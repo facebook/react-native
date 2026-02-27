@@ -9,7 +9,10 @@
  */
 
 import type {JsonPagesListResponse} from '../inspector-proxy/types';
-import type {DebuggerShellPreparationResult, DevToolLauncher} from '../types/DevToolLauncher';
+import type {
+  DebuggerShellPreparationResult,
+  DevToolLauncher,
+} from '../types/DevToolLauncher';
 
 import {fetchJson, requestLocal} from './FetchUtils';
 import {createDeviceMock} from './InspectorDeviceUtils';
@@ -45,22 +48,26 @@ async function setupDevice(
   return device;
 }
 
-function setupToolLauncherWithFuseboxShell(prepareDebuggerShell: () => Promise<DebuggerShellPreparationResult>) {
-    const ToolLauncherWithFuseboxShell: DevToolLauncher = {
-      launchDebuggerAppWindow: async (url: string) => {},
-      launchDebuggerShell: () => {
-        throw new Error('Not implemented');
-      },
-      prepareDebuggerShell,
-    };
+function setupToolLauncherWithFuseboxShell(
+  prepareDebuggerShell: () => Promise<DebuggerShellPreparationResult>,
+) {
+  const ToolLauncherWithFuseboxShell: DevToolLauncher = {
+    launchDebuggerAppWindow: async (url: string) => {},
+    launchDebuggerShell: () => {
+      throw new Error('Not implemented');
+    },
+    prepareDebuggerShell,
+  };
 
-    const prepareDebuggerShellSpy = jest
-          .spyOn(ToolLauncherWithFuseboxShell, 'prepareDebuggerShell');
+  const prepareDebuggerShellSpy = jest.spyOn(
+    ToolLauncherWithFuseboxShell,
+    'prepareDebuggerShell',
+  );
 
-    return {
-      ToolLauncherWithFuseboxShell,
-      prepareDebuggerShellSpy,
-    };
+  return {
+    ToolLauncherWithFuseboxShell,
+    prepareDebuggerShellSpy,
+  };
 }
 
 describe('enableStandaloneFuseboxShell experiment', () => {
@@ -72,7 +79,10 @@ describe('enableStandaloneFuseboxShell experiment', () => {
 
   describe('/open-debugger endpoint', () => {
     describe('success', () => {
-      const {ToolLauncherWithFuseboxShell, prepareDebuggerShellSpy} = setupToolLauncherWithFuseboxShell(() => Promise.resolve({code: 'success'}));
+      const {ToolLauncherWithFuseboxShell, prepareDebuggerShellSpy} =
+        setupToolLauncherWithFuseboxShell(() =>
+          Promise.resolve({code: 'success'}),
+        );
       const server = withServerForEachTest({
         logger: undefined,
         unstable_toolLauncher: ToolLauncherWithFuseboxShell,
@@ -102,10 +112,7 @@ describe('enableStandaloneFuseboxShell experiment', () => {
           const firstPage = pageListResponse[0];
 
           // Build the URL for the debugger
-          const openUrl = new URL(
-            '/open-debugger',
-            server.serverBaseUrl,
-          );
+          const openUrl = new URL('/open-debugger', server.serverBaseUrl);
           openUrl.searchParams.set('launchId', 'launch1');
           openUrl.searchParams.set(
             'device',
@@ -162,7 +169,10 @@ describe('enableStandaloneFuseboxShell experiment', () => {
     });
 
     describe('prepareDebuggerShell failures', () => {
-      const {ToolLauncherWithFuseboxShell, prepareDebuggerShellSpy} = setupToolLauncherWithFuseboxShell(() => Promise.resolve({code: 'platform_not_supported'}));
+      const {ToolLauncherWithFuseboxShell, prepareDebuggerShellSpy} =
+        setupToolLauncherWithFuseboxShell(() =>
+          Promise.resolve({code: 'platform_not_supported'}),
+        );
       const server = withServerForEachTest({
         logger: undefined,
         unstable_toolLauncher: ToolLauncherWithFuseboxShell,
@@ -192,10 +202,7 @@ describe('enableStandaloneFuseboxShell experiment', () => {
           const firstPage = pageListResponse[0];
 
           // Build the URL for the debugger
-          const openUrl = new URL(
-            '/open-debugger',
-            server.serverBaseUrl,
-          );
+          const openUrl = new URL('/open-debugger', server.serverBaseUrl);
           openUrl.searchParams.set('launchId', 'launch1');
           openUrl.searchParams.set(
             'device',
