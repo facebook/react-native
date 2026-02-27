@@ -1,0 +1,23 @@
+activeParameter 	Format 	Description
+domain* 	String 	Domain that should be affected (not required if using a domain-specific API key)
+mx:whatsapp.com     
+Pref
+Hostname
+IP Address
+TTL
+10
+mxa-00082601.gslb.pphosted.com
+67.231.153.30
+Proofpoint, Inc. (AS22843)
+120 min
+Blacklist Check      SMTP Test
+10
+mxb-00082601.gslb.pphosted.com
+67.231.153.30
+Proofpoint, Inc. (AS22843)
+120 min
+Blacklist Check      SMTP Test
+Test
+Result
+* (or 'address' or 'email' or 'emails' or 'addresses') 	String 	A comma separated list of email addresses / domains / IP addresses to add as blocked recipients
+*required 
