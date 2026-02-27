@@ -21,6 +21,7 @@
 #include <react/renderer/components/scrollview/ScrollViewComponentDescriptor.h>
 #include <react/renderer/components/text/ParagraphComponentDescriptor.h>
 #include <react/renderer/components/text/RawTextComponentDescriptor.h>
+#include <react/renderer/components/text/SelectableParagraphComponentDescriptor.h>
 #include <react/renderer/components/text/TextComponentDescriptor.h>
 #include <react/renderer/components/view/LayoutConformanceComponentDescriptor.h>
 #include <react/renderer/components/view/ViewComponentDescriptor.h>
@@ -71,6 +72,9 @@ void addCoreComponents(
           AndroidHorizontalScrollContentViewComponentDescriptor>());
   providerRegistry->add(
       concreteComponentDescriptorProvider<ParagraphComponentDescriptor>());
+  providerRegistry->add(
+      concreteComponentDescriptorProvider<
+          SelectableParagraphComponentDescriptor>());
   providerRegistry->add(
       concreteComponentDescriptorProvider<
           AndroidDrawerLayoutComponentDescriptor>());

@@ -687,7 +687,9 @@ public class FabricUIManager
         preparedLayout.getLayout(),
         preparedLayout.getMaximumNumberOfLines(),
         preparedLayout.getVerticalOffset(),
-        reactTags);
+        reactTags,
+        preparedLayout.getTextBreakStrategy(),
+        preparedLayout.getJustificationMode());
   }
 
   @AnyThread
@@ -1059,7 +1061,10 @@ public class FabricUIManager
     UiThreadUtil.assertOnUiThread();
 
     SurfaceMountingManager surfaceManager = mMountingManager.getSurfaceManagerForView(reactTag);
-    return surfaceManager == null ? null : surfaceManager.getView(reactTag);
+    if (surfaceManager == null || surfaceManager.isStopped()) {
+      return null;
+    }
+    return surfaceManager.getView(reactTag);
   }
 
   @Override

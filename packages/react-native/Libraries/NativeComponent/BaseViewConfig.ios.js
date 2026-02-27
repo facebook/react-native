@@ -10,8 +10,12 @@
 
 import type {PartialViewConfigWithoutName} from './PlatformBaseViewConfig';
 
-import * as ReactNativeFeatureFlags from '../../src/private/featureflags/ReactNativeFeatureFlags';
 import ReactNativeStyleAttributes from '../Components/View/ReactNativeStyleAttributes';
+import {
+  boxShadowAttribute,
+  colorAttribute,
+  filterAttribute,
+} from '../Components/View/ReactNativeStyleAttributes';
 import {
   ConditionallyIgnoredEventHandlers,
   DynamicallyInjectedByGestureHandler,
@@ -199,11 +203,11 @@ const validAttributesForNonEventProps = {
   experimental_accessibilityOrder: true,
   accessibilityRespondsToUserInteraction: true,
   testID: true,
-  backgroundColor: {process: require('../StyleSheet/processColor').default},
+  backgroundColor: colorAttribute,
   backfaceVisibility: true,
   cursor: true,
   opacity: true,
-  shadowColor: {process: require('../StyleSheet/processColor').default},
+  shadowColor: colorAttribute,
   shadowOffset: {diff: require('../Utilities/differ/sizesDiffer').default},
   shadowOpacity: true,
   shadowRadius: true,
@@ -219,8 +223,8 @@ const validAttributesForNonEventProps = {
   removeClippedSubviews: true,
   role: true,
   borderRadius: true,
-  borderColor: {process: require('../StyleSheet/processColor').default},
-  borderBlockColor: {process: require('../StyleSheet/processColor').default},
+  borderColor: colorAttribute,
+  borderBlockColor: colorAttribute,
   borderCurve: true,
   borderWidth: true,
   borderBlockWidth: true,
@@ -228,33 +232,27 @@ const validAttributesForNonEventProps = {
   hitSlop: {diff: require('../Utilities/differ/insetsDiffer').default},
   collapsable: true,
   collapsableChildren: true,
-  filter: ReactNativeFeatureFlags.enableNativeCSSParsing()
-    ? (true as const)
-    : {process: require('../StyleSheet/processFilter').default},
-  boxShadow: ReactNativeFeatureFlags.enableNativeCSSParsing()
-    ? (true as const)
-    : {process: require('../StyleSheet/processBoxShadow').default},
+  filter: filterAttribute,
+  boxShadow: boxShadowAttribute,
   mixBlendMode: true,
   isolation: true,
 
   borderTopWidth: true,
-  borderTopColor: {process: require('../StyleSheet/processColor').default},
+  borderTopColor: colorAttribute,
   borderRightWidth: true,
-  borderRightColor: {process: require('../StyleSheet/processColor').default},
+  borderRightColor: colorAttribute,
   borderBottomWidth: true,
-  borderBottomColor: {process: require('../StyleSheet/processColor').default},
+  borderBottomColor: colorAttribute,
   borderLeftWidth: true,
-  borderLeftColor: {process: require('../StyleSheet/processColor').default},
+  borderLeftColor: colorAttribute,
   borderStartWidth: true,
   borderBlockStartWidth: true,
-  borderStartColor: {process: require('../StyleSheet/processColor').default},
-  borderBlockStartColor: {
-    process: require('../StyleSheet/processColor').default,
-  },
+  borderStartColor: colorAttribute,
+  borderBlockStartColor: colorAttribute,
   borderEndWidth: true,
   borderBlockEndWidth: true,
-  borderEndColor: {process: require('../StyleSheet/processColor').default},
-  borderBlockEndColor: {process: require('../StyleSheet/processColor').default},
+  borderEndColor: colorAttribute,
+  borderBlockEndColor: colorAttribute,
 
   borderTopLeftRadius: true,
   borderTopRightRadius: true,

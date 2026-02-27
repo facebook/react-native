@@ -15,7 +15,6 @@ import androidx.annotation.AnyThread
 import androidx.annotation.UiThread
 import androidx.collection.SparseArrayCompat
 import com.facebook.common.logging.FLog
-import com.facebook.infer.annotation.Assertions
 import com.facebook.infer.annotation.ThreadConfined
 import com.facebook.react.bridge.GuardedRunnable
 import com.facebook.react.bridge.ReactNoCrashSoftException
@@ -112,30 +111,15 @@ internal constructor(
   @ThreadConfined(ThreadConfined.UI)
   private val tagToSynchronousMountProps = SparseArrayCompat<MutableMap<String, Any>>()
 
+  @AnyThread
   public fun attachRootView(rootView: View, themedReactContext: ThemedReactContext): Unit {
     this.context = themedReactContext
-    addRootView(rootView)
-  }
 
-  public fun getViewExists(tag: Int): Boolean {
-    // If Surface stopped, check if tag *was* associated with this Surface, even though it's been
-    // deleted. This helps distinguish between scenarios where an invalid tag is referenced, vs
-    // race conditions where an imperative method is called on a tag during/just after StopSurface.
-    if (tagSetForStoppedSurface?.containsKey(tag) == true) {
-      return true
-    }
-    return tagToViewState.containsKey(tag)
-  }
-
-  @UiThread
-  @ThreadConfined(ThreadConfined.UI)
-  internal fun scheduleMountItemOnViewAttach(item: MountItem): Unit {
-    onViewAttachMountItems.add(item)
-  }
-
-  @AnyThread
-  private fun addRootView(rootView: View) {
     if (isStopped) {
+      ReactSoftExceptionLogger.logSoftException(
+          TAG,
+          IllegalStateException("Trying to attach root view to a stopped surface"),
+      )
       return
     }
 
@@ -194,6 +178,22 @@ internal constructor(
     } else {
       UiThreadUtil.runOnUiThread(runnable)
     }
+  }
+
+  public fun getViewExists(tag: Int): Boolean {
+    // If Surface stopped, check if tag *was* associated with this Surface, even though it's been
+    // deleted. This helps distinguish between scenarios where an invalid tag is referenced, vs
+    // race conditions where an imperative method is called on a tag during/just after StopSurface.
+    if (tagSetForStoppedSurface?.containsKey(tag) == true) {
+      return true
+    }
+    return tagToViewState.containsKey(tag)
+  }
+
+  @UiThread
+  @ThreadConfined(ThreadConfined.UI)
+  internal fun scheduleMountItemOnViewAttach(item: MountItem): Unit {
+    onViewAttachMountItems.add(item)
   }
 
   @UiThread
@@ -370,7 +370,7 @@ internal constructor(
       ReactSoftExceptionLogger.logSoftException(
           TAG,
           IllegalViewOperationException(
-              ("removeViewAt tried to remove a React View that was actually reused. This indicates a bug in the Differ (specifically instruction ordering). [$tag]")
+              "removeViewAt tried to remove a React View that was actually reused. This indicates a bug in the Differ (specifically instruction ordering). [$tag]"
           ),
       )
       return
@@ -428,7 +428,7 @@ internal constructor(
       if (tagActualIndex == -1) {
         FLog.e(
             TAG,
-            ("removeViewAt: [$tag] -> [$parentTag] @$index: view already removed from parent! Children in parent: ${parentChildrenCount}"),
+            "removeViewAt: [$tag] -> [$parentTag] @$index: view already removed from parent! Children in parent: $parentChildrenCount",
         )
         return
       }
@@ -446,7 +446,7 @@ internal constructor(
       ReactSoftExceptionLogger.logSoftException(
           TAG,
           IllegalStateException(
-              ("Tried to remove view [$tag] of parent [$parentTag] at index $index, but got view tag $actualTag - actual index of view: $tagActualIndex")
+              "Tried to remove view [$tag] of parent [$parentTag] at index $index, but got view tag $actualTag - actual index of view: $tagActualIndex"
           ),
       )
       actualIndex = tagActualIndex
@@ -562,7 +562,13 @@ internal constructor(
         val viewManager = viewManagerRegistry?.get(componentName) as ViewManager<View, *>
         // View Managers are responsible for dealing with inital state and props.
         viewState.view =
-            viewManager.createView(reactTag, context!!, propMap, stateWrapper, jsResponderHandler)
+            viewManager.createView(
+                reactTag,
+                checkNotNull(context),
+                propMap,
+                stateWrapper,
+                jsResponderHandler,
+            )
         viewState.viewManager = viewManager
       }
     } finally {
@@ -573,13 +579,13 @@ internal constructor(
   public fun storeSynchronousMountPropsOverride(reactTag: Int, props: ReadableMap): Unit {
     if (ReactNativeFeatureFlags.overrideBySynchronousMountPropsAtMountingAndroid()) {
       val propsMap = getMapFromPropsReadableMap(props)
-      if (reactTag in tagToSynchronousMountProps) {
-        val mergedPropsMap = checkNotNull(tagToSynchronousMountProps[reactTag])
-        mergedPropsMap.putAll(propsMap)
-        tagToSynchronousMountProps[reactTag] = mergedPropsMap
+      var synchronousMountProps = tagToSynchronousMountProps[reactTag]
+      if (synchronousMountProps != null) {
+        synchronousMountProps.putAll(propsMap)
       } else {
-        tagToSynchronousMountProps[reactTag] = propsMap
+        synchronousMountProps = propsMap
       }
+      tagToSynchronousMountProps[reactTag] = synchronousMountProps
     }
   }
 
@@ -610,8 +616,7 @@ internal constructor(
     ) {
       val modifiedProps = WritableNativeMap()
       modifiedProps.merge(props)
-      val directPropsMap =
-          Assertions.assertNotNull<Map<String, Any>>(tagToSynchronousMountProps[reactTag])
+      val directPropsMap = checkNotNull(tagToSynchronousMountProps[reactTag])
       overridePropsReadableMap(directPropsMap, modifiedProps)
       viewState.currentProps = ReactStylesDiffMap(modifiedProps)
     } else {
@@ -655,7 +660,7 @@ internal constructor(
     val viewState =
         getNullableViewState(reactTag)
             ?: throw RetryableMountingLayerException(
-                "Unable to find viewState for tag: [$reactTag] for commandId: $commandId"
+                "Unable to find viewState for tag $reactTag for commandId $commandId"
             )
 
     // It's not uncommon for JS to send events as/after a component is being removed from the
@@ -684,7 +689,7 @@ internal constructor(
     val viewState =
         getNullableViewState(reactTag)
             ?: throw RetryableMountingLayerException(
-                "Unable to find viewState for tag: $reactTag for commandId: $commandId"
+                "Unable to find viewState for tag $reactTag for commandId $commandId"
             )
 
     // It's not uncommon for JS to send events as/after a component is being removed from the
@@ -783,9 +788,7 @@ internal constructor(
     if (parentViewState == null) {
       ReactSoftExceptionLogger.logSoftException(
           ReactSoftExceptionLogger.Categories.SURFACE_MOUNTING_MANAGER_MISSING_VIEWSTATE,
-          ReactNoCrashSoftException(
-              "Unable to find viewState for tag: $parentTag for updateLayout"
-          ),
+          ReactNoCrashSoftException("Unable to find viewState for tag $parentTag for updateLayout"),
       )
     } else if (parentViewState.viewManager != null) {
       parentViewManager = parentViewState.viewManager as IViewGroupManager<*>
@@ -966,7 +969,7 @@ internal constructor(
     // For non-root views we notify viewmanager with [ViewManager#onDropInstance]
     val viewManager = viewState.viewManager
     if (!viewState.isRoot && viewManager != null) {
-      viewManager.onDropViewInstance(viewState.view!!)
+      viewManager.onDropViewInstance(checkNotNull(viewState.view))
     }
   }
 
@@ -989,7 +992,7 @@ internal constructor(
     if (viewState == null) {
       ReactSoftExceptionLogger.logSoftException(
           ReactSoftExceptionLogger.Categories.SURFACE_MOUNTING_MANAGER_MISSING_VIEWSTATE,
-          ReactNoCrashSoftException("Unable to find viewState for tag: $reactTag for deleteView"),
+          ReactNoCrashSoftException("Unable to find viewState for tag $reactTag for deleteView"),
       )
       return
     }
@@ -1043,21 +1046,19 @@ internal constructor(
   @UiThread
   public fun getView(reactTag: Int): View {
     val state = getNullableViewState(reactTag)
-    val view =
-        state?.view
-            ?: throw IllegalViewOperationException(
-                "Trying to resolve view with tag $reactTag which doesn't exist"
-            )
-    return view
+    return state?.view
+        ?: throw IllegalViewOperationException(
+            "Unable to find view for tag $reactTag. Surface $surfaceId stopped: $isStopped, rootViewAttached: $isRootViewAttached"
+        )
   }
 
-  private fun getViewState(tag: Int): ViewState =
-      tagToViewState[tag]
+  private fun getViewState(reactTag: Int): ViewState =
+      tagToViewState[reactTag]
           ?: throw RetryableMountingLayerException(
-              "Unable to find viewState for tag $tag. Surface stopped: $isStopped"
+              "Unable to find viewState for tag $reactTag. Surface stopped: $isStopped"
           )
 
-  private fun getNullableViewState(tag: Int): ViewState? = tagToViewState[tag]
+  private fun getNullableViewState(reactTag: Int): ViewState? = tagToViewState[reactTag]
 
   public fun printSurfaceState(): Unit {
     FLog.e(TAG, "Views created for surface $surfaceId:")

@@ -69,6 +69,7 @@ Pod::Spec.new do |s|
   add_dependency(s, "React-Fabric", :additional_framework_paths => [
     "react/renderer/components/scrollview/platform/cxx",
     "react/renderer/components/scrollview/platform/ios",
+    "react/renderer/components/legacyviewmanagerinterop/platform/ios",
     "react/renderer/components/view/platform/cxx",
     "react/renderer/imagemanager/platform/ios",
   ])

@@ -625,6 +625,17 @@ const definitions: FeatureFlagDefinitions = {
       },
       ossReleaseStage: 'none',
     },
+    fixFindShadowNodeByTagRaceCondition: {
+      defaultValue: false,
+      metadata: {
+        dateAdded: '2026-02-25',
+        description:
+          'Fix a use-after-free race condition in findShadowNodeByTag_DEPRECATED by using getCurrentRevision() instead of tryCommit() with a raw pointer.',
+        expectedReleaseValue: true,
+        purpose: 'experimentation',
+      },
+      ossReleaseStage: 'none',
+    },
     fixMappingOfEventPrioritiesBetweenFabricAndReact: {
       defaultValue: false,
       metadata: {

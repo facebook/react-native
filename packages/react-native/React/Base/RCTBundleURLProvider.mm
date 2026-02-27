@@ -31,6 +31,8 @@ static NSString *const kRCTJsLocationKey = @"RCT_jsLocation";
 static NSString *const kRCTEnableDevKey = @"RCT_enableDev";
 static NSString *const kRCTEnableMinificationKey = @"RCT_enableMinification";
 static NSString *const kRCTInlineSourceMapKey = @"RCT_inlineSourceMap";
+static const NSTimeInterval kRCTPackagerStatusRequestTimeout = 6;
+static const NSTimeInterval kRCTPackagerStatusRequestTimeoutGraceTime = 2;
 
 @implementation RCTBundleURLProvider
 
@@ -96,22 +98,39 @@ static NSURL *serverRootWithHostPort(NSString *hostPort, NSString *scheme)
   NSURLSession *session = [NSURLSession sharedSession];
   NSMutableURLRequest *request = [NSMutableURLRequest requestWithURL:url
                                                          cachePolicy:NSURLRequestUseProtocolCachePolicy
-                                                     timeoutInterval:10];
+                                                     timeoutInterval:kRCTPackagerStatusRequestTimeout];
   [[RCTDevSupportHttpHeaders sharedInstance] applyHeadersToRequest:request];
   __block NSURLResponse *response;
   __block NSData *data;
 
+  __block BOOL isRunning = NO;
   dispatch_semaphore_t semaphore = dispatch_semaphore_create(0);
   [[session dataTaskWithRequest:request
-              completionHandler:^(NSData *d, NSURLResponse *res, __unused NSError *err) {
+              completionHandler:^(NSData *d, NSURLResponse *res, NSError *err) {
                 data = d;
                 response = res;
+                NSString *status = [[NSString alloc] initWithData:d encoding:NSUTF8StringEncoding];
+                isRunning = [status isEqualToString:@"packager-status:running"];
+                if (!isRunning) {
+                  RCTLogWarn(
+                      @"Packager status check returned unexpected result for %@: %@, error: %@", url, status, err);
+                }
                 dispatch_semaphore_signal(semaphore);
               }] resume];
-  dispatch_semaphore_wait(semaphore, DISPATCH_TIME_FOREVER);
-
-  NSString *status = [[NSString alloc] initWithData:data encoding:NSUTF8StringEncoding];
-  return [status isEqualToString:@"packager-status:running"];
+  long result = dispatch_semaphore_wait(
+      semaphore,
+      dispatch_time(
+          DISPATCH_TIME_NOW,
+          (int64_t)((kRCTPackagerStatusRequestTimeout +
+                     // The request timeout does not cover all phases of the request (e.g. DNS resolution),
+                     // so the actual request might take slightly longer than the configured timeout.
+                     kRCTPackagerStatusRequestTimeoutGraceTime) *
+                    NSEC_PER_SEC)));
+  if (result != 0) {
+    RCTLogWarn(@"Packager status check timed out for %@", url);
+    return NO;
+  }
+  return isRunning;
 }
 
 - (NSString *)guessPackagerHost

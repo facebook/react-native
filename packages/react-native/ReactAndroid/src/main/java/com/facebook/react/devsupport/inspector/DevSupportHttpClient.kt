@@ -16,9 +16,10 @@ import okhttp3.OkHttpClient
 
 /**
  * Shared [OkHttpClient] instances for devsupport networking. Uses a single connection pool and
- * dispatcher across all dev support HTTP and WebSocket usage.
+ * dispatcher across all dev support HTTP and WebSocket usage. Supports injecting custom request
+ * headers that are applied to every outgoing request via an OkHttp interceptor.
  */
-internal object DevSupportHttpClient {
+public object DevSupportHttpClient {
   private val customHeaders = ConcurrentHashMap<String, String>()
 
   private val headerInterceptor = Interceptor { chain ->
@@ -30,7 +31,7 @@ internal object DevSupportHttpClient {
   }
 
   /** Client for HTTP requests: connect=5s, write=disabled, read=disabled. */
-  val httpClient: OkHttpClient =
+  public val httpClient: OkHttpClient =
       OkHttpClient.Builder()
           .addInterceptor(headerInterceptor)
           .connectTimeout(5, TimeUnit.SECONDS)
@@ -39,7 +40,7 @@ internal object DevSupportHttpClient {
           .build()
 
   /** Client for WebSocket connections: connect=10s, write=10s, read=disabled. */
-  val websocketClient: OkHttpClient =
+  public val websocketClient: OkHttpClient =
       httpClient
           .newBuilder()
           .connectTimeout(10, TimeUnit.SECONDS)
@@ -47,12 +48,14 @@ internal object DevSupportHttpClient {
           .build()
 
   /** Add a custom header to be included in all requests made through both clients. */
-  fun addRequestHeader(name: String, value: String) {
+  @JvmStatic
+  public fun addRequestHeader(name: String, value: String) {
     customHeaders[name] = value
   }
 
   /** Remove a previously added custom header. */
-  fun removeRequestHeader(name: String) {
+  @JvmStatic
+  public fun removeRequestHeader(name: String) {
     customHeaders.remove(name)
   }
 }

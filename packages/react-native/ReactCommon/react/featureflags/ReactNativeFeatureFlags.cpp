@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<20f3c045c134a0dae21f8428c6f8714a>>
+ * @generated SignedSource<<9d81f74c5926706ee353813e594575e8>>
  */
 
 /**
@@ -240,6 +240,10 @@ bool ReactNativeFeatureFlags::enableVirtualViewContainerStateExperimental() {
 
 bool ReactNativeFeatureFlags::enableVirtualViewDebugFeatures() {
   return getAccessor().enableVirtualViewDebugFeatures();
+}
+
+bool ReactNativeFeatureFlags::fixFindShadowNodeByTagRaceCondition() {
+  return getAccessor().fixFindShadowNodeByTagRaceCondition();
 }
 
 bool ReactNativeFeatureFlags::fixMappingOfEventPrioritiesBetweenFabricAndReact() {

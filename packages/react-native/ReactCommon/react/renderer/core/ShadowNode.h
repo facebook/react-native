@@ -30,26 +30,19 @@ struct ShadowNodeWrapper;
 
 class ShadowNode : public Sealable, public DebugStringConvertible, public jsi::NativeState {
  public:
-  // TODO(T223558094): delete this in the next version.
-  using Shared [[deprecated("Use std::shared_ptr<const ShadowNode> instead")]] = std::shared_ptr<const ShadowNode>;
-  // TODO(T223558094): delete this in the next version.
-  using Weak [[deprecated("Use std::weak_ptr<const ShadowNode> instead")]] = std::weak_ptr<const ShadowNode>;
-  // TODO(T223558094): delete this in the next version.
-  using Unshared [[deprecated("Use std::shared_ptr<ShadowNode> instead")]] = std::shared_ptr<ShadowNode>;
-  // TODO(T223558094): delete this in the next version.
-  using ListOfShared [[deprecated("Use std::vector<std::shared_ptr<const ShadowNode>> instead")]] =
-      std::vector<std::shared_ptr<const ShadowNode>>;
-  // TODO(T223558094): delete this in the next version.
-  using ListOfWeak [[deprecated("Use std::vector<std::weak_ptr<const ShadowNode>> instead")]] =
-      std::vector<std::weak_ptr<const ShadowNode>>;
-  using SharedListOfShared = std::shared_ptr<const std::vector<std::shared_ptr<const ShadowNode>>>;
-  using UnsharedListOfShared = std::shared_ptr<std::vector<std::shared_ptr<const ShadowNode>>>;
-  using UnsharedListOfWeak = std::shared_ptr<std::vector<std::weak_ptr<const ShadowNode>>>;
+  using SharedListOfShared
+      [[deprecated("Use std::shared_ptr<const std::vector<std::shared_ptr<const ShadowNode>>> instead")]] =
+          std::shared_ptr<const std::vector<std::shared_ptr<const ShadowNode>>>;
+  using UnsharedListOfShared
+      [[deprecated("Use std::shared_ptr<std::vector<std::shared_ptr<const ShadowNode>>> instead")]] =
+          std::shared_ptr<std::vector<std::shared_ptr<const ShadowNode>>>;
+  using UnsharedListOfWeak [[deprecated("Use std::shared_ptr<std::vector<std::weak_ptr<const ShadowNode>>> instead")]] =
+      std::shared_ptr<std::vector<std::weak_ptr<const ShadowNode>>>;
 
   using AncestorList =
       std::vector<std::pair<std::reference_wrapper<const ShadowNode> /* parentNode */, int /* childIndex */>>;
 
-  static SharedListOfShared emptySharedShadowNodeSharedList();
+  static std::shared_ptr<const std::vector<std::shared_ptr<const ShadowNode>>> emptySharedShadowNodeSharedList();
 
   /*
    * Returns `true` if nodes belong to the same family (they were cloned one
@@ -238,7 +231,7 @@ class ShadowNode : public Sealable, public DebugStringConvertible, public jsi::N
 
  protected:
   Props::Shared props_;
-  SharedListOfShared children_;
+  std::shared_ptr<const std::vector<std::shared_ptr<const ShadowNode>>> children_;
   State::Shared state_;
   int orderIndex_;
 

@@ -2101,6 +2101,14 @@ public final class com/facebook/react/devsupport/StackTraceHelper$StackFrameImpl
 	public fun toJSON ()Lorg/json/JSONObject;
 }
 
+public final class com/facebook/react/devsupport/inspector/DevSupportHttpClient {
+	public static final field INSTANCE Lcom/facebook/react/devsupport/inspector/DevSupportHttpClient;
+	public static final fun addRequestHeader (Ljava/lang/String;Ljava/lang/String;)V
+	public final fun getHttpClient ()Lokhttp3/OkHttpClient;
+	public final fun getWebsocketClient ()Lokhttp3/OkHttpClient;
+	public static final fun removeRequestHeader (Ljava/lang/String;)V
+}
+
 public abstract interface class com/facebook/react/devsupport/interfaces/BundleLoadCallback {
 	public fun onError (Ljava/lang/Exception;)V
 	public abstract fun onSuccess ()V
@@ -4253,14 +4261,8 @@ public abstract interface class com/facebook/react/uimanager/UIBlock {
 }
 
 public class com/facebook/react/uimanager/UIImplementation {
-	protected final field mEventDispatcher Lcom/facebook/react/uimanager/events/EventDispatcher;
-	protected field mLayoutUpdateListener Lcom/facebook/react/uimanager/UIImplementation$LayoutUpdateListener;
-	protected final field mReactContext Lcom/facebook/react/bridge/ReactApplicationContext;
-	protected final field mShadowNodeRegistry Lcom/facebook/react/uimanager/ShadowNodeRegistry;
-	protected field uiImplementationThreadLock Ljava/lang/Object;
 	protected fun <init> (Lcom/facebook/react/bridge/ReactApplicationContext;Lcom/facebook/react/uimanager/ViewManagerRegistry;Lcom/facebook/react/uimanager/UIViewOperationQueue;Lcom/facebook/react/uimanager/events/EventDispatcher;)V
 	public fun addUIBlock (Lcom/facebook/react/uimanager/UIBlock;)V
-	protected fun applyUpdatesRecursive (Lcom/facebook/react/uimanager/ReactShadowNode;FFLjava/util/List;)V
 	protected fun calculateRootLayout (Lcom/facebook/react/uimanager/ReactShadowNode;)V
 	public fun clearJSResponder ()V
 	public fun configureNextLayoutAnimation (Lcom/facebook/react/bridge/ReadableMap;Lcom/facebook/react/bridge/Callback;)V
@@ -4356,7 +4358,6 @@ public class com/facebook/react/uimanager/UIManagerModule : com/facebook/react/b
 	public fun getEventDispatcher ()Lcom/facebook/react/uimanager/events/EventDispatcher;
 	public fun getName ()Ljava/lang/String;
 	public fun getPerformanceCounters ()Ljava/util/Map;
-	public fun getUIImplementation ()Lcom/facebook/react/uimanager/UIImplementation;
 	public fun getViewManagerRegistry_DO_NOT_USE ()Lcom/facebook/react/uimanager/ViewManagerRegistry;
 	public fun initialize ()V
 	public fun invalidate ()V
@@ -4400,7 +4401,7 @@ public abstract interface class com/facebook/react/uimanager/UIManagerModule$Cus
 
 public class com/facebook/react/uimanager/UIViewOperationQueue {
 	public static final field DEFAULT_MIN_TIME_LEFT_IN_FRAME_FOR_NONBATCHED_OPERATION_MS I
-	public fun <init> (Lcom/facebook/react/bridge/ReactApplicationContext;Lcom/facebook/react/uimanager/NativeViewHierarchyManager;I)V
+	public fun <init> (Lcom/facebook/react/bridge/ReactApplicationContext;I)V
 	public fun addRootView (ILandroid/view/View;)V
 	public fun dispatchViewUpdates (IJJ)V
 	public fun enqueueClearJSResponder ()V
@@ -6103,7 +6104,7 @@ public class com/facebook/react/views/text/ReactTextView : androidx/appcompat/wi
 	public fun updateView ()V
 }
 
-public final class com/facebook/react/views/text/ReactTextViewManager : com/facebook/react/uimanager/BaseViewManager, com/facebook/react/uimanager/IViewManagerWithChildren, com/facebook/react/views/text/ReactTextViewManagerCallback {
+public class com/facebook/react/views/text/ReactTextViewManager : com/facebook/react/uimanager/BaseViewManager, com/facebook/react/uimanager/IViewManagerWithChildren, com/facebook/react/views/text/ReactTextViewManagerCallback {
 	public static final field Companion Lcom/facebook/react/views/text/ReactTextViewManager$Companion;
 	public static final field REACT_CLASS Ljava/lang/String;
 	public fun <init> ()V
@@ -6116,11 +6117,14 @@ public final class com/facebook/react/views/text/ReactTextViewManager : com/face
 	public fun createViewInstance (Lcom/facebook/react/uimanager/ThemedReactContext;)Lcom/facebook/react/views/text/ReactTextView;
 	public fun getExportedCustomDirectEventTypeConstants ()Ljava/util/Map;
 	public fun getName ()Ljava/lang/String;
+	protected final fun getReactTextViewManagerCallback ()Lcom/facebook/react/views/text/ReactTextViewManagerCallback;
 	public fun getShadowNodeClass ()Ljava/lang/Class;
 	public fun needsCustomLayoutForChildren ()Z
 	public synthetic fun onAfterUpdateTransaction (Landroid/view/View;)V
+	protected fun onAfterUpdateTransaction (Lcom/facebook/react/views/text/ReactTextView;)V
 	public fun onPostProcessSpannable (Landroid/text/Spannable;)V
 	public synthetic fun prepareToRecycleView (Lcom/facebook/react/uimanager/ThemedReactContext;Landroid/view/View;)Landroid/view/View;
+	protected fun prepareToRecycleView (Lcom/facebook/react/uimanager/ThemedReactContext;Lcom/facebook/react/views/text/ReactTextView;)Lcom/facebook/react/views/text/ReactTextView;
 	public final fun setAccessible (Lcom/facebook/react/views/text/ReactTextView;Z)V
 	public final fun setAdjustFontSizeToFit (Lcom/facebook/react/views/text/ReactTextView;Z)V
 	public final fun setAndroidHyphenationFrequency (Lcom/facebook/react/views/text/ReactTextView;Ljava/lang/String;)V
@@ -6138,6 +6142,7 @@ public final class com/facebook/react/views/text/ReactTextViewManager : com/face
 	public final fun setOverflow (Lcom/facebook/react/views/text/ReactTextView;Ljava/lang/String;)V
 	public synthetic fun setPadding (Landroid/view/View;IIII)V
 	public fun setPadding (Lcom/facebook/react/views/text/ReactTextView;IIII)V
+	protected final fun setReactTextViewManagerCallback (Lcom/facebook/react/views/text/ReactTextViewManagerCallback;)V
 	public final fun setSelectable (Lcom/facebook/react/views/text/ReactTextView;Z)V
 	public final fun setSelectionColor (Lcom/facebook/react/views/text/ReactTextView;Ljava/lang/Integer;)V
 	public final fun setTextAlignVertical (Lcom/facebook/react/views/text/ReactTextView;Ljava/lang/String;)V
@@ -6146,6 +6151,7 @@ public final class com/facebook/react/views/text/ReactTextViewManager : com/face
 	public synthetic fun updateState (Landroid/view/View;Lcom/facebook/react/uimanager/ReactStylesDiffMap;Lcom/facebook/react/uimanager/StateWrapper;)Ljava/lang/Object;
 	public fun updateState (Lcom/facebook/react/views/text/ReactTextView;Lcom/facebook/react/uimanager/ReactStylesDiffMap;Lcom/facebook/react/uimanager/StateWrapper;)Ljava/lang/Object;
 	public synthetic fun updateViewAccessibility (Landroid/view/View;)V
+	protected fun updateViewAccessibility (Lcom/facebook/react/views/text/ReactTextView;)V
 }
 
 public final class com/facebook/react/views/text/ReactTextViewManager$Companion {
@@ -6161,6 +6167,9 @@ public final class com/facebook/react/views/text/ReactTypefaceUtils {
 	public static final fun parseFontStyle (Ljava/lang/String;)I
 	public static final fun parseFontVariant (Lcom/facebook/react/bridge/ReadableArray;)Ljava/lang/String;
 	public static final fun parseFontWeight (Ljava/lang/String;)I
+}
+
+public final class com/facebook/react/views/text/SelectableTextViewManager$Companion {
 }
 
 public final class com/facebook/react/views/text/TextAttributeProps {

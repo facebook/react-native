@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<c884eaa1b04699c8deb66eb62bb5e3f8>>
+ * @generated SignedSource<<5ac93ed057017f8d1a388b8029614f18>>
  */
 
 /**
@@ -190,6 +190,9 @@ class JReactNativeFeatureFlagsCxxInterop
     facebook::jni::alias_ref<JReactNativeFeatureFlagsCxxInterop>);
 
   static bool enableVirtualViewDebugFeatures(
+    facebook::jni::alias_ref<JReactNativeFeatureFlagsCxxInterop>);
+
+  static bool fixFindShadowNodeByTagRaceCondition(
     facebook::jni::alias_ref<JReactNativeFeatureFlagsCxxInterop>);
 
   static bool fixMappingOfEventPrioritiesBetweenFabricAndReact(

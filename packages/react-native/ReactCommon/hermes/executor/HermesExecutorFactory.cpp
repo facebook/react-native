@@ -265,7 +265,7 @@ HermesExecutor::getRuntimeTargetDelegate() {
   if (!targetDelegate_) {
     targetDelegate_ =
         std::make_unique<jsinspector_modern::HermesRuntimeTargetDelegate>(
-            hermesRuntime_);
+            hermesRuntime_, *hermesRuntime_);
   }
   return *targetDelegate_;
 }

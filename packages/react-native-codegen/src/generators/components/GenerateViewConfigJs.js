@@ -72,7 +72,7 @@ function getReactDiffProcessValue(typeAnnotation: PropTypeAnnotation) {
       switch (typeAnnotation.name) {
         case 'ColorPrimitive':
           return expression(
-            "{ process: require('react-native/Libraries/StyleSheet/processColor').default }",
+            "require('react-native/Libraries/Components/View/ReactNativeStyleAttributes').colorAttribute",
           );
         case 'ImageSourcePrimitive':
           return expression(

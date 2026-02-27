@@ -59,8 +59,4 @@ bool operator==(const RawPropsKey& lhs, const RawPropsKey& rhs) noexcept {
       areFieldsEqual(lhs.suffix, rhs.suffix);
 }
 
-bool operator!=(const RawPropsKey& lhs, const RawPropsKey& rhs) noexcept {
-  return !(lhs == rhs);
-}
-
 } // namespace facebook::react

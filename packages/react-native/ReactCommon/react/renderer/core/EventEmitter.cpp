@@ -125,7 +125,7 @@ void EventEmitter::dispatchUniqueEvent(
       RawEvent::Category::Continuous));
 }
 
-void EventEmitter::setEnabled(bool enabled) const {
+void EventEmitter::setEnabled(bool enabled) {
   enableCounter_ += enabled ? 1 : -1;
 
   bool shouldBeEnabled = enableCounter_ > 0;
@@ -149,7 +149,7 @@ void EventEmitter::setEnabled(bool enabled) const {
 }
 
 void EventEmitter::setShadowNodeFamily(
-    std::weak_ptr<const ShadowNodeFamily> shadowNodeFamily) const {
+    std::weak_ptr<const ShadowNodeFamily> shadowNodeFamily) {
   shadowNodeFamily_ = std::move(shadowNodeFamily);
 }
 

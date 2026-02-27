@@ -28,18 +28,22 @@ const DEFAULT_MODAL_CHILD_VIEW = (
 );
 
 describe('<Modal>', () => {
+  let root: Fantom.Root;
+
+  beforeEach(() => {
+    root = Fantom.createRoot();
+  });
+
   afterEach(() => {
+    root.destroy();
     // Flush any remaining tasks that may have been scheduled during the
     // render (e.g. passive effects from AppContainer in __DEV__ mode).
     // This prevents flaky "MessageQueue is not empty" failures from the
     // global afterEach validation hook.
     Fantom.runWorkLoop();
   });
-
   describe('props', () => {
     it('renders a Modal with the default values when no props are passed', () => {
-      const root = Fantom.createRoot();
-
       Fantom.runTask(() => {
         root.render(<Modal />);
       });
@@ -52,8 +56,6 @@ describe('<Modal>', () => {
     });
     describe('animationType', () => {
       it('renders a Modal with animationType="none" by default', () => {
-        const root = Fantom.createRoot();
-
         Fantom.runTask(() => {
           root.render(<Modal animationType="none" />);
         });
@@ -69,8 +71,6 @@ describe('<Modal>', () => {
 
       (['slide', 'fade'] as const).forEach(animationType => {
         it(`renders a Modal with animationType="${animationType}"`, () => {
-          const root = Fantom.createRoot();
-
           Fantom.runTask(() => {
             root.render(<Modal animationType={animationType} />);
           });
@@ -88,8 +88,6 @@ describe('<Modal>', () => {
 
     describe('presentationStyle', () => {
       it('renders a Modal with presentationStyle="fullScreen" by default', () => {
-        const root = Fantom.createRoot();
-
         Fantom.runTask(() => {
           root.render(<Modal presentationStyle="fullScreen" />);
         });
@@ -106,8 +104,6 @@ describe('<Modal>', () => {
       (['pageSheet', 'formSheet', 'overFullScreen'] as const).forEach(
         presentationStyle => {
           it(`renders a Modal with presentationStyle="${presentationStyle}"`, () => {
-            const root = Fantom.createRoot();
-
             Fantom.runTask(() => {
               root.render(<Modal presentationStyle={presentationStyle} />);
             });
@@ -125,8 +121,6 @@ describe('<Modal>', () => {
     });
     describe('transparent', () => {
       it('renders a Modal with transparent="true"', () => {
-        const root = Fantom.createRoot();
-
         Fantom.runTask(() => {
           root.render(<Modal transparent={true} />);
         });
@@ -145,8 +139,6 @@ describe('<Modal>', () => {
       });
 
       it('renders a Modal with transparent="false"', () => {
-        const root = Fantom.createRoot();
-
         Fantom.runTask(() => {
           root.render(<Modal transparent={false} />);
         });
@@ -164,8 +156,6 @@ describe('<Modal>', () => {
     });
     describe('statusBarTranslucent', () => {
       it('renders a Modal with statusBarTranslucent="true"', () => {
-        const root = Fantom.createRoot();
-
         Fantom.runTask(() => {
           root.render(<Modal statusBarTranslucent={true} />);
         });
@@ -179,8 +169,6 @@ describe('<Modal>', () => {
         );
       });
       it('renders a Modal with statusBarTranslucent="false"', () => {
-        const root = Fantom.createRoot();
-
         Fantom.runTask(() => {
           root.render(<Modal statusBarTranslucent={false} />);
         });
@@ -196,8 +184,6 @@ describe('<Modal>', () => {
     });
     describe('navigationBarTranslucent', () => {
       it('renders a Modal with navigationBarTranslucent="true" and statusBarTranslucent="true"', () => {
-        const root = Fantom.createRoot();
-
         Fantom.runTask(() => {
           // navigationBarTranslucent=true with statusBarTranslucent=false is not supported
           // and it emits a warning.
@@ -224,8 +210,6 @@ describe('<Modal>', () => {
         );
       });
       it('renders a Modal with navigationBarTranslucent="false"', () => {
-        const root = Fantom.createRoot();
-
         Fantom.runTask(() => {
           root.render(<Modal navigationBarTranslucent={false} />);
         });
@@ -246,8 +230,6 @@ describe('<Modal>', () => {
 
     describe('hardwareAccelerated', () => {
       it('renders a Modal with hardwareAccelerated="true"', () => {
-        const root = Fantom.createRoot();
-
         Fantom.runTask(() => {
           root.render(<Modal hardwareAccelerated={true} />);
         });
@@ -261,8 +243,6 @@ describe('<Modal>', () => {
         );
       });
       it('renders a Modal with hardwareAccelerated="false"', () => {
-        const root = Fantom.createRoot();
-
         Fantom.runTask(() => {
           root.render(<Modal hardwareAccelerated={false} />);
         });
@@ -279,8 +259,6 @@ describe('<Modal>', () => {
 
     describe('visible', () => {
       it('renders a Modal with visible="true"', () => {
-        const root = Fantom.createRoot();
-
         Fantom.runTask(() => {
           root.render(<Modal visible={true} />);
         });
@@ -292,8 +270,6 @@ describe('<Modal>', () => {
         );
       });
       it('renders nothing when visible="false"', () => {
-        const root = Fantom.createRoot();
-
         Fantom.runTask(() => {
           root.render(<Modal visible={false} />);
         });
@@ -304,8 +280,6 @@ describe('<Modal>', () => {
 
     describe('allowSwipeDismissal', () => {
       it('renders a Modal with allowSwipeDismissal="true"', () => {
-        const root = Fantom.createRoot();
-
         Fantom.runTask(() => {
           root.render(<Modal allowSwipeDismissal={true} />);
         });
@@ -319,8 +293,6 @@ describe('<Modal>', () => {
         );
       });
       it('renders a Modal with allowSwipeDismissal="false"', () => {
-        const root = Fantom.createRoot();
-
         Fantom.runTask(() => {
           root.render(<Modal allowSwipeDismissal={false} />);
         });
@@ -340,8 +312,6 @@ describe('<Modal>', () => {
         // The 'animated' prop is deprecated and ignored when the Modal is rendered
         // Users should use the 'animationType' prop instead.
         it(`[DEPRECATED] renders a Modal with animated="${animated ? 'true' : 'false'}"`, () => {
-          const root = Fantom.createRoot();
-
           Fantom.runTask(() => {
             root.render(<Modal animated={animated} />);
           });
@@ -364,7 +334,6 @@ describe('<Modal>', () => {
     describe('instance', () => {
       it('uses the "RN:ModalHostView" tag name', () => {
         const elementRef = createRef<HostInstance>();
-        const root = Fantom.createRoot();
         Fantom.runTask(() => {
           root.render(<Modal ref={elementRef} />);
         });

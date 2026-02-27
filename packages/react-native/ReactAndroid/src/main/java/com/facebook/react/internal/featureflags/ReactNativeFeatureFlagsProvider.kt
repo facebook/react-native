@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<460d442da5dc25a441b671e7b30e7e56>>
+ * @generated SignedSource<<bbaa4d1498f606886341d34a62acb508>>
  */
 
 /**
@@ -130,6 +130,8 @@ public interface ReactNativeFeatureFlagsProvider {
   @DoNotStrip public fun enableVirtualViewContainerStateExperimental(): Boolean
 
   @DoNotStrip public fun enableVirtualViewDebugFeatures(): Boolean
+
+  @DoNotStrip public fun fixFindShadowNodeByTagRaceCondition(): Boolean
 
   @DoNotStrip public fun fixMappingOfEventPrioritiesBetweenFabricAndReact(): Boolean
 

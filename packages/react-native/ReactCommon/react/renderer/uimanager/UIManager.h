@@ -68,7 +68,7 @@ class UIManager final : public ShadowTreeDelegate {
   std::weak_ptr<UIManagerAnimationBackend> unstable_getAnimationBackend();
 
   /**
-   * Execute stopSurface on any UIMAnagerAnimationDelegate.
+   * Execute stopSurface on any UIManagerAnimationDelegate.
    */
   void stopSurfaceForAnimationDelegate(SurfaceId surfaceId) const;
 
@@ -79,9 +79,9 @@ class UIManager final : public ShadowTreeDelegate {
   void synchronouslyUpdateViewOnUIThread(Tag tag, const folly::dynamic &props);
 
   /*
-   * Provides access to a UIManagerBindging.
+   * Provides access to a UIManagerBinding.
    * The `callback` methods will not be called if the internal pointer to
-   * `UIManagerBindging` is `nullptr`.
+   * `UIManagerBinding` is `nullptr`.
    * The callback is called synchronously on the same thread.
    */
   void visitBinding(
@@ -146,8 +146,10 @@ class UIManager final : public ShadowTreeDelegate {
       RawProps props,
       InstanceHandle::Shared instanceHandle) const;
 
-  std::shared_ptr<ShadowNode>
-  cloneNode(const ShadowNode &shadowNode, const ShadowNode::SharedListOfShared &children, RawProps rawProps) const;
+  std::shared_ptr<ShadowNode> cloneNode(
+      const ShadowNode &shadowNode,
+      const std::shared_ptr<const std::vector<std::shared_ptr<const ShadowNode>>> &children,
+      RawProps rawProps) const;
 
   void appendChild(
       const std::shared_ptr<const ShadowNode> &parentShadowNode,
@@ -155,7 +157,7 @@ class UIManager final : public ShadowTreeDelegate {
 
   void completeSurface(
       SurfaceId surfaceId,
-      const ShadowNode::UnsharedListOfShared &rootChildren,
+      const std::shared_ptr<std::vector<std::shared_ptr<const ShadowNode>>> &rootChildren,
       ShadowTree::CommitOptions commitOptions);
 
   void setIsJSResponder(

@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<50a267a6a302105663a150f2f3a8ef0c>>
+ * @generated SignedSource<<3495a8cf9d3d820e37d082b3d62e2b91>>
  * @flow strict
  * @noformat
  */
@@ -79,6 +79,7 @@ export interface Spec extends TurboModule {
   +enableViewRecyclingForView?: () => boolean;
   +enableVirtualViewContainerStateExperimental?: () => boolean;
   +enableVirtualViewDebugFeatures?: () => boolean;
+  +fixFindShadowNodeByTagRaceCondition?: () => boolean;
   +fixMappingOfEventPrioritiesBetweenFabricAndReact?: () => boolean;
   +fixTextClippingAndroid15useBoundsForWidth?: () => boolean;
   +fuseboxAssertSingleHostState?: () => boolean;

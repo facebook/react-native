@@ -177,7 +177,13 @@ void YGNodeRemoveChild(
     if (owner == childOwner) {
       excludedChild->setLayout({}); // layout is no longer valid
       excludedChild->setOwner(nullptr);
-      excludedChild->setDirty(true); // invalidate cache
+      // Mark dirty to invalidate cache, but suppress the dirtied callback
+      // since the node is being detached from the tree and should not
+      // propagate dirty signals through external callback mechanisms.
+      auto dirtiedFunc = excludedChild->getDirtiedFunc();
+      excludedChild->setDirtiedFunc(nullptr);
+      excludedChild->setDirty(true);
+      excludedChild->setDirtiedFunc(dirtiedFunc);
     }
     owner->markDirtyAndPropagate();
   }
@@ -199,7 +205,13 @@ void YGNodeRemoveAllChildren(const YGNodeRef ownerRef) {
       yoga::Node* oldChild = owner->getChild(i);
       oldChild->setLayout({}); // layout is no longer valid
       oldChild->setOwner(nullptr);
-      oldChild->setDirty(true); // invalidate cache
+      // Mark dirty to invalidate cache, but suppress the dirtied callback
+      // since the node is being detached from the tree and should not
+      // propagate dirty signals through external callback mechanisms.
+      auto dirtiedFunc = oldChild->getDirtiedFunc();
+      oldChild->setDirtiedFunc(nullptr);
+      oldChild->setDirty(true);
+      oldChild->setDirtiedFunc(dirtiedFunc);
     }
     owner->clearChildren();
     owner->markDirtyAndPropagate();

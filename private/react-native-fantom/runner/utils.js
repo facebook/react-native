@@ -70,7 +70,7 @@ export function getBuckModesForPlatform(
       });
     }
   } else {
-    if (EnvironmentOptions.enableASAN) {
+    if (EnvironmentOptions.enableASAN && EnvironmentOptions.enableTSAN) {
       printConsoleLog({
         type: 'console-log',
         level: 'warn',

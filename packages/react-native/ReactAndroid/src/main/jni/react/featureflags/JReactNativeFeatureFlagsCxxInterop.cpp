@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<8d00a6310e0fae475007f11fa56a5a6f>>
+ * @generated SignedSource<<45063df01d7ce8726b4a7d901f1b3341>>
  */
 
 /**
@@ -360,6 +360,12 @@ class ReactNativeFeatureFlagsJavaProvider
   bool enableVirtualViewDebugFeatures() override {
     static const auto method =
         getReactNativeFeatureFlagsProviderJavaClass()->getMethod<jboolean()>("enableVirtualViewDebugFeatures");
+    return method(javaProvider_);
+  }
+
+  bool fixFindShadowNodeByTagRaceCondition() override {
+    static const auto method =
+        getReactNativeFeatureFlagsProviderJavaClass()->getMethod<jboolean()>("fixFindShadowNodeByTagRaceCondition");
     return method(javaProvider_);
   }
 
@@ -811,6 +817,11 @@ bool JReactNativeFeatureFlagsCxxInterop::enableVirtualViewDebugFeatures(
   return ReactNativeFeatureFlags::enableVirtualViewDebugFeatures();
 }
 
+bool JReactNativeFeatureFlagsCxxInterop::fixFindShadowNodeByTagRaceCondition(
+    facebook::jni::alias_ref<JReactNativeFeatureFlagsCxxInterop> /*unused*/) {
+  return ReactNativeFeatureFlags::fixFindShadowNodeByTagRaceCondition();
+}
+
 bool JReactNativeFeatureFlagsCxxInterop::fixMappingOfEventPrioritiesBetweenFabricAndReact(
     facebook::jni::alias_ref<JReactNativeFeatureFlagsCxxInterop> /*unused*/) {
   return ReactNativeFeatureFlags::fixMappingOfEventPrioritiesBetweenFabricAndReact();
@@ -1149,6 +1160,9 @@ void JReactNativeFeatureFlagsCxxInterop::registerNatives() {
       makeNativeMethod(
         "enableVirtualViewDebugFeatures",
         JReactNativeFeatureFlagsCxxInterop::enableVirtualViewDebugFeatures),
+      makeNativeMethod(
+        "fixFindShadowNodeByTagRaceCondition",
+        JReactNativeFeatureFlagsCxxInterop::fixFindShadowNodeByTagRaceCondition),
       makeNativeMethod(
         "fixMappingOfEventPrioritiesBetweenFabricAndReact",
         JReactNativeFeatureFlagsCxxInterop::fixMappingOfEventPrioritiesBetweenFabricAndReact),

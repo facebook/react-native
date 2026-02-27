@@ -9,7 +9,7 @@
  */
 
 import type {CreateCustomMessageHandlerFn} from './inspector-proxy/CustomMessageHandler';
-import type {BrowserLauncher} from './types/BrowserLauncher';
+import type {DevToolLauncher} from './types/DevToolLauncher';
 import type {EventReporter, ReportableEvent} from './types/EventReporter';
 import type {Experiments, ExperimentsConfig} from './types/Experiments';
 import type {Logger} from './types/Logger';
@@ -18,7 +18,7 @@ import type {NextHandleFunction} from 'connect';
 
 import InspectorProxy from './inspector-proxy/InspectorProxy';
 import openDebuggerMiddleware from './middleware/openDebuggerMiddleware';
-import DefaultBrowserLauncher from './utils/DefaultBrowserLauncher';
+import DefaultToolLauncher from './utils/DefaultToolLauncher';
 import reactNativeDebuggerFrontendPath from '@react-native/debugger-frontend';
 import connect from 'connect';
 import path from 'path';
@@ -31,18 +31,17 @@ type Options = Readonly<{
    */
   serverBaseUrl: string | ReadonlyURL,
 
+  /**
+   * An implementation for logging messages to the terminal (recommended).
+   *
+   * In `@react-native/community-cli-plugin`, this reuses Metro's
+   * 'unstable_server_log' event in `TerminalReporter`.
+   */
   logger?: Logger,
 
   /**
-   * An interface for integrators to provide a custom implementation for
-   * opening URLs in a web browser.
-   *
-   * This is an unstable API with no semver guarantees.
-   */
-  unstable_browserLauncher?: BrowserLauncher,
-
-  /**
-   * An interface for logging events.
+   * An `EventReporter` implementation for logging structured events
+   * (recommended).
    *
    * This is an unstable API with no semver guarantees.
    */
@@ -56,6 +55,14 @@ type Options = Readonly<{
   unstable_experiments?: ExperimentsConfig,
 
   /**
+   * Override the default handlers for launching external applications (the
+   * debugger frontend) on the host machine (or target dev machine).
+   *
+   * This is an unstable API with no semver guarantees.
+   */
+  unstable_toolLauncher?: DevToolLauncher,
+
+  /**
    * Create custom handler to add support for unsupported CDP events, or debuggers.
    * This handler is instantiated per logical device and debugger pair.
    *
@@ -64,7 +71,8 @@ type Options = Readonly<{
   unstable_customInspectorMessageHandler?: CreateCustomMessageHandlerFn,
 
   /**
-   * Whether to measure the event loop performance of inspector proxy and log report it via the event reporter.
+   * Whether to measure the event loop performance of inspector proxy and
+   * report it via the event reporter.
    *
    * This is an unstable API with no semver guarantees.
    */
@@ -79,10 +87,9 @@ type DevMiddlewareAPI = Readonly<{
 export default function createDevMiddleware({
   serverBaseUrl,
   logger,
-  // $FlowFixMe[incompatible-type]
-  unstable_browserLauncher = DefaultBrowserLauncher,
   unstable_eventReporter,
   unstable_experiments: experimentConfig = {},
+  unstable_toolLauncher = DefaultToolLauncher,
   unstable_customInspectorMessageHandler,
   unstable_trackInspectorProxyEventLoopPerf = false,
 }: Options): DevMiddlewareAPI {
@@ -110,7 +117,7 @@ export default function createDevMiddleware({
       openDebuggerMiddleware({
         serverBaseUrl: normalizedServerBaseUrl,
         inspectorProxy,
-        browserLauncher: unstable_browserLauncher,
+        toolLauncher: unstable_toolLauncher,
         eventReporter,
         experiments,
         logger,

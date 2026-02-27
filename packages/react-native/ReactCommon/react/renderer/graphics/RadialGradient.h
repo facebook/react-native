@@ -31,15 +31,7 @@ struct RadialGradientSize {
     ValueUnit x;
     ValueUnit y;
 
-    bool operator==(const Dimensions &other) const
-    {
-      return x == other.x && y == other.y;
-    }
-
-    bool operator!=(const Dimensions &other) const
-    {
-      return !(*this == other);
-    }
+    bool operator==(const Dimensions &other) const = default;
 
 #ifdef RN_SERIALIZABLE_STATE
     folly::dynamic toDynamic() const;
@@ -48,15 +40,7 @@ struct RadialGradientSize {
 
   std::variant<SizeKeyword, Dimensions> value;
 
-  bool operator==(const RadialGradientSize &other) const
-  {
-    return value == other.value;
-  }
-
-  bool operator!=(const RadialGradientSize &other) const
-  {
-    return !(*this == other);
-  }
+  bool operator==(const RadialGradientSize &other) const = default;
 
 #ifdef RN_SERIALIZABLE_STATE
   folly::dynamic toDynamic() const;
@@ -69,15 +53,7 @@ struct RadialGradientPosition {
   std::optional<ValueUnit> right;
   std::optional<ValueUnit> bottom;
 
-  bool operator==(const RadialGradientPosition &other) const
-  {
-    return top == other.top && left == other.left && right == other.right && bottom == other.bottom;
-  }
-
-  bool operator!=(const RadialGradientPosition &other) const
-  {
-    return !(*this == other);
-  }
+  bool operator==(const RadialGradientPosition &other) const = default;
 
 #ifdef RN_SERIALIZABLE_STATE
   folly::dynamic toDynamic() const;
@@ -90,14 +66,7 @@ struct RadialGradient {
   RadialGradientPosition position;
   std::vector<ColorStop> colorStops;
 
-  bool operator==(const RadialGradient &other) const
-  {
-    return shape == other.shape && size == other.size && position == other.position && colorStops == other.colorStops;
-  }
-  bool operator!=(const RadialGradient &other) const
-  {
-    return !(*this == other);
-  }
+  bool operator==(const RadialGradient &other) const = default;
 
 #ifdef RN_SERIALIZABLE_STATE
   folly::dynamic toDynamic() const;

@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<ae86a1485b81df483dad1108b39fae31>>
+ * @generated SignedSource<<c7b6ea7f1672df7bb3396375378784c5>>
  */
 
 /**
@@ -74,6 +74,7 @@ internal class ReactNativeFeatureFlagsCxxAccessor : ReactNativeFeatureFlagsAcces
   private var enableViewRecyclingForViewCache: Boolean? = null
   private var enableVirtualViewContainerStateExperimentalCache: Boolean? = null
   private var enableVirtualViewDebugFeaturesCache: Boolean? = null
+  private var fixFindShadowNodeByTagRaceConditionCache: Boolean? = null
   private var fixMappingOfEventPrioritiesBetweenFabricAndReactCache: Boolean? = null
   private var fixTextClippingAndroid15useBoundsForWidthCache: Boolean? = null
   private var fuseboxAssertSingleHostStateCache: Boolean? = null
@@ -586,6 +587,15 @@ internal class ReactNativeFeatureFlagsCxxAccessor : ReactNativeFeatureFlagsAcces
     if (cached == null) {
       cached = ReactNativeFeatureFlagsCxxInterop.enableVirtualViewDebugFeatures()
       enableVirtualViewDebugFeaturesCache = cached
+    }
+    return cached
+  }
+
+  override fun fixFindShadowNodeByTagRaceCondition(): Boolean {
+    var cached = fixFindShadowNodeByTagRaceConditionCache
+    if (cached == null) {
+      cached = ReactNativeFeatureFlagsCxxInterop.fixFindShadowNodeByTagRaceCondition()
+      fixFindShadowNodeByTagRaceConditionCache = cached
     }
     return cached
   }
