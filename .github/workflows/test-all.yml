@@ -286,7 +286,7 @@ jobs:
     runs-on: 8-core-ubuntu
     needs: [set_release_type]
     container:
-      image: reactnativecommunity/react-native-android:latest
+      image: reactnativecommunity/react-native-android:v20.0
       env:
         TERM: "dumb"
         GRADLE_OPTS: "-Dorg.gradle.daemon=false"
@@ -305,7 +305,7 @@ jobs:
     runs-on: 8-core-ubuntu
     needs: [set_release_type]
     container:
-      image: reactnativecommunity/react-native-android:latest
+      image: reactnativecommunity/react-native-android:v20.0
       env:
         TERM: "dumb"
         GRADLE_OPTS: "-Dorg.gradle.daemon=false"
@@ -360,7 +360,7 @@ jobs:
         prebuild_react_native_core,
       ]
     container:
-      image: reactnativecommunity/react-native-android:latest
+      image: reactnativecommunity/react-native-android:v20.0
       env:
         TERM: "dumb"
         GRADLE_OPTS: "-Dorg.gradle.daemon=false"
@@ -377,7 +377,7 @@ jobs:
     runs-on: 4-core-ubuntu
     needs: build_npm_package
     container:
-      image: reactnativecommunity/react-native-android:latest
+      image: reactnativecommunity/react-native-android:v20.0
     env:
       # Set the encoding to resolve a known character encoding issue with decompressing tar.gz files in conatiners
       # via Gradle: https://github.com/gradle/gradle/issues/23391#issuecomment-1878979127

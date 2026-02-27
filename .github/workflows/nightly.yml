@@ -39,7 +39,7 @@ jobs:
     if: github.repository == 'facebook/react-native'
     needs: [set_release_type]
     container:
-      image: reactnativecommunity/react-native-android:latest
+      image: reactnativecommunity/react-native-android:v20.0
       env:
         TERM: "dumb"
         GRADLE_OPTS: "-Dorg.gradle.daemon=false"
@@ -66,7 +66,7 @@ jobs:
         prebuild_react_native_core,
       ]
     container:
-      image: reactnativecommunity/react-native-android:latest
+      image: reactnativecommunity/react-native-android:v20.0
       env:
         TERM: "dumb"
         GRADLE_OPTS: "-Dorg.gradle.daemon=false"
