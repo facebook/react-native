@@ -8,8 +8,10 @@
 #pragma once
 
 #include <ReactCommon/CallInvoker.h>
-#include <react/renderer/components/view/BaseViewProps.h>
-#include <react/renderer/core/ShadowNodeFamily.h>
+#include <react/renderer/core/ReactPrimitives.h>
+#include <chrono>
+#include <functional>
+#include <memory>
 
 namespace facebook::react {
 
