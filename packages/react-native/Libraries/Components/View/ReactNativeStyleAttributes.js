@@ -67,10 +67,6 @@ export const transformOriginAttribute: AnyAttributeType = nativeCSSParsing
   ? true
   : {process: processTransformOrigin};
 
-export const aspectRatioAttribute: AnyAttributeType = nativeCSSParsing
-  ? true
-  : {process: processAspectRatio};
-
 const ReactNativeStyleAttributes: {[string]: AnyAttributeType, ...} = {
   /**
    * Layout
@@ -78,7 +74,7 @@ const ReactNativeStyleAttributes: {[string]: AnyAttributeType, ...} = {
   alignContent: true,
   alignItems: true,
   alignSelf: true,
-  aspectRatio: aspectRatioAttribute,
+  aspectRatio: {process: processAspectRatio},
   borderBottomWidth: true,
   borderEndWidth: true,
   borderLeftWidth: true,
