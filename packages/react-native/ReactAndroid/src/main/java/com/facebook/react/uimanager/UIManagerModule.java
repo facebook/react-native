@@ -204,8 +204,8 @@ public class UIManagerModule extends ReactContextBaseJavaModule
    *     will be removed in a future release.
    */
   @Deprecated
-  public @Nullable UIImplementation getUIImplementation() {
-    return null;
+  public UIImplementation getUIImplementation() {
+    return new UIImplementation(null, null, null, 0);
   }
 
   private static Map<String, Object> createConstants(ViewManagerResolver viewManagerResolver) {
