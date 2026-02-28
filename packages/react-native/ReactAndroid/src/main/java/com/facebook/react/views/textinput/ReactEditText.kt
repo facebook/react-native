@@ -117,6 +117,7 @@ public open class ReactEditText public constructor(context: Context) : AppCompat
   private var listeners: CopyOnWriteArrayList<TextWatcher>?
 
   public var stagedInputType: Int
+  internal var stagedAutoCapitalize: Int = UNSET_AUTO_CAPITALIZE
   public var submitBehavior: String? = null
   public var dragAndDropFilter: List<String>? = null
 
@@ -1222,6 +1223,7 @@ public open class ReactEditText public constructor(context: Context) : AppCompat
 
   public companion object {
     public val DEBUG_MODE: Boolean = ReactBuildConfig.DEBUG && false
+    internal const val UNSET_AUTO_CAPITALIZE: Int = -1
 
     private val keyListener: KeyListener = QwertyKeyListener.getInstanceForFullKeyboard()
 

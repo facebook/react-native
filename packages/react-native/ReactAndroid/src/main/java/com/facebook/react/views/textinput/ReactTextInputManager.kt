@@ -704,14 +704,6 @@ public open class ReactTextInputManager public constructor() :
   // See T46146267
   @ReactProp(name = "autoCapitalize")
   public fun setAutoCapitalize(view: ReactEditText, autoCapitalize: Dynamic) {
-    // Autocapitalize is meaningless for number inputs. AUTOCAPITALIZE_FLAGS (0x7000)
-    // overlaps TYPE_NUMBER_FLAG_SIGNED (0x1000) and TYPE_NUMBER_FLAG_DECIMAL (0x2000),
-    // so applying the mask strips signed/decimal flags, corrupting the inputType and
-    // causing setInputType() to restart the IME on every prop update.
-    if ((view.stagedInputType and InputType.TYPE_MASK_CLASS) == InputType.TYPE_CLASS_NUMBER) {
-      return
-    }
-
     var autoCapitalizeValue = InputType.TYPE_TEXT_FLAG_CAP_SENTENCES
 
     if (autoCapitalize.type == ReadableType.Number) {
@@ -726,7 +718,9 @@ public open class ReactTextInputManager public constructor() :
       }
     }
 
-    updateStagedInputTypeFlag(view, AUTOCAPITALIZE_FLAGS, autoCapitalizeValue)
+    // Deferred to onAfterUpdateTransaction() so we can reconcile with the resolved
+    // keyboard type — AUTOCAPITALIZE_FLAGS collides with numeric inputType flags.
+    view.stagedAutoCapitalize = autoCapitalizeValue
   }
 
   @ReactProp(name = "keyboardType")
@@ -890,6 +884,7 @@ public open class ReactTextInputManager public constructor() :
   override fun onAfterUpdateTransaction(view: ReactEditText) {
     super.onAfterUpdateTransaction(view)
     view.maybeUpdateTypeface()
+    reconcileAutoCapitalize(view)
     view.commitStagedInputType()
   }
 
@@ -1136,6 +1131,25 @@ public open class ReactTextInputManager public constructor() :
     }
 
     private const val IME_ACTION_ID = 0x670
+
+    // AUTOCAPITALIZE_FLAGS (0x7000) shares bit positions with TYPE_NUMBER_FLAG_SIGNED
+    // (0x1000) and TYPE_NUMBER_FLAG_DECIMAL (0x2000). We apply autocapitalize here
+    // after all props are set so the resolved input class determines whether the
+    // flags are meaningful.
+    private fun reconcileAutoCapitalize(view: ReactEditText) {
+      val autoCapValue = view.stagedAutoCapitalize
+      if (autoCapValue == ReactEditText.UNSET_AUTO_CAPITALIZE) return
+
+      val inputClass = view.stagedInputType and InputType.TYPE_MASK_CLASS
+      if (inputClass == InputType.TYPE_CLASS_TEXT) {
+        updateStagedInputTypeFlag(view, AUTOCAPITALIZE_FLAGS, autoCapValue)
+      } else {
+        // Only strip 0x4000 (CAP_SENTENCES) — 0x1000/0x2000 are valid numeric flags
+        // (SIGNED/DECIMAL) and must not be cleared.
+        view.stagedInputType =
+            view.stagedInputType and InputType.TYPE_TEXT_FLAG_CAP_SENTENCES.inv()
+      }
+    }
 
     // Sets the correct password type, since numeric and text passwords have different types
     private fun checkPasswordType(view: ReactEditText) {

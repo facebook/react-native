@@ -132,19 +132,56 @@ class ReactTextInputPropertyTest {
             InputType.TYPE_NUMBER_FLAG_DECIMAL or
             InputType.TYPE_NUMBER_FLAG_SIGNED)
 
-    // Set up a numeric keyboard type first
     manager.updateProperties(view, buildStyles("keyboardType", "numeric"))
     assertThat(view.inputType and numericTypeFlags).isEqualTo(numericTypeFlags)
 
-    // Simulate a Fabric re-render applying autoCapitalize to the numeric input.
-    // AUTOCAPITALIZE_FLAGS (0x7000) overlaps TYPE_NUMBER_FLAG_SIGNED (0x1000) and
-    // TYPE_NUMBER_FLAG_DECIMAL (0x2000) — this must not strip those flags.
     manager.updateProperties(
         view,
         buildStyles("autoCapitalize", InputType.TYPE_TEXT_FLAG_CAP_SENTENCES),
     )
     assertThat(view.inputType and InputType.TYPE_NUMBER_FLAG_SIGNED).isNotZero
     assertThat(view.inputType and InputType.TYPE_NUMBER_FLAG_DECIMAL).isNotZero
+  }
+
+  @Test
+  fun testAutoCapitalizeAndNumericKeyboardInSameTransaction() {
+    val numericTypeFlags =
+        (InputType.TYPE_CLASS_NUMBER or
+            InputType.TYPE_NUMBER_FLAG_DECIMAL or
+            InputType.TYPE_NUMBER_FLAG_SIGNED)
+
+    manager.updateProperties(
+        view,
+        buildStyles(
+            "autoCapitalize",
+            InputType.TYPE_TEXT_FLAG_CAP_SENTENCES,
+            "keyboardType",
+            "numeric",
+        ),
+    )
+    assertThat(view.inputType and numericTypeFlags).isEqualTo(numericTypeFlags)
+    assertThat(view.inputType and InputType.TYPE_TEXT_FLAG_CAP_SENTENCES).isZero
+  }
+
+  @Test
+  fun testAutoCapitalizeReappliesWhenKeyboardTypeChangesFromNumericToText() {
+    // CAP_SENTENCES (0x4000) doesn't share a bit position with any numeric flag,
+    // unlike CAP_WORDS (0x2000) / CAP_CHARACTERS (0x1000).
+    manager.updateProperties(
+        view,
+        buildStyles(
+            "autoCapitalize",
+            InputType.TYPE_TEXT_FLAG_CAP_SENTENCES,
+            "keyboardType",
+            "numeric",
+        ),
+    )
+    assertThat(view.inputType and InputType.TYPE_MASK_CLASS).isEqualTo(InputType.TYPE_CLASS_NUMBER)
+    assertThat(view.inputType and InputType.TYPE_TEXT_FLAG_CAP_SENTENCES).isZero
+
+    manager.updateProperties(view, buildStyles("keyboardType", "default"))
+    assertThat(view.inputType and InputType.TYPE_MASK_CLASS).isEqualTo(InputType.TYPE_CLASS_TEXT)
+    assertThat(view.inputType and InputType.TYPE_TEXT_FLAG_CAP_SENTENCES).isNotZero
   }
 
   @Test
