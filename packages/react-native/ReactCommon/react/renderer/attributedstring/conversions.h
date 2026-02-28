@@ -9,7 +9,6 @@
 
 #include <folly/dynamic.h>
 #include <react/debug/react_native_expect.h>
-#include <react/featureflags/ReactNativeFeatureFlags.h>
 #include <react/renderer/attributedstring/AttributedString.h>
 #include <react/renderer/attributedstring/ParagraphAttributes.h>
 #include <react/renderer/attributedstring/TextAttributes.h>
@@ -22,8 +21,6 @@
 #include <react/renderer/core/conversions.h>
 #include <react/renderer/core/graphicsConversions.h>
 #include <react/renderer/core/propsConversions.h>
-#include <react/renderer/css/CSSFontVariant.h>
-#include <react/renderer/css/CSSValueParser.h>
 #include <unordered_map>
 
 #ifdef RN_SERIALIZABLE_STATE
@@ -320,66 +317,7 @@ inline std::string toString(const FontStyle &fontStyle)
   return "normal";
 }
 
-inline std::optional<FontVariant> fontVariantFromCSSFontVariant(CSSFontVariant cssVariant)
-{
-  switch (cssVariant) {
-    case CSSFontVariant::SmallCaps:
-      return FontVariant::SmallCaps;
-    case CSSFontVariant::OldstyleNums:
-      return FontVariant::OldstyleNums;
-    case CSSFontVariant::LiningNums:
-      return FontVariant::LiningNums;
-    case CSSFontVariant::TabularNums:
-      return FontVariant::TabularNums;
-    case CSSFontVariant::ProportionalNums:
-      return FontVariant::ProportionalNums;
-    case CSSFontVariant::StylisticOne:
-      return FontVariant::StylisticOne;
-    case CSSFontVariant::StylisticTwo:
-      return FontVariant::StylisticTwo;
-    case CSSFontVariant::StylisticThree:
-      return FontVariant::StylisticThree;
-    case CSSFontVariant::StylisticFour:
-      return FontVariant::StylisticFour;
-    case CSSFontVariant::StylisticFive:
-      return FontVariant::StylisticFive;
-    case CSSFontVariant::StylisticSix:
-      return FontVariant::StylisticSix;
-    case CSSFontVariant::StylisticSeven:
-      return FontVariant::StylisticSeven;
-    case CSSFontVariant::StylisticEight:
-      return FontVariant::StylisticEight;
-    case CSSFontVariant::StylisticNine:
-      return FontVariant::StylisticNine;
-    case CSSFontVariant::StylisticTen:
-      return FontVariant::StylisticTen;
-    case CSSFontVariant::StylisticEleven:
-      return FontVariant::StylisticEleven;
-    case CSSFontVariant::StylisticTwelve:
-      return FontVariant::StylisticTwelve;
-    case CSSFontVariant::StylisticThirteen:
-      return FontVariant::StylisticThirteen;
-    case CSSFontVariant::StylisticFourteen:
-      return FontVariant::StylisticFourteen;
-    case CSSFontVariant::StylisticFifteen:
-      return FontVariant::StylisticFifteen;
-    case CSSFontVariant::StylisticSixteen:
-      return FontVariant::StylisticSixteen;
-    case CSSFontVariant::StylisticSeventeen:
-      return FontVariant::StylisticSeventeen;
-    case CSSFontVariant::StylisticEighteen:
-      return FontVariant::StylisticEighteen;
-    case CSSFontVariant::StylisticNineteen:
-      return FontVariant::StylisticNineteen;
-    case CSSFontVariant::StylisticTwenty:
-      return FontVariant::StylisticTwenty;
-    default:
-      // Ligature variants (CommonLigatures, etc.) have no FontVariant equivalent
-      return std::nullopt;
-  }
-}
-
-inline void parseProcessedFontVariant(const PropsParserContext &context, const RawValue &value, FontVariant &result)
+inline void fromRawValue(const PropsParserContext &context, const RawValue &value, FontVariant &result)
 {
   result = FontVariant::Default;
   react_native_expect(value.hasType<std::vector<std::string>>());
@@ -438,44 +376,11 @@ inline void parseProcessedFontVariant(const PropsParserContext &context, const R
         result = (FontVariant)((int)result | (int)FontVariant::StylisticTwenty);
       } else {
         LOG(ERROR) << "Unsupported FontVariant value: " << item;
+        react_native_expect(false);
       }
     }
   } else {
     LOG(ERROR) << "Unsupported FontVariant type";
-  }
-}
-
-inline void parseUnprocessedFontVariantString(const std::string &value, FontVariant &result)
-{
-  auto fontVariantList = parseCSSProperty<CSSFontVariantList>(value);
-  if (!std::holds_alternative<CSSFontVariantList>(fontVariantList)) {
-    result = FontVariant::Default;
-    return;
-  }
-
-  result = FontVariant::Default;
-  for (const auto &cssVariant : std::get<CSSFontVariantList>(fontVariantList)) {
-    if (auto fv = fontVariantFromCSSFontVariant(cssVariant)) {
-      result = (FontVariant)((int)result | (int)*fv);
-    }
-  }
-}
-
-inline void parseUnprocessedFontVariant(const PropsParserContext &context, const RawValue &value, FontVariant &result)
-{
-  if (value.hasType<std::string>()) {
-    parseUnprocessedFontVariantString((std::string)value, result);
-  } else {
-    parseProcessedFontVariant(context, value, result);
-  }
-}
-
-inline void fromRawValue(const PropsParserContext &context, const RawValue &value, FontVariant &result)
-{
-  if (ReactNativeFeatureFlags::enableNativeCSSParsing()) {
-    parseUnprocessedFontVariant(context, value, result);
-  } else {
-    parseProcessedFontVariant(context, value, result);
   }
 }
 

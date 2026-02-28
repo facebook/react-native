@@ -7,7 +7,6 @@
 
 #include <gtest/gtest.h>
 
-#include <react/renderer/attributedstring/conversions.h>
 #include <react/renderer/components/view/BoxShadowPropsConversions.h>
 #include <react/renderer/components/view/FilterPropsConversions.h>
 #include <react/renderer/components/view/conversions.h>
@@ -513,31 +512,6 @@ TEST(ConversionsTest, float_optional_undefined_for_string) {
   fromRawValue(PropsParserContext{-1, ContextContainer{}}, value, result);
 
   EXPECT_TRUE(result.isUndefined());
-}
-
-TEST(ConversionsTest, unprocessed_font_variant_string_single) {
-  FontVariant result;
-  parseUnprocessedFontVariantString("small-caps", result);
-
-  EXPECT_EQ((int)result, (int)FontVariant::SmallCaps);
-}
-
-TEST(ConversionsTest, unprocessed_font_variant_string_multiple) {
-  FontVariant result;
-  parseUnprocessedFontVariantString(
-      "small-caps oldstyle-nums tabular-nums", result);
-
-  EXPECT_EQ(
-      (int)result,
-      (int)FontVariant::SmallCaps | (int)FontVariant::OldstyleNums |
-          (int)FontVariant::TabularNums);
-}
-
-TEST(ConversionsTest, unprocessed_font_variant_string_invalid) {
-  FontVariant result;
-  parseUnprocessedFontVariantString("not-a-variant", result);
-
-  EXPECT_EQ((int)result, (int)FontVariant::Default);
 }
 
 } // namespace facebook::react
