@@ -15,6 +15,7 @@ import type {
   ViewabilityConfig,
 } from '@react-native/virtualized-lists';
 import type {ScrollViewComponent} from '../Components/ScrollView/ScrollView';
+import {HostInstance} from '../../types/public/ReactNativeTypes';
 import type {StyleProp} from '../StyleSheet/StyleSheet';
 import type {ViewStyle} from '../StyleSheet/StyleSheetTypes';
 import type {View} from '../Components/View/View';
@@ -229,13 +230,10 @@ export abstract class FlatListComponent<
   getScrollResponder: () => React.JSX.Element | null | undefined;
 
   /**
-   * Provides a reference to the underlying host component
+   * Returns a reference to the underlying native scroll view, or null if the
+   * native instance is not mounted.
    */
-  getNativeScrollRef: () =>
-    | React.ComponentRef<typeof View>
-    | React.ComponentRef<typeof ScrollViewComponent>
-    | null
-    | undefined;
+  getNativeScrollRef: () => HostInstance | null;
 
   getScrollableNode: () => any;
 
