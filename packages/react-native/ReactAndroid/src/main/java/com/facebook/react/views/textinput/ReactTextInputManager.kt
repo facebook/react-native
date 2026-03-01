@@ -1138,17 +1138,19 @@ public open class ReactTextInputManager public constructor() :
     // flags are meaningful.
     private fun reconcileAutoCapitalize(view: ReactEditText) {
       val autoCapValue = view.stagedAutoCapitalize
-      if (autoCapValue == ReactEditText.UNSET_AUTO_CAPITALIZE) return
-
       val inputClass = view.stagedInputType and InputType.TYPE_MASK_CLASS
-      if (inputClass == InputType.TYPE_CLASS_TEXT) {
-        updateStagedInputTypeFlag(view, AUTOCAPITALIZE_FLAGS, autoCapValue)
-      } else {
-        // Only strip 0x4000 (CAP_SENTENCES) — 0x1000/0x2000 are valid numeric flags
-        // (SIGNED/DECIMAL) and must not be cleared.
-        view.stagedInputType =
+
+      // Only strip 0x4000 (CAP_SENTENCES) for non-text classes — 0x1000/0x2000 are
+      // valid numeric flags (SIGNED/DECIMAL) and must not be cleared.
+      val reconciled =
+          if (inputClass == InputType.TYPE_CLASS_TEXT) {
+            (view.stagedInputType and AUTOCAPITALIZE_FLAGS.inv()) or autoCapValue
+          } else {
             view.stagedInputType and InputType.TYPE_TEXT_FLAG_CAP_SENTENCES.inv()
-      }
+          }
+
+      if (view.stagedInputType == reconciled) return
+      view.stagedInputType = reconciled
     }
 
     // Sets the correct password type, since numeric and text passwords have different types
