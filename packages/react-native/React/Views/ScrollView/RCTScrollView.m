@@ -211,16 +211,22 @@
   if ([_customRefreshControl respondsToSelector:@selector(setScrollView:)]) {
     _customRefreshControl.scrollView = self;
   }
+#if !TARGET_OS_TV
   if ([refreshControl isKindOfClass:UIRefreshControl.class]) {
     self.refreshControl = (UIRefreshControl *)refreshControl;
   } else {
+#endif
     [self addSubview:_customRefreshControl];
+#if !TARGET_OS_TV
   }
+#endif
 }
 
 - (void)setPinchGestureEnabled:(BOOL)pinchGestureEnabled
 {
+#if !TARGET_OS_TV
   self.pinchGestureRecognizer.enabled = pinchGestureEnabled;
+#endif
   _pinchGestureEnabled = pinchGestureEnabled;
 }
 
@@ -229,7 +235,9 @@
   [super didMoveToWindow];
   // ScrollView enables pinch gesture late in its lifecycle. So simply setting it
   // in the setter gets overridden when the view loads.
+#if !TARGET_OS_TV
   self.pinchGestureRecognizer.enabled = _pinchGestureEnabled;
+#endif
 }
 
 - (BOOL)shouldGroupAccessibilityChildren
@@ -260,15 +268,19 @@
 
 - (void)_registerKeyboardListener
 {
+#if !TARGET_OS_TV
   [[NSNotificationCenter defaultCenter] addObserver:self
                                            selector:@selector(_keyboardWillChangeFrame:)
                                                name:UIKeyboardWillChangeFrameNotification
                                              object:nil];
+#endif
 }
 
 - (void)_unregisterKeyboardListener
 {
+#if !TARGET_OS_TV
   [[NSNotificationCenter defaultCenter] removeObserver:self name:UIKeyboardWillChangeFrameNotification object:nil];
+#endif
 }
 
 static inline UIViewAnimationOptions animationOptionsWithCurve(UIViewAnimationCurve curve)
@@ -283,6 +295,7 @@ static inline UIViewAnimationOptions animationOptionsWithCurve(UIViewAnimationCu
 
 - (void)_keyboardWillChangeFrame:(NSNotification *)notification
 {
+#if !TARGET_OS_TV
   if (![self automaticallyAdjustKeyboardInsets]) {
     return;
   }
@@ -358,6 +371,7 @@ static inline UIViewAnimationOptions animationOptionsWithCurve(UIViewAnimationCu
                      [self scrollToOffset:newContentOffset animated:NO];
                    }
                    completion:nil];
+#endif
 }
 
 - (instancetype)initWithEventDispatcher:(id<RCTEventDispatcherProtocol>)eventDispatcher
@@ -428,7 +442,11 @@ static inline void RCTApplyTransformationAccordingLayoutDirection(
   [super insertReactSubview:view atIndex:atIndex];
   if ([view conformsToProtocol:@protocol(RCTCustomRefreshControlProtocol)]) {
     [_scrollView setCustomRefreshControl:(UIView<RCTCustomRefreshControlProtocol> *)view];
+#if !TARGET_OS_TV
     if (![view isKindOfClass:[UIRefreshControl class]] && [view conformsToProtocol:@protocol(UIScrollViewDelegate)]) {
+#else
+    if ([view conformsToProtocol:@protocol(UIScrollViewDelegate)]) {
+#endif
       [self addScrollListener:(UIView<UIScrollViewDelegate> *)view];
     }
   } else {
@@ -449,8 +467,12 @@ static inline void RCTApplyTransformationAccordingLayoutDirection(
   [super removeReactSubview:subview];
   if ([subview conformsToProtocol:@protocol(RCTCustomRefreshControlProtocol)]) {
     [_scrollView setCustomRefreshControl:nil];
+#if !TARGET_OS_TV
     if (![subview isKindOfClass:[UIRefreshControl class]] &&
         [subview conformsToProtocol:@protocol(UIScrollViewDelegate)]) {
+#else
+    if ([subview conformsToProtocol:@protocol(UIScrollViewDelegate)]) {
+#endif
       [self removeScrollListener:(UIView<UIScrollViewDelegate> *)subview];
     }
   } else {
@@ -1083,8 +1105,10 @@ RCT_SET_AND_PRESERVE_OFFSET(setKeyboardDismissMode, keyboardDismissMode, UIScrol
 RCT_SET_AND_PRESERVE_OFFSET(setMaximumZoomScale, maximumZoomScale, CGFloat)
 RCT_SET_AND_PRESERVE_OFFSET(setMinimumZoomScale, minimumZoomScale, CGFloat)
 RCT_SET_AND_PRESERVE_OFFSET(setScrollEnabled, isScrollEnabled, BOOL)
+#if !TARGET_OS_TV
 RCT_SET_AND_PRESERVE_OFFSET(setPagingEnabled, isPagingEnabled, BOOL)
 RCT_SET_AND_PRESERVE_OFFSET(setScrollsToTop, scrollsToTop, BOOL)
+#endif
 RCT_SET_AND_PRESERVE_OFFSET(setShowsHorizontalScrollIndicator, showsHorizontalScrollIndicator, BOOL)
 RCT_SET_AND_PRESERVE_OFFSET(setShowsVerticalScrollIndicator, showsVerticalScrollIndicator, BOOL)
 RCT_SET_AND_PRESERVE_OFFSET(setZoomScale, zoomScale, CGFloat);
