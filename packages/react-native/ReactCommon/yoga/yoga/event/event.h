@@ -41,6 +41,10 @@ struct LayoutData {
   uint32_t maxMeasureCache = 0;
   int cachedLayouts = 0;
   int cachedMeasures = 0;
+  // Cache misses occur when a cached result is not found and layout must be
+  // recalculated. Track these to compute cache hit rates.
+  int layoutCacheMisses = 0;
+  int measureCacheMisses = 0;
   int measureCallbacks = 0;
   std::array<int, static_cast<uint8_t>(LayoutPassReason::COUNT)>
       measureCallbackReasonsCount;
