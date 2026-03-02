@@ -15,6 +15,7 @@ from doxmlparser import compound, index
 from .member import (
     ConceptMember,
     EnumMember,
+    FriendMember,
     FunctionMember,
     TypedefMember,
     VariableMember,
@@ -474,11 +475,22 @@ def build_snapshot(xml_dir: str) -> Snapshot:
                         if member_type == "attrib":
                             for member_def in section_def.memberdef:
                                 if member_def.kind == "variable":
-                                    class_scope.add_member(
-                                        get_variable_member(
-                                            member_def, visibility, is_static
-                                        )
+                                    (var_type, _) = resolve_linked_text_name(
+                                        member_def.get_type()
                                     )
+
+                                    if var_type == "friend":
+                                        class_scope.add_member(
+                                            FriendMember(
+                                                member_def.get_name(), visibility
+                                            )
+                                        )
+                                    else:
+                                        class_scope.add_member(
+                                            get_variable_member(
+                                                member_def, visibility, is_static
+                                            )
+                                        )
                         elif member_type == "func":
                             for function_def in section_def.memberdef:
                                 class_scope.add_member(

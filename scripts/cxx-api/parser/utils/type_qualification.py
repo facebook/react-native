@@ -53,6 +53,16 @@ def qualify_type_str(type_str: str, scope: Scope) -> str:
 
             return qualified_prefix + qualified_template + qualified_suffix
 
+    # Handle leading qualifiers (const, volatile) that prevent qualify_name
+    # from matching.  Strip them, qualify the rest, and prepend back.
+    for qualifier in ("const ", "volatile "):
+        if type_str.startswith(qualifier):
+            inner = type_str[len(qualifier) :]
+            qualified_inner = qualify_type_str(inner, scope)
+            if qualified_inner != inner:
+                return qualifier + qualified_inner
+            break
+
     # Try qualifying the entire string (handles simple cases without templates)
     qualified = scope.qualify_name(type_str)
     if qualified is not None:
