@@ -4794,6 +4794,11 @@ public final class com/facebook/react/uimanager/events/NativeGestureUtil {
 
 public abstract interface class com/facebook/react/uimanager/events/RCTEventEmitter : com/facebook/react/bridge/JavaScriptModule {
 	public abstract fun receiveEvent (ILjava/lang/String;Lcom/facebook/react/bridge/WritableMap;)V
+	public abstract fun receiveTouches (Ljava/lang/String;Lcom/facebook/react/bridge/WritableArray;Lcom/facebook/react/bridge/WritableArray;)V
+}
+
+public final class com/facebook/react/uimanager/events/RCTEventEmitter$DefaultImpls {
+	public static fun receiveTouches (Lcom/facebook/react/uimanager/events/RCTEventEmitter;Ljava/lang/String;Lcom/facebook/react/bridge/WritableArray;Lcom/facebook/react/bridge/WritableArray;)V
 }
 
 public abstract interface class com/facebook/react/uimanager/events/RCTModernEventEmitter : com/facebook/react/uimanager/events/RCTEventEmitter {
@@ -4805,6 +4810,7 @@ public abstract interface class com/facebook/react/uimanager/events/RCTModernEve
 public final class com/facebook/react/uimanager/events/RCTModernEventEmitter$DefaultImpls {
 	public static fun receiveEvent (Lcom/facebook/react/uimanager/events/RCTModernEventEmitter;IILjava/lang/String;Lcom/facebook/react/bridge/WritableMap;)V
 	public static fun receiveEvent (Lcom/facebook/react/uimanager/events/RCTModernEventEmitter;ILjava/lang/String;Lcom/facebook/react/bridge/WritableMap;)V
+	public static fun receiveTouches (Lcom/facebook/react/uimanager/events/RCTModernEventEmitter;Ljava/lang/String;Lcom/facebook/react/bridge/WritableArray;Lcom/facebook/react/bridge/WritableArray;)V
 }
 
 public final class com/facebook/react/uimanager/events/TouchEvent : com/facebook/react/uimanager/events/Event {
