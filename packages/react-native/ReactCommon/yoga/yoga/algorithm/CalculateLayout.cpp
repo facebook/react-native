@@ -24,6 +24,7 @@
 #include <yoga/algorithm/PixelGrid.h>
 #include <yoga/algorithm/SizingMode.h>
 #include <yoga/algorithm/TrailingPosition.h>
+#include <yoga/algorithm/grid/GridLayout.h>
 #include <yoga/debug/AssertFatal.h>
 #include <yoga/debug/Log.h>
 #include <yoga/event/event.h>
@@ -35,7 +36,7 @@ namespace facebook::yoga {
 
 std::atomic<uint32_t> gCurrentGenerationCount(0);
 
-static void constrainMaxSizeForMode(
+void constrainMaxSizeForMode(
     const yoga::Node* node,
     Direction direction,
     FlexDirection axis,
@@ -468,7 +469,7 @@ static bool measureNodeWithFixedSize(
   return false;
 }
 
-static void zeroOutLayoutRecursively(yoga::Node* const node) {
+void zeroOutLayoutRecursively(yoga::Node* const node) {
   node->getLayout() = {};
   node->setLayoutDimension(0, Dimension::Width);
   node->setLayoutDimension(0, Dimension::Height);
@@ -480,7 +481,7 @@ static void zeroOutLayoutRecursively(yoga::Node* const node) {
   }
 }
 
-static void cleanupContentsNodesRecursively(yoga::Node* const node) {
+void cleanupContentsNodesRecursively(yoga::Node* const node) {
   if (node->hasContentsChildren()) [[unlikely]] {
     node->cloneContentsChildrenIfNeeded();
     for (auto child : node->getChildren()) {
@@ -498,7 +499,7 @@ static void cleanupContentsNodesRecursively(yoga::Node* const node) {
   }
 }
 
-static float calculateAvailableInnerDimension(
+float calculateAvailableInnerDimension(
     const yoga::Node* const node,
     const Direction direction,
     const Dimension dimension,
@@ -1046,6 +1047,14 @@ static void justifyMainAxis(
 
   if (flexLine.numberOfAutoMargins == 0) {
     switch (justifyContent) {
+      case Justify::Start:
+      case Justify::End:
+      case Justify::Auto:
+        // No-Op
+        break;
+      case Justify::Stretch:
+        // No-Op
+        break;
       case Justify::Center:
         leadingMainDim = flexLine.layout.remainingFreeSpace / 2;
         break;
@@ -1366,6 +1375,24 @@ static void calculateLayoutImpl(
   // Clean and update all display: contents nodes with a direct path to the
   // current node as they will not be traversed
   cleanupContentsNodesRecursively(node);
+
+  if (node->style().display() == Display::Grid) {
+    calculateGridLayoutInternal(
+        node,
+        availableWidth,
+        availableHeight,
+        ownerDirection,
+        widthSizingMode,
+        heightSizingMode,
+        ownerWidth,
+        ownerHeight,
+        performLayout,
+        reason,
+        layoutMarkerData,
+        depth,
+        generationCount);
+    return;
+  }
 
   // STEP 1: CALCULATE VALUES FOR REMAINDER OF ALGORITHM
   const FlexDirection mainAxis =
@@ -1799,6 +1826,10 @@ static void calculateLayoutImpl(
         : fallbackAlignment(node->style().alignContent());
 
     switch (alignContent) {
+      case Align::Start:
+      case Align::End:
+        // No-Op
+        break;
       case Align::FlexEnd:
         currentLead += remainingAlignContentDim;
         break;
@@ -1886,6 +1917,10 @@ static void calculateLayoutImpl(
         }
         if (child->style().positionType() != PositionType::Absolute) {
           switch (resolveChildAlignment(node, child)) {
+            case Align::Start:
+            case Align::End:
+              // No-Op
+              break;
             case Align::FlexStart: {
               child->setLayoutPosition(
                   currentLead +
