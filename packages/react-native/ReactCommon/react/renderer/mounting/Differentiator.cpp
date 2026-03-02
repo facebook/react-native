@@ -9,11 +9,10 @@
 
 #include <cxxreact/TraceSection.h>
 #include <react/debug/react_native_assert.h>
-#include <react/featureflags/ReactNativeFeatureFlags.h>
 #include <algorithm>
 #include "internal/CullingContext.h"
+#include "internal/DiffMap.h"
 #include "internal/ShadowViewNodePair.h"
-#include "internal/TinyMap.h"
 #include "internal/sliceChildShadowNodeViewPairs.h"
 
 #include "ShadowView.h"
@@ -58,7 +57,7 @@ static std::ostream& operator<<(
 
 #ifdef DEBUG_LOGS_DIFFER
 template <typename KeyT, typename ValueT>
-static std::ostream& operator<<(std::ostream& out, TinyMap<KeyT, ValueT>& map) {
+static std::ostream& operator<<(std::ostream& out, DiffMap<KeyT, ValueT>& map) {
   auto it = map.begin();
   if (it != map.end()) {
     out << *it->second;
@@ -143,7 +142,7 @@ struct OrderedMutationInstructionContainer {
 static void updateMatchedPairSubtrees(
     ViewNodePairScope& scope,
     OrderedMutationInstructionContainer& mutationContainer,
-    TinyMap<Tag, ShadowViewNodePair*>& newRemainingPairs,
+    DiffMap<Tag, ShadowViewNodePair*>& newRemainingPairs,
     std::vector<ShadowViewNodePair*>& oldChildPairs,
     Tag parentTag,
     const ShadowViewNodePair& oldPair,
@@ -164,11 +163,11 @@ static void calculateShadowViewMutationsFlattener(
     ReparentMode reparentMode,
     OrderedMutationInstructionContainer& mutationContainer,
     Tag parentTag,
-    TinyMap<Tag, ShadowViewNodePair*>& unvisitedOtherNodes,
+    DiffMap<Tag, ShadowViewNodePair*>& unvisitedOtherNodes,
     const ShadowViewNodePair& node,
     Tag parentTagForUpdate,
-    TinyMap<Tag, ShadowViewNodePair*>* parentSubVisitedOtherNewNodes,
-    TinyMap<Tag, ShadowViewNodePair*>* parentSubVisitedOtherOldNodes,
+    DiffMap<Tag, ShadowViewNodePair*>* parentSubVisitedOtherNewNodes,
+    DiffMap<Tag, ShadowViewNodePair*>* parentSubVisitedOtherOldNodes,
     const CullingContext& cullingContextForUnvisitedOtherNodes,
     const CullingContext& cullingContext);
 
@@ -183,7 +182,7 @@ static void calculateShadowViewMutationsFlattener(
 static void updateMatchedPairSubtrees(
     ViewNodePairScope& scope,
     OrderedMutationInstructionContainer& mutationContainer,
-    TinyMap<Tag, ShadowViewNodePair*>& newRemainingPairs,
+    DiffMap<Tag, ShadowViewNodePair*>& newRemainingPairs,
     std::vector<ShadowViewNodePair*>& oldChildPairs,
     Tag parentTag,
     const ShadowViewNodePair& oldPair,
@@ -232,7 +231,6 @@ static void updateMatchedPairSubtrees(
     // Unflattening
     else {
       // Construct unvisited nodes map
-      auto unvisitedOldChildPairs = TinyMap<Tag, ShadowViewNodePair*>{};
       // We don't know where all the children of oldChildPair are
       // within oldChildPairs, but we know that they're in the same
       // relative order. The reason for this is because of flattening
@@ -240,6 +238,8 @@ static void updateMatchedPairSubtrees(
       // interwoven with children from other nodes, etc.
       auto oldFlattenedNodes = sliceChildShadowNodeViewPairsFromViewNodePair(
           oldPair, scope, true, oldCullingContextCopy);
+      auto unvisitedOldChildPairs =
+          DiffMap<Tag, ShadowViewNodePair*>(oldFlattenedNodes.size());
       for (size_t i = 0, j = 0;
            i < oldChildPairs.size() && j < oldFlattenedNodes.size();
            i++) {
@@ -422,11 +422,11 @@ static void calculateShadowViewMutationsFlattener(
     ReparentMode reparentMode,
     OrderedMutationInstructionContainer& mutationContainer,
     Tag parentTag,
-    TinyMap<Tag, ShadowViewNodePair*>& unvisitedOtherNodes,
+    DiffMap<Tag, ShadowViewNodePair*>& unvisitedOtherNodes,
     const ShadowViewNodePair& node,
     Tag parentTagForUpdate,
-    TinyMap<Tag, ShadowViewNodePair*>* parentSubVisitedOtherNewNodes,
-    TinyMap<Tag, ShadowViewNodePair*>* parentSubVisitedOtherOldNodes,
+    DiffMap<Tag, ShadowViewNodePair*>* parentSubVisitedOtherNewNodes,
+    DiffMap<Tag, ShadowViewNodePair*>* parentSubVisitedOtherOldNodes,
     const CullingContext& cullingContextForUnvisitedOtherNodes,
     const CullingContext& cullingContext) {
   // Step 1: iterate through entire tree
@@ -445,8 +445,8 @@ static void calculateShadowViewMutationsFlattener(
 
   // Views in other tree that are visited by sub-flattening or
   // sub-unflattening
-  TinyMap<Tag, ShadowViewNodePair*> subVisitedOtherNewNodes{};
-  TinyMap<Tag, ShadowViewNodePair*> subVisitedOtherOldNodes{};
+  DiffMap<Tag, ShadowViewNodePair*> subVisitedOtherNewNodes{};
+  DiffMap<Tag, ShadowViewNodePair*> subVisitedOtherOldNodes{};
   auto subVisitedNewMap =
       (parentSubVisitedOtherNewNodes != nullptr ? parentSubVisitedOtherNewNodes
                                                 : &subVisitedOtherNewNodes);
@@ -456,7 +456,7 @@ static void calculateShadowViewMutationsFlattener(
 
   // Candidates for full tree creation or deletion at the end of this function
   auto deletionCreationCandidatePairs =
-      TinyMap<Tag, const ShadowViewNodePair*>{};
+      DiffMap<Tag, const ShadowViewNodePair*>(treeChildren.size());
 
   for (size_t index = 0;
        index < treeChildren.size() && index < treeChildren.size();
@@ -471,7 +471,7 @@ static void calculateShadowViewMutationsFlattener(
              : subVisitedNewMap->end());
     auto subVisitedOtherOldIt =
         (unvisitedIt == unvisitedOtherNodes.end() &&
-                 (subVisitedNewMap->end() != nullptr)
+                 subVisitedOtherNewIt == subVisitedNewMap->end()
              ? subVisitedOldMap->find(treeChildPair.shadowView.tag)
              : subVisitedOldMap->end());
 
@@ -697,7 +697,7 @@ static void calculateShadowViewMutationsFlattener(
                   : adjustedOldCullingContext);
           // Construct unvisited nodes map
           auto unvisitedRecursiveChildPairs =
-              TinyMap<Tag, ShadowViewNodePair*>{};
+              DiffMap<Tag, ShadowViewNodePair*>(flattenedNodes.size());
           for (auto& flattenedNode : flattenedNodes) {
             auto& newChild = *flattenedNode;
 
@@ -756,9 +756,6 @@ static void calculateShadowViewMutationsFlattener(
             // loop of this function.
             for (auto& unvisitedRecursiveChildPair :
                  unvisitedRecursiveChildPairs) {
-              if (unvisitedRecursiveChildPair.first == 0) {
-                continue;
-              }
               auto& oldFlattenedNode = *unvisitedRecursiveChildPair.second;
 
               // Node unvisited - mark the entire subtree for deletion
@@ -820,9 +817,6 @@ static void calculateShadowViewMutationsFlattener(
   // subtrees if they were never visited during the execution of the above
   // loop and recursions.
   for (auto& deletionCreationCandidatePair : deletionCreationCandidatePairs) {
-    if (deletionCreationCandidatePair.first == 0) {
-      continue;
-    }
     auto& treeChildPair = *deletionCreationCandidatePair.second;
 
     // If node was visited during a flattening/unflattening recursion,
@@ -1042,9 +1036,10 @@ static void calculateShadowViewMutations(
     }
   } else {
     // Collect map of tags in the new list
-    auto newRemainingPairs = TinyMap<Tag, ShadowViewNodePair*>{};
-    auto newInsertedPairs = TinyMap<Tag, ShadowViewNodePair*>{};
-    auto deletionCandidatePairs = TinyMap<Tag, const ShadowViewNodePair*>{};
+    auto remainingCount = newChildPairs.size() - index;
+    auto newRemainingPairs = DiffMap<Tag, ShadowViewNodePair*>(remainingCount);
+    auto newInsertedPairs = DiffMap<Tag, ShadowViewNodePair*>(remainingCount);
+    auto deletionCandidatePairs = DiffMap<Tag, const ShadowViewNodePair*>{};
     for (; index < newChildPairs.size(); index++) {
       auto& newChildPair = *newChildPairs[index];
       newRemainingPairs.insert({newChildPair.shadowView.tag, &newChildPair});
@@ -1243,10 +1238,6 @@ static void calculateShadowViewMutations(
     // list to make sure that a node was not reparented into an unflattened
     // node that occurs *after* it in the hierarchy, due to zIndex ordering.
     for (auto& deletionCandidatePair : deletionCandidatePairs) {
-      if (deletionCandidatePair.first == 0) {
-        continue;
-      }
-
       const auto& oldChildPair = *deletionCandidatePair.second;
 
       DEBUG_LOGS({
@@ -1285,14 +1276,6 @@ static void calculateShadowViewMutations(
     // Final step: generate Create instructions for entirely new
     // subtrees/nodes that are not the result of flattening or unflattening.
     for (auto& newInsertedPair : newInsertedPairs) {
-      // Erased elements of a TinyMap will have a Tag/key of 0 - skip those
-      // These *should* be removed by the map; there are currently no KNOWN
-      // cases where TinyMap will do the wrong thing, but there are not yet
-      // any unit tests explicitly for TinyMap, so this is safer for now.
-      if (newInsertedPair.first == 0) {
-        continue;
-      }
-
       const auto& newChildPair = *newInsertedPair.second;
 
       DEBUG_LOGS({
