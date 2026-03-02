@@ -33,6 +33,8 @@ jest.mock('../../../Utilities/DevLoadingView', () => ({
   default: loadingViewMock,
 }));
 
+const REQUEST_ID = 1;
+
 const sendRequest = jest.fn(
   (
     method,
@@ -46,7 +48,7 @@ const sendRequest = jest.fn(
     callback,
     withCredentials,
   ) => {
-    callback(1);
+    callback(REQUEST_ID);
   },
 );
 
@@ -56,11 +58,11 @@ jest.mock('../../../Network/RCTNetworking', () => ({
     sendRequest,
     addListener: jest.fn((name, fn) => {
       if (name === 'didReceiveNetworkData') {
-        Promise.resolve().then(() => fn([1, mockDataResponse]));
+        Promise.resolve().then(() => fn([REQUEST_ID, mockDataResponse]));
       } else if (name === 'didCompleteNetworkResponse') {
-        Promise.resolve().then(() => fn([1, mockRequestError]));
+        Promise.resolve().then(() => fn([REQUEST_ID, mockRequestError]));
       } else if (name === 'didReceiveNetworkResponse') {
-        Promise.resolve().then(() => fn([1, null, mockHeaders]));
+        Promise.resolve().then(() => fn([REQUEST_ID, null, mockHeaders]));
       }
       return {remove: () => {}};
     }),
