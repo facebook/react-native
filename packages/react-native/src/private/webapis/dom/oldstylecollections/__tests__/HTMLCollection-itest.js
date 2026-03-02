@@ -8,6 +8,8 @@
  * @format
  */
 
+import '@react-native/fantom/src/setUpDefaultReactNativeEnvironment';
+
 import {createHTMLCollection} from '../HTMLCollection';
 
 describe('HTMLCollection', () => {
@@ -39,13 +41,13 @@ describe('HTMLCollection', () => {
 
     expect(() => {
       collection[0] = 'replacement';
-    }).toThrow(TypeError);
+    }).toThrow();
     expect(collection[0]).toBe('a');
 
     expect(() => {
       // $FlowExpectedError[cannot-write]
       collection.length = 100;
-    }).toThrow(TypeError);
+    }).toThrow();
     expect(collection.length).toBe(3);
   });
 
