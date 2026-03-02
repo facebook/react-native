@@ -90,13 +90,11 @@ test('loadBundleFromServer will throw for JSON responses', async () => {
   mockDataResponse = JSON.stringify({message: 'Error thrown from Metro'});
   mockRequestError = null;
 
-  try {
-    await loadBundleFromServer('/Fail.bundle?platform=ios');
-  } catch (e) {
-    expect(e).toBeInstanceOf(LoadBundleFromServerError);
-    expect(e.message).toBe('Could not load bundle');
-    expect(e.cause).toBe('Error thrown from Metro');
-  }
+  const error = await loadBundleFromServer('/Fail.bundle?platform=ios').catch(e => e);
+
+  expect(error).toBeInstanceOf(LoadBundleFromServerError);
+  expect(error.message).toBe('Could not load bundle');
+  expect(error.cause).toBe('Error thrown from Metro');
 });
 
 test('loadBundleFromServer will throw LoadBundleFromServerError for request errors', async () => {
@@ -104,13 +102,11 @@ test('loadBundleFromServer will throw LoadBundleFromServerError for request erro
   mockDataResponse = '';
   mockRequestError = 'Some error';
 
-  try {
-    await loadBundleFromServer('/Fail.bundle?platform=ios');
-  } catch (e) {
-    expect(e).toBeInstanceOf(LoadBundleFromServerRequestError);
-    expect(e.message).toBe('Could not load bundle');
-    expect(e.cause).toBe('Some error');
-  }
+  const error = await loadBundleFromServer('/Fail.bundle?platform=ios').catch(e => e);
+
+  expect(error).toBeInstanceOf(LoadBundleFromServerRequestError);
+  expect(error.message).toBe('Could not load bundle');
+  expect(error.cause).toBe('Some error');
 });
 
 test('loadBundleFromServer will request a bundle if import bundles are available', async () => {
