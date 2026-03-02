@@ -38,6 +38,7 @@ import android.view.WindowManager;
 import android.widget.FrameLayout;
 import androidx.annotation.Nullable;
 import androidx.annotation.RequiresApi;
+import androidx.window.layout.WindowMetricsCalculator;
 import com.facebook.common.logging.FLog;
 import com.facebook.infer.annotation.Assertions;
 import com.facebook.infer.annotation.ThreadConfined;
@@ -73,6 +74,7 @@ import com.facebook.react.uimanager.UIManagerHelper;
 import com.facebook.react.uimanager.common.UIManagerType;
 import com.facebook.react.uimanager.common.ViewUtil;
 import com.facebook.react.uimanager.events.EventDispatcher;
+import com.facebook.react.views.view.WindowUtilKt;
 import com.facebook.systrace.Systrace;
 import java.util.concurrent.atomic.AtomicInteger;
 
@@ -1021,13 +1023,14 @@ public class ReactRootView extends FrameLayout implements RootView, ReactRoot {
       }
 
       final ReactContext reactContext = getCurrentReactContext();
-      final Activity currentActivity =
-        reactContext != null ? reactContext.getCurrentActivity() : null;
+      final Activity activity = reactContext != null ? reactContext.getCurrentActivity() : null;
 
-      final int heightDiff =
-          DisplayMetricsHolder.getWindowDisplayMetrics(getContext(), currentActivity).heightPixels
-              - mVisibleViewArea.bottom
-              + notchHeight;
+      final int heightPixels = activity != null && WindowUtilKt.isEdgeToEdgeFeatureFlagOn()
+        ? WindowMetricsCalculator.getOrCreate()
+            .computeCurrentWindowMetrics(activity).getBounds().height()
+        : getContext().getResources().getDisplayMetrics().heightPixels;
+
+      final int heightDiff = heightPixels - mVisibleViewArea.bottom + notchHeight;
 
       boolean isKeyboardShowingOrKeyboardHeightChanged =
           mKeyboardHeight != heightDiff && heightDiff > mMinKeyboardHeightDetected;

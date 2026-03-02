@@ -17,8 +17,13 @@ import com.facebook.react.bridge.ReactTestHelper
 import com.facebook.react.bridge.WritableMap
 import com.facebook.react.internal.featureflags.ReactNativeFeatureFlagsForTests
 import com.facebook.react.uimanager.DisplayMetricsHolder
+import com.facebook.testutils.shadows.ShadowNativeLoader
+import com.facebook.testutils.shadows.ShadowNativeMap
+import com.facebook.testutils.shadows.ShadowReadableNativeMap
+import com.facebook.testutils.shadows.ShadowSoLoader
+import com.facebook.testutils.shadows.ShadowWritableNativeMap
 import junit.framework.TestCase
-import org.assertj.core.api.Assertions
+import org.assertj.core.api.Assertions.assertThat
 import org.junit.After
 import org.junit.Before
 import org.junit.Test
@@ -27,13 +32,26 @@ import org.mockito.ArgumentCaptor
 import org.mockito.ArgumentMatchers
 import org.mockito.MockedStatic
 import org.mockito.Mockito.mockStatic
+import org.mockito.kotlin.doReturn
 import org.mockito.kotlin.spy
 import org.mockito.kotlin.times
 import org.mockito.kotlin.verify
+import org.mockito.kotlin.whenever
 import org.robolectric.RobolectricTestRunner
 import org.robolectric.RuntimeEnvironment
+import org.robolectric.annotation.Config
 
 @RunWith(RobolectricTestRunner::class)
+@Config(
+    shadows =
+        [
+            ShadowSoLoader::class,
+            ShadowNativeLoader::class,
+            ShadowNativeMap::class,
+            ShadowWritableNativeMap::class,
+            ShadowReadableNativeMap::class,
+        ]
+)
 class DeviceInfoModuleTest : TestCase() {
 
   private lateinit var deviceInfoModule: DeviceInfoModule
@@ -56,7 +74,7 @@ class DeviceInfoModuleTest : TestCase() {
     reactContext = spy(BridgeReactContext(RuntimeEnvironment.getApplication()))
     val catalystInstanceMock = ReactTestHelper.createMockCatalystInstance()
     reactContext.initializeWithInstance(catalystInstanceMock)
-    deviceInfoModule = DeviceInfoModule(reactContext)
+    deviceInfoModule = spy(DeviceInfoModule(reactContext))
   }
 
   @After
@@ -111,17 +129,29 @@ class DeviceInfoModuleTest : TestCase() {
     )
   }
 
-  private fun givenDisplayMetricsHolderContains(fakeDisplayMetrics: WritableMap?) {
-    val windowDisplayMetrics = DisplayMetrics()
+  @Test
+  fun getDisplayMetricsWritableMap_returnsCorrectMap() {
+    displayMetricsHolder
+        .`when`<DisplayMetrics> { DisplayMetricsHolder.getScreenDisplayMetrics() }
+        .thenAnswer { reactContext.resources.displayMetrics }
 
-    displayMetricsHolder
-        .`when`<DisplayMetrics> { DisplayMetricsHolder.getWindowDisplayMetrics(reactContext, null) }
-        .thenAnswer { windowDisplayMetrics }
-    displayMetricsHolder
-        .`when`<WritableMap> {
-          DisplayMetricsHolder.getDisplayMetricsWritableMap(windowDisplayMetrics, 1.0)
-        }
-        .thenAnswer { fakeDisplayMetrics }
+    // Use the official initialization method to ensure both metrics are set
+    val map: WritableMap = deviceInfoModule.getDisplayMetricsWritableMap()
+    assertThat(map.hasKey("windowPhysicalPixels")).isTrue()
+    assertThat(map.hasKey("screenPhysicalPixels")).isTrue()
+    val windowMap = map.getMap("windowPhysicalPixels")
+    val screenMap = map.getMap("screenPhysicalPixels")
+    checkNotNull(windowMap)
+    checkNotNull(screenMap)
+    assertThat(windowMap.hasKey("width")).isTrue()
+    assertThat(windowMap.hasKey("height")).isTrue()
+    assertThat(windowMap.hasKey("scale")).isTrue()
+    assertThat(windowMap.hasKey("fontScale")).isTrue()
+    assertThat(windowMap.hasKey("densityDpi")).isTrue()
+  }
+
+  private fun givenDisplayMetricsHolderContains(fakeDisplayMetrics: WritableMap?) {
+    doReturn(fakeDisplayMetrics).whenever(deviceInfoModule).getDisplayMetricsWritableMap()
   }
 
   companion object {
@@ -134,7 +164,7 @@ class DeviceInfoModuleTest : TestCase() {
       verify(context, times(expectedEventList.size))
           ?.emitDeviceEvent(ArgumentMatchers.eq("didUpdateDimensions"), captor.capture())
       val actualEvents = captor.allValues
-      Assertions.assertThat(actualEvents).isEqualTo(expectedEventList)
+      assertThat(actualEvents).isEqualTo(expectedEventList)
     }
   }
 }

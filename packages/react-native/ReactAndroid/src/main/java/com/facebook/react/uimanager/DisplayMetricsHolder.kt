@@ -14,11 +14,7 @@ import android.util.DisplayMetrics
 import android.view.WindowManager
 import androidx.core.view.ViewCompat
 import androidx.core.view.WindowInsetsCompat
-import androidx.window.layout.WindowMetricsCalculator
-import com.facebook.react.bridge.WritableMap
-import com.facebook.react.bridge.WritableNativeMap
 import com.facebook.react.uimanager.PixelUtil.pxToDp
-import com.facebook.react.views.view.isEdgeToEdgeFeatureFlagOn
 
 /**
  * Holds an instance of the current DisplayMetrics so we don't have to thread it through all the
@@ -29,25 +25,6 @@ public object DisplayMetricsHolder {
       "DisplayMetricsHolder must be initialized with initDisplayMetricsIfNotInitialized or initDisplayMetrics"
 
   @JvmStatic private var screenDisplayMetrics: DisplayMetrics? = null
-
-  /** The metrics of the window associated to the Context used to initialize ReactNative */
-  @JvmStatic
-  public fun getWindowDisplayMetrics(context: Context, activity: Activity?): DisplayMetrics {
-    val displayMetrics = context.resources.displayMetrics
-    val windowDisplayMetrics = DisplayMetrics()
-    windowDisplayMetrics.setTo(displayMetrics)
-
-    if (isEdgeToEdgeFeatureFlagOn) {
-      activity?.let { activity ->
-        WindowMetricsCalculator.getOrCreate().computeCurrentWindowMetrics(activity).let {
-          windowDisplayMetrics.widthPixels = it.bounds.width()
-          windowDisplayMetrics.heightPixels = it.bounds.height()
-        }
-      }
-    }
-
-    return windowDisplayMetrics
-  }
 
   /** Screen metrics returns the metrics of the default screen on the device. */
   @JvmStatic
@@ -90,37 +67,6 @@ public object DisplayMetricsHolder {
     screenDisplayMetrics.scaledDensity = displayMetrics.scaledDensity
     DisplayMetricsHolder.screenDisplayMetrics = screenDisplayMetrics
   }
-
-  @JvmStatic
-  public fun getDisplayMetricsWritableMap(
-      windowDisplayMetrics: DisplayMetrics,
-      fontScale: Double,
-  ): WritableMap {
-    checkNotNull(screenDisplayMetrics) { INITIALIZATION_MISSING_MESSAGE }
-
-    return WritableNativeMap().apply {
-      putMap(
-          "windowPhysicalPixels",
-          getPhysicalPixelsWritableMap(windowDisplayMetrics, fontScale),
-      )
-      putMap(
-          "screenPhysicalPixels",
-          getPhysicalPixelsWritableMap(screenDisplayMetrics as DisplayMetrics, fontScale),
-      )
-    }
-  }
-
-  private fun getPhysicalPixelsWritableMap(
-      displayMetrics: DisplayMetrics,
-      fontScale: Double,
-  ): WritableMap =
-      WritableNativeMap().apply {
-        putInt("width", displayMetrics.widthPixels)
-        putInt("height", displayMetrics.heightPixels)
-        putDouble("scale", displayMetrics.density.toDouble())
-        putDouble("fontScale", fontScale)
-        putDouble("densityDpi", displayMetrics.densityDpi.toDouble())
-      }
 
   internal fun getStatusBarHeightPx(activity: Activity?): Int {
     val windowInsets = activity?.window?.decorView?.let(ViewCompat::getRootWindowInsets) ?: return 0

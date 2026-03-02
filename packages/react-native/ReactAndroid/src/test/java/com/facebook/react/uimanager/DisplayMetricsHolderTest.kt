@@ -17,7 +17,6 @@ import android.view.View
 import android.view.Window
 import android.view.WindowInsets
 import androidx.annotation.RequiresApi
-import com.facebook.react.bridge.WritableMap
 import com.facebook.testutils.shadows.ShadowNativeLoader
 import com.facebook.testutils.shadows.ShadowNativeMap
 import com.facebook.testutils.shadows.ShadowReadableNativeMap
@@ -89,32 +88,6 @@ class DisplayMetricsHolderTest {
     DisplayMetricsHolder.initDisplayMetricsIfNotInitialized(context)
     val secondScreen = DisplayMetricsHolder.getScreenDisplayMetrics()
     assertThat(secondScreen).isEqualTo(firstScreen)
-  }
-
-  @Test(expected = IllegalStateException::class)
-  fun getDisplayMetricsWritableMap_failsIfNotInitialized() {
-    val windowDisplayMetrics = DisplayMetrics()
-    DisplayMetricsHolder.getDisplayMetricsWritableMap(windowDisplayMetrics, 1.0)
-  }
-
-  @Test
-  fun getDisplayMetricsWritableMap_returnsCorrectMap() {
-    // Use the official initialization method to ensure both metrics are set
-    DisplayMetricsHolder.initDisplayMetrics(context)
-    val windowDisplayMetrics = DisplayMetrics()
-    val map: WritableMap =
-        DisplayMetricsHolder.getDisplayMetricsWritableMap(windowDisplayMetrics, 1.0)
-    assertThat(map.hasKey("windowPhysicalPixels")).isTrue()
-    assertThat(map.hasKey("screenPhysicalPixels")).isTrue()
-    val windowMap = map.getMap("windowPhysicalPixels")
-    val screenMap = map.getMap("screenPhysicalPixels")
-    checkNotNull(windowMap)
-    checkNotNull(screenMap)
-    assertThat(windowMap.hasKey("width")).isTrue()
-    assertThat(windowMap.hasKey("height")).isTrue()
-    assertThat(windowMap.hasKey("scale")).isTrue()
-    assertThat(windowMap.hasKey("fontScale")).isTrue()
-    assertThat(windowMap.hasKey("densityDpi")).isTrue()
   }
 
   @Test
