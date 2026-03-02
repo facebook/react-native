@@ -328,4 +328,68 @@ public object YogaNative {
       nativePointer: Long,
       alwaysFormContainingBlock: Boolean,
   )
+
+  @JvmStatic
+  public external fun jni_YGNodeStyleSetGridTemplateColumnsJNI(
+      nativePointer: Long,
+      types: IntArray,
+      values: FloatArray,
+      minTypes: IntArray,
+      minValues: FloatArray,
+      maxTypes: IntArray,
+      maxValues: FloatArray,
+  )
+
+  @JvmStatic
+  public external fun jni_YGNodeStyleSetGridTemplateRowsJNI(
+      nativePointer: Long,
+      types: IntArray,
+      values: FloatArray,
+      minTypes: IntArray,
+      minValues: FloatArray,
+      maxTypes: IntArray,
+      maxValues: FloatArray,
+  )
+
+  @JvmStatic
+  public external fun jni_YGNodeStyleSetGridAutoColumnsJNI(
+      nativePointer: Long,
+      types: IntArray,
+      values: FloatArray,
+      minTypes: IntArray,
+      minValues: FloatArray,
+      maxTypes: IntArray,
+      maxValues: FloatArray,
+  )
+
+  @JvmStatic
+  public external fun jni_YGNodeStyleSetGridAutoRowsJNI(
+      nativePointer: Long,
+      types: IntArray,
+      values: FloatArray,
+      minTypes: IntArray,
+      minValues: FloatArray,
+      maxTypes: IntArray,
+      maxValues: FloatArray,
+  )
+
+  @JvmStatic
+  public external fun jni_YGNodeStyleSetGridColumnStartJNI(nativePointer: Long, value: Int)
+
+  @JvmStatic
+  public external fun jni_YGNodeStyleSetGridColumnStartSpanJNI(nativePointer: Long, span: Int)
+
+  @JvmStatic public external fun jni_YGNodeStyleSetGridColumnEndJNI(nativePointer: Long, value: Int)
+
+  @JvmStatic
+  public external fun jni_YGNodeStyleSetGridColumnEndSpanJNI(nativePointer: Long, span: Int)
+
+  @JvmStatic public external fun jni_YGNodeStyleSetGridRowStartJNI(nativePointer: Long, value: Int)
+
+  @JvmStatic
+  public external fun jni_YGNodeStyleSetGridRowStartSpanJNI(nativePointer: Long, span: Int)
+
+  @JvmStatic public external fun jni_YGNodeStyleSetGridRowEndJNI(nativePointer: Long, value: Int)
+
+  @JvmStatic public external fun jni_YGNodeStyleSetGridRowEndSpanJNI(nativePointer: Long, span: Int)
 }

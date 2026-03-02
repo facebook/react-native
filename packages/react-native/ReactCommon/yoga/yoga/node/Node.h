@@ -294,14 +294,14 @@ class YG_EXPORT Node : public ::YGNode {
   bool isNodeFlexible();
   void reset();
 
- private:
-  // Used to allow resetting the node
-  Node& operator=(Node&&) noexcept = default;
-
   float relativePosition(
       FlexDirection axis,
       Direction direction,
       float axisSize) const;
+
+ private:
+  // Used to allow resetting the node
+  Node& operator=(Node&&) noexcept = default;
 
   void useWebDefaults() {
     style_.setFlexDirection(FlexDirection::Row);
