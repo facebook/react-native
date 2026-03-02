@@ -19,6 +19,7 @@ import type {CoverageMap} from './coverage/types.flow';
 import type {
   AsyncCommandResult,
   ConsoleLogMessage,
+  EnvironmentOverrides,
   HermesVariant,
 } from './utils';
 
@@ -28,9 +29,13 @@ import {shouldCollectCoverage} from './coverageUtils';
 import entrypointTemplate from './entrypoint-template';
 import * as EnvironmentOptions from './EnvironmentOptions';
 import {run as runHermesCompiler} from './executables/hermesc';
-import {run as runFantomTester} from './executables/tester';
+import {
+  getFantomTesterPath,
+  run as runFantomTester,
+} from './executables/tester';
 import formatFantomConfig from './formatFantomConfig';
 import getFantomTestConfigs from './getFantomTestConfigs';
+import processLLVMCoverage from './llvm/processLLVMCoverage';
 import {
   JS_HEAP_SNAPSHOTS_OUTPUT_PATH,
   JS_TRACES_OUTPUT_PATH,
@@ -163,18 +168,20 @@ async function processRNTesterCommandResult(
 function generateBytecodeBundle({
   sourcePath,
   bytecodePath,
-  isOptimizedMode,
+  enableOptimized,
   hermesVariant,
+  enableCoverage,
 }: {
-  sourcePath: string,
   bytecodePath: string,
-  isOptimizedMode: boolean,
+  enableCoverage: boolean,
+  enableOptimized: boolean,
   hermesVariant: HermesVariant,
+  sourcePath: string,
 }): void {
   const hermesCompilerCommandResult = runHermesCompiler(
     [
       '-emit-binary',
-      isOptimizedMode ? '-O' : null,
+      enableOptimized ? '-O' : null,
       '-max-diagnostic-width',
       '80',
       '-out',
@@ -182,8 +189,9 @@ function generateBytecodeBundle({
       sourcePath,
     ].filter(Boolean),
     {
-      isOptimizedMode,
+      enableOptimized,
       hermesVariant,
+      enableCoverage,
     },
   );
 
@@ -208,7 +216,7 @@ module.exports = async function runTest(
   runtime: {...},
   testPath: string,
 ): unknown {
-  let coverageMap: CoverageMap | void;
+  let coverageMap: CoverageMap = {};
   const snapshotResolver = await buildSnapshotResolver(config);
   const snapshotPath = snapshotResolver.resolveSnapshotPath(testPath);
   const snapshotState = new SnapshotState(snapshotPath, {
@@ -326,6 +334,7 @@ module.exports = async function runTest(
     );
     const testJSBundlePath = entrypointPath + '.bundle.js';
     const testBytecodeBundlePath = testJSBundlePath + '.hbc';
+    const testCoveragePath = entrypointPath + '.profraw';
 
     fs.mkdirSync(path.dirname(entrypointPath), {recursive: true});
     fs.writeFileSync(entrypointPath, entrypointContents, 'utf8');
@@ -333,6 +342,12 @@ module.exports = async function runTest(
     const sourceMapPath = path.join(
       path.dirname(testJSBundlePath),
       path.basename(testJSBundlePath, '.js') + '.map',
+    );
+
+    const collectCoverage = shouldCollectCoverage(
+      testPath,
+      testContents,
+      globalConfig,
     );
 
     const bundleOptions = {
@@ -344,11 +359,7 @@ module.exports = async function runTest(
       sourceMap: true,
       sourceMapUrl: sourceMapPath,
       customTransformOptions: {
-        collectCoverage: shouldCollectCoverage(
-          testPath,
-          testContents,
-          globalConfig,
-        ),
+        collectCoverage,
       },
     };
 
@@ -361,7 +372,8 @@ module.exports = async function runTest(
       generateBytecodeBundle({
         sourcePath: testJSBundlePath,
         bytecodePath: testBytecodeBundlePath,
-        isOptimizedMode: testConfig.isJsOptimized,
+        enableCoverage: collectCoverage,
+        enableOptimized: testConfig.isJsOptimized,
         hermesVariant: testConfig.hermesVariant,
       });
     }
@@ -382,15 +394,22 @@ module.exports = async function runTest(
       );
     }
 
+    const env: EnvironmentOverrides = {
+      LLVM_PROFILE_FILE: collectCoverage ? testCoveragePath : undefined,
+    };
+
+    const rnTesterOptions = {
+      enableOptimized: testConfig.isNativeOptimized,
+      hermesVariant: testConfig.hermesVariant,
+      enableCoverage: collectCoverage,
+    };
     const rnTesterCommandResult = EnvironmentOptions.isOSS
       ? runCommand(
           path.join(__dirname, '..', 'build', 'tester', 'fantom_tester'),
           rnTesterCommandArgs,
+          env,
         )
-      : runFantomTester(rnTesterCommandArgs, {
-          isOptimizedMode: testConfig.isNativeOptimized,
-          hermesVariant: testConfig.hermesVariant,
-        });
+      : runFantomTester(rnTesterCommandArgs, rnTesterOptions, env);
 
     const [processedResult, benchmarkResult] =
       await processRNTesterCommandResult(rnTesterCommandResult);
@@ -468,7 +487,32 @@ module.exports = async function runTest(
 
     testResultsByConfig.push(testResults);
 
-    coverageMap = processedResult.coverageMap;
+    coverageMap = processedResult.coverageMap || {};
+
+    if (globalConfig.collectCoverage) {
+      try {
+        const binaryPath = EnvironmentOptions.isOSS
+          ? path.join(__dirname, '..', 'build', 'tester', 'fantom_tester')
+          : getFantomTesterPath(rnTesterOptions);
+
+        const cppCoverageMap = await processLLVMCoverage(
+          testCoveragePath,
+          binaryPath,
+        );
+
+        Object.entries(cppCoverageMap || {}).forEach(
+          ([filename, fileCoverage]) => {
+            coverageMap[filename] = fileCoverage;
+          },
+        );
+      } catch (error) {
+        printConsoleLog({
+          type: 'console-log',
+          level: 'warn',
+          message: `Failed to process C++ coverage: ${String(error)} ${String(error.stack)}`,
+        });
+      }
+    }
   }
 
   const endTime = Date.now();

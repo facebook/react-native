@@ -24,6 +24,10 @@ export enum HermesVariant {
   StaticHermesExperimental, // Static Hermes Trunk
 }
 
+export type EnvironmentOverrides = {
+  LLVM_PROFILE_FILE?: string,
+};
+
 export function getBuckOptionsForHermes(
   variant: HermesVariant,
 ): ReadonlyArray<string> {
@@ -51,16 +55,16 @@ export function getHermesCompilerTarget(variant: HermesVariant): string {
   }
 }
 
-export function getBuckModesForPlatform(
-  enableRelease: boolean = false,
-): ReadonlyArray<string> {
-  let modes = ['@//xplat/mode/react-native/granite'];
-  if (enableRelease) {
-    modes.push('@//xplat/mode/hermes/opt');
-  }
+export function getBuckModesForPlatform({
+  enableCoverage,
+  enableOptimized,
+}: {
+  enableCoverage: boolean,
+  enableOptimized: boolean,
+}): $ReadOnlyArray<string> {
+  let mode = enableCoverage ? 'code-coverage' : enableOptimized ? 'opt' : 'dev';
 
-  let mode = enableRelease ? 'opt' : 'dev';
-  if (enableRelease) {
+  if (enableOptimized) {
     if (EnvironmentOptions.enableASAN || EnvironmentOptions.enableTSAN) {
       printConsoleLog({
         type: 'console-log',
@@ -105,8 +109,21 @@ export function getBuckModesForPlatform(
       throw new Error(`Unsupported platform: ${os.platform()}`);
   }
 
-  modes.push(osPlatform);
-  return modes;
+  const result: Array<string> = [
+    '@//xplat/mode/react-native/granite',
+    osPlatform,
+  ];
+
+  if (enableCoverage) {
+    result.push(
+      '-c',
+      'code_coverage.enabled=filtered',
+      '-c',
+      'code_coverage.folder_path_filter=xplat/js/react-native-github',
+    );
+  }
+
+  return result;
 }
 
 export type AsyncCommandResult = {
@@ -137,9 +154,19 @@ function maybeLogCommand(command: string, args: ReadonlyArray<string>): void {
   }
 }
 
+function toEnv(env: EnvironmentOverrides): {[string]: string} {
+  return Object.keys(env).reduce<{[string]: string}>((acc, key) => {
+    if (env[key] != null) {
+      acc[key] = env[key];
+    }
+    return acc;
+  }, {});
+}
+
 export function runCommand(
   command: string,
   args: ReadonlyArray<string>,
+  env: EnvironmentOverrides,
 ): AsyncCommandResult {
   maybeLogCommand(command, args);
 
@@ -151,6 +178,7 @@ export function runCommand(
       encoding: 'utf8',
       env: {
         ...process.env,
+        ...toEnv(env),
         PATH: `/usr/local/bin:/usr/bin:${process.env.PATH ?? ''}`,
       },
     },
@@ -184,6 +212,7 @@ export function runCommand(
 export function runCommandSync(
   command: string,
   args: ReadonlyArray<string>,
+  env: EnvironmentOverrides,
 ): SyncCommandResult {
   maybeLogCommand(command, args);
 
@@ -191,6 +220,7 @@ export function runCommandSync(
     encoding: 'utf8',
     env: {
       ...process.env,
+      ...toEnv(env),
       PATH: `/usr/local/bin:/usr/bin:${process.env.PATH ?? ''}`,
     },
   });
@@ -249,6 +279,7 @@ function getCommandAndArgsWithFDB(
 
 export function runBuck2(
   args: Array<string>,
+  env: EnvironmentOverrides,
   options?: {withFDB: boolean},
 ): AsyncCommandResult {
   const [actualCommand, actualArgs] = getCommandAndArgsWithFDB(
@@ -256,11 +287,12 @@ export function runBuck2(
     processArgsForBuck(args),
     options?.withFDB ?? false,
   );
-  return runCommand(actualCommand, actualArgs);
+  return runCommand(actualCommand, actualArgs, env);
 }
 
 export function runBuck2Sync(
   args: Array<string>,
+  env: EnvironmentOverrides,
   options?: {withFDB: boolean},
 ): SyncCommandResult {
   const [actualCommand, actualArgs] = getCommandAndArgsWithFDB(
@@ -268,7 +300,7 @@ export function runBuck2Sync(
     processArgsForBuck(args),
     options?.withFDB ?? false,
   );
-  return runCommandSync(actualCommand, actualArgs);
+  return runCommandSync(actualCommand, actualArgs, env);
 }
 
 function processArgsForBuck(args: Array<string>): Array<string> {

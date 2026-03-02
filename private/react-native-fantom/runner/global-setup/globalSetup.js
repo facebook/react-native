@@ -12,6 +12,7 @@ import type {DevToolLauncher} from '@react-native/dev-middleware';
 import type {ConfigT} from 'metro-config';
 
 import {isOSS, validateEnvironmentVariables} from '../EnvironmentOptions';
+import {getTestBuildOutputPath} from '../paths';
 import build from './build';
 import {createDevMiddleware} from '@react-native/dev-middleware';
 import connect from 'connect';
@@ -20,7 +21,10 @@ import {Server} from 'net';
 import path from 'path';
 
 export default async function globalSetup(
-  globalConfig: {...},
+  globalConfig: {
+    collectCoverage: boolean,
+    ...
+  },
   projectConfig: {...},
 ): Promise<void> {
   process.env.__FANTOM_RUN_ID__ ??= `run-${Date.now()}`;
@@ -30,7 +34,11 @@ export default async function globalSetup(
   await startMetroServer();
 
   if (!isOSS) {
-    await build();
+    await build(globalConfig.collectCoverage, {
+      LLVM_PROFILE_FILE: globalConfig.collectCoverage
+        ? getTestBuildOutputPath() + 'fantom.profraw'
+        : undefined,
+    });
   }
 }
 

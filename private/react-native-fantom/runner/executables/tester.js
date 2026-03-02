@@ -8,7 +8,11 @@
  * @format
  */
 
-import type {AsyncCommandResult, HermesVariant} from '../utils';
+import type {
+  AsyncCommandResult,
+  EnvironmentOverrides,
+  HermesVariant,
+} from '../utils';
 
 import {debugCpp, isCI, profileCpp} from '../EnvironmentOptions';
 import {CPP_TRACES_OUTPUT_PATH, NATIVE_BUILD_OUTPUT_PATH} from '../paths';
@@ -29,21 +33,22 @@ const FANTOM_TESTER_BUCK_TARGET =
   'fbsource//xplat/js/react-native-github/private/react-native-fantom/tester:tester';
 
 type TesterOptions = Readonly<{
-  isOptimizedMode: boolean,
+  enableCoverage: boolean,
+  enableOptimized: boolean,
   hermesVariant: HermesVariant,
 }>;
 
-function getFantomTesterPath({
-  isOptimizedMode,
+export function getFantomTesterPath({
   hermesVariant,
+  ...options
 }: TesterOptions): string {
   return path.join(
     NATIVE_BUILD_OUTPUT_PATH,
-    `fantom-tester-${(hermesVariant as string).toLowerCase()}-${isOptimizedMode ? 'opt' : 'dev'}`,
+    `fantom-tester-${(hermesVariant as string).toLowerCase()}-${options.enableOptimized ? 'opt' : 'dev'}${options.enableCoverage ? '-coverage' : ''}`,
   );
 }
 
-export function build(options: TesterOptions): void {
+export function build(options: TesterOptions, env: EnvironmentOverrides): void {
   const destPath = getFantomTesterPath(options);
   if (fs.existsSync(destPath)) {
     return;
@@ -58,14 +63,23 @@ export function build(options: TesterOptions): void {
   const destTmpPath = destPath + '-' + Date.now() + '-' + process.pid;
 
   try {
-    const result = runBuck2Sync([
-      'build',
-      ...getBuckModesForPlatform(options.isOptimizedMode),
-      ...getBuckOptionsForHermes(options.hermesVariant),
-      FANTOM_TESTER_BUCK_TARGET,
-      '--out',
-      tmpPath,
-    ]);
+    const result = runBuck2Sync(
+      [
+        'build',
+        ...getBuckModesForPlatform({
+          enableOptimized: options.enableOptimized,
+          enableCoverage: options.enableCoverage,
+        }),
+        ...getBuckOptionsForHermes(options.hermesVariant),
+        FANTOM_TESTER_BUCK_TARGET,
+        '--out',
+        tmpPath,
+      ],
+      env,
+      {
+        withFDB: false,
+      },
+    );
 
     if (result.status !== 0) {
       throw new Error(getDebugInfoFromCommandResult(result));
@@ -79,7 +93,7 @@ export function build(options: TesterOptions): void {
     // Remove extended attributes to avoid "Operation not permitted" errors
     // when copying to EdenFS/NFS-backed directories on macOS
     if (os.platform() === 'darwin') {
-      runCommandSync('xattr', ['-rc', tmpPath]);
+      runCommandSync('xattr', ['-rc', tmpPath], {});
     }
 
     fs.copyFileSync(tmpPath, destTmpPath);
@@ -109,6 +123,7 @@ export function build(options: TesterOptions): void {
 export function run(
   args: ReadonlyArray<string>,
   options: TesterOptions,
+  env: EnvironmentOverrides,
 ): AsyncCommandResult {
   if (isCI && debugCpp) {
     throw new Error('Cannot run Fantom with C++ debugging on CI');
@@ -119,19 +134,23 @@ export function run(
   }
 
   if (!isCI && !debugCpp) {
-    build(options);
+    build(options, env);
   }
 
   if (debugCpp) {
     return runBuck2(
       [
         'run',
-        ...getBuckModesForPlatform(options.isOptimizedMode),
+        ...getBuckModesForPlatform({
+          enableOptimized: options.enableOptimized,
+          enableCoverage: options.enableCoverage,
+        }),
         ...getBuckOptionsForHermes(options.hermesVariant),
         FANTOM_TESTER_BUCK_TARGET,
         '--',
         ...args,
       ],
+      env,
       {
         withFDB: true,
       },
@@ -156,19 +175,23 @@ export function run(
     // -g: enable call-graph (stack traces)
     // -F 997: sample at 997 Hz (prime number to avoid aliasing)
     // --call-graph dwarf: use DWARF for accurate stack traces
-    const result = runCommand('perf', [
-      'record',
-      '-g',
-      '-F',
-      '997',
-      '--call-graph',
-      'dwarf',
-      '-o',
-      perfOutputPath,
-      '--',
-      testerPath,
-      ...args,
-    ]);
+    const result = runCommand(
+      'perf',
+      [
+        'record',
+        '-g',
+        '-F',
+        '997',
+        '--call-graph',
+        'dwarf',
+        '-o',
+        perfOutputPath,
+        '--',
+        testerPath,
+        ...args,
+      ],
+      {},
+    );
 
     // Log the output path after the command starts
     console.log(
@@ -179,5 +202,5 @@ export function run(
     return result;
   }
 
-  return runCommand(testerPath, args);
+  return runCommand(testerPath, args, env);
 }

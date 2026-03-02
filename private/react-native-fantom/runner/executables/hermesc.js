@@ -24,22 +24,22 @@ import fs from 'fs';
 import os from 'os';
 import path from 'path';
 
-type TesterOptions = Readonly<{
-  isOptimizedMode: boolean,
+type HermescOptions = Readonly<{
+  enableCoverage: boolean,
+  enableOptimized: boolean,
   hermesVariant: HermesVariant,
 }>;
 
 function getHermesCompilerPath({
-  isOptimizedMode,
+  enableOptimized,
   hermesVariant,
-}: TesterOptions): string {
+}: HermescOptions): string {
   return path.join(
     NATIVE_BUILD_OUTPUT_PATH,
-    `hermesc-${(hermesVariant as string).toLowerCase()}-${isOptimizedMode ? 'opt' : 'dev'}`,
+    `hermesc-${(hermesVariant as string).toLowerCase()}-${enableOptimized ? 'opt' : 'dev'}`,
   );
 }
-
-export function build(options: TesterOptions): void {
+export function build(options: HermescOptions): void {
   const destPath = getHermesCompilerPath(options);
   if (fs.existsSync(destPath)) {
     return;
@@ -54,14 +54,20 @@ export function build(options: TesterOptions): void {
   const destTmpPath = destPath + '-' + Date.now() + '-' + process.pid;
 
   try {
-    const result = runBuck2Sync([
-      'build',
-      ...getBuckModesForPlatform(options.isOptimizedMode),
-      ...getBuckOptionsForHermes(options.hermesVariant),
-      getHermesCompilerTarget(options.hermesVariant),
-      '--out',
-      tmpPath,
-    ]);
+    const result = runBuck2Sync(
+      [
+        'build',
+        ...getBuckModesForPlatform({
+          enableOptimized: options.enableOptimized,
+          enableCoverage: options.enableCoverage,
+        }),
+        ...getBuckOptionsForHermes(options.hermesVariant),
+        getHermesCompilerTarget(options.hermesVariant),
+        '--out',
+        tmpPath,
+      ],
+      {},
+    );
 
     if (result.status !== 0) {
       throw new Error(getDebugInfoFromCommandResult(result));
@@ -75,7 +81,7 @@ export function build(options: TesterOptions): void {
     // Remove extended attributes to avoid "Operation not permitted" errors
     // when copying to EdenFS/NFS-backed directories on macOS
     if (os.platform() === 'darwin') {
-      runCommandSync('xattr', ['-rc', tmpPath]);
+      runCommandSync('xattr', ['-rc', tmpPath], {});
     }
 
     fs.copyFileSync(tmpPath, destTmpPath);
@@ -104,11 +110,11 @@ export function build(options: TesterOptions): void {
 
 export function run(
   args: ReadonlyArray<string>,
-  options: TesterOptions,
+  options: HermescOptions,
 ): SyncCommandResult {
   if (!isCI) {
     build(options);
   }
 
-  return runCommandSync(getHermesCompilerPath(options), args);
+  return runCommandSync(getHermesCompilerPath(options), args, {});
 }
