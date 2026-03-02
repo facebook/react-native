@@ -197,6 +197,7 @@ const validAttributesForNonEventProps = {
   accessibilityValue: true,
   accessibilityViewIsModal: true,
   accessibilityElementsHidden: true,
+  accessibilityContainer: true,
   accessibilityIgnoresInvertColors: true,
   accessibilityShowsLargeContentViewer: true,
   accessibilityLargeContentTitle: true,

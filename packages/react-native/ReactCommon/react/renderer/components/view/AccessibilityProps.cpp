@@ -163,6 +163,15 @@ AccessibilityProps::AccessibilityProps(
                     "accessibilityRespondsToUserInteraction",
                     sourceProps.accessibilityRespondsToUserInteraction,
                     true)),
+      accessibilityContainer(
+          ReactNativeFeatureFlags::enableCppPropsIteratorSetter()
+              ? sourceProps.accessibilityContainer
+              : convertRawProp(
+                    context,
+                    rawProps,
+                    "accessibilityContainer",
+                    sourceProps.accessibilityContainer,
+                    false)),
       onAccessibilityTap(
           ReactNativeFeatureFlags::enableCppPropsIteratorSetter()
               ? sourceProps.onAccessibilityTap
@@ -280,6 +289,7 @@ void AccessibilityProps::setProp(
     RAW_SET_PROP_SWITCH_CASE_BASIC(accessibilityElementsHidden);
     RAW_SET_PROP_SWITCH_CASE_BASIC(accessibilityIgnoresInvertColors);
     RAW_SET_PROP_SWITCH_CASE_BASIC(accessibilityRespondsToUserInteraction);
+    RAW_SET_PROP_SWITCH_CASE_BASIC(accessibilityContainer);
     RAW_SET_PROP_SWITCH_CASE_BASIC(onAccessibilityTap);
     RAW_SET_PROP_SWITCH_CASE_BASIC(onAccessibilityMagicTap);
     RAW_SET_PROP_SWITCH_CASE_BASIC(onAccessibilityEscape);
@@ -327,6 +337,10 @@ SharedDebugStringConvertibleList AccessibilityProps::getDebugProps() const {
           "accessibilityElementsHidden",
           accessibilityElementsHidden,
           defaultProps.accessibilityElementsHidden),
+      debugStringConvertibleItem(
+          "accessibilityContainer",
+          accessibilityContainer,
+          defaultProps.accessibilityContainer),
       debugStringConvertibleItem(
           "accessibilityHint",
           accessibilityHint,
