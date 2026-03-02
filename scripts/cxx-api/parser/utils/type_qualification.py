@@ -31,6 +31,10 @@ def qualify_type_str(type_str: str, scope: Scope) -> str:
     if not type_str:
         return type_str
 
+    # Names starting with "::" are already globally qualified - skip re-qualification
+    if type_str.lstrip().startswith("::"):
+        return type_str
+
     # Handle template arguments first: qualify types inside angle brackets
     angle_start = type_str.find("<")
     if angle_start != -1:
