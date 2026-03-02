@@ -52,6 +52,8 @@ const sendRequest = jest.fn(
   },
 );
 
+const removeListener = jest.fn();
+
 jest.mock('../../../Network/RCTNetworking', () => ({
   __esModule: true,
   default: {
@@ -64,7 +66,7 @@ jest.mock('../../../Network/RCTNetworking', () => ({
       } else if (name === 'didReceiveNetworkResponse') {
         Promise.resolve().then(() => fn([REQUEST_ID, null, mockHeaders]));
       }
-      return {remove: () => {}};
+      return {remove: removeListener};
     }),
   },
 }));
@@ -109,7 +111,7 @@ test('loadBundleFromServer will throw LoadBundleFromServerError for request erro
   expect(error.cause).toBe('Some error');
 });
 
-test('loadBundleFromServer will request a bundle if import bundles are available', async () => {
+test('loadBundleFromServer successfully requests a bundle (root bundle)', async () => {
   mockDataResponse = '"code";';
   mockHeaders = {'Content-Type': 'application/javascript'};
   mockRequestError = null;
@@ -121,19 +123,26 @@ test('loadBundleFromServer will request a bundle if import bundles are available
   expect(sendRequest.mock.calls).toEqual([
     [
       'GET',
-      expect.anything(),
+      'asyncRequest',
       'localhost:8042/Banana.bundle?platform=ios&dev=true&minify=false&unusedExtraParam=42&modulesOnly=true&runModule=false',
-      expect.anything(),
-      expect.anything(),
-      expect.anything(),
-      expect.anything(),
-      expect.anything(),
-      expect.anything(),
-      expect.anything(),
+      {},
+      '',
+      'text',
+      true,
+      0,
+      expect.any(Function),
+      true,
     ],
   ]);
 
-  sendRequest.mockClear();
+  expect(removeListener).toHaveBeenCalledTimes(4);
+});
+
+test('loadBundleFromServer successfully requests a bundle (subdir bundle)', async () => {
+  mockDataResponse = '"code";';
+  mockHeaders = {'Content-Type': 'application/javascript'};
+  mockRequestError = null;  
+
   await loadBundleFromServer(
     '/Tiny/Apple.bundle?platform=ios&dev=true&minify=false&unusedExtraParam=42&modulesOnly=true&runModule=false',
   );
@@ -141,18 +150,20 @@ test('loadBundleFromServer will request a bundle if import bundles are available
   expect(sendRequest.mock.calls).toEqual([
     [
       'GET',
-      expect.anything(),
+      'asyncRequest',
       'localhost:8042/Tiny/Apple.bundle?platform=ios&dev=true&minify=false&unusedExtraParam=42&modulesOnly=true&runModule=false',
-      expect.anything(),
-      expect.anything(),
-      expect.anything(),
-      expect.anything(),
-      expect.anything(),
-      expect.anything(),
-      expect.anything(),
+      {},
+      '',
+      'text',
+      true,
+      0,
+      expect.any(Function),
+      true,
     ],
   ]);
-});
+
+  expect(removeListener).toHaveBeenCalledTimes(4);
+})
 
 test('shows and hides the loading view around a request', async () => {
   mockDataResponse = '"code";';
