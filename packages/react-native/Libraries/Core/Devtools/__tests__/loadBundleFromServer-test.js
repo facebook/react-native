@@ -10,9 +10,6 @@
 
 'use strict';
 
-// TODO(legacy-fake-timers): Fix these tests to work with modern timers.
-jest.useFakeTimers({legacyFakeTimers: true});
-
 jest.mock('../../../Utilities/HMRClient');
 
 jest.mock('../../../Core/Devtools/getDevServer', () => ({
@@ -59,11 +56,11 @@ jest.mock('../../../Network/RCTNetworking', () => ({
     sendRequest,
     addListener: jest.fn((name, fn) => {
       if (name === 'didReceiveNetworkData') {
-        setImmediate(() => fn([1, mockDataResponse]));
+        Promise.resolve().then(() => fn([1, mockDataResponse]));
       } else if (name === 'didCompleteNetworkResponse') {
-        setImmediate(() => fn([1, mockRequestError]));
+        Promise.resolve().then(() => fn([1, mockRequestError]));
       } else if (name === 'didReceiveNetworkResponse') {
-        setImmediate(() => fn([1, null, mockHeaders]));
+        Promise.resolve().then(() => fn([1, null, mockHeaders]));
       }
       return {remove: () => {}};
     }),
