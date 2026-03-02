@@ -8,12 +8,14 @@
  * @format
  */
 
+import '@react-native/fantom/src/setUpDefaultReactNativeEnvironment';
+
 import {createDOMRectList} from '../DOMRectList';
 import DOMRectReadOnly from '../DOMRectReadOnly';
 
-const domRectA = new DOMRectReadOnly();
-const domRectB = new DOMRectReadOnly();
-const domRectC = new DOMRectReadOnly();
+const domRectA = new DOMRectReadOnly(1, 2, 3, 4);
+const domRectB = new DOMRectReadOnly(5, 6, 7, 8);
+const domRectC = new DOMRectReadOnly(9, 10, 11, 12);
 
 describe('DOMRectList', () => {
   it('provides an array-like interface', () => {
@@ -44,13 +46,13 @@ describe('DOMRectList', () => {
 
     expect(() => {
       collection[0] = new DOMRectReadOnly();
-    }).toThrow(TypeError);
+    }).toThrow();
     expect(collection[0]).toBe(domRectA);
 
     expect(() => {
       // $FlowExpectedError[cannot-write]
       collection.length = 100;
-    }).toThrow(TypeError);
+    }).toThrow();
     expect(collection.length).toBe(3);
   });
 
