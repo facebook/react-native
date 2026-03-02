@@ -324,6 +324,12 @@ def get_function_member(
     # Strip the trailing "=0" from the type string.
     function_type = re.sub(r"\s*=\s*0\s*$", "", function_type)
 
+    # For constexpr constructors, Doxygen outputs "constexpr" both as an
+    # attribute (constexpr="yes") and as the return type (<type>constexpr</type>).
+    # Remove the redundant type to avoid "constexpr constexpr" in output.
+    if is_constexpr and function_type == "constexpr":
+        function_type = ""
+
     doxygen_params = get_doxygen_params(function_def)
 
     function = FunctionMember(
