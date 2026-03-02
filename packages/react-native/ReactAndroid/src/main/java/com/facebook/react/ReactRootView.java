@@ -17,7 +17,6 @@ import android.annotation.SuppressLint;
 import android.content.Context;
 import android.graphics.BlendMode;
 import android.graphics.Canvas;
-import android.graphics.Insets;
 import android.graphics.Paint;
 import android.graphics.Point;
 import android.graphics.Rect;
@@ -25,21 +24,18 @@ import android.os.Build;
 import android.os.Bundle;
 import android.util.AttributeSet;
 import android.util.DisplayMetrics;
-import android.view.DisplayCutout;
 import android.view.KeyEvent;
 import android.view.MotionEvent;
 import android.view.Surface;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.ViewTreeObserver;
-import android.view.WindowInsets;
 import android.view.WindowManager;
 import android.widget.FrameLayout;
 import androidx.annotation.Nullable;
-import androidx.annotation.RequiresApi;
+import androidx.core.graphics.Insets;
 import androidx.core.view.ViewCompat;
 import androidx.core.view.WindowInsetsCompat;
-
 import com.facebook.common.logging.FLog;
 import com.facebook.infer.annotation.Assertions;
 import com.facebook.infer.annotation.ThreadConfined;
@@ -963,8 +959,8 @@ public class ReactRootView extends FrameLayout implements RootView, ReactRoot {
         mKeyboardIsVisible = keyboardIsVisible;
 
         if (keyboardIsVisible) {
-          androidx.core.graphics.Insets imeInsets = rootInsets.getInsets(WindowInsetsCompat.Type.ime());
-          androidx.core.graphics.Insets barInsets = rootInsets.getInsets(WindowInsetsCompat.Type.systemBars());
+          Insets imeInsets = rootInsets.getInsets(WindowInsetsCompat.Type.ime());
+          Insets barInsets = rootInsets.getInsets(WindowInsetsCompat.Type.systemBars());
           int height = imeInsets.bottom - barInsets.bottom;
 
           ViewGroup.LayoutParams rootLayoutParams = getRootView().getLayoutParams();
