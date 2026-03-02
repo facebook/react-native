@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<2955ab3f744af8b5cdf587312ba423d7>>
+ * @generated SignedSource<<d111de1ae4e2cb08467d23b91585ae56>>
  * @flow strict
  * @noformat
  */
@@ -44,6 +44,7 @@ export interface Spec extends TurboModule {
   +enableCppPropsIteratorSetter?: () => boolean;
   +enableCustomFocusSearchOnClippedElementsAndroid?: () => boolean;
   +enableDestroyShadowTreeRevisionAsync?: () => boolean;
+  +enableDifferentiatorMutationVectorPreallocation?: () => boolean;
   +enableDoubleMeasurementFixAndroid?: () => boolean;
   +enableEagerMainQueueModulesOnIOS?: () => boolean;
   +enableEagerRootViewAttachment?: () => boolean;

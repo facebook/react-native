@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<948a9beebe2ff00791a03455eb774eee>>
+ * @generated SignedSource<<03f5b76fefda14757a43414f6624601a>>
  */
 
 /**
@@ -65,6 +65,8 @@ public object ReactNativeFeatureFlagsCxxInterop {
   @DoNotStrip @JvmStatic public external fun enableCustomFocusSearchOnClippedElementsAndroid(): Boolean
 
   @DoNotStrip @JvmStatic public external fun enableDestroyShadowTreeRevisionAsync(): Boolean
+
+  @DoNotStrip @JvmStatic public external fun enableDifferentiatorMutationVectorPreallocation(): Boolean
 
   @DoNotStrip @JvmStatic public external fun enableDoubleMeasurementFixAndroid(): Boolean
 

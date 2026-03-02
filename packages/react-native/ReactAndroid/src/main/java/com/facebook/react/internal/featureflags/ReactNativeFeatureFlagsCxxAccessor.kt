@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<0875d5e54d884a26d37bb4eb2acc57d5>>
+ * @generated SignedSource<<202662ab1c26ed104cfe837162d4f9a2>>
  */
 
 /**
@@ -39,6 +39,7 @@ internal class ReactNativeFeatureFlagsCxxAccessor : ReactNativeFeatureFlagsAcces
   private var enableCppPropsIteratorSetterCache: Boolean? = null
   private var enableCustomFocusSearchOnClippedElementsAndroidCache: Boolean? = null
   private var enableDestroyShadowTreeRevisionAsyncCache: Boolean? = null
+  private var enableDifferentiatorMutationVectorPreallocationCache: Boolean? = null
   private var enableDoubleMeasurementFixAndroidCache: Boolean? = null
   private var enableEagerMainQueueModulesOnIOSCache: Boolean? = null
   private var enableEagerRootViewAttachmentCache: Boolean? = null
@@ -273,6 +274,15 @@ internal class ReactNativeFeatureFlagsCxxAccessor : ReactNativeFeatureFlagsAcces
     if (cached == null) {
       cached = ReactNativeFeatureFlagsCxxInterop.enableDestroyShadowTreeRevisionAsync()
       enableDestroyShadowTreeRevisionAsyncCache = cached
+    }
+    return cached
+  }
+
+  override fun enableDifferentiatorMutationVectorPreallocation(): Boolean {
+    var cached = enableDifferentiatorMutationVectorPreallocationCache
+    if (cached == null) {
+      cached = ReactNativeFeatureFlagsCxxInterop.enableDifferentiatorMutationVectorPreallocation()
+      enableDifferentiatorMutationVectorPreallocationCache = cached
     }
     return cached
   }
