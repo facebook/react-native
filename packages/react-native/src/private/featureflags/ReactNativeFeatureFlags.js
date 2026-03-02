@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<fece18f7b3b23de103a64eca1a76a4c6>>
+ * @generated SignedSource<<0d5cf6a975687f5bf540b16a997809a7>>
  * @flow strict
  * @noformat
  */
@@ -33,6 +33,7 @@ export type ReactNativeFeatureFlagsJsOnly = $ReadOnly<{
   animatedShouldUseSingleOp: Getter<boolean>,
   deferFlatListFocusChangeRenderUpdate: Getter<boolean>,
   disableMaintainVisibleContentPosition: Getter<boolean>,
+  enableOptimizedBoxShadowParsing: Getter<boolean>,
   externalElementInspectionEnabled: Getter<boolean>,
   fixImageSrcDimensionPropagation: Getter<boolean>,
   fixVirtualizeListCollapseWindowSize: Getter<boolean>,
@@ -157,6 +158,11 @@ export const deferFlatListFocusChangeRenderUpdate: Getter<boolean> = createJavaS
  * Disable prop maintainVisibleContentPosition in ScrollView
  */
 export const disableMaintainVisibleContentPosition: Getter<boolean> = createJavaScriptFlagGetter('disableMaintainVisibleContentPosition', false);
+
+/**
+ * Hoists regex patterns to module scope and optimizes parseLength in processBoxShadow for improved performance.
+ */
+export const enableOptimizedBoxShadowParsing: Getter<boolean> = createJavaScriptFlagGetter('enableOptimizedBoxShadowParsing', false);
 
 /**
  * Enable the external inspection API for DevTools to communicate with the Inspector overlay.
