@@ -92,7 +92,9 @@ test('loadBundleFromServer will throw for JSON responses', async () => {
   mockDataResponse = JSON.stringify({message: 'Error thrown from Metro'});
   mockRequestError = null;
 
-  const error = await loadBundleFromServer('/Fail.bundle?platform=ios').catch(e => e);
+  const error = await loadBundleFromServer('/Fail.bundle?platform=ios').catch(
+    e => e,
+  );
 
   expect(error).toBeInstanceOf(LoadBundleFromServerError);
   expect(error.message).toBe('Could not load bundle');
@@ -104,7 +106,9 @@ test('loadBundleFromServer will throw LoadBundleFromServerError for request erro
   mockDataResponse = '';
   mockRequestError = 'Some error';
 
-  const error = await loadBundleFromServer('/Fail.bundle?platform=ios').catch(e => e);
+  const error = await loadBundleFromServer('/Fail.bundle?platform=ios').catch(
+    e => e,
+  );
 
   expect(error).toBeInstanceOf(LoadBundleFromServerRequestError);
   expect(error.message).toBe('Could not load bundle');
@@ -141,7 +145,7 @@ test('loadBundleFromServer successfully requests a bundle (root bundle)', async 
 test('loadBundleFromServer successfully requests a bundle (subdir bundle)', async () => {
   mockDataResponse = '"code";';
   mockHeaders = {'Content-Type': 'application/javascript'};
-  mockRequestError = null;  
+  mockRequestError = null;
 
   await loadBundleFromServer(
     '/Tiny/Apple.bundle?platform=ios&dev=true&minify=false&unusedExtraParam=42&modulesOnly=true&runModule=false',
@@ -163,7 +167,7 @@ test('loadBundleFromServer successfully requests a bundle (subdir bundle)', asyn
   ]);
 
   expect(removeListener).toHaveBeenCalledTimes(4);
-})
+});
 
 test('shows and hides the loading view around a request', async () => {
   mockDataResponse = '"code";';
