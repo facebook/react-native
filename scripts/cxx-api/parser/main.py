@@ -26,14 +26,109 @@ from .template import Template
 from .utils import Argument, extract_qualifiers, parse_qualified_path
 
 
+def decode_doxygen_template_encoding(encoded: str) -> str:
+    """Decode Doxygen's encoding for template specializations in refids.
+
+    Doxygen encodes special characters in refids using underscore-prefixed codes:
+    - '_3' = '<' (template open)
+    - '_4' = '>' (template close)
+    - '_01' = ' ' (space)
+    - '_07' = '(' (open paren)
+    - '_08' = ')' (close paren)
+    - '_8_8_8' = '...' (variadic ellipsis)
+    - '_00' = ',' (comma)
+    - '_02' = '*' (pointer)
+    - '_05' = '=' (equals)
+    - '_06' = '&' (reference)
+
+    e.g. 'SyncCallback_3_01R_07Args_8_8_8_08_4' -> 'SyncCallback< R(Args...)>'
+    """
+    result = encoded
+
+    # Process longer patterns first to avoid partial matches
+    result = result.replace("_8_8_8", "...")  # Variadic ellipsis
+
+    # Process two-char patterns (_0X codes)
+    result = result.replace("_00", ", ")  # Comma (with space for readability)
+    result = result.replace("_01", " ")  # Space
+    result = result.replace("_02", "*")  # Pointer
+    result = result.replace("_05", "=")  # Equals
+    result = result.replace("_06", "&")  # Reference
+    result = result.replace("_07", "(")  # Open paren
+    result = result.replace("_08", ")")  # Close paren
+
+    # Process single-char patterns last
+    result = result.replace("_3", "<")  # Template open
+    result = result.replace("_4", ">")  # Template close
+
+    return result
+
+
+def _strip_template_args(name: str) -> str:
+    """Strip template arguments from a type name.
+
+    e.g. 'SyncCallback< R(Args...)>' -> 'SyncCallback'
+    """
+    angle_idx = name.find("<")
+    return name[:angle_idx].rstrip() if angle_idx != -1 else name
+
+
+def _qualify_text_with_refid(text: str, refid: str) -> str:
+    """Qualify a text symbol using the namespace extracted from its doxygen refid.
+
+    For ref elements, doxygen provides a refid that encodes the fully qualified
+    path to the referenced symbol. This function extracts the namespace from
+    that refid and prepends it to the text, avoiding redundant qualification.
+
+    Args:
+        text: The symbol text (e.g., "SyncCallback")
+        refid: The doxygen refid (e.g., "classfacebook_1_1react_1_1SyncCallback...")
+
+    Returns:
+        The qualified text (e.g., "facebook::react::SyncCallback")
+    """
+    ns = extract_namespace_from_refid(refid)
+
+    # Skip re-qualification if text is already globally qualified
+    # (starts with "::") - it's already an absolute path
+    if not ns or text.startswith(ns) or text.startswith("::"):
+        return text
+
+    # The text may already start with a trailing portion of the namespace.
+    # For example ns="facebook::react::HighResDuration" and
+    # text="HighResDuration::zero". We need to find the longest suffix of ns
+    # that is a prefix of text (on a "::" boundary) and only prepend the
+    # missing part.
+    ns_parts = ns.split("::")
+    prepend = ns
+
+    for i in range(1, len(ns_parts)):
+        suffix = "::".join(ns_parts[i:])
+        # Also compare without template args - for template specializations
+        # like "SyncCallback< R(Args...)>", text "SyncCallback" should match
+        base_suffix = _strip_template_args(ns_parts[i])
+        if (
+            text.startswith(suffix + "::")
+            or text == suffix
+            or text.startswith(base_suffix + "::")
+            or text == base_suffix
+        ):
+            prepend = "::".join(ns_parts[:i])
+            break
+
+    return prepend + "::" + text
+
+
 def extract_namespace_from_refid(refid: str) -> str:
     """Extract the namespace prefix from a doxygen refid.
     e.g. 'namespacefacebook_1_1yoga_1a...' -> 'facebook::yoga'
          'structfacebook_1_1react_1_1detail_1_1is__dynamic' -> 'facebook::react::detail::is_dynamic'
+         'classfacebook_1_1react_1_1SyncCallback_3_01R_07Args_8_8_8_08_4' -> 'facebook::react::SyncCallback< R(Args...)>'
 
     Doxygen encoding:
     - '::' is encoded as '_1_1'
     - '_' in identifiers is encoded as '__' (double underscore)
+    - Template specializations are encoded with hex-like codes (see decode_doxygen_template_encoding)
     """
     for prefix in ("namespace", "struct", "class", "union"):
         if refid.startswith(prefix):
@@ -46,6 +141,8 @@ def extract_namespace_from_refid(refid: str) -> str:
             # Then replace double underscore with single underscore
             # (Doxygen encodes '_' in identifiers as '__')
             result = result.replace("__", "_")
+            # Decode template specialization encodings
+            result = decode_doxygen_template_encoding(result)
             return result
     return ""
 
@@ -86,23 +183,7 @@ def resolve_linked_text_name(
                 # incorrectly treat symbols in strings as references
                 refid = getattr(part.value, "refid", None)
                 if refid and not in_string:
-                    ns = extract_namespace_from_refid(refid)
-                    # Skip re-qualification if text is already globally qualified
-                    # (starts with "::") - it's already an absolute path
-                    if ns and not text.startswith(ns) and not text.startswith("::"):
-                        # The text may already start with a trailing portion of
-                        # the namespace.  For example ns="facebook::react::HighResDuration"
-                        # and text="HighResDuration::zero".  We need to find the
-                        # longest suffix of ns that is a prefix of text (on a "::"
-                        # boundary) and only prepend the missing part.
-                        ns_parts = ns.split("::")
-                        prepend = ns
-                        for i in range(1, len(ns_parts)):
-                            suffix = "::".join(ns_parts[i:])
-                            if text.startswith(suffix + "::") or text == suffix:
-                                prepend = "::".join(ns_parts[:i])
-                                break
-                        text = prepend + "::" + text
+                    text = _qualify_text_with_refid(text, refid)
 
                 name += text
     elif type_def.ref:
