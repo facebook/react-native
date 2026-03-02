@@ -1001,6 +1001,17 @@ const definitions: FeatureFlagDefinitions = {
       },
       ossReleaseStage: 'none',
     },
+    enableOptimizedBoxShadowParsing: {
+      defaultValue: false,
+      metadata: {
+        dateAdded: '2026-02-26',
+        description:
+          'Hoists regex patterns to module scope and optimizes parseLength in processBoxShadow for improved performance.',
+        expectedReleaseValue: true,
+        purpose: 'experimentation',
+      },
+      ossReleaseStage: 'none',
+    },
     externalElementInspectionEnabled: {
       defaultValue: true,
       metadata: {
