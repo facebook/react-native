@@ -17,6 +17,31 @@ import {View} from 'react-native';
 let root;
 let testViews: React.MixedElement;
 
+function createDeepViewHierarchy(depth: number, breadth: number): React.Node {
+  if (depth === 0) {
+    return (
+      <View
+        collapsable={false}
+        style={{width: 10, height: 10}}
+        nativeID="leaf"
+      />
+    );
+  }
+  const children = [];
+  for (let i = 0; i < breadth; i++) {
+    children.push(
+      <View
+        key={i}
+        collapsable={false}
+        nativeID={`d${depth.toString()}-${i.toString()}`}
+        style={{width: depth + 1, height: depth + 1}}>
+        {createDeepViewHierarchy(depth - 1, breadth)}
+      </View>,
+    );
+  }
+  return <View collapsable={false}>{children}</View>;
+}
+
 function createViewsWithLargeAmountOfPropsAndStyles(count: number): React.Node {
   let views: React.Node = null;
   for (let i = 0; i < count; i++) {
@@ -116,6 +141,30 @@ Fantom.unstable_benchmark
       beforeAll: () => {
         // $FlowExpectedError[incompatible-type]
         testViews = createViewsWithLargeAmountOfPropsAndStyles(n);
+      },
+      beforeEach: () => {
+        root = Fantom.createRoot();
+      },
+      afterEach: () => {
+        root.destroy();
+      },
+    }),
+  )
+  .test.each(
+    [
+      [5, 4],
+      [7, 3],
+      [10, 2],
+    ],
+    ([depth, breadth]) =>
+      `render deep view hierarchy (depth=${depth.toString()}, breadth=${breadth.toString()})`,
+    () => {
+      Fantom.runTask(() => root.render(testViews));
+    },
+    ([depth, breadth]) => ({
+      beforeAll: () => {
+        // $FlowExpectedError[incompatible-type]
+        testViews = createDeepViewHierarchy(depth, breadth);
       },
       beforeEach: () => {
         root = Fantom.createRoot();

@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<0356babbe4e65071e6cc56a06e68b944>>
+ * @generated SignedSource<<006c43555032f785207c6c013f1974f5>>
  */
 
 /**
@@ -447,6 +447,11 @@ bool NativeReactNativeFeatureFlags::useTurboModuleInterop(
 bool NativeReactNativeFeatureFlags::useTurboModules(
     jsi::Runtime& /*runtime*/) {
   return ReactNativeFeatureFlags::useTurboModules();
+}
+
+bool NativeReactNativeFeatureFlags::useUnorderedMapInDifferentiator(
+    jsi::Runtime& /*runtime*/) {
+  return ReactNativeFeatureFlags::useUnorderedMapInDifferentiator();
 }
 
 double NativeReactNativeFeatureFlags::viewCullingOutsetRatio(

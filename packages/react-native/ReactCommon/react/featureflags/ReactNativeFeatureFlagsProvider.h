@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<c075c9058ed6fa1761209cdabea376f5>>
+ * @generated SignedSource<<43e301c5028a2ed195e2a3d0a4cd0ab3>>
  */
 
 /**
@@ -106,6 +106,7 @@ class ReactNativeFeatureFlagsProvider {
   virtual bool useTraitHiddenOnAndroid() = 0;
   virtual bool useTurboModuleInterop() = 0;
   virtual bool useTurboModules() = 0;
+  virtual bool useUnorderedMapInDifferentiator() = 0;
   virtual double viewCullingOutsetRatio() = 0;
   virtual bool viewTransitionEnabled() = 0;
   virtual double virtualViewPrerenderRatio() = 0;

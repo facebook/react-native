@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<861e4a47ad9b2aa4ac054059082724a0>>
+ * @generated SignedSource<<7f1c4037925fc37dcdcba51df968d503>>
  */
 
 /**
@@ -348,6 +348,10 @@ class ReactNativeFeatureFlagsDefaults : public ReactNativeFeatureFlagsProvider {
   }
 
   bool useTurboModules() override {
+    return false;
+  }
+
+  bool useUnorderedMapInDifferentiator() override {
     return false;
   }
 

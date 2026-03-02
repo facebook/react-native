@@ -911,6 +911,17 @@ const definitions: FeatureFlagDefinitions = {
       },
       ossReleaseStage: 'canary',
     },
+    useUnorderedMapInDifferentiator: {
+      defaultValue: false,
+      metadata: {
+        dateAdded: '2026-02-26',
+        description:
+          'Use std::unordered_map instead of TinyMap in the Differentiator for improved lookup performance.',
+        expectedReleaseValue: true,
+        purpose: 'experimentation',
+      },
+      ossReleaseStage: 'none',
+    },
     viewCullingOutsetRatio: {
       defaultValue: 0,
       metadata: {

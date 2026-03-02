@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<8f9f3ced66040f8275073e5084765356>>
+ * @generated SignedSource<<3dd9492ca660ad6350ce6ee4a9b5e310>>
  */
 
 /**
@@ -1487,6 +1487,24 @@ bool ReactNativeFeatureFlagsAccessor::useTurboModules() {
   return flagValue.value();
 }
 
+bool ReactNativeFeatureFlagsAccessor::useUnorderedMapInDifferentiator() {
+  auto flagValue = useUnorderedMapInDifferentiator_.load();
+
+  if (!flagValue.has_value()) {
+    // This block is not exclusive but it is not necessary.
+    // If multiple threads try to initialize the feature flag, we would only
+    // be accessing the provider multiple times but the end state of this
+    // instance and the returned flag value would be the same.
+
+    markFlagAsAccessed(81, "useUnorderedMapInDifferentiator");
+
+    flagValue = currentProvider_->useUnorderedMapInDifferentiator();
+    useUnorderedMapInDifferentiator_ = flagValue;
+  }
+
+  return flagValue.value();
+}
+
 double ReactNativeFeatureFlagsAccessor::viewCullingOutsetRatio() {
   auto flagValue = viewCullingOutsetRatio_.load();
 
@@ -1496,7 +1514,7 @@ double ReactNativeFeatureFlagsAccessor::viewCullingOutsetRatio() {
     // be accessing the provider multiple times but the end state of this
     // instance and the returned flag value would be the same.
 
-    markFlagAsAccessed(81, "viewCullingOutsetRatio");
+    markFlagAsAccessed(82, "viewCullingOutsetRatio");
 
     flagValue = currentProvider_->viewCullingOutsetRatio();
     viewCullingOutsetRatio_ = flagValue;
@@ -1514,7 +1532,7 @@ bool ReactNativeFeatureFlagsAccessor::viewTransitionEnabled() {
     // be accessing the provider multiple times but the end state of this
     // instance and the returned flag value would be the same.
 
-    markFlagAsAccessed(82, "viewTransitionEnabled");
+    markFlagAsAccessed(83, "viewTransitionEnabled");
 
     flagValue = currentProvider_->viewTransitionEnabled();
     viewTransitionEnabled_ = flagValue;
@@ -1532,7 +1550,7 @@ double ReactNativeFeatureFlagsAccessor::virtualViewPrerenderRatio() {
     // be accessing the provider multiple times but the end state of this
     // instance and the returned flag value would be the same.
 
-    markFlagAsAccessed(83, "virtualViewPrerenderRatio");
+    markFlagAsAccessed(84, "virtualViewPrerenderRatio");
 
     flagValue = currentProvider_->virtualViewPrerenderRatio();
     virtualViewPrerenderRatio_ = flagValue;

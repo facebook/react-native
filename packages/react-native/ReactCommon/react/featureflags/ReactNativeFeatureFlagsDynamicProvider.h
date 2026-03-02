@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<774ffd15e1fd9a79bb7b3f6c4719ba23>>
+ * @generated SignedSource<<db6a2d2e1d96e088574d91ae2825fe5e>>
  */
 
 /**
@@ -772,6 +772,15 @@ class ReactNativeFeatureFlagsDynamicProvider : public ReactNativeFeatureFlagsDef
     }
 
     return ReactNativeFeatureFlagsDefaults::useTurboModules();
+  }
+
+  bool useUnorderedMapInDifferentiator() override {
+    auto value = values_["useUnorderedMapInDifferentiator"];
+    if (!value.isNull()) {
+      return value.getBool();
+    }
+
+    return ReactNativeFeatureFlagsDefaults::useUnorderedMapInDifferentiator();
   }
 
   double viewCullingOutsetRatio() override {

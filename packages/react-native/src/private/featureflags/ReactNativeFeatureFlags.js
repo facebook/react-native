@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<fece18f7b3b23de103a64eca1a76a4c6>>
+ * @generated SignedSource<<8cd3151384989b1a4e8ec204943e2435>>
  * @flow strict
  * @noformat
  */
@@ -128,6 +128,7 @@ export type ReactNativeFeatureFlags = $ReadOnly<{
   useTraitHiddenOnAndroid: Getter<boolean>,
   useTurboModuleInterop: Getter<boolean>,
   useTurboModules: Getter<boolean>,
+  useUnorderedMapInDifferentiator: Getter<boolean>,
   viewCullingOutsetRatio: Getter<number>,
   viewTransitionEnabled: Getter<boolean>,
   virtualViewPrerenderRatio: Getter<number>,
@@ -521,6 +522,10 @@ export const useTurboModuleInterop: Getter<boolean> = createNativeFlagGetter('us
  * When enabled, NativeModules will be executed by using the TurboModule system
  */
 export const useTurboModules: Getter<boolean> = createNativeFlagGetter('useTurboModules', false);
+/**
+ * Use std::unordered_map instead of TinyMap in the Differentiator for improved lookup performance.
+ */
+export const useUnorderedMapInDifferentiator: Getter<boolean> = createNativeFlagGetter('useUnorderedMapInDifferentiator', false);
 /**
  * Outset the culling context frame with the provided ratio. The culling context frame size will be outset by width * ratio on the left and right, and height * ratio on the top and bottom.
  */

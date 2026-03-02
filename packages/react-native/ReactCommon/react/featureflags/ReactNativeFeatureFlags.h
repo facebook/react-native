@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<84e2800073ffab2313a4e27897c0c246>>
+ * @generated SignedSource<<0bbe4d41581432dfad7adbc2db133d00>>
  */
 
 /**
@@ -443,6 +443,11 @@ class ReactNativeFeatureFlags {
    * When enabled, NativeModules will be executed by using the TurboModule system
    */
   RN_EXPORT static bool useTurboModules();
+
+  /**
+   * Use std::unordered_map instead of TinyMap in the Differentiator for improved lookup performance.
+   */
+  RN_EXPORT static bool useUnorderedMapInDifferentiator();
 
   /**
    * Outset the culling context frame with the provided ratio. The culling context frame size will be outset by width * ratio on the left and right, and height * ratio on the top and bottom.
