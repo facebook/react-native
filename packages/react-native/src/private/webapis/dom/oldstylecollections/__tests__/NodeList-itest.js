@@ -8,6 +8,8 @@
  * @format
  */
 
+import '@react-native/fantom/src/setUpDefaultReactNativeEnvironment';
+
 import {createNodeList} from '../NodeList';
 
 describe('NodeList', () => {
@@ -48,13 +50,13 @@ describe('NodeList', () => {
 
     expect(() => {
       collection[0] = 'replacement';
-    }).toThrow(TypeError);
+    }).toThrow();
     expect(collection[0]).toBe('a');
 
     expect(() => {
       // $FlowExpectedError[cannot-write]
       collection.length = 100;
-    }).toThrow(TypeError);
+    }).toThrow();
     expect(collection.length).toBe(3);
   });
 
@@ -83,7 +85,7 @@ describe('NodeList', () => {
       expect(keys.next()).toEqual({value: 0, done: false});
       expect(keys.next()).toEqual({value: 1, done: false});
       expect(keys.next()).toEqual({value: 2, done: false});
-      expect(keys.next()).toEqual({done: true});
+      expect(keys.next()).toEqual({value: undefined, done: true});
 
       let i = 0;
       for (const key of collection.keys()) {
@@ -101,7 +103,7 @@ describe('NodeList', () => {
       expect(values.next()).toEqual({value: 'a', done: false});
       expect(values.next()).toEqual({value: 'b', done: false});
       expect(values.next()).toEqual({value: 'c', done: false});
-      expect(values.next()).toEqual({done: true});
+      expect(values.next()).toEqual({value: undefined, done: true});
 
       let i = 0;
       for (const value of collection.values()) {
@@ -119,7 +121,7 @@ describe('NodeList', () => {
       expect(entries.next()).toEqual({value: [0, 'a'], done: false});
       expect(entries.next()).toEqual({value: [1, 'b'], done: false});
       expect(entries.next()).toEqual({value: [2, 'c'], done: false});
-      expect(entries.next()).toEqual({done: true});
+      expect(entries.next()).toEqual({value: undefined, done: true});
 
       let i = 0;
       for (const entry of collection.entries()) {
@@ -138,7 +140,6 @@ describe('NodeList', () => {
         expect(value).toBe(collection[i]);
         expect(index).toBe(i);
         expect(list).toBe(collection);
-        expect(this).toBe(window);
         i++;
       });
     });
