@@ -64,7 +64,7 @@ function checkPodfileInSyncWithManifest(
       );
     }
   } catch (e) {
-    throw new Error('Please run: yarn run boostrap ios: ' + e.message);
+    throw new Error('Please run: yarn run bootstrap ios: ' + e.message);
   }
 }
 
@@ -166,7 +166,7 @@ export const tasks = {
             fs.constants.F_OK | fs.constants.R_OK,
           );
         } catch (e) {
-          throw new Error('Please run: yarn run boostrap ios: ' + e.message);
+          throw new Error('Please run: yarn run bootstrap ios: ' + e.message);
         }
       }
       checkPodfileInSyncWithManifest(
