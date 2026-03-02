@@ -956,11 +956,11 @@ public class ReactRootView extends FrameLayout implements RootView, ReactRoot {
 
       boolean keyboardIsVisible = rootInsets.isVisible(WindowInsetsCompat.Type.ime());
       if (keyboardIsVisible != mKeyboardIsVisible) {
+        Insets barInsets = rootInsets.getInsets(WindowInsetsCompat.Type.systemBars());
         mKeyboardIsVisible = keyboardIsVisible;
 
         if (keyboardIsVisible) {
           Insets imeInsets = rootInsets.getInsets(WindowInsetsCompat.Type.ime());
-          Insets barInsets = rootInsets.getInsets(WindowInsetsCompat.Type.systemBars());
           int height = imeInsets.bottom - barInsets.bottom;
 
           ViewGroup.LayoutParams rootLayoutParams = getRootView().getLayoutParams();
@@ -983,7 +983,7 @@ public class ReactRootView extends FrameLayout implements RootView, ReactRoot {
           sendEvent(
               "keyboardDidHide",
               createKeyboardEventPayload(
-                  PixelUtil.toDIPFromPixel(mVisibleViewArea.height()),
+                  PixelUtil.toDIPFromPixel(mVisibleViewArea.bottom + barInsets.bottom),
                   0,
                   PixelUtil.toDIPFromPixel(mVisibleViewArea.width()),
                   0));
