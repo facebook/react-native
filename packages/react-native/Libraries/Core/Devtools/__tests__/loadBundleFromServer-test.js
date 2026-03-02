@@ -53,21 +53,22 @@ const sendRequest = jest.fn(
 );
 
 const removeListener = jest.fn();
+const addListener = jest.fn((name, fn) => {
+  if (name === 'didReceiveNetworkData') {
+    Promise.resolve().then(() => fn([REQUEST_ID, mockDataResponse]));
+  } else if (name === 'didCompleteNetworkResponse') {
+    Promise.resolve().then(() => fn([REQUEST_ID, mockRequestError]));
+  } else if (name === 'didReceiveNetworkResponse') {
+    Promise.resolve().then(() => fn([REQUEST_ID, null, mockHeaders]));
+  }
+  return {remove: removeListener};
+})
 
 jest.mock('../../../Network/RCTNetworking', () => ({
   __esModule: true,
   default: {
     sendRequest,
-    addListener: jest.fn((name, fn) => {
-      if (name === 'didReceiveNetworkData') {
-        Promise.resolve().then(() => fn([REQUEST_ID, mockDataResponse]));
-      } else if (name === 'didCompleteNetworkResponse') {
-        Promise.resolve().then(() => fn([REQUEST_ID, mockRequestError]));
-      } else if (name === 'didReceiveNetworkResponse') {
-        Promise.resolve().then(() => fn([REQUEST_ID, null, mockHeaders]));
-      }
-      return {remove: removeListener};
-    }),
+    addListener,
   },
 }));
 
@@ -139,7 +140,8 @@ test('loadBundleFromServer successfully requests a bundle (root bundle)', async 
     ],
   ]);
 
-  expect(removeListener).toHaveBeenCalledTimes(4);
+  expect(addListener).toHaveBeenCalledTimes(4)
+  expect(removeListener).toHaveBeenCalledTimes(addListener.mock.calls.length);
 });
 
 test('loadBundleFromServer successfully requests a bundle (subdir bundle)', async () => {
@@ -166,7 +168,8 @@ test('loadBundleFromServer successfully requests a bundle (subdir bundle)', asyn
     ],
   ]);
 
-  expect(removeListener).toHaveBeenCalledTimes(4);
+  expect(addListener).toHaveBeenCalledTimes(4)
+  expect(removeListener).toHaveBeenCalledTimes(addListener.mock.calls.length);
 });
 
 test('shows and hides the loading view around a request', async () => {
