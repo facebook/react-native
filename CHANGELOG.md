@@ -1,5 +1,15 @@
 # Changelog
 
+## v0.84.1
+
+### Fixed
+
+#### Android specific
+
+- Fix included-build `gradle.properties` resolution for monorepos by reading from parent Gradle start parameters (`projectDir`/`currentDir`) before falling back to `../../android/gradle.properties`, so `hermesV1Enabled` can be inherited correctly. ([c5ae0c820a](https://github.com/facebook/react-native/commit/c5ae0c820a571141a43de980cb011d232fc2268f) by [@Titozzz](https://github.com/Titozzz))
+- Provide symbol fallbacks for `inspector-modern/chrome/Registration.h` when HermesV1 is disabled. ([5ee695ad8f](https://github.com/facebook/react-native/commit/5ee695ad8f41d7c9a92a83fa1f0acd227cdab7b8) by [@tjzel](https://github.com/tjzel))
+- ReactPlugin.kt always setting `hermesV1Enabled` to `true` ([45896674d1](https://github.com/facebook/react-native/commit/45896674d14d4b0104cb166e83c5b403f90981c0) by [@tjzel](https://github.com/tjzel))
+
 ## v0.84.0
 
 ### Breaking
