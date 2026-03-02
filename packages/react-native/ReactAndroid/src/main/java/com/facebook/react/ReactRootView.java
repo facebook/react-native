@@ -956,8 +956,8 @@ public class ReactRootView extends FrameLayout implements RootView, ReactRoot {
 
       boolean keyboardIsVisible = rootInsets.isVisible(WindowInsetsCompat.Type.ime());
       if (keyboardIsVisible != mKeyboardIsVisible) {
-        Insets barInsets = rootInsets.getInsets(WindowInsetsCompat.Type.systemBars());
         mKeyboardIsVisible = keyboardIsVisible;
+        Insets barInsets = rootInsets.getInsets(WindowInsetsCompat.Type.systemBars());
 
         if (keyboardIsVisible) {
           Insets imeInsets = rootInsets.getInsets(WindowInsetsCompat.Type.ime());
