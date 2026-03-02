@@ -526,6 +526,11 @@ def build_snapshot(xml_dir: str) -> Snapshot:
                             f"Unknown class visibility: {visibility} in {compound_object.location.file}"
                         )
             elif compound_object.kind == "namespace":
+                # Skip anonymous namespaces (internal linkage, not public API).
+                # Doxygen encodes them with a '@' prefix in the compound name.
+                if "@" in compound_object.compoundname:
+                    continue
+
                 namespace_scope = snapshot.create_or_get_namespace(
                     compound_object.compoundname
                 )
