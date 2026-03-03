@@ -166,6 +166,9 @@ RCT_EXPORT_METHOD(close : (double)code reason : (NSString *)reason socketID : (d
   NSString *type;
 
   NSNumber *socketID = [webSocket reactTag];
+  if (!socketID) {
+    return;
+  }
   id contentHandler = _contentHandlers[socketID];
   if (contentHandler) {
     message = [contentHandler processWebsocketMessage:message forSocketID:socketID withType:&type];
@@ -178,18 +181,25 @@ RCT_EXPORT_METHOD(close : (double)code reason : (NSString *)reason socketID : (d
     }
   }
 
-  [self sendEventWithName:@"websocketMessage" body:@{@"data" : message, @"type" : type, @"id" : webSocket.reactTag}];
+  [self sendEventWithName:@"websocketMessage" body:@{@"data" : message, @"type" : type, @"id" : socketID}];
 }
 
 - (void)webSocketDidOpen:(SRWebSocket *)webSocket
 {
+  NSNumber *socketID = [webSocket reactTag];
+  if (!socketID) {
+    return;
+  }
   [self sendEventWithName:@"websocketOpen"
-                     body:@{@"id" : webSocket.reactTag, @"protocol" : webSocket.protocol ? webSocket.protocol : @""}];
+                     body:@{@"id" : socketID, @"protocol" : webSocket.protocol ? webSocket.protocol : @""}];
 }
 
 - (void)webSocket:(SRWebSocket *)webSocket didFailWithError:(NSError *)error
 {
   NSNumber *socketID = [webSocket reactTag];
+  if (!socketID) {
+    return;
+  }
   _contentHandlers[socketID] = nil;
   _sockets[socketID] = nil;
   NSDictionary *body =
@@ -203,6 +213,9 @@ RCT_EXPORT_METHOD(close : (double)code reason : (NSString *)reason socketID : (d
             wasClean:(BOOL)wasClean
 {
   NSNumber *socketID = [webSocket reactTag];
+  if (!socketID) {
+    return;
+  }
   _contentHandlers[socketID] = nil;
   _sockets[socketID] = nil;
   [self sendEventWithName:@"websocketClosed"
