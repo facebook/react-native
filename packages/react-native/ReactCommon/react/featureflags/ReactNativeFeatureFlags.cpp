@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<08a361f2ffac6a0496adac1d4c3e4726>>
+ * @generated SignedSource<<5208616bc5d84f040ad0fa5e85acd6c4>>
  */
 
 /**
@@ -100,6 +100,10 @@ bool ReactNativeFeatureFlags::enableCustomFocusSearchOnClippedElementsAndroid() 
 
 bool ReactNativeFeatureFlags::enableDestroyShadowTreeRevisionAsync() {
   return getAccessor().enableDestroyShadowTreeRevisionAsync();
+}
+
+bool ReactNativeFeatureFlags::enableDifferentiatorMutationVectorPreallocation() {
+  return getAccessor().enableDifferentiatorMutationVectorPreallocation();
 }
 
 bool ReactNativeFeatureFlags::enableDoubleMeasurementFixAndroid() {
