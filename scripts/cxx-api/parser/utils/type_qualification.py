@@ -50,7 +50,7 @@ def qualify_type_str(type_str: str, scope: Scope) -> str:
             # Split template arguments and qualify each one
             args = _split_arguments(template_args)
             qualified_args = [qualify_type_str(arg.strip(), scope) for arg in args]
-            qualified_template = "< " + ", ".join(qualified_args) + " >"
+            qualified_template = "<" + ", ".join(qualified_args) + ">"
 
             # Recursively qualify the suffix (handles nested templates, pointers, etc.)
             qualified_suffix = qualify_type_str(suffix, scope) if suffix else ""
