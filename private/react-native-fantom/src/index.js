@@ -23,7 +23,10 @@ import {LogBox} from 'react-native';
 import NativeFantom, {
   NativeEventCategory,
 } from 'react-native/src/private/testing/fantom/specs/NativeFantom';
-import {getNativeNodeReference} from 'react-native/src/private/webapis/dom/nodes/internals/NodeInternals';
+import {
+  getInstanceHandle,
+  getNativeNodeReference,
+} from 'react-native/src/private/webapis/dom/nodes/internals/NodeInternals';
 import ReadOnlyNode from 'react-native/src/private/webapis/dom/nodes/ReadOnlyNode';
 
 const nativeRuntimeScheduler = global.nativeRuntimeScheduler;
@@ -235,6 +238,32 @@ export function unstable_getFabricUpdateProps(nodeOrRef: NodeOrRef): Readonly<{
   const node = getNode(nodeOrRef);
   const shadowNode = getNativeNodeReference(node);
   return NativeFantom.getFabricUpdateProps(shadowNode);
+}
+
+/**
+ * Returns the names of event handlers registered on a component's shadow node.
+ *
+ * @param nodeOrRef - The node or ref for which to retrieve event handlers.
+ * @returns Array of event handler prop names (e.g. `['onLayout', 'onTouchStart']`)
+ */
+export function getDefinedEventHandlers(
+  nodeOrRef: NodeOrRef,
+): ReadonlyArray<string> {
+  const node = getNode(nodeOrRef);
+  const instanceHandle = getInstanceHandle(node);
+  if (typeof instanceHandle !== 'object' || instanceHandle == null) {
+    return [];
+  }
+  // WARNING: This uses React private API (fiber internals).
+  // $FlowExpectedError[incompatible-type]
+  const memoizedProps = (instanceHandle as {memoizedProps?: {[string]: mixed}})
+    .memoizedProps;
+  if (memoizedProps == null) {
+    return [];
+  }
+  return Object.keys(memoizedProps).filter(
+    key => key.startsWith('on') && typeof memoizedProps[key] === 'function',
+  );
 }
 
 /**
