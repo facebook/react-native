@@ -23,25 +23,29 @@ static NSString *const kDebuggerMsgDisable = @"{ \"id\":1,\"method\":\"Debugger.
 
 static NSString *getServerHost(NSURL *bundleURL)
 {
-  NSNumber *port = @8081;
-  NSString *portStr = [[[NSProcessInfo processInfo] environment] objectForKey:@"RCT_METRO_PORT"];
-  if ((portStr != nullptr) && [portStr length] > 0) {
-    port = [NSNumber numberWithInt:[portStr intValue]];
-  }
-  if ([bundleURL port] != nullptr) {
-    port = [bundleURL port];
-  }
   NSString *host = [bundleURL host];
   if (host == nullptr) {
     host = @"localhost";
   }
 
-  // this is consistent with the Android implementation, where http:// is the
-  // hardcoded implicit scheme for the debug server. Note, packagerURL
-  // technically looks like it could handle schemes/protocols other than HTTP,
-  // so rather than force HTTP, leave it be for now, in case someone is relying
-  // on that ability when developing against iOS.
-  return [NSString stringWithFormat:@"%@:%@", host, port];
+  // Use explicit port from URL if available
+  if ([bundleURL port] != nullptr) {
+    return [NSString stringWithFormat:@"%@:%@", host, [bundleURL port]];
+  }
+
+  // Check environment variable
+  NSString *portStr = [[[NSProcessInfo processInfo] environment] objectForKey:@"RCT_METRO_PORT"];
+  if ((portStr != nullptr) && [portStr length] > 0) {
+    return [NSString stringWithFormat:@"%@:%@", host, portStr];
+  }
+
+  // For https, omit port — the scheme implies 443
+  if ([[bundleURL scheme] isEqualToString:@"https"]) {
+    return host;
+  }
+
+  // Default to 8081 for local development (Metro's default port)
+  return [NSString stringWithFormat:@"%@:%@", host, @8081];
 }
 
 static NSString *getSHA256(NSString *string)
