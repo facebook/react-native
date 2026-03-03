@@ -253,6 +253,28 @@ class InterfaceScopeKind(ScopeKind):
         return result
 
 
+class CategoryScopeKind(ScopeKind):
+    def __init__(self, class_name: str, category_name: str) -> None:
+        super().__init__("category")
+        self.class_name: str = class_name
+        self.category_name: str = category_name
+
+    def to_string(self, scope: Scope) -> str:
+        result = f"{self.name} {self.class_name}({self.category_name}) {{"
+
+        stringified_members = []
+        for member in scope.get_members():
+            stringified_members.append(member.to_string(2))
+        stringified_members = natsorted(stringified_members)
+        result += ("\n" if len(stringified_members) > 0 else "") + "\n".join(
+            stringified_members
+        )
+
+        result += "\n}"
+
+        return result
+
+
 class TemporaryScopeKind(ScopeKind):
     def __init__(self) -> None:
         super().__init__("temporary")
