@@ -479,6 +479,10 @@ def build_snapshot(xml_dir: str) -> Snapshot:
                                         member_def.get_type()
                                     )
 
+                                    # Skip anonymous variables
+                                    if "@" in var_type:
+                                        continue
+
                                     if var_type == "friend":
                                         class_scope.add_member(
                                             FriendMember(
