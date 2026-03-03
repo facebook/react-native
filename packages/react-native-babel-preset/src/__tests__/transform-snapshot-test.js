@@ -352,5 +352,41 @@ describe('react-native-babel-preset transform snapshots', () => {
       expect(result).toContain('import');
       expect(result).toContain('export');
     });
+
+    it('preserves private class fields with unstable_preserveClassPrivate', () => {
+      const code = `
+        class Counter {
+          #count = 0;
+          #privateMethod() { return this.#count; }
+          increment() { this.#count++; }
+        }
+      `;
+      const result = transformCode(code, {
+        dev: false,
+        unstable_transformProfile: 'hermes-stable',
+        customTransformOptions: {
+          unstable_preserveClassPrivate: true,
+        },
+      });
+      expect(result).toContain('#count');
+      expect(result).toContain('#privateMethod');
+    });
+
+    it('transforms private class fields without unstable_preserveClassPrivate', () => {
+      const code = `
+        class Counter {
+          #count = 0;
+          #privateMethod() { return this.#count; }
+          increment() { this.#count++; }
+        }
+      `;
+      const result = transformCode(code, {
+        dev: false,
+        unstable_transformProfile: 'hermes-stable',
+      });
+      expect(result).not.toContain('#count');
+      expect(result).not.toContain('#privateMethod');
+      expect(result).toContain('_classPrivateFieldLooseKey');
+    });
   });
 });
