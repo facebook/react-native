@@ -10,6 +10,7 @@
 #include "ProfileTreeNode.h"
 #include "TraceEventSerializer.h"
 
+#include <ranges>
 #include <string_view>
 #include <unordered_map>
 
@@ -192,8 +193,7 @@ void processCallStack(
   }
 
   ProfileTreeNode* previousNode = &rootNode;
-  for (auto it = callStack.rbegin(); it != callStack.rend(); ++it) {
-    const RuntimeSamplingProfile::SampleCallStackFrame& callFrame = *it;
+  for (const auto& callFrame : std::ranges::reverse_view(callStack)) {
     bool isGarbageCollectorFrame = callFrame.kind ==
         RuntimeSamplingProfile::SampleCallStackFrame::Kind::GarbageCollector;
 

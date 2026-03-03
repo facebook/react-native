@@ -14,6 +14,7 @@
 #include <react/renderer/core/ShadowNodeFragment.h>
 #include <react/renderer/debug/DebugStringConvertible.h>
 #include <react/renderer/debug/debugStringConvertibleUtils.h>
+#include <ranges>
 
 #include <utility>
 
@@ -391,9 +392,8 @@ std::shared_ptr<ShadowNode> ShadowNode::cloneTree(
 
   auto childNode = newShadowNode;
 
-  for (auto it = ancestors.rbegin(); it != ancestors.rend(); ++it) {
-    auto& parentNode = it->first.get();
-    auto childIndex = it->second;
+  for (auto& [ancestorRef, childIndex] : std::ranges::reverse_view(ancestors)) {
+    auto& parentNode = ancestorRef.get();
 
     auto children = parentNode.getChildren();
     react_native_assert(

@@ -12,6 +12,7 @@
 #include <react/featureflags/ReactNativeFeatureFlags.h>
 #include <react/renderer/core/ComponentDescriptor.h>
 #include <react/renderer/core/State.h>
+#include <ranges>
 
 #include <utility>
 
@@ -116,8 +117,7 @@ AncestorList ShadowNodeFamily::getAncestors(
 
   auto ancestors = AncestorList{};
   auto parentNode = &ancestorShadowNode;
-  for (auto it = families.rbegin(); it != families.rend(); it++) {
-    auto childFamily = *it;
+  for (auto childFamily : std::ranges::reverse_view(families)) {
     auto found = false;
     auto childIndex = 0;
     for (const auto& childNode : *parentNode->children_) {
