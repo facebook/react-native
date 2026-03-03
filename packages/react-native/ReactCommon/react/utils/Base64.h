@@ -10,7 +10,7 @@
 #include <string>
 #include <string_view>
 
-namespace facebook::react::jsinspector_modern {
+namespace facebook::react {
 
 namespace {
 // Vendored from Folly
@@ -96,4 +96,4 @@ inline std::string base64Encode(const std::string_view s)
   return res;
 }
 
-} // namespace facebook::react::jsinspector_modern
+} // namespace facebook::react
