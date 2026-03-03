@@ -20,7 +20,7 @@ import com.facebook.react.bridge.ReadableMap
 import com.facebook.react.bridge.WritableMap
 import com.facebook.react.bridge.WritableNativeMap
 import com.facebook.react.module.annotations.ReactModule
-import com.facebook.react.uimanager.DisplayMetricsHolder
+import com.facebook.react.uimanager.DisplayMetricsHolder.getScreenDisplayMetrics
 import com.facebook.react.uimanager.DisplayMetricsHolder.initDisplayMetricsIfNotInitialized
 import com.facebook.react.views.view.isEdgeToEdgeFeatureFlagOn
 
@@ -70,7 +70,7 @@ internal class DeviceInfoModule(reactContext: ReactApplicationContext) :
         )
         putMap(
             "screenPhysicalPixels",
-            getPhysicalPixelsWritableMap(DisplayMetricsHolder.getScreenDisplayMetrics()),
+            getPhysicalPixelsWritableMap(getScreenDisplayMetrics()),
         )
       }
 
