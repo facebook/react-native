@@ -11,7 +11,9 @@ import com.facebook.jni.HybridData
 import com.facebook.jni.annotations.DoNotStrip
 import com.facebook.react.runtime.JSRuntimeFactory
 import com.facebook.soloader.SoLoader
+import com.facebook.soloader.annotation.SoLoaderLibrary
 
+@SoLoaderLibrary("hermesinstancejni")
 public class HermesInstance(allocInOldGenBeforeTTI: Boolean) :
     JSRuntimeFactory(initHybrid(allocInOldGenBeforeTTI)) {
 
