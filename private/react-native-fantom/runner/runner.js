@@ -9,13 +9,13 @@
  */
 
 import type {
-  CoverageMap,
   FailureDetail,
   TestCaseResult,
   TestSuiteResult,
 } from '../runtime/setup';
 import type {TestSnapshotResults} from '../runtime/snapshotContext';
 import type {BenchmarkResult} from '../src/Benchmark';
+import type {CoverageMap} from './coverage/types.flow';
 import type {
   AsyncCommandResult,
   ConsoleLogMessage,

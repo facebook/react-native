@@ -8,6 +8,7 @@
  * @format
  */
 
+import type {CoverageMap} from '../runner/coverage/types.flow';
 import type {BenchmarkResult} from '../src/Benchmark';
 import type {SnapshotConfig, TestSnapshotResults} from './snapshotContext';
 
@@ -35,8 +36,6 @@ export type FailureDetail = {
   stack?: string,
   cause?: FailureDetail,
 };
-
-export opaque type CoverageMap = unknown;
 
 export type TestSuiteResult =
   | {
