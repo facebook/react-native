@@ -403,9 +403,35 @@ describe('<View>', () => {
             root.render(<View aria-hidden={true} collapsable={false} />);
           });
 
-          expect(root.getRenderedOutput().toJSX()).toEqual(
+          expect(
+            root
+              .getRenderedOutput({props: ['importantForAccessibility']})
+              .toJSX(),
+          ).toEqual(
             <rn-view importantForAccessibility="no-hide-descendants" />,
           );
+        });
+
+        it('resets importantForAccessibility when set to undefined', () => {
+          const root = Fantom.createRoot();
+          Fantom.runTask(() => {
+            root.render(<View aria-hidden={true} collapsable={false} />);
+          });
+          expect(
+            root
+              .getRenderedOutput({props: ['importantForAccessibility']})
+              .toJSX(),
+          ).toEqual(
+            <rn-view importantForAccessibility="no-hide-descendants" />,
+          );
+          Fantom.runTask(() => {
+            root.render(<View collapsable={false} />);
+          });
+          expect(
+            root
+              .getRenderedOutput({props: ['importantForAccessibility']})
+              .toJSX(),
+          ).toEqual(<rn-view />);
         });
       });
 
@@ -534,6 +560,22 @@ describe('<View>', () => {
             root.getRenderedOutput({props: ['accessibilityLabel']}).toJSX(),
           ).toEqual(<rn-view accessibilityLabel="custom label" />);
         });
+
+        it('resets accessibilityLabel when set to undefined', () => {
+          const root = Fantom.createRoot();
+          Fantom.runTask(() => {
+            root.render(<View aria-label="custom label" accessible={true} />);
+          });
+          expect(
+            root.getRenderedOutput({props: ['accessibilityLabel']}).toJSX(),
+          ).toEqual(<rn-view accessibilityLabel="custom label" />);
+          Fantom.runTask(() => {
+            root.render(<View accessible={true} />);
+          });
+          expect(
+            root.getRenderedOutput({props: ['accessibilityLabel']}).toJSX(),
+          ).toEqual(<rn-view />);
+        });
       });
 
       describe('aria-live', () => {
@@ -549,6 +591,26 @@ describe('<View>', () => {
               .getRenderedOutput({props: ['accessibilityLiveRegion']})
               .toJSX(),
           ).toEqual(<rn-view accessibilityLiveRegion="polite" />);
+        });
+
+        it('resets accessibilityLiveRegion when set to undefined', () => {
+          const root = Fantom.createRoot();
+          Fantom.runTask(() => {
+            root.render(<View aria-live="polite" accessible={true} />);
+          });
+          expect(
+            root
+              .getRenderedOutput({props: ['accessibilityLiveRegion']})
+              .toJSX(),
+          ).toEqual(<rn-view accessibilityLiveRegion="polite" />);
+          Fantom.runTask(() => {
+            root.render(<View accessible={true} />);
+          });
+          expect(
+            root
+              .getRenderedOutput({props: ['accessibilityLiveRegion']})
+              .toJSX(),
+          ).toEqual(<rn-view />);
         });
       });
 
@@ -566,6 +628,24 @@ describe('<View>', () => {
             <rn-view accessibilityState="{disabled:false,selected:false,checked:None,busy:true,expanded:null}" />,
           );
         });
+
+        it('resets accessibilityState when set to undefined', () => {
+          const root = Fantom.createRoot();
+          Fantom.runTask(() => {
+            root.render(<View aria-busy={true} accessible={true} />);
+          });
+          expect(
+            root.getRenderedOutput({props: ['accessibilityState']}).toJSX(),
+          ).toEqual(
+            <rn-view accessibilityState="{disabled:false,selected:false,checked:None,busy:true,expanded:null}" />,
+          );
+          Fantom.runTask(() => {
+            root.render(<View accessible={true} />);
+          });
+          expect(
+            root.getRenderedOutput({props: ['accessibilityState']}).toJSX(),
+          ).toEqual(<rn-view />);
+        });
       });
 
       describe('aria-disabled', () => {
@@ -581,6 +661,24 @@ describe('<View>', () => {
           ).toEqual(
             <rn-view accessibilityState="{disabled:true,selected:false,checked:None,busy:false,expanded:null}" />,
           );
+        });
+
+        it('resets accessibilityState when set to undefined', () => {
+          const root = Fantom.createRoot();
+          Fantom.runTask(() => {
+            root.render(<View aria-disabled={true} accessible={true} />);
+          });
+          expect(
+            root.getRenderedOutput({props: ['accessibilityState']}).toJSX(),
+          ).toEqual(
+            <rn-view accessibilityState="{disabled:true,selected:false,checked:None,busy:false,expanded:null}" />,
+          );
+          Fantom.runTask(() => {
+            root.render(<View accessible={true} />);
+          });
+          expect(
+            root.getRenderedOutput({props: ['accessibilityState']}).toJSX(),
+          ).toEqual(<rn-view />);
         });
       });
 
@@ -598,6 +696,24 @@ describe('<View>', () => {
             <rn-view accessibilityState="{disabled:false,selected:false,checked:None,busy:false,expanded:true}" />,
           );
         });
+
+        it('resets accessibilityState when set to undefined', () => {
+          const root = Fantom.createRoot();
+          Fantom.runTask(() => {
+            root.render(<View aria-expanded={true} accessible={true} />);
+          });
+          expect(
+            root.getRenderedOutput({props: ['accessibilityState']}).toJSX(),
+          ).toEqual(
+            <rn-view accessibilityState="{disabled:false,selected:false,checked:None,busy:false,expanded:true}" />,
+          );
+          Fantom.runTask(() => {
+            root.render(<View accessible={true} />);
+          });
+          expect(
+            root.getRenderedOutput({props: ['accessibilityState']}).toJSX(),
+          ).toEqual(<rn-view />);
+        });
       });
 
       describe('aria-selected', () => {
@@ -614,6 +730,24 @@ describe('<View>', () => {
             <rn-view accessibilityState="{disabled:false,selected:true,checked:None,busy:false,expanded:null}" />,
           );
         });
+
+        it('resets accessibilityState when set to undefined', () => {
+          const root = Fantom.createRoot();
+          Fantom.runTask(() => {
+            root.render(<View aria-selected={true} accessible={true} />);
+          });
+          expect(
+            root.getRenderedOutput({props: ['accessibilityState']}).toJSX(),
+          ).toEqual(
+            <rn-view accessibilityState="{disabled:false,selected:true,checked:None,busy:false,expanded:null}" />,
+          );
+          Fantom.runTask(() => {
+            root.render(<View accessible={true} />);
+          });
+          expect(
+            root.getRenderedOutput({props: ['accessibilityState']}).toJSX(),
+          ).toEqual(<rn-view />);
+        });
       });
 
       describe('aria-checked', () => {
@@ -629,6 +763,24 @@ describe('<View>', () => {
           ).toEqual(
             <rn-view accessibilityState="{disabled:false,selected:false,checked:Checked,busy:false,expanded:null}" />,
           );
+        });
+
+        it('resets accessibilityState when set to undefined', () => {
+          const root = Fantom.createRoot();
+          Fantom.runTask(() => {
+            root.render(<View aria-checked={true} accessible={true} />);
+          });
+          expect(
+            root.getRenderedOutput({props: ['accessibilityState']}).toJSX(),
+          ).toEqual(
+            <rn-view accessibilityState="{disabled:false,selected:false,checked:Checked,busy:false,expanded:null}" />,
+          );
+          Fantom.runTask(() => {
+            root.render(<View accessible={true} />);
+          });
+          expect(
+            root.getRenderedOutput({props: ['accessibilityState']}).toJSX(),
+          ).toEqual(<rn-view />);
         });
       });
     });
@@ -667,6 +819,22 @@ describe('<View>', () => {
 
         expect(root.getRenderedOutput({props: ['nativeID']}).toJSX()).toEqual(
           <rn-view nativeID="my-id" />,
+        );
+      });
+
+      it('resets nativeID when set to undefined', () => {
+        const root = Fantom.createRoot();
+        Fantom.runTask(() => {
+          root.render(<View id="my-id" collapsable={false} />);
+        });
+        expect(root.getRenderedOutput({props: ['nativeID']}).toJSX()).toEqual(
+          <rn-view nativeID="my-id" />,
+        );
+        Fantom.runTask(() => {
+          root.render(<View collapsable={false} />);
+        });
+        expect(root.getRenderedOutput({props: ['nativeID']}).toJSX()).toEqual(
+          <rn-view />,
         );
       });
     });
