@@ -11,7 +11,7 @@ from typing import Generic, TypeVar
 
 from natsort import natsort_keygen, natsorted
 
-from .member import Member, MemberKind
+from .member import FriendMember, Member, MemberKind
 from .template import Template, TemplateList
 from .utils import parse_qualified_path
 
@@ -226,7 +226,10 @@ class Scope(Generic[ScopeKindT]):
             if base_name in current_scope.inner_scopes:
                 matched_segments.append(path_segment)
                 current_scope = current_scope.inner_scopes[base_name]
-            elif any(m.name == base_name for m in current_scope._members):
+            elif any(
+                m.name == base_name and not isinstance(m, FriendMember)
+                for m in current_scope._members
+            ):
                 # Found as a member, assume following segments exist in the scope
                 prefix = "::".join(matched_segments)
                 suffix = "::".join(path[i:])
@@ -239,6 +242,15 @@ class Scope(Generic[ScopeKindT]):
                     if anchor_prefix:
                         return f"{anchor_prefix}::{suffix}"
                     return suffix
+            elif any(
+                isinstance(m, FriendMember) and m.name == base_name
+                for m in current_scope._members
+            ):
+                # The name matches a friend declaration, not a real member.
+                # Re-qualify from the remaining segments so the type resolves
+                # to its actual definition rather than the friend's owning class.
+                remaining = "::".join(path[i:])
+                return self.qualify_name(remaining)
             else:
                 return None
 
