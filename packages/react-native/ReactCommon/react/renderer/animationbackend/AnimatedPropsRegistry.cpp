@@ -55,7 +55,9 @@ void AnimatedPropsRegistry::update(
   }
 }
 
-std::pair<std::unordered_set<const ShadowNodeFamily*>&, SnapshotMap&>
+std::pair<
+    std::unordered_set<std::shared_ptr<const ShadowNodeFamily>>&,
+    SnapshotMap&>
 AnimatedPropsRegistry::getMap(SurfaceId surfaceId) {
   auto lock = std::lock_guard(mutex_);
   auto& [pendingMap, map, pendingFamilies, families] =

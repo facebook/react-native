@@ -109,7 +109,7 @@ class ShadowNode : public Sealable, public DebugStringConvertible, public jsi::N
    * Returns `nullptr` if the operation cannot be performed successfully.
    */
   std::shared_ptr<ShadowNode> cloneMultiple(
-      const std::unordered_set<const ShadowNodeFamily *> &familiesToUpdate,
+      const std::unordered_set<std::shared_ptr<const ShadowNodeFamily>> &familiesToUpdate,
       const std::function<
           std::shared_ptr<ShadowNode>(const ShadowNode &oldShadowNode, const ShadowNodeFragment &fragment)> &callback)
       const;

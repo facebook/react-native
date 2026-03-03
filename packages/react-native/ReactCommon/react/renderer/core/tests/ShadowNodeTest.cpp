@@ -316,7 +316,7 @@ TEST_F(ShadowNodeTest, handleRuntimeReferenceTransferOnClone) {
 TEST_F(ShadowNodeTest, cloneMultiple) {
   auto newProps = std::make_shared<const TestProps>();
   auto newRoot = nodeA_->cloneMultiple(
-      {&nodeA_->getFamily(), &nodeAB_->getFamily()},
+      {nodeA_->getFamilyShared(), nodeAB_->getFamilyShared()},
       [&](const ShadowNode& oldShadowNode, const ShadowNodeFragment& fragment) {
         return oldShadowNode.clone({
             .props = newProps,
@@ -346,7 +346,7 @@ TEST_F(ShadowNodeTest, cloneMultiple) {
 TEST_F(ShadowNodeTest, cloneMultipleWithSingleFamily) {
   auto newProps = std::make_shared<const TestProps>();
   auto newRoot = nodeA_->cloneMultiple(
-      {&nodeAB_->getFamily()},
+      {nodeAB_->getFamilyShared()},
       [&](const ShadowNode& oldShadowNode, const ShadowNodeFragment& fragment) {
         return oldShadowNode.clone({
             .props = newProps,
@@ -379,7 +379,7 @@ TEST_F(ShadowNodeTest, cloneMultipleReturnsNullptrWhenFamilyHasNoPathToRoot) {
   auto newProps = std::make_shared<const TestProps>();
   // nodeZ_ is not part of nodeA_'s tree
   auto result = nodeA_->cloneMultiple(
-      {&nodeZ_->getFamily()},
+      {nodeZ_->getFamilyShared()},
       [&](const ShadowNode& oldShadowNode, const ShadowNodeFragment& fragment) {
         return oldShadowNode.clone({
             .props = newProps,
@@ -396,7 +396,7 @@ TEST_F(ShadowNodeTest, cloneMultipleWithMixOfValidAndInvalidFamilies) {
   auto newProps = std::make_shared<const TestProps>();
   // nodeAB_ is in the tree, nodeZ_ is not
   auto result = nodeA_->cloneMultiple(
-      {&nodeAB_->getFamily(), &nodeZ_->getFamily()},
+      {nodeAB_->getFamilyShared(), nodeZ_->getFamilyShared()},
       [&](const ShadowNode& oldShadowNode, const ShadowNodeFragment& fragment) {
         return oldShadowNode.clone({
             .props = newProps,
