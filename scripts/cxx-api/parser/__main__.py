@@ -87,30 +87,31 @@ def build_snapshot_for_view(
         definitions=definitions,
     )
 
-    print("Running Doxygen")
-
     # If there is already a doxygen output directory, delete it
     if os.path.exists(os.path.join(react_native_dir, "api")):
         print("Deleting existing output directory")
         subprocess.run(["rm", "-rf", os.path.join(react_native_dir, "api")])
 
+    print("Running Doxygen")
+
     # Run doxygen with the config file
+    doxygen_bin = os.environ.get("DOXYGEN_BIN", "doxygen")
     result = subprocess.run(
-        ["doxygen", DOXYGEN_CONFIG_FILE],
+        [doxygen_bin, DOXYGEN_CONFIG_FILE],
         cwd=react_native_dir,
         capture_output=True,
         text=True,
     )
-
-    # Delete the Doxygen config file
-    print("Deleting Doxygen config file")
-    subprocess.run(["rm", DOXYGEN_CONFIG_FILE], cwd=react_native_dir)
 
     # Check the result
     if result.returncode != 0:
         print(f"Doxygen finished with error: {result.stderr}")
     else:
         print("Doxygen finished successfully")
+
+    # Delete the Doxygen config file
+    print("Deleting Doxygen config file")
+    subprocess.run(["rm", DOXYGEN_CONFIG_FILE], cwd=react_native_dir)
 
     # build snapshot, convert to string, and save to file
     snapshot = build_snapshot(os.path.join(react_native_dir, "api", "xml"))
@@ -144,6 +145,14 @@ def main():
         help="Path to codegen generated code",
     )
     args = parser.parse_args()
+
+    doxygen_bin = os.environ.get("DOXYGEN_BIN", "doxygen")
+    version_result = subprocess.run(
+        [doxygen_bin, "--version"],
+        capture_output=True,
+        text=True,
+    )
+    print(f"Using Doxygen {version_result.stdout.strip()} ({doxygen_bin})")
 
     # Define the path to the react-native directory
     react_native_dir = (

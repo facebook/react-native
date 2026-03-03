@@ -49,10 +49,15 @@ def _assert_text_equal_with_diff(
     tc.fail(diff)
 
 
+def _get_doxygen_bin() -> str:
+    return os.environ.get("DOXYGEN_BIN", "doxygen")
+
+
 def _generate_doxygen_api(case_dir_path: str, doxygen_config_path: str) -> None:
     """Run doxygen to generate XML API documentation."""
+    doxygen_bin = _get_doxygen_bin()
     result = subprocess.run(
-        ["doxygen", doxygen_config_path],
+        [doxygen_bin, doxygen_config_path],
         cwd=case_dir_path,
         capture_output=True,
         text=True,
