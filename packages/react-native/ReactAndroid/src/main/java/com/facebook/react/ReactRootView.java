@@ -38,6 +38,8 @@ import android.view.WindowManager;
 import android.widget.FrameLayout;
 import androidx.annotation.Nullable;
 import androidx.annotation.RequiresApi;
+import androidx.core.view.ViewCompat;
+import androidx.core.view.WindowInsetsCompat;
 import androidx.window.layout.WindowMetricsCalculator;
 import com.facebook.common.logging.FLog;
 import com.facebook.infer.annotation.Assertions;
@@ -1022,13 +1024,25 @@ public class ReactRootView extends FrameLayout implements RootView, ReactRoot {
         }
       }
 
+      int heightPixels = getContext().getResources().getDisplayMetrics().heightPixels;
       final ReactContext reactContext = getCurrentReactContext();
       final Activity activity = reactContext != null ? reactContext.getCurrentActivity() : null;
 
-      final int heightPixels = activity != null && WindowUtilKt.isEdgeToEdgeFeatureFlagOn()
-        ? WindowMetricsCalculator.getOrCreate()
-            .computeCurrentWindowMetrics(activity).getBounds().height()
-        : getContext().getResources().getDisplayMetrics().heightPixels;
+      if (activity != null) {
+        heightPixels = WindowMetricsCalculator.getOrCreate()
+            .computeCurrentWindowMetrics(activity).getBounds().height();
+
+        if (!WindowUtilKt.isEdgeToEdgeFeatureFlagOn()) {
+          WindowInsetsCompat rootWindowInsets =
+              ViewCompat.getRootWindowInsets(activity.getWindow().getDecorView());
+
+          if (rootWindowInsets != null) {
+            androidx.core.graphics.Insets insets =
+                rootWindowInsets.getInsets(WindowInsetsCompat.Type.systemBars());
+            heightPixels -= (insets.top + insets.bottom);
+          }
+        }
+      }
 
       final int heightDiff = heightPixels - mVisibleViewArea.bottom + notchHeight;
 
