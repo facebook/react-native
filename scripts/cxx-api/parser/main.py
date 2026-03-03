@@ -17,10 +17,11 @@ from .member import (
     EnumMember,
     FriendMember,
     FunctionMember,
+    PropertyMember,
     TypedefMember,
     VariableMember,
 )
-from .scope import StructLikeScopeKind
+from .scope import ProtocolScopeKind, StructLikeScopeKind
 from .snapshot import Snapshot
 from .template import Template
 from .utils import Argument, extract_qualifiers, parse_qualified_path
@@ -119,6 +120,15 @@ def _qualify_text_with_refid(text: str, refid: str) -> str:
     return prepend + "::" + text
 
 
+def normalize_angle_brackets(text: str) -> str:
+    """Doxygen adds spaces around < and > to avoid XML ambiguity.
+    e.g. "NSArray< id< RCTBridgeMethod > > *" -> "NSArray<id<RCTBridgeMethod>> *"
+    """
+    text = re.sub(r"<\s+", "<", text)
+    text = re.sub(r"\s+>", ">", text)
+    return text
+
+
 def extract_namespace_from_refid(refid: str) -> str:
     """Extract the namespace prefix from a doxygen refid.
     e.g. 'namespacefacebook_1_1yoga_1a...' -> 'facebook::yoga'
@@ -202,12 +212,13 @@ def resolve_linked_text_name(
             initialier_type = InitializerType.BRACE
             name = name[1:-1].strip()
 
-    return (name.strip(), initialier_type)
+    return (normalize_angle_brackets(name.strip()), initialier_type)
 
 
 def get_base_classes(
     compound_object: compound.CompounddefType,
-) -> [StructLikeScopeKind.Base]:
+    base_class=StructLikeScopeKind.Base,
+) -> list:
     """
     Get the base classes of a compound object.
     """
@@ -229,7 +240,7 @@ def get_base_classes(
                 continue
 
             base_classes.append(
-                StructLikeScopeKind.Base(
+                base_class(
                     base_name,
                     base_prot,
                     base_virt == "virtual",
@@ -484,6 +495,31 @@ def get_concept_member(
     return concept
 
 
+def get_property_member(
+    member_def: compound.MemberdefType,
+    visibility: str,
+    is_static: bool = False,
+) -> PropertyMember:
+    """
+    Get the property member from a member definition.
+    """
+    property_name = member_def.get_name()
+    property_type = resolve_linked_text_name(member_def.get_type())[0].strip()
+    accessor = member_def.accessor if hasattr(member_def, "accessor") else None
+    is_readable = getattr(member_def, "readable", "no") == "yes"
+    is_writable = getattr(member_def, "writable", "no") == "yes"
+
+    return PropertyMember(
+        property_name,
+        property_type,
+        visibility,
+        is_static,
+        accessor,
+        is_readable,
+        is_writable,
+    )
+
+
 def create_enum_scope(snapshot: Snapshot, enum_def: compound.EnumdefType):
     """
     Create an enum scope in the snapshot.
@@ -505,6 +541,71 @@ def create_enum_scope(snapshot: Snapshot, enum_def: compound.EnumdefType):
                 value_value,
             ),
         )
+
+
+def create_protocol_scope(snapshot: Snapshot, scope_def: compound.CompounddefType):
+    """
+    Create a protocol scope in the snapshot.
+    """
+    # Doxygen appends "-p" to ObjC protocol compound names
+    protocol_name = scope_def.compoundname
+    if protocol_name.endswith("-p"):
+        protocol_name = protocol_name[:-2]
+
+    protocol_scope = snapshot.create_protocol(protocol_name)
+    base_classes = get_base_classes(scope_def, base_class=ProtocolScopeKind.Base)
+    for base in base_classes:
+        base.name = base.name.strip("<>")
+    protocol_scope.kind.add_base(base_classes)
+    protocol_scope.location = scope_def.location.file
+
+    for section_def in scope_def.sectiondef:
+        kind = section_def.kind
+        parts = kind.split("-")
+        visibility = parts[0]
+        is_static = "static" in parts
+        member_type = parts[-1]
+
+        if visibility == "private":
+            pass
+        elif visibility in ("public", "protected"):
+            if member_type == "attrib":
+                for member_def in section_def.memberdef:
+                    if member_def.kind == "variable":
+                        protocol_scope.add_member(
+                            get_variable_member(member_def, visibility, is_static)
+                        )
+            elif member_type == "func":
+                for function_def in section_def.memberdef:
+                    protocol_scope.add_member(
+                        get_function_member(function_def, visibility, is_static)
+                    )
+            elif member_type == "type":
+                for member_def in section_def.memberdef:
+                    if member_def.kind == "enum":
+                        create_enum_scope(snapshot, member_def)
+                    elif member_def.kind == "typedef":
+                        protocol_scope.add_member(
+                            get_typedef_member(member_def, visibility)
+                        )
+                    else:
+                        print(
+                            f"Unknown section member kind: {member_def.kind} in {scope_def.location.file}"
+                        )
+            else:
+                print(
+                    f"Unknown protocol section kind: {kind} in {scope_def.location.file}"
+                )
+        elif visibility == "property":
+            for member_def in section_def.memberdef:
+                if member_def.kind == "property":
+                    protocol_scope.add_member(
+                        get_property_member(member_def, "public", is_static)
+                    )
+        else:
+            print(
+                f"Unknown protocol visibility: {visibility} in {scope_def.location.file}"
+            )
 
 
 def build_snapshot(xml_dir: str) -> Snapshot:
@@ -679,7 +780,7 @@ def build_snapshot(xml_dir: str) -> Snapshot:
                 # Contains deprecation info
                 pass
             elif compound_object.kind == "protocol":
-                print(f"Protocol not supported: {compound_object.compoundname}")
+                create_protocol_scope(snapshot, compound_object)
             else:
                 print(f"Unknown compound kind: {compound_object.kind}")
 
