@@ -36,13 +36,11 @@ internal class DeviceInfoModule(reactContext: ReactApplicationContext) :
     reactContext.addLifecycleEventListener(this)
   }
 
-  /** The metrics of the window associated to the Context used to initialize ReactNative */
   private fun getWindowDisplayMetrics(): DisplayMetrics {
     val windowDisplayMetrics = DisplayMetrics()
     windowDisplayMetrics.setTo(reactApplicationContext.resources.displayMetrics)
 
     val activity = reactApplicationContext.currentActivity ?: return windowDisplayMetrics
-
     val bounds = WindowMetricsCalculator.getOrCreate().computeCurrentWindowMetrics(activity).bounds
     var width = bounds.width()
     var height = bounds.height()
