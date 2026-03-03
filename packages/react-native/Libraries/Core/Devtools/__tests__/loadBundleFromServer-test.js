@@ -62,7 +62,7 @@ const addListener = jest.fn((name, fn) => {
     Promise.resolve().then(() => fn([REQUEST_ID, null, mockHeaders]));
   }
   return {remove: removeListener};
-})
+});
 
 jest.mock('../../../Network/RCTNetworking', () => ({
   __esModule: true,
@@ -140,7 +140,7 @@ test('loadBundleFromServer successfully requests a bundle (root bundle)', async 
     ],
   ]);
 
-  expect(addListener).toHaveBeenCalledTimes(4)
+  expect(addListener).toHaveBeenCalledTimes(4);
   expect(removeListener).toHaveBeenCalledTimes(addListener.mock.calls.length);
 });
 
@@ -168,7 +168,7 @@ test('loadBundleFromServer successfully requests a bundle (subdir bundle)', asyn
     ],
   ]);
 
-  expect(addListener).toHaveBeenCalledTimes(4)
+  expect(addListener).toHaveBeenCalledTimes(4);
   expect(removeListener).toHaveBeenCalledTimes(addListener.mock.calls.length);
 });
 
