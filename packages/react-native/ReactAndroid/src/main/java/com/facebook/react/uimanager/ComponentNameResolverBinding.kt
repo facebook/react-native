@@ -10,6 +10,7 @@ package com.facebook.react.uimanager
 import com.facebook.proguard.annotations.DoNotStripAny
 import com.facebook.react.bridge.RuntimeExecutor
 import com.facebook.soloader.SoLoader
+import com.facebook.soloader.annotation.SoLoaderLibrary
 import kotlin.jvm.JvmStatic
 
 /**
@@ -19,6 +20,7 @@ import kotlin.jvm.JvmStatic
  * JavaScript runtime, making component name information available to the native side.
  */
 @DoNotStripAny
+@SoLoaderLibrary("uimanagerjni")
 internal object ComponentNameResolverBinding {
   init {
     SoLoader.loadLibrary("uimanagerjni")
