@@ -26,12 +26,7 @@ from .member import (
     TypedefMember,
     VariableMember,
 )
-from .scope import (
-    CategoryScopeKind,
-    InterfaceScopeKind,
-    ProtocolScopeKind,
-    StructLikeScopeKind,
-)
+from .scope import InterfaceScopeKind, ProtocolScopeKind, StructLikeScopeKind
 from .snapshot import Snapshot
 from .template import Template
 from .utils import (
@@ -358,6 +353,17 @@ def get_property_member(
 # Scope creation
 ######################
 
+# Interfaces to skip due to Doxygen misparsing issues.
+# These produce malformed XML that cannot be reliably reconstructed.
+SKIP_INTERFACES = {
+    # Doxygen misparses Objective-C lightweight generics like @interface Foo<T> : NSObject.
+    # It places <T> in the base class list and corrupts subsequent declarations.
+    "RCTGenericDelegateSplitter",
+    # Multi-line interface declarations cause Doxygen to misparse inheritance.
+    # @interface Foo\n    : Bar <Protocol> results in __pad0__ and lost base classes.
+    "RCTScrollViewComponentView",
+}
+
 
 def create_enum_scope(snapshot: Snapshot, enum_def: compound.EnumdefType) -> None:
     """
@@ -468,6 +474,9 @@ def create_interface_scope(
     Create an interface scope in the snapshot (Objective-C @interface).
     """
     interface_name = scope_def.compoundname
+
+    if interface_name in SKIP_INTERFACES:
+        return
 
     interface_scope = snapshot.create_interface(interface_name)
     base_classes = get_base_classes(scope_def, base_class=InterfaceScopeKind.Base)
