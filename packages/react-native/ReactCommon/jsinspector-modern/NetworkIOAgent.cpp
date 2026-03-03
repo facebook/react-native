@@ -8,10 +8,10 @@
 #include "NetworkIOAgent.h"
 #include "InspectorFlags.h"
 
-#include "Base64.h"
 #include "Utf8.h"
 
 #include <jsinspector-modern/network/NetworkHandler.h>
+#include <react/utils/Base64.h>
 
 #include <sstream>
 #include <tuple>
