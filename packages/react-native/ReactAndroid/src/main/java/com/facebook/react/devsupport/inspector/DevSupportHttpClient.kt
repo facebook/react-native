@@ -21,11 +21,19 @@ import okhttp3.OkHttpClient
  */
 public object DevSupportHttpClient {
   private val customHeaders = ConcurrentHashMap<String, String>()
+  private val hostHeaders = ConcurrentHashMap<String, ConcurrentHashMap<String, String>>()
 
   private val headerInterceptor = Interceptor { chain ->
-    val builder = chain.request().newBuilder()
+    val request = chain.request()
+    val builder = request.newBuilder()
     for ((name, value) in customHeaders) {
       builder.header(name, value)
+    }
+    val host = request.url().host()
+    hostHeaders[host]?.let { headersForHost ->
+      for ((name, value) in headersForHost) {
+        builder.header(name, value)
+      }
     }
     chain.proceed(builder.build())
   }
@@ -53,10 +61,27 @@ public object DevSupportHttpClient {
     customHeaders[name] = value
   }
 
+  /** Add a custom header that is only applied to requests matching the given host. */
+  @JvmStatic
+  public fun addRequestHeader(name: String, value: String, host: String) {
+    hostHeaders.getOrPut(host) { ConcurrentHashMap() }[name] = value
+  }
+
   /** Remove a previously added custom header. */
   @JvmStatic
   public fun removeRequestHeader(name: String) {
     customHeaders.remove(name)
+  }
+
+  /** Remove a previously added host-specific custom header. */
+  @JvmStatic
+  public fun removeRequestHeader(name: String, host: String) {
+    hostHeaders[host]?.let { headersForHost ->
+      headersForHost.remove(name)
+      if (headersForHost.isEmpty()) {
+        hostHeaders.remove(host)
+      }
+    }
   }
 
   /**
