@@ -670,6 +670,28 @@ describe('<View>', () => {
         );
       });
     });
+
+    describe('nativeID', () => {
+      it('resets nativeID when removed', () => {
+        const root = Fantom.createRoot();
+
+        Fantom.runTask(() => {
+          root.render(<View nativeID="my-id" collapsable={false} />);
+        });
+
+        expect(root.getRenderedOutput({props: ['nativeID']}).toJSX()).toEqual(
+          <rn-view nativeID="my-id" />,
+        );
+
+        Fantom.runTask(() => {
+          root.render(<View collapsable={false} />);
+        });
+
+        expect(root.getRenderedOutput({props: ['nativeID']}).toJSX()).toEqual(
+          <rn-view />,
+        );
+      });
+    });
   });
 
   describe('ref', () => {
