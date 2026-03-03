@@ -202,6 +202,57 @@ class ProtocolScopeKind(ScopeKind):
         return result
 
 
+class InterfaceScopeKind(ScopeKind):
+    class Base:
+        def __init__(
+            self, name: str, protection: str, virtual: bool, refid: str
+        ) -> None:
+            self.name: str = name
+            self.protection: str = protection
+            self.virtual: bool = virtual
+            self.refid: str = refid
+
+    def __init__(self) -> None:
+        super().__init__("interface")
+        self.base_classes: [InterfaceScopeKind.Base] = []
+
+    def add_base(
+        self, base: InterfaceScopeKind.Base | [InterfaceScopeKind.Base]
+    ) -> None:
+        if isinstance(base, list):
+            for b in base:
+                self.base_classes.append(b)
+        else:
+            self.base_classes.append(base)
+
+    def to_string(self, scope: Scope) -> str:
+        result = ""
+
+        bases = []
+        for base in self.base_classes:
+            base_text = [base.protection]
+            if base.virtual:
+                base_text.append("virtual")
+            base_text.append(base.name)
+            bases.append(" ".join(base_text))
+
+        inheritance_string = " : " + ", ".join(bases) if bases else ""
+
+        result += f"{self.name} {scope.get_qualified_name()}{inheritance_string} {{"
+
+        stringified_members = []
+        for member in scope.get_members():
+            stringified_members.append(member.to_string(2))
+        stringified_members = natsorted(stringified_members)
+        result += ("\n" if len(stringified_members) > 0 else "") + "\n".join(
+            stringified_members
+        )
+
+        result += "\n}"
+
+        return result
+
+
 class TemporaryScopeKind(ScopeKind):
     def __init__(self) -> None:
         super().__init__("temporary")
