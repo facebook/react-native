@@ -12,6 +12,7 @@
 #import <FBReactNativeSpec/FBReactNativeSpec.h>
 #import <React/RCTAssert.h>
 #import <React/RCTConvert.h>
+#import <React/RCTDevSupportHttpHeaders.h>
 #import <React/RCTUtils.h>
 #import <SocketRocket/SRWebSocket.h>
 
@@ -113,6 +114,8 @@ RCT_EXPORT_METHOD(
       [request addValue:headerValue == nil ? @"" : headerValue forHTTPHeaderField:headerKey];
     }];
   }
+
+  [[RCTDevSupportHttpHeaders sharedInstance] applyHeadersToRequest:request];
 
   SRWebSocket *webSocket = [[SRWebSocket alloc] initWithURLRequest:request protocols:protocols];
   [webSocket setDelegateDispatchQueue:[self methodQueue]];
