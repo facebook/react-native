@@ -925,7 +925,7 @@ jsi::Value UIManagerBinding::get(
 
           auto* viewTransitionDelegate = uiManager->getViewTransitionDelegate();
           if (viewTransitionDelegate != nullptr) {
-            viewTransitionDelegate->captureLayoutMetricsFromRoot(shadowNode);
+            viewTransitionDelegate->captureLayoutMetricsFromRoot(*shadowNode);
           }
 
           return result;
@@ -960,7 +960,7 @@ jsi::Value UIManagerBinding::get(
                   uiManager->getViewTransitionDelegate();
               if (viewTransitionDelegate != nullptr) {
                 viewTransitionDelegate->applyViewTransitionName(
-                    shadowNode, transitionName, className);
+                    *shadowNode, transitionName, className);
               }
             }
           }
@@ -994,7 +994,7 @@ jsi::Value UIManagerBinding::get(
                   uiManager->getViewTransitionDelegate();
               if (viewTransitionDelegate != nullptr) {
                 viewTransitionDelegate->cancelViewTransitionName(
-                    shadowNode, transitionName);
+                    *shadowNode, transitionName);
               }
             }
           }
@@ -1023,7 +1023,7 @@ jsi::Value UIManagerBinding::get(
             auto* viewTransitionDelegate =
                 uiManager->getViewTransitionDelegate();
             if (viewTransitionDelegate != nullptr) {
-              viewTransitionDelegate->restoreViewTransitionName(shadowNode);
+              viewTransitionDelegate->restoreViewTransitionName(*shadowNode);
             }
           }
 

@@ -161,6 +161,7 @@ Pod::Spec.new do |s|
     ss.header_dir           = "react/renderer/scheduler"
 
     ss.dependency             "React-Fabric/animationbackend"
+    ss.dependency             "React-Fabric/viewtransition"
     ss.dependency             "React-performancecdpmetrics"
     ss.dependency             "React-performancetimeline"
     ss.dependency             "React-Fabric/observers/events"
@@ -219,5 +220,10 @@ Pod::Spec.new do |s|
     ss.exclude_files        = "react/renderer/leakchecker/tests"
     ss.header_dir           = "react/renderer/leakchecker"
     ss.pod_target_xcconfig  = { "GCC_WARN_PEDANTIC" => "YES" }
+  end
+
+  s.subspec "viewtransition" do |ss|
+    ss.source_files         = podspec_sources("react/renderer/viewtransition/**/*.{m,mm,cpp,h}", "react/renderer/viewtransition/**/*.h")
+    ss.header_dir           = "react/renderer/viewtransition"
   end
 end

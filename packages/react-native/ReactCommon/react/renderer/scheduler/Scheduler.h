@@ -27,6 +27,7 @@
 #include <react/renderer/uimanager/UIManagerAnimationDelegate.h>
 #include <react/renderer/uimanager/UIManagerBinding.h>
 #include <react/renderer/uimanager/UIManagerDelegate.h>
+#include <react/renderer/viewtransition/ViewTransitionModule.h>
 #include <react/utils/ContextContainer.h>
 
 namespace facebook::react {
@@ -145,6 +146,8 @@ class Scheduler final : public UIManagerDelegate {
   std::shared_ptr<const ContextContainer> contextContainer_;
 
   RuntimeScheduler *runtimeScheduler_{nullptr};
+
+  std::unique_ptr<ViewTransitionModule> viewTransitionModule_;
 
   mutable std::shared_mutex onSurfaceStartCallbackMutex_;
   OnSurfaceStartCallback onSurfaceStartCallback_;
