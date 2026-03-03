@@ -488,6 +488,10 @@ void UIManager::sendAccessibilityEvent(
   }
 }
 
+UIManagerViewTransitionDelegate* UIManager::getViewTransitionDelegate() const {
+  return viewTransitionDelegate_;
+}
+
 void UIManager::configureNextLayoutAnimation(
     jsi::Runtime& runtime,
     const RawValue& config,
@@ -706,6 +710,13 @@ void UIManager::stopSurfaceForAnimationDelegate(SurfaceId surfaceId) const {
 void UIManager::setNativeAnimatedDelegate(
     std::weak_ptr<UIManagerNativeAnimatedDelegate> delegate) {
   nativeAnimatedDelegate_ = delegate;
+}
+
+void UIManager::setViewTransitionDelegate(
+    UIManagerViewTransitionDelegate* delegate) {
+  if (ReactNativeFeatureFlags::viewTransitionEnabled()) {
+    viewTransitionDelegate_ = delegate;
+  }
 }
 
 void UIManager::unstable_setAnimationBackend(
