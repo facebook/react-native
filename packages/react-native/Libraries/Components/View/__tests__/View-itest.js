@@ -231,6 +231,101 @@ describe('<View>', () => {
         });
       });
 
+      describe('aspectRatio', () => {
+        it('is preserved when updating an unrelated prop', () => {
+          const root = Fantom.createRoot();
+
+          Fantom.runTask(() => {
+            root.render(
+              <View
+                style={{width: 100, aspectRatio: 2}}
+                nativeID="first"
+                collapsable={false}
+              />,
+            );
+          });
+
+          // width=100, aspectRatio=2 → height = 100 / 2 = 50
+          expect(
+            root
+              .getRenderedOutput({
+                includeLayoutMetrics: true,
+                props: ['layoutMetrics-frame'],
+              })
+              .toJSX(),
+          ).toEqual(
+            <rn-view layoutMetrics-frame="{x:0,y:0,width:100,height:50}" />,
+          );
+
+          // Update only nativeID, not aspectRatio
+          Fantom.runTask(() => {
+            root.render(
+              <View
+                style={{width: 100, aspectRatio: 2}}
+                nativeID="second"
+                collapsable={false}
+              />,
+            );
+          });
+
+          // aspectRatio must still be preserved → same layout
+          expect(
+            root
+              .getRenderedOutput({
+                includeLayoutMetrics: true,
+                props: ['layoutMetrics-frame'],
+              })
+              .toJSX(),
+          ).toEqual(
+            <rn-view layoutMetrics-frame="{x:0,y:0,width:100,height:50}" />,
+          );
+        });
+
+        it('can be changed to undefined after initially having a value', () => {
+          const root = Fantom.createRoot();
+
+          Fantom.runTask(() => {
+            root.render(
+              <View style={{width: 100, aspectRatio: 2}} collapsable={false} />,
+            );
+          });
+
+          // width=100, aspectRatio=2 → height = 100 / 2 = 50
+          expect(
+            root
+              .getRenderedOutput({
+                includeLayoutMetrics: true,
+                props: ['layoutMetrics-frame'],
+              })
+              .toJSX(),
+          ).toEqual(
+            <rn-view layoutMetrics-frame="{x:0,y:0,width:100,height:50}" />,
+          );
+
+          // Update aspectRatio to undefined
+          Fantom.runTask(() => {
+            root.render(
+              <View
+                style={{width: 100, aspectRatio: undefined}}
+                collapsable={false}
+              />,
+            );
+          });
+
+          // aspectRatio is now undefined → height collapses to 0
+          expect(
+            root
+              .getRenderedOutput({
+                includeLayoutMetrics: true,
+                props: ['layoutMetrics-frame'],
+              })
+              .toJSX(),
+          ).toEqual(
+            <rn-view layoutMetrics-frame="{x:0,y:0,width:100,height:0}" />,
+          );
+        });
+      });
+
       describe('background-image', () => {
         it('it parses CSS and object syntax', () => {
           const root = Fantom.createRoot();
