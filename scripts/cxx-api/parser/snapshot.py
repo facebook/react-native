@@ -7,6 +7,7 @@ from __future__ import annotations
 
 from .scope import (
     EnumScopeKind,
+    InterfaceScopeKind,
     NamespaceScopeKind,
     ProtocolScopeKind,
     Scope,
@@ -105,6 +106,30 @@ class Snapshot:
             return scope
         else:
             new_scope = Scope(ProtocolScopeKind(), scope_name)
+            new_scope.parent_scope = current_scope
+            current_scope.inner_scopes[scope_name] = new_scope
+            return new_scope
+
+    def create_interface(self, qualified_name: str) -> Scope[InterfaceScopeKind]:
+        """
+        Create an interface in the snapshot.
+        """
+        path = parse_qualified_path(qualified_name)
+        scope_path = path[0:-1]
+        scope_name = path[-1]
+        current_scope = self.ensure_scope(scope_path)
+
+        if scope_name in current_scope.inner_scopes:
+            scope = current_scope.inner_scopes[scope_name]
+            if scope.kind.name == "temporary":
+                scope.kind = InterfaceScopeKind()
+            else:
+                raise RuntimeError(
+                    f"Identifier {scope_name} already exists in scope {current_scope.name}"
+                )
+            return scope
+        else:
+            new_scope = Scope(InterfaceScopeKind(), scope_name)
             new_scope.parent_scope = current_scope
             current_scope.inner_scopes[scope_name] = new_scope
             return new_scope

@@ -8,7 +8,6 @@ from __future__ import annotations
 import os
 import re
 from enum import Enum
-from pprint import pprint
 
 from doxmlparser import compound, index
 
@@ -21,7 +20,7 @@ from .member import (
     TypedefMember,
     VariableMember,
 )
-from .scope import ProtocolScopeKind, StructLikeScopeKind
+from .scope import InterfaceScopeKind, ProtocolScopeKind, StructLikeScopeKind
 from .snapshot import Snapshot
 from .template import Template
 from .utils import Argument, extract_qualifiers, parse_qualified_path
@@ -608,6 +607,66 @@ def create_protocol_scope(snapshot: Snapshot, scope_def: compound.CompounddefTyp
             )
 
 
+def create_interface_scope(snapshot: Snapshot, scope_def: compound.CompounddefType):
+    """
+    Create an interface scope in the snapshot (Objective-C @interface).
+    """
+    interface_name = scope_def.compoundname
+
+    interface_scope = snapshot.create_interface(interface_name)
+    base_classes = get_base_classes(scope_def, base_class=InterfaceScopeKind.Base)
+    interface_scope.kind.add_base(base_classes)
+    interface_scope.location = scope_def.location.file
+
+    for section_def in scope_def.sectiondef:
+        kind = section_def.kind
+        parts = kind.split("-")
+        visibility = parts[0]
+        is_static = "static" in parts
+        member_type = parts[-1]
+
+        if visibility == "private":
+            pass
+        elif visibility in ("public", "protected"):
+            if member_type == "attrib":
+                for member_def in section_def.memberdef:
+                    if member_def.kind == "variable":
+                        interface_scope.add_member(
+                            get_variable_member(member_def, visibility, is_static)
+                        )
+            elif member_type == "func":
+                for function_def in section_def.memberdef:
+                    interface_scope.add_member(
+                        get_function_member(function_def, visibility, is_static)
+                    )
+            elif member_type == "type":
+                for member_def in section_def.memberdef:
+                    if member_def.kind == "enum":
+                        create_enum_scope(snapshot, member_def)
+                    elif member_def.kind == "typedef":
+                        interface_scope.add_member(
+                            get_typedef_member(member_def, visibility)
+                        )
+                    else:
+                        print(
+                            f"Unknown section member kind: {member_def.kind} in {scope_def.location.file}"
+                        )
+            else:
+                print(
+                    f"Unknown interface section kind: {kind} in {scope_def.location.file}"
+                )
+        elif visibility == "property":
+            for member_def in section_def.memberdef:
+                if member_def.kind == "property":
+                    interface_scope.add_member(
+                        get_property_member(member_def, "public", is_static)
+                    )
+        else:
+            print(
+                f"Unknown interface visibility: {visibility} in {scope_def.location.file}"
+            )
+
+
 def build_snapshot(xml_dir: str) -> Snapshot:
     """
     Reads the Doxygen XML output and builds a snapshot of the C++ API.
@@ -628,12 +687,23 @@ def build_snapshot(xml_dir: str) -> Snapshot:
         doxygen_object = compound.parse(detail_file, silence=True)
 
         for compound_object in doxygen_object.compounddef:
+            # Check if this is an Objective-C interface by looking at the compound id
+            # Doxygen reports ObjC interfaces as kind="class" but with id starting with "interface"
+            is_objc_interface = (
+                compound_object.kind == "class"
+                and compound_object.id.startswith("interface")
+            )
+
             # classes and structs are represented by the same scope with a different kind
             if (
                 compound_object.kind == "class"
                 or compound_object.kind == "struct"
                 or compound_object.kind == "union"
             ):
+                # Handle Objective-C interfaces separately
+                if is_objc_interface:
+                    create_interface_scope(snapshot, compound_object)
+                    continue
                 class_scope = (
                     snapshot.create_struct_like(
                         compound_object.compoundname, StructLikeScopeKind.Type.CLASS
@@ -781,6 +851,8 @@ def build_snapshot(xml_dir: str) -> Snapshot:
                 pass
             elif compound_object.kind == "protocol":
                 create_protocol_scope(snapshot, compound_object)
+            elif compound_object.kind == "interface":
+                create_interface_scope(snapshot, compound_object)
             else:
                 print(f"Unknown compound kind: {compound_object.kind}")
 
