@@ -87,7 +87,9 @@ def resolve_linked_text_name(
                 refid = getattr(part.value, "refid", None)
                 if refid and not in_string:
                     ns = extract_namespace_from_refid(refid)
-                    if ns and not text.startswith(ns):
+                    # Skip re-qualification if text is already globally qualified
+                    # (starts with "::") - it's already an absolute path
+                    if ns and not text.startswith(ns) and not text.startswith("::"):
                         # The text may already start with a trailing portion of
                         # the namespace.  For example ns="facebook::react::HighResDuration"
                         # and text="HighResDuration::zero".  We need to find the
