@@ -26,7 +26,12 @@ from .member import (
     TypedefMember,
     VariableMember,
 )
-from .scope import InterfaceScopeKind, ProtocolScopeKind, StructLikeScopeKind
+from .scope import (
+    CategoryScopeKind,
+    InterfaceScopeKind,
+    ProtocolScopeKind,
+    StructLikeScopeKind,
+)
 from .snapshot import Snapshot
 from .template import Template
 from .utils import (
@@ -561,3 +566,34 @@ def create_class_scope(
             print(
                 f"Unknown class visibility: {visibility} in {compound_object.location.file}"
             )
+
+
+def create_category_scope(
+    snapshot: Snapshot, scope_def: compound.CompounddefType
+) -> None:
+    """
+    Create a category scope in the snapshot (Objective-C category).
+    Categories extend existing classes with additional methods.
+    The compound name is in the format: ClassName(CategoryName)
+    """
+    compound_name = scope_def.compoundname
+
+    # Parse ClassName(CategoryName) format
+    match = re.match(r"^(.+)\((.+)\)$", compound_name)
+    if not match:
+        print(f"Invalid category name format: {compound_name}")
+        return
+
+    class_name = match.group(1)
+    category_name = match.group(2)
+
+    category_scope = snapshot.create_category(class_name, category_name)
+    category_scope.location = scope_def.location.file
+
+    _process_objc_sections(
+        snapshot,
+        category_scope,
+        scope_def.sectiondef,
+        scope_def.location.file,
+        "category",
+    )
