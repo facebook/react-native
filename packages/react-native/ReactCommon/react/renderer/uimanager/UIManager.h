@@ -27,6 +27,7 @@
 #include <react/renderer/uimanager/UIManagerAnimationDelegate.h>
 #include <react/renderer/uimanager/UIManagerDelegate.h>
 #include <react/renderer/uimanager/UIManagerNativeAnimatedDelegate.h>
+#include <react/renderer/uimanager/UIManagerViewTransitionDelegate.h>
 #include <react/renderer/uimanager/consistency/LazyShadowTreeRevisionConsistencyManager.h>
 #include <react/renderer/uimanager/consistency/ShadowTreeRevisionProvider.h>
 #include <react/renderer/uimanager/primitives.h>
@@ -73,6 +74,12 @@ class UIManager final : public ShadowTreeDelegate {
   void stopSurfaceForAnimationDelegate(SurfaceId surfaceId) const;
 
   void setNativeAnimatedDelegate(std::weak_ptr<UIManagerNativeAnimatedDelegate> delegate);
+
+  /**
+   * Sets and gets UIManager's ViewTransition API delegate.
+   */
+  void setViewTransitionDelegate(UIManagerViewTransitionDelegate *delegate);
+  UIManagerViewTransitionDelegate *getViewTransitionDelegate() const;
 
   void animationTick() const;
 
@@ -242,6 +249,7 @@ class UIManager final : public ShadowTreeDelegate {
   UIManagerDelegate *delegate_{};
   UIManagerAnimationDelegate *animationDelegate_{nullptr};
   std::weak_ptr<UIManagerNativeAnimatedDelegate> nativeAnimatedDelegate_;
+  UIManagerViewTransitionDelegate *viewTransitionDelegate_{nullptr};
 
   const RuntimeExecutor runtimeExecutor_{};
   ShadowTreeRegistry shadowTreeRegistry_{};

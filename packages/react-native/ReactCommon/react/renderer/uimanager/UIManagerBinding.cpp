@@ -876,6 +876,265 @@ jsi::Value UIManagerBinding::get(
         });
   }
 
+  if (methodName == "measureInstance") {
+    auto paramCount = 1;
+    return jsi::Function::createFromHostFunction(
+        runtime,
+        name,
+        paramCount,
+        [uiManager, methodName, paramCount](
+            jsi::Runtime& runtime,
+            const jsi::Value& /*thisValue*/,
+            const jsi::Value* arguments,
+            size_t count) -> jsi::Value {
+          validateArgumentCount(runtime, methodName, paramCount, count);
+
+          if (!arguments[0].isObject()) {
+            auto result = jsi::Object(runtime);
+            result.setProperty(runtime, "x", 0);
+            result.setProperty(runtime, "y", 0);
+            result.setProperty(runtime, "width", 0);
+            result.setProperty(runtime, "height", 0);
+            return result;
+          }
+
+          auto shadowNode = Bridging<std::shared_ptr<const ShadowNode>>::fromJs(
+              runtime, arguments[0]);
+
+          auto currentRevision =
+              uiManager->getShadowTreeRevisionProvider()->getCurrentRevision(
+                  shadowNode->getSurfaceId());
+
+          if (currentRevision == nullptr) {
+            auto result = jsi::Object(runtime);
+            result.setProperty(runtime, "x", 0);
+            result.setProperty(runtime, "y", 0);
+            result.setProperty(runtime, "width", 0);
+            result.setProperty(runtime, "height", 0);
+            return result;
+          }
+
+          auto domRect = dom::getBoundingClientRect(
+              currentRevision, *shadowNode, true /* includeTransform */);
+
+          auto result = jsi::Object(runtime);
+          result.setProperty(runtime, "x", domRect.x);
+          result.setProperty(runtime, "y", domRect.y);
+          result.setProperty(runtime, "width", domRect.width);
+          result.setProperty(runtime, "height", domRect.height);
+
+          auto* viewTransitionDelegate = uiManager->getViewTransitionDelegate();
+          if (viewTransitionDelegate != nullptr) {
+            viewTransitionDelegate->captureLayoutMetricsFromRoot(shadowNode);
+          }
+
+          return result;
+        });
+  }
+
+  if (methodName == "applyViewTransitionName") {
+    auto paramCount = 3;
+    return jsi::Function::createFromHostFunction(
+        runtime,
+        name,
+        paramCount,
+        [uiManager, methodName, paramCount](
+            jsi::Runtime& runtime,
+            const jsi::Value& /*thisValue*/,
+            const jsi::Value* arguments,
+            size_t count) -> jsi::Value {
+          validateArgumentCount(runtime, methodName, paramCount, count);
+
+          if (arguments[0].isObject()) {
+            auto shadowNode =
+                Bridging<std::shared_ptr<const ShadowNode>>::fromJs(
+                    runtime, arguments[0]);
+            auto transitionName = arguments[1].isString()
+                ? stringFromValue(runtime, arguments[1])
+                : "";
+            auto className = arguments[2].isString()
+                ? stringFromValue(runtime, arguments[2])
+                : "";
+            if (!transitionName.empty()) {
+              auto* viewTransitionDelegate =
+                  uiManager->getViewTransitionDelegate();
+              if (viewTransitionDelegate != nullptr) {
+                viewTransitionDelegate->applyViewTransitionName(
+                    shadowNode, transitionName, className);
+              }
+            }
+          }
+
+          return jsi::Value::undefined();
+        });
+  }
+
+  if (methodName == "cancelViewTransitionName") {
+    auto paramCount = 2;
+    return jsi::Function::createFromHostFunction(
+        runtime,
+        name,
+        paramCount,
+        [uiManager, methodName, paramCount](
+            jsi::Runtime& runtime,
+            const jsi::Value& /*thisValue*/,
+            const jsi::Value* arguments,
+            size_t count) -> jsi::Value {
+          validateArgumentCount(runtime, methodName, paramCount, count);
+
+          if (arguments[0].isObject()) {
+            auto shadowNode =
+                Bridging<std::shared_ptr<const ShadowNode>>::fromJs(
+                    runtime, arguments[0]);
+            auto transitionName = arguments[1].isString()
+                ? stringFromValue(runtime, arguments[1])
+                : "";
+            if (!transitionName.empty()) {
+              auto* viewTransitionDelegate =
+                  uiManager->getViewTransitionDelegate();
+              if (viewTransitionDelegate != nullptr) {
+                viewTransitionDelegate->cancelViewTransitionName(
+                    shadowNode, transitionName);
+              }
+            }
+          }
+
+          return jsi::Value::undefined();
+        });
+  }
+
+  if (methodName == "restoreViewTransitionName") {
+    auto paramCount = 1;
+    return jsi::Function::createFromHostFunction(
+        runtime,
+        name,
+        paramCount,
+        [uiManager, methodName, paramCount](
+            jsi::Runtime& runtime,
+            const jsi::Value& /*thisValue*/,
+            const jsi::Value* arguments,
+            size_t count) -> jsi::Value {
+          validateArgumentCount(runtime, methodName, paramCount, count);
+
+          if (arguments[0].isObject()) {
+            auto shadowNode =
+                Bridging<std::shared_ptr<const ShadowNode>>::fromJs(
+                    runtime, arguments[0]);
+            auto* viewTransitionDelegate =
+                uiManager->getViewTransitionDelegate();
+            if (viewTransitionDelegate != nullptr) {
+              viewTransitionDelegate->restoreViewTransitionName(shadowNode);
+            }
+          }
+
+          return jsi::Value::undefined();
+        });
+  }
+
+  if (methodName == "startViewTransition") {
+    auto paramCount = 1;
+    return jsi::Function::createFromHostFunction(
+        runtime,
+        name,
+        paramCount,
+        [uiManager, methodName, paramCount](
+            jsi::Runtime& runtime,
+            const jsi::Value& /*thisValue*/,
+            const jsi::Value* arguments,
+            size_t count) -> jsi::Value {
+          validateArgumentCount(runtime, methodName, paramCount, count);
+
+          auto* viewTransitionDelegate = uiManager->getViewTransitionDelegate();
+          if (viewTransitionDelegate == nullptr) {
+            return jsi::Value::undefined();
+          }
+
+          auto promiseConstructor =
+              runtime.global().getPropertyAsFunction(runtime, "Promise");
+
+          auto readyResolveFunc =
+              std::make_shared<std::shared_ptr<jsi::Function>>();
+          auto finishedResolveFunc =
+              std::make_shared<std::shared_ptr<jsi::Function>>();
+
+          auto mutationFunc = std::make_shared<jsi::Function>(
+              arguments[0].asObject(runtime).asFunction(runtime));
+
+          auto readyPromise = promiseConstructor.callAsConstructor(
+              runtime,
+              jsi::Function::createFromHostFunction(
+                  runtime,
+                  jsi::PropNameID::forAscii(runtime, "readyExecutor"),
+                  2,
+                  [readyResolveFunc](
+                      jsi::Runtime& runtime,
+                      const jsi::Value& /*thisValue*/,
+                      const jsi::Value* args,
+                      size_t /*count*/) -> jsi::Value {
+                    auto onReadyFunc = std::make_shared<jsi::Function>(
+                        args[0].asObject(runtime).asFunction(runtime));
+                    *readyResolveFunc = onReadyFunc;
+                    return jsi::Value::undefined();
+                  }));
+
+          auto finishedPromise = promiseConstructor.callAsConstructor(
+              runtime,
+              jsi::Function::createFromHostFunction(
+                  runtime,
+                  jsi::PropNameID::forAscii(runtime, "finishedExecutor"),
+                  2,
+                  [finishedResolveFunc, viewTransitionDelegate](
+                      jsi::Runtime& rt,
+                      const jsi::Value& /*thisValue*/,
+                      const jsi::Value* args,
+                      size_t /*count*/) -> jsi::Value {
+                    auto onCompleteFunc = std::make_shared<jsi::Function>(
+                        args[0].asObject(rt).asFunction(rt));
+                    *finishedResolveFunc = std::make_shared<jsi::Function>(
+                        jsi::Function::createFromHostFunction(
+                            rt,
+                            jsi::PropNameID::forAscii(rt, "finishedResolve"),
+                            0,
+                            [onCompleteFunc, viewTransitionDelegate](
+                                jsi::Runtime& runtime,
+                                const jsi::Value& /*thisValue*/,
+                                const jsi::Value* /*args*/,
+                                size_t /*count*/) -> jsi::Value {
+                              onCompleteFunc->call(runtime);
+                              viewTransitionDelegate->startViewTransitionEnd();
+                              return jsi::Value::undefined();
+                            }));
+                    return jsi::Value::undefined();
+                  }));
+
+          auto result = jsi::Object(runtime);
+          result.setProperty(runtime, "ready", std::move(readyPromise));
+          result.setProperty(runtime, "finished", std::move(finishedPromise));
+
+          viewTransitionDelegate->startViewTransition(
+              [&runtime, mutationFunc = std::move(mutationFunc)]() {
+                mutationFunc->call(runtime);
+              },
+              [readyResolveFunc = std::move(readyResolveFunc), &runtime]() {
+                if (*readyResolveFunc) {
+                  (*readyResolveFunc)->call(runtime);
+                }
+              },
+              [finishedResolveFunc = std::move(finishedResolveFunc),
+               uiManager]() {
+                uiManager->runtimeExecutor_(
+                    [finishedResolveFunc = std::move(finishedResolveFunc)](
+                        jsi::Runtime& rt) mutable {
+                      if (*finishedResolveFunc) {
+                        (*finishedResolveFunc)->call(rt);
+                      }
+                    });
+              });
+
+          return jsi::Value(runtime, result);
+        });
+  }
+
   return jsi::Value::undefined();
 }
 
