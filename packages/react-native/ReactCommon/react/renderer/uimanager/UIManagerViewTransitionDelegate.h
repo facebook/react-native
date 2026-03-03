@@ -16,18 +16,16 @@ class UIManagerViewTransitionDelegate {
  public:
   virtual ~UIManagerViewTransitionDelegate() = default;
 
-  virtual void applyViewTransitionName(
-      const std::shared_ptr<const ShadowNode> &shadowNode,
-      const std::string &name,
-      const std::string &className)
+  virtual void
+  applyViewTransitionName(const ShadowNode &shadowNode, const std::string &name, const std::string &className)
   {
   }
 
-  virtual void cancelViewTransitionName(const std::shared_ptr<const ShadowNode> &shadowNode, const std::string &name) {}
+  virtual void cancelViewTransitionName(const ShadowNode &shadowNode, const std::string &name) {}
 
-  virtual void restoreViewTransitionName(const std::shared_ptr<const ShadowNode> &shadowNode) {}
+  virtual void restoreViewTransitionName(const ShadowNode &shadowNode) {}
 
-  virtual void captureLayoutMetricsFromRoot(const std::shared_ptr<const ShadowNode> &shadowNode) {}
+  virtual void captureLayoutMetricsFromRoot(const ShadowNode &shadowNode) {}
 
   virtual void startViewTransition(
       std::function<void()> mutationCallback,

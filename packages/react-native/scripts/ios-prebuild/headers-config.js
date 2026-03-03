@@ -215,6 +215,12 @@ const PodspecExceptions /*: {[key: string]: PodSpecConfiguration} */ = {
         excludePatterns: ['react/renderer/leakchecker/tests'],
         headerDir: 'react/renderer/leakchecker',
       },
+
+      {
+        name: 'viewtransition',
+        headerPatterns: ['react/renderer/viewtransition/**/*.h'],
+        headerDir: 'react/renderer/viewtransition',
+      },
     ],
   },
   // Yoga should preserve its directory structure
