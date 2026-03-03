@@ -10,6 +10,12 @@
 
 'use strict';
 
+import {
+  LoadBundleFromServerError,
+  LoadBundleFromServerRequestError,
+} from '../loadBundleFromServer';
+import invariant from 'invariant';
+
 jest.mock('../../../Utilities/HMRClient');
 
 jest.mock('../../../Core/Devtools/getDevServer', () => ({
@@ -55,11 +61,11 @@ const sendRequest = jest.fn(
 const removeListener = jest.fn();
 const addListener = jest.fn((name, fn) => {
   if (name === 'didReceiveNetworkData') {
-    Promise.resolve().then(() => fn([REQUEST_ID, mockDataResponse]));
+    void Promise.resolve().then(() => fn([REQUEST_ID, mockDataResponse]));
   } else if (name === 'didCompleteNetworkResponse') {
-    Promise.resolve().then(() => fn([REQUEST_ID, mockRequestError]));
+    void Promise.resolve().then(() => fn([REQUEST_ID, mockRequestError]));
   } else if (name === 'didReceiveNetworkResponse') {
-    Promise.resolve().then(() => fn([REQUEST_ID, null, mockHeaders]));
+    void Promise.resolve().then(() => fn([REQUEST_ID, null, mockHeaders]));
   }
   return {remove: removeListener};
 });
@@ -73,10 +79,6 @@ jest.mock('../../../Network/RCTNetworking', () => ({
 }));
 
 let loadBundleFromServer: (bundlePathAndQuery: string) => Promise<void>;
-const {
-  LoadBundleFromServerError,
-  LoadBundleFromServerRequestError,
-} = require('../loadBundleFromServer');
 
 let mockHeaders: {'Content-Type': string};
 let mockDataResponse;
@@ -93,11 +95,14 @@ test('loadBundleFromServer will throw for JSON responses', async () => {
   mockDataResponse = JSON.stringify({message: 'Error thrown from Metro'});
   mockRequestError = null;
 
-  const error = await loadBundleFromServer('/Fail.bundle?platform=ios').catch(
-    e => e,
-  );
+  const error: mixed = await loadBundleFromServer(
+    '/Fail.bundle?platform=ios',
+  ).catch(e => e);
 
-  expect(error).toBeInstanceOf(LoadBundleFromServerError);
+  invariant(
+    error instanceof LoadBundleFromServerError,
+    'Expected a LoadBundleFromServerError',
+  );
   expect(error.message).toBe('Could not load bundle');
   expect(error.cause).toBe('Error thrown from Metro');
 });
@@ -107,11 +112,14 @@ test('loadBundleFromServer will throw LoadBundleFromServerError for request erro
   mockDataResponse = '';
   mockRequestError = 'Some error';
 
-  const error = await loadBundleFromServer('/Fail.bundle?platform=ios').catch(
-    e => e,
-  );
+  const error: mixed = await loadBundleFromServer(
+    '/Fail.bundle?platform=ios',
+  ).catch(e => e);
 
-  expect(error).toBeInstanceOf(LoadBundleFromServerRequestError);
+  invariant(
+    error instanceof LoadBundleFromServerRequestError,
+    'Expected a LoadBundleFromServerRequestError',
+  );
   expect(error.message).toBe('Could not load bundle');
   expect(error.cause).toBe('Some error');
 });
