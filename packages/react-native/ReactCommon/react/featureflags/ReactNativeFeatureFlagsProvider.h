@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<a2616fb1b6afdd7b66bfd197de1d0fd6>>
+ * @generated SignedSource<<72136ca54c46744eb47ba5c2e4881afd>>
  */
 
 /**
@@ -83,6 +83,7 @@ class ReactNativeFeatureFlagsProvider {
   virtual bool fixFindShadowNodeByTagRaceCondition() = 0;
   virtual bool fixMappingOfEventPrioritiesBetweenFabricAndReact() = 0;
   virtual bool fixTextClippingAndroid15useBoundsForWidth() = 0;
+  virtual bool fixYogaFlexBasisFitContentInMainAxis() = 0;
   virtual bool fuseboxAssertSingleHostState() = 0;
   virtual bool fuseboxEnabledRelease() = 0;
   virtual bool fuseboxNetworkInspectionEnabled() = 0;

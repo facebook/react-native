@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<6c49874d2e5f3f9dfa6c64945026f4b7>>
+ * @generated SignedSource<<c3041dc85a41293c5336ab0bd1a39fb2>>
  * @flow strict
  * @noformat
  */
@@ -106,6 +106,7 @@ export type ReactNativeFeatureFlags = $ReadOnly<{
   fixFindShadowNodeByTagRaceCondition: Getter<boolean>,
   fixMappingOfEventPrioritiesBetweenFabricAndReact: Getter<boolean>,
   fixTextClippingAndroid15useBoundsForWidth: Getter<boolean>,
+  fixYogaFlexBasisFitContentInMainAxis: Getter<boolean>,
   fuseboxAssertSingleHostState: Getter<boolean>,
   fuseboxEnabledRelease: Getter<boolean>,
   fuseboxNetworkInspectionEnabled: Getter<boolean>,
@@ -437,6 +438,10 @@ export const fixMappingOfEventPrioritiesBetweenFabricAndReact: Getter<boolean> =
  * Fix text clipping starting in Android 15 due to usage of useBoundsForWidth
  */
 export const fixTextClippingAndroid15useBoundsForWidth: Getter<boolean> = createNativeFlagGetter('fixTextClippingAndroid15useBoundsForWidth', false);
+/**
+ * When enabled, Yoga will not apply a FitContent constraint in the main axis during flex basis computation for non-measure container nodes. This prevents unnecessary re-measurement and cascading clones when a sibling changes size in a ScrollView.
+ */
+export const fixYogaFlexBasisFitContentInMainAxis: Getter<boolean> = createNativeFlagGetter('fixYogaFlexBasisFitContentInMainAxis', false);
 /**
  * Enable system assertion validating that Fusebox is configured with a single host. When set, the CDP backend will dynamically disable features (Perf and Network) in the event that multiple hosts are registered (undefined behaviour), and broadcast this over `ReactNativeApplication.systemStateChanged`.
  */

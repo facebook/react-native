@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<175e48107d9bd1d713a4da0a252a58bf>>
+ * @generated SignedSource<<ca623df2cb1859a07c626f5847cbe203>>
  */
 
 /**
@@ -384,6 +384,12 @@ class ReactNativeFeatureFlagsJavaProvider
   bool fixTextClippingAndroid15useBoundsForWidth() override {
     static const auto method =
         getReactNativeFeatureFlagsProviderJavaClass()->getMethod<jboolean()>("fixTextClippingAndroid15useBoundsForWidth");
+    return method(javaProvider_);
+  }
+
+  bool fixYogaFlexBasisFitContentInMainAxis() override {
+    static const auto method =
+        getReactNativeFeatureFlagsProviderJavaClass()->getMethod<jboolean()>("fixYogaFlexBasisFitContentInMainAxis");
     return method(javaProvider_);
   }
 
@@ -849,6 +855,11 @@ bool JReactNativeFeatureFlagsCxxInterop::fixTextClippingAndroid15useBoundsForWid
   return ReactNativeFeatureFlags::fixTextClippingAndroid15useBoundsForWidth();
 }
 
+bool JReactNativeFeatureFlagsCxxInterop::fixYogaFlexBasisFitContentInMainAxis(
+    facebook::jni::alias_ref<JReactNativeFeatureFlagsCxxInterop> /*unused*/) {
+  return ReactNativeFeatureFlags::fixYogaFlexBasisFitContentInMainAxis();
+}
+
 bool JReactNativeFeatureFlagsCxxInterop::fuseboxAssertSingleHostState(
     facebook::jni::alias_ref<JReactNativeFeatureFlagsCxxInterop> /*unused*/) {
   return ReactNativeFeatureFlags::fuseboxAssertSingleHostState();
@@ -1194,6 +1205,9 @@ void JReactNativeFeatureFlagsCxxInterop::registerNatives() {
       makeNativeMethod(
         "fixTextClippingAndroid15useBoundsForWidth",
         JReactNativeFeatureFlagsCxxInterop::fixTextClippingAndroid15useBoundsForWidth),
+      makeNativeMethod(
+        "fixYogaFlexBasisFitContentInMainAxis",
+        JReactNativeFeatureFlagsCxxInterop::fixYogaFlexBasisFitContentInMainAxis),
       makeNativeMethod(
         "fuseboxAssertSingleHostState",
         JReactNativeFeatureFlagsCxxInterop::fuseboxAssertSingleHostState),

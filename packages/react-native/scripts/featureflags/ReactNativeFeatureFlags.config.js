@@ -669,6 +669,17 @@ const definitions: FeatureFlagDefinitions = {
       },
       ossReleaseStage: 'experimental',
     },
+    fixYogaFlexBasisFitContentInMainAxis: {
+      defaultValue: false,
+      metadata: {
+        dateAdded: '2026-02-26',
+        description:
+          'When enabled, Yoga will not apply a FitContent constraint in the main axis during flex basis computation for non-measure container nodes. This prevents unnecessary re-measurement and cascading clones when a sibling changes size in a ScrollView.',
+        expectedReleaseValue: true,
+        purpose: 'experimentation',
+      },
+      ossReleaseStage: 'none',
+    },
     fuseboxAssertSingleHostState: {
       defaultValue: true,
       metadata: {

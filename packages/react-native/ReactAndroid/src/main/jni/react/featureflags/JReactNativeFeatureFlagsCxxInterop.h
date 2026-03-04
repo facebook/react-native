@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<e182e4c23748be5ade70f6568ea2046f>>
+ * @generated SignedSource<<eba2da5eaffcbe9001b75a0bd0792959>>
  */
 
 /**
@@ -202,6 +202,9 @@ class JReactNativeFeatureFlagsCxxInterop
     facebook::jni::alias_ref<JReactNativeFeatureFlagsCxxInterop>);
 
   static bool fixTextClippingAndroid15useBoundsForWidth(
+    facebook::jni::alias_ref<JReactNativeFeatureFlagsCxxInterop>);
+
+  static bool fixYogaFlexBasisFitContentInMainAxis(
     facebook::jni::alias_ref<JReactNativeFeatureFlagsCxxInterop>);
 
   static bool fuseboxAssertSingleHostState(

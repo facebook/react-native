@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<bf43f43a55a2712f3e3295f7afb0a5dd>>
+ * @generated SignedSource<<b0514fa48c870d4878205bac87443a3c>>
  */
 
 /**
@@ -90,6 +90,7 @@ class ReactNativeFeatureFlagsAccessor {
   bool fixFindShadowNodeByTagRaceCondition();
   bool fixMappingOfEventPrioritiesBetweenFabricAndReact();
   bool fixTextClippingAndroid15useBoundsForWidth();
+  bool fixYogaFlexBasisFitContentInMainAxis();
   bool fuseboxAssertSingleHostState();
   bool fuseboxEnabledRelease();
   bool fuseboxNetworkInspectionEnabled();
@@ -129,7 +130,7 @@ class ReactNativeFeatureFlagsAccessor {
   std::unique_ptr<ReactNativeFeatureFlagsProvider> currentProvider_;
   bool wasOverridden_;
 
-  std::array<std::atomic<const char*>, 86> accessedFeatureFlags_;
+  std::array<std::atomic<const char*>, 87> accessedFeatureFlags_;
 
   std::atomic<std::optional<bool>> commonTestFlag_;
   std::atomic<std::optional<bool>> cdpInteractionMetricsEnabled_;
@@ -189,6 +190,7 @@ class ReactNativeFeatureFlagsAccessor {
   std::atomic<std::optional<bool>> fixFindShadowNodeByTagRaceCondition_;
   std::atomic<std::optional<bool>> fixMappingOfEventPrioritiesBetweenFabricAndReact_;
   std::atomic<std::optional<bool>> fixTextClippingAndroid15useBoundsForWidth_;
+  std::atomic<std::optional<bool>> fixYogaFlexBasisFitContentInMainAxis_;
   std::atomic<std::optional<bool>> fuseboxAssertSingleHostState_;
   std::atomic<std::optional<bool>> fuseboxEnabledRelease_;
   std::atomic<std::optional<bool>> fuseboxNetworkInspectionEnabled_;

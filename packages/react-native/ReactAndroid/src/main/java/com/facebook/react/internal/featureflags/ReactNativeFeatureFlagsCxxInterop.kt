@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<03f5b76fefda14757a43414f6624601a>>
+ * @generated SignedSource<<f2c8850b294c6d81274ac0b59f4f0ec3>>
  */
 
 /**
@@ -143,6 +143,8 @@ public object ReactNativeFeatureFlagsCxxInterop {
   @DoNotStrip @JvmStatic public external fun fixMappingOfEventPrioritiesBetweenFabricAndReact(): Boolean
 
   @DoNotStrip @JvmStatic public external fun fixTextClippingAndroid15useBoundsForWidth(): Boolean
+
+  @DoNotStrip @JvmStatic public external fun fixYogaFlexBasisFitContentInMainAxis(): Boolean
 
   @DoNotStrip @JvmStatic public external fun fuseboxAssertSingleHostState(): Boolean
 

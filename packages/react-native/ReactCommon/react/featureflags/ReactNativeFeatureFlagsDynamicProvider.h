@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<e7e7cb27ef8094e8a60c14327d29d192>>
+ * @generated SignedSource<<67ca0cbea749c2589b2d9afa0ab73818>>
  */
 
 /**
@@ -565,6 +565,15 @@ class ReactNativeFeatureFlagsDynamicProvider : public ReactNativeFeatureFlagsDef
     }
 
     return ReactNativeFeatureFlagsDefaults::fixTextClippingAndroid15useBoundsForWidth();
+  }
+
+  bool fixYogaFlexBasisFitContentInMainAxis() override {
+    auto value = values_["fixYogaFlexBasisFitContentInMainAxis"];
+    if (!value.isNull()) {
+      return value.getBool();
+    }
+
+    return ReactNativeFeatureFlagsDefaults::fixYogaFlexBasisFitContentInMainAxis();
   }
 
   bool fuseboxAssertSingleHostState() override {
