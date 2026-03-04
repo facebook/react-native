@@ -9,6 +9,7 @@
 
 package com.facebook.react.devsupport.inspector
 
+import com.facebook.react.modules.network.OkHttpClientProvider
 import java.util.concurrent.TimeUnit
 import okhttp3.OkHttpClient
 
@@ -19,7 +20,8 @@ import okhttp3.OkHttpClient
 internal object DevSupportHttpClient {
   /** Client for HTTP requests: connect=5s, write=disabled, read=disabled. */
   internal val httpClient: OkHttpClient =
-      OkHttpClient.Builder()
+      OkHttpClientProvider.getOkHttpClient()
+          .newBuilder()
           .connectTimeout(5, TimeUnit.SECONDS)
           .writeTimeout(0, TimeUnit.MILLISECONDS)
           .readTimeout(0, TimeUnit.MINUTES)
