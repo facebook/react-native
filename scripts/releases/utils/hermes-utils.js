@@ -25,6 +25,13 @@ const MAVEN_VERSIONS_FILE_PATH = path.join(
   'version.properties',
 );
 
+const GRADLE_PROPERTIES_PATH = path.join(
+  REACT_NATIVE_PACKAGE_DIR,
+  '..',
+  '..',
+  'gradle.properties',
+);
+
 async function getLatestHermesNightlyVersion() /*: Promise<{
   compilerVersion: string,
   compilerV1Version: string,
@@ -49,6 +56,27 @@ async function getLatestHermesNightlyVersion() /*: Promise<{
     runtimeVersion: compilerVersion,
     runtimeV1Version: compilerV1Version,
   };
+}
+
+/**
+ * Updates gradle.properties to use stable Hermes instead of nightly.
+ * This is needed because main uses nightly Hermes, but release branches
+ * should use stable Hermes from Maven Central.
+ */
+async function setStableHermesForReleaseBranch() {
+  let content = await fs.readFile(GRADLE_PROPERTIES_PATH, 'utf8');
+
+  content = content.replace(
+    'react.internal.useHermesStable=false',
+    'react.internal.useHermesStable=true',
+  );
+  content = content.replace(
+    'react.internal.useHermesNightly=true',
+    'react.internal.useHermesNightly=false',
+  );
+
+  await fs.writeFile(GRADLE_PROPERTIES_PATH, content, 'utf8');
+  console.info('Switched gradle.properties to use stable Hermes');
 }
 
 async function updateHermesCompilerVersionInDependencies(
@@ -95,6 +123,7 @@ async function updateHermesVersionsToNightly() {
 }
 
 module.exports = {
+  setStableHermesForReleaseBranch,
   updateHermesVersionsToNightly,
   updateHermesCompilerVersionInDependencies,
   updateHermesRuntimeDependenciesVersions,
