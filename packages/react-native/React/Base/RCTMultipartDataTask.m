@@ -7,7 +7,12 @@
 
 #import "RCTMultipartDataTask.h"
 
-#import "RCTDevSupportHttpHeaders.h"
+static RCTMultipartDataTaskRequestInterceptor multipartRequestInterceptor;
+
+void RCTSetCustomMultipartDataTaskRequestInterceptor(RCTMultipartDataTaskRequestInterceptor interceptor)
+{
+  multipartRequestInterceptor = interceptor;
+}
 
 @interface RCTMultipartDataTask () <NSURLSessionDataDelegate, NSURLSessionDataDelegate>
 
@@ -42,8 +47,15 @@
                                                    delegateQueue:nil];
   NSMutableURLRequest *request = [NSMutableURLRequest requestWithURL:_url];
   [request addValue:@"multipart/mixed" forHTTPHeaderField:@"Accept"];
-  [[RCTDevSupportHttpHeaders sharedInstance] applyHeadersToRequest:request];
-  NSURLSessionDataTask *dataTask = [session dataTaskWithRequest:request];
+  NSURLRequest *finalRequest = request;
+  if (multipartRequestInterceptor != nil) {
+    NSURLRequest *intercepted = multipartRequestInterceptor(request);
+    if (intercepted != nil) {
+      finalRequest = intercepted;
+    }
+  }
+  NSLog(@"[RCTMultipartDataTask] %@ %@", finalRequest.HTTPMethod ?: @"GET", finalRequest.URL.absoluteString);
+  NSURLSessionDataTask *dataTask = [session dataTaskWithRequest:finalRequest];
   [dataTask resume];
   [session finishTasksAndInvalidate];
 }
