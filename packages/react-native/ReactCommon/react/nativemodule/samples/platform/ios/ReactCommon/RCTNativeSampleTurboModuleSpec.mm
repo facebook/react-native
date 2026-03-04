@@ -283,8 +283,12 @@ NativeSampleTurboModuleSpecJSI::NativeSampleTurboModuleSpecJSI(const ObjCTurboMo
   eventEmitterMap_["onClick"] = std::make_shared<AsyncEventEmitter<id>>();
   eventEmitterMap_["onChange"] = std::make_shared<AsyncEventEmitter<id>>();
   eventEmitterMap_["onSubmit"] = std::make_shared<AsyncEventEmitter<id>>();
-  setEventEmitterCallback([&](const std::string &name, id value) {
-    static_cast<AsyncEventEmitter<id> &>(*eventEmitterMap_[name]).emit(value);
+  auto emitterMap = eventEmitterMap_;
+  setEventEmitterCallback([emitterMap](const std::string &name, id value) {
+    auto it = emitterMap.find(name);
+    if (it != emitterMap.end() && it->second) {
+      static_cast<AsyncEventEmitter<id> &>(*it->second).emit(value);
+    }
   });
 }
 } // namespace facebook::react
