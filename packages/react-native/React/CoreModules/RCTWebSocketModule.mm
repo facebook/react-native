@@ -35,6 +35,13 @@
 
 @end
 
+static SRWebSocketProvider srWebSocketProvider;
+
+void RCTSetCustomSRWebSocketProvider(SRWebSocketProvider provider)
+{
+  srWebSocketProvider = provider;
+}
+
 @implementation RCTWebSocketModule {
   NSMutableDictionary<NSNumber *, SRWebSocket *> *_sockets;
   NSMutableDictionary<NSNumber *, id<RCTWebSocketContentHandler>> *_contentHandlers;
@@ -114,7 +121,13 @@ RCT_EXPORT_METHOD(
     }];
   }
 
-  SRWebSocket *webSocket = [[SRWebSocket alloc] initWithURLRequest:request protocols:protocols];
+  SRWebSocket *webSocket;
+  if (srWebSocketProvider != nullptr) {
+    webSocket = srWebSocketProvider(request);
+  }
+  if (webSocket == nil) {
+    webSocket = [[SRWebSocket alloc] initWithURLRequest:request protocols:protocols];
+  }
   [webSocket setDelegateDispatchQueue:[self methodQueue]];
   webSocket.delegate = self;
   webSocket.reactTag = @(socketID);
