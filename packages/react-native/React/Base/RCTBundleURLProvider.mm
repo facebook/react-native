@@ -10,6 +10,7 @@
 #import "RCTConstants.h"
 #import "RCTConvert.h"
 #import "RCTDefines.h"
+#import "RCTDevSupportHttpHeaders.h"
 #import "RCTLog.h"
 
 #import <jsinspector-modern/InspectorFlags.h>
@@ -93,9 +94,10 @@ static NSURL *serverRootWithHostPort(NSString *hostPort, NSString *scheme)
   NSURL *url = [serverRootWithHostPort(hostPort, scheme) URLByAppendingPathComponent:@"status"];
 
   NSURLSession *session = [NSURLSession sharedSession];
-  NSURLRequest *request = [NSURLRequest requestWithURL:url
-                                           cachePolicy:NSURLRequestUseProtocolCachePolicy
-                                       timeoutInterval:10];
+  NSMutableURLRequest *request = [NSMutableURLRequest requestWithURL:url
+                                                         cachePolicy:NSURLRequestUseProtocolCachePolicy
+                                                     timeoutInterval:10];
+  [[RCTDevSupportHttpHeaders sharedInstance] applyHeadersToRequest:request];
   __block NSURLResponse *response;
   __block NSData *data;
 

@@ -2129,6 +2129,7 @@ public final class com/facebook/react/devsupport/StackTraceHelper$StackFrameImpl
 	public fun toJSON ()Lorg/json/JSONObject;
 }
 
+
 public abstract interface class com/facebook/react/devsupport/interfaces/BundleLoadCallback {
 	public fun onError (Ljava/lang/Exception;)V
 	public abstract fun onSuccess ()V
