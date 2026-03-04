@@ -72,7 +72,7 @@ function getCppArrayTypeForAnnotation(
         case 'object':
           if (!structParts) {
             throw new Error(
-              `Trying to generate the event emitter for an Array of ${typeElement.type} without informations to generate the generic type`,
+              `Trying to generate the event emitter for an Array of ${typeElement.type} without information to generate the generic type`,
             );
           }
           return `std::vector<${generateEventStructName(structParts)}>`;
@@ -84,7 +84,7 @@ function getCppArrayTypeForAnnotation(
           ) {
             if (!structParts) {
               throw new Error(
-                `Trying to generate the event emitter for an Array of ${typeElement.type} without informations to generate the generic type`,
+                `Trying to generate the event emitter for an Array of ${typeElement.type} without information to generate the generic type`,
               );
             }
             return `std::vector<${generateEventStructName(structParts)}>`;
