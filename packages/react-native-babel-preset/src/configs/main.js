@@ -51,7 +51,7 @@ const getPreset = (src, options, babel) => {
   const transformProfile =
     options?.unstable_transformProfile ?? babel?.caller(getTransformProfile);
 
-  const dev = options?.dev ?? babel.env('development');
+  const dev = options?.dev ?? babel?.env('development') ?? false;
 
   // Hermes V1 (aka Static Hermes) uses more optimised profiles.
   // There is currently no difference between stable and canary, but canary
