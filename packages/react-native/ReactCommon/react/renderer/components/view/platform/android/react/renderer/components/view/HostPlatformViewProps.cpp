@@ -141,7 +141,23 @@ HostPlatformViewProps::HostPlatformViewProps(
                     rawProps,
                     "nextFocusUp",
                     sourceProps.nextFocusUp,
-                    {})) {}
+                    {})) {
+  if (!ReactNativeFeatureFlags::enableCppPropsIteratorSetter()) {
+    if (ReactNativeFeatureFlags::enableNativeViewPropTransformations()) {
+      // tabIndex -> focusable
+      auto* tabIndexValue = rawProps.at("tabIndex", nullptr, nullptr);
+      if (tabIndexValue != nullptr) {
+        if (tabIndexValue->hasValue()) {
+          int tabIndex = 0;
+          fromRawValue(context, *tabIndexValue, tabIndex);
+          focusable = tabIndex == 0;
+        } else {
+          focusable = {};
+        }
+      }
+    }
+  }
+}
 
 #define VIEW_EVENT_CASE(eventType)                      \
   case CONSTEXPR_RAW_PROPS_KEY_HASH("on" #eventType): { \
@@ -181,6 +197,19 @@ void HostPlatformViewProps::setProp(
     RAW_SET_PROP_SWITCH_CASE_BASIC(nextFocusLeft);
     RAW_SET_PROP_SWITCH_CASE_BASIC(nextFocusRight);
     RAW_SET_PROP_SWITCH_CASE_BASIC(nextFocusUp);
+    case CONSTEXPR_RAW_PROPS_KEY_HASH("tabIndex"): {
+      if (!ReactNativeFeatureFlags::enableNativeViewPropTransformations()) {
+        return;
+      }
+      if (value.hasValue()) {
+        int tabIndex = 0;
+        fromRawValue(context, value, tabIndex);
+        focusable = tabIndex == 0;
+      } else {
+        focusable = defaults.focusable;
+      }
+      return;
+    }
   }
 }
 

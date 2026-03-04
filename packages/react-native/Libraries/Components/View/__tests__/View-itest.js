@@ -5,7 +5,7 @@
  * LICENSE file in the root directory of this source tree.
  *
  * @flow strict-local
- * @fantom_flags enableNativeCSSParsing:*
+ * @fantom_flags enableNativeCSSParsing:* enableNativeViewPropTransformations:*
  * @format
  */
 
@@ -575,6 +575,140 @@ describe('<View>', () => {
           expect(
             root.getRenderedOutput({props: ['accessibilityLabel']}).toJSX(),
           ).toEqual(<rn-view />);
+        });
+      });
+
+      describe('overlapping aria-label and accessibilityLabel', () => {
+        it('preserves accessibilityLabel when aria-label is removed', () => {
+          const root = Fantom.createRoot();
+
+          // Set both aria-label and accessibilityLabel
+          Fantom.runTask(() => {
+            root.render(
+              <View
+                aria-label="aria value"
+                accessibilityLabel="native value"
+                accessible={true}
+              />,
+            );
+          });
+
+          // aria-label should take precedence
+          expect(
+            root.getRenderedOutput({props: ['accessibilityLabel']}).toJSX(),
+          ).toEqual(<rn-view accessibilityLabel="aria value" />);
+
+          // Remove aria-label but keep accessibilityLabel
+          Fantom.runTask(() => {
+            root.render(
+              <View accessibilityLabel="native value" accessible={true} />,
+            );
+          });
+
+          // accessibilityLabel should still be "native value"
+          expect(
+            root.getRenderedOutput({props: ['accessibilityLabel']}).toJSX(),
+          ).toEqual(<rn-view accessibilityLabel="native value" />);
+        });
+      });
+
+      describe('overlapping aria-hidden and importantForAccessibility', () => {
+        it('preserves importantForAccessibility when aria-hidden is removed', () => {
+          const root = Fantom.createRoot();
+
+          // Set both aria-hidden and importantForAccessibility
+          Fantom.runTask(() => {
+            root.render(
+              <View
+                aria-hidden={true}
+                importantForAccessibility="no-hide-descendants"
+                accessible={true}
+              />,
+            );
+          });
+
+          expect(
+            root
+              .getRenderedOutput({props: ['importantForAccessibility']})
+              .toJSX(),
+          ).toEqual(
+            <rn-view importantForAccessibility="no-hide-descendants" />,
+          );
+
+          // Remove aria-hidden but keep importantForAccessibility
+          Fantom.runTask(() => {
+            root.render(
+              <View
+                importantForAccessibility="no-hide-descendants"
+                accessible={true}
+              />,
+            );
+          });
+
+          // importantForAccessibility should still be "no-hide-descendants"
+          expect(
+            root
+              .getRenderedOutput({props: ['importantForAccessibility']})
+              .toJSX(),
+          ).toEqual(
+            <rn-view importantForAccessibility="no-hide-descendants" />,
+          );
+        });
+      });
+
+      describe('aria-hidden={false} with importantForAccessibility', () => {
+        it('does not overwrite explicit importantForAccessibility', () => {
+          const root = Fantom.createRoot();
+
+          // Set importantForAccessibility="yes" and aria-hidden={false}.
+          // aria-hidden={false} should NOT reset importantForAccessibility
+          // to Auto, it should preserve the explicit "yes" value.
+          Fantom.runTask(() => {
+            root.render(
+              <View
+                importantForAccessibility="yes"
+                aria-hidden={false}
+                collapsable={false}
+              />,
+            );
+          });
+
+          expect(
+            root
+              .getRenderedOutput({props: ['importantForAccessibility']})
+              .toJSX(),
+          ).toEqual(<rn-view importantForAccessibility="yes" />);
+        });
+      });
+
+      describe('overlapping aria-live and accessibilityLiveRegion', () => {
+        it('preserves accessibilityLiveRegion when aria-live is removed', () => {
+          const root = Fantom.createRoot();
+
+          // Set both aria-live and accessibilityLiveRegion
+          Fantom.runTask(() => {
+            root.render(
+              <View
+                aria-live="polite"
+                accessibilityLiveRegion="assertive"
+                accessible={true}
+              />,
+            );
+          });
+
+          // Remove aria-live but keep accessibilityLiveRegion
+          Fantom.runTask(() => {
+            root.render(
+              <View accessibilityLiveRegion="assertive" accessible={true} />,
+            );
+          });
+
+          // accessibilityLiveRegion should still be "assertive"
+          expect(
+            root
+              .getRenderedOutput({props: ['accessibilityLiveRegion']})
+              .toJSX(),
+          ).toEqual(<rn-view accessibilityLiveRegion="assertive" />);
         });
       });
 
