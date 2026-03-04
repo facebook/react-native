@@ -19,7 +19,7 @@ import okhttp3.OkHttpClient
  * dispatcher across all dev support HTTP and WebSocket usage. Supports injecting custom request
  * headers that are applied to every outgoing request via an OkHttp interceptor.
  */
-public object DevSupportHttpClient {
+internal object DevSupportHttpClient {
   private val customHeaders = ConcurrentHashMap<String, String>()
 
   private val headerInterceptor = Interceptor { chain ->
@@ -31,7 +31,7 @@ public object DevSupportHttpClient {
   }
 
   /** Client for HTTP requests: connect=5s, write=disabled, read=disabled. */
-  public val httpClient: OkHttpClient =
+  internal val httpClient: OkHttpClient =
       OkHttpClient.Builder()
           .addInterceptor(headerInterceptor)
           .connectTimeout(5, TimeUnit.SECONDS)
@@ -40,7 +40,7 @@ public object DevSupportHttpClient {
           .build()
 
   /** Client for WebSocket connections: connect=10s, write=10s, read=disabled. */
-  public val websocketClient: OkHttpClient =
+  internal val websocketClient: OkHttpClient =
       httpClient
           .newBuilder()
           .connectTimeout(10, TimeUnit.SECONDS)
@@ -48,14 +48,12 @@ public object DevSupportHttpClient {
           .build()
 
   /** Add a custom header to be included in all requests made through both clients. */
-  @JvmStatic
-  public fun addRequestHeader(name: String, value: String) {
+  internal fun addRequestHeader(name: String, value: String) {
     customHeaders[name] = value
   }
 
   /** Remove a previously added custom header. */
-  @JvmStatic
-  public fun removeRequestHeader(name: String) {
+  internal fun removeRequestHeader(name: String) {
     customHeaders.remove(name)
   }
 
@@ -63,12 +61,11 @@ public object DevSupportHttpClient {
    * Returns the appropriate HTTP scheme ("http" or "https") for the given host. Uses "https" when
    * the host specifies port 443 explicitly (e.g. "example.com:443").
    */
-  @JvmStatic
-  public fun httpScheme(host: String): String = if (host.endsWith(":443")) "https" else "http"
+  internal fun httpScheme(host: String): String = if (host.endsWith(":443")) "https" else "http"
 
   /**
    * Returns the appropriate WebSocket scheme ("ws" or "wss") for the given host. Uses "wss" when
    * the host specifies port 443 explicitly (e.g. "example.com:443").
    */
-  @JvmStatic public fun wsScheme(host: String): String = if (host.endsWith(":443")) "wss" else "ws"
+  internal fun wsScheme(host: String): String = if (host.endsWith(":443")) "wss" else "ws"
 }
