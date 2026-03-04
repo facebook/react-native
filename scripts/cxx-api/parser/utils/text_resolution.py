@@ -104,12 +104,12 @@ def resolve_ref_text_name(type_def: compound.refTextType) -> str:
                     name += part.value.valueOf_
                 else:
                     name += str(part.value)
-        return name
+        return normalize_angle_brackets(name)
 
     if type_def.ref:
-        return type_def.ref[0].get_valueOf_()
+        return normalize_angle_brackets(type_def.ref[0].get_valueOf_())
 
-    return type_def.get_valueOf_()
+    return normalize_angle_brackets(type_def.get_valueOf_())
 
 
 class InitializerType(Enum):
