@@ -112,9 +112,7 @@ TesterAppDelegate::TesterAppDelegate(
 
   std::shared_ptr<NativeAnimatedNodesManagerProvider> provider;
 
-  if (ReactNativeFeatureFlags::useSharedAnimatedBackend()) {
-    provider = std::make_shared<NativeAnimatedNodesManagerProvider>();
-  } else {
+  if (!ReactNativeFeatureFlags::useSharedAnimatedBackend()) {
     provider = std::make_shared<NativeAnimatedNodesManagerProvider>(
         [this](std::function<void()>&& onRender, bool /*isAsync*/) {
           onAnimationRender_ = std::move(onRender);

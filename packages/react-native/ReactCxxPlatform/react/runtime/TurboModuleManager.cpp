@@ -62,15 +62,19 @@ std::shared_ptr<TurboModule> TurboModuleManager::operator()(
     }
   }
 
+  if (animatedNodesManagerProvider_ != nullptr &&
+      name == AnimatedModule::kModuleName) {
+    // when animatedNodesManagerProvider_ is null, defer to default
+    return std::make_shared<AnimatedModule>(
+        jsInvoker_, animatedNodesManagerProvider_);
+  }
+
   if (auto turboModule =
           DefaultTurboModules::getTurboModule(name, jsInvoker_)) {
     return turboModule;
   }
 
-  if (name == AnimatedModule::kModuleName) {
-    return std::make_shared<AnimatedModule>(
-        jsInvoker_, animatedNodesManagerProvider_);
-  } else if (name == AppStateModule::kModuleName) {
+  if (name == AppStateModule::kModuleName) {
     return std::make_shared<AppStateModule>(jsInvoker_);
   } else if (name == DeviceInfoModule::kModuleName) {
     return std::make_shared<DeviceInfoModule>(jsInvoker_);
