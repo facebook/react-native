@@ -150,6 +150,7 @@ internal object TouchesHelper {
             0,
             eventData,
             event.getEventCategory(),
+            event.timestampMs,
         )
       }
     } finally {

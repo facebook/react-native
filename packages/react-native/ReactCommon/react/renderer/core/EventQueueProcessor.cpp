@@ -96,7 +96,8 @@ void EventQueueProcessor::flushEvents(
         event.eventTarget.get(),
         event.type,
         reactPriority,
-        *event.eventPayload);
+        *event.eventPayload,
+        event.eventStartTimeStamp);
 
     if (eventLogger != nullptr) {
       eventLogger->onEventProcessingEnd(event.loggingTag);

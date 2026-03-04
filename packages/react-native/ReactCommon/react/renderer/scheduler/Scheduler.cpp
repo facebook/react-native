@@ -88,11 +88,12 @@ Scheduler::Scheduler(
                        EventTarget* eventTarget,
                        const std::string& type,
                        ReactEventPriority priority,
-                       const EventPayload& payload) {
+                       const EventPayload& payload,
+                       HighResTimeStamp eventTimestamp) {
     uiManager->visitBinding(
         [&](const UIManagerBinding& uiManagerBinding) {
           uiManagerBinding.dispatchEvent(
-              runtime, eventTarget, type, priority, payload);
+              runtime, eventTarget, type, priority, payload, eventTimestamp);
         },
         runtime);
   };

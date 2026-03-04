@@ -184,6 +184,44 @@ describe('Event Timing API', () => {
     expect(entry.interactionId).toBeGreaterThanOrEqual(0);
   });
 
+  it('provides the event timeStamp as startTime', () => {
+    const callback = jest.fn();
+
+    const observer = new PerformanceObserver(callback);
+    observer.observe({entryTypes: ['event']});
+
+    let eventTimeStamp;
+
+    const root = Fantom.createRoot();
+    Fantom.runTask(() => {
+      root.render(
+        <View
+          onClick={event => {
+            eventTimeStamp = event.timeStamp;
+          }}
+        />,
+      );
+    });
+
+    const element = nullthrows(root.document.documentElement.firstElementChild);
+
+    expect(callback).not.toHaveBeenCalled();
+
+    Fantom.dispatchNativeEvent(element, 'click');
+
+    expect(callback).toHaveBeenCalledTimes(1);
+
+    const entryList = callback.mock.lastCall[0] as PerformanceObserverEntryList;
+    const entries = entryList.getEntries();
+
+    expect(entries.length).toBe(1);
+
+    const entry = ensurePerformanceEventTiming(entries[0]);
+
+    expect(eventTimeStamp).not.toBeUndefined();
+    expect(entry.startTime).toBe(eventTimeStamp);
+  });
+
   it('reports number of dispatched events via performance.eventCounts', () => {
     NativePerformance.clearEventCountsForTesting?.();
 

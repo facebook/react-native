@@ -22,6 +22,7 @@ internal class EventAnimationDriver(
     private val eventPath: List<String>,
     @JvmField internal var valueNode: ValueAnimatedNode,
 ) : RCTModernEventEmitter {
+  @Deprecated("Use the overload with eventTimestamp parameter instead.")
   override fun receiveEvent(
       surfaceId: Int,
       targetTag: Int,

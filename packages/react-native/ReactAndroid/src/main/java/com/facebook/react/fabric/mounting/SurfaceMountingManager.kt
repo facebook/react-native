@@ -8,6 +8,7 @@
 package com.facebook.react.fabric.mounting
 
 import android.annotation.SuppressLint
+import android.os.SystemClock
 import android.view.View
 import android.view.ViewGroup
 import android.view.ViewParent
@@ -1083,6 +1084,25 @@ internal constructor(
       params: WritableMap?,
       @EventCategoryDef eventCategory: Int,
   ): Unit {
+    enqueuePendingEvent(
+        reactTag,
+        eventName,
+        canCoalesceEvent,
+        params,
+        eventCategory,
+        SystemClock.uptimeMillis(),
+    )
+  }
+
+  @AnyThread
+  public fun enqueuePendingEvent(
+      reactTag: Int,
+      eventName: String,
+      canCoalesceEvent: Boolean,
+      params: WritableMap?,
+      @EventCategoryDef eventCategory: Int,
+      eventTimestamp: Long,
+  ): Unit {
     // When the surface stopped we will reset the view state map. We are not going to enqueue
     // pending events as they are not expected to be dispatched anyways.
     val viewState = tagToViewState[reactTag]
@@ -1092,7 +1112,8 @@ internal constructor(
       return
     }
 
-    val viewEvent = PendingViewEvent(eventName, params, eventCategory, canCoalesceEvent)
+    val viewEvent =
+        PendingViewEvent(eventName, params, eventCategory, canCoalesceEvent, eventTimestamp)
     UiThreadUtil.runOnUiThread {
       val eventEmitter = viewState.eventEmitter
       if (eventEmitter != null) {
@@ -1145,12 +1166,13 @@ internal constructor(
       private val params: WritableMap?,
       @field:EventCategoryDef private val eventCategory: Int,
       private val canCoalesceEvent: Boolean,
+      private val eventTimestamp: Long,
   ) {
     fun dispatch(eventEmitter: EventEmitterWrapper) {
       if (canCoalesceEvent) {
-        eventEmitter.dispatchUnique(eventName, params)
+        eventEmitter.dispatchUnique(eventName, params, eventTimestamp)
       } else {
-        eventEmitter.dispatch(eventName, params, eventCategory)
+        eventEmitter.dispatch(eventName, params, eventCategory, eventTimestamp)
       }
     }
   }

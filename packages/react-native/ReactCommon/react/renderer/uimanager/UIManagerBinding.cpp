@@ -65,12 +65,13 @@ void UIManagerBinding::dispatchEvent(
     EventTarget* eventTarget,
     const std::string& type,
     ReactEventPriority priority,
-    const EventPayload& eventPayload) const {
+    const EventPayload& eventPayload,
+    HighResTimeStamp eventTimestamp) const {
   TraceSection s("UIManagerBinding::dispatchEvent", "type", type);
 
   if (eventPayload.getType() == EventPayloadType::PointerEvent) {
     auto pointerEvent = static_cast<const PointerEvent&>(eventPayload);
-    auto dispatchCallback = [this, &runtime](
+    auto dispatchCallback = [this, &runtime, eventTimestamp](
                                 const ShadowNode& targetNode,
                                 const std::string& type,
                                 ReactEventPriority priority,
@@ -79,7 +80,12 @@ void UIManagerBinding::dispatchEvent(
       if (eventTarget != nullptr) {
         eventTarget->retain(runtime);
         this->dispatchEventToJS(
-            runtime, eventTarget.get(), type, priority, eventPayload);
+            runtime,
+            eventTarget.get(),
+            type,
+            priority,
+            eventPayload,
+            eventTimestamp);
         eventTarget->release(runtime);
       }
     };
@@ -95,7 +101,8 @@ void UIManagerBinding::dispatchEvent(
           *uiManager_);
     }
   } else {
-    dispatchEventToJS(runtime, eventTarget, type, priority, eventPayload);
+    dispatchEventToJS(
+        runtime, eventTarget, type, priority, eventPayload, eventTimestamp);
   }
 }
 
@@ -104,7 +111,8 @@ void UIManagerBinding::dispatchEventToJS(
     EventTarget* eventTarget,
     const std::string& type,
     ReactEventPriority priority,
-    const EventPayload& eventPayload) const {
+    const EventPayload& eventPayload,
+    HighResTimeStamp eventTimestamp) const {
   auto payload = eventPayload.asJSIValue(runtime);
 
   // If a payload is null, the factory has decided to cancel the event
@@ -134,6 +142,15 @@ void UIManagerBinding::dispatchEventToJS(
     // Do not log all missing instanceHandles to avoid log spam
     LOG_EVERY_N(INFO, 10) << "instanceHandle is null, event of type " << type
                           << " will be dropped";
+  }
+
+  // Add timestamp to payload if not already set
+  if (payload.isObject()) {
+    auto payloadObject = payload.asObject(runtime);
+    if (!payloadObject.hasProperty(runtime, "timeStamp")) {
+      payloadObject.setProperty(
+          runtime, "timeStamp", eventTimestamp.toDOMHighResTimeStamp());
+    }
   }
 
   currentEventPriority_ = priority;
