@@ -8,6 +8,7 @@
 package com.facebook.react.modules.network
 
 import android.content.Context
+import com.facebook.react.devsupport.inspector.DevSupportHttpClient
 import java.io.File
 import java.util.concurrent.TimeUnit
 import okhttp3.Cache
@@ -47,8 +48,10 @@ public object OkHttpClientProvider {
   @JvmStatic
   public fun createClientBuilder(): OkHttpClient.Builder {
     // No timeouts by default
+    // Use DevSupportHttpClient as base to inherit custom header interceptor
     val client: OkHttpClient.Builder =
-        OkHttpClient.Builder()
+        DevSupportHttpClient.httpClient
+            .newBuilder()
             .connectTimeout(0, TimeUnit.MILLISECONDS)
             .readTimeout(0, TimeUnit.MILLISECONDS)
             .writeTimeout(0, TimeUnit.MILLISECONDS)

@@ -19,6 +19,7 @@ import com.facebook.react.bridge.ReadableType
 import com.facebook.react.bridge.WritableMap
 import com.facebook.react.bridge.buildReadableMap
 import com.facebook.react.common.ReactConstants
+import com.facebook.react.devsupport.inspector.DevSupportHttpClient
 import com.facebook.react.module.annotations.ReactModule
 import com.facebook.react.modules.network.CustomClientBuilder
 import com.facebook.react.modules.network.ForwardingCookieHandler
@@ -80,7 +81,8 @@ public class WebSocketModule(context: ReactApplicationContext) :
   ) {
     val id = socketID.toInt()
     val okHttpBuilder =
-        OkHttpClient.Builder()
+        DevSupportHttpClient.httpClient
+            .newBuilder()
             .connectTimeout(10, TimeUnit.SECONDS)
             .writeTimeout(10, TimeUnit.SECONDS)
             .readTimeout(0, TimeUnit.MINUTES) // Disable timeouts for read
@@ -199,8 +201,9 @@ public class WebSocketModule(context: ReactApplicationContext) :
         },
     )
 
-    // Trigger shutdown of the dispatcher's executor so this process can exit cleanly
-    client.dispatcher().executorService().shutdown()
+    // Note: Do NOT call client.dispatcher().executorService().shutdown() here.
+    // When building from a shared OkHttpClient (DevSupportHttpClient), the dispatcher
+    // is shared across all clients. Shutting it down would kill all connections.
   }
 
   override fun close(code: Double, reason: String?, socketID: Double) {

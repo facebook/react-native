@@ -9,6 +9,7 @@
 
 @implementation RCTDevSupportHttpHeaders {
   NSMutableDictionary<NSString *, NSString *> *_headers;
+  NSMutableDictionary<NSString *, NSMutableDictionary<NSString *, NSString *> *> *_hostHeaders;
   dispatch_queue_t _queue;
 }
 
@@ -26,6 +27,7 @@
 {
   if (self = [super init]) {
     _headers = [NSMutableDictionary new];
+    _hostHeaders = [NSMutableDictionary new];
     _queue = dispatch_queue_create("com.facebook.react.RCTDevSupportHttpHeaders", DISPATCH_QUEUE_SERIAL);
   }
   return self;
@@ -38,10 +40,35 @@
   });
 }
 
+- (void)addRequestHeader:(NSString *)name value:(NSString *)value forHost:(NSString *)host
+{
+  dispatch_sync(_queue, ^{
+    NSMutableDictionary<NSString *, NSString *> *headersForHost = self->_hostHeaders[host];
+    if (headersForHost == nil) {
+      headersForHost = [NSMutableDictionary new];
+      self->_hostHeaders[host] = headersForHost;
+    }
+    headersForHost[name] = value;
+  });
+}
+
 - (void)removeRequestHeader:(NSString *)name
 {
   dispatch_sync(_queue, ^{
     [self->_headers removeObjectForKey:name];
+  });
+}
+
+- (void)removeRequestHeader:(NSString *)name forHost:(NSString *)host
+{
+  dispatch_sync(_queue, ^{
+    NSMutableDictionary<NSString *, NSString *> *headersForHost = self->_hostHeaders[host];
+    if (headersForHost != nil) {
+      [headersForHost removeObjectForKey:name];
+      if (headersForHost.count == 0) {
+        [self->_hostHeaders removeObjectForKey:host];
+      }
+    }
   });
 }
 
@@ -56,8 +83,23 @@
 
 - (void)applyHeadersToRequest:(NSMutableURLRequest *)request
 {
-  NSDictionary<NSString *, NSString *> *headers = [self allHeaders];
-  [headers enumerateKeysAndObjectsUsingBlock:^(NSString *headerName, NSString *headerValue, BOOL *stop) {
+  __block NSDictionary<NSString *, NSString *> *globalHeaders;
+  __block NSDictionary<NSString *, NSString *> *hostSpecificHeaders;
+
+  NSString *requestHost = request.URL.host;
+
+  dispatch_sync(_queue, ^{
+    globalHeaders = [self->_headers copy];
+    if (requestHost != nil && self->_hostHeaders[requestHost] != nil) {
+      hostSpecificHeaders = [self->_hostHeaders[requestHost] copy];
+    }
+  });
+
+  [globalHeaders enumerateKeysAndObjectsUsingBlock:^(NSString *headerName, NSString *headerValue, BOOL *stop) {
+    [request setValue:headerValue forHTTPHeaderField:headerName];
+  }];
+
+  [hostSpecificHeaders enumerateKeysAndObjectsUsingBlock:^(NSString *headerName, NSString *headerValue, BOOL *stop) {
     [request setValue:headerValue forHTTPHeaderField:headerName];
   }];
 }
