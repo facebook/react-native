@@ -117,6 +117,7 @@ public open class ReactEditText public constructor(context: Context) : AppCompat
   private var listeners: CopyOnWriteArrayList<TextWatcher>?
 
   public var stagedInputType: Int
+  internal var stagedAutoCapitalize: Int = 0
   public var submitBehavior: String? = null
   public var dragAndDropFilter: List<String>? = null
 

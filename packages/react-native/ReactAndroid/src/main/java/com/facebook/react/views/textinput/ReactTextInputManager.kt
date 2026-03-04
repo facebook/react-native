@@ -718,7 +718,9 @@ public open class ReactTextInputManager public constructor() :
       }
     }
 
-    updateStagedInputTypeFlag(view, AUTOCAPITALIZE_FLAGS, autoCapitalizeValue)
+    // Deferred to onAfterUpdateTransaction() so we can reconcile with the resolved
+    // keyboard type — AUTOCAPITALIZE_FLAGS collides with numeric inputType flags.
+    view.stagedAutoCapitalize = autoCapitalizeValue
   }
 
   @ReactProp(name = "keyboardType")
@@ -882,6 +884,7 @@ public open class ReactTextInputManager public constructor() :
   override fun onAfterUpdateTransaction(view: ReactEditText) {
     super.onAfterUpdateTransaction(view)
     view.maybeUpdateTypeface()
+    reconcileAutoCapitalize(view)
     view.commitStagedInputType()
   }
 
@@ -1128,6 +1131,28 @@ public open class ReactTextInputManager public constructor() :
     }
 
     private const val IME_ACTION_ID = 0x670
+
+    // AUTOCAPITALIZE_FLAGS (0x7000) shares bit positions with TYPE_NUMBER_FLAG_SIGNED
+    // (0x1000) and TYPE_NUMBER_FLAG_DECIMAL (0x2000). We apply autocapitalize here
+    // after all props are set so the resolved input class determines whether the
+    // flags are meaningful.
+    private fun reconcileAutoCapitalize(view: ReactEditText) {
+      val autoCapValue = view.stagedAutoCapitalize
+      val inputClass = view.stagedInputType and InputType.TYPE_MASK_CLASS
+
+      // Only strip 0x4000 (CAP_SENTENCES) for non-text classes — 0x1000/0x2000 are
+      // valid numeric flags (SIGNED/DECIMAL) and must not be cleared.
+      val reconciled =
+          if (inputClass == InputType.TYPE_CLASS_TEXT) {
+            (view.stagedInputType and AUTOCAPITALIZE_FLAGS.inv()) or autoCapValue
+          } else {
+            view.stagedInputType and InputType.TYPE_TEXT_FLAG_CAP_SENTENCES.inv()
+          }
+
+      if (view.stagedInputType != reconciled) {
+        view.stagedInputType = reconciled
+      }
+    }
 
     // Sets the correct password type, since numeric and text passwords have different types
     private fun checkPasswordType(view: ReactEditText) {
