@@ -14,6 +14,7 @@ public enum YogaErrata {
   STRETCH_FLEX_BASIS(1),
   ABSOLUTE_POSITION_WITHOUT_INSETS_EXCLUDES_PADDING(2),
   ABSOLUTE_PERCENT_AGAINST_INNER_SIZE(4),
+  FLEX_BASIS_FIT_CONTENT_IN_MAIN_AXIS(8),
   ALL(2147483647),
   CLASSIC(2147483646);
 
@@ -33,6 +34,7 @@ public enum YogaErrata {
       case 1: return STRETCH_FLEX_BASIS;
       case 2: return ABSOLUTE_POSITION_WITHOUT_INSETS_EXCLUDES_PADDING;
       case 4: return ABSOLUTE_PERCENT_AGAINST_INNER_SIZE;
+      case 8: return FLEX_BASIS_FIT_CONTENT_IN_MAIN_AXIS;
       case 2147483647: return ALL;
       case 2147483646: return CLASSIC;
       default: throw new IllegalArgumentException("Unknown enum value: " + value);
