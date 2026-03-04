@@ -413,17 +413,16 @@ namespace {
 
 std::shared_ptr<ShadowNode> cloneMultipleRecursive(
     const ShadowNode& shadowNode,
-    const std::unordered_map<const ShadowNodeFamily*, int>& childrenCount,
+    const std::unordered_map<Tag, int>& childrenCount,
     const std::function<std::shared_ptr<
         ShadowNode>(const ShadowNode&, const ShadowNodeFragment&)>& callback) {
-  const auto* family = &shadowNode.getFamily();
   auto& children = shadowNode.getChildren();
   std::shared_ptr<std::vector<std::shared_ptr<const ShadowNode>>> newChildren;
-  auto count = childrenCount.at(family);
+  auto count = childrenCount.at(shadowNode.getTag());
 
   for (size_t i = 0; count > 0 && i < children.size(); i++) {
-    const auto childFamily = &children[i]->getFamily();
-    if (childrenCount.contains(childFamily)) {
+    const auto childTag = children[i]->getTag();
+    if (childrenCount.contains(childTag)) {
       count--;
       if (!newChildren) {
         newChildren =
@@ -441,37 +440,39 @@ std::shared_ptr<ShadowNode> cloneMultipleRecursive(
 } // namespace
 
 std::shared_ptr<ShadowNode> ShadowNode::cloneMultiple(
-    const std::unordered_set<const ShadowNodeFamily*>& familiesToUpdate,
+    const std::unordered_set<std::shared_ptr<const ShadowNodeFamily>>&
+        familiesToUpdate,
     const std::function<std::shared_ptr<ShadowNode>(
         const ShadowNode& oldShadowNode,
         const ShadowNodeFragment& fragment)>& callback) const {
-  std::unordered_map<const ShadowNodeFamily*, int> childrenCount;
+  std::unordered_map<Tag, int> childrenCount;
 
   for (const auto& family : familiesToUpdate) {
-    if (childrenCount.contains(family)) {
+    if (childrenCount.contains(family->getTag())) {
       continue;
     }
 
-    childrenCount[family] = 0;
+    childrenCount[family->getTag()] = 0;
 
     auto ancestor = family->parent_.lock();
     while ((ancestor != nullptr) && ancestor != family_) {
-      auto ancestorIt = childrenCount.find(ancestor.get());
+      auto ancestorTag = ancestor->getTag();
+      auto ancestorIt = childrenCount.find(ancestorTag);
       if (ancestorIt != childrenCount.end()) {
         ancestorIt->second++;
         break;
       }
-      childrenCount[ancestor.get()] = 1;
+      childrenCount[ancestorTag] = 1;
 
       ancestor = ancestor->parent_.lock();
     }
 
     if (ancestor == family_) {
-      childrenCount[ancestor.get()]++;
+      childrenCount[ancestor->getTag()]++;
     }
   }
 
-  if (!childrenCount.contains(&this->getFamily())) {
+  if (!childrenCount.contains(getTag())) {
     return nullptr;
   }
 

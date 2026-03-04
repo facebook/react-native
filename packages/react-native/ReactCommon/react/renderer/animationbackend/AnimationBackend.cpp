@@ -71,7 +71,7 @@ void AnimationBackend::onAnimationFrame(AnimationTimestamp timestamp) {
       auto& [families, updates, hasLayoutUpdates] =
           surfaceUpdates[family->getSurfaceId()];
       hasLayoutUpdates |= mutation.hasLayoutUpdates;
-      families.insert(family.get());
+      families.insert(family);
       updates[mutation.tag] = std::move(mutation.props);
     }
   }
@@ -146,7 +146,8 @@ void AnimationBackend::commitUpdates(
                           const ShadowNode& shadowNode,
                           const ShadowNodeFragment& fragment) {
                         auto newProps = ShadowNodeFragment::propsPlaceholder();
-                        if (surfaceFamilies.contains(&shadowNode.getFamily())) {
+                        if (surfaceFamilies.contains(
+                                shadowNode.getFamilyShared())) {
                           auto& animatedProps = updates.at(shadowNode.getTag());
                           newProps = cloneProps(animatedProps, shadowNode);
                         }

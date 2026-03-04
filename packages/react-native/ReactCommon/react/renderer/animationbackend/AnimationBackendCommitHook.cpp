@@ -43,9 +43,10 @@ RootShadowNode::Unshared AnimationBackendCommitHook::shadowTreeWillCommit(
               const ShadowNodeFragment& fragment) {
             auto newProps = ShadowNodeFragment::propsPlaceholder();
             std::shared_ptr<BaseViewProps> viewProps = nullptr;
-            if (surfaceFamilies.contains(&shadowNode.getFamily()) &&
-                updates.contains(shadowNode.getTag())) {
-              auto& snapshot = updates.at(shadowNode.getTag());
+            if (auto updatesIter = updates.find(shadowNode.getTag());
+                updatesIter != updates.end() &&
+                surfaceFamilies.contains(shadowNode.getFamilyShared())) {
+              auto& snapshot = updatesIter->second;
               if (!snapshot->propNames.empty() || snapshot->rawProps) {
                 PropsParserContext propsParserContext{
                     shadowNode.getSurfaceId(),
