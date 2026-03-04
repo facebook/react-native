@@ -17,7 +17,9 @@
 + (instancetype)sharedInstance;
 
 - (void)addRequestHeader:(NSString *)name value:(NSString *)value;
+- (void)addRequestHeader:(NSString *)name value:(NSString *)value forHost:(NSString *)host;
 - (void)removeRequestHeader:(NSString *)name;
+- (void)removeRequestHeader:(NSString *)name forHost:(NSString *)host;
 - (NSDictionary<NSString *, NSString *> *)allHeaders;
 - (void)applyHeadersToRequest:(NSMutableURLRequest *)request;
 

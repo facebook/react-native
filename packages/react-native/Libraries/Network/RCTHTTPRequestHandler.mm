@@ -9,6 +9,7 @@
 
 #import <mutex>
 
+#import <React/RCTDevSupportHttpHeaders.h>
 #import <React/RCTNetworking.h>
 #import <ReactCommon/RCTTurboModule.h>
 
@@ -99,7 +100,9 @@ RCT_EXPORT_MODULE()
                                            valueOptions:NSPointerFunctionsStrongMemory
                                                capacity:0];
   }
-  NSURLSessionDataTask *task = [_session dataTaskWithRequest:request];
+  NSMutableURLRequest *mutableRequest = [request mutableCopy];
+  [[RCTDevSupportHttpHeaders sharedInstance] applyHeadersToRequest:mutableRequest];
+  NSURLSessionDataTask *task = [_session dataTaskWithRequest:mutableRequest];
   [_delegates setObject:delegate forKey:task];
   [task resume];
   return task;
