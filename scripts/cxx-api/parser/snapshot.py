@@ -6,6 +6,7 @@
 from __future__ import annotations
 
 from .scope import (
+    CategoryScopeKind,
     EnumScopeKind,
     InterfaceScopeKind,
     NamespaceScopeKind,
@@ -132,6 +133,31 @@ class Snapshot:
             new_scope = Scope(InterfaceScopeKind(), scope_name)
             new_scope.parent_scope = current_scope
             current_scope.inner_scopes[scope_name] = new_scope
+            return new_scope
+
+    def create_category(
+        self, class_name: str, category_name: str
+    ) -> Scope[CategoryScopeKind]:
+        """
+        Create a category in the snapshot.
+        Categories are stored with a unique key: "ClassName(CategoryName)"
+        """
+        scope_key = f"{class_name}({category_name})"
+        current_scope = self.root_scope
+
+        if scope_key in current_scope.inner_scopes:
+            scope = current_scope.inner_scopes[scope_key]
+            if scope.kind.name == "temporary":
+                scope.kind = CategoryScopeKind(class_name, category_name)
+            else:
+                raise RuntimeError(
+                    f"Identifier {scope_key} already exists in scope {current_scope.name}"
+                )
+            return scope
+        else:
+            new_scope = Scope(CategoryScopeKind(class_name, category_name), scope_key)
+            new_scope.parent_scope = current_scope
+            current_scope.inner_scopes[scope_key] = new_scope
             return new_scope
 
     def create_enum(self, qualified_name: str) -> Scope[EnumScopeKind]:

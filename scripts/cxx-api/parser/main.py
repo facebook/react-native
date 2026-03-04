@@ -14,6 +14,7 @@ import os
 from doxmlparser import compound, index
 
 from .builders import (
+    create_category_scope,
     create_class_scope,
     create_enum_scope,
     create_interface_scope,
@@ -121,7 +122,7 @@ def build_snapshot(xml_dir: str) -> Snapshot:
             elif compound_object.kind == "dir":
                 pass
             elif compound_object.kind == "category":
-                print(f"Category not supported: {compound_object.compoundname}")
+                create_category_scope(snapshot, compound_object)
             elif compound_object.kind == "page":
                 # Contains deprecation info
                 pass
