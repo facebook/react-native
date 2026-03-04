@@ -42,7 +42,8 @@ class EventQueueProcessorTest : public testing::Test {
                          const EventTarget* /*eventTarget*/,
                          const std::string& type,
                          ReactEventPriority priority,
-                         const EventPayload& /*payload*/) {
+                         const EventPayload& /*payload*/,
+                         HighResTimeStamp /*eventTimestamp*/) {
       eventTypes_.push_back(type);
       eventPriorities_.push_back(priority);
     };

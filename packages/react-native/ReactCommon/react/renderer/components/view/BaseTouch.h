@@ -11,6 +11,7 @@
 #include <react/renderer/core/ReactPrimitives.h>
 #include <react/renderer/debug/DebugStringConvertible.h>
 #include <react/renderer/graphics/Point.h>
+#include <react/timing/primitives.h>
 
 namespace facebook::react {
 
@@ -53,8 +54,14 @@ struct BaseTouch {
 
   /*
    * The time in seconds when the touch occurred or when it was last mutated.
+   * @deprecated Use timeStamp instead.
    */
   Float timestamp{0.0f};
+
+  /*
+   * The time when the touch occurred.
+   */
+  HighResTimeStamp timeStamp{};
 
   /*
    * The particular implementation of `Hasher` and (especially) `Comparator`

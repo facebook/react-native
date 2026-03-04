@@ -16,6 +16,7 @@
 #include <react/renderer/core/EventTarget.h>
 #include <react/renderer/core/ReactPrimitives.h>
 #include <react/renderer/core/ValueFactoryEventPayload.h>
+#include <react/timing/primitives.h>
 
 namespace facebook::react {
 
@@ -88,6 +89,12 @@ class EventEmitter {
 
   void dispatchEvent(
       std::string type,
+      const ValueFactory &payloadFactory,
+      RawEvent::Category category,
+      HighResTimeStamp eventTimestamp) const;
+
+  void dispatchEvent(
+      std::string type,
       folly::dynamic &&payload,
       RawEvent::Category category = RawEvent::Category::Unspecified) const;
 
@@ -96,12 +103,30 @@ class EventEmitter {
       SharedEventPayload payload,
       RawEvent::Category category = RawEvent::Category::Unspecified) const;
 
+  void dispatchEvent(
+      std::string type,
+      folly::dynamic &&payload,
+      RawEvent::Category category,
+      HighResTimeStamp eventTimestamp) const;
+
+  void dispatchEvent(
+      std::string type,
+      SharedEventPayload payload,
+      RawEvent::Category category,
+      HighResTimeStamp eventTimestamp) const;
+
   void dispatchUniqueEvent(std::string type, folly::dynamic &&payload) const;
 
   void dispatchUniqueEvent(std::string type, const ValueFactory &payloadFactory = EventEmitter::defaultPayloadFactory())
       const;
 
+  void dispatchUniqueEvent(std::string type, const ValueFactory &payloadFactory, HighResTimeStamp eventTimestamp) const;
+
   void dispatchUniqueEvent(std::string type, SharedEventPayload payload) const;
+
+  void dispatchUniqueEvent(std::string type, folly::dynamic &&payload, HighResTimeStamp eventTimestamp) const;
+
+  void dispatchUniqueEvent(std::string type, SharedEventPayload payload, HighResTimeStamp eventTimestamp) const;
 
  private:
   friend class UIManagerBinding;

@@ -15,6 +15,7 @@
 #include <react/renderer/core/EventTarget.h>
 #include <react/renderer/core/ReactEventPriority.h>
 #include <react/renderer/core/ValueFactory.h>
+#include <react/timing/primitives.h>
 
 namespace facebook::react {
 
@@ -23,7 +24,8 @@ using EventPipe = std::function<void(
     EventTarget *eventTarget,
     const std::string &type,
     ReactEventPriority priority,
-    const EventPayload &payload)>;
+    const EventPayload &payload,
+    HighResTimeStamp eventTimestamp)>;
 
 using EventPipeConclusion = std::function<void(jsi::Runtime &runtime)>;
 

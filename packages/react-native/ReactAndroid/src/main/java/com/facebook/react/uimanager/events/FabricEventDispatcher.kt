@@ -72,6 +72,7 @@ internal class FabricEventDispatcher(
             event.internal_getEventData(),
             event.internal_getEventCategory(),
             true,
+            event.timestampMs,
         )
       } else {
         ReactSoftExceptionLogger.logSoftException(

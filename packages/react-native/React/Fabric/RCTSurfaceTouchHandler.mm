@@ -67,6 +67,7 @@ static void UpdateActiveTouchWithUITouch(
   activeTouch.touch.pagePoint = RCTPointFromCGPoint(pagePoint);
 
   activeTouch.touch.timestamp = uiTouch.timestamp;
+  activeTouch.touch.timeStamp = RCTHighResTimeStampFromSeconds(uiTouch.timestamp);
 
   if (RCTForceTouchAvailable()) {
     activeTouch.touch.force = RCTZeroIfNaN(uiTouch.force / uiTouch.maximumPossibleForce);
