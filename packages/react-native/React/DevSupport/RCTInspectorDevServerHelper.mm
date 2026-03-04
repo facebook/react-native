@@ -112,13 +112,15 @@ static NSURL *getInspectorDeviceUrl(NSURL *bundleURL)
   NSString *escapedInspectorDeviceId = [getInspectorDeviceId()
       stringByAddingPercentEncodingWithAllowedCharacters:NSCharacterSet.URLQueryAllowedCharacterSet];
 
-  return [NSURL
-      URLWithString:[NSString stringWithFormat:@"http://%@/inspector/device?name=%@&app=%@&device=%@&profiling=%@",
-                                               getServerHost(bundleURL),
-                                               escapedDeviceName,
-                                               escapedAppName,
-                                               escapedInspectorDeviceId,
-                                               isProfilingBuild ? @"true" : @"false"]];
+  NSString *scheme = [bundleURL scheme] != nullptr ? [bundleURL scheme] : @"http";
+  return
+      [NSURL URLWithString:[NSString stringWithFormat:@"%@://%@/inspector/device?name=%@&app=%@&device=%@&profiling=%@",
+                                                      scheme,
+                                                      getServerHost(bundleURL),
+                                                      escapedDeviceName,
+                                                      escapedAppName,
+                                                      escapedInspectorDeviceId,
+                                                      isProfilingBuild ? @"true" : @"false"]];
 }
 
 @implementation RCTInspectorDevServerHelper
@@ -150,7 +152,9 @@ static void sendEventToAllConnections(NSString *event)
   NSString *escapedInspectorDeviceId = [getInspectorDeviceId()
       stringByAddingPercentEncodingWithAllowedCharacters:NSCharacterSet.URLQueryAllowedCharacterSet];
 
-  NSURL *url = [NSURL URLWithString:[NSString stringWithFormat:@"http://%@/open-debugger?device=%@",
+  NSString *scheme = [bundleURL scheme] != nullptr ? [bundleURL scheme] : @"http";
+  NSURL *url = [NSURL URLWithString:[NSString stringWithFormat:@"%@://%@/open-debugger?device=%@",
+                                                               scheme,
                                                                getServerHost(bundleURL),
                                                                escapedInspectorDeviceId]];
   NSMutableURLRequest *request = [NSMutableURLRequest requestWithURL:url];
