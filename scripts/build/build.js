@@ -85,6 +85,10 @@ async function build() {
 
 async function buildPackage(packageName /*: string */, prepack /*: boolean */) {
   try {
+    process.stdout.write(
+      `${packageName} ${styleText('dim', '.').repeat(72 - packageName.length)} `,
+    );
+
     const {emitTypeScriptDefs} = getBuildOptions(packageName);
     const entryPoints = await getEntryPoints(packageName);
 
@@ -96,10 +100,6 @@ async function buildPackage(packageName /*: string */, prepack /*: boolean */) {
       file =>
         !entryPoints.has(file) &&
         !entryPoints.has(file.replace(/\.js$/, '.flow.js')),
-    );
-
-    process.stdout.write(
-      `${packageName} ${styleText('dim', '.').repeat(72 - packageName.length)} `,
     );
 
     // Build regular files
@@ -297,6 +297,15 @@ async function getEntryPoints(
       // Skip non-JS files
       if (!target.endsWith('.js')) {
         continue;
+      }
+
+      if (target.startsWith('./' + BUILD_DIR + '/')) {
+        throw new Error(
+          `Found ./${BUILD_DIR}/* entry in package.json exports for ` +
+            `${packageName}. This is either a misconfiguration, or the ` +
+            `prepack script was previously run and the package.json state ` +
+            `is dirty. Please re-run against a clean working copy.`,
+        );
       }
 
       if (target.includes('*')) {
