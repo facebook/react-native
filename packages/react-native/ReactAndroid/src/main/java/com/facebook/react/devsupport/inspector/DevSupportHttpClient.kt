@@ -9,31 +9,17 @@
 
 package com.facebook.react.devsupport.inspector
 
-import java.util.concurrent.ConcurrentHashMap
 import java.util.concurrent.TimeUnit
-import okhttp3.Interceptor
 import okhttp3.OkHttpClient
 
 /**
  * Shared [OkHttpClient] instances for devsupport networking. Uses a single connection pool and
- * dispatcher across all dev support HTTP and WebSocket usage. Supports injecting custom request
- * headers that are applied to every outgoing request via an OkHttp interceptor.
+ * dispatcher across all dev support HTTP and WebSocket usage.
  */
 internal object DevSupportHttpClient {
-  private val customHeaders = ConcurrentHashMap<String, String>()
-
-  private val headerInterceptor = Interceptor { chain ->
-    val builder = chain.request().newBuilder()
-    for ((name, value) in customHeaders) {
-      builder.header(name, value)
-    }
-    chain.proceed(builder.build())
-  }
-
   /** Client for HTTP requests: connect=5s, write=disabled, read=disabled. */
   internal val httpClient: OkHttpClient =
       OkHttpClient.Builder()
-          .addInterceptor(headerInterceptor)
           .connectTimeout(5, TimeUnit.SECONDS)
           .writeTimeout(0, TimeUnit.MILLISECONDS)
           .readTimeout(0, TimeUnit.MINUTES)
@@ -46,16 +32,6 @@ internal object DevSupportHttpClient {
           .connectTimeout(10, TimeUnit.SECONDS)
           .writeTimeout(10, TimeUnit.SECONDS)
           .build()
-
-  /** Add a custom header to be included in all requests made through both clients. */
-  internal fun addRequestHeader(name: String, value: String) {
-    customHeaders[name] = value
-  }
-
-  /** Remove a previously added custom header. */
-  internal fun removeRequestHeader(name: String) {
-    customHeaders.remove(name)
-  }
 
   /**
    * Returns the appropriate HTTP scheme ("http" or "https") for the given host. Uses "https" when
