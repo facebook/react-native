@@ -428,8 +428,6 @@ export type BackgroundSizeValue =
       x: string | number;
       y: string | number;
     }
-  | 'cover'
-  | 'contain';
 
 export type BackgroundRepeatKeyword =
   | 'repeat'

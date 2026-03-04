@@ -167,7 +167,8 @@ public open class ReactViewManager : ReactClippingViewManager<ReactViewGroup>() 
             backgroundSizes.add(parsedBackgroundSize)
           }
         }
-        BackgroundStyleApplicator.setBackgroundSize(view, backgroundSizes)
+        BackgroundStyleApplicator.setBackgroundSize(
+            view, backgroundSizes.ifEmpty { null })
       }
     } else {
       BackgroundStyleApplicator.setBackgroundSize(view, null)
@@ -186,7 +187,8 @@ public open class ReactViewManager : ReactClippingViewManager<ReactViewGroup>() 
             backgroundPositions.add(parsedBackgroundPosition)
           }
         }
-        BackgroundStyleApplicator.setBackgroundPosition(view, backgroundPositions)
+        BackgroundStyleApplicator.setBackgroundPosition(
+            view, backgroundPositions.ifEmpty { null })
       } else {
         BackgroundStyleApplicator.setBackgroundPosition(view, null)
       }
@@ -205,7 +207,8 @@ public open class ReactViewManager : ReactClippingViewManager<ReactViewGroup>() 
             backgroundRepeats.add(parsedBackgroundRepeat)
           }
         }
-        BackgroundStyleApplicator.setBackgroundRepeat(view, backgroundRepeats)
+        BackgroundStyleApplicator.setBackgroundRepeat(
+            view, backgroundRepeats.ifEmpty { null })
       } else {
         BackgroundStyleApplicator.setBackgroundRepeat(view, null)
       }
