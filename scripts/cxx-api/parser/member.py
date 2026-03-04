@@ -359,28 +359,6 @@ class TypedefMember(Member):
         return result
 
 
-class FriendMember(Member):
-    def __init__(self, name: str, visibility: str = "public") -> None:
-        super().__init__(name, visibility)
-
-    @property
-    def member_kind(self) -> MemberKind:
-        return MemberKind.FRIEND
-
-    def to_string(
-        self,
-        indent: int = 0,
-        qualification: str | None = None,
-        hide_visibility: bool = False,
-    ) -> str:
-        name = self._get_qualified_name(qualification)
-        result = " " * indent
-        if not hide_visibility:
-            result += self.visibility + " "
-        result += f"friend {name};"
-        return result
-
-
 class PropertyMember(Member):
     def __init__(
         self,
@@ -428,6 +406,28 @@ class PropertyMember(Member):
 
         result += f"@property {attrs_str}{self.type} {name};"
 
+        return result
+
+
+class FriendMember(Member):
+    def __init__(self, name: str, visibility: str = "public") -> None:
+        super().__init__(name, visibility)
+
+    @property
+    def member_kind(self) -> MemberKind:
+        return MemberKind.FRIEND
+
+    def to_string(
+        self,
+        indent: int = 0,
+        qualification: str | None = None,
+        hide_visibility: bool = False,
+    ) -> str:
+        name = self._get_qualified_name(qualification)
+        result = " " * indent
+        if not hide_visibility:
+            result += self.visibility + " "
+        result += f"friend {name};"
         return result
 
 
