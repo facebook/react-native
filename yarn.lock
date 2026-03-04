@@ -6591,18 +6591,6 @@ markdown-it@14.1.0:
     punycode.js "^2.3.1"
     uc.micro "^2.1.0"
 
-markdown-it@14.1.1:
-  version "14.1.1"
-  resolved "https://registry.yarnpkg.com/markdown-it/-/markdown-it-14.1.1.tgz#856f90b66fc39ae70affd25c1b18b581d7deee1f"
-  integrity sha512-BuU2qnTti9YKgK5N+IeMubp14ZUKUUw7yeJbkjtosvHiP0AZ5c8IAgEMk79D0eC8F23r4Ac/q8cAIFdm2FtyoA==
-  dependencies:
-    argparse "^2.0.1"
-    entities "^4.4.0"
-    linkify-it "^5.0.0"
-    mdurl "^2.0.0"
-    punycode.js "^2.3.1"
-    uc.micro "^2.1.0"
-
 markdownlint-cli2-formatter-default@0.0.5:
   version "0.0.5"
   resolved "https://registry.yarnpkg.com/markdownlint-cli2-formatter-default/-/markdownlint-cli2-formatter-default-0.0.5.tgz#b8fde4e127f9a9c0596e6d45eed352dd0aa0ff98"
@@ -6620,13 +6608,12 @@ markdownlint-cli2@^0.17.2:
     markdownlint-cli2-formatter-default "0.0.5"
     micromatch "4.0.8"
 
-markdownlint-rule-relative-links@^5.1.0:
-  version "5.1.0"
-  resolved "https://registry.yarnpkg.com/markdownlint-rule-relative-links/-/markdownlint-rule-relative-links-5.1.0.tgz#f84bbfa2bcc1df02e570d1ad2c9fb7f39e9f5760"
-  integrity sha512-0jZ3NlTXvAdV7XqWlVQ5guSee2W67acLrH102KOHk3t2nG5mzsoqGCBYUwNyeNBBpzc1hbj4bgi5maexB25V+A==
+markdownlint-rule-relative-links@^3.0.0:
+  version "3.0.0"
+  resolved "https://registry.yarnpkg.com/markdownlint-rule-relative-links/-/markdownlint-rule-relative-links-3.0.0.tgz#e4de472298f3859c51ea3e421350cf7649bbef12"
+  integrity sha512-+Ek2J8kXKtL8IcjmPYBsxtS37etKIbPE85aj/ehwSlxcWIlT0BCsA/SPHZlIICiZON786XVrLStMCJ1x25D3oA==
   dependencies:
-    markdown-it "14.1.1"
-    mime "4.1.0"
+    markdown-it "14.1.0"
 
 markdownlint@0.37.4:
   version "0.37.4"
@@ -7219,11 +7206,6 @@ mime@1.6.0:
   version "1.6.0"
   resolved "https://registry.yarnpkg.com/mime/-/mime-1.6.0.tgz#32cd9e5c64553bd58d19a568af452acff04981b1"
   integrity sha512-x0Vn8spI+wuJ1O6S7gnbaQg8Pxh4NNHb7KSINmEWKiPE4RKOplvijn+NkmYmmRgP68mc70j2EbeTFRsrswaQeg==
-
-mime@4.1.0:
-  version "4.1.0"
-  resolved "https://registry.yarnpkg.com/mime/-/mime-4.1.0.tgz#ec55df7aa21832a36d44f0bbee5c04639b27802f"
-  integrity sha512-X5ju04+cAzsojXKes0B/S4tcYtFAJ6tTMuSPBEn9CPGlrWr8Fiw7qYeLT0XyH80HSoAoqWCaz+MWKh22P7G1cw==
 
 mime@^2.4.1:
   version "2.6.0"
