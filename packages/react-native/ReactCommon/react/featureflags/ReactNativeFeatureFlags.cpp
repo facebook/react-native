@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<5208616bc5d84f040ad0fa5e85acd6c4>>
+ * @generated SignedSource<<8643070722a65532f6c928ed82ca2aa5>>
  */
 
 /**
@@ -196,6 +196,10 @@ bool ReactNativeFeatureFlags::enableModuleArgumentNSNullConversionIOS() {
 
 bool ReactNativeFeatureFlags::enableNativeCSSParsing() {
   return getAccessor().enableNativeCSSParsing();
+}
+
+bool ReactNativeFeatureFlags::enableNativeViewPropTransformations() {
+  return getAccessor().enableNativeViewPropTransformations();
 }
 
 bool ReactNativeFeatureFlags::enableNetworkEventReporting() {

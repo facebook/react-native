@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<7713ee7b0947f0ae8c66b73413a7f226>>
+ * @generated SignedSource<<4adf4e6f40b726bf9d3680301fb92e1f>>
  */
 
 /**
@@ -108,6 +108,8 @@ public open class ReactNativeFeatureFlagsDefaults : ReactNativeFeatureFlagsProvi
   override fun enableModuleArgumentNSNullConversionIOS(): Boolean = false
 
   override fun enableNativeCSSParsing(): Boolean = false
+
+  override fun enableNativeViewPropTransformations(): Boolean = false
 
   override fun enableNetworkEventReporting(): Boolean = true
 
