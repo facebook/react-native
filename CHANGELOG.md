@@ -1,5 +1,113 @@
 # Changelog
 
+## v0.83.3
+
+### Breaking
+
+
+
+#### Android specific
+
+
+
+#### iOS specific
+
+
+
+### Added
+
+
+
+#### Android specific
+
+
+
+#### iOS specific
+
+
+
+### Changed
+
+
+
+#### Android specific
+
+
+
+#### iOS specific
+
+
+
+### Deprecated
+
+
+
+#### Android specific
+
+
+
+#### iOS specific
+
+
+
+### Removed
+
+
+
+#### Android specific
+
+
+
+#### iOS specific
+
+
+
+### Fixed
+
+
+
+#### Android specific
+
+- Fix included-build `gradle.properties` resolution for monorepos by reading from parent Gradle start parameters (`projectDir`/`currentDir`) before falling back to `../../android/gradle.properties`, so `hermesV1Enabled` can be inherited correctly. ([c5ae0c820a](https://github.com/facebook/react-native/commit/c5ae0c820a571141a43de980cb011d232fc2268f) by [@Titozzz](https://github.com/Titozzz))
+
+#### iOS specific
+
+
+
+### Security
+
+
+
+#### Android specific
+
+
+
+#### iOS specific
+
+
+
+### Unknown
+
+- Release 0.83.3 ([96e5bbc4ff](https://github.com/facebook/react-native/commit/96e5bbc4ffb2a80ade8b6500602ce101f0fac9d5) by [@react-native-bot](https://github.com/react-native-bot))
+- [0.83] Fix rncore tarball extraction for EdenFS compatibility ([becef72f12](https://github.com/facebook/react-native/commit/becef72f1216430f9ac0c3e9c90c87a2167651d3) by [@cipolleschi](https://github.com/cipolleschi))
+- [0.83] Add support for custom header in devsupport ([c8ab750148](https://github.com/facebook/react-native/commit/c8ab750148f318062a75f5294020e854d91969dc) by [@cortinico](https://github.com/cortinico))
+- Skip set-rn-artifacts-version for PRs targeting stable branches ([81223f27b7](https://github.com/facebook/react-native/commit/81223f27b7cba74a9c560614b3b9655e54b12b31) by [@cipolleschi](https://github.com/cipolleschi))
+- Bump Podfile.lock ([080327c80c](https://github.com/facebook/react-native/commit/080327c80ce0fa39ac8ade3067119d9b0dcea8f6) by [@react-native-bot](https://github.com/react-native-bot))
+- Release 0.83.2 ([e2ad57939d](https://github.com/facebook/react-native/commit/e2ad57939da2b409ee1e950b08418762d36b850c) by [@react-native-bot](https://github.com/react-native-bot))
+
+#### Android Unknown
+
+
+
+#### iOS Unknown
+
+
+
+#### Failed to parse
+
+
+
+
 ## v0.84.0
 
 ### Breaking
