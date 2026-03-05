@@ -7,6 +7,7 @@
 
 #pragma once
 
+#include <fbjni/ByteBuffer.h>
 #include <fbjni/fbjni.h>
 
 #include <jsinspector-modern/HostTarget.h>
@@ -98,13 +99,17 @@ struct JFrameTimingSequence : public jni::JavaClass<JFrameTimingSequence> {
         std::chrono::steady_clock::time_point(std::chrono::nanoseconds(getFieldValue(field))));
   }
 
-  std::optional<std::string> getScreenshot() const
+  std::optional<std::vector<uint8_t>> getScreenshot() const
   {
-    auto field = javaClassStatic()->getField<jstring>("screenshot");
+    auto field = javaClassStatic()->getField<jbyteArray>("screenshot");
     auto javaScreenshot = getFieldValue(field);
     if (javaScreenshot) {
-      auto jstring = jni::static_ref_cast<jni::JString>(javaScreenshot);
-      return jstring->toStdString();
+      auto size = static_cast<size_t>(javaScreenshot->size());
+      if (size > 0) {
+        std::vector<uint8_t> result(size);
+        javaScreenshot->getRegion(0, javaScreenshot->size(), reinterpret_cast<jbyte *>(result.data()));
+        return result;
+      }
     }
     return std::nullopt;
   }

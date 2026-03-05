@@ -103,7 +103,7 @@ TEST_F(TracingTest, EmitsScreenshotEventWhenScreenshotValuePassed) {
           11, // threadId
           now,
           now + HighResDuration::fromNanoseconds(50),
-          "base64EncodedScreenshotData"));
+          std::vector<uint8_t>{}));
 
   auto allTraceEvents = endTracingAndCollectEvents();
   EXPECT_THAT(allTraceEvents, Contains(AtJsonPtr("/name", "Screenshot")));

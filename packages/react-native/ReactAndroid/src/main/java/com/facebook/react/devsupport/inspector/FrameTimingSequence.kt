@@ -12,5 +12,5 @@ internal data class FrameTimingSequence(
     val threadId: Int,
     val beginTimestamp: Long,
     val endTimestamp: Long,
-    val screenshot: String? = null,
+    val screenshot: ByteArray? = null,
 )
