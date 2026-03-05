@@ -116,6 +116,84 @@ describe('<TouchableHighlight>', () => {
           <rn-view opacity="0.5" />,
         );
       });
+
+      it('applies default activeOpacity (0.85) to child when pressed', () => {
+        const root = Fantom.createRoot();
+
+        Fantom.runTask(() => {
+          root.render(
+            <TouchableHighlight testOnly_pressed={true}>
+              <View />
+            </TouchableHighlight>,
+          );
+        });
+
+        expect(root.getRenderedOutput({props: ['opacity']}).toJSX()).toEqual(
+          <rn-view>
+            <rn-view opacity="0.8500000238418579" />
+          </rn-view>,
+        );
+      });
+
+      it('applies custom activeOpacity to child when pressed', () => {
+        const root = Fantom.createRoot();
+
+        Fantom.runTask(() => {
+          root.render(
+            <TouchableHighlight testOnly_pressed={true} activeOpacity={0.5}>
+              <View />
+            </TouchableHighlight>,
+          );
+        });
+
+        expect(root.getRenderedOutput({props: ['opacity']}).toJSX()).toEqual(
+          <rn-view>
+            <rn-view opacity="0.5" />
+          </rn-view>,
+        );
+      });
+    });
+
+    describe('underlayColor', () => {
+      it('renders default underlay color (black) when pressed', () => {
+        const root = Fantom.createRoot();
+
+        Fantom.runTask(() => {
+          root.render(
+            <TouchableHighlight testOnly_pressed={true}>
+              <View />
+            </TouchableHighlight>,
+          );
+        });
+
+        expect(
+          root.getRenderedOutput({props: ['backgroundColor']}).toJSX(),
+        ).toEqual(
+          <rn-view backgroundColor="rgba(0, 0, 0, 1)">
+            <rn-view />
+          </rn-view>,
+        );
+      });
+
+      it('renders custom underlay color when pressed', () => {
+        const root = Fantom.createRoot();
+
+        Fantom.runTask(() => {
+          root.render(
+            <TouchableHighlight testOnly_pressed={true} underlayColor="red">
+              <View />
+            </TouchableHighlight>,
+          );
+        });
+
+        expect(
+          root.getRenderedOutput({props: ['backgroundColor']}).toJSX(),
+        ).toEqual(
+          <rn-view backgroundColor="rgba(255, 0, 0, 1)">
+            <rn-view />
+          </rn-view>,
+        );
+      });
     });
 
     describe('onPress', () => {
@@ -140,6 +218,32 @@ describe('<TouchableHighlight>', () => {
         Fantom.dispatchNativeEvent(element, 'click');
 
         expect(onPressCallback).toHaveBeenCalledTimes(1);
+      });
+    });
+
+    describe('onShowUnderlay', () => {
+      it('triggers onShowUnderlay callback when pressed', () => {
+        const elementRef = createRef<HostInstance>();
+        const onShowUnderlayCallback = jest.fn();
+
+        const root = Fantom.createRoot();
+
+        Fantom.runTask(() => {
+          root.render(
+            <TouchableHighlight
+              ref={elementRef}
+              onPress={() => {}}
+              onShowUnderlay={onShowUnderlayCallback}
+              style={{height: 100}}>
+              <View />
+            </TouchableHighlight>,
+          );
+        });
+
+        const element = ensureInstance(elementRef.current, ReactNativeElement);
+        Fantom.dispatchNativeEvent(element, 'click');
+
+        expect(onShowUnderlayCallback).toHaveBeenCalledTimes(1);
       });
     });
 
@@ -183,6 +287,93 @@ describe('<TouchableHighlight>', () => {
         ).toEqual(
           <rn-view accessibilityState="{disabled:true,selected:false,checked:None,busy:false,expanded:null}" />,
         );
+      });
+
+      it('sets accessibilityState disabled when accessibilityState is empty', () => {
+        const root = Fantom.createRoot();
+
+        Fantom.runTask(() => {
+          root.render(
+            <TouchableHighlight disabled={true} accessibilityState={{}}>
+              <View />
+            </TouchableHighlight>,
+          );
+        });
+
+        expect(
+          root.getRenderedOutput({props: ['accessibilityState']}).toJSX(),
+        ).toEqual(
+          <rn-view accessibilityState="{disabled:true,selected:false,checked:None,busy:false,expanded:null}" />,
+        );
+      });
+
+      it('preserves accessibilityState values when disabled is true', () => {
+        const root = Fantom.createRoot();
+
+        Fantom.runTask(() => {
+          root.render(
+            <TouchableHighlight
+              disabled={true}
+              accessibilityState={{checked: true}}>
+              <View />
+            </TouchableHighlight>,
+          );
+        });
+
+        expect(
+          root.getRenderedOutput({props: ['accessibilityState']}).toJSX(),
+        ).toEqual(
+          <rn-view accessibilityState="{disabled:true,selected:false,checked:Checked,busy:false,expanded:null}" />,
+        );
+      });
+
+      it('overwrites accessibilityState disabled with disabled prop', () => {
+        const root = Fantom.createRoot();
+
+        Fantom.runTask(() => {
+          root.render(
+            <TouchableHighlight
+              disabled={true}
+              accessibilityState={{disabled: false}}>
+              <View />
+            </TouchableHighlight>,
+          );
+        });
+
+        expect(
+          root.getRenderedOutput({props: ['accessibilityState']}).toJSX(),
+        ).toEqual(
+          <rn-view accessibilityState="{disabled:true,selected:false,checked:None,busy:false,expanded:null}" />,
+        );
+      });
+
+      it('disables when only accessibilityState disabled is set', () => {
+        const elementRef = createRef<HostInstance>();
+        const onPressCallback = jest.fn();
+
+        const root = Fantom.createRoot();
+
+        Fantom.runTask(() => {
+          root.render(
+            <TouchableHighlight
+              ref={elementRef}
+              onPress={onPressCallback}
+              accessibilityState={{disabled: true}}>
+              <View />
+            </TouchableHighlight>,
+          );
+        });
+
+        expect(
+          root.getRenderedOutput({props: ['accessibilityState']}).toJSX(),
+        ).toEqual(
+          <rn-view accessibilityState="{disabled:true,selected:false,checked:None,busy:false,expanded:null}" />,
+        );
+
+        const element = ensureInstance(elementRef.current, ReactNativeElement);
+        Fantom.dispatchNativeEvent(element, 'click');
+
+        expect(onPressCallback).toHaveBeenCalledTimes(0);
       });
     });
 
@@ -242,5 +433,9 @@ describe('<TouchableHighlight>', () => {
         expect(element.tagName).toBe('RN:View');
       });
     });
+  });
+
+  it('has the correct displayName', () => {
+    expect(TouchableHighlight.displayName).toBe('TouchableHighlight');
   });
 });
