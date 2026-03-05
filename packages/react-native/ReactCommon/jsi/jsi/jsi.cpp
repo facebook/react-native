@@ -459,6 +459,16 @@ void Runtime::deleteProperty(const Object& object, const Value& name) {
   }
 }
 
+size_t Runtime::push(const Array& arr, const Value* elements, size_t count) {
+  size_t newSize = size(arr);
+  for (size_t i = 0; i < count; i++) {
+    arr.setProperty(*this, Value((int)newSize), elements[i]);
+    ++newSize;
+  }
+  arr.setProperty(*this, "length", Value((int)newSize));
+  return newSize;
+}
+
 void Runtime::setRuntimeDataImpl(
     const UUID& uuid,
     const void* data,
