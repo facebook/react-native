@@ -33,6 +33,7 @@ def build_doxygen_config(
     include_directories: list[str] = None,
     exclude_patterns: list[str] = None,
     definitions: dict[str, str | int] = None,
+    input_filter: str = None,
 ) -> None:
     if include_directories is None:
         include_directories = []
@@ -53,6 +54,8 @@ def build_doxygen_config(
         ]
     )
 
+    input_filter_str = input_filter if input_filter else ""
+
     # read the template file
     with open(os.path.join(directory, ".doxygen.config.template")) as f:
         template = f.read()
@@ -62,6 +65,7 @@ def build_doxygen_config(
         template.replace("${INPUTS}", include_directories_str)
         .replace("${EXCLUDE_PATTERNS}", exclude_patterns_str)
         .replace("${PREDEFINED}", definitions_str)
+        .replace("${DOXYGEN_INPUT_FILTER}", input_filter_str)
     )
 
     # write the config file
@@ -77,6 +81,7 @@ def build_snapshot_for_view(
     definitions: dict[str, str | int],
     output_dir: str,
     verbose: bool = True,
+    input_filter: str = None,
 ) -> None:
     if verbose:
         print(f"Generating API view: {api_view}")
@@ -87,6 +92,7 @@ def build_snapshot_for_view(
         include_directories=include_directories,
         exclude_patterns=exclude_patterns,
         definitions=definitions,
+        input_filter=input_filter,
     )
 
     # If there is already a doxygen output directory, delete it
@@ -188,6 +194,17 @@ def main():
     if verbose and args.codegen_path:
         print(f"Codegen output path: {os.path.abspath(args.codegen_path)}")
 
+    input_filter_path = os.path.join(
+        get_react_native_dir(),
+        "scripts",
+        "cxx-api",
+        "input_filters",
+        "doxygen_strip_comments.py",
+    )
+    input_filter = None
+    if os.path.exists(input_filter_path):
+        input_filter = f"python3 {input_filter_path}"
+
     # Parse config file
     config_path = os.path.join(
         get_react_native_dir(), "scripts", "cxx-api", "config.yml"
@@ -219,6 +236,7 @@ def main():
                 definitions={},
                 output_dir=output_dir,
                 verbose=verbose,
+                input_filter=input_filter,
             )
 
             if verbose:
@@ -245,7 +263,3 @@ def main():
             )
         )
         build_snapshots(output_dir, verbose=True)
-
-
-if __name__ == "__main__":
-    main()

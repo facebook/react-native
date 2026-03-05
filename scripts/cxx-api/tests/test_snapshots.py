@@ -49,18 +49,21 @@ def _assert_text_equal_with_diff(
     tc.fail(diff)
 
 
-def _get_doxygen_bin() -> str:
-    return os.environ.get("DOXYGEN_BIN", "doxygen")
-
-
-def _generate_doxygen_api(case_dir_path: str, doxygen_config_path: str) -> None:
+def _generate_doxygen_api(
+    case_dir_path: str, doxygen_config_path: str, filter_script_path: str | None = None
+) -> None:
     """Run doxygen to generate XML API documentation."""
-    doxygen_bin = _get_doxygen_bin()
+    env = os.environ.copy()
+    if filter_script_path:
+        env["DOXYGEN_INPUT_FILTER"] = f"python3 {filter_script_path}"
+
+    doxygen_bin = env.get("DOXYGEN_BIN", "doxygen")
     result = subprocess.run(
         [doxygen_bin, doxygen_config_path],
         cwd=case_dir_path,
         capture_output=True,
         text=True,
+        env=env,
     )
     if result.returncode != 0:
         raise RuntimeError(f"Doxygen failed: {result.stderr}")
@@ -101,8 +104,22 @@ def _make_case_test(case_dir: Traversable, tests_root: Traversable):
             case_dir_path = tests_root_path / case_dir.name
             doxygen_config_path = tests_root_path / ".doxygen.config.template"
 
+            # Find the filter script in the package resources
+            pkg_root = ir.files(__package__ if __package__ else "__main__")
+            filter_script = (
+                pkg_root.parent / "input_filters" / "doxygen_strip_comments.py"
+            )
+
+            # Get real filesystem path for filter script if it exists
+            filter_script_path = None
+            if filter_script.is_file():
+                with ir.as_file(filter_script) as fs_path:
+                    filter_script_path = str(fs_path)
+
             # Run doxygen to generate the XML
-            _generate_doxygen_api(str(case_dir_path), str(doxygen_config_path))
+            _generate_doxygen_api(
+                str(case_dir_path), str(doxygen_config_path), filter_script_path
+            )
 
             # Parse the generated XML
             xml_dir = case_dir_path / "api" / "xml"
