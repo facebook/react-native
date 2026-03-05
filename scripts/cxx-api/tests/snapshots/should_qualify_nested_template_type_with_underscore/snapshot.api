@@ -1,5 +1,5 @@
 template <typename T>
-facebook::react::detail::is_dynamic<T>::type & facebook::react::jsArgAsDynamic(T && args, size_t n);
+facebook::react::detail::is_dynamic<T>::type& facebook::react::jsArgAsDynamic(T&& args, size_t n);
 
 
 template <typename T>
