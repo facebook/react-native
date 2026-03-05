@@ -13,9 +13,13 @@ import type {
   TestCaseResult,
   TestSuiteResult,
 } from '../runtime/setup';
-import type {TestSnapshotResults} from '../runtime/snapshotContext';
+import type {
+  TestInlineSnapshotResults,
+  TestSnapshotResults,
+} from '../runtime/snapshotContext';
 import type {BenchmarkResult} from '../src/Benchmark';
 import type {CoverageMap} from './coverage/types.flow';
+import type {PendingInlineSnapshot} from './snapshotUtils';
 import type {
   AsyncCommandResult,
   ConsoleLogMessage,
@@ -45,6 +49,8 @@ import {
 } from './paths';
 import {
   getInitialSnapshotData,
+  processInlineSnapshotResults,
+  saveInlineSnapshotsToSource,
   updateSnapshotsAndGetJestSnapshotResult,
 } from './snapshotUtils';
 import {
@@ -239,6 +245,7 @@ module.exports = async function runTest(
 
   const testResultsByConfig = [];
   const benchmarkResults = [];
+  const allPendingInlineSnapshots: Array<PendingInlineSnapshot> = [];
 
   const skippedTestResults = ({
     ancestorTitles,
@@ -255,6 +262,7 @@ module.exports = async function runTest(
       fullName: title,
       numPassingAsserts: 0,
       snapshotResults: {} as TestSnapshotResults,
+      inlineSnapshotResults: [] as TestInlineSnapshotResults,
       status: 'pending' as TestCaseResult['status'],
       testFilePath: testPath,
       title,
@@ -414,7 +422,16 @@ module.exports = async function runTest(
     const [processedResult, benchmarkResult] =
       await processRNTesterCommandResult(rnTesterCommandResult);
 
-    if (containsError(processedResult) || EnvironmentOptions.profileJS) {
+    const hasInlineSnapshotUpdates =
+      processedResult.testResults?.some(r =>
+        r.inlineSnapshotResults.some(ir => !ir.pass),
+      ) ?? false;
+
+    if (
+      containsError(processedResult) ||
+      EnvironmentOptions.profileJS ||
+      hasInlineSnapshotUpdates
+    ) {
       await createSourceMap({
         ...bundleOptions,
         out: sourceMapPath,
@@ -451,6 +468,20 @@ module.exports = async function runTest(
         ),
         snapshotResults: testResult.snapshotResults,
       })) ?? [];
+
+    // Process inline snapshot results (requires source map for symbolication)
+    if (hasInlineSnapshotUpdates) {
+      const inlineResults = nullthrows(processedResult.testResults).map(
+        r => r.inlineSnapshotResults,
+      );
+      const pending = processInlineSnapshotResults(
+        snapshotState,
+        inlineResults,
+        sourceMapPath,
+        testPath,
+      );
+      allPendingInlineSnapshots.push(...pending);
+    }
 
     // Display the Fantom test configuration as a suffix of the name of the root
     // `describe` block of the test, or adds one if the test doesn't have it.
@@ -514,6 +545,9 @@ module.exports = async function runTest(
       }
     }
   }
+
+  // Write pending inline snapshots to the test source file
+  saveInlineSnapshotsToSource(testPath, allPendingInlineSnapshots);
 
   const endTime = Date.now();
 
