@@ -2442,7 +2442,19 @@ INCLUDE_FILE_PATTERNS  =
 # recursively expanded use the := operator instead of the = operator.
 # This tag requires that the tag ENABLE_PREPROCESSING is set to YES.
 
-PREDEFINED             = FOLLY_PACK_PUSH="" FOLLY_PACK_POP="" FOLLY_PACK_ATTR="" __attribute__(x)="" __deprecated_msg(x)=""
+PREDEFINED             = FOLLY_PACK_PUSH="" \
+                         FOLLY_PACK_POP="" \
+                         FOLLY_PACK_ATTR="" \
+                         __attribute__(x)="" \
+                         __deprecated_msg(x)="" \
+                         NS_REQUIRES_SUPER="" \
+                         NS_UNAVAILABLE="" \
+                         CF_RETURNS_NOT_RETAINED="" \
+                         NS_DESIGNATED_INITIALIZER="" \
+                         RCT_EXTERN="" \
+                         RCT_DEPRECATED="" \
+                         RCT_EXTERN_MODULE="" \
+                         API_AVAILABLE(x)=""
 
 # If the MACRO_EXPANSION and EXPAND_ONLY_PREDEF tags are set to YES then this
 # tag can be used to specify a list of macro names that should be expanded. The
