@@ -37,9 +37,9 @@ jobs:
     runs-on: ubuntu-latest
     if: github.repository == 'facebook/react-native'
     outputs:
-      any_code_change: ${{ steps.filter_exclusions.outputs.any_code_change || github.event_name != 'pull_request' }}
-      should_test_android: ${{ steps.filter_exclusions.outputs.should_test_android || github.event_name != 'pull_request' }}
-      should_test_ios: ${{ steps.filter_exclusions.outputs.should_test_ios || github.event_name != 'pull_request' }}
+      any_code_change: ${{ steps.filter_exclusions.outputs.any_code_change == 'true' || github.event_name != 'pull_request' }}
+      should_test_android: ${{ steps.filter_exclusions.outputs.should_test_android == 'true' || github.event_name != 'pull_request' }}
+      should_test_ios: ${{ steps.filter_exclusions.outputs.should_test_ios == 'true' || github.event_name != 'pull_request' }}
       debugger_shell: ${{ steps.filter_inclusions.outputs.debugger_shell }}
     steps:
       - name: Checkout
