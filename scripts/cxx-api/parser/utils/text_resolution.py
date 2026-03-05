@@ -90,28 +90,6 @@ def normalize_angle_brackets(text: str) -> str:
     return text
 
 
-def resolve_ref_text_name(type_def: compound.refTextType) -> str:
-    """Resolve the text content of a refTextType."""
-    if hasattr(type_def, "content_") and type_def.content_:
-        name = ""
-        for part in type_def.content_:
-            if part.category == 1:  # MixedContainer.CategoryText
-                name += part.value
-            elif part.category == 3:  # MixedContainer.CategoryComplex (ref element)
-                if hasattr(part.value, "get_valueOf_"):
-                    name += part.value.get_valueOf_()
-                elif hasattr(part.value, "valueOf_"):
-                    name += part.value.valueOf_
-                else:
-                    name += str(part.value)
-        return normalize_angle_brackets(name)
-
-    if type_def.ref:
-        return normalize_angle_brackets(type_def.ref[0].get_valueOf_())
-
-    return normalize_angle_brackets(type_def.get_valueOf_())
-
-
 class InitializerType(Enum):
     NONE = (0,)
     ASSIGNMENT = (1,)
