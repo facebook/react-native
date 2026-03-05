@@ -1,0 +1,39 @@
+name: Validate C++ Stable API
+
+on:
+  pull_request:
+
+env:
+  DOXYGEN_VERSION: '1.16.1'
+
+jobs:
+  validate_cxx_stable_api:
+    runs-on: ubuntu-latest
+    if: github.repository == 'facebook/react-native'
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v6
+
+      - name: Install Doxygen
+        run: |
+          for i in 1 2 3; do
+            wget -q https://www.doxygen.nl/files/doxygen-${{ env.DOXYGEN_VERSION }}.linux.bin.tar.gz && break
+            echo "Download attempt $i failed, retrying in 10s..."
+            sleep 10
+          done
+          tar -xzf doxygen-${{ env.DOXYGEN_VERSION }}.linux.bin.tar.gz
+          echo "${{ github.workspace }}/doxygen-${{ env.DOXYGEN_VERSION }}/bin" >> $GITHUB_PATH
+
+      - name: Setup Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+
+      - name: Install Python dependencies
+        run: pip install doxmlparser natsort pyyaml
+
+      - name: Verify C++ Stable API snapshots
+        env:
+          DOXYGEN_BIN: ${{ github.workspace }}/doxygen-${{ env.DOXYGEN_VERSION }}/bin/doxygen
+        working-directory: scripts/cxx-api
+        run: python -m parser --check
