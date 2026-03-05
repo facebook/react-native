@@ -3,5 +3,4 @@ category RCTBridgeProxy(Cxx) {
 }
 
 interface RCTBridgeProxy : public NSObject {
-  public @property (assign) int cxxOnlyProperty;
 }
