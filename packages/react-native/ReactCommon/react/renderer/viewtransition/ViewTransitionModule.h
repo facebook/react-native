@@ -45,6 +45,9 @@ class ViewTransitionModule : public UIManagerViewTransitionDelegate {
 
   void startViewTransitionEnd() override;
 
+  std::optional<ViewTransitionInstance> getViewTransitionInstance(const std::string &name, const std::string &pseudo)
+      override;
+
   // Animation state structure for storing minimal view data
   struct AnimationKeyFrameViewLayoutMetrics {
     Point originFromRoot;
