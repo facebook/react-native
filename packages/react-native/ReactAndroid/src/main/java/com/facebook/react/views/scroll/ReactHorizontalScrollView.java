@@ -158,7 +158,7 @@ public class ReactHorizontalScrollView extends HorizontalScrollView
   /**
    * Set all default values here as opposed to in the constructor or field defaults. It is important
    * that these properties are set during the constructor, but also on-demand whenever an existing
-   * ReactTextView is recycled.
+   * ReactHorizontalScrollView is recycled.
    */
   private void initView() {
     mOverflowInset = new Rect();
@@ -552,7 +552,7 @@ public class ReactHorizontalScrollView extends HorizontalScrollView
 
   /**
    * Since ReactHorizontalScrollView handles layout changes on JS side, it does not call
-   * super.onlayout due to which mIsLayoutDirty flag in HorizontalScrollView remains true and
+   * super.onLayout due to which mIsLayoutDirty flag in HorizontalScrollView remains true and
    * prevents scrolling to child when requestChildFocus is called. Overriding this method and
    * scrolling to child without checking any layout dirty flag. This will fix focus navigation issue
    * for KeyEvents which are not handled in HorizontalScrollView, for example: KEYCODE_TAB.
@@ -568,7 +568,7 @@ public class ReactHorizontalScrollView extends HorizontalScrollView
   /**
    * In rare cases where an app overrides the built-in ReactScrollView by overriding it, and also
    * needs to customize scroll into view on focus behaviors, this protected method can be used to
-   * unblocks such customization.
+   * unblock such customization.
    */
   protected void requestChildFocusWithoutScroll(View child, View focused) {
     super.requestChildFocus(child, focused);
@@ -1008,10 +1008,10 @@ public class ReactHorizontalScrollView extends HorizontalScrollView
         return nextFocus;
       }
 
-      @Nullable View nextfocusableView = findNextFocusableView(this, focused, direction);
+      @Nullable View nextFocusableView = findNextFocusableView(this, focused, direction);
 
-      if (nextfocusableView != null) {
-        return nextfocusableView;
+      if (nextFocusableView != null) {
+        return nextFocusableView;
       }
     }
 
@@ -1700,7 +1700,7 @@ public class ReactHorizontalScrollView extends HorizontalScrollView
 
     if (mScroller != null && !mScroller.isFinished()) {
       // Calculate the velocity and position of the fling animation at the time of this layout
-      // event, which may be later than the last ScrollView tick. These values are not commited to
+      // event, which may be later than the last ScrollView tick. These values are not committed to
       // the underlying ScrollView, which will recalculate positions on its next tick.
       int scrollerXBeforeTick = mScroller.getCurrX();
       boolean hasMoreTicks = mScroller.computeScrollOffset();
