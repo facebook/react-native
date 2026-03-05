@@ -2121,6 +2121,46 @@ TEST_P(JSITest, ArrayPush) {
   EXPECT_TRUE(arr.getValueAtIndex(rd, 3).isUndefined());
 }
 
+TEST_P(JSITest, ArrayBufferDetachedTest) {
+  // This Runtime Decorator is used to test the default implementation of
+  // Runtime::detached
+  class RD : public RuntimeDecorator<Runtime, Runtime> {
+   public:
+    explicit RD(Runtime& rt) : RuntimeDecorator(rt) {}
+
+    bool detached(const ArrayBuffer& ab) override {
+      return Runtime::detached(ab);
+    }
+  };
+  RD rd = RD(rt);
+
+  // Test that a normal ArrayBuffer is not detached.
+  auto ab = eval("var buf = new ArrayBuffer(10); buf")
+                .getObject(rd)
+                .getArrayBuffer(rd);
+
+  // The default Runtime::detached reads the JS "detached" property. If the
+  // runtime doesn't support ArrayBuffer.prototype.detached, it will throw
+  // JSINativeException.
+  try {
+    EXPECT_FALSE(ab.detached(rd));
+  } catch (const JSINativeException&) {
+    // Runtime doesn't support ArrayBuffer.prototype.detached, skip the rest.
+    return;
+  }
+
+  // Detach the ArrayBuffer. Use transfer() if available, otherwise fall back
+  // to HermesInternal.detach for Hermes runtime.
+  eval(
+      "if (typeof buf.transfer === 'function') {"
+      "  buf.transfer();"
+      "} else if (typeof HermesInternal !== 'undefined' && "
+      "           typeof HermesInternal.detachArrayBuffer === 'function') {"
+      "  HermesInternal.detachArrayBuffer(buf);"
+      "}");
+  EXPECT_TRUE(ab.detached(rd));
+}
+
 INSTANTIATE_TEST_CASE_P(
     Runtimes,
     JSITest,
