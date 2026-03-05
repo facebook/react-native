@@ -465,7 +465,24 @@ def create_interface_scope(
 
     interface_scope = snapshot.create_interface(interface_name)
     base_classes = get_base_classes(scope_def, base_class=InterfaceScopeKind.Base)
-    interface_scope.kind.add_base(base_classes)
+
+    # Doxygen incorrectly splits "Foo <Protocol1, Protocol2>" into separate base classes:
+    # "Foo", "<Protocol1>", "<Protocol2>". Combine them back into "Foo <Protocol1, Protocol2>".
+    combined_bases = []
+    for base in base_classes:
+        if base.name.startswith("<") and base.name.endswith(">") and combined_bases:
+            prev_name = combined_bases[-1].name
+            protocol = base.name[1:-1]  # Strip < and >
+            if "<" in prev_name and prev_name.endswith(">"):
+                # Previous base already has protocols, merge inside the brackets
+                combined_bases[-1].name = f"{prev_name[:-1]}, {protocol}>"
+            else:
+                # First protocol for this base class
+                combined_bases[-1].name = f"{prev_name} <{protocol}>"
+        else:
+            combined_bases.append(base)
+
+    interface_scope.kind.add_base(combined_bases)
     interface_scope.location = scope_def.location.file
 
     _process_objc_sections(
