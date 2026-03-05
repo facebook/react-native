@@ -269,10 +269,10 @@ const AccessibilityInfo = {
    * See https://reactnative.dev/docs/accessibilityinfo#prefersCrossFadeTransitions
    */
   prefersCrossFadeTransitions(): Promise<boolean> {
-    return new Promise((resolve, reject) => {
-      if (Platform.OS === 'android') {
-        return Promise.resolve(false);
-      } else {
+    if (Platform.OS === 'android') {
+      return Promise.resolve(false);
+    } else {
+      return new Promise((resolve, reject) => {
         if (
           NativeAccessibilityManagerIOS?.getCurrentPrefersCrossFadeTransitionsState !=
           null
@@ -288,8 +288,8 @@ const AccessibilityInfo = {
             ),
           );
         }
-      }
-    });
+      });
+    }
   },
 
   /**
