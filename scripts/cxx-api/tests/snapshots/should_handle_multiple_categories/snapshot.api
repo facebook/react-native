@@ -7,6 +7,4 @@ category RCTConvert(CategoryTwo) {
 }
 
 interface RCTConvert : public NSObject {
-  public virtual static NSString* methodOne:(id json);
-  public virtual static NSString* methodTwo:(id json);
 }
