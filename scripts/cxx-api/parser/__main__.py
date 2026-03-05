@@ -201,6 +201,7 @@ def main():
         "input_filters",
         "doxygen_strip_comments.py",
     )
+
     input_filter = None
     if os.path.exists(input_filter_path):
         input_filter = f"python3 {input_filter_path}"
@@ -263,3 +264,7 @@ def main():
             )
         )
         build_snapshots(output_dir, verbose=True)
+
+
+if __name__ == "__main__":
+    main()

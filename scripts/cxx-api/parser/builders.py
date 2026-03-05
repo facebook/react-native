@@ -33,6 +33,7 @@ from .utils import (
     Argument,
     extract_qualifiers,
     InitializerType,
+    normalize_angle_brackets,
     normalize_pointer_spacing,
     parse_qualified_path,
     resolve_linked_text_name,
@@ -59,7 +60,7 @@ def get_base_classes(
             # - prot: protection level (public, protected, private)
             # - virt: virtual inheritance (non-virtual, virtual, pure-virtual)
             # - valueOf_: the name of the base class
-            base_name = base.valueOf_
+            base_name = normalize_angle_brackets(base.valueOf_)
             base_prot = base.prot
             base_virt = base.virt
             base_refid = base.refid

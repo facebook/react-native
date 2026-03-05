@@ -5,6 +5,8 @@
 
 from __future__ import annotations
 
+from .text_resolution import normalize_angle_brackets
+
 
 def parse_qualified_path(path: str) -> list[str]:
     """
@@ -19,7 +21,12 @@ def parse_qualified_path(path: str) -> list[str]:
     - Comparison operators inside parentheses: "std::enable_if<(N > 0)>::type"
     - Arrow operators: "decltype(ptr->member)::type"
     - Bitshift operators: "std::integral_constant<int, (1 >> 2)>::value"
+
+    Normalizes angle bracket spacing (e.g., "Foo< Bar >" -> "Foo<Bar>").
     """
+    # Normalize angle bracket spacing before parsing
+    path = normalize_angle_brackets(path)
+
     result = []
     current = ""
     angle_depth = 0
