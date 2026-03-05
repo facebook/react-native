@@ -33,7 +33,7 @@ struct CSSDataTypeParser<ConsumeDataType> {
 
 static_assert(CSSDataType<ConsumeDataType>);
 
-TEST(CSSValueParser, consume_multiple_with_delimeter) {
+TEST(CSSValueParser, consume_multiple_with_delimiter) {
   CSSSyntaxParser syntaxParser{"1 2, 3, 4 / 5"};
   CSSValueParser parser{syntaxParser};
 
