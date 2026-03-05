@@ -3,5 +3,4 @@ category RCTConvert(UIActivityIndicatorView) {
 }
 
 interface RCTConvert : public NSObject {
-  public virtual static UIActivityIndicatorViewStyle UIActivityIndicatorViewStyle:(id json);
 }
