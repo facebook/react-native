@@ -126,6 +126,11 @@ const Components: Array<RNTesterModuleInfo> = [
     category: 'Basic',
   },
   {
+    key: 'TextInputLayoutBugExample',
+    module: require('../examples/TextInputLayoutBug/TextInputLayoutBugExample'),
+    category: 'Basic',
+  },
+  {
     key: 'TouchableExample',
     module: require('../examples/Touchable/TouchableExample'),
   },
