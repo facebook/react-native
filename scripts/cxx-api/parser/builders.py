@@ -26,12 +26,7 @@ from .member import (
     TypedefMember,
     VariableMember,
 )
-from .scope import (
-    CategoryScopeKind,
-    InterfaceScopeKind,
-    ProtocolScopeKind,
-    StructLikeScopeKind,
-)
+from .scope import InterfaceScopeKind, ProtocolScopeKind, StructLikeScopeKind
 from .snapshot import Snapshot
 from .template import Template
 from .utils import (
@@ -40,7 +35,6 @@ from .utils import (
     InitializerType,
     parse_qualified_path,
     resolve_linked_text_name,
-    resolve_ref_text_name,
 )
 
 
@@ -281,7 +275,7 @@ def get_typedef_member(
     typedef_def: compound.memberdefType, visibility: str
 ) -> TypedefMember:
     typedef_name = typedef_def.get_name()
-    typedef_type = resolve_ref_text_name(typedef_def.get_type())
+    typedef_type = resolve_linked_text_name(typedef_def.get_type())[0]
     typedef_argstring = typedef_def.get_argsstring()
     typedef_definition = typedef_def.definition
 
@@ -338,7 +332,7 @@ def get_property_member(
     Get the property member from a member definition.
     """
     property_name = member_def.get_name()
-    property_type = resolve_ref_text_name(member_def.get_type()).strip()
+    property_type = resolve_linked_text_name(member_def.get_type())[0].strip()
     accessor = member_def.accessor if hasattr(member_def, "accessor") else None
     is_readable = getattr(member_def, "readable", "no") == "yes"
     is_writable = getattr(member_def, "writable", "no") == "yes"
@@ -364,7 +358,7 @@ def create_enum_scope(snapshot: Snapshot, enum_def: compound.EnumdefType) -> Non
     Create an enum scope in the snapshot.
     """
     scope = snapshot.create_enum(enum_def.qualifiedname)
-    scope.kind.type = resolve_ref_text_name(enum_def.get_type())
+    scope.kind.type = resolve_linked_text_name(enum_def.get_type())[0]
     scope.location = enum_def.location.file
 
     for enum_value_def in enum_def.enumvalue:
