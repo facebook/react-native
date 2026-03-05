@@ -9,6 +9,8 @@
 #include "Timing.h"
 #include "TracingCategory.h"
 
+#include <react/utils/Base64.h>
+
 namespace facebook::react::jsinspector_modern::tracing {
 
 /* static */ TraceEvent TraceEventGenerator::createSetLayerTreeIdEvent(
@@ -70,14 +72,19 @@ TraceEventGenerator::createFrameTimingsEvents(
 /* static */ TraceEvent TraceEventGenerator::createScreenshotEvent(
     FrameSequenceId frameSequenceId,
     int sourceId,
-    std::string&& snapshot,
+    std::vector<uint8_t>&& snapshot,
     HighResTimeStamp expectedDisplayTime,
     ProcessId processId,
     ThreadId threadId) {
-  folly::dynamic args = folly::dynamic::object("snapshot", std::move(snapshot))(
-      "source_id", sourceId)("frame_sequence", frameSequenceId)(
-      "expected_display_time",
-      highResTimeStampToTracingClockTimeStamp(expectedDisplayTime));
+  // Convert binary data to string for Base64 encoding
+  std::string snapshotBytes(snapshot.begin(), snapshot.end());
+  std::string base64Snapshot = base64Encode(snapshotBytes);
+
+  folly::dynamic args =
+      folly::dynamic::object("snapshot", std::move(base64Snapshot))(
+          "source_id", sourceId)("frame_sequence", frameSequenceId)(
+          "expected_display_time",
+          highResTimeStampToTracingClockTimeStamp(expectedDisplayTime));
 
   return TraceEvent{
       .name = "Screenshot",

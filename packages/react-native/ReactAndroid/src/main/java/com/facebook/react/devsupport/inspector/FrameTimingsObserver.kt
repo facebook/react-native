@@ -12,7 +12,6 @@ import android.os.Build
 import android.os.Handler
 import android.os.Looper
 import android.os.Process
-import android.util.Base64
 import android.view.FrameMetrics
 import android.view.PixelCopy
 import android.view.Window
@@ -109,7 +108,7 @@ internal class FrameTimingsObserver(
   }
 
   // Must be called from the main thread so that PixelCopy captures the current frame.
-  private fun captureScreenshot(callback: (String?) -> Unit) {
+  private fun captureScreenshot(callback: (ByteArray?) -> Unit) {
     if (Build.VERSION.SDK_INT < Build.VERSION_CODES.O) {
       callback(null)
       return
@@ -143,7 +142,12 @@ internal class FrameTimingsObserver(
     )
   }
 
-  private fun encodeScreenshot(window: Window, bitmap: Bitmap, width: Int, height: Int): String? {
+  private fun encodeScreenshot(
+      window: Window,
+      bitmap: Bitmap,
+      width: Int,
+      height: Int,
+  ): ByteArray? {
     var scaledBitmap: Bitmap? = null
     return try {
       val density = window.context.resources.displayMetrics.density
@@ -155,9 +159,9 @@ internal class FrameTimingsObserver(
           if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R) Bitmap.CompressFormat.WEBP_LOSSY
           else Bitmap.CompressFormat.JPEG
 
-      ByteArrayOutputStream().use { outputStream ->
+      ByteArrayOutputStream(SCREENSHOT_OUTPUT_SIZE_HINT).use { outputStream ->
         scaledBitmap.compress(compressFormat, SCREENSHOT_QUALITY, outputStream)
-        Base64.encodeToString(outputStream.toByteArray(), Base64.NO_WRAP)
+        outputStream.toByteArray()
       }
     } catch (e: Exception) {
       null
@@ -170,5 +174,10 @@ internal class FrameTimingsObserver(
   companion object {
     private const val SCREENSHOT_SCALE_FACTOR = 0.75f
     private const val SCREENSHOT_QUALITY = 80
+
+    // Capacity hint for the ByteArrayOutputStream used during bitmap
+    // compression. Sized slightly above typical compressed output to minimise
+    // internal buffer resizing.
+    private const val SCREENSHOT_OUTPUT_SIZE_HINT = 65536 // 64 KB
   }
 }
