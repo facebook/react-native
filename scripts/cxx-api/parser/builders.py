@@ -337,6 +337,16 @@ def get_property_member(
     is_readable = getattr(member_def, "readable", "no") == "yes"
     is_writable = getattr(member_def, "writable", "no") == "yes"
 
+    # Handle block properties: Doxygen splits the block type across <type> and <argsstring>
+    # <type> = "void(^"
+    # <argsstring> = ")(NSString *eventName, NSDictionary *event, NSNumber *reactTag)"
+    # We need to combine them: "void(^eventInterceptor)(NSString *, NSDictionary *, NSNumber *)"
+    if property_type.endswith("(^"):
+        argsstring = member_def.get_argsstring()
+        if argsstring:
+            property_type = f"{property_type}{property_name}{argsstring}"
+            property_name = ""
+
     return PropertyMember(
         property_name,
         property_type,
