@@ -90,6 +90,30 @@ def normalize_angle_brackets(text: str) -> str:
     return text
 
 
+def normalize_nullability(text: str) -> str:
+    """Normalize Objective-C nullability annotations to a consistent form.
+
+    There are three forms of nullability annotations in Objective-C:
+    - nonnull/nullable (context-sensitive keywords, typically used as prefix)
+    - _Nonnull/_Nullable (type qualifiers, can appear after the type)
+    - __nonnull/__nullable (legacy Apple macros, deprecated but still used)
+
+    This function normalizes all forms to _Nonnull/_Nullable, which is the
+    most flexible form that can be used in any position.
+    """
+    # Normalize __nonnull -> _Nonnull (must come before nonnull)
+    text = re.sub(r"\b__nonnull\b", "_Nonnull", text)
+    # Normalize nonnull -> _Nonnull (negative lookbehind to avoid _Nonnull)
+    text = re.sub(r"(?<!_)\bnonnull\b", "_Nonnull", text)
+
+    # Normalize __nullable -> _Nullable (must come before nullable)
+    text = re.sub(r"\b__nullable\b", "_Nullable", text)
+    # Normalize nullable -> _Nullable (negative lookbehind to avoid _Nullable)
+    text = re.sub(r"(?<!_)\bnullable\b", "_Nullable", text)
+
+    return text
+
+
 def normalize_pointer_spacing(text: str) -> str:
     """Normalize spacing around pointer (*) and reference (&, &&) symbols.
 
@@ -179,7 +203,9 @@ def resolve_linked_text_name(
             name = name[1:-1].strip()
 
     return (
-        normalize_pointer_spacing(normalize_angle_brackets(name.strip())),
+        normalize_nullability(
+            normalize_pointer_spacing(normalize_angle_brackets(name.strip()))
+        ),
         initialier_type,
     )
 
