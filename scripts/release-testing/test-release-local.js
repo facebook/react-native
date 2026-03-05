@@ -327,7 +327,30 @@ function bootSimulatorIfNeeded() {
     console.info('An iOS simulator is already booted, skipping boot.');
     return;
   }
-  exec('xcrun simctl boot "iPhone 16 Pro"');
+
+  // Find the latest available iPhone simulator by picking the last iOS runtime
+  // and the first iPhone device listed under it.
+  const devicesJson = JSON.parse(
+    String(
+      exec('xcrun simctl list devices iPhone available -j', {silent: true}),
+    ),
+  );
+  const runtimes = Object.keys(devicesJson.devices)
+    .filter(r => r.startsWith('com.apple.CoreSimulator.SimRuntime.iOS'))
+    .sort();
+  const latestRuntime = runtimes[runtimes.length - 1];
+  const device =
+    latestRuntime != null
+      ? devicesJson.devices[latestRuntime].find(d => d.name.includes('iPhone'))
+      : null;
+
+  if (device != null) {
+    console.info(`Booting ${device.name} (${latestRuntime})...`);
+    exec(`xcrun simctl boot "${device.udid}"`);
+  } else {
+    console.error('No available iPhone simulator found.');
+    process.exit(1);
+  }
 }
 
 async function main() {
