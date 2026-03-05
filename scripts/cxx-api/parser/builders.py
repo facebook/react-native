@@ -389,15 +389,40 @@ def create_enum_scope(snapshot: Snapshot, enum_def: compound.EnumdefType) -> Non
         )
 
 
+def _is_category_member(member_def: compound.MemberdefType) -> bool:
+    """
+    Check if a member comes from a category based on its definition.
+
+    Doxygen merges category members into the base interface XML output, but the
+    member's definition field contains the category name in parentheses, e.g.:
+    "int RCTBridgeProxy(Cxx)::cxxOnlyProperty"
+
+    We use this to filter out category members from the interface scope.
+    """
+    definition = member_def.definition
+    if not definition:
+        return False
+
+    # Look for pattern: ClassName(CategoryName)::memberName
+    # The definition contains the qualified name with category info
+    return bool(re.search(r"\w+\([^)]+\)::", definition))
+
+
 def _process_objc_sections(
     snapshot: Snapshot,
     scope,
     section_defs: list,
     location_file: str,
     scope_type: str,
+    filter_category_members: bool = False,
 ) -> None:
     """
     Common section processing for protocols and interfaces.
+
+    Args:
+        filter_category_members: If True, skip members that come from categories.
+            This is used for interfaces since Doxygen incorrectly merges category
+            members into the base interface XML output.
     """
     for section_def in section_defs:
         kind = section_def.kind
@@ -412,11 +437,15 @@ def _process_objc_sections(
             if member_type == "attrib":
                 for member_def in section_def.memberdef:
                     if member_def.kind == "variable":
+                        if filter_category_members and _is_category_member(member_def):
+                            continue
                         scope.add_member(
                             get_variable_member(member_def, visibility, is_static)
                         )
             elif member_type == "func":
                 for function_def in section_def.memberdef:
+                    if filter_category_members and _is_category_member(function_def):
+                        continue
                     scope.add_member(
                         get_function_member(function_def, visibility, is_static)
                     )
@@ -425,6 +454,8 @@ def _process_objc_sections(
                     if member_def.kind == "enum":
                         create_enum_scope(snapshot, member_def)
                     elif member_def.kind == "typedef":
+                        if filter_category_members and _is_category_member(member_def):
+                            continue
                         scope.add_member(get_typedef_member(member_def, visibility))
                     else:
                         print(
@@ -435,6 +466,8 @@ def _process_objc_sections(
         elif visibility == "property":
             for member_def in section_def.memberdef:
                 if member_def.kind == "property":
+                    if filter_category_members and _is_category_member(member_def):
+                        continue
                     scope.add_member(
                         get_property_member(member_def, "public", is_static)
                     )
@@ -504,6 +537,7 @@ def create_interface_scope(
         scope_def.sectiondef,
         scope_def.location.file,
         "interface",
+        filter_category_members=True,
     )
 
 
