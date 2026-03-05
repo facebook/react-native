@@ -61,6 +61,7 @@ ReactApple:
     - "*/platform/macos/*"
     - "*/platform/android/*"
   definitions:
+    __cplusplus: 1
   variants:
     debug:
       definitions:
