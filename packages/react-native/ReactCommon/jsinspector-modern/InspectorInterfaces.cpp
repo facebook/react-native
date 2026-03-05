@@ -142,6 +142,12 @@ int InspectorImpl::addPage(
       pageId,
       Page{pageId, description, vm, std::move(connectFunc), capabilities});
 
+  for (const auto& listenerWeak : listeners_) {
+    if (auto listener = listenerWeak.lock()) {
+      listener->unstable_onHostTargetAdded();
+    }
+  }
+
   return pageId;
 }
 
