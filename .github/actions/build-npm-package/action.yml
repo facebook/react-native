@@ -10,6 +10,10 @@ inputs:
     default: ''
   gradle-cache-encryption-key:
     description: The encryption key needed to store the Gradle Configuration cache
+  ignore-android:
+    description: When true, skip downloading Android artifacts (use when Android was not built)
+    required: false
+    default: 'false'
 
 runs:
   using: composite
@@ -18,18 +22,21 @@ runs:
       shell: bash
       run: git config --global --add safe.directory '*'
     - name: Download ReactNativeDependencies
+      if: ${{ inputs.ignore-android != 'true' }}
       uses: actions/download-artifact@v7
       with:
         pattern: ReactNativeDependencies*
         path: ./packages/react-native/ReactAndroid/external-artifacts/artifacts
         merge-multiple: true
     - name: Download ReactCore artifacts
+      if: ${{ inputs.ignore-android != 'true' }}
       uses: actions/download-artifact@v7
       with:
         pattern: ReactCore*
         path: ./packages/react-native/ReactAndroid/external-artifacts/artifacts
         merge-multiple: true
     - name: Print Artifacts Directory
+      if: ${{ inputs.ignore-android != 'true' }}
       shell: bash
       run: ls -lR ./packages/react-native/ReactAndroid/external-artifacts/artifacts/
     - name: Setup gradle
