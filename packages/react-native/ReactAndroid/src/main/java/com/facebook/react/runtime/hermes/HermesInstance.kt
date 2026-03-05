@@ -12,15 +12,22 @@ import com.facebook.jni.annotations.DoNotStrip
 import com.facebook.react.runtime.JSRuntimeFactory
 import com.facebook.soloader.SoLoader
 
-public class HermesInstance(allocInOldGenBeforeTTI: Boolean) :
-    JSRuntimeFactory(initHybrid(allocInOldGenBeforeTTI)) {
+public class HermesInstance(
+    allocInOldGenBeforeTTI: Boolean,
+    useOccupancyTargetExperiment: Boolean,
+) : JSRuntimeFactory(initHybrid(allocInOldGenBeforeTTI, useOccupancyTargetExperiment)) {
 
-  public constructor() : this(false)
+  public constructor(allocInOldGenBeforeTTI: Boolean) : this(allocInOldGenBeforeTTI, false)
+
+  public constructor() : this(false, false)
 
   public companion object {
     @JvmStatic
     @DoNotStrip
-    protected external fun initHybrid(allocInOldGenBeforeTTI: Boolean): HybridData
+    protected external fun initHybrid(
+        allocInOldGenBeforeTTI: Boolean,
+        useOccupancyTargetExperiment: Boolean,
+    ): HybridData
 
     init {
       SoLoader.loadLibrary("hermesinstancejni")
