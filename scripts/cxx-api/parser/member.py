@@ -404,7 +404,11 @@ class PropertyMember(Member):
         if self.is_static:
             result += "static "
 
-        result += f"@property {attrs_str}{self.type} {name};"
+        # For block properties, name is embedded in the type (e.g., "void(^eventInterceptor)(args)")
+        if name:
+            result += f"@property {attrs_str}{self.type} {name};"
+        else:
+            result += f"@property {attrs_str}{self.type};"
 
         return result
 
