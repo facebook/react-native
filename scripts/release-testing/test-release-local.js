@@ -102,14 +102,7 @@ async function testRNTesterIOS(
     exec(`unzip ${hermesAppZipPath} -d ${appOutputFolder}`);
 
     // boot device
-    const bootedDevice = String(
-      exec('xcrun simctl list | grep "iPhone 16 Pro" | grep Booted', {
-        silent: true,
-      }),
-    ).trim();
-    if (!bootedDevice || bootedDevice.length === 0) {
-      exec('xcrun simctl boot "iPhone 16 Pro"');
-    }
+    bootSimulatorIfNeeded();
 
     // install app on device
     exec(`xcrun simctl install booted ${appOutputFolder}`);
@@ -118,12 +111,13 @@ async function testRNTesterIOS(
       `USE_HERMES=1 CI=${onReleaseBranch.toString()} RCT_NEW_ARCH_ENABLED=1 bundle exec pod install --ansi`,
     );
 
+    // boot device
+    bootSimulatorIfNeeded();
+
     // build the app on iOS simulator
     exec(
       'xcodebuild -workspace RNTesterPods.xcworkspace -scheme RNTester -sdk "iphonesimulator" -destination "generic/platform=iOS Simulator" -derivedDataPath "/tmp/RNTesterBuild"',
     );
-    // boot device
-    exec('xcrun simctl boot "iPhone 16 Pro"');
     // install app on device
     exec(
       'xcrun simctl install booted "/tmp/RNTesterBuild/Build/Products/Debug-iphonesimulator/RNTester.app"',
@@ -322,6 +316,18 @@ async function testRNTestProject(
     exec('npm run android');
   }
   popd();
+}
+
+function bootSimulatorIfNeeded() {
+  const bootedDevices = String(
+    exec('xcrun simctl list devices booted', {silent: true}),
+  ).trim();
+  // Check if there is at least one booted device by looking for a line with a UDID
+  if (/\([A-F0-9-]+\)/i.test(bootedDevices)) {
+    console.info('An iOS simulator is already booted, skipping boot.');
+    return;
+  }
+  exec('xcrun simctl boot "iPhone 16 Pro"');
 }
 
 async function main() {
