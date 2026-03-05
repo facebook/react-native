@@ -103,12 +103,12 @@
 }
 
 - (instancetype)initWithTurboModuleDelegate:(id<RCTTurboModuleManagerDelegate>)turboModuleManagerDelegate
-                               hostDelegate:(id<RCTHostDelegate>)hostdelegate
+                               hostDelegate:(id<RCTHostDelegate>)hostDelegate
                               configuration:(RCTRootViewFactoryConfiguration *)configuration
 {
   if (self = [super init]) {
     _configuration = configuration;
-    _hostDelegate = hostdelegate;
+    _hostDelegate = hostDelegate;
     _contextContainer = std::make_shared<const facebook::react::ContextContainer>();
     _turboModuleManagerDelegate = turboModuleManagerDelegate;
   }
