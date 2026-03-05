@@ -1,1 +1,1 @@
-void test::doSomething(const Node *const node, int x);
+void test::doSomething(const Node* const node, int x);
