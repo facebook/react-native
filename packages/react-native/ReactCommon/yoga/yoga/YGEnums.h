@@ -22,7 +22,9 @@ YG_ENUM_DECL(
     YGAlignBaseline,
     YGAlignSpaceBetween,
     YGAlignSpaceAround,
-    YGAlignSpaceEvenly)
+    YGAlignSpaceEvenly,
+    YGAlignStart,
+    YGAlignEnd)
 
 YG_ENUM_DECL(
     YGBoxSizing,
@@ -44,7 +46,8 @@ YG_ENUM_DECL(
     YGDisplay,
     YGDisplayFlex,
     YGDisplayNone,
-    YGDisplayContents)
+    YGDisplayContents,
+    YGDisplayGrid)
 
 YG_ENUM_DECL(
     YGEdge,
@@ -81,6 +84,14 @@ YG_ENUM_DECL(
     YGFlexDirectionRowReverse)
 
 YG_ENUM_DECL(
+    YGGridTrackType,
+    YGGridTrackTypeAuto,
+    YGGridTrackTypePoints,
+    YGGridTrackTypePercent,
+    YGGridTrackTypeFr,
+    YGGridTrackTypeMinmax)
+
+YG_ENUM_DECL(
     YGGutter,
     YGGutterColumn,
     YGGutterRow,
@@ -88,12 +99,16 @@ YG_ENUM_DECL(
 
 YG_ENUM_DECL(
     YGJustify,
+    YGJustifyAuto,
     YGJustifyFlexStart,
     YGJustifyCenter,
     YGJustifyFlexEnd,
     YGJustifySpaceBetween,
     YGJustifySpaceAround,
-    YGJustifySpaceEvenly)
+    YGJustifySpaceEvenly,
+    YGJustifyStretch,
+    YGJustifyStart,
+    YGJustifyEnd)
 
 YG_ENUM_DECL(
     YGLogLevel,
