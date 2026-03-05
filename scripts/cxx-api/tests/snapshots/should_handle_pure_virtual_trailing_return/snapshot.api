@@ -1,5 +1,5 @@
 class test::Base {
-  public virtual const char * getName() = 0;
+  public virtual const char* getName() = 0;
   public virtual std::vector<test::Method> getMethods() = 0;
 }
 

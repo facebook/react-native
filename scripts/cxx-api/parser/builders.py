@@ -33,6 +33,7 @@ from .utils import (
     Argument,
     extract_qualifiers,
     InitializerType,
+    normalize_pointer_spacing,
     parse_qualified_path,
     resolve_linked_text_name,
 )
@@ -344,7 +345,9 @@ def get_property_member(
     if property_type.endswith("(^"):
         argsstring = member_def.get_argsstring()
         if argsstring:
-            property_type = f"{property_type}{property_name}{argsstring}"
+            # Normalize pointer spacing in the argsstring
+            normalized_argsstring = normalize_pointer_spacing(argsstring)
+            property_type = f"{property_type}{property_name}{normalized_argsstring}"
             property_name = ""
 
     return PropertyMember(

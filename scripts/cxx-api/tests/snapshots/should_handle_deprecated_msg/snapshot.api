@@ -6,8 +6,8 @@ interface RCTDeprecatedInterface {
 }
 
 interface RCTTestInterface {
-  public virtual NSArray * deprecatedMethod:(id param);
-  public virtual void normalMethod:(NSString * name);
+  public virtual NSArray* deprecatedMethod:(id param);
+  public virtual void normalMethod:(NSString* name);
 }
 
 protocol RCTDeprecatedProtocol {

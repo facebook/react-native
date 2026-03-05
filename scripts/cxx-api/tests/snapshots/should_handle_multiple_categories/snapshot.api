@@ -1,12 +1,12 @@
 category RCTConvert(CategoryOne) {
-  public virtual static NSString * methodOne:(id json);
+  public virtual static NSString* methodOne:(id json);
 }
 
 category RCTConvert(CategoryTwo) {
-  public virtual static NSString * methodTwo:(id json);
+  public virtual static NSString* methodTwo:(id json);
 }
 
 interface RCTConvert : public NSObject {
-  public virtual static NSString * methodOne:(id json);
-  public virtual static NSString * methodTwo:(id json);
+  public virtual static NSString* methodOne:(id json);
+  public virtual static NSString* methodTwo:(id json);
 }

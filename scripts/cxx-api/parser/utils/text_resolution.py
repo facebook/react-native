@@ -83,10 +83,43 @@ def extract_namespace_from_refid(refid: str) -> str:
 
 def normalize_angle_brackets(text: str) -> str:
     """Doxygen adds spaces around < and > to avoid XML ambiguity.
-    e.g. "NSArray< id< RCTBridgeMethod > > *" -> "NSArray<id<RCTBridgeMethod>> *"
+    e.g. "NSArray< id< RCTBridgeMethod > > *" -> "NSArray<id<RCTBridgeMethod>>*"
     """
     text = re.sub(r"<\s+", "<", text)
     text = re.sub(r"\s+>", ">", text)
+    return text
+
+
+def normalize_pointer_spacing(text: str) -> str:
+    """Normalize spacing around pointer (*) and reference (&, &&) symbols.
+
+    Doxygen outputs types with a space before * and &, e.g.:
+    - "NSString *" -> "NSString*"
+    - "int &" -> "int&"
+    - "T &&" -> "T&&"
+
+    But for function arguments like "NSString *name", we want "NSString* name"
+    (space moved from before * to after *).
+
+    This normalizes to have no space before the pointer/reference symbol,
+    while preserving the space after if there's an identifier following.
+    """
+    # For patterns like "Type *name" -> "Type* name" (move space from before to after)
+    # Match: word/type character or > followed by space(s), then *, then word char
+    text = re.sub(r"(\w|>)\s+\*(\w)", r"\1* \2", text)
+    # For patterns like "Type *" at end or before comma/paren/angle/open-paren -> "Type*"
+    text = re.sub(r"(\w|>)\s+\*(?=\s*[,)>(]|$)", r"\1*", text)
+    # For patterns like "Type *" followed by another * (pointer to pointer)
+    text = re.sub(r"(\w|>)\s+\*(?=\*)", r"\1*", text)
+
+    # Same for && (rvalue reference)
+    text = re.sub(r"(\w|>)\s+&&(\w)", r"\1&& \2", text)
+    text = re.sub(r"(\w|>)\s+&&(?=\s*[,)>(]|$)", r"\1&&", text)
+
+    # Same for & (lvalue reference) - but don't match &&
+    text = re.sub(r"(\w|>)\s+&(?!&)(\w)", r"\1& \2", text)
+    text = re.sub(r"(\w|>)\s+&(?!&)(?=\s*[,)>(]|$)", r"\1&", text)
+
     return text
 
 
@@ -145,7 +178,10 @@ def resolve_linked_text_name(
             initialier_type = InitializerType.BRACE
             name = name[1:-1].strip()
 
-    return (normalize_angle_brackets(name.strip()), initialier_type)
+    return (
+        normalize_pointer_spacing(normalize_angle_brackets(name.strip())),
+        initialier_type,
+    )
 
 
 def _qualify_text_with_refid(text: str, refid: str) -> str:
