@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<95380ca380ce7c5d3d2293b105d42247>>
+ * @generated SignedSource<<06bec17aa254943812f39a35442c6965>>
  */
 
 /**
@@ -408,6 +408,12 @@ class ReactNativeFeatureFlagsJavaProvider
   bool fuseboxEnabledRelease() override {
     static const auto method =
         getReactNativeFeatureFlagsProviderJavaClass()->getMethod<jboolean()>("fuseboxEnabledRelease");
+    return method(javaProvider_);
+  }
+
+  bool fuseboxFrameRecordingEnabled() override {
+    static const auto method =
+        getReactNativeFeatureFlagsProviderJavaClass()->getMethod<jboolean()>("fuseboxFrameRecordingEnabled");
     return method(javaProvider_);
   }
 
@@ -881,6 +887,11 @@ bool JReactNativeFeatureFlagsCxxInterop::fuseboxEnabledRelease(
   return ReactNativeFeatureFlags::fuseboxEnabledRelease();
 }
 
+bool JReactNativeFeatureFlagsCxxInterop::fuseboxFrameRecordingEnabled(
+    facebook::jni::alias_ref<JReactNativeFeatureFlagsCxxInterop> /*unused*/) {
+  return ReactNativeFeatureFlags::fuseboxFrameRecordingEnabled();
+}
+
 bool JReactNativeFeatureFlagsCxxInterop::fuseboxNetworkInspectionEnabled(
     facebook::jni::alias_ref<JReactNativeFeatureFlagsCxxInterop> /*unused*/) {
   return ReactNativeFeatureFlags::fuseboxNetworkInspectionEnabled();
@@ -1228,6 +1239,9 @@ void JReactNativeFeatureFlagsCxxInterop::registerNatives() {
       makeNativeMethod(
         "fuseboxEnabledRelease",
         JReactNativeFeatureFlagsCxxInterop::fuseboxEnabledRelease),
+      makeNativeMethod(
+        "fuseboxFrameRecordingEnabled",
+        JReactNativeFeatureFlagsCxxInterop::fuseboxFrameRecordingEnabled),
       makeNativeMethod(
         "fuseboxNetworkInspectionEnabled",
         JReactNativeFeatureFlagsCxxInterop::fuseboxNetworkInspectionEnabled),
