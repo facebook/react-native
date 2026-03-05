@@ -10,7 +10,7 @@ class test::Clss {
   public void fn7(std::vector<std::vector<std::pair<int, int>>> v);
   public void fn8(std::map<K, std::function<void(A, B)>> m);
   public void fn9(int(*)(int, int) callback);
-  public void fn10(void(*)(const char *, size_t) handler);
+  public void fn10(void(*)(const char*, size_t) handler);
   public void fn11(int(*(*fp)(int))(double));
   public void fn12(int x = 5, std::string s = "default");
   public void fn13(std::function<void()> f = nullptr);

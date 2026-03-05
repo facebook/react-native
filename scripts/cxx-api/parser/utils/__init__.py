@@ -18,6 +18,7 @@ from .text_resolution import (
     extract_namespace_from_refid,
     InitializerType,
     normalize_angle_brackets,
+    normalize_pointer_spacing,
     resolve_linked_text_name,
 )
 from .type_qualification import qualify_arguments, qualify_parsed_type, qualify_type_str
