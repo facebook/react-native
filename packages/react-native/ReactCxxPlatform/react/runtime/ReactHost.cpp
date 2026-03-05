@@ -35,7 +35,7 @@
 #include <react/runtime/hermes/HermesInstance.h>
 #include <react/threading/MessageQueueThreadImpl.h>
 
-#include "TurboModuleManager.h"
+#include "ReactCxxTurboModuleProvider.h"
 
 namespace facebook::react {
 
@@ -251,7 +251,7 @@ void ReactHost::createReactInstance() {
   }
 
   auto liveReloadCallback = [this]() { reloadReactInstance(); };
-  TurboModuleManager turboModuleManager(
+  ReactCxxTurboModuleProvider turboModuleManager(
       reactInstanceData_->turboModuleProviders,
       jsInvoker,
       reactInstanceData_->onJsError,
