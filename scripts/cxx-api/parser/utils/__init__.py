@@ -19,7 +19,6 @@ from .text_resolution import (
     InitializerType,
     normalize_angle_brackets,
     resolve_linked_text_name,
-    resolve_ref_text_name,
 )
 from .type_qualification import qualify_arguments, qualify_parsed_type, qualify_type_str
 
@@ -40,5 +39,4 @@ __all__ = [
     "qualify_parsed_type",
     "qualify_type_str",
     "resolve_linked_text_name",
-    "resolve_ref_text_name",
 ]
