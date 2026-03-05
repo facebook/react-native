@@ -191,6 +191,26 @@
 - **Touch Handling**: Respect `cancelsTouchesInView` when canceling touches in `RCTSurfaceTouchHandler` ([5634e8a601](https://github.com/facebook/react-native/commit/5634e8a601caf0faa174bac3511929de767609ac) by [@intmain](https://github.com/intmain))
 - **View**: Fix duplicate shadow bug during component recycling by cleaning up visual layers in prepareForRecycle ([7dcedf1def](https://github.com/facebook/react-native/commit/7dcedf1def880163ab7ca07b2575a8153029a925) by Atharv Soni)
 
+## v0.83.3
+
+### Added
+
+#### Android specific
+
+- **Dev Support**: [0.83] Add support for custom header in devsupport ([c8ab750148](https://github.com/facebook/react-native/commit/c8ab750148f318062a75f5294020e854d91969dc) by [@cortinico](https://github.com/cortinico))
+
+### Changed
+
+- **CI**: Skip set-rn-artifacts-version for PRs targeting stable branches ([81223f27b7](https://github.com/facebook/react-native/commit/81223f27b7cba74a9c560614b3b9655e54b12b31) by [@cipolleschi](https://github.com/cipolleschi))
+
+### Fixed
+
+- **Build**: [0.83] Fix rncore tarball extraction for EdenFS compatibility ([becef72f12](https://github.com/facebook/react-native/commit/becef72f1216430f9ac0c3e9c90c87a2167651d3) by [@cipolleschi](https://github.com/cipolleschi))
+
+#### Android specific
+
+- **Gradle**: Fix included-build `gradle.properties` resolution for monorepos by reading from parent Gradle start parameters (`projectDir`/`currentDir`) before falling back to `../../android/gradle.properties`, so `hermesV1Enabled` can be inherited correctly. ([c5ae0c820a](https://github.com/facebook/react-native/commit/c5ae0c820a571141a43de980cb011d232fc2268f) by [@Titozzz](https://github.com/Titozzz))
+
 ## v0.83.2
 
 ### Added
