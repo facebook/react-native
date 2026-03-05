@@ -19,7 +19,8 @@ class HermesInstance {
   static std::unique_ptr<JSRuntime> createJSRuntime(
       std::shared_ptr<::hermes::vm::CrashManager> crashManager,
       std::shared_ptr<MessageQueueThread> msgQueueThread,
-      bool allocInOldGenBeforeTTI) noexcept;
+      bool allocInOldGenBeforeTTI,
+      bool useOccupancyTargetExperiment = false) noexcept;
 };
 
 } // namespace facebook::react

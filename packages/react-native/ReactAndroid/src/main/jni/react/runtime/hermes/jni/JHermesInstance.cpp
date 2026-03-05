@@ -13,8 +13,9 @@ namespace facebook::react {
 
 jni::local_ref<JHermesInstance::jhybriddata> JHermesInstance::initHybrid(
     jni::alias_ref<jclass> /* unused */,
-    bool allocInOldGenBeforeTTI) {
-  return makeCxxInstance(allocInOldGenBeforeTTI);
+    bool allocInOldGenBeforeTTI,
+    bool useOccupancyTargetExperiment) {
+  return makeCxxInstance(allocInOldGenBeforeTTI, useOccupancyTargetExperiment);
 }
 
 void JHermesInstance::registerNatives() {
@@ -26,7 +27,10 @@ void JHermesInstance::registerNatives() {
 std::unique_ptr<JSRuntime> JHermesInstance::createJSRuntime(
     std::shared_ptr<MessageQueueThread> msgQueueThread) noexcept {
   return HermesInstance::createJSRuntime(
-      nullptr, msgQueueThread, allocInOldGenBeforeTTI_);
+      nullptr,
+      msgQueueThread,
+      allocInOldGenBeforeTTI_,
+      useOccupancyTargetExperiment_);
 }
 
 } // namespace facebook::react
