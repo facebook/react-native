@@ -21,7 +21,7 @@ interface ErrnoError extends Error {
   syscall?: string;
 }
 
-type Node$Conditional<T: boolean, IfTrue, IfFalse> = T extends true
+type Node$Conditional<T extends boolean, IfTrue, IfFalse> = T extends true
   ? IfTrue
   : T extends false
     ? IfFalse
@@ -282,7 +282,7 @@ type child_process$execFileOpts = Readonly<{
   signal?: AbortSignal,
 }>;
 
-type child_process$execFileCallback<T: string | Buffer> =
+type child_process$execFileCallback<T extends string | Buffer> =
   child_process$execCallback<T>;
 
 type child_process$execFileSyncOpts = Readonly<{
@@ -414,7 +414,7 @@ type child_process$spawnOpts = Readonly<{
   serialization?: 'json' | 'advanced',
 }>;
 
-type child_process$spawnSyncRet<T: string | Buffer> = Readonly<{
+type child_process$spawnSyncRet<T extends string | Buffer> = Readonly<{
   pid: number,
   output: Array<any>,
   // TODO: subprocess.stdout may be null in case of error
@@ -454,9 +454,9 @@ type child_process$Serializable =
 type child_process$SendHandle = net$Server | net$Socket;
 
 declare class child_process$ChildProcessTyped<
-  TStdin: stream$Writable | null,
-  TStdout: stream$Readable | null,
-  TStderr: stream$Readable | null,
+  TStdin extends stream$Writable | null,
+  TStdout extends stream$Readable | null,
+  TStderr extends stream$Readable | null,
 > extends events$EventEmitter
 {
   +stdin: TStdin;
@@ -515,7 +515,7 @@ declare module 'child_process' {
     stream$Readable,
   >;
 
-  type StringOrBuffer<Opts, Default: string | Buffer> =
+  type StringOrBuffer<Opts, Default extends string | Buffer> =
     Opts extends Readonly<{encoding: infer E, ...}>
       ? E extends buffer$NonBufferEncoding
         ? string
@@ -524,11 +524,15 @@ declare module 'child_process' {
           : string | Buffer
       : Default;
 
-  type StreamForChannel<Channel: 0 | 1 | 2> = Channel extends 0
+  type StreamForChannel<Channel extends 0 | 1 | 2> = Channel extends 0
     ? stream$Writable
     : stream$Readable;
 
-  type MaybeStream<Opts, FD: 0 | 1 | 2, PipeByDefault: true | false = true> =
+  type MaybeStream<
+    Opts,
+    FD extends 0 | 1 | 2,
+    PipeByDefault extends true | false = true,
+  > =
     Opts extends Readonly<{stdio: infer E, ...}>
       ? E extends child_process$StdioPipe
         ? StreamForChannel<FD>
@@ -552,7 +556,7 @@ declare module 'child_process' {
     stream$Readable,
   >;
 
-  declare function exec<Opts: child_process$execOpts>(
+  declare function exec<Opts extends child_process$execOpts>(
     command: string,
     options: Opts,
     callback?: child_process$execCallback<StringOrBuffer<Opts, string>>,
@@ -562,11 +566,11 @@ declare module 'child_process' {
     stream$Readable,
   >;
 
-  declare function execSync<Opts: child_process$execSyncOpts>(
+  declare function execSync<Opts extends child_process$execSyncOpts>(
     command: string,
   ): Buffer;
 
-  declare function execSync<Opts: child_process$execSyncOpts>(
+  declare function execSync<Opts extends child_process$execSyncOpts>(
     command: string,
     options: Opts,
   ): StringOrBuffer<Opts, Buffer>;
@@ -583,7 +587,7 @@ declare module 'child_process' {
     stream$Readable,
   >;
 
-  declare function execFile<Opts: child_process$execFileOpts>(
+  declare function execFile<Opts extends child_process$execFileOpts>(
     file: string,
     args: ReadonlyArray<string>,
     options: Opts,
@@ -594,7 +598,7 @@ declare module 'child_process' {
     stream$Readable,
   >;
 
-  declare function execFile<Opts: child_process$execFileOpts>(
+  declare function execFile<Opts extends child_process$execFileOpts>(
     file: string,
     options: Opts,
     callback?: child_process$execFileCallback<StringOrBuffer<Opts, string>>,
@@ -609,13 +613,13 @@ declare module 'child_process' {
     args?: ReadonlyArray<string>,
   ): Buffer;
 
-  declare function execFileSync<Opts: child_process$execFileSyncOpts>(
+  declare function execFileSync<Opts extends child_process$execFileSyncOpts>(
     command: string,
     args: ReadonlyArray<string>,
     options: Opts,
   ): StringOrBuffer<Opts, Buffer>;
 
-  declare function execFileSync<Opts: child_process$execFileSyncOpts>(
+  declare function execFileSync<Opts extends child_process$execFileSyncOpts>(
     command: string,
     options: Opts,
   ): StringOrBuffer<Opts, Buffer>;
@@ -625,7 +629,7 @@ declare module 'child_process' {
     args?: ReadonlyArray<string>,
   ): child_process$ChildProcessTyped<null, null, null>;
 
-  declare function fork<Opts: child_process$forkOpts>(
+  declare function fork<Opts extends child_process$forkOpts>(
     modulePath: string,
     args: ReadonlyArray<string>,
     options: Opts,
@@ -635,7 +639,7 @@ declare module 'child_process' {
     MaybeStream<Opts, 2, false>,
   >;
 
-  declare function fork<Opts: child_process$forkOpts>(
+  declare function fork<Opts extends child_process$forkOpts>(
     modulePath: string,
     options: Opts,
   ): child_process$ChildProcessTyped<
@@ -653,7 +657,7 @@ declare module 'child_process' {
     stream$Readable,
   >;
 
-  declare function spawn<Opts: child_process$spawnOpts>(
+  declare function spawn<Opts extends child_process$spawnOpts>(
     command: string,
     args: ReadonlyArray<string>,
     options: Opts,
@@ -663,7 +667,7 @@ declare module 'child_process' {
     MaybeStream<Opts, 2>,
   >;
 
-  declare function spawn<Opts: child_process$spawnOpts>(
+  declare function spawn<Opts extends child_process$spawnOpts>(
     command: string,
     options: Opts,
   ): child_process$ChildProcessTyped<
@@ -677,13 +681,13 @@ declare module 'child_process' {
     args?: ReadonlyArray<string>,
   ): child_process$spawnSyncRet<Buffer>;
 
-  declare function spawnSync<Opts: child_process$spawnSyncOpts>(
+  declare function spawnSync<Opts extends child_process$spawnSyncOpts>(
     command: string,
     args: ReadonlyArray<string>,
     options: Opts,
   ): child_process$spawnSyncRet<StringOrBuffer<Opts, Buffer>>;
 
-  declare function spawnSync<Opts: child_process$spawnSyncOpts>(
+  declare function spawnSync<Opts extends child_process$spawnSyncOpts>(
     command: string,
     options: Opts,
   ): child_process$spawnSyncRet<StringOrBuffer<Opts, Buffer>>;
@@ -2112,7 +2116,7 @@ declare module 'fs' {
     }>,
   ): void;
 
-  declare type GlobOptions<WithFileTypes: boolean> = Readonly<{
+  declare type GlobOptions<WithFileTypes extends boolean> = Readonly<{
     /**
      * Current working directory.
      * @default process.cwd()
@@ -2154,7 +2158,7 @@ declare module 'fs' {
     callback: (err: ?ErrnoError, matches: Array<string>) => void,
   ): void;
 
-  declare function glob<WithFileTypes: boolean = false>(
+  declare function glob<WithFileTypes extends boolean = false>(
     pattern: string | ReadonlyArray<string>,
     options: GlobOptions<WithFileTypes>,
     callback: (
@@ -2172,7 +2176,7 @@ declare module 'fs' {
    * @since v22.0.0
    * @returns paths of files that match the pattern.
    */
-  declare function globSync<WithFileTypes: boolean = false>(
+  declare function globSync<WithFileTypes extends boolean = false>(
     pattern: string | ReadonlyArray<string>,
     options?: GlobOptions<WithFileTypes>,
   ): Node$Conditional<WithFileTypes, Array<Dirent>, Array<string>>;
@@ -2289,7 +2293,7 @@ declare module 'fs' {
     ): WriteStream;
     datasync(): Promise<void>;
     fd: number;
-    read<T: Buffer | Uint8Array>(
+    read<T extends Buffer | Uint8Array>(
       buffer: T,
       offset: number,
       length: number,
@@ -2314,7 +2318,7 @@ declare module 'fs' {
         highWaterMark?: number,
       }>,
     ): readline$Interface;
-    readv<T: Array<Buffer> | Array<Uint8Array> | Array<DataView>>(
+    readv<T extends Array<Buffer> | Array<Uint8Array> | Array<DataView>>(
       buffers: T,
       position?: number | null,
     ): Promise<{buffers: T, bytesRead: number}>;
@@ -2340,7 +2344,7 @@ declare module 'fs' {
       }>,
     ): Promise<void>;
     writeFile: AppendOrWriteToFileHandle;
-    writev<T: Array<Buffer> | Array<Uint8Array> | Array<DataView>>(
+    writev<T extends Array<Buffer> | Array<Uint8Array> | Array<DataView>>(
       buffers: T,
       position?: number | null,
     ): Promise<{buffers: T, bytesWritten: number}>;
@@ -2386,7 +2390,7 @@ declare module 'fs' {
       atime: number | string | Date,
       mtime: number | string | Date,
     ): Promise<void>,
-    glob<WithFileTypes: boolean = false>(
+    glob<WithFileTypes extends boolean = false>(
       pattern: string | ReadonlyArray<string>,
       options?: GlobOptions<WithFileTypes>,
     ): Node$Conditional<
@@ -2422,7 +2426,7 @@ declare module 'fs' {
         recursive?: boolean,
       }>,
     ): Promise<Dir>,
-    read<T: Buffer | Uint8Array>(
+    read<T extends Buffer | Uint8Array>(
       filehandle: FileHandle,
       buffer: T,
       offset: number,
@@ -2503,7 +2507,7 @@ declare module 'fs' {
         overflow?: 'ignore' | 'throw',
       }>,
     ): AsyncIterator<{eventType: string, filename: ?string}>,
-    write<T: Buffer | Uint8Array>(
+    write<T extends Buffer | Uint8Array>(
       filehandle: FileHandle,
       buffer: T,
       offset: number,
@@ -3314,7 +3318,7 @@ declare module 'perf_hooks' {
     now(): number;
     setResourceTimingBufferSize(maxSize: number): void;
     +timeOrigin: number;
-    timerify<TArgs: Iterable<unknown>, TReturn>(
+    timerify<TArgs extends Iterable<unknown>, TReturn>(
       fn: (...TArgs) => TReturn,
       options?: Readonly<{histogram?: RecordableHistogram}>,
     ): (...TArgs) => TReturn;
@@ -3609,7 +3613,7 @@ declare class stream$Readable extends stream$Stream {
   destroy(error?: Error): this;
   isPaused(): boolean;
   pause(): this;
-  pipe<T: stream$Writable>(dest: T, options?: {end?: boolean, ...}): T;
+  pipe<T extends stream$Writable>(dest: T, options?: {end?: boolean, ...}): T;
   read(size?: number): ?(string | Buffer);
   readable: boolean;
   readableHighWaterMark: number;
@@ -3773,25 +3777,25 @@ declare module 'stream' {
     },
     callback: (error?: Error) => void,
   ): () => void;
-  declare function pipeline<T: stream$Writable>(
+  declare function pipeline<T extends stream$Writable>(
     s1: stream$Readable,
     last: T,
     cb: (error?: Error) => void,
   ): T;
-  declare function pipeline<T: stream$Writable>(
+  declare function pipeline<T extends stream$Writable>(
     s1: stream$Readable,
     s2: stream$Duplex,
     last: T,
     cb: (error?: Error) => void,
   ): T;
-  declare function pipeline<T: stream$Writable>(
+  declare function pipeline<T extends stream$Writable>(
     s1: stream$Readable,
     s2: stream$Duplex,
     s3: stream$Duplex,
     last: T,
     cb: (error?: Error) => void,
   ): T;
-  declare function pipeline<T: stream$Writable>(
+  declare function pipeline<T extends stream$Writable>(
     s1: stream$Readable,
     s2: stream$Duplex,
     s3: stream$Duplex,
@@ -3799,7 +3803,7 @@ declare module 'stream' {
     last: T,
     cb: (error?: Error) => void,
   ): T;
-  declare function pipeline<T: stream$Writable>(
+  declare function pipeline<T extends stream$Writable>(
     s1: stream$Readable,
     s2: stream$Duplex,
     s3: stream$Duplex,
@@ -3808,7 +3812,7 @@ declare module 'stream' {
     last: T,
     cb: (error?: Error) => void,
   ): T;
-  declare function pipeline<T: stream$Writable>(
+  declare function pipeline<T extends stream$Writable>(
     s1: stream$Readable,
     s2: stream$Duplex,
     s3: stream$Duplex,
@@ -4191,19 +4195,19 @@ declare module 'timers' {
     // [key: $SymbolDispose]: () => void;
   }
 
-  declare export function setTimeout<TArgs: Iterable<unknown>>(
+  declare export function setTimeout<TArgs extends Iterable<unknown>>(
     callback: (...args: TArgs) => unknown,
     delay?: number,
     ...args: TArgs
   ): Timeout;
 
-  declare export function setInterval<TArgs: Iterable<unknown>>(
+  declare export function setInterval<TArgs extends Iterable<unknown>>(
     callback: (...args: TArgs) => unknown,
     delay?: number,
     ...args: TArgs
   ): Timeout;
 
-  declare export function setImmediate<TArgs: Iterable<unknown>>(
+  declare export function setImmediate<TArgs extends Iterable<unknown>>(
     callback: (...args: TArgs) => unknown,
     ...args: TArgs
   ): Immediate;
@@ -4500,7 +4504,7 @@ declare module 'util' {
   declare function stripVTControlCharacters(str: string): string;
 
   declare function parseArgs<
-    TOptions: {+[string]: util$ParseArgsOption} = {},
+    TOptions extends {+[string]: util$ParseArgsOption} = {},
   >(config: {
     args?: Array<string>,
     options?: TOptions,
@@ -4514,7 +4518,7 @@ declare module 'util' {
   };
 
   declare function parseArgs<
-    TOptions: {[string]: util$ParseArgsOption} = {},
+    TOptions extends {[string]: util$ParseArgsOption} = {},
   >(config: {
     args?: Array<string>,
     options?: TOptions,
@@ -5658,7 +5662,7 @@ declare class Process extends events$EventEmitter {
   setegid?: (id: number | string) => void;
   seteuid?: (id: number | string) => void;
   setgid?: (id: number | string) => void;
-  setgroups?: <Group: string | number>(groups: Array<Group>) => void;
+  setgroups?: <Group extends string | number>(groups: Array<Group>) => void;
   setuid?: (id: number | string) => void;
   stderr: stream$Writable | tty$WriteStream;
   stdin: stream$Readable | tty$ReadStream;

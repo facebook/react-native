@@ -2196,7 +2196,7 @@ declare module 'rxjs/operators' {
     key: keyof T,
   ): rxjs$MonoTypeOperatorFunction<T>;
 
-  declare export function distinctUntilKeyChanged<T, K: keyof T>(
+  declare export function distinctUntilKeyChanged<T, K extends keyof T>(
     key: K,
     compare: (x: unknown, y: unknown) => boolean,
   ): rxjs$MonoTypeOperatorFunction<T>;
@@ -2291,7 +2291,7 @@ declare module 'rxjs/operators' {
     scheduler?: rxjs$SchedulerLike,
   ): rxjs$MonoTypeOperatorFunction<T>;
 
-  declare export function filter<T, S: T>(
+  declare export function filter<T, S extends T>(
     predicate: (value: T, index: number) => boolean,
     thisArg?: any,
   ): rxjs$OperatorFunction<T, S>;
@@ -2305,7 +2305,7 @@ declare module 'rxjs/operators' {
     callback: () => void,
   ): rxjs$MonoTypeOperatorFunction<T>;
 
-  declare export function find<T, S: T>(
+  declare export function find<T, S extends T>(
     predicate: (value: T, index: number, source: rxjs$Observable<T>) => boolean,
     thisArg?: any,
   ): rxjs$OperatorFunction<T, T | S | void>;
@@ -2938,7 +2938,7 @@ declare module 'rxjs/operators' {
     notifier: rxjs$Observable<any>,
   ): rxjs$MonoTypeOperatorFunction<T>;
 
-  declare export function takeWhile<T, S: T>(
+  declare export function takeWhile<T, S extends T>(
     predicate: (value: T, index: number) => S,
     inclusive?: boolean,
   ): rxjs$OperatorFunction<T, S>;

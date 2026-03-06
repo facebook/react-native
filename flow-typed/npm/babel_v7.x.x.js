@@ -353,7 +353,7 @@ declare module '@babel/core' {
       raw: BabelNodeArrayExpression,
     ): BabelNodeIdentifier;
 
-    buildCodeFrameError<TError: Error>(
+    buildCodeFrameError<TError extends Error>(
       node: BabelNode,
       msg: string,
       Class<TError>,
