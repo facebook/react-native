@@ -19,6 +19,7 @@ from .utils import (
     parse_type_with_argstrings,
     qualify_arguments,
     qualify_parsed_type,
+    qualify_template_args_only,
     qualify_type_str,
 )
 
@@ -142,6 +143,10 @@ class VariableMember(Member):
     def close(self, scope: Scope):
         self._fp_arguments = qualify_arguments(self._fp_arguments, scope)
         self._parsed_type = qualify_parsed_type(self._parsed_type, scope)
+        # Qualify template arguments in variable name for explicit specializations
+        # e.g., "default_value<MyType>" -> "default_value<ns::MyType>"
+        if "<" in self.name:
+            self.name = qualify_template_args_only(self.name, scope)
 
     def _is_function_pointer(self) -> bool:
         """Check if this variable is a function pointer type."""
@@ -237,6 +242,10 @@ class FunctionMember(Member):
     def close(self, scope: Scope):
         self.type = qualify_type_str(self.type, scope)
         self.arguments = qualify_arguments(self.arguments, scope)
+        # Qualify template arguments in function name for explicit specializations
+        # e.g., "convert<MyType>" -> "convert<ns::MyType>"
+        if "<" in self.name:
+            self.name = qualify_template_args_only(self.name, scope)
 
     def to_string(
         self,

@@ -1,0 +1,7 @@
+constexpr T test::default_value;
+constexpr test::MyType test::default_value<test::MyType>;
+T* test::null_ptr;
+test::MyType* test::null_ptr<test::MyType>;
+
+struct test::MyType {
+}
