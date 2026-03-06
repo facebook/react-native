@@ -13,7 +13,7 @@ from natsort import natsort_keygen, natsorted
 
 from .member import FriendMember, Member, MemberKind
 from .template import Template, TemplateList
-from .utils import parse_qualified_path
+from .utils import parse_qualified_path, qualify_template_args_only, qualify_type_str
 
 
 # Pre-create natsort key function for efficiency
@@ -26,6 +26,10 @@ class ScopeKind(ABC):
 
     @abstractmethod
     def to_string(self, scope: Scope) -> str:
+        pass
+
+    def close(self, scope: Scope) -> None:
+        """Called when the scope is closed. Override to perform cleanup."""
         pass
 
     def print_scope(self, scope: Scope) -> None:
@@ -71,6 +75,11 @@ class StructLikeScopeKind(ScopeKind):
                 self.template_list.add(t)
         else:
             self.template_list.add(template)
+
+    def close(self, scope: Scope) -> None:
+        """Qualify base class names and their template arguments."""
+        for base in self.base_classes:
+            base.name = qualify_type_str(base.name, scope)
 
     def to_string(self, scope: Scope) -> str:
         result = ""
@@ -174,6 +183,11 @@ class ProtocolScopeKind(ScopeKind):
         else:
             self.base_classes.append(base)
 
+    def close(self, scope: Scope) -> None:
+        """Qualify base class names and their template arguments."""
+        for base in self.base_classes:
+            base.name = qualify_type_str(base.name, scope)
+
     def to_string(self, scope: Scope) -> str:
         result = ""
 
@@ -224,6 +238,11 @@ class InterfaceScopeKind(ScopeKind):
                 self.base_classes.append(b)
         else:
             self.base_classes.append(base)
+
+    def close(self, scope: Scope) -> None:
+        """Qualify base class names and their template arguments."""
+        for base in self.base_classes:
+            base.name = qualify_type_str(base.name, scope)
 
     def to_string(self, scope: Scope) -> str:
         result = ""
@@ -297,13 +316,17 @@ class Scope(Generic[ScopeKindT]):
 
     def get_qualified_name(self) -> str:
         """
-        Get the qualified name of the scope.
+        Get the qualified name of the scope, with template arguments qualified.
         """
         path = []
         current_scope = self
         while current_scope is not None:
             if current_scope.name is not None:
-                path.append(current_scope.name)
+                # Qualify template arguments in the scope name if it has any
+                name = current_scope.name
+                if "<" in name and current_scope.parent_scope is not None:
+                    name = qualify_template_args_only(name, current_scope.parent_scope)
+                path.append(name)
             current_scope = current_scope.parent_scope
         path.reverse()
         return "::".join(path)
@@ -328,10 +351,27 @@ class Scope(Generic[ScopeKindT]):
 
         current_scope = self
         # Walk up to find a scope that contains the first path segment
+        # Check both inner_scopes AND members (for type aliases, etc.)
         base_first = self._get_base_name(path[0])
-        while (
-            current_scope is not None and base_first not in current_scope.inner_scopes
-        ):
+        while current_scope is not None:
+            # Check if it's an inner scope
+            if base_first in current_scope.inner_scopes:
+                break
+
+            # Skip self-qualification if name matches current scope's name
+            if (
+                current_scope.name
+                and self._get_base_name(current_scope.name) == base_first
+            ):
+                current_scope = current_scope.parent_scope
+                continue
+
+            # Check if it's a member (type alias, variable, etc.)
+            for m in current_scope._members:
+                if m.name == base_first and not isinstance(m, FriendMember):
+                    prefix = current_scope.get_qualified_name()
+                    return f"{prefix}::{name}" if prefix else name
+
             current_scope = current_scope.parent_scope
 
         if current_scope is None:
@@ -403,6 +443,8 @@ class Scope(Generic[ScopeKindT]):
         """
         for member in self.get_members():
             member.close(self)
+
+        self.kind.close(self)
 
         for _, inner_scope in self.inner_scopes.items():
             inner_scope.close()
