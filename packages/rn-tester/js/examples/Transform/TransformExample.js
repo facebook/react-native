@@ -349,11 +349,14 @@ exports.examples = [
   },
   {
     title: 'Translate, Rotate, Scale',
+    name: 'translate-rotate-scale',
     description:
       "translateX: 100, translateY: 50, rotate: '30deg', scaleX: 2, scaleY: 2",
     render(): React.Node {
       return (
-        <View style={styles.container}>
+        <View
+          testID="transform-translate-rotate-scale"
+          style={styles.container}>
           <View style={styles.box1} />
         </View>
       );
@@ -361,11 +364,14 @@ exports.examples = [
   },
   {
     title: 'Scale, Translate, Rotate, ',
+    name: 'scale-translate-rotate',
     description:
       "scaleX: 2, scaleY: 2, translateX: 100, translateY: 50, rotate: '30deg'",
     render(): React.Node {
       return (
-        <View style={styles.container}>
+        <View
+          testID="transform-scale-translate-rotate"
+          style={styles.container}>
           <View style={styles.box2} />
         </View>
       );
@@ -373,10 +379,11 @@ exports.examples = [
   },
   {
     title: 'Rotate',
+    name: 'rotate',
     description: "rotate: '30deg'",
     render(): React.Node {
       return (
-        <View style={styles.container}>
+        <View testID="transform-rotate" style={styles.container}>
           <View style={styles.box3step1} />
         </View>
       );
@@ -384,10 +391,11 @@ exports.examples = [
   },
   {
     title: 'Rotate, Scale',
+    name: 'rotate-scale',
     description: "rotate: '30deg', scaleX: 2, scaleY: 2",
     render(): React.Node {
       return (
-        <View style={styles.container}>
+        <View testID="transform-rotate-scale" style={styles.container}>
           <View style={styles.box3step2} />
         </View>
       );
@@ -395,11 +403,14 @@ exports.examples = [
   },
   {
     title: 'Rotate, Scale, Translate ',
+    name: 'rotate-scale-translate',
     description:
       "rotate: '30deg', scaleX: 2, scaleY: 2, translateX: 100, translateY: 50",
     render(): React.Node {
       return (
-        <View style={styles.container}>
+        <View
+          testID="transform-rotate-scale-translate"
+          style={styles.container}>
           <View style={styles.box3step3} />
         </View>
       );
@@ -407,10 +418,13 @@ exports.examples = [
   },
   {
     title: 'Translate, Scale, Rotate',
+    name: 'translate-scale-rotate',
     description: "translate: [200, 350], scale: 2.5, rotate: '-0.2rad'",
     render(): React.Node {
       return (
-        <View style={styles.container}>
+        <View
+          testID="transform-translate-scale-rotate"
+          style={styles.container}>
           <View style={styles.box4} />
         </View>
       );
@@ -418,10 +432,13 @@ exports.examples = [
   },
   {
     title: 'Translate, Rotate, Scale',
+    name: 'translate-rotate-scale-2',
     description: "translate: [-50, 35], rotate: '50deg', scale: 2",
     render(): React.Node {
       return (
-        <View style={styles.container}>
+        <View
+          testID="transform-translate-rotate-scale-2"
+          style={styles.container}>
           <View style={[styles.box5, styles.box5Transform]} />
         </View>
       );
@@ -436,10 +453,11 @@ exports.examples = [
   },
   {
     title: 'Transform using a string',
+    name: 'string-transform',
     description: "transform: 'translate(-50px, 35px) rotate(50deg) scale(2)'",
     render(): React.Node {
       return (
-        <View style={styles.container}>
+        <View testID="transform-string" style={styles.container}>
           <View style={[styles.box7, styles.box7Transform]} />
         </View>
       );
@@ -454,16 +472,26 @@ exports.examples = [
   },
   {
     title: 'Translate Percentage',
+    name: 'translate-percentage',
     description: "transform: 'translate(50%)'",
     render(): React.Node {
-      return <TranslatePercentage />;
+      return (
+        <View testID="transform-translate-percentage">
+          <TranslatePercentage />
+        </View>
+      );
     },
   },
   {
     title: 'Transform Matrix 2D',
+    name: 'matrix-2d',
     description: "transform: 'matrix(1, 0, 0, 0, 1, 0, 0, 0, 1)'",
     render(): React.Node {
-      return <TranslateMatrix2D />;
+      return (
+        <View testID="transform-matrix-2d">
+          <TranslateMatrix2D />
+        </View>
+      );
     },
   },
   {
