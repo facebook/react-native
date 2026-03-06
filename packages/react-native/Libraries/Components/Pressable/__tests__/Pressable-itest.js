@@ -148,8 +148,8 @@ describe('<Pressable>', () => {
             <rn-paragraph
               allowFontScaling="true"
               ellipsizeMode="tail"
-              fontSize="nan"
-              fontSizeMultiplier="nan"
+              fontSize="NaN"
+              fontSizeMultiplier="NaN"
               foregroundColor="rgba(0, 0, 0, 0)"
               overflow="hidden">
               the quick brown fox

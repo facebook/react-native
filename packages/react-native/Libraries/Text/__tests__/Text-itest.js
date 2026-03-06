@@ -40,8 +40,8 @@ describe('<Text>', () => {
           <rn-paragraph
             allowFontScaling="true"
             ellipsizeMode="tail"
-            fontSize="nan"
-            fontSizeMultiplier="nan"
+            fontSize="NaN"
+            fontSizeMultiplier="NaN"
             foregroundColor="rgba(0, 0, 0, 0)"
             overflow="hidden">
             {TEST_TEXT}
