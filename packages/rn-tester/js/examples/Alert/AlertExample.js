@@ -379,6 +379,7 @@ const styles = StyleSheet.create({
 export const examples = [
   {
     title: 'Alert with default Button',
+    name: 'default-button',
     description:
       "It can be used to show some information to user that doesn't require an action.",
     render(): React.Node {
@@ -394,6 +395,7 @@ export const examples = [
   },
   {
     title: 'Alert with three Buttons',
+    name: 'three-buttons',
     description: 'It can be used when there are three possible actions',
     render(): React.Node {
       return <AlertWithThreeButtons />;
