@@ -17,6 +17,7 @@ import re
 
 from doxmlparser import compound
 
+from ..input_filters.handle_objc_interface_generics import decode_objc_generics
 from .member import (
     ConceptMember,
     EnumMember,
@@ -509,6 +510,12 @@ def create_interface_scope(
     Create an interface scope in the snapshot (Objective-C @interface).
     """
     interface_name = scope_def.compoundname
+
+    # Decode ObjC generics that were encoded by the input filter.
+    # The input filter encodes ``@interface Foo<T>`` as
+    # ``@interface Foo__GENERICS__T__ENDGENERICS__`` so Doxygen can parse it.
+    # We restore the original ``Foo<T>`` name here.
+    interface_name = decode_objc_generics(interface_name)
 
     interface_scope = snapshot.create_interface(interface_name)
     base_classes = get_base_classes(scope_def, base_class=InterfaceScopeKind.Base)

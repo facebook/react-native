@@ -5,6 +5,7 @@ interface RCTTestMacros {
   public virtual instancetype initWithName:(NSString* name);
   public virtual static UIUserInterfaceStyle userInterfaceStyle();
   public virtual void deprecatedMethod();
+  public virtual void start();
 }
 
 protocol RCTTestProtocol {

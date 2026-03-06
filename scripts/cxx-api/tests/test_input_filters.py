@@ -7,10 +7,13 @@ from __future__ import annotations
 
 import unittest
 
-from ..input_filters.doxygen_strip_comments import (
-    strip_block_comments,
-    strip_deprecated_msg,
+from ..input_filters.handle_objc_interface_generics import (
+    decode_objc_generics,
+    encode_objc_interface_generics,
 )
+from ..input_filters.strip_block_comments import strip_block_comments
+from ..input_filters.strip_deprecated_msg import strip_deprecated_msg
+from ..input_filters.strip_ns_unavailable import strip_ns_unavailable
 
 
 class TestDoxygenStripComments(unittest.TestCase):
@@ -114,6 +117,161 @@ class TestStripDeprecatedMsg(unittest.TestCase):
         content = '__deprecated_msg("This API will be removed.") @interface RCTSurface : NSObject'
         result = strip_deprecated_msg(content)
         self.assertEqual(result, "@interface RCTSurface : NSObject")
+
+
+class TestStripNSUnavailable(unittest.TestCase):
+    def test_strips_single_line_init(self):
+        content = "- (instancetype)init NS_UNAVAILABLE;"
+        result = strip_ns_unavailable(content)
+        self.assertEqual(result, "")
+
+    def test_strips_single_line_new(self):
+        content = "+ (instancetype)new NS_UNAVAILABLE;"
+        result = strip_ns_unavailable(content)
+        self.assertEqual(result, "")
+
+    def test_strips_init_with_frame(self):
+        content = "- (instancetype)initWithFrame:(CGRect)frame NS_UNAVAILABLE;"
+        result = strip_ns_unavailable(content)
+        self.assertEqual(result, "")
+
+    def test_strips_property(self):
+        content = "@property (nonatomic, copy, nullable) NSString *text NS_UNAVAILABLE;"
+        result = strip_ns_unavailable(content)
+        self.assertEqual(result, "")
+
+    def test_strips_method_with_params(self):
+        content = (
+            "- (void)insertSubview:(UIView *)view atIndex:(NSInteger)index"
+            " NS_UNAVAILABLE;"
+        )
+        result = strip_ns_unavailable(content)
+        self.assertEqual(result, "")
+
+    def test_strips_multiline_declaration(self):
+        content = (
+            "- (instancetype)initWithSurface:(id<RCTSurfaceProtocol>)surface\n"
+            "                sizeMeasureMode:(RCTSurfaceSizeMeasureMode)"
+            "sizeMeasureMode NS_UNAVAILABLE;"
+        )
+        result = strip_ns_unavailable(content)
+        # Should preserve line count (2 lines -> 1 newline)
+        self.assertEqual(result, "\n")
+
+    def test_preserves_normal_methods(self):
+        content = "- (instancetype)initWithBridge:(RCTBridge *)bridge;"
+        result = strip_ns_unavailable(content)
+        self.assertEqual(result, content)
+
+    def test_preserves_normal_properties(self):
+        content = "@property (nonatomic, strong) NSString *name;"
+        result = strip_ns_unavailable(content)
+        self.assertEqual(result, content)
+
+    def test_preserves_designated_initializer(self):
+        content = (
+            "- (instancetype)initWithName:(NSString *)name NS_DESIGNATED_INITIALIZER;"
+        )
+        result = strip_ns_unavailable(content)
+        self.assertEqual(result, content)
+
+    def test_does_not_strip_across_semicolons(self):
+        content = (
+            "- (void)normalMethod;\n"
+            "- (instancetype)init NS_UNAVAILABLE;\n"
+            "- (void)anotherMethod;"
+        )
+        result = strip_ns_unavailable(content)
+        self.assertEqual(result, "- (void)normalMethod;\n\n- (void)anotherMethod;")
+
+    def test_strips_multiple_unavailable_methods(self):
+        content = (
+            "- (instancetype)init NS_UNAVAILABLE;\n+ (instancetype)new NS_UNAVAILABLE;"
+        )
+        result = strip_ns_unavailable(content)
+        self.assertEqual(result, "\n")
+
+    def test_handles_empty_content(self):
+        result = strip_ns_unavailable("")
+        self.assertEqual(result, "")
+
+    def test_preserves_line_count(self):
+        content = (
+            "@interface RCTHost : NSObject\n"
+            "- (instancetype)init NS_UNAVAILABLE;\n"
+            "+ (instancetype)new NS_UNAVAILABLE;\n"
+            "- (void)start;\n"
+            "@end"
+        )
+        result = strip_ns_unavailable(content)
+        self.assertEqual(result.count("\n"), content.count("\n"))
+
+    def test_handles_leading_whitespace(self):
+        content = "    - (instancetype)init NS_UNAVAILABLE;"
+        result = strip_ns_unavailable(content)
+        self.assertEqual(result, "")
+
+
+class TestEncodeObjcInterfaceGenerics(unittest.TestCase):
+    def test_single_generic_param(self):
+        content = "@interface Foo<T> : NSObject\n@end"
+        result = encode_objc_interface_generics(content)
+        self.assertEqual(
+            result,
+            "@interface Foo__GENERICS__T__ENDGENERICS__ : NSObject\n@end",
+        )
+
+    def test_two_generic_params(self):
+        content = "@interface MyMap<K, V> : NSObject\n@end"
+        result = encode_objc_interface_generics(content)
+        self.assertEqual(
+            result,
+            "@interface MyMap__GENERICS__K__COMMA__V__ENDGENERICS__ : NSObject\n@end",
+        )
+
+    def test_protocol_conformance_not_encoded(self):
+        content = "@interface Foo : NSObject <NSCopying>"
+        result = encode_objc_interface_generics(content)
+        self.assertEqual(result, content)
+
+    def test_interface_without_generics(self):
+        content = "@interface MyClass : NSObject\n- (void)method;\n@end"
+        result = encode_objc_interface_generics(content)
+        self.assertEqual(result, content)
+
+    def test_multiple_interfaces_both_with_generics(self):
+        content = (
+            "@interface Foo<T> : NSObject\n@end\n\n"
+            "@interface Bar<K, V> : NSObject\n@end"
+        )
+        result = encode_objc_interface_generics(content)
+        self.assertIn("__GENERICS__T__ENDGENERICS__", result)
+        self.assertIn("__GENERICS__K__COMMA__V__ENDGENERICS__", result)
+
+
+class TestDecodeObjcGenerics(unittest.TestCase):
+    def test_single_generic_param(self):
+        result = decode_objc_generics("Foo__GENERICS__T__ENDGENERICS__")
+        self.assertEqual(result, "Foo<T>")
+
+    def test_two_generic_params(self):
+        result = decode_objc_generics("MyMap__GENERICS__K__COMMA__V__ENDGENERICS__")
+        self.assertEqual(result, "MyMap<K, V>")
+
+    def test_roundtrip_single_generic(self):
+        content = "@interface Foo<T> : NSObject\n@end"
+        encoded = encode_objc_interface_generics(content)
+        # Extract the encoded class name (between "@interface " and " :")
+        encoded_name = encoded.split("@interface ")[1].split(" :")[0]
+        decoded_name = decode_objc_generics(encoded_name)
+        self.assertEqual(decoded_name, "Foo<T>")
+
+    def test_roundtrip_multiple_generics(self):
+        content = "@interface MyMap<K, V> : NSObject\n@end"
+        encoded = encode_objc_interface_generics(content)
+        encoded_name = encoded.split("@interface ")[1].split(" :")[0]
+        decoded_name = decode_objc_generics(encoded_name)
+        self.assertEqual(decoded_name, "MyMap<K, V>")
 
 
 if __name__ == "__main__":
