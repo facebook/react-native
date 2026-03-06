@@ -21,7 +21,12 @@ from .text_resolution import (
     normalize_pointer_spacing,
     resolve_linked_text_name,
 )
-from .type_qualification import qualify_arguments, qualify_parsed_type, qualify_type_str
+from .type_qualification import (
+    qualify_arguments,
+    qualify_parsed_type,
+    qualify_template_args_only,
+    qualify_type_str,
+)
 
 __all__ = [
     "Argument",
@@ -38,6 +43,7 @@ __all__ = [
     "parse_type_with_argstrings",
     "qualify_arguments",
     "qualify_parsed_type",
+    "qualify_template_args_only",
     "qualify_type_str",
     "resolve_linked_text_name",
 ]

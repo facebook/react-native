@@ -28,6 +28,44 @@ def qualify_arguments(arguments: list[Argument], scope: Scope) -> list[Argument]
 
 def qualify_type_str(type_str: str, scope: Scope) -> str:
     """Qualify a type string, handling trailing decorators (*, &, &&, etc.)."""
+    return _qualify_type_str_impl(type_str, scope, qualify_base=True)
+
+
+def qualify_template_args_only(type_str: str, scope: Scope) -> str:
+    """Qualify only template arguments in a type string, leaving the base type unchanged.
+
+    This is useful for class names in template specializations where the base type
+    is already positioned in the correct scope but the template arguments need
+    qualification (e.g., "MyVector< Test >" -> "MyVector< ns::Test >").
+    """
+    return _qualify_type_str_impl(type_str, scope, qualify_base=False)
+
+
+def _qualify_prefix_with_decorators(prefix: str, scope: Scope) -> str:
+    """Qualify a template prefix that may have leading const/volatile qualifiers."""
+    stripped = prefix.lstrip()
+    decorator_prefix = ""
+    changed = True
+    while changed:
+        changed = False
+        # Handle leading const/volatile qualifiers (must have trailing space)
+        for qualifier in ("const ", "volatile "):
+            if stripped.startswith(qualifier):
+                decorator_prefix += qualifier
+                stripped = stripped[len(qualifier) :].lstrip()
+                changed = True
+                break
+
+    if decorator_prefix and stripped:
+        qualified_inner = scope.qualify_name(stripped)
+        if qualified_inner is not None:
+            return decorator_prefix + qualified_inner
+
+    return prefix
+
+
+def _qualify_type_str_impl(type_str: str, scope: Scope, qualify_base: bool) -> str:
+    """Implementation of type string qualification with control over base type handling."""
     if not type_str:
         return type_str
 
@@ -44,28 +82,57 @@ def qualify_type_str(type_str: str, scope: Scope) -> str:
             template_args = type_str[angle_start + 1 : angle_end]
             suffix = type_str[angle_end + 1 :]
 
-            # Qualify the prefix (outer type before the template)
-            qualified_prefix = scope.qualify_name(prefix) or prefix
+            # Qualify the prefix (outer type before the template) only if requested
+            # Use recursive qualification to handle leading decorators like "const *Type"
+            if qualify_base:
+                # Try simple qualification first
+                simple_qualified = scope.qualify_name(prefix)
+                if simple_qualified is not None:
+                    qualified_prefix = simple_qualified
+                else:
+                    # Handle prefixes with leading decorators (const, *, &, etc.)
+                    qualified_prefix = _qualify_prefix_with_decorators(prefix, scope)
+            else:
+                qualified_prefix = prefix
 
-            # Split template arguments and qualify each one
+            # Split template arguments and qualify each one (always qualify args)
             args = _split_arguments(template_args)
-            qualified_args = [qualify_type_str(arg.strip(), scope) for arg in args]
+            qualified_args = [
+                _qualify_type_str_impl(arg.strip(), scope, qualify_base=True)
+                for arg in args
+            ]
             qualified_template = "<" + ", ".join(qualified_args) + ">"
 
             # Recursively qualify the suffix (handles nested templates, pointers, etc.)
-            qualified_suffix = qualify_type_str(suffix, scope) if suffix else ""
+            qualified_suffix = (
+                _qualify_type_str_impl(suffix, scope, qualify_base) if suffix else ""
+            )
 
             return qualified_prefix + qualified_template + qualified_suffix
 
-    # Handle leading qualifiers (const, volatile) that prevent qualify_name
-    # from matching.  Strip them, qualify the rest, and prepend back.
-    for qualifier in ("const ", "volatile "):
-        if type_str.startswith(qualifier):
-            inner = type_str[len(qualifier) :]
-            qualified_inner = qualify_type_str(inner, scope)
-            if qualified_inner != inner:
-                return qualifier + qualified_inner
-            break
+    # If not qualifying base types, return as-is for non-template types
+    if not qualify_base:
+        return type_str
+
+    # Handle leading const/volatile qualifiers.
+    # Strip leading qualifiers, qualify the rest, and prepend back.
+    stripped = type_str.lstrip()
+    prefix = ""
+    changed = True
+    while changed:
+        changed = False
+        # Handle leading const/volatile qualifiers (must have trailing space)
+        for qualifier in ("const ", "volatile "):
+            if stripped.startswith(qualifier):
+                prefix += qualifier
+                stripped = stripped[len(qualifier) :].lstrip()
+                changed = True
+                break
+
+    if prefix and stripped:
+        qualified_inner = _qualify_type_str_impl(stripped, scope, qualify_base=True)
+        if qualified_inner != stripped:
+            return prefix + qualified_inner
 
     # Try qualifying the entire string (handles simple cases without templates)
     qualified = scope.qualify_name(type_str)
