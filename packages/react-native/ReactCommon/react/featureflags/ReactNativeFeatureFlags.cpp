@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<9ceab23bb1cb8d569411222993ef9f1e>>
+ * @generated SignedSource<<c7d08e6d97766cbb68db8772611530b5>>
  */
 
 /**
@@ -168,6 +168,10 @@ bool ReactNativeFeatureFlags::enableMainQueueCoordinatorOnIOS() {
 
 bool ReactNativeFeatureFlags::enableModuleArgumentNSNullConversionIOS() {
   return getAccessor().enableModuleArgumentNSNullConversionIOS();
+}
+
+bool ReactNativeFeatureFlags::enableMutationObserverByDefault() {
+  return getAccessor().enableMutationObserverByDefault();
 }
 
 bool ReactNativeFeatureFlags::enableNativeCSSParsing() {

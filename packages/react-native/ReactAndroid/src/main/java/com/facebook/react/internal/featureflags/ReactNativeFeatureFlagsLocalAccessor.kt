@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<9feb91e31a7d54e4b3f7737fb524800b>>
+ * @generated SignedSource<<6deac57c7f55d6d7406f7dffb1abe487>>
  */
 
 /**
@@ -60,6 +60,7 @@ internal class ReactNativeFeatureFlagsLocalAccessor : ReactNativeFeatureFlagsAcc
   private var enableLayoutAnimationsOnIOSCache: Boolean? = null
   private var enableMainQueueCoordinatorOnIOSCache: Boolean? = null
   private var enableModuleArgumentNSNullConversionIOSCache: Boolean? = null
+  private var enableMutationObserverByDefaultCache: Boolean? = null
   private var enableNativeCSSParsingCache: Boolean? = null
   private var enableNetworkEventReportingCache: Boolean? = null
   private var enablePreparedTextLayoutCache: Boolean? = null
@@ -470,6 +471,16 @@ internal class ReactNativeFeatureFlagsLocalAccessor : ReactNativeFeatureFlagsAcc
       cached = currentProvider.enableModuleArgumentNSNullConversionIOS()
       accessedFeatureFlags.add("enableModuleArgumentNSNullConversionIOS")
       enableModuleArgumentNSNullConversionIOSCache = cached
+    }
+    return cached
+  }
+
+  override fun enableMutationObserverByDefault(): Boolean {
+    var cached = enableMutationObserverByDefaultCache
+    if (cached == null) {
+      cached = currentProvider.enableMutationObserverByDefault()
+      accessedFeatureFlags.add("enableMutationObserverByDefault")
+      enableMutationObserverByDefaultCache = cached
     }
     return cached
   }

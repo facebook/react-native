@@ -347,6 +347,13 @@ let reactIntersectionObserverNativeModule = RNTarget(
   dependencies: [.reactNativeDependencies, .reactCxxReact, .reactFabric, .reactTurboModuleBridging, .reactTurboModuleCore, .reactGraphics, .reactGraphicsApple, .reactRuntimeScheduler, .yoga]
 )
 
+/// React-mutationobservernativemodule.podspec
+let reactMutationObserverNativeModule = RNTarget(
+  name: .reactMutationObserverNativeModule,
+  path: "ReactCommon/react/nativemodule/mutationobserver",
+  dependencies: [.reactNativeDependencies, .reactCxxReact, .reactFabric, .reactTurboModuleBridging, .reactTurboModuleCore, .yoga]
+)
+
 /// React-featureflagnativemodule.podspec
 let reactFeatureflagsNativemodule = RNTarget(
   name: .reactFeatureflagsNativemodule,
@@ -463,7 +470,7 @@ let reactFabric = RNTarget(
     "components/root/tests",
   ],
   dependencies: [.reactNativeDependencies, .reactJsiExecutor, .rctTypesafety, .reactTurboModuleCore, .jsi, .logger, .reactDebug, .reactFeatureFlags, .reactUtils, .reactRuntimeScheduler, .reactCxxReact, .reactRendererDebug, .reactGraphics, .yoga],
-  sources: ["animations", "attributedstring", "core", "componentregistry", "componentregistry/native", "components/root", "components/view", "components/view/platform/cxx", "components/scrollview", "components/scrollview/platform/cxx", "components/legacyviewmanagerinterop", "dom", "scheduler", "mounting", "observers/events", "observers/intersection", "telemetry", "consistency", "leakchecker", "uimanager", "uimanager/consistency"]
+  sources: ["animations", "attributedstring", "core", "componentregistry", "componentregistry/native", "components/root", "components/view", "components/view/platform/cxx", "components/scrollview", "components/scrollview/platform/cxx", "components/legacyviewmanagerinterop", "dom", "scheduler", "mounting", "observers/events", "observers/intersection", "observers/mutation", "telemetry", "consistency", "leakchecker", "uimanager", "uimanager/consistency"]
 )
 
 let reactFabricInputAccessory = RNTarget(
@@ -699,6 +706,7 @@ let targets = [
   reactIdleCallbacksNativeModule,
   reactWebPerformanceNativeModule,
   reactIntersectionObserverNativeModule,
+  reactMutationObserverNativeModule,
   reactFeatureflagsNativemodule,
   reactNativeModuleDom,
   reactAppDelegate,
@@ -887,6 +895,7 @@ extension String {
   static let reactIdleCallbacksNativeModule = "React-idlecallbacksnativemodule"
   static let reactWebPerformanceNativeModule = "React-webperformancenativemodule"
   static let reactIntersectionObserverNativeModule = "React-intersectionobservernativemodule"
+  static let reactMutationObserverNativeModule = "React-mutationobservernativemodule"
   static let reactFeatureflagsNativemodule = "React-featureflagsnativemodule"
   static let reactNativeModuleDom = "React-domnativemodule"
   static let reactAppDelegate = "React-RCTAppDelegate"
