@@ -57,6 +57,34 @@ class GeneratePackageListTaskTest {
   }
 
   @Test
+  fun extractAllFqcnsFromImport_withMultipleImports_returnsAll() {
+    val task = createTestTask<GeneratePackageListTask>()
+    val result =
+        task.extractAllFqcnsFromImport(
+            "import com.appsflyer.reactnative.RNAppsFlyerPackage;\nimport com.appsflyer.reactnative.PCAppsFlyerPackage;"
+        )
+    assertThat(result)
+        .containsExactly(
+            "com.appsflyer.reactnative.RNAppsFlyerPackage",
+            "com.appsflyer.reactnative.PCAppsFlyerPackage"
+        )
+  }
+
+  @Test
+  fun extractAllFqcnsFromImport_withSingleImport_returnsSingleElement() {
+    val task = createTestTask<GeneratePackageListTask>()
+    val result = task.extractAllFqcnsFromImport("import com.facebook.react.APackage;")
+    assertThat(result).containsExactly("com.facebook.react.APackage")
+  }
+
+  @Test
+  fun extractAllFqcnsFromImport_withNoValidImport_returnsEmpty() {
+    val task = createTestTask<GeneratePackageListTask>()
+    val result = task.extractAllFqcnsFromImport("not an import statement")
+    assertThat(result).isEmpty()
+  }
+
+  @Test
   fun composePackageInstance_withNoPackages_returnsEmpty() {
     val task = createTestTask<GeneratePackageListTask>()
     val packageName = "com.facebook.react"
@@ -78,6 +106,68 @@ class GeneratePackageListTaskTest {
                   new com.facebook.react.APackage(),
                   // @react-native/another-package
                   new com.facebook.react.AnotherPackage()
+            """
+                .trimIndent()
+        )
+  }
+
+  @Test
+  fun composePackageInstance_withMultiplePackagesPerLibrary_qualifiesAll() {
+    val task = createTestTask<GeneratePackageListTask>()
+    val packageName = "com.example.app"
+
+    val multiPackageDeps =
+        mapOf(
+            "react-native-appsflyer" to
+                ModelAutolinkingDependenciesPlatformAndroidJson(
+                    sourceDir = "./node_modules/react-native-appsflyer/android",
+                    packageImportPath =
+                        "import com.appsflyer.reactnative.RNAppsFlyerPackage;\nimport com.appsflyer.reactnative.PCAppsFlyerPackage;",
+                    packageInstance =
+                        "new RNAppsFlyerPackage(),\nnew PCAppsFlyerPackage()",
+                    buildTypes = emptyList(),
+                ),
+        )
+
+    val result = task.composePackageInstance(packageName, multiPackageDeps)
+    assertThat(result)
+        .isEqualTo(
+            """
+            ,
+                  // react-native-appsflyer
+                  new com.appsflyer.reactnative.RNAppsFlyerPackage(),
+            new com.appsflyer.reactnative.PCAppsFlyerPackage()
+            """
+                .trimIndent()
+        )
+  }
+
+  @Test
+  fun composePackageInstance_withPreQualifiedInstances_doesNotDoubleQualify() {
+    val task = createTestTask<GeneratePackageListTask>()
+    val packageName = "com.example.app"
+
+    val preQualifiedDeps =
+        mapOf(
+            "react-native-appsflyer" to
+                ModelAutolinkingDependenciesPlatformAndroidJson(
+                    sourceDir = "./node_modules/react-native-appsflyer/android",
+                    packageImportPath =
+                        "import com.appsflyer.reactnative.RNAppsFlyerPackage;\nimport com.appsflyer.reactnative.PCAppsFlyerPackage;",
+                    packageInstance =
+                        "new com.appsflyer.reactnative.RNAppsFlyerPackage(),\nnew com.appsflyer.reactnative.PCAppsFlyerPackage()",
+                    buildTypes = emptyList(),
+                ),
+        )
+
+    val result = task.composePackageInstance(packageName, preQualifiedDeps)
+    assertThat(result)
+        .isEqualTo(
+            """
+            ,
+                  // react-native-appsflyer
+                  new com.appsflyer.reactnative.RNAppsFlyerPackage(),
+            new com.appsflyer.reactnative.PCAppsFlyerPackage()
             """
                 .trimIndent()
         )

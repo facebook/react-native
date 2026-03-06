@@ -69,6 +69,13 @@ abstract class GeneratePackageListTask : DefaultTask() {
     return match?.groupValues?.get(1)
   }
 
+  /**
+   * Extracts all fully qualified class names from one or more import statements. E.g., "import
+   * com.foo.bar.A;\nimport com.foo.bar.B;" -> ["com.foo.bar.A", "com.foo.bar.B"]
+   */
+  internal fun extractAllFqcnsFromImport(importStatements: String): List<String> =
+      Regex("import\\s+([\\w.]+)\\s*;").findAll(importStatements).map { it.groupValues[1] }.toList()
+
   internal fun composePackageInstance(
       packageName: String,
       packages: Map<String, ModelAutolinkingDependenciesPlatformAndroidJson>,
@@ -86,15 +93,17 @@ abstract class GeneratePackageListTask : DefaultTask() {
           val packageImportPath = dep.packageImportPath
           val interpolated = interpolateDynamicValues(packageInstance, packageName)
 
-          // Use FQCN to avoid class name collisions between different packages
-          val fqcn = extractFqcnFromImport(interpolateDynamicValues(packageImportPath, packageName))
+          // Use FQCNs to avoid class name collisions between different packages.
+          // A library may register multiple ReactPackage classes (e.g. react-native-appsflyer),
+          // so we extract all FQCNs and replace each bare class name individually.
+          val fqcns =
+              extractAllFqcnsFromImport(interpolateDynamicValues(packageImportPath, packageName))
           val fqcnInstance =
-              if (fqcn != null) {
+              fqcns.fold(interpolated) { acc, fqcn ->
                 val className = fqcn.substringAfterLast('.')
-                // Replace the short class name with FQCN in the instance
-                interpolated.replace(Regex("\\b${Regex.escape(className)}\\b")) { fqcn }
-              } else {
-                interpolated
+                // Negative lookbehind (?<!\.) ensures we only replace bare class names,
+                // not ones already part of a fully qualified name (e.g. com.foo.ClassName).
+                acc.replace(Regex("(?<!\\.)\\b${Regex.escape(className)}\\b")) { fqcn }
               }
 
           // Add comment with package name before each instance
