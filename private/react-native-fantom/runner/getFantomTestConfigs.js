@@ -485,7 +485,7 @@ function getConfigurationVariations(
   return results;
 }
 
-function parseFeatureFlagValue<T: boolean | number | string>(
+function parseFeatureFlagValue<T extends boolean | number | string>(
   defaultValue: T,
   value: string,
 ): T {

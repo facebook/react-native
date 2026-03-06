@@ -131,7 +131,7 @@ type State = {childProps: VirtualizedListProps, ...};
  */
 class VirtualizedSectionList<
   ItemT,
-  SectionT: SectionBase<
+  SectionT extends SectionBase<
     ItemT,
     DefaultVirtualizedSectionT,
   > = DefaultVirtualizedSectionT,
@@ -643,7 +643,7 @@ function ItemWithSeparator<ItemT>(
 
 const VirtualizedSectionListComponent = VirtualizedSectionList as component<
   ItemT,
-  SectionT: SectionBase<
+  SectionT extends SectionBase<
     ItemT,
     DefaultVirtualizedSectionT,
   > = DefaultVirtualizedSectionT,

@@ -25,7 +25,7 @@ declare module '@babel/traverse' {
     getCode(): ?string;
     getScope(): ?Scope;
     addHelper(name: string): {};
-    buildError<TError: Error>(
+    buildError<TError extends Error>(
       node: BabelNode,
       msg: string,
       Error: Class<TError>,
@@ -37,7 +37,7 @@ declare module '@babel/traverse' {
     getCode(): ?string;
     getScope(): ?Scope;
     addHelper(name: string): {};
-    buildError<TError: Error>(
+    buildError<TError extends Error>(
       node: BabelNode,
       msg: string,
       Error: Class<TError>,
@@ -294,7 +294,7 @@ declare module '@babel/traverse' {
 
   declare type Opts = {...};
 
-  declare export class NodePath<+TNode: BabelNode = BabelNode> {
+  declare export class NodePath<+TNode extends BabelNode = BabelNode> {
     parent: BabelNode;
     hub: HubInterface;
     contexts: Array<TraversalContext>;
@@ -340,7 +340,7 @@ declare module '@babel/traverse' {
     setData<TVal>(key: string, val: TVal): TVal;
     getData<TVal = unknown>(key: string, def?: TVal): TVal;
 
-    buildCodeFrameError<TError: Error>(
+    buildCodeFrameError<TError extends Error>(
       msg: string,
       Error?: Class<TError>,
     ): TError;
@@ -724,7 +724,7 @@ declare module '@babel/traverse' {
 
     getAllPrevSiblings(): Array<NodePath<>>;
 
-    get<TKey: keyof TNode>(
+    get<TKey extends keyof TNode>(
       key: TKey,
       context?: boolean | TraversalContext,
     ): TNode[TKey] extends BabelNode ? NodePath<> : Array<NodePath<>>;
@@ -1432,17 +1432,20 @@ declare module '@babel/traverse' {
     // END GENERATED NODE PATH METHODS
   }
 
-  declare export type VisitNodeFunction<-TNode: BabelNode, TState> = (
+  declare export type VisitNodeFunction<-TNode extends BabelNode, TState> = (
     path: NodePath<TNode>,
     state: TState,
   ) => void;
 
-  declare export type VisitNodeObject<-TNode: BabelNode, TState> = Partial<{
+  declare export type VisitNodeObject<
+    -TNode extends BabelNode,
+    TState,
+  > = Partial<{
     enter(path: NodePath<TNode>, state: TState): void,
     exit(path: NodePath<TNode>, state: TState): void,
   }>;
 
-  declare export type VisitNode<-TNode: BabelNode, TState> =
+  declare export type VisitNode<-TNode extends BabelNode, TState> =
     | VisitNodeFunction<TNode, TState>
     | VisitNodeObject<TNode, TState>;
 

@@ -217,7 +217,7 @@ export default function structuredClone<T>(value: T): T {
 
 const NON_SERIALIZABLE_OBJECT_KEY = Symbol('nonSerializableObject');
 
-function isNonSerializableObject<T: interface {}>(obj: T): boolean {
+function isNonSerializableObject<T extends interface {}>(obj: T): boolean {
   // $FlowExpectedError[invalid-in-lhs]
   return NON_SERIALIZABLE_OBJECT_KEY in obj;
 }
