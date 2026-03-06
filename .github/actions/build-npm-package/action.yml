@@ -18,18 +18,21 @@ runs:
       shell: bash
       run: git config --global --add safe.directory '*'
     - name: Download ReactNativeDependencies
+      continue-on-error: true
       uses: actions/download-artifact@v7
       with:
         pattern: ReactNativeDependencies*
         path: ./packages/react-native/ReactAndroid/external-artifacts/artifacts
         merge-multiple: true
     - name: Download ReactCore artifacts
+      continue-on-error: true
       uses: actions/download-artifact@v7
       with:
         pattern: ReactCore*
         path: ./packages/react-native/ReactAndroid/external-artifacts/artifacts
         merge-multiple: true
     - name: Print Artifacts Directory
+      continue-on-error: true
       shell: bash
       run: ls -lR ./packages/react-native/ReactAndroid/external-artifacts/artifacts/
     - name: Setup gradle
