@@ -194,11 +194,17 @@ component RtlAndInlineViewsExample() {
 }
 
 component TextWithLinkRoleExample() {
-  const handlePress = () => console.log('Link Press');
+  const [pressed, setPressed] = useState(false);
+  const handlePress = () => setPressed(true);
+  const linkColor = pressed ? 'red' : 'teal';
 
   return (
-    <View>
-      <Text role="link" style={styles.link} onPress={handlePress}>
+    <View testID="text-with-link-role">
+      <Text
+        role="link"
+        style={[styles.link, {color: linkColor}]}
+        onPress={handlePress}
+        testID="text-link-role-link">
         Link Text
       </Text>
 
