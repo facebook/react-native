@@ -48,6 +48,9 @@ const textViewConfig = {
     dataDetectorType: true,
     android_hyphenationFrequency: true,
     lineBreakStrategyIOS: true,
+    focusable: true,
+    tooltip: true,
+    href: true,
   },
   directEventTypes: {
     topTextLayout: {
