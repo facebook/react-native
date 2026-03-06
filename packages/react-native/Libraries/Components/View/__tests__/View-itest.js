@@ -43,14 +43,14 @@ describe('<View>', () => {
           ).toEqual(
             <rn-view
               layoutMetrics-frame="{x:0,y:0,width:20,height:50}"
-              height="50.000000%"
+              height="50%"
               layoutMetrics-borderWidth="{top:0,right:0,bottom:0,left:0}"
               layoutMetrics-contentInsets="{top:0,right:0,bottom:0,left:0}"
               layoutMetrics-displayType="Flex"
               layoutMetrics-layoutDirection="LeftToRight"
               layoutMetrics-overflowInset="{top:0,right:-0,bottom:-0,left:0}"
               layoutMetrics-pointScaleFactor="3"
-              width="20.000000%"
+              width="20%"
             />,
           );
         });
@@ -69,14 +69,14 @@ describe('<View>', () => {
           ).toEqual(
             <rn-view
               layoutMetrics-frame="{x:0,y:0,width:5,height:10}"
-              height="10.000000"
+              height="10"
               layoutMetrics-borderWidth="{top:0,right:0,bottom:0,left:0}"
               layoutMetrics-contentInsets="{top:0,right:0,bottom:0,left:0}"
               layoutMetrics-displayType="Flex"
               layoutMetrics-layoutDirection="LeftToRight"
               layoutMetrics-overflowInset="{top:0,right:-0,bottom:-0,left:0}"
               layoutMetrics-pointScaleFactor="3"
-              width="5.000000"
+              width="5"
             />,
           );
         });
@@ -134,15 +134,15 @@ describe('<View>', () => {
           ).toEqual(
             <rn-view
               layoutMetrics-frame="{x:50,y:50,width:5,height:10}"
-              height="10.000000"
+              height="10"
               layoutMetrics-borderWidth="{top:0,right:0,bottom:0,left:0}"
               layoutMetrics-contentInsets="{top:0,right:0,bottom:0,left:0}"
               layoutMetrics-displayType="Flex"
               layoutMetrics-layoutDirection="LeftToRight"
               layoutMetrics-overflowInset="{top:0,right:-0,bottom:-0,left:0}"
               layoutMetrics-pointScaleFactor="3"
-              margin="50.000000%"
-              width="5.000000"
+              margin="50%"
+              width="5"
             />,
           );
         });
@@ -166,15 +166,15 @@ describe('<View>', () => {
           ).toEqual(
             <rn-view
               layoutMetrics-frame="{x:5,y:5,width:5,height:10}"
-              height="10.000000"
+              height="10"
               layoutMetrics-borderWidth="{top:0,right:0,bottom:0,left:0}"
               layoutMetrics-contentInsets="{top:0,right:0,bottom:0,left:0}"
               layoutMetrics-displayType="Flex"
               layoutMetrics-layoutDirection="LeftToRight"
               layoutMetrics-overflowInset="{top:0,right:-0,bottom:-0,left:0}"
               layoutMetrics-pointScaleFactor="3"
-              margin="5.000000"
-              width="5.000000"
+              margin="5"
+              width="5"
             />,
           );
         });
@@ -190,7 +190,7 @@ describe('<View>', () => {
 
           expect(
             root.getRenderedOutput({props: ['transform']}).toJSX(),
-          ).toEqual(<rn-view transform='[{"translateX": 10.000000}]' />);
+          ).toEqual(<rn-view transform='[{"translateX": 10}]' />);
         });
 
         [

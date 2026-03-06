@@ -154,7 +154,7 @@ describe('<Image>', () => {
         });
 
         expect(root.getRenderedOutput({props: ['height']}).toJSX()).toEqual(
-          <rn-image height="100.000000" />,
+          <rn-image height="100" />,
         );
       });
     });
@@ -168,7 +168,7 @@ describe('<Image>', () => {
         });
 
         expect(root.getRenderedOutput({props: ['width']}).toJSX()).toEqual(
-          <rn-image width="100.000000" />,
+          <rn-image width="100" />,
         );
       });
     });
@@ -483,8 +483,8 @@ describe('<Image>', () => {
               source-type="remote"
               source-size="{40, 40}"
               source-uri="https://reactnative.dev/img/tiny_logo.png"
-              width="40.000000"
-              height="40.000000"
+              width="40"
+              height="40"
             />
           ) : (
             <rn-image
@@ -599,13 +599,7 @@ describe('<Image>', () => {
           root
             .getRenderedOutput({props: ['width', 'height', 'resizeMode']})
             .toJSX(),
-        ).toEqual(
-          <rn-image
-            height="100.000000"
-            resizeMode="contain"
-            width="100.000000"
-          />,
-        );
+        ).toEqual(<rn-image height="100" resizeMode="contain" width="100" />);
       });
     });
 

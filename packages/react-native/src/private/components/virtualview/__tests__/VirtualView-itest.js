@@ -158,12 +158,7 @@ describe('styles', () => {
 
     expect(
       root.getRenderedOutput({props: ['minHeight', 'minWidth']}).toJSX(),
-    ).toEqual(
-      <rn-virtualViewExperimental
-        minHeight="100.000000"
-        minWidth="100.000000"
-      />,
-    );
+    ).toEqual(<rn-virtualViewExperimental minHeight="100" minWidth="100" />);
   });
 });
 

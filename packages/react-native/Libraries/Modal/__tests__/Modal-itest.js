@@ -19,12 +19,7 @@ import ensureInstance from 'react-native/src/private/__tests__/utilities/ensureI
 import ReactNativeElement from 'react-native/src/private/webapis/dom/nodes/ReactNativeElement';
 
 const DEFAULT_MODAL_CHILD_VIEW = (
-  <rn-view
-    backgroundColor="rgba(255, 255, 255, 1)"
-    flex="1.000000"
-    left="0.000000"
-    top="0.000000"
-  />
+  <rn-view backgroundColor="rgba(255, 255, 255, 1)" flex="1" left="0" top="0" />
 );
 
 describe('<Modal>', () => {

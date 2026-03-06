@@ -28,7 +28,7 @@ describe('<ActivityIndicator>', () => {
         });
 
         expect(root.getRenderedOutput().toJSX()).toEqual(
-          <rn-androidProgressBar height="20.000000" width="20.000000" />,
+          <rn-androidProgressBar height="20" width="20" />,
         );
       });
 
@@ -40,7 +40,7 @@ describe('<ActivityIndicator>', () => {
         });
 
         expect(root.getRenderedOutput().toJSX()).toEqual(
-          <rn-androidProgressBar height="20.000000" width="20.000000" />,
+          <rn-androidProgressBar height="20" width="20" />,
         );
       });
 
@@ -52,7 +52,7 @@ describe('<ActivityIndicator>', () => {
         });
 
         expect(root.getRenderedOutput().toJSX()).toEqual(
-          <rn-androidProgressBar height="36.000000" width="36.000000" />,
+          <rn-androidProgressBar height="36" width="36" />,
         );
       });
 
@@ -64,7 +64,7 @@ describe('<ActivityIndicator>', () => {
         });
 
         expect(root.getRenderedOutput().toJSX()).toEqual(
-          <rn-androidProgressBar height="48.000000" width="48.000000" />,
+          <rn-androidProgressBar height="48" width="48" />,
         );
       });
     });
@@ -80,7 +80,7 @@ describe('<ActivityIndicator>', () => {
         // Color is a native prop not serialized as a view attribute,
         // but the component still renders correctly
         expect(root.getRenderedOutput().toJSX()).toEqual(
-          <rn-androidProgressBar height="20.000000" width="20.000000" />,
+          <rn-androidProgressBar height="20" width="20" />,
         );
       });
     });
@@ -95,7 +95,7 @@ describe('<ActivityIndicator>', () => {
 
         // Component renders normally when animating (default)
         expect(root.getRenderedOutput().toJSX()).toEqual(
-          <rn-androidProgressBar height="20.000000" width="20.000000" />,
+          <rn-androidProgressBar height="20" width="20" />,
         );
       });
 
@@ -108,7 +108,7 @@ describe('<ActivityIndicator>', () => {
 
         // Component still renders when not animating
         expect(root.getRenderedOutput().toJSX()).toEqual(
-          <rn-androidProgressBar height="20.000000" width="20.000000" />,
+          <rn-androidProgressBar height="20" width="20" />,
         );
       });
     });
