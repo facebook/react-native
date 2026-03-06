@@ -12,7 +12,7 @@ import android.text.Layout
 import android.text.style.UpdateAppearance
 
 /**
- * May be overriden to implement charater styles which are applied by [PreparedLayoutTextView]
+ * May be overridden to implement character styles which are applied by [PreparedLayoutTextView]
  * during the drawing of text, against the underlying Android canvas
  */
 public abstract class DrawCommandSpan : UpdateAppearance, ReactSpan {
