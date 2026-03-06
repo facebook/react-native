@@ -173,7 +173,6 @@ Pod::Spec.new do |s|
   end
 
   s.subspec "mounting" do |ss|
-    ss.dependency             "React-jsinspectortracing"
     ss.source_files         = podspec_sources("react/renderer/mounting/**/*.{m,mm,cpp,h}", "react/renderer/mounting/**/*.h")
     ss.exclude_files        = "react/renderer/mounting/tests"
     ss.header_dir           = "react/renderer/mounting"
