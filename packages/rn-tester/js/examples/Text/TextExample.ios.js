@@ -601,9 +601,10 @@ const examples = [
   },
   {
     title: 'Wrap',
+    name: 'wrap',
     render: function (): React.Node {
       return (
-        <Text>
+        <Text testID="text-wrap">
           The text should wrap if it goes on multiple lines. See, this is going
           to the next line.
         </Text>
@@ -612,15 +613,21 @@ const examples = [
   },
   {
     title: "Substring Emoji (should only see 'test')",
+    name: 'substringEmoji',
     render: function (): React.Node {
-      return <Text>{'test🙃'.substring(0, 5)}</Text>;
+      return (
+        <Text testID="text-substring-emoji">{'test🙃'.substring(0, 5)}</Text>
+      );
     },
   },
   {
     title: 'Transparent Background Color',
+    name: 'transparentBackgroundColor',
     render: function (): React.Node {
       return (
-        <Text style={{backgroundColor: '#00000020', padding: 10}}>
+        <Text
+          testID="text-transparent-bg"
+          style={{backgroundColor: '#00000020', padding: 10}}>
           Text in a gray box!
           <Text style={{backgroundColor: 'red'}}>
             Another text in a (inline) red box (which is inside the gray box).
@@ -711,9 +718,10 @@ const examples = [
   },
   {
     title: 'Padding',
+    name: 'padding',
     render: function (): React.Node {
       return (
-        <Text style={{padding: 10}}>
+        <Text testID="text-padding" style={{padding: 10}}>
           This text is indented by 10px padding on all sides.
         </Text>
       );
@@ -1033,9 +1041,10 @@ const examples = [
   },
   {
     title: 'Spaces',
+    name: 'spaces',
     render: function (): React.Node {
       return (
-        <Text>
+        <Text testID="text-spaces">
           A {'generated'} {'string'} and some &nbsp;&nbsp;&nbsp; spaces
         </Text>
       );
@@ -1043,9 +1052,10 @@ const examples = [
   },
   {
     title: 'Line Height',
+    name: 'lineHeightIOS',
     render: function (): React.Node {
       return (
-        <Text>
+        <Text testID="text-line-height-ios">
           <Text style={{lineHeight: 35}}>
             A lot of space between the lines of this long passage that should
             wrap once.
@@ -1061,10 +1071,11 @@ const examples = [
   },
   {
     title: 'backgroundColor attribute',
+    name: 'backgroundColorAttr',
     description: 'backgroundColor is inherited from all types of views.',
     render: function (): React.Node {
       return (
-        <Text style={{backgroundColor: 'yellow'}}>
+        <Text testID="text-bg-color-attr" style={{backgroundColor: 'yellow'}}>
           Yellow container background,
           <Text style={{backgroundColor: '#ffaaaa'}}>
             {' '}
@@ -1289,9 +1300,10 @@ const examples = [
   },
   {
     title: 'Font variants',
+    name: 'fontVariants',
     render: function (): React.Node {
       return (
-        <View>
+        <View testID="text-font-variants">
           <Text style={{fontVariant: ['small-caps']}}>Small Caps{'\n'}</Text>
           <Text
             style={{
@@ -1370,9 +1382,10 @@ const examples = [
   },
   {
     title: 'Transform',
+    name: 'textTransform',
     render: function (): React.Node {
       return (
-        <View>
+        <View testID="text-transform">
           <Text style={{textTransform: 'uppercase'}}>
             This text should be uppercased.
           </Text>
@@ -1429,6 +1442,7 @@ const examples = [
   },
   {
     title: 'Line Break Strategy',
+    name: 'lineBreakStrategy',
     render: function (): React.Node {
       const lineBreakStrategy = [
         'none',
@@ -1444,7 +1458,7 @@ const examples = [
       };
 
       return (
-        <View>
+        <View testID="text-line-break-strategy">
           {lineBreakStrategy.map(strategy => {
             return (
               <View key={strategy} style={{marginBottom: 12}}>

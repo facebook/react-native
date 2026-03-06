@@ -361,7 +361,7 @@ function IncludeFontPaddingExample(props: {}): React.Node {
 
 function FontVariantsExample(props: {}): React.Node {
   return (
-    <>
+    <View testID="text-font-variants">
       <RNTesterText style={{fontVariant: ['small-caps']}}>
         Small Caps{'\n'}
       </RNTesterText>
@@ -399,7 +399,7 @@ function FontVariantsExample(props: {}): React.Node {
         }}>
         Stylistic & and $
       </RNTesterText>
-    </>
+    </View>
   );
 }
 
@@ -619,7 +619,7 @@ function FontWeightExample(props: {}): React.Node {
 
 function BackgroundColorExample(props: {}): React.Node {
   return (
-    <>
+    <View testID="text-bg-color-attr">
       <RNTesterText style={{backgroundColor: '#ffaaaa'}}>
         Red background,
         <RNTesterText style={{backgroundColor: '#aaaaff'}}>
@@ -644,7 +644,7 @@ function BackgroundColorExample(props: {}): React.Node {
           </RNTesterText>
         </RNTesterText>
       </RNTesterText>
-    </>
+    </View>
   );
 }
 
@@ -1322,7 +1322,7 @@ const examples = [
     name: 'wrap',
     render(): React.Node {
       return (
-        <RNTesterText style={styles.wrappedText}>
+        <RNTesterText testID="text-wrap" style={styles.wrappedText}>
           The text should wrap if it goes on multiple lines. See, this is going
           to the next line.
         </RNTesterText>
@@ -1341,7 +1341,7 @@ const examples = [
     name: 'padding',
     render(): React.Node {
       return (
-        <RNTesterText style={{padding: 10}}>
+        <RNTesterText testID="text-padding" style={{padding: 10}}>
           This text is indented by 10px padding on all sides.
         </RNTesterText>
       );
@@ -1470,7 +1470,7 @@ const examples = [
     name: 'spaces',
     render(): React.Node {
       return (
-        <RNTesterText>
+        <RNTesterText testID="text-spaces">
           A {'generated'} {'string'} and some &nbsp;&nbsp;&nbsp; spaces
         </RNTesterText>
       );
@@ -1497,7 +1497,7 @@ const examples = [
   },
   {
     title: 'backgroundColor attribute',
-    name: 'backgroundColorAttribute',
+    name: 'backgroundColorAttr',
     render(): React.Node {
       return <BackgroundColorExample />;
     },
