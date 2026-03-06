@@ -1673,7 +1673,7 @@ static NSString *RCTRecursiveAccessibilityLabel(UIView *view)
 
 - (BOOL)canBecomeFirstResponder
 {
-  return YES;
+  return ReactNativeFeatureFlags::enableImperativeFocus();
 }
 
 - (void)handleCommand:(const NSString *)commandName args:(const NSArray *)args
