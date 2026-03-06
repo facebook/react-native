@@ -130,6 +130,9 @@ function handleUpdate(): void {
   if (updateTimeout == null) {
     updateTimeout = setImmediate(() => {
       updateTimeout = null;
+      if (TracingStateObserver.isTracing()) {
+        return;
+      }
       const nextState = getNextState();
       observers.forEach(({observer}) => observer(nextState));
     });
@@ -212,6 +215,8 @@ export function addLog(log: LogData): void {
       isTracing => {
         if (isTracing) {
           clear();
+        } else {
+          handleUpdate();
         }
       },
     );
