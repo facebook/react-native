@@ -3275,13 +3275,10 @@ public abstract class com/facebook/react/uimanager/BaseViewManagerDelegate : com
 
 public final class com/facebook/react/uimanager/DisplayMetricsHolder {
 	public static final field INSTANCE Lcom/facebook/react/uimanager/DisplayMetricsHolder;
-	public static final fun getDisplayMetricsWritableMap (D)Lcom/facebook/react/bridge/WritableMap;
 	public static final fun getScreenDisplayMetrics ()Landroid/util/DisplayMetrics;
-	public static final fun getWindowDisplayMetrics ()Landroid/util/DisplayMetrics;
 	public static final fun initDisplayMetrics (Landroid/content/Context;)V
 	public static final fun initDisplayMetricsIfNotInitialized (Landroid/content/Context;)V
 	public static final fun setScreenDisplayMetrics (Landroid/util/DisplayMetrics;)V
-	public static final fun setWindowDisplayMetrics (Landroid/util/DisplayMetrics;)V
 }
 
 public final class com/facebook/react/uimanager/FloatUtil {
