@@ -14,6 +14,7 @@
 #include <deque>
 #include <memory>
 #include <optional>
+#include <ranges>
 #include <vector>
 
 namespace facebook::react {
@@ -52,8 +53,8 @@ void addAncestorsToUpdateList(
 
   int ancestorDepth = static_cast<int>(ancestors.size() - 1);
   // iterate from current ShadowNode's parent to root ShadowNode
-  for (auto iter = ancestors.rbegin(); iter != ancestors.rend(); ++iter) {
-    auto& ancestorShadowNode = iter->first.get();
+  for (auto& [ancestorRef, childIdx] : std::ranges::reverse_view(ancestors)) {
+    auto& ancestorShadowNode = ancestorRef.get();
     auto ancestorTag = ancestorShadowNode.getTag();
     auto ancestorAddedToUpdateList = std::find_if(
         shadowNodesToUpdate.begin(),
@@ -67,10 +68,10 @@ void addAncestorsToUpdateList(
           .tag = ancestorShadowNode.getTag(),
           .depth = ancestorDepth,
           .node = ancestorShadowNodesShared[ancestorDepth],
-          .updatedChildrenIndices = {iter->second},
+          .updatedChildrenIndices = {childIdx},
       });
     } else {
-      ancestorAddedToUpdateList->updatedChildrenIndices.push_back(iter->second);
+      ancestorAddedToUpdateList->updatedChildrenIndices.push_back(childIdx);
     }
     ancestorDepth--;
   }
