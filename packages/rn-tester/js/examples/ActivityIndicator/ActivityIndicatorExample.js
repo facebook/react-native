@@ -69,6 +69,7 @@ exports.description = 'Animated loading indicators.';
 exports.examples = [
   {
     title: 'Default (small, white)',
+    name: 'default',
     render(): Node {
       return (
         <ActivityIndicator
@@ -93,6 +94,7 @@ exports.examples = [
   },
   {
     title: 'Custom colors',
+    name: 'custom-colors',
     render(): Node {
       return (
         <View style={styles.horizontal}>
