@@ -301,7 +301,7 @@ export default class AnimatedValue extends AnimatedWithChildren {
    * Interpolates the value before updating the property, e.g. mapping 0-1 to
    * 0-10.
    */
-  interpolate<OutputT: InterpolationConfigSupportedOutputType>(
+  interpolate<OutputT extends InterpolationConfigSupportedOutputType>(
     config: InterpolationConfigType<OutputT>,
   ): AnimatedInterpolation<OutputT> {
     return new AnimatedInterpolation(this, config);

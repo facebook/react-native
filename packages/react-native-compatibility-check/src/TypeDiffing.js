@@ -276,7 +276,7 @@ export function compareTypeAnnotation(
   }
 }
 
-function compareObjectTypeProperty<T: CompleteTypeAnnotation>(
+function compareObjectTypeProperty<T extends CompleteTypeAnnotation>(
   first: NamedShape<T>,
   second: NamedShape<T>,
 ): number {
@@ -520,7 +520,7 @@ function comparePropertyArrays(
   return result;
 }
 
-export function compareObjectTypes<T: CompleteTypeAnnotation>(
+export function compareObjectTypes<T extends CompleteTypeAnnotation>(
   newerPropertyTypes: ReadonlyArray<NamedShape<T>>,
   olderPropertyTypes: ReadonlyArray<NamedShape<T>>,
 ): ComparisonResult {

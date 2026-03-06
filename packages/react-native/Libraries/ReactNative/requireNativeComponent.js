@@ -26,7 +26,7 @@ const getNativeComponentAttributes =
  *
  */
 
-const requireNativeComponent = <T: {...}>(
+const requireNativeComponent = <T extends {...}>(
   uiViewClassName: string,
 ): HostComponent<T> =>
   ((createReactNativeComponentClass(uiViewClassName, () =>

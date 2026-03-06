@@ -65,12 +65,12 @@ type PassThroughProps = Readonly<{
   passthroughAnimatedPropExplicitValues?: ViewProps | null,
 }>;
 
-type LooseOmit<O: interface {}, K: keyof $FlowFixMe> = Pick<
+type LooseOmit<O extends interface {}, K extends keyof $FlowFixMe> = Pick<
   O,
   Exclude<keyof O, K>,
 >;
 
-export type AnimatedProps<Props: {...}> = LooseOmit<
+export type AnimatedProps<Props extends {...}> = LooseOmit<
   {
     [K in keyof Props]: K extends NonAnimatedProps
       ? Props[K]
@@ -80,7 +80,7 @@ export type AnimatedProps<Props: {...}> = LooseOmit<
 > &
   PassThroughProps;
 
-export type AnimatedBaseProps<Props: {...}> = LooseOmit<
+export type AnimatedBaseProps<Props extends {...}> = LooseOmit<
   {
     [K in keyof Props]: K extends NonAnimatedProps
       ? Props[K]
@@ -90,12 +90,12 @@ export type AnimatedBaseProps<Props: {...}> = LooseOmit<
 >;
 
 export type AnimatedComponentType<
-  Props: {...},
+  Props extends {...},
   +Instance = unknown,
 > = component(ref?: React.RefSetter<Instance>, ...AnimatedProps<Props>);
 
 export default function createAnimatedComponent<
-  TInstance: React.ComponentType<any>,
+  TInstance extends React.ComponentType<any>,
 >(
   Component: TInstance,
 ): AnimatedComponentType<
@@ -106,8 +106,8 @@ export default function createAnimatedComponent<
 }
 
 export function unstable_createAnimatedComponentWithAllowlist<
-  TProps: {...},
-  TInstance: React.ComponentType<TProps>,
+  TProps extends {...},
+  TInstance extends React.ComponentType<TProps>,
 >(
   Component: TInstance,
   allowlist: ?AnimatedPropsAllowlist,

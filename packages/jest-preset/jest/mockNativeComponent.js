@@ -15,12 +15,12 @@ import {createElement} from 'react';
 
 let nativeTag = 1;
 
-type MockNativeComponent<TProps: {...}> = component(
+type MockNativeComponent<TProps extends {...}> = component(
   ref?: ?React.RefSetter<HostInstance>,
   ...props: TProps
 );
 
-export default function mockNativeComponent<TProps: {...}>(
+export default function mockNativeComponent<TProps extends {...}>(
   viewName: string,
 ): MockNativeComponent<TProps> {
   const Component = class extends React.Component<TProps> {

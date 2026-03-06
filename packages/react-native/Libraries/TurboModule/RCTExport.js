@@ -29,7 +29,7 @@
  */
 
 // eslint-disable-next-line no-unused-vars
-export interface DEPRECATED_RCTExport<T: void = void> {
+export interface DEPRECATED_RCTExport<T extends void = void> {
   +getConstants?: () => {...};
 }
 

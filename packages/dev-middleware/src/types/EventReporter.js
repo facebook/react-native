@@ -10,18 +10,18 @@
 
 import type {DebuggerShellPreparationResult} from './DevToolLauncher';
 
-type SuccessResult<Props: {...} | void = {}> = {
+type SuccessResult<Props extends {...} | void = {}> = {
   status: 'success',
   ...Props,
 };
 
-type ErrorResult<ErrorT = unknown, Props: {...} | void = {}> = {
+type ErrorResult<ErrorT = unknown, Props extends {...} | void = {}> = {
   status: 'error',
   error: ErrorT,
   ...Props,
 };
 
-type CodedErrorResult<ErrorCode: string> = {
+type CodedErrorResult<ErrorCode extends string> = {
   status: 'coded_error',
   errorCode: ErrorCode,
   errorDetails?: string,

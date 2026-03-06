@@ -33,7 +33,7 @@ export type InterpolationConfigSupportedOutputType =
   | NativeColorValue;
 
 export type InterpolationConfigType<
-  OutputT: InterpolationConfigSupportedOutputType,
+  OutputT extends InterpolationConfigSupportedOutputType,
 > = Readonly<{
   ...AnimatedNodeConfig,
   inputRange: ReadonlyArray<number>,
@@ -307,10 +307,9 @@ function findRange(input: number, inputRange: ReadonlyArray<number>) {
   return i - 1;
 }
 
-function checkValidRanges<OutputT: InterpolationConfigSupportedOutputType>(
-  inputRange: ReadonlyArray<number>,
-  outputRange: ReadonlyArray<OutputT>,
-) {
+function checkValidRanges<
+  OutputT extends InterpolationConfigSupportedOutputType,
+>(inputRange: ReadonlyArray<number>, outputRange: ReadonlyArray<OutputT>) {
   checkInfiniteRange('outputRange', outputRange);
   checkInfiniteRange('inputRange', inputRange);
   checkValidInputRange(inputRange);
@@ -334,10 +333,9 @@ function checkValidInputRange(arr: ReadonlyArray<number>) {
   }
 }
 
-function checkInfiniteRange<OutputT: InterpolationConfigSupportedOutputType>(
-  name: string,
-  arr: ReadonlyArray<OutputT>,
-) {
+function checkInfiniteRange<
+  OutputT extends InterpolationConfigSupportedOutputType,
+>(name: string, arr: ReadonlyArray<OutputT>) {
   invariant(arr.length >= 2, name + ' must have at least 2 elements');
   invariant(
     arr.length !== 2 || arr[0] !== -Infinity || arr[1] !== Infinity,
@@ -352,7 +350,7 @@ function checkInfiniteRange<OutputT: InterpolationConfigSupportedOutputType>(
 }
 
 export default class AnimatedInterpolation<
-  OutputT: InterpolationConfigSupportedOutputType,
+  OutputT extends InterpolationConfigSupportedOutputType,
 > extends AnimatedWithChildren {
   _parent: AnimatedNode;
   _config: InterpolationConfigType<OutputT>;
@@ -402,7 +400,7 @@ export default class AnimatedInterpolation<
     return this._getInterpolation()(parentValue);
   }
 
-  interpolate<NewOutputT: number | string>(
+  interpolate<NewOutputT extends number | string>(
     config: InterpolationConfigType<NewOutputT>,
   ): AnimatedInterpolation<NewOutputT> {
     return new AnimatedInterpolation(this, config);

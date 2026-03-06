@@ -48,7 +48,7 @@ const emitter = new NativeEventEmitter<$FlowFixMe>(
  * requestId to each network request that can be used to abort that request later on.
  */
 const RCTNetworking = {
-  addListener<K: keyof RCTNetworkingEventDefinitions>(
+  addListener<K extends keyof RCTNetworkingEventDefinitions>(
     eventType: K,
     listener: (...RCTNetworkingEventDefinitions[K]) => unknown,
     context?: unknown,

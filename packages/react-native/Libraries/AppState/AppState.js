@@ -110,7 +110,7 @@ class AppStateImpl {
    *
    * See https://reactnative.dev/docs/appstate#addeventlistener
    */
-  addEventListener<K: AppStateEvent>(
+  addEventListener<K extends AppStateEvent>(
     type: K,
     handler: (...AppStateEventDefinitions[K]) => void,
   ): EventSubscription {

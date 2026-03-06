@@ -15,7 +15,7 @@ const mockNativeComponent = jest.requireActual<TmockNativeComponent>(
   '../mockNativeComponent',
 ).default;
 
-export default function requireNativeComponent<T: {...}>(
+export default function requireNativeComponent<T extends {...}>(
   uiViewClassName: string,
 ): HostComponent<T> {
   return mockNativeComponent<T>(uiViewClassName);

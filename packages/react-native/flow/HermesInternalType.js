@@ -108,7 +108,7 @@ declare type $HermesInternalType = {
   /**
    * Enqueue a JavaScript callback function as a Job into the engine Job queue.
    */
-  +enqueueJob?: <TArguments: Array<unknown>>(
+  +enqueueJob?: <TArguments extends Array<unknown>>(
     jobCallback: (...args: TArguments) => unknown,
   ) => void,
 };

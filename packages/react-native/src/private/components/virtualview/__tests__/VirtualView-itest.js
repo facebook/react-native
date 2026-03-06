@@ -360,7 +360,9 @@ export function dispatchModeChangeEvent(
 /**
  * Helper to create a callback ref that records instances using WeakRefs.
  */
-function createWeakRefCallback<T: interface {} = interface {}>(): Readonly<{
+function createWeakRefCallback<
+  T extends interface {} = interface {},
+>(): Readonly<{
   weakRefs: ReadonlyArray<WeakRef<T>>,
   callbackRef: React.RefSetter<T>,
 }> {
