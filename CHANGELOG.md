@@ -1,5 +1,110 @@
 # Changelog
 
+## v0.83.4
+
+### Breaking
+
+
+
+#### Android specific
+
+
+
+#### iOS specific
+
+
+
+### Added
+
+
+
+#### Android specific
+
+
+
+#### iOS specific
+
+
+
+### Changed
+
+
+
+#### Android specific
+
+
+
+#### iOS specific
+
+
+
+### Deprecated
+
+
+
+#### Android specific
+
+
+
+#### iOS specific
+
+
+
+### Removed
+
+
+
+#### Android specific
+
+
+
+#### iOS specific
+
+
+
+### Fixed
+
+
+
+#### Android specific
+
+
+
+#### iOS specific
+
+
+
+### Security
+
+
+
+#### Android specific
+
+
+
+#### iOS specific
+
+
+
+### Unknown
+
+- Release 0.83.4 ([829ff063a1](https://github.com/facebook/react-native/commit/829ff063a1ee1f3e13789f104378b2d8b347ad11) by [@react-native-bot](https://github.com/react-native-bot))
+- Bump Podfile.lock ([7d892b914b](https://github.com/facebook/react-native/commit/7d892b914b8919b8015734ca46bd52e3910d502f) by [@react-native-bot](https://github.com/react-native-bot))
+- Release 0.83.3 ([96e5bbc4ff](https://github.com/facebook/react-native/commit/96e5bbc4ffb2a80ade8b6500602ce101f0fac9d5) by [@react-native-bot](https://github.com/react-native-bot))
+
+#### Android Unknown
+
+
+
+#### iOS Unknown
+
+- Add RCTDevSupportHeaders in React Umbrella ([cfb5328833](https://github.com/facebook/react-native/commit/cfb53288331885ce5d221783affe2f1fb9e18782) by [@cipolleschi](https://github.com/cipolleschi))
+
+#### Failed to parse
+
+
+
+
 ## v0.85.0-rc.0
 
 ### Breaking
