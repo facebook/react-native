@@ -7,6 +7,7 @@
 
 #include "DebugStringConvertible.h"
 
+#include <cmath>
 #include <cstdint>
 #include <iomanip>
 #include <sstream>
@@ -127,6 +128,14 @@ SharedDebugStringConvertibleList DebugStringConvertible::getDebugProps() const {
  * `toString`-family implementation.
  */
 std::string toString(const double& value) {
+  // Handle special floating-point values with prettier output
+  if (std::isnan(value)) {
+    return "NaN";
+  }
+  if (std::isinf(value)) {
+    return value < 0 ? "-Infinity" : "Infinity";
+  }
+
   std::ostringstream stream;
   stream << std::fixed << std::setprecision(4) << value;
   std::string result = stream.str();
