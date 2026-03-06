@@ -15,6 +15,13 @@
 #include <react/utils/ContextContainer.h>
 #include <memory>
 
+#ifdef RCT_USE_PANGO
+#include <mutex>
+
+struct _PangoFontMap;
+struct _PangoContext;
+#endif
+
 namespace facebook::react {
 
 class TextLayoutManager;
@@ -26,7 +33,7 @@ class TextLayoutManager;
 class TextLayoutManager {
  public:
   explicit TextLayoutManager(const std::shared_ptr<const ContextContainer> &contextContainer);
-  virtual ~TextLayoutManager() = default;
+  virtual ~TextLayoutManager();
 
   /*
    * Not copyable.
@@ -49,9 +56,31 @@ class TextLayoutManager {
       const TextLayoutContext &layoutContext,
       const LayoutConstraints &layoutConstraints) const;
 
+#ifdef RCT_USE_PANGO
+  /*
+   * Measures individual lines of `attributedString`.
+   * Detected by TextLayoutManagerExtended via C++20 concepts.
+   */
+  LinesMeasurements measureLines(
+      const AttributedStringBox &attributedStringBox,
+      const ParagraphAttributes &paragraphAttributes,
+      const Size &size) const;
+#endif
+
  protected:
   std::shared_ptr<const ContextContainer> contextContainer_;
   TextMeasureCache textMeasureCache_;
+
+#ifdef RCT_USE_PANGO
+  LineMeasureCache lineMeasureCache_;
+#endif
+
+ private:
+#ifdef RCT_USE_PANGO
+  _PangoFontMap *fontMap_{nullptr};
+  _PangoContext *pangoContext_{nullptr};
+  mutable std::mutex pangoMutex_;
+#endif
 };
 
 } // namespace facebook::react

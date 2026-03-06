@@ -53,3 +53,8 @@ target_link_libraries(react_renderer_textlayoutmanager
 )
 target_compile_reactnative_options(react_renderer_textlayoutmanager PRIVATE)
 target_compile_options(react_renderer_textlayoutmanager PRIVATE -Wpedantic)
+
+if(NOT ANDROID)
+  target_compile_definitions(react_renderer_textlayoutmanager PRIVATE RCT_USE_PANGO=1)
+  target_link_libraries(react_renderer_textlayoutmanager pango pangoft2)
+endif()
