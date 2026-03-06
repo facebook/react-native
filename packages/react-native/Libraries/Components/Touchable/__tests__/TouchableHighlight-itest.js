@@ -77,8 +77,8 @@ describe('<TouchableHighlight>', () => {
         ).toEqual(
           <rn-view
             backgroundColor="rgba(0, 0, 255, 1)"
-            height="50.000000"
-            width="100.000000"
+            height="50"
+            width="100"
           />,
         );
       });
@@ -130,7 +130,7 @@ describe('<TouchableHighlight>', () => {
 
         expect(root.getRenderedOutput({props: ['opacity']}).toJSX()).toEqual(
           <rn-view>
-            <rn-view opacity="0.8500000238418579" />
+            <rn-view opacity="0.85" />
           </rn-view>,
         );
       });

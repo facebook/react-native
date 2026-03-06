@@ -7,11 +7,9 @@
 
 #include "DebugStringConvertible.h"
 
-#include <array>
-#include <cinttypes>
-#include <cstdio>
-
-#include <double-conversion/double-conversion.h>
+#include <cstdint>
+#include <iomanip>
+#include <sstream>
 
 namespace facebook::react {
 
@@ -129,33 +127,30 @@ SharedDebugStringConvertibleList DebugStringConvertible::getDebugProps() const {
  * `toString`-family implementation.
  */
 std::string toString(const double& value) {
-  // Format taken from folly's toString
-  static double_conversion::DoubleToStringConverter conv(
-      0,
-      "Infinity",
-      "NaN",
-      'E',
-      -6, // detail::kConvMaxDecimalInShortestLow,
-      21, // detail::kConvMaxDecimalInShortestHigh,
-      6, // max leading padding zeros
-      1); // max trailing padding zeros
-  std::array<char, 256> buffer{};
-  double_conversion::StringBuilder builder(buffer.data(), buffer.size());
-  conv.ToShortest(value, &builder);
-  return builder.Finalize();
+  std::ostringstream stream;
+  stream << std::fixed << std::setprecision(4) << value;
+  std::string result = stream.str();
+
+  // Strip trailing zeros and unnecessary decimal point
+  if (auto dotPos = result.find('.'); dotPos != std::string::npos) {
+    auto lastNonZero = result.find_last_not_of('0');
+    if (lastNonZero == dotPos) {
+      result.erase(dotPos);
+    } else {
+      result.erase(lastNonZero + 1);
+    }
+  }
+  return result;
 }
 
 std::string toString(const void* value) {
   if (value == nullptr) {
     return "null";
   }
-  std::array<char, 20> buffer{};
-  std::snprintf(
-      buffer.data(),
-      buffer.size(),
-      "0x%" PRIXPTR,
-      reinterpret_cast<uintptr_t>(value));
-  return buffer.data();
+  std::ostringstream stream;
+  stream << "0x" << std::uppercase << std::hex
+         << reinterpret_cast<uintptr_t>(value);
+  return stream.str();
 }
 
 #endif

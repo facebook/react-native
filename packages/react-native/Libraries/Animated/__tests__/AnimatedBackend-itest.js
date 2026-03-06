@@ -117,7 +117,7 @@ test('animate layout props', () => {
   // TODO: getFabricUpdateProps is not working with the cloneMutliple method
   // expect(Fantom.unstable_getFabricUpdateProps(viewElement).height).toBe(100);
   expect(root.getRenderedOutput({props: ['height']}).toJSX()).toEqual(
-    <rn-view height="50.000000" />,
+    <rn-view height="50" />,
   );
 
   Fantom.unstable_produceFramesForDuration(100);
@@ -128,7 +128,7 @@ test('animate layout props', () => {
   });
 
   expect(root.getRenderedOutput({props: ['height']}).toJSX()).toEqual(
-    <rn-view height="100.000000" />,
+    <rn-view height="100" />,
   );
 });
 
@@ -174,7 +174,7 @@ test('animate layout props and rerender', () => {
 
   Fantom.unstable_produceFramesForDuration(500);
   expect(root.getRenderedOutput({props: ['height', 'width']}).toJSX()).toEqual(
-    <rn-view height="50.000000" width="100.000000" />,
+    <rn-view height="50" width="100" />,
   );
 
   Fantom.runTask(() => {
@@ -184,7 +184,7 @@ test('animate layout props and rerender', () => {
   // TODO: getFabricUpdateProps is not working with the cloneMutliple method
   // expect(Fantom.unstable_getFabricUpdateProps(viewElement).height).toBe(50);
   expect(root.getRenderedOutput({props: ['height', 'width']}).toJSX()).toEqual(
-    <rn-view height="50.000000" width="200.000000" />,
+    <rn-view height="50" width="200" />,
   );
 
   Fantom.unstable_produceFramesForDuration(500);
@@ -195,7 +195,7 @@ test('animate layout props and rerender', () => {
   });
 
   expect(root.getRenderedOutput({props: ['height', 'width']}).toJSX()).toEqual(
-    <rn-view height="100.000000" width="200.000000" />,
+    <rn-view height="100" width="200" />,
   );
 
   Fantom.runTask(() => {
@@ -203,7 +203,7 @@ test('animate layout props and rerender', () => {
   });
 
   expect(root.getRenderedOutput({props: ['height', 'width']}).toJSX()).toEqual(
-    <rn-view height="100.000000" width="300.000000" />,
+    <rn-view height="100" width="300" />,
   );
 });
 
@@ -250,9 +250,9 @@ test('animate non-layout props and rerender', () => {
 
   Fantom.unstable_produceFramesForDuration(500);
 
-  // TODO: rendered output should be <rn-view opacity="0,5" width="100.000000" /> at this point, but synchronous updates are not captured by fantom
+  // TODO: rendered output should be <rn-view opacity="0,5" width="100" /> at this point, but synchronous updates are not captured by fantom
   expect(root.getRenderedOutput({props: ['width']}).toJSX()).toEqual(
-    <rn-view width="100.000000" />,
+    <rn-view width="100" />,
   );
 
   expect(
@@ -265,7 +265,7 @@ test('animate non-layout props and rerender', () => {
   });
 
   expect(root.getRenderedOutput({props: ['opacity', 'width']}).toJSX()).toEqual(
-    <rn-view opacity="0.25" width="150.000000" />,
+    <rn-view opacity="0.25" width="150" />,
   );
 
   Fantom.runTask(() => {
@@ -275,7 +275,7 @@ test('animate non-layout props and rerender', () => {
   // TODO: getFabricUpdateProps is not working with the cloneMutliple method
   // expect(Fantom.unstable_getFabricUpdateProps(viewElement).height).toBe(50);
   expect(root.getRenderedOutput({props: ['opacity', 'width']}).toJSX()).toEqual(
-    <rn-view opacity="0.25" width="200.000000" />,
+    <rn-view opacity="0.25" width="200" />,
   );
 
   Fantom.unstable_produceFramesForDuration(500);
@@ -287,7 +287,7 @@ test('animate non-layout props and rerender', () => {
 
   // TODO: T246961305 rendered output should be <rn-view opacity="1" /> at this point
   expect(root.getRenderedOutput({props: ['width']}).toJSX()).toEqual(
-    <rn-view width="200.000000" />,
+    <rn-view width="200" />,
   );
 
   expect(Fantom.unstable_getDirectManipulationProps(viewElement).opacity).toBe(
@@ -300,7 +300,7 @@ test('animate non-layout props and rerender', () => {
   });
 
   expect(root.getRenderedOutput({props: ['opacity', 'width']}).toJSX()).toEqual(
-    <rn-view opacity="0.5" width="300.000000" />,
+    <rn-view opacity="0.5" width="300" />,
   );
 });
 
@@ -373,9 +373,9 @@ test('animate layout props and rerender in many components', () => {
 
   Fantom.unstable_produceFramesForDuration(500);
   expect(root.getRenderedOutput({props: ['height', 'width']}).toJSX()).toEqual(
-    <rn-view height="50.000000" width="100.000000">
+    <rn-view height="50" width="100">
       {Array.from({length: N}, (_, i) => (
-        <rn-view key={i} height="50.000000" width="100.000000" />
+        <rn-view key={i} height="50" width="100" />
       ))}
     </rn-view>,
   );
@@ -392,9 +392,9 @@ test('animate layout props and rerender in many components', () => {
   // TODO: getFabricUpdateProps is not working with the cloneMutliple method
   // expect(Fantom.unstable_getFabricUpdateProps(viewElement).height).toBe(50);
   expect(root.getRenderedOutput({props: ['height', 'width']}).toJSX()).toEqual(
-    <rn-view height="50.000000" width="200.000000">
+    <rn-view height="50" width="200">
       {Array.from({length: N}, (_, i) => (
-        <rn-view key={i} height="50.000000" width="100.000000" />
+        <rn-view key={i} height="50" width="100" />
       ))}
     </rn-view>,
   );
@@ -466,7 +466,7 @@ test('animate width, height and opacity at once', () => {
 
   expect(
     root.getRenderedOutput({props: ['width', 'height', 'opacity']}).toJSX(),
-  ).toEqual(<rn-view height="200.000000" opacity="0.5" width="200.000000" />);
+  ).toEqual(<rn-view height="200" opacity="0.5" width="200" />);
 });
 
 test('animate width with memo and rerender (js sync test)', () => {
@@ -532,7 +532,7 @@ test('animate width with memo and rerender (js sync test)', () => {
   });
 
   expect(root.getRenderedOutput({props: ['width', 'height']}).toJSX()).toEqual(
-    <rn-view height="100.000000" width="100.000000" />,
+    <rn-view height="100" width="100" />,
   );
 
   Fantom.unstable_produceFramesForDuration(1000);
@@ -543,7 +543,7 @@ test('animate width with memo and rerender (js sync test)', () => {
   });
 
   expect(root.getRenderedOutput({props: ['width']}).toJSX()).toEqual(
-    <rn-view width="200.000000" />,
+    <rn-view width="200" />,
   );
 
   // Trigger rerender after animation completes to see if animation state gets overwritten
@@ -552,6 +552,6 @@ test('animate width with memo and rerender (js sync test)', () => {
   });
 
   expect(root.getRenderedOutput({props: ['width']}).toJSX()).toEqual(
-    <rn-view width="200.000000" />,
+    <rn-view width="200" />,
   );
 });

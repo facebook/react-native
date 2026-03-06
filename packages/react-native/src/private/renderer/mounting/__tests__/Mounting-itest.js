@@ -141,7 +141,7 @@ describe('ViewFlattening', () => {
     expect(root.getRenderedOutput().toJSX()).toEqual(
       <rn-view nativeID="G">
         <rn-view nativeID="H">
-          <rn-view width="100.000000" nativeID="A" />
+          <rn-view width="100" nativeID="A" />
         </rn-view>
       </rn-view>,
     );
@@ -176,7 +176,7 @@ describe('ViewFlattening', () => {
         <rn-view nativeID="H">
           <rn-view nativeID="I">
             <rn-view key="0" nativeID="B" />
-            <rn-view key="1" nativeID="A" width="100.000000" />
+            <rn-view key="1" nativeID="A" width="100" />
           </rn-view>
         </rn-view>
       </rn-view>,
@@ -214,7 +214,7 @@ describe('ViewFlattening', () => {
         <rn-view nativeID="H">
           <rn-view nativeID="I">
             <rn-view nativeID="J">
-              <rn-view key="0" nativeID="A" width="100.000000" />
+              <rn-view key="0" nativeID="A" width="100" />
               <rn-view key="1" nativeID="B" />
             </rn-view>
           </rn-view>
@@ -378,8 +378,8 @@ describe('ViewFlattening', () => {
         .toJSX(),
     ).toEqual(
       <rn-view
-        width="100.000000"
-        height="100.000000"
+        width="100"
+        height="100"
         backgroundColor="rgba(255, 255, 255, 0.498039)"
       />,
     );

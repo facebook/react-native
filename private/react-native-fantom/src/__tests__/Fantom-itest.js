@@ -371,7 +371,7 @@ describe('Fantom', () => {
         });
 
         expect(root.getRenderedOutput().toJSX()).toEqual(
-          <rn-view height="100.000000" width="100.000000" />,
+          <rn-view height="100" width="100" />,
         );
       });
 
@@ -397,8 +397,8 @@ describe('Fantom', () => {
 
         expect(root.getRenderedOutput().toJSX()).toEqual(
           <>
-            <rn-view key="0" width="100.000000" height="100.000000" />
-            <rn-view key="1" width="100.000000" height="100.000000" />
+            <rn-view key="0" width="100" height="100" />
+            <rn-view key="1" width="100" height="100" />
           </>,
         );
       });
@@ -414,7 +414,7 @@ describe('Fantom', () => {
 
         expect(root.getRenderedOutput({includeRoot: true}).toJSX()).toEqual(
           <rn-rootView>
-            <rn-view width="100.000000" height="100.000000" />
+            <rn-view width="100" height="100" />
           </rn-rootView>,
         );
       });
@@ -432,7 +432,7 @@ describe('Fantom', () => {
           root.getRenderedOutput({includeLayoutMetrics: true}).toJSX(),
         ).toEqual(
           <rn-view
-            height="100.000000"
+            height="100"
             layoutMetrics-borderWidth="{top:0,right:0,bottom:0,left:0}"
             layoutMetrics-contentInsets="{top:0,right:0,bottom:0,left:0}"
             layoutMetrics-displayType="Flex"
@@ -440,7 +440,7 @@ describe('Fantom', () => {
             layoutMetrics-layoutDirection="LeftToRight"
             layoutMetrics-overflowInset="{top:0,right:-0,bottom:-0,left:0}"
             layoutMetrics-pointScaleFactor="3"
-            width="100.000000"
+            width="100"
           />,
         );
       });
@@ -460,7 +460,7 @@ describe('Fantom', () => {
               props: ['width'],
             })
             .toJSX(),
-        ).toEqual(<rn-view width="100.000000" />);
+        ).toEqual(<rn-view width="100" />);
       });
 
       it('skip props', () => {
@@ -478,7 +478,7 @@ describe('Fantom', () => {
               props: ['^(?!width$).*$'],
             })
             .toJSX(),
-        ).toEqual(<rn-view height="100.000000" />);
+        ).toEqual(<rn-view height="100" />);
       });
 
       it('filter out all props', () => {
