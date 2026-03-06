@@ -721,9 +721,10 @@ const examples = [
   },
   {
     title: 'Font Family',
+    name: 'fontFamily',
     render: function (): React.Node {
       return (
-        <View>
+        <View testID="text-font-family">
           <Text style={{fontFamily: Platform.isTV ? 'Times' : 'Cochin'}}>
             Cochin
           </Text>
@@ -758,9 +759,10 @@ const examples = [
   },
   {
     title: 'Font Size',
+    name: 'fontSize',
     render: function (): React.Node {
       return (
-        <View>
+        <View testID="text-font-size">
           <Text style={{fontSize: 23}}>Size 23</Text>
           <Text style={{fontSize: 8}}>Size 8</Text>
         </View>
@@ -769,9 +771,10 @@ const examples = [
   },
   {
     title: 'Color',
+    name: 'color',
     render: function (): React.Node {
       return (
-        <View>
+        <View testID="text-test-color">
           <Text style={{color: 'red'}}>Red color</Text>
           <Text style={{color: 'blue'}}>Blue color</Text>
         </View>
@@ -780,9 +783,10 @@ const examples = [
   },
   {
     title: 'Font Weight',
+    name: 'fontWeight',
     render: function (): React.Node {
       return (
-        <View>
+        <View testID="text-font-weight">
           <Text style={{fontWeight: 'bold'}}>Move fast and be bold</Text>
           <Text style={{fontWeight: 'normal'}}>Move fast and be normal</Text>
           <Text style={{fontWeight: '900'}}>FONT WEIGHT 900</Text>
@@ -809,9 +813,10 @@ const examples = [
   },
   {
     title: 'Font Style',
+    name: 'fontStyle',
     render: function (): React.Node {
       return (
-        <View>
+        <View testID="text-font-style">
           <Text style={{fontStyle: 'normal'}}>Normal text</Text>
           <Text style={{fontStyle: 'italic'}}>Italic text</Text>
         </View>
@@ -833,9 +838,10 @@ const examples = [
   },
   {
     title: 'Text Decoration',
+    name: 'textDecoration',
     render: function (): React.Node {
       return (
-        <View>
+        <View testID="text-text-decoration">
           <Text
             style={{
               textDecorationLine: 'underline',
@@ -908,12 +914,13 @@ const examples = [
   },
   {
     title: 'Nested',
+    name: 'nested',
     description: ('Nested text components will inherit the styles of their ' +
       'parents (only backgroundColor is inherited from non-Text parents).  ' +
       '<Text> only supports other <Text> and raw text (strings) as children.': string),
     render: function (): React.Node {
       return (
-        <View>
+        <View testID="text-test-nested">
           <Text>
             (Normal text,
             <Text style={{fontWeight: 'bold'}}>
@@ -981,9 +988,10 @@ const examples = [
   },
   {
     title: 'Letter Spacing',
+    name: 'letterSpacing',
     render: function (): React.Node {
       return (
-        <View>
+        <View testID="text-letter-spacing">
           <Text style={{letterSpacing: 0}}>letterSpacing = 0</Text>
           <Text style={{letterSpacing: 2, marginTop: 5}}>
             letterSpacing = 2
@@ -1240,9 +1248,10 @@ const examples = [
   },
   {
     title: 'Text shadow',
+    name: 'textShadow',
     render: function (): React.Node {
       return (
-        <View>
+        <View testID="text-text-shadow">
           <Text
             style={{
               fontSize: 20,
@@ -1258,9 +1267,10 @@ const examples = [
   },
   {
     title: 'Ellipsize mode',
+    name: 'ellipsizeMode',
     render: function (): React.Node {
       return (
-        <View>
+        <View testID="text-ellipsize-mode">
           <Text numberOfLines={1}>
             This very long text should be truncated with dots in the end.
           </Text>
