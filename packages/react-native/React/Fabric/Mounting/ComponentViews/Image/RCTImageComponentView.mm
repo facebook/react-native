@@ -63,7 +63,11 @@ using namespace facebook::react;
 
   // `tintColor`
   if (oldImageProps.tintColor != newImageProps.tintColor) {
-    _imageView.tintColor = RCTUIColorFromSharedColor(newImageProps.tintColor);
+    if (newImageProps.tintColor.has_value()) {
+      _imageView.tintColor = RCTUIColorFromSharedColor(newImageProps.tintColor.value());
+    } else {
+      _imageView.tintColor = nil;
+    }
   }
 
   [super updateProps:props oldProps:oldProps];
