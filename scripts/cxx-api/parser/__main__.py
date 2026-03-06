@@ -60,7 +60,7 @@ def build_doxygen_config(
     with open(os.path.join(directory, ".doxygen.config.template")) as f:
         template = f.read()
 
-    # replace the placeholder with the actual path
+    # replace the placeholders with the actual values
     config = (
         template.replace("${INPUTS}", include_directories_str)
         .replace("${EXCLUDE_PATTERNS}", exclude_patterns_str)
@@ -103,9 +103,12 @@ def build_snapshot_for_view(
 
     if verbose:
         print("Running Doxygen")
+        if input_filter:
+            print(f"  Using input filter: {input_filter}")
 
     # Run doxygen with the config file
     doxygen_bin = os.environ.get("DOXYGEN_BIN", "doxygen")
+
     result = subprocess.run(
         [doxygen_bin, DOXYGEN_CONFIG_FILE],
         cwd=react_native_dir,
@@ -227,6 +230,7 @@ def main():
                     definitions=config.definitions,
                     output_dir=output_dir,
                     verbose=verbose,
+                    input_filter=input_filter,
                 )
         else:
             snapshot = build_snapshot_for_view(

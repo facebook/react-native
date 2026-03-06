@@ -7,7 +7,10 @@ from __future__ import annotations
 
 import unittest
 
-from ..input_filters.doxygen_strip_comments import strip_block_comments
+from ..input_filters.doxygen_strip_comments import (
+    strip_block_comments,
+    strip_deprecated_msg,
+)
 
 
 class TestDoxygenStripComments(unittest.TestCase):
@@ -65,6 +68,52 @@ class TestDoxygenStripComments(unittest.TestCase):
         content = "just code without comments"
         result = strip_block_comments(content)
         self.assertEqual(result, content)
+
+
+class TestStripDeprecatedMsg(unittest.TestCase):
+    def test_strips_deprecated_msg(self):
+        content = '- (void)oldMethod __deprecated_msg("Use newMethod instead.");'
+        result = strip_deprecated_msg(content)
+        self.assertEqual(result, "- (void)oldMethod ;")
+
+    def test_strips_standalone_deprecated(self):
+        content = "- (instancetype)initWithBundleURL:(NSURL *)bundleURL launchOptions:(nullable NSDictionary *)launchOptions __deprecated;"
+        result = strip_deprecated_msg(content)
+        self.assertEqual(
+            result,
+            "- (instancetype)initWithBundleURL:(NSURL *)bundleURL launchOptions:(nullable NSDictionary *)launchOptions ;",
+        )
+
+    def test_standalone_deprecated_does_not_match_deprecated_msg(self):
+        content = '__deprecated_msg("msg") and __deprecated'
+        result = strip_deprecated_msg(content)
+        self.assertEqual(result, "and ")
+
+    def test_preserves_deprecated_in_identifiers(self):
+        content = (
+            "- (void)findComponentViewWithTag_DO_NOT_USE_DEPRECATED:(NSInteger)tag;"
+        )
+        result = strip_deprecated_msg(content)
+        self.assertEqual(result, content)
+
+    def test_preserves_DEPRECATED_suffix_in_names(self):
+        content = "@property (weak) RCTViewRegistry *viewRegistry_DEPRECATED;"
+        result = strip_deprecated_msg(content)
+        self.assertEqual(result, content)
+
+    def test_handles_no_deprecated(self):
+        content = "- (void)normalMethod;"
+        result = strip_deprecated_msg(content)
+        self.assertEqual(result, content)
+
+    def test_handles_empty_content(self):
+        result = strip_deprecated_msg("")
+        self.assertEqual(result, "")
+
+    def test_strips_deprecated_before_interface(self):
+        content = '__deprecated_msg("This API will be removed.") @interface RCTSurface : NSObject'
+        result = strip_deprecated_msg(content)
+        self.assertEqual(result, "@interface RCTSurface : NSObject")
 
 
 if __name__ == "__main__":
