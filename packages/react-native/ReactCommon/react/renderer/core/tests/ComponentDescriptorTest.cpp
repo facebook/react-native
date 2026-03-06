@@ -111,7 +111,7 @@ TEST(ComponentDescriptorTest, appendChild) {
           /* .surfaceId = */ .surfaceId = 1,
           /* .instanceHandle = */ .instanceHandle = nullptr,
       });
-  std::shared_ptr<const ShadowNode> node1 = descriptor->createShadowNode(
+  std::shared_ptr<ShadowNode> node1 = descriptor->createShadowNode(
       ShadowNodeFragment{
           /* .props = */ .props = props,
       },
