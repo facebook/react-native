@@ -202,7 +202,7 @@ def main():
         "scripts",
         "cxx-api",
         "input_filters",
-        "doxygen_strip_comments.py",
+        "main.py",
     )
 
     input_filter = None
