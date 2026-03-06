@@ -11,6 +11,8 @@
 
 - (NSArray *)deprecatedMethod:(id)param __deprecated_msg("Use newMethod instead.");
 
+- (instancetype)initWithURL:(NSURL *)url launchOptions:(NSDictionary *)launchOptions __deprecated;
+
 @end
 
 @interface RCTDeprecatedInterface

@@ -36,6 +36,28 @@ def strip_block_comments(content: str) -> str:
     return comment_pattern.sub(replace_with_newlines, content)
 
 
+def strip_deprecated_msg(content: str) -> str:
+    """
+    Remove __deprecated_msg(...) macros and standalone __deprecated annotations
+    from content.
+
+    These macros cause Doxygen to produce malformed XML output when they appear
+    before @interface declarations, creating __pad0__ artifacts and missing
+    members. Standalone __deprecated on method declarations causes the annotation
+    to be parsed as a parameter name. Since the macros are stripped, deprecation
+    info won't appear in the API snapshot output.
+    """
+    # Pattern to match __deprecated_msg("...") with any content inside quotes
+    pattern = re.compile(r'__deprecated_msg\s*\(\s*"[^"]*"\s*\)\s*')
+    content = pattern.sub("", content)
+
+    # Pattern to match standalone __deprecated (not followed by _msg or other suffix)
+    standalone_pattern = re.compile(r"\b__deprecated\b(?!_)\s*")
+    content = standalone_pattern.sub("", content)
+
+    return content
+
+
 def main():
     if len(sys.argv) < 2:
         print("Usage: doxygen_strip_comments.py <filename>", file=sys.stderr)
@@ -48,6 +70,7 @@ def main():
             content = f.read()
 
         filtered = strip_block_comments(content)
+        filtered = strip_deprecated_msg(filtered)
         print(filtered, end="")
     except Exception as e:
         # On error, output original content to not break the build
