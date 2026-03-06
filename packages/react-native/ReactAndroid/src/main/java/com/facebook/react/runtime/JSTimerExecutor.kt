@@ -13,8 +13,10 @@ import com.facebook.react.bridge.WritableArray
 import com.facebook.react.bridge.WritableNativeArray
 import com.facebook.react.modules.core.JavaScriptTimerExecutor
 import com.facebook.soloader.SoLoader
+import com.facebook.soloader.annotation.SoLoaderLibrary
 
 @DoNotStrip
+@SoLoaderLibrary("rninstance")
 internal class JSTimerExecutor() : HybridClassBase(), JavaScriptTimerExecutor {
   init {
     initHybrid()
