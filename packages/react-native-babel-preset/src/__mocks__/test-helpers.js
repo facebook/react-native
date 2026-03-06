@@ -17,7 +17,7 @@ const generate = require('@babel/generator').default;
 const t = require('@babel/types');
 const nullthrows = require('nullthrows');
 
-function makeTransformOptions<OptionsT: ?EntryOptions>(
+function makeTransformOptions<OptionsT extends ?EntryOptions>(
   plugins: ReadonlyArray<PluginEntry>,
   options: OptionsT,
 ): BabelCoreOptions {
@@ -52,7 +52,7 @@ function validateOutputAst(ast: BabelNode) {
   });
 }
 
-function transformToAst<T: ?EntryOptions>(
+function transformToAst<T extends ?EntryOptions>(
   plugins: ReadonlyArray<PluginEntry>,
   code: string,
   options: T,

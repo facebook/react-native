@@ -37,11 +37,11 @@ function getPaperRenderer(): ReactNativeType {
   return cachedPaperRenderer;
 }
 
-const getMethod: (<MethodName: keyof ReactFabricType>(
+const getMethod: (<MethodName extends keyof ReactFabricType>(
   () => ReactFabricType,
   MethodName,
 ) => ReactFabricType[MethodName]) &
-  (<MethodName: keyof ReactNativeType>(
+  (<MethodName extends keyof ReactNativeType>(
     () => ReactNativeType,
     MethodName,
   ) => ReactNativeType[MethodName]) = (getRenderer, methodName) => {
@@ -59,13 +59,13 @@ const getMethod: (<MethodName: keyof ReactFabricType>(
   };
 };
 
-function getFabricMethod<MethodName: keyof ReactFabricType>(
+function getFabricMethod<MethodName extends keyof ReactFabricType>(
   methodName: MethodName,
 ): ReactFabricType[MethodName] {
   return getMethod(getFabricRenderer, methodName);
 }
 
-function getPaperMethod<MethodName: keyof ReactNativeType>(
+function getPaperMethod<MethodName extends keyof ReactNativeType>(
   methodName: MethodName,
 ): ReactNativeType[MethodName] {
   return getMethod(getPaperRenderer, methodName);
@@ -133,12 +133,14 @@ export function dispatchCommand(
   }
 }
 
-export const findHostInstance_DEPRECATED: <TElementType: React.ElementType>(
+export const findHostInstance_DEPRECATED: <
+  TElementType extends React.ElementType,
+>(
   // $FlowExpectedError[incompatible-type]
   componentOrHandle: ?(React.ElementRef<TElementType> | number),
 ) => ?HostInstance = getPaperMethod('findHostInstance_DEPRECATED');
 
-export const findNodeHandle: <TElementType: React.ElementType>(
+export const findNodeHandle: <TElementType extends React.ElementType>(
   // $FlowExpectedError[incompatible-type]
   componentOrHandle: ?(React.ElementRef<TElementType> | number),
 ) => ?number = getPaperMethod('findNodeHandle');

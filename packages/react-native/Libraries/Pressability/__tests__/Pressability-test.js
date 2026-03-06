@@ -23,7 +23,7 @@ const itif = (condition: boolean) => {
 };
 
 // TODO: Move this util to a shared location.
-function getMock<TArguments: ReadonlyArray<unknown>, TReturn>(
+function getMock<TArguments extends ReadonlyArray<unknown>, TReturn>(
   fn: (...args: TArguments) => TReturn,
 ): JestMockFn<TArguments, TReturn> {
   if (!jest.isMockFunction(fn)) {

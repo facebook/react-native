@@ -27,7 +27,7 @@
  * Freezing the object and adding the throw mechanism is expensive and will
  * only be used in DEV.
  */
-function deepFreezeAndThrowOnMutationInDev<T: {...} | Array<unknown>>(
+function deepFreezeAndThrowOnMutationInDev<T extends {...} | Array<unknown>>(
   object: T,
 ): T {
   if (__DEV__) {

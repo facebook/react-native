@@ -42,7 +42,9 @@ export type CdpMessageToTarget = Readonly<{
  * Send a CDP message from from the target with the given pageId to the debugger.
  * Returns the message as received by the debugger.
  */
-export async function sendFromTargetToDebugger<Message: CdpMessageFromTarget>(
+export async function sendFromTargetToDebugger<
+  Message extends CdpMessageFromTarget,
+>(
   device: DeviceMock,
   debugger_: DebuggerMock,
   pageId: string,
@@ -76,7 +78,9 @@ export async function sendFromTargetToDebugger<Message: CdpMessageFromTarget>(
  * Send a CDP message from the debugger to the target with the given pageId.
  * Returns the message as received by the target.
  */
-export async function sendFromDebuggerToTarget<Message: CdpMessageToTarget>(
+export async function sendFromDebuggerToTarget<
+  Message extends CdpMessageToTarget,
+>(
   debugger_: DebuggerMock,
   device: DeviceMock,
   pageId: string,

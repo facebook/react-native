@@ -21,8 +21,8 @@ type TComponentType = React.ComponentType<{...}>;
  * a major footgun. Be careful when using this function!
  */
 export default function mockComponent<
-  TComponentModule: Modulish<TComponentType>,
-  TIsESModule: boolean,
+  TComponentModule extends Modulish<TComponentType>,
+  TIsESModule extends boolean,
 >(
   moduleName: string,
   instanceMethods: ?interface {},

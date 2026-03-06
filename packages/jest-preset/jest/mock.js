@@ -16,7 +16,7 @@
  * If `factoryRef` is provided, it is expected to reference a module that
  * exports the same type signature as the module referenced by `moduleRef`.
  */
-export default function mock<TModuleRef: $Flow$ModuleRef<unknown>>(
+export default function mock<TModuleRef extends $Flow$ModuleRef<unknown>>(
   moduleRef: TModuleRef,
   factoryRef?: NoInfer<TModuleRef>,
 ): void {

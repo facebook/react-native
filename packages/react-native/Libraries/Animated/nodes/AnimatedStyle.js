@@ -22,7 +22,7 @@ import AnimatedWithChildren from './AnimatedWithChildren';
 export type AnimatedStyleAllowlist = Readonly<{[string]: true}>;
 
 type FlatStyle = {[string]: unknown};
-type FlatStyleForWeb<TStyle: FlatStyle> = [unknown, TStyle];
+type FlatStyleForWeb<TStyle extends FlatStyle> = [unknown, TStyle];
 
 function createAnimatedStyle(
   flatStyle: FlatStyle,
@@ -154,7 +154,7 @@ export default class AnimatedStyle extends AnimatedWithChildren {
   /**
    * See the constructor, where this is shadowed on web platforms.
    */
-  __getValueForStyle<TStyle: FlatStyle>(
+  __getValueForStyle<TStyle extends FlatStyle>(
     style: TStyle,
   ): FlatStyleForWeb<TStyle> | TStyle {
     return style;

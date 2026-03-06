@@ -19,10 +19,10 @@ import RCTDeviceEventEmitter from '../RCTDeviceEventEmitter';
  * Mock `NativeEventEmitter` to ignore Native Modules.
  */
 export default class NativeEventEmitter<
-  TEventToArgsMap: Readonly<Record<string, ReadonlyArray<unknown>>>,
+  TEventToArgsMap extends Readonly<Record<string, ReadonlyArray<unknown>>>,
 > implements IEventEmitter<TEventToArgsMap>
 {
-  addListener<TEvent: keyof TEventToArgsMap>(
+  addListener<TEvent extends keyof TEventToArgsMap>(
     eventType: TEvent,
     listener: (...args: TEventToArgsMap[TEvent]) => unknown,
     context?: unknown,
@@ -30,18 +30,22 @@ export default class NativeEventEmitter<
     return RCTDeviceEventEmitter.addListener(eventType, listener, context);
   }
 
-  emit<TEvent: keyof TEventToArgsMap>(
+  emit<TEvent extends keyof TEventToArgsMap>(
     eventType: TEvent,
     ...args: TEventToArgsMap[TEvent]
   ): void {
     RCTDeviceEventEmitter.emit(eventType, ...args);
   }
 
-  removeAllListeners<TEvent: keyof TEventToArgsMap>(eventType?: ?TEvent): void {
+  removeAllListeners<TEvent extends keyof TEventToArgsMap>(
+    eventType?: ?TEvent,
+  ): void {
     RCTDeviceEventEmitter.removeAllListeners(eventType);
   }
 
-  listenerCount<TEvent: keyof TEventToArgsMap>(eventType: TEvent): number {
+  listenerCount<TEvent extends keyof TEventToArgsMap>(
+    eventType: TEvent,
+  ): number {
     return RCTDeviceEventEmitter.listenerCount(eventType);
   }
 }

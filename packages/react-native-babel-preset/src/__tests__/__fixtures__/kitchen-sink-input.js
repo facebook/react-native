@@ -124,7 +124,7 @@ function processUser({
 }
 
 // Spread operators
-function mergeConfigs<T: {}>(
+function mergeConfigs<T extends {}>(
   base: T,
   ...overrides: ReadonlyArray<Partial<T>>
 ): T {

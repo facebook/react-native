@@ -25,7 +25,7 @@ type RCTDeviceEventDefinitions = {[name: string]: Array<any>};
  */
 class RCTDeviceEventEmitterImpl extends EventEmitter<RCTDeviceEventDefinitions> {
   // Add systrace to RCTDeviceEventEmitter.emit method for debugging
-  emit<TEvent: keyof RCTDeviceEventDefinitions>(
+  emit<TEvent extends keyof RCTDeviceEventDefinitions>(
     eventType: TEvent,
     ...args: RCTDeviceEventDefinitions[TEvent]
   ): void {

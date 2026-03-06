@@ -29,7 +29,7 @@ export type OSSReleaseStageValue =
   | 'stable';
 
 export type CommonFeatureFlagConfig<
-  TValue: FeatureFlagValue = FeatureFlagValue,
+  TValue extends FeatureFlagValue = FeatureFlagValue,
 > = Readonly<{
   defaultValue: TValue,
   metadata: FeatureFlagMetadata<TValue>,
@@ -44,7 +44,7 @@ export type CommonFeatureFlagList = Readonly<{
 }>;
 
 export type JsOnlyFeatureFlagConfig<
-  TValue: FeatureFlagValue = FeatureFlagValue,
+  TValue extends FeatureFlagValue = FeatureFlagValue,
 > = Readonly<{
   defaultValue: TValue,
   metadata: FeatureFlagMetadata<TValue>,
@@ -55,7 +55,9 @@ export type JsOnlyFeatureFlagList = Readonly<{
   [flagName: string]: JsOnlyFeatureFlagConfig<>,
 }>;
 
-export type FeatureFlagMetadata<TValue: FeatureFlagValue = FeatureFlagValue> =
+export type FeatureFlagMetadata<
+  TValue extends FeatureFlagValue = FeatureFlagValue,
+> =
   | Readonly<{
       purpose: 'experimentation',
       /**

@@ -14,7 +14,7 @@ type NativeCommandsOptions<T = string> = Readonly<{
   supportedCommands: ReadonlyArray<T>,
 }>;
 
-function codegenNativeCommands<T: interface {}>(
+function codegenNativeCommands<T extends interface {}>(
   options: NativeCommandsOptions<keyof T>,
 ): T {
   const commandObj: {[keyof T]: (...ReadonlyArray<unknown>) => void} = {};

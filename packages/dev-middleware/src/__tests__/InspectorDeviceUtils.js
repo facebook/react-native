@@ -142,7 +142,7 @@ export class DeviceMock extends DeviceAgent {
     }
   }
 
-  #sendPayloadIfNonNull<Event: MessageFromDevice['event']>(
+  #sendPayloadIfNonNull<Event extends MessageFromDevice['event']>(
     event: Event,
     maybePayload:
       | MessageFromDevice['payload']
