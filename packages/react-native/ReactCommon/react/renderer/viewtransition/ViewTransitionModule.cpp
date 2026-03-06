@@ -138,6 +138,38 @@ void ViewTransitionModule::startViewTransitionEnd() {
   transitionStarted_ = false;
 }
 
+std::optional<UIManagerViewTransitionDelegate::ViewTransitionInstance>
+ViewTransitionModule::getViewTransitionInstance(
+    const std::string& name,
+    const std::string& pseudo) {
+  // Look up layout based on pseudo type ("old" or "new")
+  if (pseudo == "new") {
+    auto it = newLayout_.find(name);
+    if (it != newLayout_.end()) {
+      const auto& view = it->second;
+      return ViewTransitionInstance{
+          .x = view.layoutMetrics.originFromRoot.x,
+          .y = view.layoutMetrics.originFromRoot.y,
+          .width = view.layoutMetrics.size.width,
+          .height = view.layoutMetrics.size.height,
+          .nativeTag = view.tag};
+    }
+  } else if (pseudo == "old") {
+    auto it = oldLayout_.find(name);
+    if (it != oldLayout_.end()) {
+      const auto& view = it->second;
+      return ViewTransitionInstance{
+          .x = view.layoutMetrics.originFromRoot.x,
+          .y = view.layoutMetrics.originFromRoot.y,
+          .width = view.layoutMetrics.size.width,
+          .height = view.layoutMetrics.size.height,
+          .nativeTag = view.tag};
+    }
+  }
+
+  return std::nullopt;
+}
+
 void ViewTransitionModule::onTransitionAnimationEnd(
     const std::unordered_set<std::string>& names,
     Tag newTag,
