@@ -48,10 +48,10 @@ describe('<Pressable>', () => {
             accessible="true"
             accessibilityState="{disabled:false,selected:false,checked:None,busy:false,expanded:null}"
             backgroundColor="rgba(0, 0, 255, 1)"
-            borderWidth="3.000000"
-            height="50.000000"
+            borderWidth="3"
+            height="50"
             opacity="40"
-            width="100.000000"
+            width="100"
           />,
         );
       });
@@ -148,8 +148,8 @@ describe('<Pressable>', () => {
             <rn-paragraph
               allowFontScaling="true"
               ellipsizeMode="tail"
-              fontSize="NaN"
-              fontSizeMultiplier="NaN"
+              fontSize="nan"
+              fontSizeMultiplier="nan"
               foregroundColor="rgba(0, 0, 0, 0)"
               overflow="hidden">
               the quick brown fox

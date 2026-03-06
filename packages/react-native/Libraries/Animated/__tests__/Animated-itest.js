@@ -332,7 +332,7 @@ test('moving box by 50 points with offset 10', () => {
   // TODO(T232605345): The following line won't be necessary once race condition on Android is fixed.
   Fantom.runWorkLoop();
   expect(root.getRenderedOutput({props: ['transform']}).toJSX()).toEqual(
-    <rn-view transform='[{"translateX": 60.000000}]' />,
+    <rn-view transform='[{"translateX": 60}]' />,
   );
 
   expect(finishValue?.finished).toBe(true);
@@ -579,7 +579,7 @@ test('animate layout props', () => {
   }
 
   expect(root.getRenderedOutput({props: ['height']}).toJSX()).toEqual(
-    <rn-view height="100.000000" />,
+    <rn-view height="100" />,
   );
 });
 

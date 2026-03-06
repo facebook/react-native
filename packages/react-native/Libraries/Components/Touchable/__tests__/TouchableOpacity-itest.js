@@ -61,8 +61,8 @@ describe('<TouchableOpacity>', () => {
         ).toEqual(
           <rn-view
             backgroundColor="rgba(0, 0, 255, 1)"
-            height="50.000000"
-            width="100.000000"
+            height="50"
+            width="100"
           />,
         );
       });
