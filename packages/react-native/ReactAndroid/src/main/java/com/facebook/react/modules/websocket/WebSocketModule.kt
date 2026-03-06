@@ -22,6 +22,7 @@ import com.facebook.react.common.ReactConstants
 import com.facebook.react.module.annotations.ReactModule
 import com.facebook.react.modules.network.CustomClientBuilder
 import com.facebook.react.modules.network.ForwardingCookieHandler
+import com.facebook.react.modules.network.OkHttpClientProvider
 import java.io.IOException
 import java.net.URI
 import java.net.URISyntaxException
@@ -80,7 +81,8 @@ public class WebSocketModule(context: ReactApplicationContext) :
   ) {
     val id = socketID.toInt()
     val okHttpBuilder =
-        OkHttpClient.Builder()
+        OkHttpClientProvider.getOkHttpClient()
+            .newBuilder()
             .connectTimeout(10, TimeUnit.SECONDS)
             .writeTimeout(10, TimeUnit.SECONDS)
             .readTimeout(0, TimeUnit.MINUTES) // Disable timeouts for read
@@ -198,9 +200,6 @@ public class WebSocketModule(context: ReactApplicationContext) :
           }
         },
     )
-
-    // Trigger shutdown of the dispatcher's executor so this process can exit cleanly
-    client.dispatcher().executorService().shutdown()
   }
 
   override fun close(code: Double, reason: String?, socketID: Double) {
