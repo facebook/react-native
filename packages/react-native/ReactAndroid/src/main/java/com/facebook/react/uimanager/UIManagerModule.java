@@ -567,6 +567,7 @@ public class UIManagerModule extends ReactContextBaseJavaModule
     return null;
   }
 
+  @Override
   @ReactMethod
   public void sendAccessibilityEvent(int tag, int eventType) {
     int uiManagerType = ViewUtil.getUIManagerType(tag);
@@ -601,10 +602,12 @@ public class UIManagerModule extends ReactContextBaseJavaModule
    */
   public void prependUIBlock(UIBlock block) {}
 
+  @Override
   public void addUIManagerEventListener(UIManagerListener listener) {
     mUIManagerListeners.add(listener);
   }
 
+  @Override
   public void removeUIManagerEventListener(UIManagerListener listener) {
     mUIManagerListeners.remove(listener);
   }
@@ -631,6 +634,7 @@ public class UIManagerModule extends ReactContextBaseJavaModule
    * Updates the styles of the {@link ReactShadowNode} based on the Measure specs received by
    * parameters. offsetX and offsetY aren't used in non-Fabric, so they're ignored here.
    */
+  @Override
   public void updateRootLayoutSpecs(
       final int rootViewTag,
       final int widthMeasureSpec,
