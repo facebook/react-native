@@ -327,8 +327,10 @@ const AnimatedBlurExample = () => {
       <Button
         onPress={onPress}
         title={isBlurred ? 'Remove Blur' : 'Animate Blur'}
+        testID="animated-blur-button"
       />
       <Animated.View
+        testID="animated-blur-view"
         style={[
           {
             filter: [{blur: animatedValue}],
