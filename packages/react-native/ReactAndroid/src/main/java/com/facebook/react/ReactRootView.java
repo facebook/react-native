@@ -868,6 +868,7 @@ public class ReactRootView extends FrameLayout implements RootView, ReactRoot {
             + " or in the onDestroyView() of your hosting Fragment.");
   }
 
+  @Override
   public int getRootViewTag() {
     return mRootViewTag;
   }
@@ -876,6 +877,7 @@ public class ReactRootView extends FrameLayout implements RootView, ReactRoot {
     return mRootViewTag != 0 && mRootViewTag != NO_ID;
   }
 
+  @Override
   public void setRootViewTag(int rootViewTag) {
     mRootViewTag = rootViewTag;
   }
