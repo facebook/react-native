@@ -43,7 +43,39 @@ const {
   readPkgJsonInDirectory,
   readReactNativeConfig,
 } = require('./utils');
+const fs = require('fs');
 const path = require('path');
+
+/**
+ * Moves Swift-compatible header files from ReactCodegen to ReactAppDependencyProvider.
+ * These headers define protocols for Swift TurboModules and need to be in the
+ * ReactAppDependencyProvider pod for proper import with angle brackets.
+ */
+function moveSwiftHeadersToAppDependencyProvider(
+  reactCodegenOutputPath /*: string */,
+  appDependencyProviderPath /*: string */,
+) {
+  if (!fs.existsSync(reactCodegenOutputPath)) {
+    return;
+  }
+
+  const entries = fs.readdirSync(reactCodegenOutputPath, {withFileTypes: true});
+  for (const entry of entries) {
+    if (entry.isDirectory()) {
+      const subdir = path.join(reactCodegenOutputPath, entry.name);
+      const files = fs.readdirSync(subdir);
+      for (const file of files) {
+        if (file.endsWith('-Swift.h')) {
+          const sourcePath = path.join(subdir, file);
+          const destPath = path.join(appDependencyProviderPath, file);
+          fs.mkdirSync(appDependencyProviderPath, {recursive: true});
+          fs.renameSync(sourcePath, destPath);
+          codegenLog(`Moved ${file} to ReactAppDependencyProvider`);
+        }
+      }
+    }
+  }
+}
 
 /**
  * This function is the entry point for the codegen. It:
@@ -163,9 +195,15 @@ function execute(
           libraries,
           reactCodegenOutputPath,
         );
-        generateAppDependencyProvider(
-          path.join(outputPath, 'ReactAppDependencyProvider'),
+        const appDependencyProviderPath = path.join(
+          outputPath,
+          'ReactAppDependencyProvider',
         );
+        moveSwiftHeadersToAppDependencyProvider(
+          reactCodegenOutputPath,
+          appDependencyProviderPath,
+        );
+        generateAppDependencyProvider(appDependencyProviderPath);
         generateReactCodegenPodspec(
           projectRoot,
           pkgJson,
