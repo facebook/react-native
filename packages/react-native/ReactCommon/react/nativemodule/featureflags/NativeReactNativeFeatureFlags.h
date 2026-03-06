@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<525d64b15e1b72440743363280116c6a>>
+ * @generated SignedSource<<65d6afec6765b87de65b41f72c17f44f>>
  */
 
 /**
@@ -117,6 +117,8 @@ class NativeReactNativeFeatureFlags
   bool enableMainQueueCoordinatorOnIOS(jsi::Runtime& runtime);
 
   bool enableModuleArgumentNSNullConversionIOS(jsi::Runtime& runtime);
+
+  bool enableMutationObserverByDefault(jsi::Runtime& runtime);
 
   bool enableNativeCSSParsing(jsi::Runtime& runtime);
 

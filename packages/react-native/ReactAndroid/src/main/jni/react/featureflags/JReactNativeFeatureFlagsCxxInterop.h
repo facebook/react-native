@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<6b7e2af51ba9d64ae4e474dfa104a7c3>>
+ * @generated SignedSource<<2c9336f5ba6c40dfdec7137100d1fcc5>>
  */
 
 /**
@@ -151,6 +151,9 @@ class JReactNativeFeatureFlagsCxxInterop
     facebook::jni::alias_ref<JReactNativeFeatureFlagsCxxInterop>);
 
   static bool enableModuleArgumentNSNullConversionIOS(
+    facebook::jni::alias_ref<JReactNativeFeatureFlagsCxxInterop>);
+
+  static bool enableMutationObserverByDefault(
     facebook::jni::alias_ref<JReactNativeFeatureFlagsCxxInterop>);
 
   static bool enableNativeCSSParsing(
