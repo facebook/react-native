@@ -135,7 +135,10 @@ exports.examples = [
     name: 'opacity',
     render(): React.Node {
       return (
-        <StaticViewAndImageComparison style={{filter: [{opacity: 0.5}]}} />
+        <StaticViewAndImageComparison
+          style={{filter: [{opacity: 0.5}]}}
+          testID="filter-test-opacity"
+        />
       );
     },
   },
@@ -145,7 +148,10 @@ exports.examples = [
     name: 'contrast',
     render(): React.Node {
       return (
-        <StaticViewAndImageComparison style={{filter: [{contrast: 0.5}]}} />
+        <StaticViewAndImageComparison
+          style={{filter: [{contrast: 0.5}]}}
+          testID="filter-test-contrast"
+        />
       );
     },
   },
@@ -155,7 +161,12 @@ exports.examples = [
     name: 'sepia',
     platform: 'android',
     render(): React.Node {
-      return <StaticViewAndImageComparison style={{filter: [{sepia: 0.5}]}} />;
+      return (
+        <StaticViewAndImageComparison
+          style={{filter: [{sepia: 0.5}]}}
+          testID="filter-test-sepia"
+        />
+      );
     },
   },
   {
@@ -164,7 +175,10 @@ exports.examples = [
     name: 'grayscale',
     render(): React.Node {
       return (
-        <StaticViewAndImageComparison style={{filter: [{grayscale: 0.5}]}} />
+        <StaticViewAndImageComparison
+          style={{filter: [{grayscale: 0.5}]}}
+          testID="filter-test-grayscale"
+        />
       );
     },
   },
@@ -173,7 +187,12 @@ exports.examples = [
     description: 'saturate(4)',
     name: 'saturate',
     render(): React.Node {
-      return <StaticViewAndImageComparison style={{filter: [{saturate: 4}]}} />;
+      return (
+        <StaticViewAndImageComparison
+          style={{filter: [{saturate: 4}]}}
+          testID="filter-test-saturate"
+        />
+      );
     },
   },
   {
@@ -184,6 +203,7 @@ exports.examples = [
       return (
         <StaticViewAndImageComparison
           style={{filter: [{hueRotate: '-90deg'}]}}
+          testID="filter-test-hue-rotate"
         />
       );
     },
@@ -194,7 +214,12 @@ exports.examples = [
     name: 'invert',
     platform: 'android',
     render(): React.Node {
-      return <StaticViewAndImageComparison style={{filter: [{invert: 0.7}]}} />;
+      return (
+        <StaticViewAndImageComparison
+          style={{filter: [{invert: 0.7}]}}
+          testID="filter-test-invert"
+        />
+      );
     },
   },
   {
