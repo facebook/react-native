@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<fa176f1e72870e3d1a639780bbd3fab5>>
+ * @generated SignedSource<<75d6c8b2ed8a5cf5f3de44d1d6392c58>>
  * @flow strict
  * @noformat
  */
@@ -90,6 +90,7 @@ export type ReactNativeFeatureFlags = $ReadOnly<{
   enableLayoutAnimationsOnIOS: Getter<boolean>,
   enableMainQueueCoordinatorOnIOS: Getter<boolean>,
   enableModuleArgumentNSNullConversionIOS: Getter<boolean>,
+  enableMutationObserverByDefault: Getter<boolean>,
   enableNativeCSSParsing: Getter<boolean>,
   enableNativeViewPropTransformations: Getter<boolean>,
   enableNetworkEventReporting: Getter<boolean>,
@@ -375,6 +376,10 @@ export const enableMainQueueCoordinatorOnIOS: Getter<boolean> = createNativeFlag
  * Enable NSNull conversion when handling module arguments on iOS
  */
 export const enableModuleArgumentNSNullConversionIOS: Getter<boolean> = createNativeFlagGetter('enableModuleArgumentNSNullConversionIOS', false);
+/**
+ * Enables the MutationObserver Web API in React Native.
+ */
+export const enableMutationObserverByDefault: Getter<boolean> = createNativeFlagGetter('enableMutationObserverByDefault', false);
 /**
  * Parse CSS strings using the Fabric CSS parser instead of ViewConfig processing
  */

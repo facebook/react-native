@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<d84f2a5d22b85dc51c5e224dc276b508>>
+ * @generated SignedSource<<dc346a5844161a603beb120783f6751a>>
  */
 
 /**
@@ -74,6 +74,7 @@ class ReactNativeFeatureFlagsAccessor {
   bool enableLayoutAnimationsOnIOS();
   bool enableMainQueueCoordinatorOnIOS();
   bool enableModuleArgumentNSNullConversionIOS();
+  bool enableMutationObserverByDefault();
   bool enableNativeCSSParsing();
   bool enableNativeViewPropTransformations();
   bool enableNetworkEventReporting();
@@ -131,7 +132,7 @@ class ReactNativeFeatureFlagsAccessor {
   std::unique_ptr<ReactNativeFeatureFlagsProvider> currentProvider_;
   bool wasOverridden_;
 
-  std::array<std::atomic<const char*>, 88> accessedFeatureFlags_;
+  std::array<std::atomic<const char*>, 89> accessedFeatureFlags_;
 
   std::atomic<std::optional<bool>> commonTestFlag_;
   std::atomic<std::optional<bool>> cdpInteractionMetricsEnabled_;
@@ -175,6 +176,7 @@ class ReactNativeFeatureFlagsAccessor {
   std::atomic<std::optional<bool>> enableLayoutAnimationsOnIOS_;
   std::atomic<std::optional<bool>> enableMainQueueCoordinatorOnIOS_;
   std::atomic<std::optional<bool>> enableModuleArgumentNSNullConversionIOS_;
+  std::atomic<std::optional<bool>> enableMutationObserverByDefault_;
   std::atomic<std::optional<bool>> enableNativeCSSParsing_;
   std::atomic<std::optional<bool>> enableNativeViewPropTransformations_;
   std::atomic<std::optional<bool>> enableNetworkEventReporting_;

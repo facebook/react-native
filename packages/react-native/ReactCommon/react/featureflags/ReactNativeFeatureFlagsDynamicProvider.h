@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<6be8bbcc220f1dc15ce0817152bcaf91>>
+ * @generated SignedSource<<5b75038b551675ce0272327b3d3a8040>>
  */
 
 /**
@@ -421,6 +421,15 @@ class ReactNativeFeatureFlagsDynamicProvider : public ReactNativeFeatureFlagsDef
     }
 
     return ReactNativeFeatureFlagsDefaults::enableModuleArgumentNSNullConversionIOS();
+  }
+
+  bool enableMutationObserverByDefault() override {
+    auto value = values_["enableMutationObserverByDefault"];
+    if (!value.isNull()) {
+      return value.getBool();
+    }
+
+    return ReactNativeFeatureFlagsDefaults::enableMutationObserverByDefault();
   }
 
   bool enableNativeCSSParsing() override {

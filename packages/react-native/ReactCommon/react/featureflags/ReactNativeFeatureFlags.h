@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<7cd54b66686446e890246a4b4836bb69>>
+ * @generated SignedSource<<988fab572d94253ccb4dc3e598fc154b>>
  */
 
 /**
@@ -248,6 +248,11 @@ class ReactNativeFeatureFlags {
    * Enable NSNull conversion when handling module arguments on iOS
    */
   RN_EXPORT static bool enableModuleArgumentNSNullConversionIOS();
+
+  /**
+   * Enables the MutationObserver Web API in React Native.
+   */
+  RN_EXPORT static bool enableMutationObserverByDefault();
 
   /**
    * Parse CSS strings using the Fabric CSS parser instead of ViewConfig processing
