@@ -7,10 +7,9 @@ from __future__ import annotations
 
 import unittest
 
-from ..input_filters.doxygen_strip_comments import (
-    strip_block_comments,
-    strip_deprecated_msg,
-)
+from ..input_filters.strip_block_comments import strip_block_comments
+from ..input_filters.strip_deprecated_msg import strip_deprecated_msg
+from ..input_filters.strip_ns_unavailable import strip_ns_unavailable
 
 
 class TestDoxygenStripComments(unittest.TestCase):
@@ -114,6 +113,99 @@ class TestStripDeprecatedMsg(unittest.TestCase):
         content = '__deprecated_msg("This API will be removed.") @interface RCTSurface : NSObject'
         result = strip_deprecated_msg(content)
         self.assertEqual(result, "@interface RCTSurface : NSObject")
+
+
+class TestStripNSUnavailable(unittest.TestCase):
+    def test_strips_single_line_init(self):
+        content = "- (instancetype)init NS_UNAVAILABLE;"
+        result = strip_ns_unavailable(content)
+        self.assertEqual(result, "")
+
+    def test_strips_single_line_new(self):
+        content = "+ (instancetype)new NS_UNAVAILABLE;"
+        result = strip_ns_unavailable(content)
+        self.assertEqual(result, "")
+
+    def test_strips_init_with_frame(self):
+        content = "- (instancetype)initWithFrame:(CGRect)frame NS_UNAVAILABLE;"
+        result = strip_ns_unavailable(content)
+        self.assertEqual(result, "")
+
+    def test_strips_property(self):
+        content = "@property (nonatomic, copy, nullable) NSString *text NS_UNAVAILABLE;"
+        result = strip_ns_unavailable(content)
+        self.assertEqual(result, "")
+
+    def test_strips_method_with_params(self):
+        content = (
+            "- (void)insertSubview:(UIView *)view atIndex:(NSInteger)index"
+            " NS_UNAVAILABLE;"
+        )
+        result = strip_ns_unavailable(content)
+        self.assertEqual(result, "")
+
+    def test_strips_multiline_declaration(self):
+        content = (
+            "- (instancetype)initWithSurface:(id<RCTSurfaceProtocol>)surface\n"
+            "                sizeMeasureMode:(RCTSurfaceSizeMeasureMode)"
+            "sizeMeasureMode NS_UNAVAILABLE;"
+        )
+        result = strip_ns_unavailable(content)
+        # Should preserve line count (2 lines -> 1 newline)
+        self.assertEqual(result, "\n")
+
+    def test_preserves_normal_methods(self):
+        content = "- (instancetype)initWithBridge:(RCTBridge *)bridge;"
+        result = strip_ns_unavailable(content)
+        self.assertEqual(result, content)
+
+    def test_preserves_normal_properties(self):
+        content = "@property (nonatomic, strong) NSString *name;"
+        result = strip_ns_unavailable(content)
+        self.assertEqual(result, content)
+
+    def test_preserves_designated_initializer(self):
+        content = (
+            "- (instancetype)initWithName:(NSString *)name NS_DESIGNATED_INITIALIZER;"
+        )
+        result = strip_ns_unavailable(content)
+        self.assertEqual(result, content)
+
+    def test_does_not_strip_across_semicolons(self):
+        content = (
+            "- (void)normalMethod;\n"
+            "- (instancetype)init NS_UNAVAILABLE;\n"
+            "- (void)anotherMethod;"
+        )
+        result = strip_ns_unavailable(content)
+        self.assertEqual(result, "- (void)normalMethod;\n\n- (void)anotherMethod;")
+
+    def test_strips_multiple_unavailable_methods(self):
+        content = (
+            "- (instancetype)init NS_UNAVAILABLE;\n+ (instancetype)new NS_UNAVAILABLE;"
+        )
+        result = strip_ns_unavailable(content)
+        self.assertEqual(result, "\n")
+
+    def test_handles_empty_content(self):
+        result = strip_ns_unavailable("")
+        self.assertEqual(result, "")
+
+    def test_preserves_line_count(self):
+        content = (
+            "@interface RCTHost : NSObject\n"
+            "- (instancetype)init NS_UNAVAILABLE;\n"
+            "+ (instancetype)new NS_UNAVAILABLE;\n"
+            "- (void)start;\n"
+            "@end"
+        )
+        result = strip_ns_unavailable(content)
+        self.assertEqual(result.count("\n"), content.count("\n"))
+
+    def test_handles_leading_whitespace(self):
+        content = "    - (instancetype)init NS_UNAVAILABLE;"
+        result = strip_ns_unavailable(content)
+        self.assertEqual(result, "")
 
 
 if __name__ == "__main__":
