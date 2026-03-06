@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<fefaf14f0291216b635ea0c356e9929c>>
+ * @generated SignedSource<<f31741d016231b75604a72aa89dd6923>>
  */
 
 /**
@@ -300,6 +300,7 @@ class ReactNestedScrollView extends NestedScrollView
     mScrollEnabled = scrollEnabled;
   }
 
+  @Override
   public boolean getScrollEnabled() {
     return mScrollEnabled;
   }
@@ -888,6 +889,7 @@ class ReactNestedScrollView extends NestedScrollView
   }
 
   @Nullable
+  @Override
   public StateWrapper getStateWrapper() {
     return mStateWrapper;
   }
@@ -1353,6 +1355,7 @@ class ReactNestedScrollView extends NestedScrollView
    * <p>`smoothScrollTo` changes `contentOffset` and we need to keep `contentOffset` in sync between
    * scroll view and state. Calling raw `smoothScrollTo` doesn't update state.
    */
+  @Override
   public void reactSmoothScrollTo(int x, int y) {
     ReactScrollViewHelper.smoothScrollTo(this, x, y);
     setPendingContentOffsets(x, y);
