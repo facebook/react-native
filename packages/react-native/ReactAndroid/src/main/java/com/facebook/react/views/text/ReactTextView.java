@@ -579,6 +579,7 @@ public class ReactTextView extends AppCompatTextView implements ReactCompoundVie
     mShouldAdjustSpannableFontSize = true;
   }
 
+  @Override
   public void setLetterSpacing(float letterSpacing) {
     if (Float.isNaN(letterSpacing)) {
       return;
