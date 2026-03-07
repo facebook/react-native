@@ -57,6 +57,10 @@ jobs:
             should_test_android:
               # Not an isolated iOS change
               - '**'
+              # TESTING ONLY
+              - '!.github/actions/build-npm-package/action.yml'
+              - '!.github/workflows/test-all.yml'
+              # /TESTING ONLY
               - '!packages/react-native/React/**'
               - '!packages/react-native/ReactApple/**'
               - '!packages/react-native/**/*.m'
@@ -68,6 +72,10 @@ jobs:
             should_test_ios:
               # Not an isolated Android change
               - '**'
+              # TESTING ONLY
+              - '!.github/actions/build-npm-package/action.yml'
+              - '!.github/workflows/test-all.yml'
+              # /TESTING ONLY
               - '!gradle/**'
               - '!gradle*'
               - '!packages/gradle-plugin/**'
@@ -185,7 +193,8 @@ jobs:
 
   test_e2e_ios_templateapp:
     runs-on: macos-15-large
-    needs: [build_npm_package, prebuild_apple_dependencies]
+    needs: [build_npm_package, prebuild_apple_dependencies, check_code_changes]
+    if: needs.check_code_changes.outputs.should_test_ios == 'true'
     strategy:
       fail-fast: false
       matrix:
@@ -272,7 +281,8 @@ jobs:
 
   test_e2e_android_templateapp:
     runs-on: 4-core-ubuntu
-    needs: build_npm_package
+    needs: [build_npm_package, build_android]
+    if: needs.build_android.result == 'success'
     strategy:
       fail-fast: false
       matrix:
@@ -423,10 +433,15 @@ jobs:
     needs:
       [
         set_release_type,
+        check_code_changes,
         build_android,
         prebuild_apple_dependencies,
         prebuild_react_native_core,
       ]
+    if: |
+      always() &&
+      !contains(needs.*.result, 'failure') &&
+      !contains(needs.*.result, 'cancelled')
     container:
       image: reactnativecommunity/react-native-android:latest
       env:
@@ -444,10 +459,12 @@ jobs:
         with:
           release-type: ${{ needs.set_release_type.outputs.RELEASE_TYPE }}
           gradle-cache-encryption-key: ${{ secrets.GRADLE_CACHE_ENCRYPTION_KEY }}
+          ignore-android: ${{ needs.check_code_changes.outputs.should_test_android == 'false' }}
 
   test_android_helloworld:
     runs-on: 4-core-ubuntu
-    needs: build_npm_package
+    needs: [build_npm_package, build_android]
+    if: needs.build_android.result == 'success'
     container:
       image: reactnativecommunity/react-native-android:latest
     env:
