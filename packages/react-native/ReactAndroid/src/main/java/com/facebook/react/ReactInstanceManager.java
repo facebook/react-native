@@ -27,6 +27,7 @@ import static com.facebook.react.bridge.ReactMarkerConstants.VM_INIT;
 import static com.facebook.react.uimanager.common.UIManagerType.FABRIC;
 import static com.facebook.systrace.Systrace.TRACE_TAG_REACT;
 
+import android.annotation.SuppressLint;
 import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
@@ -593,12 +594,14 @@ public class ReactInstanceManager {
 
   /**
    * Call this from {@link Activity#onPause()}. This notifies any listening modules so they can do
-   * any necessary cleanup. The passed Activity is the current Activity being paused. This will
-   * always be the foreground activity that would be returned by {@link
-   * ReactContext#getCurrentActivity()}.
+   * any necessary cleanup. The passed Activity is the current Activity being paused. This is
+   * expected to be the foreground activity that would be returned by {@link
+   * ReactContext#getCurrentActivity()}. If the passed activity does not match the current activity,
+   * a warning will be logged instead of crashing.
    *
    * @param activity the activity being paused
    */
+  @SuppressLint("ReflectionMethodUse")
   @ThreadConfined(UI)
   public void onHostPause(@Nullable Activity activity) {
     if (mRequireActivity) {
@@ -612,15 +615,15 @@ public class ReactInstanceManager {
       }
       Assertions.assertCondition(mCurrentActivity != null);
     }
-    if (mCurrentActivity != null) {
-      Assertions.assertCondition(
-          activity == mCurrentActivity,
+    if (mCurrentActivity != null && activity != mCurrentActivity) {
+      FLog.w(
+          TAG,
           "Pausing an activity that is not the current activity, this is incorrect! "
               + "Current activity: "
               + mCurrentActivity.getClass().getSimpleName()
               + " "
               + "Paused activity: "
-              + activity.getClass().getSimpleName());
+              + (activity == null ? "null" : activity.getClass().getSimpleName()));
     }
     onHostPause();
   }
