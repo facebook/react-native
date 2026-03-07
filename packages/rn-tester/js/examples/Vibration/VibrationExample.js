@@ -14,13 +14,7 @@ import type {RNTesterModuleExample} from '../../types/RNTesterTypes';
 
 import RNTesterText from '../../components/RNTesterText';
 import React from 'react';
-import {
-  Platform,
-  StyleSheet,
-  TouchableHighlight,
-  Vibration,
-  View,
-} from 'react-native';
+import {StyleSheet, TouchableHighlight, Vibration, View} from 'react-native';
 
 exports.framework = 'React';
 exports.title = 'Vibration';
@@ -28,26 +22,13 @@ exports.category = 'Basic';
 exports.documentationURL = 'https://reactnative.dev/docs/vibration';
 exports.description = 'Vibration API';
 
-let pattern, patternLiteral, patternDescription;
-if (Platform.OS === 'android') {
-  pattern = [0, 500, 200, 500];
-  patternLiteral = '[0, 500, 200, 500]';
-  patternDescription = `${patternLiteral}
+const pattern = [0, 500, 200, 500];
+const patternLiteral = '[0, 500, 200, 500]';
+const patternDescription = `${patternLiteral}
 arg 0: duration to wait before turning the vibrator on.
 arg with odd: vibration length.
 arg with even: duration to wait before next vibration.
 `;
-} else {
-  pattern = [0, 1000, 2000, 3000];
-  patternLiteral = '[0, 1000, 2000, 3000]';
-  patternDescription = `${patternLiteral}
-vibration length on iOS is fixed.
-pattern controls durations BETWEEN each vibration only.
-
-arg 0: duration to wait before turning the vibrator on.
-subsequent args: duration to wait before next vibration.
-`;
-}
 
 exports.examples = [
   {
@@ -68,7 +49,25 @@ exports.examples = [
           style={styles.wrapper}
           onPress={() => Vibration.vibrate()}>
           <View style={styles.button}>
-            <RNTesterText style={styles.buttonText}>Vibrate</RNTesterText>
+            <RNTesterText style={styles.buttonText}>
+              Vibrate (default 400ms)
+            </RNTesterText>
+          </View>
+        </TouchableHighlight>
+      );
+    },
+  },
+  {
+    title: 'Vibration.vibrate(1000)',
+    render(): React.Node {
+      return (
+        <TouchableHighlight
+          style={styles.wrapper}
+          onPress={() => Vibration.vibrate(1000)}>
+          <View style={styles.button}>
+            <RNTesterText style={styles.buttonText}>
+              Vibrate for 1 second
+            </RNTesterText>
           </View>
         </TouchableHighlight>
       );
