@@ -1083,6 +1083,8 @@ declare module '@babel/core' {
     +babelrc: string | void;
     +babelignore: string | void;
     +config: string | void;
+    +files: ReadonlySet<string>;
+    +fileHandling: 'ignored' | 'transpile' | 'unsupported';
 
     constructor(options: ValidatedOptions): PartialConfig;
 
