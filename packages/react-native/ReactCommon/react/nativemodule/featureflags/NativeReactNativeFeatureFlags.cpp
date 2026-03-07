@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<600173d3cb27205c13d0ab7fe7ab8edb>>
+ * @generated SignedSource<<f2d9f3c9c479bbdadd033baaf619c3d3>>
  */
 
 /**
@@ -342,11 +342,6 @@ bool NativeReactNativeFeatureFlags::fixMappingOfEventPrioritiesBetweenFabricAndR
 bool NativeReactNativeFeatureFlags::fixTextClippingAndroid15useBoundsForWidth(
     jsi::Runtime& /*runtime*/) {
   return ReactNativeFeatureFlags::fixTextClippingAndroid15useBoundsForWidth();
-}
-
-bool NativeReactNativeFeatureFlags::fixYogaFlexBasisFitContentInMainAxis(
-    jsi::Runtime& /*runtime*/) {
-  return ReactNativeFeatureFlags::fixYogaFlexBasisFitContentInMainAxis();
 }
 
 bool NativeReactNativeFeatureFlags::fuseboxAssertSingleHostState(

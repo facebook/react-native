@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<b0a1604371a16a1cd6aa650aaa30353a>>
+ * @generated SignedSource<<f00cb61af4413b63f1556ebda3daf980>>
  */
 
 /**
@@ -264,10 +264,6 @@ class ReactNativeFeatureFlagsDefaults : public ReactNativeFeatureFlagsProvider {
   }
 
   bool fixTextClippingAndroid15useBoundsForWidth() override {
-    return false;
-  }
-
-  bool fixYogaFlexBasisFitContentInMainAxis() override {
     return false;
   }
 
