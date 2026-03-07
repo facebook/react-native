@@ -1,5 +1,13 @@
 # Changelog
 
+## v0.83.4
+
+### Fixed
+
+#### iOS specific
+
+- **Precompiled Binaries:** Add RCTDevSupportHeaders in React Umbrella ([cfb5328833](https://github.com/facebook/react-native/commit/cfb53288331885ce5d221783affe2f1fb9e18782) by [@cipolleschi](https://github.com/cipolleschi))
+
 ## v0.85.0-rc.0
 
 ### Breaking
