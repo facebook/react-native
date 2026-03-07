@@ -400,6 +400,10 @@ class RuntimeDecorator : public Base, private jsi::Instrumentation {
     plain_.setValueAtIndexImpl(a, i, value);
   }
 
+  size_t push(const Array& a, const Value* elements, size_t count) override {
+    return plain_.push(a, elements, count);
+  }
+
   Function createFunctionFromHostFunction(
       const PropNameID& name,
       unsigned int paramCount,
@@ -428,6 +432,11 @@ class RuntimeDecorator : public Base, private jsi::Instrumentation {
 
   const void* getRuntimeDataImpl(const UUID& uuid) override {
     return plain_.getRuntimeDataImpl(uuid);
+  }
+
+  std::shared_ptr<MutableBuffer> tryGetMutableBuffer(
+      const jsi::ArrayBuffer& arrayBuffer) override {
+    return plain_.tryGetMutableBuffer(arrayBuffer);
   }
 
   // Private data for managing scopes.
@@ -969,6 +978,10 @@ class WithRuntimeDecorator : public RuntimeDecorator<Plain, Base> {
     Around around{with_};
     RD::setValueAtIndexImpl(a, i, value);
   }
+  size_t push(const Array& a, const Value* elements, size_t count) override {
+    Around around{with_};
+    return RD::push(a, elements, count);
+  }
 
   Function createFunctionFromHostFunction(
       const PropNameID& name,
@@ -990,6 +1003,12 @@ class WithRuntimeDecorator : public RuntimeDecorator<Plain, Base> {
       override {
     Around around{with_};
     return RD::callAsConstructor(f, args, count);
+  }
+
+  std::shared_ptr<MutableBuffer> tryGetMutableBuffer(
+      const jsi::ArrayBuffer& arrayBuffer) override {
+    Around around{with_};
+    return RD::tryGetMutableBuffer(arrayBuffer);
   }
 
   // Private data for managing scopes.
