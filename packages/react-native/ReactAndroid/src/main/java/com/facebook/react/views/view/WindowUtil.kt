@@ -7,9 +7,13 @@
 
 package com.facebook.react.views.view
 
+import android.animation.ArgbEvaluator
+import android.animation.ValueAnimator
 import android.graphics.Color
 import android.os.Build
+import android.view.View
 import android.view.Window
+import android.view.WindowInsetsController
 import android.view.WindowManager
 import androidx.core.view.ViewCompat
 import androidx.core.view.WindowCompat
@@ -35,6 +39,49 @@ public var isEdgeToEdgeFeatureFlagOn: Boolean = false
 
 public fun setEdgeToEdgeFeatureFlagOn() {
   isEdgeToEdgeFeatureFlagOn = true
+}
+
+@Suppress("DEPRECATION")
+internal fun Window.setStatusBarColor(color: Int, animated: Boolean) {
+  addFlags(WindowManager.LayoutParams.FLAG_DRAWS_SYSTEM_BAR_BACKGROUNDS)
+  if (animated) {
+    val curColor = statusBarColor
+    val colorAnimation = ValueAnimator.ofObject(ArgbEvaluator(), curColor, color)
+    colorAnimation.addUpdateListener { animator ->
+      statusBarColor = (animator.animatedValue as Int)
+    }
+    colorAnimation.setDuration(300).startDelay = 0
+    colorAnimation.start()
+  } else {
+    statusBarColor = color
+  }
+}
+
+@Suppress("DEPRECATION")
+internal fun Window.setStatusBarStyle(style: String?) {
+  if (Build.VERSION.SDK_INT > Build.VERSION_CODES.R) {
+    if ("dark-content" == style) {
+      // dark-content means dark icons on a light status bar
+      insetsController?.setSystemBarsAppearance(
+          WindowInsetsController.APPEARANCE_LIGHT_STATUS_BARS,
+          WindowInsetsController.APPEARANCE_LIGHT_STATUS_BARS,
+      )
+    } else {
+      insetsController?.setSystemBarsAppearance(
+          0,
+          WindowInsetsController.APPEARANCE_LIGHT_STATUS_BARS,
+      )
+    }
+  } else {
+    var systemUiVisibilityFlags = decorView.systemUiVisibility
+    systemUiVisibilityFlags =
+        if ("dark-content" == style) {
+          systemUiVisibilityFlags or View.SYSTEM_UI_FLAG_LIGHT_STATUS_BAR
+        } else {
+          systemUiVisibilityFlags and View.SYSTEM_UI_FLAG_LIGHT_STATUS_BAR.inv()
+        }
+    decorView.systemUiVisibility = systemUiVisibilityFlags
+  }
 }
 
 @Suppress("DEPRECATION")
