@@ -36,3 +36,30 @@ TEST(ColorTest, testColorConversion) {
     EXPECT_EQ(std::round(colorComponents.blue * 10) / 10.f, 0);
   }
 }
+
+TEST(ColorTest, testTransparentColorIsNotUndefined) {
+  using namespace facebook::react;
+
+  // Default SharedColor should be falsy (undefined)
+  SharedColor undefinedColor;
+  EXPECT_FALSE(static_cast<bool>(undefinedColor));
+
+  // Transparent color should be truthy (defined)
+  auto transparentColor = colorFromRGBA(0, 0, 0, 0);
+  EXPECT_TRUE(static_cast<bool>(transparentColor));
+
+  // clearColor() should be truthy (it's an explicitly set transparent color)
+  auto clear = clearColor();
+  EXPECT_TRUE(static_cast<bool>(clear));
+
+  // Transparent color should not equal undefined color
+  EXPECT_NE(transparentColor, undefinedColor);
+
+  // Two undefined colors should be equal
+  SharedColor anotherUndefined;
+  EXPECT_EQ(undefinedColor, anotherUndefined);
+
+  // Two transparent colors should be equal
+  auto anotherTransparent = colorFromRGBA(0, 0, 0, 0);
+  EXPECT_EQ(transparentColor, anotherTransparent);
+}

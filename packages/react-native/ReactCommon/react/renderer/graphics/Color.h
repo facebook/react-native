@@ -29,9 +29,9 @@ namespace facebook::react {
  */
 class SharedColor {
  public:
-  SharedColor() : color_(HostPlatformColor::UndefinedColor) {}
+  SharedColor() : color_{}, defined_(false) {}
 
-  SharedColor(Color color) : color_(color) {}
+  SharedColor(Color color) : color_(color), defined_(true) {}
 
   Color &operator*()
   {
@@ -45,23 +45,30 @@ class SharedColor {
 
   bool operator==(const SharedColor &otherColor) const
   {
+    if (defined_ != otherColor.defined_) {
+      return false;
+    }
+    if (!defined_) {
+      return true;
+    }
     return color_ == otherColor.color_;
   }
 
   bool operator!=(const SharedColor &otherColor) const
   {
-    return color_ != otherColor.color_;
+    return !(*this == otherColor);
   }
 
   operator bool() const
   {
-    return color_ != HostPlatformColor::UndefinedColor;
+    return defined_;
   }
 
   std::string toString() const noexcept;
 
  private:
   Color color_;
+  bool defined_;
 };
 
 bool isColorMeaningful(const SharedColor &color) noexcept;

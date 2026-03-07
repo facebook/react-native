@@ -179,7 +179,7 @@ TextAttributes TextAttributes::defaultTextAttributes() {
     auto defaultAttrs = TextAttributes{};
     // Non-obvious (can be different among platforms) default text attributes.
     defaultAttrs.foregroundColor = blackColor();
-    defaultAttrs.backgroundColor = clearColor();
+    defaultAttrs.backgroundColor = SharedColor{};
     defaultAttrs.fontSize = 14.0;
     defaultAttrs.fontSizeMultiplier = 1.0;
     return defaultAttrs;
