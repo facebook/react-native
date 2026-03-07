@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<988fab572d94253ccb4dc3e598fc154b>>
+ * @generated SignedSource<<f0f19fee7d5fdd2dbf5eb8460ab95905>>
  */
 
 /**
@@ -338,11 +338,6 @@ class ReactNativeFeatureFlags {
    * Fix text clipping starting in Android 15 due to usage of useBoundsForWidth
    */
   RN_EXPORT static bool fixTextClippingAndroid15useBoundsForWidth();
-
-  /**
-   * When enabled, Yoga will not apply a FitContent constraint in the main axis during flex basis computation for non-measure container nodes. This prevents unnecessary re-measurement and cascading clones when a sibling changes size in a ScrollView.
-   */
-  RN_EXPORT static bool fixYogaFlexBasisFitContentInMainAxis();
 
   /**
    * Enable system assertion validating that Fusebox is configured with a single host. When set, the CDP backend will dynamically disable features (Perf and Network) in the event that multiple hosts are registered (undefined behaviour), and broadcast this over `ReactNativeApplication.systemStateChanged`.
