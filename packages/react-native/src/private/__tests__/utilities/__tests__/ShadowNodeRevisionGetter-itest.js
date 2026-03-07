@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @fantom_flags enableFabricCommitBranching:* fixYogaFlexBasisFitContentInMainAxis:*
+ * @fantom_flags enableFabricCommitBranching:*
  * @flow strict-local
  * @format
  */
@@ -15,7 +15,6 @@ import {createShadowNodeReferenceGetterRef} from '../ShadowNodeRevisionGetter';
 import * as Fantom from '@react-native/fantom';
 import * as React from 'react';
 import {ScrollView, View} from 'react-native';
-import {fixYogaFlexBasisFitContentInMainAxis} from 'react-native/src/private/featureflags/ReactNativeFeatureFlags';
 
 test('base case when cloning results in revision +1', () => {
   const root = Fantom.createRoot();
@@ -71,10 +70,6 @@ test('changing height of the top item in ScrollView results in excessive cloning
     );
   });
 
-  if (fixYogaFlexBasisFitContentInMainAxis()) {
-    expect(getRevision()).toBe(1);
-  } else {
-    // TODO(T225268793): the below assertion should be: `expect(getRevision()).toBe(1);`
-    expect(getRevision()).toBe(2);
-  }
+  // TODO(T225268793): the below assertion should be: `expect(getRevision()).toBe(1);`
+  expect(getRevision()).toBe(2);
 });

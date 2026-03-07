@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<b1d196c0623e11fbcf59b38143fbe37e>>
+ * @generated SignedSource<<ff9e56efafa98cf4c466c976739a2957>>
  */
 
 /**
@@ -84,7 +84,6 @@ internal class ReactNativeFeatureFlagsLocalAccessor : ReactNativeFeatureFlagsAcc
   private var fixFindShadowNodeByTagRaceConditionCache: Boolean? = null
   private var fixMappingOfEventPrioritiesBetweenFabricAndReactCache: Boolean? = null
   private var fixTextClippingAndroid15useBoundsForWidthCache: Boolean? = null
-  private var fixYogaFlexBasisFitContentInMainAxisCache: Boolean? = null
   private var fuseboxAssertSingleHostStateCache: Boolean? = null
   private var fuseboxEnabledReleaseCache: Boolean? = null
   private var fuseboxNetworkInspectionEnabledCache: Boolean? = null
@@ -710,16 +709,6 @@ internal class ReactNativeFeatureFlagsLocalAccessor : ReactNativeFeatureFlagsAcc
       cached = currentProvider.fixTextClippingAndroid15useBoundsForWidth()
       accessedFeatureFlags.add("fixTextClippingAndroid15useBoundsForWidth")
       fixTextClippingAndroid15useBoundsForWidthCache = cached
-    }
-    return cached
-  }
-
-  override fun fixYogaFlexBasisFitContentInMainAxis(): Boolean {
-    var cached = fixYogaFlexBasisFitContentInMainAxisCache
-    if (cached == null) {
-      cached = currentProvider.fixYogaFlexBasisFitContentInMainAxis()
-      accessedFeatureFlags.add("fixYogaFlexBasisFitContentInMainAxis")
-      fixYogaFlexBasisFitContentInMainAxisCache = cached
     }
     return cached
   }
