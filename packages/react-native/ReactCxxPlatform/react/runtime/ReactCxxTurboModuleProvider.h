@@ -21,9 +21,9 @@ class NativeAnimatedNodesManagerProvider;
 class SurfaceDelegate;
 struct IDevUIDelegate;
 
-class TurboModuleManager final {
+class ReactCxxTurboModuleProvider final {
  public:
-  TurboModuleManager(
+  ReactCxxTurboModuleProvider(
       TurboModuleProviders turboModuleProviders,
       std::shared_ptr<CallInvoker> jsInvoker,
       JsErrorHandler::OnJsError onJsError,
