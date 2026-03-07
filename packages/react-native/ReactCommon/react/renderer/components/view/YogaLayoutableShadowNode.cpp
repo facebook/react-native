@@ -599,13 +599,10 @@ void YogaLayoutableShadowNode::layoutTree(
 
   {
     TraceSection s2("YogaLayoutableShadowNode::configureYogaTree");
-    YGErrata defaultErrata = YGErrataAll;
-    if (ReactNativeFeatureFlags::fixYogaFlexBasisFitContentInMainAxis()) {
-      defaultErrata = static_cast<YGErrata>(
-          defaultErrata & ~YGErrataFlexBasisFitContentInMainAxis);
-    }
     configureYogaTree(
-        layoutContext.pointScaleFactor, defaultErrata, swapLeftAndRight);
+        layoutContext.pointScaleFactor,
+        YGErrataAll /*defaultErrata*/,
+        swapLeftAndRight);
   }
 
   auto minimumSize = layoutConstraints.minimumSize;
