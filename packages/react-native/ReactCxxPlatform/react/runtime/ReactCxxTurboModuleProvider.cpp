@@ -5,7 +5,7 @@
  * LICENSE file in the root directory of this source tree.
  */
 
-#include "TurboModuleManager.h"
+#include "ReactCxxTurboModuleProvider.h"
 
 #include <react/coremodules/AppStateModule.h>
 #include <react/coremodules/DeviceInfoModule.h>
@@ -27,7 +27,7 @@
 
 using namespace facebook::react;
 
-TurboModuleManager::TurboModuleManager(
+ReactCxxTurboModuleProvider::ReactCxxTurboModuleProvider(
     TurboModuleProviders turboModuleProviders,
     std::shared_ptr<CallInvoker> jsInvoker,
     JsErrorHandler::OnJsError onJsError,
@@ -50,7 +50,7 @@ TurboModuleManager::TurboModuleManager(
       webSocketClientFactory_(std::move(webSocketClientFactory)),
       liveReloadCallback_(std::move(liveReloadCallback)) {}
 
-std::shared_ptr<TurboModule> TurboModuleManager::operator()(
+std::shared_ptr<TurboModule> ReactCxxTurboModuleProvider::operator()(
     const std::string& name) const {
   react_native_assert(!name.empty() && "TurboModule name must not be empty");
 
