@@ -38,10 +38,10 @@ class NetworkReporterTestBase : public TracingTestBase<
  protected:
   NetworkReporterTestBase()
       : TracingTestBase({
-            .networkInspectionEnabled = true,
             .enableNetworkEventReporting =
                 WithParamInterface<Params>::GetParam()
                     .enableNetworkEventReporting,
+            .networkInspectionEnabled = true,
         }) {}
 
   void SetUp() override {

@@ -328,6 +328,7 @@ namespace {
 struct StaticHostTargetMetadata {
   std::optional<bool> isProfilingBuild;
   std::optional<bool> networkInspectionEnabled;
+  std::optional<bool> frameRecordingEnabled;
 };
 
 StaticHostTargetMetadata getStaticHostMetadata() {
@@ -335,7 +336,8 @@ StaticHostTargetMetadata getStaticHostMetadata() {
 
   return {
       .isProfilingBuild = inspectorFlags.getIsProfilingBuild(),
-      .networkInspectionEnabled = inspectorFlags.getNetworkInspectionEnabled()};
+      .networkInspectionEnabled = inspectorFlags.getNetworkInspectionEnabled(),
+      .frameRecordingEnabled = inspectorFlags.getFrameRecordingEnabled()};
 }
 
 } // namespace
@@ -369,6 +371,10 @@ folly::dynamic createHostMetadataPayload(const HostTargetMetadata& metadata) {
   if (staticMetadata.networkInspectionEnabled) {
     result["unstable_networkInspectionEnabled"] =
         staticMetadata.networkInspectionEnabled.value();
+  }
+  if (staticMetadata.frameRecordingEnabled) {
+    result["unstable_frameRecordingEnabled"] =
+        staticMetadata.frameRecordingEnabled.value();
   }
 
   return result;
