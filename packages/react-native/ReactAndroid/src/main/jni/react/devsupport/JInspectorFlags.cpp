@@ -21,6 +21,12 @@ bool JInspectorFlags::getIsProfilingBuild(jni::alias_ref<jclass> /*unused*/) {
   return inspectorFlags.getIsProfilingBuild();
 }
 
+bool JInspectorFlags::getFrameRecordingEnabled(
+    jni::alias_ref<jclass> /*unused*/) {
+  auto& inspectorFlags = InspectorFlags::getInstance();
+  return inspectorFlags.getFrameRecordingEnabled();
+}
+
 void JInspectorFlags::registerNatives() {
   javaClassLocal()->registerNatives({
       makeNativeMethod("getFuseboxEnabled", JInspectorFlags::getFuseboxEnabled),
@@ -28,6 +34,11 @@ void JInspectorFlags::registerNatives() {
   javaClassLocal()->registerNatives({
       makeNativeMethod(
           "getIsProfilingBuild", JInspectorFlags::getIsProfilingBuild),
+  });
+  javaClassLocal()->registerNatives({
+      makeNativeMethod(
+          "getFrameRecordingEnabled",
+          JInspectorFlags::getFrameRecordingEnabled),
   });
 }
 

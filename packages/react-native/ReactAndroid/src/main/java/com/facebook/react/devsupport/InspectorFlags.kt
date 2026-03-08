@@ -20,4 +20,6 @@ internal object InspectorFlags {
   @DoNotStrip @JvmStatic external fun getFuseboxEnabled(): Boolean
 
   @DoNotStrip @JvmStatic external fun getIsProfilingBuild(): Boolean
+
+  @DoNotStrip @JvmStatic external fun getFrameRecordingEnabled(): Boolean
 }

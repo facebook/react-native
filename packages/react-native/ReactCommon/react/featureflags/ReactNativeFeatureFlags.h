@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<0bbe4d41581432dfad7adbc2db133d00>>
+ * @generated SignedSource<<72fbfea67f04a37ede242532b37c217e>>
  */
 
 /**
@@ -333,6 +333,11 @@ class ReactNativeFeatureFlags {
    * Flag determining if the React Native DevTools (Fusebox) CDP backend should be enabled in release builds. This flag is global and should not be changed across React Host lifetimes.
    */
   RN_EXPORT static bool fuseboxEnabledRelease();
+
+  /**
+   * Enable frame timings and screenshots support in the React Native DevTools CDP backend. This flag is global and should not be changed across React Host lifetimes.
+   */
+  RN_EXPORT static bool fuseboxFrameRecordingEnabled();
 
   /**
    * Enable network inspection support in the React Native DevTools CDP backend. Requires `enableBridgelessArchitecture`. This flag is global and should not be changed across React Host lifetimes.

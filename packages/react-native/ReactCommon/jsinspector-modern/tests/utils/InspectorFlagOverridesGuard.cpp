@@ -31,6 +31,11 @@ class ReactNativeFeatureFlagsOverrides
         ReactNativeFeatureFlagsDefaults::fuseboxEnabledRelease());
   }
 
+  bool fuseboxFrameRecordingEnabled() override {
+    return overrides_.frameRecordingEnabled.value_or(
+        ReactNativeFeatureFlagsDefaults::fuseboxFrameRecordingEnabled());
+  }
+
   bool fuseboxNetworkInspectionEnabled() override {
     return overrides_.networkInspectionEnabled.value_or(
         ReactNativeFeatureFlagsDefaults::fuseboxNetworkInspectionEnabled());

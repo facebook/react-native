@@ -21,6 +21,10 @@ bool InspectorFlags::getAssertSingleHostState() const {
   return loadFlagsAndAssertUnchanged().assertSingleHostState;
 }
 
+bool InspectorFlags::getFrameRecordingEnabled() const {
+  return loadFlagsAndAssertUnchanged().frameRecordingEnabled;
+}
+
 bool InspectorFlags::getFuseboxEnabled() const {
   if (fuseboxDisabledForTest_) {
     return false;
@@ -54,6 +58,8 @@ const InspectorFlags::Values& InspectorFlags::loadFlagsAndAssertUnchanged()
   InspectorFlags::Values newValues = {
       .assertSingleHostState =
           ReactNativeFeatureFlags::fuseboxAssertSingleHostState(),
+      .frameRecordingEnabled =
+          ReactNativeFeatureFlags::fuseboxFrameRecordingEnabled(),
       .fuseboxEnabled =
 #if defined(REACT_NATIVE_DEBUGGER_ENABLED)
           true,

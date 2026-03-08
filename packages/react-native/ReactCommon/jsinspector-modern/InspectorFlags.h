@@ -37,6 +37,11 @@ class InspectorFlags {
   bool getIsProfilingBuild() const;
 
   /**
+   * Flag determining if frame recording (timings + screenshots) is enabled.
+   */
+  bool getFrameRecordingEnabled() const;
+
+  /**
    * Flag determining if network inspection is enabled.
    */
   bool getNetworkInspectionEnabled() const;
@@ -61,6 +66,7 @@ class InspectorFlags {
  private:
   struct Values {
     bool assertSingleHostState;
+    bool frameRecordingEnabled;
     bool fuseboxEnabled;
     bool isProfilingBuild;
     bool networkInspectionEnabled;
