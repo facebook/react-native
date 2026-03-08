@@ -20,6 +20,7 @@ class JInspectorFlags : public jni::JavaClass<JInspectorFlags> {
 
   static bool getFuseboxEnabled(jni::alias_ref<jclass> /*unused*/);
   static bool getIsProfilingBuild(jni::alias_ref<jclass> /*unused*/);
+  static bool getFrameRecordingEnabled(jni::alias_ref<jclass> /*unused*/);
 
   static void registerNatives();
 

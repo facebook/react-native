@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<ce1f59ca437f7d8e24bdcbd651e44cc2>>
+ * @generated SignedSource<<3d472893c05bdee6e09f834f52d3d92f>>
  */
 
 /**
@@ -151,6 +151,8 @@ public object ReactNativeFeatureFlagsCxxInterop {
   @DoNotStrip @JvmStatic public external fun fuseboxAssertSingleHostState(): Boolean
 
   @DoNotStrip @JvmStatic public external fun fuseboxEnabledRelease(): Boolean
+
+  @DoNotStrip @JvmStatic public external fun fuseboxFrameRecordingEnabled(): Boolean
 
   @DoNotStrip @JvmStatic public external fun fuseboxNetworkInspectionEnabled(): Boolean
 

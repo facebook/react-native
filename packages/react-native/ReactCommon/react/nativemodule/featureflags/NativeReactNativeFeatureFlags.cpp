@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<f2d9f3c9c479bbdadd033baaf619c3d3>>
+ * @generated SignedSource<<ce2fa6a5b28f4a59c63f92556b22eb99>>
  */
 
 /**
@@ -352,6 +352,11 @@ bool NativeReactNativeFeatureFlags::fuseboxAssertSingleHostState(
 bool NativeReactNativeFeatureFlags::fuseboxEnabledRelease(
     jsi::Runtime& /*runtime*/) {
   return ReactNativeFeatureFlags::fuseboxEnabledRelease();
+}
+
+bool NativeReactNativeFeatureFlags::fuseboxFrameRecordingEnabled(
+    jsi::Runtime& /*runtime*/) {
+  return ReactNativeFeatureFlags::fuseboxFrameRecordingEnabled();
 }
 
 bool NativeReactNativeFeatureFlags::fuseboxNetworkInspectionEnabled(
