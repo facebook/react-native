@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<a4c3c9732db567bf8ab9915f731e57ff>>
+ * @generated SignedSource<<cbc85fcd815ba2585166a53e7b410f30>>
  */
 
 /**
@@ -82,6 +82,7 @@ internal class ReactNativeFeatureFlagsCxxAccessor : ReactNativeFeatureFlagsAcces
   private var fixTextClippingAndroid15useBoundsForWidthCache: Boolean? = null
   private var fuseboxAssertSingleHostStateCache: Boolean? = null
   private var fuseboxEnabledReleaseCache: Boolean? = null
+  private var fuseboxFrameRecordingEnabledCache: Boolean? = null
   private var fuseboxNetworkInspectionEnabledCache: Boolean? = null
   private var hideOffscreenVirtualViewsOnIOSCache: Boolean? = null
   private var overrideBySynchronousMountPropsAtMountingAndroidCache: Boolean? = null
@@ -663,6 +664,15 @@ internal class ReactNativeFeatureFlagsCxxAccessor : ReactNativeFeatureFlagsAcces
     if (cached == null) {
       cached = ReactNativeFeatureFlagsCxxInterop.fuseboxEnabledRelease()
       fuseboxEnabledReleaseCache = cached
+    }
+    return cached
+  }
+
+  override fun fuseboxFrameRecordingEnabled(): Boolean {
+    var cached = fuseboxFrameRecordingEnabledCache
+    if (cached == null) {
+      cached = ReactNativeFeatureFlagsCxxInterop.fuseboxFrameRecordingEnabled()
+      fuseboxFrameRecordingEnabledCache = cached
     }
     return cached
   }
