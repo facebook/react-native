@@ -250,6 +250,7 @@ internal class MountItemDispatcher(
           if (ReactNativeFeatureFlags.enableFabricLogs()) {
             for (m in items) {
               if (m === mountItem) {
+                // We want to mark the mount item that caused exception
                 FLog.e(TAG, "dispatchMountItems: mountItem: next mountItem triggered exception!")
               }
               printMountItem(m, "dispatchMountItems: mountItem")
