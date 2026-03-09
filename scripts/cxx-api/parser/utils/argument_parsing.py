@@ -297,6 +297,13 @@ def _parse_single_argument(arg: str) -> Argument:
             )
         ):
             return (qualifiers, base_arg, None, default_value)
+        # C++ parameter names cannot contain "::". Doxygen may
+        # incorrectly cross-reference a parameter name to a member
+        # variable, producing a qualified path (e.g. "bool
+        # ns::Class::isActive" instead of "bool isActive"). Strip
+        # the namespace prefix to recover the original name.
+        if "::" in potential_name:
+            potential_name = potential_name.rsplit("::", 1)[-1]
         return (qualifiers, prefix, potential_name, default_value)
     else:
         return (qualifiers, base_arg, None, default_value)

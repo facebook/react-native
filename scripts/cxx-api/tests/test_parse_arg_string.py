@@ -374,6 +374,33 @@ class TestParseArgString(unittest.TestCase):
         self.assertTrue(mods.is_noexcept)
         self.assertTrue(mods.is_override)
 
+    # =========================================================================
+    # Qualified parameter names (Doxygen cross-reference cleanup)
+    # =========================================================================
+
+    def test_qualified_parameter_name_stripped(self):
+        """Parameter names containing '::' should be stripped to base name.
+
+        Doxygen may incorrectly cross-reference parameter names to member
+        variables, producing qualified paths like 'ns::Class::paramName'.
+        C++ parameter names cannot contain '::', so the qualification must
+        be stripped to just the base name.
+        """
+        args, mods = parse_arg_string(
+            "(bool facebook::react::PerformanceTracer::isTracing)"
+        )
+        self.assertEqual(args, [(None, "bool", "isTracing", None)])
+
+    def test_qualified_parameter_name_simple(self):
+        """Simple qualified parameter name: test::Foo::value"""
+        args, mods = parse_arg_string("(int test::Foo::value)")
+        self.assertEqual(args, [(None, "int", "value", None)])
+
+    def test_unqualified_parameter_name_unchanged(self):
+        """Regular parameter names without '::' should not be affected."""
+        args, mods = parse_arg_string("(bool isActive)")
+        self.assertEqual(args, [(None, "bool", "isActive", None)])
+
 
 if __name__ == "__main__":
     unittest.main()
