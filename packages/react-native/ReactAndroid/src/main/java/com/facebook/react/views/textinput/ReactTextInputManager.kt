@@ -1015,7 +1015,7 @@ public open class ReactTextInputManager public constructor() :
 
     val spanned =
         TextLayoutManager.getOrCreateSpannableForText(
-            view.context,
+            view.context.assets,
             attributedString,
             reactTextViewManagerCallback,
         )
