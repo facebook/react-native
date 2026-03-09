@@ -1376,14 +1376,24 @@ internal object TextLayoutManager {
     return FontMetricsUtil.getFontMetrics(layout.text, layout, context)
   }
 
-  private fun isBoring(text: Spannable, paint: TextPaint): BoringLayout.Metrics? =
-      if (Build.VERSION.SDK_INT < Build.VERSION_CODES.TIRAMISU) {
-        BoringLayout.isBoring(text, paint)
-      } else {
-        // Default to include fallback line spacing on Android 13+, like TextView
-        // https://cs.android.com/android/_/android/platform/frameworks/base/+/78c774defb238c05c42b34a12b6b3b0c64844ed7
-        BoringLayout.isBoring(text, paint, TextDirectionHeuristics.FIRSTSTRONG_LTR, true, null)
-      }
+  private fun isBoring(text: Spannable, paint: TextPaint): BoringLayout.Metrics? {
+    val metrics =
+        if (Build.VERSION.SDK_INT < Build.VERSION_CODES.TIRAMISU) {
+          BoringLayout.isBoring(text, paint)
+        } else {
+          // Default to include fallback line spacing on Android 13+, like TextView
+          // https://cs.android.com/android/_/android/platform/frameworks/base/+/78c774defb238c05c42b34a12b6b3b0c64844ed7
+          BoringLayout.isBoring(text, paint, TextDirectionHeuristics.FIRSTSTRONG_LTR, true, null)
+        }
+
+    // BoringLayout.isBoring() sometimes thinks text width is negative for some strings, even on
+    // Android 15+. Fallback to StaticLayout.
+    if (metrics == null || metrics.width < 0) {
+      return null
+    }
+
+    return metrics
+  }
 
   private class CreateLayoutResult(
       val layout: Layout,
