@@ -1,5 +1,112 @@
 # Changelog
 
+## v0.85.0-rc.1
+
+### Breaking
+
+- Fix unsafe rawPointer access in cloneMultiple. ([1d47693230](https://github.com/facebook/react-native/commit/1d476932305f2563d773eb04f0f78a9bdd2525e1) by [@coado](https://github.com/coado))
+
+#### Android specific
+
+
+
+#### iOS specific
+
+
+
+### Added
+
+- Add c++ AnimatedModule to DefaultTurboModules ([15e52e3f71](https://github.com/facebook/react-native/commit/15e52e3f71e7199808686e2b86ea54dcb2495b71) by [@zeyap](https://github.com/zeyap))
+
+#### Android specific
+
+
+
+#### iOS specific
+
+
+
+### Changed
+
+
+
+#### Android specific
+
+
+
+#### iOS specific
+
+
+
+### Deprecated
+
+
+
+#### Android specific
+
+
+
+#### iOS specific
+
+
+
+### Removed
+
+
+
+#### Android specific
+
+
+
+#### iOS specific
+
+
+
+### Fixed
+
+
+
+#### Android specific
+
+
+
+#### iOS specific
+
+
+
+### Security
+
+
+
+#### Android specific
+
+
+
+#### iOS specific
+
+
+
+### Unknown
+
+- Release 0.85.0-rc.1 ([6be3604ab6](https://github.com/facebook/react-native/commit/6be3604ab6c497c4131986650e6406a5746542f7) by [@react-native-bot](https://github.com/react-native-bot))
+- Merge branch '0.85-stable' of https://github.com/facebook/react-native into 0.85-stable ([9e1aaa8ca4](https://github.com/facebook/react-native/commit/9e1aaa8ca4364182650f6da6a5e6e1d080e79ec1) by [@alanleedev](https://github.com/alanleedev))
+- [0.85] Add support for custom headers in devsupport ([410ffb04cc](https://github.com/facebook/react-native/commit/410ffb04cc6a2fc0baa41ef0fe3ed9cd7c1cb28e) by [@cipolleschi](https://github.com/cipolleschi))
+- Bump Podfile.lock ([2750e6038d](https://github.com/facebook/react-native/commit/2750e6038d41054d2fa6156d982be228ca3de8e3) by [@react-native-bot](https://github.com/react-native-bot))
+- Release 0.85.0-rc.0 ([3e2367c58d](https://github.com/facebook/react-native/commit/3e2367c58d60c97414a3a135f9f5d89e87ee5e3d) by [@react-native-bot](https://github.com/react-native-bot))
+
+#### Android Unknown
+
+
+
+#### iOS Unknown
+
+
+
+#### Failed to parse
+
+
+
+
 ## v0.83.4
 
 ### Fixed
