@@ -17,6 +17,7 @@ const {
   getBuildOptions,
   getTypeScriptCompilerOptions,
 } = require('./config');
+const translateFlowToTSDef = require('./translateFlowToTSDef');
 const babel = require('@babel/core');
 const {spawn} = require('child_process');
 const translate = require('flow-api-translator');
@@ -213,7 +214,7 @@ async function buildFile(
         emitTypeScriptDefs
           ? fs.writeFile(
               buildPath.replace(/\.js$/, '') + '.d.ts',
-              await translate.translateFlowToTSDef(source, prettierConfig),
+              await translateFlowToTSDef(source, prettierConfig),
             )
           : null,
       ]);
