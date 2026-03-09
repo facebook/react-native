@@ -623,7 +623,7 @@ jobs:
         uses: ./.github/actions/yarn-install
       - name: Build packages
         shell: bash
-        run: yarn build
+        run: yarn build --prepack debugger-shell
       - name: Verify debugger-shell build
         shell: bash
         run: node scripts/debugger-shell/build-binary.js
