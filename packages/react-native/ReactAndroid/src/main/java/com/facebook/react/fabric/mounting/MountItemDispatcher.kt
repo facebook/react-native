@@ -120,7 +120,7 @@ internal class MountItemDispatcher(
             // items
             addViewCommandMountItem(mountItem)
           }
-        } else {
+        } else if (ReactNativeFeatureFlags.enableFabricLogs()) {
           printMountItem(item, "dispatchExternalMountItems: mounting failed with ${e.message}")
         }
       }
@@ -247,12 +247,13 @@ internal class MountItemDispatcher(
         } catch (e: Throwable) {
           // If there's an exception, we want to log diagnostics in prod and rethrow.
           FLog.e(TAG, "dispatchMountItems: caught exception, displaying mount state", e)
-          for (m in items) {
-            if (m === mountItem) {
-              // We want to mark the mount item that caused exception
-              FLog.e(TAG, "dispatchMountItems: mountItem: next mountItem triggered exception!")
+          if (ReactNativeFeatureFlags.enableFabricLogs()) {
+            for (m in items) {
+              if (m === mountItem) {
+                FLog.e(TAG, "dispatchMountItems: mountItem: next mountItem triggered exception!")
+              }
+              printMountItem(m, "dispatchMountItems: mountItem")
             }
-            printMountItem(m, "dispatchMountItems: mountItem")
           }
 
           if (mountItem.getSurfaceId() != View.NO_ID) {
