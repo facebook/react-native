@@ -94,6 +94,9 @@ static NSURL *serverRootWithHostPort(NSString *hostPort, NSString *scheme)
   }
 
   NSURL *url = [serverRootWithHostPort(hostPort, scheme) URLByAppendingPathComponent:@"status"];
+  if (url == nil) {
+    return NO;
+  }
 
   NSURLSession *session = [NSURLSession sharedSession];
   NSMutableURLRequest *request = [NSMutableURLRequest requestWithURL:url
@@ -133,6 +136,73 @@ static NSURL *serverRootWithHostPort(NSString *hostPort, NSString *scheme)
   return isRunning;
 }
 
++ (void)isPackagerRunningAsync:(NSString *)hostPort completion:(void (^)(BOOL isRunning))completion
+{
+  [RCTBundleURLProvider isPackagerRunningAsync:hostPort scheme:nil completion:completion];
+}
+
++ (void)isPackagerRunningAsync:(NSString *)hostPort
+                        scheme:(NSString *)scheme
+                    completion:(void (^)(BOOL isRunning))completion
+{
+  if (!kRCTAllowPackagerAccess) {
+    completion(NO);
+    return;
+  }
+
+  NSURL *url = [serverRootWithHostPort(hostPort, scheme) URLByAppendingPathComponent:@"status"];
+  if (url == nil) {
+    completion(NO);
+    return;
+  }
+
+  NSURLSession *session = [NSURLSession sharedSession];
+  NSMutableURLRequest *request = [NSMutableURLRequest requestWithURL:url
+                                                         cachePolicy:NSURLRequestUseProtocolCachePolicy
+                                                     timeoutInterval:kRCTPackagerStatusRequestTimeout];
+  [[RCTDevSupportHttpHeaders sharedInstance] applyHeadersToRequest:request];
+
+  __block BOOL hasCompleted = NO;
+  NSObject *lock = [[NSObject alloc] init];
+
+  void (^safeCompletion)(BOOL) = ^(BOOL isRunning) {
+    @synchronized(lock) {
+      if (!hasCompleted) {
+        hasCompleted = YES;
+        completion(isRunning);
+      }
+    }
+  };
+
+  NSURLSessionDataTask *task = [session dataTaskWithRequest:request
+                                          completionHandler:^(NSData *data, NSURLResponse *response, NSError *error) {
+                                            if (error != nil || data == nil) {
+                                              safeCompletion(NO);
+                                              return;
+                                            }
+                                            NSString *status = [[NSString alloc] initWithData:data
+                                                                                     encoding:NSUTF8StringEncoding];
+                                            BOOL isRunning = [status isEqualToString:@"packager-status:running"];
+                                            safeCompletion(isRunning);
+                                          }];
+  [task resume];
+
+  dispatch_after(
+      dispatch_time(
+          DISPATCH_TIME_NOW,
+          (int64_t)((kRCTPackagerStatusRequestTimeout + kRCTPackagerStatusRequestTimeoutGraceTime) * NSEC_PER_SEC)),
+      dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0),
+      ^{
+        @synchronized(lock) {
+          if (!hasCompleted) {
+            hasCompleted = YES;
+            [task cancel];
+            completion(NO);
+          }
+        }
+      });
+}
+
 - (NSString *)guessPackagerHost
 {
   static NSString *ipGuess;
@@ -159,6 +229,18 @@ static NSURL *serverRootWithHostPort(NSString *hostPort, NSString *scheme)
 + (BOOL)isPackagerRunning:(NSString *)hostPort scheme:(NSString *)scheme
 {
   return false;
+}
+
++ (void)isPackagerRunningAsync:(NSString *)hostPort completion:(void (^)(BOOL isRunning))completion
+{
+  completion(NO);
+}
+
++ (void)isPackagerRunningAsync:(NSString *)hostPort
+                        scheme:(NSString *)scheme
+                    completion:(void (^)(BOOL isRunning))completion
+{
+  completion(NO);
 }
 #endif
 
