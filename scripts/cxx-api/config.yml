@@ -61,6 +61,8 @@ ReactApple:
     - "*/platform/windows/*"
     - "*/platform/macos/*"
     - "*/platform/android/*"
+    - "*+Private.h"
+    - "*+Internal.h"
   definitions:
     __cplusplus: 1
   variants:
