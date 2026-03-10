@@ -171,11 +171,11 @@ class VariableMember(Member):
         if self.is_constexpr:
             result += "constexpr "
 
-        if self.is_const and not self.is_constexpr:
-            result += "const "
-
         if self.is_mutable:
             result += "mutable "
+
+        if self.is_const and not self.is_constexpr:
+            result += "const "
 
         if self._is_function_pointer():
             formatted_args = format_arguments(self._fp_arguments)
