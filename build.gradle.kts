@@ -116,7 +116,7 @@ var hermesSubstitution: Pair<String, String>? = null
 if (project.findProperty("react.internal.useHermesStable")?.toString()?.toBoolean() == true) {
   val hermesVersions = java.util.Properties()
   val hermesVersionPropertiesFile =
-      File("./packages/react-native/sdks/hermes-engine/version.properties")
+      rootProject.file("./packages/react-native/sdks/hermes-engine/version.properties")
   hermesVersionPropertiesFile.inputStream().use { hermesVersions.load(it) }
   val selectedHermesVersion = hermesVersions["HERMES_V1_VERSION_NAME"] as String
 
@@ -124,7 +124,7 @@ if (project.findProperty("react.internal.useHermesStable")?.toString()?.toBoolea
 } else if (
     project.findProperty("react.internal.useHermesNightly")?.toString()?.toBoolean() == true
 ) {
-  val reactNativePackageJson = File("./packages/react-native/package.json")
+  val reactNativePackageJson = rootProject.file("./packages/react-native/package.json")
   val reactNativePackageJsonContent = reactNativePackageJson.readText()
   val packageJson = groovy.json.JsonSlurper().parseText(reactNativePackageJsonContent) as Map<*, *>
 
