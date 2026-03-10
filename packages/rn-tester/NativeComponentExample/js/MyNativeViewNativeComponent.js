@@ -8,7 +8,7 @@
  * @format
  */
 
-import type {CodegenTypes, HostComponent, ViewProps} from 'react-native';
+import {CodegenTypes, HostComponent, ViewProps} from 'react-native';
 
 import * as React from 'react';
 import {codegenNativeCommands, codegenNativeComponent} from 'react-native';
@@ -30,6 +30,7 @@ type LegacyStyleEvent = Readonly<{
 
 type NativeProps = Readonly<{
   ...ViewProps,
+  isEnabled?: CodegenTypes.WithDefault<boolean, true>,
   opacity?: CodegenTypes.Float,
   values: ReadonlyArray<CodegenTypes.Int32>,
 
