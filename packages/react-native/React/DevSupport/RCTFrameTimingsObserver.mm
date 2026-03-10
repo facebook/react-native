@@ -31,6 +31,7 @@ static constexpr CGFloat kScreenshotJPEGQuality = 0.8;
   uint64_t _frameCounter;
   dispatch_queue_t _encodingQueue;
   std::atomic<bool> _running;
+  uint64_t _lastScreenshotHash;
 }
 
 - (instancetype)initWithScreenshotsEnabled:(BOOL)screenshotsEnabled callback:(RCTFrameTimingCallback)callback
@@ -41,6 +42,7 @@ static constexpr CGFloat kScreenshotJPEGQuality = 0.8;
     _frameCounter = 0;
     _encodingQueue = dispatch_queue_create("com.facebook.react.frame-timings-observer", DISPATCH_QUEUE_SERIAL);
     _running.store(false);
+    _lastScreenshotHash = 0;
   }
   return self;
 }
@@ -49,6 +51,7 @@ static constexpr CGFloat kScreenshotJPEGQuality = 0.8;
 {
   _running.store(true, std::memory_order_relaxed);
   _frameCounter = 0;
+  _lastScreenshotHash = 0;
 
   // Emit an initial frame timing to ensure at least one frame is captured at the
   // start of tracing, even if no UI changes occur.
@@ -126,6 +129,24 @@ static constexpr CGFloat kScreenshotJPEGQuality = 0.8;
   UIImage *image = [renderer imageWithActions:^(UIGraphicsImageRendererContext *context) {
     [rootView drawViewHierarchyInRect:CGRectMake(0, 0, scaledSize.width, scaledSize.height) afterScreenUpdates:NO];
   }];
+
+  // Skip duplicate frames via sampled FNV-1a pixel hash
+  CGImageRef cgImage = image.CGImage;
+  CFDataRef pixelData = CGDataProviderCopyData(CGImageGetDataProvider(cgImage));
+  uint64_t hash = 0xcbf29ce484222325ULL;
+  const uint8_t *ptr = CFDataGetBytePtr(pixelData);
+  CFIndex length = CFDataGetLength(pixelData);
+  // Use prime stride to prevent row alignment on power-of-2 pixel widths
+  for (CFIndex i = 0; i < length; i += 67) {
+    hash ^= ptr[i];
+    hash *= 0x100000001b3ULL;
+  }
+  CFRelease(pixelData);
+
+  if (hash == _lastScreenshotHash) {
+    return;
+  }
+  _lastScreenshotHash = hash;
 
   dispatch_async(_encodingQueue, ^{
     if (!self->_running.load(std::memory_order_relaxed)) {
