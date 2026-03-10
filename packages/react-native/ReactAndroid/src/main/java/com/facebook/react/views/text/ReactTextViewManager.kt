@@ -157,7 +157,7 @@ public constructor(
         state.getMapBuffer(TX_STATE_KEY_PARAGRAPH_ATTRIBUTES.toInt())
     val spanned: Spannable =
         TextLayoutManager.getOrCreateSpannableForText(
-            view.context,
+            view.context.assets,
             attributedString,
             reactTextViewManagerCallback,
         )

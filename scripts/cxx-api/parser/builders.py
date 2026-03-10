@@ -17,6 +17,7 @@ import re
 
 from doxmlparser import compound
 
+from ..input_filters.handle_objc_interface_generics import decode_objc_generics
 from .member import (
     ConceptMember,
     EnumMember,
@@ -38,6 +39,37 @@ from .utils import (
     parse_qualified_path,
     resolve_linked_text_name,
 )
+
+
+######################
+# Inherited constructor fixup
+######################
+
+
+def _fix_inherited_constructor_name(
+    func_member: FunctionMember,
+    compound_name: str,
+) -> None:
+    """
+    Fix inherited constructor names reported by Doxygen.
+
+    When a class inherits constructors via ``using Base::Base;``, Doxygen
+    reports them with the base class name instead of the derived class name.
+    This function detects such constructors and renames them.
+    """
+    if (
+        func_member.type != ""
+        or func_member.name.startswith("~")
+        or func_member.name.startswith("operator")
+    ):
+        return
+
+    class_unqualified_name = parse_qualified_path(compound_name)[-1]
+    # Strip template args for comparison
+    class_base_name = class_unqualified_name.split("<")[0]
+
+    if func_member.name != class_base_name:
+        func_member.name = class_unqualified_name
 
 
 ######################
@@ -510,6 +542,12 @@ def create_interface_scope(
     """
     interface_name = scope_def.compoundname
 
+    # Decode ObjC generics that were encoded by the input filter.
+    # The input filter encodes ``@interface Foo<T>`` as
+    # ``@interface Foo__GENERICS__T__ENDGENERICS__`` so Doxygen can parse it.
+    # We restore the original ``Foo<T>`` name here.
+    interface_name = decode_objc_generics(interface_name)
+
     interface_scope = snapshot.create_interface(interface_name)
     base_classes = get_base_classes(scope_def, base_class=InterfaceScopeKind.Base)
 
@@ -594,9 +632,13 @@ def create_class_scope(
                             )
             elif member_type == "func":
                 for function_def in section_def.memberdef:
-                    class_scope.add_member(
-                        get_function_member(function_def, visibility, is_static)
+                    func_member = get_function_member(
+                        function_def, visibility, is_static
                     )
+                    _fix_inherited_constructor_name(
+                        func_member, compound_object.compoundname
+                    )
+                    class_scope.add_member(func_member)
             elif member_type == "type":
                 for member_def in section_def.memberdef:
                     if member_def.kind == "enum":

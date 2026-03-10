@@ -22,9 +22,16 @@ function generateNativeCode(
   schemaInfos /*: $ReadOnlyArray<$FlowFixMe> */,
   includesGeneratedCode /*: boolean */,
   platform /*: string */,
+  forceOutputPath /*: boolean */ = false,
 ) /*: Array<void> */ {
   return schemaInfos.map(schemaInfo => {
-    generateCode(outputPath, schemaInfo, includesGeneratedCode, platform);
+    generateCode(
+      outputPath,
+      schemaInfo,
+      includesGeneratedCode,
+      platform,
+      forceOutputPath,
+    );
   });
 }
 
@@ -33,6 +40,7 @@ function generateCode(
   schemaInfo /*: $FlowFixMe */,
   includesGeneratedCode /*: boolean */,
   platform /*: string */,
+  forceOutputPath /*: boolean */ = false,
 ) {
   if (shouldSkipGenerationForFBReactNativeSpec(schemaInfo, platform)) {
     codegenLog(
@@ -60,8 +68,9 @@ function generateCode(
   );
 
   // Finally, copy artifacts to the final output directory.
-  const outputDir =
-    reactNativeCoreLibraryOutputPath(libraryName, platform) ?? outputPath;
+  const outputDir = forceOutputPath
+    ? outputPath
+    : (reactNativeCoreLibraryOutputPath(libraryName, platform) ?? outputPath);
   fs.mkdirSync(outputDir, {recursive: true});
   cpSyncRecursiveIfChanged(tmpOutputDir, outputDir);
   codegenLog(`Generated artifacts: ${outputDir}`);

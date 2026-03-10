@@ -1,12 +1,14 @@
 # Changelog
 
-## v0.83.4
+## v0.85.0-rc.1
 
-### Fixed
+### Breaking
 
-#### iOS specific
+- **Animated**: Fix unsafe rawPointer access in cloneMultiple. ([1d47693230](https://github.com/facebook/react-native/commit/1d476932305f2563d773eb04f0f78a9bdd2525e1) by [@coado](https://github.com/coado))
 
-- **Precompiled Binaries:** Add RCTDevSupportHeaders in React Umbrella ([cfb5328833](https://github.com/facebook/react-native/commit/cfb53288331885ce5d221783affe2f1fb9e18782) by [@cipolleschi](https://github.com/cipolleschi))
+### Added
+
+- **Animated**: Add c++ AnimatedModule to DefaultTurboModules ([15e52e3f71](https://github.com/facebook/react-native/commit/15e52e3f71e7199808686e2b86ea54dcb2495b71) by [@zeyap](https://github.com/zeyap))
 
 ## v0.85.0-rc.0
 
@@ -398,6 +400,14 @@
 - **Touch Handling**: Remove redundant gesture to tap button when the layer beneath is already tappable ([8b8cceac89](https://github.com/facebook/react-native/commit/8b8cceac89a5962fb2bc52025702f2c023d41055) by [@emily8rown](https://github.com/emily8rown))
 - **Touch Handling**: Respect `cancelsTouchesInView` when canceling touches in `RCTSurfaceTouchHandler` ([5634e8a601](https://github.com/facebook/react-native/commit/5634e8a601caf0faa174bac3511929de767609ac) by [@intmain](https://github.com/intmain))
 - **View**: Fix duplicate shadow bug during component recycling by cleaning up visual layers in prepareForRecycle ([7dcedf1def](https://github.com/facebook/react-native/commit/7dcedf1def880163ab7ca07b2575a8153029a925) by Atharv Soni)
+
+## v0.83.4
+
+### Fixed
+
+#### iOS specific
+
+- **Precompiled Binaries:** Add RCTDevSupportHeaders in React Umbrella ([cfb5328833](https://github.com/facebook/react-native/commit/cfb53288331885ce5d221783affe2f1fb9e18782) by [@cipolleschi](https://github.com/cipolleschi))
 
 ## v0.83.3
 

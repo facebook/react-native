@@ -7,7 +7,6 @@
 
 #pragma once
 
-#include <folly/dynamic.h>
 #include <jsi/jsi.h>
 #include <react/renderer/core/RawValue.h>
 #include <react/renderer/uimanager/PointerEventsProcessor.h>

@@ -58,6 +58,23 @@ NS_ASSUME_NONNULL_BEGIN
 + (BOOL)isPackagerRunning:(NSString *)hostPort scheme:(NSString *__nullable)scheme;
 
 /**
+ * Asynchronously checks if there's a packager running at the given host:port.
+ * The port is optional, if not specified, kRCTBundleURLProviderDefaultPort will be used
+ * The completion handler is called on an arbitrary queue.
+ */
++ (void)isPackagerRunningAsync:(NSString *)hostPort completion:(void (^)(BOOL isRunning))completion;
+
+/**
+ * Asynchronously checks if there's a packager running at the given scheme://host:port.
+ * The port is optional, if not specified, kRCTBundleURLProviderDefaultPort will be used
+ * The scheme is also optional, if not specified, a default http protocol will be used
+ * The completion handler is called on an arbitrary queue.
+ */
++ (void)isPackagerRunningAsync:(NSString *)hostPort
+                        scheme:(NSString *__nullable)scheme
+                    completion:(void (^)(BOOL isRunning))completion;
+
+/**
  * Returns the jsBundleURL for a given bundle entrypoint and
  * the fallback offline JS bundle if the packager is not running.
  */

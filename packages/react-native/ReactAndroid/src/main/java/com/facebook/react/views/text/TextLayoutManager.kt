@@ -7,7 +7,7 @@
 
 package com.facebook.react.views.text
 
-import android.content.Context
+import android.content.res.AssetManager
 import android.graphics.Color
 import android.graphics.Typeface
 import android.os.Build
@@ -31,6 +31,7 @@ import com.facebook.react.common.ReactConstants
 import com.facebook.react.common.mapbuffer.MapBuffer
 import com.facebook.react.common.mapbuffer.ReadableMapBuffer
 import com.facebook.react.internal.featureflags.ReactNativeFeatureFlags
+import com.facebook.react.uimanager.DisplayMetricsHolder
 import com.facebook.react.uimanager.PixelUtil
 import com.facebook.react.uimanager.PixelUtil.dpToPx
 import com.facebook.react.uimanager.PixelUtil.pxToDp
@@ -217,7 +218,7 @@ internal object TextLayoutManager {
   }
 
   private fun buildSpannableFromFragments(
-      context: Context,
+      assets: AssetManager,
       fragments: MapBuffer,
       sb: SpannableStringBuilder,
       ops: MutableList<SetSpanOperation>,
@@ -296,7 +297,7 @@ internal object TextLayoutManager {
                       textAttributes.fontWeight,
                       textAttributes.fontFeatureSettings,
                       textAttributes.fontFamily,
-                      context.assets,
+                      assets,
                   ),
               )
           )
@@ -352,7 +353,7 @@ internal object TextLayoutManager {
   )
 
   private fun buildSpannableFromFragmentsOptimized(
-      context: Context,
+      assets: AssetManager,
       fragments: MapBuffer,
       outputReactTags: IntArray?,
   ): Spannable {
@@ -472,7 +473,7 @@ internal object TextLayoutManager {
                   fragment.props.fontWeight,
                   fragment.props.fontFeatureSettings,
                   fragment.props.fontFamily,
-                  context.assets,
+                  assets,
               ),
               start,
               end,
@@ -528,7 +529,7 @@ internal object TextLayoutManager {
   }
 
   fun getOrCreateSpannableForText(
-      context: Context,
+      assets: AssetManager,
       attributedString: MapBuffer,
       reactTextViewManagerCallback: ReactTextViewManagerCallback?,
   ): Spannable {
@@ -539,7 +540,7 @@ internal object TextLayoutManager {
     } else {
       text =
           createSpannableFromAttributedString(
-              context,
+              assets,
               attributedString.getMapBuffer(AS_KEY_FRAGMENTS),
               reactTextViewManagerCallback,
               null,
@@ -550,13 +551,13 @@ internal object TextLayoutManager {
   }
 
   private fun createSpannableFromAttributedString(
-      context: Context,
+      assets: AssetManager,
       fragments: MapBuffer,
       reactTextViewManagerCallback: ReactTextViewManagerCallback?,
       outputReactTags: IntArray?,
   ): Spannable {
     if (ReactNativeFeatureFlags.enableAndroidTextMeasurementOptimizations()) {
-      val spannable = buildSpannableFromFragmentsOptimized(context, fragments, outputReactTags)
+      val spannable = buildSpannableFromFragmentsOptimized(assets, fragments, outputReactTags)
 
       reactTextViewManagerCallback?.onPostProcessSpannable(spannable)
       return spannable
@@ -568,7 +569,7 @@ internal object TextLayoutManager {
       // a new spannable will be wiped out
       val ops: MutableList<SetSpanOperation> = ArrayList()
 
-      buildSpannableFromFragments(context, fragments, sb, ops, outputReactTags)
+      buildSpannableFromFragments(assets, fragments, sb, ops, outputReactTags)
 
       // TODO T31905686: add support for inline Images
       // While setting the Spans on the final text, we also check whether any of them are images.
@@ -740,7 +741,7 @@ internal object TextLayoutManager {
   private fun updateTextPaint(
       paint: TextPaint,
       baseTextAttributes: TextAttributeProps,
-      context: Context,
+      assets: AssetManager,
   ) {
     if (baseTextAttributes.fontSize != ReactConstants.UNSET) {
       paint.textSize = baseTextAttributes.fontSize.toFloat()
@@ -757,7 +758,7 @@ internal object TextLayoutManager {
               baseTextAttributes.fontStyle,
               baseTextAttributes.fontWeight,
               baseTextAttributes.fontFamily,
-              context.assets,
+              assets,
           )
       paint.setTypeface(typeface)
 
@@ -779,28 +780,28 @@ internal object TextLayoutManager {
    */
   private fun scratchPaintWithAttributes(
       baseTextAttributes: TextAttributeProps,
-      context: Context,
+      assets: AssetManager,
   ): TextPaint {
     val paint = checkNotNull(textPaintInstance.get())
     paint.setTypeface(null)
     paint.textSize = 12f
     paint.isFakeBoldText = false
     paint.textSkewX = 0f
-    updateTextPaint(paint, baseTextAttributes, context)
+    updateTextPaint(paint, baseTextAttributes, assets)
     return paint
   }
 
   private fun newPaintWithAttributes(
       baseTextAttributes: TextAttributeProps,
-      context: Context,
+      assets: AssetManager,
   ): TextPaint {
     val paint = TextPaint(TextPaint.ANTI_ALIAS_FLAG)
-    updateTextPaint(paint, baseTextAttributes, context)
+    updateTextPaint(paint, baseTextAttributes, assets)
     return paint
   }
 
   private fun createLayoutForMeasurement(
-      context: Context,
+      assets: AssetManager,
       attributedString: MapBuffer,
       paragraphAttributes: MapBuffer,
       width: Float,
@@ -809,7 +810,7 @@ internal object TextLayoutManager {
       heightYogaMeasureMode: YogaMeasureMode,
       reactTextViewManagerCallback: ReactTextViewManagerCallback?,
   ): Layout {
-    val text = getOrCreateSpannableForText(context, attributedString, reactTextViewManagerCallback)
+    val text = getOrCreateSpannableForText(assets, attributedString, reactTextViewManagerCallback)
 
     val paint: TextPaint
     if (attributedString.contains(AS_KEY_CACHE_ID)) {
@@ -817,7 +818,7 @@ internal object TextLayoutManager {
     } else {
       val baseTextAttributes =
           TextAttributeProps.fromMapBuffer(attributedString.getMapBuffer(AS_KEY_BASE_ATTRIBUTES))
-      paint = scratchPaintWithAttributes(baseTextAttributes, context)
+      paint = scratchPaintWithAttributes(baseTextAttributes, assets)
     }
 
     return createLayout(
@@ -922,7 +923,7 @@ internal object TextLayoutManager {
 
   @JvmStatic
   fun createPreparedLayout(
-      context: Context,
+      assets: AssetManager,
       attributedString: ReadableMapBuffer,
       paragraphAttributes: ReadableMapBuffer,
       width: Float,
@@ -935,7 +936,7 @@ internal object TextLayoutManager {
     val reactTags = IntArray(fragments.count)
     val text =
         createSpannableFromAttributedString(
-            context,
+            assets,
             fragments,
             reactTextViewManagerCallback,
             reactTags,
@@ -945,7 +946,7 @@ internal object TextLayoutManager {
     val result =
         createLayout(
             text,
-            newPaintWithAttributes(baseTextAttributes, context),
+            newPaintWithAttributes(baseTextAttributes, assets),
             attributedString,
             paragraphAttributes,
             width,
@@ -1085,7 +1086,7 @@ internal object TextLayoutManager {
 
   @JvmStatic
   fun measureText(
-      context: Context,
+      assets: AssetManager,
       attributedString: MapBuffer,
       paragraphAttributes: MapBuffer,
       width: Float,
@@ -1098,7 +1099,7 @@ internal object TextLayoutManager {
     // TODO(5578671): Handle text direction (see View#getTextDirectionHeuristic)
     val layout =
         createLayoutForMeasurement(
-            context,
+            assets,
             attributedString,
             paragraphAttributes,
             width,
@@ -1355,7 +1356,7 @@ internal object TextLayoutManager {
 
   @JvmStatic
   fun measureLines(
-      context: Context,
+      assetManager: AssetManager,
       attributedString: MapBuffer,
       paragraphAttributes: MapBuffer,
       width: Float,
@@ -1364,7 +1365,7 @@ internal object TextLayoutManager {
   ): WritableArray {
     val layout =
         createLayoutForMeasurement(
-            context,
+            assetManager,
             attributedString,
             paragraphAttributes,
             width,
@@ -1373,7 +1374,11 @@ internal object TextLayoutManager {
             YogaMeasureMode.EXACTLY,
             reactTextViewManagerCallback,
         )
-    return FontMetricsUtil.getFontMetrics(layout.text, layout, context)
+    return FontMetricsUtil.getFontMetrics(
+        layout.text,
+        layout,
+        DisplayMetricsHolder.getWindowDisplayMetrics(),
+    )
   }
 
   private fun isBoring(text: Spannable, paint: TextPaint): BoringLayout.Metrics? {
