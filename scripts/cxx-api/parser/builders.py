@@ -42,6 +42,37 @@ from .utils import (
 
 
 ######################
+# Inherited constructor fixup
+######################
+
+
+def _fix_inherited_constructor_name(
+    func_member: FunctionMember,
+    compound_name: str,
+) -> None:
+    """
+    Fix inherited constructor names reported by Doxygen.
+
+    When a class inherits constructors via ``using Base::Base;``, Doxygen
+    reports them with the base class name instead of the derived class name.
+    This function detects such constructors and renames them.
+    """
+    if (
+        func_member.type != ""
+        or func_member.name.startswith("~")
+        or func_member.name.startswith("operator")
+    ):
+        return
+
+    class_unqualified_name = parse_qualified_path(compound_name)[-1]
+    # Strip template args for comparison
+    class_base_name = class_unqualified_name.split("<")[0]
+
+    if func_member.name != class_base_name:
+        func_member.name = class_unqualified_name
+
+
+######################
 # Member extraction
 ######################
 
@@ -601,9 +632,13 @@ def create_class_scope(
                             )
             elif member_type == "func":
                 for function_def in section_def.memberdef:
-                    class_scope.add_member(
-                        get_function_member(function_def, visibility, is_static)
+                    func_member = get_function_member(
+                        function_def, visibility, is_static
                     )
+                    _fix_inherited_constructor_name(
+                        func_member, compound_object.compoundname
+                    )
+                    class_scope.add_member(func_member)
             elif member_type == "type":
                 for member_def in section_def.memberdef:
                     if member_def.kind == "enum":
