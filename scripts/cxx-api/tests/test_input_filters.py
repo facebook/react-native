@@ -7,6 +7,10 @@ from __future__ import annotations
 
 import unittest
 
+from ..input_filters.handle_objc_interface_generics import (
+    decode_objc_generics,
+    encode_objc_interface_generics,
+)
 from ..input_filters.strip_block_comments import strip_block_comments
 from ..input_filters.strip_deprecated_msg import strip_deprecated_msg
 from ..input_filters.strip_ns_unavailable import strip_ns_unavailable
@@ -206,6 +210,68 @@ class TestStripNSUnavailable(unittest.TestCase):
         content = "    - (instancetype)init NS_UNAVAILABLE;"
         result = strip_ns_unavailable(content)
         self.assertEqual(result, "")
+
+
+class TestEncodeObjcInterfaceGenerics(unittest.TestCase):
+    def test_single_generic_param(self):
+        content = "@interface Foo<T> : NSObject\n@end"
+        result = encode_objc_interface_generics(content)
+        self.assertEqual(
+            result,
+            "@interface Foo__GENERICS__T__ENDGENERICS__ : NSObject\n@end",
+        )
+
+    def test_two_generic_params(self):
+        content = "@interface MyMap<K, V> : NSObject\n@end"
+        result = encode_objc_interface_generics(content)
+        self.assertEqual(
+            result,
+            "@interface MyMap__GENERICS__K__COMMA__V__ENDGENERICS__ : NSObject\n@end",
+        )
+
+    def test_protocol_conformance_not_encoded(self):
+        content = "@interface Foo : NSObject <NSCopying>"
+        result = encode_objc_interface_generics(content)
+        self.assertEqual(result, content)
+
+    def test_interface_without_generics(self):
+        content = "@interface MyClass : NSObject\n- (void)method;\n@end"
+        result = encode_objc_interface_generics(content)
+        self.assertEqual(result, content)
+
+    def test_multiple_interfaces_both_with_generics(self):
+        content = (
+            "@interface Foo<T> : NSObject\n@end\n\n"
+            "@interface Bar<K, V> : NSObject\n@end"
+        )
+        result = encode_objc_interface_generics(content)
+        self.assertIn("__GENERICS__T__ENDGENERICS__", result)
+        self.assertIn("__GENERICS__K__COMMA__V__ENDGENERICS__", result)
+
+
+class TestDecodeObjcGenerics(unittest.TestCase):
+    def test_single_generic_param(self):
+        result = decode_objc_generics("Foo__GENERICS__T__ENDGENERICS__")
+        self.assertEqual(result, "Foo<T>")
+
+    def test_two_generic_params(self):
+        result = decode_objc_generics("MyMap__GENERICS__K__COMMA__V__ENDGENERICS__")
+        self.assertEqual(result, "MyMap<K, V>")
+
+    def test_roundtrip_single_generic(self):
+        content = "@interface Foo<T> : NSObject\n@end"
+        encoded = encode_objc_interface_generics(content)
+        # Extract the encoded class name (between "@interface " and " :")
+        encoded_name = encoded.split("@interface ")[1].split(" :")[0]
+        decoded_name = decode_objc_generics(encoded_name)
+        self.assertEqual(decoded_name, "Foo<T>")
+
+    def test_roundtrip_multiple_generics(self):
+        content = "@interface MyMap<K, V> : NSObject\n@end"
+        encoded = encode_objc_interface_generics(content)
+        encoded_name = encoded.split("@interface ")[1].split(" :")[0]
+        decoded_name = decode_objc_generics(encoded_name)
+        self.assertEqual(decoded_name, "MyMap<K, V>")
 
 
 if __name__ == "__main__":
