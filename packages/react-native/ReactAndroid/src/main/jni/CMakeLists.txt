@@ -159,7 +159,6 @@ add_react_android_subdir(src/main/jni/react/hermes/instrumentation/)
 add_react_android_subdir(src/main/jni/react/runtime/cxxreactpackage)
 add_react_android_subdir(src/main/jni/react/runtime/jni)
 add_react_android_subdir(src/main/jni/react/runtime/hermes/jni)
-add_react_android_subdir(src/main/jni/react/tracing)
 add_react_android_subdir(src/main/jni/react/devsupport)
 
 # SoMerging Utils
@@ -232,7 +231,6 @@ add_library(reactnative
           $<TARGET_OBJECTS:react_renderer_uimanager>
           $<TARGET_OBJECTS:react_renderer_uimanager_consistency>
           $<TARGET_OBJECTS:react_renderer_viewtransition>
-          $<TARGET_OBJECTS:react_tracingjni>
           $<TARGET_OBJECTS:react_utils>
           $<TARGET_OBJECTS:reactnativeblob>
           $<TARGET_OBJECTS:reactnativejni>
@@ -333,7 +331,6 @@ target_include_directories(reactnative
         $<TARGET_PROPERTY:react_renderer_uimanager,INTERFACE_INCLUDE_DIRECTORIES>
         $<TARGET_PROPERTY:react_renderer_uimanager_consistency,INTERFACE_INCLUDE_DIRECTORIES>
         $<TARGET_PROPERTY:react_renderer_viewtransition,INTERFACE_INCLUDE_DIRECTORIES>
-        $<TARGET_PROPERTY:react_tracingjni,INTERFACE_INCLUDE_DIRECTORIES>
         $<TARGET_PROPERTY:react_utils,INTERFACE_INCLUDE_DIRECTORIES>
         $<TARGET_PROPERTY:reactnativeblob,INTERFACE_INCLUDE_DIRECTORIES>
         $<TARGET_PROPERTY:reactnativejni,INTERFACE_INCLUDE_DIRECTORIES>

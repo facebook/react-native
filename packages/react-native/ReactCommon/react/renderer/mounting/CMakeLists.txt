@@ -22,7 +22,6 @@ target_link_libraries(react_renderer_mounting
         glog
         glog_init
         jsi
-        jsinspector_tracing
         react_debug
         react_renderer_core
         react_renderer_debug
