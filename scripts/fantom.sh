@@ -10,7 +10,9 @@ set -e
 if [[ -f "BUCK" && -z "$FANTOM_FORCE_OSS_BUILD" ]]; then
   export JS_DIR='..'
 else
-  yarn workspace @react-native/fantom build
+  if [[ ! -f "private/react-native-fantom/build/tester/fantom_tester" ]]; then
+    yarn workspace @react-native/fantom build
+  fi
   export FANTOM_FORCE_OSS_BUILD=1
 fi
 
