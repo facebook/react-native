@@ -52,6 +52,7 @@ describe('AccessibilityInfo', () => {
   beforeEach(() => {
     originalPlatform = Platform.OS;
     mockGetCurrentPrefersCrossFadeTransitionsState.mockClear();
+    mockGetCurrentDarkerSystemColorsState.mockClear();
   });
 
   describe('prefersCrossFadeTransitions', () => {
