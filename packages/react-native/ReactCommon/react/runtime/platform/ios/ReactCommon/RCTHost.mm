@@ -13,6 +13,7 @@
 #import <React/RCTConvert.h>
 #import <React/RCTDevMenu.h>
 #import <React/RCTFabricSurface.h>
+#import <React/RCTFrameTimingsObserver.h>
 #import <React/RCTInspectorDevServerHelper.h>
 #import <React/RCTInspectorNetworkHelper.h>
 #import <React/RCTInspectorUtils.h>
@@ -37,12 +38,52 @@ using namespace facebook::react;
 @property (nonatomic, readonly) jsinspector_modern::HostTarget *inspectorTarget;
 @end
 
+#if TARGET_OS_IPHONE && defined(REACT_NATIVE_DEBUGGER_ENABLED)
+class RCTHostTracingDelegate : public jsinspector_modern::HostTargetTracingDelegate {
+ public:
+  explicit RCTHostTracingDelegate(RCTHost *host) : host_(host) {}
+
+  void onTracingStarted(jsinspector_modern::tracing::Mode /*tracingMode*/, bool screenshotsCategoryEnabled) override
+  {
+    RCTHost *host = host_;
+    if (host == nil || host.inspectorTarget == nullptr) {
+      return;
+    }
+    __weak RCTHost *weakHost = host;
+
+    observer_ = [[RCTFrameTimingsObserver alloc]
+        initWithScreenshotsEnabled:screenshotsCategoryEnabled
+                          callback:^(jsinspector_modern::tracing::FrameTimingSequence sequence) {
+                            RCTHost *strongHost = weakHost;
+                            if (strongHost != nil && strongHost.inspectorTarget != nullptr) {
+                              strongHost.inspectorTarget->recordFrameTimings(std::move(sequence));
+                            }
+                          }];
+    [observer_ start];
+  }
+
+  void onTracingStopped() override
+  {
+    [observer_ stop];
+    observer_ = nil;
+  }
+
+ private:
+  __weak RCTHost *host_;
+  RCTFrameTimingsObserver *observer_{nil};
+};
+#endif
+
 class RCTHostHostTargetDelegate : public facebook::react::jsinspector_modern::HostTargetDelegate {
  public:
   RCTHostHostTargetDelegate(RCTHost *host)
       : host_(host),
         pauseOverlayController_([[RCTPausedInDebuggerOverlayController alloc] init]),
         networkHelper_([[RCTInspectorNetworkHelper alloc] init])
+#if TARGET_OS_IPHONE && defined(REACT_NATIVE_DEBUGGER_ENABLED)
+        ,
+        tracingDelegate_(host)
+#endif
   {
   }
 
@@ -100,10 +141,25 @@ class RCTHostHostTargetDelegate : public facebook::react::jsinspector_modern::Ho
     [networkHelper_ loadNetworkResourceWithParams:params executor:executor];
   }
 
+#if TARGET_OS_IPHONE && defined(REACT_NATIVE_DEBUGGER_ENABLED)
+  jsinspector_modern::HostTargetTracingDelegate *getTracingDelegate() override
+  {
+    auto &inspectorFlags = jsinspector_modern::InspectorFlags::getInstance();
+    if (!inspectorFlags.getFrameRecordingEnabled()) {
+      return nullptr;
+    }
+
+    return &tracingDelegate_;
+  }
+#endif
+
  private:
   __weak RCTHost *host_;
   RCTPausedInDebuggerOverlayController *pauseOverlayController_;
   RCTInspectorNetworkHelper *networkHelper_;
+#if TARGET_OS_IPHONE && defined(REACT_NATIVE_DEBUGGER_ENABLED)
+  RCTHostTracingDelegate tracingDelegate_;
+#endif
 };
 
 @implementation RCTHost {
