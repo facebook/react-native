@@ -26,7 +26,7 @@ class TestParseConfig(unittest.TestCase):
         """Single view without variants"""
         config = {
             "ReactCommon": {
-                "include_codegen": False,
+                "codegen": {"generate": False},
                 "inputs": ["packages/react-native/ReactCommon"],
                 "exclude_patterns": ["*/jni/*"],
                 "definitions": {"FOO": 1},
@@ -46,7 +46,7 @@ class TestParseConfig(unittest.TestCase):
         """Single view with debug and release variants"""
         config = {
             "ReactCommon": {
-                "include_codegen": False,
+                "codegen": {"generate": False},
                 "inputs": ["packages/react-native/ReactCommon"],
                 "exclude_patterns": [],
                 "definitions": {},
@@ -78,7 +78,7 @@ class TestParseConfig(unittest.TestCase):
         """Base definitions are merged with variant definitions"""
         config = {
             "ReactAndroid": {
-                "include_codegen": False,
+                "codegen": {"generate": False},
                 "inputs": [],
                 "exclude_patterns": [],
                 "definitions": {"RN_SERIALIZABLE_STATE": 1, "ANDROID": 1},
@@ -108,7 +108,7 @@ class TestParseConfig(unittest.TestCase):
         """Variant definitions override base definitions with same key"""
         config = {
             "TestView": {
-                "include_codegen": False,
+                "codegen": {"generate": False},
                 "inputs": [],
                 "exclude_patterns": [],
                 "definitions": {"MODE": "base", "SHARED": 1},
@@ -129,7 +129,7 @@ class TestParseConfig(unittest.TestCase):
         """Variant with empty definitions still inherits base"""
         config = {
             "TestView": {
-                "include_codegen": False,
+                "codegen": {"generate": False},
                 "inputs": [],
                 "exclude_patterns": [],
                 "definitions": {"BASE": 1},
@@ -147,7 +147,7 @@ class TestParseConfig(unittest.TestCase):
         """Variant with None definitions still inherits base"""
         config = {
             "TestView": {
-                "include_codegen": False,
+                "codegen": {"generate": False},
                 "inputs": [],
                 "exclude_patterns": [],
                 "definitions": {"BASE": 1},
@@ -169,7 +169,7 @@ class TestParseConfig(unittest.TestCase):
         """Relative paths are joined with base_dir"""
         config = {
             "TestView": {
-                "include_codegen": False,
+                "codegen": {"generate": False},
                 "inputs": ["packages/foo", "packages/bar"],
                 "exclude_patterns": [],
                 "definitions": {},
@@ -186,7 +186,7 @@ class TestParseConfig(unittest.TestCase):
         """Absolute paths are not modified"""
         config = {
             "TestView": {
-                "include_codegen": False,
+                "codegen": {"generate": False},
                 "inputs": ["/absolute/path/foo", "relative/path"],
                 "exclude_patterns": [],
                 "definitions": {},
@@ -203,7 +203,7 @@ class TestParseConfig(unittest.TestCase):
         """Empty inputs list"""
         config = {
             "TestView": {
-                "include_codegen": False,
+                "codegen": {"generate": False},
                 "inputs": [],
                 "exclude_patterns": [],
                 "definitions": {},
@@ -217,7 +217,7 @@ class TestParseConfig(unittest.TestCase):
         """None inputs treated as empty list"""
         config = {
             "TestView": {
-                "include_codegen": False,
+                "codegen": {"generate": False},
                 "inputs": None,
                 "exclude_patterns": [],
                 "definitions": {},
@@ -231,49 +231,67 @@ class TestParseConfig(unittest.TestCase):
     # Codegen path handling
     # =========================================================================
 
-    def test_codegen_path_added_when_include_codegen_true(self):
-        """Codegen path is appended when include_codegen is true"""
+    def test_codegen_platform_set_when_generate_true(self):
+        """codegen_platform is set when codegen.generate is true"""
         config = {
             "TestView": {
-                "include_codegen": True,
-                "inputs": ["packages/foo"],
+                "codegen": {"generate": True, "platform": "android"},
+                "inputs": [],
                 "exclude_patterns": [],
                 "definitions": {},
             }
         }
-        result = parse_config(config, "/base/dir", codegen_path="/codegen/path")
+        result = parse_config(config, "/base/dir")
 
-        self.assertIn("/codegen/path", result[0].inputs)
-        self.assertEqual(len(result[0].inputs), 2)
+        self.assertEqual(result[0].codegen_platform, "android")
 
-    def test_codegen_path_not_added_when_include_codegen_false(self):
-        """Codegen path is not added when include_codegen is false"""
+    def test_codegen_platform_ios(self):
+        """codegen_platform correctly stores ios platform"""
         config = {
             "TestView": {
-                "include_codegen": False,
-                "inputs": ["packages/foo"],
+                "codegen": {"generate": True, "platform": "ios"},
+                "inputs": [],
                 "exclude_patterns": [],
                 "definitions": {},
             }
         }
-        result = parse_config(config, "/base/dir", codegen_path="/codegen/path")
+        result = parse_config(config, "/base/dir")
 
-        self.assertNotIn("/codegen/path", result[0].inputs)
-        self.assertEqual(len(result[0].inputs), 1)
+        self.assertEqual(result[0].codegen_platform, "ios")
 
-    def test_codegen_path_not_added_when_none(self):
-        """Codegen path not added when codegen_path is None"""
+    def test_codegen_platform_propagated_to_variants(self):
+        """codegen_platform is propagated to all variant configs"""
         config = {
             "TestView": {
-                "include_codegen": True,
-                "inputs": ["packages/foo"],
+                "codegen": {"generate": True, "platform": "android"},
+                "inputs": [],
+                "exclude_patterns": [],
+                "definitions": {},
+                "variants": {
+                    "debug": {"definitions": {"DEBUG": 1}},
+                    "release": {"definitions": {"NDEBUG": 1}},
+                },
+            }
+        }
+        result = parse_config(config, "/base/dir")
+
+        self.assertEqual(len(result), 2)
+        for r in result:
+            self.assertEqual(r.codegen_platform, "android")
+
+    def test_codegen_missing_defaults_to_no_codegen(self):
+        """Missing codegen config defaults to no codegen"""
+        config = {
+            "TestView": {
+                "inputs": [],
                 "exclude_patterns": [],
                 "definitions": {},
             }
         }
-        result = parse_config(config, "/base/dir", codegen_path=None)
+        result = parse_config(config, "/base/dir")
 
-        self.assertEqual(len(result[0].inputs), 1)
+        self.assertEqual(len(result[0].inputs), 0)
+        self.assertIsNone(result[0].codegen_platform)
 
     # =========================================================================
     # Multiple views
@@ -283,13 +301,13 @@ class TestParseConfig(unittest.TestCase):
         """Multiple views are all parsed"""
         config = {
             "ViewA": {
-                "include_codegen": False,
+                "codegen": {"generate": False},
                 "inputs": [],
                 "exclude_patterns": [],
                 "definitions": {"A": 1},
             },
             "ViewB": {
-                "include_codegen": False,
+                "codegen": {"generate": False},
                 "inputs": [],
                 "exclude_patterns": [],
                 "definitions": {"B": 1},
@@ -305,7 +323,7 @@ class TestParseConfig(unittest.TestCase):
         """Multiple views each with variants"""
         config = {
             "ViewA": {
-                "include_codegen": False,
+                "codegen": {"generate": False},
                 "inputs": [],
                 "exclude_patterns": [],
                 "definitions": {},
@@ -315,7 +333,7 @@ class TestParseConfig(unittest.TestCase):
                 },
             },
             "ViewB": {
-                "include_codegen": False,
+                "codegen": {"generate": False},
                 "inputs": [],
                 "exclude_patterns": [],
                 "definitions": {},
@@ -338,7 +356,7 @@ class TestParseConfig(unittest.TestCase):
         """Exclude patterns are passed through unchanged"""
         config = {
             "TestView": {
-                "include_codegen": False,
+                "codegen": {"generate": False},
                 "inputs": [],
                 "exclude_patterns": ["*/jni/*", "*/platform/ios/*"],
                 "definitions": {},
@@ -355,7 +373,7 @@ class TestParseConfig(unittest.TestCase):
         """None exclude_patterns treated as empty list"""
         config = {
             "TestView": {
-                "include_codegen": False,
+                "codegen": {"generate": False},
                 "inputs": [],
                 "exclude_patterns": None,
                 "definitions": {},
@@ -373,7 +391,7 @@ class TestParseConfig(unittest.TestCase):
         """Variant names are capitalized in snapshot name"""
         config = {
             "TestView": {
-                "include_codegen": False,
+                "codegen": {"generate": False},
                 "inputs": [],
                 "exclude_patterns": [],
                 "definitions": {},
@@ -408,7 +426,7 @@ class TestParseConfig(unittest.TestCase):
         """None definitions treated as empty dict"""
         config = {
             "TestView": {
-                "include_codegen": False,
+                "codegen": {"generate": False},
                 "inputs": [],
                 "exclude_patterns": [],
                 "definitions": None,
