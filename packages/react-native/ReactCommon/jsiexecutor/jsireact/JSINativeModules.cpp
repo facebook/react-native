@@ -58,7 +58,7 @@ Value JSINativeModules::getModule(Runtime& rt, const PropNameID& name) {
       m_objects.emplace(std::move(moduleName), std::move(*module)).first;
 
   Value ret = Value(rt, result->second);
-  BridgeNativeModulePerfLogger::moduleJSRequireEndingEnd(moduleName.c_str());
+  BridgeNativeModulePerfLogger::moduleJSRequireEndingEnd(result->first.c_str());
   return ret;
 }
 

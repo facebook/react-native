@@ -88,7 +88,7 @@ void TextAttributes::apply(TextAttributes textAttributes) {
 
   // Shadow
   textShadowOffset = textAttributes.textShadowOffset.has_value()
-      ? textAttributes.textShadowOffset.value()
+      ? textAttributes.textShadowOffset
       : textShadowOffset;
   textShadowRadius = !std::isnan(textAttributes.textShadowRadius)
       ? textAttributes.textShadowRadius
