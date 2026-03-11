@@ -70,8 +70,8 @@ def _qualify_type_str_impl(type_str: str, scope: Scope, qualify_base: bool) -> s
         return type_str
 
     # Names starting with "::" are already globally qualified - skip re-qualification
-    if type_str.lstrip().startswith("::"):
-        return type_str
+    if type_str.lstrip().startswith("::") and qualify_base:
+        return type_str[2:]
 
     # Handle template arguments first: qualify types inside angle brackets
     angle_start = type_str.find("<")
@@ -105,7 +105,9 @@ def _qualify_type_str_impl(type_str: str, scope: Scope, qualify_base: bool) -> s
 
             # Recursively qualify the suffix (handles nested templates, pointers, etc.)
             qualified_suffix = (
-                _qualify_type_str_impl(suffix, scope, qualify_base) if suffix else ""
+                _qualify_type_str_impl(suffix, scope, qualify_base=False)
+                if suffix
+                else ""
             )
 
             return qualified_prefix + qualified_template + qualified_suffix
