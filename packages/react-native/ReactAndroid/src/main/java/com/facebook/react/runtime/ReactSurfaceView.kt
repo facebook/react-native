@@ -15,6 +15,8 @@ import android.graphics.Rect
 import android.view.KeyEvent
 import android.view.MotionEvent
 import android.view.View
+import androidx.core.view.ViewCompat
+import androidx.core.view.WindowInsetsCompat
 import com.facebook.common.logging.FLog
 import com.facebook.react.ReactRootView
 import com.facebook.react.bridge.ReactContext
@@ -27,6 +29,7 @@ import com.facebook.react.uimanager.JSKeyDispatcher
 import com.facebook.react.uimanager.JSPointerDispatcher
 import com.facebook.react.uimanager.JSTouchDispatcher
 import com.facebook.react.uimanager.common.UIManagerType
+import com.facebook.react.views.view.isEdgeToEdgeFeatureFlagOn
 import com.facebook.systrace.Systrace
 import java.util.Objects
 import kotlin.math.max
@@ -56,6 +59,21 @@ public class ReactSurfaceView(context: Context?, internal val surface: ReactSurf
       getWindowVisibleDisplayFrame(visibleWindowFrame)
       locationOnScreen[0] -= visibleWindowFrame.left
       locationOnScreen[1] -= visibleWindowFrame.top
+
+      if (isEdgeToEdgeFeatureFlagOn) {
+        // In edge-to-edge mode the viewport spans the full window, so add the top system bar
+        // insets back to convert the content-area offset above into a window-relative offset.
+        ViewCompat.getRootWindowInsets(this)?.apply {
+          val insets =
+              getInsets(
+                  WindowInsetsCompat.Type.statusBars() or WindowInsetsCompat.Type.displayCutout()
+              )
+
+          locationOnScreen[0] += insets.left
+          locationOnScreen[1] += insets.top
+        }
+      }
+
       return Point(locationOnScreen[0], locationOnScreen[1])
     }
 
