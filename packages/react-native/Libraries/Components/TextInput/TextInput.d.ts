@@ -504,6 +504,7 @@ export type TextInputSelectionChangeEvent =
  */
 export interface TextInputKeyPressEventData {
   key: string;
+  eventCount: number;
 }
 
 /**
