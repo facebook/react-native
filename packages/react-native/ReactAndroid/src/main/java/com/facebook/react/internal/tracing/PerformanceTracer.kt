@@ -20,7 +20,7 @@ import com.facebook.soloader.SoLoader
 @DoNotStrip
 public object PerformanceTracer {
   init {
-    SoLoader.loadLibrary("react_tracingjni")
+    SoLoader.loadLibrary("react_performancetracerjni")
   }
 
   public fun <T> trace(name: String, block: () -> T): T {

@@ -28,7 +28,6 @@ public object OpenSourceMergedSoMapping : ExternalSoMapping {
         "react_devsupportjni",
         "react_featureflagsjni",
         "react_newarchdefaults",
-        "react_tracingjni",
         "reactnativeblob",
         "reactnativejni",
         "reactnativejni_common",
@@ -58,7 +57,6 @@ public object OpenSourceMergedSoMapping : ExternalSoMapping {
       "react_devsupportjni" -> libreact_devsupportjni_so()
       "react_featureflagsjni" -> libreact_featureflagsjni_so()
       "react_newarchdefaults" -> libreact_newarchdefaults_so()
-      "react_tracingjni" -> libreact_tracingjni_so()
       "reactnative" -> libreactnative_so()
       "reactnativeblob" -> libreactnativeblob_so()
       "reactnativejni" -> libreactnativejni_so()
@@ -89,8 +87,6 @@ public object OpenSourceMergedSoMapping : ExternalSoMapping {
   public external fun libreact_featureflagsjni_so(): Int
 
   public external fun libreact_newarchdefaults_so(): Int
-
-  public external fun libreact_tracingjni_so(): Int
 
   public external fun libreactnative_so(): Int
 
