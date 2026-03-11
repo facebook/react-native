@@ -9,6 +9,7 @@ import sys
 
 sys.path.insert(0, os.path.dirname(__file__))
 
+from handle_objc_interface_generics import encode_objc_interface_generics
 from strip_block_comments import strip_block_comments
 from strip_deprecated_msg import strip_deprecated_msg
 from strip_ns_unavailable import strip_ns_unavailable
@@ -28,6 +29,7 @@ def main():
         filtered = strip_block_comments(content)
         filtered = strip_deprecated_msg(filtered)
         filtered = strip_ns_unavailable(filtered)
+        filtered = encode_objc_interface_generics(filtered)
         print(filtered, end="")
     except Exception as e:
         # On error, output original content to not break the build

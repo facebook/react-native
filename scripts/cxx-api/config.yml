@@ -1,5 +1,5 @@
 ReactCommon:
-  include_codegen: false
+  codegen:
   inputs:
     - packages/react-native/ReactCommon
   exclude_patterns:
@@ -22,13 +22,13 @@ ReactCommon:
         REACT_NATIVE_PRODUCTION: 1
 
 ReactAndroid:
-  include_codegen: true
+  codegen:
+    platform: android
   inputs:
     - packages/react-native/ReactCommon
     - packages/react-native/ReactAndroid
   exclude_patterns:
     - "*/test_utils/*"
-    - "*/FBReactNativeSpec*/*"
     - "*/platform/cxx/*"
     - "*/platform/windows/*"
     - "*/platform/macos/*"
@@ -48,7 +48,8 @@ ReactAndroid:
 
 # ReactIOS?
 ReactApple:
-  include_codegen: true
+  codegen:
+    platform: ios
   inputs:
     - packages/react-native/ReactCommon
     - packages/react-native/React
@@ -60,6 +61,8 @@ ReactApple:
     - "*/platform/windows/*"
     - "*/platform/macos/*"
     - "*/platform/android/*"
+    - "*+Private.h"
+    - "*+Internal.h"
   definitions:
     __cplusplus: 1
   variants:

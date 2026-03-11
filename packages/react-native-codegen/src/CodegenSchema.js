@@ -265,14 +265,15 @@ export type ReservedTypeAnnotation = Readonly<{
 /**
  * NativeModule Types
  */
-export type Nullable<+T: NativeModuleTypeAnnotation> =
+export type Nullable<+T extends NativeModuleTypeAnnotation> =
   | NullableTypeAnnotation<T>
   | T;
 
-export type NullableTypeAnnotation<+T: NativeModuleTypeAnnotation> = Readonly<{
-  type: 'NullableTypeAnnotation',
-  typeAnnotation: T,
-}>;
+export type NullableTypeAnnotation<+T extends NativeModuleTypeAnnotation> =
+  Readonly<{
+    type: 'NullableTypeAnnotation',
+    typeAnnotation: T,
+  }>;
 
 export type NativeModuleSchema = Readonly<{
   type: 'NativeModule',
@@ -316,7 +317,7 @@ export type NativeModuleObjectTypeAnnotation = ObjectTypeAnnotation<
 >;
 
 export type NativeModuleArrayTypeAnnotation<
-  +T: Nullable<NativeModuleBaseTypeAnnotation>,
+  +T extends Nullable<NativeModuleBaseTypeAnnotation>,
 > = ArrayTypeAnnotation<
   | T
   /**

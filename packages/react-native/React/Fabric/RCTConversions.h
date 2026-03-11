@@ -21,18 +21,13 @@ NS_ASSUME_NONNULL_BEGIN
  * Converts an iOS timestamp (seconds since boot, NOT including sleep time, from
  * NSProcessInfo.processInfo.systemUptime or UITouch.timestamp) to a HighResTimeStamp.
  *
- * iOS timestamps use mach_absolute_time() which doesn't account for sleep time,
- * while std::chrono::steady_clock uses mach_continuous_time() which does.
- * To handle this correctly, we compute the relative offset from the current time
- * and apply it to HighResTimeStamp::now().
+ * iOS timestamps and HighResTimeStamp both use mach_absolute_time() which doesn't
+ * account for sleep time. We convert the timestamp directly since they share the
+ * same time domain.
  */
 inline facebook::react::HighResTimeStamp RCTHighResTimeStampFromSeconds(NSTimeInterval seconds)
 {
-  NSTimeInterval nowSystemUptime = NSProcessInfo.processInfo.systemUptime;
-  NSTimeInterval delta = nowSystemUptime - seconds;
-  auto deltaDuration =
-      std::chrono::duration_cast<std::chrono::steady_clock::duration>(std::chrono::duration<double>(delta));
-  return facebook::react::HighResTimeStamp::now() - facebook::react::HighResDuration::fromChrono(deltaDuration);
+  return facebook::react::HighResTimeStamp::fromDOMHighResTimeStamp(seconds * 1e3);
 }
 
 inline NSString *RCTNSStringFromString(

@@ -7,9 +7,6 @@
 Entry point for running the parser package as a script.
 
 Usage:
-    # With codegen modules path:
-    python ... --codegen-path /path/to/codegen
-
     # With output directory:
     python ... --output-dir /path/to/output
 """
@@ -73,6 +70,35 @@ def build_doxygen_config(
         f.write(config)
 
 
+def build_codegen(platform: str, verbose: bool = False) -> str:
+    react_native_dir = os.path.join(get_react_native_dir(), "packages", "react-native")
+
+    result = subprocess.run(
+        [
+            "node",
+            "./scripts/generate-codegen-artifacts.js",
+            "--path",
+            "./",
+            "--outputPath",
+            "./api/codegen",
+            "--targetPlatform",
+            platform,
+            "--forceOutputPath",
+        ],
+        cwd=react_native_dir,
+    )
+
+    if result.returncode != 0:
+        if verbose:
+            print(f"Codegen finished with error: {result.stderr}")
+        sys.exit(1)
+    else:
+        if verbose:
+            print("Codegen finished successfully")
+
+    return os.path.join(react_native_dir, "api", "codegen")
+
+
 def build_snapshot_for_view(
     api_view: str,
     react_native_dir: str,
@@ -80,11 +106,26 @@ def build_snapshot_for_view(
     exclude_patterns: list[str],
     definitions: dict[str, str | int],
     output_dir: str,
+    codegen_platform: str | None = None,
     verbose: bool = True,
     input_filter: str = None,
 ) -> None:
+    # If there is already an output directory, delete it
+    if os.path.exists(os.path.join(react_native_dir, "api")):
+        if verbose:
+            print("Deleting existing output directory")
+        subprocess.run(["rm", "-rf", os.path.join(react_native_dir, "api")])
+
     if verbose:
         print(f"Generating API view: {api_view}")
+
+    if codegen_platform is not None:
+        codegen_dir = build_codegen(codegen_platform, verbose=verbose)
+        include_directories.append(codegen_dir)
+    elif verbose:
+        print("Skipping codegen")
+
+    if verbose:
         print("Generating Doxygen config file")
 
     build_doxygen_config(
@@ -94,12 +135,6 @@ def build_snapshot_for_view(
         definitions=definitions,
         input_filter=input_filter,
     )
-
-    # If there is already a doxygen output directory, delete it
-    if os.path.exists(os.path.join(react_native_dir, "api")):
-        if verbose:
-            print("Deleting existing output directory")
-        subprocess.run(["rm", "-rf", os.path.join(react_native_dir, "api")])
 
     if verbose:
         print("Running Doxygen")
@@ -120,6 +155,7 @@ def build_snapshot_for_view(
     if result.returncode != 0:
         if verbose:
             print(f"Doxygen finished with error: {result.stderr}")
+        sys.exit(1)
     else:
         if verbose:
             print("Doxygen finished successfully")
@@ -151,11 +187,6 @@ def main():
         "--output-dir",
         type=str,
         help="Output directory for the snapshot",
-    )
-    parser.add_argument(
-        "--codegen-path",
-        type=str,
-        help="Path to codegen generated code",
     )
     parser.add_argument(
         "--check",
@@ -194,9 +225,6 @@ def main():
     if verbose:
         print(f"Running in directory: {react_native_package_dir}")
 
-    if verbose and args.codegen_path:
-        print(f"Codegen output path: {os.path.abspath(args.codegen_path)}")
-
     input_filter_path = os.path.join(
         get_react_native_dir(),
         "scripts",
@@ -216,7 +244,6 @@ def main():
     snapshot_configs = parse_config_file(
         config_path,
         get_react_native_dir(),
-        codegen_path=args.codegen_path,
     )
 
     def build_snapshots(output_dir: str, verbose: bool) -> None:
@@ -229,6 +256,7 @@ def main():
                     exclude_patterns=config.exclude_patterns,
                     definitions=config.definitions,
                     output_dir=output_dir,
+                    codegen_platform=config.codegen_platform,
                     verbose=verbose,
                     input_filter=input_filter,
                 )
@@ -240,6 +268,7 @@ def main():
                 exclude_patterns=[],
                 definitions={},
                 output_dir=output_dir,
+                codegen_platform=None,
                 verbose=verbose,
                 input_filter=input_filter,
             )

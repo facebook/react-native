@@ -41,7 +41,6 @@ int countAttachments(const AttributedString& attributedString) {
 
 Size measureText(
     const std::shared_ptr<const ContextContainer>& contextContainer,
-    Tag rootTag,
     MapBuffer attributedString,
     MapBuffer paragraphAttributes,
     float minWidth,
@@ -55,7 +54,6 @@ Size measureText(
   static auto measure =
       jni::findClassStatic("com/facebook/react/fabric/FabricUIManager")
           ->getMethod<jlong(
-              jint,
               JReadableMapBuffer::javaobject,
               JReadableMapBuffer::javaobject,
               jfloat,
@@ -71,7 +69,6 @@ Size measureText(
 
   return yogaMeassureToSize(measure(
       fabricUIManager,
-      rootTag,
       attributedStringBuffer.get(),
       paragraphAttributesBuffer.get(),
       minWidth,
@@ -105,7 +102,6 @@ TextMeasurement doMeasure(
 
   auto size = measureText(
       contextContainer,
-      layoutContext.surfaceId,
       std::move(attributedStringMap),
       std::move(paragraphAttributesMap),
       minimumSize.width,
@@ -221,7 +217,6 @@ TextMeasurement TextLayoutManager::measureCachedSpannableById(
 
   auto size = measureText(
       contextContainer_,
-      layoutContext.surfaceId,
       localDataBuilder.build(),
       toMapBuffer(paragraphAttributes),
       minimumSize.width,
@@ -304,7 +299,6 @@ TextLayoutManager::PreparedTextLayout TextLayoutManager::prepareLayout(
   static auto prepareTextLayout =
       jni::findClassStatic("com/facebook/react/fabric/FabricUIManager")
           ->getMethod<JPreparedLayout::javaobject(
-              jint,
               JReadableMapBuffer::javaobject,
               JReadableMapBuffer::javaobject,
               jfloat,
@@ -335,7 +329,6 @@ TextLayoutManager::PreparedTextLayout TextLayoutManager::prepareLayout(
 
         return PreparedTextLayout{jni::make_global(prepareTextLayout(
             fabricUIManager,
-            layoutContext.surfaceId,
             attributedStringMB.get(),
             paragraphAttributesMB.get(),
             minimumSize.width,

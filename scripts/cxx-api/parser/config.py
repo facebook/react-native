@@ -36,12 +36,12 @@ class ApiViewSnapshotConfig:
     inputs: list[str]
     exclude_patterns: list[str]
     definitions: dict[str, str | int]
+    codegen_platform: str | None = None
 
 
 def parse_config(
     raw_config: dict,
     base_dir: str,
-    codegen_path: str | None = None,
 ) -> list[ApiViewSnapshotConfig]:
     """
     Parse a raw config dictionary and return a flattened list of snapshot configs.
@@ -62,10 +62,8 @@ def parse_config(
             for path in (view_config.get("inputs") or [])
         ]
 
-        include_codegen = view_config.get("include_codegen", False)
-        if include_codegen and codegen_path:
-            inputs.append(os.path.abspath(codegen_path))
-
+        codegen_config = view_config.get("codegen") or {}
+        codegen_platform = codegen_config.get("platform")
         exclude_patterns = view_config.get("exclude_patterns") or []
         base_definitions = view_config.get("definitions") or {}
 
@@ -85,6 +83,7 @@ def parse_config(
                     inputs=inputs,
                     exclude_patterns=exclude_patterns,
                     definitions=base_definitions,
+                    codegen_platform=codegen_platform,
                 )
             )
         else:
@@ -97,6 +96,7 @@ def parse_config(
                         inputs=inputs,
                         exclude_patterns=exclude_patterns,
                         definitions=merged_definitions,
+                        codegen_platform=codegen_platform,
                     )
                 )
 
@@ -106,7 +106,6 @@ def parse_config(
 def parse_config_file(
     config_path: str,
     base_dir: str,
-    codegen_path: str | None = None,
 ) -> list[ApiViewSnapshotConfig]:
     """
     Parse the config.yml file and return a flattened list of snapshot configs.
@@ -122,4 +121,4 @@ def parse_config_file(
     with open(config_path, "r") as stream:
         raw_config = yaml.safe_load(stream)
 
-    return parse_config(raw_config, base_dir, codegen_path)
+    return parse_config(raw_config, base_dir)

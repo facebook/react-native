@@ -338,7 +338,7 @@ jobs:
           flavor: ${{ matrix.flavor }}
           working-directory: /tmp/RNTestProject
 
-  run_fantom_tests:
+  build_fantom_runner:
     runs-on: 8-core-ubuntu
     needs: [set_release_type, check_code_changes, lint]
     if: needs.check_code_changes.outputs.any_code_change == 'true'
@@ -356,11 +356,24 @@ jobs:
     steps:
       - name: Checkout
         uses: actions/checkout@v6
-      - name: Build and Test Fantom
-        uses: ./.github/actions/run-fantom-tests
+      - name: Build Fantom Runner
+        uses: ./.github/actions/build-fantom-runner
         with:
           release-type: ${{ needs.set_release_type.outputs.RELEASE_TYPE }}
           gradle-cache-encryption-key: ${{ secrets.GRADLE_CACHE_ENCRYPTION_KEY }}
+
+  run_fantom_tests:
+    runs-on: 8-core-ubuntu
+    needs: [build_fantom_runner]
+    container:
+      image: reactnativecommunity/react-native-android:latest
+      env:
+        TERM: "dumb"
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v6
+      - name: Run Fantom Tests
+        uses: ./.github/actions/run-fantom-tests
 
   build_android:
     runs-on: 8-core-ubuntu
@@ -623,7 +636,7 @@ jobs:
         uses: ./.github/actions/yarn-install
       - name: Build packages
         shell: bash
-        run: yarn build
+        run: yarn build --prepack
       - name: Verify debugger-shell build
         shell: bash
         run: node scripts/debugger-shell/build-binary.js

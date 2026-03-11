@@ -49,6 +49,7 @@ exports[`LogBoxContainer should render fatal with selectedIndex 2 1`] = `
   />
   <LogBoxInspectorFooter
     level="fatal"
+    onCopy={[Function]}
     onDismiss={[Function]}
     onMinimize={[Function]}
   />
@@ -106,6 +107,7 @@ exports[`LogBoxContainer should render warning with selectedIndex 0 1`] = `
   />
   <LogBoxInspectorFooter
     level="warn"
+    onCopy={[Function]}
     onDismiss={[Function]}
     onMinimize={[Function]}
   />

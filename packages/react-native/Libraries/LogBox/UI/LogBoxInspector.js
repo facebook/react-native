@@ -8,6 +8,7 @@
  * @format
  */
 
+import Clipboard from '../../Components/Clipboard/Clipboard';
 import Keyboard from '../../Components/Keyboard/Keyboard';
 import View from '../../Components/View/View';
 import StyleSheet from '../../StyleSheet/StyleSheet';
@@ -59,6 +60,47 @@ export default function LogBoxInspector(props: Props): React.Node {
     LogBoxData.retrySymbolicateLogNow(log);
   }
 
+  function _handleCopy() {
+    const headerTitleMap = {
+      warn: 'Console Warning',
+      error: 'Console Error',
+      fatal: 'Uncaught Error',
+      syntax: 'Syntax Error',
+      component: 'Render Error',
+    };
+
+    const title =
+      log.type ??
+      headerTitleMap[log.isComponentError ? 'component' : log.level];
+
+    const parts = [title, '', log.message.content];
+
+    if (log.codeFrame != null) {
+      const location = log.codeFrame.location;
+      parts.push(
+        '',
+        'Source:',
+        location != null
+          ? `${log.codeFrame.fileName} (${location.row}:${location.column})`
+          : log.codeFrame.fileName,
+      );
+    }
+
+    const stack = log.getAvailableStack();
+    if (stack.length > 0) {
+      parts.push('', 'Call Stack:');
+      for (const frame of stack) {
+        const methodName = frame.methodName ?? '?';
+        const file = frame.file ?? '?';
+        const lineNumber =
+          frame.lineNumber != null ? `:${frame.lineNumber}` : '';
+        parts.push(`${methodName} (${file}${lineNumber})`);
+      }
+    }
+
+    Clipboard.setString(parts.join('\n'));
+  }
+
   if (log == null) {
     return null;
   }
@@ -75,6 +117,7 @@ export default function LogBoxInspector(props: Props): React.Node {
       <LogBoxInspectorFooter
         onDismiss={props.onDismiss}
         onMinimize={props.onMinimize}
+        onCopy={_handleCopy}
         level={log.level}
       />
     </View>

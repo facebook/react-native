@@ -12,7 +12,10 @@
 #include <react/renderer/graphics/Float.h>
 #include <react/renderer/graphics/ValueUnit.h>
 
+#if RN_DEBUG_STRING_CONVERTIBLE
 #include <sstream>
+#endif
+
 #include <variant>
 #include <vector>
 
