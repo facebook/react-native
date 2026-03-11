@@ -7,13 +7,13 @@ from __future__ import annotations
 
 import unittest
 
-from ..input_filters.handle_objc_interface_generics import (
+from ..parser.input_filters.handle_objc_interface_generics import (
     decode_objc_generics,
     encode_objc_interface_generics,
 )
-from ..input_filters.strip_block_comments import strip_block_comments
-from ..input_filters.strip_deprecated_msg import strip_deprecated_msg
-from ..input_filters.strip_ns_unavailable import strip_ns_unavailable
+from ..parser.input_filters.strip_block_comments import strip_block_comments
+from ..parser.input_filters.strip_deprecated_msg import strip_deprecated_msg
+from ..parser.input_filters.strip_ns_unavailable import strip_ns_unavailable
 
 
 class TestDoxygenStripComments(unittest.TestCase):

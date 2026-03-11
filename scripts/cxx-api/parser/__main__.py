@@ -229,6 +229,7 @@ def main():
         get_react_native_dir(),
         "scripts",
         "cxx-api",
+        "parser",
         "input_filters",
         "main.py",
     )
