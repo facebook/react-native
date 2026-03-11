@@ -53,7 +53,7 @@ import com.facebook.react.views.common.ContextUtils
 import com.facebook.react.views.view.ReactViewGroup
 import com.facebook.react.views.view.disableEdgeToEdge
 import com.facebook.react.views.view.enableEdgeToEdge
-import com.facebook.react.views.view.isEdgeToEdgeFeatureFlagOn
+import com.facebook.react.views.view.isEdgeToEdge
 import com.facebook.react.views.view.setStatusBarTranslucency
 
 /**
@@ -81,17 +81,17 @@ public class ReactModalHostView(context: ThemedReactContext) :
   public var onRequestCloseListener: OnRequestCloseListener? = null
 
   public var statusBarTranslucent: Boolean = false
-    get() = field || isEdgeToEdgeFeatureFlagOn
+    get() = field || isEdgeToEdge
     set(value) {
       field = value
-      createNewDialog = createNewDialog || !isEdgeToEdgeFeatureFlagOn
+      createNewDialog = createNewDialog || !isEdgeToEdge
     }
 
   public var navigationBarTranslucent: Boolean = false
-    get() = field || isEdgeToEdgeFeatureFlagOn
+    get() = field || isEdgeToEdge
     set(value) {
       field = value
-      createNewDialog = createNewDialog || !isEdgeToEdgeFeatureFlagOn
+      createNewDialog = createNewDialog || !isEdgeToEdge
     }
 
   public var animationType: String? = null
@@ -428,7 +428,7 @@ public class ReactModalHostView(context: ThemedReactContext) :
       val dialogWindowInsetsController =
           WindowInsetsControllerCompat(dialogWindow, dialogWindow.decorView)
 
-      if (isEdgeToEdgeFeatureFlagOn) {
+      if (isEdgeToEdge) {
         activityWindowInsetsController.systemBarsBehavior =
             WindowInsetsControllerCompat.BEHAVIOR_SHOW_TRANSIENT_BARS_BY_SWIPE
         dialogWindowInsetsController.systemBarsBehavior =

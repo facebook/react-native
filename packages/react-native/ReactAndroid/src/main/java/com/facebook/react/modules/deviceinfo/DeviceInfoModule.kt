@@ -22,7 +22,7 @@ import com.facebook.react.bridge.WritableNativeMap
 import com.facebook.react.module.annotations.ReactModule
 import com.facebook.react.uimanager.DisplayMetricsHolder.getScreenDisplayMetrics
 import com.facebook.react.uimanager.DisplayMetricsHolder.initDisplayMetricsIfNotInitialized
-import com.facebook.react.views.view.isEdgeToEdgeFeatureFlagOn
+import com.facebook.react.views.view.isEdgeToEdge
 
 /** Module that exposes Android Constants to JS. */
 @ReactModule(name = NativeDeviceInfoSpec.NAME)
@@ -91,7 +91,7 @@ internal class DeviceInfoModule(reactContext: ReactApplicationContext) :
 
     return mapOf(
         "Dimensions" to displayMetrics.toHashMap(),
-        "isEdgeToEdge" to isEdgeToEdgeFeatureFlagOn,
+        "isEdgeToEdge" to isEdgeToEdge,
     )
   }
 
