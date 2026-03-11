@@ -48,6 +48,9 @@ def build_snapshot(xml_dir: str) -> Snapshot:
         doxygen_object = compound.parse(detail_file, silence=True)
 
         for compound_object in doxygen_object.compounddef:
+            if compound_object.prot == "private":
+                continue
+
             # Check if this is an Objective-C interface by looking at the compound id
             # Doxygen reports ObjC interfaces as kind="class" but with id starting with "interface"
             is_objc_interface = (
