@@ -8,6 +8,7 @@
 #include "ShadowTree.h"
 
 #include <cxxreact/TraceSection.h>
+#include <jsinspector-modern/tracing/PerformanceTracerSection.h>
 #include <react/debug/react_native_assert.h>
 #include <react/renderer/components/root/RootComponentDescriptor.h>
 #include <react/renderer/components/view/ViewShadowNode.h>
@@ -24,6 +25,19 @@ namespace facebook::react {
 
 namespace {
 const int MAX_COMMIT_ATTEMPTS_BEFORE_LOCKING = 3;
+
+std::string getShadowTreeCommitSourceName(ShadowTreeCommitSource source) {
+  switch (source) {
+    case ShadowTreeCommitSource::Unknown:
+      return "Unknown";
+    case ShadowTreeCommitSource::React:
+      return "React";
+    case ShadowTreeCommitSource::AnimationEndSync:
+      return "AnimationEndSync";
+    case ShadowTreeCommitSource::ReactRevisionMerge:
+      return "ReactRevisionMerge";
+  }
+}
 } // namespace
 
 using CommitStatus = ShadowTree::CommitStatus;
@@ -316,6 +330,13 @@ CommitStatus ShadowTree::tryCommit(
     const ShadowTreeCommitTransaction& transaction,
     const CommitOptions& commitOptions) const {
   TraceSection s("ShadowTree::commit");
+  jsinspector_modern::tracing::PerformanceTracerSection s1(
+      "commit",
+      "Renderer",
+      "\u269b Native",
+      nullptr,
+      "source",
+      getShadowTreeCommitSourceName(commitOptions.source));
 
   auto isReactBranch = ReactNativeFeatureFlags::enableFabricCommitBranching() &&
       commitOptions.source == CommitSource::React;
@@ -382,7 +403,11 @@ CommitStatus ShadowTree::tryCommit(
 
   telemetry.willLayout();
   telemetry.setAsThreadLocal();
-  newRootShadowNode->layoutIfNeeded(&affectedLayoutableNodes);
+  {
+    jsinspector_modern::tracing::PerformanceTracerSection s2(
+        "layout", "Renderer", "\u269b Native");
+    newRootShadowNode->layoutIfNeeded(&affectedLayoutableNodes);
+  }
   telemetry.unsetAsThreadLocal();
   telemetry.didLayout(static_cast<int>(affectedLayoutableNodes.size()));
 
