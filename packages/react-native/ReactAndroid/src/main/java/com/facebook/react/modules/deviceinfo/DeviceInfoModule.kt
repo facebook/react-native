@@ -47,7 +47,7 @@ internal class DeviceInfoModule(reactContext: ReactApplicationContext) :
 
     // WindowMetrics bounds include system bars. When edge-to-edge is not enabled, we subtract them
     // so that window dimensions reflect the usable content area.
-    if (!isEdgeToEdgeFeatureFlagOn) {
+    if (!isEdgeToEdge) {
       ViewCompat.getRootWindowInsets(activity.window.decorView)?.let {
         val insets = it.getInsets(WindowInsetsCompat.Type.systemBars())
         width -= (insets.left + insets.right)

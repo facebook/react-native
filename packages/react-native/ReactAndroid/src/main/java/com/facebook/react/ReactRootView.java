@@ -1034,7 +1034,7 @@ public class ReactRootView extends FrameLayout implements RootView, ReactRoot {
         heightPixels = WindowMetricsCalculator.getOrCreate()
             .computeCurrentWindowMetrics(activity).getBounds().height();
 
-        if (!WindowUtilKt.isEdgeToEdgeFeatureFlagOn()) {
+        if (!WindowUtilKt.isEdgeToEdge()) {
           WindowInsetsCompat rootWindowInsets =
               ViewCompat.getRootWindowInsets(activity.getWindow().getDecorView());
 
