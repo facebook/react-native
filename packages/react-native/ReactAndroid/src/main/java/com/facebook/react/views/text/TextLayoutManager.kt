@@ -1377,7 +1377,7 @@ internal object TextLayoutManager {
     return FontMetricsUtil.getFontMetrics(
         layout.text,
         layout,
-        DisplayMetricsHolder.getWindowDisplayMetrics(),
+        DisplayMetricsHolder.getScreenDisplayMetrics(),
     )
   }
 
