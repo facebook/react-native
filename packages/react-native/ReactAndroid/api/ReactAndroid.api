@@ -6544,7 +6544,8 @@ public final class com/facebook/react/views/view/ReactViewManager$Companion {
 
 public final class com/facebook/react/views/view/WindowUtilKt {
 	public static final fun isEdgeToEdgeFeatureFlagOn ()Z
-	public static final fun setEdgeToEdgeFeatureFlagOn ()V
+	public static final fun isEdgeToEdge ()Z
+	public static final fun initEdgeToEdge (Landroid/content/Context;Z)V
 }
 
 public final class com/facebook/react/views/virtual/VirtualViewMode : java/lang/Enum {

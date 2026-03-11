@@ -7,6 +7,7 @@
 
 package com.facebook.react.views.view
 
+import android.content.Context
 import android.graphics.Color
 import android.os.Build
 import android.view.Window
@@ -33,8 +34,28 @@ internal val DarkNavigationBarColor = Color.argb(0x80, 0x1b, 0x1b, 0x1b)
 public var isEdgeToEdgeFeatureFlagOn: Boolean = false
   private set
 
-public fun setEdgeToEdgeFeatureFlagOn() {
-  isEdgeToEdgeFeatureFlagOn = true
+/**
+ * Whether edge-to-edge is enforced. Computed once in [initEdgeToEdge], based on:
+ * - The device is running Android 16+ (where edge-to-edge is always enforced)
+ * - The edge-to-edge feature flag has been explicitly enabled
+ * - The device is running Android 15 (API 35) without opting out
+ */
+public var isEdgeToEdge: Boolean = false
+  private set
+
+public fun initEdgeToEdge(context: Context, flag: Boolean) {
+  isEdgeToEdgeFeatureFlagOn = flag
+  isEdgeToEdge =
+      when {
+        Build.VERSION.SDK_INT >= Build.VERSION_CODES.BAKLAVA || flag -> true
+        Build.VERSION.SDK_INT < Build.VERSION_CODES.VANILLA_ICE_CREAM -> false
+        else ->
+            context.theme
+                .obtainStyledAttributes(
+                    intArrayOf(android.R.attr.windowOptOutEdgeToEdgeEnforcement)
+                )
+                .use { !it.getBoolean(0, false) }
+      }
 }
 
 @Suppress("DEPRECATION")
@@ -67,7 +88,7 @@ internal fun Window.setStatusBarVisibility(isHidden: Boolean) {
 
 @Suppress("DEPRECATION")
 private fun Window.statusBarHide() {
-  if (isEdgeToEdgeFeatureFlagOn) {
+  if (isEdgeToEdge) {
     WindowInsetsControllerCompat(this, decorView).run {
       systemBarsBehavior = WindowInsetsControllerCompat.BEHAVIOR_SHOW_TRANSIENT_BARS_BY_SWIPE
       hide(WindowInsetsCompat.Type.statusBars())
@@ -86,7 +107,7 @@ private fun Window.statusBarHide() {
 
 @Suppress("DEPRECATION")
 private fun Window.statusBarShow() {
-  if (isEdgeToEdgeFeatureFlagOn) {
+  if (isEdgeToEdge) {
     WindowInsetsControllerCompat(this, decorView).run {
       systemBarsBehavior = WindowInsetsControllerCompat.BEHAVIOR_SHOW_TRANSIENT_BARS_BY_SWIPE
       show(WindowInsetsCompat.Type.statusBars())
