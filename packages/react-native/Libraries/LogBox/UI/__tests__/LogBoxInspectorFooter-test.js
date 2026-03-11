@@ -27,6 +27,7 @@ describe('LogBoxInspectorFooter', () => {
       <LogBoxInspectorFooter
         onMinimize={() => {}}
         onDismiss={() => {}}
+        onCopy={() => {}}
         level="warn"
       />,
     );
@@ -39,6 +40,7 @@ describe('LogBoxInspectorFooter', () => {
       <LogBoxInspectorFooter
         onMinimize={() => {}}
         onDismiss={() => {}}
+        onCopy={() => {}}
         level="error"
       />,
     );
@@ -51,6 +53,7 @@ describe('LogBoxInspectorFooter', () => {
       <LogBoxInspectorFooter
         onMinimize={() => {}}
         onDismiss={() => {}}
+        onCopy={() => {}}
         level="fatal"
       />,
     );
@@ -63,6 +66,7 @@ describe('LogBoxInspectorFooter', () => {
       <LogBoxInspectorFooter
         onMinimize={() => {}}
         onDismiss={() => {}}
+        onCopy={() => {}}
         level="syntax"
       />,
     );
