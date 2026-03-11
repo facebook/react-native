@@ -39,6 +39,65 @@ from .utils import (
     parse_qualified_path,
     resolve_linked_text_name,
 )
+from .utils.argument_parsing import _find_matching_angle, _split_arguments
+
+
+######################
+# Base class fixups
+######################
+
+
+def _fix_base_class_default_substitution(
+    base_name: str,
+    template_params: list[Template],
+) -> str:
+    """
+    Workaround for Doxygen's substitution of template parameters with their
+    defaults in base class template arguments. For example, given:
+
+        template <typename BazT = Baz>
+        class Foo : public Bar<BazT> {};
+
+    Doxygen emits ``Bar<Baz>`` instead of ``Bar<BazT>``.
+
+    This function builds a reverse mapping (default_value -> param_name) and
+    replaces matching template arguments in base_name with the parameter names.
+    """
+    angle_start = base_name.find("<")
+    if angle_start == -1:
+        return base_name
+
+    angle_end = _find_matching_angle(base_name, angle_start)
+    if angle_end == -1:
+        return base_name
+
+    # Build reverse mapping: default_value -> param_name.
+    # Map both fully qualified and unqualified names.
+    default_to_param: dict[str, str] = {}
+    for param in template_params:
+        if param.value is not None and param.name is not None:
+            default_to_param[param.value] = param.name
+            last_sep = param.value.rfind("::")
+            if last_sep != -1:
+                default_to_param[param.value[last_sep + 2 :]] = param.name
+
+    if not default_to_param:
+        return base_name
+
+    prefix = base_name[:angle_start]
+    inner = base_name[angle_start + 1 : angle_end]
+    suffix = base_name[angle_end + 1 :]
+
+    args = _split_arguments(inner)
+    fixed_args = []
+    for arg in args:
+        stripped = arg.strip()
+        if stripped in default_to_param:
+            fixed_args.append(default_to_param[stripped])
+        else:
+            fixed_args.append(stripped)
+
+    return f"{prefix}<{', '.join(fixed_args)}>{suffix}"
 
 
 ######################
@@ -604,7 +663,14 @@ def create_class_scope(
         )
 
     class_scope.kind.add_base(get_base_classes(compound_object))
-    class_scope.kind.add_template(get_template_params(compound_object))
+    template_params = get_template_params(compound_object)
+
+    # Fix Doxygen's substitution of template param defaults in base classes
+    if template_params:
+        for base in class_scope.kind.base_classes:
+            base.name = _fix_base_class_default_substitution(base.name, template_params)
+
+    class_scope.kind.add_template(template_params)
     class_scope.location = compound_object.location.file
 
     for section_def in compound_object.sectiondef:
