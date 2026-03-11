@@ -213,8 +213,8 @@ const AccessibilityInfo = {
    * The result is `true` when high text contrast is enabled and `false` otherwise.
    */
   isHighTextContrastEnabled(): Promise<boolean> {
-    return new Promise((resolve, reject) => {
-      if (Platform.OS === 'android') {
+    if (Platform.OS === 'android') {
+      return new Promise((resolve, reject) => {
         if (NativeAccessibilityInfoAndroid?.isHighTextContrastEnabled != null) {
           NativeAccessibilityInfoAndroid.isHighTextContrastEnabled(resolve);
         } else {
@@ -224,10 +224,10 @@ const AccessibilityInfo = {
             ),
           );
         }
-      } else {
-        return Promise.resolve(false);
-      }
-    });
+      });
+    } else {
+      return Promise.resolve(false);
+    }
   },
 
   /**

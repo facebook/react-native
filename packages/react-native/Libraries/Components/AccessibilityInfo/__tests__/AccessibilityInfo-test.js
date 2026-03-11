@@ -37,9 +37,24 @@ const mockNativeAccessibilityManagerDefault: {
   getCurrentDarkerSystemColorsState: mockGetCurrentDarkerSystemColorsState,
 };
 
+const mockIsHighTextContrastEnabled = jest.fn(onSuccess => onSuccess(true));
+const mockNativeAccessibilityInfo: {
+  isHighTextContrastEnabled: JestMockFn<
+    [onSuccess: (isHighTextContrastEnabled: boolean) => void],
+    void,
+  > | null,
+} = {
+  isHighTextContrastEnabled: mockIsHighTextContrastEnabled,
+};
+
 jest.mock('../NativeAccessibilityManager', () => ({
   __esModule: true,
   default: mockNativeAccessibilityManagerDefault,
+}));
+
+jest.mock('../NativeAccessibilityInfo', () => ({
+  __esModule: true,
+  default: mockNativeAccessibilityInfo,
 }));
 
 const Platform = require('../../../Utilities/Platform').default;
@@ -53,6 +68,7 @@ describe('AccessibilityInfo', () => {
     originalPlatform = Platform.OS;
     mockGetCurrentPrefersCrossFadeTransitionsState.mockClear();
     mockGetCurrentDarkerSystemColorsState.mockClear();
+    mockIsHighTextContrastEnabled.mockClear();
   });
 
   describe('prefersCrossFadeTransitions', () => {
@@ -149,11 +165,58 @@ describe('AccessibilityInfo', () => {
     });
   });
 
+  describe('isHighTextContrastEnabled', () => {
+    describe('Android', () => {
+      it('should call isHighTextContrastEnabled if available', async () => {
+        /* $FlowFixMe[incompatible-type] */
+        Platform.OS = 'android';
+
+        const isHighTextContrastEnabled =
+          await AccessibilityInfo.isHighTextContrastEnabled();
+
+        expect(mockIsHighTextContrastEnabled).toHaveBeenCalled();
+        expect(isHighTextContrastEnabled).toBe(true);
+      });
+
+      it('should throw error if isHighTextContrastEnabled is not available', async () => {
+        /* $FlowFixMe[incompatible-type] */
+        Platform.OS = 'android';
+
+        mockNativeAccessibilityInfo.isHighTextContrastEnabled = null;
+
+        const result: mixed =
+          await AccessibilityInfo.isHighTextContrastEnabled().catch(e => e);
+
+        invariant(
+          result instanceof Error,
+          'Expected isHighTextContrastEnabled to reject',
+        );
+        expect(result.message).toEqual(
+          'NativeAccessibilityInfoAndroid.isHighTextContrastEnabled is not available',
+        );
+      });
+    });
+
+    describe('iOS', () => {
+      it('should return false', async () => {
+        /* $FlowFixMe[incompatible-type] */
+        Platform.OS = 'ios';
+
+        const isHighTextContrastEnabled =
+          await AccessibilityInfo.isHighTextContrastEnabled();
+
+        expect(isHighTextContrastEnabled).toBe(false);
+      });
+    });
+  });
+
   afterEach(() => {
     mockNativeAccessibilityManagerDefault.getCurrentPrefersCrossFadeTransitionsState =
       mockGetCurrentPrefersCrossFadeTransitionsState;
     mockNativeAccessibilityManagerDefault.getCurrentDarkerSystemColorsState =
       mockGetCurrentDarkerSystemColorsState;
+    mockNativeAccessibilityInfo.isHighTextContrastEnabled =
+      mockIsHighTextContrastEnabled;
     /* $FlowFixMe[incompatible-type] */
     Platform.OS = originalPlatform;
   });
