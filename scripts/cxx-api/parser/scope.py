@@ -11,7 +11,7 @@ from typing import Generic, TypeVar
 
 from natsort import natsort_keygen, natsorted
 
-from .member import FriendMember, Member, MemberKind
+from .member import FriendMember, Member, MemberKind, TypedefMember
 from .template import Template, TemplateList
 from .utils import parse_qualified_path, qualify_template_args_only, qualify_type_str
 
@@ -311,8 +311,9 @@ class Scope(Generic[ScopeKindT]):
         self.kind: ScopeKindT = kind
         self.parent_scope: Scope | None = None
         self.inner_scopes: dict[str, Scope] = {}
-        self._members: list[Member] = []
         self.location: str | None = None
+        self._members: list[Member] = []
+        self._private_typedefs: dict[str, TypedefMember] = {}
 
     def get_qualified_name(self) -> str:
         """
@@ -372,6 +373,10 @@ class Scope(Generic[ScopeKindT]):
                     prefix = current_scope.get_qualified_name()
                     return f"{prefix}::{name}" if prefix else name
 
+            # Check private typedefs: substitute with the expanded definition
+            if len(path) == 1 and base_first in current_scope._private_typedefs:
+                return current_scope._private_typedefs[base_first].get_value()
+
             current_scope = current_scope.parent_scope
 
         if current_scope is None:
@@ -423,6 +428,15 @@ class Scope(Generic[ScopeKindT]):
         else:
             return "::".join(matched_segments)
 
+    def add_private_typedef(self, member: TypedefMember) -> None:
+        """
+        Store a private typedef for use during type resolution.
+
+        Private typedefs are not included in the snapshot output, but their
+        definitions are substituted for references to them in public members.
+        """
+        self._private_typedefs[member.name] = member
+
     def add_member(self, member: Member | None) -> None:
         """
         Add a member to the scope.
@@ -441,6 +455,9 @@ class Scope(Generic[ScopeKindT]):
         """
         Close the scope by setting the kind of all temporary scopes.
         """
+        for typedef in self._private_typedefs.values():
+            typedef.close(self)
+
         for member in self.get_members():
             member.close(self)
 

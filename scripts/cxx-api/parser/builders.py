@@ -465,7 +465,11 @@ def _process_objc_sections(
         member_type = parts[-1]
 
         if visibility == "private":
-            pass
+            if member_type == "type":
+                for member_def in section_def.memberdef:
+                    if member_def.kind == "typedef":
+                        typedef_member = get_typedef_member(member_def, visibility)
+                        scope.add_private_typedef(typedef_member)
         elif visibility in ("public", "protected"):
             if member_type == "attrib":
                 for member_def in section_def.memberdef:
@@ -611,7 +615,11 @@ def create_class_scope(
         member_type = parts[-1]
 
         if visibility == "private":
-            pass
+            if member_type == "type":
+                for member_def in section_def.memberdef:
+                    if member_def.kind == "typedef":
+                        typedef_member = get_typedef_member(member_def, visibility)
+                        class_scope.add_private_typedef(typedef_member)
         elif visibility in ("public", "protected"):
             if member_type == "attrib":
                 for member_def in section_def.memberdef:

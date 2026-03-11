@@ -334,6 +334,19 @@ class TypedefMember(Member):
         """Check if this typedef is a function pointer type."""
         return self.argstring is not None and self.argstring.startswith(")(")
 
+    def get_value(self) -> str:
+        if self.keyword == "using":
+            return format_parsed_type(self._parsed_type)
+        elif self._is_function_pointer():
+            formatted_args = format_arguments(self._fp_arguments)
+            qualified_type = format_parsed_type(self._parsed_type)
+            if "(*" in qualified_type:
+                return f"{qualified_type})({formatted_args})"
+            else:
+                return f"{qualified_type}(*)({formatted_args})"
+        else:
+            return self.type
+
     def to_string(
         self,
         indent: int = 0,
