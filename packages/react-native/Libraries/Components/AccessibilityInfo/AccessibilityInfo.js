@@ -237,10 +237,10 @@ const AccessibilityInfo = {
    * The result is `true` when dark system colors is enabled and `false` otherwise.
    */
   isDarkerSystemColorsEnabled(): Promise<boolean> {
-    return new Promise((resolve, reject) => {
-      if (Platform.OS === 'android') {
-        return Promise.resolve(false);
-      } else {
+    if (Platform.OS === 'android') {
+      return Promise.resolve(false);
+    } else {
+      return new Promise((resolve, reject) => {
         if (
           NativeAccessibilityManagerIOS?.getCurrentDarkerSystemColorsState !=
           null
@@ -256,8 +256,8 @@ const AccessibilityInfo = {
             ),
           );
         }
-      }
-    });
+      });
+    }
   },
 
   /**
