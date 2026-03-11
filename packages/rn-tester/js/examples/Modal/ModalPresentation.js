@@ -19,7 +19,15 @@ import {RNTesterThemeContext} from '../../components/RNTesterTheme';
 import RNTOption from '../../components/RNTOption';
 import * as React from 'react';
 import {useCallback, useContext, useState} from 'react';
-import {Modal, Platform, StyleSheet, Switch, Text, View} from 'react-native';
+import {
+  Modal,
+  Platform,
+  StatusBar,
+  StyleSheet,
+  Switch,
+  Text,
+  View,
+} from 'react-native';
 
 const animationTypes = ['slide', 'none', 'fade'] as const;
 const presentationStyles = [
@@ -312,6 +320,25 @@ function ModalPresentation() {
               onPress={() => setProps(prev => ({...prev, visible: false}))}>
               Close
             </RNTesterButton>
+            <RNTesterText style={styles.title}>
+              Status Bar controls
+            </RNTesterText>
+            <View style={{flexDirection: 'row'}}>
+              <RNTesterButton
+                onPress={() => StatusBar.setBarStyle('light-content')}>
+                Set light
+              </RNTesterButton>
+              <RNTesterButton
+                onPress={() => StatusBar.setBarStyle('dark-content')}>
+                Set dark
+              </RNTesterButton>
+              <RNTesterButton onPress={() => StatusBar.setHidden(true)}>
+                Hide
+              </RNTesterButton>
+              <RNTesterButton onPress={() => StatusBar.setHidden(false)}>
+                Show
+              </RNTesterButton>
+            </View>
             {controls}
           </View>
         </View>
