@@ -17,8 +17,13 @@ import android.view.PixelCopy
 import android.view.Window
 import com.facebook.proguard.annotations.DoNotStripAny
 import java.io.ByteArrayOutputStream
+import java.util.concurrent.Executors
+import java.util.concurrent.atomic.AtomicBoolean
+import java.util.concurrent.atomic.AtomicReference
+import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.asCoroutineDispatcher
 import kotlinx.coroutines.launch
 
 @DoNotStripAny
@@ -29,9 +34,27 @@ internal class FrameTimingsObserver(
   private val isSupported = Build.VERSION.SDK_INT >= Build.VERSION_CODES.N
   private val mainHandler = Handler(Looper.getMainLooper())
 
+  // Serial dispatcher for encoding work (single background thread). We limit to 1 thread to
+  // minimize the performance impact of screenshot recording.
+  private val encodingDispatcher: CoroutineDispatcher =
+      Executors.newSingleThreadExecutor().asCoroutineDispatcher()
+
+  // Stores the most recently captured frame to opportunistically encode after the current frame.
+  // Replaced frames are emitted as timings without screenshots.
+  private val lastFrameBuffer = AtomicReference<FrameData?>(null)
+
   private var frameCounter: Int = 0
+  private val encodingInProgress = AtomicBoolean(false)
   @Volatile private var isTracing: Boolean = false
   @Volatile private var currentWindow: Window? = null
+
+  private data class FrameData(
+      val bitmap: Bitmap,
+      val frameId: Int,
+      val threadId: Int,
+      val beginTimestamp: Long,
+      val endTimestamp: Long,
+  )
 
   fun start() {
     if (!isSupported) {
@@ -39,10 +62,11 @@ internal class FrameTimingsObserver(
     }
 
     frameCounter = 0
+    encodingInProgress.set(false)
+    lastFrameBuffer.set(null)
     isTracing = true
 
-    // Capture initial screenshot to ensure there's always at least one frame
-    // recorded at the start of tracing, even if no UI changes occur
+    // Emit initial frame event
     val timestamp = System.nanoTime()
     emitFrameTiming(timestamp, timestamp)
 
@@ -58,6 +82,7 @@ internal class FrameTimingsObserver(
 
     currentWindow?.removeOnFrameMetricsAvailableListener(frameMetricsListener)
     mainHandler.removeCallbacksAndMessages(null)
+    lastFrameBuffer.getAndSet(null)?.bitmap?.recycle()
   }
 
   fun setCurrentWindow(window: Window?) {
@@ -74,8 +99,7 @@ internal class FrameTimingsObserver(
 
   private val frameMetricsListener =
       Window.OnFrameMetricsAvailableListener { _, frameMetrics, _ ->
-        // Guard against calls arriving after stop() has ended tracing. Async work scheduled from
-        // previous frames will still finish.
+        // Guard against calls after stop()
         if (!isTracing) {
           return@OnFrameMetricsAvailableListener
         }
@@ -88,34 +112,107 @@ internal class FrameTimingsObserver(
     val frameId = frameCounter++
     val threadId = Process.myTid()
 
-    if (screenshotsEnabled) {
-      // Initiate PixelCopy immediately on the main thread, while still in the current frame,
-      // then process and emit asynchronously once the copy is complete.
-      captureScreenshot { screenshot ->
-        CoroutineScope(Dispatchers.Default).launch {
-          onFrameTimingSequence(
-              FrameTimingSequence(frameId, threadId, beginTimestamp, endTimestamp, screenshot)
-          )
+    if (!screenshotsEnabled) {
+      // Screenshots disabled - emit without screenshot
+      emitFrameEvent(frameId, threadId, beginTimestamp, endTimestamp, null)
+      return
+    }
+
+    captureScreenshot(frameId, threadId, beginTimestamp, endTimestamp) { frameData ->
+      if (frameData != null) {
+        if (encodingInProgress.compareAndSet(false, true)) {
+          // Not encoding - encode this frame immediately
+          encodeFrame(frameData)
+        } else {
+          // Encoding thread busy - store current screenshot in buffer for tail-capture
+          val oldFrameData = lastFrameBuffer.getAndSet(frameData)
+          if (oldFrameData != null) {
+            // Skipped frame - emit event without screenshot
+            emitFrameEvent(
+                oldFrameData.frameId,
+                oldFrameData.threadId,
+                oldFrameData.beginTimestamp,
+                oldFrameData.endTimestamp,
+                null,
+            )
+            oldFrameData.bitmap.recycle()
+          }
         }
+      } else {
+        // Failed to capture (e.g. timeout) - emit without screenshot
+        emitFrameEvent(frameId, threadId, beginTimestamp, endTimestamp, null)
       }
-    } else {
-      CoroutineScope(Dispatchers.Default).launch {
-        onFrameTimingSequence(
-            FrameTimingSequence(frameId, threadId, beginTimestamp, endTimestamp, null)
+    }
+  }
+
+  private fun emitFrameEvent(
+      frameId: Int,
+      threadId: Int,
+      beginTimestamp: Long,
+      endTimestamp: Long,
+      screenshot: ByteArray?,
+  ) {
+    CoroutineScope(Dispatchers.Default).launch {
+      onFrameTimingSequence(
+          FrameTimingSequence(frameId, threadId, beginTimestamp, endTimestamp, screenshot)
+      )
+    }
+  }
+
+  private fun encodeFrame(frameData: FrameData) {
+    CoroutineScope(encodingDispatcher).launch {
+      try {
+        val screenshot = encodeScreenshot(frameData.bitmap)
+        emitFrameEvent(
+            frameData.frameId,
+            frameData.threadId,
+            frameData.beginTimestamp,
+            frameData.endTimestamp,
+            screenshot,
         )
+      } finally {
+        frameData.bitmap.recycle()
+      }
+
+      // Clear encoding flag early, allowing new frames to start fresh encoding sessions
+      encodingInProgress.set(false)
+
+      // Opportunistically encode tail frame (if present) without blocking new frames
+      val tailFrame = lastFrameBuffer.getAndSet(null)
+      if (tailFrame != null) {
+        try {
+          val screenshot = encodeScreenshot(tailFrame.bitmap)
+          emitFrameEvent(
+              tailFrame.frameId,
+              tailFrame.threadId,
+              tailFrame.beginTimestamp,
+              tailFrame.endTimestamp,
+              screenshot,
+          )
+        } finally {
+          tailFrame.bitmap.recycle()
+        }
       }
     }
   }
 
   // Must be called from the main thread so that PixelCopy captures the current frame.
-  private fun captureScreenshot(callback: (ByteArray?) -> Unit) {
+  private fun captureScreenshot(
+      frameId: Int,
+      threadId: Int,
+      beginTimestamp: Long,
+      endTimestamp: Long,
+      callback: (FrameData?) -> Unit,
+  ) {
     if (Build.VERSION.SDK_INT < Build.VERSION_CODES.O) {
+      // PixelCopy not available
       callback(null)
       return
     }
 
     val window = currentWindow
     if (window == null) {
+      // No window
       callback(null)
       return
     }
@@ -130,9 +227,7 @@ internal class FrameTimingsObserver(
         bitmap,
         { copyResult ->
           if (copyResult == PixelCopy.SUCCESS) {
-            CoroutineScope(Dispatchers.Default).launch {
-              callback(encodeScreenshot(window, bitmap, width, height))
-            }
+            callback(FrameData(bitmap, frameId, threadId, beginTimestamp, endTimestamp))
           } else {
             bitmap.recycle()
             callback(null)
@@ -142,14 +237,12 @@ internal class FrameTimingsObserver(
     )
   }
 
-  private fun encodeScreenshot(
-      window: Window,
-      bitmap: Bitmap,
-      width: Int,
-      height: Int,
-  ): ByteArray? {
+  private fun encodeScreenshot(bitmap: Bitmap): ByteArray? {
     var scaledBitmap: Bitmap? = null
     return try {
+      val window = currentWindow ?: return null
+      val width = bitmap.width
+      val height = bitmap.height
       val density = window.context.resources.displayMetrics.density
       val scaledWidth = (width / density * SCREENSHOT_SCALE_FACTOR).toInt()
       val scaledHeight = (height / density * SCREENSHOT_SCALE_FACTOR).toInt()
@@ -167,7 +260,6 @@ internal class FrameTimingsObserver(
       null
     } finally {
       scaledBitmap?.recycle()
-      bitmap.recycle()
     }
   }
 
