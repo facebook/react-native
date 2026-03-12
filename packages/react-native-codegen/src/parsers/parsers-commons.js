@@ -189,30 +189,42 @@ function getObjectTypeAnnotations(
     if (!isTypeAlias) {
       return;
     }
-    const parent = parser.nextNodeForTypeAlias(value);
+    let parent = parser.nextNodeForTypeAlias(value);
+    // Unwrap $ReadOnly/Readonly wrappers to get the inner object type
+    if (
+      parent.type === 'GenericTypeAnnotation' &&
+      (parent.id?.name === '$ReadOnly' || parent.id?.name === 'Readonly') &&
+      parent.typeParameters?.params?.length === 1
+    ) {
+      parent = parent.typeParameters.params[0];
+    } else if (
+      parent.type === 'TSTypeReference' &&
+      parent.typeName?.name === 'Readonly' &&
+      parent.typeParameters?.params?.length === 1
+    ) {
+      parent = parent.typeParameters.params[0];
+    }
     if (
       parent.type !== 'ObjectTypeAnnotation' &&
       parent.type !== 'TSTypeLiteral'
     ) {
       return;
     }
-    const typeProperties = parser
-      .getAnnotatedElementProperties(value)
-      .map(prop =>
-        parseObjectProperty(
-          parent,
-          prop,
-          hasteModuleName,
-          types,
-          aliasMap,
-          {}, // enumMap
-          tryParse,
-          true, // cxxOnly
-          prop?.optional || false,
-          translateTypeAnnotation,
-          parser,
-        ),
-      );
+    const typeProperties = (parent.properties ?? parent.members).map(prop =>
+      parseObjectProperty(
+        parent,
+        prop,
+        hasteModuleName,
+        types,
+        aliasMap,
+        {}, // enumMap
+        tryParse,
+        true, // cxxOnly
+        prop?.optional || false,
+        translateTypeAnnotation,
+        parser,
+      ),
+    );
     aliasMap[key] = {
       type: 'ObjectTypeAnnotation',
       properties: typeProperties,
