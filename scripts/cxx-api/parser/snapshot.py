@@ -90,14 +90,18 @@ class Snapshot:
     def create_protocol(self, qualified_name: str) -> Scope[ProtocolScopeKind]:
         """
         Create a protocol in the snapshot.
+        In Objective-C, a protocol and interface can share the same name,
+        so protocols are stored with a '-p' suffix to differentiate them.
         """
         path = parse_qualified_path(qualified_name)
         scope_path = path[0:-1]
         scope_name = path[-1]
+        # Use '-p' suffix to allow protocols to coexist with interfaces of the same name
+        scope_key = f"{scope_name}-p"
         current_scope = self.ensure_scope(scope_path)
 
-        if scope_name in current_scope.inner_scopes:
-            scope = current_scope.inner_scopes[scope_name]
+        if scope_key in current_scope.inner_scopes:
+            scope = current_scope.inner_scopes[scope_key]
             if scope.kind.name == "temporary":
                 scope.kind = ProtocolScopeKind()
             else:
@@ -108,7 +112,7 @@ class Snapshot:
         else:
             new_scope = Scope(ProtocolScopeKind(), scope_name)
             new_scope.parent_scope = current_scope
-            current_scope.inner_scopes[scope_name] = new_scope
+            current_scope.inner_scopes[scope_key] = new_scope
             return new_scope
 
     def create_interface(self, qualified_name: str) -> Scope[InterfaceScopeKind]:

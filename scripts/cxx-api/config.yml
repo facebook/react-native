@@ -54,6 +54,7 @@ ReactApple:
     - packages/react-native/ReactCommon
     - packages/react-native/React
     - packages/react-native/ReactApple
+    - packages/react-native/Libraries
   exclude_patterns:
     - "*/test_utils/*"
     - "*/jni/*"
@@ -63,6 +64,8 @@ ReactApple:
     - "*/platform/android/*"
     - "*+Private.h"
     - "*+Internal.h"
+    - "*/scripts/*"
+    - "*/templates/*"
   definitions:
     __cplusplus: 1
   variants:
