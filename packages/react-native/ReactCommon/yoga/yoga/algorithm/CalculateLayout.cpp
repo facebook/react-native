@@ -94,7 +94,18 @@ static void computeFlexBasisForChild(
   const bool isColumnStyleDimDefined =
       child->hasDefiniteLength(Dimension::Height, ownerHeight);
 
-  if (resolvedFlexBasis.isDefined() && yoga::isDefined(mainAxisSize)) {
+  const bool fixFlexBasisFitContent =
+      node->getConfig()->isExperimentalFeatureEnabled(
+          ExperimentalFeature::FixFlexBasisFitContent);
+
+  bool useResolvedFlexBasis =
+      resolvedFlexBasis.isDefined() && yoga::isDefined(mainAxisSize);
+  if (fixFlexBasisFitContent && resolvedFlexBasis.isDefined() &&
+      resolvedFlexBasis.unwrap() > 0) {
+    useResolvedFlexBasis = true;
+  }
+
+  if (useResolvedFlexBasis) {
     if (child->getLayout().computedFlexBasis.isUndefined() ||
         (child->getConfig()->isExperimentalFeatureEnabled(
              ExperimentalFeature::WebFlexBasis) &&
@@ -164,12 +175,27 @@ static void computeFlexBasisForChild(
       }
     }
 
-    if ((isMainAxisRow && node->style().overflow() == Overflow::Scroll) ||
-        node->style().overflow() != Overflow::Scroll) {
-      if (yoga::isUndefined(childHeight) && yoga::isDefined(height)) {
-        childHeight = height;
-        childHeightSizingMode = SizingMode::FitContent;
-      }
+    // For height in the main axis (column direction): when the
+    // FixFlexBasisFitContent feature is enabled, skip FitContent for
+    // non-measure container children. This makes the flex basis independent
+    // of the parent's content-determined height, preventing unnecessary
+    // re-measurement cascades when a sibling changes size in a ScrollView.
+    //
+    // We only optimize the height (column) axis because text wrapping depends
+    // on width constraints propagating through container nodes. Removing
+    // FitContent from the width axis would cause text inside nested
+    // containers to stop wrapping.
+    bool applyHeightFitContent =
+        isMainAxisRow || node->style().overflow() != Overflow::Scroll;
+    if (fixFlexBasisFitContent) {
+      applyHeightFitContent = isMainAxisRow ||
+          (child->hasMeasureFunc() &&
+           node->style().overflow() != Overflow::Scroll);
+    }
+    if (applyHeightFitContent && yoga::isUndefined(childHeight) &&
+        yoga::isDefined(height)) {
+      childHeight = height;
+      childHeightSizingMode = SizingMode::FitContent;
     }
 
     const auto& childStyle = child->style();
@@ -537,6 +563,8 @@ static float computeFlexBasisForChildren(
     yoga::Node* const node,
     const float availableInnerWidth,
     const float availableInnerHeight,
+    const float ownerWidth,
+    const float ownerHeight,
     SizingMode widthSizingMode,
     SizingMode heightSizingMode,
     Direction direction,
@@ -598,8 +626,8 @@ static float computeFlexBasisForChildren(
           availableInnerWidth,
           widthSizingMode,
           availableInnerHeight,
-          availableInnerWidth,
-          availableInnerHeight,
+          ownerWidth,
+          ownerHeight,
           heightSizingMode,
           direction,
           layoutMarkerData,
@@ -1429,12 +1457,53 @@ static void calculateLayoutImpl(
 
   // STEP 3: DETERMINE FLEX BASIS FOR EACH ITEM
 
+  // When this node is measured with MaxContent (FixFlexBasisFitContent
+  // behavior), availableInnerHeight is NaN.
+  // To preserve percentage resolution for descendants, derive a definite
+  // owner-size from the parent-provided ownerHeight.
+  float ownerWidthForChildren = availableInnerWidth;
+  float ownerHeightForChildren = availableInnerHeight;
+
+  if (node->getConfig()->isExperimentalFeatureEnabled(
+          ExperimentalFeature::FixFlexBasisFitContent)) {
+    const auto* owner = node->getOwner();
+    const bool isChildOfScrollContainer =
+        owner != nullptr && owner->style().overflow() == Overflow::Scroll;
+
+    if (!isChildOfScrollContainer) {
+      if (yoga::isUndefined(ownerWidthForChildren) &&
+          yoga::isDefined(ownerWidth)) {
+        ownerWidthForChildren = calculateAvailableInnerDimension(
+            node,
+            direction,
+            Dimension::Width,
+            ownerWidth - marginAxisRow,
+            paddingAndBorderAxisRow,
+            ownerWidth,
+            ownerWidth);
+      }
+      if (yoga::isUndefined(ownerHeightForChildren) &&
+          yoga::isDefined(ownerHeight)) {
+        ownerHeightForChildren = calculateAvailableInnerDimension(
+            node,
+            direction,
+            Dimension::Height,
+            ownerHeight - marginAxisColumn,
+            paddingAndBorderAxisColumn,
+            ownerHeight,
+            ownerWidth);
+      }
+    }
+  }
+
   // Computed basis + margins + gap
   float totalMainDim = 0;
   totalMainDim += computeFlexBasisForChildren(
       node,
       availableInnerWidth,
       availableInnerHeight,
+      ownerWidthForChildren,
+      ownerHeightForChildren,
       widthSizingMode,
       heightSizingMode,
       direction,

@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<5ae89f16fbc942bd1c857c85b0520a03>>
+ * @generated SignedSource<<4811a81c7839f2be5c8a127e6c8e310b>>
  */
 
 /**
@@ -338,6 +338,11 @@ class ReactNativeFeatureFlags {
    * Fix text clipping starting in Android 15 due to usage of useBoundsForWidth
    */
   RN_EXPORT static bool fixTextClippingAndroid15useBoundsForWidth();
+
+  /**
+   * Fix flex basis computation to not apply FitContent constraint in the main axis for non-measure container nodes, preventing unnecessary re-measurement in scroll containers.
+   */
+  RN_EXPORT static bool fixYogaFlexBasisFitContentInMainAxis();
 
   /**
    * Enable system assertion validating that Fusebox is configured with a single host. When set, the CDP backend will dynamically disable features (Perf and Network) in the event that multiple hosts are registered (undefined behaviour), and broadcast this over `ReactNativeApplication.systemStateChanged`.
