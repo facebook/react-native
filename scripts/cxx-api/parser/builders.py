@@ -17,7 +17,7 @@ import re
 
 from doxmlparser import compound
 
-from ..input_filters.handle_objc_interface_generics import decode_objc_generics
+from .input_filters.handle_objc_interface_generics import decode_objc_generics
 from .member import (
     ConceptMember,
     EnumMember,
