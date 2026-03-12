@@ -264,7 +264,7 @@ internal class FrameTimingsObserver(
   }
 
   companion object {
-    private const val SCREENSHOT_SCALE_FACTOR = 0.75f
+    private const val SCREENSHOT_SCALE_FACTOR = 1.0f
     private const val SCREENSHOT_QUALITY = 80
 
     // Capacity hint for the ByteArrayOutputStream used during bitmap
