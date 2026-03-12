@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<acd57b19a67924a91c6b25904cb24d3b>>
+ * @generated SignedSource<<f34b257861830bae7012fc5201904831>>
  */
 
 /**
@@ -142,6 +142,8 @@ public interface ReactNativeFeatureFlagsProvider {
   @DoNotStrip public fun fixMappingOfEventPrioritiesBetweenFabricAndReact(): Boolean
 
   @DoNotStrip public fun fixTextClippingAndroid15useBoundsForWidth(): Boolean
+
+  @DoNotStrip public fun fixYogaFlexBasisFitContentInMainAxis(): Boolean
 
   @DoNotStrip public fun fuseboxAssertSingleHostState(): Boolean
 

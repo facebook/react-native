@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<44a2abb1927d4db27052329f6544fefc>>
+ * @generated SignedSource<<5966ef11ee71a38059decda1c529fd6f>>
  * @flow strict
  * @noformat
  */
@@ -108,6 +108,7 @@ export type ReactNativeFeatureFlags = $ReadOnly<{
   fixFindShadowNodeByTagRaceCondition: Getter<boolean>,
   fixMappingOfEventPrioritiesBetweenFabricAndReact: Getter<boolean>,
   fixTextClippingAndroid15useBoundsForWidth: Getter<boolean>,
+  fixYogaFlexBasisFitContentInMainAxis: Getter<boolean>,
   fuseboxAssertSingleHostState: Getter<boolean>,
   fuseboxEnabledRelease: Getter<boolean>,
   fuseboxFrameRecordingEnabled: Getter<boolean>,
@@ -448,6 +449,10 @@ export const fixMappingOfEventPrioritiesBetweenFabricAndReact: Getter<boolean> =
  * Fix text clipping starting in Android 15 due to usage of useBoundsForWidth
  */
 export const fixTextClippingAndroid15useBoundsForWidth: Getter<boolean> = createNativeFlagGetter('fixTextClippingAndroid15useBoundsForWidth', false);
+/**
+ * Fix flex basis computation to not apply FitContent constraint in the main axis for non-measure container nodes, preventing unnecessary re-measurement in scroll containers.
+ */
+export const fixYogaFlexBasisFitContentInMainAxis: Getter<boolean> = createNativeFlagGetter('fixYogaFlexBasisFitContentInMainAxis', false);
 /**
  * Enable system assertion validating that Fusebox is configured with a single host. When set, the CDP backend will dynamically disable features (Perf and Network) in the event that multiple hosts are registered (undefined behaviour), and broadcast this over `ReactNativeApplication.systemStateChanged`.
  */
