@@ -409,16 +409,18 @@ class Scope(Generic[ScopeKindT]):
                     if anchor_prefix:
                         return f"{anchor_prefix}::{suffix}"
                     return suffix
-            elif any(
-                isinstance(m, FriendMember) and m.name == base_name
-                for m in current_scope._members
-            ):
-                # The name matches a friend declaration, not a real member.
-                # Re-qualify from the remaining segments so the type resolves
-                # to its actual definition rather than the friend's owning class.
-                remaining = "::".join(path[i:])
-                return self.qualify_name(remaining)
             else:
+                # Segment not found as an inner scope or a real member of
+                # the current scope.  When inside a struct-like scope this
+                # typically means Doxygen's refid-based qualification
+                # incorrectly placed a type under a compound that does not
+                # actually contain it — for example a friend declaration or
+                # an inherited constructor reported as a member ref. Try
+                # to re-qualify from the remaining unmatched segments so the
+                # type resolves against the broader scope hierarchy.
+                if isinstance(current_scope.kind, StructLikeScopeKind):
+                    remaining = "::".join(path[i:])
+                    return self.qualify_name(remaining)
                 return None
 
         # Return qualified name with preserved template arguments
