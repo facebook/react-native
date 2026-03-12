@@ -65,6 +65,7 @@ import com.facebook.react.uimanager.DisplayMetricsHolder
 import com.facebook.react.uimanager.IllegalViewOperationException
 import com.facebook.react.uimanager.UIConstantsProviderBinding
 import com.facebook.react.uimanager.UIConstantsProviderBinding.ConstantsForViewManagerProvider
+import com.facebook.react.uimanager.UIManagerConstantsCache
 import com.facebook.react.uimanager.UIManagerModuleConstantsHelper
 import com.facebook.react.uimanager.ViewManager
 import com.facebook.react.uimanager.ViewManagerRegistry
@@ -219,6 +220,7 @@ internal class ReactInstance(
     // initialized.
     // This happens inside getTurboModuleManagerDelegate getter.
     if (ReactNativeFeatureFlags.useNativeViewConfigsInBridgelessMode()) {
+      UIManagerConstantsCache.maybePreload(context)
       val customDirectEvents: MutableMap<String, Any> = HashMap()
 
       UIConstantsProviderBinding.install(
@@ -232,22 +234,58 @@ internal class ReactInstance(
           // We want to match this beahavior.
           { Arguments.makeNativeMap(UIManagerModuleConstantsHelper.defaultExportableEventTypes) },
           ConstantsForViewManagerProvider { viewManagerName: String ->
+            UIManagerConstantsCache
+                .getCachedConstantsForViewManager(
+                    context,
+                    viewManagerName,
+                    customDirectEvents,
+                    context.sourceURL,
+                )
+                ?.let { cachedConstants ->
+                  return@ConstantsForViewManagerProvider cachedConstants
+                }
+
             val viewManager =
                 viewManagerResolver.getViewManager(viewManagerName)
                     ?: return@ConstantsForViewManagerProvider null
-            getConstantsForViewManager(viewManager, customDirectEvents)
+            val viewManagerConstants =
+                createConstantsForViewManagerMap(viewManager, customDirectEvents)
+            UIManagerConstantsCache.saveConstantsForViewManager(
+                context,
+                viewManagerName,
+                viewManagerConstants,
+                customDirectEvents,
+                context.sourceURL,
+            )
+            Arguments.makeNativeMap(viewManagerConstants)
           },
           {
-            val viewManagers: List<ViewManager<*, *>> =
-                ArrayList(viewManagerResolver.eagerViewManagerMap.values)
-            val constants = createConstants(viewManagers, customDirectEvents)
+            val cachedConstants =
+                UIManagerConstantsCache.getCachedConstants(
+                    context,
+                    customDirectEvents,
+                    context.sourceURL,
+                )
+            if (cachedConstants != null) {
+              cachedConstants
+            } else {
+              val viewManagers: List<ViewManager<*, *>> =
+                  ArrayList(viewManagerResolver.eagerViewManagerMap.values)
+              val constants = createConstants(viewManagers, customDirectEvents)
 
-            val lazyViewManagers = viewManagerResolver.lazyViewManagerNames
-            if (!lazyViewManagers.isEmpty()) {
-              constants["ViewManagerNames"] = ArrayList(lazyViewManagers)
-              constants["LazyViewManagersEnabled"] = true
+              val lazyViewManagers = viewManagerResolver.lazyViewManagerNames
+              if (!lazyViewManagers.isEmpty()) {
+                constants["ViewManagerNames"] = ArrayList(lazyViewManagers)
+                constants["LazyViewManagersEnabled"] = true
+              }
+              UIManagerConstantsCache.saveConstants(
+                  context,
+                  constants,
+                  customDirectEvents,
+                  context.sourceURL,
+              )
+              Arguments.makeNativeMap(constants)
             }
-            Arguments.makeNativeMap(constants)
           },
       )
     }
@@ -616,6 +654,14 @@ internal class ReactInstance(
         viewManager: ViewManager<*, *>,
         customDirectEvents: MutableMap<String, Any>,
     ): NativeMap {
+      val viewManagerConstants = createConstantsForViewManagerMap(viewManager, customDirectEvents)
+      return Arguments.makeNativeMap(viewManagerConstants)
+    }
+
+    private fun createConstantsForViewManagerMap(
+        viewManager: ViewManager<*, *>,
+        customDirectEvents: MutableMap<String, Any>,
+    ): Map<String, Any?> {
       SystraceMessage.beginSection(
               Systrace.TRACE_TAG_REACT,
               "ReactInstance.getConstantsForViewManager",
@@ -624,15 +670,13 @@ internal class ReactInstance(
           .arg("Lazy", true)
           .flush()
       try {
-        val viewManagerConstants: Map<String, Any> =
-            UIManagerModuleConstantsHelper.createConstantsForViewManager(
+        return UIManagerModuleConstantsHelper.createConstantsForViewManager(
                 viewManager,
                 null,
                 null,
                 null,
                 customDirectEvents,
             )
-        return Arguments.makeNativeMap(viewManagerConstants)
       } finally {
         SystraceMessage.endSection(Systrace.TRACE_TAG_REACT).flush()
       }
