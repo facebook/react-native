@@ -80,6 +80,14 @@ static NSSet<NSNumber *> *returnKeyTypesSet;
 
   BOOL _hasInputAccessoryView;
   CGSize _previousContentSize;
+
+  /*
+   * When IME composition is active (markedTextRange != nil), we defer updating
+   * defaultTextAttributes to avoid destroying the composition underline.
+   * See: https://github.com/facebook/react-native/issues/48497
+   */
+  BOOL _needsUpdateDefaultTextAttributes;
+  NSDictionary<NSAttributedStringKey, id> *_pendingDefaultTextAttributes;
 }
 
 #pragma mark - UIView overrides
@@ -113,6 +121,15 @@ static NSSet<NSNumber *> *returnKeyTypesSet;
       [_backedTextInputView.defaultTextAttributes mutableCopy];
 
   defaultAttributes[RCTAttributedStringEventEmitterKey] = RCTWrapEventEmitter(_eventEmitter);
+
+  // During IME composition, skip setting defaultTextAttributes.
+  // UITextField.setDefaultTextAttributes reapplies attributes to the entire text,
+  // which removes the composition underline and breaks the IME state.
+  if (_backedTextInputView.markedTextRange) {
+    _needsUpdateDefaultTextAttributes = YES;
+    _pendingDefaultTextAttributes = [defaultAttributes copy];
+    return;
+  }
 
   _backedTextInputView.defaultTextAttributes = defaultAttributes;
 }
@@ -384,6 +401,8 @@ static NSSet<NSNumber *> *returnKeyTypesSet;
   _lastStringStateWasUpdatedWith = nil;
   _ignoreNextTextInputCall = NO;
   _didMoveToWindow = NO;
+  _needsUpdateDefaultTextAttributes = NO;
+  _pendingDefaultTextAttributes = nil;
   _backedTextInputView.inputAccessoryViewID = nil;
   _backedTextInputView.inputAccessoryView = nil;
   _hasInputAccessoryView = false;
@@ -457,7 +476,9 @@ static NSSet<NSNumber *> *returnKeyTypesSet;
     }
   }
 
-  if (props.maxLength < std::numeric_limits<int>::max()) {
+  // Defer maxLength enforcement during IME composition — it will be applied
+  // after the composition is committed (in textInputDidChange).
+  if (props.maxLength < std::numeric_limits<int>::max() && !_backedTextInputView.markedTextRange) {
     NSInteger allowedLength = props.maxLength - _backedTextInputView.attributedText.string.length + range.length;
 
     if (allowedLength > 0 && text.length > allowedLength) {
@@ -495,6 +516,31 @@ static NSSet<NSNumber *> *returnKeyTypesSet;
     return;
   }
 
+  // After composition ends, apply any pending defaultTextAttributes that were
+  // deferred during IME composition (Fix 1).
+  if (_needsUpdateDefaultTextAttributes && !_backedTextInputView.markedTextRange) {
+    _needsUpdateDefaultTextAttributes = NO;
+    if (_pendingDefaultTextAttributes) {
+      _backedTextInputView.defaultTextAttributes = _pendingDefaultTextAttributes;
+      _pendingDefaultTextAttributes = nil;
+    }
+  }
+
+  // After composition ends, enforce maxLength by truncating if needed (Fix 3).
+  if (!_backedTextInputView.markedTextRange) {
+    const auto &props = static_cast<const TextInputProps &>(*_props);
+    if (props.maxLength < std::numeric_limits<int>::max()) {
+      NSString *currentText = _backedTextInputView.attributedText.string;
+      if ((NSInteger)currentText.length > props.maxLength) {
+        NSString *truncated = [currentText substringToIndex:props.maxLength];
+        NSAttributedString *truncatedAttr =
+            [[NSAttributedString alloc] initWithString:truncated
+                                            attributes:_backedTextInputView.defaultTextAttributes];
+        [self _setAttributedString:truncatedAttr];
+      }
+    }
+  }
+
   [self _updateState];
 
   if (_eventEmitter) {
@@ -515,7 +561,8 @@ static NSSet<NSNumber *> *returnKeyTypesSet;
   [self _updateTypingAttributes];
 
   const auto &props = static_cast<const TextInputProps &>(*_props);
-  if (props.multiline && ![_lastStringStateWasUpdatedWith isEqual:_backedTextInputView.attributedText]) {
+  if (props.multiline &&
+      ![_lastStringStateWasUpdatedWith.string isEqualToString:_backedTextInputView.attributedText.string]) {
     [self textInputDidChange];
     _ignoreNextTextInputCall = YES;
   }
@@ -768,6 +815,12 @@ static NSSet<NSNumber *> *returnKeyTypesSet;
 
 - (void)_setAttributedString:(NSAttributedString *)attributedString
 {
+  // During IME composition, skip replacing attributed text to preserve markedTextRange.
+  // The final text will be synced via textInputDidChange -> _updateState after composition ends.
+  if (_backedTextInputView.markedTextRange) {
+    return;
+  }
+
   if ([self _textOf:attributedString equals:_backedTextInputView.attributedText]) {
     return;
   }
