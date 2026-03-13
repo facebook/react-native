@@ -62,6 +62,8 @@ function handleLaunchArgs(argv: string[]) {
         width: 1200,
         height: 600,
       }),
+      minWidth: 400,
+      minHeight: 300,
       webPreferences: {
         partition: 'persist:react-native-devtools',
         preload: require.resolve('./preload.js'),
