@@ -121,8 +121,8 @@ void UIManagerBinding::dispatchEventToJS(
   }
 
   auto instanceHandle = eventTarget != nullptr ? [&]() {
-    auto instanceHandle = eventTarget->getInstanceHandle(runtime);
-    if (instanceHandle.isUndefined()) {
+    auto retrievedInstanceHandle = eventTarget->getInstanceHandle(runtime);
+    if (retrievedInstanceHandle.isUndefined()) {
       return jsi::Value::null();
     }
 
@@ -134,7 +134,7 @@ void UIManagerBinding::dispatchEventToJS(
     react_native_assert(payload.isObject());
     payload.asObject(runtime).setProperty(
         runtime, "target", eventTarget->getTag());
-    return instanceHandle;
+    return retrievedInstanceHandle;
   }()
                                                : jsi::Value::null();
 
