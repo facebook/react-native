@@ -11,10 +11,8 @@
 import type {ProcessedColorValue} from './processColor';
 import type {BoxShadowValue} from './StyleSheetTypes';
 
-import {enableOptimizedBoxShadowParsing} from '../../src/private/featureflags/ReactNativeFeatureFlags';
 import processColor from './processColor';
 
-// Pre-compiled regex patterns for performance - avoids regex compilation on each call
 const COMMA_SPLIT_REGEX = /,(?![^()]*\))/;
 const WHITESPACE_SPLIT_REGEX = /\s+(?![^(]*\))/;
 const LENGTH_PARSE_REGEX = /^([+-]?\d*\.?\d+)(px)?$/;
@@ -39,12 +37,7 @@ export default function processBoxShadow(
 
   const boxShadowList =
     typeof rawBoxShadows === 'string'
-      ? parseBoxShadowString(
-          rawBoxShadows.replace(
-            enableOptimizedBoxShadowParsing() ? NEWLINE_REGEX : /\n/g,
-            ' ',
-          ),
-        )
+      ? parseBoxShadowString(rawBoxShadows.replace(NEWLINE_REGEX, ' '))
       : rawBoxShadows;
 
   for (const rawBoxShadow of boxShadowList) {
@@ -121,9 +114,7 @@ function parseBoxShadowString(rawBoxShadows: string): Array<BoxShadowValue> {
   let result: Array<BoxShadowValue> = [];
 
   for (const rawBoxShadow of rawBoxShadows
-    .split(
-      enableOptimizedBoxShadowParsing() ? COMMA_SPLIT_REGEX : /,(?![^()]*\))/,
-    ) // split by comma that is not in parenthesis
+    .split(COMMA_SPLIT_REGEX)
     .map(bS => bS.trim())
     .filter(bS => bS !== '')) {
     const boxShadow: BoxShadowValue = {
@@ -137,11 +128,7 @@ function parseBoxShadowString(rawBoxShadows: string): Array<BoxShadowValue> {
     let lengthCount = 0;
 
     // split rawBoxShadow string by all whitespaces that are not in parenthesis
-    const args = rawBoxShadow.split(
-      enableOptimizedBoxShadowParsing()
-        ? WHITESPACE_SPLIT_REGEX
-        : /\s+(?![^(]*\))/,
-    );
+    const args = rawBoxShadow.split(WHITESPACE_SPLIT_REGEX);
     for (const arg of args) {
       const processedColor = processColor(arg);
       if (processedColor != null) {
@@ -210,43 +197,18 @@ function parseBoxShadowString(rawBoxShadows: string): Array<BoxShadowValue> {
 }
 
 function parseLength(length: string): ?number {
-  if (enableOptimizedBoxShadowParsing()) {
-    // Use pre-compiled regex for performance
-    const match = LENGTH_PARSE_REGEX.exec(length);
+  const match = LENGTH_PARSE_REGEX.exec(length);
 
-    if (!match) {
-      return null;
-    }
-
-    const value = parseFloat(match[1]);
-    if (Number.isNaN(value)) {
-      return null;
-    }
-
-    // match[2] is 'px' or undefined
-    // If no unit and value is not 0, return null
-    if (match[2] == null && value !== 0) {
-      return null;
-    }
-
-    return value;
-  }
-
-  // matches on args with units like "1.5 5% -80deg"
-  const argsWithUnitsRegex = /([+-]?\d*(\.\d+)?)([\w\W]+)?/g;
-  const match = argsWithUnitsRegex.exec(length);
-
-  if (!match || Number.isNaN(match[1])) {
+  if (!match) {
     return null;
   }
 
-  if (match[3] != null && match[3] !== 'px') {
+  const value = parseFloat(match[1]);
+
+  // If no unit (px) and value is not 0, reject it
+  if (match[2] == null && value !== 0) {
     return null;
   }
 
-  if (match[3] == null && match[1] !== '0') {
-    return null;
-  }
-
-  return Number(match[1]);
+  return value;
 }
