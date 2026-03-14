@@ -58,6 +58,13 @@ class NativeDOM : public NativeDOMCxxSpec<NativeDOM> {
       /* height: */ double>
   getBoundingClientRect(jsi::Runtime &rt, std::shared_ptr<const ShadowNode> shadowNode, bool includeTransform);
 
+  std::vector<std::tuple<
+      /* x: */ double,
+      /* y: */ double,
+      /* width: */ double,
+      /* height: */ double>>
+  getClientRects(jsi::Runtime &rt, std::shared_ptr<const ShadowNode> shadowNode);
+
   std::tuple</* width: */ int, /* height: */ int> getInnerSize(
       jsi::Runtime &rt,
       std::shared_ptr<const ShadowNode> shadowNode);
