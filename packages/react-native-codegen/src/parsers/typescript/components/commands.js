@@ -13,12 +13,14 @@
 import type {
   CommandParamTypeAnnotation,
   CommandTypeAnnotation,
-  ComponentCommandArrayTypeAnnotation,
   NamedShape,
 } from '../../../CodegenSchema.js';
 import type {Parser} from '../../parser';
 import type {TypeDeclarationMap} from '../../utils';
 
+const {
+  getCommandArrayElementTypeType,
+} = require('../../components/commands-commons');
 const {parseTopLevelType} = require('../parseTopLevelType');
 const {getPrimitiveTypeAnnotation} = require('./componentsUtils');
 
@@ -126,47 +128,6 @@ function buildCommandSchemaInternal(
       },
     },
   };
-}
-
-function getCommandArrayElementTypeType(
-  inputType: unknown,
-  parser: Parser,
-): ComponentCommandArrayTypeAnnotation['elementType'] {
-  // TODO: T172453752 support more complex type annotation for array element
-
-  if (inputType == null || typeof inputType !== 'object') {
-    throw new Error(`Expected an object, received ${typeof inputType}`);
-  }
-
-  const type = inputType.type;
-  if (typeof type !== 'string') {
-    throw new Error('Command array element type must be a string');
-  }
-
-  // This is not a great solution. This generally means its a type alias to another type
-  // like an object or union. Ideally we'd encode that in the schema so the compat-check can
-  // validate those deeper objects for breaking changes and the generators can do something smarter.
-  // As of now, the generators just create ReadableMap or (const NSArray *) which are untyped
-  if (type === 'TSTypeReference') {
-    const name =
-      typeof inputType.typeName === 'object'
-        ? parser.getTypeAnnotationName(inputType)
-        : null;
-
-    if (typeof name !== 'string') {
-      throw new Error('Expected TSTypeReference AST name to be a string');
-    }
-
-    try {
-      return getPrimitiveTypeAnnotation(name);
-    } catch (e) {
-      return {
-        type: 'MixedTypeAnnotation',
-      };
-    }
-  }
-
-  return getPrimitiveTypeAnnotation(type);
 }
 
 function buildCommandSchema(
