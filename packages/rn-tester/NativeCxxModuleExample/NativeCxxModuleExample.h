@@ -23,10 +23,10 @@
 namespace facebook::react {
 
 #pragma mark - Structs
-using ConstantsStruct = NativeCxxModuleExampleConstantsStruct<bool, int32_t, std::string>;
+using ConstantsStruct = SharedTypeConstantsStruct<bool, int32_t, std::string>;
 
 template <>
-struct Bridging<ConstantsStruct> : NativeCxxModuleExampleConstantsStructBridging<ConstantsStruct> {};
+struct Bridging<ConstantsStruct> : SharedTypeConstantsStructBridging<ConstantsStruct> {};
 
 using ObjectStruct = NativeCxxModuleExampleObjectStruct<int32_t, std::string, std::optional<std::string>>;
 
@@ -138,9 +138,9 @@ class NativeCxxModuleExample : public NativeCxxModuleExampleCxxSpec<NativeCxxMod
 
   GraphNode getGraphNode(jsi::Runtime &rt, GraphNode arg);
 
-  NativeCxxModuleExampleEnumInt getNumEnum(jsi::Runtime &rt, NativeCxxModuleExampleEnumInt arg);
+  SharedTypeEnumInt getNumEnum(jsi::Runtime &rt, SharedTypeEnumInt arg);
 
-  NativeCxxModuleExampleEnumStr getStrEnum(jsi::Runtime &rt, NativeCxxModuleExampleEnumNone arg);
+  NativeCxxModuleExampleEnumStr getStrEnum(jsi::Runtime &rt, SharedTypeEnumNone arg);
 
   std::map<std::string, std::optional<int32_t>> getMap(
       jsi::Runtime &rt,

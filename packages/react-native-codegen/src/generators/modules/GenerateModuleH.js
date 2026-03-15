@@ -319,6 +319,8 @@ function createStructsString(
   aliasMap: NativeModuleAliasMap,
   resolveAlias: AliasResolver,
   enumMap: NativeModuleEnumMap,
+  importedAliasNames?: $FlowFixMe,
+  emittedSharedStructs?: Set<string>,
 ): string {
   const getCppType = (
     parentObjectAlias: string,
@@ -340,7 +342,19 @@ function createStructsString(
       if (value.properties.length === 0) {
         return '';
       }
-      const structName = `${hasteModuleName}${alias}`;
+      const sourceModule: string | void =
+        importedAliasNames != null ? importedAliasNames[alias] : undefined;
+      // Skip shared types that have already been emitted by another module
+      if (sourceModule != null && emittedSharedStructs != null) {
+        if (emittedSharedStructs.has(alias)) {
+          return '';
+        }
+        emittedSharedStructs.add(alias);
+      }
+      const structName =
+        sourceModule != null
+          ? `${sourceModule}${alias}`
+          : `${hasteModuleName}${alias}`;
       const templateParameter = value.properties.filter(
         v =>
           !isDirectRecursiveMember(alias, v.typeAnnotation) &&
@@ -549,11 +563,22 @@ function createEnums(
   hasteModuleName: string,
   enumMap: NativeModuleEnumMap,
   resolveAlias: AliasResolver,
+  importedEnumNames?: $FlowFixMe,
+  emittedSharedEnums?: Set<string>,
 ): string {
   return Object.entries(enumMap)
     .map(([enumName, enumNode]) => {
+      const sourceModule: string | void =
+        importedEnumNames != null ? importedEnumNames[enumName] : undefined;
+      // Skip shared enums that have already been emitted by another module
+      if (sourceModule != null && emittedSharedEnums != null) {
+        if (emittedSharedEnums.has(enumName)) {
+          return '';
+        }
+        emittedSharedEnums.add(enumName);
+      }
       return generateEnum(
-        hasteModuleName,
+        sourceModule != null ? sourceModule : hasteModuleName,
         enumName,
         enumNode.members,
         enumNode.memberType,
@@ -687,6 +712,10 @@ module.exports = {
   ): FilesOutput {
     const nativeModules = getModules(schema);
 
+    // Track emitted shared types across modules to avoid duplicates
+    const emittedSharedStructs: Set<string> = new Set();
+    const emittedSharedEnums: Set<string> = new Set();
+
     const modules = Object.keys(nativeModules).flatMap(hasteModuleName => {
       const nativeModule = nativeModules[hasteModuleName];
       const {
@@ -695,6 +724,8 @@ module.exports = {
         spec: {methods},
         spec,
         moduleName,
+        importedAliasNames,
+        importedEnumNames,
       } = nativeModule;
       const resolveAlias = createAliasResolver(aliasMap);
       const structs = createStructsString(
@@ -702,8 +733,16 @@ module.exports = {
         aliasMap,
         resolveAlias,
         enumMap,
+        importedAliasNames,
+        emittedSharedStructs,
       );
-      const enums = createEnums(hasteModuleName, enumMap, resolveAlias);
+      const enums = createEnums(
+        hasteModuleName,
+        enumMap,
+        resolveAlias,
+        importedEnumNames,
+        emittedSharedEnums,
+      );
       return [
         ModuleSpecClassDeclarationTemplate({
           hasteModuleName,

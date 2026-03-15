@@ -95,15 +95,15 @@ GraphNode NativeCxxModuleExample::getGraphNode(
   return arg;
 }
 
-NativeCxxModuleExampleEnumInt NativeCxxModuleExample::getNumEnum(
+SharedTypeEnumInt NativeCxxModuleExample::getNumEnum(
     jsi::Runtime& /*rt*/,
-    NativeCxxModuleExampleEnumInt arg) {
+    SharedTypeEnumInt arg) {
   return arg;
 }
 
 NativeCxxModuleExampleEnumStr NativeCxxModuleExample::getStrEnum(
     jsi::Runtime& /*rt*/,
-    NativeCxxModuleExampleEnumNone /*arg*/) {
+    SharedTypeEnumNone /*arg*/) {
   return NativeCxxModuleExampleEnumStr::SB;
 }
 
@@ -191,7 +191,7 @@ void NativeCxxModuleExample::voidFunc(jsi::Runtime& /*rt*/) {
           ObjectStruct{1, "two", std::nullopt},
           ObjectStruct{3, "four", std::nullopt},
           ObjectStruct{5, "six", std::nullopt}});
-  emitOnEvent(NativeCxxModuleExampleEnumNone::NA);
+  emitOnEvent(SharedTypeEnumNone::NA);
 }
 
 AsyncPromise<> NativeCxxModuleExample::voidPromise(jsi::Runtime& rt) {

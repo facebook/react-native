@@ -419,6 +419,153 @@ private:
 };
 
 
+#pragma mark - SharedEnumTypesSharedNumEnum
+
+enum class SharedEnumTypesSharedNumEnum { One, Two, Three };
+
+template <>
+struct Bridging<SharedEnumTypesSharedNumEnum> {
+  static SharedEnumTypesSharedNumEnum fromJs(jsi::Runtime &rt, const jsi::Value &rawValue) {
+    double value = (double)rawValue.asNumber();
+    if (value == 1) {
+      return SharedEnumTypesSharedNumEnum::One;
+    } else if (value == 2) {
+      return SharedEnumTypesSharedNumEnum::Two;
+    } else if (value == 3) {
+      return SharedEnumTypesSharedNumEnum::Three;
+    } else {
+      throw jsi::JSError(rt, \\"No appropriate enum member found for value in SharedEnumTypesSharedNumEnum\\");
+    }
+  }
+
+  static jsi::Value toJs(jsi::Runtime &rt, SharedEnumTypesSharedNumEnum value) {
+    if (value == SharedEnumTypesSharedNumEnum::One) {
+      return bridging::toJs(rt, 1);
+    } else if (value == SharedEnumTypesSharedNumEnum::Two) {
+      return bridging::toJs(rt, 2);
+    } else if (value == SharedEnumTypesSharedNumEnum::Three) {
+      return bridging::toJs(rt, 3);
+    } else {
+      throw jsi::JSError(rt, \\"No appropriate enum member found for enum value in SharedEnumTypesSharedNumEnum\\");
+    }
+  }
+};
+
+#pragma mark - SharedEnumTypesSharedStatusEnum
+
+enum class SharedEnumTypesSharedStatusEnum { Active, Paused, Off };
+
+template <>
+struct Bridging<SharedEnumTypesSharedStatusEnum> {
+  static SharedEnumTypesSharedStatusEnum fromJs(jsi::Runtime &rt, const jsi::String &rawValue) {
+    std::string value = rawValue.utf8(rt);
+    if (value == \\"active\\") {
+      return SharedEnumTypesSharedStatusEnum::Active;
+    } else if (value == \\"paused\\") {
+      return SharedEnumTypesSharedStatusEnum::Paused;
+    } else if (value == \\"off\\") {
+      return SharedEnumTypesSharedStatusEnum::Off;
+    } else {
+      throw jsi::JSError(rt, \\"No appropriate enum member found for value in SharedEnumTypesSharedStatusEnum\\");
+    }
+  }
+
+  static jsi::String toJs(jsi::Runtime &rt, SharedEnumTypesSharedStatusEnum value) {
+    if (value == SharedEnumTypesSharedStatusEnum::Active) {
+      return bridging::toJs(rt, \\"active\\");
+    } else if (value == SharedEnumTypesSharedStatusEnum::Paused) {
+      return bridging::toJs(rt, \\"paused\\");
+    } else if (value == SharedEnumTypesSharedStatusEnum::Off) {
+      return bridging::toJs(rt, \\"off\\");
+    } else {
+      throw jsi::JSError(rt, \\"No appropriate enum member found for enum value in SharedEnumTypesSharedStatusEnum\\");
+    }
+  }
+};
+#pragma mark - SharedEnumTypesSharedStateType
+
+template <typename P0, typename P1>
+struct SharedEnumTypesSharedStateType {
+  P0 status{};
+  P1 count;
+  bool operator==(const SharedEnumTypesSharedStateType &other) const {
+    return status == other.status && count == other.count;
+  }
+};
+
+template <typename T>
+struct SharedEnumTypesSharedStateTypeBridging {
+  static T types;
+
+  static T fromJs(
+      jsi::Runtime &rt,
+      const jsi::Object &value,
+      const std::shared_ptr<CallInvoker> &jsInvoker) {
+    T result{
+      bridging::fromJs<decltype(types.status)>(rt, value.getProperty(rt, \\"status\\"), jsInvoker),
+      bridging::fromJs<decltype(types.count)>(rt, value.getProperty(rt, \\"count\\"), jsInvoker)};
+    return result;
+  }
+
+#ifdef DEBUG
+  static jsi::String statusToJs(jsi::Runtime &rt, decltype(types.status) value) {
+    return bridging::toJs(rt, value);
+  }
+  static double countToJs(jsi::Runtime &rt, decltype(types.count) value) {
+    return bridging::toJs(rt, value);
+  }
+#endif
+
+  static jsi::Object toJs(
+      jsi::Runtime &rt,
+      const T &value,
+      const std::shared_ptr<CallInvoker> &jsInvoker) {
+    auto result = facebook::jsi::Object(rt);
+    result.setProperty(rt, \\"status\\", bridging::toJs(rt, value.status, jsInvoker));
+    result.setProperty(rt, \\"count\\", bridging::toJs(rt, value.count, jsInvoker));
+    return result;
+  }
+};
+
+
+template <typename T>
+class JSI_EXPORT NativeImportedEnumTurboModuleCxxSpec : public TurboModule {
+public:
+  static constexpr std::string_view kModuleName = \\"NativeImportedEnumTurboModule\\";
+
+protected:
+  NativeImportedEnumTurboModuleCxxSpec(std::shared_ptr<CallInvoker> jsInvoker) : TurboModule(std::string{NativeImportedEnumTurboModuleCxxSpec::kModuleName}, jsInvoker) {
+    methodMap_[\\"getStatus\\"] = MethodMetadata {.argCount = 1, .invoker = __getStatus};
+    methodMap_[\\"getNum\\"] = MethodMetadata {.argCount = 0, .invoker = __getNum};
+    methodMap_[\\"setStatus\\"] = MethodMetadata {.argCount = 1, .invoker = __setStatus};
+  }
+  
+private:
+  static jsi::Value __getStatus(jsi::Runtime &rt, TurboModule &turboModule, const jsi::Value* args, size_t count) {
+    static_assert(
+      bridging::getParameterCount(&T::getStatus) == 2,
+      \\"Expected getStatus(...) to have 2 parameters\\");
+    return bridging::callFromJs<jsi::String>(rt, &T::getStatus,  static_cast<NativeImportedEnumTurboModuleCxxSpec*>(&turboModule)->jsInvoker_, static_cast<T*>(&turboModule),
+      count <= 0 ? throw jsi::JSError(rt, \\"Expected argument in position 0 to be passed\\") : args[0].asObject(rt));
+  }
+
+  static jsi::Value __getNum(jsi::Runtime &rt, TurboModule &turboModule, const jsi::Value* /*args*/, size_t /*count*/) {
+    static_assert(
+      bridging::getParameterCount(&T::getNum) == 1,
+      \\"Expected getNum(...) to have 1 parameters\\");
+    return bridging::callFromJs<jsi::Value>(rt, &T::getNum,  static_cast<NativeImportedEnumTurboModuleCxxSpec*>(&turboModule)->jsInvoker_, static_cast<T*>(&turboModule));
+  }
+
+  static jsi::Value __setStatus(jsi::Runtime &rt, TurboModule &turboModule, const jsi::Value* args, size_t count) {
+    static_assert(
+      bridging::getParameterCount(&T::setStatus) == 2,
+      \\"Expected setStatus(...) to have 2 parameters\\");
+    bridging::callFromJs<void>(rt, &T::setStatus,  static_cast<NativeImportedEnumTurboModuleCxxSpec*>(&turboModule)->jsInvoker_, static_cast<T*>(&turboModule),
+      count <= 0 ? throw jsi::JSError(rt, \\"Expected argument in position 0 to be passed\\") : args[0].asString(rt));return jsi::Value::undefined();
+  }
+};
+
+
 template <typename T>
 class JSI_EXPORT NativeNullableTurboModuleCxxSpec : public TurboModule {
 public:
@@ -2012,6 +2159,153 @@ private:
       \\"Expected getStateTypeWithEnums(...) to have 2 parameters\\");
     return bridging::callFromJs<jsi::Object>(rt, &T::getStateTypeWithEnums,  static_cast<NativeEnumTurboModuleCxxSpec*>(&turboModule)->jsInvoker_, static_cast<T*>(&turboModule),
       count <= 0 ? throw jsi::JSError(rt, \\"Expected argument in position 0 to be passed\\") : args[0].asObject(rt));
+  }
+};
+
+
+#pragma mark - SharedEnumTypesSharedNumEnum
+
+enum class SharedEnumTypesSharedNumEnum { One, Two, Three };
+
+template <>
+struct Bridging<SharedEnumTypesSharedNumEnum> {
+  static SharedEnumTypesSharedNumEnum fromJs(jsi::Runtime &rt, const jsi::Value &rawValue) {
+    double value = (double)rawValue.asNumber();
+    if (value == 1) {
+      return SharedEnumTypesSharedNumEnum::One;
+    } else if (value == 2) {
+      return SharedEnumTypesSharedNumEnum::Two;
+    } else if (value == 3) {
+      return SharedEnumTypesSharedNumEnum::Three;
+    } else {
+      throw jsi::JSError(rt, \\"No appropriate enum member found for value in SharedEnumTypesSharedNumEnum\\");
+    }
+  }
+
+  static jsi::Value toJs(jsi::Runtime &rt, SharedEnumTypesSharedNumEnum value) {
+    if (value == SharedEnumTypesSharedNumEnum::One) {
+      return bridging::toJs(rt, 1);
+    } else if (value == SharedEnumTypesSharedNumEnum::Two) {
+      return bridging::toJs(rt, 2);
+    } else if (value == SharedEnumTypesSharedNumEnum::Three) {
+      return bridging::toJs(rt, 3);
+    } else {
+      throw jsi::JSError(rt, \\"No appropriate enum member found for enum value in SharedEnumTypesSharedNumEnum\\");
+    }
+  }
+};
+
+#pragma mark - SharedEnumTypesSharedStatusEnum
+
+enum class SharedEnumTypesSharedStatusEnum { Active, Paused, Off };
+
+template <>
+struct Bridging<SharedEnumTypesSharedStatusEnum> {
+  static SharedEnumTypesSharedStatusEnum fromJs(jsi::Runtime &rt, const jsi::String &rawValue) {
+    std::string value = rawValue.utf8(rt);
+    if (value == \\"active\\") {
+      return SharedEnumTypesSharedStatusEnum::Active;
+    } else if (value == \\"paused\\") {
+      return SharedEnumTypesSharedStatusEnum::Paused;
+    } else if (value == \\"off\\") {
+      return SharedEnumTypesSharedStatusEnum::Off;
+    } else {
+      throw jsi::JSError(rt, \\"No appropriate enum member found for value in SharedEnumTypesSharedStatusEnum\\");
+    }
+  }
+
+  static jsi::String toJs(jsi::Runtime &rt, SharedEnumTypesSharedStatusEnum value) {
+    if (value == SharedEnumTypesSharedStatusEnum::Active) {
+      return bridging::toJs(rt, \\"active\\");
+    } else if (value == SharedEnumTypesSharedStatusEnum::Paused) {
+      return bridging::toJs(rt, \\"paused\\");
+    } else if (value == SharedEnumTypesSharedStatusEnum::Off) {
+      return bridging::toJs(rt, \\"off\\");
+    } else {
+      throw jsi::JSError(rt, \\"No appropriate enum member found for enum value in SharedEnumTypesSharedStatusEnum\\");
+    }
+  }
+};
+#pragma mark - SharedEnumTypesSharedStateType
+
+template <typename P0, typename P1>
+struct SharedEnumTypesSharedStateType {
+  P0 status{};
+  P1 count;
+  bool operator==(const SharedEnumTypesSharedStateType &other) const {
+    return status == other.status && count == other.count;
+  }
+};
+
+template <typename T>
+struct SharedEnumTypesSharedStateTypeBridging {
+  static T types;
+
+  static T fromJs(
+      jsi::Runtime &rt,
+      const jsi::Object &value,
+      const std::shared_ptr<CallInvoker> &jsInvoker) {
+    T result{
+      bridging::fromJs<decltype(types.status)>(rt, value.getProperty(rt, \\"status\\"), jsInvoker),
+      bridging::fromJs<decltype(types.count)>(rt, value.getProperty(rt, \\"count\\"), jsInvoker)};
+    return result;
+  }
+
+#ifdef DEBUG
+  static jsi::String statusToJs(jsi::Runtime &rt, decltype(types.status) value) {
+    return bridging::toJs(rt, value);
+  }
+  static double countToJs(jsi::Runtime &rt, decltype(types.count) value) {
+    return bridging::toJs(rt, value);
+  }
+#endif
+
+  static jsi::Object toJs(
+      jsi::Runtime &rt,
+      const T &value,
+      const std::shared_ptr<CallInvoker> &jsInvoker) {
+    auto result = facebook::jsi::Object(rt);
+    result.setProperty(rt, \\"status\\", bridging::toJs(rt, value.status, jsInvoker));
+    result.setProperty(rt, \\"count\\", bridging::toJs(rt, value.count, jsInvoker));
+    return result;
+  }
+};
+
+
+template <typename T>
+class JSI_EXPORT NativeImportedEnumTurboModuleCxxSpec : public TurboModule {
+public:
+  static constexpr std::string_view kModuleName = \\"NativeImportedEnumTurboModule\\";
+
+protected:
+  NativeImportedEnumTurboModuleCxxSpec(std::shared_ptr<CallInvoker> jsInvoker) : TurboModule(std::string{NativeImportedEnumTurboModuleCxxSpec::kModuleName}, jsInvoker) {
+    methodMap_[\\"getStatus\\"] = MethodMetadata {.argCount = 1, .invoker = __getStatus};
+    methodMap_[\\"getNum\\"] = MethodMetadata {.argCount = 0, .invoker = __getNum};
+    methodMap_[\\"setStatus\\"] = MethodMetadata {.argCount = 1, .invoker = __setStatus};
+  }
+  
+private:
+  static jsi::Value __getStatus(jsi::Runtime &rt, TurboModule &turboModule, const jsi::Value* args, size_t count) {
+    static_assert(
+      bridging::getParameterCount(&T::getStatus) == 2,
+      \\"Expected getStatus(...) to have 2 parameters\\");
+    return bridging::callFromJs<jsi::String>(rt, &T::getStatus,  static_cast<NativeImportedEnumTurboModuleCxxSpec*>(&turboModule)->jsInvoker_, static_cast<T*>(&turboModule),
+      count <= 0 ? throw jsi::JSError(rt, \\"Expected argument in position 0 to be passed\\") : args[0].asObject(rt));
+  }
+
+  static jsi::Value __getNum(jsi::Runtime &rt, TurboModule &turboModule, const jsi::Value* /*args*/, size_t /*count*/) {
+    static_assert(
+      bridging::getParameterCount(&T::getNum) == 1,
+      \\"Expected getNum(...) to have 1 parameters\\");
+    return bridging::callFromJs<jsi::Value>(rt, &T::getNum,  static_cast<NativeImportedEnumTurboModuleCxxSpec*>(&turboModule)->jsInvoker_, static_cast<T*>(&turboModule));
+  }
+
+  static jsi::Value __setStatus(jsi::Runtime &rt, TurboModule &turboModule, const jsi::Value* args, size_t count) {
+    static_assert(
+      bridging::getParameterCount(&T::setStatus) == 2,
+      \\"Expected setStatus(...) to have 2 parameters\\");
+    bridging::callFromJs<void>(rt, &T::setStatus,  static_cast<NativeImportedEnumTurboModuleCxxSpec*>(&turboModule)->jsInvoker_, static_cast<T*>(&turboModule),
+      count <= 0 ? throw jsi::JSError(rt, \\"Expected argument in position 0 to be passed\\") : args[0].asString(rt));return jsi::Value::undefined();
   }
 };
 

@@ -49,6 +49,11 @@ const {
 } = require('../parsers-commons.js');
 const {Visitor} = require('../parsers-primitives');
 const {wrapComponentSchema} = require('../schema.js');
+const {
+  buildImportedTypeSourceMap,
+  getImportsFromAST,
+  resolveImportedTypes,
+} = require('../utils');
 const {buildComponentSchema} = require('./components');
 const {
   flattenProperties,
@@ -125,11 +130,32 @@ class TypeScriptParser implements Parser {
 
   parseFile(filename: string): SchemaType {
     const contents = fs.readFileSync(filename, 'utf8');
-
-    return this.parseString(contents, filename);
+    const ast = this.getAst(contents, filename);
+    const imports = getImportsFromAST(ast);
+    const importedTypes = resolveImportedTypes(
+      imports,
+      filename,
+      ['.ts', '.tsx', '.d.ts'],
+      (c, f) => this.getAst(c, f),
+      a => this.getTypes(a),
+    );
+    const importedTypeSourceMap: {[string]: string} | void = importedTypes
+      ? buildImportedTypeSourceMap(imports)
+      : undefined;
+    return this.parseString(
+      contents,
+      filename,
+      importedTypes,
+      importedTypeSourceMap,
+    );
   }
 
-  parseString(contents: string, filename: ?string): SchemaType {
+  parseString(
+    contents: string,
+    filename: ?string,
+    importedTypes?: TypeDeclarationMap,
+    importedTypeSourceMap?: {[string]: string},
+  ): SchemaType {
     return buildSchema(
       contents,
       filename,
@@ -139,6 +165,8 @@ class TypeScriptParser implements Parser {
       Visitor,
       this,
       typeScriptTranslateTypeAnnotation,
+      importedTypes,
+      importedTypeSourceMap,
     );
   }
 

@@ -8,19 +8,10 @@
  * @format
  */
 
+import type {ConstantsStruct, EnumInt, EnumNone} from './SharedType';
 import type {CodegenTypes, TurboModule} from 'react-native';
 
 import {TurboModuleRegistry} from 'react-native';
-
-export enum EnumInt {
-  IA = 23,
-  IB = 42,
-}
-
-export enum EnumNone {
-  NA,
-  NB,
-}
 
 export enum EnumStr {
   SA = 's---a',

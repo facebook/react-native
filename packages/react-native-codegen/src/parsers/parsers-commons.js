@@ -181,8 +181,14 @@ function getObjectTypeAnnotations(
   tryParse: ParserErrorCapturer,
   translateTypeAnnotation: $FlowFixMe,
   parser: Parser,
-): {...NativeModuleAliasMap} {
+  importedTypeNames?: $FlowFixMe,
+  importedTypeSourceMap?: {[string]: string},
+): {
+  aliasMap: {...NativeModuleAliasMap},
+  importedAliasNames: {[string]: string},
+} {
   const aliasMap: {...NativeModuleAliasMap} = {};
+  const importedAliasNames: {[string]: string} = {};
   Object.entries(types).forEach(([key, value]) => {
     const isTypeAlias =
       value.type === 'TypeAlias' || value.type === 'TSTypeAliasDeclaration';
@@ -229,8 +235,15 @@ function getObjectTypeAnnotations(
       type: 'ObjectTypeAnnotation',
       properties: typeProperties,
     };
+    if (importedTypeNames != null && importedTypeNames.has(key)) {
+      const sourceModule =
+        importedTypeSourceMap != null ? importedTypeSourceMap[key] : undefined;
+      if (sourceModule != null) {
+        importedAliasNames[key] = sourceModule;
+      }
+    }
   });
-  return aliasMap;
+  return {aliasMap, importedAliasNames};
 }
 
 function parseObjectProperty(
@@ -575,9 +588,13 @@ function buildSchemaFromConfigType(
     tryParse: ParserErrorCapturer,
     parser: Parser,
     translateTypeAnnotation: $FlowFixMe,
+    importedTypes?: TypeDeclarationMap,
+    importedTypeSourceMap?: {[string]: string},
   ) => NativeModuleSchema,
   parser: Parser,
   translateTypeAnnotation: $FlowFixMe,
+  importedTypes?: TypeDeclarationMap,
+  importedTypeSourceMap?: {[string]: string},
 ): SchemaType {
   switch (configType) {
     case 'component': {
@@ -598,6 +615,8 @@ function buildSchemaFromConfigType(
           tryParse,
           parser,
           translateTypeAnnotation,
+          importedTypes,
+          importedTypeSourceMap,
         ),
       );
 
@@ -639,12 +658,16 @@ function buildSchema(
     tryParse: ParserErrorCapturer,
     parser: Parser,
     translateTypeAnnotation: $FlowFixMe,
+    importedTypes?: TypeDeclarationMap,
+    importedTypeSourceMap?: {[string]: string},
   ) => NativeModuleSchema,
   Visitor: ({isComponent: boolean, isModule: boolean}) => {
     [type: string]: (node: $FlowFixMe) => void,
   },
   parser: Parser,
   translateTypeAnnotation: $FlowFixMe,
+  importedTypes?: TypeDeclarationMap,
+  importedTypeSourceMap?: {[string]: string},
 ): SchemaType {
   // Early return for non-Spec JavaScript files
   if (
@@ -666,6 +689,8 @@ function buildSchema(
     buildModuleSchema,
     parser,
     translateTypeAnnotation,
+    importedTypes,
+    importedTypeSourceMap,
   );
 }
 
@@ -760,9 +785,24 @@ const buildModuleSchema = (
   tryParse: ParserErrorCapturer,
   parser: Parser,
   translateTypeAnnotation: $FlowFixMe,
+  importedTypes?: TypeDeclarationMap,
+  importedTypeSourceMap?: {[string]: string},
 ): NativeModuleSchema => {
   const language = parser.language();
-  const types = parser.getTypes(ast);
+  const localTypes = parser.getTypes(ast);
+  const types = importedTypes ? {...importedTypes, ...localTypes} : localTypes;
+
+  // Track which type names are imported (present in importedTypes but not
+  // overridden by a local definition). Used to populate importedAliasNames
+  // and importedEnumNames in the schema so generators can skip prefixing.
+  const importedTypeNames: Set<string> = new Set();
+  if (importedTypes) {
+    for (const name of Object.keys(importedTypes)) {
+      if (!(name in localTypes)) {
+        importedTypeNames.add(name);
+      }
+    }
+  }
   const moduleSpecs = (Object.values(types): ReadonlyArray<$FlowFixMe>).filter(
     t => parser.isModuleInterface(t),
   );
@@ -796,15 +836,23 @@ const buildModuleSchema = (
     moduleName,
   );
 
-  const aliasMap: {...NativeModuleAliasMap} = cxxOnly
+  const {
+    aliasMap,
+    importedAliasNames,
+  }: {
+    aliasMap: {...NativeModuleAliasMap},
+    importedAliasNames: {[string]: string},
+  } = cxxOnly
     ? getObjectTypeAnnotations(
         hasteModuleName,
         types,
         tryParse,
         translateTypeAnnotation,
         parser,
+        importedTypeNames.size > 0 ? importedTypeNames : undefined,
+        importedTypeSourceMap,
       )
-    : {};
+    : {aliasMap: {}, importedAliasNames: {}};
   const properties: ReadonlyArray<$FlowFixMe> =
     language === 'Flow' ? moduleSpec.body.properties : moduleSpec.body.body;
 
@@ -896,6 +944,35 @@ const buildModuleSchema = (
       },
     );
 
+  // Determine which enum names are imported and their source modules
+  const importedEnumNames: {[string]: string} = {};
+  for (const name of Object.keys(nativeModuleSchema.enumMap)) {
+    if (
+      importedTypeNames.has(name) &&
+      importedTypeSourceMap != null &&
+      importedTypeSourceMap[name] != null
+    ) {
+      importedEnumNames[name] = importedTypeSourceMap[name];
+    }
+  }
+
+  // For non-cxxOnly modules, aliasMap is populated via side effects during
+  // property parsing. Scan it for imported types too.
+  if (!cxxOnly) {
+    for (const name of Object.keys(nativeModuleSchema.aliasMap)) {
+      if (
+        importedTypeNames.has(name) &&
+        importedTypeSourceMap != null &&
+        importedTypeSourceMap[name] != null
+      ) {
+        importedAliasNames[name] = importedTypeSourceMap[name];
+      }
+    }
+  }
+
+  const hasImportedAliases = Object.keys(importedAliasNames).length > 0;
+  const hasImportedEnums = Object.keys(importedEnumNames).length > 0;
+
   return {
     type: 'NativeModule',
     aliasMap: getSortedObject(nativeModuleSchema.aliasMap),
@@ -906,6 +983,8 @@ const buildModuleSchema = (
     },
     moduleName,
     excludedPlatforms: nativeModuleSchema.excludedPlatforms,
+    importedAliasNames: hasImportedAliases ? importedAliasNames : undefined,
+    importedEnumNames: hasImportedEnums ? importedEnumNames : undefined,
   };
 };
 
