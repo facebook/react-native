@@ -62,8 +62,6 @@ class ViewTransitionModule : public UIManagerViewTransitionDelegate {
   };
 
  private:
-  void onTransitionAnimationEnd(const std::unordered_set<std::string> &names, Tag newTag, Tag oldTag);
-
   // registry of layout of old/new views
   std::unordered_map<std::string, AnimationKeyFrameView> oldLayout_{};
   std::unordered_map<std::string, AnimationKeyFrameView> newLayout_{};
