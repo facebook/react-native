@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<25d1f9cb509dbd8274e3a00237d2ea62>>
+ * @generated SignedSource<<20a808bb8708d8088f3d7aae8d58b6b2>>
  */
 
 /**
@@ -763,6 +763,15 @@ class ReactNativeFeatureFlagsDynamicProvider : public ReactNativeFeatureFlagsDef
     }
 
     return ReactNativeFeatureFlagsDefaults::useFabricInterop();
+  }
+
+  bool useLISAlgorithmInDifferentiator() override {
+    auto value = values_["useLISAlgorithmInDifferentiator"];
+    if (!value.isNull()) {
+      return value.getBool();
+    }
+
+    return ReactNativeFeatureFlagsDefaults::useLISAlgorithmInDifferentiator();
   }
 
   bool useNativeViewConfigsInBridgelessMode() override {

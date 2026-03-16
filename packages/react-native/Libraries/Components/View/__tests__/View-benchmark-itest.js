@@ -4,6 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
+ * @fantom_flags useLISAlgorithmInDifferentiator:*
  * @flow strict-local
  * @format
  */
@@ -173,4 +174,98 @@ Fantom.unstable_benchmark
         root.destroy();
       },
     }),
+  )
+  .test.each(
+    [10, 50, 100],
+    n => `reorder ${n.toString()} children (move first to last)`,
+    () => {
+      Fantom.runTask(() => root.render(testViews));
+    },
+    n => {
+      let original: React.MixedElement;
+      let reordered: React.MixedElement;
+      return {
+        beforeAll: () => {
+          const children = [];
+          for (let i = 0; i < n; i++) {
+            children.push(
+              <View
+                key={i}
+                collapsable={false}
+                nativeID={`child-${i.toString()}`}
+                style={{width: i + 1, height: i + 1}}
+              />,
+            );
+          }
+          original = (
+            <View collapsable={false} nativeID="parent">
+              {children}
+            </View>
+          );
+          // Move first child to last
+          const reorderedChildren = [...children.slice(1), children[0]];
+          reordered = (
+            <View collapsable={false} nativeID="parent">
+              {reorderedChildren}
+            </View>
+          );
+        },
+        beforeEach: () => {
+          root = Fantom.createRoot();
+          Fantom.runTask(() => root.render(original));
+          // $FlowExpectedError[incompatible-type]
+          testViews = reordered;
+        },
+        afterEach: () => {
+          root.destroy();
+        },
+      };
+    },
+  )
+  .test.each(
+    [10, 50, 100],
+    n => `reorder ${n.toString()} children (swap first two)`,
+    () => {
+      Fantom.runTask(() => root.render(testViews));
+    },
+    n => {
+      let original: React.MixedElement;
+      let reordered: React.MixedElement;
+      return {
+        beforeAll: () => {
+          const children = [];
+          for (let i = 0; i < n; i++) {
+            children.push(
+              <View
+                key={i}
+                collapsable={false}
+                nativeID={`child-${i.toString()}`}
+                style={{width: i + 1, height: i + 1}}
+              />,
+            );
+          }
+          original = (
+            <View collapsable={false} nativeID="parent">
+              {children}
+            </View>
+          );
+          // Swap first two children — both algorithms handle this equally
+          const swapped = [children[1], children[0], ...children.slice(2)];
+          reordered = (
+            <View collapsable={false} nativeID="parent">
+              {swapped}
+            </View>
+          );
+        },
+        beforeEach: () => {
+          root = Fantom.createRoot();
+          Fantom.runTask(() => root.render(original));
+          // $FlowExpectedError[incompatible-type]
+          testViews = reordered;
+        },
+        afterEach: () => {
+          root.destroy();
+        },
+      };
+    },
   );
