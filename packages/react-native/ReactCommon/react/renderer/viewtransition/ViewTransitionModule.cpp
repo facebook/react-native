@@ -131,9 +131,13 @@ void ViewTransitionModule::startViewTransition(
 }
 
 void ViewTransitionModule::startViewTransitionEnd() {
-  for (const auto& it : nameRegistry_) {
-    onTransitionAnimationEnd(it.second, it.first, 0);
+  for (const auto& [tag, names] : nameRegistry_) {
+    for (const auto& name : names) {
+      oldLayout_.erase(name);
+      newLayout_.erase(name);
+    }
   }
+  nameRegistry_.clear();
 
   transitionStarted_ = false;
 }
@@ -168,23 +172,6 @@ ViewTransitionModule::getViewTransitionInstance(
   }
 
   return std::nullopt;
-}
-
-void ViewTransitionModule::onTransitionAnimationEnd(
-    const std::unordered_set<std::string>& names,
-    Tag newTag,
-    Tag oldTag) {
-  for (const auto& name : names) {
-    oldLayout_.erase(name);
-    newLayout_.erase(name);
-  }
-
-  if (newTag != 0) {
-    nameRegistry_.erase(newTag);
-  }
-  if (oldTag != 0) {
-    nameRegistry_.erase(oldTag);
-  }
 }
 
 } // namespace facebook::react
