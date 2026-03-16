@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<5966ef11ee71a38059decda1c529fd6f>>
+ * @generated SignedSource<<e92d2298350e61bc901fe52a7e651657>>
  * @flow strict
  * @noformat
  */
@@ -128,6 +128,7 @@ export type ReactNativeFeatureFlags = $ReadOnly<{
   updateRuntimeShadowNodeReferencesOnCommitThread: Getter<boolean>,
   useAlwaysAvailableJSErrorHandling: Getter<boolean>,
   useFabricInterop: Getter<boolean>,
+  useLISAlgorithmInDifferentiator: Getter<boolean>,
   useNativeViewConfigsInBridgelessMode: Getter<boolean>,
   useNestedScrollViewAndroid: Getter<boolean>,
   useSharedAnimatedBackend: Getter<boolean>,
@@ -529,6 +530,10 @@ export const useAlwaysAvailableJSErrorHandling: Getter<boolean> = createNativeFl
  * Should this application enable the Fabric Interop Layer for Android? If yes, the application will behave so that it can accept non-Fabric components and render them on Fabric. This toggle is controlling extra logic such as custom event dispatching that are needed for the Fabric Interop Layer to work correctly.
  */
 export const useFabricInterop: Getter<boolean> = createNativeFlagGetter('useFabricInterop', true);
+/**
+ * Use Longest Increasing Subsequence algorithm in the Differentiator to minimize REMOVE/INSERT mutations during child list reconciliation.
+ */
+export const useLISAlgorithmInDifferentiator: Getter<boolean> = createNativeFlagGetter('useLISAlgorithmInDifferentiator', false);
 /**
  * When enabled, the native view configs are used in bridgeless mode.
  */

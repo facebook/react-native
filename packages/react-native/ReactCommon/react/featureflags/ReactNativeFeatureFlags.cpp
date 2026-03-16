@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<bfb72cee88230c56d2c101be808ef300>>
+ * @generated SignedSource<<a33f1aaed390cc914a55bd48906f1a11>>
  */
 
 /**
@@ -344,6 +344,10 @@ bool ReactNativeFeatureFlags::useAlwaysAvailableJSErrorHandling() {
 
 bool ReactNativeFeatureFlags::useFabricInterop() {
   return getAccessor().useFabricInterop();
+}
+
+bool ReactNativeFeatureFlags::useLISAlgorithmInDifferentiator() {
+  return getAccessor().useLISAlgorithmInDifferentiator();
 }
 
 bool ReactNativeFeatureFlags::useNativeViewConfigsInBridgelessMode() {

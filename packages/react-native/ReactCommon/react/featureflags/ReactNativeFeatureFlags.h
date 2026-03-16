@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<4811a81c7839f2be5c8a127e6c8e310b>>
+ * @generated SignedSource<<6c175f21aaa8d084c7b0be0625d5d77d>>
  */
 
 /**
@@ -438,6 +438,11 @@ class ReactNativeFeatureFlags {
    * Should this application enable the Fabric Interop Layer for Android? If yes, the application will behave so that it can accept non-Fabric components and render them on Fabric. This toggle is controlling extra logic such as custom event dispatching that are needed for the Fabric Interop Layer to work correctly.
    */
   RN_EXPORT static bool useFabricInterop();
+
+  /**
+   * Use Longest Increasing Subsequence algorithm in the Differentiator to minimize REMOVE/INSERT mutations during child list reconciliation.
+   */
+  RN_EXPORT static bool useLISAlgorithmInDifferentiator();
 
   /**
    * When enabled, the native view configs are used in bridgeless mode.

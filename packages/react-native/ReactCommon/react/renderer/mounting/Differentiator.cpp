@@ -12,6 +12,7 @@
 #include <algorithm>
 #include "internal/CullingContext.h"
 #include "internal/DiffMap.h"
+#include "internal/LongestIncreasingSubsequence.h"
 #include "internal/ShadowViewNodePair.h"
 #include "internal/sliceChildShadowNodeViewPairs.h"
 
@@ -1048,13 +1049,275 @@ static void calculateShadowViewMutations(
           oldCullingContext,
           newCullingContextCopy);
     }
+  } else if (ReactNativeFeatureFlags::useLISAlgorithmInDifferentiator()) {
+    // LIS-based Stage 4: find the Longest Increasing Subsequence of
+    // new-list positions among old children to minimize REMOVE/INSERT
+    // mutations. Items in the LIS maintain their relative order and
+    // don't need REMOVE+INSERT — only items outside the LIS are moved.
+    auto remainingOldCount = oldChildPairs.size() - lastIndexAfterFirstStage;
+    auto remainingNewCount = newChildPairs.size() - lastIndexAfterFirstStage;
+
+    // Build newRemainingPairs (required by updateMatchedPairSubtrees for
+    // flattening logic) and tag→index map for O(1) lookups in Step 1.
+    auto newRemainingPairs =
+        DiffMap<Tag, ShadowViewNodePair*>(remainingNewCount);
+    auto newTagToIndex = DiffMap<Tag, size_t>(remainingNewCount);
+    for (size_t i = lastIndexAfterFirstStage; i < newChildPairs.size(); i++) {
+      auto& newChildPair = *newChildPairs[i];
+      newRemainingPairs.insert({newChildPair.shadowView.tag, &newChildPair});
+      newTagToIndex.insert({newChildPair.shadowView.tag, i});
+    }
+
+    // Step 1: Map old children to their positions in the new list.
+    std::vector<size_t> oldToNewPos(remainingOldCount);
+    std::vector<bool> oldExistsInNew(remainingOldCount, false);
+
+    for (size_t i = 0; i < remainingOldCount; i++) {
+      auto oldIdx = lastIndexAfterFirstStage + i;
+      Tag oldTag = oldChildPairs[oldIdx]->shadowView.tag;
+      auto it = newTagToIndex.find(oldTag);
+      if (it != newTagToIndex.end()) {
+        oldToNewPos[i] = it->second;
+        oldExistsInNew[i] = true;
+      }
+    }
+
+    // Step 2: Compute LIS of new-list positions.
+    auto inLIS = longestIncreasingSubsequence(oldToNewPos, oldExistsInNew);
+
+    auto deletionCandidatePairs = std::vector<const ShadowViewNodePair*>{};
+    deletionCandidatePairs.reserve(remainingOldCount);
+
+    // New-child-indexed flag: true = LIS match that stays in place.
+    auto isLISMatch = std::vector<bool>(remainingNewCount, false);
+
+    // Step 4: Process old children.
+    // CRITICAL: check newRemainingPairs at runtime (not the pre-computed
+    // oldExistsInNew). The flattener erases entries from newRemainingPairs
+    // as it consumes them during flatten/unflatten — using the pre-computed
+    // snapshot would cause double-processing of flattened nodes.
+    react_native_assert(inLIS.size() == remainingOldCount);
+    for (size_t i = 0; i < remainingOldCount; i++) {
+      auto oldIdx = lastIndexAfterFirstStage + i;
+      auto& oldChildPair = *oldChildPairs[oldIdx];
+      Tag oldTag = oldChildPair.shadowView.tag;
+
+      auto newIt = newRemainingPairs.find(oldTag);
+      if (newIt == newRemainingPairs.end()) {
+        // Not in new list or consumed by flattening -> REMOVE.
+        if (!oldChildPair.isConcreteView) {
+          continue;
+        }
+
+        DEBUG_LOGS({
+          LOG(ERROR) << "Differ LIS Branch: Removing deleted tag: "
+                     << oldChildPair << " with parent: [" << parentTag << "]";
+        });
+
+        // Edge case: complex (un)flattening — node exists in other tree.
+        if (oldChildPair.inOtherTree() &&
+            oldChildPair.otherTreePair->isConcreteView) {
+          const ShadowView& otherTreeView =
+              oldChildPair.otherTreePair->shadowView;
+          mutationContainer.removeMutations.push_back(
+              ShadowViewMutation::RemoveMutation(
+                  parentTag,
+                  otherTreeView,
+                  static_cast<int>(oldChildPair.mountIndex)));
+          continue;
+        }
+
+        mutationContainer.removeMutations.push_back(
+            ShadowViewMutation::RemoveMutation(
+                parentTag,
+                oldChildPair.shadowView,
+                static_cast<int>(oldChildPair.mountIndex)));
+        deletionCandidatePairs.push_back(&oldChildPair);
+
+      } else if (inLIS[i]) {
+        // In LIS -> stays in place, just UPDATE + subtree recursion.
+        auto& newChildPair = *newIt->second;
+
+        DEBUG_LOGS({
+          LOG(ERROR) << "Differ LIS Branch: Matched in-order (LIS) at old "
+                     << oldIdx << ": " << oldChildPair << " with parent: ["
+                     << parentTag << "]";
+        });
+
+        // For LIS matches with concrete-ness changes, we must use
+        // (true, false) to avoid generating INSERT in updateMatchedPair.
+        // INSERT mutations must be in new-child order (Step 5), not
+        // old-child order (Step 4). Generating INSERT here would put it
+        // out of order relative to Step 5's INSERTs.
+        bool concreteChanged =
+            oldChildPair.isConcreteView != newChildPair.isConcreteView;
+
+        updateMatchedPair(
+            mutationContainer,
+            true,
+            !concreteChanged,
+            parentTag,
+            oldChildPair,
+            newChildPair);
+
+        updateMatchedPairSubtrees(
+            scope,
+            mutationContainer,
+            newRemainingPairs,
+            oldChildPairs,
+            parentTag,
+            oldChildPair,
+            newChildPair,
+            oldCullingContext,
+            newCullingContext);
+
+        if (!concreteChanged) {
+          // Check if this LIS match was consumed by flattening.
+          // updateMatchedPairSubtrees may erase entries from
+          // newRemainingPairs during flatten/unflatten transitions.
+          // If consumed, the node was reparented elsewhere and needs
+          // REMOVE from this parent.
+          if (newRemainingPairs.find(oldTag) != newRemainingPairs.end()) {
+            isLISMatch[oldToNewPos[i] - lastIndexAfterFirstStage] = true;
+          } else if (oldChildPair.isConcreteView) {
+            if (oldChildPair.inOtherTree() &&
+                oldChildPair.otherTreePair->isConcreteView) {
+              mutationContainer.removeMutations.push_back(
+                  ShadowViewMutation::RemoveMutation(
+                      parentTag,
+                      oldChildPair.otherTreePair->shadowView,
+                      static_cast<int>(oldChildPair.mountIndex)));
+            } else {
+              mutationContainer.removeMutations.push_back(
+                  ShadowViewMutation::RemoveMutation(
+                      parentTag,
+                      oldChildPair.shadowView,
+                      static_cast<int>(oldChildPair.mountIndex)));
+              deletionCandidatePairs.push_back(&oldChildPair);
+            }
+          }
+        }
+        // concreteChanged: not in isLISMatch, Step 5 handles INSERT.
+
+      } else {
+        // In new list but NOT in LIS -> REMOVE from old position.
+        // Will be re-inserted at new position in Step 5.
+        auto& newChildPair = *newIt->second;
+
+        DEBUG_LOGS({
+          LOG(ERROR)
+              << "Differ LIS Branch: Matched out-of-order (not in LIS) at old "
+              << oldIdx << ": " << oldChildPair << " with parent: ["
+              << parentTag << "]";
+        });
+
+        updateMatchedPair(
+            mutationContainer,
+            true,
+            false,
+            parentTag,
+            oldChildPair,
+            newChildPair);
+
+        updateMatchedPairSubtrees(
+            scope,
+            mutationContainer,
+            newRemainingPairs,
+            oldChildPairs,
+            parentTag,
+            oldChildPair,
+            newChildPair,
+            oldCullingContext,
+            newCullingContext);
+      }
+    }
+
+    // Step 5: Process new children — INSERT + CREATE.
+    // Generate INSERT for every non-LIS-matched concrete new child.
+    // Only generate CREATE for genuinely new children (not in other tree
+    // from flattening).
+    for (size_t i = lastIndexAfterFirstStage; i < newChildPairs.size(); i++) {
+      auto& newChildPair = *newChildPairs[i];
+
+      if (!newChildPair.isConcreteView) {
+        continue;
+      }
+
+      // LIS matches stay in place — no INSERT needed.
+      if (isLISMatch[i - lastIndexAfterFirstStage]) {
+        continue;
+      }
+
+      DEBUG_LOGS({
+        LOG(ERROR) << "Differ LIS Branch: Inserting tag: " << newChildPair
+                   << " with parent: [" << parentTag << "]"
+                   << (newChildPair.inOtherTree() ? " (in other tree)" : "");
+      });
+
+      mutationContainer.insertMutations.push_back(
+          ShadowViewMutation::InsertMutation(
+              parentTag,
+              newChildPair.shadowView,
+              static_cast<int>(newChildPair.mountIndex)));
+
+      // Only CREATE genuinely new children (not matched by flattening).
+      if (!newChildPair.inOtherTree()) {
+        mutationContainer.createMutations.push_back(
+            ShadowViewMutation::CreateMutation(newChildPair.shadowView));
+
+        auto newCullingContextCopy =
+            newCullingContext.adjustCullingContextIfNeeded(newChildPair);
+
+        ViewNodePairScope innerScope{};
+        calculateShadowViewMutations(
+            innerScope,
+            mutationContainer.downwardMutations,
+            newChildPair.shadowView.tag,
+            {},
+            sliceChildShadowNodeViewPairsFromViewNodePair(
+                newChildPair, innerScope, false, newCullingContextCopy),
+            oldCullingContext,
+            newCullingContextCopy);
+      }
+    }
+
+    // Step 6: Generate DELETE for deletion candidates.
+    for (const auto* deletionCandidatePtr : deletionCandidatePairs) {
+      const auto& oldChildPair = *deletionCandidatePtr;
+
+      DEBUG_LOGS({
+        LOG(ERROR) << "Differ LIS Branch: Deleting removed tag: "
+                   << oldChildPair << " with parent: [" << parentTag << "]";
+      });
+
+      if (!oldChildPair.inOtherTree() && oldChildPair.isConcreteView) {
+        mutationContainer.deleteMutations.push_back(
+            ShadowViewMutation::DeleteMutation(oldChildPair.shadowView));
+        auto oldCullingContextCopy =
+            oldCullingContext.adjustCullingContextIfNeeded(oldChildPair);
+
+        ViewNodePairScope innerScope{};
+        auto grandChildPairs = sliceChildShadowNodeViewPairsFromViewNodePair(
+            oldChildPair, innerScope, false, oldCullingContextCopy);
+        calculateShadowViewMutations(
+            innerScope,
+            mutationContainer.destructiveDownwardMutations,
+            oldChildPair.shadowView.tag,
+            std::move(grandChildPairs),
+            {},
+            oldCullingContextCopy,
+            newCullingContext);
+      }
+    }
   } else {
+    // Existing greedy Stage 4 algorithm.
     // Collect map of tags in the new list
-    auto remainingCount = newChildPairs.size() - index;
+    auto remainingCount = newChildPairs.size() - lastIndexAfterFirstStage;
     auto newRemainingPairs = DiffMap<Tag, ShadowViewNodePair*>(remainingCount);
     auto newInsertedPairs = DiffMap<Tag, ShadowViewNodePair*>(remainingCount);
     auto deletionCandidatePairs = DiffMap<Tag, const ShadowViewNodePair*>{};
-    for (; index < newChildPairs.size(); index++) {
+    for (index = lastIndexAfterFirstStage; index < newChildPairs.size();
+         index++) {
       auto& newChildPair = *newChildPairs[index];
       newRemainingPairs.insert({newChildPair.shadowView.tag, &newChildPair});
     }
