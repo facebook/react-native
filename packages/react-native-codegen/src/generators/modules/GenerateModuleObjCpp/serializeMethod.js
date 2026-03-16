@@ -249,6 +249,11 @@ function getParamObjCType(
       switch (structTypeAnnotation.name) {
         case 'RootTag':
           return notStruct(isRequired ? 'double' : 'NSNumber *');
+        case 'ArrayBuffer':
+        case 'Uint8Array':
+          throw new Error(
+            `ArrayBuffer and Uint8Array are only supported in cxx-only modules. Got ${structTypeAnnotation.name}.`,
+          );
         default:
           (structTypeAnnotation.name: empty);
           throw new Error(
@@ -329,6 +334,11 @@ function getReturnObjCType(
       switch (typeAnnotation.name) {
         case 'RootTag':
           return wrapOptional('NSNumber *', isRequired);
+        case 'ArrayBuffer':
+        case 'Uint8Array':
+          throw new Error(
+            `ArrayBuffer and Uint8Array are only supported in cxx-only modules. Got ${typeAnnotation.name}.`,
+          );
         default:
           (typeAnnotation.name: empty);
           throw new Error(
@@ -412,7 +422,20 @@ function getReturnJSType(
     case 'ArrayTypeAnnotation':
       return 'ArrayKind';
     case 'ReservedTypeAnnotation':
-      return 'NumberKind';
+      switch (typeAnnotation.name) {
+        case 'RootTag':
+          return 'NumberKind';
+        case 'ArrayBuffer':
+        case 'Uint8Array':
+          throw new Error(
+            `ArrayBuffer and Uint8Array are only supported in cxx-only modules. Got ${typeAnnotation.name}.`,
+          );
+        default:
+          (typeAnnotation.name: empty);
+          throw new Error(
+            `Unsupported return type for ${methodName}. Found: ${typeAnnotation.name}`,
+          );
+      }
     case 'StringTypeAnnotation':
       return 'StringKind';
     case 'StringLiteralTypeAnnotation':

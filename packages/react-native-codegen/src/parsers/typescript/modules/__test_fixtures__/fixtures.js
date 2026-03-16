@@ -903,6 +903,8 @@ export type CustomDeviceEvent = {
 export interface Spec extends TurboModule {
   readonly getCallback: () => () => void;
   readonly getMixed: (arg: unknown) => unknown;
+  readonly getArrayBuffer: (input: ArrayBuffer) => ArrayBuffer;
+  readonly getUint8Array: (input: Uint8Array) => Uint8Array;
   readonly getEnums: (quality: Quality, resolution?: Resolution, stringOptions: StringOptions) => Quality;
   readonly getBinaryTreeNode: (arg: BinaryTreeNode) => BinaryTreeNode;
   readonly getGraphNode: (arg: GraphNode) => GraphNode;

@@ -259,7 +259,7 @@ export type CommandParamTypeAnnotation =
 
 export type ReservedTypeAnnotation = Readonly<{
   type: 'ReservedTypeAnnotation',
-  name: 'RootTag', // Union with more custom types.
+  name: 'RootTag' | 'ArrayBuffer' | 'Uint8Array', // Union with more custom types.
 }>;
 
 /**

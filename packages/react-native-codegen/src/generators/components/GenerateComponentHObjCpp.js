@@ -157,6 +157,11 @@ function getObjCParamType(param: Param): string {
       switch (typeAnnotation.name) {
         case 'RootTag':
           return 'double';
+        case 'ArrayBuffer':
+        case 'Uint8Array':
+          throw new Error(
+            `ArrayBuffer and Uint8Array are only supported in cxx-only modules. Got ${typeAnnotation.name}.`,
+          );
         default:
           (typeAnnotation.name: empty);
           throw new Error(`Receieved invalid type: ${typeAnnotation.name}`);
@@ -187,6 +192,11 @@ function getObjCExpectedKindParamType(param: Param): string {
       switch (typeAnnotation.name) {
         case 'RootTag':
           return '[NSNumber class]';
+        case 'ArrayBuffer':
+        case 'Uint8Array':
+          throw new Error(
+            `ArrayBuffer and Uint8Array are only supported in cxx-only modules. Got ${typeAnnotation.name}.`,
+          );
         default:
           (typeAnnotation.name: empty);
           throw new Error(`Receieved invalid type: ${typeAnnotation.name}`);
@@ -217,6 +227,11 @@ function getReadableExpectedKindParamType(param: Param): string {
       switch (typeAnnotation.name) {
         case 'RootTag':
           return 'double';
+        case 'ArrayBuffer':
+        case 'Uint8Array':
+          throw new Error(
+            `ArrayBuffer and Uint8Array are only supported in cxx-only modules. Got ${typeAnnotation.name}.`,
+          );
         default:
           (typeAnnotation.name: empty);
           throw new Error(`Receieved invalid type: ${typeAnnotation.name}`);
@@ -250,6 +265,11 @@ function getObjCRightHandAssignmentParamType(
       switch (typeAnnotation.name) {
         case 'RootTag':
           return `[(NSNumber *)arg${index} doubleValue]`;
+        case 'ArrayBuffer':
+        case 'Uint8Array':
+          throw new Error(
+            `ArrayBuffer and Uint8Array are only supported in cxx-only modules. Got ${typeAnnotation.name}.`,
+          );
         default:
           (typeAnnotation.name: empty);
           throw new Error(`Receieved invalid type: ${typeAnnotation.name}`);

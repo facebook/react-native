@@ -157,6 +157,11 @@ function getCommandArgJavaType(param: NamedShape<CommandParamTypeAnnotation>) {
       switch (typeAnnotation.name) {
         case 'RootTag':
           return 'double';
+        case 'ArrayBuffer':
+        case 'Uint8Array':
+          throw new Error(
+            `ArrayBuffer and Uint8Array are only supported in cxx-only modules. Got ${typeAnnotation.name}.`,
+          );
         default:
           (typeAnnotation.name: empty);
           throw new Error(`Receieved invalid type: ${typeAnnotation.name}`);

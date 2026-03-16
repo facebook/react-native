@@ -39,6 +39,8 @@ type State = {
 type Examples =
   | 'callback'
   | 'callbackWithSubscription'
+  | 'getArrayBuffer'
+  | 'getUint8Array'
   | 'getArray'
   | 'getBool'
   | 'getConstants'
@@ -95,6 +97,21 @@ class NativeCxxModuleExampleExample extends React.Component<{}, State> {
       if (subscription) {
         subscription();
       }
+    },
+    getArrayBuffer: () => {
+      const input = new ArrayBuffer(4);
+      const inputView = new Uint8Array(input);
+      inputView[0] = 9;
+      inputView[1] = 8;
+      inputView[2] = 7;
+      inputView[3] = 6;
+      const output = NativeCxxModuleExample?.getArrayBuffer(input);
+      return output == null ? null : Array.from(new Uint8Array(output));
+    },
+    getUint8Array: () => {
+      const input = new Uint8Array([1, 2, 3, 4]);
+      const output = NativeCxxModuleExample?.getUint8Array(input);
+      return output == null ? null : Array.from(output);
     },
     getArray: () =>
       NativeCxxModuleExample?.getArray([

@@ -102,6 +102,20 @@ function emitRootTag(nullable: boolean): Nullable<ReservedTypeAnnotation> {
   });
 }
 
+function emitArrayBuffer(nullable: boolean): Nullable<ReservedTypeAnnotation> {
+  return wrapNullable(nullable, {
+    type: 'ReservedTypeAnnotation',
+    name: 'ArrayBuffer',
+  });
+}
+
+function emitUint8Array(nullable: boolean): Nullable<ReservedTypeAnnotation> {
+  return wrapNullable(nullable, {
+    type: 'ReservedTypeAnnotation',
+    name: 'Uint8Array',
+  });
+}
+
 function emitDouble(nullable: boolean): Nullable<DoubleTypeAnnotation> {
   return wrapNullable(nullable, {
     type: 'DoubleTypeAnnotation',
@@ -666,6 +680,12 @@ function emitCommonTypes(
     UnsafeMixed: cxxOnly ? emitMixed : emitGenericObject,
     unknown: cxxOnly ? emitMixed : emitGenericObject,
     UnknownTypeAnnotation: cxxOnly ? emitMixed : emitGenericObject,
+    ...(cxxOnly
+      ? {
+          ArrayBuffer: emitArrayBuffer,
+          Uint8Array: emitUint8Array,
+        }
+      : {}),
   };
 
   const typeAnnotationName = parser.convertKeywordToTypeAnnotation(
@@ -783,6 +803,8 @@ module.exports = {
   emitObject,
   emitPromise,
   emitRootTag,
+  emitArrayBuffer,
+  emitUint8Array,
   emitVoid,
   emitString,
   emitStringish,

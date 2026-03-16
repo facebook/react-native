@@ -238,7 +238,7 @@ export type CommandParamTypeAnnotation =
 
 export interface ReservedTypeAnnotation {
   readonly type: 'ReservedTypeAnnotation';
-  readonly name: 'RootTag'; // Union with more custom types.
+  readonly name: 'RootTag' | 'ArrayBuffer' | 'Uint8Array'; // Union with more custom types.
 }
 
 /**

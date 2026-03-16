@@ -91,6 +91,11 @@ function toObjCType(
       switch (typeAnnotation.name) {
         case 'RootTag':
           return wrapCxxOptional('double', isRequired);
+        case 'ArrayBuffer':
+        case 'Uint8Array':
+          throw new Error(
+            `ArrayBuffer and Uint8Array are only supported in cxx-only modules. Got ${typeAnnotation.name}.`,
+          );
         default:
           (typeAnnotation.name: empty);
           throw new Error(`Unknown prop type, found: ${typeAnnotation.name}"`);
@@ -177,6 +182,11 @@ function toObjCValue(
       switch (typeAnnotation.name) {
         case 'RootTag':
           return wrapPrimitive('double');
+        case 'ArrayBuffer':
+        case 'Uint8Array':
+          throw new Error(
+            `ArrayBuffer and Uint8Array are only supported in cxx-only modules. Got ${typeAnnotation.name}.`,
+          );
         default:
           (typeAnnotation.name: empty);
           throw new Error(

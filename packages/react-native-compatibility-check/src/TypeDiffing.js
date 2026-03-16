@@ -1624,6 +1624,8 @@ function compareReservedTypeAnnotation(
 
   switch (newerAnnotation.name) {
     case 'RootTag':
+    case 'ArrayBuffer':
+    case 'Uint8Array':
     case 'ColorPrimitive':
     case 'ImageSourcePrimitive':
     case 'PointPrimitive':
