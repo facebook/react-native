@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<5144fb0350b71394206d614c68ef87f0>>
+ * @generated SignedSource<<5765eb9864a1280e5c8706a8cfb22e5b>>
  */
 
 /**
@@ -515,6 +515,12 @@ public object ReactNativeFeatureFlags {
    */
   @JvmStatic
   public fun useNativeViewConfigsInBridgelessMode(): Boolean = accessor.useNativeViewConfigsInBridgelessMode()
+
+  /**
+   * When enabled, bridgeless mode skips the native persisted UIManager constants cache and always computes constants on demand.
+   */
+  @JvmStatic
+  public fun disableNativeUIManagerConstantsCacheInBridgelessMode(): Boolean = accessor.disableNativeUIManagerConstantsCacheInBridgelessMode()
 
   /**
    * When enabled, ReactScrollView will extend NestedScrollView instead of ScrollView on Android for improved nested scrolling support.

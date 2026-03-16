@@ -23,6 +23,8 @@ import com.facebook.react.bridge.NativeModule
 import com.facebook.react.bridge.ReactApplicationContext
 import com.facebook.react.common.assets.ReactFontManager
 import com.facebook.react.defaults.DefaultReactHost
+import com.facebook.react.internal.featureflags.ReactNativeFeatureFlags
+import com.facebook.react.internal.featureflags.ReactNativeFeatureFlagsOverrides_RNOSS_Canary_Android
 import com.facebook.react.module.model.ReactModuleInfo
 import com.facebook.react.module.model.ReactModuleInfoProvider
 import com.facebook.react.uiapp.component.MyLegacyViewManager
@@ -122,5 +124,13 @@ internal class RNTesterApplication : Application(), ReactApplication {
     ReactFontManager.getInstance().addCustomFont(this, "FiraCode", R.font.firacode)
     super.onCreate()
     loadReactNative(this)
+    if (BuildConfig.IS_NEW_ARCHITECTURE_ENABLED) {
+      ReactNativeFeatureFlags.dangerouslyForceOverride(
+          object : ReactNativeFeatureFlagsOverrides_RNOSS_Canary_Android() {
+            override fun disableNativeUIManagerConstantsCacheInBridgelessMode(): Boolean =
+                BuildConfig.UI_MANAGER_CACHE_BACKEND != "native"
+          }
+      )
+    }
   }
 }

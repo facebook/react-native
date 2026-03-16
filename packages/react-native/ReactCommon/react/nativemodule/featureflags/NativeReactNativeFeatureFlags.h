@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<0aeea7c4fa2a8aa4180c83bbd0746250>>
+ * @generated SignedSource<<766beab931a683fc96879f9aee4f9316>>
  */
 
 /**
@@ -197,6 +197,8 @@ class NativeReactNativeFeatureFlags
   bool useFabricInterop(jsi::Runtime& runtime);
 
   bool useNativeViewConfigsInBridgelessMode(jsi::Runtime& runtime);
+
+  bool disableNativeUIManagerConstantsCacheInBridgelessMode(jsi::Runtime& runtime);
 
   bool useNestedScrollViewAndroid(jsi::Runtime& runtime);
 

@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<7b87f5541ecf881d8ce51c5edd5b99b0>>
+ * @generated SignedSource<<cfdb8838fe998e0f657de180f3dc271c>>
  */
 
 /**
@@ -105,6 +105,7 @@ internal class ReactNativeFeatureFlagsLocalAccessor : ReactNativeFeatureFlagsAcc
   private var useAlwaysAvailableJSErrorHandlingCache: Boolean? = null
   private var useFabricInteropCache: Boolean? = null
   private var useNativeViewConfigsInBridgelessModeCache: Boolean? = null
+  private var disableNativeUIManagerConstantsCacheInBridgelessModeCache: Boolean? = null
   private var useNestedScrollViewAndroidCache: Boolean? = null
   private var useSharedAnimatedBackendCache: Boolean? = null
   private var useTraitHiddenOnAndroidCache: Boolean? = null
@@ -921,6 +922,16 @@ internal class ReactNativeFeatureFlagsLocalAccessor : ReactNativeFeatureFlagsAcc
       cached = currentProvider.useNativeViewConfigsInBridgelessMode()
       accessedFeatureFlags.add("useNativeViewConfigsInBridgelessMode")
       useNativeViewConfigsInBridgelessModeCache = cached
+    }
+    return cached
+  }
+
+  override fun disableNativeUIManagerConstantsCacheInBridgelessMode(): Boolean {
+    var cached = disableNativeUIManagerConstantsCacheInBridgelessModeCache
+    if (cached == null) {
+      cached = currentProvider.disableNativeUIManagerConstantsCacheInBridgelessMode()
+      accessedFeatureFlags.add("disableNativeUIManagerConstantsCacheInBridgelessMode")
+      disableNativeUIManagerConstantsCacheInBridgelessModeCache = cached
     }
     return cached
   }

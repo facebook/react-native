@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<b4670c40175b42e04eb8f03b752a0c00>>
+ * @generated SignedSource<<82fae58a4b2ebca771351029b6e21265>>
  */
 
 /**
@@ -525,6 +525,12 @@ class ReactNativeFeatureFlagsJavaProvider
     return method(javaProvider_);
   }
 
+  bool disableNativeUIManagerConstantsCacheInBridgelessMode() override {
+    static const auto method =
+        getReactNativeFeatureFlagsProviderJavaClass()->getMethod<jboolean()>("disableNativeUIManagerConstantsCacheInBridgelessMode");
+    return method(javaProvider_);
+  }
+
   bool useNestedScrollViewAndroid() override {
     static const auto method =
         getReactNativeFeatureFlagsProviderJavaClass()->getMethod<jboolean()>("useNestedScrollViewAndroid");
@@ -988,6 +994,11 @@ bool JReactNativeFeatureFlagsCxxInterop::useNativeViewConfigsInBridgelessMode(
   return ReactNativeFeatureFlags::useNativeViewConfigsInBridgelessMode();
 }
 
+bool JReactNativeFeatureFlagsCxxInterop::disableNativeUIManagerConstantsCacheInBridgelessMode(
+    facebook::jni::alias_ref<JReactNativeFeatureFlagsCxxInterop> /*unused*/) {
+  return ReactNativeFeatureFlags::disableNativeUIManagerConstantsCacheInBridgelessMode();
+}
+
 bool JReactNativeFeatureFlagsCxxInterop::useNestedScrollViewAndroid(
     facebook::jni::alias_ref<JReactNativeFeatureFlagsCxxInterop> /*unused*/) {
   return ReactNativeFeatureFlags::useNestedScrollViewAndroid();
@@ -1307,6 +1318,9 @@ void JReactNativeFeatureFlagsCxxInterop::registerNatives() {
       makeNativeMethod(
         "useNativeViewConfigsInBridgelessMode",
         JReactNativeFeatureFlagsCxxInterop::useNativeViewConfigsInBridgelessMode),
+      makeNativeMethod(
+        "disableNativeUIManagerConstantsCacheInBridgelessMode",
+        JReactNativeFeatureFlagsCxxInterop::disableNativeUIManagerConstantsCacheInBridgelessMode),
       makeNativeMethod(
         "useNestedScrollViewAndroid",
         JReactNativeFeatureFlagsCxxInterop::useNestedScrollViewAndroid),

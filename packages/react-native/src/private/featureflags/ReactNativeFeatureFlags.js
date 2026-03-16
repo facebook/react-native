@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<0fffffdeaf8ab7210131ac789f8b208b>>
+ * @generated SignedSource<<5b9a77b03afabd12aa8f426756ffaedc>>
  * @flow strict
  * @noformat
  */
@@ -128,6 +128,7 @@ export type ReactNativeFeatureFlags = $ReadOnly<{
   useAlwaysAvailableJSErrorHandling: Getter<boolean>,
   useFabricInterop: Getter<boolean>,
   useNativeViewConfigsInBridgelessMode: Getter<boolean>,
+  disableNativeUIManagerConstantsCacheInBridgelessMode: Getter<boolean>,
   useNestedScrollViewAndroid: Getter<boolean>,
   useSharedAnimatedBackend: Getter<boolean>,
   useTraitHiddenOnAndroid: Getter<boolean>,
@@ -527,6 +528,10 @@ export const useFabricInterop: Getter<boolean> = createNativeFlagGetter('useFabr
  * When enabled, the native view configs are used in bridgeless mode.
  */
 export const useNativeViewConfigsInBridgelessMode: Getter<boolean> = createNativeFlagGetter('useNativeViewConfigsInBridgelessMode', false);
+/**
+ * When enabled, bridgeless mode skips the native persisted UIManager constants cache and always computes constants on demand.
+ */
+export const disableNativeUIManagerConstantsCacheInBridgelessMode: Getter<boolean> = createNativeFlagGetter('disableNativeUIManagerConstantsCacheInBridgelessMode', true);
 /**
  * When enabled, ReactScrollView will extend NestedScrollView instead of ScrollView on Android for improved nested scrolling support.
  */
