@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<ab3b1d2277b8cc9db1708ef94515fb35>>
+ * @generated SignedSource<<c84cfe57aee20fe67cd4827cda00876c>>
  */
 
 /**
@@ -184,6 +184,8 @@ public open class ReactNativeFeatureFlagsDefaults : ReactNativeFeatureFlagsProvi
   override fun useFabricInterop(): Boolean = true
 
   override fun useNativeViewConfigsInBridgelessMode(): Boolean = false
+
+  override fun disableNativeUIManagerConstantsCacheInBridgelessMode(): Boolean = true
 
   override fun useNestedScrollViewAndroid(): Boolean = false
 

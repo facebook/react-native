@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<06dba77b9b76d06d5c338ed8a97e33f5>>
+ * @generated SignedSource<<03a3adfe3b4e0c0952096cf6192f9bf1>>
  */
 
 /**
@@ -113,6 +113,7 @@ class ReactNativeFeatureFlagsAccessor {
   bool useAlwaysAvailableJSErrorHandling();
   bool useFabricInterop();
   bool useNativeViewConfigsInBridgelessMode();
+  bool disableNativeUIManagerConstantsCacheInBridgelessMode();
   bool useNestedScrollViewAndroid();
   bool useSharedAnimatedBackend();
   bool useTraitHiddenOnAndroid();
@@ -133,7 +134,7 @@ class ReactNativeFeatureFlagsAccessor {
   std::unique_ptr<ReactNativeFeatureFlagsProvider> currentProvider_;
   bool wasOverridden_;
 
-  std::array<std::atomic<const char*>, 90> accessedFeatureFlags_;
+  std::array<std::atomic<const char*>, 91> accessedFeatureFlags_;
 
   std::atomic<std::optional<bool>> commonTestFlag_;
   std::atomic<std::optional<bool>> cdpInteractionMetricsEnabled_;
@@ -216,6 +217,7 @@ class ReactNativeFeatureFlagsAccessor {
   std::atomic<std::optional<bool>> useAlwaysAvailableJSErrorHandling_;
   std::atomic<std::optional<bool>> useFabricInterop_;
   std::atomic<std::optional<bool>> useNativeViewConfigsInBridgelessMode_;
+  std::atomic<std::optional<bool>> disableNativeUIManagerConstantsCacheInBridgelessMode_;
   std::atomic<std::optional<bool>> useNestedScrollViewAndroid_;
   std::atomic<std::optional<bool>> useSharedAnimatedBackend_;
   std::atomic<std::optional<bool>> useTraitHiddenOnAndroid_;

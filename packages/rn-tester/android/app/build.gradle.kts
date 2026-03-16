@@ -15,6 +15,8 @@ plugins {
 
 val reactNativeDirPath = "$rootDir/packages/react-native"
 val isNewArchEnabled = project.property("newArchEnabled") == "true"
+val uiManagerCacheBackend =
+    (project.findProperty("uiManagerCacheBackend")?.toString() ?: "none").lowercase()
 
 /**
  * This is the configuration block to customize your React Native Android app. By default you don't
@@ -116,6 +118,7 @@ android {
     buildConfigField("String", "JS_MAIN_MODULE_NAME", "\"js/RNTesterApp.android\"")
     buildConfigField("String", "BUNDLE_ASSET_NAME", "\"RNTesterApp.android.bundle\"")
     buildConfigField("Boolean", "IS_INTERNAL_BUILD", "false")
+    buildConfigField("String", "UI_MANAGER_CACHE_BACKEND", "\"$uiManagerCacheBackend\"")
   }
   externalNativeBuild { cmake { version = cmakeVersion } }
   splits {

@@ -912,6 +912,17 @@ const definitions: FeatureFlagDefinitions = {
       },
       ossReleaseStage: 'canary',
     },
+    disableNativeUIManagerConstantsCacheInBridgelessMode: {
+      defaultValue: true,
+      metadata: {
+        dateAdded: '2026-03-13',
+        description:
+          'When enabled, bridgeless mode skips the native persisted UIManager constants cache and always computes constants on demand.',
+        expectedReleaseValue: false,
+        purpose: 'experimentation',
+      },
+      ossReleaseStage: 'none',
+    },
     useNestedScrollViewAndroid: {
       defaultValue: false,
       metadata: {

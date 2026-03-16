@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<5433b4a2f4a0574591a38017422edac8>>
+ * @generated SignedSource<<80fa9f828f4c1bfd9e2da3e7ab9fd883>>
  */
 
 /**
@@ -271,6 +271,9 @@ class JReactNativeFeatureFlagsCxxInterop
     facebook::jni::alias_ref<JReactNativeFeatureFlagsCxxInterop>);
 
   static bool useNativeViewConfigsInBridgelessMode(
+    facebook::jni::alias_ref<JReactNativeFeatureFlagsCxxInterop>);
+
+  static bool disableNativeUIManagerConstantsCacheInBridgelessMode(
     facebook::jni::alias_ref<JReactNativeFeatureFlagsCxxInterop>);
 
   static bool useNestedScrollViewAndroid(

@@ -220,7 +220,11 @@ internal class ReactInstance(
     // initialized.
     // This happens inside getTurboModuleManagerDelegate getter.
     if (ReactNativeFeatureFlags.useNativeViewConfigsInBridgelessMode()) {
-      UIManagerConstantsCache.maybePreload(context)
+      val shouldUseNativeUIManagerConstantsCache =
+          !ReactNativeFeatureFlags.disableNativeUIManagerConstantsCacheInBridgelessMode()
+      if (shouldUseNativeUIManagerConstantsCache) {
+        UIManagerConstantsCache.maybePreload(context)
+      }
       val customDirectEvents: MutableMap<String, Any> = HashMap()
 
       UIConstantsProviderBinding.install(
@@ -234,58 +238,61 @@ internal class ReactInstance(
           // We want to match this beahavior.
           { Arguments.makeNativeMap(UIManagerModuleConstantsHelper.defaultExportableEventTypes) },
           ConstantsForViewManagerProvider { viewManagerName: String ->
-            UIManagerConstantsCache
-                .getCachedConstantsForViewManager(
-                    context,
-                    viewManagerName,
-                    customDirectEvents,
-                    context.sourceURL,
-                )
-                ?.let { cachedConstants ->
-                  return@ConstantsForViewManagerProvider cachedConstants
-                }
+            if (shouldUseNativeUIManagerConstantsCache) {
+              UIManagerConstantsCache
+                  .getCachedConstantsForViewManager(
+                      context,
+                      viewManagerName,
+                      customDirectEvents,
+                      context.sourceURL,
+                  )
+                  ?.let { cachedConstants -> return@ConstantsForViewManagerProvider cachedConstants }
+            }
 
             val viewManager =
                 viewManagerResolver.getViewManager(viewManagerName)
                     ?: return@ConstantsForViewManagerProvider null
             val viewManagerConstants =
                 createConstantsForViewManagerMap(viewManager, customDirectEvents)
-            UIManagerConstantsCache.saveConstantsForViewManager(
-                context,
-                viewManagerName,
-                viewManagerConstants,
-                customDirectEvents,
-                context.sourceURL,
-            )
+            if (shouldUseNativeUIManagerConstantsCache) {
+              UIManagerConstantsCache.saveConstantsForViewManager(
+                  context,
+                  viewManagerName,
+                  viewManagerConstants,
+                  customDirectEvents,
+                  context.sourceURL,
+              )
+            }
             Arguments.makeNativeMap(viewManagerConstants)
           },
           {
-            val cachedConstants =
-                UIManagerConstantsCache.getCachedConstants(
-                    context,
-                    customDirectEvents,
-                    context.sourceURL,
-                )
-            if (cachedConstants != null) {
-              cachedConstants
-            } else {
-              val viewManagers: List<ViewManager<*, *>> =
-                  ArrayList(viewManagerResolver.eagerViewManagerMap.values)
-              val constants = createConstants(viewManagers, customDirectEvents)
+            if (shouldUseNativeUIManagerConstantsCache) {
+              UIManagerConstantsCache
+                  .getCachedConstants(
+                      context,
+                      customDirectEvents,
+                      context.sourceURL,
+                  )
+                  ?.let { cachedConstants -> return@install cachedConstants }
+            }
+            val viewManagers: List<ViewManager<*, *>> =
+                ArrayList(viewManagerResolver.eagerViewManagerMap.values)
+            val constants = createConstants(viewManagers, customDirectEvents)
 
-              val lazyViewManagers = viewManagerResolver.lazyViewManagerNames
-              if (!lazyViewManagers.isEmpty()) {
-                constants["ViewManagerNames"] = ArrayList(lazyViewManagers)
-                constants["LazyViewManagersEnabled"] = true
-              }
+            val lazyViewManagers = viewManagerResolver.lazyViewManagerNames
+            if (!lazyViewManagers.isEmpty()) {
+              constants["ViewManagerNames"] = ArrayList(lazyViewManagers)
+              constants["LazyViewManagersEnabled"] = true
+            }
+            if (shouldUseNativeUIManagerConstantsCache) {
               UIManagerConstantsCache.saveConstants(
                   context,
                   constants,
                   customDirectEvents,
                   context.sourceURL,
               )
-              Arguments.makeNativeMap(constants)
             }
+            Arguments.makeNativeMap(constants)
           },
       )
     }

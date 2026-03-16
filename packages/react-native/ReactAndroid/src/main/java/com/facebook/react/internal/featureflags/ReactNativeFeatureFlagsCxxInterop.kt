@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<de1c66a540520cd88c4d358ba30f2c6d>>
+ * @generated SignedSource<<1e88e791ede99c1a251a37405bafdbef>>
  */
 
 /**
@@ -189,6 +189,8 @@ public object ReactNativeFeatureFlagsCxxInterop {
   @DoNotStrip @JvmStatic public external fun useFabricInterop(): Boolean
 
   @DoNotStrip @JvmStatic public external fun useNativeViewConfigsInBridgelessMode(): Boolean
+
+  @DoNotStrip @JvmStatic public external fun disableNativeUIManagerConstantsCacheInBridgelessMode(): Boolean
 
   @DoNotStrip @JvmStatic public external fun useNestedScrollViewAndroid(): Boolean
 
