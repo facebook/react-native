@@ -1,0 +1,508 @@
+// !$*UTF8*$!
+{
+	archiveVersion = 1;
+	classes = {
+	};
+	objectVersion = 77;
+	objects = {
+
+/* Begin PBXBuildFile section */
+		FC00840D3DFE0D8AD3AC299D /* AppDelegate.mm in Sources */ = {isa = PBXBuildFile; fileRef = C2E5DF890E99756A6EC5C63D /* AppDelegate.mm */;};
+		C29AFC20C7D3A56EDD8C741A /* FlexibleSizeExampleView.mm in Sources */ = {isa = PBXBuildFile; fileRef = 722F71D77D877AE011FD7A80 /* FlexibleSizeExampleView.mm */;};
+		0322AF03A31AD07F716EE4E6 /* UpdatePropertiesExampleView.mm in Sources */ = {isa = PBXBuildFile; fileRef = DFE4FA508CF1402498A75267 /* UpdatePropertiesExampleView.mm */;};
+		10704E8259DDFB576FFB962E /* SwiftTest.swift in Sources */ = {isa = PBXBuildFile; fileRef = B96E572A91A15AFC38317C6F /* SwiftTest.swift */;};
+		9CA17636881E7B3A94CD3C77 /* main.m in Sources */ = {isa = PBXBuildFile; fileRef = 11863BB54564A7D6F8B902AD /* main.m */;};
+		F0EBF07EB41D0239DC8D5EE6 /* Images.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = A61ADCA07B5ED7EE03B9FB98 /* Images.xcassets */;};
+		4A07FC7426D672802821A9C6 /* LaunchScreen.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 938E0FF6CB340F540BA1DF27 /* LaunchScreen.storyboard */;};
+		7092C804BDB63C6FCDEF52D5 /* RNTesterBundle.bundle in Resources */ = {isa = PBXBuildFile; fileRef = D36335F1420AA12858370641 /* RNTesterBundle.bundle */;};
+		26C2907BFFD5AC401413461E /* legacy_image@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = 9BF509F818BF3751DA9F8626 /* legacy_image@2x.png */;};
+		43A205C2354F80C6A8D33BCB /* PrivacyInfo.xcprivacy in Resources */ = {isa = PBXBuildFile; fileRef = 6E328EAE007CA8A78F973938 /* PrivacyInfo.xcprivacy */;};
+		EBB76FCA51A76A5CC679FCD5 /* ReactNative in Frameworks */ = {isa = PBXBuildFile; productRef = 6F0119ECFF25280A2D6CCA09 /* ReactNative */;};
+		B1F0B592EED8B298DB0F1C9D /* ReactNativeDependencies in Frameworks */ = {isa = PBXBuildFile; productRef = 9077C7053A8D5EBD548B1C63 /* ReactNativeDependencies */;};
+		143E3574B3BAE28E8D556C4E /* hermes-engine in Frameworks */ = {isa = PBXBuildFile; productRef = 67307129B842BD6E66A40F66 /* hermes-engine */;};
+		0503568A2A51D4907B192EF2 /* Autolinked in Frameworks */ = {isa = PBXBuildFile; productRef = 093742F9A1206BBC0B50D6AE /* Autolinked */;};
+		7FD3BB0354E1C0B2AACC3C8D /* ReactCodegen in Frameworks */ = {isa = PBXBuildFile; productRef = 46C1CDABA3006F86BFB380CD /* ReactCodegen */;};
+		BA9B60BD20D27F30EA656100 /* ReactAppDependencyProvider in Frameworks */ = {isa = PBXBuildFile; productRef = D02918E89D38186C02228201 /* ReactAppDependencyProvider */;};
+/* End PBXBuildFile section */
+
+/* Begin PBXFileReference section */
+		C2E5DF890E99756A6EC5C63D /* AppDelegate.mm */ = {
+			isa = PBXFileReference;
+			lastKnownFileType = sourcecode.cpp.objcpp;
+			path = AppDelegate.mm;
+			sourceTree = "<group>";
+		};
+		722F71D77D877AE011FD7A80 /* FlexibleSizeExampleView.mm */ = {
+			isa = PBXFileReference;
+			lastKnownFileType = sourcecode.cpp.objcpp;
+			path = NativeExampleViews/FlexibleSizeExampleView.mm;
+			sourceTree = "<group>";
+		};
+		DFE4FA508CF1402498A75267 /* UpdatePropertiesExampleView.mm */ = {
+			isa = PBXFileReference;
+			lastKnownFileType = sourcecode.cpp.objcpp;
+			path = NativeExampleViews/UpdatePropertiesExampleView.mm;
+			sourceTree = "<group>";
+		};
+		B96E572A91A15AFC38317C6F /* SwiftTest.swift */ = {
+			isa = PBXFileReference;
+			lastKnownFileType = sourcecode.swift;
+			path = SwiftTest.swift;
+			sourceTree = "<group>";
+		};
+		11863BB54564A7D6F8B902AD /* main.m */ = {
+			isa = PBXFileReference;
+			lastKnownFileType = sourcecode.c.objc;
+			path = main.m;
+			sourceTree = "<group>";
+		};
+		28AA61642F7C4201A256D239 /* AppDelegate.h */ = {
+			isa = PBXFileReference;
+			lastKnownFileType = sourcecode.c.h;
+			path = AppDelegate.h;
+			sourceTree = "<group>";
+		};
+		E33E0111739E58BBB193D88A /* FlexibleSizeExampleView.h */ = {
+			isa = PBXFileReference;
+			lastKnownFileType = sourcecode.c.h;
+			path = NativeExampleViews/FlexibleSizeExampleView.h;
+			sourceTree = "<group>";
+		};
+		00AE774A2CCBFCF413756F4E /* UpdatePropertiesExampleView.h */ = {
+			isa = PBXFileReference;
+			lastKnownFileType = sourcecode.c.h;
+			path = NativeExampleViews/UpdatePropertiesExampleView.h;
+			sourceTree = "<group>";
+		};
+		A61ADCA07B5ED7EE03B9FB98 /* Images.xcassets */ = {
+			isa = PBXFileReference;
+			lastKnownFileType = folder.assetcatalog;
+			path = Images.xcassets;
+			sourceTree = "<group>";
+		};
+		938E0FF6CB340F540BA1DF27 /* LaunchScreen.storyboard */ = {
+			isa = PBXFileReference;
+			lastKnownFileType = file.storyboard;
+			path = LaunchScreen.storyboard;
+			sourceTree = "<group>";
+		};
+		D36335F1420AA12858370641 /* RNTesterBundle.bundle */ = {
+			isa = PBXFileReference;
+			lastKnownFileType = "\"wrapper.plug-in\"";
+			path = RNTesterBundle.bundle;
+			sourceTree = "<group>";
+		};
+		9BF509F818BF3751DA9F8626 /* legacy_image@2x.png */ = {
+			isa = PBXFileReference;
+			lastKnownFileType = image.png;
+			path = "legacy_image@2x.png";
+			sourceTree = "<group>";
+		};
+		92F5EBEA213E9BF899490C45 /* Info.plist */ = {
+			isa = PBXFileReference;
+			lastKnownFileType = text.plist.xml;
+			path = Info.plist;
+			sourceTree = "<group>";
+		};
+		6E328EAE007CA8A78F973938 /* PrivacyInfo.xcprivacy */ = {
+			isa = PBXFileReference;
+			lastKnownFileType = text.plist.xml;
+			path = PrivacyInfo.xcprivacy;
+			sourceTree = "<group>";
+		};
+		541C99C9E613CC047E3A590E /* RNTester.app */ = {
+			isa = PBXFileReference;
+			explicitFileType = wrapper.application;
+			includeInIndex = 0;
+			path = RNTester.app;
+			sourceTree = BUILT_PRODUCTS_DIR;
+		};
+/* End PBXFileReference section */
+
+/* Begin PBXFrameworksBuildPhase section */
+		342636B63A5A3BDE6D757526 /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				EBB76FCA51A76A5CC679FCD5,
+				B1F0B592EED8B298DB0F1C9D,
+				143E3574B3BAE28E8D556C4E,
+				0503568A2A51D4907B192EF2,
+				7FD3BB0354E1C0B2AACC3C8D,
+				BA9B60BD20D27F30EA656100,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXFrameworksBuildPhase section */
+
+/* Begin PBXGroup section */
+		32FFE54A99F6CB24DE17AE4C = {
+			isa = PBXGroup;
+			children = (
+				BB7A93857051E2BACEAEC463 /* RNTester */,
+				6E328EAE007CA8A78F973938 /* PrivacyInfo.xcprivacy */,
+				B7373B02E7576E22B4877F78 /* Products */,
+			);
+			sourceTree = "<group>";
+		};
+		BB7A93857051E2BACEAEC463 /* RNTester */ = {
+			isa = PBXGroup;
+			children = (
+				C2E5DF890E99756A6EC5C63D /* AppDelegate.mm */,
+				722F71D77D877AE011FD7A80 /* FlexibleSizeExampleView.mm */,
+				DFE4FA508CF1402498A75267 /* UpdatePropertiesExampleView.mm */,
+				B96E572A91A15AFC38317C6F /* SwiftTest.swift */,
+				11863BB54564A7D6F8B902AD /* main.m */,
+				28AA61642F7C4201A256D239 /* AppDelegate.h */,
+				E33E0111739E58BBB193D88A /* FlexibleSizeExampleView.h */,
+				00AE774A2CCBFCF413756F4E /* UpdatePropertiesExampleView.h */,
+				A61ADCA07B5ED7EE03B9FB98 /* Images.xcassets */,
+				938E0FF6CB340F540BA1DF27 /* LaunchScreen.storyboard */,
+				D36335F1420AA12858370641 /* RNTesterBundle.bundle */,
+				9BF509F818BF3751DA9F8626 /* legacy_image@2x.png */,
+				92F5EBEA213E9BF899490C45 /* Info.plist */,
+			);
+			path = RNTester;
+			sourceTree = "<group>";
+		};
+		B7373B02E7576E22B4877F78 /* Products */ = {
+			isa = PBXGroup;
+			children = (
+				541C99C9E613CC047E3A590E /* RNTester.app */,
+			);
+			name = Products;
+			sourceTree = "<group>";
+		};
+/* End PBXGroup section */
+
+/* Begin PBXNativeTarget section */
+		952BC704BD093AB61B4F83F0 /* RNTester */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = 61BE48545177BFBE94676BFF /* Build configuration list for PBXNativeTarget "RNTester" */;
+			buildPhases = (
+				56B023BE7C48E5B32C8BF3A5 /* Sync SPM Autolinking */,
+				81FE5423A9EB4933552FBA8F /* Prepare VFS Overlay */,
+				D688CEEA9E5FCD0B08D098C9 /* Sources */,
+				342636B63A5A3BDE6D757526 /* Frameworks */,
+				99B7D28117FFA35F60A1DCE3 /* Resources */,
+				39471FCBCD05DCAF714FB455 /* Build JS Bundle */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+			);
+			name = RNTester;
+			packageProductDependencies = (
+				6F0119ECFF25280A2D6CCA09,
+				9077C7053A8D5EBD548B1C63,
+				67307129B842BD6E66A40F66,
+				093742F9A1206BBC0B50D6AE,
+				46C1CDABA3006F86BFB380CD,
+				D02918E89D38186C02228201,
+			);
+			productName = RNTester;
+			productReference = 541C99C9E613CC047E3A590E /* RNTester.app */;
+			productType = "com.apple.product-type.application";
+		};
+/* End PBXNativeTarget section */
+
+/* Begin PBXProject section */
+		AA43DDDCE7F3489C99E3F6C9 /* Project object */ = {
+			isa = PBXProject;
+			attributes = {
+				BuildIndependentTargetsInParallel = 1;
+				LastUpgradeCheck = 1600;
+			};
+			buildConfigurationList = 4127DDB6D4D75C2603DF540B /* Build configuration list for PBXProject "RNTester" */;
+			mainGroup = 32FFE54A99F6CB24DE17AE4C;
+			packageReferences = (
+				E1F47AFB2B12E4FC99C4CDDF /* XCLocalSwiftPackageReference "build/xcframeworks" */,
+				74A67208C0A83CB81EDB54A8 /* XCLocalSwiftPackageReference "autolinked" */,
+				D97937E20DB28D59C5F20110 /* XCLocalSwiftPackageReference "build/generated/ios" */,
+			);
+			productRefGroup = B7373B02E7576E22B4877F78 /* Products */;
+			projectDirPath = "";
+			projectRoot = "";
+			targets = (
+				952BC704BD093AB61B4F83F0 /* RNTester */,
+			);
+		};
+/* End PBXProject section */
+
+/* Begin PBXResourcesBuildPhase section */
+		99B7D28117FFA35F60A1DCE3 /* Resources */ = {
+			isa = PBXResourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				F0EBF07EB41D0239DC8D5EE6 /* Images.xcassets in Resources */,
+				4A07FC7426D672802821A9C6 /* LaunchScreen.storyboard in Resources */,
+				7092C804BDB63C6FCDEF52D5 /* RNTesterBundle.bundle in Resources */,
+				26C2907BFFD5AC401413461E /* legacy_image@2x.png in Resources */,
+				43A205C2354F80C6A8D33BCB /* PrivacyInfo.xcprivacy in Resources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXResourcesBuildPhase section */
+
+/* Begin PBXShellScriptBuildPhase section */
+		56B023BE7C48E5B32C8BF3A5 /* Sync SPM Autolinking */ = {
+			isa = PBXShellScriptBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			inputFileListPaths = (
+			);
+			inputPaths = (
+			);
+			name = "Sync SPM Autolinking";
+			outputFileListPaths = (
+			);
+			outputPaths = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+			shellPath = /bin/sh;
+			shellScript = "set -euo pipefail\n\nSTAMP=\"$SRCROOT/autolinked/.spm-sync-stamp\"\nSTALE=0\n\n# Check 0: xcframework artifacts missing (fresh clone)\nif [ ! -f \"$SRCROOT/build/xcframeworks/artifacts.json\" ] || \\\n   [ ! -d \"$SRCROOT/build/xcframeworks/React.xcframework\" ]; then\n  STALE=1\nfi\n\n# Find project root (where package.json lives — may be parent of SRCROOT)\nPROJECT_ROOT=\"$SRCROOT\"\nif [ ! -f \"$PROJECT_ROOT/package.json\" ] && [ -f \"$PROJECT_ROOT/../package.json\" ]; then\n  PROJECT_ROOT=\"$SRCROOT/..\"\nfi\n\n# Check 1: dependency inputs (covers app projects after any package manager install)\nfor INPUT in \\\n  \"$PROJECT_ROOT/package.json\" \\\n  \"$PROJECT_ROOT/react-native.config.js\"; do\n  if [ -f \"$INPUT\" ] && [ \"$INPUT\" -nt \"$STAMP\" ]; then\n    STALE=1\n    break\n  fi\ndone\n\n# Check node_modules mtime (works with npm, yarn, pnpm, bun — any package manager)\nif [ \"$STALE\" -eq 0 ]; then\n  # In monorepos, node_modules may be hoisted to the repo root\n  NM_DIR=\"$SRCROOT/node_modules\"\n  if [ ! -d \"$NM_DIR\" ]; then\n    NM_DIR=\"$SRCROOT/../node_modules\"\n  fi\n  if [ -d \"$NM_DIR\" ] && [ \"$NM_DIR\" -nt \"$STAMP\" ]; then\n    STALE=1\n  fi\nfi\n\n# Check 2: codegen spec files changed via git (covers monorepo after git pull)\nif [ \"$STALE\" -eq 0 ] && [ -f \"$STAMP\" ]; then\n  STAMP_TIME=$(stat -f %m \"$STAMP\" 2>/dev/null || stat -c %Y \"$STAMP\" 2>/dev/null || echo 0)\n  LATEST_SPEC_COMMIT=$(git -C \"$SRCROOT\" log -1 --format=%ct -- '*.js' '*.ts' 2>/dev/null || echo 0)\n  if [ \"$LATEST_SPEC_COMMIT\" -gt \"$STAMP_TIME\" ]; then\n    STALE=1\n  fi\nfi\n\nif [ ! -f \"$STAMP\" ]; then\n  STALE=1\nfi\n\nif [ \"$STALE\" -eq 0 ]; then\n  exit 0\nfi\n\necho \"SPM sync inputs changed — re-syncing (codegen + autolinking)...\"\n\nWITH_ENVIRONMENT=\"../react-native/scripts/xcode/with-environment.sh\"\nSYNC_SCRIPT=\"../react-native/scripts/spm/sync-spm-autolinking.js\"\n\nif [ -f \"$WITH_ENVIRONMENT\" ]; then\n  # with-environment.sh references PODS_ROOT and $1, which may be unset.\n  # Temporarily disable nounset to avoid failures when sourcing.\n  export PODS_ROOT=\"${PODS_ROOT:-$SRCROOT}\"\n  set +u\n  . \"$WITH_ENVIRONMENT\"\n  set -u\nfi\n\nif command -v node >/dev/null 2>&1; then\n  node \"$SYNC_SCRIPT\" --app-root \"$SRCROOT\" --react-native-root \"$SRCROOT/../react-native\" || {\n    echo \"warning: SPM sync failed — build may use stale codegen/autolinking\"\n    exit 0\n  }\nelse\n  echo \"warning: node not found — skipping SPM sync\"\n  exit 0\nfi\n";
+		};
+		81FE5423A9EB4933552FBA8F /* Prepare VFS Overlay */ = {
+			isa = PBXShellScriptBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			inputFileListPaths = (
+			);
+			inputPaths = (
+				"$(SRCROOT)/build/xcframeworks/React-VFS.yaml",
+			);
+			name = "Prepare VFS Overlay";
+			outputFileListPaths = (
+			);
+			outputPaths = (
+				"$(DERIVED_FILE_DIR)/React-VFS.yaml",
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+			shellPath = /bin/sh;
+			shellScript = "set -euo pipefail\nSRC_VFS=\"$SRCROOT/build/xcframeworks/React-VFS.yaml\"\nDST_VFS=\"$DERIVED_FILE_DIR/React-VFS.yaml\"\n\nif [ ! -f \"$SRC_VFS\" ]; then\n  echo \"warning: VFS overlay not found at $SRC_VFS\"\n  exit 0\nfi\n\nLOCAL_HEADERS=\"$SRCROOT/build/xcframeworks/React.xcframework/Headers\"\nsed \"4s|.*|  - name: '$LOCAL_HEADERS'|\" \"$SRC_VFS\" > \"$DST_VFS\"\n";
+		};
+		39471FCBCD05DCAF714FB455 /* Build JS Bundle */ = {
+			isa = PBXShellScriptBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			inputFileListPaths = (
+			);
+			inputPaths = (
+			);
+			name = "Build JS Bundle";
+			outputFileListPaths = (
+			);
+			outputPaths = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+			shellPath = /bin/sh;
+			shellScript = "set -e\n\nexport PROJECT_ROOT=\"$SRCROOT\"\nexport ENTRY_FILE=\"$SRCROOT/index.js\"\n\nWITH_ENVIRONMENT=\"../react-native/scripts/xcode/with-environment.sh\"\nREACT_NATIVE_XCODE=\"../react-native/scripts/react-native-xcode.sh\"\n\n/bin/sh -c \"$WITH_ENVIRONMENT $REACT_NATIVE_XCODE\"\n";
+		};
+/* End PBXShellScriptBuildPhase section */
+
+/* Begin PBXSourcesBuildPhase section */
+		D688CEEA9E5FCD0B08D098C9 /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				FC00840D3DFE0D8AD3AC299D /* AppDelegate.mm in Sources */,
+				C29AFC20C7D3A56EDD8C741A /* FlexibleSizeExampleView.mm in Sources */,
+				0322AF03A31AD07F716EE4E6 /* UpdatePropertiesExampleView.mm in Sources */,
+				10704E8259DDFB576FFB962E /* SwiftTest.swift in Sources */,
+				9CA17636881E7B3A94CD3C77 /* main.m in Sources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXSourcesBuildPhase section */
+
+/* Begin XCBuildConfiguration section */
+		7D5A9E00209051176B8C8035 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ALWAYS_SEARCH_USER_PATHS = NO;
+				CLANG_CXX_LANGUAGE_STANDARD = "c++20";
+				CLANG_ENABLE_MODULES = YES;
+				CLANG_ENABLE_OBJC_ARC = YES;
+				COPY_PHASE_STRIP = NO;
+				DEBUG_INFORMATION_FORMAT = dwarf;
+				ENABLE_STRICT_OBJC_MSGSEND = YES;
+				ENABLE_TESTABILITY = YES;
+				GCC_DYNAMIC_NO_PIC = NO;
+				GCC_NO_COMMON_BLOCKS = YES;
+				GCC_OPTIMIZATION_LEVEL = 0;
+				GCC_PREPROCESSOR_DEFINITIONS = (
+					"DEBUG=1",
+					"$(inherited)",
+				);
+				IPHONEOS_DEPLOYMENT_TARGET = 15;
+				MTL_ENABLE_DEBUG_INFO = INCLUDE_SOURCE;
+				ONLY_ACTIVE_ARCH = YES;
+				SDKROOT = iphoneos;
+				SUPPORTED_PLATFORMS = "iphoneos iphonesimulator";
+				SUPPORTS_MACCATALYST = NO;
+				SWIFT_ACTIVE_COMPILATION_CONDITIONS = DEBUG;
+								SWIFT_OPTIMIZATION_LEVEL = "-Onone";
+				SWIFT_VERSION = 5.0;
+			};
+			name = Debug;
+		};
+		077CE6EC59291839A53FDB4C /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ALWAYS_SEARCH_USER_PATHS = NO;
+				CLANG_CXX_LANGUAGE_STANDARD = "c++20";
+				CLANG_ENABLE_MODULES = YES;
+				CLANG_ENABLE_OBJC_ARC = YES;
+				COPY_PHASE_STRIP = YES;
+				DEBUG_INFORMATION_FORMAT = "dwarf-with-dsym";
+				ENABLE_NS_ASSERTIONS = NO;
+				ENABLE_STRICT_OBJC_MSGSEND = YES;
+				GCC_NO_COMMON_BLOCKS = YES;
+				IPHONEOS_DEPLOYMENT_TARGET = 15;
+				SDKROOT = iphoneos;
+				SUPPORTED_PLATFORMS = "iphoneos iphonesimulator";
+				SUPPORTS_MACCATALYST = NO;
+				SWIFT_COMPILATION_MODE = wholemodule;
+								SWIFT_OPTIMIZATION_LEVEL = "-O";
+				SWIFT_VERSION = 5.0;
+				VALIDATE_PRODUCT = YES;
+			};
+			name = Release;
+		};
+		276D0D5A43515D11235856EF /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
+				CLANG_CXX_LANGUAGE_STANDARD = "c++20";
+				DEVELOPMENT_TEAM = "";
+				HEADER_SEARCH_PATHS = (
+					"$(inherited)",
+					"$(SRCROOT)/build/xcframeworks/React.xcframework/Headers",
+					"$(SRCROOT)/build/xcframeworks/React.xcframework/Headers/React_RCTAppDelegate",
+					"$(SRCROOT)/build/xcframeworks/ReactNativeDependencies.xcframework/Headers",
+					"$(SRCROOT)/autolinked/sources",
+				);
+				INFOPLIST_FILE = "$(SRCROOT)/RNTester/Info.plist";
+				IPHONEOS_DEPLOYMENT_TARGET = 15;
+				LD_RUNPATH_SEARCH_PATHS = (
+					/usr/lib/swift,
+					"$(inherited)",
+					"@executable_path/Frameworks",
+				);
+				OTHER_CFLAGS = (
+					"$(inherited)",
+					"-ivfsoverlay",
+					"$(DERIVED_FILE_DIR)/React-VFS.yaml",
+				);
+				OTHER_LDFLAGS = (
+					"$(inherited)",
+					"-ObjC",
+				);
+				OTHER_SWIFT_FLAGS = (
+					"$(inherited)",
+					"-Xcc",
+					"-ivfsoverlay",
+					"-Xcc",
+					"$(DERIVED_FILE_DIR)/React-VFS.yaml",
+					"-Xcc",
+					"-fmodule-map-file=$(BUILT_PRODUCTS_DIR)/React.framework/Modules/module.modulemap",
+				);
+				PRODUCT_BUNDLE_IDENTIFIER = com.meta.RNTester.localDevelopment;
+				PRODUCT_NAME = RNTester;
+				REACT_NATIVE_PATH = "../react-native";
+				SWIFT_VERSION = 5.0;
+				TARGETED_DEVICE_FAMILY = "1,2";
+				SWIFT_OPTIMIZATION_LEVEL = "-Onone";
+			};
+			name = Debug;
+		};
+		E74922C70A1BFEEA494331B5 /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
+				CLANG_CXX_LANGUAGE_STANDARD = "c++20";
+				DEVELOPMENT_TEAM = "";
+				HEADER_SEARCH_PATHS = (
+					"$(inherited)",
+					"$(SRCROOT)/build/xcframeworks/React.xcframework/Headers",
+					"$(SRCROOT)/build/xcframeworks/React.xcframework/Headers/React_RCTAppDelegate",
+					"$(SRCROOT)/build/xcframeworks/ReactNativeDependencies.xcframework/Headers",
+					"$(SRCROOT)/autolinked/sources",
+				);
+				INFOPLIST_FILE = "$(SRCROOT)/RNTester/Info.plist";
+				IPHONEOS_DEPLOYMENT_TARGET = 15;
+				LD_RUNPATH_SEARCH_PATHS = (
+					/usr/lib/swift,
+					"$(inherited)",
+					"@executable_path/Frameworks",
+				);
+				OTHER_CFLAGS = (
+					"$(inherited)",
+					"-ivfsoverlay",
+					"$(DERIVED_FILE_DIR)/React-VFS.yaml",
+				);
+				OTHER_LDFLAGS = (
+					"$(inherited)",
+					"-ObjC",
+				);
+				OTHER_SWIFT_FLAGS = (
+					"$(inherited)",
+					"-Xcc",
+					"-ivfsoverlay",
+					"-Xcc",
+					"$(DERIVED_FILE_DIR)/React-VFS.yaml",
+					"-Xcc",
+					"-fmodule-map-file=$(BUILT_PRODUCTS_DIR)/React.framework/Modules/module.modulemap",
+				);
+				PRODUCT_BUNDLE_IDENTIFIER = com.meta.RNTester.localDevelopment;
+				PRODUCT_NAME = RNTester;
+				REACT_NATIVE_PATH = "../react-native";
+				SWIFT_VERSION = 5.0;
+				TARGETED_DEVICE_FAMILY = "1,2";
+			};
+			name = Release;
+		};
+/* End XCBuildConfiguration section */
+
+/* Begin XCConfigurationList section */
+		4127DDB6D4D75C2603DF540B /* Build configuration list for PBXProject "RNTester" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				7D5A9E00209051176B8C8035 /* Debug */,
+				077CE6EC59291839A53FDB4C /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+		61BE48545177BFBE94676BFF /* Build configuration list for PBXNativeTarget "RNTester" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				276D0D5A43515D11235856EF /* Debug */,
+				E74922C70A1BFEEA494331B5 /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+/* End XCConfigurationList section */
+
+/* Begin XCLocalSwiftPackageReference section */
+		E1F47AFB2B12E4FC99C4CDDF /* XCLocalSwiftPackageReference "build/xcframeworks" */ = {isa = XCLocalSwiftPackageReference; relativePath = build/xcframeworks;};
+		74A67208C0A83CB81EDB54A8 /* XCLocalSwiftPackageReference "autolinked" */ = {isa = XCLocalSwiftPackageReference; relativePath = autolinked;};
+		D97937E20DB28D59C5F20110 /* XCLocalSwiftPackageReference "build/generated/ios" */ = {isa = XCLocalSwiftPackageReference; relativePath = build/generated/ios;};
+/* End XCLocalSwiftPackageReference section */
+
+/* Begin XCSwiftPackageProductDependency section */
+		6F0119ECFF25280A2D6CCA09 /* ReactNative */ = {isa = XCSwiftPackageProductDependency; package = E1F47AFB2B12E4FC99C4CDDF /* XCLocalSwiftPackageReference "build/xcframeworks" */; productName = ReactNative;};
+		9077C7053A8D5EBD548B1C63 /* ReactNativeDependencies */ = {isa = XCSwiftPackageProductDependency; package = E1F47AFB2B12E4FC99C4CDDF /* XCLocalSwiftPackageReference "build/xcframeworks" */; productName = ReactNativeDependencies;};
+		67307129B842BD6E66A40F66 /* hermes-engine */ = {isa = XCSwiftPackageProductDependency; package = E1F47AFB2B12E4FC99C4CDDF /* XCLocalSwiftPackageReference "build/xcframeworks" */; productName = "hermes-engine";};
+		093742F9A1206BBC0B50D6AE /* Autolinked */ = {isa = XCSwiftPackageProductDependency; package = 74A67208C0A83CB81EDB54A8 /* XCLocalSwiftPackageReference "autolinked" */; productName = Autolinked;};
+		46C1CDABA3006F86BFB380CD /* ReactCodegen */ = {isa = XCSwiftPackageProductDependency; package = D97937E20DB28D59C5F20110 /* XCLocalSwiftPackageReference "build/generated/ios" */; productName = ReactCodegen;};
+		D02918E89D38186C02228201 /* ReactAppDependencyProvider */ = {isa = XCSwiftPackageProductDependency; package = D97937E20DB28D59C5F20110 /* XCLocalSwiftPackageReference "build/generated/ios" */; productName = ReactAppDependencyProvider;};
+/* End XCSwiftPackageProductDependency section */
+
+	};
+	rootObject = AA43DDDCE7F3489C99E3F6C9;
+}
