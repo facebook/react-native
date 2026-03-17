@@ -271,11 +271,8 @@ function translateFunctionParamToJavaType(
       imports.add('com.facebook.react.bridge.Callback');
       return wrapOptional('Callback', isRequired);
     case 'BigIntTypeAnnotation':
-      throw new Error(
-        createErrorMessage(
-          `${realTypeAnnotation.type} is not supported in Java TurboModules yet`,
-        ),
-      );
+      imports.add('java.math.BigInteger');
+      return wrapOptional('BigInteger', isRequired);
     default:
       (realTypeAnnotation.type: 'MixedTypeAnnotation');
       throw new Error(createErrorMessage(realTypeAnnotation.type));
@@ -371,11 +368,8 @@ function translateFunctionReturnTypeToJavaType(
       imports.add('com.facebook.react.bridge.WritableArray');
       return wrapOptional('WritableArray', isRequired);
     case 'BigIntTypeAnnotation':
-      throw new Error(
-        createErrorMessage(
-          `${realTypeAnnotation.type} is not supported in Java TurboModules yet`,
-        ),
-      );
+      imports.add('java.math.BigInteger');
+      return wrapOptional('BigInteger', isRequired);
     default:
       (realTypeAnnotation.type: 'MixedTypeAnnotation');
       throw new Error(createErrorMessage(realTypeAnnotation.type));
@@ -459,7 +453,7 @@ function getFalsyReturnStatementFromReturnType(
     case 'ArrayTypeAnnotation':
       return 'return null;';
     case 'BigIntTypeAnnotation':
-      throw new Error(createErrorMessage(realTypeAnnotation.type));
+      return nullable ? 'return null;' : 'return BigInteger.ZERO;';
     default:
       (realTypeAnnotation.type: 'MixedTypeAnnotation');
       throw new Error(createErrorMessage(realTypeAnnotation.type));

@@ -299,9 +299,7 @@ function translateParamTypeToJniType(
     case 'Int32TypeAnnotation':
       return !isRequired ? 'Ljava/lang/Double;' : 'D';
     case 'BigIntTypeAnnotation':
-      throw new Error(
-        `${realTypeAnnotation.type} is not supported in Java TurboModules yet`,
-      );
+      return 'Ljava/math/BigInteger;';
     case 'GenericObjectTypeAnnotation':
       return 'Lcom/facebook/react/bridge/ReadableMap;';
     case 'ObjectTypeAnnotation':
@@ -387,9 +385,7 @@ function translateReturnTypeToJniType(
     case 'Int32TypeAnnotation':
       return nullable ? 'Ljava/lang/Double;' : 'D';
     case 'BigIntTypeAnnotation':
-      throw new Error(
-        `${realTypeAnnotation.type} is not supported in Java TurboModules yet`,
-      );
+      return 'Ljava/math/BigInteger;';
     case 'PromiseTypeAnnotation':
       return 'Lcom/facebook/react/bridge/Promise;';
     case 'GenericObjectTypeAnnotation':
