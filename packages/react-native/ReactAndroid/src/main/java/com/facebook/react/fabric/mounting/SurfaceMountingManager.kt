@@ -739,13 +739,20 @@ internal constructor(
       return
     }
 
-    val viewState = getViewState(reactTag)
+    val viewState = getNullableViewState(reactTag)
+    if (viewState == null) {
+      ReactSoftExceptionLogger.logSoftException(
+          ReactSoftExceptionLogger.Categories.SURFACE_MOUNTING_MANAGER_MISSING_VIEWSTATE,
+          ReactNoCrashSoftException("Unable to find viewState for tag $reactTag for updateLayout"),
+      )
+      return
+    }
     // Do not layout Root Views
     if (viewState.isRoot) {
       return
     }
 
-    val viewToUpdate = checkNotNull(viewState.view) { "Unable to find View for tag: $reactTag" }
+    val viewToUpdate = viewState.view ?: return
 
     viewToUpdate.layoutDirection =
         when (layoutDirection) {
