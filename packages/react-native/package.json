@@ -1,6 +1,6 @@
 {
   "name": "react-native",
-  "version": "0.85.0-rc.2",
+  "version": "0.85.0-rc.3",
   "description": "A framework for building native apps using React",
   "license": "MIT",
   "repository": {
@@ -149,7 +149,7 @@
     "featureflags": "node ./scripts/featureflags/index.js"
   },
   "peerDependencies": {
-    "@react-native/jest-preset": "0.85.0-rc.2",
+    "@react-native/jest-preset": "0.85.0-rc.3",
     "@types/react": "^19.1.1",
     "react": "^19.2.3"
   },
@@ -162,13 +162,13 @@
     }
   },
   "dependencies": {
-    "@react-native/assets-registry": "0.85.0-rc.2",
-    "@react-native/codegen": "0.85.0-rc.2",
-    "@react-native/community-cli-plugin": "0.85.0-rc.2",
-    "@react-native/gradle-plugin": "0.85.0-rc.2",
-    "@react-native/js-polyfills": "0.85.0-rc.2",
-    "@react-native/normalize-colors": "0.85.0-rc.2",
-    "@react-native/virtualized-lists": "0.85.0-rc.2",
+    "@react-native/assets-registry": "0.85.0-rc.3",
+    "@react-native/codegen": "0.85.0-rc.3",
+    "@react-native/community-cli-plugin": "0.85.0-rc.3",
+    "@react-native/gradle-plugin": "0.85.0-rc.3",
+    "@react-native/js-polyfills": "0.85.0-rc.3",
+    "@react-native/normalize-colors": "0.85.0-rc.3",
+    "@react-native/virtualized-lists": "0.85.0-rc.3",
     "abort-controller": "^3.0.0",
     "anser": "^1.4.9",
     "ansi-regex": "^5.0.0",
