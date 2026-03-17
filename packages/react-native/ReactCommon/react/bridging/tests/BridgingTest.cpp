@@ -7,6 +7,10 @@
 
 #include "BridgingTest.h"
 
+#include <cstdint>
+#include <limits>
+#include <utility>
+
 namespace facebook::react {
 
 using namespace std::literals;
@@ -796,6 +800,89 @@ TEST_F(BridgingTest, highResTimeStampTest) {
   EXPECT_EQ(1.0, bridging::toJs(rt, HighResDuration::fromNanoseconds(1e6)));
   EXPECT_EQ(
       1.000001, bridging::toJs(rt, HighResDuration::fromNanoseconds(1e6 + 1)));
+}
+
+TEST_F(BridgingTest, bigintTest) {
+  // Test BigInt construction from int64_t
+  BigInt fromSigned(static_cast<int64_t>(42));
+  EXPECT_TRUE(fromSigned.isInt64());
+  EXPECT_FALSE(fromSigned.isUint64());
+  EXPECT_EQ(42, fromSigned.asInt64());
+
+  // Test BigInt construction from uint64_t
+  BigInt fromUnsigned(static_cast<uint64_t>(42));
+  EXPECT_FALSE(fromUnsigned.isInt64());
+  EXPECT_TRUE(fromUnsigned.isUint64());
+  EXPECT_EQ(42ULL, fromUnsigned.asUint64());
+
+  // Test BigInt construction from jsi::BigInt with signed value
+  auto jsiBigint = jsi::BigInt::fromInt64(rt, -123456789012345LL);
+  BigInt fromJsi(rt, jsiBigint);
+  EXPECT_TRUE(fromJsi.isInt64());
+  EXPECT_EQ(-123456789012345LL, fromJsi.asInt64());
+
+  // Test BigInt construction from jsi::BigInt with large unsigned value
+  // (doesn't fit in int64_t, so should be stored as uint64_t)
+  constexpr uint64_t uint64Max = std::numeric_limits<uint64_t>::max();
+  auto jsiUnsigned = jsi::BigInt::fromUint64(rt, uint64Max);
+  BigInt fromJsiUnsigned(rt, jsiUnsigned);
+  EXPECT_TRUE(fromJsiUnsigned.isUint64());
+  EXPECT_EQ(uint64Max, fromJsiUnsigned.asUint64());
+
+  // Test BigInt construction from jsi::BigInt with small positive value
+  // (fits in both int64_t and uint64_t — should prefer int64_t)
+  auto jsiSmall = jsi::BigInt::fromInt64(rt, 5);
+  BigInt fromJsiSmall(rt, jsiSmall);
+  EXPECT_TRUE(fromJsiSmall.isInt64());
+  EXPECT_EQ(5, fromJsiSmall.asInt64());
+
+  // Test toJSBigInt roundtrip for signed value
+  BigInt signedVal(static_cast<int64_t>(-42));
+  auto jsResult = signedVal.toJSBigInt(rt);
+  EXPECT_EQ(-42, jsResult.asInt64(rt));
+
+  // Test toJSBigInt roundtrip for unsigned value
+  BigInt unsignedVal(uint64Max);
+  auto jsUnsignedResult = unsignedVal.toJSBigInt(rt);
+  EXPECT_EQ(uint64Max, jsUnsignedResult.asUint64(rt));
+
+  // Test Bridging<BigInt>::fromJs
+  constexpr int64_t int64Max = std::numeric_limits<int64_t>::max();
+  auto jsBigint = jsi::BigInt::fromInt64(rt, int64Max);
+  auto bridged =
+      bridging::fromJs<BigInt>(rt, jsi::Value(rt, jsBigint), invoker);
+  EXPECT_TRUE(bridged.isInt64());
+  EXPECT_EQ(int64Max, bridged.asInt64());
+
+  // Test Bridging<BigInt>::toJs
+  BigInt toConvert(static_cast<int64_t>(123456789012345LL));
+  auto jsConverted = bridging::toJs(rt, toConvert);
+  EXPECT_EQ(123456789012345LL, jsConverted.asInt64(rt));
+
+  // Test roundtrip at extreme values via bridging
+  constexpr int64_t int64Min = std::numeric_limits<int64_t>::min();
+
+  auto roundtripMin = bridging::fromJs<BigInt>(
+      rt, jsi::Value(rt, bridging::toJs(rt, BigInt(int64Min))), invoker);
+  EXPECT_TRUE(roundtripMin.isInt64());
+  EXPECT_EQ(int64Min, roundtripMin.asInt64());
+
+  auto roundtripMax = bridging::fromJs<BigInt>(
+      rt, jsi::Value(rt, bridging::toJs(rt, BigInt(int64Max))), invoker);
+  EXPECT_TRUE(roundtripMax.isInt64());
+  EXPECT_EQ(int64Max, roundtripMax.asInt64());
+
+  auto roundtripUmax = bridging::fromJs<BigInt>(
+      rt, jsi::Value(rt, bridging::toJs(rt, BigInt(uint64Max))), invoker);
+  EXPECT_TRUE(roundtripUmax.isUint64());
+  EXPECT_EQ(uint64Max, roundtripUmax.asUint64());
+
+  // Test equality
+  EXPECT_EQ(BigInt(static_cast<int64_t>(42)), BigInt(static_cast<int64_t>(42)));
+  EXPECT_EQ(BigInt(uint64Max), BigInt(uint64Max));
+  // Same numeric value but different variant type are not equal
+  EXPECT_NE(
+      BigInt(static_cast<int64_t>(42)), BigInt(static_cast<uint64_t>(42)));
 }
 
 } // namespace facebook::react
