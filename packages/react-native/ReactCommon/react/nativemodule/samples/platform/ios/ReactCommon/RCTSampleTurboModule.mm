@@ -210,6 +210,11 @@ RCT_EXPORT_METHOD(promiseAssert : (RCTPromiseResolveBlock)resolve reject : (RCTP
   RCTAssert(false, @"Intentional assert from ObjC promiseAssert");
 }
 
+RCT_EXPORT_SYNCHRONOUS_TYPED_METHOD(NSNumber *, getBigInt : (int64_t)arg)
+{
+  return @(arg);
+}
+
 @end
 
 Class _Nonnull RCTSampleTurboModuleCls(void)
