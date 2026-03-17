@@ -120,6 +120,8 @@ function serializeArg(
       return wrap(val => `${val}.asNumber()`);
     case 'Int32TypeAnnotation':
       return wrap(val => `${val}.asNumber()`);
+    case 'BigIntTypeAnnotation':
+      return wrap(val => `jsi::Value(rt, ${val})`);
     case 'NumberLiteralTypeAnnotation':
       return wrap(val => `${val}.asNumber()`);
     case 'ArrayTypeAnnotation':
@@ -268,6 +270,8 @@ function translatePrimitiveJSTypeToCpp(
       return wrapOptional('double', isRequired);
     case 'Int32TypeAnnotation':
       return wrapOptional('int', isRequired);
+    case 'BigIntTypeAnnotation':
+      return wrapOptional('BigInt', isRequired);
     case 'BooleanTypeAnnotation':
       return wrapOptional('bool', isRequired);
     case 'BooleanLiteralTypeAnnotation':
@@ -602,6 +606,12 @@ function translateFunctionToCpp(
     enumMap,
   );
 
+  // BigInt methods return BigInt from C++, but the callFromJs template
+  // parameter must be jsi::BigInt so the bridging layer converts via
+  // Bridging<BigInt>::toJs -> jsi::BigInt -> jsi::Value.
+  const callFromJsReturnType =
+    returnType === 'BigInt' ? 'jsi::BigInt' : returnType;
+
   let methodCallArgs = [...args].join(',\n      ');
   if (methodCallArgs.length > 0) {
     methodCallArgs = `,\n      ${methodCallArgs}`;
@@ -611,7 +621,7 @@ function translateFunctionToCpp(
     static_assert(
       bridging::getParameterCount(&T::${prop.name}) == ${paramTypes.length},
       "Expected ${prop.name}(...) to have ${paramTypes.length} parameters");
-    ${!isVoid ? (!isNullable ? 'return ' : 'auto result = ') : ''}bridging::callFromJs<${returnType}>(rt, &T::${prop.name},  static_cast<${hasteModuleName}CxxSpec*>(&turboModule)->jsInvoker_, static_cast<T*>(&turboModule)${methodCallArgs});${!isVoid ? (!isNullable ? '' : 'return result ? jsi::Value(std::move(*result)) : jsi::Value::null();') : 'return jsi::Value::undefined();'}\n  }`;
+    ${!isVoid ? (!isNullable ? 'return ' : 'auto result = ') : ''}bridging::callFromJs<${callFromJsReturnType}>(rt, &T::${prop.name},  static_cast<${hasteModuleName}CxxSpec*>(&turboModule)->jsInvoker_, static_cast<T*>(&turboModule)${methodCallArgs});${!isVoid ? (!isNullable ? '' : 'return result ? jsi::Value(std::move(*result)) : jsi::Value::null();') : 'return jsi::Value::undefined();'}\n  }`;
 }
 
 type EventEmitterCpp = {
