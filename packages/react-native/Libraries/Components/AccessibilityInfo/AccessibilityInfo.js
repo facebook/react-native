@@ -136,7 +136,7 @@ const AccessibilityInfo = {
             reject,
           );
         } else {
-          reject(new Error('AccessibilityInfo native module is not available'));
+          reject(new Error('NativeAccessibilityManagerIOS is not available'));
         }
       });
     }
@@ -171,7 +171,7 @@ const AccessibilityInfo = {
             reject,
           );
         } else {
-          reject(new Error('AccessibilityInfo native module is not available'));
+          reject(new Error('NativeAccessibilityManagerIOS is not available'));
         }
       });
     }
