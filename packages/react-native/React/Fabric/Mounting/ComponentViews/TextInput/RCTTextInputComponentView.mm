@@ -160,8 +160,14 @@ static NSSet<NSNumber *> *returnKeyTypesSet;
       UITraitCollection.currentTraitCollection.preferredContentSizeCategory !=
           previousTraitCollection.preferredContentSizeCategory) {
     const auto &newTextInputProps = static_cast<const TextInputProps &>(*_props);
-    _backedTextInputView.defaultTextAttributes =
+    NSDictionary<NSAttributedStringKey, id> *attributes =
         RCTNSTextAttributesFromTextAttributes(newTextInputProps.getEffectiveTextAttributes(RCTFontSizeMultiplier()));
+    if (_backedTextInputView.markedTextRange) {
+      _needsUpdateDefaultTextAttributes = YES;
+      _pendingDefaultTextAttributes = [attributes copy];
+    } else {
+      _backedTextInputView.defaultTextAttributes = attributes;
+    }
   }
 }
 
@@ -314,7 +320,12 @@ static NSSet<NSNumber *> *returnKeyTypesSet;
         RCTNSTextAttributesFromTextAttributes(newTextInputProps.getEffectiveTextAttributes(RCTFontSizeMultiplier()));
     defaultAttributes[RCTAttributedStringEventEmitterKey] =
         _backedTextInputView.defaultTextAttributes[RCTAttributedStringEventEmitterKey];
-    _backedTextInputView.defaultTextAttributes = defaultAttributes;
+    if (_backedTextInputView.markedTextRange) {
+      _needsUpdateDefaultTextAttributes = YES;
+      _pendingDefaultTextAttributes = [defaultAttributes copy];
+    } else {
+      _backedTextInputView.defaultTextAttributes = defaultAttributes;
+    }
   }
 
   if (newTextInputProps.selectionColor != oldTextInputProps.selectionColor) {
@@ -532,11 +543,21 @@ static NSSet<NSNumber *> *returnKeyTypesSet;
     if (props.maxLength < std::numeric_limits<int>::max()) {
       NSString *currentText = _backedTextInputView.attributedText.string;
       if ((NSInteger)currentText.length > props.maxLength) {
-        NSString *truncated = [currentText substringToIndex:props.maxLength];
-        NSAttributedString *truncatedAttr =
-            [[NSAttributedString alloc] initWithString:truncated
-                                            attributes:_backedTextInputView.defaultTextAttributes];
-        [self _setAttributedString:truncatedAttr];
+        NSInteger truncateAt = props.maxLength;
+        // Ensure we don't split multi-codepoint characters (emoji, composed CJK, etc.)
+        if (truncateAt > 0) {
+          NSRange charRange = [currentText rangeOfComposedCharacterSequenceAtIndex:truncateAt - 1];
+          if (charRange.location + charRange.length > (NSUInteger)truncateAt) {
+            truncateAt = charRange.location;
+          }
+        }
+        if (truncateAt > 0) {
+          NSString *truncated = [currentText substringToIndex:truncateAt];
+          NSAttributedString *truncatedAttr =
+              [[NSAttributedString alloc] initWithString:truncated
+                                              attributes:_backedTextInputView.defaultTextAttributes];
+          [self _setAttributedString:truncatedAttr];
+        }
       }
     }
   }
@@ -622,10 +643,15 @@ static NSSet<NSNumber *> *returnKeyTypesSet;
   }
   _comingFromJS = YES;
   if (value && ![value isEqualToString:_backedTextInputView.attributedText.string]) {
-    NSAttributedString *attributedString =
-        [[NSAttributedString alloc] initWithString:value attributes:_backedTextInputView.defaultTextAttributes];
-    [self _setAttributedString:attributedString];
-    [self _updateState];
+    if (!_backedTextInputView.markedTextRange) {
+      NSAttributedString *attributedString =
+          [[NSAttributedString alloc] initWithString:value attributes:_backedTextInputView.defaultTextAttributes];
+      [self _setAttributedString:attributedString];
+      [self _updateState];
+    }
+    // During IME composition, skip JS-driven text updates entirely.
+    // The composition will commit via textInputDidChange, after which
+    // JS can re-assert its controlled value through a new setTextAndSelection call.
   }
 
   UITextPosition *startPosition = [_backedTextInputView positionFromPosition:_backedTextInputView.beginningOfDocument
