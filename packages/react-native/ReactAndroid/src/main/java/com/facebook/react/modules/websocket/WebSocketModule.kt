@@ -395,9 +395,9 @@ public class WebSocketModule(context: ReactApplicationContext) :
 
         val defaultOrigin =
             if (requestURI.port != -1) {
-              String.format("%s://%s:%s", scheme, requestURI.host, requestURI.port)
+              "$scheme://${requestURI.host}:${requestURI.port}"
             } else {
-              String.format("%s://%s", scheme, requestURI.host)
+              "$scheme://${requestURI.host}"
             }
 
         return defaultOrigin
