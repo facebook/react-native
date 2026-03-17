@@ -35,11 +35,15 @@ static NSMutableArray<Class> *RCTModuleClasses;
 static dispatch_queue_t RCTModuleClassesSyncQueue;
 NSArray<Class> *RCTGetModuleClasses(void)
 {
+#ifndef RCT_REMOVE_LEGACY_ARCH
   __block NSArray<Class> *result;
   dispatch_sync(RCTModuleClassesSyncQueue, ^{
     result = [RCTModuleClasses copy];
   });
   return result;
+#else
+  return @[];
+#endif
 }
 
 NSSet<NSString *> *getCoreModuleClasses(void);
