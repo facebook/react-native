@@ -25,7 +25,7 @@ from .builders import (
     get_variable_member,
 )
 from .snapshot import Snapshot
-from .utils import parse_qualified_path
+from .utils import has_scope_resolution_outside_angles, parse_qualified_path
 
 
 def build_snapshot(xml_dir: str) -> Snapshot:
@@ -84,12 +84,22 @@ def build_snapshot(xml_dir: str) -> Snapshot:
                 for section_def in compound_object.sectiondef:
                     if section_def.kind == "var":
                         for variable_def in section_def.memberdef:
+                            # Skip out-of-class definitions (e.g. "Strct<T>::VALUE")
+                            if has_scope_resolution_outside_angles(
+                                variable_def.get_name()
+                            ):
+                                continue
                             is_static = variable_def.static == "yes"
                             namespace_scope.add_member(
                                 get_variable_member(variable_def, "public", is_static)
                             )
                     elif section_def.kind == "func":
                         for function_def in section_def.memberdef:
+                            # Skip out-of-class definitions (e.g. "Strct<T>::convert")
+                            if has_scope_resolution_outside_angles(
+                                function_def.get_name()
+                            ):
+                                continue
                             function_static = function_def.static == "yes"
 
                             if not function_static:

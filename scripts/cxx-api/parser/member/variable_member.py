@@ -15,7 +15,8 @@ from ..utils import (
     parse_type_with_argstrings,
     qualify_arguments,
     qualify_parsed_type,
-    qualify_template_args_only,
+    qualify_type_str,
+    split_specialization,
 )
 from .base import Member, MemberKind, STORE_INITIALIZERS_IN_SNAPSHOT
 
@@ -38,7 +39,9 @@ class VariableMember(Member):
         argstring: str | None = None,
         is_brace_initializer: bool = False,
     ) -> None:
-        super().__init__(name, visibility)
+        base_name, specialization_args = split_specialization(name)
+        super().__init__(base_name, visibility)
+        self.specialization_args: list[str] | None = specialization_args
         self.type: str = type
         self.value: str | None = value
         self.is_const: bool = is_const
@@ -62,14 +65,20 @@ class VariableMember(Member):
     def close(self, scope: Scope):
         self._fp_arguments = qualify_arguments(self._fp_arguments, scope)
         self._parsed_type = qualify_parsed_type(self._parsed_type, scope)
-        # Qualify template arguments in variable name for explicit specializations
-        # e.g., "default_value<MyType>" -> "default_value<ns::MyType>"
-        if "<" in self.name:
-            self.name = qualify_template_args_only(self.name, scope)
+        if self.specialization_args is not None:
+            self.specialization_args = [
+                qualify_type_str(arg, scope) for arg in self.specialization_args
+            ]
 
     def _is_function_pointer(self) -> bool:
         """Check if this variable is a function pointer type."""
         return self.argstring is not None and self.argstring.startswith(")(")
+
+    def _get_qualified_name(self, qualification: str | None) -> str:
+        name = self.name
+        if self.specialization_args is not None:
+            name = f"{name}<{', '.join(self.specialization_args)}>"
+        return f"{qualification}::{name}" if qualification else name
 
     def to_string(
         self,
