@@ -38,6 +38,7 @@ from .utils import (
     normalize_pointer_spacing,
     parse_qualified_path,
     resolve_linked_text_name,
+    split_specialization,
 )
 from .utils.argument_parsing import _find_matching_angle, _split_arguments
 
@@ -124,8 +125,7 @@ def _fix_inherited_constructor_name(
         return
 
     class_unqualified_name = parse_qualified_path(compound_name)[-1]
-    # Strip template args for comparison
-    class_base_name = class_unqualified_name.split("<")[0]
+    class_base_name, _ = split_specialization(class_unqualified_name)
 
     if func_member.name != class_base_name:
         func_member.name = class_unqualified_name
