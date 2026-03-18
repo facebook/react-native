@@ -911,8 +911,20 @@ static NSSet<NSNumber *> *returnKeyTypesSet;
                                                            toPosition:_backedTextInputView.selectedTextRange.start];
 
     NSUInteger samplePoint = offsetStart == 0 ? 0 : offsetStart - 1;
-    _backedTextInputView.typingAttributes = [_backedTextInputView.attributedText attributesAtIndex:samplePoint
-                                                                                    effectiveRange:NULL];
+    NSMutableDictionary *attrs = [[_backedTextInputView.attributedText attributesAtIndex:samplePoint
+                                                                         effectiveRange:NULL] mutableCopy];
+    // Strip attributes that interfere with UIKit's IME composition underline rendering.
+    // Only remove no-op defaults; preserve user-specified values.
+    [attrs removeObjectForKey:RCTAttributedStringEventEmitterKey];
+    NSShadow *shadow = attrs[NSShadowAttributeName];
+    if (shadow && CGSizeEqualToSize(shadow.shadowOffset, CGSizeZero) && shadow.shadowBlurRadius == 0) {
+      [attrs removeObjectForKey:NSShadowAttributeName];
+    }
+    UIColor *bgColor = attrs[NSBackgroundColorAttributeName];
+    if (bgColor && CGColorGetAlpha(bgColor.CGColor) == 0) {
+      [attrs removeObjectForKey:NSBackgroundColorAttributeName];
+    }
+    _backedTextInputView.typingAttributes = attrs;
   }
 }
 

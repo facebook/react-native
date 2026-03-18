@@ -631,4 +631,89 @@ static UITextRange *createMockTextRangeForTextView(UITextView *textView)
                         @"JS-driven update must be blocked during composition");
 }
 
+#pragma mark - typingAttributes stripping for IME composition underline
+
+- (void)testTypingAttributesStrippedForMultiline
+{
+  // UITextView (multiline): setDefaultTextAttributes: must strip EventEmitter,
+  // no-op NSShadow, and transparent NSBackgroundColor from typingAttributes.
+  // These attributes prevent UIKit from rendering the IME composition underline.
+  RCTMockTextView *mock;
+  [self createMultiLineWithMock:&mock];
+
+  NSShadow *noopShadow = [NSShadow new]; // offset (0,0), blur 0
+  NSDictionary *attrs = @{
+    NSFontAttributeName : [UIFont systemFontOfSize:14],
+    NSForegroundColorAttributeName : [UIColor blackColor],
+    @"EventEmitter" : [@"fake-emitter" dataUsingEncoding:NSUTF8StringEncoding],
+    NSShadowAttributeName : noopShadow,
+    NSBackgroundColorAttributeName : [UIColor clearColor],
+  };
+  mock.defaultTextAttributes = attrs;
+
+  XCTAssertNil(mock.typingAttributes[@"EventEmitter"],
+               @"EventEmitter must be stripped from typingAttributes");
+  XCTAssertNil(mock.typingAttributes[NSShadowAttributeName],
+               @"No-op NSShadow must be stripped from typingAttributes");
+  XCTAssertNil(mock.typingAttributes[NSBackgroundColorAttributeName],
+               @"Transparent NSBackgroundColor must be stripped from typingAttributes");
+  XCTAssertNotNil(mock.typingAttributes[NSFontAttributeName],
+                  @"Standard attributes like font must be preserved");
+  XCTAssertNotNil(mock.typingAttributes[NSForegroundColorAttributeName],
+                  @"Standard attributes like foreground color must be preserved");
+}
+
+- (void)testRealShadowAndBackgroundPreservedInMultilineTypingAttributes
+{
+  // User-specified shadow and background color must NOT be stripped.
+  RCTMockTextView *mock;
+  [self createMultiLineWithMock:&mock];
+
+  NSShadow *realShadow = [NSShadow new];
+  realShadow.shadowOffset = CGSizeMake(1, 1);
+  realShadow.shadowBlurRadius = 2;
+  NSDictionary *attrs = @{
+    NSFontAttributeName : [UIFont systemFontOfSize:14],
+    NSShadowAttributeName : realShadow,
+    NSBackgroundColorAttributeName : [UIColor yellowColor],
+  };
+  mock.defaultTextAttributes = attrs;
+
+  XCTAssertNotNil(mock.typingAttributes[NSShadowAttributeName],
+                  @"User-specified NSShadow must be preserved");
+  XCTAssertNotNil(mock.typingAttributes[NSBackgroundColorAttributeName],
+                  @"User-specified NSBackgroundColor must be preserved");
+}
+
+- (void)testUpdateTypingAttributesStripsIMEBlockingAttrs
+{
+  // _updateTypingAttributes reads from attributed text (which has EventEmitter
+  // and no-op attrs from Fabric). These must be stripped so UIKit can render
+  // the composition underline on subsequent compositions.
+  RCTMockTextField *mock;
+  RCTTextInputComponentView *cv = [self createSingleLineWithMock:&mock];
+
+  NSShadow *noopShadow = [NSShadow new];
+  NSDictionary *attrsWithJunk = @{
+    NSFontAttributeName : [UIFont systemFontOfSize:14],
+    @"EventEmitter" : [@"fake-emitter" dataUsingEncoding:NSUTF8StringEncoding],
+    NSShadowAttributeName : noopShadow,
+    NSBackgroundColorAttributeName : [UIColor clearColor],
+  };
+  mock.attributedText = [[NSAttributedString alloc] initWithString:@"test" attributes:attrsWithJunk];
+  mock.mockMarkedTextRange = nil;
+  mock.selectedTextRange = [mock textRangeFromPosition:mock.beginningOfDocument toPosition:mock.beginningOfDocument];
+
+  [(id<RCTBackedTextInputDelegate>)cv textInputDidChangeSelection];
+
+  XCTAssertNil(mock.typingAttributes[@"EventEmitter"],
+               @"EventEmitter must be stripped from typingAttributes");
+  XCTAssertNil(mock.typingAttributes[NSShadowAttributeName],
+               @"No-op NSShadow must be stripped from typingAttributes");
+  XCTAssertNil(mock.typingAttributes[NSBackgroundColorAttributeName],
+               @"Transparent NSBackgroundColor must be stripped from typingAttributes");
+  XCTAssertNotNil(mock.typingAttributes[NSFontAttributeName],
+                  @"Font must be preserved in typingAttributes");
+}
+
 @end

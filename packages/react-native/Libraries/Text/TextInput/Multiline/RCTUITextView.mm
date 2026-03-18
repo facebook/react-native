@@ -135,7 +135,19 @@ static UIColor *defaultPlaceholderColor(void)
   }
 
   _defaultTextAttributes = defaultTextAttributes;
-  self.typingAttributes = defaultTextAttributes;
+  // Strip attributes that interfere with UIKit's IME composition underline rendering.
+  // Only remove no-op defaults; preserve user-specified values.
+  NSMutableDictionary *typingAttrs = [defaultTextAttributes mutableCopy];
+  [typingAttrs removeObjectForKey:@"EventEmitter"];
+  NSShadow *shadow = typingAttrs[NSShadowAttributeName];
+  if (shadow && CGSizeEqualToSize(shadow.shadowOffset, CGSizeZero) && shadow.shadowBlurRadius == 0) {
+    [typingAttrs removeObjectForKey:NSShadowAttributeName];
+  }
+  UIColor *bgColor = typingAttrs[NSBackgroundColorAttributeName];
+  if (bgColor && CGColorGetAlpha(bgColor.CGColor) == 0) {
+    [typingAttrs removeObjectForKey:NSBackgroundColorAttributeName];
+  }
+  self.typingAttributes = typingAttrs;
   [self _updatePlaceholder];
 }
 
