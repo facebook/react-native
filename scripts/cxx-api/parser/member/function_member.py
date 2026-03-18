@@ -64,16 +64,7 @@ class FunctionMember(Member):
     def close(self, scope: Scope):
         self.type = qualify_type_str(self.type, scope)
         self.arguments = qualify_arguments(self.arguments, scope)
-        if self.specialization_args is not None:
-            self.specialization_args = [
-                qualify_type_str(arg, scope) for arg in self.specialization_args
-            ]
-
-    def _get_qualified_name(self, qualification: str | None) -> str:
-        name = self.name
-        if self.specialization_args is not None:
-            name = f"{name}<{', '.join(self.specialization_args)}>"
-        return f"{qualification}::{name}" if qualification else name
+        self._qualify_specialization_args(scope)
 
     def to_string(
         self,
