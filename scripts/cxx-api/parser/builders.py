@@ -14,6 +14,7 @@ This module contains:
 from __future__ import annotations
 
 import re
+from dataclasses import dataclass
 
 from doxmlparser import compound
 
@@ -41,6 +42,24 @@ from .utils import (
     split_specialization,
 )
 from .utils.argument_parsing import _find_matching_angle, _split_arguments
+
+
+@dataclass
+class ParsedSectionKind:
+    """Parsed representation of a Doxygen section kind string (e.g. 'public-static-func')."""
+
+    visibility: str
+    is_static: bool
+    member_type: str
+
+    @classmethod
+    def parse(cls, kind: str) -> ParsedSectionKind:
+        parts = kind.split("-")
+        return cls(
+            visibility=parts[0],
+            is_static="static" in parts,
+            member_type=parts[-1],
+        )
 
 
 ######################
@@ -536,11 +555,10 @@ def _process_objc_sections(
             members into the base interface XML output.
     """
     for section_def in section_defs:
-        kind = section_def.kind
-        parts = kind.split("-")
-        visibility = parts[0]
-        is_static = "static" in parts
-        member_type = parts[-1]
+        section = ParsedSectionKind.parse(section_def.kind)
+        visibility = section.visibility
+        is_static = section.is_static
+        member_type = section.member_type
 
         if visibility == "private":
             if member_type == "type":
@@ -577,7 +595,9 @@ def _process_objc_sections(
                             f"Unknown section member kind: {member_def.kind} in {location_file}"
                         )
             else:
-                print(f"Unknown {scope_type} section kind: {kind} in {location_file}")
+                print(
+                    f"Unknown {scope_type} section kind: {section_def.kind} in {location_file}"
+                )
         elif visibility == "property":
             for member_def in section_def.memberdef:
                 if member_def.kind == "property":
@@ -693,11 +713,10 @@ def create_class_scope(
     class_scope.location = compound_object.location.file
 
     for section_def in compound_object.sectiondef:
-        kind = section_def.kind
-        parts = kind.split("-")
-        visibility = parts[0]
-        is_static = "static" in parts
-        member_type = parts[-1]
+        section = ParsedSectionKind.parse(section_def.kind)
+        visibility = section.visibility
+        is_static = section.is_static
+        member_type = section.member_type
 
         if visibility == "private":
             if member_type == "type":
@@ -746,7 +765,7 @@ def create_class_scope(
                         )
             else:
                 print(
-                    f"Unknown class section kind: {kind} in {compound_object.location.file}"
+                    f"Unknown class section kind: {section_def.kind} in {compound_object.location.file}"
                 )
         elif visibility == "friend":
             pass
