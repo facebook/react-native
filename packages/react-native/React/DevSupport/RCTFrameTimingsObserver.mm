@@ -14,6 +14,7 @@
 
 #import <atomic>
 #import <chrono>
+#import <mutex>
 #import <optional>
 #import <vector>
 
@@ -24,14 +25,38 @@ using namespace facebook::react;
 static constexpr CGFloat kScreenshotScaleFactor = 0.75;
 static constexpr CGFloat kScreenshotJPEGQuality = 0.8;
 
+namespace {
+
+// Stores a captured frame screenshot and its associated metadata, used for
+// buffering frames during dynamic sampling.
+struct FrameData {
+  UIImage *image;
+  uint64_t frameId;
+  jsinspector_modern::tracing::ThreadId threadId;
+  HighResTimeStamp beginTimestamp;
+  HighResTimeStamp endTimestamp;
+};
+
+} // namespace
+
 @implementation RCTFrameTimingsObserver {
   BOOL _screenshotsEnabled;
   RCTFrameTimingCallback _callback;
   CADisplayLink *_displayLink;
   uint64_t _frameCounter;
+  // Serial queue for encoding work (single background thread). We limit to 1
+  // thread to minimize the performance impact of screenshot recording.
   dispatch_queue_t _encodingQueue;
   std::atomic<bool> _running;
   uint64_t _lastScreenshotHash;
+
+  // Stores the most recently captured frame to opportunistically encode after
+  // the current frame. Replaced frames are emitted as timings without
+  // screenshots.
+  std::mutex _lastFrameMutex;
+  std::optional<FrameData> _lastFrameData;
+
+  std::atomic<bool> _encodingInProgress;
 }
 
 - (instancetype)initWithScreenshotsEnabled:(BOOL)screenshotsEnabled callback:(RCTFrameTimingCallback)callback
@@ -43,6 +68,7 @@ static constexpr CGFloat kScreenshotJPEGQuality = 0.8;
     _encodingQueue = dispatch_queue_create("com.facebook.react.frame-timings-observer", DISPATCH_QUEUE_SERIAL);
     _running.store(false);
     _lastScreenshotHash = 0;
+    _encodingInProgress.store(false);
   }
   return self;
 }
@@ -52,9 +78,13 @@ static constexpr CGFloat kScreenshotJPEGQuality = 0.8;
   _running.store(true, std::memory_order_relaxed);
   _frameCounter = 0;
   _lastScreenshotHash = 0;
+  _encodingInProgress.store(false, std::memory_order_relaxed);
+  {
+    std::lock_guard<std::mutex> lock(_lastFrameMutex);
+    _lastFrameData.reset();
+  }
 
-  // Emit an initial frame timing to ensure at least one frame is captured at the
-  // start of tracing, even if no UI changes occur.
+  // Emit initial frame event
   auto now = HighResTimeStamp::now();
   [self _emitFrameTimingWithBeginTimestamp:now endTimestamp:now];
 
@@ -67,6 +97,10 @@ static constexpr CGFloat kScreenshotJPEGQuality = 0.8;
   _running.store(false, std::memory_order_relaxed);
   [_displayLink invalidate];
   _displayLink = nil;
+  {
+    std::lock_guard<std::mutex> lock(_lastFrameMutex);
+    _lastFrameData.reset();
+  }
 }
 
 - (void)_displayLinkTick:(CADisplayLink *)sender
@@ -90,32 +124,115 @@ static constexpr CGFloat kScreenshotJPEGQuality = 0.8;
   uint64_t frameId = _frameCounter++;
   auto threadId = static_cast<jsinspector_modern::tracing::ThreadId>(pthread_mach_thread_np(pthread_self()));
 
-  if (_screenshotsEnabled) {
-    [self _captureScreenshotWithCompletion:^(std::optional<std::vector<uint8_t>> screenshotData) {
-      if (!self->_running.load()) {
-        return;
-      }
-      jsinspector_modern::tracing::FrameTimingSequence sequence{
-          frameId, threadId, beginTimestamp, endTimestamp, std::move(screenshotData)};
-      self->_callback(std::move(sequence));
-    }];
+  if (!_screenshotsEnabled) {
+    // Screenshots disabled - emit without screenshot
+    [self _emitFrameEventWithFrameId:frameId
+                            threadId:threadId
+                      beginTimestamp:beginTimestamp
+                        endTimestamp:endTimestamp
+                          screenshot:std::nullopt];
+    return;
+  }
+
+  UIImage *image = [self _captureScreenshot];
+  if (image == nil) {
+    // Failed to capture (e.g. no window, duplicate hash) - emit without screenshot
+    [self _emitFrameEventWithFrameId:frameId
+                            threadId:threadId
+                      beginTimestamp:beginTimestamp
+                        endTimestamp:endTimestamp
+                          screenshot:std::nullopt];
+    return;
+  }
+
+  FrameData frameData{image, frameId, threadId, beginTimestamp, endTimestamp};
+
+  bool expected = false;
+  if (_encodingInProgress.compare_exchange_strong(expected, true)) {
+    // Not encoding - encode this frame immediately
+    [self _encodeFrame:std::move(frameData)];
   } else {
-    dispatch_async(_encodingQueue, ^{
-      if (!self->_running.load(std::memory_order_relaxed)) {
-        return;
-      }
-      jsinspector_modern::tracing::FrameTimingSequence sequence{frameId, threadId, beginTimestamp, endTimestamp};
-      self->_callback(std::move(sequence));
-    });
+    // Encoding thread busy - store current screenshot in buffer for tail-capture
+    std::optional<FrameData> oldFrame;
+    {
+      std::lock_guard<std::mutex> lock(_lastFrameMutex);
+      oldFrame = std::move(_lastFrameData);
+      _lastFrameData = std::move(frameData);
+    }
+    if (oldFrame.has_value()) {
+      // Skipped frame - emit event without screenshot
+      [self _emitFrameEventWithFrameId:oldFrame->frameId
+                              threadId:oldFrame->threadId
+                        beginTimestamp:oldFrame->beginTimestamp
+                          endTimestamp:oldFrame->endTimestamp
+                            screenshot:std::nullopt];
+    }
   }
 }
 
-- (void)_captureScreenshotWithCompletion:(void (^)(std::optional<std::vector<uint8_t>>))completion
+- (void)_emitFrameEventWithFrameId:(uint64_t)frameId
+                          threadId:(jsinspector_modern::tracing::ThreadId)threadId
+                    beginTimestamp:(HighResTimeStamp)beginTimestamp
+                      endTimestamp:(HighResTimeStamp)endTimestamp
+                        screenshot:(std::optional<std::vector<uint8_t>>)screenshot
+{
+  dispatch_async(dispatch_get_global_queue(QOS_CLASS_DEFAULT, 0), ^{
+    if (!self->_running.load(std::memory_order_relaxed)) {
+      return;
+    }
+    jsinspector_modern::tracing::FrameTimingSequence sequence{
+        frameId, threadId, beginTimestamp, endTimestamp, std::move(screenshot)};
+    self->_callback(std::move(sequence));
+  });
+}
+
+- (void)_encodeFrame:(FrameData)frameData
+{
+  dispatch_async(_encodingQueue, ^{
+    if (!self->_running.load(std::memory_order_relaxed)) {
+      return;
+    }
+
+    auto screenshot = [self _encodeScreenshot:frameData.image];
+    [self _emitFrameEventWithFrameId:frameData.frameId
+                            threadId:frameData.threadId
+                      beginTimestamp:frameData.beginTimestamp
+                        endTimestamp:frameData.endTimestamp
+                          screenshot:std::move(screenshot)];
+
+    // Clear encoding flag early, allowing new frames to start fresh encoding
+    // sessions
+    self->_encodingInProgress.store(false, std::memory_order_release);
+
+    // Opportunistically encode tail frame (if present) without blocking new
+    // frames
+    std::optional<FrameData> tailFrame;
+    {
+      std::lock_guard<std::mutex> lock(self->_lastFrameMutex);
+      tailFrame = std::move(self->_lastFrameData);
+      self->_lastFrameData.reset();
+    }
+    if (tailFrame.has_value()) {
+      if (!self->_running.load(std::memory_order_relaxed)) {
+        return;
+      }
+      auto tailScreenshot = [self _encodeScreenshot:tailFrame->image];
+      [self _emitFrameEventWithFrameId:tailFrame->frameId
+                              threadId:tailFrame->threadId
+                        beginTimestamp:tailFrame->beginTimestamp
+                          endTimestamp:tailFrame->endTimestamp
+                            screenshot:std::move(tailScreenshot)];
+    }
+  });
+}
+
+// Captures a screenshot of the current window. Must be called on the main
+// thread. Returns nil if capture fails or if the frame content is unchanged.
+- (UIImage *)_captureScreenshot
 {
   UIWindow *keyWindow = [self _getKeyWindow];
-  if (keyWindow == nullptr) {
-    completion(std::nullopt);
-    return;
+  if (keyWindow == nil) {
+    return nil;
   }
 
   UIView *rootView = keyWindow.rootViewController.view ?: keyWindow;
@@ -144,24 +261,22 @@ static constexpr CGFloat kScreenshotJPEGQuality = 0.8;
   CFRelease(pixelData);
 
   if (hash == _lastScreenshotHash) {
-    return;
+    return nil;
   }
   _lastScreenshotHash = hash;
 
-  dispatch_async(_encodingQueue, ^{
-    if (!self->_running.load(std::memory_order_relaxed)) {
-      return;
-    }
-    NSData *jpegData = UIImageJPEGRepresentation(image, kScreenshotJPEGQuality);
-    if (jpegData == nullptr) {
-      completion(std::nullopt);
-      return;
-    }
+  return image;
+}
 
-    const auto *bytes = static_cast<const uint8_t *>(jpegData.bytes);
-    std::vector<uint8_t> screenshotBytes(bytes, bytes + jpegData.length);
-    completion(std::move(screenshotBytes));
-  });
+- (std::optional<std::vector<uint8_t>>)_encodeScreenshot:(UIImage *)image
+{
+  NSData *jpegData = UIImageJPEGRepresentation(image, kScreenshotJPEGQuality);
+  if (jpegData == nil) {
+    return std::nullopt;
+  }
+
+  const auto *bytes = static_cast<const uint8_t *>(jpegData.bytes);
+  return std::vector<uint8_t>(bytes, bytes + jpegData.length);
 }
 
 - (UIWindow *)_getKeyWindow
