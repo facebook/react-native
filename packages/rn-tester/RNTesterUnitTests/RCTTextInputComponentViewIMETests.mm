@@ -334,6 +334,108 @@ static UITextRange *createMockTextRangeForTextView(UITextView *textView)
   XCTAssertEqualObjects(mock.attributedText.string, @"Hello世界");
 }
 
+#pragma mark - Composition underline preservation
+
+- (void)testCompositionUnderlinePreservedDuringStateRoundTrip
+{
+  // The core bug: during IME composition, the system adds NSUnderlineStyleAttributeName
+  // to show the composition underline. If _setAttributedString is called (e.g., from a
+  // Fabric state round-trip), it would replace the attributed text with one that has NO
+  // underline, destroying the visual composition indicator. Our guard must prevent this.
+  RCTMockTextField *mock;
+  RCTTextInputComponentView *cv = [self createSingleLineWithMock:&mock];
+
+  // Set up text WITH underline (simulating active IME composition)
+  NSDictionary *withUnderline = @{
+    NSFontAttributeName : [UIFont systemFontOfSize:14],
+    NSUnderlineStyleAttributeName : @(NSUnderlineStyleSingle),
+  };
+  mock.attributedText = [[NSAttributedString alloc] initWithString:@"한" attributes:withUnderline];
+  mock.mockMarkedTextRange = createMockTextRange(mock);
+
+  // Attempt to replace with text WITHOUT underline (simulating state round-trip)
+  NSAttributedString *withoutUnderline =
+      [[NSAttributedString alloc] initWithString:@"한"
+                                      attributes:@{NSFontAttributeName : [UIFont systemFontOfSize:14]}];
+
+#pragma clang diagnostic push
+#pragma clang diagnostic ignored "-Warc-performSelector-leaks"
+  SEL sel = NSSelectorFromString(@"_setAttributedString:");
+  if ([cv respondsToSelector:sel]) {
+    [cv performSelector:sel withObject:withoutUnderline];
+  }
+#pragma clang diagnostic pop
+
+  // The underline attribute must still be present (guard blocked the replacement)
+  NSDictionary *resultAttrs = [mock.attributedText attributesAtIndex:0 effectiveRange:nil];
+  XCTAssertNotNil(
+      resultAttrs[NSUnderlineStyleAttributeName],
+      @"Composition underline must be preserved — _setAttributedString should be blocked during composition");
+}
+
+- (void)testCompositionUnderlinePreservedDuringDeferredAttributeUpdate
+{
+  // When updateEventEmitter defers defaultTextAttributes during composition,
+  // the underline on the current text must not be disturbed.
+  RCTMockTextField *mock;
+  RCTTextInputComponentView *cv = [self createSingleLineWithMock:&mock];
+  id<RCTBackedTextInputDelegate> delegate = (id<RCTBackedTextInputDelegate>)cv;
+
+  NSDictionary *withUnderline = @{
+    NSFontAttributeName : [UIFont systemFontOfSize:14],
+    NSUnderlineStyleAttributeName : @(NSUnderlineStyleSingle),
+  };
+  mock.attributedText = [[NSAttributedString alloc] initWithString:@"か" attributes:withUnderline];
+  mock.mockMarkedTextRange = createMockTextRange(mock);
+
+  // Simulate deferred attribute update (from updateEventEmitter during composition)
+  NSDictionary *newAttrs = @{NSFontAttributeName : [UIFont boldSystemFontOfSize:16]};
+  [cv setValue:@YES forKey:@"_needsUpdateDefaultTextAttributes"];
+  [cv setValue:newAttrs forKey:@"_pendingDefaultTextAttributes"];
+
+  // textInputDidChange fires mid-composition — deferred attrs must NOT be applied
+  [delegate textInputDidChange];
+
+  // Underline must still be on the text
+  NSDictionary *resultAttrs = [mock.attributedText attributesAtIndex:0 effectiveRange:nil];
+  XCTAssertNotNil(
+      resultAttrs[NSUnderlineStyleAttributeName],
+      @"Composition underline must survive deferred attribute update during composition");
+
+  // Deferred flag must still be pending
+  XCTAssertTrue([[cv valueForKey:@"_needsUpdateDefaultTextAttributes"] boolValue]);
+}
+
+- (void)testUnderlineRemovedAfterCompositionCommit
+{
+  // After composition commits, the system removes the underline.
+  // Our code should allow normal attribute updates at this point.
+  RCTMockTextField *mock;
+  RCTTextInputComponentView *cv = [self createSingleLineWithMock:&mock];
+  id<RCTBackedTextInputDelegate> delegate = (id<RCTBackedTextInputDelegate>)cv;
+
+  // Mid-composition: underline present
+  NSDictionary *withUnderline = @{
+    NSFontAttributeName : [UIFont systemFontOfSize:14],
+    NSUnderlineStyleAttributeName : @(NSUnderlineStyleSingle),
+  };
+  mock.attributedText = [[NSAttributedString alloc] initWithString:@"한" attributes:withUnderline];
+  mock.mockMarkedTextRange = createMockTextRange(mock);
+  [delegate textInputDidChange];
+
+  // Commit: system removes underline and clears markedTextRange
+  mock.mockMarkedTextRange = nil;
+  mock.attributedText = [[NSAttributedString alloc] initWithString:@"한"
+                                                        attributes:@{NSFontAttributeName : [UIFont systemFontOfSize:14]}];
+  [delegate textInputDidChange];
+
+  // After commit, underline should be gone (system removed it)
+  NSDictionary *resultAttrs = [mock.attributedText attributesAtIndex:0 effectiveRange:nil];
+  XCTAssertNil(
+      resultAttrs[NSUnderlineStyleAttributeName],
+      @"Underline should be removed after composition commits");
+}
+
 #pragma mark - _setAttributedString guard
 
 - (void)testSetAttributedStringBlockedDuringComposition

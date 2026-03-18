@@ -64,9 +64,7 @@ describe('TextInput IME composition behavior', () => {
       });
 
       expect(onChangeText).toHaveBeenCalledTimes(4);
-      expect(onChangeText.mock.calls.map(c => c[0])).toEqual(
-        compositionSteps,
-      );
+      expect(onChangeText.mock.calls.map(c => c[0])).toEqual(compositionSteps);
       expect(currentText).toBe('한글');
     });
 
