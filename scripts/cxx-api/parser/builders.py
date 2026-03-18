@@ -463,11 +463,17 @@ def create_enum_scope(snapshot: Snapshot, enum_def: compound.EnumdefType) -> Non
     Create an enum scope in the snapshot.
     """
     scope = snapshot.create_enum(enum_def.qualifiedname)
-    scope.kind.type = resolve_linked_text_name(enum_def.get_type())[0]
-    scope.location = enum_def.location.file
+    if scope.kind.type is None:
+        scope.kind.type = resolve_linked_text_name(enum_def.get_type())[0]
+    if scope.location is None:
+        scope.location = enum_def.location.file
+
+    existing_value_names = {member.name for member in scope.get_members()}
 
     for enum_value_def in enum_def.enumvalue:
         value_name = enum_value_def.get_name()
+        if value_name in existing_value_names:
+            continue
         value_value = None
 
         if enum_value_def.initializer is not None:
@@ -479,6 +485,7 @@ def create_enum_scope(snapshot: Snapshot, enum_def: compound.EnumdefType) -> Non
                 value_value,
             ),
         )
+        existing_value_names.add(value_name)
 
 
 def _is_category_member(member_def: compound.MemberdefType) -> bool:
