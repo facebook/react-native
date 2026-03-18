@@ -51,7 +51,7 @@ using AnimationEndCallback = AsyncCallback<EndResult>;
 template <>
 struct Bridging<EndResult> : NativeAnimatedTurboModuleEndResultBridging<EndResult> {};
 
-class NativeAnimatedNodesManager {
+class NativeAnimatedNodesManager : public std::enable_shared_from_this<NativeAnimatedNodesManager> {
  public:
   using DirectManipulationCallback = std::function<void(Tag, const folly::dynamic &)>;
   using FabricCommitCallback = std::function<void(std::unordered_map<Tag, folly::dynamic> &)>;
