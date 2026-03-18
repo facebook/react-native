@@ -11,33 +11,16 @@ from natsort import natsorted
 
 from ..utils import qualify_type_str
 from .base_scope_kind import ScopeKind
+from .extendable import Extendable
 
 if TYPE_CHECKING:
     from .scope import Scope
 
 
-class InterfaceScopeKind(ScopeKind):
-    class Base:
-        def __init__(
-            self, name: str, protection: str, virtual: bool, refid: str
-        ) -> None:
-            self.name: str = name
-            self.protection: str = protection
-            self.virtual: bool = virtual
-            self.refid: str = refid
-
+class InterfaceScopeKind(ScopeKind, Extendable):
     def __init__(self) -> None:
-        super().__init__("interface")
-        self.base_classes: [InterfaceScopeKind.Base] = []
-
-    def add_base(
-        self, base: InterfaceScopeKind.Base | [InterfaceScopeKind.Base]
-    ) -> None:
-        if isinstance(base, list):
-            for b in base:
-                self.base_classes.append(b)
-        else:
-            self.base_classes.append(base)
+        ScopeKind.__init__(self, "interface")
+        Extendable.__init__(self)
 
     def close(self, scope: Scope) -> None:
         """Qualify base class names and their template arguments."""
@@ -47,16 +30,7 @@ class InterfaceScopeKind(ScopeKind):
     def to_string(self, scope: Scope) -> str:
         result = ""
 
-        bases = []
-        for base in self.base_classes:
-            base_text = [base.protection]
-            if base.virtual:
-                base_text.append("virtual")
-            base_text.append(base.name)
-            bases.append(" ".join(base_text))
-
-        inheritance_string = " : " + ", ".join(bases) if bases else ""
-
+        inheritance_string = self.get_inheritance_string()
         result += f"{self.name} {scope.get_qualified_name()}{inheritance_string} {{"
 
         stringified_members = []
