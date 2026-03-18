@@ -7,8 +7,6 @@ from __future__ import annotations
 
 from typing import TYPE_CHECKING
 
-from natsort import natsorted
-
 from .base_scope_kind import ScopeKind
 
 if TYPE_CHECKING:
@@ -22,16 +20,5 @@ class CategoryScopeKind(ScopeKind):
         self.category_name: str = category_name
 
     def to_string(self, scope: Scope) -> str:
-        result = f"{self.name} {self.class_name}({self.category_name}) {{"
-
-        stringified_members = []
-        for member in scope.get_members():
-            stringified_members.append(member.to_string(2))
-        stringified_members = natsorted(stringified_members)
-        result += ("\n" if len(stringified_members) > 0 else "") + "\n".join(
-            stringified_members
-        )
-
-        result += "\n}"
-
-        return result
+        header = f"{self.name} {self.class_name}({self.category_name}) "
+        return header + self._format_scope_body(scope)

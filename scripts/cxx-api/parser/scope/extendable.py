@@ -26,6 +26,13 @@ class Extendable:
         else:
             self.base_classes.append(base)
 
+    def qualify_base_classes(self, scope) -> None:
+        """Qualify base class names and their template arguments."""
+        from ..utils import qualify_type_str
+
+        for base in self.base_classes:
+            base.name = qualify_type_str(base.name, scope)
+
     def get_inheritance_string(self) -> str:
         bases = []
         for base in self.base_classes:
