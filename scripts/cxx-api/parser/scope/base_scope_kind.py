@@ -8,7 +8,7 @@ from __future__ import annotations
 from abc import ABC, abstractmethod
 from typing import TYPE_CHECKING, TypeVar
 
-from natsort import natsort_keygen
+from natsort import natsort_keygen, natsorted
 
 if TYPE_CHECKING:
     from .scope import Scope
@@ -28,6 +28,18 @@ class ScopeKind(ABC):
     def close(self, scope: Scope) -> None:
         """Called when the scope is closed. Override to perform cleanup."""
         pass
+
+    def _format_scope_body(self, scope: Scope, member_suffix: str = "") -> str:
+        """Format the members list inside a scope's braces."""
+        stringified_members = [
+            member.to_string(2) + member_suffix for member in scope.get_members()
+        ]
+        stringified_members = natsorted(stringified_members)
+        result = "{"
+        if stringified_members:
+            result += "\n" + "\n".join(stringified_members)
+        result += "\n}"
+        return result
 
     def print_scope(self, scope: Scope) -> None:
         print(self.to_string(scope))
