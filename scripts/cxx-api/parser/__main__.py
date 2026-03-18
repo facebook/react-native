@@ -199,6 +199,11 @@ def main():
         help="Directory containing committed snapshots for comparison (used with --check)",
     )
     parser.add_argument(
+        "--view",
+        type=str,
+        help="Name of the API view to generate",
+    )
+    parser.add_argument(
         "--test",
         action="store_true",
         help="Run on the local test directory instead of the react-native directory",
@@ -250,6 +255,9 @@ def main():
     def build_snapshots(output_dir: str, verbose: bool) -> None:
         if not args.test:
             for config in snapshot_configs:
+                if args.view and config.snapshot_name != args.view:
+                    continue
+
                 build_snapshot_for_view(
                     api_view=config.snapshot_name,
                     react_native_dir=react_native_package_dir,
