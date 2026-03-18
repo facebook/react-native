@@ -317,6 +317,21 @@ def get_doxygen_params(
             else:
                 param_type += param_array
 
+        # Handle pointer-to-member-function types where the name must be
+        # embedded inside the declarator group.  Doxygen gives:
+        #   type = "void(ns::*)() const", name = "asFoo"
+        # We need to produce:
+        #   "void(ns::*asFoo)() const"
+        if param_name:
+            m = re.search(r"\([^)]*::\*\)", param_type)
+            if m:
+                # Insert name before the closing ')' of the ptr-to-member group
+                insert_pos = m.end() - 1
+                param_type = (
+                    param_type[:insert_pos] + param_name + param_type[insert_pos:]
+                )
+                param_name = None
+
         qualifiers, core_type = extract_qualifiers(param_type)
         arguments.append((qualifiers, core_type, param_name, param_default))
 
