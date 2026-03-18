@@ -42,7 +42,7 @@ const {
   parseValidUnionType,
 } = require('../../Utils');
 
-type StructContext = 'CONSTANTS' | 'REGULAR';
+export type StructContext = 'CONSTANTS' | 'REGULAR';
 
 export type RegularStruct = Readonly<{
   context: 'REGULAR',

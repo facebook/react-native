@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<5144fb0350b71394206d614c68ef87f0>>
+ * @generated SignedSource<<61964fd9ddf11ed5c2848da3f4d0b490>>
  */
 
 /**
@@ -509,6 +509,12 @@ public object ReactNativeFeatureFlags {
    */
   @JvmStatic
   public fun useFabricInterop(): Boolean = accessor.useFabricInterop()
+
+  /**
+   * Use Longest Increasing Subsequence algorithm in the Differentiator to minimize REMOVE/INSERT mutations during child list reconciliation.
+   */
+  @JvmStatic
+  public fun useLISAlgorithmInDifferentiator(): Boolean = accessor.useLISAlgorithmInDifferentiator()
 
   /**
    * When enabled, the native view configs are used in bridgeless mode.

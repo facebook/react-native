@@ -70,10 +70,7 @@
 - (std::shared_ptr<facebook::react::TurboModule>)getTurboModule:(const std::string &)name
                                                       jsInvoker:(std::shared_ptr<facebook::react::CallInvoker>)jsInvoker
 {
-  if (facebook::react::ReactNativeFeatureFlags::cxxNativeAnimatedEnabled() &&
-      // initialization is moved to DefaultTurboModules when using shared animated backend
-      // TODO: T257053961 deprecate RCTAnimatedModuleProvider.
-      !facebook::react::ReactNativeFeatureFlags::useSharedAnimatedBackend()) {
+  if (facebook::react::ReactNativeFeatureFlags::cxxNativeAnimatedEnabled()) {
     if (name == facebook::react::AnimatedModule::kModuleName) {
       __weak RCTAnimatedModuleProvider *weakSelf = self;
       auto provider = std::make_shared<facebook::react::NativeAnimatedNodesManagerProvider>(

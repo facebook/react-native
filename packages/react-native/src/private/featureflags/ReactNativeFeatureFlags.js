@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<5966ef11ee71a38059decda1c529fd6f>>
+ * @generated SignedSource<<d929e85924c23746edd258449cdb2d42>>
  * @flow strict
  * @noformat
  */
@@ -33,9 +33,7 @@ export type ReactNativeFeatureFlagsJsOnly = $ReadOnly<{
   animatedShouldUseSingleOp: Getter<boolean>,
   deferFlatListFocusChangeRenderUpdate: Getter<boolean>,
   disableMaintainVisibleContentPosition: Getter<boolean>,
-  enableOptimizedBoxShadowParsing: Getter<boolean>,
   externalElementInspectionEnabled: Getter<boolean>,
-  fixImageSrcDimensionPropagation: Getter<boolean>,
   fixVirtualizeListCollapseWindowSize: Getter<boolean>,
   isLayoutAnimationEnabled: Getter<boolean>,
   shouldUseAnimatedObjectForTransform: Getter<boolean>,
@@ -128,6 +126,7 @@ export type ReactNativeFeatureFlags = $ReadOnly<{
   updateRuntimeShadowNodeReferencesOnCommitThread: Getter<boolean>,
   useAlwaysAvailableJSErrorHandling: Getter<boolean>,
   useFabricInterop: Getter<boolean>,
+  useLISAlgorithmInDifferentiator: Getter<boolean>,
   useNativeViewConfigsInBridgelessMode: Getter<boolean>,
   useNestedScrollViewAndroid: Getter<boolean>,
   useSharedAnimatedBackend: Getter<boolean>,
@@ -166,19 +165,9 @@ export const deferFlatListFocusChangeRenderUpdate: Getter<boolean> = createJavaS
 export const disableMaintainVisibleContentPosition: Getter<boolean> = createJavaScriptFlagGetter('disableMaintainVisibleContentPosition', false);
 
 /**
- * Hoists regex patterns to module scope and optimizes parseLength in processBoxShadow for improved performance.
- */
-export const enableOptimizedBoxShadowParsing: Getter<boolean> = createJavaScriptFlagGetter('enableOptimizedBoxShadowParsing', false);
-
-/**
  * Enable the external inspection API for DevTools to communicate with the Inspector overlay.
  */
 export const externalElementInspectionEnabled: Getter<boolean> = createJavaScriptFlagGetter('externalElementInspectionEnabled', true);
-
-/**
- * Fix image dimensions not being passed through when src is used
- */
-export const fixImageSrcDimensionPropagation: Getter<boolean> = createJavaScriptFlagGetter('fixImageSrcDimensionPropagation', true);
 
 /**
  * Fixing an edge case where the current window size is not properly calculated with fast scrolling. Window size collapsed to 1 element even if windowSize more than the current amount of elements
@@ -529,6 +518,10 @@ export const useAlwaysAvailableJSErrorHandling: Getter<boolean> = createNativeFl
  * Should this application enable the Fabric Interop Layer for Android? If yes, the application will behave so that it can accept non-Fabric components and render them on Fabric. This toggle is controlling extra logic such as custom event dispatching that are needed for the Fabric Interop Layer to work correctly.
  */
 export const useFabricInterop: Getter<boolean> = createNativeFlagGetter('useFabricInterop', true);
+/**
+ * Use Longest Increasing Subsequence algorithm in the Differentiator to minimize REMOVE/INSERT mutations during child list reconciliation.
+ */
+export const useLISAlgorithmInDifferentiator: Getter<boolean> = createNativeFlagGetter('useLISAlgorithmInDifferentiator', false);
 /**
  * When enabled, the native view configs are used in bridgeless mode.
  */

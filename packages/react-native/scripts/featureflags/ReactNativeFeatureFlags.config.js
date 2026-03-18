@@ -901,6 +901,17 @@ const definitions: FeatureFlagDefinitions = {
       },
       ossReleaseStage: 'none',
     },
+    useLISAlgorithmInDifferentiator: {
+      defaultValue: false,
+      metadata: {
+        dateAdded: '2026-03-12',
+        description:
+          'Use Longest Increasing Subsequence algorithm in the Differentiator to minimize REMOVE/INSERT mutations during child list reconciliation.',
+        expectedReleaseValue: true,
+        purpose: 'experimentation',
+      },
+      ossReleaseStage: 'none',
+    },
     useNativeViewConfigsInBridgelessMode: {
       defaultValue: false,
       metadata: {
@@ -1054,17 +1065,6 @@ const definitions: FeatureFlagDefinitions = {
       },
       ossReleaseStage: 'none',
     },
-    enableOptimizedBoxShadowParsing: {
-      defaultValue: false,
-      metadata: {
-        dateAdded: '2026-02-26',
-        description:
-          'Hoists regex patterns to module scope and optimizes parseLength in processBoxShadow for improved performance.',
-        expectedReleaseValue: true,
-        purpose: 'experimentation',
-      },
-      ossReleaseStage: 'none',
-    },
     externalElementInspectionEnabled: {
       defaultValue: true,
       metadata: {
@@ -1073,16 +1073,6 @@ const definitions: FeatureFlagDefinitions = {
           'Enable the external inspection API for DevTools to communicate with the Inspector overlay.',
         expectedReleaseValue: true,
         purpose: 'experimentation',
-      },
-      ossReleaseStage: 'none',
-    },
-    fixImageSrcDimensionPropagation: {
-      defaultValue: true,
-      metadata: {
-        description:
-          'Fix image dimensions not being passed through when src is used',
-        expectedReleaseValue: true,
-        purpose: 'release',
       },
       ossReleaseStage: 'none',
     },
