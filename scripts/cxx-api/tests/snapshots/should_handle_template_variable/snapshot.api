@@ -1,0 +1,7 @@
+template <typename T>
+const test::Strct<T> test::Strct<T>::VALUE;
+
+template <typename T>
+struct test::Strct {
+  public static const test::Strct<T> VALUE;
+}

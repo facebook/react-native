@@ -249,7 +249,7 @@ def get_variable_member(
         if initializer_type == InitializerType.BRACE:
             is_brace_initializer = True
 
-    return VariableMember(
+    member = VariableMember(
         variable_name,
         variable_type,
         visibility,
@@ -262,6 +262,10 @@ def get_variable_member(
         variable_argstring,
         is_brace_initializer,
     )
+
+    member.add_template(get_template_params(member_def))
+
+    return member
 
 
 def get_doxygen_params(
