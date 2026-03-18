@@ -13,40 +13,23 @@ from natsort import natsorted
 from ..template import Template, TemplateList
 from ..utils import qualify_type_str
 from .base_scope_kind import ScopeKind
+from .extendable import Extendable
 
 if TYPE_CHECKING:
     from .scope import Scope
 
 
-class StructLikeScopeKind(ScopeKind):
-    class Base:
-        def __init__(
-            self, name: str, protection: str, virtual: bool, refid: str
-        ) -> None:
-            self.name: str = name
-            self.protection: str = protection
-            self.virtual: bool = virtual
-            self.refid: str = refid
-
+class StructLikeScopeKind(ScopeKind, Extendable):
     class Type(Enum):
         CLASS = "class"
         STRUCT = "struct"
         UNION = "union"
 
     def __init__(self, type: Type) -> None:
-        super().__init__(type.value)
+        ScopeKind.__init__(self, type.value)
+        Extendable.__init__(self)
 
-        self.base_classes: [StructLikeScopeKind.Base] = []
         self.template_list: TemplateList | None = None
-
-    def add_base(
-        self, base: StructLikeScopeKind.Base | [StructLikeScopeKind.Base]
-    ) -> None:
-        if isinstance(base, list):
-            for b in base:
-                self.base_classes.append(b)
-        else:
-            self.base_classes.append(base)
 
     def add_template(self, template: Template | [Template]) -> None:
         if template and self.template_list is None:
@@ -66,18 +49,10 @@ class StructLikeScopeKind(ScopeKind):
     def to_string(self, scope: Scope) -> str:
         result = ""
 
-        bases = []
-        for base in self.base_classes:
-            base_text = [base.protection]
-            if base.virtual:
-                base_text.append("virtual")
-            base_text.append(base.name)
-            bases.append(" ".join(base_text))
-
-        inheritance_string = " : " + ", ".join(bases) if bases else ""
-
         if self.template_list is not None:
             result += "\n" + self.template_list.to_string() + "\n"
+
+        inheritance_string = self.get_inheritance_string()
         result += f"{self.name} {scope.get_qualified_name()}{inheritance_string} {{"
 
         stringified_members = []
