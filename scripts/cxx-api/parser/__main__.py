@@ -13,6 +13,7 @@ Usage:
 
 import argparse
 import os
+import shutil
 import subprocess
 import sys
 import tempfile
@@ -114,7 +115,7 @@ def build_snapshot_for_view(
     if os.path.exists(os.path.join(react_native_dir, "api")):
         if verbose:
             print("Deleting existing output directory")
-        subprocess.run(["rm", "-rf", os.path.join(react_native_dir, "api")])
+        shutil.rmtree(os.path.join(react_native_dir, "api"))
 
     if verbose:
         print(f"Generating API view: {api_view}")
@@ -163,7 +164,10 @@ def build_snapshot_for_view(
     # Delete the Doxygen config file
     if verbose:
         print("Deleting Doxygen config file")
-    subprocess.run(["rm", DOXYGEN_CONFIG_FILE], cwd=react_native_dir)
+    os.remove(os.path.join(react_native_dir, DOXYGEN_CONFIG_FILE))
+
+    if verbose:
+        print("Building snapshot")
 
     # build snapshot, convert to string, and save to file
     snapshot = build_snapshot(os.path.join(react_native_dir, "api", "xml"))
