@@ -26,6 +26,7 @@ class Scope(Generic[ScopeKindT]):
         self.location: str | None = None
         self._members: list[Member] = []
         self._private_typedefs: dict[str, TypedefMember] = {}
+        self._qualifying_member: Member | None = None
 
     def get_qualified_name(self) -> str:
         """
@@ -85,6 +86,8 @@ class Scope(Generic[ScopeKindT]):
 
             # Check if it's a member (type alias, variable, etc.)
             for m in current_scope._members:
+                if m is current_scope._qualifying_member:
+                    continue
                 if m.name == base_first and not isinstance(m, FriendMember):
                     prefix = current_scope.get_qualified_name()
                     return f"{prefix}::{name}" if prefix else name
@@ -110,7 +113,9 @@ class Scope(Generic[ScopeKindT]):
                 matched_segments.append(path_segment)
                 current_scope = current_scope.inner_scopes[base_name]
             elif any(
-                m.name == base_name and not isinstance(m, FriendMember)
+                m.name == base_name
+                and not isinstance(m, FriendMember)
+                and m is not current_scope._qualifying_member
                 for m in current_scope._members
             ) or any(
                 any(m.name == base_name for m in inner._members)
@@ -194,7 +199,9 @@ class Scope(Generic[ScopeKindT]):
             typedef.close(self)
 
         for member in self.get_members():
+            self._qualifying_member = member
             member.close(self)
+        self._qualifying_member = None
 
         self.kind.close(self)
 
