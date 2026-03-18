@@ -396,8 +396,13 @@ class Scope(Generic[ScopeKindT]):
             elif any(
                 m.name == base_name and not isinstance(m, FriendMember)
                 for m in current_scope._members
+            ) or any(
+                any(m.name == base_name for m in inner._members)
+                for inner in current_scope.inner_scopes.values()
+                if isinstance(inner.kind, EnumScopeKind)
             ):
-                # Found as a member, assume following segments exist in the scope
+                # Found as a member (or as an unscoped enum value accessible
+                # from the parent scope), assume following segments exist
                 prefix = "::".join(matched_segments)
                 suffix = "::".join(path[i:])
                 anchor_prefix = anchor_scope.get_qualified_name()
