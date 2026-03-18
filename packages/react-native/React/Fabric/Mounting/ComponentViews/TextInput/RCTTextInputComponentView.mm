@@ -318,8 +318,11 @@ static NSSet<NSNumber *> *returnKeyTypesSet;
   if (newTextInputProps.textAttributes != oldTextInputProps.textAttributes) {
     NSMutableDictionary<NSAttributedStringKey, id> *defaultAttributes =
         RCTNSTextAttributesFromTextAttributes(newTextInputProps.getEffectiveTextAttributes(RCTFontSizeMultiplier()));
+    // If updateEventEmitter already deferred a pending update with the new event emitter,
+    // use it instead of the stale one on the view that hasn't been updated yet.
+    id pendingEmitter = _pendingDefaultTextAttributes[RCTAttributedStringEventEmitterKey];
     defaultAttributes[RCTAttributedStringEventEmitterKey] =
-        _backedTextInputView.defaultTextAttributes[RCTAttributedStringEventEmitterKey];
+        pendingEmitter ?: _backedTextInputView.defaultTextAttributes[RCTAttributedStringEventEmitterKey];
     if (_backedTextInputView.markedTextRange) {
       _needsUpdateDefaultTextAttributes = YES;
       _pendingDefaultTextAttributes = [defaultAttributes copy];
@@ -556,7 +559,12 @@ static NSSet<NSNumber *> *returnKeyTypesSet;
           NSAttributedString *truncatedAttr =
               [[NSAttributedString alloc] initWithString:truncated
                                               attributes:_backedTextInputView.defaultTextAttributes];
+          // Suppress delegate callbacks from _setAttributedString to prevent
+          // textInputDidChangeSelection from triggering a recursive textInputDidChange.
+          // This is an internal truncation, not a user or JS action.
+          _comingFromJS = YES;
           [self _setAttributedString:truncatedAttr];
+          _comingFromJS = NO;
         }
       }
     }

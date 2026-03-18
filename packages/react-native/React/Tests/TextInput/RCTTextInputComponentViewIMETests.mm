@@ -82,33 +82,33 @@ static UITextRange *createMockTextRangeForTextView(UITextView *textView)
 
 - (void)testDefaultTextAttributesSkippedDuringMarkedText
 {
-  // Create the component view and swap in our mock text field
+  // Verifies that pending defaultTextAttributes are NOT applied while composition is active.
+  // textInputDidChange should only apply pending attributes after markedTextRange becomes nil.
   RCTTextInputComponentView *componentView = [[RCTTextInputComponentView alloc] initWithFrame:CGRectZero];
   RCTMockTextField *mockTextField = [[RCTMockTextField alloc] initWithFrame:CGRectZero];
 
-  // Set initial text and attributes
   mockTextField.attributedText = [[NSAttributedString alloc] initWithString:@"test"];
-  NSDictionary<NSAttributedStringKey, id> *originalAttributes = @{NSFontAttributeName : [UIFont systemFontOfSize:14]};
-  mockTextField.defaultTextAttributes = originalAttributes;
-
-  // Swap the backed text input view
   [componentView setValue:mockTextField forKey:@"_backedTextInputView"];
   mockTextField.textInputDelegate = (id<RCTBackedTextInputDelegate>)componentView;
 
-  // Simulate IME composition active
-  UITextRange *range = createMockTextRange(mockTextField);
-  mockTextField.mockMarkedTextRange = range;
+  // Simulate deferred attributes (as if updateEventEmitter was called during composition)
+  NSDictionary<NSAttributedStringKey, id> *pendingAttributes =
+      @{NSFontAttributeName : [UIFont systemFontOfSize:18]};
+  [componentView setValue:@YES forKey:@"_needsUpdateDefaultTextAttributes"];
+  [componentView setValue:pendingAttributes forKey:@"_pendingDefaultTextAttributes"];
 
-  // Store current attributes for comparison
-  NSDictionary<NSAttributedStringKey, id> *attributesBefore = [mockTextField.defaultTextAttributes copy];
+  // Composition IS active
+  mockTextField.mockMarkedTextRange = createMockTextRange(mockTextField);
 
-  // Trigger textInputDidChange (which would normally be called during typing)
-  // The key behavior: during IME composition, defaultTextAttributes should NOT be reapplied
-  // We verify this by checking the _needsUpdateDefaultTextAttributes flag via KVC
-  XCTAssertNotNil(mockTextField.markedTextRange, @"markedTextRange should be non-nil during composition");
+  // Call textInputDidChange — pending attributes should NOT be applied yet
+  [(id<RCTBackedTextInputDelegate>)componentView textInputDidChange];
 
-  // Verify that the mock properly reports markedTextRange
-  XCTAssertTrue(mockTextField.markedTextRange != nil, @"Mock should simulate active IME composition");
+  // Verify pending was preserved (not applied) because composition is still active
+  BOOL needsUpdate = [[componentView valueForKey:@"_needsUpdateDefaultTextAttributes"] boolValue];
+  XCTAssertTrue(needsUpdate, @"_needsUpdateDefaultTextAttributes should remain YES during composition");
+
+  id pendingAfter = [componentView valueForKey:@"_pendingDefaultTextAttributes"];
+  XCTAssertNotNil(pendingAfter, @"_pendingDefaultTextAttributes should NOT be cleared during composition");
 }
 
 - (void)testPendingDefaultTextAttributesAppliedAfterCompositionEnds
@@ -207,10 +207,17 @@ static UITextRange *createMockTextRangeForTextView(UITextView *textView)
 
 - (void)testMaxLengthNotEnforcedDuringComposition
 {
+  // Verifies that textInputShouldChangeText does not block input during IME composition,
+  // even if maxLength would normally restrict it.
+  //
+  // Note: maxLength is a C++ prop (TextInputProps) and cannot be set via KVC in unit tests.
+  // With defaultSharedProps, maxLength = INT_MAX, so the maxLength branch is never entered.
+  // This test verifies that the markedTextRange guard allows text through unconditionally
+  // during composition. The post-composition truncation path in textInputDidChange (which
+  // handles grapheme-cluster-safe truncation) requires integration testing with real props.
   RCTTextInputComponentView *componentView = [[RCTTextInputComponentView alloc] initWithFrame:CGRectZero];
   RCTMockTextField *mockTextField = [[RCTMockTextField alloc] initWithFrame:CGRectZero];
 
-  // Set up text that's already at maxLength
   mockTextField.attributedText = [[NSAttributedString alloc] initWithString:@"12345"];
   [componentView setValue:mockTextField forKey:@"_backedTextInputView"];
   mockTextField.textInputDelegate = (id<RCTBackedTextInputDelegate>)componentView;
@@ -218,9 +225,6 @@ static UITextRange *createMockTextRangeForTextView(UITextView *textView)
   // Simulate active IME composition
   mockTextField.mockMarkedTextRange = createMockTextRange(mockTextField);
 
-  // Call textInputShouldChangeText during composition — maxLength should NOT block input
-  // Note: maxLength is set to default (INT_MAX) in defaultSharedProps, so this test verifies
-  // the guard condition only. When maxLength is set, the markedTextRange check prevents blocking.
   NSString *result =
       [(id<RCTBackedTextInputDelegate>)componentView textInputShouldChangeText:@"additional" inRange:NSMakeRange(5, 0)];
 
@@ -230,6 +234,8 @@ static UITextRange *createMockTextRangeForTextView(UITextView *textView)
 
 - (void)testMaxLengthEnforcedWhenNoComposition
 {
+  // Verifies that textInputShouldChangeText passes text through when maxLength is not constraining.
+  // See note in testMaxLengthNotEnforcedDuringComposition about prop limitations in unit tests.
   RCTTextInputComponentView *componentView = [[RCTTextInputComponentView alloc] initWithFrame:CGRectZero];
   RCTMockTextField *mockTextField = [[RCTMockTextField alloc] initWithFrame:CGRectZero];
 
@@ -240,7 +246,6 @@ static UITextRange *createMockTextRangeForTextView(UITextView *textView)
   // No active composition
   mockTextField.mockMarkedTextRange = nil;
 
-  // With default props (maxLength = INT_MAX), text should pass through
   NSString *result =
       [(id<RCTBackedTextInputDelegate>)componentView textInputShouldChangeText:@"extra" inRange:NSMakeRange(5, 0)];
 
