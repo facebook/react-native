@@ -552,9 +552,13 @@ void NativeAnimatedNodesManager::startRenderCallbackIfNeeded(bool isAsync) {
 
   if (ReactNativeFeatureFlags::useSharedAnimatedBackend()) {
     if (auto animationBackend = animationBackend_.lock()) {
-      animationBackendCallbackId_ =
-          animationBackend->start([this](AnimationTimestamp timestamp) {
-            return pullAnimationMutations(timestamp);
+      auto weak = weak_from_this();
+      animationBackendCallbackId_ = animationBackend->start(
+          [weak](AnimationTimestamp timestamp) -> AnimationMutations {
+            if (auto self = weak.lock()) {
+              return self->pullAnimationMutations(timestamp);
+            }
+            return {};
           });
     }
 
