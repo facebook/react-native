@@ -1,5 +1,109 @@
 # Changelog
 
+## v0.85.0-rc.5
+
+### Breaking
+
+
+
+#### Android specific
+
+
+
+#### iOS specific
+
+
+
+### Added
+
+
+
+#### Android specific
+
+
+
+#### iOS specific
+
+
+
+### Changed
+
+
+
+#### Android specific
+
+
+
+#### iOS specific
+
+
+
+### Deprecated
+
+
+
+#### Android specific
+
+
+
+#### iOS specific
+
+
+
+### Removed
+
+
+
+#### Android specific
+
+
+
+#### iOS specific
+
+
+
+### Fixed
+
+
+
+#### Android specific
+
+
+
+#### iOS specific
+
+
+
+### Security
+
+
+
+#### Android specific
+
+
+
+#### iOS specific
+
+
+
+### Unknown
+
+- Release 0.85.0-rc.5 ([eae2c5f89d](https://github.com/facebook/react-native/commit/eae2c5f89d60ebb7bb014b73af0569712282fe0c) by [@react-native-bot](https://github.com/react-native-bot))
+- Release 0.85.0-rc.4 ([e2e415fd58](https://github.com/facebook/react-native/commit/e2e415fd5882f9a32d326c929b4c43070734c03f) by [@react-native-bot](https://github.com/react-native-bot))
+
+#### Android Unknown
+
+
+
+#### iOS Unknown
+
+
+
+#### Failed to parse
+
+
+
+
 ## v0.85.0-rc.1
 
 ### Breaking
