@@ -166,6 +166,22 @@ def _split_arguments(args_str: str) -> list[str]:
     return [arg for arg in result if arg]
 
 
+def split_specialization(name: str) -> tuple[str, list[str] | None]:
+    """Split a potentially specialized name into base name and specialization args.
+
+    Examples:
+        "Foo" -> ("Foo", None)
+        "Foo<int>" -> ("Foo", ["int"])
+        "Foo<int, float>" -> ("Foo", ["int", "float"])
+        "Foo<Bar<int>>" -> ("Foo", ["Bar<int>"])
+    """
+    angle_start = name.find("<")
+    if angle_start == -1 or not name.endswith(">"):
+        return (name, None)
+    args = _split_arguments(name[angle_start + 1 : -1])
+    return (name[:angle_start], args if args else None)
+
+
 def _prefix_is_all_qualifiers(prefix: str) -> bool:
     """Check if all tokens in the prefix are type qualifiers/specifiers.
 

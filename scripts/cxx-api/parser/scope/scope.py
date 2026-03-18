@@ -10,7 +10,7 @@ from typing import Generic
 from natsort import natsorted
 
 from ..member import FriendMember, Member, TypedefMember
-from ..utils import parse_qualified_path, qualify_template_args_only
+from ..utils import parse_qualified_path, qualify_type_str
 from .base_scope_kind import _natsort_key, ScopeKindT
 from .enum_scope_kind import EnumScopeKind
 from .namespace_scope_kind import NamespaceScopeKind
@@ -35,10 +35,14 @@ class Scope(Generic[ScopeKindT]):
         current_scope = self
         while current_scope is not None:
             if current_scope.name is not None:
-                # Qualify template arguments in the scope name if it has any
                 name = current_scope.name
-                if "<" in name and current_scope.parent_scope is not None:
-                    name = qualify_template_args_only(name, current_scope.parent_scope)
+                if (
+                    isinstance(current_scope.kind, StructLikeScopeKind)
+                    and current_scope.kind.specialization_args is not None
+                ):
+                    name = (
+                        f"{name}<{', '.join(current_scope.kind.specialization_args)}>"
+                    )
                 path.append(name)
             current_scope = current_scope.parent_scope
         path.reverse()
@@ -174,6 +178,18 @@ class Scope(Generic[ScopeKindT]):
         """
         Close the scope by setting the kind of all temporary scopes.
         """
+        # Qualify specialization args early so that members and inner scopes
+        # see the fully-qualified name when they call get_qualified_name().
+        if (
+            isinstance(self.kind, StructLikeScopeKind)
+            and self.kind.specialization_args is not None
+            and self.parent_scope is not None
+        ):
+            self.kind.specialization_args = [
+                qualify_type_str(arg, self.parent_scope)
+                for arg in self.kind.specialization_args
+            ]
+
         for typedef in self._private_typedefs.values():
             typedef.close(self)
 

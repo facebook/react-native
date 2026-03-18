@@ -15,7 +15,7 @@ from .scope import (
     StructLikeScopeKind,
     TemporaryScopeKind,
 )
-from .utils import parse_qualified_path
+from .utils import parse_qualified_path, split_specialization
 
 
 class Snapshot:
@@ -46,19 +46,26 @@ class Snapshot:
         scope_name = path[-1]
         current_scope = self.ensure_scope(scope_path)
 
-        if scope_name in current_scope.inner_scopes:
-            scope = current_scope.inner_scopes[scope_name]
+        base_name, specialization_args = split_specialization(scope_name)
+
+        # Use the full name (including specialization) as the dict key so that
+        # base templates and their specializations are distinct entries.
+        scope_key = scope_name
+
+        if scope_key in current_scope.inner_scopes:
+            scope = current_scope.inner_scopes[scope_key]
             if scope.kind.name == "temporary":
-                scope.kind = StructLikeScopeKind(type)
+                scope.kind = StructLikeScopeKind(type, specialization_args)
+                scope.name = base_name
             else:
                 raise RuntimeError(
-                    f"Identifier {scope_name} already exists in scope {current_scope.name}"
+                    f"Identifier {scope_key} already exists in scope {current_scope.name}"
                 )
             return scope
         else:
-            new_scope = Scope(StructLikeScopeKind(type), scope_name)
+            new_scope = Scope(StructLikeScopeKind(type, specialization_args), base_name)
             new_scope.parent_scope = current_scope
-            current_scope.inner_scopes[scope_name] = new_scope
+            current_scope.inner_scopes[scope_key] = new_scope
             return new_scope
 
     def create_or_get_namespace(self, qualified_name: str) -> Scope[NamespaceScopeKind]:

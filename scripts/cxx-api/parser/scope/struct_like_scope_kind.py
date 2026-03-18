@@ -25,11 +25,14 @@ class StructLikeScopeKind(ScopeKind, Extendable):
         STRUCT = "struct"
         UNION = "union"
 
-    def __init__(self, type: Type) -> None:
+    def __init__(
+        self, type: Type, specialization_args: list[str] | None = None
+    ) -> None:
         ScopeKind.__init__(self, type.value)
         Extendable.__init__(self)
 
         self.template_list: TemplateList | None = None
+        self.specialization_args = specialization_args
 
     def add_template(self, template: Template | [Template]) -> None:
         if template and self.template_list is None:
