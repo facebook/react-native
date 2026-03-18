@@ -578,7 +578,12 @@ static NSSet<NSNumber *> *returnKeyTypesSet;
     }
   }
 
-  [self _updateState];
+  // During IME composition, defer _updateState to avoid Fabric round-trips
+  // that can interfere with UIKit's marked text rendering.
+  // State will be pushed when composition commits (markedTextRange becomes nil).
+  if (!_backedTextInputView.markedTextRange) {
+    [self _updateState];
+  }
 
   if (_eventEmitter) {
     const auto &textInputEventEmitter = static_cast<const TextInputEventEmitter &>(*_eventEmitter);
@@ -670,18 +675,23 @@ static NSSet<NSNumber *> *returnKeyTypesSet;
     // JS can re-assert its controlled value through a new setTextAndSelection call.
   }
 
-  UITextPosition *startPosition = [_backedTextInputView positionFromPosition:_backedTextInputView.beginningOfDocument
-                                                                      offset:start];
-  UITextPosition *endPosition = [_backedTextInputView positionFromPosition:_backedTextInputView.beginningOfDocument
-                                                                    offset:end];
+  // During IME composition, skip selection updates from JS.
+  // Calling setSelectedTextRange: while markedTextRange is active causes UIKit
+  // to clear the marked text range, destroying the composition underline.
+  if (!_backedTextInputView.markedTextRange) {
+    UITextPosition *startPosition = [_backedTextInputView positionFromPosition:_backedTextInputView.beginningOfDocument
+                                                                        offset:start];
+    UITextPosition *endPosition = [_backedTextInputView positionFromPosition:_backedTextInputView.beginningOfDocument
+                                                                      offset:end];
 
-  if (startPosition && endPosition) {
-    UITextRange *range = [_backedTextInputView textRangeFromPosition:startPosition toPosition:endPosition];
-    [_backedTextInputView setSelectedTextRange:range notifyDelegate:NO];
-    // ensure we scroll to the selected position
-    NSInteger offsetEnd = [_backedTextInputView offsetFromPosition:_backedTextInputView.beginningOfDocument
-                                                        toPosition:range.end];
-    [_backedTextInputView scrollRangeToVisible:NSMakeRange(offsetEnd, 0)];
+    if (startPosition && endPosition) {
+      UITextRange *range = [_backedTextInputView textRangeFromPosition:startPosition toPosition:endPosition];
+      [_backedTextInputView setSelectedTextRange:range notifyDelegate:NO];
+      // ensure we scroll to the selected position
+      NSInteger offsetEnd = [_backedTextInputView offsetFromPosition:_backedTextInputView.beginningOfDocument
+                                                          toPosition:range.end];
+      [_backedTextInputView scrollRangeToVisible:NSMakeRange(offsetEnd, 0)];
+    }
   }
   _comingFromJS = NO;
 }

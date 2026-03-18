@@ -48,11 +48,12 @@ describe('TextInput IME composition behavior', () => {
         );
       }
 
-      let renderer: $FlowFixMe;
+      let renderer;
       ReactTestRenderer.act(() => {
         renderer = ReactTestRenderer.create(<ControlledInput />);
       });
 
+      // $FlowFixMe[incompatible-use]
       const input = renderer.root.findByType(TextInput);
 
       // Simulate Korean composition steps
@@ -88,11 +89,12 @@ describe('TextInput IME composition behavior', () => {
         );
       }
 
-      let renderer: $FlowFixMe;
+      let renderer;
       ReactTestRenderer.act(() => {
         renderer = ReactTestRenderer.create(<ControlledInput />);
       });
 
+      // $FlowFixMe[incompatible-use]
       const input = renderer.root.findByType(TextInput);
 
       // Romaji "kanji" → hiragana → kanji conversion
@@ -135,11 +137,12 @@ describe('TextInput IME composition behavior', () => {
         );
       }
 
-      let renderer: $FlowFixMe;
+      let renderer;
       ReactTestRenderer.act(() => {
         renderer = ReactTestRenderer.create(<ControlledInput />);
       });
 
+      // $FlowFixMe[incompatible-use]
       const input = renderer.root.findByType(TextInput);
 
       const compositionSteps = [
@@ -181,11 +184,12 @@ describe('TextInput IME composition behavior', () => {
         );
       }
 
-      let renderer: $FlowFixMe;
+      let renderer;
       ReactTestRenderer.act(() => {
         renderer = ReactTestRenderer.create(<ControlledInput />);
       });
 
+      // $FlowFixMe[incompatible-use]
       const input = renderer.root.findByType(TextInput);
 
       const compositionSteps = [
@@ -229,11 +233,12 @@ describe('TextInput IME composition behavior', () => {
         );
       }
 
-      let renderer: $FlowFixMe;
+      let renderer;
       ReactTestRenderer.act(() => {
         renderer = ReactTestRenderer.create(<ControlledInput />);
       });
 
+      // $FlowFixMe[incompatible-use]
       const input = renderer.root.findByType(TextInput);
 
       // First character: "zhong" → 中
@@ -277,11 +282,12 @@ describe('TextInput IME composition behavior', () => {
         );
       }
 
-      let renderer: $FlowFixMe;
+      let renderer;
       ReactTestRenderer.act(() => {
         renderer = ReactTestRenderer.create(<ControlledInput />);
       });
 
+      // $FlowFixMe[incompatible-use]
       const input = renderer.root.findByType(TextInput);
 
       // Wubi input for 王 (wang/king)
@@ -315,11 +321,12 @@ describe('TextInput IME composition behavior', () => {
         );
       }
 
-      let renderer: $FlowFixMe;
+      let renderer;
       ReactTestRenderer.act(() => {
         renderer = ReactTestRenderer.create(<ControlledInput />);
       });
 
+      // $FlowFixMe[incompatible-use]
       const input = renderer.root.findByType(TextInput);
 
       const compositionSteps = ['ㄓ', 'ㄓㄨ', 'ㄓㄨㄥ', '中'];
@@ -353,11 +360,12 @@ describe('TextInput IME composition behavior', () => {
         );
       }
 
-      let renderer: $FlowFixMe;
+      let renderer;
       ReactTestRenderer.act(() => {
         renderer = ReactTestRenderer.create(<ControlledInput />);
       });
 
+      // $FlowFixMe[incompatible-use]
       const input = renderer.root.findByType(TextInput);
 
       const compositionSteps = [
@@ -403,11 +411,12 @@ describe('TextInput IME composition behavior', () => {
         );
       }
 
-      let renderer: $FlowFixMe;
+      let renderer;
       ReactTestRenderer.act(() => {
         renderer = ReactTestRenderer.create(<ControlledInput />);
       });
 
+      // $FlowFixMe[incompatible-use]
       const input = renderer.root.findByType(TextInput);
 
       ReactTestRenderer.act(() => {
@@ -446,11 +455,12 @@ describe('TextInput IME composition behavior', () => {
         );
       }
 
-      let renderer: $FlowFixMe;
+      let renderer;
       ReactTestRenderer.act(() => {
         renderer = ReactTestRenderer.create(<ControlledInput />);
       });
 
+      // $FlowFixMe[incompatible-use]
       const input = renderer.root.findByType(TextInput);
 
       // During composition, native sends text that may temporarily exceed maxLength.
@@ -479,13 +489,14 @@ describe('TextInput IME composition behavior', () => {
       const onChange = jest.fn();
       const onChangeText = jest.fn();
 
-      let renderer: $FlowFixMe;
+      let renderer;
       ReactTestRenderer.act(() => {
         renderer = ReactTestRenderer.create(
           <TextInput onChange={onChange} onChangeText={onChangeText} />,
         );
       });
 
+      // $FlowFixMe[incompatible-use]
       const input = renderer.root.findByType(TextInput);
 
       ReactTestRenderer.act(() => {
@@ -521,11 +532,12 @@ describe('TextInput IME composition behavior', () => {
         );
       }
 
-      let renderer: $FlowFixMe;
+      let renderer;
       ReactTestRenderer.act(() => {
         renderer = ReactTestRenderer.create(<ControlledMultiline />);
       });
 
+      // $FlowFixMe[incompatible-use]
       const input = renderer.root.findByType(TextInput);
 
       // Composition on second line
@@ -564,11 +576,12 @@ describe('TextInput IME composition behavior', () => {
         );
       }
 
-      let renderer: $FlowFixMe;
+      let renderer;
       ReactTestRenderer.act(() => {
         renderer = ReactTestRenderer.create(<ControlledInput />);
       });
 
+      // $FlowFixMe[incompatible-use]
       const input = renderer.root.findByType(TextInput);
 
       // Latin portion typed directly
@@ -614,11 +627,12 @@ describe('TextInput IME composition behavior', () => {
         );
       }
 
-      let renderer: $FlowFixMe;
+      let renderer;
       ReactTestRenderer.act(() => {
         renderer = ReactTestRenderer.create(<ControlledInput />);
       });
 
+      // $FlowFixMe[incompatible-use]
       const input = renderer.root.findByType(TextInput);
 
       // Chinese Pinyin: "ni" → 你
@@ -662,11 +676,12 @@ describe('TextInput IME composition behavior', () => {
         );
       }
 
-      let renderer: $FlowFixMe;
+      let renderer;
       ReactTestRenderer.act(() => {
         renderer = ReactTestRenderer.create(<ControlledInput />);
       });
 
+      // $FlowFixMe[incompatible-use]
       const input = renderer.root.findByType(TextInput);
 
       // "React " typed in Latin
@@ -720,11 +735,12 @@ describe('TextInput IME composition behavior', () => {
         );
       }
 
-      let renderer: $FlowFixMe;
+      let renderer;
       ReactTestRenderer.act(() => {
         renderer = ReactTestRenderer.create(<ControlledInput />);
       });
 
+      // $FlowFixMe[incompatible-use]
       const input = renderer.root.findByType(TextInput);
 
       // First word: watashi → 私
@@ -789,11 +805,12 @@ describe('TextInput IME composition behavior', () => {
         );
       }
 
-      let renderer: $FlowFixMe;
+      let renderer;
       ReactTestRenderer.act(() => {
         renderer = ReactTestRenderer.create(<ControlledInput />);
       });
 
+      // $FlowFixMe[incompatible-use]
       const input = renderer.root.findByType(TextInput);
 
       // "wo" → 我
@@ -852,11 +869,12 @@ describe('TextInput IME composition behavior', () => {
         );
       }
 
-      let renderer: $FlowFixMe;
+      let renderer;
       ReactTestRenderer.act(() => {
         renderer = ReactTestRenderer.create(<TransformingInput />);
       });
 
+      // $FlowFixMe[incompatible-use]
       const input = renderer.root.findByType(TextInput);
 
       // Composition intermediate
