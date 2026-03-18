@@ -12,8 +12,8 @@ from ..utils import (
     format_arguments,
     parse_arg_string,
     qualify_arguments,
-    qualify_template_args_only,
     qualify_type_str,
+    split_specialization,
 )
 from .base import Member, MemberKind
 
@@ -34,7 +34,9 @@ class FunctionMember(Member):
         doxygen_params: list[Argument] | None = None,
         is_constexpr: bool = False,
     ) -> None:
-        super().__init__(name, visibility)
+        base_name, specialization_args = split_specialization(name)
+        super().__init__(base_name, visibility)
+        self.specialization_args: list[str] | None = specialization_args
         self.type: str = type
         self.is_virtual: bool = is_virtual
         self.is_static: bool = is_static
@@ -62,10 +64,16 @@ class FunctionMember(Member):
     def close(self, scope: Scope):
         self.type = qualify_type_str(self.type, scope)
         self.arguments = qualify_arguments(self.arguments, scope)
-        # Qualify template arguments in function name for explicit specializations
-        # e.g., "convert<MyType>" -> "convert<ns::MyType>"
-        if "<" in self.name:
-            self.name = qualify_template_args_only(self.name, scope)
+        if self.specialization_args is not None:
+            self.specialization_args = [
+                qualify_type_str(arg, scope) for arg in self.specialization_args
+            ]
+
+    def _get_qualified_name(self, qualification: str | None) -> str:
+        name = self.name
+        if self.specialization_args is not None:
+            name = f"{name}<{', '.join(self.specialization_args)}>"
+        return f"{qualification}::{name}" if qualification else name
 
     def to_string(
         self,
