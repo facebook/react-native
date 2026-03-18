@@ -15,10 +15,14 @@ from ..utils import (
     parse_type_with_argstrings,
     qualify_arguments,
     qualify_parsed_type,
-    qualify_type_str,
     split_specialization,
 )
-from .base import Member, MemberKind, STORE_INITIALIZERS_IN_SNAPSHOT
+from .base import (
+    is_function_pointer_argstring,
+    Member,
+    MemberKind,
+    STORE_INITIALIZERS_IN_SNAPSHOT,
+)
 
 if TYPE_CHECKING:
     from ..scope import Scope
@@ -65,20 +69,7 @@ class VariableMember(Member):
     def close(self, scope: Scope):
         self._fp_arguments = qualify_arguments(self._fp_arguments, scope)
         self._parsed_type = qualify_parsed_type(self._parsed_type, scope)
-        if self.specialization_args is not None:
-            self.specialization_args = [
-                qualify_type_str(arg, scope) for arg in self.specialization_args
-            ]
-
-    def _is_function_pointer(self) -> bool:
-        """Check if this variable is a function pointer type."""
-        return self.argstring is not None and self.argstring.startswith(")(")
-
-    def _get_qualified_name(self, qualification: str | None) -> str:
-        name = self.name
-        if self.specialization_args is not None:
-            name = f"{name}<{', '.join(self.specialization_args)}>"
-        return f"{qualification}::{name}" if qualification else name
+        self._qualify_specialization_args(scope)
 
     def to_string(
         self,
@@ -108,7 +99,7 @@ class VariableMember(Member):
         if self.is_const and not self.is_constexpr:
             result += "const "
 
-        if self._is_function_pointer():
+        if is_function_pointer_argstring(self.argstring):
             formatted_args = format_arguments(self._fp_arguments)
             qualified_type = format_parsed_type(self._parsed_type)
             # Function pointer types: argstring is ")(args...)"

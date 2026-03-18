@@ -16,7 +16,7 @@ from ..utils import (
     qualify_arguments,
     qualify_parsed_type,
 )
-from .base import Member, MemberKind
+from .base import is_function_pointer_argstring, Member, MemberKind
 
 if TYPE_CHECKING:
     from ..scope import Scope
@@ -48,14 +48,10 @@ class TypedefMember(Member):
         self._fp_arguments = qualify_arguments(self._fp_arguments, scope)
         self._parsed_type = qualify_parsed_type(self._parsed_type, scope)
 
-    def _is_function_pointer(self) -> bool:
-        """Check if this typedef is a function pointer type."""
-        return self.argstring is not None and self.argstring.startswith(")(")
-
     def get_value(self) -> str:
         if self.keyword == "using":
             return format_parsed_type(self._parsed_type)
-        elif self._is_function_pointer():
+        elif is_function_pointer_argstring(self.argstring):
             formatted_args = format_arguments(self._fp_arguments)
             qualified_type = format_parsed_type(self._parsed_type)
             if "(*" in qualified_type:
@@ -84,7 +80,7 @@ class TypedefMember(Member):
 
         if self.keyword == "using":
             result += f" {name} = {format_parsed_type(self._parsed_type)};"
-        elif self._is_function_pointer():
+        elif is_function_pointer_argstring(self.argstring):
             formatted_args = format_arguments(self._fp_arguments)
             qualified_type = format_parsed_type(self._parsed_type)
             # Function pointer typedef: "typedef return_type (*name)(args);"

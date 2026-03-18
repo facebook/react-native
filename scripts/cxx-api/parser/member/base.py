@@ -32,11 +32,17 @@ class MemberKind(IntEnum):
     FRIEND = 6
 
 
+def is_function_pointer_argstring(argstring: str | None) -> bool:
+    """Check if an argstring indicates a function pointer type."""
+    return argstring is not None and argstring.startswith(")(")
+
+
 class Member(ABC):
     def __init__(self, name: str, visibility: str) -> None:
         self.name: str = name
         self.visibility: str = visibility
         self.template_list: TemplateList | None = None
+        self.specialization_args: list[str] | None = None
 
     @property
     @abstractmethod
@@ -55,8 +61,19 @@ class Member(ABC):
     def close(self, scope: Scope):
         pass
 
-    def _get_qualified_name(self, qualification: str | None):
-        return f"{qualification}::{self.name}" if qualification else self.name
+    def _get_qualified_name(self, qualification: str | None) -> str:
+        name = self.name
+        if self.specialization_args is not None:
+            name = f"{name}<{', '.join(self.specialization_args)}>"
+        return f"{qualification}::{name}" if qualification else name
+
+    def _qualify_specialization_args(self, scope: Scope) -> None:
+        if self.specialization_args is not None:
+            from ..utils import qualify_type_str
+
+            self.specialization_args = [
+                qualify_type_str(arg, scope) for arg in self.specialization_args
+            ]
 
     def add_template(self, template: Template | [Template]) -> None:
         if template and self.template_list is None:
