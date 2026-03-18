@@ -162,6 +162,9 @@ class VariableMember(Member):
 
         result = " " * indent
 
+        if self.template_list is not None:
+            result += self.template_list.to_string() + "\n" + " " * indent
+
         if not hide_visibility:
             result += self.visibility + " "
 
