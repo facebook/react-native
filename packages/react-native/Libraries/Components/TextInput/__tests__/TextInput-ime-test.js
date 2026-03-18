@@ -10,7 +10,6 @@
 
 const {enter} = require('../../../Utilities/ReactNativeTestTools');
 const TextInput = require('../TextInput').default;
-const {create} = require('@react-native/jest-preset/jest/renderer');
 const React = require('react');
 const {createRef, useState} = require('react');
 const ReactTestRenderer = require('react-test-renderer');
