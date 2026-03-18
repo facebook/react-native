@@ -12,6 +12,7 @@ from .argument_parsing import (
     parse_arg_string,
     parse_function_pointer_argstring,
     parse_type_with_argstrings,
+    split_specialization,
 )
 from .qualified_path import parse_qualified_path
 from .text_resolution import (
@@ -37,6 +38,7 @@ __all__ = [
     "FunctionModifiers",
     "InitializerType",
     "normalize_angle_brackets",
+    "normalize_pointer_spacing",
     "parse_arg_string",
     "parse_function_pointer_argstring",
     "parse_qualified_path",
@@ -46,4 +48,5 @@ __all__ = [
     "qualify_template_args_only",
     "qualify_type_str",
     "resolve_linked_text_name",
+    "split_specialization",
 ]
