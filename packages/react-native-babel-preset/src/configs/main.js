@@ -21,6 +21,10 @@ const EXCLUDED_FIRST_PARTY_PATHS = [
   /[/\\]private[/\\]react-native-fantom[/\\]/,
 ];
 
+// customTransformOptions may be strings from URL params, or booleans passed
+// programatically. For strings, handle them as Metro does when parsing URLs.
+const TRUE_VALS = new Set([true, 'true', '1']);
+
 function isTypeScriptSource(fileName) {
   return !!fileName && fileName.endsWith('.ts');
 }
@@ -72,6 +76,11 @@ const getPreset = (src, options, babel) => {
 
   // Preserve class syntax and related if we're using Hermes V1.
   const preserveClasses = isHermesV1;
+
+  // Preserve private class fields and methods if the experiment is enabled.
+  const preserveClassPrivate = TRUE_VALS.has(
+    options?.customTransformOptions?.unstable_preserveClassPrivate,
+  );
 
   const isNull = src == null;
   const hasClass = isNull || src.indexOf('class') !== -1;
@@ -217,11 +226,15 @@ const getPreset = (src, options, babel) => {
           ...(preserveClasses
             ? []
             : [[require('@babel/plugin-transform-class-properties'), {loose}]]),
-          [require('@babel/plugin-transform-private-methods'), {loose}],
-          [
-            require('@babel/plugin-transform-private-property-in-object'),
-            {loose},
-          ],
+          ...(preserveClassPrivate
+            ? []
+            : [
+                [require('@babel/plugin-transform-private-methods'), {loose}],
+                [
+                  require('@babel/plugin-transform-private-property-in-object'),
+                  {loose},
+                ],
+              ]),
           [require('@babel/plugin-syntax-dynamic-import')],
           [require('@babel/plugin-syntax-export-default-from')],
           ...passthroughSyntaxPlugins,
