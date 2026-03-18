@@ -19,6 +19,7 @@ const mockGetCurrentDarkerSystemColorsState = jest.fn((onSuccess, onError) =>
 const mockGetCurrentBoldTextState = jest.fn((onSuccess, onError) => onSuccess(true));
 const mockGetCurrentGrayscaleState = jest.fn((onSuccess, onError) => onSuccess(true));
 const mockGetCurrentInvertColorsState = jest.fn((onSuccess, onError) => onSuccess(true));
+const mockGetCurrentReduceMotionState = jest.fn((onSuccess, onError) => onSuccess(true));
 const mockNativeAccessibilityManagerDefault: {
   getCurrentPrefersCrossFadeTransitionsState: JestMockFn<
     [
@@ -40,7 +41,7 @@ const mockNativeAccessibilityManagerDefault: {
       onError: (error: Error) => void,
     ],
     void,
-  > | null,  
+  > | null,
   getCurrentGrayscaleState: JestMockFn<
     [
       onSuccess: (isGrayscaleEnabled: boolean) => void,
@@ -55,6 +56,13 @@ const mockNativeAccessibilityManagerDefault: {
     ],
     void,
   > | null,
+  getCurrentReduceMotionState: JestMockFn<
+    [
+      onSuccess: (isReduceMotionEnabled: boolean) => void,
+      onError: (error: Error) => void,
+    ],
+    void,
+  > | null, 
 } = {
   getCurrentPrefersCrossFadeTransitionsState:
     mockGetCurrentPrefersCrossFadeTransitionsState,
@@ -62,12 +70,13 @@ const mockNativeAccessibilityManagerDefault: {
   getCurrentBoldTextState: mockGetCurrentBoldTextState,
   getCurrentGrayscaleState: mockGetCurrentGrayscaleState,
   getCurrentInvertColorsState: mockGetCurrentInvertColorsState,
-
+  getCurrentReduceMotionState: mockGetCurrentReduceMotionState,
 };
 
 const mockIsHighTextContrastEnabled = jest.fn(onSuccess => onSuccess(true));
 const mockIsGrayscaleEnabled = jest.fn(onSuccess => onSuccess(true));
 const mockIsInvertColorsEnabled = jest.fn(onSuccess => onSuccess(true));
+const mockIsReduceMotionEnabled = jest.fn(onSuccess => onSuccess(true));
 const mockNativeAccessibilityInfo: {
   isHighTextContrastEnabled: JestMockFn<
     [onSuccess: (isHighTextContrastEnabled: boolean) => void],
@@ -81,10 +90,15 @@ const mockNativeAccessibilityInfo: {
     [onSuccess: (isInvertColorsEnabled: boolean) => void],
     void,
   > | null,
+  isReduceMotionEnabled: JestMockFn<
+    [onSuccess: (isReduceMotionEnabled: boolean) => void],
+    void,
+  > | null,
 } = {
   isHighTextContrastEnabled: mockIsHighTextContrastEnabled,
   isGrayscaleEnabled: mockIsGrayscaleEnabled,
   isInvertColorsEnabled: mockIsInvertColorsEnabled,
+  isReduceMotionEnabled: mockIsReduceMotionEnabled,
 };
 
 jest.mock('../NativeAccessibilityManager', () => ({
@@ -101,7 +115,6 @@ const Platform = require('../../../Utilities/Platform').default;
 const AccessibilityInfo = require('../AccessibilityInfo').default;
 const invariant = require('invariant');
 
-// isReduceMotionEnabled
 // isReduceTransparencyEnabled
 // isScreenReaderEnabled
 // isAccessibilityServiceEnabled
@@ -129,7 +142,7 @@ describe('AccessibilityInfo', () => {
           await AccessibilityInfo.isBoldTextEnabled();
 
         expect(isBoldTextEnabled).toBe(false);
-      });      
+      });
     })
 
     describe('iOS', () => {
@@ -177,7 +190,7 @@ describe('AccessibilityInfo', () => {
 
         expect(mockIsGrayscaleEnabled).toHaveBeenCalled();
         expect(isGrayscaleEnabled).toBe(true);
-      });     
+      });
 
       it('should throw error if isGrayscaleEnabled is not available', async () => {
         /* $FlowFixMe[incompatible-type] */
@@ -243,7 +256,7 @@ describe('AccessibilityInfo', () => {
 
         expect(mockIsInvertColorsEnabled).toHaveBeenCalled();
         expect(isInvertColorsEnabled).toBe(true);
-      });     
+      });
 
       it('should throw error if isInvertColorsEnabled is not available', async () => {
         /* $FlowFixMe[incompatible-type] */
@@ -296,6 +309,74 @@ describe('AccessibilityInfo', () => {
         );
       });
     });
+  });
+
+  describe('isReduceMotionEnabled', () => {
+    describe('Android', () => {
+      it('should call isReduceMotionEnabled if available', async () => {
+        /* $FlowFixMe[incompatible-type] */
+        Platform.OS = 'android';
+
+        const isReduceMotionEnabled =
+          await AccessibilityInfo.isReduceMotionEnabled();
+
+        expect(mockIsReduceMotionEnabled).toHaveBeenCalled();
+        expect(isReduceMotionEnabled).toBe(true);
+      });
+
+      it('should throw error if isReduceMotionEnabled is not available', async () => {
+        /* $FlowFixMe[incompatible-type] */
+        Platform.OS = 'android';
+
+        const nativeAccessibilityInfoModule =
+          jest.requireMock('../NativeAccessibilityInfo');
+        nativeAccessibilityInfoModule.default = null;
+
+
+        const result: mixed =
+          await AccessibilityInfo.isReduceMotionEnabled().catch(e => e);
+
+        invariant(
+          result instanceof Error,
+          'Expected isReduceMotionEnabled to reject',
+        );
+        expect(result.message).toEqual(
+          'NativeAccessibilityInfoAndroid is not available',
+        );
+      });
+    });
+
+    describe('iOS', () => {
+      it('should call getCurrentReduceMotionState if available', async () => {
+        /* $FlowFixMe[incompatible-type] */
+        Platform.OS = 'ios';
+
+        const isReduceMotionEnabled =
+          await AccessibilityInfo.isReduceMotionEnabled();
+
+        expect(isReduceMotionEnabled).toBe(true);
+      });
+
+      it('should reject if NativeAccessibilityManagerIOS module is not available', async () => {
+        /* $FlowFixMe[incompatible-type] */
+        Platform.OS = 'ios';
+
+        const nativeAccessibilityManagerModule =
+          jest.requireMock('../NativeAccessibilityManager');
+        nativeAccessibilityManagerModule.default = null;
+
+        const result: mixed =
+          await AccessibilityInfo.isReduceMotionEnabled().catch(e => e);
+
+        invariant(
+          result instanceof Error,
+          'Expected isReduceMotionEnabled to reject',
+        );
+        expect(result.message).toEqual(
+          'NativeAccessibilityManagerIOS is not available',
+        );
+      });
+    });  
   });
 
   describe('prefersCrossFadeTransitions', () => {
@@ -440,6 +521,8 @@ describe('AccessibilityInfo', () => {
   afterEach(() => {
     jest.requireMock('../NativeAccessibilityManager').default =
       mockNativeAccessibilityManagerDefault;
+    jest.requireMock('../NativeAccessibilityInfo').default =
+      mockNativeAccessibilityInfo;
     mockNativeAccessibilityManagerDefault.getCurrentPrefersCrossFadeTransitionsState =
       mockGetCurrentPrefersCrossFadeTransitionsState;
     mockNativeAccessibilityManagerDefault.getCurrentDarkerSystemColorsState =

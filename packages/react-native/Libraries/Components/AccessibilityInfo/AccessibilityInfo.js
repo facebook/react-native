@@ -191,7 +191,7 @@ const AccessibilityInfo = {
         if (NativeAccessibilityInfoAndroid != null) {
           NativeAccessibilityInfoAndroid.isReduceMotionEnabled(resolve);
         } else {
-          reject(new Error('AccessibilityInfo native module is not available'));
+          reject(new Error('NativeAccessibilityInfoAndroid is not available'));
         }
       } else {
         if (NativeAccessibilityManagerIOS != null) {
