@@ -12,7 +12,7 @@
 #import <React/RCTUITextField.h>
 #import <React/RCTUITextView.h>
 
-#import "RCTTextInputComponentView.h"
+#import <React/RCTTextInputComponentView.h>
 
 /**
  * Mock UITextField subclass that allows overriding markedTextRange for testing
@@ -78,247 +78,455 @@ static UITextRange *createMockTextRangeForTextView(UITextView *textView)
 
 @implementation RCTTextInputComponentViewIMETests
 
-#pragma mark - Fix 1: updateEventEmitter defaultTextAttributes deferral
+#pragma mark - Helpers
 
-- (void)testDefaultTextAttributesSkippedDuringMarkedText
+- (RCTTextInputComponentView *)createSingleLineWithMock:(RCTMockTextField **)outMock
 {
-  // Verifies that pending defaultTextAttributes are NOT applied while composition is active.
-  // textInputDidChange should only apply pending attributes after markedTextRange becomes nil.
-  RCTTextInputComponentView *componentView = [[RCTTextInputComponentView alloc] initWithFrame:CGRectZero];
-  RCTMockTextField *mockTextField = [[RCTMockTextField alloc] initWithFrame:CGRectZero];
-
-  mockTextField.attributedText = [[NSAttributedString alloc] initWithString:@"test"];
-  [componentView setValue:mockTextField forKey:@"_backedTextInputView"];
-  mockTextField.textInputDelegate = (id<RCTBackedTextInputDelegate>)componentView;
-
-  // Simulate deferred attributes (as if updateEventEmitter was called during composition)
-  NSDictionary<NSAttributedStringKey, id> *pendingAttributes =
-      @{NSFontAttributeName : [UIFont systemFontOfSize:18]};
-  [componentView setValue:@YES forKey:@"_needsUpdateDefaultTextAttributes"];
-  [componentView setValue:pendingAttributes forKey:@"_pendingDefaultTextAttributes"];
-
-  // Composition IS active
-  mockTextField.mockMarkedTextRange = createMockTextRange(mockTextField);
-
-  // Call textInputDidChange — pending attributes should NOT be applied yet
-  [(id<RCTBackedTextInputDelegate>)componentView textInputDidChange];
-
-  // Verify pending was preserved (not applied) because composition is still active
-  BOOL needsUpdate = [[componentView valueForKey:@"_needsUpdateDefaultTextAttributes"] boolValue];
-  XCTAssertTrue(needsUpdate, @"_needsUpdateDefaultTextAttributes should remain YES during composition");
-
-  id pendingAfter = [componentView valueForKey:@"_pendingDefaultTextAttributes"];
-  XCTAssertNotNil(pendingAfter, @"_pendingDefaultTextAttributes should NOT be cleared during composition");
+  RCTTextInputComponentView *cv = [[RCTTextInputComponentView alloc] initWithFrame:CGRectZero];
+  RCTMockTextField *mock = [[RCTMockTextField alloc] initWithFrame:CGRectZero];
+  [cv setValue:mock forKey:@"_backedTextInputView"];
+  mock.textInputDelegate = (id<RCTBackedTextInputDelegate>)cv;
+  if (outMock) {
+    *outMock = mock;
+  }
+  return cv;
 }
 
-- (void)testPendingDefaultTextAttributesAppliedAfterCompositionEnds
+- (RCTTextInputComponentView *)createMultiLineWithMock:(RCTMockTextView **)outMock
 {
-  RCTTextInputComponentView *componentView = [[RCTTextInputComponentView alloc] initWithFrame:CGRectZero];
-  RCTMockTextField *mockTextField = [[RCTMockTextField alloc] initWithFrame:CGRectZero];
-
-  mockTextField.attributedText = [[NSAttributedString alloc] initWithString:@"test"];
-  [componentView setValue:mockTextField forKey:@"_backedTextInputView"];
-  mockTextField.textInputDelegate = (id<RCTBackedTextInputDelegate>)componentView;
-
-  // Set pending attributes (simulating what updateEventEmitter would do)
-  NSDictionary<NSAttributedStringKey, id> *pendingAttributes =
-      @{NSFontAttributeName : [UIFont systemFontOfSize:16]};
-  [componentView setValue:@YES forKey:@"_needsUpdateDefaultTextAttributes"];
-  [componentView setValue:pendingAttributes forKey:@"_pendingDefaultTextAttributes"];
-
-  // Composition is NOT active (markedTextRange is nil)
-  mockTextField.mockMarkedTextRange = nil;
-
-  // Call textInputDidChange — should apply pending attributes
-  [(id<RCTBackedTextInputDelegate>)componentView textInputDidChange];
-
-  // After textInputDidChange with no markedText, pending should be cleared
-  BOOL needsUpdate = [[componentView valueForKey:@"_needsUpdateDefaultTextAttributes"] boolValue];
-  XCTAssertFalse(needsUpdate, @"_needsUpdateDefaultTextAttributes should be cleared after applying");
-
-  id pendingAfter = [componentView valueForKey:@"_pendingDefaultTextAttributes"];
-  XCTAssertNil(pendingAfter, @"_pendingDefaultTextAttributes should be nil after applying");
+  RCTTextInputComponentView *cv = [[RCTTextInputComponentView alloc] initWithFrame:CGRectZero];
+  RCTMockTextView *mock = [[RCTMockTextView alloc] initWithFrame:CGRectZero];
+  [cv setValue:mock forKey:@"_backedTextInputView"];
+  mock.textInputDelegate = (id<RCTBackedTextInputDelegate>)cv;
+  if (outMock) {
+    *outMock = mock;
+  }
+  return cv;
 }
 
-#pragma mark - Fix 2: _setAttributedString guard during composition
+#pragma mark - Korean IME lifecycle
 
-- (void)testSetAttributedStringSkippedDuringMarkedText
+- (void)testKoreanCompositionLifecycle
 {
-  RCTTextInputComponentView *componentView = [[RCTTextInputComponentView alloc] initWithFrame:CGRectZero];
-  RCTMockTextField *mockTextField = [[RCTMockTextField alloc] initWithFrame:CGRectZero];
+  // Simulates the full UIKit delegate call sequence for typing "한":
+  //   ㅎ (composing) → 하 (composing) → 한 (composing) → 한 (committed)
+  RCTMockTextField *mock;
+  RCTTextInputComponentView *cv = [self createSingleLineWithMock:&mock];
+  id<RCTBackedTextInputDelegate> delegate = (id<RCTBackedTextInputDelegate>)cv;
 
-  NSAttributedString *originalText = [[NSAttributedString alloc] initWithString:@"original"];
-  mockTextField.attributedText = originalText;
-  [componentView setValue:mockTextField forKey:@"_backedTextInputView"];
-  mockTextField.textInputDelegate = (id<RCTBackedTextInputDelegate>)componentView;
+  NSDictionary *ulAttrs = @{NSUnderlineStyleAttributeName : @(NSUnderlineStyleSingle)};
 
-  // Simulate active IME composition
-  mockTextField.mockMarkedTextRange = createMockTextRange(mockTextField);
+  // Step 1: ㅎ — composition starts
+  mock.mockMarkedTextRange = nil;
+  [delegate textInputShouldChangeText:@"ㅎ" inRange:NSMakeRange(0, 0)];
+  mock.attributedText = [[NSAttributedString alloc] initWithString:@"ㅎ" attributes:ulAttrs];
+  mock.mockMarkedTextRange = createMockTextRange(mock);
+  [delegate textInputDidChange];
+  XCTAssertEqualObjects(mock.attributedText.string, @"ㅎ");
 
-  // Try to set a different attributed string via the private method
-  NSAttributedString *newText = [[NSAttributedString alloc] initWithString:@"replaced"];
-  // Use performSelector to call private method _setAttributedString:
+  // Step 2: 하 — vowel added
+  [delegate textInputShouldChangeText:@"하" inRange:NSMakeRange(0, 1)];
+  mock.attributedText = [[NSAttributedString alloc] initWithString:@"하" attributes:ulAttrs];
+  [delegate textInputDidChange];
+  XCTAssertEqualObjects(mock.attributedText.string, @"하");
+
+  // Step 3: 한 — final consonant added
+  [delegate textInputShouldChangeText:@"한" inRange:NSMakeRange(0, 1)];
+  mock.attributedText = [[NSAttributedString alloc] initWithString:@"한" attributes:ulAttrs];
+  [delegate textInputDidChange];
+  XCTAssertEqualObjects(mock.attributedText.string, @"한");
+
+  // Step 4: commit — markedTextRange cleared, underline removed
+  mock.mockMarkedTextRange = nil;
+  mock.attributedText = [[NSAttributedString alloc] initWithString:@"한"];
+  [delegate textInputDidChange];
+  XCTAssertEqualObjects(mock.attributedText.string, @"한");
+}
+
+#pragma mark - Japanese romaji lifecycle
+
+- (void)testJapaneseRomajiCompositionLifecycle
+{
+  // k → か → かn → かん → 漢 (candidate) → commit
+  RCTMockTextField *mock;
+  RCTTextInputComponentView *cv = [self createSingleLineWithMock:&mock];
+  id<RCTBackedTextInputDelegate> delegate = (id<RCTBackedTextInputDelegate>)cv;
+
+  NSDictionary *ul = @{NSUnderlineStyleAttributeName : @(NSUnderlineStyleSingle)};
+  mock.mockMarkedTextRange = createMockTextRange(mock);
+
+  for (NSString *step in @[ @"k", @"か", @"かn", @"かん" ]) {
+    mock.attributedText = [[NSAttributedString alloc] initWithString:step attributes:ul];
+    [delegate textInputDidChange];
+    XCTAssertEqualObjects(mock.attributedText.string, step);
+  }
+
+  // Candidate selection
+  mock.attributedText = [[NSAttributedString alloc] initWithString:@"漢" attributes:ul];
+  [delegate textInputDidChange];
+
+  // Commit
+  mock.mockMarkedTextRange = nil;
+  mock.attributedText = [[NSAttributedString alloc] initWithString:@"漢"];
+  [delegate textInputDidChange];
+  XCTAssertEqualObjects(mock.attributedText.string, @"漢");
+}
+
+#pragma mark - Chinese Pinyin lifecycle
+
+- (void)testChinesePinyinCompositionLifecycle
+{
+  // z → zh → zhong → 中 (candidate) → commit
+  RCTMockTextField *mock;
+  RCTTextInputComponentView *cv = [self createSingleLineWithMock:&mock];
+  id<RCTBackedTextInputDelegate> delegate = (id<RCTBackedTextInputDelegate>)cv;
+
+  NSDictionary *ul = @{NSUnderlineStyleAttributeName : @(NSUnderlineStyleSingle)};
+  mock.mockMarkedTextRange = createMockTextRange(mock);
+
+  for (NSString *step in @[ @"z", @"zh", @"zho", @"zhon", @"zhong" ]) {
+    mock.attributedText = [[NSAttributedString alloc] initWithString:step attributes:ul];
+    [delegate textInputDidChange];
+    XCTAssertEqualObjects(mock.attributedText.string, step);
+  }
+
+  mock.attributedText = [[NSAttributedString alloc] initWithString:@"中" attributes:ul];
+  [delegate textInputDidChange];
+
+  mock.mockMarkedTextRange = nil;
+  mock.attributedText = [[NSAttributedString alloc] initWithString:@"中"];
+  [delegate textInputDidChange];
+  XCTAssertEqualObjects(mock.attributedText.string, @"中");
+}
+
+#pragma mark - Korean multi-syllable lifecycle
+
+- (void)testKoreanMultiSyllableCompositionLifecycle
+{
+  // 감사 — two syllables: ㄱ→가→감 (commit) → ㅅ→사 (commit)
+  RCTMockTextField *mock;
+  RCTTextInputComponentView *cv = [self createSingleLineWithMock:&mock];
+  id<RCTBackedTextInputDelegate> delegate = (id<RCTBackedTextInputDelegate>)cv;
+
+  NSDictionary *ul = @{NSUnderlineStyleAttributeName : @(NSUnderlineStyleSingle)};
+
+  // First syllable: 감
+  mock.mockMarkedTextRange = createMockTextRange(mock);
+  for (NSString *step in @[ @"ㄱ", @"가", @"감" ]) {
+    mock.attributedText = [[NSAttributedString alloc] initWithString:step attributes:ul];
+    [delegate textInputDidChange];
+  }
+
+  // ㅅ is typed — 감 commits, new syllable starts: 감ㅅ
+  // System splits: "감" committed + "ㅅ" composing
+  mock.attributedText = [[NSAttributedString alloc] initWithString:@"감ㅅ" attributes:ul];
+  [delegate textInputDidChange];
+  XCTAssertEqualObjects(mock.attributedText.string, @"감ㅅ");
+
+  // ㅏ added: 감사
+  mock.attributedText = [[NSAttributedString alloc] initWithString:@"감사" attributes:ul];
+  [delegate textInputDidChange];
+
+  // Commit
+  mock.mockMarkedTextRange = nil;
+  mock.attributedText = [[NSAttributedString alloc] initWithString:@"감사"];
+  [delegate textInputDidChange];
+
+  XCTAssertEqualObjects(mock.attributedText.string, @"감사");
+}
+
+#pragma mark - Japanese candidate re-selection lifecycle
+
+- (void)testJapaneseCandidateReselectionLifecycle
+{
+  // はし → 橋 → 箸 → 端 → 箸 (user scrolls candidates and confirms)
+  RCTMockTextField *mock;
+  RCTTextInputComponentView *cv = [self createSingleLineWithMock:&mock];
+  id<RCTBackedTextInputDelegate> delegate = (id<RCTBackedTextInputDelegate>)cv;
+
+  NSDictionary *ul = @{NSUnderlineStyleAttributeName : @(NSUnderlineStyleSingle)};
+  mock.mockMarkedTextRange = createMockTextRange(mock);
+
+  // Romaji input
+  for (NSString *step in @[ @"h", @"は", @"はs", @"はし" ]) {
+    mock.attributedText = [[NSAttributedString alloc] initWithString:step attributes:ul];
+    [delegate textInputDidChange];
+  }
+
+  // Candidate selection — user scrolls through candidates
+  for (NSString *candidate in @[ @"橋", @"箸", @"端", @"箸" ]) {
+    mock.attributedText = [[NSAttributedString alloc] initWithString:candidate attributes:ul];
+    [delegate textInputDidChange];
+    // Text should reflect the current candidate, not be replaced by JS
+    XCTAssertEqualObjects(mock.attributedText.string, candidate);
+  }
+
+  // Commit
+  mock.mockMarkedTextRange = nil;
+  mock.attributedText = [[NSAttributedString alloc] initWithString:@"箸"];
+  [delegate textInputDidChange];
+
+  XCTAssertEqualObjects(mock.attributedText.string, @"箸");
+}
+
+#pragma mark - Chinese Zhuyin (Bopomofo) lifecycle
+
+- (void)testChineseZhuyinCompositionLifecycle
+{
+  // Zhuyin (Bopomofo) IME used in Taiwan: ㄓㄨㄥ → 中
+  RCTMockTextField *mock;
+  RCTTextInputComponentView *cv = [self createSingleLineWithMock:&mock];
+  id<RCTBackedTextInputDelegate> delegate = (id<RCTBackedTextInputDelegate>)cv;
+
+  NSDictionary *ul = @{NSUnderlineStyleAttributeName : @(NSUnderlineStyleSingle)};
+  mock.mockMarkedTextRange = createMockTextRange(mock);
+
+  for (NSString *step in @[ @"ㄓ", @"ㄓㄨ", @"ㄓㄨㄥ" ]) {
+    mock.attributedText = [[NSAttributedString alloc] initWithString:step attributes:ul];
+    [delegate textInputDidChange];
+    XCTAssertEqualObjects(mock.attributedText.string, step);
+  }
+
+  // Candidate selected
+  mock.attributedText = [[NSAttributedString alloc] initWithString:@"中" attributes:ul];
+  [delegate textInputDidChange];
+
+  // Commit
+  mock.mockMarkedTextRange = nil;
+  mock.attributedText = [[NSAttributedString alloc] initWithString:@"中"];
+  [delegate textInputDidChange];
+
+  XCTAssertEqualObjects(mock.attributedText.string, @"中");
+}
+
+#pragma mark - Mixed Latin + CJK lifecycle
+
+- (void)testMixedLatinAndCJKComposition
+{
+  // User types "Hello" in Latin, then switches to Japanese IME and types "世界"
+  RCTMockTextField *mock;
+  RCTTextInputComponentView *cv = [self createSingleLineWithMock:&mock];
+  id<RCTBackedTextInputDelegate> delegate = (id<RCTBackedTextInputDelegate>)cv;
+
+  NSDictionary *ul = @{NSUnderlineStyleAttributeName : @(NSUnderlineStyleSingle)};
+
+  // Latin input (no composition)
+  mock.mockMarkedTextRange = nil;
+  mock.attributedText = [[NSAttributedString alloc] initWithString:@"Hello"];
+  [delegate textInputDidChange];
+
+  // Japanese composition starts after "Hello"
+  mock.mockMarkedTextRange = createMockTextRange(mock);
+  for (NSString *step in @[ @"Hellos", @"Helloせ", @"Helloせk", @"Helloせか", @"Helloせかi", @"Helloせかい" ]) {
+    mock.attributedText = [[NSAttributedString alloc] initWithString:step attributes:ul];
+    [delegate textInputDidChange];
+  }
+
+  // Candidate selected
+  mock.attributedText = [[NSAttributedString alloc] initWithString:@"Hello世界" attributes:ul];
+  [delegate textInputDidChange];
+
+  // Commit
+  mock.mockMarkedTextRange = nil;
+  mock.attributedText = [[NSAttributedString alloc] initWithString:@"Hello世界"];
+  [delegate textInputDidChange];
+
+  XCTAssertEqualObjects(mock.attributedText.string, @"Hello世界");
+}
+
+#pragma mark - _setAttributedString guard
+
+- (void)testSetAttributedStringBlockedDuringComposition
+{
+  RCTMockTextField *mock;
+  RCTTextInputComponentView *cv = [self createSingleLineWithMock:&mock];
+
+  mock.attributedText = [[NSAttributedString alloc] initWithString:@"composing"];
+  mock.mockMarkedTextRange = createMockTextRange(mock);
+
 #pragma clang diagnostic push
 #pragma clang diagnostic ignored "-Warc-performSelector-leaks"
-  SEL selector = NSSelectorFromString(@"_setAttributedString:");
-  if ([componentView respondsToSelector:selector]) {
-    [componentView performSelector:selector withObject:newText];
+  SEL sel = NSSelectorFromString(@"_setAttributedString:");
+  if ([cv respondsToSelector:sel]) {
+    [cv performSelector:sel
+             withObject:[[NSAttributedString alloc] initWithString:@"replaced"]];
   }
 #pragma clang diagnostic pop
 
-  // The text should remain unchanged because markedTextRange is active
-  XCTAssertEqualObjects(
-      mockTextField.attributedText.string,
-      @"original",
-      @"attributedText should not be replaced during IME composition");
+  XCTAssertEqualObjects(mock.attributedText.string, @"composing",
+                        @"Text must not be replaced during composition");
 }
 
-- (void)testSetAttributedStringAppliedWhenNoMarkedText
+- (void)testSetAttributedStringAllowedAfterComposition
 {
-  RCTTextInputComponentView *componentView = [[RCTTextInputComponentView alloc] initWithFrame:CGRectZero];
-  RCTMockTextField *mockTextField = [[RCTMockTextField alloc] initWithFrame:CGRectZero];
+  RCTMockTextField *mock;
+  RCTTextInputComponentView *cv = [self createSingleLineWithMock:&mock];
 
-  NSAttributedString *originalText = [[NSAttributedString alloc] initWithString:@"original"];
-  mockTextField.attributedText = originalText;
-  [componentView setValue:mockTextField forKey:@"_backedTextInputView"];
-  mockTextField.textInputDelegate = (id<RCTBackedTextInputDelegate>)componentView;
+  mock.attributedText = [[NSAttributedString alloc] initWithString:@"old"];
+  mock.mockMarkedTextRange = nil;
 
-  // No IME composition
-  mockTextField.mockMarkedTextRange = nil;
-
-  // Set a different attributed string
-  NSAttributedString *newText = [[NSAttributedString alloc] initWithString:@"replaced"];
 #pragma clang diagnostic push
 #pragma clang diagnostic ignored "-Warc-performSelector-leaks"
-  SEL selector = NSSelectorFromString(@"_setAttributedString:");
-  if ([componentView respondsToSelector:selector]) {
-    [componentView performSelector:selector withObject:newText];
+  SEL sel = NSSelectorFromString(@"_setAttributedString:");
+  if ([cv respondsToSelector:sel]) {
+    [cv performSelector:sel
+             withObject:[[NSAttributedString alloc] initWithString:@"new"]];
   }
 #pragma clang diagnostic pop
 
-  // The text should be updated since there's no active composition
-  XCTAssertEqualObjects(
-      mockTextField.attributedText.string,
-      @"replaced",
-      @"attributedText should be replaced when no IME composition is active");
+  XCTAssertEqualObjects(mock.attributedText.string, @"new",
+                        @"Text should be replaced when not composing");
 }
 
-#pragma mark - Fix 3: maxLength during IME composition
+#pragma mark - Deferred defaultTextAttributes
 
-- (void)testMaxLengthNotEnforcedDuringComposition
+- (void)testDeferredAttributesPreservedDuringComposition
 {
-  // Verifies that textInputShouldChangeText does not block input during IME composition,
-  // even if maxLength would normally restrict it.
-  //
-  // Note: maxLength is a C++ prop (TextInputProps) and cannot be set via KVC in unit tests.
-  // With defaultSharedProps, maxLength = INT_MAX, so the maxLength branch is never entered.
-  // This test verifies that the markedTextRange guard allows text through unconditionally
-  // during composition. The post-composition truncation path in textInputDidChange (which
-  // handles grapheme-cluster-safe truncation) requires integration testing with real props.
-  RCTTextInputComponentView *componentView = [[RCTTextInputComponentView alloc] initWithFrame:CGRectZero];
-  RCTMockTextField *mockTextField = [[RCTMockTextField alloc] initWithFrame:CGRectZero];
+  RCTMockTextField *mock;
+  RCTTextInputComponentView *cv = [self createSingleLineWithMock:&mock];
+  mock.attributedText = [[NSAttributedString alloc] initWithString:@"test"];
 
-  mockTextField.attributedText = [[NSAttributedString alloc] initWithString:@"12345"];
-  [componentView setValue:mockTextField forKey:@"_backedTextInputView"];
-  mockTextField.textInputDelegate = (id<RCTBackedTextInputDelegate>)componentView;
+  [cv setValue:@YES forKey:@"_needsUpdateDefaultTextAttributes"];
+  [cv setValue:@{NSFontAttributeName : [UIFont systemFontOfSize:18]}
+       forKey:@"_pendingDefaultTextAttributes"];
 
-  // Simulate active IME composition
-  mockTextField.mockMarkedTextRange = createMockTextRange(mockTextField);
+  mock.mockMarkedTextRange = createMockTextRange(mock);
+  [(id<RCTBackedTextInputDelegate>)cv textInputDidChange];
+
+  XCTAssertTrue([[cv valueForKey:@"_needsUpdateDefaultTextAttributes"] boolValue]);
+  XCTAssertNotNil([cv valueForKey:@"_pendingDefaultTextAttributes"]);
+}
+
+- (void)testDeferredAttributesAppliedAfterComposition
+{
+  RCTMockTextField *mock;
+  RCTTextInputComponentView *cv = [self createSingleLineWithMock:&mock];
+  mock.attributedText = [[NSAttributedString alloc] initWithString:@"test"];
+
+  [cv setValue:@YES forKey:@"_needsUpdateDefaultTextAttributes"];
+  [cv setValue:@{NSFontAttributeName : [UIFont systemFontOfSize:18]}
+       forKey:@"_pendingDefaultTextAttributes"];
+
+  mock.mockMarkedTextRange = nil;
+  [(id<RCTBackedTextInputDelegate>)cv textInputDidChange];
+
+  XCTAssertFalse([[cv valueForKey:@"_needsUpdateDefaultTextAttributes"] boolValue]);
+  XCTAssertNil([cv valueForKey:@"_pendingDefaultTextAttributes"]);
+}
+
+#pragma mark - Full lifecycle with deferred attributes
+
+- (void)testCompositionLifecycleWithDeferredAttributes
+{
+  // Composition starts → deferred attrs set mid-composition → composition ends → attrs applied
+  RCTMockTextField *mock;
+  RCTTextInputComponentView *cv = [self createSingleLineWithMock:&mock];
+  id<RCTBackedTextInputDelegate> delegate = (id<RCTBackedTextInputDelegate>)cv;
+
+  NSDictionary *ul = @{NSUnderlineStyleAttributeName : @(NSUnderlineStyleSingle)};
+
+  // Composition starts
+  mock.mockMarkedTextRange = createMockTextRange(mock);
+  mock.attributedText = [[NSAttributedString alloc] initWithString:@"ㅎ" attributes:ul];
+  [delegate textInputDidChange];
+
+  // Mid-composition: deferred attribute update arrives
+  [cv setValue:@YES forKey:@"_needsUpdateDefaultTextAttributes"];
+  [cv setValue:@{NSFontAttributeName : [UIFont boldSystemFontOfSize:20]}
+       forKey:@"_pendingDefaultTextAttributes"];
+
+  mock.attributedText = [[NSAttributedString alloc] initWithString:@"한" attributes:ul];
+  [delegate textInputDidChange];
+
+  // Still composing — deferred must be preserved
+  XCTAssertTrue([[cv valueForKey:@"_needsUpdateDefaultTextAttributes"] boolValue]);
+
+  // Commit
+  mock.mockMarkedTextRange = nil;
+  mock.attributedText = [[NSAttributedString alloc] initWithString:@"한"];
+  [delegate textInputDidChange];
+
+  // Deferred attrs must now be applied
+  XCTAssertFalse([[cv valueForKey:@"_needsUpdateDefaultTextAttributes"] boolValue]);
+  XCTAssertNil([cv valueForKey:@"_pendingDefaultTextAttributes"]);
+  XCTAssertEqualObjects(mock.attributedText.string, @"한");
+}
+
+#pragma mark - maxLength
+
+- (void)testMaxLengthBypassedDuringComposition
+{
+  RCTMockTextField *mock;
+  RCTTextInputComponentView *cv = [self createSingleLineWithMock:&mock];
+  mock.attributedText = [[NSAttributedString alloc] initWithString:@"12345"];
+  mock.mockMarkedTextRange = createMockTextRange(mock);
 
   NSString *result =
-      [(id<RCTBackedTextInputDelegate>)componentView textInputShouldChangeText:@"additional" inRange:NSMakeRange(5, 0)];
-
-  // During composition, text should pass through unblocked
-  XCTAssertEqualObjects(result, @"additional", @"Text input should not be blocked during IME composition");
+      [(id<RCTBackedTextInputDelegate>)cv textInputShouldChangeText:@"한" inRange:NSMakeRange(5, 0)];
+  XCTAssertEqualObjects(result, @"한");
 }
 
-- (void)testMaxLengthEnforcedWhenNoComposition
+- (void)testMaxLengthPassthroughWhenNotComposing
 {
-  // Verifies that textInputShouldChangeText passes text through when maxLength is not constraining.
-  // See note in testMaxLengthNotEnforcedDuringComposition about prop limitations in unit tests.
-  RCTTextInputComponentView *componentView = [[RCTTextInputComponentView alloc] initWithFrame:CGRectZero];
-  RCTMockTextField *mockTextField = [[RCTMockTextField alloc] initWithFrame:CGRectZero];
-
-  mockTextField.attributedText = [[NSAttributedString alloc] initWithString:@"12345"];
-  [componentView setValue:mockTextField forKey:@"_backedTextInputView"];
-  mockTextField.textInputDelegate = (id<RCTBackedTextInputDelegate>)componentView;
-
-  // No active composition
-  mockTextField.mockMarkedTextRange = nil;
+  RCTMockTextField *mock;
+  RCTTextInputComponentView *cv = [self createSingleLineWithMock:&mock];
+  mock.attributedText = [[NSAttributedString alloc] initWithString:@"12345"];
+  mock.mockMarkedTextRange = nil;
 
   NSString *result =
-      [(id<RCTBackedTextInputDelegate>)componentView textInputShouldChangeText:@"extra" inRange:NSMakeRange(5, 0)];
-
-  XCTAssertEqualObjects(result, @"extra", @"Text should pass through when maxLength is not constraining");
+      [(id<RCTBackedTextInputDelegate>)cv textInputShouldChangeText:@"6" inRange:NSMakeRange(5, 0)];
+  XCTAssertEqualObjects(result, @"6");
 }
 
-#pragma mark - Fix 4: multiline selection change bare text comparison
+#pragma mark - Multiline bare text comparison
 
-- (void)testMultilineSelectionChangeUsesBarTextComparison
+- (void)testMultilineBareTextComparisonPreventsFalsePositive
 {
-  // This test verifies that textInputDidChangeSelection uses string comparison
-  // (not NSAttributedString isEqual:) to avoid false positives during IME composition.
-  //
-  // When IME composition is active, the attributed string has system-added underline
-  // attributes that cause isEqual: to fail even when the bare text is identical.
-  // Using isEqualToString: on the bare text avoids triggering unnecessary
-  // textInputDidChange calls.
+  RCTMockTextView *mock;
+  RCTTextInputComponentView *cv = [self createMultiLineWithMock:&mock];
 
-  RCTTextInputComponentView *componentView = [[RCTTextInputComponentView alloc] initWithFrame:CGRectZero];
-  RCTMockTextView *mockTextView = [[RCTMockTextView alloc] initWithFrame:CGRectZero];
-
-  // Set up attributed text with system-style attributes (simulating IME underline)
-  NSMutableAttributedString *textWithSystemAttrs =
+  mock.attributedText =
       [[NSMutableAttributedString alloc] initWithString:@"test"
                                              attributes:@{
                                                NSFontAttributeName : [UIFont systemFontOfSize:14],
                                                NSUnderlineStyleAttributeName : @(NSUnderlineStyleSingle),
                                              }];
-  mockTextView.attributedText = textWithSystemAttrs;
-  [componentView setValue:mockTextView forKey:@"_backedTextInputView"];
-  mockTextView.textInputDelegate = (id<RCTBackedTextInputDelegate>)componentView;
 
-  // Set _lastStringStateWasUpdatedWith to same text but different attributes
-  NSAttributedString *lastString =
+  NSAttributedString *withoutUL =
       [[NSAttributedString alloc] initWithString:@"test"
                                       attributes:@{NSFontAttributeName : [UIFont systemFontOfSize:14]}];
-  [componentView setValue:lastString forKey:@"_lastStringStateWasUpdatedWith"];
+  [cv setValue:withoutUL forKey:@"_lastStringStateWasUpdatedWith"];
 
-  // The bare text is the same ("test" == "test"), so even though the attributed
-  // strings differ (due to NSUnderlineStyleAttributeName), the comparison
-  // should return YES (equal) and NOT trigger an extra textInputDidChange.
-  XCTAssertTrue(
-      [lastString.string isEqualToString:mockTextView.attributedText.string],
-      @"Bare text comparison should show strings are equal");
-  XCTAssertFalse(
-      [lastString isEqual:mockTextView.attributedText],
-      @"Full attributed string comparison should show strings are NOT equal (different attributes)");
+  // Bare strings equal — new comparison returns YES (no false positive)
+  XCTAssertTrue([withoutUL.string isEqualToString:mock.attributedText.string]);
+  // Full attributed strings differ — old comparison would return NO
+  XCTAssertFalse([withoutUL isEqual:mock.attributedText]);
 }
 
-- (void)testMultilineSelectionChangeNoExtraUpdateDuringComposition
+#pragma mark - JS-driven update blocked during composition
+
+- (void)testJSDrivenTextUpdateBlockedDuringComposition
 {
-  // Verifies that during IME composition, the attributed string underline
-  // attributes added by the system do not cause a spurious textInputDidChange call
-  // in multiline mode.
-  RCTTextInputComponentView *componentView = [[RCTTextInputComponentView alloc] initWithFrame:CGRectZero];
-  RCTMockTextView *mockTextView = [[RCTMockTextView alloc] initWithFrame:CGRectZero];
+  RCTMockTextField *mock;
+  RCTTextInputComponentView *cv = [self createSingleLineWithMock:&mock];
 
-  mockTextView.attributedText = [[NSAttributedString alloc] initWithString:@"composing"];
-  [componentView setValue:mockTextView forKey:@"_backedTextInputView"];
-  mockTextView.textInputDelegate = (id<RCTBackedTextInputDelegate>)componentView;
+  mock.attributedText = [[NSAttributedString alloc] initWithString:@"composing"
+                                                        attributes:@{
+                                                          NSUnderlineStyleAttributeName : @(NSUnderlineStyleSingle),
+                                                        }];
+  mock.mockMarkedTextRange = createMockTextRange(mock);
 
-  // Simulate active IME composition
-  mockTextView.mockMarkedTextRange = createMockTextRangeForTextView(mockTextView);
+#pragma clang diagnostic push
+#pragma clang diagnostic ignored "-Warc-performSelector-leaks"
+  SEL sel = NSSelectorFromString(@"_setAttributedString:");
+  if ([cv respondsToSelector:sel]) {
+    [cv performSelector:sel
+             withObject:[[NSAttributedString alloc] initWithString:@"js-value"]];
+  }
+#pragma clang diagnostic pop
 
-  // Set _lastStringStateWasUpdatedWith with same bare text
-  NSAttributedString *lastString = [[NSAttributedString alloc] initWithString:@"composing"];
-  [componentView setValue:lastString forKey:@"_lastStringStateWasUpdatedWith"];
-
-  // Since the bare text matches, textInputDidChangeSelection should NOT trigger textInputDidChange
-  // This is verified by the fact that _lastStringStateWasUpdatedWith.string equals attributedText.string
-  XCTAssertTrue(
-      [lastString.string isEqualToString:mockTextView.attributedText.string],
-      @"Bare text should match, preventing unnecessary textInputDidChange call");
+  XCTAssertEqualObjects(mock.attributedText.string, @"composing",
+                        @"JS-driven update must be blocked during composition");
 }
 
 @end
