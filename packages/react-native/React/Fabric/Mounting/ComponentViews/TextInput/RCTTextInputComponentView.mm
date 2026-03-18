@@ -160,9 +160,16 @@ static NSSet<NSNumber *> *returnKeyTypesSet;
       UITraitCollection.currentTraitCollection.preferredContentSizeCategory !=
           previousTraitCollection.preferredContentSizeCategory) {
     const auto &newTextInputProps = static_cast<const TextInputProps &>(*_props);
-    NSDictionary<NSAttributedStringKey, id> *attributes =
+    NSMutableDictionary<NSAttributedStringKey, id> *attributes =
         RCTNSTextAttributesFromTextAttributes(newTextInputProps.getEffectiveTextAttributes(RCTFontSizeMultiplier()));
     if (_backedTextInputView.markedTextRange) {
+      // Preserve the event emitter key from any prior pending update (e.g., from updateEventEmitter)
+      // or from the current view attributes, since RCTNSTextAttributesFromTextAttributes does not include it.
+      id emitter = _pendingDefaultTextAttributes[RCTAttributedStringEventEmitterKey]
+          ?: _backedTextInputView.defaultTextAttributes[RCTAttributedStringEventEmitterKey];
+      if (emitter) {
+        attributes[RCTAttributedStringEventEmitterKey] = emitter;
+      }
       _needsUpdateDefaultTextAttributes = YES;
       _pendingDefaultTextAttributes = [attributes copy];
     } else {
@@ -525,7 +532,8 @@ static NSSet<NSNumber *> *returnKeyTypesSet;
     return;
   }
 
-  if (_ignoreNextTextInputCall && [_lastStringStateWasUpdatedWith isEqual:_backedTextInputView.attributedText]) {
+  if (_ignoreNextTextInputCall &&
+      [_lastStringStateWasUpdatedWith.string isEqualToString:_backedTextInputView.attributedText.string]) {
     _ignoreNextTextInputCall = NO;
     return;
   }
@@ -554,8 +562,8 @@ static NSSet<NSNumber *> *returnKeyTypesSet;
             truncateAt = charRange.location;
           }
         }
-        if (truncateAt > 0) {
-          NSString *truncated = [currentText substringToIndex:truncateAt];
+        {
+          NSString *truncated = truncateAt > 0 ? [currentText substringToIndex:truncateAt] : @"";
           NSAttributedString *truncatedAttr =
               [[NSAttributedString alloc] initWithString:truncated
                                               attributes:_backedTextInputView.defaultTextAttributes];
@@ -590,7 +598,7 @@ static NSSet<NSNumber *> *returnKeyTypesSet;
   [self _updateTypingAttributes];
 
   const auto &props = static_cast<const TextInputProps &>(*_props);
-  if (props.multiline &&
+  if (props.multiline && !_backedTextInputView.markedTextRange &&
       ![_lastStringStateWasUpdatedWith.string isEqualToString:_backedTextInputView.attributedText.string]) {
     [self textInputDidChange];
     _ignoreNextTextInputCall = YES;
