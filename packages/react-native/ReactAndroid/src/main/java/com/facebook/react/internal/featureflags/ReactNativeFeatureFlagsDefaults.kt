@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<67d638f79b7b06a087f63563c2e5ff95>>
+ * @generated SignedSource<<a822c8a92925244e2a302bd04f034fa0>>
  */
 
 /**
@@ -49,7 +49,7 @@ public open class ReactNativeFeatureFlagsDefaults : ReactNativeFeatureFlagsProvi
 
   override fun enableAndroidAntialiasedBorderRadiusClipping(): Boolean = false
 
-  override fun enableAndroidLinearText(): Boolean = false
+  override fun enableAndroidLinearText(): Boolean = true
 
   override fun enableAndroidTextMeasurementOptimizations(): Boolean = false
 

@@ -192,7 +192,7 @@ const definitions: FeatureFlagDefinitions = {
       ossReleaseStage: 'none',
     },
     enableAndroidLinearText: {
-      defaultValue: false,
+      defaultValue: true,
       metadata: {
         dateAdded: '2025-09-09',
         description:
