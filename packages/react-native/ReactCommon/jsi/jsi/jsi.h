@@ -675,6 +675,10 @@ class JSI_EXPORT IRuntime : public ICast {
   /// Create a new URIError object with the message property set to \p message.
   virtual Value createURIError(const String& msg) = 0;
 
+  /// Returns the number of code units in the string, equivalent to 'length'
+  /// property of a JS string.
+  virtual size_t length(const String& str) = 0;
+
  protected:
   virtual ~IRuntime() = default;
 };
@@ -785,6 +789,8 @@ class JSI_EXPORT Runtime : public IRuntime {
   Value createSyntaxError(const String& msg) override;
   Value createTypeError(const String& msg) override;
   Value createURIError(const String& msg) override;
+
+  size_t length(const String& str) override;
 
  protected:
   friend class Pointer;
@@ -1103,6 +1109,11 @@ class JSI_EXPORT String : public Pointer {
   static bool
   strictEquals(IRuntime& runtime, const String& a, const String& b) {
     return runtime.strictEquals(a, b);
+  }
+
+  /// \return the 'length' property of this JS string.
+  size_t length(IRuntime& runtime) const {
+    return runtime.length(*this);
   }
 
   /// Copies the data in a JS string as utf8 into a C++ string.
