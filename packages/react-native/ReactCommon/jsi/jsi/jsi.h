@@ -8,6 +8,7 @@
 #pragma once
 
 #include <cassert>
+#include <cmath>
 #include <cstdint>
 #include <cstring>
 #include <exception>
@@ -1897,6 +1898,28 @@ class JSI_EXPORT Value {
 
   bool isObject() const {
     return kind_ == ObjectKind;
+  }
+
+  /// \returns true if `Number.isInteger(value)` returns true, false otherwise.
+  bool isInteger() const {
+    // 1. If number is an integral Number, return true.
+    // 2. Return false.
+
+    // The spec's definition of integral number:
+    // When the term integer is used in this specification, it refers to a
+    // mathematical value which is in the set of integers, unless otherwise
+    // stated. When the term integral Number is used in this specification, it
+    // refers to a finite Number value whose mathematical value is in the set of
+    // integers.
+
+    if (!isNumber()) {
+      return false;
+    }
+    auto number = data_.number;
+    if (!std::isfinite(number)) {
+      return false;
+    }
+    return number == std::trunc(number);
   }
 
   /// \return the boolean value, or asserts if not a boolean.
