@@ -516,7 +516,7 @@ const AccessibilityInfo = {
   getRecommendedTimeoutMillis(originalTimeout: number): Promise<number> {
     if (Platform.OS === 'android') {
       return new Promise((resolve, reject) => {
-        if (NativeAccessibilityInfoAndroid?.getRecommendedTimeoutMillis) {
+        if (NativeAccessibilityInfoAndroid?.getRecommendedTimeoutMillis != null) {
           NativeAccessibilityInfoAndroid.getRecommendedTimeoutMillis(
             originalTimeout,
             resolve,
