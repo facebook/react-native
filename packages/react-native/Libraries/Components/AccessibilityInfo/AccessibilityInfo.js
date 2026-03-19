@@ -211,7 +211,7 @@ const AccessibilityInfo = {
    *
    * Returns a promise which resolves to a boolean.
    * The result is `true` when high text contrast is enabled and `false` otherwise.
-   * 
+   *
    * See https://reactnative.dev/docs/accessibilityinfo#ishightextcontrastenabled-android
    */
   isHighTextContrastEnabled(): Promise<boolean> {
@@ -237,7 +237,7 @@ const AccessibilityInfo = {
    *
    * Returns a promise which resolves to a boolean.
    * The result is `true` when dark system colors is enabled and `false` otherwise.
-   * 
+   *
    * See https://reactnative.dev/docs/accessibilityinfo#isdarkersystemcolorsenabled-ios
    */
   isDarkerSystemColorsEnabled(): Promise<boolean> {
@@ -516,7 +516,9 @@ const AccessibilityInfo = {
   getRecommendedTimeoutMillis(originalTimeout: number): Promise<number> {
     if (Platform.OS === 'android') {
       return new Promise((resolve, reject) => {
-        if (NativeAccessibilityInfoAndroid?.getRecommendedTimeoutMillis != null) {
+        if (
+          NativeAccessibilityInfoAndroid?.getRecommendedTimeoutMillis != null
+        ) {
           NativeAccessibilityInfoAndroid.getRecommendedTimeoutMillis(
             originalTimeout,
             resolve,

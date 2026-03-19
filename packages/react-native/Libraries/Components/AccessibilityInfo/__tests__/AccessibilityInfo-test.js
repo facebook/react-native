@@ -16,12 +16,24 @@ const mockGetCurrentPrefersCrossFadeTransitionsState = jest.fn(
 const mockGetCurrentDarkerSystemColorsState = jest.fn((onSuccess, onError) =>
   onSuccess(true),
 );
-const mockGetCurrentBoldTextState = jest.fn((onSuccess, onError) => onSuccess(true));
-const mockGetCurrentGrayscaleState = jest.fn((onSuccess, onError) => onSuccess(true));
-const mockGetCurrentInvertColorsState = jest.fn((onSuccess, onError) => onSuccess(true));
-const mockGetCurrentReduceMotionState = jest.fn((onSuccess, onError) => onSuccess(true));
-const mockGetCurrentReduceTransparencyState = jest.fn((onSuccess, onError) => onSuccess(true));
-const mockGetCurrentVoiceOverState = jest.fn((onSuccess, onError) => onSuccess(true));
+const mockGetCurrentBoldTextState = jest.fn((onSuccess, onError) =>
+  onSuccess(true),
+);
+const mockGetCurrentGrayscaleState = jest.fn((onSuccess, onError) =>
+  onSuccess(true),
+);
+const mockGetCurrentInvertColorsState = jest.fn((onSuccess, onError) =>
+  onSuccess(true),
+);
+const mockGetCurrentReduceMotionState = jest.fn((onSuccess, onError) =>
+  onSuccess(true),
+);
+const mockGetCurrentReduceTransparencyState = jest.fn((onSuccess, onError) =>
+  onSuccess(true),
+);
+const mockGetCurrentVoiceOverState = jest.fn((onSuccess, onError) =>
+  onSuccess(true),
+);
 let mockNativeAccessibilityManagerIOS: {
   getCurrentPrefersCrossFadeTransitionsState: JestMockFn<
     [
@@ -64,7 +76,7 @@ let mockNativeAccessibilityManagerIOS: {
       onError: (error: Error) => void,
     ],
     void,
-  > | null, 
+  > | null,
   getCurrentReduceTransparencyState: JestMockFn<
     [
       onSuccess: (isReduceTransparencyEnabled: boolean) => void,
@@ -98,7 +110,9 @@ const mockIsInvertColorsEnabled = jest.fn(onSuccess => onSuccess(true));
 const mockIsReduceMotionEnabled = jest.fn(onSuccess => onSuccess(true));
 const mockIsTouchExplorationEnabled = jest.fn(onSuccess => onSuccess(true));
 const mockIsAccessibilityServiceEnabled = jest.fn(onSuccess => onSuccess(true));
-const mockGetRecommendedTimeoutMillis = jest.fn((originalTimeout, onSuccess) => onSuccess(ANDROID_RECOMMENDED_TIMEOUT));
+const mockGetRecommendedTimeoutMillis = jest.fn((originalTimeout, onSuccess) =>
+  onSuccess(ANDROID_RECOMMENDED_TIMEOUT),
+);
 let mockNativeAccessibilityInfoAndroid: {
   isHighTextContrastEnabled: JestMockFn<
     [onSuccess: (isHighTextContrastEnabled: boolean) => void],
@@ -127,7 +141,7 @@ let mockNativeAccessibilityInfoAndroid: {
   getRecommendedTimeoutMillis: JestMockFn<
     [originalTimeout: number, onSuccess: (recommendedTimeout: number) => void],
     void,
-  > | null, 
+  > | null,
 } = {
   isHighTextContrastEnabled: mockIsHighTextContrastEnabled,
   isGrayscaleEnabled: mockIsGrayscaleEnabled,
@@ -166,20 +180,18 @@ describe('AccessibilityInfo', () => {
         /* $FlowFixMe[incompatible-type] */
         Platform.OS = 'android';
 
-        const isBoldTextEnabled =
-          await AccessibilityInfo.isBoldTextEnabled();
+        const isBoldTextEnabled = await AccessibilityInfo.isBoldTextEnabled();
 
         expect(isBoldTextEnabled).toBe(false);
       });
-    })
+    });
 
     describe('iOS', () => {
       it('should call getCurrentBoldTextState if available', async () => {
         /* $FlowFixMe[incompatible-type] */
         Platform.OS = 'ios';
 
-        const isBoldTextEnabled =
-          await AccessibilityInfo.isBoldTextEnabled();
+        const isBoldTextEnabled = await AccessibilityInfo.isBoldTextEnabled();
 
         expect(mockGetCurrentBoldTextState).toHaveBeenCalled();
         expect(isBoldTextEnabled).toBe(true);
@@ -189,12 +201,14 @@ describe('AccessibilityInfo', () => {
         /* $FlowFixMe[incompatible-type] */
         Platform.OS = 'ios';
 
-        const nativeAccessibilityManagerModule =
-          jest.requireMock('../NativeAccessibilityManager');
+        const nativeAccessibilityManagerModule = jest.requireMock(
+          '../NativeAccessibilityManager',
+        );
         nativeAccessibilityManagerModule.default = null;
 
-        const result: mixed =
-          await AccessibilityInfo.isBoldTextEnabled().catch(e => e);
+        const result: mixed = await AccessibilityInfo.isBoldTextEnabled().catch(
+          e => e,
+        );
 
         invariant(
           result instanceof Error,
@@ -213,8 +227,7 @@ describe('AccessibilityInfo', () => {
         /* $FlowFixMe[incompatible-type] */
         Platform.OS = 'android';
 
-        const isGrayscaleEnabled =
-          await AccessibilityInfo.isGrayscaleEnabled();
+        const isGrayscaleEnabled = await AccessibilityInfo.isGrayscaleEnabled();
 
         expect(mockIsGrayscaleEnabled).toHaveBeenCalled();
         expect(isGrayscaleEnabled).toBe(true);
@@ -244,8 +257,7 @@ describe('AccessibilityInfo', () => {
         /* $FlowFixMe[incompatible-type] */
         Platform.OS = 'ios';
 
-        const isGrayscaleEnabled =
-          await AccessibilityInfo.isGrayscaleEnabled();
+        const isGrayscaleEnabled = await AccessibilityInfo.isGrayscaleEnabled();
 
         expect(mockGetCurrentGrayscaleState).toHaveBeenCalled();
         expect(isGrayscaleEnabled).toBe(true);
@@ -255,8 +267,9 @@ describe('AccessibilityInfo', () => {
         /* $FlowFixMe[incompatible-type] */
         Platform.OS = 'ios';
 
-        const nativeAccessibilityManagerModule =
-          jest.requireMock('../NativeAccessibilityManager');
+        const nativeAccessibilityManagerModule = jest.requireMock(
+          '../NativeAccessibilityManager',
+        );
         nativeAccessibilityManagerModule.default = null;
 
         const result: mixed =
@@ -321,8 +334,9 @@ describe('AccessibilityInfo', () => {
         /* $FlowFixMe[incompatible-type] */
         Platform.OS = 'ios';
 
-        const nativeAccessibilityManagerModule =
-          jest.requireMock('../NativeAccessibilityManager');
+        const nativeAccessibilityManagerModule = jest.requireMock(
+          '../NativeAccessibilityManager',
+        );
         nativeAccessibilityManagerModule.default = null;
 
         const result: mixed =
@@ -368,19 +382,20 @@ describe('AccessibilityInfo', () => {
         /* $FlowFixMe[incompatible-type] */
         Platform.OS = 'ios';
 
-        const nativeAccessibilityManagerModule =
-          jest.requireMock('../NativeAccessibilityManager');
+        const nativeAccessibilityManagerModule = jest.requireMock(
+          '../NativeAccessibilityManager',
+        );
         nativeAccessibilityManagerModule.default = null;
 
         const result: mixed =
           await AccessibilityInfo.isReduceTransparencyEnabled().catch(e => e);
-          
+
         invariant(
           result instanceof Error,
           'Expected isReduceTransparencyEnabled to reject',
         );
         expect(result.message).toEqual(
-          'NativeAccessibilityManagerIOS is not available', 
+          'NativeAccessibilityManagerIOS is not available',
         );
       });
     });
@@ -403,8 +418,9 @@ describe('AccessibilityInfo', () => {
         /* $FlowFixMe[incompatible-type] */
         Platform.OS = 'android';
 
-        const nativeAccessibilityInfoModule =
-          jest.requireMock('../NativeAccessibilityInfo');
+        const nativeAccessibilityInfoModule = jest.requireMock(
+          '../NativeAccessibilityInfo',
+        );
         nativeAccessibilityInfoModule.default = null;
 
         const result: mixed =
@@ -436,8 +452,9 @@ describe('AccessibilityInfo', () => {
         /* $FlowFixMe[incompatible-type] */
         Platform.OS = 'ios';
 
-        const nativeAccessibilityManagerModule =
-          jest.requireMock('../NativeAccessibilityManager');
+        const nativeAccessibilityManagerModule = jest.requireMock(
+          '../NativeAccessibilityManager',
+        );
         nativeAccessibilityManagerModule.default = null;
 
         const result: mixed =
@@ -467,7 +484,6 @@ describe('AccessibilityInfo', () => {
         expect(isAccessibilityServiceEnabled).toBe(true);
       });
 
-
       it('should throw error if isAccessibilityServiceEnabled is not available', async () => {
         /* $FlowFixMe[incompatible-type] */
         Platform.OS = 'android';
@@ -490,8 +506,9 @@ describe('AccessibilityInfo', () => {
         /* $FlowFixMe[incompatible-type] */
         Platform.OS = 'android';
 
-        const nativeAccessibilityInfoModule =
-          jest.requireMock('../NativeAccessibilityInfo');
+        const nativeAccessibilityInfoModule = jest.requireMock(
+          '../NativeAccessibilityInfo',
+        );
         nativeAccessibilityInfoModule.default = null;
 
         const result: mixed =
@@ -543,8 +560,9 @@ describe('AccessibilityInfo', () => {
         /* $FlowFixMe[incompatible-type] */
         Platform.OS = 'android';
 
-        const nativeAccessibilityInfoModule =
-          jest.requireMock('../NativeAccessibilityInfo');
+        const nativeAccessibilityInfoModule = jest.requireMock(
+          '../NativeAccessibilityInfo',
+        );
         nativeAccessibilityInfoModule.default = null;
 
         const result: mixed =
@@ -575,8 +593,9 @@ describe('AccessibilityInfo', () => {
         /* $FlowFixMe[incompatible-type] */
         Platform.OS = 'ios';
 
-        const nativeAccessibilityManagerModule =
-          jest.requireMock('../NativeAccessibilityManager');
+        const nativeAccessibilityManagerModule = jest.requireMock(
+          '../NativeAccessibilityManager',
+        );
         nativeAccessibilityManagerModule.default = null;
 
         const result: mixed =
@@ -590,7 +609,7 @@ describe('AccessibilityInfo', () => {
           'NativeAccessibilityManagerIOS is not available',
         );
       });
-    });  
+    });
   });
 
   describe('prefersCrossFadeTransitions', () => {
