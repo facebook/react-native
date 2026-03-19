@@ -117,8 +117,12 @@ static NSSet<NSNumber *> *returnKeyTypesSet;
 {
   [super updateEventEmitter:eventEmitter];
 
+  // Use pending attributes as the base if they exist (e.g., from a prior updateProps
+  // that deferred during composition), to avoid clobbering deferred text-style changes.
   NSMutableDictionary<NSAttributedStringKey, id> *defaultAttributes =
-      [_backedTextInputView.defaultTextAttributes mutableCopy];
+      _pendingDefaultTextAttributes
+          ? [_pendingDefaultTextAttributes mutableCopy]
+          : [_backedTextInputView.defaultTextAttributes mutableCopy];
 
   defaultAttributes[RCTAttributedStringEventEmitterKey] = RCTWrapEventEmitter(_eventEmitter);
 
@@ -173,6 +177,11 @@ static NSSet<NSNumber *> *returnKeyTypesSet;
       _needsUpdateDefaultTextAttributes = YES;
       _pendingDefaultTextAttributes = [attributes copy];
     } else {
+      // Preserve the event emitter key since RCTNSTextAttributesFromTextAttributes does not include it.
+      id emitter = _backedTextInputView.defaultTextAttributes[RCTAttributedStringEventEmitterKey];
+      if (emitter) {
+        attributes[RCTAttributedStringEventEmitterKey] = emitter;
+      }
       _backedTextInputView.defaultTextAttributes = attributes;
     }
   }
