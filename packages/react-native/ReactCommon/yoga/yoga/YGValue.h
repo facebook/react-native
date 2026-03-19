@@ -25,6 +25,8 @@ constexpr float YGUndefined = std::numeric_limits<float>::quiet_NaN();
 
 YG_EXTERN_C_BEGIN
 
+typedef const struct YGNode* YGNodeConstRef;
+
 /**
  * Structure used to represent a dimension in a style.
  */
@@ -53,6 +55,36 @@ YG_EXPORT extern const YGValue YGValueZero;
  */
 YG_EXPORT bool YGFloatIsUndefined(float value);
 
+/**
+ * Host-defined identifier for a dynamic style value.
+ */
+typedef uint8_t YGValueDynamicID;
+
+/**
+ * Layout context passed to YGValueDynamic for resolving dynamic values.
+ * May be extended with additional fields (e.g. containing block dimensions).
+ */
+typedef struct YGValueDynamicContext {
+  float referenceLength;
+} YGValueDynamicContext;
+
+/**
+ * Called during layout to resolve a dynamic style value (e.g. calc()).
+ * Must return a YGValue with unit YGUnitPoint.
+ */
+typedef YGValue (*YGValueDynamic)(
+    YGNodeConstRef node,
+    YGValueDynamicID id,
+    YGValueDynamicContext context);
+
+/**
+ * Callback + identifier pair for internal storage.
+ */
+struct YGValueDynamicData {
+  YGValueDynamic callback;
+  YGValueDynamicID id;
+};
+
 YG_EXTERN_C_END
 
 // Equality operators for comparison of YGValue in C++
@@ -72,6 +104,7 @@ inline bool operator==(const YGValue& lhs, const YGValue& rhs) {
     case YGUnitPoint:
     case YGUnitPercent:
       return lhs.value == rhs.value;
+    case YGUnitDynamic:
     default:
       return false;
   }

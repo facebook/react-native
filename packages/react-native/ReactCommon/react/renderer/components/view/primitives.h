@@ -7,6 +7,7 @@
 
 #pragma once
 
+#include <react/renderer/css/CSSCalc.h>
 #include <react/renderer/graphics/Color.h>
 #include <react/renderer/graphics/RectangleCorners.h>
 #include <react/renderer/graphics/RectangleEdges.h>
@@ -247,5 +248,47 @@ struct BorderMetrics {
 
   bool operator==(const BorderMetrics &rhs) const = default;
 };
+
+enum class CalcExpressionPropertyID : uint8_t {
+  Width,
+  Height,
+  MinWidth,
+  MinHeight,
+  MaxWidth,
+  MaxHeight,
+  FlexBasis,
+  RowGap,
+  ColumnGap,
+  Gap,
+  Left,
+  Top,
+  Right,
+  Bottom,
+  Start,
+  End,
+  InsetInline,
+  InsetBlock,
+  Inset,
+  MarginLeft,
+  MarginTop,
+  MarginRight,
+  MarginBottom,
+  MarginStart,
+  MarginEnd,
+  MarginHorizontal,
+  MarginVertical,
+  MarginAll,
+  PaddingLeft,
+  PaddingTop,
+  PaddingRight,
+  PaddingBottom,
+  PaddingStart,
+  PaddingEnd,
+  PaddingHorizontal,
+  PaddingVertical,
+  PaddingAll,
+};
+
+using CalcExpressions = std::unordered_map<CalcExpressionPropertyID, CSSCalc>;
 
 } // namespace facebook::react
