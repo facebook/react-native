@@ -199,6 +199,8 @@ class Instrumentation;
 class Scope;
 class JSIException;
 class JSError;
+class TypedArray;
+class Uint8Array;
 
 /// A function which has this type can be registered as a function
 /// callable from JavaScript using Function::createFromHostFunction().
@@ -549,6 +551,8 @@ class JSI_EXPORT IRuntime : public ICast {
 
   virtual bool isArray(const Object&) const = 0;
   virtual bool isArrayBuffer(const Object&) const = 0;
+  virtual bool isTypedArray(const Object&) const = 0;
+  virtual bool isUint8Array(const Object&) const = 0;
   virtual bool isFunction(const Object&) const = 0;
   virtual bool isHostObject(const jsi::Object&) const = 0;
   virtual bool isHostFunction(const jsi::Function&) const = 0;
@@ -636,6 +640,22 @@ class JSI_EXPORT IRuntime : public ICast {
   /// MutableBuffer, which is orthogonal from \p arrayBuffer.
   virtual std::shared_ptr<MutableBuffer> tryGetMutableBuffer(
       const jsi::ArrayBuffer& arrayBuffer) = 0;
+
+  /// \return the underlying buffer of the \p typedArray.
+  virtual ArrayBuffer buffer(const TypedArray& typedArray) = 0;
+  /// \return the 'byteOffset' property of the \p typedArray.
+  virtual size_t byteOffset(const TypedArray& typedArray) = 0;
+  /// \return the 'byteLength' property of the \p typedArray.
+  virtual size_t byteLength(const TypedArray& typedArray) = 0;
+  /// \return the 'length; property of the \p typedArray.
+  virtual size_t length(const TypedArray& typedArray) = 0;
+
+  /// Create a JS UInt8Array with length \p length.
+  virtual Uint8Array createUint8Array(size_t length) = 0;
+  /// Create a JS UInt8Array using the ArrayBuffer \p buffer starting at byte
+  /// offset \p offset and length \p length.
+  virtual Uint8Array
+  createUint8Array(const ArrayBuffer& buffer, size_t offset, size_t length) = 0;
 
  protected:
   virtual ~IRuntime() = default;
@@ -726,6 +746,19 @@ class JSI_EXPORT Runtime : public IRuntime {
       const jsi::ArrayBuffer& arrayBuffer) override;
 
   bool detached(const ArrayBuffer&) override;
+
+  ArrayBuffer buffer(const TypedArray& typedArray) override;
+  size_t byteOffset(const TypedArray& typedArray) override;
+  size_t byteLength(const TypedArray& typedArray) override;
+  size_t length(const TypedArray& typedArray) override;
+
+  bool isTypedArray(const Object&) const override;
+  bool isUint8Array(const Object&) const override;
+  Uint8Array createUint8Array(size_t length) override;
+  Uint8Array createUint8Array(
+      const ArrayBuffer& buffer,
+      size_t offset,
+      size_t length) override;
 
  protected:
   friend class Pointer;
@@ -1214,6 +1247,18 @@ class JSI_EXPORT Object : public Pointer {
     return runtime.isArrayBuffer(*this);
   }
 
+  /// \return true iff the Object is a TypedArray (Uint8Array, Int32Array,
+  /// Float64Array, etc.). If so, then \c getTypedArray() will succeed.
+  bool isTypedArray(IRuntime& runtime) const {
+    return runtime.isTypedArray(*this);
+  }
+
+  /// \return true iff the Object is an Uint8Array. If so, then \c
+  /// getUint8Array() will succeed
+  bool isUint8Array(IRuntime& runtime) const {
+    return runtime.isUint8Array(*this);
+  }
+
   /// \return true iff the Object is callable.  If so, then \c
   /// getFunction will succeed.
   bool isFunction(IRuntime& runtime) const {
@@ -1244,6 +1289,16 @@ class JSI_EXPORT Object : public Pointer {
   /// JSIException.
   Array asArray(IRuntime& runtime) &&;
 
+  /// \return a TypedArray instance which refers to the same underlying
+  /// object. If \c isTypedArray() would return false, this will throw
+  /// JSIException.
+  TypedArray asTypedArray(IRuntime& runtime) const&;
+
+  /// \return an Uint8Array instance which refers to the same underlying
+  /// object. If \c isUint8Array() would return false, this will throw
+  /// JSIException.
+  Uint8Array asUint8Array(IRuntime& runtime) const&;
+
   /// \return an ArrayBuffer instance which refers to the same underlying
   /// object.  If \c isArrayBuffer() would return false, this will assert.
   ArrayBuffer getArrayBuffer(IRuntime& runtime) const&;
@@ -1251,6 +1306,14 @@ class JSI_EXPORT Object : public Pointer {
   /// \return an ArrayBuffer instance which refers to the same underlying
   /// object.  If \c isArrayBuffer() would return false, this will assert.
   ArrayBuffer getArrayBuffer(IRuntime& runtime) &&;
+
+  /// \return a TypedArray instance which refers to the same underlying
+  /// object. If \c isTypedArray() would return false, this will assert.
+  TypedArray getTypedArray(IRuntime& runtime) const&;
+
+  /// \return an Uint8Array instance which refers to the same underlying
+  /// object. If \c isUint8Array() would return false, this will assert.
+  Uint8Array getUint8Array(IRuntime& runtime) const&;
 
   /// \return a Function instance which refers to the same underlying
   /// object.  If \c isFunction() would return false, this will assert.
@@ -1599,6 +1662,64 @@ class JSI_EXPORT Function : public Object {
   friend class Runtime;
 
   Function(Runtime::PointerValue* value) : Object(value) {}
+};
+
+/// Represents a JS TypedArray
+class JSI_EXPORT TypedArray : public Object {
+ public:
+  TypedArray(TypedArray&&) = default;
+  TypedArray& operator=(TypedArray&&) = default;
+
+  // Gets the buffer of this TypedArray
+  ArrayBuffer buffer(IRuntime& runtime) {
+    return runtime.buffer(*this);
+  }
+
+  // Gets the byte offset of this TypedArray
+  size_t byteOffset(IRuntime& runtime) {
+    return runtime.byteOffset(*this);
+  }
+
+  // Gets the byte length of this TypedArray
+  size_t byteLength(IRuntime& runtime) {
+    return runtime.byteLength(*this);
+  }
+
+  // Gets the element length of this TypedArray
+  size_t length(IRuntime& runtime) {
+    return runtime.length(*this);
+  }
+
+ private:
+  friend class Object;
+  friend class Value;
+  friend class Runtime;
+  friend class Uint8Array;
+
+  explicit TypedArray(Runtime::PointerValue* value) : Object(value) {}
+};
+
+// Represents a JS Uint8Array
+class JSI_EXPORT Uint8Array : public TypedArray {
+ public:
+  Uint8Array(Uint8Array&&) = default;
+  Uint8Array& operator=(Uint8Array&&) = default;
+
+  Uint8Array(IRuntime& runtime, size_t length)
+      : Uint8Array(runtime.createUint8Array(length)) {}
+  Uint8Array(
+      IRuntime& runtime,
+      const ArrayBuffer& buffer,
+      size_t offset,
+      size_t length)
+      : Uint8Array(runtime.createUint8Array(buffer, offset, length)) {}
+
+ private:
+  friend class Object;
+  friend class Value;
+  friend class Runtime;
+
+  explicit Uint8Array(Runtime::PointerValue* value) : TypedArray(value) {}
 };
 
 /// Represents any JS Value (undefined, null, boolean, number, symbol,
