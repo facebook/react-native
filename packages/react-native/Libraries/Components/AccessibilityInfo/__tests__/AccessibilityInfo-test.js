@@ -753,7 +753,7 @@ describe('AccessibilityInfo', () => {
 
   describe('getRecommendedTimeoutMillis', () => {
     describe('Android', () => {
-      it('should return the provided timeout value', async () => {
+      it('should return the system recommended timeout value', async () => {
         /* $FlowFixMe[incompatible-type] */
         Platform.OS = 'android';
 
