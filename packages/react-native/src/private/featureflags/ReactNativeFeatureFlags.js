@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<d929e85924c23746edd258449cdb2d42>>
+ * @generated SignedSource<<8c2aa180526563dbaaeb91f1428e0c77>>
  * @flow strict
  * @noformat
  */
@@ -34,6 +34,7 @@ export type ReactNativeFeatureFlagsJsOnly = $ReadOnly<{
   deferFlatListFocusChangeRenderUpdate: Getter<boolean>,
   disableMaintainVisibleContentPosition: Getter<boolean>,
   externalElementInspectionEnabled: Getter<boolean>,
+  fixImageSrcDimensionPropagation: Getter<boolean>,
   fixVirtualizeListCollapseWindowSize: Getter<boolean>,
   isLayoutAnimationEnabled: Getter<boolean>,
   shouldUseAnimatedObjectForTransform: Getter<boolean>,
@@ -168,6 +169,11 @@ export const disableMaintainVisibleContentPosition: Getter<boolean> = createJava
  * Enable the external inspection API for DevTools to communicate with the Inspector overlay.
  */
 export const externalElementInspectionEnabled: Getter<boolean> = createJavaScriptFlagGetter('externalElementInspectionEnabled', true);
+
+/**
+ * Fix image dimensions not being passed through when src is used
+ */
+export const fixImageSrcDimensionPropagation: Getter<boolean> = createJavaScriptFlagGetter('fixImageSrcDimensionPropagation', true);
 
 /**
  * Fixing an edge case where the current window size is not properly calculated with fast scrolling. Window size collapsed to 1 element even if windowSize more than the current amount of elements

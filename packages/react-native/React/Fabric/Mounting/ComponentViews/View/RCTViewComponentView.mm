@@ -6,6 +6,7 @@
  */
 
 #import "RCTViewComponentView.h"
+#import <React/RCTSurfaceHostingProxyRootView.h>
 
 #import <CoreGraphics/CoreGraphics.h>
 #import <QuartzCore/QuartzCore.h>
@@ -53,6 +54,7 @@ const CGFloat BACKGROUND_COLOR_ZPOSITION = -1024.0f;
   BOOL _useCustomContainerView;
   NSMutableSet<NSString *> *_accessibilityOrderNativeIDs;
   RCTSwiftUIContainerViewWrapper *_swiftUIWrapper;
+  BOOL _focusable;
 }
 
 #ifdef RCT_DYNAMIC_FRAMEWORKS
@@ -480,6 +482,13 @@ const CGFloat BACKGROUND_COLOR_ZPOSITION = -1024.0f;
   if (oldViewProps.filter != newViewProps.filter) {
     needsInvalidateLayer = YES;
   }
+
+  // `focusable`
+#if TARGET_OS_TV
+  if (oldViewProps.focusable != newViewProps.focusable) {
+    _focusable = (bool)newViewProps.focusable;
+  }
+#endif
 
   // `mixBlendMode`
   if (oldViewProps.mixBlendMode != newViewProps.mixBlendMode) {
@@ -1422,6 +1431,11 @@ static NSString *RCTRecursiveAccessibilityLabel(UIView *view)
   return !super.accessibilityLabel && super.isAccessibilityElement;
 }
 
+- (BOOL)canBecomeFocused
+{
+  return _focusable;
+}
+
 - (BOOL)isAccessibilityElement
 {
   if (self.contentView != nil) {
@@ -1671,6 +1685,8 @@ static NSString *RCTRecursiveAccessibilityLabel(UIView *view)
   }
 }
 
+#pragma mark - Focus Events
+
 - (BOOL)canBecomeFirstResponder
 {
   return YES;
@@ -1689,17 +1705,42 @@ static NSString *RCTRecursiveAccessibilityLabel(UIView *view)
   }
 }
 
+#if TARGET_OS_TV
+/// Finds the containing RCTSurfaceHostingProxyRootView by walking up the view
+/// hierarchy.
+- (RCTSurfaceHostingProxyRootView *)containingRootView
+{
+  UIView *view = self;
+  while (view != nil) {
+    if ([view isKindOfClass:[RCTSurfaceHostingProxyRootView class]]) {
+      return (RCTSurfaceHostingProxyRootView *)view;
+    }
+    view = view.superview;
+  }
+  return nil;
+}
+#endif
+
 - (void)focus
 {
   [self becomeFirstResponder];
+
+#if TARGET_OS_TV
+  RCTSurfaceHostingProxyRootView *rootView = [self containingRootView];
+  if (rootView == nil) {
+    return;
+  }
+
+  rootView.reactPreferredFocusedView = self;
+  [rootView setNeedsFocusUpdate];
+  [rootView updateFocusIfNeeded];
+#endif
 }
 
 - (void)blur
 {
   [self resignFirstResponder];
 }
-
-#pragma mark - Focus Events
 
 - (BOOL)becomeFirstResponder
 {
@@ -1726,6 +1767,30 @@ static NSString *RCTRecursiveAccessibilityLabel(UIView *view)
 
   return YES;
 }
+
+#if TARGET_OS_TV
+
+- (void)didUpdateFocusInContext:(UIFocusUpdateContext *)context
+       withAnimationCoordinator:(UIFocusAnimationCoordinator *)coordinator
+{
+  if (context.previouslyFocusedView == context.nextFocusedView) {
+    return;
+  }
+
+  if (context.nextFocusedView == self) {
+    if (_eventEmitter) {
+      _eventEmitter->onFocus();
+    }
+  } else {
+    if (_eventEmitter) {
+      _eventEmitter->onBlur();
+    }
+  }
+
+  [super didUpdateFocusInContext:context withAnimationCoordinator:coordinator];
+}
+
+#endif
 
 @end
 

@@ -15,41 +15,31 @@ from enum import Enum
 from doxmlparser import compound
 
 
+# Doxygen's encoding for special characters in refids, ordered longest-first
+# to avoid partial matches during replacement.
+_DOXYGEN_TEMPLATE_ENCODINGS = (
+    ("_8_8_8", "..."),  # Variadic ellipsis
+    ("_00", ", "),  # Comma (with space for readability)
+    ("_01", " "),  # Space
+    ("_02", "*"),  # Pointer
+    ("_05", "="),  # Equals
+    ("_06", "&"),  # Reference
+    ("_07", "("),  # Open paren
+    ("_08", ")"),  # Close paren
+    ("_3", "<"),  # Template open
+    ("_4", ">"),  # Template close
+)
+
+
 def decode_doxygen_template_encoding(encoded: str) -> str:
     """Decode Doxygen's encoding for template specializations in refids.
 
-    Doxygen encodes special characters in refids using underscore-prefixed codes:
-    - '_3' = '<' (template open)
-    - '_4' = '>' (template close)
-    - '_01' = ' ' (space)
-    - '_07' = '(' (open paren)
-    - '_08' = ')' (close paren)
-    - '_8_8_8' = '...' (variadic ellipsis)
-    - '_00' = ',' (comma)
-    - '_02' = '*' (pointer)
-    - '_05' = '=' (equals)
-    - '_06' = '&' (reference)
-
+    Doxygen encodes special characters in refids using underscore-prefixed codes.
     e.g. 'SyncCallback_3_01R_07Args_8_8_8_08_4' -> 'SyncCallback< R(Args...)>'
     """
     result = encoded
-
-    # Process longer patterns first to avoid partial matches
-    result = result.replace("_8_8_8", "...")  # Variadic ellipsis
-
-    # Process two-char patterns (_0X codes)
-    result = result.replace("_00", ", ")  # Comma (with space for readability)
-    result = result.replace("_01", " ")  # Space
-    result = result.replace("_02", "*")  # Pointer
-    result = result.replace("_05", "=")  # Equals
-    result = result.replace("_06", "&")  # Reference
-    result = result.replace("_07", "(")  # Open paren
-    result = result.replace("_08", ")")  # Close paren
-
-    # Process single-char patterns last
-    result = result.replace("_3", "<")  # Template open
-    result = result.replace("_4", ">")  # Template close
-
+    for pattern, replacement in _DOXYGEN_TEMPLATE_ENCODINGS:
+        result = result.replace(pattern, replacement)
     return result
 
 

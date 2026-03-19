@@ -14,6 +14,7 @@ This module contains:
 from __future__ import annotations
 
 import re
+from dataclasses import dataclass
 
 from doxmlparser import compound
 
@@ -38,8 +39,27 @@ from .utils import (
     normalize_pointer_spacing,
     parse_qualified_path,
     resolve_linked_text_name,
+    split_specialization,
 )
 from .utils.argument_parsing import _find_matching_angle, _split_arguments
+
+
+@dataclass
+class ParsedSectionKind:
+    """Parsed representation of a Doxygen section kind string (e.g. 'public-static-func')."""
+
+    visibility: str
+    is_static: bool
+    member_type: str
+
+    @classmethod
+    def parse(cls, kind: str) -> ParsedSectionKind:
+        parts = kind.split("-")
+        return cls(
+            visibility=parts[0],
+            is_static="static" in parts,
+            member_type=parts[-1],
+        )
 
 
 ######################
@@ -124,8 +144,7 @@ def _fix_inherited_constructor_name(
         return
 
     class_unqualified_name = parse_qualified_path(compound_name)[-1]
-    # Strip template args for comparison
-    class_base_name = class_unqualified_name.split("<")[0]
+    class_base_name, _ = split_specialization(class_unqualified_name)
 
     if func_member.name != class_base_name:
         func_member.name = class_unqualified_name
@@ -249,7 +268,7 @@ def get_variable_member(
         if initializer_type == InitializerType.BRACE:
             is_brace_initializer = True
 
-    return VariableMember(
+    member = VariableMember(
         variable_name,
         variable_type,
         visibility,
@@ -262,6 +281,10 @@ def get_variable_member(
         variable_argstring,
         is_brace_initializer,
     )
+
+    member.add_template(get_template_params(member_def))
+
+    return member
 
 
 def get_doxygen_params(
@@ -312,6 +335,21 @@ def get_doxygen_params(
                 param_name = None
             else:
                 param_type += param_array
+
+        # Handle pointer-to-member-function types where the name must be
+        # embedded inside the declarator group.  Doxygen gives:
+        #   type = "void(ns::*)() const", name = "asFoo"
+        # We need to produce:
+        #   "void(ns::*asFoo)() const"
+        if param_name:
+            m = re.search(r"\([^)]*::\*\)", param_type)
+            if m:
+                # Insert name before the closing ')' of the ptr-to-member group
+                insert_pos = m.end() - 1
+                param_type = (
+                    param_type[:insert_pos] + param_name + param_type[insert_pos:]
+                )
+                param_name = None
 
         qualifiers, core_type = extract_qualifiers(param_type)
         arguments.append((qualifiers, core_type, param_name, param_default))
@@ -517,11 +555,10 @@ def _process_objc_sections(
             members into the base interface XML output.
     """
     for section_def in section_defs:
-        kind = section_def.kind
-        parts = kind.split("-")
-        visibility = parts[0]
-        is_static = "static" in parts
-        member_type = parts[-1]
+        section = ParsedSectionKind.parse(section_def.kind)
+        visibility = section.visibility
+        is_static = section.is_static
+        member_type = section.member_type
 
         if visibility == "private":
             if member_type == "type":
@@ -558,7 +595,9 @@ def _process_objc_sections(
                             f"Unknown section member kind: {member_def.kind} in {location_file}"
                         )
             else:
-                print(f"Unknown {scope_type} section kind: {kind} in {location_file}")
+                print(
+                    f"Unknown {scope_type} section kind: {section_def.kind} in {location_file}"
+                )
         elif visibility == "property":
             for member_def in section_def.memberdef:
                 if member_def.kind == "property":
@@ -674,11 +713,10 @@ def create_class_scope(
     class_scope.location = compound_object.location.file
 
     for section_def in compound_object.sectiondef:
-        kind = section_def.kind
-        parts = kind.split("-")
-        visibility = parts[0]
-        is_static = "static" in parts
-        member_type = parts[-1]
+        section = ParsedSectionKind.parse(section_def.kind)
+        visibility = section.visibility
+        is_static = section.is_static
+        member_type = section.member_type
 
         if visibility == "private":
             if member_type == "type":
@@ -727,7 +765,7 @@ def create_class_scope(
                         )
             else:
                 print(
-                    f"Unknown class section kind: {kind} in {compound_object.location.file}"
+                    f"Unknown class section kind: {section_def.kind} in {compound_object.location.file}"
                 )
         elif visibility == "friend":
             pass

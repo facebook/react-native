@@ -5,6 +5,7 @@
  * LICENSE file in the root directory of this source tree.
  *
  * @flow strict-local
+ * @fantom_flags fixImageSrcDimensionPropagation:*
  * @format
  */
 
@@ -12,6 +13,7 @@ import '@react-native/fantom/src/setUpDefaultReactNativeEnvironment';
 
 import type {AccessibilityProps, HostInstance} from 'react-native';
 
+import * as ReactNativeFeatureFlags from '../../../src/private/featureflags/ReactNativeFeatureFlags';
 import * as Fantom from '@react-native/fantom';
 import * as React from 'react';
 import {createRef} from 'react';
@@ -475,14 +477,23 @@ describe('<Image>', () => {
             .getRenderedOutput({props: ['source', 'width', 'height']})
             .toJSX(),
         ).toEqual(
-          <rn-image
-            source-scale="1"
-            source-type="remote"
-            source-size="{40, 40}"
-            source-uri="https://reactnative.dev/img/tiny_logo.png"
-            width="40"
-            height="40"
-          />,
+          ReactNativeFeatureFlags.fixImageSrcDimensionPropagation() ? (
+            <rn-image
+              source-scale="1"
+              source-type="remote"
+              source-size="{40, 40}"
+              source-uri="https://reactnative.dev/img/tiny_logo.png"
+              width="40"
+              height="40"
+            />
+          ) : (
+            <rn-image
+              source-scale="1"
+              source-type="remote"
+              source-size="{40, 40}"
+              source-uri="https://reactnative.dev/img/tiny_logo.png"
+            />
+          ),
         );
       });
     });

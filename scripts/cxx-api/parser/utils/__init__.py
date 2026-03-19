@@ -9,9 +9,11 @@ from .argument_parsing import (
     format_arguments,
     format_parsed_type,
     FunctionModifiers,
+    has_scope_resolution_outside_angles,
     parse_arg_string,
     parse_function_pointer_argstring,
     parse_type_with_argstrings,
+    split_specialization,
 )
 from .qualified_path import parse_qualified_path
 from .text_resolution import (
@@ -21,12 +23,7 @@ from .text_resolution import (
     normalize_pointer_spacing,
     resolve_linked_text_name,
 )
-from .type_qualification import (
-    qualify_arguments,
-    qualify_parsed_type,
-    qualify_template_args_only,
-    qualify_type_str,
-)
+from .type_qualification import qualify_arguments, qualify_parsed_type, qualify_type_str
 
 __all__ = [
     "Argument",
@@ -35,15 +32,17 @@ __all__ = [
     "format_arguments",
     "format_parsed_type",
     "FunctionModifiers",
+    "has_scope_resolution_outside_angles",
     "InitializerType",
     "normalize_angle_brackets",
+    "normalize_pointer_spacing",
     "parse_arg_string",
     "parse_function_pointer_argstring",
     "parse_qualified_path",
     "parse_type_with_argstrings",
     "qualify_arguments",
     "qualify_parsed_type",
-    "qualify_template_args_only",
     "qualify_type_str",
     "resolve_linked_text_name",
+    "split_specialization",
 ]
