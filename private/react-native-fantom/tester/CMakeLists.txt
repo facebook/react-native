@@ -38,6 +38,16 @@ add_fantom_third_party_subdir(folly)
 add_fantom_third_party_subdir(gflags)
 add_fantom_third_party_subdir(nlohmann_json)
 
+# Pango and its dependencies (order matters for dep resolution)
+add_fantom_third_party_subdir(freetype)
+add_fantom_third_party_subdir(expat)
+add_fantom_third_party_subdir(libffi)
+add_fantom_third_party_subdir(fribidi)
+add_fantom_third_party_subdir(glib)
+add_fantom_third_party_subdir(fontconfig)
+add_fantom_third_party_subdir(harfbuzz)
+add_fantom_third_party_subdir(pango)
+
 add_subdirectory(${FANTOM_CODEGEN_DIR} codegen)
 
 add_library(glog_init INTERFACE)

@@ -40,6 +40,14 @@ fun getSDKPath(): String {
 val FOLLY_VERSION = libs.versions.folly.get()
 val GFLAGS_VERSION = libs.versions.gflags.get()
 val NLOHMANNJSON_VERSION = libs.versions.nlohmannjson.get()
+val PANGO_VERSION = "1.50.12"
+val GLIB_VERSION = "2.78.3"
+val FRIBIDI_VERSION = "1.0.13"
+val HARFBUZZ_VERSION = "8.3.0"
+val FREETYPE_VERSION = "2.13.2"
+val FONTCONFIG_VERSION = "2.14.2"
+val EXPAT_VERSION = "2.6.0"
+val LIBFFI_VERSION = "3.4.6"
 
 val buildDir = project.layout.buildDirectory.get().asFile
 val downloadsDir =
@@ -135,6 +143,194 @@ val prepareNlohmannJson by
       into("$thirdParty/nlohmann_json")
     }
 
+// --- Pango and its dependencies ---
+
+val downloadFreetypeDest = File(downloadsDir, "freetype-${FREETYPE_VERSION}.tar.gz")
+val downloadFreetype by
+    tasks.registering(Download::class) {
+      dependsOn(createNativeDepsDirectories)
+      src("https://download.savannah.gnu.org/releases/freetype/freetype-${FREETYPE_VERSION}.tar.gz")
+      onlyIfModified(true)
+      overwrite(false)
+      retries(5)
+      quiet(true)
+      dest(downloadFreetypeDest)
+    }
+val prepareFreetype by
+    tasks.registering(Copy::class) {
+      dependsOn(listOf(downloadFreetype))
+      from(tarTree(downloadFreetypeDest))
+      from("tester/third-party/freetype/")
+      include("freetype-${FREETYPE_VERSION}/**/*", "CMakeLists.txt")
+      eachFile { path = path.substringAfter("/") }
+      includeEmptyDirs = false
+      into("$thirdParty/freetype")
+    }
+
+val downloadHarfbuzzDest = File(downloadsDir, "harfbuzz-${HARFBUZZ_VERSION}.tar.gz")
+val downloadHarfbuzz by
+    tasks.registering(Download::class) {
+      dependsOn(createNativeDepsDirectories)
+      src(
+          "https://github.com/harfbuzz/harfbuzz/releases/download/${HARFBUZZ_VERSION}/harfbuzz-${HARFBUZZ_VERSION}.tar.gz"
+      )
+      onlyIfModified(true)
+      overwrite(false)
+      retries(5)
+      quiet(true)
+      dest(downloadHarfbuzzDest)
+    }
+val prepareHarfbuzz by
+    tasks.registering(Copy::class) {
+      dependsOn(listOf(downloadHarfbuzz))
+      from(tarTree(downloadHarfbuzzDest))
+      from("tester/third-party/harfbuzz/")
+      include("harfbuzz-${HARFBUZZ_VERSION}/**/*", "CMakeLists.txt")
+      eachFile { path = path.substringAfter("/") }
+      includeEmptyDirs = false
+      into("$thirdParty/harfbuzz")
+    }
+
+val downloadExpatDest = File(downloadsDir, "expat-${EXPAT_VERSION}.tar.gz")
+val downloadExpat by
+    tasks.registering(Download::class) {
+      dependsOn(createNativeDepsDirectories)
+      src(
+          "https://github.com/libexpat/libexpat/releases/download/R_2_6_0/expat-${EXPAT_VERSION}.tar.gz"
+      )
+      onlyIfModified(true)
+      overwrite(false)
+      retries(5)
+      quiet(true)
+      dest(downloadExpatDest)
+    }
+val prepareExpat by
+    tasks.registering(Copy::class) {
+      dependsOn(listOf(downloadExpat))
+      from(tarTree(downloadExpatDest))
+      from("tester/third-party/expat/")
+      include("expat-${EXPAT_VERSION}/**/*", "CMakeLists.txt")
+      eachFile { path = path.substringAfter("/") }
+      includeEmptyDirs = false
+      into("$thirdParty/expat")
+    }
+
+val downloadLibffiDest = File(downloadsDir, "libffi-${LIBFFI_VERSION}.tar.gz")
+val downloadLibffi by
+    tasks.registering(Download::class) {
+      dependsOn(createNativeDepsDirectories)
+      src(
+          "https://github.com/libffi/libffi/releases/download/v${LIBFFI_VERSION}/libffi-${LIBFFI_VERSION}.tar.gz"
+      )
+      onlyIfModified(true)
+      overwrite(false)
+      retries(5)
+      quiet(true)
+      dest(downloadLibffiDest)
+    }
+val prepareLibffi by
+    tasks.registering(Copy::class) {
+      dependsOn(listOf(downloadLibffi))
+      from(tarTree(downloadLibffiDest))
+      from("tester/third-party/libffi/")
+      include("libffi-${LIBFFI_VERSION}/**/*", "CMakeLists.txt")
+      eachFile { path = path.substringAfter("/") }
+      includeEmptyDirs = false
+      into("$thirdParty/libffi")
+    }
+
+val downloadFribidiDest = File(downloadsDir, "fribidi-${FRIBIDI_VERSION}.tar.gz")
+val downloadFribidi by
+    tasks.registering(Download::class) {
+      dependsOn(createNativeDepsDirectories)
+      src(
+          "https://github.com/fribidi/fribidi/releases/download/v${FRIBIDI_VERSION}/fribidi-${FRIBIDI_VERSION}.tar.gz"
+      )
+      onlyIfModified(true)
+      overwrite(false)
+      retries(5)
+      quiet(true)
+      dest(downloadFribidiDest)
+    }
+val prepareFribidi by
+    tasks.registering(Copy::class) {
+      dependsOn(listOf(downloadFribidi))
+      from(tarTree(downloadFribidiDest))
+      from("tester/third-party/fribidi/")
+      include("fribidi-${FRIBIDI_VERSION}/**/*", "CMakeLists.txt", "fribidi-config.h")
+      eachFile { path = path.substringAfter("/") }
+      includeEmptyDirs = false
+      into("$thirdParty/fribidi")
+    }
+
+val downloadGlibDest = File(downloadsDir, "glib-${GLIB_VERSION}.tar.gz")
+val downloadGlib by
+    tasks.registering(Download::class) {
+      dependsOn(createNativeDepsDirectories)
+      src("https://download.gnome.org/sources/glib/2.78/glib-${GLIB_VERSION}.tar.gz")
+      onlyIfModified(true)
+      overwrite(false)
+      retries(5)
+      quiet(true)
+      dest(downloadGlibDest)
+    }
+val prepareGlib by
+    tasks.registering(Copy::class) {
+      dependsOn(listOf(downloadGlib))
+      from(tarTree(downloadGlibDest))
+      from("tester/third-party/glib/")
+      include("glib-${GLIB_VERSION}/**/*", "CMakeLists.txt", "glibconfig.h", "config.h")
+      eachFile { path = path.substringAfter("/") }
+      includeEmptyDirs = false
+      into("$thirdParty/glib")
+    }
+
+val downloadFontconfigDest = File(downloadsDir, "fontconfig-${FONTCONFIG_VERSION}.tar.gz")
+val downloadFontconfig by
+    tasks.registering(Download::class) {
+      dependsOn(createNativeDepsDirectories)
+      src(
+          "https://www.freedesktop.org/software/fontconfig/release/fontconfig-${FONTCONFIG_VERSION}.tar.gz"
+      )
+      onlyIfModified(true)
+      overwrite(false)
+      retries(5)
+      quiet(true)
+      dest(downloadFontconfigDest)
+    }
+val prepareFontconfig by
+    tasks.registering(Copy::class) {
+      dependsOn(listOf(downloadFontconfig))
+      from(tarTree(downloadFontconfigDest))
+      from("tester/third-party/fontconfig/")
+      include("fontconfig-${FONTCONFIG_VERSION}/**/*", "CMakeLists.txt", "fcstdint.h", "config.h")
+      eachFile { path = path.substringAfter("/") }
+      includeEmptyDirs = false
+      into("$thirdParty/fontconfig")
+    }
+
+val downloadPangoDest = File(downloadsDir, "pango-${PANGO_VERSION}.tar.gz")
+val downloadPango by
+    tasks.registering(Download::class) {
+      dependsOn(createNativeDepsDirectories)
+      src("https://download.gnome.org/sources/pango/1.50/pango-${PANGO_VERSION}.tar.gz")
+      onlyIfModified(true)
+      overwrite(false)
+      retries(5)
+      quiet(true)
+      dest(downloadPangoDest)
+    }
+val preparePango by
+    tasks.registering(Copy::class) {
+      dependsOn(listOf(downloadPango))
+      from(tarTree(downloadPangoDest))
+      from("tester/third-party/pango/")
+      include("pango-${PANGO_VERSION}/**/*", "CMakeLists.txt", "config.h", "pango-features.h")
+      eachFile { path = path.substringAfter("/") }
+      includeEmptyDirs = false
+      into("$thirdParty/pango")
+    }
+
 var codegenSrcDir = File("$reactAndroidBuildDir/generated/source/codegen/jni")
 var codegenOutDir = File("$buildDir/codegen")
 val prepareRNCodegen by
@@ -170,6 +366,14 @@ val prepareNative3pDependencies by
           prepareGflags,
           prepareNlohmannJson,
           prepareFolly,
+          prepareFreetype,
+          prepareHarfbuzz,
+          prepareExpat,
+          prepareLibffi,
+          prepareFribidi,
+          prepareGlib,
+          prepareFontconfig,
+          preparePango,
           ":packages:react-native:ReactAndroid:prepareBoost",
           ":packages:react-native:ReactAndroid:prepareDoubleConversion",
           ":packages:react-native:ReactAndroid:prepareFastFloat",
