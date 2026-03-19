@@ -209,6 +209,16 @@ inline ArrayBuffer Object::getArrayBuffer(IRuntime& runtime) && {
   return ArrayBuffer(value);
 }
 
+inline TypedArray Object::getTypedArray(IRuntime& runtime) const& {
+  assert(runtime.isTypedArray(*this));
+  return TypedArray(runtime.cloneObject(ptr_));
+}
+
+inline Uint8Array Object::getUint8Array(IRuntime& runtime) const& {
+  assert(runtime.isUint8Array(*this));
+  return Uint8Array(runtime.cloneObject(ptr_));
+}
+
 inline Function Object::getFunction(IRuntime& runtime) const& {
   assert(runtime.isFunction(*this));
   return Function(runtime.cloneObject(ptr_));
