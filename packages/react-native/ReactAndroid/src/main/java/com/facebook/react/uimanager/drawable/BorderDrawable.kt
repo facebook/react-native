@@ -254,49 +254,66 @@ internal class BorderDrawable(
               computedBorderColors.right,
               computedBorderColors.bottom,
           )
-      if (fastBorderColor != 0) {
+      if (fastBorderColor != 0 &&
+          (borderStyle != BorderStyle.SOLID || Color.alpha(fastBorderColor) == 255)) {
         if (Color.alpha(fastBorderColor) != 0) {
           // Border color is not transparent.
           val right = bounds.right
           val bottom = bounds.bottom
           borderPaint.color = multiplyColorAlpha(fastBorderColor, borderAlpha)
           borderPaint.style = Paint.Style.STROKE
-          pathForSingleBorder = Path()
-          if (borderLeft > 0) {
+          pathForSingleBorder = pathForSingleBorder ?: Path()
+          if (borderLeft == borderTop && borderLeft == borderRight && borderLeft == borderBottom &&
+              borderLeft > 0) {
+            // All borders have same width. Draw single rect path to avoid corner overlapping
+            // and have continuous dashes across corners.
+            val width = borderLeft.toFloat()
+            updatePathEffect(width.toInt())
+            borderPaint.strokeWidth = width
             pathForSingleBorder?.reset()
-            val width = borderWidth.left.roundToInt()
-            updatePathEffect(width)
-            borderPaint.strokeWidth = width.toFloat()
-            pathForSingleBorder?.moveTo((left + width / 2).toFloat(), top.toFloat())
-            pathForSingleBorder?.lineTo((left + width / 2).toFloat(), bottom.toFloat())
+            pathForSingleBorder?.addRect(
+                left + width / 2f, top + width / 2f,
+                right - width / 2f, bottom - width / 2f,
+                Path.Direction.CW
+            )
             pathForSingleBorder?.let { canvas.drawPath(it, borderPaint) }
-          }
-          if (borderTop > 0) {
-            pathForSingleBorder?.reset()
-            val width = borderWidth.top.roundToInt()
-            updatePathEffect(width)
-            borderPaint.strokeWidth = width.toFloat()
-            pathForSingleBorder?.moveTo(left.toFloat(), (top + width / 2).toFloat())
-            pathForSingleBorder?.lineTo(right.toFloat(), (top + width / 2).toFloat())
-            pathForSingleBorder?.let { canvas.drawPath(it, borderPaint) }
-          }
-          if (borderRight > 0) {
-            pathForSingleBorder?.reset()
-            val width = borderWidth.right.roundToInt()
-            updatePathEffect(width)
-            borderPaint.strokeWidth = width.toFloat()
-            pathForSingleBorder?.moveTo((right - width / 2).toFloat(), top.toFloat())
-            pathForSingleBorder?.lineTo((right - width / 2).toFloat(), bottom.toFloat())
-            pathForSingleBorder?.let { canvas.drawPath(it, borderPaint) }
-          }
-          if (borderBottom > 0) {
-            pathForSingleBorder?.reset()
-            val width = borderWidth.bottom.roundToInt()
-            updatePathEffect(width)
-            borderPaint.strokeWidth = width.toFloat()
-            pathForSingleBorder?.moveTo(left.toFloat(), (bottom - width / 2).toFloat())
-            pathForSingleBorder?.lineTo(right.toFloat(), (bottom - width / 2).toFloat())
-            pathForSingleBorder?.let { canvas.drawPath(it, borderPaint) }
+          } else {
+            if (borderLeft > 0) {
+              pathForSingleBorder?.reset()
+              val width = borderLeft
+              updatePathEffect(width)
+              borderPaint.strokeWidth = width.toFloat()
+              pathForSingleBorder?.moveTo((left + width / 2).toFloat(), top.toFloat())
+              pathForSingleBorder?.lineTo((left + width / 2).toFloat(), bottom.toFloat())
+              pathForSingleBorder?.let { canvas.drawPath(it, borderPaint) }
+            }
+            if (borderTop > 0) {
+              pathForSingleBorder?.reset()
+              val width = borderTop
+              updatePathEffect(width)
+              borderPaint.strokeWidth = width.toFloat()
+              pathForSingleBorder?.moveTo(left.toFloat(), (top + width / 2).toFloat())
+              pathForSingleBorder?.lineTo(right.toFloat(), (top + width / 2).toFloat())
+              pathForSingleBorder?.let { canvas.drawPath(it, borderPaint) }
+            }
+            if (borderRight > 0) {
+              pathForSingleBorder?.reset()
+              val width = borderRight
+              updatePathEffect(width)
+              borderPaint.strokeWidth = width.toFloat()
+              pathForSingleBorder?.moveTo((right - width / 2).toFloat(), top.toFloat())
+              pathForSingleBorder?.lineTo((right - width / 2).toFloat(), bottom.toFloat())
+              pathForSingleBorder?.let { canvas.drawPath(it, borderPaint) }
+            }
+            if (borderBottom > 0) {
+              pathForSingleBorder?.reset()
+              val width = borderBottom
+              updatePathEffect(width)
+              borderPaint.strokeWidth = width.toFloat()
+              pathForSingleBorder?.moveTo(left.toFloat(), (bottom - width / 2).toFloat())
+              pathForSingleBorder?.lineTo(right.toFloat(), (bottom - width / 2).toFloat())
+              pathForSingleBorder?.let { canvas.drawPath(it, borderPaint) }
+            }
           }
         }
       } else {
@@ -493,16 +510,6 @@ internal class BorderDrawable(
       colorRight: Int,
       colorBottom: Int,
   ): Int {
-    // If any of the border colors are translucent then we can't use the fast path.
-    if (
-        Color.alpha(colorLeft) < 255 ||
-            Color.alpha(colorTop) < 255 ||
-            Color.alpha(colorRight) < 255 ||
-            Color.alpha(colorBottom) < 255
-    ) {
-      return 0
-    }
-
     val andSmear =
         ((if (borderLeft > 0) colorLeft else ALL_BITS_SET) and
             (if (borderTop > 0) colorTop else ALL_BITS_SET) and
@@ -1094,7 +1101,7 @@ internal class BorderDrawable(
     }
     val alpha = rawAlpha + (rawAlpha shr 7) // make it 0..256
     val colorAlpha = color ushr 24
-    val multipliedAlpha = colorAlpha * (alpha shr 7) shr 8
+    val multipliedAlpha = colorAlpha * alpha shr 8
     return (multipliedAlpha shl 24) or (color and 0x00FFFFFF)
   }
 }
