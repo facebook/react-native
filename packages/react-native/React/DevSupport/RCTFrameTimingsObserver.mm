@@ -22,7 +22,7 @@
 
 using namespace facebook::react;
 
-static constexpr CGFloat kScreenshotScaleFactor = 0.75;
+static constexpr CGFloat kScreenshotScaleFactor = 1.0;
 static constexpr CGFloat kScreenshotJPEGQuality = 0.8;
 
 namespace {
