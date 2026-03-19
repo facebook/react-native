@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<8c2aa180526563dbaaeb91f1428e0c77>>
+ * @generated SignedSource<<123878b4b779b3af2fdd200341082a3d>>
  * @flow strict
  * @noformat
  */
@@ -259,7 +259,7 @@ export const enableAndroidAntialiasedBorderRadiusClipping: Getter<boolean> = cre
 /**
  * Enables linear text rendering on Android wherever subpixel text rendering is enabled
  */
-export const enableAndroidLinearText: Getter<boolean> = createNativeFlagGetter('enableAndroidLinearText', false);
+export const enableAndroidLinearText: Getter<boolean> = createNativeFlagGetter('enableAndroidLinearText', true);
 /**
  * Enables various optimizations throughout the path of measuring text on Android.
  */
