@@ -557,6 +557,15 @@ std::shared_ptr<MutableBuffer> Runtime::tryGetMutableBuffer(
   return nullptr;
 }
 
+bool Runtime::detached(const ArrayBuffer& buffer) {
+  Value prop = buffer.getProperty(*this, "detached");
+  if (!prop.isBool()) {
+    throw JSINativeException(
+        "ArrayBuffer.detached is not supported by this runtime");
+  }
+  return prop.getBool();
+}
+
 Pointer& Pointer::operator=(Pointer&& other) noexcept {
   if (ptr_) {
     ptr_->invalidate();

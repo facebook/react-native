@@ -392,6 +392,9 @@ class RuntimeDecorator : public Base, private jsi::Instrumentation {
   uint8_t* data(const ArrayBuffer& ab) override {
     return plain_.data(ab);
   }
+  bool detached(const ArrayBuffer& ab) override {
+    return plain_.detached(ab);
+  }
   Value getValueAtIndex(const Array& a, size_t i) override {
     return plain_.getValueAtIndex(a, i);
   }
@@ -968,6 +971,10 @@ class WithRuntimeDecorator : public RuntimeDecorator<Plain, Base> {
   uint8_t* data(const ArrayBuffer& ab) override {
     Around around{with_};
     return RD::data(ab);
+  }
+  bool detached(const ArrayBuffer& ab) override {
+    Around around{with_};
+    return RD::detached(ab);
   }
   Value getValueAtIndex(const Array& a, size_t i) override {
     Around around{with_};
