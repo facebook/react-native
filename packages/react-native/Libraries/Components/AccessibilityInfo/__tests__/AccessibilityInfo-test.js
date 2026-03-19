@@ -20,6 +20,7 @@ const mockGetCurrentBoldTextState = jest.fn((onSuccess, onError) => onSuccess(tr
 const mockGetCurrentGrayscaleState = jest.fn((onSuccess, onError) => onSuccess(true));
 const mockGetCurrentInvertColorsState = jest.fn((onSuccess, onError) => onSuccess(true));
 const mockGetCurrentReduceMotionState = jest.fn((onSuccess, onError) => onSuccess(true));
+const mockGetCurrentReduceTransparencyState = jest.fn((onSuccess, onError) => onSuccess(true));
 const mockNativeAccessibilityManagerDefault: {
   getCurrentPrefersCrossFadeTransitionsState: JestMockFn<
     [
@@ -63,6 +64,13 @@ const mockNativeAccessibilityManagerDefault: {
     ],
     void,
   > | null, 
+  getCurrentReduceTransparencyState: JestMockFn<
+    [
+      onSuccess: (isReduceTransparencyEnabled: boolean) => void,
+      onError: (error: Error) => void,
+    ],
+    void,
+  > | null,
 } = {
   getCurrentPrefersCrossFadeTransitionsState:
     mockGetCurrentPrefersCrossFadeTransitionsState,
@@ -71,6 +79,7 @@ const mockNativeAccessibilityManagerDefault: {
   getCurrentGrayscaleState: mockGetCurrentGrayscaleState,
   getCurrentInvertColorsState: mockGetCurrentInvertColorsState,
   getCurrentReduceMotionState: mockGetCurrentReduceMotionState,
+  getCurrentReduceTransparencyState: mockGetCurrentReduceTransparencyState,
 };
 
 const mockIsHighTextContrastEnabled = jest.fn(onSuccess => onSuccess(true));
@@ -115,7 +124,6 @@ const Platform = require('../../../Utilities/Platform').default;
 const AccessibilityInfo = require('../AccessibilityInfo').default;
 const invariant = require('invariant');
 
-// isReduceTransparencyEnabled
 // isScreenReaderEnabled
 // isAccessibilityServiceEnabled
 
@@ -306,6 +314,53 @@ describe('AccessibilityInfo', () => {
         );
         expect(result.message).toEqual(
           'NativeAccessibilityManagerIOS is not available',
+        );
+      });
+    });
+  });
+
+  describe('isReduceTransparencyEnabled', () => {
+    describe('Android', () => {
+      it('should return immediately', async () => {
+        /* $FlowFixMe[incompatible-type] */
+        Platform.OS = 'android';
+
+        const isReduceTransparencyEnabled =
+          await AccessibilityInfo.isReduceTransparencyEnabled();
+
+        expect(isReduceTransparencyEnabled).toBe(false);
+      });
+    });
+
+    describe('iOS', () => {
+      it('should call getCurrentReduceTransparencyState if available', async () => {
+        /* $FlowFixMe[incompatible-type] */
+        Platform.OS = 'ios';
+
+        const isReduceTransparencyEnabled =
+          await AccessibilityInfo.isReduceTransparencyEnabled();
+
+        expect(mockGetCurrentReduceTransparencyState).toHaveBeenCalled();
+        expect(isReduceTransparencyEnabled).toBe(true);
+      });
+
+      it('should reject if NativeAccessibilityManagerIOS module is not available', async () => {
+        /* $FlowFixMe[incompatible-type] */
+        Platform.OS = 'ios';
+
+        const nativeAccessibilityManagerModule =
+          jest.requireMock('../NativeAccessibilityManager');
+        nativeAccessibilityManagerModule.default = null;
+
+        const result: mixed =
+          await AccessibilityInfo.isReduceTransparencyEnabled().catch(e => e);
+          
+        invariant(
+          result instanceof Error,
+          'Expected isReduceTransparencyEnabled to reject',
+        );
+        expect(result.message).toEqual(
+          'NativeAccessibilityManagerIOS is not available', 
         );
       });
     });
