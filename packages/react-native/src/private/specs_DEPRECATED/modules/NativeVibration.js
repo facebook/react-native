@@ -15,8 +15,6 @@ import * as TurboModuleRegistry from '../../../../Libraries/TurboModule/TurboMod
 export interface Spec extends TurboModule {
   +getConstants: () => {};
   +vibrate: (pattern: number) => void;
-
-  // Android only
   +vibrateByPattern: (pattern: Array<number>, repeat: number) => void;
   +cancel: () => void;
 }
