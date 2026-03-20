@@ -156,7 +156,6 @@ convertJSIFunctionToCallback(jsi::Runtime &rt, jsi::Function &&function, const s
   return ^(NSArray *args) {
     if (!callback) {
       LOG(FATAL) << "Callback arg cannot be called more than once";
-      return;
     }
 
     callback->call([args](jsi::Runtime &rt, jsi::Function &jsFunction) {
