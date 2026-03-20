@@ -139,7 +139,7 @@ def build_snapshots(
                 output_dir=output_dir,
                 codegen_platform=config.codegen_platform,
                 verbose=verbose,
-                input_filter=input_filter,
+                input_filter=input_filter if config.input_filter else None,
             )
     else:
         snapshot = build_snapshot_for_view(

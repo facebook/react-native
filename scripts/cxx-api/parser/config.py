@@ -37,6 +37,7 @@ class ApiViewSnapshotConfig:
     exclude_patterns: list[str]
     definitions: dict[str, str | int]
     codegen_platform: str | None = None
+    input_filter: bool = False
 
 
 def parse_config(
@@ -65,6 +66,7 @@ def parse_config(
         codegen_config = view_config.get("codegen") or {}
         codegen_platform = codegen_config.get("platform")
         exclude_patterns = view_config.get("exclude_patterns") or []
+        input_filter = view_config.get("input_filter", False)
         base_definitions = view_config.get("definitions") or {}
 
         raw_variants = view_config.get("variants") or {}
@@ -84,6 +86,7 @@ def parse_config(
                     exclude_patterns=exclude_patterns,
                     definitions=base_definitions,
                     codegen_platform=codegen_platform,
+                    input_filter=input_filter,
                 )
             )
         else:
@@ -97,6 +100,7 @@ def parse_config(
                         exclude_patterns=exclude_patterns,
                         definitions=merged_definitions,
                         codegen_platform=codegen_platform,
+                        input_filter=input_filter,
                     )
                 )
 
