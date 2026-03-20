@@ -32,9 +32,10 @@ struct CSSCalc {
   float vh{0.0f};
   bool unitless{false};
 
-  constexpr auto operator==(const CSSCalc& rhs) const -> bool = default;
+  constexpr bool operator==(const CSSCalc &rhs) const = default;
 
-  constexpr auto operator+(const CSSCalc& rhs) const -> CSSCalc {
+  constexpr CSSCalc operator+(const CSSCalc &rhs) const -> 
+  {
     return CSSCalc{
         px + rhs.px,
         percent + rhs.percent,
@@ -43,7 +44,8 @@ struct CSSCalc {
         unitless && rhs.unitless};
   }
 
-  constexpr auto operator-(const CSSCalc& rhs) const -> CSSCalc {
+  constexpr CSSCalc operator-(const CSSCalc &rhs) const
+  {
     return CSSCalc{
         px - rhs.px,
         percent - rhs.percent,
@@ -52,12 +54,14 @@ struct CSSCalc {
         unitless && rhs.unitless};
   }
 
-  constexpr auto operator*(float scalar) const -> CSSCalc {
+  constexpr CSSCalc operator*(float scalar) const
+  {
     return CSSCalc{
         px * scalar, percent * scalar, vw * scalar, vh * scalar, unitless};
   }
 
-  constexpr auto operator/(float scalar) const -> CSSCalc {
+  constexpr CSSCalc operator/(float scalar) const
+  {
     if (scalar == 0.0f) {
       return CSSCalc{};
     }
@@ -65,54 +69,65 @@ struct CSSCalc {
         px / scalar, percent / scalar, vw / scalar, vh / scalar, unitless};
   }
 
-  constexpr auto operator-() const -> CSSCalc {
+  constexpr CSSCalc operator-() const
+  {
     return CSSCalc{-px, -percent, -vw, -vh, unitless};
   }
 
-  auto resolve(float percentRef, float viewportWidth, float viewportHeight)
-      const -> float {
+  float resolve(float percentRef, float viewportWidth, float viewportHeight)
+      const
+  {
     return px + (percent * percentRef * 0.01f) + (vw * viewportWidth * 0.01f) +
         (vh * viewportHeight * 0.01f);
   }
 
-  constexpr auto isUnitless() const -> bool {
+  constexpr bool isUnitless() const
+  {
     return unitless;
   }
 
-  constexpr auto isPointsOnly() const -> bool {
+  constexpr bool isPointsOnly() const
+  {
     return percent == 0.0f && vw == 0.0f && vh == 0.0f && !unitless;
   }
 
-  constexpr auto isPercentOnly() const -> bool {
+  constexpr bool isPercentOnly() const
+  {
     return px == 0.0f && vw == 0.0f && vh == 0.0f && !unitless;
   }
 
-  constexpr auto isZero() const -> bool {
+  constexpr bool isZero() const
+  {
     return px == 0.0f && percent == 0.0f && vw == 0.0f && vh == 0.0f;
   }
 
-  static constexpr auto fromNumber(float value) -> CSSCalc {
+  static constexpr CSSCalc fromNumber(float value)
+  {
     return CSSCalc{value, 0.0f, 0.0f, 0.0f, true};
   }
 
-  static constexpr auto fromPoints(float value) -> CSSCalc {
+  static constexpr CSSCalc fromPoints(float value)
+  {
     return CSSCalc{value, 0.0f, 0.0f, 0.0f, false};
   }
 
-  static constexpr auto fromPercent(float value) -> CSSCalc {
+  static constexpr CSSCalc fromPercent(float value)
+  {
     return CSSCalc{0.0f, value, 0.0f, 0.0f, false};
   }
 
-  static constexpr auto fromVw(float value) -> CSSCalc {
+  static constexpr CSSCalc fromVw(float value)
+  {
     return CSSCalc{0.0f, 0.0f, value, 0.0f, false};
   }
 
-  static constexpr auto fromVh(float value) -> CSSCalc {
+  static constexpr CSSCalc fromVh(float value)
+  {
     return CSSCalc{0.0f, 0.0f, 0.0f, value, false};
   }
 
-  static constexpr auto fromLength(float value, CSSLengthUnit unit)
-      -> std::optional<CSSCalc> {
+  static constexpr std::optional<CSSCalc> fromLength(float value, CSSLengthUnit unit)
+  {
     switch (unit) {
       case CSSLengthUnit::Px:
         return fromPoints(value);
@@ -129,8 +144,9 @@ struct CSSCalc {
 template <>
 struct CSSDataTypeParser<CSSCalc> {
   static constexpr auto consumeFunctionBlock(
-      const CSSFunctionBlock& func,
-      CSSValueParser& parser) -> std::optional<CSSCalc> {
+      const CSSFunctionBlock &func,
+      CSSValueParser &parser) -> std::optional<CSSCalc>
+    {
     if (!iequals(func.name, "calc")) {
       return std::nullopt;
     }
@@ -138,8 +154,9 @@ struct CSSDataTypeParser<CSSCalc> {
     return parseCalcExpression(parser);
   }
 
-  static constexpr auto parseCalcExpression(CSSValueParser& parser)
-      -> std::optional<CSSCalc> {
+    static constexpr auto parseCalcExpression(CSSValueParser &parser)
+      -> std::optional<CSSCalc>
+    {
     parser.syntaxParser().consumeWhitespace();
     auto result = parseAddSub(parser);
     parser.syntaxParser().consumeWhitespace();
@@ -147,8 +164,9 @@ struct CSSDataTypeParser<CSSCalc> {
   }
 
   static constexpr auto consumeSimpleBlock(
-      const CSSSimpleBlock& block,
-      CSSValueParser& parser) -> std::optional<CSSCalc> {
+      const CSSSimpleBlock &block,
+      CSSValueParser &parser) -> std::optional<CSSCalc>
+    {
     if (block.openBracketType != CSSTokenType::OpenParen) {
       return std::nullopt;
     }
@@ -157,8 +175,9 @@ struct CSSDataTypeParser<CSSCalc> {
   }
 
  private:
-  static constexpr auto parseAddSub(CSSValueParser& parser)
-      -> std::optional<CSSCalc> {
+    static constexpr auto parseAddSub(CSSValueParser &parser)
+      -> std::optional<CSSCalc>
+    {
     auto left = parseMulDiv(parser);
     if (!left) {
       return std::nullopt;
@@ -170,7 +189,7 @@ struct CSSDataTypeParser<CSSCalc> {
 
       auto opResult =
           parser.syntaxParser().consumeComponentValue<std::optional<char>>(
-              CSSDelimiter::None, [](const CSSPreservedToken& token) {
+              CSSDelimiter::None, [](const CSSPreservedToken &token) {
                 if (token.type() == CSSTokenType::Delim) {
                   auto sv = token.stringValue();
                   if (!sv.empty() && (sv[0] == '+' || sv[0] == '-')) {
@@ -205,8 +224,9 @@ struct CSSDataTypeParser<CSSCalc> {
     return left;
   }
 
-  static constexpr auto parseMulDiv(CSSValueParser& parser)
-      -> std::optional<CSSCalc> {
+    static constexpr auto parseMulDiv(CSSValueParser &parser)
+      -> std::optional<CSSCalc>
+    {
     auto left = parseUnary(parser);
     if (!left) {
       return std::nullopt;
@@ -218,7 +238,7 @@ struct CSSDataTypeParser<CSSCalc> {
 
       auto opResult =
           parser.syntaxParser().consumeComponentValue<std::optional<char>>(
-              CSSDelimiter::None, [](const CSSPreservedToken& token) {
+              CSSDelimiter::None, [](const CSSPreservedToken &token) {
                 if (token.type() == CSSTokenType::Delim) {
                   auto sv = token.stringValue();
                   if (!sv.empty() && (sv[0] == '*' || sv[0] == '/')) {
@@ -259,13 +279,14 @@ struct CSSDataTypeParser<CSSCalc> {
     return left;
   }
 
-  static constexpr auto parseUnary(CSSValueParser& parser)
-      -> std::optional<CSSCalc> {
+    static constexpr auto parseUnary(CSSValueParser &parser)
+      -> std::optional<CSSCalc>
+    {
     auto savedParser = parser.syntaxParser();
 
     auto opResult =
         parser.syntaxParser().consumeComponentValue<std::optional<char>>(
-            CSSDelimiter::None, [](const CSSPreservedToken& token) {
+          CSSDelimiter::None, [](const CSSPreservedToken &token) {
               if (token.type() == CSSTokenType::Delim) {
                 auto sv = token.stringValue();
                 if (!sv.empty() && (sv[0] == '+' || sv[0] == '-')) {
@@ -288,8 +309,9 @@ struct CSSDataTypeParser<CSSCalc> {
     return parsePrimary(parser);
   }
 
-  static constexpr auto parsePrimary(CSSValueParser& parser)
-      -> std::optional<CSSCalc> {
+  static constexpr auto parsePrimary(CSSValueParser &parser)
+      -> std::optional<CSSCalc>
+  {
     auto value =
         parser.parseNextValue<CSSNumber, CSSPercentage, CSSLength, CSSCalc>();
 
@@ -302,7 +324,7 @@ struct CSSDataTypeParser<CSSCalc> {
     }
 
     if (std::holds_alternative<CSSLength>(value)) {
-      const auto& length = std::get<CSSLength>(value);
+      const auto &length = std::get<CSSLength>(value);
       return CSSCalc::fromLength(length.value, length.unit);
     }
 
@@ -313,8 +335,9 @@ struct CSSDataTypeParser<CSSCalc> {
     return std::nullopt;
   }
 
-  static constexpr auto parseCalcContents(CSSValueParser& parser)
-      -> std::optional<CSSCalc> {
+    static constexpr auto parseCalcContents(CSSValueParser &parser)
+      -> std::optional<CSSCalc>
+    {
     parser.syntaxParser().consumeWhitespace();
     auto result = parseAddSub(parser);
     parser.syntaxParser().consumeWhitespace();
