@@ -31,16 +31,6 @@ def qualify_type_str(type_str: str, scope: Scope) -> str:
     return _qualify_type_str_impl(type_str, scope, qualify_base=True)
 
 
-def qualify_template_args_only(type_str: str, scope: Scope) -> str:
-    """Qualify only template arguments in a type string, leaving the base type unchanged.
-
-    This is useful for class names in template specializations where the base type
-    is already positioned in the correct scope but the template arguments need
-    qualification (e.g., "MyVector< Test >" -> "MyVector< ns::Test >").
-    """
-    return _qualify_type_str_impl(type_str, scope, qualify_base=False)
-
-
 def _qualify_prefix_with_decorators(prefix: str, scope: Scope) -> str:
     """Qualify a template prefix that may have leading const/volatile qualifiers."""
     stripped = prefix.lstrip()

@@ -34,30 +34,19 @@ describe('processBackgroundSize', () => {
     ]);
   });
 
-  it('should handle array with cover', () => {
-    expect(processBackgroundSize(['cover'])).toEqual(['cover']);
-  });
-
-  it('should handle array with contain', () => {
-    expect(processBackgroundSize(['contain'])).toEqual(['contain']);
-  });
-
-  it('should handle array with mixed values', () => {
-    expect(processBackgroundSize([{x: 100, y: 'auto'}, 'cover'])).toEqual([
+  it('should handle array with multiple values', () => {
+    expect(
+      processBackgroundSize([
+        {x: 100, y: 'auto'},
+        {x: '50%', y: '50%'},
+      ]),
+    ).toEqual([
       {x: 100, y: 'auto'},
-      'cover',
+      {x: '50%', y: '50%'},
     ]);
   });
 
   // Test string input - single values
-  it('should parse cover', () => {
-    expect(processBackgroundSize('cover')).toEqual(['cover']);
-  });
-
-  it('should parse contain', () => {
-    expect(processBackgroundSize('contain')).toEqual(['contain']);
-  });
-
   it('should parse single length value', () => {
     expect(processBackgroundSize('100px')).toEqual([{x: 100, y: 'auto'}]);
   });
@@ -111,9 +100,9 @@ describe('processBackgroundSize', () => {
 
   // Test multiple background sizes (comma-separated)
   it('should parse multiple background sizes', () => {
-    expect(processBackgroundSize('100px 200px, cover')).toEqual([
+    expect(processBackgroundSize('100px 200px, 50%')).toEqual([
       {x: 100, y: 200},
-      'cover',
+      {x: '50%', y: 'auto'},
     ]);
   });
 
@@ -125,16 +114,16 @@ describe('processBackgroundSize', () => {
   });
 
   it('should parse multiple background sizes with newlines', () => {
-    expect(processBackgroundSize('100px 200px,\nCover')).toEqual([
+    expect(processBackgroundSize('100px 200px,\n50%')).toEqual([
       {x: 100, y: 200},
-      'cover',
+      {x: '50%', y: 'auto'},
     ]);
   });
 
   it('should parse multiple background sizes with extra whitespace', () => {
-    expect(processBackgroundSize('  100px  200px  ,  cover  ')).toEqual([
+    expect(processBackgroundSize('  100px  200px  ,  50%  ')).toEqual([
       {x: 100, y: 200},
-      'cover',
+      {x: '50%', y: 'auto'},
     ]);
   });
 
@@ -172,11 +161,11 @@ describe('processBackgroundSize', () => {
   });
 
   it('should handle mixed case keywords', () => {
-    expect(processBackgroundSize('COVER')).toEqual(['cover']);
+    expect(processBackgroundSize('AUTO')).toEqual([{x: 'auto', y: 'auto'}]);
   });
 
   it('should handle mixed case keywords with spaces', () => {
-    expect(processBackgroundSize('  Cover  ')).toEqual(['cover']);
+    expect(processBackgroundSize('  Auto  ')).toEqual([{x: 'auto', y: 'auto'}]);
   });
 
   it('should handle invalid mixed values', () => {
@@ -214,18 +203,26 @@ describe('processBackgroundSize', () => {
 
   // Test complex scenarios
   it('should handle complex multiple background scenario', () => {
-    expect(
-      processBackgroundSize('100px 200px, 50% auto, cover, contain'),
-    ).toEqual([{x: 100, y: 200}, {x: '50%', y: 'auto'}, 'cover', 'contain']);
+    expect(processBackgroundSize('100px 200px, 50% auto, auto')).toEqual([
+      {x: 100, y: 200},
+      {x: '50%', y: 'auto'},
+      {x: 'auto', y: 'auto'},
+    ]);
   });
 
   it('should handle all valid single value combinations', () => {
-    expect(processBackgroundSize('100px, 50%, auto, cover, contain')).toEqual([
+    expect(processBackgroundSize('100px, 50%, auto')).toEqual([
       {x: 100, y: 'auto'},
       {x: '50%', y: 'auto'},
       {x: 'auto', y: 'auto'},
-      'cover',
-      'contain',
     ]);
+  });
+
+  it('should return empty array for unsupported cover keyword', () => {
+    expect(processBackgroundSize('cover')).toEqual([]);
+  });
+
+  it('should return empty array for unsupported contain keyword', () => {
+    expect(processBackgroundSize('contain')).toEqual([]);
   });
 });

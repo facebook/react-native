@@ -1,5 +1,13 @@
 # Changelog
 
+## v0.85.0-rc.5
+
+### Fixed
+
+#### iOS specific
+
+- **Animated**: Revert RCTAnimatedModuleProvider change from [# 55729](https://github.com/facebook/react-native/pull/55729) ([85696fe](https://github.com/facebook/react-native/commit/85696fe1169d737c42cc9b4f85472dda23e99ed7) by [@zeyap](https://github.com/zeyap))
+
 ## v0.85.0-rc.1
 
 ### Breaking

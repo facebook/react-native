@@ -940,11 +940,6 @@ jsi::Value UIManagerBinding::get(
           result.setProperty(runtime, "width", domRect.width);
           result.setProperty(runtime, "height", domRect.height);
 
-          auto* viewTransitionDelegate = uiManager->getViewTransitionDelegate();
-          if (viewTransitionDelegate != nullptr) {
-            viewTransitionDelegate->captureLayoutMetricsFromRoot(*shadowNode);
-          }
-
           return result;
         });
   }
