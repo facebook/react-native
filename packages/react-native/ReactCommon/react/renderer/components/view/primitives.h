@@ -17,6 +17,7 @@
 #include <bitset>
 #include <cmath>
 #include <optional>
+#include <unordered_map>
 
 namespace facebook::react {
 
@@ -249,46 +250,6 @@ struct BorderMetrics {
   bool operator==(const BorderMetrics &rhs) const = default;
 };
 
-enum class CalcExpressionPropertyID : uint8_t {
-  Width,
-  Height,
-  MinWidth,
-  MinHeight,
-  MaxWidth,
-  MaxHeight,
-  FlexBasis,
-  RowGap,
-  ColumnGap,
-  Gap,
-  Left,
-  Top,
-  Right,
-  Bottom,
-  Start,
-  End,
-  InsetInline,
-  InsetBlock,
-  Inset,
-  MarginLeft,
-  MarginTop,
-  MarginRight,
-  MarginBottom,
-  MarginStart,
-  MarginEnd,
-  MarginHorizontal,
-  MarginVertical,
-  MarginAll,
-  PaddingLeft,
-  PaddingTop,
-  PaddingRight,
-  PaddingBottom,
-  PaddingStart,
-  PaddingEnd,
-  PaddingHorizontal,
-  PaddingVertical,
-  PaddingAll,
-};
-
-using CalcExpressions = std::unordered_map<CalcExpressionPropertyID, CSSCalc>;
+using CalcExpressions = std::unordered_map<uint32_t, CSSCalc>;
 
 } // namespace facebook::react

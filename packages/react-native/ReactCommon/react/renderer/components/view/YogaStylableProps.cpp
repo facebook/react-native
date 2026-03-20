@@ -12,6 +12,7 @@
 #include <react/renderer/components/view/propsConversions.h>
 #include <react/renderer/core/propsConversions.h>
 #include <react/renderer/debug/debugStringConvertibleUtils.h>
+#include <react/utils/fnv1a.h>
 #include <yoga/Yoga.h>
 #include <yoga/style/StyleLength.h>
 
@@ -132,37 +133,36 @@ static inline const T getFieldValue(
   REBUILD_YG_FIELD_SWITCH_CASE_INDEXED(                              \
       position, setPosition, yoga::Edge::All, "inset");
 
-#define APPLY_CALC_COMMON(fieldName, key, setPoints, setPercent, setDynamic) \
-  {                                                                          \
-    if (const auto* rawValue = rawProps.at(fieldName, nullptr, nullptr)) {   \
-      const auto& value = *rawValue;                                         \
-      if (value.hasType<std::string>()) {                                    \
-        auto isCalcExpression{false};                                        \
-        auto parsed = parseCSSProperty<CSSCalc>((std::string)value);         \
-        if (std::holds_alternative<CSSCalc>(parsed)) {                       \
-          auto calc = std::get<CSSCalc>(parsed);                             \
-          if (calc.isPointsOnly()) {                                         \
-            setPoints(calc.px);                                              \
-          } else if (calc.isPercentOnly()) {                                 \
-            setPercent(calc.percent);                                        \
-          } else {                                                           \
-            setDynamic(static_cast<YGValueDynamicID>(key));                  \
-            calcExpressions[key] = std::move(calc);                          \
-            isCalcExpression = true;                                         \
-          }                                                                  \
-        }                                                                    \
-        if (!isCalcExpression && calcExpressions.count(key)) {               \
-          calcExpressions.erase(key);                                        \
-        }                                                                    \
-      }                                                                      \
-    }                                                                        \
+#define APPLY_CALC_COMMON(fieldName, setPoints, setPercent, setDynamic)    \
+  {                                                                        \
+    if (const auto* rawValue = rawProps.at(fieldName, nullptr, nullptr)) { \
+      const auto& value = *rawValue;                                       \
+      if (value.hasType<std::string>()) {                                  \
+        constexpr auto key = fnv1a(fieldName);                            \
+        auto isCalcExpression{false};                                      \
+        auto parsed = parseCSSProperty<CSSCalc>((std::string)value);       \
+        if (std::holds_alternative<CSSCalc>(parsed)) {                     \
+          auto calc = std::get<CSSCalc>(parsed);                           \
+          if (calc.isPointsOnly()) {                                       \
+            setPoints(calc.px);                                            \
+          } else if (calc.isPercentOnly()) {                               \
+            setPercent(calc.percent);                                      \
+          } else {                                                         \
+            setDynamic(key);                                              \
+            calcExpressions[key] = std::move(calc);                       \
+            isCalcExpression = true;                                       \
+          }                                                                \
+        }                                                                  \
+        if (!isCalcExpression && calcExpressions.count(key)) {            \
+          calcExpressions.erase(key);                                     \
+        }                                                                  \
+      }                                                                    \
+    }                                                                      \
   }
 
-#define APPLY_CALC_YG_INDEXED(                                           \
-    getter, setter, index, fieldName, LengthType, key)                   \
+#define APPLY_CALC_YG_INDEXED(setter, index, fieldName, LengthType)      \
   APPLY_CALC_COMMON(                                                     \
       fieldName,                                                         \
-      key,                                                               \
       [&](float points) {                                                \
         yogaStyle.setter(index, LengthType::points(points));             \
       },                                                                 \
@@ -175,10 +175,9 @@ static inline const T getFieldValue(
             LengthType::dynamic(&yogaNodeCalcValueResolver, dynamicId)); \
       })
 
-#define APPLY_CALC_YG_FIELD(getter, setter, fieldName, LengthType, key)       \
+#define APPLY_CALC_YG_FIELD(setter, fieldName, LengthType)                    \
   APPLY_CALC_COMMON(                                                          \
       fieldName,                                                              \
-      key,                                                                    \
       [&](float points) { yogaStyle.setter(LengthType::points(points)); },    \
       [&](float percent) { yogaStyle.setter(LengthType::percent(percent)); }, \
       [&](YGValueDynamicID dynamicId) {                                       \
@@ -186,240 +185,66 @@ static inline const T getFieldValue(
             LengthType::dynamic(&yogaNodeCalcValueResolver, dynamicId));      \
       })
 
-#define APPLY_CALC_YG_DIMENSION(                                     \
-    field, setter, widthStr, heightStr, widthCalcIdx, heightCalcIdx) \
-  APPLY_CALC_YG_INDEXED(                                             \
-      field,                                                         \
-      setter,                                                        \
-      yoga::Dimension::Width,                                        \
-      widthStr,                                                      \
-      yoga::StyleSizeLength,                                         \
-      widthCalcIdx)                                                  \
-  APPLY_CALC_YG_INDEXED(                                             \
-      field,                                                         \
-      setter,                                                        \
-      yoga::Dimension::Height,                                       \
-      heightStr,                                                     \
-      yoga::StyleSizeLength,                                         \
-      heightCalcIdx)
+#define APPLY_CALC_YG_DIMENSION(setter, widthStr, heightStr)           \
+  APPLY_CALC_YG_INDEXED(                                               \
+      setter, yoga::Dimension::Width, widthStr, yoga::StyleSizeLength) \
+  APPLY_CALC_YG_INDEXED(                                               \
+      setter, yoga::Dimension::Height, heightStr, yoga::StyleSizeLength)
 
-#define APPLY_CALC_YG_EDGES_MARGIN(field, setter, LengthType, prefix) \
-  APPLY_CALC_YG_INDEXED(                                              \
-      field,                                                          \
-      setter,                                                         \
-      yoga::Edge::Left,                                               \
-      prefix "Left",                                                  \
-      LengthType,                                                     \
-      CalcExpressionPropertyID::MarginLeft)                           \
-  APPLY_CALC_YG_INDEXED(                                              \
-      field,                                                          \
-      setter,                                                         \
-      yoga::Edge::Top,                                                \
-      prefix "Top",                                                   \
-      LengthType,                                                     \
-      CalcExpressionPropertyID::MarginTop)                            \
-  APPLY_CALC_YG_INDEXED(                                              \
-      field,                                                          \
-      setter,                                                         \
-      yoga::Edge::Right,                                              \
-      prefix "Right",                                                 \
-      LengthType,                                                     \
-      CalcExpressionPropertyID::MarginRight)                          \
-  APPLY_CALC_YG_INDEXED(                                              \
-      field,                                                          \
-      setter,                                                         \
-      yoga::Edge::Bottom,                                             \
-      prefix "Bottom",                                                \
-      LengthType,                                                     \
-      CalcExpressionPropertyID::MarginBottom)                         \
-  APPLY_CALC_YG_INDEXED(                                              \
-      field,                                                          \
-      setter,                                                         \
-      yoga::Edge::Start,                                              \
-      prefix "Start",                                                 \
-      LengthType,                                                     \
-      CalcExpressionPropertyID::MarginStart)                          \
-  APPLY_CALC_YG_INDEXED(                                              \
-      field,                                                          \
-      setter,                                                         \
-      yoga::Edge::End,                                                \
-      prefix "End",                                                   \
-      LengthType,                                                     \
-      CalcExpressionPropertyID::MarginEnd)                            \
-  APPLY_CALC_YG_INDEXED(                                              \
-      field,                                                          \
-      setter,                                                         \
-      yoga::Edge::Horizontal,                                         \
-      prefix "Horizontal",                                            \
-      LengthType,                                                     \
-      CalcExpressionPropertyID::MarginHorizontal)                     \
-  APPLY_CALC_YG_INDEXED(                                              \
-      field,                                                          \
-      setter,                                                         \
-      yoga::Edge::Vertical,                                           \
-      prefix "Vertical",                                              \
-      LengthType,                                                     \
-      CalcExpressionPropertyID::MarginVertical)                       \
-  APPLY_CALC_YG_INDEXED(                                              \
-      field,                                                          \
-      setter,                                                         \
-      yoga::Edge::All,                                                \
-      prefix,                                                         \
-      LengthType,                                                     \
-      CalcExpressionPropertyID::MarginAll)
+#define APPLY_CALC_YG_EDGES_MARGIN(setter, LengthType, prefix)                 \
+  APPLY_CALC_YG_INDEXED(setter, yoga::Edge::Left, prefix "Left", LengthType)   \
+  APPLY_CALC_YG_INDEXED(setter, yoga::Edge::Top, prefix "Top", LengthType)     \
+  APPLY_CALC_YG_INDEXED(setter, yoga::Edge::Right, prefix "Right", LengthType) \
+  APPLY_CALC_YG_INDEXED(                                                       \
+      setter, yoga::Edge::Bottom, prefix "Bottom", LengthType)                 \
+  APPLY_CALC_YG_INDEXED(setter, yoga::Edge::Start, prefix "Start", LengthType) \
+  APPLY_CALC_YG_INDEXED(setter, yoga::Edge::End, prefix "End", LengthType)     \
+  APPLY_CALC_YG_INDEXED(                                                       \
+      setter, yoga::Edge::Horizontal, prefix "Horizontal", LengthType)         \
+  APPLY_CALC_YG_INDEXED(                                                       \
+      setter, yoga::Edge::Vertical, prefix "Vertical", LengthType)             \
+  APPLY_CALC_YG_INDEXED(setter, yoga::Edge::All, prefix, LengthType)
 
-#define APPLY_CALC_YG_EDGES_PADDING(field, setter, LengthType, prefix) \
-  APPLY_CALC_YG_INDEXED(                                               \
-      field,                                                           \
-      setter,                                                          \
-      yoga::Edge::Left,                                                \
-      prefix "Left",                                                   \
-      LengthType,                                                      \
-      CalcExpressionPropertyID::PaddingLeft)                           \
-  APPLY_CALC_YG_INDEXED(                                               \
-      field,                                                           \
-      setter,                                                          \
-      yoga::Edge::Top,                                                 \
-      prefix "Top",                                                    \
-      LengthType,                                                      \
-      CalcExpressionPropertyID::PaddingTop)                            \
-  APPLY_CALC_YG_INDEXED(                                               \
-      field,                                                           \
-      setter,                                                          \
-      yoga::Edge::Right,                                               \
-      prefix "Right",                                                  \
-      LengthType,                                                      \
-      CalcExpressionPropertyID::PaddingRight)                          \
-  APPLY_CALC_YG_INDEXED(                                               \
-      field,                                                           \
-      setter,                                                          \
-      yoga::Edge::Bottom,                                              \
-      prefix "Bottom",                                                 \
-      LengthType,                                                      \
-      CalcExpressionPropertyID::PaddingBottom)                         \
-  APPLY_CALC_YG_INDEXED(                                               \
-      field,                                                           \
-      setter,                                                          \
-      yoga::Edge::Start,                                               \
-      prefix "Start",                                                  \
-      LengthType,                                                      \
-      CalcExpressionPropertyID::PaddingStart)                          \
-  APPLY_CALC_YG_INDEXED(                                               \
-      field,                                                           \
-      setter,                                                          \
-      yoga::Edge::End,                                                 \
-      prefix "End",                                                    \
-      LengthType,                                                      \
-      CalcExpressionPropertyID::PaddingEnd)                            \
-  APPLY_CALC_YG_INDEXED(                                               \
-      field,                                                           \
-      setter,                                                          \
-      yoga::Edge::Horizontal,                                          \
-      prefix "Horizontal",                                             \
-      LengthType,                                                      \
-      CalcExpressionPropertyID::PaddingHorizontal)                     \
-  APPLY_CALC_YG_INDEXED(                                               \
-      field,                                                           \
-      setter,                                                          \
-      yoga::Edge::Vertical,                                            \
-      prefix "Vertical",                                               \
-      LengthType,                                                      \
-      CalcExpressionPropertyID::PaddingVertical)                       \
-  APPLY_CALC_YG_INDEXED(                                               \
-      field,                                                           \
-      setter,                                                          \
-      yoga::Edge::All,                                                 \
-      prefix,                                                          \
-      LengthType,                                                      \
-      CalcExpressionPropertyID::PaddingAll)
+#define APPLY_CALC_YG_EDGES_PADDING(setter, LengthType, prefix)                \
+  APPLY_CALC_YG_INDEXED(setter, yoga::Edge::Left, prefix "Left", LengthType)   \
+  APPLY_CALC_YG_INDEXED(setter, yoga::Edge::Top, prefix "Top", LengthType)     \
+  APPLY_CALC_YG_INDEXED(setter, yoga::Edge::Right, prefix "Right", LengthType) \
+  APPLY_CALC_YG_INDEXED(                                                       \
+      setter, yoga::Edge::Bottom, prefix "Bottom", LengthType)                 \
+  APPLY_CALC_YG_INDEXED(setter, yoga::Edge::Start, prefix "Start", LengthType) \
+  APPLY_CALC_YG_INDEXED(setter, yoga::Edge::End, prefix "End", LengthType)     \
+  APPLY_CALC_YG_INDEXED(                                                       \
+      setter, yoga::Edge::Horizontal, prefix "Horizontal", LengthType)         \
+  APPLY_CALC_YG_INDEXED(                                                       \
+      setter, yoga::Edge::Vertical, prefix "Vertical", LengthType)             \
+  APPLY_CALC_YG_INDEXED(setter, yoga::Edge::All, prefix, LengthType)
 
-#define APPLY_CALC_YG_EDGES_POSITION()       \
-  APPLY_CALC_YG_INDEXED(                     \
-      position,                              \
-      setPosition,                           \
-      yoga::Edge::Left,                      \
-      "left",                                \
-      yoga::StyleLength,                     \
-      CalcExpressionPropertyID::Left)        \
-  APPLY_CALC_YG_INDEXED(                     \
-      position,                              \
-      setPosition,                           \
-      yoga::Edge::Top,                       \
-      "top",                                 \
-      yoga::StyleLength,                     \
-      CalcExpressionPropertyID::Top)         \
-  APPLY_CALC_YG_INDEXED(                     \
-      position,                              \
-      setPosition,                           \
-      yoga::Edge::Right,                     \
-      "right",                               \
-      yoga::StyleLength,                     \
-      CalcExpressionPropertyID::Right)       \
-  APPLY_CALC_YG_INDEXED(                     \
-      position,                              \
-      setPosition,                           \
-      yoga::Edge::Bottom,                    \
-      "bottom",                              \
-      yoga::StyleLength,                     \
-      CalcExpressionPropertyID::Bottom)      \
-  APPLY_CALC_YG_INDEXED(                     \
-      position,                              \
-      setPosition,                           \
-      yoga::Edge::Start,                     \
-      "start",                               \
-      yoga::StyleLength,                     \
-      CalcExpressionPropertyID::Start)       \
-  APPLY_CALC_YG_INDEXED(                     \
-      position,                              \
-      setPosition,                           \
-      yoga::Edge::End,                       \
-      "end",                                 \
-      yoga::StyleLength,                     \
-      CalcExpressionPropertyID::End)         \
-  APPLY_CALC_YG_INDEXED(                     \
-      position,                              \
-      setPosition,                           \
-      yoga::Edge::Horizontal,                \
-      "insetInline",                         \
-      yoga::StyleLength,                     \
-      CalcExpressionPropertyID::InsetInline) \
-  APPLY_CALC_YG_INDEXED(                     \
-      position,                              \
-      setPosition,                           \
-      yoga::Edge::Vertical,                  \
-      "insetBlock",                          \
-      yoga::StyleLength,                     \
-      CalcExpressionPropertyID::InsetBlock)  \
-  APPLY_CALC_YG_INDEXED(                     \
-      position,                              \
-      setPosition,                           \
-      yoga::Edge::All,                       \
-      "inset",                               \
-      yoga::StyleLength,                     \
-      CalcExpressionPropertyID::Inset)
+#define APPLY_CALC_YG_EDGES_POSITION()                                       \
+  APPLY_CALC_YG_INDEXED(                                                     \
+      setPosition, yoga::Edge::Left, "left", yoga::StyleLength)              \
+  APPLY_CALC_YG_INDEXED(                                                     \
+      setPosition, yoga::Edge::Top, "top", yoga::StyleLength)                \
+  APPLY_CALC_YG_INDEXED(                                                     \
+      setPosition, yoga::Edge::Right, "right", yoga::StyleLength)            \
+  APPLY_CALC_YG_INDEXED(                                                     \
+      setPosition, yoga::Edge::Bottom, "bottom", yoga::StyleLength)          \
+  APPLY_CALC_YG_INDEXED(                                                     \
+      setPosition, yoga::Edge::Start, "start", yoga::StyleLength)            \
+  APPLY_CALC_YG_INDEXED(                                                     \
+      setPosition, yoga::Edge::End, "end", yoga::StyleLength)                \
+  APPLY_CALC_YG_INDEXED(                                                     \
+      setPosition, yoga::Edge::Horizontal, "insetInline", yoga::StyleLength) \
+  APPLY_CALC_YG_INDEXED(                                                     \
+      setPosition, yoga::Edge::Vertical, "insetBlock", yoga::StyleLength)    \
+  APPLY_CALC_YG_INDEXED(                                                     \
+      setPosition, yoga::Edge::All, "inset", yoga::StyleLength)
 
-#define APPLY_CALC_YG_GUTTER()             \
-  APPLY_CALC_YG_INDEXED(                   \
-      gap,                                 \
-      setGap,                              \
-      yoga::Gutter::Row,                   \
-      "rowGap",                            \
-      yoga::StyleLength,                   \
-      CalcExpressionPropertyID::RowGap)    \
-  APPLY_CALC_YG_INDEXED(                   \
-      gap,                                 \
-      setGap,                              \
-      yoga::Gutter::Column,                \
-      "columnGap",                         \
-      yoga::StyleLength,                   \
-      CalcExpressionPropertyID::ColumnGap) \
-  APPLY_CALC_YG_INDEXED(                   \
-      gap,                                 \
-      setGap,                              \
-      yoga::Gutter::All,                   \
-      "gap",                               \
-      yoga::StyleLength,                   \
-      CalcExpressionPropertyID::Gap)
+#define APPLY_CALC_YG_GUTTER()                                      \
+  APPLY_CALC_YG_INDEXED(                                            \
+      setGap, yoga::Gutter::Row, "rowGap", yoga::StyleLength)       \
+  APPLY_CALC_YG_INDEXED(                                            \
+      setGap, yoga::Gutter::Column, "columnGap", yoga::StyleLength) \
+  APPLY_CALC_YG_INDEXED(setGap, yoga::Gutter::All, "gap", yoga::StyleLength)
 
 void YogaStylableProps::setProp(
     const PropsParserContext& context,
@@ -827,37 +652,14 @@ CalcExpressions YogaStylableProps::buildCalcExpressions(
     const RawProps& rawProps,
     const CalcExpressions& defaultValue) {
   auto calcExpressions = defaultValue;
-  APPLY_CALC_YG_DIMENSION(
-      dimension,
-      setDimension,
-      "width",
-      "height",
-      CalcExpressionPropertyID::Width,
-      CalcExpressionPropertyID::Height)
-  APPLY_CALC_YG_DIMENSION(
-      minDimension,
-      setMinDimension,
-      "minWidth",
-      "minHeight",
-      CalcExpressionPropertyID::MinWidth,
-      CalcExpressionPropertyID::MinHeight)
-  APPLY_CALC_YG_DIMENSION(
-      maxDimension,
-      setMaxDimension,
-      "maxWidth",
-      "maxHeight",
-      CalcExpressionPropertyID::MaxWidth,
-      CalcExpressionPropertyID::MaxHeight)
-  APPLY_CALC_YG_FIELD(
-      flexBasis,
-      setFlexBasis,
-      "flexBasis",
-      yoga::StyleSizeLength,
-      CalcExpressionPropertyID::FlexBasis)
+  APPLY_CALC_YG_DIMENSION(setDimension, "width", "height")
+  APPLY_CALC_YG_DIMENSION(setMinDimension, "minWidth", "minHeight")
+  APPLY_CALC_YG_DIMENSION(setMaxDimension, "maxWidth", "maxHeight")
+  APPLY_CALC_YG_FIELD(setFlexBasis, "flexBasis", yoga::StyleSizeLength)
   APPLY_CALC_YG_GUTTER()
   APPLY_CALC_YG_EDGES_POSITION()
-  APPLY_CALC_YG_EDGES_MARGIN(margin, setMargin, yoga::StyleLength, "margin")
-  APPLY_CALC_YG_EDGES_PADDING(padding, setPadding, yoga::StyleLength, "padding")
+  APPLY_CALC_YG_EDGES_MARGIN(setMargin, yoga::StyleLength, "margin")
+  APPLY_CALC_YG_EDGES_PADDING(setPadding, yoga::StyleLength, "padding")
   return calcExpressions;
 }
 

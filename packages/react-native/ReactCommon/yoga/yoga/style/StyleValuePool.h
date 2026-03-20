@@ -200,7 +200,7 @@ class StyleValuePool {
   YGValueDynamicID getDynamicCallbackID(StyleValueHandle handle) const {
     assert(handle.isDynamic());
     assert(handle.isValueIndexed());
-    return static_cast<uint8_t>(buffer_.get32(handle.value() + 2));
+    return buffer_.get32(handle.value() + 2);
   }
 
   static constexpr bool isIntegerPackable(float f) {

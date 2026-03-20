@@ -58,7 +58,7 @@ YG_EXPORT bool YGFloatIsUndefined(float value);
 /**
  * Host-defined identifier for a dynamic style value.
  */
-typedef uint8_t YGValueDynamicID;
+typedef uint32_t YGValueDynamicID;
 
 /**
  * Layout context passed to YGValueDynamic for resolving dynamic values.
@@ -76,14 +76,6 @@ typedef YGValue (*YGValueDynamic)(
     YGNodeConstRef node,
     YGValueDynamicID id,
     YGValueDynamicContext context);
-
-/**
- * Callback + identifier pair for internal storage.
- */
-struct YGValueDynamicData {
-  YGValueDynamic callback;
-  YGValueDynamicID id;
-};
 
 YG_EXTERN_C_END
 

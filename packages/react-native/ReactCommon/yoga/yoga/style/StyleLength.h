@@ -147,6 +147,11 @@ class StyleLength {
   }
 
  private:
+  struct YGValueDynamicData {
+    YGValueDynamic callback;
+    YGValueDynamicID id;
+  };
+
   union Payload {
     constexpr Payload() : value{} {}
     constexpr explicit Payload(FloatOptional val) : value(val) {}

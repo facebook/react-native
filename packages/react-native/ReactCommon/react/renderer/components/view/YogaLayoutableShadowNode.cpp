@@ -903,12 +903,11 @@ YGValue YogaLayoutableShadowNode::yogaNodeCalcValueResolver(
 
   auto& node = shadowNodeFromContext(yogaNode);
   auto& props = static_cast<const YogaStylableProps&>(*node.props_);
-  auto key = static_cast<CalcExpressionPropertyID>(id);
-  if (!props.calcExpressions.contains(key)) {
+  if (!props.calcExpressions.contains(id)) {
     return {};
   }
-  
-  auto& calc = props.calcExpressions.at(key);
+
+  auto& calc = props.calcExpressions.at(id);
   return YGValue(
       calc.resolve(
           context.referenceLength,
