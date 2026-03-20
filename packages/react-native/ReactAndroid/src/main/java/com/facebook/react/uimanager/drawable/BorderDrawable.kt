@@ -719,7 +719,7 @@ internal class BorderDrawable(
 
     // Check Spacing.ALL first
     val allWidth = borderWidth.getRaw(Spacing.ALL)
-    if (!allWidth.isNaN()) return allWidth.dpToPx()
+    if (!allWidth.isNaN()) return allWidth
 
     // Use the max of all individual sides as a representative width
     val top = borderWidth.getRaw(Spacing.TOP)
@@ -735,7 +735,7 @@ internal class BorderDrawable(
                 maxOf(if (right.isNaN()) 0f else right, if (bottom.isNaN()) 0f else bottom),
             ),
         )
-    return maxSide.dpToPx()
+    return maxSide
   }
 
   private fun getFullBorderWidth(): Float {
@@ -755,7 +755,7 @@ internal class BorderDrawable(
   private fun updatePathEffect(borderWidth: Int) {
     this.borderStyle?.let { style ->
       val pathEffectForBorderStyle =
-          if (this.borderStyle != null) getPathEffect(style, borderWidth.toFloat()) else null
+          if (this.borderStyle != null) getPathEffect(style, borderWidth.pxToDp()) else null
       borderPaint.setPathEffect(pathEffectForBorderStyle)
     }
   }
