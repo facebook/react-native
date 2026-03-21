@@ -68,7 +68,6 @@ function serializeArg(
 
     // param?: T
     if (optional && !nullable) {
-      // throw new Error('are we hitting this case? ' + moduleName);
       return `count <= ${index} || ${val}.isUndefined() ? std::nullopt : std::make_optional(${expression})`;
     }
 

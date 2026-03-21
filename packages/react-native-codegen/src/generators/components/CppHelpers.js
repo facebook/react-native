@@ -15,6 +15,9 @@ import type {
   PropTypeAnnotation,
 } from '../../CodegenSchema';
 
+const {
+  getCppConversionIncludesForReservedPrimitive,
+} = require('../ReservedPrimitiveTypes');
 const {getEnumName, parseValidUnionType, toSafeCppString} = require('../Utils');
 
 function toIntEnumValueName(propName: string, value: number): string {
@@ -134,24 +137,8 @@ function getImports(
       | 'PointPrimitive'
       | 'DimensionPrimitive',
   ) {
-    switch (name) {
-      case 'ColorPrimitive':
-        return;
-      case 'PointPrimitive':
-        return;
-      case 'EdgeInsetsPrimitive':
-        return;
-      case 'ImageRequestPrimitive':
-        return;
-      case 'ImageSourcePrimitive':
-        imports.add('#include <react/renderer/components/image/conversions.h>');
-        return;
-      case 'DimensionPrimitive':
-        imports.add('#include <react/renderer/components/view/conversions.h>');
-        return;
-      default:
-        (name: empty);
-        throw new Error(`Invalid name, got ${name}`);
+    for (const include of getCppConversionIncludesForReservedPrimitive(name)) {
+      imports.add(include);
     }
   }
 

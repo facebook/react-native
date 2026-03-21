@@ -34,11 +34,19 @@ function toPascalCase(inString: string): string {
     return inString;
   }
 
-  return inString[0].toUpperCase() + inString.slice(1);
+  return capitalize(inString);
+}
+
+function toSafeIdentifier(input: string, shouldCapitalize: boolean): string {
+  const parts = input.split('-');
+  if (!shouldCapitalize) {
+    return parts.join('');
+  }
+  return parts.map(toPascalCase).join('');
 }
 
 function toSafeCppString(input: string): string {
-  return input.split('-').map(toPascalCase).join('');
+  return toSafeIdentifier(input, true);
 }
 
 function getEnumName(moduleName: string, origEnumName: string): string {
@@ -105,6 +113,7 @@ module.exports = {
   indent,
   parseValidUnionType,
   toPascalCase,
+  toSafeIdentifier,
   toSafeCppString,
   getEnumName,
   HeterogeneousUnionError,
