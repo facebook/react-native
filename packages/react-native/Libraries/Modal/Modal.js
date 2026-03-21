@@ -349,7 +349,7 @@ class Modal extends React.Component<ModalProps, ModalState> {
           <ScrollView.Context.Provider value={null}>
             <View
               // $FlowFixMe[incompatible-type]
-              style={[styles.container, containerStyles]}
+              style={[styles.container, containerStyles, this.props.style]}
               collapsable={false}>
               {innerChildren}
             </View>
