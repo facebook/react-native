@@ -25,14 +25,10 @@ void ViewTransitionModule::applyViewTransitionName(
   auto tag = shadowNode.getTag();
   auto surfaceId = shadowNode.getSurfaceId();
 
-  // Look up the captured layout metrics for this shadowNode
-  auto metricsIt = capturedLayoutMetricsFromRoot_.find(tag);
-  if (metricsIt == capturedLayoutMetricsFromRoot_.end()) {
-    // No measurement captured yet, nothing to do
+  auto layoutMetrics = captureLayoutMetricsFromRoot(shadowNode);
+  if (layoutMetrics == EmptyLayoutMetrics) {
     return;
   }
-
-  const auto& layoutMetrics = metricsIt->second;
 
   // Convert LayoutMetrics to AnimationKeyFrameViewLayoutMetrics
   AnimationKeyFrameViewLayoutMetrics keyframeMetrics{
@@ -54,8 +50,6 @@ void ViewTransitionModule::applyViewTransitionName(
         .layoutMetrics = keyframeMetrics, .tag = tag, .surfaceId = surfaceId};
     newLayout_[name] = newView;
   }
-
-  capturedLayoutMetricsFromRoot_.erase(tag);
 }
 
 void ViewTransitionModule::cancelViewTransitionName(
@@ -73,10 +67,10 @@ void ViewTransitionModule::restoreViewTransitionName(
   cancelledNameRegistry_.erase(shadowNode.getTag());
 }
 
-void ViewTransitionModule::captureLayoutMetricsFromRoot(
+LayoutMetrics ViewTransitionModule::captureLayoutMetricsFromRoot(
     const ShadowNode& shadowNode) {
   if (uiManager_ == nullptr) {
-    return;
+    return EmptyLayoutMetrics;
   }
 
   // Get the current revision (root node) for this surface
@@ -85,22 +79,18 @@ void ViewTransitionModule::captureLayoutMetricsFromRoot(
           shadowNode.getSurfaceId());
 
   if (currentRevision == nullptr) {
-    return;
+    return EmptyLayoutMetrics;
   }
 
   // Cast root to LayoutableShadowNode
   auto layoutableRoot =
       dynamic_cast<const LayoutableShadowNode*>(currentRevision.get());
   if (layoutableRoot == nullptr) {
-    return;
+    return EmptyLayoutMetrics;
   }
 
-  // Compute layout metrics from root
-  auto layoutMetrics = LayoutableShadowNode::computeLayoutMetricsFromRoot(
+  return LayoutableShadowNode::computeLayoutMetricsFromRoot(
       shadowNode.getFamily(), *layoutableRoot, {});
-
-  // Store the layout metrics keyed by tag
-  capturedLayoutMetricsFromRoot_[shadowNode.getTag()] = layoutMetrics;
 }
 
 void ViewTransitionModule::startViewTransition(
@@ -110,7 +100,7 @@ void ViewTransitionModule::startViewTransition(
   // Mark transition as started
   transitionStarted_ = true;
 
-  // Call mutation callback (including commitRoot, measureInstance,
+  // Call mutation callback (including commitRoot, measureInstance
   // applyViewTransitionName for old & new)
   if (mutationCallback) {
     mutationCallback();

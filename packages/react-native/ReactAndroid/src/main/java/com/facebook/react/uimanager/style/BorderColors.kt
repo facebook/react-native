@@ -59,27 +59,35 @@ internal value class BorderColors(
    * @throws IllegalArgumentException if layoutDirection is not LTR or RTL
    */
   fun resolve(layoutDirection: Int, context: Context): ColorEdges {
+    // Fix for issue #38335: borderBottomColor does not override borderColor on Android
+    // Physical edge colors (LEFT, RIGHT, TOP, BOTTOM) should have higher priority than
+    // logical block colors (BLOCK_START, BLOCK_END, BLOCK) and shorthand colors (ALL, HORIZONTAL, VERTICAL)
+    // This ensures that setting borderBottomColor properly overrides borderBlockColor
     return when (layoutDirection) {
       LayoutDirection.LTR ->
           ColorEdges(
+              // Left: START > LEFT > HORIZONTAL > ALL
               edgeColors[LogicalEdge.START.ordinal]
                   ?: edgeColors[LogicalEdge.LEFT.ordinal]
                   ?: edgeColors[LogicalEdge.HORIZONTAL.ordinal]
                   ?: edgeColors[LogicalEdge.ALL.ordinal]
                   ?: Color.BLACK,
-              edgeColors[LogicalEdge.BLOCK_START.ordinal]
-                  ?: edgeColors[LogicalEdge.TOP.ordinal]
+              // Top: Physical edge (TOP) > BLOCK_START > BLOCK > VERTICAL > ALL
+              edgeColors[LogicalEdge.TOP.ordinal]
+                  ?: edgeColors[LogicalEdge.BLOCK_START.ordinal]
                   ?: edgeColors[LogicalEdge.BLOCK.ordinal]
                   ?: edgeColors[LogicalEdge.VERTICAL.ordinal]
                   ?: edgeColors[LogicalEdge.ALL.ordinal]
                   ?: Color.BLACK,
+              // Right: END > RIGHT > HORIZONTAL > ALL
               edgeColors[LogicalEdge.END.ordinal]
                   ?: edgeColors[LogicalEdge.RIGHT.ordinal]
                   ?: edgeColors[LogicalEdge.HORIZONTAL.ordinal]
                   ?: edgeColors[LogicalEdge.ALL.ordinal]
                   ?: Color.BLACK,
-              edgeColors[LogicalEdge.BLOCK_END.ordinal]
-                  ?: edgeColors[LogicalEdge.BOTTOM.ordinal]
+              // Bottom: Physical edge (BOTTOM) > BLOCK_END > BLOCK > VERTICAL > ALL
+              edgeColors[LogicalEdge.BOTTOM.ordinal]
+                  ?: edgeColors[LogicalEdge.BLOCK_END.ordinal]
                   ?: edgeColors[LogicalEdge.BLOCK.ordinal]
                   ?: edgeColors[LogicalEdge.VERTICAL.ordinal]
                   ?: edgeColors[LogicalEdge.ALL.ordinal]
@@ -87,50 +95,60 @@ internal value class BorderColors(
           )
       LayoutDirection.RTL ->
           if (I18nUtil.instance.doLeftAndRightSwapInRTL(context)) {
+            // RTL with doLeftAndRightSwapInRTL: START/END swap with LEFT/RIGHT
             ColorEdges(
+                // Left (becomes RTL right): END > RIGHT > HORIZONTAL > ALL
                 edgeColors[LogicalEdge.END.ordinal]
                     ?: edgeColors[LogicalEdge.RIGHT.ordinal]
                     ?: edgeColors[LogicalEdge.HORIZONTAL.ordinal]
                     ?: edgeColors[LogicalEdge.ALL.ordinal]
                     ?: Color.BLACK,
-                edgeColors[LogicalEdge.BLOCK_START.ordinal]
-                    ?: edgeColors[LogicalEdge.TOP.ordinal]
+                // Top: Physical edge (TOP) > BLOCK_START > BLOCK > VERTICAL > ALL
+                edgeColors[LogicalEdge.TOP.ordinal]
+                    ?: edgeColors[LogicalEdge.BLOCK_START.ordinal]
                     ?: edgeColors[LogicalEdge.BLOCK.ordinal]
                     ?: edgeColors[LogicalEdge.VERTICAL.ordinal]
                     ?: edgeColors[LogicalEdge.ALL.ordinal]
                     ?: Color.BLACK,
+                // Right (becomes RTL left): START > LEFT > HORIZONTAL > ALL
                 edgeColors[LogicalEdge.START.ordinal]
                     ?: edgeColors[LogicalEdge.LEFT.ordinal]
                     ?: edgeColors[LogicalEdge.HORIZONTAL.ordinal]
                     ?: edgeColors[LogicalEdge.ALL.ordinal]
                     ?: Color.BLACK,
-                edgeColors[LogicalEdge.BLOCK_END.ordinal]
-                    ?: edgeColors[LogicalEdge.BOTTOM.ordinal]
+                // Bottom: Physical edge (BOTTOM) > BLOCK_END > BLOCK > VERTICAL > ALL
+                edgeColors[LogicalEdge.BOTTOM.ordinal]
+                    ?: edgeColors[LogicalEdge.BLOCK_END.ordinal]
                     ?: edgeColors[LogicalEdge.BLOCK.ordinal]
                     ?: edgeColors[LogicalEdge.VERTICAL.ordinal]
                     ?: edgeColors[LogicalEdge.ALL.ordinal]
                     ?: Color.BLACK,
             )
           } else {
+            // RTL without swap: START/END don't affect LEFT/RIGHT
             ColorEdges(
+                // Left: END > LEFT > HORIZONTAL > ALL
                 edgeColors[LogicalEdge.END.ordinal]
                     ?: edgeColors[LogicalEdge.LEFT.ordinal]
                     ?: edgeColors[LogicalEdge.HORIZONTAL.ordinal]
                     ?: edgeColors[LogicalEdge.ALL.ordinal]
                     ?: Color.BLACK,
-                edgeColors[LogicalEdge.BLOCK_START.ordinal]
-                    ?: edgeColors[LogicalEdge.TOP.ordinal]
+                // Top: Physical edge (TOP) > BLOCK_START > BLOCK > VERTICAL > ALL
+                edgeColors[LogicalEdge.TOP.ordinal]
+                    ?: edgeColors[LogicalEdge.BLOCK_START.ordinal]
                     ?: edgeColors[LogicalEdge.BLOCK.ordinal]
                     ?: edgeColors[LogicalEdge.VERTICAL.ordinal]
                     ?: edgeColors[LogicalEdge.ALL.ordinal]
                     ?: Color.BLACK,
+                // Right: START > RIGHT > HORIZONTAL > ALL
                 edgeColors[LogicalEdge.START.ordinal]
                     ?: edgeColors[LogicalEdge.RIGHT.ordinal]
                     ?: edgeColors[LogicalEdge.HORIZONTAL.ordinal]
                     ?: edgeColors[LogicalEdge.ALL.ordinal]
                     ?: Color.BLACK,
-                edgeColors[LogicalEdge.BLOCK_END.ordinal]
-                    ?: edgeColors[LogicalEdge.BOTTOM.ordinal]
+                // Bottom: Physical edge (BOTTOM) > BLOCK_END > BLOCK > VERTICAL > ALL
+                edgeColors[LogicalEdge.BOTTOM.ordinal]
+                    ?: edgeColors[LogicalEdge.BLOCK_END.ordinal]
                     ?: edgeColors[LogicalEdge.BLOCK.ordinal]
                     ?: edgeColors[LogicalEdge.VERTICAL.ordinal]
                     ?: edgeColors[LogicalEdge.ALL.ordinal]
