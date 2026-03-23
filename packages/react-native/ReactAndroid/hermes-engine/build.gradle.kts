@@ -81,21 +81,20 @@ val hermesBuildOutputFileTree =
     fileTree(hermesBuildDir.toString())
         .include("**/*.cmake", "**/*.marks", "**/compiler_depends.ts", "**/Makefile", "**/link.txt")
 
-val hermesVersionProvider: Provider<String> =
-    providers.provider {
-      var hermesVersion = if (hermesV1Enabled) "250829098.0.0-stable" else "main"
-      val hermesVersionFile =
-          File(
-              reactNativeRootDir,
-              if (hermesV1Enabled) "sdks/.hermesv1version" else "sdks/.hermesversion",
-          )
+val hermesVersionProvider: Provider<String> = providers.provider {
+  var hermesVersion = if (hermesV1Enabled) "250829098.0.0-stable" else "main"
+  val hermesVersionFile =
+      File(
+          reactNativeRootDir,
+          if (hermesV1Enabled) "sdks/.hermesv1version" else "sdks/.hermesversion",
+      )
 
-      if (hermesVersionFile.exists()) {
-        hermesVersion = hermesVersionFile.readText()
-      }
+  if (hermesVersionFile.exists()) {
+    hermesVersion = hermesVersionFile.readText()
+  }
 
-      hermesVersion
-    }
+  hermesVersion
+}
 
 val ndkBuildJobs = Runtime.getRuntime().availableProcessors().toString()
 val prefabHeadersDir = File("$buildDir/prefab-headers")
