@@ -15,6 +15,10 @@
 
 RCTFontWeight RCTGetFontWeight(UIFont *font)
 {
+  if (!font) {
+    return UIFontWeightRegular;
+  }
+
   static NSArray<NSString *> *weightSuffixes;
   static NSArray<NSNumber *> *fontWeights;
   static dispatch_once_t onceToken;
