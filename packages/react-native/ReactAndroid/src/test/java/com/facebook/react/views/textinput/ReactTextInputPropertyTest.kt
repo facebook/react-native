@@ -19,7 +19,9 @@ import android.text.InputType
 import android.text.Layout
 import android.util.DisplayMetrics
 import android.view.Gravity
+import android.view.View
 import android.view.inputmethod.EditorInfo
+import androidx.autofill.HintConstants
 import androidx.core.content.res.ResourcesCompat.ID_NULL
 import com.facebook.react.bridge.BridgeReactContext
 import com.facebook.react.bridge.CatalystInstance
@@ -212,6 +214,37 @@ class ReactTextInputPropertyTest {
 
     manager.updateProperties(view, buildStyles("editable", true))
     assertThat(view.isEnabled).isTrue
+  }
+
+  @Test
+  fun testAutoCompleteExtendedHints() {
+    if (Build.VERSION.SDK_INT < Build.VERSION_CODES.O) {
+      return
+    }
+
+    val expectedHints =
+        listOf(
+            "2fa-app-otp" to HintConstants.AUTOFILL_HINT_2FA_APP_OTP,
+            "email-otp" to HintConstants.AUTOFILL_HINT_EMAIL_OTP,
+            "flight-confirmation-code" to HintConstants.AUTOFILL_HINT_FLIGHT_CONFIRMATION_CODE,
+            "flight-number" to HintConstants.AUTOFILL_HINT_FLIGHT_NUMBER,
+            "gift-card-number" to HintConstants.AUTOFILL_HINT_GIFT_CARD_NUMBER,
+            "gift-card-pin" to HintConstants.AUTOFILL_HINT_GIFT_CARD_PIN,
+            "loyalty-account-number" to HintConstants.AUTOFILL_HINT_LOYALTY_ACCOUNT_NUMBER,
+            "postal-address-dependent-locality" to
+                HintConstants.AUTOFILL_HINT_POSTAL_ADDRESS_DEPENDENT_LOCALITY,
+            "postal-address-unit" to HintConstants.AUTOFILL_HINT_POSTAL_ADDRESS_APT_NUMBER,
+            "promo-code" to HintConstants.AUTOFILL_HINT_PROMO_CODE,
+            "upi-vpa" to HintConstants.AUTOFILL_HINT_UPI_VPA,
+            "wifi-password" to HintConstants.AUTOFILL_HINT_WIFI_PASSWORD,
+        )
+
+    expectedHints.forEach { (autoComplete, expectedHint) ->
+      manager.updateProperties(view, buildStyles("autoComplete", autoComplete))
+
+      assertThat(view.importantForAutofill).isEqualTo(View.IMPORTANT_FOR_AUTOFILL_YES)
+      assertThat(view.autofillHints?.toList()).containsExactly(expectedHint)
+    }
   }
 
   @Test
