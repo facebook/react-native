@@ -1,5 +1,110 @@
 # Changelog
 
+## v0.85.0-rc.6
+
+### Breaking
+
+
+
+#### Android specific
+
+
+
+#### iOS specific
+
+
+
+### Added
+
+
+
+#### Android specific
+
+
+
+#### iOS specific
+
+
+
+### Changed
+
+- Bump fmt to 12.1.0 to fix Xcode 26.4 ([faeef2b90a](https://github.com/facebook/react-native/commit/faeef2b90a56633ad44289b994d31e7ce590b145) by [@leotm](https://github.com/leotm))
+
+#### Android specific
+
+
+
+#### iOS specific
+
+
+
+### Deprecated
+
+
+
+#### Android specific
+
+
+
+#### iOS specific
+
+
+
+### Removed
+
+
+
+#### Android specific
+
+
+
+#### iOS specific
+
+
+
+### Fixed
+
+
+
+#### Android specific
+
+
+
+#### iOS specific
+
+- Fixed duplicate symbol error when using React.XCFramework ([d21ffc9e32](https://github.com/facebook/react-native/commit/d21ffc9e322060c354b78da84d590cfc337c1de8) by [@chrfalch](https://github.com/chrfalch))
+
+### Security
+
+
+
+#### Android specific
+
+
+
+#### iOS specific
+
+
+
+### Unknown
+
+- Release 0.85.0-rc.6 ([8f22bbd225](https://github.com/facebook/react-native/commit/8f22bbd225b65dd5aa39706e97e34249b717b20e) by [@react-native-bot](https://github.com/react-native-bot))
+- Bump Podfile.lock ([5f9054b20f](https://github.com/facebook/react-native/commit/5f9054b20f3532d43defe89be42f69e1272ac25b) by [@react-native-bot](https://github.com/react-native-bot))
+- Release 0.85.0-rc.5 ([eae2c5f89d](https://github.com/facebook/react-native/commit/eae2c5f89d60ebb7bb014b73af0569712282fe0c) by [@react-native-bot](https://github.com/react-native-bot))
+
+#### Android Unknown
+
+
+
+#### iOS Unknown
+
+
+
+#### Failed to parse
+
+
+
+
 ## v0.85.0-rc.5
 
 ### Fixed
