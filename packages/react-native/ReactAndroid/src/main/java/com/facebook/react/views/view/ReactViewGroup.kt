@@ -1021,7 +1021,12 @@ public open class ReactViewGroup public constructor(context: Context?) :
       super.addChildrenForAccessibility(outChildren)
     } catch (error: IllegalArgumentException) {
       // Android 16 can race while building accessibility child lists during fast re-parenting.
-      if (error.message?.contains("descendant of this view") != true) {
+      if (error.message?.contains("descendant of this view") == true) {
+        logSoftException(
+            ReactSoftExceptionLogger.Categories.RVG_ADD_CHILDREN_FOR_ACCESSIBILITY,
+            error,
+        )
+      } else {
         throw error
       }
     }
