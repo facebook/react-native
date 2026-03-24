@@ -34,7 +34,7 @@ struct CSSCalc {
 
   constexpr bool operator==(const CSSCalc &rhs) const = default;
 
-  constexpr CSSCalc operator+(const CSSCalc &rhs) const -> 
+  constexpr CSSCalc operator+(const CSSCalc &rhs) const 
   {
     return CSSCalc{
         px + rhs.px,
