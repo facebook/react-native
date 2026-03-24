@@ -30,7 +30,9 @@ void EventTarget::retain(jsi::Runtime& runtime) {
   }
 
   if (retainCount_ == 0) {
-    strongInstanceHandle_ = instanceHandle_->getInstanceHandle(runtime);
+    if (instanceHandle_ != nullptr) {
+      strongInstanceHandle_ = instanceHandle_->getInstanceHandle(runtime);
+    }
   }
   retainCount_ += 1;
 
@@ -72,6 +74,9 @@ SurfaceId EventTarget::getSurfaceId() const {
 }
 
 Tag EventTarget::getTag() const {
+  if (instanceHandle_ == nullptr) {
+    return -1;
+  }
   return instanceHandle_->getTag();
 }
 
