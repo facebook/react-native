@@ -1149,7 +1149,14 @@ static void justifyMainAxis(
       // dimensionWithMargin.
       flexLine.layout.mainDim +=
           child->style().computeMarginForAxis(mainAxis, availableInnerWidth) +
-          childLayout.computedFlexBasis.unwrap();
+          boundAxisWithinMinAndMax(
+              child,
+              direction,
+              mainAxis,
+              childLayout.computedFlexBasis,
+              mainAxisOwnerSize,
+              ownerWidth)
+              .unwrap();
       flexLine.layout.crossDim = availableInnerCrossDim;
     } else {
       // The main dimension is the sum of all the elements dimension plus
