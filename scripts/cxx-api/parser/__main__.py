@@ -12,11 +12,12 @@ Usage:
 """
 
 import argparse
+import concurrent.futures
 import os
-import shutil
 import subprocess
 import sys
 import tempfile
+import traceback
 
 from .config import ApiViewSnapshotConfig, parse_config_file
 from .doxygen import get_doxygen_bin, run_doxygen
@@ -36,13 +37,20 @@ def run_command(
     if result.returncode != 0:
         if verbose:
             print(f"{label} finished with error: {result.stderr}")
-        sys.exit(1)
+        raise RuntimeError(
+            f"{label} finished with error (exit code {result.returncode})"
+        )
     elif verbose:
         print(f"{label} finished successfully")
     return result
 
 
-def build_codegen(platform: str, verbose: bool = False) -> str:
+def build_codegen(
+    platform: str,
+    verbose: bool = False,
+    output_path: str = "./api/codegen",
+    label: str = "",
+) -> str:
     react_native_dir = os.path.join(get_react_native_dir(), "packages", "react-native")
 
     run_command(
@@ -52,17 +60,21 @@ def build_codegen(platform: str, verbose: bool = False) -> str:
             "--path",
             "./",
             "--outputPath",
-            "./api/codegen",
+            output_path,
             "--targetPlatform",
             platform,
             "--forceOutputPath",
         ],
-        label="Codegen",
+        label=f"[{label}] Codegen" if label else "Codegen",
         verbose=verbose,
         cwd=react_native_dir,
+        capture_output=True,
+        text=True,
     )
 
-    return os.path.join(react_native_dir, "api", "codegen")
+    if os.path.isabs(output_path):
+        return output_path
+    return os.path.join(react_native_dir, output_path)
 
 
 def build_snapshot_for_view(
@@ -75,21 +87,29 @@ def build_snapshot_for_view(
     codegen_platform: str | None = None,
     verbose: bool = True,
     input_filter: str = None,
+    work_dir: str | None = None,
 ) -> str:
     if verbose:
-        print(f"Generating API view: {api_view}")
+        print(f"[{api_view}] Generating API view")
 
-    api_dir = os.path.join(react_native_dir, "api")
-    if os.path.exists(api_dir):
-        if verbose:
-            print("  Deleting existing output directory")
-        shutil.rmtree(api_dir)
+    include_directories = list(include_directories)
+
+    if work_dir is None:
+        work_dir = os.path.join(react_native_dir, "api")
 
     if codegen_platform is not None:
-        codegen_dir = build_codegen(codegen_platform, verbose=verbose)
+        codegen_output = os.path.join(work_dir, "codegen")
+        codegen_dir = build_codegen(
+            codegen_platform,
+            verbose=verbose,
+            output_path=codegen_output,
+            label=api_view,
+        )
         include_directories.append(codegen_dir)
     elif verbose:
-        print("  Skipping codegen")
+        print(f"[{api_view}] Skipping codegen")
+
+    config_file = f".doxygen.config.{api_view}.generated"
 
     run_doxygen(
         working_dir=react_native_dir,
@@ -98,12 +118,15 @@ def build_snapshot_for_view(
         definitions=definitions,
         input_filter=input_filter,
         verbose=verbose,
+        output_dir=work_dir,
+        config_file=config_file,
+        label=api_view,
     )
 
     if verbose:
-        print("  Building snapshot")
+        print(f"[{api_view}] Building snapshot")
 
-    snapshot = build_snapshot(os.path.join(api_dir, "xml"))
+    snapshot = build_snapshot(os.path.join(work_dir, "xml"))
     snapshot_string = snapshot.to_string()
 
     output_file = os.path.join(output_dir, f"{api_view}Cxx.api")
@@ -126,36 +149,66 @@ def build_snapshots(
     is_test: bool = False,
 ) -> None:
     if not is_test:
-        for config in snapshot_configs:
-            if view_filter and config.snapshot_name != view_filter:
-                continue
+        configs_to_build = [
+            config
+            for config in snapshot_configs
+            if not view_filter or config.snapshot_name == view_filter
+        ]
 
-            build_snapshot_for_view(
-                api_view=config.snapshot_name,
-                react_native_dir=react_native_dir,
-                include_directories=config.inputs,
-                exclude_patterns=config.exclude_patterns,
-                definitions=config.definitions,
-                output_dir=output_dir,
-                codegen_platform=config.codegen_platform,
-                verbose=verbose,
-                input_filter=input_filter if config.input_filter else None,
-            )
+        with tempfile.TemporaryDirectory(prefix="cxx-api-") as parent_tmp:
+            with concurrent.futures.ThreadPoolExecutor() as executor:
+                futures = {}
+                for config in configs_to_build:
+                    work_dir = os.path.join(parent_tmp, config.snapshot_name)
+                    os.makedirs(work_dir, exist_ok=True)
+                    future = executor.submit(
+                        build_snapshot_for_view,
+                        api_view=config.snapshot_name,
+                        react_native_dir=react_native_dir,
+                        include_directories=config.inputs,
+                        exclude_patterns=config.exclude_patterns,
+                        definitions=config.definitions,
+                        output_dir=output_dir,
+                        codegen_platform=config.codegen_platform,
+                        verbose=verbose,
+                        input_filter=input_filter if config.input_filter else None,
+                        work_dir=work_dir,
+                    )
+                    futures[future] = config.snapshot_name
+
+                errors = []
+                for future in concurrent.futures.as_completed(futures):
+                    view_name = futures[future]
+                    try:
+                        future.result()
+                    except Exception as e:
+                        errors.append((view_name, e))
+                        if verbose:
+                            print(
+                                f"[{view_name}] Error generating:\n"
+                                f"{traceback.format_exc()}"
+                            )
+
+                if errors:
+                    failed_views = ", ".join(name for name, _ in errors)
+                    raise RuntimeError(f"Failed to generate snapshots: {failed_views}")
     else:
-        snapshot = build_snapshot_for_view(
-            api_view="Test",
-            react_native_dir=react_native_dir,
-            include_directories=[],
-            exclude_patterns=[],
-            definitions={},
-            output_dir=output_dir,
-            codegen_platform=None,
-            verbose=verbose,
-            input_filter=input_filter,
-        )
+        with tempfile.TemporaryDirectory(prefix="cxx-api-test-") as work_dir:
+            snapshot = build_snapshot_for_view(
+                api_view="Test",
+                react_native_dir=react_native_dir,
+                include_directories=[],
+                exclude_patterns=[],
+                definitions={},
+                output_dir=output_dir,
+                codegen_platform=None,
+                verbose=verbose,
+                input_filter=input_filter,
+                work_dir=work_dir,
+            )
 
-        if verbose:
-            print(snapshot)
+            if verbose:
+                print(snapshot)
 
 
 def get_default_snapshot_dir() -> str:

@@ -9,7 +9,6 @@ Doxygen configuration and execution utilities.
 
 import os
 import subprocess
-import sys
 
 _DOXYGEN_CONFIG_FILE = ".doxygen.config.generated"
 
@@ -24,6 +23,8 @@ def build_doxygen_config(
     exclude_patterns: list[str] = None,
     definitions: dict[str, str | int] = None,
     input_filter: str = None,
+    output_dir: str = "api",
+    config_file: str = _DOXYGEN_CONFIG_FILE,
 ) -> None:
     if include_directories is None:
         include_directories = []
@@ -54,9 +55,10 @@ def build_doxygen_config(
         .replace("${EXCLUDE_PATTERNS}", exclude_patterns_str)
         .replace("${PREDEFINED}", definitions_str)
         .replace("${DOXYGEN_INPUT_FILTER}", input_filter_str)
+        .replace("${OUTPUT_DIR}", output_dir)
     )
 
-    with open(os.path.join(directory, _DOXYGEN_CONFIG_FILE), "w") as f:
+    with open(os.path.join(directory, config_file), "w") as f:
         f.write(config)
 
 
@@ -67,10 +69,14 @@ def run_doxygen(
     definitions: dict[str, str | int],
     input_filter: str = None,
     verbose: bool = True,
+    output_dir: str = "api",
+    config_file: str = _DOXYGEN_CONFIG_FILE,
+    label: str = "",
 ) -> None:
     """Generate Doxygen config, run Doxygen, and clean up the config file."""
+    prefix = f"[{label}] " if label else ""
     if verbose:
-        print("  Generating Doxygen config file")
+        print(f"{prefix}Generating Doxygen config file")
 
     build_doxygen_config(
         working_dir,
@@ -78,17 +84,19 @@ def run_doxygen(
         exclude_patterns=exclude_patterns,
         definitions=definitions,
         input_filter=input_filter,
+        output_dir=output_dir,
+        config_file=config_file,
     )
 
     if verbose:
-        print("  Running Doxygen")
+        print(f"{prefix}Running Doxygen")
         if input_filter:
-            print(f"    Using input filter: {input_filter}")
+            print(f"{prefix}Using input filter: {input_filter}")
 
     doxygen_bin = get_doxygen_bin()
 
     result = subprocess.run(
-        [doxygen_bin, _DOXYGEN_CONFIG_FILE],
+        [doxygen_bin, config_file],
         cwd=working_dir,
         capture_output=True,
         text=True,
@@ -96,11 +104,11 @@ def run_doxygen(
 
     if result.returncode != 0:
         if verbose:
-            print(f"  Doxygen finished with error: {result.stderr}")
-        sys.exit(1)
+            print(f"{prefix}Doxygen finished with error: {result.stderr}")
+        raise RuntimeError(f"Doxygen finished with error: {result.stderr}")
     elif verbose:
-        print("  Doxygen finished successfully")
+        print(f"{prefix}Doxygen finished successfully")
 
     if verbose:
-        print("  Deleting Doxygen config file")
-    os.remove(os.path.join(working_dir, _DOXYGEN_CONFIG_FILE))
+        print(f"{prefix}Deleting Doxygen config file")
+    os.remove(os.path.join(working_dir, config_file))
