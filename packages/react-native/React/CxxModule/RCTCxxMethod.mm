@@ -129,7 +129,7 @@ using namespace facebook::react;
       // TODO: we should convert this to JSValue directly
       return convertFollyDynamicToId(result);
     }
-  } catch (const facebook::xplat::JsArgumentException &ex) {
+  } catch ([[maybe_unused]] const facebook::xplat::JsArgumentException &ex) {
     RCTLogError(
         @"Method %@.%s argument error: %s",
         RCTBridgeModuleNameForClass([module class]),

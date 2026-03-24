@@ -8,8 +8,6 @@
 package com.facebook.react
 
 import com.facebook.jni.HybridData
-import com.facebook.react.bridge.CxxModuleWrapper
-import com.facebook.react.bridge.ModuleSpec
 import com.facebook.react.bridge.NativeModule
 import com.facebook.react.bridge.ReactApplicationContext
 import com.facebook.react.internal.featureflags.ReactNativeNewArchitectureFeatureFlags
@@ -17,7 +15,6 @@ import com.facebook.react.internal.turbomodule.core.TurboModuleManagerDelegate
 import com.facebook.react.module.annotations.ReactModule
 import com.facebook.react.module.model.ReactModuleInfo
 import com.facebook.react.turbomodule.core.interfaces.TurboModule
-import javax.inject.Provider
 
 public abstract class ReactPackageTurboModuleManagerDelegate : TurboModuleManagerDelegate {
   internal fun interface ModuleProvider {
@@ -61,26 +58,6 @@ public abstract class ReactPackageTurboModuleManagerDelegate : TurboModuleManage
         continue
       }
 
-      @Suppress("DEPRECATION")
-      if (shouldSupportLegacyPackages() && reactPackage is LazyReactPackage) {
-        // TODO(T145105887): Output warnings that LazyReactPackage was used
-        val lazyPkg = reactPackage
-        val moduleSpecs: List<ModuleSpec> =
-            lazyPkg.internal_getNativeModules(reactApplicationContext)
-        val moduleSpecProviderMap: MutableMap<String?, Provider<out NativeModule>> = mutableMapOf()
-        for (moduleSpec in moduleSpecs) {
-          moduleSpecProviderMap[moduleSpec.getName()] = moduleSpec.getProvider()
-        }
-
-        val moduleProvider = ModuleProvider { moduleName: String ->
-          moduleSpecProviderMap[moduleName]?.get()
-        }
-
-        moduleProviders.add(moduleProvider)
-        packageModuleInfos[moduleProvider] = lazyPkg.reactModuleInfoProvider.getReactModuleInfos()
-        continue
-      }
-
       if (shouldSupportLegacyPackages()) {
         // TODO(T145105887): Output warnings that ReactPackage was used
         @Suppress("DEPRECATION")
@@ -103,7 +80,7 @@ public abstract class ReactPackageTurboModuleManagerDelegate : TurboModuleManage
                       moduleClass.name,
                       reactModule.canOverrideExistingModule,
                       true,
-                      reactModule.isCxxModule,
+                      false,
                       ReactModuleInfo.classIsTurboModule(moduleClass),
                   )
               else
@@ -112,7 +89,7 @@ public abstract class ReactPackageTurboModuleManagerDelegate : TurboModuleManage
                       moduleClass.name,
                       module.canOverrideExistingModule(),
                       true,
-                      CxxModuleWrapper::class.java.isAssignableFrom(moduleClass),
+                      false,
                       ReactModuleInfo.classIsTurboModule(moduleClass),
                   )
 
@@ -127,8 +104,6 @@ public abstract class ReactPackageTurboModuleManagerDelegate : TurboModuleManage
       }
     }
   }
-
-  override fun unstable_shouldEnableLegacyModuleInterop(): Boolean = shouldEnableLegacyModuleInterop
 
   override fun getModule(moduleName: String): TurboModule? {
     var resolvedModule: NativeModule? = null
@@ -176,7 +151,7 @@ public abstract class ReactPackageTurboModuleManagerDelegate : TurboModuleManage
   }
 
   override fun getLegacyModule(moduleName: String): NativeModule? {
-    if (!unstable_shouldEnableLegacyModuleInterop()) {
+    if (!shouldEnableLegacyModuleInterop) {
       return null
     }
 
@@ -214,7 +189,7 @@ public abstract class ReactPackageTurboModuleManagerDelegate : TurboModuleManage
     }
   }
 
-  private fun shouldSupportLegacyPackages(): Boolean = unstable_shouldEnableLegacyModuleInterop()
+  private fun shouldSupportLegacyPackages(): Boolean = shouldEnableLegacyModuleInterop
 
   public abstract class Builder {
     private var packages: List<ReactPackage>? = null

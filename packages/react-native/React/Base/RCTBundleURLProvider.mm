@@ -10,6 +10,7 @@
 #import "RCTConstants.h"
 #import "RCTConvert.h"
 #import "RCTDefines.h"
+#import "RCTDevSupportHttpHeaders.h"
 #import "RCTLog.h"
 
 #import <jsinspector-modern/InspectorFlags.h>
@@ -30,6 +31,8 @@ static NSString *const kRCTJsLocationKey = @"RCT_jsLocation";
 static NSString *const kRCTEnableDevKey = @"RCT_enableDev";
 static NSString *const kRCTEnableMinificationKey = @"RCT_enableMinification";
 static NSString *const kRCTInlineSourceMapKey = @"RCT_inlineSourceMap";
+static const NSTimeInterval kRCTPackagerStatusRequestTimeout = 6;
+static const NSTimeInterval kRCTPackagerStatusRequestTimeoutGraceTime = 2;
 
 @implementation RCTBundleURLProvider
 
@@ -91,25 +94,113 @@ static NSURL *serverRootWithHostPort(NSString *hostPort, NSString *scheme)
   }
 
   NSURL *url = [serverRootWithHostPort(hostPort, scheme) URLByAppendingPathComponent:@"status"];
+  if (url == nil) {
+    return NO;
+  }
 
   NSURLSession *session = [NSURLSession sharedSession];
-  NSURLRequest *request = [NSURLRequest requestWithURL:url
-                                           cachePolicy:NSURLRequestUseProtocolCachePolicy
-                                       timeoutInterval:10];
+  NSMutableURLRequest *request = [NSMutableURLRequest requestWithURL:url
+                                                         cachePolicy:NSURLRequestUseProtocolCachePolicy
+                                                     timeoutInterval:kRCTPackagerStatusRequestTimeout];
+  [[RCTDevSupportHttpHeaders sharedInstance] applyHeadersToRequest:request];
   __block NSURLResponse *response;
   __block NSData *data;
 
+  __block BOOL isRunning = NO;
   dispatch_semaphore_t semaphore = dispatch_semaphore_create(0);
   [[session dataTaskWithRequest:request
-              completionHandler:^(NSData *d, NSURLResponse *res, __unused NSError *err) {
+              completionHandler:^(NSData *d, NSURLResponse *res, NSError *err) {
                 data = d;
                 response = res;
+                NSString *status = [[NSString alloc] initWithData:d encoding:NSUTF8StringEncoding];
+                isRunning = [status isEqualToString:@"packager-status:running"];
+                if (!isRunning) {
+                  RCTLogWarn(
+                      @"Packager status check returned unexpected result for %@: %@, error: %@", url, status, err);
+                }
                 dispatch_semaphore_signal(semaphore);
               }] resume];
-  dispatch_semaphore_wait(semaphore, DISPATCH_TIME_FOREVER);
+  long result = dispatch_semaphore_wait(
+      semaphore,
+      dispatch_time(
+          DISPATCH_TIME_NOW,
+          (int64_t)((kRCTPackagerStatusRequestTimeout +
+                     // The request timeout does not cover all phases of the request (e.g. DNS resolution),
+                     // so the actual request might take slightly longer than the configured timeout.
+                     kRCTPackagerStatusRequestTimeoutGraceTime) *
+                    NSEC_PER_SEC)));
+  if (result != 0) {
+    RCTLogWarn(@"Packager status check timed out for %@", url);
+    return NO;
+  }
+  return isRunning;
+}
 
-  NSString *status = [[NSString alloc] initWithData:data encoding:NSUTF8StringEncoding];
-  return [status isEqualToString:@"packager-status:running"];
++ (void)isPackagerRunningAsync:(NSString *)hostPort completion:(void (^)(BOOL isRunning))completion
+{
+  [RCTBundleURLProvider isPackagerRunningAsync:hostPort scheme:nil completion:completion];
+}
+
++ (void)isPackagerRunningAsync:(NSString *)hostPort
+                        scheme:(NSString *)scheme
+                    completion:(void (^)(BOOL isRunning))completion
+{
+  if (!kRCTAllowPackagerAccess) {
+    completion(NO);
+    return;
+  }
+
+  NSURL *url = [serverRootWithHostPort(hostPort, scheme) URLByAppendingPathComponent:@"status"];
+  if (url == nil) {
+    completion(NO);
+    return;
+  }
+
+  NSURLSession *session = [NSURLSession sharedSession];
+  NSMutableURLRequest *request = [NSMutableURLRequest requestWithURL:url
+                                                         cachePolicy:NSURLRequestUseProtocolCachePolicy
+                                                     timeoutInterval:kRCTPackagerStatusRequestTimeout];
+  [[RCTDevSupportHttpHeaders sharedInstance] applyHeadersToRequest:request];
+
+  __block BOOL hasCompleted = NO;
+  NSObject *lock = [[NSObject alloc] init];
+
+  void (^safeCompletion)(BOOL) = ^(BOOL isRunning) {
+    @synchronized(lock) {
+      if (!hasCompleted) {
+        hasCompleted = YES;
+        completion(isRunning);
+      }
+    }
+  };
+
+  NSURLSessionDataTask *task = [session dataTaskWithRequest:request
+                                          completionHandler:^(NSData *data, NSURLResponse *response, NSError *error) {
+                                            if (error != nil || data == nil) {
+                                              safeCompletion(NO);
+                                              return;
+                                            }
+                                            NSString *status = [[NSString alloc] initWithData:data
+                                                                                     encoding:NSUTF8StringEncoding];
+                                            BOOL isRunning = [status isEqualToString:@"packager-status:running"];
+                                            safeCompletion(isRunning);
+                                          }];
+  [task resume];
+
+  dispatch_after(
+      dispatch_time(
+          DISPATCH_TIME_NOW,
+          (int64_t)((kRCTPackagerStatusRequestTimeout + kRCTPackagerStatusRequestTimeoutGraceTime) * NSEC_PER_SEC)),
+      dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0),
+      ^{
+        @synchronized(lock) {
+          if (!hasCompleted) {
+            hasCompleted = YES;
+            [task cancel];
+            completion(NO);
+          }
+        }
+      });
 }
 
 - (NSString *)guessPackagerHost
@@ -138,6 +229,18 @@ static NSURL *serverRootWithHostPort(NSString *hostPort, NSString *scheme)
 + (BOOL)isPackagerRunning:(NSString *)hostPort scheme:(NSString *)scheme
 {
   return false;
+}
+
++ (void)isPackagerRunningAsync:(NSString *)hostPort completion:(void (^)(BOOL isRunning))completion
+{
+  completion(NO);
+}
+
++ (void)isPackagerRunningAsync:(NSString *)hostPort
+                        scheme:(NSString *)scheme
+                    completion:(void (^)(BOOL isRunning))completion
+{
+  completion(NO);
 }
 #endif
 
@@ -313,6 +416,54 @@ static NSURL *serverRootWithHostPort(NSString *hostPort, NSString *scheme)
                             additionalOptions:(NSDictionary<NSString *, NSString *> *__nullable)additionalOptions
 {
   NSString *path = [NSString stringWithFormat:@"/%@.bundle", bundleRoot];
+  NSArray<NSURLQueryItem *> *queryItems = [self createJSBundleURLQuery:packagerHost
+                                                        packagerScheme:scheme
+                                                             enableDev:enableDev
+                                                    enableMinification:enableMinification
+                                                       inlineSourceMap:inlineSourceMap
+                                                           modulesOnly:modulesOnly
+                                                             runModule:runModule
+                                                     additionalOptions:additionalOptions];
+
+  return [RCTBundleURLProvider resourceURLForResourcePath:path
+                                             packagerHost:packagerHost
+                                                   scheme:scheme
+                                               queryItems:[queryItems copy]];
+}
+
+- (NSURL *)jsBundleURLForBundleRoot:(NSString *)bundleRoot
+               packagerServerScheme:(NSString *)packagerServerScheme
+                 packagerServerHost:(NSString *)packagerServerHost
+             packagerOptionsUpdater:(RCTPackagerOptionsUpdater)packagerOptionsUpdater
+{
+  NSArray<NSURLQueryItem *> *queryItems = [RCTBundleURLProvider createJSBundleURLQuery:packagerServerHost
+                                                                        packagerScheme:packagerServerScheme
+                                                                             enableDev:[self enableDev]
+                                                                    enableMinification:[self enableMinification]
+                                                                       inlineSourceMap:[self inlineSourceMap]
+                                                                           modulesOnly:NO
+                                                                             runModule:YES
+                                                                     additionalOptions:nil];
+
+  NSArray<NSURLQueryItem *> *updatedQueryItems = packagerOptionsUpdater((NSMutableArray *)queryItems);
+  NSString *path = [NSString stringWithFormat:@"/%@.bundle", bundleRoot];
+
+  return [RCTBundleURLProvider resourceURLForResourcePath:path
+                                             packagerHost:packagerServerHost
+                                                   scheme:packagerServerScheme
+                                               queryItems:updatedQueryItems];
+}
+
++ (NSArray<NSURLQueryItem *> *)createJSBundleURLQuery:(NSString *)packagerHost
+                                       packagerScheme:(NSString *__nullable)scheme
+                                            enableDev:(BOOL)enableDev
+                                   enableMinification:(BOOL)enableMinification
+                                      inlineSourceMap:(BOOL)inlineSourceMap
+                                          modulesOnly:(BOOL)modulesOnly
+                                            runModule:(BOOL)runModule
+                                    additionalOptions:
+                                        (NSDictionary<NSString *, NSString *> *__nullable)additionalOptions
+{
   BOOL lazy = enableDev;
   NSMutableArray<NSURLQueryItem *> *queryItems = [[NSMutableArray alloc] initWithArray:@[
     [[NSURLQueryItem alloc] initWithName:@"platform" value:RCTPlatformName],
@@ -345,10 +496,7 @@ static NSURL *serverRootWithHostPort(NSString *hostPort, NSString *scheme)
     }
   }
 
-  return [[self class] resourceURLForResourcePath:path
-                                     packagerHost:packagerHost
-                                           scheme:scheme
-                                       queryItems:[queryItems copy]];
+  return queryItems;
 }
 
 + (NSURL *)resourceURLForResourcePath:(NSString *)path

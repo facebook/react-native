@@ -24,7 +24,7 @@ function debug(...args: Array<void | LayoutRectangle | string>) {
   // console.log.apply(null, arguments);
 }
 
-type Props = $ReadOnly<{}>;
+type Props = Readonly<{}>;
 
 type State = {
   didAnimation: boolean,
@@ -201,4 +201,4 @@ const styles = StyleSheet.create({
 });
 
 LayoutEventsTest.displayName = 'LayoutEventsTest';
-module.exports = LayoutEventsTest;
+export default LayoutEventsTest;

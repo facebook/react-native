@@ -86,7 +86,7 @@ expect.extend({
 function mockEffectRegistry(): {
   mockEffect: string => () => () => void,
   mockEffectWithoutCleanup: string => () => void,
-  registry: $ReadOnlyArray<TestEffect | TestEffectCleanup>,
+  registry: ReadonlyArray<TestEffect | TestEffectCleanup>,
 } {
   const registry: Array<TestEffect | TestEffectCleanup> = [];
   return {

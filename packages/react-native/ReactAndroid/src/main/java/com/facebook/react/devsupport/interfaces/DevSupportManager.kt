@@ -19,8 +19,8 @@ import java.io.File
 
 /**
  * Interface for accessing and interacting with development features. In dev mode, use the
- * implementation [com.facebook.react.devsupport.BridgeDevSupportManager]. In production mode, use
- * the dummy implementation [com.facebook.react.devsupport.ReleaseDevSupportManager].
+ * implementation [com.facebook.react.devsupport.BridgelessDevSupportManager]. In production mode,
+ * use the dummy implementation [com.facebook.react.devsupport.ReleaseDevSupportManager].
  */
 public interface DevSupportManager : JSExceptionHandler {
 
@@ -35,6 +35,22 @@ public interface DevSupportManager : JSExceptionHandler {
   public val lastErrorCookie: Int
   public val currentActivity: Activity?
   public val currentReactContext: ReactContext?
+
+  public var devMenuEnabled: Boolean
+    get() = true
+    set(value) = Unit
+
+  public var shakeGestureEnabled: Boolean
+    get() = true
+    set(value) = Unit
+
+  public var keyboardShortcutsEnabled: Boolean
+    get() = true
+    set(value) = Unit
+
+  public var bundleFilePath: String?
+    get() = null
+    set(value) = Unit
 
   public var devSupportEnabled: Boolean
 

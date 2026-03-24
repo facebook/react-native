@@ -797,9 +797,9 @@ RCT_EXPORT_MODULE()
 
 #pragma mark - JS API
 
-RCT_EXPORT_METHOD(sendRequest
-                  : (JS::NativeNetworkingIOS::SpecSendRequestQuery &)query callback
-                  : (RCTResponseSenderBlock)responseSender)
+RCT_EXPORT_METHOD(
+    sendRequest : (JS::NativeNetworkingIOS::SpecSendRequestQuery &)query callback : (RCTResponseSenderBlock)
+        responseSender)
 {
   NSString *method = query.method();
   NSString *url = query.url();

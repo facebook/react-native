@@ -99,14 +99,8 @@ internal class MountingManager(
   }
 
   @AnyThread
-  fun attachRootView(surfaceId: Int, rootView: View?, themedReactContext: ThemedReactContext?) {
+  fun attachRootView(surfaceId: Int, rootView: View, themedReactContext: ThemedReactContext) {
     val surfaceMountingManager = getSurfaceManagerEnforced(surfaceId, "attachView")
-
-    if (surfaceMountingManager.isStopped) {
-      logSoftException(TAG, IllegalStateException("Trying to attach a view to a stopped surface"))
-      return
-    }
-
     surfaceMountingManager.attachRootView(rootView, themedReactContext)
   }
 
@@ -336,10 +330,11 @@ internal class MountingManager(
   fun enqueuePendingEvent(
       surfaceId: Int,
       reactTag: Int,
-      eventName: String?,
+      eventName: String,
       canCoalesceEvent: Boolean,
       params: WritableMap?,
       @EventCategoryDef eventCategory: Int,
+      eventTimestamp: Long,
   ) {
     val smm = getSurfaceMountingManager(surfaceId, reactTag)
     if (smm == null) {
@@ -351,7 +346,14 @@ internal class MountingManager(
       )
       return
     }
-    smm.enqueuePendingEvent(reactTag, eventName, canCoalesceEvent, params, eventCategory)
+    smm.enqueuePendingEvent(
+        reactTag,
+        eventName,
+        canCoalesceEvent,
+        params,
+        eventCategory,
+        eventTimestamp,
+    )
   }
 
   private fun getSurfaceMountingManager(surfaceId: Int, reactTag: Int): SurfaceMountingManager? =

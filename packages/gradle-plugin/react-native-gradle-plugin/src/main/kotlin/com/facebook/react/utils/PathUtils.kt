@@ -42,6 +42,7 @@ internal fun detectedEntryFile(config: ReactExtension, envVariableOverride: Stri
  */
 internal fun detectedCliFile(config: ReactExtension): File =
     detectCliFile(
+        project = config.project,
         reactNativeRoot = config.root.get().asFile,
         preconfiguredCliFile = config.cliFile.asFile.orNull,
     )
@@ -71,7 +72,11 @@ private fun detectEntryFile(
       else -> File(reactRoot, "index.js")
     }
 
-private fun detectCliFile(reactNativeRoot: File, preconfiguredCliFile: File?): File {
+private fun detectCliFile(
+    project: Project,
+    reactNativeRoot: File,
+    preconfiguredCliFile: File?,
+): File {
   // 1. preconfigured path
   if (preconfiguredCliFile != null) {
     if (preconfiguredCliFile.exists()) {
@@ -81,14 +86,12 @@ private fun detectCliFile(reactNativeRoot: File, preconfiguredCliFile: File?): F
 
   // 2. node module path
   val nodeProcess =
-      Runtime.getRuntime()
-          .exec(
-              arrayOf("node", "--print", "require.resolve('react-native/cli');"),
-              emptyArray(),
-              reactNativeRoot,
-          )
+      project.providers.exec { exec ->
+        exec.commandLine("node", "--print", "require.resolve('react-native/cli');")
+        exec.workingDir(reactNativeRoot)
+      }
 
-  val nodeProcessOutput = nodeProcess.inputStream.use { it.bufferedReader().readText().trim() }
+  val nodeProcessOutput = nodeProcess.standardOutput.asText.get().trim()
 
   if (nodeProcessOutput.isNotEmpty()) {
     val nodeModuleCliJs = File(nodeProcessOutput)
@@ -130,7 +133,6 @@ private fun detectCliFile(reactNativeRoot: File, preconfiguredCliFile: File?): F
 internal fun detectOSAwareHermesCommand(
     projectRoot: File,
     hermesCommand: String,
-    hermesV1Enabled: Boolean = false,
 ): String { // 1. If the project specifies a Hermes command, don't second guess it.
   if (hermesCommand.isNotBlank()) {
     val osSpecificHermesCommand =
@@ -151,13 +153,9 @@ internal fun detectOSAwareHermesCommand(
     return builtHermesc.cliPath(projectRoot)
   }
 
-  // 3. If Hermes V1 is enabled, use hermes-compiler from npm, otherwise, if the
-  // react-native contains a pre-built hermesc, use it.
-  // TODO: T237406039 use hermes-compiler from npm for both
-  val hermesCPath = if (hermesV1Enabled) HERMES_COMPILER_NPM_DIR else HERMESC_IN_REACT_NATIVE_DIR
+  // 3. Use hermes-compiler from npm
   val prebuiltHermesPath =
-      hermesCPath
-          .plus(getHermesCBin())
+      HERMES_COMPILER_NPM_DIR.plus(getHermesCBin())
           .replace("%OS-BIN%", getHermesOSBin())
           // Execution on Windows fails with / as separator
           .replace('/', File.separatorChar)
@@ -243,6 +241,5 @@ internal fun readPackageJsonFile(
 }
 
 private const val HERMES_COMPILER_NPM_DIR = "node_modules/hermes-compiler/hermesc/%OS-BIN%/"
-private const val HERMESC_IN_REACT_NATIVE_DIR = "node_modules/react-native/sdks/hermesc/%OS-BIN%/"
 private const val HERMESC_BUILT_FROM_SOURCE_DIR =
     "node_modules/react-native/ReactAndroid/hermes-engine/build/hermes/bin/"

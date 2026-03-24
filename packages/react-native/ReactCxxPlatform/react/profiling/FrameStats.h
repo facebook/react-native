@@ -25,7 +25,8 @@ class TimeSeries;
 void enableFrameStatsPrinting(bool enable = true);
 void logFrameStats(double timeStampMs, double durationMs);
 
-inline double getTimeStampMs() {
+inline double getTimeStampMs()
+{
   return std::chrono::duration_cast<std::chrono::nanoseconds>(
              std::chrono::high_resolution_clock::now().time_since_epoch())
              .count() /
@@ -36,7 +37,8 @@ class FrameStatsBlock {
  public:
   FrameStatsBlock() : startTimeStamp_(getTimeStampMs()) {}
 
-  ~FrameStatsBlock() {
+  ~FrameStatsBlock()
+  {
     logFrameStats(startTimeStamp_, getTimeStampMs() - startTimeStamp_);
   }
 

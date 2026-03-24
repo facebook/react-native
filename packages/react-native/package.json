@@ -21,7 +21,7 @@
   ],
   "bugs": "https://github.com/facebook/react-native/issues",
   "engines": {
-    "node": ">= 20.19.4"
+    "node": "^20.19.4 || ^22.13.0 || ^24.3.0 || >= 25.0.0"
   },
   "bin": {
     "react-native": "cli.js"
@@ -82,7 +82,6 @@
     "index.js.flow",
     "interface.js",
     "jest-preset.js",
-    "jest",
     "Libraries",
     "LICENSE",
     "React-Core.podspec",
@@ -129,6 +128,7 @@
     "scripts/xcode/ccache.conf",
     "scripts/xcode/with-environment.sh",
     "sdks/.hermesversion",
+    "sdks/.hermesv1version",
     "sdks/hermes-engine",
     "sdks/hermesc",
     "settings.gradle.kts",
@@ -149,38 +149,38 @@
     "featureflags": "node ./scripts/featureflags/index.js"
   },
   "peerDependencies": {
+    "@react-native/jest-preset": "0.86.0-main",
     "@types/react": "^19.1.1",
-    "react": "^19.2.0"
+    "react": "^19.2.3"
   },
   "peerDependenciesMeta": {
     "@types/react": {
       "optional": true
+    },
+    "@react-native/jest-preset": {
+      "optional": true
     }
   },
   "dependencies": {
-    "@jest/create-cache-key-function": "^29.7.0",
-    "@react-native/assets-registry": "0.83.0-main",
-    "@react-native/codegen": "0.83.0-main",
-    "@react-native/community-cli-plugin": "0.83.0-main",
-    "@react-native/gradle-plugin": "0.83.0-main",
-    "@react-native/js-polyfills": "0.83.0-main",
-    "@react-native/normalize-colors": "0.83.0-main",
-    "@react-native/virtualized-lists": "0.83.0-main",
+    "@react-native/assets-registry": "0.86.0-main",
+    "@react-native/codegen": "0.86.0-main",
+    "@react-native/community-cli-plugin": "0.86.0-main",
+    "@react-native/gradle-plugin": "0.86.0-main",
+    "@react-native/js-polyfills": "0.86.0-main",
+    "@react-native/normalize-colors": "0.86.0-main",
+    "@react-native/virtualized-lists": "0.86.0-main",
     "abort-controller": "^3.0.0",
     "anser": "^1.4.9",
     "ansi-regex": "^5.0.0",
-    "babel-jest": "^29.7.0",
-    "babel-plugin-syntax-hermes-parser": "0.32.0",
+    "babel-plugin-syntax-hermes-parser": "0.34.0",
     "base64-js": "^1.5.1",
     "commander": "^12.0.0",
     "flow-enums-runtime": "^0.0.6",
-    "glob": "^7.1.1",
     "hermes-compiler": "0.0.0",
     "invariant": "^2.2.4",
-    "jest-environment-node": "^29.7.0",
     "memoize-one": "^5.0.0",
-    "metro-runtime": "^0.83.3",
-    "metro-source-map": "^0.83.3",
+    "metro-runtime": "^0.84.2",
+    "metro-source-map": "^0.84.2",
     "nullthrows": "^1.1.1",
     "pretty-format": "^29.7.0",
     "promise": "^8.3.0",
@@ -190,6 +190,7 @@
     "scheduler": "0.27.0",
     "semver": "^7.1.3",
     "stacktrace-parser": "^0.1.10",
+    "tinyglobby": "^0.2.15",
     "whatwg-fetch": "^3.0.0",
     "ws": "^7.5.10",
     "yargs": "^17.6.2"

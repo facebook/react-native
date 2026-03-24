@@ -62,7 +62,6 @@ Color ColorAnimatedNode::getColor() {
     manager_->updatedNodeTags_.erase(tag_);
   }
   return color_;
-  return 0;
 }
 
 } // namespace facebook::react

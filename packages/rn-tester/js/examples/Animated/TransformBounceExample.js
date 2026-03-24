@@ -29,7 +29,7 @@ const styles = StyleSheet.create({
   },
 });
 
-function TransformBounceView({useNativeDriver}: {useNativeDriver: boolean}) {
+component TransformBounceView(useNativeDriver: boolean) {
   const anim = new Animated.Value(0);
   const bounceAnimation = Animated.spring(anim, {
     // Returns to the start
@@ -91,7 +91,7 @@ function TransformBounceView({useNativeDriver}: {useNativeDriver: boolean}) {
   );
 }
 
-function TransformBounceExample(): React.Node {
+component TransformBounceExample() {
   const [useNativeDriver, setUseNativeDriver] = useState(false);
 
   return (

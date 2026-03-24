@@ -56,11 +56,12 @@ TEST_F(BridgingTest, callFromJsTest) {
 
   auto object = jsi::Object(rt);
 
-  EXPECT_TRUE(jsi::Object::strictEquals(
-      rt,
-      object,
-      bridging::callFromJs<jsi::Object>(
-          rt, &TestClass::getObject, invoker, &instance, object)));
+  EXPECT_TRUE(
+      jsi::Object::strictEquals(
+          rt,
+          object,
+          bridging::callFromJs<jsi::Object>(
+              rt, &TestClass::getObject, invoker, &instance, object)));
 
   auto promise = bridging::callFromJs<jsi::Object>(
       rt,

@@ -7,10 +7,16 @@
 
 #pragma once
 
+#include <react/renderer/debug/flags.h>
 #include <react/renderer/graphics/ColorStop.h>
 #include <react/renderer/graphics/Float.h>
 #include <react/renderer/graphics/ValueUnit.h>
 #include <optional>
+
+#if RN_DEBUG_STRING_CONVERTIBLE
+#include <sstream>
+#endif
+
 #include <variant>
 #include <vector>
 
@@ -23,23 +29,13 @@ namespace facebook::react {
 enum class RadialGradientShape { Circle, Ellipse };
 
 struct RadialGradientSize {
-  enum class SizeKeyword {
-    ClosestSide,
-    FarthestSide,
-    ClosestCorner,
-    FarthestCorner
-  };
+  enum class SizeKeyword { ClosestSide, FarthestSide, ClosestCorner, FarthestCorner };
 
   struct Dimensions {
     ValueUnit x;
     ValueUnit y;
 
-    bool operator==(const Dimensions& other) const {
-      return x == other.x && y == other.y;
-    }
-    bool operator!=(const Dimensions& other) const {
-      return !(*this == other);
-    }
+    bool operator==(const Dimensions &other) const = default;
 
 #ifdef RN_SERIALIZABLE_STATE
     folly::dynamic toDynamic() const;
@@ -48,21 +44,7 @@ struct RadialGradientSize {
 
   std::variant<SizeKeyword, Dimensions> value;
 
-  bool operator==(const RadialGradientSize& other) const {
-    if (std::holds_alternative<SizeKeyword>(value) &&
-        std::holds_alternative<SizeKeyword>(other.value)) {
-      return std::get<SizeKeyword>(value) == std::get<SizeKeyword>(other.value);
-    } else if (
-        std::holds_alternative<Dimensions>(value) &&
-        std::holds_alternative<Dimensions>(other.value)) {
-      return std::get<Dimensions>(value) == std::get<Dimensions>(other.value);
-    }
-    return false;
-  }
-
-  bool operator!=(const RadialGradientSize& other) const {
-    return !(*this == other);
-  }
+  bool operator==(const RadialGradientSize &other) const = default;
 
 #ifdef RN_SERIALIZABLE_STATE
   folly::dynamic toDynamic() const;
@@ -75,14 +57,7 @@ struct RadialGradientPosition {
   std::optional<ValueUnit> right;
   std::optional<ValueUnit> bottom;
 
-  bool operator==(const RadialGradientPosition& other) const {
-    return top == other.top && left == other.left && right == other.right &&
-        bottom == other.bottom;
-  }
-
-  bool operator!=(const RadialGradientPosition& other) const {
-    return !(*this == other);
-  }
+  bool operator==(const RadialGradientPosition &other) const = default;
 
 #ifdef RN_SERIALIZABLE_STATE
   folly::dynamic toDynamic() const;
@@ -95,17 +70,14 @@ struct RadialGradient {
   RadialGradientPosition position;
   std::vector<ColorStop> colorStops;
 
-  bool operator==(const RadialGradient& other) const {
-    return shape == other.shape && size == other.size &&
-        position == other.position && colorStops == other.colorStops;
-  }
-  bool operator!=(const RadialGradient& other) const {
-    return !(*this == other);
-  }
+  bool operator==(const RadialGradient &other) const = default;
 
 #ifdef RN_SERIALIZABLE_STATE
   folly::dynamic toDynamic() const;
 #endif
-};
 
+#if RN_DEBUG_STRING_CONVERTIBLE
+  void toString(std::stringstream &ss) const;
+#endif
+};
 }; // namespace facebook::react

@@ -10,7 +10,7 @@
 import type * as React from 'react';
 import {Constructor} from '../../types/private/Utilities';
 import {AccessibilityProps} from '../Components/View/ViewAccessibility';
-import {NativeMethods} from '../../types/public/ReactNativeTypes';
+import {HostInstance} from '../../types/public/ReactNativeTypes';
 import {ColorValue, StyleProp} from '../StyleSheet/StyleSheet';
 import {TextStyle, ViewStyle} from '../StyleSheet/StyleSheetTypes';
 import {
@@ -224,7 +224,7 @@ export interface TextProps
  * A React component for displaying text which supports nesting, styling, and touch handling.
  */
 declare class TextComponent extends React.Component<TextProps> {}
-declare const TextBase: Constructor<NativeMethods> & typeof TextComponent;
+declare const TextBase: Constructor<HostInstance> & typeof TextComponent;
 export class Text extends TextBase {}
 
 export const unstable_TextAncestorContext: React.Context<boolean>;

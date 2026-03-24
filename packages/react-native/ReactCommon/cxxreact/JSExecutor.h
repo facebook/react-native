@@ -31,26 +31,21 @@ class RAMBundleRegistry;
 
 // This interface describes the delegate interface required by
 // Executor implementations to call from JS into native code.
-class [[deprecated(
-    "This API will be removed along with the legacy architecture.")]] ExecutorDelegate {
+class [[deprecated("This API will be removed along with the legacy architecture.")]] ExecutorDelegate {
  public:
   virtual ~ExecutorDelegate() = default;
 
   virtual std::shared_ptr<ModuleRegistry> getModuleRegistry() = 0;
 
-  virtual void callNativeModules(
-      JSExecutor& executor,
-      folly::dynamic&& calls,
-      bool isEndOfBatch) = 0;
+  virtual void callNativeModules(JSExecutor &executor, folly::dynamic &&calls, bool isEndOfBatch) = 0;
   virtual MethodCallResult callSerializableNativeHook(
-      JSExecutor& executor,
+      JSExecutor &executor,
       unsigned int moduleId,
       unsigned int methodId,
-      folly::dynamic&& args) = 0;
+      folly::dynamic &&args) = 0;
 };
 
-class [[deprecated(
-    "This API will be removed along with the legacy architecture.")]] JSExecutorFactory {
+class [[deprecated("This API will be removed along with the legacy architecture.")]] JSExecutorFactory {
  public:
   virtual std::unique_ptr<JSExecutor> createJSExecutor(
       std::shared_ptr<ExecutorDelegate> delegate,
@@ -58,8 +53,7 @@ class [[deprecated(
   virtual ~JSExecutorFactory() = default;
 };
 
-class RN_EXPORT [[deprecated(
-    "This API will be removed along with the legacy architecture.")]] JSExecutor {
+class RN_EXPORT [[deprecated("This API will be removed along with the legacy architecture.")]] JSExecutor {
  public:
   /**
    * Prepares the JS runtime for React Native by installing global variables.
@@ -69,24 +63,19 @@ class RN_EXPORT [[deprecated(
   /**
    * Execute an application script bundle in the JS context.
    */
-  virtual void loadBundle(
-      std::unique_ptr<const JSBigString> script,
-      std::string sourceURL) = 0;
+  virtual void loadBundle(std::unique_ptr<const JSBigString> script, std::string sourceURL) = 0;
 
 #ifndef RCT_REMOVE_LEGACY_ARCH
   /**
    * Add an application "RAM" bundle registry
    */
-  virtual void setBundleRegistry(
-      std::unique_ptr<RAMBundleRegistry> bundleRegistry) = 0;
+  virtual void setBundleRegistry(std::unique_ptr<RAMBundleRegistry> bundleRegistry) = 0;
 #endif // RCT_REMOVE_LEGACY_ARCH
 
   /**
    * Register a file path for an additional "RAM" bundle
    */
-  virtual void registerBundle(
-      uint32_t bundleId,
-      const std::string& bundlePath) = 0;
+  virtual void registerBundle(uint32_t bundleId, const std::string &bundlePath) = 0;
 
   /**
    * Executes BatchedBridge.callFunctionReturnFlushedQueue with the module ID,
@@ -94,10 +83,8 @@ class RN_EXPORT [[deprecated(
    * responsible for using Bridge->callNativeModules to invoke any necessary
    * native modules methods.
    */
-  virtual void callFunction(
-      const std::string& moduleId,
-      const std::string& methodId,
-      const folly::dynamic& arguments) = 0;
+  virtual void
+  callFunction(const std::string &moduleId, const std::string &methodId, const folly::dynamic &arguments) = 0;
 
   /**
    * Executes BatchedBridge.invokeCallbackAndReturnFlushedQueue with the cbID,
@@ -105,15 +92,12 @@ class RN_EXPORT [[deprecated(
    * executor is responsible for using Bridge->callNativeModules to invoke any
    * necessary native modules methods.
    */
-  virtual void invokeCallback(
-      double callbackId,
-      const folly::dynamic& arguments) = 0;
+  virtual void invokeCallback(double callbackId, const folly::dynamic &arguments) = 0;
 
-  virtual void setGlobalVariable(
-      std::string propName,
-      std::unique_ptr<const JSBigString> jsonValue) = 0;
+  virtual void setGlobalVariable(std::string propName, std::unique_ptr<const JSBigString> jsonValue) = 0;
 
-  virtual void* getJavaScriptContext() {
+  virtual void *getJavaScriptContext()
+  {
     return nullptr;
   }
 
@@ -122,7 +106,8 @@ class RN_EXPORT [[deprecated(
    * Chrome remote debugging protocol. If true, the executor should also
    * override the \c createAgentDelegate method.
    */
-  virtual bool isInspectable() {
+  virtual bool isInspectable()
+  {
     return false;
   }
 
@@ -140,24 +125,21 @@ class RN_EXPORT [[deprecated(
 
   virtual void flush() {}
 
-  static std::string getSyntheticBundlePath(
-      uint32_t bundleId,
-      const std::string& bundlePath);
+  static std::string getSyntheticBundlePath(uint32_t bundleId, const std::string &bundlePath);
 
   /**
    * Get a reference to the \c RuntimeTargetDelegate owned (or implemented) by
    * this executor. This reference must remain valid for the duration of the
    * executor's lifetime.
    */
-  virtual jsinspector_modern::RuntimeTargetDelegate& getRuntimeTargetDelegate();
+  virtual jsinspector_modern::RuntimeTargetDelegate &getRuntimeTargetDelegate();
 
  private:
   /**
    * Initialized by \c getRuntimeTargetDelegate if not overridden, and then
    * never changes.
    */
-  std::optional<jsinspector_modern::FallbackRuntimeTargetDelegate>
-      runtimeTargetDelegate_;
+  std::optional<jsinspector_modern::FallbackRuntimeTargetDelegate> runtimeTargetDelegate_;
 };
 
 } // namespace facebook::react

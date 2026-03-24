@@ -149,7 +149,7 @@ function Card(props: {color: string}) {
 
   const separatorComponent = () => <View style={styles.separator} />;
 
-  const listRef = useRef<?FlatList<mixed>>();
+  const listRef = useRef<?FlatList<unknown>>();
 
   useEffect(() => {
     listRef.current?.scrollToOffset({offset: 0, animated: false});

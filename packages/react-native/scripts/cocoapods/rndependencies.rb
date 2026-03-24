@@ -177,9 +177,9 @@ class ReactNativeDependenciesUtils
         return "#{maven_repo_url}/#{group}/react-native-artifacts/#{version}/react-native-artifacts-#{version}-reactnative-dependencies-#{build_type.to_s}.tar.gz"
     end
 
-    def self.nightly_tarball_url(version)
+    def self.nightly_tarball_url(version, build_type)
         artifact_coordinate = "react-native-artifacts"
-        artifact_name = "reactnative-dependencies-debug.tar.gz"
+        artifact_name = "reactnative-dependencies-#{build_type.to_s}.tar.gz"
         xml_url = "https://central.sonatype.com/repository/maven-snapshots/com/facebook/react/#{artifact_coordinate}/#{version}-SNAPSHOT/maven-metadata.xml"
 
         response = Net::HTTP.get_response(URI(xml_url))
@@ -196,13 +196,39 @@ class ReactNativeDependenciesUtils
         end
     end
 
+    def self.download_nightly_rndeps(react_native_path, version, configuration)
+        tarball_url = nightly_tarball_url(version, configuration)
+        download_rndeps_tarball(react_native_path, tarball_url, version, configuration)
+    end
+
     def self.download_stable_rndeps(react_native_path, version, configuration)
         tarball_url = release_tarball_url(version, configuration)
         download_rndeps_tarball(react_native_path, tarball_url, version, configuration)
     end
 
     def self.podspec_source_download_prebuilt_nightly_tarball(version)
-        url = nightly_tarball_url(version)
+        # Warn if @@react_native_path is not set
+        if @@react_native_path == ""
+            rndeps_log("react_native_path is not set", :error)
+            return
+        end
+
+        # Warn if @@react_native_version is not set
+        if @@react_native_version == ""
+            rndeps_log("react_native_version is not set", :error)
+            return
+        end
+
+        if @@build_from_source
+            return
+        end
+
+        url = nightly_tarball_url(version, :debug)
+        rndeps_log("Using tarball from URL: #{url}")
+        destinationDebug = download_nightly_rndeps(@@react_native_path, @@react_native_version, :debug)
+        download_nightly_rndeps(@@react_native_path, @@react_native_version, :release)
+
+        return {:http => URI::File.build(path: destinationDebug).to_s }
         return {:http => url}
     end
 
@@ -225,7 +251,7 @@ class ReactNativeDependenciesUtils
     end
 
     def self.nightly_artifact_exists(version)
-        return artifact_exists(nightly_tarball_url(version).gsub("\\", ""))
+        return artifact_exists(nightly_tarball_url(version, :debug).gsub("\\", ""))
     end
 
     def self.artifacts_dir()

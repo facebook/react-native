@@ -151,7 +151,7 @@ export default class Event {
     return this._type;
   }
 
-  composedPath(): $ReadOnlyArray<EventTarget> {
+  composedPath(): ReadonlyArray<EventTarget> {
     return getComposedPath(this).slice();
   }
 

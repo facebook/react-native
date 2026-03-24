@@ -7,56 +7,70 @@
 
 #pragma once
 
-#include <folly/dynamic.h>
+#include <ReactCommon/CallInvoker.h>
 #include <react/renderer/core/ReactPrimitives.h>
 #include <react/renderer/uimanager/UIManager.h>
 #include <react/renderer/uimanager/UIManagerAnimationBackend.h>
 #include <functional>
+#include <memory>
+#include <set>
 #include <vector>
 #include "AnimatedProps.h"
-#include "AnimatedPropsBuilder.h"
+#include "AnimatedPropsRegistry.h"
+#include "AnimationBackendCommitHook.h"
+#include "AnimationChoreographer.h"
 
 namespace facebook::react {
 
+class AnimationBackend;
+
 struct AnimationMutation {
   Tag tag;
-  const ShadowNodeFamily* family;
+  std::shared_ptr<const ShadowNodeFamily> family;
   AnimatedProps props;
+  bool hasLayoutUpdates{false};
 };
 
-using AnimationMutations = std::vector<AnimationMutation>;
+struct AnimationMutations {
+  std::vector<AnimationMutation> batch;
+  std::set<SurfaceId> asyncFlushSurfaces;
+};
+
+using Callback = std::function<AnimationMutations(AnimationTimestamp)>;
+
+struct CallbackWithId {
+  CallbackId callbackId;
+  Callback callback;
+};
 
 class AnimationBackend : public UIManagerAnimationBackend {
  public:
-  using Callback = std::function<AnimationMutations(float)>;
-  using StartOnRenderCallback = std::function<void(std::function<void()>&&)>;
-  using StopOnRenderCallback = std::function<void()>;
-  using DirectManipulationCallback =
-      std::function<void(Tag, const folly::dynamic&)>;
-  using FabricCommitCallback =
-      std::function<void(std::unordered_map<Tag, folly::dynamic>&)>;
-
-  std::vector<Callback> callbacks;
-  const StartOnRenderCallback startOnRenderCallback_;
-  const StopOnRenderCallback stopOnRenderCallback_;
-  const DirectManipulationCallback directManipulationCallback_;
-  const FabricCommitCallback fabricCommitCallback_;
-  UIManager* uiManager_;
+  using ResumeCallback = std::function<void()>;
+  using PauseCallback = std::function<void()>;
 
   AnimationBackend(
-      StartOnRenderCallback&& startOnRenderCallback,
-      StopOnRenderCallback&& stopOnRenderCallback,
-      DirectManipulationCallback&& directManipulationCallback,
-      FabricCommitCallback&& fabricCommitCallback,
-      UIManager* uiManager);
-  void commitUpdatesWithFamilies(
-      const std::unordered_set<const ShadowNodeFamily*>& families,
-      std::unordered_map<Tag, AnimatedProps>& updates);
-  void synchronouslyUpdateProps(
-      const std::unordered_map<Tag, AnimatedProps>& updates);
+      std::shared_ptr<AnimationChoreographer> animationChoreographer,
+      std::shared_ptr<UIManager> uiManager);
+  void commitUpdates(SurfaceId surfaceId, SurfaceUpdates &surfaceUpdates);
+  void synchronouslyUpdateProps(const std::unordered_map<Tag, AnimatedProps> &updates);
+  void requestAsyncFlushForSurfaces(const std::set<SurfaceId> &surfaces);
+  void clearRegistry(SurfaceId surfaceId) override;
+  void registerJSInvoker(std::shared_ptr<CallInvoker> jsInvoker) override;
 
-  void onAnimationFrame(double timestamp) override;
-  void start(const Callback& callback);
-  void stop() override;
+  void onAnimationFrame(AnimationTimestamp timestamp) override;
+  void trigger() override;
+  CallbackId start(const Callback &callback) override;
+  void stop(CallbackId callbackId) override;
+
+ private:
+  std::vector<CallbackWithId> callbacks;
+  std::shared_ptr<AnimatedPropsRegistry> animatedPropsRegistry_;
+  std::shared_ptr<AnimationChoreographer> animationChoreographer_;
+  AnimationBackendCommitHook commitHook_;
+  std::weak_ptr<UIManager> uiManager_;
+  std::shared_ptr<CallInvoker> jsInvoker_;
+  bool isRenderCallbackStarted_{false};
+  CallbackId nextCallbackId_{0};
+  std::mutex mutex_;
 };
 } // namespace facebook::react

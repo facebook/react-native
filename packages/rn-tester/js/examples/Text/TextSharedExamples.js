@@ -14,7 +14,7 @@ import type {TextLayoutLine} from 'react-native/Libraries/Types/CoreEventTypes';
 import RNTesterText from '../../components/RNTesterText';
 import {useTheme} from '../../components/RNTesterTheme';
 import {useState} from 'react';
-import {View} from 'react-native';
+import {StyleSheet, Text, View} from 'react-native';
 
 function InlineView(props: {
   textAlign: 'auto' | 'left' | 'right' | 'center' | 'justify',
@@ -80,7 +80,7 @@ function EmptyTextExample(): React.Node {
 function TextAndLayoutLinesJSON({
   testID,
   ellipsizeMode,
-}: $ReadOnly<{
+}: Readonly<{
   testID: string,
   ellipsizeMode: 'head' | 'tail' | 'middle' | 'clip',
 }>): React.Node {
@@ -193,6 +193,55 @@ component RtlAndInlineViewsExample() {
   );
 }
 
+component TextWithLinkRoleExample() {
+  const [pressed, setPressed] = useState(false);
+  const handlePress = () => setPressed(true);
+  const linkColor = pressed ? 'red' : 'teal';
+
+  return (
+    <View testID="text-with-link-role">
+      <Text
+        role="link"
+        style={[styles.link, {color: linkColor}]}
+        onPress={handlePress}
+        testID="text-link-role-link">
+        Link Text
+      </Text>
+
+      <Text>
+        <Text role="link" style={styles.link} onPress={handlePress}>
+          Nested Link
+        </Text>
+      </Text>
+
+      <Text>
+        Before{' '}
+        <Text role="link" style={styles.link} onPress={handlePress}>
+          Nested Link
+        </Text>
+        {' After'}
+      </Text>
+
+      <Text>
+        <Text role="link" style={styles.link} onPress={handlePress}>
+          Nested Link 1
+        </Text>
+        {' - '}
+        <Text role="link" style={styles.link} onPress={handlePress}>
+          Nested Link 2
+        </Text>
+      </Text>
+    </View>
+  );
+}
+
+const styles = StyleSheet.create({
+  link: {
+    color: 'teal',
+    textDecorationLine: 'underline',
+  },
+});
+
 export default [
   {
     title: 'Empty Text',
@@ -222,4 +271,10 @@ export default [
     scrollable: true,
     render: NumberOfLinesTextLayoutExample,
   },
-] as $ReadOnlyArray<RNTesterModuleExample>;
+  {
+    title: 'Text with link role',
+    name: 'textWithLinkRole',
+    description: 'Shows the a11y behavior of Text with role="link"',
+    render: TextWithLinkRoleExample,
+  },
+] as ReadonlyArray<RNTesterModuleExample>;

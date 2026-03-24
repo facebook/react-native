@@ -159,4 +159,40 @@ TEST_F(TaskDispatchThreadTest, SyncTaskShouldntBeBlockedDueToDelayedTask) {
   dispatcher->runSync([&] { counter++; });
   EXPECT_EQ(counter.load(), 1);
 }
+
+// Test: runSync should not block forever when quit() is called concurrently
+// This tests the fix where the RAII guard ensures the promise is fulfilled
+// even if the task is destroyed without executing during shutdown.
+TEST_F(TaskDispatchThreadTest, RunSyncDoesNotBlockWhenQuitCalledConcurrently) {
+  for (int i = 0; i < 100; ++i) {
+    auto localDispatcher = std::make_unique<TaskDispatchThread>();
+
+    std::atomic<bool> runSyncCompleted{false};
+
+    // Block the dispatcher thread with a slow task
+    localDispatcher->runAsync(
+        [&] { std::this_thread::sleep_for(std::chrono::milliseconds(10)); });
+
+    // Start runSync from another thread - it will queue a task and wait
+    std::thread syncThread([&] {
+      localDispatcher->runSync([&] {});
+      runSyncCompleted = true;
+    });
+
+    // Concurrently call quit() - this should cause the queued task to be
+    // destroyed without executing, but runSync should still return (not block
+    // forever) because the RAII guard fulfills the promise on destruction.
+    std::this_thread::sleep_for(std::chrono::milliseconds(5));
+    localDispatcher->quit();
+
+    // If the fix works, syncThread should complete. If not, this would hang.
+    syncThread.join();
+
+    // runSync should have completed (either task ran or was skipped due to
+    // shutdown)
+    EXPECT_TRUE(runSyncCompleted.load());
+
+    localDispatcher.reset();
+  }
+}
 } // namespace facebook::react

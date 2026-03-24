@@ -26,7 +26,7 @@ let hmrUnavailableReason: string | null = null;
 let hmrOrigin: string | null = null;
 let currentCompileErrorMessage: string | null = null;
 let didConnect: boolean = false;
-let pendingLogs: Array<[LogLevel, $ReadOnlyArray<mixed>]> = [];
+let pendingLogs: Array<[LogLevel, ReadonlyArray<unknown>]> = [];
 
 type LogLevel =
   | 'trace'
@@ -43,7 +43,7 @@ export type HMRClientNativeInterface = {
   enable(): void,
   disable(): void,
   registerBundle(requestUrl: string): void,
-  log(level: LogLevel, data: $ReadOnlyArray<mixed>): void,
+  log(level: LogLevel, data: ReadonlyArray<unknown>): void,
   setup(
     platform: string,
     bundleEntry: string,
@@ -113,7 +113,7 @@ const HMRClient: HMRClientNativeInterface = {
     registerBundleEntryPoints(hmrClient);
   },
 
-  log(level: LogLevel, data: $ReadOnlyArray<mixed>) {
+  log(level: LogLevel, data: ReadonlyArray<unknown>) {
     if (!hmrClient) {
       // Catch a reasonable number of early logs
       // in case hmrClient gets initialized later.
@@ -141,7 +141,7 @@ const HMRClient: HMRClientNativeInterface = {
           ),
         }),
       );
-    } catch (error) {
+    } catch {
       // If sending logs causes any failures we want to silently ignore them
       // to ensure we do not cause infinite-logging loops.
     }
@@ -212,6 +212,7 @@ Error: ${e.message}`;
     });
 
     let pendingUpdatesCount = 0;
+    let lastMarkerChangeId: string | null = null;
     client.on('update-start', ({isInitialUpdate}) => {
       pendingUpdatesCount++;
       currentCompileErrorMessage = null;
@@ -229,10 +230,23 @@ Error: ${e.message}`;
       }
     });
 
-    client.on('update-done', () => {
+    client.on('update-done', body => {
       pendingUpdatesCount--;
       if (pendingUpdatesCount === 0) {
         DevLoadingView.hide();
+        const changeId = body?.changeId;
+        if (changeId != null && changeId !== lastMarkerChangeId) {
+          lastMarkerChangeId = changeId;
+          performance.mark('Fast Refresh - Update done', {
+            detail: {
+              devtools: {
+                dataType: 'marker',
+                color: 'primary',
+                tooltipText: 'Fast Refresh \u269b',
+              },
+            },
+          });
+        }
       }
     });
 
@@ -307,6 +321,7 @@ function setHMRUnavailableReason(reason: string) {
     DevLoadingView.showMessage(
       'Fast Refresh disconnected. Reload app to reconnect.',
       'error',
+      {dismissButton: true},
     );
     console.warn(reason);
     // (Not using the `warning` module to prevent a Buck cycle.)

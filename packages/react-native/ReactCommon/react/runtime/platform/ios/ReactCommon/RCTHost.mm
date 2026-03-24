@@ -13,6 +13,7 @@
 #import <React/RCTConvert.h>
 #import <React/RCTDevMenu.h>
 #import <React/RCTFabricSurface.h>
+#import <React/RCTFrameTimingsObserver.h>
 #import <React/RCTInspectorDevServerHelper.h>
 #import <React/RCTInspectorNetworkHelper.h>
 #import <React/RCTInspectorUtils.h>
@@ -37,12 +38,52 @@ using namespace facebook::react;
 @property (nonatomic, readonly) jsinspector_modern::HostTarget *inspectorTarget;
 @end
 
+#if TARGET_OS_IPHONE && defined(REACT_NATIVE_DEBUGGER_ENABLED)
+class RCTHostTracingDelegate : public jsinspector_modern::HostTargetTracingDelegate {
+ public:
+  explicit RCTHostTracingDelegate(RCTHost *host) : host_(host) {}
+
+  void onTracingStarted(jsinspector_modern::tracing::Mode /*tracingMode*/, bool screenshotsCategoryEnabled) override
+  {
+    RCTHost *host = host_;
+    if (host == nil || host.inspectorTarget == nullptr) {
+      return;
+    }
+    __weak RCTHost *weakHost = host;
+
+    observer_ = [[RCTFrameTimingsObserver alloc]
+        initWithScreenshotsEnabled:screenshotsCategoryEnabled
+                          callback:^(jsinspector_modern::tracing::FrameTimingSequence sequence) {
+                            RCTHost *strongHost = weakHost;
+                            if (strongHost != nil && strongHost.inspectorTarget != nullptr) {
+                              strongHost.inspectorTarget->recordFrameTimings(std::move(sequence));
+                            }
+                          }];
+    [observer_ start];
+  }
+
+  void onTracingStopped() override
+  {
+    [observer_ stop];
+    observer_ = nil;
+  }
+
+ private:
+  __weak RCTHost *host_;
+  RCTFrameTimingsObserver *observer_{nil};
+};
+#endif
+
 class RCTHostHostTargetDelegate : public facebook::react::jsinspector_modern::HostTargetDelegate {
  public:
   RCTHostHostTargetDelegate(RCTHost *host)
       : host_(host),
         pauseOverlayController_([[RCTPausedInDebuggerOverlayController alloc] init]),
         networkHelper_([[RCTInspectorNetworkHelper alloc] init])
+#if TARGET_OS_IPHONE && defined(REACT_NATIVE_DEBUGGER_ENABLED)
+        ,
+        tracingDelegate_(host)
+#endif
   {
   }
 
@@ -100,10 +141,25 @@ class RCTHostHostTargetDelegate : public facebook::react::jsinspector_modern::Ho
     [networkHelper_ loadNetworkResourceWithParams:params executor:executor];
   }
 
+#if TARGET_OS_IPHONE && defined(REACT_NATIVE_DEBUGGER_ENABLED)
+  jsinspector_modern::HostTargetTracingDelegate *getTracingDelegate() override
+  {
+    auto &inspectorFlags = jsinspector_modern::InspectorFlags::getInstance();
+    if (!inspectorFlags.getFrameRecordingEnabled()) {
+      return nullptr;
+    }
+
+    return &tracingDelegate_;
+  }
+#endif
+
  private:
   __weak RCTHost *host_;
   RCTPausedInDebuggerOverlayController *pauseOverlayController_;
   RCTInspectorNetworkHelper *networkHelper_;
+#if TARGET_OS_IPHONE && defined(REACT_NATIVE_DEBUGGER_ENABLED)
+  RCTHostTracingDelegate tracingDelegate_;
+#endif
 };
 
 @implementation RCTHost {
@@ -152,10 +208,6 @@ class RCTHostHostTargetDelegate : public facebook::react::jsinspector_modern::Ho
                    launchOptions:launchOptions];
 }
 
-/**
- Host initialization should not be resource intensive. A host may be created before any intention of using React Native
- has been expressed.
- */
 - (instancetype)initWithBundleURLProvider:(RCTHostBundleURLProvider)provider
                              hostDelegate:(id<RCTHostDelegate>)hostDelegate
                turboModuleManagerDelegate:(id<RCTTurboModuleManagerDelegate>)turboModuleManagerDelegate
@@ -167,23 +219,31 @@ class RCTHostHostTargetDelegate : public facebook::react::jsinspector_modern::Ho
               turboModuleManagerDelegate:turboModuleManagerDelegate
                         jsEngineProvider:jsEngineProvider
                            launchOptions:launchOptions
+                     bundleConfiguration:[RCTBundleConfiguration defaultConfiguration]
                     devMenuConfiguration:[RCTDevMenuConfiguration defaultConfiguration]];
 }
 
+/**
+ Host initialization should not be resource intensive. A host may be created before any intention of using React Native
+ has been expressed.
+ */
 - (instancetype)initWithBundleURLProvider:(RCTHostBundleURLProvider)provider
                              hostDelegate:(id<RCTHostDelegate>)hostDelegate
                turboModuleManagerDelegate:(id<RCTTurboModuleManagerDelegate>)turboModuleManagerDelegate
                          jsEngineProvider:(RCTHostJSEngineProvider)jsEngineProvider
                             launchOptions:(nullable NSDictionary *)launchOptions
+                      bundleConfiguration:(RCTBundleConfiguration *)bundleConfiguration
                      devMenuConfiguration:(RCTDevMenuConfiguration *)devMenuConfiguration
 {
   if (self = [super init]) {
     _hostDelegate = hostDelegate;
     _turboModuleManagerDelegate = turboModuleManagerDelegate;
-    _bundleManager = [RCTBundleManager new];
+    _bundleManager = [[RCTBundleManager alloc] initWithBundleConfig:bundleConfiguration];
     _moduleRegistry = [RCTModuleRegistry new];
     _jsEngineProvider = [jsEngineProvider copy];
     _launchOptions = [launchOptions copy];
+
+    [self setBundleURLProvider:provider];
 
     __weak RCTHost *weakSelf = self;
     auto bundleURLGetter = ^NSURL *() {
@@ -251,7 +311,7 @@ class RCTHostHostTargetDelegate : public facebook::react::jsinspector_modern::Ho
           }
           return strongSelf->_inspectorTarget->connect(std::move(remote));
         },
-        {.nativePageReloads = true, .prefersFuseboxFrontend = true});
+        {.nativePageReloads = true});
   }
   if (_instance) {
     RCTLogWarn(
@@ -367,7 +427,14 @@ class RCTHostHostTargetDelegate : public facebook::react::jsinspector_modern::Ho
 
 - (void)instance:(RCTInstance *)instance didInitializeRuntime:(facebook::jsi::Runtime &)runtime
 {
+  if ([_hostDelegate respondsToSelector:@selector(host:didInitializeRuntime:)]) {
+    [_hostDelegate host:self didInitializeRuntime:runtime];
+  }
+  // Runtime delegate is deprecated as of 0.84
+#pragma clang diagnostic push
+#pragma clang diagnostic ignored "-Wdeprecated-declarations"
   [self.runtimeDelegate host:self didInitializeRuntime:runtime];
+#pragma clang diagnostic pop
 }
 
 - (void)loadBundleAtURL:(NSURL *)sourceURL
@@ -450,7 +517,7 @@ class RCTHostHostTargetDelegate : public facebook::react::jsinspector_modern::Ho
   // Sanitize the bundle URL
   _bundleURL = [RCTConvert NSURL:_bundleURL.absoluteString];
 
-  // Update the global bundle URLq
+  // Update the global bundle URL
   RCTReloadCommandSetBundleURL(_bundleURL);
 }
 

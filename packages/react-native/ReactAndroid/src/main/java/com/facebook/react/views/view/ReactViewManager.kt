@@ -35,6 +35,9 @@ import com.facebook.react.uimanager.annotations.ReactPropGroup
 import com.facebook.react.uimanager.common.UIManagerType
 import com.facebook.react.uimanager.common.ViewUtil
 import com.facebook.react.uimanager.style.BackgroundImageLayer
+import com.facebook.react.uimanager.style.BackgroundPosition
+import com.facebook.react.uimanager.style.BackgroundRepeat
+import com.facebook.react.uimanager.style.BackgroundSize
 import com.facebook.react.uimanager.style.BorderRadiusProp
 import com.facebook.react.uimanager.style.BorderStyle
 import com.facebook.react.uimanager.style.LogicalEdge
@@ -152,6 +155,63 @@ public open class ReactViewManager : ReactClippingViewManager<ReactViewGroup>() 
     }
   }
 
+  @ReactProp(name = ViewProps.BACKGROUND_SIZE, customType = "BackgroundSize")
+  public open fun setBackgroundSize(view: ReactViewGroup, backgroundSize: ReadableArray?) {
+    if (ViewUtil.getUIManagerType(view) == UIManagerType.FABRIC) {
+      if (backgroundSize != null && backgroundSize.size() > 0) {
+        val backgroundSizes = ArrayList<BackgroundSize>(backgroundSize.size())
+        for (i in 0 until backgroundSize.size()) {
+          val backgroundSizeValue = backgroundSize.getDynamic(i)
+          val parsedBackgroundSize = BackgroundSize.parse(backgroundSizeValue)
+          if (parsedBackgroundSize != null) {
+            backgroundSizes.add(parsedBackgroundSize)
+          }
+        }
+        BackgroundStyleApplicator.setBackgroundSize(view, backgroundSizes.ifEmpty { null })
+      }
+    } else {
+      BackgroundStyleApplicator.setBackgroundSize(view, null)
+    }
+  }
+
+  @ReactProp(name = ViewProps.BACKGROUND_POSITION, customType = "BackgroundPosition")
+  public open fun setBackgroundPosition(view: ReactViewGroup, backgroundPosition: ReadableArray?) {
+    if (ViewUtil.getUIManagerType(view) == UIManagerType.FABRIC) {
+      if (backgroundPosition != null && backgroundPosition.size() > 0) {
+        val backgroundPositions = ArrayList<BackgroundPosition>(backgroundPosition.size())
+        for (i in 0 until backgroundPosition.size()) {
+          val backgroundPositionMap = backgroundPosition.getMap(i)
+          val parsedBackgroundPosition = BackgroundPosition.parse(backgroundPositionMap)
+          if (parsedBackgroundPosition != null) {
+            backgroundPositions.add(parsedBackgroundPosition)
+          }
+        }
+        BackgroundStyleApplicator.setBackgroundPosition(view, backgroundPositions.ifEmpty { null })
+      } else {
+        BackgroundStyleApplicator.setBackgroundPosition(view, null)
+      }
+    }
+  }
+
+  @ReactProp(name = ViewProps.BACKGROUND_REPEAT, customType = "BackgroundRepeat")
+  public open fun setBackgroundRepeat(view: ReactViewGroup, backgroundRepeat: ReadableArray?) {
+    if (ViewUtil.getUIManagerType(view) == UIManagerType.FABRIC) {
+      if (backgroundRepeat != null && backgroundRepeat.size() > 0) {
+        val backgroundRepeats = ArrayList<BackgroundRepeat>(backgroundRepeat.size())
+        for (i in 0 until backgroundRepeat.size()) {
+          val backgroundRepeatMap = backgroundRepeat.getMap(i)
+          val parsedBackgroundRepeat = BackgroundRepeat.parse(backgroundRepeatMap)
+          if (parsedBackgroundRepeat != null) {
+            backgroundRepeats.add(parsedBackgroundRepeat)
+          }
+        }
+        BackgroundStyleApplicator.setBackgroundRepeat(view, backgroundRepeats.ifEmpty { null })
+      } else {
+        BackgroundStyleApplicator.setBackgroundRepeat(view, null)
+      }
+    }
+  }
+
   @ReactProp(name = "nextFocusDown", defaultInt = View.NO_ID)
   public open fun nextFocusDown(view: ReactViewGroup, viewId: Int) {
     view.nextFocusDownId = viewId
@@ -261,19 +321,22 @@ public open class ReactViewManager : ReactClippingViewManager<ReactViewGroup>() 
   @ReactProp(name = ViewProps.POINTER_EVENTS)
   public open fun setPointerEvents(view: ReactViewGroup, pointerEventsStr: String?) {
     view.pointerEvents = PointerEvents.parsePointerEvents(pointerEventsStr)
+    ImportantForInteractionHelper.setImportantForInteraction(view, view.pointerEvents)
   }
 
   @ReactProp(name = "nativeBackgroundAndroid")
   public open fun setNativeBackground(view: ReactViewGroup, background: ReadableMap?) {
-    val bg =
-        background?.let { ReactDrawableHelper.createDrawableFromJSDescription(view.context, it) }
+    val bg = background?.let {
+      ReactDrawableHelper.createDrawableFromJSDescription(view.context, it)
+    }
     BackgroundStyleApplicator.setFeedbackUnderlay(view, bg)
   }
 
   @ReactProp(name = "nativeForegroundAndroid")
   public open fun setNativeForeground(view: ReactViewGroup, foreground: ReadableMap?) {
-    view.foreground =
-        foreground?.let { ReactDrawableHelper.createDrawableFromJSDescription(view.context, it) }
+    view.foreground = foreground?.let {
+      ReactDrawableHelper.createDrawableFromJSDescription(view.context, it)
+    }
   }
 
   @ReactProp(name = ViewProps.NEEDS_OFFSCREEN_ALPHA_COMPOSITING)
@@ -328,8 +391,7 @@ public open class ReactViewManager : ReactClippingViewManager<ReactViewGroup>() 
   @ReactProp(name = ViewProps.COLLAPSABLE)
   @Suppress("UNUSED_PARAMETER")
   public open fun setCollapsable(view: ReactViewGroup, collapsable: Boolean) {
-    // no-op: it's here only so that "collapsable" property is exported to JS. The value is actually
-    // handled in NativeViewHierarchyOptimizer
+    // no-op: it's here only so that "collapsable" property is exported to JS.
   }
 
   @ReactProp(name = ViewProps.COLLAPSABLE_CHILDREN)
@@ -342,8 +404,7 @@ public open class ReactViewManager : ReactClippingViewManager<ReactViewGroup>() 
   public open fun setFocusable(view: ReactViewGroup, focusable: Boolean) {
     if (focusable) {
       view.setOnClickListener {
-        val eventDispatcher =
-            UIManagerHelper.getEventDispatcherForReactTag((view.context as ReactContext), view.id)
+        val eventDispatcher = UIManagerHelper.getEventDispatcher(view.context as ReactContext)
         eventDispatcher?.dispatchEvent(
             ViewGroupClickEvent(UIManagerHelper.getSurfaceId(view.context), view.id)
         )

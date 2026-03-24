@@ -251,10 +251,10 @@ static NSLineBreakMode RCTNSLineBreakModeFromEllipsizeMode(EllipsizeMode ellipsi
   return textStorage;
 }
 
-- (SharedEventEmitter)getEventEmitterWithAttributeString:(AttributedString)attributedString
-                                     paragraphAttributes:(ParagraphAttributes)paragraphAttributes
-                                                   frame:(CGRect)frame
-                                                 atPoint:(CGPoint)point
+- (std::shared_ptr<const EventEmitter>)getEventEmitterWithAttributeString:(AttributedString)attributedString
+                                                      paragraphAttributes:(ParagraphAttributes)paragraphAttributes
+                                                                    frame:(CGRect)frame
+                                                                  atPoint:(CGPoint)point
 {
   NSTextStorage *textStorage = [self
       _textStorageAndLayoutManagerWithAttributesString:[self _nsAttributedStringFromAttributedString:attributedString]
@@ -388,9 +388,10 @@ static NSLineBreakMode RCTNSLineBreakModeFromEllipsizeMode(EllipsizeMode ellipsi
     size.height = enumeratedLinesHeight;
   }
 
-  size = (CGSize){
-      ceil(size.width * layoutContext.pointScaleFactor) / layoutContext.pointScaleFactor,
-      ceil(size.height * layoutContext.pointScaleFactor) / layoutContext.pointScaleFactor};
+  size = (CGSize){ceil(size.width * layoutContext.pointScaleFactor) / layoutContext.pointScaleFactor,
+                  ceil(size.height * layoutContext.pointScaleFactor) / layoutContext.pointScaleFactor};
+
+  NSRange visibleGlyphRange = [layoutManager glyphRangeForTextContainer:textContainer];
 
   __block auto attachments = TextMeasurement::Attachments{};
 
@@ -407,7 +408,15 @@ static NSLineBreakMode RCTNSLineBreakModeFromEllipsizeMode(EllipsizeMode ellipsi
                                                                      actualCharacterRange:NULL];
                 NSRange truncatedRange =
                     [layoutManager truncatedGlyphRangeInLineFragmentForGlyphAtIndex:attachmentGlyphRange.location];
-                if (truncatedRange.location != NSNotFound && attachmentGlyphRange.location >= truncatedRange.location) {
+
+                // Attachment on a line that did not fit (e.g. on the 4th line when the container is limited to 3 lines)
+                BOOL isOutsideVisibleRange = !NSLocationInRange(attachmentGlyphRange.location, visibleGlyphRange);
+                // Attachment in the ellipsis range of the last visible line (line truncated with "..." and the
+                // attachment falls in that portion)
+                BOOL isInTruncatedRange =
+                    truncatedRange.location != NSNotFound && attachmentGlyphRange.location >= truncatedRange.location;
+
+                if (isOutsideVisibleRange || isInTruncatedRange) {
                   attachments.push_back(TextMeasurement::Attachment{.isClipped = true});
                 } else {
                   CGSize attachmentSize = attachment.bounds.size;

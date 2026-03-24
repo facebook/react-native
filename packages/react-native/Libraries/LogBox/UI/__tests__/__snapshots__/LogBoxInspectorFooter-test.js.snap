@@ -71,6 +71,11 @@ exports[`LogBoxInspectorFooter should render two buttons for error 1`] = `
     onPress={[Function]}
     text="Minimize"
   />
+  <LogBoxInspectorFooterButton
+    id="logbox_footer_button_copy"
+    onPress={[Function]}
+    text="Copy"
+  />
 </View>
 `;
 
@@ -100,6 +105,11 @@ exports[`LogBoxInspectorFooter should render two buttons for fatal 1`] = `
     onPress={[Function]}
     text="Minimize"
   />
+  <LogBoxInspectorFooterButton
+    id="logbox_footer_button_copy"
+    onPress={[Function]}
+    text="Copy"
+  />
 </View>
 `;
 
@@ -128,6 +138,11 @@ exports[`LogBoxInspectorFooter should render two buttons for warning 1`] = `
     id="logbox_footer_button_minimize"
     onPress={[Function]}
     text="Minimize"
+  />
+  <LogBoxInspectorFooterButton
+    id="logbox_footer_button_copy"
+    onPress={[Function]}
+    text="Copy"
   />
 </View>
 `;

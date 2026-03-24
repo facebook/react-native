@@ -62,10 +62,6 @@ void RCTEnableTurboModuleInteropBridgeProxy(BOOL enabled);
 BOOL RCTFabricInteropLayerEnabled(void);
 void RCTEnableFabricInteropLayer(BOOL enabled);
 
-// Turn on TurboModule sync execution of void methods
-BOOL RCTTurboModuleSyncVoidMethodsEnabled(void);
-void RCTEnableTurboModuleSyncVoidMethods(BOOL enabled);
-
 BOOL RCTUIManagerDispatchAccessibilityManagerInitOntoMain(void);
 void RCTUIManagerSetDispatchAccessibilityManagerInitOntoMain(BOOL enabled);
 

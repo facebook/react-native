@@ -88,7 +88,7 @@ export interface PerformanceObserverInit {
   +durationThreshold?: DOMHighResTimeStamp;
 }
 
-function getSupportedPerformanceEntryTypes(): $ReadOnlyArray<PerformanceEntryType> {
+function getSupportedPerformanceEntryTypes(): ReadonlyArray<PerformanceEntryType> {
   return Object.freeze(
     NativePerformance.getSupportedPerformanceEntryTypes().map(
       rawToPerformanceEntryType,
@@ -237,7 +237,7 @@ export class PerformanceObserver {
     }
   }
 
-  static supportedEntryTypes: $ReadOnlyArray<PerformanceEntryType> =
+  static supportedEntryTypes: ReadonlyArray<PerformanceEntryType> =
     getSupportedPerformanceEntryTypes();
 }
 

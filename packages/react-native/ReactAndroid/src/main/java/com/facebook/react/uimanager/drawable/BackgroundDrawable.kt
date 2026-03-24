@@ -11,18 +11,14 @@ import android.content.Context
 import android.graphics.Canvas
 import android.graphics.Color
 import android.graphics.ColorFilter
-import android.graphics.ComposeShader
 import android.graphics.Paint
 import android.graphics.Path
 import android.graphics.PixelFormat
-import android.graphics.PorterDuff
 import android.graphics.Rect
 import android.graphics.RectF
-import android.graphics.Shader
 import android.graphics.drawable.Drawable
 import com.facebook.react.uimanager.PixelUtil.dpToPx
 import com.facebook.react.uimanager.PixelUtil.pxToDp
-import com.facebook.react.uimanager.style.BackgroundImageLayer
 import com.facebook.react.uimanager.style.BorderInsets
 import com.facebook.react.uimanager.style.BorderRadiusStyle
 import com.facebook.react.uimanager.style.ComputedBorderRadius
@@ -58,14 +54,6 @@ internal class BackgroundDrawable(
 
   private var backgroundRect: RectF = RectF()
   private var backgroundRenderPath: Path? = null
-
-  var backgroundImageLayers: List<BackgroundImageLayer>? = null
-    set(value) {
-      if (field != value) {
-        field = value
-        invalidateSelf()
-      }
-    }
 
   private val backgroundPaint: Paint =
       Paint(Paint.ANTI_ALIAS_FLAG).apply {
@@ -123,24 +111,6 @@ internal class BackgroundDrawable(
       }
     }
 
-    backgroundPaint.alpha = 255
-    if (backgroundImageLayers != null && backgroundImageLayers?.isNotEmpty() == true) {
-      backgroundPaint.setShader(getBackgroundImageShader())
-      if (computedBorderRadius?.isUniform() == true && borderRadius?.hasRoundedBorders() == true) {
-        canvas.drawRoundRect(
-            backgroundRect,
-            computedBorderRadius?.topLeft?.horizontal?.dpToPx() ?: 0f,
-            computedBorderRadius?.topLeft?.vertical?.dpToPx() ?: 0f,
-            backgroundPaint,
-        )
-      } else if (borderRadius?.hasRoundedBorders() != true) {
-        canvas.drawRect(backgroundRect, backgroundPaint)
-      } else {
-        canvas.drawPath(checkNotNull(backgroundRenderPath), backgroundPaint)
-      }
-      backgroundPaint.setShader(null)
-    }
-    backgroundPaint.alpha = Color.alpha(backgroundColor)
     canvas.restore()
   }
 
@@ -153,24 +123,6 @@ internal class BackgroundDrawable(
             it?.bottom?.dpToPx() ?: 0f,
         )
       }
-
-  private fun getBackgroundImageShader(): Shader? {
-    backgroundImageLayers?.let { layers ->
-      var compositeShader: Shader? = null
-      for (backgroundImageLayer in layers) {
-        val currentShader = backgroundImageLayer.getShader(bounds)
-
-        compositeShader =
-            if (compositeShader == null) {
-              currentShader
-            } else {
-              ComposeShader(currentShader, compositeShader, PorterDuff.Mode.SRC_OVER)
-            }
-      }
-      return compositeShader
-    }
-    return null
-  }
 
   private fun updatePath() {
     if (!needUpdatePath) {

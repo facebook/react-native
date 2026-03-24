@@ -89,7 +89,7 @@ const diffClampImpl = function (
 
 const _combineCallbacks = function (
   callback: ?EndCallback,
-  config: $ReadOnly<{...AnimationConfig, ...}>,
+  config: Readonly<{...AnimationConfig, ...}>,
 ) {
   if (callback && config.onComplete) {
     return (...args: Array<EndResult>) => {
@@ -543,7 +543,7 @@ function unforkEventImpl(
 }
 
 const eventImpl = function <T>(
-  argMapping: $ReadOnlyArray<?Mapping>,
+  argMapping: ReadonlyArray<?Mapping>,
   config: EventConfig<T>,
 ): any {
   const animatedEvent = new AnimatedEvent(argMapping, config);

@@ -18,17 +18,17 @@ import type {
 
 import codegenNativeComponent from 'react-native/Libraries/Utilities/codegenNativeComponent';
 
-type OnChangeEvent = $ReadOnly<{
+type OnChangeEvent = Readonly<{
   location: {
     source: {url: string, ...},
     x: Int32,
     y: Int32,
-    arrayOfObjects: $ReadOnlyArray<{value: $ReadOnly<{str: string}>}>,
+    arrayOfObjects: ReadonlyArray<{value: Readonly<{str: string}>}>,
     ...
   },
 }>;
 
-type NativeProps = $ReadOnly<{
+type NativeProps = Readonly<{
   ...ViewProps,
 
   // Props

@@ -240,9 +240,10 @@ TEST(RawPropsTest, handleRawPropsPrimitiveTypes) {
   ContextContainer contextContainer{};
   PropsParserContext parserContext{-1, contextContainer};
 
-  auto raw = RawProps(folly::dynamic::object("intValue", (int)42)(
-      "doubleValue", (double)17.42)("floatValue", (float)66.67)(
-      "stringValue", "helloworld")("boolValue", true));
+  auto raw = RawProps(
+      folly::dynamic::object("intValue", (int)42)("doubleValue", (double)17.42)(
+          "floatValue", (float)66.67)("stringValue", "helloworld")(
+          "boolValue", true));
 
   auto parser = RawPropsParser();
   parser.prepare<PropsPrimitiveTypes>();
@@ -261,9 +262,10 @@ TEST(RawPropsTest, handleRawPropsPrimitiveTypesGetTwice) {
   ContextContainer contextContainer{};
   PropsParserContext parserContext{-1, contextContainer};
 
-  auto raw = RawProps(folly::dynamic::object("intValue", (int)42)(
-      "doubleValue", (double)17.42)("floatValue", (float)66.67)(
-      "stringValue", "helloworld")("boolValue", true));
+  auto raw = RawProps(
+      folly::dynamic::object("intValue", (int)42)("doubleValue", (double)17.42)(
+          "floatValue", (float)66.67)("stringValue", "helloworld")(
+          "boolValue", true));
 
   auto parser = RawPropsParser();
   parser.prepare<PropsPrimitiveTypes>();
@@ -290,9 +292,10 @@ TEST(RawPropsTest, handleRawPropsPrimitiveTypesGetOutOfOrder) {
   ContextContainer contextContainer{};
   PropsParserContext parserContext{-1, contextContainer};
 
-  auto raw = RawProps(folly::dynamic::object("intValue", (int)42)(
-      "doubleValue", (double)17.42)("floatValue", (float)66.67)(
-      "stringValue", "helloworld")("boolValue", true));
+  auto raw = RawProps(
+      folly::dynamic::object("intValue", (int)42)("doubleValue", (double)17.42)(
+          "floatValue", (float)66.67)("stringValue", "helloworld")(
+          "boolValue", true));
 
   auto parser = RawPropsParser();
   parser.prepare<PropsPrimitiveTypes>();

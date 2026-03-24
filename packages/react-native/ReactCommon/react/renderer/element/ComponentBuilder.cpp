@@ -13,7 +13,7 @@ namespace facebook::react {
 
 ComponentBuilder::ComponentBuilder(
     ComponentDescriptorRegistry::Shared componentDescriptorRegistry)
-    : componentDescriptorRegistry_(std::move(componentDescriptorRegistry)){};
+    : componentDescriptorRegistry_(std::move(componentDescriptorRegistry)) {};
 
 std::shared_ptr<ShadowNode> ComponentBuilder::build(
     const ElementFragment& elementFragment) const {
@@ -26,10 +26,11 @@ std::shared_ptr<ShadowNode> ComponentBuilder::build(
     children.push_back(build(childFragment));
   }
 
-  auto family = componentDescriptor.createFamily(ShadowNodeFamilyFragment{
-      .tag = elementFragment.tag,
-      .surfaceId = elementFragment.surfaceId,
-      .instanceHandle = nullptr});
+  auto family = componentDescriptor.createFamily(
+      ShadowNodeFamilyFragment{
+          .tag = elementFragment.tag,
+          .surfaceId = elementFragment.surfaceId,
+          .instanceHandle = nullptr});
 
   auto initialState =
       componentDescriptor.createInitialState(elementFragment.props, family);

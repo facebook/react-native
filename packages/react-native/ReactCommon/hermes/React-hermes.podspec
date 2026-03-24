@@ -47,6 +47,7 @@ Pod::Spec.new do |s|
   s.dependency "React-jsi"
   add_dependency(s, "React-runtimeexecutor", :additional_framework_paths => ["platform/ios"])
   add_dependency(s, "React-oscompat")
+  add_dependency(s, "React-jsitooling", :framework_name => "JSITooling")
 
   add_rn_third_party_dependencies(s)
   add_rncore_dependency(s)

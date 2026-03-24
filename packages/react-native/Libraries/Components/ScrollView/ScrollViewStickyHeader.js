@@ -25,7 +25,7 @@ import {
   useState,
 } from 'react';
 
-export type ScrollViewStickyHeaderProps = $ReadOnly<{
+export type ScrollViewStickyHeaderProps = Readonly<{
   children?: React.Node,
   nextHeaderLayoutY: ?number,
   onLayout: (event: LayoutChangeEvent) => void,

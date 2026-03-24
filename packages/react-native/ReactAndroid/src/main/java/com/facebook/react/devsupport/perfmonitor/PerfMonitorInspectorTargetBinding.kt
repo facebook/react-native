@@ -7,7 +7,7 @@
 
 package com.facebook.react.devsupport.perfmonitor
 
-import com.facebook.react.devsupport.interfaces.TracingState
+import com.facebook.react.devsupport.inspector.TracingState
 
 /**
  * [Experimental] Interface implemented by [com.facebook.react.runtime.ReactHostInspectorTarget]

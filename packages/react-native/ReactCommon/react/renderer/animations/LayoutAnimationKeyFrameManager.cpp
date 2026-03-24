@@ -39,7 +39,7 @@ static std::string GetMutationInstructionString(
       ? mutation.newChildShadowView.tag
       : mutation.oldChildShadowView.tag;
   return getDebugName(mutation) + " [" + std::to_string(tag) + "]->[" +
-      std::to_string(mutation.parentShadowView.tag) + "] @" +
+      std::to_string(mutation.parentTag) + "] @" +
       std::to_string(mutation.index);
 }
 
@@ -122,14 +122,15 @@ void LayoutAnimationKeyFrameManager::uiManagerDidConfigureNextLayoutAnimation(
   if (layoutAnimationConfig) {
     std::scoped_lock lock(currentAnimationMutex_);
 
-    uiManagerDidConfigureNextLayoutAnimation(LayoutAnimation{
-        .surfaceId = -1,
-        .startTime = 0,
-        .completed = false,
-        .layoutAnimationConfig = *layoutAnimationConfig,
-        .successCallback = successCallback,
-        .failureCallback = failureCallback,
-        .keyFrames = {}});
+    uiManagerDidConfigureNextLayoutAnimation(
+        LayoutAnimation{
+            .surfaceId = -1,
+            .startTime = 0,
+            .completed = false,
+            .layoutAnimationConfig = *layoutAnimationConfig,
+            .successCallback = successCallback,
+            .failureCallback = failureCallback,
+            .keyFrames = {}});
   } else {
     LOG(ERROR) << "Parsing LayoutAnimationConfig failed: "
                << (folly::dynamic)config;
@@ -255,8 +256,7 @@ LayoutAnimationKeyFrameManager::pullTransaction(
       //   Catch delete+create (reparenting) (this should be optimized away at
       //   the diffing level eventually?)
       // TODO: to prevent this step we could tag Remove/Insert mutations as
-      // being moves on the Differ level, since we know that there? We could use
-      // TinyMap here, but it's not exposed by Differentiator (yet).
+      // being moves on the Differ level, since we know that there?
       std::unordered_set<Tag> insertedTags;
       std::unordered_set<Tag> deletedTags;
       std::unordered_set<Tag>
@@ -1161,7 +1161,7 @@ void LayoutAnimationKeyFrameManager::queueFinalMutationsForCompletedKeyFrame(
     const AnimationKeyFrame& keyframe,
     ShadowViewMutation::List& mutationsList,
     bool interrupted,
-    const std::string& /*logPrefix*/) const {
+    [[maybe_unused]] const std::string& logPrefix) const {
   if (!keyframe.finalMutationsForKeyFrame.empty()) {
     // TODO: modularize this segment, it is repeated 2x in KeyFrameManager
     // as well.
@@ -1175,25 +1175,31 @@ void LayoutAnimationKeyFrameManager::queueFinalMutationsForCompletedKeyFrame(
           // For CREATE/INSERT this will contain CREATE, INSERT in that order.
           // For REMOVE/DELETE, same.
         case ShadowViewMutation::Type::Create:
-          mutationsList.push_back(ShadowViewMutation::CreateMutation(
-              finalMutation.newChildShadowView));
+          mutationsList.push_back(
+              ShadowViewMutation::CreateMutation(
+                  finalMutation.newChildShadowView));
           break;
         case ShadowViewMutation::Type::Delete:
           mutationsList.push_back(ShadowViewMutation::DeleteMutation(prev));
           break;
         case ShadowViewMutation::Type::Insert:
-          mutationsList.push_back(ShadowViewMutation::InsertMutation(
-              finalMutation.parentTag,
-              finalMutation.newChildShadowView,
-              finalMutation.index));
+          mutationsList.push_back(
+              ShadowViewMutation::InsertMutation(
+                  finalMutation.parentTag,
+                  finalMutation.newChildShadowView,
+                  finalMutation.index));
           break;
         case ShadowViewMutation::Type::Remove:
-          mutationsList.push_back(ShadowViewMutation::RemoveMutation(
-              finalMutation.parentTag, prev, finalMutation.index));
+          mutationsList.push_back(
+              ShadowViewMutation::RemoveMutation(
+                  finalMutation.parentTag, prev, finalMutation.index));
           break;
         case ShadowViewMutation::Type::Update:
-          mutationsList.push_back(ShadowViewMutation::UpdateMutation(
-              prev, finalMutation.newChildShadowView, finalMutation.parentTag));
+          mutationsList.push_back(
+              ShadowViewMutation::UpdateMutation(
+                  prev,
+                  finalMutation.newChildShadowView,
+                  finalMutation.parentTag));
           break;
       }
       if (finalMutation.newChildShadowView.tag > 0) {

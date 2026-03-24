@@ -71,7 +71,7 @@ export interface Spec {
   +dispatchCommand: (
     node: Node,
     commandName: string,
-    args: Array<mixed>,
+    args: Array<unknown>,
   ) => void;
   +findNodeAtPoint: (
     node: Node,
@@ -97,6 +97,16 @@ export interface Spec {
   +unstable_ContinuousEventPriority: number;
   +unstable_IdleEventPriority: number;
   +unstable_getCurrentEventPriority: () => number;
+  +unstable_getViewTransitionInstance: (
+    name: string,
+    pseudo: string,
+  ) => ?{
+    x: number,
+    y: number,
+    width: number,
+    height: number,
+    nativeTag: number,
+  };
 }
 
 let nativeFabricUIManagerProxy: ?Spec;
@@ -129,6 +139,7 @@ const CACHED_PROPERTIES = [
   'unstable_ContinuousEventPriority',
   'unstable_IdleEventPriority',
   'unstable_getCurrentEventPriority',
+  'unstable_getViewTransitionInstance',
 ];
 
 // This is exposed as a getter because apps using the legacy renderer AND
@@ -154,7 +165,7 @@ export function getFabricUIManager(): ?Spec {
  */
 function createProxyWithCachedProperties(
   implementation: Spec,
-  propertiesToCache: $ReadOnlyArray<string>,
+  propertiesToCache: ReadonlyArray<string>,
 ): Spec {
   const proxy = Object.create(implementation);
   for (const propertyName of propertiesToCache) {

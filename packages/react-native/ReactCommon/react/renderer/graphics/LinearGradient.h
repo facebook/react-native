@@ -7,61 +7,47 @@
 
 #pragma once
 
+#include <react/renderer/debug/flags.h>
 #include <react/renderer/graphics/ColorStop.h>
 #include <react/renderer/graphics/Float.h>
 #include <react/renderer/graphics/ValueUnit.h>
-#include <stdexcept>
-#include <string>
+
+#if RN_DEBUG_STRING_CONVERTIBLE
+#include <sstream>
+#endif
+
 #include <variant>
 #include <vector>
 
 namespace facebook::react {
 
-enum class GradientDirectionType { Angle, Keyword };
+enum class [[deprecated("Use std::holds_alternative")]] GradientDirectionType {
+  Angle,
+  Keyword,
+};
 
-enum class GradientKeyword {
+enum class GradientKeyword : uint8_t {
   ToTopRight,
   ToBottomRight,
   ToTopLeft,
   ToBottomLeft,
 };
 
-struct GradientDirection {
-  GradientDirectionType type;
-  std::variant<Float, GradientKeyword> value;
-
-  bool operator==(const GradientDirection& other) const {
-    return type == other.type && value == other.value;
-  }
-
-#ifdef RN_SERIALIZABLE_STATE
-  folly::dynamic toDynamic() const;
-#endif
-};
+using GradientDirection = std::variant<Float, GradientKeyword>;
 
 struct LinearGradient {
   GradientDirection direction;
   std::vector<ColorStop> colorStops;
 
-  bool operator==(const LinearGradient& other) const {
-    return direction == other.direction && colorStops == other.colorStops;
-  }
+  bool operator==(const LinearGradient &other) const = default;
 
 #ifdef RN_SERIALIZABLE_STATE
   folly::dynamic toDynamic() const;
 #endif
-};
 
-inline GradientKeyword parseGradientKeyword(const std::string& keyword) {
-  if (keyword == "to top right")
-    return GradientKeyword::ToTopRight;
-  if (keyword == "to bottom right")
-    return GradientKeyword::ToBottomRight;
-  if (keyword == "to top left")
-    return GradientKeyword::ToTopLeft;
-  if (keyword == "to bottom left")
-    return GradientKeyword::ToBottomLeft;
-  throw std::invalid_argument("Invalid gradient keyword: " + keyword);
-}
+#if RN_DEBUG_STRING_CONVERTIBLE
+  void toString(std::stringstream &ss) const;
+#endif
+};
 
 }; // namespace facebook::react

@@ -22,7 +22,7 @@ import {getCurrentTimeStamp} from './internals/Utilities';
 import {PerformanceEntry} from './PerformanceEntry';
 
 export type DetailType =
-  | mixed
+  | unknown
   // This will effectively ignored by Flow (mixed | anything = mixed)
   // but we'll use it as documentation for how to use the extensibility API.
   | {devtools?: ExtensionMarkerPayload | ExtensionTrackEntryPayload, ...};

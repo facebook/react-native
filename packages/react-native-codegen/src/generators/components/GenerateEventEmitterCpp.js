@@ -19,12 +19,13 @@ import type {
 } from '../../CodegenSchema';
 
 const {indent} = require('../Utils');
+const {parseValidUnionType} = require('../Utils');
 const {IncludeTemplate, generateEventStructName} = require('./CppHelpers');
 
 // File path -> contents
 type FilesOutput = Map<string, string>;
 
-type ComponentCollection = $ReadOnly<{
+type ComponentCollection = Readonly<{
   [component: string]: ComponentShape,
   ...
 }>;
@@ -98,7 +99,7 @@ void ${className}EventEmitter::${eventName}() const {
 function generateSetter(
   variableName: string,
   propertyName: string,
-  propertyParts: $ReadOnlyArray<string>,
+  propertyParts: ReadonlyArray<string>,
   usingEvent: boolean,
   valueMapper: string => string = value => value,
 ) {
@@ -113,7 +114,7 @@ function generateSetter(
 function generateObjectSetter(
   variableName: string,
   propertyName: string,
-  propertyParts: $ReadOnlyArray<string>,
+  propertyParts: ReadonlyArray<string>,
   typeAnnotation: ObjectTypeAnnotation<EventTypeAnnotation>,
   extraIncludes: Set<string>,
   usingEvent: boolean,
@@ -150,7 +151,7 @@ function setValueAtIndex(
 function generateArraySetter(
   variableName: string,
   propertyName: string,
-  propertyParts: $ReadOnlyArray<string>,
+  propertyParts: ReadonlyArray<string>,
   elementType: EventTypeAnnotation,
   extraIncludes: Set<string>,
   usingEvent: boolean,
@@ -183,7 +184,7 @@ function handleArrayElementType(
   propertyName: string,
   indexVariable: string,
   loopLocalVariable: string,
-  propertyParts: $ReadOnlyArray<string>,
+  propertyParts: ReadonlyArray<string>,
   extraIncludes: Set<string>,
   usingEvent: boolean,
 ): string {
@@ -207,7 +208,11 @@ function handleArrayElementType(
         loopLocalVariable,
         val => `jsi::valueFromDynamic(runtime, ${val})`,
       );
-    case 'StringLiteralUnionTypeAnnotation':
+    case 'UnionTypeAnnotation':
+      const validUnionType = parseValidUnionType(elementType);
+      if (validUnionType !== 'string') {
+        throw new Error('Invalid since it is a union of non strings');
+      }
       return setValueAtIndex(
         propertyName,
         indexVariable,
@@ -244,7 +249,7 @@ function convertObjectTypeArray(
   propertyName: string,
   indexVariable: string,
   loopLocalVariable: string,
-  propertyParts: $ReadOnlyArray<string>,
+  propertyParts: ReadonlyArray<string>,
   objectTypeAnnotation: ObjectTypeAnnotation<EventTypeAnnotation>,
   extraIncludes: Set<string>,
 ): string {
@@ -263,7 +268,7 @@ function convertArrayTypeArray(
   propertyName: string,
   indexVariable: string,
   loopLocalVariable: string,
-  propertyParts: $ReadOnlyArray<string>,
+  propertyParts: ReadonlyArray<string>,
   eventTypeAnnotation: EventTypeAnnotation,
   extraIncludes: Set<string>,
   usingEvent: boolean,
@@ -291,8 +296,8 @@ function convertArrayTypeArray(
 
 function generateSetters(
   parentPropertyName: string,
-  properties: $ReadOnlyArray<NamedShape<EventTypeAnnotation>>,
-  propertyParts: $ReadOnlyArray<string>,
+  properties: ReadonlyArray<NamedShape<EventTypeAnnotation>>,
+  propertyParts: ReadonlyArray<string>,
   extraIncludes: Set<string>,
   usingEvent: boolean = true,
 ): string {
@@ -320,7 +325,11 @@ function generateSetters(
             usingEvent,
             prop => `jsi::valueFromDynamic(runtime, ${prop})`,
           );
-        case 'StringLiteralUnionTypeAnnotation':
+        case 'UnionTypeAnnotation':
+          const validUnionType = parseValidUnionType(typeAnnotation);
+          if (validUnionType !== 'string') {
+            throw new Error('Invalid since it is a union of non strings');
+          }
           return generateSetter(
             parentPropertyName,
             eventProperty.name,

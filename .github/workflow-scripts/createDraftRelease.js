@@ -40,18 +40,28 @@ function _extractChangelog(version) {
   return changelog.slice(changelogStarts, changelogEnds).join('\n').trim();
 }
 
-function _computeBody(version, changelog) {
+function _computeBody(changelog, version, hermesVersion, hermesV1Version) {
+  hermesVersion = hermesVersion ?? version;
+  hermesV1Version = hermesV1Version ?? version;
   return `${changelog}
 
 ---
 
 Hermes dSYMS:
-- [Debug](https://repo1.maven.org/maven2/com/facebook/react/react-native-artifacts/${version}/react-native-artifacts-${version}-hermes-framework-dSYM-debug.tar.gz)
-- [Release](https://repo1.maven.org/maven2/com/facebook/react/react-native-artifacts/${version}/react-native-artifacts-${version}-hermes-framework-dSYM-release.tar.gz)
+- [Debug](https://repo1.maven.org/maven2/com/facebook/hermes/hermes-ios/${hermesVersion}/hermes-ios-${hermesVersion}-hermes-framework-dSYM-debug.tar.gz)
+- [Release](https://repo1.maven.org/maven2/com/facebook/hermes/hermes-ios/${hermesVersion}/hermes-ios-${hermesVersion}-hermes-framework-dSYM-release.tar.gz)
+
+Hermes V1 dSYMS:
+- [Debug](https://repo1.maven.org/maven2/com/facebook/hermes/hermes-ios/${hermesV1Version}/hermes-ios-${hermesV1Version}-hermes-framework-dSYM-debug.tar.gz)
+- [Release](https://repo1.maven.org/maven2/com/facebook/hermes/hermes-ios/${hermesV1Version}/hermes-ios-${hermesV1Version}-hermes-framework-dSYM-release.tar.gz)
 
 ReactNativeDependencies dSYMs:
 - [Debug](https://repo1.maven.org/maven2/com/facebook/react/react-native-artifacts/${version}/react-native-artifacts-${version}-reactnative-dependencies-dSYM-debug.tar.gz)
 - [Release](https://repo1.maven.org/maven2/com/facebook/react/react-native-artifacts/${version}/react-native-artifacts-${version}-reactnative-dependencies-dSYM-release.tar.gz)
+
+ReactNative Core dSYMs:
+- [Debug](https://repo1.maven.org/maven2/com/facebook/react/react-native-artifacts/${version}/react-native-artifacts-${version}-reactnative-core-debug.tar.gz)
+- [Release](https://repo1.maven.org/maven2/com/facebook/react/react-native-artifacts/${version}/react-native-artifacts-${version}-reactnative-core-release.tar.gz)
 
 ---
 
@@ -113,7 +123,13 @@ function moveToChangelogBranch(version) {
   run(`git checkout -b changelog/v${version}`);
 }
 
-async function createDraftRelease(version, latest, token) {
+async function createDraftRelease(
+  version,
+  latest,
+  token,
+  hermesVersion,
+  hermesV1Version,
+) {
   if (version.startsWith('v')) {
     version = version.substring(1);
   }
@@ -121,7 +137,7 @@ async function createDraftRelease(version, latest, token) {
   _verifyTagExists(version);
   moveToChangelogBranch(version);
   const changelog = _extractChangelog(version);
-  const body = _computeBody(version, changelog);
+  const body = _computeBody(changelog, version, hermesVersion, hermesV1Version);
   const release = await _createDraftReleaseOnGitHub(
     version,
     body,

@@ -49,7 +49,7 @@ describe('diffApiSnapshot', () => {
     expect(res.changedApis).toEqual(['DeletedExport']);
   });
 
-  test('should detect breaking change when a statement is changed', () => {
+  test('should detect potentially breaking change when a statement is changed', () => {
     const prevSnapshot = `
       import * as React from 'react';
       export declare type AccessibilityActionEvent = NativeSyntheticEvent<
@@ -78,11 +78,11 @@ describe('diffApiSnapshot', () => {
     `;
 
     const res = diffApiSnapshot(prevSnapshot, newSnapshot);
-    expect(res.result).toBe(Result.BREAKING);
+    expect(res.result).toBe(Result.POTENTIALLY_BREAKING);
     expect(res.changedApis).toEqual(['Foo']);
   });
 
-  test('should detect potentially not breaking change when a statement is added', () => {
+  test('should detect potentially non-breaking change when a statement is added', () => {
     const prevSnapshot = `
       import * as React from 'react';
       declare type AccessibilityActionEvent = NativeSyntheticEvent<
@@ -117,7 +117,7 @@ describe('diffApiSnapshot', () => {
     expect(res.changedApis).toEqual(['NewExport']);
   });
 
-  test('should detect not breaking change when nothing is changed', () => {
+  test('should detect non-breaking change when nothing is changed', () => {
     const prevSnapshot = `
       import * as React from 'react';
       declare type AccessibilityActionEvent = NativeSyntheticEvent<

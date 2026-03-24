@@ -11,9 +11,14 @@ package com.facebook.react.devsupport.interfaces
 public interface DevLoadingViewManager {
   public fun showMessage(message: String)
 
-  public fun showMessage(message: String, color: Double?, backgroundColor: Double?)
+  public fun showMessage(
+      message: String,
+      color: Double?,
+      backgroundColor: Double?,
+      dismissButton: Boolean?,
+  )
 
-  public fun updateProgress(status: String?, done: Int?, total: Int?)
+  public fun updateProgress(status: String?, done: Int?, total: Int?, percent: Int?)
 
   public fun hide()
 }

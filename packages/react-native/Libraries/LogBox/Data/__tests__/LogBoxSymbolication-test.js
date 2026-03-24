@@ -18,7 +18,7 @@ const LogBoxSymbolication = require('../LogBoxSymbolication');
 jest.mock('../../../Core/Devtools/symbolicateStackTrace');
 
 const symbolicateStackTrace: JestMockFn<
-  $ReadOnlyArray<Array<StackFrame>>,
+  ReadonlyArray<Array<StackFrame>>,
   Promise<SymbolicatedStackTrace>,
 > = (require('../../../Core/Devtools/symbolicateStackTrace').default: any);
 

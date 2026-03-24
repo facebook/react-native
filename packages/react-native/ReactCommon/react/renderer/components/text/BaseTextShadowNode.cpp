@@ -76,8 +76,9 @@ void BaseTextShadowNode::buildAttributedString(
     fragment.parentShadowView = shadowViewFromShadowNode(*childNode);
     fragment.textAttributes = baseTextAttributes;
     outAttributedString.appendFragment(std::move(fragment));
-    outAttachments.push_back(Attachment{
-        childNode.get(), outAttributedString.getFragments().size() - 1});
+    outAttachments.push_back(
+        Attachment{
+            childNode.get(), outAttributedString.getFragments().size() - 1});
   }
 }
 

@@ -7,40 +7,39 @@
 
 #pragma once
 
-#include <react/featureflags/ReactNativeFeatureFlags.h>
 #include <react/renderer/imagemanager/ImageRequest.h>
 #include <react/renderer/imagemanager/ImageRequestParams.h>
-#include <react/renderer/mounting/ShadowTree.h>
 #include <react/utils/ContextContainer.h>
 #include <memory>
+#include <mutex>
 #include <unordered_map>
 #include <vector>
 
 namespace facebook::react {
 
-class ImageFetcherCommitHook;
+extern const char ImageFetcherKey[];
 
 class ImageFetcher {
  public:
   ImageFetcher(std::shared_ptr<const ContextContainer> contextContainer);
-  ~ImageFetcher();
-  ImageFetcher(const ImageFetcher&) = delete;
-  ImageFetcher& operator=(const ImageFetcher&) = delete;
-  ImageFetcher(ImageFetcher&&) = delete;
-  ImageFetcher& operator=(ImageFetcher&&) = delete;
+  ~ImageFetcher() = default;
+  ImageFetcher(const ImageFetcher &) = delete;
+  ImageFetcher &operator=(const ImageFetcher &) = delete;
+  ImageFetcher(ImageFetcher &&) = delete;
+  ImageFetcher &operator=(ImageFetcher &&) = delete;
 
-  ImageRequest requestImage(
-      const ImageSource& imageSource,
-      SurfaceId surfaceId,
-      const ImageRequestParams& imageRequestParams,
-      Tag tag);
-
- private:
-  friend class ImageFetcherCommitHook;
   void flushImageRequests();
 
+ private:
+  friend class ImageManager;
+  ImageRequest requestImage(
+      const ImageSource &imageSource,
+      SurfaceId surfaceId,
+      const ImageRequestParams &imageRequestParams,
+      Tag tag);
+
   std::unordered_map<SurfaceId, std::vector<ImageRequestItem>> items_;
+  std::mutex mutex_;
   std::shared_ptr<const ContextContainer> contextContainer_;
-  std::unique_ptr<ImageFetcherCommitHook> commitHook_;
 };
 } // namespace facebook::react

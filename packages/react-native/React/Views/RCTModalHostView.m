@@ -25,7 +25,9 @@
   RCTModalHostViewController *_modalViewController;
   RCTTouchHandler *_touchHandler;
   UIView *_reactSubview;
+#if !TARGET_OS_TV
   UIInterfaceOrientation _lastKnownOrientation;
+#endif
   RCTDirectEventBlock _onRequestClose;
 }
 
@@ -90,6 +92,7 @@ RCT_NOT_IMPLEMENTED(-(instancetype)initWithCoder : coder)
 
 - (void)notifyForOrientationChange
 {
+#if !TARGET_OS_TV
   if (!_onOrientationChange) {
     return;
   }
@@ -106,6 +109,7 @@ RCT_NOT_IMPLEMENTED(-(instancetype)initWithCoder : coder)
     @"orientation" : isPortrait ? @"portrait" : @"landscape",
   };
   _onOrientationChange(eventPayload);
+#endif
 }
 
 - (void)insertReactSubview:(UIView *)subview atIndex:(NSInteger)atIndex
@@ -191,7 +195,9 @@ RCT_NOT_IMPLEMENTED(-(instancetype)initWithCoder : coder)
   if (shouldBePresented) {
     RCTAssert(self.reactViewController, @"Can't present modal view controller without a presenting view controller");
 
+#if !TARGET_OS_TV
     _modalViewController.supportedInterfaceOrientations = [self supportedOrientationsMask];
+#endif
 
     if ([self.animationType isEqualToString:@"fade"]) {
       _modalViewController.modalTransitionStyle = UIModalTransitionStyleCrossDissolve;
@@ -224,6 +230,7 @@ RCT_NOT_IMPLEMENTED(-(instancetype)initWithCoder : coder)
       transparent ? UIModalPresentationOverFullScreen : UIModalPresentationFullScreen;
 }
 
+#if !TARGET_OS_TV
 - (UIInterfaceOrientationMask)supportedOrientationsMask
 {
   if (_supportedOrientations.count == 0) {
@@ -250,6 +257,7 @@ RCT_NOT_IMPLEMENTED(-(instancetype)initWithCoder : coder)
   }
   return supportedOrientations;
 }
+#endif
 
 @end
 

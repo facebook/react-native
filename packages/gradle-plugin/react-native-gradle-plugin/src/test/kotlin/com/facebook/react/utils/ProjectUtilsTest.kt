@@ -117,8 +117,8 @@ class ProjectUtilsTest {
   }
 
   @Test
-  fun isHermesV1Enabled_returnsFalseByDefault() {
-    assertThat(createProject().isHermesV1Enabled).isFalse()
+  fun isHermesV1Enabled_returnsTrueByDefault() {
+    assertThat(createProject().isHermesV1Enabled).isTrue()
   }
 
   @Test

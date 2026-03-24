@@ -146,17 +146,34 @@ if (__DEV__) {
         ? guessHostFromDevServerUrl(devServer.url)
         : 'localhost';
 
-      // Read the optional global variable for backward compatibility.
-      // It was added in https://github.com/facebook/react-native/commit/bf2b435322e89d0aeee8792b1c6e04656c2719a0.
-      const port =
+      // Derive scheme and port from the dev server URL when possible,
+      // falling back to ws://host:8097 for local development.
+      let wsScheme = 'ws';
+      let port = 8097;
+
+      if (
         // $FlowFixMe[prop-missing]
         // $FlowFixMe[incompatible-use]
         window.__REACT_DEVTOOLS_PORT__ != null
-          ? window.__REACT_DEVTOOLS_PORT__
-          : 8097;
+      ) {
+        // $FlowFixMe[prop-missing]
+        port = window.__REACT_DEVTOOLS_PORT__;
+      } else if (devServer.bundleLoadedFromServer) {
+        try {
+          const devUrl = new URL(devServer.url);
+          if (devUrl.protocol === 'https:') {
+            wsScheme = 'wss';
+          }
+          if (devUrl.port) {
+            port = parseInt(devUrl.port, 10);
+          } else if (devUrl.protocol === 'https:') {
+            port = 443;
+          }
+        } catch (e) {}
+      }
 
       const WebSocket = require('../WebSocket/WebSocket').default;
-      ws = new WebSocket('ws://' + host + ':' + port);
+      ws = new WebSocket(wsScheme + '://' + host + ':' + port);
       ws.addEventListener('close', event => {
         isWebSocketOpen = false;
       });

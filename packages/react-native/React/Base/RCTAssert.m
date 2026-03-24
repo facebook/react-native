@@ -146,7 +146,7 @@ void RCTFatal(NSError *error)
       // userInfo: <underlying error userinfo, plus untruncated description plus JS stack trace>
       @throw [[NSException alloc] initWithName:name reason:message userInfo:userInfo];
 #if DEBUG
-    } @catch (NSException *e) {
+    } @catch (NSException *) {
     }
 #endif
   }
@@ -216,7 +216,7 @@ void RCTFatalException(NSException *exception)
 #endif
       @throw exception;
 #if DEBUG
-    } @catch (NSException *e) {
+    } @catch (NSException *) {
     }
 #endif
   }

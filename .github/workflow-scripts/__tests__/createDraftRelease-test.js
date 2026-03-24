@@ -121,7 +121,7 @@ describe('Create Draft Release', () => {
   });
 
   describe('#_computeBody', () => {
-    it('computes body for release', async () => {
+    it('computes body for release when no hermes versions are passed', async () => {
       const version = '0.77.1';
       const changelog = `## v${version}
 ### Breaking Changes
@@ -134,19 +134,82 @@ describe('Create Draft Release', () => {
 #### iOS
 - [PR #3436](https://github.com/facebook/react-native/pull/3436) - Some other change
 - [PR #3437](https://github.com/facebook/react-native/pull/3437) - Some other change`;
-      const body = _computeBody(version, changelog);
+      const body = _computeBody(changelog, version);
 
       expect(body).toEqual(`${changelog}
 
 ---
 
 Hermes dSYMS:
-- [Debug](https://repo1.maven.org/maven2/com/facebook/react/react-native-artifacts/${version}/react-native-artifacts-${version}-hermes-framework-dSYM-debug.tar.gz)
-- [Release](https://repo1.maven.org/maven2/com/facebook/react/react-native-artifacts/${version}/react-native-artifacts-${version}-hermes-framework-dSYM-release.tar.gz)
+- [Debug](https://repo1.maven.org/maven2/com/facebook/hermes/hermes-ios/${version}/hermes-ios-${version}-hermes-framework-dSYM-debug.tar.gz)
+- [Release](https://repo1.maven.org/maven2/com/facebook/hermes/hermes-ios/${version}/hermes-ios-${version}-hermes-framework-dSYM-release.tar.gz)
+
+Hermes V1 dSYMS:
+- [Debug](https://repo1.maven.org/maven2/com/facebook/hermes/hermes-ios/${version}/hermes-ios-${version}-hermes-framework-dSYM-debug.tar.gz)
+- [Release](https://repo1.maven.org/maven2/com/facebook/hermes/hermes-ios/${version}/hermes-ios-${version}-hermes-framework-dSYM-release.tar.gz)
 
 ReactNativeDependencies dSYMs:
 - [Debug](https://repo1.maven.org/maven2/com/facebook/react/react-native-artifacts/${version}/react-native-artifacts-${version}-reactnative-dependencies-dSYM-debug.tar.gz)
 - [Release](https://repo1.maven.org/maven2/com/facebook/react/react-native-artifacts/${version}/react-native-artifacts-${version}-reactnative-dependencies-dSYM-release.tar.gz)
+
+ReactNative Core dSYMs:
+- [Debug](https://repo1.maven.org/maven2/com/facebook/react/react-native-artifacts/${version}/react-native-artifacts-${version}-reactnative-core-debug.tar.gz)
+- [Release](https://repo1.maven.org/maven2/com/facebook/react/react-native-artifacts/${version}/react-native-artifacts-${version}-reactnative-core-release.tar.gz)
+
+---
+
+You can file issues or pick requests against this release [here](https://github.com/reactwg/react-native-releases/issues/new/choose).
+
+---
+
+To help you upgrade to this version, you can use the [Upgrade Helper](https://react-native-community.github.io/upgrade-helper/) ⚛️.
+
+---
+
+View the whole changelog in the [CHANGELOG.md file](https://github.com/facebook/react-native/blob/main/CHANGELOG.md).`);
+    });
+
+    it('computes body for release when hermes versions are passed', async () => {
+      const version = '0.77.1';
+      const hermesVersion = '0.15.0';
+      const hermesV1Version = '250829098.0.2';
+      const changelog = `## v${version}
+### Breaking Changes
+- [PR #9012](https://github.com/facebook/react-native/pull/9012) - Some other change
+
+#### Android
+- [PR #3456](https://github.com/facebook/react-native/pull/3456) - Some other change
+- [PR #3457](https://github.com/facebook/react-native/pull/3457) - Some other change
+
+#### iOS
+- [PR #3436](https://github.com/facebook/react-native/pull/3436) - Some other change
+- [PR #3437](https://github.com/facebook/react-native/pull/3437) - Some other change`;
+      const body = _computeBody(
+        changelog,
+        version,
+        hermesVersion,
+        hermesV1Version,
+      );
+
+      expect(body).toEqual(`${changelog}
+
+---
+
+Hermes dSYMS:
+- [Debug](https://repo1.maven.org/maven2/com/facebook/hermes/hermes-ios/${hermesVersion}/hermes-ios-${hermesVersion}-hermes-framework-dSYM-debug.tar.gz)
+- [Release](https://repo1.maven.org/maven2/com/facebook/hermes/hermes-ios/${hermesVersion}/hermes-ios-${hermesVersion}-hermes-framework-dSYM-release.tar.gz)
+
+Hermes V1 dSYMS:
+- [Debug](https://repo1.maven.org/maven2/com/facebook/hermes/hermes-ios/${hermesV1Version}/hermes-ios-${hermesV1Version}-hermes-framework-dSYM-debug.tar.gz)
+- [Release](https://repo1.maven.org/maven2/com/facebook/hermes/hermes-ios/${hermesV1Version}/hermes-ios-${hermesV1Version}-hermes-framework-dSYM-release.tar.gz)
+
+ReactNativeDependencies dSYMs:
+- [Debug](https://repo1.maven.org/maven2/com/facebook/react/react-native-artifacts/${version}/react-native-artifacts-${version}-reactnative-dependencies-dSYM-debug.tar.gz)
+- [Release](https://repo1.maven.org/maven2/com/facebook/react/react-native-artifacts/${version}/react-native-artifacts-${version}-reactnative-dependencies-dSYM-release.tar.gz)
+
+ReactNative Core dSYMs:
+- [Debug](https://repo1.maven.org/maven2/com/facebook/react/react-native-artifacts/${version}/react-native-artifacts-${version}-reactnative-core-debug.tar.gz)
+- [Release](https://repo1.maven.org/maven2/com/facebook/react/react-native-artifacts/${version}/react-native-artifacts-${version}-reactnative-core-release.tar.gz)
 
 ---
 

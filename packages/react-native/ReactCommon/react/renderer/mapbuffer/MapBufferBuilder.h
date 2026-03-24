@@ -33,13 +33,11 @@ class MapBufferBuilder {
 
   void putDouble(MapBuffer::Key key, double value);
 
-  void putString(MapBuffer::Key key, const std::string& value);
+  void putString(MapBuffer::Key key, const std::string &value);
 
-  void putMapBuffer(MapBuffer::Key key, const MapBuffer& map);
+  void putMapBuffer(MapBuffer::Key key, const MapBuffer &map);
 
-  void putMapBufferList(
-      MapBuffer::Key key,
-      const std::vector<MapBuffer>& mapBufferList);
+  void putMapBufferList(MapBuffer::Key key, const std::vector<MapBuffer> &mapBufferList);
 
   MapBuffer build();
 
@@ -54,11 +52,7 @@ class MapBufferBuilder {
 
   bool needsSort_{false};
 
-  void storeKeyValue(
-      MapBuffer::Key key,
-      MapBuffer::DataType type,
-      const uint8_t* value,
-      uint32_t valueSize);
+  void storeKeyValue(MapBuffer::Key key, MapBuffer::DataType type, const uint8_t *value, uint32_t valueSize);
 };
 
 } // namespace facebook::react

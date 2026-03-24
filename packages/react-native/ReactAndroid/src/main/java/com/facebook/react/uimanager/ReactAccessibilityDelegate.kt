@@ -246,7 +246,7 @@ public open class ReactAccessibilityDelegate( // The View this delegate is attac
 
       // In order to make Talkback announce the change of the adjustable's value,
       // schedule to send a TYPE_VIEW_SELECTED event after performing the scroll actions.
-      val accessibilityRole = host.getTag(R.id.accessibility_role) as AccessibilityRole
+      val accessibilityRole = host.getTag(R.id.accessibility_role) as AccessibilityRole?
       val accessibilityValue = host.getTag(R.id.accessibility_value) as ReadableMap?
       if (
           accessibilityRole == AccessibilityRole.ADJUSTABLE &&

@@ -17,6 +17,14 @@ InspectorFlags& InspectorFlags::getInstance() {
   return instance;
 }
 
+bool InspectorFlags::getAssertSingleHostState() const {
+  return loadFlagsAndAssertUnchanged().assertSingleHostState;
+}
+
+bool InspectorFlags::getFrameRecordingEnabled() const {
+  return loadFlagsAndAssertUnchanged().frameRecordingEnabled;
+}
+
 bool InspectorFlags::getFuseboxEnabled() const {
   if (fuseboxDisabledForTest_) {
     return false;
@@ -33,6 +41,10 @@ bool InspectorFlags::getNetworkInspectionEnabled() const {
   return loadFlagsAndAssertUnchanged().networkInspectionEnabled;
 }
 
+bool InspectorFlags::getPerfIssuesEnabled() const {
+  return loadFlagsAndAssertUnchanged().perfIssuesEnabled;
+}
+
 void InspectorFlags::dangerouslyResetFlags() {
   *this = InspectorFlags{};
 }
@@ -44,6 +56,10 @@ void InspectorFlags::dangerouslyDisableFuseboxForTest() {
 const InspectorFlags::Values& InspectorFlags::loadFlagsAndAssertUnchanged()
     const {
   InspectorFlags::Values newValues = {
+      .assertSingleHostState =
+          ReactNativeFeatureFlags::fuseboxAssertSingleHostState(),
+      .frameRecordingEnabled =
+          ReactNativeFeatureFlags::fuseboxFrameRecordingEnabled(),
       .fuseboxEnabled =
 #if defined(REACT_NATIVE_DEBUGGER_ENABLED)
           true,
@@ -59,6 +75,7 @@ const InspectorFlags::Values& InspectorFlags::loadFlagsAndAssertUnchanged()
       .networkInspectionEnabled =
           ReactNativeFeatureFlags::enableBridgelessArchitecture() &&
           ReactNativeFeatureFlags::fuseboxNetworkInspectionEnabled(),
+      .perfIssuesEnabled = ReactNativeFeatureFlags::perfIssuesEnabled(),
   };
 
   if (cachedValues_.has_value() && !inconsistentFlagsStateLogged_) {

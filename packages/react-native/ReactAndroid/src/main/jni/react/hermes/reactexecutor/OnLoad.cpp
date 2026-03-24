@@ -45,7 +45,8 @@ static void installBindings(jsi::Runtime& runtime) {
 }
 
 class [[deprecated(
-    "This API will be removed along with the legacy architecture.")]] HermesExecutorHolder
+    "This API will be removed along with the legacy architecture.")]]
+HermesExecutorHolder
     : public jni::HybridClass<HermesExecutorHolder, JavaScriptExecutorHolder> {
  public:
   static constexpr auto kJavaDescriptor =

@@ -71,25 +71,32 @@ async function setVersion(
   version /*: string */,
   skipReactNativeVersion /*: boolean */ = false,
 ) /*: Promise<void> */ {
-  const packages = await getPackages({
-    includePrivate: true,
+  // Packages to set the new versions of. This excludes packages under
+  // private/, which are not versioned.
+  const packagesToVersion = await getPackages({
     includeReactNative: true,
+    forceIncludeRNTester: true,
   });
   const newPackageVersions = Object.fromEntries(
-    Object.entries(packages).map(([packageName, {packageJson}]) => {
-      let packageVersion = version;
-      if (packageName === 'react-native' && skipReactNativeVersion) {
-        packageVersion = '1000.0.0';
-      } else if (packageJson.private === true) {
-        packageVersion = packageJson.version ?? '0.0.0';
-      }
-      return [packageName, packageVersion];
-    }),
+    Object.keys(packagesToVersion).map(packageName => [
+      packageName,
+      packageName === 'react-native' && skipReactNativeVersion
+        ? '1000.0.0'
+        : version,
+    ]),
   );
 
+  // Packages to apply updated versions in (dependencies/devDependencies). This
+  // is all packages and the workspace root.
   const packagesToUpdate = [
     await getWorkspaceRoot(),
-    ...Object.values(packages),
+    ...Object.values(
+      await getPackages({
+        includeReactNative: true,
+        includePrivate: true,
+        forceIncludeRNTester: true,
+      }),
+    ),
   ];
 
   // Update all workspace packages

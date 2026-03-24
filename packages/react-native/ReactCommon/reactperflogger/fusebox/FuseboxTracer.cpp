@@ -52,16 +52,18 @@ bool FuseboxTracer::stopTracing(
   auto traceEvents = folly::dynamic::array();
 
   // Register "Main" process
-  traceEvents.push_back(folly::dynamic::object(
-      "args", folly::dynamic::object("name", "Main"))("cat", "__metadata")(
-      "name", "process_name")("ph", "M")("pid", PID)("tid", 0)("ts", 0));
+  traceEvents.push_back(
+      folly::dynamic::object("args", folly::dynamic::object("name", "Main"))(
+          "cat", "__metadata")("name", "process_name")("ph", "M")("pid", PID)(
+          "tid", 0)("ts", 0));
   // Register "Timings" track
   // NOTE: This is a hack to make the trace viewer show a "Timings" track
   // adjacent to custom tracks in our current build of Chrome DevTools.
   // In future, we should align events exactly.
-  traceEvents.push_back(folly::dynamic::object(
-      "args", folly::dynamic::object("name", "Timings"))("cat", "__metadata")(
-      "name", "thread_name")("ph", "M")("pid", PID)("tid", 1000)("ts", 0));
+  traceEvents.push_back(
+      folly::dynamic::object("args", folly::dynamic::object("name", "Timings"))(
+          "cat", "__metadata")("name", "thread_name")("ph", "M")("pid", PID)(
+          "tid", 1000)("ts", 0));
 
   auto savedBuffer = std::move(buffer_);
   buffer_.clear();
@@ -73,20 +75,22 @@ bool FuseboxTracer::stopTracing(
     if (!event.track.empty() && !trackIdMap.contains(event.track)) {
       auto trackId = nextTrack++;
       trackIdMap[event.track] = trackId;
-      traceEvents.push_back(folly::dynamic::object(
-          "args", folly::dynamic::object("name", event.track))(
-          "cat", "__metadata")("name", "thread_name")("ph", "M")("pid", PID)(
-          "tid", trackId)("ts", 0));
+      traceEvents.push_back(
+          folly::dynamic::object(
+              "args", folly::dynamic::object("name", event.track))(
+              "cat", "__metadata")("name", "thread_name")("ph", "M")(
+              "pid", PID)("tid", trackId)("ts", 0));
     }
 
     auto trackId =
         trackIdMap.contains(event.track) ? trackIdMap[event.track] : 1000;
 
     // Emit "blink.user_timing" trace event
-    traceEvents.push_back(folly::dynamic::object(
-        "args", folly::dynamic::object())("cat", "blink.user_timing")(
-        "dur", (event.end - event.start) * 1000)("name", event.name)("ph", "X")(
-        "ts", event.start * 1000)("pid", PID)("tid", trackId));
+    traceEvents.push_back(
+        folly::dynamic::object("args", folly::dynamic::object())(
+            "cat", "blink.user_timing")(
+            "dur", (event.end - event.start) * 1000)("name", event.name)(
+            "ph", "X")("ts", event.start * 1000)("pid", PID)("tid", trackId));
 
     if (traceEvents.size() >= 1000) {
       resultCallback(traceEvents);
@@ -109,11 +113,12 @@ void FuseboxTracer::addEvent(
   if (!tracing_) {
     return;
   }
-  buffer_.push_back(BufferEvent{
-      .start = start,
-      .end = end,
-      .name = std::string(name),
-      .track = std::string(track.value_or(""))});
+  buffer_.push_back(
+      BufferEvent{
+          .start = start,
+          .end = end,
+          .name = std::string(name),
+          .track = std::string(track.value_or(""))});
 }
 
 bool FuseboxTracer::stopTracingAndWriteToFile(const std::string& path) {

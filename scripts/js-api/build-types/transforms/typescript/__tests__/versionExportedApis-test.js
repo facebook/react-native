@@ -726,4 +726,27 @@ describe('versionExportedApis', () => {
       "
     `);
   });
+
+  test('should handle typeof with declare const and track dependencies', async () => {
+    const code = `
+      type AccessibilityInfo_default = {
+        isScreenReaderEnabled: () => Promise<boolean>;
+      };
+      declare const AccessibilityInfo: typeof AccessibilityInfo_default;
+      declare type AccessibilityInfo = typeof AccessibilityInfo;
+      export { AccessibilityInfo };
+    `;
+    const result = await translate(code);
+    expect(result).toMatchInlineSnapshot(`
+      "type AccessibilityInfo_default = {
+        isScreenReaderEnabled: () => Promise<boolean>;
+      };
+      declare const AccessibilityInfo: typeof AccessibilityInfo_default;
+      declare type AccessibilityInfo = typeof AccessibilityInfo;
+      export {
+        AccessibilityInfo, // 2b0c85e6, Deps: [AccessibilityInfo_default], Total: 1, Tree: AccessibilityInfo→[AccessibilityInfo_default]
+      };
+      "
+    `);
+  });
 });

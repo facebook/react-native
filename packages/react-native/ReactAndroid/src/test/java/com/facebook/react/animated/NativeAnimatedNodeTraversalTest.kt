@@ -1370,6 +1370,44 @@ class NativeAnimatedNodeTraversalTest {
     assertThat(previousValue).isEqualTo(1.5)
   }
 
+  @Test
+  fun testTrackingSpringDoesNotCrashWhenToValueNodeIsDetached() {
+    val springConfig: JavaOnlyMap =
+        JavaOnlyMap.of(
+            "type",
+            "spring",
+            "stiffness",
+            230.2,
+            "damping",
+            22.0,
+            "mass",
+            1.0,
+            "initialVelocity",
+            0.0,
+            "restSpeedThreshold",
+            0.001,
+            "restDisplacementThreshold",
+            0.001,
+            "overshootClamping",
+            false,
+        )
+
+    createAnimatedGraphWithTrackingNode(springConfig)
+
+    nativeAnimatedNodesManager.setAnimatedNodeValue(1, 1.0)
+    nativeAnimatedNodesManager.runUpdates(nextFrameTime())
+
+    nativeAnimatedNodesManager.disconnectAnimatedNodes(1, 2)
+    nativeAnimatedNodesManager.dropAnimatedNode(1)
+
+    nativeAnimatedNodesManager.runUpdates(nextFrameTime())
+
+    val trackedNode = nativeAnimatedNodesManager.getNodeById(3) as? ValueAnimatedNode
+    assertThat(trackedNode).isNotNull
+    val trackedValue = checkNotNull(trackedNode).getValue()
+    assertThat(trackedValue.isNaN()).isFalse
+  }
+
   companion object {
     private const val FRAME_LEN_NANOS: Long = 1000000000L / 60L
     private const val INITIAL_FRAME_TIME_NANOS: Long = 14599233201256L /* random */

@@ -13,14 +13,7 @@
 import RNTesterText from '../../components/RNTesterText';
 import RNTOption from '../../components/RNTOption';
 import React from 'react';
-import {
-  Alert,
-  Linking,
-  StyleSheet,
-  Text,
-  TouchableHighlight,
-  View,
-} from 'react-native';
+import {Alert, StyleSheet, Text, TouchableHighlight, View} from 'react-native';
 
 const BINARY_TYPES = {
   String,
@@ -62,17 +55,12 @@ class XHRExampleBinaryUpload extends React.Component<{...}, $FlowFixMe> {
       Alert.alert('Upload failed', 'No response payload.');
       return;
     }
-    const index = xhr.responseText.indexOf(
-      'http://ptsv2.com/t/react-native/d/',
-    );
-    if (index === -1) {
+    const {status} = JSON.parse(xhr.responseText);
+    if (status !== 'success') {
       Alert.alert('Upload failed', 'Invalid response payload.');
       return;
     }
-    const url = xhr.responseText.slice(index).split('\n')[0];
-    console.log('Upload successful: ' + url);
-    // $FlowFixMe[unused-promise]
-    Linking.openURL(url);
+    Alert.alert('Upload successful: https://ptsv3.com/react-native');
   }
 
   state: $FlowFixMe | {type: 'Uint8Array'} = {
@@ -81,7 +69,7 @@ class XHRExampleBinaryUpload extends React.Component<{...}, $FlowFixMe> {
 
   _upload = () => {
     const xhr = new XMLHttpRequest();
-    xhr.open('POST', 'http://ptsv2.com/t/react-native/post');
+    xhr.open('POST', 'https://ptsv3.com/t/react-native/post');
     xhr.onload = () => XHRExampleBinaryUpload.handlePostTestServerUpload(xhr);
     xhr.setRequestHeader('Content-Type', 'text/plain');
 

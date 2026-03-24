@@ -19,13 +19,10 @@ import LogBoxButton from './LogBoxButton';
 import * as LogBoxStyle from './LogBoxStyle';
 import * as React from 'react';
 
-type Props = $ReadOnly<{
+component LogBoxInspectorStackFrame(
   frame: StackFrame,
   onPress?: ?(event: GestureResponderEvent) => void,
-}>;
-
-function LogBoxInspectorStackFrame(props: Props): React.Node {
-  const {frame, onPress} = props;
+) {
   const column = frame.column != null && parseInt(frame.column, 10);
   const location =
     getFileName(frame.file) +
@@ -90,7 +87,12 @@ const styles = StyleSheet.create({
     includeFontPadding: false,
     lineHeight: 18,
     fontWeight: '400',
-    fontFamily: Platform.select({android: 'monospace', ios: 'Menlo'}),
+    fontFamily: Platform.select({
+      android: 'monospace',
+      ios: 'Menlo',
+      macos: 'Menlo',
+      windows: 'Consolas',
+    }),
   },
   location: {
     color: LogBoxStyle.getTextColor(0.8),

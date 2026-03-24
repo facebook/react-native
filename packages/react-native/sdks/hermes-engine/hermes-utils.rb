@@ -86,7 +86,7 @@ def hermes_commit_envvar_defined()
 end
 
 def hermes_v1_enabled()
-    return ENV['RCT_HERMES_V1_ENABLED'] == "1"
+    return ENV['RCT_HERMES_V1_ENABLED'] != "0"
 end
 
 def force_build_from_tag(react_native_path)
@@ -225,17 +225,10 @@ def release_tarball_url(version, build_type)
         ENV['ENTERPRISE_REPOSITORY'] :
         "https://repo1.maven.org/maven2"
 
-    if hermes_v1_enabled()
-        namespace = "com/facebook/hermes"
-        # Sample url from Maven:
-        # https://repo1.maven.org/maven2/com/facebook/hermes/hermes-ios/0.14.0/hermes-ios-0.14.0-hermes-ios-debug.tar.gz
-        return "#{maven_repo_url}/#{namespace}/hermes-ios/#{version}/hermes-ios-#{version}-hermes-ios-#{build_type.to_s}.tar.gz"
-    else
-        namespace = "com/facebook/react"
-        # Sample url from Maven:
-        # https://repo1.maven.org/maven2/com/facebook/react/react-native-artifacts/0.71.0/react-native-artifacts-0.71.0-hermes-ios-debug.tar.gz
-        return "#{maven_repo_url}/#{namespace}/react-native-artifacts/#{version}/react-native-artifacts-#{version}-hermes-ios-#{build_type.to_s}.tar.gz"
-    end
+    namespace = "com/facebook/hermes"
+    # Sample url from Maven:
+    # https://repo1.maven.org/maven2/com/facebook/hermes/hermes-ios/0.14.0/hermes-ios-0.14.0-hermes-ios-debug.tar.gz
+    return "#{maven_repo_url}/#{namespace}/hermes-ios/#{version}/hermes-ios-#{version}-hermes-ios-#{build_type.to_s}.tar.gz"
 end
 
 def download_stable_hermes(react_native_path, version, configuration)
@@ -257,29 +250,26 @@ def download_hermes_tarball(react_native_path, tarball_url, version, configurati
 end
 
 def nightly_tarball_url(version)
-  # TODO: T231755027 update coordinates and versioning
-  artifact_coordinate = "react-native-artifacts"
+  artifact_coordinate = "hermes-ios"
   artifact_name = "hermes-ios-debug.tar.gz"
-  namespace = "com/facebook/react"
-
-  if hermes_v1_enabled()
-    artifact_coordinate = "hermes-ios"
-    artifact_name = "hermes-ios-debug.tar.gz"
-    namespace = "com/facebook/hermes"
-  end
+  namespace = "com/facebook/hermes"
 
   xml_url = "https://central.sonatype.com/repository/maven-snapshots/#{namespace}/#{artifact_coordinate}/#{version}-SNAPSHOT/maven-metadata.xml"
 
-  response = Net::HTTP.get_response(URI(xml_url))
-  if response.is_a?(Net::HTTPSuccess)
-    xml = REXML::Document.new(response.body)
-    timestamp = xml.elements['metadata/versioning/snapshot/timestamp'].text
-    build_number = xml.elements['metadata/versioning/snapshot/buildNumber'].text
-    full_version = "#{version}-#{timestamp}-#{build_number}"
-    final_url = "https://central.sonatype.com/repository/maven-snapshots/#{namespace}/#{artifact_coordinate}/#{version}-SNAPSHOT/#{artifact_coordinate}-#{full_version}-#{artifact_name}"
+  begin
+    response = Net::HTTP.get_response(URI(xml_url))
+    if response.is_a?(Net::HTTPSuccess)
+      xml = REXML::Document.new(response.body)
+      timestamp = xml.elements['metadata/versioning/snapshot/timestamp'].text
+      build_number = xml.elements['metadata/versioning/snapshot/buildNumber'].text
+      full_version = "#{version}-#{timestamp}-#{build_number}"
+      final_url = "https://central.sonatype.com/repository/maven-snapshots/#{namespace}/#{artifact_coordinate}/#{version}-SNAPSHOT/#{artifact_coordinate}-#{full_version}-#{artifact_name}"
 
-    return final_url
-  else
+      return final_url
+    else
+      return ""
+    end
+  rescue => e
     return ""
   end
 end

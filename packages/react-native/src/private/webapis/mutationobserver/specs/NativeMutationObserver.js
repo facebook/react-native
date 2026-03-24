@@ -15,16 +15,16 @@ import * as TurboModuleRegistry from '../../../../../Libraries/TurboModule/Turbo
 export type MutationObserverId = number;
 
 // These types are not supported by the codegen.
-type ShadowNode = mixed;
-type InstanceHandle = mixed;
-type ReactNativeElement = mixed;
-type ReadOnlyNode = mixed;
+type ShadowNode = unknown;
+type InstanceHandle = unknown;
+type ReactNativeElement = unknown;
+type ReadOnlyNode = unknown;
 
 export type NativeMutationRecord = {
   mutationObserverId: MutationObserverId,
   target: ReactNativeElement,
-  addedNodes: $ReadOnlyArray<ReadOnlyNode>,
-  removedNodes: $ReadOnlyArray<ReadOnlyNode>,
+  addedNodes: ReadonlyArray<ReadOnlyNode>,
+  removedNodes: ReadonlyArray<ReadOnlyNode>,
   ...
 };
 
@@ -47,7 +47,7 @@ export interface Spec extends TurboModule {
     ) => ReadOnlyNode,
   ) => void;
   +disconnect: () => void;
-  +takeRecords: () => $ReadOnlyArray<NativeMutationRecord>;
+  +takeRecords: () => ReadonlyArray<NativeMutationRecord>;
 }
 
 export default (TurboModuleRegistry.get<Spec>(

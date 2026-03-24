@@ -23,5 +23,5 @@ declare export default class DOMRectList
 }
 
 declare export function createDOMRectList(
-  domRects: $ReadOnlyArray<DOMRectReadOnly>,
+  domRects: ReadonlyArray<DOMRectReadOnly>,
 ): DOMRectList;

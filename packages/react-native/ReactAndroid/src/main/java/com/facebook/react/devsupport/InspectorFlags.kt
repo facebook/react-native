@@ -9,8 +9,10 @@ package com.facebook.react.devsupport
 
 import com.facebook.proguard.annotations.DoNotStrip
 import com.facebook.soloader.SoLoader
+import com.facebook.soloader.annotation.SoLoaderLibrary
 
 /** JNI wrapper for `jsinspector_modern::InspectorFlags`. */
+@SoLoaderLibrary("react_devsupportjni")
 @DoNotStrip
 internal object InspectorFlags {
   init {
@@ -20,4 +22,6 @@ internal object InspectorFlags {
   @DoNotStrip @JvmStatic external fun getFuseboxEnabled(): Boolean
 
   @DoNotStrip @JvmStatic external fun getIsProfilingBuild(): Boolean
+
+  @DoNotStrip @JvmStatic external fun getFrameRecordingEnabled(): Boolean
 }

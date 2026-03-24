@@ -42,7 +42,7 @@ type AppStateEventDefinitions = {
   focus: [],
 };
 
-export type AppStateEvent = $Keys<AppStateEventDefinitions>;
+export type AppStateEvent = keyof AppStateEventDefinitions;
 
 type NativeAppStateEventDefinitions = {
   appStateDidChange: [{app_state: AppStateStatus}],
@@ -110,7 +110,7 @@ class AppStateImpl {
    *
    * See https://reactnative.dev/docs/appstate#addeventlistener
    */
-  addEventListener<K: AppStateEvent>(
+  addEventListener<K extends AppStateEvent>(
     type: K,
     handler: (...AppStateEventDefinitions[K]) => void,
   ): EventSubscription {

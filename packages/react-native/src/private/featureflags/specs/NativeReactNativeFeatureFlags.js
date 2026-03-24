@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<5a4824857285ef91a4e2f4aeb589cc5d>>
+ * @generated SignedSource<<971e04eed130adab56e3306a6a26ff1c>>
  * @flow strict
  * @noformat
  */
@@ -28,23 +28,28 @@ export interface Spec extends TurboModule {
   +commonTestFlagWithoutNativeImplementation?: () => boolean;
   +cdpInteractionMetricsEnabled?: () => boolean;
   +cxxNativeAnimatedEnabled?: () => boolean;
-  +cxxNativeAnimatedRemoveJsSync?: () => boolean;
+  +defaultTextToOverflowHidden?: () => boolean;
   +disableEarlyViewCommandExecution?: () => boolean;
-  +disableFabricCommitInCXXAnimated?: () => boolean;
+  +disableImageViewPreallocationAndroid?: () => boolean;
   +disableMountItemReorderingAndroid?: () => boolean;
-  +disableOldAndroidAttachmentMetricsWorkarounds?: () => boolean;
+  +disableSubviewClippingAndroid?: () => boolean;
   +disableTextLayoutManagerCacheAndroid?: () => boolean;
+  +disableViewPreallocationAndroid?: () => boolean;
   +enableAccessibilityOrder?: () => boolean;
   +enableAccumulatedUpdatesInRawPropsAndroid?: () => boolean;
+  +enableAndroidAntialiasedBorderRadiusClipping?: () => boolean;
   +enableAndroidLinearText?: () => boolean;
   +enableAndroidTextMeasurementOptimizations?: () => boolean;
   +enableBridgelessArchitecture?: () => boolean;
   +enableCppPropsIteratorSetter?: () => boolean;
   +enableCustomFocusSearchOnClippedElementsAndroid?: () => boolean;
   +enableDestroyShadowTreeRevisionAsync?: () => boolean;
+  +enableDifferentiatorMutationVectorPreallocation?: () => boolean;
   +enableDoubleMeasurementFixAndroid?: () => boolean;
   +enableEagerMainQueueModulesOnIOS?: () => boolean;
   +enableEagerRootViewAttachment?: () => boolean;
+  +enableExclusivePropsUpdateAndroid?: () => boolean;
+  +enableFabricCommitBranching?: () => boolean;
   +enableFabricLogs?: () => boolean;
   +enableFabricRenderer?: () => boolean;
   +enableFontScaleChangesUpdatingLayout?: () => boolean;
@@ -56,15 +61,18 @@ export interface Spec extends TurboModule {
   +enableImmediateUpdateModeForContentOffsetChanges?: () => boolean;
   +enableImperativeFocus?: () => boolean;
   +enableInteropViewManagerClassLookUpOptimizationIOS?: () => boolean;
+  +enableIntersectionObserverByDefault?: () => boolean;
+  +enableKeyEvents?: () => boolean;
   +enableLayoutAnimationsOnAndroid?: () => boolean;
   +enableLayoutAnimationsOnIOS?: () => boolean;
   +enableMainQueueCoordinatorOnIOS?: () => boolean;
   +enableModuleArgumentNSNullConversionIOS?: () => boolean;
+  +enableMutationObserverByDefault?: () => boolean;
   +enableNativeCSSParsing?: () => boolean;
+  +enableNativeViewPropTransformations?: () => boolean;
   +enableNetworkEventReporting?: () => boolean;
   +enablePreparedTextLayout?: () => boolean;
   +enablePropsUpdateReconciliationAndroid?: () => boolean;
-  +enableResourceTimingAPI?: () => boolean;
   +enableSwiftUIBasedFilters?: () => boolean;
   +enableViewCulling?: () => boolean;
   +enableViewRecycling?: () => boolean;
@@ -72,38 +80,41 @@ export interface Spec extends TurboModule {
   +enableViewRecyclingForScrollView?: () => boolean;
   +enableViewRecyclingForText?: () => boolean;
   +enableViewRecyclingForView?: () => boolean;
+  +enableVirtualViewContainerStateExperimental?: () => boolean;
   +enableVirtualViewDebugFeatures?: () => boolean;
-  +enableVirtualViewRenderState?: () => boolean;
-  +enableVirtualViewWindowFocusDetection?: () => boolean;
-  +enableWebPerformanceAPIsByDefault?: () => boolean;
+  +fixFindShadowNodeByTagRaceCondition?: () => boolean;
   +fixMappingOfEventPrioritiesBetweenFabricAndReact?: () => boolean;
+  +fixTextClippingAndroid15useBoundsForWidth?: () => boolean;
+  +fixYogaFlexBasisFitContentInMainAxis?: () => boolean;
+  +fuseboxAssertSingleHostState?: () => boolean;
   +fuseboxEnabledRelease?: () => boolean;
+  +fuseboxFrameRecordingEnabled?: () => boolean;
   +fuseboxNetworkInspectionEnabled?: () => boolean;
   +hideOffscreenVirtualViewsOnIOS?: () => boolean;
   +overrideBySynchronousMountPropsAtMountingAndroid?: () => boolean;
+  +perfIssuesEnabled?: () => boolean;
   +perfMonitorV2Enabled?: () => boolean;
   +preparedTextCacheSize?: () => number;
   +preventShadowTreeCommitExhaustion?: () => boolean;
   +shouldPressibilityUseW3CPointerEventsForHover?: () => boolean;
   +shouldTriggerResponderTransferOnScrollAndroid?: () => boolean;
   +skipActivityIdentityAssertionOnHostPause?: () => boolean;
-  +sweepActiveTouchOnChildNativeGesturesAndroid?: () => boolean;
+  +syncAndroidClipToPaddingWithOverflow?: () => boolean;
   +traceTurboModulePromiseRejectionsOnAndroid?: () => boolean;
   +updateRuntimeShadowNodeReferencesOnCommit?: () => boolean;
+  +updateRuntimeShadowNodeReferencesOnCommitThread?: () => boolean;
   +useAlwaysAvailableJSErrorHandling?: () => boolean;
   +useFabricInterop?: () => boolean;
-  +useNativeEqualsInNativeReadableArrayAndroid?: () => boolean;
-  +useNativeTransformHelperAndroid?: () => boolean;
+  +useLISAlgorithmInDifferentiator?: () => boolean;
   +useNativeViewConfigsInBridgelessMode?: () => boolean;
-  +useOptimizedEventBatchingOnAndroid?: () => boolean;
-  +useRawPropsJsiValue?: () => boolean;
-  +useShadowNodeStateOnClone?: () => boolean;
+  +useNestedScrollViewAndroid?: () => boolean;
   +useSharedAnimatedBackend?: () => boolean;
   +useTraitHiddenOnAndroid?: () => boolean;
   +useTurboModuleInterop?: () => boolean;
   +useTurboModules?: () => boolean;
+  +useUnorderedMapInDifferentiator?: () => boolean;
   +viewCullingOutsetRatio?: () => number;
-  +virtualViewHysteresisRatio?: () => number;
+  +viewTransitionEnabled?: () => boolean;
   +virtualViewPrerenderRatio?: () => number;
 }
 

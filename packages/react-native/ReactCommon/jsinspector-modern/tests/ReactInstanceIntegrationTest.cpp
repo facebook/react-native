@@ -14,6 +14,7 @@
 #include <glog/logging.h>
 #include <jsinspector-modern/InspectorFlags.h>
 #include <react/featureflags/ReactNativeFeatureFlags.h>
+#include <react/runtime/JSRuntimeBindings.h>
 #include <react/runtime/hermes/HermesInstance.h>
 
 using namespace ::testing;

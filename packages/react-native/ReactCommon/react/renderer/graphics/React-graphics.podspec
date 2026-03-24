@@ -47,6 +47,7 @@ Pod::Spec.new do |s|
 
   s.dependency "React-jsi"
   s.dependency "React-jsiexecutor"
+  s.dependency "React-featureflags"
   s.dependency "React-utils"
 
   depend_on_js_engine(s)

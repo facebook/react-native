@@ -163,7 +163,7 @@ static UIColor *_Nullable _UIColorFromSemanticString(NSString *semanticString)
     } else {
       Class uiColorClass = [UIColor class];
       IMP imp = [uiColorClass methodForSelector:objcColorSelector];
-      id (*getUIColor)(id, SEL) = ((id(*)(id, SEL))imp);
+      id (*getUIColor)(id, SEL) = ((id (*)(id, SEL))imp);
       id colorObject = getUIColor(uiColorClass, objcColorSelector);
       if ([colorObject isKindOfClass:[UIColor class]]) {
         return colorObject;

@@ -6,6 +6,7 @@
  */
 
 #import "RCTViewComponentView.h"
+#import <React/RCTSurfaceHostingProxyRootView.h>
 
 #import <CoreGraphics/CoreGraphics.h>
 #import <QuartzCore/QuartzCore.h>
@@ -14,6 +15,7 @@
 
 #import <RCTSwiftUIWrapper/RCTSwiftUIContainerViewWrapper.h>
 #import <React/RCTAssert.h>
+#import <React/RCTBackgroundImageUtils.h>
 #import <React/RCTBorderDrawing.h>
 #import <React/RCTBoxShadow.h>
 #import <React/RCTConversions.h>
@@ -52,6 +54,7 @@ const CGFloat BACKGROUND_COLOR_ZPOSITION = -1024.0f;
   BOOL _useCustomContainerView;
   NSMutableSet<NSString *> *_accessibilityOrderNativeIDs;
   RCTSwiftUIContainerViewWrapper *_swiftUIWrapper;
+  BOOL _focusable;
 }
 
 #ifdef RCT_DYNAMIC_FRAMEWORKS
@@ -66,7 +69,9 @@ const CGFloat BACKGROUND_COLOR_ZPOSITION = -1024.0f;
   if (self = [super initWithFrame:frame]) {
     _props = ViewShadowNode::defaultSharedProps();
     _reactSubviews = [NSMutableArray new];
+#if !TARGET_OS_TV
     self.multipleTouchEnabled = YES;
+#endif
     _useCustomContainerView = NO;
     _removeClippedSubviews = NO;
   }
@@ -375,6 +380,7 @@ const CGFloat BACKGROUND_COLOR_ZPOSITION = -1024.0f;
 
   // `accessibilityShowsLargeContentViewer`
   if (oldViewProps.accessibilityShowsLargeContentViewer != newViewProps.accessibilityShowsLargeContentViewer) {
+#if !TARGET_OS_TV
     if (@available(iOS 13.0, *)) {
       if (newViewProps.accessibilityShowsLargeContentViewer) {
         self.showsLargeContentViewer = YES;
@@ -384,13 +390,16 @@ const CGFloat BACKGROUND_COLOR_ZPOSITION = -1024.0f;
         self.showsLargeContentViewer = NO;
       }
     }
+#endif
   }
 
   // `accessibilityLargeContentTitle`
   if (oldViewProps.accessibilityLargeContentTitle != newViewProps.accessibilityLargeContentTitle) {
+#if !TARGET_OS_TV
     if (@available(iOS 13.0, *)) {
       self.largeContentTitle = RCTNSStringFromStringNilIfEmpty(newViewProps.accessibilityLargeContentTitle);
     }
+#endif
   }
 
   // `accessibilityOrder`
@@ -474,6 +483,13 @@ const CGFloat BACKGROUND_COLOR_ZPOSITION = -1024.0f;
     needsInvalidateLayer = YES;
   }
 
+  // `focusable`
+#if TARGET_OS_TV
+  if (oldViewProps.focusable != newViewProps.focusable) {
+    _focusable = (bool)newViewProps.focusable;
+  }
+#endif
+
   // `mixBlendMode`
   if (oldViewProps.mixBlendMode != newViewProps.mixBlendMode) {
     switch (newViewProps.mixBlendMode) {
@@ -528,8 +544,11 @@ const CGFloat BACKGROUND_COLOR_ZPOSITION = -1024.0f;
     }
   }
 
-  // `linearGradient`
-  if (oldViewProps.backgroundImage != newViewProps.backgroundImage) {
+  // `backgroundImage`
+  if (oldViewProps.backgroundImage != newViewProps.backgroundImage ||
+      oldViewProps.backgroundPosition != newViewProps.backgroundPosition ||
+      oldViewProps.backgroundRepeat != newViewProps.backgroundRepeat ||
+      oldViewProps.backgroundSize != newViewProps.backgroundSize) {
     needsInvalidateLayer = YES;
   }
 
@@ -556,6 +575,12 @@ const CGFloat BACKGROUND_COLOR_ZPOSITION = -1024.0f;
   // re-applying individual sub-values which weren't changed.
   [super updateLayoutMetrics:layoutMetrics oldLayoutMetrics:_layoutMetrics];
 
+  // Capture the frame size that was used by updateProps to resolve the
+  // transform, before overwriting _layoutMetrics. This is important because
+  // _layoutMetrics may be stale (e.g., from a recycled view) and differ from
+  // the oldLayoutMetrics parameter (which comes from the shadow tree).
+  auto previousFrameSize = _layoutMetrics.frame.size;
+
   _layoutMetrics = layoutMetrics;
   _needsInvalidateLayer = YES;
 
@@ -573,8 +598,12 @@ const CGFloat BACKGROUND_COLOR_ZPOSITION = -1024.0f;
     _backgroundColorLayer.frame = CGRectMake(0, 0, self.layer.bounds.size.width, self.layer.bounds.size.height);
   }
 
+  // Recompute the transform whenever the layout size differs from what was
+  // used in updateProps. Using previousFrameSize (the stored _layoutMetrics)
+  // instead of the oldLayoutMetrics parameter ensures correctness even when
+  // the view was recycled with stale dimensions.
   if ((_props->transformOrigin.isSet() || !_props->transform.operations.empty()) &&
-      layoutMetrics.frame.size != oldLayoutMetrics.frame.size) {
+      layoutMetrics.frame.size != previousFrameSize) {
     auto newTransform = _props->resolveTransform(layoutMetrics);
     self.layer.transform = RCTCATransform3DFromTransformMatrix(newTransform);
   }
@@ -619,11 +648,32 @@ const CGFloat BACKGROUND_COLOR_ZPOSITION = -1024.0f;
     self.layer.opacity = (float)props.opacity;
   }
 
+  // Clean up box shadow layers to prevent cross-component contamination
+  if (_boxShadowLayers != nullptr) {
+    for (CALayer *boxShadowLayer = nullptr in _boxShadowLayers) {
+      [boxShadowLayer removeFromSuperlayer];
+    }
+    [_boxShadowLayers removeAllObjects];
+    _boxShadowLayers = nil;
+  }
+
+  // Clean up other visual layers
+  [_backgroundColorLayer removeFromSuperlayer];
+  _backgroundColorLayer = nil;
+  [_borderLayer removeFromSuperlayer];
+  _borderLayer = nil;
+  [_outlineLayer removeFromSuperlayer];
+  _outlineLayer = nil;
+  [_filterLayer removeFromSuperlayer];
+  _filterLayer = nil;
+  [self clearExistingBackgroundImageLayers];
+
   _propKeysManagedByAnimated_DO_NOT_USE_THIS_IS_BROKEN = nil;
   _eventEmitter.reset();
   _isJSResponder = NO;
   _removeClippedSubviews = NO;
   _reactSubviews = [NSMutableArray new];
+  _layoutMetrics = {};
 }
 
 - (void)setPropKeysManagedByAnimated_DO_NOT_USE_THIS_IS_BROKEN:(NSSet<NSString *> *_Nullable)props
@@ -915,7 +965,8 @@ static RCTBorderStyle RCTBorderStyleFromOutlineStyle(OutlineStyle outlineStyle)
     layer.shadowPath = nil;
   }
 
-#if defined(__IPHONE_OS_VERSION_MAX_ALLOWED) && __IPHONE_OS_VERSION_MAX_ALLOWED >= 170000 /* __IPHONE_17_0 */
+#if !TARGET_OS_TV && defined(__IPHONE_OS_VERSION_MAX_ALLOWED) && \
+    __IPHONE_OS_VERSION_MAX_ALLOWED >= 170000 /* __IPHONE_17_0 */
   // Stage 1.5. Cursor / Hover Effects
   if (@available(iOS 17.0, *)) {
     UIHoverStyle *hoverStyle = nil;
@@ -1047,14 +1098,23 @@ static RCTBorderStyle RCTBorderStyleFromOutlineStyle(OutlineStyle outlineStyle)
   [_filterLayer removeFromSuperlayer];
   _filterLayer = nil;
   if (_swiftUIWrapper != nullptr) {
-    [_swiftUIWrapper updateBlurRadius:@(0)];
+    [_swiftUIWrapper resetStyles];
   }
   self.layer.opacity = (float)_props->opacity;
   if (!_props->filter.empty()) {
     float multiplicativeBrightness = 1;
     bool hasBrightnessFilter = false;
     for (const auto &primitive : _props->filter) {
-      if (std::holds_alternative<Float>(primitive.parameters)) {
+      if (primitive.type == FilterType::DropShadow) {
+        if (_swiftUIWrapper != nullptr && std::holds_alternative<DropShadowParams>(primitive.parameters)) {
+          const auto &dropShadowParams = std::get<DropShadowParams>(primitive.parameters);
+          UIColor *shadowColor = RCTUIColorFromSharedColor(dropShadowParams.color);
+          [_swiftUIWrapper updateDropShadow:@(dropShadowParams.standardDeviation)
+                                          x:@(dropShadowParams.offsetX)
+                                          y:@(dropShadowParams.offsetY)
+                                      color:shadowColor];
+        }
+      } else if (std::holds_alternative<Float>(primitive.parameters)) {
         if (primitive.type == FilterType::Brightness) {
           multiplicativeBrightness *= std::get<Float>(primitive.parameters);
           hasBrightnessFilter = true;
@@ -1064,6 +1124,26 @@ static RCTBorderStyle RCTBorderStyleFromOutlineStyle(OutlineStyle outlineStyle)
           if (_swiftUIWrapper != nullptr) {
             Float blurRadius = std::get<Float>(primitive.parameters);
             [_swiftUIWrapper updateBlurRadius:@(blurRadius)];
+          }
+        } else if (primitive.type == FilterType::Grayscale) {
+          if (_swiftUIWrapper != nullptr) {
+            Float grayscale = std::get<Float>(primitive.parameters);
+            [_swiftUIWrapper updateGrayscale:@(grayscale)];
+          }
+        } else if (primitive.type == FilterType::Saturate) {
+          if (_swiftUIWrapper != nullptr) {
+            Float saturation = std::get<Float>(primitive.parameters);
+            [_swiftUIWrapper updateSaturation:@(saturation)];
+          }
+        } else if (primitive.type == FilterType::Contrast) {
+          if (_swiftUIWrapper != nullptr) {
+            Float contrast = std::get<Float>(primitive.parameters);
+            [_swiftUIWrapper updateContrast:@(contrast)];
+          }
+        } else if (primitive.type == FilterType::HueRotate) {
+          if (_swiftUIWrapper != nullptr) {
+            Float hueRotateDegrees = std::get<Float>(primitive.parameters);
+            [_swiftUIWrapper updateHueRotate:@(hueRotateDegrees)];
           }
         }
       }
@@ -1088,27 +1168,62 @@ static RCTBorderStyle RCTBorderStyleFromOutlineStyle(OutlineStyle outlineStyle)
   // background image
   [self clearExistingBackgroundImageLayers];
   if (!_props->backgroundImage.empty()) {
+    const auto borderMetricsBI = _props->resolveBorderMetrics(_layoutMetrics);
+
+    // background-origin: padding-box
+    CGRect backgroundPositioningArea = RCTCGRectFromRect(_layoutMetrics.getPaddingFrame());
+    // background-clip: border-box
+    CGRect backgroundPaintingArea = self.layer.bounds;
+
+    size_t imageIndex = _props->backgroundImage.size() - 1;
     // iterate in reverse to match CSS specification
     for (const auto &backgroundImage : std::ranges::reverse_view(_props->backgroundImage)) {
+      BackgroundSize backgroundSize = BackgroundSizeLengthPercentage{};
+      if (!_props->backgroundSize.empty()) {
+        backgroundSize = _props->backgroundSize[imageIndex % _props->backgroundSize.size()];
+      }
+
+      BackgroundPosition backgroundPosition;
+      if (!_props->backgroundPosition.empty()) {
+        backgroundPosition = _props->backgroundPosition[imageIndex % _props->backgroundPosition.size()];
+      }
+
+      BackgroundRepeat backgroundRepeat;
+      if (!_props->backgroundRepeat.empty()) {
+        backgroundRepeat = _props->backgroundRepeat[imageIndex % _props->backgroundRepeat.size()];
+      }
+
+      CGSize backgroundImageSize = [RCTBackgroundImageUtils calculateBackgroundImageSize:backgroundPositioningArea
+                                                                       itemIntrinsicSize:backgroundPositioningArea.size
+                                                                          backgroundSize:backgroundSize
+                                                                        backgroundRepeat:backgroundRepeat];
+
+      CALayer *gradientLayer;
+
       if (std::holds_alternative<LinearGradient>(backgroundImage)) {
         const auto &linearGradient = std::get<LinearGradient>(backgroundImage);
-        CALayer *backgroundImageLayer = [RCTLinearGradient gradientLayerWithSize:self.layer.bounds.size
-                                                                        gradient:linearGradient];
-        [self shapeLayerToMatchView:backgroundImageLayer borderMetrics:borderMetrics];
-        backgroundImageLayer.masksToBounds = YES;
-        backgroundImageLayer.zPosition = BACKGROUND_COLOR_ZPOSITION;
-        [layer addSublayer:backgroundImageLayer];
-        [_backgroundImageLayers addObject:backgroundImageLayer];
+        gradientLayer = [RCTLinearGradient gradientLayerWithSize:backgroundImageSize gradient:linearGradient];
       } else if (std::holds_alternative<RadialGradient>(backgroundImage)) {
         const auto &radialGradient = std::get<RadialGradient>(backgroundImage);
-        CALayer *backgroundImageLayer = [RCTRadialGradient gradientLayerWithSize:self.layer.bounds.size
-                                                                        gradient:radialGradient];
-        [self shapeLayerToMatchView:backgroundImageLayer borderMetrics:borderMetrics];
+        gradientLayer = [RCTRadialGradient gradientLayerWithSize:backgroundImageSize gradient:radialGradient];
+      }
+
+      if (gradientLayer != nil) {
+        CALayer *backgroundImageLayer =
+            [RCTBackgroundImageUtils createBackgroundImageLayerWithSize:backgroundPositioningArea
+                                                           paintingArea:backgroundPaintingArea
+                                                               itemSize:backgroundImageSize
+                                                     backgroundPosition:backgroundPosition
+                                                       backgroundRepeat:backgroundRepeat
+                                                              itemLayer:gradientLayer];
+        [self shapeLayerToMatchView:backgroundImageLayer borderMetrics:borderMetricsBI];
         backgroundImageLayer.masksToBounds = YES;
         backgroundImageLayer.zPosition = BACKGROUND_COLOR_ZPOSITION;
         [layer addSublayer:backgroundImageLayer];
         [_backgroundImageLayers addObject:backgroundImageLayer];
       }
+
+      imageIndex--;
     }
   }
 
@@ -1272,6 +1387,10 @@ static NSString *RCTRecursiveAccessibilityLabel(UIView *view)
   // Result string is initialized lazily to prevent useless but costly allocations.
   NSMutableString *result = nil;
   for (UIView *subview in view.subviews) {
+    // Skip subviews that have accessibilityElementsHidden set to YES
+    if (subview.accessibilityElementsHidden) {
+      continue;
+    }
     NSString *label = subview.accessibilityLabel;
     if (!label) {
       label = RCTRecursiveAccessibilityLabel(subview);
@@ -1310,6 +1429,11 @@ static NSString *RCTRecursiveAccessibilityLabel(UIView *view)
 - (BOOL)wantsToCooptLabel
 {
   return !super.accessibilityLabel && super.isAccessibilityElement;
+}
+
+- (BOOL)canBecomeFocused
+{
+  return _focusable;
 }
 
 - (BOOL)isAccessibilityElement
@@ -1409,8 +1533,15 @@ static NSString *RCTRecursiveAccessibilityLabel(UIView *view)
 
   NSMutableArray<UIAccessibilityCustomAction *> *customActions = [NSMutableArray array];
   for (const auto &accessibilityAction : accessibilityActions) {
+    NSString *actionName = RCTNSStringFromString(accessibilityAction.name);
+    NSString *actionLabel = actionName;
+
+    if (accessibilityAction.label.has_value()) {
+      actionLabel = RCTNSStringFromString(accessibilityAction.label.value());
+    }
+
     [customActions
-        addObject:[[UIAccessibilityCustomAction alloc] initWithName:RCTNSStringFromString(accessibilityAction.name)
+        addObject:[[UIAccessibilityCustomAction alloc] initWithName:actionLabel
                                                              target:self
                                                            selector:@selector(didActivateAccessibilityCustomAction:)]];
   }
@@ -1465,7 +1596,17 @@ static NSString *RCTRecursiveAccessibilityLabel(UIView *view)
 - (BOOL)didActivateAccessibilityCustomAction:(UIAccessibilityCustomAction *)action
 {
   if (_eventEmitter && _props->onAccessibilityAction) {
-    _eventEmitter->onAccessibilityAction(RCTStringFromNSString(action.name));
+    // iOS defines the name as the localized label, so iterate through accessibilityActions to find the matching
+    // non-localized action name when passing to JS. This allows for standard action names across platforms.
+    NSString *actionName = action.name;
+    for (const auto &accessibilityAction : _props->accessibilityActions) {
+      if (accessibilityAction.label.has_value() &&
+          [RCTNSStringFromString(accessibilityAction.label.value()) isEqualToString:action.name]) {
+        actionName = RCTNSStringFromString(accessibilityAction.name);
+        break;
+      }
+    }
+    _eventEmitter->onAccessibilityAction(RCTStringFromNSString(actionName));
     return YES;
   } else {
     return NO;
@@ -1486,7 +1627,9 @@ static NSString *RCTRecursiveAccessibilityLabel(UIView *view)
 {
   if (!_props->filter.empty()) {
     for (const auto &primitive : _props->filter) {
-      if (primitive.type == FilterType::Blur) {
+      if (primitive.type == FilterType::Blur || primitive.type == FilterType::Grayscale ||
+          primitive.type == FilterType::DropShadow || primitive.type == FilterType::Saturate ||
+          primitive.type == FilterType::Contrast || primitive.type == FilterType::HueRotate) {
         return YES;
       }
     }
@@ -1542,6 +1685,8 @@ static NSString *RCTRecursiveAccessibilityLabel(UIView *view)
   }
 }
 
+#pragma mark - Focus Events
+
 - (BOOL)canBecomeFirstResponder
 {
   return YES;
@@ -1560,17 +1705,42 @@ static NSString *RCTRecursiveAccessibilityLabel(UIView *view)
   }
 }
 
+#if TARGET_OS_TV
+/// Finds the containing RCTSurfaceHostingProxyRootView by walking up the view
+/// hierarchy.
+- (RCTSurfaceHostingProxyRootView *)containingRootView
+{
+  UIView *view = self;
+  while (view != nil) {
+    if ([view isKindOfClass:[RCTSurfaceHostingProxyRootView class]]) {
+      return (RCTSurfaceHostingProxyRootView *)view;
+    }
+    view = view.superview;
+  }
+  return nil;
+}
+#endif
+
 - (void)focus
 {
   [self becomeFirstResponder];
+
+#if TARGET_OS_TV
+  RCTSurfaceHostingProxyRootView *rootView = [self containingRootView];
+  if (rootView == nil) {
+    return;
+  }
+
+  rootView.reactPreferredFocusedView = self;
+  [rootView setNeedsFocusUpdate];
+  [rootView updateFocusIfNeeded];
+#endif
 }
 
 - (void)blur
 {
   [self resignFirstResponder];
 }
-
-#pragma mark - Focus Events
 
 - (BOOL)becomeFirstResponder
 {
@@ -1597,6 +1767,30 @@ static NSString *RCTRecursiveAccessibilityLabel(UIView *view)
 
   return YES;
 }
+
+#if TARGET_OS_TV
+
+- (void)didUpdateFocusInContext:(UIFocusUpdateContext *)context
+       withAnimationCoordinator:(UIFocusAnimationCoordinator *)coordinator
+{
+  if (context.previouslyFocusedView == context.nextFocusedView) {
+    return;
+  }
+
+  if (context.nextFocusedView == self) {
+    if (_eventEmitter) {
+      _eventEmitter->onFocus();
+    }
+  } else {
+    if (_eventEmitter) {
+      _eventEmitter->onBlur();
+    }
+  }
+
+  [super didUpdateFocusInContext:context withAnimationCoordinator:coordinator];
+}
+
+#endif
 
 @end
 

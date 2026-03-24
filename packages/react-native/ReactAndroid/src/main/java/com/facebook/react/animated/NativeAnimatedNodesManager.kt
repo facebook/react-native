@@ -233,7 +233,7 @@ public class NativeAnimatedNodesManager(
             )
     if (node !is ValueAnimatedNode) {
       throw JSApplicationIllegalArgumentException(
-          ("startAnimatingNode: Animated node [${animatedNodeTag}] should be of type ${ValueAnimatedNode::class.java.name}")
+          ("startAnimatingNode: Animated node [${animatedNodeTag}] should be of type ValueAnimatedNode")
       )
     }
 
@@ -389,7 +389,7 @@ public class NativeAnimatedNodesManager(
             )
     if (node !is PropsAnimatedNode) {
       throw JSApplicationIllegalArgumentException(
-          ("connectAnimatedNodeToView: Animated node connected to view [${viewTag}] should be of type ${PropsAnimatedNode::class.java.name}")
+          ("connectAnimatedNodeToView: Animated node connected to view [${viewTag}] should be of type PropsAnimatedNode")
       )
     }
     checkNotNull(reactApplicationContext) {
@@ -420,7 +420,7 @@ public class NativeAnimatedNodesManager(
             )
     if (node !is PropsAnimatedNode) {
       throw JSApplicationIllegalArgumentException(
-          ("disconnectAnimatedNodeFromView: Animated node connected to view [${viewTag}] should be of type ${PropsAnimatedNode::class.java.name}")
+          ("disconnectAnimatedNodeFromView: Animated node connected to view [${viewTag}] should be of type PropsAnimatedNode")
       )
     }
     node.disconnectFromView(viewTag)
@@ -463,7 +463,7 @@ public class NativeAnimatedNodesManager(
     // default values since it will never actually update the view.
     if (node !is PropsAnimatedNode) {
       throw JSApplicationIllegalArgumentException(
-          "Animated node connected to view [?] should be of type ${PropsAnimatedNode::class.java.name}"
+          "Animated node connected to view [?] should be of type PropsAnimatedNode"
       )
     }
     node.restoreDefaultValues()
@@ -483,7 +483,7 @@ public class NativeAnimatedNodesManager(
             )
     if (node !is ValueAnimatedNode) {
       throw JSApplicationIllegalArgumentException(
-          ("addAnimatedEventToView: Animated node on view [${viewTag}] connected to event handler (${eventHandlerName}) should be of type ${ValueAnimatedNode::class.java.name}")
+          ("addAnimatedEventToView: Animated node on view [${viewTag}] connected to event handler (${eventHandlerName}) should be of type ValueAnimatedNode")
       )
     }
 

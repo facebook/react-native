@@ -7,9 +7,10 @@
  * @noflow
  * @nolint
  * @preventMunge
- * @generated SignedSource<<90e5b8f55761c6a4805052d5b49689b8>>
+ * @generated SignedSource<<a389884f917160390547bb8b67479473>>
  *
- * This file was sync'd from the facebook/react repository.
+ * This file is no longer sync'd from the facebook/react repository.
+ * The version compatibility check is removed. Use at your own risk.
  */
 
 "use strict";
@@ -19456,11 +19457,11 @@ __DEV__ &&
       shouldSuspendImpl = newShouldSuspendImpl;
     };
     var isomorphicReactPackageVersion = React.version;
-    if ("19.2.0" !== isomorphicReactPackageVersion)
+    if ("19.2.3" !== isomorphicReactPackageVersion)
       throw Error(
         'Incompatible React versions: The "react" and "react-native-renderer" packages must have the exact same version. Instead got:\n  - react:                  ' +
           (isomorphicReactPackageVersion +
-            "\n  - react-native-renderer:  19.2.0\nLearn more: https://react.dev/warnings/version-mismatch")
+            "\n  - react-native-renderer:  19.2.3\nLearn more: https://react.dev/warnings/version-mismatch")
       );
     if (
       "function" !==
@@ -19486,10 +19487,10 @@ __DEV__ &&
     (function () {
       var internals = {
         bundleType: 1,
-        version: "19.2.0",
+        version: "19.2.3",
         rendererPackageName: "react-native-renderer",
         currentDispatcherRef: ReactSharedInternals,
-        reconcilerVersion: "19.2.0"
+        reconcilerVersion: "19.2.3"
       };
       null !== extraDevToolsConfig &&
         (internals.rendererConfig = extraDevToolsConfig);

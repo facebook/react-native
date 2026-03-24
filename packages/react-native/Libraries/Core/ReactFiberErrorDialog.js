@@ -14,7 +14,7 @@ import ExceptionsManager, {SyntheticError} from './ExceptionsManager';
 
 export type CapturedError = {
   +componentStack: string,
-  +error: mixed,
+  +error: unknown,
   +errorBoundary: ?{...},
   ...
 };

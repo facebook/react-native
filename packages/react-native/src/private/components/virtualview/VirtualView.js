@@ -13,14 +13,14 @@ import type {NativeSyntheticEvent} from '../../../../Libraries/Types/CoreEventTy
 import type {HostInstance} from '../../types/HostInstance';
 import type {NativeModeChangeEvent} from './VirtualViewNativeComponent';
 
+import UIManager from '../../../../Libraries/ReactNative/UIManager';
 import StyleSheet from '../../../../Libraries/StyleSheet/StyleSheet';
-import * as ReactNativeFeatureFlags from '../../featureflags/ReactNativeFeatureFlags';
+import {useVirtualViewLogging} from './logger/VirtualViewLogger';
 import VirtualViewExperimentalNativeComponent from './VirtualViewExperimentalNativeComponent';
-import VirtualViewClassicNativeComponent from './VirtualViewNativeComponent';
+import VirtualViewProperNativeComponent from './VirtualViewNativeComponent';
 import nullthrows from 'nullthrows';
 import * as React from 'react';
-// $FlowFixMe[missing-export]
-import {startTransition, unstable_Activity as Activity, useState} from 'react';
+import {startTransition, useState} from 'react';
 
 // @see VirtualViewNativeComponent
 export enum VirtualViewMode {
@@ -36,23 +36,28 @@ export enum VirtualViewRenderState {
   None = 2,
 }
 
-export type Rect = $ReadOnly<{
+export type Rect = Readonly<{
   x: number,
   y: number,
   width: number,
   height: number,
 }>;
 
-export type ModeChangeEvent = $ReadOnly<{
+export type ModeChangeEvent = Readonly<{
   ...Omit<NativeModeChangeEvent, 'mode'>,
+  renderState: VirtualViewRenderState,
   mode: VirtualViewMode,
   target: HostInstance,
 }>;
 
-const VirtualViewNativeComponent: typeof VirtualViewClassicNativeComponent =
-  ReactNativeFeatureFlags.enableVirtualViewExperimental()
-    ? VirtualViewExperimentalNativeComponent
-    : VirtualViewClassicNativeComponent;
+// If `VirtualView` exists and `VirtualViewExperimental` does not, that means
+// the new version was renamed to `VirtualView`. Eventually, this can be deleted
+// with a single remaining import of `VirtualViewNativeComponent`.
+const VirtualViewNativeComponent: typeof VirtualViewExperimentalNativeComponent =
+  UIManager.hasViewManagerConfig('VirtualView') &&
+  !UIManager.hasViewManagerConfig('VirtualViewExperimental')
+    ? VirtualViewProperNativeComponent
+    : VirtualViewExperimentalNativeComponent;
 
 type VirtualViewComponent = component(
   children?: React.Node,
@@ -90,21 +95,26 @@ function createVirtualView(initialState: State): VirtualViewComponent {
       _logs.states?.push(state);
     }
     const isHidden = state !== NotHidden;
+    const loggingCallbacksRef = useVirtualViewLogging(isHidden, nativeID);
 
     const handleModeChange = (
       event: NativeSyntheticEvent<NativeModeChangeEvent>,
     ) => {
       const mode = nullthrows(VirtualViewMode.cast(event.nativeEvent.mode));
+      const modeChangeEvent: ModeChangeEvent = {
+        mode,
+        renderState: isHidden
+          ? VirtualViewRenderState.None
+          : VirtualViewRenderState.Rendered,
+        // $FlowFixMe[incompatible-type] - we know this is a HostInstance
+        target: event.currentTarget as HostInstance,
+        targetRect: event.nativeEvent.targetRect,
+        thresholdRect: event.nativeEvent.thresholdRect,
+      };
+      loggingCallbacksRef.current?.logModeChange(modeChangeEvent);
+
       const emitModeChange =
-        onModeChange == null
-          ? null
-          : onModeChange.bind(null, {
-              mode,
-              // $FlowFixMe[incompatible-type] - we know this is a HostInstance
-              target: event.currentTarget as HostInstance,
-              targetRect: event.nativeEvent.targetRect,
-              thresholdRect: event.nativeEvent.thresholdRect,
-            });
+        onModeChange == null ? null : onModeChange.bind(null, modeChangeEvent);
 
       match (mode) {
         VirtualViewMode.Visible => {
@@ -143,17 +153,7 @@ function createVirtualView(initialState: State): VirtualViewComponent {
             : style
         }
         onModeChange={handleModeChange}>
-        {
-          match (ReactNativeFeatureFlags.virtualViewActivityBehavior()) {
-            'activity-without-mode' =>
-              <Activity>{isHidden ? null : children}</Activity>,
-            'activity-with-hidden-mode' =>
-              <Activity mode={isHidden ? 'hidden' : 'visible'}>
-                {children}
-              </Activity>,
-            'no-activity' | _ => isHidden ? null : children,
-          }
-        }
+        {isHidden ? null : children}
       </VirtualViewNativeComponent>
     );
   }

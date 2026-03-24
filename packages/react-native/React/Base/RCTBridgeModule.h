@@ -295,10 +295,12 @@ RCT_EXTERN_C_END
 /**
  * Like RCT_EXTERN_MODULE, but allows setting a custom JavaScript name.
  */
-#define RCT_EXTERN_REMAP_MODULE(js_name, objc_name, objc_supername)                      \
-  objc_name : objc_supername @end @interface objc_name(RCTExternModule)<RCTBridgeModule> \
-  @end                                                                                   \
-  @implementation objc_name (RCTExternModule)                                            \
+#define RCT_EXTERN_REMAP_MODULE(js_name, objc_name, objc_supername) \
+  objc_name:                                                        \
+  objc_supername @                                                  \
+  end @interface objc_name(RCTExternModule)<RCTBridgeModule>        \
+  @end                                                              \
+  @implementation objc_name (RCTExternModule)                       \
   RCT_EXPORT_MODULE_NO_LOAD(js_name, objc_name)
 
 /**

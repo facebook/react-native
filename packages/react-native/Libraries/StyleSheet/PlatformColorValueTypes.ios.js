@@ -22,7 +22,7 @@ type LocalNativeColorValue = {
   },
 };
 
-export const PlatformColor = (...names: Array<string>): ColorValue => {
+export const PlatformColor = (...names: Array<string>): NativeColorValue => {
   // $FlowExpectedError[incompatible-type] LocalNativeColorValue is the iOS LocalNativeColorValue type
   return ({semantic: names}: LocalNativeColorValue);
 };

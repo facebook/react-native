@@ -42,6 +42,9 @@ module.exports = {
     return require('./Libraries/Components/DrawerAndroid/DrawerLayoutAndroid')
       .default;
   },
+  get EventEmitter() {
+    return require('./Libraries/vendor/emitter/EventEmitter').default;
+  },
   get FlatList() {
     return require('./Libraries/Lists/FlatList').default;
   },
@@ -338,8 +341,17 @@ module.exports = {
   get useAnimatedValue() {
     return require('./Libraries/Animated/useAnimatedValue').default;
   },
+  get useAnimatedValueXY() {
+    return require('./Libraries/Animated/useAnimatedValueXY').default;
+  },
+  get useAnimatedColor() {
+    return require('./Libraries/Animated/useAnimatedColor').default;
+  },
   get useColorScheme() {
     return require('./Libraries/Utilities/useColorScheme').default;
+  },
+  get usePressability() {
+    return require('./Libraries/Pressability/usePressability').default;
   },
   get useWindowDimensions() {
     return require('./Libraries/Utilities/useWindowDimensions').default;

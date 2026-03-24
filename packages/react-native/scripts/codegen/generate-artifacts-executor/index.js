@@ -63,9 +63,10 @@ const path = require('path');
 function execute(
   projectRoot /*: string */,
   targetPlatform /*: string */,
-  baseOutputPath /*: string */,
+  optionalBaseOutputPath /*: ?string */,
   source /*: string */,
   runReactNativeCodegen /*: boolean */ = true,
+  forceOutputPath /*: boolean */ = false,
 ) {
   try {
     codegenLog(`Analyzing ${path.join(projectRoot, 'package.json')}`);
@@ -88,25 +89,35 @@ function execute(
       buildCodegenIfNeeded();
     }
 
-    const reactNativeConfig = readReactNativeConfig(
-      projectRoot,
-      baseOutputPath,
-    );
-    const codegenEnabledLibraries = findCodegenEnabledLibraries(
-      pkgJson,
-      projectRoot,
-      baseOutputPath,
-      reactNativeConfig,
-    );
-
-    if (codegenEnabledLibraries.length === 0) {
-      codegenLog('No codegen-enabled libraries found.', true);
-    }
-
-    let platforms =
+    const platforms =
       targetPlatform === 'all' ? supportedPlatforms : [targetPlatform];
 
+    // NOTE: We cache the external libraries search (which may not run) across platforms to not change previous behaviour
+    const externalLibrariesCache /*: { current?: ?Array<$FlowFixMe> } */ = {};
+
     for (const platform of platforms) {
+      // NOTE: This needs to be computed per-platform since `platform` can alter the path via a `package.json:codegenConfig.outputDir[platform]` override
+      const baseOutputPath = computeBaseOutputPath(
+        projectRoot,
+        optionalBaseOutputPath,
+        pkgJson,
+        platform,
+      );
+      const reactNativeConfig = readReactNativeConfig(
+        projectRoot,
+        baseOutputPath,
+      );
+      const codegenEnabledLibraries = findCodegenEnabledLibraries(
+        pkgJson,
+        projectRoot,
+        baseOutputPath,
+        reactNativeConfig,
+        externalLibrariesCache,
+      );
+      if (codegenEnabledLibraries.length === 0) {
+        codegenLog('No codegen-enabled libraries found.', true);
+      }
+
       const disabledLibraries = findDisabledLibrariesByPlatform(
         reactNativeConfig,
         platform,
@@ -136,6 +147,7 @@ function execute(
           ),
           pkgJsonIncludesGeneratedCode(pkgJson),
           platform,
+          forceOutputPath,
         );
       }
 
@@ -201,22 +213,38 @@ function readOutputDirFromPkgJson(
   return null;
 }
 
+function computeBaseOutputPath(
+  projectRoot /*: string */,
+  optionalBaseOutputPath /*: ?string */,
+  pkgJson /*: $FlowFixMe */,
+  platform /*: string */,
+) {
+  if (
+    process.env.RCT_SCRIPT_OUTPUT_DIR != null &&
+    process.env.RCT_SCRIPT_OUTPUT_DIR.length > 0
+  ) {
+    return process.env.RCT_SCRIPT_OUTPUT_DIR;
+  }
+  let baseOutputPath /*: string */;
+  if (optionalBaseOutputPath == null) {
+    const outputDirFromPkgJson = readOutputDirFromPkgJson(pkgJson, platform);
+    if (outputDirFromPkgJson != null) {
+      baseOutputPath = path.join(projectRoot, outputDirFromPkgJson);
+    } else {
+      baseOutputPath = projectRoot;
+    }
+  } else {
+    baseOutputPath = optionalBaseOutputPath;
+  }
+  return baseOutputPath;
+}
+
 function computeOutputPath(
   projectRoot /*: string */,
   baseOutputPath /*: string */,
   pkgJson /*: $FlowFixMe */,
   platform /*: string */,
-) {
-  if (baseOutputPath == null) {
-    const outputDirFromPkgJson = readOutputDirFromPkgJson(pkgJson, platform);
-    if (outputDirFromPkgJson != null) {
-      // $FlowFixMe[reassign-const]
-      baseOutputPath = path.join(projectRoot, outputDirFromPkgJson);
-    } else {
-      // $FlowFixMe[reassign-const]
-      baseOutputPath = projectRoot;
-    }
-  }
+) /*: string */ {
   if (pkgJsonIncludesGeneratedCode(pkgJson)) {
     // Don't create nested directories for libraries to make importing generated headers easier.
     return baseOutputPath;

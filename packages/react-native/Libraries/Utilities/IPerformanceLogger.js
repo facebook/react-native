@@ -34,10 +34,10 @@ export interface IPerformanceLogger {
   clearCompleted(): void;
   close(): void;
   currentTimestamp(): number;
-  getExtras(): $ReadOnly<{[key: string]: ?ExtraValue, ...}>;
-  getPoints(): $ReadOnly<{[key: string]: ?number, ...}>;
-  getPointExtras(): $ReadOnly<{[key: string]: ?Extras, ...}>;
-  getTimespans(): $ReadOnly<{[key: string]: ?Timespan, ...}>;
+  getExtras(): Readonly<{[key: string]: ?ExtraValue, ...}>;
+  getPoints(): Readonly<{[key: string]: ?number, ...}>;
+  getPointExtras(): Readonly<{[key: string]: ?Extras, ...}>;
+  getTimespans(): Readonly<{[key: string]: ?Timespan, ...}>;
   hasTimespan(key: string): boolean;
   isClosed(): boolean;
   logEverything(): void;

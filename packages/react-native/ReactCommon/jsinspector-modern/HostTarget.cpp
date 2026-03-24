@@ -8,6 +8,7 @@
 #include "HostTarget.h"
 #include "HostAgent.h"
 #include "HostTargetTraceRecording.h"
+#include "HostTargetTracing.h"
 #include "InspectorInterfaces.h"
 #include "InspectorUtilities.h"
 #include "InstanceTarget.h"
@@ -63,8 +64,9 @@ class HostTargetSession {
           cdp::jsonError(std::nullopt, cdp::ErrorCode::ParseError, e.what()));
       return;
     } catch (const cdp::TypeError& e) {
-      frontendChannel_(cdp::jsonError(
-          std::nullopt, cdp::ErrorCode::InvalidRequest, e.what()));
+      frontendChannel_(
+          cdp::jsonError(
+              std::nullopt, cdp::ErrorCode::InvalidRequest, e.what()));
       return;
     }
 
@@ -101,17 +103,12 @@ class HostTargetSession {
     }
   }
 
-  /**
-   * Returns whether the ReactNativeApplication CDP domain is enabled.
-   *
-   * Chrome DevTools Frontend enables this domain as a client.
-   */
-  bool hasFuseboxClient() const {
-    return hostAgent_.hasFuseboxClientConnected();
+  HostAgent& agent() {
+    return hostAgent_;
   }
 
-  void emitTraceRecording(tracing::TraceRecordingState traceRecording) const {
-    hostAgent_.emitExternalTraceRecording(std::move(traceRecording));
+  FrontendChannel dangerouslyGetFrontendChannel() {
+    return frontendChannel_;
   }
 
  private:
@@ -170,28 +167,30 @@ class HostRuntimeBinding {
       HostTarget& target,
       std::string name,
       std::function<void(std::string)> callback)
-      : connection_(target.connect(std::make_unique<CallbackRemoteConnection>(
-            [callback = std::move(callback)](const std::string& message) {
-              auto parsedMessage = folly::parseJson(message);
+      : connection_(target.connect(
+            std::make_unique<CallbackRemoteConnection>(
+                [callback = std::move(callback)](const std::string& message) {
+                  auto parsedMessage = folly::parseJson(message);
 
-              // Ignore initial Runtime.addBinding response
-              if (parsedMessage["id"] == 0 &&
-                  parsedMessage["result"].isObject() &&
-                  parsedMessage["result"].empty()) {
-                return;
-              }
+                  // Ignore initial Runtime.addBinding response
+                  if (parsedMessage["id"] == 0 &&
+                      parsedMessage["result"].isObject() &&
+                      parsedMessage["result"].empty()) {
+                    return;
+                  }
 
-              // Assert that we only intercept bindingCalled responses
-              assert(
-                  parsedMessage["method"].asString() ==
-                  "Runtime.bindingCalled");
-              callback(parsedMessage["params"]["payload"].asString());
-            }))) {
+                  // Assert that we only intercept bindingCalled responses
+                  assert(
+                      parsedMessage["method"].asString() ==
+                      "Runtime.bindingCalled");
+                  callback(parsedMessage["params"]["payload"].asString());
+                }))) {
     // Install runtime binding
-    connection_->sendMessage(cdp::jsonRequest(
-        0,
-        "Runtime.addBinding",
-        folly::dynamic::object("name", std::move(name))));
+    connection_->sendMessage(
+        cdp::jsonRequest(
+            0,
+            "Runtime.addBinding",
+            folly::dynamic::object("name", std::move(name))));
   }
 
  private:
@@ -203,6 +202,9 @@ std::shared_ptr<HostTarget> HostTarget::create(
     VoidExecutor executor) {
   std::shared_ptr<HostTarget> hostTarget{new HostTarget(delegate)};
   hostTarget->setExecutor(std::move(executor));
+  if (InspectorFlags::getInstance().getPerfIssuesEnabled()) {
+    hostTarget->installPerfIssuesBinding();
+  }
   return hostTarget;
 }
 
@@ -286,6 +288,17 @@ void HostTarget::sendCommand(HostCommand command) {
   });
 }
 
+void HostTarget::installPerfIssuesBinding() {
+  perfMonitorUpdateHandler_ =
+      std::make_unique<PerfMonitorUpdateHandler>(delegate_);
+  perfMetricsBinding_ = std::make_unique<HostRuntimeBinding>(
+      *this, // Used immediately
+      "__react_native_perf_issues_reporter",
+      [this](const std::string& message) {
+        perfMonitorUpdateHandler_->handlePerfIssueAdded(message);
+      });
+}
+
 HostTargetController::HostTargetController(HostTarget& target)
     : target_(target) {}
 
@@ -306,11 +319,16 @@ bool HostTargetController::decrementPauseOverlayCounter() {
   return --pauseOverlayCounter_ != 0;
 }
 
+bool HostTargetController::maybeEmitStashedBackgroundTrace() {
+  return target_.maybeEmitStashedBackgroundTrace();
+}
+
 namespace {
 
 struct StaticHostTargetMetadata {
   std::optional<bool> isProfilingBuild;
   std::optional<bool> networkInspectionEnabled;
+  std::optional<bool> frameRecordingEnabled;
 };
 
 StaticHostTargetMetadata getStaticHostMetadata() {
@@ -318,7 +336,8 @@ StaticHostTargetMetadata getStaticHostMetadata() {
 
   return {
       .isProfilingBuild = inspectorFlags.getIsProfilingBuild(),
-      .networkInspectionEnabled = inspectorFlags.getNetworkInspectionEnabled()};
+      .networkInspectionEnabled = inspectorFlags.getNetworkInspectionEnabled(),
+      .frameRecordingEnabled = inspectorFlags.getFrameRecordingEnabled()};
 }
 
 } // namespace
@@ -353,36 +372,41 @@ folly::dynamic createHostMetadataPayload(const HostTargetMetadata& metadata) {
     result["unstable_networkInspectionEnabled"] =
         staticMetadata.networkInspectionEnabled.value();
   }
+  if (staticMetadata.frameRecordingEnabled) {
+    result["unstable_frameRecordingEnabled"] =
+        staticMetadata.frameRecordingEnabled.value();
+  }
 
   return result;
 }
 
-bool HostTarget::hasActiveSessionWithFuseboxClient() const {
-  bool hasActiveFuseboxSession = false;
-  sessions_.forEach([&](HostTargetSession& session) {
-    hasActiveFuseboxSession |= session.hasFuseboxClient();
+bool HostTarget::maybeEmitStashedBackgroundTrace() {
+  std::vector<FrontendChannel> eligibleFrontendChannels;
+  eligibleFrontendChannels.reserve(sessions_.size());
+  sessions_.forEach([&eligibleFrontendChannels](auto& session) {
+    if (session.agent().isEligibleForBackgroundTrace()) {
+      eligibleFrontendChannels.push_back(
+          session.dangerouslyGetFrontendChannel());
+    }
   });
-  return hasActiveFuseboxSession;
+
+  if (eligibleFrontendChannels.empty()) {
+    return false;
+  }
+
+  auto stashedTrace = std::exchange(stashedTracingProfile_, std::nullopt);
+  if (stashedTrace) {
+    emitNotificationsForTracingProfile(
+        std::move(*stashedTrace),
+        eligibleFrontendChannels,
+        /* isBackgroundTrace */ true);
+  }
+  return true;
 }
 
-void HostTarget::emitTraceRecordingForFirstFuseboxClient(
-    tracing::TraceRecordingState traceRecording) const {
-  bool emitted = false;
-  sessions_.forEach([&](HostTargetSession& session) {
-    if (emitted) {
-      /**
-       * TraceRecordingState object is not copiable for performance reasons,
-       * because it could contain large Runtime sampling profile object.
-       *
-       * This approach would not work with multi-client debugger setup.
-       */
-      return;
-    }
-    if (session.hasFuseboxClient()) {
-      session.emitTraceRecording(std::move(traceRecording));
-      emitted = true;
-    }
-  });
+bool HostTarget::stopAndMaybeEmitBackgroundTrace() {
+  stashedTracingProfile_ = stopTracing();
+  return maybeEmitStashedBackgroundTrace();
 }
 
 } // namespace facebook::react::jsinspector_modern

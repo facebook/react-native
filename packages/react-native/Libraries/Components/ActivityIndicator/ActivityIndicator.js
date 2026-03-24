@@ -26,7 +26,7 @@ const GRAY = '#999999';
 
 type IndicatorSize = number | 'small' | 'large';
 
-type ActivityIndicatorIOSProps = $ReadOnly<{
+type ActivityIndicatorIOSProps = Readonly<{
   /**
     Whether the indicator should hide when not animating.
 
@@ -34,7 +34,7 @@ type ActivityIndicatorIOSProps = $ReadOnly<{
   */
   hidesWhenStopped?: ?boolean,
 }>;
-export type ActivityIndicatorProps = $ReadOnly<{
+export type ActivityIndicatorProps = Readonly<{
   ...ViewProps,
   ...ActivityIndicatorIOSProps,
 

@@ -31,7 +31,7 @@ const debug = require('debug')('build-types:transforms:versionExportedApis');
  */
 function createVersionExportedApis(
   outputDebugAnnotations: boolean = false,
-): PluginObj<mixed> {
+): PluginObj<unknown> {
   return {
     visitor: {
       Program(path) {
@@ -44,21 +44,29 @@ function createVersionExportedApis(
         // Collect all type declarations and build dependency graph
         for (const nodePath of path.get('body')) {
           const node = nodePath.node;
-          const typeName = node.id?.name;
+          // VariableDeclaration has name at declarations[0].id.name, others at node.id.name
+          const typeName = t.isVariableDeclaration(node)
+            ? node.declarations?.[0]?.id?.name
+            : node.id?.name;
           if (
             (t.isTSDeclareFunction(node) ||
               t.isTSTypeAliasDeclaration(node) ||
               t.isTSInterfaceDeclaration(node) ||
               t.isTSEnumDeclaration(node) ||
               t.isClassDeclaration(node) ||
-              t.isTSModuleDeclaration(node)) &&
+              t.isTSModuleDeclaration(node) ||
+              t.isVariableDeclaration(node)) &&
             typeName != null
           ) {
-            declarations.set(typeName, node);
-            dependencyGraph.set(
-              typeName,
-              Array.from(getTypeReferencesForNode(node)),
-            );
+            // Don't overwrite if declaration already exists
+            // (e.g., prefer `declare const X: typeof X_default` over `declare type X = typeof X`)
+            if (!declarations.has(typeName)) {
+              declarations.set(typeName, node);
+              dependencyGraph.set(
+                typeName,
+                Array.from(getTypeReferencesForNode(node)),
+              );
+            }
           }
         }
 
@@ -337,6 +345,14 @@ function createVersionExportedApis(
     // Handle type operators (`keyof T`)
     if (t.isTSTypeOperator(node)) {
       getTypeReferencesForNode(node.typeAnnotation, refs);
+    }
+
+    // Handle typeof queries (`typeof X`)
+    if (t.isTSTypeQuery(node) && node.exprName) {
+      const exprName = node.exprName;
+      if (t.isIdentifier(exprName) || t.isTSQualifiedName(exprName)) {
+        refs.add(extractQualifiedName(exprName));
+      }
     }
 
     // Handle conditional types (`T extends U ? X : Y`)

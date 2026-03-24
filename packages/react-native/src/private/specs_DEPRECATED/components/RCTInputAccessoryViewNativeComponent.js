@@ -14,7 +14,7 @@ import type {HostComponent} from '../../types/HostComponent';
 
 import codegenNativeComponent from '../../../../Libraries/Utilities/codegenNativeComponent';
 
-type InputAccessoryNativeProps = $ReadOnly<{
+type InputAccessoryNativeProps = Readonly<{
   ...ViewProps,
   backgroundColor?: ?ColorValue,
 }>;

@@ -64,10 +64,11 @@ let isInterceptorEnabled = false;
 
 /**
  * A network interceptor which monkey-patches XMLHttpRequest methods
- * to gather all network requests/responses, in order to show their
- * information in the React Native inspector development tool.
+ * to gather all network requests/responses.
  * This supports interception with XMLHttpRequest API, including Fetch API
  * and any other third party libraries that depend on XMLHttpRequest.
+ *
+ * @deprecated Since React Native 0.84
  */
 const XHRInterceptor = {
   /**

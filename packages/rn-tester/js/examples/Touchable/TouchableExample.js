@@ -310,7 +310,7 @@ class TouchableHitSlop extends React.Component<{...}, $FlowFixMe> {
 }
 
 function TouchableNativeMethodChecker<
-  T: component(ref?: React.RefSetter<any>, ...any),
+  T extends component(ref?: React.RefSetter<any>, ...any),
 >(props: {Component: T, name: string}): React.Node {
   const [status, setStatus] = useState<?boolean>(null);
   const ref = useRef<any>(null);
@@ -672,6 +672,7 @@ exports.documentationURL = 'https://reactnative.dev/docs/touchablehighlight';
 exports.examples = [
   {
     title: '<TouchableHighlight>',
+    name: 'highlight',
     description: ('TouchableHighlight works by adding an extra view with a ' +
       'black background under the single child view.  This works best when the ' +
       'child view is fully opaque, although it can be made to work as a simple ' +
@@ -683,6 +684,7 @@ exports.examples = [
   },
   {
     title: '<TouchableWithoutFeedback>',
+    name: 'without-feedback',
     render(): React.Node {
       return <TouchableWithoutFeedbackBox />;
     },
@@ -742,6 +744,7 @@ exports.examples = [
   },
   {
     title: 'Touchable feedback events',
+    name: 'feedback-events',
     description: ('<Touchable*> components accept onPress, onPressIn, ' +
       'onPressOut, and onLongPress as props.': string),
     render(): React.MixedElement {
@@ -768,6 +771,7 @@ exports.examples = [
   },
   {
     title: 'Touchable Hit Slop',
+    name: 'hit-slop',
     description:
       ('<Touchable*> components accept hitSlop prop which extends the touch area ' +
         'without changing the view bounds.': string),

@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<285ec8cc3b3e5f55c5c31106b6df8717>>
+ * @generated SignedSource<<6c088ccf18868fc6e54d83c7483b6607>>
  */
 
 /**
@@ -57,9 +57,9 @@ class ReactNativeFeatureFlagsJavaProvider
     return method(javaProvider_);
   }
 
-  bool cxxNativeAnimatedRemoveJsSync() override {
+  bool defaultTextToOverflowHidden() override {
     static const auto method =
-        getReactNativeFeatureFlagsProviderJavaClass()->getMethod<jboolean()>("cxxNativeAnimatedRemoveJsSync");
+        getReactNativeFeatureFlagsProviderJavaClass()->getMethod<jboolean()>("defaultTextToOverflowHidden");
     return method(javaProvider_);
   }
 
@@ -69,9 +69,9 @@ class ReactNativeFeatureFlagsJavaProvider
     return method(javaProvider_);
   }
 
-  bool disableFabricCommitInCXXAnimated() override {
+  bool disableImageViewPreallocationAndroid() override {
     static const auto method =
-        getReactNativeFeatureFlagsProviderJavaClass()->getMethod<jboolean()>("disableFabricCommitInCXXAnimated");
+        getReactNativeFeatureFlagsProviderJavaClass()->getMethod<jboolean()>("disableImageViewPreallocationAndroid");
     return method(javaProvider_);
   }
 
@@ -81,15 +81,21 @@ class ReactNativeFeatureFlagsJavaProvider
     return method(javaProvider_);
   }
 
-  bool disableOldAndroidAttachmentMetricsWorkarounds() override {
+  bool disableSubviewClippingAndroid() override {
     static const auto method =
-        getReactNativeFeatureFlagsProviderJavaClass()->getMethod<jboolean()>("disableOldAndroidAttachmentMetricsWorkarounds");
+        getReactNativeFeatureFlagsProviderJavaClass()->getMethod<jboolean()>("disableSubviewClippingAndroid");
     return method(javaProvider_);
   }
 
   bool disableTextLayoutManagerCacheAndroid() override {
     static const auto method =
         getReactNativeFeatureFlagsProviderJavaClass()->getMethod<jboolean()>("disableTextLayoutManagerCacheAndroid");
+    return method(javaProvider_);
+  }
+
+  bool disableViewPreallocationAndroid() override {
+    static const auto method =
+        getReactNativeFeatureFlagsProviderJavaClass()->getMethod<jboolean()>("disableViewPreallocationAndroid");
     return method(javaProvider_);
   }
 
@@ -102,6 +108,12 @@ class ReactNativeFeatureFlagsJavaProvider
   bool enableAccumulatedUpdatesInRawPropsAndroid() override {
     static const auto method =
         getReactNativeFeatureFlagsProviderJavaClass()->getMethod<jboolean()>("enableAccumulatedUpdatesInRawPropsAndroid");
+    return method(javaProvider_);
+  }
+
+  bool enableAndroidAntialiasedBorderRadiusClipping() override {
+    static const auto method =
+        getReactNativeFeatureFlagsProviderJavaClass()->getMethod<jboolean()>("enableAndroidAntialiasedBorderRadiusClipping");
     return method(javaProvider_);
   }
 
@@ -141,6 +153,12 @@ class ReactNativeFeatureFlagsJavaProvider
     return method(javaProvider_);
   }
 
+  bool enableDifferentiatorMutationVectorPreallocation() override {
+    static const auto method =
+        getReactNativeFeatureFlagsProviderJavaClass()->getMethod<jboolean()>("enableDifferentiatorMutationVectorPreallocation");
+    return method(javaProvider_);
+  }
+
   bool enableDoubleMeasurementFixAndroid() override {
     static const auto method =
         getReactNativeFeatureFlagsProviderJavaClass()->getMethod<jboolean()>("enableDoubleMeasurementFixAndroid");
@@ -156,6 +174,18 @@ class ReactNativeFeatureFlagsJavaProvider
   bool enableEagerRootViewAttachment() override {
     static const auto method =
         getReactNativeFeatureFlagsProviderJavaClass()->getMethod<jboolean()>("enableEagerRootViewAttachment");
+    return method(javaProvider_);
+  }
+
+  bool enableExclusivePropsUpdateAndroid() override {
+    static const auto method =
+        getReactNativeFeatureFlagsProviderJavaClass()->getMethod<jboolean()>("enableExclusivePropsUpdateAndroid");
+    return method(javaProvider_);
+  }
+
+  bool enableFabricCommitBranching() override {
+    static const auto method =
+        getReactNativeFeatureFlagsProviderJavaClass()->getMethod<jboolean()>("enableFabricCommitBranching");
     return method(javaProvider_);
   }
 
@@ -225,6 +255,18 @@ class ReactNativeFeatureFlagsJavaProvider
     return method(javaProvider_);
   }
 
+  bool enableIntersectionObserverByDefault() override {
+    static const auto method =
+        getReactNativeFeatureFlagsProviderJavaClass()->getMethod<jboolean()>("enableIntersectionObserverByDefault");
+    return method(javaProvider_);
+  }
+
+  bool enableKeyEvents() override {
+    static const auto method =
+        getReactNativeFeatureFlagsProviderJavaClass()->getMethod<jboolean()>("enableKeyEvents");
+    return method(javaProvider_);
+  }
+
   bool enableLayoutAnimationsOnAndroid() override {
     static const auto method =
         getReactNativeFeatureFlagsProviderJavaClass()->getMethod<jboolean()>("enableLayoutAnimationsOnAndroid");
@@ -249,9 +291,21 @@ class ReactNativeFeatureFlagsJavaProvider
     return method(javaProvider_);
   }
 
+  bool enableMutationObserverByDefault() override {
+    static const auto method =
+        getReactNativeFeatureFlagsProviderJavaClass()->getMethod<jboolean()>("enableMutationObserverByDefault");
+    return method(javaProvider_);
+  }
+
   bool enableNativeCSSParsing() override {
     static const auto method =
         getReactNativeFeatureFlagsProviderJavaClass()->getMethod<jboolean()>("enableNativeCSSParsing");
+    return method(javaProvider_);
+  }
+
+  bool enableNativeViewPropTransformations() override {
+    static const auto method =
+        getReactNativeFeatureFlagsProviderJavaClass()->getMethod<jboolean()>("enableNativeViewPropTransformations");
     return method(javaProvider_);
   }
 
@@ -270,12 +324,6 @@ class ReactNativeFeatureFlagsJavaProvider
   bool enablePropsUpdateReconciliationAndroid() override {
     static const auto method =
         getReactNativeFeatureFlagsProviderJavaClass()->getMethod<jboolean()>("enablePropsUpdateReconciliationAndroid");
-    return method(javaProvider_);
-  }
-
-  bool enableResourceTimingAPI() override {
-    static const auto method =
-        getReactNativeFeatureFlagsProviderJavaClass()->getMethod<jboolean()>("enableResourceTimingAPI");
     return method(javaProvider_);
   }
 
@@ -321,27 +369,21 @@ class ReactNativeFeatureFlagsJavaProvider
     return method(javaProvider_);
   }
 
+  bool enableVirtualViewContainerStateExperimental() override {
+    static const auto method =
+        getReactNativeFeatureFlagsProviderJavaClass()->getMethod<jboolean()>("enableVirtualViewContainerStateExperimental");
+    return method(javaProvider_);
+  }
+
   bool enableVirtualViewDebugFeatures() override {
     static const auto method =
         getReactNativeFeatureFlagsProviderJavaClass()->getMethod<jboolean()>("enableVirtualViewDebugFeatures");
     return method(javaProvider_);
   }
 
-  bool enableVirtualViewRenderState() override {
+  bool fixFindShadowNodeByTagRaceCondition() override {
     static const auto method =
-        getReactNativeFeatureFlagsProviderJavaClass()->getMethod<jboolean()>("enableVirtualViewRenderState");
-    return method(javaProvider_);
-  }
-
-  bool enableVirtualViewWindowFocusDetection() override {
-    static const auto method =
-        getReactNativeFeatureFlagsProviderJavaClass()->getMethod<jboolean()>("enableVirtualViewWindowFocusDetection");
-    return method(javaProvider_);
-  }
-
-  bool enableWebPerformanceAPIsByDefault() override {
-    static const auto method =
-        getReactNativeFeatureFlagsProviderJavaClass()->getMethod<jboolean()>("enableWebPerformanceAPIsByDefault");
+        getReactNativeFeatureFlagsProviderJavaClass()->getMethod<jboolean()>("fixFindShadowNodeByTagRaceCondition");
     return method(javaProvider_);
   }
 
@@ -351,9 +393,33 @@ class ReactNativeFeatureFlagsJavaProvider
     return method(javaProvider_);
   }
 
+  bool fixTextClippingAndroid15useBoundsForWidth() override {
+    static const auto method =
+        getReactNativeFeatureFlagsProviderJavaClass()->getMethod<jboolean()>("fixTextClippingAndroid15useBoundsForWidth");
+    return method(javaProvider_);
+  }
+
+  bool fixYogaFlexBasisFitContentInMainAxis() override {
+    static const auto method =
+        getReactNativeFeatureFlagsProviderJavaClass()->getMethod<jboolean()>("fixYogaFlexBasisFitContentInMainAxis");
+    return method(javaProvider_);
+  }
+
+  bool fuseboxAssertSingleHostState() override {
+    static const auto method =
+        getReactNativeFeatureFlagsProviderJavaClass()->getMethod<jboolean()>("fuseboxAssertSingleHostState");
+    return method(javaProvider_);
+  }
+
   bool fuseboxEnabledRelease() override {
     static const auto method =
         getReactNativeFeatureFlagsProviderJavaClass()->getMethod<jboolean()>("fuseboxEnabledRelease");
+    return method(javaProvider_);
+  }
+
+  bool fuseboxFrameRecordingEnabled() override {
+    static const auto method =
+        getReactNativeFeatureFlagsProviderJavaClass()->getMethod<jboolean()>("fuseboxFrameRecordingEnabled");
     return method(javaProvider_);
   }
 
@@ -372,6 +438,12 @@ class ReactNativeFeatureFlagsJavaProvider
   bool overrideBySynchronousMountPropsAtMountingAndroid() override {
     static const auto method =
         getReactNativeFeatureFlagsProviderJavaClass()->getMethod<jboolean()>("overrideBySynchronousMountPropsAtMountingAndroid");
+    return method(javaProvider_);
+  }
+
+  bool perfIssuesEnabled() override {
+    static const auto method =
+        getReactNativeFeatureFlagsProviderJavaClass()->getMethod<jboolean()>("perfIssuesEnabled");
     return method(javaProvider_);
   }
 
@@ -411,9 +483,9 @@ class ReactNativeFeatureFlagsJavaProvider
     return method(javaProvider_);
   }
 
-  bool sweepActiveTouchOnChildNativeGesturesAndroid() override {
+  bool syncAndroidClipToPaddingWithOverflow() override {
     static const auto method =
-        getReactNativeFeatureFlagsProviderJavaClass()->getMethod<jboolean()>("sweepActiveTouchOnChildNativeGesturesAndroid");
+        getReactNativeFeatureFlagsProviderJavaClass()->getMethod<jboolean()>("syncAndroidClipToPaddingWithOverflow");
     return method(javaProvider_);
   }
 
@@ -429,6 +501,12 @@ class ReactNativeFeatureFlagsJavaProvider
     return method(javaProvider_);
   }
 
+  bool updateRuntimeShadowNodeReferencesOnCommitThread() override {
+    static const auto method =
+        getReactNativeFeatureFlagsProviderJavaClass()->getMethod<jboolean()>("updateRuntimeShadowNodeReferencesOnCommitThread");
+    return method(javaProvider_);
+  }
+
   bool useAlwaysAvailableJSErrorHandling() override {
     static const auto method =
         getReactNativeFeatureFlagsProviderJavaClass()->getMethod<jboolean()>("useAlwaysAvailableJSErrorHandling");
@@ -441,15 +519,9 @@ class ReactNativeFeatureFlagsJavaProvider
     return method(javaProvider_);
   }
 
-  bool useNativeEqualsInNativeReadableArrayAndroid() override {
+  bool useLISAlgorithmInDifferentiator() override {
     static const auto method =
-        getReactNativeFeatureFlagsProviderJavaClass()->getMethod<jboolean()>("useNativeEqualsInNativeReadableArrayAndroid");
-    return method(javaProvider_);
-  }
-
-  bool useNativeTransformHelperAndroid() override {
-    static const auto method =
-        getReactNativeFeatureFlagsProviderJavaClass()->getMethod<jboolean()>("useNativeTransformHelperAndroid");
+        getReactNativeFeatureFlagsProviderJavaClass()->getMethod<jboolean()>("useLISAlgorithmInDifferentiator");
     return method(javaProvider_);
   }
 
@@ -459,21 +531,9 @@ class ReactNativeFeatureFlagsJavaProvider
     return method(javaProvider_);
   }
 
-  bool useOptimizedEventBatchingOnAndroid() override {
+  bool useNestedScrollViewAndroid() override {
     static const auto method =
-        getReactNativeFeatureFlagsProviderJavaClass()->getMethod<jboolean()>("useOptimizedEventBatchingOnAndroid");
-    return method(javaProvider_);
-  }
-
-  bool useRawPropsJsiValue() override {
-    static const auto method =
-        getReactNativeFeatureFlagsProviderJavaClass()->getMethod<jboolean()>("useRawPropsJsiValue");
-    return method(javaProvider_);
-  }
-
-  bool useShadowNodeStateOnClone() override {
-    static const auto method =
-        getReactNativeFeatureFlagsProviderJavaClass()->getMethod<jboolean()>("useShadowNodeStateOnClone");
+        getReactNativeFeatureFlagsProviderJavaClass()->getMethod<jboolean()>("useNestedScrollViewAndroid");
     return method(javaProvider_);
   }
 
@@ -501,15 +561,21 @@ class ReactNativeFeatureFlagsJavaProvider
     return method(javaProvider_);
   }
 
+  bool useUnorderedMapInDifferentiator() override {
+    static const auto method =
+        getReactNativeFeatureFlagsProviderJavaClass()->getMethod<jboolean()>("useUnorderedMapInDifferentiator");
+    return method(javaProvider_);
+  }
+
   double viewCullingOutsetRatio() override {
     static const auto method =
         getReactNativeFeatureFlagsProviderJavaClass()->getMethod<jdouble()>("viewCullingOutsetRatio");
     return method(javaProvider_);
   }
 
-  double virtualViewHysteresisRatio() override {
+  bool viewTransitionEnabled() override {
     static const auto method =
-        getReactNativeFeatureFlagsProviderJavaClass()->getMethod<jdouble()>("virtualViewHysteresisRatio");
+        getReactNativeFeatureFlagsProviderJavaClass()->getMethod<jboolean()>("viewTransitionEnabled");
     return method(javaProvider_);
   }
 
@@ -538,9 +604,9 @@ bool JReactNativeFeatureFlagsCxxInterop::cxxNativeAnimatedEnabled(
   return ReactNativeFeatureFlags::cxxNativeAnimatedEnabled();
 }
 
-bool JReactNativeFeatureFlagsCxxInterop::cxxNativeAnimatedRemoveJsSync(
+bool JReactNativeFeatureFlagsCxxInterop::defaultTextToOverflowHidden(
     facebook::jni::alias_ref<JReactNativeFeatureFlagsCxxInterop> /*unused*/) {
-  return ReactNativeFeatureFlags::cxxNativeAnimatedRemoveJsSync();
+  return ReactNativeFeatureFlags::defaultTextToOverflowHidden();
 }
 
 bool JReactNativeFeatureFlagsCxxInterop::disableEarlyViewCommandExecution(
@@ -548,9 +614,9 @@ bool JReactNativeFeatureFlagsCxxInterop::disableEarlyViewCommandExecution(
   return ReactNativeFeatureFlags::disableEarlyViewCommandExecution();
 }
 
-bool JReactNativeFeatureFlagsCxxInterop::disableFabricCommitInCXXAnimated(
+bool JReactNativeFeatureFlagsCxxInterop::disableImageViewPreallocationAndroid(
     facebook::jni::alias_ref<JReactNativeFeatureFlagsCxxInterop> /*unused*/) {
-  return ReactNativeFeatureFlags::disableFabricCommitInCXXAnimated();
+  return ReactNativeFeatureFlags::disableImageViewPreallocationAndroid();
 }
 
 bool JReactNativeFeatureFlagsCxxInterop::disableMountItemReorderingAndroid(
@@ -558,14 +624,19 @@ bool JReactNativeFeatureFlagsCxxInterop::disableMountItemReorderingAndroid(
   return ReactNativeFeatureFlags::disableMountItemReorderingAndroid();
 }
 
-bool JReactNativeFeatureFlagsCxxInterop::disableOldAndroidAttachmentMetricsWorkarounds(
+bool JReactNativeFeatureFlagsCxxInterop::disableSubviewClippingAndroid(
     facebook::jni::alias_ref<JReactNativeFeatureFlagsCxxInterop> /*unused*/) {
-  return ReactNativeFeatureFlags::disableOldAndroidAttachmentMetricsWorkarounds();
+  return ReactNativeFeatureFlags::disableSubviewClippingAndroid();
 }
 
 bool JReactNativeFeatureFlagsCxxInterop::disableTextLayoutManagerCacheAndroid(
     facebook::jni::alias_ref<JReactNativeFeatureFlagsCxxInterop> /*unused*/) {
   return ReactNativeFeatureFlags::disableTextLayoutManagerCacheAndroid();
+}
+
+bool JReactNativeFeatureFlagsCxxInterop::disableViewPreallocationAndroid(
+    facebook::jni::alias_ref<JReactNativeFeatureFlagsCxxInterop> /*unused*/) {
+  return ReactNativeFeatureFlags::disableViewPreallocationAndroid();
 }
 
 bool JReactNativeFeatureFlagsCxxInterop::enableAccessibilityOrder(
@@ -576,6 +647,11 @@ bool JReactNativeFeatureFlagsCxxInterop::enableAccessibilityOrder(
 bool JReactNativeFeatureFlagsCxxInterop::enableAccumulatedUpdatesInRawPropsAndroid(
     facebook::jni::alias_ref<JReactNativeFeatureFlagsCxxInterop> /*unused*/) {
   return ReactNativeFeatureFlags::enableAccumulatedUpdatesInRawPropsAndroid();
+}
+
+bool JReactNativeFeatureFlagsCxxInterop::enableAndroidAntialiasedBorderRadiusClipping(
+    facebook::jni::alias_ref<JReactNativeFeatureFlagsCxxInterop> /*unused*/) {
+  return ReactNativeFeatureFlags::enableAndroidAntialiasedBorderRadiusClipping();
 }
 
 bool JReactNativeFeatureFlagsCxxInterop::enableAndroidLinearText(
@@ -608,6 +684,11 @@ bool JReactNativeFeatureFlagsCxxInterop::enableDestroyShadowTreeRevisionAsync(
   return ReactNativeFeatureFlags::enableDestroyShadowTreeRevisionAsync();
 }
 
+bool JReactNativeFeatureFlagsCxxInterop::enableDifferentiatorMutationVectorPreallocation(
+    facebook::jni::alias_ref<JReactNativeFeatureFlagsCxxInterop> /*unused*/) {
+  return ReactNativeFeatureFlags::enableDifferentiatorMutationVectorPreallocation();
+}
+
 bool JReactNativeFeatureFlagsCxxInterop::enableDoubleMeasurementFixAndroid(
     facebook::jni::alias_ref<JReactNativeFeatureFlagsCxxInterop> /*unused*/) {
   return ReactNativeFeatureFlags::enableDoubleMeasurementFixAndroid();
@@ -621,6 +702,16 @@ bool JReactNativeFeatureFlagsCxxInterop::enableEagerMainQueueModulesOnIOS(
 bool JReactNativeFeatureFlagsCxxInterop::enableEagerRootViewAttachment(
     facebook::jni::alias_ref<JReactNativeFeatureFlagsCxxInterop> /*unused*/) {
   return ReactNativeFeatureFlags::enableEagerRootViewAttachment();
+}
+
+bool JReactNativeFeatureFlagsCxxInterop::enableExclusivePropsUpdateAndroid(
+    facebook::jni::alias_ref<JReactNativeFeatureFlagsCxxInterop> /*unused*/) {
+  return ReactNativeFeatureFlags::enableExclusivePropsUpdateAndroid();
+}
+
+bool JReactNativeFeatureFlagsCxxInterop::enableFabricCommitBranching(
+    facebook::jni::alias_ref<JReactNativeFeatureFlagsCxxInterop> /*unused*/) {
+  return ReactNativeFeatureFlags::enableFabricCommitBranching();
 }
 
 bool JReactNativeFeatureFlagsCxxInterop::enableFabricLogs(
@@ -678,6 +769,16 @@ bool JReactNativeFeatureFlagsCxxInterop::enableInteropViewManagerClassLookUpOpti
   return ReactNativeFeatureFlags::enableInteropViewManagerClassLookUpOptimizationIOS();
 }
 
+bool JReactNativeFeatureFlagsCxxInterop::enableIntersectionObserverByDefault(
+    facebook::jni::alias_ref<JReactNativeFeatureFlagsCxxInterop> /*unused*/) {
+  return ReactNativeFeatureFlags::enableIntersectionObserverByDefault();
+}
+
+bool JReactNativeFeatureFlagsCxxInterop::enableKeyEvents(
+    facebook::jni::alias_ref<JReactNativeFeatureFlagsCxxInterop> /*unused*/) {
+  return ReactNativeFeatureFlags::enableKeyEvents();
+}
+
 bool JReactNativeFeatureFlagsCxxInterop::enableLayoutAnimationsOnAndroid(
     facebook::jni::alias_ref<JReactNativeFeatureFlagsCxxInterop> /*unused*/) {
   return ReactNativeFeatureFlags::enableLayoutAnimationsOnAndroid();
@@ -698,9 +799,19 @@ bool JReactNativeFeatureFlagsCxxInterop::enableModuleArgumentNSNullConversionIOS
   return ReactNativeFeatureFlags::enableModuleArgumentNSNullConversionIOS();
 }
 
+bool JReactNativeFeatureFlagsCxxInterop::enableMutationObserverByDefault(
+    facebook::jni::alias_ref<JReactNativeFeatureFlagsCxxInterop> /*unused*/) {
+  return ReactNativeFeatureFlags::enableMutationObserverByDefault();
+}
+
 bool JReactNativeFeatureFlagsCxxInterop::enableNativeCSSParsing(
     facebook::jni::alias_ref<JReactNativeFeatureFlagsCxxInterop> /*unused*/) {
   return ReactNativeFeatureFlags::enableNativeCSSParsing();
+}
+
+bool JReactNativeFeatureFlagsCxxInterop::enableNativeViewPropTransformations(
+    facebook::jni::alias_ref<JReactNativeFeatureFlagsCxxInterop> /*unused*/) {
+  return ReactNativeFeatureFlags::enableNativeViewPropTransformations();
 }
 
 bool JReactNativeFeatureFlagsCxxInterop::enableNetworkEventReporting(
@@ -716,11 +827,6 @@ bool JReactNativeFeatureFlagsCxxInterop::enablePreparedTextLayout(
 bool JReactNativeFeatureFlagsCxxInterop::enablePropsUpdateReconciliationAndroid(
     facebook::jni::alias_ref<JReactNativeFeatureFlagsCxxInterop> /*unused*/) {
   return ReactNativeFeatureFlags::enablePropsUpdateReconciliationAndroid();
-}
-
-bool JReactNativeFeatureFlagsCxxInterop::enableResourceTimingAPI(
-    facebook::jni::alias_ref<JReactNativeFeatureFlagsCxxInterop> /*unused*/) {
-  return ReactNativeFeatureFlags::enableResourceTimingAPI();
 }
 
 bool JReactNativeFeatureFlagsCxxInterop::enableSwiftUIBasedFilters(
@@ -758,24 +864,19 @@ bool JReactNativeFeatureFlagsCxxInterop::enableViewRecyclingForView(
   return ReactNativeFeatureFlags::enableViewRecyclingForView();
 }
 
+bool JReactNativeFeatureFlagsCxxInterop::enableVirtualViewContainerStateExperimental(
+    facebook::jni::alias_ref<JReactNativeFeatureFlagsCxxInterop> /*unused*/) {
+  return ReactNativeFeatureFlags::enableVirtualViewContainerStateExperimental();
+}
+
 bool JReactNativeFeatureFlagsCxxInterop::enableVirtualViewDebugFeatures(
     facebook::jni::alias_ref<JReactNativeFeatureFlagsCxxInterop> /*unused*/) {
   return ReactNativeFeatureFlags::enableVirtualViewDebugFeatures();
 }
 
-bool JReactNativeFeatureFlagsCxxInterop::enableVirtualViewRenderState(
+bool JReactNativeFeatureFlagsCxxInterop::fixFindShadowNodeByTagRaceCondition(
     facebook::jni::alias_ref<JReactNativeFeatureFlagsCxxInterop> /*unused*/) {
-  return ReactNativeFeatureFlags::enableVirtualViewRenderState();
-}
-
-bool JReactNativeFeatureFlagsCxxInterop::enableVirtualViewWindowFocusDetection(
-    facebook::jni::alias_ref<JReactNativeFeatureFlagsCxxInterop> /*unused*/) {
-  return ReactNativeFeatureFlags::enableVirtualViewWindowFocusDetection();
-}
-
-bool JReactNativeFeatureFlagsCxxInterop::enableWebPerformanceAPIsByDefault(
-    facebook::jni::alias_ref<JReactNativeFeatureFlagsCxxInterop> /*unused*/) {
-  return ReactNativeFeatureFlags::enableWebPerformanceAPIsByDefault();
+  return ReactNativeFeatureFlags::fixFindShadowNodeByTagRaceCondition();
 }
 
 bool JReactNativeFeatureFlagsCxxInterop::fixMappingOfEventPrioritiesBetweenFabricAndReact(
@@ -783,9 +884,29 @@ bool JReactNativeFeatureFlagsCxxInterop::fixMappingOfEventPrioritiesBetweenFabri
   return ReactNativeFeatureFlags::fixMappingOfEventPrioritiesBetweenFabricAndReact();
 }
 
+bool JReactNativeFeatureFlagsCxxInterop::fixTextClippingAndroid15useBoundsForWidth(
+    facebook::jni::alias_ref<JReactNativeFeatureFlagsCxxInterop> /*unused*/) {
+  return ReactNativeFeatureFlags::fixTextClippingAndroid15useBoundsForWidth();
+}
+
+bool JReactNativeFeatureFlagsCxxInterop::fixYogaFlexBasisFitContentInMainAxis(
+    facebook::jni::alias_ref<JReactNativeFeatureFlagsCxxInterop> /*unused*/) {
+  return ReactNativeFeatureFlags::fixYogaFlexBasisFitContentInMainAxis();
+}
+
+bool JReactNativeFeatureFlagsCxxInterop::fuseboxAssertSingleHostState(
+    facebook::jni::alias_ref<JReactNativeFeatureFlagsCxxInterop> /*unused*/) {
+  return ReactNativeFeatureFlags::fuseboxAssertSingleHostState();
+}
+
 bool JReactNativeFeatureFlagsCxxInterop::fuseboxEnabledRelease(
     facebook::jni::alias_ref<JReactNativeFeatureFlagsCxxInterop> /*unused*/) {
   return ReactNativeFeatureFlags::fuseboxEnabledRelease();
+}
+
+bool JReactNativeFeatureFlagsCxxInterop::fuseboxFrameRecordingEnabled(
+    facebook::jni::alias_ref<JReactNativeFeatureFlagsCxxInterop> /*unused*/) {
+  return ReactNativeFeatureFlags::fuseboxFrameRecordingEnabled();
 }
 
 bool JReactNativeFeatureFlagsCxxInterop::fuseboxNetworkInspectionEnabled(
@@ -801,6 +922,11 @@ bool JReactNativeFeatureFlagsCxxInterop::hideOffscreenVirtualViewsOnIOS(
 bool JReactNativeFeatureFlagsCxxInterop::overrideBySynchronousMountPropsAtMountingAndroid(
     facebook::jni::alias_ref<JReactNativeFeatureFlagsCxxInterop> /*unused*/) {
   return ReactNativeFeatureFlags::overrideBySynchronousMountPropsAtMountingAndroid();
+}
+
+bool JReactNativeFeatureFlagsCxxInterop::perfIssuesEnabled(
+    facebook::jni::alias_ref<JReactNativeFeatureFlagsCxxInterop> /*unused*/) {
+  return ReactNativeFeatureFlags::perfIssuesEnabled();
 }
 
 bool JReactNativeFeatureFlagsCxxInterop::perfMonitorV2Enabled(
@@ -833,9 +959,9 @@ bool JReactNativeFeatureFlagsCxxInterop::skipActivityIdentityAssertionOnHostPaus
   return ReactNativeFeatureFlags::skipActivityIdentityAssertionOnHostPause();
 }
 
-bool JReactNativeFeatureFlagsCxxInterop::sweepActiveTouchOnChildNativeGesturesAndroid(
+bool JReactNativeFeatureFlagsCxxInterop::syncAndroidClipToPaddingWithOverflow(
     facebook::jni::alias_ref<JReactNativeFeatureFlagsCxxInterop> /*unused*/) {
-  return ReactNativeFeatureFlags::sweepActiveTouchOnChildNativeGesturesAndroid();
+  return ReactNativeFeatureFlags::syncAndroidClipToPaddingWithOverflow();
 }
 
 bool JReactNativeFeatureFlagsCxxInterop::traceTurboModulePromiseRejectionsOnAndroid(
@@ -848,6 +974,11 @@ bool JReactNativeFeatureFlagsCxxInterop::updateRuntimeShadowNodeReferencesOnComm
   return ReactNativeFeatureFlags::updateRuntimeShadowNodeReferencesOnCommit();
 }
 
+bool JReactNativeFeatureFlagsCxxInterop::updateRuntimeShadowNodeReferencesOnCommitThread(
+    facebook::jni::alias_ref<JReactNativeFeatureFlagsCxxInterop> /*unused*/) {
+  return ReactNativeFeatureFlags::updateRuntimeShadowNodeReferencesOnCommitThread();
+}
+
 bool JReactNativeFeatureFlagsCxxInterop::useAlwaysAvailableJSErrorHandling(
     facebook::jni::alias_ref<JReactNativeFeatureFlagsCxxInterop> /*unused*/) {
   return ReactNativeFeatureFlags::useAlwaysAvailableJSErrorHandling();
@@ -858,14 +989,9 @@ bool JReactNativeFeatureFlagsCxxInterop::useFabricInterop(
   return ReactNativeFeatureFlags::useFabricInterop();
 }
 
-bool JReactNativeFeatureFlagsCxxInterop::useNativeEqualsInNativeReadableArrayAndroid(
+bool JReactNativeFeatureFlagsCxxInterop::useLISAlgorithmInDifferentiator(
     facebook::jni::alias_ref<JReactNativeFeatureFlagsCxxInterop> /*unused*/) {
-  return ReactNativeFeatureFlags::useNativeEqualsInNativeReadableArrayAndroid();
-}
-
-bool JReactNativeFeatureFlagsCxxInterop::useNativeTransformHelperAndroid(
-    facebook::jni::alias_ref<JReactNativeFeatureFlagsCxxInterop> /*unused*/) {
-  return ReactNativeFeatureFlags::useNativeTransformHelperAndroid();
+  return ReactNativeFeatureFlags::useLISAlgorithmInDifferentiator();
 }
 
 bool JReactNativeFeatureFlagsCxxInterop::useNativeViewConfigsInBridgelessMode(
@@ -873,19 +999,9 @@ bool JReactNativeFeatureFlagsCxxInterop::useNativeViewConfigsInBridgelessMode(
   return ReactNativeFeatureFlags::useNativeViewConfigsInBridgelessMode();
 }
 
-bool JReactNativeFeatureFlagsCxxInterop::useOptimizedEventBatchingOnAndroid(
+bool JReactNativeFeatureFlagsCxxInterop::useNestedScrollViewAndroid(
     facebook::jni::alias_ref<JReactNativeFeatureFlagsCxxInterop> /*unused*/) {
-  return ReactNativeFeatureFlags::useOptimizedEventBatchingOnAndroid();
-}
-
-bool JReactNativeFeatureFlagsCxxInterop::useRawPropsJsiValue(
-    facebook::jni::alias_ref<JReactNativeFeatureFlagsCxxInterop> /*unused*/) {
-  return ReactNativeFeatureFlags::useRawPropsJsiValue();
-}
-
-bool JReactNativeFeatureFlagsCxxInterop::useShadowNodeStateOnClone(
-    facebook::jni::alias_ref<JReactNativeFeatureFlagsCxxInterop> /*unused*/) {
-  return ReactNativeFeatureFlags::useShadowNodeStateOnClone();
+  return ReactNativeFeatureFlags::useNestedScrollViewAndroid();
 }
 
 bool JReactNativeFeatureFlagsCxxInterop::useSharedAnimatedBackend(
@@ -908,14 +1024,19 @@ bool JReactNativeFeatureFlagsCxxInterop::useTurboModules(
   return ReactNativeFeatureFlags::useTurboModules();
 }
 
+bool JReactNativeFeatureFlagsCxxInterop::useUnorderedMapInDifferentiator(
+    facebook::jni::alias_ref<JReactNativeFeatureFlagsCxxInterop> /*unused*/) {
+  return ReactNativeFeatureFlags::useUnorderedMapInDifferentiator();
+}
+
 double JReactNativeFeatureFlagsCxxInterop::viewCullingOutsetRatio(
     facebook::jni::alias_ref<JReactNativeFeatureFlagsCxxInterop> /*unused*/) {
   return ReactNativeFeatureFlags::viewCullingOutsetRatio();
 }
 
-double JReactNativeFeatureFlagsCxxInterop::virtualViewHysteresisRatio(
+bool JReactNativeFeatureFlagsCxxInterop::viewTransitionEnabled(
     facebook::jni::alias_ref<JReactNativeFeatureFlagsCxxInterop> /*unused*/) {
-  return ReactNativeFeatureFlags::virtualViewHysteresisRatio();
+  return ReactNativeFeatureFlags::viewTransitionEnabled();
 }
 
 double JReactNativeFeatureFlagsCxxInterop::virtualViewPrerenderRatio(
@@ -964,29 +1085,35 @@ void JReactNativeFeatureFlagsCxxInterop::registerNatives() {
         "cxxNativeAnimatedEnabled",
         JReactNativeFeatureFlagsCxxInterop::cxxNativeAnimatedEnabled),
       makeNativeMethod(
-        "cxxNativeAnimatedRemoveJsSync",
-        JReactNativeFeatureFlagsCxxInterop::cxxNativeAnimatedRemoveJsSync),
+        "defaultTextToOverflowHidden",
+        JReactNativeFeatureFlagsCxxInterop::defaultTextToOverflowHidden),
       makeNativeMethod(
         "disableEarlyViewCommandExecution",
         JReactNativeFeatureFlagsCxxInterop::disableEarlyViewCommandExecution),
       makeNativeMethod(
-        "disableFabricCommitInCXXAnimated",
-        JReactNativeFeatureFlagsCxxInterop::disableFabricCommitInCXXAnimated),
+        "disableImageViewPreallocationAndroid",
+        JReactNativeFeatureFlagsCxxInterop::disableImageViewPreallocationAndroid),
       makeNativeMethod(
         "disableMountItemReorderingAndroid",
         JReactNativeFeatureFlagsCxxInterop::disableMountItemReorderingAndroid),
       makeNativeMethod(
-        "disableOldAndroidAttachmentMetricsWorkarounds",
-        JReactNativeFeatureFlagsCxxInterop::disableOldAndroidAttachmentMetricsWorkarounds),
+        "disableSubviewClippingAndroid",
+        JReactNativeFeatureFlagsCxxInterop::disableSubviewClippingAndroid),
       makeNativeMethod(
         "disableTextLayoutManagerCacheAndroid",
         JReactNativeFeatureFlagsCxxInterop::disableTextLayoutManagerCacheAndroid),
+      makeNativeMethod(
+        "disableViewPreallocationAndroid",
+        JReactNativeFeatureFlagsCxxInterop::disableViewPreallocationAndroid),
       makeNativeMethod(
         "enableAccessibilityOrder",
         JReactNativeFeatureFlagsCxxInterop::enableAccessibilityOrder),
       makeNativeMethod(
         "enableAccumulatedUpdatesInRawPropsAndroid",
         JReactNativeFeatureFlagsCxxInterop::enableAccumulatedUpdatesInRawPropsAndroid),
+      makeNativeMethod(
+        "enableAndroidAntialiasedBorderRadiusClipping",
+        JReactNativeFeatureFlagsCxxInterop::enableAndroidAntialiasedBorderRadiusClipping),
       makeNativeMethod(
         "enableAndroidLinearText",
         JReactNativeFeatureFlagsCxxInterop::enableAndroidLinearText),
@@ -1006,6 +1133,9 @@ void JReactNativeFeatureFlagsCxxInterop::registerNatives() {
         "enableDestroyShadowTreeRevisionAsync",
         JReactNativeFeatureFlagsCxxInterop::enableDestroyShadowTreeRevisionAsync),
       makeNativeMethod(
+        "enableDifferentiatorMutationVectorPreallocation",
+        JReactNativeFeatureFlagsCxxInterop::enableDifferentiatorMutationVectorPreallocation),
+      makeNativeMethod(
         "enableDoubleMeasurementFixAndroid",
         JReactNativeFeatureFlagsCxxInterop::enableDoubleMeasurementFixAndroid),
       makeNativeMethod(
@@ -1014,6 +1144,12 @@ void JReactNativeFeatureFlagsCxxInterop::registerNatives() {
       makeNativeMethod(
         "enableEagerRootViewAttachment",
         JReactNativeFeatureFlagsCxxInterop::enableEagerRootViewAttachment),
+      makeNativeMethod(
+        "enableExclusivePropsUpdateAndroid",
+        JReactNativeFeatureFlagsCxxInterop::enableExclusivePropsUpdateAndroid),
+      makeNativeMethod(
+        "enableFabricCommitBranching",
+        JReactNativeFeatureFlagsCxxInterop::enableFabricCommitBranching),
       makeNativeMethod(
         "enableFabricLogs",
         JReactNativeFeatureFlagsCxxInterop::enableFabricLogs),
@@ -1048,6 +1184,12 @@ void JReactNativeFeatureFlagsCxxInterop::registerNatives() {
         "enableInteropViewManagerClassLookUpOptimizationIOS",
         JReactNativeFeatureFlagsCxxInterop::enableInteropViewManagerClassLookUpOptimizationIOS),
       makeNativeMethod(
+        "enableIntersectionObserverByDefault",
+        JReactNativeFeatureFlagsCxxInterop::enableIntersectionObserverByDefault),
+      makeNativeMethod(
+        "enableKeyEvents",
+        JReactNativeFeatureFlagsCxxInterop::enableKeyEvents),
+      makeNativeMethod(
         "enableLayoutAnimationsOnAndroid",
         JReactNativeFeatureFlagsCxxInterop::enableLayoutAnimationsOnAndroid),
       makeNativeMethod(
@@ -1060,8 +1202,14 @@ void JReactNativeFeatureFlagsCxxInterop::registerNatives() {
         "enableModuleArgumentNSNullConversionIOS",
         JReactNativeFeatureFlagsCxxInterop::enableModuleArgumentNSNullConversionIOS),
       makeNativeMethod(
+        "enableMutationObserverByDefault",
+        JReactNativeFeatureFlagsCxxInterop::enableMutationObserverByDefault),
+      makeNativeMethod(
         "enableNativeCSSParsing",
         JReactNativeFeatureFlagsCxxInterop::enableNativeCSSParsing),
+      makeNativeMethod(
+        "enableNativeViewPropTransformations",
+        JReactNativeFeatureFlagsCxxInterop::enableNativeViewPropTransformations),
       makeNativeMethod(
         "enableNetworkEventReporting",
         JReactNativeFeatureFlagsCxxInterop::enableNetworkEventReporting),
@@ -1071,9 +1219,6 @@ void JReactNativeFeatureFlagsCxxInterop::registerNatives() {
       makeNativeMethod(
         "enablePropsUpdateReconciliationAndroid",
         JReactNativeFeatureFlagsCxxInterop::enablePropsUpdateReconciliationAndroid),
-      makeNativeMethod(
-        "enableResourceTimingAPI",
-        JReactNativeFeatureFlagsCxxInterop::enableResourceTimingAPI),
       makeNativeMethod(
         "enableSwiftUIBasedFilters",
         JReactNativeFeatureFlagsCxxInterop::enableSwiftUIBasedFilters),
@@ -1096,23 +1241,32 @@ void JReactNativeFeatureFlagsCxxInterop::registerNatives() {
         "enableViewRecyclingForView",
         JReactNativeFeatureFlagsCxxInterop::enableViewRecyclingForView),
       makeNativeMethod(
+        "enableVirtualViewContainerStateExperimental",
+        JReactNativeFeatureFlagsCxxInterop::enableVirtualViewContainerStateExperimental),
+      makeNativeMethod(
         "enableVirtualViewDebugFeatures",
         JReactNativeFeatureFlagsCxxInterop::enableVirtualViewDebugFeatures),
       makeNativeMethod(
-        "enableVirtualViewRenderState",
-        JReactNativeFeatureFlagsCxxInterop::enableVirtualViewRenderState),
-      makeNativeMethod(
-        "enableVirtualViewWindowFocusDetection",
-        JReactNativeFeatureFlagsCxxInterop::enableVirtualViewWindowFocusDetection),
-      makeNativeMethod(
-        "enableWebPerformanceAPIsByDefault",
-        JReactNativeFeatureFlagsCxxInterop::enableWebPerformanceAPIsByDefault),
+        "fixFindShadowNodeByTagRaceCondition",
+        JReactNativeFeatureFlagsCxxInterop::fixFindShadowNodeByTagRaceCondition),
       makeNativeMethod(
         "fixMappingOfEventPrioritiesBetweenFabricAndReact",
         JReactNativeFeatureFlagsCxxInterop::fixMappingOfEventPrioritiesBetweenFabricAndReact),
       makeNativeMethod(
+        "fixTextClippingAndroid15useBoundsForWidth",
+        JReactNativeFeatureFlagsCxxInterop::fixTextClippingAndroid15useBoundsForWidth),
+      makeNativeMethod(
+        "fixYogaFlexBasisFitContentInMainAxis",
+        JReactNativeFeatureFlagsCxxInterop::fixYogaFlexBasisFitContentInMainAxis),
+      makeNativeMethod(
+        "fuseboxAssertSingleHostState",
+        JReactNativeFeatureFlagsCxxInterop::fuseboxAssertSingleHostState),
+      makeNativeMethod(
         "fuseboxEnabledRelease",
         JReactNativeFeatureFlagsCxxInterop::fuseboxEnabledRelease),
+      makeNativeMethod(
+        "fuseboxFrameRecordingEnabled",
+        JReactNativeFeatureFlagsCxxInterop::fuseboxFrameRecordingEnabled),
       makeNativeMethod(
         "fuseboxNetworkInspectionEnabled",
         JReactNativeFeatureFlagsCxxInterop::fuseboxNetworkInspectionEnabled),
@@ -1122,6 +1276,9 @@ void JReactNativeFeatureFlagsCxxInterop::registerNatives() {
       makeNativeMethod(
         "overrideBySynchronousMountPropsAtMountingAndroid",
         JReactNativeFeatureFlagsCxxInterop::overrideBySynchronousMountPropsAtMountingAndroid),
+      makeNativeMethod(
+        "perfIssuesEnabled",
+        JReactNativeFeatureFlagsCxxInterop::perfIssuesEnabled),
       makeNativeMethod(
         "perfMonitorV2Enabled",
         JReactNativeFeatureFlagsCxxInterop::perfMonitorV2Enabled),
@@ -1141,8 +1298,8 @@ void JReactNativeFeatureFlagsCxxInterop::registerNatives() {
         "skipActivityIdentityAssertionOnHostPause",
         JReactNativeFeatureFlagsCxxInterop::skipActivityIdentityAssertionOnHostPause),
       makeNativeMethod(
-        "sweepActiveTouchOnChildNativeGesturesAndroid",
-        JReactNativeFeatureFlagsCxxInterop::sweepActiveTouchOnChildNativeGesturesAndroid),
+        "syncAndroidClipToPaddingWithOverflow",
+        JReactNativeFeatureFlagsCxxInterop::syncAndroidClipToPaddingWithOverflow),
       makeNativeMethod(
         "traceTurboModulePromiseRejectionsOnAndroid",
         JReactNativeFeatureFlagsCxxInterop::traceTurboModulePromiseRejectionsOnAndroid),
@@ -1150,29 +1307,23 @@ void JReactNativeFeatureFlagsCxxInterop::registerNatives() {
         "updateRuntimeShadowNodeReferencesOnCommit",
         JReactNativeFeatureFlagsCxxInterop::updateRuntimeShadowNodeReferencesOnCommit),
       makeNativeMethod(
+        "updateRuntimeShadowNodeReferencesOnCommitThread",
+        JReactNativeFeatureFlagsCxxInterop::updateRuntimeShadowNodeReferencesOnCommitThread),
+      makeNativeMethod(
         "useAlwaysAvailableJSErrorHandling",
         JReactNativeFeatureFlagsCxxInterop::useAlwaysAvailableJSErrorHandling),
       makeNativeMethod(
         "useFabricInterop",
         JReactNativeFeatureFlagsCxxInterop::useFabricInterop),
       makeNativeMethod(
-        "useNativeEqualsInNativeReadableArrayAndroid",
-        JReactNativeFeatureFlagsCxxInterop::useNativeEqualsInNativeReadableArrayAndroid),
-      makeNativeMethod(
-        "useNativeTransformHelperAndroid",
-        JReactNativeFeatureFlagsCxxInterop::useNativeTransformHelperAndroid),
+        "useLISAlgorithmInDifferentiator",
+        JReactNativeFeatureFlagsCxxInterop::useLISAlgorithmInDifferentiator),
       makeNativeMethod(
         "useNativeViewConfigsInBridgelessMode",
         JReactNativeFeatureFlagsCxxInterop::useNativeViewConfigsInBridgelessMode),
       makeNativeMethod(
-        "useOptimizedEventBatchingOnAndroid",
-        JReactNativeFeatureFlagsCxxInterop::useOptimizedEventBatchingOnAndroid),
-      makeNativeMethod(
-        "useRawPropsJsiValue",
-        JReactNativeFeatureFlagsCxxInterop::useRawPropsJsiValue),
-      makeNativeMethod(
-        "useShadowNodeStateOnClone",
-        JReactNativeFeatureFlagsCxxInterop::useShadowNodeStateOnClone),
+        "useNestedScrollViewAndroid",
+        JReactNativeFeatureFlagsCxxInterop::useNestedScrollViewAndroid),
       makeNativeMethod(
         "useSharedAnimatedBackend",
         JReactNativeFeatureFlagsCxxInterop::useSharedAnimatedBackend),
@@ -1186,11 +1337,14 @@ void JReactNativeFeatureFlagsCxxInterop::registerNatives() {
         "useTurboModules",
         JReactNativeFeatureFlagsCxxInterop::useTurboModules),
       makeNativeMethod(
+        "useUnorderedMapInDifferentiator",
+        JReactNativeFeatureFlagsCxxInterop::useUnorderedMapInDifferentiator),
+      makeNativeMethod(
         "viewCullingOutsetRatio",
         JReactNativeFeatureFlagsCxxInterop::viewCullingOutsetRatio),
       makeNativeMethod(
-        "virtualViewHysteresisRatio",
-        JReactNativeFeatureFlagsCxxInterop::virtualViewHysteresisRatio),
+        "viewTransitionEnabled",
+        JReactNativeFeatureFlagsCxxInterop::viewTransitionEnabled),
       makeNativeMethod(
         "virtualViewPrerenderRatio",
         JReactNativeFeatureFlagsCxxInterop::virtualViewPrerenderRatio),

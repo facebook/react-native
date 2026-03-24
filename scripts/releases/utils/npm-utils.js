@@ -174,4 +174,5 @@ function getPackageVersionStrByTag(
 module.exports = {
   getNpmInfo,
   publishPackage,
+  getPackageVersionStrByTag,
 };

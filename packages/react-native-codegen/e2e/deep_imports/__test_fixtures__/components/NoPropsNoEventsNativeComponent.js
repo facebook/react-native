@@ -13,7 +13,7 @@ import type {ViewProps} from 'react-native/Libraries/Components/View/ViewPropTyp
 
 import codegenNativeComponent from 'react-native/Libraries/Utilities/codegenNativeComponent';
 
-type NativeProps = $ReadOnly<{
+type NativeProps = Readonly<{
   ...ViewProps,
 
   // No Props or events

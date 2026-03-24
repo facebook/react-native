@@ -18,10 +18,10 @@ import type {
   NativeModuleEnumMember,
   NativeModuleEnumMemberType,
   NativeModuleParamTypeAnnotation,
+  NativeModuleUnionTypeAnnotationMemberType,
   Nullable,
   PropTypeAnnotation,
   SchemaType,
-  UnionTypeAnnotationMemberType,
 } from '../CodegenSchema';
 import type {ParserType} from './errors';
 import type {
@@ -146,15 +146,7 @@ export interface Parser {
    */
   remapUnionTypeAnnotationMemberNames(
     types: $FlowFixMe,
-  ): UnionTypeAnnotationMemberType[];
-  /**
-   * Given a union annotation members types, it returns an array of string literals.
-   * @parameter membersTypes: union annotation members types
-   * @returns: an array of string literals.
-   */
-  getStringLiteralUnionTypeAnnotationStringLiterals(
-    types: $FlowFixMe,
-  ): string[];
+  ): NativeModuleUnionTypeAnnotationMemberType[];
   /**
    * Given the name of a file, it returns a Schema.
    * @parameter filename: the name of the file.
@@ -191,7 +183,7 @@ export interface Parser {
    */
   getFunctionTypeAnnotationParameters(
     functionTypeAnnotation: $FlowFixMe,
-  ): $ReadOnlyArray<$FlowFixMe>;
+  ): ReadonlyArray<$FlowFixMe>;
 
   /**
    * Given a parameter, it returns the function name of the parameter.
@@ -243,7 +235,7 @@ export interface Parser {
    */
   parseEnumMembers(
     typeAnnotation: $FlowFixMe,
-  ): $ReadOnlyArray<NativeModuleEnumMember>;
+  ): ReadonlyArray<NativeModuleEnumMember>;
 
   /**
    * Given a node, it returns true if it is a module interface
@@ -336,7 +328,7 @@ export interface Parser {
    * @parameter typeAlias: the type alias.
    * @returns: an array of properties.
    */
-  bodyProperties(typeAlias: $FlowFixMe): $ReadOnlyArray<$FlowFixMe>;
+  bodyProperties(typeAlias: $FlowFixMe): ReadonlyArray<$FlowFixMe>;
 
   /**
    * Given a keyword convert it to TypeAnnotation.
@@ -390,11 +382,11 @@ export interface Parser {
   getResolveTypeAnnotationFN(): ResolveTypeAnnotationFN;
 
   getProps(
-    typeDefinition: $ReadOnlyArray<PropAST>,
+    typeDefinition: ReadonlyArray<PropAST>,
     types: TypeDeclarationMap,
   ): {
-    props: $ReadOnlyArray<NamedShape<PropTypeAnnotation>>,
-    extendsProps: $ReadOnlyArray<ExtendsPropsShape>,
+    props: ReadonlyArray<NamedShape<PropTypeAnnotation>>,
+    extendsProps: ReadonlyArray<ExtendsPropsShape>,
   };
 
   getProperties(typeName: string, types: TypeDeclarationMap): $FlowFixMe;

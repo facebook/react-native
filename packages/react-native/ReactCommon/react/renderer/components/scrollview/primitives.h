@@ -18,26 +18,14 @@ enum class ScrollViewIndicatorStyle { Default, Black, White };
 
 enum class ScrollViewKeyboardDismissMode { None, OnDrag, Interactive };
 
-enum class ContentInsetAdjustmentBehavior {
-  Never,
-  Automatic,
-  ScrollableAxes,
-  Always
-};
+enum class ContentInsetAdjustmentBehavior { Never, Automatic, ScrollableAxes, Always };
 
 class ScrollViewMaintainVisibleContentPosition final {
  public:
   int minIndexForVisible{0};
   std::optional<int> autoscrollToTopThreshold{};
 
-  bool operator==(const ScrollViewMaintainVisibleContentPosition& rhs) const {
-    return std::tie(this->minIndexForVisible, this->autoscrollToTopThreshold) ==
-        std::tie(rhs.minIndexForVisible, rhs.autoscrollToTopThreshold);
-  }
-
-  bool operator!=(const ScrollViewMaintainVisibleContentPosition& rhs) const {
-    return !(*this == rhs);
-  }
+  bool operator==(const ScrollViewMaintainVisibleContentPosition &rhs) const = default;
 };
 
 } // namespace facebook::react

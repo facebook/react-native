@@ -857,11 +857,70 @@ describe('expect', () => {
       expect(new Date('2025-01-02')).toMatchSnapshot();
       expect(new Error()).toMatchSnapshot();
       expect(new RegExp('asd')).toMatchSnapshot();
-      expect(new Promise(() => {})).toMatchSnapshot();
+      // TODO(T245412835): uncomment this once we support Hermes V1 in OSS fantom.
+      // expect(new Promise(() => {})).toMatchSnapshot();
     });
 
     test('named snapshots', () => {
       expect({a: 'b'}).toMatchSnapshot('named snapshot');
+    });
+  });
+
+  describe('toMatchInlineSnapshot()', () => {
+    test('primitive types', () => {
+      expect(42).toMatchInlineSnapshot(`42`);
+      expect('hello').toMatchInlineSnapshot(`"hello"`);
+      expect(true).toMatchInlineSnapshot(`true`);
+      expect(null).toMatchInlineSnapshot(`null`);
+      expect(undefined).toMatchInlineSnapshot(`undefined`);
+      expect('foo\nbar').toMatchInlineSnapshot(`
+        "foo
+        bar"
+      `);
+    });
+
+    test('complex types', () => {
+      expect({foo: 'bar'}).toMatchInlineSnapshot(`
+        Object {
+          "foo": "bar",
+        }
+      `);
+      expect(new Map([['foo', 'bar']])).toMatchInlineSnapshot(`
+        Map {
+          "foo" => "bar",
+        }
+      `);
+      expect(new Set([1, 2])).toMatchInlineSnapshot(`
+        Set {
+          1,
+          2,
+        }
+      `);
+      expect(new Date('2025-01-02')).toMatchInlineSnapshot(
+        `2025-01-02T00:00:00.000Z`,
+      );
+      expect(new Error()).toMatchInlineSnapshot(`[Error]`);
+      expect(new RegExp('asd')).toMatchInlineSnapshot(`/asd/`);
+      expect(function foo() {}).toMatchInlineSnapshot(`[Function foo]`);
+    });
+
+    test('JSX elements', () => {
+      expect(<span>hello</span>).toMatchInlineSnapshot(`
+        <span>
+          hello
+        </span>
+      `);
+      expect(
+        <div>
+          <span>nested</span>
+        </div>,
+      ).toMatchInlineSnapshot(`
+        <div>
+          <span>
+            nested
+          </span>
+        </div>
+      `);
     });
   });
 });

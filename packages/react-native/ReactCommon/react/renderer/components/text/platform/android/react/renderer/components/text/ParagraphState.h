@@ -55,32 +55,31 @@ class ParagraphState final {
   /**
    * A fully prepared representation of a text layout to mount
    */
-  MeasuredPreparedLayout measuredLayout;
+  MeasuredPreparedTextLayout measuredLayout;
 
   ParagraphState(
       AttributedString attributedString,
       ParagraphAttributes paragraphAttributes,
       std::weak_ptr<const TextLayoutManager> layoutManager,
-      MeasuredPreparedLayout measuredLayout)
+      MeasuredPreparedTextLayout measuredLayout)
       : attributedString(std::move(attributedString)),
         paragraphAttributes(std::move(paragraphAttributes)),
         layoutManager(std::move(layoutManager)),
-        measuredLayout(std::move(measuredLayout)) {}
+        measuredLayout(std::move(measuredLayout))
+  {
+  }
 
   ParagraphState(
       AttributedString attributedString,
       ParagraphAttributes paragraphAttributes,
       std::weak_ptr<const TextLayoutManager> layoutManager)
-      : ParagraphState(
-            std::move(attributedString),
-            std::move(paragraphAttributes),
-            std::move(layoutManager),
-            {}) {}
+      : ParagraphState(std::move(attributedString), std::move(paragraphAttributes), std::move(layoutManager), {})
+  {
+  }
 
   ParagraphState() = default;
-  ParagraphState(
-      const ParagraphState& /*previousState*/,
-      const folly::dynamic& /*data*/) {
+  ParagraphState(const ParagraphState & /*previousState*/, const folly::dynamic & /*data*/)
+  {
     react_native_assert(false && "Not supported");
   };
 

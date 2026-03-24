@@ -10,21 +10,14 @@
 namespace facebook::react {
 
 #ifdef RN_SERIALIZABLE_STATE
-folly::dynamic GradientDirection::toDynamic() const {
+namespace {
+folly::dynamic directionToDynamic(const GradientDirection& value) {
   folly::dynamic result = folly::dynamic::object();
-  result["type"] = [&]() {
-    switch (type) {
-      case GradientDirectionType::Angle:
-        return "angle";
-      case GradientDirectionType::Keyword:
-        return "keyword";
-    }
-    return "";
-  }();
-
   if (std::holds_alternative<Float>(value)) {
+    result["type"] = "angle";
     result["value"] = std::get<Float>(value);
   } else if (std::holds_alternative<GradientKeyword>(value)) {
+    result["type"] = "keyword";
     result["value"] = [&]() {
       switch (std::get<GradientKeyword>(value)) {
         case GradientKeyword::ToTopRight:
@@ -41,11 +34,12 @@ folly::dynamic GradientDirection::toDynamic() const {
   }
   return result;
 }
+} // namespace
 
 folly::dynamic LinearGradient::toDynamic() const {
   folly::dynamic result = folly::dynamic::object();
   result["type"] = "linear-gradient";
-  result["direction"] = direction.toDynamic();
+  result["direction"] = directionToDynamic(direction);
 
   folly::dynamic colorStopsArray = folly::dynamic::array();
   for (const auto& colorStop : colorStops) {
@@ -53,6 +47,39 @@ folly::dynamic LinearGradient::toDynamic() const {
   }
   result["colorStops"] = colorStopsArray;
   return result;
+}
+#endif
+
+#if RN_DEBUG_STRING_CONVERTIBLE
+void LinearGradient::toString(std::stringstream& ss) const {
+  ss << "linear-gradient(";
+
+  if (std::holds_alternative<Float>(direction)) {
+    ss << std::get<Float>(direction) << "deg";
+  } else {
+    auto keyword = std::get<GradientKeyword>(direction);
+    switch (keyword) {
+      case GradientKeyword::ToTopRight:
+        ss << "to top right";
+        break;
+      case GradientKeyword::ToBottomRight:
+        ss << "to bottom right";
+        break;
+      case GradientKeyword::ToTopLeft:
+        ss << "to top left";
+        break;
+      case GradientKeyword::ToBottomLeft:
+        ss << "to bottom left";
+        break;
+    }
+  }
+
+  for (const auto& colorStop : colorStops) {
+    ss << ", ";
+    colorStop.toString(ss);
+  }
+
+  ss << ")";
 }
 #endif
 

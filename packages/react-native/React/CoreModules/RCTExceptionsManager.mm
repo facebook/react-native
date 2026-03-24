@@ -77,26 +77,27 @@ RCT_EXPORT_MODULE()
     RCTTriggerReloadCommandListeners(@"JS Crash Reload");
   } else if (!RCT_DEV) {
     NSString *description = [@"Unhandled JS Exception: " stringByAppendingString:message];
-    NSDictionary *errorInfo =
-        @{NSLocalizedDescriptionKey : description, RCTJSStackTraceKey : stack, RCTJSExtraDataKey : extraDataAsJSON};
+    NSDictionary *errorInfo = @{
+      NSLocalizedDescriptionKey : description,
+      RCTJSStackTraceKey : stack == nil ? (id)kCFNull : stack,
+      RCTJSExtraDataKey : extraDataAsJSON == nil ? (id)kCFNull : extraDataAsJSON
+    };
     RCTFatal([NSError errorWithDomain:RCTErrorDomain code:0 userInfo:errorInfo]);
   }
 }
 
 // TODO(T205456329): This method is deprecated in favour of reportException. Delete in v0.77
-RCT_EXPORT_METHOD(reportSoftException
-                  : (NSString *)message stack
-                  : (NSArray<NSDictionary *> *)stack exceptionId
-                  : (double)exceptionId)
+RCT_EXPORT_METHOD(
+    reportSoftException : (NSString *)message stack : (NSArray<NSDictionary *> *)stack exceptionId : (double)
+        exceptionId)
 {
   [self reportSoft:message stack:stack exceptionId:exceptionId extraDataAsJSON:nil];
 }
 
 // TODO(T205456329): This method is deprecated in favour of reportException. Delete in v0.77
-RCT_EXPORT_METHOD(reportFatalException
-                  : (NSString *)message stack
-                  : (NSArray<NSDictionary *> *)stack exceptionId
-                  : (double)exceptionId)
+RCT_EXPORT_METHOD(
+    reportFatalException : (NSString *)message stack : (NSArray<NSDictionary *> *)stack exceptionId : (double)
+        exceptionId)
 {
   [self reportFatal:message stack:stack exceptionId:exceptionId extraDataAsJSON:nil];
 }

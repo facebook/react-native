@@ -13,7 +13,6 @@
 #include <react/renderer/uimanager/consistency/ShadowTreeRevisionProvider.h>
 #include <cstdint>
 #include <memory>
-#include <shared_mutex>
 
 namespace facebook::react {
 
@@ -23,20 +22,16 @@ namespace facebook::react {
  * tree for a given surface ID, only updating it when React commits a new tree
  * or between JS tasks.
  */
-class LazyShadowTreeRevisionConsistencyManager
-    : public ShadowTreeRevisionConsistencyManager,
-      public ShadowTreeRevisionProvider {
+class LazyShadowTreeRevisionConsistencyManager : public ShadowTreeRevisionConsistencyManager,
+                                                 public ShadowTreeRevisionProvider {
  public:
-  explicit LazyShadowTreeRevisionConsistencyManager(
-      ShadowTreeRegistry& shadowTreeRegistry);
+  explicit LazyShadowTreeRevisionConsistencyManager(ShadowTreeRegistry &shadowTreeRegistry);
 
-  void updateCurrentRevision(
-      SurfaceId surfaceId,
-      RootShadowNode::Shared rootShadowNode);
+  std::shared_ptr<const RootShadowNode> updateCurrentRevision(SurfaceId surfaceId);
 
 #pragma mark - ShadowTreeRevisionProvider
 
-  RootShadowNode::Shared getCurrentRevision(SurfaceId surfaceId) override;
+  std::shared_ptr<const RootShadowNode> getCurrentRevision(SurfaceId surfaceId) override;
 
 #pragma mark - ShadowTreeRevisionConsistencyManager
 
@@ -45,9 +40,8 @@ class LazyShadowTreeRevisionConsistencyManager
 
  private:
   std::mutex capturedRootShadowNodesForConsistencyMutex_;
-  std::unordered_map<SurfaceId, RootShadowNode::Shared>
-      capturedRootShadowNodesForConsistency_;
-  ShadowTreeRegistry& shadowTreeRegistry_;
+  std::unordered_map<SurfaceId, RootShadowNode::Shared> capturedRootShadowNodesForConsistency_;
+  ShadowTreeRegistry &shadowTreeRegistry_;
   uint_fast32_t lockCount{0};
 };
 

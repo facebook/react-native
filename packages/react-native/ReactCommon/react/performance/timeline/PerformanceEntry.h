@@ -38,8 +38,7 @@ struct PerformanceMark : AbstractPerformanceEntry {
 };
 
 struct PerformanceMeasure : AbstractPerformanceEntry {
-  static constexpr PerformanceEntryType entryType =
-      PerformanceEntryType::MEASURE;
+  static constexpr PerformanceEntryType entryType = PerformanceEntryType::MEASURE;
 };
 
 struct PerformanceEventTiming : AbstractPerformanceEntry {
@@ -54,13 +53,11 @@ struct PerformanceEventTiming : AbstractPerformanceEntry {
 };
 
 struct PerformanceLongTaskTiming : AbstractPerformanceEntry {
-  static constexpr PerformanceEntryType entryType =
-      PerformanceEntryType::LONGTASK;
+  static constexpr PerformanceEntryType entryType = PerformanceEntryType::LONGTASK;
 };
 
 struct PerformanceResourceTiming : AbstractPerformanceEntry {
-  static constexpr PerformanceEntryType entryType =
-      PerformanceEntryType::RESOURCE;
+  static constexpr PerformanceEntryType entryType = PerformanceEntryType::RESOURCE;
   /** Aligns with `startTime`. */
   HighResTimeStamp fetchStart;
   HighResTimeStamp requestStart;
@@ -83,9 +80,10 @@ using PerformanceEntry = std::variant<
     PerformanceResourceTiming>;
 
 struct PerformanceEntrySorter {
-  bool operator()(const PerformanceEntry& lhs, const PerformanceEntry& rhs) {
+  bool operator()(const PerformanceEntry &lhs, const PerformanceEntry &rhs)
+  {
     return std::visit(
-        [](const auto& left, const auto& right) {
+        [](const auto &left, const auto &right) {
           if (left.startTime != right.startTime) {
             return left.startTime < right.startTime;
           }

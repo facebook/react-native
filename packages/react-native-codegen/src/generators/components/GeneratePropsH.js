@@ -124,6 +124,8 @@ static inline void fromRawValue(const PropsParserContext& context, const RawValu
 static inline std::string toString(const ${enumName} &value) {
   switch (value) {
     ${toCases}
+    default:
+      abort();
   }
 }
 
@@ -154,13 +156,16 @@ static inline void fromRawValue(const PropsParserContext& context, const RawValu
   assert(value.hasType<int>());
   auto integerValue = (int)value;
   switch (integerValue) {${fromCases}
+    default:
+      abort();
   }
-  abort();
 }
 
 static inline std::string toString(const ${enumName} &value) {
   switch (value) {
     ${toCases}
+    default:
+      abort();
   }
 }
 
@@ -168,6 +173,8 @@ static inline std::string toString(const ${enumName} &value) {
 static inline folly::dynamic toDynamic(const ${enumName} &value) {
   switch (value) {
     ${toDynamicCases}
+    default:
+      abort();
   }
 }
 #endif
@@ -344,7 +351,7 @@ function convertValueToEnumOption(value: string): string {
 function generateArrayEnumString(
   componentName: string,
   name: string,
-  options: $ReadOnlyArray<string>,
+  options: ReadonlyArray<string>,
 ): string {
   const enumName = getEnumName(componentName, name);
 
@@ -386,7 +393,7 @@ function generateStringEnum(
 ) {
   const typeAnnotation = prop.typeAnnotation;
   if (typeAnnotation.type === 'StringEnumTypeAnnotation') {
-    const values: $ReadOnlyArray<string> = typeAnnotation.options;
+    const values: ReadonlyArray<string> = typeAnnotation.options;
     const enumName = getEnumName(componentName, prop.name);
 
     const fromCases = values
@@ -424,7 +431,7 @@ function generateIntEnum(
 ) {
   const typeAnnotation = prop.typeAnnotation;
   if (typeAnnotation.type === 'Int32EnumTypeAnnotation') {
-    const values: $ReadOnlyArray<number> = typeAnnotation.options;
+    const values: ReadonlyArray<number> = typeAnnotation.options;
     const enumName = getEnumName(componentName, prop.name);
 
     const fromCases = values
@@ -520,8 +527,9 @@ function generateEnumString(
 
 function generatePropsString(
   componentName: string,
-  props: $ReadOnlyArray<NamedShape<PropTypeAnnotation>>,
-  nameParts: $ReadOnlyArray<string>,
+  props: ReadonlyArray<NamedShape<PropTypeAnnotation>>,
+  nameParts: ReadonlyArray<string>,
+  generateOptionalProperties?: boolean = false,
 ) {
   return props
     .map(prop => {
@@ -535,13 +543,21 @@ function generatePropsString(
         prop,
       );
 
+      if (
+        prop.optional &&
+        prop.typeAnnotation.default == null &&
+        generateOptionalProperties
+      ) {
+        return `std::optional<${nativeType}> ${prop.name}${defaultInitializer};`;
+      }
+
       return `${nativeType} ${prop.name}${defaultInitializer};`;
     })
     .join('\n' + '  ');
 }
 
 function getExtendsImports(
-  extendsProps: $ReadOnlyArray<ExtendsPropsShape>,
+  extendsProps: ReadonlyArray<ExtendsPropsShape>,
 ): Set<string> {
   const imports: Set<string> = new Set();
 
@@ -574,7 +590,12 @@ function generateStructsForComponent(
   componentName: string,
   component: ComponentShape,
 ): string {
-  const structs = generateStructs(componentName, component.props, []);
+  const structs = generateStructs(
+    componentName,
+    component.props,
+    [],
+    component.generateOptionalObjectProperties,
+  );
   const structArray = Array.from(structs.values());
   if (structArray.length < 1) {
     return '';
@@ -584,8 +605,9 @@ function generateStructsForComponent(
 
 function generateStructs(
   componentName: string,
-  properties: $ReadOnlyArray<NamedShape<PropTypeAnnotation>>,
+  properties: ReadonlyArray<NamedShape<PropTypeAnnotation>>,
   nameParts: Array<string>,
+  generateOptionalObjectProperties?: boolean = false,
 ): StructsMap {
   const structs: StructsMap = new Map();
   properties.forEach(prop => {
@@ -598,6 +620,7 @@ function generateStructs(
         componentName,
         elementProperties,
         nameParts.concat([prop.name]),
+        generateOptionalObjectProperties,
       );
       nestedStructs.forEach(function (value, key) {
         structs.set(key, value);
@@ -608,6 +631,7 @@ function generateStructs(
         componentName,
         nameParts.concat([prop.name]),
         typeAnnotation.properties,
+        generateOptionalObjectProperties,
       );
     }
 
@@ -622,6 +646,7 @@ function generateStructs(
         componentName,
         elementProperties,
         nameParts.concat([prop.name]),
+        generateOptionalObjectProperties,
       );
       nestedStructs.forEach(function (value, key) {
         structs.set(key, value);
@@ -633,6 +658,7 @@ function generateStructs(
         componentName,
         nameParts.concat([prop.name]),
         elementProperties,
+        generateOptionalObjectProperties,
       );
 
       // Generate the conversion function for std:vector<Object>.
@@ -663,6 +689,7 @@ function generateStructs(
         componentName,
         elementProperties,
         nameParts.concat([prop.name]),
+        generateOptionalObjectProperties,
       );
       nestedStructs.forEach(function (value, key) {
         structs.set(key, value);
@@ -674,6 +701,7 @@ function generateStructs(
         componentName,
         nameParts.concat([prop.name]),
         elementProperties,
+        generateOptionalObjectProperties,
       );
 
       // Generate the conversion function for std:vector<Object>.
@@ -698,8 +726,9 @@ function generateStructs(
 function generateStruct(
   structs: StructsMap,
   componentName: string,
-  nameParts: $ReadOnlyArray<string>,
-  properties: $ReadOnlyArray<NamedShape<PropTypeAnnotation>>,
+  nameParts: ReadonlyArray<string>,
+  properties: ReadonlyArray<NamedShape<PropTypeAnnotation>>,
+  generateOptionalObjectProperties?: boolean = false,
 ): void {
   const structNameParts = nameParts;
   const structName = generateStructName(componentName, structNameParts);
@@ -707,6 +736,7 @@ function generateStruct(
     componentName,
     properties,
     structNameParts,
+    generateOptionalObjectProperties,
   );
 
   properties.forEach((property: NamedShape<PropTypeAnnotation>) => {
@@ -737,7 +767,13 @@ function generateStruct(
             `Properties are expected for ObjectTypeAnnotation (see ${name} in ${componentName})`,
           );
         }
-        generateStruct(structs, componentName, nameParts.concat([name]), props);
+        generateStruct(
+          structs,
+          componentName,
+          nameParts.concat([name]),
+          props,
+          generateOptionalObjectProperties,
+        );
         return;
       case 'MixedTypeAnnotation':
         return;
@@ -769,9 +805,29 @@ function generateStruct(
         case 'DoubleTypeAnnotation':
         case 'FloatTypeAnnotation':
         case 'MixedTypeAnnotation':
-          return `result["${name}"] = ${name};`;
+          if (
+            property.optional &&
+            property.typeAnnotation.default == null &&
+            generateOptionalObjectProperties
+          ) {
+            return `if (${name}.has_value()) {
+      result["${name}"] = ${name}.value();
+    }`;
+          } else {
+            return `result["${name}"] = ${name};`;
+          }
         default:
-          return `result["${name}"] = ::facebook::react::toDynamic(${name});`;
+          if (
+            property.optional &&
+            property.typeAnnotation.default == null &&
+            generateOptionalObjectProperties
+          ) {
+            return `if (${name}.has_value()) {
+      result["${name}"] = ::facebook::react::toDynamic(${name}.value());
+    }`;
+          } else {
+            return `result["${name}"] = ::facebook::react::toDynamic(${name});`;
+          }
       }
     })
     .join('\n    ');
@@ -827,6 +883,7 @@ module.exports = {
               componentName,
               component.props,
               [],
+              component.generateOptionalProperties,
             );
             const extendString = getClassExtendString(component);
             const extendsImports = getExtendsImports(component.extendsProps);

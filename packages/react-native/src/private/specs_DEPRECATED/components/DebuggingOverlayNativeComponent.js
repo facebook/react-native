@@ -16,7 +16,7 @@ import codegenNativeCommands from '../../../../Libraries/Utilities/codegenNative
 import codegenNativeComponent from '../../../../Libraries/Utilities/codegenNativeComponent';
 import * as React from 'react';
 
-type DebuggingOverlayNativeProps = $ReadOnly<{
+type DebuggingOverlayNativeProps = Readonly<{
   ...ViewProps,
 }>;
 export type DebuggingOverlayNativeComponentType =
@@ -38,11 +38,11 @@ export type ElementRectangle = {
 interface NativeCommands {
   +highlightTraceUpdates: (
     viewRef: React.ElementRef<DebuggingOverlayNativeComponentType>,
-    updates: $ReadOnlyArray<TraceUpdate>,
+    updates: ReadonlyArray<TraceUpdate>,
   ) => void;
   +highlightElements: (
     viewRef: React.ElementRef<DebuggingOverlayNativeComponentType>,
-    elements: $ReadOnlyArray<ElementRectangle>,
+    elements: ReadonlyArray<ElementRectangle>,
   ) => void;
   +clearElementsHighlights: (
     viewRef: React.ElementRef<DebuggingOverlayNativeComponentType>,

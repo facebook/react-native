@@ -20,11 +20,9 @@ namespace facebook::react::jsinspector_modern {
  * A hybrid Java/C++ class that exposes an instance of
  * InspectorPackagerConnection to Java.
  */
-class JCxxInspectorPackagerConnection
-    : public jni::HybridClass<JCxxInspectorPackagerConnection> {
+class JCxxInspectorPackagerConnection : public jni::HybridClass<JCxxInspectorPackagerConnection> {
  public:
-  constexpr static auto kJavaDescriptor =
-      "Lcom/facebook/react/devsupport/CxxInspectorPackagerConnection;";
+  constexpr static auto kJavaDescriptor = "Lcom/facebook/react/devsupport/CxxInspectorPackagerConnection;";
 
   static void registerNatives();
 
@@ -32,7 +30,7 @@ class JCxxInspectorPackagerConnection
 
   void connect();
   void closeQuietly();
-  void sendEventToAllConnections(const std::string& event);
+  void sendEventToAllConnections(const std::string &event);
 
  private:
   friend HybridBase;
@@ -43,16 +41,16 @@ class JCxxInspectorPackagerConnection
    * Private constructor since this class can only be created from Java.
    */
   JCxxInspectorPackagerConnection(
-      const std::string& url,
-      const std::string& deviceName,
-      const std::string& packageName,
+      const std::string &url,
+      const std::string &deviceName,
+      const std::string &packageName,
       jni::alias_ref<JDelegateImpl::javaobject> delegate);
 
   static jni::local_ref<jhybriddata> initHybrid(
       jni::alias_ref<jclass> /*unused*/,
-      const std::string& url,
-      const std::string& deviceName,
-      const std::string& packageName,
+      const std::string &url,
+      const std::string &deviceName,
+      const std::string &packageName,
       jni::alias_ref<JDelegateImpl::javaobject> delegate);
 
   /**

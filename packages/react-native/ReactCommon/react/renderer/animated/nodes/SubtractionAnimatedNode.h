@@ -18,11 +18,10 @@ namespace facebook::react {
 
 class SubtractionAnimatedNode final : public OperatorAnimatedNode {
  public:
-  SubtractionAnimatedNode(
-      Tag tag,
-      const folly::dynamic& config,
-      NativeAnimatedNodesManager& manager)
-      : OperatorAnimatedNode(tag, config, manager) {}
+  SubtractionAnimatedNode(Tag tag, const folly::dynamic &config, NativeAnimatedNodesManager &manager)
+      : OperatorAnimatedNode(tag, config, manager)
+  {
+  }
 
   void update() override;
 };

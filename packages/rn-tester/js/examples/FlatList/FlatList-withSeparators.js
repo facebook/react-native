@@ -42,7 +42,7 @@ const Separator =
     );
   };
 
-export function FlatList_withSeparators(): React.Node {
+export component FlatList_withSeparators() {
   const exampleProps = {
     ItemSeparatorComponent: Separator('lightgreen', 'green'),
   };

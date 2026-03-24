@@ -13,6 +13,9 @@ import type {AnyAttributeType} from '../../Renderer/shims/ReactNativeTypes';
 import * as ReactNativeFeatureFlags from '../../../src/private/featureflags/ReactNativeFeatureFlags';
 import processAspectRatio from '../../StyleSheet/processAspectRatio';
 import processBackgroundImage from '../../StyleSheet/processBackgroundImage';
+import processBackgroundPosition from '../../StyleSheet/processBackgroundPosition';
+import processBackgroundRepeat from '../../StyleSheet/processBackgroundRepeat';
+import processBackgroundSize from '../../StyleSheet/processBackgroundSize';
 import processBoxShadow from '../../StyleSheet/processBoxShadow';
 import processColor from '../../StyleSheet/processColor';
 import processFilter from '../../StyleSheet/processFilter';
@@ -21,7 +24,56 @@ import processTransform from '../../StyleSheet/processTransform';
 import processTransformOrigin from '../../StyleSheet/processTransformOrigin';
 import sizesDiffer from '../../Utilities/differ/sizesDiffer';
 
-const colorAttributes = {process: processColor};
+const nativeCSSParsing = ReactNativeFeatureFlags.enableNativeCSSParsing();
+
+/**
+ * Gated style attribute types. When native CSS parsing is enabled, the JS
+ * processor is bypassed and the raw value is sent directly to native.
+ * These are exported so that other ViewConfigs can reuse them.
+ */
+export const colorAttribute: AnyAttributeType = nativeCSSParsing
+  ? true
+  : {process: processColor};
+
+export const filterAttribute: AnyAttributeType = nativeCSSParsing
+  ? true
+  : {process: processFilter};
+
+export const boxShadowAttribute: AnyAttributeType = nativeCSSParsing
+  ? true
+  : {process: processBoxShadow};
+
+export const backgroundImageAttribute: AnyAttributeType = nativeCSSParsing
+  ? true
+  : {process: processBackgroundImage};
+
+export const backgroundSizeAttribute: AnyAttributeType = nativeCSSParsing
+  ? true
+  : {process: processBackgroundSize};
+
+export const backgroundPositionAttribute: AnyAttributeType = nativeCSSParsing
+  ? true
+  : {process: processBackgroundPosition};
+
+export const backgroundRepeatAttribute: AnyAttributeType = nativeCSSParsing
+  ? true
+  : {process: processBackgroundRepeat};
+
+export const transformAttribute: AnyAttributeType = nativeCSSParsing
+  ? true
+  : {process: processTransform};
+
+export const transformOriginAttribute: AnyAttributeType = nativeCSSParsing
+  ? true
+  : {process: processTransformOrigin};
+
+export const fontVariantAttribute: AnyAttributeType = nativeCSSParsing
+  ? true
+  : {process: processFontVariant};
+
+export const aspectRatioAttribute: AnyAttributeType = nativeCSSParsing
+  ? true
+  : {process: processAspectRatio};
 
 const ReactNativeStyleAttributes: {[string]: AnyAttributeType, ...} = {
   /**
@@ -30,7 +82,7 @@ const ReactNativeStyleAttributes: {[string]: AnyAttributeType, ...} = {
   alignContent: true,
   alignItems: true,
   alignSelf: true,
-  aspectRatio: {process: processAspectRatio},
+  aspectRatio: aspectRatioAttribute,
   borderBottomWidth: true,
   borderEndWidth: true,
   borderLeftWidth: true,
@@ -108,7 +160,7 @@ const ReactNativeStyleAttributes: {[string]: AnyAttributeType, ...} = {
    * Shadow
    */
   elevation: true,
-  shadowColor: colorAttributes,
+  shadowColor: colorAttribute,
   shadowOffset: {diff: sizesDiffer},
   shadowOpacity: true,
   shadowRadius: true,
@@ -116,15 +168,13 @@ const ReactNativeStyleAttributes: {[string]: AnyAttributeType, ...} = {
   /**
    * Transform
    */
-  transform: {process: processTransform},
-  transformOrigin: {process: processTransformOrigin},
+  transform: transformAttribute,
+  transformOrigin: transformOriginAttribute,
 
   /**
    * Filter
    */
-  filter: ReactNativeFeatureFlags.enableNativeCSSParsing()
-    ? true
-    : {process: processFilter},
+  filter: filterAttribute,
 
   /**
    * MixBlendMode
@@ -139,48 +189,61 @@ const ReactNativeStyleAttributes: {[string]: AnyAttributeType, ...} = {
   /*
    * BoxShadow
    */
-  boxShadow: ReactNativeFeatureFlags.enableNativeCSSParsing()
-    ? true
-    : {process: processBoxShadow},
+  boxShadow: boxShadowAttribute,
 
   /**
-   * Linear Gradient
+   * BackgroundImage
    */
-  experimental_backgroundImage: {process: processBackgroundImage},
+  experimental_backgroundImage: backgroundImageAttribute,
+
+  /**
+   * BackgroundSize
+   */
+  experimental_backgroundSize: backgroundSizeAttribute,
+
+  /**
+   * BackgroundPosition
+   */
+  experimental_backgroundPosition: backgroundPositionAttribute,
+
+  /**
+   * BackgroundRepeat
+   */
+  experimental_backgroundRepeat: backgroundRepeatAttribute,
 
   /**
    * View
    */
   backfaceVisibility: true,
-  backgroundColor: colorAttributes,
-  borderBlockColor: colorAttributes,
-  borderBlockEndColor: colorAttributes,
-  borderBlockStartColor: colorAttributes,
-  borderBottomColor: colorAttributes,
+  backgroundColor: colorAttribute,
+  borderBlockColor: colorAttribute,
+  borderBlockEndColor: colorAttribute,
+  borderBlockStartColor: colorAttribute,
+  borderBottomColor: colorAttribute,
   borderBottomEndRadius: true,
   borderBottomLeftRadius: true,
   borderBottomRightRadius: true,
   borderBottomStartRadius: true,
-  borderColor: colorAttributes,
+  borderColor: colorAttribute,
   borderCurve: true,
-  borderEndColor: colorAttributes,
+  borderEndColor: colorAttribute,
   borderEndEndRadius: true,
   borderEndStartRadius: true,
-  borderLeftColor: colorAttributes,
+  borderLeftColor: colorAttribute,
   borderRadius: true,
-  borderRightColor: colorAttributes,
-  borderStartColor: colorAttributes,
+  borderRightColor: colorAttribute,
+  borderStartColor: colorAttribute,
   borderStartEndRadius: true,
   borderStartStartRadius: true,
   borderStyle: true,
-  borderTopColor: colorAttributes,
+  borderTopColor: colorAttribute,
   borderTopEndRadius: true,
   borderTopLeftRadius: true,
   borderTopRightRadius: true,
   borderTopStartRadius: true,
   cursor: true,
   opacity: true,
-  outlineColor: colorAttributes,
+  outlineColor: colorAttribute,
   outlineOffset: true,
   outlineStyle: true,
   outlineWidth: true,
@@ -189,21 +252,21 @@ const ReactNativeStyleAttributes: {[string]: AnyAttributeType, ...} = {
   /**
    * Text
    */
-  color: colorAttributes,
+  color: colorAttribute,
   fontFamily: true,
   fontSize: true,
   fontStyle: true,
-  fontVariant: {process: processFontVariant},
+  fontVariant: fontVariantAttribute,
   fontWeight: true,
   includeFontPadding: true,
   letterSpacing: true,
   lineHeight: true,
   textAlign: true,
   textAlignVertical: true,
-  textDecorationColor: colorAttributes,
+  textDecorationColor: colorAttribute,
   textDecorationLine: true,
   textDecorationStyle: true,
-  textShadowColor: colorAttributes,
+  textShadowColor: colorAttribute,
   textShadowOffset: true,
   textShadowRadius: true,
   textTransform: true,
@@ -214,9 +277,9 @@ const ReactNativeStyleAttributes: {[string]: AnyAttributeType, ...} = {
   /**
    * Image
    */
-  overlayColor: colorAttributes,
+  overlayColor: colorAttribute,
   resizeMode: true,
-  tintColor: colorAttributes,
+  tintColor: colorAttribute,
   objectFit: true,
 };
 

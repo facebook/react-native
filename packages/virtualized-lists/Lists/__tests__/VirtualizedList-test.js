@@ -1374,12 +1374,12 @@ it('does not over-render when there is less than initialNumToRender cells', asyn
     );
   });
 
-  // Check that the first render clamps to the last item when intialNumToRender
+  // Check that the first render clamps to the last item when initialNumToRender
   // goes over it.
   expect(component).toMatchSnapshot();
 });
 
-it('retains intitial render if initialScrollIndex == 0', async () => {
+it('retains initial render if initialScrollIndex == 0', async () => {
   const items = generateItems(20);
   const ITEM_HEIGHT = 10;
 
@@ -1415,7 +1415,7 @@ it('retains intitial render if initialScrollIndex == 0', async () => {
   expect(component).toMatchSnapshot();
 });
 
-it('discards intitial render if initialScrollIndex != 0', async () => {
+it('discards initial render if initialScrollIndex != 0', async () => {
   const items = generateItems(20);
   const ITEM_HEIGHT = 10;
 
@@ -1617,7 +1617,7 @@ it('adjusts render area with non-zero initialScrollIndex', async () => {
     jest.advanceTimersToNextTimer(3);
   });
 
-  // We should expand the render area after receiving a message indcating we
+  // We should expand the render area after receiving a message indicating we
   // arrived at initialScrollIndex.
   expect(component).toMatchSnapshot();
 });
@@ -1711,7 +1711,7 @@ it('renders no spacers up to initialScrollIndex on first render when virtualizat
   });
 
   // There should be no spacers present in an offset initial render with
-  // virtualiztion disabled. Only initialNumToRender items starting at
+  // virtualization disabled. Only initialNumToRender items starting at
   // initialScrollIndex.
   expect(component).toMatchSnapshot();
 });
@@ -1734,7 +1734,7 @@ it('expands first in viewport to render up to maxToRenderPerBatch on initial ren
   });
 
   // When virtualization is disabled we may render items before initialItemIndex
-  // if initialItemIndex + initialNumToRender < maToRenderPerBatch. Expect cells
+  // if initialItemIndex + initialNumToRender < maxToRenderPerBatch. Expect cells
   // 0-3 to be rendered in this example, even though initialScrollIndex is 4.
   expect(component).toMatchSnapshot();
 });

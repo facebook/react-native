@@ -92,8 +92,7 @@ class TextInputTraits final {
    * iOS & Android
    * Default value: `Sentences`.
    */
-  AutocapitalizationType autocapitalizationType{
-      AutocapitalizationType::Sentences};
+  AutocapitalizationType autocapitalizationType{AutocapitalizationType::Sentences};
 
   /*
    * Can be empty (`null` in JavaScript) which means `default`.
@@ -148,8 +147,7 @@ class TextInputTraits final {
    * iOS-only (implemented only on iOS for now)
    * Default value: `Never`.
    */
-  TextInputAccessoryVisibilityMode clearButtonMode{
-      TextInputAccessoryVisibilityMode::Never};
+  TextInputAccessoryVisibilityMode clearButtonMode{TextInputAccessoryVisibilityMode::Never};
 
   /*
    * iOS-only (implemented only on iOS for now)

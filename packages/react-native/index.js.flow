@@ -320,7 +320,6 @@ export * as NativeComponentRegistry from './Libraries/NativeComponent/NativeComp
 export {default as NativeDialogManagerAndroid} from './Libraries/NativeModules/specs/NativeDialogManagerAndroid';
 
 export type {
-  EventSubscription,
   EmitterSubscription,
   NativeEventSubscription,
 } from './Libraries/EventEmitter/NativeEventEmitter';
@@ -408,6 +407,13 @@ export * as TurboModuleRegistry from './Libraries/TurboModule/TurboModuleRegistr
 export {default as UIManager} from './Libraries/ReactNative/UIManager';
 export {unstable_batchedUpdates} from './Libraries/ReactNative/RendererProxy';
 export {default as useAnimatedValue} from './Libraries/Animated/useAnimatedValue';
+export {default as useAnimatedValueXY} from './Libraries/Animated/useAnimatedValueXY';
+export {default as useAnimatedColor} from './Libraries/Animated/useAnimatedColor';
+export type {
+  PressabilityConfig,
+  EventHandlers as PressabilityEventHandlers,
+} from './Libraries/Pressability/Pressability';
+export {default as usePressability} from './Libraries/Pressability/usePressability';
 export {default as useColorScheme} from './Libraries/Utilities/useColorScheme';
 export {default as useWindowDimensions} from './Libraries/Utilities/useWindowDimensions';
 export {default as UTFSequence} from './Libraries/UTFSequence';
@@ -420,6 +426,9 @@ export type {
   BlurEvent,
   FocusEvent,
   GestureResponderEvent,
+  KeyDownEvent,
+  KeyEvent,
+  KeyUpEvent,
   LayoutChangeEvent,
   LayoutRectangle,
   MouseEvent,
@@ -454,6 +463,12 @@ export type {
   PublicRootInstance,
   PublicTextInstance,
 } from './Libraries/ReactPrivate/ReactNativePrivateInterface';
+
+export type {
+  EventSubscription,
+  IEventEmitter,
+} from './Libraries/vendor/emitter/EventEmitter';
+export {default as EventEmitter} from './Libraries/vendor/emitter/EventEmitter';
 
 export {
   default as unstable_VirtualView,

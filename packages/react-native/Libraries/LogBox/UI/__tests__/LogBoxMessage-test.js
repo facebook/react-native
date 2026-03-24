@@ -10,8 +10,8 @@
 
 'use strict';
 
-const render = require('../../../../jest/renderer');
 const LogBoxMessage = require('../LogBoxMessage').default;
+const render = require('@react-native/jest-preset/jest/renderer');
 const React = require('react');
 
 describe('LogBoxMessage', () => {
@@ -172,34 +172,6 @@ describe('LogBoxMessage', () => {
         message={{
           content: 'TransformError normal substitution normal',
           substitutions: [{length: 12, offset: 22}],
-        }}
-      />,
-    );
-
-    expect(output).toMatchSnapshot();
-  });
-
-  it('Should strip "Warning: " without breaking substitution', async () => {
-    const output = await render.create(
-      <LogBoxMessage
-        style={{}}
-        message={{
-          content: 'Warning: normal substitution normal',
-          substitutions: [{length: 12, offset: 16}],
-        }}
-      />,
-    );
-
-    expect(output).toMatchSnapshot();
-  });
-
-  it('Should strip "Warning: Warning: " without breaking substitution', async () => {
-    const output = await render.create(
-      <LogBoxMessage
-        style={{}}
-        message={{
-          content: 'Warning: Warning: normal substitution normal',
-          substitutions: [{length: 12, offset: 25}],
         }}
       />,
     );

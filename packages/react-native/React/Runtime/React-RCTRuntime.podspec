@@ -56,6 +56,7 @@ Pod::Spec.new do |s|
 
   add_dependency(s, "React-RuntimeCore")
   add_dependency(s, "React-RuntimeApple")
+  add_dependency(s, "React-utils", :additional_framework_paths => ["react/utils/platform/ios"])
 
   if use_third_party_jsc()
     s.exclude_files = ["RCTHermesInstanceFactory.{mm,h}", "RCTJscInstanceFactory.{mm,h}"]

@@ -59,7 +59,7 @@ const ModalEventEmitter =
 // destroyed before the callback is fired.
 let uniqueModalIdentifier = 0;
 
-type OrientationChangeEvent = $ReadOnly<{
+type OrientationChangeEvent = Readonly<{
   orientation: 'portrait' | 'landscape',
 }>;
 
@@ -125,7 +125,7 @@ export type ModalPropsIOS = {
    * The `supportedOrientations` prop allows the modal to be rotated to any of the specified orientations.
    * On iOS, the modal is still restricted by what's specified in your app's Info.plist's UISupportedInterfaceOrientations field.
    */
-  supportedOrientations?: ?$ReadOnlyArray<
+  supportedOrientations?: ?ReadonlyArray<
     | 'portrait'
     | 'portrait-upside-down'
     | 'landscape'
@@ -383,7 +383,7 @@ const styles = StyleSheet.create({
   },
 });
 
-type ModalRefProps = $ReadOnly<{
+type ModalRefProps = Readonly<{
   ref?: React.RefSetter<PublicModalInstance>,
 }>;
 

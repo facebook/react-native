@@ -38,7 +38,7 @@ const Item = ({item, separators}: ListRenderItemInfo<string>) => {
   );
 };
 
-export function FlatList_stickyHeaders(): React.Node {
+export component FlatList_stickyHeaders() {
   return (
     <FlatList
       data={DATA}

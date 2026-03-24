@@ -15,7 +15,7 @@ import React from 'react';
 import {useState} from 'react';
 import {Image, ImageBackground, StyleSheet, Text, View} from 'react-native';
 
-type Props = $ReadOnly<{
+type Props = Readonly<{
   style: ViewStyleProp,
   testID?: string,
 }>;

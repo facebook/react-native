@@ -41,6 +41,7 @@ Pod::Spec.new do |s|
   resolve_use_frameworks(s, header_mappings_dir: "../../..", module_name: "React_performancetimeline")
 
   s.dependency "React-featureflags"
+  add_dependency(s, "React-jsinspector", :framework_name => 'jsinspector_modern')
   add_dependency(s, "React-jsinspectortracing", :framework_name => 'jsinspector_moderntracing')
   s.dependency "React-timing"
   s.dependency "React-perflogger"

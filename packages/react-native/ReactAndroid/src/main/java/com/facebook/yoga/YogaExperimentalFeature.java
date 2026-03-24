@@ -10,7 +10,8 @@
 package com.facebook.yoga;
 
 public enum YogaExperimentalFeature {
-  WEB_FLEX_BASIS(0);
+  WEB_FLEX_BASIS(0),
+  FIX_FLEX_BASIS_FIT_CONTENT(1);
 
   private final int mIntValue;
 
@@ -25,6 +26,7 @@ public enum YogaExperimentalFeature {
   public static YogaExperimentalFeature fromInt(int value) {
     switch (value) {
       case 0: return WEB_FLEX_BASIS;
+      case 1: return FIX_FLEX_BASIS_FIT_CONTENT;
       default: throw new IllegalArgumentException("Unknown enum value: " + value);
     }
   }

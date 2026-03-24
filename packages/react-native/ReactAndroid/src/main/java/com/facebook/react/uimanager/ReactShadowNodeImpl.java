@@ -55,8 +55,7 @@ import java.util.Arrays;
  *
  * <p>This class allows for the native view hierarchy to not be an exact copy of the hierarchy
  * received from JS by keeping track of both JS children (e.g. {@link #getChildCount()} and
- * separately native children (e.g. {@link #getNativeChildCount()}). See {@link
- * NativeViewHierarchyOptimizer} for more information.
+ * separately native children (e.g. {@link #getNativeChildCount()}).
  */
 @ReactPropertyHolder
 @LegacyArchitecture(logLevel = LegacyArchitectureLogLevel.ERROR)
@@ -310,16 +309,7 @@ public class ReactShadowNodeImpl implements ReactShadowNode<ReactShadowNodeImpl>
   }
 
   private void updateNativeChildrenCountInParent(int delta) {
-    if (getNativeKind() != NativeKind.PARENT) {
-      ReactShadowNodeImpl parent = getParent();
-      while (parent != null) {
-        parent.mTotalNativeChildren += delta;
-        if (parent.getNativeKind() == NativeKind.PARENT) {
-          break;
-        }
-        parent = parent.getParent();
-      }
-    }
+    // Commented out due to NativeKind removal
   }
 
   /**
@@ -398,32 +388,10 @@ public class ReactShadowNodeImpl implements ReactShadowNode<ReactShadowNodeImpl>
       int newScreenWidth = newAbsoluteRight - newAbsoluteLeft;
       int newScreenHeight = newAbsoluteBottom - newAbsoluteTop;
 
-      boolean layoutHasChanged =
-          newScreenX != mScreenX
-              || newScreenY != mScreenY
-              || newScreenWidth != mScreenWidth
-              || newScreenHeight != mScreenHeight;
-
       mScreenX = newScreenX;
       mScreenY = newScreenY;
       mScreenWidth = newScreenWidth;
       mScreenHeight = newScreenHeight;
-
-      if (layoutHasChanged) {
-        // TODO: T26400974 ReactShadowNode should not depend on nativeViewHierarchyOptimizer
-        if (nativeViewHierarchyOptimizer != null) {
-          nativeViewHierarchyOptimizer.handleUpdateLayout(this);
-        } else {
-          uiViewOperationQueue.enqueueUpdateLayout(
-              getParent().getReactTag(),
-              getReactTag(),
-              getScreenX(),
-              getScreenY(),
-              getScreenWidth(),
-              getScreenHeight(),
-              getLayoutDirection());
-        }
-      }
     }
   }
 
@@ -518,8 +486,7 @@ public class ReactShadowNodeImpl implements ReactShadowNode<ReactShadowNodeImpl>
    */
   @Override
   public final void addNativeChildAt(ReactShadowNodeImpl child, int nativeIndex) {
-    Assertions.assertCondition(getNativeKind() == NativeKind.PARENT);
-    Assertions.assertCondition(child.getNativeKind() != NativeKind.NONE);
+    // Assertions removed due to NativeKind removal
 
     if (mNativeChildren == null) {
       mNativeChildren = new ArrayList<>(4);
@@ -581,13 +548,6 @@ public class ReactShadowNodeImpl implements ReactShadowNode<ReactShadowNodeImpl>
   }
 
   @Override
-  public NativeKind getNativeKind() {
-    return isVirtual() || isLayoutOnly()
-        ? NativeKind.NONE
-        : hoistNativeChildren() ? NativeKind.LEAF : NativeKind.PARENT;
-  }
-
-  @Override
   public final int getTotalNativeChildren() {
     return mTotalNativeChildren;
   }
@@ -611,10 +571,8 @@ public class ReactShadowNodeImpl implements ReactShadowNode<ReactShadowNodeImpl>
   }
 
   private int getTotalNativeNodeContributionToParent() {
-    NativeKind kind = getNativeKind();
-    return kind == NativeKind.NONE
-        ? mTotalNativeChildren
-        : kind == NativeKind.LEAF ? 1 + mTotalNativeChildren : 1; // kind == NativeKind.PARENT
+    // Logic removed due to NativeKind removal
+    return 0;
   }
 
   @Override
@@ -642,13 +600,12 @@ public class ReactShadowNodeImpl implements ReactShadowNode<ReactShadowNodeImpl>
    * in this subtree (which means that the given child will be a sibling of theirs in the final
    * native hierarchy since they'll get attached to the same native parent).
    *
-   * <p>Basically, a view might have children that have been optimized away by {@link
-   * NativeViewHierarchyOptimizer}. Since those children will then add their native children to this
-   * view, we now have ranges of native children that correspond to single unoptimized children. The
-   * purpose of this method is to return the index within the native children that corresponds to
-   * the **start** of the native children that belong to the given child. Also, note that all of the
-   * children of a view might be optimized away, so this could return the same value for multiple
-   * different children.
+   * <p>Basically, a view might have children that have been optimized away. Since those children
+   * will then add their native children to this view, we now have ranges of native children that
+   * correspond to single unoptimized children. The purpose of this method is to return the index
+   * within the native children that corresponds to the **start** of the native children that belong
+   * to the given child. Also, note that all of the children of a view might be optimized away, so
+   * this could return the same value for multiple different children.
    *
    * <p>Example. Native children are represented by (N) where N is the no-opt child they came from.
    * If no children are optimized away it'd look like this: (0) (1) (2) (3) ... (n)

@@ -25,7 +25,7 @@ type ColorChangedEvent = {
   },
 };
 
-type NativeProps = $ReadOnly<{
+type NativeProps = Readonly<{
   ...ViewProps,
   opacity?: number,
   color?: string,
@@ -57,7 +57,7 @@ export function callNativeMethodToChangeBackgroundColor(
 
 export function callNativeMethodToAddOverlays(
   viewRef: React.ElementRef<MyLegacyViewType> | null,
-  overlayColors: $ReadOnlyArray<string>,
+  overlayColors: ReadonlyArray<string>,
 ) {
   if (!viewRef) {
     console.log('viewRef is null');

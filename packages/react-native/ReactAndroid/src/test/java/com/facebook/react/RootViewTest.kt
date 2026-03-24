@@ -12,38 +12,24 @@ package com.facebook.react
 import android.app.Activity
 import android.graphics.Insets
 import android.graphics.Rect
-import android.view.MotionEvent
 import android.view.WindowInsets
 import android.view.WindowManager
 import com.facebook.react.bridge.Arguments
 import com.facebook.react.bridge.BridgeReactContext
 import com.facebook.react.bridge.CatalystInstance
-import com.facebook.react.bridge.JavaOnlyMap
 import com.facebook.react.bridge.ReactTestHelper
-import com.facebook.react.bridge.WritableArray
-import com.facebook.react.common.SystemClock
 import com.facebook.react.internal.featureflags.ReactNativeFeatureFlagsForTests
 import com.facebook.react.uimanager.DisplayMetricsHolder
 import com.facebook.react.uimanager.UIManagerModule
-import com.facebook.react.uimanager.events.EventDispatcher
-import com.facebook.react.uimanager.events.RCTEventEmitter
-import com.facebook.react.uimanager.events.TouchEvent
 import com.facebook.testutils.shadows.ShadowArguments
-import java.util.Date
 import org.assertj.core.api.Assertions.*
 import org.junit.Before
 import org.junit.Test
 import org.junit.runner.RunWith
-import org.mockito.kotlin.KArgumentCaptor
-import org.mockito.kotlin.any
-import org.mockito.kotlin.argumentCaptor
-import org.mockito.kotlin.eq
 import org.mockito.kotlin.mock
-import org.mockito.kotlin.reset
 import org.mockito.kotlin.spy
 import org.mockito.kotlin.times
 import org.mockito.kotlin.verify
-import org.mockito.kotlin.verifyNoMoreInteractions
 import org.mockito.kotlin.whenever
 import org.robolectric.Robolectric
 import org.robolectric.RobolectricTestRunner
@@ -57,12 +43,6 @@ class RootViewTest {
   private lateinit var reactContext: BridgeReactContext
   private lateinit var catalystInstanceMock: CatalystInstance
 
-  private lateinit var downEventCaptor: KArgumentCaptor<TouchEvent>
-  private lateinit var downActionTouchesArgCaptor: KArgumentCaptor<WritableArray>
-
-  private lateinit var upEventCaptor: KArgumentCaptor<TouchEvent>
-  private lateinit var upActionTouchesArgCaptor: KArgumentCaptor<WritableArray>
-
   @Before
   fun setUp() {
     ReactNativeFeatureFlagsForTests.setUp()
@@ -75,108 +55,6 @@ class RootViewTest {
     val uiManagerModuleMock: UIManagerModule = mock()
     whenever(catalystInstanceMock.getNativeModule(UIManagerModule::class.java))
         .thenReturn(uiManagerModuleMock)
-
-    downEventCaptor = argumentCaptor()
-    downActionTouchesArgCaptor = argumentCaptor()
-
-    upEventCaptor = argumentCaptor()
-    upActionTouchesArgCaptor = argumentCaptor()
-  }
-
-  @Test
-  fun testTouchEmitter() {
-    val instanceManager: ReactInstanceManager = mock()
-    whenever(instanceManager.currentReactContext).thenReturn(reactContext)
-    val uiManager: UIManagerModule = mock()
-    val eventDispatcher: EventDispatcher = mock()
-    val eventEmitterModuleMock: RCTEventEmitter = mock()
-    whenever(catalystInstanceMock.getNativeModule(UIManagerModule::class.java))
-        .thenReturn(uiManager)
-    whenever(uiManager.eventDispatcher).thenReturn(eventDispatcher)
-
-    // RootView IDs is React Native follow the 11, 21, 31, ... progression.
-    val rootViewId = 11
-    val rootView = ReactRootView(reactContext)
-    rootView.id = rootViewId
-    rootView.setRootViewTag(rootViewId)
-    rootView.startReactApplication(instanceManager, "")
-    rootView.simulateAttachForTesting()
-    val ts = SystemClock.currentTimeMillis()
-
-    // Test ACTION_DOWN event
-    rootView.onTouchEvent(MotionEvent.obtain(100, ts, MotionEvent.ACTION_DOWN, 0f, 0f, 0))
-
-    verify(eventDispatcher).dispatchEvent(downEventCaptor.capture())
-    verifyNoMoreInteractions(eventDispatcher)
-    downEventCaptor.firstValue.dispatch(eventEmitterModuleMock)
-    verify(eventEmitterModuleMock)
-        .receiveTouches(eq("topTouchStart"), downActionTouchesArgCaptor.capture(), any())
-    verifyNoMoreInteractions(eventEmitterModuleMock)
-    assertThat(downActionTouchesArgCaptor.firstValue.size()).isEqualTo(1)
-    assertThat(downActionTouchesArgCaptor.firstValue.getMap(0))
-        .isEqualTo(
-            JavaOnlyMap.of(
-                "pageX",
-                0.0,
-                "pageY",
-                0.0,
-                "locationX",
-                0.0,
-                "locationY",
-                0.0,
-                "target",
-                rootViewId,
-                "timestamp",
-                ts.toDouble(),
-                "identifier",
-                0.0,
-                "targetSurface",
-                -1,
-            )
-        )
-
-    // Test ACTION_UP event
-    reset(eventEmitterModuleMock, eventDispatcher)
-
-    rootView.onTouchEvent(MotionEvent.obtain(50, ts, MotionEvent.ACTION_UP, 0f, 0f, 0))
-
-    verify(eventDispatcher).dispatchEvent(upEventCaptor.capture())
-    verifyNoMoreInteractions(eventDispatcher)
-    upEventCaptor.firstValue.dispatch(eventEmitterModuleMock)
-    verify(eventEmitterModuleMock)
-        .receiveTouches(eq("topTouchEnd"), upActionTouchesArgCaptor.capture(), any())
-    verifyNoMoreInteractions(eventEmitterModuleMock)
-    assertThat(upActionTouchesArgCaptor.firstValue.size()).isEqualTo(1)
-    assertThat(upActionTouchesArgCaptor.firstValue.getMap(0))
-        .isEqualTo(
-            JavaOnlyMap.of(
-                "pageX",
-                0.0,
-                "pageY",
-                0.0,
-                "locationX",
-                0.0,
-                "locationY",
-                0.0,
-                "target",
-                rootViewId,
-                "timestamp",
-                ts.toDouble(),
-                "identifier",
-                0.0,
-                "targetSurface",
-                -1,
-            )
-        )
-
-    // Test other action
-    reset(eventDispatcher)
-
-    rootView.onTouchEvent(
-        MotionEvent.obtain(50, Date().time, MotionEvent.ACTION_HOVER_MOVE, 0f, 0f, 0)
-    )
-
-    verifyNoMoreInteractions(eventDispatcher)
   }
 
   @Test

@@ -129,9 +129,7 @@ public class ReactImageView(
     if (!shouldNotify) {
       downloadListener = null
     } else {
-      val eventDispatcher =
-          UIManagerHelper.getEventDispatcherForReactTag((context as ReactContext), id)
-
+      val eventDispatcher = UIManagerHelper.getEventDispatcher((context as ReactContext))
       downloadListener =
           object : ReactImageDownloadListener<ImageInfo>() {
             override fun onProgressChange(loaded: Int, total: Int) {
@@ -372,15 +370,17 @@ public class ReactImageView(
   public override fun hasOverlappingRendering(): Boolean = false
 
   public override fun onDraw(canvas: Canvas) {
-    BackgroundStyleApplicator.clipToPaddingBox(this, canvas)
-    try {
-      super.onDraw(canvas)
-    } catch (e: RuntimeException) {
-      // Only provide updates if downloadListener is set (shouldNotify is true)
-      if (downloadListener != null) {
-        val eventDispatcher =
-            UIManagerHelper.getEventDispatcherForReactTag(context as ReactContext, id)
-        eventDispatcher?.dispatchEvent(createErrorEvent(UIManagerHelper.getSurfaceId(this), id, e))
+    BackgroundStyleApplicator.clipToPaddingBoxWithAntiAliasing(this, canvas) {
+      try {
+        super.onDraw(canvas)
+      } catch (e: RuntimeException) {
+        // Only provide updates if downloadListener is set (shouldNotify is true)
+        if (downloadListener != null) {
+          val eventDispatcher = UIManagerHelper.getEventDispatcher(context as ReactContext)
+          eventDispatcher?.dispatchEvent(
+              createErrorEvent(UIManagerHelper.getSurfaceId(this), id, e)
+          )
+        }
       }
     }
   }
@@ -411,14 +411,16 @@ public class ReactImageView(
 
     // We store this in a local variable as it's coming from super.getHierarchy()
     val hierarchy = this.hierarchy
-    hierarchy.actualImageScaleType = scaleType
+    hierarchy.setActualImageScaleType(scaleType)
 
-    if (defaultImageDrawable != null) {
-      hierarchy.setPlaceholderImage(defaultImageDrawable, scaleType)
+    val defaultDrawable = defaultImageDrawable
+    if (defaultDrawable != null) {
+      hierarchy.setPlaceholderImage(defaultDrawable, scaleType)
     }
 
-    if (loadingImageDrawable != null) {
-      hierarchy.setPlaceholderImage(loadingImageDrawable, ScalingUtils.ScaleType.CENTER)
+    val loadingDrawable = loadingImageDrawable
+    if (loadingDrawable != null) {
+      hierarchy.setPlaceholderImage(loadingDrawable, ScalingUtils.ScaleType.CENTER)
     }
 
     val roundingParams = hierarchy.roundingParams

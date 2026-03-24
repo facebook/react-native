@@ -66,6 +66,13 @@ object PropertyUtils {
   const val INTERNAL_REACT_WINDOWS_BASH = "react.internal.windowsBashPath"
 
   /**
+   * Controls whether to use Hermes from stable builds. This will force hermes version set in the
+   * sdks/hermes-engine/version.properties file to be used. This has a higher priority than
+   * react.internal.useHermesNightly.
+   */
+  const val INTERNAL_USE_HERMES_STABLE = "react.internal.useHermesStable"
+
+  /**
    * Internal property to force the build to use Hermes from the latest nightly. This speeds up the
    * build at the cost of not testing the latest integration against Hermes.
    */
@@ -81,8 +88,9 @@ object PropertyUtils {
   const val INTERNAL_VERSION_NAME = "VERSION_NAME"
 
   /**
-   * Internal property, shared with iOS, used to control the version name of Hermes Engine. This is
-   * stored in sdks/hermes-engine/version.properties
+   * Internal properties, shared with iOS, used to control the version name of Hermes Engine. They
+   * are stored in sdks/hermes-engine/version.properties
    */
+  const val INTERNAL_HERMES_VERSION_NAME = "HERMES_VERSION_NAME"
   const val INTERNAL_HERMES_V1_VERSION_NAME = "HERMES_V1_VERSION_NAME"
 }

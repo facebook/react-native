@@ -8,10 +8,11 @@
  * @format
  */
 
+import type {ReactTestRendererJSON} from '../../Utilities/ReactNativeTestTools';
 import type {ReactTestRenderer} from 'react-test-renderer';
 
-import {create} from '../../../jest/renderer';
 import flattenStyle from '../../StyleSheet/flattenStyle';
+import {create} from '@react-native/jest-preset/jest/renderer';
 import * as React from 'react';
 
 const Text = require('../Text').default;
@@ -24,10 +25,36 @@ function omitRefAndFlattenStyle(instance: ReactTestRenderer) {
   if (json == null) {
     throw new Error('Expected `instance.toJSON()` to be non-null');
   }
-  // Omit `ref` for forward-compatibility with `enableRefAsProp`.
-  delete json.props.ref;
-  json.props.style = flattenStyle(json.props.style);
-  return json;
+
+  function processNode(node: ReactTestRendererJSON): ReactTestRendererJSON {
+    if (node == null || typeof node !== 'object') {
+      return node;
+    }
+
+    if (node.props) {
+      // Omit `ref` for forward-compatibility with `enableRefAsProp`.
+      delete node.props.ref;
+      // Omit event handlers
+      delete node.props.onClick;
+      delete node.props.onResponderGrant;
+      delete node.props.onResponderMove;
+      delete node.props.onResponderRelease;
+      delete node.props.onResponderTerminate;
+      delete node.props.onResponderTerminationRequest;
+      delete node.props.onStartShouldSetResponder;
+      // Flatten style
+      node.props.style = flattenStyle(node.props.style);
+    }
+
+    // Process children recursively
+    if (node.children) {
+      node.children = node.children.map(processNode);
+    }
+
+    return node;
+  }
+
+  return processNode(json);
 }
 
 describe('Text', () => {
@@ -39,12 +66,227 @@ describe('Text', () => {
         accessible={true}
         allowFontScaling={true}
         ellipsizeMode="tail"
+        style={
+          Object {
+            "overflow": "hidden",
+          }
+        }
       />
     `);
   });
 
   it('has displayName', () => {
     expect(Text.displayName).toEqual('Text');
+  });
+
+  describe('accessibilityRole with onPress/onLongPress', () => {
+    it('automatically sets accessibilityRole="link" when onPress is provided', async () => {
+      const instance = await create(
+        <Text onPress={() => {}}>Clickable Text</Text>,
+      );
+
+      expect(omitRefAndFlattenStyle(instance)).toMatchInlineSnapshot(`
+        <RCTText
+          accessibilityRole="link"
+          accessible={true}
+          allowFontScaling={true}
+          ellipsizeMode="tail"
+          isHighlighted={false}
+          isPressable={true}
+          style={
+            Object {
+              "overflow": "hidden",
+            }
+          }
+        >
+          Clickable Text
+        </RCTText>
+      `);
+    });
+
+    it('automatically sets accessibilityRole="link" when onLongPress is provided', async () => {
+      const instance = await create(
+        <Text onLongPress={() => {}}>Long Press Text</Text>,
+      );
+
+      expect(omitRefAndFlattenStyle(instance)).toMatchInlineSnapshot(`
+        <RCTText
+          accessibilityRole="link"
+          accessible={true}
+          allowFontScaling={true}
+          ellipsizeMode="tail"
+          isHighlighted={false}
+          isPressable={true}
+          style={
+            Object {
+              "overflow": "hidden",
+            }
+          }
+        >
+          Long Press Text
+        </RCTText>
+      `);
+    });
+
+    it('automatically sets accessibilityRole="link" when onStartShouldSetResponder is provided', async () => {
+      const instance = await create(
+        <Text onStartShouldSetResponder={() => true}>Responder Text</Text>,
+      );
+
+      expect(omitRefAndFlattenStyle(instance)).toMatchInlineSnapshot(`
+        <RCTText
+          accessibilityRole="link"
+          accessible={true}
+          allowFontScaling={true}
+          ellipsizeMode="tail"
+          isHighlighted={false}
+          isPressable={true}
+          style={
+            Object {
+              "overflow": "hidden",
+            }
+          }
+        >
+          Responder Text
+        </RCTText>
+      `);
+    });
+
+    it('respects explicit accessibilityRole', async () => {
+      const instance = await create(
+        <Text accessibilityRole="button" onPress={() => {}}>
+          Explicit Button Role
+        </Text>,
+      );
+
+      expect(omitRefAndFlattenStyle(instance)).toMatchInlineSnapshot(`
+        <RCTText
+          accessibilityRole="button"
+          accessible={true}
+          allowFontScaling={true}
+          ellipsizeMode="tail"
+          isHighlighted={false}
+          isPressable={true}
+          style={
+            Object {
+              "overflow": "hidden",
+            }
+          }
+        >
+          Explicit Button Role
+        </RCTText>
+      `);
+    });
+
+    it('respects explicit role prop', async () => {
+      // $FlowFixMe[prop-missing]
+      const instance = await create(
+        <Text onPress={() => {}} role="button">
+          Explicit Role Prop
+        </Text>,
+      );
+
+      expect(omitRefAndFlattenStyle(instance)).toMatchInlineSnapshot(`
+        <RCTText
+          accessible={true}
+          allowFontScaling={true}
+          ellipsizeMode="tail"
+          isHighlighted={false}
+          isPressable={true}
+          role="button"
+          style={
+            Object {
+              "overflow": "hidden",
+            }
+          }
+        >
+          Explicit Role Prop
+        </RCTText>
+      `);
+    });
+
+    it('does not automatically set accessibilityRole when disabled', async () => {
+      const instance = await create(
+        <Text disabled onPress={() => {}}>
+          Disabled Pressable Text
+        </Text>,
+      );
+
+      expect(omitRefAndFlattenStyle(instance)).toMatchInlineSnapshot(`
+        <RCTText
+          accessibilityState={
+            Object {
+              "disabled": true,
+            }
+          }
+          accessible={true}
+          allowFontScaling={true}
+          disabled={true}
+          ellipsizeMode="tail"
+          style={
+            Object {
+              "overflow": "hidden",
+            }
+          }
+        >
+          Disabled Pressable Text
+        </RCTText>
+      `);
+    });
+
+    it('automatically sets accessibilityRole="link" for nested Text with onPress', async () => {
+      const instance = await create(
+        <Text>
+          Parent Text<Text onPress={() => {}}>Nested Clickable Link</Text>
+        </Text>,
+      );
+
+      expect(omitRefAndFlattenStyle(instance)).toMatchInlineSnapshot(`
+        <RCTText
+          accessible={true}
+          allowFontScaling={true}
+          ellipsizeMode="tail"
+          style={
+            Object {
+              "overflow": "hidden",
+            }
+          }
+        >
+          Parent Text
+          <RCTText
+            accessibilityRole="link"
+            isHighlighted={false}
+            isPressable={true}
+            style={
+              Object {
+                "overflow": "hidden",
+              }
+            }
+          >
+            Nested Clickable Link
+          </RCTText>
+        </RCTText>
+      `);
+    });
+
+    it('does not set accessibilityRole when no press handlers are provided', async () => {
+      const instance = await create(<Text>Non-pressable Text</Text>);
+
+      expect(omitRefAndFlattenStyle(instance)).toMatchInlineSnapshot(`
+        <RCTText
+          accessible={true}
+          allowFontScaling={true}
+          ellipsizeMode="tail"
+          style={
+            Object {
+              "overflow": "hidden",
+            }
+          }
+        >
+          Non-pressable Text
+        </RCTText>
+      `);
+    });
   });
 });
 
@@ -65,6 +307,11 @@ describe('Text compat with web', () => {
         allowFontScaling={true}
         ellipsizeMode="tail"
         nativeID="id"
+        style={
+          Object {
+            "overflow": "hidden",
+          }
+        }
         tabIndex={0}
         testID="testID"
       />
@@ -182,6 +429,11 @@ describe('Text compat with web', () => {
         ellipsizeMode="tail"
         importantForAccessibility="no-hide-descendants"
         role="main"
+        style={
+          Object {
+            "overflow": "hidden",
+          }
+        }
       />
     `);
   });
@@ -212,6 +464,7 @@ describe('Text compat with web', () => {
             "display": "flex",
             "flex": 1,
             "marginInlineStart": 10,
+            "overflow": "hidden",
             "textAlignVertical": "center",
             "userSelect": undefined,
             "verticalAlign": undefined,

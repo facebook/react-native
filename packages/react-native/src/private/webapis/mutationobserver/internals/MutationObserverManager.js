@@ -38,7 +38,7 @@ let isConnected: boolean = false;
 
 const registeredMutationObservers: Map<
   MutationObserverId,
-  $ReadOnly<{observer: MutationObserver, callback: MutationObserverCallback}>,
+  Readonly<{observer: MutationObserver, callback: MutationObserverCallback}>,
 > = new Map();
 
 /**

@@ -19,7 +19,6 @@ import com.facebook.react.bridge.NativeArray
 import com.facebook.react.bridge.NativeArrayInterface
 import com.facebook.react.bridge.NativeModule
 import com.facebook.react.bridge.NativeModuleRegistry
-import com.facebook.react.bridge.NotThreadSafeBridgeIdleDebugListener
 import com.facebook.react.bridge.RuntimeExecutor
 import com.facebook.react.bridge.RuntimeScheduler
 import com.facebook.react.bridge.UIManager
@@ -98,13 +97,16 @@ internal class BridgelessCatalystInstance(private val reactHost: ReactHostImpl) 
 
   @get:Deprecated("Deprecated in Java")
   override val javaScriptContextHolder: JavaScriptContextHolder
-    get() = reactHost.javaScriptContextHolder!!
+    get() =
+        requireNotNull(reactHost.javaScriptContextHolder) {
+          "javaScriptContextHolder is not available"
+        }
 
   @Suppress("INAPPLICABLE_JVM_NAME")
   @get:Deprecated("Deprecated in Java")
   @get:JvmName("getJSCallInvokerHolder") // This is needed to keep backward compatibility
   override val jsCallInvokerHolder: CallInvokerHolder
-    get() = reactHost.jsCallInvokerHolder!!
+    get() = requireNotNull(reactHost.jsCallInvokerHolder) { "jsCallInvokerHolder is not available" }
 
   override val nativeMethodCallInvokerHolder: NativeMethodCallInvokerHolder
     get() =
@@ -125,7 +127,10 @@ internal class BridgelessCatalystInstance(private val reactHost: ReactHostImpl) 
     get() = reactHost.nativeModules
 
   override val reactQueueConfiguration: ReactQueueConfiguration
-    get() = reactHost.reactQueueConfiguration!!
+    get() =
+        requireNotNull(reactHost.reactQueueConfiguration) {
+          "reactQueueConfiguration is not available"
+        }
 
   override val runtimeExecutor: RuntimeExecutor?
     get() = reactHost.runtimeExecutor
@@ -139,14 +144,6 @@ internal class BridgelessCatalystInstance(private val reactHost: ReactHostImpl) 
 
   override val sourceURL: String
     get() = throw UnsupportedOperationException("Unimplemented method 'getSourceURL'")
-
-  override fun addBridgeIdleDebugListener(listener: NotThreadSafeBridgeIdleDebugListener) {
-    throw UnsupportedOperationException("Unimplemented method 'addBridgeIdleDebugListener'")
-  }
-
-  override fun removeBridgeIdleDebugListener(listener: NotThreadSafeBridgeIdleDebugListener) {
-    throw UnsupportedOperationException("Unimplemented method 'removeBridgeIdleDebugListener'")
-  }
 
   override fun registerSegment(segmentId: Int, path: String) {
     throw UnsupportedOperationException("Unimplemented method 'registerSegment'")

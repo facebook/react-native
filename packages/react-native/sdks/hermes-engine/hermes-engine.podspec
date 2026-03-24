@@ -20,12 +20,21 @@ end
 
 # package.json
 package = JSON.parse(File.read(File.join(react_native_path, "package.json")))
-# TODO: T231755000 read hermes version from version.properties when consuming hermes
-version = package['version']
+versionProperties = Hash[*File.read("version.properties").split(/[=\n]+/)]
 
-if ENV['RCT_HERMES_V1_ENABLED'] == "1"
-  versionProperties = Hash[*File.read("version.properties").split(/[=\n]+/)]
+if ENV['RCT_HERMES_V1_ENABLED'] == "0"
+  version = versionProperties['HERMES_VERSION_NAME']
+else
   version = versionProperties['HERMES_V1_VERSION_NAME']
+end
+
+# Local monorepo build
+# We don't want to build Hermes V1 from source
+if ENV['RCT_HERMES_V1_ENABLED'] == "0" && package['version'] == "1000.0.0" then
+  hermesCompilerVersion = package['dependencies']['hermes-compiler']
+  if hermesCompilerVersion != "0.0.0" then
+    version = hermesCompilerVersion
+  end
 end
 
 source_type = hermes_source_type(version, react_native_path)
@@ -60,7 +69,15 @@ Pod::Spec.new do |spec|
 
     spec.subspec 'Pre-built' do |ss|
       ss.preserve_paths = ["destroot/bin/*"].concat(["**/*.{h,c,cpp}"])
-      ss.source_files = "destroot/include/hermes/**/*.h"
+      if ENV["RCT_HERMES_V1_ENABLED"] == "0"
+        ss.source_files = "destroot/include/hermes/**/*.h"
+      else
+        # Hermes v1 is shipping a jsi/hermes.h header which is imported by the hermes.h header
+        # and that file is not present in React Native's JSI
+        # (see https://github.com/facebook/react-native/tree/main/packages/react-native/ReactCommon/jsi/jsi/ where there is
+        # hermes-interface.h but not hermes.h)
+        ss.source_files = ["destroot/include/hermes/**/*.h", "destroot/include/jsi/hermes.h"]
+      end
       ss.header_mappings_dir = "destroot/include"
       ss.ios.vendored_frameworks = "destroot/Library/Frameworks/universal/hermesvm.xcframework"
       ss.visionos.vendored_frameworks = "destroot/Library/Frameworks/universal/hermesvm.xcframework"
@@ -70,13 +87,9 @@ Pod::Spec.new do |spec|
 
     # When using the local prebuilt tarball, it should include hermesc compatible with the used VM.
     # In other cases, when using Hermes V1, the prebuilt versioned binaries can be used.
-    # TODO: T236142916 hermesc should be consumed from NPM even when not using Hermes V1
-    if source_type != HermesEngineSourceType::LOCAL_PREBUILT_TARBALL && ENV['RCT_HERMES_V1_ENABLED'] == "1"
+    if source_type != HermesEngineSourceType::LOCAL_PREBUILT_TARBALL
       hermes_compiler_path = File.dirname(Pod::Executable.execute_command('node', ['-p',
-        'require.resolve(
-        "hermes-compiler",
-        {paths: [process.argv[1]]}
-        )', __dir__]).strip
+        "require.resolve(\"hermes-compiler\", {paths: [\"#{react_native_path}\"]})", __dir__]).strip
       )
 
       spec.user_target_xcconfig = {
@@ -127,7 +140,7 @@ Pod::Spec.new do |spec|
       ss.header_dir = 'hermes/Public'
     end
 
-    if ENV['RCT_HERMES_V1_ENABLED'] != "1"
+    if ENV['RCT_HERMES_V1_ENABLED'] == "0"
       spec.subspec 'inspector' do |ss|
         ss.source_files = ''
         ss.public_header_files = 'API/hermes/inspector/*.h'

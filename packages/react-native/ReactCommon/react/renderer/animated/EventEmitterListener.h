@@ -32,10 +32,11 @@ class EventListenerContainerT {
    * Returns true if event was handled by the listener, false to continue
    * default dispatch.
    */
-  bool willDispatchEvent(TArgs... args) {
+  bool willDispatchEvent(TArgs... args)
+  {
     std::shared_lock lock(mutex_);
     bool handled = false;
-    for (const auto& listener : eventListeners_) {
+    for (const auto &listener : eventListeners_) {
       handled = (*listener)(args...);
       if (handled) {
         break;
@@ -44,16 +45,16 @@ class EventListenerContainerT {
     return handled;
   }
 
-  void addListener(std::shared_ptr<const EventListenerT<TArgs...>> listener) {
+  void addListener(std::shared_ptr<const EventListenerT<TArgs...>> listener)
+  {
     std::unique_lock lock(mutex_);
     eventListeners_.push_back(std::move(listener));
   }
 
-  void removeListener(
-      const std::shared_ptr<const EventListenerT<TArgs...>>& listener) {
+  void removeListener(const std::shared_ptr<const EventListenerT<TArgs...>> &listener)
+  {
     std::unique_lock lock(mutex_);
-    auto it =
-        std::find(eventListeners_.begin(), eventListeners_.end(), listener);
+    auto it = std::find(eventListeners_.begin(), eventListeners_.end(), listener);
     if (it != eventListeners_.end()) {
       eventListeners_.erase(it);
     }
@@ -64,9 +65,7 @@ class EventListenerContainerT {
   std::vector<std::shared_ptr<const EventListenerT<TArgs...>>> eventListeners_;
 };
 
-using EventEmitterListener =
-    EventListenerT<Tag, const std::string&, const EventPayload&>;
-using EventEmitterListenerContainer =
-    EventListenerContainerT<Tag, const std::string&, const EventPayload&>;
+using EventEmitterListener = EventListenerT<Tag, const std::string &, const EventPayload &>;
+using EventEmitterListenerContainer = EventListenerContainerT<Tag, const std::string &, const EventPayload &>;
 
 } // namespace facebook::react

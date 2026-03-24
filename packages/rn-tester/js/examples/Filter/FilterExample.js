@@ -15,12 +15,20 @@ import type {ViewStyleProp} from 'react-native/Libraries/StyleSheet/StyleSheet';
 
 import React from 'react';
 import {useState} from 'react';
-import {Animated, Button, Image, StyleSheet, Text, View} from 'react-native';
+import {
+  Animated,
+  Button,
+  Image,
+  StyleSheet,
+  Text,
+  View,
+  useAnimatedValue,
+} from 'react-native';
 
 const alphaHotdog = require('../../assets/alpha-hotdog.png');
 const hotdog = require('../../assets/hotdog.jpg');
 
-type Props = $ReadOnly<{
+type Props = Readonly<{
   style?: ViewStyleProp,
   testID?: string,
   imageSource?: number,
@@ -127,7 +135,10 @@ exports.examples = [
     name: 'opacity',
     render(): React.Node {
       return (
-        <StaticViewAndImageComparison style={{filter: [{opacity: 0.5}]}} />
+        <StaticViewAndImageComparison
+          style={{filter: [{opacity: 0.5}]}}
+          testID="filter-test-opacity"
+        />
       );
     },
   },
@@ -135,10 +146,12 @@ exports.examples = [
     title: 'Contrast',
     description: 'contrast(0.5)',
     name: 'contrast',
-    platform: 'android',
     render(): React.Node {
       return (
-        <StaticViewAndImageComparison style={{filter: [{contrast: 0.5}]}} />
+        <StaticViewAndImageComparison
+          style={{filter: [{contrast: 0.5}]}}
+          testID="filter-test-contrast"
+        />
       );
     },
   },
@@ -148,17 +161,24 @@ exports.examples = [
     name: 'sepia',
     platform: 'android',
     render(): React.Node {
-      return <StaticViewAndImageComparison style={{filter: [{sepia: 0.5}]}} />;
+      return (
+        <StaticViewAndImageComparison
+          style={{filter: [{sepia: 0.5}]}}
+          testID="filter-test-sepia"
+        />
+      );
     },
   },
   {
     title: 'Grayscale',
     description: 'grayscale(0.5)',
     name: 'grayscale',
-    platform: 'android',
     render(): React.Node {
       return (
-        <StaticViewAndImageComparison style={{filter: [{grayscale: 0.5}]}} />
+        <StaticViewAndImageComparison
+          style={{filter: [{grayscale: 0.5}]}}
+          testID="filter-test-grayscale"
+        />
       );
     },
   },
@@ -166,20 +186,24 @@ exports.examples = [
     title: 'Saturate',
     description: 'saturate(4)',
     name: 'saturate',
-    platform: 'android',
     render(): React.Node {
-      return <StaticViewAndImageComparison style={{filter: [{saturate: 4}]}} />;
+      return (
+        <StaticViewAndImageComparison
+          style={{filter: [{saturate: 4}]}}
+          testID="filter-test-saturate"
+        />
+      );
     },
   },
   {
     title: 'Hue Rotate',
     description: 'hueRotate(-90deg)',
     name: 'hueRotate',
-    platform: 'android',
     render(): React.Node {
       return (
         <StaticViewAndImageComparison
           style={{filter: [{hueRotate: '-90deg'}]}}
+          testID="filter-test-hue-rotate"
         />
       );
     },
@@ -190,7 +214,12 @@ exports.examples = [
     name: 'invert',
     platform: 'android',
     render(): React.Node {
-      return <StaticViewAndImageComparison style={{filter: [{invert: 0.7}]}} />;
+      return (
+        <StaticViewAndImageComparison
+          style={{filter: [{invert: 0.7}]}}
+          testID="filter-test-invert"
+        />
+      );
     },
   },
   {
@@ -231,7 +260,6 @@ exports.examples = [
     title: 'Drop Shadow',
     description: 'drop-shadow(30px 10px 4px #4444dd)',
     name: 'drop-shadow',
-    platform: 'android',
     render(): React.Node {
       return (
         <StaticViewAndImageComparison
@@ -283,7 +311,7 @@ exports.examples = [
 ] as Array<RNTesterModuleExample>;
 
 const AnimatedBlurExample = () => {
-  const animatedValue = React.useRef(new Animated.Value(0)).current;
+  const animatedValue = useAnimatedValue(0);
   const [isBlurred, setIsBlurred] = React.useState(false);
 
   const onPress = () => {
@@ -299,8 +327,10 @@ const AnimatedBlurExample = () => {
       <Button
         onPress={onPress}
         title={isBlurred ? 'Remove Blur' : 'Animate Blur'}
+        testID="animated-blur-button"
       />
       <Animated.View
+        testID="animated-blur-view"
         style={[
           {
             filter: [{blur: animatedValue}],

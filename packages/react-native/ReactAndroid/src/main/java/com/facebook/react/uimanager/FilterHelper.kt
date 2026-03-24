@@ -7,6 +7,7 @@
 
 package com.facebook.react.uimanager
 
+import android.annotation.SuppressLint
 import android.annotation.TargetApi
 import android.graphics.BlendMode
 import android.graphics.BlendModeColorFilter
@@ -21,9 +22,26 @@ import com.facebook.react.uimanager.PixelUtil.dpToPx
 import kotlin.math.cos
 import kotlin.math.sin
 
+/**
+ * Helper object for parsing and applying CSS filter effects on Android S+ (API 31+).
+ *
+ * This object provides utilities to convert CSS filter arrays into Android [RenderEffect] chains
+ * and [ColorMatrixColorFilter] objects. Supports filters like blur, brightness, contrast,
+ * grayscale, sepia, saturate, hue-rotate, invert, opacity, and drop-shadow.
+ *
+ * @see <a href="https://www.w3.org/TR/filter-effects-1/">CSS Filter Effects Module Level 1</a>
+ */
+@SuppressLint("UseRequiresApi")
 @TargetApi(31)
 internal object FilterHelper {
 
+  /**
+   * Parses a ReadableArray of CSS filter definitions into a chained [RenderEffect].
+   *
+   * @param filters The array of filter definitions, or null
+   * @return A chained RenderEffect representing all filters, or null if no filters provided
+   * @throws IllegalArgumentException if an invalid filter name is encountered
+   */
   @JvmStatic
   fun parseFilters(filters: ReadableArray?): RenderEffect? {
     filters ?: return null
@@ -88,7 +106,7 @@ internal object FilterHelper {
     }
 
     for (i in 0 until filters.size()) {
-      val filter = filters.getMap(i)!!.entryIterator.next()
+      val filter = checkNotNull(filters.getMap(i)).entryIterator.next()
       val filterName = filter.key
       if (filterName == "blur" || filterName == "dropShadow") {
         return false

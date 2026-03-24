@@ -13,7 +13,7 @@ import type {HostComponent} from '../../types/HostComponent';
 
 import codegenNativeComponent from '../../../../Libraries/Utilities/codegenNativeComponent';
 
-type AndroidHorizontalScrollContentViewNativeProps = $ReadOnly<{
+type AndroidHorizontalScrollContentViewNativeProps = Readonly<{
   ...ViewProps,
 
   removeClippedSubviews?: ?boolean,

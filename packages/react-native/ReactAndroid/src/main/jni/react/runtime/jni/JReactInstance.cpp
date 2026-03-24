@@ -13,11 +13,12 @@
 #include <glog/logging.h>
 #include <jni.h>
 #include <jsi/jsi.h>
-#include <jsireact/JSIExecutor.h>
 #include <react/jni/JRuntimeExecutor.h>
 #include <react/jni/JSLogging.h>
 #include <react/renderer/runtimescheduler/RuntimeSchedulerCallInvoker.h>
 #include <react/runtime/BridgelessNativeMethodCallInvoker.h>
+#include <react/runtime/JSRuntimeBindings.h>
+
 #include "JavaTimerRegistry.h"
 
 namespace facebook::react {
@@ -95,8 +96,8 @@ JReactInstance::JReactInstance(
   auto nativeMethodCallInvoker =
       std::make_unique<BridgelessNativeMethodCallInvoker>(
           sharedNativeMessageQueueThread);
-  nativeMethodCallInvokerHolder_ =
-      jni::make_global(NativeMethodCallInvokerHolder::newObjectCxxArgs(
+  nativeMethodCallInvokerHolder_ = jni::make_global(
+      NativeMethodCallInvokerHolder::newObjectCxxArgs(
           std::move(nativeMethodCallInvoker)));
 
   // Storing this here to make sure the Java reference doesn't get destroyed

@@ -33,7 +33,7 @@ const WS_STATES = [
 ];
 
 class Button extends React.Component<
-  $ReadOnly<{
+  Readonly<{
     disabled: boolean,
     label: string,
     onPress: () => void,
@@ -57,7 +57,7 @@ class Button extends React.Component<
 }
 
 class Row extends React.Component<
-  $ReadOnly<{
+  Readonly<{
     children?: React.Node,
     label: string,
     value?: ?string,
@@ -76,12 +76,12 @@ class Row extends React.Component<
   }
 }
 
-type WebSocketImageState = $ReadOnly<{
+type WebSocketImageState = Readonly<{
   blob: ?Blob,
 }>;
 
 class WebSocketImage extends React.Component<
-  $ReadOnly<{url: string}>,
+  Readonly<{url: string}>,
   WebSocketImageState,
 > {
   ws: ?WebSocket = null;
@@ -150,7 +150,7 @@ type WebSocketExampleState = {
 };
 
 class WebSocketExample extends React.Component<
-  $ReadOnly<{}>,
+  Readonly<{}>,
   WebSocketExampleState,
 > {
   state: WebSocketExampleState = {

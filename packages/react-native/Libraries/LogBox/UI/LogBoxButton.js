@@ -19,9 +19,9 @@ import * as LogBoxStyle from './LogBoxStyle';
 import * as React from 'react';
 import {useState} from 'react';
 
-type Props = $ReadOnly<{
+component LogBoxButton(
   id?: string,
-  backgroundColor: $ReadOnly<{
+  backgroundColor: Readonly<{
     default: string,
     pressed: string,
   }>,
@@ -29,14 +29,12 @@ type Props = $ReadOnly<{
   hitSlop?: ?EdgeInsetsProp,
   onPress?: ?(event: GestureResponderEvent) => void,
   style?: ViewStyleProp,
-}>;
-
-function LogBoxButton(props: Props): React.Node {
+) {
   const [pressed, setPressed] = useState(false);
 
-  let backgroundColor = props.backgroundColor;
-  if (!backgroundColor) {
-    backgroundColor = {
+  let resolvedBackgroundColor = backgroundColor;
+  if (!resolvedBackgroundColor) {
+    resolvedBackgroundColor = {
       default: LogBoxStyle.getBackgroundColor(0.95),
       pressed: LogBoxStyle.getBackgroundColor(0.6),
     };
@@ -44,25 +42,25 @@ function LogBoxButton(props: Props): React.Node {
 
   const content = (
     <View
-      id={props.id}
+      id={id}
       style={StyleSheet.compose(
         {
           backgroundColor: pressed
-            ? backgroundColor.pressed
-            : backgroundColor.default,
+            ? resolvedBackgroundColor.pressed
+            : resolvedBackgroundColor.default,
         },
-        props.style,
+        style,
       )}>
-      {props.children}
+      {children}
     </View>
   );
 
-  return props.onPress == null ? (
+  return onPress == null ? (
     content
   ) : (
     <TouchableWithoutFeedback
-      hitSlop={props.hitSlop}
-      onPress={props.onPress}
+      hitSlop={hitSlop}
+      onPress={onPress}
       onPressIn={() => setPressed(true)}
       onPressOut={() => setPressed(false)}>
       {content}

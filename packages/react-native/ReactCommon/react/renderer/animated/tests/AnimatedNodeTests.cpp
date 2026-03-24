@@ -215,6 +215,73 @@ TEST_F(AnimatedNodeTests, DiffClampAnimatedNode) {
   EXPECT_EQ(nodesManager_->getValue(diffClampTag), 1);
 }
 
+TEST_F(AnimatedNodeTests, RoundAnimatedNodeUsesNearestConfigKey) {
+  // This test verifies that RoundAnimatedNode reads the "nearest" config key
+  // for the rounding factor, not the "input" key.
+  initNodesManager();
+
+  auto rootTag = getNextRootViewTag();
+
+  auto valueTag = ++rootTag;
+  auto roundTag = ++rootTag;
+
+  nodesManager_->createAnimatedNode(
+      valueTag,
+      folly::dynamic::object("type", "value")("value", 7.3)("offset", 0));
+
+  // The round node should read "nearest" for the rounding factor (5.0),
+  // not "input" (which is the valueTag integer).
+  nodesManager_->createAnimatedNode(
+      roundTag,
+      folly::dynamic::object("type", "round")("input", valueTag)(
+          "nearest", 5.0));
+  nodesManager_->connectAnimatedNodes(valueTag, roundTag);
+
+  runAnimationFrame(0);
+
+  // 7.3 rounded to nearest 5.0 should be 5.0 (since round(7.3/5) * 5 = 1 * 5)
+  // If the bug existed (reading "input" instead of "nearest"), it would use
+  // the valueTag as the rounding factor, giving incorrect results.
+  EXPECT_DOUBLE_EQ(nodesManager_->getValue(roundTag).value(), 5.0);
+
+  // Test another value to ensure rounding works correctly
+  nodesManager_->setAnimatedNodeValue(valueTag, 12.6);
+  runAnimationFrame(0);
+
+  // 12.6 rounded to nearest 5.0 should be 15.0 (since round(12.6/5) * 5 = 3 *
+  // 5)
+  EXPECT_DOUBLE_EQ(nodesManager_->getValue(roundTag).value(), 15.0);
+}
+
+TEST_F(AnimatedNodeTests, SetOffsetReturnsFalseWhenUnchanged) {
+  // This test verifies that setAnimatedNodeOffset doesn't trigger unnecessary
+  // updates when the offset value hasn't changed.
+  initNodesManager();
+
+  auto rootTag = getNextRootViewTag();
+  auto valueTag = ++rootTag;
+
+  nodesManager_->createAnimatedNode(
+      valueTag,
+      folly::dynamic::object("type", "value")("value", 10)("offset", 0));
+
+  runAnimationFrame(0);
+  EXPECT_EQ(nodeNeedsUpdate(valueTag), false);
+
+  // First setOffset should mark the node as needing update
+  nodesManager_->setAnimatedNodeOffset(valueTag, 5);
+  EXPECT_EQ(nodeNeedsUpdate(valueTag), true);
+  EXPECT_EQ(nodesManager_->getValue(valueTag), 15); // 10 + 5
+
+  runAnimationFrame(0);
+  EXPECT_EQ(nodeNeedsUpdate(valueTag), false);
+
+  // Setting the same offset again should NOT mark the node as needing update
+  nodesManager_->setAnimatedNodeOffset(valueTag, 5);
+  EXPECT_EQ(nodeNeedsUpdate(valueTag), false); // No change, no update needed
+  EXPECT_EQ(nodesManager_->getValue(valueTag), 15); // Still 10 + 5
+}
+
 TEST_F(AnimatedNodeTests, ObjectAnimatedNode) {
   initNodesManager();
 

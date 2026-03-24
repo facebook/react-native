@@ -106,27 +106,27 @@ describe('listeners', () => {
     }).not.toThrow();
 
     expect(() => {
-      // $FlowExpectedError[incompatible-type] 
+      // $FlowExpectedError[incompatible-type]
       emitter.addListener('A', null);
     }).toThrow();
 
     expect(() => {
-      // $FlowExpectedError[incompatible-type] 
+      // $FlowExpectedError[incompatible-type]
       emitter.addListener('A', undefined);
     }).toThrow();
 
     expect(() => {
-      // $FlowExpectedError[incompatible-type] 
+      // $FlowExpectedError[incompatible-type]
       emitter.addListener('A', 'abc');
     }).toThrow();
 
     expect(() => {
-      // $FlowExpectedError[incompatible-type] 
+      // $FlowExpectedError[incompatible-type]
       emitter.addListener('A', 123);
     }).toThrow();
 
     expect(() => {
-      // $FlowExpectedError[incompatible-type] 
+      // $FlowExpectedError[incompatible-type]
       emitter.addListener('A', 123);
     }).toThrow();
   });
@@ -155,7 +155,7 @@ describe('arguments and context', () => {
 
     const context = {};
     let that;
-    const listener = jest.fn(function (this: mixed) {
+    const listener = jest.fn(function (this: unknown) {
       that = this;
     });
     emitter.addListener('A', listener, context);
@@ -341,7 +341,7 @@ describe('event emission', () => {
     const listenerA = jest.fn(() => {
       results.push('A');
     });
-    const listenerB: JestMockFn<Array<mixed>, void> = jest.fn(() => {
+    const listenerB: JestMockFn<Array<unknown>, void> = jest.fn(() => {
       results.push('B');
       subscriptionB.remove();
     });

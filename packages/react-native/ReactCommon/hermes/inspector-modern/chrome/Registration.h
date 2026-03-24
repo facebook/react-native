@@ -25,9 +25,7 @@ using DebugSessionToken = int;
  * should be called before any JS runs in the runtime. The returned token
  * can be used to disable debugging for this runtime.
  */
-extern DebugSessionToken enableDebugging(
-    std::unique_ptr<RuntimeAdapter> adapter,
-    const std::string& title);
+extern DebugSessionToken enableDebugging(std::unique_ptr<RuntimeAdapter> adapter, const std::string &title);
 
 /*
  * disableDebugging removes this runtime from the list of debuggable JS targets

@@ -79,7 +79,7 @@ function StartupTimingExample(): React.Node {
 }
 
 function PerformanceObserverUserTimingExample(): React.Node {
-  const [entries, setEntries] = useState<$ReadOnlyArray<PerformanceEntry>>([]);
+  const [entries, setEntries] = useState<ReadonlyArray<PerformanceEntry>>([]);
 
   useEffect(() => {
     const observer = new PerformanceObserver(list => {
@@ -131,13 +131,13 @@ function PerformanceObserverUserTimingExample(): React.Node {
 function PerformanceObserverEventTimingExample(): React.Node {
   const [count, setCount] = useState(0);
 
-  const [entries, setEntries] = useState<
-    $ReadOnlyArray<PerformanceEventTiming>,
-  >([]);
+  const [entries, setEntries] = useState<ReadonlyArray<PerformanceEventTiming>>(
+    [],
+  );
 
   useEffect(() => {
     const observer = new PerformanceObserver(list => {
-      const newEntries: $ReadOnlyArray<PerformanceEventTiming> =
+      const newEntries: ReadonlyArray<PerformanceEventTiming> =
         // $FlowExpectedError[incompatible-type] This is guaranteed because we're only observing `event` entry types.
         list.getEntries();
       setEntries(newEntries);
@@ -182,7 +182,7 @@ function PerformanceObserverEventTimingExample(): React.Node {
 }
 
 function PerformanceObserverLongtaskExample(): React.Node {
-  const [entries, setEntries] = useState<$ReadOnlyArray<PerformanceEntry>>([]);
+  const [entries, setEntries] = useState<ReadonlyArray<PerformanceEntry>>([]);
 
   useEffect(() => {
     const observer = new PerformanceObserver(list => {

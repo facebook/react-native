@@ -12,7 +12,10 @@ import type {EventSubscription} from '../../vendor/emitter/EventEmitter';
 import type {PlatformConfig} from '../AnimatedPlatformConfig';
 import type Animation from '../animations/Animation';
 import type {EndCallback} from '../animations/Animation';
-import type {InterpolationConfigType} from './AnimatedInterpolation';
+import type {
+  InterpolationConfigSupportedOutputType,
+  InterpolationConfigType,
+} from './AnimatedInterpolation';
 import type AnimatedNode from './AnimatedNode';
 import type {AnimatedNodeConfig} from './AnimatedNode';
 import type AnimatedTracking from './AnimatedTracking';
@@ -21,7 +24,7 @@ import NativeAnimatedHelper from '../../../src/private/animated/NativeAnimatedHe
 import AnimatedInterpolation from './AnimatedInterpolation';
 import AnimatedWithChildren from './AnimatedWithChildren';
 
-export type AnimatedValueConfig = $ReadOnly<{
+export type AnimatedValueConfig = Readonly<{
   ...AnimatedNodeConfig,
   useNativeDriver: boolean,
 }>;
@@ -131,7 +134,7 @@ export default class AnimatedValue extends AnimatedWithChildren {
     }
   }
 
-  addListener(callback: (value: any) => mixed): string {
+  addListener(callback: (value: any) => unknown): string {
     const id = super.addListener(callback);
     this._listenerCount++;
     if (this.__isNative) {
@@ -298,7 +301,7 @@ export default class AnimatedValue extends AnimatedWithChildren {
    * Interpolates the value before updating the property, e.g. mapping 0-1 to
    * 0-10.
    */
-  interpolate<OutputT: number | string>(
+  interpolate<OutputT extends InterpolationConfigSupportedOutputType>(
     config: InterpolationConfigType<OutputT>,
   ): AnimatedInterpolation<OutputT> {
     return new AnimatedInterpolation(this, config);

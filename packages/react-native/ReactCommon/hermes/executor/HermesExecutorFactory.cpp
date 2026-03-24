@@ -13,6 +13,8 @@
 #include <jsi/decorator.h>
 #include <jsinspector-modern/InspectorFlags.h>
 
+#include <thread>
+
 #include <hermes/inspector-modern/chrome/HermesRuntimeTargetDelegate.h>
 
 #if defined(HERMES_ENABLE_DEBUGGER) && !defined(HERMES_V1_ENABLED)
@@ -263,7 +265,7 @@ HermesExecutor::getRuntimeTargetDelegate() {
   if (!targetDelegate_) {
     targetDelegate_ =
         std::make_unique<jsinspector_modern::HermesRuntimeTargetDelegate>(
-            hermesRuntime_);
+            hermesRuntime_, *hermesRuntime_);
   }
   return *targetDelegate_;
 }

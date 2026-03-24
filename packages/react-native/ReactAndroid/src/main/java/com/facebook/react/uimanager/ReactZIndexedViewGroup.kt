@@ -7,7 +7,17 @@
 
 package com.facebook.react.uimanager
 
-/** ViewGroup that supports z-index. */
+import com.facebook.react.common.annotations.internal.LegacyArchitecture
+
+/**
+ * ViewGroup that supports z-index.
+ *
+ * This interface is part of the legacy architecture. CustomDrawOrder is no longer used when Fabric
+ * is enabled, which is now everywhere. Z-order is managed at the C++ layer, and no re-ordering is
+ * needed in the Android View layer. This interface is kept for backward compatibility but should
+ * not be used in new code.
+ */
+@LegacyArchitecture
 public interface ReactZIndexedViewGroup {
   /**
    * Determine the index of a child view at [index] considering z-index.

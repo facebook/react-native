@@ -23,7 +23,7 @@
 namespace facebook::react {
 
 static_assert(TextLayoutManagerExtended::supportsLineMeasurement());
-static_assert(TextLayoutManagerExtended::supportsPreparedLayout());
+static_assert(TextLayoutManagerExtended::supportsPreparedTextLayout());
 
 namespace {
 
@@ -41,7 +41,6 @@ int countAttachments(const AttributedString& attributedString) {
 
 Size measureText(
     const std::shared_ptr<const ContextContainer>& contextContainer,
-    Tag rootTag,
     MapBuffer attributedString,
     MapBuffer paragraphAttributes,
     float minWidth,
@@ -55,7 +54,6 @@ Size measureText(
   static auto measure =
       jni::findClassStatic("com/facebook/react/fabric/FabricUIManager")
           ->getMethod<jlong(
-              jint,
               JReadableMapBuffer::javaobject,
               JReadableMapBuffer::javaobject,
               jfloat,
@@ -71,7 +69,6 @@ Size measureText(
 
   return yogaMeassureToSize(measure(
       fabricUIManager,
-      rootTag,
       attributedStringBuffer.get(),
       paragraphAttributesBuffer.get(),
       minWidth,
@@ -105,7 +102,6 @@ TextMeasurement doMeasure(
 
   auto size = measureText(
       contextContainer,
-      layoutContext.surfaceId,
       std::move(attributedStringMap),
       std::move(paragraphAttributesMap),
       minimumSize.width,
@@ -159,8 +155,9 @@ TextLayoutManager::TextLayoutManager(
     : contextContainer_(std::move(contextContainer)),
       textMeasureCache_(kSimpleThreadSafeCacheSizeCap),
       lineMeasureCache_(kSimpleThreadSafeCacheSizeCap),
-      preparedTextCache_(static_cast<size_t>(
-          ReactNativeFeatureFlags::preparedTextCacheSize())) {}
+      preparedTextCache_(
+          static_cast<size_t>(
+              ReactNativeFeatureFlags::preparedTextCacheSize())) {}
 
 TextMeasurement TextLayoutManager::measure(
     const AttributedStringBox& attributedStringBox,
@@ -220,7 +217,6 @@ TextMeasurement TextLayoutManager::measureCachedSpannableById(
 
   auto size = measureText(
       contextContainer_,
-      layoutContext.surfaceId,
       localDataBuilder.build(),
       toMapBuffer(paragraphAttributes),
       minimumSize.width,
@@ -295,7 +291,7 @@ LinesMeasurements TextLayoutManager::measureLines(
             std::move(doMeasureLines));
 }
 
-TextLayoutManager::PreparedLayout TextLayoutManager::prepareLayout(
+TextLayoutManager::PreparedTextLayout TextLayoutManager::prepareLayout(
     const AttributedString& attributedString,
     const ParagraphAttributes& paragraphAttributes,
     const TextLayoutContext& layoutContext,
@@ -303,7 +299,6 @@ TextLayoutManager::PreparedLayout TextLayoutManager::prepareLayout(
   static auto prepareTextLayout =
       jni::findClassStatic("com/facebook/react/fabric/FabricUIManager")
           ->getMethod<JPreparedLayout::javaobject(
-              jint,
               JReadableMapBuffer::javaobject,
               JReadableMapBuffer::javaobject,
               jfloat,
@@ -332,9 +327,8 @@ TextLayoutManager::PreparedLayout TextLayoutManager::prepareLayout(
         auto minimumSize = layoutConstraints.minimumSize;
         auto maximumSize = layoutConstraints.maximumSize;
 
-        return PreparedLayout{jni::make_global(prepareTextLayout(
+        return PreparedTextLayout{jni::make_global(prepareTextLayout(
             fabricUIManager,
-            layoutContext.surfaceId,
             attributedStringMB.get(),
             paragraphAttributesMB.get(),
             minimumSize.width,
@@ -370,15 +364,16 @@ TextLayoutManager::PreparedLayout TextLayoutManager::prepareLayout(
 
     const auto& fabricUIManager =
         contextContainer_->at<jni::global_ref<jobject>>("FabricUIManager");
-    return PreparedLayout{jni::make_global(reusePreparedLayoutWithNewReactTags(
-        fabricUIManager, preparedText->get(), javaReactTags.get()))};
+    return PreparedTextLayout{
+        jni::make_global(reusePreparedLayoutWithNewReactTags(
+            fabricUIManager, preparedText->get(), javaReactTags.get()))};
   } else {
-    return PreparedLayout{*preparedText};
+    return PreparedTextLayout{*preparedText};
   }
 }
 
 TextMeasurement TextLayoutManager::measurePreparedLayout(
-    const PreparedLayout& preparedLayout,
+    const PreparedTextLayout& preparedLayout,
     const TextLayoutContext& /*layoutContext*/,
     const LayoutConstraints& layoutConstraints) const {
   const auto& fabricUIManager =
@@ -423,11 +418,12 @@ TextMeasurement TextLayoutManager::measurePreparedLayout(
         textMeasurement.attachments.push_back(
             TextMeasurement::Attachment{.frame = Rect{}, .isClipped = true});
       } else {
-        textMeasurement.attachments.push_back(TextMeasurement::Attachment{
-            .frame =
-                {.origin = {.x = left, .y = top},
-                 .size = {.width = width, .height = height}},
-            .isClipped = false});
+        textMeasurement.attachments.push_back(
+            TextMeasurement::Attachment{
+                .frame =
+                    {.origin = {.x = left, .y = top},
+                     .size = {.width = width, .height = height}},
+                .isClipped = false});
       }
     }
   }

@@ -17,10 +17,10 @@
 #include <react/debug/flags.h>
 #include <react/renderer/animated/EventEmitterListener.h>
 #include <react/renderer/animated/event_drivers/EventAnimationDriver.h>
-#ifdef RN_USE_ANIMATION_BACKEND
+#include <react/renderer/animationbackend/AnimatedPropsBuilder.h>
 #include <react/renderer/animationbackend/AnimationBackend.h>
-#endif
 #include <react/renderer/core/ReactPrimitives.h>
+#include <react/renderer/core/ShadowNode.h>
 #include <react/renderer/uimanager/UIManagerAnimationBackend.h>
 #include <chrono>
 #include <memory>
@@ -44,45 +44,46 @@ class Scheduler;
 using ValueListenerCallback = std::function<void(double)>;
 using UiTask = std::function<void()>;
 
-using EndResult = NativeAnimatedTurboModuleEndResult<
-    bool,
-    std::optional<double>,
-    std::optional<double>>;
+using EndResult = NativeAnimatedTurboModuleEndResult<bool, std::optional<double>, std::optional<double>>;
 
 using AnimationEndCallback = AsyncCallback<EndResult>;
 
 template <>
-struct Bridging<EndResult>
-    : NativeAnimatedTurboModuleEndResultBridging<EndResult> {};
+struct Bridging<EndResult> : NativeAnimatedTurboModuleEndResultBridging<EndResult> {};
 
-class NativeAnimatedNodesManager {
+class NativeAnimatedNodesManager : public std::enable_shared_from_this<NativeAnimatedNodesManager> {
  public:
-  using DirectManipulationCallback =
-      std::function<void(Tag, const folly::dynamic&)>;
-  using FabricCommitCallback =
-      std::function<void(std::unordered_map<Tag, folly::dynamic>&)>;
-  using StartOnRenderCallback = std::function<void(std::function<void()>&&)>;
-  using StopOnRenderCallback = std::function<void()>;
+  using DirectManipulationCallback = std::function<void(Tag, const folly::dynamic &)>;
+  using FabricCommitCallback = std::function<void(std::unordered_map<Tag, folly::dynamic> &)>;
+  using StartOnRenderCallback = std::function<void(std::function<void()> &&, bool isAsync)>;
+  using StopOnRenderCallback = std::function<void(bool isAsync)>;
+  using FrameRateListenerCallback = std::function<void(bool /* shouldEnableListener */)>;
+  using ResolvePlatformColor = std::function<void(SurfaceId surfaceId, const RawValue &value, SharedColor &result)>;
 
   explicit NativeAnimatedNodesManager(
-      DirectManipulationCallback&& directManipulationCallback,
-      FabricCommitCallback&& fabricCommitCallback,
-      StartOnRenderCallback&& startOnRenderCallback = nullptr,
-      StopOnRenderCallback&& stopOnRenderCallback = nullptr) noexcept;
+      DirectManipulationCallback &&directManipulationCallback,
+      FabricCommitCallback &&fabricCommitCallback,
+      ResolvePlatformColor &&resolvePlatformColor,
+      StartOnRenderCallback &&startOnRenderCallback = nullptr,
+      StopOnRenderCallback &&stopOnRenderCallback = nullptr,
+      FrameRateListenerCallback &&frameRateListenerCallback = nullptr) noexcept;
 
-  explicit NativeAnimatedNodesManager(
-      std::shared_ptr<UIManagerAnimationBackend> animationBackend) noexcept;
+  explicit NativeAnimatedNodesManager(std::shared_ptr<UIManagerAnimationBackend> animationBackend) noexcept;
 
   ~NativeAnimatedNodesManager() noexcept;
 
-  template <
-      typename T,
-      typename = std::enable_if_t<std::is_base_of_v<AnimatedNode, T>>>
-  T* getAnimatedNode(Tag tag) const
+  // Non-copyable and non-movable to prevent accidental copies or moves of this resource-heavy manager
+  NativeAnimatedNodesManager(const NativeAnimatedNodesManager &) = delete;
+  NativeAnimatedNodesManager &operator=(const NativeAnimatedNodesManager &) = delete;
+  NativeAnimatedNodesManager(NativeAnimatedNodesManager &&) = delete;
+  NativeAnimatedNodesManager &operator=(NativeAnimatedNodesManager &&) = delete;
+
+  template <typename T, typename = std::enable_if_t<std::is_base_of_v<AnimatedNode, T>>>
+  T *getAnimatedNode(Tag tag) const
     requires(std::is_base_of_v<AnimatedNode, T>)
   {
     if (auto it = animatedNodes_.find(tag); it != animatedNodes_.end()) {
-      return static_cast<T*>(it->second.get());
+      return static_cast<T *>(it->second.get());
     }
     return nullptr;
   }
@@ -92,13 +93,15 @@ class NativeAnimatedNodesManager {
 #pragma mark - Graph
 
   // Called from JS thread
-  void createAnimatedNodeAsync(Tag tag, const folly::dynamic& config) noexcept;
+  void createAnimatedNodeAsync(Tag tag, const folly::dynamic &config) noexcept;
 
-  void createAnimatedNode(Tag tag, const folly::dynamic& config) noexcept;
+  void createAnimatedNode(Tag tag, const folly::dynamic &config) noexcept;
 
   void connectAnimatedNodes(Tag parentTag, Tag childTag) noexcept;
 
   void connectAnimatedNodeToView(Tag propsNodeTag, Tag viewTag) noexcept;
+
+  void connectAnimatedNodeToShadowNodeFamily(Tag propsNodeTag, std::shared_ptr<ShadowNodeFamily> family) noexcept;
 
   void disconnectAnimatedNodes(Tag parentTag, Tag childTag) noexcept;
 
@@ -116,9 +119,13 @@ class NativeAnimatedNodesManager {
 
   void setAnimatedNodeOffset(Tag tag, double offset);
 
-#ifdef RN_USE_ANIMATION_BACKEND
-  AnimationMutations pullAnimationMutations();
-#endif
+  void insertMutations(
+      std::unordered_map<Tag, std::pair<ShadowNodeFamily::Weak, folly::dynamic>> &updates,
+      AnimationMutations &mutations,
+      AnimatedPropsBuilder &propsBuilder,
+      bool hasLayoutUpdates = false);
+  AnimationMutations onAnimationFrameForBackend(AnimatedPropsBuilder &propsBuilder, AnimationTimestamp timestamp);
+  AnimationMutations pullAnimationMutations(AnimationTimestamp timestamp);
 
 #pragma mark - Drivers
 
@@ -128,37 +135,29 @@ class NativeAnimatedNodesManager {
       folly::dynamic config,
       std::optional<AnimationEndCallback> endCallback) noexcept;
 
-  void stopAnimation(
-      int animationId,
-      bool isTrackingAnimation = false) noexcept;
+  void stopAnimation(int animationId, bool isTrackingAnimation = false) noexcept;
 
-  void addAnimatedEventToView(
-      Tag viewTag,
-      const std::string& eventName,
-      const folly::dynamic& eventMapping) noexcept;
+  void addAnimatedEventToView(Tag viewTag, const std::string &eventName, const folly::dynamic &eventMapping) noexcept;
 
-  void removeAnimatedEventFromView(
-      Tag viewTag,
-      const std::string& eventName,
-      Tag animatedValueTag) noexcept;
+  void removeAnimatedEventFromView(Tag viewTag, const std::string &eventName, Tag animatedValueTag) noexcept;
 
-  std::shared_ptr<EventEmitterListener> getEventEmitterListener() noexcept {
+  std::shared_ptr<EventEmitterListener> getEventEmitterListener() noexcept
+  {
     return ensureEventEmitterListener();
   }
 
 #pragma mark - Listeners
 
-  void startListeningToAnimatedNodeValue(
-      Tag tag,
-      ValueListenerCallback&& callback) noexcept;
+  void startListeningToAnimatedNodeValue(Tag tag, ValueListenerCallback &&callback) noexcept;
 
   void stopListeningToAnimatedNodeValue(Tag tag) noexcept;
 
   void schedulePropsCommit(
       Tag viewTag,
-      const folly::dynamic& props,
+      const folly::dynamic &props,
       bool layoutStyleUpdated,
-      bool forceFabricCommit) noexcept;
+      bool forceFabricCommit,
+      ShadowNodeFamily::Weak shadowNodeFamily = {}) noexcept;
 
   /**
    * Commits all pending animated property updates to their respective views.
@@ -174,7 +173,8 @@ class NativeAnimatedNodesManager {
    */
   bool commitProps();
 
-  void scheduleOnUI(UiTask&& task) {
+  void scheduleOnUI(UiTask &&task)
+  {
     {
       std::lock_guard<std::mutex> lock(uiTasksMutex_);
       operations_.push_back(std::move(task));
@@ -183,17 +183,16 @@ class NativeAnimatedNodesManager {
     // Whenever a batch is flushed to the UI thread, start the onRender
     // callbacks to guarantee they run at least once. E.g., to execute
     // setValue calls.
-    startRenderCallbackIfNeeded();
+    startRenderCallbackIfNeeded(true);
   }
 
   void onRender();
 
-  void startRenderCallbackIfNeeded();
+  void startRenderCallbackIfNeeded(bool isAsync);
 
-  void updateNodes(
-      const std::set<int>& finishedAnimationValueNodes = {}) noexcept;
+  void updateNodes(const std::set<int> &finishedAnimationValueNodes = {}) noexcept;
 
-  folly::dynamic managedProps(Tag tag) const noexcept;
+  folly::dynamic getManagedProps(Tag tag) const noexcept;
 
   bool hasManagedProps() const noexcept;
 
@@ -201,8 +200,10 @@ class NativeAnimatedNodesManager {
 
   bool isOnRenderThread() const noexcept;
 
+  void resolvePlatformColor(SurfaceId surfaceId, const RawValue &value, SharedColor &result) const;
+
  private:
-  void stopRenderCallbackIfNeeded() noexcept;
+  void stopRenderCallbackIfNeeded(bool isAsync) noexcept;
 
   bool onAnimationFrame(double timestamp);
 
@@ -212,22 +213,16 @@ class NativeAnimatedNodesManager {
 
   std::shared_ptr<EventEmitterListener> ensureEventEmitterListener() noexcept;
 
-  void handleAnimatedEvent(
-      Tag tag,
-      const std::string& eventName,
-      const EventPayload& payload) noexcept;
+  void handleAnimatedEvent(Tag tag, const std::string &eventName, const EventPayload &payload) noexcept;
 
   std::weak_ptr<UIManagerAnimationBackend> animationBackend_;
 
-  std::unique_ptr<AnimatedNode> animatedNode(
-      Tag tag,
-      const folly::dynamic& config) noexcept;
+  std::unique_ptr<AnimatedNode> animatedNode(Tag tag, const folly::dynamic &config) noexcept;
 
   static thread_local bool isOnRenderThread_;
 
   std::mutex animatedNodesCreatedAsyncMutex_;
-  std::unordered_map<Tag, std::unique_ptr<AnimatedNode>>
-      animatedNodesCreatedAsync_;
+  std::unordered_map<Tag, std::unique_ptr<AnimatedNode>> animatedNodesCreatedAsync_;
   std::unordered_map<Tag, std::unique_ptr<AnimatedNode>> animatedNodes_;
   std::unordered_map<Tag, Tag> connectedAnimatedNodes_;
   std::unordered_map<int, std::unique_ptr<AnimationDriver>> activeAnimations_;
@@ -255,18 +250,23 @@ class NativeAnimatedNodesManager {
   const DirectManipulationCallback directManipulationCallback_;
   const FabricCommitCallback fabricCommitCallback_;
 
+  const ResolvePlatformColor resolvePlatformColor_;
+
   /*
    * Tracks whether the render callback loop for animations is currently active.
    */
   std::atomic_bool isRenderCallbackStarted_{false};
   const StartOnRenderCallback startOnRenderCallback_;
   const StopOnRenderCallback stopOnRenderCallback_;
+  const FrameRateListenerCallback frameRateListenerCallback_;
 
   std::shared_ptr<EventEmitterListener> eventEmitterListener_{nullptr};
 
   std::unordered_map<Tag, folly::dynamic> updateViewProps_{};
   std::unordered_map<Tag, folly::dynamic> updateViewPropsDirect_{};
-
+  std::unordered_map<Tag, std::pair<ShadowNodeFamily::Weak, folly::dynamic>> updateViewPropsForBackend_{};
+  std::unordered_map<Tag, std::pair<ShadowNodeFamily::Weak, folly::dynamic>> updateViewPropsDirectForBackend_{};
+  std::unordered_set<Tag> shouldRequestAsyncFlush_{};
   /*
    * Sometimes a view is not longer connected to a PropsAnimatedNode, but
    * NativeAnimated has previously changed the view's props via direct
@@ -281,6 +281,8 @@ class NativeAnimatedNodesManager {
 #ifdef REACT_NATIVE_DEBUG
   bool warnedAboutGraphTraversal_ = false;
 #endif
+
+  CallbackId animationBackendCallbackId_{0};
 
   friend class ColorAnimatedNode;
   friend class AnimationDriver;

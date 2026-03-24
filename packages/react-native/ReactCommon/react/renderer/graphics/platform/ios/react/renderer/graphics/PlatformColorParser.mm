@@ -42,11 +42,12 @@ inline facebook::react::SharedColor RCTPlatformColorComponentsFromDynamicItems(
     fromRawValue(contextContainer, surfaceId, dynamicItems.at("highContrastDark"), highContrastDarkSharedColor);
   }
 
-  Color color = Color(DynamicColor{
-      .lightColor = (*lightSharedColor).getColor(),
-      .darkColor = (*darkSharedColor).getColor(),
-      .highContrastLightColor = (*highContrastLightSharedColor).getColor(),
-      .highContrastDarkColor = (*highContrastDarkSharedColor).getColor()});
+  Color color = Color(
+      DynamicColor{
+          .lightColor = (*lightSharedColor).getColor(),
+          .darkColor = (*darkSharedColor).getColor(),
+          .highContrastLightColor = (*highContrastLightSharedColor).getColor(),
+          .highContrastDarkColor = (*highContrastDarkSharedColor).getColor()});
   return SharedColor(color);
 }
 

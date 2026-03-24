@@ -19,7 +19,7 @@ export type FetchSegmentFunction = typeof __fetchSegment;
 
 function __fetchSegment(
   segmentId: number,
-  options: $ReadOnly<{
+  options: Readonly<{
     otaBuildNumber: ?string,
     requestedModuleName: string,
     segmentHash: string,

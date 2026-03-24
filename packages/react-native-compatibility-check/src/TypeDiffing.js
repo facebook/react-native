@@ -10,13 +10,16 @@
 
 import type {
   ComparisonResult,
+  EnumMembersComparisonResult,
   FunctionComparisonResult,
   MembersComparisonResult,
   PositionalComparisonResult,
   PropertiesComparisonResult,
   TypeComparisonError,
+  UnionMembersComparisonResult,
 } from './ComparisonResult';
 import type {
+  BooleanLiteralTypeAnnotation,
   CompleteReservedTypeAnnotation,
   CompleteTypeAnnotation,
   EventEmitterTypeAnnotation,
@@ -237,12 +240,12 @@ export function compareTypeAnnotation(
         EQUALITY_MSG,
       );
       return compareNumberLiteralTypes(newerAnnotation, olderAnnotation);
-    case 'StringLiteralUnionTypeAnnotation':
+    case 'BooleanLiteralTypeAnnotation':
       invariant(
-        olderAnnotation.type === 'StringLiteralUnionTypeAnnotation',
+        olderAnnotation.type === 'BooleanLiteralTypeAnnotation',
         EQUALITY_MSG,
       );
-      return compareStringLiteralUnionTypes(newerAnnotation, olderAnnotation);
+      return compareBooleanLiteralTypes(newerAnnotation, olderAnnotation);
     case 'StringLiteralTypeAnnotation':
       invariant(
         olderAnnotation.type === 'StringLiteralTypeAnnotation',
@@ -266,13 +269,14 @@ export function compareTypeAnnotation(
       );
 
       return compareReservedTypeAnnotation(newerAnnotation, olderAnnotation);
-    default: // Flow exhaustiveness check
+    default:
+      // Flow exhaustiveness check
       (newerAnnotation: empty);
       throw new Error(`Unsupported type annotation: ${newerAnnotation.type}`);
   }
 }
 
-function compareObjectTypeProperty<T: CompleteTypeAnnotation>(
+function compareObjectTypeProperty<T extends CompleteTypeAnnotation>(
   first: NamedShape<T>,
   second: NamedShape<T>,
 ): number {
@@ -321,7 +325,7 @@ function updatePropertyError(
   };
 }
 
-function updateEnumMemberError(
+function updateMemberError(
   name: string,
   newType: CompleteTypeAnnotation,
   oldType: CompleteTypeAnnotation,
@@ -344,6 +348,22 @@ function updateEnumMemberError(
       result.errorMembers = [newFault];
     }
   };
+}
+
+// Helper function to get a descriptive label for a CompleteTypeAnnotation
+function getTypeAnnotationLabel(type: CompleteTypeAnnotation): string {
+  switch (type.type) {
+    case 'StringLiteralTypeAnnotation':
+      return `"${type.value}"`;
+    case 'NumberLiteralTypeAnnotation':
+      return String(type.value);
+    case 'BooleanLiteralTypeAnnotation':
+      return String(type.value);
+    case 'NullableTypeAnnotation':
+      return `?${getTypeAnnotationLabel(type.typeAnnotation)}`;
+    default:
+      return type.type;
+  }
 }
 
 function updateNestedProperties(
@@ -404,8 +424,8 @@ function checkOptionalityChanges(
 }
 
 function comparePropertyArrays(
-  newerOriginal: $ReadOnlyArray<NamedShape<CompleteTypeAnnotation>>,
-  olderOriginal: $ReadOnlyArray<NamedShape<CompleteTypeAnnotation>>,
+  newerOriginal: ReadonlyArray<NamedShape<CompleteTypeAnnotation>>,
+  olderOriginal: ReadonlyArray<NamedShape<CompleteTypeAnnotation>>,
 ): PropertiesComparisonResult {
   const newer = newerOriginal.slice(0);
   const older = olderOriginal.slice(0);
@@ -500,9 +520,9 @@ function comparePropertyArrays(
   return result;
 }
 
-export function compareObjectTypes<T: CompleteTypeAnnotation>(
-  newerPropertyTypes: $ReadOnlyArray<NamedShape<T>>,
-  olderPropertyTypes: $ReadOnlyArray<NamedShape<T>>,
+export function compareObjectTypes<T extends CompleteTypeAnnotation>(
+  newerPropertyTypes: ReadonlyArray<NamedShape<T>>,
+  olderPropertyTypes: ReadonlyArray<NamedShape<T>>,
 ): ComparisonResult {
   if (newerPropertyTypes.length === 0 && olderPropertyTypes.length === 0) {
     return {status: 'matching'};
@@ -522,12 +542,22 @@ export function compareObjectTypes<T: CompleteTypeAnnotation>(
     return {
       status: 'properties',
       propertyLog: {missingProperties: sortedOlderTypes},
+      errorLog: typeAnnotationComparisonError(
+        'Object has property changes',
+        objectTypeAnnotation(newerPropertyTypes),
+        objectTypeAnnotation(olderPropertyTypes),
+      ),
     };
   }
   if (sortedOlderTypes.length === 0) {
     return {
       status: 'properties',
       propertyLog: {addedProperties: sortedNewerTypes},
+      errorLog: typeAnnotationComparisonError(
+        'Object has property changes',
+        objectTypeAnnotation(newerPropertyTypes),
+        objectTypeAnnotation(olderPropertyTypes),
+      ),
     };
   }
   const result = comparePropertyArrays(sortedNewerTypes, sortedOlderTypes);
@@ -555,18 +585,24 @@ export function compareObjectTypes<T: CompleteTypeAnnotation>(
     return makeError(
       typeAnnotationComparisonError(
         'Object types do not match.',
-        // $FlowFixMe[incompatible-type]
         objectTypeAnnotation(newerPropertyTypes),
-        // $FlowFixMe[incompatible-type]
         objectTypeAnnotation(olderPropertyTypes),
       ),
     );
   }
-  return {status: 'properties', propertyLog: result};
+  return {
+    status: 'properties',
+    propertyLog: result,
+    errorLog: typeAnnotationComparisonError(
+      'Object has property changes',
+      objectTypeAnnotation(newerPropertyTypes),
+      objectTypeAnnotation(olderPropertyTypes),
+    ),
+  };
 }
 
 function objectTypeAnnotation<T>(
-  properties: $ReadOnlyArray<NamedShape<T>>,
+  properties: ReadonlyArray<NamedShape<T>>,
 ): ObjectTypeAnnotation<T> {
   return {
     type: 'ObjectTypeAnnotation',
@@ -612,13 +648,13 @@ export function compareEnumDeclarations(
 export function compareEnumDeclarationMemberArrays(
   newer: Array<NativeModuleEnumMember>,
   older: Array<NativeModuleEnumMember>,
-): MembersComparisonResult {
+): EnumMembersComparisonResult {
   if (newer.length === 0 && older.length === 0) {
-    return {};
+    return {memberKind: 'enum'};
   } else if (newer.length === 0) {
-    return {missingMembers: older};
+    return {memberKind: 'enum', missingMembers: [...older]};
   } else if (older.length === 0) {
-    return {addedMembers: newer};
+    return {memberKind: 'enum', addedMembers: [...newer]};
   }
 
   const newerHead = newer.pop();
@@ -639,7 +675,7 @@ export function compareEnumDeclarationMemberArrays(
       case 'matching':
         return result;
       case 'error':
-        updateEnumMemberError(
+        updateMemberError(
           newerName,
           newerHead.value,
           olderHead.value,
@@ -656,7 +692,8 @@ export function compareEnumDeclarationMemberArrays(
       case 'positionalTypeChange':
       case 'members':
         break;
-      default: // Flow exhaustiveness check
+      default:
+        // Flow exhaustiveness check
         (comparedTypes: empty);
         throw new Error('Unsupported status ' + comparedTypes.status);
     }
@@ -678,6 +715,80 @@ export function compareEnumDeclarationMemberArrays(
       result.missingMembers = [olderHead];
     }
     return result;
+  }
+
+  throw new Error('Internal error: should not reach here');
+}
+
+export function compareUnionMemberArrays(
+  newer: Array<CompleteTypeAnnotation>,
+  older: Array<CompleteTypeAnnotation>,
+): UnionMembersComparisonResult {
+  if (newer.length === 0 && older.length === 0) {
+    return {memberKind: 'union'};
+  } else if (newer.length === 0) {
+    return {memberKind: 'union', missingMembers: [...older]};
+  } else if (older.length === 0) {
+    return {memberKind: 'union', addedMembers: [...newer]};
+  }
+
+  const newerHead = newer.pop();
+  const olderHead = older.pop();
+  invariant(newerHead != null && olderHead != null, 'Array is empty');
+
+  const sortComparison = compareTypeAnnotationForSorting(
+    [0, newerHead],
+    [0, olderHead],
+  );
+
+  if (sortComparison === 0) {
+    const headComparison = compareTypeAnnotation(newerHead, olderHead);
+
+    const restComparison = compareUnionMemberArrays(newer, older);
+    switch (headComparison.status) {
+      case 'matching':
+        return restComparison;
+      case 'error':
+        updateMemberError(
+          getTypeAnnotationLabel(newerHead),
+          newerHead,
+          olderHead,
+          restComparison,
+        )(headComparison.errorLog);
+        return restComparison;
+      case 'skipped':
+        throw new Error(
+          "Internal error: returned 'skipped' for non-optional older type",
+        );
+      case 'properties':
+        restComparison.missingMembers = restComparison.missingMembers || [];
+        restComparison.missingMembers.push(olderHead);
+        restComparison.addedMembers = restComparison.addedMembers || [];
+        restComparison.addedMembers.push(newerHead);
+        return restComparison;
+      //TODO: Handle the nullable changes within Union
+      case 'nullableChange':
+      case 'functionChange':
+      case 'positionalTypeChange':
+      case 'members':
+        break;
+      default:
+        // Flow exhaustiveness check
+        (headComparison: empty);
+        throw new Error('Unsupported status ' + headComparison.status);
+    }
+  } else if (sortComparison > 0) {
+    older.push(olderHead);
+    const restComparison = compareUnionMemberArrays(newer, older);
+    restComparison.addedMembers = restComparison.addedMembers || [];
+    restComparison.addedMembers.push(newerHead);
+    return restComparison;
+  } else if (sortComparison < 0) {
+    newer.push(newerHead);
+    const restComparison = compareUnionMemberArrays(newer, older);
+    restComparison.missingMembers = restComparison.missingMembers || [];
+    restComparison.missingMembers.push(olderHead);
+    return restComparison;
   }
 
   throw new Error('Internal error: should not reach here');
@@ -732,7 +843,15 @@ export function compareEnumDeclarationWithMembers(
     );
   }
 
-  return {status: 'members', memberLog: result};
+  return {
+    status: 'members',
+    memberLog: result,
+    errorLog: typeAnnotationComparisonError(
+      'Enum has member changes',
+      newerDeclaration,
+      olderDeclaration,
+    ),
+  };
 }
 
 function compareNullableChange(
@@ -771,6 +890,11 @@ function compareNullableChange(
         newType: newerAnnotation,
         oldType: olderAnnotation,
       },
+      errorLog: typeAnnotationComparisonError(
+        'Nullable type has changes',
+        newerAnnotation,
+        olderAnnotation,
+      ),
     };
   }
   const interiorLog = compareTypeAnnotation(newVoidRemoved, oldVoidRemoved);
@@ -793,6 +917,11 @@ function compareNullableChange(
           newType: newerAnnotation,
           oldType: olderAnnotation,
         },
+        errorLog: typeAnnotationComparisonError(
+          'Nullable type has changes',
+          newerAnnotation,
+          olderAnnotation,
+        ),
       };
     default:
       return {
@@ -804,6 +933,12 @@ function compareNullableChange(
           newType: newerAnnotation,
           oldType: olderAnnotation,
         },
+        errorLog: typeAnnotationComparisonError(
+          'Nullable type has changes',
+          newerAnnotation,
+          olderAnnotation,
+          interiorLog.errorLog,
+        ),
       };
   }
 }
@@ -812,17 +947,56 @@ export function compareUnionTypes(
   newerType: NativeModuleUnionTypeAnnotation,
   olderType: NativeModuleUnionTypeAnnotation,
 ): ComparisonResult {
-  if (newerType.memberType !== olderType.memberType) {
+  const sortedNewerTypes = sortTypeAnnotations(newerType.types);
+  const sortedOlderTypes = sortTypeAnnotations(olderType.types);
+
+  const result = compareUnionMemberArrays(
+    sortedNewerTypes.map(([_, type]) => type),
+    sortedOlderTypes.map(([_, type]) => type),
+  );
+
+  if (isMemberLogEmpty(result)) {
+    return {status: 'matching'};
+  } else if (result.errorMembers) {
     return makeError(
       typeAnnotationComparisonError(
-        'Union member type does not match',
+        'Union types do not match',
+        newerType,
+        olderType,
+        memberComparisonError(
+          result.errorMembers.length > 1
+            ? 'Union contained members with type mismatches'
+            : 'Union contained a member with a type mismatch',
+          result.errorMembers,
+        ),
+      ),
+    );
+  } else if (
+    (result.addedMembers &&
+      result.addedMembers.length > 0 &&
+      result.addedMembers.length === newerType.types.length) ||
+    (result.missingMembers &&
+      result.missingMembers.length > 0 &&
+      result.missingMembers.length === olderType.types.length)
+  ) {
+    return makeError(
+      typeAnnotationComparisonError(
+        'Union types do not match.',
         newerType,
         olderType,
       ),
     );
   }
 
-  return {status: 'matching'};
+  return {
+    status: 'members',
+    memberLog: result,
+    errorLog: typeAnnotationComparisonError(
+      'Union has member changes',
+      newerType,
+      olderType,
+    ),
+  };
 }
 
 export function comparePromiseTypes(
@@ -907,6 +1081,21 @@ export function compareStringLiteralTypes(
       );
 }
 
+export function compareBooleanLiteralTypes(
+  newerType: BooleanLiteralTypeAnnotation,
+  olderType: BooleanLiteralTypeAnnotation,
+): ComparisonResult {
+  return newerType.value === olderType.value
+    ? {status: 'matching'}
+    : makeError(
+        typeAnnotationComparisonError(
+          'Boolean literals are not equal',
+          newerType,
+          olderType,
+        ),
+      );
+}
+
 export function compareStringLiteralUnionTypes(
   newerType: StringLiteralUnionTypeAnnotation,
   olderType: StringLiteralUnionTypeAnnotation,
@@ -958,6 +1147,11 @@ export function compareStringLiteralUnionTypes(
       return {
         status: 'positionalTypeChange',
         changeLog,
+        errorLog: typeAnnotationComparisonError(
+          'String literal union has member changes',
+          newerType,
+          olderType,
+        ),
       };
     case 'matching':
       return {status: 'matching'};
@@ -1035,7 +1229,15 @@ export function compareFunctionTypes(
   if (isFunctionLogEmpty(functionChanges)) {
     return {status: 'matching'};
   }
-  return {status: 'functionChange', functionChangeLog: functionChanges};
+  return {
+    status: 'functionChange',
+    functionChangeLog: functionChanges,
+    errorLog: typeAnnotationComparisonError(
+      'Function has parameter or return type changes',
+      newerType,
+      olderType,
+    ),
+  };
 }
 
 type ArrayComparisonResult =
@@ -1059,8 +1261,8 @@ type ArrayComparisonResult =
 function compareArrayOfTypes(
   fixedOrder: boolean,
   fixedLength: boolean,
-  newerTypes: $ReadOnlyArray<CompleteTypeAnnotation>,
-  olderTypes: $ReadOnlyArray<CompleteTypeAnnotation>,
+  newerTypes: ReadonlyArray<CompleteTypeAnnotation>,
+  olderTypes: ReadonlyArray<CompleteTypeAnnotation>,
 ): ArrayComparisonResult {
   const sameLength = newerTypes.length === olderTypes.length;
   if (fixedLength && !sameLength) {

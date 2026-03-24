@@ -23,23 +23,17 @@ const View = require('../../../../../Libraries/Components/View/View').default;
 const StyleSheet =
   require('../../../../../Libraries/StyleSheet/StyleSheet').default;
 const Text = require('../../../../../Libraries/Text/Text').default;
-const PerformanceOverlay = require('../perfmonitor/PerformanceOverlay').default;
 const ElementProperties = require('./ElementProperties').default;
-const NetworkOverlay = require('./NetworkOverlay').default;
 
-type Props = $ReadOnly<{
+type Props = Readonly<{
   devtoolsIsOpen: boolean,
   inspecting: boolean,
   setInspecting: (val: boolean) => void,
-  perfing: boolean,
-  setPerfing: (val: boolean) => void,
   touchTargeting: boolean,
   setTouchTargeting: (val: boolean) => void,
-  networking: boolean,
-  setNetworking: (val: boolean) => void,
   hierarchy?: ?ElementsHierarchy,
   selection?: ?number,
-  setSelection: number => mixed,
+  setSelection: number => unknown,
   inspected?: ?InspectedElement,
 }>;
 
@@ -67,10 +61,6 @@ class InspectorPanel extends React.Component<Props> {
           />
         </ScrollView>
       );
-    } else if (this.props.perfing) {
-      contents = <PerformanceOverlay />;
-    } else if (this.props.networking) {
-      contents = <NetworkOverlay />;
     } else {
       contents = <View style={styles.waiting}>{this.renderWaiting()}</View>;
     }
@@ -83,22 +73,6 @@ class InspectorPanel extends React.Component<Props> {
             pressed={this.props.inspecting}
             onClick={this.props.setInspecting}
           />
-          {global.RN$Bridgeless === true ? null : (
-            // These Inspector Panel sub-features are removed under the New Arch.
-            // See https://github.com/react-native-community/discussions-and-proposals/pull/777
-            <>
-              <InspectorPanelButton
-                title={'Perf'}
-                pressed={this.props.perfing}
-                onClick={this.props.setPerfing}
-              />
-              <InspectorPanelButton
-                title={'Network'}
-                pressed={this.props.networking}
-                onClick={this.props.setNetworking}
-              />
-            </>
-          )}
           <InspectorPanelButton
             title={'Touchables'}
             pressed={this.props.touchTargeting}
@@ -110,7 +84,7 @@ class InspectorPanel extends React.Component<Props> {
   }
 }
 
-type InspectorPanelButtonProps = $ReadOnly<{
+type InspectorPanelButtonProps = Readonly<{
   onClick: (val: boolean) => void,
   pressed: boolean,
   title: string,

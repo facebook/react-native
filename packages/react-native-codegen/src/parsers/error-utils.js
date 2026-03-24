@@ -17,6 +17,7 @@ import type {Parser} from './parser';
 
 const {
   IncorrectModuleRegistryCallArgumentTypeParserError,
+  IncorrectModuleRegistryCallArgumentValueParserError,
   IncorrectModuleRegistryCallArityParserError,
   IncorrectModuleRegistryCallTypeParameterParserError,
   MisnamedModuleInterfaceParserError,
@@ -239,7 +240,7 @@ function throwIfPropertyValueTypeIsUnsupported(
 
 function throwIfMoreThanOneModuleInterfaceParserError(
   nativeModuleName: string,
-  moduleSpecs: $ReadOnlyArray<$FlowFixMe>,
+  moduleSpecs: ReadonlyArray<$FlowFixMe>,
   parserType: ParserType,
 ) {
   if (moduleSpecs.length > 1) {
@@ -278,7 +279,7 @@ function throwIfArrayElementTypeAnnotationIsUnsupported(
     PromiseTypeAnnotation: 'Promise',
     // TODO: Added as a work-around for now until TupleTypeAnnotation are fully supported in both flow and TS
     // Right now they are partially treated as UnionTypeAnnotation
-    UnionTypeAnnotation: 'UnionTypeAnnotation',
+    // UnionTypeAnnotation: 'UnionTypeAnnotation',
   };
 
   if (type in TypeMap) {
@@ -309,6 +310,16 @@ function throwIfIncorrectModuleRegistryCallArgument(
       type,
     );
   }
+
+  const value = callExpressionArg.value;
+  if (typeof value !== 'string' || !/^[a-zA-Z_][a-zA-Z0-9_]*$/.test(value)) {
+    throw new IncorrectModuleRegistryCallArgumentValueParserError(
+      nativeModuleName,
+      callExpressionArg,
+      methodName,
+      String(value),
+    );
+  }
 }
 
 function throwIfPartialNotAnnotatingTypeParameter(
@@ -333,7 +344,7 @@ function throwIfPartialWithMoreParameter(typeAnnotation: $FlowFixMe) {
 }
 
 function throwIfMoreThanOneCodegenNativecommands(
-  commandsTypeNames: $ReadOnlyArray<$FlowFixMe>,
+  commandsTypeNames: ReadonlyArray<$FlowFixMe>,
 ) {
   if (commandsTypeNames.length > 1) {
     throw new Error('codegenNativeCommands may only be called once in a file');
@@ -375,9 +386,9 @@ function throwIfBubblingTypeIsNull(
 }
 
 function throwIfArgumentPropsAreNull(
-  argumentProps: ?$ReadOnlyArray<$FlowFixMe>,
+  argumentProps: ?ReadonlyArray<$FlowFixMe>,
   eventName: string,
-): $ReadOnlyArray<$FlowFixMe> {
+): ReadonlyArray<$FlowFixMe> {
   if (!argumentProps) {
     throw new Error(`Unable to determine event arguments for "${eventName}"`);
   }

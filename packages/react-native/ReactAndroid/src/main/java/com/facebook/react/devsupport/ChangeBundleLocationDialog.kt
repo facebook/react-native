@@ -33,9 +33,6 @@ internal object ChangeBundleLocationDialog {
   ) {
     val settings = devSettings.packagerConnectionSettings
     val currentHost = settings.debugServerHost
-    settings.debugServerHost = ""
-    val defaultHost = settings.debugServerHost
-    settings.debugServerHost = currentHost
 
     val layout = LinearLayout(context)
     layout.orientation = LinearLayout.VERTICAL
@@ -60,11 +57,11 @@ internal object ChangeBundleLocationDialog {
     input.setTextColor(-0x1000000)
     input.setText(currentHost)
 
-    val defaultHostSuggestion = Button(context)
-    defaultHostSuggestion.text = defaultHost
-    defaultHostSuggestion.textSize = 12f
-    defaultHostSuggestion.isAllCaps = false
-    defaultHostSuggestion.setOnClickListener { input.setText(defaultHost) }
+    val currentHostSuggestion = Button(context)
+    currentHostSuggestion.text = currentHost
+    currentHostSuggestion.textSize = 12f
+    currentHostSuggestion.isAllCaps = false
+    currentHostSuggestion.setOnClickListener { input.setText(currentHost) }
 
     val networkHost = getDevServerNetworkIpAndPort(context)
     val networkHostSuggestion = Button(context)
@@ -80,8 +77,12 @@ internal object ChangeBundleLocationDialog {
             LinearLayout.LayoutParams.MATCH_PARENT,
             LinearLayout.LayoutParams.WRAP_CONTENT,
         )
-    suggestionRow.addView(defaultHostSuggestion)
-    suggestionRow.addView(networkHostSuggestion)
+    suggestionRow.addView(currentHostSuggestion)
+
+    if (currentHost != networkHost) {
+      // We don't want to display two buttons with the same host suggestion.
+      suggestionRow.addView(networkHostSuggestion)
+    }
 
     val instructions = TextView(context)
     instructions.text =

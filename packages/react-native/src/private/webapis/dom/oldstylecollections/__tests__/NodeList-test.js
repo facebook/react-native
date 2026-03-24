@@ -134,7 +134,7 @@ describe('NodeList', () => {
       const collection = createNodeList(['a', 'b', 'c']);
 
       let i = 0;
-      collection.forEach(function (this: mixed, value, index, list) {
+      collection.forEach(function (this: unknown, value, index, list) {
         expect(value).toBe(collection[i]);
         expect(index).toBe(i);
         expect(list).toBe(collection);
@@ -148,7 +148,7 @@ describe('NodeList', () => {
 
       let i = 0;
       const explicitThis = {id: 'foo'};
-      collection.forEach(function (this: mixed, value, index, list) {
+      collection.forEach(function (this: unknown, value, index, list) {
         expect(value).toBe(collection[i]);
         expect(index).toBe(i);
         expect(list).toBe(collection);

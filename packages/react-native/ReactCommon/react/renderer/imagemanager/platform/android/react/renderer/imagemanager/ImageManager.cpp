@@ -22,10 +22,21 @@ constexpr inline bool isInteger(const std::string& str) {
 
 ImageManager::ImageManager(
     const std::shared_ptr<const ContextContainer>& contextContainer)
-    : self_(new ImageFetcher(contextContainer)) {}
+    : contextContainer_(contextContainer),
+      self_(new std::shared_ptr<ImageFetcher>(
+          std::make_shared<ImageFetcher>(contextContainer))) {
+  if (ReactNativeFeatureFlags::enableImagePrefetchingJNIBatchingAndroid()) {
+    std::weak_ptr<ImageFetcher> weakImageFetcher =
+        *static_cast<std::shared_ptr<ImageFetcher>*>(self_);
+    contextContainer->insert(ImageFetcherKey, weakImageFetcher);
+  }
+}
 
 ImageManager::~ImageManager() {
-  delete static_cast<ImageFetcher*>(self_);
+  if (ReactNativeFeatureFlags::enableImagePrefetchingJNIBatchingAndroid()) {
+    contextContainer_->erase(ImageFetcherKey);
+  }
+  delete static_cast<std::shared_ptr<ImageFetcher>*>(self_);
 }
 
 ImageRequest ImageManager::requestImage(
@@ -35,8 +46,9 @@ ImageRequest ImageManager::requestImage(
     Tag tag) const {
   if (ReactNativeFeatureFlags::enableImagePrefetchingAndroid()) {
     if (!isInteger(imageSource.uri)) {
-      return static_cast<ImageFetcher*>(self_)->requestImage(
-          imageSource, surfaceId, imageRequestParams, tag);
+      return static_cast<std::shared_ptr<ImageFetcher>*>(self_)
+          ->get()
+          ->requestImage(imageSource, surfaceId, imageRequestParams, tag);
     }
   }
   return {imageSource, nullptr, {}};

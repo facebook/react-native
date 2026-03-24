@@ -18,7 +18,8 @@ namespace facebook::react {
 
 #ifdef RN_SERIALIZABLE_STATE
 
-inline folly::dynamic toDynamic(const std::vector<bool>& arrayValue) {
+inline folly::dynamic toDynamic(const std::vector<bool> &arrayValue)
+{
   folly::dynamic resultArray = folly::dynamic::array();
   for (auto value : arrayValue) {
     resultArray.push_back(value);
@@ -26,15 +27,17 @@ inline folly::dynamic toDynamic(const std::vector<bool>& arrayValue) {
   return resultArray;
 }
 
-inline folly::dynamic toDynamic(const std::vector<std::string>& arrayValue) {
+inline folly::dynamic toDynamic(const std::vector<std::string> &arrayValue)
+{
   folly::dynamic resultArray = folly::dynamic::array();
-  for (auto& value : arrayValue) {
+  for (auto &value : arrayValue) {
     resultArray.push_back(value);
   }
   return resultArray;
 }
 
-inline folly::dynamic toDynamic(const std::vector<int>& arrayValue) {
+inline folly::dynamic toDynamic(const std::vector<int> &arrayValue)
+{
   folly::dynamic resultArray = folly::dynamic::array();
   for (auto value : arrayValue) {
     resultArray.push_back(value);
@@ -42,7 +45,8 @@ inline folly::dynamic toDynamic(const std::vector<int>& arrayValue) {
   return resultArray;
 }
 
-inline folly::dynamic toDynamic(const std::vector<double>& arrayValue) {
+inline folly::dynamic toDynamic(const std::vector<double> &arrayValue)
+{
   folly::dynamic resultArray = folly::dynamic::array();
   for (auto value : arrayValue) {
     resultArray.push_back(value);
@@ -50,7 +54,8 @@ inline folly::dynamic toDynamic(const std::vector<double>& arrayValue) {
   return resultArray;
 }
 
-inline folly::dynamic toDynamic(const std::vector<Float>& arrayValue) {
+inline folly::dynamic toDynamic(const std::vector<Float> &arrayValue)
+{
   folly::dynamic resultArray = folly::dynamic::array();
   for (auto value : arrayValue) {
     resultArray.push_back(value);
@@ -58,18 +63,20 @@ inline folly::dynamic toDynamic(const std::vector<Float>& arrayValue) {
   return resultArray;
 }
 
-inline folly::dynamic toDynamic(const std::vector<folly::dynamic>& arrayValue) {
+inline folly::dynamic toDynamic(const std::vector<folly::dynamic> &arrayValue)
+{
   folly::dynamic resultArray = folly::dynamic::array();
-  for (auto& value : arrayValue) {
+  for (auto &value : arrayValue) {
     resultArray.push_back(value);
   }
   return resultArray;
 }
 
 template <typename T>
-folly::dynamic toDynamic(const std::vector<T>& arrayValue) {
+folly::dynamic toDynamic(const std::vector<T> &arrayValue)
+{
   folly::dynamic resultArray = folly::dynamic::array();
-  for (const auto& value : arrayValue) {
+  for (const auto &value : arrayValue) {
     resultArray.push_back(toDynamic(value));
   }
   return resultArray;
@@ -83,11 +90,8 @@ folly::dynamic toDynamic(const std::vector<T>& arrayValue) {
  * nullptr.
  */
 template <typename T>
-void fromRawValue(
-    const PropsParserContext& context,
-    const RawValue& rawValue,
-    T& result,
-    T defaultValue) {
+void fromRawValue(const PropsParserContext &context, const RawValue &rawValue, T &result, T defaultValue)
+{
   if (!rawValue.hasValue()) {
     result = std::move(defaultValue);
     return;
@@ -97,34 +101,28 @@ void fromRawValue(
 }
 
 template <typename T>
-void fromRawValue(
-    const PropsParserContext& context,
-    const RawValue& rawValue,
-    T& result) {
+void fromRawValue(const PropsParserContext &context, const RawValue &rawValue, T &result)
+{
   result = (T)rawValue;
 }
 
 template <typename T>
-void fromRawValue(
-    const PropsParserContext& context,
-    const RawValue& rawValue,
-    std::optional<T>& result) {
+void fromRawValue(const PropsParserContext &context, const RawValue &rawValue, std::optional<T> &result)
+{
   T resultValue;
   fromRawValue(context, rawValue, resultValue);
   result = std::optional<T>{std::move(resultValue)};
 }
 
 template <typename T>
-void fromRawValue(
-    const PropsParserContext& context,
-    const RawValue& rawValue,
-    std::vector<T>& result) {
+void fromRawValue(const PropsParserContext &context, const RawValue &rawValue, std::vector<T> &result)
+{
   if (rawValue.hasType<std::vector<RawValue>>()) {
     auto items = (std::vector<RawValue>)rawValue;
     auto length = items.size();
     result.clear();
     result.reserve(length);
-    for (auto& item : items) {
+    for (auto &item : items) {
       T itemResult;
       fromRawValue(context, item, itemResult);
       result.push_back(itemResult);
@@ -141,16 +139,14 @@ void fromRawValue(
 }
 
 template <typename T>
-void fromRawValue(
-    const PropsParserContext& context,
-    const RawValue& rawValue,
-    std::vector<std::vector<T>>& result) {
+void fromRawValue(const PropsParserContext &context, const RawValue &rawValue, std::vector<std::vector<T>> &result)
+{
   if (rawValue.hasType<std::vector<std::vector<RawValue>>>()) {
     auto items = (std::vector<std::vector<RawValue>>)rawValue;
     auto length = items.size();
     result.clear();
     result.reserve(length);
-    for (auto& item : items) {
+    for (auto &item : items) {
       T itemResult;
       fromRawValue(context, item, itemResult);
       result.push_back(itemResult);
@@ -168,14 +164,15 @@ void fromRawValue(
 
 template <typename T, typename U = T>
 T convertRawProp(
-    const PropsParserContext& context,
-    const RawProps& rawProps,
-    const char* name,
-    const T& sourceValue,
-    const U& defaultValue,
-    const char* namePrefix = nullptr,
-    const char* nameSuffix = nullptr) {
-  const auto* rawValue = rawProps.at(name, namePrefix, nameSuffix);
+    const PropsParserContext &context,
+    const RawProps &rawProps,
+    const char *name,
+    const T &sourceValue,
+    const U &defaultValue,
+    const char *namePrefix = nullptr,
+    const char *nameSuffix = nullptr)
+{
+  const auto *rawValue = rawProps.at(name, namePrefix, nameSuffix);
   if (rawValue == nullptr) [[likely]] {
     return sourceValue;
   }
@@ -190,12 +187,11 @@ T convertRawProp(
     T result;
     fromRawValue(context, *rawValue, result);
     return result;
-  } catch (const std::exception& e) {
+  } catch (const std::exception &e) {
     // In case of errors, log the error and fall back to the default
     RawPropsKey key{.prefix = namePrefix, .name = name, .suffix = nameSuffix};
     // TODO: report this using ErrorUtils so it's more visible to the user
-    LOG(ERROR) << "Error while converting prop '"
-               << static_cast<std::string>(key) << "': " << e.what();
+    LOG(ERROR) << "Error while converting prop '" << static_cast<std::string>(key) << "': " << e.what();
     return defaultValue;
   }
 }

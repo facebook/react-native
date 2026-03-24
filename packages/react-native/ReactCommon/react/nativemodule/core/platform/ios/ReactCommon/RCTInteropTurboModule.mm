@@ -511,8 +511,9 @@ void ObjCInteropTurboModule::setInvocationArg(
       return;
     }
 
-    const char *BLOCK_TYPE = @encode(__typeof__(^{
-    }));
+    const char *BLOCK_TYPE = @encode(
+        __typeof__(^{
+        }));
 
     if (objCArgType == BLOCK_TYPE) {
       /**
@@ -599,10 +600,6 @@ jsi::Value ObjCInteropTurboModule::convertReturnIdToJSIValue(
     TurboModuleMethodValueKind returnType,
     id result)
 {
-  std::string methodJsSignature = name_ + "." + methodNameCStr + "()";
-  std::string errorPrefix =
-      methodJsSignature + ": Error while converting return Objective C value to JavaScript type. ";
-
   if (returnType == VoidKind) {
     return jsi::Value::undefined();
   }
@@ -616,6 +613,7 @@ jsi::Value ObjCInteropTurboModule::convertReturnIdToJSIValue(
     return returnValue;
   }
 
+  std::string methodJsSignature = name_ + "." + methodNameCStr + "()";
   throw jsi::JSError(runtime, methodJsSignature + "Objective C type was unsupported.");
 }
 

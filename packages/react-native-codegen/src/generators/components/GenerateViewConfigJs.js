@@ -72,7 +72,7 @@ function getReactDiffProcessValue(typeAnnotation: PropTypeAnnotation) {
       switch (typeAnnotation.name) {
         case 'ColorPrimitive':
           return expression(
-            "{ process: require('react-native/Libraries/StyleSheet/processColor').default }",
+            "require('react-native/Libraries/Components/View/ReactNativeStyleAttributes').colorAttribute",
           );
         case 'ImageSourcePrimitive':
           return expression(
@@ -152,7 +152,7 @@ export default NativeComponentRegistry.get(nativeComponentName, () => __INTERNAL
 };
 
 // Check whether the native component exists in the app binary.
-// Old getViewManagerConfig() checks for the existance of the native Paper view manager. Not available in Bridgeless.
+// Old getViewManagerConfig() checks for the existence of the native Paper view manager. Not available in Bridgeless.
 // New hasViewManagerConfig() queries Fabric’s native component registry directly.
 const DeprecatedComponentNameCheckTemplate = ({
   componentName,
@@ -184,7 +184,7 @@ function normalizeInputEventName(name: string) {
 
 // Replicates the behavior of viewConfig in RCTComponentData.m
 function getValidAttributesForEvents(
-  events: $ReadOnlyArray<EventTypeShape>,
+  events: ReadonlyArray<EventTypeShape>,
   imports: Set<string>,
 ) {
   imports.add(

@@ -31,11 +31,11 @@ export type {
 // Reexport type
 export type {LayoutAnimationConfig} from '../Renderer/shims/ReactNativeTypes';
 
-export type LayoutAnimationTypes = $ReadOnly<{
+export type LayoutAnimationTypes = Readonly<{
   [type in LayoutAnimationType]: type,
 }>;
 
-export type LayoutAnimationProperties = $ReadOnly<{
+export type LayoutAnimationProperties = Readonly<{
   [prop in LayoutAnimationProperty]: prop,
 }>;
 
@@ -201,7 +201,7 @@ const LayoutAnimation = {
     scaleY: 'scaleY',
     scaleXY: 'scaleXY',
   }) as LayoutAnimationProperties,
-  checkConfig(...args: Array<mixed>) {
+  checkConfig(...args: Array<unknown>) {
     console.error('LayoutAnimation.checkConfig(...) has been disabled.');
   },
   Presets,

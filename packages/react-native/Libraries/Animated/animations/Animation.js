@@ -24,7 +24,7 @@ export type EndResult = {
 };
 export type EndCallback = (result: EndResult) => void;
 
-export type AnimationConfig = $ReadOnly<{
+export type AnimationConfig = Readonly<{
   isInteraction?: boolean,
   useNativeDriver: boolean,
   platformConfig?: PlatformConfig,
@@ -98,7 +98,7 @@ export default class Animation {
     this.__active = false;
   }
 
-  __getNativeAnimationConfig(): $ReadOnly<{
+  __getNativeAnimationConfig(): Readonly<{
     platformConfig: ?PlatformConfig,
     ...
   }> {
@@ -151,9 +151,7 @@ export default class Animation {
             animatedValue.__onAnimatedValueUpdateReceived(value, offset);
 
             const isJsSyncRemoved =
-              ReactNativeFeatureFlags.cxxNativeAnimatedEnabled() &&
-              !ReactNativeFeatureFlags.disableFabricCommitInCXXAnimated() &&
-              ReactNativeFeatureFlags.cxxNativeAnimatedRemoveJsSync();
+              ReactNativeFeatureFlags.cxxNativeAnimatedEnabled();
             if (!isJsSyncRemoved) {
               if (this.__isLooping === true) {
                 return;
@@ -170,7 +168,7 @@ export default class Animation {
       );
 
       return true;
-    } catch (e) {
+    } catch (e: unknown) {
       throw e;
     } finally {
       NativeAnimatedHelper.API.unsetWaitingForIdentifier(

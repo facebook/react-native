@@ -13,7 +13,6 @@
 #include <jsinspector-modern/tracing/PerformanceTracer.h>
 #endif
 #include <jsinspector-modern/network/HttpUtils.h>
-#include <react/featureflags/ReactNativeFeatureFlags.h>
 #include <react/performance/timeline/PerformanceEntryReporter.h>
 
 namespace facebook::react {
@@ -169,9 +168,16 @@ void NetworkReporter::reportDataReceived(
     int dataLength,
     const std::optional<int>& encodedDataLength) {
 #ifdef REACT_NATIVE_DEBUGGER_ENABLED
+  auto now = HighResTimeStamp::now();
+
   // Debugger enabled: CDP event handling
   jsinspector_modern::NetworkHandler::getInstance().onDataReceived(
       requestId, dataLength, encodedDataLength.value_or(dataLength));
+
+  // Debugger enabled: Add trace event to Performance timeline
+  jsinspector_modern::tracing::PerformanceTracer::getInstance()
+      .reportResourceReceivedData(
+          requestId, now, encodedDataLength.value_or(dataLength));
 #endif
 }
 
@@ -180,27 +186,25 @@ void NetworkReporter::reportResponseEnd(
     int encodedDataLength) {
   auto now = HighResTimeStamp::now();
 
-  if (ReactNativeFeatureFlags::enableResourceTimingAPI()) {
-    // All builds: Report PerformanceResourceTiming event
-    {
-      std::lock_guard<std::mutex> lock(perfTimingsMutex_);
-      auto it = perfTimingsBuffer_.find(requestId);
-      if (it != perfTimingsBuffer_.end()) {
-        auto& eventData = it->second;
-        PerformanceEntryReporter::getInstance()->reportResourceTiming(
-            eventData.url,
-            eventData.fetchStart,
-            eventData.requestStart,
-            eventData.connectStart.value_or(now),
-            eventData.connectEnd.value_or(now),
-            eventData.responseStart.value_or(now),
-            now,
-            eventData.responseStatus,
-            eventData.contentType,
-            eventData.encodedBodySize,
-            eventData.decodedBodySize);
-        perfTimingsBuffer_.erase(requestId);
-      }
+  // All builds: Report PerformanceResourceTiming event
+  {
+    std::lock_guard<std::mutex> lock(perfTimingsMutex_);
+    auto it = perfTimingsBuffer_.find(requestId);
+    if (it != perfTimingsBuffer_.end()) {
+      auto& eventData = it->second;
+      PerformanceEntryReporter::getInstance()->reportResourceTiming(
+          eventData.url,
+          eventData.fetchStart,
+          eventData.requestStart,
+          eventData.connectStart.value_or(now),
+          eventData.connectEnd.value_or(now),
+          eventData.responseStart.value_or(now),
+          now,
+          eventData.responseStatus,
+          eventData.contentType,
+          eventData.encodedBodySize,
+          eventData.decodedBodySize);
+      perfTimingsBuffer_.erase(requestId);
     }
   }
 

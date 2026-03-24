@@ -7,7 +7,23 @@
 
 #include "Color.h"
 
+#include <array>
+
 namespace facebook::react {
+
+std::string SharedColor::toString() const noexcept {
+  ColorComponents components = colorComponentsFromColor(*this);
+  std::array<char, 255> buffer{};
+  std::snprintf(
+      buffer.data(),
+      buffer.size(),
+      "rgba(%.0f, %.0f, %.0f, %g)",
+      components.red * 255.f,
+      components.green * 255.f,
+      components.blue * 255.f,
+      components.alpha);
+  return buffer.data();
+}
 
 bool isColorMeaningful(const SharedColor& color) noexcept {
   if (!color) {

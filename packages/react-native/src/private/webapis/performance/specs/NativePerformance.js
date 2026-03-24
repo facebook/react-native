@@ -42,14 +42,14 @@ export type RawPerformanceEntry = {
   decodedBodySize?: number,
 };
 
-export opaque type OpaqueNativeObserverHandle = mixed;
+export opaque type OpaqueNativeObserverHandle = unknown;
 
 export type NativeBatchedObserverCallback = () => void;
 export type NativePerformanceMarkResult = number;
-export type NativePerformanceMeasureResult = $ReadOnlyArray<number>; // [startTime, duration]
+export type NativePerformanceMeasureResult = ReadonlyArray<number>; // [startTime, duration]
 
 export type PerformanceObserverInit = {
-  entryTypes?: $ReadOnlyArray<number>,
+  entryTypes?: ReadonlyArray<number>,
   type?: number,
   buffered?: boolean,
   durationThreshold?: number,
@@ -59,25 +59,25 @@ export interface Spec extends TurboModule {
   +now: () => number;
   +timeOrigin?: () => number;
 
-  +reportMark: (name: string, startTime: number, entry: mixed) => void;
+  +reportMark: (name: string, startTime: number, entry: unknown) => void;
   +reportMeasure: (
     name: string,
     startTime: number,
     duration: number,
-    entry: mixed,
+    entry: unknown,
   ) => void;
   +getMarkTime: (name: string) => ?number;
   +clearMarks: (entryName?: string) => void;
   +clearMeasures: (entryName?: string) => void;
-  +getEntries: () => $ReadOnlyArray<RawPerformanceEntry>;
+  +getEntries: () => ReadonlyArray<RawPerformanceEntry>;
   +getEntriesByName: (
     entryName: string,
     entryType?: ?RawPerformanceEntryType,
-  ) => $ReadOnlyArray<RawPerformanceEntry>;
+  ) => ReadonlyArray<RawPerformanceEntry>;
   +getEntriesByType: (
     entryType: RawPerformanceEntryType,
-  ) => $ReadOnlyArray<RawPerformanceEntry>;
-  +getEventCounts: () => $ReadOnlyArray<[string, number]>;
+  ) => ReadonlyArray<RawPerformanceEntry>;
+  +getEventCounts: () => ReadonlyArray<[string, number]>;
   +getSimpleMemoryInfo: () => NativeMemoryInfo;
   +getReactNativeStartupTiming: () => ReactNativeStartupTiming;
 
@@ -94,9 +94,9 @@ export interface Spec extends TurboModule {
   +takeRecords: (
     observer: OpaqueNativeObserverHandle,
     sort: boolean,
-  ) => $ReadOnlyArray<RawPerformanceEntry>;
+  ) => ReadonlyArray<RawPerformanceEntry>;
 
-  +getSupportedPerformanceEntryTypes: () => $ReadOnlyArray<RawPerformanceEntryType>;
+  +getSupportedPerformanceEntryTypes: () => ReadonlyArray<RawPerformanceEntryType>;
 
   +clearEventCountsForTesting: () => void;
 }

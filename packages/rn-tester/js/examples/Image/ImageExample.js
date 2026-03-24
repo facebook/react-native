@@ -30,11 +30,11 @@ const base64Icon =
 const IMAGE_PREFETCH_URL = `${IMAGE1}?r=1&t=${Date.now()}`;
 const prefetchTask = Image.prefetch(IMAGE_PREFETCH_URL);
 
-type ImageSource = $ReadOnly<{
+type ImageSource = Readonly<{
   uri: string,
 }>;
 
-type BlobImageProps = $ReadOnly<{
+type BlobImageProps = Readonly<{
   url: string,
 }>;
 
@@ -59,7 +59,7 @@ const BlobImage = ({url}: BlobImageProps): React.Node => {
 
 type BlobImageExampleState = {};
 
-type BlobImageExampleProps = $ReadOnly<{
+type BlobImageExampleProps = Readonly<{
   urls: string[],
 }>;
 
@@ -78,7 +78,7 @@ class BlobImageExample extends React.Component<
   }
 }
 
-type NetworkImageCallbackExampleProps = $ReadOnly<{
+type NetworkImageCallbackExampleProps = Readonly<{
   source: ImageSource,
   prefetchedSource: ImageSource,
 }>;
@@ -87,7 +87,7 @@ const NetworkImageCallbackExample = ({
   source,
   prefetchedSource,
 }: NetworkImageCallbackExampleProps): React.Node => {
-  const [events, setEvents] = useState<$ReadOnlyArray<string>>([]);
+  const [events, setEvents] = useState<ReadonlyArray<string>>([]);
   const [startLoadPrefetched, setStartLoadPrefetched] = useState(false);
   const [mountTime, setMountTime] = useState(Date.now());
 
@@ -197,7 +197,7 @@ const NetworkImageCallbackExample = ({
 type NetworkImageExampleState = {
   error: ?string,
   loading: boolean,
-  progress: $ReadOnlyArray<number>,
+  progress: ReadonlyArray<number>,
 };
 
 class NetworkImageExample extends React.Component<
@@ -247,7 +247,7 @@ type ImageSizeExampleState = {
   height: number,
 };
 
-type ImageSizeExampleProps = $ReadOnly<{
+type ImageSizeExampleProps = Readonly<{
   source: ImageSource,
 }>;
 
@@ -284,7 +284,7 @@ type MultipleSourcesExampleState = {
   height: number,
 };
 
-type MultipleSourcesExampleProps = $ReadOnly<{}>;
+type MultipleSourcesExampleProps = Readonly<{}>;
 
 class MultipleSourcesExample extends React.Component<
   MultipleSourcesExampleProps,
@@ -359,7 +359,7 @@ type LoadingIndicatorSourceExampleState = {
   imageHash: number,
 };
 
-type LoadingIndicatorSourceExampleProps = $ReadOnly<{}>;
+type LoadingIndicatorSourceExampleProps = Readonly<{}>;
 
 class LoadingIndicatorSourceExample extends React.Component<
   LoadingIndicatorSourceExampleProps,
@@ -407,7 +407,7 @@ type FadeDurationExampleState = {
   imageHash: number,
 };
 
-type FadeDurationExampleProps = $ReadOnly<{}>;
+type FadeDurationExampleProps = Readonly<{}>;
 
 class FadeDurationExample extends React.Component<
   FadeDurationExampleProps,
@@ -450,7 +450,7 @@ type OnLayoutExampleState = {
   layoutHandlerMessage: string,
 };
 
-type OnLayoutExampleProps = $ReadOnly<{}>;
+type OnLayoutExampleProps = Readonly<{}>;
 
 class OnLayoutExample extends React.Component<
   OnLayoutExampleProps,
@@ -543,7 +543,7 @@ type OnPartialLoadExampleState = {
   hasLoaded: boolean,
 };
 
-type OnPartialLoadExampleProps = $ReadOnly<{}>;
+type OnPartialLoadExampleProps = Readonly<{}>;
 
 class OnPartialLoadExample extends React.Component<
   OnPartialLoadExampleProps,
@@ -936,7 +936,7 @@ exports.examples = [
   {
     title: 'Multiple Image Source using the `srcSet` prop.',
     description:
-      ('A list of comma seperated uris along with scale are provided in `srcSet`.' +
+      ('A list of comma separated uris along with scale are provided in `srcSet`.' +
         'An appropriate value will be used based on the scale of the device.': string),
     render: function (): React.Node {
       return (
@@ -959,12 +959,13 @@ exports.examples = [
   },
   {
     title: 'Plain Static Image',
+    name: 'static-image',
     description:
       ('Static assets should be placed in the source code tree, and ' +
         'required in the same way as JavaScript modules.': string),
     render: function (): React.Node {
       return (
-        <View style={styles.horizontal}>
+        <View testID="image-static" style={styles.horizontal}>
           <Image
             source={require('../../assets/uie_thumb_normal.png')}
             style={styles.icon}
@@ -1173,9 +1174,10 @@ exports.examples = [
   },
   {
     title: 'Opacity',
+    name: 'opacity',
     render: function (): React.Node {
       return (
-        <View style={styles.horizontal}>
+        <View testID="image-opacity" style={styles.horizontal}>
           <Image style={[styles.base, styles.opacity1]} source={fullImage} />
           <Image style={[styles.base, styles.opacity2]} source={fullImage} />
           <Image style={[styles.base, styles.opacity3]} source={fullImage} />
@@ -1188,13 +1190,11 @@ exports.examples = [
   },
   {
     title: 'Nesting content inside <Image> component',
+    name: 'nesting-content',
     render: function (): React.Node {
       return (
-        <View style={styles.base}>
-          <Image
-            style={{...StyleSheet.absoluteFillObject}}
-            source={fullImage}
-          />
+        <View testID="image-nesting-content" style={styles.base}>
+          <Image style={{...StyleSheet.absoluteFill}} source={fullImage} />
           <Text style={styles.nestedText}>React</Text>
         </View>
       );
@@ -1202,9 +1202,11 @@ exports.examples = [
   },
   {
     title: 'Nesting content inside <ImageBackground> component',
+    name: 'nesting-image-background',
     render: function (): React.Node {
       return (
         <ImageBackground
+          testID="image-nesting-background"
           style={styles.transparentImageBackground}
           source={fullImage}>
           <Text style={styles.nestedText}>React</Text>
@@ -1214,11 +1216,12 @@ exports.examples = [
   },
   {
     title: 'Tint Color',
+    name: 'tint-color',
     description: ('The `tintColor` prop changes all the non-alpha ' +
       'pixels to the tint color.': string),
     render: function (): React.Node {
       return (
-        <View>
+        <View testID="image-tint-color">
           <View style={styles.horizontal}>
             <Image
               source={require('../../assets/uie_thumb_normal.png')}
@@ -1517,9 +1520,11 @@ exports.examples = [
   },
   {
     title: 'Animated GIF',
+    name: 'animated-gif',
     render: function (): React.Node {
       return (
         <Image
+          testID="image-animated-gif"
           style={styles.gif}
           source={require('../../assets/tumblr_mfqekpMktw1rn90umo1_500.gif')}
         />
@@ -1529,9 +1534,14 @@ exports.examples = [
   },
   {
     title: 'Base64 image',
+    name: 'base64-image',
     render: function (): React.Node {
       return (
-        <Image style={styles.base64} source={{uri: base64Icon, scale: 3}} />
+        <Image
+          testID="image-base64"
+          style={styles.base64}
+          source={{uri: base64Icon, scale: 3}}
+        />
       );
     },
     platform: 'ios',
@@ -1602,9 +1612,10 @@ exports.examples = [
   },
   {
     title: 'Blur Radius',
+    name: 'blur-radius',
     render: function (): React.Node {
       return (
-        <View style={styles.horizontal}>
+        <View testID="image-blur-radius" style={styles.horizontal}>
           <Image style={styles.base} source={fullImage} blurRadius={0} />
           <Image style={styles.base} source={fullImage} blurRadius={5} />
           <Image style={styles.base} source={fullImage} blurRadius={10} />

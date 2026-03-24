@@ -97,8 +97,9 @@ YogaLayoutableShadowNode::YogaLayoutableShadowNode(
     const ShadowNodeFragment& fragment)
     : LayoutableShadowNode(sourceShadowNode, fragment),
       yogaConfig_(FabricDefaultYogaLog),
-      yogaNode_(static_cast<const YogaLayoutableShadowNode&>(sourceShadowNode)
-                    .yogaNode_) {
+      yogaNode_(
+          static_cast<const YogaLayoutableShadowNode&>(sourceShadowNode)
+              .yogaNode_) {
 // Note, cloned `yoga::Node` instance (copied using copy-constructor) inherits
 // dirty flag, measure function, and other properties being set originally in
 // the `YogaLayoutableShadowNode` constructor above.
@@ -896,6 +897,11 @@ yoga::Config& YogaLayoutableShadowNode::initializeYogaConfig(
     YGConfigSetPointScaleFactor(
         &config, YGConfigGetPointScaleFactor(previousConfig));
     YGConfigSetErrata(&config, YGConfigGetErrata(previousConfig));
+  }
+
+  if (ReactNativeFeatureFlags::fixYogaFlexBasisFitContentInMainAxis()) {
+    YGConfigSetExperimentalFeatureEnabled(
+        &config, YGExperimentalFeatureFixFlexBasisFitContent, true);
   }
 
   return config;

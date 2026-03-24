@@ -31,7 +31,7 @@ import * as React from 'react';
 import {useCallback, useState} from 'react';
 import {Alert, FlatList, StyleSheet, View} from 'react-native';
 
-function MultiColumnExample(): React.Node {
+component MultiColumnExample() {
   const [data, setData] = useState(genNewerItems(1000));
   const [filterText, setFilterText] = useState('');
   const [fixedHeight, setFixedHeight] = useState(true);
@@ -42,7 +42,7 @@ function MultiColumnExample(): React.Node {
   const _onChangeFilterText = (_filterText: string) => {
     setFilterText(_filterText);
   };
-  const _onChangeNumColumns = (_numColumns: mixed) => {
+  const _onChangeNumColumns = (_numColumns: unknown) => {
     setNumColumns(Number(_numColumns));
   };
 

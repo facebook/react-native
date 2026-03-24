@@ -131,11 +131,8 @@ RCT_EXPORT_METHOD(getContentSize : (nonnull NSNumber *)reactTag callback : (RCTR
       }];
 }
 
-RCT_EXPORT_METHOD(scrollTo
-                  : (nonnull NSNumber *)reactTag offsetX
-                  : (CGFloat)x offsetY
-                  : (CGFloat)y animated
-                  : (BOOL)animated)
+RCT_EXPORT_METHOD(
+    scrollTo : (nonnull NSNumber *)reactTag offsetX : (CGFloat)x offsetY : (CGFloat)y animated : (BOOL)animated)
 {
   [self.bridge.uiManager
       addUIBlock:^(__unused RCTUIManager *uiManager, NSDictionary<NSNumber *, UIView *> *viewRegistry) {

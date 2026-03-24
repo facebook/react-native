@@ -174,7 +174,7 @@ export interface PublicScrollViewInstance
 
 type InnerViewInstance = React.ElementRef<typeof View>;
 
-export type ScrollViewPropsIOS = $ReadOnly<{
+export type ScrollViewPropsIOS = Readonly<{
   /**
    * Controls whether iOS should automatically adjust the content inset
    * for scroll views that are placed behind a navigation bar or
@@ -330,7 +330,7 @@ export type ScrollViewPropsIOS = $ReadOnly<{
   ),
 }>;
 
-export type ScrollViewPropsAndroid = $ReadOnly<{
+export type ScrollViewPropsAndroid = Readonly<{
   /**
    * Enables nested scrolling for Android API level 21+.
    * Nested scrolling is supported by default on iOS
@@ -388,14 +388,22 @@ export type ScrollViewPropsAndroid = $ReadOnly<{
    * @platform android
    */
   fadingEdgeLength?: ?number | {start: number, end: number},
+  /**
+   * When false, the ScrollView will not automatically scroll to a focused child when
+   * the child requests focus. This can be useful when you want to control the scroll
+   * position programmatically. The default value is true.
+   *
+   * @platform android
+   */
+  scrollsChildToFocus?: ?boolean,
 }>;
 
 type StickyHeaderComponentType = component(
-  ref?: React.RefSetter<$ReadOnly<interface {setNextHeaderY: number => void}>>,
+  ref?: React.RefSetter<Readonly<interface {setNextHeaderY: number => void}>>,
   ...ScrollViewStickyHeaderProps
 );
 
-type ScrollViewBaseProps = $ReadOnly<{
+type ScrollViewBaseProps = Readonly<{
   /**
    * These styles will be applied to the scroll view content container which
    * wraps all of the child views. Example:
@@ -514,7 +522,7 @@ type ScrollViewBaseProps = $ReadOnly<{
    * whether content is "visible" or not.
    *
    */
-  maintainVisibleContentPosition?: ?$ReadOnly<{
+  maintainVisibleContentPosition?: ?Readonly<{
     minIndexForVisible: number,
     autoscrollToTopThreshold?: ?number,
   }>,
@@ -591,7 +599,7 @@ type ScrollViewBaseProps = $ReadOnly<{
    * top of the scroll view. This property is not supported in conjunction
    * with `horizontal={true}`.
    */
-  stickyHeaderIndices?: ?$ReadOnlyArray<number>,
+  stickyHeaderIndices?: ?ReadonlyArray<number>,
   /**
    * A React Component that will be used to render sticky headers.
    * To be used together with `stickyHeaderIndices` or with `SectionList`, defaults to `ScrollViewStickyHeader`.
@@ -625,7 +633,7 @@ type ScrollViewBaseProps = $ReadOnly<{
    *
    * Overrides less configurable `pagingEnabled` and `snapToInterval` props.
    */
-  snapToOffsets?: ?$ReadOnlyArray<number>,
+  snapToOffsets?: ?ReadonlyArray<number>,
   /**
    * Use in conjunction with `snapToOffsets`. By default, the beginning
    * of the list counts as a snap offset. Set `snapToStart` to false to disable
@@ -673,7 +681,7 @@ type ScrollViewBaseProps = $ReadOnly<{
   scrollViewRef?: React.RefSetter<PublicScrollViewInstance>,
 }>;
 
-export type ScrollViewProps = $ReadOnly<{
+export type ScrollViewProps = Readonly<{
   ...Omit<ViewProps, 'experimental_accessibilityOrder'>,
   ...ScrollViewPropsIOS,
   ...ScrollViewPropsAndroid,
@@ -686,7 +694,7 @@ type ScrollViewState = {
 
 const IS_ANIMATING_TOUCH_START_THRESHOLD_MS = 16;
 
-export type ScrollViewComponentStatics = $ReadOnly<{
+export type ScrollViewComponentStatics = Readonly<{
   Context: typeof ScrollViewContext,
 }>;
 
@@ -1850,6 +1858,8 @@ class ScrollView extends React.Component<ScrollViewProps, ScrollViewState> {
           {style: StyleSheet.compose(baseStyle, outer)},
           <NativeScrollView
             {...props}
+            // Nested scroll should always be enabled to allow the child scroll view to handle events before passing them to the refresh control parent
+            nestedScrollEnabled={props.nestedScrollEnabled ?? true}
             style={StyleSheet.compose(baseStyle, inner)}
             // $FlowFixMe[incompatible-type] - Flow only knows element refs.
             ref={scrollViewRef}>

@@ -10,12 +10,12 @@ package com.facebook.react.devsupport
 import android.content.Context
 import com.facebook.react.bridge.UiThreadUtil
 import com.facebook.react.common.SurfaceDelegateFactory
+import com.facebook.react.devsupport.inspector.TracingState
 import com.facebook.react.devsupport.interfaces.DevBundleDownloadListener
 import com.facebook.react.devsupport.interfaces.DevLoadingViewManager
 import com.facebook.react.devsupport.interfaces.DevSupportManager
 import com.facebook.react.devsupport.interfaces.PausedInDebuggerOverlayManager
 import com.facebook.react.devsupport.interfaces.RedBoxHandler
-import com.facebook.react.devsupport.interfaces.TracingState
 import com.facebook.react.packagerconnection.RequestHandler
 
 /**
@@ -23,9 +23,8 @@ import com.facebook.react.packagerconnection.RequestHandler
  * [DevSupportManagerBase] with some additional, more flexible APIs for asynchronously loading the
  * JS bundle.
  *
- * @constructor The primary constructor mirrors the same constructor we have for
- *   [BridgeDevSupportManager] and
- *     * is kept for backward compatibility.
+ * @constructor The primary constructor mirrors the same constructor we had for
+ *   `BridgeDevSupportManager` and is kept for backward compatibility.
  */
 internal class BridgelessDevSupportManager(
     applicationContext: Context,
@@ -83,6 +82,6 @@ internal class BridgelessDevSupportManager(
   }
 
   fun tracingState(): TracingState {
-    return TracingState.ENABLEDINCDPMODE
+    return TracingState.ENABLED_IN_CDP_MODE
   }
 }

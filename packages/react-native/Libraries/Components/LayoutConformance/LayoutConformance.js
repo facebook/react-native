@@ -12,7 +12,7 @@ import StyleSheet from '../../StyleSheet/StyleSheet';
 import LayoutConformanceNativeComponent from './LayoutConformanceNativeComponent';
 import * as React from 'react';
 
-export type LayoutConformanceProps = $ReadOnly<{
+export type LayoutConformanceProps = Readonly<{
   /**
    * strict: Layout in accordance with W3C spec, even when breaking
    * compatibility: Layout with the same behavior as previous versions of React Native

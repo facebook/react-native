@@ -728,7 +728,7 @@ TEST_P(RuntimeSchedulerTest, normalTaskYieldsToSynchronousAccessAndResumes) {
   // the test would be flaky in a multithreaded environment.
   stubQueue_->waitForTasks(2);
 
-  // Normal priority task immediatelly yield in favour of the sync task.
+  // Normal priority task immediately yield in favour of the sync task.
   stubQueue_->tick();
 
   EXPECT_EQ(stubQueue_->size(), 1);

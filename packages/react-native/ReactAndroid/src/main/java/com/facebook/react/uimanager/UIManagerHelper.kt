@@ -112,56 +112,32 @@ public object UIManagerHelper {
     }
   }
 
+  /** @return the [EventDispatcher] that handles events for the given [ReactContext]. */
+  @JvmStatic
+  public fun getEventDispatcher(context: ReactContext): EventDispatcher? {
+    var localContext = context
+    if (localContext is ThemedReactContext) {
+      localContext = localContext.reactApplicationContext
+    }
+    return (localContext as EventDispatcherProvider).getEventDispatcher()
+  }
+
   /** @return the [EventDispatcher] that handles events for the reactTag received as a parameter. */
   @JvmStatic
-  public fun getEventDispatcherForReactTag(context: ReactContext, reactTag: Int): EventDispatcher? {
-    val eventDispatcher = getEventDispatcher(context, getUIManagerType(reactTag))
-    if (eventDispatcher == null) {
-      ReactSoftExceptionLogger.logSoftException(
-          TAG,
-          IllegalStateException("Cannot get EventDispatcher for reactTag $reactTag"),
-      )
-    }
-    return eventDispatcher
-  }
+  @Deprecated("reactTag is no longer needed", ReplaceWith("getEventDispatcher(context)"))
+  public fun getEventDispatcherForReactTag(context: ReactContext, reactTag: Int): EventDispatcher? =
+      getEventDispatcher(context)
 
   /**
    * @return the [EventDispatcher] that handles events for the [UIManagerType] received as a
    *   parameter.
    */
   @JvmStatic
+  @Deprecated("UIManagerType is no longer needed", ReplaceWith("getEventDispatcher(context)"))
   public fun getEventDispatcher(
       context: ReactContext,
       @UIManagerType uiManagerType: Int,
-  ): EventDispatcher? {
-    // TODO T67518514 Clean this up once we migrate everything over to bridgeless mode
-    var localContext = context
-    if (localContext.isBridgeless()) {
-      if (localContext is ThemedReactContext) {
-        localContext = localContext.reactApplicationContext
-      }
-      return (localContext as EventDispatcherProvider).getEventDispatcher()
-    }
-    val uiManager = getUIManager(localContext, uiManagerType, false)
-    if (uiManager == null) {
-      ReactSoftExceptionLogger.logSoftException(
-          TAG,
-          ReactNoCrashSoftException("Unable to find UIManager for UIManagerType $uiManagerType"),
-      )
-      return null
-    }
-    val eventDispatcher = uiManager.eventDispatcher
-    // Linter shows "Condition is always 'false'."
-    // Keeping it for now as it was in the original Java code.
-    @Suppress("SENSELESS_COMPARISON")
-    if (eventDispatcher == null) {
-      ReactSoftExceptionLogger.logSoftException(
-          TAG,
-          IllegalStateException("Cannot get EventDispatcher for UIManagerType $uiManagerType"),
-      )
-    }
-    return eventDispatcher
-  }
+  ): EventDispatcher? = getEventDispatcher(context)
 
   /**
    * @return The [ReactContext] associated to the [View] received as a parameter.

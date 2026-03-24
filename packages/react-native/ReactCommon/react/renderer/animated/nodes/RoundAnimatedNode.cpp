@@ -22,7 +22,7 @@ RoundAnimatedNode::RoundAnimatedNode(
     NativeAnimatedNodesManager& manager)
     : ValueAnimatedNode(tag, config, manager),
       inputNodeTag_(static_cast<Tag>(getConfig()["input"].asInt())),
-      nearest_(getConfig()["input"].asDouble()) {
+      nearest_(getConfig()["nearest"].asDouble()) {
   react_native_assert(
       nearest_ != 0 &&
       "'nearest' cannot be 0 (can't round to the nearest multiple of 0)");

@@ -162,7 +162,7 @@ async function main() {
   console.info(`WORKING_DIRECTORY: ${WORKING_DIRECTORY}`);
   console.info('==============================\n');
 
-  const simulatorName = 'iPhone 15 Pro';
+  const simulatorName = 'iPhone 16 Pro';
   launchSimulator(simulatorName);
   installAppOnSimulator(APP_PATH);
   const udid = extractSimulatorUDID();

@@ -39,11 +39,15 @@ import com.facebook.react.common.annotations.FrameworkAPI
 import com.facebook.react.common.annotations.UnstableReactNativeAPI
 import com.facebook.react.common.build.ReactBuildConfig
 import com.facebook.react.devsupport.DefaultDevSupportManagerFactory
+import com.facebook.react.devsupport.DevMenuConfiguration
 import com.facebook.react.devsupport.DevSupportManagerBase
 import com.facebook.react.devsupport.DevSupportManagerFactory
 import com.facebook.react.devsupport.InspectorFlags
+import com.facebook.react.devsupport.inspector.FrameTimingsObserver
 import com.facebook.react.devsupport.inspector.InspectorNetworkHelper
 import com.facebook.react.devsupport.inspector.InspectorNetworkRequestListener
+import com.facebook.react.devsupport.inspector.TracingState
+import com.facebook.react.devsupport.inspector.TracingStateListener
 import com.facebook.react.devsupport.interfaces.BundleLoadCallback
 import com.facebook.react.devsupport.interfaces.DevSupportManager
 import com.facebook.react.devsupport.interfaces.DevSupportManager.PausedInDebuggerOverlayCommandListener
@@ -73,6 +77,9 @@ import java.util.concurrent.atomic.AtomicInteger
 import java.util.concurrent.atomic.AtomicReference
 import kotlin.Unit
 import kotlin.concurrent.Volatile
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.launch
 
 /**
  * A ReactHost is an object that manages a single [ReactInstance]. A ReactHost can be constructed
@@ -143,6 +150,7 @@ public class ReactHostImpl(
   private val beforeDestroyListeners: MutableList<() -> Unit> = CopyOnWriteArrayList()
 
   internal var reactHostInspectorTarget: ReactHostInspectorTarget? = null
+  private var frameTimingsObserver: FrameTimingsObserver? = null
 
   @Volatile private var hostInvalidated = false
 
@@ -242,6 +250,7 @@ public class ReactHostImpl(
     stateTracker.enterState("onHostResume(activity)")
 
     currentActivity = activity
+    frameTimingsObserver?.setCurrentWindow(activity?.window)
 
     maybeEnableDevSupport(true)
     reactLifecycleStateManager.moveToOnHostResume(currentReactContext, activity)
@@ -364,6 +373,12 @@ public class ReactHostImpl(
   /** Remove a listener previously added with [addReactInstanceEventListener]. */
   override fun removeReactInstanceEventListener(listener: ReactInstanceEventListener) {
     reactInstanceEventListeners.remove(listener)
+  }
+
+  override fun setDevMenuConfiguration(config: DevMenuConfiguration) {
+    devSupportManager.devMenuEnabled = config.devMenuEnabled
+    devSupportManager.shakeGestureEnabled = config.shakeGestureEnabled
+    devSupportManager.keyboardShortcutsEnabled = config.keyboardShortcutsEnabled
   }
 
   /**
@@ -643,6 +658,28 @@ public class ReactHostImpl(
     }
   }
 
+  @ThreadConfined(value = ThreadConfined.UI)
+  override fun setBundleSource(filePath: String) {
+    devSupportManager.bundleFilePath = filePath
+    reload("Change bundle source")
+  }
+
+  @ThreadConfined(value = ThreadConfined.UI)
+  override fun setBundleSource(
+      debugServerHost: String,
+      moduleName: String,
+      queryMapper: (Map<String, String>) -> Map<String, String>,
+  ) {
+    CoroutineScope(Dispatchers.Default).launch {
+      (devSupportManager as DevSupportManagerBase).devServerHelper.closePackagerConnection()
+      val packagerConnectionSettings = devSupportManager.devSettings.packagerConnectionSettings
+      packagerConnectionSettings.setPackagerOptionsUpdater(queryMapper)
+      packagerConnectionSettings.debugServerHost = debugServerHost
+      devSupportManager.jsAppBundleName = moduleName
+      reload("Changed bundle source")
+    }
+  }
+
   @ThreadConfined(ThreadConfined.UI)
   override fun onConfigurationChanged(context: Context) {
     val currentReactContext = this.currentReactContext
@@ -815,6 +852,7 @@ public class ReactHostImpl(
   private fun moveToHostDestroy(currentContext: ReactContext?) {
     reactLifecycleStateManager.moveToOnHostDestroy(currentContext)
     currentActivity = null
+    frameTimingsObserver?.setCurrentWindow(null)
   }
 
   private fun raiseSoftException(
@@ -951,11 +989,10 @@ public class ReactHostImpl(
           jsBundleLoader.onSuccess(
               { task ->
                 val bundleLoader = checkNotNull(task.getResult())
-                val reactContext =
-                    bridgelessReactContextRef.getOrCreate {
-                      stateTracker.enterState(method, "Creating BridgelessReactContext")
-                      BridgelessReactContext(context, this)
-                    }
+                val reactContext = bridgelessReactContextRef.getOrCreate {
+                  stateTracker.enterState(method, "Creating BridgelessReactContext")
+                  BridgelessReactContext(context, this)
+                }
                 reactContext.jsExceptionHandler = devSupportManager
 
                 stateTracker.enterState(method, "Creating ReactInstance")
@@ -1056,6 +1093,16 @@ public class ReactHostImpl(
   private val jsBundleLoader: Task<JSBundleLoader>
     get() {
       stateTracker.enterState("getJSBundleLoader()")
+
+      if (devSupportManager.bundleFilePath != null) {
+        return try {
+          Task.forResult(
+              JSBundleLoader.createFileLoader(checkNotNull(devSupportManager.bundleFilePath))
+          )
+        } catch (e: Exception) {
+          Task.forError(e)
+        }
+      }
 
       if (useDevSupport && allowPackagerServerAccess) {
         return isMetroRunning.onSuccessTask(
@@ -1220,10 +1267,6 @@ public class ReactHostImpl(
     val method = "getOrCreateReloadTask()"
     stateTracker.enterState(method)
 
-    // Log how React Native is destroyed
-    // TODO(T136397487): Remove after Venice is shipped to 100%
-    raiseSoftException(method, reason)
-
     reloadTask?.let {
       return it
     }
@@ -1375,10 +1418,6 @@ public class ReactHostImpl(
     val method = "getOrCreateDestroyTask()"
     stateTracker.enterState(method)
 
-    // Log how React Native is destroyed
-    // TODO(T136397487): Remove after Venice is shipped to 100%
-    raiseSoftException(method, reason, ex)
-
     destroyTask?.let {
       return it
     }
@@ -1400,8 +1439,7 @@ public class ReactHostImpl(
                 // If the host has been invalidated, now that the current context/instance
                 // has been unregistered, we can safely destroy the host's inspector
                 // target.
-                reactHostInspectorTarget?.close()
-                reactHostInspectorTarget = null
+                destroyReactHostInspectorTarget()
               }
 
               // Step 1: Destroy DevSupportManager
@@ -1512,11 +1550,50 @@ public class ReactHostImpl(
 
   internal fun getOrCreateReactHostInspectorTarget(): ReactHostInspectorTarget? {
     if (reactHostInspectorTarget == null && InspectorFlags.getFuseboxEnabled()) {
-      // NOTE: ReactHostInspectorTarget only retains a weak reference to `this`.
-      reactHostInspectorTarget = ReactHostInspectorTarget(this)
+      reactHostInspectorTarget = createReactHostInspectorTarget()
     }
 
     return reactHostInspectorTarget
+  }
+
+  private fun createReactHostInspectorTarget(): ReactHostInspectorTarget {
+    // NOTE: ReactHostInspectorTarget only retains a weak reference to `this`.
+    val inspectorTarget = ReactHostInspectorTarget(this)
+    inspectorTarget.registerTracingStateListener(
+        TracingStateListener { state: TracingState, _screenshotsEnabled: Boolean ->
+          when (state) {
+            TracingState.ENABLED_IN_BACKGROUND_MODE,
+            TracingState.ENABLED_IN_CDP_MODE -> {
+              if (InspectorFlags.getFrameRecordingEnabled()) {
+                val observer =
+                    FrameTimingsObserver(
+                        _screenshotsEnabled,
+                        { frameTimingsSequence ->
+                          inspectorTarget.recordFrameTimings(frameTimingsSequence)
+                        },
+                    )
+                observer.setCurrentWindow(currentActivity?.window)
+                observer.start()
+                frameTimingsObserver = observer
+              }
+            }
+            TracingState.DISABLED -> {
+              frameTimingsObserver?.stop()
+              frameTimingsObserver = null
+            }
+          }
+        }
+    )
+
+    return inspectorTarget
+  }
+
+  private fun destroyReactHostInspectorTarget() {
+    frameTimingsObserver?.stop()
+    frameTimingsObserver = null
+
+    reactHostInspectorTarget?.close()
+    reactHostInspectorTarget = null
   }
 
   @ThreadConfined(ThreadConfined.UI)

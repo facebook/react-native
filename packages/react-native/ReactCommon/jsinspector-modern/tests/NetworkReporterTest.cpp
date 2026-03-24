@@ -5,7 +5,7 @@
  * LICENSE file in the root directory of this source tree.
  */
 
-#include "JsiIntegrationTest.h"
+#include "TracingTest.h"
 #include "engines/JsiIntegrationTestHermesEngineAdapter.h"
 
 #include <folly/executors/QueuedImmediateExecutor.h>
@@ -19,7 +19,7 @@ namespace facebook::react::jsinspector_modern {
 
 namespace {
 
-struct Params {
+struct NetworkReporterTestParams {
   bool enableNetworkEventReporting;
 };
 
@@ -27,18 +27,21 @@ struct Params {
 
 /**
  * A test fixture for the way the internal NetworkReporter API interacts with
- * the CDP Network domain.
+ * the CDP Network and Tracing domains.
  */
-class NetworkReporterTest : public JsiIntegrationPortableTestBase<
-                                JsiIntegrationTestHermesEngineAdapter,
-                                folly::QueuedImmediateExecutor>,
-                            public WithParamInterface<Params> {
+template <typename Params>
+  requires std::convertible_to<Params, NetworkReporterTestParams>
+class NetworkReporterTestBase : public TracingTestBase<
+                                    JsiIntegrationTestHermesEngineAdapter,
+                                    folly::QueuedImmediateExecutor>,
+                                public WithParamInterface<Params> {
  protected:
-  NetworkReporterTest()
-      : JsiIntegrationPortableTestBase({
-            .networkInspectionEnabled = true,
+  NetworkReporterTestBase()
+      : TracingTestBase({
             .enableNetworkEventReporting =
-                GetParam().enableNetworkEventReporting,
+                WithParamInterface<Params>::GetParam()
+                    .enableNetworkEventReporting,
+            .networkInspectionEnabled = true,
         }) {}
 
   void SetUp() override {
@@ -76,6 +79,8 @@ class NetworkReporterTest : public JsiIntegrationPortableTestBase<
 
   std::unordered_map<std::string, std::string> scriptUrlsById_;
 };
+
+using NetworkReporterTest = NetworkReporterTestBase<NetworkReporterTestParams>;
 
 TEST_P(NetworkReporterTest, testNetworkEnableDisable) {
   InSequence s;
@@ -393,15 +398,16 @@ TEST_P(NetworkReporterTest, testCompleteNetworkFlow) {
                                             "base64Encoded": false
                                           }
                                         })"));
-  this->toPage_->sendMessage(fmt::format(
-      R"({{
+  this->toPage_->sendMessage(
+      fmt::format(
+          R"({{
           "id": 2,
           "method": "Network.getResponseBody",
           "params": {{
             "requestId": {0}
           }}
         }})",
-      folly::toJson(requestId)));
+          folly::toJson(requestId)));
 
   this->expectMessageFromPage(JsonEq(R"({
                                           "id": 3,
@@ -437,15 +443,16 @@ TEST_P(NetworkReporterTest, testGetResponseBodyWithBase64) {
                                             "base64Encoded": true
                                           }
                                         })"));
-  this->toPage_->sendMessage(fmt::format(
-      R"({{
+  this->toPage_->sendMessage(
+      fmt::format(
+          R"({{
           "id": 2,
           "method": "Network.getResponseBody",
           "params": {{
             "requestId": {0}
           }}
         }})",
-      folly::toJson(requestId)));
+          folly::toJson(requestId)));
 
   this->expectMessageFromPage(JsonEq(R"({
                                           "id": 3,
@@ -581,12 +588,242 @@ TEST_P(NetworkReporterTest, testCreateRequestIdWithoutNetworkDomain) {
   EXPECT_NE(id1, id2);
 }
 
-static const auto paramValues = testing::Values(
-    Params{.enableNetworkEventReporting = true},
-    Params{
+TEST_P(NetworkReporterTest, testTwoSessionsReceiveNetworkEvents) {
+  auto secondary = this->connectSecondary();
+
+  this->expectMessageFromPage(JsonEq(R"({"id": 1, "result": {}})"));
+  this->toPage_->sendMessage(R"({"id": 1, "method": "Network.enable"})");
+
+  EXPECT_CALL(
+      secondary.fromPage(), onMessage(JsonEq(R"({"id": 2, "result": {}})")));
+  secondary.toPage().sendMessage(R"({"id": 2, "method": "Network.enable"})");
+
+  // Both sessions should receive the network event
+  this->expectMessageFromPage(JsonParsed(AllOf(
+      AtJsonPtr("/method", "Network.requestWillBeSent"),
+      AtJsonPtr("/params/requestId", "multi-session-request"))));
+  EXPECT_CALL(
+      secondary.fromPage(),
+      onMessage(JsonParsed(AllOf(
+          AtJsonPtr("/method", "Network.requestWillBeSent"),
+          AtJsonPtr("/params/requestId", "multi-session-request")))));
+
+  RequestInfo requestInfo;
+  requestInfo.url = "https://example.com/test";
+  requestInfo.httpMethod = "GET";
+  NetworkReporter::getInstance().reportRequestStart(
+      "multi-session-request", requestInfo, 0, std::nullopt);
+
+  this->expectMessageFromPage(JsonEq(R"({"id": 3, "result": {}})"));
+  this->toPage_->sendMessage(R"({"id": 3, "method": "Network.disable"})");
+
+  EXPECT_CALL(
+      secondary.fromPage(), onMessage(JsonEq(R"({"id": 4, "result": {}})")));
+  secondary.toPage().sendMessage(R"({"id": 4, "method": "Network.disable"})");
+}
+
+struct NetworkReporterTracingTestParams {
+  bool enableNetworkEventReporting;
+  bool enableNetworkDomain;
+
+  operator NetworkReporterTestParams() const {
+    return NetworkReporterTestParams{
+        .enableNetworkEventReporting = enableNetworkEventReporting,
+    };
+  }
+};
+
+using NetworkReporterTracingTest =
+    NetworkReporterTestBase<NetworkReporterTracingTestParams>;
+
+TEST_P(
+    NetworkReporterTracingTest,
+    testReportsToTracingDomainPlusNetworkDomain) {
+  InSequence s;
+
+  this->startTracing();
+
+  if (GetParam().enableNetworkDomain) {
+    this->expectMessageFromPage(JsonEq(R"({
+                                        "id": 1,
+                                        "result": {}
+                                      })"));
+    this->toPage_->sendMessage(R"({
+                                  "id": 1,
+                                  "method": "Network.enable"
+                                })");
+
+    this->expectMessageFromPage(JsonParsed(AllOf(
+        AtJsonPtr("/method", "Network.requestWillBeSent"),
+        AtJsonPtr("/params/requestId", "trace-events-request"),
+        AtJsonPtr("/params/loaderId", ""),
+        AtJsonPtr("/params/documentURL", "mobile"),
+        AtJsonPtr("/params/request/url", "https://trace.example.com/events"),
+        AtJsonPtr("/params/request/method", "GET"),
+        AtJsonPtr("/params/request/headers/Accept", "application/json"),
+        AtJsonPtr("/params/timestamp", Gt(0)),
+        AtJsonPtr("/params/wallTime", Gt(0)),
+        AtJsonPtr("/params/initiator/type", "script"),
+        AtJsonPtr("/params/redirectHasExtraInfo", false))));
+
+    this->expectMessageFromPage(JsonParsed(AllOf(
+        AtJsonPtr("/method", "Network.requestWillBeSentExtraInfo"),
+        AtJsonPtr("/params/requestId", "trace-events-request"),
+        AtJsonPtr("/params/associatedCookies", "[]"_json),
+        AtJsonPtr("/params/headers", "{}"_json),
+        AtJsonPtr("/params/connectTiming/requestTime", Gt(0)))));
+
+    this->expectMessageFromPage(JsonParsed(AllOf(
+        AtJsonPtr("/method", "Network.responseReceived"),
+        AtJsonPtr("/params/requestId", "trace-events-request"),
+        AtJsonPtr("/params/loaderId", ""),
+        AtJsonPtr("/params/timestamp", Gt(0)),
+        AtJsonPtr("/params/type", "XHR"),
+        AtJsonPtr("/params/response/url", "https://trace.example.com/events"),
+        AtJsonPtr("/params/response/status", 200),
+        AtJsonPtr("/params/response/statusText", "OK"),
+        AtJsonPtr("/params/response/headers/Content-Type", "application/json"),
+        AtJsonPtr("/params/response/mimeType", "application/json"),
+        AtJsonPtr("/params/response/encodedDataLength", 1024),
+        AtJsonPtr("/params/hasExtraInfo", false))));
+
+    this->expectMessageFromPage(JsonParsed(AllOf(
+        AtJsonPtr("/method", "Network.dataReceived"),
+        AtJsonPtr("/params/requestId", "trace-events-request"),
+        AtJsonPtr("/params/timestamp", Gt(0)),
+        AtJsonPtr("/params/dataLength", 512),
+        AtJsonPtr("/params/encodedDataLength", 512))));
+
+    this->expectMessageFromPage(JsonParsed(AllOf(
+        AtJsonPtr("/method", "Network.loadingFinished"),
+        AtJsonPtr("/params/requestId", "trace-events-request"),
+        AtJsonPtr("/params/timestamp", Gt(0)),
+        AtJsonPtr("/params/encodedDataLength", 1024))));
+  }
+
+  NetworkReporter::getInstance().reportRequestStart(
+      "trace-events-request",
+      {
+          .url = "https://trace.example.com/events",
+          .httpMethod = "GET",
+          .headers = Headers{{"Accept", "application/json"}},
+      },
+      0,
+      std::nullopt);
+
+  NetworkReporter::getInstance().reportConnectionTiming(
+      "trace-events-request", std::nullopt);
+
+  NetworkReporter::getInstance().reportResponseStart(
+      "trace-events-request",
+      {
+          .url = "https://trace.example.com/events",
+          .statusCode = 200,
+          .headers = Headers{{"Content-Type", "application/json"}},
+      },
+      1024);
+
+  NetworkReporter::getInstance().reportDataReceived(
+      "trace-events-request", 512, 512);
+
+  NetworkReporter::getInstance().reportResponseEnd(
+      "trace-events-request", 1024);
+
+  auto allTraceEvents = endTracingAndCollectEvents();
+
+  EXPECT_THAT(
+      allTraceEvents,
+      Contains(AllOf(
+          AtJsonPtr("/name", "ResourceSendRequest"),
+          AtJsonPtr("/cat", "devtools.timeline"),
+          AtJsonPtr("/ph", "I"),
+          AtJsonPtr("/s", "t"),
+          AtJsonPtr("/tid", oscompat::getCurrentThreadId()),
+          AtJsonPtr("/pid", oscompat::getCurrentProcessId()),
+          AtJsonPtr("/args/data/initiator", "{}"_json),
+          AtJsonPtr("/args/data/requestId", "trace-events-request"),
+          AtJsonPtr("/args/data/url", "https://trace.example.com/events"),
+          AtJsonPtr("/args/data/requestMethod", "GET"),
+          AtJsonPtr("/args/data/priority", "VeryHigh"),
+          AtJsonPtr("/args/data/renderBlocking", "non_blocking"),
+          AtJsonPtr("/args/data/resourceType", "Other"))));
+
+  EXPECT_THAT(
+      allTraceEvents,
+      Contains(AllOf(
+          AtJsonPtr("/name", "ResourceReceiveResponse"),
+          AtJsonPtr("/cat", "devtools.timeline"),
+          AtJsonPtr("/ph", "I"),
+          AtJsonPtr("/s", "t"),
+          AtJsonPtr("/tid", oscompat::getCurrentThreadId()),
+          AtJsonPtr("/pid", oscompat::getCurrentProcessId()),
+          AtJsonPtr("/ts", Gt(0)),
+          AtJsonPtr("/args/data/requestId", "trace-events-request"),
+          AtJsonPtr("/args/data/statusCode", 200),
+          AtJsonPtr("/args/data/mimeType", "application/json"),
+          AtJsonPtr("/args/data/protocol", "h2"),
+          AtJsonPtr("/args/data/encodedDataLength", 1024),
+          AtJsonPtr(
+              "/args/data/headers",
+              R"([{ "name": "Content-Type", "value": "application/json" }])"_json),
+          AtJsonPtr(
+              "/args/data/timing",
+              AllOf(
+                  AtJsonPtr("/requestTime", Ge(0)),
+                  AtJsonPtr("/sendStart", Ge(0)),
+                  AtJsonPtr("/sendEnd", Ge(0)),
+                  AtJsonPtr("/receiveHeadersStart", Ge(0)),
+                  AtJsonPtr("/receiveHeadersEnd", Ge(0)))))));
+
+  EXPECT_THAT(
+      allTraceEvents,
+      Contains(AllOf(
+          AtJsonPtr("/name", "ResourceReceivedData"),
+          AtJsonPtr("/cat", "devtools.timeline"),
+          AtJsonPtr("/ph", "I"),
+          AtJsonPtr("/s", "t"),
+          AtJsonPtr("/tid", oscompat::getCurrentThreadId()),
+          AtJsonPtr("/pid", oscompat::getCurrentProcessId()),
+          AtJsonPtr("/args/data/requestId", "trace-events-request"),
+          AtJsonPtr("/args/data/encodedDataLength", 512))));
+
+  EXPECT_THAT(
+      allTraceEvents,
+      Contains(AllOf(
+          AtJsonPtr("/name", "ResourceFinish"),
+          AtJsonPtr("/cat", "devtools.timeline"),
+          AtJsonPtr("/ph", "I"),
+          AtJsonPtr("/s", "t"),
+          AtJsonPtr("/tid", oscompat::getCurrentThreadId()),
+          AtJsonPtr("/pid", oscompat::getCurrentProcessId()),
+          AtJsonPtr("/args/data/requestId", "trace-events-request"),
+          AtJsonPtr("/args/data/encodedDataLength", 1024),
+          AtJsonPtr("/args/data/decodedBodyLength", 0),
+          AtJsonPtr("/args/data/didFail", false))));
+}
+
+static const auto networkReporterTestParamValues = testing::Values(
+    NetworkReporterTestParams{.enableNetworkEventReporting = true},
+    NetworkReporterTestParams{
         .enableNetworkEventReporting = false,
     });
 
-INSTANTIATE_TEST_SUITE_P(NetworkReporterTest, NetworkReporterTest, paramValues);
+static const auto networkReporterTracingTestParamValues = testing::Values(
+    NetworkReporterTracingTestParams{
+        .enableNetworkEventReporting = true,
+        .enableNetworkDomain = true},
+    NetworkReporterTracingTestParams{
+        .enableNetworkEventReporting = true,
+        .enableNetworkDomain = false});
+
+INSTANTIATE_TEST_SUITE_P(
+    NetworkReporterTest,
+    NetworkReporterTest,
+    networkReporterTestParamValues);
+
+INSTANTIATE_TEST_SUITE_P(
+    NetworkReporterTracingTest,
+    NetworkReporterTracingTest,
+    networkReporterTracingTestParamValues);
 
 } // namespace facebook::react::jsinspector_modern

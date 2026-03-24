@@ -10,6 +10,7 @@
 #include <string>
 #include <vector>
 
+#include <react/debug/react_native_assert.h>
 #include <react/renderer/core/graphicsConversions.h>
 #include <react/renderer/core/propsConversions.h>
 #include <react/renderer/debug/debugStringConvertibleUtils.h>
@@ -33,26 +34,25 @@ class ImageSource {
   CacheStategy cache = CacheStategy::Default;
   std::vector<std::pair<std::string, std::string>> headers{};
 
-  bool operator==(const ImageSource& rhs) const {
+  bool operator==(const ImageSource &rhs) const
+  {
     return std::tie(this->type, this->uri) == std::tie(rhs.type, rhs.uri);
   }
 
-  bool operator!=(const ImageSource& rhs) const {
-    return !(*this == rhs);
-  }
-
 #ifdef RN_SERIALIZABLE_STATE
-  folly::dynamic toDynamic() const {
+  folly::dynamic toDynamic() const
+  {
     folly::dynamic imageSourceResult = folly::dynamic::object();
     switch (type) {
-      case ImageSource::Type::Invalid:
-        imageSourceResult["type"] = "invalid";
-        break;
       case ImageSource::Type::Remote:
         imageSourceResult["type"] = "remote";
         break;
       case ImageSource::Type::Local:
         imageSourceResult["type"] = "local";
+        break;
+      case ImageSource::Type::Invalid:
+      default:
+        imageSourceResult["type"] = "invalid";
         break;
     }
 
@@ -69,9 +69,6 @@ class ImageSource {
     imageSourceResult["method"] = method;
 
     switch (cache) {
-      case ImageSource::CacheStategy::Default:
-        imageSourceResult["cache"] = "default";
-        break;
       case ImageSource::CacheStategy::Reload:
         imageSourceResult["cache"] = "reload";
         break;
@@ -81,10 +78,14 @@ class ImageSource {
       case ImageSource::CacheStategy::OnlyIfCached:
         imageSourceResult["cache"] = "only-if-cached";
         break;
+      case ImageSource::CacheStategy::Default:
+      default:
+        imageSourceResult["cache"] = "default";
+        break;
     }
 
     folly::dynamic headersObject = folly::dynamic::object();
-    for (const auto& header : headers) {
+    for (const auto &header : headers) {
       headersObject[header.first] = header.second;
     }
     imageSourceResult["headers"] = headersObject;
@@ -94,41 +95,30 @@ class ImageSource {
 #endif
 
 #if RN_DEBUG_STRING_CONVERTIBLE
-  SharedDebugStringConvertibleList getDebugProps(
-      const std::string& prefix) const {
+  SharedDebugStringConvertibleList getDebugProps(const std::string &prefix) const
+  {
     ImageSource imageSource{};
 
     SharedDebugStringConvertibleList headersList;
-    for (const auto& header : headers) {
-      headersList.push_back(debugStringConvertibleItem(
-          prefix + "-header-" + header.first, header.second));
+    for (const auto &header : headers) {
+      headersList.push_back(debugStringConvertibleItem(prefix + "-header-" + header.first, header.second));
     }
 
     return headersList +
         SharedDebugStringConvertibleList{
-            debugStringConvertibleItem(
-                prefix + "-type", toString(type), toString(imageSource.type)),
+            debugStringConvertibleItem(prefix + "-type", toString(type), toString(imageSource.type)),
             debugStringConvertibleItem(prefix + "-uri", uri, imageSource.uri),
-            debugStringConvertibleItem(
-                prefix + "-bundle", bundle, imageSource.bundle),
-            debugStringConvertibleItem(
-                prefix + "-scale", scale, imageSource.scale),
-            debugStringConvertibleItem(
-                prefix + "-size",
-                react::toString(size),
-                react::toString(imageSource.size)),
-            debugStringConvertibleItem(
-                prefix + "-body", body, imageSource.body),
-            debugStringConvertibleItem(
-                prefix + "-method", method, imageSource.method),
-            debugStringConvertibleItem(
-                prefix + "-cache",
-                toString(cache),
-                toString(imageSource.cache)),
+            debugStringConvertibleItem(prefix + "-bundle", bundle, imageSource.bundle),
+            debugStringConvertibleItem(prefix + "-scale", scale, imageSource.scale),
+            debugStringConvertibleItem(prefix + "-size", react::toString(size), react::toString(imageSource.size)),
+            debugStringConvertibleItem(prefix + "-body", body, imageSource.body),
+            debugStringConvertibleItem(prefix + "-method", method, imageSource.method),
+            debugStringConvertibleItem(prefix + "-cache", toString(cache), toString(imageSource.cache)),
         };
   }
 
-  std::string toString(const Type& typeValue) const {
+  std::string toString(const Type &typeValue) const
+  {
     switch (typeValue) {
       case ImageSource::Type::Invalid:
         return "invalid";
@@ -136,10 +126,14 @@ class ImageSource {
         return "remote";
       case ImageSource::Type::Local:
         return "local";
+      default:
+        react_native_assert(false && "Invalid ImageSource::Type");
+        return "";
     }
   }
 
-  std::string toString(const CacheStategy& cacheValue) const {
+  std::string toString(const CacheStategy &cacheValue) const
+  {
     switch (cacheValue) {
       case ImageSource::CacheStategy::Default:
         return "default";
@@ -149,13 +143,17 @@ class ImageSource {
         return "force-cache";
       case ImageSource::CacheStategy::OnlyIfCached:
         return "only-if-cached";
+      default:
+        react_native_assert(false && "Invalid ImageSource::CacheStategy");
+        return "";
     }
   }
 #endif
 };
 
 #ifdef RN_SERIALIZABLE_STATE
-inline folly::dynamic toDynamic(const ImageSource& imageSource) {
+inline folly::dynamic toDynamic(const ImageSource &imageSource)
+{
   return imageSource.toDynamic();
 }
 #endif

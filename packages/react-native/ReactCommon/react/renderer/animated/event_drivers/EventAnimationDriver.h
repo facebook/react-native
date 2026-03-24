@@ -11,7 +11,6 @@
 
 #pragma once
 
-#include <folly/dynamic.h>
 #include <react/renderer/core/EventPayload.h>
 #include <react/renderer/core/ReactPrimitives.h>
 #include <optional>
@@ -22,15 +21,14 @@ namespace facebook::react {
 
 class EventAnimationDriver {
  public:
-  EventAnimationDriver(
-      const std::vector<std::string>& eventPath,
-      Tag animatedValueTag);
+  EventAnimationDriver(const std::vector<std::string> &eventPath, Tag animatedValueTag);
 
   ~EventAnimationDriver() = default;
 
-  std::optional<double> getValueFromPayload(const EventPayload& eventPayload);
+  std::optional<double> getValueFromPayload(const EventPayload &eventPayload);
 
-  Tag getAnimatedNodeTag() const {
+  Tag getAnimatedNodeTag() const
+  {
     return animatedValueTag_;
   }
 
@@ -44,8 +42,8 @@ struct EventAnimationDriverKey {
   Tag viewTag;
   std::string eventName;
 
-  bool operator==(
-      const facebook::react::EventAnimationDriverKey& rhs) const noexcept {
+  bool operator==(const facebook::react::EventAnimationDriverKey &rhs) const noexcept
+  {
     return viewTag == rhs.viewTag && eventName == rhs.eventName;
   }
 };
@@ -55,9 +53,9 @@ struct EventAnimationDriverKey {
 namespace std {
 template <>
 struct hash<facebook::react::EventAnimationDriverKey> {
-  size_t operator()(const facebook::react::EventAnimationDriverKey& key) const {
-    return std::hash<facebook::react::Tag>()(key.viewTag) ^
-        std::hash<std::string>()(key.eventName);
+  size_t operator()(const facebook::react::EventAnimationDriverKey &key) const
+  {
+    return std::hash<facebook::react::Tag>()(key.viewTag) ^ std::hash<std::string>()(key.eventName);
   }
 };
 } // namespace std

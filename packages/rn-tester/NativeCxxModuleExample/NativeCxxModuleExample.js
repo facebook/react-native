@@ -31,11 +31,11 @@ export type UnionFloat = 1.44 | 2.88 | 5.76;
 export type UnionString = 'One' | 'Two' | 'Three';
 export type UnionObject = {value: number} | {low: string};
 
-export type ConstantsStruct = {
+export type ConstantsStruct = Readonly<{
   const1: boolean,
   const2: number,
   const3: string,
-};
+}>;
 
 export type ObjectStruct = {
   a: number,

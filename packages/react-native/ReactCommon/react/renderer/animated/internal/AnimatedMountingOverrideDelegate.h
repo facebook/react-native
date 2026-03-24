@@ -7,11 +7,9 @@
 
 #pragma once
 
-#include <folly/dynamic.h>
 #include <react/renderer/mounting/MountingOverrideDelegate.h>
 #include <react/renderer/mounting/MountingTransaction.h>
 #include <react/renderer/mounting/ShadowViewMutation.h>
-#include <functional>
 #include <optional>
 
 namespace facebook::react {
@@ -21,22 +19,20 @@ class NativeAnimatedNodesManager;
 
 class AnimatedMountingOverrideDelegate : public MountingOverrideDelegate {
  public:
-  AnimatedMountingOverrideDelegate(
-      NativeAnimatedNodesManager& animatedManager,
-      const Scheduler& scheduler);
+  AnimatedMountingOverrideDelegate(NativeAnimatedNodesManager &animatedManager, const Scheduler &scheduler);
 
   bool shouldOverridePullTransaction() const override;
 
   std::optional<MountingTransaction> pullTransaction(
       SurfaceId surfaceId,
       MountingTransaction::Number transactionNumber,
-      const TransactionTelemetry& telemetry,
+      const TransactionTelemetry &telemetry,
       ShadowViewMutationList mutations) const override;
 
  private:
-  mutable NativeAnimatedNodesManager* animatedManager_;
+  mutable NativeAnimatedNodesManager *animatedManager_;
 
-  const Scheduler* scheduler_;
+  const Scheduler *scheduler_;
 };
 
 } // namespace facebook::react

@@ -111,11 +111,12 @@ void RuntimeAgent::notifyBindingCalled(
     return;
   }
 
-  frontendChannel_(cdp::jsonNotification(
-      "Runtime.bindingCalled",
-      folly::dynamic::object(
-          "executionContextId", executionContextDescription_.id)(
-          "name", bindingName)("payload", payload)));
+  frontendChannel_(
+      cdp::jsonNotification(
+          "Runtime.bindingCalled",
+          folly::dynamic::object(
+              "executionContextId", executionContextDescription_.id)(
+              "name", bindingName)("payload", payload)));
 }
 
 RuntimeAgent::ExportedState RuntimeAgent::getExportedState() {
@@ -145,31 +146,26 @@ RuntimeAgent::~RuntimeAgent() {
   sessionState_.lastRuntimeAgentExportedState = getExportedState();
 }
 
-void RuntimeAgent::enableSamplingProfiler() {
-  targetController_.enableSamplingProfiler();
-}
-
-void RuntimeAgent::disableSamplingProfiler() {
-  targetController_.disableSamplingProfiler();
-}
-
-tracing::RuntimeSamplingProfile RuntimeAgent::collectSamplingProfile() {
-  return targetController_.collectSamplingProfile();
-}
-
 #pragma mark - Tracing
 
 RuntimeTracingAgent::RuntimeTracingAgent(
     tracing::TraceRecordingState& state,
     RuntimeTargetController& targetController)
     : tracing::TargetTracingAgent(state), targetController_(targetController) {
-  if (state.mode == tracing::Mode::CDP) {
+  if (state.enabledCategories.contains(tracing::Category::JavaScriptSampling)) {
     targetController_.enableSamplingProfiler();
+  }
+  if (state.mode == tracing::Mode::CDP) {
+    targetController_.emitTracingStateChange(true);
   }
 }
 
 RuntimeTracingAgent::~RuntimeTracingAgent() {
   if (state_.mode == tracing::Mode::CDP) {
+    targetController_.emitTracingStateChange(false);
+  }
+  if (state_.enabledCategories.contains(
+          tracing::Category::JavaScriptSampling)) {
     targetController_.disableSamplingProfiler();
     auto profile = targetController_.collectSamplingProfile();
 

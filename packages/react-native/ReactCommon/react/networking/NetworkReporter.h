@@ -9,7 +9,6 @@
 
 #include "NetworkTypes.h"
 
-#include <folly/dynamic.h>
 #include <react/timing/primitives.h>
 
 #include <mutex>
@@ -27,14 +26,14 @@ namespace facebook::react {
  * reporting.
  */
 struct ResourceTimingData {
-  std::string url;
-  HighResTimeStamp fetchStart;
-  HighResTimeStamp requestStart;
-  std::optional<HighResTimeStamp> connectStart;
-  std::optional<HighResTimeStamp> connectEnd;
-  std::optional<HighResTimeStamp> responseStart;
+  std::string url{};
+  HighResTimeStamp fetchStart{};
+  HighResTimeStamp requestStart{};
+  std::optional<HighResTimeStamp> connectStart{};
+  std::optional<HighResTimeStamp> connectEnd{};
+  std::optional<HighResTimeStamp> responseStart{};
   int responseStatus = 0;
-  std::string contentType;
+  std::string contentType{};
   int encodedBodySize = 0;
   int decodedBodySize = 0;
 };
@@ -47,7 +46,7 @@ struct ResourceTimingData {
  */
 class NetworkReporter {
  public:
-  static NetworkReporter& getInstance();
+  static NetworkReporter &getInstance();
 
   /**
    * Returns whether network tracking over CDP is currently enabled.
@@ -65,10 +64,10 @@ class NetworkReporter {
    * https://w3c.github.io/resource-timing/#dom-performanceresourcetiming-requeststart
    */
   void reportRequestStart(
-      const std::string& requestId,
-      const RequestInfo& requestInfo,
+      const std::string &requestId,
+      const RequestInfo &requestInfo,
       int encodedDataLength,
-      const std::optional<ResponseInfo>& redirectResponse);
+      const std::optional<ResponseInfo> &redirectResponse);
 
   /**
    * Report timestamp for sending the network request, and (in a debug build)
@@ -82,9 +81,7 @@ class NetworkReporter {
    *
    * https://w3c.github.io/resource-timing/#dom-performanceresourcetiming-connectstart
    */
-  void reportConnectionTiming(
-      const std::string& requestId,
-      const std::optional<Headers>& headers);
+  void reportConnectionTiming(const std::string &requestId, const std::optional<Headers> &headers);
 
   /**
    * Report when HTTP response headers have been received, corresponding to
@@ -96,10 +93,7 @@ class NetworkReporter {
    *
    * https://w3c.github.io/resource-timing/#dom-performanceresourcetiming-responsestart
    */
-  void reportResponseStart(
-      const std::string& requestId,
-      const ResponseInfo& responseInfo,
-      int encodedDataLength);
+  void reportResponseStart(const std::string &requestId, const ResponseInfo &responseInfo, int encodedDataLength);
 
   /**
    * Report when additional chunks of the response body have been received.
@@ -107,10 +101,7 @@ class NetworkReporter {
    * Corresponds to `Network.dataReceived` in CDP (used for progress bar
    * rendering).
    */
-  void reportDataReceived(
-      const std::string& requestId,
-      int dataLength,
-      const std::optional<int>& encodedDataLength);
+  void reportDataReceived(const std::string &requestId, int dataLength, const std::optional<int> &encodedDataLength);
 
   /**
    * Report when a network request is complete and we are no longer receiving
@@ -122,14 +113,14 @@ class NetworkReporter {
    *
    * https://w3c.github.io/resource-timing/#dom-performanceresourcetiming-responseend
    */
-  void reportResponseEnd(const std::string& requestId, int encodedDataLength);
+  void reportResponseEnd(const std::string &requestId, int encodedDataLength);
 
   /**
    * Report when a network request has failed.
    *
    * Corresponds to `Network.loadingFailed` in CDP.
    */
-  void reportRequestFailed(const std::string& requestId, bool cancelled) const;
+  void reportRequestFailed(const std::string &requestId, bool cancelled) const;
 
   /**
    * Store the fetched response body for a text or image network response.
@@ -141,15 +132,12 @@ class NetworkReporter {
    *
    * Should be called after checking \ref NetworkReporter::isDebuggingEnabled.
    */
-  void storeResponseBody(
-      const std::string& requestId,
-      std::string_view body,
-      bool base64Encoded);
+  void storeResponseBody(const std::string &requestId, std::string_view body, bool base64Encoded);
 
  private:
   NetworkReporter() = default;
-  NetworkReporter(const NetworkReporter&) = delete;
-  NetworkReporter& operator=(const NetworkReporter&) = delete;
+  NetworkReporter(const NetworkReporter &) = delete;
+  NetworkReporter &operator=(const NetworkReporter &) = delete;
   ~NetworkReporter() = default;
 
   std::unordered_map<std::string, ResourceTimingData> perfTimingsBuffer_{};
