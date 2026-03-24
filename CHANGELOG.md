@@ -1,5 +1,21 @@
 # Changelog
 
+## v0.85.0-rc.6
+
+### Changed
+
+#### iOS specific
+
+- **Build**: Bump fmt to 12.1.0 to fix Xcode 26.4 ([faeef2b90a](https://github.com/facebook/react-native/commit/faeef2b90a56633ad44289b994d31e7ce590b145) by [@leotm](https://github.com/leotm))
+
+
+### Fixed
+
+#### iOS specific
+
+- **Build**: Fixed duplicate symbol error when using React.XCFramework ([d21ffc9e32](https://github.com/facebook/react-native/commit/d21ffc9e322060c354b78da84d590cfc337c1de8) by [@chrfalch](https://github.com/chrfalch))
+
+
 ## v0.85.0-rc.5
 
 ### Fixed
