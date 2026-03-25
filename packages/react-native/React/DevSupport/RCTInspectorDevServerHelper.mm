@@ -28,6 +28,10 @@ static NSString *getServerHost(NSURL *bundleURL)
   if (host == nullptr) {
     host = @"localhost";
   }
+  // NSURL.host strips IPv6 brackets, but URL authority requires them.
+  if ([host containsString:@":"] && ![host hasPrefix:@"["] && ![host hasSuffix:@"]"]) {
+    host = [NSString stringWithFormat:@"[%@]", host];
+  }
 
   // Use explicit port from URL if available
   if ([bundleURL port] != nullptr) {
