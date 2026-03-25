@@ -3610,14 +3610,22 @@ declare class stream$Readable extends stream$Stream {
   static toWeb(streamReadable: stream$Readable): ReadableStream;
 
   constructor(options?: readableStreamOptions): void;
+  closed: boolean;
   destroy(error?: Error): this;
+  destroyed: boolean;
+  errored: ?Error;
   isPaused(): boolean;
   pause(): this;
   pipe<T extends stream$Writable>(dest: T, options?: {end?: boolean, ...}): T;
   read(size?: number): ?(string | Buffer);
   readable: boolean;
+  readableAborted: boolean;
+  readableDidRead: boolean;
+  readableEnded: boolean;
+  readableFlowing: boolean | null;
   readableHighWaterMark: number;
   readableLength: number;
+  readableObjectMode: boolean;
   resume(): this;
   setEncoding(encoding: string): this;
   unpipe(dest?: stream$Writable): this;
@@ -3662,8 +3670,10 @@ declare class stream$Writable extends stream$Stream {
   static toWeb(streamWritable: stream$Writable): WritableStream;
 
   constructor(options?: writableStreamOptions): void;
+  closed: boolean;
   cork(): void;
   destroy(error?: Error): this;
+  destroyed: boolean;
   end(callback?: () => void): this;
   end(chunk?: string | Buffer | Uint8Array, callback?: () => void): this;
   end(
@@ -3671,11 +3681,17 @@ declare class stream$Writable extends stream$Stream {
     encoding?: string,
     callback?: () => void,
   ): this;
+  errored: ?Error;
   setDefaultEncoding(encoding: string): this;
   uncork(): void;
   writable: boolean;
+  writableAborted: boolean;
+  writableEnded: boolean;
+  writableFinished: boolean;
   writableHighWaterMark: number;
   writableLength: number;
+  writableNeedDrain: boolean;
+  writableObjectMode: boolean;
   write(
     chunk: string | Buffer | Uint8Array,
     callback?: (error?: Error) => void,
