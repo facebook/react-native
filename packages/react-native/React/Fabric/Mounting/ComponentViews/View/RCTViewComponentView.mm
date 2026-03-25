@@ -1777,14 +1777,14 @@ static NSString *RCTRecursiveAccessibilityLabel(UIView *view)
     return;
   }
 
+  // Do not resignFirstRespodner if we lost focus, let whoever took focus
+  // becomeFirstResponder thereby resigning for us. If we resign here,
+  // first responder will be assigned to some ancestor view and they
+  // can temporarily call onFocus/onBlur
   if (context.nextFocusedView == self) {
-    if (_eventEmitter) {
-      _eventEmitter->onFocus();
-    }
-  } else {
-    if (_eventEmitter) {
-      _eventEmitter->onBlur();
-    }
+    [self becomeFirstResponder];
+  } else if (context.previouslyFocusedView == self && context.nextFocusedView == nil) {
+    [self resignFirstResponder];
   }
 
   [super didUpdateFocusInContext:context withAnimationCoordinator:coordinator];
