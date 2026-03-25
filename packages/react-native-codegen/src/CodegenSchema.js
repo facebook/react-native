@@ -285,6 +285,12 @@ export type NativeModuleSchema = Readonly<{
   // TODO: It's clearer to define `restrictedToPlatforms` instead, but
   // `excludedPlatforms` is used here to be consistent with ComponentSchema.
   excludedPlatforms?: ReadonlyArray<PlatformType>,
+  // Maps imported type names to their source module haste name.
+  // Used by code generators to prefix these types with the source module
+  // name instead of the consuming module name, enabling shared types
+  // across multiple TurboModule specs.
+  importedAliasNames?: Readonly<{[aliasName: string]: string}>,
+  importedEnumNames?: Readonly<{[enumName: string]: string}>,
 }>;
 
 type NativeModuleSpec = Readonly<{

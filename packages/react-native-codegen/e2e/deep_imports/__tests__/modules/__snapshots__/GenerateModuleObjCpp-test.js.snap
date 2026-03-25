@@ -179,6 +179,48 @@ namespace facebook::react {
     NativeEnumTurboModuleSpecJSI(const ObjCTurboModule::InitParams &params);
   };
 } // namespace facebook::react
+namespace JS {
+  namespace NativeImportedEnumTurboModule {
+    struct SharedStateType {
+      NSString *status() const;
+      double count() const;
+
+      SharedStateType(NSDictionary *const v) : _v(v) {}
+    private:
+      NSDictionary *_v;
+    };
+  }
+}
+
+@interface RCTCxxConvert (NativeImportedEnumTurboModule_SharedStateType)
++ (RCTManagedPointer *)JS_NativeImportedEnumTurboModule_SharedStateType:(id)json;
+@end
+@protocol NativeImportedEnumTurboModuleSpec <RCTBridgeModule, RCTTurboModule>
+
+- (NSString *)getStatus:(JS::NativeImportedEnumTurboModule::SharedStateType &)statusProp;
+- (NSNumber *)getNum;
+- (void)setStatus:(NSString *)status;
+
+@end
+
+@interface NativeImportedEnumTurboModuleSpecBase : NSObject {
+@protected
+facebook::react::EventEmitterCallback _eventEmitterCallback;
+}
+- (void)setEventEmitterCallback:(EventEmitterCallbackWrapper *)eventEmitterCallbackWrapper;
+
+
+@end
+
+namespace facebook::react {
+  /**
+   * ObjC++ class for module 'NativeImportedEnumTurboModule'
+   */
+  class JSI_EXPORT NativeImportedEnumTurboModuleSpecJSI : public ObjCTurboModule {
+  public:
+    NativeImportedEnumTurboModuleSpecJSI(const ObjCTurboModule::InitParams &params);
+  };
+} // namespace facebook::react
 
 @protocol NativeNullableTurboModuleSpec <RCTBridgeModule, RCTTurboModule>
 
@@ -1261,6 +1303,16 @@ inline NSString *JS::NativeEnumTurboModule::StateTypeWithEnums::lowerCase() cons
 {
   id const p = _v[@\\"lowerCase\\"];
   return RCTBridgingToString(p);
+}
+inline NSString *JS::NativeImportedEnumTurboModule::SharedStateType::status() const
+{
+  id const p = _v[@\\"status\\"];
+  return RCTBridgingToString(p);
+}
+inline double JS::NativeImportedEnumTurboModule::SharedStateType::count() const
+{
+  id const p = _v[@\\"count\\"];
+  return RCTBridgingToDouble(p);
 }
 
 
@@ -1733,6 +1785,48 @@ namespace facebook::react {
     NativeEnumTurboModuleSpecJSI(const ObjCTurboModule::InitParams &params);
   };
 } // namespace facebook::react
+namespace JS {
+  namespace NativeImportedEnumTurboModule {
+    struct SharedStateType {
+      NSString *status() const;
+      double count() const;
+
+      SharedStateType(NSDictionary *const v) : _v(v) {}
+    private:
+      NSDictionary *_v;
+    };
+  }
+}
+
+@interface RCTCxxConvert (NativeImportedEnumTurboModule_SharedStateType)
++ (RCTManagedPointer *)JS_NativeImportedEnumTurboModule_SharedStateType:(id)json;
+@end
+@protocol NativeImportedEnumTurboModuleSpec <RCTBridgeModule, RCTTurboModule>
+
+- (NSString *)getStatus:(JS::NativeImportedEnumTurboModule::SharedStateType &)statusProp;
+- (NSNumber *)getNum;
+- (void)setStatus:(NSString *)status;
+
+@end
+
+@interface NativeImportedEnumTurboModuleSpecBase : NSObject {
+@protected
+facebook::react::EventEmitterCallback _eventEmitterCallback;
+}
+- (void)setEventEmitterCallback:(EventEmitterCallbackWrapper *)eventEmitterCallbackWrapper;
+
+
+@end
+
+namespace facebook::react {
+  /**
+   * ObjC++ class for module 'NativeImportedEnumTurboModule'
+   */
+  class JSI_EXPORT NativeImportedEnumTurboModuleSpecJSI : public ObjCTurboModule {
+  public:
+    NativeImportedEnumTurboModuleSpecJSI(const ObjCTurboModule::InitParams &params);
+  };
+} // namespace facebook::react
 
 @protocol NativeNullableTurboModuleSpec <RCTBridgeModule, RCTTurboModule>
 
@@ -2815,6 +2909,16 @@ inline NSString *JS::NativeEnumTurboModule::StateTypeWithEnums::lowerCase() cons
 {
   id const p = _v[@\\"lowerCase\\"];
   return RCTBridgingToString(p);
+}
+inline NSString *JS::NativeImportedEnumTurboModule::SharedStateType::status() const
+{
+  id const p = _v[@\\"status\\"];
+  return RCTBridgingToString(p);
+}
+inline double JS::NativeImportedEnumTurboModule::SharedStateType::count() const
+{
+  id const p = _v[@\\"count\\"];
+  return RCTBridgingToDouble(p);
 }
 
 
@@ -3291,6 +3395,49 @@ namespace facebook::react {
         
         methodMap_[\\"getStateTypeWithEnums\\"] = MethodMetadata {1, __hostFunction_NativeEnumTurboModuleSpecJSI_getStateTypeWithEnums};
         setMethodArgConversionSelector(@\\"getStateTypeWithEnums\\", 0, @\\"JS_NativeEnumTurboModule_StateTypeWithEnums:\\");
+  }
+} // namespace facebook::react
+
+@implementation NativeImportedEnumTurboModuleSpecBase
+
+
+- (void)setEventEmitterCallback:(EventEmitterCallbackWrapper *)eventEmitterCallbackWrapper
+{
+  _eventEmitterCallback = std::move(eventEmitterCallbackWrapper->_eventEmitterCallback);
+}
+@end
+
+@implementation RCTCxxConvert (NativeImportedEnumTurboModule_SharedStateType)
++ (RCTManagedPointer *)JS_NativeImportedEnumTurboModule_SharedStateType:(id)json
+{
+  return facebook::react::managedPointer<JS::NativeImportedEnumTurboModule::SharedStateType>(json);
+}
+@end
+namespace facebook::react {
+  
+    static facebook::jsi::Value __hostFunction_NativeImportedEnumTurboModuleSpecJSI_getStatus(facebook::jsi::Runtime& rt, TurboModule &turboModule, const facebook::jsi::Value* args, size_t count) {
+      return static_cast<ObjCTurboModule&>(turboModule).invokeObjCMethod(rt, StringKind, \\"getStatus\\", @selector(getStatus:), args, count);
+    }
+
+    static facebook::jsi::Value __hostFunction_NativeImportedEnumTurboModuleSpecJSI_getNum(facebook::jsi::Runtime& rt, TurboModule &turboModule, const facebook::jsi::Value* args, size_t count) {
+      return static_cast<ObjCTurboModule&>(turboModule).invokeObjCMethod(rt, NumberKind, \\"getNum\\", @selector(getNum), args, count);
+    }
+
+    static facebook::jsi::Value __hostFunction_NativeImportedEnumTurboModuleSpecJSI_setStatus(facebook::jsi::Runtime& rt, TurboModule &turboModule, const facebook::jsi::Value* args, size_t count) {
+      return static_cast<ObjCTurboModule&>(turboModule).invokeObjCMethod(rt, VoidKind, \\"setStatus\\", @selector(setStatus:), args, count);
+    }
+
+  NativeImportedEnumTurboModuleSpecJSI::NativeImportedEnumTurboModuleSpecJSI(const ObjCTurboModule::InitParams &params)
+    : ObjCTurboModule(params) {
+      
+        methodMap_[\\"getStatus\\"] = MethodMetadata {1, __hostFunction_NativeImportedEnumTurboModuleSpecJSI_getStatus};
+        setMethodArgConversionSelector(@\\"getStatus\\", 0, @\\"JS_NativeImportedEnumTurboModule_SharedStateType:\\");
+        
+        methodMap_[\\"getNum\\"] = MethodMetadata {0, __hostFunction_NativeImportedEnumTurboModuleSpecJSI_getNum};
+        
+        
+        methodMap_[\\"setStatus\\"] = MethodMetadata {1, __hostFunction_NativeImportedEnumTurboModuleSpecJSI_setStatus};
+        
   }
 } // namespace facebook::react
 

@@ -27,6 +27,8 @@ export default TurboModuleRegistry.getEnforcing<Spec>('SampleTurboModule');
         aliasMap: {},
         enumMap: {},
         excludedPlatforms: undefined,
+        importedAliasNames: undefined,
+        importedEnumNames: undefined,
         moduleName: 'SampleTurboModule',
         spec: {
           eventEmitters: [],

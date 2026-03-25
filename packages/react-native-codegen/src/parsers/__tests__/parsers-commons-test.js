@@ -409,7 +409,7 @@ describe('buildSchemaFromConfigType', () => {
     (_ast, _parser) => componentSchemaMock,
   );
   const buildModuleSchemaMock = jest.fn(
-    (_0, _1, _2, _3, _4) => moduleSchemaMock,
+    (_0, _1, _2, _3, _4, _5, _6) => moduleSchemaMock,
   );
 
   const buildSchemaFromConfigTypeHelper = (
@@ -422,8 +422,8 @@ describe('buildSchemaFromConfigType', () => {
       astMock,
       wrapComponentSchemaMock,
       buildComponentSchemaMock,
-      /* $FlowFixMe[incompatible-type] Natural Inference rollout. See
-       * https://fburl.com/workplace/6291gfvu */
+      // $FlowFixMe[incompatible-type]
+      // $FlowFixMe[invalid-tuple-arity]
       buildModuleSchemaMock,
       parser,
       flowTranslateTypeAnnotation,
@@ -509,6 +509,8 @@ describe('buildSchemaFromConfigType', () => {
             expect.any(Function),
             parser,
             flowTranslateTypeAnnotation,
+            undefined,
+            undefined,
           );
 
           expect(buildComponentSchemaMock).not.toHaveBeenCalled();

@@ -86,19 +86,19 @@ TEST_F(NativeCxxModuleExampleTests, GetGraphNodeReturnsCorrectValues) {
 
 TEST_F(NativeCxxModuleExampleTests, GetNumEnumReturnsCorrectValues) {
   EXPECT_EQ(
-      module_->getNumEnum(*runtime_, NativeCxxModuleExampleEnumInt::IA),
-      NativeCxxModuleExampleEnumInt::IA);
+      module_->getNumEnum(*runtime_, SharedTypeEnumInt::IA),
+      SharedTypeEnumInt::IA);
   EXPECT_EQ(
-      module_->getNumEnum(*runtime_, NativeCxxModuleExampleEnumInt::IB),
-      NativeCxxModuleExampleEnumInt::IB);
+      module_->getNumEnum(*runtime_, SharedTypeEnumInt::IB),
+      SharedTypeEnumInt::IB);
 }
 
 TEST_F(NativeCxxModuleExampleTests, GetStrEnumReturnsCorrectValues) {
   EXPECT_EQ(
-      module_->getStrEnum(*runtime_, NativeCxxModuleExampleEnumNone::NA),
+      module_->getStrEnum(*runtime_, SharedTypeEnumNone::NA),
       NativeCxxModuleExampleEnumStr::SB);
   EXPECT_EQ(
-      module_->getStrEnum(*runtime_, NativeCxxModuleExampleEnumNone::NB),
+      module_->getStrEnum(*runtime_, SharedTypeEnumNone::NB),
       NativeCxxModuleExampleEnumStr::SB);
 }
 
