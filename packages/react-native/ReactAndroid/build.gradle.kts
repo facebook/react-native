@@ -100,6 +100,8 @@ val preparePrefab by
                       Pair("../ReactCommon/hermes/inspector-modern/", "hermes/inspector-modern/"),
                       // fabricjni
                       Pair("src/main/jni/react/fabric", "react/fabric/"),
+                      // uimanagerjni
+                      Pair("src/main/jni/react/uimanager", "react/uimanager/"),
                       // glog
                       Pair(File(buildDir, "third-party-ndk/glog/exported/").absolutePath, ""),
                       // jsiinpsector
