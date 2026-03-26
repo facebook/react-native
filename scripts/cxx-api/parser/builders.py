@@ -333,6 +333,8 @@ def get_doxygen_params(
                     + param_array
                 )
                 param_name = None
+            elif param_name:
+                param_name += param_array
             else:
                 param_type += param_array
 
