@@ -166,8 +166,14 @@ def get_base_classes(
 ) -> list:
     """
     Get the base classes of a compound object.
+
+    Deduplicates base classes by name. Doxygen can emit duplicate
+    ``basecompoundref`` entries when a class inherits constructors via
+    ``using Base::Base;`` — the using-declaration is incorrectly reported
+    as an additional base class reference.
     """
     base_classes = []
+    seen_names: set[str] = set()
     if compound_object.basecompoundref:
         for base in compound_object.basecompoundref:
             # base is a compoundRefType with:
@@ -183,6 +189,10 @@ def get_base_classes(
             if base_prot == "private":
                 # Ignore private base classes
                 continue
+
+            if base_name in seen_names:
+                continue
+            seen_names.add(base_name)
 
             base_classes.append(
                 base_class(
