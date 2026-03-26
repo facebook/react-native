@@ -43,7 +43,7 @@ ${protocolMethods}
 @protected
 facebook::react::EventEmitterCallback _eventEmitterCallback;
 }
-- (void)setEventEmitterCallback:(EventEmitterCallbackWrapper *)eventEmitterCallbackWrapper;
+- (void)setEventEmitterCallback:(EventEmitterCallbackWrapper *_Nonnull)eventEmitterCallbackWrapper;
 
 ${eventEmitters}
 @end
@@ -105,11 +105,11 @@ const HeaderFileTemplate = ({
 #import <vector>
 
 ` +
-    (assumeNonnull ? '\nNS_ASSUME_NONNULL_BEGIN\n' : '') +
+    '\nNS_ASSUME_NONNULL_BEGIN\n' +
     moduleDeclarations +
     '\n' +
     structInlineMethods +
-    (assumeNonnull ? '\nNS_ASSUME_NONNULL_END\n' : '\n') +
+    '\nNS_ASSUME_NONNULL_END\n' +
     `#endif // ${headerFileNameWithNoExt}_H` +
     '\n'
   );
@@ -136,7 +136,11 @@ const SourceFileTemplate = ({
 
 #import "${headerFileName}"
 
+NS_ASSUME_NONNULL_BEGIN
+
 ${moduleImplementations}
+
+NS_ASSUME_NONNULL_END
 `;
 
 module.exports = {
