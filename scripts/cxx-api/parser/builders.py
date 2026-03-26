@@ -377,6 +377,29 @@ def get_doxygen_params(
                     param_type[:insert_pos] + param_name + param_type[insert_pos:]
                 )
                 param_name = None
+        else:
+            # Doxygen bug: for pointer-to-member-function params with
+            # ref-qualifiers (& or &&), Doxygen incorrectly embeds the
+            # parameter name in the type string between cv-qualifiers
+            # and the ref-qualifier, and omits <declname> entirely:
+            #   <type>R(ns::*)() const asFoo &amp;</type>
+            # Detect this pattern and reconstruct the correct type:
+            #   R(ns::*asFoo)() const &
+            m = re.search(
+                r"(\([^)]*::\*\))"  # group 1: ptr-to-member declarator
+                r"(.+?)"  # group 2: param list + cv-qualifiers
+                r"\s+([a-zA-Z_]\w*)"  # group 3: misplaced identifier
+                r"\s*(&{1,2})\s*$",  # group 4: ref-qualifier
+                param_type,
+            )
+            if m:
+                param_type = (
+                    param_type[: m.end(1) - 1]  # up to ')' of (ns::*)
+                    + m.group(3)  # insert extracted name
+                    + param_type[m.end(1) - 1 : m.end(2)]  # ')' + params + cv-quals
+                    + " "
+                    + m.group(4)  # ref-qualifier
+                )
 
         qualifiers, core_type = extract_qualifiers(param_type)
         arguments.append((qualifiers, core_type, param_name, param_default))
