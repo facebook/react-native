@@ -200,7 +200,7 @@ jobs:
       - name: Run yarn
         uses: ./.github/actions/yarn-install
       - name: Setup ruby
-        uses: ruby/setup-ruby@v1
+        uses: ruby/setup-ruby@eab2afb99481ca09a4e91171a8e0aee0e89bfedd # v1
         with:
           ruby-version: 2.6.10
       - name: Download React Native Package
@@ -238,7 +238,7 @@ jobs:
 
           # For stable branches, we want to use the stable branch of the template
           # In all the other cases, we want to use "main"
-          BRANCH=${{ github.ref_name }}
+          BRANCH=${REF_NAME}
           if ! [[ $BRANCH == *-stable* ]]; then
             BRANCH=main
           fi
@@ -261,6 +261,8 @@ jobs:
             -sdk "iphonesimulator" \
             -destination "generic/platform=iOS Simulator" \
             -derivedDataPath "/tmp/RNTestProject"
+        env:
+          REF_NAME: ${{ github.ref_name }}
       - name: Run E2E Tests
         uses: ./.github/actions/maestro-ios
         with:
@@ -312,7 +314,7 @@ jobs:
 
           # For stable branches, we want to use the stable branch of the template
           # In all the other cases, we want to use "main"
-          BRANCH=${{ github.ref_name }}
+          BRANCH=${REF_NAME}
           if ! [[ $BRANCH == *-stable* ]]; then
             BRANCH=main
           fi
@@ -327,6 +329,8 @@ jobs:
           CAPITALIZED_FLAVOR=$(echo "${{ matrix.flavor }}" | awk '{print toupper(substr($0, 1, 1)) substr($0, 2)}')
           ./gradlew assemble$CAPITALIZED_FLAVOR --no-daemon -PreactNativeArchitectures=x86
 
+        env:
+          REF_NAME: ${{ github.ref_name }}
       - name: Run E2E Tests
         uses: ./.github/actions/maestro-android
         timeout-minutes: 60

@@ -18,7 +18,7 @@ jobs:
     steps:
       - uses: actions/checkout@v6
       - name: Apply Needs Attention Label
-        uses: react-native-community/needs-attention@v2.0.0
+        uses: react-native-community/needs-attention@c6f1c6640a2aba7965c152d7e903fa8b2be06f43 # v2.0.0
         with:
           repo-token: ${{ secrets.GITHUB_TOKEN }}
           response-required-label: "Needs: Author Feedback"

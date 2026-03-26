@@ -113,7 +113,9 @@ jobs:
           curl -X POST https://api.github.com/repos/react-native-community/rn-diff-purge/dispatches \
             -H "Accept: application/vnd.github.v3+json" \
             -H "Authorization: Bearer $REACT_NATIVE_BOT_GITHUB_TOKEN" \
-            -d "{\"event_type\": \"publish\", \"client_payload\": { \"version\": \"${{ github.ref_name }}\" }}"
+            -d "{\"event_type\": \"publish\", \"client_payload\": { \"version\": \"${REF_NAME}\" }}"
+        env:
+          REF_NAME: ${{ github.ref_name }}
       - name: Verify Release is on NPM
         timeout-minutes: 3
         uses: actions/github-script@v8
