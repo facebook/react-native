@@ -22,13 +22,15 @@ jobs:
         uses:  ./.github/actions/yarn-install
       - name: Extract next oncall
         run: |
-          ONCALLS=$(node ./.github/workflow-scripts/extractIssueOncalls.js "${{ secrets.ONCALL_SCHEDULE }}")
+          ONCALLS=$(node ./.github/workflow-scripts/extractIssueOncalls.js "${ONCALL_SCHEDULE}")
           ONCALL1=$(echo $ONCALLS | cut -d ' ' -f 1)
           ONCALL2=$(echo $ONCALLS | cut -d ' ' -f 2)
           echo "oncall1=$ONCALL1" >> $GITHUB_ENV
           echo "oncall2=$ONCALL2" >> $GITHUB_ENV
+        env:
+          ONCALL_SCHEDULE: ${{ secrets.ONCALL_SCHEDULE }}
       - name: Monitor New Issues
-        uses: react-native-community/repo-monitor@v1.0.1
+        uses: react-native-community/repo-monitor@d58266a4f198b830ccaa495b853d251ad3aa8cc8 # v1.0.1
         with:
           task: "monitor-issues"
           git_secret: ${{ secrets.GITHUB_TOKEN }}
