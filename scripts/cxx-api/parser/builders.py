@@ -41,7 +41,12 @@ from .utils import (
     resolve_linked_text_name,
     split_specialization,
 )
-from .utils.argument_parsing import _find_matching_angle, _split_arguments
+from .utils.argument_parsing import (
+    _find_matching_angle,
+    _split_arguments,
+    format_parsed_type,
+    parse_type_with_argstrings,
+)
 
 
 @dataclass
@@ -307,6 +312,16 @@ def get_doxygen_params(
             if param.get_type()
             else ""
         )
+
+        # Doxygen may incorrectly cross-reference parameter names inside
+        # inline function pointer types to member variables of the enclosing
+        # class, producing qualified paths like "const void*
+        # ns::Class::data" instead of "const void* data".  Re-parse the
+        # type through parse_type_with_argstrings which delegates to
+        # _parse_single_argument — that already strips "::" from names.
+        segments = parse_type_with_argstrings(param_type)
+        if len(segments) > 1:
+            param_type = format_parsed_type(segments)
         param_name = param.declname or param.defname or None
         param_default = (
             resolve_linked_text_name(param.defval)[0].strip() if param.defval else None
