@@ -10,7 +10,6 @@
 package com.facebook.react.uiapp
 
 import android.app.Application
-import com.facebook.fbreact.specs.SampleLegacyModule
 import com.facebook.fbreact.specs.SampleTurboModule
 import com.facebook.react.BaseReactPackage
 import com.facebook.react.PackageList
@@ -44,7 +43,6 @@ internal class RNTesterApplication : Application(), ReactApplication {
                     ): NativeModule? =
                         when (name) {
                           SampleTurboModule.NAME -> SampleTurboModule(reactContext)
-                          SampleLegacyModule.NAME -> SampleLegacyModule(reactContext)
                           else -> null
                         }
 
@@ -62,15 +60,6 @@ internal class RNTesterApplication : Application(), ReactApplication {
                                       needsEagerInit = false,
                                       isCxxModule = false,
                                       isTurboModule = true,
-                                  ),
-                              SampleLegacyModule.NAME to
-                                  ReactModuleInfo(
-                                      SampleLegacyModule.NAME,
-                                      "SampleLegacyModule",
-                                      canOverrideExistingModule = false,
-                                      needsEagerInit = false,
-                                      isCxxModule = false,
-                                      isTurboModule = false,
                                   ),
                           )
                         }
