@@ -193,22 +193,20 @@ def build_snapshots(
                     failed_views = ", ".join(name for name, _ in errors)
                     raise RuntimeError(f"Failed to generate snapshots: {failed_views}")
     else:
-        with tempfile.TemporaryDirectory(prefix="cxx-api-test-") as work_dir:
-            snapshot = build_snapshot_for_view(
-                api_view="Test",
-                react_native_dir=react_native_dir,
-                include_directories=[],
-                exclude_patterns=[],
-                definitions={},
-                output_dir=output_dir,
-                codegen_platform=None,
-                verbose=verbose,
-                input_filter=input_filter,
-                work_dir=work_dir,
-            )
+        snapshot = build_snapshot_for_view(
+            api_view="Test",
+            react_native_dir=react_native_dir,
+            include_directories=[],
+            exclude_patterns=[],
+            definitions={},
+            output_dir=output_dir,
+            codegen_platform=None,
+            verbose=verbose,
+            input_filter=input_filter,
+        )
 
-            if verbose:
-                print(snapshot)
+        if verbose:
+            print(snapshot)
 
 
 def get_default_snapshot_dir() -> str:
