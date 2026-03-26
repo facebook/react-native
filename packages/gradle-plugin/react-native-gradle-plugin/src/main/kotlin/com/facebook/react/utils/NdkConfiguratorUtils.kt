@@ -20,10 +20,6 @@ internal object NdkConfiguratorUtils {
     project.pluginManager.withPlugin("com.android.application") {
       project.extensions.getByType(ApplicationAndroidComponentsExtension::class.java).finalizeDsl {
           ext ->
-        // We enable prefab so users can consume .so/headers from ReactAndroid and hermes-engine
-        // .aar
-        ext.buildFeatures.prefab = true
-
         // If the user has not provided a CmakeLists.txt path, let's provide
         // the default one from the framework
         if (ext.externalNativeBuild.cmake.path == null) {

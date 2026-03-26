@@ -9,7 +9,6 @@ package com.facebook.react.utils
 
 import com.android.build.api.variant.ApplicationAndroidComponentsExtension
 import com.android.build.api.variant.LibraryAndroidComponentsExtension
-import com.android.build.gradle.LibraryExtension
 import com.facebook.react.ReactExtension
 import com.facebook.react.utils.ProjectUtils.isEdgeToEdgeEnabled
 import com.facebook.react.utils.ProjectUtils.isHermesEnabled
@@ -82,7 +81,7 @@ internal object AgpConfiguratorUtils {
       subproject.pluginManager.withPlugin("com.android.library") {
         subproject.extensions
             .getByType(LibraryAndroidComponentsExtension::class.java)
-            .finalizeDsl { ext -> ext.buildFeatures.buildConfig = true }
+            .finalizeDsl { ext -> ext.buildFeatures { buildConfig = true } }
       }
     }
   }
@@ -114,22 +113,22 @@ internal object AgpConfiguratorUtils {
   fun configureNamespaceForLibraries(appProject: Project) {
     appProject.rootProject.allprojects { subproject ->
       subproject.pluginManager.withPlugin("com.android.library") {
-        subproject.extensions
+        val components = subproject.extensions
             .getByType(LibraryAndroidComponentsExtension::class.java)
-            .finalizeDsl { ext ->
-              if (ext.namespace == null) {
-                val android = subproject.extensions.getByType(LibraryExtension::class.java)
-                val manifestFile = android.sourceSets.getByName("main").manifest.srcFile
 
-                manifestFile
-                    .takeIf { it.exists() }
-                    ?.let { file ->
-                      getPackageNameFromManifest(file)?.let { packageName ->
-                        ext.namespace = packageName
-                      }
-                    }
-              }
-            }
+        components.finalizeDsl { dsl ->
+          if (dsl.namespace.isNullOrEmpty()) {
+            val manifestFile = subproject.file("src/main/AndroidManifest.xml")
+
+            manifestFile
+                .takeIf { it.exists() }
+                ?.let { file ->
+                  getPackageNameFromManifest(file)?.let { packageName ->
+                    dsl.namespace = packageName
+                  }
+                }
+          }
+        }
       }
     }
   }
