@@ -4,8 +4,18 @@
 # This source code is licensed under the MIT license found in the
 # LICENSE file in the root directory of this source tree.
 
-# Defines functions for building various Hermes frameworks.
-# See build-ios-framework.sh and build-mac-framework.sh for usage examples.
+# Builds Hermes Apple frameworks for all platforms (iOS, macOS, tvOS, visionOS,
+# Mac Catalyst) and combines them into a single universal xcframework.
+#
+# Usage:
+#   ./build-apple-framework.sh              # build all platforms + universal xcframework
+#   ./build-apple-framework.sh <platform>   # build a single platform (e.g. macosx, iphoneos)
+#   ./build-apple-framework.sh build_framework  # combine already-built slices into xcframework
+
+if [ "$CI" ]; then
+  set -x
+fi
+set -e
 
 CURR_SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd -P)"
 
@@ -56,6 +66,35 @@ function get_mac_deployment_target {
   use_env_var "${MAC_DEPLOYMENT_TARGET}" "MAC_DEPLOYMENT_TARGET"
 }
 
+# Given a specific target, retrieve the right architecture for it
+# $1 the target you want to build. Allowed values: iphoneos, iphonesimulator, catalyst, macosx, xros, xrsimulator, appletvos, appletvsimulator
+function get_architecture {
+    if [[ $1 == "iphoneos" || $1 == "xros" ]]; then
+      echo "arm64"
+    elif [[ $1 == "iphonesimulator" || $1 == "xrsimulator" ]]; then
+      echo "x86_64;arm64"
+    elif [[ $1 == "appletvos" ]]; then
+      echo "arm64"
+    elif [[ $1 == "appletvsimulator" ]]; then
+      echo "x86_64;arm64"
+    elif [[ $1 == "catalyst" || $1 == "macosx" ]]; then
+      echo "x86_64;arm64"
+    else
+      echo "Error: unknown architecture passed $1"
+      exit 1
+    fi
+}
+
+function get_deployment_target {
+    if [[ $1 == "xros" || $1 == "xrsimulator" ]]; then
+      echo "$(get_visionos_deployment_target)"
+    elif [[ $1 == "macosx" ]]; then
+      echo "$(get_mac_deployment_target)"
+    else # tvOS and iOS use the same deployment target
+      echo "$(get_ios_deployment_target)"
+    fi
+}
+
 # Build host hermes compiler for internal bytecode
 function build_host_hermesc {
   echo "Building hermesc"
@@ -63,6 +102,14 @@ function build_host_hermesc {
     cmake -S . -B build_host_hermesc -DJSI_DIR="$JSI_PATH"
     cmake --build ./build_host_hermesc --target hermesc -j "${NUM_CORES}"
   popd > /dev/null || exit 1
+}
+
+function build_host_hermesc_if_needed {
+  if [[ ! -f "$IMPORT_HOST_COMPILERS_PATH" ]]; then
+    build_host_hermesc
+  else
+    echo "[HermesC] Skipping! Found an existent hermesc already at: $IMPORT_HOST_COMPILERS_PATH"
+  fi
 }
 
 # Utility function to configure an Apple framework
@@ -117,15 +164,8 @@ function configure_apple_framework {
     popd > /dev/null || exit 1
 }
 
-function build_host_hermesc_if_needed {
-  if [[ ! -f "$IMPORT_HOST_COMPILERS_PATH" ]]; then
-    build_host_hermesc
-  else
-    echo "[HermesC] Skipping! Found an existent hermesc already at: $IMPORT_HOST_COMPILERS_PATH"
-  fi
-}
-
-# Utility function to build an Apple framework
+# Utility function to build an Apple framework for a single platform
+# $1: platform, $2: architectures, $3: deployment target
 function build_apple_framework {
   # Only build host HermesC if no file found at $IMPORT_HOST_COMPILERS_PATH
   build_host_hermesc_if_needed
@@ -134,7 +174,6 @@ function build_apple_framework {
   [ ! -f "$IMPORT_HOST_COMPILERS_PATH" ] &&
   echo "Host hermesc is required to build apple frameworks!"
 
-  # $1: platform, $2: architectures, $3: deployment target
   echo "Building $BUILD_TYPE framework for $1 with architectures: $2"
   configure_apple_framework "$1" "$2" "$3"
 
@@ -223,7 +262,7 @@ function create_universal_framework {
   # shellcheck disable=SC2086
   if xcodebuild -create-xcframework $args -output "universal/hermesvm.xcframework"
   then
-    # # Remove the thin iOS hermesvm.frameworks that are now part of the universal
+    # # Remove the thin hermesvm.frameworks that are now part of the universal
     # XCFramework
     for platform in "${platforms[@]}"; do
       rm -r "$platform"
@@ -232,3 +271,45 @@ function create_universal_framework {
 
   popd > /dev/null || exit 1
 }
+
+# Build a single framework for a given platform
+# $1 is the target to build (e.g. iphoneos, macosx, etc.)
+function build_framework {
+  if [ ! -d destroot/Library/Frameworks/universal/hermesvm.xcframework ]; then
+    deployment_target=$(get_deployment_target "$1")
+    architecture=$(get_architecture "$1")
+    build_apple_framework "$1" "$architecture" "$deployment_target"
+  else
+    echo "Skipping; Clean \"destroot\" to rebuild".
+  fi
+}
+
+# Combine already-built slices into a universal xcframework
+function build_universal_framework {
+    if [ ! -d destroot/Library/Frameworks/universal/hermesvm.xcframework ]; then
+        create_universal_framework "${PLATFORMS[@]}"
+    else
+        echo "Skipping; Clean \"destroot\" to rebuild".
+    fi
+}
+
+# Build all platforms sequentially then combine into a universal xcframework
+function create_framework {
+    if [ ! -d destroot/Library/Frameworks/universal/hermesvm.xcframework ]; then
+        for platform in "${PLATFORMS[@]}"; do
+            build_framework "$platform"
+        done
+        build_universal_framework
+    else
+        echo "Skipping; Clean \"destroot\" to rebuild".
+    fi
+}
+
+# --- Entry point ---
+if [[ -z $1 ]]; then
+  create_framework
+elif [[ $1 == "build_framework" ]]; then
+  build_universal_framework
+else
+  build_framework "$1"
+fi

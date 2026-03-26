@@ -73,7 +73,7 @@ Pod::Spec.new do |spec|
       ss.ios.vendored_frameworks = "destroot/Library/Frameworks/universal/hermesvm.xcframework"
       ss.visionos.vendored_frameworks = "destroot/Library/Frameworks/universal/hermesvm.xcframework"
       ss.tvos.vendored_frameworks = "destroot/Library/Frameworks/universal/hermesvm.xcframework"
-      ss.osx.vendored_frameworks = "destroot/Library/Frameworks/macosx/hermesvm.framework"
+      ss.osx.vendored_frameworks = "destroot/Library/Frameworks/universal/hermesvm.xcframework"
     end
 
     # When using the local prebuilt tarball, it should include hermesc compatible with the used VM.
