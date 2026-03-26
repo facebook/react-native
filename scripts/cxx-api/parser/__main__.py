@@ -35,8 +35,12 @@ def run_command(
     """Run a subprocess command with consistent error handling."""
     result = subprocess.run(cmd, **kwargs)
     if result.returncode != 0:
-        if verbose:
-            print(f"{label} finished with error: {result.stderr}")
+        stderr_output = result.stderr or ""
+        if isinstance(stderr_output, bytes):
+            stderr_output = stderr_output.decode("utf-8", errors="replace")
+        print(f"{label} failed (exit code {result.returncode})", file=sys.stderr)
+        if stderr_output:
+            print(stderr_output, file=sys.stderr)
         raise RuntimeError(
             f"{label} finished with error (exit code {result.returncode})"
         )
@@ -53,9 +57,11 @@ def build_codegen(
 ) -> str:
     react_native_dir = os.path.join(get_react_native_dir(), "packages", "react-native")
 
+    node_bin = os.environ.get("NODE_BIN", "node")
+
     run_command(
         [
-            "node",
+            node_bin,
             "./scripts/generate-codegen-artifacts.js",
             "--path",
             "./",
@@ -228,6 +234,11 @@ def main():
         help="Generate snapshots to a temp directory and compare against committed ones",
     )
     parser.add_argument(
+        "--check-output",
+        type=str,
+        help="File path to write check results to (used with --check)",
+    )
+    parser.add_argument(
         "--snapshot-dir",
         type=str,
         help="Directory containing committed snapshots for comparison (used with --check)",
@@ -302,7 +313,11 @@ def main():
         if args.check:
             snapshot_dir = args.snapshot_dir or get_default_snapshot_dir()
 
-            if not check_snapshots(snapshot_output_dir, snapshot_dir):
+            if not check_snapshots(
+                snapshot_output_dir,
+                snapshot_dir,
+                output_file=args.check_output,
+            ):
                 sys.exit(1)
 
             print("All snapshot checks passed")
