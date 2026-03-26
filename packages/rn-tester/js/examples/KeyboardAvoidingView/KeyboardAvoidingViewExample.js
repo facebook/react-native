@@ -12,7 +12,8 @@
 
 import type {RNTesterModuleExample} from '../../types/RNTesterTypes';
 
-import React, {useState} from 'react';
+import * as React from 'react';
+import {useState} from 'react';
 import {
   Alert,
   Button,

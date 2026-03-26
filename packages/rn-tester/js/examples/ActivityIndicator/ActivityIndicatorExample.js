@@ -11,7 +11,8 @@
 import type {RNTesterModuleExample} from '../../types/RNTesterTypes';
 import type {Node} from 'react';
 
-import React, {useCallback, useEffect, useRef, useState} from 'react';
+import * as React from 'react';
+import {useCallback, useEffect, useRef, useState} from 'react';
 import {ActivityIndicator, StyleSheet, View} from 'react-native';
 
 function ToggleAnimatingActivityIndicator() {

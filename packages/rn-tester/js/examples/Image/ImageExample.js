@@ -16,7 +16,7 @@ import type {ImageProps, LayoutChangeEvent} from 'react-native';
 import RNTesterButton from '../../components/RNTesterButton';
 import RNTesterText from '../../components/RNTesterText';
 import ImageCapInsetsExample from './ImageCapInsetsExample';
-import React from 'react';
+import * as React from 'react';
 import {useEffect, useState} from 'react';
 import {Image, ImageBackground, StyleSheet, Text, View} from 'react-native';
 

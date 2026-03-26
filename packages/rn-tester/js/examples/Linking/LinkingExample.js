@@ -12,7 +12,7 @@ import type {RNTesterModuleExample} from '../../types/RNTesterTypes';
 
 import RNTesterBlock from '../../components/RNTesterBlock';
 import RNTesterText from '../../components/RNTesterText';
-import React from 'react';
+import * as React from 'react';
 import {useState} from 'react';
 import {
   Button,

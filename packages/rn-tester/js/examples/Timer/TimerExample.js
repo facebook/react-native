@@ -14,7 +14,7 @@ import type {RNTesterModuleExample} from '../../types/RNTesterTypes';
 
 import RNTesterButton from '../../components/RNTesterButton';
 import RNTesterText from '../../components/RNTesterText';
-import React from 'react';
+import * as React from 'react';
 import {Alert, Platform, ToastAndroid, View} from 'react-native';
 
 function burnCPU(milliseconds: number) {
