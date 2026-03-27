@@ -157,6 +157,34 @@ module.exports = {
   get unstable_VirtualView() {
     return require('./src/private/components/virtualview/VirtualView').default;
   },
+  get unstable_VirtualArray() {
+    return require('./src/private/components/virtualcollection/Virtual')
+      .VirtualArray;
+  },
+  get unstable_createVirtualCollectionView() {
+    return require('./src/private/components/virtualcollection/VirtualCollectionView')
+      .createVirtualCollectionView;
+  },
+  get unstable_VirtualColumn() {
+    return require('./src/private/components/virtualcollection/column/VirtualColumn')
+      .default;
+  },
+  get unstable_VirtualColumnGenerator() {
+    return require('./src/private/components/virtualcollection/column/VirtualColumnGenerator')
+      .default;
+  },
+  get unstable_VirtualRow() {
+    return require('./src/private/components/virtualcollection/row/VirtualRow')
+      .default;
+  },
+  get unstable_getScrollParent() {
+    return require('./src/private/components/virtualcollection/dom/getScrollParent')
+      .default;
+  },
+  get unstable_DEFAULT_INITIAL_NUM_TO_RENDER() {
+    return require('./src/private/components/virtualcollection/FlingConstants')
+      .DEFAULT_INITIAL_NUM_TO_RENDER;
+  },
   // #endregion
   // #region APIs
   get AccessibilityInfo() {
