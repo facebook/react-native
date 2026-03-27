@@ -20,6 +20,6 @@ export interface Spec extends TurboModule {
   +getNumberWithAlias: (arg: Number) => AnotherNumber;
 }
 
-export default (TurboModuleRegistry.getEnforcing<Spec>(
+export default TurboModuleRegistry.getEnforcing<Spec>(
   'SampleTurboModule',
-): Spec);
+) as Spec;

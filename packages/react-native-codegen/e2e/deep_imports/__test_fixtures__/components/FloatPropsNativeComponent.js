@@ -30,6 +30,6 @@ type NativeProps = Readonly<{
   blurRadiusNullable?: WithDefault<Float, null>,
 }>;
 
-export default (codegenNativeComponent<NativeProps>(
+export default codegenNativeComponent<NativeProps>(
   'FloatPropsNativeComponentView',
-): HostComponent<NativeProps>);
+) as HostComponent<NativeProps>;

@@ -20,6 +20,6 @@ type NativeProps = Readonly<{
   defaultValue?: string,
 }>;
 
-export default (codegenNativeComponent<NativeProps>(
+export default codegenNativeComponent<NativeProps>(
   'StringPropNativeComponentView',
-): HostComponent<NativeProps>);
+) as HostComponent<NativeProps>;

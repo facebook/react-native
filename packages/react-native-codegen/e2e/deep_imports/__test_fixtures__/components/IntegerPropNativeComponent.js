@@ -26,6 +26,6 @@ type NativeProps = Readonly<{
   progress3?: WithDefault<Int32, 10>,
 }>;
 
-export default (codegenNativeComponent<NativeProps>(
+export default codegenNativeComponent<NativeProps>(
   'IntegerPropNativeComponentView',
-): HostComponent<NativeProps>);
+) as HostComponent<NativeProps>;
