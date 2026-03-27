@@ -114,6 +114,7 @@ export interface Spec extends TurboModule {
   +voidFuncAssert: () => void;
   +getObjectAssert: (arg: ObjectStruct) => ObjectStruct;
   +promiseAssert: () => Promise<void>;
+  +getBigInt: (arg: bigint) => bigint;
 }
 
 export default (TurboModuleRegistry.get<Spec>(

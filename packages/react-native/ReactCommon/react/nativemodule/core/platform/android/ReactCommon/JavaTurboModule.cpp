@@ -5,6 +5,8 @@
  * LICENSE file in the root directory of this source tree.
  */
 
+#include <cstdint>
+#include <limits>
 #include <memory>
 #include <string>
 
@@ -169,6 +171,53 @@ struct JPromiseImpl : public jni::JavaClass<JPromiseImpl> {
   }
 };
 
+struct JBigInteger : public jni::JavaClass<JBigInteger> {
+  constexpr static auto kJavaDescriptor = "Ljava/math/BigInteger;";
+
+  static jni::local_ref<javaobject> valueOf(jlong val) {
+    static const auto cls = javaClassStatic();
+    static const auto method =
+        cls->getStaticMethod<javaobject(jlong)>("valueOf");
+    return method(cls, val);
+  }
+
+  static jni::local_ref<javaobject> fromUint64(uint64_t val) {
+    // For values that fit in int64, use the fast path.
+    if (val <= static_cast<uint64_t>(std::numeric_limits<int64_t>::max())) {
+      return valueOf(static_cast<jlong>(val));
+    }
+    // For values with the high bit set, construct from a big-endian byte
+    // array with a leading zero byte to ensure a positive signum.
+    jbyte bytes[9];
+    bytes[0] = 0; // sign byte: ensures BigInteger treats this as positive
+    for (int i = 8; i >= 1; --i) {
+      bytes[i] = static_cast<jbyte>(val & 0xFF);
+      val >>= 8;
+    }
+    auto env = jni::Environment::current();
+    auto byteArray = env->NewByteArray(9);
+    env->SetByteArrayRegion(byteArray, 0, 9, bytes);
+    return newInstance(byteArray);
+  }
+
+  jlong longValue() const {
+    static const auto method =
+        javaClassStatic()->getMethod<jlong()>("longValue");
+    return method(self());
+  }
+
+  jint bitLength() const {
+    static const auto method =
+        javaClassStatic()->getMethod<jint()>("bitLength");
+    return method(self());
+  }
+
+  jint signum() const {
+    static const auto method = javaClassStatic()->getMethod<jint()>("signum");
+    return method(self());
+  }
+};
+
 // This is used for generating short exception strings.
 std::string stringifyJSIValue(const jsi::Value& v, jsi::Runtime* rt = nullptr) {
   if (v.isUndefined()) {
@@ -322,7 +371,7 @@ JNIArgs convertJSIArgsToJNIArgs(
     return obj;
   };
 
-  for (unsigned int argIndex = 0; argIndex < count; argIndex += 1) {
+  for (int argIndex = 0; argIndex < static_cast<int>(count); argIndex += 1) {
     const std::string& type = methodArgTypes.at(argIndex);
 
     const jsi::Value* arg = &args[argIndex];
@@ -397,6 +446,23 @@ JNIArgs convertJSIArgsToJNIArgs(
       jarg->l = makeGlobalIfNecessary(
           jni::JBoolean::valueOf(static_cast<unsigned char>(arg->getBool()))
               .release());
+    } else if (type == "Ljava/math/BigInteger;") {
+      if (!arg->isBigInt()) {
+        throw JavaTurboModuleArgumentConversionException(
+            "bigint", argIndex, methodName, arg, &rt);
+      }
+      auto bigint = arg->getBigInt(rt);
+      jni::local_ref<JBigInteger::javaobject> javaBigInt;
+      if (bigint.isInt64(rt)) {
+        javaBigInt = JBigInteger::valueOf(bigint.getInt64(rt));
+      } else if (bigint.isUint64(rt)) {
+        javaBigInt = JBigInteger::fromUint64(bigint.getUint64(rt));
+      } else {
+        throw jsi::JSError(
+            rt,
+            "BigInt value cannot be losslessly represented as int64_t or uint64_t");
+      }
+      jarg->l = makeGlobalIfNecessary(javaBigInt.release());
     } else if (type == "Ljava/lang/String;") {
       if (!arg->isString()) {
         throw JavaTurboModuleArgumentConversionException(
@@ -962,6 +1028,42 @@ jsi::Value JavaTurboModule::invokeJavaMethod(
           });
       TMPL::asyncMethodCallEnd(moduleName, methodName);
       return jsPromise;
+    }
+    case BigIntKind: {
+      auto returnObject =
+          env->CallObjectMethodA(instance, methodID, jargs.data());
+      checkJNIErrorForMethodCall();
+
+      TMPL::syncMethodCallExecutionEnd(moduleName, methodName);
+      TMPL::syncMethodCallReturnConversionStart(moduleName, methodName);
+
+      auto returnValue = jsi::Value::null();
+      if (returnObject != nullptr) {
+        auto bigIntObj = jni::adopt_local(
+            static_cast<JBigInteger::javaobject>(returnObject));
+
+        // bitLength() returns bits excluding sign bit.
+        // A value fits in int64_t when bitLength() <= 63.
+        // A positive value fits in uint64_t when bitLength() <= 64.
+        auto bits = bigIntObj->bitLength();
+        if (bits <= 63) {
+          returnValue = jsi::BigInt::fromInt64(
+              runtime, static_cast<int64_t>(bigIntObj->longValue()));
+        } else if (bits <= 64 && bigIntObj->signum() >= 0) {
+          // Unsigned 64-bit value: extract low 64 bits via longValue()
+          // and reinterpret as uint64_t.
+          returnValue = jsi::BigInt::fromUint64(
+              runtime, static_cast<uint64_t>(bigIntObj->longValue()));
+        } else {
+          throw jsi::JSError(
+              runtime,
+              "BigInt value cannot be losslessly represented as int64_t or uint64_t");
+        }
+      }
+
+      TMPL::syncMethodCallReturnConversionEnd(moduleName, methodName);
+      TMPL::syncMethodCallEnd(moduleName, methodName);
+      return returnValue;
     }
     default:
       throw std::runtime_error(
