@@ -4,6 +4,8 @@ exclude_patterns:
   - "*/test/*"
   - "*/stubs/*"
 
+exclude_symbols:
+
 platforms:
   ReactCommon:
     codegen:

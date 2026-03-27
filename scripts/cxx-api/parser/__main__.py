@@ -89,6 +89,7 @@ def build_snapshot_for_view(
     verbose: bool = True,
     input_filter: str = None,
     work_dir: str | None = None,
+    exclude_symbols: list[str] | None = None,
 ) -> str:
     if verbose:
         print(f"[{api_view}] Generating API view")
@@ -127,7 +128,9 @@ def build_snapshot_for_view(
     if verbose:
         print(f"[{api_view}] Building snapshot")
 
-    snapshot = build_snapshot(os.path.join(work_dir, "xml"))
+    snapshot = build_snapshot(
+        os.path.join(work_dir, "xml"), exclude_symbols=exclude_symbols
+    )
     snapshot_string = snapshot.to_string()
 
     output_file = os.path.join(output_dir, f"{api_view}Cxx.api")
@@ -175,6 +178,7 @@ def build_snapshots(
                         verbose=verbose,
                         input_filter=input_filter if config.input_filter else None,
                         work_dir=work_dir,
+                        exclude_symbols=config.exclude_symbols,
                     )
                     futures[future] = config.snapshot_name
 

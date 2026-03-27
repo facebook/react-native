@@ -481,6 +481,93 @@ class TestParseConfig(unittest.TestCase):
         self.assertEqual(view_b.exclude_patterns, ["*/test/*", "*/b_only/*"])
 
     # =========================================================================
+    # Exclude symbols
+    # =========================================================================
+
+    def test_exclude_symbols_parsed(self):
+        """Global exclude_symbols are parsed and propagated"""
+        config = {
+            "exclude_symbols": ["Fantom", "::detail::"],
+            "platforms": {
+                "TestView": {
+                    "inputs": [],
+                    "definitions": {},
+                }
+            },
+        }
+        result = parse_config(config, "/base/dir")
+
+        self.assertEqual(result[0].exclude_symbols, ["Fantom", "::detail::"])
+
+    def test_exclude_symbols_propagated_to_variants(self):
+        """Global exclude_symbols are propagated to all variant configs"""
+        config = {
+            "exclude_symbols": ["Fantom"],
+            "platforms": {
+                "TestView": {
+                    "inputs": [],
+                    "definitions": {},
+                    "variants": {
+                        "debug": {"definitions": {"DEBUG": 1}},
+                        "release": {"definitions": {"NDEBUG": 1}},
+                    },
+                }
+            },
+        }
+        result = parse_config(config, "/base/dir")
+
+        self.assertEqual(len(result), 2)
+        for r in result:
+            self.assertEqual(r.exclude_symbols, ["Fantom"])
+
+    def test_exclude_symbols_default_empty(self):
+        """Missing exclude_symbols defaults to empty list"""
+        config = {
+            "platforms": {
+                "TestView": {
+                    "inputs": [],
+                    "definitions": {},
+                }
+            }
+        }
+        result = parse_config(config, "/base/dir")
+
+        self.assertEqual(result[0].exclude_symbols, [])
+
+    def test_exclude_symbols_none_treated_as_empty(self):
+        """None exclude_symbols treated as empty list"""
+        config = {
+            "exclude_symbols": None,
+            "platforms": {
+                "TestView": {
+                    "inputs": [],
+                    "definitions": {},
+                }
+            },
+        }
+        result = parse_config(config, "/base/dir")
+
+        self.assertEqual(result[0].exclude_symbols, [])
+
+    def test_exclude_symbols_applied_to_all_platforms(self):
+        """Global exclude_symbols apply to every platform"""
+        config = {
+            "exclude_symbols": ["Fantom"],
+            "platforms": {
+                "ViewA": {
+                    "inputs": [],
+                },
+                "ViewB": {
+                    "inputs": [],
+                },
+            },
+        }
+        result = parse_config(config, "/base/dir")
+
+        for r in result:
+            self.assertEqual(r.exclude_symbols, ["Fantom"])
+
+    # =========================================================================
     # Variant naming
     # =========================================================================
 
