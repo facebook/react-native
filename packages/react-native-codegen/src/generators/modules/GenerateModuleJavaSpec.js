@@ -155,6 +155,9 @@ function translateEventEmitterTypeToJavaType(
     case 'DoubleTypeAnnotation':
     case 'Int32TypeAnnotation':
       return 'double';
+    case 'BigIntTypeAnnotation':
+      imports.add('java.math.BigInteger');
+      return 'BigInteger';
     case 'BooleanTypeAnnotation':
     case 'BooleanLiteralTypeAnnotation':
       return 'boolean';
@@ -267,6 +270,9 @@ function translateFunctionParamToJavaType(
     case 'FunctionTypeAnnotation':
       imports.add('com.facebook.react.bridge.Callback');
       return wrapOptional('Callback', isRequired);
+    case 'BigIntTypeAnnotation':
+      imports.add('java.math.BigInteger');
+      return wrapOptional('BigInteger', isRequired);
     default:
       (realTypeAnnotation.type: 'MixedTypeAnnotation');
       throw new Error(createErrorMessage(realTypeAnnotation.type));
@@ -361,6 +367,9 @@ function translateFunctionReturnTypeToJavaType(
     case 'ArrayTypeAnnotation':
       imports.add('com.facebook.react.bridge.WritableArray');
       return wrapOptional('WritableArray', isRequired);
+    case 'BigIntTypeAnnotation':
+      imports.add('java.math.BigInteger');
+      return wrapOptional('BigInteger', isRequired);
     default:
       (realTypeAnnotation.type: 'MixedTypeAnnotation');
       throw new Error(createErrorMessage(realTypeAnnotation.type));
@@ -443,6 +452,8 @@ function getFalsyReturnStatementFromReturnType(
       return 'return null;';
     case 'ArrayTypeAnnotation':
       return 'return null;';
+    case 'BigIntTypeAnnotation':
+      return nullable ? 'return null;' : 'return BigInteger.ZERO;';
     default:
       (realTypeAnnotation.type: 'MixedTypeAnnotation');
       throw new Error(createErrorMessage(realTypeAnnotation.type));

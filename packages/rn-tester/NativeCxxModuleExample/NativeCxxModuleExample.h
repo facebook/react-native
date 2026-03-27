@@ -182,6 +182,8 @@ class NativeCxxModuleExample : public NativeCxxModuleExampleCxxSpec<NativeCxxMod
 
   AsyncPromise<> promiseAssert(jsi::Runtime &rt);
 
+  BigInt getBigInt(jsi::Runtime &rt, BigInt arg);
+
  private:
   std::optional<AsyncCallback<std::string>> valueCallback_;
 };
