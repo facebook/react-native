@@ -20,7 +20,7 @@ jest.mock('../../../Core/Devtools/symbolicateStackTrace');
 const symbolicateStackTrace: JestMockFn<
   ReadonlyArray<Array<StackFrame>>,
   Promise<SymbolicatedStackTrace>,
-> = (require('../../../Core/Devtools/symbolicateStackTrace').default: any);
+> = require('../../../Core/Devtools/symbolicateStackTrace').default as any;
 
 const createStack = (methodNames: Array<string>) =>
   methodNames.map((methodName): StackFrame => ({

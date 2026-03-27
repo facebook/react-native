@@ -324,7 +324,7 @@ exports.examples = [
     title: 'this.setTimeout(fn, t)',
     description: ('Execute function fn t milliseconds in the future.  If ' +
       't === 0, it will be enqueued immediately in the next event loop.  ' +
-      'Larger values will fire on the closest frame.': string),
+      'Larger values will fire on the closest frame.') as string,
     render: function (): React.Node {
       return (
         <View>
@@ -373,7 +373,7 @@ exports.examples = [
   {
     title: 'this.setInterval(fn, t)',
     description: ('Execute function fn every t milliseconds until cancelled ' +
-      'or component is unmounted.': string),
+      'or component is unmounted.') as string,
     render: function (): React.Node {
       return <IntervalExample />;
     },

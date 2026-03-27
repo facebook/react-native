@@ -137,7 +137,7 @@ export class DeviceMock extends DeviceAgent {
         });
         break;
       default:
-        (message: empty);
+        message as empty;
         throw new Error(`Unhandled event ${message.event}`);
     }
   }

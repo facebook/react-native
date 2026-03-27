@@ -64,6 +64,6 @@ export interface Spec extends TurboModule {
   +getImageUrl?: () => Promise<string | null>;
 }
 
-export default (TurboModuleRegistry.getEnforcing<Spec>(
+export default TurboModuleRegistry.getEnforcing<Spec>(
   'SampleTurboModule',
-): Spec);
+) as Spec;

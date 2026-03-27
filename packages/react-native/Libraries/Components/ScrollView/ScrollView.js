@@ -856,7 +856,7 @@ class ScrollView extends React.Component<ScrollViewProps, ScrollViewState> {
   getScrollResponder: ScrollViewImperativeMethods['getScrollResponder'] =
     () => {
       // $FlowFixMe[unclear-type]
-      return ((this: any): ScrollResponderType);
+      return this as any as ScrollResponderType;
     };
 
   getScrollableNode: ScrollViewImperativeMethods['getScrollableNode'] = () => {
@@ -1958,5 +1958,5 @@ ScrollViewWrapper.displayName = 'ScrollView';
 // $FlowExpectedError[prop-missing]
 ScrollViewWrapper.Context = ScrollViewContext;
 
-export default ((ScrollViewWrapper: $FlowFixMe): typeof ScrollViewWrapper &
-  ScrollViewComponentStatics);
+export default ScrollViewWrapper as $FlowFixMe as typeof ScrollViewWrapper &
+  ScrollViewComponentStatics;

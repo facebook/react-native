@@ -1053,11 +1053,11 @@ const textInputExamples: Array<RNTesterModuleExample> = [
   },
 ];
 
-module.exports = ({
-  displayName: (undefined: ?string),
+module.exports = {
+  displayName: undefined as ?string,
   title: 'TextInput',
   documentationURL: 'https://reactnative.dev/docs/TextInput',
   category: 'Basic',
   description: 'Single and multi-line text inputs.',
   examples: textInputExamples,
-}: RNTesterModule);
+} as RNTesterModule;

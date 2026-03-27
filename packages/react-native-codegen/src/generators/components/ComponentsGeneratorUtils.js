@@ -111,7 +111,7 @@ function getNativeTypeFromAnnotation(
     case 'MixedTypeAnnotation':
       return 'folly::dynamic';
     default:
-      (typeAnnotation: empty);
+      typeAnnotation as empty;
       throw new Error(
         `Received invalid typeAnnotation for ${componentName} prop ${prop.name}, received ${typeAnnotation.type}`,
       );

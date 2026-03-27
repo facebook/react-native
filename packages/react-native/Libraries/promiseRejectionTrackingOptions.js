@@ -39,7 +39,7 @@ const rejectionTrackingOptions: NonNullable<Parameters<enable>[0]> = {
         message =
           typeof rejection === 'string'
             ? rejection
-            : JSON.stringify((rejection: $FlowFixMe));
+            : JSON.stringify(rejection as $FlowFixMe);
       }
     }
 

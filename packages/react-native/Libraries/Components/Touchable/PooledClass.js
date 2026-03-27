@@ -124,10 +124,10 @@ const addPoolingTo = function <T>(
 
 const PooledClass = {
   addPoolingTo: addPoolingTo,
-  oneArgumentPooler: (oneArgumentPooler: Pooler),
-  twoArgumentPooler: (twoArgumentPooler: Pooler),
-  threeArgumentPooler: (threeArgumentPooler: Pooler),
-  fourArgumentPooler: (fourArgumentPooler: Pooler),
+  oneArgumentPooler: oneArgumentPooler as Pooler,
+  twoArgumentPooler: twoArgumentPooler as Pooler,
+  threeArgumentPooler: threeArgumentPooler as Pooler,
+  fourArgumentPooler: fourArgumentPooler as Pooler,
 };
 
 export default PooledClass;

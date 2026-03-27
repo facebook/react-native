@@ -16,6 +16,6 @@ export interface Spec extends TurboModule {
   +queueMicrotask: (callback: () => unknown) => void;
 }
 
-export default (TurboModuleRegistry.getEnforcing<Spec>(
+export default TurboModuleRegistry.getEnforcing<Spec>(
   'NativeMicrotasksCxx',
-): Spec);
+) as Spec;

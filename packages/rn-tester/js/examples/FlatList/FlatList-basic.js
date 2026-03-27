@@ -444,9 +444,9 @@ const styles = StyleSheet.create({
   },
 });
 
-export default ({
+export default {
   title: 'Basic',
   name: 'basic',
   description: 'Simple list of items',
   render: () => <FlatListExample />,
-}: RNTesterModuleExample);
+} as RNTesterModuleExample;

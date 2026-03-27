@@ -352,7 +352,7 @@ function usePressState(forcePressed: boolean): [boolean, (boolean) => void] {
 const MemoedPressable = memo(Pressable);
 MemoedPressable.displayName = 'Pressable';
 
-export default (MemoedPressable: component(
+export default MemoedPressable as component(
   ref?: React.RefSetter<React.ElementRef<typeof View>>,
   ...props: PressableProps
-));
+);

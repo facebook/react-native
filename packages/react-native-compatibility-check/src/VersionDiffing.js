@@ -268,7 +268,7 @@ function nestedPropertiesCheck(
       }
       return currentCheck;
     default:
-      (result.status: empty);
+      result.status as empty;
       return [];
   }
 }
@@ -939,7 +939,7 @@ export function assessComparisonResult(
             );
             break;
           default:
-            (oldDirection: empty);
+            oldDirection as empty;
             throw new Error(
               'Unsupported native boundary direction ' + oldDirection,
             );
@@ -1063,7 +1063,7 @@ export function assessComparisonResult(
             });
             break;
           default:
-            (oldDirection: empty);
+            oldDirection as empty;
             throw new Error('Unknown direction : ' + oldDirection);
         }
         /* $FlowFixMe[prop-missing] (>=0.68.0 site=react_native_fb) This
@@ -1080,7 +1080,7 @@ export function assessComparisonResult(
         }
         break;
       default:
-        (difference.status: empty);
+        difference.status as empty;
         throw new Error('Unsupported status: ' + difference.status);
     }
   };

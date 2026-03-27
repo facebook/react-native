@@ -52,11 +52,11 @@ function getImports(
             imports.add('import android.view.View;');
             return;
           default:
-            (extendProps.knownTypeName: empty);
+            extendProps.knownTypeName as empty;
             throw new Error('Invalid knownTypeName');
         }
       default:
-        (extendProps.type: empty);
+        extendProps.type as empty;
         throw new Error('Invalid extended type');
     }
   });

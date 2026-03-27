@@ -436,7 +436,7 @@ function emitUnion(
   parser: Parser,
 ): Nullable<NativeModuleUnionTypeAnnotation> {
   const unparsedMemberTypes: ReadonlyArray<$FlowFixMe> =
-    (typeAnnotation.types: ReadonlyArray<$FlowFixMe>);
+    typeAnnotation.types as ReadonlyArray<$FlowFixMe>;
 
   const memberTypes = unparsedMemberTypes.map(
     (memberType: $FlowFixMe): NativeModuleUnionTypeAnnotationMemberType => {

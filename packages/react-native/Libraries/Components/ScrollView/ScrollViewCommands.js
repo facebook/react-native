@@ -42,11 +42,11 @@ interface NativeCommands {
   ) => void;
 }
 
-export default (codegenNativeCommands<NativeCommands>({
+export default codegenNativeCommands<NativeCommands>({
   supportedCommands: [
     'flashScrollIndicators',
     'scrollTo',
     'scrollToEnd',
     'zoomToRect',
   ],
-}): NativeCommands);
+}) as NativeCommands;

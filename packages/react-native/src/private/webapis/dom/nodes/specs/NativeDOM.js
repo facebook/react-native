@@ -448,4 +448,4 @@ export interface RefinedSpec {
 //    might end up loading this but not using it.
 // 2. We lose automatic backwards compatibility checks because of this.
 // $FlowExpectedError[incompatible-type]
-export default (TurboModuleRegistry.get<Spec>('NativeDOMCxx'): RefinedSpec);
+export default TurboModuleRegistry.get<Spec>('NativeDOMCxx') as RefinedSpec;

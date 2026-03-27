@@ -63,6 +63,6 @@ export class _LogBoxInspectorContainer extends React.Component<Props> {
   };
 }
 
-export default (LogBoxData.withSubscription(
+export default LogBoxData.withSubscription(
   _LogBoxInspectorContainer,
-): React.ComponentType<{}>);
+) as React.ComponentType<{}>;

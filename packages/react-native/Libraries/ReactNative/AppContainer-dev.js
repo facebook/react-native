@@ -29,7 +29,7 @@ import {useRef} from 'react';
 
 const {useEffect, useState, useCallback} = React;
 
-const reactDevToolsHook: ReactDevToolsGlobalHook = (window: $FlowFixMe)
+const reactDevToolsHook: ReactDevToolsGlobalHook = (window as $FlowFixMe)
   .__REACT_DEVTOOLS_GLOBAL_HOOK__;
 
 // Required for React DevTools to view / edit React Native styles in Flipper.

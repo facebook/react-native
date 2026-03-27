@@ -19,10 +19,10 @@ type RCTSafeAreaViewNativeProps = Readonly<{
   // No props
 }>;
 
-export default (codegenNativeComponent<RCTSafeAreaViewNativeProps>(
+export default codegenNativeComponent<RCTSafeAreaViewNativeProps>(
   'SafeAreaView',
   {
     paperComponentName: 'RCTSafeAreaView',
     interfaceOnly: true,
   },
-): HostComponent<RCTSafeAreaViewNativeProps>);
+) as HostComponent<RCTSafeAreaViewNativeProps>;

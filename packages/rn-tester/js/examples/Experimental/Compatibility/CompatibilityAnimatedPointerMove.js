@@ -67,25 +67,25 @@ function CompatibilityAnimatedPointerMove(): React.Node {
               {
                 translateX: xCoord.interpolate({
                   inputRange: [0, WIDTH],
-                  outputRange: ([0, WIDTH / 2]: number[]),
+                  outputRange: [0, WIDTH / 2] as number[],
                 }),
               },
               {
                 translateY: yCoord.interpolate({
                   inputRange: [0, HEIGHT],
-                  outputRange: ([0, HEIGHT / 2]: number[]),
+                  outputRange: [0, HEIGHT / 2] as number[],
                 }),
               },
               {
                 scaleX: xCoord.interpolate({
                   inputRange: [0, WIDTH],
-                  outputRange: ([0, WIDTH]: number[]),
+                  outputRange: [0, WIDTH] as number[],
                 }),
               },
               {
                 scaleY: yCoord.interpolate({
                   inputRange: [0, HEIGHT],
-                  outputRange: ([0, HEIGHT]: number[]),
+                  outputRange: [0, HEIGHT] as number[],
                 }),
               },
             ],
@@ -96,7 +96,7 @@ function CompatibilityAnimatedPointerMove(): React.Node {
   );
 }
 
-export default ({
+export default {
   name: 'compatibility_animatedevent_pointer_move',
   description:
     'An AnimatedEvent example on onPointerMove. The blue box should scale to pointer event offset values within black box',
@@ -104,4 +104,4 @@ export default ({
   render(): React.Node {
     return <CompatibilityAnimatedPointerMove />;
   },
-}: RNTesterModuleExample);
+} as RNTesterModuleExample;

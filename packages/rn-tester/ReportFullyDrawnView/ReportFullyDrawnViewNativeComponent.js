@@ -19,6 +19,6 @@ type NativeProps = Readonly<{
 
 export type ReportFullyDrawnViewType = HostComponent<ViewProps>;
 
-export default (codegenNativeComponent<NativeProps>(
+export default codegenNativeComponent<NativeProps>(
   'RNTReportFullyDrawnView',
-): ReportFullyDrawnViewType);
+) as ReportFullyDrawnViewType;

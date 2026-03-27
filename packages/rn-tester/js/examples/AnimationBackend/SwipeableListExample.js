@@ -278,9 +278,9 @@ const styles = StyleSheet.create({
   },
 });
 
-export default ({
+export default {
   title: 'Swipeable List',
   name: 'swipeableList',
   description: 'A swipeable list with width animation',
   render: (): React.Node => <SwipeableListExample />,
-}: RNTesterModuleExample);
+} as RNTesterModuleExample;

@@ -47,7 +47,7 @@ exports.examples = [
     name: 'color-red',
     description:
       ('Note: On iOS, the color prop controls the color of the text. On ' +
-        'Android, the color adjusts the background color of the button.': string),
+        'Android, the color adjusts the background color of the button.') as string,
     render: function (): React.Node {
       return (
         <RNTesterThemeContext.Consumer>
@@ -71,7 +71,7 @@ exports.examples = [
     name: 'two-buttons-flexbox',
     description:
       ('Two buttons wrapped inside view with justifyContent: spaceBetween,' +
-        'This layout strategy lets the title define the width of the button': string),
+        'This layout strategy lets the title define the width of the button') as string,
     render: function (): React.Node {
       return (
         <RNTesterThemeContext.Consumer>
@@ -163,7 +163,7 @@ exports.examples = [
   {
     title: 'Button with accessibilityLabel="label"',
     description: ('Note: This prop changes the text that a screen ' +
-      'reader announces (there are no visual differences).': string),
+      'reader announces (there are no visual differences).') as string,
     render: function (): React.Node {
       return (
         <RNTesterThemeContext.Consumer>
@@ -185,7 +185,7 @@ exports.examples = [
   {
     title: 'Button with aria-label="label"',
     description: ('Note: This prop changes the text that a screen ' +
-      'reader announces (there are no visual differences).': string),
+      'reader announces (there are no visual differences).') as string,
     render: function (): React.Node {
       return (
         <RNTesterThemeContext.Consumer>
@@ -208,7 +208,7 @@ exports.examples = [
     title: 'Button with accessibilityState={{disabled: true}}',
     description:
       ('Note: This prop will announce on TalkBack that the button is disabled. ' +
-        'The "disabled" prop has higher precedence on the state of the component': string),
+        'The "disabled" prop has higher precedence on the state of the component') as string,
     render: function (): React.Node {
       return (
         <RNTesterThemeContext.Consumer>

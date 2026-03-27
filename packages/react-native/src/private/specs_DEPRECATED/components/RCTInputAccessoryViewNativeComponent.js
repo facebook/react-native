@@ -19,11 +19,11 @@ type InputAccessoryNativeProps = Readonly<{
   backgroundColor?: ?ColorValue,
 }>;
 
-export default (codegenNativeComponent<InputAccessoryNativeProps>(
+export default codegenNativeComponent<InputAccessoryNativeProps>(
   'InputAccessory',
   {
     interfaceOnly: true,
     paperComponentName: 'RCTInputAccessoryView',
     excludedPlatforms: ['android'],
   },
-): HostComponent<InputAccessoryNativeProps>);
+) as HostComponent<InputAccessoryNativeProps>;

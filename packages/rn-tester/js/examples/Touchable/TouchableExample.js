@@ -664,7 +664,7 @@ const styles = StyleSheet.create({
   },
 });
 
-exports.displayName = (undefined: ?string);
+exports.displayName = undefined as ?string;
 exports.description = 'Touchable and onPress examples.';
 exports.title = 'Touchable* and onPress';
 exports.category = 'UI';
@@ -677,7 +677,7 @@ exports.examples = [
       'black background under the single child view.  This works best when the ' +
       'child view is fully opaque, although it can be made to work as a simple ' +
       'background color change as well with the activeOpacity and ' +
-      'underlayColor props.': string),
+      'underlayColor props.') as string,
     render(): React.Node {
       return <TouchableHighlightBox />;
     },
@@ -692,7 +692,7 @@ exports.examples = [
   {
     title: 'TouchableNativeFeedback with Animated child',
     description: ('TouchableNativeFeedback can have an AnimatedComponent as a' +
-      'direct child.': string),
+      'direct child.') as string,
     platform: 'android',
     render(): React.Node {
       const mScale = new Animated.Value(1);
@@ -746,7 +746,7 @@ exports.examples = [
     title: 'Touchable feedback events',
     name: 'feedback-events',
     description: ('<Touchable*> components accept onPress, onPressIn, ' +
-      'onPressOut, and onLongPress as props.': string),
+      'onPressOut, and onLongPress as props.') as string,
     render(): React.MixedElement {
       return <TouchableFeedbackEvents />;
     },
@@ -755,7 +755,7 @@ exports.examples = [
     title: 'Touchable delay for events',
     description: ('<Touchable*> components also accept delayPressIn, ' +
       'delayPressOut, and delayLongPress as props. These props impact the ' +
-      'timing of feedback events.': string),
+      'timing of feedback events.') as string,
     render(): React.MixedElement {
       return <TouchableDelayEvents />;
     },
@@ -774,7 +774,7 @@ exports.examples = [
     name: 'hit-slop',
     description:
       ('<Touchable*> components accept hitSlop prop which extends the touch area ' +
-        'without changing the view bounds.': string),
+        'without changing the view bounds.') as string,
     render(): React.MixedElement {
       return <TouchableHitSlop />;
     },
@@ -782,7 +782,7 @@ exports.examples = [
   {
     title: 'Touchable Native Methods',
     description:
-      ('Some <Touchable*> components expose native methods like `measure`.': string),
+      'Some <Touchable*> components expose native methods like `measure`.' as string,
     render(): React.MixedElement {
       return <TouchableNativeMethods />;
     },
@@ -790,7 +790,7 @@ exports.examples = [
   {
     title: 'Custom Ripple Radius (Android-only)',
     description:
-      ('Ripple radius on TouchableNativeFeedback can be controlled': string),
+      'Ripple radius on TouchableNativeFeedback can be controlled' as string,
     render(): React.MixedElement {
       return <CustomRippleRadius />;
     },
@@ -799,7 +799,7 @@ exports.examples = [
     title: 'Disabled Touchable*',
     description:
       ('<Touchable*> components accept disabled prop which prevents ' +
-        'any interaction with component': string),
+        'any interaction with component') as string,
     render(): React.MixedElement {
       return <TouchableDisabled />;
     },

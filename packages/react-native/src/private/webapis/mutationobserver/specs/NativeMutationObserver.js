@@ -50,6 +50,6 @@ export interface Spec extends TurboModule {
   +takeRecords: () => ReadonlyArray<NativeMutationRecord>;
 }
 
-export default (TurboModuleRegistry.get<Spec>(
+export default TurboModuleRegistry.get<Spec>(
   'NativeMutationObserverCxx',
-): ?Spec);
+) as ?Spec;

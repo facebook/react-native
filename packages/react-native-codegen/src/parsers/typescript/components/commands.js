@@ -102,7 +102,7 @@ function buildCommandSchemaInternal(
         };
         break;
       default:
-        (type: unknown);
+        (type) as unknown;
         throw new Error(
           `Unsupported param type for method "${name}", param "${paramName}". Found ${type}`,
         );

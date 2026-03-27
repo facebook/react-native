@@ -53,4 +53,4 @@ export interface Spec extends TurboModule {
   +dismissActionSheet?: () => void;
 }
 
-export default (TurboModuleRegistry.get<Spec>('ActionSheetManager'): ?Spec);
+export default TurboModuleRegistry.get<Spec>('ActionSheetManager') as ?Spec;

@@ -127,12 +127,12 @@ component CompositeAnimationsWithEasingExample() {
   );
 }
 
-export default ({
+export default {
   title: 'Composite Animations with Easing',
   name: 'compositeAnimationsWithEasing',
   description: ('Sequence, parallel, delay, and ' +
-    'stagger with different easing functions.': string),
+    'stagger with different easing functions.') as string,
   expect:
     'The 3 views will animate their `left` position based on their animation configurations.',
   render: () => <CompositeAnimationsWithEasingExample />,
-}: RNTesterModuleExample);
+} as RNTesterModuleExample;
