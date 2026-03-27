@@ -11,7 +11,7 @@
 import type {RNTesterModuleExample} from '../../types/RNTesterTypes';
 import type {ViewStyleProp} from 'react-native/Libraries/StyleSheet/StyleSheet';
 
-import React from 'react';
+import * as React from 'react';
 import {useState} from 'react';
 import {Image, ImageBackground, StyleSheet, Text, View} from 'react-native';
 

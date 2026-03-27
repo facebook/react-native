@@ -17,7 +17,7 @@ import type {
 } from 'react-native/Libraries/Components/View/ViewPropTypes';
 
 import RNTesterText from '../../components/RNTesterText';
-import React from 'react';
+import * as React from 'react';
 import {Image, LayoutAnimation, StyleSheet, View} from 'react-native';
 
 type Props = Readonly<{}>;

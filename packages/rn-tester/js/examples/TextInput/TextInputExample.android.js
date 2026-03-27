@@ -17,7 +17,7 @@ import type {
 
 import ExampleTextInput from './ExampleTextInput';
 import TextInputSharedExamples from './TextInputSharedExamples';
-import React from 'react';
+import * as React from 'react';
 import {useState} from 'react';
 import {StyleSheet, Text, View} from 'react-native';
 

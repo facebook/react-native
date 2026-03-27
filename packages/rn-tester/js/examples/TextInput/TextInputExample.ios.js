@@ -19,7 +19,7 @@ import type {KeyboardTypeOptions} from 'react-native';
 import RNTesterText from '../../components/RNTesterText';
 import ExampleTextInput from './ExampleTextInput';
 import TextInputSharedExamples from './TextInputSharedExamples';
-import React from 'react';
+import * as React from 'react';
 import {useRef} from 'react';
 import {
   Alert,
