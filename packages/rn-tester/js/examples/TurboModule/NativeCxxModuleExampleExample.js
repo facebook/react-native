@@ -50,6 +50,7 @@ type Examples =
   | 'getStrEnum'
   | 'getMap'
   | 'getNumber'
+  | 'getBigInt'
   | 'getObject'
   | 'getSet'
   | 'getString'
@@ -122,7 +123,10 @@ class NativeCxxModuleExampleExample extends React.Component<{}, State> {
       }),
     getNumEnum: () => NativeCxxModuleExample?.getNumEnum(EnumInt.IB),
     getStrEnum: () => NativeCxxModuleExample?.getStrEnum(EnumNone.NB),
+    getMap: () => NativeCxxModuleExample?.getMap({one: 1, two: 2, three: null}),
     getNumber: () => NativeCxxModuleExample?.getNumber(99.95),
+    getBigInt: () =>
+      NativeCxxModuleExample?.getBigInt(BigInt('9223372036854775807')),
     getObject: () =>
       NativeCxxModuleExample?.getObject({a: 1, b: 'foo', c: null}),
     getSet: () => NativeCxxModuleExample?.getSet([1, 1.1, 1.1, 1.1, 2]),
@@ -259,7 +263,9 @@ class NativeCxxModuleExampleExample extends React.Component<{}, State> {
     return (
       <View style={styles.result}>
         <RNTesterText style={[styles.value]}>
-          {JSON.stringify(result.value)}
+          {typeof result.value === 'bigint'
+            ? result.value.toString()
+            : JSON.stringify(result.value)}
         </RNTesterText>
         <RNTesterText style={[styles.type]}>{result.type}</RNTesterText>
       </View>

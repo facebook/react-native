@@ -115,6 +115,8 @@ function toObjCValue(
       return wrapPrimitive('double');
     case 'Int32TypeAnnotation':
       return wrapPrimitive('double');
+    case 'BigIntTypeAnnotation':
+      return value;
     case 'DoubleTypeAnnotation':
       return wrapPrimitive('double');
     case 'BooleanTypeAnnotation':
