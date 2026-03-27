@@ -12,7 +12,7 @@
     "clang-format": "clang-format -i --glob=*/**/*.{h,cpp,m,mm}",
     "clean": "node ./scripts/build/clean.js",
     "cxx-api-build": "python -m scripts.cxx-api.parser",
-    "cxx-api-validate": "python -m scripts.cxx-api.parser --check",
+    "cxx-api-validate": "python -m scripts.cxx-api.parser --validate",
     "flow-check": "flow check",
     "flow": "flow",
     "format-check": "prettier --list-different \"./**/*.{js,md,yml,ts,tsx}\"",
