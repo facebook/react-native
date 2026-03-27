@@ -285,8 +285,8 @@ def main():
     )
 
     with tempfile.TemporaryDirectory() as tmpdir:
-        snapshot_output_dir = (
-            tmpdir if args.check else args.output_dir or get_default_snapshot_dir()
+        snapshot_output_dir = args.output_dir or (
+            tmpdir if args.check else get_default_snapshot_dir()
         )
 
         build_snapshots(
