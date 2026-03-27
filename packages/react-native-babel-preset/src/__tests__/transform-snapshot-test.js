@@ -105,6 +105,30 @@ const testConfigs = [
     },
     description: 'Without babel runtime helpers',
   },
+  {
+    name: 'hermes-stable-dev-preserve-class-private',
+    options: {
+      dev: true,
+      unstable_transformProfile: 'hermes-stable',
+      customTransformOptions: {
+        unstable_preserveClassPrivate: true,
+      },
+    },
+    description:
+      'Hermes stable transform profile in development mode with unstable_preserveClassPrivate enabled',
+  },
+  {
+    name: 'hermes-stable-dev-preserve-async',
+    options: {
+      dev: true,
+      unstable_transformProfile: 'hermes-stable',
+      customTransformOptions: {
+        unstable_preserveAsync: true,
+      },
+    },
+    description:
+      'Hermes stable transform profile in development mode with unstable_preserveAsync enabled',
+  },
 ];
 
 function transformCode(
@@ -387,6 +411,45 @@ describe('react-native-babel-preset transform snapshots', () => {
       expect(result).not.toContain('#count');
       expect(result).not.toContain('#privateMethod');
       expect(result).toContain('_classPrivateFieldLooseKey');
+    });
+
+    it('preserves async/await with unstable_preserveAsync', () => {
+      const code = `
+        async function fetchData() {
+          const response = await fetch('/api');
+          return response.json();
+        }
+        async function* asyncGen() {
+          yield await Promise.resolve(1);
+          yield await Promise.resolve(2);
+        }
+      `;
+      const result = transformCode(code, {
+        dev: false,
+        unstable_transformProfile: 'hermes-stable',
+        customTransformOptions: {
+          unstable_preserveAsync: true,
+        },
+      });
+      expect(result).toContain('async function fetchData');
+      expect(result).toContain('await fetch');
+      expect(result).toContain('async function* asyncGen');
+      expect(result).not.toContain('_asyncToGenerator');
+      expect(result).not.toContain('_wrapAsyncGenerator');
+    });
+
+    it('transforms async/await without unstable_preserveAsync', () => {
+      const code = `
+        async function fetchData() {
+          const response = await fetch('/api');
+          return response.json();
+        }
+      `;
+      const result = transformCode(code, {
+        dev: false,
+        unstable_transformProfile: 'hermes-stable',
+      });
+      expect(result).toContain('_asyncToGenerator');
     });
   });
 });
