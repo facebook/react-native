@@ -19,6 +19,6 @@ type NativeProps = Readonly<{
   // No Props or events
 }>;
 
-export default (codegenNativeComponent<NativeProps>(
+export default codegenNativeComponent<NativeProps>(
   'NoPropsNoEventsNativeComponentView',
-): HostComponent<NativeProps>);
+) as HostComponent<NativeProps>;

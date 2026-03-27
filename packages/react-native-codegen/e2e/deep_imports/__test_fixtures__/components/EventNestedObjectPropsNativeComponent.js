@@ -38,6 +38,6 @@ type NativeProps = Readonly<{
   onChange?: ?BubblingEventHandler<OnChangeEvent>,
 }>;
 
-export default (codegenNativeComponent<NativeProps>(
+export default codegenNativeComponent<NativeProps>(
   'EventNestedObjectPropsNativeComponentView',
-): HostComponent<NativeProps>);
+) as HostComponent<NativeProps>;

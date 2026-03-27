@@ -64,6 +64,6 @@ export interface Spec extends TurboModule {
   ) => StateTypeWithEnums;
 }
 
-export default (TurboModuleRegistry.getEnforcing<Spec>(
+export default TurboModuleRegistry.getEnforcing<Spec>(
   'NativeEnumTurboModule',
-): Spec);
+) as Spec;
