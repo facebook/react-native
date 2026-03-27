@@ -16,7 +16,8 @@ public enum YogaUnit {
   AUTO(3),
   MAX_CONTENT(4),
   FIT_CONTENT(5),
-  STRETCH(6);
+  STRETCH(6),
+  DYNAMIC(7);
 
   private final int mIntValue;
 
@@ -37,6 +38,7 @@ public enum YogaUnit {
       case 4: return MAX_CONTENT;
       case 5: return FIT_CONTENT;
       case 6: return STRETCH;
+      case 7: return DYNAMIC;
       default: throw new IllegalArgumentException("Unknown enum value: " + value);
     }
   }
