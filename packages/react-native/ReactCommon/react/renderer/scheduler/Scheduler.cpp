@@ -271,6 +271,9 @@ SchedulerDelegate* Scheduler::getDelegate() const {
 #pragma mark - UIManagerAnimationDelegate
 
 void Scheduler::animationTick() const {
+  if (!uiManager_) {
+    return;
+  }
   uiManager_->animationTick();
 }
 
