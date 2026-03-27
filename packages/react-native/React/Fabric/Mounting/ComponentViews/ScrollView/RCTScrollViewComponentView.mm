@@ -274,6 +274,15 @@ static inline UIViewAnimationOptions animationOptionsWithCurve(UIViewAnimationCu
       @"Unexpected implementation of UIViewAnimationCurve");
   return curve << 16;
 }
+
+static inline UIEdgeInsets RCTEffectiveContentInset(UIScrollView *scrollView)
+{
+  if (@available(iOS 11.0, *)) {
+    return scrollView.adjustedContentInset;
+  }
+
+  return scrollView.contentInset;
+}
 #endif
 
 - (RCTGenericDelegateSplitter<id<UIScrollViewDelegate>> *)scrollViewDelegateSplitter
@@ -923,29 +932,7 @@ static inline UIViewAnimationOptions animationOptionsWithCurve(UIViewAnimationCu
 
 - (void)scrollTo:(double)x y:(double)y animated:(BOOL)animated
 {
-  CGPoint offset = CGPointMake(x, y);
-  CGRect maxRect = CGRectMake(
-      fmin(-_scrollView.contentInset.left, 0),
-      fmin(-_scrollView.contentInset.top, 0),
-      fmax(
-          _scrollView.contentSize.width - _scrollView.bounds.size.width + _scrollView.contentInset.right +
-              fmax(_scrollView.contentInset.left, 0),
-          0.01),
-      fmax(
-          _scrollView.contentSize.height - _scrollView.bounds.size.height + _scrollView.contentInset.bottom +
-              fmax(_scrollView.contentInset.top, 0),
-          0.01)); // Make width and height greater than 0
-
-  const auto &props = static_cast<const ScrollViewProps &>(*_props);
-  if (!CGRectContainsPoint(maxRect, offset) && !props.scrollToOverflowEnabled) {
-    CGFloat localX = fmax(offset.x, CGRectGetMinX(maxRect));
-    localX = fmin(localX, CGRectGetMaxX(maxRect));
-    CGFloat localY = fmax(offset.y, CGRectGetMinY(maxRect));
-    localY = fmin(localY, CGRectGetMaxY(maxRect));
-    offset = CGPointMake(localX, localY);
-  }
-
-  [self scrollToOffset:offset animated:animated];
+  [self scrollToOffset:CGPointMake(x, y) animated:animated];
 }
 
 - (void)scrollToEnd:(BOOL)animated
@@ -1015,6 +1002,27 @@ static inline UIViewAnimationOptions animationOptionsWithCurve(UIViewAnimationCu
   if (_layoutMetrics.layoutDirection == LayoutDirection::RightToLeft) {
     // Adjusting offset.x in right to left layout direction.
     offset.x = self.contentSize.width - _scrollView.frame.size.width - offset.x;
+  }
+
+  UIEdgeInsets contentInset = RCTEffectiveContentInset(_scrollView);
+  CGRect maxRect = CGRectMake(
+      fmin(-contentInset.left, 0),
+      fmin(-contentInset.top, 0),
+      fmax(
+          _scrollView.contentSize.width - _scrollView.bounds.size.width + contentInset.right + fmax(contentInset.left, 0),
+          0.01),
+      fmax(
+          _scrollView.contentSize.height - _scrollView.bounds.size.height + contentInset.bottom +
+              fmax(contentInset.top, 0),
+          0.01)); // Make width and height greater than 0
+
+  const auto &props = static_cast<const ScrollViewProps &>(*_props);
+  if (!CGRectContainsPoint(maxRect, offset) && !props.scrollToOverflowEnabled) {
+    CGFloat localX = fmax(offset.x, CGRectGetMinX(maxRect));
+    localX = fmin(localX, CGRectGetMaxX(maxRect));
+    CGFloat localY = fmax(offset.y, CGRectGetMinY(maxRect));
+    localY = fmin(localY, CGRectGetMaxY(maxRect));
+    offset = CGPointMake(localX, localY);
   }
 
   if (CGPointEqualToPoint(_scrollView.contentOffset, offset)) {

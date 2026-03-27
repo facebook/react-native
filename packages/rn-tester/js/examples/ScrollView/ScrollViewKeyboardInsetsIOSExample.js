@@ -123,6 +123,37 @@ component ScrollViewKeyboardInsetsExample() {
   );
 }
 
+component ScrollViewKeyboardInsetsAutomaticContentInsetExample() {
+  return (
+    <ScrollView
+      style={styles.automaticInsetScrollView}
+      contentContainerStyle={styles.automaticInsetContent}
+      automaticallyAdjustKeyboardInsets
+      contentInsetAdjustmentBehavior="automatic"
+      keyboardDismissMode="interactive">
+      <Text style={styles.automaticInsetTitle}>
+        Focus the input near the bottom and dismiss the keyboard.
+      </Text>
+      <Text style={styles.automaticInsetDescription}>
+        The content should return to its original position immediately without
+        leaving extra space at the bottom.
+      </Text>
+      <View style={styles.automaticInsetCard}>
+        <Text>
+          This reproduces the combination of automatic keyboard insets and
+          automatic content inset adjustment that previously left a stale bottom
+          gap until the next manual scroll.
+        </Text>
+      </View>
+      <View style={styles.automaticInsetSpacer} />
+      <TextInput
+        placeholder="Keyboard dismissal repro"
+        style={styles.automaticInsetTextInput}
+      />
+    </ScrollView>
+  );
+}
+
 const styles = StyleSheet.create({
   container: {
     flex: 1,
@@ -176,6 +207,42 @@ const styles = StyleSheet.create({
     fontSize: 12,
     fontFamily: 'Courier',
   },
+  automaticInsetScrollView: {
+    flex: 1,
+    backgroundColor: '#f2f5f7',
+  },
+  automaticInsetContent: {
+    padding: 16,
+    paddingBottom: 32,
+    gap: 16,
+  },
+  automaticInsetTitle: {
+    fontSize: 18,
+    fontWeight: '600',
+  },
+  automaticInsetDescription: {
+    fontSize: 15,
+    lineHeight: 21,
+  },
+  automaticInsetCard: {
+    padding: 16,
+    borderRadius: 12,
+    backgroundColor: '#fff',
+    borderWidth: 1,
+    borderColor: '#d0d7de',
+  },
+  automaticInsetSpacer: {
+    height: 320,
+  },
+  automaticInsetTextInput: {
+    borderWidth: 1,
+    borderColor: '#999',
+    borderRadius: 10,
+    backgroundColor: '#fff',
+    fontSize: 18,
+    paddingHorizontal: 14,
+    paddingVertical: 12,
+  },
 });
 
 exports.title = 'ScrollViewKeyboardInsets';
@@ -186,5 +253,12 @@ exports.examples = [
   {
     title: '<ScrollView> automaticallyAdjustKeyboardInsets Example',
     render: (): React.Node => <ScrollViewKeyboardInsetsExample />,
+  },
+  {
+    title:
+      '<ScrollView> keyboard dismissal with automatic content inset adjustment',
+    render: (): React.Node => (
+      <ScrollViewKeyboardInsetsAutomaticContentInsetExample />
+    ),
   },
 ] as Array<RNTesterModuleExample>;
