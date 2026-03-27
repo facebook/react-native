@@ -87,6 +87,15 @@ def parse_config(
                 seen.add(pattern)
         exclude_patterns = merged_patterns
 
+        platform_exclude_symbols = view_config.get("exclude_symbols") or []
+        seen_symbols: set[str] = set()
+        merged_symbols: list[str] = []
+        for symbol in global_exclude_symbols + platform_exclude_symbols:
+            if symbol not in seen_symbols:
+                merged_symbols.append(symbol)
+                seen_symbols.add(symbol)
+        exclude_symbols = merged_symbols
+
         raw_variants = view_config.get("variants") or {}
         variants = [
             ApiViewVariant(
@@ -105,7 +114,7 @@ def parse_config(
                     definitions=base_definitions,
                     codegen_platform=codegen_platform,
                     input_filter=input_filter,
-                    exclude_symbols=global_exclude_symbols,
+                    exclude_symbols=exclude_symbols,
                 )
             )
         else:
@@ -120,7 +129,7 @@ def parse_config(
                         definitions=merged_definitions,
                         codegen_platform=codegen_platform,
                         input_filter=input_filter,
-                        exclude_symbols=global_exclude_symbols,
+                        exclude_symbols=exclude_symbols,
                     )
                 )
 

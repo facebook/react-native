@@ -73,6 +73,10 @@ platforms:
       - "*+Internal.h"
       - "*/scripts/*"
       - "*/templates/*"
+      - "*/components/progressbar/android/*"
+      - "*/components/switch/androidswitch/*"
+    exclude_symbols:
+      - "Android"
     input_filter: true
     definitions:
       __cplusplus: 1
