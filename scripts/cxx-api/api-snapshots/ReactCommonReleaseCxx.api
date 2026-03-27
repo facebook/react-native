@@ -181,7 +181,6 @@ constexpr size_t facebook::react::RESOURCE_TIMING_BUFFER_SIZE;
 constexpr uint32_t facebook::react::INITIAL_BUCKETS_SIZE;
 static const facebook::react::LayoutMetrics facebook::react::EmptyLayoutMetrics;
 static const facebook::react::TelemetryTimePoint facebook::react::kTelemetryUndefinedTimePoint;
-static const int facebook::react::NO_VIEW_TAG;
 static constexpr auto facebook::react::kPropNameLengthHardCap;
 static constexpr double facebook::react::SingleFrameIntervalMs;
 static constexpr double facebook::react::TicksPerMs;
@@ -473,8 +472,6 @@ facebook::react::SharedColor facebook::react::fromCSSColor(const facebook::react
 facebook::react::SharedColor facebook::react::whiteColor();
 facebook::react::Size facebook::react::ModalHostViewScreenSize(void);
 facebook::react::Size facebook::react::yogaMeassureToSize(int64_t value);
-facebook::react::StubViewTree facebook::react::buildStubViewTreeUsingDifferentiator(const facebook::react::ShadowNode& rootShadowNode);
-facebook::react::StubViewTree facebook::react::buildStubViewTreeWithoutUsingDifferentiator(const facebook::react::ShadowNode& rootShadowNode);
 facebook::react::SurfaceId facebook::react::getNextRootViewTag() noexcept;
 facebook::react::TurboModuleMethodValueKind facebook::react::getTurboModuleMethodValueKind(facebook::jsi::Runtime& rt, const facebook::jsi::Value* value);
 facebook::react::ValueUnit facebook::react::cssLengthPercentageToValueUnit(const std::variant<facebook::react::CSSLength, facebook::react::CSSPercentage>& value);
@@ -723,8 +720,6 @@ bool facebook::react::operator==(const facebook::react::PerformanceObserver& lhs
 bool facebook::react::operator==(const facebook::react::PreparedTextCacheKey& lhs, const facebook::react::PreparedTextCacheKey& rhs);
 bool facebook::react::operator==(const facebook::react::RawPropsKey& lhs, const facebook::react::RawPropsKey& rhs) noexcept;
 bool facebook::react::operator==(const facebook::react::Size& rhs, const facebook::react::Size& lhs) noexcept;
-bool facebook::react::operator==(const facebook::react::StubView& lhs, const facebook::react::StubView& rhs);
-bool facebook::react::operator==(const facebook::react::StubViewTree& lhs, const facebook::react::StubViewTree& rhs);
 bool facebook::react::operator==(const facebook::react::TextMeasureCacheKey& lhs, const facebook::react::TextMeasureCacheKey& rhs);
 constexpr bool facebook::react::operator==(const facebook::react::AccessibilityState& lhs, const facebook::react::AccessibilityState& rhs);
 constexpr bool facebook::react::operator==(const facebook::react::AccessibilityValue& lhs, const facebook::react::AccessibilityValue& rhs);
@@ -3931,37 +3926,6 @@ class facebook::react::StateUpdate {
   public facebook::react::StateUpdate::Callback callback;
   public using Callback = std::function<facebook::react::StateData::Shared(const facebook::react::StateData::Shared& data)>;
   public using FailureCallback = std::function<void()>;
-}
-
-class facebook::react::StubView {
-  public StubView() = default;
-  public StubView(const facebook::react::StubView& stubView) = default;
-  public facebook::react::ComponentHandle componentHandle;
-  public facebook::react::ComponentName componentName;
-  public facebook::react::LayoutMetrics layoutMetrics;
-  public facebook::react::Props::Shared props;
-  public facebook::react::ShadowNodeTraits traits;
-  public facebook::react::SharedEventEmitter eventEmitter;
-  public facebook::react::State::Shared state;
-  public facebook::react::SurfaceId surfaceId;
-  public facebook::react::Tag parentTag;
-  public facebook::react::Tag tag;
-  public operator facebook::react::ShadowView() const;
-  public std::vector<facebook::react::StubView::Shared> children;
-  public using Shared = std::shared_ptr<facebook::react::StubView>;
-  public void update(const facebook::react::ShadowView& shadowView);
-}
-
-class facebook::react::StubViewTree {
-  public StubViewTree() = default;
-  public StubViewTree(const facebook::react::ShadowView& shadowView);
-  public bool hasTag(facebook::react::Tag tag) const;
-  public const facebook::react::StubView& getRootStubView() const;
-  public const facebook::react::StubView& getStubView(facebook::react::Tag tag) const;
-  public size_t size() const;
-  public std::vector<std::string> takeMountingLogs();
-  public void dispatchCommand(const facebook::react::ShadowView& shadowView, const std::string& commandName, const folly::dynamic& args);
-  public void mutate(const facebook::react::ShadowViewMutationList& mutations);
 }
 
 class facebook::react::StyleAnimatedNode : public facebook::react::AnimatedNode {
