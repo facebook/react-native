@@ -7955,13 +7955,6 @@ class facebook::react::UnimplementedViewProps : public facebook::react::HostPlat
   public void setComponentName(facebook::react::ComponentName componentName);
 }
 
-class facebook::react::UnstableLegacyViewManagerAutomaticComponentDescriptor : public facebook::react::ConcreteComponentDescriptor<LegacyViewManagerAndroidInteropShadowNode> {
-  public UnstableLegacyViewManagerAutomaticComponentDescriptor(const facebook::react::ComponentDescriptorParameters& parameters, facebook::react::RawPropsParser&& rawPropsParser = {});
-  public UnstableLegacyViewManagerAutomaticComponentDescriptor(const facebook::react::ComponentDescriptorParameters& parameters, std::string legacyComponentName);
-  public virtual facebook::react::ComponentHandle getComponentHandle() const override;
-  public virtual facebook::react::ComponentName getComponentName() const override;
-}
-
 class facebook::react::ValueAnimatedNode : public facebook::react::AnimatedNode {
   protected bool isColorValue_;
   public ValueAnimatedNode(facebook::react::Tag tag, const folly::dynamic& config, facebook::react::NativeAnimatedNodesManager& manager);
@@ -10592,11 +10585,6 @@ class facebook::react::BaseTextInputShadowNode : public facebook::react::Concret
   public static facebook::react::ShadowNodeTraits BaseTraits();
   public using BaseShadowNode = facebook::react::ConcreteViewShadowNode<concreteComponentName, ViewPropsT, ViewEventEmitterT, StateDataT>;
   public void setTextLayoutManager(std::shared_ptr<const facebook::react::TextLayoutManager> textLayoutManager);
-}
-
-template <const char* concreteComponentName>
-class facebook::react::UnstableLegacyViewManagerInteropComponentDescriptor : public facebook::react::ConcreteComponentDescriptor<facebook::react::ConcreteViewShadowNode<concreteComponentName, facebook::react::ViewProps>> {
-  public UnstableLegacyViewManagerInteropComponentDescriptor(const facebook::react::ComponentDescriptorParameters& parameters);
 }
 
 template <facebook::react::ComponentName concreteComponentName, typename BaseShadowNodeT, typename PropsT, typename EventEmitterT = facebook::react::EventEmitter, typename StateDataT = facebook::react::StateData>

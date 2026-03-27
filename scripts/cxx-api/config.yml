@@ -9,6 +9,7 @@ exclude_patterns:
 exclude_symbols:
   - "Fantom"
   - "NativeReactNativeFeatureFlags"
+  - "UnstableLegacy"
 
 platforms:
   ReactCommon:
