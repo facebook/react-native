@@ -44,10 +44,13 @@ platforms:
     exclude_patterns:
       - "*/ReactAndroid/src/main/jni/react/featureflags/*"
       - "*/components/switch/iosswitch/*"
+      - "*/components/inputaccessory/*"
       - "*/platform/cxx/*"
       - "*/platform/windows/*"
       - "*/platform/macos/*"
       - "*/platform/ios/*"
+    exclude_symbols:
+      - "InputAccessory"
     input_filter: false
     definitions:
       RN_SERIALIZABLE_STATE: 1
