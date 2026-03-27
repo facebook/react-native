@@ -113,7 +113,7 @@ inline JS::NativeSampleTurboModule::Constants::Builder::Builder(Constants i)
  @protected
   facebook::react::EventEmitterCallback _eventEmitterCallback;
 }
-- (void)setEventEmitterCallback:(EventEmitterCallbackWrapper *)eventEmitterCallbackWrapper;
+- (void)setEventEmitterCallback:(EventEmitterCallbackWrapper *_Nonnull)eventEmitterCallbackWrapper;
 
 - (void)emitOnPress;
 - (void)emitOnClick:(NSString *_Nonnull)value;
