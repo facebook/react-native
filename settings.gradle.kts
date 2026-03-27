@@ -34,7 +34,6 @@ dependencyResolutionManagement {
 rootProject.name = "react-native-github"
 
 plugins {
-  id("org.gradle.toolchains.foojay-resolver-convention").version("0.5.0")
   id("com.facebook.react.settings")
 }
 
