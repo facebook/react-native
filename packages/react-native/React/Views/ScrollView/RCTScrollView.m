@@ -284,9 +284,7 @@ static inline UIViewAnimationOptions animationOptionsWithCurve(UIViewAnimationCu
 static inline UIEdgeInsets RCTEffectiveContentInset(UIScrollView *scrollView)
 {
   if (@available(iOS 11.0, *)) {
-    if (!UIEdgeInsetsEqualToEdgeInsets(UIEdgeInsetsZero, scrollView.adjustedContentInset)) {
-      return scrollView.adjustedContentInset;
-    }
+    return scrollView.adjustedContentInset;
   }
 
   return scrollView.contentInset;
