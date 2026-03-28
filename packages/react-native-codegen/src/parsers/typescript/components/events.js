@@ -19,156 +19,41 @@ import type {Parser} from '../../parser';
 import type {TypeDeclarationMap} from '../../utils';
 
 const {
+  extractArrayElementType,
+  getPropertyType: getPropertyTypeCommon,
+} = require('../../components/events-commons');
+const {
   throwIfArgumentPropsAreNull,
   throwIfBubblingTypeIsNull,
   throwIfEventHasNoName,
 } = require('../../error-utils');
 const {
-  buildPropertiesForEvent,
   emitBuildEventSchema,
   getEventArgument,
   handleEventHandler,
 } = require('../../parsers-commons');
-const {
-  emitBoolProp,
-  emitDoubleProp,
-  emitFloatProp,
-  emitInt32Prop,
-  emitMixedProp,
-  emitObjectProp,
-  emitStringProp,
-  emitUnionProp,
-} = require('../../parsers-primitives');
 const {parseTopLevelType} = require('../parseTopLevelType');
 const {flattenProperties} = require('./componentsUtils');
 
+/**
+ * TypeScript wrapper around the shared getPropertyType that applies
+ * parseTopLevelType to unwrap Readonly, WithDefault, and nullable unions
+ * before delegating to the shared type resolution logic.
+ */
 function getPropertyType(
   /* $FlowFixMe[missing-local-annot] The type annotation(s) required by Flow's
    * LTI update could not be added via codemod */
-  name,
+  name: string,
   optionalProperty: boolean,
   /* $FlowFixMe[missing-local-annot] The type annotation(s) required by Flow's
    * LTI update could not be added via codemod */
-  annotation,
+  annotation: $FlowFixMe,
   parser: Parser,
 ): NamedShape<EventTypeAnnotation> {
   const topLevelType = parseTopLevelType(annotation, parser);
   const typeAnnotation = topLevelType.type;
   const optional = optionalProperty || topLevelType.optional;
-  const type =
-    typeAnnotation.type === 'TSTypeReference'
-      ? parser.getTypeAnnotationName(typeAnnotation)
-      : typeAnnotation.type;
-
-  switch (type) {
-    case 'TSBooleanKeyword':
-      return emitBoolProp(name, optional);
-    case 'TSStringKeyword':
-      return emitStringProp(name, optional);
-    case 'Int32':
-      return emitInt32Prop(name, optional);
-    case 'Double':
-      return emitDoubleProp(name, optional);
-    case 'Float':
-      return emitFloatProp(name, optional);
-    case 'TSTypeLiteral':
-      return emitObjectProp(
-        name,
-        optional,
-        parser,
-        typeAnnotation,
-        extractArrayElementType,
-      );
-    case 'TSUnionType':
-      return emitUnionProp(name, optional, parser, typeAnnotation);
-    case 'UnsafeMixed':
-      return emitMixedProp(name, optional);
-    case 'TSArrayType':
-      return {
-        name,
-        optional,
-        typeAnnotation: extractArrayElementType(typeAnnotation, name, parser),
-      };
-    default:
-      throw new Error(`Unable to determine event type for "${name}": ${type}`);
-  }
-}
-
-function extractArrayElementType(
-  typeAnnotation: $FlowFixMe,
-  name: string,
-  parser: Parser,
-): EventTypeAnnotation {
-  const type = extractTypeFromTypeAnnotation(typeAnnotation, parser);
-
-  switch (type) {
-    case 'TSParenthesizedType':
-      return extractArrayElementType(
-        typeAnnotation.typeAnnotation,
-        name,
-        parser,
-      );
-    case 'TSBooleanKeyword':
-      return {type: 'BooleanTypeAnnotation'};
-    case 'TSStringKeyword':
-      return {type: 'StringTypeAnnotation'};
-    case 'Float':
-      return {
-        type: 'FloatTypeAnnotation',
-      };
-    case 'Int32':
-      return {
-        type: 'Int32TypeAnnotation',
-      };
-    case 'TSNumberKeyword':
-    case 'Double':
-      return {
-        type: 'DoubleTypeAnnotation',
-      };
-    case 'TSUnionType':
-      return {
-        type: 'UnionTypeAnnotation',
-        types: typeAnnotation.types.map(option => ({
-          type: 'StringLiteralTypeAnnotation',
-          value: parser.getLiteralValue(option),
-        })),
-      };
-    case 'TSTypeLiteral':
-      return {
-        type: 'ObjectTypeAnnotation',
-        properties: parser
-          .getObjectProperties(typeAnnotation)
-          .map(member =>
-            buildPropertiesForEvent(member, parser, getPropertyType),
-          ),
-      };
-    case 'TSArrayType':
-      return {
-        type: 'ArrayTypeAnnotation',
-        elementType: extractArrayElementType(
-          typeAnnotation.elementType,
-          name,
-          parser,
-        ),
-      };
-    default:
-      throw new Error(
-        `Unrecognized ${type} for Array ${name} in events.\n${JSON.stringify(
-          typeAnnotation,
-          null,
-          2,
-        )}`,
-      );
-  }
-}
-
-function extractTypeFromTypeAnnotation(
-  typeAnnotation: $FlowFixMe,
-  parser: Parser,
-): string {
-  return typeAnnotation.type === 'TSTypeReference'
-    ? parser.getTypeAnnotationName(typeAnnotation)
-    : typeAnnotation.type;
+  return getPropertyTypeCommon(name, optional, typeAnnotation, parser);
 }
 
 function findEventArgumentsAndType(

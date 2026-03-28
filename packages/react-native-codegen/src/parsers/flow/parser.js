@@ -548,7 +548,7 @@ class FlowParser implements Parser {
 
   extractTypeFromTypeAnnotation(typeAnnotation: $FlowFixMe): string {
     return typeAnnotation.type === 'GenericTypeAnnotation'
-      ? typeAnnotation.id.name
+      ? this.getTypeAnnotationName(typeAnnotation)
       : typeAnnotation.type;
   }
 
