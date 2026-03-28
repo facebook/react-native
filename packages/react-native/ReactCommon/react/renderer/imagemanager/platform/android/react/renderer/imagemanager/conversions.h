@@ -58,8 +58,12 @@ inline void serializeImageRequestParams(MapBufferBuilder &builder, const ImageRe
   if (isColorMeaningful(imageRequestParams.overlayColor)) {
     builder.putInt(IS_KEY_OVERLAY_COLOR, toAndroidRepr(imageRequestParams.overlayColor));
   }
-  if (isColorMeaningful(imageRequestParams.tintColor)) {
-    builder.putInt(IS_KEY_TINT_COLOR, toAndroidRepr(imageRequestParams.tintColor));
+  if (imageRequestParams.tintColor.has_value()) {
+    auto tintColor = imageRequestParams.tintColor.value();
+    if (isColorMeaningful(tintColor)) {
+      builder.putInt(
+          IS_KEY_TINT_COLOR, toAndroidRepr(tintColor));
+    }
   }
   builder.putInt(IS_KEY_FADE_DURATION, static_cast<int32_t>(imageRequestParams.fadeDuration));
   builder.putBool(IS_KEY_PROGRESSIVE_RENDERING_ENABLED, imageRequestParams.progressiveRenderingEnabled);
