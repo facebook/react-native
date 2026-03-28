@@ -14,6 +14,7 @@ Usage:
 import argparse
 import concurrent.futures
 import os
+import shutil
 import subprocess
 import sys
 import tempfile
@@ -147,6 +148,7 @@ def build_snapshots(
     verbose: bool,
     view_filter: str | None = None,
     is_test: bool = False,
+    keep_xml: bool = False,
 ) -> None:
     if not is_test:
         configs_to_build = [
@@ -193,6 +195,7 @@ def build_snapshots(
                     failed_views = ", ".join(name for name, _ in errors)
                     raise RuntimeError(f"Failed to generate snapshots: {failed_views}")
     else:
+        work_dir = os.path.join(react_native_dir, "api")
         snapshot = build_snapshot_for_view(
             api_view="Test",
             react_native_dir=react_native_dir,
@@ -203,7 +206,17 @@ def build_snapshots(
             codegen_platform=None,
             verbose=verbose,
             input_filter=input_filter,
+            work_dir=work_dir,
         )
+
+        if keep_xml:
+            xml_src = os.path.join(work_dir, "xml")
+            xml_dst = os.path.join(output_dir, "xml")
+            if os.path.exists(xml_dst):
+                shutil.rmtree(xml_dst)
+            shutil.copytree(xml_src, xml_dst)
+            if verbose:
+                print(f"XML files saved to {xml_dst}")
 
         if verbose:
             print(snapshot)
@@ -241,6 +254,11 @@ def main():
         "--test",
         action="store_true",
         help="Run on the local test directory instead of the react-native directory",
+    )
+    parser.add_argument(
+        "--xml",
+        action="store_true",
+        help="Keep the generated Doxygen XML files next to the .api output in a xml/ directory",
     )
     args = parser.parse_args()
 
@@ -286,7 +304,9 @@ def main():
 
     with tempfile.TemporaryDirectory() as tmpdir:
         snapshot_output_dir = (
-            tmpdir if args.check else args.output_dir or get_default_snapshot_dir()
+            args.output_dir or tmpdir
+            if args.check
+            else args.output_dir or get_default_snapshot_dir()
         )
 
         build_snapshots(
@@ -297,6 +317,7 @@ def main():
             input_filter=input_filter,
             view_filter=args.view,
             is_test=args.test,
+            keep_xml=args.xml,
         )
 
         if args.check:
