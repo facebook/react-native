@@ -14,6 +14,7 @@ Usage:
 import argparse
 import concurrent.futures
 import os
+import shutil
 import subprocess
 import sys
 import tempfile
@@ -23,7 +24,7 @@ from .config import ApiViewSnapshotConfig, parse_config_file
 from .doxygen import get_doxygen_bin, run_doxygen
 from .main import build_snapshot
 from .path_utils import get_react_native_dir
-from .snapshot_diff import check_snapshots
+from .snapshot_diff import validate_snapshots
 
 
 def run_command(
@@ -88,6 +89,7 @@ def build_snapshot_for_view(
     verbose: bool = True,
     input_filter: str = None,
     work_dir: str | None = None,
+    exclude_symbols: list[str] | None = None,
 ) -> str:
     if verbose:
         print(f"[{api_view}] Generating API view")
@@ -126,7 +128,9 @@ def build_snapshot_for_view(
     if verbose:
         print(f"[{api_view}] Building snapshot")
 
-    snapshot = build_snapshot(os.path.join(work_dir, "xml"))
+    snapshot = build_snapshot(
+        os.path.join(work_dir, "xml"), exclude_symbols=exclude_symbols
+    )
     snapshot_string = snapshot.to_string()
 
     output_file = os.path.join(output_dir, f"{api_view}Cxx.api")
@@ -147,6 +151,7 @@ def build_snapshots(
     verbose: bool,
     view_filter: str | None = None,
     is_test: bool = False,
+    keep_xml: bool = False,
 ) -> None:
     if not is_test:
         configs_to_build = [
@@ -173,6 +178,7 @@ def build_snapshots(
                         verbose=verbose,
                         input_filter=input_filter if config.input_filter else None,
                         work_dir=work_dir,
+                        exclude_symbols=config.exclude_symbols,
                     )
                     futures[future] = config.snapshot_name
 
@@ -193,6 +199,7 @@ def build_snapshots(
                     failed_views = ", ".join(name for name, _ in errors)
                     raise RuntimeError(f"Failed to generate snapshots: {failed_views}")
     else:
+        work_dir = os.path.join(react_native_dir, "api")
         snapshot = build_snapshot_for_view(
             api_view="Test",
             react_native_dir=react_native_dir,
@@ -203,7 +210,17 @@ def build_snapshots(
             codegen_platform=None,
             verbose=verbose,
             input_filter=input_filter,
+            work_dir=work_dir,
         )
+
+        if keep_xml:
+            xml_src = os.path.join(work_dir, "xml")
+            xml_dst = os.path.join(output_dir, "xml")
+            if os.path.exists(xml_dst):
+                shutil.rmtree(xml_dst)
+            shutil.copytree(xml_src, xml_dst)
+            if verbose:
+                print(f"XML files saved to {xml_dst}")
 
         if verbose:
             print(snapshot)
@@ -223,14 +240,14 @@ def main():
         help="Output directory for the snapshot",
     )
     parser.add_argument(
-        "--check",
+        "--validate",
         action="store_true",
         help="Generate snapshots to a temp directory and compare against committed ones",
     )
     parser.add_argument(
         "--snapshot-dir",
         type=str,
-        help="Directory containing committed snapshots for comparison (used with --check)",
+        help="Directory containing committed snapshots for comparison (used with --validate)",
     )
     parser.add_argument(
         "--view",
@@ -242,9 +259,14 @@ def main():
         action="store_true",
         help="Run on the local test directory instead of the react-native directory",
     )
+    parser.add_argument(
+        "--xml",
+        action="store_true",
+        help="Keep the generated Doxygen XML files next to the .api output in a xml/ directory",
+    )
     args = parser.parse_args()
 
-    verbose = not args.check
+    verbose = not args.validate
 
     doxygen_bin = get_doxygen_bin()
     version_result = subprocess.run(
@@ -286,26 +308,29 @@ def main():
 
     with tempfile.TemporaryDirectory() as tmpdir:
         snapshot_output_dir = (
-            tmpdir if args.check else args.output_dir or get_default_snapshot_dir()
+            args.output_dir or tmpdir
+            if args.validate
+            else args.output_dir or get_default_snapshot_dir()
         )
 
         build_snapshots(
             output_dir=snapshot_output_dir,
-            verbose=not args.check,
+            verbose=not args.validate,
             snapshot_configs=snapshot_configs,
             react_native_dir=react_native_package_dir,
             input_filter=input_filter,
             view_filter=args.view,
             is_test=args.test,
+            keep_xml=args.xml,
         )
 
-        if args.check:
+        if args.validate:
             snapshot_dir = args.snapshot_dir or get_default_snapshot_dir()
 
-            if not check_snapshots(snapshot_output_dir, snapshot_dir):
+            if not validate_snapshots(snapshot_output_dir, snapshot_dir):
                 sys.exit(1)
 
-            print("All snapshot checks passed")
+            print("All snapshot validations passed")
 
 
 if __name__ == "__main__":
