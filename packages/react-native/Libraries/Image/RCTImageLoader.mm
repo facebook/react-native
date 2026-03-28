@@ -714,17 +714,19 @@ static RCTImageLoaderCancellationBlock RCTLoadImageURLFromLoader(
                                                        completionHandler
 {
   RCTNetworking *networking = [_moduleRegistry moduleForName:"Networking"];
-  if (RCT_DEBUG && !networking) {
+  if (!networking) {
     RCTLogError(
         @"No suitable image URL loader found for %@. You may need to "
          " import the RCTNetwork library in order to load images.",
         request.URL.absoluteString);
+    completionHandler(RCTErrorWithMessage(@"RCTNetworking module is not available"), nil, nil);
     return NULL;
   }
 
   // Check if networking module can load image
-  if (RCT_DEBUG && ![networking canHandleRequest:request]) {
+  if (![networking canHandleRequest:request]) {
     RCTLogError(@"No suitable image URL loader found for %@", request.URL.absoluteString);
+    completionHandler(RCTErrorWithMessage(@"No suitable URL loader for request"), nil, nil);
     return NULL;
   }
 
