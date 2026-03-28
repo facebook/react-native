@@ -14,6 +14,7 @@ Usage:
 import argparse
 import concurrent.futures
 import os
+import shutil
 import subprocess
 import sys
 import tempfile
@@ -88,6 +89,7 @@ def build_snapshot_for_view(
     verbose: bool = True,
     input_filter: str = None,
     work_dir: str | None = None,
+    exclude_symbols: list[str] | None = None,
 ) -> str:
     if verbose:
         print(f"[{api_view}] Generating API view")
@@ -126,7 +128,9 @@ def build_snapshot_for_view(
     if verbose:
         print(f"[{api_view}] Building snapshot")
 
-    snapshot = build_snapshot(os.path.join(work_dir, "xml"))
+    snapshot = build_snapshot(
+        os.path.join(work_dir, "xml"), exclude_symbols=exclude_symbols
+    )
     snapshot_string = snapshot.to_string()
 
     output_file = os.path.join(output_dir, f"{api_view}Cxx.api")
@@ -147,6 +151,7 @@ def build_snapshots(
     verbose: bool,
     view_filter: str | None = None,
     is_test: bool = False,
+    keep_xml: bool = False,
 ) -> None:
     if not is_test:
         configs_to_build = [
@@ -173,6 +178,7 @@ def build_snapshots(
                         verbose=verbose,
                         input_filter=input_filter if config.input_filter else None,
                         work_dir=work_dir,
+                        exclude_symbols=config.exclude_symbols,
                     )
                     futures[future] = config.snapshot_name
 
@@ -193,6 +199,7 @@ def build_snapshots(
                     failed_views = ", ".join(name for name, _ in errors)
                     raise RuntimeError(f"Failed to generate snapshots: {failed_views}")
     else:
+        work_dir = os.path.join(react_native_dir, "api")
         snapshot = build_snapshot_for_view(
             api_view="Test",
             react_native_dir=react_native_dir,
@@ -203,7 +210,17 @@ def build_snapshots(
             codegen_platform=None,
             verbose=verbose,
             input_filter=input_filter,
+            work_dir=work_dir,
         )
+
+        if keep_xml:
+            xml_src = os.path.join(work_dir, "xml")
+            xml_dst = os.path.join(output_dir, "xml")
+            if os.path.exists(xml_dst):
+                shutil.rmtree(xml_dst)
+            shutil.copytree(xml_src, xml_dst)
+            if verbose:
+                print(f"XML files saved to {xml_dst}")
 
         if verbose:
             print(snapshot)
@@ -241,6 +258,11 @@ def main():
         "--test",
         action="store_true",
         help="Run on the local test directory instead of the react-native directory",
+    )
+    parser.add_argument(
+        "--xml",
+        action="store_true",
+        help="Keep the generated Doxygen XML files next to the .api output in a xml/ directory",
     )
     args = parser.parse_args()
 
@@ -286,7 +308,9 @@ def main():
 
     with tempfile.TemporaryDirectory() as tmpdir:
         snapshot_output_dir = (
-            tmpdir if args.check else args.output_dir or get_default_snapshot_dir()
+            args.output_dir or tmpdir
+            if args.check
+            else args.output_dir or get_default_snapshot_dir()
         )
 
         build_snapshots(
@@ -297,6 +321,7 @@ def main():
             input_filter=input_filter,
             view_filter=args.view,
             is_test=args.test,
+            keep_xml=args.xml,
         )
 
         if args.check:
