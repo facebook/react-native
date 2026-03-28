@@ -4,6 +4,7 @@ ReactCommon:
     - packages/react-native/ReactCommon
   exclude_patterns:
     - "*/test_utils/*"
+    - "*/test/*"
     - "*/jni/*"
     - "*/platform/cxx/*" # Should this be included in ReactCommon?
     - "*/platform/windows/*"
@@ -30,6 +31,7 @@ ReactAndroid:
     - packages/react-native/ReactAndroid
   exclude_patterns:
     - "*/test_utils/*"
+    - "*/test/*"
     - "*/platform/cxx/*"
     - "*/platform/windows/*"
     - "*/platform/macos/*"
@@ -59,6 +61,7 @@ ReactApple:
     - packages/react-native/Libraries
   exclude_patterns:
     - "*/test_utils/*"
+    - "*/test/*"
     - "*/jni/*"
     - "*/platform/cxx/*"
     - "*/platform/windows/*"
