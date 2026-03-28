@@ -60,7 +60,7 @@ const styles = StyleSheet.create({
   },
 });
 
-exports.displayName = (undefined: ?string);
+exports.displayName = undefined as ?string;
 exports.category = 'UI';
 exports.framework = 'React';
 exports.title = 'ActivityIndicator';

@@ -28,6 +28,6 @@ export interface Spec extends TurboModule {
   +setRootNodeSize: (surfaceId: Int32, width: Float, height: Float) => void;
 }
 
-export default (TurboModuleRegistry.getEnforcing<Spec>(
+export default TurboModuleRegistry.getEnforcing<Spec>(
   'NativeFantomTestSpecificMethodsCxx',
-): Spec);
+) as Spec;

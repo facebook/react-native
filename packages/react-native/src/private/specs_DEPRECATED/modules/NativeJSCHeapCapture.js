@@ -16,4 +16,4 @@ export interface Spec extends TurboModule {
   +captureComplete: (path: string, error: ?string) => void;
 }
 
-export default (TurboModuleRegistry.get<Spec>('JSCHeapCapture'): ?Spec);
+export default TurboModuleRegistry.get<Spec>('JSCHeapCapture') as ?Spec;

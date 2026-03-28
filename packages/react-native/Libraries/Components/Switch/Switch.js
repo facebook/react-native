@@ -196,7 +196,7 @@ const Switch: component(
   // We wrap the native state in an object to force the layout-effect
   // below to re-run whenever we get an update from native, even if it's
   // not different from the previous native state.
-  const [native, setNative] = useState({value: (null: ?boolean)});
+  const [native, setNative] = useState({value: null as ?boolean});
 
   const handleChange = (event: SwitchChangeEvent) => {
     // $FlowFixMe[unused-promise]

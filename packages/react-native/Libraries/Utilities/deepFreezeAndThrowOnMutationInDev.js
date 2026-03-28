@@ -43,7 +43,7 @@ function deepFreezeAndThrowOnMutationInDev<T extends {...} | Array<unknown>>(
     }
 
     // $FlowFixMe[not-an-object] `object` can be an array, but Object.keys works with arrays too
-    const keys = Object.keys((object: {...} | Array<unknown>));
+    const keys = Object.keys(object as {...} | Array<unknown>);
     // $FlowFixMe[method-unbinding] added when improving typing for this parameters
     const hasOwnProperty = Object.prototype.hasOwnProperty;
 

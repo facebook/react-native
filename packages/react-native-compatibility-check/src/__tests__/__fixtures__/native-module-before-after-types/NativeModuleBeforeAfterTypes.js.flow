@@ -65,6 +65,6 @@ export interface Spec extends TurboModule {
   +simpleArrayChange: (a: SimpleArrayChange) => void;
 }
 
-(TurboModuleRegistry.getEnforcing<Spec>(
+TurboModuleRegistry.getEnforcing<Spec>(
   'NativeModuleTest',
-): Spec);
+) as Spec;

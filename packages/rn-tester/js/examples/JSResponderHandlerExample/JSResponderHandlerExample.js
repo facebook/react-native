@@ -33,7 +33,7 @@ exports.examples = [
       ('This example tests the native JSResponderHandler: when the user ' +
         'scrolls on the right side of the ScrollView (white area located on the' +
         ' right side of the gray area), the touch event is managed by native ' +
-        'which blocks the scroll event.': string),
+        'which blocks the scroll event.') as string,
 
     render: function (): React.Node {
       const views = [];

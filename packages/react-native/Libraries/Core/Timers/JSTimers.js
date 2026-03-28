@@ -476,11 +476,11 @@ let ExportedJSTimers: {
 if (!NativeTiming) {
   console.warn("Timing native module is not available, can't set timers.");
   // $FlowFixMe[incompatible-type] : we can assume timers are generally available
-  ExportedJSTimers = ({
+  ExportedJSTimers = {
     callReactNativeMicrotasks: JSTimers.callReactNativeMicrotasks,
     queueReactNativeMicrotask: JSTimers.queueReactNativeMicrotask,
     // $FlowFixMe[incompatible-variance]
-  }: typeof JSTimers);
+  } as typeof JSTimers;
 } else {
   // $FlowFixMe[incompatible-variance]
   ExportedJSTimers = JSTimers;

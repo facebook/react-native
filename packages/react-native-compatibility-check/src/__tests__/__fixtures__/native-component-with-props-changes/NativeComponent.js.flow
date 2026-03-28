@@ -24,6 +24,6 @@ export type Props = Readonly<{
   height?: WithDefault<Int32, 100>,
 }>;
 
-export default (codegenNativeComponent<Props>(
+export default codegenNativeComponent<Props>(
   'NativeComponent',
-): HostComponent<Props>);
+) as HostComponent<Props>;

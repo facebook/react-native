@@ -741,4 +741,4 @@ let AndroidTextInputNativeComponent =
   );
 
 // flowlint-next-line unclear-type:off
-export default ((AndroidTextInputNativeComponent: any): HostComponent<AndroidTextInputNativeProps>);
+export default AndroidTextInputNativeComponent as any as HostComponent<AndroidTextInputNativeProps>;

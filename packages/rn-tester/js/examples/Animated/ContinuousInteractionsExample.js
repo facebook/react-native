@@ -24,13 +24,13 @@ component AnimatedContinuousInteractionsExample() {
   );
 }
 
-export default ({
+export default {
   title: 'Continuous Interactions',
   name: 'continuousInteractions',
   description: ('Gesture events, chaining, 2D ' +
     'values, interrupting and transitioning ' +
-    'animations, etc.': string),
+    'animations, etc.') as string,
   render() {
     return <AnimatedContinuousInteractionsExample />;
   },
-}: RNTesterModuleExample);
+} as RNTesterModuleExample;

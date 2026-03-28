@@ -83,13 +83,13 @@ component FadeInExample() {
   );
 }
 
-export default ({
+export default {
   title: 'FadeInView',
   name: 'fadeInView',
   description: ('Uses a simple timing animation to ' +
     'bring opacity from 0 to 1 when the component ' +
-    'mounts.': string),
+    'mounts.') as string,
   expect:
     'FadeInView box should animate from opacity 0 to 1. \nExpect no animation when hiding.\nHiding the view mid-animation should not affect next animation.',
   render: (): React.Node => <FadeInExample />,
-}: RNTesterModuleExample);
+} as RNTesterModuleExample;

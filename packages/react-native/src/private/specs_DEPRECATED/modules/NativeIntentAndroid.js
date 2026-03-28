@@ -27,4 +27,4 @@ export interface Spec extends TurboModule {
   ) => Promise<void>;
 }
 
-export default (TurboModuleRegistry.get<Spec>('IntentAndroid'): ?Spec);
+export default TurboModuleRegistry.get<Spec>('IntentAndroid') as ?Spec;

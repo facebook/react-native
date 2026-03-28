@@ -64,10 +64,10 @@ function codegenNativeComponent<Props extends {...}>(
     }
   }
 
-  return (requireNativeComponent<Props>(
+  return requireNativeComponent<Props>(
     // $FlowFixMe[incompatible-type]
     componentNameInUse,
-  ): HostComponent<Props>);
+  ) as HostComponent<Props>;
 }
 
 export default codegenNativeComponent;

@@ -103,11 +103,11 @@ component RotatingImagesExample() {
   );
 }
 
-export default ({
+export default {
   title: 'Rotating Images',
   name: 'rotatingImages',
   description: 'Simple Animated.Image rotation.',
   expect:
     'Transform animation on image in scale, rotation, and translation. JS driver will ignore any calls to `start` on running animation. Native driver will re-start the animation.',
   render: RotatingImagesExample,
-}: RNTesterModuleExample);
+} as RNTesterModuleExample;

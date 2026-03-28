@@ -61,7 +61,7 @@ describe.each(['HTTP', 'HTTPS'])(
           pageList = (await fetchJson(
             `${serverRef.serverBaseUrl}/json`,
             // $FlowFixMe[unclear-type]
-          ): any);
+          )) as any;
           expect(pageList).toHaveLength(1);
         });
         const [{webSocketDebuggerUrl}] = pageList;
@@ -121,7 +121,7 @@ describe.each(['HTTP', 'HTTPS'])(
           pageList = (await fetchJson(
             `${serverRef.serverBaseUrl}/json`,
             // $FlowFixMe[unclear-type]
-          ): any);
+          )) as any;
           expect(pageList).toHaveLength(1);
         });
         const [{webSocketDebuggerUrl}] = pageList;
@@ -189,7 +189,7 @@ describe.each(['HTTP', 'HTTPS'])(
           pageList = (await fetchJson(
             `${serverRef.serverBaseUrl}/json`,
             // $FlowFixMe[unclear-type]
-          ): any);
+          )) as any;
           expect(pageList).toHaveLength(1);
         });
         const [{webSocketDebuggerUrl}] = pageList;
@@ -306,7 +306,7 @@ describe.each(['HTTP', 'HTTPS'])(
           pageList = (await fetchJson(
             `${serverRef.serverBaseUrl}/json`,
             // $FlowFixMe[unclear-type]
-          ): any);
+          )) as any;
           expect(pageList).toHaveLength(1);
         });
         const [{webSocketDebuggerUrl}] = pageList;
@@ -356,7 +356,7 @@ describe.each(['HTTP', 'HTTPS'])(
           pageList = (await fetchJson(
             `${serverRef.serverBaseUrl}/json`,
             // $FlowFixMe[unclear-type]
-          ): any);
+          )) as any;
           expect(pageList).toHaveLength(1);
         });
         const [{webSocketDebuggerUrl}] = pageList;
@@ -431,7 +431,7 @@ describe.each(['HTTP', 'HTTPS'])(
             pageList = (await fetchJson(
               `${serverRef.serverBaseUrl}/json`,
               // $FlowFixMe[unclear-type]
-            ): any);
+            )) as any;
             expect(pageList).toHaveLength(1);
           });
           const [{webSocketDebuggerUrl}] = pageList;
@@ -477,7 +477,7 @@ describe.each(['HTTP', 'HTTPS'])(
             pageList = (await fetchJson(
               `${serverRef.serverBaseUrl}/json`,
               // $FlowFixMe[unclear-type]
-            ): any);
+            )) as any;
             expect(pageList).toHaveLength(1);
           });
           const [{webSocketDebuggerUrl}] = pageList;
@@ -515,7 +515,7 @@ describe.each(['HTTP', 'HTTPS'])(
             pageList = (await fetchJson(
               `${serverRef.serverBaseUrl}/json`,
               // $FlowFixMe[unclear-type]
-            ): any);
+            )) as any;
             expect(pageList).toHaveLength(1);
           });
           const [{webSocketDebuggerUrl}] = pageList;
@@ -578,7 +578,7 @@ describe.each(['HTTP', 'HTTPS'])(
             pageList = (await fetchJson(
               `${serverRef.serverBaseUrl}/json`,
               // $FlowFixMe[unclear-type]
-            ): any);
+            )) as any;
             expect(pageList).toHaveLength(1);
           });
           const [{webSocketDebuggerUrl}] = pageList;
@@ -632,7 +632,7 @@ describe.each(['HTTP', 'HTTPS'])(
             pageList = (await fetchJson(
               `${serverRef.serverBaseUrl}/json`,
               // $FlowFixMe[unclear-type]
-            ): any);
+            )) as any;
             expect(pageList).toHaveLength(1);
           });
           const [{webSocketDebuggerUrl}] = pageList;
@@ -689,7 +689,7 @@ describe.each(['HTTP', 'HTTPS'])(
             pageList = (await fetchJson(
               `${serverRef.serverBaseUrl}/json`,
               // $FlowFixMe[unclear-type]
-            ): any);
+            )) as any;
             expect(pageList).toHaveLength(1);
           });
           const [{webSocketDebuggerUrl}] = pageList;

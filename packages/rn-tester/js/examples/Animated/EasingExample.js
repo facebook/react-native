@@ -189,10 +189,10 @@ const styles = StyleSheet.create({
   },
 });
 
-export default ({
+export default {
   title: 'Easing',
   name: 'easing',
   description:
     'The Easing module implements common easing functions. This module is used by Animated.timing() to convey physically believable motion in animations.',
   render: () => <EasingExample />,
-}: RNTesterModuleExample);
+} as RNTesterModuleExample;

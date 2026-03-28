@@ -14,7 +14,7 @@ import type {Node} from 'react';
 import * as React from 'react';
 import {Button} from 'react-native';
 
-exports.displayName = (undefined: ?string);
+exports.displayName = undefined as ?string;
 exports.framework = 'React';
 exports.title = 'Crash';
 exports.category = 'Basic';

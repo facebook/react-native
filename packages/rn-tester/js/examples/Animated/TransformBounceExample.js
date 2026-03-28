@@ -112,7 +112,7 @@ component TransformBounceExample() {
   );
 }
 
-export default ({
+export default {
   title: 'Transform Bounce',
   name: 'transformBounce',
   expect: 'Transform animation on rotation, translation, scale of View',
@@ -120,6 +120,6 @@ export default ({
     'spring with custom constants and mapped to an ' +
     'ordered set of transforms.  Each transform has ' +
     'an interpolation to convert the value into the ' +
-    'right range and units.': string),
+    'right range and units.') as string,
   render: () => <TransformBounceExample />,
-}: RNTesterModuleExample);
+} as RNTesterModuleExample;

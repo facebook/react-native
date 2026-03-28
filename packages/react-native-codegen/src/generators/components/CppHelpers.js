@@ -47,7 +47,7 @@ function getCppTypeForAnnotation(
     case 'MixedTypeAnnotation':
       return 'folly::dynamic';
     default:
-      (type: empty);
+      (type) as empty;
       throw new Error(`Received invalid typeAnnotation ${type}`);
   }
 }
@@ -95,7 +95,7 @@ function getCppArrayTypeForAnnotation(
           // Unions of strings and string literals are treated as just strings
           return `std::vector<${getCppTypeForAnnotation('StringTypeAnnotation')}>`;
         default:
-          (validUnionType: empty);
+          validUnionType as empty;
           throw new Error(`Unsupported union member type`);
       }
     case 'ObjectTypeAnnotation':
@@ -241,7 +241,7 @@ function convertDefaultTypeToString(
         case 'DimensionPrimitive':
           return '';
         default:
-          (typeAnnotation.name: empty);
+          typeAnnotation.name as empty;
           throw new Error(
             `Unsupported type annotation: ${typeAnnotation.name}`,
           );
@@ -283,7 +283,7 @@ function convertDefaultTypeToString(
     case 'MixedTypeAnnotation':
       return '';
     default:
-      (typeAnnotation: empty);
+      typeAnnotation as empty;
       throw new Error(`Unsupported type annotation: ${typeAnnotation.type}`);
   }
 }
