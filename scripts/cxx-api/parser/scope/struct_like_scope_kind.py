@@ -42,7 +42,47 @@ class StructLikeScopeKind(ScopeKind, Extendable):
             self.template_list.add(template)
 
     def close(self, scope: Scope) -> None:
+        self._remove_merged_primary_bases(scope)
         self.qualify_base_classes(scope)
+
+    def _remove_merged_primary_bases(self, scope: Scope) -> None:
+        """Remove base classes that Doxygen incorrectly merged from the
+        primary template into a partial specialization.
+
+        In C++ a partial specialization's inheritance list completely
+        replaces the primary template's, but Doxygen merges both lists
+        into the specialization's ``basecompoundref`` elements.
+
+        This method performs count-based subtraction: for each base in
+        the primary template, one matching occurrence (by name) is removed
+        from this specialization's base list.  Count-based subtraction
+        correctly preserves bases that the specialization explicitly
+        re-inherits from the same class as the primary template.
+        """
+        if self.specialization_args is None:
+            return
+        if scope.parent_scope is None:
+            return
+
+        for sibling in scope.parent_scope.inner_scopes.values():
+            if (
+                sibling is not scope
+                and sibling.name == scope.name
+                and isinstance(sibling.kind, StructLikeScopeKind)
+                and sibling.kind.specialization_args is None
+            ):
+                primary_base_counts: dict[str, int] = {}
+                for b in sibling.kind.base_classes:
+                    primary_base_counts[b.name] = primary_base_counts.get(b.name, 0) + 1
+
+                result = []
+                for b in self.base_classes:
+                    if primary_base_counts.get(b.name, 0) > 0:
+                        primary_base_counts[b.name] -= 1
+                    else:
+                        result.append(b)
+                self.base_classes = result
+                break
 
     def to_string(self, scope: Scope) -> str:
         result = ""
