@@ -36,6 +36,8 @@ class ModalHostViewShadowNode final : public ConcreteViewShadowNode<
     traits.set(ShadowNodeTraits::Trait::Unstable_uncullableView);
     return traits;
   }
+
+  Transform getTransform() const override;
 };
 
 } // namespace facebook::react
