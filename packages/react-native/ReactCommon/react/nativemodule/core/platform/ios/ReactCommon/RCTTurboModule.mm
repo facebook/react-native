@@ -460,7 +460,13 @@ void ObjCTurboModule::performVoidMethodInvocation(
     @try {
       [inv invokeWithTarget:strongModule];
     } @catch (NSException *exception) {
-      throw convertNSExceptionToJSError(runtime, exception, std::string{moduleName}, methodNameStr);
+      // Cannot rethrow C++ exceptions from async dispatch - nothing can catch them.
+      // Log the error for debugging purposes instead of crashing.
+      RCTLogError(
+          @"Exception thrown while invoking async method %s.%s: %@",
+          moduleName,
+          methodNameStr.c_str(),
+          exception);
     } @finally {
       [retainedObjectsForInvocation removeAllObjects];
     }
