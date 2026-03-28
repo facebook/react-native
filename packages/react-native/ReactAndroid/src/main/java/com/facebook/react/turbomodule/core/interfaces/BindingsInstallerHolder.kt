@@ -12,4 +12,4 @@ import com.facebook.proguard.annotations.DoNotStrip
 
 /** A Java holder for a C++ BindingsInstallerHolder. */
 @DoNotStrip
-public class BindingsInstallerHolder(@field:DoNotStrip private val mHybridData: HybridData)
+public class BindingsInstallerHolder(@field:DoNotStrip private val hybridData: HybridData)
