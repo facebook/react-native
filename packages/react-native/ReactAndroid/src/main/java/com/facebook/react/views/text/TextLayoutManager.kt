@@ -637,7 +637,7 @@ internal object TextLayoutManager {
 
     val layoutWidth =
         when (widthYogaMeasureMode) {
-          YogaMeasureMode.EXACTLY -> floor(width).toInt()
+          YogaMeasureMode.EXACTLY -> ceil(width).toInt()
           YogaMeasureMode.AT_MOST -> min(desiredWidth, floor(width).toInt())
           else -> desiredWidth
         }
