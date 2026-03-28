@@ -392,12 +392,19 @@ class RuntimeDecorator : public Base, private jsi::Instrumentation {
   uint8_t* data(const ArrayBuffer& ab) override {
     return plain_.data(ab);
   }
+  bool detached(const ArrayBuffer& ab) override {
+    return plain_.detached(ab);
+  }
   Value getValueAtIndex(const Array& a, size_t i) override {
     return plain_.getValueAtIndex(a, i);
   }
   void setValueAtIndexImpl(const Array& a, size_t i, const Value& value)
       override {
     plain_.setValueAtIndexImpl(a, i, value);
+  }
+
+  size_t push(const Array& a, const Value* elements, size_t count) override {
+    return plain_.push(a, elements, count);
   }
 
   Function createFunctionFromHostFunction(
@@ -428,6 +435,11 @@ class RuntimeDecorator : public Base, private jsi::Instrumentation {
 
   const void* getRuntimeDataImpl(const UUID& uuid) override {
     return plain_.getRuntimeDataImpl(uuid);
+  }
+
+  std::shared_ptr<MutableBuffer> tryGetMutableBuffer(
+      const jsi::ArrayBuffer& arrayBuffer) override {
+    return plain_.tryGetMutableBuffer(arrayBuffer);
   }
 
   // Private data for managing scopes.
@@ -960,6 +972,10 @@ class WithRuntimeDecorator : public RuntimeDecorator<Plain, Base> {
     Around around{with_};
     return RD::data(ab);
   }
+  bool detached(const ArrayBuffer& ab) override {
+    Around around{with_};
+    return RD::detached(ab);
+  }
   Value getValueAtIndex(const Array& a, size_t i) override {
     Around around{with_};
     return RD::getValueAtIndex(a, i);
@@ -968,6 +984,10 @@ class WithRuntimeDecorator : public RuntimeDecorator<Plain, Base> {
       override {
     Around around{with_};
     RD::setValueAtIndexImpl(a, i, value);
+  }
+  size_t push(const Array& a, const Value* elements, size_t count) override {
+    Around around{with_};
+    return RD::push(a, elements, count);
   }
 
   Function createFunctionFromHostFunction(
@@ -990,6 +1010,12 @@ class WithRuntimeDecorator : public RuntimeDecorator<Plain, Base> {
       override {
     Around around{with_};
     return RD::callAsConstructor(f, args, count);
+  }
+
+  std::shared_ptr<MutableBuffer> tryGetMutableBuffer(
+      const jsi::ArrayBuffer& arrayBuffer) override {
+    Around around{with_};
+    return RD::tryGetMutableBuffer(arrayBuffer);
   }
 
   // Private data for managing scopes.
