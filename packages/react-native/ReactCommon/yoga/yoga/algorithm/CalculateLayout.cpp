@@ -2358,6 +2358,10 @@ bool calculateLayoutInternal(
     (performLayout ? layoutMarkerData.cachedLayouts
                    : layoutMarkerData.cachedMeasures) += 1;
   } else {
+    // Track cache misses for computing hit rates
+    (performLayout ? layoutMarkerData.layoutCacheMisses
+                   : layoutMarkerData.measureCacheMisses) += 1;
+
     calculateLayoutImpl(
         node,
         availableWidth,
