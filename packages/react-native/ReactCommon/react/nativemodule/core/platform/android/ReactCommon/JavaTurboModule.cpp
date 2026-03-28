@@ -982,12 +982,17 @@ void JavaTurboModule::configureEventEmitterCallback() {
     FACEBOOK_JNI_THROW_PENDING_EXCEPTION();
   }
 
-  auto callback = JCxxCallbackImpl::newObjectCxxArgs([&](folly::dynamic args) {
-    auto eventName = args.at(0).asString();
-    auto& eventEmitter = static_cast<AsyncEventEmitter<folly::dynamic>&>(
-        *eventEmitterMap_[eventName].get());
-    eventEmitter.emit(args.size() > 1 ? std::move(args).at(1) : nullptr);
-  });
+  auto emitterMap = eventEmitterMap_;
+  auto callback =
+      JCxxCallbackImpl::newObjectCxxArgs([emitterMap](folly::dynamic args) {
+        auto eventName = args.at(0).asString();
+        auto it = emitterMap.find(eventName);
+        if (it != emitterMap.end() && it->second) {
+          auto& eventEmitter =
+              static_cast<AsyncEventEmitter<folly::dynamic>&>(*it->second);
+          eventEmitter.emit(args.size() > 1 ? std::move(args).at(1) : nullptr);
+        }
+      });
 
   jvalue args[1];
   args[0].l = callback.release();
