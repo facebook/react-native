@@ -9,6 +9,7 @@
 
 #include <glog/logging.h>
 #include <react/renderer/bridging/bridging.h>
+#include <ranges>
 
 namespace facebook::react {
 
@@ -79,8 +80,9 @@ static bool isAnyViewInPathToRootListeningToEvents(
   auto ancestors = nodeFamily.getAncestors(*owningRootShadowNode);
 
   // Check for listeners from the target's parent to the root
-  for (auto it = ancestors.rbegin(); it != ancestors.rend(); it++) {
-    auto& currentNode = it->first.get();
+  for (auto& [ancestorNode, childIndex] :
+       std::ranges::reverse_view(ancestors)) {
+    auto& currentNode = ancestorNode.get();
     if (isViewListeningToEvents(currentNode, eventTypes)) {
       return true;
     }
@@ -488,11 +490,9 @@ void PointerEventsProcessor::handleIncomingPointerEventOnNode(
   }
 
   // Actually emit the leave events (in order from target to root)
-  for (auto it = targetsToEmitLeaveTo.rbegin();
-       it != targetsToEmitLeaveTo.rend();
-       it++) {
+  for (auto& target : std::ranges::reverse_view(targetsToEmitLeaveTo)) {
     eventDispatcher(
-        *it, "topPointerLeave", ReactEventPriority::Discrete, event);
+        target, "topPointerLeave", ReactEventPriority::Discrete, event);
   }
 
   // Over

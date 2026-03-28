@@ -7,6 +7,7 @@
 
 #include "PointerHoverTracker.h"
 
+#include <ranges>
 #include <utility>
 
 namespace facebook::react {
@@ -139,8 +140,8 @@ EventPath PointerHoverTracker::getEventPathTargets() const {
   auto ancestors = target_->getFamily().getAncestors(*root_);
 
   result.emplace_back(*target_);
-  for (auto it = ancestors.rbegin(); it != ancestors.rend(); it++) {
-    result.push_back(it->first);
+  for (auto& [ancestor, index] : std::ranges::reverse_view(ancestors)) {
+    result.push_back(ancestor);
   }
 
   return result;
