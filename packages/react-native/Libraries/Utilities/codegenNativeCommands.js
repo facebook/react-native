@@ -27,7 +27,7 @@ function codegenNativeCommands<T extends interface {}>(
     };
   });
 
-  return ((commandObj: any): T);
+  return commandObj as any as T;
 }
 
 export default codegenNativeCommands;

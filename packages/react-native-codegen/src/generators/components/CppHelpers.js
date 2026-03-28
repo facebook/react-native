@@ -15,6 +15,9 @@ import type {
   PropTypeAnnotation,
 } from '../../CodegenSchema';
 
+const {
+  getCppConversionIncludesForReservedPrimitive,
+} = require('../ReservedPrimitiveTypes');
 const {getEnumName, parseValidUnionType, toSafeCppString} = require('../Utils');
 
 function toIntEnumValueName(propName: string, value: number): string {
@@ -44,7 +47,7 @@ function getCppTypeForAnnotation(
     case 'MixedTypeAnnotation':
       return 'folly::dynamic';
     default:
-      (type: empty);
+      (type) as empty;
       throw new Error(`Received invalid typeAnnotation ${type}`);
   }
 }
@@ -92,7 +95,7 @@ function getCppArrayTypeForAnnotation(
           // Unions of strings and string literals are treated as just strings
           return `std::vector<${getCppTypeForAnnotation('StringTypeAnnotation')}>`;
         default:
-          (validUnionType: empty);
+          validUnionType as empty;
           throw new Error(`Unsupported union member type`);
       }
     case 'ObjectTypeAnnotation':
@@ -134,24 +137,8 @@ function getImports(
       | 'PointPrimitive'
       | 'DimensionPrimitive',
   ) {
-    switch (name) {
-      case 'ColorPrimitive':
-        return;
-      case 'PointPrimitive':
-        return;
-      case 'EdgeInsetsPrimitive':
-        return;
-      case 'ImageRequestPrimitive':
-        return;
-      case 'ImageSourcePrimitive':
-        imports.add('#include <react/renderer/components/image/conversions.h>');
-        return;
-      case 'DimensionPrimitive':
-        imports.add('#include <react/renderer/components/view/conversions.h>');
-        return;
-      default:
-        (name: empty);
-        throw new Error(`Invalid name, got ${name}`);
+    for (const include of getCppConversionIncludesForReservedPrimitive(name)) {
+      imports.add(include);
     }
   }
 
@@ -254,7 +241,7 @@ function convertDefaultTypeToString(
         case 'DimensionPrimitive':
           return '';
         default:
-          (typeAnnotation.name: empty);
+          typeAnnotation.name as empty;
           throw new Error(
             `Unsupported type annotation: ${typeAnnotation.name}`,
           );
@@ -296,7 +283,7 @@ function convertDefaultTypeToString(
     case 'MixedTypeAnnotation':
       return '';
     default:
-      (typeAnnotation: empty);
+      typeAnnotation as empty;
       throw new Error(`Unsupported type annotation: ${typeAnnotation.type}`);
   }
 }

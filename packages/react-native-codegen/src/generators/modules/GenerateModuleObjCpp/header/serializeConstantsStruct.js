@@ -96,7 +96,7 @@ function toObjCValue(
         case 'RootTag':
           return wrapPrimitive('double');
         default:
-          (typeAnnotation.name: empty);
+          typeAnnotation.name as empty;
           throw new Error(
             `Couldn't convert into ObjC type: ${typeAnnotation.type}"`,
           );
@@ -167,7 +167,7 @@ function toObjCValue(
         ? `${value}.has_value() ? ${value}.value().buildUnsafeRawValue() : nil`
         : `${value}.buildUnsafeRawValue()`;
     default:
-      (typeAnnotation.type: empty);
+      typeAnnotation.type as empty;
       throw new Error(
         `Couldn't convert into ObjC value: ${typeAnnotation.type}"`,
       );

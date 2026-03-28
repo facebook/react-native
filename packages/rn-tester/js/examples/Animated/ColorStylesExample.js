@@ -162,9 +162,9 @@ const styles = StyleSheet.create({
   },
 });
 
-export default ({
+export default {
   title: 'Color Styles',
   name: 'colorStyles',
   description: 'Animations of color styles.',
   render: () => <AnimatedColorStyleExample />,
-}: RNTesterModuleExample);
+} as RNTesterModuleExample;

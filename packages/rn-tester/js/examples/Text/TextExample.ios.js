@@ -575,7 +575,7 @@ const examples = [
     title: 'iOS System Font Families (iOS only)',
     name: 'iOSSystemFontFamilies',
     description:
-      ('Shows system font families including system-ui/ui-sans-serif, ui-serif, ui-monospace, and ui-rounded': string),
+      'Shows system font families including system-ui/ui-sans-serif, ui-serif, ui-monospace, and ui-rounded' as string,
     render: function (): React.Node {
       const baseTextStyle = {fontSize: 20};
       return (
@@ -925,7 +925,7 @@ const examples = [
     name: 'nested',
     description: ('Nested text components will inherit the styles of their ' +
       'parents (only backgroundColor is inherited from non-Text parents).  ' +
-      '<Text> only supports other <Text> and raw text (strings) as children.': string),
+      '<Text> only supports other <Text> and raw text (strings) as children.') as string,
     render: function (): React.Node {
       return (
         <View testID="text-test-nested">
@@ -1601,11 +1601,11 @@ const examples = [
   ...TextSharedExamples,
 ];
 
-module.exports = ({
+module.exports = {
   title: 'Text',
   documentationURL: 'https://reactnative.dev/docs/text',
   category: 'Basic',
   description: 'Base component for rendering styled text.',
   displayName: 'TextExample',
   examples,
-}: RNTesterModule);
+} as RNTesterModule;

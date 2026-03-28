@@ -36,6 +36,7 @@ import com.facebook.react.uimanager.PixelUtil
 import com.facebook.react.uimanager.PixelUtil.dpToPx
 import com.facebook.react.uimanager.PixelUtil.pxToDp
 import com.facebook.react.uimanager.ReactAccessibilityDelegate
+import com.facebook.react.util.AndroidVersion.VERSION_CODE_VANILLA_ICE_CREAM
 import com.facebook.react.views.text.internal.span.CustomLetterSpacingSpan
 import com.facebook.react.views.text.internal.span.CustomLineHeightSpan
 import com.facebook.react.views.text.internal.span.CustomStyleSpan
@@ -104,6 +105,18 @@ internal object TextLayoutManager {
   private const val DEFAULT_ADJUST_FONT_SIZE_TO_FIT = false
 
   private val tagToSpannableCache = ConcurrentHashMap<Int, Spannable>()
+
+  // Lazily cached Method for StaticLayout.Builder.setUseBoundsForWidth (API 35+).
+  // Reflection is needed because some internal targets compile against an SDK older than 35.
+  private val setUseBoundsForWidthMethod: java.lang.reflect.Method? by lazy {
+    try {
+      StaticLayout.Builder::class
+          .java
+          .getMethod("setUseBoundsForWidth", Boolean::class.javaPrimitiveType)
+    } catch (_: ReflectiveOperationException) {
+      null
+    }
+  }
 
   fun setCachedSpannableForTag(reactTag: Int, sp: Spannable): Unit {
     tagToSpannableCache[reactTag] = sp
@@ -623,7 +636,7 @@ internal object TextLayoutManager {
 
     // Pre-Android 15: Use existing advance-based logic
     if (
-        Build.VERSION.SDK_INT < Build.VERSION_CODES.VANILLA_ICE_CREAM ||
+        Build.VERSION.SDK_INT < VERSION_CODE_VANILLA_ICE_CREAM ||
             !ReactNativeFeatureFlags.fixTextClippingAndroid15useBoundsForWidth()
     ) {
       val desiredWidth = ceil(Layout.getDesiredWidth(text, paint)).toInt()
@@ -724,11 +737,14 @@ internal object TextLayoutManager {
       builder.setUseLineSpacingFromFallbacks(true)
     }
 
+    // setUseBoundsForWidth added in API 35 — use reflection to support internal targets that
+    // compile against an SDK older than 35.
+    // https://developer.android.com/reference/android/text/StaticLayout.Builder#setUseBoundsForWidth(boolean)
     if (
-        Build.VERSION.SDK_INT >= Build.VERSION_CODES.VANILLA_ICE_CREAM &&
+        Build.VERSION.SDK_INT >= VERSION_CODE_VANILLA_ICE_CREAM &&
             ReactNativeFeatureFlags.fixTextClippingAndroid15useBoundsForWidth()
     ) {
-      builder.setUseBoundsForWidth(true)
+      setUseBoundsForWidthMethod?.invoke(builder, true)
     }
 
     return builder.build()

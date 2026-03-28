@@ -51,7 +51,7 @@ export type InterpolationConfigType<
 function createNumericInterpolation(
   config: InterpolationConfigType<number>,
 ): (input: number) => number {
-  const outputRange: ReadonlyArray<number> = (config.outputRange: any);
+  const outputRange: ReadonlyArray<number> = config.outputRange as any;
   const inputRange = config.inputRange;
 
   const easing = config.easing || Easing.linear;
@@ -77,7 +77,7 @@ function createNumericInterpolation(
     );
 
     const range = findRange(input, inputRange);
-    return (interpolate(
+    return interpolate(
       input,
       inputRange[range],
       inputRange[range + 1],
@@ -86,7 +86,7 @@ function createNumericInterpolation(
       easing,
       extrapolateLeft,
       extrapolateRight,
-    ): any);
+    ) as any;
   };
 }
 
@@ -205,7 +205,7 @@ function mapStringToNumericComponents(
     const components: Array<string | number> = [];
     let lastMatchEnd = 0;
     let match: RegExp$matchResult;
-    while ((match = (numericComponentRegex.exec(input): any)) != null) {
+    while ((match = numericComponentRegex.exec(input) as any) != null) {
       if (match.index > lastMatchEnd) {
         components.push(input.substring(lastMatchEnd, match.index));
       }
@@ -374,13 +374,13 @@ export default class AnimatedInterpolation<
     if (!this._interpolation) {
       const config = this._config;
       if (config.outputRange && typeof config.outputRange[0] === 'string') {
-        this._interpolation = (createStringInterpolation((config: any)): any);
+        this._interpolation = createStringInterpolation(config as any) as any;
       } else if (typeof config.outputRange[0] === 'object') {
-        this._interpolation = (createPlatformColorInterpolation(
-          (config: any),
-        ): any);
+        this._interpolation = createPlatformColorInterpolation(
+          config as any,
+        ) as any;
       } else {
-        this._interpolation = (createNumericInterpolation((config: any)): any);
+        this._interpolation = createNumericInterpolation(config as any) as any;
       }
     }
     return this._interpolation;
@@ -426,7 +426,7 @@ export default class AnimatedInterpolation<
     let outputType = null;
     if (typeof outputRange[0] === 'string') {
       // $FlowFixMe[incompatible-type]
-      outputRange = ((outputRange: ReadonlyArray<string>).map(value => {
+      outputRange = (outputRange as ReadonlyArray<string>).map(value => {
         const processedColor = processColor(value);
         if (typeof processedColor === 'number') {
           outputType = 'color';
@@ -434,7 +434,7 @@ export default class AnimatedInterpolation<
         } else {
           return NativeAnimatedHelper.transformDataType(value);
         }
-      }): any);
+      }) as any;
     } else if (typeof outputRange[0] === 'object') {
       outputType = 'platform_color';
     }

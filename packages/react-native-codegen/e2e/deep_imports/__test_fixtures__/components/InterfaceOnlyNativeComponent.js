@@ -27,10 +27,10 @@ type NativeProps = Readonly<{
   onChange?: ?BubblingEventHandler<Readonly<{value: boolean}>>,
 }>;
 
-export default (codegenNativeComponent<NativeProps>(
+export default codegenNativeComponent<NativeProps>(
   'InterfaceOnlyNativeComponentView',
   {
     interfaceOnly: true,
     paperComponentName: 'RCTInterfaceOnlyComponent',
   },
-): HostComponent<NativeProps>);
+) as HostComponent<NativeProps>;

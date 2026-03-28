@@ -45,6 +45,6 @@ type NativeProps = Readonly<{
   }>,
 }>;
 
-export default (codegenNativeComponent<NativeProps>(
+export default codegenNativeComponent<NativeProps>(
   'ObjectPropsNativeComponent',
-): HostComponent<NativeProps>);
+) as HostComponent<NativeProps>;

@@ -98,6 +98,6 @@ export function callNativeMethodToRemoveOverlays(
   );
 }
 
-export default (requireNativeComponent(
+export default requireNativeComponent(
   'RNTMyLegacyNativeView',
-): HostComponent<NativeProps>);
+) as HostComponent<NativeProps>;

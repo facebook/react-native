@@ -35,4 +35,4 @@ export interface Spec extends TurboModule {
   ) => void;
 }
 
-export default (TurboModuleRegistry.getEnforcing<Spec>('ToastAndroid'): Spec);
+export default TurboModuleRegistry.getEnforcing<Spec>('ToastAndroid') as Spec;

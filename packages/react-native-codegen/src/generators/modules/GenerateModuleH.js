@@ -68,7 +68,6 @@ function serializeArg(
 
     // param?: T
     if (optional && !nullable) {
-      // throw new Error('are we hitting this case? ' + moduleName);
       return `count <= ${index} || ${val}.isUndefined() ? std::nullopt : std::make_optional(${expression})`;
     }
 
@@ -88,7 +87,7 @@ function serializeArg(
         case 'RootTag':
           return wrap(val => `${val}.asNumber()`);
         default:
-          (realTypeAnnotation.name: empty);
+          realTypeAnnotation.name as empty;
           throw new Error(
             `Unknown prop type for "${arg.name}, found: ${realTypeAnnotation.name}"`,
           );
@@ -140,7 +139,7 @@ function serializeArg(
         case 'string':
           return wrap(val => `${val}.asString(rt)`);
         default:
-          (validUnionType: empty);
+          validUnionType as empty;
           throw new Error(`Unsupported union member type`);
       }
     case 'ObjectTypeAnnotation':
@@ -148,7 +147,7 @@ function serializeArg(
     case 'MixedTypeAnnotation':
       return wrap(val => `jsi::Value(rt, ${val})`);
     default:
-      (realTypeAnnotation.type: empty);
+      realTypeAnnotation.type as empty;
       throw new Error(
         `Unknown prop type for "${arg.name}, found: ${realTypeAnnotation.type}"`,
       );
@@ -249,7 +248,7 @@ function translatePrimitiveJSTypeToCpp(
         case 'RootTag':
           return wrapOptional('double', isRequired);
         default:
-          (realTypeAnnotation.name: empty);
+          realTypeAnnotation.name as empty;
           throw new Error(createErrorMessage(realTypeAnnotation.name));
       }
     case 'VoidTypeAnnotation':
@@ -295,7 +294,7 @@ function translatePrimitiveJSTypeToCpp(
         case 'string':
           return wrapOptional('jsi::String', isRequired);
         default:
-          (validUnionType: empty);
+          validUnionType as empty;
           throw new Error(`Unsupported union member type`);
       }
     case 'ObjectTypeAnnotation':
@@ -309,7 +308,7 @@ function translatePrimitiveJSTypeToCpp(
     case 'MixedTypeAnnotation':
       return wrapOptional('jsi::Value', isRequired);
     default:
-      (realTypeAnnotation.type: empty);
+      realTypeAnnotation.type as empty;
       throw new Error(createErrorMessage(realTypeAnnotation.type));
   }
 }

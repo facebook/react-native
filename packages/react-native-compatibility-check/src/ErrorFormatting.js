@@ -91,7 +91,7 @@ export function formatErrorMessage(
       );
       return error.message + formattedMembers.join('');
     default:
-      (error.type: empty);
+      error.type as empty;
       return '';
   }
 }
@@ -114,7 +114,7 @@ function formatTypeAnnotation(annotation: CompleteTypeAnnotation): string {
           shortHandType = 'number';
           break;
         default:
-          (annotation.memberType: empty);
+          annotation.memberType as empty;
           throw new Error('Unexpected enum memberType');
       }
 
@@ -130,7 +130,7 @@ function formatTypeAnnotation(annotation: CompleteTypeAnnotation): string {
           shortHandType = 'number';
           break;
         default:
-          (annotation.memberType: empty);
+          annotation.memberType as empty;
           throw new Error('Unexptected enum memberType');
       }
 
@@ -213,7 +213,7 @@ function formatTypeAnnotation(annotation: CompleteTypeAnnotation): string {
             return (
               '(' +
               // @lint-ignore-every FLOW_INCOMPATIBLE_TYPE_ARG
-              (annotation.types: ReadonlyArray<CompleteTypeAnnotation>)
+              (annotation.types as ReadonlyArray<CompleteTypeAnnotation>)
                 .map(boolLit => formatTypeAnnotation(boolLit))
                 .join(' | ') +
               ')'
@@ -229,7 +229,7 @@ function formatTypeAnnotation(annotation: CompleteTypeAnnotation): string {
             return (
               '(' +
               // @lint-ignore-every FLOW_INCOMPATIBLE_TYPE_ARG
-              (annotation.types: ReadonlyArray<CompleteTypeAnnotation>)
+              (annotation.types as ReadonlyArray<CompleteTypeAnnotation>)
                 .map(numLit => formatTypeAnnotation(numLit))
                 .join(' | ') +
               ')'
@@ -247,7 +247,7 @@ function formatTypeAnnotation(annotation: CompleteTypeAnnotation): string {
             return (
               '(' +
               // @lint-ignore-every FLOW_INCOMPATIBLE_TYPE_ARG
-              (annotation.types: ReadonlyArray<CompleteTypeAnnotation>)
+              (annotation.types as ReadonlyArray<CompleteTypeAnnotation>)
                 .map(stringLit => formatTypeAnnotation(stringLit))
                 .join(' | ') +
               ')'
@@ -256,7 +256,7 @@ function formatTypeAnnotation(annotation: CompleteTypeAnnotation): string {
           // Unions of strings and string literals are treated as just strings
           return `Union<string>`;
         default:
-          (validUnionType: empty);
+          validUnionType as empty;
           throw new Error(`Unsupported union member type`);
       }
     case 'StringTypeAnnotation':
@@ -281,7 +281,7 @@ function formatTypeAnnotation(annotation: CompleteTypeAnnotation): string {
 
       return 'Object';
     default:
-      (annotation.type: empty);
+      annotation.type as empty;
       return JSON.stringify(annotation);
   }
 }
@@ -351,7 +351,7 @@ export function formatDiffSet(summary: DiffSummary): FormattedDiffSummary {
     formattedIncompatibilities[hasteModule] = formattedIncompat;
   });
   return {
-    status: (summaryStatus: 'incompatible'),
+    status: summaryStatus as 'incompatible',
     incompatibilityReport: formattedIncompatibilities,
   };
 }

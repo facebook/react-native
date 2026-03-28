@@ -423,7 +423,7 @@ describe('inspector-proxy device socket handoff', () => {
         pageList = (await fetchJson(
           `${serverRef.serverBaseUrl}/json`,
           // $FlowFixMe[unclear-type]
-        ): any);
+        )) as any;
         expect(pageList).toEqual(
           expect.arrayContaining(
             pageListSpec.map(pageSpec =>

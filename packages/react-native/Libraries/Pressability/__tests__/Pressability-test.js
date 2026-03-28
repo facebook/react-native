@@ -29,7 +29,7 @@ function getMock<TArguments extends ReadonlyArray<unknown>, TReturn>(
   if (!jest.isMockFunction(fn)) {
     throw new Error('Function must be mock function');
   }
-  return (fn: $FlowFixMe);
+  return fn as $FlowFixMe;
 }
 
 const createMockPressability = (overrides: ?Partial<PressabilityConfig>) => {
@@ -186,7 +186,7 @@ const createMockPressEvent = (
   }
 
   const nativeEvent = {
-    changedTouches: ([]: Array<GestureResponderEvent['nativeEvent']>),
+    changedTouches: [] as Array<GestureResponderEvent['nativeEvent']>,
     force: 1,
     identifier: 42,
     locationX: pageX,
@@ -195,7 +195,7 @@ const createMockPressEvent = (
     pageY,
     target: 42,
     timestamp: 1075881600000,
-    touches: ([]: Array<GestureResponderEvent['nativeEvent']>),
+    touches: [] as Array<GestureResponderEvent['nativeEvent']>,
   };
 
   nativeEvent.changedTouches.push(nativeEvent);

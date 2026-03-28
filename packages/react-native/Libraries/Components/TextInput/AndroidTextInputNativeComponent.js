@@ -90,8 +90,15 @@ export type AndroidTextInputNativeProps = Readonly<{
    * - `cc-exp-month`
    * - `cc-exp-year`
    * - `cc-number`
+   * - `2fa-app-otp`
    * - `email`
+   * - `email-otp`
+   * - `flight-confirmation-code`
+   * - `flight-number`
    * - `gender`
+   * - `gift-card-number`
+   * - `gift-card-pin`
+   * - `loyalty-account-number`
    * - `name`
    * - `name-family`
    * - `name-given`
@@ -103,17 +110,22 @@ export type AndroidTextInputNativeProps = Readonly<{
    * - `password-new`
    * - `postal-address`
    * - `postal-address-country`
+   * - `postal-address-dependent-locality`
    * - `postal-address-extended`
    * - `postal-address-extended-postal-code`
    * - `postal-address-locality`
    * - `postal-address-region`
+   * - `postal-address-unit`
    * - `postal-code`
+   * - `promo-code`
    * - `street-address`
    * - `sms-otp`
    * - `tel`
    * - `tel-country-code`
    * - `tel-national`
    * - `tel-device`
+   * - `upi-vpa`
+   * - `wifi-password`
    * - `username`
    * - `username-new`
    * - `off`
@@ -121,6 +133,7 @@ export type AndroidTextInputNativeProps = Readonly<{
    * @platform android
    */
   autoComplete?: WithDefault<
+    | '2fa-app-otp'
     | 'birthdate-day'
     | 'birthdate-full'
     | 'birthdate-month'
@@ -132,7 +145,13 @@ export type AndroidTextInputNativeProps = Readonly<{
     | 'cc-exp-year'
     | 'cc-number'
     | 'email'
+    | 'email-otp'
+    | 'flight-confirmation-code'
+    | 'flight-number'
     | 'gender'
+    | 'gift-card-number'
+    | 'gift-card-pin'
+    | 'loyalty-account-number'
     | 'name'
     | 'name-family'
     | 'name-given'
@@ -144,17 +163,22 @@ export type AndroidTextInputNativeProps = Readonly<{
     | 'password-new'
     | 'postal-address'
     | 'postal-address-country'
+    | 'postal-address-dependent-locality'
     | 'postal-address-extended'
     | 'postal-address-extended-postal-code'
     | 'postal-address-locality'
     | 'postal-address-region'
+    | 'postal-address-unit'
     | 'postal-code'
+    | 'promo-code'
     | 'street-address'
     | 'sms-otp'
     | 'tel'
     | 'tel-country-code'
     | 'tel-national'
     | 'tel-device'
+    | 'upi-vpa'
+    | 'wifi-password'
     | 'username'
     | 'username-new'
     | 'off',
@@ -717,4 +741,4 @@ let AndroidTextInputNativeComponent =
   );
 
 // flowlint-next-line unclear-type:off
-export default ((AndroidTextInputNativeComponent: any): HostComponent<AndroidTextInputNativeProps>);
+export default AndroidTextInputNativeComponent as any as HostComponent<AndroidTextInputNativeProps>;

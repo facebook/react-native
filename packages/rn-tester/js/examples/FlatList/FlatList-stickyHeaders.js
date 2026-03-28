@@ -64,9 +64,9 @@ const styles = StyleSheet.create({
   },
 });
 
-export default ({
+export default {
   title: 'Sticky Headers',
   name: 'stickyHeaders',
   description: 'Test sticky headers on FlatList',
   render: () => <FlatList_stickyHeaders />,
-}: RNTesterModuleExample);
+} as RNTesterModuleExample;

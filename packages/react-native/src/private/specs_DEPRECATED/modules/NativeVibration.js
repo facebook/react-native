@@ -21,4 +21,4 @@ export interface Spec extends TurboModule {
   +cancel: () => void;
 }
 
-export default (TurboModuleRegistry.getEnforcing<Spec>('Vibration'): Spec);
+export default TurboModuleRegistry.getEnforcing<Spec>('Vibration') as Spec;

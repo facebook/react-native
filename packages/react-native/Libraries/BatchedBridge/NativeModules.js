@@ -114,7 +114,7 @@ function genMethod(moduleID: number, methodID: number, type: MethodType) {
           errorData =>
             reject(
               updateErrorWithErrorData(
-                (errorData: $FlowFixMe),
+                errorData as $FlowFixMe,
                 enqueueingFrameError,
               ),
             ),

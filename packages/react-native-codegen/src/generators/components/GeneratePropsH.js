@@ -331,11 +331,11 @@ function getClassExtendString(component: ComponentShape): string {
               case 'ReactNativeCoreViewProps':
                 return 'public ViewProps';
               default:
-                (extendProps.knownTypeName: empty);
+                extendProps.knownTypeName as empty;
                 throw new Error('Invalid knownTypeName');
             }
           default:
-            (extendProps.type: empty);
+            extendProps.type as empty;
             throw new Error('Invalid extended type');
         }
       })
@@ -574,11 +574,11 @@ function getExtendsImports(
             );
             return;
           default:
-            (extendProps.knownTypeName: empty);
+            extendProps.knownTypeName as empty;
             throw new Error('Invalid knownTypeName');
         }
       default:
-        (extendProps.type: empty);
+        extendProps.type as empty;
         throw new Error('Invalid extended type');
     }
   });
@@ -778,7 +778,7 @@ function generateStruct(
       case 'MixedTypeAnnotation':
         return;
       default:
-        (property.typeAnnotation.type: empty);
+        property.typeAnnotation.type as empty;
         throw new Error(
           `Received invalid component property type ${property.typeAnnotation.type}`,
         );

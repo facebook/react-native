@@ -97,16 +97,15 @@ internal class FrameTimingsObserver(
     }
   }
 
-  private val frameMetricsListener =
-      Window.OnFrameMetricsAvailableListener { _, frameMetrics, _ ->
-        // Guard against calls after stop()
-        if (!isTracing) {
-          return@OnFrameMetricsAvailableListener
-        }
-        val beginTimestamp = frameMetrics.getMetric(FrameMetrics.VSYNC_TIMESTAMP)
-        val endTimestamp = beginTimestamp + frameMetrics.getMetric(FrameMetrics.TOTAL_DURATION)
-        emitFrameTiming(beginTimestamp, endTimestamp)
-      }
+  private val frameMetricsListener = Window.OnFrameMetricsAvailableListener { _, frameMetrics, _ ->
+    // Guard against calls after stop()
+    if (!isTracing) {
+      return@OnFrameMetricsAvailableListener
+    }
+    val beginTimestamp = frameMetrics.getMetric(FrameMetrics.VSYNC_TIMESTAMP)
+    val endTimestamp = beginTimestamp + frameMetrics.getMetric(FrameMetrics.TOTAL_DURATION)
+    emitFrameTiming(beginTimestamp, endTimestamp)
+  }
 
   private fun emitFrameTiming(beginTimestamp: Long, endTimestamp: Long) {
     val frameId = frameCounter++

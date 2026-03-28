@@ -163,9 +163,9 @@ const styles = StyleSheet.create({
   },
 });
 
-export default ({
+export default {
   title: 'Transform Styles',
   name: 'transformStyles',
   description: 'Variations of transform styles.',
   render: () => <AnimatedTransformStyleExample />,
-}: RNTesterModuleExample);
+} as RNTesterModuleExample;

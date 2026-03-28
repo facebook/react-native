@@ -47,6 +47,6 @@ export interface Spec extends TurboModule {
   +takeRecords: () => ReadonlyArray<NativeIntersectionObserverEntry>;
 }
 
-export default (TurboModuleRegistry.get<Spec>(
+export default TurboModuleRegistry.get<Spec>(
   'NativeIntersectionObserverCxx',
-): ?Spec);
+) as ?Spec;

@@ -989,11 +989,10 @@ public class ReactHostImpl(
           jsBundleLoader.onSuccess(
               { task ->
                 val bundleLoader = checkNotNull(task.getResult())
-                val reactContext =
-                    bridgelessReactContextRef.getOrCreate {
-                      stateTracker.enterState(method, "Creating BridgelessReactContext")
-                      BridgelessReactContext(context, this)
-                    }
+                val reactContext = bridgelessReactContextRef.getOrCreate {
+                  stateTracker.enterState(method, "Creating BridgelessReactContext")
+                  BridgelessReactContext(context, this)
+                }
                 reactContext.jsExceptionHandler = devSupportManager
 
                 stateTracker.enterState(method, "Creating ReactInstance")

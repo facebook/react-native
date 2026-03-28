@@ -442,6 +442,14 @@ void BaseViewProps::setProp(
     VIEW_EVENT_CASE(PointerOverCapture);
     VIEW_EVENT_CASE(PointerOut);
     VIEW_EVENT_CASE(PointerOutCapture);
+    VIEW_EVENT_CASE(Click);
+    VIEW_EVENT_CASE(ClickCapture);
+    VIEW_EVENT_CASE(PointerDown);
+    VIEW_EVENT_CASE(PointerDownCapture);
+    VIEW_EVENT_CASE(PointerUp);
+    VIEW_EVENT_CASE(PointerUpCapture);
+    VIEW_EVENT_CASE(GotPointerCapture);
+    VIEW_EVENT_CASE(LostPointerCapture);
     VIEW_EVENT_CASE(MoveShouldSetResponder);
     VIEW_EVENT_CASE(MoveShouldSetResponderCapture);
     VIEW_EVENT_CASE(StartShouldSetResponder);

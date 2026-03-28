@@ -183,7 +183,7 @@ export default function openDebuggerMiddleware({
                   shouldUseStandaloneFuseboxShell = false;
                   break;
                 default:
-                  (shellPreparationResult.code: empty);
+                  shellPreparationResult.code as empty;
               }
             }
             if (shouldUseStandaloneFuseboxShell) {
@@ -226,7 +226,7 @@ export default function openDebuggerMiddleware({
             res.end();
             break;
           default:
-            (launchType: empty);
+            launchType as empty;
         }
         eventReporter?.logEvent({
           type: 'launch_debugger_frontend',

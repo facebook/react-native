@@ -20,6 +20,6 @@ export interface Spec extends TurboModule {
   +getValueWithPromiseWithAlias: (arg: String) => AnotherPromise;
 }
 
-export default (TurboModuleRegistry.getEnforcing<Spec>(
+export default TurboModuleRegistry.getEnforcing<Spec>(
   'SampleTurboModule',
-): Spec);
+) as Spec;

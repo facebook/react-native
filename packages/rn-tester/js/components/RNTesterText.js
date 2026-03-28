@@ -11,7 +11,8 @@
 import type {TextProps} from 'react-native';
 
 import {RNTesterThemeContext} from './RNTesterTheme';
-import React, {useContext, useMemo} from 'react';
+import * as React from 'react';
+import {useContext, useMemo} from 'react';
 import {Text} from 'react-native';
 
 type Props = Readonly<{

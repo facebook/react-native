@@ -124,7 +124,7 @@ component MovingBoxExample() {
   );
 }
 
-export default ({
+export default {
   title: 'Moving box example',
   name: 'movingView',
   description:
@@ -132,4 +132,4 @@ export default ({
   expect:
     'During animation, removing box from layout will stop the animation and box will stay in its current position.\nStarting animation when box is not rendered and rendering mid-way does not affect animation.\nReset will reset the animation to its starting position.',
   render: (): React.Node => <MovingBoxExample />,
-}: RNTesterModuleExample);
+} as RNTesterModuleExample;

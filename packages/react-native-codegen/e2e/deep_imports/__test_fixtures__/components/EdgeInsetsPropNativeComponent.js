@@ -21,6 +21,6 @@ type NativeProps = Readonly<{
   // contentInset?: EdgeInsetsValue,
 }>;
 
-export default (codegenNativeComponent<NativeProps>(
+export default codegenNativeComponent<NativeProps>(
   'EdgeInsetsPropNativeComponentView',
-): HostComponent<NativeProps>);
+) as HostComponent<NativeProps>;

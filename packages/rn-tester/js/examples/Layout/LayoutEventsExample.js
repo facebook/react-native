@@ -17,7 +17,7 @@ import type {
 } from 'react-native/Libraries/Components/View/ViewPropTypes';
 
 import RNTesterText from '../../components/RNTesterText';
-import React from 'react';
+import * as React from 'react';
 import {Image, LayoutAnimation, StyleSheet, View} from 'react-native';
 
 type Props = Readonly<{}>;
@@ -156,7 +156,7 @@ const styles = StyleSheet.create({
 exports.title = 'Layout Events';
 exports.category = 'UI';
 exports.description = ('Examples that show how Layout events can be used to ' +
-  'measure view size and position.': string);
+  'measure view size and position.') as string;
 exports.examples = [
   {
     title: 'LayoutEventExample',

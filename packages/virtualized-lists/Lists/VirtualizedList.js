@@ -971,15 +971,15 @@ class VirtualizedList extends StateSafePureComponent<
     // 2a. Add a cell for ListEmptyComponent if applicable
     const itemCount = this.props.getItemCount(data);
     if (itemCount === 0 && ListEmptyComponent) {
-      const element: ExactReactElement_DEPRECATED<any> = ((isValidElement(
-        ListEmptyComponent,
-      ) ? (
-        ListEmptyComponent
-      ) : (
-        // $FlowFixMe[not-a-component]
-        // $FlowFixMe[incompatible-type]
-        <ListEmptyComponent />
-      )): any);
+      const element: ExactReactElement_DEPRECATED<any> = (
+        isValidElement(ListEmptyComponent) ? (
+          ListEmptyComponent
+        ) : (
+          // $FlowFixMe[not-a-component]
+          // $FlowFixMe[incompatible-type]
+          <ListEmptyComponent />
+        )
+      ) as any;
       cells.push(
         <VirtualizedListCellContextProvider
           cellKey={this._getCellKey() + '-empty'}

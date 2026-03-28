@@ -36,7 +36,7 @@ function toObjCType(
         case 'RootTag':
           return wrapCxxOptional('double', isRequired);
         default:
-          (typeAnnotation.name: empty);
+          typeAnnotation.name as empty;
           throw new Error(`Unknown prop type, found: ${typeAnnotation.name}"`);
       }
     case 'StringTypeAnnotation':
@@ -105,7 +105,7 @@ function toObjCType(
         isRequired,
       );
     default:
-      (typeAnnotation.type: empty);
+      typeAnnotation.type as empty;
       throw new Error(
         `Couldn't convert into ObjC type: ${typeAnnotation.type}"`,
       );

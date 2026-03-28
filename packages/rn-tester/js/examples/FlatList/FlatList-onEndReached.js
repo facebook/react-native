@@ -42,7 +42,7 @@ export component FlatList_onEndReached() {
   );
 }
 
-export default ({
+export default {
   title: 'onEndReached',
   name: 'onEndReached',
   description:
@@ -50,4 +50,4 @@ export default ({
   render: function () {
     return <FlatList_onEndReached />;
   },
-}: RNTesterModuleExample);
+} as RNTesterModuleExample;

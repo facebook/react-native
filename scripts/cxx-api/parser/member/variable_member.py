@@ -111,6 +111,8 @@ class VariableMember(Member):
                 result += f"{qualified_type} (*{name})({formatted_args})"
         else:
             result += f"{format_parsed_type(self._parsed_type)} {name}"
+            if self.argstring:
+                result += self.argstring
 
         if STORE_INITIALIZERS_IN_SNAPSHOT and self.value is not None:
             if self.is_brace_initializer:

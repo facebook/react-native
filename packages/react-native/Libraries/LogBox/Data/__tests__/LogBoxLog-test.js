@@ -57,7 +57,7 @@ function getLogBoxSymbolication(): {
     Promise<SymbolicatedStackTrace>,
   >,
 } {
-  return (require('../LogBoxSymbolication'): any);
+  return require('../LogBoxSymbolication') as any;
 }
 
 const createStack = (methodNames: Array<string>) =>

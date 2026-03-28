@@ -189,7 +189,7 @@ class VirtualizedSectionList<
     const listHeaderOffset = this.props.ListHeaderComponent ? 1 : 0;
 
     const stickyHeaderIndices = this.props.stickySectionHeadersEnabled
-      ? ([]: Array<number>)
+      ? ([] as Array<number>)
       : undefined;
 
     let itemCount = 0;
@@ -615,7 +615,7 @@ function ItemWithSeparator<ItemT>(
         highlighted={leadingSeparatorHiglighted}
         {...leadingSeparatorProps}
       />
-    )): any);
+    )) as any);
   const separator =
     SeparatorComponent != null &&
     ((React.isValidElement(SeparatorComponent) ? (
@@ -627,7 +627,7 @@ function ItemWithSeparator<ItemT>(
         highlighted={separatorHighlighted}
         {...separatorProps}
       />
-    )): any);
+    )) as any);
   const RenderSeparator = leadingSeparator || separator;
   const firstSeparator = inverted === false ? leadingSeparator : separator;
   const secondSeparator = inverted === false ? separator : leadingSeparator;

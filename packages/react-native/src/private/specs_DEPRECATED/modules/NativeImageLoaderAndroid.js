@@ -27,4 +27,4 @@ export interface Spec extends TurboModule {
   +queryCache: (uris: Array<string>) => Promise<Object>;
 }
 
-export default (TurboModuleRegistry.getEnforcing<Spec>('ImageLoader'): Spec);
+export default TurboModuleRegistry.getEnforcing<Spec>('ImageLoader') as Spec;
