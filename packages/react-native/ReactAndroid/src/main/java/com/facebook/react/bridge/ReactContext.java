@@ -15,6 +15,7 @@ import android.content.ContextWrapper;
 import android.content.Intent;
 import android.os.Bundle;
 import android.view.LayoutInflater;
+import android.view.Window;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import com.facebook.common.logging.FLog;
@@ -47,6 +48,8 @@ public abstract class ReactContext extends ContextWrapper {
   private final CopyOnWriteArraySet<LifecycleEventListener> mLifecycleEventListeners =
       new CopyOnWriteArraySet<>();
   private final CopyOnWriteArraySet<ActivityEventListener> mActivityEventListeners =
+      new CopyOnWriteArraySet<>();
+  private final CopyOnWriteArraySet<ExtraWindowEventListener> mExtraWindowEventListeners =
       new CopyOnWriteArraySet<>();
   private final CopyOnWriteArraySet<WindowFocusChangeListener> mWindowFocusEventListeners =
       new CopyOnWriteArraySet<>();
@@ -246,6 +249,14 @@ public abstract class ReactContext extends ContextWrapper {
     mActivityEventListeners.remove(listener);
   }
 
+  public void addExtraWindowEventListener(ExtraWindowEventListener listener) {
+    mExtraWindowEventListeners.add(listener);
+  }
+
+  public void removeExtraWindowEventListener(ExtraWindowEventListener listener) {
+    mExtraWindowEventListeners.remove(listener);
+  }
+
   public void addWindowFocusChangeListener(WindowFocusChangeListener listener) {
     mWindowFocusEventListeners.add(listener);
   }
@@ -350,6 +361,30 @@ public abstract class ReactContext extends ContextWrapper {
     for (ActivityEventListener listener : mActivityEventListeners) {
       try {
         listener.onActivityResult(activity, requestCode, resultCode, data);
+      } catch (RuntimeException e) {
+        handleException(e);
+      }
+    }
+  }
+
+  @ThreadConfined(UI)
+  public void onExtraWindowCreate(Window window) {
+    UiThreadUtil.assertOnUiThread();
+    for (ExtraWindowEventListener listener : mExtraWindowEventListeners) {
+      try {
+        listener.onExtraWindowCreate(window);
+      } catch (RuntimeException e) {
+        handleException(e);
+      }
+    }
+  }
+
+  @ThreadConfined(UI)
+  public void onExtraWindowDestroy(Window window) {
+    UiThreadUtil.assertOnUiThread();
+    for (ExtraWindowEventListener listener : mExtraWindowEventListeners) {
+      try {
+        listener.onExtraWindowDestroy(window);
       } catch (RuntimeException e) {
         handleException(e);
       }
