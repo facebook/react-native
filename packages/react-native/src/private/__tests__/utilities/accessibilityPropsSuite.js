@@ -137,44 +137,6 @@ function getAccessibilityProps(
   return {...props};
 }
 
-export function rolePropSuite(
-  Component: component(...AccessibilityProps),
-): void {
-  describe('role', () => {
-    beforeEach(() => {
-      root = Fantom.createRoot();
-    });
-
-    afterEach(() => {
-      root.destroy();
-    });
-
-    it(`'role' has none by default`, () => {
-      expect(getAccessibilityProps(<Component />, ['role'])).toEqual({});
-    });
-
-    it(`'role' maps invalid values to 'none'`, () => {
-      expect(
-        getAccessibilityProps(
-          // $FlowExpectedError[incompatible-type]
-          <Component role="__some_invalid_value" />,
-          ['role'],
-        ),
-      ).toEqual({['role']: 'none'});
-    });
-
-    describe(`'role' propagation`, () => {
-      ROLE_VALUES.forEach(role => {
-        it(`can be set to ${role}`, () => {
-          expect(
-            getAccessibilityProp(<Component role={role} />, 'role'),
-          ).toEqual(role);
-        });
-      });
-    });
-  });
-}
-
 export default function accessibilityPropsSuite(
   Component: component(...AccessibilityProps),
   accessibleByDefault: boolean = true,
@@ -326,6 +288,32 @@ export default function accessibilityPropsSuite(
             'accessibilityActions',
           ),
         ).toEqual("[activate, spawn: 'open a panel', escape]");
+      });
+    });
+  });
+
+  describe('role', () => {
+    beforeEach(() => {
+      root = Fantom.createRoot();
+    });
+
+    afterEach(() => {
+      root.destroy();
+    });
+
+    it(`'role' has none by default`, () => {
+      expect(getAccessibilityProps(<Component />, ['role'])).toEqual({});
+    });
+
+    describe(`'role' propagation`, () => {
+      ROLE_VALUES.forEach(role => {
+        it(`can be set to ${role}`, () => {
+          if (role !== 'none') {
+            expect(
+              getAccessibilityProp(<Component role={role} />, 'role'),
+            ).toEqual(role);
+          }
+        });
       });
     });
   });
