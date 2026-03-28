@@ -13,8 +13,7 @@
 const getDevServer = require('./getDevServer').default;
 
 export default function openURLInBrowser(url: string) {
-  // $FlowFixMe[unused-promise]
-  fetch(getDevServer().url + 'open-url', {
+  void fetch(getDevServer().url + 'open-url', {
     method: 'POST',
     headers: {
       'Content-Type': 'application/json',
