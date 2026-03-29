@@ -18,7 +18,14 @@ import RNTesterText from '../../components/RNTesterText';
 import ImageCapInsetsExample from './ImageCapInsetsExample';
 import * as React from 'react';
 import {useEffect, useState} from 'react';
-import {Image, ImageBackground, StyleSheet, Text, View} from 'react-native';
+import {
+  Image,
+  ImageBackground,
+  Platform,
+  StyleSheet,
+  Text,
+  View,
+} from 'react-native';
 
 const IMAGE1 =
   'https://www.facebook.com/assets/fb_lite_messaging/E2EE-settings@3x.png';
@@ -1014,6 +1021,16 @@ exports.examples = [
   {
     title: 'Error Handler for Large Images',
     render: function (): React.Node {
+      if (Platform.OS === 'android' && parseInt(Platform.Version, 10) < 27) {
+        return (
+          <View>
+            <RNTesterText>
+              Large images are only supported on Android API 27+
+            </RNTesterText>
+          </View>
+        );
+      }
+
       return (
         <NetworkImageExample
           resizeMethod="none"
@@ -1714,6 +1731,16 @@ exports.examples = [
       'Demonstrating the effects of loading a large image with different resize methods',
     scrollable: true,
     render: function (): React.Node {
+      if (parseInt(Platform.Version, 10) < 27) {
+        return (
+          <View>
+            <RNTesterText>
+              Large images are only supported on Android API 27+
+            </RNTesterText>
+          </View>
+        );
+      }
+
       const methods: Array<ImageProps['resizeMethod']> = [
         'auto',
         'resize',
