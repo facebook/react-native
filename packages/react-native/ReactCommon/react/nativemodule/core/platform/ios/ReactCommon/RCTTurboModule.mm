@@ -461,7 +461,9 @@ void ObjCTurboModule::performVoidMethodInvocation(
     @try {
       [inv invokeWithTarget:strongModule];
     } @catch (NSException *exception) {
-      throw convertNSExceptionToJSError(runtime, exception, std::string{moduleName}, methodNameStr);
+      // Void methods are always async, re-throw instead of converting to
+      // JSError, same as the async branch in performMethodInvocation.
+      @throw exception;
     } @finally {
       [retainedObjectsForInvocation removeAllObjects];
     }
