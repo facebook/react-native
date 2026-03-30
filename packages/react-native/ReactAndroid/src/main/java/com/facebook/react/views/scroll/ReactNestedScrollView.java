@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<f31741d016231b75604a72aa89dd6923>>
+ * @generated SignedSource<<dd8221f4b150b4b3bec3dafd4b745482>>
  */
 
 /**
@@ -1527,11 +1527,12 @@ class ReactNestedScrollView extends NestedScrollView
    * and that you are **not** overriding the NestedScrollView content view to pass in a `translateY`
    * style. `translateY` must never be set from ReactJS while using this feature!
    */
-  public void setScrollAwayTopPaddingEnabledUnstable(int topPadding) {
-    setScrollAwayTopPaddingEnabledUnstable(topPadding, true);
+  public void setScrollAwayPaddingEnabledUnstable(int topPadding, int bottomPadding) {
+    setScrollAwayPaddingEnabledUnstable(topPadding, bottomPadding, true);
   }
 
-  public void setScrollAwayTopPaddingEnabledUnstable(int topPadding, boolean updateState) {
+  public void setScrollAwayPaddingEnabledUnstable(
+      int topPadding, int bottomPadding, boolean updateState) {
     int count = getChildCount();
 
     Assertions.assertCondition(
@@ -1548,17 +1549,18 @@ class ReactNestedScrollView extends NestedScrollView
       // Add the topPadding value as the bottom padding for the NestedScrollView.
       // Otherwise, we'll push down the contents of the scroll view down too
       // far off screen.
-      setPadding(0, 0, 0, topPadding);
+      setPadding(0, 0, 0, topPadding + bottomPadding);
     }
 
     if (updateState) {
-      updateScrollAwayState(topPadding);
+      updateScrollAwayState(topPadding, bottomPadding);
     }
     setRemoveClippedSubviews(mRemoveClippedSubviews);
   }
 
-  private void updateScrollAwayState(int scrollAwayPaddingTop) {
+  private void updateScrollAwayState(int scrollAwayPaddingTop, int scrollAwayPaddingBottom) {
     getReactScrollViewScrollState().setScrollAwayPaddingTop(scrollAwayPaddingTop);
+    getReactScrollViewScrollState().setScrollAwayPaddingBottom(scrollAwayPaddingBottom);
     ReactScrollViewHelper.forceUpdateState(this);
   }
 
@@ -1567,7 +1569,8 @@ class ReactNestedScrollView extends NestedScrollView
     mReactScrollViewScrollState = scrollState;
     if (ReactNativeFeatureFlags.enableViewCulling()
         || ReactNativeFeatureFlags.useTraitHiddenOnAndroid()) {
-      setScrollAwayTopPaddingEnabledUnstable(scrollState.getScrollAwayPaddingTop(), false);
+      setScrollAwayPaddingEnabledUnstable(
+          scrollState.getScrollAwayPaddingTop(), scrollState.getScrollAwayPaddingBottom(), false);
 
       Point scrollPosition = scrollState.getLastStateUpdateScroll();
       scrollTo(scrollPosition.x, scrollPosition.y);
