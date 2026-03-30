@@ -2,7 +2,7 @@
 
 ![npm package](https://img.shields.io/npm/v/@react-native/core-cli-utils?color=brightgreen&label=npm%20package)
 
-A collection of utilites to help Frameworks build their React Native CLI tooling. This is not intended to be used directly use users of React Native.
+A collection of utilities to help Frameworks build their React Native CLI tooling. This is not intended to be used directly use users of React Native.
 
 ## Usage
 

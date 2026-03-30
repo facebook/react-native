@@ -225,7 +225,7 @@ This file contains all changelogs for releases in the 0.60-0.69 range. Please ch
 
 #### Android specific
 
-- Gradle: extend the algoritm to find hermesc paths ([aeac6ab677](https://github.com/facebook/react-native/commit/aeac6ab6773cd2c0ca7abe9e5aa3f22fa81683e5) by [@cortinico](https://github.com/cortinico))
+- Gradle: extend the algorithm to find hermesc paths ([aeac6ab677](https://github.com/facebook/react-native/commit/aeac6ab6773cd2c0ca7abe9e5aa3f22fa81683e5) by [@cortinico](https://github.com/cortinico))
 - Bump boost for Android to 1.76 to align with iOS ([5cd6367f0b](https://github.com/facebook/react-native/commit/5cd6367f0b86543274a15bb6d0e53a8545fed845) by [@kelset](https://github.com/kelset))
 - Adopt `MapBuffer` interface for `ReadableMapBuffer` ([81e4249315](https://github.com/facebook/react-native/commit/81e42493158edd5e7b88f98c19c87e9d61ba4aba))
 - Mark intent as nullable ([5ffa0b0aa6](https://github.com/facebook/react-native/commit/5ffa0b0aa6c523234c634167be1f94b0d9edb0f7) by [@sshic](https://github.com/sshic))
@@ -306,7 +306,7 @@ This file contains all changelogs for releases in the 0.60-0.69 range. Please ch
 #### Android specific
 
 - Add back hermes inspector support ([6b6adcc111](https://github.com/facebook/react-native/commit/6b6adcc111123bec2c4c110070b2506385e74664) by [@Kudo](https://github.com/Kudo))
-- Fixed issue where any node with an AccessibilityDelegate set (which was any node with any accessibility propoerty), was using ExploreByTouchHelper's built in AccessibilityNodeProvider, and not properly populating their AccessibilityNodeInfo's, leading to focus issues and issues with automated test services like UIAutomator. ([70fcab76a4](https://github.com/facebook/react-native/commit/70fcab76a4dcf65e628ac897620fe050758574e3) by [@blavalla](https://github.com/blavalla))
+- Fixed issue where any node with an AccessibilityDelegate set (which was any node with any accessibility property), was using ExploreByTouchHelper's built in AccessibilityNodeProvider, and not properly populating their AccessibilityNodeInfo's, leading to focus issues and issues with automated test services like UIAutomator. ([70fcab76a4](https://github.com/facebook/react-native/commit/70fcab76a4dcf65e628ac897620fe050758574e3) by [@blavalla](https://github.com/blavalla))
 - Fix Extras usage in Android implementation of Linking.sendIntent() ([86f8d0bb52](https://github.com/facebook/react-native/commit/86f8d0bb528a75777c357ae214643ed58c326ca9))
 - Fix typo in gradle plugin deprecation message ([41cfd2f976](https://github.com/facebook/react-native/commit/41cfd2f9768e4742eedd299ab467d316d016705e) by [@mikehardy](https://github.com/mikehardy))
 - Fixed `TimingModule` related functions for headless JS tasks, eg. `setTimeout` ([dac56ce077](https://github.com/facebook/react-native/commit/dac56ce0776e0e4d23ed4f8b324f2e2432aefa6a) by [@marcesengel](https://github.com/marcesengel))
@@ -817,7 +817,7 @@ This file contains all changelogs for releases in the 0.60-0.69 range. Please ch
 #### iOS specific
 
 - Revert "Fix Deadlock in RCTi18nUtil (iOS)" ([70ddf46](https://github.com/facebook/react-native/commit/70ddf46c8afcd720e188b6d82568eac6ac8125e6) by [@Saadnajmi](https://github.com/Saadnajmi))
-- `apply_Xcode_12_5_M1_post_install_workaround` causing pods targetting iOS 12 and above to fail ([a4a3e67554](https://github.com/facebook/react-native/commit/a4a3e675542827bb281a7ceccc7b8f5533eae29f) by [@Yonom](https://github.com/Yonom))
+- `apply_Xcode_12_5_M1_post_install_workaround` causing pods targeting iOS 12 and above to fail ([a4a3e67554](https://github.com/facebook/react-native/commit/a4a3e675542827bb281a7ceccc7b8f5533eae29f) by [@Yonom](https://github.com/Yonom))
 
 ## v0.66.3
 
@@ -1750,7 +1750,7 @@ This file contains all changelogs for releases in the 0.60-0.69 range. Please ch
 - Fix `Animated.Value` initialized with undefined in `ScrollView` ([cf02bd9b76](https://github.com/facebook/react-native/commit/cf02bd9b765e29ed8aa2bbf62661e89c84bb80e5) by [@janicduplessis](https://github.com/janicduplessis))
 - Do not explicitly include `.js` in Library imports ([161b910494](https://github.com/facebook/react-native/commit/161b9104941663dcc0b08a73789c0ff3410fc661) by [@NickGerleman](https://github.com/NickGerleman))
 - Fixed `Pressability` to properly fire `onLongPress`. ([5ca1d8f260](https://github.com/facebook/react-native/commit/5ca1d8f260bfb64111a6ba39f76a0a935829c0f2) by [@yungsters](https://github.com/yungsters))
-- Fixed typo from `inly` to `only` inside `Modal.js` library code. ([686d8a57f8](https://github.com/facebook/react-native/commit/686d8a57f889fe74dc1c66566c80f0ed6d677729) by [@Darking360](https://github.com/Darking360))
+- Fixed typo from `only` to `only` inside `Modal.js` library code. ([686d8a57f8](https://github.com/facebook/react-native/commit/686d8a57f889fe74dc1c66566c80f0ed6d677729) by [@Darking360](https://github.com/Darking360))
 - Fix viewability calculations for nested `VirtualizedLists` inside of a parent list's `FooterComponent` ([074a2fab74](https://github.com/facebook/react-native/commit/074a2fab74754c28cba0ccc51552a246a3046501) by [@logandaniels](https://github.com/logandaniels))
 - Fix android `TextInput` transitions ([0a17a4fe56](https://github.com/facebook/react-native/commit/0a17a4fe56ff2cabc3c7d1cc5b34bd3fdd032e59))
 - Remove JS autoFocus implementation ([0569d4c431](https://github.com/facebook/react-native/commit/0569d4c4315d61d2d8f4ab628a54eb1e1db45dc2) by [@janicduplessis](https://github.com/janicduplessis))
