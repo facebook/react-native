@@ -1519,11 +1519,12 @@ public class ReactScrollView extends ScrollView
    * and that you are **not** overriding the ScrollView content view to pass in a `translateY`
    * style. `translateY` must never be set from ReactJS while using this feature!
    */
-  public void setScrollAwayTopPaddingEnabledUnstable(int topPadding) {
-    setScrollAwayTopPaddingEnabledUnstable(topPadding, true);
+  public void setScrollAwayPaddingEnabledUnstable(int topPadding, int bottomPadding) {
+    setScrollAwayPaddingEnabledUnstable(topPadding, bottomPadding, true);
   }
 
-  public void setScrollAwayTopPaddingEnabledUnstable(int topPadding, boolean updateState) {
+  public void setScrollAwayPaddingEnabledUnstable(
+      int topPadding, int bottomPadding, boolean updateState) {
     int count = getChildCount();
 
     Assertions.assertCondition(
@@ -1540,17 +1541,18 @@ public class ReactScrollView extends ScrollView
       // Add the topPadding value as the bottom padding for the ScrollView.
       // Otherwise, we'll push down the contents of the scroll view down too
       // far off screen.
-      setPadding(0, 0, 0, topPadding);
+      setPadding(0, 0, 0, topPadding + bottomPadding);
     }
 
     if (updateState) {
-      updateScrollAwayState(topPadding);
+      updateScrollAwayState(topPadding, bottomPadding);
     }
     setRemoveClippedSubviews(mRemoveClippedSubviews);
   }
 
-  private void updateScrollAwayState(int scrollAwayPaddingTop) {
+  private void updateScrollAwayState(int scrollAwayPaddingTop, int scrollAwayPaddingBottom) {
     getReactScrollViewScrollState().setScrollAwayPaddingTop(scrollAwayPaddingTop);
+    getReactScrollViewScrollState().setScrollAwayPaddingBottom(scrollAwayPaddingBottom);
     ReactScrollViewHelper.forceUpdateState(this);
   }
 
@@ -1559,7 +1561,8 @@ public class ReactScrollView extends ScrollView
     mReactScrollViewScrollState = scrollState;
     if (ReactNativeFeatureFlags.enableViewCulling()
         || ReactNativeFeatureFlags.useTraitHiddenOnAndroid()) {
-      setScrollAwayTopPaddingEnabledUnstable(scrollState.getScrollAwayPaddingTop(), false);
+      setScrollAwayPaddingEnabledUnstable(
+          scrollState.getScrollAwayPaddingTop(), scrollState.getScrollAwayPaddingBottom(), false);
 
       Point scrollPosition = scrollState.getLastStateUpdateScroll();
       scrollTo(scrollPosition.x, scrollPosition.y);
