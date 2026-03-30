@@ -78,7 +78,7 @@ function PointerEventPointerOverOutTestCase(
         assert_equals(
           innerOverRef.current,
           innerOutRef.current,
-          'pointerover is recieved before pointerout',
+          'pointerover is received before pointerout',
         );
         switch (innerOverRef.current) {
           case 0: {
@@ -144,7 +144,7 @@ function PointerEventPointerOverOutTestCase(
           assert_equals(
             outerOwnOverRef.current,
             outerOwnOutRef.current,
-            'outer: pointerover is recieved before pointerout',
+            'outer: pointerover is received before pointerout',
           );
           outerOwnOverRef.current++;
         } else {
@@ -167,7 +167,7 @@ function PointerEventPointerOverOutTestCase(
           assert_equals(
             outerOwnOverRef.current,
             outerOwnOutRef.current + 1,
-            'outer: pointerout is recieved after pointerover',
+            'outer: pointerout is received after pointerover',
           );
           if (outerOwnOutRef.current === 1) {
             assert_equals(innerOutRef.current, 2, 'inner should be done now');
