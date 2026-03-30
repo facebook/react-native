@@ -75,7 +75,7 @@ runs:
         cd packages/rn-tester
 
         bundle install
-        bundle exec pod update hermes-engine --no-repo-update
+        bundle exec pod update hermes-engine React-Core-prebuilt ReactNativeDependencies --no-repo-update
     - name: Build RNTester
       shell: bash
       run: |
