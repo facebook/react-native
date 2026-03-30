@@ -1,5 +1,110 @@
 # Changelog
 
+## v0.85.0-rc.7
+
+### Breaking
+
+
+
+#### Android specific
+
+
+
+#### iOS specific
+
+
+
+### Added
+
+
+
+#### Android specific
+
+
+
+#### iOS specific
+
+
+
+### Changed
+
+
+
+#### Android specific
+
+
+
+#### iOS specific
+
+
+
+### Deprecated
+
+
+
+#### Android specific
+
+
+
+#### iOS specific
+
+
+
+### Removed
+
+
+
+#### Android specific
+
+
+
+#### iOS specific
+
+
+
+### Fixed
+
+
+
+#### Android specific
+
+
+
+#### iOS specific
+
+- Fix Hermes crash when async void TurboModule method throws NSException by re-throwing instead of converting to JSError on wrong thread ([4083a6ff92](https://github.com/facebook/react-native/commit/4083a6ff92b0ffd4f71166848f3d7ce36172fac8) by [@fabriziocucci](https://github.com/fabriziocucci))
+
+### Security
+
+
+
+#### Android specific
+
+
+
+#### iOS specific
+
+
+
+### Unknown
+
+- Release 0.85.0-rc.7 ([b2839b1d62](https://github.com/facebook/react-native/commit/b2839b1d62888e124dc7fb81d16da1c510484a97) by [@react-native-bot](https://github.com/react-native-bot))
+- Bump Podfile.lock ([b3f24a51f0](https://github.com/facebook/react-native/commit/b3f24a51f0374853522444b7ea187cda1d015029) by [@react-native-bot](https://github.com/react-native-bot))
+- Release 0.85.0-rc.6 ([8f22bbd225](https://github.com/facebook/react-native/commit/8f22bbd225b65dd5aa39706e97e34249b717b20e) by [@react-native-bot](https://github.com/react-native-bot))
+
+#### Android Unknown
+
+
+
+#### iOS Unknown
+
+
+
+#### Failed to parse
+
+
+
+
 ## v0.85.0-rc.6
 
 ### Changed
