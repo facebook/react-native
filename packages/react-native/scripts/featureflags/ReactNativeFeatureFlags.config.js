@@ -678,17 +678,6 @@ const definitions: FeatureFlagDefinitions = {
       },
       ossReleaseStage: 'none',
     },
-    fixTextClippingAndroid15useBoundsForWidth: {
-      defaultValue: false,
-      metadata: {
-        dateAdded: '2025-12-03',
-        description:
-          'Fix text clipping starting in Android 15 due to usage of useBoundsForWidth',
-        expectedReleaseValue: true,
-        purpose: 'experimentation',
-      },
-      ossReleaseStage: 'experimental',
-    },
     fixYogaFlexBasisFitContentInMainAxis: {
       defaultValue: false,
       metadata: {

@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<e211fdbb92579b05507ea84ae42f22ff>>
+ * @generated SignedSource<<b6c95e5954a185b0ee8c0ae8dde4a74b>>
  */
 
 /**
@@ -83,7 +83,6 @@ internal class ReactNativeFeatureFlagsLocalAccessor : ReactNativeFeatureFlagsAcc
   private var enableVirtualViewDebugFeaturesCache: Boolean? = null
   private var fixFindShadowNodeByTagRaceConditionCache: Boolean? = null
   private var fixMappingOfEventPrioritiesBetweenFabricAndReactCache: Boolean? = null
-  private var fixTextClippingAndroid15useBoundsForWidthCache: Boolean? = null
   private var fixYogaFlexBasisFitContentInMainAxisCache: Boolean? = null
   private var fuseboxAssertSingleHostStateCache: Boolean? = null
   private var fuseboxEnabledReleaseCache: Boolean? = null
@@ -702,16 +701,6 @@ internal class ReactNativeFeatureFlagsLocalAccessor : ReactNativeFeatureFlagsAcc
       cached = currentProvider.fixMappingOfEventPrioritiesBetweenFabricAndReact()
       accessedFeatureFlags.add("fixMappingOfEventPrioritiesBetweenFabricAndReact")
       fixMappingOfEventPrioritiesBetweenFabricAndReactCache = cached
-    }
-    return cached
-  }
-
-  override fun fixTextClippingAndroid15useBoundsForWidth(): Boolean {
-    var cached = fixTextClippingAndroid15useBoundsForWidthCache
-    if (cached == null) {
-      cached = currentProvider.fixTextClippingAndroid15useBoundsForWidth()
-      accessedFeatureFlags.add("fixTextClippingAndroid15useBoundsForWidth")
-      fixTextClippingAndroid15useBoundsForWidthCache = cached
     }
     return cached
   }

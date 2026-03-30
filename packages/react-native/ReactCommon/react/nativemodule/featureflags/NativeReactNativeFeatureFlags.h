@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<8368d761c6a95fcdbf804681a2bf65d3>>
+ * @generated SignedSource<<0461c053059cd8e566296db2a3c9a82e>>
  */
 
 /**
@@ -153,8 +153,6 @@ class NativeReactNativeFeatureFlags
   bool fixFindShadowNodeByTagRaceCondition(jsi::Runtime& runtime);
 
   bool fixMappingOfEventPrioritiesBetweenFabricAndReact(jsi::Runtime& runtime);
-
-  bool fixTextClippingAndroid15useBoundsForWidth(jsi::Runtime& runtime);
 
   bool fixYogaFlexBasisFitContentInMainAxis(jsi::Runtime& runtime);
 

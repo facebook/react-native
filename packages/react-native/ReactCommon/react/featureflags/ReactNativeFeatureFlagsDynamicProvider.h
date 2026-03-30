@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<20a808bb8708d8088f3d7aae8d58b6b2>>
+ * @generated SignedSource<<a83664d06b336a11217fbf44fbb1658f>>
  */
 
 /**
@@ -574,15 +574,6 @@ class ReactNativeFeatureFlagsDynamicProvider : public ReactNativeFeatureFlagsDef
     }
 
     return ReactNativeFeatureFlagsDefaults::fixMappingOfEventPrioritiesBetweenFabricAndReact();
-  }
-
-  bool fixTextClippingAndroid15useBoundsForWidth() override {
-    auto value = values_["fixTextClippingAndroid15useBoundsForWidth"];
-    if (!value.isNull()) {
-      return value.getBool();
-    }
-
-    return ReactNativeFeatureFlagsDefaults::fixTextClippingAndroid15useBoundsForWidth();
   }
 
   bool fixYogaFlexBasisFitContentInMainAxis() override {

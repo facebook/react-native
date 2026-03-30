@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<6c175f21aaa8d084c7b0be0625d5d77d>>
+ * @generated SignedSource<<a218accbb46d69a2d1bf54e0213b3421>>
  */
 
 /**
@@ -333,11 +333,6 @@ class ReactNativeFeatureFlags {
    * Uses the default event priority instead of the discreet event priority by default when dispatching events from Fabric to React.
    */
   RN_EXPORT static bool fixMappingOfEventPrioritiesBetweenFabricAndReact();
-
-  /**
-   * Fix text clipping starting in Android 15 due to usage of useBoundsForWidth
-   */
-  RN_EXPORT static bool fixTextClippingAndroid15useBoundsForWidth();
 
   /**
    * Fix flex basis computation to not apply FitContent constraint in the main axis for non-measure container nodes, preventing unnecessary re-measurement in scroll containers.

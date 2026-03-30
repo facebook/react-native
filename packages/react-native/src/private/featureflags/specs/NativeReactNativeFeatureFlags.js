@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<971e04eed130adab56e3306a6a26ff1c>>
+ * @generated SignedSource<<9ce25b0fb29f19a0c26bbfab58bd5112>>
  * @flow strict
  * @noformat
  */
@@ -84,7 +84,6 @@ export interface Spec extends TurboModule {
   +enableVirtualViewDebugFeatures?: () => boolean;
   +fixFindShadowNodeByTagRaceCondition?: () => boolean;
   +fixMappingOfEventPrioritiesBetweenFabricAndReact?: () => boolean;
-  +fixTextClippingAndroid15useBoundsForWidth?: () => boolean;
   +fixYogaFlexBasisFitContentInMainAxis?: () => boolean;
   +fuseboxAssertSingleHostState?: () => boolean;
   +fuseboxEnabledRelease?: () => boolean;
