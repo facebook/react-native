@@ -10,7 +10,7 @@ import importlib.resources as ir
 import os
 import subprocess
 import unittest
-from importlib.abc import Traversable
+from importlib.resources.abc import Traversable
 from pathlib import Path
 from typing import Iterable
 
