@@ -43,6 +43,7 @@ platforms:
       - packages/react-native/ReactAndroid
     exclude_patterns:
       - "*/ReactAndroid/src/main/jni/react/featureflags/*"
+      - "*/components/switch/iosswitch/*"
       - "*/platform/cxx/*"
       - "*/platform/windows/*"
       - "*/platform/macos/*"
