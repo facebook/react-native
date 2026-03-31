@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<61964fd9ddf11ed5c2848da3f4d0b490>>
+ * @generated SignedSource<<c47da5069c3dfd7a287125bd0dfbc0c0>>
  */
 
 /**
@@ -383,12 +383,6 @@ public object ReactNativeFeatureFlags {
    */
   @JvmStatic
   public fun fixMappingOfEventPrioritiesBetweenFabricAndReact(): Boolean = accessor.fixMappingOfEventPrioritiesBetweenFabricAndReact()
-
-  /**
-   * Fix text clipping starting in Android 15 due to usage of useBoundsForWidth
-   */
-  @JvmStatic
-  public fun fixTextClippingAndroid15useBoundsForWidth(): Boolean = accessor.fixTextClippingAndroid15useBoundsForWidth()
 
   /**
    * Fix flex basis computation to not apply FitContent constraint in the main axis for non-measure container nodes, preventing unnecessary re-measurement in scroll containers.

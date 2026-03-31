@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<51f57b07e238ca9c13f4c7ec363eb9a0>>
+ * @generated SignedSource<<d4ee6a3bdce184436663da3ea2bd408f>>
  */
 
 /**
@@ -337,11 +337,6 @@ bool NativeReactNativeFeatureFlags::fixFindShadowNodeByTagRaceCondition(
 bool NativeReactNativeFeatureFlags::fixMappingOfEventPrioritiesBetweenFabricAndReact(
     jsi::Runtime& /*runtime*/) {
   return ReactNativeFeatureFlags::fixMappingOfEventPrioritiesBetweenFabricAndReact();
-}
-
-bool NativeReactNativeFeatureFlags::fixTextClippingAndroid15useBoundsForWidth(
-    jsi::Runtime& /*runtime*/) {
-  return ReactNativeFeatureFlags::fixTextClippingAndroid15useBoundsForWidth();
 }
 
 bool NativeReactNativeFeatureFlags::fixYogaFlexBasisFitContentInMainAxis(

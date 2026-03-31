@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<3f5bd11c861fc2e02627ba0f9941f4b7>>
+ * @generated SignedSource<<17bd69842b715020e73d2ff55f1b07ba>>
  * @flow strict
  * @noformat
  */
@@ -105,7 +105,6 @@ export type ReactNativeFeatureFlags = $ReadOnly<{
   enableVirtualViewDebugFeatures: Getter<boolean>,
   fixFindShadowNodeByTagRaceCondition: Getter<boolean>,
   fixMappingOfEventPrioritiesBetweenFabricAndReact: Getter<boolean>,
-  fixTextClippingAndroid15useBoundsForWidth: Getter<boolean>,
   fixYogaFlexBasisFitContentInMainAxis: Getter<boolean>,
   fuseboxAssertSingleHostState: Getter<boolean>,
   fuseboxEnabledRelease: Getter<boolean>,
@@ -434,10 +433,6 @@ export const fixFindShadowNodeByTagRaceCondition: Getter<boolean> = createNative
  * Uses the default event priority instead of the discreet event priority by default when dispatching events from Fabric to React.
  */
 export const fixMappingOfEventPrioritiesBetweenFabricAndReact: Getter<boolean> = createNativeFlagGetter('fixMappingOfEventPrioritiesBetweenFabricAndReact', false);
-/**
- * Fix text clipping starting in Android 15 due to usage of useBoundsForWidth
- */
-export const fixTextClippingAndroid15useBoundsForWidth: Getter<boolean> = createNativeFlagGetter('fixTextClippingAndroid15useBoundsForWidth', false);
 /**
  * Fix flex basis computation to not apply FitContent constraint in the main axis for non-measure container nodes, preventing unnecessary re-measurement in scroll containers.
  */
