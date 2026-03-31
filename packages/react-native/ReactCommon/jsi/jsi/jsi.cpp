@@ -557,6 +557,23 @@ std::shared_ptr<MutableBuffer> Runtime::tryGetMutableBuffer(
   return nullptr;
 }
 
+Uint8Array Runtime::createUint8Array(size_t length) {
+  auto uint8ArrayCtor = global().getPropertyAsFunction(*this, "Uint8Array");
+  auto result =
+      uint8ArrayCtor.callAsConstructor(*this, static_cast<int>(length));
+  return Uint8Array(cloneObject(getPointerValue(result.getObject(*this))));
+}
+
+Uint8Array Runtime::createUint8Array(
+    const ArrayBuffer& buffer,
+    size_t offset,
+    size_t length) {
+  auto uint8ArrayCtor = global().getPropertyAsFunction(*this, "Uint8Array");
+  auto result = uint8ArrayCtor.callAsConstructor(
+      *this, buffer, static_cast<int>(offset), static_cast<int>(length));
+  return Uint8Array(cloneObject(getPointerValue(result.getObject(*this))));
+}
+
 bool Runtime::detached(const ArrayBuffer& buffer) {
   Value prop = buffer.getProperty(*this, "detached");
   if (!prop.isBool()) {
@@ -564,6 +581,57 @@ bool Runtime::detached(const ArrayBuffer& buffer) {
         "ArrayBuffer.detached is not supported by this runtime");
   }
   return prop.getBool();
+}
+
+ArrayBuffer Runtime::buffer(const TypedArray& typedArray) {
+  Value buffer = typedArray.getProperty(*this, "buffer");
+  if (!buffer.isObject()) {
+    throw JSINativeException("TypedArray.buffer is not an object");
+  }
+  Object bufferObj = buffer.getObject(*this);
+  if (!bufferObj.isArrayBuffer(*this)) {
+    throw JSINativeException("TypedArray.buffer is not an ArrayBuffer");
+  }
+  return bufferObj.getArrayBuffer(*this);
+}
+
+size_t Runtime::byteOffset(const TypedArray& typedArray) {
+  Value byteOffset = typedArray.getProperty(*this, "byteOffset");
+  if (!byteOffset.isNumber()) {
+    throw JSINativeException("TypedArray.byteOffset is not a number");
+  }
+  return static_cast<size_t>(byteOffset.getNumber());
+}
+
+size_t Runtime::byteLength(const TypedArray& typedArray) {
+  Value byteLength = typedArray.getProperty(*this, "byteLength");
+  if (!byteLength.isNumber()) {
+    throw JSINativeException("TypedArray.byteLength is not a number");
+  }
+  return static_cast<size_t>(byteLength.getNumber());
+}
+
+size_t Runtime::length(const TypedArray& typedArray) {
+  Value length = typedArray.getProperty(*this, "length");
+  if (!length.isNumber()) {
+    throw JSINativeException("TypedArray.length is not a number");
+  }
+  return static_cast<size_t>(length.getNumber());
+}
+
+bool Runtime::isTypedArray(const Object& obj) const {
+  Runtime& self = const_cast<Runtime&>(*this);
+  // Uint8Array.__proto__ is the %TypedArray% intrinsic constructor.
+  auto uint8ArrayCtor = self.global().getPropertyAsFunction(self, "Uint8Array");
+  auto typedArrayCtor =
+      uint8ArrayCtor.getProperty(self, "__proto__").getObject(self);
+  return self.instanceOf(obj, typedArrayCtor.getFunction(self));
+}
+
+bool Runtime::isUint8Array(const Object& obj) const {
+  Runtime& self = const_cast<Runtime&>(*this);
+  auto uint8ArrayCtor = self.global().getPropertyAsFunction(self, "Uint8Array");
+  return self.instanceOf(obj, uint8ArrayCtor);
 }
 
 Pointer& Pointer::operator=(Pointer&& other) noexcept {
@@ -639,6 +707,26 @@ Function Object::asFunction(IRuntime& runtime) && {
             ", expected a function");
   }
   return std::move(*this).getFunction(runtime);
+}
+
+TypedArray Object::asTypedArray(IRuntime& runtime) const& {
+  if (!isTypedArray(runtime)) {
+    throw JSError(
+        runtime,
+        "Object is " + kindToString(Value(runtime, *this), &runtime) +
+            ", expected a TypedArray");
+  }
+  return getTypedArray(runtime);
+}
+
+Uint8Array Object::asUint8Array(IRuntime& runtime) const& {
+  if (!isUint8Array(runtime)) {
+    throw JSError(
+        runtime,
+        "Object is " + kindToString(Value(runtime, *this), &runtime) +
+            ", expected a Uint8Array");
+  }
+  return getUint8Array(runtime);
 }
 
 Value::Value(Value&& other) noexcept : Value(other.kind_) {
