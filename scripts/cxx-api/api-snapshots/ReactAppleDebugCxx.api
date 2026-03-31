@@ -2946,25 +2946,6 @@ protocol NativeWebSocketModuleSpec : public NSObjectRCTBridgeModule, public RCTT
 protocol RCTActivityIndicatorViewViewProtocol : public NSObject {
 }
 
-protocol RCTAndroidDrawerLayoutViewProtocol : public NSObject {
-  public virtual void closeDrawer();
-  public virtual void openDrawer();
-}
-
-protocol RCTAndroidHorizontalScrollContentViewViewProtocol : public NSObject {
-}
-
-protocol RCTAndroidProgressBarViewProtocol : public NSObject {
-}
-
-protocol RCTAndroidSwipeRefreshLayoutViewProtocol : public NSObject {
-  public virtual void setNativeRefreshing:(BOOL value);
-}
-
-protocol RCTAndroidSwitchViewProtocol : public NSObject {
-  public virtual void setNativeValue:(BOOL value);
-}
-
 protocol RCTAnimatedImage : public NSObject {
   public @property (assign, readonly) NSUInteger animatedImageFrameCount;
   public @property (assign, readonly) NSUInteger animatedImageLoopCount;
@@ -3806,13 +3787,10 @@ class facebook::hermes::IHermesSHUnit : public facebook::jsi::ICast {
 }
 
 
-const char facebook::react::AndroidProgressBarComponentName[];
-const char facebook::react::AndroidSwitchComponentName[];
 const char facebook::react::AppleSwitchComponentName[];
 const char facebook::react::ImageComponentName[];
 const char facebook::react::ImageManagerKey[];
 const char facebook::react::InputAccessoryComponentName[];
-const char facebook::react::LegacyViewManagerAndroidInteropComponentName[];
 const char facebook::react::LegacyViewManagerInteropComponentName[];
 const char facebook::react::ModalHostViewComponentName[];
 const char facebook::react::ParagraphComponentName[];
@@ -3869,12 +3847,6 @@ using facebook::react::ActivePointerRegistry = std::unordered_map<facebook::reac
 using facebook::react::ActivityIndicatorViewComponentDescriptor = facebook::react::ConcreteComponentDescriptor<facebook::react::ActivityIndicatorViewShadowNode>;
 using facebook::react::ActivityIndicatorViewShadowNode = facebook::react::ConcreteViewShadowNode<facebook::react::ActivityIndicatorViewComponentName, facebook::react::ActivityIndicatorViewProps, facebook::react::ActivityIndicatorViewEventEmitter, facebook::react::ActivityIndicatorViewState>;
 using facebook::react::ActivityIndicatorViewState = facebook::react::StateData;
-using facebook::react::AndroidDrawerLayoutComponentDescriptor = facebook::react::ConcreteComponentDescriptor<facebook::react::AndroidDrawerLayoutShadowNode>;
-using facebook::react::AndroidDrawerLayoutShadowNode = facebook::react::ConcreteViewShadowNode<facebook::react::AndroidDrawerLayoutComponentName, facebook::react::AndroidDrawerLayoutProps, facebook::react::AndroidDrawerLayoutEventEmitter, facebook::react::AndroidDrawerLayoutState>;
-using facebook::react::AndroidDrawerLayoutState = facebook::react::StateData;
-using facebook::react::AndroidSwipeRefreshLayoutComponentDescriptor = facebook::react::ConcreteComponentDescriptor<facebook::react::AndroidSwipeRefreshLayoutShadowNode>;
-using facebook::react::AndroidSwipeRefreshLayoutShadowNode = facebook::react::ConcreteViewShadowNode<facebook::react::AndroidSwipeRefreshLayoutComponentName, facebook::react::AndroidSwipeRefreshLayoutProps, facebook::react::AndroidSwipeRefreshLayoutEventEmitter, facebook::react::AndroidSwipeRefreshLayoutState>;
-using facebook::react::AndroidSwipeRefreshLayoutState = facebook::react::StateData;
 using facebook::react::AnimationEndCallback = facebook::react::AsyncCallback<facebook::react::EndResult>;
 using facebook::react::AnimationTimestamp = std::chrono::duration<double, std::milli>;
 using facebook::react::BackgroundExecutor = std::function<void(std::function<void()>&& callback)>;
@@ -3938,7 +3910,6 @@ using facebook::react::InteractionTypesMap = std::unordered_map<std::string_view
 using facebook::react::IntersectionObserverObserverId = int32_t;
 using facebook::react::JSIScopedTimeoutInvoker = std::function<void(const std::function<void()>& invokee, std::function<std::string()> errorMessageProducer)>;
 using facebook::react::LayoutConformanceComponentDescriptor = facebook::react::ConcreteComponentDescriptor<facebook::react::LayoutConformanceShadowNode>;
-using facebook::react::LegacyViewManagerAndroidInteropShadowNode = facebook::react::ConcreteViewShadowNode<facebook::react::LegacyViewManagerAndroidInteropComponentName, facebook::react::LegacyViewManagerInteropViewProps>;
 using facebook::react::LegacyViewManagerInteropShadowNode = facebook::react::ConcreteViewShadowNode<facebook::react::LegacyViewManagerInteropComponentName, facebook::react::LegacyViewManagerInteropViewProps, facebook::react::ViewEventEmitter, facebook::react::LegacyViewManagerInteropState>;
 using facebook::react::LineMeasureCache = facebook::react::SimpleThreadSafeCache<facebook::react::LineMeasureCacheKey, facebook::react::LinesMeasurements, facebook::react::kSimpleThreadSafeCacheSizeCap>;
 using facebook::react::LinesMeasurements = std::vector<facebook::react::LineMeasurement>;
@@ -4458,8 +4429,6 @@ facebook::react::RectangleEdges<T> facebook::react::operator+(const facebook::re
 template <typename T>
 facebook::react::RectangleEdges<T> facebook::react::operator-(const facebook::react::RectangleEdges<T>& lhs, const facebook::react::RectangleEdges<T>& rhs) noexcept;
 JSI_EXPORT const char facebook::react::ActivityIndicatorViewComponentName[];
-JSI_EXPORT const char facebook::react::AndroidDrawerLayoutComponentName[];
-JSI_EXPORT const char facebook::react::AndroidSwipeRefreshLayoutComponentName[];
 JSI_EXPORT const char facebook::react::DebuggingOverlayComponentName[];
 JSI_EXPORT const char facebook::react::PullToRefreshViewComponentName[];
 JSI_EXPORT const char facebook::react::UnimplementedNativeViewComponentName[];
@@ -4510,139 +4479,6 @@ class facebook::react::ActivityIndicatorViewProps : public facebook::react::Host
 class facebook::react::AdditionAnimatedNode : public facebook::react::OperatorAnimatedNode {
   public AdditionAnimatedNode(facebook::react::Tag tag, const folly::dynamic& config, facebook::react::NativeAnimatedNodesManager& manager);
   public virtual void update() override;
-}
-
-class facebook::react::AndroidDrawerLayoutEventEmitter : public facebook::react::BaseViewEventEmitter {
-  public void onDrawerClose(facebook::react::AndroidDrawerLayoutEventEmitter::OnDrawerClose value) const;
-  public void onDrawerOpen(facebook::react::AndroidDrawerLayoutEventEmitter::OnDrawerOpen value) const;
-  public void onDrawerSlide(facebook::react::AndroidDrawerLayoutEventEmitter::OnDrawerSlide value) const;
-  public void onDrawerStateChanged(facebook::react::AndroidDrawerLayoutEventEmitter::OnDrawerStateChanged value) const;
-}
-
-struct facebook::react::AndroidDrawerLayoutEventEmitter::OnDrawerClose {
-}
-
-struct facebook::react::AndroidDrawerLayoutEventEmitter::OnDrawerOpen {
-}
-
-struct facebook::react::AndroidDrawerLayoutEventEmitter::OnDrawerSlide {
-  public facebook::react::Float offset;
-}
-
-struct facebook::react::AndroidDrawerLayoutEventEmitter::OnDrawerStateChanged {
-  public int drawerState;
-}
-
-class facebook::react::AndroidDrawerLayoutProps : public facebook::react::HostPlatformViewProps {
-  public AndroidDrawerLayoutProps() = default;
-  public AndroidDrawerLayoutProps(const facebook::react::PropsParserContext& context, const facebook::react::AndroidDrawerLayoutProps& sourceProps, const facebook::react::RawProps& rawProps);
-  public facebook::react::AndroidDrawerLayoutDrawerLockMode drawerLockMode;
-  public facebook::react::AndroidDrawerLayoutDrawerPosition drawerPosition;
-  public facebook::react::AndroidDrawerLayoutKeyboardDismissMode keyboardDismissMode;
-  public facebook::react::Float drawerWidth;
-  public facebook::react::SharedColor drawerBackgroundColor;
-  public facebook::react::SharedColor statusBarBackgroundColor;
-}
-
-class facebook::react::AndroidHorizontalScrollContentViewEventEmitter : public facebook::react::BaseViewEventEmitter {
-}
-
-class facebook::react::AndroidHorizontalScrollContentViewProps : public facebook::react::HostPlatformViewProps {
-  public AndroidHorizontalScrollContentViewProps() = default;
-  public AndroidHorizontalScrollContentViewProps(const facebook::react::PropsParserContext& context, const facebook::react::AndroidHorizontalScrollContentViewProps& sourceProps, const facebook::react::RawProps& rawProps);
-  public bool removeClippedSubviews;
-}
-
-class facebook::react::AndroidProgressBarComponentDescriptor : public facebook::react::ConcreteComponentDescriptor<facebook::react::AndroidProgressBarShadowNode> {
-  public AndroidProgressBarComponentDescriptor(const facebook::react::ComponentDescriptorParameters& parameters);
-  public virtual void adopt(facebook::react::ShadowNode& shadowNode) const override;
-}
-
-class facebook::react::AndroidProgressBarEventEmitter : public facebook::react::BaseViewEventEmitter {
-}
-
-class facebook::react::AndroidProgressBarMeasurementsManager {
-  public AndroidProgressBarMeasurementsManager(const std::shared_ptr<const facebook::react::ContextContainer>& contextContainer);
-  public facebook::react::Size measure(facebook::react::SurfaceId surfaceId, const facebook::react::AndroidProgressBarProps& props, facebook::react::LayoutConstraints layoutConstraints) const;
-}
-
-class facebook::react::AndroidProgressBarProps : public facebook::react::HostPlatformViewProps {
-  public AndroidProgressBarProps() = default;
-  public AndroidProgressBarProps(const facebook::react::PropsParserContext& context, const facebook::react::AndroidProgressBarProps& sourceProps, const facebook::react::RawProps& rawProps);
-  public bool animating;
-  public bool indeterminate;
-  public double progress;
-  public facebook::react::SharedColor color;
-  public std::string styleAttr;
-  public std::string testID;
-  public std::string typeAttr;
-}
-
-class facebook::react::AndroidProgressBarShadowNode : public facebook::react::ConcreteViewShadowNode<facebook::react::AndroidProgressBarComponentName, facebook::react::AndroidProgressBarProps, facebook::react::AndroidProgressBarEventEmitter> {
-  public AndroidProgressBarShadowNode(const facebook::react::ShadowNode& sourceShadowNode, const facebook::react::ShadowNodeFragment& fragment);
-  public AndroidProgressBarShadowNode(const facebook::react::ShadowNodeFragment& fragment, const facebook::react::ShadowNodeFamily::Shared& family, facebook::react::ShadowNodeTraits traits);
-  public static facebook::react::ShadowNodeTraits BaseTraits();
-  public virtual facebook::react::Size measureContent(const facebook::react::LayoutContext& layoutContext, const facebook::react::LayoutConstraints& layoutConstraints) const override;
-  public void setAndroidProgressBarMeasurementsManager(const std::shared_ptr<facebook::react::AndroidProgressBarMeasurementsManager>& measurementsManager);
-}
-
-class facebook::react::AndroidSwipeRefreshLayoutEventEmitter : public facebook::react::BaseViewEventEmitter {
-  public void onRefresh(facebook::react::AndroidSwipeRefreshLayoutEventEmitter::OnRefresh value) const;
-}
-
-struct facebook::react::AndroidSwipeRefreshLayoutEventEmitter::OnRefresh {
-}
-
-class facebook::react::AndroidSwipeRefreshLayoutProps : public facebook::react::HostPlatformViewProps {
-  public AndroidSwipeRefreshLayoutProps() = default;
-  public AndroidSwipeRefreshLayoutProps(const facebook::react::PropsParserContext& context, const facebook::react::AndroidSwipeRefreshLayoutProps& sourceProps, const facebook::react::RawProps& rawProps);
-  public bool enabled;
-  public bool refreshing;
-  public facebook::react::AndroidSwipeRefreshLayoutSize size;
-  public facebook::react::Float progressViewOffset;
-  public facebook::react::SharedColor progressBackgroundColor;
-  public std::vector<facebook::react::SharedColor> colors;
-}
-
-class facebook::react::AndroidSwitchComponentDescriptor : public facebook::react::ConcreteComponentDescriptor<facebook::react::AndroidSwitchShadowNode> {
-  public AndroidSwitchComponentDescriptor(const facebook::react::ComponentDescriptorParameters& parameters);
-  public virtual void adopt(facebook::react::ShadowNode& shadowNode) const override;
-}
-
-class facebook::react::AndroidSwitchEventEmitter : public facebook::react::BaseViewEventEmitter {
-  public void onChange(facebook::react::AndroidSwitchEventEmitter::OnChange value) const;
-}
-
-struct facebook::react::AndroidSwitchEventEmitter::OnChange {
-  public bool value;
-  public int target;
-}
-
-class facebook::react::AndroidSwitchMeasurementsManager {
-  public AndroidSwitchMeasurementsManager(const std::shared_ptr<const facebook::react::ContextContainer>& contextContainer);
-  public facebook::react::Size measure(facebook::react::SurfaceId surfaceId, facebook::react::LayoutConstraints layoutConstraints) const;
-}
-
-class facebook::react::AndroidSwitchProps : public facebook::react::HostPlatformViewProps {
-  public AndroidSwitchProps() = default;
-  public AndroidSwitchProps(const facebook::react::PropsParserContext& context, const facebook::react::AndroidSwitchProps& sourceProps, const facebook::react::RawProps& rawProps);
-  public bool disabled;
-  public bool enabled;
-  public bool on;
-  public bool value;
-  public facebook::react::SharedColor thumbColor;
-  public facebook::react::SharedColor thumbTintColor;
-  public facebook::react::SharedColor trackColorForFalse;
-  public facebook::react::SharedColor trackColorForTrue;
-  public facebook::react::SharedColor trackTintColor;
-}
-
-class facebook::react::AndroidSwitchShadowNode : public facebook::react::ConcreteViewShadowNode<facebook::react::AndroidSwitchComponentName, facebook::react::AndroidSwitchProps, facebook::react::AndroidSwitchEventEmitter> {
-  public AndroidSwitchShadowNode(const facebook::react::ShadowNode& sourceShadowNode, const facebook::react::ShadowNodeFragment& fragment);
-  public AndroidSwitchShadowNode(const facebook::react::ShadowNodeFragment& fragment, const facebook::react::ShadowNodeFamily::Shared& family, facebook::react::ShadowNodeTraits traits);
-  public static facebook::react::ShadowNodeTraits BaseTraits();
-  public virtual facebook::react::Size measureContent(const facebook::react::LayoutContext& layoutContext, const facebook::react::LayoutConstraints& layoutConstraints) const override;
-  public void setAndroidSwitchMeasurementsManager(const std::shared_ptr<facebook::react::AndroidSwitchMeasurementsManager>& measurementsManager);
 }
 
 class facebook::react::AnimatedModule : public facebook::react::NativeAnimatedModuleCxxSpec<facebook::react::AnimatedModule>, public facebook::react::TurboModuleWithJSIBindings {
@@ -8729,7 +8565,7 @@ class facebook::react::UnimplementedViewProps : public facebook::react::HostPlat
   public void setComponentName(facebook::react::ComponentName componentName);
 }
 
-class facebook::react::UnstableLegacyViewManagerAutomaticComponentDescriptor : public facebook::react::ConcreteComponentDescriptor<facebook::react::LegacyViewManagerAndroidInteropShadowNode> {
+class facebook::react::UnstableLegacyViewManagerAutomaticComponentDescriptor : public facebook::react::ConcreteComponentDescriptor<LegacyViewManagerAndroidInteropShadowNode> {
   public UnstableLegacyViewManagerAutomaticComponentDescriptor(const facebook::react::ComponentDescriptorParameters& parameters, facebook::react::RawPropsParser&& rawPropsParser = {});
   public UnstableLegacyViewManagerAutomaticComponentDescriptor(const facebook::react::ComponentDescriptorParameters& parameters, std::string legacyComponentName);
   public virtual facebook::react::ComponentHandle getComponentHandle() const override;
@@ -8991,27 +8827,6 @@ enum facebook::react::AccessibilityTraits : uint32_t {
 enum facebook::react::ActivityIndicatorViewSize {
   Large,
   Small,
-}
-
-enum facebook::react::AndroidDrawerLayoutDrawerLockMode {
-  LockedClosed,
-  LockedOpen,
-  Unlocked,
-}
-
-enum facebook::react::AndroidDrawerLayoutDrawerPosition {
-  Left,
-  Right,
-}
-
-enum facebook::react::AndroidDrawerLayoutKeyboardDismissMode {
-  None,
-  OnDrag,
-}
-
-enum facebook::react::AndroidSwipeRefreshLayoutSize {
-  Default,
-  Large,
 }
 
 enum facebook::react::AnimatedNodeType {
@@ -11519,23 +11334,6 @@ struct facebook::react::NativePerformanceRawPerformanceEntry {
   public bool operator==(const facebook::react::NativePerformanceRawPerformanceEntry& other) const;
 }
 
-template <typename P0, typename P1, typename P2, typename P3, typename P4, typename P5, typename P6, typename P7, typename P8, typename P9, typename P10, typename P11>
-struct facebook::react::NativePlatformConstantsAndroidPlatformConstantsAndroid {
-  public P0 isTesting;
-  public P1 isDisableAnimations;
-  public P2 reactNativeVersion;
-  public P3 Version;
-  public P4 Release;
-  public P5 Serial;
-  public P6 Fingerprint;
-  public P7 Model;
-  public P8 ServerHost;
-  public P9 uiMode;
-  public P10 Brand;
-  public P11 Manufacturer;
-  public bool operator==(const facebook::react::NativePlatformConstantsAndroidPlatformConstantsAndroid& other) const;
-}
-
 template <typename P0, typename P1, typename P2, typename P3, typename P4, typename P5, typename P6, typename P7, typename P8, typename P9>
 struct facebook::react::NativeAlertManagerArgs {
   public P0 title;
@@ -11592,18 +11390,6 @@ struct facebook::react::NativePlatformConstantsIOSPlatformConstantsIOS {
 }
 
 template <typename P0, typename P1, typename P2, typename P3, typename P4, typename P5, typename P6>
-struct facebook::react::NativeDialogManagerAndroidDialogOptions {
-  public P0 title;
-  public P1 message;
-  public P2 buttonPositive;
-  public P3 buttonNegative;
-  public P4 buttonNeutral;
-  public P5 items;
-  public P6 cancelable;
-  public bool operator==(const facebook::react::NativeDialogManagerAndroidDialogOptions& other) const;
-}
-
-template <typename P0, typename P1, typename P2, typename P3, typename P4, typename P5, typename P6>
 struct facebook::react::NativeIntersectionObserverNativeIntersectionObserverEntry {
   public P0 intersectionObserverId;
   public P1 targetInstanceHandle;
@@ -11624,16 +11410,6 @@ struct facebook::react::NativeIntersectionObserverNativeIntersectionObserverObse
   public P4 rootThresholds;
   public P5 rootMargin;
   public bool operator==(const facebook::react::NativeIntersectionObserverNativeIntersectionObserverObserveOptions& other) const;
-}
-
-template <typename P0, typename P1, typename P2, typename P3, typename P4>
-struct facebook::react::NativeDeviceInfoDisplayMetricsAndroid {
-  public P0 width;
-  public P1 height;
-  public P2 scale;
-  public P3 fontScale;
-  public P4 densityDpi;
-  public bool operator==(const facebook::react::NativeDeviceInfoDisplayMetricsAndroid& other) const;
 }
 
 template <typename P0, typename P1, typename P2, typename P3, typename P4>
@@ -11690,15 +11466,6 @@ struct facebook::react::NativePerformancePerformanceObserverInit {
   public P2 buffered;
   public P3 durationThreshold;
   public bool operator==(const facebook::react::NativePerformancePerformanceObserverInit& other) const;
-}
-
-template <typename P0, typename P1, typename P2, typename P3>
-struct facebook::react::NativePlatformConstantsAndroidReactNativeVersionAndroid {
-  public P0 major;
-  public P1 minor;
-  public P2 patch;
-  public P3 prerelease;
-  public bool operator==(const facebook::react::NativePlatformConstantsAndroidReactNativeVersionAndroid& other) const;
 }
 
 template <typename P0, typename P1, typename P2>
@@ -11775,13 +11542,6 @@ struct facebook::react::NativeIdleCallbacksIdleDeadline {
   public P0 didTimeout;
   public P1 timeRemaining;
   public bool operator==(const facebook::react::NativeIdleCallbacksIdleDeadline& other) const;
-}
-
-template <typename P0, typename P1>
-struct facebook::react::NativeImageLoaderAndroidImageSize {
-  public P0 width;
-  public P1 height;
-  public bool operator==(const facebook::react::NativeImageLoaderAndroidImageSize& other) const;
 }
 
 template <typename P0, typename P1>
@@ -12002,12 +11762,6 @@ class facebook::react::NativeDeviceInfoCxxSpec : public facebook::react::TurboMo
 }
 
 template <typename T>
-class facebook::react::NativeDialogManagerAndroidCxxSpec : public facebook::react::TurboModule {
-  protected NativeDialogManagerAndroidCxxSpec(std::shared_ptr<facebook::react::CallInvoker> jsInvoker);
-  public static constexpr std::string_view kModuleName;
-}
-
-template <typename T>
 class facebook::react::NativeExceptionsManagerCxxSpec : public facebook::react::TurboModule {
   protected NativeExceptionsManagerCxxSpec(std::shared_ptr<facebook::react::CallInvoker> jsInvoker);
   public static constexpr std::string_view kModuleName;
@@ -12050,32 +11804,14 @@ class facebook::react::NativeImageEditorCxxSpec : public facebook::react::TurboM
 }
 
 template <typename T>
-class facebook::react::NativeImageLoaderAndroidCxxSpec : public facebook::react::TurboModule {
-  protected NativeImageLoaderAndroidCxxSpec(std::shared_ptr<facebook::react::CallInvoker> jsInvoker);
-  public static constexpr std::string_view kModuleName;
-}
-
-template <typename T>
 class facebook::react::NativeImageLoaderIOSCxxSpec : public facebook::react::TurboModule {
   protected NativeImageLoaderIOSCxxSpec(std::shared_ptr<facebook::react::CallInvoker> jsInvoker);
   public static constexpr std::string_view kModuleName;
 }
 
 template <typename T>
-class facebook::react::NativeImageStoreAndroidCxxSpec : public facebook::react::TurboModule {
-  protected NativeImageStoreAndroidCxxSpec(std::shared_ptr<facebook::react::CallInvoker> jsInvoker);
-  public static constexpr std::string_view kModuleName;
-}
-
-template <typename T>
 class facebook::react::NativeImageStoreIOSCxxSpec : public facebook::react::TurboModule {
   protected NativeImageStoreIOSCxxSpec(std::shared_ptr<facebook::react::CallInvoker> jsInvoker);
-  public static constexpr std::string_view kModuleName;
-}
-
-template <typename T>
-class facebook::react::NativeIntentAndroidCxxSpec : public facebook::react::TurboModule {
-  protected NativeIntentAndroidCxxSpec(std::shared_ptr<facebook::react::CallInvoker> jsInvoker);
   public static constexpr std::string_view kModuleName;
 }
 
@@ -12128,12 +11864,6 @@ class facebook::react::NativeMutationObserverCxxSpec : public facebook::react::T
 }
 
 template <typename T>
-class facebook::react::NativeNetworkingAndroidCxxSpec : public facebook::react::TurboModule {
-  protected NativeNetworkingAndroidCxxSpec(std::shared_ptr<facebook::react::CallInvoker> jsInvoker);
-  public static constexpr std::string_view kModuleName;
-}
-
-template <typename T>
 class facebook::react::NativeNetworkingIOSCxxSpec : public facebook::react::TurboModule {
   protected NativeNetworkingIOSCxxSpec(std::shared_ptr<facebook::react::CallInvoker> jsInvoker);
   public static constexpr std::string_view kModuleName;
@@ -12142,18 +11872,6 @@ class facebook::react::NativeNetworkingIOSCxxSpec : public facebook::react::Turb
 template <typename T>
 class facebook::react::NativePerformanceCxxSpec : public facebook::react::TurboModule {
   protected NativePerformanceCxxSpec(std::shared_ptr<facebook::react::CallInvoker> jsInvoker);
-  public static constexpr std::string_view kModuleName;
-}
-
-template <typename T>
-class facebook::react::NativePermissionsAndroidCxxSpec : public facebook::react::TurboModule {
-  protected NativePermissionsAndroidCxxSpec(std::shared_ptr<facebook::react::CallInvoker> jsInvoker);
-  public static constexpr std::string_view kModuleName;
-}
-
-template <typename T>
-class facebook::react::NativePlatformConstantsAndroidCxxSpec : public facebook::react::TurboModule {
-  protected NativePlatformConstantsAndroidCxxSpec(std::shared_ptr<facebook::react::CallInvoker> jsInvoker);
   public static constexpr std::string_view kModuleName;
 }
 
@@ -12224,12 +11942,6 @@ class facebook::react::NativeSourceCodeCxxSpec : public facebook::react::TurboMo
 }
 
 template <typename T>
-class facebook::react::NativeStatusBarManagerAndroidCxxSpec : public facebook::react::TurboModule {
-  protected NativeStatusBarManagerAndroidCxxSpec(std::shared_ptr<facebook::react::CallInvoker> jsInvoker);
-  public static constexpr std::string_view kModuleName;
-}
-
-template <typename T>
 class facebook::react::NativeStatusBarManagerIOSCxxSpec : public facebook::react::TurboModule {
   protected NativeStatusBarManagerIOSCxxSpec(std::shared_ptr<facebook::react::CallInvoker> jsInvoker);
   public static constexpr std::string_view kModuleName;
@@ -12238,12 +11950,6 @@ class facebook::react::NativeStatusBarManagerIOSCxxSpec : public facebook::react
 template <typename T>
 class facebook::react::NativeTimingCxxSpec : public facebook::react::TurboModule {
   protected NativeTimingCxxSpec(std::shared_ptr<facebook::react::CallInvoker> jsInvoker);
-  public static constexpr std::string_view kModuleName;
-}
-
-template <typename T>
-class facebook::react::NativeToastAndroidCxxSpec : public facebook::react::TurboModule {
-  protected NativeToastAndroidCxxSpec(std::shared_ptr<facebook::react::CallInvoker> jsInvoker);
   public static constexpr std::string_view kModuleName;
 }
 
@@ -12409,18 +12115,6 @@ struct facebook::react::NativeDeviceInfoDimensionsPayloadBridging {
 }
 
 template <typename T>
-struct facebook::react::NativeDeviceInfoDisplayMetricsAndroidBridging {
-  public static T fromJs(facebook::jsi::Runtime& rt, const facebook::jsi::Object& value, const std::shared_ptr<facebook::react::CallInvoker>& jsInvoker);
-  public static T types;
-  public static double densityDpiToJs(facebook::jsi::Runtime& rt, decltype(types.densityDpi) value);
-  public static double fontScaleToJs(facebook::jsi::Runtime& rt, decltype(types.fontScale) value);
-  public static double heightToJs(facebook::jsi::Runtime& rt, decltype(types.height) value);
-  public static double scaleToJs(facebook::jsi::Runtime& rt, decltype(types.scale) value);
-  public static double widthToJs(facebook::jsi::Runtime& rt, decltype(types.width) value);
-  public static facebook::jsi::Object toJs(facebook::jsi::Runtime& rt, const T& value, const std::shared_ptr<facebook::react::CallInvoker>& jsInvoker);
-}
-
-template <typename T>
 struct facebook::react::NativeDeviceInfoDisplayMetricsBridging {
   public static T fromJs(facebook::jsi::Runtime& rt, const facebook::jsi::Object& value, const std::shared_ptr<facebook::react::CallInvoker>& jsInvoker);
   public static T types;
@@ -12429,20 +12123,6 @@ struct facebook::react::NativeDeviceInfoDisplayMetricsBridging {
   public static double scaleToJs(facebook::jsi::Runtime& rt, decltype(types.scale) value);
   public static double widthToJs(facebook::jsi::Runtime& rt, decltype(types.width) value);
   public static facebook::jsi::Object toJs(facebook::jsi::Runtime& rt, const T& value, const std::shared_ptr<facebook::react::CallInvoker>& jsInvoker);
-}
-
-template <typename T>
-struct facebook::react::NativeDialogManagerAndroidDialogOptionsBridging {
-  public static T fromJs(facebook::jsi::Runtime& rt, const facebook::jsi::Object& value, const std::shared_ptr<facebook::react::CallInvoker>& jsInvoker);
-  public static T types;
-  public static bool cancelableToJs(facebook::jsi::Runtime& rt, decltype(types.cancelable) value);
-  public static facebook::jsi::Array itemsToJs(facebook::jsi::Runtime& rt, decltype(types.items) value);
-  public static facebook::jsi::Object toJs(facebook::jsi::Runtime& rt, const T& value, const std::shared_ptr<facebook::react::CallInvoker>& jsInvoker);
-  public static facebook::jsi::String buttonNegativeToJs(facebook::jsi::Runtime& rt, decltype(types.buttonNegative) value);
-  public static facebook::jsi::String buttonNeutralToJs(facebook::jsi::Runtime& rt, decltype(types.buttonNeutral) value);
-  public static facebook::jsi::String buttonPositiveToJs(facebook::jsi::Runtime& rt, decltype(types.buttonPositive) value);
-  public static facebook::jsi::String messageToJs(facebook::jsi::Runtime& rt, decltype(types.message) value);
-  public static facebook::jsi::String titleToJs(facebook::jsi::Runtime& rt, decltype(types.title) value);
 }
 
 template <typename T>
@@ -12509,15 +12189,6 @@ struct facebook::react::NativeImageEditorOptionsBridging {
   public static facebook::jsi::Object toJs(facebook::jsi::Runtime& rt, const T& value, const std::shared_ptr<facebook::react::CallInvoker>& jsInvoker);
   public static std::optional<facebook::jsi::Object> displaySizeToJs(facebook::jsi::Runtime& rt, decltype(types.displaySize) value);
   public static std::optional<facebook::jsi::String> resizeModeToJs(facebook::jsi::Runtime& rt, decltype(types.resizeMode) value);
-}
-
-template <typename T>
-struct facebook::react::NativeImageLoaderAndroidImageSizeBridging {
-  public static T fromJs(facebook::jsi::Runtime& rt, const facebook::jsi::Object& value, const std::shared_ptr<facebook::react::CallInvoker>& jsInvoker);
-  public static T types;
-  public static double heightToJs(facebook::jsi::Runtime& rt, decltype(types.height) value);
-  public static double widthToJs(facebook::jsi::Runtime& rt, decltype(types.width) value);
-  public static facebook::jsi::Object toJs(facebook::jsi::Runtime& rt, const T& value, const std::shared_ptr<facebook::react::CallInvoker>& jsInvoker);
 }
 
 template <typename T>
@@ -12601,36 +12272,6 @@ struct facebook::react::NativePerformanceRawPerformanceEntryBridging {
   public static facebook::jsi::Object toJs(facebook::jsi::Runtime& rt, const T& value, const std::shared_ptr<facebook::react::CallInvoker>& jsInvoker);
   public static facebook::jsi::String contentTypeToJs(facebook::jsi::Runtime& rt, decltype(types.contentType) value);
   public static facebook::jsi::String nameToJs(facebook::jsi::Runtime& rt, decltype(types.name) value);
-}
-
-template <typename T>
-struct facebook::react::NativePlatformConstantsAndroidPlatformConstantsAndroidBridging {
-  public static T fromJs(facebook::jsi::Runtime& rt, const facebook::jsi::Object& value, const std::shared_ptr<facebook::react::CallInvoker>& jsInvoker);
-  public static T types;
-  public static bool isDisableAnimationsToJs(facebook::jsi::Runtime& rt, decltype(types.isDisableAnimations) value);
-  public static bool isTestingToJs(facebook::jsi::Runtime& rt, decltype(types.isTesting) value);
-  public static double VersionToJs(facebook::jsi::Runtime& rt, decltype(types.Version) value);
-  public static facebook::jsi::Object reactNativeVersionToJs(facebook::jsi::Runtime& rt, decltype(types.reactNativeVersion) value);
-  public static facebook::jsi::Object toJs(facebook::jsi::Runtime& rt, const T& value, const std::shared_ptr<facebook::react::CallInvoker>& jsInvoker);
-  public static facebook::jsi::String BrandToJs(facebook::jsi::Runtime& rt, decltype(types.Brand) value);
-  public static facebook::jsi::String FingerprintToJs(facebook::jsi::Runtime& rt, decltype(types.Fingerprint) value);
-  public static facebook::jsi::String ManufacturerToJs(facebook::jsi::Runtime& rt, decltype(types.Manufacturer) value);
-  public static facebook::jsi::String ModelToJs(facebook::jsi::Runtime& rt, decltype(types.Model) value);
-  public static facebook::jsi::String ReleaseToJs(facebook::jsi::Runtime& rt, decltype(types.Release) value);
-  public static facebook::jsi::String SerialToJs(facebook::jsi::Runtime& rt, decltype(types.Serial) value);
-  public static facebook::jsi::String ServerHostToJs(facebook::jsi::Runtime& rt, decltype(types.ServerHost) value);
-  public static facebook::jsi::String uiModeToJs(facebook::jsi::Runtime& rt, decltype(types.uiMode) value);
-}
-
-template <typename T>
-struct facebook::react::NativePlatformConstantsAndroidReactNativeVersionAndroidBridging {
-  public static T fromJs(facebook::jsi::Runtime& rt, const facebook::jsi::Object& value, const std::shared_ptr<facebook::react::CallInvoker>& jsInvoker);
-  public static T types;
-  public static double majorToJs(facebook::jsi::Runtime& rt, decltype(types.major) value);
-  public static double minorToJs(facebook::jsi::Runtime& rt, decltype(types.minor) value);
-  public static double patchToJs(facebook::jsi::Runtime& rt, decltype(types.patch) value);
-  public static facebook::jsi::Object toJs(facebook::jsi::Runtime& rt, const T& value, const std::shared_ptr<facebook::react::CallInvoker>& jsInvoker);
-  public static std::optional<facebook::jsi::String> prereleaseToJs(facebook::jsi::Runtime& rt, decltype(types.prerelease) value);
 }
 
 template <typename T>
@@ -16779,26 +16420,6 @@ struct JS::NativeDeviceInfo::DisplayMetrics::Builder {
 }
 
 struct JS::NativeDeviceInfo::DisplayMetrics::Builder::Input {
-  protected RCTRequired<double> fontScale;
-  protected RCTRequired<double> height;
-  protected RCTRequired<double> scale;
-  protected RCTRequired<double> width;
-}
-
-struct JS::NativeDeviceInfo::DisplayMetricsAndroid {
-  protected NSDictionary* unsafeRawValue() const;
-  protected static JS::NativeDeviceInfo::DisplayMetricsAndroid fromUnsafeRawValue(NSDictionary* const v);
-}
-
-struct JS::NativeDeviceInfo::DisplayMetricsAndroid::Builder {
-  protected Builder(JS::NativeDeviceInfo::DisplayMetricsAndroid i);
-  protected Builder(const JS::NativeDeviceInfo::DisplayMetricsAndroid::Builder::Input i);
-  protected NSDictionary* buildUnsafeRawValue() const;
-  protected using ResultT = JS::NativeDeviceInfo::DisplayMetricsAndroid;
-}
-
-struct JS::NativeDeviceInfo::DisplayMetricsAndroid::Builder::Input {
-  protected RCTRequired<double> densityDpi;
   protected RCTRequired<double> fontScale;
   protected RCTRequired<double> height;
   protected RCTRequired<double> scale;

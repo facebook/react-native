@@ -567,6 +567,64 @@ class TestParseConfig(unittest.TestCase):
         for r in result:
             self.assertEqual(r.exclude_symbols, ["Fantom"])
 
+    def test_per_platform_exclude_symbols(self):
+        """Per-platform exclude_symbols are merged with global ones"""
+        config = {
+            "exclude_symbols": ["Fantom"],
+            "platforms": {
+                "ReactApple": {
+                    "inputs": [],
+                    "exclude_symbols": ["Android"],
+                },
+                "ReactAndroid": {
+                    "inputs": [],
+                },
+            },
+        }
+        result = parse_config(config, "/base/dir")
+
+        apple = next(r for r in result if r.snapshot_name == "ReactApple")
+        self.assertEqual(apple.exclude_symbols, ["Fantom", "Android"])
+
+        android = next(r for r in result if r.snapshot_name == "ReactAndroid")
+        self.assertEqual(android.exclude_symbols, ["Fantom"])
+
+    def test_per_platform_exclude_symbols_deduplicated(self):
+        """Duplicate symbols between global and per-platform are deduplicated"""
+        config = {
+            "exclude_symbols": ["Fantom", "Android"],
+            "platforms": {
+                "TestView": {
+                    "inputs": [],
+                    "exclude_symbols": ["Fantom", "Detail"],
+                },
+            },
+        }
+        result = parse_config(config, "/base/dir")
+
+        self.assertEqual(result[0].exclude_symbols, ["Fantom", "Android", "Detail"])
+
+    def test_per_platform_exclude_symbols_propagated_to_variants(self):
+        """Per-platform exclude_symbols are propagated to all variant configs"""
+        config = {
+            "exclude_symbols": ["Fantom"],
+            "platforms": {
+                "ReactApple": {
+                    "inputs": [],
+                    "exclude_symbols": ["Android"],
+                    "variants": {
+                        "debug": {"definitions": {"DEBUG": 1}},
+                        "release": {"definitions": {"NDEBUG": 1}},
+                    },
+                },
+            },
+        }
+        result = parse_config(config, "/base/dir")
+
+        self.assertEqual(len(result), 2)
+        for r in result:
+            self.assertEqual(r.exclude_symbols, ["Fantom", "Android"])
+
     # =========================================================================
     # Variant naming
     # =========================================================================
