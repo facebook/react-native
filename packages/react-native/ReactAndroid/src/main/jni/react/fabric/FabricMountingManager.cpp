@@ -1026,6 +1026,20 @@ void FabricMountingManager::destroyUnmountedShadowNode(
   auto tag = family.getTag();
   auto surfaceId = family.getSurfaceId();
 
+  // Remove from allocatedViewRegistry so that executeMount does not skip
+  // the Create mount item for this tag. Without this, if the view was
+  // preallocated and then destroyed (e.g. due to a superseded concurrent
+  // render), executeMount would skip the Create because allocatedViewTags
+  // still contains the tag, but the Java side no longer has the view in
+  // tagToViewState (it was deleted by destroyUnmountedView below).
+  {
+    std::lock_guard allocatedViewsLock(allocatedViewsMutex_);
+    auto allocatedViewsIterator = allocatedViewRegistry_.find(surfaceId);
+    if (allocatedViewsIterator != allocatedViewRegistry_.end()) {
+      allocatedViewsIterator->second.erase(tag);
+    }
+  }
+
   // ThreadScope::WithClassLoader is necessary because
   // destroyUnmountedShadowNode is being called from a destructor thread
   jni::ThreadScope::WithClassLoader([&]() {
