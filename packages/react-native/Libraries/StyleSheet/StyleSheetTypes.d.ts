@@ -365,7 +365,8 @@ export type BlendMode =
   | 'hue'
   | 'saturation'
   | 'color'
-  | 'luminosity';
+  | 'luminosity'
+  | 'plus-lighter';
 
 export type LinearGradientValue = {
   type: 'linear-gradient';

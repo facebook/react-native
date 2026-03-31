@@ -530,6 +530,9 @@ void packMixBlendMode(
     case BlendMode::Luminosity:
       blendModeStr = "luminosity";
       break;
+    case BlendMode::PlusLighter:
+      blendModeStr = "plus-lighter";
+      break;
     default:
       throw std::runtime_error("Unknown blend mode");
   }

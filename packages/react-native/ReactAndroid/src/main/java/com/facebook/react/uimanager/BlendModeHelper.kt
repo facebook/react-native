@@ -54,6 +54,7 @@ internal object BlendModeHelper {
       "saturation" -> BlendMode.SATURATION
       "color" -> BlendMode.COLOR
       "luminosity" -> BlendMode.LUMINOSITY
+      "plus-lighter" -> BlendMode.PLUS
       else -> throw IllegalArgumentException("Invalid mix-blend-mode name: $mixBlendMode")
     }
   }
