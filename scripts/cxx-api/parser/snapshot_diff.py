@@ -11,10 +11,10 @@ import difflib
 import os
 
 
-def check_snapshots(generated_dir: str, committed_dir: str) -> bool:
+def validate_snapshots(generated_dir: str, committed_dir: str) -> bool:
     """Compare generated snapshots against committed ones.
 
-    Returns True if check passes (snapshots match or no committed snapshots).
+    Returns True if validation passes (snapshots match or no committed snapshots).
     Returns False if snapshots differ.
     """
     if not os.path.isdir(committed_dir):
