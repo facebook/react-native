@@ -3201,6 +3201,8 @@ public abstract class com/facebook/react/uimanager/BaseViewManager : com/faceboo
 	public fun setAccessibilityLiveRegion (Landroid/view/View;Ljava/lang/String;)V
 	public fun setAccessibilityRole (Landroid/view/View;Ljava/lang/String;)V
 	public fun setAccessibilityValue (Landroid/view/View;Lcom/facebook/react/bridge/ReadableMap;)V
+	public fun setAuxClick (Landroid/view/View;Z)V
+	public fun setAuxClickCapture (Landroid/view/View;Z)V
 	public fun setBackgroundColor (Landroid/view/View;I)V
 	public fun setBorderBottomLeftRadius (Landroid/view/View;F)V
 	public fun setBorderBottomRightRadius (Landroid/view/View;F)V

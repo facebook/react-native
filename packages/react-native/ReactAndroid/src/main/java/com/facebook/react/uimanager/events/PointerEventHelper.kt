@@ -28,9 +28,12 @@ internal object PointerEventHelper {
   const val POINTER_UP: String = "topPointerUp"
   const val POINTER_OVER: String = "topPointerOver"
   const val POINTER_OUT: String = "topPointerOut"
+  const val AUXCLICK: String = "topAuxClick"
   const val CLICK: String = "topClick"
 
   enum class EVENT {
+    AUXCLICK,
+    AUXCLICK_CAPTURE,
     CANCEL,
     CANCEL_CAPTURE,
     CLICK,
@@ -110,6 +113,8 @@ internal object PointerEventHelper {
       EVENT.UP_CAPTURE,
       EVENT.CANCEL,
       EVENT.CANCEL_CAPTURE,
+      EVENT.AUXCLICK,
+      EVENT.AUXCLICK_CAPTURE,
       EVENT.CLICK,
       EVENT.CLICK_CAPTURE -> true
       else -> {

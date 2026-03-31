@@ -101,6 +101,10 @@ void TouchEventEmitter::onTouchCancel(TouchEvent event) const {
       "touchCancel", std::move(event), RawEvent::Category::ContinuousEnd);
 }
 
+void TouchEventEmitter::onAuxClick(PointerEvent event) const {
+  dispatchPointerEvent("auxClick", std::move(event), RawEvent::Category::Discrete);
+}
+
 void TouchEventEmitter::onClick(PointerEvent event) const {
   dispatchPointerEvent("click", std::move(event), RawEvent::Category::Discrete);
 }

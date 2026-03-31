@@ -5039,6 +5039,7 @@ class facebook::react::TimerManager {
 
 class facebook::react::TouchEventEmitter : public facebook::react::EventEmitter {
   public TouchEventEmitter(facebook::react::SharedEventTarget eventTarget, facebook::react::EventDispatcher::Weak eventDispatcher);
+  public void onAuxClick(facebook::react::PointerEvent event) const;
   public void onClick(facebook::react::PointerEvent event) const;
   public void onGotPointerCapture(facebook::react::PointerEvent event) const;
   public void onLostPointerCapture(facebook::react::PointerEvent event) const;

@@ -93,6 +93,12 @@ const bubblingEventTypes = {
   },
 
   // Experimental/Work in Progress Pointer Events (not yet ready for use)
+  topAuxClick: {
+    phasedRegistrationNames: {
+      captured: 'onAuxClickCapture',
+      bubbled: 'onAuxClick',
+    },
+  },
   topClick: {
     phasedRegistrationNames: {
       captured: 'onClickCapture',
@@ -409,6 +415,8 @@ const validAttributesForEventProps = ConditionallyIgnoredEventHandlers({
   onTouchCancel: true,
 
   // Pointer events
+  onAuxClick: true,
+  onAuxClickCapture: true,
   onClick: true,
   onClickCapture: true,
   onPointerUp: true,

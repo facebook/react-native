@@ -182,6 +182,8 @@ public object ViewProps {
   internal const val ON_POINTER_LEAVE_CAPTURE: String = "onPointerLeaveCapture"
   internal const val ON_POINTER_MOVE: String = "onPointerMove"
   internal const val ON_POINTER_MOVE_CAPTURE: String = "onPointerMoveCapture"
+  internal const val ON_AUXCLICK: String = "onAuxClick"
+  internal const val ON_AUXCLICK_CAPTURE: String = "onAuxClickCapture"
   internal const val ON_CLICK: String = "onClick"
   internal const val ON_CLICK_CAPTURE: String = "onClickCapture"
   @JvmField
