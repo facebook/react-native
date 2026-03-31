@@ -6999,15 +6999,6 @@ enum facebook::react::ModalHostViewSupportedOrientations : facebook::react::Moda
   PortraitUpsideDown,
 }
 
-enum facebook::react::NativeFantomNativeEventCategory {
-  Continuous,
-  ContinuousEnd,
-  ContinuousStart,
-  Discrete,
-  Idle,
-  Unspecified,
-}
-
 enum facebook::react::NullValueStrategy {
   Ignore,
   Override,
@@ -9200,15 +9191,6 @@ struct facebook::react::NativeDeviceInfoDisplayMetrics {
 }
 
 template <typename P0, typename P1, typename P2, typename P3>
-struct facebook::react::NativeFantomImageResponse {
-  public P0 width;
-  public P1 height;
-  public P2 cacheStatus;
-  public P3 errorMessage;
-  public bool operator==(const facebook::react::NativeFantomImageResponse& other) const;
-}
-
-template <typename P0, typename P1, typename P2, typename P3>
 struct facebook::react::NativeMutationObserverNativeMutationRecord {
   public P0 mutationObserverId;
   public P1 target;
@@ -9260,14 +9242,6 @@ struct facebook::react::NativeDeviceInfoDeviceInfoConstants {
 }
 
 template <typename P0, typename P1, typename P2>
-struct facebook::react::NativeFantomScrollOptions {
-  public P0 x;
-  public P1 y;
-  public P2 zoomScale;
-  public bool operator==(const facebook::react::NativeFantomScrollOptions& other) const;
-}
-
-template <typename P0, typename P1, typename P2>
 struct facebook::react::NativeI18nManagerI18nManagerConstants {
   public P0 doLeftAndRightSwapInRTL;
   public P1 isRTL;
@@ -9310,13 +9284,6 @@ struct facebook::react::NativeBlobModuleConstants {
   public P0 BLOB_URI_SCHEME;
   public P1 BLOB_URI_HOST;
   public bool operator==(const facebook::react::NativeBlobModuleConstants& other) const;
-}
-
-template <typename P0, typename P1>
-struct facebook::react::NativeFantomRenderFormatOptions {
-  public P0 includeRoot;
-  public P1 includeLayoutMetrics;
-  public bool operator==(const facebook::react::NativeFantomRenderFormatOptions& other) const;
 }
 
 template <typename P0, typename P1>
@@ -9577,18 +9544,6 @@ class facebook::react::NativeDialogManagerAndroidCxxSpec : public facebook::reac
 template <typename T>
 class facebook::react::NativeExceptionsManagerCxxSpec : public facebook::react::TurboModule {
   protected NativeExceptionsManagerCxxSpec(std::shared_ptr<facebook::react::CallInvoker> jsInvoker);
-  public static constexpr std::string_view kModuleName;
-}
-
-template <typename T>
-class facebook::react::NativeFantomCxxSpec : public facebook::react::TurboModule {
-  protected NativeFantomCxxSpec(std::shared_ptr<facebook::react::CallInvoker> jsInvoker);
-  public static constexpr std::string_view kModuleName;
-}
-
-template <typename T>
-class facebook::react::NativeFantomTestSpecificMethodsCxxSpec : public facebook::react::TurboModule {
-  protected NativeFantomTestSpecificMethodsCxxSpec(std::shared_ptr<facebook::react::CallInvoker> jsInvoker);
   public static constexpr std::string_view kModuleName;
 }
 
@@ -9992,27 +9947,6 @@ struct facebook::react::NativeExceptionsManagerStackFrameBridging {
 }
 
 template <typename T>
-struct facebook::react::NativeFantomImageResponseBridging {
-  public static T fromJs(facebook::jsi::Runtime& rt, const facebook::jsi::Object& value, const std::shared_ptr<facebook::react::CallInvoker>& jsInvoker);
-  public static T types;
-  public static facebook::jsi::Object toJs(facebook::jsi::Runtime& rt, const T& value, const std::shared_ptr<facebook::react::CallInvoker>& jsInvoker);
-}
-
-template <typename T>
-struct facebook::react::NativeFantomRenderFormatOptionsBridging {
-  public static T fromJs(facebook::jsi::Runtime& rt, const facebook::jsi::Object& value, const std::shared_ptr<facebook::react::CallInvoker>& jsInvoker);
-  public static T types;
-  public static facebook::jsi::Object toJs(facebook::jsi::Runtime& rt, const T& value, const std::shared_ptr<facebook::react::CallInvoker>& jsInvoker);
-}
-
-template <typename T>
-struct facebook::react::NativeFantomScrollOptionsBridging {
-  public static T fromJs(facebook::jsi::Runtime& rt, const facebook::jsi::Object& value, const std::shared_ptr<facebook::react::CallInvoker>& jsInvoker);
-  public static T types;
-  public static facebook::jsi::Object toJs(facebook::jsi::Runtime& rt, const T& value, const std::shared_ptr<facebook::react::CallInvoker>& jsInvoker);
-}
-
-template <typename T>
 struct facebook::react::NativeI18nManagerI18nManagerConstantsBridging {
   public static T fromJs(facebook::jsi::Runtime& rt, const facebook::jsi::Object& value, const std::shared_ptr<facebook::react::CallInvoker>& jsInvoker);
   public static T types;
@@ -10327,11 +10261,6 @@ struct facebook::react::Bridging<facebook::react::HighResDuration> {
 struct facebook::react::Bridging<facebook::react::HighResTimeStamp> {
   public static double toJs(facebook::jsi::Runtime&, const facebook::react::HighResTimeStamp& value);
   public static facebook::react::HighResTimeStamp fromJs(facebook::jsi::Runtime&, const facebook::jsi::Value& jsiValue);
-}
-
-struct facebook::react::Bridging<facebook::react::NativeFantomNativeEventCategory> {
-  public static facebook::jsi::Value toJs(facebook::jsi::Runtime& rt, facebook::react::NativeFantomNativeEventCategory value);
-  public static facebook::react::NativeFantomNativeEventCategory fromJs(facebook::jsi::Runtime& rt, const facebook::jsi::Value& rawValue);
 }
 
 struct facebook::react::Bridging<facebook::react::NativeIntersectionObserverEntry> : public facebook::react::NativeIntersectionObserverNativeIntersectionObserverEntryBridging<facebook::react::NativeIntersectionObserverEntry> {
