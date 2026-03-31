@@ -8288,20 +8288,6 @@ struct facebook::react::NativeAlertManagerArgs {
   public bool operator==(const facebook::react::NativeAlertManagerArgs& other) const;
 }
 
-template <typename P0, typename P1, typename P2, typename P3, typename P4, typename P5, typename P6, typename P7, typename P8>
-struct facebook::react::NativePushNotificationManagerIOSNotification {
-  public P0 alertTitle;
-  public P1 alertBody;
-  public P2 userInfo;
-  public P3 category;
-  public P4 fireDate;
-  public P5 fireIntervalSeconds;
-  public P6 applicationIconBadgeNumber;
-  public P7 isSilent;
-  public P8 soundName;
-  public bool operator==(const facebook::react::NativePushNotificationManagerIOSNotification& other) const;
-}
-
 template <typename P0, typename P1, typename P2, typename P3, typename P4, typename P5, typename P6, typename P7>
 struct facebook::react::NativeExceptionsManagerExceptionData {
   public P0 message;
@@ -8313,19 +8299,6 @@ struct facebook::react::NativeExceptionsManagerExceptionData {
   public P6 isFatal;
   public P7 extraData;
   public bool operator==(const facebook::react::NativeExceptionsManagerExceptionData& other) const;
-}
-
-template <typename P0, typename P1, typename P2, typename P3, typename P4, typename P5, typename P6, typename P7>
-struct facebook::react::NativePlatformConstantsIOSPlatformConstantsIOS {
-  public P0 isTesting;
-  public P1 isDisableAnimations;
-  public P2 reactNativeVersion;
-  public P3 forceTouchAvailable;
-  public P4 osVersion;
-  public P5 systemName;
-  public P6 interfaceIdiom;
-  public P7 isMacCatalyst;
-  public bool operator==(const facebook::react::NativePlatformConstantsIOSPlatformConstantsIOS& other) const;
 }
 
 template <typename P0, typename P1, typename P2, typename P3, typename P4, typename P5, typename P6>
@@ -8476,14 +8449,6 @@ struct facebook::react::NativeMutationObserverNativeMutationObserverObserveOptio
   public P1 targetShadowNode;
   public P2 subtree;
   public bool operator==(const facebook::react::NativeMutationObserverNativeMutationObserverObserveOptions& other) const;
-}
-
-template <typename P0, typename P1, typename P2>
-struct facebook::react::NativePushNotificationManagerIOSPermissions {
-  public P0 alert;
-  public P1 badge;
-  public P2 sound;
-  public bool operator==(const facebook::react::NativePushNotificationManagerIOSPermissions& other) const;
 }
 
 template <typename P0, typename P1>
@@ -8811,20 +8776,8 @@ class facebook::react::NativeImageLoaderAndroidCxxSpec : public facebook::react:
 }
 
 template <typename T>
-class facebook::react::NativeImageLoaderIOSCxxSpec : public facebook::react::TurboModule {
-  protected NativeImageLoaderIOSCxxSpec(std::shared_ptr<facebook::react::CallInvoker> jsInvoker);
-  public static constexpr std::string_view kModuleName;
-}
-
-template <typename T>
 class facebook::react::NativeImageStoreAndroidCxxSpec : public facebook::react::TurboModule {
   protected NativeImageStoreAndroidCxxSpec(std::shared_ptr<facebook::react::CallInvoker> jsInvoker);
-  public static constexpr std::string_view kModuleName;
-}
-
-template <typename T>
-class facebook::react::NativeImageStoreIOSCxxSpec : public facebook::react::TurboModule {
-  protected NativeImageStoreIOSCxxSpec(std::shared_ptr<facebook::react::CallInvoker> jsInvoker);
   public static constexpr std::string_view kModuleName;
 }
 
@@ -8889,12 +8842,6 @@ class facebook::react::NativeNetworkingAndroidCxxSpec : public facebook::react::
 }
 
 template <typename T>
-class facebook::react::NativeNetworkingIOSCxxSpec : public facebook::react::TurboModule {
-  protected NativeNetworkingIOSCxxSpec(std::shared_ptr<facebook::react::CallInvoker> jsInvoker);
-  public static constexpr std::string_view kModuleName;
-}
-
-template <typename T>
 class facebook::react::NativePerformanceCxxSpec : public facebook::react::TurboModule {
   protected NativePerformanceCxxSpec(std::shared_ptr<facebook::react::CallInvoker> jsInvoker);
   public static constexpr std::string_view kModuleName;
@@ -8909,18 +8856,6 @@ class facebook::react::NativePermissionsAndroidCxxSpec : public facebook::react:
 template <typename T>
 class facebook::react::NativePlatformConstantsAndroidCxxSpec : public facebook::react::TurboModule {
   protected NativePlatformConstantsAndroidCxxSpec(std::shared_ptr<facebook::react::CallInvoker> jsInvoker);
-  public static constexpr std::string_view kModuleName;
-}
-
-template <typename T>
-class facebook::react::NativePlatformConstantsIOSCxxSpec : public facebook::react::TurboModule {
-  protected NativePlatformConstantsIOSCxxSpec(std::shared_ptr<facebook::react::CallInvoker> jsInvoker);
-  public static constexpr std::string_view kModuleName;
-}
-
-template <typename T>
-class facebook::react::NativePushNotificationManagerIOSCxxSpec : public facebook::react::TurboModule {
-  protected NativePushNotificationManagerIOSCxxSpec(std::shared_ptr<facebook::react::CallInvoker> jsInvoker);
   public static constexpr std::string_view kModuleName;
 }
 
@@ -8975,12 +8910,6 @@ class facebook::react::NativeSourceCodeCxxSpec : public facebook::react::TurboMo
 template <typename T>
 class facebook::react::NativeStatusBarManagerAndroidCxxSpec : public facebook::react::TurboModule {
   protected NativeStatusBarManagerAndroidCxxSpec(std::shared_ptr<facebook::react::CallInvoker> jsInvoker);
-  public static constexpr std::string_view kModuleName;
-}
-
-template <typename T>
-class facebook::react::NativeStatusBarManagerIOSCxxSpec : public facebook::react::TurboModule {
-  protected NativeStatusBarManagerIOSCxxSpec(std::shared_ptr<facebook::react::CallInvoker> jsInvoker);
   public static constexpr std::string_view kModuleName;
 }
 
@@ -9380,47 +9309,6 @@ struct facebook::react::NativePlatformConstantsAndroidReactNativeVersionAndroidB
   public static double patchToJs(facebook::jsi::Runtime& rt, decltype(types.patch) value);
   public static facebook::jsi::Object toJs(facebook::jsi::Runtime& rt, const T& value, const std::shared_ptr<facebook::react::CallInvoker>& jsInvoker);
   public static std::optional<facebook::jsi::String> prereleaseToJs(facebook::jsi::Runtime& rt, decltype(types.prerelease) value);
-}
-
-template <typename T>
-struct facebook::react::NativePlatformConstantsIOSPlatformConstantsIOSBridging {
-  public static T fromJs(facebook::jsi::Runtime& rt, const facebook::jsi::Object& value, const std::shared_ptr<facebook::react::CallInvoker>& jsInvoker);
-  public static T types;
-  public static bool forceTouchAvailableToJs(facebook::jsi::Runtime& rt, decltype(types.forceTouchAvailable) value);
-  public static bool isDisableAnimationsToJs(facebook::jsi::Runtime& rt, decltype(types.isDisableAnimations) value);
-  public static bool isMacCatalystToJs(facebook::jsi::Runtime& rt, decltype(types.isMacCatalyst) value);
-  public static bool isTestingToJs(facebook::jsi::Runtime& rt, decltype(types.isTesting) value);
-  public static facebook::jsi::Object reactNativeVersionToJs(facebook::jsi::Runtime& rt, decltype(types.reactNativeVersion) value);
-  public static facebook::jsi::Object toJs(facebook::jsi::Runtime& rt, const T& value, const std::shared_ptr<facebook::react::CallInvoker>& jsInvoker);
-  public static facebook::jsi::String interfaceIdiomToJs(facebook::jsi::Runtime& rt, decltype(types.interfaceIdiom) value);
-  public static facebook::jsi::String osVersionToJs(facebook::jsi::Runtime& rt, decltype(types.osVersion) value);
-  public static facebook::jsi::String systemNameToJs(facebook::jsi::Runtime& rt, decltype(types.systemName) value);
-}
-
-template <typename T>
-struct facebook::react::NativePushNotificationManagerIOSNotificationBridging {
-  public static T fromJs(facebook::jsi::Runtime& rt, const facebook::jsi::Object& value, const std::shared_ptr<facebook::react::CallInvoker>& jsInvoker);
-  public static T types;
-  public static facebook::jsi::Object toJs(facebook::jsi::Runtime& rt, const T& value, const std::shared_ptr<facebook::react::CallInvoker>& jsInvoker);
-  public static std::optional<bool> isSilentToJs(facebook::jsi::Runtime& rt, decltype(types.isSilent) value);
-  public static std::optional<double> applicationIconBadgeNumberToJs(facebook::jsi::Runtime& rt, decltype(types.applicationIconBadgeNumber) value);
-  public static std::optional<double> fireDateToJs(facebook::jsi::Runtime& rt, decltype(types.fireDate) value);
-  public static std::optional<double> fireIntervalSecondsToJs(facebook::jsi::Runtime& rt, decltype(types.fireIntervalSeconds) value);
-  public static std::optional<facebook::jsi::Object> userInfoToJs(facebook::jsi::Runtime& rt, decltype(types.userInfo) value);
-  public static std::optional<facebook::jsi::String> alertBodyToJs(facebook::jsi::Runtime& rt, decltype(types.alertBody) value);
-  public static std::optional<facebook::jsi::String> alertTitleToJs(facebook::jsi::Runtime& rt, decltype(types.alertTitle) value);
-  public static std::optional<facebook::jsi::String> categoryToJs(facebook::jsi::Runtime& rt, decltype(types.category) value);
-  public static std::optional<facebook::jsi::String> soundNameToJs(facebook::jsi::Runtime& rt, decltype(types.soundName) value);
-}
-
-template <typename T>
-struct facebook::react::NativePushNotificationManagerIOSPermissionsBridging {
-  public static T fromJs(facebook::jsi::Runtime& rt, const facebook::jsi::Object& value, const std::shared_ptr<facebook::react::CallInvoker>& jsInvoker);
-  public static T types;
-  public static bool alertToJs(facebook::jsi::Runtime& rt, decltype(types.alert) value);
-  public static bool badgeToJs(facebook::jsi::Runtime& rt, decltype(types.badge) value);
-  public static bool soundToJs(facebook::jsi::Runtime& rt, decltype(types.sound) value);
-  public static facebook::jsi::Object toJs(facebook::jsi::Runtime& rt, const T& value, const std::shared_ptr<facebook::react::CallInvoker>& jsInvoker);
 }
 
 template <typename T>
