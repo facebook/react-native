@@ -5454,40 +5454,6 @@ struct facebook::react::VirtualViewEventEmitter::OnModeChangeThresholdRect {
   public double y;
 }
 
-class facebook::react::VirtualViewExperimentalEventEmitter : public facebook::react::BaseViewEventEmitter {
-  public void onModeChange(facebook::react::VirtualViewExperimentalEventEmitter::OnModeChange value) const;
-}
-
-struct facebook::react::VirtualViewExperimentalEventEmitter::OnModeChange {
-  public facebook::react::VirtualViewExperimentalEventEmitter::OnModeChangeTargetRect targetRect;
-  public facebook::react::VirtualViewExperimentalEventEmitter::OnModeChangeThresholdRect thresholdRect;
-  public int mode;
-}
-
-struct facebook::react::VirtualViewExperimentalEventEmitter::OnModeChangeTargetRect {
-  public double height;
-  public double width;
-  public double x;
-  public double y;
-}
-
-struct facebook::react::VirtualViewExperimentalEventEmitter::OnModeChangeThresholdRect {
-  public double height;
-  public double width;
-  public double x;
-  public double y;
-}
-
-class facebook::react::VirtualViewExperimentalProps : public facebook::react::HostPlatformViewProps {
-  public VirtualViewExperimentalProps() = default;
-  public VirtualViewExperimentalProps(const facebook::react::PropsParserContext& context, const facebook::react::VirtualViewExperimentalProps& sourceProps, const facebook::react::RawProps& rawProps);
-  public bool initialHidden;
-  public bool removeClippedSubviews;
-  public int renderState;
-  public virtual facebook::react::ComponentName getDiffPropsImplementationTarget() const override;
-  public virtual folly::dynamic getDiffProps(const facebook::react::Props* prevProps) const override;
-}
-
 class facebook::react::VirtualViewProps : public facebook::react::HostPlatformViewProps {
   public VirtualViewProps() = default;
   public VirtualViewProps(const facebook::react::PropsParserContext& context, const facebook::react::VirtualViewProps& sourceProps, const facebook::react::RawProps& rawProps);
@@ -12531,7 +12497,6 @@ struct facebook::jsi::detail::BeforeCaller<std::tuple<T...>> {
 }
 
 
-using facebook::yoga::ExperimentalFeatureSet = std::bitset<facebook::yoga::ordinalCount<facebook::yoga::ExperimentalFeature>()>;
 using facebook::yoga::GridTrackList = std::vector<facebook::yoga::GridTrackSize>;
 template <typename EnumT>
 concept facebook::yoga::Enumeration = std::is_enum_v<EnumT>;
@@ -12625,7 +12590,6 @@ constexpr int32_t facebook::yoga::ordinalCount<facebook::yoga::Dimension>();
 constexpr int32_t facebook::yoga::ordinalCount<facebook::yoga::Direction>();
 constexpr int32_t facebook::yoga::ordinalCount<facebook::yoga::Display>();
 constexpr int32_t facebook::yoga::ordinalCount<facebook::yoga::Edge>();
-constexpr int32_t facebook::yoga::ordinalCount<facebook::yoga::ExperimentalFeature>();
 constexpr int32_t facebook::yoga::ordinalCount<facebook::yoga::FlexDirection>();
 constexpr int32_t facebook::yoga::ordinalCount<facebook::yoga::GridTrackType>();
 constexpr int32_t facebook::yoga::ordinalCount<facebook::yoga::Gutter>();
@@ -13038,11 +13002,6 @@ enum facebook::yoga::Errata : uint32_t {
   Classic,
   None,
   StretchFlexBasis,
-}
-
-enum facebook::yoga::ExperimentalFeature : uint8_t {
-  FixFlexBasisFitContent,
-  WebFlexBasis,
 }
 
 enum facebook::yoga::FlexDirection : uint8_t {

@@ -9532,7 +9532,6 @@ struct facebook::jsi::detail::BeforeCaller<std::tuple<T...>> {
 }
 
 
-using facebook::yoga::ExperimentalFeatureSet = std::bitset<facebook::yoga::ordinalCount<facebook::yoga::ExperimentalFeature>()>;
 using facebook::yoga::GridTrackList = std::vector<facebook::yoga::GridTrackSize>;
 template <typename EnumT>
 concept facebook::yoga::Enumeration = std::is_enum_v<EnumT>;
@@ -9626,7 +9625,6 @@ constexpr int32_t facebook::yoga::ordinalCount<facebook::yoga::Dimension>();
 constexpr int32_t facebook::yoga::ordinalCount<facebook::yoga::Direction>();
 constexpr int32_t facebook::yoga::ordinalCount<facebook::yoga::Display>();
 constexpr int32_t facebook::yoga::ordinalCount<facebook::yoga::Edge>();
-constexpr int32_t facebook::yoga::ordinalCount<facebook::yoga::ExperimentalFeature>();
 constexpr int32_t facebook::yoga::ordinalCount<facebook::yoga::FlexDirection>();
 constexpr int32_t facebook::yoga::ordinalCount<facebook::yoga::GridTrackType>();
 constexpr int32_t facebook::yoga::ordinalCount<facebook::yoga::Gutter>();
@@ -10039,11 +10037,6 @@ enum facebook::yoga::Errata : uint32_t {
   Classic,
   None,
   StretchFlexBasis,
-}
-
-enum facebook::yoga::ExperimentalFeature : uint8_t {
-  FixFlexBasisFitContent,
-  WebFlexBasis,
 }
 
 enum facebook::yoga::FlexDirection : uint8_t {
