@@ -20,10 +20,6 @@ internal object NdkConfiguratorUtils {
     project.pluginManager.withPlugin("com.android.application") {
       project.extensions.getByType(ApplicationAndroidComponentsExtension::class.java).finalizeDsl {
           ext ->
-        // We enable prefab so users can consume .so/headers from ReactAndroid and hermes-engine
-        // .aar
-        ext.buildFeatures.prefab = true
-
         // If the user has not provided a CmakeLists.txt path, let's provide
         // the default one from the framework
         if (ext.externalNativeBuild.cmake.path == null) {
@@ -36,23 +32,32 @@ internal object NdkConfiguratorUtils {
 
         // Parameters should be provided in an additive manner (do not override what
         // the user provided, but allow for sensible defaults).
-        val cmakeArgs = ext.defaultConfig.externalNativeBuild.cmake.arguments
-        if (cmakeArgs.none { it.startsWith("-DPROJECT_BUILD_DIR") }) {
-          cmakeArgs.add("-DPROJECT_BUILD_DIR=${project.layout.buildDirectory.get().asFile}")
-        }
-        if (cmakeArgs.none { it.startsWith("-DPROJECT_ROOT_DIR") }) {
-          cmakeArgs.add("-DPROJECT_ROOT_DIR=${project.rootProject.layout.projectDirectory.asFile}")
-        }
-        if (cmakeArgs.none { it.startsWith("-DREACT_ANDROID_DIR") }) {
-          cmakeArgs.add(
-              "-DREACT_ANDROID_DIR=${extension.reactNativeDir.file("ReactAndroid").get().asFile}"
-          )
-        }
-        if (cmakeArgs.none { it.startsWith("-DANDROID_STL") }) {
-          cmakeArgs.add("-DANDROID_STL=c++_shared")
-        }
-        if (cmakeArgs.none { it.startsWith("-DANDROID_SUPPORT_FLEXIBLE_PAGE_SIZES") }) {
-          cmakeArgs.add("-DANDROID_SUPPORT_FLEXIBLE_PAGE_SIZES=ON")
+        // In AGP 9.1, defaultConfig is accessed as a lambda
+        ext.defaultConfig {
+          // Access cmake arguments through externalNativeBuild
+          val cmakeArgs = externalNativeBuild.cmake.arguments
+          if (cmakeArgs.none { it.startsWith("-DPROJECT_BUILD_DIR") }) {
+            cmakeArgs.add("-DPROJECT_BUILD_DIR=${project.layout.buildDirectory.get().asFile}")
+          }
+          if (cmakeArgs.none { it.startsWith("-DPROJECT_ROOT_DIR") }) {
+            cmakeArgs.add("-DPROJECT_ROOT_DIR=${project.rootProject.layout.projectDirectory.asFile}")
+          }
+          if (cmakeArgs.none { it.startsWith("-DREACT_ANDROID_DIR") }) {
+            cmakeArgs.add(
+                "-DREACT_ANDROID_DIR=${extension.reactNativeDir.file("ReactAndroid").get().asFile}"
+            )
+          }
+          if (cmakeArgs.none { it.startsWith("-DREACT_COMMON_DIR") }) {
+            cmakeArgs.add(
+                "-DREACT_COMMON_DIR=${extension.reactNativeDir.file("ReactCommon").get().asFile}"
+            )
+          }
+          if (cmakeArgs.none { it.startsWith("-DANDROID_STL") }) {
+            cmakeArgs.add("-DANDROID_STL=c++_shared")
+          }
+          if (cmakeArgs.none { it.startsWith("-DANDROID_SUPPORT_FLEXIBLE_PAGE_SIZES") }) {
+            cmakeArgs.add("-DANDROID_SUPPORT_FLEXIBLE_PAGE_SIZES=ON")
+          }
         }
 
         val architectures = project.getReactNativeArchitectures()

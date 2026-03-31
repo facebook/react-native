@@ -86,9 +86,9 @@ class JsonUtilsTest {
 
     val parsed = JsonUtils.fromPackageJson(validJson)!!
 
-    assertThat("an awesome library").isEqualTo(parsed.codegenConfig!!.name)
-    assertThat("../js/").isEqualTo(parsed.codegenConfig!!.jsSrcsDir)
-    assertThat("com.awesome.library").isEqualTo(parsed.codegenConfig!!.android!!.javaPackageName)
+    assertThat("an awesome library").isEqualTo(parsed.codegenConfig.name)
+    assertThat("../js/").isEqualTo(parsed.codegenConfig.jsSrcsDir)
+    assertThat("com.awesome.library").isEqualTo(parsed.codegenConfig.android.javaPackageName)
   }
 
   @Test

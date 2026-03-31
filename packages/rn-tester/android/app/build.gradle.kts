@@ -184,26 +184,17 @@ tasks.withType<KotlinCompile>().configureEach {
   }
 }
 
-afterEvaluate {
-  if (
-      (project.findProperty("react.internal.useHermesNightly") == null ||
-          project.findProperty("react.internal.useHermesNightly").toString() == "false") &&
-          (project.findProperty("react.internal.useHermesStable") == null ||
-              project.findProperty("react.internal.useHermesStable").toString() == "false")
-  ) {
-    // As we're consuming Hermes from source, we want to make sure
-    // `hermesc` is built before we actually invoke the `emit*HermesResource` task
-    tasks
-        .getByName("createBundleReleaseJsAndAssets")
-        .dependsOn(":packages:react-native:ReactAndroid:hermes-engine:buildHermesC")
-  }
+// As we're consuming Hermes from source, we want to make sure
+// `hermesc` is built before we actually invoke the `emit*HermesResource` task
+tasks.withType<com.facebook.react.tasks.BundleHermesCTask>().configureEach {
+  dependsOn(":packages:react-native:ReactAndroid:hermes-engine:buildHermesC")
+}
 
-  // As RN-Tester consumes the codegen from source, we need to make sure the codegen exists before
-  // we can actually invoke it. It's built by the ReactAndroid:buildCodegenCLI task.
-  tasks
-      .getByName("generateCodegenSchemaFromJavaScript")
-      .dependsOn(":packages:react-native:ReactAndroid:buildCodegenCLI")
-  tasks
-      .getByName("createBundleReleaseJsAndAssets")
-      .dependsOn(":packages:react-native:ReactAndroid:buildCodegenCLI")
+// As RN-Tester consumes the codegen from source, we need to make sure the codegen exists before
+// we can actually invoke it. It's built by the ReactAndroid:buildCodegenCLI task.
+tasks.withType<com.facebook.react.tasks.GenerateCodegenSchemaTask>().configureEach {
+  dependsOn(":packages:react-native:ReactAndroid:buildCodegenCLI")
+}
+tasks.withType<com.facebook.react.tasks.BundleHermesCTask>().configureEach {
+  dependsOn(":packages:react-native:ReactAndroid:buildCodegenCLI")
 }
