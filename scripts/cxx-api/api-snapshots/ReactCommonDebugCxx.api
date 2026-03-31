@@ -7180,7 +7180,7 @@ struct facebook::react::Bridging<std::function<R(Args...)>> {
 
 template <typename T1, typename T2>
 struct facebook::react::Bridging<std::pair<T1, T2>> : public facebook::react::array_detail::BridgingStatic<std::pair<T1, T2>, 2> {
-  public static std::pair<T1, T1> fromJs(facebook::jsi::Runtime& rt, const facebook::jsi::Array& array, const std::shared_ptr<facebook::react::CallInvoker>& jsInvoker);
+  public static std::pair<T1, T2> fromJs(facebook::jsi::Runtime& rt, const facebook::jsi::Array& array, const std::shared_ptr<facebook::react::CallInvoker>& jsInvoker);
 }
 
 template <typename T, size_t N>
