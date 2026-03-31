@@ -6413,13 +6413,6 @@ class facebook::react::NativeExceptionsManagerSpecJSI : public facebook::react::
   public NativeExceptionsManagerSpecJSI(const facebook::react::ObjCTurboModule::InitParams& params);
 }
 
-class facebook::react::NativeFantomTestSpecificMethods : public facebook::react::NativeFantomTestSpecificMethodsCxxSpec<facebook::react::NativeFantomTestSpecificMethods> {
-  public NativeFantomTestSpecificMethods(std::shared_ptr<facebook::react::CallInvoker> jsInvoker);
-  public void registerForcedCloneCommitHook(facebook::jsi::Runtime& runtime);
-  public void setRootNodeSize(facebook::jsi::Runtime& runtime, int surfaceId, float width, float height);
-  public void takeFunctionAndNoop(facebook::jsi::Runtime& runtime, facebook::jsi::Function callback);
-}
-
 class facebook::react::NativeFileReaderModuleSpecJSI : public facebook::react::ObjCTurboModule {
   public NativeFileReaderModuleSpecJSI(const facebook::react::ObjCTurboModule::InitParams& params);
 }
@@ -10648,12 +10641,6 @@ struct facebook::react::EventPayload {
   public virtual facebook::react::EventPayloadType getType() const = 0;
   public virtual std::optional<double> extractValue(const std::vector<std::string>&) const;
   public virtual ~EventPayload() = default;
-}
-
-struct facebook::react::FantomForcedCloneCommitHook : public facebook::react::UIManagerCommitHook {
-  public facebook::react::RootShadowNode::Unshared shadowTreeWillCommit(const facebook::react::ShadowTree& shadowTree, const std::shared_ptr<const facebook::react::RootShadowNode>& oldRootShadowNode, const facebook::react::RootShadowNode::Unshared& newRootShadowNode) noexcept override;
-  public virtual void commitHookWasRegistered(const facebook::react::UIManager&) noexcept override;
-  public virtual void commitHookWasUnregistered(const facebook::react::UIManager&) noexcept override;
 }
 
 struct facebook::react::FilterFunction {
