@@ -213,6 +213,8 @@ class ShadowNode : public Sealable, public DebugStringConvertible, public jsi::N
       const std::shared_ptr<const ShadowNode> &destinationShadowNode,
       const ShadowNodeFragment &fragment) const;
 
+  void dummyMethod() const;
+
 #pragma mark - DebugStringConvertible
 
 #if RN_DEBUG_STRING_CONVERTIBLE
