@@ -10875,7 +10875,7 @@ struct facebook::react::detail::merge_data_types<std::variant<AllowedTypesT...>>
 }
 
 template <CSSDataType... Ts>
-struct facebook::react::detail::is_variant_of_data_types<std::variant<Ts...>> : public std::false_type, public std::true_type {
+struct facebook::react::detail::is_variant_of_data_types<std::variant<Ts...>> : public std::true_type {
 }
 
 template <CSSDataType... AlllowedTypes1T, CSSDataType... AlllowedTypes2T, CSSMaybeCompoundDataType... RestT>
@@ -12472,13 +12472,13 @@ struct facebook::react::bridging::is_optional : public std::false_type {
 }
 
 template <typename T>
-struct facebook::react::bridging::Converter<std::optional<T>> : public facebook::react::bridging::ConverterBase<T>, public facebook::react::bridging::ConverterBase<facebook::jsi::Value> {
+struct facebook::react::bridging::Converter<std::optional<T>> : public facebook::react::bridging::ConverterBase<facebook::jsi::Value> {
   public Converter(facebook::jsi::Runtime& rt, std::optional<T> value);
   public operator std::optional<T>();
 }
 
 template <typename T>
-struct facebook::react::bridging::is_optional<std::optional<T>> : public std::false_type, public std::true_type {
+struct facebook::react::bridging::is_optional<std::optional<T>> : public std::true_type {
 }
 
 struct facebook::react::bridging::Converter<facebook::jsi::Object> : public facebook::react::bridging::ConverterBase<facebook::jsi::Object> {
