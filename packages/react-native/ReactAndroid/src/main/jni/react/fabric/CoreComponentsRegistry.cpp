@@ -7,8 +7,6 @@
 
 #include "CoreComponentsRegistry.h"
 
-#include <android/log.h>
-
 #include <react/renderer/componentregistry/ComponentDescriptorRegistry.h>
 #include <react/renderer/components/FBReactNativeSpec/ComponentDescriptors.h>
 #include <react/renderer/components/androidswitch/AndroidSwitchComponentDescriptor.h>
