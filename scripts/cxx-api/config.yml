@@ -1,11 +1,14 @@
 exclude_patterns:
   - "*/ReactCommon/react/nativemodule/fantomtestspecificmethods/*"
+  - "*/ReactCommon/react/nativemodule/featureflags/*"
+  - "*/ReactCommon/react/featureflags/*"
   - "*/test_utils/*"
   - "*/test/*"
   - "*/stubs/*"
 
 exclude_symbols:
   - "Fantom"
+  - "NativeReactNativeFeatureFlags"
 
 platforms:
   ReactCommon:
@@ -37,6 +40,7 @@ platforms:
       - packages/react-native/ReactCommon
       - packages/react-native/ReactAndroid
     exclude_patterns:
+      - "*/ReactAndroid/src/main/jni/react/featureflags/*"
       - "*/platform/cxx/*"
       - "*/platform/windows/*"
       - "*/platform/macos/*"
