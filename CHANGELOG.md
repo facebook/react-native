@@ -1,5 +1,14 @@
 # Changelog
 
+## v0.85.0-rc.7
+
+### Fixed
+
+#### iOS specific
+
+- **Hermes**: Fix Hermes crash when async void TurboModule method throws NSException by re-throwing instead of converting to JSError on wrong thread ([4083a6ff92](https://github.com/facebook/react-native/commit/4083a6ff92b0ffd4f71166848f3d7ce36172fac8) by [@fabriziocucci](https://github.com/fabriziocucci))
+
+
 ## v0.85.0-rc.6
 
 ### Changed
