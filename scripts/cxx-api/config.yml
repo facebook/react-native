@@ -5,6 +5,7 @@ exclude_patterns:
   - "*/stubs/*"
 
 exclude_symbols:
+  - "Fantom"
 
 platforms:
   ReactCommon:
