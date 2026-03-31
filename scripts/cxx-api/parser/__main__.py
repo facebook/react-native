@@ -84,7 +84,7 @@ def build_snapshot_for_view(
     exclude_patterns: list[str],
     definitions: dict[str, str | int],
     output_dir: str,
-    codegen_platform: str | None = None,
+    codegen_dir: str | None = None,
     verbose: bool = True,
     input_filter: str = None,
     work_dir: str | None = None,
@@ -97,14 +97,7 @@ def build_snapshot_for_view(
     if work_dir is None:
         work_dir = os.path.join(react_native_dir, "api")
 
-    if codegen_platform is not None:
-        codegen_output = os.path.join(work_dir, "codegen")
-        codegen_dir = build_codegen(
-            codegen_platform,
-            verbose=verbose,
-            output_path=codegen_output,
-            label=api_view,
-        )
+    if codegen_dir is not None:
         include_directories.append(codegen_dir)
     elif verbose:
         print(f"[{api_view}] Skipping codegen")
@@ -156,6 +149,23 @@ def build_snapshots(
         ]
 
         with tempfile.TemporaryDirectory(prefix="cxx-api-") as parent_tmp:
+            # Run codegen once per unique platform before parallel snapshot generation.
+            # Debug/release variants share the same codegen output, and running
+            # multiple codegen processes in parallel causes race conditions
+            # (e.g. concurrent yarn install in buildCodegenIfNeeded).
+            codegen_dirs: dict[str, str] = {}
+            for config in configs_to_build:
+                platform = config.codegen_platform
+                if platform is not None and platform not in codegen_dirs:
+                    codegen_output = os.path.join(parent_tmp, f"codegen-{platform}")
+                    os.makedirs(codegen_output, exist_ok=True)
+                    codegen_dirs[platform] = build_codegen(
+                        platform,
+                        verbose=verbose,
+                        output_path=codegen_output,
+                        label=platform,
+                    )
+
             with concurrent.futures.ThreadPoolExecutor() as executor:
                 futures = {}
                 for config in configs_to_build:
@@ -169,7 +179,7 @@ def build_snapshots(
                         exclude_patterns=config.exclude_patterns,
                         definitions=config.definitions,
                         output_dir=output_dir,
-                        codegen_platform=config.codegen_platform,
+                        codegen_dir=codegen_dirs.get(config.codegen_platform),
                         verbose=verbose,
                         input_filter=input_filter if config.input_filter else None,
                         work_dir=work_dir,
@@ -200,7 +210,7 @@ def build_snapshots(
             exclude_patterns=[],
             definitions={},
             output_dir=output_dir,
-            codegen_platform=None,
+            codegen_dir=None,
             verbose=verbose,
             input_filter=input_filter,
         )
@@ -286,7 +296,9 @@ def main():
 
     with tempfile.TemporaryDirectory() as tmpdir:
         snapshot_output_dir = (
-            tmpdir if args.check else args.output_dir or get_default_snapshot_dir()
+            args.output_dir or tmpdir
+            if args.check
+            else args.output_dir or get_default_snapshot_dir()
         )
 
         build_snapshots(
