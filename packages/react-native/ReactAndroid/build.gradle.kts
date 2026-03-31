@@ -677,6 +677,47 @@ android {
       }
     }
   }
+
+  // Generate CMake config file for find_package support
+  // This is needed for ReactNative-application.cmake to find ReactAndroid via find_package()
+  val generateReactAndroidConfig by tasks.registering {
+    outputs.dir(buildDir.resolve("cmake/ReactAndroid"))
+    doLast {
+      val configDir = outputs.files.first()
+      configDir.mkdirs()
+      val configContent = """
+        # Copyright (c) Meta Platforms, Inc. and affiliates.
+        #
+        # This source code is licensed under the MIT license found in the
+        # LICENSE file in the root directory of this source tree.
+
+        # ReactAndroid CMake configuration file
+
+        # The reactnative library
+        add_library(reactnative SHARED IMPORTED)
+        set_target_properties(reactnative PROPERTIES
+          IMPORTED_LOCATION "${buildDir}/prefab/debug/android/armeabi-v7a/libreactnative.so"
+          INTERFACE_INCLUDE_DIRECTORIES "${buildDir}/prefab-headers/reactnative"
+        )
+
+        # The jsi library
+        add_library(jsi SHARED IMPORTED)
+        set_target_properties(jsi PROPERTIES
+          IMPORTED_LOCATION "${buildDir}/prefab/debug/android/armeabi-v7a/libjsi.so"
+          INTERFACE_INCLUDE_DIRECTORIES "${buildDir}/prefab-headers/jsi"
+        )
+
+      """.trimIndent()
+      configDir.resolve("ReactAndroidConfig.cmake").writeText(configContent)
+    }
+  }
+
+  // Ensure the config file is generated before external native build
+  tasks.configureEach {
+    if (this::class.java.name.contains("CMakeTask")) {
+      dependsOn(generateReactAndroidConfig)
+    }
+  }
 }
 
 tasks.withType<KotlinCompile>().configureEach {

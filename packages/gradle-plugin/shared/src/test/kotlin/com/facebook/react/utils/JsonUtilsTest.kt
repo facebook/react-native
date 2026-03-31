@@ -85,10 +85,12 @@ class JsonUtilsTest {
         )
 
     val parsed = JsonUtils.fromPackageJson(validJson)!!
+    val codegenConfig = parsed.codegenConfig!!
+    val android = codegenConfig.android!!
 
-    assertThat("an awesome library").isEqualTo(parsed.codegenConfig.name)
-    assertThat("../js/").isEqualTo(parsed.codegenConfig.jsSrcsDir)
-    assertThat("com.awesome.library").isEqualTo(parsed.codegenConfig.android.javaPackageName)
+    assertThat("an awesome library").isEqualTo(codegenConfig.name)
+    assertThat("../js/").isEqualTo(codegenConfig.jsSrcsDir)
+    assertThat("com.awesome.library").isEqualTo(android.javaPackageName)
   }
 
   @Test
@@ -180,15 +182,17 @@ class JsonUtilsTest {
                 .trimIndent()
         )
     val parsed = JsonUtils.fromAutolinkingConfigJson(validJson)!!
+    val project = parsed.project!!
+    val android = project.android!!
 
-    assertThat("./packages/rn-tester").isEqualTo(parsed.project!!.android!!.sourceDir)
-    assertThat("RN-Tester").isEqualTo(parsed.project!!.android!!.appName)
-    assertThat("com.facebook.react.uiapp").isEqualTo(parsed.project!!.android!!.packageName)
-    assertThat("com.facebook.react.uiapp").isEqualTo(parsed.project!!.android!!.applicationId)
-    assertThat(".RNTesterActivity").isEqualTo(parsed.project!!.android!!.mainActivity)
+    assertThat("./packages/rn-tester").isEqualTo(android.sourceDir)
+    assertThat("RN-Tester").isEqualTo(android.appName)
+    assertThat("com.facebook.react.uiapp").isEqualTo(android.packageName)
+    assertThat("com.facebook.react.uiapp").isEqualTo(android.applicationId)
+    assertThat(".RNTesterActivity").isEqualTo(android.mainActivity)
     assertThat("--mode HermesDebug")
-        .isEqualTo(parsed.project!!.android!!.watchModeCommandParams!![0])
-    assertThat("implementation").isEqualTo(parsed.project!!.android!!.dependencyConfiguration)
+        .isEqualTo(android.watchModeCommandParams!![0])
+    assertThat("implementation").isEqualTo(android.dependencyConfiguration)
   }
 
   @Test
@@ -224,20 +228,22 @@ class JsonUtilsTest {
                   "dependencyConfiguration": "implementation"
                 }
               }
-            } 
+            }
             """
                 .trimIndent()
         )
     val parsed = JsonUtils.fromAutolinkingConfigJson(validJson)!!
+    val project = parsed.project!!
+    val android = project.android!!
 
-    assertThat("./packages/rn-tester").isEqualTo(parsed.project!!.android!!.sourceDir)
-    assertThat("RN-Tester").isEqualTo(parsed.project!!.android!!.appName)
-    assertThat("com.facebook.react.uiapp").isEqualTo(parsed.project!!.android!!.packageName)
-    assertThat("com.facebook.react.uiapp").isEqualTo(parsed.project!!.android!!.applicationId)
-    assertThat(".RNTesterActivity").isEqualTo(parsed.project!!.android!!.mainActivity)
+    assertThat("./packages/rn-tester").isEqualTo(android.sourceDir)
+    assertThat("RN-Tester").isEqualTo(android.appName)
+    assertThat("com.facebook.react.uiapp").isEqualTo(android.packageName)
+    assertThat("com.facebook.react.uiapp").isEqualTo(android.applicationId)
+    assertThat(".RNTesterActivity").isEqualTo(android.mainActivity)
     assertThat("--mode HermesDebug")
-        .isEqualTo(parsed.project!!.android!!.watchModeCommandParams!![0])
-    assertThat("implementation").isEqualTo(parsed.project!!.android!!.dependencyConfiguration)
+        .isEqualTo(android.watchModeCommandParams!![0])
+    assertThat("implementation").isEqualTo(android.dependencyConfiguration)
   }
 
   @Test
@@ -282,51 +288,52 @@ class JsonUtilsTest {
                 .trimIndent()
         )
     val parsed = JsonUtils.fromAutolinkingConfigJson(validJson)!!
+    val dependencies = parsed.dependencies!!
 
     assertThat("./node_modules/@react-native/oss-library-example")
-        .isEqualTo(parsed.dependencies!!["@react-native/oss-library-example"]!!.root)
+        .isEqualTo(dependencies["@react-native/oss-library-example"]!!.root)
     assertThat("@react-native/oss-library-example")
-        .isEqualTo(parsed.dependencies!!["@react-native/oss-library-example"]!!.name)
+        .isEqualTo(dependencies["@react-native/oss-library-example"]!!.name)
     assertThat("react-native_oss-library-example")
-        .isEqualTo(parsed.dependencies!!["@react-native/oss-library-example"]!!.nameCleansed)
+        .isEqualTo(dependencies["@react-native/oss-library-example"]!!.nameCleansed)
     assertThat("./node_modules/@react-native/oss-library-example/android")
         .isEqualTo(
-            parsed.dependencies!!["@react-native/oss-library-example"]!!
+            dependencies["@react-native/oss-library-example"]!!
                 .platforms!!
                 .android!!
                 .sourceDir
         )
     assertThat("import com.facebook.react.osslibraryexample.OSSLibraryExamplePackage;")
         .isEqualTo(
-            parsed.dependencies!!["@react-native/oss-library-example"]!!
+            dependencies["@react-native/oss-library-example"]!!
                 .platforms!!
                 .android!!
                 .packageImportPath
         )
     assertThat("new OSSLibraryExamplePackage()")
         .isEqualTo(
-            parsed.dependencies!!["@react-native/oss-library-example"]!!
+            dependencies["@react-native/oss-library-example"]!!
                 .platforms!!
                 .android!!
                 .packageInstance
         )
     assertThat(listOf("staging", "debug", "release"))
         .isEqualTo(
-            parsed.dependencies!!["@react-native/oss-library-example"]!!
+            dependencies["@react-native/oss-library-example"]!!
                 .platforms!!
                 .android!!
                 .buildTypes
         )
     assertThat("OSSLibraryExampleSpec")
         .isEqualTo(
-            parsed.dependencies!!["@react-native/oss-library-example"]!!
+            dependencies["@react-native/oss-library-example"]!!
                 .platforms!!
                 .android!!
                 .libraryName
         )
     assertThat(listOf("SampleNativeComponentComponentDescriptor"))
         .isEqualTo(
-            parsed.dependencies!!["@react-native/oss-library-example"]!!
+            dependencies["@react-native/oss-library-example"]!!
                 .platforms!!
                 .android!!
                 .componentDescriptors
@@ -335,27 +342,27 @@ class JsonUtilsTest {
             "./node_modules/@react-native/oss-library-example/android/build/generated/source/codegen/jni/CMakeLists.txt"
         )
         .isEqualTo(
-            parsed.dependencies!!["@react-native/oss-library-example"]!!
+            dependencies["@react-native/oss-library-example"]!!
                 .platforms!!
                 .android!!
                 .cmakeListsPath
         )
     assertThat(
-            parsed.dependencies!!["@react-native/oss-library-example"]!!
+            dependencies["@react-native/oss-library-example"]!!
                 .platforms!!
                 .android!!
                 .cxxModuleHeaderName
         )
         .isNull()
     assertThat(
-            parsed.dependencies!!["@react-native/oss-library-example"]!!
+            dependencies["@react-native/oss-library-example"]!!
                 .platforms!!
                 .android!!
                 .cxxModuleCMakeListsPath
         )
         .isNull()
     assertThat(
-            parsed.dependencies!!["@react-native/oss-library-example"]!!
+            dependencies["@react-native/oss-library-example"]!!
                 .platforms!!
                 .android!!
                 .cxxModuleCMakeListsModuleName
@@ -363,13 +370,13 @@ class JsonUtilsTest {
         .isNull()
     assertThat("implementation")
         .isEqualTo(
-            parsed.dependencies!!["@react-native/oss-library-example"]!!
+            dependencies["@react-native/oss-library-example"]!!
                 .platforms!!
                 .android!!
                 .dependencyConfiguration
         )
     assertThat(
-            parsed.dependencies!!["@react-native/oss-library-example"]!!
+            dependencies["@react-native/oss-library-example"]!!
                 .platforms!!
                 .android!!
                 .isPureCxxDependency!!
