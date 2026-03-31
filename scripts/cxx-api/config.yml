@@ -11,6 +11,8 @@ exclude_symbols:
   - "NativeReactNativeFeatureFlags"
   - "UnstableLegacy"
   - "Experimental"
+  - "TinyMap"
+  - "packAnimatedProps"
 
 platforms:
   ReactCommon:

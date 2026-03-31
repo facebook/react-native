@@ -16,17 +16,6 @@ struct YGValue {
   public float value;
 }
 
-template <typename KeyT, typename ValueT>
-class TinyMap {
-  public TinyMap::Iterator begin();
-  public TinyMap::Iterator end();
-  public TinyMap::Iterator find(KeyT key);
-  public using Iterator = TinyMap::Pair*;
-  public using Pair = std::pair<KeyT, ValueT>;
-  public void erase(TinyMap::Iterator iterator);
-  public void insert(TinyMap::Pair pair);
-}
-
 
 bool facebook::xplat::jsArgAsBool(const folly::dynamic& args, size_t n);
 double facebook::xplat::jsArgAsDouble(const folly::dynamic& args, size_t n);
@@ -8460,9 +8449,6 @@ struct facebook::react::dom::RNMeasureRect {
   public double x;
   public double y;
 }
-
-
-folly::dynamic facebook::react::animationbackend::packAnimatedProps(const facebook::react::AnimatedProps& animatedProps);
 
 
 static constexpr facebook::react::Tag facebook::react::animated::undefinedAnimatedNodeIdentifier;
