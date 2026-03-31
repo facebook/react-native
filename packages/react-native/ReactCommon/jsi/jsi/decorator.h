@@ -356,6 +356,12 @@ class RuntimeDecorator : public Base, private jsi::Instrumentation {
   bool isArrayBuffer(const Object& o) const override {
     return plain_.isArrayBuffer(o);
   }
+  bool isTypedArray(const Object& o) const override {
+    return plain_.isTypedArray(o);
+  }
+  bool isUint8Array(const Object& o) const override {
+    return plain_.isUint8Array(o);
+  }
   bool isFunction(const Object& o) const override {
     return plain_.isFunction(o);
   }
@@ -440,6 +446,30 @@ class RuntimeDecorator : public Base, private jsi::Instrumentation {
   std::shared_ptr<MutableBuffer> tryGetMutableBuffer(
       const jsi::ArrayBuffer& arrayBuffer) override {
     return plain_.tryGetMutableBuffer(arrayBuffer);
+  }
+
+  ArrayBuffer buffer(const TypedArray& typedArray) override {
+    return plain_.buffer(typedArray);
+  }
+  size_t byteOffset(const TypedArray& typedArray) override {
+    return plain_.byteOffset(typedArray);
+  }
+  size_t byteLength(const TypedArray& typedArray) override {
+    return plain_.byteLength(typedArray);
+  }
+  size_t length(const TypedArray& typedArray) override {
+    return plain_.length(typedArray);
+  }
+
+  Uint8Array createUint8Array(size_t length) override {
+    return plain_.createUint8Array(length);
+  }
+
+  Uint8Array createUint8Array(
+      const ArrayBuffer& buffer,
+      size_t offset,
+      size_t length) override {
+    return plain_.createUint8Array(buffer, offset, length);
   }
 
   // Private data for managing scopes.
@@ -926,6 +956,14 @@ class WithRuntimeDecorator : public RuntimeDecorator<Plain, Base> {
     Around around{with_};
     return RD::isArrayBuffer(o);
   }
+  bool isTypedArray(const Object& o) const override {
+    Around around{with_};
+    return RD::isTypedArray(o);
+  }
+  bool isUint8Array(const Object& o) const override {
+    Around around{with_};
+    return RD::isUint8Array(o);
+  }
   bool isFunction(const Object& o) const override {
     Around around{with_};
     return RD::isFunction(o);
@@ -1016,6 +1054,35 @@ class WithRuntimeDecorator : public RuntimeDecorator<Plain, Base> {
       const jsi::ArrayBuffer& arrayBuffer) override {
     Around around{with_};
     return RD::tryGetMutableBuffer(arrayBuffer);
+  }
+
+  ArrayBuffer buffer(const TypedArray& typedArray) override {
+    Around around{with_};
+    return RD::buffer(typedArray);
+  }
+  size_t byteOffset(const TypedArray& typedArray) override {
+    Around around{with_};
+    return RD::byteOffset(typedArray);
+  }
+  size_t byteLength(const TypedArray& typedArray) override {
+    Around around{with_};
+    return RD::byteLength(typedArray);
+  }
+  size_t length(const TypedArray& typedArray) override {
+    Around around{with_};
+    return RD::length(typedArray);
+  }
+
+  Uint8Array createUint8Array(size_t length) override {
+    Around around{with_};
+    return RD::createUint8Array(length);
+  }
+  Uint8Array createUint8Array(
+      const ArrayBuffer& buffer,
+      size_t offset,
+      size_t length) override {
+    Around around{with_};
+    return RD::createUint8Array(buffer, offset, length);
   }
 
   // Private data for managing scopes.
