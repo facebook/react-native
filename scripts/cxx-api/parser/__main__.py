@@ -24,7 +24,7 @@ from .config import ApiViewSnapshotConfig, parse_config_file
 from .doxygen import get_doxygen_bin, run_doxygen
 from .main import build_snapshot
 from .path_utils import get_react_native_dir
-from .snapshot_diff import check_snapshots
+from .snapshot_diff import validate_snapshots
 
 
 def run_command(
@@ -250,14 +250,14 @@ def main():
         help="Output directory for the snapshot",
     )
     parser.add_argument(
-        "--check",
+        "--validate",
         action="store_true",
         help="Generate snapshots to a temp directory and compare against committed ones",
     )
     parser.add_argument(
         "--snapshot-dir",
         type=str,
-        help="Directory containing committed snapshots for comparison (used with --check)",
+        help="Directory containing committed snapshots for comparison (used with --validate)",
     )
     parser.add_argument(
         "--view",
@@ -276,7 +276,7 @@ def main():
     )
     args = parser.parse_args()
 
-    verbose = not args.check
+    verbose = not args.validate
 
     doxygen_bin = get_doxygen_bin()
     version_result = subprocess.run(
@@ -319,13 +319,13 @@ def main():
     with tempfile.TemporaryDirectory() as tmpdir:
         snapshot_output_dir = (
             args.output_dir or tmpdir
-            if args.check
+            if args.validate
             else args.output_dir or get_default_snapshot_dir()
         )
 
         build_snapshots(
             output_dir=snapshot_output_dir,
-            verbose=not args.check,
+            verbose=not args.validate,
             snapshot_configs=snapshot_configs,
             react_native_dir=react_native_package_dir,
             input_filter=input_filter,
@@ -334,13 +334,13 @@ def main():
             keep_xml=args.xml,
         )
 
-        if args.check:
+        if args.validate:
             snapshot_dir = args.snapshot_dir or get_default_snapshot_dir()
 
-            if not check_snapshots(snapshot_output_dir, snapshot_dir):
+            if not validate_snapshots(snapshot_output_dir, snapshot_dir):
                 sys.exit(1)
 
-            print("All snapshot checks passed")
+            print("All snapshot validations passed")
 
 
 if __name__ == "__main__":

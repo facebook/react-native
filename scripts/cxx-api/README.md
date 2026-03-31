@@ -31,15 +31,15 @@ Maintainers should run this command whenever making intentional C++ API changes:
 python -m scripts.cxx-api.parser
 ```
 
-#### Check snapshots against committed baseline
+#### Validate snapshots against committed baseline
 
 This mode generates snapshots to a temporary directory and compares them against the committed `.api` files. It is designed for CI:
 
 ```sh
-python -m scripts.cxx-api.parser --check
+python -m scripts.cxx-api.parser --validate
 ```
 
-If any snapshot differs, a unified diff is printed and the process exits with a non-zero status. To fix a failing check, regenerate the snapshots with `python -m scripts.cxx-api.parser` and commit the updated `.api` files.
+If any snapshot differs, a unified diff is printed and the process exits with a non-zero status. To fix a failing validation, regenerate the snapshots with `python -m scripts.cxx-api.parser` and commit the updated `.api` files.
 
 ## How it works
 
