@@ -1,4 +1,5 @@
 exclude_patterns:
+  - "*/ReactCommon/react/nativemodule/fantomtestspecificmethods/*"
   - "*/test_utils/*"
   - "*/test/*"
 
