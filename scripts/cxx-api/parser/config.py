@@ -38,6 +38,7 @@ class ApiViewSnapshotConfig:
     definitions: dict[str, str | int]
     codegen_platform: str | None = None
     input_filter: bool = False
+    exclude_symbols: list[str] = field(default_factory=list)
 
 
 def parse_config(
@@ -60,6 +61,7 @@ def parse_config(
         Flattened list of ApiViewSnapshotConfig objects for all views and variants
     """
     global_exclude_patterns: list[str] = raw_config.get("exclude_patterns") or []
+    global_exclude_symbols: list[str] = raw_config.get("exclude_symbols") or []
     platforms: dict = raw_config.get("platforms") or {}
 
     snapshot_configs = []
@@ -103,6 +105,7 @@ def parse_config(
                     definitions=base_definitions,
                     codegen_platform=codegen_platform,
                     input_filter=input_filter,
+                    exclude_symbols=global_exclude_symbols,
                 )
             )
         else:
@@ -117,6 +120,7 @@ def parse_config(
                         definitions=merged_definitions,
                         codegen_platform=codegen_platform,
                         input_filter=input_filter,
+                        exclude_symbols=global_exclude_symbols,
                     )
                 )
 
