@@ -12564,10 +12564,8 @@ std::unique_ptr<facebook::jsi::Runtime> facebook::jsc::makeJSCRuntime();
 
 
 using facebook::jsi::HostFunctionType = std::function<facebook::jsi::Value(facebook::jsi::Runtime& rt, const facebook::jsi::Value& thisVal, const facebook::jsi::Value* args, size_t count)>;
-using facebook::jsi::RuntimeFactory = std::function<std::shared_ptr<facebook::jsi::Runtime>()>;
 facebook::jsi::Value facebook::jsi::valueFromDynamic(facebook::jsi::Runtime& runtime, const folly::dynamic& dyn);
 folly::dynamic facebook::jsi::dynamicFromValue(facebook::jsi::Runtime& runtime, const facebook::jsi::Value& value, const std::function<bool(const std::string&)>& filterObjectKeys = nullptr);
-std::vector<facebook::jsi::RuntimeFactory> facebook::jsi::runtimeGenerators();
 template <typename U, typename T>
 U* facebook::jsi::castInterface(T* ptr);
 template <typename U, typename T>
@@ -12716,16 +12714,6 @@ class facebook::jsi::JSINativeException : public facebook::jsi::JSIException {
   public JSINativeException(const facebook::jsi::JSINativeException&) = default;
   public JSINativeException(std::string what);
   public virtual ~JSINativeException();
-}
-
-class facebook::jsi::JSITestBase : public testing::TestWithParam<facebook::jsi::RuntimeFactory> {
-  public JSITestBase();
-  public bool checkValue(const facebook::jsi::Value& value, const std::string& jsValue);
-  public facebook::jsi::Function function(const std::string& code);
-  public facebook::jsi::Runtime& rt;
-  public facebook::jsi::RuntimeFactory factory;
-  public facebook::jsi::Value eval(const char* code);
-  public std::shared_ptr<facebook::jsi::Runtime> runtime;
 }
 
 class facebook::jsi::MutableBuffer {
