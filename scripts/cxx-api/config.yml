@@ -51,6 +51,7 @@ platforms:
       - "*/platform/ios/*"
     exclude_symbols:
       - "InputAccessory"
+      - "IOS"
     input_filter: false
     definitions:
       RN_SERIALIZABLE_STATE: 1
