@@ -401,6 +401,8 @@ class TypeScriptParser implements Parser {
         return 'StringTypeAnnotation';
       case 'TSTypeLiteral':
         return 'ObjectTypeAnnotation';
+      case 'TSUnionType':
+        return 'UnionTypeAnnotation';
       case 'TSUnknownKeyword':
         return 'MixedTypeAnnotation';
     }
@@ -603,7 +605,7 @@ class TypeScriptParser implements Parser {
 
   extractTypeFromTypeAnnotation(typeAnnotation: $FlowFixMe): string {
     return typeAnnotation.type === 'TSTypeReference'
-      ? typeAnnotation.typeName.name
+      ? this.getTypeAnnotationName(typeAnnotation)
       : typeAnnotation.type;
   }
 
