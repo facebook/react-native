@@ -75,6 +75,7 @@ runs:
         cd packages/rn-tester
 
         bundle install
+        bundle exec pod install --no-repo-update
         bundle exec pod update hermes-engine --no-repo-update
     - name: Build RNTester
       shell: bash
