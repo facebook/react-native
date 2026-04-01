@@ -12,11 +12,16 @@
 
 export type BackPressEventName = 'backPress' | 'hardwareBackPress';
 
+export interface HardwareBackPressEvent {
+  +type: string;
+  +timeStamp: number;
+}
+
 type TBackHandler = {
   exitApp(): void,
   addEventListener(
     eventName: BackPressEventName,
-    handler: () => ?boolean,
+    handler: (event: HardwareBackPressEvent) => ?boolean,
   ): {remove: () => void, ...},
 };
 
