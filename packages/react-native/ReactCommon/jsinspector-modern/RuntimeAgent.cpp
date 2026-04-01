@@ -8,6 +8,10 @@
 #include "RuntimeAgent.h"
 #include "SessionState.h"
 
+#include <folly/dynamic.h>
+#include <jsinspector-modern/cdp/CdpJson.h>
+
+#include <chrono>
 #include <utility>
 
 namespace facebook::react::jsinspector_modern {
@@ -117,6 +121,21 @@ void RuntimeAgent::notifyBindingCalled(
           folly::dynamic::object(
               "executionContextId", executionContextDescription_.id)(
               "name", bindingName)("payload", payload)));
+}
+
+void RuntimeAgent::notifyFastRefreshComplete() {
+  if (!sessionState_.isReactNativeApplicationDomainEnabled) {
+    return;
+  }
+  folly::dynamic params = folly::dynamic::object(
+      "timestamp",
+      std::chrono::duration_cast<std::chrono::milliseconds>(
+          std::chrono::system_clock::now().time_since_epoch())
+          .count());
+  frontendChannel_(
+      cdp::jsonNotification(
+          "ReactNativeApplication.unstable_fastRefreshComplete",
+          std::move(params)));
 }
 
 RuntimeAgent::ExportedState RuntimeAgent::getExportedState() {
