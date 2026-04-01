@@ -16,6 +16,7 @@
 #include "ScopedExecutor.h"
 #include "WeakList.h"
 
+#include <functional>
 #include <optional>
 #include <set>
 #include <string>
@@ -134,6 +135,19 @@ class HostTargetDelegate : public LoadNetworkResourceDelegate {
     }
   };
 
+  struct PageCaptureScreenshotRequest {
+    /**
+     * Image compression format. Defaults to "png".
+     * Allowed values: "jpeg", "png", "webp".
+     */
+    std::optional<std::string> format;
+
+    /**
+     * Compression quality from range [0..100] (jpeg only).
+     */
+    std::optional<int> quality;
+  };
+
   virtual ~HostTargetDelegate() override;
 
   /**
@@ -179,6 +193,19 @@ class HostTargetDelegate : public LoadNetworkResourceDelegate {
   {
     throw NotImplementedException(
         "LoadNetworkResourceDelegate.loadNetworkResource is not implemented by this host target delegate.");
+  }
+
+  /**
+   * Called when the debugger requests a screenshot of the current page via
+   * @cdp Page.captureScreenshot. The delegate should capture the current
+   * view, encode it to the requested format, and call the callback with
+   * base64-encoded image data. Call with std::nullopt on failure.
+   */
+  virtual void captureScreenshot(
+      const PageCaptureScreenshotRequest & /*request*/,
+      const std::function<void(std::optional<std::string> base64Data)> &callback)
+  {
+    callback(std::nullopt);
   }
 
   /**

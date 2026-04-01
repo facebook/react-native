@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<c47da5069c3dfd7a287125bd0dfbc0c0>>
+ * @generated SignedSource<<c99be3b2d8c18d23c2f1ae01d1c2dbae>>
  */
 
 /**
@@ -413,6 +413,12 @@ public object ReactNativeFeatureFlags {
    */
   @JvmStatic
   public fun fuseboxNetworkInspectionEnabled(): Boolean = accessor.fuseboxNetworkInspectionEnabled()
+
+  /**
+   * Enable Page.captureScreenshot CDP method support in the React Native DevTools CDP backend. This flag is global and should not be changed across React Host lifetimes.
+   */
+  @JvmStatic
+  public fun fuseboxScreenshotCaptureEnabled(): Boolean = accessor.fuseboxScreenshotCaptureEnabled()
 
   /**
    * Hides offscreen VirtualViews on iOS by setting hidden = YES to avoid extra cost of views

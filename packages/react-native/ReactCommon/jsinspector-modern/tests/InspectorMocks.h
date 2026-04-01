@@ -87,13 +87,13 @@ class MockInspectorPackagerConnectionDelegate : public InspectorPackagerConnecti
   explicit MockInspectorPackagerConnectionDelegate(folly::Executor &executor) : executor_(executor)
   {
     using namespace testing;
-    ON_CALL(*this, scheduleCallback(_, _)).WillByDefault(Invoke<>([this](auto callback, auto delay) {
+    ON_CALL(*this, scheduleCallback(_, _)).WillByDefault([this](auto callback, auto delay) {
       if (auto scheduledExecutor = dynamic_cast<folly::ScheduledExecutor *>(&executor_)) {
         scheduledExecutor->scheduleAt(callback, scheduledExecutor->now() + delay);
       } else {
         executor_.add(callback);
       }
-    }));
+    });
     EXPECT_CALL(*this, scheduleCallback(_, _)).Times(AnyNumber());
   }
 
@@ -136,6 +136,12 @@ class MockHostTargetDelegate : public HostTargetDelegate {
       void,
       loadNetworkResource,
       (const LoadNetworkResourceRequest &params, ScopedExecutor<NetworkRequestListener> executor),
+      (override));
+  MOCK_METHOD(
+      void,
+      captureScreenshot,
+      (const PageCaptureScreenshotRequest &request,
+       const std::function<void(std::optional<std::string> base64Data)> &callback),
       (override));
 
   HostTargetTracingDelegate *getTracingDelegate() override

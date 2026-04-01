@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<a218accbb46d69a2d1bf54e0213b3421>>
+ * @generated SignedSource<<89becc10ca7612f443ee4f7337ccf218>>
  */
 
 /**
@@ -358,6 +358,11 @@ class ReactNativeFeatureFlags {
    * Enable network inspection support in the React Native DevTools CDP backend. Requires `enableBridgelessArchitecture`. This flag is global and should not be changed across React Host lifetimes.
    */
   RN_EXPORT static bool fuseboxNetworkInspectionEnabled();
+
+  /**
+   * Enable Page.captureScreenshot CDP method support in the React Native DevTools CDP backend. This flag is global and should not be changed across React Host lifetimes.
+   */
+  RN_EXPORT static bool fuseboxScreenshotCaptureEnabled();
 
   /**
    * Hides offscreen VirtualViews on iOS by setting hidden = YES to avoid extra cost of views

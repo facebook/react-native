@@ -731,6 +731,17 @@ const definitions: FeatureFlagDefinitions = {
       },
       ossReleaseStage: 'none',
     },
+    fuseboxScreenshotCaptureEnabled: {
+      defaultValue: false,
+      metadata: {
+        dateAdded: '2026-04-01',
+        description:
+          'Enable Page.captureScreenshot CDP method support in the React Native DevTools CDP backend. This flag is global and should not be changed across React Host lifetimes.',
+        expectedReleaseValue: true,
+        purpose: 'experimentation',
+      },
+      ossReleaseStage: 'none',
+    },
     hideOffscreenVirtualViewsOnIOS: {
       defaultValue: false,
       metadata: {

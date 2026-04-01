@@ -142,6 +142,70 @@ class RCTHostHostTargetDelegate : public facebook::react::jsinspector_modern::Ho
   }
 
 #if TARGET_OS_IPHONE && defined(REACT_NATIVE_DEBUGGER_ENABLED)
+  void captureScreenshot(
+      const PageCaptureScreenshotRequest &request,
+      const std::function<void(std::optional<std::string> base64Data)> &callback) override
+  {
+    UIWindow *keyWindow = nil;
+    for (UIScene *scene in UIApplication.sharedApplication.connectedScenes) {
+      if (scene.activationState == UISceneActivationStateForegroundActive &&
+          [scene isKindOfClass:[UIWindowScene class]]) {
+        auto windowScene = (UIWindowScene *)scene;
+        for (UIWindow *window in windowScene.windows) {
+          if (window.isKeyWindow) {
+            keyWindow = window;
+            break;
+          }
+        }
+      }
+      if (keyWindow != nil) {
+        break;
+      }
+    }
+
+    if (keyWindow == nil) {
+      callback(std::nullopt);
+      return;
+    }
+
+    UIView *rootView = keyWindow.rootViewController.view ?: keyWindow;
+    CGSize viewSize = rootView.bounds.size;
+
+    UIGraphicsImageRendererFormat *format = [UIGraphicsImageRendererFormat defaultFormat];
+    format.scale = 1.0;
+    UIGraphicsImageRenderer *renderer = [[UIGraphicsImageRenderer alloc] initWithSize:viewSize format:format];
+
+    UIImage *image = [renderer imageWithActions:^(UIGraphicsImageRendererContext *context) {
+      [rootView drawViewHierarchyInRect:CGRectMake(0, 0, viewSize.width, viewSize.height) afterScreenUpdates:NO];
+    }];
+
+    if (image == nil) {
+      callback(std::nullopt);
+      return;
+    }
+
+    NSData *encodedData = nil;
+    std::string formatStr = request.format.value_or("png");
+
+    if (formatStr == "jpeg") {
+      CGFloat quality = request.quality.has_value() ? (*request.quality / 100.0) : 0.8;
+      encodedData = UIImageJPEGRepresentation(image, quality);
+    } else {
+      // Default to PNG for "png" and "webp" (WebP encoding not available via UIKit)
+      encodedData = UIImagePNGRepresentation(image);
+    }
+
+    if (encodedData == nil) {
+      callback(std::nullopt);
+      return;
+    }
+
+    NSString *base64String = [encodedData base64EncodedStringWithOptions:0];
+    callback(std::string([base64String UTF8String]));
+  }
+#endif
+
+#if TARGET_OS_IPHONE && defined(REACT_NATIVE_DEBUGGER_ENABLED)
   jsinspector_modern::HostTargetTracingDelegate *getTracingDelegate() override
   {
     auto &inspectorFlags = jsinspector_modern::InspectorFlags::getInstance();

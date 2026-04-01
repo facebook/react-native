@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<906bda93de19c1836ce3df29e05db610>>
+ * @generated SignedSource<<68b3b5a887092827d04f9b3bb18ea22d>>
  */
 
 /**
@@ -220,6 +220,9 @@ class JReactNativeFeatureFlagsCxxInterop
     facebook::jni::alias_ref<JReactNativeFeatureFlagsCxxInterop>);
 
   static bool fuseboxNetworkInspectionEnabled(
+    facebook::jni::alias_ref<JReactNativeFeatureFlagsCxxInterop>);
+
+  static bool fuseboxScreenshotCaptureEnabled(
     facebook::jni::alias_ref<JReactNativeFeatureFlagsCxxInterop>);
 
   static bool hideOffscreenVirtualViewsOnIOS(

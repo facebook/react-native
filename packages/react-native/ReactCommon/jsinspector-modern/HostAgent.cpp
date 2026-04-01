@@ -48,6 +48,7 @@ class HostAgent::Impl final {
         targetController_(targetController),
         hostMetadata_(std::move(hostMetadata)),
         sessionState_(sessionState),
+        executor_(executor),
         networkIOAgent_(NetworkIOAgent(frontendChannel, std::move(executor))),
         tracingAgent_(
             TracingAgent(frontendChannel, sessionState, targetController)) {}
@@ -197,6 +198,52 @@ class HostAgent::Impl final {
           .isFinishedHandlingRequest = true,
           .shouldSendOKResponse = true,
       };
+    }
+    if (InspectorFlags::getInstance().getScreenshotCaptureEnabled()) {
+      if (req.method == "Page.captureScreenshot") {
+        std::optional<std::string> format;
+        std::optional<int> quality;
+
+        if (req.params.isObject()) {
+          if (req.params.count("format") != 0u) {
+            format = req.params.at("format").asString();
+          }
+          if (req.params.count("quality") != 0u) {
+            quality = static_cast<int>(req.params.at("quality").asInt());
+          }
+        }
+
+        auto requestId = req.id;
+        auto frontendChannel = frontendChannel_;
+        auto executor = executor_;
+
+        targetController_.getDelegate().captureScreenshot(
+            {.format = format, .quality = quality},
+            [frontendChannel, executor, requestId](
+                std::optional<std::string> base64Data) {
+              executor([frontendChannel,
+                        requestId,
+                        base64Data = std::move(base64Data)]() {
+                if (base64Data.has_value()) {
+                  frontendChannel(
+                      cdp::jsonResult(
+                          requestId,
+                          folly::dynamic::object("data", *base64Data)));
+                } else {
+                  frontendChannel(
+                      cdp::jsonError(
+                          requestId,
+                          cdp::ErrorCode::InternalError,
+                          "Failed to capture screenshot"));
+                }
+              });
+            });
+
+        return {
+            .isFinishedHandlingRequest = true,
+            .shouldSendOKResponse = false,
+        };
+      }
     }
     if (req.method == "Overlay.setPausedInDebuggerMessage") {
       auto message =
@@ -470,6 +517,7 @@ class HostAgent::Impl final {
    */
   SessionState& sessionState_;
 
+  VoidExecutor executor_;
   NetworkIOAgent networkIOAgent_;
 
   TracingAgent tracingAgent_;
