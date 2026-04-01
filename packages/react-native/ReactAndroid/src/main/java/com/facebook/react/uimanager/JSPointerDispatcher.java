@@ -169,7 +169,7 @@ public class JSPointerDispatcher {
           eventDispatcher);
     }
 
-    boolean primaryClick = eventState.primaryPointerId == activePointerId && eventState.supportsHover(pointerId);
+    boolean primaryClick = eventState.getPrimaryPointerId() == activePointerId && eventState.supportsHover(activePointerId);
     List<ViewTarget> hitPathDown = mCurrentlyDownPointerIdsToHitPath.remove(activePointerId);
 
     if (primaryClick) {
