@@ -11,6 +11,7 @@
 'use strict';
 
 import type {
+  BigIntTypeAnnotation,
   BooleanLiteralTypeAnnotation,
   BooleanTypeAnnotation,
   DoubleTypeAnnotation,
@@ -72,6 +73,7 @@ export type StructTypeAnnotation =
   | NumberLiteralTypeAnnotation
   | BooleanLiteralTypeAnnotation
   | Int32TypeAnnotation
+  | BigIntTypeAnnotation
   | DoubleTypeAnnotation
   | FloatTypeAnnotation
   | BooleanTypeAnnotation
