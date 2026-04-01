@@ -1147,43 +1147,6 @@ jsi::Value UIManagerBinding::get(
         });
   }
 
-  if (methodName == "unstable_getViewTransitionInstance") {
-    auto paramCount = 2;
-    return jsi::Function::createFromHostFunction(
-        runtime,
-        name,
-        paramCount,
-        [uiManager, methodName, paramCount](
-            jsi::Runtime& runtime,
-            const jsi::Value& /*thisValue*/,
-            const jsi::Value* arguments,
-            size_t count) -> jsi::Value {
-          validateArgumentCount(runtime, methodName, paramCount, count);
-
-          auto nameStr = arguments[0].asString(runtime).utf8(runtime);
-          auto pseudoStr = arguments[1].asString(runtime).utf8(runtime);
-
-          auto* viewTransitionDelegate = uiManager->getViewTransitionDelegate();
-          if (viewTransitionDelegate == nullptr) {
-            return jsi::Value::undefined();
-          }
-
-          auto instance = viewTransitionDelegate->getViewTransitionInstance(
-              nameStr, pseudoStr);
-          if (!instance) {
-            return jsi::Value::undefined();
-          }
-          auto result = jsi::Object(runtime);
-          result.setProperty(runtime, "x", instance->x);
-          result.setProperty(runtime, "y", instance->y);
-          result.setProperty(runtime, "width", instance->width);
-          result.setProperty(runtime, "height", instance->height);
-          result.setProperty(
-              runtime, "nativeTag", static_cast<double>(instance->nativeTag));
-          return result;
-        });
-  }
-
   return jsi::Value::undefined();
 }
 
