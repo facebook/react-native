@@ -26,7 +26,7 @@ module.exports = {
     ...baseConfig.moduleFileExtensions,
     'cpp',
     'h',
-  ] /*:: as $ReadOnlyArray<string> */,
+  ] /*:: as ReadonlyArray<string> */,
   // This allows running Meta-internal tests with the `-test.fb.js` suffix.
   testRegex: '/__tests__/.*-itest(\\.fb)?\\.js$',
   testPathIgnorePatterns: [

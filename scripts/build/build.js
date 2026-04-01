@@ -229,7 +229,7 @@ async function buildFile(
 /*::
 type PackageJson = {
   name: string,
-  exports?: {[subpath: string]: string | mixed},
+  exports?: {[subpath: string]: string | unknown},
 };
 */
 

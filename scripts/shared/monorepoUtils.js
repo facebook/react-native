@@ -27,7 +27,7 @@ export type PackageJson = {
   ...
 };
 
-type PackagesFilter = $ReadOnly<{
+type PackagesFilter = Readonly<{
   // Include the main react-native package
   includeReactNative: boolean,
 
@@ -135,7 +135,7 @@ async function parsePackageInfo(
  */
 async function updatePackageJson(
   {path: packagePath, packageJson} /*: PackageInfo */,
-  newPackageVersions /*: $ReadOnly<{[string]: string}> */,
+  newPackageVersions /*: Readonly<{[string]: string}> */,
 ) /*: Promise<void> */ {
   const packageName = packageJson.name;
 

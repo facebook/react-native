@@ -9,12 +9,12 @@
  */
 
 /*::
-export type PodSpecConfiguration = $ReadOnly<{
+export type PodSpecConfiguration = Readonly<{
   name: string,
   headerPatterns: Array<string>,
   headerDir?: string,
   excludePatterns?: Array<string>,
-  subSpecs?: $ReadOnlyArray<PodSpecConfiguration>,
+  subSpecs?: ReadonlyArray<PodSpecConfiguration>,
   preservePaths?: Array<string>,
 } | {disabled: true}>;
 */

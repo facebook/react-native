@@ -522,9 +522,9 @@ describe.each(['HTTP', 'HTTPS'])(
 
           // Collect all connect events
           const connectEvents: Array<
-            $ReadOnly<{
+            Readonly<{
               event: string,
-              payload: $ReadOnly<{pageId: string, sessionId?: string}>,
+              payload: Readonly<{pageId: string, sessionId?: string}>,
             }>,
           > = [];
           device.connect.mockImplementation(message => {

@@ -28,7 +28,7 @@ const UNSTABLE_MODULES_REQUIRING_MAIN_QUEUE_SETUP_PROVIDER_MM_TEMPLATE_PATH =
   );
 
 function generateUnstableModulesRequiringMainQueueSetupProvider(
-  libraries /*: $ReadOnlyArray<$FlowFixMe> */,
+  libraries /*: ReadonlyArray<$FlowFixMe> */,
   outputDir /*: string */,
 ) {
   const iosAnnotations = parseiOSAnnotations(libraries);
