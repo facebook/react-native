@@ -306,17 +306,6 @@ struct pre_merge_jni_library {
   public int(*onload_func)(JNIEnv *, jclass);
 }
 
-template <typename KeyT, typename ValueT>
-class TinyMap {
-  public TinyMap::Iterator begin();
-  public TinyMap::Iterator end();
-  public TinyMap::Iterator find(KeyT key);
-  public using Iterator = TinyMap::Pair*;
-  public using Pair = std::pair<KeyT, ValueT>;
-  public void erase(TinyMap::Iterator iterator);
-  public void insert(TinyMap::Pair pair);
-}
-
 union jvalue {
   public jboolean z;
   public jbyte b;
@@ -11402,9 +11391,6 @@ struct facebook::react::dom::RNMeasureRect {
   public double x;
   public double y;
 }
-
-
-folly::dynamic facebook::react::animationbackend::packAnimatedProps(const facebook::react::AnimatedProps& animatedProps);
 
 
 static constexpr facebook::react::Tag facebook::react::animated::undefinedAnimatedNodeIdentifier;

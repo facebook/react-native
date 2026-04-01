@@ -3637,17 +3637,6 @@ struct YGValue {
   public float value;
 }
 
-template <typename KeyT, typename ValueT>
-class TinyMap {
-  public TinyMap::Iterator begin();
-  public TinyMap::Iterator end();
-  public TinyMap::Iterator find(KeyT key);
-  public using Iterator = TinyMap::Pair*;
-  public using Pair = std::pair<KeyT, ValueT>;
-  public void erase(TinyMap::Iterator iterator);
-  public void insert(TinyMap::Pair pair);
-}
-
 template <typename T>
 struct RCTRequired {
   public RCTRequired& operator=(RCTRequired&&) = default;
@@ -13684,9 +13673,6 @@ struct facebook::react::dom::RNMeasureRect {
 
 facebook::jsi::Value facebook::react::TurboModuleConvertUtils::convertObjCObjectToJSIValue(facebook::jsi::Runtime& runtime, id value);
 id facebook::react::TurboModuleConvertUtils::convertJSIValueToObjCObject(facebook::jsi::Runtime& runtime, const facebook::jsi::Value& value, const std::shared_ptr<facebook::react::CallInvoker>& jsInvoker, BOOL useNSNull = NO);
-
-
-folly::dynamic facebook::react::animationbackend::packAnimatedProps(const facebook::react::AnimatedProps& animatedProps);
 
 
 static const facebook::react::Color facebook::react::HostPlatformColor::UndefinedColor;
