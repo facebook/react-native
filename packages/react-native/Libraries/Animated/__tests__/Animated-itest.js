@@ -735,3 +735,152 @@ test('Animated.sequence', () => {
 
   expect(_isSequenceFinished).toBe(true);
 });
+
+describe('Animated.spring', () => {
+  test('basic spring animation', () => {
+    let _translateX;
+    const viewRef = createRef<HostInstance>();
+
+    function MyApp() {
+      const translateX = useAnimatedValue(0);
+      _translateX = translateX;
+      return (
+        <Animated.View
+          ref={viewRef}
+          style={[{width: 100, height: 100}, {transform: [{translateX}]}]}
+        />
+      );
+    }
+
+    const root = Fantom.createRoot();
+    Fantom.runTask(() => {
+      root.render(<MyApp />);
+    });
+
+    const viewElement = ensureInstance(viewRef.current, ReactNativeElement);
+    expect(viewElement.getBoundingClientRect().x).toBe(0);
+
+    let finishResult = null;
+    Fantom.runTask(() => {
+      Animated.spring(_translateX, {
+        toValue: 100,
+        stiffness: 100,
+        damping: 10,
+        mass: 1,
+        useNativeDriver: true,
+      }).start(result => {
+        finishResult = result;
+      });
+    });
+
+    Fantom.unstable_produceFramesForDuration(500);
+
+    const transform =
+      // $FlowFixMe[incompatible-use]
+      Fantom.unstable_getDirectManipulationProps(viewElement).transform[0];
+    expect(transform.translateX).toBeGreaterThan(0);
+
+    Fantom.unstable_produceFramesForDuration(4500);
+
+    Fantom.runWorkLoop();
+    expect(viewElement.getBoundingClientRect().x).toBe(100);
+    expect(finishResult?.finished).toBe(true);
+  });
+
+  test('with overshoot clamping', () => {
+    let _translateX;
+    const viewRef = createRef<HostInstance>();
+
+    function MyApp() {
+      const translateX = useAnimatedValue(0);
+      _translateX = translateX;
+      return (
+        <Animated.View
+          ref={viewRef}
+          style={[{width: 100, height: 100}, {transform: [{translateX}]}]}
+        />
+      );
+    }
+
+    const root = Fantom.createRoot();
+    Fantom.runTask(() => {
+      root.render(<MyApp />);
+    });
+
+    const viewElement = ensureInstance(viewRef.current, ReactNativeElement);
+
+    Fantom.runTask(() => {
+      Animated.spring(_translateX, {
+        toValue: 100,
+        stiffness: 300,
+        damping: 5,
+        mass: 1,
+        overshootClamping: true,
+        useNativeDriver: true,
+      }).start();
+    });
+
+    // Sample at multiple points to ensure value never exceeds toValue
+    for (let i = 0; i < 25; i++) {
+      Fantom.unstable_produceFramesForDuration(200);
+      const t =
+        // $FlowFixMe[incompatible-use]
+        Fantom.unstable_getDirectManipulationProps(viewElement).transform[0];
+      expect(t.translateX).toBeLessThanOrEqual(100);
+      expect(t.translateX).toBeGreaterThanOrEqual(0);
+    }
+
+    Fantom.runWorkLoop();
+    expect(viewElement.getBoundingClientRect().x).toBe(100);
+  });
+
+  test('critically damped', () => {
+    let _translateX;
+    const viewRef = createRef<HostInstance>();
+
+    function MyApp() {
+      const translateX = useAnimatedValue(0);
+      _translateX = translateX;
+      return (
+        <Animated.View
+          ref={viewRef}
+          style={[{width: 100, height: 100}, {transform: [{translateX}]}]}
+        />
+      );
+    }
+
+    const root = Fantom.createRoot();
+    Fantom.runTask(() => {
+      root.render(<MyApp />);
+    });
+
+    const viewElement = ensureInstance(viewRef.current, ReactNativeElement);
+
+    Fantom.runTask(() => {
+      Animated.spring(_translateX, {
+        toValue: 100,
+        stiffness: 100,
+        damping: 20,
+        mass: 1,
+        useNativeDriver: true,
+      }).start();
+    });
+
+    // Verify monotonic convergence (no oscillation)
+    let prevValue = 0;
+    for (let i = 0; i < 10; i++) {
+      Fantom.unstable_produceFramesForDuration(200);
+      const t =
+        // $FlowFixMe[incompatible-use]
+        Fantom.unstable_getDirectManipulationProps(viewElement).transform[0];
+      // Should approach 100 monotonically from below
+      expect(t.translateX).toBeGreaterThanOrEqual(prevValue - 0.01);
+      expect(t.translateX).toBeLessThanOrEqual(100.01);
+      prevValue = t.translateX;
+    }
+
+    Fantom.unstable_produceFramesForDuration(3000);
+    Fantom.runWorkLoop();
+    expect(viewElement.getBoundingClientRect().x).toBe(100);
+  });
+});
