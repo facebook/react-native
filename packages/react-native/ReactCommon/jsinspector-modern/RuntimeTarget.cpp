@@ -47,6 +47,8 @@ void RuntimeTarget::installGlobals() {
   // NOTE: RuntimeTarget::installNetworkReporterAPI is in
   // RuntimeTargetNetwork.cpp
   installNetworkReporterAPI();
+
+  installFastRefreshHandler();
 }
 
 std::shared_ptr<RuntimeAgent> RuntimeTarget::createAgent(
@@ -124,6 +126,37 @@ void RuntimeTarget::installBindingHandler(const std::string& bindingName) {
     } catch (jsi::JSError&) {
       // Per Chrome's implementation, @cdp Runtime.createBinding swallows
       // JavaScript exceptions that occur while setting up the binding.
+    }
+  });
+}
+
+void RuntimeTarget::installFastRefreshHandler() {
+  jsExecutor_([selfExecutor = executorFromThis()](jsi::Runtime& runtime) {
+    auto globalObj = runtime.global();
+    try {
+      auto name =
+          jsi::PropNameID::forUtf8(runtime, "__notifyFastRefreshComplete");
+      globalObj.setProperty(
+          runtime,
+          name,
+          jsi::Function::createFromHostFunction(
+              runtime,
+              name,
+              0,
+              [selfExecutor](
+                  jsi::Runtime& /*rt*/,
+                  const jsi::Value&,
+                  const jsi::Value*,
+                  size_t) -> jsi::Value {
+                selfExecutor([](auto& self) {
+                  self.agents_.forEach(
+                      [](auto& agent) { agent.notifyFastRefreshComplete(); });
+                });
+
+                return jsi::Value::undefined();
+              }));
+    } catch (jsi::JSError&) {
+      // Swallow JavaScript exceptions that occur while setting up the global.
     }
   });
 }
