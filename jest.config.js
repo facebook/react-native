@@ -43,7 +43,7 @@ module.exports = {
     '<rootDir>/packages/react-native/Libraries/Renderer',
     '<rootDir>/packages/react-native/sdks/hermes/',
     ...PODS_LOCATIONS,
-  ] /*:: as $ReadOnlyArray<string> */,
+  ] /*:: as ReadonlyArray<string> */,
   transformIgnorePatterns: ['node_modules/(?!@react-native/)'],
   haste: {
     defaultPlatform: 'ios',
@@ -52,12 +52,12 @@ module.exports = {
   moduleFileExtensions: [
     'fb.js',
     ...defaults.moduleFileExtensions,
-  ] /*:: as $ReadOnlyArray<string> */,
+  ] /*:: as ReadonlyArray<string> */,
   modulePathIgnorePatterns: [
     'scripts/.*/__fixtures__/',
     '<rootDir>/packages/react-native/sdks/hermes/',
     ...PODS_LOCATIONS,
-  ] /*:: as $ReadOnlyArray<string> */,
+  ] /*:: as ReadonlyArray<string> */,
   unmockedModulePathPatterns: [
     'node_modules/react/',
     'packages/react-native/Libraries/Renderer',

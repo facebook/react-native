@@ -32,7 +32,7 @@ const MODULE_PROVIDERS_MM_TEMPLATE_PATH = path.join(
 function generateRCTModuleProviders(
   projectRoot /*: string */,
   pkgJson /*: $FlowFixMe */,
-  libraries /*: $ReadOnlyArray<$FlowFixMe> */,
+  libraries /*: ReadonlyArray<$FlowFixMe> */,
   outputDir /*: string */,
 ) {
   fs.mkdirSync(outputDir, {recursive: true});

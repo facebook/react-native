@@ -20,7 +20,7 @@
  */
 
 const {execSync} = require('child_process');
-const argv /*:$ReadOnly<{
+const argv /*:Readonly<{
   maxWorkers?: number,
   jestBinary?: string,
   flowBinary?: string,

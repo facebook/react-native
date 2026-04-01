@@ -59,7 +59,7 @@ async function* asyncNumberGenerator(
 }
 
 // Async/await patterns
-async function fetchData(url: string): Promise<{data: mixed}> {
+async function fetchData(url: string): Promise<{data: unknown}> {
   const response = await fetch(url);
   const data = await response.json();
   return {data};
@@ -159,7 +159,7 @@ function parseDate(
 }
 
 // Try-catch with optional binding
-function safeJsonParse(input: string): mixed {
+function safeJsonParse(input: string): unknown {
   try {
     return JSON.parse(input);
   } catch {
@@ -182,7 +182,7 @@ const MyClass = class {
 };
 
 // Dynamic import (syntax only)
-async function loadModule(): Promise<mixed> {
+async function loadModule(): Promise<unknown> {
   // $FlowExpectedError[cannot-resolve-module] - Testing dynamic import syntax
   const module = await import('./some-module');
   return module.default;

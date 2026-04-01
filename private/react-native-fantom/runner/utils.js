@@ -61,7 +61,7 @@ export function getBuckModesForPlatform({
 }: {
   enableCoverage: boolean,
   enableOptimized: boolean,
-}): $ReadOnlyArray<string> {
+}): ReadonlyArray<string> {
   let mode = enableCoverage ? 'code-coverage' : enableOptimized ? 'opt' : 'dev';
 
   if (enableOptimized) {

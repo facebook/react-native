@@ -37,7 +37,7 @@ type Data = {
   title: string,
 };
 
-const initialData: $ReadOnlyArray<Data> = [
+const initialData: ReadonlyArray<Data> = [
   {id: '1', title: 'Kate Bell'},
   {id: '2', title: 'John Appleseed'},
   {id: '3', title: 'Mark Zuckerberg'},
@@ -62,7 +62,7 @@ const timingConfig = {
 };
 
 function SwipeableListExample(): React.Node {
-  const [data, setData] = React.useState<$ReadOnlyArray<Data>>(initialData);
+  const [data, setData] = React.useState<ReadonlyArray<Data>>(initialData);
 
   const handleRemove = useCallback((id: string) => {
     setData(currentData => currentData.filter(item => item.id !== id));

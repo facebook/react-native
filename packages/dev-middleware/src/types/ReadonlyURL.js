@@ -25,7 +25,7 @@ export interface ReadonlyURLSearchParams {
       value: string,
       name: string,
       params: URLSearchParams,
-    ) => mixed,
+    ) => unknown,
     thisArg: This,
   ): void;
   toString(): string;
