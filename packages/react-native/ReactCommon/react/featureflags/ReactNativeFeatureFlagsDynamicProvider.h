@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<a83664d06b336a11217fbf44fbb1658f>>
+ * @generated SignedSource<<7ef6a6f017a957fa7242702e13d0edcb>>
  */
 
 /**
@@ -619,6 +619,15 @@ class ReactNativeFeatureFlagsDynamicProvider : public ReactNativeFeatureFlagsDef
     }
 
     return ReactNativeFeatureFlagsDefaults::fuseboxNetworkInspectionEnabled();
+  }
+
+  bool fuseboxScreenshotCaptureEnabled() override {
+    auto value = values_["fuseboxScreenshotCaptureEnabled"];
+    if (!value.isNull()) {
+      return value.getBool();
+    }
+
+    return ReactNativeFeatureFlagsDefaults::fuseboxScreenshotCaptureEnabled();
   }
 
   bool hideOffscreenVirtualViewsOnIOS() override {

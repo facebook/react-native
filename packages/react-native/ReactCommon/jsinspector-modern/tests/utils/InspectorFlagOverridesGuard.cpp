@@ -26,6 +26,11 @@ class ReactNativeFeatureFlagsOverrides
       const InspectorFlagOverrides& overrides)
       : overrides_(overrides) {}
 
+  bool fuseboxScreenshotCaptureEnabled() override {
+    return overrides_.screenshotCaptureEnabled.value_or(
+        ReactNativeFeatureFlagsDefaults::fuseboxScreenshotCaptureEnabled());
+  }
+
   bool fuseboxEnabledRelease() override {
     return overrides_.fuseboxEnabledRelease.value_or(
         ReactNativeFeatureFlagsDefaults::fuseboxEnabledRelease());

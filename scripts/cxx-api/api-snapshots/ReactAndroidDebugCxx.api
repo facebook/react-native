@@ -2821,6 +2821,7 @@ class facebook::react::JReactHostInspectorTarget : public jni::HybridClass<faceb
   public static void registerNatives();
   public virtual facebook::react::jsinspector_modern::HostTargetMetadata getMetadata() override;
   public virtual facebook::react::jsinspector_modern::HostTargetTracingDelegate* getTracingDelegate() override;
+  public virtual void captureScreenshot(const facebook::react::jsinspector_modern::HostTargetDelegate::PageCaptureScreenshotRequest&, const std::function<void(std::optional<std::string> base64Data)>& callback) override;
   public virtual void onReload(const facebook::react::jsinspector_modern::HostTargetDelegate::PageReloadRequest& request) override;
   public virtual void onSetPausedInDebuggerMessage(const facebook::react::jsinspector_modern::HostTargetDelegate::OverlaySetPausedInDebuggerMessageRequest& request) override;
   public virtual void unstable_onPerfIssueAdded(const facebook::react::jsinspector_modern::PerfIssuePayload&) override;
@@ -5657,6 +5658,7 @@ enum facebook::react::BlendMode {
   Multiply,
   Normal,
   Overlay,
+  PlusLighter,
   Saturation,
   Screen,
   SoftLight,
@@ -7242,6 +7244,7 @@ struct facebook::react::JNativeModule : public facebook::jni::JavaClass<facebook
 struct facebook::react::JReactHostImpl : public facebook::jni::JavaClass<facebook::react::JReactHostImpl> {
   public jni::local_ref<JTaskInterface::javaobject> reload(const std::string& reason);
   public jni::local_ref<jni::JMap<jstring, jstring>> getHostMetadata() const;
+  public jni::local_ref<jni::JString> captureScreenshot(const std::string& format, int quality) const;
   public static constexpr auto kJavaDescriptor;
   public void loadNetworkResource(const std::string& url, jni::local_ref<InspectorNetworkRequestListener::javaobject> listener) const;
   public void setPausedInDebuggerMessage(std::optional<std::string> message);
@@ -10379,6 +10382,7 @@ class facebook::react::jsinspector_modern::HostTargetDelegate : public facebook:
   public facebook::react::jsinspector_modern::HostTargetDelegate& operator=(facebook::react::jsinspector_modern::HostTargetDelegate&&) = delete;
   public virtual facebook::react::jsinspector_modern::HostTargetMetadata getMetadata() = 0;
   public virtual facebook::react::jsinspector_modern::HostTargetTracingDelegate* getTracingDelegate();
+  public virtual void captureScreenshot(const facebook::react::jsinspector_modern::HostTargetDelegate::PageCaptureScreenshotRequest&, const std::function<void(std::optional<std::string> base64Data)>& callback);
   public virtual void loadNetworkResource(const facebook::react::jsinspector_modern::LoadNetworkResourceRequest&, facebook::react::jsinspector_modern::ScopedExecutor<facebook::react::jsinspector_modern::NetworkRequestListener>) override;
   public virtual void onReload(const facebook::react::jsinspector_modern::HostTargetDelegate::PageReloadRequest& request) = 0;
   public virtual void onSetPausedInDebuggerMessage(const facebook::react::jsinspector_modern::HostTargetDelegate::OverlaySetPausedInDebuggerMessageRequest& request) = 0;
@@ -10389,6 +10393,11 @@ class facebook::react::jsinspector_modern::HostTargetDelegate : public facebook:
 struct facebook::react::jsinspector_modern::HostTargetDelegate::OverlaySetPausedInDebuggerMessageRequest {
   public bool operator==(const facebook::react::jsinspector_modern::HostTargetDelegate::OverlaySetPausedInDebuggerMessageRequest& rhs) const;
   public std::optional<std::string> message;
+}
+
+struct facebook::react::jsinspector_modern::HostTargetDelegate::PageCaptureScreenshotRequest {
+  public std::optional<int> quality;
+  public std::optional<std::string> format;
 }
 
 struct facebook::react::jsinspector_modern::HostTargetDelegate::PageReloadRequest {
@@ -10476,6 +10485,7 @@ class facebook::react::jsinspector_modern::InspectorFlags {
   public bool getIsProfilingBuild() const;
   public bool getNetworkInspectionEnabled() const;
   public bool getPerfIssuesEnabled() const;
+  public bool getScreenshotCaptureEnabled() const;
   public static facebook::react::jsinspector_modern::InspectorFlags& getInstance();
   public void dangerouslyDisableFuseboxForTest();
   public void dangerouslyResetFlags();
@@ -10580,6 +10590,7 @@ class facebook::react::jsinspector_modern::JInspectorFlags : public facebook::jn
   public static bool getFrameRecordingEnabled(jni::alias_ref<jclass>);
   public static bool getFuseboxEnabled(jni::alias_ref<jclass>);
   public static bool getIsProfilingBuild(jni::alias_ref<jclass>);
+  public static bool getScreenshotCaptureEnabled(jni::alias_ref<jclass>);
   public static constexpr auto kJavaDescriptor;
   public static void registerNatives();
 }

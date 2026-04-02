@@ -37,6 +37,11 @@ class InspectorFlags {
   bool getIsProfilingBuild() const;
 
   /**
+   * Flag determining if Page.captureScreenshot CDP method is enabled.
+   */
+  bool getScreenshotCaptureEnabled() const;
+
+  /**
    * Flag determining if frame recording (timings + screenshots) is enabled.
    */
   bool getFrameRecordingEnabled() const;
@@ -66,6 +71,7 @@ class InspectorFlags {
  private:
   struct Values {
     bool assertSingleHostState;
+    bool screenshotCaptureEnabled;
     bool frameRecordingEnabled;
     bool fuseboxEnabled;
     bool isProfilingBuild;
