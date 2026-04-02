@@ -859,6 +859,74 @@ describe('LogBoxData', () => {
       LogBoxDataWithMock.observe(observerAfter).unsubscribe();
       expect(Array.from(observerAfter.mock.calls[0][0].logs).length).toBe(0);
     });
+
+    it('does not notify observers while tracing is active', () => {
+      const LogBoxDataWithMock = require('../LogBoxData');
+
+      LogBoxDataWithMock.addLog({
+        level: 'warn',
+        message: {content: 'Log 1', substitutions: []},
+        category: 'log-1',
+        componentStack: [],
+      });
+      jest.runOnlyPendingTimers();
+
+      const observer = jest.fn();
+      const subscription = LogBoxDataWithMock.observe(observer);
+
+      // observe() calls the observer once synchronously on subscribe
+      expect(observer).toHaveBeenCalledTimes(1);
+
+      // Start tracing
+      mockIsTracing = jest.fn(() => true);
+      if (mockSubscribeCallback) {
+        mockSubscribeCallback(true);
+      }
+      jest.runOnlyPendingTimers();
+
+      // Observer should NOT have been called again during tracing
+      expect(observer).toHaveBeenCalledTimes(1);
+
+      subscription.unsubscribe();
+    });
+
+    it('notifies observers when tracing ends to sync state', () => {
+      const LogBoxDataWithMock = require('../LogBoxData');
+
+      LogBoxDataWithMock.addLog({
+        level: 'warn',
+        message: {content: 'Log 1', substitutions: []},
+        category: 'log-1',
+        componentStack: [],
+      });
+      jest.runOnlyPendingTimers();
+
+      const observer = jest.fn();
+      const subscription = LogBoxDataWithMock.observe(observer);
+
+      // observe() calls once on subscribe
+      expect(observer).toHaveBeenCalledTimes(1);
+      expect(Array.from(observer.mock.calls[0][0].logs).length).toBe(1);
+
+      // Start tracing — clears logs but does not notify
+      mockIsTracing = jest.fn(() => true);
+      if (mockSubscribeCallback) {
+        mockSubscribeCallback(true);
+      }
+      jest.runOnlyPendingTimers();
+      expect(observer).toHaveBeenCalledTimes(1);
+
+      // End tracing — should notify observer with cleared state
+      mockIsTracing = jest.fn(() => false);
+      if (mockSubscribeCallback) {
+        mockSubscribeCallback(false);
+      }
+      jest.runOnlyPendingTimers();
+      expect(observer).toHaveBeenCalledTimes(2);
+      expect(Array.from(observer.mock.calls[1][0].logs).length).toBe(0);
+
+      subscription.unsubscribe();
+    });
   });
 
   afterEach(() => {
