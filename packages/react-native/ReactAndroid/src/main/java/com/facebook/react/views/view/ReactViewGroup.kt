@@ -997,12 +997,12 @@ public open class ReactViewGroup public constructor(context: Context?) :
     } else if (axOrderParentOrderList != null) {
       // view is a container so add its children normally
       if (!isFocusable) {
-        super.addChildrenForAccessibility(outChildren)
+        safeAddChildrenForAccessibility(outChildren)
         return
 
         // If this view can coopt, turn the focusability off its children but add them to the tree
       } else if (isFocusable && (contentDescription == null || contentDescription == "")) {
-        super.addChildrenForAccessibility(outChildren)
+        safeAddChildrenForAccessibility(outChildren)
         for (i in 0..<childCount) {
           ReactAxOrderHelper.disableFocusForSubtree(getChildAt(i), axOrderParentOrderList)
         }
@@ -1012,7 +1012,23 @@ public open class ReactViewGroup public constructor(context: Context?) :
         return
       }
     } else {
+      safeAddChildrenForAccessibility(outChildren)
+    }
+  }
+
+  private fun safeAddChildrenForAccessibility(outChildren: ArrayList<View>) {
+    try {
       super.addChildrenForAccessibility(outChildren)
+    } catch (error: IllegalArgumentException) {
+      // Android 16 can race while building accessibility child lists during fast re-parenting.
+      if (error.message?.contains("descendant of this view") == true) {
+        logSoftException(
+            ReactSoftExceptionLogger.Categories.RVG_ADD_CHILDREN_FOR_ACCESSIBILITY,
+            error,
+        )
+      } else {
+        throw error
+      }
     }
   }
 
