@@ -34,6 +34,8 @@ exports[`GenerateModuleObjCpp can generate a header file NativeModule specs 1`] 
 #import <vector>
 
 
+NS_ASSUME_NONNULL_BEGIN
+
 @protocol NativeArrayTurboModuleSpec <RCTBridgeModule, RCTTurboModule>
 
 - (NSArray<NSString *> *)getArray:(NSArray *)a;
@@ -47,7 +49,7 @@ exports[`GenerateModuleObjCpp can generate a header file NativeModule specs 1`] 
 @protected
 facebook::react::EventEmitterCallback _eventEmitterCallback;
 }
-- (void)setEventEmitterCallback:(EventEmitterCallbackWrapper *)eventEmitterCallbackWrapper;
+- (void)setEventEmitterCallback:(EventEmitterCallbackWrapper *_Nonnull)eventEmitterCallbackWrapper;
 
 
 @end
@@ -73,7 +75,7 @@ namespace facebook::react {
 @protected
 facebook::react::EventEmitterCallback _eventEmitterCallback;
 }
-- (void)setEventEmitterCallback:(EventEmitterCallbackWrapper *)eventEmitterCallbackWrapper;
+- (void)setEventEmitterCallback:(EventEmitterCallbackWrapper *_Nonnull)eventEmitterCallbackWrapper;
 
 
 @end
@@ -99,7 +101,7 @@ namespace facebook::react {
 @protected
 facebook::react::EventEmitterCallback _eventEmitterCallback;
 }
-- (void)setEventEmitterCallback:(EventEmitterCallbackWrapper *)eventEmitterCallbackWrapper;
+- (void)setEventEmitterCallback:(EventEmitterCallbackWrapper *_Nonnull)eventEmitterCallbackWrapper;
 
 
 @end
@@ -165,7 +167,7 @@ namespace JS {
 @protected
 facebook::react::EventEmitterCallback _eventEmitterCallback;
 }
-- (void)setEventEmitterCallback:(EventEmitterCallbackWrapper *)eventEmitterCallbackWrapper;
+- (void)setEventEmitterCallback:(EventEmitterCallbackWrapper *_Nonnull)eventEmitterCallbackWrapper;
 
 
 @end
@@ -196,7 +198,7 @@ namespace facebook::react {
 @protected
 facebook::react::EventEmitterCallback _eventEmitterCallback;
 }
-- (void)setEventEmitterCallback:(EventEmitterCallbackWrapper *)eventEmitterCallbackWrapper;
+- (void)setEventEmitterCallback:(EventEmitterCallbackWrapper *_Nonnull)eventEmitterCallbackWrapper;
 
 
 @end
@@ -222,7 +224,7 @@ namespace facebook::react {
 @protected
 facebook::react::EventEmitterCallback _eventEmitterCallback;
 }
-- (void)setEventEmitterCallback:(EventEmitterCallbackWrapper *)eventEmitterCallbackWrapper;
+- (void)setEventEmitterCallback:(EventEmitterCallbackWrapper *_Nonnull)eventEmitterCallbackWrapper;
 
 
 @end
@@ -413,7 +415,7 @@ namespace JS {
 @protected
 facebook::react::EventEmitterCallback _eventEmitterCallback;
 }
-- (void)setEventEmitterCallback:(EventEmitterCallbackWrapper *)eventEmitterCallbackWrapper;
+- (void)setEventEmitterCallback:(EventEmitterCallbackWrapper *_Nonnull)eventEmitterCallbackWrapper;
 
 
 @end
@@ -567,7 +569,7 @@ namespace JS {
 @protected
 facebook::react::EventEmitterCallback _eventEmitterCallback;
 }
-- (void)setEventEmitterCallback:(EventEmitterCallbackWrapper *)eventEmitterCallbackWrapper;
+- (void)setEventEmitterCallback:(EventEmitterCallbackWrapper *_Nonnull)eventEmitterCallbackWrapper;
 
 
 @end
@@ -643,7 +645,7 @@ namespace JS {
 @protected
 facebook::react::EventEmitterCallback _eventEmitterCallback;
 }
-- (void)setEventEmitterCallback:(EventEmitterCallbackWrapper *)eventEmitterCallbackWrapper;
+- (void)setEventEmitterCallback:(EventEmitterCallbackWrapper *_Nonnull)eventEmitterCallbackWrapper;
 
 
 @end
@@ -673,7 +675,7 @@ namespace facebook::react {
 @protected
 facebook::react::EventEmitterCallback _eventEmitterCallback;
 }
-- (void)setEventEmitterCallback:(EventEmitterCallbackWrapper *)eventEmitterCallbackWrapper;
+- (void)setEventEmitterCallback:(EventEmitterCallbackWrapper *_Nonnull)eventEmitterCallbackWrapper;
 
 
 @end
@@ -776,7 +778,7 @@ namespace JS {
 @protected
 facebook::react::EventEmitterCallback _eventEmitterCallback;
 }
-- (void)setEventEmitterCallback:(EventEmitterCallbackWrapper *)eventEmitterCallbackWrapper;
+- (void)setEventEmitterCallback:(EventEmitterCallbackWrapper *_Nonnull)eventEmitterCallbackWrapper;
 
 
 @end
@@ -880,7 +882,7 @@ namespace JS {
 @protected
 facebook::react::EventEmitterCallback _eventEmitterCallback;
 }
-- (void)setEventEmitterCallback:(EventEmitterCallbackWrapper *)eventEmitterCallbackWrapper;
+- (void)setEventEmitterCallback:(EventEmitterCallbackWrapper *_Nonnull)eventEmitterCallbackWrapper;
 
 
 @end
@@ -983,7 +985,7 @@ namespace JS {
 @protected
 facebook::react::EventEmitterCallback _eventEmitterCallback;
 }
-- (void)setEventEmitterCallback:(EventEmitterCallbackWrapper *)eventEmitterCallbackWrapper;
+- (void)setEventEmitterCallback:(EventEmitterCallbackWrapper *_Nonnull)eventEmitterCallbackWrapper;
 
 
 @end
@@ -1086,7 +1088,7 @@ namespace JS {
 @protected
 facebook::react::EventEmitterCallback _eventEmitterCallback;
 }
-- (void)setEventEmitterCallback:(EventEmitterCallbackWrapper *)eventEmitterCallbackWrapper;
+- (void)setEventEmitterCallback:(EventEmitterCallbackWrapper *_Nonnull)eventEmitterCallbackWrapper;
 
 
 @end
@@ -1189,7 +1191,7 @@ namespace JS {
 @protected
 facebook::react::EventEmitterCallback _eventEmitterCallback;
 }
-- (void)setEventEmitterCallback:(EventEmitterCallbackWrapper *)eventEmitterCallbackWrapper;
+- (void)setEventEmitterCallback:(EventEmitterCallbackWrapper *_Nonnull)eventEmitterCallbackWrapper;
 
 
 @end
@@ -1215,7 +1217,7 @@ namespace facebook::react {
 @protected
 facebook::react::EventEmitterCallback _eventEmitterCallback;
 }
-- (void)setEventEmitterCallback:(EventEmitterCallbackWrapper *)eventEmitterCallbackWrapper;
+- (void)setEventEmitterCallback:(EventEmitterCallbackWrapper *_Nonnull)eventEmitterCallbackWrapper;
 
 
 @end
@@ -1548,6 +1550,7 @@ inline JS::NativeSampleTurboModuleOptional::Constants::Builder::Builder(Constant
   return i.unsafeRawValue();
 }) {}
 
+NS_ASSUME_NONNULL_END
 #endif // RNCodegenModuleFixtures_H
 "
 `;
@@ -1601,7 +1604,7 @@ NS_ASSUME_NONNULL_BEGIN
 @protected
 facebook::react::EventEmitterCallback _eventEmitterCallback;
 }
-- (void)setEventEmitterCallback:(EventEmitterCallbackWrapper *)eventEmitterCallbackWrapper;
+- (void)setEventEmitterCallback:(EventEmitterCallbackWrapper *_Nonnull)eventEmitterCallbackWrapper;
 
 
 @end
@@ -1627,7 +1630,7 @@ namespace facebook::react {
 @protected
 facebook::react::EventEmitterCallback _eventEmitterCallback;
 }
-- (void)setEventEmitterCallback:(EventEmitterCallbackWrapper *)eventEmitterCallbackWrapper;
+- (void)setEventEmitterCallback:(EventEmitterCallbackWrapper *_Nonnull)eventEmitterCallbackWrapper;
 
 
 @end
@@ -1653,7 +1656,7 @@ namespace facebook::react {
 @protected
 facebook::react::EventEmitterCallback _eventEmitterCallback;
 }
-- (void)setEventEmitterCallback:(EventEmitterCallbackWrapper *)eventEmitterCallbackWrapper;
+- (void)setEventEmitterCallback:(EventEmitterCallbackWrapper *_Nonnull)eventEmitterCallbackWrapper;
 
 
 @end
@@ -1719,7 +1722,7 @@ namespace JS {
 @protected
 facebook::react::EventEmitterCallback _eventEmitterCallback;
 }
-- (void)setEventEmitterCallback:(EventEmitterCallbackWrapper *)eventEmitterCallbackWrapper;
+- (void)setEventEmitterCallback:(EventEmitterCallbackWrapper *_Nonnull)eventEmitterCallbackWrapper;
 
 
 @end
@@ -1750,7 +1753,7 @@ namespace facebook::react {
 @protected
 facebook::react::EventEmitterCallback _eventEmitterCallback;
 }
-- (void)setEventEmitterCallback:(EventEmitterCallbackWrapper *)eventEmitterCallbackWrapper;
+- (void)setEventEmitterCallback:(EventEmitterCallbackWrapper *_Nonnull)eventEmitterCallbackWrapper;
 
 
 @end
@@ -1776,7 +1779,7 @@ namespace facebook::react {
 @protected
 facebook::react::EventEmitterCallback _eventEmitterCallback;
 }
-- (void)setEventEmitterCallback:(EventEmitterCallbackWrapper *)eventEmitterCallbackWrapper;
+- (void)setEventEmitterCallback:(EventEmitterCallbackWrapper *_Nonnull)eventEmitterCallbackWrapper;
 
 
 @end
@@ -1967,7 +1970,7 @@ namespace JS {
 @protected
 facebook::react::EventEmitterCallback _eventEmitterCallback;
 }
-- (void)setEventEmitterCallback:(EventEmitterCallbackWrapper *)eventEmitterCallbackWrapper;
+- (void)setEventEmitterCallback:(EventEmitterCallbackWrapper *_Nonnull)eventEmitterCallbackWrapper;
 
 
 @end
@@ -2121,7 +2124,7 @@ namespace JS {
 @protected
 facebook::react::EventEmitterCallback _eventEmitterCallback;
 }
-- (void)setEventEmitterCallback:(EventEmitterCallbackWrapper *)eventEmitterCallbackWrapper;
+- (void)setEventEmitterCallback:(EventEmitterCallbackWrapper *_Nonnull)eventEmitterCallbackWrapper;
 
 
 @end
@@ -2197,7 +2200,7 @@ namespace JS {
 @protected
 facebook::react::EventEmitterCallback _eventEmitterCallback;
 }
-- (void)setEventEmitterCallback:(EventEmitterCallbackWrapper *)eventEmitterCallbackWrapper;
+- (void)setEventEmitterCallback:(EventEmitterCallbackWrapper *_Nonnull)eventEmitterCallbackWrapper;
 
 
 @end
@@ -2227,7 +2230,7 @@ namespace facebook::react {
 @protected
 facebook::react::EventEmitterCallback _eventEmitterCallback;
 }
-- (void)setEventEmitterCallback:(EventEmitterCallbackWrapper *)eventEmitterCallbackWrapper;
+- (void)setEventEmitterCallback:(EventEmitterCallbackWrapper *_Nonnull)eventEmitterCallbackWrapper;
 
 
 @end
@@ -2330,7 +2333,7 @@ namespace JS {
 @protected
 facebook::react::EventEmitterCallback _eventEmitterCallback;
 }
-- (void)setEventEmitterCallback:(EventEmitterCallbackWrapper *)eventEmitterCallbackWrapper;
+- (void)setEventEmitterCallback:(EventEmitterCallbackWrapper *_Nonnull)eventEmitterCallbackWrapper;
 
 
 @end
@@ -2434,7 +2437,7 @@ namespace JS {
 @protected
 facebook::react::EventEmitterCallback _eventEmitterCallback;
 }
-- (void)setEventEmitterCallback:(EventEmitterCallbackWrapper *)eventEmitterCallbackWrapper;
+- (void)setEventEmitterCallback:(EventEmitterCallbackWrapper *_Nonnull)eventEmitterCallbackWrapper;
 
 
 @end
@@ -2537,7 +2540,7 @@ namespace JS {
 @protected
 facebook::react::EventEmitterCallback _eventEmitterCallback;
 }
-- (void)setEventEmitterCallback:(EventEmitterCallbackWrapper *)eventEmitterCallbackWrapper;
+- (void)setEventEmitterCallback:(EventEmitterCallbackWrapper *_Nonnull)eventEmitterCallbackWrapper;
 
 
 @end
@@ -2640,7 +2643,7 @@ namespace JS {
 @protected
 facebook::react::EventEmitterCallback _eventEmitterCallback;
 }
-- (void)setEventEmitterCallback:(EventEmitterCallbackWrapper *)eventEmitterCallbackWrapper;
+- (void)setEventEmitterCallback:(EventEmitterCallbackWrapper *_Nonnull)eventEmitterCallbackWrapper;
 
 
 @end
@@ -2743,7 +2746,7 @@ namespace JS {
 @protected
 facebook::react::EventEmitterCallback _eventEmitterCallback;
 }
-- (void)setEventEmitterCallback:(EventEmitterCallbackWrapper *)eventEmitterCallbackWrapper;
+- (void)setEventEmitterCallback:(EventEmitterCallbackWrapper *_Nonnull)eventEmitterCallbackWrapper;
 
 
 @end
@@ -2769,7 +2772,7 @@ namespace facebook::react {
 @protected
 facebook::react::EventEmitterCallback _eventEmitterCallback;
 }
-- (void)setEventEmitterCallback:(EventEmitterCallbackWrapper *)eventEmitterCallbackWrapper;
+- (void)setEventEmitterCallback:(EventEmitterCallbackWrapper *_Nonnull)eventEmitterCallbackWrapper;
 
 
 @end
@@ -3123,11 +3126,13 @@ exports[`GenerateModuleObjCpp can generate an implementation file NativeModule s
 
 #import \\"RNCodegenModuleFixtures.h\\"
 
+NS_ASSUME_NONNULL_BEGIN
+
 
 @implementation NativeArrayTurboModuleSpecBase
 
 
-- (void)setEventEmitterCallback:(EventEmitterCallbackWrapper *)eventEmitterCallbackWrapper
+- (void)setEventEmitterCallback:(EventEmitterCallbackWrapper *_Nonnull)eventEmitterCallbackWrapper
 {
   _eventEmitterCallback = std::move(eventEmitterCallbackWrapper->_eventEmitterCallback);
 }
@@ -3165,7 +3170,7 @@ namespace facebook::react {
 @implementation NativeBooleanTurboModuleSpecBase
 
 
-- (void)setEventEmitterCallback:(EventEmitterCallbackWrapper *)eventEmitterCallbackWrapper
+- (void)setEventEmitterCallback:(EventEmitterCallbackWrapper *_Nonnull)eventEmitterCallbackWrapper
 {
   _eventEmitterCallback = std::move(eventEmitterCallbackWrapper->_eventEmitterCallback);
 }
@@ -3196,7 +3201,7 @@ namespace facebook::react {
 @implementation NativeCallbackTurboModuleSpecBase
 
 
-- (void)setEventEmitterCallback:(EventEmitterCallbackWrapper *)eventEmitterCallbackWrapper
+- (void)setEventEmitterCallback:(EventEmitterCallbackWrapper *_Nonnull)eventEmitterCallbackWrapper
 {
   _eventEmitterCallback = std::move(eventEmitterCallbackWrapper->_eventEmitterCallback);
 }
@@ -3227,7 +3232,7 @@ namespace facebook::react {
 @implementation NativeEnumTurboModuleSpecBase
 
 
-- (void)setEventEmitterCallback:(EventEmitterCallbackWrapper *)eventEmitterCallbackWrapper
+- (void)setEventEmitterCallback:(EventEmitterCallbackWrapper *_Nonnull)eventEmitterCallbackWrapper
 {
   _eventEmitterCallback = std::move(eventEmitterCallbackWrapper->_eventEmitterCallback);
 }
@@ -3297,7 +3302,7 @@ namespace facebook::react {
 @implementation NativeNullableTurboModuleSpecBase
 
 
-- (void)setEventEmitterCallback:(EventEmitterCallbackWrapper *)eventEmitterCallbackWrapper
+- (void)setEventEmitterCallback:(EventEmitterCallbackWrapper *_Nonnull)eventEmitterCallbackWrapper
 {
   _eventEmitterCallback = std::move(eventEmitterCallbackWrapper->_eventEmitterCallback);
 }
@@ -3356,7 +3361,7 @@ namespace facebook::react {
 @implementation NativeNumberTurboModuleSpecBase
 
 
-- (void)setEventEmitterCallback:(EventEmitterCallbackWrapper *)eventEmitterCallbackWrapper
+- (void)setEventEmitterCallback:(EventEmitterCallbackWrapper *_Nonnull)eventEmitterCallbackWrapper
 {
   _eventEmitterCallback = std::move(eventEmitterCallbackWrapper->_eventEmitterCallback);
 }
@@ -3387,7 +3392,7 @@ namespace facebook::react {
 @implementation NativeObjectTurboModuleSpecBase
 
 
-- (void)setEventEmitterCallback:(EventEmitterCallbackWrapper *)eventEmitterCallbackWrapper
+- (void)setEventEmitterCallback:(EventEmitterCallbackWrapper *_Nonnull)eventEmitterCallbackWrapper
 {
   _eventEmitterCallback = std::move(eventEmitterCallbackWrapper->_eventEmitterCallback);
 }
@@ -3450,7 +3455,7 @@ namespace facebook::react {
 @implementation NativeOptionalObjectTurboModuleSpecBase
 
 
-- (void)setEventEmitterCallback:(EventEmitterCallbackWrapper *)eventEmitterCallbackWrapper
+- (void)setEventEmitterCallback:(EventEmitterCallbackWrapper *_Nonnull)eventEmitterCallbackWrapper
 {
   _eventEmitterCallback = std::move(eventEmitterCallbackWrapper->_eventEmitterCallback);
 }
@@ -3474,7 +3479,7 @@ namespace facebook::react {
 @implementation NativePartialAnnotationTurboModuleSpecBase
 
 
-- (void)setEventEmitterCallback:(EventEmitterCallbackWrapper *)eventEmitterCallbackWrapper
+- (void)setEventEmitterCallback:(EventEmitterCallbackWrapper *_Nonnull)eventEmitterCallbackWrapper
 {
   _eventEmitterCallback = std::move(eventEmitterCallbackWrapper->_eventEmitterCallback);
 }
@@ -3537,7 +3542,7 @@ namespace facebook::react {
 @implementation NativePromiseTurboModuleSpecBase
 
 
-- (void)setEventEmitterCallback:(EventEmitterCallbackWrapper *)eventEmitterCallbackWrapper
+- (void)setEventEmitterCallback:(EventEmitterCallbackWrapper *_Nonnull)eventEmitterCallbackWrapper
 {
   _eventEmitterCallback = std::move(eventEmitterCallbackWrapper->_eventEmitterCallback);
 }
@@ -3568,7 +3573,7 @@ namespace facebook::react {
 @implementation NativeSampleTurboModuleSpecBase
 
 
-- (void)setEventEmitterCallback:(EventEmitterCallbackWrapper *)eventEmitterCallbackWrapper
+- (void)setEventEmitterCallback:(EventEmitterCallbackWrapper *_Nonnull)eventEmitterCallbackWrapper
 {
   _eventEmitterCallback = std::move(eventEmitterCallbackWrapper->_eventEmitterCallback);
 }
@@ -3687,7 +3692,7 @@ namespace facebook::react {
 @implementation NativeSampleTurboModuleArraysSpecBase
 
 
-- (void)setEventEmitterCallback:(EventEmitterCallbackWrapper *)eventEmitterCallbackWrapper
+- (void)setEventEmitterCallback:(EventEmitterCallbackWrapper *_Nonnull)eventEmitterCallbackWrapper
 {
   _eventEmitterCallback = std::move(eventEmitterCallbackWrapper->_eventEmitterCallback);
 }
@@ -3795,7 +3800,7 @@ namespace facebook::react {
 @implementation NativeSampleTurboModuleNullableSpecBase
 
 
-- (void)setEventEmitterCallback:(EventEmitterCallbackWrapper *)eventEmitterCallbackWrapper
+- (void)setEventEmitterCallback:(EventEmitterCallbackWrapper *_Nonnull)eventEmitterCallbackWrapper
 {
   _eventEmitterCallback = std::move(eventEmitterCallbackWrapper->_eventEmitterCallback);
 }
@@ -3914,7 +3919,7 @@ namespace facebook::react {
 @implementation NativeSampleTurboModuleNullableAndOptionalSpecBase
 
 
-- (void)setEventEmitterCallback:(EventEmitterCallbackWrapper *)eventEmitterCallbackWrapper
+- (void)setEventEmitterCallback:(EventEmitterCallbackWrapper *_Nonnull)eventEmitterCallbackWrapper
 {
   _eventEmitterCallback = std::move(eventEmitterCallbackWrapper->_eventEmitterCallback);
 }
@@ -4033,7 +4038,7 @@ namespace facebook::react {
 @implementation NativeSampleTurboModuleOptionalSpecBase
 
 
-- (void)setEventEmitterCallback:(EventEmitterCallbackWrapper *)eventEmitterCallbackWrapper
+- (void)setEventEmitterCallback:(EventEmitterCallbackWrapper *_Nonnull)eventEmitterCallbackWrapper
 {
   _eventEmitterCallback = std::move(eventEmitterCallbackWrapper->_eventEmitterCallback);
 }
@@ -4152,7 +4157,7 @@ namespace facebook::react {
 @implementation NativeStringTurboModuleSpecBase
 
 
-- (void)setEventEmitterCallback:(EventEmitterCallbackWrapper *)eventEmitterCallbackWrapper
+- (void)setEventEmitterCallback:(EventEmitterCallbackWrapper *_Nonnull)eventEmitterCallbackWrapper
 {
   _eventEmitterCallback = std::move(eventEmitterCallbackWrapper->_eventEmitterCallback);
 }
@@ -4179,5 +4184,7 @@ namespace facebook::react {
         
   }
 } // namespace facebook::react
+
+NS_ASSUME_NONNULL_END
 "
 `;

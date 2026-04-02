@@ -39,7 +39,7 @@ ${eventEmitters
   .map(eventEmitter => EventEmitterImplementationTemplate(eventEmitter))
   .join('\n')}
 
-- (void)setEventEmitterCallback:(EventEmitterCallbackWrapper *)eventEmitterCallbackWrapper
+- (void)setEventEmitterCallback:(EventEmitterCallbackWrapper *_Nonnull)eventEmitterCallbackWrapper
 {
   _eventEmitterCallback = std::move(eventEmitterCallbackWrapper->_eventEmitterCallback);
 }

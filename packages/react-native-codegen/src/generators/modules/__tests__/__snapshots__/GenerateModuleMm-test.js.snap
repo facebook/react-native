@@ -17,11 +17,13 @@ Map {
 
 #import \\"SampleWithUppercaseName.h\\"
 
+NS_ASSUME_NONNULL_BEGIN
+
 
 @implementation NativeSampleTurboModuleSpecBase
 
 
-- (void)setEventEmitterCallback:(EventEmitterCallbackWrapper *)eventEmitterCallbackWrapper
+- (void)setEventEmitterCallback:(EventEmitterCallbackWrapper *_Nonnull)eventEmitterCallbackWrapper
 {
   _eventEmitterCallback = std::move(eventEmitterCallbackWrapper->_eventEmitterCallback);
 }
@@ -36,6 +38,8 @@ namespace facebook::react {
       
   }
 } // namespace facebook::react
+
+NS_ASSUME_NONNULL_END
 ",
 }
 `;
@@ -57,11 +61,13 @@ Map {
 
 #import \\"complex_objects.h\\"
 
+NS_ASSUME_NONNULL_BEGIN
+
 
 @implementation NativeSampleTurboModuleSpecBase
 
 
-- (void)setEventEmitterCallback:(EventEmitterCallbackWrapper *)eventEmitterCallbackWrapper
+- (void)setEventEmitterCallback:(EventEmitterCallbackWrapper *_Nonnull)eventEmitterCallbackWrapper
 {
   _eventEmitterCallback = std::move(eventEmitterCallbackWrapper->_eventEmitterCallback);
 }
@@ -158,6 +164,8 @@ namespace facebook::react {
         
   }
 } // namespace facebook::react
+
+NS_ASSUME_NONNULL_END
 ",
 }
 `;
@@ -179,7 +187,11 @@ Map {
 
 #import \\"cxx_only_native_modules.h\\"
 
+NS_ASSUME_NONNULL_BEGIN
 
+
+
+NS_ASSUME_NONNULL_END
 ",
 }
 `;
@@ -201,11 +213,13 @@ Map {
 
 #import \\"empty_native_modules.h\\"
 
+NS_ASSUME_NONNULL_BEGIN
+
 
 @implementation NativeSampleTurboModuleSpecBase
 
 
-- (void)setEventEmitterCallback:(EventEmitterCallbackWrapper *)eventEmitterCallbackWrapper
+- (void)setEventEmitterCallback:(EventEmitterCallbackWrapper *_Nonnull)eventEmitterCallbackWrapper
 {
   _eventEmitterCallback = std::move(eventEmitterCallbackWrapper->_eventEmitterCallback);
 }
@@ -220,6 +234,8 @@ namespace facebook::react {
       
   }
 } // namespace facebook::react
+
+NS_ASSUME_NONNULL_END
 ",
 }
 `;
@@ -240,6 +256,8 @@ Map {
  */
 
 #import \\"event_emitter_module.h\\"
+
+NS_ASSUME_NONNULL_BEGIN
 
 
 @implementation NativeSampleTurboModuleSpecBase
@@ -268,7 +286,7 @@ Map {
   _eventEmitterCallback(\\"onEvent6\\", value);
 }
 
-- (void)setEventEmitterCallback:(EventEmitterCallbackWrapper *)eventEmitterCallbackWrapper
+- (void)setEventEmitterCallback:(EventEmitterCallbackWrapper *_Nonnull)eventEmitterCallbackWrapper
 {
   _eventEmitterCallback = std::move(eventEmitterCallbackWrapper->_eventEmitterCallback);
 }
@@ -297,6 +315,8 @@ namespace facebook::react {
         });
   }
 } // namespace facebook::react
+
+NS_ASSUME_NONNULL_END
 ",
 }
 `;
@@ -318,11 +338,13 @@ Map {
 
 #import \\"native_modules_with_type_aliases.h\\"
 
+NS_ASSUME_NONNULL_BEGIN
+
 
 @implementation AliasTurboModuleSpecBase
 
 
-- (void)setEventEmitterCallback:(EventEmitterCallbackWrapper *)eventEmitterCallbackWrapper
+- (void)setEventEmitterCallback:(EventEmitterCallbackWrapper *_Nonnull)eventEmitterCallbackWrapper
 {
   _eventEmitterCallback = std::move(eventEmitterCallbackWrapper->_eventEmitterCallback);
 }
@@ -365,6 +387,8 @@ namespace facebook::react {
         setMethodArgConversionSelector(@\\"cropImage\\", 0, @\\"JS_AliasTurboModule_Options:\\");
   }
 } // namespace facebook::react
+
+NS_ASSUME_NONNULL_END
 ",
 }
 `;
@@ -386,11 +410,13 @@ Map {
 
 #import \\"real_module_example.h\\"
 
+NS_ASSUME_NONNULL_BEGIN
+
 
 @implementation NativeCameraRollManagerSpecBase
 
 
-- (void)setEventEmitterCallback:(EventEmitterCallbackWrapper *)eventEmitterCallbackWrapper
+- (void)setEventEmitterCallback:(EventEmitterCallbackWrapper *_Nonnull)eventEmitterCallbackWrapper
 {
   _eventEmitterCallback = std::move(eventEmitterCallbackWrapper->_eventEmitterCallback);
 }
@@ -433,7 +459,7 @@ namespace facebook::react {
 @implementation NativeExceptionsManagerSpecBase
 
 
-- (void)setEventEmitterCallback:(EventEmitterCallbackWrapper *)eventEmitterCallbackWrapper
+- (void)setEventEmitterCallback:(EventEmitterCallbackWrapper *_Nonnull)eventEmitterCallbackWrapper
 {
   _eventEmitterCallback = std::move(eventEmitterCallbackWrapper->_eventEmitterCallback);
 }
@@ -492,6 +518,8 @@ namespace facebook::react {
         
   }
 } // namespace facebook::react
+
+NS_ASSUME_NONNULL_END
 ",
 }
 `;
@@ -513,11 +541,13 @@ Map {
 
 #import \\"simple_native_modules.h\\"
 
+NS_ASSUME_NONNULL_BEGIN
+
 
 @implementation NativeSampleTurboModuleSpecBase
 
 
-- (void)setEventEmitterCallback:(EventEmitterCallbackWrapper *)eventEmitterCallbackWrapper
+- (void)setEventEmitterCallback:(EventEmitterCallbackWrapper *_Nonnull)eventEmitterCallbackWrapper
 {
   _eventEmitterCallback = std::move(eventEmitterCallbackWrapper->_eventEmitterCallback);
 }
@@ -628,6 +658,8 @@ namespace facebook::react {
         
   }
 } // namespace facebook::react
+
+NS_ASSUME_NONNULL_END
 ",
 }
 `;
@@ -649,6 +681,8 @@ Map {
 
 #import \\"string_literals.h\\"
 
+NS_ASSUME_NONNULL_BEGIN
+
 
 @implementation NativeSampleTurboModuleSpecBase
 - (void)emitLiteralEvent:(NSString *_Nonnull)value
@@ -656,7 +690,7 @@ Map {
   _eventEmitterCallback(\\"literalEvent\\", value);
 }
 
-- (void)setEventEmitterCallback:(EventEmitterCallbackWrapper *)eventEmitterCallbackWrapper
+- (void)setEventEmitterCallback:(EventEmitterCallbackWrapper *_Nonnull)eventEmitterCallbackWrapper
 {
   _eventEmitterCallback = std::move(eventEmitterCallbackWrapper->_eventEmitterCallback);
 }
@@ -680,6 +714,8 @@ namespace facebook::react {
         });
   }
 } // namespace facebook::react
+
+NS_ASSUME_NONNULL_END
 ",
 }
 `;
@@ -701,11 +737,13 @@ Map {
 
 #import \\"two_modules_different_files.h\\"
 
+NS_ASSUME_NONNULL_BEGIN
+
 
 @implementation NativeSampleTurboModuleSpecBase
 
 
-- (void)setEventEmitterCallback:(EventEmitterCallbackWrapper *)eventEmitterCallbackWrapper
+- (void)setEventEmitterCallback:(EventEmitterCallbackWrapper *_Nonnull)eventEmitterCallbackWrapper
 {
   _eventEmitterCallback = std::move(eventEmitterCallbackWrapper->_eventEmitterCallback);
 }
@@ -729,7 +767,7 @@ namespace facebook::react {
 @implementation NativeSampleTurboModule2SpecBase
 
 
-- (void)setEventEmitterCallback:(EventEmitterCallbackWrapper *)eventEmitterCallbackWrapper
+- (void)setEventEmitterCallback:(EventEmitterCallbackWrapper *_Nonnull)eventEmitterCallbackWrapper
 {
   _eventEmitterCallback = std::move(eventEmitterCallbackWrapper->_eventEmitterCallback);
 }
@@ -749,6 +787,8 @@ namespace facebook::react {
         
   }
 } // namespace facebook::react
+
+NS_ASSUME_NONNULL_END
 ",
 }
 `;
@@ -770,11 +810,13 @@ Map {
 
 #import \\"union_module.h\\"
 
+NS_ASSUME_NONNULL_BEGIN
+
 
 @implementation NativeSampleTurboModuleSpecBase
 
 
-- (void)setEventEmitterCallback:(EventEmitterCallbackWrapper *)eventEmitterCallbackWrapper
+- (void)setEventEmitterCallback:(EventEmitterCallbackWrapper *_Nonnull)eventEmitterCallbackWrapper
 {
   _eventEmitterCallback = std::move(eventEmitterCallbackWrapper->_eventEmitterCallback);
 }
@@ -794,6 +836,8 @@ namespace facebook::react {
         
   }
 } // namespace facebook::react
+
+NS_ASSUME_NONNULL_END
 ",
 }
 `;
