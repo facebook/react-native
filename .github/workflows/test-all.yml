@@ -272,7 +272,8 @@ jobs:
 
   test_e2e_android_templateapp:
     runs-on: 4-core-ubuntu
-    needs: build_npm_package
+    needs: [build_npm_package, build_android]
+    if: needs.build_android.result == 'success'
     strategy:
       fail-fast: false
       matrix:
@@ -440,6 +441,10 @@ jobs:
         prebuild_apple_dependencies,
         prebuild_react_native_core,
       ]
+    if: |
+      always() &&
+      !contains(needs.*.result, 'failure') &&
+      !contains(needs.*.result, 'cancelled')
     container:
       image: reactnativecommunity/react-native-android:latest
       env:
@@ -460,7 +465,8 @@ jobs:
 
   test_android_helloworld:
     runs-on: 4-core-ubuntu
-    needs: build_npm_package
+    needs: [build_npm_package, build_android]
+    if: needs.build_android.result == 'success'
     container:
       image: reactnativecommunity/react-native-android:latest
     env:
