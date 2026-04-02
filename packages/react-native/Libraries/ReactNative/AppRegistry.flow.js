@@ -29,7 +29,7 @@ export type AppConfig = {
   ...
 };
 export type AppParameters = {
-  initialProps: $ReadOnly<{[string]: mixed, ...}>,
+  initialProps: Readonly<{[string]: unknown, ...}>,
   rootTag: RootTag,
   fabric?: boolean,
 };
@@ -39,7 +39,7 @@ export type Runnable = (
 ) => void;
 export type Runnables = {[appKey: string]: Runnable};
 export type Registry = {
-  sections: $ReadOnlyArray<string>,
+  sections: ReadonlyArray<string>,
   runnables: Runnables,
   ...
 };

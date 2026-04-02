@@ -10,9 +10,10 @@
 #import "RCTNetworkConversions.h"
 
 #import <React/RCTLog.h>
-#import <jsinspector-modern/network/NetworkReporter.h>
+#import <React/RCTUtils.h>
+#import <react/networking/NetworkReporter.h>
 
-using namespace facebook::react::jsinspector_modern;
+using namespace facebook::react;
 
 #ifdef REACT_NATIVE_DEBUGGER_ENABLED
 namespace {
@@ -28,11 +29,33 @@ Headers convertNSDictionaryToHeaders(const NSDictionary<NSString *, NSString *> 
 
 std::string convertRequestBodyToStringTruncated(NSURLRequest *request)
 {
-  const NSUInteger maxBodySize = 1024 * 1024; // 1MB
-  auto bodyLength = request.HTTPBody.length;
-  auto bytesToRead = std::min(bodyLength, maxBodySize);
+  const NSUInteger maxBodySize = 512 * 1024; // 512KB
+  NSData *bodyData = request.HTTPBody;
 
-  auto body = std::string((const char *)request.HTTPBody.bytes, bytesToRead);
+  if (bodyData == nil || bodyData.length == 0) {
+    return "";
+  }
+
+  // Decompress if gzip-encoded (up to maxBodySize)
+  NSString *contentEncoding = [request valueForHTTPHeaderField:@"Content-Encoding"];
+  if ([contentEncoding isEqualToString:@"gzip"]) {
+    NSData *decompressedData = RCTDecompressGzipData(bodyData, maxBodySize);
+    if (decompressedData != nil) {
+      bodyData = decompressedData;
+    }
+  }
+
+  auto bodyLength = bodyData.length;
+  auto bytesToRead = std::min(bodyLength, maxBodySize);
+  NSData *truncatedData = [bodyData subdataWithRange:NSMakeRange(0, bytesToRead)];
+
+  // Attempt UTF-8 decoding
+  NSString *bodyString = [[NSString alloc] initWithData:truncatedData encoding:NSUTF8StringEncoding];
+  if (bodyString == nil) {
+    return "[Preview unavailable]";
+  }
+
+  auto body = std::string([bodyString UTF8String]);
 
   if (bytesToRead < bodyLength) {
     body +=
@@ -48,14 +71,14 @@ std::string convertRequestBodyToStringTruncated(NSURLRequest *request)
 #ifdef REACT_NATIVE_DEBUGGER_ENABLED
 
 // Dictionary to buffer incremental response bodies (CDP debugging active only)
-static const NSMutableDictionary<NSNumber *, NSMutableString *> *responseBuffers = nil;
+static const NSMutableDictionary<NSString *, NSMutableString *> *responseBuffers = nil;
 
 #endif
 
 @implementation RCTInspectorNetworkReporter {
 }
 
-+ (void)reportRequestStart:(NSNumber *)requestId
++ (void)reportRequestStart:(NSString *)requestId
                    request:(NSURLRequest *)request
          encodedDataLength:(int)encodedDataLength
 {
@@ -68,11 +91,10 @@ static const NSMutableDictionary<NSNumber *, NSMutableString *> *responseBuffers
   requestInfo.httpBody = convertRequestBodyToStringTruncated(request);
 #endif
 
-  NetworkReporter::getInstance().reportRequestStart(
-      requestId.stringValue.UTF8String, requestInfo, encodedDataLength, std::nullopt);
+  NetworkReporter::getInstance().reportRequestStart(requestId.UTF8String, requestInfo, encodedDataLength, std::nullopt);
 }
 
-+ (void)reportConnectionTiming:(NSNumber *)requestId request:(NSURLRequest *)request
++ (void)reportConnectionTiming:(NSString *)requestId request:(NSURLRequest *)request
 {
   Headers headersMap;
 
@@ -81,10 +103,10 @@ static const NSMutableDictionary<NSNumber *, NSMutableString *> *responseBuffers
   headersMap = convertNSDictionaryToHeaders(request.allHTTPHeaderFields);
 #endif
 
-  NetworkReporter::getInstance().reportConnectionTiming(requestId.stringValue.UTF8String, headersMap);
+  NetworkReporter::getInstance().reportConnectionTiming(requestId.UTF8String, headersMap);
 }
 
-+ (void)reportResponseStart:(NSNumber *)requestId
++ (void)reportResponseStart:(NSString *)requestId
                    response:(NSURLResponse *)response
                  statusCode:(int)statusCode
                     headers:(NSDictionary<NSString *, NSString *> *)headers
@@ -99,17 +121,17 @@ static const NSMutableDictionary<NSNumber *, NSMutableString *> *responseBuffers
 #endif
 
   NetworkReporter::getInstance().reportResponseStart(
-      requestId.stringValue.UTF8String, responseInfo, response.expectedContentLength);
+      requestId.UTF8String, responseInfo, response.expectedContentLength);
 }
 
-+ (void)reportDataReceived:(NSNumber *)requestId data:(NSData *)data
++ (void)reportDataReceived:(NSString *)requestId data:(NSData *)data
 {
-  NetworkReporter::getInstance().reportDataReceived(requestId.stringValue.UTF8String, (int)data.length, std::nullopt);
+  NetworkReporter::getInstance().reportDataReceived(requestId.UTF8String, (int)data.length, std::nullopt);
 }
 
-+ (void)reportResponseEnd:(NSNumber *)requestId encodedDataLength:(int)encodedDataLength
++ (void)reportResponseEnd:(NSString *)requestId encodedDataLength:(int)encodedDataLength
 {
-  NetworkReporter::getInstance().reportResponseEnd(requestId.stringValue.UTF8String, encodedDataLength);
+  NetworkReporter::getInstance().reportResponseEnd(requestId.UTF8String, encodedDataLength);
 
 #ifdef REACT_NATIVE_DEBUGGER_ENABLED
   // Debug build: Check for buffered response body and flush to NetworkReporter
@@ -118,7 +140,7 @@ static const NSMutableDictionary<NSNumber *, NSMutableString *> *responseBuffers
     if (buffer != nullptr) {
       if (buffer.length > 0) {
         NetworkReporter::getInstance().storeResponseBody(
-            requestId.stringValue.UTF8String, RCTStringViewFromNSString(buffer), false);
+            requestId.UTF8String, RCTStringViewFromNSString(buffer), false);
       }
       [responseBuffers removeObjectForKey:requestId];
     }
@@ -126,9 +148,9 @@ static const NSMutableDictionary<NSNumber *, NSMutableString *> *responseBuffers
 #endif
 }
 
-+ (void)reportRequestFailed:(NSNumber *)requestId cancelled:(bool)cancelled
++ (void)reportRequestFailed:(NSString *)requestId cancelled:(bool)cancelled
 {
-  NetworkReporter::getInstance().reportRequestFailed(requestId.stringValue.UTF8String, cancelled);
+  NetworkReporter::getInstance().reportRequestFailed(requestId.UTF8String, cancelled);
 
 #ifdef REACT_NATIVE_DEBUGGER_ENABLED
   // Debug build: Clear buffer for request
@@ -138,7 +160,7 @@ static const NSMutableDictionary<NSNumber *, NSMutableString *> *responseBuffers
 #endif
 }
 
-+ (void)maybeStoreResponseBody:(NSNumber *)requestId data:(id)data base64Encoded:(bool)base64Encoded
++ (void)maybeStoreResponseBody:(NSString *)requestId data:(id)data base64Encoded:(bool)base64Encoded
 {
 #ifdef REACT_NATIVE_DEBUGGER_ENABLED
   // Debug build: Process response body and report to NetworkReporter
@@ -152,7 +174,7 @@ static const NSMutableDictionary<NSNumber *, NSMutableString *> *responseBuffers
       NSString *encodedString = [(NSData *)data base64EncodedStringWithOptions:0];
       if (encodedString != nullptr) {
         networkReporter.storeResponseBody(
-            requestId.stringValue.UTF8String, RCTStringViewFromNSString(encodedString), base64Encoded);
+            requestId.UTF8String, RCTStringViewFromNSString(encodedString), base64Encoded);
       } else {
         RCTLogWarn(@"Failed to encode response data for request %@", requestId);
       }
@@ -160,13 +182,12 @@ static const NSMutableDictionary<NSNumber *, NSMutableString *> *responseBuffers
       RCTLogWarn(@"Exception while encoding response data: %@", exception.reason);
     }
   } else if ([data isKindOfClass:[NSString class]] && [(NSString *)data length] > 0) {
-    networkReporter.storeResponseBody(
-        requestId.stringValue.UTF8String, RCTStringViewFromNSString((NSString *)data), base64Encoded);
+    networkReporter.storeResponseBody(requestId.UTF8String, RCTStringViewFromNSString((NSString *)data), base64Encoded);
   }
 #endif
 }
 
-+ (void)maybeStoreResponseBodyIncremental:(NSNumber *)requestId data:(NSString *)data
++ (void)maybeStoreResponseBodyIncremental:(NSString *)requestId data:(NSString *)data
 {
 #ifdef REACT_NATIVE_DEBUGGER_ENABLED
   // Debug build: Buffer incremental response body contents

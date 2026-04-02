@@ -19,16 +19,15 @@ namespace facebook::react {
 class Instance;
 
 struct JCallback : public jni::JavaClass<JCallback> {
-  constexpr static auto kJavaDescriptor =
-      "Lcom/facebook/react/bridge/Callback;";
+  constexpr static auto kJavaDescriptor = "Lcom/facebook/react/bridge/Callback;";
 };
 
 class JCxxCallbackImpl : public jni::HybridClass<JCxxCallbackImpl, JCallback> {
  public:
-  constexpr static auto kJavaDescriptor =
-      "Lcom/facebook/react/bridge/CxxCallbackImpl;";
+  constexpr static auto kJavaDescriptor = "Lcom/facebook/react/bridge/CxxCallbackImpl;";
 
-  static void registerNatives() {
+  static void registerNatives()
+  {
     registerHybrid({
         makeNativeMethod("nativeInvoke", JCxxCallbackImpl::invoke),
     });
@@ -40,7 +39,8 @@ class JCxxCallbackImpl : public jni::HybridClass<JCxxCallbackImpl, JCallback> {
   using Callback = std::function<void(folly::dynamic)>;
   JCxxCallbackImpl(Callback callback) : callback_(std::move(callback)) {}
 
-  void invoke(NativeArray* arguments) {
+  void invoke(NativeArray *arguments)
+  {
     callback_(arguments->consume());
   }
 

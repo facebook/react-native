@@ -29,7 +29,7 @@ type CopiedFiles = {
 };
 
 async function saveAssets(
-  assets: $ReadOnlyArray<AssetData>,
+  assets: ReadonlyArray<AssetData>,
   platform: string,
   assetsDest?: string,
   assetCatalogDest?: string,
@@ -116,7 +116,7 @@ function copyAll(filesToCopy: CopiedFiles) {
         const src = queue.shift();
         // $FlowFixMe[incompatible-type]
         const dest = filesToCopy[src];
-        // $FlowFixMe[incompatible-call]
+        // $FlowFixMe[incompatible-type]
         copy(src, dest, copyNext);
       }
     };

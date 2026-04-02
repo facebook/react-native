@@ -64,7 +64,8 @@ abstract class PrepareGflagsTask : DefaultTask() {
               .replace(Regex("@GFLAGS_NAMESPACE@"), "gflags")
               .replace(
                   Regex(
-                      "@(HAVE_STDINT_H|HAVE_SYS_TYPES_H|HAVE_INTTYPES_H|GFLAGS_INTTYPES_FORMAT_C99)@"),
+                      "@(HAVE_STDINT_H|HAVE_SYS_TYPES_H|HAVE_INTTYPES_H|GFLAGS_INTTYPES_FORMAT_C99)@"
+                  ),
                   "1",
               )
               .replace(Regex("@([A-Z0-9_]+)@"), "1")

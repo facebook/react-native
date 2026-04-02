@@ -11,8 +11,10 @@ import android.view.View
 import android.view.ViewGroup
 import com.facebook.common.logging.FLog
 import com.facebook.react.common.ReactConstants
+import com.facebook.react.common.annotations.internal.LegacyArchitecture
 
 /** Helper to handle implementing ViewGroups with custom drawing order based on z-index. */
+@LegacyArchitecture
 public class ViewGroupDrawingOrderHelper(private val viewGroup: ViewGroup) {
   private var numberOfChildrenWithZIndex = 0
   private var drawingOrderIndices: IntArray? = null
@@ -57,9 +59,11 @@ public class ViewGroupDrawingOrderHelper(private val viewGroup: ViewGroup) {
    */
   public fun getChildDrawingOrder(childCount: Int, index: Int): Int {
     var currentDrawingOrderIndices = this.drawingOrderIndices
-    if (currentDrawingOrderIndices != null &&
-        (index >= currentDrawingOrderIndices.size ||
-            currentDrawingOrderIndices[index] >= childCount)) {
+    if (
+        currentDrawingOrderIndices != null &&
+            (index >= currentDrawingOrderIndices.size ||
+                currentDrawingOrderIndices[index] >= childCount)
+    ) {
       FLog.w(
           ReactConstants.TAG,
           "getChildDrawingOrder index out of bounds! Please check any custom view manipulations you" +

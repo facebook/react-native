@@ -11,7 +11,6 @@ import androidx.annotation.GuardedBy
 import com.facebook.common.logging.FLog
 import com.facebook.jni.HybridData
 import com.facebook.proguard.annotations.DoNotStrip
-import com.facebook.react.bridge.CxxModuleWrapper
 import com.facebook.react.bridge.NativeModule
 import com.facebook.react.bridge.RuntimeExecutor
 import com.facebook.react.common.annotations.FrameworkAPI
@@ -53,7 +52,6 @@ public class TurboModuleManager(
   @DoNotStrip
   private val mHybridData: HybridData =
       initHybrid(
-          runtimeExecutor,
           jsCallInvokerHolder as CallInvokerHolderImpl,
           nativeMethodCallInvokerHolder as NativeMethodCallInvokerHolderImpl,
           delegate,
@@ -61,7 +59,7 @@ public class TurboModuleManager(
 
   init {
 
-    installJSIBindings(shouldEnableLegacyModuleInterop())
+    dispatchJSBindingInstall(runtimeExecutor)
 
     eagerInitModuleNames = delegate?.getEagerInitModuleNames() ?: emptyList()
 
@@ -73,7 +71,7 @@ public class TurboModuleManager(
             ModuleProvider { moduleName: String -> delegate.getModule(moduleName) as NativeModule? }
 
     legacyModuleProvider =
-        if (delegate == null || !shouldEnableLegacyModuleInterop()) nullProvider
+        if (delegate == null) nullProvider
         else
             ModuleProvider { moduleName: String ->
               val nativeModule = delegate.getLegacyModule(moduleName)
@@ -94,9 +92,6 @@ public class TurboModuleManager(
   private fun isLegacyModule(moduleName: String): Boolean =
       delegate?.unstable_isLegacyModuleRegistered(moduleName) == true
 
-  private fun shouldEnableLegacyModuleInterop(): Boolean =
-      delegate?.unstable_shouldEnableLegacyModuleInterop() == true
-
   // used from TurboModuleManager.cpp
   @Suppress("unused")
   @DoNotStrip
@@ -110,39 +105,7 @@ public class TurboModuleManager(
     }
 
     val module = getModule(moduleName)
-    return if (module !is CxxModuleWrapper && module !is TurboModule) module else null
-  }
-
-  // used from TurboModuleManager.cpp
-  @Suppress("unused")
-  @DoNotStrip
-  private fun getLegacyCxxModule(moduleName: String): CxxModuleWrapper? {
-    /*
-     * This API is invoked from global.nativeModuleProxy.
-     * Only call getModule if the native module is a legacy module.
-     */
-    if (!isLegacyModule(moduleName)) {
-      return null
-    }
-
-    val module = getModule(moduleName)
-    return if (module is CxxModuleWrapper && module !is TurboModule) module else null
-  }
-
-  // used from TurboModuleManager.cpp
-  @Suppress("unused")
-  @DoNotStrip
-  private fun getTurboLegacyCxxModule(moduleName: String): CxxModuleWrapper? {
-    /*
-     * This API is invoked from global.__turboModuleProxy.
-     * Only call getModule if the native module is a turbo module.
-     */
-    if (!isTurboModule(moduleName)) {
-      return null
-    }
-
-    val module = getModule(moduleName)
-    return if (module is CxxModuleWrapper && module is TurboModule) module else null
+    return if (module !is TurboModule) module else null
   }
 
   // used from TurboModuleManager.cpp
@@ -158,7 +121,7 @@ public class TurboModuleManager(
     }
 
     val module = getModule(moduleName)
-    return if (module !is CxxModuleWrapper && module is TurboModule) module else null
+    return if (module is TurboModule) module else null
   }
 
   /**
@@ -314,13 +277,12 @@ public class TurboModuleManager(
   }
 
   private external fun initHybrid(
-      runtimeExecutor: RuntimeExecutor,
       jsCallInvokerHolder: CallInvokerHolderImpl,
       nativeMethodCallInvoker: NativeMethodCallInvokerHolderImpl,
       tmmDelegate: TurboModuleManagerDelegate?,
   ): HybridData
 
-  private external fun installJSIBindings(shouldCreateLegacyModules: Boolean)
+  private external fun dispatchJSBindingInstall(runtimeExecutor: RuntimeExecutor)
 
   override fun invalidate() {
     /*

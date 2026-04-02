@@ -7,7 +7,7 @@
 
 #import <React/RCTBaseTextViewManager.h>
 
-#ifndef RCT_FIT_RM_OLD_COMPONENT
+#ifndef RCT_REMOVE_LEGACY_ARCH
 
 @implementation RCTBaseTextViewManager
 
@@ -61,4 +61,4 @@ RCT_REMAP_SHADOW_PROPERTY(textTransform, textAttributes.textTransform, RCTTextTr
 
 @end
 
-#endif // RCT_FIT_RM_OLD_COMPONENT
+#endif // RCT_REMOVE_LEGACY_ARCH

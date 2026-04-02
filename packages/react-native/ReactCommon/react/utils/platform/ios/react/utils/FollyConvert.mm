@@ -33,7 +33,7 @@ id convertFollyDynamicToId(const folly::dynamic &dyn)
       NSMutableArray *array = [[NSMutableArray alloc] initWithCapacity:dyn.size()];
       for (const auto &elem : dyn) {
         id value = convertFollyDynamicToId(elem);
-        if (value) {
+        if (value != nullptr) {
           [array addObject:value];
         }
       }
@@ -44,7 +44,7 @@ id convertFollyDynamicToId(const folly::dynamic &dyn)
       for (const auto &elem : dyn.items()) {
         id key = convertFollyDynamicToId(elem.first);
         id value = convertFollyDynamicToId(elem.second);
-        if (key && value) {
+        if ((key != nullptr) && (value != nullptr)) {
           dict[key] = value;
         }
       }

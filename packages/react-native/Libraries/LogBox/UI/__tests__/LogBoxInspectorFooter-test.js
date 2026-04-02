@@ -10,8 +10,8 @@
 
 'use strict';
 
-const render = require('../../../../jest/renderer');
 const LogBoxInspectorFooter = require('../LogBoxInspectorFooter').default;
+const render = require('@react-native/jest-preset/jest/renderer');
 const React = require('react');
 
 // Mock `LogBoxInspectorFooterButton` because we are interested in snapshotting
@@ -27,6 +27,7 @@ describe('LogBoxInspectorFooter', () => {
       <LogBoxInspectorFooter
         onMinimize={() => {}}
         onDismiss={() => {}}
+        onCopy={() => {}}
         level="warn"
       />,
     );
@@ -39,6 +40,7 @@ describe('LogBoxInspectorFooter', () => {
       <LogBoxInspectorFooter
         onMinimize={() => {}}
         onDismiss={() => {}}
+        onCopy={() => {}}
         level="error"
       />,
     );
@@ -51,6 +53,7 @@ describe('LogBoxInspectorFooter', () => {
       <LogBoxInspectorFooter
         onMinimize={() => {}}
         onDismiss={() => {}}
+        onCopy={() => {}}
         level="fatal"
       />,
     );
@@ -63,6 +66,7 @@ describe('LogBoxInspectorFooter', () => {
       <LogBoxInspectorFooter
         onMinimize={() => {}}
         onDismiss={() => {}}
+        onCopy={() => {}}
         level="syntax"
       />,
     );

@@ -21,10 +21,6 @@ import {
   withServerForEachTest,
 } from './ServerUtils';
 import {createHash} from 'crypto';
-import fs from 'fs';
-import path from 'path';
-
-const fsPromise = fs.promises;
 
 // WebSocket is unreliable when using fake timers.
 jest.useRealTimers();
@@ -47,7 +43,6 @@ describe.each(['HTTP', 'HTTPS'])(
 
     const serverRef = withServerForEachTest({
       logger: undefined,
-      projectRoot: __dirname,
       secure: protocol === 'HTTPS',
     });
 
@@ -278,7 +273,10 @@ describe.each(['HTTP', 'HTTPS'])(
               vm: 'bar-vm',
             },
             {
-              debuggerHostHeader: 'localhost:' + serverRef.port,
+              debuggerHeaders: {
+                Host: 'localhost:' + serverRef.port,
+                Origin: 'http://localhost:8081',
+              },
               deviceHostHeader: sourceHost,
             },
           );
@@ -472,14 +470,7 @@ describe.each(['HTTP', 'HTTPS'])(
         }
       });
 
-      test('reads source from disk', async () => {
-        // Should be just 'foo\n', but the newline can get mangled by the OS
-        // and/or SCM, so let's read the source of truth from disk.
-        const fileRealContents = await fsPromise.readFile(
-          path.join(__dirname, '__fixtures__', 'mock-source-file.txt'),
-          'utf8',
-        );
-
+      test('throws when attempting to pass a filesystem url', async () => {
         const {device, debugger_} = await createAndConnectTarget(
           serverRef,
           autoCleanup.signal,
@@ -490,6 +481,7 @@ describe.each(['HTTP', 'HTTPS'])(
             vm: 'bar-vm',
           },
         );
+
         try {
           await sendFromTargetToDebugger(device, debugger_, 'page1', {
             method: 'Debugger.scriptParsed',
@@ -500,7 +492,7 @@ describe.each(['HTTP', 'HTTPS'])(
               endLine: 0,
               startColumn: 0,
               endColumn: 0,
-              hash: createHash('sha256').update(fileRealContents).digest('hex'),
+              hash: createHash('sha256').update('').digest('hex'),
             },
           });
           const response = await debugger_.sendAndGetResponse({
@@ -511,8 +503,15 @@ describe.each(['HTTP', 'HTTPS'])(
             },
           });
           expect(response.result).toEqual(
-            expect.objectContaining({scriptSource: fileRealContents}),
+            expect.objectContaining({
+              error: {
+                message: expect.stringContaining(
+                  'Can\'t parse requested URL "__fixtures__/mock-source-file.txt"',
+                ),
+              },
+            }),
           );
+
           // The device does not receive the getScriptSource request, since it
           // is handled by the proxy.
           expect(device.wrappedEventParsed).not.toBeCalledWith({
@@ -567,7 +566,7 @@ describe.each(['HTTP', 'HTTPS'])(
 
       describe('Debugger.getScriptSource', () => {
         test('should forward request directly to device (does not read source from disk in proxy)', async () => {
-          const {device, debugger_} = await createAndConnectTarget(
+          const {device, debugger_, sessionId} = await createAndConnectTarget(
             serverRef,
             autoCleanup.signal,
             pageDescription,
@@ -580,10 +579,17 @@ describe.each(['HTTP', 'HTTPS'])(
                 scriptId: 'script1',
               },
             };
-            await sendFromDebuggerToTarget(debugger_, device, 'page1', message);
+            await sendFromDebuggerToTarget(
+              debugger_,
+              device,
+              'page1',
+              message,
+              {sessionId},
+            );
 
             expect(device.wrappedEventParsed).toBeCalledWith({
               pageId: 'page1',
+              sessionId,
               wrappedEvent: message,
             });
           } finally {
@@ -595,7 +601,7 @@ describe.each(['HTTP', 'HTTPS'])(
 
       describe('Network.loadNetworkResource', () => {
         test('should forward event directly to client (does not rewrite url host)', async () => {
-          const {device, debugger_} = await createAndConnectTarget(
+          const {device, debugger_, sessionId} = await createAndConnectTarget(
             serverRef,
             autoCleanup.signal,
             pageDescription,
@@ -608,11 +614,19 @@ describe.each(['HTTP', 'HTTPS'])(
                 url: `${protocol.toLowerCase()}://10.0.2.2:${serverRef.port}`,
               },
             };
-            await sendFromDebuggerToTarget(debugger_, device, 'page1', message);
-            expect(device.wrappedEventParsed).toBeCalledWith({
-              pageId: 'page1',
-              wrappedEvent: message,
-            });
+            await sendFromDebuggerToTarget(
+              debugger_,
+              device,
+              'page1',
+              message,
+              {sessionId},
+            );
+            expect(device.wrappedEventParsed).toBeCalledWith(
+              expect.objectContaining({
+                pageId: 'page1',
+                wrappedEvent: message,
+              }),
+            );
           } finally {
             device.close();
             debugger_.close();

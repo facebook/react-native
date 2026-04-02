@@ -12,15 +12,19 @@
 
 @implementation RCTFabricModalHostViewController {
   CGRect _lastViewBounds;
+#if !TARGET_OS_TV
   RCTSurfaceTouchHandler *_touchHandler;
+#endif
 }
 
 - (instancetype)init
 {
-  if (!(self = [super init])) {
+  if ((self = [super init]) == nullptr) {
     return nil;
   }
+#if !TARGET_OS_TV
   _touchHandler = [RCTSurfaceTouchHandler new];
+#endif
 
   return self;
 }
@@ -37,13 +41,22 @@
 - (void)loadView
 {
   self.view = [UIView new];
+#if !TARGET_OS_TV
   [_touchHandler attachToView:self.view];
+#endif
 }
 
+#if !TARGET_OS_TV
 - (UIStatusBarStyle)preferredStatusBarStyle
 {
   return [RCTUIStatusBarManager() statusBarStyle];
 }
+
+- (BOOL)prefersStatusBarHidden
+{
+  return [RCTUIStatusBarManager() isStatusBarHidden];
+}
+#endif
 
 - (void)viewDidDisappear:(BOOL)animated
 {
@@ -51,17 +64,12 @@
   _lastViewBounds = CGRectZero;
 }
 
-- (BOOL)prefersStatusBarHidden
-{
-  return [RCTUIStatusBarManager() isStatusBarHidden];
-}
-
 #if RCT_DEV && TARGET_OS_IOS
 - (UIInterfaceOrientationMask)supportedInterfaceOrientations
 {
   UIInterfaceOrientationMask appSupportedOrientationsMask =
       [RCTSharedApplication() supportedInterfaceOrientationsForWindow:RCTKeyWindow()];
-  if (!(_supportedInterfaceOrientations & appSupportedOrientationsMask)) {
+  if ((_supportedInterfaceOrientations & appSupportedOrientationsMask) == 0u) {
     RCTLogError(
         @"Modal was presented with 0x%x orientations mask but the application only supports 0x%x."
         @"Add more interface orientations to your app's Info.plist to fix this."

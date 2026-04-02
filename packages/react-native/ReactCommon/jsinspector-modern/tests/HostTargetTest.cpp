@@ -180,9 +180,10 @@ TEST_F(HostTargetProtocolTest, PageReloadMethod) {
 
   EXPECT_CALL(
       hostTargetDelegate_,
-      onReload(Eq(HostTargetDelegate::PageReloadRequest{
-          .ignoreCache = std::nullopt,
-          .scriptToEvaluateOnLoad = std::nullopt})))
+      onReload(
+          Eq(HostTargetDelegate::PageReloadRequest{
+              .ignoreCache = std::nullopt,
+              .scriptToEvaluateOnLoad = std::nullopt})))
       .RetiresOnSaturation();
   EXPECT_CALL(fromPage(), onMessage(JsonEq(R"({
                                                "id": 1,
@@ -196,8 +197,10 @@ TEST_F(HostTargetProtocolTest, PageReloadMethod) {
 
   EXPECT_CALL(
       hostTargetDelegate_,
-      onReload(Eq(HostTargetDelegate::PageReloadRequest{
-          .ignoreCache = true, .scriptToEvaluateOnLoad = "alert('hello');"})))
+      onReload(
+          Eq(HostTargetDelegate::PageReloadRequest{
+              .ignoreCache = true,
+              .scriptToEvaluateOnLoad = "alert('hello');"})))
       .RetiresOnSaturation();
   EXPECT_CALL(fromPage(), onMessage(JsonEq(R"({
                                                "id": 2,
@@ -1052,7 +1055,7 @@ TEST_F(HostTargetTest, NetworkLoadNetworkResourceStreamInterrupted) {
       })
       .RetiresOnSaturation();
 
-  // Load the resource, receiving headers succesfully.
+  // Load the resource, receiving headers successfully.
   toPage_->sendMessage(R"({
                            "id": 1,
                            "method": "Network.loadNetworkResource",
@@ -1266,7 +1269,7 @@ TEST_F(HostTargetTest, NetworkLoadNetworkResourceStreamClosed) {
       })
       .RetiresOnSaturation();
 
-  // Load the resource, receiving headers succesfully.
+  // Load the resource, receiving headers successfully.
   toPage_->sendMessage(R"({
                            "id": 1,
                            "method": "Network.loadNetworkResource",
@@ -1355,7 +1358,7 @@ TEST_F(HostTargetTest, NetworkLoadNetworkResourceAgentDisconnect) {
       })
       .RetiresOnSaturation();
 
-  // Load the resource, receiving headers succesfully.
+  // Load the resource, receiving headers successfully.
   toPage_->sendMessage(R"({
                            "id": 1,
                            "method": "Network.loadNetworkResource",
@@ -1521,6 +1524,59 @@ TEST_F(HostTargetTest, IOReadSizeValidation) {
           "size": 134217728
         }
       })");
+}
+
+TEST_F(HostTargetTest, TracingDelegateIsNotifiedOnCDPRequest) {
+  connect();
+  InSequence s;
+
+  EXPECT_CALL(
+      hostTargetDelegate_.getTracingDelegateMock(),
+      onTracingStarted(Eq(tracing::Mode::CDP), Eq(false)))
+      .Times(1)
+      .RetiresOnSaturation();
+  EXPECT_CALL(fromPage(), onMessage(JsonEq(R"({
+                                               "id": 1,
+                                               "result": {}
+                                             })")));
+  toPage_->sendMessage(R"({
+                        "id": 1,
+                        "method": "Tracing.start"
+                      })");
+
+  EXPECT_CALL(hostTargetDelegate_.getTracingDelegateMock(), onTracingStopped())
+      .Times(1)
+      .RetiresOnSaturation();
+  EXPECT_CALL(fromPage(), onMessage(JsonEq(R"({
+                                               "id": 1,
+                                               "result": {}
+                                             })")));
+  EXPECT_CALL(
+      fromPage(),
+      onMessage(JsonParsed(
+          testing::AllOf(
+              AtJsonPtr("/method", "Tracing.tracingComplete"),
+              AtJsonPtr("/params/dataLossOccurred", false)))));
+  toPage_->sendMessage(R"({
+                        "id": 1,
+                        "method": "Tracing.end"
+                      })");
+}
+
+TEST_F(HostTargetTest, TracingDelegateIsNotifiedOnDirectTracingCall) {
+  connect();
+
+  EXPECT_CALL(
+      hostTargetDelegate_.getTracingDelegateMock(),
+      onTracingStarted(Eq(tracing::Mode::Background), Eq(false)))
+      .Times(1)
+      .RetiresOnSaturation();
+  page_->startTracing(tracing::Mode::Background, {});
+
+  EXPECT_CALL(hostTargetDelegate_.getTracingDelegateMock(), onTracingStopped())
+      .Times(1)
+      .RetiresOnSaturation();
+  page_->stopTracing();
 }
 
 } // namespace facebook::react::jsinspector_modern

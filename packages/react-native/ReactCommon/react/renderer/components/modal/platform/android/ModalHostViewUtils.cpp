@@ -11,7 +11,7 @@
 namespace facebook::react {
 
 Size ModalHostViewScreenSize() {
-  return Size{0, 0};
+  return Size{.width = 0, .height = 0};
 }
 
 } // namespace facebook::react

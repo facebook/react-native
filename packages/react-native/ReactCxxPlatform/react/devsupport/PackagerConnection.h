@@ -20,15 +20,15 @@ class PackagerConnection {
 
  public:
   PackagerConnection(
-      const WebSocketClientFactory& webSocketClientFactory,
-      const std::string& packagerConnectionUrl,
-      LiveReloadCallback&& liveReloadCallback,
-      ShowDevMenuCallback&& showDevMenuCallback);
+      const WebSocketClientFactory &webSocketClientFactory,
+      const std::string &packagerConnectionUrl,
+      LiveReloadCallback &&liveReloadCallback,
+      ShowDevMenuCallback &&showDevMenuCallback);
   ~PackagerConnection() noexcept;
-  PackagerConnection(const PackagerConnection& other) = delete;
-  PackagerConnection& operator=(PackagerConnection& other) = delete;
-  PackagerConnection(PackagerConnection&& other) = delete;
-  PackagerConnection& operator=(PackagerConnection&& other) = delete;
+  PackagerConnection(const PackagerConnection &other) = delete;
+  PackagerConnection &operator=(PackagerConnection &other) = delete;
+  PackagerConnection(PackagerConnection &&other) = delete;
+  PackagerConnection &operator=(PackagerConnection &&other) = delete;
 
  private:
   const LiveReloadCallback liveReloadCallback_;

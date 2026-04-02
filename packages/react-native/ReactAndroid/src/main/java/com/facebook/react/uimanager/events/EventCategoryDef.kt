@@ -21,7 +21,8 @@ import androidx.annotation.IntDef
             EventCategoryDef.UNSPECIFIED,
             EventCategoryDef.DISCRETE,
             EventCategoryDef.CONTINUOUS,
-        ])
+        ]
+)
 @Retention(AnnotationRetention.SOURCE)
 internal annotation class EventCategoryDef {
   companion object {

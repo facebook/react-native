@@ -88,7 +88,7 @@ void TextAttributes::apply(TextAttributes textAttributes) {
 
   // Shadow
   textShadowOffset = textAttributes.textShadowOffset.has_value()
-      ? textAttributes.textShadowOffset.value()
+      ? textAttributes.textShadowOffset
       : textShadowOffset;
   textShadowRadius = !std::isnan(textAttributes.textShadowRadius)
       ? textAttributes.textShadowRadius
@@ -176,13 +176,13 @@ bool TextAttributes::operator==(const TextAttributes& rhs) const {
 
 TextAttributes TextAttributes::defaultTextAttributes() {
   static auto textAttributes = [] {
-    auto textAttributes = TextAttributes{};
+    auto defaultAttrs = TextAttributes{};
     // Non-obvious (can be different among platforms) default text attributes.
-    textAttributes.foregroundColor = blackColor();
-    textAttributes.backgroundColor = clearColor();
-    textAttributes.fontSize = 14.0;
-    textAttributes.fontSizeMultiplier = 1.0;
-    return textAttributes;
+    defaultAttrs.foregroundColor = blackColor();
+    defaultAttrs.backgroundColor = clearColor();
+    defaultAttrs.fontSize = 14.0;
+    defaultAttrs.fontSizeMultiplier = 1.0;
+    return defaultAttrs;
   }();
   return textAttributes;
 }

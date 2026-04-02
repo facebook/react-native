@@ -24,9 +24,9 @@ import {
 } from 'react-native';
 import openURLInBrowser from 'react-native/Libraries/Core/Devtools/openURLInBrowser';
 
-export type NewAppScreenProps = $ReadOnly<{
+export type NewAppScreenProps = Readonly<{
   templateFileName?: string,
-  safeAreaInsets?: $ReadOnly<{
+  safeAreaInsets?: Readonly<{
     top: number,
     bottom: number,
     left: number,
@@ -123,7 +123,8 @@ function getHermesLabel(): React.Node {
 
   return (
     <ThemedText color="secondary" style={styles.label}>
-      JS Engine: Hermes
+      JS Engine: Hermes (
+      {global.HermesInternal.getRuntimeProperties?.()['OSS Release Version']})
     </ThemedText>
   );
 }

@@ -13,10 +13,11 @@ import type {PlatformConfig} from '../AnimatedPlatformConfig';
 import NativeAnimatedHelper from '../../../src/private/animated/NativeAnimatedHelper';
 import invariant from 'invariant';
 
-type ValueListenerCallback = (state: {value: number, ...}) => mixed;
+type ValueListenerCallback = (state: {value: number, ...}) => unknown;
 
-export type AnimatedNodeConfig = $ReadOnly<{
+export type AnimatedNodeConfig = Readonly<{
   debugID?: string,
+  unstable_disableBatchingForNativeCreate?: boolean,
 }>;
 
 let _uniqueId = 1;
@@ -33,7 +34,7 @@ export default class AnimatedNode {
   _platformConfig: ?PlatformConfig = undefined;
 
   constructor(
-    config?: ?$ReadOnly<{
+    config?: ?Readonly<{
       ...AnimatedNodeConfig,
       ...
     }>,
@@ -42,6 +43,8 @@ export default class AnimatedNode {
     if (__DEV__) {
       this.__debugID = config?.debugID;
     }
+    this.__disableBatchingForNativeCreate =
+      config?.unstable_disableBatchingForNativeCreate;
   }
 
   __attach(): void {}
@@ -58,13 +61,14 @@ export default class AnimatedNode {
   }
   __addChild(child: AnimatedNode) {}
   __removeChild(child: AnimatedNode) {}
-  __getChildren(): $ReadOnlyArray<AnimatedNode> {
+  __getChildren(): ReadonlyArray<AnimatedNode> {
     return [];
   }
 
   /* Methods and props used by native Animated impl */
   __isNative: boolean = false;
   __nativeTag: ?number = undefined;
+  __disableBatchingForNativeCreate: ?boolean = undefined;
 
   __makeNative(platformConfig: ?PlatformConfig): void {
     // Subclasses are expected to set `__isNative` to true before this.
@@ -83,7 +87,7 @@ export default class AnimatedNode {
    *
    * See https://reactnative.dev/docs/animatedvalue#addlistener
    */
-  addListener(callback: (value: any) => mixed): string {
+  addListener(callback: (value: any) => unknown): string {
     const id = String(_uniqueId++);
     this._listeners.set(id, callback);
     return id;
@@ -142,6 +146,9 @@ export default class AnimatedNode {
       if (this._platformConfig) {
         config.platformConfig = this._platformConfig;
       }
+      if (this.__disableBatchingForNativeCreate) {
+        config.disableBatchingForNativeCreate = true;
+      }
       NativeAnimatedHelper.API.createAnimatedNode(nativeTag, config);
     }
     return nativeTag;
@@ -165,7 +172,7 @@ export default class AnimatedNode {
    * NOTE: This is intended to prevent `JSON.stringify` from throwing "cyclic
    * structure" errors in React DevTools. Avoid depending on this!
    */
-  toJSON(): mixed {
+  toJSON(): unknown {
     return this.__getValue();
   }
 

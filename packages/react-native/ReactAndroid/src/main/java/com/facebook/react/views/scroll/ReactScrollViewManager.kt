@@ -15,6 +15,7 @@ import com.facebook.react.bridge.ReadableArray
 import com.facebook.react.bridge.ReadableMap
 import com.facebook.react.bridge.ReadableType
 import com.facebook.react.bridge.RetryableMountingLayerException
+import com.facebook.react.internal.featureflags.ReactNativeFeatureFlags
 import com.facebook.react.module.annotations.ReactModule
 import com.facebook.react.uimanager.BackgroundStyleApplicator.setBorderColor
 import com.facebook.react.uimanager.BackgroundStyleApplicator.setBorderRadius
@@ -56,6 +57,24 @@ public open class ReactScrollViewManager
 constructor(private val fpsListener: FpsListener? = null) :
     ViewGroupManager<ReactScrollView>(), ScrollCommandHandler<ReactScrollView> {
 
+  init {
+    if (ReactNativeFeatureFlags.enableViewRecyclingForScrollView()) {
+      setupViewRecycling()
+    }
+  }
+
+  override fun prepareToRecycleView(
+      reactContext: ThemedReactContext,
+      view: ReactScrollView,
+  ): ReactScrollView? {
+    // BaseViewManager
+    val preparedView = super.prepareToRecycleView(reactContext, view)
+    if (preparedView != null) {
+      preparedView.recycleView()
+    }
+    return preparedView
+  }
+
   override fun getName(): String = REACT_CLASS
 
   public override fun createViewInstance(context: ThemedReactContext): ReactScrollView =
@@ -83,6 +102,11 @@ constructor(private val fpsListener: FpsListener? = null) :
   @ReactProp(name = "disableIntervalMomentum")
   public fun setDisableIntervalMomentum(view: ReactScrollView, disableIntervalMomentum: Boolean) {
     view.setDisableIntervalMomentum(disableIntervalMomentum)
+  }
+
+  @ReactProp(name = "scrollsChildToFocus", defaultBoolean = true)
+  public fun setScrollsChildToFocus(view: ReactScrollView, scrollsChildToFocus: Boolean) {
+    view.setScrollsChildToFocus(scrollsChildToFocus)
   }
 
   @ReactProp(name = "snapToInterval")
@@ -289,7 +313,8 @@ constructor(private val fpsListener: FpsListener? = null) :
     val child =
         scrollView.getChildAt(0)
             ?: throw RetryableMountingLayerException(
-                "scrollToEnd called on ScrollView without child")
+                "scrollToEnd called on ScrollView without child"
+            )
 
     // ScrollView always has one child - the scrollable area
     val bottom = child.height + scrollView.paddingBottom
@@ -334,7 +359,8 @@ constructor(private val fpsListener: FpsListener? = null) :
     if (view.fadingEdgeLengthStart > 0 || view.fadingEdgeLengthEnd > 0) {
       view.isVerticalFadingEdgeEnabled = true
       view.setFadingEdgeLength(
-          Math.round(Math.max(view.fadingEdgeLengthStart, view.fadingEdgeLengthEnd).dpToPx()))
+          Math.round(Math.max(view.fadingEdgeLengthStart, view.fadingEdgeLengthEnd).dpToPx())
+      )
     } else {
       view.isVerticalFadingEdgeEnabled = false
       view.setFadingEdgeLength(0)
@@ -350,7 +376,8 @@ constructor(private val fpsListener: FpsListener? = null) :
   public fun setMaintainVisibleContentPosition(view: ReactScrollView, value: ReadableMap?) {
     if (value != null) {
       view.setMaintainVisibleContentPosition(
-          MaintainVisibleScrollPositionHelper.Config.fromReadableMap(value))
+          MaintainVisibleScrollPositionHelper.Config.fromReadableMap(value)
+      )
     } else {
       view.setMaintainVisibleContentPosition(null)
     }
@@ -362,6 +389,12 @@ constructor(private val fpsListener: FpsListener? = null) :
       stateWrapper: StateWrapper,
   ): Any? {
     view.setStateWrapper(stateWrapper)
+    if (
+        ReactNativeFeatureFlags.enableViewCulling() ||
+            ReactNativeFeatureFlags.useTraitHiddenOnAndroid()
+    ) {
+      ReactScrollViewHelper.loadFabricScrollState(view, stateWrapper)
+    }
     return null
   }
 

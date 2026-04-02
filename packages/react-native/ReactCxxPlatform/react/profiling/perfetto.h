@@ -18,12 +18,14 @@
 #if WITH_PERFETTO
 #include <perfetto.h>
 
-PERFETTO_DEFINE_CATEGORIES(
+PERFETTO_DEFINE_CATEGORIES_IN_NAMESPACE(
+    facebook::react,
     perfetto::Category("rncxx").SetDescription("Events from RN/Granite"));
 
 void initializePerfetto();
 
-inline uint64_t getCurrentPerfettoTimestamp() {
+inline uint64_t getCurrentPerfettoTimestamp()
+{
   return std::chrono::duration_cast<std::chrono::nanoseconds>(
              std::chrono::high_resolution_clock::now().time_since_epoch())
       .count();

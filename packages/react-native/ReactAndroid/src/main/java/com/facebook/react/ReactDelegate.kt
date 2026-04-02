@@ -59,7 +59,8 @@ public open class ReactDelegate {
    * used for New Architecture.
    */
   @Deprecated(
-      "Use one of the other constructors instead to account for New Architecture. Deprecated since 0.75.0")
+      "Use one of the other constructors instead to account for New Architecture. Deprecated since 0.75.0"
+  )
   public constructor(
       activity: Activity,
       reactNativeHost: ReactNativeHost?,
@@ -67,9 +68,9 @@ public open class ReactDelegate {
       launchOptions: Bundle?,
   ) {
     this.activity = activity
-    mainComponentName = appKey
+    this.mainComponentName = appKey
     this.launchOptions = launchOptions
-    doubleTapReloadRecognizer = DoubleTapReloadRecognizer()
+    this.doubleTapReloadRecognizer = DoubleTapReloadRecognizer()
     this.reactNativeHost = reactNativeHost
   }
 
@@ -80,9 +81,9 @@ public open class ReactDelegate {
       launchOptions: Bundle?,
   ) {
     this.activity = activity
-    mainComponentName = appKey
+    this.mainComponentName = appKey
     this.launchOptions = launchOptions
-    doubleTapReloadRecognizer = DoubleTapReloadRecognizer()
+    this.doubleTapReloadRecognizer = DoubleTapReloadRecognizer()
     this.reactHost = reactHost
   }
 
@@ -94,21 +95,24 @@ public open class ReactDelegate {
       launchOptions: Bundle?,
       fabricEnabled: Boolean,
   ) {
-    isFabricEnabled = fabricEnabled
+    this.isFabricEnabled = fabricEnabled
     this.activity = activity
-    mainComponentName = appKey
+    this.mainComponentName = appKey
     this.launchOptions = launchOptions
-    doubleTapReloadRecognizer = DoubleTapReloadRecognizer()
+    this.doubleTapReloadRecognizer = DoubleTapReloadRecognizer()
     this.reactNativeHost = reactNativeHost
   }
 
   private val devSupportManager: DevSupportManager?
     get() =
-        if (ReactNativeNewArchitectureFeatureFlags.enableBridgelessArchitecture() &&
-            reactHost?.devSupportManager != null) {
+        if (
+            ReactNativeNewArchitectureFeatureFlags.enableBridgelessArchitecture() &&
+                reactHost?.devSupportManager != null
+        ) {
           reactHost?.devSupportManager
-        } else if (reactNativeHost?.hasInstance() == true &&
-            reactNativeHost?.reactInstanceManager != null) {
+        } else if (
+            reactNativeHost?.hasInstance() == true && reactNativeHost?.reactInstanceManager != null
+        ) {
           reactNativeHost?.reactInstanceManager?.devSupportManager
         } else {
           null
@@ -117,10 +121,12 @@ public open class ReactDelegate {
   public fun onHostResume() {
     if (activity !is DefaultHardwareBackBtnHandler) {
       throw ClassCastException(
-          "Host Activity `${activity.javaClass.simpleName}` does not implement DefaultHardwareBackBtnHandler")
+          "Host Activity `${activity.javaClass.simpleName}` does not implement DefaultHardwareBackBtnHandler"
+      )
     }
-    if (ReactNativeNewArchitectureFeatureFlags.enableBridgelessArchitecture() &&
-        reactHost != null) {
+    if (
+        ReactNativeNewArchitectureFeatureFlags.enableBridgelessArchitecture() && reactHost != null
+    ) {
       reactHost?.onHostResume(activity, activity as DefaultHardwareBackBtnHandler)
     } else {
       if (reactNativeHost?.hasInstance() == true) {
@@ -132,8 +138,9 @@ public open class ReactDelegate {
   }
 
   public fun onUserLeaveHint() {
-    if (ReactNativeNewArchitectureFeatureFlags.enableBridgelessArchitecture() &&
-        reactHost != null) {
+    if (
+        ReactNativeNewArchitectureFeatureFlags.enableBridgelessArchitecture() && reactHost != null
+    ) {
       reactHost?.onHostLeaveHint(activity)
     } else {
       if (reactNativeHost?.hasInstance() == true) {
@@ -143,8 +150,9 @@ public open class ReactDelegate {
   }
 
   public fun onHostPause() {
-    if (ReactNativeNewArchitectureFeatureFlags.enableBridgelessArchitecture() &&
-        reactHost != null) {
+    if (
+        ReactNativeNewArchitectureFeatureFlags.enableBridgelessArchitecture() && reactHost != null
+    ) {
       reactHost?.onHostPause(activity)
     } else {
       if (reactNativeHost?.hasInstance() == true) {
@@ -155,8 +163,9 @@ public open class ReactDelegate {
 
   public fun onHostDestroy() {
     unloadApp()
-    if (ReactNativeNewArchitectureFeatureFlags.enableBridgelessArchitecture() &&
-        reactHost != null) {
+    if (
+        ReactNativeNewArchitectureFeatureFlags.enableBridgelessArchitecture() && reactHost != null
+    ) {
       reactHost?.onHostDestroy(activity)
     } else {
       if (reactNativeHost?.hasInstance() == true) {
@@ -166,22 +175,21 @@ public open class ReactDelegate {
   }
 
   public fun onBackPressed(): Boolean {
-    if (ReactNativeNewArchitectureFeatureFlags.enableBridgelessArchitecture() &&
-        reactHost != null) {
-      reactHost?.onBackPressed()
+    if (
+        ReactNativeNewArchitectureFeatureFlags.enableBridgelessArchitecture() && reactHost != null
+    ) {
+      return reactHost?.onBackPressed() == true
+    } else if (reactNativeHost?.hasInstance() == true) {
+      reactNativeHost?.reactInstanceManager?.onBackPressed()
       return true
-    } else {
-      if (reactNativeHost?.hasInstance() == true) {
-        reactNativeHost?.reactInstanceManager?.onBackPressed()
-        return true
-      }
     }
     return false
   }
 
   public fun onNewIntent(intent: Intent): Boolean {
-    if (ReactNativeNewArchitectureFeatureFlags.enableBridgelessArchitecture() &&
-        reactHost != null) {
+    if (
+        ReactNativeNewArchitectureFeatureFlags.enableBridgelessArchitecture() && reactHost != null
+    ) {
       reactHost?.onNewIntent(intent)
       return true
     } else {
@@ -199,9 +207,11 @@ public open class ReactDelegate {
       data: Intent?,
       shouldForwardToReactInstance: Boolean,
   ) {
-    if (ReactNativeNewArchitectureFeatureFlags.enableBridgelessArchitecture() &&
-        reactHost != null &&
-        shouldForwardToReactInstance) {
+    if (
+        ReactNativeNewArchitectureFeatureFlags.enableBridgelessArchitecture() &&
+            reactHost != null &&
+            shouldForwardToReactInstance
+    ) {
       reactHost?.onActivityResult(activity, requestCode, resultCode, data)
     } else {
       if (reactNativeHost?.hasInstance() == true && shouldForwardToReactInstance) {
@@ -213,8 +223,9 @@ public open class ReactDelegate {
   }
 
   public fun onWindowFocusChanged(hasFocus: Boolean) {
-    if (ReactNativeNewArchitectureFeatureFlags.enableBridgelessArchitecture() &&
-        reactHost != null) {
+    if (
+        ReactNativeNewArchitectureFeatureFlags.enableBridgelessArchitecture() && reactHost != null
+    ) {
       reactHost?.onWindowFocusChange(hasFocus)
     } else {
       if (reactNativeHost?.hasInstance() == true) {
@@ -224,8 +235,9 @@ public open class ReactDelegate {
   }
 
   public fun onConfigurationChanged(newConfig: Configuration?) {
-    if (ReactNativeNewArchitectureFeatureFlags.enableBridgelessArchitecture() &&
-        reactHost != null) {
+    if (
+        ReactNativeNewArchitectureFeatureFlags.enableBridgelessArchitecture() && reactHost != null
+    ) {
       reactHost?.onConfigurationChanged(checkNotNull(activity))
     } else {
       if (reactNativeHost?.hasInstance() == true) {
@@ -235,11 +247,13 @@ public open class ReactDelegate {
   }
 
   public fun onKeyDown(keyCode: Int, event: KeyEvent): Boolean {
-    if (keyCode == KeyEvent.KEYCODE_MEDIA_FAST_FORWARD &&
-        ((ReactNativeNewArchitectureFeatureFlags.enableBridgelessArchitecture() &&
-            reactHost?.devSupportManager != null) ||
-            (reactNativeHost?.hasInstance() == true &&
-                reactNativeHost?.useDeveloperSupport == true))) {
+    if (
+        keyCode == KeyEvent.KEYCODE_MEDIA_FAST_FORWARD &&
+            ((ReactNativeNewArchitectureFeatureFlags.enableBridgelessArchitecture() &&
+                reactHost?.devSupportManager != null) ||
+                (reactNativeHost?.hasInstance() == true &&
+                    reactNativeHost?.useDeveloperSupport == true))
+    ) {
       event.startTracking()
       return true
     }
@@ -247,9 +261,10 @@ public open class ReactDelegate {
   }
 
   public fun onKeyLongPress(keyCode: Int): Boolean {
-    if (keyCode == KeyEvent.KEYCODE_MEDIA_FAST_FORWARD) {
-      if (ReactNativeNewArchitectureFeatureFlags.enableBridgelessArchitecture() &&
-          reactHost != null) {
+    if (keyCode == KeyEvent.KEYCODE_MEDIA_FAST_FORWARD || keyCode == KeyEvent.KEYCODE_BACK) {
+      if (
+          ReactNativeNewArchitectureFeatureFlags.enableBridgelessArchitecture() && reactHost != null
+      ) {
         val devSupportManager = reactHost?.devSupportManager
         // onKeyLongPress is a Dev API and not supported in RELEASE mode.
         if (devSupportManager != null && devSupportManager !is ReleaseDevSupportManager) {
@@ -257,8 +272,9 @@ public open class ReactDelegate {
           return true
         }
       } else {
-        if (reactNativeHost?.hasInstance() == true &&
-            reactNativeHost?.useDeveloperSupport == true) {
+        if (
+            reactNativeHost?.hasInstance() == true && reactNativeHost?.useDeveloperSupport == true
+        ) {
           reactNativeHost?.reactInstanceManager?.showDevOptionsDialog()
           return true
         }
@@ -277,8 +293,10 @@ public open class ReactDelegate {
         reactHost?.reload("ReactDelegate.reload()")
       } else {
         runOnUiThread {
-          if (reactNativeHost?.hasInstance() == true &&
-              reactNativeHost?.reactInstanceManager != null) {
+          if (
+              reactNativeHost?.hasInstance() == true &&
+                  reactNativeHost?.reactInstanceManager != null
+          ) {
             reactNativeHost?.reactInstanceManager?.recreateReactContextInBackground()
           }
         }
@@ -372,7 +390,11 @@ public open class ReactDelegate {
   public fun shouldShowDevMenuOrReload(keyCode: Int, event: KeyEvent?): Boolean {
     val devSupportManager = devSupportManager
     // shouldShowDevMenuOrReload is a Dev API and not supported in RELEASE mode.
-    if (devSupportManager == null || devSupportManager is ReleaseDevSupportManager) {
+    if (
+        devSupportManager == null ||
+            !devSupportManager.keyboardShortcutsEnabled ||
+            devSupportManager is ReleaseDevSupportManager
+    ) {
       return false
     }
 
@@ -389,7 +411,8 @@ public open class ReactDelegate {
   }
 
   @Deprecated(
-      "Do not access [ReactInstanceManager] directly. This class is going away in the New Architecture. You should use [ReactHost] instead.")
+      "Do not access [ReactInstanceManager] directly. This class is going away in the New Architecture. You should use [ReactHost] instead."
+  )
   public fun getReactInstanceManager(): ReactInstanceManager {
     val nonNullReactNativeHost =
         checkNotNull(reactNativeHost) {

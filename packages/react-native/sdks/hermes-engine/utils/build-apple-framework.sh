@@ -9,7 +9,7 @@
 
 CURR_SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd -P)"
 
-IMPORT_HERMESC_PATH=${HERMES_OVERRIDE_HERMESC_PATH:-$PWD/build_host_hermesc/ImportHermesc.cmake}
+IMPORT_HOST_COMPILERS_PATH=${HERMES_OVERRIDE_HERMESC_PATH:-$PWD/build_host_hermesc/ImportHostCompilers.cmake}
 BUILD_TYPE=${BUILD_TYPE:-Debug}
 
 HERMES_PATH="$CURR_SCRIPT_DIR/.."
@@ -88,6 +88,11 @@ function configure_apple_framework {
     xcode_15_flags="LINKER:-ld_classic"
   fi
 
+  boost_context_flag=""
+  if [[ $1 == "catalyst" ]]; then
+    boost_context_flag="-DHERMES_ALLOW_BOOST_CONTEXT=0"
+  fi
+
   pushd "$HERMES_PATH" > /dev/null || exit 1
     cmake -S . -B "build_$1" \
       -DHERMES_EXTRA_LINKER_FLAGS="$xcode_15_flags" \
@@ -104,28 +109,29 @@ function configure_apple_framework {
       -DHERMES_BUILD_SHARED_JSI:BOOLEAN=false \
       -DCMAKE_CXX_FLAGS:STRING="-gdwarf" \
       -DCMAKE_C_FLAGS:STRING="-gdwarf" \
-      -DIMPORT_HERMESC:PATH="$IMPORT_HERMESC_PATH" \
+      -DIMPORT_HOST_COMPILERS:PATH="$IMPORT_HOST_COMPILERS_PATH" \
       -DJSI_DIR="$JSI_PATH" \
       -DHERMES_RELEASE_VERSION="for RN $(get_release_version)" \
-      -DCMAKE_BUILD_TYPE="$cmake_build_type"
+      -DCMAKE_BUILD_TYPE="$cmake_build_type" \
+      $boost_context_flag
     popd > /dev/null || exit 1
 }
 
 function build_host_hermesc_if_needed {
-  if [[ ! -f "$IMPORT_HERMESC_PATH" ]]; then
+  if [[ ! -f "$IMPORT_HOST_COMPILERS_PATH" ]]; then
     build_host_hermesc
   else
-    echo "[HermesC] Skipping! Found an existent hermesc already at: $IMPORT_HERMESC_PATH"
+    echo "[HermesC] Skipping! Found an existent hermesc already at: $IMPORT_HOST_COMPILERS_PATH"
   fi
 }
 
 # Utility function to build an Apple framework
 function build_apple_framework {
-  # Only build host HermesC if no file found at $IMPORT_HERMESC_PATH
+  # Only build host HermesC if no file found at $IMPORT_HOST_COMPILERS_PATH
   build_host_hermesc_if_needed
 
-  # Confirm ImportHermesc.cmake is now available.
-  [ ! -f "$IMPORT_HERMESC_PATH" ] &&
+  # Confirm ImportHostCompilers.cmake is now available.
+  [ ! -f "$IMPORT_HOST_COMPILERS_PATH" ] &&
   echo "Host hermesc is required to build apple frameworks!"
 
   # $1: platform, $2: architectures, $3: deployment target
@@ -134,10 +140,10 @@ function build_apple_framework {
 
   pushd "$HERMES_PATH" > /dev/null || exit 1
     mkdir -p "destroot/Library/Frameworks/$1"
-    cmake --build "./build_$1" --target libhermes -j "${NUM_CORES}"
+    cmake --build "./build_$1" --target hermesvm -j "${NUM_CORES}"
     # Produce the dSYM.
-    xcrun dsymutil "./build_$1/API/hermes/hermes.framework/hermes" -o "./build_$1/API/hermes/hermes.framework.dSYM"
-    cp -R "./build_$1"/API/hermes/hermes.framework* "destroot/Library/Frameworks/$1"
+    xcrun dsymutil "./build_$1/lib/hermesvm.framework/hermesvm" -o "./build_$1/lib/hermesvm.framework.dSYM"
+    cp -R "./build_$1"/lib/hermesvm.framework* "destroot/Library/Frameworks/$1"
 
     # In a MacOS build, also produce the hermes and hermesc CLI tools.
     if [[ $1 == macosx ]]; then
@@ -171,7 +177,7 @@ function prepare_dest_root_for_ci {
   mkdir -p  "destroot/bin"
   for platform in "${PLATFORMS[@]}"; do
     mkdir -p "destroot/Library/Frameworks/$platform"
-    cp -R "./build_$platform/API/hermes/hermes.framework"* "destroot/Library/Frameworks/$platform"
+    cp -R "./build_$platform/lib/hermesvm.framework"* "destroot/Library/Frameworks/$platform"
   done
 
   cp "./build_macosx/bin/"* "destroot/bin"
@@ -209,15 +215,15 @@ function create_universal_framework {
 
   for i in "${!platforms[@]}"; do
     local platform="${platforms[$i]}"
-    local hermes_framework_path="${platform}/hermes.framework"
+    local hermes_framework_path="${platform}/hermesvm.framework"
     args+="-framework $hermes_framework_path "
   done
 
   mkdir -p universal
   # shellcheck disable=SC2086
-  if xcodebuild -create-xcframework $args -output "universal/hermes.xcframework"
+  if xcodebuild -create-xcframework $args -output "universal/hermesvm.xcframework"
   then
-    # # Remove the thin iOS hermes.frameworks that are now part of the universal
+    # # Remove the thin iOS hermesvm.frameworks that are now part of the universal
     # XCFramework
     for platform in "${platforms[@]}"; do
       rm -r "$platform"

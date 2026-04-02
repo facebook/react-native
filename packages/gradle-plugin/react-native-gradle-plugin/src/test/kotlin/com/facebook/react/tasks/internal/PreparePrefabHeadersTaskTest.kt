@@ -55,7 +55,8 @@ class PreparePrefabHeadersTaskTest {
         createTestTask<PreparePrefabHeadersTask>(project = project) {
           it.outputDir.set(outputDir)
           it.input.set(
-              listOf(PrefabPreprocessingEntry("sample_library", "input/" to expectedPrefix)))
+              listOf(PrefabPreprocessingEntry("sample_library", "input/" to expectedPrefix))
+          )
         }
 
     task.taskAction()
@@ -76,7 +77,8 @@ class PreparePrefabHeadersTaskTest {
         createTestTask<PreparePrefabHeadersTask>(project = project) {
           it.outputDir.set(outputDir)
           it.input.set(
-              listOf(PrefabPreprocessingEntry("sample_library", "input/" to expectedPrefix)))
+              listOf(PrefabPreprocessingEntry("sample_library", "input/" to expectedPrefix))
+          )
         }
 
     task.taskAction()
@@ -102,7 +104,8 @@ class PreparePrefabHeadersTaskTest {
                       "sample_library",
                       listOf("input/component1/" to "", "input/component2/" to ""),
                   ),
-              ))
+              )
+          )
         }
 
     task.taskAction()
@@ -125,7 +128,8 @@ class PreparePrefabHeadersTaskTest {
               listOf(
                   PrefabPreprocessingEntry("libraryone", "input/lib1/" to ""),
                   PrefabPreprocessingEntry("librarytwo", "input/lib2/" to ""),
-              ))
+              )
+          )
         }
 
     task.taskAction()
@@ -155,7 +159,8 @@ class PreparePrefabHeadersTaskTest {
                       "librarytwo",
                       listOf("input/lib2/" to "", "input/shared/" to "shared/"),
                   ),
-              ))
+              )
+          )
         }
 
     task.taskAction()
@@ -181,9 +186,9 @@ class PreparePrefabHeadersTaskTest {
 
     val project = createProject(projectDir = tempFolder.root)
     val task =
-        createTestTask<PreparePrefabHeadersTask>(project = project) {
-          it.outputDir.set(outputDir)
-          it.input.set(listOf(PrefabPreprocessingEntry("sample_library", "boost/" to "")))
+        createTestTask<PreparePrefabHeadersTask>(project = project) { task ->
+          task.outputDir.set(outputDir)
+          task.input.set(listOf(PrefabPreprocessingEntry("sample_library", "boost/" to "")))
         }
 
     task.taskAction()

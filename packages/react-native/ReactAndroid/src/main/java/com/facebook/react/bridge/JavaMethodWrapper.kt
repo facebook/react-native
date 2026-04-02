@@ -53,6 +53,14 @@ internal class JavaMethodWrapper(
   private var arguments: Array<Any?>? = null
   private var jsArgumentsNeeded = 0
 
+  val signature: String?
+    get() {
+      if (!argumentsProcessed) {
+        processArguments()
+      }
+      return checkNotNull(internalSignature)
+    }
+
   init {
     method.isAccessible = true
     parameterTypes = method.parameterTypes
@@ -85,14 +93,6 @@ internal class JavaMethodWrapper(
       SystraceMessage.endSection(TRACE_TAG_REACT).flush()
     }
   }
-
-  val signature: String?
-    get() {
-      if (!argumentsProcessed) {
-        processArguments()
-      }
-      return checkNotNull(internalSignature)
-    }
 
   private fun buildSignature(method: Method, paramTypes: Array<Class<*>>, isSync: Boolean): String =
       buildString(paramTypes.size + 2) {
@@ -189,8 +189,9 @@ internal class JavaMethodWrapper(
           }
 
       if (jsArgumentsNeeded != parameters.size()) {
-        throw NativeArgumentsParseException(
-            "$traceName got ${parameters.size()} arguments, expected $jsArgumentsNeeded")
+        throw JSApplicationCausedNativeException(
+            "$traceName got ${parameters.size()} arguments, expected $jsArgumentsNeeded"
+        )
       }
 
       var i = 0
@@ -207,7 +208,7 @@ internal class JavaMethodWrapper(
           i++
         }
       } catch (e: UnexpectedNativeTypeException) {
-        throw NativeArgumentsParseException(
+        throw JSApplicationCausedNativeException(
             "${e.message} (constructing arguments for $traceName at argument index ${
               getAffectedRange(
                   jsArgumentsConsumed,
@@ -217,7 +218,7 @@ internal class JavaMethodWrapper(
             e,
         )
       } catch (e: NullPointerException) {
-        throw NativeArgumentsParseException(
+        throw JSApplicationCausedNativeException(
             "${e.message} (constructing arguments for $traceName at argument index ${
               getAffectedRange(
                   jsArgumentsConsumed,
@@ -248,13 +249,6 @@ internal class JavaMethodWrapper(
   }
 
   companion object {
-    init {
-      LegacyArchitectureLogger.assertLegacyArchitecture(
-          "JavaMethodWrapper",
-          LegacyArchitectureLogLevel.ERROR,
-      )
-    }
-
     private val ARGUMENT_EXTRACTOR_BOOLEAN: ArgumentExtractor<Boolean> =
         object : ArgumentExtractor<Boolean>() {
           @Suppress("DEPRECATION")
@@ -346,8 +340,23 @@ internal class JavaMethodWrapper(
               if (jsArguments.isNull(atIndex)) {
                 null
               } else {
-                val id = jsArguments.getDouble(atIndex).toInt()
-                @Suppress("DEPRECATION") CallbackImpl(jsInstance, id)
+                object : Callback {
+                  private var invoked = false
+
+                  override fun invoke(vararg args: Any?) {
+                    if (invoked) {
+                      error(
+                          "Illegal callback invocation from native module. This callback type only permits a single invocation from native code."
+                      )
+                    }
+                    @Suppress("UNCHECKED_CAST")
+                    jsInstance.invokeCallback(
+                        callbackID = jsArguments.getDouble(atIndex).toInt(),
+                        arguments = Arguments.fromJavaArgs(args as Array<Any?>),
+                    )
+                    invoked = true
+                  }
+                }
               }
         }
 
@@ -371,6 +380,13 @@ internal class JavaMethodWrapper(
 
     private val DEBUG =
         PrinterHolder.printer.shouldDisplayLogMessage(ReactDebugOverlayTags.BRIDGE_CALLS)
+
+    init {
+      LegacyArchitectureLogger.assertLegacyArchitecture(
+          "JavaMethodWrapper",
+          LegacyArchitectureLogLevel.ERROR,
+      )
+    }
 
     private fun paramTypeToChar(paramClass: Class<*>): Char {
       val tryCommon = commonTypeToChar(paramClass)

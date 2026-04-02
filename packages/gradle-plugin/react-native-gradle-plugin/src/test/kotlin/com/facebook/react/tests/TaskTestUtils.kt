@@ -59,8 +59,8 @@ internal fun createZip(dest: File, paths: List<String>) {
   val uri = URI.create("jar:file:$dest")
 
   FileSystems.newFileSystem(uri, env).use { zipfs ->
-    paths.forEach {
-      val zipEntryPath = zipfs.getPath(it)
+    paths.forEach { path ->
+      val zipEntryPath = zipfs.getPath(path)
       val zipEntryFolder = zipEntryPath.subpath(0, zipEntryPath.nameCount - 1)
       Files.createDirectories(zipEntryFolder)
       Files.createFile(zipEntryPath)

@@ -21,6 +21,7 @@
 
 using namespace facebook::react;
 
+#if !TARGET_OS_TV
 static UIInterfaceOrientationMask supportedOrientationsMask(ModalHostViewSupportedOrientationsMask mask)
 {
   UIInterfaceOrientationMask supportedOrientations = 0;
@@ -55,6 +56,7 @@ static UIInterfaceOrientationMask supportedOrientationsMask(ModalHostViewSupport
 
   return supportedOrientations;
 }
+#endif
 
 static std::tuple<BOOL, UIModalTransitionStyle> animationConfiguration(const ModalHostViewAnimationType animation)
 {
@@ -77,9 +79,21 @@ static UIModalPresentationStyle presentationConfiguration(const ModalHostViewPro
     case ModalHostViewPresentationStyle::FullScreen:
       return UIModalPresentationFullScreen;
     case ModalHostViewPresentationStyle::PageSheet:
+#if !TARGET_OS_TV
       return UIModalPresentationPageSheet;
+#else
+      return UIModalPresentationFullScreen;
+#endif
     case ModalHostViewPresentationStyle::FormSheet:
+#if TARGET_OS_TV
+      if (@available(tvOS 26.0, *)) {
+        return UIModalPresentationFormSheet;
+      } else {
+        return UIModalPresentationFullScreen;
+      }
+#else
       return UIModalPresentationFormSheet;
+#endif
     case ModalHostViewPresentationStyle::OverFullScreen:
       return UIModalPresentationOverFullScreen;
   }
@@ -106,6 +120,7 @@ static ModalHostViewEventEmitter::OnOrientationChange onOrientationChangeStruct(
   BOOL _shouldAnimatePresentation;
   BOOL _shouldPresent;
   BOOL _isPresented;
+  BOOL _modalInPresentation;
 }
 
 - (instancetype)initWithFrame:(CGRect)frame
@@ -115,6 +130,7 @@ static ModalHostViewEventEmitter::OnOrientationChange onOrientationChangeStruct(
     _shouldAnimatePresentation = YES;
 
     _isPresented = NO;
+    _modalInPresentation = YES;
   }
 
   return self;
@@ -126,7 +142,7 @@ static ModalHostViewEventEmitter::OnOrientationChange onOrientationChangeStruct(
     _viewController = [RCTFabricModalHostViewController new];
     _viewController.modalTransitionStyle = UIModalTransitionStyleCoverVertical;
     _viewController.delegate = self;
-    _viewController.modalInPresentation = YES;
+    _viewController.modalInPresentation = _modalInPresentation;
   }
   return _viewController;
 }
@@ -152,6 +168,7 @@ static ModalHostViewEventEmitter::OnOrientationChange onOrientationChangeStruct(
   if (shouldBePresented) {
     [self saveAccessibilityFocusedView];
     self.viewController.presentationController.delegate = self;
+    self.viewController.modalInPresentation = _modalInPresentation;
 
     _isPresented = YES;
     [self presentViewController:self.viewController
@@ -276,7 +293,8 @@ static ModalHostViewEventEmitter::OnOrientationChange onOrientationChangeStruct(
   self.viewController.modalPresentationStyle = presentationConfiguration(newProps);
 
   if (oldViewProps.allowSwipeDismissal != newProps.allowSwipeDismissal) {
-    self.viewController.modalInPresentation = !newProps.allowSwipeDismissal;
+    _modalInPresentation = !newProps.allowSwipeDismissal;
+    self.viewController.modalInPresentation = _modalInPresentation;
   }
 
   _shouldPresent = newProps.visible;

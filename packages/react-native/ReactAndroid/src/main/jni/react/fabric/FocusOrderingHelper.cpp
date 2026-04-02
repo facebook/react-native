@@ -6,7 +6,6 @@
  */
 
 #include "FocusOrderingHelper.h"
-#include <android/log.h>
 #include <react/renderer/uimanager/UIManager.h>
 
 namespace facebook::react {
@@ -55,8 +54,10 @@ int minorAxisDistance(FocusDirection direction, Rect source, Rect dest) {
 // 13 is a magic number that comes from Android's implementation. We opt to use
 // this to get the same focus ordering as Android. See:
 // https://cs.android.com/android/platform/superproject/main/+/main:frameworks/base/core/java/android/view/FocusFinder.java;l=547
-int getWeightedDistanceFor(int majorAxisDistance, int minorAxisDistance) {
-  return 13 * majorAxisDistance * majorAxisDistance +
+double getWeightedDistanceFor(
+    double majorAxisDistance,
+    double minorAxisDistance) {
+  return 13.0 * majorAxisDistance * majorAxisDistance +
       minorAxisDistance * minorAxisDistance;
 }
 
@@ -113,8 +114,8 @@ bool isBetterCandidate(
     return false;
   }
 
-  int candidateWeightedDistance = 0;
-  int currentWeightedDistance = 0;
+  double candidateWeightedDistance = 0;
+  double currentWeightedDistance = 0;
 
   switch (focusDirection) {
     case FocusDirection::FocusLeft:

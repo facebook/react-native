@@ -14,7 +14,7 @@ import ExceptionsManager, {SyntheticError} from './ExceptionsManager';
 
 export type CapturedError = {
   +componentStack: string,
-  +error: mixed,
+  +error: unknown,
   +errorBoundary: ?{...},
   ...
 };
@@ -32,18 +32,18 @@ const ReactFiberErrorDialog = {
     if (errorValue instanceof Error) {
       /* $FlowFixMe[class-object-subtyping] added when improving typing for
        * this parameters */
-      // $FlowFixMe[incompatible-cast]
-      error = (errorValue: ExtendedError);
+      // $FlowFixMe[incompatible-type]
+      error = errorValue as ExtendedError;
     } else if (typeof errorValue === 'string') {
       /* $FlowFixMe[class-object-subtyping] added when improving typing for
        * this parameters */
-      // $FlowFixMe[incompatible-cast]
-      error = (new SyntheticError(errorValue): ExtendedError);
+      // $FlowFixMe[incompatible-type]
+      error = new SyntheticError(errorValue) as ExtendedError;
     } else {
       /* $FlowFixMe[class-object-subtyping] added when improving typing for
        * this parameters */
-      // $FlowFixMe[incompatible-cast]
-      error = (new SyntheticError('Unspecified error'): ExtendedError);
+      // $FlowFixMe[incompatible-type]
+      error = new SyntheticError('Unspecified error') as ExtendedError;
     }
     try {
       error.componentStack = componentStack;

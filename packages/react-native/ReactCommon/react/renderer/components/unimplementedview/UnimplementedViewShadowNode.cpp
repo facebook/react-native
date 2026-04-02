@@ -9,6 +9,7 @@
 
 namespace facebook::react {
 
+// NOLINTNEXTLINE(facebook-hte-CArray,modernize-avoid-c-arrays)
 const char UnimplementedViewComponentName[] = "UnimplementedView";
 
 } // namespace facebook::react

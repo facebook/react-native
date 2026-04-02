@@ -18,26 +18,28 @@ import type {
 } from '../../Types/CoreEventTypes';
 import type {ViewProps} from '../View/ViewPropTypes';
 
+import ReactNativeElement from '../../../src/private/webapis/dom/nodes/ReactNativeElement';
 import {type ColorValue, type TextStyleProp} from '../../StyleSheet/StyleSheet';
 import * as React from 'react';
 
 /**
  * @see TextInputProps.onChange
  */
-type TextInputChangeEventData = $ReadOnly<{
+type TextInputChangeEventData = Readonly<{
   eventCount: number,
   target: number,
   text: string,
+  selection?: Selection,
 }>;
 
 export type TextInputChangeEvent =
   NativeSyntheticEvent<TextInputChangeEventData>;
 
 export type TextInputEvent = NativeSyntheticEvent<
-  $ReadOnly<{
+  Readonly<{
     eventCount: number,
     previousText: string,
-    range: $ReadOnly<{
+    range: Readonly<{
       start: number,
       end: number,
     }>,
@@ -46,9 +48,9 @@ export type TextInputEvent = NativeSyntheticEvent<
   }>,
 >;
 
-type TextInputContentSizeChangeEventData = $ReadOnly<{
+type TextInputContentSizeChangeEventData = Readonly<{
   target: number,
-  contentSize: $ReadOnly<{
+  contentSize: Readonly<{
     width: number,
     height: number,
   }>,
@@ -72,17 +74,17 @@ export type TextInputBlurEvent = BlurEvent;
  */
 export type TextInputFocusEvent = FocusEvent;
 
-type TargetEvent = $ReadOnly<{
+type TargetEvent = Readonly<{
   target: number,
   ...
 }>;
 
-export type Selection = $ReadOnly<{
+export type Selection = Readonly<{
   start: number,
   end: number,
 }>;
 
-type TextInputSelectionChangeEventData = $ReadOnly<{
+type TextInputSelectionChangeEventData = Readonly<{
   ...TargetEvent,
   selection: Selection,
   ...
@@ -94,7 +96,7 @@ type TextInputSelectionChangeEventData = $ReadOnly<{
 export type TextInputSelectionChangeEvent =
   NativeSyntheticEvent<TextInputSelectionChangeEventData>;
 
-type TextInputKeyPressEventData = $ReadOnly<{
+type TextInputKeyPressEventData = Readonly<{
   ...TargetEvent,
   key: string,
   target?: ?number,
@@ -108,7 +110,7 @@ type TextInputKeyPressEventData = $ReadOnly<{
 export type TextInputKeyPressEvent =
   NativeSyntheticEvent<TextInputKeyPressEventData>;
 
-type TextInputEndEditingEventData = $ReadOnly<{
+type TextInputEndEditingEventData = Readonly<{
   ...TargetEvent,
   eventCount: number,
   text: string,
@@ -121,7 +123,7 @@ type TextInputEndEditingEventData = $ReadOnly<{
 export type TextInputEndEditingEvent =
   NativeSyntheticEvent<TextInputEndEditingEventData>;
 
-type TextInputSubmitEditingEventData = $ReadOnly<{
+type TextInputSubmitEditingEventData = Readonly<{
   ...TargetEvent,
   eventCount: number,
   text: string,
@@ -265,7 +267,7 @@ export type EnterKeyHintTypeOptions =
 
 type PasswordRules = string;
 
-export type TextInputIOSProps = $ReadOnly<{
+export type TextInputIOSProps = Readonly<{
   /**
    * If true, the keyboard shortcuts (undo/redo and copy buttons) are disabled. The default value is false.
    * @platform ios
@@ -305,7 +307,7 @@ export type TextInputIOSProps = $ReadOnly<{
    */
   dataDetectorTypes?:
     | ?DataDetectorTypesType
-    | $ReadOnlyArray<DataDetectorTypesType>,
+    | ReadonlyArray<DataDetectorTypesType>,
 
   /**
    * If `true`, the keyboard disables the return key when there is no text and
@@ -402,7 +404,7 @@ export type TextInputIOSProps = $ReadOnly<{
   smartInsertDelete?: ?boolean,
 }>;
 
-export type TextInputAndroidProps = $ReadOnly<{
+export type TextInputAndroidProps = Readonly<{
   /**
    * When provided it will set the color of the cursor (or "caret") in the component.
    * Unlike the behavior of `selectionColor` the cursor color will be set independently
@@ -511,7 +513,7 @@ export type TextInputAndroidProps = $ReadOnly<{
   underlineColorAndroid?: ?ColorValue,
 }>;
 
-type TextInputBaseProps = $ReadOnly<{
+type TextInputBaseProps = Readonly<{
   /**
    * When provided, the text input will only accept drag and drop events for the specified
    * types. If null or not provided, the text input will accept all types of drag and drop events.
@@ -530,7 +532,7 @@ type TextInputBaseProps = $ReadOnly<{
    *
    * @see https://developer.android.com/reference/android/content/ClipData for more information on MIME types
    */
-  experimental_acceptDragAndDropTypes?: ?$ReadOnlyArray<string>,
+  experimental_acceptDragAndDropTypes?: ?ReadonlyArray<string>,
 
   /**
    * Can tell `TextInput` to automatically capitalize certain characters.
@@ -592,7 +594,14 @@ type TextInputBaseProps = $ReadOnly<{
    *
    * The following values work on Android only:
    *
+   * - `2fa-app-otp`
+   * - `email-otp`
+   * - `flight-confirmation-code`
+   * - `flight-number`
    * - `gender`
+   * - `gift-card-number`
+   * - `gift-card-pin`
+   * - `loyalty-account-number`
    * - `name-family`
    * - `name-given`
    * - `name-middle`
@@ -603,17 +612,23 @@ type TextInputBaseProps = $ReadOnly<{
    * - `password-new`
    * - `postal-address`
    * - `postal-address-country`
+   * - `postal-address-dependent-locality`
    * - `postal-address-extended`
    * - `postal-address-extended-postal-code`
    * - `postal-address-locality`
    * - `postal-address-region`
+   * - `postal-address-unit`
+   * - `promo-code`
    * - `sms-otp`
    * - `tel-country-code`
    * - `tel-national`
    * - `tel-device`
+   * - `upi-vpa`
+   * - `wifi-password`
    * - `username-new`
    */
   autoComplete?: ?(
+    | '2fa-app-otp'
     | 'additional-name'
     | 'address-line1'
     | 'address-line2'
@@ -635,11 +650,17 @@ type TextInputBaseProps = $ReadOnly<{
     | 'country'
     | 'current-password'
     | 'email'
+    | 'email-otp'
+    | 'flight-confirmation-code'
+    | 'flight-number'
     | 'family-name'
     | 'gender'
+    | 'gift-card-number'
+    | 'gift-card-pin'
     | 'given-name'
     | 'honorific-prefix'
     | 'honorific-suffix'
+    | 'loyalty-account-number'
     | 'name'
     | 'name-family'
     | 'name-given'
@@ -656,18 +677,23 @@ type TextInputBaseProps = $ReadOnly<{
     | 'password-new'
     | 'postal-address'
     | 'postal-address-country'
+    | 'postal-address-dependent-locality'
     | 'postal-address-extended'
     | 'postal-address-extended-postal-code'
     | 'postal-address-locality'
     | 'postal-address-region'
+    | 'postal-address-unit'
     | 'postal-code'
+    | 'promo-code'
     | 'street-address'
     | 'sms-otp'
     | 'tel'
     | 'tel-country-code'
     | 'tel-national'
     | 'tel-device'
+    | 'upi-vpa'
     | 'url'
+    | 'wifi-password'
     | 'username'
     | 'username-new'
     | 'off'
@@ -808,18 +834,18 @@ type TextInputBaseProps = $ReadOnly<{
   /**
    * Callback that is called when the text input is blurred.
    */
-  onBlur?: ?(e: TextInputBlurEvent) => mixed,
+  onBlur?: ?(e: TextInputBlurEvent) => unknown,
 
   /**
    * Callback that is called when the text input's text changes.
    */
-  onChange?: ?(e: TextInputChangeEvent) => mixed,
+  onChange?: ?(e: TextInputChangeEvent) => unknown,
 
   /**
    * Callback that is called when the text input's text changes.
    * Changed text is passed as an argument to the callback handler.
    */
-  onChangeText?: ?(text: string) => mixed,
+  onChangeText?: ?(text: string) => unknown,
 
   /**
    * Callback that is called when the text input's content size changes.
@@ -828,17 +854,17 @@ type TextInputBaseProps = $ReadOnly<{
    *
    * Only called for multiline text inputs.
    */
-  onContentSizeChange?: ?(e: TextInputContentSizeChangeEvent) => mixed,
+  onContentSizeChange?: ?(e: TextInputContentSizeChangeEvent) => unknown,
 
   /**
    * Callback that is called when text input ends.
    */
-  onEndEditing?: ?(e: TextInputEndEditingEvent) => mixed,
+  onEndEditing?: ?(e: TextInputEndEditingEvent) => unknown,
 
   /**
    * Callback that is called when the text input is focused.
    */
-  onFocus?: ?(e: TextInputFocusEvent) => mixed,
+  onFocus?: ?(e: TextInputFocusEvent) => unknown,
 
   /**
    * Callback that is called when a key is pressed.
@@ -847,42 +873,42 @@ type TextInputBaseProps = $ReadOnly<{
    * the typed-in character otherwise including `' '` for space.
    * Fires before `onChange` callbacks.
    */
-  onKeyPress?: ?(e: TextInputKeyPressEvent) => mixed,
+  onKeyPress?: ?(e: TextInputKeyPressEvent) => unknown,
 
   /**
    * Called when a single tap gesture is detected.
    */
-  onPress?: ?(event: GestureResponderEvent) => mixed,
+  onPress?: ?(event: GestureResponderEvent) => unknown,
 
   /**
    * Called when a touch is engaged.
    */
-  onPressIn?: ?(event: GestureResponderEvent) => mixed,
+  onPressIn?: ?(event: GestureResponderEvent) => unknown,
 
   /**
    * Called when a touch is released.
    */
-  onPressOut?: ?(event: GestureResponderEvent) => mixed,
+  onPressOut?: ?(event: GestureResponderEvent) => unknown,
 
   /**
    * Callback that is called when the text input selection is changed.
    * This will be called with
    * `{ nativeEvent: { selection: { start, end } } }`.
    */
-  onSelectionChange?: ?(e: TextInputSelectionChangeEvent) => mixed,
+  onSelectionChange?: ?(e: TextInputSelectionChangeEvent) => unknown,
 
   /**
    * Callback that is called when the text input's submit button is pressed.
    * Invalid if `multiline={true}` is specified.
    */
-  onSubmitEditing?: ?(e: TextInputSubmitEditingEvent) => mixed,
+  onSubmitEditing?: ?(e: TextInputSubmitEditingEvent) => unknown,
 
   /**
    * Invoked on content scroll with `{ nativeEvent: { contentOffset: { x, y } } }`.
    * May also contain other properties from ScrollEvent but on Android contentSize
    * is not provided for performance reasons.
    */
-  onScroll?: ?(e: ScrollEvent) => mixed,
+  onScroll?: ?(e: ScrollEvent) => unknown,
 
   /**
    * The string that will be rendered before text input has been entered.
@@ -945,7 +971,7 @@ type TextInputBaseProps = $ReadOnly<{
    * The start and end of the text input's selection. Set start and end to
    * the same value to position the cursor.
    */
-  selection?: ?$ReadOnly<{
+  selection?: ?Readonly<{
     start: number,
     end?: ?number,
   }>,
@@ -1030,19 +1056,25 @@ type TextInputBaseProps = $ReadOnly<{
   textAlign?: ?('left' | 'center' | 'right'),
 }>;
 
-export type TextInputProps = $ReadOnly<{
+export type TextInputProps = Readonly<{
   ...Omit<ViewProps, 'style' | 'experimental_accessibilityOrder'>,
   ...TextInputIOSProps,
   ...TextInputAndroidProps,
   ...TextInputBaseProps,
 }>;
 
-export interface TextInputInstance extends HostInstance {
-  +clear: () => void;
-  +isFocused: () => boolean;
-  +getNativeRef: () => ?HostInstance;
-  +setSelection: (start: number, end: number) => void;
+/**
+ * TextInput monkey-patches the native element instance with these methods.
+ * It isn't technically a class but this is the most elegant way to type it.
+ */
+declare class _TextInputInstance extends ReactNativeElement {
+  clear(): void;
+  isFocused(): boolean;
+  getNativeRef(): ?ReactNativeElement;
+  setSelection(start: number, end: number): void;
 }
+
+export type TextInputInstance = _TextInputInstance;
 
 /**
  * A foundational component for inputting text into the app via a
@@ -1160,8 +1192,8 @@ type InternalTextInput = component(
   ...TextInputProps
 );
 
-export type TextInputComponentStatics = $ReadOnly<{
-  State: $ReadOnly<{
+export type TextInputComponentStatics = Readonly<{
+  State: Readonly<{
     currentlyFocusedInput: () => ?HostInstance,
     currentlyFocusedField: () => ?number,
     focusTextInput: (textField: ?HostInstance) => void,

@@ -6,7 +6,6 @@
  *
  * @flow strict-local
  * @format
- * @fantom_flags reduceDefaultPropsInText:*
  */
 
 import '@react-native/fantom/src/setUpDefaultReactNativeEnvironment';
@@ -43,7 +42,8 @@ describe('<Text>', () => {
             ellipsizeMode="tail"
             fontSize="NaN"
             fontSizeMultiplier="NaN"
-            foregroundColor="rgba(0, 0, 0, 0)">
+            foregroundColor="rgba(0, 0, 0, 0)"
+            overflow="hidden">
             {TEST_TEXT}
           </rn-paragraph>,
         );
@@ -351,6 +351,22 @@ describe('<Text>', () => {
             <rn-paragraph writingDirection="auto">{TEST_TEXT}</rn-paragraph>,
           );
         });
+      });
+    });
+
+    describe('aria-hidden', () => {
+      it('is is passed as importantForAccessibility', () => {
+        const root = Fantom.createRoot();
+        Fantom.runTask(() => {
+          root.render(<Text aria-hidden={true} />);
+        });
+        expect(
+          root
+            .getRenderedOutput({props: ['importantForAccessibility']})
+            .toJSX(),
+        ).toEqual(
+          <rn-paragraph importantForAccessibility="no-hide-descendants" />,
+        );
       });
     });
   });

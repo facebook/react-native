@@ -14,10 +14,8 @@
 
 namespace facebook::react {
 
-inline void fromRawValue(
-    const PropsParserContext& /*context*/,
-    const RawValue& value,
-    DataDetectorType& result) {
+inline void fromRawValue(const PropsParserContext & /*context*/, const RawValue &value, DataDetectorType &result)
+{
   auto string = static_cast<std::string>(value);
   if (string == "all") {
     result = DataDetectorType::All;
@@ -34,7 +32,8 @@ inline void fromRawValue(
   }
 }
 
-inline std::string toString(const DataDetectorType& value) {
+inline std::string toString(const DataDetectorType &value)
+{
   switch (value) {
     case DataDetectorType::All:
       return "all";

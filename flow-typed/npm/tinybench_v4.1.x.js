@@ -11,7 +11,7 @@
 declare module 'tinybench' {
   declare export class Task extends EventTarget {
     name: string;
-    result: void | $ReadOnly<TaskResult>;
+    result: void | Readonly<TaskResult>;
     runs: number;
 
     reset(): void;
@@ -91,10 +91,15 @@ declare module 'tinybench' {
     beforeEach?: (this: Task) => void | Promise<void>,
   };
 
-  export interface FnReturnedObject {
-    overriddenDuration?: number;
-  }
+  // This is defined as an interface in tinybench but we define it as an object
+  // to catch problems like `overriddenDuration` being misspelled.
+  export type FnReturnedObject = {
+    overriddenDuration?: number,
+  };
 
+  // This type is defined as returning `unknown` instead of `void` in tinybench,
+  // but we type it this way to avoid mistakes (we can make breaking changes
+  // in our definition that they can't).
   export type Fn = () =>
     | Promise<void | FnReturnedObject>
     | void
@@ -103,13 +108,13 @@ declare module 'tinybench' {
   declare export class Bench extends EventTarget {
     concurrency: null | 'task' | 'bench';
     name?: string;
-    opts: $ReadOnly<BenchOptions>;
+    opts: Readonly<BenchOptions>;
     threshold: number;
 
     constructor(options?: BenchOptions): this;
 
     // $FlowExpectedError[unsafe-getters-setters]
-    get results(): Array<$ReadOnly<TaskResult>>;
+    get results(): Array<Readonly<TaskResult>>;
 
     // $FlowExpectedError[unsafe-getters-setters]
     get tasks(): Array<Task>;

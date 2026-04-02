@@ -147,6 +147,9 @@ Available pragmas:
   - Possible values:
     - `true`: using Hermes bytecode
     - `false`: not using Hermes bytecode
+- `@fantom_disable_coverage`: used to disable coverage collection for the test.
+  - Example: `@fantom_disable_coverage`
+  - Does not require a value.
 - `@fantom_react_fb_flags`: used to set overrides for internal React flags set
   in ReactNativeInternalFeatureFlags (Meta use only)
 

@@ -20,7 +20,7 @@ import type {EventInit} from '../../dom/events/Event';
 import Event from '../../dom/events/Event';
 
 export interface MessageEventInit extends EventInit {
-  +data?: mixed;
+  +data?: unknown;
   +origin?: string;
   +lastEventId?: string;
   // Unsupported
@@ -30,7 +30,7 @@ export interface MessageEventInit extends EventInit {
 }
 
 export default class MessageEvent extends Event {
-  _data: mixed;
+  _data: unknown;
   _origin: string;
   _lastEventId: string;
 
@@ -42,7 +42,7 @@ export default class MessageEvent extends Event {
     this._lastEventId = String(options?.lastEventId ?? '');
   }
 
-  get data(): mixed {
+  get data(): unknown {
     return this._data;
   }
 

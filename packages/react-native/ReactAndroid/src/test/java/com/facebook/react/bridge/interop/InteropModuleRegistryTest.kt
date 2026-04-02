@@ -5,16 +5,17 @@
  * LICENSE file in the root directory of this source tree.
  */
 
-@file:Suppress(
-    "DEPRECATION") // Suppressing as we want to test specifically with RCTEventEmitter here
+// Suppressing as we want to test specifically with RCTEventEmitter here
+@file:Suppress("DEPRECATION")
 
 package com.facebook.react.bridge.interop
 
+import com.facebook.react.bridge.JavaScriptModule
+import com.facebook.react.bridge.WritableMap
 import com.facebook.react.common.annotations.UnstableReactNativeAPI
 import com.facebook.react.internal.featureflags.ReactNativeFeatureFlags
 import com.facebook.react.internal.featureflags.ReactNativeFeatureFlagsDefaults
 import com.facebook.react.internal.featureflags.ReactNativeFeatureFlagsForTests
-import com.facebook.react.modules.core.JSTimers
 import com.facebook.react.uimanager.events.RCTEventEmitter
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.After
@@ -25,6 +26,14 @@ import org.junit.Test
 class InteropModuleRegistryTest {
 
   private lateinit var underTest: InteropModuleRegistry
+
+  private interface FakeJavaScriptModule : JavaScriptModule
+
+  @Suppress("DEPRECATION")
+  private class FakeRCTEventEmitter : RCTEventEmitter {
+    @Deprecated("Use [RCTModernEventEmitter.receiveEvent] instead")
+    override fun receiveEvent(targetTag: Int, eventName: String, params: WritableMap?) = Unit
+  }
 
   @Before
   fun setup() {
@@ -60,7 +69,7 @@ class InteropModuleRegistryTest {
   @Test
   fun getInteropModule_withUnregisteredClass_returnsNull() {
     overrideFeatureFlags(true, true)
-    val missingModule = underTest.getInteropModule(JSTimers::class.java)
+    val missingModule = underTest.getInteropModule(FakeJavaScriptModule::class.java)
 
     assertThat(missingModule).isNull()
   }
@@ -71,6 +80,7 @@ class InteropModuleRegistryTest {
           override fun useFabricInterop(): Boolean = useFabricInterop
 
           override fun enableFabricRenderer(): Boolean = enableFabricRenderer
-        })
+        }
+    )
   }
 }

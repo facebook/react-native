@@ -34,13 +34,7 @@ const transformProperties = {
   translateY: {outputRange: [0, 100], selected: false},
 };
 
-function AnimatedView({
-  properties,
-  useNativeDriver,
-}: {
-  properties: Array<string>,
-  useNativeDriver: boolean,
-}) {
+component AnimatedView(properties: Array<string>, useNativeDriver: boolean) {
   const animatedValue = new Animated.Value(0);
   const transformStyles = properties.map(property => ({
     [property]: animatedValue.interpolate({
@@ -78,10 +72,11 @@ function AnimatedView({
   );
 }
 
-function AnimatedTransformStyleExample(): React.Node {
+component AnimatedTransformStyleExample() {
   const [properties, setProperties] = useState(transformProperties);
   const [useNativeDriver, setUseNativeDriver] = useState(false);
   const onToggle = (property: string) =>
+    // $FlowFixMe[incompatible-type]
     setProperties({
       ...properties,
       [property]: {
@@ -126,7 +121,7 @@ function AnimatedTransformStyleExample(): React.Node {
       <AnimatedView
         key={`animated-view-use-${useNativeDriver ? 'native' : 'js'}-driver`}
         useNativeDriver={useNativeDriver}
-        // $FlowFixMe[incompatible-call]
+        // $FlowFixMe[incompatible-type]
         properties={Object.keys(properties).filter(
           property => properties[property].selected,
         )}
@@ -168,9 +163,9 @@ const styles = StyleSheet.create({
   },
 });
 
-export default ({
+export default {
   title: 'Transform Styles',
   name: 'transformStyles',
   description: 'Variations of transform styles.',
   render: () => <AnimatedTransformStyleExample />,
-}: RNTesterModuleExample);
+} as RNTesterModuleExample;

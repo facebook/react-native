@@ -571,6 +571,11 @@ function consoleAssertPolyfill(expression, label) {
 
 function stub() {}
 
+// https://developer.chrome.com/docs/devtools/console/api#createtask
+function consoleCreateTaskStub() {
+  return {run: cb => cb()};
+}
+
 if (global.nativeLoggingHook) {
   const originalConsole = global.console;
   // Preserve the original `console` as `originalConsole`
@@ -587,6 +592,7 @@ if (global.nativeLoggingHook) {
     timeStamp: stub,
     count: stub,
     countReset: stub,
+    createTask: consoleCreateTaskStub,
     ...(originalConsole ?? {}),
     error: getNativeLogFunction(LOG_LEVELS.error),
     info: getNativeLogFunction(LOG_LEVELS.info),
@@ -605,13 +611,12 @@ if (global.nativeLoggingHook) {
   // Delete the copy there after the c++ pipeline is rolled out everywhere.
   if (global.RN$useAlwaysAvailableJSErrorHandling === true) {
     let originalConsoleError = console.error;
-    console.reportErrorsAsExceptions = true;
     function stringifySafe(arg) {
       return inspect(arg, {depth: 10}).replace(/\n\s*/g, ' ');
     }
     console.error = function (...args) {
       originalConsoleError.apply(this, args);
-      if (!console.reportErrorsAsExceptions) {
+      if (console.reportErrorsAsExceptions === false) {
         return;
       }
       if (global.RN$inExceptionHandler?.()) {
@@ -705,6 +710,7 @@ if (global.nativeLoggingHook) {
     time: stub,
     timeEnd: stub,
     timeStamp: stub,
+    createTask: consoleCreateTaskStub,
   };
 
   Object.defineProperty(console, '_isPolyfilled', {

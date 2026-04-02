@@ -41,25 +41,24 @@ struct ShadowNodeFamilyFragment {
  */
 class ShadowNodeFamily final : public jsi::NativeState {
  public:
-  using Shared = std::shared_ptr<const ShadowNodeFamily>;
-  using Weak = std::weak_ptr<const ShadowNodeFamily>;
+  using Shared = std::shared_ptr<ShadowNodeFamily>;
+  using Weak = std::weak_ptr<ShadowNodeFamily>;
 
-  using AncestorList = std::vector<std::pair<
-      std::reference_wrapper<const ShadowNode> /* parentNode */,
-      int /* childIndex */>>;
+  using AncestorList =
+      std::vector<std::pair<std::reference_wrapper<const ShadowNode> /* parentNode */, int /* childIndex */>>;
 
   ShadowNodeFamily(
-      const ShadowNodeFamilyFragment& fragment,
+      const ShadowNodeFamilyFragment &fragment,
       SharedEventEmitter eventEmitter,
       EventDispatcher::Weak eventDispatcher,
-      const ComponentDescriptor& componentDescriptor);
+      const ComponentDescriptor &componentDescriptor);
 
   /*
    * Sets the parent.
    * This is not technically thread-safe, but practically it mutates the object
    * only once (and the model enforces that this first call is not concurrent).
    */
-  void setParent(const ShadowNodeFamily::Shared& parent) const;
+  void setParent(const ShadowNodeFamily::Shared &parent);
 
   /*
    * Returns a handle (or name) associated with the component.
@@ -70,7 +69,7 @@ class ShadowNodeFamily final : public jsi::NativeState {
   /*
    * Returns a concrete `ComponentDescriptor` that manages nodes of this type.
    */
-  const ComponentDescriptor& getComponentDescriptor() const;
+  const ComponentDescriptor &getComponentDescriptor() const;
 
   /*
    * Returns a list of all ancestors of the node relative to the given ancestor.
@@ -81,7 +80,7 @@ class ShadowNodeFamily final : public jsi::NativeState {
    * Can be called from any thread.
    * The theoretical complexity of the algorithm is `O(ln(n))`. Use it wisely.
    */
-  AncestorList getAncestors(const ShadowNode& ancestorShadowNode) const;
+  AncestorList getAncestors(const ShadowNode &ancestorShadowNode) const;
 
   SurfaceId getSurfaceId() const;
 
@@ -91,26 +90,23 @@ class ShadowNodeFamily final : public jsi::NativeState {
    * @param callback will be executed when an unmounted instance of
    * ShadowNodeFamily is destroyed.
    */
-  void onUnmountedFamilyDestroyed(
-      std::function<void(const ShadowNodeFamily& family)> callback) const;
+  void onUnmountedFamilyDestroyed(std::function<void(const ShadowNodeFamily &family)> callback);
 
   /*
    * Sets and gets the most recent state.
    */
   std::shared_ptr<const State> getMostRecentState() const;
-  void setMostRecentState(const std::shared_ptr<const State>& state) const;
+  void setMostRecentState(const std::shared_ptr<const State> &state);
 
   /**
    * Mark this ShadowNodeFamily as mounted.
    */
-  void setMounted() const;
+  void setMounted();
 
   /*
    * Dispatches a state update with given priority.
    */
-  void dispatchRawState(
-      StateUpdate&& stateUpdate,
-      EventQueue::UpdateMode updateMode) const;
+  void dispatchRawState(StateUpdate &&stateUpdate, EventQueue::UpdateMode updateMode);
 
   /*
    * Holds currently applied native props. `nullptr` if setNativeProps API is
@@ -124,9 +120,9 @@ class ShadowNodeFamily final : public jsi::NativeState {
    */
   Tag getTag() const;
 
-  jsi::Value getInstanceHandle(jsi::Runtime& runtime) const;
+  jsi::Value getInstanceHandle(jsi::Runtime &runtime) const;
   InstanceHandle::Shared getInstanceHandle() const;
-  void setInstanceHandle(InstanceHandle::Shared& instanceHandle) const;
+  void setInstanceHandle(InstanceHandle::Shared &instanceHandle);
 
   /**
    * Override destructor to call onUnmountedFamilyDestroyedCallback() for
@@ -143,15 +139,13 @@ class ShadowNodeFamily final : public jsi::NativeState {
    * otherwise returns `nullptr`.
    * To be used by `State` only.
    */
-  std::shared_ptr<const State> getMostRecentStateIfObsolete(
-      const State& state) const;
+  std::shared_ptr<const State> getMostRecentStateIfObsolete(const State &state) const;
 
   EventDispatcher::Weak eventDispatcher_;
-  mutable std::shared_ptr<const State> mostRecentState_;
+  std::shared_ptr<const State> mostRecentState_;
   mutable std::shared_mutex mutex_;
 
-  mutable std::function<void(ShadowNodeFamily& family)>
-      onUnmountedFamilyDestroyedCallback_ = nullptr;
+  std::function<void(ShadowNodeFamily &family)> onUnmountedFamilyDestroyedCallback_ = nullptr;
 
   /*
    * Deprecated.
@@ -166,7 +160,7 @@ class ShadowNodeFamily final : public jsi::NativeState {
   /*
    * Weak reference to the React instance handle
    */
-  mutable InstanceHandle::Shared instanceHandle_;
+  InstanceHandle::Shared instanceHandle_;
 
   /*
    * `EventEmitter` associated with all nodes of the family.
@@ -177,7 +171,7 @@ class ShadowNodeFamily final : public jsi::NativeState {
    * Reference to a concrete `ComponentDescriptor` that manages nodes of this
    * type.
    */
-  const ComponentDescriptor& componentDescriptor_;
+  const ComponentDescriptor &componentDescriptor_;
 
   /*
    * ComponentHandle and ComponentName must be stored (cached) inside the object
@@ -190,18 +184,18 @@ class ShadowNodeFamily final : public jsi::NativeState {
   /*
    * Points to a family of all parent nodes of all nodes of the family.
    */
-  mutable ShadowNodeFamily::Weak parent_{};
+  ShadowNodeFamily::Weak parent_{};
 
   /*
    * Represents a case where `parent_` is `nullptr`.
    * For optimization purposes only.
    */
-  mutable bool hasParent_{false};
+  bool hasParent_{false};
 
   /*
    * Determines if the ShadowNodeFamily was ever mounted on the screen.
    */
-  mutable bool hasBeenMounted_{false};
+  bool hasBeenMounted_{false};
 };
 
 } // namespace facebook::react

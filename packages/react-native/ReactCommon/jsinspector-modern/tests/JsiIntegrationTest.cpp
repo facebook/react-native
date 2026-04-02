@@ -358,6 +358,7 @@ TYPED_TEST(JsiIntegrationPortableTest, ReactNativeApplicationEnable) {
                                           "method": "ReactNativeApplication.metadataUpdated",
                                           "params": {
                                             "integrationName": "JsiIntegrationTest",
+                                            "unstable_frameRecordingEnabled": false,
                                             "unstable_isProfilingBuild": false,
                                             "unstable_networkInspectionEnabled": false
                                           }
@@ -534,13 +535,14 @@ TYPED_TEST(JsiIntegrationHermesTest, EvaluateExpressionInExecutionContext) {
                                            }
                                          }
                                        })"));
-  this->toPage_->sendMessage(fmt::format(
-      R"({{
+  this->toPage_->sendMessage(
+      fmt::format(
+          R"({{
         "id": 1,
         "method": "Runtime.evaluate",
         "params": {{"expression": "42", "contextId": {0}}}
       }})",
-      std::to_string(executionContextId)));
+          std::to_string(executionContextId)));
 
   // Silence notifications about execution contexts.
   this->expectMessageFromPage(JsonEq(R"({
@@ -556,16 +558,22 @@ TYPED_TEST(JsiIntegrationHermesTest, EvaluateExpressionInExecutionContext) {
   // Now the old execution context is stale.
   this->expectMessageFromPage(
       JsonParsed(AllOf(AtJsonPtr("/id", 3), AtJsonPtr("/error/code", -32600))));
-  this->toPage_->sendMessage(fmt::format(
-      R"({{
+  this->toPage_->sendMessage(
+      fmt::format(
+          R"({{
         "id": 3,
         "method": "Runtime.evaluate",
         "params": {{"expression": "10000", "contextId": {0}}}
       }})",
-      std::to_string(executionContextId)));
+          std::to_string(executionContextId)));
 }
 
-TYPED_TEST(JsiIntegrationHermesTest, ResolveBreakpointAfterEval) {
+#if !defined(HERMES_STATIC_HERMES_STABLE)
+// TODO: Unconditionally enable test for line-only (columnless) breakpoints
+// after D83595036 (fix for T239924718) ships to the stable branch of Static
+// Hermes.
+
+TYPED_TEST(JsiIntegrationHermesTest, ResolveColumnlessBreakpointAfterEval) {
   this->connect();
 
   InSequence s;
@@ -603,7 +611,7 @@ TYPED_TEST(JsiIntegrationHermesTest, ResolveBreakpointAfterEval) {
                                })");
 }
 
-TYPED_TEST(JsiIntegrationHermesTest, ResolveBreakpointAfterReload) {
+TYPED_TEST(JsiIntegrationHermesTest, ResolveColumnlessBreakpointAfterReload) {
   this->connect();
 
   InSequence s;
@@ -643,6 +651,159 @@ TYPED_TEST(JsiIntegrationHermesTest, ResolveBreakpointAfterReload) {
   EXPECT_EQ(
       breakpointInfo->value()["params"]["location"]["scriptId"],
       scriptInfo->value()["params"]["scriptId"]);
+}
+
+#endif // !defined(HERMES_STATIC_HERMES_STABLE)
+
+TYPED_TEST(JsiIntegrationHermesTest, ResolveColumnBreakpointAfterEval) {
+  this->connect();
+
+  InSequence s;
+
+  this->expectMessageFromPage(JsonEq(R"({
+                                         "id": 1,
+                                         "result": {}
+                                       })"));
+  this->toPage_->sendMessage(R"({
+                                 "id": 1,
+                                 "method": "Debugger.enable"
+                               })");
+
+  auto scriptInfo = this->expectMessageFromPage(JsonParsed(AllOf(
+      AtJsonPtr("/method", "Debugger.scriptParsed"),
+      AtJsonPtr("/params/url", "breakpointTest.js"))));
+  this->eval(R"( // line 0
+    globalThis.foo = function() { // line 1
+      Date.now(); // line 2
+    };
+    //# sourceURL=breakpointTest.js
+  )");
+  ASSERT_TRUE(scriptInfo->has_value());
+
+  this->expectMessageFromPage(JsonParsed(AllOf(
+      AtJsonPtr("/id", 2),
+      AtJsonPtr("/result/locations/0/lineNumber", 2),
+      AtJsonPtr("/result/locations/0/columnNumber", 6),
+      AtJsonPtr(
+          "/result/locations/0/scriptId",
+          scriptInfo->value()["params"]["scriptId"]))));
+  this->toPage_->sendMessage(R"({
+                                 "id": 2,
+                                 "method": "Debugger.setBreakpointByUrl",
+                                 "params": {"lineNumber": 2,
+                                             "columnNumber": 6,
+                                 "url": "breakpointTest.js"}
+                               })");
+}
+
+TYPED_TEST(JsiIntegrationHermesTest, ResolveColumnBreakpointAfterReload) {
+  this->connect();
+
+  InSequence s;
+
+  this->expectMessageFromPage(JsonEq(R"({
+                                         "id": 1,
+                                         "result": {}
+                                       })"));
+  this->toPage_->sendMessage(R"({
+                                 "id": 1,
+                                 "method": "Debugger.enable"
+                               })");
+
+  this->expectMessageFromPage(JsonParsed(AtJsonPtr("/id", 2)));
+  this->toPage_->sendMessage(R"({
+                                 "id": 2,
+                                 "method": "Debugger.setBreakpointByUrl",
+                                 "params": {"lineNumber": 2, "columnNumber": 6, "url": "breakpointTest.js"}
+                               })");
+
+  this->reload();
+
+  auto scriptInfo = this->expectMessageFromPage(JsonParsed(AllOf(
+      AtJsonPtr("/method", "Debugger.scriptParsed"),
+      AtJsonPtr("/params/url", "breakpointTest.js"))));
+  auto breakpointInfo = this->expectMessageFromPage(JsonParsed(AllOf(
+      AtJsonPtr("/method", "Debugger.breakpointResolved"),
+      AtJsonPtr("/params/location/lineNumber", 2),
+      AtJsonPtr("/params/location/columnNumber", 6))));
+  this->eval(R"( // line 0
+    globalThis.foo = function() { // line 1
+      Date.now(); // line 2
+    };
+    //# sourceURL=breakpointTest.js
+  )");
+  ASSERT_TRUE(breakpointInfo->has_value());
+  ASSERT_TRUE(scriptInfo->has_value());
+  EXPECT_EQ(
+      breakpointInfo->value()["params"]["location"]["scriptId"],
+      scriptInfo->value()["params"]["scriptId"]);
+}
+
+TYPED_TEST(JsiIntegrationHermesTest, TwoConnectionsEnableDebugger) {
+  this->connect();
+  auto secondary = this->connectSecondary();
+
+  EXPECT_CALL(
+      this->fromPage(), onMessage(JsonEq(R"({"id": 1, "result": {}})")));
+  EXPECT_CALL(
+      secondary.fromPage(), onMessage(JsonEq(R"({"id": 2, "result": {}})")));
+
+  this->toPage_->sendMessage(R"({"id": 1, "method": "Debugger.enable"})");
+  secondary.toPage().sendMessage(R"({"id": 2, "method": "Debugger.enable"})");
+}
+
+TYPED_TEST(JsiIntegrationHermesTest, TwoConnectionsDebuggerLifecycle) {
+  this->connect();
+  auto secondary = this->connectSecondary();
+
+  this->expectMessageFromPage(JsonEq(R"({"id": 1, "result": {}})"));
+  this->toPage_->sendMessage(R"({"id": 1, "method": "Debugger.enable"})");
+
+  // Connections: Main (Debugger enabled), Secondary (Debugger disabled)
+  // --> Only the main connection receives Debugger events.
+  this->expectMessageFromPage(JsonParsed(AllOf(
+      AtJsonPtr("/method", "Debugger.scriptParsed"),
+      AtJsonPtr("/params/url", "script1.js"))));
+  this->eval("1 + 1; //# sourceURL=script1.js");
+
+  // Connections: Main (Debugger enabled), Secondary (Debugger being enabled)
+  // --> The secondary connection receives buffered Debugger events.
+  EXPECT_CALL(
+      secondary.fromPage(), onMessage(JsonEq(R"({"id": 2, "result": {}})")));
+  EXPECT_CALL(
+      secondary.fromPage(),
+      onMessage(JsonParsed(AllOf(
+          AtJsonPtr("/method", "Debugger.scriptParsed"),
+          AtJsonPtr("/params/url", "script1.js")))));
+  secondary.toPage().sendMessage(R"({"id": 2, "method": "Debugger.enable"})");
+
+  // Connections: Main (Debugger enabled), Secondary (Debugger enabled)
+  // --> Both connections receive Debugger events.
+  this->expectMessageFromPage(JsonParsed(AllOf(
+      AtJsonPtr("/method", "Debugger.scriptParsed"),
+      AtJsonPtr("/params/url", "script2.js"))));
+  EXPECT_CALL(
+      secondary.fromPage(),
+      onMessage(JsonParsed(AllOf(
+          AtJsonPtr("/method", "Debugger.scriptParsed"),
+          AtJsonPtr("/params/url", "script2.js")))));
+  this->eval("2 + 2; //# sourceURL=script2.js");
+
+  this->expectMessageFromPage(JsonEq(R"({"id": 3, "result": {}})"));
+  this->toPage_->sendMessage(R"({"id": 3, "method": "Debugger.disable"})");
+
+  // Connections: Main (Debugger disabled), Secondary (Debugger enabled)
+  // --> Only the secondary connection receives Debugger events.
+  EXPECT_CALL(
+      secondary.fromPage(),
+      onMessage(JsonParsed(AllOf(
+          AtJsonPtr("/method", "Debugger.scriptParsed"),
+          AtJsonPtr("/params/url", "script3.js")))));
+  this->eval("3 + 3; //# sourceURL=script3.js");
+
+  EXPECT_CALL(
+      secondary.fromPage(), onMessage(JsonEq(R"({"id": 4, "result": {}})")));
+  secondary.toPage().sendMessage(R"({"id": 4, "method": "Debugger.disable"})");
 }
 
 TYPED_TEST(JsiIntegrationHermesTest, CDPAgentReentrancyRegressionTest) {
@@ -779,48 +940,52 @@ TYPED_TEST(JsiIntegrationHermesTest, ReleaseRemoteObject) {
   // Ensure we can get the properties of the object.
   this->expectMessageFromPage(JsonParsed(
       AllOf(AtJsonPtr("/id", 2), AtJsonPtr("/result/result", SizeIs(Gt(0))))));
-  this->toPage_->sendMessage(fmt::format(
-      R"({{
+  this->toPage_->sendMessage(
+      fmt::format(
+          R"({{
           "id": 2,
           "method": "Runtime.getProperties",
           "params": {{"objectId": {}, "ownProperties": true}}
         }})",
-      folly::toJson(objectId)));
+          folly::toJson(objectId)));
 
   // Release the object.
   this->expectMessageFromPage(JsonEq(R"({
                                          "id": 3,
                                          "result": {}
                                        })"));
-  this->toPage_->sendMessage(fmt::format(
-      R"({{
+  this->toPage_->sendMessage(
+      fmt::format(
+          R"({{
           "id": 3,
           "method": "Runtime.releaseObject",
           "params": {{"objectId": {}, "ownProperties": true}}
         }})",
-      folly::toJson(objectId)));
+          folly::toJson(objectId)));
 
   // Getting properties for a released object results in an error.
   this->expectMessageFromPage(
       JsonParsed(AllOf(AtJsonPtr("/id", 4), AtJsonPtr("/error/code", -32000))));
-  this->toPage_->sendMessage(fmt::format(
-      R"({{
+  this->toPage_->sendMessage(
+      fmt::format(
+          R"({{
           "id": 4,
           "method": "Runtime.getProperties",
           "params": {{"objectId": {}, "ownProperties": true}}
         }})",
-      folly::toJson(objectId)));
+          folly::toJson(objectId)));
 
   // Releasing an already released object is an error.
   this->expectMessageFromPage(
       JsonParsed(AllOf(AtJsonPtr("/id", 5), AtJsonPtr("/error/code", -32000))));
-  this->toPage_->sendMessage(fmt::format(
-      R"({{
+  this->toPage_->sendMessage(
+      fmt::format(
+          R"({{
           "id": 5,
           "method": "Runtime.releaseObject",
           "params": {{"objectId": {}, "ownProperties": true}}
         }})",
-      folly::toJson(objectId)));
+          folly::toJson(objectId)));
 }
 
 TYPED_TEST(JsiIntegrationHermesTest, ReleaseRemoteObjectGroup) {
@@ -845,13 +1010,14 @@ TYPED_TEST(JsiIntegrationHermesTest, ReleaseRemoteObjectGroup) {
   // Ensure we can get the properties of the object.
   this->expectMessageFromPage(JsonParsed(
       AllOf(AtJsonPtr("/id", 2), AtJsonPtr("/result/result", SizeIs(Gt(0))))));
-  this->toPage_->sendMessage(fmt::format(
-      R"({{
+  this->toPage_->sendMessage(
+      fmt::format(
+          R"({{
           "id": 2,
           "method": "Runtime.getProperties",
           "params": {{"objectId": {}, "ownProperties": true}}
         }})",
-      folly::toJson(objectId)));
+          folly::toJson(objectId)));
 
   // Release the object group containing our object.
   this->expectMessageFromPage(JsonEq(R"({
@@ -867,13 +1033,14 @@ TYPED_TEST(JsiIntegrationHermesTest, ReleaseRemoteObjectGroup) {
   // Getting properties for a released object results in an error.
   this->expectMessageFromPage(
       JsonParsed(AllOf(AtJsonPtr("/id", 4), AtJsonPtr("/error/code", -32000))));
-  this->toPage_->sendMessage(fmt::format(
-      R"({{
+  this->toPage_->sendMessage(
+      fmt::format(
+          R"({{
           "id": 4,
           "method": "Runtime.getProperties",
           "params": {{"objectId": {}, "ownProperties": true}}
         }})",
-      folly::toJson(objectId)));
+          folly::toJson(objectId)));
 
   // Releasing an already released object group is a no-op.
   this->expectMessageFromPage(JsonEq(R"({
@@ -885,6 +1052,88 @@ TYPED_TEST(JsiIntegrationHermesTest, ReleaseRemoteObjectGroup) {
                                  "method": "Runtime.releaseObjectGroup",
                                  "params": {"objectGroup": "foo"}
                                })");
+}
+
+// A low-level test for captureStackTrace and serializeStackTrace in
+// HermesRuntimeTargetDelegate. This functionality is not directly exposed
+// to user code, but serves as a building block for higher-level CDP domains.
+TYPED_TEST(JsiIntegrationHermesTest, testCaptureAndSerializeStackTrace) {
+  auto& runtimeTargetDelegate = this->dangerouslyGetRuntimeTargetDelegate();
+  auto& runtime = this->dangerouslyGetRuntime();
+  runtime.global().setProperty(
+      runtime,
+      "captureCdpStackTrace",
+      jsi::Function::createFromHostFunction(
+          runtime,
+          jsi::PropNameID::forAscii(runtime, "captureCdpStackTrace"),
+          0,
+          [&runtimeTargetDelegate](
+              jsi::Runtime& rt,
+              const jsi::Value& /* thisVal */,
+              const jsi::Value* /* args */,
+              size_t /* count */) -> jsi::Value {
+            auto stackTraceDynamic = runtimeTargetDelegate.serializeStackTrace(
+                *runtimeTargetDelegate.captureStackTrace(rt));
+            if (!stackTraceDynamic.has_value()) {
+              return jsi::Value::undefined();
+            }
+            return jsi::String::createFromUtf8(
+                rt, folly::toJson(*stackTraceDynamic));
+          }));
+
+  this->connect();
+
+  InSequence s;
+
+  this->expectMessageFromPage(JsonEq(R"({
+                                         "id": 1,
+                                         "result": {}
+                                       })"));
+  this->toPage_->sendMessage(R"({
+                                 "id": 1,
+                                 "method": "Debugger.enable"
+                               })");
+
+  auto scriptInfo = this->expectMessageFromPage(JsonParsed(AllOf(
+      AtJsonPtr("/method", "Debugger.scriptParsed"),
+      AtJsonPtr("/params/url", "stackTraceTest.js"))));
+
+  auto stackTrace = this->eval(R"( // line 0
+    function inner() { // line 1
+      return globalThis.captureCdpStackTrace(); // line 2
+    } // line 3
+    function outer() { // line 4
+      return inner(); // line 5
+    } // line 6
+    outer(); // line 7
+    //# sourceURL=stackTraceTest.js
+  )")
+                        .getString(runtime)
+                        .utf8(runtime);
+
+  ASSERT_TRUE(scriptInfo->has_value());
+
+  EXPECT_THAT(
+      stackTrace,
+      JsonParsed(AllOf(
+          AtJsonPtr("/callFrames/0/functionName", "inner"),
+          AtJsonPtr(
+              "/callFrames/0/scriptId",
+              scriptInfo->value()["params"]["scriptId"]),
+          AtJsonPtr("/callFrames/0/lineNumber", 2),
+          AtJsonPtr("/callFrames/0/columnNumber", 44),
+          AtJsonPtr("/callFrames/1/functionName", "outer"),
+          AtJsonPtr(
+              "/callFrames/1/scriptId",
+              scriptInfo->value()["params"]["scriptId"]),
+          AtJsonPtr("/callFrames/1/lineNumber", 5),
+          AtJsonPtr("/callFrames/1/columnNumber", 18),
+          AtJsonPtr("/callFrames/2/functionName", "global"),
+          AtJsonPtr(
+              "/callFrames/2/scriptId",
+              scriptInfo->value()["params"]["scriptId"]),
+          AtJsonPtr("/callFrames/2/lineNumber", 7),
+          AtJsonPtr("/callFrames/2/columnNumber", 9))));
 }
 
 #pragma endregion // AllHermesVariants

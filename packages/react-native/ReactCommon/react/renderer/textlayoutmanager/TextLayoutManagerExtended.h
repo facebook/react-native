@@ -19,33 +19,31 @@
 namespace facebook::react {
 
 template <typename TextLayoutManagerT>
-concept TextLayoutManagerWithPreparedLayout = requires(
+concept TextLayoutManagerWithPreparedTextLayout = requires(
     TextLayoutManagerT textLayoutManager,
     AttributedString attributedString,
     ParagraphAttributes paragraphAttributes,
     TextLayoutContext layoutContext,
     LayoutConstraints layoutConstraints,
-    typename TextLayoutManagerT::PreparedLayout preparedLayout) {
-  sizeof(typename TextLayoutManagerT::PreparedLayout);
+    typename TextLayoutManagerT::PreparedTextLayout preparedTextLayout) {
+  sizeof(typename TextLayoutManagerT::PreparedTextLayout);
   {
-    textLayoutManager.prepareLayout(
-        attributedString, paragraphAttributes, layoutContext, layoutConstraints)
-  } -> std::same_as<typename TextLayoutManagerT::PreparedLayout>;
+    textLayoutManager.prepareLayout(attributedString, paragraphAttributes, layoutContext, layoutConstraints)
+  } -> std::same_as<typename TextLayoutManagerT::PreparedTextLayout>;
   {
-    textLayoutManager.measurePreparedLayout(
-        preparedLayout, layoutContext, layoutConstraints)
+    textLayoutManager.measurePreparedLayout(preparedTextLayout, layoutContext, layoutConstraints)
   } -> std::same_as<TextMeasurement>;
 };
 
 namespace detail {
 template <typename T>
-struct PreparedLayoutT {
+struct PreparedTextLayoutT {
   using type = std::nullptr_t;
 };
 
-template <TextLayoutManagerWithPreparedLayout T>
-struct PreparedLayoutT<T> {
-  using type = typename T::PreparedLayout;
+template <TextLayoutManagerWithPreparedTextLayout T>
+struct PreparedTextLayoutT<T> {
+  using type = typename T::PreparedTextLayout;
 };
 
 /**
@@ -57,74 +55,69 @@ struct PreparedLayoutT<T> {
 template <typename TextLayoutManagerT>
 class TextLayoutManagerExtended {
  public:
-  static constexpr bool supportsLineMeasurement() {
+  static constexpr bool supportsLineMeasurement()
+  {
     return requires(TextLayoutManagerT textLayoutManager) {
       {
-        textLayoutManager.measureLines(
-            AttributedStringBox{}, ParagraphAttributes{}, Size{})
+        textLayoutManager.measureLines(AttributedStringBox{}, ParagraphAttributes{}, Size{})
       } -> std::same_as<LinesMeasurements>;
     };
   }
 
-  static constexpr bool supportsPreparedLayout() {
-    return TextLayoutManagerWithPreparedLayout<TextLayoutManagerT>;
+  static constexpr bool supportsPreparedTextLayout()
+  {
+    return TextLayoutManagerWithPreparedTextLayout<TextLayoutManagerT>;
   }
 
-  using PreparedLayout = typename PreparedLayoutT<TextLayoutManagerT>::type;
+  using PreparedTextLayout = typename PreparedTextLayoutT<TextLayoutManagerT>::type;
 
-  TextLayoutManagerExtended(const TextLayoutManagerT& textLayoutManager)
-      : textLayoutManager_(textLayoutManager) {}
+  TextLayoutManagerExtended(const TextLayoutManagerT &textLayoutManager) : textLayoutManager_(textLayoutManager) {}
 
   LinesMeasurements measureLines(
-      const AttributedStringBox& attributedStringBox,
-      const ParagraphAttributes& paragraphAttributes,
-      const Size& size) {
+      const AttributedStringBox &attributedStringBox,
+      const ParagraphAttributes &paragraphAttributes,
+      const Size &size)
+  {
     if constexpr (supportsLineMeasurement()) {
-      return textLayoutManager_.measureLines(
-          attributedStringBox, paragraphAttributes, size);
+      return textLayoutManager_.measureLines(attributedStringBox, paragraphAttributes, size);
     }
     LOG(FATAL) << "Platform TextLayoutManager does not support measureLines";
   }
 
-  PreparedLayout prepareLayout(
-      const AttributedString& attributedString,
-      const ParagraphAttributes& paragraphAttributes,
-      const TextLayoutContext& layoutContext,
-      const LayoutConstraints& layoutConstraints) const {
-    if constexpr (supportsPreparedLayout()) {
-      return textLayoutManager_.prepareLayout(
-          attributedString,
-          paragraphAttributes,
-          layoutContext,
-          layoutConstraints);
+  PreparedTextLayout prepareLayout(
+      const AttributedString &attributedString,
+      const ParagraphAttributes &paragraphAttributes,
+      const TextLayoutContext &layoutContext,
+      const LayoutConstraints &layoutConstraints) const
+  {
+    if constexpr (supportsPreparedTextLayout()) {
+      return textLayoutManager_.prepareLayout(attributedString, paragraphAttributes, layoutContext, layoutConstraints);
     }
     LOG(FATAL) << "Platform TextLayoutManager does not support prepareLayout";
   }
 
   TextMeasurement measurePreparedLayout(
-      const PreparedLayout& layout,
-      const TextLayoutContext& layoutContext,
-      const LayoutConstraints& layoutConstraints) const {
-    if constexpr (supportsPreparedLayout()) {
-      return textLayoutManager_.measurePreparedLayout(
-          layout, layoutContext, layoutConstraints);
+      const PreparedTextLayout &layout,
+      const TextLayoutContext &layoutContext,
+      const LayoutConstraints &layoutConstraints) const
+  {
+    if constexpr (supportsPreparedTextLayout()) {
+      return textLayoutManager_.measurePreparedLayout(layout, layoutContext, layoutConstraints);
     }
-    LOG(FATAL)
-        << "Platform TextLayoutManager does not support measurePreparedLayout";
+    LOG(FATAL) << "Platform TextLayoutManager does not support measurePreparedLayout";
   }
 
  private:
-  const TextLayoutManagerT& textLayoutManager_;
+  const TextLayoutManagerT &textLayoutManager_;
 };
 } // namespace detail
 
-using TextLayoutManagerExtended =
-    detail::TextLayoutManagerExtended<TextLayoutManager>;
+using TextLayoutManagerExtended = detail::TextLayoutManagerExtended<TextLayoutManager>;
 
-struct MeasuredPreparedLayout {
+struct MeasuredPreparedTextLayout {
   LayoutConstraints layoutConstraints;
   TextMeasurement measurement;
-  TextLayoutManagerExtended::PreparedLayout preparedLayout{};
+  TextLayoutManagerExtended::PreparedTextLayout preparedTextLayout{};
 };
 
 } // namespace facebook::react

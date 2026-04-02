@@ -14,8 +14,8 @@ import LogBoxInspectorStackFrames, {
   getCollapseMessage,
 } from '../LogBoxInspectorStackFrames';
 
-const render = require('../../../../jest/renderer');
 const LogBoxLog = require('../../Data/LogBoxLog').default;
+const render = require('@react-native/jest-preset/jest/renderer');
 const React = require('react');
 
 // Mock `LogBoxInspectorSection` because we are interested in snapshotting the
@@ -90,7 +90,7 @@ describe('LogBoxInspectorStackFrames', () => {
       expect(
         getCollapseMessage(
           createCollapsedFrames(
-            // $FlowFixMe[incompatible-call]
+            // $FlowFixMe[incompatible-type]
             [stackOne, stackTwo, stackThree].filter(i => i != null),
           ),
           collapsed,

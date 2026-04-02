@@ -59,25 +59,28 @@ class ReactRootProjectPlugin : Plugin<Project> {
   }
 
   private fun checkLegacyArchProperty(project: Project) {
-    if ((project.hasProperty(PropertyUtils.NEW_ARCH_ENABLED) &&
-        !project.property(PropertyUtils.NEW_ARCH_ENABLED).toString().toBoolean()) ||
-        (project.hasProperty(PropertyUtils.SCOPED_NEW_ARCH_ENABLED) &&
-            !project.property(PropertyUtils.SCOPED_NEW_ARCH_ENABLED).toString().toBoolean())) {
+    if (
+        (project.hasProperty(PropertyUtils.NEW_ARCH_ENABLED) &&
+            !project.property(PropertyUtils.NEW_ARCH_ENABLED).toString().toBoolean()) ||
+            (project.hasProperty(PropertyUtils.SCOPED_NEW_ARCH_ENABLED) &&
+                !project.property(PropertyUtils.SCOPED_NEW_ARCH_ENABLED).toString().toBoolean())
+    ) {
       project.logger.error(
           """
-      ********************************************************************************
+          ********************************************************************************
 
-      WARNING: Setting `newArchEnabled=false` in your `gradle.properties` file is not
-      supported anymore since React Native 0.82.
-      
-      You can remove the line from your `gradle.properties` file.
-      
-      The application will run with the New Architecture enabled by default.
+          WARNING: Setting `newArchEnabled=false` in your `gradle.properties` file is not
+          supported anymore since React Native 0.82.
 
-      ********************************************************************************
+          You can remove the line from your `gradle.properties` file.
 
-      """
-              .trimIndent())
+          The application will run with the New Architecture enabled by default.
+
+          ********************************************************************************
+
+          """
+              .trimIndent()
+      )
     }
   }
 }

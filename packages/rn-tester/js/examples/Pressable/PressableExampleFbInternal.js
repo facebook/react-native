@@ -8,5 +8,5 @@
  * @format
  */
 
-// $FlowFixMe
+// $FlowFixMe[unclear-type]
 export const examples: Array<any> = [];

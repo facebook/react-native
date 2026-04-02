@@ -67,7 +67,7 @@
 #endif
 
 #ifndef RCT_ENABLE_INSPECTOR
-#if (RCT_DEV || RCT_REMOTE_PROFILE) && __has_include(<React/RCTInspectorDevServerHelper.h>)
+#if (RCT_DEV || RCT_REMOTE_PROFILE)
 #define RCT_ENABLE_INSPECTOR 1
 #else
 #define RCT_ENABLE_INSPECTOR 0
@@ -93,14 +93,6 @@
  */
 #ifndef RCT_DEV_MENU
 #define RCT_DEV_MENU RCT_DEV
-#endif
-
-#ifndef RCT_DEV_SETTINGS_ENABLE_PACKAGER_CONNECTION
-#if RCT_DEV && (__has_include("RCTPackagerConnection.h") || __has_include(<React/RCTPackagerConnection.h>))
-#define RCT_DEV_SETTINGS_ENABLE_PACKAGER_CONNECTION 1
-#else
-#define RCT_DEV_SETTINGS_ENABLE_PACKAGER_CONNECTION 0
-#endif
 #endif
 
 #if RCT_DEV
@@ -175,13 +167,3 @@
     @throw _RCTNotImplementedException(_cmd, [self class]);                                             \
   }                                                                                                     \
   _Pragma("clang diagnostic pop")
-
-/**
- * Controls for activating the new architecture without the legacy system.
- * Note: this is work in progress.
- */
-#ifdef REACT_NATIVE_FORCE_NEW_ARCHITECTURE_EXPERIMENTAL_DO_NOT_USE
-#define RCT_ONLY_NEW_ARCHITECTURE_EXPERIMENTAL_DO_NOT_USE 1
-#else
-#define RCT_ONLY_NEW_ARCHITECTURE_EXPERIMENTAL_DO_NOT_USE 0
-#endif

@@ -13,8 +13,22 @@
 #import <react/renderer/graphics/Color.h>
 #import <react/renderer/graphics/RCTPlatformColorUtils.h>
 #import <react/renderer/graphics/Transform.h>
+#import <react/timing/primitives.h>
 
 NS_ASSUME_NONNULL_BEGIN
+
+/*
+ * Converts an iOS timestamp (seconds since boot, NOT including sleep time, from
+ * NSProcessInfo.processInfo.systemUptime or UITouch.timestamp) to a HighResTimeStamp.
+ *
+ * iOS timestamps and HighResTimeStamp both use mach_absolute_time() which doesn't
+ * account for sleep time. We convert the timestamp directly since they share the
+ * same time domain.
+ */
+inline facebook::react::HighResTimeStamp RCTHighResTimeStampFromSeconds(NSTimeInterval seconds)
+{
+  return facebook::react::HighResTimeStamp::fromDOMHighResTimeStamp(seconds * 1e3);
+}
 
 inline NSString *RCTNSStringFromString(
     const std::string &string,
@@ -153,7 +167,7 @@ inline CATransform3D RCTCATransform3DFromTransformMatrix(const facebook::react::
 
 inline facebook::react::Point RCTPointFromCGPoint(const CGPoint &point)
 {
-  return {point.x, point.y};
+  return {.x = point.x, .y = point.y};
 }
 
 inline facebook::react::Float RCTFloatFromCGFloat(CGFloat value)
@@ -166,12 +180,12 @@ inline facebook::react::Float RCTFloatFromCGFloat(CGFloat value)
 
 inline facebook::react::Size RCTSizeFromCGSize(const CGSize &size)
 {
-  return {RCTFloatFromCGFloat(size.width), RCTFloatFromCGFloat(size.height)};
+  return {.width = RCTFloatFromCGFloat(size.width), .height = RCTFloatFromCGFloat(size.height)};
 }
 
 inline facebook::react::Rect RCTRectFromCGRect(const CGRect &rect)
 {
-  return {RCTPointFromCGPoint(rect.origin), RCTSizeFromCGSize(rect.size)};
+  return {.origin = RCTPointFromCGPoint(rect.origin), .size = RCTSizeFromCGSize(rect.size)};
 }
 
 inline facebook::react::EdgeInsets RCTEdgeInsetsFromUIEdgeInsets(const UIEdgeInsets &edgeInsets)

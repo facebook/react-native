@@ -7,14 +7,16 @@
 
 #import <UIKit/UIKit.h>
 
-#ifndef RCT_FIT_RM_OLD_COMPONENT
+#ifndef RCT_REMOVE_LEGACY_ARCH
 
-typedef CGSize (^RCTWrapperMeasureBlock)(CGSize minimumSize, CGSize maximumSize);
+typedef CGSize (^RCTWrapperMeasureBlock)(CGSize minimumSize, CGSize maximumSize)
+    __attribute__((deprecated("This API will be removed along with the legacy architecture.")));
 
 @class RCTBridge;
 
 NS_ASSUME_NONNULL_BEGIN
 
+__attribute__((deprecated("This API will be removed along with the legacy architecture.")))
 @interface RCTWrapperView : UIView
 
 @property (nonatomic, retain, nullable) UIView *contentView;
@@ -37,4 +39,4 @@ NS_ASSUME_NONNULL_BEGIN
 
 NS_ASSUME_NONNULL_END
 
-#endif // RCT_FIT_RM_OLD_COMPONENT
+#endif // RCT_REMOVE_LEGACY_ARCH

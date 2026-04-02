@@ -250,15 +250,17 @@ TEST(CSSSyntaxParser, complex) {
 }
 
 TEST(CSSSyntaxParser, unterminated_functions) {
-  EXPECT_FALSE(CSSSyntaxParser{"foo("}.consumeComponentValue<bool>(
-      [](const CSSFunctionBlock&, CSSSyntaxParser& /*blockParser*/) {
-        return true;
-      }));
+  EXPECT_FALSE(
+      CSSSyntaxParser{"foo("}.consumeComponentValue<bool>(
+          [](const CSSFunctionBlock&, CSSSyntaxParser& /*blockParser*/) {
+            return true;
+          }));
 
-  EXPECT_FALSE(CSSSyntaxParser{"foo(a bar()baz()"}.consumeComponentValue<bool>(
-      [](const CSSFunctionBlock&, CSSSyntaxParser& /*blockParser*/) {
-        return true;
-      }));
+  EXPECT_FALSE(
+      CSSSyntaxParser{"foo(a bar()baz()"}.consumeComponentValue<bool>(
+          [](const CSSFunctionBlock&, CSSSyntaxParser& /*blockParser*/) {
+            return true;
+          }));
 }
 
 TEST(CSSSyntaxParser, simple_blocks) {

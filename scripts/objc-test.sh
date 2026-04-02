@@ -15,9 +15,6 @@ SCRIPTS=$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)
 ROOT=$(dirname "$SCRIPTS")
 
 SKIPPED_TESTS=()
-# TODO: T60408036 This test crashes iOS 13 for bad access, please investigate
-# and re-enable. See https://gist.github.com/0xced/56035d2f57254cf518b5.
-SKIPPED_TESTS+=("-skip-testing:RNTesterUnitTests/RCTJSONTests/testNotUTF8Convertible")
 
 # Create cleanup handler
 cleanup() {
@@ -75,33 +72,27 @@ waitForWebSocketServer() {
 runTests() {
   # shellcheck disable=SC1091
   source "$ROOT/scripts/.tests.env"
-  xcodebuild build test \
+  xcodebuild test \
     -workspace RNTesterPods.xcworkspace \
     -scheme RNTester \
     -sdk iphonesimulator \
     -destination "platform=iOS Simulator,name=$IOS_DEVICE,OS=$IOS_TARGET_OS" \
+    -derivedDataPath "/tmp/RNTesterBuild" \
+    -resultBundlePath "/tmp/RNTesterTestResults" \
       "${SKIPPED_TESTS[@]}"
 }
 
 buildForTesting() {
   # shellcheck disable=SC1091
   source "$ROOT/scripts/.tests.env"
+  bundle install
+  bundle exec pod install
   xcodebuild build-for-testing \
     -workspace RNTesterPods.xcworkspace \
     -scheme RNTester \
-    -sdk iphonesimulator
-}
-
-runTestsOnly() {
-  # shellcheck disable=SC1091
-  source "$ROOT/scripts/.tests.env"
-  echo "[Testing] Running tests on $IOS_DEVICE for OS $IOS_TARGET_OS"
-  xcodebuild test \
-    -workspace RNTesterPods.xcworkspace \
-    -scheme RNTester \
     -sdk iphonesimulator \
-    -destination "platform=iOS Simulator,name=$IOS_DEVICE,OS=$IOS_TARGET_OS" \
-      "${SKIPPED_TESTS[@]}"
+    -derivedDataPath "/tmp/RNTesterBuild" \
+    -destination "platform=iOS Simulator,name=$IOS_DEVICE,OS=$IOS_TARGET_OS"
 }
 
 buildProject() {

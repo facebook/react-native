@@ -22,7 +22,7 @@ describe('Electron dependency', () => {
     // $FlowFixMe[untyped-import] - package.json is not typed
     const ourPackageJson = require('../package.json');
 
-    const declaredElectronVersion = ourPackageJson.dependencies.electron;
+    const declaredElectronVersion = ourPackageJson.devDependencies.electron;
     expect(declaredElectronVersion).toBeTruthy();
 
     // $FlowFixMe[untyped-import] - package.json is not typed

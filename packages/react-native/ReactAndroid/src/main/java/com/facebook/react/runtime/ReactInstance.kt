@@ -7,6 +7,7 @@
 
 package com.facebook.react.runtime
 
+import android.annotation.SuppressLint
 import android.content.res.AssetManager
 import android.view.View
 import com.facebook.common.logging.FLog
@@ -43,6 +44,7 @@ import com.facebook.react.common.annotations.UnstableReactNativeAPI
 import com.facebook.react.devsupport.InspectorFlags.getIsProfilingBuild
 import com.facebook.react.devsupport.StackTraceHelper
 import com.facebook.react.devsupport.interfaces.DevSupportManager
+import com.facebook.react.fabric.AnimationBackendChoreographer
 import com.facebook.react.fabric.ComponentFactory
 import com.facebook.react.fabric.FabricUIManager
 import com.facebook.react.fabric.FabricUIManagerBinding
@@ -76,7 +78,6 @@ import java.util.ArrayList
 import java.util.HashMap
 import java.util.HashSet
 import kotlin.collections.Collection
-import kotlin.jvm.JvmStatic
 
 /**
  * A replacement for [com.facebook.react.bridge.CatalystInstance] responsible for creating and
@@ -105,6 +106,13 @@ internal class ReactInstance(
   val fabricUIManager: FabricUIManager
   val javaScriptContextHolder: JavaScriptContextHolder
 
+  val nativeModules: Collection<NativeModule>
+    get() = turboModuleManager.modules
+
+  val eventDispatcher: EventDispatcher
+    /** @return The [EventDispatcher] used by [FabricUIManager] to emit UI events to JS. */
+    get() = fabricUIManager.eventDispatcher
+
   init {
     Systrace.beginSection(Systrace.TRACE_TAG_REACT, "ReactInstance.initialize")
 
@@ -126,7 +134,7 @@ internal class ReactInstance(
     ReactChoreographer.initialize(AndroidChoreographerProvider.getInstance())
     devSupportManager.startInspector()
 
-    val jsTimerExecutor = createJSTimerExecutor()
+    val jsTimerExecutor = JSTimerExecutor()
     javaTimerManager =
         JavaTimerManager(
             context,
@@ -161,7 +169,8 @@ internal class ReactInstance(
 
     val reactPackages: MutableList<ReactPackage> = ArrayList<ReactPackage>()
     reactPackages.add(
-        CoreReactPackage(context.devSupportManager, context.defaultHardwareBackBtnHandler))
+        CoreReactPackage(context.devSupportManager, context.defaultHardwareBackBtnHandler)
+    )
     if (useDevSupport) {
       reactPackages.add(DebugCorePackage())
     }
@@ -181,7 +190,6 @@ internal class ReactInstance(
             getJSCallInvokerHolder(),
             getNativeMethodCallInvokerHolder(),
         )
-
     Systrace.endSection(Systrace.TRACE_TAG_REACT)
 
     // Set up Fabric
@@ -251,6 +259,8 @@ internal class ReactInstance(
     // Misc initialization that needs to be done before Fabric init
     DisplayMetricsHolder.initDisplayMetricsIfNotInitialized(context)
 
+    val animationBackendChoreographer = AnimationBackendChoreographer(context)
+
     val binding = FabricUIManagerBinding()
     binding.register(
         getBufferedRuntimeExecutor(),
@@ -258,6 +268,7 @@ internal class ReactInstance(
         fabricUIManager,
         eventBeatManager,
         componentFactory,
+        animationBackendChoreographer,
     )
 
     // Initialize the FabricUIManager
@@ -287,7 +298,8 @@ internal class ReactInstance(
       try {
         val exceptionsManager =
             checkNotNull(
-                getNativeModule<NativeExceptionsManagerSpec>(NativeExceptionsManagerSpec.NAME))
+                getNativeModule<NativeExceptionsManagerSpec>(NativeExceptionsManagerSpec.NAME)
+            )
         exceptionsManager.reportException(data)
       } catch (e: Exception) {
         // Sometimes (e.g: always with the default exception manager) the native module exceptions
@@ -327,7 +339,8 @@ internal class ReactInstance(
           override fun setSourceURLs(deviceURL: String, remoteURL: String) {
             context.sourceURL = deviceURL
           }
-        })
+        }
+    )
     Systrace.endSection(Systrace.TRACE_TAG_REACT)
   }
 
@@ -339,9 +352,6 @@ internal class ReactInstance(
     return false
   }
 
-  val nativeModules: Collection<NativeModule>
-    get() = turboModuleManager.modules
-
   fun <T : NativeModule> getNativeModule(nativeModuleInterface: Class<T>): T? {
     val annotation = nativeModuleInterface.getAnnotation(ReactModule::class.java)
     if (annotation != null) {
@@ -350,6 +360,7 @@ internal class ReactInstance(
     return null
   }
 
+  @SuppressLint("KotlinGenericsCast")
   fun <T : NativeModule> getNativeModule(nativeModuleName: String): T? {
     synchronized(turboModuleManager) {
       @Suppress("UNCHECKED_CAST")
@@ -389,7 +400,8 @@ internal class ReactInstance(
       ReactSoftExceptionLogger.logSoftException(
           TAG,
           IllegalViewOperationException(
-              "surfaceView's is NOT equal to View.NO_ID before calling startSurface."),
+              "surfaceView's is NOT equal to View.NO_ID before calling startSurface."
+          ),
       )
       view.id = View.NO_ID
     }
@@ -465,14 +477,11 @@ internal class ReactInstance(
       ReactSoftExceptionLogger.logSoftException(
           TAG,
           ReactNoCrashSoftException(
-              "Native method handleMemoryPressureJs is called earlier than librninstance.so got ready."),
+              "Native method handleMemoryPressureJs is called earlier than librninstance.so got ready."
+          ),
       )
     }
   }
-
-  val eventDispatcher: EventDispatcher
-    /** @return The [EventDispatcher] used by [FabricUIManager] to emit UI events to JS. */
-    get() = fabricUIManager.eventDispatcher
 
   fun registerSegment(segmentId: Int, path: String) {
     registerSegmentNative(segmentId, path)
@@ -628,7 +637,5 @@ internal class ReactInstance(
         SystraceMessage.endSection(Systrace.TRACE_TAG_REACT).flush()
       }
     }
-
-    @JvmStatic @DoNotStrip private external fun createJSTimerExecutor(): JSTimerExecutor
   }
 }

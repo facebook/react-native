@@ -42,6 +42,9 @@ module.exports = {
     return require('./Libraries/Components/DrawerAndroid/DrawerLayoutAndroid')
       .default;
   },
+  get EventEmitter() {
+    return require('./Libraries/vendor/emitter/EventEmitter').default;
+  },
   get FlatList() {
     return require('./Libraries/Lists/FlatList').default;
   },
@@ -65,6 +68,12 @@ module.exports = {
   },
   get Modal() {
     return require('./Libraries/Modal/Modal').default;
+  },
+  get unstable_NativeText() {
+    return require('./Libraries/Text/TextNativeComponent').NativeText;
+  },
+  get unstable_NativeView() {
+    return require('./Libraries/Components/View/ViewNativeComponent').default;
   },
   get Pressable() {
     return require('./Libraries/Components/Pressable/Pressable').default;
@@ -148,6 +157,34 @@ module.exports = {
   get unstable_VirtualView() {
     return require('./src/private/components/virtualview/VirtualView').default;
   },
+  get unstable_VirtualArray() {
+    return require('./src/private/components/virtualcollection/Virtual')
+      .VirtualArray;
+  },
+  get unstable_createVirtualCollectionView() {
+    return require('./src/private/components/virtualcollection/VirtualCollectionView')
+      .createVirtualCollectionView;
+  },
+  get unstable_VirtualColumn() {
+    return require('./src/private/components/virtualcollection/column/VirtualColumn')
+      .default;
+  },
+  get unstable_VirtualColumnGenerator() {
+    return require('./src/private/components/virtualcollection/column/VirtualColumnGenerator')
+      .default;
+  },
+  get unstable_VirtualRow() {
+    return require('./src/private/components/virtualcollection/row/VirtualRow')
+      .default;
+  },
+  get unstable_getScrollParent() {
+    return require('./src/private/components/virtualcollection/dom/getScrollParent')
+      .default;
+  },
+  get unstable_DEFAULT_INITIAL_NUM_TO_RENDER() {
+    return require('./src/private/components/virtualcollection/FlingConstants')
+      .DEFAULT_INITIAL_NUM_TO_RENDER;
+  },
   // #endregion
   // #region APIs
   get AccessibilityInfo() {
@@ -224,6 +261,12 @@ module.exports = {
    * @deprecated
    */
   get InteractionManager() {
+    warnOnce(
+      'interaction-manager-deprecated',
+      'InteractionManager has been deprecated and will be removed in a ' +
+        'future release. Please refactor long tasks into smaller ones, and ' +
+        " use 'requestIdleCallback' instead.",
+    );
     return require('./Libraries/Interaction/InteractionManager').default;
   },
   get Keyboard() {
@@ -326,8 +369,17 @@ module.exports = {
   get useAnimatedValue() {
     return require('./Libraries/Animated/useAnimatedValue').default;
   },
+  get useAnimatedValueXY() {
+    return require('./Libraries/Animated/useAnimatedValueXY').default;
+  },
+  get useAnimatedColor() {
+    return require('./Libraries/Animated/useAnimatedColor').default;
+  },
   get useColorScheme() {
     return require('./Libraries/Utilities/useColorScheme').default;
+  },
+  get usePressability() {
+    return require('./Libraries/Pressability/usePressability').default;
   },
   get useWindowDimensions() {
     return require('./Libraries/Utilities/useWindowDimensions').default;

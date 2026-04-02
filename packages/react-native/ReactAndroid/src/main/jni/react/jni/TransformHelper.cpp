@@ -39,7 +39,9 @@ void processTransform(
   }
 
   auto result = BaseViewProps::resolveTransform(
-      Size(viewWidth, viewHeight), transform, transformOrigin);
+      Size{.width = viewWidth, .height = viewHeight},
+      transform,
+      transformOrigin);
 
   // Convert from matrix of floats to double matrix
   constexpr size_t MatrixSize = std::tuple_size_v<decltype(result.matrix)>;

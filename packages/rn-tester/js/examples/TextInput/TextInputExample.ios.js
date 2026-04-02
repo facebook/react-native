@@ -19,7 +19,7 @@ import type {KeyboardTypeOptions} from 'react-native';
 import RNTesterText from '../../components/RNTesterText';
 import ExampleTextInput from './ExampleTextInput';
 import TextInputSharedExamples from './TextInputSharedExamples';
-import React from 'react';
+import * as React from 'react';
 import {useRef} from 'react';
 import {
   Alert,
@@ -50,7 +50,7 @@ class TextInputAccessoryViewChangeTextExample extends React.Component<
   {text: string},
 > {
   constructor(props: void | {...}) {
-    // $FlowFixMe[incompatible-call]
+    // $FlowFixMe[incompatible-type]
     super(props);
     this.state = {text: 'Placeholder Text'};
   }
@@ -85,7 +85,7 @@ class TextInputAccessoryViewChangeKeyboardExample extends React.Component<
   {keyboardType: string, text: string},
 > {
   constructor(props: void | {...}) {
-    // $FlowFixMe[incompatible-call]
+    // $FlowFixMe[incompatible-type]
     super(props);
     this.state = {text: '', keyboardType: 'default'};
   }
@@ -124,13 +124,13 @@ class TextInputAccessoryViewChangeKeyboardExample extends React.Component<
 }
 
 class TextInputAccessoryViewDefaultDoneButtonExample extends React.Component<
-  $ReadOnly<{
+  Readonly<{
     keyboardType: KeyboardTypeOptions,
   }>,
   {text: string},
 > {
-  constructor(props: void | $ReadOnly<{keyboardType: KeyboardTypeOptions}>) {
-    // $FlowFixMe[incompatible-call]
+  constructor(props: void | Readonly<{keyboardType: KeyboardTypeOptions}>) {
+    // $FlowFixMe[incompatible-type]
     super(props);
     this.state = {text: ''};
   }
@@ -1053,11 +1053,11 @@ const textInputExamples: Array<RNTesterModuleExample> = [
   },
 ];
 
-module.exports = ({
-  displayName: (undefined: ?string),
+module.exports = {
+  displayName: undefined as ?string,
   title: 'TextInput',
   documentationURL: 'https://reactnative.dev/docs/TextInput',
   category: 'Basic',
   description: 'Single and multi-line text inputs.',
   examples: textInputExamples,
-}: RNTesterModule);
+} as RNTesterModule;

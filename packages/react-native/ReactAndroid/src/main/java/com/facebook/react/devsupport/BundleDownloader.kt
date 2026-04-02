@@ -92,23 +92,28 @@ public class BundleDownloader public constructor(private val client: OkHttpClien
             object : Callback {
               override fun onFailure(call: Call, e: IOException) {
                 // ignore callback if call was cancelled
-                if (downloadBundleFromURLCall == null ||
-                    downloadBundleFromURLCall?.isCanceled() == true) {
+                if (
+                    downloadBundleFromURLCall == null ||
+                        downloadBundleFromURLCall?.isCanceled() == true
+                ) {
                   downloadBundleFromURLCall = null
                   return
                 }
                 downloadBundleFromURLCall = null
                 val url = call.request().url().toString()
                 callback.onFailure(
-                    makeGeneric(url, "Could not connect to development server.", "URL: $url", e))
+                    makeGeneric(url, "Could not connect to development server.", "URL: $url", e)
+                )
               }
 
               @Throws(IOException::class)
               override fun onResponse(call: Call, response: Response) {
                 response.use { resp ->
                   // ignore callback if call was cancelled
-                  if (downloadBundleFromURLCall == null ||
-                      downloadBundleFromURLCall?.isCanceled() == true) {
+                  if (
+                      downloadBundleFromURLCall == null ||
+                          downloadBundleFromURLCall?.isCanceled() == true
+                  ) {
                     downloadBundleFromURLCall = null
                     return
                   }
@@ -146,7 +151,8 @@ public class BundleDownloader public constructor(private val client: OkHttpClien
                   }
                 }
               }
-            })
+            }
+        )
   }
 
   @Throws(IOException::class)
@@ -163,14 +169,16 @@ public class BundleDownloader public constructor(private val client: OkHttpClien
           DebugServerException(
               ("""
                     Error while reading multipart response.
-                    
+
                     Response body was empty: ${response.code()}
-                    
+
                     URL: $url
-                    
-                    
+
+
                     """
-                  .trimIndent())))
+                  .trimIndent())
+          )
+      )
       return
     }
     val source = checkNotNull(response.body()?.source())
@@ -204,8 +212,10 @@ public class BundleDownloader public constructor(private val client: OkHttpClien
                       callback,
                   )
                 } else {
-                  if (!headers.containsKey("Content-Type") ||
-                      headers["Content-Type"] != "application/json") {
+                  if (
+                      !headers.containsKey("Content-Type") ||
+                          headers["Content-Type"] != "application/json"
+                  ) {
                     return
                   }
 
@@ -221,7 +231,11 @@ public class BundleDownloader public constructor(private val client: OkHttpClien
                     if (progress.has("total")) {
                       total = progress.getInt("total")
                     }
-                    callback.onProgress(status, done, total)
+                    var percent: Int? = null
+                    if (progress.has("percent")) {
+                      percent = progress.getInt("percent")
+                    }
+                    callback.onProgress(status, done, total, percent)
                   } catch (e: JSONException) {
                     FLog.e(ReactConstants.TAG, "Error parsing progress JSON. $e")
                   }
@@ -238,23 +252,27 @@ public class BundleDownloader public constructor(private val client: OkHttpClien
                       "Downloading",
                       (loaded / 1024).toInt(),
                       (total / 1024).toInt(),
+                      null,
                   )
                 }
               }
-            })
+            }
+        )
     if (!completed) {
       callback.onFailure(
           DebugServerException(
               ("""
                     Error while reading multipart response.
-                    
+
                     Response code: ${response.code()}
-                    
+
                     URL: $url
-                    
-                    
+
+
                     """
-                  .trimIndent())))
+                  .trimIndent())
+          )
+      )
     }
   }
 

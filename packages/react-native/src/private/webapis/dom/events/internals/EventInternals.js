@@ -14,7 +14,7 @@
  * (only with public exports).
  */
 
-import type Event, {EventPhase} from '../Event';
+import type Event, {EventInit, EventPhase} from '../Event';
 import type EventTarget from '../EventTarget';
 
 export const COMPOSED_PATH_KEY: symbol = Symbol('composedPath');
@@ -30,6 +30,11 @@ export const STOP_IMMEDIATE_PROPAGATION_FLAG_KEY: symbol = Symbol(
 export const STOP_PROPAGATION_FLAG_KEY: symbol = Symbol('stopPropagationFlag');
 export const TARGET_KEY: symbol = Symbol('target');
 
+// For internal construction of events using a custom timestamp (instead of
+// event object creation), for use cases like dispatching events from the host
+// platform using the original timestamps.
+export const EVENT_INIT_TIMESTAMP_KEY: symbol = Symbol('eventInitTimestamp');
+
 export function getCurrentTarget(event: Event): EventTarget | null {
   // $FlowExpectedError[prop-missing]
   return event[CURRENT_TARGET_KEY];
@@ -43,14 +48,14 @@ export function setCurrentTarget(
   event[CURRENT_TARGET_KEY] = currentTarget;
 }
 
-export function getComposedPath(event: Event): $ReadOnlyArray<EventTarget> {
+export function getComposedPath(event: Event): ReadonlyArray<EventTarget> {
   // $FlowExpectedError[prop-missing]
   return event[COMPOSED_PATH_KEY];
 }
 
 export function setComposedPath(
   event: Event,
-  composedPath: $ReadOnlyArray<EventTarget>,
+  composedPath: ReadonlyArray<EventTarget>,
 ): void {
   // $FlowExpectedError[prop-missing]
   event[COMPOSED_PATH_KEY] = composedPath;
@@ -117,4 +122,16 @@ export function getTarget(event: Event): EventTarget | null {
 export function setTarget(event: Event, target: EventTarget | null): void {
   // $FlowExpectedError[prop-missing]
   event[TARGET_KEY] = target;
+}
+
+export function setEventInitTimeStamp(
+  eventInit: EventInit,
+  timeStamp: number,
+): void {
+  if (typeof timeStamp !== 'number') {
+    return;
+  }
+  // $FlowExpectedError[prop-missing]
+  // $FlowExpectedError[invalid-computed-prop]
+  eventInit[EVENT_INIT_TIMESTAMP_KEY] = timeStamp;
 }

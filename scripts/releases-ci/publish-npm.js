@@ -18,14 +18,17 @@ const {
   updateReactNativeArtifacts,
 } = require('../releases/set-rn-artifacts-version');
 const {setVersion} = require('../releases/set-version');
+const {
+  updateHermesVersionsToNightly,
+} = require('../releases/utils/hermes-utils');
 const {getNpmInfo, publishPackage} = require('../releases/utils/npm-utils');
 const {
   publishAndroidArtifactsToMaven,
   publishExternalArtifactsToMaven,
 } = require('../releases/utils/release-utils');
-const {REPO_ROOT} = require('../shared/consts');
-const {getPackages} = require('../shared/monorepoUtils');
-const path = require('path');
+const {getBranchName} = require('../releases/utils/scm-utils');
+const {REACT_NATIVE_PACKAGE_DIR} = require('../shared/consts');
+const {getPackages, getReactNativePackage} = require('../shared/monorepoUtils');
 const yargs = require('yargs');
 
 /**
@@ -76,7 +79,6 @@ async function publishMonorepoPackages(tag /*: ?string */) {
     console.log(`Publishing ${packageInfo.name}...`);
     const result = publishPackage(packageInfo.path, {
       tags: [tag],
-      otp: process.env.NPM_CONFIG_OTP,
       access: 'public',
     });
 
@@ -95,12 +97,25 @@ async function publishNpm(buildType /*: BuildType */) /*: Promise<void> */ {
   const {version, tag} = getNpmInfo(buildType);
 
   // For stable releases, ci job `prepare_package_for_release` handles this
-  if (['dry-run', 'nightly'].includes(buildType)) {
-    if (buildType === 'nightly') {
-      // Set same version for all monorepo packages
-      await setVersion(version);
-      await publishMonorepoPackages(tag);
-    } else {
+  if (buildType === 'nightly') {
+    // Set hermes versions to latest available
+    await updateHermesVersionsToNightly();
+
+    // Set same version for all monorepo packages
+    await setVersion(version);
+    await publishMonorepoPackages(tag);
+  } else if (buildType === 'dry-run') {
+    // Before updating React Native artifacts versions for dry-run, we check if the version has already been set.
+    // If it has, we don't need to update the artifacts at all (at this will revert them back to 1000.0.0)
+    // If it hasn't, we can update the native artifacts accordingly.
+    const projectInfo = await getReactNativePackage();
+
+    if (projectInfo.version === '1000.0.0') {
+      // Set hermes versions to latest available if not on a stable branch
+      if (!/.*-stable/.test(getBranchName())) {
+        await updateHermesVersionsToNightly();
+      }
+
       await updateReactNativeArtifacts(version, buildType);
     }
   }
@@ -119,10 +134,8 @@ async function publishNpm(buildType /*: BuildType */) /*: Promise<void> */ {
   // NPM publishing is done just after.
   publishExternalArtifactsToMaven(version, buildType);
 
-  const packagePath = path.join(REPO_ROOT, 'packages', 'react-native');
-  const result = publishPackage(packagePath, {
+  const result = publishPackage(REACT_NATIVE_PACKAGE_DIR, {
     tags: [tag],
-    otp: process.env.NPM_CONFIG_OTP,
   });
 
   if (result.code) {

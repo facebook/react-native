@@ -17,6 +17,14 @@ InspectorFlags& InspectorFlags::getInstance() {
   return instance;
 }
 
+bool InspectorFlags::getAssertSingleHostState() const {
+  return loadFlagsAndAssertUnchanged().assertSingleHostState;
+}
+
+bool InspectorFlags::getFrameRecordingEnabled() const {
+  return loadFlagsAndAssertUnchanged().frameRecordingEnabled;
+}
+
 bool InspectorFlags::getFuseboxEnabled() const {
   if (fuseboxDisabledForTest_) {
     return false;
@@ -33,11 +41,8 @@ bool InspectorFlags::getNetworkInspectionEnabled() const {
   return loadFlagsAndAssertUnchanged().networkInspectionEnabled;
 }
 
-bool InspectorFlags::getPerfMonitorV2Enabled() const {
-  // loadFlagsAndAssertUnchanged().perfMonitorV2Enabled
-  // disabling the feature for now while tests are failing
-  // instead of reverting the whole feature
-  return false;
+bool InspectorFlags::getPerfIssuesEnabled() const {
+  return loadFlagsAndAssertUnchanged().perfIssuesEnabled;
 }
 
 void InspectorFlags::dangerouslyResetFlags() {
@@ -51,6 +56,10 @@ void InspectorFlags::dangerouslyDisableFuseboxForTest() {
 const InspectorFlags::Values& InspectorFlags::loadFlagsAndAssertUnchanged()
     const {
   InspectorFlags::Values newValues = {
+      .assertSingleHostState =
+          ReactNativeFeatureFlags::fuseboxAssertSingleHostState(),
+      .frameRecordingEnabled =
+          ReactNativeFeatureFlags::fuseboxFrameRecordingEnabled(),
       .fuseboxEnabled =
 #if defined(REACT_NATIVE_DEBUGGER_ENABLED)
           true,
@@ -66,9 +75,7 @@ const InspectorFlags::Values& InspectorFlags::loadFlagsAndAssertUnchanged()
       .networkInspectionEnabled =
           ReactNativeFeatureFlags::enableBridgelessArchitecture() &&
           ReactNativeFeatureFlags::fuseboxNetworkInspectionEnabled(),
-      .perfMonitorV2Enabled =
-          ReactNativeFeatureFlags::enableBridgelessArchitecture() &&
-          ReactNativeFeatureFlags::perfMonitorV2Enabled(),
+      .perfIssuesEnabled = ReactNativeFeatureFlags::perfIssuesEnabled(),
   };
 
   if (cachedValues_.has_value() && !inconsistentFlagsStateLogged_) {

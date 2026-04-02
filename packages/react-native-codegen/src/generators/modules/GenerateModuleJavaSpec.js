@@ -24,13 +24,13 @@ import type {AliasResolver} from './Utils';
 
 const {unwrapNullable} = require('../../parsers/parsers-commons');
 const {wrapOptional} = require('../TypeUtils/Java');
-const {toPascalCase} = require('../Utils');
+const {parseValidUnionType, toPascalCase} = require('../Utils');
 const {createAliasResolver, getModules} = require('./Utils');
 
 type FilesOutput = Map<string, string>;
 
 function FileTemplate(
-  config: $ReadOnly<{
+  config: Readonly<{
     packageName: string,
     className: string,
     jsName: string,
@@ -92,7 +92,7 @@ function EventEmitterTemplate(
 }
 
 function MethodTemplate(
-  config: $ReadOnly<{
+  config: Readonly<{
     abstract: boolean,
     methodBody: ?string,
     methodJavaAnnotation: string,
@@ -127,14 +127,28 @@ function translateEventEmitterTypeToJavaType(
   eventEmitter: NativeModuleEventEmitterShape,
   imports: Set<string>,
 ): string {
-  const type = eventEmitter.typeAnnotation.typeAnnotation.type;
-  switch (type) {
+  const typeAnnotation = eventEmitter.typeAnnotation.typeAnnotation;
+  switch (typeAnnotation.type) {
     case 'StringTypeAnnotation':
       return 'String';
     case 'StringLiteralTypeAnnotation':
       return 'String';
-    case 'StringLiteralUnionTypeAnnotation':
-      return 'String';
+    case 'UnionTypeAnnotation':
+      const validUnionType = parseValidUnionType(typeAnnotation);
+      switch (validUnionType) {
+        case 'boolean':
+          return 'boolean';
+        case 'number':
+          return 'double';
+        case 'object':
+          imports.add('com.facebook.react.bridge.ReadableMap');
+          return 'ReadableMap';
+        case 'string':
+          return 'String';
+        default:
+          validUnionType as empty;
+          throw new Error(`Unsupported union member type`);
+      }
     case 'NumberTypeAnnotation':
     case 'NumberLiteralTypeAnnotation':
     case 'FloatTypeAnnotation':
@@ -142,6 +156,7 @@ function translateEventEmitterTypeToJavaType(
     case 'Int32TypeAnnotation':
       return 'double';
     case 'BooleanTypeAnnotation':
+    case 'BooleanLiteralTypeAnnotation':
       return 'boolean';
     case 'GenericObjectTypeAnnotation':
     case 'ObjectTypeAnnotation':
@@ -160,7 +175,7 @@ function translateEventEmitterTypeToJavaType(
         `Unsupported eventType for ${eventEmitter.name}. Found: ${eventEmitter.typeAnnotation.typeAnnotation.type}`,
       );
     default:
-      (type: empty);
+      typeAnnotation.type as empty;
       throw new Error(
         `Unsupported eventType for ${eventEmitter.name}. Found: ${eventEmitter.typeAnnotation.typeAnnotation.type}`,
       );
@@ -193,14 +208,12 @@ function translateFunctionParamToJavaType(
         case 'RootTag':
           return wrapOptional('double', isRequired);
         default:
-          (realTypeAnnotation.name: empty);
+          realTypeAnnotation.name as empty;
           throw new Error(createErrorMessage(realTypeAnnotation.name));
       }
     case 'StringTypeAnnotation':
       return wrapOptional('String', isRequired);
     case 'StringLiteralTypeAnnotation':
-      return wrapOptional('String', isRequired);
-    case 'StringLiteralUnionTypeAnnotation':
       return wrapOptional('String', isRequired);
     case 'NumberTypeAnnotation':
       return wrapOptional('double', isRequired);
@@ -214,6 +227,8 @@ function translateFunctionParamToJavaType(
       return wrapOptional('double', isRequired);
     case 'BooleanTypeAnnotation':
       return wrapOptional('boolean', isRequired);
+    case 'BooleanLiteralTypeAnnotation':
+      return wrapOptional('boolean', isRequired);
     case 'EnumDeclaration':
       switch (realTypeAnnotation.memberType) {
         case 'NumberTypeAnnotation':
@@ -224,18 +239,20 @@ function translateFunctionParamToJavaType(
           throw new Error(createErrorMessage(realTypeAnnotation.type));
       }
     case 'UnionTypeAnnotation':
-      switch (typeAnnotation.memberType) {
-        case 'NumberTypeAnnotation':
+      const validUnionType = parseValidUnionType(realTypeAnnotation);
+      switch (validUnionType) {
+        case 'boolean':
+          return wrapOptional('boolean', isRequired);
+        case 'number':
           return wrapOptional('double', isRequired);
-        case 'ObjectTypeAnnotation':
+        case 'object':
           imports.add('com.facebook.react.bridge.ReadableMap');
           return wrapOptional('ReadableMap', isRequired);
-        case 'StringTypeAnnotation':
+        case 'string':
           return wrapOptional('String', isRequired);
         default:
-          throw new Error(
-            `Unsupported union member returning value, found: ${realTypeAnnotation.memberType}"`,
-          );
+          validUnionType as empty;
+          throw new Error(`Unsupported union member type`);
       }
     case 'ObjectTypeAnnotation':
       imports.add('com.facebook.react.bridge.ReadableMap');
@@ -251,7 +268,7 @@ function translateFunctionParamToJavaType(
       imports.add('com.facebook.react.bridge.Callback');
       return wrapOptional('Callback', isRequired);
     default:
-      (realTypeAnnotation.type: 'MixedTypeAnnotation');
+      realTypeAnnotation.type as 'MixedTypeAnnotation';
       throw new Error(createErrorMessage(realTypeAnnotation.type));
   }
 }
@@ -285,7 +302,7 @@ function translateFunctionReturnTypeToJavaType(
         case 'RootTag':
           return wrapOptional('double', isRequired);
         default:
-          (realTypeAnnotation.name: empty);
+          realTypeAnnotation.name as empty;
           throw new Error(createErrorMessage(realTypeAnnotation.name));
       }
     case 'VoidTypeAnnotation':
@@ -295,8 +312,6 @@ function translateFunctionReturnTypeToJavaType(
     case 'StringTypeAnnotation':
       return wrapOptional('String', isRequired);
     case 'StringLiteralTypeAnnotation':
-      return wrapOptional('String', isRequired);
-    case 'StringLiteralUnionTypeAnnotation':
       return wrapOptional('String', isRequired);
     case 'NumberTypeAnnotation':
       return wrapOptional('double', isRequired);
@@ -310,6 +325,8 @@ function translateFunctionReturnTypeToJavaType(
       return wrapOptional('double', isRequired);
     case 'BooleanTypeAnnotation':
       return wrapOptional('boolean', isRequired);
+    case 'BooleanLiteralTypeAnnotation':
+      return wrapOptional('boolean', isRequired);
     case 'EnumDeclaration':
       switch (realTypeAnnotation.memberType) {
         case 'NumberTypeAnnotation':
@@ -320,18 +337,20 @@ function translateFunctionReturnTypeToJavaType(
           throw new Error(createErrorMessage(realTypeAnnotation.type));
       }
     case 'UnionTypeAnnotation':
-      switch (realTypeAnnotation.memberType) {
-        case 'NumberTypeAnnotation':
+      const validUnionType = parseValidUnionType(realTypeAnnotation);
+      switch (validUnionType) {
+        case 'boolean':
+          return wrapOptional('boolean', isRequired);
+        case 'number':
           return wrapOptional('double', isRequired);
-        case 'ObjectTypeAnnotation':
+        case 'object':
           imports.add('com.facebook.react.bridge.WritableMap');
-          return wrapOptional('WritableMap', isRequired);
-        case 'StringTypeAnnotation':
+          return wrapOptional('ReadableMap', isRequired);
+        case 'string':
           return wrapOptional('String', isRequired);
         default:
-          throw new Error(
-            `Unsupported union member returning value, found: ${realTypeAnnotation.memberType}"`,
-          );
+          validUnionType as empty;
+          throw new Error(`Unsupported union member type`);
       }
     case 'ObjectTypeAnnotation':
       imports.add('com.facebook.react.bridge.WritableMap');
@@ -343,7 +362,7 @@ function translateFunctionReturnTypeToJavaType(
       imports.add('com.facebook.react.bridge.WritableArray');
       return wrapOptional('WritableArray', isRequired);
     default:
-      (realTypeAnnotation.type: 'MixedTypeAnnotation');
+      realTypeAnnotation.type as 'MixedTypeAnnotation';
       throw new Error(createErrorMessage(realTypeAnnotation.type));
   }
 }
@@ -369,7 +388,7 @@ function getFalsyReturnStatementFromReturnType(
         case 'RootTag':
           return 'return 0.0;';
         default:
-          (realTypeAnnotation.name: empty);
+          realTypeAnnotation.name as empty;
           throw new Error(createErrorMessage(realTypeAnnotation.name));
       }
     case 'VoidTypeAnnotation':
@@ -388,6 +407,8 @@ function getFalsyReturnStatementFromReturnType(
       return nullable ? 'return null;' : 'return 0;';
     case 'BooleanTypeAnnotation':
       return nullable ? 'return null;' : 'return false;';
+    case 'BooleanLiteralTypeAnnotation':
+      return nullable ? 'return null;' : 'return false;';
     case 'EnumDeclaration':
       switch (realTypeAnnotation.memberType) {
         case 'NumberTypeAnnotation':
@@ -398,23 +419,23 @@ function getFalsyReturnStatementFromReturnType(
           throw new Error(createErrorMessage(realTypeAnnotation.type));
       }
     case 'UnionTypeAnnotation':
-      switch (realTypeAnnotation.memberType) {
-        case 'NumberTypeAnnotation':
+      const validUnionType = parseValidUnionType(realTypeAnnotation);
+      switch (validUnionType) {
+        case 'boolean':
+          return nullable ? 'return null;' : 'return false;';
+        case 'number':
           return nullable ? 'return null;' : 'return 0;';
-        case 'ObjectTypeAnnotation':
+        case 'object':
           return 'return null;';
-        case 'StringTypeAnnotation':
+        case 'string':
           return nullable ? 'return null;' : 'return "";';
         default:
-          throw new Error(
-            `Unsupported union member returning value, found: ${realTypeAnnotation.memberType}"`,
-          );
+          validUnionType as empty;
+          throw new Error(`Unsupported union member type`);
       }
     case 'StringTypeAnnotation':
       return nullable ? 'return null;' : 'return "";';
     case 'StringLiteralTypeAnnotation':
-      return nullable ? 'return null;' : 'return "";';
-    case 'StringLiteralUnionTypeAnnotation':
       return nullable ? 'return null;' : 'return "";';
     case 'ObjectTypeAnnotation':
       return 'return null;';
@@ -423,7 +444,7 @@ function getFalsyReturnStatementFromReturnType(
     case 'ArrayTypeAnnotation':
       return 'return null;';
     default:
-      (realTypeAnnotation.type: 'MixedTypeAnnotation');
+      realTypeAnnotation.type as 'MixedTypeAnnotation';
       throw new Error(createErrorMessage(realTypeAnnotation.type));
   }
 }

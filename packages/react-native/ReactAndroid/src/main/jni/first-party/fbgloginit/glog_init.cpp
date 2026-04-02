@@ -102,7 +102,7 @@ lastResort(const char* tag, const char* msg, const char* arg = nullptr) {
   }
 #else
   std::cerr << msg;
-  if (arg) {
+  if (arg != nullptr) {
     std::cerr << ": " << arg;
   }
   std::cerr << std::endl;

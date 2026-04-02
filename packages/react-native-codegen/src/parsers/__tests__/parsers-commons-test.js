@@ -95,7 +95,7 @@ describe('wrapNullable', () => {
 describe('unwrapNullable', () => {
   describe('when type annotation is nullable', () => {
     it('returns original type annotation', () => {
-      // $FlowFixMe[incompatible-call]
+      // $FlowFixMe[incompatible-type]
       const result = unwrapNullable<{
         type: 'NullableTypeAnnotation',
         typeAnnotation: {type: 'BooleanTypeAnnotation'},
@@ -422,7 +422,7 @@ describe('buildSchemaFromConfigType', () => {
       astMock,
       wrapComponentSchemaMock,
       buildComponentSchemaMock,
-      /* $FlowFixMe[incompatible-call] Natural Inference rollout. See
+      /* $FlowFixMe[incompatible-type] Natural Inference rollout. See
        * https://fburl.com/workplace/6291gfvu */
       buildModuleSchemaMock,
       parser,
@@ -487,7 +487,7 @@ describe('buildSchemaFromConfigType', () => {
 
       describe('when buildModuleSchema returns null', () => {
         it('throws an error', () => {
-          // $FlowFixMe[incompatible-call] - This is to test an invariant
+          // $FlowFixMe[incompatible-type] - This is to test an invariant
           buildModuleSchemaMock.mockReturnValueOnce(null);
 
           expect(() =>
@@ -698,9 +698,9 @@ describe('buildSchema', () => {
         ...ViewProps,
       |}>;
 
-      export default (codegenNativeComponent<ModuleProps>(
+      export default codegenNativeComponent<ModuleProps>(
         'Module',
-      ): HostComponent<ModuleProps>);
+      ) as HostComponent<ModuleProps>;
     `;
 
     it('returns a module with good properties', () => {
@@ -808,9 +808,9 @@ describe('buildSchema', () => {
         +getArray: (a: Array<any>) => Array<string>;
       }
 
-      export default (TurboModuleRegistry.getEnforcing<Spec>(
+      export default TurboModuleRegistry.getEnforcing<Spec>(
         'SampleTurboModule',
-      ): Spec);
+      ) as Spec;
     `;
 
     it('returns a module with good properties', () => {
@@ -1101,9 +1101,9 @@ describe('buildModuleSchema', () => {
       +getArray: (a: Array<any>) => Array<string>;
     }
 
-    export default (TurboModuleRegistry.getEnforcing<Spec>(
+    export default TurboModuleRegistry.getEnforcing<Spec>(
       'SampleTurboModule',
-    ): Spec);
+    ) as Spec;
   `;
 
   describe('throwIfModuleInterfaceNotFound', () => {
@@ -1201,9 +1201,9 @@ describe('buildModuleSchema', () => {
           +getArray: (a: Array<any>) => Array<string>;
         }
 
-        export default (TurboModuleRegistry.getEnforcing<Spec>(
+        export default TurboModuleRegistry.getEnforcing<Spec>(
           'SampleTurboModule',
-        ): Spec);
+        ) as Spec;
       `;
       const ast = flowParser.getAst(contents);
       const types = flowParser.getTypes(ast);

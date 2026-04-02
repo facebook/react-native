@@ -7,7 +7,7 @@
 
 #import <React/RCTBaseTextInputView.h>
 
-#ifndef RCT_FIT_RM_OLD_COMPONENT
+#ifndef RCT_REMOVE_LEGACY_ARCH
 
 #import <React/RCTBridge.h>
 #import <React/RCTConvert.h>
@@ -727,6 +727,9 @@ RCT_NOT_IMPLEMENTED(-(instancetype)initWithFrame : (CGRect)frame)
       return @"Join";
     case UIReturnKeyEmergencyCall:
       return @"Emergency Call";
+    case UIReturnKeyDefault:
+    case UIReturnKeyContinue:
+    case UIReturnKeyDone:
     default:
       return @"Done";
   }
@@ -843,4 +846,4 @@ static BOOL findMismatch(NSString *first, NSString *second, NSRange *firstRange,
 
 @end
 
-#endif // RCT_FIT_RM_OLD_COMPONENT
+#endif // RCT_REMOVE_LEGACY_ARCH

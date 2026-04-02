@@ -73,6 +73,9 @@ public object ViewProps {
   public const val ENABLED: String = "enabled"
   public const val BACKGROUND_COLOR: String = "backgroundColor"
   public const val BACKGROUND_IMAGE: String = "experimental_backgroundImage"
+  public const val BACKGROUND_SIZE: String = "experimental_backgroundSize"
+  public const val BACKGROUND_POSITION: String = "experimental_backgroundPosition"
+  public const val BACKGROUND_REPEAT: String = "experimental_backgroundRepeat"
   public const val FOREGROUND_COLOR: String = "foregroundColor"
   public const val COLOR: String = "color"
   public const val FONT_SIZE: String = "fontSize"
@@ -254,7 +257,8 @@ public object ViewProps {
               PADDING_BOTTOM,
               PADDING_START,
               PADDING_END,
-          ))
+          )
+      )
 
   @JvmStatic
   public fun isLayoutOnly(map: ReadableMap, prop: String): Boolean {
@@ -272,16 +276,19 @@ public object ViewProps {
       BORDER_RADIUS -> {
         if (map.hasKey(BACKGROUND_COLOR)) {
           val valueType = map.getType(BACKGROUND_COLOR)
-          if (valueType == ReadableType.Number &&
-              map.getInt(BACKGROUND_COLOR) != Color.TRANSPARENT) {
+          if (
+              valueType == ReadableType.Number && map.getInt(BACKGROUND_COLOR) != Color.TRANSPARENT
+          ) {
             return false
           } else if (valueType != ReadableType.Null) {
             return false
           }
         }
-        if (map.hasKey(BORDER_WIDTH) &&
-            !map.isNull(BORDER_WIDTH) &&
-            map.getDouble(BORDER_WIDTH) != 0.0) {
+        if (
+            map.hasKey(BORDER_WIDTH) &&
+                !map.isNull(BORDER_WIDTH) &&
+                map.getDouble(BORDER_WIDTH) != 0.0
+        ) {
           return false
         } else {
           return true

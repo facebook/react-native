@@ -8,9 +8,6 @@
 ; Ignore the codegen e2e tests
 <PROJECT_ROOT>/packages/react-native-codegen/e2e/__test_fixtures__/modules/NativeEnumTurboModule.js
 
-; Ignore the Dangerfile
-<PROJECT_ROOT>/private/react-native-bots/dangerfile.js
-
 ; Ignore "BUCK" generated dirs
 <PROJECT_ROOT>/\.buckd/
 
@@ -51,6 +48,8 @@ experimental.pattern_matching=true
 casting_syntax=both
 component_syntax=true
 
+check_is_status=true
+
 emoji=true
 
 exact_by_default=true
@@ -69,13 +68,11 @@ munge_underscores=true
 module.name_mapper='^react-native$' -> '<PROJECT_ROOT>/packages/react-native/index.js'
 module.name_mapper='^react-native/\(.*\)$' -> '<PROJECT_ROOT>/packages/react-native/\1'
 module.name_mapper='^@react-native/dev-middleware$' -> '<PROJECT_ROOT>/packages/dev-middleware'
-module.name_mapper='^@?[./a-zA-Z0-9$_-]+\.\(bmp\|gif\|jpg\|jpeg\|png\|psd\|svg\|webp\|m4v\|mov\|mp4\|mpeg\|mpg\|webm\|aac\|aiff\|caf\|m4a\|mp3\|wav\|html\|pdf\|xml\)$' -> '<PROJECT_ROOT>/packages/react-native/Libraries/Image/RelativeImageStub'
+module.name_mapper='^@?[./a-zA-Z0-9$_-]+\.\(bmp\|gif\|jpg\|jpeg\|png\|psd\|svg\|webp\|m4v\|mov\|mp4\|mpeg\|mpg\|webm\|aac\|aiff\|caf\|m4a\|mp3\|wav\|html\|pdf\|xml\|ktx\|heic\|heif\)$' -> '<PROJECT_ROOT>/packages/react-native/Libraries/Image/RelativeImageStub'
 
 module.system.haste.module_ref_prefix=m#
 
 react.runtime=automatic
-
-suppress_type=$FlowFixMe
 
 ban_spread_key_props=true
 
@@ -100,4 +97,4 @@ untyped-import
 untyped-type-import
 
 [version]
-^0.279.0
+^0.307.1

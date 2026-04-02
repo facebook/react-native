@@ -1008,6 +1008,9 @@ namespace JS {
     struct Constants {
 
       struct Builder {
+        // Backwards compat for RCTTypedModuleConstants
+        using ResultT = Constants;
+
         struct Input {
           RCTRequired<bool> const1;
           RCTRequired<double> const2;
@@ -1055,8 +1058,8 @@ namespace JS {
 - (NSString *)getEnums:(double)enumInt
              enumFloat:(double)enumFloat
             enumString:(NSString *)enumString;
-- (facebook::react::ModuleConstants<JS::NativeSampleTurboModule::Constants::Builder>)constantsToExport;
-- (facebook::react::ModuleConstants<JS::NativeSampleTurboModule::Constants::Builder>)getConstants;
+- (facebook::react::ModuleConstants<JS::NativeSampleTurboModule::Constants>)constantsToExport;
+- (facebook::react::ModuleConstants<JS::NativeSampleTurboModule::Constants>)getConstants;
 
 @end
 

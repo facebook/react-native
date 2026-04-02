@@ -586,6 +586,15 @@ export interface ScrollViewPropsAndroid {
    * Causes the scrollbars not to turn transparent when they are not in use. The default value is false.
    */
   persistentScrollbar?: boolean | undefined;
+
+  /**
+   * When false, the ScrollView will not automatically scroll to a focused child when
+   * the child requests focus. This can be useful when you want to control the scroll
+   * position programmatically. The default value is true.
+   *
+   * @platform android
+   */
+  scrollsChildToFocus?: boolean | undefined;
 }
 
 export interface ScrollViewProps

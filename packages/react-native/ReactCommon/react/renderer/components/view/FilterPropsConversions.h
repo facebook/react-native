@@ -22,10 +22,9 @@
 
 namespace facebook::react {
 
-inline void parseProcessedFilter(
-    const PropsParserContext& context,
-    const RawValue& value,
-    std::vector<FilterFunction>& result) {
+inline void
+parseProcessedFilter(const PropsParserContext &context, const RawValue &value, std::vector<FilterFunction> &result)
+{
   react_native_expect(value.hasType<std::vector<RawValue>>());
   if (!value.hasType<std::vector<RawValue>>()) {
     result = {};
@@ -34,9 +33,8 @@ inline void parseProcessedFilter(
 
   std::vector<FilterFunction> filter{};
   auto rawFilter = static_cast<std::vector<RawValue>>(value);
-  for (const auto& rawFilterPrimitive : rawFilter) {
-    bool isMap =
-        rawFilterPrimitive.hasType<std::unordered_map<std::string, RawValue>>();
+  for (const auto &rawFilterPrimitive : rawFilter) {
+    bool isMap = rawFilterPrimitive.hasType<std::unordered_map<std::string, RawValue>>();
     react_native_expect(isMap);
     if (!isMap) {
       // If a filter is malformed then we should not apply any of them which
@@ -45,84 +43,75 @@ inline void parseProcessedFilter(
       return;
     }
 
-    auto rawFilterFunction =
-        static_cast<std::unordered_map<std::string, RawValue>>(
-            rawFilterPrimitive);
+    auto rawFilterFunction = static_cast<std::unordered_map<std::string, RawValue>>(rawFilterPrimitive);
     FilterFunction filterFunction{};
-    try {
-      filterFunction.type =
-          filterTypeFromString(rawFilterFunction.begin()->first);
-      if (filterFunction.type == FilterType::DropShadow) {
-        auto rawDropShadow =
-            static_cast<std::unordered_map<std::string, RawValue>>(
-                rawFilterFunction.begin()->second);
-        DropShadowParams dropShadowParams{};
-
-        auto offsetX = rawDropShadow.find("offsetX");
-        react_native_expect(offsetX != rawDropShadow.end());
-        if (offsetX == rawDropShadow.end()) {
-          result = {};
-          return;
-        }
-
-        react_native_expect(offsetX->second.hasType<Float>());
-        if (!offsetX->second.hasType<Float>()) {
-          result = {};
-          return;
-        }
-        dropShadowParams.offsetX = (Float)offsetX->second;
-
-        auto offsetY = rawDropShadow.find("offsetY");
-        react_native_expect(offsetY != rawDropShadow.end());
-        if (offsetY == rawDropShadow.end()) {
-          result = {};
-          return;
-        }
-        react_native_expect(offsetY->second.hasType<Float>());
-        if (!offsetY->second.hasType<Float>()) {
-          result = {};
-          return;
-        }
-        dropShadowParams.offsetY = (Float)offsetY->second;
-
-        auto standardDeviation = rawDropShadow.find("standardDeviation");
-        if (standardDeviation != rawDropShadow.end()) {
-          react_native_expect(standardDeviation->second.hasType<Float>());
-          if (!standardDeviation->second.hasType<Float>()) {
-            result = {};
-            return;
-          }
-          dropShadowParams.standardDeviation = (Float)standardDeviation->second;
-        }
-
-        auto color = rawDropShadow.find("color");
-        if (color != rawDropShadow.end()) {
-          fromRawValue(
-              context.contextContainer,
-              context.surfaceId,
-              color->second,
-              dropShadowParams.color);
-        }
-
-        filterFunction.parameters = dropShadowParams;
-      } else {
-        filterFunction.parameters = (float)rawFilterFunction.begin()->second;
-      }
-      filter.push_back(std::move(filterFunction));
-    } catch (const std::exception& e) {
-      LOG(ERROR) << "Could not parse FilterFunction: " << e.what();
+    auto filterType = filterTypeFromString(rawFilterFunction.begin()->first);
+    if (!filterType.has_value()) {
+      LOG(ERROR) << "Could not parse FilterFunction: " << rawFilterFunction.begin()->first;
       result = {};
       return;
     }
+    filterFunction.type = *filterType;
+    if (filterFunction.type == FilterType::DropShadow) {
+      auto rawDropShadow = static_cast<std::unordered_map<std::string, RawValue>>(rawFilterFunction.begin()->second);
+      DropShadowParams dropShadowParams{};
+
+      auto offsetX = rawDropShadow.find("offsetX");
+      react_native_expect(offsetX != rawDropShadow.end());
+      if (offsetX == rawDropShadow.end()) {
+        result = {};
+        return;
+      }
+
+      react_native_expect(offsetX->second.hasType<Float>());
+      if (!offsetX->second.hasType<Float>()) {
+        result = {};
+        return;
+      }
+      dropShadowParams.offsetX = (Float)offsetX->second;
+
+      auto offsetY = rawDropShadow.find("offsetY");
+      react_native_expect(offsetY != rawDropShadow.end());
+      if (offsetY == rawDropShadow.end()) {
+        result = {};
+        return;
+      }
+      react_native_expect(offsetY->second.hasType<Float>());
+      if (!offsetY->second.hasType<Float>()) {
+        result = {};
+        return;
+      }
+      dropShadowParams.offsetY = (Float)offsetY->second;
+
+      auto standardDeviation = rawDropShadow.find("standardDeviation");
+      if (standardDeviation != rawDropShadow.end()) {
+        react_native_expect(standardDeviation->second.hasType<Float>());
+        if (!standardDeviation->second.hasType<Float>()) {
+          result = {};
+          return;
+        }
+        dropShadowParams.standardDeviation = (Float)standardDeviation->second;
+      }
+
+      auto color = rawDropShadow.find("color");
+      if (color != rawDropShadow.end()) {
+        fromRawValue(context.contextContainer, context.surfaceId, color->second, dropShadowParams.color);
+      }
+
+      filterFunction.parameters = dropShadowParams;
+    } else {
+      filterFunction.parameters = (float)rawFilterFunction.begin()->second;
+    }
+    filter.push_back(filterFunction);
   }
 
   result = filter;
 }
 
-inline FilterType filterTypeFromVariant(
-    const CSSFilterFunctionVariant& filter) {
+inline FilterType filterTypeFromVariant(const CSSFilterFunction &filter)
+{
   return std::visit(
-      [](auto&& filter) -> FilterType {
+      [](auto &&filter) -> FilterType {
         using FilterT = std::decay_t<decltype(filter)>;
 
         if constexpr (std::is_same_v<FilterT, CSSBlurFilter>) {
@@ -159,10 +148,10 @@ inline FilterType filterTypeFromVariant(
       filter);
 }
 
-inline std::optional<FilterFunction> fromCSSFilter(
-    const CSSFilterFunctionVariant& cssFilter) {
+inline std::optional<FilterFunction> fromCSSFilter(const CSSFilterFunction &cssFilter)
+{
   return std::visit(
-      [&](auto&& filter) -> std::optional<FilterFunction> {
+      [&](auto &&filter) -> std::optional<FilterFunction> {
         using FilterT = std::decay_t<decltype(filter)>;
 
         if constexpr (std::is_same_v<FilterT, CSSBlurFilter>) {
@@ -178,8 +167,7 @@ inline std::optional<FilterFunction> fromCSSFilter(
 
         if constexpr (std::is_same_v<FilterT, CSSDropShadowFilter>) {
           // TODO: support non-px values
-          if (filter.offsetX.unit != CSSLengthUnit::Px ||
-              filter.offsetY.unit != CSSLengthUnit::Px ||
+          if (filter.offsetX.unit != CSSLengthUnit::Px || filter.offsetY.unit != CSSLengthUnit::Px ||
               filter.standardDeviation.unit != CSSLengthUnit::Px) {
             return {};
           }
@@ -195,12 +183,9 @@ inline std::optional<FilterFunction> fromCSSFilter(
         }
 
         if constexpr (
-            std::is_same_v<FilterT, CSSBrightnessFilter> ||
-            std::is_same_v<FilterT, CSSContrastFilter> ||
-            std::is_same_v<FilterT, CSSGrayscaleFilter> ||
-            std::is_same_v<FilterT, CSSInvertFilter> ||
-            std::is_same_v<FilterT, CSSOpacityFilter> ||
-            std::is_same_v<FilterT, CSSSaturateFilter> ||
+            std::is_same_v<FilterT, CSSBrightnessFilter> || std::is_same_v<FilterT, CSSContrastFilter> ||
+            std::is_same_v<FilterT, CSSGrayscaleFilter> || std::is_same_v<FilterT, CSSInvertFilter> ||
+            std::is_same_v<FilterT, CSSOpacityFilter> || std::is_same_v<FilterT, CSSSaturateFilter> ||
             std::is_same_v<FilterT, CSSSepiaFilter>) {
           return FilterFunction{
               .type = filterTypeFromVariant(cssFilter),
@@ -218,16 +203,15 @@ inline std::optional<FilterFunction> fromCSSFilter(
       cssFilter);
 }
 
-inline void parseUnprocessedFilterString(
-    std::string&& value,
-    std::vector<FilterFunction>& result) {
+inline void parseUnprocessedFilterString(std::string &&value, std::vector<FilterFunction> &result)
+{
   auto filterList = parseCSSProperty<CSSFilterList>((std::string)value);
   if (!std::holds_alternative<CSSFilterList>(filterList)) {
     result = {};
     return;
   }
 
-  for (const auto& cssFilter : std::get<CSSFilterList>(filterList)) {
+  for (const auto &cssFilter : std::get<CSSFilterList>(filterList)) {
     if (auto filter = fromCSSFilter(cssFilter)) {
       result.push_back(*filter);
     } else {
@@ -237,12 +221,10 @@ inline void parseUnprocessedFilterString(
   }
 }
 
-inline std::optional<FilterFunction> parseDropShadow(
-    const PropsParserContext& context,
-    const RawValue& value) {
+inline std::optional<FilterFunction> parseDropShadow(const PropsParserContext &context, const RawValue &value)
+{
   if (value.hasType<std::string>()) {
-    auto val = parseCSSProperty<CSSDropShadowFilter>(
-        std::string("drop-shadow(") + (std::string)value + ")");
+    auto val = parseCSSProperty<CSSDropShadowFilter>(std::string("drop-shadow(") + (std::string)value + ")");
     if (std::holds_alternative<CSSDropShadowFilter>(val)) {
       return fromCSSFilter(std::get<CSSDropShadowFilter>(val));
     }
@@ -252,8 +234,7 @@ inline std::optional<FilterFunction> parseDropShadow(
   if (!value.hasType<std::unordered_map<std::string, RawValue>>()) {
     return {};
   }
-  auto rawDropShadow =
-      static_cast<std::unordered_map<std::string, RawValue>>(value);
+  auto rawDropShadow = static_cast<std::unordered_map<std::string, RawValue>>(value);
 
   DropShadowParams dropShadowParams{};
 
@@ -281,8 +262,7 @@ inline std::optional<FilterFunction> parseDropShadow(
 
   auto standardDeviation = rawDropShadow.find("standardDeviation");
   if (standardDeviation != rawDropShadow.end()) {
-    if (auto parsedStandardDeviation =
-            coerceLength(standardDeviation->second)) {
+    if (auto parsedStandardDeviation = coerceLength(standardDeviation->second)) {
       if (*parsedStandardDeviation < 0.0f) {
         return {};
       }
@@ -301,23 +281,21 @@ inline std::optional<FilterFunction> parseDropShadow(
     }
   }
 
-  return FilterFunction{FilterType::DropShadow, dropShadowParams};
+  return FilterFunction{.type = FilterType::DropShadow, .parameters = dropShadowParams};
 }
 
-inline std::optional<FilterFunction> parseFilterRawValue(
-    const PropsParserContext& context,
-    const RawValue& value) {
+inline std::optional<FilterFunction> parseFilterRawValue(const PropsParserContext &context, const RawValue &value)
+{
   if (!value.hasType<std::unordered_map<std::string, RawValue>>()) {
     return {};
   }
-  auto rawFilter =
-      static_cast<std::unordered_map<std::string, RawValue>>(value);
+  auto rawFilter = static_cast<std::unordered_map<std::string, RawValue>>(value);
 
   if (rawFilter.size() != 1) {
     return {};
   }
 
-  const auto& filterKey = rawFilter.begin()->first;
+  const auto &filterKey = rawFilter.begin()->first;
 
   if (filterKey == "drop-shadow") {
     return parseDropShadow(context, rawFilter.begin()->second);
@@ -326,30 +304,35 @@ inline std::optional<FilterFunction> parseFilterRawValue(
       if (*length < 0.0f) {
         return {};
       }
-      return FilterFunction{FilterType::Blur, *length};
+      return FilterFunction{.type = FilterType::Blur, .parameters = *length};
     }
     return {};
   } else if (filterKey == "hue-rotate") {
     if (auto angle = coerceAngle(rawFilter.begin()->second)) {
-      return FilterFunction{FilterType::HueRotate, *angle};
+      return FilterFunction{.type = FilterType::HueRotate, .parameters = *angle};
     }
     return {};
   } else {
+    auto filterType = filterTypeFromString(filterKey);
+    if (!filterType.has_value()) {
+      return {};
+    }
     if (auto amount = coerceAmount(rawFilter.begin()->second)) {
       if (*amount < 0.0f) {
         return {};
       }
-      return FilterFunction{filterTypeFromString(filterKey), *amount};
+      return FilterFunction{.type = *filterType, .parameters = *amount};
     }
     return {};
   }
 }
 
 inline void parseUnprocessedFilterList(
-    const PropsParserContext& context,
-    std::vector<RawValue>&& value,
-    std::vector<FilterFunction>& result) {
-  for (const auto& rawValue : value) {
+    const PropsParserContext &context,
+    std::vector<RawValue> &&value,
+    std::vector<FilterFunction> &result)
+{
+  for (const auto &rawValue : value) {
     if (auto Filter = parseFilterRawValue(context, rawValue)) {
       result.push_back(*Filter);
     } else {
@@ -359,10 +342,9 @@ inline void parseUnprocessedFilterList(
   }
 }
 
-inline void parseUnprocessedFilter(
-    const PropsParserContext& context,
-    const RawValue& value,
-    std::vector<FilterFunction>& result) {
+inline void
+parseUnprocessedFilter(const PropsParserContext &context, const RawValue &value, std::vector<FilterFunction> &result)
+{
   if (value.hasType<std::string>()) {
     parseUnprocessedFilterString((std::string)value, result);
   } else if (value.hasType<std::vector<RawValue>>()) {
@@ -372,10 +354,8 @@ inline void parseUnprocessedFilter(
   }
 }
 
-inline void fromRawValue(
-    const PropsParserContext& context,
-    const RawValue& value,
-    std::vector<FilterFunction>& result) {
+inline void fromRawValue(const PropsParserContext &context, const RawValue &value, std::vector<FilterFunction> &result)
+{
   if (ReactNativeFeatureFlags::enableNativeCSSParsing()) {
     parseUnprocessedFilter(context, value, result);
   } else {

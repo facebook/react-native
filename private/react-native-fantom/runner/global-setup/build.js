@@ -8,6 +8,8 @@
  * @format
  */
 
+import type {EnvironmentOverrides} from '../utils';
+
 import {createBundle} from '../bundling';
 import {isCI} from '../EnvironmentOptions';
 import {build as buildHermesCompiler} from '../executables/hermesc';
@@ -37,7 +39,10 @@ async function tryOrLog(
   }
 }
 
-export default async function build(): Promise<void> {
+export default async function build(
+  enableCoverage: boolean,
+  env: EnvironmentOverrides,
+): Promise<void> {
   try {
     fs.rmSync(NATIVE_BUILD_OUTPUT_PATH, {recursive: true});
   } catch {}
@@ -45,10 +50,13 @@ export default async function build(): Promise<void> {
   fs.mkdirSync(NATIVE_BUILD_OUTPUT_PATH, {recursive: true});
 
   if (isCI) {
-    for (const isOptimizedMode of [false, true]) {
+    for (const enableOptimized of [false, true]) {
       for (const hermesVariant of HermesVariant.members()) {
-        buildFantomTester({isOptimizedMode, hermesVariant});
-        buildHermesCompiler({isOptimizedMode, hermesVariant});
+        buildFantomTester(
+          {enableOptimized, hermesVariant, enableCoverage},
+          env,
+        );
+        buildHermesCompiler({enableOptimized, hermesVariant, enableCoverage});
       }
     }
 
@@ -78,6 +86,7 @@ async function warmUpMetro(isOptimizedMode: boolean): Promise<void> {
     platform: 'android',
     minify: isOptimizedMode,
     dev: !isOptimizedMode,
+    customTransformOptions: undefined,
   });
 
   try {

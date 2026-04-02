@@ -15,7 +15,10 @@ import path from 'path';
 
 type BundleOptions = {
   ...RunBuildOptions,
-  out: $NonMaybeType<RunBuildOptions['out']>,
+  customTransformOptions: ?{
+    collectCoverage: boolean,
+  },
+  out: NonNullable<RunBuildOptions['out']>,
   testPath: string,
 };
 
@@ -49,9 +52,19 @@ export async function createBundle(options: BundleOptions): Promise<void> {
   );
 
   if (lastBundleError || lastBundleResult?.ok !== true) {
-    throw new Error(
-      `Failed to request bundle from Metro: ${lastBundleError?.message ?? (await lastBundleResult?.text()) ?? ''}`,
-    );
+    let errorMessage =
+      lastBundleError?.message ?? (await lastBundleResult?.text()) ?? '';
+
+    try {
+      const parsed = JSON.parse(errorMessage);
+      if (typeof parsed.message === 'string') {
+        errorMessage = parsed.message;
+      }
+    } catch {
+      // Not JSON — use the raw text as-is.
+    }
+
+    throw new Error(`Failed to request bundle from Metro:\n${errorMessage}`);
   }
 
   await fs.promises.writeFile(
@@ -94,6 +107,7 @@ function getBundleBaseURL({
   dev,
   sourceMap,
   sourceMapUrl,
+  customTransformOptions,
 }: BundleOptions): URL {
   const requestPath = path.relative(PROJECT_ROOT, entry).replace(/\.js$/, '');
   const port = getMetroPort();
@@ -118,6 +132,10 @@ function getBundleBaseURL({
 
   if (sourceMapUrl != null) {
     baseURL.searchParams.append('sourceMapUrl', sourceMapUrl);
+  }
+
+  if (customTransformOptions?.collectCoverage) {
+    baseURL.searchParams.append('transform.collectCoverage', 'true');
   }
 
   return baseURL;

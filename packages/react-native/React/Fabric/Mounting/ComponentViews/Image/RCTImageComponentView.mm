@@ -21,7 +21,7 @@ using namespace facebook::react;
 
 @implementation RCTImageComponentView {
   ImageShadowNode::ConcreteState::Shared _state;
-  RCTImageResponseObserverProxy _imageResponseObserverProxy;
+  std::shared_ptr<RCTImageResponseObserverProxy> _imageResponseObserverProxy;
 }
 
 - (instancetype)initWithFrame:(CGRect)frame
@@ -36,7 +36,7 @@ using namespace facebook::react;
     _imageView.layer.minificationFilter = kCAFilterTrilinear;
     _imageView.layer.magnificationFilter = kCAFilterTrilinear;
 
-    _imageResponseObserverProxy = RCTImageResponseObserverProxy(self);
+    _imageResponseObserverProxy = std::make_shared<RCTImageResponseObserverProxy>(self);
 
     self.contentView = _imageView;
   }
@@ -134,7 +134,7 @@ using namespace facebook::react;
   }
 
   auto imageSource = _state->getData().getImageSource();
-  imageSource.size = {image.size.width, image.size.height};
+  imageSource.size = {.width = image.size.width, .height = image.size.height};
 
   static_cast<const ImageEventEmitter &>(*_eventEmitter).onLoad(imageSource);
   static_cast<const ImageEventEmitter &>(*_eventEmitter).onLoadEnd();

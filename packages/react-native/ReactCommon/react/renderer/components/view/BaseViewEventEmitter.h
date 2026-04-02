@@ -23,14 +23,18 @@ class BaseViewEventEmitter : public TouchEventEmitter {
 
 #pragma mark - Accessibility
 
-  void onAccessibilityAction(const std::string& name) const;
+  void onAccessibilityAction(const std::string &name) const;
   void onAccessibilityTap() const;
   void onAccessibilityMagicTap() const;
   void onAccessibilityEscape() const;
 
 #pragma mark - Layout
 
-  void onLayout(const LayoutMetrics& layoutMetrics) const;
+  void onLayout(const LayoutMetrics &layoutMetrics) const;
+
+#pragma mark - Focus
+  void onFocus() const;
+  void onBlur() const;
 
  private:
   /*
@@ -60,8 +64,7 @@ class BaseViewEventEmitter : public TouchEventEmitter {
     bool isDispatching{false};
   };
 
-  mutable std::shared_ptr<LayoutEventState> layoutEventState_{
-      std::make_shared<LayoutEventState>()};
+  mutable std::shared_ptr<LayoutEventState> layoutEventState_{std::make_shared<LayoutEventState>()};
 };
 
 } // namespace facebook::react

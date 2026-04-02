@@ -29,10 +29,11 @@ enum class BlendMode {
   Saturation,
   Color,
   Luminosity,
+  PlusLighter,
 };
 
-inline std::optional<BlendMode> blendModeFromString(
-    std::string_view blendModeName) {
+inline std::optional<BlendMode> blendModeFromString(std::string_view blendModeName)
+{
   if (blendModeName == "normal") {
     return BlendMode::Normal;
   } else if (blendModeName == "multiply") {
@@ -65,12 +66,15 @@ inline std::optional<BlendMode> blendModeFromString(
     return BlendMode::Color;
   } else if (blendModeName == "luminosity") {
     return BlendMode::Luminosity;
+  } else if (blendModeName == "plus-lighter") {
+    return BlendMode::PlusLighter;
   } else {
     return std::nullopt;
   }
 }
 
-inline std::string toString(const BlendMode& blendMode) {
+inline std::string toString(const BlendMode &blendMode)
+{
   switch (blendMode) {
     case BlendMode::Normal:
       return "normal";
@@ -104,6 +108,10 @@ inline std::string toString(const BlendMode& blendMode) {
       return "color";
     case BlendMode::Luminosity:
       return "luminosity";
+    case BlendMode::PlusLighter:
+      return "plus-lighter";
+    default:
+      abort();
   }
 }
 } // namespace facebook::react

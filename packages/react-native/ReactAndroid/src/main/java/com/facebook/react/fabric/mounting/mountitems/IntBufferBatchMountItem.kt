@@ -8,7 +8,6 @@
 package com.facebook.react.fabric.mounting.mountitems
 
 import com.facebook.common.logging.FLog
-import com.facebook.proguard.annotations.DoNotStripAny
 import com.facebook.react.bridge.ReactMarker
 import com.facebook.react.bridge.ReactMarkerConstants
 import com.facebook.react.bridge.ReadableMap
@@ -31,7 +30,8 @@ import java.util.Locale
  * The purpose of encapsulating the array of MountItems this way, is to reduce the amount of
  * allocations in C++ and JNI round-trips.
  */
-@DoNotStripAny
+private const val TAG = "IntBufferBatchMountItem"
+
 internal class IntBufferBatchMountItem(
     private val surfaceId: Int,
     private val intBuffer: IntArray,
@@ -109,7 +109,7 @@ internal class IntBufferBatchMountItem(
             surfaceMountingManager.createView(
                 fabricComponentName,
                 intBuffer[i++],
-                objBuffer[j++] as ReadableMap?,
+                objBuffer[j++] as ReadableMap,
                 objBuffer[j++] as StateWrapper?,
                 objBuffer[j++] as EventEmitterWrapper?,
                 intBuffer[i++] == 1,
@@ -124,7 +124,7 @@ internal class IntBufferBatchMountItem(
           INSTRUCTION_REMOVE ->
               surfaceMountingManager.removeViewAt(intBuffer[i++], intBuffer[i++], intBuffer[i++])
           INSTRUCTION_UPDATE_PROPS ->
-              surfaceMountingManager.updateProps(intBuffer[i++], objBuffer[j++] as ReadableMap?)
+              surfaceMountingManager.updateProps(intBuffer[i++], objBuffer[j++] as ReadableMap)
           INSTRUCTION_UPDATE_STATE ->
               surfaceMountingManager.updateState(intBuffer[i++], objBuffer[j++] as StateWrapper?)
           INSTRUCTION_UPDATE_LAYOUT -> {
@@ -178,7 +178,8 @@ internal class IntBufferBatchMountItem(
           }
           else -> {
             throw IllegalArgumentException(
-                "Invalid type argument to IntBufferBatchMountItem: $type at index: $i")
+                "Invalid type argument to IntBufferBatchMountItem: $type at index: $i"
+            )
           }
         }
       }
@@ -217,7 +218,8 @@ internal class IntBufferBatchMountItem(
                       intBuffer[i++],
                       intBuffer[i++],
                       fabricComponentName,
-                  ))
+                  )
+              )
             }
             INSTRUCTION_DELETE ->
                 s.append(String.format(Locale.ROOT, "DELETE [%d]\n", intBuffer[i++]))
@@ -229,7 +231,8 @@ internal class IntBufferBatchMountItem(
                         intBuffer[i++],
                         intBuffer[i++],
                         intBuffer[i++],
-                    ))
+                    )
+                )
             INSTRUCTION_REMOVE ->
                 s.append(
                     String.format(
@@ -238,15 +241,16 @@ internal class IntBufferBatchMountItem(
                         intBuffer[i++],
                         intBuffer[i++],
                         intBuffer[i++],
-                    ))
+                    )
+                )
             INSTRUCTION_UPDATE_PROPS -> {
               val props = objBuffer[j++]
               val propsString =
                   if (FabricUIManager.IS_DEVELOPMENT_ENVIRONMENT) (props?.toString() ?: "<null>")
                   else "<hidden>"
               s.append(
-                  String.format(
-                      Locale.ROOT, "UPDATE PROPS [%d]: %s\n", intBuffer[i++], propsString))
+                  String.format(Locale.ROOT, "UPDATE PROPS [%d]: %s\n", intBuffer[i++], propsString)
+              )
             }
             INSTRUCTION_UPDATE_STATE -> {
               val state: StateWrapper? = objBuffer[j++] as StateWrapper?
@@ -254,8 +258,8 @@ internal class IntBufferBatchMountItem(
                   if (FabricUIManager.IS_DEVELOPMENT_ENVIRONMENT) (state?.toString() ?: "<null>")
                   else "<hidden>"
               s.append(
-                  String.format(
-                      Locale.ROOT, "UPDATE STATE [%d]: %s\n", intBuffer[i++], stateString))
+                  String.format(Locale.ROOT, "UPDATE STATE [%d]: %s\n", intBuffer[i++], stateString)
+              )
             }
             INSTRUCTION_UPDATE_LAYOUT ->
                 s.append(
@@ -271,7 +275,8 @@ internal class IntBufferBatchMountItem(
                         intBuffer[i++],
                         intBuffer[i++],
                         intBuffer[i++],
-                    ))
+                    )
+                )
             INSTRUCTION_UPDATE_PADDING ->
                 s.append(
                     String.format(
@@ -282,7 +287,8 @@ internal class IntBufferBatchMountItem(
                         intBuffer[i++],
                         intBuffer[i++],
                         intBuffer[i++],
-                    ))
+                    )
+                )
             INSTRUCTION_UPDATE_OVERFLOW_INSET ->
                 s.append(
                     String.format(
@@ -293,7 +299,8 @@ internal class IntBufferBatchMountItem(
                         intBuffer[i++],
                         intBuffer[i++],
                         intBuffer[i++],
-                    ))
+                    )
+                )
             INSTRUCTION_UPDATE_EVENT_EMITTER -> {
               j += 1
               s.append(String.format(Locale.ROOT, "UPDATE EVENTEMITTER [%d]\n", intBuffer[i++]))
@@ -301,7 +308,8 @@ internal class IntBufferBatchMountItem(
             else -> {
               FLog.e(TAG, "String so far: $s")
               throw IllegalArgumentException(
-                  "Invalid type argument to IntBufferBatchMountItem: $type at index: $i")
+                  "Invalid type argument to IntBufferBatchMountItem: $type at index: $i"
+              )
             }
           }
         }
@@ -333,8 +341,6 @@ internal class IntBufferBatchMountItem(
   }
 
   companion object {
-    val TAG: String = IntBufferBatchMountItem::class.java.simpleName
-
     const val INSTRUCTION_FLAG_MULTIPLE: Int = 1
 
     const val INSTRUCTION_CREATE: Int = 2

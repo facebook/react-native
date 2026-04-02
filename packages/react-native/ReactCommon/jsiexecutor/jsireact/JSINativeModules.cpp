@@ -7,7 +7,7 @@
 
 #include "jsireact/JSINativeModules.h"
 
-#ifndef RCT_FIT_RM_OLD_RUNTIME
+#ifndef RCT_REMOVE_LEGACY_ARCH
 
 #include <reactperflogger/BridgeNativeModulePerfLogger.h>
 
@@ -58,7 +58,7 @@ Value JSINativeModules::getModule(Runtime& rt, const PropNameID& name) {
       m_objects.emplace(std::move(moduleName), std::move(*module)).first;
 
   Value ret = Value(rt, result->second);
-  BridgeNativeModulePerfLogger::moduleJSRequireEndingEnd(moduleName.c_str());
+  BridgeNativeModulePerfLogger::moduleJSRequireEndingEnd(result->first.c_str());
   return ret;
 }
 
@@ -111,4 +111,4 @@ std::optional<Object> JSINativeModules::createModule(
 
 } // namespace facebook::react
 
-#endif // RCT_FIT_RM_OLD_RUNTIME
+#endif // RCT_REMOVE_LEGACY_ARCH

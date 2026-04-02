@@ -89,10 +89,10 @@ internal class AccessibilityInfoModule(context: ReactApplicationContext) :
   init {
     val appContext = context.applicationContext
     accessibilityManager =
-        appContext.getSystemService(Context.ACCESSIBILITY_SERVICE) as AccessibilityManager
+        appContext.getSystemService(Context.ACCESSIBILITY_SERVICE) as AccessibilityManager?
     contentResolver = reactApplicationContext.contentResolver
-    touchExplorationEnabled = accessibilityManager.isTouchExplorationEnabled
-    accessibilityServiceEnabled = accessibilityManager.isEnabled
+    touchExplorationEnabled = accessibilityManager?.isTouchExplorationEnabled ?: false
+    accessibilityServiceEnabled = accessibilityManager?.isEnabled ?: false
     reduceMotionEnabled = isReduceMotionEnabledValue
     highTextContrastEnabled = isHighTextContrastEnabledValue
     grayscaleModeEnabled = isGrayscaleEnabledValue
@@ -211,22 +211,16 @@ internal class AccessibilityInfoModule(context: ReactApplicationContext) :
   private fun updateAndSendTouchExplorationChangeEvent(enabled: Boolean) {
     if (touchExplorationEnabled != enabled) {
       touchExplorationEnabled = enabled
-      val reactApplicationContext = getReactApplicationContextIfActiveOrWarn()
-      if (reactApplicationContext != null) {
-        getReactApplicationContext()
-            .emitDeviceEvent(TOUCH_EXPLORATION_EVENT_NAME, touchExplorationEnabled)
-      }
+      getReactApplicationContextIfActiveOrWarn()
+          ?.emitDeviceEvent(TOUCH_EXPLORATION_EVENT_NAME, touchExplorationEnabled)
     }
   }
 
   private fun updateAndSendAccessibilityServiceChangeEvent(enabled: Boolean) {
     if (accessibilityServiceEnabled != enabled) {
       accessibilityServiceEnabled = enabled
-      val reactApplicationContext = getReactApplicationContextIfActiveOrWarn()
-      if (reactApplicationContext != null) {
-        getReactApplicationContext()
-            .emitDeviceEvent(ACCESSIBILITY_SERVICE_EVENT_NAME, accessibilityServiceEnabled)
-      }
+      getReactApplicationContextIfActiveOrWarn()
+          ?.emitDeviceEvent(ACCESSIBILITY_SERVICE_EVENT_NAME, accessibilityServiceEnabled)
     }
   }
 
@@ -241,15 +235,17 @@ internal class AccessibilityInfoModule(context: ReactApplicationContext) :
 
   override fun onHostResume() {
     accessibilityManager?.addTouchExplorationStateChangeListener(
-        touchExplorationStateChangeListener)
+        touchExplorationStateChangeListener
+    )
     accessibilityManager?.addAccessibilityStateChangeListener(accessibilityServiceChangeListener)
     val transitionUri = Settings.Global.getUriFor(Settings.Global.TRANSITION_ANIMATION_SCALE)
     contentResolver.registerContentObserver(transitionUri, false, animationScaleObserver)
     val highTextContrastUri =
-        Settings.Global.getUriFor(ACCESSIBILITY_HIGH_TEXT_CONTRAST_ENABLED_CONSTANT)
+        Settings.Secure.getUriFor(ACCESSIBILITY_HIGH_TEXT_CONTRAST_ENABLED_CONSTANT)
     contentResolver.registerContentObserver(highTextContrastUri, false, highTextContrastObserver)
     updateAndSendTouchExplorationChangeEvent(
-        accessibilityManager?.isTouchExplorationEnabled == true)
+        accessibilityManager?.isTouchExplorationEnabled == true
+    )
     updateAndSendAccessibilityServiceChangeEvent(accessibilityManager?.isEnabled == true)
     updateAndSendReduceMotionChangeEvent()
     updateAndSendHighTextContrastChangeEvent()
@@ -259,7 +255,8 @@ internal class AccessibilityInfoModule(context: ReactApplicationContext) :
 
   override fun onHostPause() {
     accessibilityManager?.removeTouchExplorationStateChangeListener(
-        touchExplorationStateChangeListener)
+        touchExplorationStateChangeListener
+    )
     accessibilityManager?.removeAccessibilityStateChangeListener(accessibilityServiceChangeListener)
     contentResolver.unregisterContentObserver(animationScaleObserver)
     contentResolver.unregisterContentObserver(highTextContrastObserver)
@@ -268,7 +265,8 @@ internal class AccessibilityInfoModule(context: ReactApplicationContext) :
   override fun initialize() {
     reactApplicationContext.addLifecycleEventListener(this)
     updateAndSendTouchExplorationChangeEvent(
-        accessibilityManager?.isTouchExplorationEnabled == true)
+        accessibilityManager?.isTouchExplorationEnabled == true
+    )
     updateAndSendAccessibilityServiceChangeEvent(accessibilityManager?.isEnabled == true)
     updateAndSendReduceMotionChangeEvent()
     updateAndSendHighTextContrastChangeEvent()

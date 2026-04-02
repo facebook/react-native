@@ -50,6 +50,7 @@ Pod::Spec.new do |s|
   add_dependency(s, "React-jsinspectorcdp", :framework_name => 'jsinspector_moderncdp')
   add_dependency(s, "React-jsinspectornetwork", :framework_name => 'jsinspector_modernnetwork')
   add_dependency(s, "React-NativeModulesApple", :additional_framework_paths => ["build/generated/ios"])
+  add_dependency(s, "React-networking", :framework_name => 'React_networking')
 
   add_rn_third_party_dependencies(s)
   add_rncore_dependency(s)

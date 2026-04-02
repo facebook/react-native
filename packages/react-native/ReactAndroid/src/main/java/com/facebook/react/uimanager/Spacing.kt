@@ -66,11 +66,13 @@ public class Spacing(private val defaultValue: Float, private val spacing: Float
    */
   public operator fun get(spacingType: Int): Float {
     val defaultVal =
-        if (spacingType == START ||
-            spacingType == END ||
-            spacingType == BLOCK ||
-            spacingType == BLOCK_END ||
-            spacingType == BLOCK_START) {
+        if (
+            spacingType == START ||
+                spacingType == END ||
+                spacingType == BLOCK ||
+                spacingType == BLOCK_END ||
+                spacingType == BLOCK_START
+        ) {
           YogaConstants.UNDEFINED
         } else {
           defaultValue

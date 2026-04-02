@@ -7,7 +7,7 @@
 
 #import <React/RCTSinglelineTextInputViewManager.h>
 
-#ifndef RCT_FIT_RM_OLD_COMPONENT
+#ifndef RCT_REMOVE_LEGACY_ARCH
 
 #import <React/RCTBaseTextInputShadowView.h>
 #import <React/RCTSinglelineTextInputView.h>
@@ -32,4 +32,4 @@ RCT_EXPORT_MODULE()
 
 @end
 
-#endif // RCT_FIT_RM_OLD_COMPONENT
+#endif // RCT_REMOVE_LEGACY_ARCH

@@ -1,6 +1,6 @@
 {
   "name": "@react-native/codegen",
-  "version": "0.82.0-main",
+  "version": "0.86.0-main",
   "description": "Code generation tools for React Native",
   "license": "MIT",
   "repository": {
@@ -18,7 +18,7 @@
   ],
   "bugs": "https://github.com/facebook/react-native/issues",
   "engines": {
-    "node": ">= 20.19.4"
+    "node": "^20.19.4 || ^22.13.0 || ^24.3.0 || >= 25.0.0"
   },
   "scripts": {
     "build": "yarn clean && node scripts/build.js --verbose",
@@ -30,11 +30,11 @@
   ],
   "dependencies": {
     "@babel/core": "^7.25.2",
-    "@babel/parser": "^7.25.3",
-    "glob": "^7.1.1",
-    "hermes-parser": "0.31.2",
+    "@babel/parser": "^7.29.0",
+    "hermes-parser": "0.34.0",
     "invariant": "^2.2.4",
     "nullthrows": "^1.1.1",
+    "tinyglobby": "^0.2.15",
     "yargs": "^17.6.2"
   },
   "devDependencies": {
@@ -45,7 +45,8 @@
     "@babel/plugin-transform-nullish-coalescing-operator": "^7.24.7",
     "@babel/plugin-transform-optional-chaining": "^7.24.8",
     "@babel/preset-env": "^7.25.3",
-    "hermes-estree": "0.31.2",
+    "babel-plugin-syntax-hermes-parser": "0.34.0",
+    "hermes-estree": "0.34.0",
     "micromatch": "^4.0.4",
     "prettier": "3.6.2",
     "rimraf": "^3.0.2"

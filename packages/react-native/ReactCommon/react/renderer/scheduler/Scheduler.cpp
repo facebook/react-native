@@ -13,6 +13,7 @@
 #include <cxxreact/TraceSection.h>
 #include <react/debug/react_native_assert.h>
 #include <react/featureflags/ReactNativeFeatureFlags.h>
+#include <react/renderer/animationbackend/AnimationBackend.h>
 #include <react/renderer/componentregistry/ComponentDescriptorRegistry.h>
 #include <react/renderer/core/EventQueueProcessor.h>
 #include <react/renderer/core/LayoutContext.h>
@@ -41,7 +42,12 @@ Scheduler::Scheduler(
   if (ReactNativeFeatureFlags::enableBridgelessArchitecture() &&
       ReactNativeFeatureFlags::cdpInteractionMetricsEnabled()) {
     cdpMetricsReporter_.emplace(CdpMetricsReporter{runtimeExecutor_});
-    performanceEntryReporter_->addEventTimingListener(&*cdpMetricsReporter_);
+    performanceEntryReporter_->addEventListener(&*cdpMetricsReporter_);
+  }
+
+  if (ReactNativeFeatureFlags::perfIssuesEnabled()) {
+    cdpPerfIssuesReporter_.emplace(CdpPerfIssuesReporter{runtimeExecutor_});
+    performanceEntryReporter_->addEventListener(&*cdpPerfIssuesReporter_);
   }
 
   eventPerformanceLogger_ =
@@ -49,6 +55,17 @@ Scheduler::Scheduler(
 
   auto uiManager =
       std::make_shared<UIManager>(runtimeExecutor_, contextContainer_);
+
+  if (ReactNativeFeatureFlags::useSharedAnimatedBackend()) {
+    auto animationBackend = std::make_shared<AnimationBackend>(
+        schedulerToolbox.animationChoreographer, uiManager);
+
+    schedulerToolbox.animationChoreographer->setAnimationBackend(
+        animationBackend);
+
+    uiManager->unstable_setAnimationBackend(animationBackend);
+  }
+
   auto eventOwnerBox = std::make_shared<EventBeat::OwnerBox>();
   eventOwnerBox->owner = eventDispatcher_;
 
@@ -68,14 +85,15 @@ Scheduler::Scheduler(
 
   auto eventPipe = [uiManager](
                        jsi::Runtime& runtime,
-                       const EventTarget* eventTarget,
+                       EventTarget* eventTarget,
                        const std::string& type,
                        ReactEventPriority priority,
-                       const EventPayload& payload) {
+                       const EventPayload& payload,
+                       HighResTimeStamp eventTimestamp) {
     uiManager->visitBinding(
         [&](const UIManagerBinding& uiManagerBinding) {
           uiManagerBinding.dispatchEvent(
-              runtime, eventTarget, type, priority, payload);
+              runtime, eventTarget, type, priority, payload, eventTimestamp);
         },
         runtime);
   };
@@ -140,6 +158,13 @@ Scheduler::Scheduler(
   }
   uiManager_->setAnimationDelegate(animationDelegate);
 
+  // Initialize ViewTransitionModule
+  if (ReactNativeFeatureFlags::viewTransitionEnabled()) {
+    viewTransitionModule_ = std::make_unique<ViewTransitionModule>();
+    viewTransitionModule_->setUIManager(uiManager_.get());
+    uiManager_->setViewTransitionDelegate(viewTransitionModule_.get());
+  }
+
   uiManager->registerMountHook(*eventPerformanceLogger_);
 }
 
@@ -169,9 +194,13 @@ Scheduler::~Scheduler() {
   // The thread-safety of this operation is guaranteed by this requirement.
   uiManager_->setDelegate(nullptr);
   uiManager_->setAnimationDelegate(nullptr);
+  uiManager_->setViewTransitionDelegate(nullptr);
 
   if (cdpMetricsReporter_) {
-    performanceEntryReporter_->removeEventTimingListener(&*cdpMetricsReporter_);
+    performanceEntryReporter_->removeEventListener(&*cdpMetricsReporter_);
+  }
+  if (cdpPerfIssuesReporter_) {
+    performanceEntryReporter_->removeEventListener(&*cdpPerfIssuesReporter_);
   }
 
   // Then, let's verify that the requirement was satisfied.
@@ -282,8 +311,8 @@ void Scheduler::uiManagerDidDispatchCommand(
     const std::shared_ptr<const ShadowNode>& shadowNode,
     const std::string& commandName,
     const folly::dynamic& args) {
-  TraceSection s("Scheduler::uiManagerDispatchCommand");
-
+  TraceSection s(
+      "Scheduler::uiManagerDispatchCommand", "commandName", commandName);
   if (delegate_ != nullptr) {
     auto shadowView = ShadowView(*shadowNode);
     runtimeScheduler_->scheduleRenderingUpdate(
@@ -344,6 +373,22 @@ void Scheduler::uiManagerShouldAddEventListener(
 void Scheduler::uiManagerShouldRemoveEventListener(
     const std::shared_ptr<const EventListener>& listener) {
   removeEventListener(listener);
+}
+
+void Scheduler::uiManagerDidFinishReactCommit(const ShadowTree& shadowTree) {
+  auto surfaceId = shadowTree.getSurfaceId();
+  runtimeScheduler_->scheduleRenderingUpdate(
+      surfaceId, [surfaceId, uiManager = uiManager_]() {
+        uiManager->getShadowTreeRegistry().visit(
+            surfaceId,
+            [](const ShadowTree& tree) { tree.promoteReactRevision(); });
+      });
+}
+
+void Scheduler::uiManagerDidPromoteReactRevision(const ShadowTree& shadowTree) {
+  if (delegate_ != nullptr) {
+    delegate_->schedulerShouldMergeReactRevision(shadowTree.getSurfaceId());
+  }
 }
 
 void Scheduler::uiManagerDidStartSurface(const ShadowTree& shadowTree) {

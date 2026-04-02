@@ -7,14 +7,17 @@
 
 #import <UIKit/UIKit.h>
 
-#ifndef RCT_FIT_RM_OLD_COMPONENT
+#ifndef RCT_REMOVE_LEGACY_ARCH
 
+__attribute__((deprecated("This API will be removed along with the legacy architecture.")))
 @interface RCTModalHostViewController : UIViewController
 
 @property (nonatomic, copy) void (^boundsDidChangeBlock)(CGRect newBounds);
 
+#if !TARGET_OS_TV
 @property (nonatomic, assign) UIInterfaceOrientationMask supportedInterfaceOrientations;
+#endif
 
 @end
 
-#endif // RCT_FIT_RM_OLD_COMPONENT
+#endif // RCT_REMOVE_LEGACY_ARCH

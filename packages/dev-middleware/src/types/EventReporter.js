@@ -8,19 +8,20 @@
  * @format
  */
 
-type SuccessResult<Props: {...} | void = {}> = {
+import type {DebuggerShellPreparationResult} from './DevToolLauncher';
+
+type SuccessResult<Props extends {...} | void = {}> = {
   status: 'success',
   ...Props,
 };
 
-type ErrorResult<ErrorT = mixed, Props: {...} | void = {}> = {
+type ErrorResult<ErrorT = unknown, Props extends {...} | void = {}> = {
   status: 'error',
   error: ErrorT,
-  prefersFuseboxFrontend?: ?boolean,
   ...Props,
 };
 
-type CodedErrorResult<ErrorCode: string> = {
+type CodedErrorResult<ErrorCode extends string> = {
   status: 'coded_error',
   errorCode: ErrorCode,
   errorDetails?: string,
@@ -44,10 +45,9 @@ export type ReportableEvent =
       ...
         | SuccessResult<{
             targetDescription: string,
-            prefersFuseboxFrontend: boolean,
             ...DebuggerSessionIDs,
           }>
-        | ErrorResult<mixed>
+        | ErrorResult<unknown>
         | CodedErrorResult<'NO_APPS_FOUND'>,
     }
   | {
@@ -57,7 +57,7 @@ export type ReportableEvent =
             ...DebuggerSessionIDs,
             frontendUserAgent: string | null,
           }>
-        | ErrorResult<mixed, DebuggerSessionIDs>,
+        | ErrorResult<unknown, DebuggerSessionIDs>,
     }
   | {
       type: 'debugger_command',
@@ -70,7 +70,6 @@ export type ReportableEvent =
       ...DebuggerSessionIDs,
       ...ConnectionUptime,
       frontendUserAgent: string | null,
-      prefersFuseboxFrontend: boolean | null,
       ...
         | SuccessResult<void>
         | CodedErrorResult<
@@ -85,9 +84,6 @@ export type ReportableEvent =
       type: 'profiling_target_registered',
       status: 'success',
       ...DebuggerSessionIDs,
-    }
-  | {
-      type: 'fusebox_console_notice',
     }
   | {
       type: 'no_debug_pages_for_device',
@@ -132,6 +128,10 @@ export type ReportableEvent =
       duration: number,
       ...ConnectionUptime,
       ...DebuggerSessionIDs,
+    }
+  | {
+      type: 'fusebox_shell_preparation_attempt',
+      result: DebuggerShellPreparationResult,
     };
 
 /**

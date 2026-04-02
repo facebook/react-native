@@ -17,6 +17,7 @@ import com.facebook.react.bridge.ReactApplicationContext
 import com.facebook.react.bridge.ReactSoftExceptionLogger
 import com.facebook.react.bridge.ReadableArray
 import com.facebook.react.bridge.ReadableMap
+import com.facebook.react.bridge.ScrollEndedListener
 import com.facebook.react.bridge.UIManager
 import com.facebook.react.bridge.UIManagerListener
 import com.facebook.react.bridge.buildReadableMap
@@ -80,7 +81,10 @@ import kotlin.concurrent.Volatile
 @OptIn(UnstableReactNativeAPI::class)
 @ReactModule(name = NativeAnimatedModuleSpec.NAME)
 public class NativeAnimatedModule(reactContext: ReactApplicationContext) :
-    NativeAnimatedModuleSpec(reactContext), LifecycleEventListener, UIManagerListener {
+    NativeAnimatedModuleSpec(reactContext),
+    LifecycleEventListener,
+    UIManagerListener,
+    ScrollEndedListener {
 
   // For `queueAndExecuteBatchedOperations`
   private enum class BatchExecutionOpCodes(value: Int) {
@@ -239,6 +243,11 @@ public class NativeAnimatedModule(reactContext: ReactApplicationContext) :
     super.initialize()
 
     reactApplicationContext.addLifecycleEventListener(this)
+    reactApplicationContext.scrollEndedListeners.addListener(this)
+  }
+
+  override fun onScrollEnded(scrollView: android.view.ViewGroup) {
+    userDrivenScrollEnded(scrollView.id)
   }
 
   override fun onHostResume() {
@@ -311,8 +320,10 @@ public class NativeAnimatedModule(reactContext: ReactApplicationContext) :
     if (operations.isEmpty && preOperations.isEmpty) {
       return
     }
-    if (uiManagerType == UIManagerType.FABRIC ||
-        ReactBuildConfig.UNSTABLE_ENABLE_MINIFY_LEGACY_ARCHITECTURE) {
+    if (
+        uiManagerType == UIManagerType.FABRIC ||
+            ReactBuildConfig.UNSTABLE_ENABLE_MINIFY_LEGACY_ARCHITECTURE
+    ) {
       return
     }
 
@@ -421,7 +432,8 @@ public class NativeAnimatedModule(reactContext: ReactApplicationContext) :
       ReactSoftExceptionLogger.logSoftException(
           NAME,
           RuntimeException(
-              "initializeLifecycleEventListenersForViewTag could not get NativeAnimatedNodesManager"),
+              "initializeLifecycleEventListenersForViewTag could not get NativeAnimatedNodesManager"
+          ),
       )
     }
 
@@ -466,13 +478,17 @@ public class NativeAnimatedModule(reactContext: ReactApplicationContext) :
     // If there are ongoing Fabric animations from a previous screen,
     // and we tear down the current non-Fabric screen, we should expect
     // the animation mode to switch back - and vice-versa.
-    if (numNonFabricAnimations == 0 &&
-        numFabricAnimations > 0 &&
-        uiManagerType != UIManagerType.FABRIC) {
+    if (
+        numNonFabricAnimations == 0 &&
+            numFabricAnimations > 0 &&
+            uiManagerType != UIManagerType.FABRIC
+    ) {
       uiManagerType = UIManagerType.FABRIC
-    } else if (numFabricAnimations == 0 &&
-        numNonFabricAnimations > 0 &&
-        uiManagerType != UIManagerType.LEGACY) {
+    } else if (
+        numFabricAnimations == 0 &&
+            numNonFabricAnimations > 0 &&
+            uiManagerType != UIManagerType.LEGACY
+    ) {
       uiManagerType = UIManagerType.LEGACY
     }
   }
@@ -501,7 +517,8 @@ public class NativeAnimatedModule(reactContext: ReactApplicationContext) :
             }
             animatedNodesManager.createAnimatedNode(tag, config)
           }
-        })
+        }
+    )
   }
 
   override fun updateAnimatedNodeConfig(tagDouble: Double, config: ReadableMap) {
@@ -518,7 +535,8 @@ public class NativeAnimatedModule(reactContext: ReactApplicationContext) :
             }
             animatedNodesManager.updateAnimatedNodeConfig(tag, config)
           }
-        })
+        }
+    )
   }
 
   override fun startListeningToAnimatedNodeValue(tagDouble: Double) {
@@ -546,7 +564,8 @@ public class NativeAnimatedModule(reactContext: ReactApplicationContext) :
             }
             animatedNodesManager.startListeningToAnimatedNodeValue(tag, listener)
           }
-        })
+        }
+    )
   }
 
   override fun stopListeningToAnimatedNodeValue(tagDouble: Double) {
@@ -563,7 +582,8 @@ public class NativeAnimatedModule(reactContext: ReactApplicationContext) :
             }
             animatedNodesManager.stopListeningToAnimatedNodeValue(tag)
           }
-        })
+        }
+    )
   }
 
   override fun dropAnimatedNode(tagDouble: Double) {
@@ -580,7 +600,8 @@ public class NativeAnimatedModule(reactContext: ReactApplicationContext) :
             }
             animatedNodesManager.dropAnimatedNode(tag)
           }
-        })
+        }
+    )
   }
 
   override fun setAnimatedNodeValue(tagDouble: Double, value: Double) {
@@ -597,7 +618,8 @@ public class NativeAnimatedModule(reactContext: ReactApplicationContext) :
             }
             animatedNodesManager.setAnimatedNodeValue(tag, value)
           }
-        })
+        }
+    )
   }
 
   override fun setAnimatedNodeOffset(tagDouble: Double, value: Double) {
@@ -614,7 +636,8 @@ public class NativeAnimatedModule(reactContext: ReactApplicationContext) :
             }
             animatedNodesManager.setAnimatedNodeOffset(tag, value)
           }
-        })
+        }
+    )
   }
 
   override fun flattenAnimatedNodeOffset(tagDouble: Double) {
@@ -631,7 +654,8 @@ public class NativeAnimatedModule(reactContext: ReactApplicationContext) :
             }
             animatedNodesManager.flattenAnimatedNodeOffset(tag)
           }
-        })
+        }
+    )
   }
 
   override fun extractAnimatedNodeOffset(tagDouble: Double) {
@@ -648,7 +672,8 @@ public class NativeAnimatedModule(reactContext: ReactApplicationContext) :
             }
             animatedNodesManager.extractAnimatedNodeOffset(tag)
           }
-        })
+        }
+    )
   }
 
   override fun startAnimatingNode(
@@ -676,7 +701,8 @@ public class NativeAnimatedModule(reactContext: ReactApplicationContext) :
                 endCallback,
             )
           }
-        })
+        }
+    )
   }
 
   override fun stopAnimation(animationIdDouble: Double) {
@@ -693,7 +719,8 @@ public class NativeAnimatedModule(reactContext: ReactApplicationContext) :
             }
             animatedNodesManager.stopAnimation(animationId)
           }
-        })
+        }
+    )
   }
 
   override fun connectAnimatedNodes(parentNodeTagDouble: Double, childNodeTagDouble: Double) {
@@ -714,7 +741,8 @@ public class NativeAnimatedModule(reactContext: ReactApplicationContext) :
             }
             animatedNodesManager.connectAnimatedNodes(parentNodeTag, childNodeTag)
           }
-        })
+        }
+    )
   }
 
   override fun disconnectAnimatedNodes(parentNodeTagDouble: Double, childNodeTagDouble: Double) {
@@ -735,7 +763,8 @@ public class NativeAnimatedModule(reactContext: ReactApplicationContext) :
             }
             animatedNodesManager.disconnectAnimatedNodes(parentNodeTag, childNodeTag)
           }
-        })
+        }
+    )
   }
 
   override fun connectAnimatedNodeToView(animatedNodeTagDouble: Double, viewTagDouble: Double) {
@@ -761,7 +790,8 @@ public class NativeAnimatedModule(reactContext: ReactApplicationContext) :
             }
             animatedNodesManager.connectAnimatedNodeToView(animatedNodeTag, viewTag)
           }
-        })
+        }
+    )
   }
 
   override fun disconnectAnimatedNodeFromView(
@@ -787,7 +817,8 @@ public class NativeAnimatedModule(reactContext: ReactApplicationContext) :
             }
             animatedNodesManager.disconnectAnimatedNodeFromView(animatedNodeTag, viewTag)
           }
-        })
+        }
+    )
   }
 
   override fun restoreDefaultValues(animatedNodeTagDouble: Double) {
@@ -804,7 +835,8 @@ public class NativeAnimatedModule(reactContext: ReactApplicationContext) :
             }
             animatedNodesManager.restoreDefaultValues(animatedNodeTag)
           }
-        })
+        }
+    )
   }
 
   override fun addAnimatedEventToView(
@@ -833,7 +865,8 @@ public class NativeAnimatedModule(reactContext: ReactApplicationContext) :
             }
             animatedNodesManager.addAnimatedEventToView(viewTag, eventName, eventMapping)
           }
-        })
+        }
+    )
   }
 
   override fun removeAnimatedEventFromView(
@@ -863,7 +896,8 @@ public class NativeAnimatedModule(reactContext: ReactApplicationContext) :
             }
             animatedNodesManager.removeAnimatedEventFromView(viewTag, eventName, animatedValueTag)
           }
-        })
+        }
+    )
   }
 
   override fun addListener(eventName: String) {
@@ -881,12 +915,14 @@ public class NativeAnimatedModule(reactContext: ReactApplicationContext) :
           override fun execute(animatedNodesManager: NativeAnimatedNodesManager) {
             animatedNodesManager.getValue(animatedValueNodeTag, callback)
           }
-        })
+        }
+    )
   }
 
   override fun invalidate() {
     super.invalidate()
 
+    reactApplicationContext.scrollEndedListeners.removeListener(this)
     reactApplicationContext.removeLifecycleEventListener(this)
   }
 
@@ -1081,7 +1117,8 @@ public class NativeAnimatedModule(reactContext: ReactApplicationContext) :
               }
             }
           }
-        })
+        }
+    )
     finishOperationBatch()
   }
 

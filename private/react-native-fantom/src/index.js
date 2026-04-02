@@ -15,7 +15,6 @@ import type {
 import type {MixedElement} from 'react';
 import type {RootTag} from 'react-native';
 import type ReactNativeDocument from 'react-native/src/private/webapis/dom/nodes/ReactNativeDocument';
-import type ReadOnlyNode from 'react-native/src/private/webapis/dom/nodes/ReadOnlyNode';
 
 import * as Benchmark from './Benchmark';
 import {getConstants} from './Constants';
@@ -24,11 +23,17 @@ import {LogBox} from 'react-native';
 import NativeFantom, {
   NativeEventCategory,
 } from 'react-native/src/private/testing/fantom/specs/NativeFantom';
-import {getNativeNodeReference} from 'react-native/src/private/webapis/dom/nodes/internals/NodeInternals';
+import {
+  getInstanceHandle,
+  getNativeNodeReference,
+} from 'react-native/src/private/webapis/dom/nodes/internals/NodeInternals';
+import ReadOnlyNode from 'react-native/src/private/webapis/dom/nodes/ReadOnlyNode';
 
 const nativeRuntimeScheduler = global.nativeRuntimeScheduler;
 const {unstable_scheduleCallback, unstable_ImmediatePriority} =
   nativeRuntimeScheduler;
+
+type NodeOrRef = ReadOnlyNode | Readonly<{current: ?ReadOnlyNode}>;
 
 export type RootConfig = {
   viewportWidth?: number,
@@ -94,7 +99,7 @@ class Root {
     const ReactFabric =
       require('react-native/Libraries/Renderer/shims/ReactFabric').default;
 
-    // $FlowExpectedError[incompatible-cast]
+    // $FlowExpectedError[incompatible-type]
     const surfaceIdIsNumber = this.#surfaceId as number;
     ReactFabric.render(element, surfaceIdIsNumber, null, true);
 
@@ -218,19 +223,48 @@ export function unstable_produceFramesForDuration(milliseconds: number) {
  * Note: This API is marked as unstable and may change in future versions.
  */
 export function unstable_getDirectManipulationProps(
-  node: ReadOnlyNode,
-): $ReadOnly<{
-  [string]: mixed,
+  nodeOrRef: NodeOrRef,
+): Readonly<{
+  [string]: unknown,
 }> {
+  const node = getNode(nodeOrRef);
   const shadowNode = getNativeNodeReference(node);
   return NativeFantom.getDirectManipulationProps(shadowNode);
 }
 
-export function unstable_getFabricUpdateProps(node: ReadOnlyNode): $ReadOnly<{
-  [string]: mixed,
+export function unstable_getFabricUpdateProps(nodeOrRef: NodeOrRef): Readonly<{
+  [string]: unknown,
 }> {
+  const node = getNode(nodeOrRef);
   const shadowNode = getNativeNodeReference(node);
   return NativeFantom.getFabricUpdateProps(shadowNode);
+}
+
+/**
+ * Returns the names of event handlers registered on a component's shadow node.
+ *
+ * @param nodeOrRef - The node or ref for which to retrieve event handlers.
+ * @returns Array of event handler prop names (e.g. `['onLayout', 'onTouchStart']`)
+ */
+export function getDefinedEventHandlers(
+  nodeOrRef: NodeOrRef,
+): ReadonlyArray<string> {
+  const node = getNode(nodeOrRef);
+  const instanceHandle = getInstanceHandle(node);
+  if (typeof instanceHandle !== 'object' || instanceHandle == null) {
+    return [];
+  }
+  // WARNING: This uses React private API (fiber internals).
+  // $FlowExpectedError[incompatible-type]
+  const memoizedProps = (
+    instanceHandle as {memoizedProps?: {[string]: unknown}}
+  ).memoizedProps;
+  if (memoizedProps == null) {
+    return [];
+  }
+  return Object.keys(memoizedProps).filter(
+    key => key.startsWith('on') && typeof memoizedProps[key] === 'function',
+  );
 }
 
 /**
@@ -394,11 +428,12 @@ export function createRoot(rootConfig?: RootConfig): Root {
  * ```
  */
 export function enqueueNativeEvent(
-  node: ReadOnlyNode,
+  nodeOrRef: NodeOrRef,
   type: string,
-  payload?: $ReadOnly<{[key: string]: mixed}>,
-  options?: $ReadOnly<{category?: NativeEventCategory, isUnique?: boolean}>,
+  payload?: Readonly<{[key: string]: unknown}>,
+  options?: Readonly<{category?: NativeEventCategory, isUnique?: boolean}>,
 ) {
+  const node = getNode(nodeOrRef);
   const shadowNode = getNativeNodeReference(node);
   NativeFantom.enqueueNativeEvent(
     shadowNode,
@@ -425,11 +460,13 @@ export function enqueueNativeEvent(
  * ```
  */
 export function dispatchNativeEvent(
-  node: ReadOnlyNode,
+  nodeOrRef: NodeOrRef,
   type: string,
-  payload?: $ReadOnly<{[key: string]: mixed}>,
-  options?: $ReadOnly<{category?: NativeEventCategory, isUnique?: boolean}>,
+  payload?: Readonly<{[key: string]: unknown}>,
+  options?: Readonly<{category?: NativeEventCategory, isUnique?: boolean}>,
 ) {
+  const node = getNode(nodeOrRef);
+
   runOnUIThread(() => {
     enqueueNativeEvent(node, type, payload, options);
   });
@@ -487,9 +524,10 @@ export type ScrollEventOptions = {
  * ```
  */
 export function enqueueScrollEvent(
-  node: ReadOnlyNode,
+  nodeOrRef: NodeOrRef,
   options: ScrollEventOptions,
 ) {
+  const node = getNode(nodeOrRef);
   const shadowNode = getNativeNodeReference(node);
   NativeFantom.enqueueScrollEvent(shadowNode, options);
 }
@@ -525,7 +563,9 @@ export function enqueueScrollEvent(
  * // Assert that changes from Fantom.scrollTo are in effect.
  * ```
  */
-export function scrollTo(node: ReadOnlyNode, options: ScrollEventOptions) {
+export function scrollTo(nodeOrRef: NodeOrRef, options: ScrollEventOptions) {
+  const node = getNode(nodeOrRef);
+
   runOnUIThread(() => {
     enqueueScrollEvent(node, options);
   });
@@ -558,9 +598,10 @@ export function scrollTo(node: ReadOnlyNode, options: ScrollEventOptions) {
  * ```
  */
 export function enqueueModalSizeUpdate(
-  node: ReadOnlyNode,
-  size: $ReadOnly<{width: number, height: number}>,
+  nodeOrRef: NodeOrRef,
+  size: Readonly<{width: number, height: number}>,
 ) {
+  const node = getNode(nodeOrRef);
   const shadowNode = getNativeNodeReference(node);
   NativeFantom.enqueueModalSizeUpdate(shadowNode, size.width, size.height);
 }
@@ -573,70 +614,6 @@ export type {
 } from './Benchmark';
 
 /**
- * Quick and dirty polyfills required by tinybench.
- */
-
-if (typeof global.Event === 'undefined') {
-  global.Event = class Event {
-    constructor() {}
-  };
-} else {
-  console.warn(
-    'The global Event class is already defined. If this API is already defined by React Native, you might want to remove this logic.',
-  );
-}
-
-if (typeof global.EventTarget === 'undefined') {
-  global.EventTarget = class EventTarget {
-    listeners: $FlowFixMe;
-
-    constructor() {
-      this.listeners = {};
-    }
-
-    addEventListener(type: string, cb: () => void) {
-      if (!(type in this.listeners)) {
-        this.listeners[type] = [];
-      }
-      this.listeners[type].push(cb);
-    }
-
-    removeEventListener(type: string, cb: () => void): void {
-      if (!(type in this.listeners)) {
-        return;
-      }
-      let handlers = this.listeners[type];
-      for (let i in handlers) {
-        if (cb === handlers[i]) {
-          handlers.splice(i, 1);
-          return;
-        }
-      }
-    }
-
-    dispatchEvent(type: string, event: Event) {
-      if (!(type in this.listeners)) {
-        return;
-      }
-      let handlers = this.listeners[type];
-      for (let i in handlers) {
-        handlers[i].call(this, event);
-      }
-    }
-
-    clearEventListeners() {
-      for (let i in this.listeners) {
-        delete this.listeners[i];
-      }
-    }
-  };
-} else {
-  console.warn(
-    'The global Event class is already defined. If this API is already defined by React Native, you might want to remove this logic.',
-  );
-}
-
-/**
  * Returns a function that returns the current reference count for the supplied
  * element's shadow node. If the reference count is zero, that means the shadow
  * node has been deallocated.
@@ -644,9 +621,10 @@ if (typeof global.EventTarget === 'undefined') {
  * @param node The node for which to create a reference counting function.
  */
 export function createShadowNodeReferenceCounter(
-  node: ReadOnlyNode,
+  nodeOrRef: NodeOrRef,
 ): () => number {
-  let shadowNode = getNativeNodeReference(node);
+  const node = getNode(nodeOrRef);
+  const shadowNode = getNativeNodeReference(node);
   return NativeFantom.createShadowNodeReferenceCounter(shadowNode);
 }
 
@@ -657,9 +635,10 @@ export function createShadowNodeReferenceCounter(
  * @param node The node for which to create a revision getter.
  */
 export function createShadowNodeRevisionGetter(
-  node: ReadOnlyNode,
+  nodeOrRef: NodeOrRef,
 ): () => ?number {
-  let shadowNode = getNativeNodeReference(node);
+  const node = getNode(nodeOrRef);
+  const shadowNode = getNativeNodeReference(node);
   return NativeFantom.createShadowNodeRevisionGetter(shadowNode);
 }
 
@@ -683,7 +662,7 @@ export function takeJSMemoryHeapSnapshot(): void {
 
   try {
     NativeFantom.saveJSMemoryHeapSnapshot(filePath);
-  } catch (nativeError: mixed) {
+  } catch (nativeError: unknown) {
     let errorMessage = 'Error saving JS heap snapshot.';
     if (
       nativeError instanceof Error &&
@@ -721,6 +700,38 @@ function runLogBoxCheck() {
     // but will hopefully fail it for some other reason.
     throw new Error(message);
   }
+}
+
+function getNode(nodeOrRef: NodeOrRef): ReadOnlyNode {
+  if (nodeOrRef instanceof ReadOnlyNode) {
+    return nodeOrRef;
+  } else if (nodeOrRef.current != null) {
+    return nodeOrRef.current;
+  } else {
+    throw new TypeError('Could not get node from ref');
+  }
+}
+
+/**
+ * Quick and dirty polyfills required by tinybench.
+ */
+
+if (typeof global.Event === 'undefined') {
+  global.Event =
+    require('react-native/src/private/webapis/dom/events/Event').default;
+} else {
+  console.warn(
+    'The global Event class is already defined. If this API is already defined by React Native, you might want to remove this logic.',
+  );
+}
+
+if (typeof global.EventTarget === 'undefined') {
+  global.EventTarget =
+    require('react-native/src/private/webapis/dom/events/EventTarget').default;
+} else {
+  console.warn(
+    'The global Event class is already defined. If this API is already defined by React Native, you might want to remove this logic.',
+  );
 }
 
 global.__FANTOM_PACKAGE_LOADED__ = true;

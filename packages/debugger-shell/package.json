@@ -1,6 +1,7 @@
 {
   "name": "@react-native/debugger-shell",
-  "version": "0.82.0-main",
+  "productName": "React Native DevTools",
+  "version": "0.86.0-main",
   "description": "Experimental debugger shell for React Native for use with @react-native/debugger-frontend",
   "keywords": [
     "react-native",
@@ -16,8 +17,19 @@
     },
     "./package.json": "./package.json"
   },
+  "publishConfig": {
+    "main": "./dist/index.js",
+    "exports": {
+      ".": {
+        "node": "./dist/node/index.js",
+        "electron": "./dist/electron/index.js"
+      },
+      "./package.json": "./package.json"
+    }
+  },
   "scripts": {
-    "dev": "electron src/electron"
+    "dev": "electron src/electron",
+    "prepack": "node ../../scripts/build/prepack.js"
   },
   "repository": {
     "type": "git",
@@ -26,14 +38,21 @@
   },
   "license": "MIT",
   "engines": {
-    "node": ">= 20.19.4",
-    "electron": ">=37.2.4"
+    "node": "^20.19.4 || ^22.13.0 || ^24.3.0 || >= 25.0.0"
   },
   "dependencies": {
     "cross-spawn": "^7.0.6",
-    "electron": "37.2.4"
+    "debug": "^4.4.0",
+    "fb-dotslash": "0.5.8"
   },
   "devDependencies": {
+    "electron": "39.0.0",
     "semver": "^7.1.3"
-  }
+  },
+  "files": [
+    "!**/__tests__/**",
+    "bin",
+    "dist",
+    "!src/electron"
+  ]
 }

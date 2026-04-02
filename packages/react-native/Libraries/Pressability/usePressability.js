@@ -12,7 +12,7 @@ import Pressability, {
   type EventHandlers,
   type PressabilityConfig,
 } from './Pressability';
-import {useEffect, useRef} from 'react';
+import {useInsertionEffect, useRef} from 'react';
 
 declare function usePressability(config: PressabilityConfig): EventHandlers;
 declare function usePressability(config: null | void): null | EventHandlers;
@@ -40,7 +40,7 @@ export default function usePressability(
 
   // On the initial mount, this is a no-op. On updates, `pressability` will be
   // re-configured to use the new configuration.
-  useEffect(() => {
+  useInsertionEffect(() => {
     if (config != null && pressability != null) {
       pressability.configure(config);
     }
@@ -48,7 +48,7 @@ export default function usePressability(
 
   // On unmount, reset pending state and timers inside `pressability`. This is
   // a separate effect because we do not want to reset when `config` changes.
-  useEffect(() => {
+  useInsertionEffect(() => {
     if (pressability != null) {
       return () => {
         pressability.reset();

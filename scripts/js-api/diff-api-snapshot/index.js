@@ -26,7 +26,7 @@ async function main() {
   const {
     positionals: [prevSnapshot, newSnapshot],
     values: {help},
-    /* $FlowFixMe[incompatible-call] Natural Inference rollout. See
+    /* $FlowFixMe[incompatible-type] Natural Inference rollout. See
      * https://fburl.com/workplace/6291gfvu */
   } = parseArgs(config);
 
@@ -35,10 +35,9 @@ async function main() {
   Usage: node ./scripts/js-api/diff-api-snapshot <prev-snapshot> <new-snapshot>
 
   Analyze changes between two versions of React Native's JavaScript API
-  snapshot (yarn build-types). Returns a JSON object with the following
-  fields:
-    - result: 'BREAKING', 'POTENTIALLY_NON_BREAKING' or 'NON_BREAKING'.
-    - changedApis: List of changed APIs.
+  snapshot (yarn build-types). Returns a JSON object with the following fields:
+  - result: 'BREAKING', 'POTENTIALLY_BREAKING', 'POTENTIALLY_NON_BREAKING' or 'NON_BREAKING'.
+  - changedApis: List of changed APIs.
     `);
     process.exitCode = 0;
     return;

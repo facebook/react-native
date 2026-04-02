@@ -9,7 +9,8 @@
 #import <React/RCTSurfaceRootShadowViewDelegate.h>
 #import <yoga/YGEnums.h>
 
-@interface RCTSurfaceRootShadowView : RCTShadowView
+__deprecated_msg("This API will be removed along with the legacy architecture.") @interface RCTSurfaceRootShadowView
+    : RCTShadowView
 
 @property (nonatomic, assign, readonly) CGSize minimumSize;
 @property (nonatomic, assign, readonly) CGSize maximumSize;
@@ -18,7 +19,8 @@
 
 @property (nonatomic, assign, readonly) CGSize intrinsicSize;
 
-@property (nonatomic, weak) id<RCTSurfaceRootShadowViewDelegate> delegate;
+@property (nonatomic, weak) id<RCTSurfaceRootShadowViewDelegate> delegate __deprecated_msg(
+    "This API will be removed along with the legacy architecture.");
 
 /**
  * Layout direction (LTR or RTL) inherited from native environment and

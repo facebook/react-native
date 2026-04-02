@@ -30,16 +30,16 @@ TEST(LayoutableShadowNodeTest, relativeLayoutMetrics) {
     Element<ViewShadowNode>()
       .finalize([](ViewShadowNode &shadowNode){
         auto layoutMetrics = EmptyLayoutMetrics;
-        layoutMetrics.frame.origin = {10, 20};
-        layoutMetrics.frame.size = {100, 200};
+        layoutMetrics.frame.origin = {.x=10, .y=20};
+        layoutMetrics.frame.size = {.width=100, .height=200};
         shadowNode.setLayoutMetrics(layoutMetrics);
       })
       .children({
         Element<ViewShadowNode>()
         .finalize([](ViewShadowNode &shadowNode){
           auto layoutMetrics = EmptyLayoutMetrics;
-          layoutMetrics.frame.origin = {10, 20};
-          layoutMetrics.frame.size = {100, 200};
+          layoutMetrics.frame.origin = {.x=10, .y=20};
+          layoutMetrics.frame.size = {.width=100, .height=200};
           shadowNode.setLayoutMetrics(layoutMetrics);
         })
         .reference(childShadowNode)
@@ -75,8 +75,8 @@ TEST(LayoutableShadowNodeTest, relativeLayoutMetricsOnNodeWithDisplayNone) {
     Element<ViewShadowNode>()
       .finalize([](ViewShadowNode &shadowNode){
         auto layoutMetrics = EmptyLayoutMetrics;
-        layoutMetrics.frame.size = {100, 200};
-        layoutMetrics.frame.origin = {10, 20};
+        layoutMetrics.frame.size = {.width=100, .height=200};
+        layoutMetrics.frame.origin = {.x=10, .y=20};
         layoutMetrics.displayType = DisplayType::None;
         shadowNode.setLayoutMetrics(layoutMetrics);
     });
@@ -113,8 +113,8 @@ TEST(
     Element<ViewShadowNode>()
       .finalize([](ViewShadowNode &shadowNode){
         auto layoutMetrics = EmptyLayoutMetrics;
-        layoutMetrics.frame.origin = {10, 20};
-        layoutMetrics.frame.size = {100, 200};
+        layoutMetrics.frame.origin = {.x=10, .y=20};
+        layoutMetrics.frame.size = {.width=100, .height=200};
         layoutMetrics.displayType = DisplayType::None;
         shadowNode.setLayoutMetrics(layoutMetrics);
       })
@@ -122,8 +122,8 @@ TEST(
         Element<ViewShadowNode>()
         .finalize([](ViewShadowNode &shadowNode){
           auto layoutMetrics = EmptyLayoutMetrics;
-          layoutMetrics.frame.origin = {10, 20};
-          layoutMetrics.frame.size = {100, 200};
+          layoutMetrics.frame.origin = {.x=10, .y=20};
+          layoutMetrics.frame.size = {.width=100, .height=200};
           shadowNode.setLayoutMetrics(layoutMetrics);
         })
         .reference(childShadowNode)
@@ -165,8 +165,8 @@ TEST(
     Element<ViewShadowNode>()
       .finalize([](ViewShadowNode &shadowNode){
         auto layoutMetrics = EmptyLayoutMetrics;
-        layoutMetrics.frame.origin = {0, 0};
-        layoutMetrics.frame.size = {1000, 1000};
+        layoutMetrics.frame.origin = {.x=0, .y=0};
+        layoutMetrics.frame.size = {.width=1000, .height=1000};
         layoutMetrics.displayType = DisplayType::None;
         shadowNode.setLayoutMetrics(layoutMetrics);
       })
@@ -174,16 +174,16 @@ TEST(
         Element<ViewShadowNode>()
         .finalize([](ViewShadowNode &shadowNode){
           auto layoutMetrics = EmptyLayoutMetrics;
-          layoutMetrics.frame.origin = {50, 50};
-          layoutMetrics.frame.size = {200, 200};
+          layoutMetrics.frame.origin = {.x=50, .y=50};
+          layoutMetrics.frame.size = {.width=200, .height=200};
           shadowNode.setLayoutMetrics(layoutMetrics);
         })
         .children({
           Element<ViewShadowNode>()
             .finalize([](ViewShadowNode &shadowNode){
               auto layoutMetrics = EmptyLayoutMetrics;
-              layoutMetrics.frame.origin = {10, 20};
-              layoutMetrics.frame.size = {100, 200};
+              layoutMetrics.frame.origin = {.x=10, .y=20};
+              layoutMetrics.frame.size = {.width=100, .height=200};
               shadowNode.setLayoutMetrics(layoutMetrics);
             }).reference(childShadowNode)
         })
@@ -223,19 +223,19 @@ TEST(LayoutableShadowNodeTest, contentOriginOffset) {
     Element<ScrollViewShadowNode>()
       .finalize([](ScrollViewShadowNode &shadowNode){
         auto layoutMetrics = EmptyLayoutMetrics;
-        layoutMetrics.frame.origin = {10, 20};
-        layoutMetrics.frame.size = {100, 200};
+        layoutMetrics.frame.origin = {.x=10, .y=20};
+        layoutMetrics.frame.size = {.width=100, .height=200};
         shadowNode.setLayoutMetrics(layoutMetrics);
       })
       .stateData([](ScrollViewState &data) {
-        data.contentOffset = {10, 10};
+        data.contentOffset = {.x=10, .y=10};
       })
       .children({
         Element<ViewShadowNode>()
         .finalize([](ViewShadowNode &shadowNode){
           auto layoutMetrics = EmptyLayoutMetrics;
-          layoutMetrics.frame.origin = {10, 20};
-          layoutMetrics.frame.size = {100, 200};
+          layoutMetrics.frame.origin = {.x=10, .y=20};
+          layoutMetrics.frame.size = {.width=100, .height=200};
           shadowNode.setLayoutMetrics(layoutMetrics);
         })
         .reference(childShadowNode)
@@ -248,7 +248,7 @@ TEST(LayoutableShadowNodeTest, contentOriginOffset) {
       LayoutableShadowNode::computeRelativeLayoutMetrics(
           childShadowNode->getFamily(),
           *parentShadowNode,
-          {/* includeTransform = */ true});
+          {.includeTransform = true});
 
   EXPECT_EQ(relativeLayoutMetrics.frame.origin.x, 0);
   EXPECT_EQ(relativeLayoutMetrics.frame.origin.y, 10);
@@ -256,7 +256,7 @@ TEST(LayoutableShadowNodeTest, contentOriginOffset) {
   relativeLayoutMetrics = LayoutableShadowNode::computeRelativeLayoutMetrics(
       childShadowNode->getFamily(),
       *parentShadowNode,
-      {/* includeTransform = */ false});
+      {.includeTransform = false});
 
   EXPECT_EQ(relativeLayoutMetrics.frame.origin.x, 10);
   EXPECT_EQ(relativeLayoutMetrics.frame.origin.y, 20);
@@ -279,15 +279,15 @@ TEST(LayoutableShadowNodeTest, relativeLayoutMetricsOnTransformedNode) {
     Element<ViewShadowNode>()
       .finalize([](ViewShadowNode &shadowNode){
         auto layoutMetrics = EmptyLayoutMetrics;
-        layoutMetrics.frame.size = {1000, 1000};
+        layoutMetrics.frame.size = {.width=1000, .height=1000};
         shadowNode.setLayoutMetrics(layoutMetrics);
       })
       .children({
         Element<ViewShadowNode>()
         .finalize([](ViewShadowNode &shadowNode){
           auto layoutMetrics = EmptyLayoutMetrics;
-          layoutMetrics.frame.origin = {10, 20};
-          layoutMetrics.frame.size = {100, 200};
+          layoutMetrics.frame.origin = {.x=10, .y=20};
+          layoutMetrics.frame.size = {.width=100, .height=200};
           shadowNode.setLayoutMetrics(layoutMetrics);
         })
         .props([] {
@@ -332,7 +332,7 @@ TEST(LayoutableShadowNodeTest, noOverflow) {
       .props([] {
         auto sharedProps = std::make_shared<RootProps>();
         auto &props = *sharedProps;
-        props.layoutConstraints = LayoutConstraints{{0,0}, {500, 500}};
+        props.layoutConstraints = LayoutConstraints{.minimumSize={.width=0,.height=0}, .maximumSize={.width=500, .height=500}};
         auto &yogaStyle = props.yogaStyle;
         yogaStyle.setDimension(yoga::Dimension::Width, yoga::StyleSizeLength::points(500));
         yogaStyle.setDimension(yoga::Dimension::Height, yoga::StyleSizeLength::points(500));
@@ -397,7 +397,7 @@ TEST(LayoutableShadowNodeTest, overflowInsetFrameToRightAndDown) {
       .props([] {
         auto sharedProps = std::make_shared<RootProps>();
         auto &props = *sharedProps;
-        props.layoutConstraints = LayoutConstraints{{0,0}, {500, 500}};
+        props.layoutConstraints = LayoutConstraints{.minimumSize={.width=0,.height=0}, .maximumSize={.width=500, .height=500}};
         auto &yogaStyle = props.yogaStyle;
         yogaStyle.setDimension(yoga::Dimension::Width, yoga::StyleSizeLength::points(500));
         yogaStyle.setDimension(yoga::Dimension::Height, yoga::StyleSizeLength::points(500));
@@ -463,7 +463,7 @@ TEST(LayoutableShadowNodeTest, overflowInsetFrameToLeftAndTop) {
       .props([] {
         auto sharedProps = std::make_shared<RootProps>();
         auto &props = *sharedProps;
-        props.layoutConstraints = LayoutConstraints{{0,0}, {500, 500}};
+        props.layoutConstraints = LayoutConstraints{.minimumSize={.width=0,.height=0}, .maximumSize={.width=500, .height=500}};
         auto &yogaStyle = props.yogaStyle;
         yogaStyle.setDimension(yoga::Dimension::Width, yoga::StyleSizeLength::points(500));
         yogaStyle.setDimension(yoga::Dimension::Height, yoga::StyleSizeLength::points(500));
@@ -533,7 +533,7 @@ TEST(LayoutableShadowNodeTest, overflowInsetFrameToAllSides) {
       .props([] {
         auto sharedProps = std::make_shared<RootProps>();
         auto &props = *sharedProps;
-        props.layoutConstraints = LayoutConstraints{{0,0}, {500, 500}};
+        props.layoutConstraints = LayoutConstraints{.minimumSize={.width=0,.height=0}, .maximumSize={.width=500, .height=500}};
         auto &yogaStyle = props.yogaStyle;
         yogaStyle.setDimension(yoga::Dimension::Width, yoga::StyleSizeLength::points(500));
         yogaStyle.setDimension(yoga::Dimension::Height, yoga::StyleSizeLength::points(500));
@@ -614,7 +614,7 @@ TEST(LayoutableShadowNodeTest, relativeLayoutMetricsOnTransformedParent) {
     Element<RootShadowNode>()
       .finalize([](RootShadowNode &shadowNode){
         auto layoutMetrics = EmptyLayoutMetrics;
-        layoutMetrics.frame.size = {900, 900};
+        layoutMetrics.frame.size = {.width=900, .height=900};
         shadowNode.setLayoutMetrics(layoutMetrics);
       })
       .children({
@@ -626,8 +626,8 @@ TEST(LayoutableShadowNodeTest, relativeLayoutMetricsOnTransformedParent) {
         })
         .finalize([](ViewShadowNode &shadowNode){
           auto layoutMetrics = EmptyLayoutMetrics;
-          layoutMetrics.frame.origin = {10, 10};
-          layoutMetrics.frame.size = {100, 100};
+          layoutMetrics.frame.origin = {.x=10, .y=10};
+          layoutMetrics.frame.size = {.width=100, .height=100};
           shadowNode.setLayoutMetrics(layoutMetrics);
         })
         .children({
@@ -635,8 +635,8 @@ TEST(LayoutableShadowNodeTest, relativeLayoutMetricsOnTransformedParent) {
           .reference(childShadowNode)
           .finalize([](ViewShadowNode &shadowNode){
             auto layoutMetrics = EmptyLayoutMetrics;
-            layoutMetrics.frame.origin = {10, 10};
-            layoutMetrics.frame.size = {50, 50};
+            layoutMetrics.frame.origin = {.x=10, .y=10};
+            layoutMetrics.frame.size = {.width=50, .height=50};
             shadowNode.setLayoutMetrics(layoutMetrics);
           })
         })
@@ -680,15 +680,15 @@ TEST(LayoutableShadowNodeTest, relativeLayoutMetricsOnParentWithClipping) {
     Element<RootShadowNode>()
       .finalize([](RootShadowNode &shadowNode){
         auto layoutMetrics = EmptyLayoutMetrics;
-        layoutMetrics.frame.size = {900, 900};
+        layoutMetrics.frame.size = {.width=900, .height=900};
         shadowNode.setLayoutMetrics(layoutMetrics);
       })
       .children({
         Element<ViewShadowNode>()
         .finalize([](ViewShadowNode &shadowNode){
           auto layoutMetrics = EmptyLayoutMetrics;
-          layoutMetrics.frame.origin = {10, 10};
-          layoutMetrics.frame.size = {100, 100};
+          layoutMetrics.frame.origin = {.x=10, .y=10};
+          layoutMetrics.frame.size = {.width=100, .height=100};
           shadowNode.setLayoutMetrics(layoutMetrics);
         })
         .children({
@@ -696,8 +696,8 @@ TEST(LayoutableShadowNodeTest, relativeLayoutMetricsOnParentWithClipping) {
           .reference(childShadowNode)
           .finalize([](ViewShadowNode &shadowNode){
             auto layoutMetrics = EmptyLayoutMetrics;
-            layoutMetrics.frame.origin = {10, 10};
-            layoutMetrics.frame.size = {150, 150};
+            layoutMetrics.frame.origin = {.x=10, .y=10};
+            layoutMetrics.frame.size = {.width=150, .height=150};
             shadowNode.setLayoutMetrics(layoutMetrics);
           })
         })
@@ -711,9 +711,9 @@ TEST(LayoutableShadowNodeTest, relativeLayoutMetricsOnParentWithClipping) {
           childShadowNode->getFamily(),
           *parentShadowNode,
           {
-              /* includeTransform = */ true,
-              /* includeViewportOffset = */ false,
-              /* enableOverflowClipping = */ true,
+              .includeTransform = true,
+              .includeViewportOffset = false,
+              .enableOverflowClipping = true,
           });
 
   EXPECT_EQ(relativeLayoutMetrics.frame.origin.x, 20);
@@ -749,7 +749,7 @@ TEST(
     Element<RootShadowNode>()
       .finalize([](RootShadowNode &shadowNode){
         auto layoutMetrics = EmptyLayoutMetrics;
-        layoutMetrics.frame.size = {900, 900};
+        layoutMetrics.frame.size = {.width=900, .height=900};
         shadowNode.setLayoutMetrics(layoutMetrics);
       })
       .children({
@@ -761,8 +761,8 @@ TEST(
         })
         .finalize([](ViewShadowNode &shadowNode){
           auto layoutMetrics = EmptyLayoutMetrics;
-          layoutMetrics.frame.origin = {10, 10};
-          layoutMetrics.frame.size = {100, 100};
+          layoutMetrics.frame.origin = {.x=10, .y=10};
+          layoutMetrics.frame.size = {.width=100, .height=100};
           shadowNode.setLayoutMetrics(layoutMetrics);
         })
         .children({
@@ -770,8 +770,8 @@ TEST(
           .reference(childShadowNode)
           .finalize([](ViewShadowNode &shadowNode){
             auto layoutMetrics = EmptyLayoutMetrics;
-            layoutMetrics.frame.origin = {10, 10};
-            layoutMetrics.frame.size = {150, 150};
+            layoutMetrics.frame.origin = {.x=10, .y=10};
+            layoutMetrics.frame.size = {.width=150, .height=150};
             shadowNode.setLayoutMetrics(layoutMetrics);
           })
         })
@@ -785,9 +785,9 @@ TEST(
           childShadowNode->getFamily(),
           *parentShadowNode,
           {
-              /* includeTransform = */ true,
-              /* includeViewportOffset = */ false,
-              /* enableOverflowClipping = */ true,
+              .includeTransform = true,
+              .includeViewportOffset = false,
+              .enableOverflowClipping = true,
           });
 
   EXPECT_EQ(relativeLayoutMetrics.frame.origin.x, 40);
@@ -810,8 +810,8 @@ TEST(LayoutableShadowNodeTest, relativeLayoutMetricsOnSameNode) {
     Element<ViewShadowNode>()
       .finalize([](ViewShadowNode &shadowNode){
         auto layoutMetrics = EmptyLayoutMetrics;
-        layoutMetrics.frame.size = {100, 200};
-        layoutMetrics.frame.origin = {10, 20};
+        layoutMetrics.frame.size = {.width=100, .height=200};
+        layoutMetrics.frame.origin = {.x=10, .y=20};
         shadowNode.setLayoutMetrics(layoutMetrics);
     });
   // clang-format on
@@ -846,8 +846,8 @@ TEST(LayoutableShadowNodeTest, relativeLayoutMetricsOnSameTransformedNode) {
       })
       .finalize([](ViewShadowNode &shadowNode){
         auto layoutMetrics = EmptyLayoutMetrics;
-        layoutMetrics.frame.size = {100, 200};
-        layoutMetrics.frame.origin = {10, 20};
+        layoutMetrics.frame.size = {.width=100, .height=200};
+        layoutMetrics.frame.origin = {.x=10, .y=20};
         shadowNode.setLayoutMetrics(layoutMetrics);
     });
   // clang-format on
@@ -891,7 +891,7 @@ TEST(LayoutableShadowNodeTest, relativeLayoutMetricsOnClonedNode) {
   auto clonedChildShadowNode =
       std::static_pointer_cast<ViewShadowNode>(childShadowNode->clone({}));
   auto layoutMetrics = EmptyLayoutMetrics;
-  layoutMetrics.frame.size = {50, 60};
+  layoutMetrics.frame.size = {.width = 50, .height = 60};
   clonedChildShadowNode->setLayoutMetrics(layoutMetrics);
 
   parentShadowNode->replaceChild(*childShadowNode, clonedChildShadowNode);
@@ -932,7 +932,7 @@ TEST(
         Element<ModalHostViewShadowNode>()
           .finalize([](ModalHostViewShadowNode &shadowNode){
             auto layoutMetrics = EmptyLayoutMetrics;
-            layoutMetrics.frame.origin = {10, 10};
+            layoutMetrics.frame.origin = {.x=10, .y=10};
             shadowNode.setLayoutMetrics(layoutMetrics);
           })
           .children({
@@ -940,7 +940,7 @@ TEST(
             .reference(childShadowNode)
             .finalize([](ViewShadowNode &shadowNode){
               auto layoutMetrics = EmptyLayoutMetrics;
-              layoutMetrics.frame.origin = {10, 10};
+              layoutMetrics.frame.origin = {.x=10, .y=10};
               shadowNode.setLayoutMetrics(layoutMetrics);
             })
           })
@@ -966,7 +966,7 @@ TEST(LayoutableShadowNodeTest, includeViewportOffset) {
       Element<RootShadowNode>()
         .props([] {
           auto sharedProps = std::make_shared<RootProps>();
-          sharedProps->layoutContext.viewportOffset = {10, 20};
+          sharedProps->layoutContext.viewportOffset = {.x=10, .y=20};
           return sharedProps;
         })
         .children({
@@ -982,14 +982,14 @@ TEST(LayoutableShadowNodeTest, includeViewportOffset) {
   auto layoutMetrics = LayoutableShadowNode::computeRelativeLayoutMetrics(
       viewShadowNode->getFamily(),
       *rootShadowNode,
-      {/* includeTransform = */ false, /* includeViewportOffset = */ true});
+      {.includeTransform = false, .includeViewportOffset = true});
   EXPECT_EQ(layoutMetrics.frame.origin.x, 10);
   EXPECT_EQ(layoutMetrics.frame.origin.y, 20);
 
   layoutMetrics = LayoutableShadowNode::computeRelativeLayoutMetrics(
       viewShadowNode->getFamily(),
       *rootShadowNode,
-      {/* includeTransform = */ true, /* includeViewportOffset = */ true});
+      {.includeTransform = true, .includeViewportOffset = true});
   EXPECT_EQ(layoutMetrics.frame.origin.x, 10);
   EXPECT_EQ(layoutMetrics.frame.origin.y, 20);
 }
@@ -1023,23 +1023,23 @@ TEST(LayoutableShadowNodeTest, invertedVerticalView) {
           })
             .finalize([](ViewShadowNode &shadowNode){
               auto layoutMetrics = EmptyLayoutMetrics;
-              layoutMetrics.frame.size = {200, 200};
+              layoutMetrics.frame.size = {.width=200, .height=200};
               shadowNode.setLayoutMetrics(layoutMetrics);
             }).children({
                 Element<ViewShadowNode>()
                   .reference(childShadowNode1)
                   .finalize([](ViewShadowNode &shadowNode){
                     auto layoutMetrics = EmptyLayoutMetrics;
-                    layoutMetrics.frame.origin = {0, 0};
-                    layoutMetrics.frame.size = {100, 100};
+                    layoutMetrics.frame.origin = {.x=0, .y=0};
+                    layoutMetrics.frame.size = {.width=100, .height=100};
                     shadowNode.setLayoutMetrics(layoutMetrics);
                   }),
                 Element<ViewShadowNode>()
                   .reference(childShadowNode2)
                   .finalize([](ViewShadowNode &shadowNode){
                     auto layoutMetrics = EmptyLayoutMetrics;
-                    layoutMetrics.frame.origin = {0, 100};
-                    layoutMetrics.frame.size = {100, 100};
+                    layoutMetrics.frame.origin = {.x=0, .y=100};
+                    layoutMetrics.frame.size = {.width=100, .height=100};
                     shadowNode.setLayoutMetrics(layoutMetrics);
                   })
         });
@@ -1099,31 +1099,31 @@ TEST(LayoutableShadowNodeTest, nestedInvertedVerticalView) {
       })
       .finalize([](ViewShadowNode &shadowNode){
         auto layoutMetrics = EmptyLayoutMetrics;
-        layoutMetrics.frame.size = {400, 400};
+        layoutMetrics.frame.size = {.width=400, .height=400};
         shadowNode.setLayoutMetrics(layoutMetrics);
     })
       .children({
         Element<ViewShadowNode>()
               .finalize([](ViewShadowNode &shadowNode){
                 auto layoutMetrics = EmptyLayoutMetrics;
-                layoutMetrics.frame.origin = {100, 50};
-                layoutMetrics.frame.size = {200, 200};
+                layoutMetrics.frame.origin = {.x=100, .y=50};
+                layoutMetrics.frame.size = {.width=200, .height=200};
                 shadowNode.setLayoutMetrics(layoutMetrics);
               }).children({
                 Element<ViewShadowNode>()
                   .reference(childShadowNode1)
                   .finalize([](ViewShadowNode &shadowNode){
                     auto layoutMetrics = EmptyLayoutMetrics;
-                    layoutMetrics.frame.origin = {0, 0};
-                    layoutMetrics.frame.size = {100, 100};
+                    layoutMetrics.frame.origin = {.x=0, .y=0};
+                    layoutMetrics.frame.size = {.width=100, .height=100};
                     shadowNode.setLayoutMetrics(layoutMetrics);
                   }),
                 Element<ViewShadowNode>()
                   .reference(childShadowNode2)
                   .finalize([](ViewShadowNode &shadowNode){
                     auto layoutMetrics = EmptyLayoutMetrics;
-                    layoutMetrics.frame.origin = {0, 100};
-                    layoutMetrics.frame.size = {100, 100};
+                    layoutMetrics.frame.origin = {.x=0, .y=100};
+                    layoutMetrics.frame.size = {.width=100, .height=100};
                     shadowNode.setLayoutMetrics(layoutMetrics);
                   })
         })
@@ -1185,14 +1185,14 @@ TEST(LayoutableShadowNodeTest, nestedDoubleInvertedVerticalView) {
       })
       .finalize([](ViewShadowNode &shadowNode){
         auto layoutMetrics = EmptyLayoutMetrics;
-        layoutMetrics.frame.size = {100, 300};
+        layoutMetrics.frame.size = {.width=100, .height=300};
         shadowNode.setLayoutMetrics(layoutMetrics);
     })
       .children({
         Element<ViewShadowNode>()
               .finalize([](ViewShadowNode &shadowNode){
                 auto layoutMetrics = EmptyLayoutMetrics;
-                layoutMetrics.frame.size = {100, 200};
+                layoutMetrics.frame.size = {.width=100, .height=200};
                 shadowNode.setLayoutMetrics(layoutMetrics);
               }).props([] {
                   auto sharedProps = std::make_shared<ViewShadowNodeProps>();
@@ -1203,16 +1203,16 @@ TEST(LayoutableShadowNodeTest, nestedDoubleInvertedVerticalView) {
                   .reference(childShadowNode1)
                   .finalize([](ViewShadowNode &shadowNode){
                     auto layoutMetrics = EmptyLayoutMetrics;
-                    layoutMetrics.frame.origin = {0, 0};
-                    layoutMetrics.frame.size = {100, 100};
+                    layoutMetrics.frame.origin = {.x=0, .y=0};
+                    layoutMetrics.frame.size = {.width=100, .height=100};
                     shadowNode.setLayoutMetrics(layoutMetrics);
                   }),
                 Element<ViewShadowNode>()
                   .reference(childShadowNode2)
                   .finalize([](ViewShadowNode &shadowNode){
                     auto layoutMetrics = EmptyLayoutMetrics;
-                    layoutMetrics.frame.origin = {0, 100};
-                    layoutMetrics.frame.size = {100, 100};
+                    layoutMetrics.frame.origin = {.x=0, .y=100};
+                    layoutMetrics.frame.size = {.width=100, .height=100};
                     shadowNode.setLayoutMetrics(layoutMetrics);
                   })
         })
@@ -1265,23 +1265,23 @@ TEST(LayoutableShadowNodeTest, invertedHorizontalView) {
           })
             .finalize([](ViewShadowNode &shadowNode){
               auto layoutMetrics = EmptyLayoutMetrics;
-              layoutMetrics.frame.size = {200, 200};
+              layoutMetrics.frame.size = {.width=200, .height=200};
               shadowNode.setLayoutMetrics(layoutMetrics);
             }).children({
                 Element<ViewShadowNode>()
                   .reference(childShadowNode1)
                   .finalize([](ViewShadowNode &shadowNode){
                     auto layoutMetrics = EmptyLayoutMetrics;
-                    layoutMetrics.frame.origin = {0, 0};
-                    layoutMetrics.frame.size = {100, 100};
+                    layoutMetrics.frame.origin = {.x=0, .y=0};
+                    layoutMetrics.frame.size = {.width=100, .height=100};
                     shadowNode.setLayoutMetrics(layoutMetrics);
                   }),
                 Element<ViewShadowNode>()
                   .reference(childShadowNode2)
                   .finalize([](ViewShadowNode &shadowNode){
                     auto layoutMetrics = EmptyLayoutMetrics;
-                    layoutMetrics.frame.origin = {100, 0};
-                    layoutMetrics.frame.size = {100, 100};
+                    layoutMetrics.frame.origin = {.x=100, .y=0};
+                    layoutMetrics.frame.size = {.width=100, .height=100};
                     shadowNode.setLayoutMetrics(layoutMetrics);
                   })
         });
@@ -1337,31 +1337,31 @@ TEST(LayoutableShadowNodeTest, nestedInvertedHorizontalView) {
       })
       .finalize([](ViewShadowNode &shadowNode){
         auto layoutMetrics = EmptyLayoutMetrics;
-        layoutMetrics.frame.size = {400, 400};
+        layoutMetrics.frame.size = {.width=400, .height=400};
         shadowNode.setLayoutMetrics(layoutMetrics);
     })
       .children({
         Element<ViewShadowNode>()
               .finalize([](ViewShadowNode &shadowNode){
                 auto layoutMetrics = EmptyLayoutMetrics;
-                layoutMetrics.frame.origin = {50, 100};
-                layoutMetrics.frame.size = {200, 200};
+                layoutMetrics.frame.origin = {.x=50, .y=100};
+                layoutMetrics.frame.size = {.width=200, .height=200};
                 shadowNode.setLayoutMetrics(layoutMetrics);
               }).children({
                 Element<ViewShadowNode>()
                   .reference(childShadowNode1)
                   .finalize([](ViewShadowNode &shadowNode){
                     auto layoutMetrics = EmptyLayoutMetrics;
-                    layoutMetrics.frame.origin = {0, 0};
-                    layoutMetrics.frame.size = {100, 100};
+                    layoutMetrics.frame.origin = {.x=0, .y=0};
+                    layoutMetrics.frame.size = {.width=100, .height=100};
                     shadowNode.setLayoutMetrics(layoutMetrics);
                   }),
                 Element<ViewShadowNode>()
                   .reference(childShadowNode2)
                   .finalize([](ViewShadowNode &shadowNode){
                     auto layoutMetrics = EmptyLayoutMetrics;
-                    layoutMetrics.frame.origin = {100, 0};
-                    layoutMetrics.frame.size = {100, 100};
+                    layoutMetrics.frame.origin = {.x=100, .y=0};
+                    layoutMetrics.frame.size = {.width=100, .height=100};
                     shadowNode.setLayoutMetrics(layoutMetrics);
                   })
         })
@@ -1403,18 +1403,18 @@ TEST(LayoutableShadowNodeTest, inversedContentOriginOffset) {
       })
       .finalize([](ScrollViewShadowNode &shadowNode){
         auto layoutMetrics = EmptyLayoutMetrics;
-        layoutMetrics.frame.size = {300, 350};
+        layoutMetrics.frame.size = {.width=300, .height=350};
         shadowNode.setLayoutMetrics(layoutMetrics);
       })
       .stateData([](ScrollViewState &data) {
-        data.contentOffset = {10, 20};
+        data.contentOffset = {.x=10, .y=20};
       })
       .children({
         Element<ViewShadowNode>()
         .finalize([](ViewShadowNode &shadowNode){
           auto layoutMetrics = EmptyLayoutMetrics;
-          layoutMetrics.frame.origin = {30, 40};
-          layoutMetrics.frame.size = {100, 200};
+          layoutMetrics.frame.origin = {.x=30, .y=40};
+          layoutMetrics.frame.size = {.width=100, .height=200};
           shadowNode.setLayoutMetrics(layoutMetrics);
         })
         .reference(childShadowNode)

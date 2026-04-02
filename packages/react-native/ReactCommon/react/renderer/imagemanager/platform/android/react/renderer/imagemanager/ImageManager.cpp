@@ -12,12 +12,31 @@
 
 namespace facebook::react {
 
+namespace {
+
+constexpr inline bool isInteger(const std::string& str) {
+  return str.find_first_not_of("0123456789") == std::string::npos;
+}
+
+} // namespace
+
 ImageManager::ImageManager(
     const std::shared_ptr<const ContextContainer>& contextContainer)
-    : self_(new ImageFetcher(contextContainer)) {}
+    : contextContainer_(contextContainer),
+      self_(new std::shared_ptr<ImageFetcher>(
+          std::make_shared<ImageFetcher>(contextContainer))) {
+  if (ReactNativeFeatureFlags::enableImagePrefetchingJNIBatchingAndroid()) {
+    std::weak_ptr<ImageFetcher> weakImageFetcher =
+        *static_cast<std::shared_ptr<ImageFetcher>*>(self_);
+    contextContainer->insert(ImageFetcherKey, weakImageFetcher);
+  }
+}
 
 ImageManager::~ImageManager() {
-  delete static_cast<ImageFetcher*>(self_);
+  if (ReactNativeFeatureFlags::enableImagePrefetchingJNIBatchingAndroid()) {
+    contextContainer_->erase(ImageFetcherKey);
+  }
+  delete static_cast<std::shared_ptr<ImageFetcher>*>(self_);
 }
 
 ImageRequest ImageManager::requestImage(
@@ -26,8 +45,11 @@ ImageRequest ImageManager::requestImage(
     const ImageRequestParams& imageRequestParams,
     Tag tag) const {
   if (ReactNativeFeatureFlags::enableImagePrefetchingAndroid()) {
-    return static_cast<ImageFetcher*>(self_)->requestImage(
-        imageSource, imageRequestParams, surfaceId, tag);
+    if (!isInteger(imageSource.uri)) {
+      return static_cast<std::shared_ptr<ImageFetcher>*>(self_)
+          ->get()
+          ->requestImage(imageSource, surfaceId, imageRequestParams, tag);
+    }
   }
   return {imageSource, nullptr, {}};
 }

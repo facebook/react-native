@@ -36,7 +36,8 @@ private constructor(
 
   override fun initHybrid(): HybridData {
     throw UnsupportedOperationException(
-        "DefaultTurboModuleManagerDelegate.initHybrid() must never be called!")
+        "DefaultTurboModuleManagerDelegate.initHybrid() must never be called!"
+    )
   }
 
   public class Builder : ReactPackageTurboModuleManagerDelegate.Builder() {

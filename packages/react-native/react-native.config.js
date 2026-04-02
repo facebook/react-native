@@ -114,9 +114,9 @@ commands.push(codegenCommand);
 
 const config = {
   commands,
-  platforms: {} /*:: as {[string]: $ReadOnly<{
-      projectConfig: mixed,
-      dependencyConfig: mixed,
+  platforms: {} /*:: as {[string]: Readonly<{
+      projectConfig: unknown,
+      dependencyConfig: unknown,
     }>} */,
 };
 

@@ -8,6 +8,7 @@
 #include "HostTarget.h"
 #include "HostAgent.h"
 #include "HostTargetTraceRecording.h"
+#include "HostTargetTracing.h"
 #include "InspectorInterfaces.h"
 #include "InspectorUtilities.h"
 #include "InstanceTarget.h"
@@ -63,8 +64,9 @@ class HostTargetSession {
           cdp::jsonError(std::nullopt, cdp::ErrorCode::ParseError, e.what()));
       return;
     } catch (const cdp::TypeError& e) {
-      frontendChannel_(cdp::jsonError(
-          std::nullopt, cdp::ErrorCode::InvalidRequest, e.what()));
+      frontendChannel_(
+          cdp::jsonError(
+              std::nullopt, cdp::ErrorCode::InvalidRequest, e.what()));
       return;
     }
 
@@ -99,6 +101,14 @@ class HostTargetSession {
     } else {
       hostAgent_.setCurrentInstanceAgent(nullptr);
     }
+  }
+
+  HostAgent& agent() {
+    return hostAgent_;
+  }
+
+  FrontendChannel dangerouslyGetFrontendChannel() {
+    return frontendChannel_;
   }
 
  private:
@@ -157,28 +167,30 @@ class HostRuntimeBinding {
       HostTarget& target,
       std::string name,
       std::function<void(std::string)> callback)
-      : connection_(target.connect(std::make_unique<CallbackRemoteConnection>(
-            [callback = std::move(callback)](const std::string& message) {
-              auto parsedMessage = folly::parseJson(message);
+      : connection_(target.connect(
+            std::make_unique<CallbackRemoteConnection>(
+                [callback = std::move(callback)](const std::string& message) {
+                  auto parsedMessage = folly::parseJson(message);
 
-              // Ignore initial Runtime.addBinding response
-              if (parsedMessage["id"] == 0 &&
-                  parsedMessage["result"].isObject() &&
-                  parsedMessage["result"].empty()) {
-                return;
-              }
+                  // Ignore initial Runtime.addBinding response
+                  if (parsedMessage["id"] == 0 &&
+                      parsedMessage["result"].isObject() &&
+                      parsedMessage["result"].empty()) {
+                    return;
+                  }
 
-              // Assert that we only intercept bindingCalled responses
-              assert(
-                  parsedMessage["method"].asString() ==
-                  "Runtime.bindingCalled");
-              callback(parsedMessage["params"]["payload"].asString());
-            }))) {
+                  // Assert that we only intercept bindingCalled responses
+                  assert(
+                      parsedMessage["method"].asString() ==
+                      "Runtime.bindingCalled");
+                  callback(parsedMessage["params"]["payload"].asString());
+                }))) {
     // Install runtime binding
-    connection_->sendMessage(cdp::jsonRequest(
-        0,
-        "Runtime.addBinding",
-        folly::dynamic::object("name", std::move(name))));
+    connection_->sendMessage(
+        cdp::jsonRequest(
+            0,
+            "Runtime.addBinding",
+            folly::dynamic::object("name", std::move(name))));
   }
 
  private:
@@ -190,8 +202,8 @@ std::shared_ptr<HostTarget> HostTarget::create(
     VoidExecutor executor) {
   std::shared_ptr<HostTarget> hostTarget{new HostTarget(delegate)};
   hostTarget->setExecutor(std::move(executor));
-  if (InspectorFlags::getInstance().getPerfMonitorV2Enabled()) {
-    hostTarget->installPerfMetricsBinding();
+  if (InspectorFlags::getInstance().getPerfIssuesEnabled()) {
+    hostTarget->installPerfIssuesBinding();
   }
   return hostTarget;
 }
@@ -217,6 +229,11 @@ HostTarget::~HostTarget() {
   // HostCommandSender owns a session, so we must release it for the assertion
   // below to be valid.
   commandSender_.reset();
+
+  // HostRuntimeBinding owns a connection, so we must release it for the
+  // assertion
+  perfMetricsBinding_.reset();
+
   // Sessions are owned by InspectorPackagerConnection, not by HostTarget, but
   // they hold a HostTarget& that we must guarantee is valid.
   assert(
@@ -271,16 +288,14 @@ void HostTarget::sendCommand(HostCommand command) {
   });
 }
 
-void HostTarget::installPerfMetricsBinding() {
+void HostTarget::installPerfIssuesBinding() {
+  perfMonitorUpdateHandler_ =
+      std::make_unique<PerfMonitorUpdateHandler>(delegate_);
   perfMetricsBinding_ = std::make_unique<HostRuntimeBinding>(
       *this, // Used immediately
-      "__chromium_devtools_metrics_reporter",
+      "__react_native_perf_issues_reporter",
       [this](const std::string& message) {
-        auto payload = folly::parseJson(message);
-        HostTargetDelegate::PerfMonitorUpdateRequest request{
-            .interactionName = payload["eventName"].asString(),
-            .durationMs = static_cast<uint16_t>(payload["duration"].asInt())};
-        delegate_.unstable_onPerfMonitorUpdate(request);
+        perfMonitorUpdateHandler_->handlePerfIssueAdded(message);
       });
 }
 
@@ -304,11 +319,16 @@ bool HostTargetController::decrementPauseOverlayCounter() {
   return --pauseOverlayCounter_ != 0;
 }
 
+bool HostTargetController::maybeEmitStashedBackgroundTrace() {
+  return target_.maybeEmitStashedBackgroundTrace();
+}
+
 namespace {
 
 struct StaticHostTargetMetadata {
   std::optional<bool> isProfilingBuild;
   std::optional<bool> networkInspectionEnabled;
+  std::optional<bool> frameRecordingEnabled;
 };
 
 StaticHostTargetMetadata getStaticHostMetadata() {
@@ -316,7 +336,8 @@ StaticHostTargetMetadata getStaticHostMetadata() {
 
   return {
       .isProfilingBuild = inspectorFlags.getIsProfilingBuild(),
-      .networkInspectionEnabled = inspectorFlags.getNetworkInspectionEnabled()};
+      .networkInspectionEnabled = inspectorFlags.getNetworkInspectionEnabled(),
+      .frameRecordingEnabled = inspectorFlags.getFrameRecordingEnabled()};
 }
 
 } // namespace
@@ -351,8 +372,41 @@ folly::dynamic createHostMetadataPayload(const HostTargetMetadata& metadata) {
     result["unstable_networkInspectionEnabled"] =
         staticMetadata.networkInspectionEnabled.value();
   }
+  if (staticMetadata.frameRecordingEnabled) {
+    result["unstable_frameRecordingEnabled"] =
+        staticMetadata.frameRecordingEnabled.value();
+  }
 
   return result;
+}
+
+bool HostTarget::maybeEmitStashedBackgroundTrace() {
+  std::vector<FrontendChannel> eligibleFrontendChannels;
+  eligibleFrontendChannels.reserve(sessions_.size());
+  sessions_.forEach([&eligibleFrontendChannels](auto& session) {
+    if (session.agent().isEligibleForBackgroundTrace()) {
+      eligibleFrontendChannels.push_back(
+          session.dangerouslyGetFrontendChannel());
+    }
+  });
+
+  if (eligibleFrontendChannels.empty()) {
+    return false;
+  }
+
+  auto stashedTrace = std::exchange(stashedTracingProfile_, std::nullopt);
+  if (stashedTrace) {
+    emitNotificationsForTracingProfile(
+        std::move(*stashedTrace),
+        eligibleFrontendChannels,
+        /* isBackgroundTrace */ true);
+  }
+  return true;
+}
+
+bool HostTarget::stopAndMaybeEmitBackgroundTrace() {
+  stashedTracingProfile_ = stopTracing();
+  return maybeEmitStashedBackgroundTrace();
 }
 
 } // namespace facebook::react::jsinspector_modern

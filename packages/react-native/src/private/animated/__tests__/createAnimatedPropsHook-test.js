@@ -8,9 +8,9 @@
  * @format
  */
 
-import {create, update} from '../../../../jest/renderer';
 import {AnimatedEvent} from '../../../../Libraries/Animated/AnimatedEvent';
 import createAnimatedPropsHook from '../createAnimatedPropsHook';
+import {create, update} from '@react-native/jest-preset/jest/renderer';
 import {useLayoutEffect} from 'react';
 
 describe('useAnimatedProps', () => {
@@ -18,8 +18,8 @@ describe('useAnimatedProps', () => {
     const useAnimatedProps = createAnimatedPropsHook(null);
 
     const refs = [];
-    function Sentinel(props: {[string]: mixed}): React.Node {
-      const [, ref] = useAnimatedProps<{[string]: mixed}, mixed>(props);
+    function Sentinel(props: {[string]: unknown}): React.Node {
+      const [, ref] = useAnimatedProps<{[string]: unknown}, unknown>(props);
       useLayoutEffect(() => {
         refs.push(ref);
       }, [ref]);
@@ -38,8 +38,8 @@ describe('useAnimatedProps', () => {
     const useAnimatedProps = createAnimatedPropsHook(null);
 
     const refs = [];
-    function Sentinel(props: {[string]: mixed}): React.Node {
-      const [, ref] = useAnimatedProps<{[string]: mixed}, mixed>(props);
+    function Sentinel(props: {[string]: unknown}): React.Node {
+      const [, ref] = useAnimatedProps<{[string]: unknown}, unknown>(props);
       useLayoutEffect(() => {
         refs.push(ref);
       }, [ref]);
@@ -60,8 +60,8 @@ describe('useAnimatedProps', () => {
     const useAnimatedProps = createAnimatedPropsHook(null);
 
     const refs = [];
-    function Sentinel(props: {[string]: mixed}): React.Node {
-      const [, ref] = useAnimatedProps<{[string]: mixed}, mixed>(props);
+    function Sentinel(props: {[string]: unknown}): React.Node {
+      const [, ref] = useAnimatedProps<{[string]: unknown}, unknown>(props);
       useLayoutEffect(() => {
         refs.push(ref);
       }, [ref]);

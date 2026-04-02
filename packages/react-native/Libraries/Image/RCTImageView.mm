@@ -17,7 +17,7 @@
 #import <React/RCTUtils.h>
 #import <React/UIView+React.h>
 
-#ifndef RCT_FIT_RM_OLD_COMPONENT
+#ifndef RCT_REMOVE_LEGACY_ARCH
 
 /**
  * Determines whether an image of `currentSize` should be reloaded for display
@@ -505,4 +505,4 @@ RCT_NOT_IMPLEMENTED(-(instancetype)initWithFrame : (CGRect)frame)
 
 @end
 
-#endif // RCT_FIT_RM_OLD_COMPONENT
+#endif // RCT_REMOVE_LEGACY_ARCH

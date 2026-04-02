@@ -51,7 +51,7 @@ type RequiredSectionListProps<ItemT, SectionT = DefaultSectionT> = {
    *       ItemSeparatorComponent?: ?ReactClass<{highlighted: boolean, ...}>,
    *     }>
    */
-  sections: $ReadOnlyArray<SectionData<ItemT, SectionT>>,
+  sections: ReadonlyArray<SectionData<ItemT, SectionT>>,
 };
 
 export type SectionListRenderItemInfo<ItemT, SectionT = DefaultSectionT> = {

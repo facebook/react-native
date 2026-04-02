@@ -14,7 +14,12 @@ if [ -z "$CURRENT_ARCH" ] || [ "$CURRENT_ARCH" == "undefined_arch" ]; then
     # it's better to rely on platform name as fallback because architecture differs between simulator and device
 
     if [[ "$PLATFORM_NAME" == *"simulator"* ]]; then
-        CURRENT_ARCH="x86_64"
+        if [[ "$(uname -m)" == "arm64" ]]; then
+            # Apple Silicon Mac -> arm64 simulator
+            CURRENT_ARCH="arm64"
+        else
+            CURRENT_ARCH="x86_64"
+        fi
     else
         CURRENT_ARCH="arm64"
     fi
@@ -97,3 +102,21 @@ cp -f src/glog/logging.h "$EXPORTED_INCLUDE_DIR/"
 cp -f src/glog/raw_logging.h "$EXPORTED_INCLUDE_DIR/"
 cp -f src/glog/stl_logging.h "$EXPORTED_INCLUDE_DIR/"
 cp -f src/glog/vlog_is_on.h "$EXPORTED_INCLUDE_DIR/"
+
+
+# Create a custom module.modulemap that works with Swift C++ interop
+# The issue is that glog headers include other headers inside namespace blocks
+# which Clang treats as module imports inside namespaces (which is illegal)
+# Solution: Use textual headers to prevent submodule creation
+cat > src/glog/module.modulemap << 'MODULEMAP'
+module glog {
+     // Use textual headers to avoid submodule generation
+     // This prevents the "import within namespace" error with Swift C++ interop
+     textual header "log_severity.h"
+     textual header "logging.h"
+     textual header "raw_logging.h"
+     textual header "stl_logging.h"
+     textual header "vlog_is_on.h"
+     export *
+}
+MODULEMAP

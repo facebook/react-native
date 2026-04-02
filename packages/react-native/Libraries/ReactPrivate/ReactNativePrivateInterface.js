@@ -39,7 +39,6 @@ import typeof Platform from '../Utilities/Platform';
 // Expose these types to the React renderer
 export type {
   HostInstance as PublicInstance,
-
   // These types are only necessary for Paper
   NativeMethods as LegacyPublicInstance,
   MeasureOnSuccessCallback,
@@ -79,14 +78,14 @@ module.exports = {
     return require('../Utilities/differ/deepDiffer').default;
   },
   get deepFreezeAndThrowOnMutationInDev(): deepFreezeAndThrowOnMutationInDev<
-    {...} | Array<mixed>,
+    {...} | Array<unknown>,
   > {
     return require('../Utilities/deepFreezeAndThrowOnMutationInDev').default;
   },
   // TODO: Remove when React has migrated to `createAttributePayload` and `diffAttributePayloads`
   get flattenStyle(): flattenStyle<DangerouslyImpreciseStyleProp> {
     // $FlowFixMe[underconstrained-implicit-instantiation]
-    // $FlowFixMe[incompatible-return]
+    // $FlowFixMe[incompatible-type]
     return require('../StyleSheet/flattenStyle').default;
   },
   get ReactFiberErrorDialog(): ReactFiberErrorDialog {

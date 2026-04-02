@@ -18,8 +18,11 @@ target_include_directories(jsinspector_tracing PUBLIC ${REACT_COMMON_DIR})
 
 target_link_libraries(jsinspector_tracing
         folly_runtime
+        jsi
+        jsinspector_network
         oscompat
         react_timing
+        react_utils
 )
 target_compile_reactnative_options(jsinspector_tracing PRIVATE)
 target_compile_options(jsinspector_tracing PRIVATE -Wpedantic)

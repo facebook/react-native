@@ -27,7 +27,7 @@ import {
 } from '../../components/ListExampleShared';
 import RNTesterPage from '../../components/RNTesterPage';
 import RNTesterText from '../../components/RNTesterText';
-import React from 'react';
+import * as React from 'react';
 import {useRef, useState} from 'react';
 import {
   Alert,
@@ -172,7 +172,7 @@ const SectionSeparatorComponent = info => (
   <CustomSeparatorComponent {...info} text="SECTION SEPARATOR" />
 );
 
-export function SectionList_scrollable(Props: {...}): React.MixedElement {
+export component SectionList_scrollable() {
   const scrollPos = new Animated.Value(0);
   const scrollSinkY = Animated.event(
     [{nativeEvent: {contentOffset: {y: scrollPos}}}],
@@ -194,7 +194,7 @@ export function SectionList_scrollable(Props: {...}): React.MixedElement {
   let startIndex = 0;
   const endIndex = filteredData.length - 1;
   for (let ii = 10; ii <= endIndex + 10; ii += 10) {
-    // $FlowFixMe[incompatible-call]
+    // $FlowFixMe[incompatible-type]
     filteredSectionData.push({
       key: `${filteredData[startIndex].key} - ${
         filteredData[Math.min(ii - 1, endIndex)].key

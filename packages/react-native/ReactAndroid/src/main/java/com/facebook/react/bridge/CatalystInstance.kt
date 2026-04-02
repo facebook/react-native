@@ -23,7 +23,8 @@ import com.facebook.react.turbomodule.core.interfaces.NativeMethodCallInvokerHol
  */
 @Deprecated(
     message =
-        "This class is deprecated, please to migrate to new architecture using [com.facebook.react.defaults.DefaultReactHost] instead.")
+        "This class is deprecated, please to migrate to new architecture using [com.facebook.react.defaults.DefaultReactHost] instead."
+)
 @DoNotStrip
 @LegacyArchitecture
 public interface CatalystInstance : MemoryPressureListener, JSInstance, JSBundleLoaderDelegate {
@@ -74,24 +75,6 @@ public interface CatalystInstance : MemoryPressureListener, JSInstance, JSBundle
    */
   public fun extendNativeModules(modules: NativeModuleRegistry)
 
-  /**
-   * Adds a idle listener for this Catalyst instance. The listener will receive notifications
-   * whenever the bridge transitions from idle to busy and vice-versa, where the busy state is
-   * defined as there being some non-zero number of calls to JS that haven't resolved via a
-   * onBatchCompleted call. The listener should be purely passive and not affect application logic.
-   */
-  public fun addBridgeIdleDebugListener(
-      @Suppress("DEPRECATION") listener: NotThreadSafeBridgeIdleDebugListener
-  )
-
-  /**
-   * Removes a NotThreadSafeBridgeIdleDebugListener previously added with
-   * [addBridgeIdleDebugListener]
-   */
-  public fun removeBridgeIdleDebugListener(
-      @Suppress("DEPRECATION") listener: NotThreadSafeBridgeIdleDebugListener
-  )
-
   /** This method registers the file path of an additional JS segment by its ID. */
   public fun registerSegment(segmentId: Int, path: String)
 
@@ -128,16 +111,19 @@ public interface CatalystInstance : MemoryPressureListener, JSInstance, JSBundle
 
   @Deprecated(
       message =
-          "This method is deprecated, please to migrate to new architecture using [com.facebook.react.defaults.DefaultReactHost] instead.")
+          "This method is deprecated, please to migrate to new architecture using [com.facebook.react.defaults.DefaultReactHost] instead."
+  )
   public fun setTurboModuleRegistry(turboModuleRegistry: TurboModuleRegistry)
 
   @Deprecated(
       message =
-          "This method is deprecated, please to migrate to new architecture using [com.facebook.react.defaults.DefaultReactHost] instead.")
+          "This method is deprecated, please to migrate to new architecture using [com.facebook.react.defaults.DefaultReactHost] instead."
+  )
   public fun setFabricUIManager(fabricUIManager: UIManager)
 
   @Deprecated(
       message =
-          "This method is deprecated, please to migrate to new architecture using [com.facebook.react.defaults.DefaultReactHost] instead.")
+          "This method is deprecated, please to migrate to new architecture using [com.facebook.react.defaults.DefaultReactHost] instead."
+  )
   public fun getFabricUIManager(): UIManager?
 }

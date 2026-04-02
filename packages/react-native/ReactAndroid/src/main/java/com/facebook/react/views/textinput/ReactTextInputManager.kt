@@ -66,14 +66,12 @@ import com.facebook.react.views.scroll.ScrollEventType.Companion.getJSEventName
 import com.facebook.react.views.text.DefaultStyleValuesUtil.getDefaultTextColor
 import com.facebook.react.views.text.DefaultStyleValuesUtil.getDefaultTextColorHighlight
 import com.facebook.react.views.text.DefaultStyleValuesUtil.getDefaultTextColorHint
-import com.facebook.react.views.text.ReactBaseTextShadowNode
 import com.facebook.react.views.text.ReactTextUpdate
 import com.facebook.react.views.text.ReactTextUpdate.Companion.buildReactTextUpdateFromState
 import com.facebook.react.views.text.ReactTextViewManagerCallback
 import com.facebook.react.views.text.ReactTypefaceUtils.parseFontVariant
 import com.facebook.react.views.text.TextAttributeProps
 import com.facebook.react.views.text.TextLayoutManager
-import com.facebook.react.views.text.internal.span.TextInlineImageSpan.Companion.possiblyUpdateInlineImageSpans
 import java.util.LinkedList
 
 /** Manages instances of TextInput. */
@@ -101,14 +99,13 @@ public open class ReactTextInputManager public constructor() :
     return editText
   }
 
-  override fun createShadowNodeInstance(): ReactBaseTextShadowNode = ReactTextInputShadowNode()
+  override fun createShadowNodeInstance(): LayoutShadowNode = LayoutShadowNode()
 
   public fun createShadowNodeInstance(
       reactTextViewManagerCallback: ReactTextViewManagerCallback?
-  ): ReactBaseTextShadowNode = ReactTextInputShadowNode(reactTextViewManagerCallback)
+  ): LayoutShadowNode = LayoutShadowNode()
 
-  override fun getShadowNodeClass(): Class<out LayoutShadowNode> =
-      ReactTextInputShadowNode::class.java
+  override fun getShadowNodeClass(): Class<out LayoutShadowNode> = LayoutShadowNode::class.java
 
   override fun getExportedCustomBubblingEventTypeConstants(): Map<String, Any> {
     val baseEventTypeConstants = super.getExportedCustomBubblingEventTypeConstants()
@@ -121,16 +118,20 @@ public open class ReactTextInputManager public constructor() :
                         mapOf(
                             "bubbled" to "onSubmitEditing",
                             "captured" to "onSubmitEditingCapture",
-                        )),
+                        )
+                ),
             "topEndEditing" to
                 mapOf(
                     "phasedRegistrationNames" to
-                        mapOf("bubbled" to "onEndEditing", "captured" to "onEndEditingCapture")),
+                        mapOf("bubbled" to "onEndEditing", "captured" to "onEndEditingCapture")
+                ),
             "topKeyPress" to
                 mapOf(
                     "phasedRegistrationNames" to
-                        mapOf("bubbled" to "onKeyPress", "captured" to "onKeyPressCapture")),
-        ))
+                        mapOf("bubbled" to "onKeyPress", "captured" to "onKeyPressCapture")
+                ),
+        )
+    )
     return eventTypeConstants
   }
 
@@ -138,7 +139,8 @@ public open class ReactTextInputManager public constructor() :
     val baseEventTypeConstants = super.getExportedCustomDirectEventTypeConstants()
     val eventTypeConstants = baseEventTypeConstants ?: mutableMapOf()
     eventTypeConstants.putAll(
-        mapOf(getJSEventName(ScrollEventType.SCROLL) to mapOf("registrationName" to "onScroll")))
+        mapOf(getJSEventName(ScrollEventType.SCROLL) to mapOf("registrationName" to "onScroll"))
+    )
     return eventTypeConstants
   }
 
@@ -190,11 +192,6 @@ public open class ReactTextInputManager public constructor() :
     return ReactTextUpdate(
         sb,
         mostRecentEventCount,
-        false,
-        0f,
-        0f,
-        0f,
-        0f,
         Gravity.NO_GRAVITY,
         0,
         0,
@@ -203,29 +200,6 @@ public open class ReactTextInputManager public constructor() :
 
   override fun updateExtraData(view: ReactEditText, extraData: Any) {
     if (extraData is ReactTextUpdate) {
-      // TODO T58784068: delete this block of code, these are always unset in Fabric
-      val paddingLeft = extraData.paddingLeft.toInt()
-      val paddingTop = extraData.paddingTop.toInt()
-      val paddingRight = extraData.paddingRight.toInt()
-      val paddingBottom = extraData.paddingBottom.toInt()
-      if (paddingLeft != UNSET ||
-          paddingTop != UNSET ||
-          paddingRight != UNSET ||
-          paddingBottom != UNSET) {
-        view.setPadding(
-            if (paddingLeft != UNSET) paddingLeft else view.paddingLeft,
-            if (paddingTop != UNSET) paddingTop else view.paddingTop,
-            if (paddingRight != UNSET) paddingRight else view.paddingRight,
-            if (paddingBottom != UNSET) paddingBottom else view.paddingBottom,
-        )
-      }
-
-      @Suppress("DEPRECATION")
-      if (extraData.containsImages()) {
-        val spannable = extraData.text
-        possiblyUpdateInlineImageSpans(spannable, view)
-      }
-
       // Ensure that selection is handled correctly on text update
       val isCurrentSelectionEmpty = view.selectionStart == view.selectionEnd
       var selectionStart = UNSET
@@ -350,7 +324,7 @@ public open class ReactTextInputManager public constructor() :
   }
 
   // Sets the letter spacing as an absolute point size.
-  // This extra handling, on top of what ReactBaseTextShadowNode already does, is required for the
+  // This extra handling is required for the
   // correct display of spacing in placeholder (hint) text.
   @ReactProp(name = ViewProps.LETTER_SPACING, defaultFloat = 0f)
   public fun setLetterSpacing(view: ReactEditText, letterSpacing: Float) {
@@ -499,8 +473,10 @@ public open class ReactTextInputManager public constructor() :
 
   @ReactProp(name = "caretHidden", defaultBoolean = false)
   public fun setCaretHidden(view: ReactEditText, caretHidden: Boolean) {
-    if (view.stagedInputType == InputType.TYPE_TEXT_VARIATION_EMAIL_ADDRESS &&
-        shouldHideCursorForEmailTextInput()) {
+    if (
+        view.stagedInputType == InputType.TYPE_TEXT_VARIATION_EMAIL_ADDRESS &&
+            shouldHideCursorForEmailTextInput()
+    ) {
       return
     }
     view.isCursorVisible = !caretHidden
@@ -529,7 +505,8 @@ public open class ReactTextInputManager public constructor() :
             TAG,
             IllegalStateException(
                 "Could not get default text color from View Context: " +
-                    (if (c != null) c.javaClass.canonicalName else "null")),
+                    (if (c != null) c.javaClass.canonicalName else "null")
+            ),
         )
       }
     } else {
@@ -741,7 +718,9 @@ public open class ReactTextInputManager public constructor() :
       }
     }
 
-    updateStagedInputTypeFlag(view, AUTOCAPITALIZE_FLAGS, autoCapitalizeValue)
+    // Deferred to onAfterUpdateTransaction() so we can reconcile with the resolved
+    // keyboard type — AUTOCAPITALIZE_FLAGS collides with numeric inputType flags.
+    view.stagedAutoCapitalize = autoCapitalizeValue
   }
 
   @ReactProp(name = "keyboardType")
@@ -905,6 +884,7 @@ public open class ReactTextInputManager public constructor() :
   override fun onAfterUpdateTransaction(view: ReactEditText) {
     super.onAfterUpdateTransaction(view)
     view.maybeUpdateTypeface()
+    reconcileAutoCapitalize(view)
     view.commitStagedInputType()
   }
 
@@ -922,7 +902,8 @@ public open class ReactTextInputManager public constructor() :
       } else {
         eventDispatcher?.dispatchEvent(BlurEvent(surfaceId, editText.id))
         eventDispatcher?.dispatchEvent(
-            ReactTextInputEndEditingEvent(surfaceId, editText.id, editText.text.toString()))
+            ReactTextInputEndEditingEvent(surfaceId, editText.id, editText.text.toString())
+        )
       }
     }
 
@@ -947,7 +928,8 @@ public open class ReactTextInputManager public constructor() :
                   reactContext.surfaceId,
                   editText.id,
                   editText.text.toString(),
-              ))
+              )
+          )
         }
 
         if (shouldBlur) {
@@ -982,7 +964,8 @@ public open class ReactTextInputManager public constructor() :
                   "characters" to InputType.TYPE_TEXT_FLAG_CAP_CHARACTERS,
                   "words" to InputType.TYPE_TEXT_FLAG_CAP_WORDS,
                   "sentences" to InputType.TYPE_TEXT_FLAG_CAP_SENTENCES,
-              ))
+              )
+      )
 
   override fun setPadding(view: ReactEditText, left: Int, top: Int, right: Int, bottom: Int) {
     view.setPadding(left, top, right, bottom)
@@ -1032,14 +1015,15 @@ public open class ReactTextInputManager public constructor() :
 
     val spanned =
         TextLayoutManager.getOrCreateSpannableForText(
-            view.context,
+            view.context.assets,
             attributedString,
             reactTextViewManagerCallback,
         )
 
     val textBreakStrategy =
         TextAttributeProps.getTextBreakStrategy(
-            paragraphAttributes.getString(TextLayoutManager.PA_KEY_TEXT_BREAK_STRATEGY.toInt()))
+            paragraphAttributes.getString(TextLayoutManager.PA_KEY_TEXT_BREAK_STRATEGY.toInt())
+        )
     val currentJustificationMode =
         if (Build.VERSION.SDK_INT < Build.VERSION_CODES.O) {
           0
@@ -1072,6 +1056,7 @@ public open class ReactTextInputManager public constructor() :
 
     private val REACT_PROPS_AUTOFILL_HINTS_MAP: Map<String, String> =
         mapOf(
+            "2fa-app-otp" to HintConstants.AUTOFILL_HINT_2FA_APP_OTP,
             "birthdate-day" to HintConstants.AUTOFILL_HINT_BIRTH_DATE_DAY,
             "birthdate-full" to HintConstants.AUTOFILL_HINT_BIRTH_DATE_FULL,
             "birthdate-month" to HintConstants.AUTOFILL_HINT_BIRTH_DATE_MONTH,
@@ -1083,7 +1068,13 @@ public open class ReactTextInputManager public constructor() :
             "cc-exp-year" to HintConstants.AUTOFILL_HINT_CREDIT_CARD_EXPIRATION_YEAR,
             "cc-number" to HintConstants.AUTOFILL_HINT_CREDIT_CARD_NUMBER,
             "email" to HintConstants.AUTOFILL_HINT_EMAIL_ADDRESS,
+            "email-otp" to HintConstants.AUTOFILL_HINT_EMAIL_OTP,
+            "flight-confirmation-code" to HintConstants.AUTOFILL_HINT_FLIGHT_CONFIRMATION_CODE,
+            "flight-number" to HintConstants.AUTOFILL_HINT_FLIGHT_NUMBER,
             "gender" to HintConstants.AUTOFILL_HINT_GENDER,
+            "gift-card-number" to HintConstants.AUTOFILL_HINT_GIFT_CARD_NUMBER,
+            "gift-card-pin" to HintConstants.AUTOFILL_HINT_GIFT_CARD_PIN,
+            "loyalty-account-number" to HintConstants.AUTOFILL_HINT_LOYALTY_ACCOUNT_NUMBER,
             "name" to HintConstants.AUTOFILL_HINT_PERSON_NAME,
             "name-family" to HintConstants.AUTOFILL_HINT_PERSON_NAME_FAMILY,
             "name-given" to HintConstants.AUTOFILL_HINT_PERSON_NAME_GIVEN,
@@ -1095,19 +1086,25 @@ public open class ReactTextInputManager public constructor() :
             "password-new" to HintConstants.AUTOFILL_HINT_NEW_PASSWORD,
             "postal-address" to HintConstants.AUTOFILL_HINT_POSTAL_ADDRESS,
             "postal-address-country" to HintConstants.AUTOFILL_HINT_POSTAL_ADDRESS_COUNTRY,
+            "postal-address-dependent-locality" to
+                HintConstants.AUTOFILL_HINT_POSTAL_ADDRESS_DEPENDENT_LOCALITY,
             "postal-address-extended" to
                 HintConstants.AUTOFILL_HINT_POSTAL_ADDRESS_EXTENDED_ADDRESS,
             "postal-address-extended-postal-code" to
                 HintConstants.AUTOFILL_HINT_POSTAL_ADDRESS_EXTENDED_POSTAL_CODE,
             "postal-address-locality" to HintConstants.AUTOFILL_HINT_POSTAL_ADDRESS_LOCALITY,
             "postal-address-region" to HintConstants.AUTOFILL_HINT_POSTAL_ADDRESS_REGION,
+            "postal-address-unit" to HintConstants.AUTOFILL_HINT_POSTAL_ADDRESS_APT_NUMBER,
             "postal-code" to HintConstants.AUTOFILL_HINT_POSTAL_CODE,
+            "promo-code" to HintConstants.AUTOFILL_HINT_PROMO_CODE,
             "street-address" to HintConstants.AUTOFILL_HINT_POSTAL_ADDRESS_STREET_ADDRESS,
             "sms-otp" to HintConstants.AUTOFILL_HINT_SMS_OTP,
             "tel" to HintConstants.AUTOFILL_HINT_PHONE_NUMBER,
             "tel-country-code" to HintConstants.AUTOFILL_HINT_PHONE_COUNTRY_CODE,
             "tel-national" to HintConstants.AUTOFILL_HINT_PHONE_NATIONAL,
             "tel-device" to HintConstants.AUTOFILL_HINT_PHONE_NUMBER_DEVICE,
+            "upi-vpa" to HintConstants.AUTOFILL_HINT_UPI_VPA,
+            "wifi-password" to HintConstants.AUTOFILL_HINT_WIFI_PASSWORD,
             "username" to HintConstants.AUTOFILL_HINT_USERNAME,
             "username-new" to HintConstants.AUTOFILL_HINT_NEW_USERNAME,
         )
@@ -1148,10 +1145,34 @@ public open class ReactTextInputManager public constructor() :
 
     private const val IME_ACTION_ID = 0x670
 
+    // AUTOCAPITALIZE_FLAGS (0x7000) shares bit positions with TYPE_NUMBER_FLAG_SIGNED
+    // (0x1000) and TYPE_NUMBER_FLAG_DECIMAL (0x2000). We apply autocapitalize here
+    // after all props are set so the resolved input class determines whether the
+    // flags are meaningful.
+    private fun reconcileAutoCapitalize(view: ReactEditText) {
+      val autoCapValue = view.stagedAutoCapitalize
+      val inputClass = view.stagedInputType and InputType.TYPE_MASK_CLASS
+
+      // Only strip 0x4000 (CAP_SENTENCES) for non-text classes — 0x1000/0x2000 are
+      // valid numeric flags (SIGNED/DECIMAL) and must not be cleared.
+      val reconciled =
+          if (inputClass == InputType.TYPE_CLASS_TEXT) {
+            (view.stagedInputType and AUTOCAPITALIZE_FLAGS.inv()) or autoCapValue
+          } else {
+            view.stagedInputType and InputType.TYPE_TEXT_FLAG_CAP_SENTENCES.inv()
+          }
+
+      if (view.stagedInputType != reconciled) {
+        view.stagedInputType = reconciled
+      }
+    }
+
     // Sets the correct password type, since numeric and text passwords have different types
     private fun checkPasswordType(view: ReactEditText) {
-      if ((view.stagedInputType and INPUT_TYPE_KEYBOARD_NUMBERED) != 0 &&
-          (view.stagedInputType and InputType.TYPE_TEXT_VARIATION_PASSWORD) != 0) {
+      if (
+          (view.stagedInputType and INPUT_TYPE_KEYBOARD_NUMBERED) != 0 &&
+              (view.stagedInputType and InputType.TYPE_TEXT_VARIATION_PASSWORD) != 0
+      ) {
         // Text input type is numbered password, remove text password variation, add numeric one
         updateStagedInputTypeFlag(
             view,
@@ -1168,6 +1189,6 @@ public open class ReactTextInputManager public constructor() :
     private fun getEventDispatcher(
         reactContext: ReactContext,
         editText: ReactEditText,
-    ): EventDispatcher? = UIManagerHelper.getEventDispatcherForReactTag(reactContext, editText.id)
+    ): EventDispatcher? = UIManagerHelper.getEventDispatcher(reactContext)
   }
 }

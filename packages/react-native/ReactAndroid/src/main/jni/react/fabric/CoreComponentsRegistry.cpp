@@ -7,8 +7,6 @@
 
 #include "CoreComponentsRegistry.h"
 
-#include <android/log.h>
-
 #include <react/renderer/componentregistry/ComponentDescriptorRegistry.h>
 #include <react/renderer/components/FBReactNativeSpec/ComponentDescriptors.h>
 #include <react/renderer/components/androidswitch/AndroidSwitchComponentDescriptor.h>
@@ -21,65 +19,71 @@
 #include <react/renderer/components/scrollview/ScrollViewComponentDescriptor.h>
 #include <react/renderer/components/text/ParagraphComponentDescriptor.h>
 #include <react/renderer/components/text/RawTextComponentDescriptor.h>
+#include <react/renderer/components/text/SelectableParagraphComponentDescriptor.h>
 #include <react/renderer/components/text/TextComponentDescriptor.h>
 #include <react/renderer/components/view/LayoutConformanceComponentDescriptor.h>
 #include <react/renderer/components/view/ViewComponentDescriptor.h>
 #include <react/renderer/components/virtualview/VirtualViewComponentDescriptor.h>
-#include <react/renderer/components/virtualviewexperimental/VirtualViewExperimentalComponentDescriptor.h>
 
 namespace facebook::react::CoreComponentsRegistry {
 
 std::shared_ptr<const ComponentDescriptorProviderRegistry>
 sharedProviderRegistry() {
   static auto providerRegistry =
-      []() -> std::shared_ptr<ComponentDescriptorProviderRegistry> {
-    auto providerRegistry =
-        std::make_shared<ComponentDescriptorProviderRegistry>();
-
-    providerRegistry->add(concreteComponentDescriptorProvider<
-                          AndroidProgressBarComponentDescriptor>());
-    providerRegistry->add(concreteComponentDescriptorProvider<
-                          AndroidSwipeRefreshLayoutComponentDescriptor>());
-    providerRegistry->add(concreteComponentDescriptorProvider<
-                          ActivityIndicatorViewComponentDescriptor>());
-    providerRegistry->add(concreteComponentDescriptorProvider<
-                          AndroidTextInputComponentDescriptor>());
-    providerRegistry->add(
-        concreteComponentDescriptorProvider<ViewComponentDescriptor>());
-    providerRegistry->add(
-        concreteComponentDescriptorProvider<ImageComponentDescriptor>());
-    providerRegistry->add(concreteComponentDescriptorProvider<
-                          ModalHostViewComponentDescriptor>());
-    providerRegistry->add(concreteComponentDescriptorProvider<
-                          AndroidSwitchComponentDescriptor>());
-    providerRegistry->add(
-        concreteComponentDescriptorProvider<SafeAreaViewComponentDescriptor>());
-    providerRegistry->add(
-        concreteComponentDescriptorProvider<TextComponentDescriptor>());
-    providerRegistry->add(
-        concreteComponentDescriptorProvider<RawTextComponentDescriptor>());
-    providerRegistry->add(
-        concreteComponentDescriptorProvider<ScrollViewComponentDescriptor>());
-    providerRegistry->add(
-        concreteComponentDescriptorProvider<
-            AndroidHorizontalScrollContentViewComponentDescriptor>());
-    providerRegistry->add(
-        concreteComponentDescriptorProvider<ParagraphComponentDescriptor>());
-    providerRegistry->add(concreteComponentDescriptorProvider<
-                          AndroidDrawerLayoutComponentDescriptor>());
-    providerRegistry->add(concreteComponentDescriptorProvider<
-                          DebuggingOverlayComponentDescriptor>());
-    providerRegistry->add(concreteComponentDescriptorProvider<
-                          LayoutConformanceComponentDescriptor>());
-    providerRegistry->add(
-        concreteComponentDescriptorProvider<VirtualViewComponentDescriptor>());
-    providerRegistry->add(concreteComponentDescriptorProvider<
-                          VirtualViewExperimentalComponentDescriptor>());
-
-    return providerRegistry;
-  }();
-
+      std::make_shared<ComponentDescriptorProviderRegistry>();
   return providerRegistry;
+}
+
+void addCoreComponents(
+    std::shared_ptr<const ComponentDescriptorProviderRegistry>
+        providerRegistry) {
+  providerRegistry->add(
+      concreteComponentDescriptorProvider<
+          AndroidProgressBarComponentDescriptor>());
+  providerRegistry->add(
+      concreteComponentDescriptorProvider<
+          AndroidSwipeRefreshLayoutComponentDescriptor>());
+  providerRegistry->add(
+      concreteComponentDescriptorProvider<
+          ActivityIndicatorViewComponentDescriptor>());
+  providerRegistry->add(
+      concreteComponentDescriptorProvider<
+          AndroidTextInputComponentDescriptor>());
+  providerRegistry->add(
+      concreteComponentDescriptorProvider<ViewComponentDescriptor>());
+  providerRegistry->add(
+      concreteComponentDescriptorProvider<ImageComponentDescriptor>());
+  providerRegistry->add(
+      concreteComponentDescriptorProvider<ModalHostViewComponentDescriptor>());
+  providerRegistry->add(
+      concreteComponentDescriptorProvider<AndroidSwitchComponentDescriptor>());
+  providerRegistry->add(
+      concreteComponentDescriptorProvider<SafeAreaViewComponentDescriptor>());
+  providerRegistry->add(
+      concreteComponentDescriptorProvider<TextComponentDescriptor>());
+  providerRegistry->add(
+      concreteComponentDescriptorProvider<RawTextComponentDescriptor>());
+  providerRegistry->add(
+      concreteComponentDescriptorProvider<ScrollViewComponentDescriptor>());
+  providerRegistry->add(
+      concreteComponentDescriptorProvider<
+          AndroidHorizontalScrollContentViewComponentDescriptor>());
+  providerRegistry->add(
+      concreteComponentDescriptorProvider<ParagraphComponentDescriptor>());
+  providerRegistry->add(
+      concreteComponentDescriptorProvider<
+          SelectableParagraphComponentDescriptor>());
+  providerRegistry->add(
+      concreteComponentDescriptorProvider<
+          AndroidDrawerLayoutComponentDescriptor>());
+  providerRegistry->add(
+      concreteComponentDescriptorProvider<
+          DebuggingOverlayComponentDescriptor>());
+  providerRegistry->add(
+      concreteComponentDescriptorProvider<
+          LayoutConformanceComponentDescriptor>());
+  providerRegistry->add(
+      concreteComponentDescriptorProvider<VirtualViewComponentDescriptor>());
 }
 
 } // namespace facebook::react::CoreComponentsRegistry

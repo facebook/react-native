@@ -10,7 +10,7 @@
 
 import type {RunServerResult} from 'metro';
 
-type MetroServer = $NonMaybeType<RunServerResult?.['httpServer']>;
+type MetroServer = NonNullable<RunServerResult?.['httpServer']>;
 
 declare var __FANTOM_METRO_SERVER__: ?RunServerResult;
 

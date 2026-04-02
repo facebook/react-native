@@ -12,17 +12,19 @@ import type {EventSubscription} from '../../vendor/emitter/EventEmitter';
 import type {PlatformConfig} from '../AnimatedPlatformConfig';
 import type Animation from '../animations/Animation';
 import type {EndCallback} from '../animations/Animation';
-import type {InterpolationConfigType} from './AnimatedInterpolation';
+import type {
+  InterpolationConfigSupportedOutputType,
+  InterpolationConfigType,
+} from './AnimatedInterpolation';
 import type AnimatedNode from './AnimatedNode';
 import type {AnimatedNodeConfig} from './AnimatedNode';
 import type AnimatedTracking from './AnimatedTracking';
 
 import NativeAnimatedHelper from '../../../src/private/animated/NativeAnimatedHelper';
-import InteractionManager from '../../Interaction/InteractionManager';
 import AnimatedInterpolation from './AnimatedInterpolation';
 import AnimatedWithChildren from './AnimatedWithChildren';
 
-export type AnimatedValueConfig = $ReadOnly<{
+export type AnimatedValueConfig = Readonly<{
   ...AnimatedNodeConfig,
   useNativeDriver: boolean,
 }>;
@@ -56,7 +58,7 @@ export function flushValue(rootNode: AnimatedNode): void {
   function findAnimatedStyles(node: AnimatedNode) {
     // $FlowFixMe[prop-missing]
     if (typeof node.update === 'function') {
-      leaves.add((node: any));
+      leaves.add(node as any);
     } else {
       node.__getChildren().forEach(findAnimatedStyles);
     }
@@ -132,7 +134,7 @@ export default class AnimatedValue extends AnimatedWithChildren {
     }
   }
 
-  addListener(callback: (value: any) => mixed): string {
+  addListener(callback: (value: any) => unknown): string {
     const id = super.addListener(callback);
     this._listenerCount++;
     if (this.__isNative) {
@@ -299,7 +301,7 @@ export default class AnimatedValue extends AnimatedWithChildren {
    * Interpolates the value before updating the property, e.g. mapping 0-1 to
    * 0-10.
    */
-  interpolate<OutputT: number | string>(
+  interpolate<OutputT extends InterpolationConfigSupportedOutputType>(
     config: InterpolationConfigType<OutputT>,
   ): AnimatedInterpolation<OutputT> {
     return new AnimatedInterpolation(this, config);
@@ -312,10 +314,6 @@ export default class AnimatedValue extends AnimatedWithChildren {
    * See https://reactnative.dev/docs/animatedvalue#animate
    */
   animate(animation: Animation, callback: ?EndCallback): void {
-    let handle = null;
-    if (animation.__isInteraction) {
-      handle = InteractionManager.createInteractionHandle();
-    }
     const previousAnimation = this._animation;
     this._animation && this._animation.stop();
     this._animation = animation;
@@ -328,9 +326,6 @@ export default class AnimatedValue extends AnimatedWithChildren {
       },
       result => {
         this._animation = null;
-        if (handle !== null) {
-          InteractionManager.clearInteractionHandle(handle);
-        }
         callback && callback(result);
       },
       previousAnimation,

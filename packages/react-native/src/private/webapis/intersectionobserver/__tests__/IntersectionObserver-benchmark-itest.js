@@ -177,6 +177,42 @@ Fantom.unstable_benchmark
     },
   )
   .test(
+    'Observe a mounted view with custom root and % rootMargin',
+    () => {
+      Fantom.runTask(() => {
+        observer.observe(node);
+      });
+    },
+    {
+      beforeEach: () => {
+        mockCallback = jest.fn();
+        Fantom.runTask(() => {
+          root.render(
+            <View ref={rootRef}>
+              <View style={{width: 100, height: 10}} ref={nodeRef} />
+            </View>,
+          );
+        });
+        node = ensureInstance(nodeRef.current, ReactNativeElement);
+        rootNode = ensureInstance(rootRef.current, ReactNativeElement);
+        Fantom.runTask(() => {
+          observer = new IntersectionObserver(mockCallback, {
+            root: rootNode,
+            rootMargin: '10%',
+          });
+        });
+      },
+      afterEach: () => {
+        expect(mockCallback).toHaveBeenCalledTimes(1);
+        const [entries] = mockCallback.mock.lastCall;
+        expect(entries.length).toBe(1);
+        expect(entries[0].isIntersecting).toBe(true);
+
+        cleanup(root, observer);
+      },
+    },
+  )
+  .test(
     'ScrollView no intersection, no observation',
     () => {
       scrollBy1(scrollViewNode, VIEWPORT_HEIGHT);

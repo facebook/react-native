@@ -7,7 +7,6 @@
 
 #pragma once
 
-#include <folly/dynamic.h>
 #include <react/renderer/attributedstring/conversions.h>
 #include <react/renderer/components/text/ParagraphState.h>
 #ifdef RN_SERIALIZABLE_STATE
@@ -18,7 +17,8 @@
 namespace facebook::react {
 
 #ifdef RN_SERIALIZABLE_STATE
-inline MapBuffer toMapBuffer(const ParagraphState& paragraphState) {
+inline MapBuffer toMapBuffer(const ParagraphState &paragraphState)
+{
   auto builder = MapBufferBuilder();
   auto attStringMapBuffer = toMapBuffer(paragraphState.attributedString);
   builder.putMapBuffer(TX_STATE_KEY_ATTRIBUTED_STRING, attStringMapBuffer);

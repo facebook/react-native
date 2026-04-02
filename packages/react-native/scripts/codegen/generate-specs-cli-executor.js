@@ -14,7 +14,7 @@ const utils = require('./codegen-utils');
 const fs = require('fs');
 const path = require('path');
 
-const GENERATORS /*: {[string]: {[string]: $ReadOnlyArray<string>}} */ = {
+const GENERATORS /*: {[string]: {[string]: ReadonlyArray<string>}} */ = {
   all: {
     android: ['componentsAndroid', 'modulesAndroid', 'modulesCxx'],
     ios: ['componentsIOS', 'modulesIOS', 'modulesCxx'],
@@ -120,7 +120,7 @@ function generateSpec(
   packageName /*: string */,
   libraryType /*: string */,
 ) {
-  // $FlowFixMe[incompatible-call]
+  // $FlowFixMe[incompatible-type]
   generateSpecFromInMemorySchema(
     platform,
     readAndParseSchema(schemaPath),

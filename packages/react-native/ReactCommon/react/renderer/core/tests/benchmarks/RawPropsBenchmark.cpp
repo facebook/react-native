@@ -19,8 +19,10 @@ namespace facebook::react {
 
 auto contextContainer = std::make_shared<const ContextContainer>();
 auto eventDispatcher = std::shared_ptr<EventDispatcher>{nullptr};
-auto viewComponentDescriptor = ViewComponentDescriptor{
-    ComponentDescriptorParameters{eventDispatcher, contextContainer}};
+auto viewComponentDescriptor =
+    ViewComponentDescriptor{ComponentDescriptorParameters{
+        .eventDispatcher = eventDispatcher,
+        .contextContainer = contextContainer}};
 
 auto emptyPropsDynamic = folly::parseJson("{}");
 auto propsString = std::string{

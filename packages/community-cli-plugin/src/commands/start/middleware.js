@@ -22,7 +22,10 @@ type MiddlewareReturn = {
   },
   messageSocketEndpoint: {
     server: ws$WebSocketServer,
-    broadcast: (method: string, params?: Record<string, mixed> | null) => void,
+    broadcast: (
+      method: string,
+      params?: Record<string, unknown> | null,
+    ) => void,
   },
   eventsSocketEndpoint: {
     server: ws$WebSocketServer,
@@ -31,16 +34,16 @@ type MiddlewareReturn = {
   ...
 };
 
-// $FlowFixMe
+// $FlowFixMe[incompatible-type]
 const unusedStubWSServer: ws$WebSocketServer = {};
-// $FlowFixMe
+// $FlowFixMe[incompatible-type]
 const unusedMiddlewareStub: Server = {};
 
 const communityMiddlewareFallback = {
   createDevServerMiddleware: (params: {
     host?: string,
     port: number,
-    watchFolders: $ReadOnlyArray<string>,
+    watchFolders: ReadonlyArray<string>,
   }): MiddlewareReturn => ({
     // FIXME: Several features will break without community middleware and
     // should be migrated into core.
@@ -54,7 +57,7 @@ const communityMiddlewareFallback = {
       server: unusedStubWSServer,
       broadcast: (
         method: string,
-        _params?: Record<string, mixed> | null,
+        _params?: Record<string, unknown> | null,
       ): void => {},
     },
     eventsSocketEndpoint: {

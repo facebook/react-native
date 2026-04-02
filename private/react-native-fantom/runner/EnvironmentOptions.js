@@ -16,10 +16,12 @@ const VALID_ENVIRONMENT_VARIABLES = [
   'FANTOM_FORCE_CI_MODE',
   'FANTOM_FORCE_OSS_BUILD',
   'FANTOM_FORCE_TEST_MODE',
+  'FANTOM_INCLUDE_BENCHMARKS',
   'FANTOM_LOG_COMMANDS',
   'FANTOM_PRINT_OUTPUT',
   'FANTOM_DEBUG_JS',
   'FANTOM_PROFILE_JS',
+  'FANTOM_PROFILE_CPP',
   'FANTOM_ENABLE_JS_MEMORY_INSTRUMENTATION',
 ];
 
@@ -68,6 +70,12 @@ export const forceTestModeForBenchmarks: boolean = Boolean(
 export const debugJS: boolean = Boolean(process.env.FANTOM_DEBUG_JS);
 
 export const profileJS: boolean = Boolean(process.env.FANTOM_PROFILE_JS);
+
+/**
+ * Enables C++ sampling profiler using Linux perf.
+ * Saves perf.data files to .out/cpp-traces/ for analysis.
+ */
+export const profileCpp: boolean = Boolean(process.env.FANTOM_PROFILE_CPP);
 
 /**
  * Enables address sanitizer (ASAN) build mode for the C++ side.

@@ -56,6 +56,11 @@ export interface PressableProps
   onPressIn?: null | ((event: GestureResponderEvent) => void) | undefined;
 
   /**
+   * Called when the press location moves.
+   */
+  onPressMove?: null | ((event: GestureResponderEvent) => void) | undefined;
+
+  /**
    * Called when a touch is released before `onPress`.
    */
   onPressOut?: null | ((event: GestureResponderEvent) => void) | undefined;

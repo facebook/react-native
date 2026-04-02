@@ -9,7 +9,6 @@
 
 #include <unordered_map>
 
-#include <folly/dynamic.h>
 #include <glog/logging.h>
 #include <react/debug/react_native_expect.h>
 #include <react/renderer/core/PropsParserContext.h>
@@ -18,10 +17,8 @@
 
 namespace facebook::react {
 
-inline void fromRawValue(
-    const PropsParserContext& context,
-    const RawValue& value,
-    ImageSource& result) {
+inline void fromRawValue(const PropsParserContext &context, const RawValue &value, ImageSource &result)
+{
   if (value.hasType<std::string>()) {
     result = {
         /* .type = */ ImageSource::Type::Remote,
@@ -40,12 +37,10 @@ inline void fromRawValue(
       result.type = ImageSource::Type::Local;
     }
 
-    if (items.find("width") != items.end() &&
-        items.find("height") != items.end() &&
+    if (items.find("width") != items.end() && items.find("height") != items.end() &&
         // The following checks have to be removed after codegen is shipped.
         // See T45151459.
-        items.at("width").hasType<Float>() &&
-        items.at("height").hasType<Float>()) {
+        items.at("width").hasType<Float>() && items.at("height").hasType<Float>()) {
       result.size = {(Float)items.at("width"), (Float)items.at("height")};
     }
 
@@ -81,27 +76,22 @@ inline void fromRawValue(
     }
 
     if (items.find("headers") != items.end() &&
-        items.at("headers")
-            .hasType<std::unordered_map<std::string, std::string>>()) {
-      auto headers =
-          (std::unordered_map<std::string, std::string>)items.at("headers");
-      for (const auto& header : headers) {
+        items.at("headers").hasType<std::unordered_map<std::string, std::string>>()) {
+      auto headers = (std::unordered_map<std::string, std::string>)items.at("headers");
+      for (const auto &header : headers) {
         result.headers.push_back(header);
       }
     }
 
-    if (items.find("body") != items.end() &&
-        items.at("body").hasType<std::string>()) {
+    if (items.find("body") != items.end() && items.at("body").hasType<std::string>()) {
       result.body = (std::string)items.at("body");
     }
 
-    if (items.find("method") != items.end() &&
-        items.at("method").hasType<std::string>()) {
+    if (items.find("method") != items.end() && items.at("method").hasType<std::string>()) {
       result.method = (std::string)items.at("method");
     }
 
-    if (items.find("cache") != items.end() &&
-        items.at("cache").hasType<std::string>()) {
+    if (items.find("cache") != items.end() && items.at("cache").hasType<std::string>()) {
       auto cache = (std::string)items.at("cache");
       if (cache == "reload") {
         result.cache = ImageSource::CacheStategy::Reload;
@@ -121,14 +111,13 @@ inline void fromRawValue(
   result.type = ImageSource::Type::Invalid;
 }
 
-inline std::string toString(const ImageSource& value) {
+inline std::string toString(const ImageSource &value)
+{
   return "{uri: " + value.uri + "}";
 }
 
-inline void fromRawValue(
-    const PropsParserContext& context,
-    const RawValue& value,
-    ImageResizeMode& result) {
+inline void fromRawValue(const PropsParserContext &context, const RawValue &value, ImageResizeMode &result)
+{
   react_native_expect(value.hasType<std::string>());
   if (!value.hasType<std::string>()) {
     LOG(ERROR) << "Unsupported ImageResizeMode type";
@@ -158,7 +147,8 @@ inline void fromRawValue(
   }
 }
 
-inline std::string toString(const ImageResizeMode& value) {
+inline std::string toString(const ImageResizeMode &value)
+{
   switch (value) {
     case ImageResizeMode::Cover:
       return "cover";
@@ -172,6 +162,11 @@ inline std::string toString(const ImageResizeMode& value) {
       return "repeat";
     case ImageResizeMode::None:
       return "none";
+    default:
+      LOG(ERROR) << "Unsupported ImageResizeMode value: " << (int)value;
+      react_native_expect(false);
+      // "cover" is default in non-Fabric web and iOS
+      return "cover";
   }
 }
 

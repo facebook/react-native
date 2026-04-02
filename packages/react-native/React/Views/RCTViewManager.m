@@ -137,8 +137,6 @@ RCT_EXPORT_MODULE()
 
 - (void)setBridge:(RCTBridge *)bridge
 {
-  RCTErrorNewArchitectureValidation(
-      RCTNotAllowedInBridgeless, self, @"RCTViewManager must not be initialized for the new architecture");
   _bridge = bridge;
 }
 
@@ -297,6 +295,7 @@ RCT_CUSTOM_VIEW_PROPERTY(accessibilityState, NSDictionary, RCTView)
 
 RCT_CUSTOM_VIEW_PROPERTY(accessibilityShowsLargeContentViewer, BOOL, RCTView)
 {
+#if !TARGET_OS_TV
   if (@available(iOS 13.0, *)) {
     BOOL showsLargeContentViewer = json ? [RCTConvert BOOL:json] : defaultView.showsLargeContentViewer;
 
@@ -308,13 +307,16 @@ RCT_CUSTOM_VIEW_PROPERTY(accessibilityShowsLargeContentViewer, BOOL, RCTView)
       view.showsLargeContentViewer = NO;
     }
   }
+#endif
 }
 
 RCT_CUSTOM_VIEW_PROPERTY(accessibilityLargeContentTitle, NSString, RCTView)
 {
+#if !TARGET_OS_TV
   if (@available(iOS 13.0, *)) {
     view.largeContentTitle = json ? [RCTConvert NSString:json] : defaultView.largeContentTitle;
   }
+#endif
 }
 
 RCT_CUSTOM_VIEW_PROPERTY(nativeID, NSString *, RCTView)
@@ -343,11 +345,13 @@ RCT_CUSTOM_VIEW_PROPERTY(pointerEvents, RCTPointerEvents, RCTView)
       // Unspecified values do not.
       // This wouldn't override a container view's `userInteractionEnabled = NO`
       view.userInteractionEnabled = YES;
+      break;
     case RCTPointerEventsNone:
       view.userInteractionEnabled = NO;
       break;
     default:
       RCTLogInfo(@"UIView base class does not support pointerEvent value: %@", json);
+      break;
   }
 }
 RCT_CUSTOM_VIEW_PROPERTY(removeClippedSubviews, BOOL, RCTView)

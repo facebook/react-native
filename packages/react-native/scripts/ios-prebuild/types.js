@@ -20,6 +20,26 @@ export type Destination =
   'macOS,variant=Mac Catalyst';
 
 export type BuildFlavor = 'Debug' | 'Release';
+
+export type MavenSubGroup = 'hermes' | 'react';
+
+export type VFSEntry = {
+  name: string,
+  type: 'file' | 'directory',
+  'external-contents'?: string,
+  contents?: Array<VFSEntry>,
+};
+
+export type VFSOverlay = {
+  version: number,
+  'case-sensitive': boolean,
+  roots: Array<VFSEntry>,
+};
+
+export type HeaderMapping = {
+  key: string,
+  path: string,
+};
 */
 
 module.exports = {};

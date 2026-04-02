@@ -9,10 +9,10 @@
 
 #import <React/RCTConversions.h>
 
-#import <react/renderer/components/FBReactNativeSpec/ComponentDescriptors.h>
 #import <react/renderer/components/FBReactNativeSpec/EventEmitters.h>
 #import <react/renderer/components/FBReactNativeSpec/Props.h>
 #import <react/renderer/components/FBReactNativeSpec/RCTComponentViewHelpers.h>
+#import <react/renderer/components/switch/AppleSwitchComponentDescriptor.h>
 
 #import "RCTFabricComponentsPlugins.h"
 
@@ -20,6 +20,19 @@ using namespace facebook::react;
 
 @interface RCTSwitchComponentView () <RCTSwitchViewProtocol>
 @end
+
+#if TARGET_OS_TV
+
+@implementation RCTSwitchComponentView {
+}
+
+- (void)setValue:(BOOL)value
+{
+}
+
+@end
+
+#else
 
 @implementation RCTSwitchComponentView {
   UISwitch *_switchView;
@@ -126,6 +139,8 @@ using namespace facebook::react;
 }
 
 @end
+
+#endif
 
 Class<RCTComponentViewProtocol> RCTSwitchCls(void)
 {

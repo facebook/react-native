@@ -14,9 +14,9 @@ import * as TurboModuleRegistry from 'react-native/Libraries/TurboModule/TurboMo
 
 export interface Spec extends TurboModule {
   +exampleFunction: (a: string, b: number) => void;
-  +getConstants: () => $ReadOnly<{}>;
+  +getConstants: () => Readonly<{}>;
 }
 
-export default (TurboModuleRegistry.getEnforcing<Spec>(
+export default TurboModuleRegistry.getEnforcing<Spec>(
   'NativeModuleTest',
-): Spec);
+) as Spec;

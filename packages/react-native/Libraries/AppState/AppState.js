@@ -42,7 +42,7 @@ type AppStateEventDefinitions = {
   focus: [],
 };
 
-export type AppStateEvent = $Keys<AppStateEventDefinitions>;
+export type AppStateEvent = keyof AppStateEventDefinitions;
 
 type NativeAppStateEventDefinitions = {
   appStateDidChange: [{app_state: AppStateStatus}],
@@ -97,7 +97,7 @@ class AppStateImpl {
         // It's possible that the state will have changed here & listeners need to be notified
         if (!eventUpdated && this.currentState !== appStateData.app_state) {
           this.currentState = appStateData.app_state;
-          // $FlowFixMe[incompatible-call]
+          // $FlowFixMe[incompatible-type]
           emitter.emit('appStateDidChange', appStateData);
         }
       }, logError);
@@ -110,7 +110,7 @@ class AppStateImpl {
    *
    * See https://reactnative.dev/docs/appstate#addeventlistener
    */
-  addEventListener<K: AppStateEvent>(
+  addEventListener<K extends AppStateEvent>(
     type: K,
     handler: (...AppStateEventDefinitions[K]) => void,
   ): EventSubscription {
@@ -134,9 +134,13 @@ class AppStateImpl {
         // $FlowFixMe[invalid-tuple-arity] Flow cannot refine handler based on the event type
         const focusOrBlurHandler: () => void = handler;
         return emitter.addListener('appStateFocusChange', hasFocus => {
+          /* $FlowFixMe[invalid-compare] Error discovered during Constant
+           * Condition roll out. See https://fburl.com/workplace/4oq3zi07. */
           if (type === 'blur' && !hasFocus) {
             focusOrBlurHandler();
           }
+          /* $FlowFixMe[invalid-compare] Error discovered during Constant
+           * Condition roll out. See https://fburl.com/workplace/4oq3zi07. */
           if (type === 'focus' && hasFocus) {
             focusOrBlurHandler();
           }

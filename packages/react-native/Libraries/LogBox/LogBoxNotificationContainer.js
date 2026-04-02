@@ -16,8 +16,8 @@ import LogBoxLog from './Data/LogBoxLog';
 import LogBoxLogNotification from './UI/LogBoxNotification';
 import * as React from 'react';
 
-type Props = $ReadOnly<{
-  logs: $ReadOnlyArray<LogBoxLog>,
+type Props = Readonly<{
+  logs: ReadonlyArray<LogBoxLog>,
   selectedLogIndex: number,
   isDisabled?: ?boolean,
 }>;
@@ -100,6 +100,6 @@ const styles = StyleSheet.create({
   },
 });
 
-export default (LogBoxData.withSubscription(
+export default LogBoxData.withSubscription(
   _LogBoxNotificationContainer,
-): React.ComponentType<{}>);
+) as React.ComponentType<{}>;

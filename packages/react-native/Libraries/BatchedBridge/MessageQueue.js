@@ -6,6 +6,7 @@
  *
  * @flow strict
  * @format
+ * @deprecated
  */
 
 'use strict';
@@ -22,7 +23,7 @@ export type SpyData = {
   type: number,
   module: ?string,
   method: string | number,
-  args: mixed[],
+  args: unknown[],
   ...
 };
 
@@ -41,9 +42,9 @@ const DEBUG_INFO_LIMIT = 32;
 
 class MessageQueue {
   _lazyCallableModules: {[key: string]: (void) => {...}, ...};
-  _queue: [number[], number[], mixed[], number];
-  _successCallbacks: Map<number, ?(...mixed[]) => void>;
-  _failureCallbacks: Map<number, ?(...mixed[]) => void>;
+  _queue: [number[], number[], unknown[], number];
+  _successCallbacks: Map<number, ?(...unknown[]) => void>;
+  _failureCallbacks: Map<number, ?(...unknown[]) => void>;
   _callID: number;
   _lastFlush: number;
   _eventLoopStartTime: number;
@@ -51,7 +52,7 @@ class MessageQueue {
 
   _debugInfo: {[number]: [number, number], ...};
   _remoteModuleTable: {[number]: string, ...};
-  _remoteMethodTable: {[number]: $ReadOnlyArray<string>, ...};
+  _remoteMethodTable: {[number]: ReadonlyArray<string>, ...};
 
   __spy: ?(data: SpyData) => void;
 
@@ -108,8 +109,8 @@ class MessageQueue {
   callFunctionReturnFlushedQueue(
     module: string,
     method: string,
-    args: mixed[],
-  ): null | [Array<number>, Array<number>, Array<mixed>, number] {
+    args: unknown[],
+  ): null | [Array<number>, Array<number>, Array<unknown>, number] {
     this.__guard(() => {
       this.__callFunction(module, method, args);
     });
@@ -119,8 +120,8 @@ class MessageQueue {
 
   invokeCallbackAndReturnFlushedQueue(
     cbID: number,
-    args: mixed[],
-  ): null | [Array<number>, Array<number>, Array<mixed>, number] {
+    args: unknown[],
+  ): null | [Array<number>, Array<number>, Array<unknown>, number] {
     this.__guard(() => {
       this.__invokeCallback(cbID, args);
     });
@@ -128,7 +129,9 @@ class MessageQueue {
     return this.flushedQueue();
   }
 
-  flushedQueue(): null | [Array<number>, Array<number>, Array<mixed>, number] {
+  flushedQueue():
+    | null
+    | [Array<number>, Array<number>, Array<unknown>, number] {
     this.__guard(() => {
       this.__callReactNativeMicrotasks();
     });
@@ -170,10 +173,10 @@ class MessageQueue {
   callNativeSyncHook(
     moduleID: number,
     methodID: number,
-    params: mixed[],
-    onFail: ?(...mixed[]) => void,
-    onSucc: ?(...mixed[]) => void,
-  ): mixed {
+    params: unknown[],
+    onFail: ?(...unknown[]) => void,
+    onSucc: ?(...unknown[]) => void,
+  ): unknown {
     if (__DEV__) {
       invariant(
         global.nativeCallSyncHook,
@@ -190,9 +193,9 @@ class MessageQueue {
   processCallbacks(
     moduleID: number,
     methodID: number,
-    params: mixed[],
-    onFail: ?(...mixed[]) => void,
-    onSucc: ?(...mixed[]) => void,
+    params: unknown[],
+    onFail: ?(...unknown[]) => void,
+    onSucc: ?(...unknown[]) => void,
   ): void {
     if (onFail || onSucc) {
       if (__DEV__) {
@@ -241,9 +244,9 @@ class MessageQueue {
   enqueueNativeCall(
     moduleID: number,
     methodID: number,
-    params: mixed[],
-    onFail: ?(...mixed[]) => void,
-    onSucc: ?(...mixed[]) => void,
+    params: unknown[],
+    onFail: ?(...unknown[]) => void,
+    onSucc: ?(...unknown[]) => void,
   ): void {
     this.processCallbacks(moduleID, methodID, params, onFail, onSucc);
 
@@ -255,7 +258,7 @@ class MessageQueue {
       // folly-convertible.  As a special case, if a prop value is a
       // function it is permitted here, and special-cased in the
       // conversion.
-      const isValidArgument = (val: mixed): boolean => {
+      const isValidArgument = (val: unknown): boolean => {
         switch (typeof val) {
           case 'undefined':
           case 'boolean':
@@ -344,7 +347,7 @@ class MessageQueue {
   createDebugLookup(
     moduleID: number,
     name: string,
-    methods: ?$ReadOnlyArray<string>,
+    methods: ?ReadonlyArray<string>,
   ) {
     if (__DEV__) {
       this._remoteModuleTable[moduleID] = name;
@@ -369,7 +372,7 @@ class MessageQueue {
     } else {
       try {
         fn();
-      } catch (error) {
+      } catch (error: unknown) {
         ErrorUtils.reportFatalError(error);
       }
     }
@@ -400,7 +403,7 @@ class MessageQueue {
     }
   }
 
-  __callFunction(module: string, method: string, args: mixed[]): void {
+  __callFunction(module: string, method: string, args: unknown[]): void {
     this._lastFlush = Date.now();
     this._eventLoopStartTime = this._lastFlush;
     if (__DEV__ || this.__spy) {
@@ -440,7 +443,7 @@ class MessageQueue {
     }
   }
 
-  __invokeCallback(cbID: number, args: mixed[]): void {
+  __invokeCallback(cbID: number, args: unknown[]): void {
     this._lastFlush = Date.now();
     this._eventLoopStartTime = this._lastFlush;
 

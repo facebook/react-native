@@ -28,7 +28,7 @@ describe('setNormalizedColorAlpha', () => {
 
   it('should return the original color when alpha is unchanged', () => {
     const originalColor = normalizeColor('blue');
-    // $FlowFixMe[incompatible-call]
+    // $FlowFixMe[incompatible-type]
     expect(setNormalizedColorAlpha(originalColor, 1)).toBe(originalColor);
   });
 });

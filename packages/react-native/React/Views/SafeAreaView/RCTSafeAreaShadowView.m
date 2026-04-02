@@ -7,7 +7,7 @@
 
 #import "RCTSafeAreaShadowView.h"
 
-#ifndef RCT_FIT_RM_OLD_COMPONENT
+#ifndef RCT_REMOVE_LEGACY_ARCH
 
 #import <React/RCTAssert.h>
 #import <yoga/Yoga.h>
@@ -54,4 +54,4 @@
 
 @end
 
-#endif // RCT_FIT_RM_OLD_COMPONENT
+#endif // RCT_REMOVE_LEGACY_ARCH

@@ -24,7 +24,8 @@ public class SourceCodeModule(reactContext: ReactApplicationContext) :
               Assertions.assertNotNull<String>(
                   reactApplicationContext.getSourceURL(),
                   "No source URL loaded, have you initialised the instance?",
-              ))
+              )
+      )
 
   public companion object {
     public const val NAME: String = NativeSourceCodeSpec.NAME

@@ -10,12 +10,8 @@
 #include <fb/glog_init.h>
 #include <fbjni/fbjni.h>
 
-#include "CatalystInstanceImpl.h"
-#include "CxxModuleWrapperBase.h"
 #include "InspectorNetworkRequestListener.h"
-#include "JInspector.h"
 #include "JavaScriptExecutorHolder.h"
-#include "ReactInstanceManagerInspectorTarget.h"
 
 #ifndef WITH_GLOGINIT
 #define WITH_GLOGINIT 1
@@ -37,12 +33,6 @@ extern "C" JNIEXPORT jint JNI_OnLoad(JavaVM* vm, void* reserved) {
     gloginit::initialize();
     FLAGS_minloglevel = 0;
 #endif
-#ifndef RCT_FIT_RM_OLD_RUNTIME
-    CatalystInstanceImpl::registerNatives();
-#endif
-    CxxModuleWrapperBase::registerNatives();
-    JInspector::registerNatives();
-    ReactInstanceManagerInspectorTarget::registerNatives();
     InspectorNetworkRequestListener::registerNatives();
   });
 }

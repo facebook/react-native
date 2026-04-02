@@ -7,7 +7,9 @@
 
 #ifdef WITH_PERFETTO
 
+#if defined(__ANDROID__)
 #include <android/log.h>
+#endif // __ANDROID__
 #include <folly/json.h>
 #include <hermes/hermes.h>
 #include <perfetto.h>
@@ -25,8 +27,7 @@ const std::string JS_SAMPLING_TRACK = "JS Sampling";
 
 const int SAMPLING_HZ = 1000;
 
-using perfetto::TrackEvent;
-
+#if defined(__ANDROID__)
 std::string getApplicationId() {
   pid_t pid = getpid();
   char path[64] = {0};
@@ -40,6 +41,7 @@ std::string getApplicationId() {
   }
   return "";
 }
+#endif // __ANDROID__
 
 uint64_t hermesToPerfettoTime(int64_t hermesTs) {
   return (hermesTs / 1000);
@@ -130,6 +132,7 @@ void FuseboxPerfettoDataSource::OnStop(const StopArgs& a) {
   std::string trace = stream.str();
   logHermesProfileToFusebox(trace);
 
+#if defined(__ANDROID__)
   // XXX: Adjust the package ID. Writing to other global tmp directories
   // seems to fail.
   std::string appId = getApplicationId();
@@ -137,6 +140,7 @@ void FuseboxPerfettoDataSource::OnStop(const StopArgs& a) {
       ANDROID_LOG_INFO, "FuseboxTracer", "Application ID: %s", appId.c_str());
   FuseboxTracer::getFuseboxTracer().stopTracingAndWriteToFile(
       "/data/data/" + appId + "/cache/hermes_trace.json");
+#endif // __ANDROID__
 }
 
 } // namespace facebook::react

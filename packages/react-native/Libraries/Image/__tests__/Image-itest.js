@@ -6,14 +6,12 @@
  *
  * @flow strict-local
  * @format
- * @fantom_flags reduceDefaultPropsInImage:*
  */
 
 import '@react-native/fantom/src/setUpDefaultReactNativeEnvironment';
 
 import type {AccessibilityProps, HostInstance} from 'react-native';
 
-import * as ReactNativeFeatureFlags from '../../../src/private/featureflags/ReactNativeFeatureFlags';
 import * as Fantom from '@react-native/fantom';
 import * as React from 'react';
 import {createRef} from 'react';
@@ -37,51 +35,27 @@ describe('<Image>', () => {
           root.render(<Image />);
         });
 
-        if (ReactNativeFeatureFlags.reduceDefaultPropsInImage()) {
-          expect(root.getRenderedOutput().toJSX()).toEqual(
-            <rn-image
-              overflow="hidden"
-              resizeMode="cover"
-              source-scale="1"
-              source-type="remote"
-            />,
-          );
-        } else {
-          expect(root.getRenderedOutput().toJSX()).toEqual(
-            <rn-image
-              accessibilityState="{disabled:false,selected:false,checked:None,busy:false,expanded:null}"
-              overflow="hidden"
-              resizeMode="cover"
-              source-scale="1"
-              source-type="remote"
-            />,
-          );
-        }
+        expect(root.getRenderedOutput().toJSX()).toEqual(
+          <rn-image
+            overflow="hidden"
+            resizeMode="cover"
+            source-scale="1"
+            source-type="remote"
+          />,
+        );
 
         Fantom.runTask(() => {
           root.render(<Image src="" />);
         });
 
-        if (ReactNativeFeatureFlags.reduceDefaultPropsInImage()) {
-          expect(root.getRenderedOutput().toJSX()).toEqual(
-            <rn-image
-              overflow="hidden"
-              resizeMode="cover"
-              source-scale="1"
-              source-type="remote"
-            />,
-          );
-        } else {
-          expect(root.getRenderedOutput().toJSX()).toEqual(
-            <rn-image
-              accessibilityState="{disabled:false,selected:false,checked:None,busy:false,expanded:null}"
-              overflow="hidden"
-              resizeMode="cover"
-              source-scale="1"
-              source-type="remote"
-            />,
-          );
-        }
+        expect(root.getRenderedOutput().toJSX()).toEqual(
+          <rn-image
+            overflow="hidden"
+            resizeMode="cover"
+            source-scale="1"
+            source-type="remote"
+          />,
+        );
       });
     });
 
@@ -178,7 +152,7 @@ describe('<Image>', () => {
         });
 
         expect(root.getRenderedOutput({props: ['height']}).toJSX()).toEqual(
-          <rn-image height="100.000000" />,
+          <rn-image height="100" />,
         );
       });
     });
@@ -192,7 +166,7 @@ describe('<Image>', () => {
         });
 
         expect(root.getRenderedOutput({props: ['width']}).toJSX()).toEqual(
-          <rn-image width="100.000000" />,
+          <rn-image width="100" />,
         );
       });
     });
@@ -265,14 +239,26 @@ describe('<Image>', () => {
 
           Fantom.runTask(() => {
             root.render(
-              <Image referrerPolicy={referrerPolicy} src={LOGO_SOURCE.uri} />,
+              <>
+                <Image referrerPolicy={referrerPolicy} src={LOGO_SOURCE.uri} />
+                <Image referrerPolicy={referrerPolicy} source={LOGO_SOURCE} />
+              </>,
             );
           });
 
           expect(
             root.getRenderedOutput({props: ['source-header']}).toJSX(),
           ).toEqual(
-            <rn-image source-header-Referrer-Policy={referrerPolicy} />,
+            <>
+              <rn-image
+                key="0"
+                source-header-Referrer-Policy={referrerPolicy}
+              />
+              <rn-image
+                key="1"
+                source-header-Referrer-Policy={referrerPolicy}
+              />
+            </>,
           );
         });
       });
@@ -470,6 +456,35 @@ describe('<Image>', () => {
           />,
         );
       });
+
+      it('merges dimension information into source', () => {
+        const root = Fantom.createRoot();
+
+        Fantom.runTask(() => {
+          root.render(
+            <Image
+              src="https://reactnative.dev/img/tiny_logo.png"
+              width={40}
+              height={40}
+            />,
+          );
+        });
+
+        expect(
+          root
+            .getRenderedOutput({props: ['source', 'width', 'height']})
+            .toJSX(),
+        ).toEqual(
+          <rn-image
+            source-scale="1"
+            source-type="remote"
+            source-size="{40, 40}"
+            source-uri="https://reactnative.dev/img/tiny_logo.png"
+            width="40"
+            height="40"
+          />,
+        );
+      });
     });
 
     describe('srcSet', () => {
@@ -573,13 +588,7 @@ describe('<Image>', () => {
           root
             .getRenderedOutput({props: ['width', 'height', 'resizeMode']})
             .toJSX(),
-        ).toEqual(
-          <rn-image
-            height="100.000000"
-            resizeMode="contain"
-            width="100.000000"
-          />,
-        );
+        ).toEqual(<rn-image height="100" resizeMode="contain" width="100" />);
       });
     });
 
@@ -594,6 +603,20 @@ describe('<Image>', () => {
         expect(root.getRenderedOutput({props: ['tintColor']}).toJSX()).toEqual(
           <rn-image tintColor="rgba(255, 0, 0, 1)" />,
         );
+      });
+    });
+
+    describe('aria-hidden', () => {
+      it('is is passed as importantForAccessibility', () => {
+        const root = Fantom.createRoot();
+        Fantom.runTask(() => {
+          root.render(<Image aria-hidden={true} />);
+        });
+        expect(
+          root
+            .getRenderedOutput({props: ['importantForAccessibility']})
+            .toJSX(),
+        ).toEqual(<rn-image importantForAccessibility="no-hide-descendants" />);
       });
     });
 
@@ -669,7 +692,7 @@ describe('<Image>', () => {
             (width, height) => {
               size = {width, height};
             },
-            (e: mixed) => {
+            (e: unknown) => {
               if (e instanceof Error) {
                 err = e;
               }

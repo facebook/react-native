@@ -196,7 +196,8 @@ TEST(PerformanceObserver, PerformanceObserverTestObserveTakeRecords) {
   reporter->reportMeasure(
       "off",
       timeOrigin + HighResDuration::fromMilliseconds(10),
-      HighResDuration::fromMilliseconds(20));
+      HighResDuration::fromMilliseconds(20),
+      std::nullopt);
   reporter->reportMark(
       "test2", timeOrigin + HighResDuration::fromMilliseconds(20));
   reporter->reportMark(
@@ -391,7 +392,10 @@ TEST(PerformanceObserver, PerformanceObserverTestMultiple) {
       {.durationThreshold = HighResDuration::fromMilliseconds(80)});
 
   reporter->reportMeasure(
-      "measure", timeOrigin, HighResDuration::fromMilliseconds(50));
+      "measure",
+      timeOrigin,
+      HighResDuration::fromMilliseconds(50),
+      std::nullopt);
   reporter->reportEvent(
       "event1",
       timeOrigin,

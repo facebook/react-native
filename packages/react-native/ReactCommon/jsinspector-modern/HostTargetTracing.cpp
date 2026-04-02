@@ -10,11 +10,22 @@
 
 namespace facebook::react::jsinspector_modern {
 
-bool HostTargetController::startTracing(tracing::Mode tracingMode) {
-  return target_.startTracing(tracingMode);
+namespace {
+
+// The size of the timeline for the trace recording that happened in the
+// background.
+constexpr HighResDuration kBackgroundTraceWindowSize =
+    HighResDuration::fromMilliseconds(20000);
+
+} // namespace
+
+bool HostTargetController::startTracing(
+    tracing::Mode tracingMode,
+    std::set<tracing::Category> enabledCategories) {
+  return target_.startTracing(tracingMode, std::move(enabledCategories));
 }
 
-tracing::TraceRecordingState HostTargetController::stopTracing() {
+tracing::HostTracingProfile HostTargetController::stopTracing() {
   return target_.stopTracing();
 }
 
@@ -25,31 +36,69 @@ std::shared_ptr<HostTracingAgent> HostTarget::createTracingAgent(
   return agent;
 }
 
-bool HostTarget::startTracing(tracing::Mode tracingMode) {
+bool HostTarget::startTracing(
+    tracing::Mode tracingMode,
+    std::set<tracing::Category> enabledCategories) {
+  std::lock_guard lock(tracingMutex_);
+
   if (traceRecording_ != nullptr) {
     if (traceRecording_->isBackgroundInitiated() &&
         tracingMode == tracing::Mode::CDP) {
+      if (auto tracingDelegate = delegate_.getTracingDelegate()) {
+        tracingDelegate->onTracingStopped();
+      }
+
+      traceRecording_->stop();
       traceRecording_.reset();
     } else {
       return false;
     }
   }
 
-  traceRecording_ =
-      std::make_unique<HostTargetTraceRecording>(tracingMode, *this);
+  auto timeWindow = tracingMode == tracing::Mode::Background
+      ? std::make_optional(kBackgroundTraceWindowSize)
+      : std::nullopt;
+  auto screenshotsCategoryEnabled =
+      enabledCategories.contains(tracing::Category::Screenshot);
+
+  traceRecording_ = std::make_unique<HostTargetTraceRecording>(
+      *this, tracingMode, std::move(enabledCategories), timeWindow);
   traceRecording_->setTracedInstance(currentInstance_.get());
   traceRecording_->start();
+
+  if (auto tracingDelegate = delegate_.getTracingDelegate()) {
+    tracingDelegate->onTracingStarted(tracingMode, screenshotsCategoryEnabled);
+  }
 
   return true;
 }
 
-tracing::TraceRecordingState HostTarget::stopTracing() {
+tracing::HostTracingProfile HostTarget::stopTracing() {
+  std::lock_guard lock(tracingMutex_);
+
   assert(traceRecording_ != nullptr && "No tracing in progress");
 
-  auto state = traceRecording_->stop();
+  if (auto tracingDelegate = delegate_.getTracingDelegate()) {
+    tracingDelegate->onTracingStopped();
+  }
+
+  auto profile = traceRecording_->stop();
   traceRecording_.reset();
 
-  return state;
+  return profile;
+}
+
+void HostTarget::recordFrameTimings(
+    tracing::FrameTimingSequence frameTimingSequence) {
+  std::lock_guard lock(tracingMutex_);
+
+  if (traceRecording_) {
+    traceRecording_->recordFrameTimings(std::move(frameTimingSequence));
+  } else {
+    assert(
+        false &&
+        "The HostTarget is not being profiled. Did you call recordFrameTimings() from the native Host side when there is no tracing in progress?");
+  }
 }
 
 } // namespace facebook::react::jsinspector_modern

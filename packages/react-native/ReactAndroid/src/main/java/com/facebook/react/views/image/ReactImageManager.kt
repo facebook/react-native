@@ -53,7 +53,8 @@ public constructor(
       replaceWith =
           ReplaceWith(
               expression =
-                  "ReactImageManager(draweeControllerBuilder, globalImageLoadListener, callerContextFactory)"),
+                  "ReactImageManager(draweeControllerBuilder, globalImageLoadListener, callerContextFactory)"
+          ),
   )
   public constructor(
       draweeControllerBuilder: AbstractDraweeControllerBuilder<*, *, *, *>?,
@@ -72,7 +73,8 @@ public constructor(
       replaceWith =
           ReplaceWith(
               expression =
-                  "ReactImageManager(draweeControllerBuilder, globalImageLoadListener, callerContextFactory)"),
+                  "ReactImageManager(draweeControllerBuilder, globalImageLoadListener, callerContextFactory)"
+          ),
   )
   public constructor(
       draweeControllerBuilder: AbstractDraweeControllerBuilder<*, *, *, *>?,
@@ -125,7 +127,8 @@ public constructor(
           callerContextFactory.getOrCreateCallerContext(
               (view.context as ThemedReactContext).moduleName,
               analyticTag,
-          ))
+          )
+      )
     }
   }
 
@@ -185,17 +188,7 @@ public constructor(
 
   @ReactProp(name = ViewProps.RESIZE_METHOD)
   public fun setResizeMethod(view: ReactImageView, resizeMethod: String?) {
-    when (resizeMethod) {
-      null,
-      "auto" -> view.setResizeMethod(ImageResizeMethod.AUTO)
-      "resize" -> view.setResizeMethod(ImageResizeMethod.RESIZE)
-      "scale" -> view.setResizeMethod(ImageResizeMethod.SCALE)
-      "none" -> view.setResizeMethod(ImageResizeMethod.NONE)
-      else -> {
-        view.setResizeMethod(ImageResizeMethod.AUTO)
-        FLog.w(ReactConstants.TAG, "Invalid resize method: '$resizeMethod'")
-      }
-    }
+    view.setResizeMethod(ImageResizeMethod.parse(resizeMethod))
   }
 
   @ReactProp(name = "resizeMultiplier")

@@ -41,7 +41,8 @@ internal class BridgelessAtomicRef<T>(
       }
       if (state == State.Failure) {
         throw RuntimeException(
-            "BridgelessAtomicRef: Failed to create object. Reason: $failureMessage")
+            "BridgelessAtomicRef: Failed to create object. Reason: $failureMessage"
+        )
       }
       if (state != State.Creating) {
         state = State.Creating
@@ -77,6 +78,8 @@ internal class BridgelessAtomicRef<T>(
         try {
           (this as Object).wait()
         } catch (ex: InterruptedException) {
+          // Record the interrupt to restore it after the wait loop completes.
+          // We continue waiting because we need the object to be created.
           wasInterrupted = true
         }
       }
@@ -87,7 +90,8 @@ internal class BridgelessAtomicRef<T>(
 
       if (state == State.Failure) {
         throw RuntimeException(
-            "BridgelessAtomicRef: Failed to create object. Reason: $failureMessage")
+            "BridgelessAtomicRef: Failed to create object. Reason: $failureMessage"
+        )
       }
       return get()
     }

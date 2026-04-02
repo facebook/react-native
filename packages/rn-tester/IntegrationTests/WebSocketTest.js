@@ -151,4 +151,4 @@ class WebSocketTest extends React.Component<{...}, State> {
 
 WebSocketTest.displayName = 'WebSocketTest';
 
-module.exports = WebSocketTest;
+export default WebSocketTest;

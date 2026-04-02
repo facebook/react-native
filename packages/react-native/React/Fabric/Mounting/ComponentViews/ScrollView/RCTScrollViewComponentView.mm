@@ -111,6 +111,7 @@ RCTSendScrollEventForNativeAnimations_DEPRECATED(UIScrollView *scrollView, NSInt
 
   CGRect _prevFirstVisibleFrame;
   __weak UIView *_firstVisibleView;
+  NSInteger _firstVisibleViewTag;
 
   CGFloat _endDraggingSensitivityMultiplier;
 
@@ -351,9 +352,11 @@ static inline UIViewAnimationOptions animationOptionsWithCurve(UIViewAnimationCu
   MAP_SCROLL_VIEW_PROP(maximumZoomScale);
   MAP_SCROLL_VIEW_PROP(minimumZoomScale);
   MAP_SCROLL_VIEW_PROP(scrollEnabled);
+#if !TARGET_OS_TV
   MAP_SCROLL_VIEW_PROP(pagingEnabled);
   MAP_SCROLL_VIEW_PROP(pinchGestureEnabled);
   MAP_SCROLL_VIEW_PROP(scrollsToTop);
+#endif
   MAP_SCROLL_VIEW_PROP(showsHorizontalScrollIndicator);
   MAP_SCROLL_VIEW_PROP(showsVerticalScrollIndicator);
 
@@ -679,6 +682,13 @@ static inline UIViewAnimationOptions animationOptionsWithCurve(UIViewAnimationCu
 
   const auto &props = static_cast<const ScrollViewProps &>(*_props);
   _scrollView.contentOffset = RCTCGPointFromPoint(props.contentOffset);
+  // Reset zoom scale to default
+  _scrollView.zoomScale = 1.0;
+  // Invalidate cached content size so that updateState: recalculates the
+  // container frame after zoomScale reset (which may have mutated it in RTL).
+  _contentSize = CGSizeZero;
+  // Reset contentInset to prevent stale insets leaking into recycled scroll views.
+  _scrollView.contentInset = UIEdgeInsetsZero;
   // We set the default behavior to "never" so that iOS
   // doesn't do weird things to UIScrollView insets automatically
   // and keeps it as an opt-in behavior.
@@ -691,6 +701,7 @@ static inline UIViewAnimationOptions animationOptionsWithCurve(UIViewAnimationCu
   _contentView = nil;
   _prevFirstVisibleFrame = CGRectZero;
   _firstVisibleView = nil;
+  _firstVisibleViewTag = 0;
   _virtualViewContainerState = nil;
 }
 
@@ -1041,7 +1052,7 @@ static inline UIViewAnimationOptions animationOptionsWithCurve(UIViewAnimationCu
 - (void)_prepareForMaintainVisibleScrollPosition
 {
   const auto &props = static_cast<const ScrollViewProps &>(*_props);
-  if (!props.maintainVisibleContentPosition) {
+  if (!props.maintainVisibleContentPosition || _avoidAdjustmentForMaintainVisibleContentPosition) {
     return;
   }
 
@@ -1059,6 +1070,7 @@ static inline UIViewAnimationOptions animationOptionsWithCurve(UIViewAnimationCu
     if (hasNewView || ii == _contentView.subviews.count - 1) {
       _prevFirstVisibleFrame = subview.frame;
       _firstVisibleView = subview;
+      _firstVisibleViewTag = subview.tag;
       break;
     }
   }
@@ -1069,6 +1081,13 @@ static inline UIViewAnimationOptions animationOptionsWithCurve(UIViewAnimationCu
   const auto &props = static_cast<const ScrollViewProps &>(*_props);
   if (!props.maintainVisibleContentPosition || _avoidAdjustmentForMaintainVisibleContentPosition) {
     return;
+  }
+
+  if (ReactNativeFeatureFlags::enableViewCulling()) {
+    // Abort if the first visible view has changed (different tag)
+    if (_firstVisibleView && _firstVisibleView.tag != _firstVisibleViewTag) {
+      return;
+    }
   }
 
   std::optional<int> autoscrollThreshold = props.maintainVisibleContentPosition.value().autoscrollToTopThreshold;

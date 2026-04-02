@@ -9,7 +9,6 @@ package com.facebook.react.views.text
 
 import android.os.Build
 import android.text.Layout
-import android.text.TextUtils
 import android.text.TextUtils.TruncateAt
 import android.util.LayoutDirection
 import android.view.Gravity
@@ -238,7 +237,7 @@ public class TextAttributeProps private constructor() {
         }
       }
     }
-    fontFeatureSettings = TextUtils.join(", ", features)
+    fontFeatureSettings = features.joinToString(", ")
   }
 
   private fun setFontWeight(fontWeightString: String?) {
@@ -272,12 +271,15 @@ public class TextAttributeProps private constructor() {
     textShadowOffsetDy = 0f
 
     if (offsetMap != null) {
-      if (offsetMap.hasKey(PROP_SHADOW_OFFSET_WIDTH) &&
-          !offsetMap.isNull(PROP_SHADOW_OFFSET_WIDTH)) {
+      if (
+          offsetMap.hasKey(PROP_SHADOW_OFFSET_WIDTH) && !offsetMap.isNull(PROP_SHADOW_OFFSET_WIDTH)
+      ) {
         textShadowOffsetDx = toPixelFromDIP(offsetMap.getDouble(PROP_SHADOW_OFFSET_WIDTH))
       }
-      if (offsetMap.hasKey(PROP_SHADOW_OFFSET_HEIGHT) &&
-          !offsetMap.isNull(PROP_SHADOW_OFFSET_HEIGHT)) {
+      if (
+          offsetMap.hasKey(PROP_SHADOW_OFFSET_HEIGHT) &&
+              !offsetMap.isNull(PROP_SHADOW_OFFSET_HEIGHT)
+      ) {
         textShadowOffsetDy = toPixelFromDIP(offsetMap.getDouble(PROP_SHADOW_OFFSET_HEIGHT))
       }
     }
@@ -461,7 +463,8 @@ public class TextAttributeProps private constructor() {
       result.includeFontPadding = getBooleanProp(props, ViewProps.INCLUDE_FONT_PADDING, true)
       result.setTextDecorationLine(getStringProp(props, ViewProps.TEXT_DECORATION_LINE))
       result.setTextShadowOffset(
-          if (props.hasKey(PROP_SHADOW_OFFSET)) props.getMap(PROP_SHADOW_OFFSET) else null)
+          if (props.hasKey(PROP_SHADOW_OFFSET)) props.getMap(PROP_SHADOW_OFFSET) else null
+      )
       result.textShadowRadius = getFloatProp(props, PROP_SHADOW_RADIUS, 1f)
       result.textShadowColor = getIntProp(props, PROP_SHADOW_COLOR, DEFAULT_TEXT_SHADOW_COLOR)
       result.setTextTransform(getStringProp(props, PROP_TEXT_TRANSFORM))

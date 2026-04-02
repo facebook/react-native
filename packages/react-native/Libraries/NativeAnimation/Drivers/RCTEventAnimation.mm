@@ -13,7 +13,7 @@
 
 - (instancetype)initWithEventPath:(NSArray<NSString *> *)eventPath valueNode:(RCTValueAnimatedNode *)valueNode
 {
-  if ((self = [super init])) {
+  if ((self = [super init]) != nullptr) {
     _eventPath = eventPath;
     _valueNode = valueNode;
   }

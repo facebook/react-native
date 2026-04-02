@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<8a2403250a16c2b2b573fc05db6e4768>>
+ * @generated SignedSource<<30a507b84b656705ee1abec794472d6b>>
  */
 
 /**
@@ -29,19 +29,27 @@ public interface ReactNativeFeatureFlagsProvider {
 
   @DoNotStrip public fun cxxNativeAnimatedEnabled(): Boolean
 
-  @DoNotStrip public fun cxxNativeAnimatedRemoveJsSync(): Boolean
+  @DoNotStrip public fun defaultTextToOverflowHidden(): Boolean
 
-  @DoNotStrip public fun disableFabricCommitInCXXAnimated(): Boolean
+  @DoNotStrip public fun disableEarlyViewCommandExecution(): Boolean
+
+  @DoNotStrip public fun disableImageViewPreallocationAndroid(): Boolean
 
   @DoNotStrip public fun disableMountItemReorderingAndroid(): Boolean
 
-  @DoNotStrip public fun disableOldAndroidAttachmentMetricsWorkarounds(): Boolean
+  @DoNotStrip public fun disableSubviewClippingAndroid(): Boolean
 
   @DoNotStrip public fun disableTextLayoutManagerCacheAndroid(): Boolean
+
+  @DoNotStrip public fun disableViewPreallocationAndroid(): Boolean
 
   @DoNotStrip public fun enableAccessibilityOrder(): Boolean
 
   @DoNotStrip public fun enableAccumulatedUpdatesInRawPropsAndroid(): Boolean
+
+  @DoNotStrip public fun enableAndroidAntialiasedBorderRadiusClipping(): Boolean
+
+  @DoNotStrip public fun enableAndroidLinearText(): Boolean
 
   @DoNotStrip public fun enableAndroidTextMeasurementOptimizations(): Boolean
 
@@ -53,17 +61,21 @@ public interface ReactNativeFeatureFlagsProvider {
 
   @DoNotStrip public fun enableDestroyShadowTreeRevisionAsync(): Boolean
 
+  @DoNotStrip public fun enableDifferentiatorMutationVectorPreallocation(): Boolean
+
   @DoNotStrip public fun enableDoubleMeasurementFixAndroid(): Boolean
 
   @DoNotStrip public fun enableEagerMainQueueModulesOnIOS(): Boolean
 
   @DoNotStrip public fun enableEagerRootViewAttachment(): Boolean
 
+  @DoNotStrip public fun enableExclusivePropsUpdateAndroid(): Boolean
+
+  @DoNotStrip public fun enableFabricCommitBranching(): Boolean
+
   @DoNotStrip public fun enableFabricLogs(): Boolean
 
   @DoNotStrip public fun enableFabricRenderer(): Boolean
-
-  @DoNotStrip public fun enableFixForParentTagDuringReparenting(): Boolean
 
   @DoNotStrip public fun enableFontScaleChangesUpdatingLayout(): Boolean
 
@@ -73,9 +85,19 @@ public interface ReactNativeFeatureFlagsProvider {
 
   @DoNotStrip public fun enableImagePrefetchingAndroid(): Boolean
 
+  @DoNotStrip public fun enableImagePrefetchingJNIBatchingAndroid(): Boolean
+
+  @DoNotStrip public fun enableImagePrefetchingOnUiThreadAndroid(): Boolean
+
   @DoNotStrip public fun enableImmediateUpdateModeForContentOffsetChanges(): Boolean
 
+  @DoNotStrip public fun enableImperativeFocus(): Boolean
+
   @DoNotStrip public fun enableInteropViewManagerClassLookUpOptimizationIOS(): Boolean
+
+  @DoNotStrip public fun enableIntersectionObserverByDefault(): Boolean
+
+  @DoNotStrip public fun enableKeyEvents(): Boolean
 
   @DoNotStrip public fun enableLayoutAnimationsOnAndroid(): Boolean
 
@@ -85,39 +107,55 @@ public interface ReactNativeFeatureFlagsProvider {
 
   @DoNotStrip public fun enableModuleArgumentNSNullConversionIOS(): Boolean
 
+  @DoNotStrip public fun enableMutationObserverByDefault(): Boolean
+
   @DoNotStrip public fun enableNativeCSSParsing(): Boolean
 
-  @DoNotStrip public fun enableNetworkEventReporting(): Boolean
+  @DoNotStrip public fun enableNativeViewPropTransformations(): Boolean
 
-  @DoNotStrip public fun enableNewBackgroundAndBorderDrawables(): Boolean
+  @DoNotStrip public fun enableNetworkEventReporting(): Boolean
 
   @DoNotStrip public fun enablePreparedTextLayout(): Boolean
 
   @DoNotStrip public fun enablePropsUpdateReconciliationAndroid(): Boolean
 
-  @DoNotStrip public fun enableResourceTimingAPI(): Boolean
+  @DoNotStrip public fun enableSwiftUIBasedFilters(): Boolean
 
   @DoNotStrip public fun enableViewCulling(): Boolean
 
   @DoNotStrip public fun enableViewRecycling(): Boolean
 
+  @DoNotStrip public fun enableViewRecyclingForImage(): Boolean
+
+  @DoNotStrip public fun enableViewRecyclingForScrollView(): Boolean
+
   @DoNotStrip public fun enableViewRecyclingForText(): Boolean
 
   @DoNotStrip public fun enableViewRecyclingForView(): Boolean
 
+  @DoNotStrip public fun enableVirtualViewContainerStateExperimental(): Boolean
+
   @DoNotStrip public fun enableVirtualViewDebugFeatures(): Boolean
 
-  @DoNotStrip public fun enableVirtualViewRenderState(): Boolean
-
-  @DoNotStrip public fun enableVirtualViewWindowFocusDetection(): Boolean
+  @DoNotStrip public fun fixFindShadowNodeByTagRaceCondition(): Boolean
 
   @DoNotStrip public fun fixMappingOfEventPrioritiesBetweenFabricAndReact(): Boolean
 
+  @DoNotStrip public fun fixYogaFlexBasisFitContentInMainAxis(): Boolean
+
+  @DoNotStrip public fun fuseboxAssertSingleHostState(): Boolean
+
   @DoNotStrip public fun fuseboxEnabledRelease(): Boolean
+
+  @DoNotStrip public fun fuseboxFrameRecordingEnabled(): Boolean
 
   @DoNotStrip public fun fuseboxNetworkInspectionEnabled(): Boolean
 
   @DoNotStrip public fun hideOffscreenVirtualViewsOnIOS(): Boolean
+
+  @DoNotStrip public fun overrideBySynchronousMountPropsAtMountingAndroid(): Boolean
+
+  @DoNotStrip public fun perfIssuesEnabled(): Boolean
 
   @DoNotStrip public fun perfMonitorV2Enabled(): Boolean
 
@@ -125,37 +163,43 @@ public interface ReactNativeFeatureFlagsProvider {
 
   @DoNotStrip public fun preventShadowTreeCommitExhaustion(): Boolean
 
-  @DoNotStrip public fun releaseImageDataWhenConsumed(): Boolean
-
   @DoNotStrip public fun shouldPressibilityUseW3CPointerEventsForHover(): Boolean
+
+  @DoNotStrip public fun shouldTriggerResponderTransferOnScrollAndroid(): Boolean
 
   @DoNotStrip public fun skipActivityIdentityAssertionOnHostPause(): Boolean
 
-  @DoNotStrip public fun sweepActiveTouchOnChildNativeGesturesAndroid(): Boolean
+  @DoNotStrip public fun syncAndroidClipToPaddingWithOverflow(): Boolean
 
   @DoNotStrip public fun traceTurboModulePromiseRejectionsOnAndroid(): Boolean
 
   @DoNotStrip public fun updateRuntimeShadowNodeReferencesOnCommit(): Boolean
 
+  @DoNotStrip public fun updateRuntimeShadowNodeReferencesOnCommitThread(): Boolean
+
   @DoNotStrip public fun useAlwaysAvailableJSErrorHandling(): Boolean
 
   @DoNotStrip public fun useFabricInterop(): Boolean
 
-  @DoNotStrip public fun useNativeEqualsInNativeReadableArrayAndroid(): Boolean
-
-  @DoNotStrip public fun useNativeTransformHelperAndroid(): Boolean
+  @DoNotStrip public fun useLISAlgorithmInDifferentiator(): Boolean
 
   @DoNotStrip public fun useNativeViewConfigsInBridgelessMode(): Boolean
 
-  @DoNotStrip public fun useOptimizedEventBatchingOnAndroid(): Boolean
+  @DoNotStrip public fun useNestedScrollViewAndroid(): Boolean
 
-  @DoNotStrip public fun useRawPropsJsiValue(): Boolean
+  @DoNotStrip public fun useSharedAnimatedBackend(): Boolean
 
-  @DoNotStrip public fun useShadowNodeStateOnClone(): Boolean
+  @DoNotStrip public fun useTraitHiddenOnAndroid(): Boolean
 
   @DoNotStrip public fun useTurboModuleInterop(): Boolean
 
   @DoNotStrip public fun useTurboModules(): Boolean
+
+  @DoNotStrip public fun useUnorderedMapInDifferentiator(): Boolean
+
+  @DoNotStrip public fun viewCullingOutsetRatio(): Double
+
+  @DoNotStrip public fun viewTransitionEnabled(): Boolean
 
   @DoNotStrip public fun virtualViewPrerenderRatio(): Double
 }

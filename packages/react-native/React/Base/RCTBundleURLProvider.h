@@ -7,6 +7,7 @@
 
 #import <Foundation/Foundation.h>
 
+#import "RCTBundleManager.h"
 #import "RCTDefines.h"
 
 RCT_EXTERN NSString *_Nonnull const RCTBundleURLProviderUpdatedNotification;
@@ -57,6 +58,23 @@ NS_ASSUME_NONNULL_BEGIN
 + (BOOL)isPackagerRunning:(NSString *)hostPort scheme:(NSString *__nullable)scheme;
 
 /**
+ * Asynchronously checks if there's a packager running at the given host:port.
+ * The port is optional, if not specified, kRCTBundleURLProviderDefaultPort will be used
+ * The completion handler is called on an arbitrary queue.
+ */
++ (void)isPackagerRunningAsync:(NSString *)hostPort completion:(void (^)(BOOL isRunning))completion;
+
+/**
+ * Asynchronously checks if there's a packager running at the given scheme://host:port.
+ * The port is optional, if not specified, kRCTBundleURLProviderDefaultPort will be used
+ * The scheme is also optional, if not specified, a default http protocol will be used
+ * The completion handler is called on an arbitrary queue.
+ */
++ (void)isPackagerRunningAsync:(NSString *)hostPort
+                        scheme:(NSString *__nullable)scheme
+                    completion:(void (^)(BOOL isRunning))completion;
+
+/**
  * Returns the jsBundleURL for a given bundle entrypoint and
  * the fallback offline JS bundle if the packager is not running.
  */
@@ -89,6 +107,16 @@ NS_ASSUME_NONNULL_BEGIN
 - (NSURL *__nullable)jsBundleURLForFallbackExtension:(NSString *__nullable)extension;
 
 /**
+ * Returns the jsBundleURL for a given bundle entrypoint,
+ * the packager scheme, server host and options updater
+ * for modifying default packager options.
+ */
+- (NSURL *__nullable)jsBundleURLForBundleRoot:(NSString *)bundleRoot
+                         packagerServerScheme:(NSString *)packagerServerScheme
+                           packagerServerHost:(NSString *)packagerServerHost
+                       packagerOptionsUpdater:(RCTPackagerOptionsUpdater)packagerOptionsUpdater;
+
+/**
  * Returns the resourceURL for a given bundle entrypoint and
  * the fallback offline resource file if the packager is not running.
  */
@@ -96,6 +124,19 @@ NS_ASSUME_NONNULL_BEGIN
                                    resourceName:(NSString *)name
                               resourceExtension:(NSString *)extension
                                   offlineBundle:(NSBundle *)offlineBundle;
+
+/**
+ * Returns the query items for given options used to create the jsBundleURL.
+ */
++ (NSArray<NSURLQueryItem *> *)createJSBundleURLQuery:(NSString *)packagerHost
+                                       packagerScheme:(NSString *__nullable)scheme
+                                            enableDev:(BOOL)enableDev
+                                   enableMinification:(BOOL)enableMinification
+                                      inlineSourceMap:(BOOL)inlineSourceMap
+                                          modulesOnly:(BOOL)modulesOnly
+                                            runModule:(BOOL)runModule
+                                    additionalOptions:
+                                        (NSDictionary<NSString *, NSString *> *__nullable)additionalOptions;
 
 /**
  * The IP address or hostname of the packager.

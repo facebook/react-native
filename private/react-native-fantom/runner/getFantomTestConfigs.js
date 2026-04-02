@@ -11,6 +11,7 @@
 import type {FeatureFlagValue} from '../../../packages/react-native/scripts/featureflags/types';
 
 import ReactNativeFeatureFlags from '../../../packages/react-native/scripts/featureflags/ReactNativeFeatureFlags.config';
+import * as EnvironmentOptions from './EnvironmentOptions';
 import {HermesVariant} from './utils';
 // $FlowExpectedError[untyped-import]
 import {extract, parse} from 'jest-docblock';
@@ -59,13 +60,13 @@ export const FantomTestConfigHermesVariant = HermesVariant;
 export const DEFAULT_IS_NATIVE_OPTIMIZED: boolean = false;
 export const DEFAULT_IS_JS_OPTIMIZED: boolean = false;
 export const DEFAULT_IS_JS_BYTECODE: boolean = false;
-export const DEFAULT_HERMES_VARIANT: HermesVariant = HermesVariant.Hermes;
+export const DEFAULT_OSS_HERMES_VARIANT: HermesVariant = HermesVariant.Hermes;
+export const DEFAULT_HERMES_VARIANT: HermesVariant =
+  HermesVariant.StaticHermesStable;
 
 export const DEFAULT_FEATURE_FLAGS: FantomTestConfigFeatureFlags = {
   common: {},
-  jsOnly: {
-    enableAccessToHostTreeInFabric: true,
-  },
+  jsOnly: {},
   reactInternal: {},
 };
 
@@ -85,6 +86,7 @@ const VALID_FANTOM_PRAGMAS = [
   'fantom_flags',
   'fantom_hermes_variant',
   'fantom_react_fb_flags',
+  'fantom_disable_coverage',
 ];
 
 export function getOverrides(
@@ -171,7 +173,9 @@ export default function getFantomTestConfigs(
     isNativeOptimized: DEFAULT_IS_NATIVE_OPTIMIZED,
     isJsOptimized: DEFAULT_IS_JS_OPTIMIZED,
     isJsBytecode: DEFAULT_IS_JS_BYTECODE,
-    hermesVariant: DEFAULT_HERMES_VARIANT,
+    hermesVariant: EnvironmentOptions.isOSS
+      ? DEFAULT_OSS_HERMES_VARIANT
+      : DEFAULT_HERMES_VARIANT,
     flags: {
       common: {
         ...DEFAULT_FEATURE_FLAGS.common,
@@ -430,7 +434,7 @@ export default function getFantomTestConfigs(
 
 function getConfigurationVariations(
   config: FantomTestConfig,
-  variations: $ReadOnlyArray<$ReadOnlyArray<PartialFantomTestConfig>>,
+  variations: ReadonlyArray<ReadonlyArray<PartialFantomTestConfig>>,
 ): Array<FantomTestConfig> {
   if (variations.length === 0) {
     return [config];
@@ -481,17 +485,17 @@ function getConfigurationVariations(
   return results;
 }
 
-function parseFeatureFlagValue<T: boolean | number | string>(
+function parseFeatureFlagValue<T extends boolean | number | string>(
   defaultValue: T,
   value: string,
 ): T {
   switch (typeof defaultValue) {
     case 'boolean':
       if (value === 'true') {
-        // $FlowExpectedError[incompatible-return] at this point we know T is a boolean
+        // $FlowExpectedError[incompatible-type] at this point we know T is a boolean
         return true;
       } else if (value === 'false') {
-        // $FlowExpectedError[incompatible-return] at this point we know T is a boolean
+        // $FlowExpectedError[incompatible-type] at this point we know T is a boolean
         return false;
       } else {
         throw new Error(`Invalid value for boolean flag: ${value}`);
@@ -503,10 +507,10 @@ function parseFeatureFlagValue<T: boolean | number | string>(
         throw new Error(`Invalid value for number flag: ${value}`);
       }
 
-      // $FlowExpectedError[incompatible-return] at this point we know T is a number
+      // $FlowExpectedError[incompatible-type] at this point we know T is a number
       return parsed;
     case 'string':
-      // $FlowExpectedError[incompatible-return] at this point we know T is a string
+      // $FlowExpectedError[incompatible-type] at this point we know T is a string
       return value;
     default:
       throw new Error(`Unsupported feature flag type: ${typeof defaultValue}`);

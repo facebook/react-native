@@ -9,12 +9,13 @@
  */
 
 import {RNTesterThemeContext} from '../../components/RNTesterTheme';
-import React, {useContext} from 'react';
+import * as React from 'react';
+import {useContext} from 'react';
 import {StyleSheet, TextInput} from 'react-native';
 
 const ExampleTextInput: component(
-  ref: React.RefSetter<null | React.ElementRef<typeof TextInput>>,
-  ...props: React.ElementConfig<typeof TextInput>
+  ref?: React.RefSetter<null | React.ElementRef<typeof TextInput>>,
+  ...props: Omit<React.ElementConfig<typeof TextInput>, 'ref'>
 ) = ({
   ref,
   ...props
@@ -30,9 +31,9 @@ const ExampleTextInput: component(
       {...props}
       style={[
         {
-          color: theme.LabelColor,
           backgroundColor: theme.SecondaryGroupedBackgroundColor,
           borderColor: theme.QuaternaryLabelColor,
+          color: theme.LabelColor,
         },
         styles.input,
         props.style,
@@ -44,9 +45,9 @@ const ExampleTextInput: component(
 const styles = StyleSheet.create({
   input: {
     borderWidth: 1,
-    fontSize: 13,
     flexGrow: 1,
     flexShrink: 1,
+    fontSize: 13,
     padding: 4,
   },
 });

@@ -38,7 +38,7 @@ describe('checkVersion', () => {
   });
 });
 
-function setDevelopmentModeForTests(dev: mixed) {
+function setDevelopmentModeForTests(dev: unknown) {
   let originalDev;
 
   beforeAll(() => {
@@ -477,7 +477,7 @@ function runExceptionsManagerTests() {
           expect(nativeReportException).not.toBeCalled();
           expect(logBoxAddConsoleLog).toBeCalledTimes(1);
           expect(logBoxAddConsoleLog.mock.calls[0][0]).toBe('error');
-          // $FlowFixMe[incompatible-call]
+          // $FlowFixMe[incompatible-type]
           expect(logBoxAddConsoleLog.mock.calls[0][1]).toBe(...args);
         } else {
           expect(logBoxAddException).not.toBeCalled();
@@ -1076,7 +1076,7 @@ function runExceptionsManagerTests() {
     });
   });
 }
-const linesByFile = new Map<string, $ReadOnlyArray<string>>();
+const linesByFile = new Map<string, ReadonlyArray<string>>();
 
 function getLineFromFrame({lineNumber /* 1-based */, file}: $FlowFixMe) {
   if (file == null) {

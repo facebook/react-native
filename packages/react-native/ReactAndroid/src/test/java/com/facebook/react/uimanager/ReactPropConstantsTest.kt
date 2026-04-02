@@ -123,7 +123,8 @@ class ReactPropConstantsTest {
                 "customIntProp" to "date",
                 "customBoxedIntGroupPropFirst" to "color",
                 "customBoxedIntGroupPropSecond" to "color",
-            ))
+            )
+        )
   }
 
   companion object {

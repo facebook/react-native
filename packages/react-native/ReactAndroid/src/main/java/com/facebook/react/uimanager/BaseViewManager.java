@@ -79,6 +79,7 @@ public abstract class BaseViewManager<T extends View, C extends LayoutShadowNode
     // Reset tags
     view.setTag(null);
     view.setTag(R.id.pointer_events, null);
+    view.setTag(R.id.important_for_interaction, null);
     view.setTag(R.id.react_test_id, null);
     view.setTag(R.id.view_tag_native_id, null);
     view.setTag(R.id.labelled_by, null);
@@ -147,7 +148,11 @@ public abstract class BaseViewManager<T extends View, C extends LayoutShadowNode
     // are the default view flags in View.java:
     // https://android.googlesource.com/platform/frameworks/base/+/a175a5b/core/java/android/view/View.java#2712
     // `mViewFlags = SOUND_EFFECTS_ENABLED | HAPTIC_FEEDBACK_ENABLED | LAYOUT_DIRECTION_INHERIT`
-    // Therefore we set the following options as such:
+
+    // NOTE: setClickable MUST be called AFTER setOnClickListener because
+    // the latter has the side effect of setting isClickable=true on some views!
+    view.setOnClickListener(null);
+    view.setClickable(false);
     view.setFocusable(false);
     view.setFocusableInTouchMode(false);
 
@@ -385,8 +390,8 @@ public abstract class BaseViewManager<T extends View, C extends LayoutShadowNode
       view.setSelected(false);
     }
     view.setTag(R.id.accessibility_state, accessibilityState);
-    if (accessibilityState.hasKey("disabled") && !accessibilityState.getBoolean("disabled")) {
-      view.setEnabled(true);
+    if (accessibilityState.hasKey("disabled")) {
+      view.setEnabled(!accessibilityState.getBoolean("disabled"));
     }
 
     // For states which don't have corresponding methods in
@@ -474,14 +479,13 @@ public abstract class BaseViewManager<T extends View, C extends LayoutShadowNode
   public void setImportantForAccessibility(
       @NonNull T view, @Nullable String importantForAccessibility) {
     if (importantForAccessibility == null || importantForAccessibility.equals("auto")) {
-      ViewCompat.setImportantForAccessibility(view, ViewCompat.IMPORTANT_FOR_ACCESSIBILITY_AUTO);
+      view.setImportantForAccessibility(View.IMPORTANT_FOR_ACCESSIBILITY_AUTO);
     } else if (importantForAccessibility.equals("yes")) {
-      ViewCompat.setImportantForAccessibility(view, ViewCompat.IMPORTANT_FOR_ACCESSIBILITY_YES);
+      view.setImportantForAccessibility(View.IMPORTANT_FOR_ACCESSIBILITY_YES);
     } else if (importantForAccessibility.equals("no")) {
-      ViewCompat.setImportantForAccessibility(view, ViewCompat.IMPORTANT_FOR_ACCESSIBILITY_NO);
+      view.setImportantForAccessibility(View.IMPORTANT_FOR_ACCESSIBILITY_NO);
     } else if (importantForAccessibility.equals("no-hide-descendants")) {
-      ViewCompat.setImportantForAccessibility(
-          view, ViewCompat.IMPORTANT_FOR_ACCESSIBILITY_NO_HIDE_DESCENDANTS);
+      view.setImportantForAccessibility(View.IMPORTANT_FOR_ACCESSIBILITY_NO_HIDE_DESCENDANTS);
     }
   }
 
@@ -762,6 +766,16 @@ public abstract class BaseViewManager<T extends View, C extends LayoutShadowNode
                 MapBuilder.of(
                     "phasedRegistrationNames",
                     MapBuilder.of("bubbled", "onFocus", "captured", "onFocusCapture")))
+            .put(
+                "topKeyDown",
+                MapBuilder.of(
+                    "phasedRegistrationNames",
+                    MapBuilder.of("bubbled", "onKeyDown", "captured", "onKeyDownCapture")))
+            .put(
+                "topKeyUp",
+                MapBuilder.of(
+                    "phasedRegistrationNames",
+                    MapBuilder.of("bubbled", "onKeyUp", "captured", "onKeyUpCapture")))
             .build());
     return eventTypeConstants;
   }
@@ -998,18 +1012,18 @@ public abstract class BaseViewManager<T extends View, C extends LayoutShadowNode
    * especially helpful for views that are recycled so we can retain and restore the original
    * listener upon recycling (onDropViewInstance).
    */
-  private class BaseVMFocusChangeListener<V extends View> implements OnFocusChangeListener {
+  private static class BaseVMFocusChangeListener implements OnFocusChangeListener {
     private @Nullable OnFocusChangeListener mOriginalFocusChangeListener;
 
     public BaseVMFocusChangeListener(@Nullable OnFocusChangeListener originalFocusChangeListener) {
       mOriginalFocusChangeListener = originalFocusChangeListener;
     }
 
-    public void attach(T view) {
+    public void attach(View view) {
       view.setOnFocusChangeListener(this);
     }
 
-    public void detach(T view) {
+    public void detach(View view) {
       view.setOnFocusChangeListener(mOriginalFocusChangeListener);
     }
 
@@ -1025,8 +1039,7 @@ public abstract class BaseViewManager<T extends View, C extends LayoutShadowNode
       if (view.getContext() instanceof ThemedReactContext) {
         ThemedReactContext themedReactContext = (ThemedReactContext) view.getContext();
         @Nullable
-        EventDispatcher eventDispatcher =
-            UIManagerHelper.getEventDispatcherForReactTag(themedReactContext, view.getId());
+        EventDispatcher eventDispatcher = UIManagerHelper.getEventDispatcher(themedReactContext);
         if (eventDispatcher != null) {
           if (hasFocus) {
             eventDispatcher.dispatchEvent(new FocusEvent(surfaceId, view.getId()));

@@ -8,7 +8,7 @@
 #import <React/RCTMultilineTextInputView.h>
 #import <React/RCTMultilineTextInputViewManager.h>
 
-#ifndef RCT_FIT_RM_OLD_COMPONENT
+#ifndef RCT_REMOVE_LEGACY_ARCH
 
 @implementation RCTMultilineTextInputViewManager
 
@@ -25,4 +25,4 @@ RCT_REMAP_VIEW_PROPERTY(dataDetectorTypes, backedTextInputView.dataDetectorTypes
 
 @end
 
-#endif // RCT_FIT_RM_OLD_COMPONENT
+#endif // RCT_REMOVE_LEGACY_ARCH

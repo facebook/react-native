@@ -10,12 +10,6 @@
 
 'use strict';
 
-/*
-TODO:
-
-- ViewConfigs should spread in View's valid attributes
-*/
-
 import type {SchemaType} from '../CodegenSchema';
 
 const schemaValidator = require('../SchemaValidator.js');
@@ -36,7 +30,6 @@ const generateTests = require('./components/GenerateTests.js');
 const generateThirdPartyFabricComponentsProviderH = require('./components/GenerateThirdPartyFabricComponentsProviderH.js');
 const generateThirdPartyFabricComponentsProviderObjCpp = require('./components/GenerateThirdPartyFabricComponentsProviderObjCpp.js');
 const generateViewConfigJs = require('./components/GenerateViewConfigJs.js');
-const generateModuleCpp = require('./modules/GenerateModuleCpp.js');
 const generateModuleH = require('./modules/GenerateModuleH.js');
 const generateModuleJavaSpec = require('./modules/GenerateModuleJavaSpec.js');
 const generateModuleJniCpp = require('./modules/GenerateModuleJniCpp.js');
@@ -56,7 +49,6 @@ const ALL_GENERATORS = {
   generateStateCpp: generateStateCpp.generate,
   generateStateH: generateStateH.generate,
   generateModuleH: generateModuleH.generate,
-  generateModuleCpp: generateModuleCpp.generate,
   generateModuleObjCpp: generateModuleObjCpp.generate,
   generateModuleJavaSpec: generateModuleJavaSpec.generate,
   generateModuleJniCpp: generateModuleJniCpp.generate,
@@ -84,11 +76,11 @@ export type GenerateFunction = (
   includeGetDebugPropsImplementation?: boolean,
 ) => FilesOutput;
 
-export type LibraryGeneratorsFunctions = $ReadOnly<{
+export type LibraryGeneratorsFunctions = Readonly<{
   [string]: Array<GenerateFunction>,
 }>;
 
-export type LibraryOptions = $ReadOnly<{
+export type LibraryOptions = Readonly<{
   libraryName: string,
   schema: SchemaType,
   outputDirectory: string,
@@ -99,7 +91,7 @@ export type LibraryOptions = $ReadOnly<{
   libraryGenerators?: LibraryGeneratorsFunctions,
 }>;
 
-export type SchemasOptions = $ReadOnly<{
+export type SchemasOptions = Readonly<{
   schemas: {[string]: SchemaType},
   outputDirectory: string,
   supportedApplePlatforms?: {[string]: {[string]: boolean}},
@@ -120,12 +112,12 @@ export type LibraryGenerators =
 
 export type SchemasGenerators = 'providerIOS';
 
-export type LibraryConfig = $ReadOnly<{
+export type LibraryConfig = Readonly<{
   generators: Array<LibraryGenerators>,
   test?: boolean,
 }>;
 
-export type SchemasConfig = $ReadOnly<{
+export type SchemasConfig = Readonly<{
   generators: Array<SchemasGenerators>,
   test?: boolean,
 }>;
@@ -179,7 +171,7 @@ const LIBRARY_GENERATORS: LibraryGeneratorsFunctions = {
     generateModuleJniH.generate,
     generateModuleJavaSpec.generate,
   ],
-  modulesCxx: [generateModuleCpp.generate, generateModuleH.generate],
+  modulesCxx: [generateModuleH.generate],
   modulesIOS: [generateModuleObjCpp.generate],
   tests: [generateTests.generate],
   'shadow-nodes': [

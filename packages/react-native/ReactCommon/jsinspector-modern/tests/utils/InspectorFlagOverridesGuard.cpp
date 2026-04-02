@@ -31,9 +31,26 @@ class ReactNativeFeatureFlagsOverrides
         ReactNativeFeatureFlagsDefaults::fuseboxEnabledRelease());
   }
 
+  bool fuseboxFrameRecordingEnabled() override {
+    return overrides_.frameRecordingEnabled.value_or(
+        ReactNativeFeatureFlagsDefaults::fuseboxFrameRecordingEnabled());
+  }
+
   bool fuseboxNetworkInspectionEnabled() override {
     return overrides_.networkInspectionEnabled.value_or(
         ReactNativeFeatureFlagsDefaults::fuseboxNetworkInspectionEnabled());
+  }
+
+  bool enableBridgelessArchitecture() override {
+    // NOTE: Network support is gated by (enableBridgelessArchitecture &&
+    // fuseboxNetworkInspectionEnabled).
+    return overrides_.networkInspectionEnabled.value_or(
+        ReactNativeFeatureFlagsDefaults::enableBridgelessArchitecture());
+  }
+
+  bool enableNetworkEventReporting() override {
+    return overrides_.enableNetworkEventReporting.value_or(
+        ReactNativeFeatureFlagsDefaults::enableNetworkEventReporting());
   }
 
  private:

@@ -123,21 +123,26 @@ internal constructor(
         reactHost
             ?: return Task.forError(
                 IllegalStateException(
-                    "Trying to call ReactSurface.prerender(), but no ReactHost is attached."))
+                    "Trying to call ReactSurface.prerender(), but no ReactHost is attached."
+                )
+            )
     return host.prerenderSurface(this)
   }
 
   override fun start(): TaskInterface<Void> {
     if (surfaceViewRef.get() == null) {
       return Task.forError(
-          IllegalStateException("Trying to call ReactSurface.start(), but view is not created."))
+          IllegalStateException("Trying to call ReactSurface.start(), but view is not created.")
+      )
     }
 
     val host =
         reactHost
             ?: return Task.forError(
                 IllegalStateException(
-                    "Trying to call ReactSurface.start(), but no ReactHost is attached."))
+                    "Trying to call ReactSurface.start(), but no ReactHost is attached."
+                )
+            )
     return host.startSurface(this)
   }
 
@@ -146,7 +151,9 @@ internal constructor(
         reactHost
             ?: return Task.forError(
                 IllegalStateException(
-                    "Trying to call ReactSurface.stop(), but no ReactHost is attached."))
+                    "Trying to call ReactSurface.stop(), but no ReactHost is attached."
+                )
+            )
     return host.stopSurface(this)
   }
 

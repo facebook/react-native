@@ -11,7 +11,7 @@
 import * as React from 'react';
 import {StyleSheet, Text} from 'react-native';
 
-type Props = $ReadOnly<{
+type Props = Readonly<{
   numPass: number,
   numFail: number,
   numError: number,

@@ -437,9 +437,11 @@ class NativeAnimatedNodeTraversalTest {
         wasGreaterThanOne = true
       }
       // Test to see if it reset after coming to rest
-      if (didComeToRest &&
-          currentValue == 0.0 &&
-          abs(abs(currentValue - previousValue) - 1.0) < 0.001) {
+      if (
+          didComeToRest &&
+              currentValue == 0.0 &&
+              abs(abs(currentValue - previousValue) - 1.0) < 0.001
+      ) {
         numberOfResets++
       }
 
@@ -1044,7 +1046,8 @@ class NativeAnimatedNodeTraversalTest {
 
     whenever(uiManagerMock.constants).thenAnswer {
       mapOf(
-          "customDirectEventTypes" to mapOf("onScroll" to mapOf("registrationName" to "onScroll")))
+          "customDirectEventTypes" to mapOf("onScroll" to mapOf("registrationName" to "onScroll"))
+      )
     }
 
     nativeAnimatedNodesManager = NativeAnimatedNodesManager(reactApplicationContextMock)
@@ -1365,6 +1368,44 @@ class NativeAnimatedNodeTraversalTest {
 
     // we verify that the value settled at 2
     assertThat(previousValue).isEqualTo(1.5)
+  }
+
+  @Test
+  fun testTrackingSpringDoesNotCrashWhenToValueNodeIsDetached() {
+    val springConfig: JavaOnlyMap =
+        JavaOnlyMap.of(
+            "type",
+            "spring",
+            "stiffness",
+            230.2,
+            "damping",
+            22.0,
+            "mass",
+            1.0,
+            "initialVelocity",
+            0.0,
+            "restSpeedThreshold",
+            0.001,
+            "restDisplacementThreshold",
+            0.001,
+            "overshootClamping",
+            false,
+        )
+
+    createAnimatedGraphWithTrackingNode(springConfig)
+
+    nativeAnimatedNodesManager.setAnimatedNodeValue(1, 1.0)
+    nativeAnimatedNodesManager.runUpdates(nextFrameTime())
+
+    nativeAnimatedNodesManager.disconnectAnimatedNodes(1, 2)
+    nativeAnimatedNodesManager.dropAnimatedNode(1)
+
+    nativeAnimatedNodesManager.runUpdates(nextFrameTime())
+
+    val trackedNode = nativeAnimatedNodesManager.getNodeById(3) as? ValueAnimatedNode
+    assertThat(trackedNode).isNotNull
+    val trackedValue = checkNotNull(trackedNode).getValue()
+    assertThat(trackedValue.isNaN()).isFalse
   }
 
   companion object {

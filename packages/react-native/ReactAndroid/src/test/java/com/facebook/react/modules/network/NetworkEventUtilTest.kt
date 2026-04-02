@@ -16,10 +16,6 @@ import com.facebook.react.internal.featureflags.ReactNativeFeatureFlagsDefaults
 import com.facebook.react.internal.featureflags.ReactNativeFeatureFlagsForTests
 import com.facebook.testutils.shadows.ShadowArguments
 import java.net.SocketTimeoutException
-import okhttp3.Headers
-import okhttp3.Protocol
-import okhttp3.Request
-import okhttp3.Response
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.After
 import org.junit.Before
@@ -46,7 +42,8 @@ class NetworkEventUtilTest {
     ReactNativeFeatureFlags.override(
         object : ReactNativeFeatureFlagsDefaults() {
           override fun enableNetworkEventReporting(): Boolean = false
-        })
+        }
+    )
   }
 
   @After
@@ -83,7 +80,14 @@ class NetworkEventUtilTest {
     val progress = 100L
     val total = 1000L
 
-    NetworkEventUtil.onIncrementalDataReceived(reactContext, requestId, data, progress, total)
+    NetworkEventUtil.onIncrementalDataReceived(
+        reactContext,
+        requestId,
+        "test_devtools_request_$requestId",
+        data,
+        progress,
+        total,
+    )
 
     val eventNameCaptor = ArgumentCaptor.forClass(String::class.java)
     val eventArgumentsCaptor = ArgumentCaptor.forClass(WritableArray::class.java)
@@ -127,7 +131,13 @@ class NetworkEventUtilTest {
     val requestId = 1
     val data = "response data"
 
-    NetworkEventUtil.onDataReceived(reactContext, requestId, data, "string")
+    NetworkEventUtil.onDataReceived(
+        reactContext,
+        requestId,
+        "test_devtools_request_$requestId",
+        data,
+        "string",
+    )
 
     val eventNameCaptor = ArgumentCaptor.forClass(String::class.java)
     val eventArgumentsCaptor = ArgumentCaptor.forClass(WritableArray::class.java)
@@ -147,7 +157,13 @@ class NetworkEventUtilTest {
     val requestId = 1
     val data: WritableMap = Arguments.createMap().apply { putString("key", "value") }
 
-    NetworkEventUtil.onDataReceived(reactContext, requestId, data, ByteArray(0))
+    NetworkEventUtil.onDataReceived(
+        reactContext,
+        requestId,
+        "test_devtools_request_$requestId",
+        data,
+        ByteArray(0),
+    )
 
     val eventNameCaptor = ArgumentCaptor.forClass(String::class.java)
     val eventArgumentsCaptor = ArgumentCaptor.forClass(WritableArray::class.java)
@@ -168,7 +184,13 @@ class NetworkEventUtilTest {
     val error = "An error occurred"
     val e: Throwable? = null
 
-    NetworkEventUtil.onRequestError(reactContext, requestId, error, e)
+    NetworkEventUtil.onRequestError(
+        reactContext,
+        requestId,
+        "test_devtools_request_$requestId",
+        error,
+        e,
+    )
 
     val eventNameCaptor = ArgumentCaptor.forClass(String::class.java)
     val eventArgumentsCaptor = ArgumentCaptor.forClass(WritableArray::class.java)
@@ -189,7 +211,13 @@ class NetworkEventUtilTest {
     val error = "Timeout error"
     val e: Throwable = SocketTimeoutException()
 
-    NetworkEventUtil.onRequestError(reactContext, requestId, error, e)
+    NetworkEventUtil.onRequestError(
+        reactContext,
+        requestId,
+        "test_devtools_request_$requestId",
+        error,
+        e,
+    )
 
     val eventNameCaptor = ArgumentCaptor.forClass(String::class.java)
     val eventArgumentsCaptor = ArgumentCaptor.forClass(WritableArray::class.java)
@@ -209,7 +237,12 @@ class NetworkEventUtilTest {
   fun testOnRequestSuccess() {
     val requestId = 1
 
-    NetworkEventUtil.onRequestSuccess(reactContext, requestId, 128)
+    NetworkEventUtil.onRequestSuccess(
+        reactContext,
+        requestId,
+        "test_devtools_request_$requestId",
+        128,
+    )
 
     val eventNameCaptor = ArgumentCaptor.forClass(String::class.java)
     val eventArgumentsCaptor = ArgumentCaptor.forClass(WritableArray::class.java)
@@ -228,19 +261,18 @@ class NetworkEventUtilTest {
   fun testOnResponseReceived() {
     val requestId = 1
     val statusCode = 200
-    val headers = Headers.Builder().add("Content-Type", "application/json").build()
+    val headersMap = mapOf("Content-Type" to "application/json")
     val url = "http://example.com"
 
-    val request = Request.Builder().url(url).build()
-    val response =
-        Response.Builder()
-            .protocol(Protocol.HTTP_1_1)
-            .request(request)
-            .headers(headers)
-            .code(statusCode)
-            .message("OK")
-            .build()
-    NetworkEventUtil.onResponseReceived(reactContext, requestId, url, response)
+    NetworkEventUtil.onResponseReceived(
+        reactContext,
+        requestId,
+        "test_devtools_request_$requestId",
+        url,
+        statusCode,
+        headersMap,
+        0L,
+    )
 
     val eventNameCaptor = ArgumentCaptor.forClass(String::class.java)
     val eventArgumentsCaptor = ArgumentCaptor.forClass(WritableArray::class.java)
@@ -263,24 +295,36 @@ class NetworkEventUtilTest {
   @Test
   fun testNullReactContext() {
     val url = "http://example.com"
-    val request = Request.Builder().url(url).build()
-    val response =
-        Response.Builder()
-            .protocol(Protocol.HTTP_1_1)
-            .request(request)
-            .headers(Headers.Builder().build())
-            .code(200)
-            .message("OK")
-            .build()
 
     NetworkEventUtil.onDataSend(null, 1, 100, 1000)
-    NetworkEventUtil.onIncrementalDataReceived(null, 1, "data", 100, 1000)
+    NetworkEventUtil.onIncrementalDataReceived(
+        null,
+        1,
+        "test_devtools_request_1",
+        "data",
+        100,
+        1000,
+    )
     NetworkEventUtil.onDataReceivedProgress(null, 1, 100, 1000)
-    NetworkEventUtil.onDataReceived(null, 1, "data", "string")
-    NetworkEventUtil.onDataReceived(null, 1, Arguments.createMap(), ByteArray(0))
-    NetworkEventUtil.onRequestError(null, 1, "error", null)
-    NetworkEventUtil.onRequestSuccess(null, 1, 0)
-    NetworkEventUtil.onResponseReceived(null, 1, url, response)
+    NetworkEventUtil.onDataReceived(null, 1, "test_devtools_request_1", "data", "string")
+    NetworkEventUtil.onDataReceived(
+        null,
+        1,
+        "test_devtools_request_1",
+        Arguments.createMap(),
+        ByteArray(0),
+    )
+    NetworkEventUtil.onRequestError(null, 1, "test_devtools_request_1", "error", null)
+    NetworkEventUtil.onRequestSuccess(null, 1, "test_devtools_request_1", 0)
+    NetworkEventUtil.onResponseReceived(
+        null,
+        1,
+        "test_devtools_request_1",
+        url,
+        200,
+        emptyMap(),
+        0L,
+    )
 
     verify(reactContext, never()).emitDeviceEvent(any<String>(), any())
   }

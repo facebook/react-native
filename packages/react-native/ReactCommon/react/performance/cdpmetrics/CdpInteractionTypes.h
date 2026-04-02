@@ -12,11 +12,10 @@
 
 namespace facebook::react {
 
-using InteractionTypesMap =
-    std::unordered_map<std::string_view, std::string_view>;
+using InteractionTypesMap = std::unordered_map<std::string_view, std::string_view>;
 
-const InteractionTypesMap& getInteractionTypes();
+const InteractionTypesMap &getInteractionTypes();
 
-const std::string_view getInteractionTypeForEvent(std::string_view eventName);
+std::string_view getInteractionTypeForEvent(std::string_view eventName);
 
 } // namespace facebook::react

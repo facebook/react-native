@@ -10,11 +10,11 @@
 
 'use strict';
 
-export type Scene = {name: string, [string]: mixed, ...};
+export type Scene = {name: string, [string]: unknown, ...};
 
 let _listeners: Array<(scene: Scene) => void> = [];
 
-let _activeScene = {name: 'default'};
+let _activeScene: Scene = {name: 'default'};
 
 const SceneTracker = {
   setActiveScene(scene: Scene) {

@@ -48,7 +48,7 @@ function ManyPointersPropertiesExample(): React.Node {
   const onPointerMove = (event: PointerEvent) => {
     const pointerId = event.nativeEvent.pointerId;
     // $FlowFixMe[invalid-computed-prop]
-    // $FlowFixMe[incompatible-call]
+    // $FlowFixMe[incompatible-type]
     setData({...data, [pointerId]: event.nativeEvent});
   };
 
@@ -57,7 +57,7 @@ function ManyPointersPropertiesExample(): React.Node {
       <View style={styles.container} onPointerMove={onPointerMove} />
       <View style={styles.properties}>
         {Object.entries(data).map(
-          //$FlowFixMe can't supply generic for Object.entries
+          //$FlowFixMe[incompatible-type] can't supply generic for Object.entries
           ([key, evt]: [string, PointerEvent['nativeEvent']]) => (
             <View style={styles.property} key={key}>
               <Text>PointerID: {evt.pointerId}</Text>
@@ -84,11 +84,11 @@ function ManyPointersPropertiesExample(): React.Node {
   );
 }
 
-export default ({
+export default {
   name: 'many_pointers_properties_example',
   description: 'Display of properties for multiple pointers',
   title: 'Display Properties of many pointers',
   render(): React.Node {
     return <ManyPointersPropertiesExample />;
   },
-}: RNTesterModuleExample);
+} as RNTesterModuleExample;

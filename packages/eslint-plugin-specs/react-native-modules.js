@@ -15,12 +15,6 @@ const path = require('path');
 
 // We use the prepack hook before publishing package to set this value to true
 const PACKAGE_USAGE = false;
-const ERRORS = {
-  misnamedHasteModule(hasteModuleName) {
-    return `Module ${hasteModuleName}: All files using TurboModuleRegistry must start with Native.`;
-  },
-};
-
 let RNModuleParser;
 let RNParserUtils;
 let RNFlowParser;
@@ -38,8 +32,13 @@ function requireModuleParser() {
     // If using this externally, we leverage @react-native/codegen as published form
     if (!PACKAGE_USAGE) {
       const config = {
+        babelrc: false,
+        configFile: false,
         only: [/react-native-codegen\/src\//],
-        plugins: [require('@babel/plugin-transform-flow-strip-types').default],
+        plugins: [
+          require('babel-plugin-syntax-hermes-parser'),
+          require('@babel/plugin-transform-flow-strip-types').default,
+        ],
       };
 
       withBabelRegister(config, () => {
@@ -51,8 +50,13 @@ function requireModuleParser() {
       });
     } else {
       const config = {
+        babelrc: false,
+        configFile: false,
         only: [/@react-native\/codegen\/lib\//],
-        plugins: [require('@babel/plugin-transform-flow-strip-types').default],
+        plugins: [
+          require('babel-plugin-syntax-hermes-parser'),
+          require('@babel/plugin-transform-flow-strip-types').default,
+        ],
       };
 
       withBabelRegister(config, () => {
@@ -120,78 +124,97 @@ function isGeneratedFile(context) {
 /**
  * A lint rule to guide best practices in writing type safe React NativeModules.
  */
-function rule(context) {
-  const filename = context.getFilename();
-  const hasteModuleName = path.basename(filename).replace(/\.js$/, '');
+module.exports = {
+  meta: {
+    type: 'problem',
+    docs: {
+      description:
+        'Enforce best practices for writing type-safe React Native TurboModules',
+      recommended: false,
+    },
+    messages: {
+      misnamedHasteModule:
+        'Module {{hasteModuleName}}: All files using TurboModuleRegistry must start with Native.',
+      parsingError: '{{message}}',
+    },
+    schema: [],
+  },
 
-  if (isGeneratedFile(context)) {
-    return {};
-  }
+  create(context) {
+    const filename = context.getFilename();
+    const hasteModuleName = path.basename(filename).replace(/\.js$/, '');
 
-  let isModule = false;
+    if (isGeneratedFile(context)) {
+      return {};
+    }
 
-  return {
-    'Program:exit': function (node) {
-      if (!isModule) {
-        return;
-      }
+    let isModule = false;
 
-      // Report invalid file names
-      if (!VALID_SPEC_NAMES.test(hasteModuleName)) {
-        context.report({
-          node,
-          message: ERRORS.misnamedHasteModule(hasteModuleName),
-        });
-      }
+    return {
+      'Program:exit': function (node) {
+        if (!isModule) {
+          return;
+        }
 
-      const {
-        buildModuleSchema,
-        createParserErrorCapturer,
-        parser,
-        translateTypeAnnotation,
-      } = requireModuleParser();
+        // Report invalid file names
+        if (!VALID_SPEC_NAMES.test(hasteModuleName)) {
+          context.report({
+            node,
+            messageId: 'misnamedHasteModule',
+            data: {
+              hasteModuleName,
+            },
+          });
+        }
 
-      const [parsingErrors, tryParse] = createParserErrorCapturer();
-
-      const sourceCode = context.getSourceCode().getText();
-      const ast = parser.getAst(sourceCode, filename);
-
-      tryParse(() => {
-        buildModuleSchema(
-          hasteModuleName,
-          ast,
-          tryParse,
+        const {
+          buildModuleSchema,
+          createParserErrorCapturer,
           parser,
           translateTypeAnnotation,
-        );
-      });
+        } = requireModuleParser();
 
-      parsingErrors.forEach(error => {
-        error.nodes.forEach(flowNode => {
-          context.report({
-            loc: flowNode.loc,
-            message: error.message,
+        const [parsingErrors, tryParse] = createParserErrorCapturer();
+
+        const sourceCode = context.getSourceCode().getText();
+        const ast = parser.getAst(sourceCode, filename);
+
+        tryParse(() => {
+          buildModuleSchema(
+            hasteModuleName,
+            ast,
+            tryParse,
+            parser,
+            translateTypeAnnotation,
+          );
+        });
+
+        parsingErrors.forEach(error => {
+          error.nodes.forEach(flowNode => {
+            context.report({
+              loc: flowNode.loc,
+              messageId: 'parsingError',
+              data: {
+                message: error.message,
+              },
+            });
           });
         });
-      });
-    },
-    CallExpression(node) {
-      if (!isModuleRequire(node)) {
-        return;
-      }
+      },
+      CallExpression(node) {
+        if (!isModuleRequire(node)) {
+          return;
+        }
 
-      isModule = true;
-    },
-    InterfaceExtends(node) {
-      if (node.id.name !== 'TurboModule') {
-        return;
-      }
+        isModule = true;
+      },
+      InterfaceExtends(node) {
+        if (node.id.name !== 'TurboModule') {
+          return;
+        }
 
-      isModule = true;
-    },
-  };
-}
-
-rule.errors = ERRORS;
-
-module.exports = rule;
+        isModule = true;
+      },
+    };
+  },
+};

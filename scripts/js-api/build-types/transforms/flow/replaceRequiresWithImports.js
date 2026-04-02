@@ -36,7 +36,7 @@ const visitors: TransformVisitor = context => ({
       const requiredModule = node.declarations[0].init.arguments[0];
 
       if (node.declarations[0].id.type === 'Identifier') {
-        // $FlowExpectedError[incompatible-call] - we are replacing an expression with a statement but in the top-level scope
+        // $FlowExpectedError[incompatible-type] - we are replacing an expression with a statement but in the top-level scope
         context.replaceNode(node, {
           type: 'ImportDeclaration',
           source: requiredModule,
@@ -52,7 +52,7 @@ const visitors: TransformVisitor = context => ({
           ],
         });
       } else if (node.declarations[0].id.type === 'ObjectPattern') {
-        // $FlowExpectedError[incompatible-call] - we are replacing an expression with a statement but in the top-level scope
+        // $FlowExpectedError[incompatible-type] - we are replacing an expression with a statement but in the top-level scope
         context.replaceNode(node, {
           type: 'ImportDeclaration',
           source: requiredModule,
@@ -103,7 +103,7 @@ const visitors: TransformVisitor = context => ({
         // Special treatment for `require().default` case to transform it to
         // a default import
         if (node.declarations[0].init.property.name === 'default') {
-          // $FlowExpectedError[incompatible-call] - we are replacing an expression with a statement but in the top-level scope
+          // $FlowExpectedError[incompatible-type] - we are replacing an expression with a statement but in the top-level scope
           context.replaceNode(node, {
             type: 'ImportDeclaration',
             source: requiredModule,
@@ -119,7 +119,7 @@ const visitors: TransformVisitor = context => ({
             ],
           });
         } else {
-          // $FlowExpectedError[incompatible-call] - we are replacing an expression with a statement but in the top-level scope
+          // $FlowExpectedError[incompatible-type] - we are replacing an expression with a statement but in the top-level scope
           context.replaceNode(node, {
             type: 'ImportDeclaration',
             source: requiredModule,
@@ -142,7 +142,7 @@ const visitors: TransformVisitor = context => ({
         }
       } else if (node.declarations[0].init.property.type === 'Literal') {
         // Handle member access via bracket notation
-        // $FlowExpectedError[incompatible-call] - we are replacing an expression with a statement but in the top-level
+        // $FlowExpectedError[incompatible-type] - we are replacing an expression with a statement but in the top-level
         context.replaceNode(node, {
           type: 'ImportDeclaration',
           source: requiredModule,

@@ -23,8 +23,7 @@
 
 namespace facebook::react {
 
-using ShadowTreeCommitTransaction = std::function<RootShadowNode::Unshared(
-    const RootShadowNode& oldRootShadowNode)>;
+using ShadowTreeCommitTransaction = std::function<RootShadowNode::Unshared(const RootShadowNode &oldRootShadowNode)>;
 
 /*
  * Represents a result of a `commit` operation.
@@ -51,6 +50,8 @@ enum class ShadowTreeCommitMode {
 enum class ShadowTreeCommitSource {
   Unknown,
   React,
+  AnimationEndSync,
+  ReactRevisionMerge,
 };
 
 struct ShadowTreeCommitOptions {
@@ -86,10 +87,10 @@ class ShadowTree final {
    */
   ShadowTree(
       SurfaceId surfaceId,
-      const LayoutConstraints& layoutConstraints,
-      const LayoutContext& layoutContext,
-      const ShadowTreeDelegate& delegate,
-      const ContextContainer& contextContainer);
+      const LayoutConstraints &layoutConstraints,
+      const LayoutContext &layoutContext,
+      const ShadowTreeDelegate &delegate,
+      const ContextContainer &contextContainer);
 
   ~ShadowTree();
 
@@ -111,22 +112,24 @@ class ShadowTree final {
    * and expecting a `newRootShadowNode` as a return value.
    * The `transaction` function can cancel commit returning `nullptr`.
    */
-  CommitStatus tryCommit(
-      const ShadowTreeCommitTransaction& transaction,
-      const CommitOptions& commitOptions) const;
+  CommitStatus tryCommit(const ShadowTreeCommitTransaction &transaction, const CommitOptions &commitOptions) const;
 
   /*
    * Calls `tryCommit` in a loop until it finishes successfully.
    */
-  CommitStatus commit(
-      const ShadowTreeCommitTransaction& transaction,
-      const CommitOptions& commitOptions) const;
+  CommitStatus commit(const ShadowTreeCommitTransaction &transaction, const CommitOptions &commitOptions) const;
 
   /*
    * Returns a `ShadowTreeRevision` representing the momentary state of
    * the `ShadowTree`.
    */
   ShadowTreeRevision getCurrentRevision() const;
+
+  /*
+   * Returns a `ShadowTreeRevision` representing the momentary state of
+   * the `ShadowTree` in the JS thread.
+   */
+  std::optional<ShadowTreeRevision> getCurrentReactRevision() const;
 
   /*
    * Commit an empty tree (a new `RootShadowNode` with no children).
@@ -141,32 +144,42 @@ class ShadowTree final {
 
   std::shared_ptr<const MountingCoordinator> getMountingCoordinator() const;
 
+  /**
+   * Promotes the current React revision to be merged into the main branch of the
+   * ShadowTree.
+   */
+  void promoteReactRevision() const;
+
+  /**
+   * Commits the currently promoted React revision to the "main" branch of the
+   * ShadowTree. No-op if the promoted React revision doesn't exist.
+   */
+  void mergeReactRevision() const;
+
  private:
   constexpr static ShadowTreeRevision::Number INITIAL_REVISION{0};
 
   void mount(ShadowTreeRevision revision, bool mountSynchronously) const;
 
-  void emitLayoutEvents(
-      std::vector<const LayoutableShadowNode*>& affectedLayoutableNodes) const;
+  void emitLayoutEvents(std::vector<const LayoutableShadowNode *> &affectedLayoutableNodes) const;
+
+  void scheduleReactRevisionPromotion() const;
 
   const SurfaceId surfaceId_;
-  const ShadowTreeDelegate& delegate_;
-  mutable std::shared_mutex commitMutex_;
-  mutable std::recursive_mutex commitMutexRecursive_;
-  mutable CommitMode commitMode_{
-      CommitMode::Normal}; // Protected by `commitMutex_`.
-  mutable ShadowTreeRevision currentRevision_; // Protected by `commitMutex_`.
+  const ShadowTreeDelegate &delegate_;
+  mutable std::shared_mutex revisionMutex_;
+  mutable std::recursive_mutex revisionMutexRecursive_;
+  mutable CommitMode commitMode_{CommitMode::Normal}; // Protected by `revisionMutex_`.
+  mutable ShadowTreeRevision currentRevision_; // Protected by `revisionMutex_`.
+  mutable std::optional<ShadowTreeRevision> currentReactRevision_; // Protected by `revisionMutex_`.
+  mutable std::optional<ShadowTreeRevision> reactRevisionToBePromoted_; // Protected by `revisionMutex_`.
   std::shared_ptr<const MountingCoordinator> mountingCoordinator_;
 
-  using UniqueLock = std::variant<
-      std::unique_lock<std::shared_mutex>,
-      std::unique_lock<std::recursive_mutex>>;
-  using SharedLock = std::variant<
-      std::shared_lock<std::shared_mutex>,
-      std::unique_lock<std::recursive_mutex>>;
+  using UniqueLock = std::variant<std::unique_lock<std::shared_mutex>, std::unique_lock<std::recursive_mutex>>;
+  using SharedLock = std::variant<std::shared_lock<std::shared_mutex>, std::unique_lock<std::recursive_mutex>>;
 
-  inline UniqueLock uniqueCommitLock() const;
-  inline SharedLock sharedCommitLock() const;
+  inline UniqueLock uniqueRevisionLock(bool defer = false) const;
+  inline SharedLock sharedRevisionLock() const;
 };
 
 } // namespace facebook::react

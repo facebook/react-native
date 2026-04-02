@@ -19,6 +19,8 @@ namespace facebook::react::jsinspector_modern {
 struct InspectorFlagOverrides {
   // NOTE: Keep these entries in sync with ReactNativeFeatureFlagsOverrides in
   // the implementation file.
+  std::optional<bool> enableNetworkEventReporting;
+  std::optional<bool> frameRecordingEnabled;
   std::optional<bool> fuseboxEnabledRelease;
   std::optional<bool> networkInspectionEnabled;
 };
@@ -29,13 +31,11 @@ struct InspectorFlagOverrides {
  */
 class InspectorFlagOverridesGuard {
  public:
-  explicit InspectorFlagOverridesGuard(const InspectorFlagOverrides& overrides);
-  InspectorFlagOverridesGuard(const InspectorFlagOverridesGuard&) = delete;
-  InspectorFlagOverridesGuard(InspectorFlagOverridesGuard&&) = default;
-  InspectorFlagOverridesGuard& operator=(const InspectorFlagOverridesGuard&) =
-      delete;
-  InspectorFlagOverridesGuard& operator=(InspectorFlagOverridesGuard&&) =
-      default;
+  explicit InspectorFlagOverridesGuard(const InspectorFlagOverrides &overrides);
+  InspectorFlagOverridesGuard(const InspectorFlagOverridesGuard &) = delete;
+  InspectorFlagOverridesGuard(InspectorFlagOverridesGuard &&) = default;
+  InspectorFlagOverridesGuard &operator=(const InspectorFlagOverridesGuard &) = delete;
+  InspectorFlagOverridesGuard &operator=(InspectorFlagOverridesGuard &&) = default;
 
   ~InspectorFlagOverridesGuard();
 };

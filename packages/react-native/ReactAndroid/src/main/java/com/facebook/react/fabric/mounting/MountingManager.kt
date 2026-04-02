@@ -19,8 +19,6 @@ import com.facebook.react.bridge.ReadableMap
 import com.facebook.react.bridge.RetryableMountingLayerException
 import com.facebook.react.bridge.UiThreadUtil.assertOnUiThread
 import com.facebook.react.bridge.WritableMap
-import com.facebook.react.common.annotations.UnstableReactNativeAPI
-import com.facebook.react.common.mapbuffer.MapBuffer
 import com.facebook.react.fabric.events.EventEmitterWrapper
 import com.facebook.react.fabric.mounting.mountitems.MountItem
 import com.facebook.react.touch.JSResponderHandler
@@ -53,7 +51,7 @@ internal class MountingManager(
   private val rootViewManager = RootViewManager()
 
   internal fun interface MountItemExecutor {
-    @UiThread @ThreadConfined(ThreadConfined.UI) fun executeItems(items: Queue<MountItem?>?)
+    @UiThread @ThreadConfined(ThreadConfined.UI) fun executeItems(items: Queue<MountItem>)
   }
 
   /**
@@ -86,7 +84,8 @@ internal class MountingManager(
       logSoftException(
           TAG,
           IllegalStateException(
-              "Called startSurface more than once for the SurfaceId [$surfaceId]"),
+              "Called startSurface more than once for the SurfaceId [$surfaceId]"
+          ),
       )
     }
 
@@ -100,14 +99,8 @@ internal class MountingManager(
   }
 
   @AnyThread
-  fun attachRootView(surfaceId: Int, rootView: View?, themedReactContext: ThemedReactContext?) {
+  fun attachRootView(surfaceId: Int, rootView: View, themedReactContext: ThemedReactContext) {
     val surfaceMountingManager = getSurfaceManagerEnforced(surfaceId, "attachView")
-
-    if (surfaceMountingManager.isStopped) {
-      logSoftException(TAG, IllegalStateException("Trying to attach a view to a stopped surface"))
-      return
-    }
-
     surfaceMountingManager.attachRootView(rootView, themedReactContext)
   }
 
@@ -158,7 +151,8 @@ internal class MountingManager(
   fun getSurfaceManagerEnforced(surfaceId: Int, context: String): SurfaceMountingManager =
       getSurfaceManager(surfaceId)
           ?: throw RetryableMountingLayerException(
-              ("Unable to find SurfaceMountingManager for surfaceId: [$surfaceId]. Context: $context"))
+              ("Unable to find SurfaceMountingManager for surfaceId: [$surfaceId]. Context: $context")
+          )
 
   fun surfaceIsStopped(surfaceId: Int): Boolean {
     if (stoppedSurfaceIds.contains(surfaceId)) {
@@ -214,7 +208,8 @@ internal class MountingManager(
   fun getSurfaceManagerForViewEnforced(reactTag: Int): SurfaceMountingManager =
       getSurfaceManagerForView(reactTag)
           ?: throw RetryableMountingLayerException(
-              "Unable to find SurfaceMountingManager for tag: [$reactTag]")
+              "Unable to find SurfaceMountingManager for tag: [$reactTag]"
+          )
 
   fun getViewExists(reactTag: Int): Boolean = getSurfaceManagerForView(reactTag) != null
 
@@ -264,13 +259,23 @@ internal class MountingManager(
   }
 
   @UiThread
-  fun updateProps(reactTag: Int, props: ReadableMap?) {
+  fun storeSynchronousMountPropsOverride(reactTag: Int, props: ReadableMap?) {
     assertOnUiThread()
     if (props == null) {
       return
     }
 
-    getSurfaceManagerForViewEnforced(reactTag).updateProps(reactTag, props)
+    getSurfaceManagerForViewEnforced(reactTag).storeSynchronousMountPropsOverride(reactTag, props)
+  }
+
+  @UiThread
+  fun updatePropsSynchronously(reactTag: Int, props: ReadableMap?) {
+    assertOnUiThread()
+    if (props == null) {
+      return
+    }
+
+    getSurfaceManagerForViewEnforced(reactTag).updatePropsSynchronously(reactTag, props)
   }
 
   /**
@@ -322,38 +327,14 @@ internal class MountingManager(
               attachmentsPositions,
           )
 
-  /**
-   * This prefetch method is experimental, do not use it for production code. it will most likely
-   * change or be removed in the future.
-   *
-   * @param reactContext
-   * @param componentName
-   * @param surfaceId surface ID
-   * @param reactTag reactTag that should be set as ID of the view instance
-   * @param params prefetch request params defined in C++
-   */
-  @Suppress("FunctionName")
-  @AnyThread
-  @UnstableReactNativeAPI
-  fun experimental_prefetchResource(
-      reactContext: ReactContext?,
-      componentName: String?,
-      surfaceId: Int,
-      reactTag: Int,
-      params: MapBuffer?,
-  ) {
-    viewManagerRegistry
-        .get(checkNotNull(componentName))
-        .experimental_prefetchResource(reactContext, surfaceId, reactTag, params)
-  }
-
   fun enqueuePendingEvent(
       surfaceId: Int,
       reactTag: Int,
-      eventName: String?,
+      eventName: String,
       canCoalesceEvent: Boolean,
       params: WritableMap?,
       @EventCategoryDef eventCategory: Int,
+      eventTimestamp: Long,
   ) {
     val smm = getSurfaceMountingManager(surfaceId, reactTag)
     if (smm == null) {
@@ -365,7 +346,14 @@ internal class MountingManager(
       )
       return
     }
-    smm.enqueuePendingEvent(reactTag, eventName, canCoalesceEvent, params, eventCategory)
+    smm.enqueuePendingEvent(
+        reactTag,
+        eventName,
+        canCoalesceEvent,
+        params,
+        eventCategory,
+        eventTimestamp,
+    )
   }
 
   private fun getSurfaceMountingManager(surfaceId: Int, reactTag: Int): SurfaceMountingManager? =

@@ -12,15 +12,17 @@
 #import <React/RCTSurfaceHostingView.h>
 
 @implementation RCTLogBoxView {
-#ifndef RCT_FIT_RM_OLD_RUNTIME
+#ifndef RCT_REMOVE_LEGACY_ARCH
   RCTSurface *_surface;
-#endif // RCT_FIT_RM_OLD_RUNTIME
+#endif // RCT_REMOVE_LEGACY_ARCH
 }
 
 - (instancetype)initWithFrame:(CGRect)frame
 {
-  if ((self = [super initWithFrame:frame])) {
+  if ((self = [super initWithFrame:frame]) != nullptr) {
+#if !TARGET_OS_TV
     self.windowLevel = UIWindowLevelStatusBar - 1;
+#endif
     self.backgroundColor = [UIColor clearColor];
   }
   return self;
@@ -35,14 +37,14 @@
   self.rootViewController = _rootViewController;
 }
 
-#ifndef RCT_FIT_RM_OLD_RUNTIME
+#ifndef RCT_REMOVE_LEGACY_ARCH
 - (instancetype)initWithWindow:(UIWindow *)window bridge:(RCTBridge *)bridge
 {
-  RCTErrorNewArchitectureValidation(RCTNotAllowedInFabricWithoutLegacy, @"RCTLogBoxView", nil);
-
   self = [super initWithWindowScene:window.windowScene];
 
+#if !TARGET_OS_TV
   self.windowLevel = UIWindowLevelStatusBar - 1;
+#endif
   self.backgroundColor = [UIColor clearColor];
 
   _surface = [[RCTSurface alloc] initWithBridge:bridge moduleName:@"LogBox" initialProperties:@{}];
@@ -55,7 +57,7 @@
 
   return self;
 }
-#endif // RCT_FIT_RM_OLD_RUNTIME
+#endif // RCT_REMOVE_LEGACY_ARCH
 
 - (instancetype)initWithWindow:(UIWindow *)window surfacePresenter:(id<RCTSurfacePresenterStub>)surfacePresenter
 {
@@ -74,9 +76,9 @@
 - (void)layoutSubviews
 {
   [super layoutSubviews];
-#ifndef RCT_FIT_RM_OLD_RUNTIME
+#ifndef RCT_REMOVE_LEGACY_ARCH
   [_surface setSize:self.frame.size];
-#endif // RCT_FIT_RM_OLD_RUNTIME
+#endif // RCT_REMOVE_LEGACY_ARCH
 }
 
 - (void)dealloc

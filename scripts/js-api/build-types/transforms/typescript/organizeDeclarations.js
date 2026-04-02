@@ -19,7 +19,7 @@ import * as t from '@babel/types';
  * - Sorts declarations alphabetically.
  * - Moves all exports into a single block at the end of the file.
  */
-const visitor: PluginObj<mixed> = {
+const visitor: PluginObj<unknown> = {
   visitor: {
     Program(path) {
       const exportedIdentifiers: Set<string> = new Set();
@@ -79,7 +79,7 @@ const visitor: PluginObj<mixed> = {
       if (exportedIdentifiers.size > 0) {
         const sortedIdentifiers = Array.from(exportedIdentifiers).sort();
         const exportStatement = t.exportNamedDeclaration(
-          // $FlowFixMe[incompatible-call]
+          // $FlowFixMe[incompatible-type]
           null,
           sortedIdentifiers.map(name =>
             t.exportSpecifier(t.identifier(name), t.identifier(name)),

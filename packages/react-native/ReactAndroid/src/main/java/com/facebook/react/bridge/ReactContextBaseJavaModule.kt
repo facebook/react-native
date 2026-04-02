@@ -25,7 +25,7 @@ public abstract class ReactContextBaseJavaModule : BaseJavaModule {
    * this method whenever you actually need the Activity and make sure to check for `null`.
    */
   @Deprecated(
-      "Deprecated in 0.80.0. Use getReactApplicationContext.getCurrentActivity() instead.",
+      "Deprecated in 0.80.0. Use getReactApplicationContext().getCurrentActivity() instead.",
       ReplaceWith("reactApplicationContext.currentActivity"),
   )
   protected fun getCurrentActivity(): Activity? {

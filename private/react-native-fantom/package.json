@@ -7,6 +7,9 @@
   "scripts": {
     "build": "./build.sh"
   },
+  "dependencies": {
+    "babel-plugin-istanbul": "^7.0.0"
+  },
   "peerDependencies": {
     "jest": "^29.7.0",
     "jest-snapshot": "^29.7.0"

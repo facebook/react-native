@@ -1,62 +1,75 @@
 #!/usr/bin/env dotslash
 
-// @generated SignedSource<<14de73ea0ed751d80c7c687c6aeb123f>>
+// @generated SignedSource<<bd4e820d8ffcb7101b665b044f061248>>
 
 
 {
     "name": "React Native DevTools",
     "platforms": {
         "linux-aarch64": {
-            "size": 116120331,
+            "size": 115268850,
             "hash": "sha256",
-            "digest": "5a1747bdb50f8140d96e99b31f9a603ceaf52e777e5dd59f65edacd87f8c6348",
+            "digest": "869b2bab193f006e6b4771b1694123ad151fc8f06173271a95f091eb4d6c9ae5",
             "providers": [
                 {
                     "type": "http",
-                    "url": "https://scontent.xx.fbcdn.net/mci_ab/uap/?ab_b=m&ab_page=react_native_devtools_binaries&ab_entry=AQMRq1ou56GjpsIRFHpozEYiPfCuVvgWQVwiMMPBbwKyBnebit8HDGKof5XgDHbAKCqAZSgC8L22eJETnqIUM3kEAMYNXcHviIGy41rsXKVDYDgyWlGFB1zP2WzHrjWagfD062Pt4q5GqvCG5RVlhz656BOsutU7B4pDXGFCIdry7FveKn0PXGxvd1E"
+                    "url": "https://scontent.xx.fbcdn.net/mci_ab/uap/?ab_b=m&ab_page=react_native_devtools_binaries&ab_entry=AQN70skMEOeXpz3lAGnQLy88BvbdPlLRJat94hxxWEhvB3xwywu8k_bE_-ZaLJuvmzlF50eeNJgqwTAdS8O-J5KNW1MSvgg4LfUTlswe6DKllGDSgd_RVE4xwV_jxDNiYd6IX4fJF2NBlTxosYtKFUD6UaiXOESXxho2oi1mXM6kW851DNrg6vaH1fU"
                 }
             ],
             "format": "tar.gz",
             "path": "React Native DevTools-linux-arm64/React Native DevTools"
         },
         "linux-x86_64": {
-            "size": 116056146,
+            "size": 114837389,
             "hash": "sha256",
-            "digest": "b48a3e392ac482de8058917879cf07fd5934dcb84aa901d4fe0d29273b503f54",
+            "digest": "85af333cfbc3113b5f45646d8c0fbba5ae396d4f40c3617882d7936852cdb183",
             "providers": [
                 {
                     "type": "http",
-                    "url": "https://scontent.xx.fbcdn.net/mci_ab/uap/?ab_b=m&ab_page=react_native_devtools_binaries&ab_entry=AQOyyb_LXrME2ubBGSkEi1vDw-2hwuHgHwnR-kAGQyhJK7lnELQDXKX1xW_u0joDwbTOhmiptwenq07G2NFkrY3t_AXefb_xTu2qHzpmrsX2YcwJlewbprgbuX7Uvdhqncb_IRAnJ4ogYKHUg6CZBNmLCQsyDsoqmkXtJ9ikJcQeDu2aiqbb-RWJ"
+                    "url": "https://scontent.xx.fbcdn.net/mci_ab/uap/?ab_b=m&ab_page=react_native_devtools_binaries&ab_entry=AQMlrPALw0cm-NrVQAnC3KwZmtKmvh2lzgZgSNKL_ov5IBkCpM-wPR4xjxgYxjrRMNhMBJbr7l1OWbX5qiTY4KroFXcWH-l8KioKWY1TxBEX9DeVC-ORVMX0kvZkI5TiNMnfmesl64tPW1iTm7CB0vdlG5woAVrnY9lZGALP65N-L5RIBZzQB4tr"
                 }
             ],
             "format": "tar.gz",
             "path": "React Native DevTools-linux-x64/React Native DevTools"
         },
         "macos-aarch64": {
-            "size": 110957864,
+            "size": 112365024,
             "hash": "sha256",
-            "digest": "7964d83c857f12bb741abf4377771f3f3697b81df6283dd88d75ae43991afb73",
+            "digest": "8be411fc07384011739f2fa6c6ab9f97d0e6be787a8118adb7e8543fc01ae5ab",
             "providers": [
                 {
                     "type": "http",
-                    "url": "https://scontent.xx.fbcdn.net/mci_ab/uap/?ab_b=m&ab_page=react_native_devtools_binaries&ab_entry=AQM7USVzavWxZkjOO6CasnSfPIfE08jJAkwfVO0qWiYBli136vpzA_HS89ZqsIsAC_GXeT7K-K9BxdON7z5qBoRMUygAay7z4DGT5OZ9YSf9MDCd0JOzah5_6s3ijw2j4eeRu8ZNYzI3aTutDXtPMJAb2KfBHGx2lEiSW5YK9idcB5Y2boAWeDXXX5nb"
+                    "url": "https://scontent.xx.fbcdn.net/mci_ab/uap/?ab_b=m&ab_page=react_native_devtools_binaries&ab_entry=AQNGm1TUXqJJYAVo1VGVpGs5YhcZ6uoEAh_yOsCkXAqTzWCcG2WkM5h_UB1KfOJ31Xicpz07mG_vw0DfZXisGLLGGA4j0AKupOPfyYQBHhNcbOVgtrb9qqVkfXZEKS9IwDbUG95YFodLcMyF6lXeHkgvWIFqkyEtO9bPnyx9RrtxMOG_3J61Q_NPBtxN"
                 }
             ],
             "format": "tar.gz",
             "path": "React Native DevTools.app/Contents/MacOS/React Native DevTools"
         },
         "macos-x86_64": {
-            "size": 117827315,
+            "size": 119261188,
             "hash": "sha256",
-            "digest": "bab2fac43def4a82fb88300aac05180eeda24f31cc00402a3ff7ca2e612bd532",
+            "digest": "7e52e1c961a85bf6ffae7864e3c7f6d06cca8f0c01bc4ada63efb3aded6e9089",
             "providers": [
                 {
                     "type": "http",
-                    "url": "https://scontent.xx.fbcdn.net/mci_ab/uap/?ab_b=m&ab_page=react_native_devtools_binaries&ab_entry=AQPYS0ZRQ7RV1S-yy3tut6pRqcKdPcOiKfekrA5AXdd_M-HDaXLwJS57iAFU2K2X-EA_cyg25C3L-5L7O3eyNKPMToZHbV282GiojnNSKFNjsjj9_B737lOwHI_XqbDQEIiNJZ7NjbkZ8_iMKK-LNL-Ydha2ORWWqytuzP4sWQ6sm0XIxsdyQ6bOLw"
+                    "url": "https://scontent.xx.fbcdn.net/mci_ab/uap/?ab_b=m&ab_page=react_native_devtools_binaries&ab_entry=AQOpwivC5E7T-jcte46cm6vYrn0hBmyL2an8DgG2v4_ON-6Cmr9PWuwgUORlUvVKsQoJADcIVVu2q6svSfglSGD5UjMfHODZ6_pyjWZTyRMFjdZ72eRrCLgSv_oallI_-jjU-gzNeMlhdyg3yTjGBzmGLjVDpyZBvww-YGgDu3_rwdTozAzEf_lAIw"
                 }
             ],
             "format": "tar.gz",
             "path": "React Native DevTools.app/Contents/MacOS/React Native DevTools"
+        },
+        "windows-x86_64": {
+            "size": 138044576,
+            "hash": "sha256",
+            "digest": "2a5b7271f5ac34c19c10db6084fe71272bb52efebdd8d0e4c2b0fd9b3aeb56bb",
+            "providers": [
+                {
+                    "type": "http",
+                    "url": "https://scontent.xx.fbcdn.net/mci_ab/uap/?ab_b=m&ab_page=react_native_devtools_binaries&ab_entry=AQOh3711WMGWiwwjQncGDPeyt2IFAASumXOMz5ul082edhj_xuN8dXoptGpZLb95zou-x4arY5bg1phLNlu1wTkuRnV8oMRuGh_kGcg6-mpMmE-8lclNGnYhFX0BzNgMbVXtEmm5RDsicWJBTUy01MthQRgbCrB00ra_tZ31gZg1o19HhmLOMFBr"
+                }
+            ],
+            "format": "tar.gz",
+            "path": "React Native DevTools-win32-x64/React Native DevTools.exe"
         }
     }
 }

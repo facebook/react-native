@@ -19,6 +19,7 @@ import com.facebook.react.bridge.LifecycleEventListener
 import com.facebook.react.bridge.NativeModule
 import com.facebook.react.bridge.ReactApplicationContext
 import com.facebook.react.bridge.ReactContext
+import com.facebook.react.bridge.ScrollEndedListeners
 import com.facebook.react.bridge.UIManager
 import com.facebook.react.common.annotations.internal.LegacyArchitecture
 import com.facebook.react.turbomodule.core.interfaces.CallInvokerHolder
@@ -86,7 +87,8 @@ public class ThemedReactContext(
       reactApplicationContext.getNativeModule(moduleName)
 
   @Deprecated(
-      "This method is deprecated and will be removed once the Legacy Architecture is removed")
+      "This method is deprecated and will be removed once the Legacy Architecture is removed"
+  )
   @LegacyArchitecture
   override fun getCatalystInstance(): CatalystInstance? =
       reactApplicationContext.getCatalystInstance()
@@ -123,7 +125,8 @@ public class ThemedReactContext(
    *   with this [ThemedReactContext]
    */
   @Deprecated(
-      "Do not depend on this method. It will be removed in a future release of React Native.")
+      "Do not depend on this method. It will be removed in a future release of React Native."
+  )
   public fun getSurfaceID(): String? = moduleName
 
   override fun handleException(e: Exception?) {
@@ -131,7 +134,8 @@ public class ThemedReactContext(
   }
 
   @Deprecated(
-      "You should not invoke isBridgeless and let your code depend on this check. This function will be removed in the future.")
+      "You should not invoke isBridgeless and let your code depend on this check. This function will be removed in the future."
+  )
   override fun isBridgeless(): Boolean = reactApplicationContext.isBridgeless()
 
   override fun getJavaScriptContextHolder(): JavaScriptContextHolder? =
@@ -151,4 +155,7 @@ public class ThemedReactContext(
   override fun registerSegment(segmentId: Int, path: String?, callback: Callback?) {
     reactApplicationContext.registerSegment(segmentId, path, callback)
   }
+
+  override fun getScrollEndedListeners(): ScrollEndedListeners =
+      reactApplicationContext.scrollEndedListeners
 }

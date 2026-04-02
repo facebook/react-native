@@ -409,8 +409,7 @@ type ElementProps<C> = C extends React.Component<infer P, any> ? P : never;
 class CustomView extends React.Component {
   render() {
     return (
-      <Text
-        style={[StyleSheet.absoluteFill, {...StyleSheet.absoluteFillObject}]}>
+      <Text style={[StyleSheet.absoluteFill, {...StyleSheet.absoluteFill}]}>
         Custom View
       </Text>
     );

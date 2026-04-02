@@ -7,7 +7,7 @@
 
 #import <UIKit/UIKit.h>
 
-#ifndef RCT_FIT_RM_OLD_COMPONENT
+#ifndef RCT_REMOVE_LEGACY_ARCH
 
 #import <RCTWrapper/RCTWrapperView.h>
 #import <RCTWrapper/RCTWrapperViewControllerHostingView.h>
@@ -16,29 +16,29 @@
 // Umbrella header with macros
 
 // RCT_WRAPPER_FOR_VIEW
-#define RCT_WRAPPER_FOR_VIEW(ClassName)         \
-                                                \
-  NS_ASSUME_NONNULL_BEGIN                       \
-                                                \
-  @interface ClassName                          \
-  ##Manager : RCTWrapperViewManager             \
-                                                \
-              @end                              \
-                                                \
-  NS_ASSUME_NONNULL_END                         \
-                                                \
-  @implementation ClassName                     \
-  ##Manager                                     \
-                                                \
-      RCT_EXPORT_MODULE()                       \
-                                                \
-      - (UIView *)view                          \
-  {                                             \
-    RCTWrapperView *wrapperView = [super view]; \
-    wrapperView.contentView = [ClassName new];  \
-    return wrapperView;                         \
-  }                                             \
-                                                \
+#define RCT_WRAPPER_FOR_VIEW(ClassName)                                                       \
+  NS_ASSUME_NONNULL_BEGIN                                                                     \
+                                                                                              \
+  __attribute__((deprecated("This API will be removed along with the legacy architecture."))) \
+  @interface ClassName                                                                        \
+  ##Manager : RCTWrapperViewManager                                                           \
+                                                                                              \
+              @end                                                                            \
+                                                                                              \
+  NS_ASSUME_NONNULL_END                                                                       \
+                                                                                              \
+  @implementation ClassName                                                                   \
+  ##Manager                                                                                   \
+                                                                                              \
+      RCT_EXPORT_MODULE()                                                                     \
+                                                                                              \
+      - (UIView *)view                                                                        \
+  {                                                                                           \
+    RCTWrapperView *wrapperView = [super view];                                               \
+    wrapperView.contentView = [ClassName new];                                                \
+    return wrapperView;                                                                       \
+  }                                                                                           \
+                                                                                              \
   @end
 
 // RCT_WRAPPER_FOR_VIEW_CONTROLLER
@@ -46,6 +46,7 @@
                                                                                                                        \
   NS_ASSUME_NONNULL_BEGIN                                                                                              \
                                                                                                                        \
+  __attribute__((deprecated("This API will be removed along with the legacy architecture.")))                          \
   @interface ClassName                                                                                                 \
   ##Manager : RCTWrapperViewManager                                                                                    \
                                                                                                                        \
@@ -69,4 +70,4 @@
                                                                                                                        \
   @end
 
-#endif // RCT_FIT_RM_OLD_COMPONENT
+#endif // RCT_REMOVE_LEGACY_ARCH

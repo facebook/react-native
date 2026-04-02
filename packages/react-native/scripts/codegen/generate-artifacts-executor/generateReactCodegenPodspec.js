@@ -15,7 +15,7 @@ const {
   TEMPLATES_FOLDER_PATH,
   packageJson,
 } = require('./constants');
-const {codegenLog} = require('./utils');
+const {codegenLog, writeFileSyncIfChanged} = require('./utils');
 const {execSync} = require('child_process');
 const fs = require('fs');
 const path = require('path');
@@ -39,7 +39,7 @@ function generateReactCodegenPodspec(
     .replace(/{input-files}/, inputFiles)
     .replace(/{codegen-script}/, codegenScript);
   const finalPathPodspec = path.join(outputPath, 'ReactCodegen.podspec');
-  fs.writeFileSync(finalPathPodspec, finalPodspec);
+  writeFileSyncIfChanged(finalPathPodspec, finalPodspec);
   codegenLog(`Generated podspec: ${finalPathPodspec}`);
 }
 
@@ -59,6 +59,11 @@ function getInputFiles(appPath /*: string */, appPkgJson /*: $FlowFixMe */) {
         !projectPath.includes('/Pods/') && // exclude Pods/Pods.xcodeproj
         !projectPath.includes('/node_modules/'), // exclude all the xcodeproj in node_modules of libraries
     )[0];
+  if (!xcodeproj) {
+    throw new Error(
+      `Cannot find .xcodeproj file inside ${appPath}. This is required to determine codegen spec paths relative to native project.`,
+    );
+  }
   const jsFiles = '-name "Native*.js" -or -name "*NativeComponent.js"';
   const tsFiles = '-name "Native*.ts" -or -name "*NativeComponent.ts"';
   const findCommand = `find ${path.join(appPath, jsSrcsDir)} -type f -not -path "*/__mocks__/*" -and \\( ${jsFiles} -or ${tsFiles} \\)`;
@@ -71,14 +76,18 @@ function getInputFiles(appPath /*: string */, appPkgJson /*: $FlowFixMe */) {
   return `[${list}]`;
 }
 
-function codegenScripts(appPath /*: string */, outputPath /*: string */) {
-  const relativeAppPath = path.relative(outputPath, appPath);
+function codegenScripts(appPath /*: string */, baseOutputPath /*: string */) {
+  const relativeAppPath = path.relative(baseOutputPath, appPath);
+  const relativeReactNativeRootFolder = path.relative(
+    baseOutputPath,
+    REACT_NATIVE_PACKAGE_ROOT_FOLDER,
+  );
   return `<<-SCRIPT
 pushd "$PODS_ROOT/../" > /dev/null
 RCT_SCRIPT_POD_INSTALLATION_ROOT=$(pwd)
 popd >/dev/null
 
-export RCT_SCRIPT_RN_DIR="$RCT_SCRIPT_POD_INSTALLATION_ROOT/${path.relative(outputPath, REACT_NATIVE_PACKAGE_ROOT_FOLDER)}"
+export RCT_SCRIPT_RN_DIR="$RCT_SCRIPT_POD_INSTALLATION_ROOT/${relativeReactNativeRootFolder}"
 export RCT_SCRIPT_APP_PATH="$RCT_SCRIPT_POD_INSTALLATION_ROOT/${relativeAppPath.length === 0 ? '.' : relativeAppPath}"
 export RCT_SCRIPT_OUTPUT_DIR="$RCT_SCRIPT_POD_INSTALLATION_ROOT"
 export RCT_SCRIPT_TYPE="withCodegenDiscovery"

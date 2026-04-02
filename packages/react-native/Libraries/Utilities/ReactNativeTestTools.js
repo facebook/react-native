@@ -38,13 +38,21 @@ function byClickable(): Predicate {
     node =>
       // note: <Text /> lazy-mounts press handlers after the first press,
       //       so this is a workaround for targeting text nodes.
+      /* $FlowFixMe[invalid-compare] Error discovered during Constant Condition
+       * roll out. See https://fburl.com/workplace/4oq3zi07. */
       (node.type === Text &&
         node.props &&
         typeof node.props.onPress === 'function') ||
       // note: Special casing <Switch /> since it doesn't use touchable
+      /* $FlowFixMe[invalid-compare] Error discovered during Constant Condition
+       * roll out. See https://fburl.com/workplace/4oq3zi07. */
       (node.type === Switch && node.props && node.props.disabled !== true) ||
+      /* $FlowFixMe[invalid-compare] Error discovered during Constant Condition
+       * roll out. See https://fburl.com/workplace/4oq3zi07. */
       (node.type === View &&
         node?.props?.onStartShouldSetResponder?.testOnly_pressabilityConfig) ||
+      /* $FlowFixMe[invalid-compare] Error discovered during Constant Condition
+       * roll out. See https://fburl.com/workplace/4oq3zi07. */
       (node.type === TouchableWithoutFeedback &&
         node.props &&
         typeof node.props.onPress === 'function') ||
@@ -98,14 +106,14 @@ function maximumDepthError(
 }
 
 function expectNoConsoleWarn() {
-  (jest: $FlowFixMe).spyOn(console, 'warn').mockImplementation((...args) => {
+  (jest as $FlowFixMe).spyOn(console, 'warn').mockImplementation((...args) => {
     expect(args).toBeFalsy();
   });
 }
 
 function expectNoConsoleError() {
   let hasNotFailed = true;
-  (jest: $FlowFixMe).spyOn(console, 'error').mockImplementation((...args) => {
+  (jest as $FlowFixMe).spyOn(console, 'error').mockImplementation((...args) => {
     if (hasNotFailed) {
       hasNotFailed = false; // set false to prevent infinite recursion
       expect(args).toBeFalsy();
@@ -116,7 +124,7 @@ function expectNoConsoleError() {
 async function expectRendersMatchingSnapshot(
   name: string,
   ComponentProvider: () => React.MixedElement,
-  unmockComponent: () => mixed,
+  unmockComponent: () => unknown,
 ) {
   let instance;
 
@@ -164,7 +172,7 @@ function renderWithStrictMode(element: React.Node): ReactTestRendererType {
   const WorkAroundBugWithStrictModeInTestRenderer = (prps: {
     children: React.Node,
   }) => prps.children;
-  const StrictMode = (React: $FlowFixMe).StrictMode;
+  const StrictMode = (React as $FlowFixMe).StrictMode;
   return ReactTestRenderer.create(
     <WorkAroundBugWithStrictModeInTestRenderer>
       <StrictMode>{element}</StrictMode>
@@ -174,8 +182,12 @@ function renderWithStrictMode(element: React.Node): ReactTestRendererType {
 
 function tap(instance: ReactTestInstance) {
   const touchable = instance.find(byClickable());
+  /* $FlowFixMe[invalid-compare] Error discovered during Constant Condition
+   * roll out. See https://fburl.com/workplace/4oq3zi07. */
   if (touchable.type === Text && touchable.props && touchable.props.onPress) {
     touchable.props.onPress();
+    /* $FlowFixMe[invalid-compare] Error discovered during Constant Condition
+     * roll out. See https://fburl.com/workplace/4oq3zi07. */
   } else if (touchable.type === Switch && touchable.props) {
     const value = !touchable.props.value;
     const {onChange, onValueChange} = touchable.props;
@@ -205,7 +217,7 @@ function scrollToBottom(instance: ReactTestInstance) {
 // To make error messages a little bit better, we attach a custom toString
 // implementation to a predicate
 function withMessage(fn: Predicate, message: string): Predicate {
-  (fn: any).toString = () => message;
+  (fn as any).toString = () => message;
   return fn;
 }
 

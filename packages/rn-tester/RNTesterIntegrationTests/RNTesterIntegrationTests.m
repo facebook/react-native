@@ -40,7 +40,8 @@
 
 #pragma mark - Test harness
 
-- (void)testTheTester_waitOneFrame
+// Disabled due to test being based on deprecated RCTBridge
+- (void)disabled_testTheTester_waitOneFrame
 {
   [_runner runTest:_cmd
                   module:@"IntegrationTestHarnessTest"
@@ -61,17 +62,24 @@
 #pragma mark - JS tests
 
 // This list should be kept in sync with IntegrationTestsApp.js
-RCT_TEST(IntegrationTestHarnessTest)
+// RCT_TEST(IntegrationTestHarnessTest) // Disabled due to test being based on deprecated RCTBridge
 // RCT_TEST(TimersTest) // Disabled due to issue introduced in 61346d3
-RCT_TEST(AppEventsTest)
+// RCT_TEST(AppEventsTest) // Disabled due to test being based on deprecated RCTBridge
 // RCT_TEST(ImageCachePolicyTest) // This test never passed.
-RCT_TEST(ImageSnapshotTest)
+// RCT_TEST(ImageSnapshotTest) // Disabled due to test being based on deprecated RCTBridge
 // RCT_TEST(LayoutEventsTest) // Disabled due to flakiness: #8686784
-RCT_TEST(SimpleSnapshotTest)
-RCT_TEST(SyncMethodTest)
-RCT_TEST(PromiseTest)
-RCT_TEST_ONLY_WITH_PACKAGER(WebSocketTest) // Requires a WebSocket test server, see scripts/objc-test.sh
-RCT_TEST(AccessibilityManagerTest)
-RCT_TEST(GlobalEvalWithSourceUrlTest)
+// RCT_TEST(SimpleSnapshotTest) // Disabled due to test being based on deprecated RCTBridge
+// RCT_TEST(SyncMethodTest) // Disabled due to test being based on deprecated RCTBridge
+// RCT_TEST(PromiseTest) // Disabled due to test being based on deprecated RCTBridge
+// RCT_TEST_ONLY_WITH_PACKAGER(WebSocketTest) // Disabled due to test being based on deprecated RCTBridge; Requires a
+// WebSocket test server, see scripts/objc-test.sh
+
+// Disabled due to TODO(T225745315) causing AccessibilityManager to be unavailable
+// and in turn RCTDeviceInfo::_exportedDimensions to fall back to 1.0 font scale,
+// failing the test's assertion
+// TODO: re-enable this test when TODO(T225745315) is resolved
+// RCT_TEST(AccessibilityManagerTest)
+
+// RCT_TEST(GlobalEvalWithSourceUrlTest) // Disabled due to test being based on deprecated RCTBridge
 
 @end

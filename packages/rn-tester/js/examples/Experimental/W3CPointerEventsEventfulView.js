@@ -70,7 +70,8 @@ export default function EventfulView(props: {
   const eventLog =
     (eventName: string, handler: ?(e: PointerEvent) => void) =>
     (event: PointerEvent) => {
-      // $FlowFixMe Using private property
+      // $FlowFixMe[incompatible-use]
+      // $FlowFixMe[prop-missing] Using private property
       log(`${name} - ${eventName} - target: ${event.target._nativeTag}`);
       handler?.(event);
     };

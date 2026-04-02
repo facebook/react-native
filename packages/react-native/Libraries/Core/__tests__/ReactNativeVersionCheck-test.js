@@ -22,7 +22,7 @@ describe('checkVersion', () => {
   });
 });
 
-function _setDevelopmentModeForTests(dev: mixed) {
+function _setDevelopmentModeForTests(dev: unknown) {
   let originalDev;
 
   beforeAll(() => {

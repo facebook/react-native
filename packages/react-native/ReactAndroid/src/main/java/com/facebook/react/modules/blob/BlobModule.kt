@@ -63,7 +63,7 @@ public class BlobModule(reactContext: ReactApplicationContext) :
         }
       }
 
-  private val networkingUriHandler =
+  internal val networkingUriHandler =
       object : NetworkingModule.UriHandler {
         override fun supports(uri: Uri, responseType: String): Boolean {
           val scheme = uri.scheme
@@ -106,7 +106,8 @@ public class BlobModule(reactContext: ReactApplicationContext) :
           val blob = checkNotNull(map.getMap("blob"))
           val bytes =
               checkNotNull(
-                  resolve(blob.getString("blobId"), blob.getInt("offset"), blob.getInt("size")))
+                  resolve(blob.getString("blobId"), blob.getInt("offset"), blob.getInt("size"))
+              )
 
           return RequestBody.create(MediaType.parse(type), bytes)
         }

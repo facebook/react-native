@@ -18,6 +18,8 @@
 @class RCTHost;
 @class RCTRootView;
 @class RCTSurfacePresenterBridgeAdapter;
+@class RCTBundleConfiguration;
+@class RCTDevMenuConfiguration;
 
 NS_ASSUME_NONNULL_BEGIN
 
@@ -65,14 +67,15 @@ typedef void (^RCTLoadSourceForBridgeBlock)(RCTBridge *bridge, RCTSourceLoadBloc
 - (instancetype)initWithBundleURLBlock:(RCTBundleURLBlock)bundleURLBlock
                         newArchEnabled:(BOOL)newArchEnabled
                     turboModuleEnabled:(BOOL)turboModuleEnabled
-                     bridgelessEnabled:(BOOL)bridgelessEnabled NS_DESIGNATED_INITIALIZER __deprecated;
+                     bridgelessEnabled:(BOOL)bridgelessEnabled __deprecated;
 
 - (instancetype)initWithBundleURL:(NSURL *)bundleURL
                    newArchEnabled:(BOOL)newArchEnabled
                turboModuleEnabled:(BOOL)turboModuleEnabled
                 bridgelessEnabled:(BOOL)bridgelessEnabled __deprecated;
 
-- (instancetype)initWithBundleURLBlock:(RCTBundleURLBlock)bundleURLBlock newArchEnabled:(BOOL)newArchEnabled;
+- (instancetype)initWithBundleURLBlock:(RCTBundleURLBlock)bundleURLBlock
+                        newArchEnabled:(BOOL)newArchEnabled NS_DESIGNATED_INITIALIZER;
 
 - (instancetype)initWithBundleURL:(NSURL *)bundleURL newArchEnabled:(BOOL)newArchEnabled;
 
@@ -145,7 +148,7 @@ typedef void (^RCTLoadSourceForBridgeBlock)(RCTBridge *bridge, RCTSourceLoadBloc
 @property (nonatomic, nullable) RCTExtraLazyModuleClassesForBridge extraLazyModuleClassesForBridge;
 
 /**
- * The bridge will call this block when a module been called from JS
+ * The bridge will call this block when a module has been called from JS
  * cannot be found among registered modules.
  * It should return YES if the module with name 'moduleName' was registered
  * in the implementation, and the system must attempt to look for it again among registered.
@@ -170,11 +173,11 @@ typedef void (^RCTLoadSourceForBridgeBlock)(RCTBridge *bridge, RCTSourceLoadBloc
 
 #pragma mark - RCTRootViewFactory
 /**
- * The RCTRootViewFactory is an utility class that encapsulates the logic of creating a new RCTRootView based on the
+ * The RCTRootViewFactory is a utility class that encapsulates the logic of creating a new RCTRootView based on the
  * current state of the environment. It allows you to initialize your app root view for old architecture, new
- * architecture and bridgless mode.
+ * architecture and bridgeless mode.
  *
- * This class is used to initalize rootView in RCTAppDelegate, but you can also use it separately.
+ * This class is used to initialize rootView in RCTAppDelegate, but you can also use it separately.
  *
  * Create a new instance of this class (make sure to retain it) and call the
  * `viewWithModuleName:initialProperties:launchOptions` method to create new RCTRootView.
@@ -191,7 +194,7 @@ typedef void (^RCTLoadSourceForBridgeBlock)(RCTBridge *bridge, RCTSourceLoadBloc
 - (instancetype)initWithConfiguration:(RCTRootViewFactoryConfiguration *)configuration;
 
 - (instancetype)initWithTurboModuleDelegate:(id<RCTTurboModuleManagerDelegate>)turboModuleManagerDelegate
-                               hostDelegate:(id<RCTHostDelegate>)hostdelegate
+                               hostDelegate:(id<RCTHostDelegate>)hostDelegate
                               configuration:(RCTRootViewFactoryConfiguration *)configuration;
 
 /**
@@ -200,7 +203,15 @@ typedef void (^RCTLoadSourceForBridgeBlock)(RCTBridge *bridge, RCTSourceLoadBloc
  * @parameter: moduleName  - the name of the app, used by Metro to resolve the module.
  * @parameter: initialProperties  -  a set of initial properties.
  * @parameter: launchOptions  - a dictionary with a set of options.
+ * @parameter: bundleConfiguration  - a configuration for custom bundle source URL.
+ * @parameter: devMenuConfiguration - a configuration for enabling/disabling dev menu.
  */
+- (UIView *_Nonnull)viewWithModuleName:(NSString *)moduleName
+                     initialProperties:(NSDictionary *__nullable)initialProperties
+                         launchOptions:(NSDictionary *__nullable)launchOptions
+                   bundleConfiguration:(RCTBundleConfiguration *)bundleConfiguration
+                  devMenuConfiguration:(RCTDevMenuConfiguration *)devMenuConfiguration;
+
 - (UIView *_Nonnull)viewWithModuleName:(NSString *)moduleName
                      initialProperties:(NSDictionary *__nullable)initialProperties
                          launchOptions:(NSDictionary *__nullable)launchOptions;
@@ -218,8 +229,16 @@ typedef void (^RCTLoadSourceForBridgeBlock)(RCTBridge *bridge, RCTSourceLoadBloc
  * Use it to speed up later viewWithModuleName: calls.
  *
  * @parameter: launchOptions  - a dictionary with a set of options.
+ * @parameter: bundleConfiguration  - a configuration for custom bundle source URL.
+ * @parameter: devMenuConfiguration - a configuration for enabling/disabling dev menu.
  */
-- (void)initializeReactHostWithLaunchOptions:(NSDictionary *__nullable)launchOptions;
+- (void)initializeReactHostWithLaunchOptions:(NSDictionary *__nullable)launchOptions
+                         bundleConfiguration:(RCTBundleConfiguration *)bundleConfiguration
+                        devMenuConfiguration:(RCTDevMenuConfiguration *)devMenuConfiguration;
+
+- (RCTHost *)createReactHost:(NSDictionary *__nullable)launchOptions
+         bundleConfiguration:(RCTBundleConfiguration *)bundleConfiguration
+        devMenuConfiguration:(RCTDevMenuConfiguration *)devMenuConfiguration;
 
 - (RCTHost *)createReactHost:(NSDictionary *__nullable)launchOptions;
 

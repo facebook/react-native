@@ -16,12 +16,12 @@ const path = require('path');
 export type TypeDeclarationMap = {[declarationName: string]: $FlowFixMe};
 
 export type TypeResolutionStatus =
-  | $ReadOnly<{
+  | Readonly<{
       type: 'alias' | 'enum',
       successful: true,
       name: string,
     }>
-  | $ReadOnly<{
+  | Readonly<{
       successful: false,
     }>;
 
@@ -52,21 +52,21 @@ function createParserErrorCapturer(): [
       if (!(error instanceof ParserError)) {
         throw error;
       }
-      // $FlowFixMe[incompatible-call]
+      // $FlowFixMe[incompatible-type]
       errors.push(error);
 
       return null;
     }
   }
 
-  // $FlowFixMe[incompatible-return]
+  // $FlowFixMe[incompatible-type]
   return [errors, guard];
 }
 
 function verifyPlatforms(
   hasteModuleName: string,
   moduleName: string,
-): $ReadOnly<{
+): Readonly<{
   cxxOnly: boolean,
   excludedPlatforms: Array<'iOS' | 'android'>,
 }> {

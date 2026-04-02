@@ -60,7 +60,7 @@ public class ModuleHolder {
             nativeModule.javaClass.simpleName,
             nativeModule.canOverrideExistingModule(),
             true,
-            CxxModuleWrapper::class.java.isAssignableFrom(nativeModule.javaClass),
+            false,
             ReactModuleInfo.classIsTurboModule(nativeModule.javaClass),
         )
 
@@ -108,7 +108,7 @@ public class ModuleHolder {
     get() = reactModuleInfo.isTurboModule
 
   public val isCxxModule: Boolean
-    get() = reactModuleInfo.isCxxModule
+    get() = false
 
   public val className: String
     get() = reactModuleInfo.className

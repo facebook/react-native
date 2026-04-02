@@ -6,7 +6,6 @@
  */
 
 #include "ReactMarker.h"
-#include <cxxreact/JSExecutor.h>
 
 namespace facebook::react::ReactMarker {
 

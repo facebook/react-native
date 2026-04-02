@@ -5,11 +5,10 @@
  * LICENSE file in the root directory of this source tree.
  */
 
+#include <cxxreact/JSBigString.h>
 #include <react/io/ResourceLoader.h>
 
 #include <cassert>
-#include <fstream>
-#include <sstream>
 
 namespace facebook::react {
 
@@ -21,17 +20,12 @@ bool ResourceLoader::isResourceFile(const std::string& path) {
   return std::filesystem::exists(path) && !std::filesystem::is_directory(path);
 }
 
-std::string ResourceLoader::getResourceFileContents(const std::string& path) {
-  std::ifstream file(path, std::ios::binary);
-  if (!file.good()) {
-    throw std::runtime_error("File not found " + path);
-  }
-  std::stringstream buffer;
-  buffer << file.rdbuf();
-  return buffer.str();
+/* static */ std::unique_ptr<const JSBigString>
+ResourceLoader::getResourceFileContents(const std::string& path) {
+  return JSBigFileString::fromPath(path);
 }
 
-std::filesystem::path ResourceLoader::getCacheRootPath() {
+/* static */ std::filesystem::path ResourceLoader::getCacheRootPath() {
   return std::filesystem::temp_directory_path();
 }
 } // namespace facebook::react

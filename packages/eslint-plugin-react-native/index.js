@@ -8,7 +8,13 @@
  * @noflow
  */
 
-exports.rules = {
-  'platform-colors': require('./platform-colors'),
-  'no-deep-imports': require('./no-deep-imports'),
+module.exports = {
+  meta: {
+    name: '@react-native/eslint-plugin',
+    version: require('./package.json').version,
+  },
+  rules: {
+    'platform-colors': require('./platform-colors'),
+    'no-deep-imports': require('./no-deep-imports'),
+  },
 };

@@ -127,7 +127,7 @@ jsi::Value RuntimeSchedulerBinding::get(
         name,
         0,
         [](jsi::Runtime&, const jsi::Value&, const jsi::Value*, size_t) noexcept
-        -> jsi::Value {
+            -> jsi::Value {
           // RequestPaint is left empty by design.
           return jsi::Value::undefined();
         });

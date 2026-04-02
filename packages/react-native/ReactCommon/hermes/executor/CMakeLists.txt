@@ -18,7 +18,7 @@ add_library(
 target_include_directories(hermes_executor_common PUBLIC .)
 react_native_android_selector(reactnative reactnative "")
 target_link_libraries(hermes_executor_common
-        hermes-engine::libhermes
+        hermes-engine::hermesvm
         hermes_inspector_modern
         jsi
         jsireact

@@ -39,15 +39,18 @@ import com.facebook.react.common.annotations.FrameworkAPI
 import com.facebook.react.common.annotations.UnstableReactNativeAPI
 import com.facebook.react.common.build.ReactBuildConfig
 import com.facebook.react.devsupport.DefaultDevSupportManagerFactory
+import com.facebook.react.devsupport.DevMenuConfiguration
 import com.facebook.react.devsupport.DevSupportManagerBase
 import com.facebook.react.devsupport.DevSupportManagerFactory
 import com.facebook.react.devsupport.InspectorFlags
+import com.facebook.react.devsupport.inspector.FrameTimingsObserver
 import com.facebook.react.devsupport.inspector.InspectorNetworkHelper
 import com.facebook.react.devsupport.inspector.InspectorNetworkRequestListener
+import com.facebook.react.devsupport.inspector.TracingState
+import com.facebook.react.devsupport.inspector.TracingStateListener
 import com.facebook.react.devsupport.interfaces.BundleLoadCallback
 import com.facebook.react.devsupport.interfaces.DevSupportManager
 import com.facebook.react.devsupport.interfaces.DevSupportManager.PausedInDebuggerOverlayCommandListener
-import com.facebook.react.devsupport.interfaces.PerfMonitorV2Handler
 import com.facebook.react.fabric.ComponentFactory
 import com.facebook.react.fabric.FabricUIManager
 import com.facebook.react.interfaces.TaskInterface
@@ -62,6 +65,7 @@ import com.facebook.react.runtime.internal.bolts.Task
 import com.facebook.react.runtime.internal.bolts.TaskCompletionSource
 import com.facebook.react.turbomodule.core.interfaces.CallInvokerHolder
 import com.facebook.react.uimanager.DisplayMetricsHolder
+import com.facebook.react.uimanager.PixelUtil
 import com.facebook.react.uimanager.events.BlackHoleEventDispatcher
 import com.facebook.react.uimanager.events.EventDispatcher
 import com.facebook.react.views.imagehelper.ResourceDrawableIdHelper
@@ -73,6 +77,9 @@ import java.util.concurrent.atomic.AtomicInteger
 import java.util.concurrent.atomic.AtomicReference
 import kotlin.Unit
 import kotlin.concurrent.Volatile
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.launch
 
 /**
  * A ReactHost is an object that manages a single [ReactInstance]. A ReactHost can be constructed
@@ -96,21 +103,30 @@ public class ReactHostImpl(
     private val useDevSupport: Boolean,
     devSupportManagerFactory: DevSupportManagerFactory? = null,
 ) : ReactHost {
+  private val reactHostImplDevHelper = ReactHostImplDevHelper(this)
+
   public override val devSupportManager: DevSupportManager =
-      (devSupportManagerFactory ?: DefaultDevSupportManagerFactory()).create(
-          applicationContext = context.applicationContext,
-          reactInstanceManagerHelper = ReactHostImplDevHelper(this),
-          packagerPathForJSBundleName = reactHostDelegate.jsMainModulePath,
-          enableOnCreate = true,
-          redBoxHandler = null,
-          devBundleDownloadListener = null,
-          minNumShakes = 2,
-          customPackagerCommandHandlers = null,
-          surfaceDelegateFactory = null,
-          devLoadingViewManager = null,
-          pausedInDebuggerOverlayManager = null,
-          useDevSupport = useDevSupport,
-      )
+      (devSupportManagerFactory ?: DefaultDevSupportManagerFactory())
+          .create(
+              applicationContext = context.applicationContext,
+              reactInstanceManagerHelper = reactHostImplDevHelper,
+              packagerPathForJSBundleName = reactHostDelegate.jsMainModulePath,
+              enableOnCreate = true,
+              redBoxHandler = null,
+              devBundleDownloadListener = null,
+              minNumShakes = 2,
+              customPackagerCommandHandlers = null,
+              surfaceDelegateFactory = null,
+              devLoadingViewManager = null,
+              pausedInDebuggerOverlayManager = null,
+              useDevSupport = useDevSupport,
+          )
+          .also { devSupportManager ->
+            // Wire up the tracing state provider
+            if (devSupportManager is DevSupportManagerBase) {
+              devSupportManager.setTracingStateProvider(reactHostImplDevHelper)
+            }
+          }
   public override val memoryPressureRouter: MemoryPressureRouter = MemoryPressureRouter(context)
 
   private val attachedSurfaces: MutableSet<ReactSurfaceImpl> = HashSet()
@@ -120,12 +136,12 @@ public class ReactHostImpl(
   private var reactInstance: ReactInstance? = null
 
   private val bridgelessReactContextRef = BridgelessAtomicRef<BridgelessReactContext>()
+  private val id = counter.getAndIncrement()
 
   private val activity = AtomicReference<Activity?>()
   private val lastUsedActivityRef = AtomicReference(WeakReference<Activity?>(null))
-  private val bridgelessReactStateTracker = BridgelessReactStateTracker(ReactBuildConfig.DEBUG)
-  private val reactLifecycleStateManager = ReactLifecycleStateManager(bridgelessReactStateTracker)
-  private val id = counter.getAndIncrement()
+  private val stateTracker = ReactHostStateTracker(id)
+  private val reactLifecycleStateManager = ReactLifecycleStateManager(stateTracker)
   private var memoryPressureListener: MemoryPressureListener? = null
   private var defaultHardwareBackBtnHandler: DefaultHardwareBackBtnHandler? = null
 
@@ -133,7 +149,8 @@ public class ReactHostImpl(
       CopyOnWriteArrayList()
   private val beforeDestroyListeners: MutableList<() -> Unit> = CopyOnWriteArrayList()
 
-  private var reactHostInspectorTarget: ReactHostInspectorTarget? = null
+  internal var reactHostInspectorTarget: ReactHostInspectorTarget? = null
+  private var frameTimingsObserver: FrameTimingsObserver? = null
 
   @Volatile private var hostInvalidated = false
 
@@ -170,11 +187,11 @@ public class ReactHostImpl(
   /** Initialize and run a React Native surface in a background without mounting real views. */
   internal fun prerenderSurface(surface: ReactSurfaceImpl): TaskInterface<Void> {
     val method = "prerenderSurface(surfaceId = ${surface.surfaceID})"
-    log(method, "Schedule")
+    stateTracker.enterState(method, "Schedule")
 
     attachSurface(surface)
     return callAfterGetOrCreateReactInstance(method, bgExecutor) { reactInstance: ReactInstance ->
-      log(method, "Execute")
+      stateTracker.enterState(method, "Execute")
       reactInstance.prerenderSurface(surface)
     }
   }
@@ -187,11 +204,11 @@ public class ReactHostImpl(
    */
   internal fun startSurface(surface: ReactSurfaceImpl): TaskInterface<Void> {
     val method = "startSurface(surfaceId = ${surface.surfaceID})"
-    log(method, "Schedule")
+    stateTracker.enterState(method, "Schedule")
 
     attachSurface(surface)
     return callAfterGetOrCreateReactInstance(method, bgExecutor) { reactInstance: ReactInstance ->
-      log(method, "Execute")
+      stateTracker.enterState(method, "Execute")
       reactInstance.startSurface(surface)
     }
   }
@@ -204,11 +221,11 @@ public class ReactHostImpl(
    */
   internal fun stopSurface(surface: ReactSurfaceImpl): TaskInterface<Void> {
     val method = "stopSurface(surfaceId = ${surface.surfaceID})"
-    log(method, "Schedule")
+    stateTracker.enterState(method, "Schedule")
 
     detachSurface(surface)
     return callWithExistingReactInstance(method, bgExecutor) { reactInstance: ReactInstance ->
-          log(method, "Execute")
+          stateTracker.enterState(method, "Execute")
           reactInstance.stopSurface(surface)
         }
         .makeVoid()
@@ -230,10 +247,10 @@ public class ReactHostImpl(
 
   @ThreadConfined(ThreadConfined.UI)
   override fun onHostResume(activity: Activity?) {
-    val method = "onHostResume(activity)"
-    log(method)
+    stateTracker.enterState("onHostResume(activity)")
 
     currentActivity = activity
+    frameTimingsObserver?.setCurrentWindow(activity?.window)
 
     maybeEnableDevSupport(true)
     reactLifecycleStateManager.moveToOnHostResume(currentReactContext, activity)
@@ -241,8 +258,7 @@ public class ReactHostImpl(
 
   @ThreadConfined(ThreadConfined.UI)
   override fun onHostLeaveHint(activity: Activity?) {
-    val method = "onUserLeaveHint(activity)"
-    log(method)
+    stateTracker.enterState("onUserLeaveHint(activity)")
 
     currentReactContext?.onUserLeaveHint(activity)
   }
@@ -250,7 +266,7 @@ public class ReactHostImpl(
   @ThreadConfined(ThreadConfined.UI)
   override fun onHostPause(activity: Activity?) {
     val method = "onHostPause(activity)"
-    log(method)
+    stateTracker.enterState(method)
 
     val currentActivity = this.currentActivity
     if (currentActivity != null) {
@@ -261,7 +277,7 @@ public class ReactHostImpl(
         val isNotSameActivityMessage =
             "Pausing an activity that is not the current activity, this is incorrect! Current activity: $currentActivityClass Paused activity: $activityClass"
         if (ReactNativeFeatureFlags.skipActivityIdentityAssertionOnHostPause()) {
-          log(method, isNotSameActivityMessage)
+          FLog.w(TAG, method, isNotSameActivityMessage)
         } else {
           Assertions.assertCondition(isSameActivity, isNotSameActivityMessage)
         }
@@ -276,8 +292,7 @@ public class ReactHostImpl(
   /** To be called when the host activity is paused. */
   @ThreadConfined(ThreadConfined.UI)
   override fun onHostPause() {
-    val method = "onHostPause()"
-    log(method)
+    stateTracker.enterState("onHostPause()")
 
     maybeEnableDevSupport(false)
     defaultHardwareBackBtnHandler = null
@@ -287,8 +302,7 @@ public class ReactHostImpl(
   /** To be called when the host activity is destroyed. */
   @ThreadConfined(ThreadConfined.UI)
   override fun onHostDestroy() {
-    val method = "onHostDestroy()"
-    log(method)
+    stateTracker.enterState("onHostDestroy()")
 
     maybeEnableDevSupport(false)
     moveToHostDestroy(currentReactContext)
@@ -296,8 +310,7 @@ public class ReactHostImpl(
 
   @ThreadConfined(ThreadConfined.UI)
   override fun onHostDestroy(activity: Activity?) {
-    val method = "onHostDestroy(activity)"
-    log(method)
+    stateTracker.enterState("onHostDestroy(activity)")
 
     val currentActivity = this.currentActivity
 
@@ -362,6 +375,12 @@ public class ReactHostImpl(
     reactInstanceEventListeners.remove(listener)
   }
 
+  override fun setDevMenuConfiguration(config: DevMenuConfiguration) {
+    devSupportManager.devMenuEnabled = config.devMenuEnabled
+    devSupportManager.shakeGestureEnabled = config.shakeGestureEnabled
+    devSupportManager.keyboardShortcutsEnabled = config.keyboardShortcutsEnabled
+  }
+
   /**
    * Entrypoint to reload the ReactInstance. If the ReactInstance is destroying, will wait until
    * destroy is finished, before reloading.
@@ -375,7 +394,7 @@ public class ReactHostImpl(
           {
             val reloadTask =
                 (destroyTask?.let { destroyTask ->
-                      log(
+                      stateTracker.enterState(
                           "reload()",
                           "Waiting for destroy to finish, before reloading React Native.",
                       )
@@ -416,13 +435,6 @@ public class ReactHostImpl(
             }
           },
       )
-    }
-  }
-
-  @DoNotStrip
-  private fun unstable_updatePerfMonitor(interactionName: String, durationMs: Int) {
-    if (devSupportManager is PerfMonitorV2Handler) {
-      devSupportManager.unstable_updatePerfMonitor(interactionName, durationMs)
     }
   }
 
@@ -484,7 +496,7 @@ public class ReactHostImpl(
           {
             val reloadTask = reloadTask
             if (reloadTask != null) {
-              log(
+              stateTracker.enterState(
                   "destroy()",
                   "Reloading React Native. Waiting for reload to finish before destroying React Native.",
               )
@@ -540,12 +552,15 @@ public class ReactHostImpl(
 
   @Suppress("DEPRECATION")
   internal fun <T : NativeModule> getNativeModule(nativeModuleInterface: Class<T>): T? {
-    if (!ReactBuildConfig.UNSTABLE_ENABLE_MINIFY_LEGACY_ARCHITECTURE &&
-        nativeModuleInterface == com.facebook.react.uimanager.UIManagerModule::class.java) {
+    if (
+        !ReactBuildConfig.UNSTABLE_ENABLE_MINIFY_LEGACY_ARCHITECTURE &&
+            nativeModuleInterface == com.facebook.react.uimanager.UIManagerModule::class.java
+    ) {
       ReactSoftExceptionLogger.logSoftExceptionVerbose(
           TAG,
           ReactNoCrashSoftException(
-              "getNativeModule(UIManagerModule.class) cannot be called when the bridge is disabled"),
+              "getNativeModule(UIManagerModule.class) cannot be called when the bridge is disabled"
+          ),
       )
     }
 
@@ -628,8 +643,10 @@ public class ReactHostImpl(
       val action = intent.action
       val uri = intent.data
 
-      if (uri != null &&
-          (Intent.ACTION_VIEW == action || NfcAdapter.ACTION_NDEF_DISCOVERED == action)) {
+      if (
+          uri != null &&
+              (Intent.ACTION_VIEW == action || NfcAdapter.ACTION_NDEF_DISCOVERED == action)
+      ) {
         val deviceEventManagerModule =
             currentContext.getNativeModule(DeviceEventManagerModule::class.java)
         deviceEventManagerModule?.emitNewIntentReceived(uri)
@@ -641,12 +658,42 @@ public class ReactHostImpl(
     }
   }
 
+  @ThreadConfined(value = ThreadConfined.UI)
+  override fun setBundleSource(filePath: String) {
+    devSupportManager.bundleFilePath = filePath
+    reload("Change bundle source")
+  }
+
+  @ThreadConfined(value = ThreadConfined.UI)
+  override fun setBundleSource(
+      debugServerHost: String,
+      moduleName: String,
+      queryMapper: (Map<String, String>) -> Map<String, String>,
+  ) {
+    CoroutineScope(Dispatchers.Default).launch {
+      (devSupportManager as DevSupportManagerBase).devServerHelper.closePackagerConnection()
+      val packagerConnectionSettings = devSupportManager.devSettings.packagerConnectionSettings
+      packagerConnectionSettings.setPackagerOptionsUpdater(queryMapper)
+      packagerConnectionSettings.debugServerHost = debugServerHost
+      devSupportManager.jsAppBundleName = moduleName
+      reload("Changed bundle source")
+    }
+  }
+
   @ThreadConfined(ThreadConfined.UI)
   override fun onConfigurationChanged(context: Context) {
     val currentReactContext = this.currentReactContext
     if (currentReactContext != null) {
       if (ReactNativeFeatureFlags.enableFontScaleChangesUpdatingLayout()) {
+        val previousFontScale = PixelUtil.toPixelFromSP(1.0)
         DisplayMetricsHolder.initDisplayMetrics(currentReactContext)
+        val newFontScale = PixelUtil.toPixelFromSP(1.0)
+
+        if (previousFontScale != newFontScale) {
+          synchronized(attachedSurfaces) {
+            attachedSurfaces.forEach { surface -> surface.view?.requestLayout() }
+          }
+        }
       }
 
       val appearanceModule = currentReactContext.getNativeModule(AppearanceModule::class.java)
@@ -665,20 +712,20 @@ public class ReactHostImpl(
 
   internal fun loadBundle(bundleLoader: JSBundleLoader): Task<Boolean> {
     val method = "loadBundle()"
-    log(method, "Schedule")
+    stateTracker.enterState(method, "Schedule")
 
     return callWithExistingReactInstance(method) { reactInstance: ReactInstance ->
-      log(method, "Execute")
+      stateTracker.enterState(method, "Execute")
       reactInstance.loadJSBundle(bundleLoader)
     }
   }
 
   internal fun registerSegment(segmentId: Int, path: String, callback: Callback?): Task<Boolean> {
     val method = "registerSegment(segmentId = \"$segmentId\", path = \"$path\")"
-    log(method, "Schedule")
+    stateTracker.enterState(method, "Schedule")
 
     return callWithExistingReactInstance(method) { reactInstance: ReactInstance ->
-      log(method, "Execute")
+      stateTracker.enterState(method, "Execute")
       reactInstance.registerSegment(segmentId, path)
       checkNotNull(callback).invoke()
     }
@@ -686,7 +733,7 @@ public class ReactHostImpl(
 
   internal fun handleHostException(e: Exception) {
     val method = "handleHostException(message = \"${e.message}\")"
-    log(method)
+    stateTracker.enterState(method)
 
     if (useDevSupport) {
       devSupportManager.handleException(e)
@@ -716,12 +763,12 @@ public class ReactHostImpl(
   }
 
   internal fun attachSurface(surface: ReactSurfaceImpl) {
-    log("attachSurface(surfaceId = ${surface.surfaceID})")
+    stateTracker.enterState("attachSurface(surfaceId = ${surface.surfaceID})")
     synchronized(attachedSurfaces) { attachedSurfaces.add(surface) }
   }
 
   internal fun detachSurface(surface: ReactSurfaceImpl) {
-    log("detachSurface(surfaceId = ${surface.surfaceID})")
+    stateTracker.enterState("detachSurface(surfaceId = ${surface.surfaceID})")
     synchronized(attachedSurfaces) { attachedSurfaces.remove(surface) }
   }
 
@@ -751,8 +798,7 @@ public class ReactHostImpl(
       return it
     }
 
-    val method = "getOrCreateStartTask()"
-    log(method, "Schedule")
+    stateTracker.enterState("getOrCreateStartTask()", "Schedule")
     if (ReactBuildConfig.DEBUG) {
       Assertions.assertCondition(
           ReactNativeNewArchitectureFeatureFlags.enableBridgelessArchitecture(),
@@ -806,6 +852,7 @@ public class ReactHostImpl(
   private fun moveToHostDestroy(currentContext: ReactContext?) {
     reactLifecycleStateManager.moveToOnHostDestroy(currentContext)
     currentActivity = null
+    frameTimingsObserver?.setCurrentWindow(null)
   }
 
   private fun raiseSoftException(
@@ -814,7 +861,7 @@ public class ReactHostImpl(
       throwable: Throwable? = null,
   ) {
     val method = "raiseSoftException($callingMethod)"
-    log(method, message)
+    stateTracker.enterState(method, message)
     ReactSoftExceptionLogger.logSoftException(
         TAG,
         ReactNoCrashSoftException("$method: $message", throwable),
@@ -869,14 +916,6 @@ public class ReactHostImpl(
               executor,
           )
 
-  private fun getOrCreateReactContext(): BridgelessReactContext {
-    val method = "getOrCreateReactContext()"
-    return bridgelessReactContextRef.getOrCreate {
-      log(method, "Creating BridgelessReactContext")
-      BridgelessReactContext(context, this)
-    }
-  }
-
   /**
    * Entrypoint to create the ReactInstance.
    *
@@ -897,14 +936,14 @@ public class ReactHostImpl(
   ): Task<ReactInstance> {
     val method = "waitThenCallGetOrCreateReactInstanceTaskWithRetries"
     reloadTask?.let { task ->
-      log(method, "React Native is reloading. Return reload task.")
+      stateTracker.enterState(method, "React Native is reloading. Return reload task.")
       return task
     }
 
     destroyTask?.let { task ->
       val shouldTryAgain = tryNum < maxTries
       if (shouldTryAgain) {
-        log(
+        stateTracker.enterState(
             method,
             "React Native is tearing down.Wait for teardown to finish, before trying again (try count = $tryNum).",
         )
@@ -932,10 +971,10 @@ public class ReactHostImpl(
   @ThreadConfined("ReactHost")
   private fun getOrCreateReactInstanceTask(): Task<ReactInstance> {
     val method = "getOrCreateReactInstanceTask()"
-    log(method)
+    stateTracker.enterState(method)
 
     return createReactInstanceTaskRef.getOrCreate {
-      log(method, "Start")
+      stateTracker.enterState(method, "Start")
       Assertions.assertCondition(
           !hostInvalidated,
           "Cannot start a new ReactInstance on an invalidated ReactHost",
@@ -950,10 +989,13 @@ public class ReactHostImpl(
           jsBundleLoader.onSuccess(
               { task ->
                 val bundleLoader = checkNotNull(task.getResult())
-                val reactContext = getOrCreateReactContext()
+                val reactContext = bridgelessReactContextRef.getOrCreate {
+                  stateTracker.enterState(method, "Creating BridgelessReactContext")
+                  BridgelessReactContext(context, this)
+                }
                 reactContext.jsExceptionHandler = devSupportManager
 
-                log(method, "Creating ReactInstance")
+                stateTracker.enterState(method, "Creating ReactInstance")
                 val instance =
                     ReactInstance(
                         reactContext,
@@ -974,10 +1016,13 @@ public class ReactHostImpl(
                 // as TurboModuleManager will handle any concurrent access
                 instance.initializeEagerTurboModules()
 
-                log(method, "Loading JS Bundle")
+                stateTracker.enterState(method, "Loading JS Bundle")
                 instance.loadJSBundle(bundleLoader)
 
-                log(method, "Calling DevSupportManagerBase.onNewReactContextCreated(reactContext)")
+                stateTracker.enterState(
+                    method,
+                    "DevSupportManager.onNewReactContextCreated()",
+                )
                 devSupportManager.onNewReactContextCreated(reactContext)
 
                 reactContext.runOnJSQueueThread {
@@ -1034,7 +1079,7 @@ public class ReactHostImpl(
           reactLifecycleStateManager.resumeReactContextIfHostResumed(reactContext, currentActivity)
         }
 
-        log(method, "Executing ReactInstanceEventListeners")
+        stateTracker.enterState(method, "Executing ReactInstanceEventListeners")
         for (listener in reactInstanceEventListeners) {
           listener.onReactContextInitialized(reactContext)
         }
@@ -1047,8 +1092,17 @@ public class ReactHostImpl(
 
   private val jsBundleLoader: Task<JSBundleLoader>
     get() {
-      val method = "getJSBundleLoader()"
-      log(method)
+      stateTracker.enterState("getJSBundleLoader()")
+
+      if (devSupportManager.bundleFilePath != null) {
+        return try {
+          Task.forResult(
+              JSBundleLoader.createFileLoader(checkNotNull(devSupportManager.bundleFilePath))
+          )
+        } catch (e: Exception) {
+          Task.forError(e)
+        }
+      }
 
       if (useDevSupport && allowPackagerServerAccess) {
         return isMetroRunning.onSuccessTask(
@@ -1087,13 +1141,13 @@ public class ReactHostImpl(
   private val isMetroRunning: Task<Boolean>
     get() {
       val method = "isMetroRunning()"
-      log(method)
+      stateTracker.enterState(method)
 
       val taskCompletionSource = TaskCompletionSource<Boolean>()
       val asyncDevSupportManager = devSupportManager
 
       asyncDevSupportManager.isPackagerRunning { packagerIsRunning: Boolean ->
-        log(method, "Async result = $packagerIsRunning")
+        stateTracker.enterState(method, "Async result = $packagerIsRunning")
         taskCompletionSource.setResult(packagerIsRunning)
       }
 
@@ -1102,19 +1156,20 @@ public class ReactHostImpl(
 
   private fun loadJSBundleFromMetro(): Task<JSBundleLoader> {
     val method = "loadJSBundleFromMetro()"
-    log(method)
+    stateTracker.enterState(method)
 
     val taskCompletionSource = TaskCompletionSource<JSBundleLoader>()
     val asyncDevSupportManager = devSupportManager as DevSupportManagerBase
     val bundleURL =
         asyncDevSupportManager.devServerHelper.getDevServerBundleURL(
-            checkNotNull(asyncDevSupportManager.jsAppBundleName))
+            checkNotNull(asyncDevSupportManager.jsAppBundleName)
+        )
 
     asyncDevSupportManager.reloadJSFromServer(
         bundleURL,
         object : BundleLoadCallback {
           override fun onSuccess() {
-            log(method, "Creating BundleLoader")
+            stateTracker.enterState(method, "Creating BundleLoader")
             val bundleLoader =
                 JSBundleLoader.createCachedBundleFromNetworkLoader(
                     bundleURL,
@@ -1132,16 +1187,8 @@ public class ReactHostImpl(
     return taskCompletionSource.task
   }
 
-  private fun log(method: String, message: String) {
-    bridgelessReactStateTracker.enterState("ReactHost{$id}.$method: $message")
-  }
-
-  private fun log(method: String) {
-    bridgelessReactStateTracker.enterState("ReactHost{$id}.$method")
-  }
-
   private fun stopAttachedSurfaces(method: String, reactInstance: ReactInstance) {
-    log(method, "Stopping all React Native surfaces")
+    stateTracker.enterState(method, "Stopping all React Native surfaces")
     synchronized(attachedSurfaces) {
       for (surface in attachedSurfaces) {
         reactInstance.stopSurface(surface)
@@ -1151,7 +1198,7 @@ public class ReactHostImpl(
   }
 
   private fun startAttachedSurfaces(method: String, reactInstance: ReactInstance) {
-    log(method, "Restarting previously running React Native Surfaces")
+    stateTracker.enterState(method, "Restarting previously running React Native Surfaces")
     synchronized(attachedSurfaces) {
       for (surface in attachedSurfaces) {
         reactInstance.startSurface(surface)
@@ -1218,11 +1265,7 @@ public class ReactHostImpl(
   @ThreadConfined("ReactHost")
   private fun getOrCreateReloadTask(reason: String): Task<ReactInstance> {
     val method = "getOrCreateReloadTask()"
-    log(method)
-
-    // Log how React Native is destroyed
-    // TODO(T136397487): Remove after Venice is shipped to 100%
-    raiseSoftException(method, reason)
+    stateTracker.enterState(method)
 
     reloadTask?.let {
       return it
@@ -1232,11 +1275,11 @@ public class ReactHostImpl(
 
     // When using the immediate executor, we want to avoid scheduling any further work immediately
     // when destruction is kicked off.
-    log(method, "Resetting createReactInstance task ref")
+    stateTracker.enterState(method, "Resetting createReactInstance task ref")
     return createReactInstanceTaskRef.andReset
         .continueWithTask(
             { task ->
-              log(method, "Starting React Native reload")
+              stateTracker.enterState(method, "Starting React Native reload")
               val reactInstance = taskUnwrapper(task, "1: Starting reload")
 
               unregisterInstanceFromInspector(reactInstance)
@@ -1246,9 +1289,11 @@ public class ReactHostImpl(
                 raiseSoftException(method, "ReactContext is null. Reload reason: $reason")
               }
 
-              if (reactContext != null &&
-                  reactLifecycleStateManager.lifecycleState == LifecycleState.RESUMED) {
-                log(method, "Calling ReactContext.onHostPause()")
+              if (
+                  reactContext != null &&
+                      reactLifecycleStateManager.lifecycleState == LifecycleState.RESUMED
+              ) {
+                stateTracker.enterState(method, "Calling ReactContext.onHostPause()")
                 reactContext.onHostPause()
               }
               Task.forResult(reactInstance)
@@ -1275,21 +1320,24 @@ public class ReactHostImpl(
               }
 
               memoryPressureListener?.let { listener ->
-                log(method, "Removing memory pressure listener")
+                stateTracker.enterState(method, "Removing memory pressure listener")
                 memoryPressureRouter.removeMemoryPressureListener(listener)
               }
 
               val reactContext = bridgelessReactContextRef.value
               if (reactContext != null) {
-                log(method, "Resetting ReactContext ref")
+                stateTracker.enterState(method, "Resetting ReactContext ref")
                 bridgelessReactContextRef.reset()
 
-                log(method, "Destroying ReactContext")
+                stateTracker.enterState(method, "Destroying ReactContext")
                 reactContext.destroy()
               }
 
               if (useDevSupport && reactContext != null) {
-                log(method, "Calling DevSupportManager.onReactInstanceDestroyed(reactContext)")
+                stateTracker.enterState(
+                    method,
+                    "Calling DevSupportManager.onReactInstanceDestroyed(reactContext)",
+                )
                 devSupportManager.onReactInstanceDestroyed(reactContext)
               }
               task
@@ -1302,14 +1350,14 @@ public class ReactHostImpl(
               if (reactInstance == null) {
                 raiseSoftException(method, "Skipping ReactInstance.destroy(): ReactInstance null")
               } else {
-                log(method, "Resetting ReactInstance ptr")
+                stateTracker.enterState(method, "Resetting ReactInstance ptr")
                 this.reactInstance = null
 
-                log(method, "Destroying ReactInstance")
+                stateTracker.enterState(method, "Destroying ReactInstance")
                 reactInstance.destroy()
               }
 
-              log(method, "Resetting start task ref")
+              stateTracker.enterState(method, "Resetting start task ref")
               startTask = null
 
               // Kickstart a new ReactInstance create
@@ -1346,7 +1394,7 @@ public class ReactHostImpl(
                 )
               }
 
-              log(method, "Resetting reload task ref")
+              stateTracker.enterState(method, "Resetting reload task ref")
               reloadTask = null
               task
             },
@@ -1368,11 +1416,7 @@ public class ReactHostImpl(
   @ThreadConfined("ReactHost")
   private fun getOrCreateDestroyTask(reason: String, ex: Exception?): Task<Void> {
     val method = "getOrCreateDestroyTask()"
-    log(method)
-
-    // Log how React Native is destroyed
-    // TODO(T136397487): Remove after Venice is shipped to 100%
-    raiseSoftException(method, reason, ex)
+    stateTracker.enterState(method)
 
     destroyTask?.let {
       return it
@@ -1382,11 +1426,11 @@ public class ReactHostImpl(
 
     // When using the immediate executor, we want to avoid scheduling any further work immediately
     // when destruction is kicked off.
-    log(method, "Resetting createReactInstance task ref")
+    stateTracker.enterState(method, "Resetting createReactInstance task ref")
     return createReactInstanceTaskRef.andReset
         .continueWithTask(
             { task: Task<ReactInstance> ->
-              log(method, "Starting React Native destruction")
+              stateTracker.enterState(method, "Starting React Native destruction")
               val reactInstance = taskUnwrapper(task, "1: Starting destroy")
 
               unregisterInstanceFromInspector(reactInstance)
@@ -1395,13 +1439,12 @@ public class ReactHostImpl(
                 // If the host has been invalidated, now that the current context/instance
                 // has been unregistered, we can safely destroy the host's inspector
                 // target.
-                reactHostInspectorTarget?.close()
-                reactHostInspectorTarget = null
+                destroyReactHostInspectorTarget()
               }
 
               // Step 1: Destroy DevSupportManager
               if (useDevSupport) {
-                log(method, "DevSupportManager cleanup")
+                stateTracker.enterState(method, "DevSupportManager cleanup")
                 // TODO(T137233065): Disable DevSupportManager here
                 devSupportManager.stopInspector()
               }
@@ -1412,7 +1455,7 @@ public class ReactHostImpl(
               }
 
               // Step 2: Move React Native to onHostDestroy()
-              log(method, "Move ReactHost to onHostDestroy()")
+              stateTracker.enterState(method, "Move ReactHost to onHostDestroy()")
               reactLifecycleStateManager.moveToOnHostDestroy(reactContext)
               Task.forResult<ReactInstance>(reactInstance)
             },
@@ -1445,14 +1488,14 @@ public class ReactHostImpl(
               }
 
               // Step 4: De-register the memory pressure listener
-              log(method, "Destroying MemoryPressureRouter")
+              stateTracker.enterState(method, "Destroying MemoryPressureRouter")
               memoryPressureRouter.destroy(context)
 
               if (reactContext != null) {
-                log(method, "Resetting ReactContext ref")
+                stateTracker.enterState(method, "Resetting ReactContext ref")
                 bridgelessReactContextRef.reset()
 
-                log(method, "Destroying ReactContext")
+                stateTracker.enterState(method, "Destroying ReactContext")
                 reactContext.destroy()
               }
 
@@ -1471,17 +1514,15 @@ public class ReactHostImpl(
               if (reactInstance == null) {
                 raiseSoftException(method, "Skipping ReactInstance.destroy(): ReactInstance null")
               } else {
-                log(method, "Resetting ReactInstance ptr")
+                stateTracker.enterState(method, "Resetting ReactInstance ptr")
                 this.reactInstance = null
 
-                log(method, "Destroying ReactInstance")
+                stateTracker.enterState(method, "Destroying ReactInstance")
                 reactInstance.destroy()
               }
 
-              log(method, "Resetting start task ref")
+              stateTracker.enterState(method, "Resetting start/destroy task ref")
               startTask = null
-
-              log(method, "Resetting destroy task ref")
               destroyTask = null
               task
             },
@@ -1509,11 +1550,50 @@ public class ReactHostImpl(
 
   internal fun getOrCreateReactHostInspectorTarget(): ReactHostInspectorTarget? {
     if (reactHostInspectorTarget == null && InspectorFlags.getFuseboxEnabled()) {
-      // NOTE: ReactHostInspectorTarget only retains a weak reference to `this`.
-      reactHostInspectorTarget = ReactHostInspectorTarget(this)
+      reactHostInspectorTarget = createReactHostInspectorTarget()
     }
 
     return reactHostInspectorTarget
+  }
+
+  private fun createReactHostInspectorTarget(): ReactHostInspectorTarget {
+    // NOTE: ReactHostInspectorTarget only retains a weak reference to `this`.
+    val inspectorTarget = ReactHostInspectorTarget(this)
+    inspectorTarget.registerTracingStateListener(
+        TracingStateListener { state: TracingState, _screenshotsEnabled: Boolean ->
+          when (state) {
+            TracingState.ENABLED_IN_BACKGROUND_MODE,
+            TracingState.ENABLED_IN_CDP_MODE -> {
+              if (InspectorFlags.getFrameRecordingEnabled()) {
+                val observer =
+                    FrameTimingsObserver(
+                        _screenshotsEnabled,
+                        { frameTimingsSequence ->
+                          inspectorTarget.recordFrameTimings(frameTimingsSequence)
+                        },
+                    )
+                observer.setCurrentWindow(currentActivity?.window)
+                observer.start()
+                frameTimingsObserver = observer
+              }
+            }
+            TracingState.DISABLED -> {
+              frameTimingsObserver?.stop()
+              frameTimingsObserver = null
+            }
+          }
+        }
+    )
+
+    return inspectorTarget
+  }
+
+  private fun destroyReactHostInspectorTarget() {
+    frameTimingsObserver?.stop()
+    frameTimingsObserver = null
+
+    reactHostInspectorTarget?.close()
+    reactHostInspectorTarget = null
   }
 
   @ThreadConfined(ThreadConfined.UI)

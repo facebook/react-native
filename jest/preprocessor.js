@@ -86,7 +86,7 @@ module.exports = {
         globalPrefix: '',
         hermesParser: true,
         hot: false,
-        // $FlowFixMe[incompatible-call] TODO: Remove when `inlineRequires` has been removed from metro-babel-transformer in OSS
+        // $FlowFixMe[incompatible-type] TODO: Remove when `inlineRequires` has been removed from metro-babel-transformer in OSS
         inlineRequires: true,
         minify: false,
         platform: '',
@@ -111,7 +111,7 @@ module.exports = {
 
     return generate(
       ast,
-      // $FlowFixMe[prop-missing] Error found when improving flow typing for libs
+      // $FlowFixMe[incompatible-type] Error found when improving flow typing for libs
       {
         code: true,
         comments: false,

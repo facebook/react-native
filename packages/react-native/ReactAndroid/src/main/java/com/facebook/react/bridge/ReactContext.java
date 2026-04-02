@@ -50,6 +50,7 @@ public abstract class ReactContext extends ContextWrapper {
       new CopyOnWriteArraySet<>();
   private final CopyOnWriteArraySet<WindowFocusChangeListener> mWindowFocusEventListeners =
       new CopyOnWriteArraySet<>();
+  private final ScrollEndedListeners mScrollEndedListeners = new ScrollEndedListeners();
 
   private LifecycleState mLifecycleState = LifecycleState.BEFORE_CREATE;
 
@@ -193,6 +194,15 @@ public abstract class ReactContext extends ContextWrapper {
 
   public LifecycleState getLifecycleState() {
     return mLifecycleState;
+  }
+
+  /**
+   * This allows scroll views to notify NativeAnimatedModule when user-driven scrolling ends.
+   *
+   * @return The ScrollEndedListeners instance
+   */
+  public ScrollEndedListeners getScrollEndedListeners() {
+    return mScrollEndedListeners;
   }
 
   public void addLifecycleEventListener(final LifecycleEventListener listener) {

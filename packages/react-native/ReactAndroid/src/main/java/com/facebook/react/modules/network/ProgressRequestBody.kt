@@ -50,6 +50,8 @@ internal class ProgressRequestBody(
     sinkWrapper.flush()
   }
 
+  fun innerBody(): RequestBody = requestBody
+
   private fun outputStreamSink(sink: BufferedSink): Sink {
     return Okio.sink(
         object : FilterOutputStream(sink.outputStream()) {
@@ -75,6 +77,7 @@ internal class ProgressRequestBody(
             val contentLength = contentLength()
             progressListener.onProgress(bytesWritten, contentLength, bytesWritten == contentLength)
           }
-        })
+        }
+    )
   }
 }

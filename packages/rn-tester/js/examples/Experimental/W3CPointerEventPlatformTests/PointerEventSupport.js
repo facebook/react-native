@@ -121,7 +121,8 @@ export function check_PointerEvent(
     harness.test(
       ({assert_true}) => {
         assert_true(
-          // $FlowFixMe
+          // $FlowFixMe[invalid-computed-prop]
+          // $FlowFixMe[prop-missing]
           idl_type_check[type](nativeEvent[name]),
           name + ' attribute of type ' + type,
         );
@@ -132,7 +133,7 @@ export function check_PointerEvent(
         ' IDL type ' +
         type +
         ' (JS type was ' +
-        // $FlowFixMe
+        // $FlowFixMe[prop-missing]
         typeof nativeEvent[name] +
         ')',
       {skip},
@@ -142,7 +143,7 @@ export function check_PointerEvent(
     if (value !== undefined) {
       harness.test(
         ({assert_equals}) => {
-          // $FlowFixMe
+          // $FlowFixMe[prop-missing]
           assert_equals(nativeEvent[name], value, name + ' attribute value');
         },
         pointerTestName + '.' + name + ' value is ' + String(value) + '.',
@@ -211,7 +212,7 @@ export function check_PointerEvent(
  * view events with the same handler
  */
 export function useTestEventHandler(
-  eventNames: $ReadOnlyArray<string>,
+  eventNames: ReadonlyArray<string>,
   handler: (event: any, eventName: string) => void,
 ): ViewProps {
   const eventProps: any = useMemo(() => {
@@ -242,7 +243,7 @@ export function mkEvent(id: string, eventName: EventName): EventOccurrence {
   };
 }
 
-export type EventTrackerProps = $ReadOnly<{
+export type EventTrackerProps = Readonly<{
   eventsRef?: {current: Array<EventOccurrence>},
   onAnyEvent?: (EventOccurrence, PointerEvent) => void,
   eventsToTrack: Array<EventName>,

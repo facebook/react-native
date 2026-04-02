@@ -7,7 +7,7 @@
 
 #import <UIKit/UIScrollView.h>
 
-#ifndef RCT_FIT_RM_OLD_COMPONENT
+#ifndef RCT_REMOVE_LEGACY_ARCH
 
 #import <React/RCTAutoInsetsProtocol.h>
 #import <React/RCTDefines.h>
@@ -17,7 +17,11 @@
 
 @protocol UIScrollViewDelegate;
 
-@interface RCTScrollView : RCTView <UIScrollViewDelegate, RCTScrollableProtocol, RCTAutoInsetsProtocol>
+#pragma clang diagnostic push
+#pragma clang diagnostic warning "-Wdeprecated"
+__attribute__((deprecated("This API will be removed along with the legacy architecture.")))
+@interface RCTScrollView : RCTView<UIScrollViewDelegate, RCTScrollableProtocol, RCTAutoInsetsProtocol>
+#pragma clang diagnostic pop
 
 - (instancetype)initWithEventDispatcher:(id<RCTEventDispatcherProtocol>)eventDispatcher NS_DESIGNATED_INITIALIZER;
 
@@ -68,9 +72,10 @@
 @end
 
 @interface UIView (RCTScrollView)
-
+#pragma clang diagnostic push
+#pragma clang diagnostic ignored "-Wdeprecated"
 - (void)reactUpdateResponderOffsetForScrollView:(RCTScrollView *)scrollView;
-
+#pragma clang diagnostic pop
 @end
 
 @interface RCTScrollView (Internal)
@@ -81,4 +86,4 @@
 
 RCT_EXTERN void RCTSendFakeScrollEvent(id<RCTEventDispatcherProtocol> eventDispatcher, NSNumber *reactTag);
 
-#endif // RCT_FIT_RM_OLD_COMPONENT
+#endif // RCT_REMOVE_LEGACY_ARCH

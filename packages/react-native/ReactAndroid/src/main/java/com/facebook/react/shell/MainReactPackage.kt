@@ -15,6 +15,7 @@ import com.facebook.react.bridge.ModuleSpec
 import com.facebook.react.bridge.NativeModule
 import com.facebook.react.bridge.ReactApplicationContext
 import com.facebook.react.common.ClassFinder
+import com.facebook.react.common.annotations.UnstableReactNativeAPI
 import com.facebook.react.internal.featureflags.ReactNativeFeatureFlags
 import com.facebook.react.module.annotations.ReactModule
 import com.facebook.react.module.annotations.ReactModuleList
@@ -52,15 +53,17 @@ import com.facebook.react.views.progressbar.ReactProgressBarViewManager
 import com.facebook.react.views.safeareaview.ReactSafeAreaViewManager
 import com.facebook.react.views.scroll.ReactHorizontalScrollContainerViewManager
 import com.facebook.react.views.scroll.ReactHorizontalScrollViewManager
+import com.facebook.react.views.scroll.ReactNestedScrollViewManager
 import com.facebook.react.views.scroll.ReactScrollViewManager
 import com.facebook.react.views.swiperefresh.SwipeRefreshLayoutManager
 import com.facebook.react.views.switchview.ReactSwitchManager
 import com.facebook.react.views.text.PreparedLayoutTextViewManager
 import com.facebook.react.views.text.ReactTextViewManager
-import com.facebook.react.views.text.frescosupport.FrescoBasedReactTextInlineImageViewManager
+import com.facebook.react.views.text.SelectableTextViewManager
 import com.facebook.react.views.textinput.ReactTextInputManager
 import com.facebook.react.views.unimplementedview.ReactUnimplementedViewManager
 import com.facebook.react.views.view.ReactViewManager
+import com.facebook.react.views.virtual.view.ReactVirtualViewManager
 
 /**
  * Package defining basic modules and view managers.
@@ -94,7 +97,9 @@ import com.facebook.react.views.view.ReactViewManager
             ToastModule::class,
             VibrationModule::class,
             WebSocketModule::class,
-        ])
+        ]
+)
+@OptIn(UnstableReactNativeAPI::class)
 public class MainReactPackage
 @JvmOverloads
 constructor(private val config: MainPackageConfig? = null) :
@@ -138,20 +143,20 @@ constructor(private val config: MainPackageConfig? = null) :
           ReactHorizontalScrollViewManager(),
           ReactHorizontalScrollContainerViewManager(),
           ReactProgressBarViewManager(),
-          ReactScrollViewManager(),
+          if (ReactNativeFeatureFlags.useNestedScrollViewAndroid()) ReactNestedScrollViewManager()
+          else ReactScrollViewManager(),
           ReactSwitchManager(),
           ReactSafeAreaViewManager(),
           SwipeRefreshLayoutManager(),
           // Native equivalents
-          FrescoBasedReactTextInlineImageViewManager(),
           ReactImageManager(),
           ReactModalHostManager(),
-          com.facebook.react.views.text.ReactRawTextManager(),
           ReactTextInputManager(),
           if (ReactNativeFeatureFlags.enablePreparedTextLayout()) PreparedLayoutTextViewManager()
           else ReactTextViewManager(),
+          SelectableTextViewManager(),
           ReactViewManager(),
-          com.facebook.react.views.text.ReactVirtualTextViewManager(),
+          ReactVirtualViewManager(),
           ReactUnimplementedViewManager(),
       )
 
@@ -174,17 +179,17 @@ constructor(private val config: MainPackageConfig? = null) :
           ReactSafeAreaViewManager.REACT_CLASS to
               ModuleSpec.viewManagerSpec { ReactSafeAreaViewManager() },
           ReactScrollViewManager.REACT_CLASS to
-              ModuleSpec.viewManagerSpec { ReactScrollViewManager() },
+              ModuleSpec.viewManagerSpec {
+                if (ReactNativeFeatureFlags.useNestedScrollViewAndroid())
+                    ReactNestedScrollViewManager()
+                else ReactScrollViewManager()
+              },
           ReactSwitchManager.REACT_CLASS to ModuleSpec.viewManagerSpec { ReactSwitchManager() },
           SwipeRefreshLayoutManager.REACT_CLASS to
               ModuleSpec.viewManagerSpec { SwipeRefreshLayoutManager() },
-          FrescoBasedReactTextInlineImageViewManager.REACT_CLASS to
-              ModuleSpec.viewManagerSpec { FrescoBasedReactTextInlineImageViewManager() },
           ReactImageManager.REACT_CLASS to ModuleSpec.viewManagerSpec { ReactImageManager() },
           ReactModalHostManager.REACT_CLASS to
               ModuleSpec.viewManagerSpec { ReactModalHostManager() },
-          com.facebook.react.views.text.ReactRawTextManager.REACT_CLASS to
-              ModuleSpec.viewManagerSpec { com.facebook.react.views.text.ReactRawTextManager() },
           ReactTextInputManager.REACT_CLASS to
               ModuleSpec.viewManagerSpec { ReactTextInputManager() },
           ReactTextViewManager.REACT_CLASS to
@@ -193,11 +198,11 @@ constructor(private val config: MainPackageConfig? = null) :
                     PreparedLayoutTextViewManager()
                 else ReactTextViewManager()
               },
+          SelectableTextViewManager.REACT_CLASS to
+              ModuleSpec.viewManagerSpec { SelectableTextViewManager() },
           ReactViewManager.REACT_CLASS to ModuleSpec.viewManagerSpec { ReactViewManager() },
-          com.facebook.react.views.text.ReactVirtualTextViewManager.REACT_CLASS to
-              ModuleSpec.viewManagerSpec {
-                com.facebook.react.views.text.ReactVirtualTextViewManager()
-              },
+          ReactVirtualViewManager.REACT_CLASS to
+              ModuleSpec.viewManagerSpec { ReactVirtualViewManager() },
           ReactUnimplementedViewManager.REACT_CLASS to
               ModuleSpec.viewManagerSpec { ReactUnimplementedViewManager() },
       )
@@ -223,7 +228,8 @@ constructor(private val config: MainPackageConfig? = null) :
     try {
       val reactModuleInfoProviderClass =
           ClassFinder.findClass(
-              "com.facebook.react.shell.MainReactPackage$\$ReactModuleInfoProvider")
+              "com.facebook.react.shell.MainReactPackage$\$ReactModuleInfoProvider"
+          )
       @Suppress("DEPRECATION")
       return reactModuleInfoProviderClass?.newInstance() as? ReactModuleInfoProvider
           ?: fallbackForMissingClass()

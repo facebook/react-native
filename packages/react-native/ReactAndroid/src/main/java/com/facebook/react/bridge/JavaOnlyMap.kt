@@ -98,7 +98,8 @@ public class JavaOnlyMap() : ReadableMap, WritableMap {
       value is Dynamic -> value.type
       else -> {
         throw IllegalArgumentException(
-            "Invalid value $value for key $name contained in JavaOnlyMap")
+            "Invalid value $value for key $name contained in JavaOnlyMap"
+        )
       }
     }
   }
@@ -167,13 +168,15 @@ public class JavaOnlyMap() : ReadableMap, WritableMap {
   override fun toString(): String = backingMap.toString()
 
   override fun equals(other: Any?): Boolean {
-    return if (this === other) {
-      true
-    } else if (other == null || javaClass != other.javaClass) {
-      false
-    } else {
-      backingMap == (other as JavaOnlyMap).backingMap
+    if (this === other) {
+      return true
     }
+    if (other !is JavaOnlyMap) {
+      return false
+    }
+    val thisBackingMap = backingMap
+    val otherBackingMap = other.backingMap
+    return thisBackingMap == otherBackingMap
   }
 
   override fun hashCode(): Int = backingMap.hashCode()

@@ -20,6 +20,13 @@ target_include_directories(react_devsupportjni PUBLIC .)
 target_link_libraries(react_devsupportjni
         fbjni
         jsinspector
-        jsinspector_network)
+        react_networking)
 
 target_compile_reactnative_options(react_devsupportjni PRIVATE)
+
+if(${CMAKE_BUILD_TYPE} MATCHES Debug OR REACT_NATIVE_DEBUG_OPTIMIZED)
+  target_compile_options(react_devsupportjni PRIVATE
+          -DREACT_NATIVE_DEBUGGER_ENABLED=1
+          -DREACT_NATIVE_DEBUGGER_ENABLED_DEVONLY=1
+  )
+endif ()

@@ -29,6 +29,27 @@
 
 NSString *const RCTShowDevMenuNotification = @"RCTShowDevMenuNotification";
 
+@implementation RCTDevMenuConfiguration
+- (instancetype)initWithDevMenuEnabled:(BOOL)devMenuEnabled
+                   shakeGestureEnabled:(BOOL)shakeGestureEnabled
+              keyboardShortcutsEnabled:(BOOL)keyboardShortcutsEnabled
+{
+  if (self = [super init]) {
+    _devMenuEnabled = devMenuEnabled;
+    _shakeGestureEnabled = shakeGestureEnabled;
+    _keyboardShortcutsEnabled = keyboardShortcutsEnabled;
+  }
+  return self;
+}
+
++ (instancetype)defaultConfiguration
+{
+  return [[self alloc] initWithDevMenuEnabled:RCT_DEV_MENU
+                          shakeGestureEnabled:RCT_DEV_MENU
+                     keyboardShortcutsEnabled:RCT_DEV_MENU];
+}
+@end
+
 @implementation UIWindow (RCTDevMenu)
 
 - (void)RCT_motionEnded:(__unused UIEventSubtype)motion withEvent:(UIEvent *)event
@@ -47,7 +68,7 @@ NSString *const RCTShowDevMenuNotification = @"RCTShowDevMenuNotification";
 
 - (instancetype)initWithTitleBlock:(RCTDevMenuItemTitleBlock)titleBlock handler:(dispatch_block_t)handler
 {
-  if ((self = [super init])) {
+  if ((self = [super init]) != nullptr) {
     _titleBlock = [titleBlock copy];
     _handler = [handler copy];
   }
@@ -72,14 +93,14 @@ RCT_NOT_IMPLEMENTED(-(instancetype)init)
 
 - (void)callHandler
 {
-  if (_handler) {
+  if (_handler != nullptr) {
     _handler();
   }
 }
 
 - (NSString *)title
 {
-  if (_titleBlock) {
+  if (_titleBlock != nullptr) {
     return _titleBlock();
   }
   return nil;
@@ -120,13 +141,15 @@ RCT_EXPORT_MODULE()
 
 - (instancetype)init
 {
-  if ((self = [super init])) {
+  if ((self = [super init]) != nullptr) {
     [[NSNotificationCenter defaultCenter] addObserver:self
                                              selector:@selector(showOnShake)
                                                  name:RCTShowDevMenuNotification
                                                object:nil];
     _extraMenuItems = [NSMutableArray new];
 
+    _keyboardShortcutsEnabled = true;
+    _devMenuEnabled = true;
     [self registerHotkeys];
   }
   return self;
@@ -162,7 +185,6 @@ RCT_EXPORT_MODULE()
 
   [commands unregisterKeyCommandWithInput:@"d" modifierFlags:UIKeyModifierCommand];
   [commands unregisterKeyCommandWithInput:@"i" modifierFlags:UIKeyModifierCommand];
-  [commands unregisterKeyCommandWithInput:@"n" modifierFlags:UIKeyModifierCommand];
 #endif
 }
 
@@ -172,10 +194,27 @@ RCT_EXPORT_MODULE()
   RCTKeyCommands *commands = [RCTKeyCommands sharedInstance];
 
   return [commands isKeyCommandRegisteredForInput:@"d" modifierFlags:UIKeyModifierCommand] &&
-      [commands isKeyCommandRegisteredForInput:@"i" modifierFlags:UIKeyModifierCommand] &&
-      [commands isKeyCommandRegisteredForInput:@"n" modifierFlags:UIKeyModifierCommand];
+      [commands isKeyCommandRegisteredForInput:@"i" modifierFlags:UIKeyModifierCommand];
 #else
   return NO;
+#endif
+}
+
+- (BOOL)isReloadCommandRegistered
+{
+#if TARGET_OS_SIMULATOR || TARGET_OS_MACCATALYST
+  RCTKeyCommands *commands = [RCTKeyCommands sharedInstance];
+  return [commands isKeyCommandRegisteredForInput:@"r" modifierFlags:UIKeyModifierCommand];
+#else
+  return NO;
+#endif
+}
+
+- (void)unregisterReloadCommand
+{
+#if TARGET_OS_SIMULATOR || TARGET_OS_MACCATALYST
+  RCTKeyCommands *commands = [RCTKeyCommands sharedInstance];
+  [commands unregisterKeyCommandWithInput:@"r" modifierFlags:UIKeyModifierCommand];
 #endif
 }
 
@@ -214,7 +253,7 @@ RCT_EXPORT_MODULE()
   if (_actionSheet.isBeingPresented || _actionSheet.beingDismissed) {
     return;
   }
-  if (_actionSheet) {
+  if (_actionSheet != nullptr) {
     [_actionSheet dismissViewControllerAnimated:YES
                                      completion:^(void) {
                                        self->_actionSheet = nil;
@@ -238,6 +277,17 @@ RCT_EXPORT_MODULE()
 - (void)addItem:(RCTDevMenuItem *)item
 {
   [_extraMenuItems addObject:item];
+}
+
+- (void)setKeyboardShortcutsEnabled:(BOOL)keyboardShortcutsEnabled
+{
+  if (_keyboardShortcutsEnabled != keyboardShortcutsEnabled) {
+    [self setHotkeysEnabled:keyboardShortcutsEnabled];
+
+    if (!keyboardShortcutsEnabled) {
+      [self disableReloadCommand];
+    }
+  }
 }
 
 - (void)setDefaultJSBundle
@@ -365,11 +415,14 @@ RCT_EXPORT_MODULE()
                                                                         handler:^(__unused UIAlertAction *action) {
                                                                           [weakSelf setDefaultJSBundle];
                                                                         }]];
-                      [alertController addAction:[UIAlertAction actionWithTitle:@"Cancel"
-                                                                          style:UIAlertActionStyleCancel
-                                                                        handler:^(__unused UIAlertAction *action) {
-                                                                          return;
-                                                                        }]];
+                      UIAlertAction *configCancelAction =
+                          [UIAlertAction actionWithTitle:@"Cancel"
+                                                   style:UIAlertActionStyleCancel
+                                                 handler:^(__unused UIAlertAction *action) {
+                                                   return;
+                                                 }];
+                      [configCancelAction setValue:[UIColor systemRedColor] forKey:@"titleTextColor"];
+                      [alertController addAction:configCancelAction];
                       [RCTPresentedViewController() presentViewController:alertController animated:YES completion:NULL];
                     }]];
 
@@ -379,23 +432,21 @@ RCT_EXPORT_MODULE()
 
 RCT_EXPORT_METHOD(show)
 {
-  if (_actionSheet || RCTRunningInAppExtension()) {
+  if ((_actionSheet != nullptr) || RCTRunningInAppExtension() || !_devMenuEnabled) {
     return;
   }
-
-  NSString *bridgeDescription = _bridge.bridgeDescription;
-  NSString *description =
-      bridgeDescription.length > 0 ? [NSString stringWithFormat:@"Running %@", bridgeDescription] : nil;
 
   // On larger devices we don't have an anchor point for the action sheet
   UIAlertControllerStyle style = [[UIDevice currentDevice] userInterfaceIdiom] == UIUserInterfaceIdiomPhone
       ? UIAlertControllerStyleActionSheet
       : UIAlertControllerStyleAlert;
 
-  NSString *devMenuType = [self.bridge isKindOfClass:RCTBridge.class] ? @"Bridge" : @"Bridgeless";
-  NSString *devMenuTitle = [NSString stringWithFormat:@"React Native Dev Menu (%@)", devMenuType];
+  _actionSheet = [UIAlertController alertControllerWithTitle:@"React Native Dev Menu" message:nil preferredStyle:style];
 
-  _actionSheet = [UIAlertController alertControllerWithTitle:devMenuTitle message:description preferredStyle:style];
+  NSAttributedString *title =
+      [[NSAttributedString alloc] initWithString:@"React Native Dev Menu"
+                                      attributes:@{NSFontAttributeName : [UIFont boldSystemFontOfSize:17]}];
+  [_actionSheet setValue:title forKey:@"_attributedTitle"];
 
   NSArray<RCTDevMenuItem *> *items = [self _menuItemsToPresent];
   for (RCTDevMenuItem *item in items) {
@@ -406,9 +457,11 @@ RCT_EXPORT_METHOD(show)
     [_actionSheet addAction:action];
   }
 
-  [_actionSheet addAction:[UIAlertAction actionWithTitle:@"Cancel"
-                                                   style:UIAlertActionStyleCancel
-                                                 handler:[self alertActionHandlerForDevItem:nil]]];
+  UIAlertAction *cancelAction = [UIAlertAction actionWithTitle:@"Cancel"
+                                                         style:UIAlertActionStyleCancel
+                                                       handler:[self alertActionHandlerForDevItem:nil]];
+  [cancelAction setValue:[UIColor systemRedColor] forKey:@"titleTextColor"];
+  [_actionSheet addAction:cancelAction];
 
   _presentedItems = items;
   [RCTPresentedViewController() presentViewController:_actionSheet animated:YES completion:nil];
@@ -419,7 +472,7 @@ RCT_EXPORT_METHOD(show)
 - (RCTDevMenuAlertActionHandler)alertActionHandlerForDevItem:(RCTDevMenuItem *__nullable)item
 {
   return ^(__unused UIAlertAction *action) {
-    if (item) {
+    if (item != nullptr) {
       [item callHandler];
     }
 
@@ -434,7 +487,7 @@ RCT_EXPORT_METHOD(show)
 
 - (void)setShakeToShow:(BOOL)shakeToShow
 {
-  ((RCTDevSettings *)[_moduleRegistry moduleForName:"DevSettings"]).isShakeToShowDevMenuEnabled = shakeToShow;
+  [[_moduleRegistry moduleForName:"DevSettings"] setIsShakeToShowDevMenuEnabled:shakeToShow];
 }
 
 - (BOOL)shakeToShow
@@ -484,6 +537,13 @@ RCT_EXPORT_METHOD(setHotLoadingEnabled : (BOOL)enabled)
   return [self isHotkeysRegistered];
 }
 
+- (void)disableReloadCommand
+{
+  if ([self isReloadCommandRegistered]) {
+    [self unregisterReloadCommand];
+  }
+}
+
 - (std::shared_ptr<facebook::react::TurboModule>)getTurboModule:
     (const facebook::react::ObjCTurboModule::InitParams &)params
 {
@@ -495,6 +555,15 @@ RCT_EXPORT_METHOD(setHotLoadingEnabled : (BOOL)enabled)
 #else // Unavailable when not in dev mode
 
 @interface RCTDevMenu () <NativeDevMenuSpec>
+@end
+
+@implementation RCTDevMenuConfiguration
+
++ (instancetype)defaultConfiguration
+{
+  return nil;
+}
+
 @end
 
 @implementation RCTDevMenu
@@ -509,6 +578,10 @@ RCT_EXPORT_METHOD(setHotLoadingEnabled : (BOOL)enabled)
 {
 }
 - (void)addItem:(RCTDevMenu *)item
+{
+}
+
+- (void)disableReloadCommand
 {
 }
 

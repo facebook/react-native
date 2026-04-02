@@ -7,12 +7,12 @@
 
 #pragma once
 
-#include <folly/dynamic.h>
 #include <jsi/jsi.h>
 #include <react/renderer/core/RawValue.h>
 #include <react/renderer/uimanager/PointerEventsProcessor.h>
 #include <react/renderer/uimanager/UIManager.h>
 #include <react/renderer/uimanager/primitives.h>
+#include <react/timing/primitives.h>
 
 namespace facebook::react {
 
@@ -26,15 +26,13 @@ class UIManagerBinding : public jsi::HostObject {
    * Creates and sets `UIManagerBinding` into the global namespace.
    * Thread synchronization must be enforced externally.
    */
-  static void createAndInstallIfNeeded(
-      jsi::Runtime& runtime,
-      const std::shared_ptr<UIManager>& uiManager);
+  static void createAndInstallIfNeeded(jsi::Runtime &runtime, const std::shared_ptr<UIManager> &uiManager);
 
   /*
    * Returns a pointer to UIManagerBinding previously installed into a runtime.
    * Thread synchronization must be enforced externally.
    */
-  static std::shared_ptr<UIManagerBinding> getBinding(jsi::Runtime& runtime);
+  static std::shared_ptr<UIManagerBinding> getBinding(jsi::Runtime &runtime);
 
   UIManagerBinding(std::shared_ptr<UIManager> uiManager);
 
@@ -45,11 +43,12 @@ class UIManagerBinding : public jsi::HostObject {
    * Thread synchronization must be enforced externally.
    */
   void dispatchEvent(
-      jsi::Runtime& runtime,
-      const EventTarget* eventTarget,
-      const std::string& type,
+      jsi::Runtime &runtime,
+      EventTarget *eventTarget,
+      const std::string &type,
       ReactEventPriority priority,
-      const EventPayload& payload) const;
+      const EventPayload &payload,
+      HighResTimeStamp eventTimestamp) const;
 
   /*
    * Invalidates the binding and underlying UIManager.
@@ -63,10 +62,10 @@ class UIManagerBinding : public jsi::HostObject {
   /*
    * `jsi::HostObject` specific overloads.
    */
-  jsi::Value get(jsi::Runtime& runtime, const jsi::PropNameID& name) override;
+  jsi::Value get(jsi::Runtime &runtime, const jsi::PropNameID &name) override;
 
-  UIManager& getUIManager();
-  PointerEventsProcessor& getPointerEventsProcessor();
+  UIManager &getUIManager();
+  PointerEventsProcessor &getPointerEventsProcessor();
 
  private:
   /*
@@ -74,11 +73,12 @@ class UIManagerBinding : public jsi::HostObject {
    * UIManagerBinding::dispatchEvent.
    */
   void dispatchEventToJS(
-      jsi::Runtime& runtime,
-      const EventTarget* eventTarget,
-      const std::string& type,
+      jsi::Runtime &runtime,
+      EventTarget *eventTarget,
+      const std::string &type,
       ReactEventPriority priority,
-      const EventPayload& payload) const;
+      const EventPayload &payload,
+      HighResTimeStamp eventTimestamp) const;
 
   std::shared_ptr<UIManager> uiManager_;
   std::unique_ptr<jsi::Function> eventHandler_;

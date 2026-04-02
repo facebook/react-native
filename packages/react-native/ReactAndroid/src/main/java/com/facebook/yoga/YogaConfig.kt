@@ -10,7 +10,7 @@ package com.facebook.yoga
 public abstract class YogaConfig {
   public abstract fun setExperimentalFeatureEnabled(
       feature: YogaExperimentalFeature,
-      enabled: Boolean
+      enabled: Boolean,
   )
 
   public abstract fun setUseWebDefaults(useWebDefaults: Boolean)
@@ -21,9 +21,9 @@ public abstract class YogaConfig {
 
   public abstract fun getErrata(): YogaErrata
 
-  public abstract fun setLogger(logger: YogaLogger)
+  public abstract fun setLogger(logger: YogaLogger?)
 
-  public abstract fun getLogger(): YogaLogger
+  public abstract fun getLogger(): YogaLogger?
 
   protected abstract fun getNativePointer(): Long
 

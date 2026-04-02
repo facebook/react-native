@@ -16,8 +16,10 @@
 #include <jsinspector-modern/InspectorInterfaces.h>
 
 #include <memory>
+#include <source_location>
 
 #include "FollyDynamicMatchers.h"
+#include "GmockHelpers.h"
 #include "InspectorMocks.h"
 #include "UniquePtrFactory.h"
 #include "utils/InspectorFlagOverridesGuard.h"
@@ -42,34 +44,36 @@ namespace facebook::react::jsinspector_modern {
  * the provided folly::Executor) and the corresponding jsi::Runtime.
  */
 template <typename EngineAdapter, typename Executor>
-class JsiIntegrationPortableTestBase : public ::testing::Test,
-                                       private HostTargetDelegate {
+class JsiIntegrationPortableTestBase : public ::testing::Test, private HostTargetDelegate {
  protected:
   Executor executor_;
 
-  JsiIntegrationPortableTestBase()
-      : inspectorFlagsGuard_{EngineAdapter::getInspectorFlagOverrides()},
-        engineAdapter_{executor_} {}
+  JsiIntegrationPortableTestBase(InspectorFlagOverrides overrides = {})
+      : inspectorFlagsGuard_(overrides), engineAdapter_{executor_}
+  {
+  }
 
-  void SetUp() override {
+  void SetUp() override
+  {
     // NOTE: Using SetUp() so we can call virtual methods like
     // setupRuntimeBeforeRegistration().
+    page_ = HostTarget::create(*this, inspectorExecutor_);
     instance_ = &page_->registerInstance(instanceTargetDelegate_);
     setupRuntimeBeforeRegistration(engineAdapter_->getRuntime());
-    runtimeTarget_ = &instance_->registerRuntime(
-        engineAdapter_->getRuntimeTargetDelegate(),
-        engineAdapter_->getRuntimeExecutor());
+    runtimeTarget_ =
+        &instance_->registerRuntime(engineAdapter_->getRuntimeTargetDelegate(), engineAdapter_->getRuntimeExecutor());
     loadMainBundle();
   }
 
-  ~JsiIntegrationPortableTestBase() override {
+  ~JsiIntegrationPortableTestBase() override
+  {
     toPage_.reset();
-    if (runtimeTarget_) {
+    if (runtimeTarget_ != nullptr) {
       EXPECT_TRUE(instance_);
       instance_->unregisterRuntime(*runtimeTarget_);
       runtimeTarget_ = nullptr;
     }
-    if (instance_) {
+    if (instance_ != nullptr) {
       page_->unregisterInstance(*instance_);
       instance_ = nullptr;
     }
@@ -86,33 +90,35 @@ class JsiIntegrationPortableTestBase : public ::testing::Test,
    * fixture classes to set up the runtime before registering it with the
    * CDP backend.
    */
-  virtual void setupRuntimeBeforeRegistration(jsi::Runtime& /*runtime*/) {}
+  virtual void setupRuntimeBeforeRegistration(jsi::Runtime & /*runtime*/) {}
 
-  void connect() {
+  void connect(std::source_location location = std::source_location::current())
+  {
     ASSERT_FALSE(toPage_) << "Can only connect once in a JSI integration test.";
     toPage_ = page_->connect(remoteConnections_.make_unique());
 
     using namespace ::testing;
     // Default to ignoring console messages originating inside the backend.
-    EXPECT_CALL(
+    EXPECT_CALL_WITH_SOURCE_LOCATION(
+        location,
         fromPage(),
         onMessage(JsonParsed(AllOf(
-            AtJsonPtr("/method", "Runtime.consoleAPICalled"),
-            AtJsonPtr("/params/context", "main#InstanceAgent")))))
+            AtJsonPtr("/method", "Runtime.consoleAPICalled"), AtJsonPtr("/params/context", "main#InstanceAgent")))))
         .Times(AnyNumber());
 
     // We'll always get an onDisconnect call when we tear
     // down the test. Expect it in order to satisfy the strict mock.
-    EXPECT_CALL(*remoteConnections_[0], onDisconnect());
+    EXPECT_CALL_WITH_SOURCE_LOCATION(location, *remoteConnections_[0], onDisconnect());
   }
 
-  void reload() {
-    if (runtimeTarget_) {
+  void reload()
+  {
+    if (runtimeTarget_ != nullptr) {
       ASSERT_TRUE(instance_);
       instance_->unregisterRuntime(*runtimeTarget_);
       runtimeTarget_ = nullptr;
     }
-    if (instance_) {
+    if (instance_ != nullptr) {
       page_->unregisterInstance(*instance_);
       instance_ = nullptr;
     }
@@ -120,22 +126,21 @@ class JsiIntegrationPortableTestBase : public ::testing::Test,
     engineAdapter_.emplace(executor_);
     instance_ = &page_->registerInstance(instanceTargetDelegate_);
     setupRuntimeBeforeRegistration(engineAdapter_->getRuntime());
-    runtimeTarget_ = &instance_->registerRuntime(
-        engineAdapter_->getRuntimeTargetDelegate(),
-        engineAdapter_->getRuntimeExecutor());
+    runtimeTarget_ =
+        &instance_->registerRuntime(engineAdapter_->getRuntimeTargetDelegate(), engineAdapter_->getRuntimeExecutor());
     loadMainBundle();
   }
 
-  MockRemoteConnection& fromPage() {
+  MockRemoteConnection &fromPage()
+  {
     assert(toPage_);
     return *remoteConnections_[0];
   }
 
-  VoidExecutor inspectorExecutor_ = [this](auto callback) {
-    executor_.add(callback);
-  };
+  VoidExecutor inspectorExecutor_ = [this](auto callback) { executor_.add(callback); };
 
-  jsi::Value eval(std::string_view code) {
+  jsi::Value eval(std::string_view code)
+  {
     return engineAdapter_->getRuntime().evaluateJavaScript(
         std::make_shared<jsi::StringBuffer>(std::string(code)), "<eval>");
   }
@@ -146,28 +151,86 @@ class JsiIntegrationPortableTestBase : public ::testing::Test,
    */
   template <typename Matcher>
   std::shared_ptr<const std::optional<folly::dynamic>> expectMessageFromPage(
-      Matcher&& matcher) {
-    std::shared_ptr result =
-        std::make_shared<std::optional<folly::dynamic>>(std::nullopt);
-    EXPECT_CALL(fromPage(), onMessage(matcher))
-        .WillOnce(
-            ([result](auto message) { *result = folly::parseJson(message); }))
+      Matcher &&matcher,
+      std::source_location location = std::source_location::current())
+  {
+    using namespace ::testing;
+    ScopedTrace scope(location.file_name(), location.line(), "");
+    std::shared_ptr result = std::make_shared<std::optional<folly::dynamic>>(std::nullopt);
+    EXPECT_CALL_WITH_SOURCE_LOCATION(location, fromPage(), onMessage(matcher))
+        .WillOnce(([result](auto message) { *result = folly::parseJson(message); }))
         .RetiresOnSaturation();
     return result;
   }
 
-  std::shared_ptr<HostTarget> page_ =
-      HostTarget::create(*this, inspectorExecutor_);
-  InstanceTarget* instance_{};
-  RuntimeTarget* runtimeTarget_{};
+  RuntimeTargetDelegate &dangerouslyGetRuntimeTargetDelegate()
+  {
+    return engineAdapter_->getRuntimeTargetDelegate();
+  }
+
+  jsi::Runtime &dangerouslyGetRuntime()
+  {
+    return engineAdapter_->getRuntime();
+  }
+
+  class SecondaryConnection {
+   public:
+    SecondaryConnection(
+        std::unique_ptr<ILocalConnection> toPage,
+        JsiIntegrationPortableTestBase<EngineAdapter, Executor> &test,
+        size_t remoteConnectionIndex)
+        : toPage_(std::move(toPage)), remoteConnectionIndex_(remoteConnectionIndex), test_(test)
+    {
+    }
+
+    ILocalConnection &toPage()
+    {
+      return *toPage_;
+    }
+
+    MockRemoteConnection &fromPage()
+    {
+      return *test_.remoteConnections_[remoteConnectionIndex_];
+    }
+
+   private:
+    std::unique_ptr<ILocalConnection> toPage_;
+    size_t remoteConnectionIndex_;
+    JsiIntegrationPortableTestBase<EngineAdapter, Executor> &test_;
+  };
+
+  SecondaryConnection connectSecondary(std::source_location location = std::source_location::current())
+  {
+    auto toPage = page_->connect(remoteConnections_.make_unique());
+
+    SecondaryConnection secondary{std::move(toPage), *this, remoteConnections_.objectsVended() - 1};
+
+    using namespace ::testing;
+    // Default to ignoring console messages originating inside the backend.
+    EXPECT_CALL_WITH_SOURCE_LOCATION(
+        location,
+        secondary.fromPage(),
+        onMessage(JsonParsed(AllOf(
+            AtJsonPtr("/method", "Runtime.consoleAPICalled"), AtJsonPtr("/params/context", "main#InstanceAgent")))))
+        .Times(AnyNumber());
+
+    // We'll always get an onDisconnect call when we tear
+    // down the test. Expect it in order to satisfy the strict mock.
+    EXPECT_CALL_WITH_SOURCE_LOCATION(location, secondary.fromPage(), onDisconnect());
+
+    return secondary;
+  }
+
+  std::shared_ptr<HostTarget> page_;
+  InstanceTarget *instance_{};
+  RuntimeTarget *runtimeTarget_{};
 
   InspectorFlagOverridesGuard inspectorFlagsGuard_;
   MockInstanceTargetDelegate instanceTargetDelegate_;
   std::optional<EngineAdapter> engineAdapter_;
 
  private:
-  UniquePtrFactory<::testing::StrictMock<MockRemoteConnection>>
-      remoteConnections_;
+  UniquePtrFactory<::testing::StrictMock<MockRemoteConnection>> remoteConnections_;
 
  protected:
   // NOTE: Needs to be destroyed before page_.
@@ -176,17 +239,18 @@ class JsiIntegrationPortableTestBase : public ::testing::Test,
  private:
   // HostTargetDelegate methods
 
-  HostTargetMetadata getMetadata() override {
+  HostTargetMetadata getMetadata() override
+  {
     return {.integrationName = "JsiIntegrationTest"};
   }
 
-  void onReload(const PageReloadRequest& request) override {
+  void onReload(const PageReloadRequest &request) override
+  {
     (void)request;
     reload();
   }
 
-  void onSetPausedInDebuggerMessage(
-      const OverlaySetPausedInDebuggerMessageRequest&) override {}
+  void onSetPausedInDebuggerMessage(const OverlaySetPausedInDebuggerMessageRequest & /*request*/) override {}
 };
 
 } // namespace facebook::react::jsinspector_modern

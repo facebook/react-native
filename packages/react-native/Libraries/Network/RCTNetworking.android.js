@@ -48,12 +48,12 @@ const emitter = new NativeEventEmitter<$FlowFixMe>(
  * requestId to each network request that can be used to abort that request later on.
  */
 const RCTNetworking = {
-  addListener<K: $Keys<RCTNetworkingEventDefinitions>>(
+  addListener<K extends keyof RCTNetworkingEventDefinitions>(
     eventType: K,
-    listener: (...RCTNetworkingEventDefinitions[K]) => mixed,
-    context?: mixed,
+    listener: (...RCTNetworkingEventDefinitions[K]) => unknown,
+    context?: unknown,
   ): EventSubscription {
-    // $FlowFixMe[incompatible-call]
+    // $FlowFixMe[incompatible-type]
     return emitter.addListener(eventType, listener, context);
   },
 
@@ -66,7 +66,7 @@ const RCTNetworking = {
     responseType: NativeResponseType,
     incrementalUpdates: boolean,
     timeout: number,
-    callback: (requestId: number) => mixed,
+    callback: (requestId: number) => unknown,
     withCredentials: boolean,
   ) {
     const body = convertRequestBody(data);
@@ -77,12 +77,14 @@ const RCTNetworking = {
       }));
     }
     const requestId = generateRequestId();
+    const devToolsRequestId =
+      global.__NETWORK_REPORTER__?.createDevToolsRequestId();
     NativeNetworkingAndroid.sendRequest(
       method,
       url,
       requestId,
       convertHeadersMapToArray(headers),
-      {...body, trackingName},
+      {...body, trackingName, devToolsRequestId},
       responseType,
       incrementalUpdates,
       timeout,

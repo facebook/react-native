@@ -33,7 +33,7 @@ import * as React from 'react';
 function getSize(
   uri: string,
   success?: (width: number, height: number) => void,
-  failure?: (error: mixed) => void,
+  failure?: (error: unknown) => void,
 ): void | Promise<ImageSize> {
   const promise = NativeImageLoaderIOS.getSize(uri).then(([width, height]) => ({
     width,
@@ -56,7 +56,7 @@ function getSizeWithHeaders(
   uri: string,
   headers: {[string]: string, ...},
   success?: (width: number, height: number) => void,
-  failure?: (error: mixed) => void,
+  failure?: (error: unknown) => void,
 ): void | Promise<ImageSize> {
   const promise = NativeImageLoaderIOS.getSizeWithHeaders(uri, headers);
   if (typeof success !== 'function') {
@@ -153,6 +153,7 @@ let BaseImage: AbstractImageIOS = ({
     'aria-disabled': ariaDisabled,
     'aria-expanded': ariaExpanded,
     'aria-selected': ariaSelected,
+    'aria-hidden': ariaHidden,
     src,
     ...restProps
   } = props;
@@ -164,6 +165,10 @@ let BaseImage: AbstractImageIOS = ({
     expanded: ariaExpanded ?? props.accessibilityState?.expanded,
     selected: ariaSelected ?? props.accessibilityState?.selected,
   };
+
+  // In order for `aria-hidden` to work on iOS we must set `accessible` to false (`accessibilityElementsHidden` is not enough).
+  const accessible =
+    ariaHidden !== true && (props.alt !== undefined ? true : props.accessible);
   const accessibilityLabel = props['aria-label'] ?? props.accessibilityLabel;
 
   const actualRef = useWrapRefWithImageAttachedCallbacks(forwardedRef);
@@ -175,7 +180,7 @@ let BaseImage: AbstractImageIOS = ({
           <ImageViewNativeComponent
             accessibilityState={_accessibilityState}
             {...restProps}
-            accessible={props.alt !== undefined ? true : props.accessible}
+            accessible={accessible}
             accessibilityLabel={accessibilityLabel ?? props.alt}
             ref={actualRef}
             style={style}

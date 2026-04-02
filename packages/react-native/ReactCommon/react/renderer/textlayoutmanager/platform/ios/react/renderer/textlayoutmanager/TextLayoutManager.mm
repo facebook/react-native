@@ -37,25 +37,38 @@ TextMeasurement TextLayoutManager::measure(
 
   switch (attributedStringBox.getMode()) {
     case AttributedStringBox::Mode::Value: {
-      auto attributedString = ensurePlaceholderIfEmpty_DO_NOT_USE(attributedStringBox.getValue());
+      auto originalAtributedString = attributedStringBox.getValue();
+      auto attributedString = ensurePlaceholderIfEmpty_DO_NOT_USE(originalAtributedString);
 
-      measurement = textMeasureCache_.get({attributedString, paragraphAttributes, layoutConstraints}, [&]() {
-        auto telemetry = TransactionTelemetry::threadLocalTelemetry();
-        if (telemetry) {
-          telemetry->willMeasureText();
-        }
+      measurement = textMeasureCache_.get(
+          {.attributedString = attributedString,
+           .paragraphAttributes = paragraphAttributes,
+           .layoutConstraints = layoutConstraints},
+          [&]() {
+            auto telemetry = TransactionTelemetry::threadLocalTelemetry();
+            if (telemetry) {
+              telemetry->willMeasureText();
+            }
 
-        auto measurement = [textLayoutManager measureAttributedString:attributedString
-                                                  paragraphAttributes:paragraphAttributes
-                                                        layoutContext:layoutContext
-                                                    layoutConstraints:layoutConstraints];
+            auto measurement = [textLayoutManager measureAttributedString:attributedString
+                                                      paragraphAttributes:paragraphAttributes
+                                                            layoutContext:layoutContext
+                                                        layoutConstraints:layoutConstraints];
 
-        if (telemetry) {
-          telemetry->didMeasureText();
-        }
+            // TODO(D63303709): We compensate for the placeholder character
+            // being used to represent empty string. iOS TextLayoutManager
+            // should instead measure using `baseTextAttributes` of the
+            // `AttributedString`.
+            if (originalAtributedString.isEmpty()) {
+              measurement.size.width = 0;
+            }
 
-        return measurement;
-      });
+            if (telemetry) {
+              telemetry->didMeasureText();
+            }
+
+            return measurement;
+          });
       break;
     }
 
@@ -64,7 +77,7 @@ TextMeasurement TextLayoutManager::measure(
           (NSAttributedString *)unwrapManagedObject(attributedStringBox.getOpaquePointer());
 
       auto telemetry = TransactionTelemetry::threadLocalTelemetry();
-      if (telemetry) {
+      if (telemetry != nullptr) {
         telemetry->willMeasureText();
       }
 
@@ -73,7 +86,7 @@ TextMeasurement TextLayoutManager::measure(
                                                    layoutContext:layoutContext
                                                layoutConstraints:layoutConstraints];
 
-      if (telemetry) {
+      if (telemetry != nullptr) {
         telemetry->didMeasureText();
       }
 
@@ -96,12 +109,13 @@ LinesMeasurements TextLayoutManager::measureLines(
 
   RCTTextLayoutManager *textLayoutManager = (RCTTextLayoutManager *)unwrapManagedObject(nativeTextLayoutManager_);
 
-  auto measurement = lineMeasureCache_.get({attributedString, paragraphAttributes, size}, [&]() {
-    auto measurement = [textLayoutManager getLinesForAttributedString:attributedString
-                                                  paragraphAttributes:paragraphAttributes
-                                                                 size:{size.width, size.height}];
-    return measurement;
-  });
+  auto measurement = lineMeasureCache_.get(
+      {.attributedString = attributedString, .paragraphAttributes = paragraphAttributes, .size = size}, [&]() {
+        auto measurement = [textLayoutManager getLinesForAttributedString:attributedString
+                                                      paragraphAttributes:paragraphAttributes
+                                                                     size:{size.width, size.height}];
+        return measurement;
+      });
 
   return measurement;
 }

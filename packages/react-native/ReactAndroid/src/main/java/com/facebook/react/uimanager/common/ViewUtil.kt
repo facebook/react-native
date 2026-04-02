@@ -9,8 +9,23 @@ package com.facebook.react.uimanager.common
 
 import android.view.View
 
+/**
+ * Utility object providing helper methods for working with React Native views.
+ *
+ * This object contains utilities for determining which UIManager (Legacy/Paper or Fabric) a view
+ * belongs to, based on view tags and surface IDs. These utilities are essential for routing events
+ * and operations to the correct UIManager implementation.
+ *
+ * @see UIManagerType
+ */
 public object ViewUtil {
 
+  /**
+   * Constant representing the absence of a surface ID.
+   *
+   * This value (-1) is used as a placeholder when no surface ID is available, typically indicating
+   * that the view or event originated from the legacy (Paper) UIManager rather than Fabric.
+   */
   public const val NO_SURFACE_ID: Int = -1
 
   /**

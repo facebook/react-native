@@ -87,7 +87,7 @@ export type ImageRequireSource = number;
 export type ImageSource =
   | ImageRequireSource
   | ImageURISource
-  | $ReadOnlyArray<ImageURISource>;
+  | ReadonlyArray<ImageURISource>;
 
 type ImageSourceProperties = {
   body?: ?string,
@@ -104,7 +104,7 @@ type ImageSourceProperties = {
 
 export function getImageSourceProperties(
   imageSource: ImageURISource,
-): $ReadOnly<ImageSourceProperties> {
+): Readonly<ImageSourceProperties> {
   const object: ImageSourceProperties = {};
   if (imageSource.body != null) {
     object.body = imageSource.body;

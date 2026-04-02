@@ -40,11 +40,11 @@ export type EventHandler = interface {
 };
 export type EventListener = EventCallback | EventHandler;
 
-export type EventListenerOptions = $ReadOnly<{
+export type EventListenerOptions = Readonly<{
   capture?: boolean,
 }>;
 
-export type AddEventListenerOptions = $ReadOnly<{
+export type AddEventListenerOptions = Readonly<{
   ...EventListenerOptions,
   passive?: boolean,
   once?: boolean,
@@ -311,7 +311,7 @@ function dispatch(eventTarget: EventTarget, event: Event): void {
 function getEventPath(
   eventTarget: EventTarget,
   event: Event,
-): $ReadOnlyArray<EventTarget> {
+): ReadonlyArray<EventTarget> {
   const path = [];
   let target: EventTarget | null = eventTarget;
 

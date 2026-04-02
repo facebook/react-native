@@ -12,8 +12,7 @@
 
 namespace facebook::react {
 
-using IImageLoaderOnLoadCallback = std::function<
-    void(double imageWidth, double imageHeight, const char* errorMessage)>;
+using IImageLoaderOnLoadCallback = std::function<void(double imageWidth, double imageHeight, const char *errorMessage)>;
 
 class IImageLoader {
  public:
@@ -25,11 +24,9 @@ class IImageLoader {
 
   virtual ~IImageLoader() = default;
 
-  virtual void loadImage(
-      const std::string& uri,
-      const IImageLoaderOnLoadCallback&& onLoad) = 0;
+  virtual void loadImage(const std::string &uri, const IImageLoaderOnLoadCallback &&onLoad) = 0;
 
-  virtual CacheStatus getCacheStatus(const std::string& uri) = 0;
+  virtual CacheStatus getCacheStatus(const std::string &uri) = 0;
 };
 
 } // namespace facebook::react

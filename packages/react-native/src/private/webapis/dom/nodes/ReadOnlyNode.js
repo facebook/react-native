@@ -118,7 +118,11 @@ export default class ReadOnlyNode {
   get parentElement(): ReadOnlyElement | null {
     const parentNode = this.parentNode;
 
-    if (parentNode instanceof getReadOnlyElementClass()) {
+    if (
+      parentNode != null &&
+      parentNode.nodeType === ReadOnlyNode.ELEMENT_NODE
+    ) {
+      // $FlowExpectedError[incompatible-type] parentNode is an instance of ReadOnlyElement as per the `nodeType` check
       return parentNode;
     }
 
@@ -292,7 +296,8 @@ setPlatformObject(ReadOnlyNode);
 
 export function getChildNodes(
   node: ReadOnlyNode,
-): $ReadOnlyArray<ReadOnlyNode> {
+  filter?: (node: ReadOnlyNode) => boolean,
+): ReadonlyArray<ReadOnlyNode> {
   const shadowNode = getNativeNodeReference(node);
 
   if (shadowNode == null) {
@@ -300,14 +305,21 @@ export function getChildNodes(
   }
 
   const childNodeInstanceHandles = NativeDOM.getChildNodes(shadowNode);
-  return childNodeInstanceHandles
-    .map(instanceHandle => getPublicInstanceFromInstanceHandle(instanceHandle))
-    .filter(Boolean);
+  const childNodes = [];
+  for (const childNodeInstanceHandle of childNodeInstanceHandles) {
+    const childNode = getPublicInstanceFromInstanceHandle(
+      childNodeInstanceHandle,
+    );
+    if (childNode != null && (filter == null || filter(childNode))) {
+      childNodes.push(childNode);
+    }
+  }
+  return childNodes;
 }
 
 function getNodeSiblingsAndPosition(
   node: ReadOnlyNode,
-): [$ReadOnlyArray<ReadOnlyNode>, number] {
+): [ReadonlyArray<ReadOnlyNode>, number] {
   const parent = node.parentNode;
   if (parent == null) {
     // This node is the root or it's disconnected.
@@ -322,13 +334,4 @@ function getNodeSiblingsAndPosition(
   }
 
   return [siblings, position];
-}
-
-let ReadOnlyElementClass;
-function getReadOnlyElementClass(): Class<ReadOnlyElement> {
-  if (ReadOnlyElementClass == null) {
-    // We initialize this lazily to avoid a require cycle.
-    ReadOnlyElementClass = require('./ReadOnlyElement').default;
-  }
-  return ReadOnlyElementClass;
 }

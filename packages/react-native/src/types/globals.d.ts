@@ -101,8 +101,8 @@ declare global {
 
   // #region Timer Functions
 
-  function clearInterval(handle: number): void;
-  function clearTimeout(handle: number): void;
+  function clearInterval(handle: number | null | undefined): void;
+  function clearTimeout(handle: number | null | undefined): void;
   function setInterval(handler: () => void, timeout: number): number;
   function setInterval<Args extends any[]>(
     handler: (...args: Args) => void,
@@ -115,14 +115,14 @@ declare global {
     timeout?: number,
     ...args: Args
   ): number;
-  function clearImmediate(handle: number): void;
+  function clearImmediate(handle: number | null | undefined): void;
   function setImmediate(handler: () => void): number;
   function setImmediate<Args extends any[]>(
     handler: (...args: Args) => void,
     ...args: Args
   ): number;
 
-  function cancelAnimationFrame(handle: number): void;
+  function cancelAnimationFrame(handle: number | null | undefined): void;
   function requestAnimationFrame(callback: (time: number) => void): number;
 
   function fetchBundle(
@@ -461,8 +461,18 @@ declare global {
     | 'text';
 
   interface URL {
-    href: string;
+    readonly hash: string;
+    readonly host: string;
+    readonly hostname: string;
+    readonly href: string;
+    readonly origin: string;
+    readonly password: string;
+    readonly pathname: string;
+    readonly port: string;
+    readonly protocol: string;
+    search: string;
     readonly searchParams: URLSearchParams;
+    readonly username: string;
 
     toJSON(): string;
     toString(): string;
@@ -479,8 +489,27 @@ declare global {
    * Based on definitions of lib.dom and lib.dom.iterable
    */
   interface URLSearchParams {
+    /**
+     * Returns the number of search parameter entries.
+     */
+    readonly size: number;
+
     append(key: string, value: string): void;
+    delete(name: string): void;
+    get(name: string): string | null;
+    getAll(name: string): string[];
+    has(name: string): boolean;
+    set(name: string, value: string): void;
+    sort(): void;
     toString(): string;
+    forEach(
+      callbackfn: (value: string, key: string, parent: URLSearchParams) => void,
+      thisArg?: any,
+    ): void;
+
+    keys(): IterableIterator<string>;
+    values(): IterableIterator<string>;
+    entries(): IterableIterator<[string, string]>;
 
     [Symbol.iterator](): IterableIterator<[string, string]>;
   }

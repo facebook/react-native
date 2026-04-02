@@ -113,13 +113,15 @@ void NativeMutationObserver::onMutations(std::vector<MutationRecord>& records) {
   TraceSection s("NativeMutationObserver::onMutations");
 
   for (const auto& record : records) {
-    pendingRecords_.emplace_back(NativeMutationRecord{
-        record.mutationObserverId,
-        // FIXME(T157129303) Instead of assuming we can call into JS from here,
-        // we should use an API that explicitly indicates it.
-        getPublicInstanceFromShadowNode(*record.targetShadowNode),
-        getPublicInstancesFromShadowNodes(record.addedShadowNodes),
-        getPublicInstancesFromShadowNodes(record.removedShadowNodes)});
+    pendingRecords_.emplace_back(
+        NativeMutationRecord{
+            record.mutationObserverId,
+            // It's safe to call into JS here because we only check mutations
+            // synchronously when committing from React (so we're in a JS
+            // task already).
+            getPublicInstanceFromShadowNode(*record.targetShadowNode),
+            getPublicInstancesFromShadowNodes(record.addedShadowNodes),
+            getPublicInstancesFromShadowNodes(record.removedShadowNodes)});
   }
 
   notifyMutationObserversIfNecessary();

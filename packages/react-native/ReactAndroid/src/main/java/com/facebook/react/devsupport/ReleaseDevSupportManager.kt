@@ -70,7 +70,19 @@ public open class ReleaseDevSupportManager : DevSupportManager {
 
   public override var devSupportEnabled: Boolean
     get() = false
-    @Suppress("UNUSED_PARAMETER") set(isDevSupportEnabled: Boolean): Unit = Unit
+    @Suppress("UNUSED_PARAMETER") set(value): Unit = Unit
+
+  public override var devMenuEnabled: Boolean
+    get() = false
+    @Suppress("UNUSED_PARAMETER") set(value): Unit = Unit
+
+  public override var shakeGestureEnabled: Boolean
+    get() = false
+    @Suppress("UNUSED_PARAMETER") set(value): Unit = Unit
+
+  public override var keyboardShortcutsEnabled: Boolean
+    get() = false
+    @Suppress("UNUSED_PARAMETER") set(value): Unit = Unit
 
   public override val devSettings: DeveloperSettings?
     get() = null
@@ -142,7 +154,7 @@ public open class ReleaseDevSupportManager : DevSupportManager {
 
   public override fun createSurfaceDelegate(moduleName: String): SurfaceDelegate? = null
 
-  public override fun openDebugger(): Unit = Unit
+  public override fun openDebugger(panel: String?): Unit = Unit
 
   public override fun showPausedInDebuggerOverlay(
       message: String,

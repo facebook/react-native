@@ -112,7 +112,7 @@ internal open class SwipeRefreshLayoutManager :
 
   override fun addEventEmitters(reactContext: ThemedReactContext, view: ReactSwipeRefreshLayout) {
     view.setOnRefreshListener {
-      val eventDispatcher = UIManagerHelper.getEventDispatcherForReactTag(reactContext, view.id)
+      val eventDispatcher = UIManagerHelper.getEventDispatcher(reactContext)
       eventDispatcher?.dispatchEvent(RefreshEvent(UIManagerHelper.getSurfaceId(view), view.id))
     }
   }
@@ -123,13 +123,15 @@ internal open class SwipeRefreshLayoutManager :
               mutableMapOf(
                   "DEFAULT" to SwipeRefreshLayout.DEFAULT,
                   "LARGE" to SwipeRefreshLayout.LARGE,
-              ))
+              )
+      )
 
   override fun getExportedCustomDirectEventTypeConstants(): MutableMap<String, Any> {
     val baseEventTypeConstants = super.getExportedCustomDirectEventTypeConstants()
     val eventTypeConstants: MutableMap<String, Any> = baseEventTypeConstants ?: HashMap()
     eventTypeConstants.putAll(
-        mutableMapOf("topRefresh" to mutableMapOf("registrationName" to "onRefresh")))
+        mutableMapOf("topRefresh" to mutableMapOf("registrationName" to "onRefresh"))
+    )
     return eventTypeConstants
   }
 

@@ -52,7 +52,8 @@ internal class DebugOverlayController(private val reactContext: ReactContext) {
             windowManager.removeView(fpsDebugViewContainer)
             fpsDebugViewContainer = null
           }
-        })
+        }
+    )
   }
 
   companion object {
