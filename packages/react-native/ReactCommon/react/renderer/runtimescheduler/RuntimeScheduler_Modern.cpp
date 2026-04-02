@@ -380,7 +380,42 @@ void RuntimeScheduler_Modern::executeTask(
       task.callback = result.getObject(runtime).getFunction(runtime);
     }
   } catch (jsi::JSError& error) {
-    onTaskError_(runtime, error);
+    // The JSError may originate from a different Hermes runtime (e.g. an extra
+    // runtime created by a NativeModule). Forwarding error.value() directly to
+    // ErrorUtils.reportFatalError would pass a jsi::Value that belongs to the
+    // source runtime's heap into the main runtime, which is undefined behaviour
+    // and causes LogBox to display "Unknown" instead of the real message.
+    //
+    // Fix: reconstruct a proper `new Error(message)` in the correct (main)
+    // runtime and copy the already-extracted stack string onto it, then wrap it
+    // with the JSError(Value&&, string, string) constructor that does NOT
+    // re-read any properties from the runtime - so only safe std::strings cross
+    // the runtime boundary.
+    try {
+      auto errorMessage = error.getMessage();
+      auto errorStack = error.getStack();
+      // Build `new Error(message)` in the main runtime.
+      jsi::Value newErrorObj =
+          runtime.global()
+              .getPropertyAsFunction(runtime, "Error")
+              .callAsConstructor(
+                  runtime,
+                  jsi::String::createFromUtf8(runtime, errorMessage));
+      // Override .stack with the original cross-runtime stack string.
+      newErrorObj.getObject(runtime).setProperty(
+          runtime,
+          "stack",
+          jsi::String::createFromUtf8(runtime, errorStack));
+      // Use the no-runtime-read constructor to avoid any cross-runtime access.
+      jsi::JSError newError(
+          std::move(newErrorObj), errorMessage, errorStack);
+      onTaskError_(runtime, newError);
+    } catch (...) {
+      // Reconstruction failed (e.g. Error constructor not available yet).
+      // Fall back to a plain string error so we at least surface the message.
+      jsi::JSError fallback(runtime, error.getMessage());
+      onTaskError_(runtime, fallback);
+    }
   } catch (std::exception& ex) {
     jsi::JSError error(runtime, std::string("Non-js exception: ") + ex.what());
     onTaskError_(runtime, error);
@@ -419,7 +454,28 @@ void RuntimeScheduler_Modern::performMicrotaskCheckpoint(
         break;
       }
     } catch (jsi::JSError& error) {
-      onTaskError_(runtime, error);
+      // Same cross-runtime fix as in executeTask: reconstruct a proper
+      // new Error in the main runtime before forwarding to ErrorUtils.
+      try {
+        auto errorMessage = error.getMessage();
+        auto errorStack = error.getStack();
+        jsi::Value newErrorObj =
+            runtime.global()
+                .getPropertyAsFunction(runtime, "Error")
+                .callAsConstructor(
+                    runtime,
+                    jsi::String::createFromUtf8(runtime, errorMessage));
+        newErrorObj.getObject(runtime).setProperty(
+            runtime,
+            "stack",
+            jsi::String::createFromUtf8(runtime, errorStack));
+        jsi::JSError newError(
+            std::move(newErrorObj), errorMessage, errorStack);
+        onTaskError_(runtime, newError);
+      } catch (...) {
+        jsi::JSError fallback(runtime, error.getMessage());
+        onTaskError_(runtime, fallback);
+      }
     } catch (std::exception& ex) {
       jsi::JSError error(
           runtime, std::string("Non-js exception: ") + ex.what());
