@@ -347,7 +347,7 @@ CommitStatus ShadowTree::tryCommit(
   auto telemetry = TransactionTelemetry{};
   telemetry.willCommit();
 
-  CommitMode commitMode;
+  CommitMode commitMode{};
   auto oldRevision = ShadowTreeRevision{};
   auto oldRevisionForStateProgression = ShadowTreeRevision{};
   auto newRevision = ShadowTreeRevision{};
