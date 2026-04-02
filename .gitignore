@@ -83,7 +83,6 @@ package-lock.json
 *.js.meta
 
 /coverage
-/third-party
 
 # Test Reports
 /reports
@@ -152,7 +151,6 @@ vendor/
 /packages/react-native/sdks/hermes-engine/hermes-engine-from-local-source-dir.tar.gz
 
 # iOS prebuilds
-/packages/react-native/third-party/
 fix_*.patch
 *.xcframework
 
