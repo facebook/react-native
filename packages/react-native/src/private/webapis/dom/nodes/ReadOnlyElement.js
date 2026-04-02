@@ -193,6 +193,18 @@ export default class ReadOnlyElement extends ReadOnlyNode {
     return getBoundingClientRect(this, {includeTransform: true});
   }
 
+  getClientRects(): $ReadOnlyArray<DOMRect> {
+    const node = getNativeElementReference(this);
+
+    if (node != null) {
+      const rects = NativeDOM.getClientRects(node);
+      return rects.map(rect => new DOMRect(rect[0], rect[1], rect[2], rect[3]));
+    }
+
+    // Empty array if any of the above failed
+    return [];
+  }
+
   /**
    * Pointer Capture APIs
    */
