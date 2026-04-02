@@ -2011,6 +2011,156 @@ TEST_P(JSITest, DeleteProperty) {
   EXPECT_TRUE(hasRes);
 }
 
+TEST_P(JSITest, ArrayPush) {
+  // This Runtime Decorator is used to test the default implementation of
+  // Runtime::push
+  class RD : public RuntimeDecorator<Runtime, Runtime> {
+   public:
+    explicit RD(Runtime& rt) : RuntimeDecorator(rt) {}
+
+    size_t push(const Array& arr, const Value* elements, size_t count)
+        override {
+      return Runtime::push(arr, elements, count);
+    }
+  };
+  RD rd = RD(rt);
+
+  // Push to an empty array
+  Array arr(rd, 0);
+  size_t newLength = arr.push(rd, 1, 2, 3);
+  EXPECT_EQ(newLength, 3);
+  EXPECT_EQ(arr.length(rd), 3);
+
+  EXPECT_EQ(arr.getValueAtIndex(rd, 0).getNumber(), 1);
+  EXPECT_EQ(arr.getValueAtIndex(rd, 1).getNumber(), 2);
+  EXPECT_EQ(arr.getValueAtIndex(rd, 2).getNumber(), 3);
+
+  // Push to an array already containing elements
+  arr = Array::createWithElements(rd, 1, true);
+  Object obj(rd);
+  newLength = arr.push(rd, "foobar", obj);
+  EXPECT_EQ(newLength, 4);
+  EXPECT_EQ(arr.length(rd), 4);
+
+  EXPECT_EQ(arr.getValueAtIndex(rd, 0).getNumber(), 1);
+  EXPECT_TRUE(arr.getValueAtIndex(rd, 1).getBool());
+  EXPECT_EQ(arr.getValueAtIndex(rd, 2).getString(rd).utf8(rd), "foobar");
+  EXPECT_TRUE(
+      Object::strictEquals(rd, arr.getValueAtIndex(rd, 3).getObject(rd), obj));
+
+  // Push to a Proxy of a JS Array
+  arr = eval("new Proxy([1], {})").getObject(rd).getArray(rd);
+  EXPECT_EQ(arr.length(rd), 1);
+
+  newLength = arr.push(rd, true, "foobar");
+  EXPECT_EQ(newLength, 3);
+  EXPECT_EQ(arr.length(rd), 3);
+
+  EXPECT_EQ(arr.getValueAtIndex(rd, 0).getNumber(), 1);
+  EXPECT_TRUE(arr.getValueAtIndex(rd, 1).getBool());
+  EXPECT_EQ(arr.getValueAtIndex(rd, 2).getString(rd).utf8(rd), "foobar");
+
+  // Push to a Proxy of a JS Array, where getting the length returns a custom
+  // value
+  arr = eval(
+            "var arr = [1];"
+            "var handler = {"
+            "    get(target, property) {"
+            "        if (property == 'length') {"
+            "            return target.length + 1;"
+            "        }"
+            "        return Reflect.get(target, property);"
+            "    }"
+            "};"
+            "var proxy = new Proxy(arr, handler);"
+            "proxy;")
+            .getObject(rd)
+            .getArray(rd);
+  // The handler returns the underlying array's length plus 1
+  EXPECT_EQ(arr.length(rd), 2);
+
+  // The elements will be adding starting at element 2
+  newLength = arr.push(rd, 3, 4);
+  EXPECT_EQ(newLength, 4);
+
+  EXPECT_EQ(arr.length(rd), 5);
+  EXPECT_EQ(arr.getValueAtIndex(rd, 0).getNumber(), 1);
+  EXPECT_TRUE(arr.getValueAtIndex(rd, 1).isUndefined());
+  EXPECT_EQ(arr.getValueAtIndex(rd, 2).getNumber(), 3);
+  EXPECT_EQ(arr.getValueAtIndex(rd, 3).getNumber(), 4);
+
+  // Push to a Proxy of a JS Array, where setting the 'length' property is
+  // customized
+  arr = eval(
+            "var arr = [1];"
+            "var handler = {"
+            "    set(target, property, value) {"
+            "        if (property == 'length') {"
+            "            return Reflect.set(target, property, value + 1);"
+            "        }"
+            "        return Reflect.set(target, property, value);"
+            "    }"
+            "};"
+            "var proxy = new Proxy(arr, handler);"
+            "proxy;")
+            .getObject(rd)
+            .getArray(rd);
+
+  EXPECT_EQ(arr.length(rd), 1);
+  EXPECT_EQ(arr.getValueAtIndex(rd, 0).getNumber(), 1);
+
+  newLength = arr.push(rd, 2, 3);
+  EXPECT_EQ(newLength, 3);
+
+  // When setting the 'length' property, the handler will actually set it to 3 +
+  // 1
+  EXPECT_EQ(arr.length(rd), 4);
+  EXPECT_EQ(arr.getValueAtIndex(rd, 0).getNumber(), 1);
+  EXPECT_EQ(arr.getValueAtIndex(rd, 1).getNumber(), 2);
+  EXPECT_EQ(arr.getValueAtIndex(rd, 2).getNumber(), 3);
+  EXPECT_TRUE(arr.getValueAtIndex(rd, 3).isUndefined());
+}
+
+TEST_P(JSITest, ArrayBufferDetachedTest) {
+  // This Runtime Decorator is used to test the default implementation of
+  // Runtime::detached
+  class RD : public RuntimeDecorator<Runtime, Runtime> {
+   public:
+    explicit RD(Runtime& rt) : RuntimeDecorator(rt) {}
+
+    bool detached(const ArrayBuffer& ab) override {
+      return Runtime::detached(ab);
+    }
+  };
+  RD rd = RD(rt);
+
+  // Test that a normal ArrayBuffer is not detached.
+  auto ab = eval("var buf = new ArrayBuffer(10); buf")
+                .getObject(rd)
+                .getArrayBuffer(rd);
+
+  // The default Runtime::detached reads the JS "detached" property. If the
+  // runtime doesn't support ArrayBuffer.prototype.detached, it will throw
+  // JSINativeException.
+  try {
+    EXPECT_FALSE(ab.detached(rd));
+  } catch (const JSINativeException&) {
+    // Runtime doesn't support ArrayBuffer.prototype.detached, skip the rest.
+    return;
+  }
+
+  // Detach the ArrayBuffer. Use transfer() if available, otherwise fall back
+  // to HermesInternal.detach for Hermes runtime.
+  eval(
+      "if (typeof buf.transfer === 'function') {"
+      "  buf.transfer();"
+      "} else if (typeof HermesInternal !== 'undefined' && "
+      "           typeof HermesInternal.detachArrayBuffer === 'function') {"
+      "  HermesInternal.detachArrayBuffer(buf);"
+      "}");
+  EXPECT_TRUE(ab.detached(rd));
+}
+
 INSTANTIATE_TEST_CASE_P(
     Runtimes,
     JSITest,
