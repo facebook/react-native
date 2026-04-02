@@ -214,6 +214,16 @@ static facebook::jsi::Value __hostFunction_NativeSampleTurboModuleSpecJSI_promis
       .invokeObjCMethod(rt, PromiseKind, "promiseAssert", @selector(promiseAssert:reject:), args, count);
 }
 
+static facebook::jsi::Value __hostFunction_NativeSampleTurboModuleSpecJSI_getBigInt(
+    facebook::jsi::Runtime &rt,
+    TurboModule &turboModule,
+    const facebook::jsi::Value *args,
+    size_t count)
+{
+  return static_cast<ObjCTurboModule &>(turboModule)
+      .invokeObjCMethod(rt, BigIntKind, "getBigInt", @selector(getBigInt:), args, count);
+}
+
 static facebook::jsi::Value __hostFunction_NativeSampleTurboModuleSpecJSI_getImageUrl(
     facebook::jsi::Runtime &rt,
     TurboModule &turboModule,
@@ -274,6 +284,9 @@ NativeSampleTurboModuleSpecJSI::NativeSampleTurboModuleSpecJSI(const ObjCTurboMo
   methodMap_["getObjectAssert"] = MethodMetadata{1, __hostFunction_NativeSampleTurboModuleSpecJSI_getObjectAssert};
 
   methodMap_["promiseAssert"] = MethodMetadata{0, __hostFunction_NativeSampleTurboModuleSpecJSI_promiseAssert};
+
+  methodMap_["getBigInt"] =
+      MethodMetadata{.argCount = 1, .invoker = __hostFunction_NativeSampleTurboModuleSpecJSI_getBigInt};
 
   methodMap_["getImageUrl"] = MethodMetadata{0, __hostFunction_NativeSampleTurboModuleSpecJSI_getImageUrl};
 

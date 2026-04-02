@@ -7,6 +7,7 @@
 
 // NOTE: This entire file should be codegen'ed.
 
+#import <cstdint>
 #import <vector>
 
 #ifndef __cplusplus
@@ -104,6 +105,7 @@ inline JS::NativeSampleTurboModule::Constants::Builder::Builder(Constants i)
 - (NSDictionary *)getObjectAssert:(NSDictionary *)arg;
 - (void)promiseAssert:(RCTPromiseResolveBlock)resolve reject:(RCTPromiseRejectBlock)reject;
 - (void)getImageUrl:(RCTPromiseResolveBlock)resolve reject:(RCTPromiseRejectBlock)reject;
+- (NSNumber *)getBigInt:(int64_t)arg;
 - (facebook::react::ModuleConstants<JS::NativeSampleTurboModule::Constants>)constantsToExport;
 - (facebook::react::ModuleConstants<JS::NativeSampleTurboModule::Constants>)getConstants;
 

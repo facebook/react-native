@@ -311,6 +311,24 @@ __hostFunction_NativeSampleTurboModuleSpecJSI_promiseAssert(
 }
 
 static facebook::jsi::Value
+__hostFunction_NativeSampleTurboModuleSpecJSI_getBigInt(
+    facebook::jsi::Runtime& rt,
+    TurboModule& turboModule,
+    const facebook::jsi::Value* args,
+    size_t count) {
+  static jmethodID cachedMethodId = nullptr;
+  return static_cast<JavaTurboModule&>(turboModule)
+      .invokeJavaMethod(
+          rt,
+          BigIntKind,
+          "getBigInt",
+          "(Ljava/math/BigInteger;)Ljava/math/BigInteger;",
+          args,
+          count,
+          cachedMethodId);
+}
+
+static facebook::jsi::Value
 __hostFunction_NativeSampleTurboModuleSpecJSI_getImageUrl(
     facebook::jsi::Runtime& rt,
     TurboModule& turboModule,
@@ -393,6 +411,9 @@ NativeSampleTurboModuleSpecJSI::NativeSampleTurboModuleSpecJSI(
   methodMap_["getImageUrl"] = MethodMetadata{
       .argCount = 0,
       .invoker = __hostFunction_NativeSampleTurboModuleSpecJSI_getImageUrl};
+  methodMap_["getBigInt"] = MethodMetadata{
+      .argCount = 1,
+      .invoker = __hostFunction_NativeSampleTurboModuleSpecJSI_getBigInt};
   eventEmitterMap_["onPress"] =
       std::make_shared<AsyncEventEmitter<folly::dynamic>>();
   eventEmitterMap_["onClick"] =

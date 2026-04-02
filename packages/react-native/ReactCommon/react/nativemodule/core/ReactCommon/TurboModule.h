@@ -26,6 +26,7 @@ enum TurboModuleMethodValueKind {
   VoidKind,
   BooleanKind,
   NumberKind,
+  BigIntKind,
   StringKind,
   ObjectKind,
   ArrayKind,

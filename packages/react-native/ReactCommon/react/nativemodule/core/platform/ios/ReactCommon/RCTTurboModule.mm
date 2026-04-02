@@ -25,6 +25,7 @@
 #import <objc/message.h>
 #import <objc/runtime.h>
 #import <atomic>
+#import <cstring>
 #import <iostream>
 #import <mutex>
 
@@ -186,6 +187,16 @@ id convertJSIValueToObjCObject(
   }
   if (value.isString()) {
     return convertJSIStringToNSString(runtime, value.getString(runtime));
+  }
+  if (value.isBigInt()) {
+    auto bigint = value.getBigInt(runtime);
+    if (bigint.isInt64(runtime)) {
+      return [NSNumber numberWithLongLong:bigint.getInt64(runtime)];
+    }
+    if (bigint.isUint64(runtime)) {
+      return [NSNumber numberWithUnsignedLongLong:bigint.getUint64(runtime)];
+    }
+    throw jsi::JSError(runtime, "BigInt value is too large for int64_t or uint64_t");
   }
   if (value.isObject()) {
     jsi::Object o = value.getObject(runtime);
@@ -526,6 +537,17 @@ jsi::Value ObjCTurboModule::convertReturnIdToJSIValue(
       throw jsi::JSError(runtime, "convertReturnIdToJSIValue: FunctionKind is not supported yet.");
     case PromiseKind:
       throw jsi::JSError(runtime, "convertReturnIdToJSIValue: PromiseKind wasn't handled properly.");
+    case BigIntKind: {
+      auto num = (NSNumber *)result;
+      const char *type = [num objCType];
+      if (type != nullptr &&
+          (strcmp(type, @encode(unsigned long long)) == 0 || strcmp(type, @encode(unsigned long)) == 0)) {
+        returnValue = jsi::BigInt::fromUint64(runtime, [num unsignedLongLongValue]);
+      } else {
+        returnValue = jsi::BigInt::fromInt64(runtime, [num longLongValue]);
+      }
+      break;
+    }
   }
 
   return returnValue;
@@ -627,9 +649,40 @@ void ObjCTurboModule::setInvocationArg(
       [retainedObjectsForInvocation addObject:objCArg];
     } else if (objCArgType == @encode(NSInteger)) {
       NSInteger integer = v;
-      [inv setArgument:&integer atIndex:i + 2];
+      [inv setArgument:&integer atIndex:static_cast<NSInteger>(i + 2)];
     } else {
-      [inv setArgument:(void *)&v atIndex:i + 2];
+      [inv setArgument:(void *)&v atIndex:static_cast<NSInteger>(i + 2)];
+    }
+
+    return;
+  }
+
+  if (arg.isBigInt()) {
+    auto bigint = arg.getBigInt(runtime);
+
+    /**
+     * JS type checking ensures the Objective C argument here is either a long long or NSNumber*.
+     */
+    if (bigint.isInt64(runtime)) {
+      int64_t v = bigint.getInt64(runtime);
+      if (objCArgType == @encode(id)) {
+        id objCArg = [NSNumber numberWithLongLong:v];
+        [inv setArgument:(void *)&objCArg atIndex:static_cast<NSInteger>(i + 2)];
+        [retainedObjectsForInvocation addObject:objCArg];
+      } else {
+        [inv setArgument:(void *)&v atIndex:static_cast<NSInteger>(i + 2)];
+      }
+    } else if (bigint.isUint64(runtime)) {
+      uint64_t v = bigint.getUint64(runtime);
+      if (objCArgType == @encode(id)) {
+        id objCArg = [NSNumber numberWithUnsignedLongLong:v];
+        [inv setArgument:(void *)&objCArg atIndex:static_cast<NSInteger>(i + 2)];
+        [retainedObjectsForInvocation addObject:objCArg];
+      } else {
+        [inv setArgument:(void *)&v atIndex:static_cast<NSInteger>(i + 2)];
+      }
+    } else {
+      throw jsi::JSError(runtime, "BigInt value is too large for int64_t or uint64_t");
     }
 
     return;
@@ -813,7 +866,8 @@ jsi::Value ObjCTurboModule::invokeObjCMethod(
     case StringKind:
     case ObjectKind:
     case ArrayKind:
-    case FunctionKind: {
+    case FunctionKind:
+    case BigIntKind: {
       id result = performMethodInvocation(runtime, true, methodName, inv, retainedObjectsForInvocation);
       TurboModulePerfLogger::syncMethodCallReturnConversionStart(moduleName, methodName);
       returnValue = convertReturnIdToJSIValue(runtime, methodName, returnType, result);
