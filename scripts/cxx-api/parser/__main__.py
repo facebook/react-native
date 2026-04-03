@@ -96,6 +96,7 @@ def build_snapshot_for_view(
     input_filter: str = None,
     work_dir: str | None = None,
     exclude_symbols: list[str] | None = None,
+    warn_excluded_refs: bool = False,
 ) -> str:
     if verbose:
         print(f"[{api_view}] Generating API view")
@@ -130,6 +131,23 @@ def build_snapshot_for_view(
     snapshot = build_snapshot(
         os.path.join(work_dir, "xml"), exclude_symbols=exclude_symbols
     )
+
+    if warn_excluded_refs and snapshot.excluded_symbol_references:
+        _YELLOW = "\033[33m"
+        _RESET = "\033[0m"
+        refs = snapshot.excluded_symbol_references
+        print(
+            f"{_YELLOW}[{api_view}] WARNING: Found {len(refs)} reference(s) "
+            f"to excluded symbols:{_RESET}",
+            file=sys.stderr,
+        )
+        for ref in refs:
+            print(
+                f"{_YELLOW}  • {ref.scope}: {ref.context} '{ref.symbol}' "
+                f"matches excluded pattern '{ref.pattern}'{_RESET}",
+                file=sys.stderr,
+            )
+
     snapshot_string = snapshot.to_string()
 
     output_file = os.path.join(output_dir, f"{api_view}Cxx.api")
@@ -151,6 +169,7 @@ def build_snapshots(
     view_filter: str | None = None,
     is_test: bool = False,
     keep_xml: bool = False,
+    warn_excluded_refs: bool = False,
 ) -> None:
     if not is_test:
         configs_to_build = [
@@ -195,6 +214,7 @@ def build_snapshots(
                         input_filter=input_filter if config.input_filter else None,
                         work_dir=work_dir,
                         exclude_symbols=config.exclude_symbols,
+                        warn_excluded_refs=warn_excluded_refs,
                     )
                     futures[future] = config.snapshot_name
 
@@ -285,6 +305,11 @@ def main():
         action="store_true",
         help="Keep the generated Doxygen XML files next to the .api output in a xml/ directory",
     )
+    parser.add_argument(
+        "--warn-excluded-refs",
+        action="store_true",
+        help="Warn when non-excluded symbols reference types matching exclude_symbols patterns",
+    )
     args = parser.parse_args()
 
     verbose = not args.validate
@@ -343,6 +368,7 @@ def main():
             view_filter=args.view,
             is_test=args.test,
             keep_xml=args.xml,
+            warn_excluded_refs=args.warn_excluded_refs,
         )
 
         if args.validate:
