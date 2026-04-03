@@ -118,7 +118,7 @@ declare module '@electron/packager' {
         };
     extraResource?: string | string[];
     helperBundleId?: string;
-    icon?: string;
+    icon?: string | string[];
     ignore?: RegExp | (string | RegExp)[] | IgnoreFunction;
     junk?: boolean;
     name?: string;
