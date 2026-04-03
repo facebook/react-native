@@ -87,4 +87,14 @@ using namespace facebook::react;
   self.reactNativeFactory.rootViewFactory.bridgeAdapter = bridgeAdapter;
 }
 
+- (UISceneConfiguration *)application:(UIApplication *)application
+    configurationForConnectingSceneSession:(UISceneSession *)connectingSceneSession
+                                   options:(UISceneConnectionOptions *)options API_AVAILABLE(ios(13.0))
+{
+  UISceneConfiguration *configuration = [[UISceneConfiguration alloc] initWithName:@"Default Configuration"
+                                                                       sessionRole:connectingSceneSession.role];
+  configuration.delegateClass = NSClassFromString(@"RCTSceneDelegate");
+  return configuration;
+}
+
 @end
