@@ -10,6 +10,7 @@ Main entry point for building API snapshots from Doxygen XML output.
 from __future__ import annotations
 
 import os
+from dataclasses import dataclass
 
 from doxmlparser import compound, index
 
@@ -24,8 +25,38 @@ from .builders import (
     get_typedef_member,
     get_variable_member,
 )
+from .member import (
+    FriendMember,
+    FunctionMember,
+    PropertyMember,
+    TypedefMember,
+    VariableMember,
+)
+from .scope import Scope, StructLikeScopeKind
+from .scope.extendable import Extendable
 from .snapshot import Snapshot
-from .utils import has_scope_resolution_outside_angles, parse_qualified_path
+from .utils import (
+    format_parsed_type,
+    has_scope_resolution_outside_angles,
+    parse_qualified_path,
+)
+
+
+@dataclass
+class ExcludedSymbolReference:
+    """A reference to an excluded symbol found in the API snapshot."""
+
+    symbol: str
+    """The full text containing the reference (e.g., the type string)."""
+
+    pattern: str
+    """The exclude_symbols pattern that matched."""
+
+    scope: str
+    """The qualified name of the scope containing the reference."""
+
+    context: str
+    """Description of where the reference appears (e.g., 'base class', 'return type')."""
 
 
 def _should_exclude_symbol(name: str, exclude_symbols: list[str]) -> bool:
@@ -170,6 +201,199 @@ _IGNORED_COMPOUNDS = frozenset(
 )
 
 
+def _check_text_for_excluded_patterns(
+    text: str,
+    scope_name: str,
+    context: str,
+    exclude_symbols: list[str],
+    results: list[ExcludedSymbolReference],
+) -> None:
+    """Append an ExcludedSymbolReference for each pattern found in *text*."""
+    for pattern in exclude_symbols:
+        if pattern in text:
+            results.append(
+                ExcludedSymbolReference(
+                    symbol=text,
+                    pattern=pattern,
+                    scope=scope_name,
+                    context=context,
+                )
+            )
+
+
+def _check_arguments_for_excluded_patterns(
+    arguments: list,
+    scope_name: str,
+    context_prefix: str,
+    exclude_symbols: list[str],
+    results: list[ExcludedSymbolReference],
+) -> None:
+    """Check every argument's type string for excluded patterns."""
+    for arg in arguments:
+        # Argument is a tuple: (qualifiers, type, name, default_value)
+        arg_type = arg[1]
+        if arg_type:
+            _check_text_for_excluded_patterns(
+                arg_type,
+                scope_name,
+                f"{context_prefix} parameter type",
+                exclude_symbols,
+                results,
+            )
+
+
+def _check_member_for_excluded_patterns(
+    member,
+    scope_name: str,
+    exclude_symbols: list[str],
+    results: list[ExcludedSymbolReference],
+) -> None:
+    """Check a single member for type references matching excluded patterns."""
+    member_name = f"{scope_name}::{member.name}"
+
+    if isinstance(member, FunctionMember):
+        if member.type:
+            _check_text_for_excluded_patterns(
+                member.type,
+                member_name,
+                "return type",
+                exclude_symbols,
+                results,
+            )
+        _check_arguments_for_excluded_patterns(
+            member.arguments,
+            member_name,
+            "function",
+            exclude_symbols,
+            results,
+        )
+
+    elif isinstance(member, VariableMember):
+        type_str = format_parsed_type(member._parsed_type)
+        if type_str:
+            _check_text_for_excluded_patterns(
+                type_str,
+                member_name,
+                "variable type",
+                exclude_symbols,
+                results,
+            )
+        _check_arguments_for_excluded_patterns(
+            member._fp_arguments,
+            member_name,
+            "function pointer",
+            exclude_symbols,
+            results,
+        )
+
+    elif isinstance(member, TypedefMember):
+        value = member.get_value()
+        if value:
+            _check_text_for_excluded_patterns(
+                value,
+                member_name,
+                "typedef target type",
+                exclude_symbols,
+                results,
+            )
+        _check_arguments_for_excluded_patterns(
+            member._fp_arguments,
+            member_name,
+            "function pointer",
+            exclude_symbols,
+            results,
+        )
+
+    elif isinstance(member, PropertyMember):
+        if member.type:
+            _check_text_for_excluded_patterns(
+                member.type,
+                member_name,
+                "property type",
+                exclude_symbols,
+                results,
+            )
+
+    elif isinstance(member, FriendMember):
+        _check_text_for_excluded_patterns(
+            member.name,
+            member_name,
+            "friend declaration",
+            exclude_symbols,
+            results,
+        )
+
+    if member.specialization_args:
+        for arg in member.specialization_args:
+            _check_text_for_excluded_patterns(
+                arg,
+                member_name,
+                "member specialization argument",
+                exclude_symbols,
+                results,
+            )
+
+
+def _walk_scope_for_excluded_patterns(
+    scope: Scope,
+    exclude_symbols: list[str],
+    results: list[ExcludedSymbolReference],
+) -> None:
+    """Recursively walk a scope tree checking for excluded pattern references."""
+    scope_name = scope.get_qualified_name() or "(root)"
+
+    # Check base classes (StructLikeScopeKind, ProtocolScopeKind, InterfaceScopeKind)
+    if isinstance(scope.kind, Extendable):
+        for base in scope.kind.base_classes:
+            _check_text_for_excluded_patterns(
+                base.name,
+                scope_name,
+                "base class",
+                exclude_symbols,
+                results,
+            )
+
+    # Check specialization args
+    if isinstance(scope.kind, StructLikeScopeKind) and scope.kind.specialization_args:
+        for arg in scope.kind.specialization_args:
+            _check_text_for_excluded_patterns(
+                arg,
+                scope_name,
+                "specialization argument",
+                exclude_symbols,
+                results,
+            )
+
+    for member in scope.get_members():
+        _check_member_for_excluded_patterns(
+            member, scope_name, exclude_symbols, results
+        )
+
+    for inner in scope.inner_scopes.values():
+        _walk_scope_for_excluded_patterns(inner, exclude_symbols, results)
+
+
+def find_excluded_symbol_references(
+    snapshot: Snapshot,
+    exclude_symbols: list[str],
+) -> list[ExcludedSymbolReference]:
+    """
+    Walk the snapshot scope tree after it has been finalized and find
+    references to excluded symbols in type strings, base classes, and
+    other type references.
+
+    This detects cases where a non-excluded symbol references an excluded
+    symbol (e.g., a class inherits from an excluded base, a function returns
+    an excluded type, etc.).
+    """
+    if not exclude_symbols:
+        return []
+
+    results: list[ExcludedSymbolReference] = []
+    _walk_scope_for_excluded_patterns(snapshot.root_scope, exclude_symbols, results)
+    return results
+
+
 def build_snapshot(xml_dir: str, exclude_symbols: list[str] | None = None) -> Snapshot:
     """
     Reads the Doxygen XML output and builds a snapshot of the C++ API.
@@ -218,4 +442,9 @@ def build_snapshot(xml_dir: str, exclude_symbols: list[str] | None = None) -> Sn
                 print(f"Unknown compound kind: {kind}")
 
     snapshot.finish()
+
+    snapshot.excluded_symbol_references = find_excluded_symbol_references(
+        snapshot, exclude_symbols
+    )
+
     return snapshot

@@ -21,6 +21,7 @@ from .utils import parse_qualified_path, split_specialization
 class Snapshot:
     def __init__(self) -> None:
         self.root_scope: Scope = Scope(NamespaceScopeKind())
+        self.excluded_symbol_references: list = []
 
     def ensure_scope(self, scope_path: list[str]) -> Scope:
         """
