@@ -2516,6 +2516,11 @@ class facebook::react::NativeToJsBridge {
   public void* getJavaScriptContext();
 }
 
+class facebook::react::NativeViewTransition : public NativeViewTransitionCxxSpec<facebook::react::NativeViewTransition> {
+  public NativeViewTransition(std::shared_ptr<facebook::react::CallInvoker> jsInvoker);
+  public std::optional<facebook::jsi::Object> getViewTransitionInstance(facebook::jsi::Runtime& rt, const std::string& name, const std::string& pseudo);
+}
+
 class facebook::react::NetworkReporter {
   public bool isDebuggingEnabled() const;
   public static facebook::react::NetworkReporter& getInstance();
@@ -4044,6 +4049,7 @@ enum facebook::react::BlendMode {
   Multiply,
   Normal,
   Overlay,
+  PlusLighter,
   Saturation,
   Screen,
   SoftLight,
@@ -7735,6 +7741,7 @@ class facebook::react::jsinspector_modern::RuntimeAgent {
   public const facebook::react::jsinspector_modern::ExecutionContextDescription& getExecutionContextDescription() const;
   public facebook::react::jsinspector_modern::RuntimeAgent::ExportedState getExportedState();
   public void notifyBindingCalled(const std::string& bindingName, const std::string& payload);
+  public void notifyFastRefreshComplete();
   public ~RuntimeAgent();
 }
 
