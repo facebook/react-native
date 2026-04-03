@@ -3871,6 +3871,11 @@ class facebook::react::NativeVibrationSpecJSI : public facebook::react::JavaTurb
   public NativeVibrationSpecJSI(const facebook::react::JavaTurboModule::InitParams& params);
 }
 
+class facebook::react::NativeViewTransition : public facebook::react::NativeViewTransitionCxxSpec<facebook::react::NativeViewTransition> {
+  public NativeViewTransition(std::shared_ptr<facebook::react::CallInvoker> jsInvoker);
+  public std::optional<facebook::jsi::Object> getViewTransitionInstance(facebook::jsi::Runtime& rt, const std::string& name, const std::string& pseudo);
+}
+
 class facebook::react::NativeWebSocketModuleSpecJSI : public facebook::react::JavaTurboModule {
   public NativeWebSocketModuleSpecJSI(const facebook::react::JavaTurboModule::InitParams& params);
 }
@@ -5657,6 +5662,7 @@ enum facebook::react::BlendMode {
   Multiply,
   Normal,
   Overlay,
+  PlusLighter,
   Saturation,
   Screen,
   SoftLight,
@@ -8921,6 +8927,12 @@ class facebook::react::NativeVibrationCxxSpec : public facebook::react::TurboMod
 }
 
 template <typename T>
+class facebook::react::NativeViewTransitionCxxSpec : public facebook::react::TurboModule {
+  protected NativeViewTransitionCxxSpec(std::shared_ptr<facebook::react::CallInvoker> jsInvoker);
+  public static constexpr std::string_view kModuleName;
+}
+
+template <typename T>
 class facebook::react::NativeWebSocketModuleCxxSpec : public facebook::react::TurboModule {
   protected NativeWebSocketModuleCxxSpec(std::shared_ptr<facebook::react::CallInvoker> jsInvoker);
   public static constexpr std::string_view kModuleName;
@@ -10673,6 +10685,7 @@ class facebook::react::jsinspector_modern::RuntimeAgent {
   public const facebook::react::jsinspector_modern::ExecutionContextDescription& getExecutionContextDescription() const;
   public facebook::react::jsinspector_modern::RuntimeAgent::ExportedState getExportedState();
   public void notifyBindingCalled(const std::string& bindingName, const std::string& payload);
+  public void notifyFastRefreshComplete();
   public ~RuntimeAgent();
 }
 
