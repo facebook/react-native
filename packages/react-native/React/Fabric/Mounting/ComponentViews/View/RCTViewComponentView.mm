@@ -1268,9 +1268,9 @@ static RCTBorderStyle RCTBorderStyleFromOutlineStyle(OutlineStyle outlineStyle)
     if (!_boxShadowLayers) {
       _boxShadowLayers = [NSMutableArray new];
     }
-    for (auto it = _props->boxShadow.rbegin(); it != _props->boxShadow.rend(); ++it) {
+    for (const auto &shadow : std::ranges::reverse_view(_props->boxShadow)) {
       CALayer *shadowLayer = RCTGetBoxShadowLayer(
-          *it,
+          shadow,
           RCTCornerRadiiFromBorderRadii(borderMetrics.borderRadii),
           RCTUIEdgeInsetsFromEdgeInsets(borderMetrics.borderWidths),
           self.layer.bounds.size);
