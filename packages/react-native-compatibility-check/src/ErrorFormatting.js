@@ -170,6 +170,8 @@ function formatTypeAnnotation(annotation: CompleteTypeAnnotation): string {
       return 'float';
     case 'Int32TypeAnnotation':
       return 'int';
+    case 'BigIntTypeAnnotation':
+      return 'bigint';
     case 'NumberLiteralTypeAnnotation':
       return annotation.value.toString();
     case 'BooleanLiteralTypeAnnotation':
