@@ -752,6 +752,11 @@ public abstract class BaseViewManager<T extends View, C extends LayoutShadowNode
                     "phasedRegistrationNames",
                     MapBuilder.of("bubbled", "onPointerOver", "captured", "onPointerOverCapture")))
             .put(
+                "topAuxClick",
+                MapBuilder.of(
+                    "phasedRegistrationNames",
+                    MapBuilder.of("bubbled", "onAuxClick", "captured", "onAuxClickCapture")))
+            .put(
                 "topClick",
                 MapBuilder.of(
                     "phasedRegistrationNames",
@@ -906,6 +911,16 @@ public abstract class BaseViewManager<T extends View, C extends LayoutShadowNode
   @ReactProp(name = ViewProps.ON_POINTER_MOVE_CAPTURE)
   public void setPointerMoveCapture(@NonNull T view, boolean value) {
     setPointerEventsFlag(view, PointerEventHelper.EVENT.MOVE_CAPTURE, value);
+  }
+
+  @ReactProp(name = ViewProps.ON_AUXCLICK)
+  public void setAuxClick(@NonNull T view, boolean value) {
+    setPointerEventsFlag(view, PointerEventHelper.EVENT.AUXCLICK, value);
+  }
+
+  @ReactProp(name = ViewProps.ON_AUXCLICK_CAPTURE)
+  public void setAuxClickCapture(@NonNull T view, boolean value) {
+    setPointerEventsFlag(view, PointerEventHelper.EVENT.AUXCLICK_CAPTURE, value);
   }
 
   @ReactProp(name = ViewProps.ON_CLICK)

@@ -126,6 +126,7 @@ extern const UIAccessibilityTraits SwitchAccessibilityTrait;
 /**
  * (Experimental and unused for Paper) Pointer event handlers.
  */
+@property (nonatomic, assign) RCTBubblingEventBlock onAuxClick;
 @property (nonatomic, assign) RCTBubblingEventBlock onClick;
 @property (nonatomic, assign) RCTBubblingEventBlock onPointerCancel;
 @property (nonatomic, assign) RCTBubblingEventBlock onPointerDown;

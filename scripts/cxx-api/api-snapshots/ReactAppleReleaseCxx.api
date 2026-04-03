@@ -2462,6 +2462,7 @@ interface RCTView : public UIView {
   public @property (assign) CGFloat borderWidth;
   public @property (assign) RCTBorderCurve borderCurve;
   public @property (assign) RCTBorderStyle borderStyle;
+  public @property (assign) RCTBubblingEventBlock onAuxClick;
   public @property (assign) RCTBubblingEventBlock onClick;
   public @property (assign) RCTBubblingEventBlock onGotPointerCapture;
   public @property (assign) RCTBubblingEventBlock onLostPointerCapture;

@@ -156,6 +156,8 @@ public abstract class BaseViewManagerDelegate<
       ViewProps.ON_POINTER_MOVE -> mViewManager.setPointerMove(view, value as Boolean? ?: false)
       ViewProps.ON_POINTER_MOVE_CAPTURE ->
           mViewManager.setPointerMoveCapture(view, value as Boolean? ?: false)
+      ViewProps.ON_AUXCLICK -> mViewManager.setAuxClick(view, value as Boolean? ?: false)
+      ViewProps.ON_AUXCLICK_CAPTURE -> mViewManager.setAuxClickCapture(view, value as Boolean? ?: false)
       ViewProps.ON_CLICK -> mViewManager.setClick(view, value as Boolean? ?: false)
       ViewProps.ON_CLICK_CAPTURE -> mViewManager.setClickCapture(view, value as Boolean? ?: false)
     }

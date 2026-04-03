@@ -86,6 +86,8 @@ type MouseEventProps = Readonly<{
 
 // Experimental/Work in Progress Pointer Event Callbacks (not yet ready for use)
 type PointerEventProps = Readonly<{
+  onAuxClick?: ?(event: PointerEvent) => void,
+  onAuxClickCapture?: ?(event: PointerEvent) => void,
   onClick?: ?(event: PointerEvent) => void,
   onClickCapture?: ?(event: PointerEvent) => void,
   onPointerEnter?: ?(event: PointerEvent) => void,
