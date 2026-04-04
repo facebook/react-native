@@ -1206,6 +1206,55 @@ TEST_P(RuntimeSchedulerTest, errorInTaskShouldNotStopMicrotasks) {
   EXPECT_EQ(stubErrorUtils_->getReportFatalCallCount(), 1);
 }
 
+TEST_P(RuntimeSchedulerTest, handlingCrossRuntimeError) {
+  auto secondRuntime = facebook::hermes::makeHermesRuntime();
+
+  bool didRunTask = false;
+  auto callback = createHostFunctionFromLambda(
+      [&didRunTask, &secondRuntime](bool /*unused*/) {
+        didRunTask = true;
+        throw jsi::JSError(*secondRuntime, "Cross-runtime error");
+        return jsi::Value::undefined();
+      });
+
+  runtimeScheduler_->scheduleTask(
+      SchedulerPriority::NormalPriority, std::move(callback));
+
+  EXPECT_FALSE(didRunTask);
+  EXPECT_EQ(stubQueue_->size(), 1);
+
+  stubQueue_->tick();
+
+  EXPECT_TRUE(didRunTask);
+  EXPECT_EQ(stubQueue_->size(), 0);
+  EXPECT_EQ(stubErrorUtils_->getReportFatalCallCount(), 1);
+  EXPECT_EQ(stubErrorUtils_->getLastReportedMessage(), "Cross-runtime error");
+}
+
+TEST_P(RuntimeSchedulerTest, handlingErrorPreservesMessage) {
+  bool didRunTask = false;
+  auto callback =
+      createHostFunctionFromLambda([this, &didRunTask](bool /*unused*/) {
+        didRunTask = true;
+        throw jsi::JSError(*runtime_, "Same-runtime error");
+        return jsi::Value::undefined();
+      });
+
+  runtimeScheduler_->scheduleTask(
+      SchedulerPriority::NormalPriority, std::move(callback));
+
+  EXPECT_FALSE(didRunTask);
+  EXPECT_EQ(stubQueue_->size(), 1);
+
+  stubQueue_->tick();
+
+  EXPECT_TRUE(didRunTask);
+  EXPECT_EQ(stubQueue_->size(), 0);
+  EXPECT_EQ(stubErrorUtils_->getReportFatalCallCount(), 1);
+  EXPECT_EQ(
+      stubErrorUtils_->getLastReportedMessage(), "Same-runtime error");
+}
+
 TEST_P(RuntimeSchedulerTest, reportsLongTasks) {
   // Only for event loop
   if (!GetParam()) {

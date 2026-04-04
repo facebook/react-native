@@ -170,7 +170,7 @@ void RuntimeScheduler_Legacy::callExpiredTasks(jsi::Runtime& runtime) {
       executeTask(runtime, topPriorityTask, didUserCallbackTimeout);
     }
   } catch (jsi::JSError& error) {
-    onTaskError_(runtime, error);
+    reportError(runtime, error);
   } catch (std::exception& ex) {
     jsi::JSError error(runtime, std::string("Non-js exception: ") + ex.what());
     onTaskError_(runtime, error);
@@ -242,7 +242,7 @@ void RuntimeScheduler_Legacy::startWorkLoop(jsi::Runtime& runtime) {
       executeTask(runtime, topPriorityTask, didUserCallbackTimeout);
     }
   } catch (jsi::JSError& error) {
-    onTaskError_(runtime, error);
+    reportError(runtime, error);
   } catch (std::exception& ex) {
     jsi::JSError error(runtime, std::string("Non-js exception: ") + ex.what());
     onTaskError_(runtime, error);
@@ -250,6 +250,33 @@ void RuntimeScheduler_Legacy::startWorkLoop(jsi::Runtime& runtime) {
 
   currentPriority_ = previousPriority;
   isPerformingWork_ = false;
+}
+
+void RuntimeScheduler_Legacy::reportError(
+    jsi::Runtime& runtime,
+    jsi::JSError& error) const {
+  try {
+    auto errorCtor =
+        runtime.global().getPropertyAsFunction(runtime, "Error");
+    auto errorObj =
+        errorCtor
+            .callAsConstructor(
+                runtime,
+                jsi::String::createFromUtf8(runtime, error.getMessage()))
+            .getObject(runtime);
+    errorObj.setProperty(
+        runtime,
+        "stack",
+        jsi::String::createFromUtf8(runtime, error.getStack()));
+    jsi::JSError localError(
+        jsi::Value(std::move(errorObj)),
+        error.getMessage(),
+        error.getStack());
+    onTaskError_(runtime, localError);
+  } catch (...) {
+    jsi::JSError fallbackError(runtime, error.getMessage());
+    onTaskError_(runtime, fallbackError);
+  }
 }
 
 void RuntimeScheduler_Legacy::executeTask(
