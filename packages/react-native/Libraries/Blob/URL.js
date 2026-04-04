@@ -123,8 +123,8 @@ export class URL {
   }
 
   get hash(): string {
-    const hashMatch = this._url.match(/#([^/]*)/);
-    return hashMatch ? `#${hashMatch[1]}` : '';
+    const hashIndex = this._url.indexOf('#');
+    return hashIndex !== -1 ? this._url.slice(hashIndex) : '';
   }
 
   get host(): string {
