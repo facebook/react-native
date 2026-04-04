@@ -692,18 +692,20 @@ android {
         # LICENSE file in the root directory of this source tree.
 
         # ReactAndroid CMake configuration file
+        # This file is generated during the Gradle build and used by CMake's find_package()
 
-        # The reactnative library
+        # The reactnative library - use the first available architecture
+        # The actual architecture will be determined by the CMAKE_ANDROID_ARCH_ABI variable
         add_library(reactnative SHARED IMPORTED)
         set_target_properties(reactnative PROPERTIES
-          IMPORTED_LOCATION "${buildDir}/prefab/debug/android/armeabi-v7a/libreactnative.so"
+          IMPORTED_LOCATION "${buildDir}/prefab/debug/android/\${CMAKE_ANDROID_ARCH_ABI}/libreactnative.so"
           INTERFACE_INCLUDE_DIRECTORIES "${buildDir}/prefab-headers/reactnative"
         )
 
         # The jsi library
         add_library(jsi SHARED IMPORTED)
         set_target_properties(jsi PROPERTIES
-          IMPORTED_LOCATION "${buildDir}/prefab/debug/android/armeabi-v7a/libjsi.so"
+          IMPORTED_LOCATION "${buildDir}/prefab/debug/android/\${CMAKE_ANDROID_ARCH_ABI}/libjsi.so"
           INTERFACE_INCLUDE_DIRECTORIES "${buildDir}/prefab-headers/jsi"
         )
 
@@ -713,8 +715,12 @@ android {
   }
 
   // Ensure the config file is generated before external native build
-  tasks.configureEach {
-    if (this::class.java.name.contains("CMakeTask")) {
+  // The CMake tasks are created lazily by AGP with names like "configureCMake<Variant>"
+  // We use withType to find and configure the tasks by name pattern
+  // Note: tasks.matching is not reliable for lazily created tasks in AGP 9.1+
+  // Using withType<Task>().configureEach instead
+  tasks.withType<Task>().configureEach {
+    if (name.startsWith("configureCMake")) {
       dependsOn(generateReactAndroidConfig)
     }
   }
