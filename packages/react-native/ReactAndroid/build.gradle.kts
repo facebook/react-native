@@ -685,6 +685,10 @@ android {
     doLast {
       val configDir = outputs.files.first()
       configDir.mkdirs()
+      // Convert paths to CMake-style forward slashes to avoid Windows escape sequence issues
+      val buildDirCmake = buildDir.path.replace("\\", "/")
+      // The prefab libraries are in build/intermediates/prefab_package/debug/prefab/modules/*/libs/android.*
+      val prefabLibsDir = buildDir.resolve("intermediates/prefab_package/debug/prefab/modules").path.replace("\\", "/")
       val configContent = """
         # Copyright (c) Meta Platforms, Inc. and affiliates.
         #
@@ -698,15 +702,15 @@ android {
         # The actual architecture will be determined by the CMAKE_ANDROID_ARCH_ABI variable
         add_library(reactnative SHARED IMPORTED)
         set_target_properties(reactnative PROPERTIES
-          IMPORTED_LOCATION "${buildDir}/prefab/debug/android/\${CMAKE_ANDROID_ARCH_ABI}/libreactnative.so"
-          INTERFACE_INCLUDE_DIRECTORIES "${buildDir}/prefab-headers/reactnative"
+          IMPORTED_LOCATION "${prefabLibsDir}/reactnative/libs/android.${'$'}{CMAKE_ANDROID_ARCH_ABI}/libreactnative.so"
+          INTERFACE_INCLUDE_DIRECTORIES "${buildDirCmake}/prefab-headers/reactnative"
         )
 
         # The jsi library
         add_library(jsi SHARED IMPORTED)
         set_target_properties(jsi PROPERTIES
-          IMPORTED_LOCATION "${buildDir}/prefab/debug/android/\${CMAKE_ANDROID_ARCH_ABI}/libjsi.so"
-          INTERFACE_INCLUDE_DIRECTORIES "${buildDir}/prefab-headers/jsi"
+          IMPORTED_LOCATION "${prefabLibsDir}/jsi/libs/android.${'$'}{CMAKE_ANDROID_ARCH_ABI}/libjsi.so"
+          INTERFACE_INCLUDE_DIRECTORIES "${buildDirCmake}/prefab-headers/jsi"
         )
 
       """.trimIndent()
