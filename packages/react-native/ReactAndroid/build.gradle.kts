@@ -84,6 +84,7 @@ val preparePrefab by
           prepareFmt,
           prepareFolly,
           prepareGlog,
+          prepareFbjni,
       )
       dependsOn("generateCodegenArtifactsFromSchema")
       // To export to a ReactNativePrefabProcessingEntities.kt once all
@@ -435,6 +436,50 @@ val prepareGlog by
       outputDir.set(File(thirdPartyNdkDir, "glog"))
     }
 
+val downloadFbjniAarDest = File(downloadsDir, "fbjni-0.7.0.aar")
+val downloadFbjniAar by
+    tasks.registering(Download::class) {
+      dependsOn(createNativeDepsDirectories)
+      src("https://repo1.maven.org/maven2/com/facebook/fbjni/fbjni/0.7.0/fbjni-0.7.0.aar")
+      onlyIfModified(true)
+      overwrite(false)
+      retries(5)
+      quiet(true)
+      dest(downloadFbjniAarDest)
+    }
+
+// Extract fbjni headers from AAR for prefab
+val prepareFbjni by
+    tasks.registering {
+      dependsOn(downloadFbjniAar)
+      val inputAar = downloadFbjniAarDest
+      val outputDir = File(prefabHeadersDir, "fbjni")
+      outputs.dir(outputDir)
+      doLast {
+        outputDir.mkdirs()
+        // Extract only the fbjni headers from the AAR
+        val zip = java.util.zip.ZipFile(inputAar)
+        try {
+          zip.entries().asSequence().filter { it.name.startsWith("prefab/modules/fbjni/include/fbjni/") }
+              .forEach { entry ->
+                val destFile = File(outputDir, entry.name.removePrefix("prefab/modules/fbjni/include/"))
+                destFile.parentFile.mkdirs()
+                if (entry.isDirectory) {
+                  destFile.mkdirs()
+                } else {
+                  destFile.outputStream().use { output ->
+                    zip.getInputStream(entry).use { input ->
+                      input.copyTo(output)
+                    }
+                  }
+                }
+              }
+        } finally {
+          zip.close()
+        }
+      }
+    }
+
 // Tasks used by Fantom to download the Native 3p dependencies used.
 val prepareNative3pDependencies by tasks.registering {
   dependsOn(
@@ -444,6 +489,7 @@ val prepareNative3pDependencies by tasks.registering {
       prepareFmt,
       prepareFolly,
       prepareGlog,
+      prepareFbjni,
   )
 }
 
@@ -655,6 +701,9 @@ android {
     create("jsi") { headers = File(prefabHeadersDir, "jsi").absolutePath }
     create("reactnative") { headers = File(prefabHeadersDir, "reactnative").absolutePath }
     create("hermestooling") { headers = File(prefabHeadersDir, "hermestooling").absolutePath }
+    create("fbjni") {
+      headers = File(prefabHeadersDir, "fbjni").absolutePath
+    }
   }
 
   publishing {
@@ -681,9 +730,9 @@ android {
   // Generate CMake config file for find_package support
   // This is needed for ReactNative-application.cmake to find ReactAndroid via find_package()
   val generateReactAndroidConfig by tasks.registering {
-    outputs.dir(buildDir.resolve("cmake/ReactAndroid"))
+    val configDir = buildDir.resolve("cmake/ReactAndroid")
+    outputs.dir(configDir)
     doLast {
-      val configDir = outputs.files.first()
       configDir.mkdirs()
       // Convert paths to CMake-style forward slashes to avoid Windows escape sequence issues
       val buildDirCmake = buildDir.path.replace("\\", "/")
@@ -713,6 +762,13 @@ android {
           INTERFACE_INCLUDE_DIRECTORIES "${buildDirCmake}/prefab-headers/jsi"
         )
 
+        # The fbjni library - from Gradle dependency's prefab module
+        add_library(fbjni SHARED IMPORTED)
+        set_target_properties(fbjni PROPERTIES
+          IMPORTED_LOCATION "${prefabLibsDir}/fbjni/libs/android.${'$'}{CMAKE_ANDROID_ARCH_ABI}/libfbjni.so"
+          INTERFACE_INCLUDE_DIRECTORIES "${buildDirCmake}/prefab-headers/fbjni"
+        )
+
       """.trimIndent()
       configDir.resolve("ReactAndroidConfig.cmake").writeText(configContent)
     }
@@ -720,12 +776,11 @@ android {
 
   // Ensure the config file is generated before external native build
   // The CMake tasks are created lazily by AGP with names like "configureCMake<Variant>"
-  // We use withType to find and configure the tasks by name pattern
-  // Note: tasks.matching is not reliable for lazily created tasks in AGP 9.1+
-  // Using withType<Task>().configureEach instead
-  tasks.withType<Task>().configureEach {
-    if (name.startsWith("configureCMake")) {
-      dependsOn(generateReactAndroidConfig)
+  // We use task graph callback to find and configure CMake tasks
+  // whenTaskAdded registers callbacks for tasks as they are created (handles lazy tasks)
+  tasks.whenTaskAdded { task ->
+    if (task.name.startsWith("configureCMake")) {
+      task.dependsOn(generateReactAndroidConfig)
     }
   }
 }
