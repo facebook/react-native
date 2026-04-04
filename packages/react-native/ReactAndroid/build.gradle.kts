@@ -795,11 +795,10 @@ android {
 
   // Ensure the config file is generated before external native build
   // The CMake tasks are created lazily by AGP with names like "configureCMake<Variant>"
-  // We use task graph callback to find and configure CMake tasks
-  // whenTaskAdded registers callbacks for tasks as they are created (handles lazy tasks)
-  tasks.whenTaskAdded { task ->
-    if (task.name.startsWith("configureCMake")) {
-      task.dependsOn(generateReactAndroidConfig)
+  // We use configureEach to handle lazily created tasks in AGP 9.1+
+  tasks.withType<Task>().configureEach {
+    if (name.startsWith("configureCMake")) {
+      dependsOn(generateReactAndroidConfig)
     }
   }
 }
