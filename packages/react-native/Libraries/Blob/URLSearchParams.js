@@ -14,7 +14,11 @@ export class URLSearchParams {
   _searchParams: Map<string, string[]> = new Map();
 
   get size(): number {
-    return this._searchParams.size;
+    let count = 0;
+    for (const values of this._searchParams.values()) {
+      count += values.length;
+    }
+    return count;
   }
 
   constructor(params?: Record<string, string> | string | [string, string][]) {
@@ -33,9 +37,11 @@ export class URLSearchParams {
           if (!pair) {
             return;
           }
-          const [key, value] = pair
-            .split('=')
-            .map(part => decodeURIComponent(part.replace(/\+/g, ' ')));
+          const eqIndex = pair.indexOf('=');
+          const rawKey = eqIndex === -1 ? pair : pair.slice(0, eqIndex);
+          const rawValue = eqIndex === -1 ? '' : pair.slice(eqIndex + 1);
+          const key = decodeURIComponent(rawKey.replace(/\+/g, ' '));
+          const value = decodeURIComponent(rawValue.replace(/\+/g, ' '));
           this.append(key, value);
         });
     } else if (Array.isArray(params)) {

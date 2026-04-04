@@ -110,7 +110,7 @@ describe('URL', function () {
       ['key1', 'value2'],
       ['key2', 'value3'],
     ]);
-    expect(paramsFromArray.size).toBe(2);
+    expect(paramsFromArray.size).toBe(3);
     expect(paramsFromArray.getAll('key1')).toEqual(['value1', 'value2']);
     expect(paramsFromArray.get('key2')).toBe('value3');
 
