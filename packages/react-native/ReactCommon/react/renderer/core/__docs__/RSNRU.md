@@ -15,7 +15,7 @@ the freshness of native state held on the Shadow Node instance.
 ## 🚀 Usage
 
 RSNRU is enabled by default in single threaded mode. The JS Runtime thread is
-marked as the thread allowing Shadow Node refernce updates to happen.
+marked as the thread allowing Shadow Node reference updates to happen.
 
 Threads can be marked for allowing RSNRU by calling the ShadowNode's
 `setUseRuntimeShadowNodeReferenceUpdateOnThread` function from the thread.
