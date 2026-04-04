@@ -455,20 +455,23 @@ val prepareFbjni by
     tasks.registering {
       dependsOn(downloadFbjniAar)
       val inputAar = downloadFbjniAarDest
-      val outputDir = File(prefabHeadersDir, "fbjni")
-      outputs.dir(outputDir)
+      val headersOutputDir = File(prefabHeadersDir, "fbjni")
+      val libsOutputDir = buildDir.resolve("intermediates/prefab_package/debug/prefab/modules/fbjni/libs")
+      outputs.dir(headersOutputDir)
+      outputs.dir(libsOutputDir)
       doLast {
-        outputDir.mkdirs()
+        headersOutputDir.mkdirs()
+        libsOutputDir.mkdirs()
         // Extract only the fbjni headers from the AAR
         val zip = java.util.zip.ZipFile(inputAar)
         try {
-          zip.entries().asSequence().filter { it.name.startsWith("prefab/modules/fbjni/include/fbjni/") }
-              .forEach { entry ->
-                val destFile = File(outputDir, entry.name.removePrefix("prefab/modules/fbjni/include/"))
+          zip.entries().asSequence().forEach { entry ->
+            when {
+              entry.name.startsWith("prefab/modules/fbjni/include/fbjni/") -> {
+                // Extract headers
+                val destFile = File(headersOutputDir, entry.name.removePrefix("prefab/modules/fbjni/include/"))
                 destFile.parentFile.mkdirs()
-                if (entry.isDirectory) {
-                  destFile.mkdirs()
-                } else {
+                if (!entry.isDirectory) {
                   destFile.outputStream().use { output ->
                     zip.getInputStream(entry).use { input ->
                       input.copyTo(output)
@@ -476,6 +479,20 @@ val prepareFbjni by
                   }
                 }
               }
+              entry.name.startsWith("prefab/modules/fbjni/libs/android.") -> {
+                // Extract .so files to prefab_package directory
+                val destFile = File(libsOutputDir, entry.name.substringAfter("android."))
+                destFile.parentFile.mkdirs()
+                if (!entry.isDirectory) {
+                  destFile.outputStream().use { output ->
+                    zip.getInputStream(entry).use { input ->
+                      input.copyTo(output)
+                    }
+                  }
+                }
+              }
+            }
+          }
         } finally {
           zip.close()
         }
