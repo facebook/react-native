@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<30a507b84b656705ee1abec794472d6b>>
+ * @generated SignedSource<<7e47ac680222281a813e65484e7f8e39>>
  */
 
 /**
@@ -46,8 +46,6 @@ public interface ReactNativeFeatureFlagsProvider {
   @DoNotStrip public fun enableAccessibilityOrder(): Boolean
 
   @DoNotStrip public fun enableAccumulatedUpdatesInRawPropsAndroid(): Boolean
-
-  @DoNotStrip public fun enableAndroidAntialiasedBorderRadiusClipping(): Boolean
 
   @DoNotStrip public fun enableAndroidLinearText(): Boolean
 
