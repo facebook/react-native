@@ -9,7 +9,6 @@ package com.facebook.react.utils
 
 import com.android.build.api.variant.ApplicationAndroidComponentsExtension
 import com.android.build.api.variant.LibraryAndroidComponentsExtension
-import com.android.build.gradle.LibraryExtension
 import com.facebook.react.ReactExtension
 import com.facebook.react.utils.ProjectUtils.isEdgeToEdgeEnabled
 import com.facebook.react.utils.ProjectUtils.isHermesEnabled
@@ -59,18 +58,21 @@ internal object AgpConfiguratorUtils {
           project.extensions
               .getByType(ApplicationAndroidComponentsExtension::class.java)
               .finalizeDsl { ext ->
-                ext.buildFeatures.buildConfig = true
-                ext.defaultConfig.buildConfigField("boolean", "IS_NEW_ARCHITECTURE_ENABLED", "true")
-                ext.defaultConfig.buildConfigField(
-                    "boolean",
-                    "IS_HERMES_ENABLED",
-                    project.isHermesEnabled.toString(),
-                )
-                ext.defaultConfig.buildConfigField(
-                    "boolean",
-                    "IS_EDGE_TO_EDGE_ENABLED",
-                    project.isEdgeToEdgeEnabled.toString(),
-                )
+                ext.buildFeatures { buildConfig = true }
+                // In AGP 9.1, buildConfigField is accessed via defaultConfig
+                ext.defaultConfig {
+                  buildConfigField("boolean", "IS_NEW_ARCHITECTURE_ENABLED", "true")
+                  buildConfigField(
+                      "boolean",
+                      "IS_HERMES_ENABLED",
+                      project.isHermesEnabled.toString(),
+                  )
+                  buildConfigField(
+                      "boolean",
+                      "IS_EDGE_TO_EDGE_ENABLED",
+                      project.isEdgeToEdgeEnabled.toString(),
+                  )
+                }
               }
         }
     project.pluginManager.withPlugin("com.android.application", action)
@@ -82,7 +84,7 @@ internal object AgpConfiguratorUtils {
       subproject.pluginManager.withPlugin("com.android.library") {
         subproject.extensions
             .getByType(LibraryAndroidComponentsExtension::class.java)
-            .finalizeDsl { ext -> ext.buildFeatures.buildConfig = true }
+            .finalizeDsl { ext -> ext.buildFeatures { buildConfig = true } }
       }
     }
   }
@@ -97,13 +99,16 @@ internal object AgpConfiguratorUtils {
           project.extensions
               .getByType(ApplicationAndroidComponentsExtension::class.java)
               .finalizeDsl { ext ->
-                ext.buildFeatures.resValues = true
-                ext.defaultConfig.resValue(
-                    "string",
-                    "react_native_dev_server_ip",
-                    devServerIp,
-                )
-                ext.defaultConfig.resValue("integer", "react_native_dev_server_port", devServerPort)
+                ext.buildFeatures { resValues = true }
+                // In AGP 9.1, resValue is accessed via defaultConfig
+                ext.defaultConfig {
+                  resValue(
+                      "string",
+                      "react_native_dev_server_ip",
+                      devServerIp,
+                  )
+                  resValue("integer", "react_native_dev_server_port", devServerPort)
+                }
               }
         }
 
@@ -114,22 +119,22 @@ internal object AgpConfiguratorUtils {
   fun configureNamespaceForLibraries(appProject: Project) {
     appProject.rootProject.allprojects { subproject ->
       subproject.pluginManager.withPlugin("com.android.library") {
-        subproject.extensions
+        val components = subproject.extensions
             .getByType(LibraryAndroidComponentsExtension::class.java)
-            .finalizeDsl { ext ->
-              if (ext.namespace == null) {
-                val android = subproject.extensions.getByType(LibraryExtension::class.java)
-                val manifestFile = android.sourceSets.getByName("main").manifest.srcFile
 
-                manifestFile
-                    .takeIf { it.exists() }
-                    ?.let { file ->
-                      getPackageNameFromManifest(file)?.let { packageName ->
-                        ext.namespace = packageName
-                      }
-                    }
-              }
-            }
+        components.finalizeDsl { dsl ->
+          if (dsl.namespace.isNullOrEmpty()) {
+            val manifestFile = subproject.file("src/main/AndroidManifest.xml")
+
+            manifestFile
+                .takeIf { it.exists() }
+                ?.let { file ->
+                  getPackageNameFromManifest(file)?.let { packageName ->
+                    dsl.namespace = packageName
+                  }
+                }
+          }
+        }
       }
     }
   }

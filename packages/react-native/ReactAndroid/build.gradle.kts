@@ -12,6 +12,7 @@ import com.facebook.react.tasks.internal.utils.*
 import de.undercouch.gradle.tasks.download.Download
 import java.nio.file.Paths
 import org.jetbrains.kotlin.gradle.tasks.KotlinCompile
+import org.gradle.kotlin.dsl.*
 
 plugins {
   id("maven-publish")
@@ -84,6 +85,7 @@ val preparePrefab by
           prepareFmt,
           prepareFolly,
           prepareGlog,
+          prepareFbjni,
       )
       dependsOn("generateCodegenArtifactsFromSchema")
       // To export to a ReactNativePrefabProcessingEntities.kt once all
@@ -437,6 +439,68 @@ val prepareGlog by
       outputDir.set(File(thirdPartyNdkDir, "glog"))
     }
 
+val fbjniVersion = libs.versions.fbjni.get()
+val downloadFbjniAarDest = File(downloadsDir, "fbjni-${fbjniVersion}.aar")
+val downloadFbjniAar by
+    tasks.registering(Download::class) {
+      dependsOn(createNativeDepsDirectories)
+      src("https://repo1.maven.org/maven2/com/facebook/fbjni/fbjni/${fbjniVersion}/fbjni-${fbjniVersion}.aar")
+      onlyIfModified(true)
+      overwrite(false)
+      retries(5)
+      quiet(true)
+      dest(downloadFbjniAarDest)
+    }
+
+// Extract fbjni headers from AAR for prefab
+val prepareFbjni by
+    tasks.registering {
+      dependsOn(downloadFbjniAar)
+      val inputAar = downloadFbjniAarDest
+      val headersOutputDir = File(prefabHeadersDir, "fbjni")
+      val libsOutputDir = buildDir.resolve("intermediates/prefab_package/debug/prefab/modules/fbjni/libs")
+      outputs.dir(headersOutputDir)
+      outputs.dir(libsOutputDir)
+      doLast {
+        headersOutputDir.mkdirs()
+        libsOutputDir.mkdirs()
+        // Extract only the fbjni headers from the AAR
+        val zip = java.util.zip.ZipFile(inputAar)
+        try {
+          zip.entries().asSequence().forEach { entry ->
+            when {
+              entry.name.startsWith("prefab/modules/fbjni/include/fbjni/") -> {
+                // Extract headers
+                val destFile = File(headersOutputDir, entry.name.removePrefix("prefab/modules/fbjni/include/"))
+                destFile.parentFile.mkdirs()
+                if (!entry.isDirectory) {
+                  destFile.outputStream().use { output ->
+                    zip.getInputStream(entry).use { input ->
+                      input.copyTo(output)
+                    }
+                  }
+                }
+              }
+              entry.name.startsWith("prefab/modules/fbjni/libs/android.") -> {
+                // Extract .so files to prefab_package directory
+                val destFile = File(libsOutputDir, entry.name.substringAfter("android."))
+                destFile.parentFile.mkdirs()
+                if (!entry.isDirectory) {
+                  destFile.outputStream().use { output ->
+                    zip.getInputStream(entry).use { input ->
+                      input.copyTo(output)
+                    }
+                  }
+                }
+              }
+            }
+          }
+        } finally {
+          zip.close()
+        }
+      }
+    }
+
 // Tasks used by Fantom to download the Native 3p dependencies used.
 val prepareNative3pDependencies by tasks.registering {
   dependsOn(
@@ -446,6 +510,7 @@ val prepareNative3pDependencies by tasks.registering {
       prepareFmt,
       prepareFolly,
       prepareGlog,
+      prepareFbjni,
   )
 }
 
@@ -629,8 +694,6 @@ android {
             "src/main/res/views/view",
         )
     )
-    java.exclude("com/facebook/react/processing")
-    java.exclude("com/facebook/react/module/processing")
   }
 
   lint {
@@ -659,6 +722,9 @@ android {
     create("jsi") { headers = File(prefabHeadersDir, "jsi").absolutePath }
     create("reactnative") { headers = File(prefabHeadersDir, "reactnative").absolutePath }
     create("hermestooling") { headers = File(prefabHeadersDir, "hermestooling").absolutePath }
+    create("fbjni") {
+      headers = File(prefabHeadersDir, "fbjni").absolutePath
+    }
   }
 
   publishing {
@@ -679,6 +745,62 @@ android {
       externalNativeBuild {
         cmake { arguments("-DCMAKE_BUILD_TYPE=Release", "-DREACT_NATIVE_DEBUG_OPTIMIZED=True") }
       }
+    }
+  }
+
+  // Generate CMake config file for find_package support
+  // This is needed for ReactNative-application.cmake to find ReactAndroid via find_package()
+  val generateReactAndroidConfig by tasks.registering {
+    val configDir = buildDir.resolve("cmake/ReactAndroid")
+    outputs.dir(configDir)
+    doLast {
+      configDir.mkdirs()
+      // Convert paths to CMake-style forward slashes to avoid Windows escape sequence issues
+      val buildDirCmake = buildDir.path.replace("\\", "/")
+      // The prefab libraries are in build/intermediates/prefab_package/debug/prefab/modules/*/libs/android.*
+      val prefabLibsDir = buildDir.resolve("intermediates/prefab_package/debug/prefab/modules").path.replace("\\", "/")
+      val configContent = """
+        # Copyright (c) Meta Platforms, Inc. and affiliates.
+        #
+        # This source code is licensed under the MIT license found in the
+        # LICENSE file in the root directory of this source tree.
+
+        # ReactAndroid CMake configuration file
+        # This file is generated during the Gradle build and used by CMake's find_package()
+
+        # The reactnative library - use the first available architecture
+        # The actual architecture will be determined by the CMAKE_ANDROID_ARCH_ABI variable
+        add_library(reactnative SHARED IMPORTED)
+        set_target_properties(reactnative PROPERTIES
+          IMPORTED_LOCATION "${prefabLibsDir}/reactnative/libs/android.${'$'}{CMAKE_ANDROID_ARCH_ABI}/libreactnative.so"
+          INTERFACE_INCLUDE_DIRECTORIES "${buildDirCmake}/prefab-headers/reactnative"
+        )
+
+        # The jsi library
+        add_library(jsi SHARED IMPORTED)
+        set_target_properties(jsi PROPERTIES
+          IMPORTED_LOCATION "${prefabLibsDir}/jsi/libs/android.${'$'}{CMAKE_ANDROID_ARCH_ABI}/libjsi.so"
+          INTERFACE_INCLUDE_DIRECTORIES "${buildDirCmake}/prefab-headers/jsi"
+        )
+
+        # The fbjni library - from Gradle dependency's prefab module
+        add_library(fbjni SHARED IMPORTED)
+        set_target_properties(fbjni PROPERTIES
+          IMPORTED_LOCATION "${prefabLibsDir}/fbjni/libs/android.${'$'}{CMAKE_ANDROID_ARCH_ABI}/libfbjni.so"
+          INTERFACE_INCLUDE_DIRECTORIES "${buildDirCmake}/prefab-headers/fbjni"
+        )
+
+      """.trimIndent()
+      configDir.resolve("ReactAndroidConfig.cmake").writeText(configContent)
+    }
+  }
+
+  // Ensure the config file is generated before external native build
+  // The CMake tasks are created lazily by AGP with names like "configureCMake<Variant>"
+  // We use configureEach to handle lazily created tasks in AGP 9.1+
+  tasks.withType<Task>().configureEach {
+    if (name.startsWith("configureCMake")) {
+      dependsOn(generateReactAndroidConfig)
     }
   }
 }
