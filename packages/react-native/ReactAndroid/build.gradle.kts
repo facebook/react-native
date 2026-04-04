@@ -12,6 +12,7 @@ import com.facebook.react.tasks.internal.utils.*
 import de.undercouch.gradle.tasks.download.Download
 import java.nio.file.Paths
 import org.jetbrains.kotlin.gradle.tasks.KotlinCompile
+import org.gradle.kotlin.dsl.*
 
 plugins {
   id("maven-publish")
@@ -436,11 +437,12 @@ val prepareGlog by
       outputDir.set(File(thirdPartyNdkDir, "glog"))
     }
 
-val downloadFbjniAarDest = File(downloadsDir, "fbjni-0.7.0.aar")
+val fbjniVersion = libs.versions.fbjni.get()
+val downloadFbjniAarDest = File(downloadsDir, "fbjni-${fbjniVersion}.aar")
 val downloadFbjniAar by
     tasks.registering(Download::class) {
       dependsOn(createNativeDepsDirectories)
-      src("https://repo1.maven.org/maven2/com/facebook/fbjni/fbjni/0.7.0/fbjni-0.7.0.aar")
+      src("https://repo1.maven.org/maven2/com/facebook/fbjni/fbjni/${fbjniVersion}/fbjni-${fbjniVersion}.aar")
       onlyIfModified(true)
       overwrite(false)
       retries(5)
