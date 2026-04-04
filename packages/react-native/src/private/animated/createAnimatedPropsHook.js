@@ -61,6 +61,8 @@ export default function createAnimatedPropsHook(
     const [, scheduleUpdate] = useReducer<number, void>(count => count + 1, 0);
     const onUpdateRef = useRef<UpdateCallback | null>(null);
     const timerRef = useRef<TimeoutID | null>(null);
+    const sharedAnimatedBackendEnabled =
+      ReactNativeFeatureFlags.useSharedAnimatedBackend();
 
     const rootTag = useContext(RootTagContext);
 
@@ -136,7 +138,8 @@ export default function createAnimatedPropsHook(
             // Check 2: this is an animation driven by native.
             // In native driven animations, this callback is only called once the animation completes.
             const shouldRemoveJsSync =
-              ReactNativeFeatureFlags.cxxNativeAnimatedEnabled();
+              ReactNativeFeatureFlags.cxxNativeAnimatedEnabled() &&
+              sharedAnimatedBackendEnabled;
             if (isFabricNode && !shouldRemoveJsSync) {
               // Call `scheduleUpdate` to synchronise Fiber and Shadow tree.
               // Must not be called in Paper.
@@ -212,7 +215,7 @@ export default function createAnimatedPropsHook(
           }
         };
       },
-      [node],
+      [node, sharedAnimatedBackendEnabled],
     );
     const callbackRef = useRefEffect<TInstance>(refEffect);
 
