@@ -2,6 +2,10 @@
 
 ## v0.85.0-rc.7
 
+### Added
+
+- **TypeScript**: Add global type declarations for `TextEncoder` and `TextDecoder` ([#56326](https://github.com/facebook/react-native/pull/56326) by [@deyaaeldeen](https://github.com/deyaaeldeen))
+
 ### Fixed
 
 #### iOS specific
