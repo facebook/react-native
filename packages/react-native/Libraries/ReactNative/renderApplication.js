@@ -44,7 +44,7 @@ export default function renderApplication<Props extends Object>(
   displayMode?: ?DisplayModeType,
   useOffscreen?: boolean,
 ) {
-  invariant(rootTag, 'Expect to have a valid rootTag, instead got ', rootTag);
+  invariant(rootTag, 'Expect to have a valid rootTag, instead got %s', rootTag);
 
   const performanceLogger = scopedPerformanceLogger ?? GlobalPerformanceLogger;
 
