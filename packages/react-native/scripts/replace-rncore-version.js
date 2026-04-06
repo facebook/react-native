@@ -145,15 +145,20 @@ function replaceRNCoreConfiguration(
       }
     }
 
-    // Restore Expo-generated modulemap after directory replacement
-    if (savedModulemap != null) {
-      const restoredPath = path.join(finalLocation, useFrameworksModulemapName);
-      fs.writeFileSync(restoredPath, savedModulemap);
-      console.log('Restored', useFrameworksModulemapName);
-    }
   } finally {
     // Clean up temp directory
     fs.rmSync(tmpDir, {force: true, recursive: true});
+
+    // Restore Expo-generated modulemap after directory replacement.
+    // Runs in finally so it is not skipped if mv/cp partially fails.
+    if (savedModulemap != null) {
+      const restoredPath = path.join(
+        finalLocation,
+        useFrameworksModulemapName,
+      );
+      fs.writeFileSync(restoredPath, savedModulemap);
+      console.log('Restored', useFrameworksModulemapName);
+    }
   }
 }
 
