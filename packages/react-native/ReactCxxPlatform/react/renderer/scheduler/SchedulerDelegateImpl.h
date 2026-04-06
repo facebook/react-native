@@ -51,6 +51,10 @@ class SchedulerDelegateImpl : public SchedulerDelegate {
 
   void schedulerDidUpdateShadowTree(const std::unordered_map<Tag, folly::dynamic> &tagToProps) override;
 
+  void schedulerShouldResumeAnimationBackend() override;
+
+  void schedulerShouldPauseAnimationBackend() override;
+
   std::shared_ptr<IMountingManager> mountingManager_;
   std::shared_ptr<UIManager> uiManager_;
 };
