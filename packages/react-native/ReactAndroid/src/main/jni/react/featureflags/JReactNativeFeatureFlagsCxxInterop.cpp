@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<880f137911af6d2a9d383ebd68ddc300>>
+ * @generated SignedSource<<7e78fc846fe46b5dc7d451817db90ec1>>
  */
 
 /**
@@ -108,12 +108,6 @@ class ReactNativeFeatureFlagsJavaProvider
   bool enableAccumulatedUpdatesInRawPropsAndroid() override {
     static const auto method =
         getReactNativeFeatureFlagsProviderJavaClass()->getMethod<jboolean()>("enableAccumulatedUpdatesInRawPropsAndroid");
-    return method(javaProvider_);
-  }
-
-  bool enableAndroidAntialiasedBorderRadiusClipping() override {
-    static const auto method =
-        getReactNativeFeatureFlagsProviderJavaClass()->getMethod<jboolean()>("enableAndroidAntialiasedBorderRadiusClipping");
     return method(javaProvider_);
   }
 
@@ -643,11 +637,6 @@ bool JReactNativeFeatureFlagsCxxInterop::enableAccumulatedUpdatesInRawPropsAndro
   return ReactNativeFeatureFlags::enableAccumulatedUpdatesInRawPropsAndroid();
 }
 
-bool JReactNativeFeatureFlagsCxxInterop::enableAndroidAntialiasedBorderRadiusClipping(
-    facebook::jni::alias_ref<JReactNativeFeatureFlagsCxxInterop> /*unused*/) {
-  return ReactNativeFeatureFlags::enableAndroidAntialiasedBorderRadiusClipping();
-}
-
 bool JReactNativeFeatureFlagsCxxInterop::enableAndroidLinearText(
     facebook::jni::alias_ref<JReactNativeFeatureFlagsCxxInterop> /*unused*/) {
   return ReactNativeFeatureFlags::enableAndroidLinearText();
@@ -1100,9 +1089,6 @@ void JReactNativeFeatureFlagsCxxInterop::registerNatives() {
       makeNativeMethod(
         "enableAccumulatedUpdatesInRawPropsAndroid",
         JReactNativeFeatureFlagsCxxInterop::enableAccumulatedUpdatesInRawPropsAndroid),
-      makeNativeMethod(
-        "enableAndroidAntialiasedBorderRadiusClipping",
-        JReactNativeFeatureFlagsCxxInterop::enableAndroidAntialiasedBorderRadiusClipping),
       makeNativeMethod(
         "enableAndroidLinearText",
         JReactNativeFeatureFlagsCxxInterop::enableAndroidLinearText),
