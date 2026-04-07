@@ -858,11 +858,10 @@ TEST_P(RuntimeSchedulerTest, scheduleTaskFromTask) {
 
 TEST_P(RuntimeSchedulerTest, handlingError) {
   bool didRunTask = false;
-  auto firstCallback =
-      createHostFunctionFromLambda([this, &didRunTask](bool /*unused*/) {
+  auto firstCallback = createHostFunctionFromLambda(
+      [this, &didRunTask](bool /*unused*/) -> jsi::Value {
         didRunTask = true;
         throw jsi::JSError(*runtime_, "Test error");
-        return jsi::Value::undefined();
       });
 
   runtimeScheduler_->scheduleTask(
@@ -1169,27 +1168,26 @@ TEST_P(RuntimeSchedulerTest, errorInTaskShouldNotStopMicrotasks) {
   auto microtaskRan = false;
   auto taskRan = false;
 
-  auto callback = createHostFunctionFromLambda([&](bool /* unused */) {
-    taskRan = true;
+  auto callback =
+      createHostFunctionFromLambda([&](bool /* unused */) -> jsi::Value {
+        taskRan = true;
 
-    auto microtaskCallback = jsi::Function::createFromHostFunction(
-        *runtime_,
-        jsi::PropNameID::forUtf8(*runtime_, "microtask1"),
-        3,
-        [&](jsi::Runtime& /*unused*/,
-            const jsi::Value& /*unused*/,
-            const jsi::Value* /*arguments*/,
-            size_t /*unused*/) -> jsi::Value {
-          microtaskRan = true;
-          return jsi::Value::undefined();
-        });
+        auto microtaskCallback = jsi::Function::createFromHostFunction(
+            *runtime_,
+            jsi::PropNameID::forUtf8(*runtime_, "microtask1"),
+            3,
+            [&](jsi::Runtime& /*unused*/,
+                const jsi::Value& /*unused*/,
+                const jsi::Value* /*arguments*/,
+                size_t /*unused*/) -> jsi::Value {
+              microtaskRan = true;
+              return jsi::Value::undefined();
+            });
 
-    runtime_->queueMicrotask(microtaskCallback);
+        runtime_->queueMicrotask(microtaskCallback);
 
-    throw jsi::JSError(*runtime_, "Test error");
-
-    return jsi::Value::undefined();
-  });
+        throw jsi::JSError(*runtime_, "Test error");
+      });
 
   runtimeScheduler_->scheduleTask(
       SchedulerPriority::NormalPriority, std::move(callback));
