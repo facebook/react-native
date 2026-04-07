@@ -2316,6 +2316,7 @@ class facebook::react::ExecutorDelegate {
 class facebook::react::FabricMountingManager {
   public FabricMountingManager(const facebook::react::FabricMountingManager&) = delete;
   public FabricMountingManager(jni::global_ref<JFabricUIManager::javaobject>& javaUIManager);
+  public bool isViewAllocated(facebook::react::SurfaceId surfaceId, facebook::react::Tag tag);
   public void destroyUnmountedShadowNode(const facebook::react::ShadowNodeFamily& family);
   public void dispatchCommand(const facebook::react::ShadowView& shadowView, const std::string& commandName, const folly::dynamic& args);
   public void drainPreallocateViewsQueue();
@@ -2325,6 +2326,7 @@ class facebook::react::FabricMountingManager {
   public void onAnimationStarted();
   public void onSurfaceStart(facebook::react::SurfaceId surfaceId);
   public void onSurfaceStop(facebook::react::SurfaceId surfaceId);
+  public void preallocateShadowView(const facebook::react::ShadowView& shadowView);
   public void scheduleReactRevisionMerge(facebook::react::SurfaceId surfaceId);
   public void sendAccessibilityEvent(const facebook::react::ShadowView& shadowView, const std::string& eventType);
   public void setIsJSResponder(const facebook::react::ShadowView& shadowView, bool isJSResponder, bool blockNativeResponder);
@@ -3869,6 +3871,11 @@ class facebook::react::NativeToastAndroidSpecJSI : public facebook::react::JavaT
 
 class facebook::react::NativeVibrationSpecJSI : public facebook::react::JavaTurboModule {
   public NativeVibrationSpecJSI(const facebook::react::JavaTurboModule::InitParams& params);
+}
+
+class facebook::react::NativeViewTransition : public facebook::react::NativeViewTransitionCxxSpec<facebook::react::NativeViewTransition> {
+  public NativeViewTransition(std::shared_ptr<facebook::react::CallInvoker> jsInvoker);
+  public std::optional<facebook::jsi::Object> getViewTransitionInstance(facebook::jsi::Runtime& rt, const std::string& name, const std::string& pseudo);
 }
 
 class facebook::react::NativeWebSocketModuleSpecJSI : public facebook::react::JavaTurboModule {
@@ -5657,6 +5664,7 @@ enum facebook::react::BlendMode {
   Multiply,
   Normal,
   Overlay,
+  PlusLighter,
   Saturation,
   Screen,
   SoftLight,
@@ -8921,6 +8929,12 @@ class facebook::react::NativeVibrationCxxSpec : public facebook::react::TurboMod
 }
 
 template <typename T>
+class facebook::react::NativeViewTransitionCxxSpec : public facebook::react::TurboModule {
+  protected NativeViewTransitionCxxSpec(std::shared_ptr<facebook::react::CallInvoker> jsInvoker);
+  public static constexpr std::string_view kModuleName;
+}
+
+template <typename T>
 class facebook::react::NativeWebSocketModuleCxxSpec : public facebook::react::TurboModule {
   protected NativeWebSocketModuleCxxSpec(std::shared_ptr<facebook::react::CallInvoker> jsInvoker);
   public static constexpr std::string_view kModuleName;
@@ -10673,6 +10687,7 @@ class facebook::react::jsinspector_modern::RuntimeAgent {
   public const facebook::react::jsinspector_modern::ExecutionContextDescription& getExecutionContextDescription() const;
   public facebook::react::jsinspector_modern::RuntimeAgent::ExportedState getExportedState();
   public void notifyBindingCalled(const std::string& bindingName, const std::string& payload);
+  public void notifyFastRefreshComplete();
   public ~RuntimeAgent();
 }
 

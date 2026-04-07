@@ -4,6 +4,7 @@ exclude_patterns:
   - "*/ReactCommon/react/featureflags/*"
   - "*/test_utils/*"
   - "*/test/*"
+  - "*/test_helper/*"
   - "*/stubs/*"
 
 exclude_symbols:

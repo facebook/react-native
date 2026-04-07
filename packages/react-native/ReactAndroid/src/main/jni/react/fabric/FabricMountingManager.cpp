@@ -52,6 +52,15 @@ void FabricMountingManager::onSurfaceStop(SurfaceId surfaceId) {
   allocatedViewRegistry_.erase(surfaceId);
 }
 
+bool FabricMountingManager::isViewAllocated(SurfaceId surfaceId, Tag tag) {
+  std::lock_guard lock(allocatedViewsMutex_);
+  auto it = allocatedViewRegistry_.find(surfaceId);
+  if (it == allocatedViewRegistry_.end()) {
+    return false;
+  }
+  return it->second.count(tag) > 0;
+}
+
 namespace {
 
 #ifdef REACT_NATIVE_DEBUG
