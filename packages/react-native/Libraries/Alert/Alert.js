@@ -7,11 +7,8 @@
  * @flow
  * @format
  */
-
-import type {DialogOptions} from '../NativeModules/specs/NativeDialogManagerAndroid';
-
-import Platform from '../Utilities/Platform';
-import {alertWithArgs} from './RCTAlertManager';
+import alert from './showAlert';
+import prompt from './showPrompt';
 
 /**
  * @platform ios
@@ -59,145 +56,13 @@ export type AlertOptions = {
  *
  * See https://reactnative.dev/docs/alert
  */
-class Alert {
-  static alert(
-    title: ?string,
-    message?: ?string,
-    buttons?: AlertButtons,
-    options?: AlertOptions,
-  ): void {
-    if (Platform.OS === 'ios') {
-      Alert.prompt(
-        title,
-        message,
-        buttons,
-        'default',
-        undefined,
-        undefined,
-        options,
-      );
-    } else if (Platform.OS === 'android') {
-      const NativeDialogManagerAndroid =
-        require('../NativeModules/specs/NativeDialogManagerAndroid').default;
-      if (!NativeDialogManagerAndroid) {
-        return;
-      }
-      const constants = NativeDialogManagerAndroid.getConstants();
 
-      const config: DialogOptions = {
-        title: title || '',
-        message: message || '',
-        cancelable: false,
-      };
-
-      if (options && options.cancelable) {
-        config.cancelable = options.cancelable;
-      }
-      // At most three buttons (neutral, negative, positive). Ignore rest.
-      // The text 'OK' should be probably localized. iOS Alert does that in native.
-      const defaultPositiveText = 'OK';
-      const validButtons: AlertButtons = buttons
-        ? buttons.slice(0, 3)
-        : [{text: defaultPositiveText}];
-      const buttonPositive = validButtons.pop();
-      const buttonNegative = validButtons.pop();
-      const buttonNeutral = validButtons.pop();
-
-      if (buttonNeutral) {
-        config.buttonNeutral = buttonNeutral.text || '';
-      }
-      if (buttonNegative) {
-        config.buttonNegative = buttonNegative.text || '';
-      }
-      if (buttonPositive) {
-        config.buttonPositive = buttonPositive.text || defaultPositiveText;
-      }
-
-      /* $FlowFixMe[missing-local-annot] The type annotation(s) required by
-       * Flow's LTI update could not be added via codemod */
-      const onAction = (action, buttonKey) => {
-        if (action === constants.buttonClicked) {
-          if (buttonKey === constants.buttonNeutral) {
-            // $FlowFixMe[incompatible-type]
-            // $FlowFixMe[incompatible-use]
-            buttonNeutral.onPress && buttonNeutral.onPress();
-          } else if (buttonKey === constants.buttonNegative) {
-            // $FlowFixMe[incompatible-type]
-            // $FlowFixMe[incompatible-use]
-            buttonNegative.onPress && buttonNegative.onPress();
-          } else if (buttonKey === constants.buttonPositive) {
-            // $FlowFixMe[incompatible-type]
-            // $FlowFixMe[incompatible-use]
-            buttonPositive.onPress && buttonPositive.onPress();
-          }
-        } else if (action === constants.dismissed) {
-          options && options.onDismiss && options.onDismiss();
-        }
-      };
-      const onError = (errorMessage: string) => console.warn(errorMessage);
-      NativeDialogManagerAndroid.showAlert(config, onError, onAction);
-    }
-  }
-
+const Alert = {
+  alert,
   /**
    * @platform ios
    */
-  static prompt(
-    title: ?string,
-    message?: ?string,
-    callbackOrButtons?: ?(((text: string) => void) | AlertButtons),
-    type?: ?AlertType = 'plain-text',
-    defaultValue?: string,
-    keyboardType?: string,
-    options?: AlertOptions,
-  ): void {
-    if (Platform.OS === 'ios') {
-      let callbacks: Array<?any> = [];
-      const buttons = [];
-      let cancelButtonKey;
-      let destructiveButtonKey;
-      let preferredButtonKey;
-      if (typeof callbackOrButtons === 'function') {
-        callbacks = [callbackOrButtons];
-      } else if (Array.isArray(callbackOrButtons)) {
-        callbackOrButtons.forEach((btn, index) => {
-          callbacks[index] = btn.onPress;
-          if (btn.style === 'cancel') {
-            cancelButtonKey = String(index);
-          } else if (btn.style === 'destructive') {
-            destructiveButtonKey = String(index);
-          }
-          if (btn.isPreferred) {
-            preferredButtonKey = String(index);
-          }
-          if (btn.text || index < (callbackOrButtons || []).length - 1) {
-            const btnDef: {[number]: string} = {};
-            btnDef[index] = btn.text || '';
-            buttons.push(btnDef);
-          }
-        });
-      }
-
-      alertWithArgs(
-        {
-          title: title || '',
-          message: message || undefined,
-          buttons,
-          type: type || undefined,
-          defaultValue,
-          cancelButtonKey,
-          destructiveButtonKey,
-          preferredButtonKey,
-          keyboardType,
-          userInterfaceStyle: options?.userInterfaceStyle || undefined,
-        },
-        (id, value) => {
-          const cb = callbacks[id];
-          cb && cb(value);
-        },
-      );
-    }
-  }
-}
+  prompt,
+};
 
 export default Alert;
