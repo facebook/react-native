@@ -2643,9 +2643,7 @@ async function advanceUntilRenderAreaChanged(component) {
     });
   }
 
-  throw new Error(
-    `Render area did not change`,
-  );
+  throw new Error(`Render area did not change`);
 }
 
 function performAllBatches() {
