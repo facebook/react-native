@@ -12,12 +12,13 @@ import type {ColorValue} from '../../StyleSheet/StyleSheet';
 import type {GestureResponderEvent} from '../../Types/CoreEventTypes';
 
 import processColor from '../../StyleSheet/processColor';
-import Platform from '../../Utilities/Platform';
 import View from '../View/View';
 import {Commands} from '../View/ViewNativeComponent';
 import invariant from 'invariant';
 import * as React from 'react';
 import {useMemo} from 'react';
+
+const Platform = require('../../Utilities/Platform').default;
 
 type NativeBackgroundProp = Readonly<{
   type: 'RippleAndroid',
