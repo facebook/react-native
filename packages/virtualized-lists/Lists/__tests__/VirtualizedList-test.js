@@ -2644,7 +2644,7 @@ async function advanceUntilRenderAreaChanged(component) {
   }
 
   throw new Error(
-    `Render area did not change after ${MAX_TIMER_STEPS} timer ticks`,
+    `Render area did not change`,
   );
 }
 
