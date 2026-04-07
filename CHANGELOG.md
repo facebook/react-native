@@ -1,52 +1,10 @@
 # Changelog
 
-## v0.85.0-rc.7
-
-### Fixed
-
-#### iOS specific
-
-- **Hermes**: Fix Hermes crash when async void TurboModule method throws NSException by re-throwing instead of converting to JSError on wrong thread ([4083a6ff92](https://github.com/facebook/react-native/commit/4083a6ff92b0ffd4f71166848f3d7ce36172fac8) by [@fabriziocucci](https://github.com/fabriziocucci))
-
-
-## v0.85.0-rc.6
-
-### Changed
-
-#### iOS specific
-
-- **Build**: Bump fmt to 12.1.0 to fix Xcode 26.4 ([faeef2b90a](https://github.com/facebook/react-native/commit/faeef2b90a56633ad44289b994d31e7ce590b145) by [@leotm](https://github.com/leotm))
-
-
-### Fixed
-
-#### iOS specific
-
-- **Build**: Fixed duplicate symbol error when using React.XCFramework ([d21ffc9e32](https://github.com/facebook/react-native/commit/d21ffc9e322060c354b78da84d590cfc337c1de8) by [@chrfalch](https://github.com/chrfalch))
-
-
-## v0.85.0-rc.5
-
-### Fixed
-
-#### iOS specific
-
-- **Animated**: Revert RCTAnimatedModuleProvider change from [# 55729](https://github.com/facebook/react-native/pull/55729) ([85696fe](https://github.com/facebook/react-native/commit/85696fe1169d737c42cc9b4f85472dda23e99ed7) by [@zeyap](https://github.com/zeyap))
-
-## v0.85.0-rc.1
+## v0.85.0
 
 ### Breaking
 
 - **Animated**: Fix unsafe rawPointer access in cloneMultiple. ([1d47693230](https://github.com/facebook/react-native/commit/1d476932305f2563d773eb04f0f78a9bdd2525e1) by [@coado](https://github.com/coado))
-
-### Added
-
-- **Animated**: Add c++ AnimatedModule to DefaultTurboModules ([15e52e3f71](https://github.com/facebook/react-native/commit/15e52e3f71e7199808686e2b86ea54dcb2495b71) by [@zeyap](https://github.com/zeyap))
-
-## v0.85.0-rc.0
-
-### Breaking
-
 - **Build**: Drop support for EOL Node.js lines and old minors. ([c9c601d61a](https://github.com/facebook/react-native/commit/c9c601d61af836d26ab628c2c8a30bae713ef010) by [@robhogan](https://github.com/robhogan))
 - **Jest**: Move Jest preset to new `react-native/jest-preset` package ([c4ae05534a](https://github.com/facebook/react-native/commit/c4ae05534ad5b6e6def35e736764f64b1f145a2b) by [@kitten](https://github.com/kitten))
 - **StyleSheet**: Remove deprecated `StyleSheet.absoluteFill` API ([5681db09b8](https://github.com/facebook/react-native/commit/5681db09b875e8c2b59b14df2300bad2b68d8a17) by [@huntie](https://github.com/huntie))
@@ -64,6 +22,7 @@
 
 - **Animated**: `RCTAnimationChoreographer` to `RCTScheduler` ([019c9a7d8f](https://github.com/facebook/react-native/commit/019c9a7d8f56fe895253de8487b4c6d0d76f85be) by Bartlomiej Bloniarz)
 - **Animated**: `std::mutex` to `AnimationBackend` to protect `start`, `stop` and `callbacks`. ([4064b89867](https://github.com/facebook/react-native/commit/4064b89867cb7424fd02433c6d597e534bfc8cbc) by Bartlomiej Bloniarz)
+- **Animated**: Add c++ AnimatedModule to DefaultTurboModules ([15e52e3f71](https://github.com/facebook/react-native/commit/15e52e3f71e7199808686e2b86ea54dcb2495b71) by [@zeyap](https://github.com/zeyap))
 - **Animated**: Added support for transform operations. ([58b7b052c0](https://github.com/facebook/react-native/commit/58b7b052c092e79277ab026ea6dd4f78021ed6c5) by [@coado](https://github.com/coado))
 - **Animated**: Animated calls `AnimationBackend::trigger` to push updates from. events to the mounting layer ([ac06f3bdc7](https://github.com/facebook/react-native/commit/ac06f3bdc76a9fd7c65ab899e82bff5cad9b94b6) by Bartlomiej Bloniarz)
 - **Animated**: Animated can now prompt the backend to push changes to the shadowTree on the JS thread, making RSNRU update the ShadowNode references held by the react renderer. ([f9e94c0502](https://github.com/facebook/react-native/commit/f9e94c050251c67bf0d2c806738b8c6e59bb59d5) by Bartlomiej Bloniarz)
@@ -153,6 +112,7 @@
 
 #### iOS specific
 
+- **Build**: Bump fmt to 12.1.0 to fix Xcode 26.4 ([faeef2b90a](https://github.com/facebook/react-native/commit/faeef2b90a56633ad44289b994d31e7ce590b145) by [@leotm](https://github.com/leotm))
 - **Build**: Changed umbrella header template to use angled import syntax ([2b66a9a622](https://github.com/facebook/react-native/commit/2b66a9a622ada3b540e1466d1dea61f2404d34ab) by [@chrfalch](https://github.com/chrfalch))
 
 ### Deprecated
@@ -225,13 +185,16 @@
 
 - **Accessibility**: Ensure accessibilityElementsHidden prop is respected in recursive accessibility label aggregation ([b60f533acc](https://github.com/facebook/react-native/commit/b60f533accc589ddff7fde8fbdaa65606b2cad85) by Max Polevy)
 - **Animated**: Fixed edge-case with animating non-layout props through the `commitUpdates` path. ([31f215a421](https://github.com/facebook/react-native/commit/31f215a42183fa815204c8d730cc41437b077534) by [@coado](https://github.com/coado))
+- **Animated**: Revert RCTAnimatedModuleProvider change from [# 55729](https://github.com/facebook/react-native/pull/55729) ([85696fe](https://github.com/facebook/react-native/commit/85696fe1169d737c42cc9b4f85472dda23e99ed7) by [@zeyap](https://github.com/zeyap))
 - **Build**: Fix unused exception parameter compile error in RCTUIManager catch block in certain build mode ([58bc6c3e38](https://github.com/facebook/react-native/commit/58bc6c3e38d45398ebec01a5399eac8d72f83adc) by Yannick Loriot)
+- **Build**: Fixed duplicate symbol error when using React.XCFramework ([d21ffc9e32](https://github.com/facebook/react-native/commit/d21ffc9e322060c354b78da84d590cfc337c1de8) by [@chrfalch](https://github.com/chrfalch))
 - **Build**: Fixed replace script deleting the react-vfs.yaml file on iOS ([11e257cec0](https://github.com/facebook/react-native/commit/11e257cec09d1e69e7261fd769ad0f0e4007e09e) by [@chrfalch](https://github.com/chrfalch))
 - **CocoaPods**: Add `nkf` and `base64` as ruby dependencies ([51c965883f](https://github.com/facebook/react-native/commit/51c965883f609b93b47c99b18ab260633a57346a) by [@kimchi-developer](https://github.com/kimchi-developer))
 - **CocoaPods**: Allow absolute react-native paths to be passed to `use_react_native!` in project podfiles ([33641f09fa](https://github.com/facebook/react-native/commit/33641f09fa91e93bc5780c2d6999515f9761a17f) by [@kitten](https://github.com/kitten))
 - **CocoaPods**: Regression from https://github.com/facebook/react-native/issues/54948 preventing `pod install --project-directory` from working properly ([9f686f2014](https://github.com/facebook/react-native/commit/9f686f2014aefd2ad6ee3b5843718d5d7d72d13a) by [@kitten](https://github.com/kitten))
 - **Dev Server**: Not crashing on network issues with connecting to DevServer ([ec29c292e0](https://github.com/facebook/react-native/commit/ec29c292e0417ef2c02fefe08f904117c3d5972e) by [@vzaidman](https://github.com/vzaidman))
 - **Dev Server**: Sync bundling progress between Metro cli and app hints ([e112934f2e](https://github.com/facebook/react-native/commit/e112934f2e1c74732e2fcf828299d8afab648d8e) by [@vzaidman](https://github.com/vzaidman))
+- **Hermes**: Fix Hermes crash when async void TurboModule method throws NSException by re-throwing instead of converting to JSError on wrong thread ([4083a6ff92](https://github.com/facebook/react-native/commit/4083a6ff92b0ffd4f71166848f3d7ce36172fac8) by [@fabriziocucci](https://github.com/fabriziocucci))
 - **Image**: Fix expo-image-manipulator cropped image orientation ([978d5a2d4f](https://github.com/facebook/react-native/commit/978d5a2d4f4eede9cd6ba4786cae2dcc99ce3a37) by [@mlazari](https://github.com/mlazari))
 - **Image**: Resolves a rare race-condition that can trigger in RCTImageComponentView. ([3b46755b3b](https://github.com/facebook/react-native/commit/3b46755b3b2f4a53b79d0828ef4c0cfe319a34ac) by Ryan Frawley)
 - **Prebuild**: Refactored header files generator for prebuilt React framework ([3fad7dc13d](https://github.com/facebook/react-native/commit/3fad7dc13dc6a7e4a2e9f5e877561526f990e90d) by [@chrfalch](https://github.com/chrfalch))
