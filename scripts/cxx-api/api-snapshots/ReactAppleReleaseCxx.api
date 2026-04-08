@@ -815,7 +815,6 @@ interface RCTBridgeModuleDecorator : public NSObject {
   public @property (strong, readonly) RCTBundleManager* bundleManager;
   public @property (strong, readonly) RCTCallableJSModules* callableJSModules;
   public @property (strong, readonly) RCTModuleRegistry* moduleRegistry;
-  public @property (strong, readonly) RCTViewRegistry* viewRegistry_DEPRECATED;
   public virtual instancetype initWithViewRegistry:moduleRegistry:bundleManager:callableJSModules:(RCTViewRegistry* viewRegistry, RCTModuleRegistry* moduleRegistry, RCTBundleManager* bundleManager, RCTCallableJSModules* callableJSModules);
   public virtual void attachInteropAPIsToModule:(id<RCTBridgeModule> bridgeModule);
 }
@@ -1174,7 +1173,6 @@ interface RCTEventDispatcher : public NSObject <RCTEventDispatcherProtocol, RCTI
 interface RCTEventEmitter : public NSObject <RCTBridgeModule, RCTInvalidating> {
   public @property (weak) RCTBridge* bridge;
   public @property (weak) RCTModuleRegistry* moduleRegistry;
-  public @property (weak) RCTViewRegistry* viewRegistry_DEPRECATED;
   public virtual NSArray<NSString*>* supportedEvents();
   public virtual instancetype initWithDisabledObservation();
   public virtual void addListener:(NSString* eventName);
@@ -1583,8 +1581,6 @@ interface RCTModuleData : public NSObject <RCTInvalidating> {
   public @property (strong, readonly) Class moduleClass;
   public @property (strong, readonly) dispatch_queue_t methodQueue;
   public @property (weak) id<RCTModuleDataCallInvokerProvider> callInvokerProvider;
-  public virtual instancetype initWithModuleClass:bridge:moduleRegistry:viewRegistry_DEPRECATED:bundleManager:callableJSModules:(Class moduleClass, RCTBridge* bridge, RCTModuleRegistry* moduleRegistry, RCTViewRegistry* viewRegistry_DEPRECATED, RCTBundleManager* bundleManager, RCTCallableJSModules* callableJSModules);
-  public virtual instancetype initWithModuleInstance:bridge:moduleRegistry:viewRegistry_DEPRECATED:bundleManager:callableJSModules:(id<RCTBridgeModule> instance, RCTBridge* bridge, RCTModuleRegistry* moduleRegistry, RCTViewRegistry* viewRegistry_DEPRECATED, RCTBundleManager* bundleManager, RCTCallableJSModules* callableJSModules);
   public virtual void gatherConstants();
 }
 
@@ -1952,7 +1948,6 @@ interface RCTScrollEvent : public NSObject <RCTEvent> {
 }
 
 interface RCTScrollView : public RCTView <UIScrollViewDelegate, RCTScrollableProtocol, RCTAutoInsetsProtocol> {
-  public @property (assign) BOOL DEPRECATED_sendUpdatedChildFrames;
   public @property (assign) BOOL automaticallyAdjustContentInsets;
   public @property (assign) BOOL automaticallyAdjustKeyboardInsets;
   public @property (assign) BOOL centerContent;
@@ -3038,7 +3033,6 @@ protocol RCTBridgeModule : public NSObject {
   public @property (weak) RCTBundleManager* bundleManager;
   public @property (weak) RCTCallableJSModules* callableJSModules;
   public @property (weak) RCTModuleRegistry* moduleRegistry;
-  public @property (weak) RCTViewRegistry* viewRegistry_DEPRECATED;
   public @property (weak, readonly) RCTBridge* bridge;
   public virtual NSArray<id<RCTBridgeMethod>>* methodsToExport();
   public virtual NSDictionary* constantsToExport();
@@ -7246,7 +7240,6 @@ class facebook::react::ShadowNodeFamily : public facebook::jsi::NativeState {
   public facebook::react::SharedEventEmitter getEventEmitter() const;
   public facebook::react::SurfaceId getSurfaceId() const;
   public facebook::react::Tag getTag() const;
-  public mutable std::unique_ptr<folly::dynamic> nativeProps_DEPRECATED;
   public std::shared_ptr<const facebook::react::State> getMostRecentState() const;
   public using AncestorList = std::vector<std::pair<std::reference_wrapper<const facebook::react::ShadowNode>, int>>;
   public using Shared = std::shared_ptr<facebook::react::ShadowNodeFamily>;
@@ -7781,7 +7774,6 @@ class facebook::react::UIManager : public facebook::react::ShadowTreeDelegate {
   public facebook::react::UIManagerViewTransitionDelegate* getViewTransitionDelegate() const;
   public std::shared_ptr<const facebook::react::ContextContainer> getContextContainer() const;
   public std::shared_ptr<const facebook::react::ShadowNode> findNodeAtPoint(const std::shared_ptr<const facebook::react::ShadowNode>& shadowNode, facebook::react::Point point) const;
-  public std::shared_ptr<const facebook::react::ShadowNode> findShadowNodeByTag_DEPRECATED(facebook::react::Tag tag) const;
   public std::shared_ptr<const facebook::react::ShadowNode> getNewestCloneOfShadowNode(const facebook::react::ShadowNode& shadowNode) const;
   public std::shared_ptr<facebook::react::ShadowNode> cloneNode(const facebook::react::ShadowNode& shadowNode, const std::shared_ptr<const std::vector<std::shared_ptr<const facebook::react::ShadowNode>>>& children, facebook::react::RawProps rawProps) const;
   public std::shared_ptr<facebook::react::ShadowNode> createNode(facebook::react::Tag tag, const std::string& componentName, facebook::react::SurfaceId surfaceId, facebook::react::RawProps props, facebook::react::InstanceHandle::Shared instanceHandle) const;
@@ -7805,7 +7797,6 @@ class facebook::react::UIManager : public facebook::react::ShadowTreeDelegate {
   public void setDelegate(facebook::react::UIManagerDelegate* delegate);
   public void setIsJSResponder(const std::shared_ptr<const facebook::react::ShadowNode>& shadowNode, bool isJSResponder, bool blockNativeResponder) const;
   public void setNativeAnimatedDelegate(std::weak_ptr<facebook::react::UIManagerNativeAnimatedDelegate> delegate);
-  public void setNativeProps_DEPRECATED(const std::shared_ptr<const facebook::react::ShadowNode>& shadowNode, facebook::react::RawProps rawProps) const;
   public void setOnSurfaceStartCallback(facebook::react::UIManagerDelegate::OnSurfaceStartCallback&& callback);
   public void setSurfaceProps(facebook::react::SurfaceId surfaceId, const std::string& moduleName, const folly::dynamic& props, facebook::react::DisplayMode displayMode) const noexcept;
   public void setViewTransitionDelegate(facebook::react::UIManagerViewTransitionDelegate* delegate);
