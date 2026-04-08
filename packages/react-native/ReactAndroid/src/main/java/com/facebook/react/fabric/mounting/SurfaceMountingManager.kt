@@ -282,7 +282,14 @@ internal constructor(
       return
     }
 
-    val parentViewState = getViewState(parentTag)
+    val parentViewState = getNullableViewState(parentTag)
+    if (parentViewState == null) {
+      ReactSoftExceptionLogger.logSoftException(
+          ReactSoftExceptionLogger.Categories.SURFACE_MOUNTING_MANAGER_MISSING_VIEWSTATE,
+          ReactNoCrashSoftException("Unable to find viewState for tag: [$parentTag] for addViewAt"),
+      )
+      return
+    }
     if (parentViewState.view !is ViewGroup) {
       val message =
           "Unable to add a view into a view that is not a ViewGroup. ParentTag: $parentTag - Tag: $tag - Index: $index"
@@ -290,7 +297,14 @@ internal constructor(
       throw IllegalStateException(message)
     }
     val parentView = parentViewState.view as ViewGroup
-    val viewState = getViewState(tag)
+    val viewState = getNullableViewState(tag)
+    if (viewState == null) {
+      ReactSoftExceptionLogger.logSoftException(
+          ReactSoftExceptionLogger.Categories.SURFACE_MOUNTING_MANAGER_MISSING_VIEWSTATE,
+          ReactNoCrashSoftException("Unable to find viewState for tag: [$tag] for addViewAt"),
+      )
+      return
+    }
     val view = viewState.view
     checkNotNull(view) { "Unable to find view for viewState $viewState and tag $tag" }
 
