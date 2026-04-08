@@ -687,6 +687,12 @@ internal object TextLayoutManager {
       builder.setUseLineSpacingFromFallbacks(true)
     }
 
+    if (Build.VERSION.SDK_INT >= 35) {
+      try {
+        setUseBoundsForWidthMethod?.invoke(builder, true)
+      } catch (_: ReflectiveOperationException) {}
+    }
+
     return builder.build()
   }
 
