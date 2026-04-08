@@ -374,7 +374,7 @@ static NSLineBreakMode RCTNSLineBreakModeFromEllipsizeMode(EllipsizeMode ellipsi
 
   if (!textDidWrap && glyphRange.length > 0) {
     CGRect inkRect = [layoutManager boundingRectForGlyphRange:glyphRange inTextContainer:textContainer];
-    CGFloat inkRight = CGRectGetMaxX(inkRect);
+    CGFloat inkRight = CGRectGetMaxX(inkRect) - textContainer.lineFragmentPadding;
     if (inkRight > size.width) {
       size.width = inkRight;
     }
