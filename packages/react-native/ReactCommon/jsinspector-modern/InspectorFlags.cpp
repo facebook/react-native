@@ -21,6 +21,10 @@ bool InspectorFlags::getAssertSingleHostState() const {
   return loadFlagsAndAssertUnchanged().assertSingleHostState;
 }
 
+bool InspectorFlags::getScreenshotCaptureEnabled() const {
+  return loadFlagsAndAssertUnchanged().screenshotCaptureEnabled;
+}
+
 bool InspectorFlags::getFrameRecordingEnabled() const {
   return loadFlagsAndAssertUnchanged().frameRecordingEnabled;
 }
@@ -58,6 +62,8 @@ const InspectorFlags::Values& InspectorFlags::loadFlagsAndAssertUnchanged()
   InspectorFlags::Values newValues = {
       .assertSingleHostState =
           ReactNativeFeatureFlags::fuseboxAssertSingleHostState(),
+      .screenshotCaptureEnabled =
+          ReactNativeFeatureFlags::fuseboxScreenshotCaptureEnabled(),
       .frameRecordingEnabled =
           ReactNativeFeatureFlags::fuseboxFrameRecordingEnabled(),
       .fuseboxEnabled =

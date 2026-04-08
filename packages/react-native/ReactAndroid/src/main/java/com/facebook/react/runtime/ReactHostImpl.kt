@@ -12,6 +12,7 @@ import android.content.Context
 import android.content.Intent
 import android.nfc.NfcAdapter
 import android.os.Bundle
+import androidx.core.graphics.createBitmap
 import com.facebook.common.logging.FLog
 import com.facebook.infer.annotation.Assertions
 import com.facebook.infer.annotation.ThreadConfined
@@ -445,6 +446,43 @@ public class ReactHostImpl(
   @DoNotStrip
   private fun loadNetworkResource(url: String, listener: InspectorNetworkRequestListener) {
     InspectorNetworkHelper.loadNetworkResource(url, listener)
+  }
+
+  @DoNotStrip
+  private fun captureScreenshot(format: String, quality: Int): String? {
+    val activity = currentActivity ?: return null
+    val window = activity.window ?: return null
+    val decorView = window.decorView.rootView
+
+    val width = decorView.width
+    val height = decorView.height
+    if (width <= 0 || height <= 0) {
+      return null
+    }
+
+    val bitmap = createBitmap(width, height)
+    val canvas = android.graphics.Canvas(bitmap)
+    decorView.draw(canvas)
+
+    val outputStream = java.io.ByteArrayOutputStream()
+    val compressFormat =
+        when (format) {
+          "jpeg" -> android.graphics.Bitmap.CompressFormat.JPEG
+          "webp" ->
+              if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.R) {
+                android.graphics.Bitmap.CompressFormat.WEBP_LOSSY
+              } else {
+                @Suppress("DEPRECATION") android.graphics.Bitmap.CompressFormat.WEBP
+              }
+          else -> android.graphics.Bitmap.CompressFormat.PNG
+        }
+    val compressQuality = if (quality in 0..100) quality else 80
+
+    bitmap.compress(compressFormat, compressQuality, outputStream)
+    bitmap.recycle()
+
+    val bytes = outputStream.toByteArray()
+    return android.util.Base64.encodeToString(bytes, android.util.Base64.NO_WRAP)
   }
 
   /**

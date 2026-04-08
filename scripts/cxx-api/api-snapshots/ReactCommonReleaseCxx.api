@@ -7499,6 +7499,7 @@ class facebook::react::jsinspector_modern::HostTargetDelegate : public facebook:
   public facebook::react::jsinspector_modern::HostTargetDelegate& operator=(facebook::react::jsinspector_modern::HostTargetDelegate&&) = delete;
   public virtual facebook::react::jsinspector_modern::HostTargetMetadata getMetadata() = 0;
   public virtual facebook::react::jsinspector_modern::HostTargetTracingDelegate* getTracingDelegate();
+  public virtual void captureScreenshot(const facebook::react::jsinspector_modern::HostTargetDelegate::PageCaptureScreenshotRequest&, const std::function<void(std::optional<std::string> base64Data)>& callback);
   public virtual void loadNetworkResource(const facebook::react::jsinspector_modern::LoadNetworkResourceRequest&, facebook::react::jsinspector_modern::ScopedExecutor<facebook::react::jsinspector_modern::NetworkRequestListener>) override;
   public virtual void onReload(const facebook::react::jsinspector_modern::HostTargetDelegate::PageReloadRequest& request) = 0;
   public virtual void onSetPausedInDebuggerMessage(const facebook::react::jsinspector_modern::HostTargetDelegate::OverlaySetPausedInDebuggerMessageRequest& request) = 0;
@@ -7509,6 +7510,11 @@ class facebook::react::jsinspector_modern::HostTargetDelegate : public facebook:
 struct facebook::react::jsinspector_modern::HostTargetDelegate::OverlaySetPausedInDebuggerMessageRequest {
   public bool operator==(const facebook::react::jsinspector_modern::HostTargetDelegate::OverlaySetPausedInDebuggerMessageRequest& rhs) const;
   public std::optional<std::string> message;
+}
+
+struct facebook::react::jsinspector_modern::HostTargetDelegate::PageCaptureScreenshotRequest {
+  public std::optional<int> quality;
+  public std::optional<std::string> format;
 }
 
 struct facebook::react::jsinspector_modern::HostTargetDelegate::PageReloadRequest {
@@ -7596,6 +7602,7 @@ class facebook::react::jsinspector_modern::InspectorFlags {
   public bool getIsProfilingBuild() const;
   public bool getNetworkInspectionEnabled() const;
   public bool getPerfIssuesEnabled() const;
+  public bool getScreenshotCaptureEnabled() const;
   public static facebook::react::jsinspector_modern::InspectorFlags& getInstance();
   public void dangerouslyDisableFuseboxForTest();
   public void dangerouslyResetFlags();

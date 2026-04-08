@@ -198,6 +198,42 @@ class HostAgent::Impl final {
           .shouldSendOKResponse = true,
       };
     }
+    if (InspectorFlags::getInstance().getScreenshotCaptureEnabled()) {
+      if (req.method == "Page.captureScreenshot") {
+        std::optional<std::string> format;
+        std::optional<int> quality;
+
+        if (req.params.isObject()) {
+          if (req.params.count("format") != 0u) {
+            format = req.params.at("format").asString();
+          }
+          if (req.params.count("quality") != 0u) {
+            quality = static_cast<int>(req.params.at("quality").asInt());
+          }
+        }
+
+        auto base64Data = targetController_.getDelegate().captureScreenshot(
+            {.format = format, .quality = quality});
+
+        if (base64Data.has_value()) {
+          frontendChannel_(
+              cdp::jsonResult(
+                  req.id,
+                  folly::dynamic::object("data", std::move(*base64Data))));
+        } else {
+          frontendChannel_(
+              cdp::jsonError(
+                  req.id,
+                  cdp::ErrorCode::InternalError,
+                  "Failed to capture screenshot"));
+        }
+
+        return {
+            .isFinishedHandlingRequest = true,
+            .shouldSendOKResponse = false,
+        };
+      }
+    }
     if (req.method == "Overlay.setPausedInDebuggerMessage") {
       auto message =
           req.params.isObject() && (req.params.count("message") != 0u)
