@@ -80,7 +80,7 @@ const definitions: FeatureFlagDefinitions = {
         expectedReleaseValue: true,
         purpose: 'experimentation',
       },
-      ossReleaseStage: 'none',
+      ossReleaseStage: 'experimental',
     },
     defaultTextToOverflowHidden: {
       defaultValue: true,
@@ -878,7 +878,7 @@ const definitions: FeatureFlagDefinitions = {
         expectedReleaseValue: true,
         purpose: 'experimentation',
       },
-      ossReleaseStage: 'none',
+      ossReleaseStage: 'experimental',
     },
     useTraitHiddenOnAndroid: {
       defaultValue: false,
