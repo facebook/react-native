@@ -779,10 +779,20 @@ internal constructor(
     // because of caching and calculation that may occur in onMeasure and onLayout. Layout
     // operations should also follow the native view hierarchy and go top to bottom for
     // consistency with standard layout passes (some views may depend on this).
-    viewToUpdate.measure(
-        View.MeasureSpec.makeMeasureSpec(width, View.MeasureSpec.EXACTLY),
-        View.MeasureSpec.makeMeasureSpec(height, View.MeasureSpec.EXACTLY),
-    )
+    try {
+      viewToUpdate.measure(
+          View.MeasureSpec.makeMeasureSpec(width, View.MeasureSpec.EXACTLY),
+          View.MeasureSpec.makeMeasureSpec(height, View.MeasureSpec.EXACTLY),
+      )
+    } catch (e: IllegalStateException) {
+      ReactSoftExceptionLogger.logSoftException(
+          TAG,
+          ReactNoCrashSoftException(
+              "measure() threw IllegalStateException for tag $reactTag (view not attached to window)",
+              e,
+          ),
+      )
+    }
 
     // We update the layout of the RootView when there is a change in the layout of its child. This
     // is required to re-measure the size of the native View container (usually a FrameLayout) that
