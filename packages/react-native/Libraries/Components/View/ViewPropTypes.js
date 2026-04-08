@@ -267,6 +267,7 @@ type AndroidDrawableRipple = Readonly<{
   color?: ?number,
   borderless?: ?boolean,
   rippleRadius?: ?number,
+  alpha?: ?number,
 }>;
 
 type AndroidDrawable = AndroidDrawableThemeAttr | AndroidDrawableRipple;

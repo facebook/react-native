@@ -305,17 +305,12 @@ public open class ReactViewManager : ReactClippingViewManager<ReactViewGroup>() 
 
   @ReactProp(name = "nativeBackgroundAndroid")
   public open fun setNativeBackground(view: ReactViewGroup, background: ReadableMap?) {
-    val bg = background?.let {
-      ReactDrawableHelper.createDrawableFromJSDescription(view.context, it)
-    }
-    BackgroundStyleApplicator.setFeedbackUnderlay(view, bg)
+    view.applyNativeBackground(background)
   }
 
   @ReactProp(name = "nativeForegroundAndroid")
   public open fun setNativeForeground(view: ReactViewGroup, foreground: ReadableMap?) {
-    view.foreground = foreground?.let {
-      ReactDrawableHelper.createDrawableFromJSDescription(view.context, it)
-    }
+    view.applyNativeForeground(foreground)
   }
 
   @ReactProp(name = ViewProps.NEEDS_OFFSCREEN_ALPHA_COMPOSITING)

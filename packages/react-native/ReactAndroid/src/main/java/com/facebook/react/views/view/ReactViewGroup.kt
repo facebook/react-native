@@ -12,6 +12,7 @@ package com.facebook.react.views.view
 import android.annotation.SuppressLint
 import android.annotation.TargetApi
 import android.content.Context
+import android.content.res.Configuration
 import android.graphics.BlendMode
 import android.graphics.Canvas
 import android.graphics.Paint
@@ -25,6 +26,7 @@ import android.view.ViewStructure
 import android.view.accessibility.AccessibilityManager
 import com.facebook.common.logging.FLog
 import com.facebook.react.R
+import com.facebook.react.bridge.ReadableMap
 import com.facebook.react.bridge.ReactNoCrashSoftException
 import com.facebook.react.bridge.ReactSoftExceptionLogger
 import com.facebook.react.bridge.ReactSoftExceptionLogger.logSoftException
@@ -83,6 +85,25 @@ public open class ReactViewGroup public constructor(context: Context?) :
     ReactOverflowViewWithInset {
 
   public override val overflowInset: Rect = Rect()
+
+  internal var nativeBackgroundMap: ReadableMap? = null
+  internal var nativeForegroundMap: ReadableMap? = null
+
+  internal fun applyNativeBackground(map: ReadableMap?) {
+    nativeBackgroundMap = map
+    setFeedbackUnderlay(this, map?.let { ReactDrawableHelper.createDrawableFromJSDescription(context, it) })
+  }
+
+  internal fun applyNativeForeground(map: ReadableMap?) {
+    nativeForegroundMap = map
+    foreground = map?.let { ReactDrawableHelper.createDrawableFromJSDescription(context, it) }
+  }
+
+  override fun onConfigurationChanged(newConfig: Configuration) {
+    super.onConfigurationChanged(newConfig)
+    applyNativeBackground(nativeBackgroundMap)
+    applyNativeForeground(nativeForegroundMap)
+  }
 
   /**
    * This listener will be set for child views when `removeClippedSubview` property is enabled. When
@@ -179,6 +200,9 @@ public open class ReactViewGroup public constructor(context: Context?) :
     backfaceOpacity = 1f
     backfaceVisible = true
     childrenRemovedWhileTransitioning = null
+
+    nativeBackgroundMap = null
+    nativeForegroundMap = null
   }
 
   internal open fun recycleView() {

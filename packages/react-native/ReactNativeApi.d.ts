@@ -3807,6 +3807,7 @@ declare type PressableAndroidRippleConfig = {
   color?: ColorValue
   foreground?: boolean
   radius?: number
+  alpha?: number
 }
 declare type PressableBaseProps = {
   readonly android_disableSound?: boolean
