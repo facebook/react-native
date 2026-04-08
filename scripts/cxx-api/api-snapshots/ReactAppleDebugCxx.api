@@ -286,7 +286,6 @@ category RCTSurfacePresenter(Surface) {
   public @property (assign, readonly) RCTMountingManager* mountingManager;
   public @property (assign, readonly) RCTScheduler* scheduler;
   public virtual _Nullable RCTFabricSurface* surfaceForRootTag:(ReactTag rootTag);
-  public virtual _Nullable UIView* findComponentViewWithTag_DO_NOT_USE_DEPRECATED:(NSInteger tag);
   public virtual id<RCTSurfaceProtocol> createFabricSurfaceForModuleName:initialProperties:(NSString* moduleName, NSDictionary* initialProperties);
   public virtual void addObserver:(id<RCTSurfacePresenterObserver> observer);
   public virtual void registerSurface:(RCTFabricSurface* surface);
@@ -302,7 +301,6 @@ category UIImage(React) {
 }
 
 category UIView(ComponentViewProtocol) {
-  public virtual _Nullable NSSet<NSString*>* propKeysManagedByAnimated_DO_NOT_USE_THIS_IS_BROKEN();
   public virtual facebook::react::Props::Shared props();
   public virtual static std::vector<facebook::react::ComponentDescriptorProvider> supplementalComponentDescriptorProviders();
   public virtual void finalizeUpdates:(RNComponentViewUpdateMask updateMask);
@@ -310,7 +308,6 @@ category UIView(ComponentViewProtocol) {
   public virtual void mountChildComponentView:index:(UIView<RCTComponentViewProtocol>* childComponentView, NSInteger index);
   public virtual void prepareForRecycle();
   public virtual void setIsJSResponder:(BOOL isJSResponder);
-  public virtual void setPropKeysManagedByAnimated_DO_NOT_USE_THIS_IS_BROKEN:(_Nullable NSSet<NSString*>* props);
   public virtual void unmountChildComponentView:index:(UIView<RCTComponentViewProtocol>* childComponentView, NSInteger index);
   public virtual void updateClippedSubviewsWithClipRect:relativeToView:(CGRect clipRect, UIView* clipView);
   public virtual void updateEventEmitter:(const facebook::react::EventEmitter::Shared& eventEmitter);
@@ -1929,7 +1926,6 @@ interface RCTSafeAreaViewManager : public RCTViewManager {
 interface RCTScheduler : public NSObject {
   public @property (assign, readonly) const std::shared_ptr<facebook::react::UIManager> uiManager;
   public @property (weak) id<RCTSchedulerDelegate> delegate;
-  public virtual const facebook::react::ComponentDescriptor* findComponentDescriptorByHandle_DO_NOT_USE_THIS_IS_BROKEN:(facebook::react::ComponentHandle handle);
   public virtual instancetype initWithToolbox:(facebook::react::SchedulerToolbox toolbox);
   public virtual void addEventListener:(const std::shared_ptr<facebook::react::EventListener>& listener);
   public virtual void animationTick();
@@ -2505,7 +2501,6 @@ interface RCTViewComponentView : public UIView <RCTComponentViewProtocol, RCTTou
   public @property (strong, readonly) NSObject* accessibilityElement;
   public virtual BOOL wantsToCooptLabel();
   public virtual NSString* accessibilityLabelForCoopting();
-  public virtual NSString* componentViewName_DO_NOT_USE_THIS_IS_BROKEN();
   public virtual UIView* betterHitTest:withEvent:(CGPoint point, UIEvent* event);
   public virtual void finalizeUpdates:(RNComponentViewUpdateMask updateMask);
   public virtual void prepareForRecycle();
@@ -3075,7 +3070,6 @@ protocol RCTComponentViewFactoryComponentProvider : public NSObject {
 
 protocol RCTComponentViewProtocol : public NSObject {
   public virtual BOOL isJSResponder();
-  public virtual _Nullable NSSet<NSString*>* propKeysManagedByAnimated_DO_NOT_USE_THIS_IS_BROKEN();
   public virtual facebook::react::Props::Shared props();
   public virtual static facebook::react::ComponentDescriptorProvider componentDescriptorProvider();
   public virtual static std::vector<facebook::react::ComponentDescriptorProvider> supplementalComponentDescriptorProviders();
@@ -3085,7 +3079,6 @@ protocol RCTComponentViewProtocol : public NSObject {
   public virtual void mountChildComponentView:index:(UIView<RCTComponentViewProtocol>* childComponentView, NSInteger index);
   public virtual void prepareForRecycle();
   public virtual void setIsJSResponder:(BOOL isJSResponder);
-  public virtual void setPropKeysManagedByAnimated_DO_NOT_USE_THIS_IS_BROKEN:(_Nullable NSSet<NSString*>* props);
   public virtual void unmountChildComponentView:index:(UIView<RCTComponentViewProtocol>* childComponentView, NSInteger index);
   public virtual void updateEventEmitter:(const facebook::react::EventEmitter::Shared& eventEmitter);
   public virtual void updateLayoutMetrics:oldLayoutMetrics:(const facebook::react::LayoutMetrics& layoutMetrics, const facebook::react::LayoutMetrics& oldLayoutMetrics);
@@ -3436,7 +3429,6 @@ protocol RCTSurfacePresenterObserver : public NSObject {
 }
 
 protocol RCTSurfacePresenterStub : public NSObject {
-  public virtual _Nullable UIView* findComponentViewWithTag_DO_NOT_USE_DEPRECATED:(NSInteger tag);
   public virtual id<RCTSurfaceProtocol> createFabricSurfaceForModuleName:initialProperties:(NSString* moduleName, NSDictionary* initialProperties);
   public virtual void addObserver:(id<RCTSurfacePresenterObserver> observer);
   public virtual void removeObserver:(id<RCTSurfacePresenterObserver> observer);
@@ -4093,7 +4085,6 @@ double facebook::react::getCPUTimeNanos();
 double facebook::react::interpolate(double inputValue, double inputMin, double inputMax, double outputMin, double outputMax, std::string_view extrapolateLeft, std::string_view extrapolateRight);
 double facebook::react::round(double value) noexcept;
 facebook::jsi::Value facebook::react::createPromiseAsJSIValue(facebook::jsi::Runtime& rt, facebook::react::PromiseSetupFunctionType&& func);
-facebook::react::AttributedString facebook::react::ensurePlaceholderIfEmpty_DO_NOT_USE(const facebook::react::AttributedString& attributedString);
 facebook::react::Color facebook::react::hostPlatformColorFromComponents(facebook::react::ColorComponents components);
 facebook::react::Color facebook::react::hostPlatformColorFromRGBA(uint8_t r, uint8_t g, uint8_t b, uint8_t a);
 facebook::react::ColorComponents facebook::react::colorComponentsFromColor(facebook::react::SharedColor color);
@@ -4977,7 +4968,6 @@ class facebook::react::ComponentDescriptorRegistry {
   public bool hasComponentDescriptorAt(facebook::react::ComponentHandle componentHandle) const;
   public const facebook::react::ComponentDescriptor& at(const std::string& componentName) const;
   public const facebook::react::ComponentDescriptor& at(facebook::react::ComponentHandle componentHandle) const;
-  public const facebook::react::ComponentDescriptor* findComponentDescriptorByHandle_DO_NOT_USE_THIS_IS_BROKEN(facebook::react::ComponentHandle componentHandle) const;
   public facebook::react::ComponentDescriptor::Shared getFallbackComponentDescriptor() const;
   public using Shared = std::shared_ptr<const facebook::react::ComponentDescriptorRegistry>;
   public void setFallbackComponentDescriptor(const facebook::react::SharedComponentDescriptor& descriptor);
@@ -7095,7 +7085,6 @@ class facebook::react::SafeAreaViewState {
 
 class facebook::react::Scheduler : public facebook::react::UIManagerDelegate {
   public Scheduler(const facebook::react::SchedulerToolbox& schedulerToolbox, facebook::react::UIManagerAnimationDelegate* animationDelegate, facebook::react::SchedulerDelegate* delegate);
-  public const facebook::react::ComponentDescriptor* findComponentDescriptorByHandle_DO_NOT_USE_THIS_IS_BROKEN(facebook::react::ComponentHandle handle) const;
   public facebook::react::SchedulerDelegate* getDelegate() const;
   public std::shared_ptr<const facebook::react::ContextContainer> getContextContainer() const;
   public std::shared_ptr<facebook::react::UIManager> getUIManager() const;

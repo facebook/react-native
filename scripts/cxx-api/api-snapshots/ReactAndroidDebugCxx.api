@@ -827,7 +827,6 @@ double facebook::react::getCPUTimeNanos();
 double facebook::react::interpolate(double inputValue, double inputMin, double inputMax, double outputMin, double outputMax, std::string_view extrapolateLeft, std::string_view extrapolateRight);
 double facebook::react::round(double value) noexcept;
 facebook::jsi::Value facebook::react::createPromiseAsJSIValue(facebook::jsi::Runtime& rt, facebook::react::PromiseSetupFunctionType&& func);
-facebook::react::AttributedString facebook::react::ensurePlaceholderIfEmpty_DO_NOT_USE(const facebook::react::AttributedString& attributedString);
 facebook::react::Color facebook::react::hostPlatformColorFromComponents(facebook::react::ColorComponents components);
 facebook::react::Color facebook::react::hostPlatformColorFromRGBA(uint8_t r, uint8_t g, uint8_t b, uint8_t a);
 facebook::react::ColorComponents facebook::react::colorComponentsFromColor(facebook::react::SharedColor color);
@@ -1998,7 +1997,6 @@ class facebook::react::ComponentDescriptorRegistry {
   public bool hasComponentDescriptorAt(facebook::react::ComponentHandle componentHandle) const;
   public const facebook::react::ComponentDescriptor& at(const std::string& componentName) const;
   public const facebook::react::ComponentDescriptor& at(facebook::react::ComponentHandle componentHandle) const;
-  public const facebook::react::ComponentDescriptor* findComponentDescriptorByHandle_DO_NOT_USE_THIS_IS_BROKEN(facebook::react::ComponentHandle componentHandle) const;
   public facebook::react::ComponentDescriptor::Shared getFallbackComponentDescriptor() const;
   public using Shared = std::shared_ptr<const facebook::react::ComponentDescriptorRegistry>;
   public void setFallbackComponentDescriptor(const facebook::react::SharedComponentDescriptor& descriptor);
@@ -4458,7 +4456,6 @@ class facebook::react::SafeAreaViewState {
 
 class facebook::react::Scheduler : public facebook::react::UIManagerDelegate {
   public Scheduler(const facebook::react::SchedulerToolbox& schedulerToolbox, facebook::react::UIManagerAnimationDelegate* animationDelegate, facebook::react::SchedulerDelegate* delegate);
-  public const facebook::react::ComponentDescriptor* findComponentDescriptorByHandle_DO_NOT_USE_THIS_IS_BROKEN(facebook::react::ComponentHandle handle) const;
   public facebook::react::SchedulerDelegate* getDelegate() const;
   public std::shared_ptr<const facebook::react::ContextContainer> getContextContainer() const;
   public std::shared_ptr<facebook::react::UIManager> getUIManager() const;
