@@ -11,6 +11,12 @@
 
 namespace facebook::react::jsinspector_modern {
 
+bool JInspectorFlags::getScreenshotCaptureEnabled(
+    jni::alias_ref<jclass> /*unused*/) {
+  auto& inspectorFlags = InspectorFlags::getInstance();
+  return inspectorFlags.getScreenshotCaptureEnabled();
+}
+
 bool JInspectorFlags::getFuseboxEnabled(jni::alias_ref<jclass> /*unused*/) {
   auto& inspectorFlags = InspectorFlags::getInstance();
   return inspectorFlags.getFuseboxEnabled();
@@ -28,6 +34,11 @@ bool JInspectorFlags::getFrameRecordingEnabled(
 }
 
 void JInspectorFlags::registerNatives() {
+  javaClassLocal()->registerNatives({
+      makeNativeMethod(
+          "getScreenshotCaptureEnabled",
+          JInspectorFlags::getScreenshotCaptureEnabled),
+  });
   javaClassLocal()->registerNatives({
       makeNativeMethod("getFuseboxEnabled", JInspectorFlags::getFuseboxEnabled),
   });

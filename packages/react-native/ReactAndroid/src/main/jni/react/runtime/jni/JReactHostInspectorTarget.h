@@ -145,6 +145,13 @@ struct JReactHostImpl : public jni::JavaClass<JReactHostImpl> {
                           "loadNetworkResource");
     return method(self(), jni::make_jstring(url), listener);
   }
+
+  jni::local_ref<jni::JString> captureScreenshot(const std::string &format, int quality) const
+  {
+    auto method = javaClassStatic()->getMethod<jni::local_ref<jni::JString>(jni::local_ref<jni::JString>, jint)>(
+        "captureScreenshot");
+    return method(self(), jni::make_jstring(format), static_cast<jint>(quality));
+  }
 };
 
 /**
@@ -275,6 +282,8 @@ class JReactHostInspectorTarget : public jni::HybridClass<JReactHostInspectorTar
   void loadNetworkResource(
       const jsinspector_modern::LoadNetworkResourceRequest &params,
       jsinspector_modern::ScopedExecutor<jsinspector_modern::NetworkRequestListener> executor) override;
+  std::optional<std::string> captureScreenshot(
+      const jsinspector_modern::HostTargetDelegate::PageCaptureScreenshotRequest &request) override;
   jsinspector_modern::HostTargetTracingDelegate *getTracingDelegate() override;
 
  private:
