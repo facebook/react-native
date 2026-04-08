@@ -12,6 +12,7 @@ import com.facebook.react.bridge.JavaOnlyArray
 import com.facebook.react.bridge.JavaOnlyMap
 import com.facebook.react.bridge.ReactApplicationContext
 import com.facebook.react.bridge.ReactTestHelper
+import com.facebook.soloader.SoLoader
 import com.facebook.testutils.shadows.ShadowArguments
 import java.io.ByteArrayInputStream
 import java.nio.ByteBuffer
@@ -22,6 +23,8 @@ import org.junit.After
 import org.junit.Before
 import org.junit.Test
 import org.junit.runner.RunWith
+import org.mockito.MockedStatic
+import org.mockito.Mockito.mockStatic
 import org.robolectric.RobolectricTestRunner
 import org.robolectric.Shadows.shadowOf
 import org.robolectric.annotation.Config
@@ -33,9 +36,15 @@ class BlobModuleTest {
   private lateinit var blobId: String
   private lateinit var context: ReactApplicationContext
   private lateinit var blobModule: BlobModule
+  private lateinit var mockedStaticSoLoader: MockedStatic<SoLoader>
 
   @Before
   fun prepareModules() {
+    mockedStaticSoLoader = mockStatic(SoLoader::class.java)
+    mockedStaticSoLoader
+        .`when`<Boolean> { SoLoader.loadLibrary("reactnativeblob") }
+        .thenReturn(true)
+
     bytes = ByteArray(120)
     Random.Default.nextBytes(bytes)
 
@@ -47,6 +56,7 @@ class BlobModuleTest {
   @After
   fun cleanUp() {
     blobModule.remove(blobId)
+    mockedStaticSoLoader.close()
   }
 
   @Test
