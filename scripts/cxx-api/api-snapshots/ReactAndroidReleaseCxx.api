@@ -12401,7 +12401,6 @@ const char* facebook::yoga::toString(facebook::yoga::Direction e);
 const char* facebook::yoga::toString(facebook::yoga::Display e);
 const char* facebook::yoga::toString(facebook::yoga::Edge e);
 const char* facebook::yoga::toString(facebook::yoga::Errata e);
-const char* facebook::yoga::toString(facebook::yoga::ExperimentalFeature e);
 const char* facebook::yoga::toString(facebook::yoga::FlexDirection e);
 const char* facebook::yoga::toString(facebook::yoga::GridTrackType e);
 const char* facebook::yoga::toString(facebook::yoga::Gutter e);
@@ -12421,7 +12420,6 @@ constexpr YGDirection facebook::yoga::unscopedEnum(facebook::yoga::Direction sco
 constexpr YGDisplay facebook::yoga::unscopedEnum(facebook::yoga::Display scoped);
 constexpr YGEdge facebook::yoga::unscopedEnum(facebook::yoga::Edge scoped);
 constexpr YGErrata facebook::yoga::unscopedEnum(facebook::yoga::Errata scoped);
-constexpr YGExperimentalFeature facebook::yoga::unscopedEnum(facebook::yoga::ExperimentalFeature scoped);
 constexpr YGFlexDirection facebook::yoga::unscopedEnum(facebook::yoga::FlexDirection scoped);
 constexpr YGGridTrackType facebook::yoga::unscopedEnum(facebook::yoga::GridTrackType scoped);
 constexpr YGGutter facebook::yoga::unscopedEnum(facebook::yoga::Gutter scoped);
@@ -12447,7 +12445,6 @@ constexpr facebook::yoga::Direction facebook::yoga::scopedEnum(YGDirection unsco
 constexpr facebook::yoga::Display facebook::yoga::scopedEnum(YGDisplay unscoped);
 constexpr facebook::yoga::Edge facebook::yoga::scopedEnum(YGEdge unscoped);
 constexpr facebook::yoga::Errata facebook::yoga::scopedEnum(YGErrata unscoped);
-constexpr facebook::yoga::ExperimentalFeature facebook::yoga::scopedEnum(YGExperimentalFeature unscoped);
 constexpr facebook::yoga::FlexDirection facebook::yoga::scopedEnum(YGFlexDirection unscoped);
 constexpr facebook::yoga::FloatOptional facebook::yoga::maxOrDefined(facebook::yoga::FloatOptional lhs, facebook::yoga::FloatOptional rhs);
 constexpr facebook::yoga::GridTrackType facebook::yoga::scopedEnum(YGGridTrackType unscoped);
@@ -12534,10 +12531,8 @@ class facebook::yoga::Config : public YGConfig {
   public Config(YGLogger logger);
   public YGNodeRef cloneNode(YGNodeConstRef node, YGNodeConstRef owner, size_t childIndex) const;
   public bool hasErrata(facebook::yoga::Errata errata) const;
-  public bool isExperimentalFeatureEnabled(facebook::yoga::ExperimentalFeature feature) const;
   public bool useWebDefaults() const;
   public facebook::yoga::Errata getErrata() const;
-  public facebook::yoga::ExperimentalFeatureSet getEnabledExperiments() const;
   public float getPointScaleFactor() const;
   public static const facebook::yoga::Config& getDefault();
   public uint32_t getVersion() const noexcept;
@@ -12547,7 +12542,6 @@ class facebook::yoga::Config : public YGConfig {
   public void setCloneNodeCallback(YGCloneNodeFunc cloneNode);
   public void setContext(void* context);
   public void setErrata(facebook::yoga::Errata errata);
-  public void setExperimentalFeatureEnabled(facebook::yoga::ExperimentalFeature feature, bool enabled);
   public void setLogger(YGLogger logger);
   public void setPointScaleFactor(float pointScaleFactor);
   public void setUseWebDefaults(bool useWebDefaults);
