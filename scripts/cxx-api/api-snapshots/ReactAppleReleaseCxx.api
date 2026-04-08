@@ -1987,8 +1987,8 @@ interface RCTScrollView : public RCTView <UIScrollViewDelegate, RCTScrollablePro
 interface RCTScrollViewComponentView {
   protected  __pad0__;
   public @property (assign) CGRect firstResponderFocus;
+  public @property (strong) UIScrollView* scrollView;
   public @property (strong, readonly) RCTGenericDelegateSplitter<id<UIScrollViewDelegate>>* scrollViewDelegateSplitter;
-  public @property (strong, readonly) UIScrollView* scrollView;
   public @property (strong, readonly) UIView* containerView;
   public @property (weak) UIView* firstResponderViewOutsideScrollView;
   public virtual static _Nullable RCTScrollViewComponentView* findScrollViewComponentViewForView:(UIView* view);
