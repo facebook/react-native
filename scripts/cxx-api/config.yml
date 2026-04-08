@@ -94,6 +94,8 @@ platforms:
       - "*/components/switch/androidswitch/*"
     exclude_symbols:
       - "Android"
+      - "(Deprecated)"
+      - "(Internal)"
     input_filter: true
     definitions:
       __cplusplus: 1

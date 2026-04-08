@@ -107,19 +107,6 @@ category RCTConvert(CoreLocation) {
   public virtual static CLLocationDistance CLLocationDistance:(id json);
 }
 
-category RCTConvert(Deprecated) {
-  protected typedef NSArray NSArrayArray;
-  protected typedef NSArray NSDictionaryArray;
-  protected typedef NSArray NSNumberArray;
-  protected typedef NSArray NSStringArray;
-  protected typedef NSArray NSStringArrayArray;
-  protected typedef NSArray NSURLArray;
-  protected typedef NSArray RCTFileURLArray;
-  protected typedef NSArray UIColorArray;
-  public virtual static CGImageRef CGImage:(id json);
-  public virtual static UIImage* UIImage:(id json);
-}
-
 category RCTConvert(DynamicTypeRamp) {
   public virtual static RCTDynamicTypeRamp RCTDynamicTypeRamp:(_Nullable id json);
 }
@@ -244,29 +231,6 @@ category RCTCxxConvert(NativeShareModule_SpecShareContent) {
 
 category RCTCxxConvert(NativeWebSocketModule_SpecConnectOptions) {
   public virtual static RCTManagedPointer* JS_NativeWebSocketModule_SpecConnectOptions:(id json);
-}
-
-category RCTFabricSurface(Deprecated) {
-  public virtual instancetype initWithBridge:moduleName:initialProperties:(RCTBridge* bridge, NSString* moduleName, NSDictionary* initialProperties);
-}
-
-category RCTFabricSurface(Internal) {
-  public virtual const facebook::react::SurfaceHandler& surfaceHandler();
-}
-
-category RCTImageStoreManager(Deprecated) {
-  public virtual NSString* storeImage:(UIImage* image);
-  public virtual UIImage* imageForTag:(NSString* imageTag);
-  public virtual void getImageForTag:withBlock:(NSString* imageTag, void(^)(UIImage* image) block);
-}
-
-category RCTRootView(Deprecated) {
-  public @property (assign, readonly) CGSize intrinsicSize;
-  public virtual void cancelTouches();
-}
-
-category RCTScrollView(Internal) {
-  public virtual void updateContentSizeIfNeeded();
 }
 
 category RCTScrollViewComponentView(ScrollableProtocol) {
