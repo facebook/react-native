@@ -34,6 +34,10 @@
 #import <react/runtime/JSRuntimeFactory.h>
 #import <react/runtime/JSRuntimeFactoryCAPI.h>
 
+#if RCT_DEV_MENU
+#import <React/RCTSurfaceHostingView.h>
+#endif // RCT_DEV_MENU
+
 @implementation RCTRootViewFactoryConfiguration
 
 - (instancetype)initWithBundleURL:(NSURL *)bundleURL newArchEnabled:(BOOL)newArchEnabled
@@ -189,6 +193,12 @@
 
   RCTSurfaceHostingProxyRootView *surfaceHostingProxyRootView =
       [[RCTSurfaceHostingProxyRootView alloc] initWithSurface:surface];
+#if RCT_DEV_MENU
+  RCTDevMenu *devMenu = [self.reactHost.moduleRegistry moduleForClass:[RCTDevMenu class]];
+  if (devMenu) {
+    surfaceHostingProxyRootView.devMenu = devMenu;
+  }
+#endif // RCT_DEV_MENU
 
 #if TARGET_OS_TV
   surfaceHostingProxyRootView.backgroundColor = [UIColor clearColor];
@@ -216,6 +226,16 @@
 #else
   rootView.backgroundColor = [UIColor blackColor];
 #endif
+
+#if RCT_DEV_MENU
+  if ([rootView isKindOfClass:[RCTSurfaceHostingView class]]) {
+    RCTDevMenu *devMenu = [bridge moduleForClass:[RCTDevMenu class]];
+    if (devMenu) {
+      [(RCTSurfaceHostingView *)rootView setDevMenu:devMenu];
+    }
+  }
+#endif // RCT_DEV_MENU
+
   return rootView;
 }
 

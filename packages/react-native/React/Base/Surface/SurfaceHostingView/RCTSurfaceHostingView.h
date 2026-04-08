@@ -12,6 +12,8 @@
 #import <React/RCTSurfaceSizeMeasureMode.h>
 #import <React/RCTSurfaceStage.h>
 
+@class RCTDevMenu;
+
 typedef UIView *_Nullable (^RCTSurfaceHostingViewActivityIndicatorViewFactory)(void);
 
 NS_ASSUME_NONNULL_BEGIN
@@ -60,6 +62,14 @@ NS_ASSUME_NONNULL_BEGIN
  * @param disabled if `YES`, the auto-hide is disabled. Otherwise the loading view will be hidden automatically
  */
 - (void)disableActivityIndicatorAutoHide:(BOOL)disabled;
+
+#if RCT_DEV_MENU
+/**
+ * Dev menu for key command access (Cmd+D, Cmd+I).
+ */
+@property (nonatomic, strong, nullable) RCTDevMenu *devMenu;
+#endif
+
 @end
 
 NS_ASSUME_NONNULL_END

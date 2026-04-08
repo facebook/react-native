@@ -13,6 +13,10 @@
 #import "RCTSurfaceView.h"
 #import "RCTUtils.h"
 
+#if RCT_DEV_MENU
+#import "RCTDevMenu.h"
+#endif // RCT_DEV_MENU
+
 @interface RCTSurfaceHostingView ()
 
 @property (nonatomic, assign) BOOL isActivityIndicatorViewVisible;
@@ -248,5 +252,36 @@ RCT_NOT_IMPLEMENTED(-(nullable instancetype)initWithCoder : (NSCoder *)coder)
     [self _invalidateLayout];
   });
 }
+
+#pragma mark - Dev Menu
+
+#if RCT_DEV_MENU
+- (BOOL)canBecomeFirstResponder
+{
+  return YES;
+}
+
+- (NSArray<UIKeyCommand *> *)keyCommands
+{
+  return @[
+    [UIKeyCommand keyCommandWithInput:@"d"
+                        modifierFlags:UIKeyModifierCommand
+                               action:@selector(toggleDevMenu)],
+    [UIKeyCommand keyCommandWithInput:@"i"
+                        modifierFlags:UIKeyModifierCommand
+                               action:@selector(toggleElementInspector)],
+  ];
+}
+
+- (void)toggleDevMenu
+{
+  [_devMenu toggle];
+}
+
+- (void)toggleElementInspector
+{
+  [_devMenu toggleElementInspector];
+}
+#endif // RCT_DEV_MENU
 
 @end

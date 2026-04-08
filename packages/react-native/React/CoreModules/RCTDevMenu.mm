@@ -12,7 +12,6 @@
 #import <React/RCTBundleURLProvider.h>
 #import <React/RCTDefines.h>
 #import <React/RCTDevSettings.h>
-#import <React/RCTKeyCommands.h>
 #import <React/RCTLog.h>
 #import <React/RCTReloadCommand.h>
 #import <React/RCTUtils.h>
@@ -150,72 +149,8 @@ RCT_EXPORT_MODULE()
 
     _keyboardShortcutsEnabled = true;
     _devMenuEnabled = true;
-    [self registerHotkeys];
   }
   return self;
-}
-
-- (void)registerHotkeys
-{
-#if TARGET_OS_SIMULATOR || TARGET_OS_MACCATALYST
-  RCTKeyCommands *commands = [RCTKeyCommands sharedInstance];
-  __weak __typeof(self) weakSelf = self;
-
-  // Toggle debug menu
-  [commands registerKeyCommandWithInput:@"d"
-                          modifierFlags:UIKeyModifierCommand
-                                 action:^(__unused UIKeyCommand *command) {
-                                   [weakSelf toggle];
-                                 }];
-
-  // Toggle element inspector
-  [commands registerKeyCommandWithInput:@"i"
-                          modifierFlags:UIKeyModifierCommand
-                                 action:^(__unused UIKeyCommand *command) {
-                                   [(RCTDevSettings *)[weakSelf.moduleRegistry moduleForName:"DevSettings"]
-                                       toggleElementInspector];
-                                 }];
-#endif
-}
-
-- (void)unregisterHotkeys
-{
-#if TARGET_OS_SIMULATOR || TARGET_OS_MACCATALYST
-  RCTKeyCommands *commands = [RCTKeyCommands sharedInstance];
-
-  [commands unregisterKeyCommandWithInput:@"d" modifierFlags:UIKeyModifierCommand];
-  [commands unregisterKeyCommandWithInput:@"i" modifierFlags:UIKeyModifierCommand];
-#endif
-}
-
-- (BOOL)isHotkeysRegistered
-{
-#if TARGET_OS_SIMULATOR || TARGET_OS_MACCATALYST
-  RCTKeyCommands *commands = [RCTKeyCommands sharedInstance];
-
-  return [commands isKeyCommandRegisteredForInput:@"d" modifierFlags:UIKeyModifierCommand] &&
-      [commands isKeyCommandRegisteredForInput:@"i" modifierFlags:UIKeyModifierCommand];
-#else
-  return NO;
-#endif
-}
-
-- (BOOL)isReloadCommandRegistered
-{
-#if TARGET_OS_SIMULATOR || TARGET_OS_MACCATALYST
-  RCTKeyCommands *commands = [RCTKeyCommands sharedInstance];
-  return [commands isKeyCommandRegisteredForInput:@"r" modifierFlags:UIKeyModifierCommand];
-#else
-  return NO;
-#endif
-}
-
-- (void)unregisterReloadCommand
-{
-#if TARGET_OS_SIMULATOR || TARGET_OS_MACCATALYST
-  RCTKeyCommands *commands = [RCTKeyCommands sharedInstance];
-  [commands unregisterKeyCommandWithInput:@"r" modifierFlags:UIKeyModifierCommand];
-#endif
 }
 
 - (dispatch_queue_t)methodQueue
@@ -525,23 +460,29 @@ RCT_EXPORT_METHOD(setHotLoadingEnabled : (BOOL)enabled)
 
 - (void)setHotkeysEnabled:(BOOL)enabled
 {
-  if (enabled) {
-    [self registerHotkeys];
-  } else {
-    [self unregisterHotkeys];
-  }
+  // Deprecated: hotkeys are now managed via UIKeyCommand on RCTSurfaceHostingView
 }
 
 - (BOOL)hotkeysEnabled
 {
-  return [self isHotkeysRegistered];
+  // Deprecated: hotkeys are now managed via UIKeyCommand on RCTSurfaceHostingView
+  return NO;
 }
 
 - (void)disableReloadCommand
 {
-  if ([self isReloadCommandRegistered]) {
-    [self unregisterReloadCommand];
-  }
+  // Deprecated: reload command is now managed via UIKeyCommand on RCTSurfaceHostingView
+}
+
+- (void)toggleElementInspector
+{
+  RCTDevSettings *devSettings = [_moduleRegistry moduleForName:"DevSettings"];
+  [devSettings toggleElementInspector];
+}
+
+- (void)reloadFromKeyCommand
+{
+  RCTTriggerReloadCommandListeners(@"Dev menu key command");
 }
 
 - (std::shared_ptr<facebook::react::TurboModule>)getTurboModule:
