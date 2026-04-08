@@ -2455,7 +2455,6 @@ class facebook::react::HostPlatformViewProps : public facebook::react::BaseViewP
   public HostPlatformViewProps(const facebook::react::PropsParserContext& context, const facebook::react::HostPlatformViewProps& sourceProps, const facebook::react::RawProps& rawProps);
   public HostPlatformViewProps(const facebook::react::PropsParserContext& context, const facebook::react::HostPlatformViewProps& sourceProps, const facebook::react::RawProps& rawProps, const std::function<bool(const std::string&)>& filterObjectKeys = nullptr);
   public bool focusable;
-  public bool getProbablyMoreHorizontalThanVertical_DEPRECATED() const;
   public bool hasTVPreferredFocus;
   public bool needsOffscreenAlphaCompositing;
   public bool renderToHardwareTextureAndroid;
@@ -4614,7 +4613,6 @@ class facebook::react::ShadowNodeFamily : public facebook::jsi::NativeState {
   public facebook::react::SharedEventEmitter getEventEmitter() const;
   public facebook::react::SurfaceId getSurfaceId() const;
   public facebook::react::Tag getTag() const;
-  public mutable std::unique_ptr<folly::dynamic> nativeProps_DEPRECATED;
   public std::shared_ptr<const facebook::react::State> getMostRecentState() const;
   public using AncestorList = std::vector<std::pair<std::reference_wrapper<const facebook::react::ShadowNode>, int>>;
   public using Shared = std::shared_ptr<facebook::react::ShadowNodeFamily>;
@@ -5169,7 +5167,6 @@ class facebook::react::UIManager : public facebook::react::ShadowTreeDelegate {
   public facebook::react::UIManagerViewTransitionDelegate* getViewTransitionDelegate() const;
   public std::shared_ptr<const facebook::react::ContextContainer> getContextContainer() const;
   public std::shared_ptr<const facebook::react::ShadowNode> findNodeAtPoint(const std::shared_ptr<const facebook::react::ShadowNode>& shadowNode, facebook::react::Point point) const;
-  public std::shared_ptr<const facebook::react::ShadowNode> findShadowNodeByTag_DEPRECATED(facebook::react::Tag tag) const;
   public std::shared_ptr<const facebook::react::ShadowNode> getNewestCloneOfShadowNode(const facebook::react::ShadowNode& shadowNode) const;
   public std::shared_ptr<facebook::react::ShadowNode> cloneNode(const facebook::react::ShadowNode& shadowNode, const std::shared_ptr<const std::vector<std::shared_ptr<const facebook::react::ShadowNode>>>& children, facebook::react::RawProps rawProps) const;
   public std::shared_ptr<facebook::react::ShadowNode> createNode(facebook::react::Tag tag, const std::string& componentName, facebook::react::SurfaceId surfaceId, facebook::react::RawProps props, facebook::react::InstanceHandle::Shared instanceHandle) const;
@@ -5193,7 +5190,6 @@ class facebook::react::UIManager : public facebook::react::ShadowTreeDelegate {
   public void setDelegate(facebook::react::UIManagerDelegate* delegate);
   public void setIsJSResponder(const std::shared_ptr<const facebook::react::ShadowNode>& shadowNode, bool isJSResponder, bool blockNativeResponder) const;
   public void setNativeAnimatedDelegate(std::weak_ptr<facebook::react::UIManagerNativeAnimatedDelegate> delegate);
-  public void setNativeProps_DEPRECATED(const std::shared_ptr<const facebook::react::ShadowNode>& shadowNode, facebook::react::RawProps rawProps) const;
   public void setOnSurfaceStartCallback(facebook::react::UIManagerDelegate::OnSurfaceStartCallback&& callback);
   public void setSurfaceProps(facebook::react::SurfaceId surfaceId, const std::string& moduleName, const folly::dynamic& props, facebook::react::DisplayMode displayMode) const noexcept;
   public void setViewTransitionDelegate(facebook::react::UIManagerViewTransitionDelegate* delegate);
