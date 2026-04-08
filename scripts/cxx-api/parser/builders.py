@@ -67,9 +67,7 @@ class ParsedSectionKind:
         )
 
 
-######################
-# Base class fixups
-######################
+# region Base class fixups
 
 
 def _fix_base_class_default_substitution(
@@ -125,9 +123,9 @@ def _fix_base_class_default_substitution(
     return f"{prefix}<{', '.join(fixed_args)}>{suffix}"
 
 
-######################
-# Inherited constructor fixup
-######################
+# endregion
+
+# region Inherited constructor fixup
 
 
 def _fix_inherited_constructor_name(
@@ -155,9 +153,9 @@ def _fix_inherited_constructor_name(
         func_member.name = class_unqualified_name
 
 
-######################
-# Member extraction
-######################
+# endregion
+
+# region Member extraction
 
 
 def get_base_classes(
@@ -541,9 +539,60 @@ def get_property_member(
     )
 
 
-######################
-# Scope creation
-######################
+# endregion
+
+# region Symbol exclusion
+
+
+def _should_exclude_symbol(name: str, exclude_symbols: list[str]) -> bool:
+    """
+    Check if a symbol name should be excluded based on symbol patterns.
+
+    Each pattern in exclude_symbols is treated as a substring match against
+    the symbol's qualified name.
+    """
+    return any(pattern in name for pattern in exclude_symbols)
+
+
+def _type_contains_excluded_symbol(
+    type_str: str | None, exclude_symbols: list[str]
+) -> bool:
+    """Return True if *type_str* contains any substring from *exclude_symbols*."""
+    if not type_str or not exclude_symbols:
+        return False
+    return any(pattern in type_str for pattern in exclude_symbols)
+
+
+def _member_types_reference_excluded_symbol(member, exclude_symbols: list[str]) -> bool:
+    """Check whether any type string on *member* references an excluded symbol."""
+    if not exclude_symbols:
+        return False
+
+    if isinstance(member, FunctionMember):
+        if _type_contains_excluded_symbol(member.type, exclude_symbols):
+            return True
+        for arg in member.arguments:
+            if _type_contains_excluded_symbol(arg[1], exclude_symbols):
+                return True
+
+    elif isinstance(member, VariableMember):
+        if _type_contains_excluded_symbol(member.type, exclude_symbols):
+            return True
+
+    elif isinstance(member, TypedefMember):
+        if _type_contains_excluded_symbol(member.type, exclude_symbols):
+            return True
+
+    elif isinstance(member, PropertyMember):
+        if _type_contains_excluded_symbol(member.type, exclude_symbols):
+            return True
+
+    return False
+
+
+# endregion
+
+# region Scope creation
 
 
 def create_enum_scope(snapshot: Snapshot, enum_def: compound.EnumdefType) -> None:
@@ -595,6 +644,7 @@ def _process_objc_sections(
     location_file: str,
     scope_type: str,
     filter_category_members: bool = False,
+    exclude_symbols: list[str] | None = None,
 ) -> None:
     """
     Common section processing for protocols and interfaces.
@@ -622,16 +672,34 @@ def _process_objc_sections(
                     if member_def.kind == "variable":
                         if filter_category_members and _is_category_member(member_def):
                             continue
-                        scope.add_member(
-                            get_variable_member(member_def, visibility, is_static)
+                        if exclude_symbols and _should_exclude_symbol(
+                            member_def.get_name(), exclude_symbols
+                        ):
+                            continue
+                        var_member = get_variable_member(
+                            member_def, visibility, is_static
                         )
+                        if exclude_symbols and _member_types_reference_excluded_symbol(
+                            var_member, exclude_symbols
+                        ):
+                            continue
+                        scope.add_member(var_member)
             elif member_type == "func":
                 for function_def in section_def.memberdef:
                     if filter_category_members and _is_category_member(function_def):
                         continue
-                    scope.add_member(
-                        get_function_member(function_def, visibility, is_static)
+                    if exclude_symbols and _should_exclude_symbol(
+                        function_def.get_name(), exclude_symbols
+                    ):
+                        continue
+                    func_member = get_function_member(
+                        function_def, visibility, is_static
                     )
+                    if exclude_symbols and _member_types_reference_excluded_symbol(
+                        func_member, exclude_symbols
+                    ):
+                        continue
+                    scope.add_member(func_member)
             elif member_type == "type":
                 for member_def in section_def.memberdef:
                     if member_def.kind == "enum":
@@ -639,7 +707,16 @@ def _process_objc_sections(
                     elif member_def.kind == "typedef":
                         if filter_category_members and _is_category_member(member_def):
                             continue
-                        scope.add_member(get_typedef_member(member_def, visibility))
+                        if exclude_symbols and _should_exclude_symbol(
+                            member_def.get_name(), exclude_symbols
+                        ):
+                            continue
+                        typedef_member = get_typedef_member(member_def, visibility)
+                        if exclude_symbols and _member_types_reference_excluded_symbol(
+                            typedef_member, exclude_symbols
+                        ):
+                            continue
+                        scope.add_member(typedef_member)
                     else:
                         print(
                             f"Unknown section member kind: {member_def.kind} in {location_file}"
@@ -653,15 +730,24 @@ def _process_objc_sections(
                 if member_def.kind == "property":
                     if filter_category_members and _is_category_member(member_def):
                         continue
-                    scope.add_member(
-                        get_property_member(member_def, "public", is_static)
-                    )
+                    if exclude_symbols and _should_exclude_symbol(
+                        member_def.get_name(), exclude_symbols
+                    ):
+                        continue
+                    prop_member = get_property_member(member_def, "public", is_static)
+                    if exclude_symbols and _member_types_reference_excluded_symbol(
+                        prop_member, exclude_symbols
+                    ):
+                        continue
+                    scope.add_member(prop_member)
         else:
             print(f"Unknown {scope_type} visibility: {visibility} in {location_file}")
 
 
 def create_protocol_scope(
-    snapshot: Snapshot, scope_def: compound.CompounddefType
+    snapshot: Snapshot,
+    scope_def: compound.CompounddefType,
+    exclude_symbols: list[str] | None = None,
 ) -> None:
     """
     Create a protocol scope in the snapshot.
@@ -683,11 +769,17 @@ def create_protocol_scope(
         scope_def.sectiondef,
         scope_def.location.file,
         "protocol",
+        exclude_symbols=exclude_symbols,
     )
 
 
+# endregion
+
+
 def create_interface_scope(
-    snapshot: Snapshot, scope_def: compound.CompounddefType
+    snapshot: Snapshot,
+    scope_def: compound.CompounddefType,
+    exclude_symbols: list[str] | None = None,
 ) -> None:
     """
     Create an interface scope in the snapshot (Objective-C @interface).
@@ -729,11 +821,14 @@ def create_interface_scope(
         scope_def.location.file,
         "interface",
         filter_category_members=True,
+        exclude_symbols=exclude_symbols,
     )
 
 
 def create_class_scope(
-    snapshot: Snapshot, compound_object: compound.CompounddefType
+    snapshot: Snapshot,
+    compound_object: compound.CompounddefType,
+    exclude_symbols: list[str] | None = None,
 ) -> None:
     """
     Create a class/struct/union scope in the snapshot.
@@ -789,26 +884,53 @@ def create_class_scope(
                                 FriendMember(member_def.get_name(), visibility)
                             )
                         else:
-                            class_scope.add_member(
-                                get_variable_member(member_def, visibility, is_static)
+                            if exclude_symbols and _should_exclude_symbol(
+                                member_def.get_name(), exclude_symbols
+                            ):
+                                continue
+                            var_member = get_variable_member(
+                                member_def, visibility, is_static
                             )
+                            if (
+                                exclude_symbols
+                                and _member_types_reference_excluded_symbol(
+                                    var_member, exclude_symbols
+                                )
+                            ):
+                                continue
+                            class_scope.add_member(var_member)
             elif member_type == "func":
                 for function_def in section_def.memberdef:
+                    if exclude_symbols and _should_exclude_symbol(
+                        function_def.get_name(), exclude_symbols
+                    ):
+                        continue
                     func_member = get_function_member(
                         function_def, visibility, is_static
                     )
                     _fix_inherited_constructor_name(
                         func_member, compound_object.compoundname
                     )
+                    if exclude_symbols and _member_types_reference_excluded_symbol(
+                        func_member, exclude_symbols
+                    ):
+                        continue
                     class_scope.add_member(func_member)
             elif member_type == "type":
                 for member_def in section_def.memberdef:
                     if member_def.kind == "enum":
                         create_enum_scope(snapshot, member_def)
                     elif member_def.kind == "typedef":
-                        class_scope.add_member(
-                            get_typedef_member(member_def, visibility)
-                        )
+                        if exclude_symbols and _should_exclude_symbol(
+                            member_def.get_name(), exclude_symbols
+                        ):
+                            continue
+                        typedef_member = get_typedef_member(member_def, visibility)
+                        if exclude_symbols and _member_types_reference_excluded_symbol(
+                            typedef_member, exclude_symbols
+                        ):
+                            continue
+                        class_scope.add_member(typedef_member)
                     else:
                         print(
                             f"Unknown section member kind: {member_def.kind} in {compound_object.location.file}"
@@ -830,7 +952,9 @@ def create_class_scope(
 
 
 def create_category_scope(
-    snapshot: Snapshot, scope_def: compound.CompounddefType
+    snapshot: Snapshot,
+    scope_def: compound.CompounddefType,
+    exclude_symbols: list[str] | None = None,
 ) -> None:
     """
     Create a category scope in the snapshot (Objective-C category).
@@ -857,4 +981,5 @@ def create_category_scope(
         scope_def.sectiondef,
         scope_def.location.file,
         "category",
+        exclude_symbols=exclude_symbols,
     )
