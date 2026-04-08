@@ -544,26 +544,32 @@ def get_property_member(
 # region Symbol exclusion
 
 
-def _should_exclude_symbol(name: str, exclude_symbols: list[str]) -> bool:
-    """
-    Check if a symbol name should be excluded based on symbol patterns.
+def compile_exclude_patterns(exclude_symbols: list[str]) -> list[re.Pattern]:
+    """Compile exclude_symbols strings into regex patterns for efficient matching."""
+    return [re.compile(pattern) for pattern in exclude_symbols]
 
-    Each pattern in exclude_symbols is treated as a substring match against
-    the symbol's qualified name.
+
+def _should_exclude_symbol(name: str, exclude_symbols: list[re.Pattern]) -> bool:
     """
-    return any(pattern in name for pattern in exclude_symbols)
+    Check if a symbol name should be excluded based on regex patterns.
+
+    Each pattern is used as a regex search against the symbol's name.
+    """
+    return any(pattern.search(name) for pattern in exclude_symbols)
 
 
 def _type_contains_excluded_symbol(
-    type_str: str | None, exclude_symbols: list[str]
+    type_str: str | None, exclude_symbols: list[re.Pattern]
 ) -> bool:
-    """Return True if *type_str* contains any substring from *exclude_symbols*."""
+    """Return True if *type_str* matches any regex from *exclude_symbols*."""
     if not type_str or not exclude_symbols:
         return False
-    return any(pattern in type_str for pattern in exclude_symbols)
+    return any(pattern.search(type_str) for pattern in exclude_symbols)
 
 
-def _member_types_reference_excluded_symbol(member, exclude_symbols: list[str]) -> bool:
+def _member_types_reference_excluded_symbol(
+    member, exclude_symbols: list[re.Pattern]
+) -> bool:
     """Check whether any type string on *member* references an excluded symbol."""
     if not exclude_symbols:
         return False
@@ -644,7 +650,7 @@ def _process_objc_sections(
     location_file: str,
     scope_type: str,
     filter_category_members: bool = False,
-    exclude_symbols: list[str] | None = None,
+    exclude_symbols: list[re.Pattern] | None = None,
 ) -> None:
     """
     Common section processing for protocols and interfaces.
@@ -747,7 +753,7 @@ def _process_objc_sections(
 def create_protocol_scope(
     snapshot: Snapshot,
     scope_def: compound.CompounddefType,
-    exclude_symbols: list[str] | None = None,
+    exclude_symbols: list[re.Pattern] | None = None,
 ) -> None:
     """
     Create a protocol scope in the snapshot.
@@ -779,7 +785,7 @@ def create_protocol_scope(
 def create_interface_scope(
     snapshot: Snapshot,
     scope_def: compound.CompounddefType,
-    exclude_symbols: list[str] | None = None,
+    exclude_symbols: list[re.Pattern] | None = None,
 ) -> None:
     """
     Create an interface scope in the snapshot (Objective-C @interface).
@@ -828,7 +834,7 @@ def create_interface_scope(
 def create_class_scope(
     snapshot: Snapshot,
     compound_object: compound.CompounddefType,
-    exclude_symbols: list[str] | None = None,
+    exclude_symbols: list[re.Pattern] | None = None,
 ) -> None:
     """
     Create a class/struct/union scope in the snapshot.
@@ -954,7 +960,7 @@ def create_class_scope(
 def create_category_scope(
     snapshot: Snapshot,
     scope_def: compound.CompounddefType,
-    exclude_symbols: list[str] | None = None,
+    exclude_symbols: list[re.Pattern] | None = None,
 ) -> None:
     """
     Create a category scope in the snapshot (Objective-C category).

@@ -10,6 +10,7 @@ Main entry point for building API snapshots from Doxygen XML output.
 from __future__ import annotations
 
 import os
+import re
 from dataclasses import dataclass
 
 from doxmlparser import compound, index
@@ -17,6 +18,7 @@ from doxmlparser import compound, index
 from .builders import (
     _member_types_reference_excluded_symbol,
     _should_exclude_symbol,
+    compile_exclude_patterns,
     create_category_scope,
     create_class_scope,
     create_enum_scope,
@@ -45,7 +47,7 @@ from .utils import (
 
 
 def _process_namespace_sections(
-    snapshot, namespace_scope, compound_object, exclude_symbols: list[str]
+    snapshot, namespace_scope, compound_object, exclude_symbols: list[re.Pattern]
 ):
     """
     Process all section definitions inside a namespace compound.
@@ -197,16 +199,16 @@ def _check_text_for_excluded_patterns(
     text: str,
     scope_name: str,
     context: str,
-    exclude_symbols: list[str],
+    exclude_symbols: list[re.Pattern],
     results: list[ExcludedSymbolReference],
 ) -> None:
     """Append an ExcludedSymbolReference for each pattern found in *text*."""
     for pattern in exclude_symbols:
-        if pattern in text:
+        if pattern.search(text):
             results.append(
                 ExcludedSymbolReference(
                     symbol=text,
-                    pattern=pattern,
+                    pattern=pattern.pattern,
                     scope=scope_name,
                     context=context,
                 )
@@ -217,7 +219,7 @@ def _check_arguments_for_excluded_patterns(
     arguments: list,
     scope_name: str,
     context_prefix: str,
-    exclude_symbols: list[str],
+    exclude_symbols: list[re.Pattern],
     results: list[ExcludedSymbolReference],
 ) -> None:
     """Check every argument's type string for excluded patterns."""
@@ -237,7 +239,7 @@ def _check_arguments_for_excluded_patterns(
 def _check_member_for_excluded_patterns(
     member,
     scope_name: str,
-    exclude_symbols: list[str],
+    exclude_symbols: list[re.Pattern],
     results: list[ExcludedSymbolReference],
 ) -> None:
     """Check a single member for type references matching excluded patterns."""
@@ -328,7 +330,7 @@ def _check_member_for_excluded_patterns(
 
 def _walk_scope_for_excluded_patterns(
     scope: Scope,
-    exclude_symbols: list[str],
+    exclude_symbols: list[re.Pattern],
     results: list[ExcludedSymbolReference],
 ) -> None:
     """Recursively walk a scope tree checking for excluded pattern references."""
@@ -367,7 +369,7 @@ def _walk_scope_for_excluded_patterns(
 
 def find_excluded_symbol_references(
     snapshot: Snapshot,
-    exclude_symbols: list[str],
+    exclude_symbols: list[re.Pattern],
 ) -> list[ExcludedSymbolReference]:
     """
     Walk the snapshot scope tree after it has been finalized and find
@@ -392,11 +394,13 @@ def build_snapshot(xml_dir: str, exclude_symbols: list[str] | None = None) -> Sn
 
     Args:
         xml_dir: Path to the Doxygen XML output directory.
-        exclude_symbols: Optional list of substring patterns. Compounds whose
-            qualified name contains any of these patterns will be excluded.
+        exclude_symbols: Optional list of regex patterns. Compounds whose
+            qualified name matches any of these patterns will be excluded.
     """
     if exclude_symbols is None:
         exclude_symbols = []
+
+    compiled_patterns = compile_exclude_patterns(exclude_symbols)
 
     index_path = os.path.join(xml_dir, "index.xml")
     if not os.path.exists(index_path):
@@ -417,7 +421,7 @@ def build_snapshot(xml_dir: str, exclude_symbols: list[str] | None = None) -> Sn
             if compound_object.prot == "private":
                 continue
 
-            if _should_exclude_symbol(compound_object.compoundname, exclude_symbols):
+            if _should_exclude_symbol(compound_object.compoundname, compiled_patterns):
                 continue
 
             kind = compound_object.kind
@@ -427,15 +431,15 @@ def build_snapshot(xml_dir: str, exclude_symbols: list[str] | None = None) -> Sn
             elif kind in _COMPOUND_HANDLERS:
                 handler = _COMPOUND_HANDLERS[kind]
                 if handler == _handle_namespace_compound:
-                    handler(snapshot, compound_object, exclude_symbols)
+                    handler(snapshot, compound_object, compiled_patterns)
                 elif handler == _handle_class_compound:
-                    handler(snapshot, compound_object, exclude_symbols)
+                    handler(snapshot, compound_object, compiled_patterns)
                 elif handler in (
                     create_category_scope,
                     create_protocol_scope,
                     create_interface_scope,
                 ):
-                    handler(snapshot, compound_object, exclude_symbols)
+                    handler(snapshot, compound_object, compiled_patterns)
                 else:
                     handler(snapshot, compound_object)
             else:
@@ -444,7 +448,7 @@ def build_snapshot(xml_dir: str, exclude_symbols: list[str] | None = None) -> Sn
     snapshot.finish()
 
     snapshot.excluded_symbol_references = find_excluded_symbol_references(
-        snapshot, exclude_symbols
+        snapshot, compiled_patterns
     )
 
     return snapshot

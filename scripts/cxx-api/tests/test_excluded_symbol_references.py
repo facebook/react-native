@@ -7,7 +7,10 @@ from __future__ import annotations
 
 import unittest
 
-from ..parser.builders import _member_types_reference_excluded_symbol
+from ..parser.builders import (
+    _member_types_reference_excluded_symbol,
+    compile_exclude_patterns,
+)
 from ..parser.main import find_excluded_symbol_references
 from ..parser.member import (
     FriendMember,
@@ -35,7 +38,7 @@ def _make_snapshot_with_class(
 class TestFindExcludedSymbolReferencesEmpty(unittest.TestCase):
     def test_empty_exclude_symbols_returns_empty(self) -> None:
         snapshot = Snapshot()
-        refs = find_excluded_symbol_references(snapshot, [])
+        refs = find_excluded_symbol_references(snapshot, compile_exclude_patterns([]))
         self.assertEqual(refs, [])
 
     def test_no_references_returns_empty(self) -> None:
@@ -52,7 +55,9 @@ class TestFindExcludedSymbolReferencesEmpty(unittest.TestCase):
             )
         )
         snapshot.finish()
-        refs = find_excluded_symbol_references(snapshot, ["Experimental"])
+        refs = find_excluded_symbol_references(
+            snapshot, compile_exclude_patterns(["Experimental"])
+        )
         self.assertEqual(refs, [])
 
 
@@ -68,7 +73,9 @@ class TestFindExcludedSymbolReferencesBaseClass(unittest.TestCase):
             )
         )
         snapshot.finish()
-        refs = find_excluded_symbol_references(snapshot, ["Experimental"])
+        refs = find_excluded_symbol_references(
+            snapshot, compile_exclude_patterns(["Experimental"])
+        )
         self.assertEqual(len(refs), 1)
         self.assertEqual(refs[0].symbol, "ExperimentalBase")
         self.assertEqual(refs[0].pattern, "Experimental")
@@ -85,7 +92,9 @@ class TestFindExcludedSymbolReferencesBaseClass(unittest.TestCase):
             )
         )
         snapshot.finish()
-        refs = find_excluded_symbol_references(snapshot, ["Experimental"])
+        refs = find_excluded_symbol_references(
+            snapshot, compile_exclude_patterns(["Experimental"])
+        )
         self.assertEqual(refs, [])
 
 
@@ -104,7 +113,9 @@ class TestFindExcludedSymbolReferencesFunctionMember(unittest.TestCase):
             )
         )
         snapshot.finish()
-        refs = find_excluded_symbol_references(snapshot, ["Experimental"])
+        refs = find_excluded_symbol_references(
+            snapshot, compile_exclude_patterns(["Experimental"])
+        )
         self.assertEqual(len(refs), 1)
         self.assertEqual(refs[0].symbol, "ExperimentalModule")
         self.assertEqual(refs[0].context, "return type")
@@ -123,7 +134,9 @@ class TestFindExcludedSymbolReferencesFunctionMember(unittest.TestCase):
             )
         )
         snapshot.finish()
-        refs = find_excluded_symbol_references(snapshot, ["Experimental"])
+        refs = find_excluded_symbol_references(
+            snapshot, compile_exclude_patterns(["Experimental"])
+        )
         self.assertEqual(len(refs), 1)
         self.assertEqual(refs[0].context, "function parameter type")
 
@@ -141,7 +154,9 @@ class TestFindExcludedSymbolReferencesFunctionMember(unittest.TestCase):
             )
         )
         snapshot.finish()
-        refs = find_excluded_symbol_references(snapshot, ["Experimental"])
+        refs = find_excluded_symbol_references(
+            snapshot, compile_exclude_patterns(["Experimental"])
+        )
         self.assertEqual(refs, [])
 
 
@@ -162,7 +177,9 @@ class TestFindExcludedSymbolReferencesVariableMember(unittest.TestCase):
             )
         )
         snapshot.finish()
-        refs = find_excluded_symbol_references(snapshot, ["Experimental"])
+        refs = find_excluded_symbol_references(
+            snapshot, compile_exclude_patterns(["Experimental"])
+        )
         self.assertEqual(len(refs), 1)
         self.assertEqual(refs[0].context, "variable type")
 
@@ -180,7 +197,9 @@ class TestFindExcludedSymbolReferencesTypedefMember(unittest.TestCase):
             )
         )
         snapshot.finish()
-        refs = find_excluded_symbol_references(snapshot, ["Experimental"])
+        refs = find_excluded_symbol_references(
+            snapshot, compile_exclude_patterns(["Experimental"])
+        )
         self.assertEqual(len(refs), 1)
         self.assertEqual(refs[0].context, "typedef target type")
 
@@ -190,7 +209,9 @@ class TestFindExcludedSymbolReferencesFriendMember(unittest.TestCase):
         snapshot, scope = _make_snapshot_with_class()
         scope.add_member(FriendMember(name="ExperimentalHelper"))
         snapshot.finish()
-        refs = find_excluded_symbol_references(snapshot, ["Experimental"])
+        refs = find_excluded_symbol_references(
+            snapshot, compile_exclude_patterns(["Experimental"])
+        )
         self.assertEqual(len(refs), 1)
         self.assertEqual(refs[0].context, "friend declaration")
 
@@ -210,7 +231,9 @@ class TestFindExcludedSymbolReferencesPropertyMember(unittest.TestCase):
             )
         )
         snapshot.finish()
-        refs = find_excluded_symbol_references(snapshot, ["Experimental"])
+        refs = find_excluded_symbol_references(
+            snapshot, compile_exclude_patterns(["Experimental"])
+        )
         self.assertEqual(len(refs), 1)
         self.assertEqual(refs[0].context, "property type")
 
@@ -236,7 +259,9 @@ class TestFindExcludedSymbolReferencesSpecializationArgs(unittest.TestCase):
             )
         )
         snapshot.finish()
-        refs = find_excluded_symbol_references(snapshot, ["Experimental"])
+        refs = find_excluded_symbol_references(
+            snapshot, compile_exclude_patterns(["Experimental"])
+        )
         self.assertEqual(len(refs), 1)
         self.assertEqual(refs[0].context, "specialization argument")
 
@@ -256,7 +281,9 @@ class TestFindExcludedSymbolReferencesMultiplePatterns(unittest.TestCase):
             )
         )
         snapshot.finish()
-        refs = find_excluded_symbol_references(snapshot, ["Experimental", "Fantom"])
+        refs = find_excluded_symbol_references(
+            snapshot, compile_exclude_patterns(["Experimental", "Fantom"])
+        )
         self.assertEqual(len(refs), 2)
         patterns = {r.pattern for r in refs}
         self.assertIn("Experimental", patterns)
@@ -276,7 +303,9 @@ class TestFindExcludedSymbolReferencesMultiplePatterns(unittest.TestCase):
             )
         )
         snapshot.finish()
-        refs = find_excluded_symbol_references(snapshot, ["Experimental", "Fantom"])
+        refs = find_excluded_symbol_references(
+            snapshot, compile_exclude_patterns(["Experimental", "Fantom"])
+        )
         self.assertEqual(len(refs), 2)
         self.assertTrue(all(r.symbol == "ExperimentalFantomModule" for r in refs))
 
@@ -293,7 +322,9 @@ class TestMemberTypesReferenceExcludedSymbol(unittest.TestCase):
             is_static=False,
         )
         self.assertTrue(
-            _member_types_reference_excluded_symbol(member, ["Experimental"])
+            _member_types_reference_excluded_symbol(
+                member, compile_exclude_patterns(["Experimental"])
+            )
         )
 
     def test_function_param_type_detected(self) -> None:
@@ -307,7 +338,9 @@ class TestMemberTypesReferenceExcludedSymbol(unittest.TestCase):
             is_static=False,
         )
         self.assertTrue(
-            _member_types_reference_excluded_symbol(member, ["Experimental"])
+            _member_types_reference_excluded_symbol(
+                member, compile_exclude_patterns(["Experimental"])
+            )
         )
 
     def test_function_no_match(self) -> None:
@@ -321,7 +354,9 @@ class TestMemberTypesReferenceExcludedSymbol(unittest.TestCase):
             is_static=False,
         )
         self.assertFalse(
-            _member_types_reference_excluded_symbol(member, ["Experimental"])
+            _member_types_reference_excluded_symbol(
+                member, compile_exclude_patterns(["Experimental"])
+            )
         )
 
     def test_variable_type_detected(self) -> None:
@@ -337,7 +372,9 @@ class TestMemberTypesReferenceExcludedSymbol(unittest.TestCase):
             definition="ExperimentalFeatureSet feature",
         )
         self.assertTrue(
-            _member_types_reference_excluded_symbol(member, ["Experimental"])
+            _member_types_reference_excluded_symbol(
+                member, compile_exclude_patterns(["Experimental"])
+            )
         )
 
     def test_variable_no_match(self) -> None:
@@ -353,7 +390,9 @@ class TestMemberTypesReferenceExcludedSymbol(unittest.TestCase):
             definition="int count",
         )
         self.assertFalse(
-            _member_types_reference_excluded_symbol(member, ["Experimental"])
+            _member_types_reference_excluded_symbol(
+                member, compile_exclude_patterns(["Experimental"])
+            )
         )
 
     def test_typedef_type_detected(self) -> None:
@@ -365,7 +404,9 @@ class TestMemberTypesReferenceExcludedSymbol(unittest.TestCase):
             keyword="using",
         )
         self.assertTrue(
-            _member_types_reference_excluded_symbol(member, ["Experimental"])
+            _member_types_reference_excluded_symbol(
+                member, compile_exclude_patterns(["Experimental"])
+            )
         )
 
     def test_property_type_detected(self) -> None:
@@ -379,7 +420,9 @@ class TestMemberTypesReferenceExcludedSymbol(unittest.TestCase):
             is_writable=True,
         )
         self.assertTrue(
-            _member_types_reference_excluded_symbol(member, ["Experimental"])
+            _member_types_reference_excluded_symbol(
+                member, compile_exclude_patterns(["Experimental"])
+            )
         )
 
     def test_empty_exclude_symbols_returns_false(self) -> None:
@@ -392,4 +435,8 @@ class TestMemberTypesReferenceExcludedSymbol(unittest.TestCase):
             is_pure_virtual=False,
             is_static=False,
         )
-        self.assertFalse(_member_types_reference_excluded_symbol(member, []))
+        self.assertFalse(
+            _member_types_reference_excluded_symbol(
+                member, compile_exclude_patterns([])
+            )
+        )

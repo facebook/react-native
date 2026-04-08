@@ -1414,7 +1414,6 @@ class facebook::react::EventBeat {
   public virtual void requestSynchronous() const;
   public virtual ~EventBeat() = default;
   public void setBeatCallback(facebook::react::EventBeat::BeatCallback beatCallback);
-  public void unstable_setInduceCallback(std::function<void()> callback);
 }
 
 struct facebook::react::EventBeat::OwnerBox {
@@ -1429,7 +1428,6 @@ class facebook::react::EventDispatcher {
   public void dispatchEvent(facebook::react::RawEvent&& rawEvent) const;
   public void dispatchStateUpdate(facebook::react::StateUpdate&& stateUpdate, facebook::react::EventQueue::UpdateMode updateMode) const;
   public void dispatchUniqueEvent(facebook::react::RawEvent&& rawEvent) const;
-  public void experimental_flushSync() const;
   public void removeListener(const std::shared_ptr<const facebook::react::EventListener>& listener) const;
 }
 
@@ -1455,8 +1453,6 @@ class facebook::react::EventEmitter {
   public void dispatchUniqueEvent(std::string type, folly::dynamic&& payload, facebook::react::HighResTimeStamp eventTimestamp) const;
   public void setEnabled(bool enabled);
   public void setShadowNodeFamily(std::weak_ptr<const facebook::react::ShadowNodeFamily> shadowNodeFamily);
-  template <typename Lambda>
-  public void experimental_flushSync(Lambda syncFunc) const;
 }
 
 class facebook::react::EventListenerContainer {
@@ -1495,7 +1491,6 @@ class facebook::react::EventQueue {
   public void enqueueEvent(facebook::react::RawEvent&& rawEvent) const;
   public void enqueueStateUpdate(facebook::react::StateUpdate&& stateUpdate, facebook::react::EventQueue::UpdateMode updateMode = facebook::react::EventQueue::UpdateMode::Asynchronous) const;
   public void enqueueUniqueEvent(facebook::react::RawEvent&& rawEvent) const;
-  public void experimental_flushSync() const;
 }
 
 enum facebook::react::EventQueue::UpdateMode {
@@ -1685,7 +1680,6 @@ class facebook::react::ImageProps : public facebook::react::HostPlatformViewProp
   public facebook::react::ImageSources sources;
   public facebook::react::SharedColor overlayColor;
   public facebook::react::SharedColor tintColor;
-  public std::string internal_analyticTag;
   public std::string resizeMethod;
   public void setProp(const facebook::react::PropsParserContext& context, facebook::react::RawPropsPropNameHash hash, const char* propName, const facebook::react::RawValue& value);
 }
@@ -3645,7 +3639,6 @@ class facebook::react::UIManager : public facebook::react::ShadowTreeDelegate {
   public std::shared_ptr<const facebook::react::ShadowNode> getNewestCloneOfShadowNode(const facebook::react::ShadowNode& shadowNode) const;
   public std::shared_ptr<facebook::react::ShadowNode> cloneNode(const facebook::react::ShadowNode& shadowNode, const std::shared_ptr<const std::vector<std::shared_ptr<const facebook::react::ShadowNode>>>& children, facebook::react::RawProps rawProps) const;
   public std::shared_ptr<facebook::react::ShadowNode> createNode(facebook::react::Tag tag, const std::string& componentName, facebook::react::SurfaceId surfaceId, facebook::react::RawProps props, facebook::react::InstanceHandle::Shared instanceHandle) const;
-  public std::weak_ptr<facebook::react::UIManagerAnimationBackend> unstable_getAnimationBackend();
   public virtual facebook::react::RootShadowNode::Unshared shadowTreeWillCommit(const facebook::react::ShadowTree& shadowTree, const facebook::react::RootShadowNode::Shared& oldRootShadowNode, const facebook::react::RootShadowNode::Unshared& newRootShadowNode, const facebook::react::ShadowTree::CommitOptions& commitOptions) const override;
   public virtual void shadowTreeDidFinishReactCommit(const facebook::react::ShadowTree& shadowTree) const override;
   public virtual void shadowTreeDidFinishTransaction(std::shared_ptr<const facebook::react::MountingCoordinator> mountingCoordinator, bool mountSynchronously) const override;
@@ -3674,7 +3667,6 @@ class facebook::react::UIManager : public facebook::react::ShadowTreeDelegate {
   public void synchronouslyUpdateViewOnUIThread(facebook::react::Tag tag, const folly::dynamic& props);
   public void unregisterCommitHook(facebook::react::UIManagerCommitHook& commitHook);
   public void unregisterMountHook(facebook::react::UIManagerMountHook& mountHook);
-  public void unstable_setAnimationBackend(std::shared_ptr<facebook::react::UIManagerAnimationBackend> animationBackend);
   public void updateShadowTree(std::unordered_map<facebook::react::Tag, folly::dynamic>&& tagToProps);
   public void updateState(const facebook::react::StateUpdate& stateUpdate) const;
   public void visitBinding(const std::function<void(const facebook::react::UIManager::UIManagerBinding& uiManagerBinding)>& callback, facebook::jsi::Runtime& runtime) const;
@@ -7506,7 +7498,6 @@ class facebook::react::jsinspector_modern::HostTargetDelegate : public facebook:
   public virtual void loadNetworkResource(const facebook::react::jsinspector_modern::LoadNetworkResourceRequest&, facebook::react::jsinspector_modern::ScopedExecutor<facebook::react::jsinspector_modern::NetworkRequestListener>) override;
   public virtual void onReload(const facebook::react::jsinspector_modern::HostTargetDelegate::PageReloadRequest& request) = 0;
   public virtual void onSetPausedInDebuggerMessage(const facebook::react::jsinspector_modern::HostTargetDelegate::OverlaySetPausedInDebuggerMessageRequest& request) = 0;
-  public virtual void unstable_onPerfIssueAdded(const facebook::react::jsinspector_modern::PerfIssuePayload&);
   public virtual ~HostTargetDelegate() override;
 }
 
@@ -7575,7 +7566,6 @@ class facebook::react::jsinspector_modern::ILocalConnection : public facebook::r
 
 class facebook::react::jsinspector_modern::IPageStatusListener : public facebook::react::jsinspector_modern::IDestructible {
   public virtual void onPageRemoved(int);
-  public virtual void unstable_onHostTargetAdded();
   public virtual ~IPageStatusListener() = 0;
 }
 

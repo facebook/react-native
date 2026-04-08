@@ -10,13 +10,14 @@ exclude_patterns:
 exclude_symbols:
   - "Fantom"
   - "NativeReactNativeFeatureFlags"
+  - "(?i)experimental"
+  - "unstable_"
   - "UnstableLegacy"
-  - "Experimental"
   - "TinyMap"
   - "packAnimatedProps"
   - "DO_NOT_USE"
-  - "_DEPRECATED"
-  - "DEPRECATED_"
+  - "_DEPRECATED|DEPRECATED_"
+  - "internal_"
 
 platforms:
   ReactCommon:
@@ -94,8 +95,8 @@ platforms:
       - "*/components/switch/androidswitch/*"
     exclude_symbols:
       - "Android"
-      - "(Deprecated)"
-      - "(Internal)"
+      - "\\(Deprecated\\)"
+      - "\\(Internal\\)"
     input_filter: true
     definitions:
       __cplusplus: 1
