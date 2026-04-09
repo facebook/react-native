@@ -1921,6 +1921,7 @@ PODS:
     - React-jsinspectornetwork
     - React-oscompat
     - React-timing
+    - React-utils
     - SocketRocket
   - React-jsitooling (0.83.4):
     - boost
@@ -2867,7 +2868,7 @@ SPEC CHECKSUMS:
   FBLazyVector: 82d1d7996af4c5850242966eb81e73f9a6dfab1e
   fmt: a40bb5bd0294ea969aaaba240a927bd33d878cdd
   glog: 5683914934d5b6e4240e497e0f4a3b42d1854183
-  hermes-engine: 420e3616ff59e380aefea760efb12026686b963a
+  hermes-engine: 02b1ea6892513a5b09716362f85b2511e4f9b754
   MyNativeView: 1af823608512b912ff60718a6d48bacbece9c1f0
   NativeCxxModuleExample: ed1893117fdd164b44e67b2a1d7f4620610a8081
   OCMock: 589f2c84dacb1f5aaf6e4cec1f292551fe748e74
@@ -2901,7 +2902,7 @@ SPEC CHECKSUMS:
   React-jsinspector: 5f756f86c8263f3e0e462f4b12b8da3b677686a4
   React-jsinspectorcdp: d6bcfdb732d99f6240e3ed6b82da58f7391a4ce2
   React-jsinspectornetwork: 9e2a9df177614e7e4a058c37ae2d7cefe59a7d8d
-  React-jsinspectortracing: 106ef2423c9c90c88d01f7e9b86cc86668d06bb4
+  React-jsinspectortracing: 3bd4664b3eef90bb9a1c61a012f904f162d2c721
   React-jsitooling: 5c7a6e98c27452fa0043c112ae53a7b499d08d30
   React-jsitracing: d68eea24f3feea58726ae44fab02d571b9011f36
   React-logger: 993e4b9793768764e0fdd379ad1d6582f7905463

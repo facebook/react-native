@@ -12,7 +12,9 @@ import com.facebook.proguard.annotations.DoNotStripAny
 import com.facebook.react.bridge.UiThreadUtil
 import com.facebook.react.common.annotations.FrameworkAPI
 import com.facebook.react.common.annotations.UnstableReactNativeAPI
-import com.facebook.react.devsupport.interfaces.TracingState
+import com.facebook.react.devsupport.inspector.FrameTimingSequence
+import com.facebook.react.devsupport.inspector.TracingState
+import com.facebook.react.devsupport.inspector.TracingStateListener
 import com.facebook.react.devsupport.perfmonitor.PerfMonitorInspectorTarget
 import com.facebook.react.devsupport.perfmonitor.PerfMonitorUpdateListener
 import com.facebook.soloader.SoLoader
@@ -41,11 +43,13 @@ internal class ReactHostInspectorTarget(reactHostImpl: ReactHostImpl) :
 
   external fun stopAndDiscardBackgroundTrace()
 
-  external fun tracingStateAsInt(): Int
+  external override fun getTracingState(): TracingState
 
-  override fun getTracingState(): TracingState {
-    return TracingState.entries[tracingStateAsInt()]
-  }
+  external fun registerTracingStateListener(listener: TracingStateListener): Long
+
+  external fun unregisterTracingStateListener(subscriptionId: Long)
+
+  external fun recordFrameTimings(frameTimingSequence: FrameTimingSequence)
 
   override fun addPerfMonitorListener(listener: PerfMonitorUpdateListener) {
     perfMonitorListeners.add(listener)
@@ -63,7 +67,7 @@ internal class ReactHostInspectorTarget(reactHostImpl: ReactHostImpl) :
   override fun resumeBackgroundTrace() {
     startBackgroundTrace()
     perfMonitorListeners.forEach { listener ->
-      listener.onRecordingStateChanged(TracingState.ENABLEDINBACKGROUNDMODE)
+      listener.onRecordingStateChanged(TracingState.ENABLED_IN_BACKGROUND_MODE)
     }
   }
 

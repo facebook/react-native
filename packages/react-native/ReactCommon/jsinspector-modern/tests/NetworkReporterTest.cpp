@@ -42,6 +42,7 @@ class NetworkReporterTestBase : public JsiIntegrationPortableTestBase<
             .enableNetworkEventReporting =
                 WithParamInterface<Params>::GetParam()
                     .enableNetworkEventReporting,
+            .networkInspectionEnabled = true,
         }) {}
 
   void SetUp() override {

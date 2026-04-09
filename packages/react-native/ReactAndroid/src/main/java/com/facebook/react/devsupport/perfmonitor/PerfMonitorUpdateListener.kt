@@ -7,7 +7,7 @@
 
 package com.facebook.react.devsupport.perfmonitor
 
-import com.facebook.react.devsupport.interfaces.TracingState
+import com.facebook.react.devsupport.inspector.TracingState
 
 /** [Experimental] An interface for subscribing to updates for the V2 Perf Monitor. */
 internal interface PerfMonitorUpdateListener {

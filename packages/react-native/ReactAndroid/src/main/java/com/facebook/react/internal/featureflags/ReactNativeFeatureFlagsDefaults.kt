@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<303c55a883b4798288716d168ce82d06>>
+ * @generated SignedSource<<fd1d27cb393bb274b44db0bcec73c7f8>>
  */
 
 /**
@@ -137,7 +137,11 @@ public open class ReactNativeFeatureFlagsDefaults : ReactNativeFeatureFlagsProvi
 
   override fun fuseboxEnabledRelease(): Boolean = false
 
+  override fun fuseboxFrameRecordingEnabled(): Boolean = false
+
   override fun fuseboxNetworkInspectionEnabled(): Boolean = true
+
+  override fun fuseboxScreenshotCaptureEnabled(): Boolean = false
 
   override fun hideOffscreenVirtualViewsOnIOS(): Boolean = false
 

@@ -653,6 +653,17 @@ const definitions: FeatureFlagDefinitions = {
       },
       ossReleaseStage: 'none',
     },
+    fuseboxFrameRecordingEnabled: {
+      defaultValue: false,
+      metadata: {
+        dateAdded: '2026-03-05',
+        description:
+          'Enable frame timings and screenshots support in the React Native DevTools CDP backend. This flag is global and should not be changed across React Host lifetimes.',
+        expectedReleaseValue: true,
+        purpose: 'experimentation',
+      },
+      ossReleaseStage: 'none',
+    },
     fuseboxNetworkInspectionEnabled: {
       defaultValue: true,
       metadata: {
@@ -663,6 +674,17 @@ const definitions: FeatureFlagDefinitions = {
         purpose: 'experimentation',
       },
       ossReleaseStage: 'stable',
+    },
+    fuseboxScreenshotCaptureEnabled: {
+      defaultValue: false,
+      metadata: {
+        dateAdded: '2026-04-01',
+        description:
+          'Enable Page.captureScreenshot CDP method support in the React Native DevTools CDP backend. This flag is global and should not be changed across React Host lifetimes.',
+        expectedReleaseValue: true,
+        purpose: 'experimentation',
+      },
+      ossReleaseStage: 'none',
     },
     hideOffscreenVirtualViewsOnIOS: {
       defaultValue: false,

@@ -111,8 +111,9 @@ class HostTargetSession {
     return hostAgent_.hasFuseboxClientConnected();
   }
 
-  void emitTraceRecording(tracing::TraceRecordingState traceRecording) const {
-    hostAgent_.emitExternalTraceRecording(std::move(traceRecording));
+  void emitHostTracingProfile(
+      tracing::HostTracingProfile tracingProfile) const {
+    hostAgent_.emitExternalTracingProfile(std::move(tracingProfile));
   }
 
  private:
@@ -328,6 +329,7 @@ namespace {
 struct StaticHostTargetMetadata {
   std::optional<bool> isProfilingBuild;
   std::optional<bool> networkInspectionEnabled;
+  std::optional<bool> frameRecordingEnabled;
 };
 
 StaticHostTargetMetadata getStaticHostMetadata() {
@@ -335,7 +337,8 @@ StaticHostTargetMetadata getStaticHostMetadata() {
 
   return {
       .isProfilingBuild = inspectorFlags.getIsProfilingBuild(),
-      .networkInspectionEnabled = inspectorFlags.getNetworkInspectionEnabled()};
+      .networkInspectionEnabled = inspectorFlags.getNetworkInspectionEnabled(),
+      .frameRecordingEnabled = inspectorFlags.getFrameRecordingEnabled()};
 }
 
 } // namespace
@@ -370,6 +373,10 @@ folly::dynamic createHostMetadataPayload(const HostTargetMetadata& metadata) {
     result["unstable_networkInspectionEnabled"] =
         staticMetadata.networkInspectionEnabled.value();
   }
+  if (staticMetadata.frameRecordingEnabled) {
+    result["unstable_frameRecordingEnabled"] =
+        staticMetadata.frameRecordingEnabled.value();
+  }
 
   return result;
 }
@@ -382,13 +389,13 @@ bool HostTarget::hasActiveSessionWithFuseboxClient() const {
   return hasActiveFuseboxSession;
 }
 
-void HostTarget::emitTraceRecordingForFirstFuseboxClient(
-    tracing::TraceRecordingState traceRecording) const {
+void HostTarget::emitTracingProfileForFirstFuseboxClient(
+    tracing::HostTracingProfile tracingProfile) const {
   bool emitted = false;
   sessions_.forEach([&](HostTargetSession& session) {
     if (emitted) {
       /**
-       * TraceRecordingState object is not copiable for performance reasons,
+       * HostTracingProfile object is not copiable for performance reasons,
        * because it could contain large Runtime sampling profile object.
        *
        * This approach would not work with multi-client debugger setup.
@@ -396,7 +403,7 @@ void HostTarget::emitTraceRecordingForFirstFuseboxClient(
       return;
     }
     if (session.hasFuseboxClient()) {
-      session.emitTraceRecording(std::move(traceRecording));
+      session.emitHostTracingProfile(std::move(tracingProfile));
       emitted = true;
     }
   });

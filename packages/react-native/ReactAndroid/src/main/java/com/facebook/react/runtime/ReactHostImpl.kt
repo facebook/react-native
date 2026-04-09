@@ -12,6 +12,7 @@ import android.content.Context
 import android.content.Intent
 import android.nfc.NfcAdapter
 import android.os.Bundle
+import androidx.core.graphics.createBitmap
 import com.facebook.common.logging.FLog
 import com.facebook.infer.annotation.Assertions
 import com.facebook.infer.annotation.ThreadConfined
@@ -43,8 +44,11 @@ import com.facebook.react.devsupport.DevMenuConfiguration
 import com.facebook.react.devsupport.DevSupportManagerBase
 import com.facebook.react.devsupport.DevSupportManagerFactory
 import com.facebook.react.devsupport.InspectorFlags
+import com.facebook.react.devsupport.inspector.FrameTimingsObserver
 import com.facebook.react.devsupport.inspector.InspectorNetworkHelper
 import com.facebook.react.devsupport.inspector.InspectorNetworkRequestListener
+import com.facebook.react.devsupport.inspector.TracingState
+import com.facebook.react.devsupport.inspector.TracingStateListener
 import com.facebook.react.devsupport.interfaces.BundleLoadCallback
 import com.facebook.react.devsupport.interfaces.DevSupportManager
 import com.facebook.react.devsupport.interfaces.DevSupportManager.PausedInDebuggerOverlayCommandListener
@@ -147,6 +151,7 @@ public class ReactHostImpl(
   private val beforeDestroyListeners: MutableList<() -> Unit> = CopyOnWriteArrayList()
 
   internal var reactHostInspectorTarget: ReactHostInspectorTarget? = null
+  private var frameTimingsObserver: FrameTimingsObserver? = null
 
   @Volatile private var hostInvalidated = false
 
@@ -246,6 +251,7 @@ public class ReactHostImpl(
     stateTracker.enterState("onHostResume(activity)")
 
     currentActivity = activity
+    frameTimingsObserver?.setCurrentWindow(activity?.window)
 
     maybeEnableDevSupport(true)
     reactLifecycleStateManager.moveToOnHostResume(currentReactContext, activity)
@@ -440,6 +446,43 @@ public class ReactHostImpl(
   @DoNotStrip
   private fun loadNetworkResource(url: String, listener: InspectorNetworkRequestListener) {
     InspectorNetworkHelper.loadNetworkResource(url, listener)
+  }
+
+  @DoNotStrip
+  private fun captureScreenshot(format: String, quality: Int): String? {
+    val activity = currentActivity ?: return null
+    val window = activity.window ?: return null
+    val decorView = window.decorView.rootView
+
+    val width = decorView.width
+    val height = decorView.height
+    if (width <= 0 || height <= 0) {
+      return null
+    }
+
+    val bitmap = createBitmap(width, height)
+    val canvas = android.graphics.Canvas(bitmap)
+    decorView.draw(canvas)
+
+    val outputStream = java.io.ByteArrayOutputStream()
+    val compressFormat =
+        when (format) {
+          "jpeg" -> android.graphics.Bitmap.CompressFormat.JPEG
+          "webp" ->
+              if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.R) {
+                android.graphics.Bitmap.CompressFormat.WEBP_LOSSY
+              } else {
+                @Suppress("DEPRECATION") android.graphics.Bitmap.CompressFormat.WEBP
+              }
+          else -> android.graphics.Bitmap.CompressFormat.PNG
+        }
+    val compressQuality = if (quality in 0..100) quality else 80
+
+    bitmap.compress(compressFormat, compressQuality, outputStream)
+    bitmap.recycle()
+
+    val bytes = outputStream.toByteArray()
+    return android.util.Base64.encodeToString(bytes, android.util.Base64.NO_WRAP)
   }
 
   /**
@@ -847,6 +890,7 @@ public class ReactHostImpl(
   private fun moveToHostDestroy(currentContext: ReactContext?) {
     reactLifecycleStateManager.moveToOnHostDestroy(currentContext)
     currentActivity = null
+    frameTimingsObserver?.setCurrentWindow(null)
   }
 
   private fun raiseSoftException(
@@ -1442,8 +1486,7 @@ public class ReactHostImpl(
                 // If the host has been invalidated, now that the current context/instance
                 // has been unregistered, we can safely destroy the host's inspector
                 // target.
-                reactHostInspectorTarget?.close()
-                reactHostInspectorTarget = null
+                destroyReactHostInspectorTarget()
               }
 
               // Step 1: Destroy DevSupportManager
@@ -1554,11 +1597,50 @@ public class ReactHostImpl(
 
   internal fun getOrCreateReactHostInspectorTarget(): ReactHostInspectorTarget? {
     if (reactHostInspectorTarget == null && InspectorFlags.getFuseboxEnabled()) {
-      // NOTE: ReactHostInspectorTarget only retains a weak reference to `this`.
-      reactHostInspectorTarget = ReactHostInspectorTarget(this)
+      reactHostInspectorTarget = createReactHostInspectorTarget()
     }
 
     return reactHostInspectorTarget
+  }
+
+  private fun createReactHostInspectorTarget(): ReactHostInspectorTarget {
+    // NOTE: ReactHostInspectorTarget only retains a weak reference to `this`.
+    val inspectorTarget = ReactHostInspectorTarget(this)
+    inspectorTarget.registerTracingStateListener(
+        TracingStateListener { state: TracingState, _screenshotsEnabled: Boolean ->
+          when (state) {
+            TracingState.ENABLED_IN_BACKGROUND_MODE,
+            TracingState.ENABLED_IN_CDP_MODE -> {
+              if (InspectorFlags.getFrameRecordingEnabled()) {
+                val observer =
+                    FrameTimingsObserver(
+                        _screenshotsEnabled,
+                        { frameTimingsSequence ->
+                          inspectorTarget.recordFrameTimings(frameTimingsSequence)
+                        },
+                    )
+                observer.setCurrentWindow(currentActivity?.window)
+                observer.start()
+                frameTimingsObserver = observer
+              }
+            }
+            TracingState.DISABLED -> {
+              frameTimingsObserver?.stop()
+              frameTimingsObserver = null
+            }
+          }
+        }
+    )
+
+    return inspectorTarget
+  }
+
+  private fun destroyReactHostInspectorTarget() {
+    frameTimingsObserver?.stop()
+    frameTimingsObserver = null
+
+    reactHostInspectorTarget?.close()
+    reactHostInspectorTarget = null
   }
 
   @ThreadConfined(ThreadConfined.UI)

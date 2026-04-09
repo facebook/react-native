@@ -7,6 +7,7 @@
 
 #pragma once
 
+#include <jsinspector-modern/tracing/TracingCategory.h>
 #include <react/timing/primitives.h>
 
 #include <folly/dynamic.h>
@@ -40,7 +41,7 @@ struct TraceEvent {
    * A comma separated list of categories for the event, configuring how
    * events are shown in the Trace Viewer UI.
    */
-  std::string cat;
+  Categories cat;
 
   /**
    * The event type. This is a single character which changes depending on the
