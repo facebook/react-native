@@ -27,6 +27,11 @@ class UIManagerViewTransitionDelegate {
 
   virtual void restoreViewTransitionName(const ShadowNode &shadowNode) {}
 
+  /*
+   * Start a view transition. mutationCallback and onReadyCallback MUST be
+   * called from a thread with access to the jsi::Runtime.
+   * onCompleteCallback may be called from any thread.
+   */
   virtual void startViewTransition(
       std::function<void()> mutationCallback,
       std::function<void()> onReadyCallback,

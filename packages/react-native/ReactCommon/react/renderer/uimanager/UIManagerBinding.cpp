@@ -1064,10 +1064,8 @@ jsi::Value UIManagerBinding::get(
           auto promiseConstructor =
               runtime.global().getPropertyAsFunction(runtime, "Promise");
 
-          auto readyResolveFunc =
-              std::make_shared<std::shared_ptr<jsi::Function>>();
-          auto finishedResolveFunc =
-              std::make_shared<std::shared_ptr<jsi::Function>>();
+          std::shared_ptr<jsi::Function> readyResolveFunc;
+          std::shared_ptr<jsi::Function> finishedResolveFunc;
 
           auto mutationFunc = std::make_shared<jsi::Function>(
               arguments[0].asObject(runtime).asFunction(runtime));
@@ -1078,14 +1076,13 @@ jsi::Value UIManagerBinding::get(
                   runtime,
                   jsi::PropNameID::forAscii(runtime, "readyExecutor"),
                   2,
-                  [readyResolveFunc](
+                  [&readyResolveFunc](
                       jsi::Runtime& runtime,
                       const jsi::Value& /*thisValue*/,
                       const jsi::Value* args,
                       size_t /*count*/) -> jsi::Value {
-                    auto onReadyFunc = std::make_shared<jsi::Function>(
+                    readyResolveFunc = std::make_shared<jsi::Function>(
                         args[0].asObject(runtime).asFunction(runtime));
-                    *readyResolveFunc = onReadyFunc;
                     return jsi::Value::undefined();
                   }));
 
@@ -1095,19 +1092,21 @@ jsi::Value UIManagerBinding::get(
                   runtime,
                   jsi::PropNameID::forAscii(runtime, "finishedExecutor"),
                   2,
-                  [finishedResolveFunc, viewTransitionDelegate](
+                  [&finishedResolveFunc, viewTransitionDelegate](
                       jsi::Runtime& rt,
                       const jsi::Value& /*thisValue*/,
                       const jsi::Value* args,
-                      size_t /*count*/) -> jsi::Value {
+                      size_t /*count*/) mutable -> jsi::Value {
                     auto onCompleteFunc = std::make_shared<jsi::Function>(
                         args[0].asObject(rt).asFunction(rt));
-                    *finishedResolveFunc = std::make_shared<jsi::Function>(
+                    finishedResolveFunc = std::make_shared<jsi::Function>(
                         jsi::Function::createFromHostFunction(
                             rt,
                             jsi::PropNameID::forAscii(rt, "finishedResolve"),
                             0,
-                            [onCompleteFunc, viewTransitionDelegate](
+                            [onCompleteFunc = std::move(onCompleteFunc),
+                             viewTransitionDelegate =
+                                 std::move(viewTransitionDelegate)](
                                 jsi::Runtime& runtime,
                                 const jsi::Value& /*thisValue*/,
                                 const jsi::Value* /*args*/,
@@ -1125,20 +1124,25 @@ jsi::Value UIManagerBinding::get(
 
           viewTransitionDelegate->startViewTransition(
               [&runtime, mutationFunc = std::move(mutationFunc)]() {
+                // mutationCallback is called synchronously by the
+                // delegate during startViewTransition, so &runtime is
+                // valid (it comes from the enclosing host function).
                 mutationFunc->call(runtime);
               },
               [readyResolveFunc = std::move(readyResolveFunc), &runtime]() {
-                if (*readyResolveFunc) {
-                  (*readyResolveFunc)->call(runtime);
+                // onReadyCallback is called synchronously on the JS
+                // thread by the delegate, so &runtime is valid.
+                if (readyResolveFunc) {
+                  readyResolveFunc->call(runtime);
                 }
               },
               [finishedResolveFunc = std::move(finishedResolveFunc),
-               uiManager]() {
-                uiManager->runtimeExecutor_(
+               runtimeExecutor = uiManager->runtimeExecutor_]() {
+                runtimeExecutor(
                     [finishedResolveFunc = std::move(finishedResolveFunc)](
                         jsi::Runtime& rt) mutable {
-                      if (*finishedResolveFunc) {
-                        (*finishedResolveFunc)->call(rt);
+                      if (finishedResolveFunc) {
+                        finishedResolveFunc->call(rt);
                       }
                     });
               });
