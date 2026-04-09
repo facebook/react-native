@@ -85,7 +85,7 @@ abstract class GeneratePackageListTask : DefaultTask() {
               }
           val interpolated = interpolateDynamicValues(packageInstance, packageName)
 
-          // Use FQCNs to avoid class name collisions between different packages.
+          // Use FQCNs to avoid class name collisions between different libraries.
           val packageImportPaths = dep.packageImportPaths
           val fqcnInstance =
               if (packageImportPaths != null) {
