@@ -51,14 +51,15 @@ const {main: downloadArtifacts} = require('./spm/download-spm-artifacts');
 const {main: generateAutolinking} = require('./spm/generate-spm-autolinking');
 const {main: generatePackage} = require('./spm/generate-spm-package');
 const {main: generateXcodeproj} = require('./spm/generate-spm-xcodeproj');
+const {findSourcePath} = require('./spm/generate-spm-package');
 const {
   defaultCacheDir,
+  deriveAppName,
   displayPath,
   findProjectRoot,
   makeLogger,
   readPackageJson,
   resolveAndWriteVFSOverlay,
-  toSwiftName,
 } = require('./spm/spm-utils');
 const {execSync} = require('child_process');
 const fs = require('fs');
@@ -509,12 +510,11 @@ async function main(argv /*:: ?: Array<string> */) /*: Promise<void> */ {
     log('Step 5/5: Skipping .xcodeproj generation (--skip-xcodeproj)');
   }
 
-  // Derive app name for display (same logic as generate-spm-package.js)
-  // Use projectRoot to find package.json (may be in parent dir).
   const appPkgJson = readPackageJson(projectRoot);
   const rawName =
     (appPkgJson != null ? appPkgJson.name : null) ?? path.basename(projectRoot);
-  const appDisplayName = toSwiftName(rawName.replace(/^@[^/]+\//, ''));
+  const sourcePath = findSourcePath(appRoot, rawName);
+  const appDisplayName = args.productName ?? deriveAppName(rawName, sourcePath);
 
   log('');
   log('SPM setup complete!');
