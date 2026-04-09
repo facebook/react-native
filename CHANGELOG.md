@@ -7,7 +7,7 @@
 - **Animated**: Fix unsafe rawPointer access in cloneMultiple. ([1d47693230](https://github.com/facebook/react-native/commit/1d476932305f2563d773eb04f0f78a9bdd2525e1) by [@coado](https://github.com/coado))
 - **Build**: Drop support for EOL Node.js lines and old minors. ([c9c601d61a](https://github.com/facebook/react-native/commit/c9c601d61af836d26ab628c2c8a30bae713ef010) by [@robhogan](https://github.com/robhogan))
 - **Jest**: Move Jest preset to new `react-native/jest-preset` package ([c4ae05534a](https://github.com/facebook/react-native/commit/c4ae05534ad5b6e6def35e736764f64b1f145a2b) by [@kitten](https://github.com/kitten))
-- **StyleSheet**: Remove deprecated `StyleSheet.absoluteFill` API ([5681db09b8](https://github.com/facebook/react-native/commit/5681db09b875e8c2b59b14df2300bad2b68d8a17) by [@huntie](https://github.com/huntie))
+- **StyleSheet**: Remove deprecated `StyleSheet.absoluteFillObject` API ([5681db09b8](https://github.com/facebook/react-native/commit/5681db09b875e8c2b59b14df2300bad2b68d8a17) by [@huntie](https://github.com/huntie))
 - **TypeScript**: Removing deprecated type aliases. Use the type directly. ([1813df743d](https://github.com/facebook/react-native/commit/1813df743db3852f3b667e36c31d564867c257fc) by [@sammy-SC](https://github.com/sammy-SC))
 - **TypeScript**: Removing deprecated type aliases. Use the type directly. ([796a9a8922](https://github.com/facebook/react-native/commit/796a9a892283feeb01e9ded21c40dc91409c1499) by [@sammy-SC](https://github.com/sammy-SC))
 
