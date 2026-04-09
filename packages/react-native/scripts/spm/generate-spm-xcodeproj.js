@@ -1074,25 +1074,31 @@ function main(argv /*:: ?: Array<string> */) /*: void */ {
     `${appName}.xcscheme`,
   );
 
-  fs.mkdirSync(path.dirname(pbxprojPath), {recursive: true});
-  fs.mkdirSync(path.dirname(xcworkspacePath), {recursive: true});
-  fs.mkdirSync(path.dirname(xcschemePath), {recursive: true});
+  // Only write files that actually changed to avoid triggering Xcode reloads.
+  function writeIfChanged(filePath /*: string */, content /*: string */) /*: boolean */ {
+    fs.mkdirSync(path.dirname(filePath), {recursive: true});
+    try {
+      if (fs.readFileSync(filePath, 'utf8') === content) {
+        return false;
+      }
+    } catch { /* file doesn't exist yet */ }
+    fs.writeFileSync(filePath, content, 'utf8');
+    return true;
+  }
 
-  fs.writeFileSync(pbxprojPath, pbxproj, 'utf8');
-  fs.writeFileSync(xcworkspacePath, generateXcworkspaceData(projName), 'utf8');
-  fs.writeFileSync(
-    xcschemePath,
-    generateXcscheme(appName, targetUUID, projName),
-    'utf8',
-  );
+  const xcworkspaceData = generateXcworkspaceData(projName);
+  const xcscheme = generateXcscheme(appName, targetUUID, projName);
 
-  log(`Generated: ${projName}.xcodeproj/project.pbxproj`);
-  log(
-    `Generated: ${projName}.xcodeproj/project.xcworkspace/contents.xcworkspacedata`,
-  );
-  log(
-    `Generated: ${projName}.xcodeproj/xcshareddata/xcschemes/${appName}.xcscheme`,
-  );
+  const wrote = [
+    [pbxprojPath, writeIfChanged(pbxprojPath, pbxproj)],
+    [xcworkspacePath, writeIfChanged(xcworkspacePath, xcworkspaceData)],
+    [xcschemePath, writeIfChanged(xcschemePath, xcscheme)],
+  ];
+
+  for (const [filePath, changed] of wrote) {
+    const rel = path.relative(appRoot, filePath);
+    log(changed ? `Generated: ${rel}` : `Unchanged: ${rel}`);
+  }
 
   // Ensure stub Package.swift files exist for all referenced SPM sub-packages
   // so Xcode can resolve packages before the first build phase runs.
