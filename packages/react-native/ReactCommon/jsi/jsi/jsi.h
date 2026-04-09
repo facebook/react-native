@@ -286,7 +286,7 @@ class JSI_EXPORT ISerialization : public ICast {
   /// It returns a shared pointer of an opaque Serialized object that can be
   /// deserialized multiple times. The lifetime of the Serialized object is not
   /// tied to the lifetime of the original object.
-  virtual std::shared_ptr<Serialized> serialize(Value& value) = 0;
+  virtual std::shared_ptr<Serialized> serialize(const Value& value) = 0;
 
   /// Given a Serialized object provided by \p serialized, deserialize it using
   /// the structured clone algorithm into a JS value in the current runtime.
@@ -302,7 +302,7 @@ class JSI_EXPORT ISerialization : public ICast {
   /// deserializeWithTransfer. The lifetime of the Serialized object is not tied
   /// to the lifetime of the original object.
   virtual std::unique_ptr<Serialized> serializeWithTransfer(
-      Value& value,
+      const Value& value,
       const Array& transferList) = 0;
 
   /// Using the structure clone algorithm, deserialize the object provided by \p
@@ -313,8 +313,8 @@ class JSI_EXPORT ISerialization : public ICast {
   /// serialized data entirely and make the serialized objects in the current
   /// runtime. Any transferred values in the serialized object will be owned by
   /// the current runtime.
-  //  This method returns an Array containing the deserialized values, where the
-  //  first element is the value passed into serializeWithTransfer,
+  ///  This method returns an Array containing the deserialized values, where
+  ///  the first element is the value passed into serializeWithTransfer,
   /// followed by all transferred values.
   virtual Array deserializeWithTransfer(
       std::unique_ptr<Serialized>& serialized) = 0;
