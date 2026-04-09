@@ -11,11 +11,11 @@
 'use strict';
 
 const {
-  toSwiftName,
   defaultCacheDir,
   displayPath,
   makeLogger,
   readPackageJson,
+  toSwiftName,
 } = require('../spm-utils');
 const fs = require('fs');
 const os = require('os');

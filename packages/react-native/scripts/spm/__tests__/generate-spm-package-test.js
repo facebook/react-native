@@ -11,9 +11,9 @@
 'use strict';
 
 const {
-  generateXCFrameworksPackageSwift,
-  generateInitialPackageSwift,
   findSourcePath,
+  generateInitialPackageSwift,
+  generateXCFrameworksPackageSwift,
 } = require('../generate-spm-package');
 const fs = require('fs');
 const os = require('os');
@@ -30,7 +30,9 @@ describe('generateXCFrameworksPackageSwift', () => {
       'ReactNativeDependencies',
       'hermes-engine',
     ]);
-    expect(result).toContain('.library(name: "ReactNative", targets: ["React"])');
+    expect(result).toContain(
+      '.library(name: "ReactNative", targets: ["React"])',
+    );
     expect(result).toContain(
       '.library(name: "ReactNativeDependencies", targets: ["ReactNativeDependencies"])',
     );

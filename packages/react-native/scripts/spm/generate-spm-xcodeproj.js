@@ -39,7 +39,12 @@ const {
   scanProjectFiles,
   serializePbxproj,
 } = require('./spm-pbxproj');
-const {deriveAppName, findProjectRoot, makeLogger, resolveReactNativeRoot, toSwiftName} = require('./spm-utils');
+const {
+  deriveAppName,
+  findProjectRoot,
+  makeLogger,
+  resolveReactNativeRoot,
+} = require('./spm-utils');
 const fs = require('fs');
 const path = require('path');
 const yargs = require('yargs');
@@ -100,7 +105,11 @@ function parseArgs(argv /*: Array<string> */) /*: GenerateXcodeprojArgs */ {
 // UUID helper – all UUIDs are deterministic from project + section + id
 // ---------------------------------------------------------------------------
 
-function uuid(projectName /*: string */, section /*: string */, id /*: string */) /*: string */ {
+function uuid(
+  projectName /*: string */,
+  section /*: string */,
+  id /*: string */,
+) /*: string */ {
   return generateUUID(`${projectName}:${section}:${id}`);
 }
 
@@ -111,14 +120,39 @@ function uuid(projectName /*: string */, section /*: string */, id /*: string */
 // Maps each SPM product to its sub-package path (relative to app root).
 // The xcodeproj must reference each sub-package directly so Xcode can
 // resolve the product dependencies — SPM doesn't expose transitive products.
-const SPM_PRODUCT_PACKAGES /*: Array<{product: string, packagePath: string, packageName: string}> */ = [
-  {product: 'ReactNative', packagePath: 'build/xcframeworks', packageName: 'ReactNative'},
-  {product: 'ReactNativeDependencies', packagePath: 'build/xcframeworks', packageName: 'ReactNative'},
-  {product: 'hermes-engine', packagePath: 'build/xcframeworks', packageName: 'ReactNative'},
-  {product: 'Autolinked', packagePath: 'autolinked', packageName: 'Autolinked'},
-  {product: 'ReactCodegen', packagePath: 'build/generated/ios', packageName: 'React-GeneratedCode'},
-  {product: 'ReactAppDependencyProvider', packagePath: 'build/generated/ios', packageName: 'React-GeneratedCode'},
-];
+const SPM_PRODUCT_PACKAGES /*: Array<{product: string, packagePath: string, packageName: string}> */ =
+  [
+    {
+      product: 'ReactNative',
+      packagePath: 'build/xcframeworks',
+      packageName: 'ReactNative',
+    },
+    {
+      product: 'ReactNativeDependencies',
+      packagePath: 'build/xcframeworks',
+      packageName: 'ReactNative',
+    },
+    {
+      product: 'hermes-engine',
+      packagePath: 'build/xcframeworks',
+      packageName: 'ReactNative',
+    },
+    {
+      product: 'Autolinked',
+      packagePath: 'autolinked',
+      packageName: 'Autolinked',
+    },
+    {
+      product: 'ReactCodegen',
+      packagePath: 'build/generated/ios',
+      packageName: 'React-GeneratedCode',
+    },
+    {
+      product: 'ReactAppDependencyProvider',
+      packagePath: 'build/generated/ios',
+      packageName: 'React-GeneratedCode',
+    },
+  ];
 
 const SPM_PRODUCTS = SPM_PRODUCT_PACKAGES.map(p => p.product);
 
@@ -126,7 +160,8 @@ const SPM_PRODUCTS = SPM_PRODUCT_PACKAGES.map(p => p.product);
 // pbxproj generator
 // ---------------------------------------------------------------------------
 
-function generatePbxproj(opts /*: {
+function generatePbxproj(
+  opts /*: {
   appName: string,
   sourcePath: string,
   iosVersion: string,
@@ -135,8 +170,17 @@ function generatePbxproj(opts /*: {
   files: {sources: Array<string>, headers: Array<string>, resources: Array<string>, plists: Array<string>},
   hasPrivacyInfo: boolean,
   entryFile?: string,
-} */) /*: string */ {
-  const {appName, sourcePath, iosVersion, bundleIdentifier, reactNativePath, files, hasPrivacyInfo} = opts;
+} */,
+) /*: string */ {
+  const {
+    appName,
+    sourcePath,
+    iosVersion,
+    bundleIdentifier,
+    reactNativePath,
+    files,
+    hasPrivacyInfo,
+  } = opts;
   const entryFile = opts.entryFile ?? 'index.js';
 
   // Well-known UUIDs
@@ -146,24 +190,60 @@ function generatePbxproj(opts /*: {
   const productsGroupUUID = uuid(appName, 'PBXGroup', 'Products');
   const targetUUID = uuid(appName, 'PBXNativeTarget', appName);
   const productRefUUID = uuid(appName, 'PBXFileReference', `${appName}.app`);
-  const sourcesBuildPhaseUUID = uuid(appName, 'PBXSourcesBuildPhase', 'Sources');
-  const resourcesBuildPhaseUUID = uuid(appName, 'PBXResourcesBuildPhase', 'Resources');
-  const frameworksBuildPhaseUUID = uuid(appName, 'PBXFrameworksBuildPhase', 'Frameworks');
-  const bundleScriptUUID = uuid(appName, 'PBXShellScriptBuildPhase', 'BundleJS');
+  const sourcesBuildPhaseUUID = uuid(
+    appName,
+    'PBXSourcesBuildPhase',
+    'Sources',
+  );
+  const resourcesBuildPhaseUUID = uuid(
+    appName,
+    'PBXResourcesBuildPhase',
+    'Resources',
+  );
+  const frameworksBuildPhaseUUID = uuid(
+    appName,
+    'PBXFrameworksBuildPhase',
+    'Frameworks',
+  );
+  const bundleScriptUUID = uuid(
+    appName,
+    'PBXShellScriptBuildPhase',
+    'BundleJS',
+  );
 
   const projectConfigListUUID = uuid(appName, 'XCConfigurationList', 'project');
   const targetConfigListUUID = uuid(appName, 'XCConfigurationList', 'target');
-  const projectDebugConfigUUID = uuid(appName, 'XCBuildConfiguration', 'project:Debug');
-  const projectReleaseConfigUUID = uuid(appName, 'XCBuildConfiguration', 'project:Release');
-  const targetDebugConfigUUID = uuid(appName, 'XCBuildConfiguration', 'target:Debug');
-  const targetReleaseConfigUUID = uuid(appName, 'XCBuildConfiguration', 'target:Release');
+  const projectDebugConfigUUID = uuid(
+    appName,
+    'XCBuildConfiguration',
+    'project:Debug',
+  );
+  const projectReleaseConfigUUID = uuid(
+    appName,
+    'XCBuildConfiguration',
+    'project:Release',
+  );
+  const targetDebugConfigUUID = uuid(
+    appName,
+    'XCBuildConfiguration',
+    'target:Debug',
+  );
+  const targetReleaseConfigUUID = uuid(
+    appName,
+    'XCBuildConfiguration',
+    'target:Release',
+  );
   // Build unique sub-package references (deduplicated by path)
-  const uniquePackages /*: Array<{packagePath: string, packageName: string}> */ = [];
-  const seenPaths = new Set/*:: <string> */();
+  const uniquePackages /*: Array<{packagePath: string, packageName: string}> */ =
+    [];
+  const seenPaths = new Set /*:: <string> */();
   for (const entry of SPM_PRODUCT_PACKAGES) {
     if (!seenPaths.has(entry.packagePath)) {
       seenPaths.add(entry.packagePath);
-      uniquePackages.push({packagePath: entry.packagePath, packageName: entry.packageName});
+      uniquePackages.push({
+        packagePath: entry.packagePath,
+        packageName: entry.packageName,
+      });
     }
   }
   const localPkgRefUUIDs = uniquePackages.map(pkg =>
@@ -174,8 +254,10 @@ function generatePbxproj(opts /*: {
 
   const buildFileEntries /*: Array<PbxEntry> */ = [];
   const fileRefEntries /*: Array<PbxEntry> */ = [];
-  const sourcesBuildFileUUIDs /*: Array<{uuid: string, comment: string}> */ = [];
-  const resourcesBuildFileUUIDs /*: Array<{uuid: string, comment: string}> */ = [];
+  const sourcesBuildFileUUIDs /*: Array<{uuid: string, comment: string}> */ =
+    [];
+  const resourcesBuildFileUUIDs /*: Array<{uuid: string, comment: string}> */ =
+    [];
   const sourcesGroupChildren /*: Array<{uuid: string, comment: string}> */ = [];
 
   // Helper: create a PBXFileReference entry and add to group children.
@@ -199,7 +281,12 @@ function generatePbxproj(opts /*: {
   }
 
   // Helper: create a PBXBuildFile entry linking to a file reference.
-  function addBuildFile(prefix /*: string */, file /*: string */, fileRefId /*: string */, phase /*: string */) /*: string */ {
+  function addBuildFile(
+    prefix /*: string */,
+    file /*: string */,
+    fileRefId /*: string */,
+    phase /*: string */,
+  ) /*: string */ {
     const fileName = path.basename(file);
     const buildFileId = uuid(appName, 'PBXBuildFile', `${prefix}:${file}`);
     buildFileEntries.push({
@@ -217,7 +304,10 @@ function generatePbxproj(opts /*: {
   for (const file of files.sources) {
     const fileRefId = addFileRef(file);
     const buildFileId = addBuildFile('src', file, fileRefId, 'Sources');
-    sourcesBuildFileUUIDs.push({uuid: buildFileId, comment: `${path.basename(file)} in Sources`});
+    sourcesBuildFileUUIDs.push({
+      uuid: buildFileId,
+      comment: `${path.basename(file)} in Sources`,
+    });
   }
 
   // Process header files (file reference only, no build phase)
@@ -229,7 +319,10 @@ function generatePbxproj(opts /*: {
   for (const file of files.resources) {
     const fileRefId = addFileRef(file);
     const buildFileId = addBuildFile('res', file, fileRefId, 'Resources');
-    resourcesBuildFileUUIDs.push({uuid: buildFileId, comment: `${path.basename(file)} in Resources`});
+    resourcesBuildFileUUIDs.push({
+      uuid: buildFileId,
+      comment: `${path.basename(file)} in Resources`,
+    });
   }
 
   // Process Info.plist (file reference only, no build phase)
@@ -238,8 +331,16 @@ function generatePbxproj(opts /*: {
   }
 
   // PrivacyInfo.xcprivacy (lives at app root, outside source dir)
-  const privacyInfoFileRefUUID = uuid(appName, 'PBXFileReference', 'PrivacyInfo.xcprivacy');
-  const privacyInfoBuildFileUUID = uuid(appName, 'PBXBuildFile', 'res:PrivacyInfo.xcprivacy');
+  const privacyInfoFileRefUUID = uuid(
+    appName,
+    'PBXFileReference',
+    'PrivacyInfo.xcprivacy',
+  );
+  const privacyInfoBuildFileUUID = uuid(
+    appName,
+    'PBXBuildFile',
+    'res:PrivacyInfo.xcprivacy',
+  );
   if (hasPrivacyInfo) {
     fileRefEntries.push({
       uuid: privacyInfoFileRefUUID,
@@ -298,7 +399,11 @@ function generatePbxproj(opts /*: {
     });
 
     // Link this product dependency to its sub-package reference
-    const pkgRefUUID = uuid(appName, 'XCLocalSwiftPackageReference', packagePath);
+    const pkgRefUUID = uuid(
+      appName,
+      'XCLocalSwiftPackageReference',
+      packagePath,
+    );
     spmDepEntries.push({
       uuid: depUUID,
       comment: product,
@@ -333,10 +438,9 @@ REACT_NATIVE_XCODE="${reactNativePath}/scripts/react-native-xcode.sh"
   sections.PBXFileReference = fileRefEntries;
 
   // PBXFrameworksBuildPhase
-  const frameworkBuildFileUUIDs = spmDepUUIDs.map(depUUID => {
-    const product = SPM_PRODUCTS[spmDepUUIDs.indexOf(depUUID)];
-    return uuid(appName, 'PBXBuildFile', `spm:${product}`);
-  });
+  const frameworkBuildFileUUIDs = SPM_PRODUCTS.map(product =>
+    uuid(appName, 'PBXBuildFile', `spm:${product}`),
+  );
   sections.PBXFrameworksBuildPhase = [
     {
       uuid: frameworksBuildPhaseUUID,
@@ -351,11 +455,11 @@ REACT_NATIVE_XCODE="${reactNativePath}/scripts/react-native-xcode.sh"
   ];
 
   // PBXGroup
-  const mainGroupChildren = [
-    `${sourcesGroupUUID} /* ${sourcePath} */`,
-  ];
+  const mainGroupChildren = [`${sourcesGroupUUID} /* ${sourcePath} */`];
   if (hasPrivacyInfo) {
-    mainGroupChildren.push(`${privacyInfoFileRefUUID} /* PrivacyInfo.xcprivacy */`);
+    mainGroupChildren.push(
+      `${privacyInfoFileRefUUID} /* PrivacyInfo.xcprivacy */`,
+    );
   }
   mainGroupChildren.push(`${productsGroupUUID} /* Products */`);
 
@@ -392,7 +496,11 @@ REACT_NATIVE_XCODE="${reactNativePath}/scripts/react-native-xcode.sh"
   ];
 
   // PBXNativeTarget
-  const syncAutolinkingScriptUUID = uuid(appName, 'PBXShellScriptBuildPhase', 'SyncAutolinking');
+  const syncAutolinkingScriptUUID = uuid(
+    appName,
+    'PBXShellScriptBuildPhase',
+    'SyncAutolinking',
+  );
   const vfsScriptUUID = uuid(appName, 'PBXShellScriptBuildPhase', 'PrepareVFS');
   const buildPhasesList = [
     `${syncAutolinkingScriptUUID} /* Sync SPM Autolinking */`,
@@ -557,7 +665,12 @@ fi
 `;
 
   // Helper: create a PBXShellScriptBuildPhase entry
-  function shellScriptPhase(phaseUUID /*: string */, name /*: string */, script /*: string */, opts /*: {inputPaths?: string, outputPaths?: string} */ = {}) /*: PbxEntry */ {
+  function shellScriptPhase(
+    phaseUUID /*: string */,
+    name /*: string */,
+    script /*: string */,
+    options /*: {inputPaths?: string, outputPaths?: string} */ = {},
+  ) /*: PbxEntry */ {
     const empty = '(\n\t\t\t)';
     return {
       uuid: phaseUUID,
@@ -567,10 +680,10 @@ fi
         buildActionMask: '2147483647',
         files: empty,
         inputFileListPaths: empty,
-        inputPaths: opts.inputPaths ?? empty,
+        inputPaths: options.inputPaths ?? empty,
         name: quoteIfNeeded(name),
         outputFileListPaths: empty,
-        outputPaths: opts.outputPaths ?? empty,
+        outputPaths: options.outputPaths ?? empty,
         runOnlyForDeploymentPostprocessing: '0',
         shellPath: '/bin/sh',
         shellScript: quoteIfNeeded(script),
@@ -579,7 +692,11 @@ fi
   }
 
   sections.PBXShellScriptBuildPhase = [
-    shellScriptPhase(syncAutolinkingScriptUUID, 'Sync SPM Autolinking', syncAutolinkingScript),
+    shellScriptPhase(
+      syncAutolinkingScriptUUID,
+      'Sync SPM Autolinking',
+      syncAutolinkingScript,
+    ),
     shellScriptPhase(vfsScriptUUID, 'Prepare VFS Overlay', prepareVfsScript, {
       inputPaths: `(\n\t\t\t\t"$(SRCROOT)/build/xcframeworks/React-VFS.yaml",\n\t\t\t)`,
       outputPaths: `(\n\t\t\t\t"$(DERIVED_FILE_DIR)/React-VFS.yaml",\n\t\t\t)`,
@@ -607,10 +724,13 @@ fi
   const releaseProjectSettings = `{\n\t\t\t\tALWAYS_SEARCH_USER_PATHS = NO;\n\t\t\t\tCLANG_CXX_LANGUAGE_STANDARD = "c++20";\n\t\t\t\tCLANG_ENABLE_MODULES = YES;\n\t\t\t\tCLANG_ENABLE_OBJC_ARC = YES;\n\t\t\t\tCOPY_PHASE_STRIP = YES;\n\t\t\t\tDEBUG_INFORMATION_FORMAT = "dwarf-with-dsym";\n\t\t\t\tENABLE_NS_ASSERTIONS = NO;\n\t\t\t\tENABLE_STRICT_OBJC_MSGSEND = YES;\n\t\t\t\tGCC_NO_COMMON_BLOCKS = YES;\n\t\t\t\tIPHONEOS_DEPLOYMENT_TARGET = ${iosVersion};\n\t\t\t\tSDKROOT = iphoneos;\n\t\t\t\tSUPPORTED_PLATFORMS = "iphoneos iphonesimulator";\n\t\t\t\tSUPPORTS_MACCATALYST = NO;\n\t\t\t\tSWIFT_COMPILATION_MODE = wholemodule;\n\t\t\t\t\t\t\t\tSWIFT_OPTIMIZATION_LEVEL = "-O";\n\t\t\t\tSWIFT_VERSION = 5.0;\n\t\t\t\tVALIDATE_PRODUCT = YES;\n\t\t\t}`;
 
   // Find Info.plist path
-  const infoPlistFile = files.plists.find(p => path.basename(p) === 'Info.plist');
-  const infoPlistSetting = infoPlistFile != null
-    ? `"$(SRCROOT)/${sourcePath}/${infoPlistFile}"`
-    : `"$(SRCROOT)/${sourcePath}/Info.plist"`;
+  const infoPlistFile = files.plists.find(
+    p => path.basename(p) === 'Info.plist',
+  );
+  const infoPlistSetting =
+    infoPlistFile != null
+      ? `"$(SRCROOT)/${sourcePath}/${infoPlistFile}"`
+      : `"$(SRCROOT)/${sourcePath}/Info.plist"`;
 
   const targetBuildSettings = (isDebug /*: boolean */) => {
     const vfsOverlay = '$(DERIVED_FILE_DIR)/React-VFS.yaml';
@@ -742,7 +862,11 @@ function generateXcworkspaceData(projName /*: string */) /*: string */ {
 // xcscheme generator
 // ---------------------------------------------------------------------------
 
-function generateXcscheme(appName /*: string */, targetUUID /*: string */, projName /*: string */) /*: string */ {
+function generateXcscheme(
+  appName /*: string */,
+  targetUUID /*: string */,
+  projName /*: string */,
+) /*: string */ {
   return `<?xml version="1.0" encoding="UTF-8"?>
 <Scheme
    LastUpgradeVersion = "1600"
@@ -868,7 +992,7 @@ ${productLines}
  */
 function ensureStubPackages(appRoot /*: string */) /*: void */ {
   // Derive stub definitions from SPM_PRODUCT_PACKAGES
-  const byPath = new Map/*:: <string, StubPackageDef> */();
+  const byPath = new Map /*:: <string, StubPackageDef> */();
   for (const entry of SPM_PRODUCT_PACKAGES) {
     const existing = byPath.get(entry.packagePath);
     if (existing != null) {
@@ -897,7 +1021,11 @@ function ensureStubPackages(appRoot /*: string */) /*: void */ {
     fs.mkdirSync(stubDir, {recursive: true});
     const stubSwift = path.join(stubDir, 'Stub.swift');
     if (!fs.existsSync(stubSwift)) {
-      fs.writeFileSync(stubSwift, '// Placeholder — replaced during first build.\n', 'utf8');
+      fs.writeFileSync(
+        stubSwift,
+        '// Placeholder — replaced during first build.\n',
+        'utf8',
+      );
     }
 
     log(`Wrote stub Package.swift: ${relPath}/Package.swift`);
@@ -917,7 +1045,9 @@ function main(argv /*:: ?: Array<string> */) /*: void */ {
   const projectRoot = findProjectRoot(appRoot);
   const pkgPath = path.join(projectRoot, 'package.json');
   // $FlowFixMe[incompatible-type]
-  const pkgJson /*: {name?: string, main?: string} | null */ = fs.existsSync(pkgPath)
+  const pkgJson /*: {name?: string, main?: string} | null */ = fs.existsSync(
+    pkgPath,
+  )
     ? JSON.parse(fs.readFileSync(pkgPath, 'utf8'))
     : null;
   const rawName = pkgJson?.name ?? path.basename(projectRoot);
@@ -960,7 +1090,9 @@ function main(argv /*:: ?: Array<string> */) /*: void */ {
   const privacyInfoPath = path.join(appRoot, 'PrivacyInfo.xcprivacy');
   const hasPrivacyInfo = fs.existsSync(privacyInfoPath);
 
-  log(`Sources: ${files.sources.length}, Headers: ${files.headers.length}, Resources: ${files.resources.length}${hasPrivacyInfo ? ' + PrivacyInfo.xcprivacy' : ''}`);
+  log(
+    `Sources: ${files.sources.length}, Headers: ${files.headers.length}, Resources: ${files.resources.length}${hasPrivacyInfo ? ' + PrivacyInfo.xcprivacy' : ''}`,
+  );
 
   // Generate project name
   const projName = `${appName}-SPM`;
@@ -1002,11 +1134,19 @@ function main(argv /*:: ?: Array<string> */) /*: void */ {
 
   fs.writeFileSync(pbxprojPath, pbxproj, 'utf8');
   fs.writeFileSync(xcworkspacePath, generateXcworkspaceData(projName), 'utf8');
-  fs.writeFileSync(xcschemePath, generateXcscheme(appName, targetUUID, projName), 'utf8');
+  fs.writeFileSync(
+    xcschemePath,
+    generateXcscheme(appName, targetUUID, projName),
+    'utf8',
+  );
 
   log(`Generated: ${projName}.xcodeproj/project.pbxproj`);
-  log(`Generated: ${projName}.xcodeproj/project.xcworkspace/contents.xcworkspacedata`);
-  log(`Generated: ${projName}.xcodeproj/xcshareddata/xcschemes/${appName}.xcscheme`);
+  log(
+    `Generated: ${projName}.xcodeproj/project.xcworkspace/contents.xcworkspacedata`,
+  );
+  log(
+    `Generated: ${projName}.xcodeproj/xcshareddata/xcschemes/${appName}.xcscheme`,
+  );
 
   // Ensure stub Package.swift files exist for all referenced SPM sub-packages
   // so Xcode can resolve packages before the first build phase runs.

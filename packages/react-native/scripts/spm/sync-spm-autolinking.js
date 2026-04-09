@@ -69,12 +69,9 @@ async function main(argv /*:: ?: Array<string> */) /*: Promise<void> */ {
   const artifactsJsonPath = path.join(xcfwLinksDir, 'artifacts.json');
   let artifactsDir /*: string | null */ = null;
 
-  let needsDownload = !fs.existsSync(artifactsJsonPath);
-  // Also check if symlinks are broken (pointing to deleted cache)
-  if (!needsDownload) {
-    const reactXcfw = path.join(xcfwLinksDir, 'React.xcframework');
-    needsDownload = !fs.existsSync(reactXcfw);
-  }
+  // Check if artifacts are missing or symlinks are broken (pointing to deleted cache)
+  const needsDownload = !fs.existsSync(artifactsJsonPath)
+    || !fs.existsSync(path.join(xcfwLinksDir, 'React.xcframework'));
 
   if (needsDownload) {
     const pkg = readPackageJson(reactNativeRoot);

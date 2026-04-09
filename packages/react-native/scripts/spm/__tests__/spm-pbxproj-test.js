@@ -11,8 +11,8 @@
 'use strict';
 
 const {
-  generateUUID,
   fileTypeForExtension,
+  generateUUID,
   quoteIfNeeded,
   scanProjectFiles,
   serializePbxproj,

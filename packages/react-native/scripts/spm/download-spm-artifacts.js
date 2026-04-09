@@ -358,35 +358,25 @@ function formatSpeed(bytesPerSec /*: number */) /*: string */ {
  */
 function createProgressDisplay(lineCount /*: number */) /*: {
   update: (index: number, text: string) => void,
-  finish: () => void,
 } */ {
   const lines /*: Array<string> */ = new Array(lineCount).fill('');
   let initialized = false;
 
-  function init() {
-    if (initialized) return;
-    // Print empty lines to reserve space
-    for (let i = 0; i < lineCount; i++) {
-      process.stdout.write('\n');
-    }
-    initialized = true;
-  }
-
   function update(index /*: number */, text /*: string */) {
-    init();
+    if (!initialized) {
+      for (let i = 0; i < lineCount; i++) {
+        process.stdout.write('\n');
+      }
+      initialized = true;
+    }
     lines[index] = text;
-    // Move cursor up from bottom to the target line, clear it, write, then move back down
     const moveUp = lineCount - index;
     process.stdout.write(
       `\x1b[${moveUp}A\x1b[2K\r${text}\x1b[${moveUp}B\r`,
     );
   }
 
-  function finish() {
-    // Move to after the last line (cursor is already at the bottom)
-  }
-
-  return {update, finish};
+  return {update};
 }
 
 /*::
@@ -721,7 +711,6 @@ async function main(argv /*:: ?: Array<string> */) /*: Promise<void> */ {
       }
     }),
   );
-  progress.finish();
   log('');
 
   // Write artifacts.json – maps SPM target name → xcframework path + source URL
@@ -741,27 +730,22 @@ async function main(argv /*:: ?: Array<string> */) /*: Promise<void> */ {
 
   // Summary
   log('='.repeat(60));
-  let hasOk = false;
-  let hasFailed = false;
-  for (const r of results) {
-    if (r.error == null) {
-      if (!hasOk) {
-        log('Extracted xcframeworks:');
-        log('');
-        hasOk = true;
-      }
+  const succeeded = results.filter(r => r.error == null);
+  const failed = results.filter(r => r.error != null);
+  if (succeeded.length > 0) {
+    log('Extracted xcframeworks:');
+    log('');
+    for (const r of succeeded) {
       log(`  ${r.name}`);
       log(`    path: ${displayPath(r.xcframeworkPath)}`);
       log('');
-    } else {
-      if (!hasFailed) {
-        log('Failed:');
-        hasFailed = true;
-      }
-      warn(`  ${r.name}: ${r.error}`);
     }
   }
-  if (hasFailed) {
+  if (failed.length > 0) {
+    log('Failed:');
+    for (const r of failed) {
+      warn(`  ${r.name}: ${r.error}`);
+    }
     log('');
   }
   log(`Artifact index: ${displayPath(artifactsJsonPath)}`);

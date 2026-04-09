@@ -392,47 +392,35 @@ function generateTargetDecl(
     ? `\n${indent}    dependencies: [.product(name: "ReactNative", package: "ReactNative")],`
     : '';
 
-  // C settings (Objective-C .m files): VFS overlay for header identity mapping
-  // (e.g. <React/RCTViewManager.h> → React_Core/React/RCTViewManager.h),
-  // React xcframework headers (merged layout),
-  // + React_RCTAppDelegate subdirectory for bare imports like #import <RCTDefaultReactNativeFactoryDelegate.h>.
-  const cFlags = hasXcfwHeaders
-    ? `["-ivfsoverlay", vfsOverlay, "-I", xcfwHeaders, "-I", xcfwHeaders + "/React_RCTAppDelegate"]`
-    : `[]`;
+  // C settings (Objective-C .m files): VFS overlay for header identity mapping,
+  // React xcframework headers (merged layout), + React_RCTAppDelegate subdirectory.
+  const cFlagItems /*: Array<string> */ = hasXcfwHeaders
+    ? ['"-ivfsoverlay", vfsOverlay', '"-I", xcfwHeaders', '"-I", xcfwHeaders + "/React_RCTAppDelegate"']
+    : [];
 
   // C++ settings (.mm, .cpp): same as C but also -I depsHeaders for glog/folly/boost.
   // -fno-implicit-module-maps prevents clang from matching <react/...> to
   // React.framework (case-insensitive), allowing -I and VFS to resolve C++ headers.
-  const cxxFlags =
+  const cxxFlagItems /*: Array<string> */ =
     hasXcfwHeaders && hasDepsHeaders
-      ? `["-fno-implicit-module-maps", "-ivfsoverlay", vfsOverlay, "-I", xcfwHeaders, "-I", xcfwHeaders + "/React_RCTAppDelegate", "-I", depsHeaders]`
-      : cFlags;
+      ? ['"-fno-implicit-module-maps"', ...cFlagItems, '"-I", depsHeaders']
+      : [...cFlagItems];
 
   // Extra C++ include paths (e.g. for codegen output directories outside package).
-  // These are emitted as "-I", appRoot + "/rel/path" entries appended to the cxxSettings
-  // unsafeFlags array. Using appRoot-relative Swift expressions avoids hardcoded absolute paths.
-  const extraCxxIFlags =
-    target.extraCxxAbsHeaderPaths && target.extraCxxAbsHeaderPaths.length > 0
-      ? target.extraCxxAbsHeaderPaths
-          .map(p => {
-            if (target._appRoot != null) {
-              const rel = path.relative(target._appRoot, p);
-              return `, "-I", appRoot + "/${rel}"`;
-            }
-            return `, "-I", "${p}"`;
-          })
-          .join('')
-      : '';
+  // Using appRoot-relative Swift expressions avoids hardcoded absolute paths.
+  if (target.extraCxxAbsHeaderPaths && target.extraCxxAbsHeaderPaths.length > 0) {
+    for (const p of target.extraCxxAbsHeaderPaths) {
+      if (target._appRoot != null) {
+        const rel = path.relative(target._appRoot, p);
+        cxxFlagItems.push(`"-I", appRoot + "/${rel}"`);
+      } else {
+        cxxFlagItems.push(`"-I", "${p}"`);
+      }
+    }
+  }
 
-  // Merge cxxFlags with extra C++ include paths.
-  // cxxFlags is e.g. '["-I", xcfwHeaders]' or '[]'.  extraCxxIFlags starts with ', "-I"...'.
-  // When cxxFlags is '[]' (empty), strip the leading comma from extras.
-  const cxxBase = cxxFlags.slice(0, -1); // remove trailing ']'
-  const trimmedExtras =
-    cxxBase === '[' && extraCxxIFlags.startsWith(', ')
-      ? extraCxxIFlags.slice(2)
-      : extraCxxIFlags;
-  const cxxFlagsWithExtras = cxxBase + trimmedExtras + ']';
+  const cFlags = `[${cFlagItems.join(', ')}]`;
+  const cxxFlagsWithExtras = `[${cxxFlagItems.join(', ')}]`;
 
   const resourcesLine =
     target.resources && target.resources.length > 0

@@ -277,43 +277,32 @@ function generateInitialPackageSwift(opts /*: {
 
   // Resources and app entry point are handled by the .xcodeproj, not by SPM.
   // Exclude them so SPM doesn't try to process them.
-  // main.m must be excluded because SPM treats it as an executable entry point,
-  // which is incompatible with .library products.
-  const resourceExcludes = [];
+  // main.m/main.swift must be excluded because SPM treats them as executable
+  // entry points, which is incompatible with .library products.
   const sourceDir = path.join(appRoot, sourcePath);
-  if (fs.existsSync(path.join(sourceDir, 'main.m'))) {
-    resourceExcludes.push('main.m');
-  }
-  if (fs.existsSync(path.join(sourceDir, 'main.swift'))) {
-    resourceExcludes.push('main.swift');
-  }
-  if (fs.existsSync(path.join(sourceDir, 'Info.plist'))) {
-    resourceExcludes.push('Info.plist');
-  }
-  if (fs.existsSync(path.join(sourceDir, 'Images.xcassets'))) {
-    resourceExcludes.push('Images.xcassets');
-  }
-  if (fs.existsSync(path.join(sourceDir, 'LaunchScreen.storyboard'))) {
-    resourceExcludes.push('LaunchScreen.storyboard');
-  }
+  const resourceExcludes = ['main.m', 'main.swift', 'Info.plist', 'Images.xcassets', 'LaunchScreen.storyboard']
+    .filter(f => fs.existsSync(path.join(sourceDir, f)));
 
-  let targetsSection;
-  if (isMixed) {
-    const excludeFiles = [...swiftFiles, ...resourceExcludes];
-    const swiftExclude = `\n            exclude: [${excludeFiles.map(f => `"${f}"`).join(', ')}],`;
-    const swiftSources = swiftFiles.map(f => `"${f}"`).join(', ');
-
-    targetsSection = `        .target(
-            name: "${targetName}",
-            dependencies: [
+  const spmDeps = `dependencies: [
                 .product(name: "ReactNative", package: "ReactNative"),
                 .product(name: "ReactNativeDependencies", package: "ReactNative"),
                 .product(name: "hermes-engine", package: "ReactNative"),
                 .product(name: "Autolinked", package: "Autolinked"),
                 .product(name: "ReactCodegen", package: "React-GeneratedCode"),
                 .product(name: "ReactAppDependencyProvider", package: "React-GeneratedCode"),
-            ],
-            path: "${sourcePath}",${swiftExclude}
+            ],`;
+
+  const formatExclude = (files /*: Array<string> */) =>
+    files.length > 0 ? `\n            exclude: [${files.map(f => `"${f}"`).join(', ')}],` : '';
+
+  let targetsSection;
+  if (isMixed) {
+    const swiftSources = swiftFiles.map(f => `"${f}"`).join(', ');
+
+    targetsSection = `        .target(
+            name: "${targetName}",
+            ${spmDeps}
+            path: "${sourcePath}",${formatExclude([...swiftFiles, ...resourceExcludes])}
             publicHeadersPath: ".",
             cSettings: [.unsafeFlags(cFlags)],
             cxxSettings: [.unsafeFlags(cxxFlags)]
@@ -327,21 +316,10 @@ function generateInitialPackageSwift(opts /*: {
             swiftSettings: [.unsafeFlags(swiftFlags)]
         ),`;
   } else {
-    const excludeEntries = resourceExcludes.length > 0
-      ? `\n            exclude: [${resourceExcludes.map(f => `"${f}"`).join(', ')}],`
-      : '';
-
     targetsSection = `        .target(
             name: "${targetName}",
-            dependencies: [
-                .product(name: "ReactNative", package: "ReactNative"),
-                .product(name: "ReactNativeDependencies", package: "ReactNative"),
-                .product(name: "hermes-engine", package: "ReactNative"),
-                .product(name: "Autolinked", package: "Autolinked"),
-                .product(name: "ReactCodegen", package: "React-GeneratedCode"),
-                .product(name: "ReactAppDependencyProvider", package: "React-GeneratedCode"),
-            ],
-            path: "${sourcePath}",${excludeEntries}
+            ${spmDeps}
+            path: "${sourcePath}",${formatExclude(resourceExcludes)}
             cSettings: [.unsafeFlags(cFlags)],
             cxxSettings: [.unsafeFlags(cxxFlags)],
             swiftSettings: [.unsafeFlags(swiftFlags)]
@@ -511,12 +489,7 @@ function main(argv /*:: ?: Array<string> */) /*: void */ {
     for (const [name, entry] of Object.entries(raw)) {
       const linkName = `${name}.xcframework`;
       const linkPath = path.join(xcfwLinksDir, linkName);
-      try {
-        fs.lstatSync(linkPath);
-        fs.unlinkSync(linkPath);
-      } catch {
-        // doesn't exist yet
-      }
+      try { fs.unlinkSync(linkPath); } catch { /* doesn't exist yet */ }
       fs.symlinkSync(entry.xcframeworkPath, linkPath);
       log(`Symlink: build/xcframeworks/${linkName} -> ${displayPath(entry.xcframeworkPath)}`);
       names.push(name);

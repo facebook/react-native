@@ -50,8 +50,16 @@
 const {main: downloadArtifacts} = require('./spm/download-spm-artifacts');
 const {main: generateAutolinking} = require('./spm/generate-spm-autolinking');
 const {main: generatePackage} = require('./spm/generate-spm-package');
-const {main: generateXcodeproj, ensureStubPackages} = require('./spm/generate-spm-xcodeproj');
-const {defaultCacheDir, displayPath, findProjectRoot, makeLogger, readPackageJson, resolveAndWriteVFSOverlay, toSwiftName} = require('./spm/spm-utils');
+const {main: generateXcodeproj} = require('./spm/generate-spm-xcodeproj');
+const {
+  defaultCacheDir,
+  displayPath,
+  findProjectRoot,
+  makeLogger,
+  readPackageJson,
+  resolveAndWriteVFSOverlay,
+  toSwiftName,
+} = require('./spm/spm-utils');
 const {execSync} = require('child_process');
 const fs = require('fs');
 const path = require('path');
@@ -89,8 +97,7 @@ function parseArgs(argv /*: Array<string> */) /*: SetupArgs */ {
     .option('clean', {
       type: 'boolean',
       default: false,
-      describe:
-        'Remove all generated SPM directories and re-run setup.',
+      describe: 'Remove all generated SPM directories and re-run setup.',
     })
     .option('skip-codegen', {
       type: 'boolean',
@@ -106,8 +113,7 @@ function parseArgs(argv /*: Array<string> */) /*: SetupArgs */ {
     .option('force-download', {
       type: 'boolean',
       default: false,
-      describe:
-        'Clear cached artifacts and re-download from Maven',
+      describe: 'Clear cached artifacts and re-download from Maven',
     })
     .option('skip-xcodeproj', {
       type: 'boolean',
@@ -124,7 +130,8 @@ function parseArgs(argv /*: Array<string> */) /*: SetupArgs */ {
     })
     .option('entry-file', {
       type: 'string',
-      describe: 'JS entry file relative to app root (default: package.json "main" or index.js)',
+      describe:
+        'JS entry file relative to app root (default: package.json "main" or index.js)',
     })
     .usage(
       'Usage: $0 [options]\n\nSets up Swift Package Manager support in a React Native app.',
@@ -173,10 +180,8 @@ function ensureGitignoreSpmEntries(appRoot /*: string */) {
     content = fs.readFileSync(gitignorePath, 'utf8');
   }
 
-  const lines = content.split('\n');
-  const missing = SPM_GITIGNORE_ENTRIES.filter(
-    entry => !lines.some(line => line.trim() === entry),
-  );
+  const existingEntries = new Set(content.split('\n').map(l => l.trim()));
+  const missing = SPM_GITIGNORE_ENTRIES.filter(e => !existingEntries.has(e));
 
   if (missing.length === 0) {
     return;
@@ -274,10 +279,7 @@ async function main(argv /*:: ?: Array<string> */) /*: Promise<void> */ {
       if (projectRoot !== appRoot) {
         codegenArgs.push(`-o "${appRoot}"`);
       }
-      execSync(
-        codegenArgs.join(' '),
-        {stdio: 'inherit', cwd: projectRoot},
-      );
+      execSync(codegenArgs.join(' '), {stdio: 'inherit', cwd: projectRoot});
       codegenSucceeded = true;
     } catch (e) {
       logError('Codegen failed. Continuing anyway...');
@@ -351,7 +353,8 @@ async function main(argv /*:: ?: Array<string> */) /*: Promise<void> */ {
     fs.mkdirSync(xcfwLinksDir, {recursive: true});
 
     // Build artifacts.json from the local xcframework + any siblings or cached deps
-    const artifacts /*: {[string]: {xcframeworkPath: string, url: string}} */ = {};
+    const artifacts /*: {[string]: {xcframeworkPath: string, url: string}} */ =
+      {};
     artifacts.React = {xcframeworkPath: localReactPath, url: ''};
 
     // Look for ReactNativeDependencies and hermes-engine alongside or in cache
@@ -488,9 +491,13 @@ async function main(argv /*:: ?: Array<string> */) /*: Promise<void> */ {
       log(
         '\x1b[33mWARNING: Your Package.swift does not include -ivfsoverlay flags.\x1b[0m',
       );
-      log('Add the following to your Package.swift for stable header identity:');
+      log(
+        'Add the following to your Package.swift for stable header identity:',
+      );
       log('');
-      log('  let vfsOverlay = packageDir + "/build/xcframeworks/React-VFS.yaml"');
+      log(
+        '  let vfsOverlay = packageDir + "/build/xcframeworks/React-VFS.yaml"',
+      );
       log('');
       log('  // Add to cFlags:');
       log('  "-ivfsoverlay", vfsOverlay');
@@ -534,7 +541,8 @@ async function main(argv /*:: ?: Array<string> */) /*: Promise<void> */ {
   // Derive app name for display (same logic as generate-spm-package.js)
   // Use projectRoot to find package.json (may be in parent dir).
   const appPkgJson = readPackageJson(projectRoot);
-  const rawName = (appPkgJson != null ? appPkgJson.name : null) ?? path.basename(projectRoot);
+  const rawName =
+    (appPkgJson != null ? appPkgJson.name : null) ?? path.basename(projectRoot);
   const appDisplayName = toSwiftName(rawName.replace(/^@[^/]+\//, ''));
 
   log('');
