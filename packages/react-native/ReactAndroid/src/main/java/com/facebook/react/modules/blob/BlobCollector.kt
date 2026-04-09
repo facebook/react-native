@@ -10,7 +10,9 @@ package com.facebook.react.modules.blob
 import com.facebook.react.bridge.JavaScriptContextHolder
 import com.facebook.react.bridge.ReactContext
 import com.facebook.soloader.SoLoader
+import com.facebook.soloader.annotation.SoLoaderLibrary
 
+@SoLoaderLibrary("reactnativeblob")
 internal object BlobCollector {
   init {
     SoLoader.loadLibrary("reactnativeblob")
