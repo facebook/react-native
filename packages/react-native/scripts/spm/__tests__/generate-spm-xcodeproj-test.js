@@ -98,26 +98,15 @@ describe('generatePbxproj', () => {
     expect(result).toContain('PrivacyInfo.xcprivacy in Resources');
   });
 
-  it('includes shell script build phases', () => {
-    const result = generatePbxproj(minimalOpts);
-    expect(result).toContain('Sync SPM Autolinking');
-    expect(result).toContain('Build JS Bundle');
-    expect(result).toContain('Copy Hermes Framework');
-    expect(result).toContain('Prepare VFS Overlay');
-  });
-
-  it('generated pbxproj contains Sync SPM Autolinking build phase', () => {
+  it('includes shell script build phases in correct order', () => {
     const result = generatePbxproj(minimalOpts);
     expect(result).toContain('Sync SPM Autolinking');
     expect(result).toContain('sync-spm-autolinking.js');
-  });
-
-  it('Sync SPM Autolinking phase appears before Prepare VFS Overlay in buildPhases', () => {
-    const result = generatePbxproj(minimalOpts);
+    expect(result).toContain('Build JS Bundle');
+    expect(result).toContain('Prepare VFS Overlay');
+    // Sync must run before VFS overlay
     const syncIdx = result.indexOf('Sync SPM Autolinking');
     const vfsIdx = result.indexOf('Prepare VFS Overlay');
-    expect(syncIdx).toBeGreaterThan(-1);
-    expect(vfsIdx).toBeGreaterThan(-1);
     expect(syncIdx).toBeLessThan(vfsIdx);
   });
 

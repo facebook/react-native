@@ -26,28 +26,15 @@ const path = require('path');
 // ---------------------------------------------------------------------------
 
 describe('toSwiftName', () => {
-  it('strips scope and capitalizes', () => {
-    expect(toSwiftName('@react-native/tester')).toBe('Tester');
-  });
-
-  it('capitalizes hyphenated names', () => {
-    expect(toSwiftName('my-app')).toBe('MyApp');
-  });
-
-  it('strips scope and capitalizes hyphenated', () => {
-    expect(toSwiftName('@scope/foo-bar')).toBe('FooBar');
-  });
-
-  it('capitalizes simple names', () => {
-    expect(toSwiftName('simple')).toBe('Simple');
-  });
-
-  it('skips empty segments from consecutive separators', () => {
-    expect(toSwiftName('a--b')).toBe('AB');
-  });
-
-  it('handles underscores as separators', () => {
-    expect(toSwiftName('my_great_app')).toBe('MyGreatApp');
+  it.each([
+    ['@react-native/tester', 'Tester'],
+    ['my-app', 'MyApp'],
+    ['@scope/foo-bar', 'FooBar'],
+    ['simple', 'Simple'],
+    ['a--b', 'AB'],
+    ['my_great_app', 'MyGreatApp'],
+  ])('toSwiftName(%j) => %j', (input, expected) => {
+    expect(toSwiftName(input)).toBe(expected);
   });
 });
 
@@ -127,36 +114,45 @@ describe('displayPath', () => {
 // ---------------------------------------------------------------------------
 
 describe('makeLogger', () => {
+  let spies;
+
+  afterEach(() => {
+    if (spies) {
+      spies.forEach(s => s.mockRestore());
+      spies = null;
+    }
+  });
+
+  function mockConsole(...methods) {
+    spies = methods.map(m =>
+      jest.spyOn(console, m).mockImplementation(() => {}),
+    );
+    return spies;
+  }
+
   it('log writes to stdout with green prefix', () => {
-    const spy = jest.spyOn(console, 'log').mockImplementation(() => {});
+    const [spy] = mockConsole('log');
     const {log} = makeLogger('test');
     log('hello');
-    expect(spy).toHaveBeenCalledWith(
-      expect.stringContaining('[test]'),
-    );
+    expect(spy).toHaveBeenCalledWith(expect.stringContaining('[test]'));
     expect(spy).toHaveBeenCalledWith(expect.stringContaining('hello'));
-    spy.mockRestore();
   });
 
   it('warn writes to stderr with yellow prefix', () => {
-    const spy = jest.spyOn(console, 'warn').mockImplementation(() => {});
+    const [spy] = mockConsole('warn');
     const {warn} = makeLogger('test');
     warn('caution');
-    expect(spy).toHaveBeenCalledWith(
-      expect.stringContaining('[test]'),
-    );
+    expect(spy).toHaveBeenCalledWith(expect.stringContaining('[test]'));
     expect(spy).toHaveBeenCalledWith(expect.stringContaining('caution'));
-    spy.mockRestore();
   });
 
   it('die throws, sets exitCode, writes to stderr', () => {
-    const spy = jest.spyOn(console, 'error').mockImplementation(() => {});
+    const [spy] = mockConsole('error');
     const origExitCode = process.exitCode;
     const {die} = makeLogger('test');
     expect(() => die('fatal')).toThrow('fatal');
     expect(process.exitCode).toBe(1);
     expect(spy).toHaveBeenCalledWith(expect.stringContaining('fatal'));
-    spy.mockRestore();
     process.exitCode = origExitCode;
   });
 });

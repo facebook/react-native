@@ -93,13 +93,7 @@ describe('generateAutolinkedPackageSwift', () => {
     );
   });
 
-  // BUG CASE: xcfwHeaders=null but xcframeworksRelPath is set.
-  // On first run, the xcframework symlinks don't exist yet, so
-  // xcfwHeadersPath resolves to null. But the generated Swift code
-  // resolves the path at Xcode build time, not generation time.
-  // Current behavior: output MISSING xcfwHeaders variable.
-  // After Fix 1: output SHOULD contain xcfwHeaders variable.
-  it('BUG: xcfwHeaders=null with xcframeworksRelPath set should still emit xcfwHeaders', () => {
+  it('emits xcfwHeaders even when xcfwHeadersPath is null (first-run before symlinks exist)', () => {
     const target = {
       name: 'MyModule',
       path: '../node_modules/my-module/ios',
@@ -112,7 +106,6 @@ describe('generateAutolinkedPackageSwift', () => {
       null, // xcfwHeadersPath is null (first run, symlinks don't exist)
       null, // depsXcfwHeadersPath is null
     );
-    // After Fix 1, these should pass:
     expect(result).toContain('let xcfwHeaders');
     expect(result).toContain('let vfsOverlay');
     expect(result).toContain('let depsHeaders');

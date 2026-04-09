@@ -678,82 +678,49 @@ async function main(argv /*:: ?: Array<string> */) /*: Promise<void> */ {
   // Download all three artifacts in parallel for faster setup
   log('Downloading artifacts in parallel...');
 
-  const labels = ['React', 'ReactNativeDeps', 'hermes-engine'];
-  const progress = createProgressDisplay(labels.length);
+  const artifactSpecs = [
+    {label: 'react-core', name: 'React', resolve: () => resolveRNCoreArtifact(rnVersion, flavor)},
+    {label: 'rndeps', name: 'ReactNativeDependencies', resolve: () => resolveRNDepsArtifact(rnVersion, flavor)},
+    {label: 'hermes', name: 'hermes-engine', resolve: () => resolveHermesArtifact(rnVersion, flavor, rawVersion)},
+  ];
+
+  const progress = createProgressDisplay(artifactSpecs.length);
 
   const makeCallback = (index /*: number */) /*: ProgressCallback */ =>
-    (label, downloaded, total, speed, done, elapsed) => {
+    (name, downloaded, total, speed, done, elapsed) => {
       if (done && downloaded === 0 && total === 0) {
-        progress.update(index, `  ${label}: already cached`);
+        progress.update(index, `  ${name}: already cached`);
       } else if (done) {
         const avg = elapsed > 0 ? formatSpeed(downloaded / elapsed) : '';
-        progress.update(index, `  ${label}: done ${formatBytes(downloaded)} in ${elapsed.toFixed(1)}s (${avg})`);
+        progress.update(index, `  ${name}: done ${formatBytes(downloaded)} in ${elapsed.toFixed(1)}s (${avg})`);
       } else if (total > 0) {
         const pct = ((downloaded / total) * 100).toFixed(1);
-        progress.update(index, `  ${label}: ${formatBytes(downloaded)} / ${formatBytes(total)} (${pct}%) @ ${formatSpeed(speed)}`);
+        progress.update(index, `  ${name}: ${formatBytes(downloaded)} / ${formatBytes(total)} (${pct}%) @ ${formatSpeed(speed)}`);
       } else {
-        progress.update(index, `  ${label}: extracting...`);
+        progress.update(index, `  ${name}: extracting...`);
       }
     };
 
-  const artifactPromises = [
-    (async () => {
+  const results /*: Array<ArtifactResultEntry> */ = await Promise.all(
+    artifactSpecs.map(async (spec, index) => {
       try {
-        const artifact = await resolveRNCoreArtifact(rnVersion, flavor);
-        progress.update(0, `  React: resolving...`);
+        const artifact = await spec.resolve();
+        progress.update(index, `  ${spec.name}: resolving...`);
         const r = await processArtifact(
-          'react-core',
-          'React',
+          spec.label,
+          spec.name,
           artifact,
           downloadDir,
           outputDir,
-          makeCallback(0),
+          makeCallback(index),
         );
-        return ({name: 'React', error: undefined, ...r} /*: ArtifactResultEntry */);
+        return ({name: spec.name, error: undefined, ...r} /*: ArtifactResultEntry */);
       } catch (e) {
-        progress.update(0, `  React: FAILED - ${e.message}`);
-        return ({name: 'React', error: e.message} /*: ArtifactResultEntry */);
+        progress.update(index, `  ${spec.name}: FAILED - ${e.message}`);
+        return ({name: spec.name, error: e.message} /*: ArtifactResultEntry */);
       }
-    })(),
-    (async () => {
-      try {
-        const artifact = await resolveRNDepsArtifact(rnVersion, flavor);
-        progress.update(1, `  ReactNativeDeps: resolving...`);
-        const r = await processArtifact(
-          'rndeps',
-          'ReactNativeDependencies',
-          artifact,
-          downloadDir,
-          outputDir,
-          makeCallback(1),
-        );
-        return ({name: 'ReactNativeDependencies', error: undefined, ...r} /*: ArtifactResultEntry */);
-      } catch (e) {
-        progress.update(1, `  ReactNativeDeps: FAILED - ${e.message}`);
-        return ({name: 'ReactNativeDependencies', error: e.message} /*: ArtifactResultEntry */);
-      }
-    })(),
-    (async () => {
-      try {
-        const artifact = await resolveHermesArtifact(rnVersion, flavor, rawVersion);
-        progress.update(2, `  hermes-engine: resolving...`);
-        const r = await processArtifact(
-          'hermes',
-          'hermes-engine',
-          artifact,
-          downloadDir,
-          outputDir,
-          makeCallback(2),
-        );
-        return ({name: 'hermes-engine', error: undefined, ...r} /*: ArtifactResultEntry */);
-      } catch (e) {
-        progress.update(2, `  hermes-engine: FAILED - ${e.message}`);
-        return ({name: 'hermes-engine', error: e.message} /*: ArtifactResultEntry */);
-      }
-    })(),
-  ];
-
-  const results /*: Array<ArtifactResultEntry> */ = await Promise.all(artifactPromises);
+    }),
+  );
   progress.finish();
   log('');
 
@@ -807,4 +774,4 @@ if (require.main === module) {
   });
 }
 
-module.exports = {main, defaultCacheDir, displayPath};
+module.exports = {main};

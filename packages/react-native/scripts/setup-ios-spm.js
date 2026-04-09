@@ -51,7 +51,7 @@ const {main: downloadArtifacts} = require('./spm/download-spm-artifacts');
 const {main: generateAutolinking} = require('./spm/generate-spm-autolinking');
 const {main: generatePackage} = require('./spm/generate-spm-package');
 const {main: generateXcodeproj, ensureStubPackages} = require('./spm/generate-spm-xcodeproj');
-const {defaultCacheDir, displayPath, findProjectRoot, makeLogger, readPackageJson, toSwiftName} = require('./spm/spm-utils');
+const {defaultCacheDir, displayPath, findProjectRoot, makeLogger, readPackageJson, resolveAndWriteVFSOverlay, toSwiftName} = require('./spm/spm-utils');
 const {execSync} = require('child_process');
 const fs = require('fs');
 const path = require('path');
@@ -458,29 +458,7 @@ async function main(argv /*:: ?: Array<string> */) /*: Promise<void> */ {
   // -------------------------------------------------------------------------
   // Step 4b: Resolve VFS overlay template → build/xcframeworks/React-VFS.yaml
   // -------------------------------------------------------------------------
-  const xcfwPath = path.join(appRoot, 'build', 'xcframeworks', 'React.xcframework');
-  if (fs.existsSync(xcfwPath)) {
-    const realXcfwPath = fs.realpathSync(xcfwPath);
-    const vfsTemplatePath = path.join(realXcfwPath, 'React-VFS-template.yaml');
-    const resolvedPath = path.join(appRoot, 'build', 'xcframeworks', 'React-VFS.yaml');
-
-    if (fs.existsSync(vfsTemplatePath)) {
-      // Preferred path: resolve the pre-embedded template from the xcframework
-      const {resolveVFSOverlay} = require('./ios-prebuild/vfs');
-      const template = fs.readFileSync(vfsTemplatePath, 'utf8');
-      const resolved = resolveVFSOverlay(template, realXcfwPath);
-      fs.writeFileSync(resolvedPath, resolved, 'utf8');
-      log(`Resolved VFS overlay (from template) → ${path.relative(appRoot, resolvedPath)}`);
-    } else {
-      // Fallback: generate the VFS overlay from podspec headers at setup time.
-      // This handles downloaded xcframeworks that were built before VFS embedding.
-      const {createVFSOverlay, resolveVFSOverlay} = require('./ios-prebuild/vfs');
-      const template = createVFSOverlay(reactNativeRoot);
-      const resolved = resolveVFSOverlay(template, realXcfwPath);
-      fs.writeFileSync(resolvedPath, resolved, 'utf8');
-      log(`Generated VFS overlay (from podspecs) → ${path.relative(appRoot, resolvedPath)}`);
-    }
-  }
+  resolveAndWriteVFSOverlay(appRoot, reactNativeRoot, {log});
 
   // -------------------------------------------------------------------------
   // --init: ensure .gitignore has SPM entries

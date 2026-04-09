@@ -827,5 +827,4 @@ if (require.main === module) {
 module.exports = {
   main,
   generateAutolinkedPackageSwift,
-  toSpmTargetName: toSwiftName,
 };

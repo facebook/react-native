@@ -37,7 +37,7 @@
  * With --init:    also generates a starter main Package.swift for the developer to commit.
  */
 
-const {displayPath, findProjectRoot, makeLogger, readPackageJson, toSwiftName} = require('./spm-utils');
+const {deriveAppName, displayPath, findProjectRoot, makeLogger, readPackageJson, resolveReactNativeRoot, toSwiftName} = require('./spm-utils');
 const fs = require('fs');
 const path = require('path');
 const yargs = require('yargs');
@@ -453,23 +453,16 @@ function main(argv /*:: ?: Array<string> */) /*: void */ {
   }
 
   // Resolve react-native root
-  let rnRoot = args.reactNativeRoot;
+  let rnRoot = args.reactNativeRoot
+    ? path.resolve(args.reactNativeRoot)
+    : resolveReactNativeRoot(appRoot, projectRoot);
   if (rnRoot == null) {
-    // Try appRoot first, then projectRoot (covers ios/ subdirectory case)
-    rnRoot = path.join(appRoot, 'node_modules', 'react-native');
-    if (!fs.existsSync(rnRoot)) {
-      rnRoot = path.join(projectRoot, 'node_modules', 'react-native');
-    }
-    if (!fs.existsSync(rnRoot)) {
-      console.error(
-        '[generate-spm-package] Could not find react-native. Pass --react-native-root.',
-      );
-      process.exitCode = 1;
-      return;
-    }
+    console.error(
+      '[generate-spm-package] Could not find react-native. Pass --react-native-root.',
+    );
+    process.exitCode = 1;
+    return;
   }
-  // Always resolve to absolute so path.join produces absolute paths
-  rnRoot = path.resolve(rnRoot);
 
   // Resolve version
   let version = args.version;
@@ -481,14 +474,7 @@ function main(argv /*:: ?: Array<string> */) /*: void */ {
   // Derive app/target names
   const rawName = pkgJson.name ?? path.basename(appRoot);
   const sourcePath = args.sourcePath ?? findSourcePath(appRoot, rawName);
-  const genericSourceDirs = new Set(['ios', 'app', 'sources', 'src']);
-  const cleanName = rawName.replace(/^@[^/]+\//, '');
-  const defaultAppName = toSwiftName(
-    sourcePath !== toSwiftName(cleanName) && !genericSourceDirs.has(sourcePath.toLowerCase())
-      ? sourcePath
-      : cleanName,
-  );
-  const appName = args.appName ?? defaultAppName;
+  const appName = args.appName ?? deriveAppName(rawName, sourcePath);
   const targetName = args.targetName ?? appName + 'App';
 
   log(`App name:    ${appName}`);
@@ -591,7 +577,6 @@ module.exports = {
   main,
   generateXCFrameworksPackageSwift,
   generateInitialPackageSwift,
-  toSwiftName,
   findSourcePath,
   scanSourceFiles,
 };

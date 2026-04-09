@@ -39,7 +39,7 @@ const {
   scanProjectFiles,
   serializePbxproj,
 } = require('./spm-pbxproj');
-const {findProjectRoot, makeLogger, toSwiftName} = require('./spm-utils');
+const {deriveAppName, findProjectRoot, makeLogger, resolveReactNativeRoot, toSwiftName} = require('./spm-utils');
 const fs = require('fs');
 const path = require('path');
 const yargs = require('yargs');
@@ -178,13 +178,12 @@ function generatePbxproj(opts /*: {
   const resourcesBuildFileUUIDs /*: Array<{uuid: string, comment: string}> */ = [];
   const sourcesGroupChildren /*: Array<{uuid: string, comment: string}> */ = [];
 
-  // Process source files
-  for (const file of files.sources) {
+  // Helper: create a PBXFileReference entry and add to group children.
+  // Returns the fileRef UUID for optional build-phase tracking.
+  function addFileRef(file /*: string */) /*: string */ {
     const fileName = path.basename(file);
     const ext = path.extname(file);
     const fileRefId = uuid(appName, 'PBXFileReference', file);
-    const buildFileId = uuid(appName, 'PBXBuildFile', `src:${file}`);
-
     fileRefEntries.push({
       uuid: fileRefId,
       comment: fileName,
@@ -195,89 +194,47 @@ function generatePbxproj(opts /*: {
         sourceTree: quoteIfNeeded('<group>'),
       },
     });
+    sourcesGroupChildren.push({uuid: fileRefId, comment: fileName});
+    return fileRefId;
+  }
 
+  // Helper: create a PBXBuildFile entry linking to a file reference.
+  function addBuildFile(prefix /*: string */, file /*: string */, fileRefId /*: string */, phase /*: string */) /*: string */ {
+    const fileName = path.basename(file);
+    const buildFileId = uuid(appName, 'PBXBuildFile', `${prefix}:${file}`);
     buildFileEntries.push({
       uuid: buildFileId,
-      comment: `${fileName} in Sources`,
+      comment: `${fileName} in ${phase}`,
       fields: {
         isa: 'PBXBuildFile',
         fileRef: `${fileRefId} /* ${fileName} */`,
       },
     });
-
-    sourcesBuildFileUUIDs.push({uuid: buildFileId, comment: `${fileName} in Sources`});
-    sourcesGroupChildren.push({uuid: fileRefId, comment: fileName});
+    return buildFileId;
   }
 
-  // Process header files
+  // Process source files
+  for (const file of files.sources) {
+    const fileRefId = addFileRef(file);
+    const buildFileId = addBuildFile('src', file, fileRefId, 'Sources');
+    sourcesBuildFileUUIDs.push({uuid: buildFileId, comment: `${path.basename(file)} in Sources`});
+  }
+
+  // Process header files (file reference only, no build phase)
   for (const file of files.headers) {
-    const fileName = path.basename(file);
-    const ext = path.extname(file);
-    const fileRefId = uuid(appName, 'PBXFileReference', file);
-
-    fileRefEntries.push({
-      uuid: fileRefId,
-      comment: fileName,
-      fields: {
-        isa: 'PBXFileReference',
-        lastKnownFileType: quoteIfNeeded(fileTypeForExtension(ext)),
-        path: quoteIfNeeded(file),
-        sourceTree: quoteIfNeeded('<group>'),
-      },
-    });
-
-    sourcesGroupChildren.push({uuid: fileRefId, comment: fileName});
+    addFileRef(file);
   }
 
   // Process resource files
   for (const file of files.resources) {
-    const fileName = path.basename(file);
-    const ext = path.extname(file);
-    const fileRefId = uuid(appName, 'PBXFileReference', file);
-    const buildFileId = uuid(appName, 'PBXBuildFile', `res:${file}`);
-
-    fileRefEntries.push({
-      uuid: fileRefId,
-      comment: fileName,
-      fields: {
-        isa: 'PBXFileReference',
-        lastKnownFileType: quoteIfNeeded(fileTypeForExtension(ext)),
-        path: quoteIfNeeded(file),
-        sourceTree: quoteIfNeeded('<group>'),
-      },
-    });
-
-    buildFileEntries.push({
-      uuid: buildFileId,
-      comment: `${fileName} in Resources`,
-      fields: {
-        isa: 'PBXBuildFile',
-        fileRef: `${fileRefId} /* ${fileName} */`,
-      },
-    });
-
-    resourcesBuildFileUUIDs.push({uuid: buildFileId, comment: `${fileName} in Resources`});
-    sourcesGroupChildren.push({uuid: fileRefId, comment: fileName});
+    const fileRefId = addFileRef(file);
+    const buildFileId = addBuildFile('res', file, fileRefId, 'Resources');
+    resourcesBuildFileUUIDs.push({uuid: buildFileId, comment: `${path.basename(file)} in Resources`});
   }
 
   // Process Info.plist (file reference only, no build phase)
   for (const file of files.plists) {
-    const fileName = path.basename(file);
-    const ext = path.extname(file);
-    const fileRefId = uuid(appName, 'PBXFileReference', file);
-
-    fileRefEntries.push({
-      uuid: fileRefId,
-      comment: fileName,
-      fields: {
-        isa: 'PBXFileReference',
-        lastKnownFileType: quoteIfNeeded(fileTypeForExtension(ext)),
-        path: quoteIfNeeded(file),
-        sourceTree: quoteIfNeeded('<group>'),
-      },
-    });
-
-    sourcesGroupChildren.push({uuid: fileRefId, comment: fileName});
+    addFileRef(file);
   }
 
   // PrivacyInfo.xcprivacy (lives at app root, outside source dir)
@@ -599,58 +556,35 @@ else
 fi
 `;
 
+  // Helper: create a PBXShellScriptBuildPhase entry
+  function shellScriptPhase(phaseUUID /*: string */, name /*: string */, script /*: string */, opts /*: {inputPaths?: string, outputPaths?: string} */ = {}) /*: PbxEntry */ {
+    const empty = '(\n\t\t\t)';
+    return {
+      uuid: phaseUUID,
+      comment: name,
+      fields: {
+        isa: 'PBXShellScriptBuildPhase',
+        buildActionMask: '2147483647',
+        files: empty,
+        inputFileListPaths: empty,
+        inputPaths: opts.inputPaths ?? empty,
+        name: quoteIfNeeded(name),
+        outputFileListPaths: empty,
+        outputPaths: opts.outputPaths ?? empty,
+        runOnlyForDeploymentPostprocessing: '0',
+        shellPath: '/bin/sh',
+        shellScript: quoteIfNeeded(script),
+      },
+    };
+  }
+
   sections.PBXShellScriptBuildPhase = [
-    {
-      uuid: syncAutolinkingScriptUUID,
-      comment: 'Sync SPM Autolinking',
-      fields: {
-        isa: 'PBXShellScriptBuildPhase',
-        buildActionMask: '2147483647',
-        files: '(\n\t\t\t)',
-        inputFileListPaths: '(\n\t\t\t)',
-        inputPaths: '(\n\t\t\t)',
-        name: quoteIfNeeded('Sync SPM Autolinking'),
-        outputFileListPaths: '(\n\t\t\t)',
-        outputPaths: '(\n\t\t\t)',
-        runOnlyForDeploymentPostprocessing: '0',
-        shellPath: '/bin/sh',
-        shellScript: quoteIfNeeded(syncAutolinkingScript),
-      },
-    },
-    {
-      uuid: vfsScriptUUID,
-      comment: 'Prepare VFS Overlay',
-      fields: {
-        isa: 'PBXShellScriptBuildPhase',
-        buildActionMask: '2147483647',
-        files: '(\n\t\t\t)',
-        inputFileListPaths: '(\n\t\t\t)',
-        inputPaths: `(\n\t\t\t\t"$(SRCROOT)/build/xcframeworks/React-VFS.yaml",\n\t\t\t)`,
-        name: quoteIfNeeded('Prepare VFS Overlay'),
-        outputFileListPaths: '(\n\t\t\t)',
-        outputPaths: `(\n\t\t\t\t"$(DERIVED_FILE_DIR)/React-VFS.yaml",\n\t\t\t)`,
-        runOnlyForDeploymentPostprocessing: '0',
-        shellPath: '/bin/sh',
-        shellScript: quoteIfNeeded(prepareVfsScript),
-      },
-    },
-    {
-      uuid: bundleScriptUUID,
-      comment: 'Build JS Bundle',
-      fields: {
-        isa: 'PBXShellScriptBuildPhase',
-        buildActionMask: '2147483647',
-        files: '(\n\t\t\t)',
-        inputFileListPaths: '(\n\t\t\t)',
-        inputPaths: '(\n\t\t\t)',
-        name: quoteIfNeeded('Build JS Bundle'),
-        outputFileListPaths: '(\n\t\t\t)',
-        outputPaths: '(\n\t\t\t)',
-        runOnlyForDeploymentPostprocessing: '0',
-        shellPath: '/bin/sh',
-        shellScript: quoteIfNeeded(bundleJSScript),
-      },
-    },
+    shellScriptPhase(syncAutolinkingScriptUUID, 'Sync SPM Autolinking', syncAutolinkingScript),
+    shellScriptPhase(vfsScriptUUID, 'Prepare VFS Overlay', prepareVfsScript, {
+      inputPaths: `(\n\t\t\t\t"$(SRCROOT)/build/xcframeworks/React-VFS.yaml",\n\t\t\t)`,
+      outputPaths: `(\n\t\t\t\t"$(DERIVED_FILE_DIR)/React-VFS.yaml",\n\t\t\t)`,
+    }),
+    shellScriptPhase(bundleScriptUUID, 'Build JS Bundle', bundleJSScript),
   ];
 
   // PBXSourcesBuildPhase
@@ -978,33 +912,27 @@ function main(argv /*:: ?: Array<string> */) /*: void */ {
   const args = parseArgs(argv ?? process.argv.slice(2));
   const appRoot = path.resolve(args.appRoot);
 
-  // Read app package.json for name derivation.
+  // Read app package.json for name derivation and entry file.
   // package.json may be in a parent directory (e.g. when appRoot is ios/).
   const projectRoot = findProjectRoot(appRoot);
   const pkgPath = path.join(projectRoot, 'package.json');
-  let rawName = path.basename(projectRoot);
-  if (fs.existsSync(pkgPath)) {
-    // $FlowFixMe[incompatible-type]
-    const pkgJson /*: {name?: string} */ = JSON.parse(
-      fs.readFileSync(pkgPath, 'utf8'),
-    );
-    rawName = pkgJson.name ?? rawName;
-  }
+  // $FlowFixMe[incompatible-type]
+  const pkgJson /*: {name?: string, main?: string} | null */ = fs.existsSync(pkgPath)
+    ? JSON.parse(fs.readFileSync(pkgPath, 'utf8'))
+    : null;
+  const rawName = pkgJson?.name ?? path.basename(projectRoot);
 
   // Resolve react-native root
-  let rnRoot = args.reactNativeRoot;
+  let rnRoot = args.reactNativeRoot
+    ? path.resolve(args.reactNativeRoot)
+    : resolveReactNativeRoot(appRoot, projectRoot);
   if (rnRoot == null) {
-    rnRoot = path.join(appRoot, 'node_modules', 'react-native');
-    if (!fs.existsSync(rnRoot)) {
-      // Try projectRoot (covers ios/ subdirectory case)
-      rnRoot = path.join(projectRoot, 'node_modules', 'react-native');
-    }
-    if (!fs.existsSync(rnRoot)) {
-      // Try monorepo layout
-      rnRoot = path.resolve(__dirname, '../..');
-    }
+    console.error(
+      '[generate-spm-xcodeproj] Could not find react-native. Pass --react-native-root.',
+    );
+    process.exitCode = 1;
+    return;
   }
-  rnRoot = path.resolve(rnRoot);
   const reactNativePath = path.relative(appRoot, rnRoot);
 
   // Determine source path
@@ -1013,17 +941,7 @@ function main(argv /*:: ?: Array<string> */) /*: void */ {
     sourcePath = findSourcePath(appRoot, rawName);
   }
 
-  // Derive app name: prefer the source directory name when it's a meaningful
-  // app name (e.g. "RNTester", "HelloWorld"), but fall back to package.json name
-  // when the source path is a generic directory like "ios", "App", "Sources".
-  const genericSourceDirs = new Set(['ios', 'app', 'sources', 'src']);
-  const cleanName = rawName.replace(/^@[^/]+\//, '');
-  const defaultAppName = toSwiftName(
-    sourcePath !== toSwiftName(cleanName) && !genericSourceDirs.has(sourcePath.toLowerCase())
-      ? sourcePath
-      : cleanName,
-  );
-  const appName = args.appName ?? defaultAppName;
+  const appName = args.appName ?? deriveAppName(rawName, sourcePath);
 
   const iosVersion = args.iosVersion;
   const bundleIdentifier =
@@ -1050,15 +968,7 @@ function main(argv /*:: ?: Array<string> */) /*: void */ {
   const targetUUID = uuid(appName, 'PBXNativeTarget', appName);
 
   // Determine JS entry file: CLI arg > package.json "main" > "index.js"
-  let entryFile = args.entryFile;
-  if (entryFile == null && fs.existsSync(pkgPath)) {
-    const pkgJson2 /*: {main?: string} */ = JSON.parse(
-      fs.readFileSync(pkgPath, 'utf8'),
-    );
-    if (pkgJson2.main != null) {
-      entryFile = pkgJson2.main;
-    }
-  }
+  const entryFile = args.entryFile ?? pkgJson?.main ?? undefined;
 
   // Generate pbxproj
   const pbxproj = generatePbxproj({
@@ -1069,7 +979,7 @@ function main(argv /*:: ?: Array<string> */) /*: void */ {
     reactNativePath,
     files,
     hasPrivacyInfo,
-    entryFile: entryFile ?? undefined,
+    entryFile,
   });
 
   // Write files

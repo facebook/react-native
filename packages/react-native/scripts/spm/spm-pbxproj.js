@@ -203,13 +203,7 @@ function serializePbxproj(
       } else {
         out += '\n';
         for (const key of fieldKeys) {
-          const val = entry.fields[key];
-          if (val.includes('\n\t\t\t')) {
-            // Multi-line value (e.g. buildSettings block) — already indented
-            out += `\t\t\t${key} = ${val};\n`;
-          } else {
-            out += `\t\t\t${key} = ${val};\n`;
-          }
+          out += `\t\t\t${key} = ${entry.fields[key]};\n`;
         }
         out += `\t\t};\n`;
       }

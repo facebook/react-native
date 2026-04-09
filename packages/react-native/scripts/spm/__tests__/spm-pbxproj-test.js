@@ -45,24 +45,14 @@ describe('generateUUID', () => {
 // ---------------------------------------------------------------------------
 
 describe('fileTypeForExtension', () => {
-  it('maps .m to sourcecode.c.objc', () => {
-    expect(fileTypeForExtension('.m')).toBe('sourcecode.c.objc');
-  });
-
-  it('maps .swift to sourcecode.swift', () => {
-    expect(fileTypeForExtension('.swift')).toBe('sourcecode.swift');
-  });
-
-  it('maps .xcassets to folder.assetcatalog', () => {
-    expect(fileTypeForExtension('.xcassets')).toBe('folder.assetcatalog');
-  });
-
-  it('maps .h to sourcecode.c.h', () => {
-    expect(fileTypeForExtension('.h')).toBe('sourcecode.c.h');
-  });
-
-  it('returns file for unknown extension', () => {
-    expect(fileTypeForExtension('.xyz')).toBe('file');
+  it.each([
+    ['.m', 'sourcecode.c.objc'],
+    ['.swift', 'sourcecode.swift'],
+    ['.xcassets', 'folder.assetcatalog'],
+    ['.h', 'sourcecode.c.h'],
+    ['.xyz', 'file'],
+  ])('maps %s to %s', (ext, expected) => {
+    expect(fileTypeForExtension(ext)).toBe(expected);
   });
 });
 
@@ -71,24 +61,14 @@ describe('fileTypeForExtension', () => {
 // ---------------------------------------------------------------------------
 
 describe('quoteIfNeeded', () => {
-  it('does not quote simple alphanumeric/dot/slash strings', () => {
-    expect(quoteIfNeeded('foo.bar/baz')).toBe('foo.bar/baz');
-  });
-
-  it('quotes strings with spaces', () => {
-    expect(quoteIfNeeded('foo bar')).toBe('"foo bar"');
-  });
-
-  it('escapes backslashes', () => {
-    expect(quoteIfNeeded('a\\b')).toBe('"a\\\\b"');
-  });
-
-  it('escapes embedded quotes', () => {
-    expect(quoteIfNeeded('a"b')).toBe('"a\\"b"');
-  });
-
-  it('quotes strings with special characters', () => {
-    expect(quoteIfNeeded('<group>')).toBe('"<group>"');
+  it.each([
+    ['foo.bar/baz', 'foo.bar/baz'],
+    ['foo bar', '"foo bar"'],
+    ['a\\b', '"a\\\\b"'],
+    ['a"b', '"a\\"b"'],
+    ['<group>', '"<group>"'],
+  ])('quoteIfNeeded(%j) => %j', (input, expected) => {
+    expect(quoteIfNeeded(input)).toBe(expected);
   });
 });
 

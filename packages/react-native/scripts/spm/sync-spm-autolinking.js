@@ -30,8 +30,7 @@
 const {main: downloadArtifacts} = require('./download-spm-artifacts');
 const {main: generateAutolinking} = require('./generate-spm-autolinking');
 const {main: generatePackage} = require('./generate-spm-package');
-const {defaultCacheDir, findProjectRoot, makeLogger, readPackageJson} = require('./spm-utils');
-const {execSync} = require('child_process');
+const {defaultCacheDir, findProjectRoot, makeLogger, readPackageJson, resolveAndWriteVFSOverlay, runCodegenAndInstallTemplate} = require('./spm-utils');
 const fs = require('fs');
 const path = require('path');
 const yargs = require('yargs');
@@ -59,34 +58,10 @@ async function main(argv /*:: ?: Array<string> */) /*: Promise<void> */ {
   const projectRoot = findProjectRoot(appRoot);
 
   // Step 0: Re-run codegen
-  const scriptsDir = path.join(reactNativeRoot, 'scripts');
-  const codegenScript = path.join(scriptsDir, 'generate-codegen-artifacts.js');
-  if (fs.existsSync(codegenScript)) {
-    log('Re-running codegen...');
-    try {
-      // -p points to projectRoot (where package.json lives); -o points to
-      // appRoot so output lands in the current working directory (may be ios/).
-      const codegenArgs = `node "${codegenScript}" -p "${projectRoot}" -t ios` +
-        (projectRoot !== appRoot ? ` -o "${appRoot}"` : '');
-      execSync(
-        codegenArgs,
-        {stdio: 'inherit', cwd: projectRoot},
-      );
-
-      // Install SPM codegen template
-      const codegenPkgSwift = path.join(
-        appRoot, 'build', 'generated', 'ios', 'Package.swift',
-      );
-      const spmTemplate = path.join(
-        scriptsDir, 'codegen', 'templates', 'Package.swift.spm-template',
-      );
-      if (fs.existsSync(spmTemplate) && fs.existsSync(path.dirname(codegenPkgSwift))) {
-        fs.copyFileSync(spmTemplate, codegenPkgSwift);
-        log('Installed SPM codegen template');
-      }
-    } catch {
-      log('Codegen failed — continuing with existing output');
-    }
+  try {
+    runCodegenAndInstallTemplate(projectRoot, appRoot, reactNativeRoot, {log});
+  } catch {
+    log('Codegen failed — continuing with existing output');
   }
 
   // Step 1: Ensure xcframework artifacts are available
@@ -139,39 +114,7 @@ async function main(argv /*:: ?: Array<string> */) /*: Promise<void> */ {
   generatePackage(packageArgs);
 
   // Step 4: Resolve VFS overlay
-  const xcfwPath = path.join(
-    appRoot,
-    'build',
-    'xcframeworks',
-    'React.xcframework',
-  );
-  if (fs.existsSync(xcfwPath)) {
-    const realXcfwPath = fs.realpathSync(xcfwPath);
-    const vfsTemplatePath = path.join(realXcfwPath, 'React-VFS-template.yaml');
-    const resolvedPath = path.join(
-      appRoot,
-      'build',
-      'xcframeworks',
-      'React-VFS.yaml',
-    );
-
-    if (fs.existsSync(vfsTemplatePath)) {
-      const {resolveVFSOverlay} = require('../ios-prebuild/vfs');
-      const template = fs.readFileSync(vfsTemplatePath, 'utf8');
-      const resolved = resolveVFSOverlay(template, realXcfwPath);
-      fs.writeFileSync(resolvedPath, resolved, 'utf8');
-      log('Resolved VFS overlay (from template)');
-    } else {
-      const {
-        createVFSOverlay,
-        resolveVFSOverlay,
-      } = require('../ios-prebuild/vfs');
-      const template = createVFSOverlay(reactNativeRoot);
-      const resolved = resolveVFSOverlay(template, realXcfwPath);
-      fs.writeFileSync(resolvedPath, resolved, 'utf8');
-      log('Generated VFS overlay (from podspecs)');
-    }
-  }
+  resolveAndWriteVFSOverlay(appRoot, reactNativeRoot, {log});
 
   // Step 5: Write stamp file
   const stampPath = path.join(appRoot, 'autolinked', '.spm-sync-stamp');
