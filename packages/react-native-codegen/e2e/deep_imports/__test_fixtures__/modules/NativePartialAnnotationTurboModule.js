@@ -31,6 +31,6 @@ export interface Spec extends TurboModule {
   ) => SomeObj;
 }
 
-export default (TurboModuleRegistry.getEnforcing<Spec>(
+export default TurboModuleRegistry.getEnforcing<Spec>(
   'NativePartialAnnotationTurboModule',
-): Spec);
+) as Spec;

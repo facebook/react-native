@@ -65,6 +65,26 @@ class FunctionMember(Member):
         self.type = qualify_type_str(self.type, scope)
         self.arguments = qualify_arguments(self.arguments, scope)
         self._qualify_specialization_args(scope)
+        self._qualify_conversion_operator_type(scope)
+
+    def _qualify_conversion_operator_type(self, scope: Scope) -> None:
+        """Qualify the type portion of conversion operator names.
+
+        Conversion operators like ``operator jsi::Array`` contain a type
+        reference that may need namespace qualification (e.g., to
+        ``operator facebook::jsi::Array``).
+        """
+        prefix = "operator "
+        if not self.name.startswith(prefix):
+            return
+
+        type_part = self.name[len(prefix) :]
+        if not type_part or not (type_part[0].isalpha() or type_part[0] == "_"):
+            return
+
+        qualified = qualify_type_str(type_part, scope)
+        if qualified != type_part:
+            self.name = prefix + qualified
 
     def to_string(
         self,

@@ -763,9 +763,9 @@ const buildModuleSchema = (
 ): NativeModuleSchema => {
   const language = parser.language();
   const types = parser.getTypes(ast);
-  const moduleSpecs = (Object.values(types): ReadonlyArray<$FlowFixMe>).filter(
-    t => parser.isModuleInterface(t),
-  );
+  const moduleSpecs = (
+    Object.values(types) as ReadonlyArray<$FlowFixMe>
+  ).filter(t => parser.isModuleInterface(t));
 
   throwIfModuleInterfaceNotFound(
     moduleSpecs.length,

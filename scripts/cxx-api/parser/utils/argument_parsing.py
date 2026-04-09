@@ -530,6 +530,14 @@ def parse_type_with_argstrings(
                 i = close + 1
                 continue
 
+            # Complex declarator starting with * or &, e.g. *(*fp)(int)
+            # in "int(*(*fp)(int))(double)".  Argument lists never start
+            # with pointer/reference characters.
+            if stripped and stripped[0] in ("*", "&"):
+                current_text.append(type_str[i : close + 1])
+                i = close + 1
+                continue
+
             # Try to parse as a function argument list
             args: list[Argument] = []
             if stripped:

@@ -365,7 +365,8 @@ export type BlendMode =
   | 'hue'
   | 'saturation'
   | 'color'
-  | 'luminosity';
+  | 'luminosity'
+  | 'plus-lighter';
 
 export type LinearGradientValue = {
   type: 'linear-gradient';
@@ -423,13 +424,10 @@ type RadialGradientValue = {
 
 export type BackgroundImageValue = LinearGradientValue | RadialGradientValue;
 
-export type BackgroundSizeValue =
-  | {
-      x: string | number;
-      y: string | number;
-    }
-  | 'cover'
-  | 'contain';
+export type BackgroundSizeValue = {
+  x: string | number;
+  y: string | number;
+};
 
 export type BackgroundRepeatKeyword =
   | 'repeat'

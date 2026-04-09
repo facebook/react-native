@@ -27,8 +27,6 @@ class UIManagerViewTransitionDelegate {
 
   virtual void restoreViewTransitionName(const ShadowNode &shadowNode) {}
 
-  virtual void captureLayoutMetricsFromRoot(const ShadowNode &shadowNode) {}
-
   virtual void startViewTransition(
       std::function<void()> mutationCallback,
       std::function<void()> onReadyCallback,

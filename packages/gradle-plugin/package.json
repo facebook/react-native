@@ -31,6 +31,7 @@
     "gradlew.bat",
     "README.md",
     "react-native-gradle-plugin",
+    "!react-native-gradle-plugin/src/test",
     "settings-plugin",
     "shared",
     "shared-testutil"

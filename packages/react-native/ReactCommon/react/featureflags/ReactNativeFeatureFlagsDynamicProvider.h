@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<20a808bb8708d8088f3d7aae8d58b6b2>>
+ * @generated SignedSource<<7b7ce6d46da0c344cbde4f99f5a6188c>>
  */
 
 /**
@@ -151,15 +151,6 @@ class ReactNativeFeatureFlagsDynamicProvider : public ReactNativeFeatureFlagsDef
     }
 
     return ReactNativeFeatureFlagsDefaults::enableAccumulatedUpdatesInRawPropsAndroid();
-  }
-
-  bool enableAndroidAntialiasedBorderRadiusClipping() override {
-    auto value = values_["enableAndroidAntialiasedBorderRadiusClipping"];
-    if (!value.isNull()) {
-      return value.getBool();
-    }
-
-    return ReactNativeFeatureFlagsDefaults::enableAndroidAntialiasedBorderRadiusClipping();
   }
 
   bool enableAndroidLinearText() override {
@@ -576,15 +567,6 @@ class ReactNativeFeatureFlagsDynamicProvider : public ReactNativeFeatureFlagsDef
     return ReactNativeFeatureFlagsDefaults::fixMappingOfEventPrioritiesBetweenFabricAndReact();
   }
 
-  bool fixTextClippingAndroid15useBoundsForWidth() override {
-    auto value = values_["fixTextClippingAndroid15useBoundsForWidth"];
-    if (!value.isNull()) {
-      return value.getBool();
-    }
-
-    return ReactNativeFeatureFlagsDefaults::fixTextClippingAndroid15useBoundsForWidth();
-  }
-
   bool fixYogaFlexBasisFitContentInMainAxis() override {
     auto value = values_["fixYogaFlexBasisFitContentInMainAxis"];
     if (!value.isNull()) {
@@ -628,6 +610,15 @@ class ReactNativeFeatureFlagsDynamicProvider : public ReactNativeFeatureFlagsDef
     }
 
     return ReactNativeFeatureFlagsDefaults::fuseboxNetworkInspectionEnabled();
+  }
+
+  bool fuseboxScreenshotCaptureEnabled() override {
+    auto value = values_["fuseboxScreenshotCaptureEnabled"];
+    if (!value.isNull()) {
+      return value.getBool();
+    }
+
+    return ReactNativeFeatureFlagsDefaults::fuseboxScreenshotCaptureEnabled();
   }
 
   bool hideOffscreenVirtualViewsOnIOS() override {

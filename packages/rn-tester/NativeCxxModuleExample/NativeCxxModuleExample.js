@@ -116,6 +116,6 @@ export interface Spec extends TurboModule {
   +promiseAssert: () => Promise<void>;
 }
 
-export default (TurboModuleRegistry.get<Spec>(
+export default TurboModuleRegistry.get<Spec>(
   'NativeCxxModuleExampleCxx',
-): ?Spec);
+) as ?Spec;

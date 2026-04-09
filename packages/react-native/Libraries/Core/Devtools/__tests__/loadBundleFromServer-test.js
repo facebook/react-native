@@ -95,7 +95,7 @@ test('loadBundleFromServer will throw for JSON responses', async () => {
   mockDataResponse = JSON.stringify({message: 'Error thrown from Metro'});
   mockRequestError = null;
 
-  const error: mixed = await loadBundleFromServer(
+  const error: unknown = await loadBundleFromServer(
     '/Fail.bundle?platform=ios',
   ).catch(e => e);
 
@@ -112,7 +112,7 @@ test('loadBundleFromServer will throw LoadBundleFromServerError for request erro
   mockDataResponse = '';
   mockRequestError = 'Some error';
 
-  const error: mixed = await loadBundleFromServer(
+  const error: unknown = await loadBundleFromServer(
     '/Fail.bundle?platform=ios',
   ).catch(e => e);
 

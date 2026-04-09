@@ -28,6 +28,6 @@ export interface Spec extends TurboModule {
   +afterMatchingGeneric: <T>(a: AfterMatchingGeneric<T>) => void;
 }
 
-(TurboModuleRegistry.getEnforcing<Spec>(
+TurboModuleRegistry.getEnforcing<Spec>(
   'NativeModuleTest',
-): Spec);
+) as Spec;

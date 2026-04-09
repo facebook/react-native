@@ -190,20 +190,20 @@ const TextImpl: component(
   if (processedStyle != null) {
     let overrides: ?{...TextStyleInternal} = null;
     if (typeof processedStyle.fontWeight === 'number') {
-      overrides = overrides || ({}: {...TextStyleInternal});
+      overrides = overrides || ({} as {...TextStyleInternal});
       overrides.fontWeight =
         // $FlowFixMe[incompatible-type]
-        (String(processedStyle.fontWeight): TextStyleInternal['fontWeight']);
+        String(processedStyle.fontWeight) as TextStyleInternal['fontWeight'];
     }
 
     if (processedStyle.userSelect != null) {
       _selectable = userSelectToSelectableMap[processedStyle.userSelect];
-      overrides = overrides || ({}: {...TextStyleInternal});
+      overrides = overrides || ({} as {...TextStyleInternal});
       overrides.userSelect = undefined;
     }
 
     if (processedStyle.verticalAlign != null) {
-      overrides = overrides || ({}: {...TextStyleInternal});
+      overrides = overrides || ({} as {...TextStyleInternal});
       overrides.textAlignVertical =
         verticalAlignToTextAlignVerticalMap[processedStyle.verticalAlign];
       overrides.verticalAlign = undefined;

@@ -137,7 +137,7 @@ function reportException(
 declare var console: {
   error: (...data: ReadonlyArray<unknown>) => void,
   _errorOriginal: (...data: ReadonlyArray<unknown>) => void,
-  reportErrorsAsExceptions: boolean,
+  reportErrorsAsExceptions?: boolean,
   ...
 };
 
@@ -182,7 +182,7 @@ function handleException(e: unknown, isFatal: boolean) {
 function reactConsoleErrorHandler(...args) {
   // bubble up to any original handlers
   console._errorOriginal(...args);
-  if (!console.reportErrorsAsExceptions) {
+  if (console.reportErrorsAsExceptions === false) {
     return;
   }
   if (inExceptionHandler || global.RN$inExceptionHandler?.()) {
@@ -272,18 +272,12 @@ function reactConsoleErrorHandler(...args) {
  * setting `console.reportErrorsAsExceptions = false;` in your app.
  */
 function installConsoleErrorReporter() {
-  // Enable reportErrorsAsExceptions
   if (console._errorOriginal) {
     return; // already installed
   }
   // Flow doesn't like it when you set arbitrary values on a global object
   console._errorOriginal = console.error.bind(console);
   console.error = reactConsoleErrorHandler;
-  if (console.reportErrorsAsExceptions === undefined) {
-    // Individual apps can disable this
-    // Flow doesn't like it when you set arbitrary values on a global object
-    console.reportErrorsAsExceptions = true;
-  }
 }
 
 const ExceptionsManager = {

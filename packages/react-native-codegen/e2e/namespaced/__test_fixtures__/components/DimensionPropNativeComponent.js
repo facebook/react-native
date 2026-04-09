@@ -19,6 +19,6 @@ type NativeProps = Readonly<{
   marginBack?: DimensionValue,
 }>;
 
-export default (codegenNativeComponent<NativeProps>(
+export default codegenNativeComponent<NativeProps>(
   'DimensionPropNativeComponentView',
-): HostComponent<NativeProps>);
+) as HostComponent<NativeProps>;

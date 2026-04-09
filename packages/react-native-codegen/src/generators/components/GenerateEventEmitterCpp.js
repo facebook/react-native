@@ -356,7 +356,7 @@ function generateSetters(
             usingEvent,
           );
         default:
-          (typeAnnotation.type: empty);
+          typeAnnotation.type as empty;
           throw new Error(
             `Received invalid event property type ${typeAnnotation.type}`,
           );

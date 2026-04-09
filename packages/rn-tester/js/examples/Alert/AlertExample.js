@@ -452,7 +452,7 @@ export const examples = [
   },
 ];
 
-export default ({
+export default {
   framework: 'React',
   title: 'Alerts',
   category: 'UI',
@@ -462,4 +462,4 @@ export default ({
   /* $FlowFixMe[incompatible-type] Natural Inference rollout. See
    * https://fburl.com/workplace/6291gfvu */
   examples,
-}: RNTesterModule);
+} as RNTesterModule;

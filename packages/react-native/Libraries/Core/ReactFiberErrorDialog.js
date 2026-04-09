@@ -33,17 +33,17 @@ const ReactFiberErrorDialog = {
       /* $FlowFixMe[class-object-subtyping] added when improving typing for
        * this parameters */
       // $FlowFixMe[incompatible-type]
-      error = (errorValue: ExtendedError);
+      error = errorValue as ExtendedError;
     } else if (typeof errorValue === 'string') {
       /* $FlowFixMe[class-object-subtyping] added when improving typing for
        * this parameters */
       // $FlowFixMe[incompatible-type]
-      error = (new SyntheticError(errorValue): ExtendedError);
+      error = new SyntheticError(errorValue) as ExtendedError;
     } else {
       /* $FlowFixMe[class-object-subtyping] added when improving typing for
        * this parameters */
       // $FlowFixMe[incompatible-type]
-      error = (new SyntheticError('Unspecified error'): ExtendedError);
+      error = new SyntheticError('Unspecified error') as ExtendedError;
     }
     try {
       error.componentStack = componentStack;

@@ -45,4 +45,4 @@ Object.defineProperty(global, '__rctDeviceEventEmitter', {
   value: RCTDeviceEventEmitter,
 });
 
-export default (RCTDeviceEventEmitter: IEventEmitter<RCTDeviceEventDefinitions>);
+export default RCTDeviceEventEmitter as IEventEmitter<RCTDeviceEventDefinitions>;

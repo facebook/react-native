@@ -31,7 +31,7 @@ const THIRD_PARTY_COMPONENTS_MM_TEMPLATE_PATH = path.join(
 );
 
 function generateRCTThirdPartyComponents(
-  libraries /*: $ReadOnlyArray<$FlowFixMe> */,
+  libraries /*: ReadonlyArray<$FlowFixMe> */,
   outputDir /*: string */,
 ) {
   fs.mkdirSync(outputDir, {recursive: true});

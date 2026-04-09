@@ -27,7 +27,7 @@ import {
 } from '../../components/ListExampleShared';
 import RNTesterPage from '../../components/RNTesterPage';
 import RNTesterText from '../../components/RNTesterText';
-import React from 'react';
+import * as React from 'react';
 import {useRef, useState} from 'react';
 import {
   Alert,

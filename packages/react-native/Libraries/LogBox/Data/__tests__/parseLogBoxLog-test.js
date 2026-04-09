@@ -116,7 +116,7 @@ describe('parseLogBoxLog', () => {
       name: '',
       isComponentError: false,
       componentStack: '',
-      stack: ([]: Array<StackFrame>),
+      stack: [] as Array<StackFrame>,
       id: 0,
       isFatal: true,
     };
@@ -153,7 +153,7 @@ describe('parseLogBoxLog', () => {
       name: '',
       isComponentError: false,
       componentStack: '',
-      stack: ([]: Array<StackFrame>),
+      stack: [] as Array<StackFrame>,
       id: 0,
       isFatal: true,
     };
@@ -213,7 +213,7 @@ If you are sure the module exists, try these steps:
       name: '',
       isComponentError: false,
       componentStack: '',
-      stack: ([]: Array<StackFrame>),
+      stack: [] as Array<StackFrame>,
       id: 0,
       isFatal: true,
     };
@@ -267,7 +267,7 @@ If you are sure the module exists, try these steps:
       name: '',
       isComponentError: false,
       componentStack: '',
-      stack: ([]: Array<StackFrame>),
+      stack: [] as Array<StackFrame>,
       id: 0,
       isFatal: true,
     };
@@ -315,7 +315,7 @@ Please follow the instructions at: fburl.com/rn-remote-assets
       name: '',
       isComponentError: false,
       componentStack: '',
-      stack: ([]: Array<StackFrame>),
+      stack: [] as Array<StackFrame>,
       id: 0,
       isFatal: true,
     };
@@ -361,7 +361,7 @@ Please follow the instructions at: fburl.com/rn-remote-assets
       name: '',
       isComponentError: false,
       componentStack: '',
-      stack: ([]: Array<StackFrame>),
+      stack: [] as Array<StackFrame>,
       id: 0,
       isFatal: true,
     };

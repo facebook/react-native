@@ -255,9 +255,9 @@ const styles = StyleSheet.create({
   },
 });
 
-export default ({
+export default {
   title: 'Composing',
   name: 'composing',
   description: 'Combine multiple animations using composition functions',
   render: () => <ComposingExample />,
-}: RNTesterModuleExample);
+} as RNTesterModuleExample;

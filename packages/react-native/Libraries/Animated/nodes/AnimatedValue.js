@@ -58,7 +58,7 @@ export function flushValue(rootNode: AnimatedNode): void {
   function findAnimatedStyles(node: AnimatedNode) {
     // $FlowFixMe[prop-missing]
     if (typeof node.update === 'function') {
-      leaves.add((node: any));
+      leaves.add(node as any);
     } else {
       node.__getChildren().forEach(findAnimatedStyles);
     }

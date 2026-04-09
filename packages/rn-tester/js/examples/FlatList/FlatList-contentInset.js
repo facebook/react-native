@@ -77,10 +77,10 @@ const styles = StyleSheet.create({
   },
 });
 
-export default ({
+export default {
   title: 'Content Inset',
   name: 'contentInset',
   description:
     'The amount by which the scroll view content is inset from the edges of the scroll view.',
   render: () => <FlatList_contentInset />,
-}: RNTesterModuleExample);
+} as RNTesterModuleExample;

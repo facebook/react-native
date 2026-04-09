@@ -296,6 +296,12 @@ class JSINSPECTOR_EXPORT RuntimeTarget : public EnableExecutorFromThis<RuntimeTa
   void installGlobals();
 
   /**
+   * Installs __notifyFastRefreshComplete on the runtime's global object.
+   * When called from JS, dispatches to all connected RuntimeAgents.
+   */
+  void installFastRefreshHandler();
+
+  /**
    * Install the console API handler.
    */
   void installConsoleHandler();

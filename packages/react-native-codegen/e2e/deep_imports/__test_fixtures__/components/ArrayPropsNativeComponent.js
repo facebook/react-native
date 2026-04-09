@@ -45,6 +45,6 @@ type NativeProps = Readonly<{
   arrayOfMixed?: ReadonlyArray<UnsafeMixed>,
 }>;
 
-export default (codegenNativeComponent<NativeProps>(
+export default codegenNativeComponent<NativeProps>(
   'ArrayPropsNativeComponentView',
-): HostComponent<NativeProps>);
+) as HostComponent<NativeProps>;

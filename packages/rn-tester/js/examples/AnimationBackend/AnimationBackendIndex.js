@@ -19,11 +19,11 @@ const canUseBackend =
   ReactNativeFeatureFlags.useSharedAnimatedBackend() &&
   ReactNativeFeatureFlags.cxxNativeAnimatedEnabled();
 
-export default ({
+export default {
   framework: 'React',
   title: 'Animation Backend',
   category: 'UI',
   description: `Examples demonstrating the Animation Backend for layout-updating animations. ${canUseBackend ? '' : 'You need to enable c++ Animated and the Animation Backend to see these examples.'}`,
   showIndividualExamples: true,
   examples: canUseBackend ? [PlaygroundExample, SwipeableListExample] : [],
-}: RNTesterModule);
+} as RNTesterModule;

@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<a33f1aaed390cc914a55bd48906f1a11>>
+ * @generated SignedSource<<252f40100280324a528cced3c2c40176>>
  */
 
 /**
@@ -72,10 +72,6 @@ bool ReactNativeFeatureFlags::enableAccessibilityOrder() {
 
 bool ReactNativeFeatureFlags::enableAccumulatedUpdatesInRawPropsAndroid() {
   return getAccessor().enableAccumulatedUpdatesInRawPropsAndroid();
-}
-
-bool ReactNativeFeatureFlags::enableAndroidAntialiasedBorderRadiusClipping() {
-  return getAccessor().enableAndroidAntialiasedBorderRadiusClipping();
 }
 
 bool ReactNativeFeatureFlags::enableAndroidLinearText() {
@@ -262,10 +258,6 @@ bool ReactNativeFeatureFlags::fixMappingOfEventPrioritiesBetweenFabricAndReact()
   return getAccessor().fixMappingOfEventPrioritiesBetweenFabricAndReact();
 }
 
-bool ReactNativeFeatureFlags::fixTextClippingAndroid15useBoundsForWidth() {
-  return getAccessor().fixTextClippingAndroid15useBoundsForWidth();
-}
-
 bool ReactNativeFeatureFlags::fixYogaFlexBasisFitContentInMainAxis() {
   return getAccessor().fixYogaFlexBasisFitContentInMainAxis();
 }
@@ -284,6 +276,10 @@ bool ReactNativeFeatureFlags::fuseboxFrameRecordingEnabled() {
 
 bool ReactNativeFeatureFlags::fuseboxNetworkInspectionEnabled() {
   return getAccessor().fuseboxNetworkInspectionEnabled();
+}
+
+bool ReactNativeFeatureFlags::fuseboxScreenshotCaptureEnabled() {
+  return getAccessor().fuseboxScreenshotCaptureEnabled();
 }
 
 bool ReactNativeFeatureFlags::hideOffscreenVirtualViewsOnIOS() {

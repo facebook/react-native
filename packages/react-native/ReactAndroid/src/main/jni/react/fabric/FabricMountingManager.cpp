@@ -52,6 +52,15 @@ void FabricMountingManager::onSurfaceStop(SurfaceId surfaceId) {
   allocatedViewRegistry_.erase(surfaceId);
 }
 
+bool FabricMountingManager::isViewAllocated(SurfaceId surfaceId, Tag tag) {
+  std::lock_guard lock(allocatedViewsMutex_);
+  auto it = allocatedViewRegistry_.find(surfaceId);
+  if (it == allocatedViewRegistry_.end()) {
+    return false;
+  }
+  return it->second.count(tag) > 0;
+}
+
 namespace {
 
 #ifdef REACT_NATIVE_DEBUG
@@ -1025,6 +1034,20 @@ void FabricMountingManager::destroyUnmountedShadowNode(
     const ShadowNodeFamily& family) {
   auto tag = family.getTag();
   auto surfaceId = family.getSurfaceId();
+
+  // Remove from allocatedViewRegistry so that executeMount does not skip
+  // the Create mount item for this tag. Without this, if the view was
+  // preallocated and then destroyed (e.g. due to a superseded concurrent
+  // render), executeMount would skip the Create because allocatedViewTags
+  // still contains the tag, but the Java side no longer has the view in
+  // tagToViewState (it was deleted by destroyUnmountedView below).
+  {
+    std::lock_guard allocatedViewsLock(allocatedViewsMutex_);
+    auto allocatedViewsIterator = allocatedViewRegistry_.find(surfaceId);
+    if (allocatedViewsIterator != allocatedViewRegistry_.end()) {
+      allocatedViewsIterator->second.erase(tag);
+    }
+  }
 
   // ThreadScope::WithClassLoader is necessary because
   // destroyUnmountedShadowNode is being called from a destructor thread

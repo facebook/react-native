@@ -228,37 +228,39 @@ const styles = StyleSheet.create({
 export const title = 'Performance API Examples';
 export const category = 'Basic';
 export const description = 'Shows the performance API provided in React Native';
-export const examples: Array<RNTesterModuleExample> = ([
-  {
-    title: 'performance.memory',
-    render: (): React.Node => {
-      return <MemoryExample />;
+export const examples: Array<RNTesterModuleExample> = (
+  [
+    {
+      title: 'performance.memory',
+      render: (): React.Node => {
+        return <MemoryExample />;
+      },
     },
-  },
-  {
-    title: 'performance.reactNativeStartupTiming',
-    render: (): React.Node => {
-      return <StartupTimingExample />;
+    {
+      title: 'performance.reactNativeStartupTiming',
+      render: (): React.Node => {
+        return <StartupTimingExample />;
+      },
     },
-  },
-  {
-    title: 'PerformanceObserver (marks and measures)',
-    render: (): React.Node => {
-      return <PerformanceObserverUserTimingExample />;
+    {
+      title: 'PerformanceObserver (marks and measures)',
+      render: (): React.Node => {
+        return <PerformanceObserverUserTimingExample />;
+      },
     },
-  },
-  {
-    title: 'PerformanceObserver (events)',
-    render: (): React.Node => {
-      return <PerformanceObserverEventTimingExample />;
+    {
+      title: 'PerformanceObserver (events)',
+      render: (): React.Node => {
+        return <PerformanceObserverEventTimingExample />;
+      },
     },
-  },
-  PerformanceObserver.supportedEntryTypes.includes('longtask')
-    ? {
-        title: 'PerformanceObserver (long tasks)',
-        render: (): React.Node => {
-          return <PerformanceObserverLongtaskExample />;
-        },
-      }
-    : null,
-]: Array<?RNTesterModuleExample>).filter(Boolean);
+    PerformanceObserver.supportedEntryTypes.includes('longtask')
+      ? {
+          title: 'PerformanceObserver (long tasks)',
+          render: (): React.Node => {
+            return <PerformanceObserverLongtaskExample />;
+          },
+        }
+      : null,
+  ] as Array<?RNTesterModuleExample>
+).filter(Boolean);

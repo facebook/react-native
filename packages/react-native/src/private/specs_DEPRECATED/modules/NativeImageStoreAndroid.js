@@ -21,6 +21,6 @@ export interface Spec extends TurboModule {
   ) => void;
 }
 
-export default (TurboModuleRegistry.getEnforcing<Spec>(
+export default TurboModuleRegistry.getEnforcing<Spec>(
   'ImageStoreManager',
-): Spec);
+) as Spec;

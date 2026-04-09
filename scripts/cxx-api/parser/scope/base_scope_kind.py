@@ -34,7 +34,12 @@ class ScopeKind(ABC):
         stringified_members = [
             member.to_string(2) + member_suffix for member in scope.get_members()
         ]
+
         stringified_members = natsorted(stringified_members)
+        # Deduplicate members that produce identical signatures (e.g.
+        # constructors inherited from multiple bases).
+        stringified_members = list(dict.fromkeys(stringified_members))
+
         result = "{"
         if stringified_members:
             result += "\n" + "\n".join(stringified_members)

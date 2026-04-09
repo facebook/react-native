@@ -85,7 +85,7 @@ function toObjCValue(
         case 'RootTag':
           return RCTBridgingTo('Double');
         default:
-          (typeAnnotation.name: empty);
+          typeAnnotation.name as empty;
           throw new Error(
             `Couldn't convert into ObjC type: ${typeAnnotation.type}"`,
           );
@@ -159,7 +159,7 @@ function toObjCValue(
         ? `(${value} == nil ? std::nullopt : std::make_optional(${namespacedStructName}(${value})))`
         : `${namespacedStructName}(${value})`;
     default:
-      (typeAnnotation.type: empty);
+      typeAnnotation.type as empty;
       throw new Error(
         `Couldn't convert into ObjC value: ${typeAnnotation.type}"`,
       );

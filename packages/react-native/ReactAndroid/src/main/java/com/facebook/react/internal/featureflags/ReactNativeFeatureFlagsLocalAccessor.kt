@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<e211fdbb92579b05507ea84ae42f22ff>>
+ * @generated SignedSource<<f545945b19339923fcafab4eeb1da134>>
  */
 
 /**
@@ -36,7 +36,6 @@ internal class ReactNativeFeatureFlagsLocalAccessor : ReactNativeFeatureFlagsAcc
   private var disableViewPreallocationAndroidCache: Boolean? = null
   private var enableAccessibilityOrderCache: Boolean? = null
   private var enableAccumulatedUpdatesInRawPropsAndroidCache: Boolean? = null
-  private var enableAndroidAntialiasedBorderRadiusClippingCache: Boolean? = null
   private var enableAndroidLinearTextCache: Boolean? = null
   private var enableAndroidTextMeasurementOptimizationsCache: Boolean? = null
   private var enableBridgelessArchitectureCache: Boolean? = null
@@ -83,12 +82,12 @@ internal class ReactNativeFeatureFlagsLocalAccessor : ReactNativeFeatureFlagsAcc
   private var enableVirtualViewDebugFeaturesCache: Boolean? = null
   private var fixFindShadowNodeByTagRaceConditionCache: Boolean? = null
   private var fixMappingOfEventPrioritiesBetweenFabricAndReactCache: Boolean? = null
-  private var fixTextClippingAndroid15useBoundsForWidthCache: Boolean? = null
   private var fixYogaFlexBasisFitContentInMainAxisCache: Boolean? = null
   private var fuseboxAssertSingleHostStateCache: Boolean? = null
   private var fuseboxEnabledReleaseCache: Boolean? = null
   private var fuseboxFrameRecordingEnabledCache: Boolean? = null
   private var fuseboxNetworkInspectionEnabledCache: Boolean? = null
+  private var fuseboxScreenshotCaptureEnabledCache: Boolean? = null
   private var hideOffscreenVirtualViewsOnIOSCache: Boolean? = null
   private var overrideBySynchronousMountPropsAtMountingAndroidCache: Boolean? = null
   private var perfIssuesEnabledCache: Boolean? = null
@@ -232,16 +231,6 @@ internal class ReactNativeFeatureFlagsLocalAccessor : ReactNativeFeatureFlagsAcc
       cached = currentProvider.enableAccumulatedUpdatesInRawPropsAndroid()
       accessedFeatureFlags.add("enableAccumulatedUpdatesInRawPropsAndroid")
       enableAccumulatedUpdatesInRawPropsAndroidCache = cached
-    }
-    return cached
-  }
-
-  override fun enableAndroidAntialiasedBorderRadiusClipping(): Boolean {
-    var cached = enableAndroidAntialiasedBorderRadiusClippingCache
-    if (cached == null) {
-      cached = currentProvider.enableAndroidAntialiasedBorderRadiusClipping()
-      accessedFeatureFlags.add("enableAndroidAntialiasedBorderRadiusClipping")
-      enableAndroidAntialiasedBorderRadiusClippingCache = cached
     }
     return cached
   }
@@ -706,16 +695,6 @@ internal class ReactNativeFeatureFlagsLocalAccessor : ReactNativeFeatureFlagsAcc
     return cached
   }
 
-  override fun fixTextClippingAndroid15useBoundsForWidth(): Boolean {
-    var cached = fixTextClippingAndroid15useBoundsForWidthCache
-    if (cached == null) {
-      cached = currentProvider.fixTextClippingAndroid15useBoundsForWidth()
-      accessedFeatureFlags.add("fixTextClippingAndroid15useBoundsForWidth")
-      fixTextClippingAndroid15useBoundsForWidthCache = cached
-    }
-    return cached
-  }
-
   override fun fixYogaFlexBasisFitContentInMainAxis(): Boolean {
     var cached = fixYogaFlexBasisFitContentInMainAxisCache
     if (cached == null) {
@@ -762,6 +741,16 @@ internal class ReactNativeFeatureFlagsLocalAccessor : ReactNativeFeatureFlagsAcc
       cached = currentProvider.fuseboxNetworkInspectionEnabled()
       accessedFeatureFlags.add("fuseboxNetworkInspectionEnabled")
       fuseboxNetworkInspectionEnabledCache = cached
+    }
+    return cached
+  }
+
+  override fun fuseboxScreenshotCaptureEnabled(): Boolean {
+    var cached = fuseboxScreenshotCaptureEnabledCache
+    if (cached == null) {
+      cached = currentProvider.fuseboxScreenshotCaptureEnabled()
+      accessedFeatureFlags.add("fuseboxScreenshotCaptureEnabled")
+      fuseboxScreenshotCaptureEnabledCache = cached
     }
     return cached
   }

@@ -655,14 +655,14 @@ function InternalTextInput(props: TextInputProps): React.Node {
   if (flattenedStyle != null) {
     let overrides: ?{...TextStyleInternal} = null;
     if (typeof flattenedStyle?.fontWeight === 'number') {
-      overrides = overrides || ({}: {...TextStyleInternal});
+      overrides = overrides || ({} as {...TextStyleInternal});
       overrides.fontWeight =
         // $FlowFixMe[incompatible-type]
-        (flattenedStyle.fontWeight.toString(): TextStyleInternal['fontWeight']);
+        flattenedStyle.fontWeight.toString() as TextStyleInternal['fontWeight'];
     }
 
     if (flattenedStyle.verticalAlign != null) {
-      overrides = overrides || ({}: {...TextStyleInternal});
+      overrides = overrides || ({} as {...TextStyleInternal});
       overrides.textAlignVertical =
         verticalAlignToTextAlignVerticalMap[flattenedStyle.verticalAlign];
       overrides.verticalAlign = undefined;
@@ -693,7 +693,7 @@ function InternalTextInput(props: TextInputProps): React.Node {
     textInput = (
       <RCTTextInputView
         // Figure out imperative + forward refs.
-        ref={(ref: $FlowFixMe)}
+        ref={ref as $FlowFixMe}
         {...otherProps}
         {...eventHandlers}
         acceptDragAndDropTypes={props.experimental_acceptDragAndDropTypes}
@@ -762,7 +762,7 @@ function InternalTextInput(props: TextInputProps): React.Node {
        * fixed */
       <AndroidTextInput
         // Figure out imperative + forward refs.
-        ref={(ref: $FlowFixMe)}
+        ref={ref as $FlowFixMe}
         {...otherProps}
         {...colorProps}
         {...eventHandlers}

@@ -28,15 +28,31 @@ from .snapshot import Snapshot
 from .utils import has_scope_resolution_outside_angles, parse_qualified_path
 
 
-def _process_namespace_sections(snapshot, namespace_scope, compound_object):
+def _should_exclude_symbol(name: str, exclude_symbols: list[str]) -> bool:
+    """
+    Check if a compound name should be excluded based on symbol patterns.
+
+    Each pattern in exclude_symbols is treated as a substring match against
+    the compound's qualified name.
+    """
+    return any(pattern in name for pattern in exclude_symbols)
+
+
+def _process_namespace_sections(
+    snapshot, namespace_scope, compound_object, exclude_symbols: list[str]
+):
     """
     Process all section definitions inside a namespace compound.
     """
+    compound_name = compound_object.compoundname
     for section_def in compound_object.sectiondef:
         if section_def.kind == "var":
             for variable_def in section_def.memberdef:
                 # Skip out-of-class definitions (e.g. "Strct<T>::VALUE")
                 if has_scope_resolution_outside_angles(variable_def.get_name()):
+                    continue
+                qualified_name = f"{compound_name}::{variable_def.get_name()}"
+                if _should_exclude_symbol(qualified_name, exclude_symbols):
                     continue
                 is_static = variable_def.static == "yes"
                 namespace_scope.add_member(
@@ -47,6 +63,9 @@ def _process_namespace_sections(snapshot, namespace_scope, compound_object):
                 # Skip out-of-class definitions (e.g. "Strct<T>::convert")
                 if has_scope_resolution_outside_angles(function_def.get_name()):
                     continue
+                qualified_name = f"{compound_name}::{function_def.get_name()}"
+                if _should_exclude_symbol(qualified_name, exclude_symbols):
+                    continue
                 function_static = function_def.static == "yes"
 
                 if not function_static:
@@ -55,9 +74,15 @@ def _process_namespace_sections(snapshot, namespace_scope, compound_object):
                     )
         elif section_def.kind == "typedef":
             for typedef_def in section_def.memberdef:
+                qualified_name = f"{compound_name}::{typedef_def.get_name()}"
+                if _should_exclude_symbol(qualified_name, exclude_symbols):
+                    continue
                 namespace_scope.add_member(get_typedef_member(typedef_def, "public"))
         elif section_def.kind == "enum":
             for enum_def in section_def.memberdef:
+                qualified_name = f"{compound_name}::{enum_def.get_name()}"
+                if _should_exclude_symbol(qualified_name, exclude_symbols):
+                    continue
                 create_enum_scope(snapshot, enum_def)
         else:
             print(
@@ -65,10 +90,13 @@ def _process_namespace_sections(snapshot, namespace_scope, compound_object):
             )
 
 
-def _handle_namespace_compound(snapshot, compound_object):
+def _handle_namespace_compound(snapshot, compound_object, exclude_symbols=None):
     """
     Handle a namespace compound definition.
     """
+    if exclude_symbols is None:
+        exclude_symbols = []
+
     # Skip anonymous namespaces (internal linkage, not public API).
     # Doxygen encodes them with a '@' prefix in the compound name.
     if "@" in compound_object.compoundname:
@@ -78,7 +106,9 @@ def _handle_namespace_compound(snapshot, compound_object):
 
     namespace_scope.location = compound_object.location.file
 
-    _process_namespace_sections(snapshot, namespace_scope, compound_object)
+    _process_namespace_sections(
+        snapshot, namespace_scope, compound_object, exclude_symbols
+    )
 
 
 def _handle_concept_compound(snapshot, compound_object):
@@ -140,10 +170,18 @@ _IGNORED_COMPOUNDS = frozenset(
 )
 
 
-def build_snapshot(xml_dir: str) -> Snapshot:
+def build_snapshot(xml_dir: str, exclude_symbols: list[str] | None = None) -> Snapshot:
     """
     Reads the Doxygen XML output and builds a snapshot of the C++ API.
+
+    Args:
+        xml_dir: Path to the Doxygen XML output directory.
+        exclude_symbols: Optional list of substring patterns. Compounds whose
+            qualified name contains any of these patterns will be excluded.
     """
+    if exclude_symbols is None:
+        exclude_symbols = []
+
     index_path = os.path.join(xml_dir, "index.xml")
     if not os.path.exists(index_path):
         raise RuntimeError(f"Doxygen entry point not found at {index_path}")
@@ -163,12 +201,19 @@ def build_snapshot(xml_dir: str) -> Snapshot:
             if compound_object.prot == "private":
                 continue
 
+            if _should_exclude_symbol(compound_object.compoundname, exclude_symbols):
+                continue
+
             kind = compound_object.kind
 
             if kind in _IGNORED_COMPOUNDS:
                 pass
             elif kind in _COMPOUND_HANDLERS:
-                _COMPOUND_HANDLERS[kind](snapshot, compound_object)
+                handler = _COMPOUND_HANDLERS[kind]
+                if handler == _handle_namespace_compound:
+                    handler(snapshot, compound_object, exclude_symbols)
+                else:
+                    handler(snapshot, compound_object)
             else:
                 print(f"Unknown compound kind: {kind}")
 

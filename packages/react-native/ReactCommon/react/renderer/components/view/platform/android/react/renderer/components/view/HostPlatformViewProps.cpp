@@ -379,7 +379,7 @@ static void updateBorderStyleProps(
           break;
       }
     } else {
-      result["borderStyle"] = NULL;
+      result["borderStyle"] = folly::dynamic(nullptr);
     }
   }
 }
@@ -623,7 +623,8 @@ folly::dynamic HostPlatformViewProps::getDiffProps(
   }
 
   if (zIndex != oldProps->zIndex) {
-    result["zIndex"] = zIndex.value();
+    result["zIndex"] =
+        zIndex.has_value() ? zIndex.value() : folly::dynamic(nullptr);
   }
 
   if (boxShadow != oldProps->boxShadow) {

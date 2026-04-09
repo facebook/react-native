@@ -12,17 +12,19 @@ Usage:
 """
 
 import argparse
+import concurrent.futures
 import os
 import shutil
 import subprocess
 import sys
 import tempfile
+import traceback
 
 from .config import ApiViewSnapshotConfig, parse_config_file
 from .doxygen import get_doxygen_bin, run_doxygen
 from .main import build_snapshot
 from .path_utils import get_react_native_dir
-from .snapshot_diff import check_snapshots
+from .snapshot_diff import validate_snapshots
 
 
 def run_command(
@@ -34,35 +36,52 @@ def run_command(
     """Run a subprocess command with consistent error handling."""
     result = subprocess.run(cmd, **kwargs)
     if result.returncode != 0:
-        if verbose:
-            print(f"{label} finished with error: {result.stderr}")
-        sys.exit(1)
+        stderr_output = result.stderr or ""
+        if isinstance(stderr_output, bytes):
+            stderr_output = stderr_output.decode("utf-8", errors="replace")
+        print(f"{label} failed (exit code {result.returncode})", file=sys.stderr)
+        if stderr_output:
+            print(stderr_output, file=sys.stderr)
+        raise RuntimeError(
+            f"{label} finished with error (exit code {result.returncode})"
+        )
     elif verbose:
         print(f"{label} finished successfully")
     return result
 
 
-def build_codegen(platform: str, verbose: bool = False) -> str:
+def build_codegen(
+    platform: str,
+    verbose: bool = False,
+    output_path: str = "./api/codegen",
+    label: str = "",
+) -> str:
     react_native_dir = os.path.join(get_react_native_dir(), "packages", "react-native")
+
+    node_bin = os.environ.get("NODE_BIN", "node")
 
     run_command(
         [
-            "node",
+            node_bin,
             "./scripts/generate-codegen-artifacts.js",
             "--path",
             "./",
             "--outputPath",
-            "./api/codegen",
+            output_path,
             "--targetPlatform",
             platform,
             "--forceOutputPath",
         ],
-        label="Codegen",
+        label=f"[{label}] Codegen" if label else "Codegen",
         verbose=verbose,
         cwd=react_native_dir,
+        capture_output=True,
+        text=True,
     )
 
-    return os.path.join(react_native_dir, "api", "codegen")
+    if os.path.isabs(output_path):
+        return output_path
+    return os.path.join(react_native_dir, output_path)
 
 
 def build_snapshot_for_view(
@@ -72,24 +91,26 @@ def build_snapshot_for_view(
     exclude_patterns: list[str],
     definitions: dict[str, str | int],
     output_dir: str,
-    codegen_platform: str | None = None,
+    codegen_dir: str | None = None,
     verbose: bool = True,
     input_filter: str = None,
+    work_dir: str | None = None,
+    exclude_symbols: list[str] | None = None,
 ) -> str:
     if verbose:
-        print(f"Generating API view: {api_view}")
+        print(f"[{api_view}] Generating API view")
 
-    api_dir = os.path.join(react_native_dir, "api")
-    if os.path.exists(api_dir):
-        if verbose:
-            print("  Deleting existing output directory")
-        shutil.rmtree(api_dir)
+    include_directories = list(include_directories)
 
-    if codegen_platform is not None:
-        codegen_dir = build_codegen(codegen_platform, verbose=verbose)
+    if work_dir is None:
+        work_dir = os.path.join(react_native_dir, "api")
+
+    if codegen_dir is not None:
         include_directories.append(codegen_dir)
     elif verbose:
-        print("  Skipping codegen")
+        print(f"[{api_view}] Skipping codegen")
+
+    config_file = f".doxygen.config.{api_view}.generated"
 
     run_doxygen(
         working_dir=react_native_dir,
@@ -98,12 +119,17 @@ def build_snapshot_for_view(
         definitions=definitions,
         input_filter=input_filter,
         verbose=verbose,
+        output_dir=work_dir,
+        config_file=config_file,
+        label=api_view,
     )
 
     if verbose:
-        print("  Building snapshot")
+        print(f"[{api_view}] Building snapshot")
 
-    snapshot = build_snapshot(os.path.join(api_dir, "xml"))
+    snapshot = build_snapshot(
+        os.path.join(work_dir, "xml"), exclude_symbols=exclude_symbols
+    )
     snapshot_string = snapshot.to_string()
 
     output_file = os.path.join(output_dir, f"{api_view}Cxx.api")
@@ -124,24 +150,72 @@ def build_snapshots(
     verbose: bool,
     view_filter: str | None = None,
     is_test: bool = False,
+    keep_xml: bool = False,
 ) -> None:
     if not is_test:
-        for config in snapshot_configs:
-            if view_filter and config.snapshot_name != view_filter:
-                continue
+        configs_to_build = [
+            config
+            for config in snapshot_configs
+            if not view_filter or config.snapshot_name == view_filter
+        ]
 
-            build_snapshot_for_view(
-                api_view=config.snapshot_name,
-                react_native_dir=react_native_dir,
-                include_directories=config.inputs,
-                exclude_patterns=config.exclude_patterns,
-                definitions=config.definitions,
-                output_dir=output_dir,
-                codegen_platform=config.codegen_platform,
-                verbose=verbose,
-                input_filter=input_filter,
-            )
+        with tempfile.TemporaryDirectory(prefix="cxx-api-") as parent_tmp:
+            # Run codegen once per unique platform before parallel snapshot generation.
+            # Debug/release variants share the same codegen output, and running
+            # multiple codegen processes in parallel causes race conditions
+            # (e.g. concurrent yarn install in buildCodegenIfNeeded).
+            codegen_dirs: dict[str, str] = {}
+            for config in configs_to_build:
+                platform = config.codegen_platform
+                if platform is not None and platform not in codegen_dirs:
+                    codegen_output = os.path.join(parent_tmp, f"codegen-{platform}")
+                    os.makedirs(codegen_output, exist_ok=True)
+                    codegen_dirs[platform] = build_codegen(
+                        platform,
+                        verbose=verbose,
+                        output_path=codegen_output,
+                        label=platform,
+                    )
+
+            with concurrent.futures.ThreadPoolExecutor() as executor:
+                futures = {}
+                for config in configs_to_build:
+                    work_dir = os.path.join(parent_tmp, config.snapshot_name)
+                    os.makedirs(work_dir, exist_ok=True)
+                    future = executor.submit(
+                        build_snapshot_for_view,
+                        api_view=config.snapshot_name,
+                        react_native_dir=react_native_dir,
+                        include_directories=config.inputs,
+                        exclude_patterns=config.exclude_patterns,
+                        definitions=config.definitions,
+                        output_dir=output_dir,
+                        codegen_dir=codegen_dirs.get(config.codegen_platform),
+                        verbose=verbose,
+                        input_filter=input_filter if config.input_filter else None,
+                        work_dir=work_dir,
+                        exclude_symbols=config.exclude_symbols,
+                    )
+                    futures[future] = config.snapshot_name
+
+                errors = []
+                for future in concurrent.futures.as_completed(futures):
+                    view_name = futures[future]
+                    try:
+                        future.result()
+                    except Exception as e:
+                        errors.append((view_name, e))
+                        if verbose:
+                            print(
+                                f"[{view_name}] Error generating:\n"
+                                f"{traceback.format_exc()}"
+                            )
+
+                if errors:
+                    failed_views = ", ".join(name for name, _ in errors)
+                    raise RuntimeError(f"Failed to generate snapshots: {failed_views}")
     else:
+        work_dir = os.path.join(react_native_dir, "api")
         snapshot = build_snapshot_for_view(
             api_view="Test",
             react_native_dir=react_native_dir,
@@ -149,10 +223,20 @@ def build_snapshots(
             exclude_patterns=[],
             definitions={},
             output_dir=output_dir,
-            codegen_platform=None,
+            codegen_dir=None,
             verbose=verbose,
             input_filter=input_filter,
+            work_dir=work_dir,
         )
+
+        if keep_xml:
+            xml_src = os.path.join(work_dir, "xml")
+            xml_dst = os.path.join(output_dir, "xml")
+            if os.path.exists(xml_dst):
+                shutil.rmtree(xml_dst)
+            shutil.copytree(xml_src, xml_dst)
+            if verbose:
+                print(f"XML files saved to {xml_dst}")
 
         if verbose:
             print(snapshot)
@@ -172,14 +256,19 @@ def main():
         help="Output directory for the snapshot",
     )
     parser.add_argument(
-        "--check",
+        "--validate",
         action="store_true",
         help="Generate snapshots to a temp directory and compare against committed ones",
     )
     parser.add_argument(
+        "--validate-output",
+        type=str,
+        help="File path to write validate results to (used with --validate)",
+    )
+    parser.add_argument(
         "--snapshot-dir",
         type=str,
-        help="Directory containing committed snapshots for comparison (used with --check)",
+        help="Directory containing committed snapshots for comparison (used with --validate)",
     )
     parser.add_argument(
         "--view",
@@ -191,9 +280,14 @@ def main():
         action="store_true",
         help="Run on the local test directory instead of the react-native directory",
     )
+    parser.add_argument(
+        "--xml",
+        action="store_true",
+        help="Keep the generated Doxygen XML files next to the .api output in a xml/ directory",
+    )
     args = parser.parse_args()
 
-    verbose = not args.check
+    verbose = not args.validate
 
     doxygen_bin = get_doxygen_bin()
     version_result = subprocess.run(
@@ -235,26 +329,33 @@ def main():
 
     with tempfile.TemporaryDirectory() as tmpdir:
         snapshot_output_dir = (
-            tmpdir if args.check else args.output_dir or get_default_snapshot_dir()
+            args.output_dir or tmpdir
+            if args.validate
+            else args.output_dir or get_default_snapshot_dir()
         )
 
         build_snapshots(
             output_dir=snapshot_output_dir,
-            verbose=not args.check,
+            verbose=not args.validate,
             snapshot_configs=snapshot_configs,
             react_native_dir=react_native_package_dir,
             input_filter=input_filter,
             view_filter=args.view,
             is_test=args.test,
+            keep_xml=args.xml,
         )
 
-        if args.check:
+        if args.validate:
             snapshot_dir = args.snapshot_dir or get_default_snapshot_dir()
 
-            if not check_snapshots(snapshot_output_dir, snapshot_dir):
+            if not validate_snapshots(
+                snapshot_output_dir,
+                snapshot_dir,
+                output_file=args.validate_output,
+            ):
                 sys.exit(1)
 
-            print("All snapshot checks passed")
+            print("All snapshot validations passed")
 
 
 if __name__ == "__main__":

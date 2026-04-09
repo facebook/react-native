@@ -126,9 +126,9 @@ const styles = StyleSheet.create({
   },
 });
 
-export default ({
+export default {
   title: 'Chessboard',
   name: 'chessboard',
   description: 'Combine animating layout with state updates',
   render: (): React.Node => <ChessboardExample />,
-}: RNTesterModuleExample);
+} as RNTesterModuleExample;

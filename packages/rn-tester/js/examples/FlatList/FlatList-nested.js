@@ -329,9 +329,9 @@ const styles = StyleSheet.create({
   },
 });
 
-export default ({
+export default {
   title: 'Nested',
   description: 'Nested FlatLists of same and opposite orientation',
   name: 'nested',
   render: NestedListExample,
-}: RNTesterModuleExample);
+} as RNTesterModuleExample;

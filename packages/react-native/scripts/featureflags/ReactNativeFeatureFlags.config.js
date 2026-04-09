@@ -80,7 +80,7 @@ const definitions: FeatureFlagDefinitions = {
         expectedReleaseValue: true,
         purpose: 'experimentation',
       },
-      ossReleaseStage: 'none',
+      ossReleaseStage: 'experimental',
     },
     defaultTextToOverflowHidden: {
       defaultValue: true,
@@ -180,19 +180,8 @@ const definitions: FeatureFlagDefinitions = {
       },
       ossReleaseStage: 'none',
     },
-    enableAndroidAntialiasedBorderRadiusClipping: {
-      defaultValue: false,
-      metadata: {
-        dateAdded: '2025-11-14',
-        description:
-          'Enable antialiased border radius clipping for Android API 28 and below using manual masking with Porter-Duff compositing',
-        expectedReleaseValue: true,
-        purpose: 'experimentation',
-      },
-      ossReleaseStage: 'none',
-    },
     enableAndroidLinearText: {
-      defaultValue: false,
+      defaultValue: true,
       metadata: {
         dateAdded: '2025-09-09',
         description:
@@ -678,17 +667,6 @@ const definitions: FeatureFlagDefinitions = {
       },
       ossReleaseStage: 'none',
     },
-    fixTextClippingAndroid15useBoundsForWidth: {
-      defaultValue: false,
-      metadata: {
-        dateAdded: '2025-12-03',
-        description:
-          'Fix text clipping starting in Android 15 due to usage of useBoundsForWidth',
-        expectedReleaseValue: true,
-        purpose: 'experimentation',
-      },
-      ossReleaseStage: 'experimental',
-    },
     fixYogaFlexBasisFitContentInMainAxis: {
       defaultValue: false,
       metadata: {
@@ -737,6 +715,17 @@ const definitions: FeatureFlagDefinitions = {
         dateAdded: '2024-01-31',
         description:
           'Enable network inspection support in the React Native DevTools CDP backend. Requires `enableBridgelessArchitecture`. This flag is global and should not be changed across React Host lifetimes.',
+        expectedReleaseValue: true,
+        purpose: 'experimentation',
+      },
+      ossReleaseStage: 'none',
+    },
+    fuseboxScreenshotCaptureEnabled: {
+      defaultValue: false,
+      metadata: {
+        dateAdded: '2026-04-01',
+        description:
+          'Enable Page.captureScreenshot CDP method support in the React Native DevTools CDP backend. This flag is global and should not be changed across React Host lifetimes.',
         expectedReleaseValue: true,
         purpose: 'experimentation',
       },
@@ -942,7 +931,7 @@ const definitions: FeatureFlagDefinitions = {
         expectedReleaseValue: true,
         purpose: 'experimentation',
       },
-      ossReleaseStage: 'none',
+      ossReleaseStage: 'experimental',
     },
     useTraitHiddenOnAndroid: {
       defaultValue: false,
@@ -1073,16 +1062,6 @@ const definitions: FeatureFlagDefinitions = {
           'Enable the external inspection API for DevTools to communicate with the Inspector overlay.',
         expectedReleaseValue: true,
         purpose: 'experimentation',
-      },
-      ossReleaseStage: 'none',
-    },
-    fixImageSrcDimensionPropagation: {
-      defaultValue: true,
-      metadata: {
-        description:
-          'Fix image dimensions not being passed through when src is used',
-        expectedReleaseValue: true,
-        purpose: 'release',
       },
       ossReleaseStage: 'none',
     },

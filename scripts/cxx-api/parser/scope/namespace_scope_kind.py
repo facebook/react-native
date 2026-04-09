@@ -35,6 +35,8 @@ class NamespaceScopeKind(ScopeKind):
         result = []
         for kind in MemberKind:
             sorted_group = natsorted(groups[kind])
+            # Deduplicate members with identical signatures.
+            sorted_group = list(dict.fromkeys(sorted_group))
             result.extend(sorted_group)
 
         return "\n".join(result)

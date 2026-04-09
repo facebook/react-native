@@ -247,9 +247,9 @@ const styles = StyleSheet.create({
   },
 });
 
-export default ({
+export default {
   title: 'Pan Gesture',
   name: 'panGesture',
   description: 'Animations driven by pan gesture.',
   render: () => <PanGestureExample />,
-}: RNTesterModuleExample);
+} as RNTesterModuleExample;

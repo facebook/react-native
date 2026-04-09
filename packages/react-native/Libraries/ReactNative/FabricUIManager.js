@@ -97,16 +97,6 @@ export interface Spec {
   +unstable_ContinuousEventPriority: number;
   +unstable_IdleEventPriority: number;
   +unstable_getCurrentEventPriority: () => number;
-  +unstable_getViewTransitionInstance: (
-    name: string,
-    pseudo: string,
-  ) => ?{
-    x: number,
-    y: number,
-    width: number,
-    height: number,
-    nativeTag: number,
-  };
 }
 
 let nativeFabricUIManagerProxy: ?Spec;
@@ -139,7 +129,6 @@ const CACHED_PROPERTIES = [
   'unstable_ContinuousEventPriority',
   'unstable_IdleEventPriority',
   'unstable_getCurrentEventPriority',
-  'unstable_getViewTransitionInstance',
 ];
 
 // This is exposed as a getter because apps using the legacy renderer AND

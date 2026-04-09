@@ -148,7 +148,7 @@ Pod::Spec.new do |s|
     end
 
     ss.subspec "virtualview" do |sss|
-      sss.source_files         = "react/renderer/components/virtualview/**/*.{m,mm,cpp,h}"
+      sss.source_files         = podspec_sources("react/renderer/components/virtualview/**/*.{m,mm,cpp,h}", "react/renderer/components/virtualview/**/*.h")
       sss.exclude_files        = "react/renderer/components/virtualview/tests"
       sss.header_dir           = "react/renderer/components/virtualview"
     end

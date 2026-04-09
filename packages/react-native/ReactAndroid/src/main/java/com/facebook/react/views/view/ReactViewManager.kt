@@ -167,7 +167,7 @@ public open class ReactViewManager : ReactClippingViewManager<ReactViewGroup>() 
             backgroundSizes.add(parsedBackgroundSize)
           }
         }
-        BackgroundStyleApplicator.setBackgroundSize(view, backgroundSizes)
+        BackgroundStyleApplicator.setBackgroundSize(view, backgroundSizes.ifEmpty { null })
       }
     } else {
       BackgroundStyleApplicator.setBackgroundSize(view, null)
@@ -186,7 +186,7 @@ public open class ReactViewManager : ReactClippingViewManager<ReactViewGroup>() 
             backgroundPositions.add(parsedBackgroundPosition)
           }
         }
-        BackgroundStyleApplicator.setBackgroundPosition(view, backgroundPositions)
+        BackgroundStyleApplicator.setBackgroundPosition(view, backgroundPositions.ifEmpty { null })
       } else {
         BackgroundStyleApplicator.setBackgroundPosition(view, null)
       }
@@ -205,7 +205,7 @@ public open class ReactViewManager : ReactClippingViewManager<ReactViewGroup>() 
             backgroundRepeats.add(parsedBackgroundRepeat)
           }
         }
-        BackgroundStyleApplicator.setBackgroundRepeat(view, backgroundRepeats)
+        BackgroundStyleApplicator.setBackgroundRepeat(view, backgroundRepeats.ifEmpty { null })
       } else {
         BackgroundStyleApplicator.setBackgroundRepeat(view, null)
       }
@@ -326,15 +326,17 @@ public open class ReactViewManager : ReactClippingViewManager<ReactViewGroup>() 
 
   @ReactProp(name = "nativeBackgroundAndroid")
   public open fun setNativeBackground(view: ReactViewGroup, background: ReadableMap?) {
-    val bg =
-        background?.let { ReactDrawableHelper.createDrawableFromJSDescription(view.context, it) }
+    val bg = background?.let {
+      ReactDrawableHelper.createDrawableFromJSDescription(view.context, it)
+    }
     BackgroundStyleApplicator.setFeedbackUnderlay(view, bg)
   }
 
   @ReactProp(name = "nativeForegroundAndroid")
   public open fun setNativeForeground(view: ReactViewGroup, foreground: ReadableMap?) {
-    view.foreground =
-        foreground?.let { ReactDrawableHelper.createDrawableFromJSDescription(view.context, it) }
+    view.foreground = foreground?.let {
+      ReactDrawableHelper.createDrawableFromJSDescription(view.context, it)
+    }
   }
 
   @ReactProp(name = ViewProps.NEEDS_OFFSCREEN_ALPHA_COMPOSITING)

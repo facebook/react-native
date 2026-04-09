@@ -147,10 +147,10 @@ type RCTModalHostViewNativeProps = Readonly<{
   identifier?: WithDefault<Int32, 0>,
 }>;
 
-export default (codegenNativeComponent<RCTModalHostViewNativeProps>(
+export default codegenNativeComponent<RCTModalHostViewNativeProps>(
   'ModalHostView',
   {
     interfaceOnly: true,
     paperComponentName: 'RCTModalHostView',
   },
-): HostComponent<RCTModalHostViewNativeProps>);
+) as HostComponent<RCTModalHostViewNativeProps>;

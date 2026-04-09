@@ -28,6 +28,6 @@ export interface Spec extends TurboModule {
   +getReloadAndProfileConfig: () => ReloadAndProfileConfig;
 }
 
-export default (TurboModuleRegistry.get<Spec>(
+export default TurboModuleRegistry.get<Spec>(
   'ReactDevToolsRuntimeSettingsModule',
-): ?Spec);
+) as ?Spec;

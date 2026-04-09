@@ -315,6 +315,7 @@ void RCTProfileHookModules(RCTBridge *bridge)
 
 #pragma clang diagnostic push
 #pragma clang diagnostic ignored "-Wtautological-pointer-compare"
+#pragma clang diagnostic ignored "-Wunreachable-code-return"
   if (RCTProfileTrampoline == NULL) {
     return;
   }

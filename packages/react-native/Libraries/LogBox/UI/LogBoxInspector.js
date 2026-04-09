@@ -8,7 +8,6 @@
  * @format
  */
 
-import Clipboard from '../../Components/Clipboard/Clipboard';
 import Keyboard from '../../Components/Keyboard/Keyboard';
 import View from '../../Components/View/View';
 import StyleSheet from '../../StyleSheet/StyleSheet';
@@ -98,6 +97,9 @@ export default function LogBoxInspector(props: Props): React.Node {
       }
     }
 
+    // Lazy-require to avoid crashing in environments where the native
+    // Clipboard module is unavailable (e.g. Fantom integration tests).
+    const Clipboard = require('../../Components/Clipboard/Clipboard').default;
     Clipboard.setString(parts.join('\n'));
   }
 

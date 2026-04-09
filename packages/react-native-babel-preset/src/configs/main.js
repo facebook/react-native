@@ -82,6 +82,11 @@ const getPreset = (src, options, babel) => {
     options?.customTransformOptions?.unstable_preserveClassPrivate,
   );
 
+  // Preserve async/await syntax if the experiment is enabled.
+  const preserveAsync = TRUE_VALS.has(
+    options?.customTransformOptions?.unstable_preserveAsync,
+  );
+
   const isNull = src == null;
   const hasClass = isNull || src.indexOf('class') !== -1;
 
@@ -138,7 +143,7 @@ const getPreset = (src, options, babel) => {
     require('@babel/plugin-transform-destructuring'),
     {useBuiltIns: true},
   ]);
-  if (isNull || src.indexOf('async') !== -1) {
+  if (!preserveAsync && (isNull || src.indexOf('async') !== -1)) {
     extraPlugins.push([
       require('@babel/plugin-transform-async-generator-functions'),
     ]);

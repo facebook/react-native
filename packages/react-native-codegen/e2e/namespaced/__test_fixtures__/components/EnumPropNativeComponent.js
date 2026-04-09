@@ -23,6 +23,6 @@ type NativeProps = Readonly<{
   intervals?: CodegenTypes.WithDefault<0 | 15 | 30 | 60, 0>,
 }>;
 
-export default (codegenNativeComponent<NativeProps>(
+export default codegenNativeComponent<NativeProps>(
   'EnumPropNativeComponentView',
-): HostComponent<NativeProps>);
+) as HostComponent<NativeProps>;

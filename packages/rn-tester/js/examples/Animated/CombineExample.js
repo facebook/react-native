@@ -16,13 +16,13 @@ import * as React from 'react';
 import {useState} from 'react';
 import {Animated, StyleSheet, Text, TextInput, View} from 'react-native';
 
-export default ({
+export default {
   title: 'Combine Example',
   name: 'Combine View',
   description:
     'Change the opacity of the view by combining different Animated.Values.',
   render: () => <CombineExample />,
-}: RNTesterModuleExample);
+} as RNTesterModuleExample;
 
 component CombineExample() {
   const [aValue, setAValue] = useState('0.4');

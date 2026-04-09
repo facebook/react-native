@@ -298,9 +298,7 @@ class TypeScriptParser implements Parser {
     return types[typeAnnotation.typeParameters.params[0].typeName.name];
   }
 
-  /**
-   * TODO(T108222691): Use flow-types for @babel/parser
-   */
+  // TODO(T108222691): Use flow-types for @babel/parser
   getTypes(ast: $FlowFixMe): TypeDeclarationMap {
     return ast.body.reduce((types, node) => {
       switch (node.type) {

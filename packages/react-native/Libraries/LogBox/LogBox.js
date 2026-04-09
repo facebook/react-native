@@ -32,7 +32,7 @@ function convertLegacyComponentStack(componentStack: Stack): Stack {
     typeof firstFrame.content === 'string'
   ) {
     // Convert from legacy ComponentStack to Stack format
-    return (componentStack: $FlowFixMe).map(frame => ({
+    return (componentStack as $FlowFixMe).map(frame => ({
       methodName: frame.content,
       lineNumber: frame.location.row,
       column: frame.location.column,
@@ -304,4 +304,4 @@ if (__DEV__) {
   };
 }
 
-export default (LogBox: ILogBox);
+export default LogBox as ILogBox;

@@ -67,9 +67,9 @@ component PressableWithNativeDriver() {
   );
 }
 
-export default ({
+export default {
   title: 'Pressability With Native Driver',
   name: 'pressabilityWithNativeDrivers',
   description: 'Pressabile animated with Native Drivers',
   render: () => <PressableWithNativeDriver />,
-}: RNTesterModuleExample);
+} as RNTesterModuleExample;

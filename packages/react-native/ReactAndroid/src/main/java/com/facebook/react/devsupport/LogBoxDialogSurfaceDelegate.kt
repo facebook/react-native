@@ -45,7 +45,7 @@ internal class LogBoxDialogSurfaceDelegate(private val devSupportManager: DevSup
   }
 
   override fun show() {
-    if (isShowing() || !isContentViewReady()) {
+    if (isShowing()) {
       return
     }
     val context = devSupportManager.currentActivity
@@ -56,6 +56,14 @@ internal class LogBoxDialogSurfaceDelegate(private val devSupportManager: DevSup
       )
       return
     }
+
+    if (!isContentViewReady()) {
+      createContentView("LogBox")
+    }
+    if (!isContentViewReady()) {
+      return
+    }
+
     dialog = LogBoxDialog(context, reactRootView)
     dialog?.let { dialog ->
       dialog.setCancelable(false)
@@ -69,6 +77,7 @@ internal class LogBoxDialogSurfaceDelegate(private val devSupportManager: DevSup
     }
     (reactRootView?.parent as ViewGroup?)?.removeView(reactRootView)
     dialog = null
+    destroyContentView()
   }
 
   override fun isShowing(): Boolean = dialog?.isShowing ?: false

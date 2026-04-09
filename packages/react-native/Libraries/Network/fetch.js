@@ -12,7 +12,7 @@
 
 // side-effectful require() to put fetch,
 // Headers, Request, Response in global scope
-require('whatwg-fetch');
+require('./whatwg-fetch');
 
 export const fetch = global.fetch;
 export const Headers = global.Headers;

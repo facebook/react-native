@@ -271,7 +271,7 @@ export function compareTypeAnnotation(
       return compareReservedTypeAnnotation(newerAnnotation, olderAnnotation);
     default:
       // Flow exhaustiveness check
-      (newerAnnotation: empty);
+      newerAnnotation as empty;
       throw new Error(`Unsupported type annotation: ${newerAnnotation.type}`);
   }
 }
@@ -494,7 +494,7 @@ function comparePropertyArrays(
         )(comparedTypes.errorLog);
         return result;
       default:
-        (comparedTypes: empty);
+        comparedTypes as empty;
         throw new Error('Unsupported status ' + comparedTypes.status);
     }
   }
@@ -694,7 +694,7 @@ export function compareEnumDeclarationMemberArrays(
         break;
       default:
         // Flow exhaustiveness check
-        (comparedTypes: empty);
+        comparedTypes as empty;
         throw new Error('Unsupported status ' + comparedTypes.status);
     }
   } else if (newerName > olderName) {
@@ -774,7 +774,7 @@ export function compareUnionMemberArrays(
         break;
       default:
         // Flow exhaustiveness check
-        (headComparison: empty);
+        headComparison as empty;
         throw new Error('Unsupported status ' + headComparison.status);
     }
   } else if (sortComparison > 0) {
@@ -1632,7 +1632,7 @@ function compareReservedTypeAnnotation(
     case 'DimensionPrimitive':
       return {status: 'matching'};
     default:
-      (newerAnnotation.name: empty);
+      newerAnnotation.name as empty;
       throw new Error('Unknown reserved type ' + newerAnnotation.name);
   }
 }

@@ -19,6 +19,6 @@ type NativeProps = Readonly<{
   thumbImage?: ImageSource,
 }>;
 
-export default (codegenNativeComponent<NativeProps>(
+export default codegenNativeComponent<NativeProps>(
   'ImagePropNativeComponentView',
-): HostComponent<NativeProps>);
+) as HostComponent<NativeProps>;

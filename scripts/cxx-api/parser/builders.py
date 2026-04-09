@@ -41,7 +41,12 @@ from .utils import (
     resolve_linked_text_name,
     split_specialization,
 )
-from .utils.argument_parsing import _find_matching_angle, _split_arguments
+from .utils.argument_parsing import (
+    _find_matching_angle,
+    _split_arguments,
+    format_parsed_type,
+    parse_type_with_argstrings,
+)
 
 
 @dataclass
@@ -161,8 +166,14 @@ def get_base_classes(
 ) -> list:
     """
     Get the base classes of a compound object.
+
+    Deduplicates base classes by name. Doxygen can emit duplicate
+    ``basecompoundref`` entries when a class inherits constructors via
+    ``using Base::Base;`` — the using-declaration is incorrectly reported
+    as an additional base class reference.
     """
     base_classes = []
+    seen_names: set[str] = set()
     if compound_object.basecompoundref:
         for base in compound_object.basecompoundref:
             # base is a compoundRefType with:
@@ -178,6 +189,10 @@ def get_base_classes(
             if base_prot == "private":
                 # Ignore private base classes
                 continue
+
+            if base_name in seen_names:
+                continue
+            seen_names.add(base_name)
 
             base_classes.append(
                 base_class(
@@ -307,6 +322,16 @@ def get_doxygen_params(
             if param.get_type()
             else ""
         )
+
+        # Doxygen may incorrectly cross-reference parameter names inside
+        # inline function pointer types to member variables of the enclosing
+        # class, producing qualified paths like "const void*
+        # ns::Class::data" instead of "const void* data".  Re-parse the
+        # type through parse_type_with_argstrings which delegates to
+        # _parse_single_argument — that already strips "::" from names.
+        segments = parse_type_with_argstrings(param_type)
+        if len(segments) > 1:
+            param_type = format_parsed_type(segments)
         param_name = param.declname or param.defname or None
         param_default = (
             resolve_linked_text_name(param.defval)[0].strip() if param.defval else None
@@ -333,6 +358,8 @@ def get_doxygen_params(
                     + param_array
                 )
                 param_name = None
+            elif param_name:
+                param_name += param_array
             else:
                 param_type += param_array
 
@@ -350,6 +377,29 @@ def get_doxygen_params(
                     param_type[:insert_pos] + param_name + param_type[insert_pos:]
                 )
                 param_name = None
+        else:
+            # Doxygen bug: for pointer-to-member-function params with
+            # ref-qualifiers (& or &&), Doxygen incorrectly embeds the
+            # parameter name in the type string between cv-qualifiers
+            # and the ref-qualifier, and omits <declname> entirely:
+            #   <type>R(ns::*)() const asFoo &amp;</type>
+            # Detect this pattern and reconstruct the correct type:
+            #   R(ns::*asFoo)() const &
+            m = re.search(
+                r"(\([^)]*::\*\))"  # group 1: ptr-to-member declarator
+                r"(.+?)"  # group 2: param list + cv-qualifiers
+                r"\s+([a-zA-Z_]\w*)"  # group 3: misplaced identifier
+                r"\s*(&{1,2})\s*$",  # group 4: ref-qualifier
+                param_type,
+            )
+            if m:
+                param_type = (
+                    param_type[: m.end(1) - 1]  # up to ')' of (ns::*)
+                    + m.group(3)  # insert extracted name
+                    + param_type[m.end(1) - 1 : m.end(2)]  # ')' + params + cv-quals
+                    + " "
+                    + m.group(4)  # ref-qualifier
+                )
 
         qualifiers, core_type = extract_qualifiers(param_type)
         arguments.append((qualifiers, core_type, param_name, param_default))

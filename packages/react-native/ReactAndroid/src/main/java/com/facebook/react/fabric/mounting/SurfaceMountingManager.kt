@@ -608,7 +608,14 @@ internal constructor(
       return
     }
 
-    val viewState = getViewState(reactTag)
+    val viewState = getNullableViewState(reactTag)
+    if (viewState == null) {
+      ReactSoftExceptionLogger.logSoftException(
+          ReactSoftExceptionLogger.Categories.SURFACE_MOUNTING_MANAGER_MISSING_VIEWSTATE,
+          ReactNoCrashSoftException("Unable to find viewState for tag $reactTag for updateProps"),
+      )
+      return
+    }
 
     if (
         ReactNativeFeatureFlags.overrideBySynchronousMountPropsAtMountingAndroid() &&
@@ -624,7 +631,7 @@ internal constructor(
       viewState.currentProps = ReactStylesDiffMap(props)
     }
 
-    val view: View = checkNotNull(viewState.view) { "Unable to find view for tag [$reactTag]" }
+    val view: View = viewState.view ?: return
     checkNotNull(viewState.viewManager).updateProperties(view, viewState.currentProps)
   }
 

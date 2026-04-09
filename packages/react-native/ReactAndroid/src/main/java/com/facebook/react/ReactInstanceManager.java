@@ -10,15 +10,11 @@ package com.facebook.react;
 import static com.facebook.infer.annotation.ThreadConfined.UI;
 import static com.facebook.react.bridge.ReactMarkerConstants.ATTACH_MEASURED_ROOT_VIEWS_END;
 import static com.facebook.react.bridge.ReactMarkerConstants.ATTACH_MEASURED_ROOT_VIEWS_START;
-import static com.facebook.react.bridge.ReactMarkerConstants.BUILD_NATIVE_MODULE_REGISTRY_END;
-import static com.facebook.react.bridge.ReactMarkerConstants.BUILD_NATIVE_MODULE_REGISTRY_START;
 import static com.facebook.react.bridge.ReactMarkerConstants.CHANGE_THREAD_PRIORITY;
 import static com.facebook.react.bridge.ReactMarkerConstants.CREATE_VIEW_MANAGERS_END;
 import static com.facebook.react.bridge.ReactMarkerConstants.CREATE_VIEW_MANAGERS_START;
 import static com.facebook.react.bridge.ReactMarkerConstants.PRE_SETUP_REACT_CONTEXT_END;
 import static com.facebook.react.bridge.ReactMarkerConstants.PRE_SETUP_REACT_CONTEXT_START;
-import static com.facebook.react.bridge.ReactMarkerConstants.PROCESS_PACKAGES_END;
-import static com.facebook.react.bridge.ReactMarkerConstants.PROCESS_PACKAGES_START;
 import static com.facebook.react.bridge.ReactMarkerConstants.REACT_CONTEXT_THREAD_END;
 import static com.facebook.react.bridge.ReactMarkerConstants.REACT_CONTEXT_THREAD_START;
 import static com.facebook.react.bridge.ReactMarkerConstants.SETUP_REACT_CONTEXT_END;
@@ -52,7 +48,6 @@ import com.facebook.react.bridge.JSBundleLoader;
 import com.facebook.react.bridge.JSExceptionHandler;
 import com.facebook.react.bridge.JavaScriptExecutor;
 import com.facebook.react.bridge.JavaScriptExecutorFactory;
-import com.facebook.react.bridge.NativeModuleRegistry;
 import com.facebook.react.bridge.ReactApplicationContext;
 import com.facebook.react.bridge.ReactContext;
 import com.facebook.react.bridge.ReactMarker;
@@ -1394,46 +1389,5 @@ public class ReactInstanceManager {
     throw new UnsupportedOperationException(
         "ReactInstanceManager.createReactContext is unsupported. CatalystInstanceImpl has been"
             + " removed.");
-  }
-
-  private NativeModuleRegistry processPackages(
-      ReactApplicationContext reactContext, List<ReactPackage> packages) {
-    NativeModuleRegistryBuilder nativeModuleRegistryBuilder =
-        new NativeModuleRegistryBuilder(reactContext);
-
-    ReactMarker.logMarker(PROCESS_PACKAGES_START);
-
-    synchronized (mPackages) {
-      for (ReactPackage reactPackage : packages) {
-        Systrace.beginSection(TRACE_TAG_REACT, "createAndProcessCustomReactPackage");
-        try {
-          processPackage(reactPackage, nativeModuleRegistryBuilder);
-        } finally {
-          Systrace.endSection(TRACE_TAG_REACT);
-        }
-      }
-    }
-    ReactMarker.logMarker(PROCESS_PACKAGES_END);
-
-    ReactMarker.logMarker(BUILD_NATIVE_MODULE_REGISTRY_START);
-    Systrace.beginSection(TRACE_TAG_REACT, "buildNativeModuleRegistry");
-    NativeModuleRegistry nativeModuleRegistry;
-    try {
-      nativeModuleRegistry = nativeModuleRegistryBuilder.build();
-    } finally {
-      Systrace.endSection(TRACE_TAG_REACT);
-      ReactMarker.logMarker(BUILD_NATIVE_MODULE_REGISTRY_END);
-    }
-
-    return nativeModuleRegistry;
-  }
-
-  private void processPackage(
-      ReactPackage reactPackage, NativeModuleRegistryBuilder nativeModuleRegistryBuilder) {
-    SystraceMessage.beginSection(TRACE_TAG_REACT, "processPackage")
-        .arg("className", reactPackage.getClass().getSimpleName())
-        .flush();
-    nativeModuleRegistryBuilder.processPackage(reactPackage);
-    SystraceMessage.endSection(TRACE_TAG_REACT).flush();
   }
 }

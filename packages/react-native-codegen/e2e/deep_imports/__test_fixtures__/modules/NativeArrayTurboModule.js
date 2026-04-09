@@ -21,6 +21,6 @@ export interface Spec extends TurboModule {
   +getArrayWithAlias: (a: AnotherArray, b: Array<ArrayType>) => AnotherArray;
 }
 
-export default (TurboModuleRegistry.getEnforcing<Spec>(
+export default TurboModuleRegistry.getEnforcing<Spec>(
   'SampleTurboModule',
-): Spec);
+) as Spec;

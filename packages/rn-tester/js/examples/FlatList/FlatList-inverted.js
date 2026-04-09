@@ -37,9 +37,9 @@ export component FlatList_inverted() {
   );
 }
 
-export default ({
+export default {
   title: 'Inverted',
   name: 'inverted',
   description: 'Test inverted prop on FlatList',
   render: () => <FlatList_inverted />,
-}: RNTesterModuleExample);
+} as RNTesterModuleExample;

@@ -25,6 +25,20 @@ class Extendable:
                 self.base_classes.append(b)
         else:
             self.base_classes.append(base)
+        self._deduplicate_base_classes()
+
+    def _deduplicate_base_classes(self) -> None:
+        """Remove duplicate base classes.
+
+        Doxygen sometimes reports the same base class multiple times (e.g.
+        when template argument substitution produces identical names for
+        a primary template and its specialization).  This keeps only the
+        last occurrence of each name.
+        """
+        seen: dict[str, int] = {}
+        for i, base in enumerate(self.base_classes):
+            seen[base.name] = i
+        self.base_classes = [self.base_classes[i] for i in sorted(seen.values())]
 
     def qualify_base_classes(self, scope) -> None:
         """Qualify base class names and their template arguments."""

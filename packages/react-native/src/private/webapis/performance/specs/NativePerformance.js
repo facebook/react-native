@@ -101,4 +101,4 @@ export interface Spec extends TurboModule {
   +clearEventCountsForTesting: () => void;
 }
 
-export default (TurboModuleRegistry.get<Spec>('NativePerformanceCxx'): ?Spec);
+export default TurboModuleRegistry.get<Spec>('NativePerformanceCxx') as ?Spec;

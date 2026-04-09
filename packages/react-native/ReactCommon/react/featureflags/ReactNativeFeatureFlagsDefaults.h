@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<2cf1c7be6b0086da159550454273ce2d>>
+ * @generated SignedSource<<21c6a4ee6b9c64c4b136798e558dff8f>>
  */
 
 /**
@@ -75,12 +75,8 @@ class ReactNativeFeatureFlagsDefaults : public ReactNativeFeatureFlagsProvider {
     return false;
   }
 
-  bool enableAndroidAntialiasedBorderRadiusClipping() override {
-    return false;
-  }
-
   bool enableAndroidLinearText() override {
-    return false;
+    return true;
   }
 
   bool enableAndroidTextMeasurementOptimizations() override {
@@ -263,10 +259,6 @@ class ReactNativeFeatureFlagsDefaults : public ReactNativeFeatureFlagsProvider {
     return false;
   }
 
-  bool fixTextClippingAndroid15useBoundsForWidth() override {
-    return false;
-  }
-
   bool fixYogaFlexBasisFitContentInMainAxis() override {
     return false;
   }
@@ -285,6 +277,10 @@ class ReactNativeFeatureFlagsDefaults : public ReactNativeFeatureFlagsProvider {
 
   bool fuseboxNetworkInspectionEnabled() override {
     return true;
+  }
+
+  bool fuseboxScreenshotCaptureEnabled() override {
+    return false;
   }
 
   bool hideOffscreenVirtualViewsOnIOS() override {

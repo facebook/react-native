@@ -105,6 +105,18 @@ internal object TextLayoutManager {
 
   private val tagToSpannableCache = ConcurrentHashMap<Int, Spannable>()
 
+  // Lazily cached Method for StaticLayout.Builder.setUseBoundsForWidth (API 35+).
+  // Reflection is needed because some internal targets compile against an SDK older than 35.
+  private val setUseBoundsForWidthMethod: java.lang.reflect.Method? by lazy {
+    try {
+      StaticLayout.Builder::class
+          .java
+          .getMethod("setUseBoundsForWidth", Boolean::class.javaPrimitiveType)
+    } catch (_: ReflectiveOperationException) {
+      null
+    }
+  }
+
   fun setCachedSpannableForTag(reactTag: Int, sp: Spannable): Unit {
     tagToSpannableCache[reactTag] = sp
   }
@@ -621,63 +633,14 @@ internal object TextLayoutManager {
       )
     }
 
-    // Pre-Android 15: Use existing advance-based logic
-    if (
-        Build.VERSION.SDK_INT < Build.VERSION_CODES.VANILLA_ICE_CREAM ||
-            !ReactNativeFeatureFlags.fixTextClippingAndroid15useBoundsForWidth()
-    ) {
-      val desiredWidth = ceil(Layout.getDesiredWidth(text, paint)).toInt()
-
-      val layoutWidth =
-          when (widthYogaMeasureMode) {
-            YogaMeasureMode.EXACTLY -> floor(width).toInt()
-            YogaMeasureMode.AT_MOST -> min(desiredWidth, floor(width).toInt())
-            else -> desiredWidth
-          }
-      return buildLayout(
-          text,
-          layoutWidth,
-          includeFontPadding,
-          textBreakStrategy,
-          hyphenationFrequency,
-          alignment,
-          justificationMode,
-          ellipsizeMode,
-          maxNumberOfLines,
-          paint,
-      )
-    }
-
-    // Android 15+: Need to account for visual bounds
-    // Step 1: Create unconstrained layout to get visual bounds width
-    val unconstrainedLayout =
-        buildLayout(
-            text,
-            Int.MAX_VALUE / 2,
-            includeFontPadding,
-            textBreakStrategy,
-            hyphenationFrequency,
-            alignment,
-            justificationMode,
-            null,
-            ReactConstants.UNSET,
-            paint,
-        )
-
-    // Calculate visual bounds width from unconstrained layout
-    var desiredVisualWidth = 0f
-    for (i in 0 until unconstrainedLayout.lineCount) {
-      val lineWidth = unconstrainedLayout.getLineRight(i) - unconstrainedLayout.getLineLeft(i)
-      desiredVisualWidth = max(desiredVisualWidth, lineWidth)
-    }
+    val desiredWidth = ceil(Layout.getDesiredWidth(text, paint)).toInt()
 
     val layoutWidth =
         when (widthYogaMeasureMode) {
-          YogaMeasureMode.AT_MOST -> min(ceil(desiredVisualWidth).toInt(), floor(width).toInt())
-          else -> ceil(desiredVisualWidth).toInt()
+          YogaMeasureMode.EXACTLY -> floor(width).toInt()
+          YogaMeasureMode.AT_MOST -> min(desiredWidth, floor(width).toInt())
+          else -> desiredWidth
         }
-
-    // Step 2: Create final layout with correct width
     return buildLayout(
         text,
         layoutWidth,
@@ -722,13 +685,6 @@ internal object TextLayoutManager {
 
     if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.P) {
       builder.setUseLineSpacingFromFallbacks(true)
-    }
-
-    if (
-        Build.VERSION.SDK_INT >= Build.VERSION_CODES.VANILLA_ICE_CREAM &&
-            ReactNativeFeatureFlags.fixTextClippingAndroid15useBoundsForWidth()
-    ) {
-      builder.setUseBoundsForWidth(true)
     }
 
     return builder.build()

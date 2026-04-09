@@ -21,6 +21,6 @@ type NativeProps = Readonly<{
   startPoint?: PointValue,
 }>;
 
-export default (codegenNativeComponent<NativeProps>(
+export default codegenNativeComponent<NativeProps>(
   'PointPropNativeComponentView',
-): HostComponent<NativeProps>);
+) as HostComponent<NativeProps>;

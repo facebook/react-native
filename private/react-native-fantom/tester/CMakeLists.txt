@@ -71,6 +71,7 @@ add_react_common_subdir(react/nativemodule/idlecallbacks)
 add_react_common_subdir(react/nativemodule/intersectionobserver)
 add_react_common_subdir(react/nativemodule/microtasks)
 add_react_common_subdir(react/nativemodule/mutationobserver)
+add_react_common_subdir(react/nativemodule/viewtransition)
 add_react_common_subdir(react/nativemodule/webperformance)
 add_react_common_subdir(react/performance/cdpmetrics)
 add_react_common_subdir(react/performance/timeline)
@@ -188,6 +189,7 @@ target_link_libraries(fantom_tester
     react_nativemodule_intersectionobserver
     react_nativemodule_microtasks
     react_nativemodule_mutationobserver
+    react_nativemodule_viewtransition
     react_nativemodule_webperformance
     react_performance_cdpmetrics
     react_performance_timeline

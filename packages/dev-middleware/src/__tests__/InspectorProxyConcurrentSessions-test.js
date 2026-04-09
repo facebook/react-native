@@ -62,7 +62,7 @@ describe('inspector proxy concurrent sessions', () => {
           pageList = (await fetchJson(
             `${serverBaseUrl}/json`,
             // $FlowFixMe[unclear-type]
-          ): any);
+          )) as any;
           expect(pageList).toHaveLength(1);
         });
 

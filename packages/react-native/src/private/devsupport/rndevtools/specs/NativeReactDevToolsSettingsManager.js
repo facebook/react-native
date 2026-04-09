@@ -17,6 +17,6 @@ export interface Spec extends TurboModule {
   +getGlobalHookSettings: () => ?string;
 }
 
-export default (TurboModuleRegistry.get<Spec>(
+export default TurboModuleRegistry.get<Spec>(
   'ReactDevToolsSettingsManager',
-): ?Spec);
+) as ?Spec;

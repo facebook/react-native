@@ -55,7 +55,7 @@ describe('inspector proxy React Native reloads', () => {
         pageList = (await fetchJson(
           `${serverRef.serverBaseUrl}/json`,
           // $FlowFixMe[unclear-type]
-        ): any);
+        )) as any;
         expect(pageList.length).toBeGreaterThan(0);
       });
       invariant(pageList != null, '');
@@ -114,7 +114,7 @@ describe('inspector proxy React Native reloads', () => {
         pageList = (await fetchJson(
           `${serverRef.serverBaseUrl}/json`,
           // $FlowFixMe[unclear-type]
-        ): any);
+        )) as any;
         expect(pageList).toContainEqual(
           expect.objectContaining({
             id: expect.stringContaining('originalPage-updated'),
@@ -171,7 +171,7 @@ describe('inspector proxy React Native reloads', () => {
         pageList = (await fetchJson(
           `${serverRef.serverBaseUrl}/json`,
           // $FlowFixMe[unclear-type]
-        ): any);
+        )) as any;
         expect(pageList.length).toBeGreaterThan(0);
       });
       invariant(pageList != null, '');
@@ -224,7 +224,7 @@ describe('inspector proxy React Native reloads', () => {
         pageList = (await fetchJson(
           `${serverRef.serverBaseUrl}/json`,
           // $FlowFixMe[unclear-type]
-        ): any);
+        )) as any;
         expect(pageList).toContainEqual(
           expect.objectContaining({
             id: expect.stringContaining('originalPage-updated'),
@@ -275,7 +275,7 @@ describe('inspector proxy React Native reloads', () => {
         pageList = (await fetchJson(
           `${serverRef.serverBaseUrl}/json`,
           // $FlowFixMe[unclear-type]
-        ): any);
+        )) as any;
         expect(pageList.length).toBeGreaterThan(0);
       });
       invariant(pageList != null, '');
@@ -429,7 +429,7 @@ describe('inspector proxy React Native reloads', () => {
         pageList = (await fetchJson(
           `${serverRef.serverBaseUrl}/json`,
           // $FlowFixMe[unclear-type]
-        ): any);
+        )) as any;
         expect(pageList.length).toBeGreaterThan(0);
       });
       invariant(pageList != null, '');
@@ -465,7 +465,7 @@ describe('inspector proxy React Native reloads', () => {
         pageList = (await fetchJson(
           `${serverRef.serverBaseUrl}/json`,
           // $FlowFixMe[unclear-type]
-        ): any);
+        )) as any;
         expect(pageList).toContainEqual(
           expect.objectContaining({
             id: expect.stringContaining('originalPage-updated'),

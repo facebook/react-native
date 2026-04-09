@@ -14,7 +14,7 @@ import type {RNTesterModuleExample} from '../../types/RNTesterTypes';
 import type {ViewStyleProp} from 'react-native/Libraries/StyleSheet/StyleSheet';
 
 import RNTesterText from '../../components/RNTesterText';
-import React from 'react';
+import * as React from 'react';
 import {Platform, PlatformColor, StyleSheet, View} from 'react-native';
 
 type Props = Readonly<{

@@ -22,6 +22,6 @@ type NativeProps = Readonly<{
   disabledNullable?: WithDefault<boolean, null>,
 }>;
 
-export default (codegenNativeComponent<NativeProps>(
+export default codegenNativeComponent<NativeProps>(
   'BooleanPropNativeComponentView',
-): HostComponent<NativeProps>);
+) as HostComponent<NativeProps>;

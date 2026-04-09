@@ -25,6 +25,6 @@ type NativeProps = Readonly<{
   blurRadiusNullable?: CodegenTypes.WithDefault<CodegenTypes.Float, null>,
 }>;
 
-export default (codegenNativeComponent<NativeProps>(
+export default codegenNativeComponent<NativeProps>(
   'FloatPropsNativeComponentView',
-): HostComponent<NativeProps>);
+) as HostComponent<NativeProps>;

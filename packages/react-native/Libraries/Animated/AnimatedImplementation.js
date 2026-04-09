@@ -118,8 +118,8 @@ const maybeVectorAnim = function (
         configY[key] = y;
       }
     }
-    const aX = anim((value: AnimatedValueXY).x, configX);
-    const aY = anim((value: AnimatedValueXY).y, configY);
+    const aX = anim((value as AnimatedValueXY).x, configX);
+    const aY = anim((value as AnimatedValueXY).y, configY);
     // We use `stopTogether: false` here because otherwise tracking will break
     // because the second animation will get stopped before it can update.
     return parallelImpl([aX, aY], {stopTogether: false});
@@ -142,10 +142,10 @@ const maybeVectorAnim = function (
         configA[key] = a;
       }
     }
-    const aR = anim((value: AnimatedColor).r, configR);
-    const aG = anim((value: AnimatedColor).g, configG);
-    const aB = anim((value: AnimatedColor).b, configB);
-    const aA = anim((value: AnimatedColor).a, configA);
+    const aR = anim((value as AnimatedColor).r, configR);
+    const aG = anim((value as AnimatedColor).g, configG);
+    const aB = anim((value as AnimatedColor).b, configB);
+    const aA = anim((value as AnimatedColor).a, configA);
     // We use `stopTogether: false` here because otherwise tracking will break
     // because the second animation will get stopped before it can update.
     return parallelImpl([aR, aG, aB, aA], {stopTogether: false});

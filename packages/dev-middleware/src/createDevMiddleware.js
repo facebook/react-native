@@ -196,7 +196,7 @@ function createWrappedEventReporter(
               );
               break;
             default:
-              (event.result.code: empty);
+              event.result.code as empty;
               break;
           }
       }

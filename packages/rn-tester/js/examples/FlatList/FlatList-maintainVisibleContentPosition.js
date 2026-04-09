@@ -91,9 +91,9 @@ const styles = StyleSheet.create({
   },
 });
 
-export default ({
+export default {
   title: 'maintainVisibleContentPosition',
   name: 'maintainVisibleContentPosition',
   description: 'Test maintainVisibleContentPosition prop on FlatList',
   render: () => <FlatList_maintainVisibleContentPosition />,
-}: RNTesterModuleExample);
+} as RNTesterModuleExample;

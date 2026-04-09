@@ -70,6 +70,6 @@ export const Commands: NativeCommands = codegenNativeCommands<NativeCommands>({
   ],
 });
 
-export default (codegenNativeComponent<NativeProps>(
+export default codegenNativeComponent<NativeProps>(
   'RNTMyNativeView',
-): MyNativeViewType);
+) as MyNativeViewType;

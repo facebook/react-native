@@ -26,5 +26,5 @@ export default function toExtendedError(value: unknown): ExtendedError {
   const error = toError(value);
   // ExtendedError extends Error, so this cast is safe for the LogBox system
   // $FlowFixMe[incompatible-type] ExtendedError extends Error, this cast is safe
-  return (error: ExtendedError);
+  return error as ExtendedError;
 }

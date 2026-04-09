@@ -184,4 +184,4 @@ export interface Spec extends TurboModule {
   +blur?: (reactTag: number) => void;
 }
 
-export default (TurboModuleRegistry.getEnforcing<Spec>('UIManager'): Spec);
+export default TurboModuleRegistry.getEnforcing<Spec>('UIManager') as Spec;

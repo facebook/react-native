@@ -44,7 +44,7 @@ function ensureExternalInspectionAPI(
       disable: onDisable,
     };
     // $FlowFixMe[prop-missing] Initializing global API for DevTools communication
-    (global: $FlowFixMe).__EXTERNAL_INSPECTION__ = api;
+    (global as $FlowFixMe).__EXTERNAL_INSPECTION__ = api;
     return api;
   }
   __EXTERNAL_INSPECTION__.enable = onEnable;

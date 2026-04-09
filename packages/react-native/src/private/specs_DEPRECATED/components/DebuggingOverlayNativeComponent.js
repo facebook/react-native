@@ -57,6 +57,6 @@ export const Commands: NativeCommands = codegenNativeCommands<NativeCommands>({
   ],
 });
 
-export default (codegenNativeComponent<DebuggingOverlayNativeProps>(
+export default codegenNativeComponent<DebuggingOverlayNativeProps>(
   'DebuggingOverlay',
-): HostComponent<DebuggingOverlayNativeProps>);
+) as HostComponent<DebuggingOverlayNativeProps>;

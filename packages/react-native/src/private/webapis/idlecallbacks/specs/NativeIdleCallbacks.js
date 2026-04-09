@@ -31,6 +31,6 @@ export interface Spec extends TurboModule {
   +cancelIdleCallback: (handle: IdleCallbackID) => void;
 }
 
-export default (TurboModuleRegistry.getEnforcing<Spec>(
+export default TurboModuleRegistry.getEnforcing<Spec>(
   'NativeIdleCallbacksCxx',
-): Spec);
+) as Spec;

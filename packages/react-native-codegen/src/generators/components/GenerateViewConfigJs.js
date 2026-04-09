@@ -91,7 +91,7 @@ function getReactDiffProcessValue(typeAnnotation: PropTypeAnnotation) {
         case 'DimensionPrimitive':
           return t.booleanLiteral(true);
         default:
-          (typeAnnotation.name: empty);
+          typeAnnotation.name as empty;
           throw new Error(
             `Received unknown native typeAnnotation: "${typeAnnotation.name}"`,
           );
@@ -116,7 +116,7 @@ function getReactDiffProcessValue(typeAnnotation: PropTypeAnnotation) {
       }
       return t.booleanLiteral(true);
     default:
-      (typeAnnotation: empty);
+      typeAnnotation as empty;
       throw new Error(
         `Received unknown typeAnnotation: "${typeAnnotation.type}"`,
       );
@@ -264,11 +264,11 @@ function buildViewConfig(
 
             return;
           default:
-            (extendProps.knownTypeName: empty);
+            extendProps.knownTypeName as empty;
             throw new Error('Invalid knownTypeName');
         }
       default:
-        (extendProps.type: empty);
+        extendProps.type as empty;
         throw new Error('Invalid extended type');
     }
   });

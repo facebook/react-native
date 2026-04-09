@@ -47,7 +47,7 @@ internal class MaintainVisibleScrollPositionHelper<ScrollViewT>(
         checkNotNull(
             UIManagerHelper.getUIManager(
                 checkNotNull(scrollView?.context as ReactContext?),
-                getUIManagerType(scrollView?.id ?: 0),
+                getUIManagerType(scrollView.id ?: 0),
             )
         )
 

@@ -148,7 +148,7 @@ function getNativeTypeFromAnnotation(
         eventProperty.name,
       ]);
     default:
-      (typeAnnotation.type: empty);
+      typeAnnotation.type as empty;
       throw new Error(
         `Received invalid event property type ${typeAnnotation.type}`,
       );
@@ -274,7 +274,7 @@ function generateStruct(
         );
         return;
       default:
-        (typeAnnotation.type: empty);
+        typeAnnotation.type as empty;
         throw new Error(
           `Received invalid event property type ${typeAnnotation.type}`,
         );

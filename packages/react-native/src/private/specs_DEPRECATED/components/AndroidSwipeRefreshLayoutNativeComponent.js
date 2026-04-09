@@ -69,6 +69,6 @@ export const Commands: NativeCommands = codegenNativeCommands<NativeCommands>({
   supportedCommands: ['setNativeRefreshing'],
 });
 
-export default (codegenNativeComponent<AndroidSwipeRefreshLayoutNativeProps>(
+export default codegenNativeComponent<AndroidSwipeRefreshLayoutNativeProps>(
   'AndroidSwipeRefreshLayout',
-): NativeType);
+) as NativeType;

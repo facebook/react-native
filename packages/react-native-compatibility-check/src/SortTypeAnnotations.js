@@ -158,7 +158,7 @@ export function compareTypeAnnotationForSorting(
     case 'MixedTypeAnnotation':
       return 0;
     default:
-      (typeA.type: empty);
+      typeA.type as empty;
       return -1;
   }
 }
@@ -282,7 +282,7 @@ function typeAnnotationArbitraryOrder(annotation: CompleteTypeAnnotation) {
     case 'UnionTypeAnnotation':
       return 30;
     default:
-      (annotation.type: empty);
+      annotation.type as empty;
       return -1;
   }
 }

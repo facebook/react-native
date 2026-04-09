@@ -14,6 +14,13 @@ import android.os.Build
 internal object AndroidVersion {
 
   /**
+   * This is the version code for Android 15 (SDK Level 35). Internally at Meta this code is also
+   * compiled against SDK 34, so we need to retain this constant instead of using
+   * [Build.VERSION_CODES.VANILLA_ICE_CREAM] directly.
+   */
+  internal const val VERSION_CODE_VANILLA_ICE_CREAM: Int = 35
+
+  /**
    * This is the version code for Android 16 (SDK Level 36). Delete it once we bump up the default
    * compile SDK version to 36.
    */

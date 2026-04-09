@@ -31,9 +31,9 @@ type AndroidProgressBarNativeProps = Readonly<{
   testID?: WithDefault<string, ''>,
 }>;
 
-export default (codegenNativeComponent<AndroidProgressBarNativeProps>(
+export default codegenNativeComponent<AndroidProgressBarNativeProps>(
   'AndroidProgressBar',
   {
     interfaceOnly: true,
   },
-): HostComponent<AndroidProgressBarNativeProps>);
+) as HostComponent<AndroidProgressBarNativeProps>;

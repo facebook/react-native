@@ -57,9 +57,9 @@ export const Commands: NativeCommands = codegenNativeCommands<NativeCommands>({
   supportedCommands: ['setNativeValue'],
 });
 
-export default (codegenNativeComponent<AndroidSwitchNativeProps>(
+export default codegenNativeComponent<AndroidSwitchNativeProps>(
   'AndroidSwitch',
   {
     interfaceOnly: true,
   },
-): NativeType);
+) as NativeType;

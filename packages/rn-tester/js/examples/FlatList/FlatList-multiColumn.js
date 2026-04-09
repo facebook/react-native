@@ -196,9 +196,9 @@ const styles = StyleSheet.create({
   },
 });
 
-export default ({
+export default {
   title: 'MultiColumn',
   name: 'multicolumn',
   description: 'Performant, scrollable grid of data',
   render: () => <MultiColumnExample />,
-}: RNTesterModuleExample);
+} as RNTesterModuleExample;

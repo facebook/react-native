@@ -250,7 +250,7 @@ function getParamObjCType(
         case 'RootTag':
           return notStruct(isRequired ? 'double' : 'NSNumber *');
         default:
-          (structTypeAnnotation.name: empty);
+          structTypeAnnotation.name as empty;
           throw new Error(
             `Unsupported type for param "${paramName}" in ${methodName}. Found: ${structTypeAnnotation.type}`,
           );
@@ -290,7 +290,7 @@ function getParamObjCType(
     case 'GenericObjectTypeAnnotation':
       return notStruct(wrapOptional('NSDictionary *', !nullable));
     default:
-      (structTypeAnnotation.type: empty);
+      structTypeAnnotation.type as empty;
       throw new Error(
         `Unsupported type for param "${paramName}" in ${methodName}. Found: ${typeAnnotation.type}`,
       );
@@ -330,7 +330,7 @@ function getReturnObjCType(
         case 'RootTag':
           return wrapOptional('NSNumber *', isRequired);
         default:
-          (typeAnnotation.name: empty);
+          typeAnnotation.name as empty;
           throw new Error(
             `Unsupported return type for ${methodName}. Found: ${typeAnnotation.name}`,
           );
@@ -382,13 +382,13 @@ function getReturnObjCType(
           // In the legacy codegen, we don't surround NSSTring * with _Nullable
           return wrapOptional('NSString *', isRequired);
         default:
-          (validUnionType: empty);
+          validUnionType as empty;
           throw new Error(`Unsupported union member type`);
       }
     case 'GenericObjectTypeAnnotation':
       return wrapOptional('NSDictionary *', isRequired);
     default:
-      (typeAnnotation.type: 'MixedTypeAnnotation');
+      typeAnnotation.type as 'MixedTypeAnnotation';
       throw new Error(
         `Unsupported return type for ${methodName}. Found: ${typeAnnotation.type}`,
       );
@@ -456,11 +456,11 @@ function getReturnJSType(
         case 'string':
           return 'StringKind';
         default:
-          (validUnionType: empty);
+          validUnionType as empty;
           throw new Error(`Unsupported union member types`);
       }
     default:
-      (typeAnnotation.type: 'MixedTypeAnnotation');
+      typeAnnotation.type as 'MixedTypeAnnotation';
       throw new Error(
         `Unsupported return type for ${methodName}. Found: ${typeAnnotation.type}`,
       );

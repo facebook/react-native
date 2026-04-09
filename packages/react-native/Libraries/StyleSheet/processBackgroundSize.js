@@ -57,19 +57,14 @@ function parseBackgroundSizeCSSString(
         return [];
       }
     } else if (parts.length === 1) {
-      const part = parts[0].toLowerCase();
-      if (part === 'cover' || part === 'contain') {
-        result.push(part);
+      const x = getValidLengthPercentageSizeOrNull(parts[0].toLowerCase());
+      if (x != null) {
+        result.push({
+          x,
+          y: 'auto',
+        });
       } else {
-        const x = getValidLengthPercentageSizeOrNull(parts[0].toLowerCase());
-        if (x != null) {
-          result.push({
-            x,
-            y: 'auto',
-          });
-        } else {
-          return [];
-        }
+        return [];
       }
     }
   }

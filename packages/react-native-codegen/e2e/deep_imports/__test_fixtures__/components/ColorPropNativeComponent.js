@@ -21,6 +21,6 @@ type NativeProps = Readonly<{
   tintColor?: ColorValue,
 }>;
 
-export default (codegenNativeComponent<NativeProps>(
+export default codegenNativeComponent<NativeProps>(
   'ColorPropNativeComponentView',
-): HostComponent<NativeProps>);
+) as HostComponent<NativeProps>;

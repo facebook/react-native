@@ -100,6 +100,6 @@ const styles = StyleSheet.create({
   },
 });
 
-export default (LogBoxData.withSubscription(
+export default LogBoxData.withSubscription(
   _LogBoxNotificationContainer,
-): React.ComponentType<{}>);
+) as React.ComponentType<{}>;

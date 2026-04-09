@@ -14,7 +14,8 @@ import AnExBobble from './AnExBobble';
 import AnExChained from './AnExChained';
 import AnExScroll from './AnExScroll';
 import AnExTilt from './AnExTilt';
-import React, {useState} from 'react';
+import * as React from 'react';
+import {useState} from 'react';
 import {
   Animated,
   PanResponder,

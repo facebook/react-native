@@ -21,7 +21,7 @@ type AndroidHorizontalScrollContentViewNativeProps = Readonly<{
 
 type NativeType = HostComponent<AndroidHorizontalScrollContentViewNativeProps>;
 
-export default (codegenNativeComponent<AndroidHorizontalScrollContentViewNativeProps>(
+export default codegenNativeComponent<AndroidHorizontalScrollContentViewNativeProps>(
   'AndroidHorizontalScrollContentView',
   {interfaceOnly: true},
-): NativeType);
+) as NativeType;

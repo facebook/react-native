@@ -18,4 +18,5 @@ module.exports = {
   enableFragmentRefs: true,
   enableFragmentRefsInstanceHandles: true,
   enableFragmentRefsTextNodes: true,
+  enableViewTransitionForPersistenceMode: true,
 };

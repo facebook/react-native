@@ -157,7 +157,7 @@ function translateReturnTypeToKind(
         case 'RootTag':
           return 'NumberKind';
         default:
-          (realTypeAnnotation.name: empty);
+          realTypeAnnotation.name as empty;
           throw new Error(
             `Invalid ReservedFunctionValueTypeName name, got ${realTypeAnnotation.name}`,
           );
@@ -195,7 +195,7 @@ function translateReturnTypeToKind(
         case 'string':
           return 'StringKind';
         default:
-          (validUnionType: empty);
+          validUnionType as empty;
           throw new Error(`Unsupported union member type`);
       }
     case 'NumberTypeAnnotation':
@@ -217,7 +217,7 @@ function translateReturnTypeToKind(
     case 'ArrayTypeAnnotation':
       return 'ArrayKind';
     default:
-      (realTypeAnnotation.type: 'MixedTypeAnnotation');
+      realTypeAnnotation.type as 'MixedTypeAnnotation';
       throw new Error(
         `Unknown prop type for returning value, found: ${realTypeAnnotation.type}"`,
       );
@@ -246,7 +246,7 @@ function translateParamTypeToJniType(
         case 'RootTag':
           return !isRequired ? 'Ljava/lang/Double;' : 'D';
         default:
-          (realTypeAnnotation.name: empty);
+          realTypeAnnotation.name as empty;
           throw new Error(
             `Invalid ReservedFunctionValueTypeName name, got ${realTypeAnnotation.name}`,
           );
@@ -282,7 +282,7 @@ function translateParamTypeToJniType(
         case 'string':
           return 'Ljava/lang/String;';
         default:
-          (validUnionType: empty);
+          validUnionType as empty;
           throw new Error(`Unsupported union member type`);
       }
     case 'NumberTypeAnnotation':
@@ -304,7 +304,7 @@ function translateParamTypeToJniType(
     case 'FunctionTypeAnnotation':
       return 'Lcom/facebook/react/bridge/Callback;';
     default:
-      (realTypeAnnotation.type: 'MixedTypeAnnotation');
+      realTypeAnnotation.type as 'MixedTypeAnnotation';
       throw new Error(
         `Unknown prop type for method arg, found: ${realTypeAnnotation.type}"`,
       );
@@ -328,7 +328,7 @@ function translateReturnTypeToJniType(
         case 'RootTag':
           return nullable ? 'Ljava/lang/Double;' : 'D';
         default:
-          (realTypeAnnotation.name: empty);
+          realTypeAnnotation.name as empty;
           throw new Error(
             `Invalid ReservedFunctionValueTypeName name, got ${realTypeAnnotation.name}`,
           );
@@ -366,7 +366,7 @@ function translateReturnTypeToJniType(
         case 'string':
           return 'Ljava/lang/String;';
         default:
-          (validUnionType: empty);
+          validUnionType as empty;
           throw new Error(`Unsupported union member type`);
       }
     case 'NumberTypeAnnotation':
@@ -388,7 +388,7 @@ function translateReturnTypeToJniType(
     case 'ArrayTypeAnnotation':
       return 'Lcom/facebook/react/bridge/WritableArray;';
     default:
-      (realTypeAnnotation.type: 'MixedTypeAnnotation');
+      realTypeAnnotation.type as 'MixedTypeAnnotation';
       throw new Error(
         `Unknown prop type for method return type, found: ${realTypeAnnotation.type}"`,
       );

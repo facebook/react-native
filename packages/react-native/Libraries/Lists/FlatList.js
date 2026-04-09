@@ -564,7 +564,7 @@ class FlatList<ItemT = any> extends React.PureComponent<FlatListProps<ItemT>> {
       );
       return items
         .map((item, kk) =>
-          keyExtractor(((item: $FlowFixMe): ItemT), index * numColumns + kk),
+          keyExtractor(item as $FlowFixMe as ItemT, index * numColumns + kk),
         )
         .join(':');
     }
