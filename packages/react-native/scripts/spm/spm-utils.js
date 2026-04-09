@@ -14,10 +14,6 @@ const fs = require('fs');
 const os = require('os');
 const path = require('path');
 
-// ---------------------------------------------------------------------------
-// Logging
-// ---------------------------------------------------------------------------
-
 /**
  * Creates a logger trio {log, warn, die} that prefixes messages with [name].
  *   log  – green prefix, writes to stdout
@@ -44,10 +40,6 @@ function makeLogger(name /*: string */) /*: {
   };
 }
 
-// ---------------------------------------------------------------------------
-// Path display
-// ---------------------------------------------------------------------------
-
 /**
  * Returns a short, human-readable representation of an absolute path:
  *   - Paths under $HOME are shown as ~/...
@@ -66,10 +58,6 @@ function displayPath(p /*: string */) /*: string */ {
   }
   return p;
 }
-
-// ---------------------------------------------------------------------------
-// Cache directory
-// ---------------------------------------------------------------------------
 
 /**
  * Returns the default versioned cache directory for SPM artifacts.
@@ -94,28 +82,18 @@ function defaultCacheDir(
   );
 }
 
-// ---------------------------------------------------------------------------
-// Name helpers
-// ---------------------------------------------------------------------------
-
 /**
  * Sanitize a package/app name to a valid Swift identifier.
  * e.g. "@react-native/tester" -> "RNTester", "my-app" -> "MyApp"
  */
 function toSwiftName(name /*: string */) /*: string */ {
-  // Strip scope
   const base = name.replace(/^@[^/]+\//, '');
-  // Split on non-alphanumeric, capitalize each part
   return base
     .split(/[^a-zA-Z0-9]+/)
     .filter(Boolean)
     .map(s => s.charAt(0).toUpperCase() + s.slice(1))
     .join('');
 }
-
-// ---------------------------------------------------------------------------
-// App name derivation
-// ---------------------------------------------------------------------------
 
 /**
  * Derive a default app name from the raw package name and source path.
@@ -135,10 +113,6 @@ function deriveAppName(
       : cleanName,
   );
 }
-
-// ---------------------------------------------------------------------------
-// Package.json reader
-// ---------------------------------------------------------------------------
 
 // $FlowFixMe[unclear-type] JSON data has dynamic shape
 function readPackageJson(dir /*: string */) /*: Object | null */ {
@@ -169,10 +143,6 @@ function findProjectRoot(startDir /*: string */) /*: string */ {
   }
 }
 
-// ---------------------------------------------------------------------------
-// React-native root resolution
-// ---------------------------------------------------------------------------
-
 /**
  * Resolve the react-native package root from an app directory.
  * Checks appRoot/node_modules, then projectRoot/node_modules,
@@ -196,10 +166,6 @@ function resolveReactNativeRoot(
   }
   return null;
 }
-
-// ---------------------------------------------------------------------------
-// VFS overlay resolution
-// ---------------------------------------------------------------------------
 
 /**
  * Resolves the VFS overlay for React.xcframework and writes it to
@@ -236,10 +202,6 @@ function resolveAndWriteVFSOverlay(
   }
   return true;
 }
-
-// ---------------------------------------------------------------------------
-// Codegen + SPM template
-// ---------------------------------------------------------------------------
 
 /**
  * Runs React Native codegen and installs the SPM Package.swift template

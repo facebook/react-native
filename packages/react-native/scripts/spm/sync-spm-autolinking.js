@@ -57,14 +57,12 @@ async function main(argv /*:: ?: Array<string> */) /*: Promise<void> */ {
   const reactNativeRoot = path.resolve(parsed['react-native-root']);
   const projectRoot = findProjectRoot(appRoot);
 
-  // Step 0: Re-run codegen
   try {
     runCodegenAndInstallTemplate(projectRoot, appRoot, reactNativeRoot, {log});
   } catch {
     log('Codegen failed — continuing with existing output');
   }
 
-  // Step 1: Ensure xcframework artifacts are available
   const xcfwLinksDir = path.join(appRoot, 'build', 'xcframeworks');
   const artifactsJsonPath = path.join(xcfwLinksDir, 'artifacts.json');
   let artifactsDir /*: string | null */ = null;
@@ -86,7 +84,6 @@ async function main(argv /*:: ?: Array<string> */) /*: Promise<void> */ {
     artifactsDir = xcfwLinksDir;
   }
 
-  // Step 2: Re-generate autolinked/Package.swift
   log('Re-generating autolinked/Package.swift...');
   generateAutolinking([
     '--app-root',
@@ -95,7 +92,6 @@ async function main(argv /*:: ?: Array<string> */) /*: Promise<void> */ {
     reactNativeRoot,
   ]);
 
-  // Step 3: Re-generate xcframeworks sub-package
   log('Re-generating xcframeworks sub-package...');
   const packageArgs = [
     '--app-root',
@@ -110,10 +106,8 @@ async function main(argv /*:: ?: Array<string> */) /*: Promise<void> */ {
 
   generatePackage(packageArgs);
 
-  // Step 4: Resolve VFS overlay
   resolveAndWriteVFSOverlay(appRoot, reactNativeRoot, {log});
 
-  // Step 5: Write stamp file
   const stampPath = path.join(appRoot, 'autolinked', '.spm-sync-stamp');
   fs.mkdirSync(path.dirname(stampPath), {recursive: true});
   fs.writeFileSync(stampPath, new Date().toISOString() + '\n', 'utf8');

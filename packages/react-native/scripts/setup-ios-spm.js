@@ -156,10 +156,6 @@ function parseArgs(argv /*: Array<string> */) /*: SetupArgs */ {
   };
 }
 
-// ---------------------------------------------------------------------------
-// .gitignore helpers
-// ---------------------------------------------------------------------------
-
 const SPM_GITIGNORE_ENTRIES = [
   'Package.resolved',
   'autolinked/',
@@ -198,10 +194,6 @@ function ensureGitignoreSpmEntries(appRoot /*: string */) {
   fs.writeFileSync(gitignorePath, content + separator + block + '\n', 'utf8');
   log(`Updated .gitignore with SPM entries: ${missing.join(', ')}`);
 }
-
-// ---------------------------------------------------------------------------
-// Main
-// ---------------------------------------------------------------------------
 
 async function main(argv /*:: ?: Array<string> */) /*: Promise<void> */ {
   const appRoot = process.cwd();
@@ -260,9 +252,6 @@ async function main(argv /*:: ?: Array<string> */) /*: Promise<void> */ {
     );
   }
 
-  // -------------------------------------------------------------------------
-  // Step 1: Codegen + install SPM codegen template
-  // -------------------------------------------------------------------------
   let codegenSucceeded = false;
   if (!args.skipCodegen) {
     log('Step 1/5: Running react-native codegen...');
@@ -314,9 +303,6 @@ async function main(argv /*:: ?: Array<string> */) /*: Promise<void> */ {
     log('Installed SPM codegen template → build/generated/ios/Package.swift');
   }
 
-  // -------------------------------------------------------------------------
-  // Step 2: Generate autolinked/Package.swift
-  // -------------------------------------------------------------------------
   log('Step 2/5: Generating autolinked/Package.swift...');
   try {
     generateAutolinking([
@@ -331,9 +317,6 @@ async function main(argv /*:: ?: Array<string> */) /*: Promise<void> */ {
     return;
   }
 
-  // -------------------------------------------------------------------------
-  // Step 3: Download artifacts (skipped with --remote or --local-xcframework)
-  // -------------------------------------------------------------------------
   // When --local-xcframework is given, create build/xcframeworks/ with symlinks
   // and a synthetic artifacts.json so the rest of the pipeline works normally.
   if (args.localXcframework != null && args.artifactsDir == null) {
@@ -429,9 +412,6 @@ async function main(argv /*:: ?: Array<string> */) /*: Promise<void> */ {
     log('Step 3/5: No --artifacts-dir set, skipping download step');
   }
 
-  // -------------------------------------------------------------------------
-  // Step 4: Generate xcframeworks sub-package (+ initial Package.swift with --init)
-  // -------------------------------------------------------------------------
   log('Step 4/5: Generating xcframeworks sub-package...');
   const packageArgs = [
     '--app-root',
@@ -458,14 +438,8 @@ async function main(argv /*:: ?: Array<string> */) /*: Promise<void> */ {
     return;
   }
 
-  // -------------------------------------------------------------------------
-  // Step 4b: Resolve VFS overlay template → build/xcframeworks/React-VFS.yaml
-  // -------------------------------------------------------------------------
   resolveAndWriteVFSOverlay(appRoot, reactNativeRoot, {log});
 
-  // -------------------------------------------------------------------------
-  // --init: ensure .gitignore has SPM entries
-  // -------------------------------------------------------------------------
   if (args.init) {
     ensureGitignoreSpmEntries(appRoot);
   }
@@ -507,9 +481,6 @@ async function main(argv /*:: ?: Array<string> */) /*: Promise<void> */ {
     }
   }
 
-  // -------------------------------------------------------------------------
-  // Step 5: Generate .xcodeproj (skipped with --skip-xcodeproj)
-  // -------------------------------------------------------------------------
   if (!args.skipXcodeproj) {
     log('Step 5/5: Generating .xcodeproj...');
     const xcodeprojArgs = [

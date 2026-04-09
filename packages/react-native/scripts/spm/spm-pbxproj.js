@@ -16,10 +16,6 @@ const crypto = require('crypto');
 const fs = require('fs');
 const path = require('path');
 
-// ---------------------------------------------------------------------------
-// Deterministic UUID generation
-// ---------------------------------------------------------------------------
-
 /**
  * Generate a deterministic 24-hex-character UUID from a seed string.
  * Uses MD5 hash truncated to 24 chars (standard Xcode pbxproj UUID length).
@@ -32,10 +28,6 @@ function generateUUID(seed /*: string */) /*: string */ {
     .substring(0, 24)
     .toUpperCase();
 }
-
-// ---------------------------------------------------------------------------
-// File type mapping
-// ---------------------------------------------------------------------------
 
 const FILE_TYPE_MAP /*: {[string]: string} */ = {
   '.m': 'sourcecode.c.objc',
@@ -64,10 +56,6 @@ const FILE_TYPE_MAP /*: {[string]: string} */ = {
 function fileTypeForExtension(ext /*: string */) /*: string */ {
   return FILE_TYPE_MAP[ext] ?? 'file';
 }
-
-// ---------------------------------------------------------------------------
-// Project file scanner
-// ---------------------------------------------------------------------------
 
 /**
  * Scans a source directory and categorizes files for xcodeproj generation.
@@ -134,10 +122,6 @@ function scanProjectFiles(sourceDir /*: string */) /*: ProjectFiles */ {
   walk(sourceDir, '');
   return {sources, headers, resources, plists};
 }
-
-// ---------------------------------------------------------------------------
-// pbxproj serializer
-// ---------------------------------------------------------------------------
 
 /**
  * Escapes a string for OpenStep plist format if needed.

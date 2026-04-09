@@ -157,10 +157,6 @@ function findSourcePath(appRoot /*: string */, packageName /*: string */) /*: st
   return derived;
 }
 
-// ---------------------------------------------------------------------------
-// Source file scanner
-// ---------------------------------------------------------------------------
-
 /**
  * Scans a source directory for Swift vs ObjC/C++ files.
  * Returns { swiftFiles: string[], hasObjC: boolean } where swiftFiles are
@@ -197,10 +193,6 @@ function scanSourceFiles(sourceDir /*: string */) /*: ScanResult */ {
   walk(sourceDir, '');
   return {swiftFiles, hasObjC};
 }
-
-// ---------------------------------------------------------------------------
-// XCFrameworks sub-package generator
-// ---------------------------------------------------------------------------
 
 /**
  * Generates the Package.swift for the xcframeworks sub-package.
@@ -244,10 +236,6 @@ ${binaryTargets}
 )
 `;
 }
-
-// ---------------------------------------------------------------------------
-// Initial Package.swift generator (--init mode)
-// ---------------------------------------------------------------------------
 
 /**
  * Generates an initial main Package.swift for the developer to commit.
@@ -410,10 +398,6 @@ ${targetsSection}
 `;
 }
 
-// ---------------------------------------------------------------------------
-// Main
-// ---------------------------------------------------------------------------
-
 function main(argv /*:: ?: Array<string> */) /*: void */ {
   const args = parseArgs(argv ?? process.argv.slice(2));
   // Ensure appRoot is always absolute so path.join/path.resolve produce absolute paths
@@ -430,7 +414,6 @@ function main(argv /*:: ?: Array<string> */) /*: void */ {
     return;
   }
 
-  // Resolve react-native root
   let rnRoot = args.reactNativeRoot
     ? path.resolve(args.reactNativeRoot)
     : resolveReactNativeRoot(appRoot, projectRoot);
@@ -442,14 +425,12 @@ function main(argv /*:: ?: Array<string> */) /*: void */ {
     return;
   }
 
-  // Resolve version
   let version = args.version;
   if (version == null) {
     const rnPkg = readPackageJson(rnRoot);
     version = rnPkg?.version ?? '0.0.0';
   }
 
-  // Derive app/target names
   const rawName = pkgJson.name ?? path.basename(appRoot);
   const sourcePath = args.sourcePath ?? findSourcePath(appRoot, rawName);
   const appName = args.appName ?? deriveAppName(rawName, sourcePath);
@@ -459,10 +440,6 @@ function main(argv /*:: ?: Array<string> */) /*: void */ {
   log(`Target name: ${targetName}`);
   log(`Source path: ${sourcePath}`);
   log(`Version:     ${version}`);
-
-  // -------------------------------------------------------------------------
-  // XCFrameworks sub-package: build/xcframeworks/Package.swift + symlinks
-  // -------------------------------------------------------------------------
 
   const artifactsDir = args.artifactsDir;
   if (artifactsDir != null) {
@@ -483,7 +460,6 @@ function main(argv /*:: ?: Array<string> */) /*: void */ {
     const xcfwLinksDir = path.join(appRoot, 'build', 'xcframeworks');
     fs.mkdirSync(xcfwLinksDir, {recursive: true});
 
-    // Create symlinks in build/xcframeworks/ -> actual xcframework paths in cache.
     const names /*: Array<string> */ = [];
     // $FlowFixMe[incompatible-use] Object.entries values typed as mixed
     for (const [name, entry] of Object.entries(raw)) {
@@ -495,7 +471,6 @@ function main(argv /*:: ?: Array<string> */) /*: void */ {
       names.push(name);
     }
 
-    // Generate build/xcframeworks/Package.swift
     const xcfwPkgContent = generateXCFrameworksPackageSwift(names);
     const xcfwPkgPath = path.join(xcfwLinksDir, 'Package.swift');
     fs.writeFileSync(xcfwPkgPath, xcfwPkgContent, 'utf8');
@@ -511,14 +486,9 @@ function main(argv /*:: ?: Array<string> */) /*: void */ {
     }
   }
 
-  // -------------------------------------------------------------------------
-  // --init: Generate initial main Package.swift for the developer to commit
-  // -------------------------------------------------------------------------
-
   if (args.init) {
     const outputPath = args.output ?? path.join(appRoot, 'Package.swift');
 
-    // Scan source directory for mixed Swift/ObjC
     const {swiftFiles, hasObjC} = scanSourceFiles(path.join(appRoot, sourcePath));
     if (swiftFiles.length > 0 && hasObjC) {
       log(`Mixed language sources detected – will generate split ObjC/Swift targets`);

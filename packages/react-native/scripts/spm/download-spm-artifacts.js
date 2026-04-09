@@ -59,10 +59,6 @@ const yargs = require('yargs');
 
 const {log, warn, die} = makeLogger('download-spm-artifacts');
 
-// ---------------------------------------------------------------------------
-// CLI args
-// ---------------------------------------------------------------------------
-
 function parseArgs(argv /*: Array<string> */) /*: DownloadArgs */ {
   const parsed = yargs(argv)
     .version(false)
@@ -95,10 +91,6 @@ function parseArgs(argv /*: Array<string> */) /*: DownloadArgs */ {
     output: parsed.output ?? null,
   };
 }
-
-// ---------------------------------------------------------------------------
-// Maven URL builders
-// ---------------------------------------------------------------------------
 
 const MAVEN_RELEASE =
   process.env.ENTERPRISE_REPOSITORY ?? 'https://repo1.maven.org/maven2';
@@ -176,7 +168,6 @@ async function resolveSnapshotUrl(
   );
 }
 
-// Snapshot helpers for each artifact
 async function rnCoreSnapshotUrl(
   version /*: string */,
   flavor /*: string */,
@@ -210,10 +201,6 @@ async function hermesSnapshotUrl(
     `hermes-ios-${flavor}.tar.gz`,
   );
 }
-
-// ---------------------------------------------------------------------------
-// Version resolution
-// ---------------------------------------------------------------------------
 
 async function resolveNightlyVersion(
   npmPackage /*: string */,
@@ -330,10 +317,6 @@ async function resolveHermesArtifact(
   return {url: snapshotUrl, version};
 }
 
-// ---------------------------------------------------------------------------
-// Download with progress
-// ---------------------------------------------------------------------------
-
 function formatBytes(bytes /*: number */) /*: string */ {
   if (bytes < 1024 * 1024) {
     return `${(bytes / 1024).toFixed(1)} KB`;
@@ -347,10 +330,6 @@ function formatSpeed(bytesPerSec /*: number */) /*: string */ {
   }
   return `${(bytesPerSec / 1024 / 1024).toFixed(1)} MB/s`;
 }
-
-// ---------------------------------------------------------------------------
-// Multi-line progress display for parallel downloads
-// ---------------------------------------------------------------------------
 
 /**
  * Creates a multi-line progress display that keeps N lines pinned at the
@@ -499,10 +478,6 @@ async function download(
   }
 }
 
-// ---------------------------------------------------------------------------
-// Extract xcframework from tarball
-// ---------------------------------------------------------------------------
-
 /**
  * Extracts a .tar.gz and returns the path to the first .xcframework found.
  */
@@ -546,10 +521,6 @@ function findFirst(
   }
   return null;
 }
-
-// ---------------------------------------------------------------------------
-// Per-artifact pipeline: resolve → download → extract xcframework
-// ---------------------------------------------------------------------------
 
 /**
  * Downloads a tarball, extracts the xcframework, and places it directly in
@@ -614,10 +585,6 @@ async function processArtifact(
 
   return {label, version, xcframeworkPath: destXcfwPath, url};
 }
-
-// ---------------------------------------------------------------------------
-// Main
-// ---------------------------------------------------------------------------
 
 async function main(argv /*:: ?: Array<string> */) /*: Promise<void> */ {
   const args = parseArgs(argv ?? process.argv.slice(2));
@@ -728,7 +695,6 @@ async function main(argv /*:: ?: Array<string> */) /*: Promise<void> */ {
     'utf8',
   );
 
-  // Summary
   log('='.repeat(60));
   const succeeded = results.filter(r => r.error == null);
   const failed = results.filter(r => r.error != null);

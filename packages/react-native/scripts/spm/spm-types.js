@@ -9,10 +9,6 @@
  */
 
 /*::
-// ---------------------------------------------------------------------------
-// setup-ios-spm.js
-// ---------------------------------------------------------------------------
-
 export type SetupArgs = {
   version: string | null,
   localXcframework: string | null,
@@ -28,10 +24,6 @@ export type SetupArgs = {
   productName: string | null,
   entryFile: string | null,
 };
-
-// ---------------------------------------------------------------------------
-// download-spm-artifacts.js
-// ---------------------------------------------------------------------------
 
 export type DownloadArgs = {
   version: string | null,
@@ -55,10 +47,6 @@ export type ArtifactResultEntry =
   | {name: string, error: void, label: string, version: string, xcframeworkPath: string, url: string}
   | {name: string, error: string};
 
-// ---------------------------------------------------------------------------
-// generate-spm-autolinking.js
-// ---------------------------------------------------------------------------
-
 export type AutolinkingArgs = {
   appRoot: string,
   reactNativeRoot: string | null,
@@ -77,10 +65,6 @@ export type SpmTarget = {
   _appRoot?: string | null,
 };
 
-
-// ---------------------------------------------------------------------------
-// generate-spm-package.js
-// ---------------------------------------------------------------------------
 
 export type GeneratePackageArgs = {
   appRoot: string,
@@ -101,10 +85,6 @@ export type ScanResult = {
   hasObjC: boolean,
 };
 
-// ---------------------------------------------------------------------------
-// generate-spm-xcodeproj.js
-// ---------------------------------------------------------------------------
-
 export type GenerateXcodeprojArgs = {
   appRoot: string,
   reactNativeRoot: string | null,
@@ -114,10 +94,6 @@ export type GenerateXcodeprojArgs = {
   bundleIdentifier: string | null,
   entryFile: string | null,
 };
-
-// ---------------------------------------------------------------------------
-// spm-pbxproj.js
-// ---------------------------------------------------------------------------
 
 export type ProjectFiles = {
   sources: Array<string>,

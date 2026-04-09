@@ -557,17 +557,12 @@ ${targetDecls},
 `;
 }
 
-// ---------------------------------------------------------------------------
-// Main
-// ---------------------------------------------------------------------------
-
 function main(argv /*:: ?: Array<string> */) /*: void */ {
   const args = parseArgs(argv ?? process.argv.slice(2));
   // Always resolve appRoot to absolute so path.join() produces absolute paths
   // (e.g. for extraCxxAbsHeaderPaths that go into unsafeFlags).
   const appRoot = path.resolve(args.appRoot);
 
-  // Resolve react-native root
   let rnRoot = args.reactNativeRoot;
   if (rnRoot == null) {
     rnRoot = path.join(appRoot, 'node_modules', 'react-native');

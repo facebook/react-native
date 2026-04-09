@@ -101,10 +101,6 @@ function parseArgs(argv /*: Array<string> */) /*: GenerateXcodeprojArgs */ {
   };
 }
 
-// ---------------------------------------------------------------------------
-// UUID helper – all UUIDs are deterministic from project + section + id
-// ---------------------------------------------------------------------------
-
 function uuid(
   projectName /*: string */,
   section /*: string */,
@@ -112,10 +108,6 @@ function uuid(
 ) /*: string */ {
   return generateUUID(`${projectName}:${section}:${id}`);
 }
-
-// ---------------------------------------------------------------------------
-// SPM product dependencies
-// ---------------------------------------------------------------------------
 
 // Maps each SPM product to its sub-package path (relative to app root).
 // The xcodeproj must reference each sub-package directly so Xcode can
@@ -156,10 +148,6 @@ const SPM_PRODUCT_PACKAGES /*: Array<{product: string, packagePath: string, pack
 
 const SPM_PRODUCTS = SPM_PRODUCT_PACKAGES.map(p => p.product);
 
-// ---------------------------------------------------------------------------
-// pbxproj generator
-// ---------------------------------------------------------------------------
-
 function generatePbxproj(
   opts /*: {
   appName: string,
@@ -183,7 +171,6 @@ function generatePbxproj(
   } = opts;
   const entryFile = opts.entryFile ?? 'index.js';
 
-  // Well-known UUIDs
   const projectUUID = uuid(appName, 'PBXProject', 'root');
   const mainGroupUUID = uuid(appName, 'PBXGroup', 'mainGroup');
   const sourcesGroupUUID = uuid(appName, 'PBXGroup', 'sourcesGroup');
@@ -300,7 +287,6 @@ function generatePbxproj(
     return buildFileId;
   }
 
-  // Process source files
   for (const file of files.sources) {
     const fileRefId = addFileRef(file);
     const buildFileId = addBuildFile('src', file, fileRefId, 'Sources');
@@ -310,12 +296,10 @@ function generatePbxproj(
     });
   }
 
-  // Process header files (file reference only, no build phase)
   for (const file of files.headers) {
     addFileRef(file);
   }
 
-  // Process resource files
   for (const file of files.resources) {
     const fileRefId = addFileRef(file);
     const buildFileId = addBuildFile('res', file, fileRefId, 'Resources');
@@ -325,7 +309,6 @@ function generatePbxproj(
     });
   }
 
-  // Process Info.plist (file reference only, no build phase)
   for (const file of files.plists) {
     addFileRef(file);
   }
@@ -366,7 +349,6 @@ function generatePbxproj(
     });
   }
 
-  // Product file reference
   fileRefEntries.push({
     uuid: productRefUUID,
     comment: `${appName}.app`,
@@ -415,7 +397,6 @@ function generatePbxproj(
     });
   }
 
-  // Build script: Bundle JS
   const bundleJSScript = `set -e
 
 export PROJECT_ROOT="$SRCROOT"
@@ -427,17 +408,13 @@ REACT_NATIVE_XCODE="${reactNativePath}/scripts/react-native-xcode.sh"
 /bin/sh -c "$WITH_ENVIRONMENT $REACT_NATIVE_XCODE"
 `;
 
-  // --- Assemble sections ---
   /*:: type SectionMap = {[string]: Array<PbxEntry>}; */
   const sections /*: SectionMap */ = {};
 
-  // PBXBuildFile
   sections.PBXBuildFile = buildFileEntries;
 
-  // PBXFileReference
   sections.PBXFileReference = fileRefEntries;
 
-  // PBXFrameworksBuildPhase
   const frameworkBuildFileUUIDs = SPM_PRODUCTS.map(product =>
     uuid(appName, 'PBXBuildFile', `spm:${product}`),
   );
@@ -454,7 +431,6 @@ REACT_NATIVE_XCODE="${reactNativePath}/scripts/react-native-xcode.sh"
     },
   ];
 
-  // PBXGroup
   const mainGroupChildren = [`${sourcesGroupUUID} /* ${sourcePath} */`];
   if (hasPrivacyInfo) {
     mainGroupChildren.push(
@@ -495,7 +471,6 @@ REACT_NATIVE_XCODE="${reactNativePath}/scripts/react-native-xcode.sh"
     },
   ];
 
-  // PBXNativeTarget
   const syncAutolinkingScriptUUID = uuid(
     appName,
     'PBXShellScriptBuildPhase',
@@ -529,7 +504,6 @@ REACT_NATIVE_XCODE="${reactNativePath}/scripts/react-native-xcode.sh"
     },
   ];
 
-  // PBXProject
   sections.PBXProject = [
     {
       uuid: projectUUID,
@@ -548,7 +522,6 @@ REACT_NATIVE_XCODE="${reactNativePath}/scripts/react-native-xcode.sh"
     },
   ];
 
-  // PBXResourcesBuildPhase
   sections.PBXResourcesBuildPhase = [
     {
       uuid: resourcesBuildPhaseUUID,
@@ -561,8 +534,6 @@ REACT_NATIVE_XCODE="${reactNativePath}/scripts/react-native-xcode.sh"
       },
     },
   ];
-
-  // PBXShellScriptBuildPhase
 
   // Prepare VFS overlay: rewrite the root to use the SRCROOT-relative path.
   // The VFS template resolves symlinks to the xcframework cache path, but the xcodeproj
@@ -704,7 +675,6 @@ fi
     shellScriptPhase(bundleScriptUUID, 'Build JS Bundle', bundleJSScript),
   ];
 
-  // PBXSourcesBuildPhase
   sections.PBXSourcesBuildPhase = [
     {
       uuid: sourcesBuildPhaseUUID,
@@ -718,7 +688,6 @@ fi
     },
   ];
 
-  // XCBuildConfiguration
   const debugProjectSettings = `{\n\t\t\t\tALWAYS_SEARCH_USER_PATHS = NO;\n\t\t\t\tCLANG_CXX_LANGUAGE_STANDARD = "c++20";\n\t\t\t\tCLANG_ENABLE_MODULES = YES;\n\t\t\t\tCLANG_ENABLE_OBJC_ARC = YES;\n\t\t\t\tCOPY_PHASE_STRIP = NO;\n\t\t\t\tDEBUG_INFORMATION_FORMAT = dwarf;\n\t\t\t\tENABLE_STRICT_OBJC_MSGSEND = YES;\n\t\t\t\tENABLE_TESTABILITY = YES;\n\t\t\t\tGCC_DYNAMIC_NO_PIC = NO;\n\t\t\t\tGCC_NO_COMMON_BLOCKS = YES;\n\t\t\t\tGCC_OPTIMIZATION_LEVEL = 0;\n\t\t\t\tGCC_PREPROCESSOR_DEFINITIONS = (\n\t\t\t\t\t"DEBUG=1",\n\t\t\t\t\t"$(inherited)",\n\t\t\t\t);\n\t\t\t\tIPHONEOS_DEPLOYMENT_TARGET = ${iosVersion};\n\t\t\t\tMTL_ENABLE_DEBUG_INFO = INCLUDE_SOURCE;\n\t\t\t\tONLY_ACTIVE_ARCH = YES;\n\t\t\t\tSDKROOT = iphoneos;\n\t\t\t\tSUPPORTED_PLATFORMS = "iphoneos iphonesimulator";\n\t\t\t\tSUPPORTS_MACCATALYST = NO;\n\t\t\t\tSWIFT_ACTIVE_COMPILATION_CONDITIONS = DEBUG;\n\t\t\t\t\t\t\t\tSWIFT_OPTIMIZATION_LEVEL = "-Onone";\n\t\t\t\tSWIFT_VERSION = 5.0;\n\t\t\t}`;
 
   const releaseProjectSettings = `{\n\t\t\t\tALWAYS_SEARCH_USER_PATHS = NO;\n\t\t\t\tCLANG_CXX_LANGUAGE_STANDARD = "c++20";\n\t\t\t\tCLANG_ENABLE_MODULES = YES;\n\t\t\t\tCLANG_ENABLE_OBJC_ARC = YES;\n\t\t\t\tCOPY_PHASE_STRIP = YES;\n\t\t\t\tDEBUG_INFORMATION_FORMAT = "dwarf-with-dsym";\n\t\t\t\tENABLE_NS_ASSERTIONS = NO;\n\t\t\t\tENABLE_STRICT_OBJC_MSGSEND = YES;\n\t\t\t\tGCC_NO_COMMON_BLOCKS = YES;\n\t\t\t\tIPHONEOS_DEPLOYMENT_TARGET = ${iosVersion};\n\t\t\t\tSDKROOT = iphoneos;\n\t\t\t\tSUPPORTED_PLATFORMS = "iphoneos iphonesimulator";\n\t\t\t\tSUPPORTS_MACCATALYST = NO;\n\t\t\t\tSWIFT_COMPILATION_MODE = wholemodule;\n\t\t\t\t\t\t\t\tSWIFT_OPTIMIZATION_LEVEL = "-O";\n\t\t\t\tSWIFT_VERSION = 5.0;\n\t\t\t\tVALIDATE_PRODUCT = YES;\n\t\t\t}`;
@@ -801,7 +770,6 @@ fi
     },
   ];
 
-  // XCConfigurationList
   sections.XCConfigurationList = [
     {
       uuid: projectConfigListUUID,
@@ -825,7 +793,6 @@ fi
     },
   ];
 
-  // XCLocalSwiftPackageReference
   sections.XCLocalSwiftPackageReference = [
     ...uniquePackages.map((pkg, i) => ({
       uuid: localPkgRefUUIDs[i],
@@ -837,15 +804,10 @@ fi
     })),
   ];
 
-  // XCSwiftPackageProductDependency
   sections.XCSwiftPackageProductDependency = spmDepEntries;
 
   return serializePbxproj('1', '77', projectUUID, sections);
 }
-
-// ---------------------------------------------------------------------------
-// xcworkspace generator
-// ---------------------------------------------------------------------------
 
 function generateXcworkspaceData(projName /*: string */) /*: string */ {
   return `<?xml version="1.0" encoding="UTF-8"?>
@@ -857,10 +819,6 @@ function generateXcworkspaceData(projName /*: string */) /*: string */ {
 </Workspace>
 `;
 }
-
-// ---------------------------------------------------------------------------
-// xcscheme generator
-// ---------------------------------------------------------------------------
 
 function generateXcscheme(
   appName /*: string */,
@@ -947,9 +905,6 @@ function generateXcscheme(
 `;
 }
 
-// ---------------------------------------------------------------------------
-// Stub Package.swift generation
-// ---------------------------------------------------------------------------
 // When the xcodeproj is generated, the referenced SPM package directories
 // (build/xcframeworks, autolinked, build/generated/ios) may not exist yet.
 // Xcode resolves packages before any build phase runs, so we write minimal
@@ -1032,10 +987,6 @@ function ensureStubPackages(appRoot /*: string */) /*: void */ {
   }
 }
 
-// ---------------------------------------------------------------------------
-// Main
-// ---------------------------------------------------------------------------
-
 function main(argv /*:: ?: Array<string> */) /*: void */ {
   const args = parseArgs(argv ?? process.argv.slice(2));
   const appRoot = path.resolve(args.appRoot);
@@ -1052,7 +1003,6 @@ function main(argv /*:: ?: Array<string> */) /*: void */ {
     : null;
   const rawName = pkgJson?.name ?? path.basename(projectRoot);
 
-  // Resolve react-native root
   let rnRoot = args.reactNativeRoot
     ? path.resolve(args.reactNativeRoot)
     : resolveReactNativeRoot(appRoot, projectRoot);
@@ -1082,7 +1032,6 @@ function main(argv /*:: ?: Array<string> */) /*: void */ {
   log(`Bundle identifier: ${bundleIdentifier}`);
   log(`iOS version:       ${iosVersion}`);
 
-  // Scan source files
   const sourceDir = path.join(appRoot, sourcePath);
   const files = scanProjectFiles(sourceDir);
 
@@ -1094,7 +1043,6 @@ function main(argv /*:: ?: Array<string> */) /*: void */ {
     `Sources: ${files.sources.length}, Headers: ${files.headers.length}, Resources: ${files.resources.length}${hasPrivacyInfo ? ' + PrivacyInfo.xcprivacy' : ''}`,
   );
 
-  // Generate project name
   const projName = `${appName}-SPM`;
   const projDir = path.join(appRoot, `${projName}.xcodeproj`);
   const targetUUID = uuid(appName, 'PBXNativeTarget', appName);
@@ -1102,7 +1050,6 @@ function main(argv /*:: ?: Array<string> */) /*: void */ {
   // Determine JS entry file: CLI arg > package.json "main" > "index.js"
   const entryFile = args.entryFile ?? pkgJson?.main ?? undefined;
 
-  // Generate pbxproj
   const pbxproj = generatePbxproj({
     appName,
     sourcePath,
@@ -1114,7 +1061,6 @@ function main(argv /*:: ?: Array<string> */) /*: void */ {
     entryFile,
   });
 
-  // Write files
   const pbxprojPath = path.join(projDir, 'project.pbxproj');
   const xcworkspacePath = path.join(
     projDir,
