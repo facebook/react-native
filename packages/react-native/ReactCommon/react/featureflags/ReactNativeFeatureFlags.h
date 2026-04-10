@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<a561d93b455e4092342a4fddb6143dac>>
+ * @generated SignedSource<<86b3267ffa68e0f68280957aa54d5041>>
  */
 
 /**
@@ -98,11 +98,6 @@ class ReactNativeFeatureFlags {
    * When enabled, Android will accumulate updates in rawProps to reduce the number of mounting instructions for cascading re-renders.
    */
   RN_EXPORT static bool enableAccumulatedUpdatesInRawPropsAndroid();
-
-  /**
-   * Enables linear text rendering on Android wherever subpixel text rendering is enabled
-   */
-  RN_EXPORT static bool enableAndroidLinearText();
 
   /**
    * Enables various optimizations throughout the path of measuring text on Android.

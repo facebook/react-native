@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<eacf6769e8598f88fe1790149e437f3f>>
+ * @generated SignedSource<<99a7d3e814f4b037ed4496b6eee4f264>>
  */
 
 /**
@@ -101,12 +101,6 @@ public object ReactNativeFeatureFlags {
    */
   @JvmStatic
   public fun enableAccumulatedUpdatesInRawPropsAndroid(): Boolean = accessor.enableAccumulatedUpdatesInRawPropsAndroid()
-
-  /**
-   * Enables linear text rendering on Android wherever subpixel text rendering is enabled
-   */
-  @JvmStatic
-  public fun enableAndroidLinearText(): Boolean = accessor.enableAndroidLinearText()
 
   /**
    * Enables various optimizations throughout the path of measuring text on Android.

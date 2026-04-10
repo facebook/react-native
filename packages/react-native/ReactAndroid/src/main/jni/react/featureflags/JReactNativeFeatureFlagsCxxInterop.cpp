@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<367bb35175543888c27d2e26a049289c>>
+ * @generated SignedSource<<5bac13bb6faeffdd3c5eca800f25b96a>>
  */
 
 /**
@@ -108,12 +108,6 @@ class ReactNativeFeatureFlagsJavaProvider
   bool enableAccumulatedUpdatesInRawPropsAndroid() override {
     static const auto method =
         getReactNativeFeatureFlagsProviderJavaClass()->getMethod<jboolean()>("enableAccumulatedUpdatesInRawPropsAndroid");
-    return method(javaProvider_);
-  }
-
-  bool enableAndroidLinearText() override {
-    static const auto method =
-        getReactNativeFeatureFlagsProviderJavaClass()->getMethod<jboolean()>("enableAndroidLinearText");
     return method(javaProvider_);
   }
 
@@ -643,11 +637,6 @@ bool JReactNativeFeatureFlagsCxxInterop::enableAccumulatedUpdatesInRawPropsAndro
   return ReactNativeFeatureFlags::enableAccumulatedUpdatesInRawPropsAndroid();
 }
 
-bool JReactNativeFeatureFlagsCxxInterop::enableAndroidLinearText(
-    facebook::jni::alias_ref<JReactNativeFeatureFlagsCxxInterop> /*unused*/) {
-  return ReactNativeFeatureFlags::enableAndroidLinearText();
-}
-
 bool JReactNativeFeatureFlagsCxxInterop::enableAndroidTextMeasurementOptimizations(
     facebook::jni::alias_ref<JReactNativeFeatureFlagsCxxInterop> /*unused*/) {
   return ReactNativeFeatureFlags::enableAndroidTextMeasurementOptimizations();
@@ -1100,9 +1089,6 @@ void JReactNativeFeatureFlagsCxxInterop::registerNatives() {
       makeNativeMethod(
         "enableAccumulatedUpdatesInRawPropsAndroid",
         JReactNativeFeatureFlagsCxxInterop::enableAccumulatedUpdatesInRawPropsAndroid),
-      makeNativeMethod(
-        "enableAndroidLinearText",
-        JReactNativeFeatureFlagsCxxInterop::enableAndroidLinearText),
       makeNativeMethod(
         "enableAndroidTextMeasurementOptimizations",
         JReactNativeFeatureFlagsCxxInterop::enableAndroidTextMeasurementOptimizations),

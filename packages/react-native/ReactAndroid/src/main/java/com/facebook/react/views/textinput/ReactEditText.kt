@@ -621,14 +621,12 @@ public open class ReactEditText public constructor(context: Context) : AppCompat
           paintFlags and Paint.SUBPIXEL_TEXT_FLAG.inv()
         }
 
-    if (ReactNativeFeatureFlags.enableAndroidLinearText()) {
-      paintFlags =
-          if (enableSubpixelText) {
-            paintFlags or Paint.LINEAR_TEXT_FLAG
-          } else {
-            paintFlags and Paint.LINEAR_TEXT_FLAG.inv()
-          }
-    }
+    paintFlags =
+        if (enableSubpixelText) {
+          paintFlags or Paint.LINEAR_TEXT_FLAG
+        } else {
+          paintFlags and Paint.LINEAR_TEXT_FLAG.inv()
+        }
   }
 
   public fun requestFocusFromJS() {

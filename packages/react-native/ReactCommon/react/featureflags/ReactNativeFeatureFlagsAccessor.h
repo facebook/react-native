@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<cdcc4286891855d51cf9e9f2d990bfa1>>
+ * @generated SignedSource<<dc4bf5639282b5005e86a073445a295c>>
  */
 
 /**
@@ -44,7 +44,6 @@ class ReactNativeFeatureFlagsAccessor {
   bool disableViewPreallocationAndroid();
   bool enableAccessibilityOrder();
   bool enableAccumulatedUpdatesInRawPropsAndroid();
-  bool enableAndroidLinearText();
   bool enableAndroidTextMeasurementOptimizations();
   bool enableBridgelessArchitecture();
   bool enableCppPropsIteratorSetter();
@@ -133,7 +132,7 @@ class ReactNativeFeatureFlagsAccessor {
   std::unique_ptr<ReactNativeFeatureFlagsProvider> currentProvider_;
   bool wasOverridden_;
 
-  std::array<std::atomic<const char*>, 90> accessedFeatureFlags_;
+  std::array<std::atomic<const char*>, 89> accessedFeatureFlags_;
 
   std::atomic<std::optional<bool>> commonTestFlag_;
   std::atomic<std::optional<bool>> cdpInteractionMetricsEnabled_;
@@ -147,7 +146,6 @@ class ReactNativeFeatureFlagsAccessor {
   std::atomic<std::optional<bool>> disableViewPreallocationAndroid_;
   std::atomic<std::optional<bool>> enableAccessibilityOrder_;
   std::atomic<std::optional<bool>> enableAccumulatedUpdatesInRawPropsAndroid_;
-  std::atomic<std::optional<bool>> enableAndroidLinearText_;
   std::atomic<std::optional<bool>> enableAndroidTextMeasurementOptimizations_;
   std::atomic<std::optional<bool>> enableBridgelessArchitecture_;
   std::atomic<std::optional<bool>> enableCppPropsIteratorSetter_;

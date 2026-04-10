@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<938108cbabe89175f0bd23ac9fb9d404>>
+ * @generated SignedSource<<3d49e243422f2c220ab36f3e32a78e38>>
  */
 
 /**
@@ -102,11 +102,6 @@ bool NativeReactNativeFeatureFlags::enableAccessibilityOrder(
 bool NativeReactNativeFeatureFlags::enableAccumulatedUpdatesInRawPropsAndroid(
     jsi::Runtime& /*runtime*/) {
   return ReactNativeFeatureFlags::enableAccumulatedUpdatesInRawPropsAndroid();
-}
-
-bool NativeReactNativeFeatureFlags::enableAndroidLinearText(
-    jsi::Runtime& /*runtime*/) {
-  return ReactNativeFeatureFlags::enableAndroidLinearText();
 }
 
 bool NativeReactNativeFeatureFlags::enableAndroidTextMeasurementOptimizations(

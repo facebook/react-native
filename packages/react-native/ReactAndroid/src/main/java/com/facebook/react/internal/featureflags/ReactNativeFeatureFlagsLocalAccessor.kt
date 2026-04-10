@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<f545945b19339923fcafab4eeb1da134>>
+ * @generated SignedSource<<77ba6c5db120016e6e1f8af195ab3690>>
  */
 
 /**
@@ -36,7 +36,6 @@ internal class ReactNativeFeatureFlagsLocalAccessor : ReactNativeFeatureFlagsAcc
   private var disableViewPreallocationAndroidCache: Boolean? = null
   private var enableAccessibilityOrderCache: Boolean? = null
   private var enableAccumulatedUpdatesInRawPropsAndroidCache: Boolean? = null
-  private var enableAndroidLinearTextCache: Boolean? = null
   private var enableAndroidTextMeasurementOptimizationsCache: Boolean? = null
   private var enableBridgelessArchitectureCache: Boolean? = null
   private var enableCppPropsIteratorSetterCache: Boolean? = null
@@ -231,16 +230,6 @@ internal class ReactNativeFeatureFlagsLocalAccessor : ReactNativeFeatureFlagsAcc
       cached = currentProvider.enableAccumulatedUpdatesInRawPropsAndroid()
       accessedFeatureFlags.add("enableAccumulatedUpdatesInRawPropsAndroid")
       enableAccumulatedUpdatesInRawPropsAndroidCache = cached
-    }
-    return cached
-  }
-
-  override fun enableAndroidLinearText(): Boolean {
-    var cached = enableAndroidLinearTextCache
-    if (cached == null) {
-      cached = currentProvider.enableAndroidLinearText()
-      accessedFeatureFlags.add("enableAndroidLinearText")
-      enableAndroidLinearTextCache = cached
     }
     return cached
   }
