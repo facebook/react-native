@@ -7,6 +7,8 @@
 
 #pragma once
 
+#include <functional>
+
 #include <react/renderer/animationbackend/AnimationChoreographer.h>
 #include <react/renderer/core/ReactPrimitives.h>
 #include <react/runtime/ReactInstanceConfig.h>
@@ -19,8 +21,22 @@ class TesterAnimationChoreographer : public AnimationChoreographer {
   void pause() override;
   void runUITick(AnimationTimestamp timestamp);
 
+  AnimationTimestamp now() const override
+  {
+    if (clockProvider_) {
+      return clockProvider_();
+    }
+    return AnimationChoreographer::now();
+  }
+
+  void setClockProvider(std::function<AnimationTimestamp()> clockProvider)
+  {
+    clockProvider_ = std::move(clockProvider);
+  }
+
  private:
   bool isPaused_{false};
+  std::function<AnimationTimestamp()> clockProvider_;
 };
 
 } // namespace facebook::react

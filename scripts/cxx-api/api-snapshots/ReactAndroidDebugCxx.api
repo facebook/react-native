@@ -1546,6 +1546,7 @@ class facebook::react::AnimationBackend : public facebook::react::UIManagerAnima
   public virtual facebook::react::CallbackId start(const facebook::react::UIManagerAnimationBackend::Callback& callback) override;
   public virtual void clearRegistry(facebook::react::SurfaceId surfaceId) override;
   public virtual void onAnimationFrame(facebook::react::AnimationTimestamp timestamp) override;
+  public virtual void pushAnimationMutations(const facebook::react::UIManagerAnimationBackend::Callback& callback) override;
   public virtual void registerJSInvoker(std::shared_ptr<facebook::react::CallInvoker> jsInvoker) override;
   public virtual void stop(facebook::react::CallbackId callbackId) override;
   public virtual void trigger() override;
@@ -1562,6 +1563,7 @@ class facebook::react::AnimationBackendCommitHook : public facebook::react::UIMa
 }
 
 class facebook::react::AnimationChoreographer {
+  public virtual facebook::react::AnimationTimestamp now() const;
   public virtual void pause() = 0;
   public virtual void resume() = 0;
   public virtual ~AnimationChoreographer() = default;
@@ -2814,7 +2816,7 @@ class facebook::react::JReactHostInspectorTarget : public jni::HybridClass<faceb
   public static void registerNatives();
   public virtual facebook::react::jsinspector_modern::HostTargetMetadata getMetadata() override;
   public virtual facebook::react::jsinspector_modern::HostTargetTracingDelegate* getTracingDelegate() override;
-  public virtual void captureScreenshot(const facebook::react::jsinspector_modern::HostTargetDelegate::PageCaptureScreenshotRequest&, const std::function<void(std::optional<std::string> base64Data)>& callback) override;
+  public virtual std::optional<std::string> captureScreenshot(const facebook::react::jsinspector_modern::HostTargetDelegate::PageCaptureScreenshotRequest&) override;
   public virtual void onReload(const facebook::react::jsinspector_modern::HostTargetDelegate::PageReloadRequest& request) override;
   public virtual void onSetPausedInDebuggerMessage(const facebook::react::jsinspector_modern::HostTargetDelegate::OverlaySetPausedInDebuggerMessageRequest& request) override;
   public void loadNetworkResource(const facebook::react::jsinspector_modern::LoadNetworkResourceRequest& params, facebook::react::jsinspector_modern::ScopedExecutor<facebook::react::jsinspector_modern::NetworkRequestListener> executor) override;
@@ -5211,6 +5213,7 @@ class facebook::react::UIManagerAnimationBackend {
   public virtual facebook::react::CallbackId start(const facebook::react::UIManagerAnimationBackend::Callback& callback) = 0;
   public virtual void clearRegistry(facebook::react::SurfaceId surfaceId) = 0;
   public virtual void onAnimationFrame(facebook::react::AnimationTimestamp timestamp) = 0;
+  public virtual void pushAnimationMutations(const facebook::react::UIManagerAnimationBackend::Callback& callback) = 0;
   public virtual void registerJSInvoker(std::shared_ptr<facebook::react::CallInvoker> jsInvoker) = 0;
   public virtual void stop(facebook::react::CallbackId callbackId) = 0;
   public virtual void trigger() = 0;
@@ -10379,7 +10382,7 @@ class facebook::react::jsinspector_modern::HostTargetDelegate : public facebook:
   public facebook::react::jsinspector_modern::HostTargetDelegate& operator=(facebook::react::jsinspector_modern::HostTargetDelegate&&) = delete;
   public virtual facebook::react::jsinspector_modern::HostTargetMetadata getMetadata() = 0;
   public virtual facebook::react::jsinspector_modern::HostTargetTracingDelegate* getTracingDelegate();
-  public virtual void captureScreenshot(const facebook::react::jsinspector_modern::HostTargetDelegate::PageCaptureScreenshotRequest&, const std::function<void(std::optional<std::string> base64Data)>& callback);
+  public virtual std::optional<std::string> captureScreenshot(const facebook::react::jsinspector_modern::HostTargetDelegate::PageCaptureScreenshotRequest&);
   public virtual void loadNetworkResource(const facebook::react::jsinspector_modern::LoadNetworkResourceRequest&, facebook::react::jsinspector_modern::ScopedExecutor<facebook::react::jsinspector_modern::NetworkRequestListener>) override;
   public virtual void onReload(const facebook::react::jsinspector_modern::HostTargetDelegate::PageReloadRequest& request) = 0;
   public virtual void onSetPausedInDebuggerMessage(const facebook::react::jsinspector_modern::HostTargetDelegate::OverlaySetPausedInDebuggerMessageRequest& request) = 0;
@@ -12930,6 +12933,8 @@ class facebook::yoga::StyleSizeLength {
 class facebook::yoga::StyleValueHandle {
   public constexpr bool isAuto() const;
   public constexpr bool isDefined() const;
+  public constexpr bool isPercent() const;
+  public constexpr bool isPoint() const;
   public constexpr bool isUndefined() const;
   public static constexpr facebook::yoga::StyleValueHandle ofAuto();
 }
@@ -12938,6 +12943,7 @@ class facebook::yoga::StyleValuePool {
   public facebook::yoga::FloatOptional getNumber(facebook::yoga::StyleValueHandle handle) const;
   public facebook::yoga::StyleLength getLength(facebook::yoga::StyleValueHandle handle) const;
   public facebook::yoga::StyleSizeLength getSize(facebook::yoga::StyleValueHandle handle) const;
+  public float getStoredValue(facebook::yoga::StyleValueHandle handle) const;
   public void store(facebook::yoga::StyleValueHandle& handle, facebook::yoga::FloatOptional number);
   public void store(facebook::yoga::StyleValueHandle& handle, facebook::yoga::StyleLength length);
   public void store(facebook::yoga::StyleValueHandle& handle, facebook::yoga::StyleSizeLength sizeValue);

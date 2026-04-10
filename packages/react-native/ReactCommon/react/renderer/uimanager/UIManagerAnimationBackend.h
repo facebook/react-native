@@ -31,6 +31,7 @@ class UIManagerAnimationBackend {
   virtual void stop(CallbackId callbackId) = 0;
   virtual void clearRegistry(SurfaceId surfaceId) = 0;
   virtual void trigger() = 0;
+  virtual void pushAnimationMutations(const Callback &callback) = 0;
   virtual void registerJSInvoker(std::shared_ptr<CallInvoker> jsInvoker) = 0;
 };
 

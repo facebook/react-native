@@ -51,31 +51,27 @@ AnimationBackend::AnimationBackend(
   react_native_assert(uiManager_.expired() == false);
 }
 
-void AnimationBackend::onAnimationFrame(AnimationTimestamp timestamp) {
-  std::vector<CallbackWithId> callbacksCopy;
-  std::unordered_map<SurfaceId, SurfaceUpdates> surfaceUpdates;
-  std::set<SurfaceId> asyncFlushSurfaces;
+void AnimationBackend::unpackMutations(
+    AnimationMutations& mutations,
+    std::unordered_map<SurfaceId, SurfaceUpdates>& surfaceUpdates,
+    std::set<SurfaceId>& asyncFlushSurfaces) {
+  for (auto& mutation : mutations.batch) {
+    const auto family = mutation.family;
+    react_native_assert(family != nullptr);
 
-  {
-    std::lock_guard lock(mutex_);
-    callbacksCopy = callbacks;
+    auto& [families, updates, hasLayoutUpdates] =
+        surfaceUpdates[family->getSurfaceId()];
+    hasLayoutUpdates |= mutation.hasLayoutUpdates;
+    families.insert(family);
+    updates[mutation.tag] = std::move(mutation.props);
   }
 
-  for (auto& callbackWithId : callbacksCopy) {
-    auto mutations = callbackWithId.callback(timestamp);
-    asyncFlushSurfaces.merge(mutations.asyncFlushSurfaces);
-    for (auto& mutation : mutations.batch) {
-      const auto family = mutation.family;
-      react_native_assert(family != nullptr);
+  asyncFlushSurfaces.merge(mutations.asyncFlushSurfaces);
+}
 
-      auto& [families, updates, hasLayoutUpdates] =
-          surfaceUpdates[family->getSurfaceId()];
-      hasLayoutUpdates |= mutation.hasLayoutUpdates;
-      families.insert(family);
-      updates[mutation.tag] = std::move(mutation.props);
-    }
-  }
-
+void AnimationBackend::applySurfaceUpdates(
+    std::unordered_map<SurfaceId, SurfaceUpdates>& surfaceUpdates,
+    const std::set<SurfaceId>& asyncFlushSurfaces) {
   animatedPropsRegistry_->update(surfaceUpdates);
 
   for (auto& [surfaceId, updates] : surfaceUpdates) {
@@ -87,6 +83,30 @@ void AnimationBackend::onAnimationFrame(AnimationTimestamp timestamp) {
   }
 
   requestAsyncFlushForSurfaces(asyncFlushSurfaces);
+}
+
+void AnimationBackend::applyMutations(AnimationMutations mutations) {
+  std::unordered_map<SurfaceId, SurfaceUpdates> surfaceUpdates;
+  std::set<SurfaceId> asyncFlushSurfaces;
+  unpackMutations(mutations, surfaceUpdates, asyncFlushSurfaces);
+  applySurfaceUpdates(surfaceUpdates, asyncFlushSurfaces);
+}
+
+void AnimationBackend::onAnimationFrame(AnimationTimestamp timestamp) {
+  std::vector<CallbackWithId> callbacksCopy;
+
+  {
+    std::lock_guard lock(mutex_);
+    callbacksCopy = callbacks;
+  }
+
+  std::unordered_map<SurfaceId, SurfaceUpdates> surfaceUpdates;
+  std::set<SurfaceId> asyncFlushSurfaces;
+  for (auto& callbackWithId : callbacksCopy) {
+    auto mutations = callbackWithId.callback(timestamp);
+    unpackMutations(mutations, surfaceUpdates, asyncFlushSurfaces);
+  }
+  applySurfaceUpdates(surfaceUpdates, asyncFlushSurfaces);
 }
 
 CallbackId AnimationBackend::start(const Callback& callback) {
@@ -121,6 +141,12 @@ void AnimationBackend::stop(CallbackId callbackId) {
 
 void AnimationBackend::trigger() {
   onAnimationFrame(std::chrono::steady_clock::now().time_since_epoch());
+}
+
+void AnimationBackend::pushAnimationMutations(const Callback& callback) {
+  auto timestamp = animationChoreographer_->now();
+  auto mutations = callback(timestamp);
+  applyMutations(std::move(mutations));
 }
 
 void AnimationBackend::commitUpdates(

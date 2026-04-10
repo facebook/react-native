@@ -515,7 +515,10 @@ void NativeAnimatedNodesManager::handleAnimatedEvent(
     // frames.
     if (ReactNativeFeatureFlags::useSharedAnimatedBackend()) {
       if (auto animationBackend = animationBackend_.lock()) {
-        animationBackend->trigger();
+        animationBackend->pushAnimationMutations(
+            [this](AnimationTimestamp timestamp) -> AnimationMutations {
+              return pullAnimationMutations(timestamp);
+            });
       }
     } else {
       onRender();

@@ -59,10 +59,19 @@ class AnimationBackend : public UIManagerAnimationBackend {
 
   void onAnimationFrame(AnimationTimestamp timestamp) override;
   void trigger() override;
+  void pushAnimationMutations(const Callback &callback) override;
   CallbackId start(const Callback &callback) override;
   void stop(CallbackId callbackId) override;
 
  private:
+  void unpackMutations(
+      AnimationMutations &mutations,
+      std::unordered_map<SurfaceId, SurfaceUpdates> &surfaceUpdates,
+      std::set<SurfaceId> &asyncFlushSurfaces);
+  void applySurfaceUpdates(
+      std::unordered_map<SurfaceId, SurfaceUpdates> &surfaceUpdates,
+      const std::set<SurfaceId> &asyncFlushSurfaces);
+  void applyMutations(AnimationMutations mutations);
   std::vector<CallbackWithId> callbacks;
   std::shared_ptr<AnimatedPropsRegistry> animatedPropsRegistry_;
   std::shared_ptr<AnimationChoreographer> animationChoreographer_;
