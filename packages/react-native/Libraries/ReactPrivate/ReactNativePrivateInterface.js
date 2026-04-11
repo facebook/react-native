@@ -9,6 +9,8 @@
  */
 
 import typeof CustomEvent from '../../src/private/webapis/dom/events/CustomEvent';
+import typeof {setEventInitTimeStamp} from '../../src/private/webapis/dom/events/internals/EventInternals';
+import typeof {dispatchTrustedEvent} from '../../src/private/webapis/dom/events/internals/EventTargetInternals';
 import typeof BatchedBridge from '../BatchedBridge/BatchedBridge';
 import typeof legacySendAccessibilityEvent from '../Components/AccessibilityInfo/legacySendAccessibilityEvent';
 import typeof TextInputState from '../Components/TextInput/TextInputState';
@@ -132,5 +134,13 @@ module.exports = {
   get getInternalInstanceHandleFromPublicInstance(): getInternalInstanceHandleFromPublicInstance {
     return require('../ReactNative/ReactFabricPublicInstance/ReactFabricPublicInstance')
       .getInternalInstanceHandleFromPublicInstance;
+  },
+  get dispatchTrustedEvent(): dispatchTrustedEvent {
+    return require('../../src/private/webapis/dom/events/internals/EventTargetInternals')
+      .dispatchTrustedEvent;
+  },
+  get setEventInitTimeStamp(): setEventInitTimeStamp {
+    return require('../../src/private/webapis/dom/events/internals/EventInternals')
+      .setEventInitTimeStamp;
   },
 };
