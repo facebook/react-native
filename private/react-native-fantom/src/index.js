@@ -712,26 +712,4 @@ function getNode(nodeOrRef: NodeOrRef): ReadOnlyNode {
   }
 }
 
-/**
- * Quick and dirty polyfills required by tinybench.
- */
-
-if (typeof global.Event === 'undefined') {
-  global.Event =
-    require('react-native/src/private/webapis/dom/events/Event').default;
-} else {
-  console.warn(
-    'The global Event class is already defined. If this API is already defined by React Native, you might want to remove this logic.',
-  );
-}
-
-if (typeof global.EventTarget === 'undefined') {
-  global.EventTarget =
-    require('react-native/src/private/webapis/dom/events/EventTarget').default;
-} else {
-  console.warn(
-    'The global Event class is already defined. If this API is already defined by React Native, you might want to remove this logic.',
-  );
-}
-
 global.__FANTOM_PACKAGE_LOADED__ = true;

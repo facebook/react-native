@@ -73,4 +73,16 @@ export default function setUpDOM() {
     'HTMLElement',
     () => require('../webapis/dom/nodes/ReactNativeElement').default,
   );
+
+  polyfillGlobal('Event', () => require('../webapis/dom/events/Event').default);
+
+  polyfillGlobal(
+    'EventTarget',
+    () => require('../webapis/dom/events/EventTarget').default,
+  );
+
+  polyfillGlobal(
+    'CustomEvent',
+    () => require('../webapis/dom/events/CustomEvent').default,
+  );
 }
