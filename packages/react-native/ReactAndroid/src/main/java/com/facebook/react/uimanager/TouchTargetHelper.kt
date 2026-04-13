@@ -86,7 +86,7 @@ public object TouchTargetHelper {
     // Store eventCoords in array so that they are modified to be relative to the targetView found.
     viewCoords[0] = eventX
     viewCoords[1] = eventY
-    val nativeTargetView = findTouchTargetViewWithPointerEvents(viewCoords, viewGroup, null)
+    val nativeTargetView = findTouchTargetViewWithPointerEvents(viewCoords, viewGroup)
     if (nativeTargetView != null) {
       val reactTargetView = findClosestReactAncestor(nativeTargetView)
       if (reactTargetView != null) {
