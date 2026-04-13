@@ -11,8 +11,6 @@
 #import <React/RCTLog.h>
 #import <React/RCTUtils.h>
 
-#import <QuartzCore/CATransaction.h>
-
 #import "RCTConversions.h"
 
 using namespace facebook::react;
@@ -105,14 +103,8 @@ using namespace facebook::react;
     } else {
       // Note: Changing `frame` when `layer.transform` is not the `identity transform` is undefined behavior.
       // Therefore, we must use `center` and `bounds`.
-      // TODO(szymczak): this is temporary fix for
-      // https://app.asana.com/1/236888843494340/project/1199705967702853/list/1204187545226790,
-      // we should remove this after we find a better solution
-      [CATransaction begin];
-      [CATransaction setDisableActions:YES];
       self.center = CGPoint{CGRectGetMidX(frame), CGRectGetMidY(frame)};
       self.bounds = CGRect{CGPointZero, frame.size};
-      [CATransaction commit];
     }
   }
 

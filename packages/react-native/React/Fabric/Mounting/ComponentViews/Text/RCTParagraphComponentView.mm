@@ -374,17 +374,6 @@ Class<RCTComponentViewProtocol> RCTParagraphCls(void)
   CAShapeLayer *_highlightLayer;
 }
 
-// TODO(szymczak): this is temporary fix for
-// https://app.asana.com/1/236888843494340/project/1199705967702853/list/1204187545226790,
-// we should remove this after we find a better solution
-- (id<CAAction>)actionForLayer:(CALayer *)layer forKey:(NSString *)event
-{
-  // Disable all implicit animations on this layer to prevent unwanted
-  // scale/position animations when a modal presentation's animation context
-  // is active (UIKit's presentViewController:animated:YES).
-  return (id)[NSNull null];
-}
-
 - (UIView *)hitTest:(CGPoint)point withEvent:(UIEvent *)event
 {
   return nil;
