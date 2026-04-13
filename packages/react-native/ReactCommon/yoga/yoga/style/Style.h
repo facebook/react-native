@@ -661,10 +661,10 @@ class YG_EXPORT Style {
         lengthsEqual(padding_, pool_, other.padding_, other.pool_) &&
         lengthsEqual(border_, pool_, other.border_, other.pool_) &&
         lengthsEqual(gap_, pool_, other.gap_, other.pool_) &&
-        lengthsEqual(dimensions_, pool_, other.dimensions_, other.pool_) &&
-        lengthsEqual(
+        sizeLengthsEqual(dimensions_, pool_, other.dimensions_, other.pool_) &&
+        sizeLengthsEqual(
                minDimensions_, pool_, other.minDimensions_, other.pool_) &&
-        lengthsEqual(
+        sizeLengthsEqual(
                maxDimensions_, pool_, other.maxDimensions_, other.pool_) &&
         numbersEqual(aspectRatio_, pool_, other.aspectRatio_, other.pool_) &&
         gridTemplateColumns_ == other.gridTemplateColumns_ &&
@@ -713,6 +713,31 @@ class YG_EXPORT Style {
         rhs.end(),
         [&](const auto& lhs, const auto& rhs) {
           return lengthsEqual(lhs, lhsPool, rhs, rhsPool);
+        });
+  }
+
+  static inline bool sizeLengthsEqual(
+      const StyleValueHandle& lhsHandle,
+      const StyleValuePool& lhsPool,
+      const StyleValueHandle& rhsHandle,
+      const StyleValuePool& rhsPool) {
+    return (lhsHandle.isUndefined() && rhsHandle.isUndefined()) ||
+        (lhsPool.getSize(lhsHandle) == rhsPool.getSize(rhsHandle));
+  }
+
+  template <size_t N>
+  static inline bool sizeLengthsEqual(
+      const std::array<StyleValueHandle, N>& lhs,
+      const StyleValuePool& lhsPool,
+      const std::array<StyleValueHandle, N>& rhs,
+      const StyleValuePool& rhsPool) {
+    return std::equal(
+        lhs.begin(),
+        lhs.end(),
+        rhs.begin(),
+        rhs.end(),
+        [&](const auto& lhs, const auto& rhs) {
+          return sizeLengthsEqual(lhs, lhsPool, rhs, rhsPool);
         });
   }
 
