@@ -241,6 +241,7 @@ void JReactHostInspectorTarget::recordFrameTimings(
       frameTimingSequence->getBeginTimestamp(),
       frameTimingSequence->getEndTimestamp(),
       frameTimingSequence->getScreenshot(),
+      frameTimingSequence->getVsyncInterval(),
   });
 }
 
