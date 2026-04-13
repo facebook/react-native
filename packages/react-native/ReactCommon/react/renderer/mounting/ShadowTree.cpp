@@ -422,7 +422,7 @@ CommitStatus ShadowTree::tryCommit(
 
     auto newRevisionNumber = currentRevision_.number + 1;
 
-    if (!isReactBranch) {
+    {
       std::scoped_lock dispatchLock(EventEmitter::DispatchMutex());
       updateMountedFlag(
           currentRevision_.rootShadowNode->getChildren(),
