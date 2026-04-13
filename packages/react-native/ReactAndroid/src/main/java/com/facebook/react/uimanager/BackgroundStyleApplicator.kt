@@ -338,7 +338,7 @@ public object BackgroundStyleApplicator {
   public fun setFeedbackUnderlay(view: View, drawable: Drawable?): Unit {
     if (ReactNativeFeatureFlags.enableNewBackgroundAndBorderDrawables()) {
 
-      ensureCompositeBackgroundDrawable(view).withNewFeedbackUnderlay(drawable)
+      view.background = ensureCompositeBackgroundDrawable(view).withNewFeedbackUnderlay(drawable)
     } else {
       view.background = ensureCompositeBackgroundDrawable(view).withNewFeedbackUnderlay(drawable)
     }
