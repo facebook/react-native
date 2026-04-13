@@ -1,5 +1,111 @@
 # Changelog
 
+## v0.85.1
+
+### Breaking
+
+
+
+#### Android specific
+
+
+
+#### iOS specific
+
+
+
+### Added
+
+
+
+#### Android specific
+
+
+
+#### iOS specific
+
+
+
+### Changed
+
+
+
+#### Android specific
+
+
+
+#### iOS specific
+
+
+
+### Deprecated
+
+
+
+#### Android specific
+
+
+
+#### iOS specific
+
+
+
+### Removed
+
+
+
+#### Android specific
+
+
+
+#### iOS specific
+
+
+
+### Fixed
+
+
+
+#### Android specific
+
+- FormData uploads broken in debug builds ([0d1b70ee22](https://github.com/facebook/react-native/commit/0d1b70ee225a2e9970364ddda323071aa0a7e485) by [@riteshshukla04](https://github.com/riteshshukla04))
+
+#### iOS specific
+
+
+
+### Security
+
+
+
+#### Android specific
+
+
+
+#### iOS specific
+
+
+
+### Unknown
+
+- Release 0.85.1 ([2c0ae27482](https://github.com/facebook/react-native/commit/2c0ae274825ab752b9831c12d231b7a55585f79d) by [@react-native-bot](https://github.com/react-native-bot))
+- [0.85] Correclty promote flags to experimental for 0.85 release ([401b1620dc](https://github.com/facebook/react-native/commit/401b1620dc674b3f7b9e88a783baca68a2f94ebc) by [@cortinico](https://github.com/cortinico))
+- Bump Podfile.lock ([be0358721c](https://github.com/facebook/react-native/commit/be0358721ccfd3cb81b1853b374631a8f01e639d) by [@react-native-bot](https://github.com/react-native-bot))
+- Release 0.85.0 ([10644a0cc5](https://github.com/facebook/react-native/commit/10644a0cc54a2c8ffceeb811849ece3cf9608a85) by [@react-native-bot](https://github.com/react-native-bot))
+
+#### Android Unknown
+
+
+
+#### iOS Unknown
+
+
+
+#### Failed to parse
+
+
+
+
 ## v0.85.0
 
 ### Breaking
