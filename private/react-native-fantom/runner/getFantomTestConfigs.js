@@ -72,9 +72,9 @@ export const DEFAULT_FEATURE_FLAGS: FantomTestConfigFeatureFlags = {
 
 const FANTOM_FLAG_FORMAT = /^(\w+):((?:\w+)|\*)$/;
 
-const FANTOM_BENCHMARK_FILENAME_RE = /[Bb]enchmark-itest\./g;
+const FANTOM_BENCHMARK_FILENAME_RE = /[Bb]enchmark-itest\./;
 const FANTOM_BENCHMARK_SUITE_RE =
-  /\n(Fantom\.)?unstable_benchmark(\s*)\.suite\(/g;
+  /\n(Fantom\.)?unstable_benchmark(\s*)\.suite\(/;
 
 const MAX_FANTOM_CONFIGURATION_VARIATIONS = 12;
 
