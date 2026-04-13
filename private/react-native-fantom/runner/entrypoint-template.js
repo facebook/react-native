@@ -37,7 +37,7 @@ module.exports = function entrypointTemplate({
   const constants: FantomRuntimeConstants = {
     isOSS: EnvironmentOptions.isOSS,
     isRunningFromCI: EnvironmentOptions.isCI,
-    forceTestModeForBenchmarks: EnvironmentOptions.forceTestModeForBenchmarks,
+    runBenchmarks: EnvironmentOptions.runBenchmarks,
     fantomConfigSummary: formatFantomConfig(testConfig),
     jsTraceOutputPath,
     jsHeapSnapshotOutputPathTemplate,

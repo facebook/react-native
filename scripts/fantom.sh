@@ -18,20 +18,13 @@ fi
 
 export NODE_OPTIONS='--max-old-space-size=8192'
 
-# Parse arguments to check for --benchmarks flag
-INCLUDE_BENCHMARKS=false
+# Parse arguments to extract custom flags
 ARGS=()
 for arg in "$@"; do
-  if [[ "$arg" == "--benchmarks" ]]; then
-    INCLUDE_BENCHMARKS=true
-  else
-    ARGS+=("$arg")
-  fi
+  case "$arg" in
+    --benchmarks) export FANTOM_RUN_BENCHMARKS=1 ;;
+    *) ARGS+=("$arg") ;;
+  esac
 done
 
-# When --benchmarks is passed, set env var so jest.config.js includes benchmark tests
-if [[ "$INCLUDE_BENCHMARKS" == true ]]; then
-  FANTOM_INCLUDE_BENCHMARKS=1 yarn jest --config private/react-native-fantom/config/jest.config.js "${ARGS[@]}"
-else
-  yarn jest --config private/react-native-fantom/config/jest.config.js "${ARGS[@]}"
-fi
+yarn jest --config private/react-native-fantom/config/jest.config.js "${ARGS[@]}"
