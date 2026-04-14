@@ -98,6 +98,46 @@ TEST_P(JSITest, StringTest) {
   EXPECT_EQ(movedQuux.utf8(rt), "quux2");
 }
 
+TEST_P(JSITest, StringLengthTest) {
+  // Test ASCII string length
+  String ascii = String::createFromAscii(rt, "hello");
+  EXPECT_EQ(ascii.length(rt), 5);
+
+  // Test empty string
+  String empty = String::createFromAscii(rt, "");
+  EXPECT_EQ(empty.length(rt), 0);
+
+  // Test euro sign '€' (U+20AC) - BMP character, 1 code unit
+  String euro = eval("'\\u20AC'").getString(rt);
+  EXPECT_EQ(euro.length(rt), 1);
+
+  // Test codepoint requiring 2 code units (surrogate pair)
+  // U+1F408 (🐈) is encoded as \uD83D\uDC08 in UTF-16
+  String emoji = eval("'\\uD83D\\uDC08'").getString(rt);
+  EXPECT_EQ(emoji.length(rt), 2);
+
+  // Test another surrogate pair: U+10000 (first supplementary character)
+  String supplementary = eval("'\\uD800\\uDC00'").getString(rt);
+  EXPECT_EQ(supplementary.length(rt), 2);
+
+  // Test lone high surrogate (U+D800)
+  String loneHighSurrogate = eval("'\\uD800'").getString(rt);
+  EXPECT_EQ(loneHighSurrogate.length(rt), 1);
+
+  // Test lone low surrogate (U+DC00)
+  String loneLowSurrogate = eval("'\\uDC00'").getString(rt);
+  EXPECT_EQ(loneLowSurrogate.length(rt), 1);
+
+  // Test lone surrogate in the middle of a string
+  String mixedWithLoneSurrogate = eval("'a\\uD800b'").getString(rt);
+  EXPECT_EQ(mixedWithLoneSurrogate.length(rt), 3);
+
+  // Unicode Max Value is U+10FFFF, U+11FFFF is invalid
+  // But it could be theoretically encoded as \uDBFF\uDFFF
+  String invalid = eval("'\\uDBFF\\uDFFF'").getString(rt);
+  EXPECT_EQ(invalid.length(rt), 2);
+}
+
 TEST_P(JSITest, ObjectTest) {
   eval("x = {1:2, '3':4, 5:'six', 'seven':['eight', 'nine']}");
   Object x = rt.global().getPropertyAsObject(rt, "x");
