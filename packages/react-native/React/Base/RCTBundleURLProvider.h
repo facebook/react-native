@@ -7,8 +7,9 @@
 
 #import <Foundation/Foundation.h>
 
+#import <React/RCTDefines.h>
+
 #import "RCTBundleManager.h"
-#import "RCTDefines.h"
 
 RCT_EXTERN NSString *_Nonnull const RCTBundleURLProviderUpdatedNotification;
 RCT_EXTERN const NSUInteger kRCTBundleURLProviderDefaultPort;
