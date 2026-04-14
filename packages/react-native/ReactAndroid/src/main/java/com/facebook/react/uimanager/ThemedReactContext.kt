@@ -14,7 +14,6 @@ import android.content.Context
 import android.view.Window
 import com.facebook.react.bridge.Callback
 import com.facebook.react.bridge.CatalystInstance
-import com.facebook.react.bridge.ExtraWindowEventListener
 import com.facebook.react.bridge.JavaScriptContextHolder
 import com.facebook.react.bridge.JavaScriptModule
 import com.facebook.react.bridge.LifecycleEventListener
@@ -24,6 +23,7 @@ import com.facebook.react.bridge.ReactContext
 import com.facebook.react.bridge.ScrollEndedListeners
 import com.facebook.react.bridge.UIManager
 import com.facebook.react.common.annotations.internal.LegacyArchitecture
+import com.facebook.react.interfaces.ExtraWindowEventListener
 import com.facebook.react.turbomodule.core.interfaces.CallInvokerHolder
 
 /**

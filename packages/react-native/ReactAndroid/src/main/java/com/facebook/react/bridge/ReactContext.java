@@ -26,6 +26,7 @@ import com.facebook.react.bridge.interop.InteropModuleRegistry;
 import com.facebook.react.bridge.queue.MessageQueueThread;
 import com.facebook.react.bridge.queue.ReactQueueConfiguration;
 import com.facebook.react.common.LifecycleState;
+import com.facebook.react.interfaces.ExtraWindowEventListener;
 import com.facebook.react.turbomodule.core.interfaces.CallInvokerHolder;
 import java.lang.ref.WeakReference;
 import java.util.Collection;

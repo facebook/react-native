@@ -5,9 +5,11 @@
  * LICENSE file in the root directory of this source tree.
  */
 
-package com.facebook.react.bridge
+package com.facebook.react.interfaces
 
 import android.view.Window
+import com.facebook.react.bridge.ReactApplicationContext
+import com.facebook.react.bridge.ReactTestHelper
 import com.facebook.testutils.shadows.ShadowSoLoader
 import org.junit.Before
 import org.junit.Test

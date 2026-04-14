@@ -8,9 +8,9 @@
 package com.facebook.react.uimanager
 
 import android.view.Window
-import com.facebook.react.bridge.ExtraWindowEventListener
 import com.facebook.react.bridge.ReactApplicationContext
 import com.facebook.react.bridge.ReactTestHelper
+import com.facebook.react.interfaces.ExtraWindowEventListener
 import com.facebook.testutils.shadows.ShadowSoLoader
 import org.junit.Before
 import org.junit.Test
