@@ -47,7 +47,7 @@ internal object AndroidVersion {
    * higher and the app is targeting Android 16 (SDK Level 36) or higher.
    */
   @JvmStatic
-  internal fun isAtLeastTargetSdk36(context: Context): Boolean =
+  fun isAtLeastTargetSdk36(context: Context): Boolean =
       Build.VERSION.SDK_INT >= VERSION_CODE_BAKLAVA &&
           context.applicationInfo.targetSdkVersion >= VERSION_CODE_BAKLAVA
 }
