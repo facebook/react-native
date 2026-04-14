@@ -2121,6 +2121,138 @@ TEST_P(JSITest, ArrayPush) {
   EXPECT_TRUE(arr.getValueAtIndex(rd, 3).isUndefined());
 }
 
+TEST_P(JSITest, UInt8ArrayTest) {
+  // This Runtime Decorator is used to test the default implementation of
+  // Runtime::createUint8Array and TypedArray APIs
+  class RD : public RuntimeDecorator<Runtime, Runtime> {
+   public:
+    explicit RD(Runtime& rt) : RuntimeDecorator(rt) {}
+
+    Uint8Array createUint8Array(size_t length) override {
+      return Runtime::createUint8Array(length);
+    }
+
+    Uint8Array createUint8Array(
+        const ArrayBuffer& buffer,
+        size_t offset,
+        size_t length) override {
+      return Runtime::createUint8Array(buffer, offset, length);
+    }
+
+    ArrayBuffer buffer(const TypedArray& typedArray) override {
+      return Runtime::buffer(typedArray);
+    }
+
+    size_t byteOffset(const TypedArray& typedArray) override {
+      return Runtime::byteOffset(typedArray);
+    }
+
+    size_t byteLength(const TypedArray& typedArray) override {
+      return Runtime::byteLength(typedArray);
+    }
+
+    size_t length(const TypedArray& typedArray) override {
+      return Runtime::length(typedArray);
+    }
+  };
+  RD rd = RD(rt);
+
+  // Test creating a UInt8Array with a specific length
+  {
+    auto uint8Array = rd.createUint8Array(10);
+
+    EXPECT_EQ(rd.length(uint8Array), 10);
+    EXPECT_EQ(rd.byteLength(uint8Array), 10);
+    EXPECT_EQ(rd.byteOffset(uint8Array), 0);
+  }
+
+  // Test creating a UInt8Array from an ArrayBuffer with offset
+  {
+    auto ab = eval("var buf = new ArrayBuffer(20); buf")
+                  .getObject(rd)
+                  .getArrayBuffer(rd);
+
+    // Create a Uint8Array starting at offset 5 with length 10
+    auto uint8Array = rd.createUint8Array(ab, 5, 10);
+
+    EXPECT_EQ(rd.length(uint8Array), 10);
+    EXPECT_EQ(rd.byteLength(uint8Array), 10);
+    EXPECT_EQ(rd.byteOffset(uint8Array), 5);
+
+    // Test buffer returns the correct underlying ArrayBuffer
+    auto buffer = rd.buffer(uint8Array);
+    EXPECT_EQ(buffer.size(rd), 20);
+  }
+}
+
+TEST_P(JSITest, IsTypedArrayTest) {
+  // Test that isTypedArray returns false for a regular object
+  {
+    auto obj = Object(rt);
+    EXPECT_FALSE(rt.isTypedArray(obj));
+    EXPECT_THROW(obj.asTypedArray(rt), JSIException);
+  }
+
+  // Test that isTypedArray returns true for a Uint8Array
+  {
+    Uint8Array uint8Array(rt, 10);
+    EXPECT_TRUE(rt.isTypedArray(uint8Array));
+
+    auto typedArray = uint8Array.getTypedArray(rt);
+    EXPECT_EQ(typedArray.length(rt), 10);
+  }
+
+  // Test that isTypedArray returns true for other TypedArray types
+  {
+    auto int32ArrayObj = eval("new Int32Array(5)").getObject(rt);
+    EXPECT_TRUE(rt.isTypedArray(int32ArrayObj));
+    EXPECT_FALSE(rt.isUint8Array(int32ArrayObj));
+
+    auto typedArray = int32ArrayObj.getTypedArray(rt);
+    EXPECT_EQ(typedArray.length(rt), 5);
+  }
+
+  // Test that isTypedArray returns true for Float64Array
+  {
+    auto float64ArrayObj = eval("new Float64Array(3)").getObject(rt);
+    EXPECT_TRUE(rt.isTypedArray(float64ArrayObj));
+
+    auto typedArray = float64ArrayObj.asTypedArray(rt);
+    EXPECT_EQ(typedArray.length(rt), 3);
+  }
+
+  // Test that isTypedArray returns false for ArrayBuffer
+  {
+    auto arrayBufferObj = eval("new ArrayBuffer(10)").getObject(rt);
+    EXPECT_FALSE(rt.isTypedArray(arrayBufferObj));
+  }
+
+  // Test that isTypedArray returns false for a regular array
+  {
+    auto arrayObj = eval("[1, 2, 3]").getObject(rt);
+    EXPECT_FALSE(rt.isTypedArray(arrayObj));
+  }
+}
+
+TEST_P(JSITest, IsUint8ArrayTest) {
+  // Test that isUint8Array returns false for a regular object
+  {
+    auto obj = Object(rt);
+    EXPECT_FALSE(rt.isUint8Array(obj));
+    EXPECT_THROW(obj.asUint8Array(rt), JSIException);
+  }
+
+  // Test that isUint8Array returns true for a Uint8Array created via JS
+  {
+    auto uint8ArrayObj = eval("new Uint8Array(10)").getObject(rt);
+    EXPECT_TRUE(rt.isUint8Array(uint8ArrayObj));
+
+    // Get uInt8Array should succeed.
+    auto uint8Array = uint8ArrayObj.getUint8Array(rt);
+    EXPECT_EQ(uint8Array.length(rt), 10);
+  }
+}
+
 TEST_P(JSITest, ArrayBufferDetachedTest) {
   // This Runtime Decorator is used to test the default implementation of
   // Runtime::detached
