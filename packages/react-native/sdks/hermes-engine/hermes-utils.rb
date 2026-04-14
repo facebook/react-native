@@ -194,6 +194,7 @@ def podspec_source_download_prebuild_release_tarball(react_native_path, version)
     hermes_log("Using release tarball from URL: #{url}")
     download_stable_hermes(react_native_path, version, :debug)
     download_stable_hermes(react_native_path, version, :release)
+    ensure_hermes_pods_symlink()
     return {:http => url}
 end
 
@@ -206,7 +207,19 @@ end
 # HELPERS
 
 def artifacts_dir()
-    return File.join(Pod::Config.instance.project_pods_root, "hermes-engine-artifacts")
+    return ENV['RCT_PREBUILT_CACHE_DIR'] || "/tmp/react-native-prebuilt"
+end
+
+def ensure_hermes_pods_symlink()
+    pods_artifacts = File.join(Pod::Config.instance.project_pods_root, "hermes-engine-artifacts")
+    if File.symlink?(pods_artifacts)
+        return if File.readlink(pods_artifacts) == artifacts_dir()
+        FileUtils.rm(pods_artifacts)
+    elsif File.exist?(pods_artifacts)
+        FileUtils.rm_rf(pods_artifacts)
+    end
+    FileUtils.mkdir_p(File.dirname(pods_artifacts))
+    FileUtils.ln_sf(artifacts_dir(), pods_artifacts)
 end
 
 def hermestag_file(react_native_path)

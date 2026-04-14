@@ -161,6 +161,7 @@ class ReactNativeDependenciesUtils
         destinationDebug = download_stable_rndeps(@@react_native_path, @@react_native_version, :debug)
         download_stable_rndeps(@@react_native_path, @@react_native_version, :release)
 
+        ensure_pods_symlink()
         return {:http => URI::File.build(path: destinationDebug).to_s }
     end
 
@@ -228,8 +229,8 @@ class ReactNativeDependenciesUtils
         destinationDebug = download_nightly_rndeps(@@react_native_path, @@react_native_version, :debug)
         download_nightly_rndeps(@@react_native_path, @@react_native_version, :release)
 
+        ensure_pods_symlink()
         return {:http => URI::File.build(path: destinationDebug).to_s }
-        return {:http => url}
     end
 
     def self.download_rndeps_tarball(react_native_path, tarball_url, version, configuration)
@@ -255,7 +256,19 @@ class ReactNativeDependenciesUtils
     end
 
     def self.artifacts_dir()
-        return File.join(Pod::Config.instance.project_pods_root, "ReactNativeDependencies-artifacts")
+        return ENV['RCT_PREBUILT_CACHE_DIR'] || "/tmp/react-native-prebuilt"
+    end
+
+    def self.ensure_pods_symlink()
+        pods_artifacts = File.join(Pod::Config.instance.project_pods_root, "ReactNativeDependencies-artifacts")
+        if File.symlink?(pods_artifacts)
+            return if File.readlink(pods_artifacts) == artifacts_dir()
+            FileUtils.rm(pods_artifacts)
+        elsif File.exist?(pods_artifacts)
+            FileUtils.rm_rf(pods_artifacts)
+        end
+        FileUtils.mkdir_p(File.dirname(pods_artifacts))
+        FileUtils.ln_sf(artifacts_dir(), pods_artifacts)
     end
 
     # This function checks that ReactNativeDependencies artifact exists on the maven repo

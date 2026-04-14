@@ -157,9 +157,10 @@ class ReactNativeCoreUtils
         end
 
         rncore_log("Resolved stable ReactNativeCore-prebuilt version:")
-        rncore_log("  #{Pathname.new(destinationDebug).relative_path_from(Pathname.pwd).to_s}")
-        rncore_log("  #{Pathname.new(destinationRelease).relative_path_from(Pathname.pwd).to_s}")
+        rncore_log("  #{destinationDebug}")
+        rncore_log("  #{destinationRelease}")
 
+        ensure_pods_symlink()
         return {:http => URI::File.build(path: destinationDebug).to_s }
     end
 
@@ -185,8 +186,8 @@ class ReactNativeCoreUtils
             dSymsDebug = download_nightly_rncore(@@react_native_path, @@react_native_version, :debug, true)
             dSymsRelease = download_nightly_rncore(@@react_native_path, @@react_native_version, :release, true)
             rncore_log("Resolved nightly dSYMs")
-            rncore_log("  #{Pathname.new(dSymsDebug).relative_path_from(Pathname.pwd).to_s}")
-            rncore_log("  #{Pathname.new(dSymsRelease).relative_path_from(Pathname.pwd).to_s}")
+            rncore_log("  #{dSymsDebug}")
+            rncore_log("  #{dSymsRelease}")
 
             # Make sure that the dSYMs are processed
             process_dsyms(destinationDebug, dSymsDebug)
@@ -194,8 +195,9 @@ class ReactNativeCoreUtils
         end
 
         rncore_log("Resolved nightly ReactNativeCore-prebuilt version:")
-        rncore_log("  #{Pathname.new(destinationDebug).relative_path_from(Pathname.pwd).to_s}")
-        rncore_log("  #{Pathname.new(destinationRelease).relative_path_from(Pathname.pwd).to_s}")
+        rncore_log("  #{destinationDebug}")
+        rncore_log("  #{destinationRelease}")
+        ensure_pods_symlink()
         return {:http => URI::File.build(path: destinationDebug).to_s }
     end
 
@@ -410,11 +412,11 @@ class ReactNativeCoreUtils
 
         unless File.exist?(destination_path)
           # Download to a temporary file first so we don't cache incomplete downloads.
-          rncore_log("Downloading ReactNativeCore-prebuilt #{dsyms ? "dSYMs " : ""}#{configuration ? configuration.to_s : ""} tarball from #{tarball_url} to #{Pathname.new(destination_path).relative_path_from(Pathname.pwd).to_s}")
+          rncore_log("Downloading ReactNativeCore-prebuilt #{dsyms ? "dSYMs " : ""}#{configuration ? configuration.to_s : ""} tarball from #{tarball_url} to #{destination_path}")
           tmp_file = "#{artifacts_dir()}/reactnative-core.download"
           `mkdir -p "#{artifacts_dir()}" && curl "#{tarball_url}" -Lo "#{tmp_file}" && mv "#{tmp_file}" "#{destination_path}"`
         else
-          rncore_log("Using downloaded ReactNativeCore-prebuilt #{dsyms ? "dSYMs " : ""}#{configuration ? configuration.to_s : ""} tarball at #{Pathname.new(destination_path).relative_path_from(Pathname.pwd).to_s}")
+          rncore_log("Using downloaded ReactNativeCore-prebuilt #{dsyms ? "dSYMs " : ""}#{configuration ? configuration.to_s : ""} tarball at #{destination_path}")
         end
 
         return destination_path
@@ -429,7 +431,19 @@ class ReactNativeCoreUtils
     end
 
     def self.artifacts_dir()
-        return File.join(Pod::Config.instance.project_pods_root, "ReactNativeCore-artifacts")
+        return ENV['RCT_PREBUILT_CACHE_DIR'] || "/tmp/react-native-prebuilt"
+    end
+
+    def self.ensure_pods_symlink()
+        pods_artifacts = File.join(Pod::Config.instance.project_pods_root, "ReactNativeCore-artifacts")
+        if File.symlink?(pods_artifacts)
+            return if File.readlink(pods_artifacts) == artifacts_dir()
+            FileUtils.rm(pods_artifacts)
+        elsif File.exist?(pods_artifacts)
+            FileUtils.rm_rf(pods_artifacts)
+        end
+        FileUtils.mkdir_p(File.dirname(pods_artifacts))
+        FileUtils.ln_sf(artifacts_dir(), pods_artifacts)
     end
 
     # This function checks that ReactNativeCore artifact exists on the maven repo
