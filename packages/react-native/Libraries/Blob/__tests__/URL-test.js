@@ -114,6 +114,10 @@ describe('URL', function () {
     expect(paramsFromArray.getAll('key1')).toEqual(['value1', 'value2']);
     expect(paramsFromArray.get('key2')).toBe('value3');
 
+    // keys() should yield one entry per name-value pair, including duplicates
+    const keysArray = Array.from(paramsFromArray.keys());
+    expect(keysArray).toEqual(['key1', 'key1', 'key2']);
+
     // Manipulating existing search params in the URL
     const urlParams = url.searchParams;
     expect(urlParams.get('query')).toBe('testQuery');

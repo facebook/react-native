@@ -77,7 +77,14 @@ export class URLSearchParams {
   }
 
   keys(): Iterator<string> {
-    return this._searchParams.keys();
+    function* generateKeys(params: Map<string, string[]>): Iterator<string> {
+      for (const [key, values] of params) {
+        for (let i = 0; i < values.length; i++) {
+          yield key;
+        }
+      }
+    }
+    return generateKeys(this._searchParams);
   }
 
   values(): Iterator<string> {
