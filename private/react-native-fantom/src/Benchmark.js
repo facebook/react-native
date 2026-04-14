@@ -215,7 +215,9 @@ export function suite(
         'Failing focused test to prevent it from being committed',
       );
     }
-    reportBenchmarkResult(createBenchmarkResultsObject(bench, tasks));
+    if (!isTestOnly) {
+      reportBenchmarkResult(createBenchmarkResultsObject(bench, tasks));
+    }
   });
 
   const test = (name: string, fn: SyncFn, options?: FnOptions): SuiteAPI => {
