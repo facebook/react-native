@@ -499,15 +499,23 @@ void NativeAnimatedNodesManager::handleAnimatedEvent(
     }
   }
 
-  if (foundAtLeastOneDriver && !isEventAnimationInProgress_) {
-    // There is an animation driver handling this event and
-    // event driven animation has not been started yet.
-    isEventAnimationInProgress_ = true;
-    // Some platforms (e.g. iOS) have UI tick listener disable
-    // when there are no active animations. Calling
-    // `startRenderCallbackIfNeeded` will call platform specific code to
-    // register UI tick listener.
-    startRenderCallbackIfNeeded(false);
+  if (foundAtLeastOneDriver) {
+    // Process event-driven animation updates synchronously, matching the
+    // behavior of the Java NativeAnimatedNodesManager which calls
+    // updateNodes() for every event. Without this, only the first event
+    // in a scroll sequence is processed synchronously — subsequent events
+    // just store the updated value and defer graph traversal + prop commit
+    // to the next choreographer frame, introducing 1-frame latency.
+    if (!isEventAnimationInProgress_) {
+      // There is an animation driver handling this event and
+      // event driven animation has not been started yet.
+      isEventAnimationInProgress_ = true;
+      // Some platforms (e.g. iOS) have UI tick listener disable
+      // when there are no active animations. Calling
+      // `startRenderCallbackIfNeeded` will call platform specific code to
+      // register UI tick listener.
+      startRenderCallbackIfNeeded(false);
+    }
     // Calling startOnRenderCallback_ will register a UI tick listener.
     // The UI ticker listener will not be called until the next frame.
     // That's why, in case this is called from the UI thread, we need to
