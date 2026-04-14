@@ -85,7 +85,7 @@ export class URL {
         const split = this._url.split('#');
         const beforeHash = split[0];
         const website = beforeHash.split('://')[1];
-        if (!website.includes('/')) {
+        if (website != null && !website.includes('/')) {
           this._url = split.join('/#');
         }
       }

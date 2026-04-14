@@ -168,4 +168,9 @@ describe('URL', function () {
       'https://example.com/path/to/resource',
     );
   });
+
+  it('should handle URLs with hash but no protocol separator', () => {
+    // URL with hash but no "://" should not crash
+    expect(() => new URL('mailto:user@example.com#section')).not.toThrow();
+  });
 });
