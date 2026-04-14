@@ -16,6 +16,7 @@ import androidx.core.view.ViewCompat
 import androidx.core.view.WindowCompat
 import androidx.core.view.WindowInsetsCompat
 import androidx.core.view.WindowInsetsControllerCompat
+import com.facebook.react.util.AndroidVersion
 import com.facebook.react.views.common.UiModeUtils
 
 // The light scrim color used in the platform API 29+
@@ -29,9 +30,9 @@ internal val DarkNavigationBarColor = Color.argb(0x80, 0x1b, 0x1b, 0x1b)
 
 /**
  * Whether edge-to-edge is enforced. Computed once in [initEdgeToEdge], based on:
- * - The device is running Android 16+ (where edge-to-edge is always enforced)
  * - The edge-to-edge feature flag has been explicitly enabled
- * - The device is running Android 15 (API 35) without opting out
+ * - The device is running Android 16+ with targetSdk 35+ (where edge-to-edge is always enforced)
+ * - The device is running Android 15 with targetSdk 35+ without opting out
  */
 public var isEdgeToEdge: Boolean = false
   private set
@@ -39,14 +40,18 @@ public var isEdgeToEdge: Boolean = false
 public fun initEdgeToEdge(context: Context, flag: Boolean) {
   isEdgeToEdge =
       when {
-        Build.VERSION.SDK_INT >= Build.VERSION_CODES.BAKLAVA || flag -> true
-        Build.VERSION.SDK_INT < Build.VERSION_CODES.VANILLA_ICE_CREAM -> false
-        else ->
-            context.theme
-                .obtainStyledAttributes(
-                    intArrayOf(android.R.attr.windowOptOutEdgeToEdgeEnforcement)
-                )
-                .use { !it.getBoolean(0, false) }
+        !AndroidVersion.isAtLeastTargetSdk35(context) -> flag
+        Build.VERSION.SDK_INT >= AndroidVersion.VERSION_CODE_BAKLAVA -> true
+        else -> {
+          val attributes = intArrayOf(AndroidVersion.ATTR_WINDOW_OPT_OUT_EDGE_TO_EDGE_ENFORCEMENT)
+          val typedArray = context.theme.obtainStyledAttributes(attributes)
+
+          try {
+            !typedArray.getBoolean(0, false)
+          } finally {
+            typedArray.recycle()
+          }
+        }
       }
 }
 
