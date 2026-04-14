@@ -34,7 +34,7 @@ internal val DarkNavigationBarColor = Color.argb(0x80, 0x1b, 0x1b, 0x1b)
  * - The device is running Android 16+ with targetSdk 35+ (where edge-to-edge is always enforced)
  * - The device is running Android 15 with targetSdk 35+ without opting out
  */
-public var isDeviceRunningEdgeToEdge: Boolean = false
+internal var isDeviceRunningEdgeToEdge: Boolean = false
   private set
 
 /**
