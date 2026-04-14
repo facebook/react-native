@@ -563,6 +563,7 @@ class JSI_EXPORT IRuntime : public ICast {
   virtual size_t size(const Array&) = 0;
   virtual size_t size(const ArrayBuffer&) = 0;
   virtual uint8_t* data(const ArrayBuffer&) = 0;
+  virtual bool detached(const ArrayBuffer&) = 0;
   virtual Value getValueAtIndex(const Array&, size_t i) = 0;
   virtual void
   setValueAtIndexImpl(const Array&, size_t i, const Value& value) = 0;
@@ -723,6 +724,8 @@ class JSI_EXPORT Runtime : public IRuntime {
 
   std::shared_ptr<MutableBuffer> tryGetMutableBuffer(
       const jsi::ArrayBuffer& arrayBuffer) override;
+
+  bool detached(const ArrayBuffer&) override;
 
  protected:
   friend class Pointer;
@@ -1469,6 +1472,11 @@ class JSI_EXPORT ArrayBuffer : public Object {
 
   std::shared_ptr<MutableBuffer> tryGetMutableBuffer(IRuntime& runtime) const {
     return runtime.tryGetMutableBuffer(*this);
+  }
+
+  /// \return true if the ArrayBuffer is detached, false otherwise.
+  bool detached(IRuntime& runtime) const {
+    return runtime.detached(*this);
   }
 
  private:
