@@ -86,7 +86,7 @@ class FileReader extends EventTarget {
           return;
         }
 
-        const base64 = text.split(',')[1];
+        const base64 = text.split(',')[1] ?? '';
         const typedArray = toByteArray(base64);
 
         this._result = typedArray.buffer;
