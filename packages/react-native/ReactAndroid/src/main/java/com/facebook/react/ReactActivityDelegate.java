@@ -138,7 +138,7 @@ public class ReactActivityDelegate {
           if (mActivity != null) {
             Window window = mActivity.getWindow();
             if (window != null) {
-              if (WindowUtilKt.isEdgeToEdge()) {
+              if (WindowUtilKt.isDeviceRunningEdgeToEdge()) {
                 WindowUtilKt.enableEdgeToEdge(window);
               }
               if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O && isWideColorGamutEnabled()) {

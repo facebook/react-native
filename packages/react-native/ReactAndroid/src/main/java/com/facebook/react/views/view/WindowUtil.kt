@@ -34,7 +34,7 @@ internal val DarkNavigationBarColor = Color.argb(0x80, 0x1b, 0x1b, 0x1b)
  * - The device is running Android 16+ with targetSdk 35+ (where edge-to-edge is always enforced)
  * - The device is running Android 15 with targetSdk 35+ without opting out
  */
-public var isEdgeToEdge: Boolean = false
+public var isDeviceRunningEdgeToEdge: Boolean = false
   private set
 
 /**
@@ -53,7 +53,7 @@ public fun initEdgeToEdge(context: Context, flag: Boolean) {
     setEdgeToEdgeFeatureFlagOn()
   }
 
-  isEdgeToEdge =
+  isDeviceRunningEdgeToEdge =
       when {
         !AndroidVersion.isAtLeastTargetSdk35(context) -> flag
         Build.VERSION.SDK_INT >= AndroidVersion.VERSION_CODE_BAKLAVA -> true
@@ -100,7 +100,7 @@ internal fun Window.setStatusBarVisibility(isHidden: Boolean) {
 
 @Suppress("DEPRECATION")
 private fun Window.statusBarHide() {
-  if (isEdgeToEdge) {
+  if (isDeviceRunningEdgeToEdge) {
     WindowInsetsControllerCompat(this, decorView).run {
       systemBarsBehavior = WindowInsetsControllerCompat.BEHAVIOR_SHOW_TRANSIENT_BARS_BY_SWIPE
       hide(WindowInsetsCompat.Type.statusBars())
@@ -119,7 +119,7 @@ private fun Window.statusBarHide() {
 
 @Suppress("DEPRECATION")
 private fun Window.statusBarShow() {
-  if (isEdgeToEdge) {
+  if (isDeviceRunningEdgeToEdge) {
     WindowInsetsControllerCompat(this, decorView).run {
       systemBarsBehavior = WindowInsetsControllerCompat.BEHAVIOR_SHOW_TRANSIENT_BARS_BY_SWIPE
       show(WindowInsetsCompat.Type.statusBars())
