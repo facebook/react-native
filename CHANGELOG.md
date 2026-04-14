@@ -1,5 +1,111 @@
 # Changelog
 
+## v0.83.5
+
+### Breaking
+
+
+
+#### Android specific
+
+
+
+#### iOS specific
+
+
+
+### Added
+
+
+
+#### Android specific
+
+
+
+#### iOS specific
+
+
+
+### Changed
+
+
+
+#### Android specific
+
+
+
+#### iOS specific
+
+
+
+### Deprecated
+
+
+
+#### Android specific
+
+
+
+#### iOS specific
+
+
+
+### Removed
+
+
+
+#### Android specific
+
+
+
+#### iOS specific
+
+
+
+### Fixed
+
+
+
+#### Android specific
+
+
+
+#### iOS specific
+
+
+
+### Security
+
+
+
+#### Android specific
+
+
+
+#### iOS specific
+
+
+
+### Unknown
+
+- Release 0.83.5 ([9e212543c2](https://github.com/facebook/react-native/commit/9e212543c2180c6e1b4267a7e3412cb8f60a4362) by [@react-native-bot](https://github.com/react-native-bot))
+- Update debugger-frontend from 7d3b734...6e12856 ([92d1f5b382](https://github.com/facebook/react-native/commit/92d1f5b382c0cfe439e7cf05307ebc455a121ed9) by [@huntie](https://github.com/huntie))
+- Bump Podfile.lock ([ad2f7b4b4b](https://github.com/facebook/react-native/commit/ad2f7b4b4bc74ee34c93b3e1635e46708a5bea63) by [@react-native-bot](https://github.com/react-native-bot))
+- Release 0.83.4 ([829ff063a1](https://github.com/facebook/react-native/commit/829ff063a1ee1f3e13789f104378b2d8b347ad11) by [@react-native-bot](https://github.com/react-native-bot))
+
+#### Android Unknown
+
+- - Re-land "Revert D85999774: [rn][android] Add FrameTiming module" (#54502) 85905ad ([04e61d4b4c](https://github.com/facebook/react-native/commit/04e61d4b4c942adef83a958dd0e77af077652d8c) by [@huntie](https://github.com/huntie))
+
+#### iOS Unknown
+
+
+
+#### Failed to parse
+
+
+
+
 ## v0.85.1
 
 ### Fixed
