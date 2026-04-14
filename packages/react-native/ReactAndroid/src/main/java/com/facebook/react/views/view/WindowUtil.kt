@@ -37,7 +37,22 @@ internal val DarkNavigationBarColor = Color.argb(0x80, 0x1b, 0x1b, 0x1b)
 public var isEdgeToEdge: Boolean = false
   private set
 
+/**
+ * This does not enable or apply edge-to-edge behavior, it simply tracks whether it has been flagged
+ * as enabled elsewhere in the application.
+ */
+public var isEdgeToEdgeFeatureFlagOn: Boolean = false
+  private set
+
+public fun setEdgeToEdgeFeatureFlagOn() {
+  isEdgeToEdgeFeatureFlagOn = true
+}
+
 public fun initEdgeToEdge(context: Context, flag: Boolean) {
+  if (flag) {
+    setEdgeToEdgeFeatureFlagOn()
+  }
+
   isEdgeToEdge =
       when {
         !AndroidVersion.isAtLeastTargetSdk35(context) -> flag
