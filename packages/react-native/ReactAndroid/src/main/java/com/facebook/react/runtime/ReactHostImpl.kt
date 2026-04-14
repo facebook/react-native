@@ -311,6 +311,15 @@ public class ReactHostImpl(
     val method = "onHostDestroy(activity)"
     log(method)
 
+    // Mirror the multi-activity awareness from onHostPause: don't destroy the shared
+    // ReactContext while other activities are still active.
+    if (activity != null) {
+      activeActivities.remove(activity)
+      if (activeActivities.size > 0) {
+        return
+      }
+    }
+
     val currentActivity = this.currentActivity
 
     if (currentActivity === activity) {
