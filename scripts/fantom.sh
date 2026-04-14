@@ -27,4 +27,8 @@ for arg in "$@"; do
   esac
 done
 
+if [[ -n "$FANTOM_RUN_BENCHMARKS" ]]; then
+  ARGS+=("--runInBand")
+fi
+
 yarn jest --config private/react-native-fantom/config/jest.config.js "${ARGS[@]}"
