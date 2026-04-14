@@ -400,6 +400,10 @@ class RuntimeDecorator : public Base, private jsi::Instrumentation {
     plain_.setValueAtIndexImpl(a, i, value);
   }
 
+  size_t push(const Array& a, const Value* elements, size_t count) override {
+    return plain_.push(a, elements, count);
+  }
+
   Function createFunctionFromHostFunction(
       const PropNameID& name,
       unsigned int paramCount,
@@ -968,6 +972,10 @@ class WithRuntimeDecorator : public RuntimeDecorator<Plain, Base> {
       override {
     Around around{with_};
     RD::setValueAtIndexImpl(a, i, value);
+  }
+  size_t push(const Array& a, const Value* elements, size_t count) override {
+    Around around{with_};
+    return RD::push(a, elements, count);
   }
 
   Function createFunctionFromHostFunction(
