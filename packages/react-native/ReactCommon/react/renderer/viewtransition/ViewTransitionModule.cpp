@@ -82,7 +82,14 @@ void ViewTransitionModule::applyViewTransitionName(
         .layoutMetrics = keyframeMetrics, .tag = tag, .surfaceId = surfaceId};
     oldLayout_[name] = oldView;
 
-    // TODO: capture bitmap snapshot of old view via platform
+    // Request the platform to capture a bitmap snapshot of the old view
+    // while it's still mounted. The platform stores the bitmap keyed by tag.
+    if (uiManager_ != nullptr) {
+      auto* delegate = uiManager_->getDelegate();
+      if (delegate != nullptr) {
+        delegate->uiManagerDidCaptureViewSnapshot(tag, surfaceId);
+      }
+    }
 
     if (auto it = oldPseudoElementNodesRepository_.find(name);
         it != oldPseudoElementNodesRepository_.end()) {
@@ -277,7 +284,18 @@ void ViewTransitionModule::applySnapshotsOnPseudoElementShadowNodes() {
     return;
   }
 
-  // TODO: set bitmap snapshots on pseudo-element views via platform
+  // Set view snapshots — the pseudo-element nodes themselves will be committed
+  // through the normal completeRoot flow via getPseudoElementNodes().
+  auto* delegate = uiManager_->getDelegate();
+  if (delegate != nullptr) {
+    for (const auto& [name, node] : oldPseudoElementNodes_) {
+      auto layoutIt = oldLayout_.find(name);
+      if (layoutIt != oldLayout_.end()) {
+        delegate->uiManagerDidSetViewSnapshot(
+            layoutIt->second.tag, node->getTag(), node->getSurfaceId());
+      }
+    }
+  }
 }
 
 LayoutMetrics ViewTransitionModule::captureLayoutMetricsFromRoot(
@@ -342,6 +360,14 @@ void ViewTransitionModule::startViewTransitionEnd() {
   }
   nameRegistry_.clear();
   oldPseudoElementNodes_.clear();
+
+  // Clear any pending bitmap snapshots that were captured but never consumed.
+  if (uiManager_ != nullptr) {
+    auto* delegate = uiManager_->getDelegate();
+    if (delegate != nullptr) {
+      delegate->uiManagerDidClearPendingSnapshots();
+    }
+  }
 
   transitionStarted_ = false;
 }

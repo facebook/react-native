@@ -85,6 +85,24 @@ class SchedulerDelegateProxy : public SchedulerDelegate {
     // This delegate method is not currently used on iOS.
   }
 
+  void schedulerDidCaptureViewSnapshot(Tag tag, SurfaceId surfaceId) override
+  {
+    // Does nothing.
+    // View transition snapshots are not currently implemented on iOS.
+  }
+
+  void schedulerDidSetViewSnapshot(Tag sourceTag, Tag targetTag, SurfaceId surfaceId) override
+  {
+    // Does nothing.
+    // View transition snapshots are not currently implemented on iOS.
+  }
+
+  void schedulerDidClearPendingSnapshots() override
+  {
+    // Does nothing.
+    // View transition snapshots are not currently implemented on iOS.
+  }
+
  private:
   void *scheduler_;
 };

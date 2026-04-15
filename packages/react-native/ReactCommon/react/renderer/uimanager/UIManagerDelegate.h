@@ -97,6 +97,11 @@ class UIManagerDelegate {
   using OnSurfaceStartCallback = std::function<void(const ShadowTree &shadowTree)>;
   virtual void uiManagerShouldSetOnSurfaceStartCallback(OnSurfaceStartCallback &&callback) = 0;
 
+  // View transition bitmap snapshot capture and application.
+  virtual void uiManagerDidCaptureViewSnapshot(Tag tag, SurfaceId surfaceId) = 0;
+  virtual void uiManagerDidSetViewSnapshot(Tag sourceTag, Tag targetTag, SurfaceId surfaceId) = 0;
+  virtual void uiManagerDidClearPendingSnapshots() = 0;
+
   virtual ~UIManagerDelegate() noexcept = default;
 };
 

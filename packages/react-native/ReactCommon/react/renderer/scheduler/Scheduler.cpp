@@ -364,6 +364,27 @@ void Scheduler::uiManagerDidUpdateShadowTree(
   }
 }
 
+void Scheduler::uiManagerDidCaptureViewSnapshot(Tag tag, SurfaceId surfaceId) {
+  if (delegate_ != nullptr) {
+    delegate_->schedulerDidCaptureViewSnapshot(tag, surfaceId);
+  }
+}
+
+void Scheduler::uiManagerDidSetViewSnapshot(
+    Tag sourceTag,
+    Tag targetTag,
+    SurfaceId surfaceId) {
+  if (delegate_ != nullptr) {
+    delegate_->schedulerDidSetViewSnapshot(sourceTag, targetTag, surfaceId);
+  }
+}
+
+void Scheduler::uiManagerDidClearPendingSnapshots() {
+  if (delegate_ != nullptr) {
+    delegate_->schedulerDidClearPendingSnapshots();
+  }
+}
+
 void Scheduler::uiManagerShouldAddEventListener(
     std::shared_ptr<const EventListener> listener) {
   addEventListener(listener);
