@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<1ec2592998e830300fc777070dfdc49d>>
+ * @generated SignedSource<<4e307a9c3ceae21cc7f1e201c58a51ad>>
  * @flow strict
  * @noformat
  */
@@ -287,7 +287,7 @@ export const enableExclusivePropsUpdateAndroid: Getter<boolean> = createNativeFl
 /**
  * Enables Fabric commit branching to fix starvation problems and atomic JS updates.
  */
-export const enableFabricCommitBranching: Getter<boolean> = createNativeFlagGetter('enableFabricCommitBranching', false);
+export const enableFabricCommitBranching: Getter<boolean> = createNativeFlagGetter('enableFabricCommitBranching', true);
 /**
  * This feature flag enables logs for Fabric.
  */

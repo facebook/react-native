@@ -287,7 +287,7 @@ const definitions: FeatureFlagDefinitions = {
       ossReleaseStage: 'none',
     },
     enableFabricCommitBranching: {
-      defaultValue: false,
+      defaultValue: true,
       metadata: {
         description:
           'Enables Fabric commit branching to fix starvation problems and atomic JS updates.',
