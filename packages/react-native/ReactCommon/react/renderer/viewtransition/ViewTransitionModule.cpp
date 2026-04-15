@@ -227,6 +227,36 @@ std::optional<MountingTransaction> ViewTransitionModule::pullTransaction(
       surfaceId, number, std::move(mutations), telemetry};
 }
 
+std::shared_ptr<const ShadowNode>
+ViewTransitionModule::findPseudoElementShadowNodeByTag(Tag tag) const {
+  if (uiManager_ == nullptr) {
+    return nullptr;
+  }
+
+  auto shadowNode = std::shared_ptr<const ShadowNode>{};
+
+  uiManager_->getShadowTreeRegistry().enumerate(
+      [&](const ShadowTree& shadowTree, bool& stop) {
+        const auto rootShadowNode =
+            shadowTree.getCurrentRevision().rootShadowNode;
+
+        if (rootShadowNode != nullptr) {
+          const auto& children = rootShadowNode->getChildren();
+          // Pseudo element nodes are appended after the first child (the main
+          // React tree), so iterate from index 1 onwards.
+          for (size_t i = 1; i < children.size(); ++i) {
+            if (children[i]->getTag() == tag) {
+              shadowNode = children[i];
+              stop = true;
+              return;
+            }
+          }
+        }
+      });
+
+  return shadowNode;
+}
+
 void ViewTransitionModule::cancelViewTransitionName(
     const ShadowNode& shadowNode,
     const std::string& name) {
