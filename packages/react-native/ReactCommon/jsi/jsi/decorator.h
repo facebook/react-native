@@ -434,6 +434,11 @@ class RuntimeDecorator : public Base, private jsi::Instrumentation {
     return plain_.getRuntimeDataImpl(uuid);
   }
 
+  std::shared_ptr<MutableBuffer> tryGetMutableBuffer(
+      const jsi::ArrayBuffer& arrayBuffer) override {
+    return plain_.tryGetMutableBuffer(arrayBuffer);
+  }
+
   // Private data for managing scopes.
   Runtime::ScopeState* pushScope() override {
     return plain_.pushScope();
@@ -998,6 +1003,12 @@ class WithRuntimeDecorator : public RuntimeDecorator<Plain, Base> {
       override {
     Around around{with_};
     return RD::callAsConstructor(f, args, count);
+  }
+
+  std::shared_ptr<MutableBuffer> tryGetMutableBuffer(
+      const jsi::ArrayBuffer& arrayBuffer) override {
+    Around around{with_};
+    return RD::tryGetMutableBuffer(arrayBuffer);
   }
 
   // Private data for managing scopes.
