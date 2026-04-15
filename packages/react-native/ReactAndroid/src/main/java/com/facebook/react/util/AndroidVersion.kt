@@ -31,7 +31,7 @@ internal object AndroidVersion {
    * android.R.attr.windowOptOutEdgeToEdgeEnforcement added in API 35. Internally at Meta this code
    * is compiled against an SDK that may not have this attribute defined.
    */
-  internal const val ATTR_WINDOW_OPT_OUT_EDGE_TO_EDGE_ENFORCEMENT: Int = 0x01010678
+  internal const val ATTR_WINDOW_OPT_OUT_EDGE_TO_EDGE_ENFORCEMENT: Int = 0x0101069a
 
   /**
    * This method is used to check if the current device is running Android 15 (SDK Level 35) or
