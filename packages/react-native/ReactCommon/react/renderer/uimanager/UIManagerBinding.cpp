@@ -981,6 +981,37 @@ jsi::Value UIManagerBinding::get(
         });
   }
 
+  if (methodName == "createViewTransitionInstance") {
+    auto paramCount = 2;
+    return jsi::Function::createFromHostFunction(
+        runtime,
+        name,
+        paramCount,
+        [uiManager, methodName, paramCount](
+            jsi::Runtime& runtime,
+            const jsi::Value& /*thisValue*/,
+            const jsi::Value* arguments,
+            size_t count) -> jsi::Value {
+          validateArgumentCount(runtime, methodName, paramCount, count);
+
+          auto transitionName = arguments[0].isString()
+              ? stringFromValue(runtime, arguments[0])
+              : "";
+          auto pseudoElementTag = tagFromValue(arguments[1]);
+
+          if (!transitionName.empty()) {
+            auto* viewTransitionDelegate =
+                uiManager->getViewTransitionDelegate();
+            if (viewTransitionDelegate != nullptr) {
+              viewTransitionDelegate->createViewTransitionInstance(
+                  transitionName, pseudoElementTag);
+            }
+          }
+
+          return jsi::Value::undefined();
+        });
+  }
+
   if (methodName == "cancelViewTransitionName") {
     auto paramCount = 2;
     return jsi::Function::createFromHostFunction(
