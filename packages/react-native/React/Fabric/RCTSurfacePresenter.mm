@@ -316,6 +316,20 @@ using namespace facebook::react;
   });
 }
 
+- (BOOL)schedulerShouldPromoteReactRevision:(SurfaceId)surfaceId
+{
+  if (!RCTIsMainQueue()) {
+    return NO;
+  }
+
+  auto scheduler = [self scheduler];
+  scheduler.uiManager->getShadowTreeRegistry().visit(surfaceId, [](const ShadowTree &shadowTree) {
+    shadowTree.promoteReactRevision();
+    shadowTree.mergeReactRevision();
+  });
+  return YES;
+}
+
 - (void)schedulerDidDispatchCommand:(const ShadowView &)shadowView
                         commandName:(const std::string &)commandName
                                args:(const folly::dynamic &)args

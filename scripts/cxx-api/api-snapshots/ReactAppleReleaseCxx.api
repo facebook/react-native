@@ -3349,6 +3349,7 @@ protocol RCTSafeAreaViewViewProtocol : public NSObject {
 }
 
 protocol RCTSchedulerDelegate {
+  public virtual BOOL schedulerShouldPromoteReactRevision:(facebook::react::SurfaceId surfaceId);
   public virtual void schedulerDidDispatchCommand:commandName:args:(const facebook::react::ShadowView& shadowView, const std::string& commandName, const folly::dynamic& args);
   public virtual void schedulerDidFinishTransaction:(std::shared_ptr<const facebook::react::MountingCoordinator> mountingCoordinator);
   public virtual void schedulerDidSendAccessibilityEvent:eventType:(const facebook::react::ShadowView& shadowView, const std::string& eventType);
@@ -7061,6 +7062,7 @@ class facebook::react::Scheduler : public facebook::react::UIManagerDelegate {
 }
 
 class facebook::react::SchedulerDelegate {
+  public virtual bool schedulerShouldPromoteReactRevision(facebook::react::SurfaceId surfaceId) = 0;
   public virtual void schedulerDidDispatchCommand(const facebook::react::ShadowView& shadowView, const std::string& commandName, const folly::dynamic& args) = 0;
   public virtual void schedulerDidFinishTransaction(const std::shared_ptr<const facebook::react::MountingCoordinator>& mountingCoordinator) = 0;
   public virtual void schedulerDidRequestPreliminaryViewAllocation(const facebook::react::ShadowNode& shadowNode) = 0;
@@ -9882,7 +9884,7 @@ struct facebook::react::NativePerformanceEntry {
 }
 
 struct facebook::react::PerformanceEntrySorter {
-  public bool operator()(const facebook::react::PerformanceEntry& lhs, const facebook::react::PerformanceEntry& rhs);
+  public bool operator()(const facebook::react::PerformanceEntry& lhs, const facebook::react::PerformanceEntry& rhs) const;
 }
 
 struct facebook::react::PerformanceEventTiming : public facebook::react::AbstractPerformanceEntry {

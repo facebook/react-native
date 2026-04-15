@@ -99,6 +99,8 @@ class FabricUIManagerBinding : public jni::HybridClass<FabricUIManagerBinding>,
 
   void schedulerShouldMergeReactRevision(SurfaceId surfaceId) override;
 
+  bool schedulerShouldPromoteReactRevision(SurfaceId surfaceId) override;
+
   void mergeReactRevision(SurfaceId surfaceId);
 
   void schedulerDidRequestPreliminaryViewAllocation(const ShadowNode &shadowNode) override;

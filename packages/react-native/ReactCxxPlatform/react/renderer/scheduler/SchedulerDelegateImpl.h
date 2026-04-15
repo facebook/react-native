@@ -35,6 +35,8 @@ class SchedulerDelegateImpl : public SchedulerDelegate {
 
   void schedulerShouldMergeReactRevision(SurfaceId surfaceId) override;
 
+  bool schedulerShouldPromoteReactRevision(SurfaceId surfaceId) override;
+
   void schedulerDidRequestPreliminaryViewAllocation(const ShadowNode &shadowNode) override;
 
   void schedulerDidDispatchCommand(

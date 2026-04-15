@@ -1822,13 +1822,15 @@ class facebook::react::BindingsInstallerHolder : public jni::HybridClass<faceboo
   public void installBindings(facebook::jsi::Runtime& runtime, const std::shared_ptr<facebook::react::CallInvoker>& callInvoker);
 }
 
-class facebook::react::BlobCollector : public jni::HybridClass<facebook::react::BlobCollector>, public facebook::jsi::HostObject {
+class facebook::react::BlobCollector : public facebook::jsi::HostObject {
   public BlobCollector(jni::global_ref<jobject> blobModule, std::string blobId);
   public size_t getBlobLength();
-  public static constexpr auto kJavaDescriptor;
-  public static void nativeInstall(jni::alias_ref<jclass>, jni::alias_ref<jobject> blobModule, jlong jsContextNativePointer);
-  public static void registerNatives();
   public ~BlobCollector();
+}
+
+class facebook::react::BlobModuleJSIBindings : public jni::JavaClass<facebook::react::BlobModuleJSIBindings> {
+  public static constexpr char* kJavaDescriptor;
+  public static void registerNatives();
 }
 
 class facebook::react::BridgelessNativeMethodCallInvoker : public facebook::react::NativeMethodCallInvoker {
@@ -2309,6 +2311,7 @@ class facebook::react::ExecutorDelegate {
 class facebook::react::FabricMountingManager {
   public FabricMountingManager(const facebook::react::FabricMountingManager&) = delete;
   public FabricMountingManager(jni::global_ref<JFabricUIManager::javaobject>& javaUIManager);
+  public bool isOnMainThread();
   public bool isViewAllocated(facebook::react::SurfaceId surfaceId, facebook::react::Tag tag);
   public void destroyUnmountedShadowNode(const facebook::react::ShadowNodeFamily& family);
   public void dispatchCommand(const facebook::react::ShadowView& shadowView, const std::string& commandName, const folly::dynamic& args);
@@ -4474,6 +4477,7 @@ class facebook::react::Scheduler : public facebook::react::UIManagerDelegate {
 }
 
 class facebook::react::SchedulerDelegate {
+  public virtual bool schedulerShouldPromoteReactRevision(facebook::react::SurfaceId surfaceId) = 0;
   public virtual void schedulerDidDispatchCommand(const facebook::react::ShadowView& shadowView, const std::string& commandName, const folly::dynamic& args) = 0;
   public virtual void schedulerDidFinishTransaction(const std::shared_ptr<const facebook::react::MountingCoordinator>& mountingCoordinator) = 0;
   public virtual void schedulerDidRequestPreliminaryViewAllocation(const facebook::react::ShadowNode& shadowNode) = 0;
@@ -7431,7 +7435,7 @@ struct facebook::react::NativePerformanceEntry {
 }
 
 struct facebook::react::PerformanceEntrySorter {
-  public bool operator()(const facebook::react::PerformanceEntry& lhs, const facebook::react::PerformanceEntry& rhs);
+  public bool operator()(const facebook::react::PerformanceEntry& lhs, const facebook::react::PerformanceEntry& rhs) const;
 }
 
 struct facebook::react::PerformanceEventTiming : public facebook::react::AbstractPerformanceEntry {

@@ -70,9 +70,9 @@ class FabricMountingManager final {
 
   void scheduleReactRevisionMerge(SurfaceId surfaceId);
 
- private:
   bool isOnMainThread();
 
+ private:
   jni::global_ref<JFabricUIManager::javaobject> javaUIManager_;
 
   std::recursive_mutex commitMutex_;

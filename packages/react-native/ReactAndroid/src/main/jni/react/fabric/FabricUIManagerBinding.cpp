@@ -711,6 +711,23 @@ void FabricUIManagerBinding::schedulerShouldMergeReactRevision(
   }
 }
 
+bool FabricUIManagerBinding::schedulerShouldPromoteReactRevision(
+    SurfaceId surfaceId) {
+  std::shared_lock lock(installMutex_);
+  auto mountingManager =
+      getMountingManager("schedulerShouldPromoteReactRevision");
+  if (!mountingManager || !mountingManager->isOnMainThread()) {
+    return false;
+  }
+
+  scheduler_->getUIManager()->getShadowTreeRegistry().visit(
+      surfaceId, [](const ShadowTree& shadowTree) {
+        shadowTree.promoteReactRevision();
+        shadowTree.mergeReactRevision();
+      });
+  return true;
+}
+
 void FabricUIManagerBinding::mergeReactRevision(SurfaceId surfaceId) {
   std::shared_lock lock(installMutex_);
   scheduler_->getUIManager()->getShadowTreeRegistry().visit(

@@ -43,6 +43,11 @@ void SchedulerDelegateImpl::schedulerShouldMergeReactRevision(
       [](const ShadowTree& shadowTree) { shadowTree.mergeReactRevision(); });
 }
 
+bool SchedulerDelegateImpl::schedulerShouldPromoteReactRevision(
+    SurfaceId /*surfaceId*/) {
+  return false;
+}
+
 void SchedulerDelegateImpl::schedulerDidRequestPreliminaryViewAllocation(
     const ShadowNode& shadowNode) {}
 

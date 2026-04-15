@@ -377,6 +377,15 @@ void Scheduler::uiManagerShouldRemoveEventListener(
 
 void Scheduler::uiManagerDidFinishReactCommit(const ShadowTree& shadowTree) {
   auto surfaceId = shadowTree.getSurfaceId();
+
+  // If the commit is happening on the main thread, it should be merged
+  // immediately instead of being scheduled. This allows for synchronous
+  // events to be handled correctly.
+  if (delegate_ != nullptr &&
+      delegate_->schedulerShouldPromoteReactRevision(surfaceId)) {
+    return;
+  }
+
   runtimeScheduler_->scheduleRenderingUpdate(
       surfaceId, [surfaceId, uiManager = uiManager_]() {
         uiManager->getShadowTreeRegistry().visit(

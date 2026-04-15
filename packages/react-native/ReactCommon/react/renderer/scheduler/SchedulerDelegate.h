@@ -45,6 +45,15 @@ class SchedulerDelegate {
   virtual void schedulerShouldMergeReactRevision(SurfaceId surfaceId) = 0;
 
   /*
+   * Called when a React commit finishes and the JS revision needs to be
+   * promoted. If the platform is currently on the main thread, it should
+   * promote and merge the revision immediately, returning true.
+   * If not on the main thread, it should return false and the caller will
+   * schedule the promotion at the end of the event loop.
+   */
+  virtual bool schedulerShouldPromoteReactRevision(SurfaceId surfaceId) = 0;
+
+  /*
    * Called right after a new ShadowNode was created.
    */
   virtual void schedulerDidRequestPreliminaryViewAllocation(const ShadowNode &shadowNode) = 0;

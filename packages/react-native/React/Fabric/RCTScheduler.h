@@ -33,6 +33,8 @@ NS_ASSUME_NONNULL_BEGIN
 
 - (void)schedulerShouldMergeReactRevision:(facebook::react::SurfaceId)surfaceId;
 
+- (BOOL)schedulerShouldPromoteReactRevision:(facebook::react::SurfaceId)surfaceId;
+
 - (void)schedulerDidDispatchCommand:(const facebook::react::ShadowView &)shadowView
                         commandName:(const std::string &)commandName
                                args:(const folly::dynamic &)args;
