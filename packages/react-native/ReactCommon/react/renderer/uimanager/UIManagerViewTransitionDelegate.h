@@ -57,6 +57,16 @@ class UIManagerViewTransitionDelegate {
   {
     return std::nullopt;
   }
+
+  // Similar to UIManager::findShadowNodeByTag, but searches all direct children
+  // of the root node (where pseudo-element nodes live) rather than just the
+  // first child. Pseudo-element nodes are appended as additional children of the
+  // root node, rather than inserted into the main React tree, to avoid
+  // disrupting the user-created component tree.
+  virtual std::shared_ptr<const ShadowNode> findPseudoElementShadowNodeByTag(Tag /*tag*/) const
+  {
+    return nullptr;
+  }
 };
 
 } // namespace facebook::react

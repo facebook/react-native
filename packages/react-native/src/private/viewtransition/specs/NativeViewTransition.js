@@ -23,6 +23,7 @@ export interface Spec extends TurboModule {
     height: number,
     nativeTag: number,
   };
+  +findPseudoElementShadowNodeByTag: (reactTag: number) => ?unknown /* Node */;
 }
 
 export default TurboModuleRegistry.get<Spec>(

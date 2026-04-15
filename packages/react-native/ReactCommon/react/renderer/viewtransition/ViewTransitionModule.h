@@ -76,6 +76,8 @@ class ViewTransitionModule : public UIManagerViewTransitionDelegate,
       const TransactionTelemetry &telemetry,
       ShadowViewMutationList mutations) const override;
 
+  std::shared_ptr<const ShadowNode> findPseudoElementShadowNodeByTag(Tag tag) const override;
+
   // Animation state structure for storing minimal view data
   struct AnimationKeyFrameViewLayoutMetrics {
     Point originFromRoot;
@@ -102,8 +104,8 @@ class ViewTransitionModule : public UIManagerViewTransitionDelegate,
   // used for cancel/restore viewTransitionName
   std::unordered_map<Tag, std::unordered_set<std::string>> cancelledNameRegistry_{};
 
-  // pseudo-element nodes keyed by transition name, appended to/removed from root children at next ShadowTree commit
-  // TODO: T262559264 should be cleaned up from ShadowTree as soon as transition animation ends
+  // pseudo-element nodes keyed by transition name, appended to root children via UIManagerCommitHook
+  // TODO: T262559264 pseudo elements should be cleaned up as soon as transition animation ends
   std::unordered_map<std::string, std::shared_ptr<const ShadowNode>> oldPseudoElementNodes_{};
 
   struct InactivePseudoElement {
