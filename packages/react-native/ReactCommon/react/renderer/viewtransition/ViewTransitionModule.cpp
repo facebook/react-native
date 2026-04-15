@@ -345,6 +345,8 @@ void ViewTransitionModule::startViewTransition(
 
   // Mark transition as started
   transitionStarted_ = true;
+  pendingAnimationIds_.clear();
+  onCompleteCallback_ = onCompleteCallback;
 
   // Call mutation callback (including commitRoot, measureInstance,
   // applyViewTransitionName, createViewTransitionInstance for old & new)
@@ -353,21 +355,39 @@ void ViewTransitionModule::startViewTransition(
   }
 
   applySnapshotsOnPseudoElementShadowNodes();
+
   transitionReadyFinished_ = false;
+  // onReadyCallback starts the animations. Any animation registered via
+  // waitForTransitionAnimation during this callback is part of this transition.
   if (onReadyCallback) {
     onReadyCallback();
   }
+}
 
-  // Transition animation starts
+void ViewTransitionModule::waitForTransitionAnimation(int animationId) {
+  if (!transitionReadyFinished_) {
+    pendingAnimationIds_.insert(animationId);
+  }
+}
 
-  // Call onComplete callback when transition finishes
-  if (onCompleteCallback) {
-    onCompleteCallback();
+void ViewTransitionModule::transitionAnimationFinished(int animationId) {
+  pendingAnimationIds_.erase(animationId);
+  if (transitionReadyFinished_ && pendingAnimationIds_.empty() &&
+      onCompleteCallback_) {
+    auto callback = std::move(onCompleteCallback_);
+    onCompleteCallback_ = nullptr;
+    callback();
   }
 }
 
 void ViewTransitionModule::startViewTransitionReadyFinished() {
   transitionReadyFinished_ = true;
+
+  if (pendingAnimationIds_.empty() && onCompleteCallback_) {
+    auto callback = std::move(onCompleteCallback_);
+    onCompleteCallback_ = nullptr;
+    callback();
+  }
 }
 
 void ViewTransitionModule::suspendOnActiveViewTransition() {

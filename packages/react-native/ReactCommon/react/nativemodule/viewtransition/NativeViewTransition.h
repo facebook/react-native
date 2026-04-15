@@ -28,6 +28,10 @@ class NativeViewTransition : public NativeViewTransitionCxxSpec<NativeViewTransi
   getViewTransitionInstance(jsi::Runtime &rt, const std::string &name, const std::string &pseudo);
 
   jsi::Value findPseudoElementShadowNodeByTag(jsi::Runtime &rt, double reactTag);
+
+  void waitForTransitionAnimation(jsi::Runtime &rt, double animationId);
+
+  void transitionAnimationFinished(jsi::Runtime &rt, double animationId);
 };
 
 } // namespace facebook::react

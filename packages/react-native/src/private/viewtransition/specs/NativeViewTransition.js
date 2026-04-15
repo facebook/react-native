@@ -24,6 +24,8 @@ export interface Spec extends TurboModule {
     nativeTag: number,
   };
   +findPseudoElementShadowNodeByTag: (reactTag: number) => ?unknown /* Node */;
+  +waitForTransitionAnimation: (animationId: number) => void;
+  +transitionAnimationFinished: (animationId: number) => void;
 }
 
 export default TurboModuleRegistry.get<Spec>(

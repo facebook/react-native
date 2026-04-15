@@ -67,4 +67,26 @@ jsi::Value NativeViewTransition::findPseudoElementShadowNodeByTag(
   return jsi::Value::null();
 }
 
+void NativeViewTransition::waitForTransitionAnimation(
+    jsi::Runtime& rt,
+    double animationId) {
+  auto& uiManager = UIManagerBinding::getBinding(rt)->getUIManager();
+  auto* viewTransitionDelegate = uiManager.getViewTransitionDelegate();
+  if (viewTransitionDelegate != nullptr) {
+    viewTransitionDelegate->waitForTransitionAnimation(
+        static_cast<int>(animationId));
+  }
+}
+
+void NativeViewTransition::transitionAnimationFinished(
+    jsi::Runtime& rt,
+    double animationId) {
+  auto& uiManager = UIManagerBinding::getBinding(rt)->getUIManager();
+  auto* viewTransitionDelegate = uiManager.getViewTransitionDelegate();
+  if (viewTransitionDelegate != nullptr) {
+    viewTransitionDelegate->transitionAnimationFinished(
+        static_cast<int>(animationId));
+  }
+}
+
 } // namespace facebook::react

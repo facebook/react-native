@@ -83,6 +83,10 @@ class ViewTransitionModule : public UIManagerViewTransitionDelegate,
 
   void suspendOnActiveViewTransition() override;
 
+  void waitForTransitionAnimation(int animationId) override;
+
+  void transitionAnimationFinished(int animationId) override;
+
   // Animation state structure for storing minimal view data
   struct AnimationKeyFrameViewLayoutMetrics {
     Point originFromRoot;
@@ -142,6 +146,12 @@ class ViewTransitionModule : public UIManagerViewTransitionDelegate,
     std::function<void()> onCompleteCallback;
   };
   std::queue<PendingTransition> pendingTransitions_{};
+
+  // Tracks animation IDs that must complete before onCompleteCallback_ fires.
+  // Animations are registered via waitForTransitionAnimation (called from JS
+  // after connectAnimatedNodeToView) and removed via transitionAnimationFinished.
+  std::unordered_set<int> pendingAnimationIds_{};
+  std::function<void()> onCompleteCallback_{nullptr};
 };
 
 } // namespace facebook::react
