@@ -51,8 +51,25 @@ RCT_EXPORT_MODULE()
                                              selector:@selector(hide)
                                                  name:RCTJavaScriptDidFailToLoadNotification
                                                object:nil];
+    [[NSNotificationCenter defaultCenter] addObserver:self
+                                             selector:@selector(hide)
+                                                 name:@"RCTInstanceDidLoadBundle"
+                                               object:nil];
   }
   return self;
+}
+
+- (void)dealloc
+{
+  [self clearInitialMessageDelay];
+  [[NSNotificationCenter defaultCenter] removeObserver:self];
+  UIWindow *window = _window;
+  _window = nil;
+  if (window) {
+    RCTExecuteOnMainQueue(^{
+      window.hidden = YES;
+    });
+  }
 }
 
 + (void)setEnabled:(BOOL)enabled
