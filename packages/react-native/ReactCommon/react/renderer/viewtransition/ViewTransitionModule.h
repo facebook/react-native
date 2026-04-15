@@ -11,18 +11,25 @@
 
 #include <react/renderer/core/LayoutMetrics.h>
 #include <react/renderer/core/ShadowNode.h>
+#include <react/renderer/mounting/MountingOverrideDelegate.h>
 #include <react/renderer/mounting/ShadowViewMutation.h>
+#include <react/renderer/uimanager/UIManagerCommitHook.h>
 #include <react/renderer/uimanager/UIManagerViewTransitionDelegate.h>
 
 namespace facebook::react {
 
+class ShadowTree;
 class UIManager;
 
-class ViewTransitionModule : public UIManagerViewTransitionDelegate {
+class ViewTransitionModule : public UIManagerViewTransitionDelegate,
+                             public UIManagerCommitHook,
+                             public MountingOverrideDelegate {
  public:
-  ~ViewTransitionModule() override = default;
+  ~ViewTransitionModule() override;
 
-  void setUIManager(UIManager *uiManager);
+  void initialize(UIManager *uiManager, std::weak_ptr<ViewTransitionModule> weakThis);
+
+#pragma mark - UIManagerViewTransitionDelegate
 
   // will be called when a view will transition. if a view already has a view-transition-name, it may not be called
   // again until it's removed
@@ -50,6 +57,25 @@ class ViewTransitionModule : public UIManagerViewTransitionDelegate {
   std::optional<ViewTransitionInstance> getViewTransitionInstance(const std::string &name, const std::string &pseudo)
       override;
 
+#pragma mark - UIManagerCommitHook
+
+  void commitHookWasRegistered(const UIManager & /*uiManager*/) noexcept override {}
+  void commitHookWasUnregistered(const UIManager & /*uiManager*/) noexcept override {}
+  RootShadowNode::Unshared shadowTreeWillCommit(
+      const ShadowTree &shadowTree,
+      const RootShadowNode::Shared &oldRootShadowNode,
+      const RootShadowNode::Unshared &newRootShadowNode,
+      const ShadowTreeCommitOptions &commitOptions) noexcept override;
+
+#pragma mark - MountingOverrideDelegate
+
+  bool shouldOverridePullTransaction() const override;
+  std::optional<MountingTransaction> pullTransaction(
+      SurfaceId surfaceId,
+      MountingTransaction::Number number,
+      const TransactionTelemetry &telemetry,
+      ShadowViewMutationList mutations) const override;
+
   // Animation state structure for storing minimal view data
   struct AnimationKeyFrameViewLayoutMetrics {
     Point originFromRoot;
@@ -76,10 +102,18 @@ class ViewTransitionModule : public UIManagerViewTransitionDelegate {
   // used for cancel/restore viewTransitionName
   std::unordered_map<Tag, std::unordered_set<std::string>> cancelledNameRegistry_{};
 
-  // pseudo-element nodes keyed by transition name
+  // pseudo-element nodes keyed by transition name, appended to/removed from root children at next ShadowTree commit
+  // TODO: T262559264 should be cleaned up from ShadowTree as soon as transition animation ends
   std::unordered_map<std::string, std::shared_ptr<const ShadowNode>> oldPseudoElementNodes_{};
-  // will be restored into oldPseudoElementNodes_ in next transition
-  std::unordered_map<std::string, std::shared_ptr<const ShadowNode>> oldPseudoElementNodesForNextTransition_{};
+
+  struct InactivePseudoElement {
+    std::shared_ptr<const ShadowNode> node;
+    Tag sourceTag{0}; // tag of the original view this was created from
+  };
+  // pseudo-element nodes created for entering nodes, to be copied into
+  // oldPseudoElementNodes_ during the next applyViewTransitionName call.
+  // Mutable because pullTransaction (const) needs to erase unmounted entries.
+  mutable std::unordered_map<std::string, InactivePseudoElement> oldPseudoElementNodesRepository_{};
 
   LayoutMetrics captureLayoutMetricsFromRoot(const ShadowNode &shadowNode);
 

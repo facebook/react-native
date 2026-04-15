@@ -147,7 +147,7 @@ class Scheduler final : public UIManagerDelegate {
 
   RuntimeScheduler *runtimeScheduler_{nullptr};
 
-  std::unique_ptr<ViewTransitionModule> viewTransitionModule_;
+  std::shared_ptr<ViewTransitionModule> viewTransitionModule_;
 
   mutable std::shared_mutex onSurfaceStartCallbackMutex_;
   OnSurfaceStartCallback onSurfaceStartCallback_;
