@@ -29,15 +29,6 @@ internal val LightNavigationBarColor = Color.argb(0xe6, 0xFF, 0xFF, 0xFF)
 internal val DarkNavigationBarColor = Color.argb(0x80, 0x1b, 0x1b, 0x1b)
 
 /**
- * Whether edge-to-edge is enforced. Computed once in [initEdgeToEdge], based on:
- * - The edge-to-edge feature flag has been explicitly enabled
- * - The device is running Android 16+ with targetSdk 35+ (where edge-to-edge is always enforced)
- * - The device is running Android 15 with targetSdk 35+ without opting out
- */
-internal var isDeviceRunningEdgeToEdge: Boolean = false
-  private set
-
-/**
  * This does not enable or apply edge-to-edge behavior, it simply tracks whether it has been flagged
  * as enabled elsewhere in the application.
  */
@@ -49,23 +40,27 @@ public fun setEdgeToEdgeFeatureFlagOn() {
 }
 
 internal fun initEdgeToEdge(activity: Activity) {
-  isDeviceRunningEdgeToEdge =
-      when {
-        !AndroidVersion.isAtLeastTargetSdk35(activity) -> isEdgeToEdgeFeatureFlagOn
-        Build.VERSION.SDK_INT >= AndroidVersion.VERSION_CODE_BAKLAVA -> true
-        else -> {
-          val attributes = intArrayOf(AndroidVersion.ATTR_WINDOW_OPT_OUT_EDGE_TO_EDGE_ENFORCEMENT)
-          val typedArray = activity.theme.obtainStyledAttributes(attributes)
+  // When the app targets SDK 35+, edge-to-edge may be enforced by the OS even if the
+  // feature flag wasn't explicitly set. In that case, turn the flag on to match.
+  if (AndroidVersion.isAtLeastTargetSdk35(activity)) {
+    if (Build.VERSION.SDK_INT >= AndroidVersion.VERSION_CODE_BAKLAVA) {
+      // The device is running Android 16+ (where edge-to-edge is always enforced)
+      isEdgeToEdgeFeatureFlagOn = true
+    } else {
+      val attributes = intArrayOf(AndroidVersion.ATTR_WINDOW_OPT_OUT_EDGE_TO_EDGE_ENFORCEMENT)
+      val typedArray = activity.theme.obtainStyledAttributes(attributes)
 
+      // The device is running Android 15 with / without opting out
+      isEdgeToEdgeFeatureFlagOn =
           try {
             !typedArray.getBoolean(0, false)
           } finally {
             typedArray.recycle()
           }
-        }
-      }
+    }
+  }
 
-  if (isDeviceRunningEdgeToEdge) {
+  if (isEdgeToEdgeFeatureFlagOn) {
     activity.window.enableEdgeToEdge()
   }
 }
@@ -100,7 +95,7 @@ internal fun Window.setStatusBarVisibility(isHidden: Boolean) {
 
 @Suppress("DEPRECATION")
 private fun Window.statusBarHide() {
-  if (isDeviceRunningEdgeToEdge) {
+  if (isEdgeToEdgeFeatureFlagOn) {
     WindowInsetsControllerCompat(this, decorView).run {
       systemBarsBehavior = WindowInsetsControllerCompat.BEHAVIOR_SHOW_TRANSIENT_BARS_BY_SWIPE
       hide(WindowInsetsCompat.Type.statusBars())
@@ -119,7 +114,7 @@ private fun Window.statusBarHide() {
 
 @Suppress("DEPRECATION")
 private fun Window.statusBarShow() {
-  if (isDeviceRunningEdgeToEdge) {
+  if (isEdgeToEdgeFeatureFlagOn) {
     WindowInsetsControllerCompat(this, decorView).run {
       systemBarsBehavior = WindowInsetsControllerCompat.BEHAVIOR_SHOW_TRANSIENT_BARS_BY_SWIPE
       show(WindowInsetsCompat.Type.statusBars())
