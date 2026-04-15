@@ -29,6 +29,10 @@ class ViewTransitionModule : public UIManagerViewTransitionDelegate {
   void applyViewTransitionName(const ShadowNode &shadowNode, const std::string &name, const std::string &className)
       override;
 
+  // creates a pseudo-element shadow node for a given transition name using the
+  // captured old layout metrics
+  void createViewTransitionInstance(const std::string &name, Tag pseudoElementTag) override;
+
   // if a viewTransitionName is cancelled, the element doesn't have view-transition-name and browser won't be taking
   // snapshot
   void cancelViewTransitionName(const ShadowNode &shadowNode, const std::string &name) override;
@@ -72,7 +76,14 @@ class ViewTransitionModule : public UIManagerViewTransitionDelegate {
   // used for cancel/restore viewTransitionName
   std::unordered_map<Tag, std::unordered_set<std::string>> cancelledNameRegistry_{};
 
+  // pseudo-element nodes keyed by transition name
+  std::unordered_map<std::string, std::shared_ptr<const ShadowNode>> oldPseudoElementNodes_{};
+  // will be restored into oldPseudoElementNodes_ in next transition
+  std::unordered_map<std::string, std::shared_ptr<const ShadowNode>> oldPseudoElementNodesForNextTransition_{};
+
   LayoutMetrics captureLayoutMetricsFromRoot(const ShadowNode &shadowNode);
+
+  void applySnapshotsOnPseudoElementShadowNodes();
 
   UIManager *uiManager_{nullptr};
 
