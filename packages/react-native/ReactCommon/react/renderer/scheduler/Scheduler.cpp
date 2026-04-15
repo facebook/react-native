@@ -160,9 +160,8 @@ Scheduler::Scheduler(
 
   // Initialize ViewTransitionModule
   if (ReactNativeFeatureFlags::viewTransitionEnabled()) {
-    viewTransitionModule_ = std::make_unique<ViewTransitionModule>();
-    viewTransitionModule_->setUIManager(uiManager_.get());
-    uiManager_->setViewTransitionDelegate(viewTransitionModule_.get());
+    viewTransitionModule_ = std::make_shared<ViewTransitionModule>();
+    viewTransitionModule_->initialize(uiManager_.get(), viewTransitionModule_);
   }
 
   uiManager->registerMountHook(*eventPerformanceLogger_);
