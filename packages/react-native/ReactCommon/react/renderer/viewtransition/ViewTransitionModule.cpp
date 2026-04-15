@@ -7,14 +7,51 @@
 
 #include "ViewTransitionModule.h"
 
+#include <react/renderer/components/root/RootShadowNode.h>
 #include <react/renderer/core/LayoutableShadowNode.h>
 #include <react/renderer/core/RawProps.h>
+#include <react/renderer/mounting/MountingTransaction.h>
+#include <react/renderer/mounting/ShadowTree.h>
 #include <react/renderer/uimanager/UIManager.h>
 
 namespace facebook::react {
 
-void ViewTransitionModule::setUIManager(UIManager* uiManager) {
+ViewTransitionModule::~ViewTransitionModule() {
+  if (uiManager_ != nullptr) {
+    if (uiManager_->getViewTransitionDelegate() == this) {
+      uiManager_->setViewTransitionDelegate(nullptr);
+    }
+    uiManager_->unregisterCommitHook(*this);
+    uiManager_ = nullptr;
+  }
+}
+
+void ViewTransitionModule::initialize(
+    UIManager* uiManager,
+    std::weak_ptr<ViewTransitionModule> weakThis) {
+  if (uiManager_ != nullptr) {
+    uiManager_->unregisterCommitHook(*this);
+  }
   uiManager_ = uiManager;
+  if (uiManager_ != nullptr) {
+    uiManager_->registerCommitHook(*this);
+
+    // Register as MountingOverrideDelegate on existing surfaces
+    uiManager_->getShadowTreeRegistry().enumerate(
+        [weakThis](const ShadowTree& shadowTree, bool& /*stop*/) {
+          shadowTree.getMountingCoordinator()->setMountingOverrideDelegate(
+              weakThis);
+        });
+
+    // Register on surfaces started in the future
+    uiManager_->setOnSurfaceStartCallback(
+        [weakThis](const ShadowTree& shadowTree) {
+          shadowTree.getMountingCoordinator()->setMountingOverrideDelegate(
+              weakThis);
+        });
+
+    uiManager_->setViewTransitionDelegate(this);
+  }
 }
 
 void ViewTransitionModule::applyViewTransitionName(
@@ -47,11 +84,9 @@ void ViewTransitionModule::applyViewTransitionName(
 
     // TODO: capture bitmap snapshot of old view via platform
 
-    if (auto it = oldPseudoElementNodesForNextTransition_.find(name);
-        it != oldPseudoElementNodesForNextTransition_.end()) {
-      auto pseudoElementNode = it->second;
-      oldPseudoElementNodes_[name] = pseudoElementNode;
-      oldPseudoElementNodesForNextTransition_.erase(it);
+    if (auto it = oldPseudoElementNodesRepository_.find(name);
+        it != oldPseudoElementNodesRepository_.end()) {
+      oldPseudoElementNodes_[name] = it->second.node;
     }
 
   } else {
@@ -115,11 +150,81 @@ void ViewTransitionModule::createViewTransitionInstance(
     if (pseudoElementNode != nullptr) {
       if (!forNextTransition) {
         oldPseudoElementNodes_[name] = pseudoElementNode;
-      } else {
-        oldPseudoElementNodesForNextTransition_[name] = pseudoElementNode;
+      }
+      oldPseudoElementNodesRepository_[name] = InactivePseudoElement{
+          .node = pseudoElementNode, .sourceTag = view.tag};
+    }
+  }
+}
+
+RootShadowNode::Unshared ViewTransitionModule::shadowTreeWillCommit(
+    const ShadowTree& shadowTree,
+    const RootShadowNode::Shared& /*oldRootShadowNode*/,
+    const RootShadowNode::Unshared& newRootShadowNode,
+    const ShadowTreeCommitOptions& /*commitOptions*/) noexcept {
+  if (oldPseudoElementNodes_.empty()) {
+    return newRootShadowNode;
+  }
+
+  auto surfaceId = shadowTree.getSurfaceId();
+
+  // Collect pseudo-element nodes for this surface, skipping any that are
+  // already present in the children list (from a previous commit hook run).
+  const auto& existingChildren = newRootShadowNode->getChildren();
+  std::unordered_set<Tag> existingTags;
+  existingTags.reserve(existingChildren.size());
+  for (const auto& child : existingChildren) {
+    existingTags.insert(child->getTag());
+  }
+
+  auto newChildren =
+      std::make_shared<std::vector<std::shared_ptr<const ShadowNode>>>(
+          existingChildren);
+  bool appended = false;
+  for (const auto& [name, node] : oldPseudoElementNodes_) {
+    if (node->getSurfaceId() == surfaceId &&
+        existingTags.find(node->getTag()) == existingTags.end()) {
+      newChildren->push_back(node);
+      appended = true;
+    }
+  }
+
+  if (!appended) {
+    return newRootShadowNode;
+  }
+
+  return std::make_shared<RootShadowNode>(
+      *newRootShadowNode,
+      ShadowNodeFragment{
+          .props = ShadowNodeFragment::propsPlaceholder(),
+          .children = newChildren,
+      });
+}
+
+bool ViewTransitionModule::shouldOverridePullTransaction() const {
+  return !oldPseudoElementNodesRepository_.empty();
+}
+
+std::optional<MountingTransaction> ViewTransitionModule::pullTransaction(
+    SurfaceId surfaceId,
+    MountingTransaction::Number number,
+    const TransactionTelemetry& telemetry,
+    ShadowViewMutationList mutations) const {
+  for (const auto& mutation : mutations) {
+    if (mutation.type == ShadowViewMutation::Delete) {
+      auto tag = mutation.oldChildShadowView.tag;
+      for (auto it = oldPseudoElementNodesRepository_.begin();
+           it != oldPseudoElementNodesRepository_.end();) {
+        if (it->second.sourceTag == tag) {
+          it = oldPseudoElementNodesRepository_.erase(it);
+        } else {
+          ++it;
+        }
       }
     }
   }
+  return MountingTransaction{
+      surfaceId, number, std::move(mutations), telemetry};
 }
 
 void ViewTransitionModule::cancelViewTransitionName(
