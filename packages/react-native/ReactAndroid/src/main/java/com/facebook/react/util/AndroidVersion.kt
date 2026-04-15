@@ -30,6 +30,7 @@ internal object AndroidVersion {
   /**
    * android.R.attr.windowOptOutEdgeToEdgeEnforcement added in API 35. Internally at Meta this code
    * is compiled against an SDK that may not have this attribute defined.
+   * https://cs.android.com/android/platform/superproject/main/+/main:frameworks/base/core/res/res/values/public-final.xml;l=3848;drc=7fa5818fb7037c541807c3754882d98f6ea22d20
    */
   internal const val ATTR_WINDOW_OPT_OUT_EDGE_TO_EDGE_ENFORCEMENT: Int = 0x0101069a
 
