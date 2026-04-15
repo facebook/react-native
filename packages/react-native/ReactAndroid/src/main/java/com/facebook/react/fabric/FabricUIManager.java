@@ -101,6 +101,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Queue;
 import java.util.Set;
+import java.util.concurrent.ConcurrentLinkedQueue;
 import java.util.concurrent.CopyOnWriteArrayList;
 
 /**
@@ -191,6 +192,13 @@ public class FabricUIManager
   /** Set of events sent synchronously during the current frame render. Cleared after each frame. */
   @ThreadConfined(UI)
   private final Set<SynchronousEvent> mSynchronousEvents = new HashSet<>();
+
+  /**
+   * Queue of surface IDs that need their React revision merged. Drained during doFrame so that
+   * synchronous events dispatched by the merge are processed in the same frame.
+   */
+  private final ConcurrentLinkedQueue<Integer> mPendingReactRevisionMerges =
+      new ConcurrentLinkedQueue<>();
 
   /**
    * This is used to keep track of whether or not the FabricUIManager has been destroyed. Once the
@@ -956,13 +964,7 @@ public class FabricUIManager
         mBinding.mergeReactRevision(surfaceId);
       }
     } else {
-      UiThreadUtil.runOnUiThread(
-          () -> {
-            FabricUIManagerBinding binding = mBinding;
-            if (binding != null) {
-              binding.mergeReactRevision(surfaceId);
-            }
-          });
+      mPendingReactRevisionMerges.add(surfaceId);
     }
   }
 
@@ -1556,6 +1558,18 @@ public class FabricUIManager
       if (mDestroyed) {
         FLog.w(TAG, "Not flushing pending UI operations: FabricUIManager is destroyed");
         return;
+      }
+
+      // Drain pending React revision merges first so that animations,
+      // preallocation, and mount items operate against the latest revision.
+      if (ReactNativeFeatureFlags.enableFabricCommitBranching()) {
+        FabricUIManagerBinding binding = mBinding;
+        if (binding != null) {
+          Integer mergeSurfaceId;
+          while ((mergeSurfaceId = mPendingReactRevisionMerges.poll()) != null) {
+            binding.mergeReactRevision(mergeSurfaceId);
+          }
+        }
       }
 
       // Drive any animations from C++.
