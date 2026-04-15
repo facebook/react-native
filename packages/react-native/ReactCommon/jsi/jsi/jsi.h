@@ -628,6 +628,14 @@ class JSI_EXPORT IRuntime : public ICast {
       void* ctx,
       void (*cb)(void* ctx, bool ascii, const void* data, size_t num)) = 0;
 
+  /// If possible, returns the MutableBuffer representing \p arrayBuffer's
+  /// underlying data, else return a nullptr. Importantly, the returned
+  /// MutableBuffer directly points to \p arrayBuffer's data instead of copying
+  /// the data over. The data's lifetime is valid for the lifetime of
+  /// MutableBuffer, which is orthogonal from \p arrayBuffer.
+  virtual std::shared_ptr<MutableBuffer> tryGetMutableBuffer(
+      const jsi::ArrayBuffer& arrayBuffer) = 0;
+
  protected:
   virtual ~IRuntime() = default;
 };
@@ -712,6 +720,9 @@ class JSI_EXPORT Runtime : public IRuntime {
       void (*cb)(void* ctx, bool ascii, const void* data, size_t num)) override;
 
   size_t push(const Array&, const Value*, size_t) override;
+
+  std::shared_ptr<MutableBuffer> tryGetMutableBuffer(
+      const jsi::ArrayBuffer& arrayBuffer) override;
 
  protected:
   friend class Pointer;
@@ -1454,6 +1465,10 @@ class JSI_EXPORT ArrayBuffer : public Object {
 
   uint8_t* data(IRuntime& runtime) const {
     return runtime.data(*this);
+  }
+
+  std::shared_ptr<MutableBuffer> tryGetMutableBuffer(IRuntime& runtime) const {
+    return runtime.tryGetMutableBuffer(*this);
   }
 
  private:
