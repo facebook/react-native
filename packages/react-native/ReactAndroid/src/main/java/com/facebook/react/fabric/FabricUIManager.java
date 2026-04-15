@@ -208,6 +208,8 @@ public class FabricUIManager
 
   private boolean mDriveCxxAnimations = false;
 
+  private @Nullable ViewTransitionSnapshotManager mViewTransitionSnapshotManager;
+
   private long mDispatchViewUpdatesTime = 0l;
   private long mCommitStartTime = 0l;
   private long mLayoutTime = 0l;
@@ -809,6 +811,40 @@ public class FabricUIManager
 
     ReactMarker.logFabricMarker(
         ReactMarkerConstants.FABRIC_UPDATE_UI_MAIN_THREAD_END, null, commitNumber);
+  }
+
+  /** Called from C++ via JNI. */
+  @SuppressLint("NotInvokedPrivateMethod")
+  @SuppressWarnings("unused")
+  @AnyThread
+  @ThreadConfined(ANY)
+  private void captureViewSnapshot(final int reactTag, final int surfaceId) {
+    getViewTransitionSnapshotManager().captureViewSnapshot(reactTag, surfaceId);
+  }
+
+  /** Called from C++ via JNI. */
+  @SuppressLint("NotInvokedPrivateMethod")
+  @SuppressWarnings("unused")
+  @AnyThread
+  @ThreadConfined(ANY)
+  private void setViewSnapshot(final int sourceTag, final int targetTag, final int surfaceId) {
+    getViewTransitionSnapshotManager().setViewSnapshot(sourceTag, targetTag);
+  }
+
+  /** Called from C++ via JNI. */
+  @SuppressLint("NotInvokedPrivateMethod")
+  @SuppressWarnings("unused")
+  @AnyThread
+  @ThreadConfined(ANY)
+  private void clearPendingSnapshots() {
+    getViewTransitionSnapshotManager().clearPendingSnapshots();
+  }
+
+  private synchronized ViewTransitionSnapshotManager getViewTransitionSnapshotManager() {
+    if (mViewTransitionSnapshotManager == null) {
+      mViewTransitionSnapshotManager = new ViewTransitionSnapshotManager(this, mMountingManager);
+    }
+    return mViewTransitionSnapshotManager;
   }
 
   @SuppressLint("NotInvokedPrivateMethod")

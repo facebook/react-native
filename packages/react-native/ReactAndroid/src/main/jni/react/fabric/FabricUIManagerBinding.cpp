@@ -800,18 +800,24 @@ void FabricUIManagerBinding::schedulerDidUpdateShadowTree(
 void FabricUIManagerBinding::schedulerDidCaptureViewSnapshot(
     Tag tag,
     SurfaceId surfaceId) {
-  // TODO: implement this
+  if (mountingManager_) {
+    mountingManager_->captureViewSnapshot(tag, surfaceId);
+  }
 }
 
 void FabricUIManagerBinding::schedulerDidSetViewSnapshot(
     Tag sourceTag,
     Tag targetTag,
     SurfaceId surfaceId) {
-  // TODO: implement this
+  if (mountingManager_) {
+    mountingManager_->setViewSnapshot(sourceTag, targetTag, surfaceId);
+  }
 }
 
 void FabricUIManagerBinding::schedulerDidClearPendingSnapshots() {
-  // TODO: implement this
+  if (mountingManager_) {
+    mountingManager_->clearPendingSnapshots();
+  }
 }
 
 void FabricUIManagerBinding::onAnimationStarted() {

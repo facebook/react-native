@@ -2325,6 +2325,7 @@ class facebook::react::FabricMountingManager {
   public void scheduleReactRevisionMerge(facebook::react::SurfaceId surfaceId);
   public void sendAccessibilityEvent(const facebook::react::ShadowView& shadowView, const std::string& eventType);
   public void setIsJSResponder(const facebook::react::ShadowView& shadowView, bool isJSResponder, bool blockNativeResponder);
+  public void setViewSnapshot(facebook::react::Tag sourceTag, facebook::react::Tag targetTag, facebook::react::SurfaceId surfaceId);
   public void synchronouslyUpdateViewOnUIThread(facebook::react::Tag viewTag, const folly::dynamic& props);
   public ~FabricMountingManager();
 }
