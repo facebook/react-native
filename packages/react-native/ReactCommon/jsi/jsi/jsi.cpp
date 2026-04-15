@@ -574,6 +574,34 @@ Uint8Array Runtime::createUint8Array(
   return Uint8Array(cloneObject(getPointerValue(result.getObject(*this))));
 }
 
+Value Runtime::createError(const String& msg) {
+  return callGlobalFunction(*this, "Error", Value(*this, msg));
+}
+
+Value Runtime::createEvalError(const String& msg) {
+  return callGlobalFunction(*this, "EvalError", Value(*this, msg));
+}
+
+Value Runtime::createRangeError(const String& msg) {
+  return callGlobalFunction(*this, "RangeError", Value(*this, msg));
+}
+
+Value Runtime::createReferenceError(const String& msg) {
+  return callGlobalFunction(*this, "ReferenceError", Value(*this, msg));
+}
+
+Value Runtime::createSyntaxError(const String& msg) {
+  return callGlobalFunction(*this, "SyntaxError", Value(*this, msg));
+}
+
+Value Runtime::createTypeError(const String& msg) {
+  return callGlobalFunction(*this, "TypeError", Value(*this, msg));
+}
+
+Value Runtime::createURIError(const String& msg) {
+  return callGlobalFunction(*this, "URIError", Value(*this, msg));
+}
+
 bool Runtime::detached(const ArrayBuffer& buffer) {
   Value prop = buffer.getProperty(*this, "detached");
   if (!prop.isBool()) {
@@ -966,6 +994,40 @@ JSError::JSError(Value&& value, std::string message, std::string stack)
       value_(std::make_shared<Value>(std::move(value))),
       message_(std::move(message)),
       stack_(std::move(stack)) {}
+
+JSError JSError::createEvalError(IRuntime& rt, const std::string& message) {
+  return JSError(
+      message, rt, rt.createEvalError(String::createFromUtf8(rt, message)));
+}
+
+JSError JSError::createRangeError(IRuntime& rt, const std::string& message) {
+  return JSError(
+      message, rt, rt.createRangeError(String::createFromUtf8(rt, message)));
+}
+
+JSError JSError::createReferenceError(
+    IRuntime& rt,
+    const std::string& message) {
+  return JSError(
+      message,
+      rt,
+      rt.createReferenceError(String::createFromUtf8(rt, message)));
+}
+
+JSError JSError::createSyntaxError(IRuntime& rt, const std::string& message) {
+  return JSError(
+      message, rt, rt.createSyntaxError(String::createFromUtf8(rt, message)));
+}
+
+JSError JSError::createTypeError(IRuntime& rt, const std::string& message) {
+  return JSError(
+      message, rt, rt.createTypeError(String::createFromUtf8(rt, message)));
+}
+
+JSError JSError::createURIError(IRuntime& rt, const std::string& message) {
+  return JSError(
+      message, rt, rt.createURIError(String::createFromUtf8(rt, message)));
+}
 
 void JSError::setValue(IRuntime& rt, Value&& value) {
   value_ = std::make_shared<Value>(std::move(value));

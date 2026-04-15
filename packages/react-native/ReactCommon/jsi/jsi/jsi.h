@@ -657,6 +657,24 @@ class JSI_EXPORT IRuntime : public ICast {
   virtual Uint8Array
   createUint8Array(const ArrayBuffer& buffer, size_t offset, size_t length) = 0;
 
+  /// Create a new Error object with the message property set to \p message.
+  virtual Value createError(const String& msg) = 0;
+  /// Create a new EvalError object with the message property set to \p message.
+  virtual Value createEvalError(const String& msg) = 0;
+  /// Create a new RangeError object with the message property set to \p
+  /// message.
+  virtual Value createRangeError(const String& msg) = 0;
+  /// Create a new ReferenceError object with the message property set to \p
+  /// message.
+  virtual Value createReferenceError(const String& msg) = 0;
+  /// Create a new SyntaxError object with the message property set to \p
+  /// message.
+  virtual Value createSyntaxError(const String& msg) = 0;
+  /// Create a new TypeError object with the message property set to \p message.
+  virtual Value createTypeError(const String& msg) = 0;
+  /// Create a new URIError object with the message property set to \p message.
+  virtual Value createURIError(const String& msg) = 0;
+
  protected:
   virtual ~IRuntime() = default;
 };
@@ -759,6 +777,14 @@ class JSI_EXPORT Runtime : public IRuntime {
       const ArrayBuffer& buffer,
       size_t offset,
       size_t length) override;
+
+  Value createError(const String& msg) override;
+  Value createEvalError(const String& msg) override;
+  Value createRangeError(const String& msg) override;
+  Value createReferenceError(const String& msg) override;
+  Value createSyntaxError(const String& msg) override;
+  Value createTypeError(const String& msg) override;
+  Value createURIError(const String& msg) override;
 
  protected:
   friend class Pointer;
@@ -2119,6 +2145,30 @@ class JSI_EXPORT JSError : public JSIException {
   /// constructor does not take a Runtime parameter, and therefore cannot result
   /// in recursively invoking the JSError constructor.
   JSError(Value&& value, std::string message, std::string stack);
+
+  /// Creates a JSError referring to new \c EvalError instance. The error
+  /// message property is set to given \c message.
+  static JSError createEvalError(IRuntime& rt, const std::string& message);
+
+  /// Creates a JSError referring to new \c RangeError instance. The error
+  /// message property is set to given \c message.
+  static JSError createRangeError(IRuntime& rt, const std::string& message);
+
+  /// Creates a JSError referring to new \c ReferenceError instance. The error
+  /// message property is set to given \c message.
+  static JSError createReferenceError(IRuntime& rt, const std::string& message);
+
+  /// Creates a JSError referring to new \c SyntaxError instance. The error
+  /// message property is set to given \c message.
+  static JSError createSyntaxError(IRuntime& rt, const std::string& message);
+
+  /// Creates a JSError referring to new \c TypeError instance. The error
+  /// message property is set to given \c message.
+  static JSError createTypeError(IRuntime& rt, const std::string& message);
+
+  /// Creates a JSError referring to new \c URIError instance. The error
+  /// message property is set to given \c message.
+  static JSError createURIError(IRuntime& rt, const std::string& message);
 
   JSError(const JSError&) = default;
 
