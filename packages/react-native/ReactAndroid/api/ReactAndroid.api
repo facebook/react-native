@@ -2275,6 +2275,7 @@ public final class com/facebook/react/fabric/FabricUIManagerProviderImpl : com/f
 
 public final class com/facebook/react/fabric/mounting/SurfaceMountingManager {
 	public final fun addViewAt (III)V
+	public final fun applyViewSnapshot (ILandroid/graphics/Bitmap;)V
 	public final fun attachRootView (Landroid/view/View;Lcom/facebook/react/uimanager/ThemedReactContext;)V
 	public final fun deleteView (I)V
 	public final fun enqueuePendingEvent (ILjava/lang/String;ZLcom/facebook/react/bridge/WritableMap;I)V

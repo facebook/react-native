@@ -1229,6 +1229,30 @@ void FabricMountingManager::synchronouslyUpdateViewOnUIThread(
   synchronouslyUpdateViewOnUIThreadJNI(javaUIManager_, viewTag, propsMap);
 }
 
+void FabricMountingManager::captureViewSnapshot(Tag tag, SurfaceId surfaceId) {
+  static auto captureViewSnapshotJNI =
+      JFabricUIManager::javaClassStatic()->getMethod<void(jint, jint)>(
+          "captureViewSnapshot");
+  captureViewSnapshotJNI(javaUIManager_, tag, surfaceId);
+}
+
+void FabricMountingManager::setViewSnapshot(
+    Tag sourceTag,
+    Tag targetTag,
+    SurfaceId surfaceId) {
+  static auto setViewSnapshotJNI =
+      JFabricUIManager::javaClassStatic()->getMethod<void(jint, jint, jint)>(
+          "setViewSnapshot");
+  setViewSnapshotJNI(javaUIManager_, sourceTag, targetTag, surfaceId);
+}
+
+void FabricMountingManager::clearPendingSnapshots() {
+  static auto clearPendingSnapshotsJNI =
+      JFabricUIManager::javaClassStatic()->getMethod<void()>(
+          "clearPendingSnapshots");
+  clearPendingSnapshotsJNI(javaUIManager_);
+}
+
 void FabricMountingManager::scheduleReactRevisionMerge(SurfaceId surfaceId) {
   static const auto scheduleReactRevisionMerge =
       JFabricUIManager::javaClassStatic()->getMethod<void(int32_t)>(

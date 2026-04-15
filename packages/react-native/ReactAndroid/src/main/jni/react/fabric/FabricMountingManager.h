@@ -68,6 +68,12 @@ class FabricMountingManager final {
 
   void synchronouslyUpdateViewOnUIThread(Tag viewTag, const folly::dynamic &props);
 
+  void captureViewSnapshot(Tag tag, SurfaceId surfaceId);
+
+  void setViewSnapshot(Tag sourceTag, Tag targetTag, SurfaceId surfaceId);
+
+  void clearPendingSnapshots();
+
   void scheduleReactRevisionMerge(SurfaceId surfaceId);
 
  private:

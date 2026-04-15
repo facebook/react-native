@@ -8,6 +8,7 @@
 package com.facebook.react.fabric.mounting
 
 import android.annotation.SuppressLint
+import android.graphics.Bitmap
 import android.os.SystemClock
 import android.view.View
 import android.view.ViewGroup
@@ -15,6 +16,7 @@ import android.view.ViewParent
 import androidx.annotation.AnyThread
 import androidx.annotation.UiThread
 import androidx.collection.SparseArrayCompat
+import androidx.core.graphics.drawable.toDrawable
 import com.facebook.common.logging.FLog
 import com.facebook.infer.annotation.ThreadConfined
 import com.facebook.react.bridge.GuardedRunnable
@@ -1088,6 +1090,13 @@ internal constructor(
           )
 
   private fun getNullableViewState(reactTag: Int): ViewState? = tagToViewState[reactTag]
+
+  /** Applies a bitmap as the background of the view with the given tag, if it exists. */
+  @UiThread
+  public fun applyViewSnapshot(tag: Int, bitmap: Bitmap) {
+    val view = getNullableViewState(tag)?.view ?: return
+    view.background = bitmap.toDrawable(view.resources)
+  }
 
   public fun printSurfaceState(): Unit {
     FLog.e(TAG, "Views created for surface $surfaceId:")
