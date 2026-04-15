@@ -974,6 +974,42 @@ TEST_P(JSITest, ValueTest) {
   EXPECT_EQ(eval("['zero',1,2,3]").toString(rt).utf8(rt), "zero,1,2,3");
 }
 
+TEST_P(JSITest, IsIntegerTest) {
+  // Non-number values should return false
+  EXPECT_FALSE(Value::undefined().isInteger());
+  EXPECT_FALSE(Value::null().isInteger());
+  EXPECT_FALSE(Value(true).isInteger());
+  EXPECT_FALSE(Value(false).isInteger());
+  EXPECT_FALSE(Value(rt, String::createFromAscii(rt, "42")).isInteger());
+  EXPECT_FALSE(Value(rt, Object(rt)).isInteger());
+
+  // NaN should return false
+  EXPECT_FALSE(Value(std::numeric_limits<double>::quiet_NaN()).isInteger());
+
+  // Infinity should return false
+  EXPECT_FALSE(Value(std::numeric_limits<double>::infinity()).isInteger());
+  EXPECT_FALSE(Value(-std::numeric_limits<double>::infinity()).isInteger());
+
+  // Non-integer numbers should return false
+  EXPECT_FALSE(Value(1.5).isInteger());
+  EXPECT_FALSE(Value(-2.3).isInteger());
+  EXPECT_FALSE(Value(0.1).isInteger());
+
+  // Integer numbers should return true
+  EXPECT_TRUE(Value(0).isInteger());
+  EXPECT_TRUE(Value(0.0).isInteger());
+  EXPECT_TRUE(Value(-0.0).isInteger());
+  EXPECT_TRUE(Value(1).isInteger());
+  EXPECT_TRUE(Value(-1).isInteger());
+  EXPECT_TRUE(Value(42).isInteger());
+  EXPECT_TRUE(Value(1000000).isInteger());
+  EXPECT_TRUE(Value(-999999).isInteger());
+
+  // Large integers that can be exactly represented as doubles
+  EXPECT_TRUE(Value(static_cast<double>(1LL << 52)).isInteger());
+  EXPECT_TRUE(Value(static_cast<double>(-(1LL << 52))).isInteger());
+}
+
 TEST_P(JSITest, EqualsTest) {
   EXPECT_TRUE(Object::strictEquals(rt, rt.global(), rt.global()));
   EXPECT_TRUE(Value::strictEquals(rt, 1, 1));
