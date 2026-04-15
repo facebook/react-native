@@ -7037,6 +7037,8 @@ class facebook::react::Scheduler : public facebook::react::UIManagerDelegate {
   public facebook::react::SchedulerDelegate* getDelegate() const;
   public std::shared_ptr<const facebook::react::ContextContainer> getContextContainer() const;
   public std::shared_ptr<facebook::react::UIManager> getUIManager() const;
+  public virtual void uiManagerDidCaptureViewSnapshot(facebook::react::Tag tag, facebook::react::SurfaceId surfaceId) override;
+  public virtual void uiManagerDidClearPendingSnapshots() override;
   public virtual void uiManagerDidCreateShadowNode(const facebook::react::ShadowNode& shadowNode) override;
   public virtual void uiManagerDidDispatchCommand(const std::shared_ptr<const facebook::react::ShadowNode>& shadowNode, const std::string& commandName, const folly::dynamic& args) override;
   public virtual void uiManagerDidFinishReactCommit(const facebook::react::ShadowTree& shadowTree) override;
@@ -7044,6 +7046,7 @@ class facebook::react::Scheduler : public facebook::react::UIManagerDelegate {
   public virtual void uiManagerDidPromoteReactRevision(const facebook::react::ShadowTree& shadowTree) override;
   public virtual void uiManagerDidSendAccessibilityEvent(const std::shared_ptr<const facebook::react::ShadowNode>& shadowNode, const std::string& eventType) override;
   public virtual void uiManagerDidSetIsJSResponder(const std::shared_ptr<const facebook::react::ShadowNode>& shadowNode, bool isJSResponder, bool blockNativeResponder) override;
+  public virtual void uiManagerDidSetViewSnapshot(facebook::react::Tag sourceTag, facebook::react::Tag targetTag, facebook::react::SurfaceId surfaceId) override;
   public virtual void uiManagerDidStartSurface(const facebook::react::ShadowTree& shadowTree) override;
   public virtual void uiManagerDidUpdateShadowTree(const std::unordered_map<facebook::react::Tag, folly::dynamic>& tagToProps) override;
   public virtual void uiManagerShouldAddEventListener(std::shared_ptr<const facebook::react::EventListener> listener) final;
@@ -7061,11 +7064,14 @@ class facebook::react::Scheduler : public facebook::react::UIManagerDelegate {
 }
 
 class facebook::react::SchedulerDelegate {
+  public virtual void schedulerDidCaptureViewSnapshot(facebook::react::Tag tag, facebook::react::SurfaceId surfaceId) = 0;
+  public virtual void schedulerDidClearPendingSnapshots() = 0;
   public virtual void schedulerDidDispatchCommand(const facebook::react::ShadowView& shadowView, const std::string& commandName, const folly::dynamic& args) = 0;
   public virtual void schedulerDidFinishTransaction(const std::shared_ptr<const facebook::react::MountingCoordinator>& mountingCoordinator) = 0;
   public virtual void schedulerDidRequestPreliminaryViewAllocation(const facebook::react::ShadowNode& shadowNode) = 0;
   public virtual void schedulerDidSendAccessibilityEvent(const facebook::react::ShadowView& shadowView, const std::string& eventType) = 0;
   public virtual void schedulerDidSetIsJSResponder(const facebook::react::ShadowView& shadowView, bool isJSResponder, bool blockNativeResponder) = 0;
+  public virtual void schedulerDidSetViewSnapshot(facebook::react::Tag sourceTag, facebook::react::Tag targetTag, facebook::react::SurfaceId surfaceId) = 0;
   public virtual void schedulerDidUpdateShadowTree(const std::unordered_map<facebook::react::Tag, folly::dynamic>& tagToProps) = 0;
   public virtual void schedulerShouldMergeReactRevision(facebook::react::SurfaceId surfaceId) = 0;
   public virtual void schedulerShouldRenderTransactions(const std::shared_ptr<const facebook::react::MountingCoordinator>& mountingCoordinator) = 0;
@@ -7811,6 +7817,8 @@ class facebook::react::UIManagerCommitHook {
 
 class facebook::react::UIManagerDelegate {
   public using OnSurfaceStartCallback = std::function<void(const facebook::react::ShadowTree& shadowTree)>;
+  public virtual void uiManagerDidCaptureViewSnapshot(facebook::react::Tag tag, facebook::react::SurfaceId surfaceId) = 0;
+  public virtual void uiManagerDidClearPendingSnapshots() = 0;
   public virtual void uiManagerDidCreateShadowNode(const facebook::react::ShadowNode& shadowNode) = 0;
   public virtual void uiManagerDidDispatchCommand(const std::shared_ptr<const facebook::react::ShadowNode>& shadowNode, const std::string& commandName, const folly::dynamic& args) = 0;
   public virtual void uiManagerDidFinishReactCommit(const facebook::react::ShadowTree& shadowTree) = 0;
@@ -7818,6 +7826,7 @@ class facebook::react::UIManagerDelegate {
   public virtual void uiManagerDidPromoteReactRevision(const facebook::react::ShadowTree& shadowTree) = 0;
   public virtual void uiManagerDidSendAccessibilityEvent(const std::shared_ptr<const facebook::react::ShadowNode>& shadowNode, const std::string& eventType) = 0;
   public virtual void uiManagerDidSetIsJSResponder(const std::shared_ptr<const facebook::react::ShadowNode>& shadowNode, bool isJSResponder, bool blockNativeResponder) = 0;
+  public virtual void uiManagerDidSetViewSnapshot(facebook::react::Tag sourceTag, facebook::react::Tag targetTag, facebook::react::SurfaceId surfaceId) = 0;
   public virtual void uiManagerDidStartSurface(const facebook::react::ShadowTree& shadowTree) = 0;
   public virtual void uiManagerDidUpdateShadowTree(const std::unordered_map<facebook::react::Tag, folly::dynamic>& tagToProps) = 0;
   public virtual void uiManagerShouldAddEventListener(std::shared_ptr<const facebook::react::EventListener> listener) = 0;
@@ -7845,8 +7854,10 @@ class facebook::react::UIManagerNativeAnimatedDelegateImpl : public facebook::re
 
 class facebook::react::UIManagerViewTransitionDelegate {
   public virtual std::optional<facebook::react::UIManagerViewTransitionDelegate::ViewTransitionInstance> getViewTransitionInstance(const std::string& name, const std::string& pseudo);
+  public virtual std::shared_ptr<const facebook::react::ShadowNode> findPseudoElementShadowNodeByTag(facebook::react::Tag tag) const;
   public virtual void applyViewTransitionName(const facebook::react::ShadowNode& shadowNode, const std::string& name, const std::string& className);
   public virtual void cancelViewTransitionName(const facebook::react::ShadowNode& shadowNode, const std::string& name);
+  public virtual void createViewTransitionInstance(const std::string& name, facebook::react::Tag pseudoElementTag);
   public virtual void restoreViewTransitionName(const facebook::react::ShadowNode& shadowNode);
   public virtual void startViewTransition(std::function<void()> mutationCallback, std::function<void()> onReadyCallback, std::function<void()> onCompleteCallback);
   public virtual void startViewTransitionEnd();
@@ -7916,10 +7927,15 @@ class facebook::react::ViewShadowNodeProps : public facebook::react::HostPlatfor
   public ViewShadowNodeProps(const facebook::react::PropsParserContext& context, const facebook::react::ViewShadowNodeProps& sourceProps, const facebook::react::RawProps& rawProps);
 }
 
-class facebook::react::ViewTransitionModule : public facebook::react::UIManagerViewTransitionDelegate {
+class facebook::react::ViewTransitionModule : public facebook::react::UIManagerViewTransitionDelegate, public facebook::react::UIManagerCommitHook {
+  public virtual facebook::react::RootShadowNode::Unshared shadowTreeWillCommit(const facebook::react::ShadowTree& shadowTree, const facebook::react::RootShadowNode::Shared& oldRootShadowNode, const facebook::react::RootShadowNode::Unshared& newRootShadowNode, const facebook::react::ShadowTreeCommitOptions& commitOptions) noexcept override;
   public virtual std::optional<facebook::react::UIManagerViewTransitionDelegate::ViewTransitionInstance> getViewTransitionInstance(const std::string& name, const std::string& pseudo) override;
+  public virtual std::shared_ptr<const facebook::react::ShadowNode> findPseudoElementShadowNodeByTag(facebook::react::Tag tag) const override;
   public virtual void applyViewTransitionName(const facebook::react::ShadowNode& shadowNode, const std::string& name, const std::string& className) override;
   public virtual void cancelViewTransitionName(const facebook::react::ShadowNode& shadowNode, const std::string& name) override;
+  public virtual void commitHookWasRegistered(const facebook::react::UIManager& uiManager) noexcept override;
+  public virtual void commitHookWasUnregistered(const facebook::react::UIManager& uiManager) noexcept override;
+  public virtual void createViewTransitionInstance(const std::string& name, facebook::react::Tag pseudoElementTag) override;
   public virtual void restoreViewTransitionName(const facebook::react::ShadowNode& shadowNode) override;
   public virtual void startViewTransition(std::function<void()> mutationCallback, std::function<void()> onReadyCallback, std::function<void()> onCompleteCallback) override;
   public virtual void startViewTransitionEnd() override;

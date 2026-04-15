@@ -66,6 +66,11 @@ class SchedulerDelegate {
 
   virtual void schedulerDidUpdateShadowTree(const std::unordered_map<Tag, folly::dynamic> &tagToProps) = 0;
 
+  // View transition bitmap snapshot capture and application.
+  virtual void schedulerDidCaptureViewSnapshot(Tag tag, SurfaceId surfaceId) = 0;
+  virtual void schedulerDidSetViewSnapshot(Tag sourceTag, Tag targetTag, SurfaceId surfaceId) = 0;
+  virtual void schedulerDidClearPendingSnapshots() = 0;
+
   virtual ~SchedulerDelegate() noexcept = default;
 };
 
