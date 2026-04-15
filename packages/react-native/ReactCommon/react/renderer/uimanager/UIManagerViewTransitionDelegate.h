@@ -41,6 +41,8 @@ class UIManagerViewTransitionDelegate {
   {
   }
 
+  virtual void startViewTransitionReadyFinished() {}
+
   virtual void startViewTransitionEnd() {}
 
   struct ViewTransitionInstance {

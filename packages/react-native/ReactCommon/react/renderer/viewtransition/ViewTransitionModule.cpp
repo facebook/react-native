@@ -353,7 +353,7 @@ void ViewTransitionModule::startViewTransition(
   }
 
   applySnapshotsOnPseudoElementShadowNodes();
-
+  transitionReadyFinished_ = false;
   if (onReadyCallback) {
     onReadyCallback();
   }
@@ -364,6 +364,10 @@ void ViewTransitionModule::startViewTransition(
   if (onCompleteCallback) {
     onCompleteCallback();
   }
+}
+
+void ViewTransitionModule::startViewTransitionReadyFinished() {
+  transitionReadyFinished_ = true;
 }
 
 void ViewTransitionModule::suspendOnActiveViewTransition() {
