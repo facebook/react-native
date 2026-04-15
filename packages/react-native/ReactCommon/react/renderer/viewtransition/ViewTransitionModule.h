@@ -53,6 +53,8 @@ class ViewTransitionModule : public UIManagerViewTransitionDelegate,
       std::function<void()> onReadyCallback,
       std::function<void()> onCompleteCallback) override;
 
+  void startViewTransitionReadyFinished() override;
+
   void startViewTransitionEnd() override;
 
   std::optional<ViewTransitionInstance> getViewTransitionInstance(const std::string &name, const std::string &pseudo)
@@ -127,6 +129,8 @@ class ViewTransitionModule : public UIManagerViewTransitionDelegate,
   UIManager *uiManager_{nullptr};
 
   bool transitionStarted_{false};
+
+  bool transitionReadyFinished_{false};
 
   // When suspendNextTransition_ is true and a transition is active, the next
   // startViewTransition calls are queued instead of running immediately.
