@@ -67,6 +67,10 @@ class UIManagerViewTransitionDelegate {
   {
     return nullptr;
   }
+
+  // Called by the reconciler to signal that the next view transition should
+  // be suspended until the currently active one finishes.
+  virtual void suspendOnActiveViewTransition() {}
 };
 
 } // namespace facebook::react

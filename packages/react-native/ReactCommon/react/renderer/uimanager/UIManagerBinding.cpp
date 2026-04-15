@@ -1074,6 +1074,24 @@ jsi::Value UIManagerBinding::get(
         });
   }
 
+  if (methodName == "suspendOnActiveViewTransition") {
+    return jsi::Function::createFromHostFunction(
+        runtime,
+        name,
+        0,
+        [uiManager](
+            jsi::Runtime& runtime,
+            const jsi::Value& /*thisValue*/,
+            const jsi::Value* /*arguments*/,
+            size_t /*count*/) -> jsi::Value {
+          auto* viewTransitionDelegate = uiManager->getViewTransitionDelegate();
+          if (viewTransitionDelegate != nullptr) {
+            viewTransitionDelegate->suspendOnActiveViewTransition();
+          }
+          return jsi::Value::undefined();
+        });
+  }
+
   if (methodName == "startViewTransition") {
     auto paramCount = 1;
     return jsi::Function::createFromHostFunction(

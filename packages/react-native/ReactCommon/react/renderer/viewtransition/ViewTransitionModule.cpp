@@ -328,6 +328,21 @@ void ViewTransitionModule::startViewTransition(
     std::function<void()> mutationCallback,
     std::function<void()> onReadyCallback,
     std::function<void()> onCompleteCallback) {
+  // If the reconciler signalled suspension and a transition is still active,
+  // queue this transition to run after the current one finishes.
+  // Only queue if the previous transition is still running; if it already
+  // finished, the flag is stale and we should run normally.
+  if (suspendNextTransition_ && transitionStarted_) {
+    suspendNextTransition_ = false;
+    pendingTransitions_.push(
+        PendingTransition{
+            std::move(mutationCallback),
+            std::move(onReadyCallback),
+            std::move(onCompleteCallback)});
+    return;
+  }
+  suspendNextTransition_ = false;
+
   // Mark transition as started
   transitionStarted_ = true;
 
@@ -351,6 +366,15 @@ void ViewTransitionModule::startViewTransition(
   }
 }
 
+void ViewTransitionModule::suspendOnActiveViewTransition() {
+  // Signal that the next transition should be suspended until the current
+  // one finishes. The actual queueing happens in startViewTransition.
+  if (transitionStarted_) {
+    // if there's no active transition, suspendOnActiveViewTransition is no-op
+    suspendNextTransition_ = true;
+  }
+}
+
 void ViewTransitionModule::startViewTransitionEnd() {
   for (const auto& [tag, names] : nameRegistry_) {
     for (const auto& name : names) {
@@ -370,6 +394,18 @@ void ViewTransitionModule::startViewTransitionEnd() {
   }
 
   transitionStarted_ = false;
+
+  if (!pendingTransitions_.empty()) {
+    auto pendingTransition = pendingTransitions_.front();
+    pendingTransitions_.pop();
+    startViewTransition(
+        std::move(pendingTransition.mutationCallback),
+        std::move(pendingTransition.onReadyCallback),
+        std::move(pendingTransition.onCompleteCallback));
+    // when this transition finishes, it'll call startViewTransitionEnd
+    // during its complete callback and pendingTransitions_ will be processed
+    // again
+  }
 }
 
 std::optional<UIManagerViewTransitionDelegate::ViewTransitionInstance>

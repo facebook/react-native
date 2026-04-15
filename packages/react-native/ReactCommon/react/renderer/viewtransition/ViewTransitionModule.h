@@ -7,6 +7,7 @@
 
 #pragma once
 
+#include <queue>
 #include <unordered_set>
 
 #include <react/renderer/core/LayoutMetrics.h>
@@ -78,6 +79,8 @@ class ViewTransitionModule : public UIManagerViewTransitionDelegate,
 
   std::shared_ptr<const ShadowNode> findPseudoElementShadowNodeByTag(Tag tag) const override;
 
+  void suspendOnActiveViewTransition() override;
+
   // Animation state structure for storing minimal view data
   struct AnimationKeyFrameViewLayoutMetrics {
     Point originFromRoot;
@@ -124,6 +127,17 @@ class ViewTransitionModule : public UIManagerViewTransitionDelegate,
   UIManager *uiManager_{nullptr};
 
   bool transitionStarted_{false};
+
+  // When suspendNextTransition_ is true and a transition is active, the next
+  // startViewTransition calls are queued instead of running immediately.
+  bool suspendNextTransition_{false};
+
+  struct PendingTransition {
+    std::function<void()> mutationCallback;
+    std::function<void()> onReadyCallback;
+    std::function<void()> onCompleteCallback;
+  };
+  std::queue<PendingTransition> pendingTransitions_{};
 };
 
 } // namespace facebook::react
