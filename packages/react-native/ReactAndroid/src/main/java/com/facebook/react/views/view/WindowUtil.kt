@@ -7,7 +7,7 @@
 
 package com.facebook.react.views.view
 
-import android.content.Context
+import android.app.Activity
 import android.graphics.Color
 import android.os.Build
 import android.view.Window
@@ -48,18 +48,14 @@ public fun setEdgeToEdgeFeatureFlagOn() {
   isEdgeToEdgeFeatureFlagOn = true
 }
 
-public fun initEdgeToEdge(context: Context, flag: Boolean) {
-  if (flag) {
-    setEdgeToEdgeFeatureFlagOn()
-  }
-
+internal fun initEdgeToEdge(activity: Activity) {
   isDeviceRunningEdgeToEdge =
       when {
-        !AndroidVersion.isAtLeastTargetSdk35(context) -> flag
+        !AndroidVersion.isAtLeastTargetSdk35(activity) -> isEdgeToEdgeFeatureFlagOn
         Build.VERSION.SDK_INT >= AndroidVersion.VERSION_CODE_BAKLAVA -> true
         else -> {
           val attributes = intArrayOf(AndroidVersion.ATTR_WINDOW_OPT_OUT_EDGE_TO_EDGE_ENFORCEMENT)
-          val typedArray = context.theme.obtainStyledAttributes(attributes)
+          val typedArray = activity.theme.obtainStyledAttributes(attributes)
 
           try {
             !typedArray.getBoolean(0, false)
@@ -68,6 +64,10 @@ public fun initEdgeToEdge(context: Context, flag: Boolean) {
           }
         }
       }
+
+  if (isDeviceRunningEdgeToEdge) {
+    activity.window.enableEdgeToEdge()
+  }
 }
 
 @Suppress("DEPRECATION")

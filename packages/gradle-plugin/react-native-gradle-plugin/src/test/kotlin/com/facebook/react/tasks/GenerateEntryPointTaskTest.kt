@@ -80,7 +80,9 @@ class GenerateEntryPointTaskTest {
                   DefaultNewArchitectureEntryPoint.load();
                 }
                 
-                WindowUtilKt.initEdgeToEdge(context, com.facebook.react.BuildConfig.IS_EDGE_TO_EDGE_ENABLED);
+                if (com.facebook.react.BuildConfig.IS_EDGE_TO_EDGE_ENABLED) {
+                  WindowUtilKt.setEdgeToEdgeFeatureFlagOn();
+                }
               }
             }
             """

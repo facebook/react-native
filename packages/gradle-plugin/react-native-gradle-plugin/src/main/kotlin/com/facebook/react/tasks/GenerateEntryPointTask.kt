@@ -97,7 +97,9 @@ abstract class GenerateEntryPointTask : DefaultTask() {
               DefaultNewArchitectureEntryPoint.load();
             }
             
-            WindowUtilKt.initEdgeToEdge(context, {{packageName}}.BuildConfig.IS_EDGE_TO_EDGE_ENABLED);
+            if ({{packageName}}.BuildConfig.IS_EDGE_TO_EDGE_ENABLED) {
+              WindowUtilKt.setEdgeToEdgeFeatureFlagOn();
+            }
           }
         }
         """
