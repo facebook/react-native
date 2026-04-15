@@ -23,6 +23,8 @@ class UIManagerViewTransitionDelegate {
   {
   }
 
+  virtual void createViewTransitionInstance(const std::string & /*name*/, Tag /*pseudoElementTag*/) {}
+
   virtual void cancelViewTransitionName(const ShadowNode &shadowNode, const std::string &name) {}
 
   virtual void restoreViewTransitionName(const ShadowNode &shadowNode) {}
