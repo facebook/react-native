@@ -283,6 +283,9 @@ void Scheduler::uiManagerDidDispatchCommand(
          shadowView = std::move(shadowView),
          commandName,
          args]() {
+          if (delegate == nullptr) {
+            LOG(WARNING) << "[Scheduler] uiManagerDidDispatchCommand componentName=" << shadowView.componentName << " command=" << commandName;
+          }
           delegate->schedulerDidDispatchCommand(shadowView, commandName, args);
         });
   }
