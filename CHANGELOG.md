@@ -1,5 +1,110 @@
 # Changelog
 
+## v0.83.6
+
+### Breaking
+
+
+
+#### Android specific
+
+
+
+#### iOS specific
+
+
+
+### Added
+
+
+
+#### Android specific
+
+
+
+#### iOS specific
+
+
+
+### Changed
+
+
+
+#### Android specific
+
+
+
+#### iOS specific
+
+
+
+### Deprecated
+
+
+
+#### Android specific
+
+
+
+#### iOS specific
+
+
+
+### Removed
+
+
+
+#### Android specific
+
+
+
+#### iOS specific
+
+
+
+### Fixed
+
+- Provide symbol fallbacks for `inspector-modern/chrome/Registration.h` when `HERMES_V1_ENABLED` is set ([efc4cf4ea9](https://github.com/facebook/react-native/commit/efc4cf4ea963894ef6c5ed57bab16e46c4d6e5ca) by [@huntie](https://github.com/huntie))
+
+#### Android specific
+
+
+
+#### iOS specific
+
+- Fix "Loading from Metro..." banner getting stuck after reloads in quick succession. ([e122c24c27](https://github.com/facebook/react-native/commit/e122c24c273f5fb6e0a2d6b1c961d75ac9bc90b7) by [@alanjhughes](https://github.com/alanjhughes))
+
+### Security
+
+
+
+#### Android specific
+
+
+
+#### iOS specific
+
+
+
+### Unknown
+
+- Release 0.83.6 ([1a973f4abc](https://github.com/facebook/react-native/commit/1a973f4abc15368ab408a8d81d244a80b5259879) by [@react-native-bot](https://github.com/react-native-bot))
+- Bump Podfile.lock ([5aee11b923](https://github.com/facebook/react-native/commit/5aee11b923cdd60196c87dd7c3e41ff37213ba36) by [@react-native-bot](https://github.com/react-native-bot))
+- Release 0.83.5 ([9e212543c2](https://github.com/facebook/react-native/commit/9e212543c2180c6e1b4267a7e3412cb8f60a4362) by [@react-native-bot](https://github.com/react-native-bot))
+
+#### Android Unknown
+
+
+
+#### iOS Unknown
+
+
+
+#### Failed to parse
+
+
+
+
 ## v0.83.5
 
 ### Fixed
