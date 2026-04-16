@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<1ec2592998e830300fc777070dfdc49d>>
+ * @generated SignedSource<<d1f406d9418791758ce4532e16a22f73>>
  * @flow strict
  * @noformat
  */
@@ -33,6 +33,7 @@ export type ReactNativeFeatureFlagsJsOnly = $ReadOnly<{
   animatedShouldUseSingleOp: Getter<boolean>,
   deferFlatListFocusChangeRenderUpdate: Getter<boolean>,
   disableMaintainVisibleContentPosition: Getter<boolean>,
+  enableNativeEventTargetEventDispatching: Getter<boolean>,
   externalElementInspectionEnabled: Getter<boolean>,
   fixVirtualizeListCollapseWindowSize: Getter<boolean>,
   isLayoutAnimationEnabled: Getter<boolean>,
@@ -161,6 +162,11 @@ export const deferFlatListFocusChangeRenderUpdate: Getter<boolean> = createJavaS
  * Disable prop maintainVisibleContentPosition in ScrollView
  */
 export const disableMaintainVisibleContentPosition: Getter<boolean> = createJavaScriptFlagGetter('disableMaintainVisibleContentPosition', false);
+
+/**
+ * When enabled, the React Native renderer dispatches events through the W3C EventTarget API (addEventListener/dispatchEvent) instead of the legacy plugin-based system.
+ */
+export const enableNativeEventTargetEventDispatching: Getter<boolean> = createJavaScriptFlagGetter('enableNativeEventTargetEventDispatching', false);
 
 /**
  * Enable the external inspection API for DevTools to communicate with the Inspector overlay.
