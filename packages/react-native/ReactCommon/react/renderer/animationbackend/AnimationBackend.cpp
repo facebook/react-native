@@ -24,10 +24,17 @@ static inline Props::Shared cloneProps(
       shadowNode.getSurfaceId(), *shadowNode.getContextContainer()};
   Props::Shared newProps;
   if (animatedProps.rawProps) {
-    newProps = shadowNode.getComponentDescriptor().cloneProps(
-        propsParserContext,
-        shadowNode.getProps(),
-        std::move(*animatedProps.rawProps));
+    if (ReactNativeFeatureFlags::enableFabricCommitBranching()) {
+      newProps = shadowNode.getComponentDescriptor().cloneProps(
+          propsParserContext,
+          shadowNode.getProps(),
+          std::move(*animatedProps.rawProps));
+    } else {
+      newProps = shadowNode.getComponentDescriptor().cloneProps(
+          propsParserContext,
+          shadowNode.getProps(),
+          RawProps(*animatedProps.rawProps));
+    }
   } else {
     newProps = shadowNode.getComponentDescriptor().cloneProps(
         propsParserContext, shadowNode.getProps(), {});
