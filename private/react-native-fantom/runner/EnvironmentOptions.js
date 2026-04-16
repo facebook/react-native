@@ -107,6 +107,14 @@ export function validateEnvironmentVariables(): void {
     }
   }
 
+  if (isCI && debugCpp) {
+    throw new Error('Cannot run Fantom with C++ debugging on CI');
+  }
+
+  if (isCI && profileCpp) {
+    throw new Error('Cannot run Fantom with C++ profiling on CI');
+  }
+
   // Enabling memory instrumentation is only necessary when taking JS heap
   // snapshots in optimized builds (where it is disabled by default).
   // This isn't supported in CI or in OSS because that would require adding
