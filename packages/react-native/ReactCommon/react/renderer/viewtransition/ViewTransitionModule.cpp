@@ -455,7 +455,7 @@ ViewTransitionModule::getViewTransitionInstance(
       auto pseudoElementIt = oldPseudoElementNodes_.find(name);
       auto nativeTag = pseudoElementIt != oldPseudoElementNodes_.end()
           ? pseudoElementIt->second->getTag()
-          : view.tag;
+          : -1;
       return ViewTransitionInstance{
           .x = view.layoutMetrics.originFromRoot.x,
           .y = view.layoutMetrics.originFromRoot.y,
