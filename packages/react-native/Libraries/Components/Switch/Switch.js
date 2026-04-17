@@ -76,6 +76,20 @@ type SwitchPropsBase = {
   thumbColor?: ?ColorValue,
 
   /**
+   * Android only. Thumb color when the switch is off. Overrides `thumbColor`
+   * for the unchecked state.
+   * @platform android
+   */
+  thumbColorForFalse?: ?ColorValue,
+
+  /**
+   * Android only. Thumb color when the switch is on. Overrides `thumbColor`
+   * for the checked state.
+   * @platform android
+   */
+  thumbColorForTrue?: ?ColorValue,
+
+  /**
       Custom colors for the switch track.
 
       _iOS_: When the switch value is false, the track shrinks into the border. If you want to change the
@@ -93,6 +107,21 @@ type SwitchPropsBase = {
       disabled (and the switch is translucent).
      */
   ios_backgroundColor?: ?ColorValue,
+
+  /**
+   * Android only. Drawable resource name(s) to display as an icon inside the
+   * thumb. Accepts a `{false, true}` object (like `trackColor`) so each state
+   * can have a different icon. Omit a key to show no icon for that state.
+   * Requires Material Design 3 (MaterialSwitch).
+   * @platform android
+   */
+  thumbIcon?: ?Readonly<{false?: ?string, true?: ?string}>,
+
+  /**
+   * Android only. Color tint applied to the thumb icon.
+   * @platform android
+   */
+  thumbIconTint?: ?ColorValue,
 
   /**
       Invoked when the user tries to change the value of the switch. Receives
@@ -181,6 +210,10 @@ const Switch: component(
     onValueChange,
     style,
     thumbColor,
+    thumbColorForFalse,
+    thumbColorForTrue,
+    thumbIcon,
+    thumbIconTint,
     trackColor,
     value,
     ...restProps
@@ -244,6 +277,11 @@ const Switch: component(
       on: value === true,
       style,
       thumbTintColor: thumbColor,
+      thumbColorForFalse,
+      thumbColorForTrue,
+      thumbIconForFalse: thumbIcon?.false,
+      thumbIconForTrue: thumbIcon?.true,
+      thumbIconTint,
       trackColorForFalse: trackColorForFalse,
       trackColorForTrue: trackColorForTrue,
       trackTintColor: value === true ? trackColorForTrue : trackColorForFalse,

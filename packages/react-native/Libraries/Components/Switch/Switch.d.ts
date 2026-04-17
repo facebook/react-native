@@ -55,6 +55,20 @@ export interface SwitchProps extends SwitchPropsIOS {
   thumbColor?: ColorValue | undefined;
 
   /**
+   * Android only. Thumb color when the switch is off. Overrides `thumbColor`
+   * for the unchecked state.
+   * @platform android
+   */
+  thumbColorForFalse?: ColorValue | undefined;
+
+  /**
+   * Android only. Thumb color when the switch is on. Overrides `thumbColor`
+   * for the checked state.
+   * @platform android
+   */
+  thumbColorForTrue?: ColorValue | undefined;
+
+  /**
    * Custom colors for the switch track
    *
    * Color when false and color when true
@@ -101,6 +115,21 @@ export interface SwitchProps extends SwitchPropsIOS {
    * Can be seen when the switch value is false or when the switch is disabled.
    */
   ios_backgroundColor?: ColorValue | undefined;
+
+  /**
+   * Android only. Drawable resource name(s) to display as an icon inside the
+   * thumb. Accepts a `{false, true}` object (like `trackColor`) so each state
+   * can have a different icon. Omit a key to show no icon for that state.
+   * Requires Material Design 3 (MaterialSwitch).
+   * @platform android
+   */
+  thumbIcon?: {false?: string | null; true?: string | null} | null | undefined;
+
+  /**
+   * Android only. Color tint applied to the thumb icon.
+   * @platform android
+   */
+  thumbIconTint?: ColorValue | undefined;
 
   style?: StyleProp<ViewStyle> | undefined;
 }

@@ -692,6 +692,7 @@ dependencies {
   api(libs.androidx.appcompat)
   api(libs.androidx.appcompat.resources)
   api(libs.androidx.autofill)
+  api(libs.material)
   api(libs.androidx.swiperefreshlayout)
   api(libs.androidx.tracing)
   api(libs.androidx.window)

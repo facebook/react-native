@@ -33,12 +33,17 @@ type AndroidSwitchNativeProps = Readonly<{
   disabled?: WithDefault<boolean, false>,
   enabled?: WithDefault<boolean, true>,
   thumbColor?: ?ColorValue,
+  thumbColorForFalse?: ?ColorValue,
+  thumbColorForTrue?: ?ColorValue,
   trackColorForFalse?: ?ColorValue,
   trackColorForTrue?: ?ColorValue,
   value?: WithDefault<boolean, false>,
   on?: WithDefault<boolean, false>,
   thumbTintColor?: ?ColorValue,
   trackTintColor?: ?ColorValue,
+  thumbIconForFalse?: ?string,
+  thumbIconForTrue?: ?string,
+  thumbIconTint?: ?ColorValue,
 
   // Events
   onChange?: BubblingEventHandler<AndroidSwitchChangeEvent>,

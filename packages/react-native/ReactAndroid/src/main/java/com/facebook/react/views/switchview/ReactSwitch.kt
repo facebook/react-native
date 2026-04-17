@@ -9,29 +9,36 @@ package com.facebook.react.views.switchview
 
 import android.content.Context
 import android.content.res.ColorStateList
-import android.graphics.PorterDuff
-import android.graphics.PorterDuffColorFilter
 import android.graphics.drawable.ColorDrawable
 import android.graphics.drawable.Drawable
 import android.graphics.drawable.RippleDrawable
-import androidx.appcompat.widget.SwitchCompat
+import android.graphics.drawable.StateListDrawable
+import android.view.ContextThemeWrapper
+import com.google.android.material.R
+import com.google.android.material.color.MaterialColors
+import com.google.android.material.materialswitch.MaterialSwitch
 
 /**
  * Switch that has its value controlled by JS. Whenever the value of the switch changes, we do not
  * allow any other changes to that switch until JS sets a value explicitly. This stops the Switch
  * from changing its value multiple times, when those changes have not been processed by JS first.
  */
-internal class ReactSwitch(context: Context) : SwitchCompat(context) {
+internal class ReactSwitch(context: Context) : MaterialSwitch(
+    ContextThemeWrapper(context, R.style.Theme_Material3_DayNight)
+) {
 
   private var allowChange = true
-  private var trackColorForFalse: Int? = null
+  private var thumbColorForTrue: Int? = null
+  private var thumbColorForFalse: Int? = null
   private var trackColorForTrue: Int? = null
+  private var trackColorForFalse: Int? = null
+  private var thumbIconDrawableForTrue: Drawable? = null
+  private var thumbIconDrawableForFalse: Drawable? = null
 
   override fun setChecked(checked: Boolean) {
     if (allowChange && isChecked != checked) {
       allowChange = false
       super.setChecked(checked)
-      setTrackColor(checked)
     } else {
       // Even if mAllowChange is set to false or the checked value hasn't changed, we still must
       // call the super method, since it will make sure the thumb is moved back to the correct edge.
@@ -45,64 +52,89 @@ internal class ReactSwitch(context: Context) : SwitchCompat(context) {
         RippleDrawable(createRippleDrawableColorStateList(color), ColorDrawable(color), null)
   }
 
-  fun setColor(drawable: Drawable, color: Int?): Unit {
-    if (color == null) {
-      drawable.clearColorFilter()
-    } else {
-      drawable.colorFilter = PorterDuffColorFilter(color, PorterDuff.Mode.MULTIPLY)
-    }
+  fun setThumbColor(color: Int?) = setThumbColorForTrue(color)
+
+  fun setThumbColorForTrue(color: Int?) {
+    thumbColorForTrue = color
+    applyThumbTintList()
   }
 
-  fun setTrackColor(color: Int?): Unit {
-    setColor(super.getTrackDrawable(), color)
+  fun setThumbColorForFalse(color: Int?) {
+    thumbColorForFalse = color
+    applyThumbTintList()
   }
 
-  fun setThumbColor(color: Int?): Unit {
-    setColor(super.getThumbDrawable(), color)
-
-    // Set the ripple color if background is instance of RippleDrawable
-    if (color != null && super.getBackground() is RippleDrawable) {
-      val customColorState = createRippleDrawableColorStateList(color)
-      (super.getBackground() as RippleDrawable).setColor(customColorState)
-    }
-  }
-
-  fun setOn(on: Boolean): Unit {
+  fun setOn(on: Boolean) {
     // If the switch has a different value than the value sent by JS, we must change it.
     if (isChecked != on) {
       super.setChecked(on)
-      setTrackColor(on)
     }
     allowChange = true
   }
 
-  fun setTrackColorForTrue(color: Int?): Unit {
-    if (color == trackColorForTrue) {
-      return
-    }
+  fun setTrackColorForTrue(color: Int?) {
     trackColorForTrue = color
-    if (isChecked) {
-      setTrackColor(trackColorForTrue)
-    }
+    applyTrackTintList()
   }
 
-  fun setTrackColorForFalse(color: Int?): Unit {
-    if (color == trackColorForFalse) {
+  fun setTrackColorForFalse(color: Int?) {
+    trackColorForFalse = color
+    applyTrackTintList()
+  }
+
+  fun setThumbIconForFalse(drawable: Drawable?) {
+    thumbIconDrawableForFalse = drawable
+    applyThumbIconDrawable()
+  }
+
+  fun setThumbIconForTrue(drawable: Drawable?) {
+    thumbIconDrawableForTrue = drawable
+    applyThumbIconDrawable()
+  }
+
+  private fun applyThumbIconDrawable() {
+    if (thumbIconDrawableForTrue == null && thumbIconDrawableForFalse == null) {
+      setThumbIconDrawable(null)
       return
     }
-    trackColorForFalse = color
-    if (!isChecked) {
-      setTrackColor(trackColorForFalse)
+    val stateList = StateListDrawable()
+    thumbIconDrawableForTrue?.let {
+      stateList.addState(intArrayOf(android.R.attr.state_checked), it)
     }
+    thumbIconDrawableForFalse?.let {
+      stateList.addState(intArrayOf(-android.R.attr.state_checked), it)
+    }
+    setThumbIconDrawable(stateList)
   }
 
-  private fun setTrackColor(checked: Boolean) {
-    if (trackColorForTrue != null || trackColorForFalse != null) {
-      // Update the track color to reflect the new value. We only want to do this if these
-      // props were actually set from JS; otherwise we'll just reset the color to the default.
-      val currentTrackColor = if (checked) trackColorForTrue else trackColorForFalse
-      setTrackColor(currentTrackColor)
+  private fun applyThumbTintList() {
+    if (thumbColorForTrue == null && thumbColorForFalse == null) {
+      setThumbTintList(null)
+      return
     }
+    setThumbTintList(
+        ColorStateList(
+            arrayOf(
+                intArrayOf(android.R.attr.state_checked),
+                intArrayOf(-android.R.attr.state_checked)),
+            intArrayOf(
+                thumbColorForTrue ?: MaterialColors.getColor(this, R.attr.colorOnPrimary),
+                thumbColorForFalse ?: MaterialColors.getColor(this, R.attr.colorOutline))))
+  }
+
+  private fun applyTrackTintList() {
+    if (trackColorForTrue == null && trackColorForFalse == null) {
+      setTrackTintList(null)
+      return
+    }
+    setTrackTintList(
+        ColorStateList(
+            arrayOf(
+                intArrayOf(android.R.attr.state_checked),
+                intArrayOf(-android.R.attr.state_checked)),
+            intArrayOf(
+                trackColorForTrue ?: MaterialColors.getColor(this, R.attr.colorPrimary),
+                trackColorForFalse ?: MaterialColors.getColor(this, R.attr.colorSurfaceContainerHighest))))
   }
 
   private fun createRippleDrawableColorStateList(color: Int): ColorStateList =
