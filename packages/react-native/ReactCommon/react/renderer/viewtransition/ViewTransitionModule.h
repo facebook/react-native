@@ -124,7 +124,8 @@ class ViewTransitionModule : public UIManagerViewTransitionDelegate,
   // pseudo-element nodes created for entering nodes, to be copied into
   // oldPseudoElementNodes_ during the next applyViewTransitionName call.
   // Mutable because pullTransaction (const) needs to erase unmounted entries.
-  mutable std::unordered_map<std::string, InactivePseudoElement> oldPseudoElementNodesRepository_{};
+  mutable std::unordered_map<std::string, std::unordered_map<Tag /* sourceTag */, InactivePseudoElement>>
+      oldPseudoElementNodesRepository_{};
 
   LayoutMetrics captureLayoutMetricsFromRoot(const ShadowNode &shadowNode);
 

@@ -7,6 +7,7 @@
 
 #include "ViewTransitionModule.h"
 
+#include <glog/logging.h>
 #include <react/renderer/components/root/RootShadowNode.h>
 #include <react/renderer/core/LayoutableShadowNode.h>
 #include <react/renderer/core/RawProps.h>
@@ -93,7 +94,20 @@ void ViewTransitionModule::applyViewTransitionName(
 
     if (auto it = oldPseudoElementNodesRepository_.find(name);
         it != oldPseudoElementNodesRepository_.end()) {
-      oldPseudoElementNodes_[name] = it->second.node;
+      // Find the pseudo element created from this specific source tag
+      auto& pseudoElementsBySourceTag = it->second;
+      auto innerIt = pseudoElementsBySourceTag.find(tag);
+      if (innerIt != pseudoElementsBySourceTag.end()) {
+        oldPseudoElementNodes_[name] = innerIt->second.node;
+      } else if (!pseudoElementsBySourceTag.empty()) {
+        // Fallback to first available entry for this name
+        oldPseudoElementNodes_[name] =
+            pseudoElementsBySourceTag.begin()->second.node;
+      }
+    } else {
+      LOG(WARNING)
+          << "applyViewTransitionName: old pseudo element shadow node doesn't exist for name "
+          << name;
     }
 
   } else {
@@ -158,7 +172,7 @@ void ViewTransitionModule::createViewTransitionInstance(
       if (!forNextTransition) {
         oldPseudoElementNodes_[name] = pseudoElementNode;
       }
-      oldPseudoElementNodesRepository_[name] = InactivePseudoElement{
+      oldPseudoElementNodesRepository_[name][view.tag] = InactivePseudoElement{
           .node = pseudoElementNode, .sourceTag = view.tag};
     }
   }
@@ -222,7 +236,12 @@ std::optional<MountingTransaction> ViewTransitionModule::pullTransaction(
       auto tag = mutation.oldChildShadowView.tag;
       for (auto it = oldPseudoElementNodesRepository_.begin();
            it != oldPseudoElementNodesRepository_.end();) {
-        if (it->second.sourceTag == tag) {
+        auto& pseudoElementsBySourceTag = it->second;
+        if (auto innerIt = pseudoElementsBySourceTag.find(tag);
+            innerIt != pseudoElementsBySourceTag.end()) {
+          pseudoElementsBySourceTag.erase(innerIt);
+        }
+        if (pseudoElementsBySourceTag.empty()) {
           it = oldPseudoElementNodesRepository_.erase(it);
         } else {
           ++it;
