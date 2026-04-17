@@ -353,11 +353,16 @@ using namespace facebook::react;
 {
   ReactTag tag = shadowView.tag;
   SurfaceId surfaceId = shadowView.surfaceId;
-  RCTFabricSurface *surface = [self surfaceForRootTag:surfaceId];
 
   std::function<void(folly::dynamic)> callbackCopy = jsCallback;
   RCTExecuteOnMainQueue(^{
+    RCTFabricSurface *surface = [self surfaceForRootTag:surfaceId];
     UIView *rootView = surface.view;
+    if (!rootView) {
+      RCTLogWarn(@"measure cannot find root view for surface #%d", surfaceId);
+      callbackCopy(folly::dynamic::array(0, 0, 0, 0, 0, 0));
+      return;
+    }
     [self->_mountingManager measureAsyncOnUI:tag rootView:rootView callback:callbackCopy];
   });
 }
