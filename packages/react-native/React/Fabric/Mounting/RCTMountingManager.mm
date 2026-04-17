@@ -342,4 +342,31 @@ static void RCTPerformMountInstructions(
   }
 }
 
+- (void)measureAsyncOnUI:(ReactTag)reactTag
+                rootView:(UIView *)rootView
+                callback:(const std::function<void(folly::dynamic)> &)callback
+{
+  RCTAssertMainQueue();
+
+  UIView<RCTComponentViewProtocol> *view = [self->_componentViewRegistry findComponentViewWithTag:reactTag];
+  if (!view) {
+    RCTLogWarn(@"measure cannot find view with tag #%ld", (long)reactTag);
+    callback(folly::dynamic::array(0, 0, 0, 0, 0, 0));
+    return;
+  }
+
+  // By convention, all coordinates, whether they be touch coordinates, or
+  // measurement coordinates are with respect to the root view.
+  CGRect frame = view.frame;
+  CGRect globalBounds = [view convertRect:view.bounds toView:rootView];
+
+  callback(folly::dynamic::array(
+      frame.origin.x,
+      frame.origin.y,
+      globalBounds.size.width,
+      globalBounds.size.height,
+      globalBounds.origin.x,
+      globalBounds.origin.y));
+}
+
 @end
