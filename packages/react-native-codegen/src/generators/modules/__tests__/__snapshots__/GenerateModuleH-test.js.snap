@@ -156,7 +156,7 @@ namespace facebook::react {
 
 #pragma mark - NativeSampleTurboModuleEnumInt
 
-enum class NativeSampleTurboModuleEnumInt { IA, IB };
+enum class NativeSampleTurboModuleEnumInt { IA = 23, IB = 42 };
 
 template <>
 struct Bridging<NativeSampleTurboModuleEnumInt> {
@@ -1713,7 +1713,7 @@ namespace facebook::react {
 
 #pragma mark - NativeSampleTurboModuleNumEnum
 
-enum class NativeSampleTurboModuleNumEnum { ONE, TWO };
+enum class NativeSampleTurboModuleNumEnum { ONE = 1, TWO = 2 };
 
 template <>
 struct Bridging<NativeSampleTurboModuleNumEnum> {
@@ -1741,7 +1741,7 @@ struct Bridging<NativeSampleTurboModuleNumEnum> {
 
 #pragma mark - NativeSampleTurboModuleFloatEnum
 
-enum class NativeSampleTurboModuleFloatEnum { POINT_ZERO, POINT_ONE, POINT_TWO };
+enum class NativeSampleTurboModuleFloatEnum { POINT_ZERO = 0, POINT_ONE, POINT_TWO };
 
 template <>
 struct Bridging<NativeSampleTurboModuleFloatEnum> {
