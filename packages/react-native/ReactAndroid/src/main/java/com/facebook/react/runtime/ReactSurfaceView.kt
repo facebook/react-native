@@ -50,31 +50,24 @@ public class ReactSurfaceView(context: Context?, internal val surface: ReactSurf
 
   private val viewportOffset: Point
     get() {
-      val locationOnScreen = IntArray(2)
-      getLocationOnScreen(locationOnScreen)
+      val locationInWindow = IntArray(2)
+      getLocationInWindow(locationInWindow)
 
-      // we need to subtract visibleWindowCoords - to subtract possible window insets, split
-      // screen or multi window
-      val visibleWindowFrame = Rect()
-      getWindowVisibleDisplayFrame(visibleWindowFrame)
-      locationOnScreen[0] -= visibleWindowFrame.left
-      locationOnScreen[1] -= visibleWindowFrame.top
-
-      if (isEdgeToEdgeFeatureFlagOn) {
-        // In edge-to-edge mode the viewport spans the full window, so add the top system bar
-        // insets back to convert the content-area offset above into a window-relative offset.
+      if (!isEdgeToEdgeFeatureFlagOn) {
+        // When not in edge-to-edge mode, subtract the top system bar insets so the offset is
+        // relative to the content area (below the status bar / cutout).
         ViewCompat.getRootWindowInsets(this)?.apply {
           val insets =
               getInsets(
                   WindowInsetsCompat.Type.statusBars() or WindowInsetsCompat.Type.displayCutout()
               )
 
-          locationOnScreen[0] += insets.left
-          locationOnScreen[1] += insets.top
+          locationInWindow[0] -= insets.left
+          locationInWindow[1] -= insets.top
         }
       }
 
-      return Point(locationOnScreen[0], locationOnScreen[1])
+      return Point(locationInWindow[0], locationInWindow[1])
     }
 
   init {
