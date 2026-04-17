@@ -283,6 +283,9 @@ void Scheduler::uiManagerDidDispatchCommand(
          shadowView = std::move(shadowView),
          commandName,
          args]() {
+#if __APPLE__
+          LOG(WARNING) << "[Scheduler] uiManagerDidDispatchCommand componentName=" << shadowView.componentName << " command=" << commandName;
+#endif
           delegate->schedulerDidDispatchCommand(shadowView, commandName, args);
         });
   }
