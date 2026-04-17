@@ -19,6 +19,8 @@ import LogBoxButton from './LogBoxButton';
 import * as LogBoxStyle from './LogBoxStyle';
 import * as React from 'react';
 
+const noop = () => {};
+
 component LogBoxInspectorStackFrame(
   frame: StackFrame,
   onPress?: ?(event: GestureResponderEvent) => void,
@@ -38,7 +40,7 @@ component LogBoxInspectorStackFrame(
           default: 'transparent',
           pressed: onPress ? LogBoxStyle.getBackgroundColor(1) : 'transparent',
         }}
-        onPress={onPress}
+        onPress={onPress ?? noop}
         style={styles.frame}>
         <Text
           id="logbox_stack_frame_text"

@@ -57,6 +57,9 @@ export default function LogBoxInspector(props: Props): React.Node {
   }, []);
 
   useEffect(() => {
+    if (log == null) {
+      return;
+    }
     const subscription = BackHandler.addEventListener(
       'hardwareBackPress',
       () => {
@@ -65,7 +68,7 @@ export default function LogBoxInspector(props: Props): React.Node {
       },
     );
     return () => subscription.remove();
-  }, [onMinimize]);
+  }, [log, onMinimize]);
 
   function _handleRetry() {
     LogBoxData.retrySymbolicateLogNow(log);
