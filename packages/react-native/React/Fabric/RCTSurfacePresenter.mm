@@ -17,6 +17,7 @@
 #import <React/RCTConstants.h>
 #import <React/RCTFabricSurface.h>
 #import <React/RCTI18nUtil.h>
+#import <React/RCTLog.h>
 #import <React/RCTMountingManager.h>
 #import <React/RCTMountingManagerDelegate.h>
 #import <React/RCTScheduler.h>
