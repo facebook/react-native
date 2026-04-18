@@ -51,11 +51,12 @@ void EventTarget::release(jsi::Runtime& /*runtime*/) {
   // It takes it only to ensure thread-safety (if the caller has the reference,
   // we are on a proper thread).
 
-  if (--retainCount_ == 0) {
+  if (retainCount_ > 0) {
+    --retainCount_;
+  }
+  if (retainCount_ == 0) {
     strongInstanceHandle_ = jsi::Value::null();
   }
-
-  react_native_assert(retainCount_ >= 0);
 }
 
 jsi::Value EventTarget::getInstanceHandle(jsi::Runtime& runtime) const {
