@@ -38,6 +38,37 @@ void EventQueueProcessor::flushEvents(
     }
   }
 
+  // RAII guard for the matching release() pass. If event dispatch throws (a JS
+  // exception from eventPipe_, or eventPipeConclusion_), the previous code
+  // skipped the release loop entirely, leaking JSI strong references. The
+  // guard destructor runs on every exit path. No DispatchMutex needed for
+  // release: we hold a strong pointer to each EventTarget via `events`, and
+  // release() only touches runtime-thread-confined state.
+  class EventTargetReleaseGuard {
+   public:
+    EventTargetReleaseGuard(
+        jsi::Runtime& runtime,
+        const std::vector<RawEvent>& events)
+        : runtime_(runtime), events_(events) {}
+
+    EventTargetReleaseGuard(const EventTargetReleaseGuard&) = delete;
+    EventTargetReleaseGuard(EventTargetReleaseGuard&&) = delete;
+    EventTargetReleaseGuard& operator=(const EventTargetReleaseGuard&) = delete;
+    EventTargetReleaseGuard& operator=(EventTargetReleaseGuard&&) = delete;
+
+    ~EventTargetReleaseGuard() {
+      for (const auto& event : events_) {
+        if (event.eventTarget) {
+          event.eventTarget->release(runtime_);
+        }
+      }
+    }
+
+   private:
+    jsi::Runtime& runtime_;
+    const std::vector<RawEvent>& events_;
+  } releaseGuard{runtime, events};
+
   for (const auto& event : events) {
     auto reactPriority = ReactEventPriority::Default;
 
@@ -111,15 +142,7 @@ void EventQueueProcessor::flushEvents(
   // We only run the "Conclusion" once per event group when batched.
   eventPipeConclusion_(runtime);
 
-  // No need to lock `EventEmitter::DispatchMutex()` here.
-  // The mutex protects from a situation when the `instanceHandle` can be
-  // deallocated during accessing, but that's impossible at this point because
-  // we have a strong pointer to it.
-  for (const auto& event : events) {
-    if (event.eventTarget) {
-      event.eventTarget->release(runtime);
-    }
-  }
+  // EventTarget release happens in ~EventTargetReleaseGuard above.
 }
 
 void EventQueueProcessor::flushStateUpdates(
