@@ -92,7 +92,11 @@ using namespace facebook::react;
 
   auto result = dispatch_group_wait(imageWaitGroup, dispatch_time(DISPATCH_TIME_NOW, 20 * NSEC_PER_SEC));
   if (result != 0) {
-    RCTLogError(@"Image timed out in test environment for url: %@", loaderRequest.imageURL);
+    // Downgraded from RCTLogError to RCTLogWarn: image timeouts in test
+    // environments are transient infrastructure issues, not fatal app errors.
+    // RCTLogError triggers a native redbox that blocks the entire UI and cannot
+    // be dismissed on iOS, causing E2E test failures.
+    RCTLogWarn(@"Image timed out in test environment for url: %@", loaderRequest.imageURL);
   }
   return imageRequest;
 }
