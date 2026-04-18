@@ -8,6 +8,7 @@
 #import <React/RCTUITextField.h>
 
 #import <React/RCTBackedTextInputDelegateAdapter.h>
+#import <React/RCTBackedTextInputViewLineHeightUtils.h>
 #import <React/RCTTextAttributes.h>
 #import <React/RCTUtils.h>
 #import <React/UIView+React.h>
@@ -92,8 +93,13 @@
     return;
   }
 
+  // Keep the unstripped attributes available for `_placeholderTextAttributes`, which
+  // needs the configured `lineHeight` to compute the placeholder's baseline offset.
+  // Hand UIKit a copy with the paragraphStyle line-height zeroed so the typed-text
+  // path renders at the font's natural metrics — vertical centering then positions
+  // the glyph in the bounds and the caret rect shrinks to match.
   _defaultTextAttributes = defaultTextAttributes;
-  [super setDefaultTextAttributes:defaultTextAttributes];
+  [super setDefaultTextAttributes:RCTStripDefaultTextAttributesLineHeight(defaultTextAttributes)];
   [self _updatePlaceholder];
 }
 
@@ -169,6 +175,7 @@
     [textAttributes removeObjectForKey:NSForegroundColorAttributeName];
   }
 
+  RCTApplyPlaceholderBaselineOffset(textAttributes);
   return textAttributes;
 }
 

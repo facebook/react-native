@@ -12,6 +12,7 @@
 #import <react/renderer/textlayoutmanager/RCTAttributedTextUtils.h>
 #import <react/renderer/textlayoutmanager/TextLayoutManager.h>
 
+#import <React/RCTBackedTextInputViewLineHeightUtils.h>
 #import <React/RCTBackedTextInputViewProtocol.h>
 #import <React/RCTScrollViewComponentView.h>
 #import <React/RCTUITextField.h>
@@ -47,6 +48,12 @@ static NSSet<NSNumber *> *returnKeyTypesSet;
   UIView<RCTBackedTextInputViewProtocol> *_backedTextInputView;
   NSUInteger _mostRecentEventCount;
   NSAttributedString *_lastStringStateWasUpdatedWith;
+  // The most-recent attributedString JS pushed via `_setAttributedString:`, kept
+  // unstripped (with the configured `lineHeight`). Used as the source of truth
+  // for state pushes — the displayed `attributedText` may have its paragraph-style
+  // line-height zeroed for single-line rendering, but the shadow node measures
+  // from state and needs the real line-height to keep the cell stable.
+  NSAttributedString *_sourceAttributedString;
 
   /*
    * UIKit uses either UITextField or UITextView as its UIKit element for <TextInput>. UITextField is for single line
@@ -712,10 +719,10 @@ static NSSet<NSNumber *> *returnKeyTypesSet;
   return {
       .text = RCTStringFromNSString(_backedTextInputView.attributedText.string),
       .selectionRange = [self _selectionRange],
-      .eventCount = static_cast<int>(_mostRecentEventCount),
+      .contentSize = RCTSizeFromCGSize(_backedTextInputView.contentSize),
       .contentOffset = RCTPointFromCGPoint(_backedTextInputView.contentOffset),
       .contentInset = RCTEdgeInsetsFromUIEdgeInsets(_backedTextInputView.contentInset),
-      .contentSize = RCTSizeFromCGSize(_backedTextInputView.contentSize),
+      .eventCount = static_cast<int>(_mostRecentEventCount),
       .layoutMeasurement = RCTSizeFromCGSize(_backedTextInputView.bounds.size),
       .zoomScale = _backedTextInputView.zoomScale,
   };
@@ -729,7 +736,21 @@ static NSSet<NSNumber *> *returnKeyTypesSet;
   NSAttributedString *attributedString = _backedTextInputView.attributedText;
   auto data = _state->getData();
   _lastStringStateWasUpdatedWith = attributedString;
-  data.attributedStringBox = RCTAttributedStringBoxFromNSAttributedString(attributedString);
+
+  // Single-line rendering may have stripped the paragraph-style line-height from
+  // the displayed `attributedText`, but the shadow node measures from state and
+  // needs the configured `lineHeight`. Use the saved unstripped source string
+  // when its content still matches the field; if the user has typed since the
+  // last push, fall back to building a fresh string from the field's text and
+  // the (unstripped) `defaultTextAttributes`.
+  NSAttributedString *sourceString = _sourceAttributedString;
+  if (![sourceString.string isEqualToString:attributedString.string]) {
+    sourceString = [[NSAttributedString alloc] initWithString:attributedString.string
+                                                   attributes:_backedTextInputView.defaultTextAttributes];
+    _sourceAttributedString = sourceString;
+  }
+
+  data.attributedStringBox = RCTAttributedStringBoxFromNSAttributedString(sourceString);
   _mostRecentEventCount += _comingFromJS ? 0 : 1;
   data.mostRecentEventCount = _mostRecentEventCount;
   _state->updateState(std::move(data));
@@ -768,6 +789,46 @@ static NSSet<NSNumber *> *returnKeyTypesSet;
 
 - (void)_setAttributedString:(NSAttributedString *)attributedString
 {
+  // Save the unstripped source for layout / state push before any display
+  // transformation runs. `_updateState` reads this back so the shadow node
+  // measures from the configured `lineHeight`, not the render-time strip.
+  _sourceAttributedString = [attributedString copy];
+
+  // When `lineHeight > font.lineHeight`, UIKit's draw paths anchor glyphs to the
+  // bottom of the paragraph line box. UITextView honors NSBaselineOffsetAttributeName
+  // to re-center; UITextField does not, so for single-line we zero the paragraph-style
+  // line-height (UITextField then renders at the font's natural metrics, and its
+  // built-in vertical centering positions the glyph in the bounds).
+  NSDictionary<NSAttributedStringKey, id> *defaults = _backedTextInputView.defaultTextAttributes;
+  NSParagraphStyle *defaultParagraphStyle = defaults[NSParagraphStyleAttributeName];
+  UIFont *defaultFont = defaults[NSFontAttributeName];
+  if (attributedString.length > 0 && defaultParagraphStyle && defaultFont &&
+      defaultParagraphStyle.maximumLineHeight > defaultFont.lineHeight) {
+    NSMutableAttributedString *mutableString = [attributedString mutableCopy];
+    if ([_backedTextInputView isKindOfClass:[RCTUITextView class]]) {
+      // UIKit's typingAttributes drop NSParagraphStyle on the round-trip, so chars typed
+      // since the last state push arrive without a paragraph style. Re-seed those ranges
+      // (and ranges with a zero-line-height stub) from the default so UITextView resolves a
+      // consistent line-box height across the whole string. RCTApplyBaselineOffset then
+      // computes the centering offset using the max font.lineHeight present on each line —
+      // correct for mixed-font input from nested <Text> children.
+      [mutableString enumerateAttribute:NSParagraphStyleAttributeName
+                                inRange:NSMakeRange(0, mutableString.length)
+                                options:0
+                             usingBlock:^(NSParagraphStyle *style, NSRange range, __unused BOOL *stop) {
+                               if (!style || style.maximumLineHeight == 0) {
+                                 [mutableString addAttribute:NSParagraphStyleAttributeName
+                                                       value:defaultParagraphStyle
+                                                       range:range];
+                               }
+                             }];
+      RCTApplyBaselineOffset(mutableString);
+    } else {
+      RCTStripAttributedStringLineHeights(mutableString);
+    }
+    attributedString = mutableString;
+  }
+
   if ([self _textOf:attributedString equals:_backedTextInputView.attributedText]) {
     return;
   }
