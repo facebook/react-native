@@ -177,34 +177,6 @@ const SIMPLE_NATIVE_MODULES: SchemaType = {
             },
           ],
         },
-        FloatEnum: {
-          type: 'EnumDeclarationWithMembers',
-          name: 'FloatEnum',
-          memberType: 'NumberTypeAnnotation',
-          members: [
-            {
-              name: 'POINT_ZERO',
-              value: {
-                type: 'NumberLiteralTypeAnnotation',
-                value: 0.0,
-              },
-            },
-            {
-              name: 'POINT_ONE',
-              value: {
-                type: 'NumberLiteralTypeAnnotation',
-                value: 0.1,
-              },
-            },
-            {
-              name: 'POINT_TWO',
-              value: {
-                type: 'NumberLiteralTypeAnnotation',
-                value: 0.2,
-              },
-            },
-          ],
-        },
         StringEnum: {
           type: 'EnumDeclarationWithMembers',
           name: 'StringEnum',
@@ -527,15 +499,6 @@ const SIMPLE_NATIVE_MODULES: SchemaType = {
                   optional: false,
                   typeAnnotation: {
                     name: 'NumEnum',
-                    type: 'EnumDeclaration',
-                    memberType: 'NumberTypeAnnotation',
-                  },
-                },
-                {
-                  name: 'enumFloat',
-                  optional: false,
-                  typeAnnotation: {
-                    name: 'FloatEnum',
                     type: 'EnumDeclaration',
                     memberType: 'NumberTypeAnnotation',
                   },

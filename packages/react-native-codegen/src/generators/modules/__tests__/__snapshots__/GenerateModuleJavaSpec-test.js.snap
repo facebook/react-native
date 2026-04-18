@@ -505,7 +505,7 @@ public abstract class NativeSampleTurboModuleSpec extends ReactContextBaseJavaMo
 
   @ReactMethod(isBlockingSynchronousMethod = true)
   @DoNotStrip
-  public abstract String getEnums(double enumInt, double enumFloat, String enumString);
+  public abstract String getEnums(double enumInt, String enumString);
 }
 ",
 }
