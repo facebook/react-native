@@ -147,7 +147,8 @@ void UIManagerBinding::dispatchEventToJS(
   // Add timestamp to payload if not already set
   if (payload.isObject()) {
     auto payloadObject = payload.asObject(runtime);
-    if (!payloadObject.hasProperty(runtime, "timeStamp")) {
+    if (!payloadObject.hasProperty(runtime, "timeStamp") &&
+        !payloadObject.hasProperty(runtime, "timestamp")) {
       payloadObject.setProperty(
           runtime, "timeStamp", eventTimestamp.toDOMHighResTimeStamp());
     }
