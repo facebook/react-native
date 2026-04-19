@@ -146,7 +146,8 @@ std::string httpReasonPhrase(uint16_t status) {
   return "<Unknown>";
 }
 
-std::string mimeTypeFromHeaders(const Headers& headers) {
+std::string mimeTypeFromHeaders(
+    const std::map<std::string, std::string>& headers) {
   std::string mimeType = "application/octet-stream";
 
   for (const auto& [name, value] : headers) {

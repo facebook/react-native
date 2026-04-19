@@ -19,7 +19,7 @@ import {typeof VirtualizedListContextResetter as VirtualizedListContextResetterT
 import {keyExtractor} from './Lists/VirtualizeUtils';
 
 export type {
-  ViewToken,
+  ViewToken as ListViewToken,
   ViewabilityConfig,
   ViewabilityConfigCallbackPair,
   ViewabilityConfigCallbackPairs,

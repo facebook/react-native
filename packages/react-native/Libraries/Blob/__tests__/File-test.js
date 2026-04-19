@@ -26,7 +26,7 @@ describe('babel 7 smoke test', function () {
     class Array {
       constructor() {
         called = true;
-        // $FlowFixMe[incompatible-return]
+        // $FlowFixMe[incompatible-type]
         return {foo: 'PASS'};
       }
     }
@@ -81,9 +81,9 @@ describe('File', function () {
   });
 
   it('should throw on invalid arguments', () => {
-    // $FlowExpectedError[incompatible-call]
+    // $FlowExpectedError[incompatible-type]
     expect(() => new File()).toThrow();
-    // $FlowExpectedError[incompatible-call]
+    // $FlowExpectedError[incompatible-type]
     expect(() => new File([])).toThrow();
   });
 });

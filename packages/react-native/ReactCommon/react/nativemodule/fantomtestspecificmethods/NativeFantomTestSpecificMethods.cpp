@@ -49,4 +49,36 @@ void NativeFantomTestSpecificMethods::takeFunctionAndNoop(
     jsi::Runtime& runtime,
     jsi::Function function) {}
 
+void NativeFantomTestSpecificMethods::setRootNodeSize(
+    jsi::Runtime& runtime,
+    int surfaceId,
+    float width,
+    float height) {
+  auto& uiManager = getUIManagerFromRuntime(runtime);
+
+  uiManager.getShadowTreeRegistry().visit(
+      surfaceId, [&](const ShadowTree& shadowTree) {
+        shadowTree.commit(
+            [&](const RootShadowNode& oldRootShadowNode)
+                -> RootShadowNode::Unshared {
+              PropsParserContext propsParserContext{
+                  surfaceId, *uiManager.getContextContainer()};
+
+              const auto& mainBranchRootProps =
+                  oldRootShadowNode.getConcreteProps();
+              const auto layoutContext = mainBranchRootProps.layoutContext;
+              auto layoutConstraints = mainBranchRootProps.layoutConstraints;
+
+              layoutConstraints.maximumSize.width = width;
+              layoutConstraints.maximumSize.height = height;
+              layoutConstraints.minimumSize.width = width;
+              layoutConstraints.minimumSize.height = height;
+
+              return oldRootShadowNode.clone(
+                  propsParserContext, layoutConstraints, layoutContext);
+            },
+            {.source = ShadowTreeCommitSource::Unknown});
+      });
+}
+
 } // namespace facebook::react

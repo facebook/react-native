@@ -25,10 +25,10 @@
 
 const babel = require('@babel/core');
 const fs = require('fs');
-const glob = require('glob');
 const micromatch = require('micromatch');
 const path = require('path');
 const prettier = require('prettier');
+const {globSync} = require('tinyglobby');
 const {styleText} = require('util');
 
 const prettierConfig = JSON.parse(
@@ -106,8 +106,11 @@ async function buildFile(file, silent) {
 }
 
 const srcDir = path.resolve(__dirname, '..', SRC_DIR);
-const pattern = path.resolve(srcDir, '**/*');
-const files = glob.sync(pattern, {nodir: true});
+const files = globSync('**/*', {
+  cwd: srcDir,
+  absolute: true,
+  onlyFiles: true,
+});
 
 process.stdout.write(fixedWidth(`${path.basename(PACKAGE_DIR)}\n`));
 

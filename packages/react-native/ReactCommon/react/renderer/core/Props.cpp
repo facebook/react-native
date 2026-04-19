@@ -32,15 +32,23 @@ void Props::initialize(
   nativeId = ReactNativeFeatureFlags::enableCppPropsIteratorSetter()
       ? sourceProps.nativeId
       : convertRawProp(context, rawProps, "nativeID", sourceProps.nativeId, {});
+
+  if (!ReactNativeFeatureFlags::enableCppPropsIteratorSetter()) {
+    if (ReactNativeFeatureFlags::enableNativeViewPropTransformations()) {
+      // id -> nativeId
+      auto* idValue = rawProps.at("id", nullptr, nullptr);
+      if (idValue != nullptr) {
+        if (idValue->hasValue()) {
+          fromRawValue(context, *idValue, nativeId);
+        } else {
+          nativeId = {};
+        }
+      }
+    }
+  }
 #ifdef RN_SERIALIZABLE_STATE
-  if (ReactNativeFeatureFlags::enableAccumulatedUpdatesInRawPropsAndroid()) {
-    auto& oldRawProps = sourceProps.rawProps;
-    auto newRawProps = rawProps.toDynamic(filterObjectKeys);
-    auto mergedRawProps = mergeDynamicProps(
-        oldRawProps, newRawProps, NullValueStrategy::Override);
-    this->rawProps = mergedRawProps;
-  } else {
-    this->rawProps = rawProps.toDynamic(filterObjectKeys);
+  if (!ReactNativeFeatureFlags::enableExclusivePropsUpdateAndroid()) {
+    initializeDynamicProps(sourceProps, rawProps, filterObjectKeys);
   }
 #endif
 }
@@ -54,8 +62,35 @@ void Props::setProp(
     case CONSTEXPR_RAW_PROPS_KEY_HASH("nativeID"):
       fromRawValue(context, value, nativeId, {});
       return;
+    case CONSTEXPR_RAW_PROPS_KEY_HASH("id"):
+      if (!ReactNativeFeatureFlags::enableNativeViewPropTransformations()) {
+        return;
+      }
+      fromRawValue(context, value, nativeId, {});
+      return;
   }
 }
+
+#ifdef RN_SERIALIZABLE_STATE
+void Props::initializeDynamicProps(
+    const Props& sourceProps,
+    const RawProps& rawProps,
+    const std::function<bool(const std::string&)>& filterObjectKeys) {
+  if (ReactNativeFeatureFlags::enableAccumulatedUpdatesInRawPropsAndroid()) {
+    auto& oldRawProps = sourceProps.rawProps;
+    auto newRawProps = rawProps.toDynamic(filterObjectKeys);
+    auto mergedRawProps = mergeDynamicProps(
+        oldRawProps, newRawProps, NullValueStrategy::Override);
+    this->rawProps = mergedRawProps;
+  } else {
+    this->rawProps = rawProps.toDynamic(filterObjectKeys);
+  }
+}
+
+ComponentName Props::getDiffPropsImplementationTarget() const {
+  return "";
+}
+#endif
 
 #pragma mark - DebugStringConvertible
 

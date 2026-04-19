@@ -19,6 +19,7 @@ const VirtualizedListComponent: VirtualizedListType =
 export type {
   ListRenderItemInfo,
   ListRenderItem,
+  ListViewToken,
   Separators,
   VirtualizedListProps,
 } from '@react-native/virtualized-lists';

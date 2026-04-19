@@ -14,9 +14,13 @@ namespace facebook::react::jsinspector_modern::tracing {
 
 TEST(ProfileTreeNodeTest, OnlyAddsUniqueChildren) {
   auto fooCallFrame = RuntimeSamplingProfile::SampleCallStackFrame{
-      RuntimeSamplingProfile::SampleCallStackFrame::Kind::JSFunction, 0, "foo"};
+      .kind = RuntimeSamplingProfile::SampleCallStackFrame::Kind::JSFunction,
+      .scriptId = 0,
+      .functionName = "foo"};
   auto barCallFrame = RuntimeSamplingProfile::SampleCallStackFrame{
-      RuntimeSamplingProfile::SampleCallStackFrame::Kind::JSFunction, 0, "bar"};
+      .kind = RuntimeSamplingProfile::SampleCallStackFrame::Kind::JSFunction,
+      .scriptId = 0,
+      .functionName = "bar"};
 
   ProfileTreeNode parent(
       1, ProfileTreeNode::CodeType::JavaScript, fooCallFrame);
@@ -34,9 +38,13 @@ TEST(ProfileTreeNodeTest, OnlyAddsUniqueChildren) {
 
 TEST(ProfileTreeNodeTest, ConsidersCodeTypeOfChild) {
   auto parentCallFrame = RuntimeSamplingProfile::SampleCallStackFrame{
-      RuntimeSamplingProfile::SampleCallStackFrame::Kind::JSFunction, 0, "foo"};
+      .kind = RuntimeSamplingProfile::SampleCallStackFrame::Kind::JSFunction,
+      .scriptId = 0,
+      .functionName = "foo"};
   auto childCallFrame = RuntimeSamplingProfile::SampleCallStackFrame{
-      RuntimeSamplingProfile::SampleCallStackFrame::Kind::JSFunction, 0, "bar"};
+      .kind = RuntimeSamplingProfile::SampleCallStackFrame::Kind::JSFunction,
+      .scriptId = 0,
+      .functionName = "bar"};
 
   ProfileTreeNode parent(
       1, ProfileTreeNode::CodeType::JavaScript, parentCallFrame);

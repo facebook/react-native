@@ -15,6 +15,7 @@ import android.content.ContextWrapper;
 import android.content.Intent;
 import android.os.Bundle;
 import android.view.LayoutInflater;
+import android.view.Window;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import com.facebook.common.logging.FLog;
@@ -25,6 +26,7 @@ import com.facebook.react.bridge.interop.InteropModuleRegistry;
 import com.facebook.react.bridge.queue.MessageQueueThread;
 import com.facebook.react.bridge.queue.ReactQueueConfiguration;
 import com.facebook.react.common.LifecycleState;
+import com.facebook.react.interfaces.ExtraWindowEventListener;
 import com.facebook.react.turbomodule.core.interfaces.CallInvokerHolder;
 import java.lang.ref.WeakReference;
 import java.util.Collection;
@@ -48,8 +50,11 @@ public abstract class ReactContext extends ContextWrapper {
       new CopyOnWriteArraySet<>();
   private final CopyOnWriteArraySet<ActivityEventListener> mActivityEventListeners =
       new CopyOnWriteArraySet<>();
+  private final CopyOnWriteArraySet<ExtraWindowEventListener> mExtraWindowEventListeners =
+      new CopyOnWriteArraySet<>();
   private final CopyOnWriteArraySet<WindowFocusChangeListener> mWindowFocusEventListeners =
       new CopyOnWriteArraySet<>();
+  private final ScrollEndedListeners mScrollEndedListeners = new ScrollEndedListeners();
 
   private LifecycleState mLifecycleState = LifecycleState.BEFORE_CREATE;
 
@@ -195,6 +200,15 @@ public abstract class ReactContext extends ContextWrapper {
     return mLifecycleState;
   }
 
+  /**
+   * This allows scroll views to notify NativeAnimatedModule when user-driven scrolling ends.
+   *
+   * @return The ScrollEndedListeners instance
+   */
+  public ScrollEndedListeners getScrollEndedListeners() {
+    return mScrollEndedListeners;
+  }
+
   public void addLifecycleEventListener(final LifecycleEventListener listener) {
     mLifecycleEventListeners.add(listener);
     if (hasActiveReactInstance() || isBridgeless()) {
@@ -234,6 +248,14 @@ public abstract class ReactContext extends ContextWrapper {
 
   public void removeActivityEventListener(ActivityEventListener listener) {
     mActivityEventListeners.remove(listener);
+  }
+
+  public void addExtraWindowEventListener(ExtraWindowEventListener listener) {
+    mExtraWindowEventListeners.add(listener);
+  }
+
+  public void removeExtraWindowEventListener(ExtraWindowEventListener listener) {
+    mExtraWindowEventListeners.remove(listener);
   }
 
   public void addWindowFocusChangeListener(WindowFocusChangeListener listener) {
@@ -340,6 +362,30 @@ public abstract class ReactContext extends ContextWrapper {
     for (ActivityEventListener listener : mActivityEventListeners) {
       try {
         listener.onActivityResult(activity, requestCode, resultCode, data);
+      } catch (RuntimeException e) {
+        handleException(e);
+      }
+    }
+  }
+
+  @ThreadConfined(UI)
+  public void onExtraWindowCreate(Window window) {
+    UiThreadUtil.assertOnUiThread();
+    for (ExtraWindowEventListener listener : mExtraWindowEventListeners) {
+      try {
+        listener.onExtraWindowCreate(window);
+      } catch (RuntimeException e) {
+        handleException(e);
+      }
+    }
+  }
+
+  @ThreadConfined(UI)
+  public void onExtraWindowDestroy(Window window) {
+    UiThreadUtil.assertOnUiThread();
+    for (ExtraWindowEventListener listener : mExtraWindowEventListeners) {
+      try {
+        listener.onExtraWindowDestroy(window);
       } catch (RuntimeException e) {
         handleException(e);
       }

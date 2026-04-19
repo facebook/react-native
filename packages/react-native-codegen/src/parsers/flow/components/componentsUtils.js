@@ -45,7 +45,10 @@ function getTypeAnnotationForArray<+T>(
     // Resolve the type alias if it's not defined inline
     const objectType = getValueFromTypes(extractedTypeAnnotation, types);
 
-    if (objectType.id.name === '$ReadOnly') {
+    if (
+      objectType.id.name === '$ReadOnly' ||
+      objectType.id.name === 'Readonly'
+    ) {
       return {
         type: 'ObjectTypeAnnotation',
         properties: flattenProperties(
@@ -58,7 +61,10 @@ function getTypeAnnotationForArray<+T>(
       };
     }
 
-    if (objectType.id.name === '$ReadOnlyArray') {
+    if (
+      objectType.id.name === '$ReadOnlyArray' ||
+      objectType.id.name === 'ReadonlyArray'
+    ) {
       // We need to go yet another level deeper to resolve
       // types that may be defined in a type alias
       const nestedObjectType = getValueFromTypes(
@@ -163,7 +169,7 @@ function getTypeAnnotationForArray<+T>(
       if (unionType === 'StringLiteralTypeAnnotation') {
         return {
           type: 'StringEnumTypeAnnotation',
-          default: (defaultValue: string),
+          default: defaultValue as string,
           options: typeAnnotation.types.map(option => option.value),
         };
       } else if (unionType === 'NumberLiteralTypeAnnotation') {
@@ -181,10 +187,10 @@ function getTypeAnnotationForArray<+T>(
 }
 
 function flattenProperties(
-  typeDefinition: $ReadOnlyArray<PropAST>,
+  typeDefinition: ReadonlyArray<PropAST>,
   types: TypeDeclarationMap,
   parser: Parser,
-): $ReadOnlyArray<PropAST> {
+): ReadonlyArray<PropAST> {
   return typeDefinition
     .map(property => {
       if (property.type === 'ObjectTypeProperty') {
@@ -226,7 +232,8 @@ function getTypeAnnotation<+T>(
 
   if (
     typeAnnotation.type === 'GenericTypeAnnotation' &&
-    parser.getTypeAnnotationName(typeAnnotation) === '$ReadOnlyArray'
+    (parser.getTypeAnnotationName(typeAnnotation) === '$ReadOnlyArray' ||
+      parser.getTypeAnnotationName(typeAnnotation) === 'ReadonlyArray')
   ) {
     return {
       type: 'ArrayTypeAnnotation',
@@ -243,7 +250,8 @@ function getTypeAnnotation<+T>(
 
   if (
     typeAnnotation.type === 'GenericTypeAnnotation' &&
-    parser.getTypeAnnotationName(typeAnnotation) === '$ReadOnly'
+    (parser.getTypeAnnotationName(typeAnnotation) === '$ReadOnly' ||
+      parser.getTypeAnnotationName(typeAnnotation) === 'Readonly')
   ) {
     return {
       type: 'ObjectTypeAnnotation',
@@ -305,32 +313,32 @@ function getTypeAnnotation<+T>(
     case 'Int32':
       return {
         type: 'Int32TypeAnnotation',
-        default: ((defaultValue ? defaultValue : 0): number),
+        default: (defaultValue ? defaultValue : 0) as number,
       };
     case 'Double':
       return {
         type: 'DoubleTypeAnnotation',
-        default: ((defaultValue ? defaultValue : 0): number),
+        default: (defaultValue ? defaultValue : 0) as number,
       };
     case 'Float':
       return {
         type: 'FloatTypeAnnotation',
         default: withNullDefault
-          ? (defaultValue: number | null)
-          : ((defaultValue ? defaultValue : 0): number),
+          ? (defaultValue as number | null)
+          : ((defaultValue ? defaultValue : 0) as number),
       };
     case 'BooleanTypeAnnotation':
       return {
         type: 'BooleanTypeAnnotation',
         default: withNullDefault
-          ? (defaultValue: boolean | null)
-          : ((defaultValue == null ? false : defaultValue): boolean),
+          ? (defaultValue as boolean | null)
+          : ((defaultValue == null ? false : defaultValue) as boolean),
       };
     case 'StringTypeAnnotation':
       if (typeof defaultValue !== 'undefined') {
         return {
           type: 'StringTypeAnnotation',
-          default: (defaultValue: string | null),
+          default: defaultValue as string | null,
         };
       }
       throw new Error(`A default string (or null) is required for "${name}"`);
@@ -338,7 +346,7 @@ function getTypeAnnotation<+T>(
       if (typeof defaultValue !== 'undefined') {
         return {
           type: 'StringTypeAnnotation',
-          default: (defaultValue: string | null),
+          default: defaultValue as string | null,
         };
       }
       throw new Error(`A default string (or null) is required for "${name}"`);
@@ -358,13 +366,13 @@ function getTypeAnnotation<+T>(
       if (unionType === 'StringLiteralTypeAnnotation') {
         return {
           type: 'StringEnumTypeAnnotation',
-          default: (defaultValue: string),
+          default: defaultValue as string,
           options: typeAnnotation.types.map(option => option.value),
         };
       } else if (unionType === 'NumberLiteralTypeAnnotation') {
         return {
           type: 'Int32EnumTypeAnnotation',
-          default: (defaultValue: number),
+          default: defaultValue as number,
           options: typeAnnotation.types.map(option => option.value),
         };
       } else {

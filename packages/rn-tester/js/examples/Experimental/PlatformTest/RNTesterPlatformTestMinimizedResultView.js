@@ -14,7 +14,7 @@ import RNTesterPlatformTestResultsText from './RNTesterPlatformTestResultsText';
 import * as React from 'react';
 import {StyleSheet, Text, TouchableHighlight, View} from 'react-native';
 
-type Props = $ReadOnly<{
+type Props = Readonly<{
   numFail: number,
   numError: number,
   numPass: number,

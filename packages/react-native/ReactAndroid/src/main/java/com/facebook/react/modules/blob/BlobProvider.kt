@@ -28,7 +28,7 @@ public class BlobProvider : ContentProvider() {
       projection: Array<String>?,
       selection: String?,
       selectionArgs: Array<String>?,
-      sortOrder: String?
+      sortOrder: String?,
   ): Cursor? = null
 
   override fun getType(uri: Uri): String? = null
@@ -41,7 +41,7 @@ public class BlobProvider : ContentProvider() {
       uri: Uri,
       values: ContentValues?,
       selection: String?,
-      selectionArgs: Array<String>?
+      selectionArgs: Array<String>?,
   ): Int = 0
 
   @Throws(FileNotFoundException::class)
@@ -53,9 +53,8 @@ public class BlobProvider : ContentProvider() {
     var blobModule: BlobModule? = null
     val context = context?.applicationContext
     if (context is ReactApplication) {
-      @Suppress("DEPRECATION") val host = (context as ReactApplication).reactNativeHost
       val reactContext =
-          host.reactInstanceManager.currentReactContext
+          context.reactHost?.currentReactContext
               ?: throw RuntimeException("No ReactContext associated with BlobProvider")
       blobModule = reactContext.getNativeModule(BlobModule::class.java)
     }

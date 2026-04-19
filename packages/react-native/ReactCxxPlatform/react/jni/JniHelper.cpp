@@ -5,6 +5,8 @@
  * LICENSE file in the root directory of this source tree.
  */
 
+#include "JniHelper.h"
+
 #include <fbjni/Context.h>
 #include <fbjni/fbjni.h>
 

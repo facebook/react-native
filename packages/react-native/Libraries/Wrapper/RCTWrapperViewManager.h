@@ -7,12 +7,13 @@
 
 #import <React/RCTViewManager.h>
 
-#ifndef RCT_FIT_RM_OLD_COMPONENT
+#ifndef RCT_REMOVE_LEGACY_ARCH
 
 @class RCTWrapperView;
 
 NS_ASSUME_NONNULL_BEGIN
 
+__attribute__((deprecated("This API will be removed along with the legacy architecture.")))
 @interface RCTWrapperViewManager : RCTViewManager
 
 - (RCTWrapperView *)view NS_REQUIRES_SUPER;
@@ -21,4 +22,4 @@ NS_ASSUME_NONNULL_BEGIN
 
 NS_ASSUME_NONNULL_END
 
-#endif // RCT_FIT_RM_OLD_COMPONENT
+#endif // RCT_REMOVE_LEGACY_ARCH

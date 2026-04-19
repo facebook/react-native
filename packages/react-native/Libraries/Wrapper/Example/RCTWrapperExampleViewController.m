@@ -7,7 +7,7 @@
 
 #import "RCTWrapperExampleViewController.h"
 
-#ifndef RCT_FIT_RM_OLD_COMPONENT
+#ifndef RCT_REMOVE_LEGACY_ARCH
 
 #import <RCTWrapper/RCTWrapper.h>
 
@@ -24,4 +24,4 @@
 
 RCT_WRAPPER_FOR_VIEW_CONTROLLER(RCTWrapperExampleViewController)
 
-#endif // RCT_FIT_RM_OLD_COMPONENT
+#endif // RCT_REMOVE_LEGACY_ARCH

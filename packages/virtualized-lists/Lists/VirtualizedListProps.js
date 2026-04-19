@@ -39,7 +39,7 @@ export type ListRenderItemInfo<ItemT> = {
   ...
 };
 
-export type CellRendererProps<ItemT> = $ReadOnly<{
+export type CellRendererProps<ItemT> = Readonly<{
   cellKey: string,
   children: React.Node,
   index: number,
@@ -129,7 +129,7 @@ type OptionalVirtualizedListProps = {
    * which will update the `highlighted` prop, but you can also add custom props with
    * `separators.updateProps`.
    */
-  ItemSeparatorComponent?: ?React.ComponentType<any>,
+  ItemSeparatorComponent?: ?(React.ComponentType<any> | React.MixedElement),
   /**
    * Takes an item from `data` and renders it into the list. Example usage:
    *

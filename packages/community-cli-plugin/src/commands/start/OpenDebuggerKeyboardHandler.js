@@ -12,7 +12,7 @@ import type {TerminalReporter} from 'metro';
 
 import {styleText} from 'util';
 
-type PageDescription = $ReadOnly<{
+type PageDescription = Readonly<{
   id: string,
   title: string,
   description: string,
@@ -22,7 +22,7 @@ type PageDescription = $ReadOnly<{
 export default class OpenDebuggerKeyboardHandler {
   #devServerUrl: string;
   #reporter: TerminalReporter;
-  #targetsShownForSelection: ?$ReadOnlyArray<PageDescription> = null;
+  #targetsShownForSelection: ?ReadonlyArray<PageDescription> = null;
 
   constructor({
     devServerUrl,
@@ -82,7 +82,7 @@ export default class OpenDebuggerKeyboardHandler {
       if (res.status !== 200) {
         throw new Error(`Unexpected status code: ${res.status}`);
       }
-      const targets = (await res.json()) as $ReadOnlyArray<PageDescription>;
+      const targets = (await res.json()) as ReadonlyArray<PageDescription>;
       if (!Array.isArray(targets)) {
         throw new Error('Expected array.');
       }
@@ -94,22 +94,26 @@ export default class OpenDebuggerKeyboardHandler {
         const target = targets[0];
         void this.#tryOpenDebuggerForTarget(target);
       } else {
-        this.#targetsShownForSelection = targets;
-
         if (targets.length > 9) {
           this.#log(
             'warn',
             '10 or more debug targets available, showing the first 9.',
           );
         }
+        const targetsShown = targets.slice(0, 9);
+        const hasDuplicateTitles =
+          new Set(targetsShown.map(target => target.title)).size <
+          targetsShown.length;
+        this.#targetsShownForSelection = targetsShown;
 
         this.#setTerminalMenu(
-          `Multiple debug targets available, please select:\n  ${targets
-            .slice(0, 9)
-            .map(
-              ({title}, i) =>
-                `${styleText(['white', 'inverse'], ` ${i + 1} `)} - "${title}"`,
-            )
+          `Multiple debug targets available, please select:\n  ${targetsShown
+            .map(({title, description}, i) => {
+              const descriptionSuffix = hasDuplicateTitles
+                ? ` (${description})`
+                : '';
+              return `${styleText(['white', 'inverse'], ` ${i + 1} `)} - "${title}${descriptionSuffix}"`;
+            })
             .join('\n  ')}`,
         );
       }
@@ -149,7 +153,7 @@ export default class OpenDebuggerKeyboardHandler {
     this.#targetsShownForSelection = null;
   }
 
-  #log(level: 'info' | 'warn' | 'error', ...data: Array<mixed>): void {
+  #log(level: 'info' | 'warn' | 'error', ...data: Array<unknown>): void {
     this.#reporter.update({
       type: 'unstable_server_log',
       level,

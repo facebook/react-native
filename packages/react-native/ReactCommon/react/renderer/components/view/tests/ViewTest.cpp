@@ -19,6 +19,7 @@
 
 #include <react/renderer/element/Element.h>
 #include <react/renderer/element/testUtils.h>
+#include <yoga/numeric/FloatOptional.h>
 
 namespace facebook::react {
 
@@ -97,7 +98,7 @@ TEST_F(YogaDirtyFlagTest, cloningPropsWithoutChangingThem) {
         auto& componentDescriptor = oldShadowNode.getComponentDescriptor();
         auto props = componentDescriptor.cloneProps(
             parserContext, oldShadowNode.getProps(), RawProps());
-        return oldShadowNode.clone(ShadowNodeFragment{props});
+        return oldShadowNode.clone(ShadowNodeFragment{.props = props});
       });
 
   EXPECT_FALSE(
@@ -120,7 +121,7 @@ TEST_F(YogaDirtyFlagTest, changingNonLayoutSubPropsMustNotDirtyYogaNode) {
         props.shouldRasterize = !props.shouldRasterize;
         props.collapsable = !props.collapsable;
 
-        return oldShadowNode.clone(ShadowNodeFragment{viewProps});
+        return oldShadowNode.clone(ShadowNodeFragment{.props = viewProps});
       });
 
   EXPECT_FALSE(
@@ -139,7 +140,7 @@ TEST_F(YogaDirtyFlagTest, changingLayoutSubPropsMustDirtyYogaNode) {
         props.yogaStyle.setAlignContent(yoga::Align::Baseline);
         props.yogaStyle.setDisplay(yoga::Display::None);
 
-        return oldShadowNode.clone(ShadowNodeFragment{viewProps});
+        return oldShadowNode.clone(ShadowNodeFragment{.props = viewProps});
       });
 
   EXPECT_TRUE(
@@ -153,8 +154,8 @@ TEST_F(YogaDirtyFlagTest, removingAllChildrenMustDirtyYogaNode) {
   auto newRootShadowNode = rootShadowNode_->cloneTree(
       innerShadowNode_->getFamily(), [](const ShadowNode& oldShadowNode) {
         return oldShadowNode.clone(
-            {ShadowNodeFragment::propsPlaceholder(),
-             ShadowNode::emptySharedShadowNodeSharedList()});
+            {.props = ShadowNodeFragment::propsPlaceholder(),
+             .children = ShadowNode::emptySharedShadowNodeSharedList()});
       });
 
   EXPECT_TRUE(
@@ -173,8 +174,8 @@ TEST_F(YogaDirtyFlagTest, removingLastChildMustDirtyYogaNode) {
         std::reverse(children.begin(), children.end());
 
         return oldShadowNode.clone(
-            {ShadowNodeFragment::propsPlaceholder(),
-             std::make_shared<
+            {.props = ShadowNodeFragment::propsPlaceholder(),
+             .children = std::make_shared<
                  const std::vector<std::shared_ptr<const ShadowNode>>>(
                  children)});
       });
@@ -194,8 +195,8 @@ TEST_F(YogaDirtyFlagTest, reversingListOfChildrenMustDirtyYogaNode) {
         std::reverse(children.begin(), children.end());
 
         return oldShadowNode.clone(
-            {ShadowNodeFragment::propsPlaceholder(),
-             std::make_shared<
+            {.props = ShadowNodeFragment::propsPlaceholder(),
+             .children = std::make_shared<
                  const std::vector<std::shared_ptr<const ShadowNode>>>(
                  children)});
       });
@@ -212,7 +213,7 @@ TEST_F(YogaDirtyFlagTest, updatingStateForScrollViewMistNotDirtyYogaNode) {
   auto newRootShadowNode = rootShadowNode_->cloneTree(
       scrollViewShadowNode_->getFamily(), [](const ShadowNode& oldShadowNode) {
         auto state = ScrollViewState{};
-        state.contentOffset = Point{42, 9000};
+        state.contentOffset = Point{.x = 42, .y = 9000};
 
         auto& componentDescriptor = oldShadowNode.getComponentDescriptor();
         auto newState = componentDescriptor.createState(
@@ -220,13 +221,46 @@ TEST_F(YogaDirtyFlagTest, updatingStateForScrollViewMistNotDirtyYogaNode) {
             std::make_shared<ScrollViewState>(state));
 
         return oldShadowNode.clone(
-            {ShadowNodeFragment::propsPlaceholder(),
-             ShadowNodeFragment::childrenPlaceholder(),
-             newState});
+            {.props = ShadowNodeFragment::propsPlaceholder(),
+             .children = ShadowNodeFragment::childrenPlaceholder(),
+             .state = newState});
       });
 
   EXPECT_FALSE(
       static_cast<RootShadowNode&>(*newRootShadowNode).layoutIfNeeded());
+}
+
+TEST_F(YogaDirtyFlagTest, clonedPropsPreserveAspectRatio) {
+  ContextContainer contextContainer{};
+  PropsParserContext parserContext{-1, contextContainer};
+
+  /*
+   * Cloning props with empty RawProps must preserve aspectRatio set on the
+   * source props.
+   */
+  auto newRootShadowNode = rootShadowNode_->cloneTree(
+      innerShadowNode_->getFamily(), [&](const ShadowNode& oldShadowNode) {
+        // First clone: set aspectRatio to 1.5
+        auto viewProps = std::make_shared<ViewShadowNodeProps>();
+        viewProps->yogaStyle.setAspectRatio(yoga::FloatOptional(1.5f));
+        auto nodeWithAspectRatio =
+            oldShadowNode.clone(ShadowNodeFragment{.props = viewProps});
+
+        // Second clone: clone props with empty RawProps (simulating a prop
+        // update that does not touch aspectRatio)
+        auto& componentDescriptor =
+            nodeWithAspectRatio->getComponentDescriptor();
+        auto clonedProps = componentDescriptor.cloneProps(
+            parserContext, nodeWithAspectRatio->getProps(), RawProps());
+
+        auto& clonedViewProps =
+            static_cast<const ViewShadowNodeProps&>(*clonedProps);
+        EXPECT_TRUE(clonedViewProps.yogaStyle.aspectRatio().isDefined());
+        EXPECT_EQ(clonedViewProps.yogaStyle.aspectRatio().unwrap(), 1.5f);
+
+        return nodeWithAspectRatio->clone(
+            ShadowNodeFragment{.props = clonedProps});
+      });
 }
 
 } // namespace facebook::react

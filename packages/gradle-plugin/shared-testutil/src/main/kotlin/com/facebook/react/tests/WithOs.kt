@@ -13,5 +13,5 @@ package com.facebook.react.tests
 enum class OS(val propertyName: String) {
   WIN("Windows"),
   MAC("MacOs"),
-  LINUX("Linux")
+  LINUX("Linux"),
 }

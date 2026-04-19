@@ -6,6 +6,7 @@
  *
  * @flow strict
  * @format
+ * @deprecated
  */
 
 import type {TurboModule} from '../../../../Libraries/TurboModule/RCTExport';
@@ -23,4 +24,4 @@ export interface Spec extends TurboModule {
   +setSendIdleEvents: (sendIdleEvents: boolean) => void;
 }
 
-export default (TurboModuleRegistry.get<Spec>('Timing'): ?Spec);
+export default TurboModuleRegistry.get<Spec>('Timing') as ?Spec;

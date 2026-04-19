@@ -13,8 +13,8 @@ import type {ViewStyleProp} from '../StyleSheet/StyleSheet';
 import type {
   ListRenderItem,
   ListRenderItemInfo,
+  ListViewToken,
   ViewabilityConfigCallbackPair,
-  ViewToken,
   VirtualizedListProps,
 } from '@react-native/virtualized-lists';
 
@@ -38,7 +38,7 @@ type RequiredFlatListProps<ItemT> = {
    * An array (or array-like list) of items to render. Other data types can be
    * used by targeting VirtualizedList directly.
    */
-  data: ?$ReadOnly<$ArrayLike<ItemT>>,
+  data: ?Readonly<$ArrayLike<ItemT>>,
 };
 type OptionalFlatListProps<ItemT> = {
   /**
@@ -93,7 +93,7 @@ type OptionalFlatListProps<ItemT> = {
    * specify `ItemSeparatorComponent`.
    */
   getItemLayout?: (
-    data: ?$ReadOnly<$ArrayLike<ItemT>>,
+    data: ?Readonly<$ArrayLike<ItemT>>,
     index: number,
   ) => {
     length: number,
@@ -172,7 +172,7 @@ function numColumnsOrDefault(numColumns: ?number) {
   return numColumns ?? 1;
 }
 
-function isArrayLike(data: mixed): boolean {
+function isArrayLike(data: unknown): boolean {
   // $FlowExpectedError[incompatible-use]
   return typeof Object(data).length === 'number';
 }
@@ -413,7 +413,7 @@ class FlatList<ItemT = any> extends React.PureComponent<FlatListProps<ItemT>> {
     }
   }
 
-  setNativeProps(props: {[string]: mixed, ...}) {
+  setNativeProps(props: {[string]: unknown, ...}) {
     if (this._listRef) {
       this._listRef.setNativeProps(props);
     }
@@ -432,7 +432,7 @@ class FlatList<ItemT = any> extends React.PureComponent<FlatListProps<ItemT>> {
         }));
     } else if (this.props.onViewableItemsChanged) {
       this._virtualizedListPairs.push({
-        /* $FlowFixMe[incompatible-call] (>=0.63.0 site=react_native_fb) This
+        /* $FlowFixMe[incompatible-type] (>=0.63.0 site=react_native_fb) This
          * comment suppresses an error found when Flow v0.63 was deployed. To
          * see the error delete this comment and run Flow. */
         viewabilityConfig: this.props.viewabilityConfig,
@@ -519,7 +519,7 @@ class FlatList<ItemT = any> extends React.PureComponent<FlatListProps<ItemT>> {
   _getItem = (
     data: $ArrayLike<ItemT>,
     index: number,
-  ): ?(ItemT | $ReadOnlyArray<ItemT>) => {
+  ): ?(ItemT | ReadonlyArray<ItemT>) => {
     const numColumns = numColumnsOrDefault(this.props.numColumns);
     if (numColumns > 1) {
       const ret = [];
@@ -564,16 +564,16 @@ class FlatList<ItemT = any> extends React.PureComponent<FlatListProps<ItemT>> {
       );
       return items
         .map((item, kk) =>
-          keyExtractor(((item: $FlowFixMe): ItemT), index * numColumns + kk),
+          keyExtractor(item as $FlowFixMe as ItemT, index * numColumns + kk),
         )
         .join(':');
     }
 
-    // $FlowFixMe[incompatible-call] Can't call keyExtractor with an array
+    // $FlowFixMe[incompatible-type] Can't call keyExtractor with an array
     return keyExtractor(items, index);
   };
 
-  _pushMultiColumnViewable(arr: Array<ViewToken>, v: ViewToken): void {
+  _pushMultiColumnViewable(arr: Array<ListViewToken>, v: ListViewToken): void {
     const numColumns = numColumnsOrDefault(this.props.numColumns);
     const keyExtractor = this.props.keyExtractor ?? defaultKeyExtractor;
     v.item.forEach((item, ii) => {
@@ -585,22 +585,22 @@ class FlatList<ItemT = any> extends React.PureComponent<FlatListProps<ItemT>> {
 
   _createOnViewableItemsChanged(
     onViewableItemsChanged: ?(info: {
-      viewableItems: Array<ViewToken>,
-      changed: Array<ViewToken>,
+      viewableItems: Array<ListViewToken>,
+      changed: Array<ListViewToken>,
       ...
     }) => void,
     // $FlowFixMe[missing-local-annot]
   ) {
     return (info: {
-      viewableItems: Array<ViewToken>,
-      changed: Array<ViewToken>,
+      viewableItems: Array<ListViewToken>,
+      changed: Array<ListViewToken>,
       ...
     }) => {
       const numColumns = numColumnsOrDefault(this.props.numColumns);
       if (onViewableItemsChanged) {
         if (numColumns > 1) {
-          const changed: Array<ViewToken> = [];
-          const viewableItems: Array<ViewToken> = [];
+          const changed: Array<ListViewToken> = [];
+          const viewableItems: Array<ListViewToken> = [];
           info.viewableItems.forEach(v =>
             this._pushMultiColumnViewable(viewableItems, v),
           );
@@ -626,11 +626,10 @@ class FlatList<ItemT = any> extends React.PureComponent<FlatListProps<ItemT>> {
     const render = (props: ListRenderItemInfo<ItemT>): React.Node => {
       if (ListItemComponent) {
         // $FlowFixMe[not-a-component] Component isn't valid
-        // $FlowFixMe[incompatible-type-arg] Component isn't valid
-        // $FlowFixMe[incompatible-return] Component isn't valid
+        // $FlowFixMe[incompatible-type] Component isn't valid
         return <ListItemComponent {...props} />;
       } else if (renderItem) {
-        // $FlowFixMe[incompatible-call]
+        // $FlowFixMe[incompatible-type]
         return renderItem(props);
       } else {
         return null;
@@ -648,7 +647,7 @@ class FlatList<ItemT = any> extends React.PureComponent<FlatListProps<ItemT>> {
           <View style={StyleSheet.compose(styles.row, columnWrapperStyle)}>
             {item.map((it, kk) => {
               const element = render({
-                // $FlowFixMe[incompatible-call]
+                // $FlowFixMe[incompatible-type]
                 item: it,
                 index: index * cols + kk,
                 separators: info.separators,

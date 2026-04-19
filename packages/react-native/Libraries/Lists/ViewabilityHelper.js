@@ -11,7 +11,7 @@
 'use strict';
 
 export type {
-  ViewToken,
+  ListViewToken as ViewToken,
   ViewabilityConfig,
   ViewabilityConfigCallbackPair,
 } from '@react-native/virtualized-lists';

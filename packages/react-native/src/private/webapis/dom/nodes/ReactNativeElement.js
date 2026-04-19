@@ -25,9 +25,14 @@ import type {InstanceHandle} from './internals/NodeInternals';
 import type ReactNativeDocument from './ReactNativeDocument';
 
 import TextInputState from '../../../../../Libraries/Components/TextInput/TextInputState';
+import {Commands as ViewCommands} from '../../../../../Libraries/Components/View/ViewNativeComponent';
 import {create as createAttributePayload} from '../../../../../Libraries/ReactNative/ReactFabricPublicInstance/ReactNativeAttributePayload';
 import warnForStyleProps from '../../../../../Libraries/ReactNative/ReactFabricPublicInstance/warnForStyleProps';
+import * as ReactNativeFeatureFlags from '../../../featureflags/ReactNativeFeatureFlags';
+import {getEventTypePropName} from '../../../renderer/events/ReactNativeEventTypeMapping';
+import {EVENT_TARGET_GET_DECLARATIVE_LISTENER_KEY} from '../events/internals/EventTargetInternals';
 import {
+  getCurrentProps,
   getNativeElementReference,
   getPublicInstanceFromInstanceHandle,
   setInstanceHandle,
@@ -140,11 +145,19 @@ class ReactNativeElement extends ReadOnlyElement implements NativeMethods {
    */
 
   blur(): void {
-    TextInputState.blurTextInput(this);
+    if (TextInputState.isTextInput(this)) {
+      TextInputState.blurTextInput(this);
+    } else if (ReactNativeFeatureFlags.enableImperativeFocus()) {
+      ViewCommands.blur(this);
+    }
   }
 
   focus() {
-    TextInputState.focusTextInput(this);
+    if (TextInputState.isTextInput(this)) {
+      TextInputState.focusTextInput(this);
+    } else if (ReactNativeFeatureFlags.enableImperativeFocus()) {
+      ViewCommands.focus(this);
+    }
   }
 
   measure(callback: MeasureOnSuccessCallback) {
@@ -205,6 +218,27 @@ class ReactNativeElement extends ReadOnlyElement implements NativeMethods {
       NativeDOM.setNativeProps(node, updatePayload);
     }
   }
+
+  // Provide event listeners from React props during EventTarget dispatch.
+  // This is called by EventTarget.invoke() before explicit addEventListener
+  // listeners, allowing prop-based handlers to be resolved at dispatch time
+  // without registering them via addEventListener during commit.
+  // $FlowExpectedError[unsupported-syntax]
+  [EVENT_TARGET_GET_DECLARATIVE_LISTENER_KEY](
+    eventType: string,
+    isCapture: boolean,
+  ): ((event: Event) => void) | null {
+    const currentProps = getCurrentProps(this);
+    if (currentProps == null) {
+      return null;
+    }
+    const propName = getEventTypePropName(eventType, isCapture);
+    if (propName == null) {
+      return null;
+    }
+    const handler = currentProps[propName];
+    return typeof handler === 'function' ? handler : null;
+  }
 }
 
 type ReactNativeElementT = ReactNativeElement;
@@ -233,7 +267,7 @@ function replaceConstructorWithoutSuper(
 
   ReactNativeElement.prototype = ReactNativeElementClass.prototype;
 
-  // $FlowExpectedError[incompatible-return]
+  // $FlowExpectedError[incompatible-type]
   return ReactNativeElement;
 }
 

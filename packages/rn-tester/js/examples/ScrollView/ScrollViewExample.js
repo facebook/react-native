@@ -545,6 +545,14 @@ if (Platform.OS === 'ios') {
       return <AndroidScrollBarOptions />;
     },
   });
+  examples.push({
+    title: '<ScrollView> scrollsChildToFocus\n',
+    description:
+      'When false, the ScrollView will not automatically scroll to a focused child. Useful for controlling scroll position programmatically.',
+    render(): React.Node {
+      return <ScrollsChildToFocusExample />;
+    },
+  });
 }
 exports.examples = examples;
 
@@ -562,6 +570,42 @@ const AndroidScrollBarOptions = () => {
         label={'persistentScrollBar: ' + persistentScrollBar.toString()}
         onPress={() => setPersistentScrollBar(!persistentScrollBar)}
       />
+    </View>
+  );
+};
+
+const ScrollsChildToFocusExample = () => {
+  const [scrollsChildToFocus, setScrollsChildToFocus] = useState(true);
+  return (
+    <View>
+      <RNTesterText style={styles.text}>
+        Focus a TextInput below to see the scroll behavior.
+      </RNTesterText>
+      <ScrollView
+        style={[styles.scrollView, {height: 200}]}
+        nestedScrollEnabled
+        scrollsChildToFocus={scrollsChildToFocus}>
+        <View style={{padding: 10}}>
+          <TextInput style={styles.textInput} placeholder="TextInput 1 (top)" />
+          <View style={{height: 100}} />
+          <TextInput style={styles.textInput} placeholder="TextInput 2" />
+          <View style={{height: 100}} />
+          <TextInput style={styles.textInput} placeholder="TextInput 3" />
+          <View style={{height: 100}} />
+          <TextInput
+            style={styles.textInput}
+            placeholder="TextInput 4 (bottom)"
+          />
+        </View>
+      </ScrollView>
+      <Button
+        label={'scrollsChildToFocus: ' + scrollsChildToFocus.toString()}
+        onPress={() => setScrollsChildToFocus(!scrollsChildToFocus)}
+      />
+      <RNTesterText>
+        When false, focusing a TextInput will not automatically scroll it into
+        view.
+      </RNTesterText>
     </View>
   );
 };
@@ -693,9 +737,13 @@ const SnapToOptions = () => {
       />
       <Button
         label={
+          /* $FlowFixMe[invalid-compare] Error discovered during Constant
+           * Condition roll out. See https://fburl.com/workplace/4oq3zi07. */
           snapToOffsets === [] ? 'setSnapToOffsets' : 'reset snapToOffsets'
         }
         onPress={() =>
+          /* $FlowFixMe[invalid-compare] Error discovered during Constant
+           * Condition roll out. See https://fburl.com/workplace/4oq3zi07. */
           snapToOffsets === []
             ? setSnapToOffsets([2, 4, 6, 8, 10])
             : setSnapToOffsets([])

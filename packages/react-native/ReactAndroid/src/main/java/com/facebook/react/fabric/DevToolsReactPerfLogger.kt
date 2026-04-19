@@ -114,7 +114,7 @@ public class DevToolsReactPerfLogger : FabricMarkerListener {
       name: ReactMarkerConstants,
       tag: String?,
       instanceKey: Int,
-      timestamp: Long
+      timestamp: Long,
   ) {
     logFabricMarker(name, tag, instanceKey, timestamp, 0)
   }
@@ -124,7 +124,7 @@ public class DevToolsReactPerfLogger : FabricMarkerListener {
       tag: String?,
       instanceKey: Int,
       timestamp: Long,
-      counter: Int
+      counter: Int,
   ) {
     if (isFabricCommitMarker(name)) {
       var commitPoint = fabricCommitMarkers[instanceKey]

@@ -43,16 +43,16 @@ describe('mode changes', () => {
 
     expect(_logs.states).toHaveLength(1);
     expect(root.getRenderedOutput({props: []}).toJSX()).toEqual(
-      <rn-virtualView>
+      <rn-virtualViewExperimental>
         <rn-paragraph>Child</rn-paragraph>
-      </rn-virtualView>,
+      </rn-virtualViewExperimental>,
     );
 
     dispatchModeChangeEvent(viewRef.current, VirtualViewMode.Hidden);
 
     expect(_logs.states).toHaveLength(2);
     expect(root.getRenderedOutput({props: []}).toJSX()).toEqual(
-      <rn-virtualView />,
+      <rn-virtualViewExperimental />,
     );
   });
 
@@ -72,16 +72,16 @@ describe('mode changes', () => {
 
     expect(_logs.states).toHaveLength(2);
     expect(root.getRenderedOutput({props: []}).toJSX()).toEqual(
-      <rn-virtualView />,
+      <rn-virtualViewExperimental />,
     );
 
     dispatchModeChangeEvent(viewRef.current, VirtualViewMode.Visible);
 
     expect(_logs.states).toHaveLength(3);
     expect(root.getRenderedOutput({props: []}).toJSX()).toEqual(
-      <rn-virtualView>
+      <rn-virtualViewExperimental>
         <rn-paragraph>Child</rn-paragraph>
-      </rn-virtualView>,
+      </rn-virtualViewExperimental>,
     );
   });
 
@@ -101,9 +101,9 @@ describe('mode changes', () => {
 
     expect(_logs.states).toHaveLength(1);
     expect(root.getRenderedOutput({props: []}).toJSX()).toEqual(
-      <rn-virtualView>
+      <rn-virtualViewExperimental>
         <rn-paragraph>Child</rn-paragraph>
-      </rn-virtualView>,
+      </rn-virtualViewExperimental>,
     );
 
     dispatchModeChangeEvent(viewRef.current, VirtualViewMode.Visible);
@@ -111,27 +111,27 @@ describe('mode changes', () => {
     // Expects `VirtualView` does not undergo a state update.
     expect(_logs.states).toHaveLength(1);
     expect(root.getRenderedOutput({props: []}).toJSX()).toEqual(
-      <rn-virtualView>
+      <rn-virtualViewExperimental>
         <rn-paragraph>Child</rn-paragraph>
-      </rn-virtualView>,
+      </rn-virtualViewExperimental>,
     );
   });
 });
 
 describe('styles', () => {
-  test('does not set height when visible', () => {
+  test('does not set styles when visible', () => {
     const root = Fantom.createRoot();
 
     Fantom.runTask(() => {
       root.render(<VirtualView />);
     });
 
-    expect(root.getRenderedOutput({props: ['height']}).toJSX()).toEqual(
-      <rn-virtualView />,
-    );
+    expect(
+      root.getRenderedOutput({props: ['minHeight', 'minWidth']}).toJSX(),
+    ).toEqual(<rn-virtualViewExperimental />);
   });
 
-  test('does not set height when prerendered', () => {
+  test('does not set styles when prerendered', () => {
     const root = Fantom.createRoot();
     const viewRef = createRef<React.RefOf<VirtualView>>();
 
@@ -141,12 +141,12 @@ describe('styles', () => {
 
     dispatchModeChangeEvent(viewRef.current, VirtualViewMode.Prerender);
 
-    expect(root.getRenderedOutput({props: ['height']}).toJSX()).toEqual(
-      <rn-virtualView />,
-    );
+    expect(
+      root.getRenderedOutput({props: ['minHeight', 'minWidth']}).toJSX(),
+    ).toEqual(<rn-virtualViewExperimental />);
   });
 
-  test('sets height when hidden', () => {
+  test('sets styles when hidden', () => {
     const root = Fantom.createRoot();
     const viewRef = createRef<React.RefOf<VirtualView>>();
 
@@ -156,9 +156,9 @@ describe('styles', () => {
 
     dispatchModeChangeEvent(viewRef.current, VirtualViewMode.Hidden);
 
-    expect(root.getRenderedOutput({props: ['height']}).toJSX()).toEqual(
-      <rn-virtualView height="100.000000" />,
-    );
+    expect(
+      root.getRenderedOutput({props: ['minHeight', 'minWidth']}).toJSX(),
+    ).toEqual(<rn-virtualViewExperimental minHeight="100" minWidth="100" />);
   });
 });
 
@@ -297,7 +297,7 @@ describe('memory management', () => {
  * Helper to reduce duplication of the mock event payload.
  */
 export function dispatchModeChangeEvent(
-  instance: mixed,
+  instance: unknown,
   mode: VirtualViewMode,
 ): void {
   const targetRect = {
@@ -346,7 +346,7 @@ export function dispatchModeChangeEvent(
     {
       mode: mode as number,
       targetRect,
-      // $FlowFixMe[incompatible-cast] - https://fburl.com/workplace/t8a3yvuo
+      // $FlowFixMe[incompatible-type] - https://fburl.com/workplace/t8a3yvuo
       thresholdRect,
     } as NativeModeChangeEvent,
   );
@@ -355,8 +355,10 @@ export function dispatchModeChangeEvent(
 /**
  * Helper to create a callback ref that records instances using WeakRefs.
  */
-function createWeakRefCallback<T: interface {} = interface {}>(): $ReadOnly<{
-  weakRefs: $ReadOnlyArray<WeakRef<T>>,
+function createWeakRefCallback<
+  T extends interface {} = interface {},
+>(): Readonly<{
+  weakRefs: ReadonlyArray<WeakRef<T>>,
   callbackRef: React.RefSetter<T>,
 }> {
   const weakRefs: Array<WeakRef<T>> = [];
@@ -373,7 +375,7 @@ function createWeakRefCallback<T: interface {} = interface {}>(): $ReadOnly<{
 /**
  * Gets the shadow node via `instance.__internalInstanceHandle.stateNode.node`.
  */
-function getNodeAsObjectFromPublicInstance(instance: mixed): interface {} {
+function getNodeAsObjectFromPublicInstance(instance: unknown): interface {} {
   const node = getNodeFromPublicInstance(
     ensureInstance(instance, ReactNativeElement),
   );

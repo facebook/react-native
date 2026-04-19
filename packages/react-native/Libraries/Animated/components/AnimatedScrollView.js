@@ -54,7 +54,8 @@ const AnimatedScrollView: AnimatedComponentType<
     props.style != null
   ) {
     return (
-      // $FlowFixMe - It should return an Animated ScrollView but it returns a ScrollView with Animated props applied.
+      // $FlowFixMe[incompatible-type] - It should return an Animated ScrollView but it returns a ScrollView with Animated props applied.
+      // $FlowFixMe[incompatible-variance]
       <AnimatedScrollViewWithInvertedRefreshControl
         scrollEventThrottle={0.0001}
         {...props}
@@ -89,7 +90,7 @@ const AnimatedScrollViewWithInvertedRefreshControl =
     const {intermediatePropsForRefreshControl, intermediatePropsForScrollView} =
       useMemo(() => {
         // $FlowFixMe[underconstrained-implicit-instantiation]
-        // $FlowFixMe[incompatible-call]
+        // $FlowFixMe[incompatible-type]
         const {outer, inner} = splitLayoutProps(flattenStyle(props.style));
         return {
           intermediatePropsForRefreshControl: {style: outer},

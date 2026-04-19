@@ -18,7 +18,8 @@ internal class RequestCloseEvent(surfaceId: Int, viewTag: Int) :
 
   @Deprecated(
       "Do not use this constructor, use the one with explicit surfaceId",
-      ReplaceWith("RequestCloseEvent(surfaceId, viewTag)"))
+      ReplaceWith("RequestCloseEvent(surfaceId, viewTag)"),
+  )
   constructor(viewTag: Int) : this(ViewUtil.NO_SURFACE_ID, viewTag)
 
   override fun getEventName(): String = EVENT_NAME

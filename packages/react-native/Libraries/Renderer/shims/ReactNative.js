@@ -7,15 +7,15 @@
  * @noformat
  * @nolint
  * @flow
- * @generated SignedSource<<e2c46705ed927302dbe9332dafba459d>>
+ * @generated SignedSource<<5908e4e900f26a939c59a16d2c252af3>>
  *
- * This file was sync'd from the facebook/react repository.
+ * This file is no longer sync'd from the facebook/react repository.
+ * The version compatibility check is removed. Use at your own risk.
  */
 'use strict';
 
-import type {ReactNativeType} from './ReactNativeTypes';
-
-let ReactNative: ReactNativeType;
+// The underlying type no longer exists
+let ReactNative: $FlowFixMe;
 
 if (__DEV__) {
   ReactNative = require('../implementations/ReactNativeRenderer-dev');

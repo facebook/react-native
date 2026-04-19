@@ -23,7 +23,7 @@ target_include_directories(jsijniprofiler PRIVATE .)
 
 target_link_libraries(
       jsijniprofiler
-      hermes-engine::libhermes
+      hermes-engine::hermesvm
       jsi
       reactnative
 )

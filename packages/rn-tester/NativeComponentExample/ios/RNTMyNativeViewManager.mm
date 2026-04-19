@@ -27,7 +27,7 @@ RCT_EXPORT_METHOD(callNativeMethodToChangeBackgroundColor : (nonnull NSNumber *)
 {
   [self.bridge.uiManager addUIBlock:^(RCTUIManager *uiManager, NSDictionary<NSNumber *, UIView *> *viewRegistry) {
     UIView *view = viewRegistry[reactTag];
-    if (!view || ![view isKindOfClass:[UIView class]]) {
+    if ((view == nullptr) || ![view isKindOfClass:[UIView class]]) {
       RCTLogError(@"Cannot find NativeView with tag #%@", reactTag);
       return;
     }

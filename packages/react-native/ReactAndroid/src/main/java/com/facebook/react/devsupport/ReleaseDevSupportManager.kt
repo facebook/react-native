@@ -40,13 +40,13 @@ public open class ReleaseDevSupportManager : DevSupportManager {
 
   public override fun addCustomDevOption(
       optionName: String,
-      optionHandler: DevOptionHandler
+      optionHandler: DevOptionHandler,
   ): Unit = Unit
 
   public override fun showNewJSError(
       message: String?,
       details: ReadableArray?,
-      errorCookie: Int
+      errorCookie: Int,
   ): Unit = Unit
 
   public override fun createRootView(appKey: String): View? = null
@@ -70,7 +70,19 @@ public open class ReleaseDevSupportManager : DevSupportManager {
 
   public override var devSupportEnabled: Boolean
     get() = false
-    @Suppress("UNUSED_PARAMETER") set(isDevSupportEnabled: Boolean): Unit = Unit
+    @Suppress("UNUSED_PARAMETER") set(value): Unit = Unit
+
+  public override var devMenuEnabled: Boolean
+    get() = false
+    @Suppress("UNUSED_PARAMETER") set(value): Unit = Unit
+
+  public override var shakeGestureEnabled: Boolean
+    get() = false
+    @Suppress("UNUSED_PARAMETER") set(value): Unit = Unit
+
+  public override var keyboardShortcutsEnabled: Boolean
+    get() = false
+    @Suppress("UNUSED_PARAMETER") set(value): Unit = Unit
 
   public override val devSettings: DeveloperSettings?
     get() = null
@@ -106,7 +118,7 @@ public open class ReleaseDevSupportManager : DevSupportManager {
 
   public override fun downloadBundleResourceFromUrlSync(
       resourceURL: String,
-      outputFile: File
+      outputFile: File,
   ): File? = null
 
   public override val lastErrorTitle: String?
@@ -142,11 +154,11 @@ public open class ReleaseDevSupportManager : DevSupportManager {
 
   public override fun createSurfaceDelegate(moduleName: String): SurfaceDelegate? = null
 
-  public override fun openDebugger(): Unit = Unit
+  public override fun openDebugger(panel: String?): Unit = Unit
 
   public override fun showPausedInDebuggerOverlay(
       message: String,
-      listener: PausedInDebuggerOverlayCommandListener
+      listener: PausedInDebuggerOverlayCommandListener,
   ): Unit = Unit
 
   public override fun hidePausedInDebuggerOverlay(): Unit = Unit

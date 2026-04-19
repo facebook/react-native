@@ -17,10 +17,9 @@ import com.facebook.react.uimanager.events.EventDispatcher
 
 internal class ReactTextInputTextWatcher(
     reactContext: ReactContext,
-    private val editText: ReactEditText
+    private val editText: ReactEditText,
 ) : TextWatcher {
-  private val eventDispatcher: EventDispatcher? =
-      UIManagerHelper.getEventDispatcherForReactTag(reactContext, editText.id)
+  private val eventDispatcher: EventDispatcher? = UIManagerHelper.getEventDispatcher(reactContext)
   private val surfaceId = UIManagerHelper.getSurfaceId(reactContext)
   private var previousText: String? = null
 
@@ -59,7 +58,14 @@ internal class ReactTextInputTextWatcher(
     // The event that contains the event counter and updates it must be sent first.
     eventDispatcher?.dispatchEvent(
         ReactTextChangedEvent(
-            surfaceId, editText.id, s.toString(), editText.incrementAndGetEventCounter()))
+            surfaceId,
+            editText.id,
+            s.toString(),
+            editText.incrementAndGetEventCounter(),
+            editText.selectionStart,
+            editText.selectionEnd,
+        )
+    )
   }
 
   override fun afterTextChanged(s: Editable) = Unit

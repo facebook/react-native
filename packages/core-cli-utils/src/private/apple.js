@@ -64,7 +64,7 @@ function checkPodfileInSyncWithManifest(
       );
     }
   } catch (e) {
-    throw new Error('Please run: yarn run boostrap ios: ' + e.message);
+    throw new Error('Please run: yarn run bootstrap ios: ' + e.message);
   }
 }
 
@@ -75,7 +75,7 @@ const FIRST = 1,
   FIFTH = 5;
 
 function getNodePackagePath(packageName: string): string {
-  // $FlowIgnore[prop-missing] type definition is incomplete
+  // $FlowFixMe[prop-missing] type definition is incomplete
   return require.resolve(packageName, {cwd: [process.cwd(), ...module.paths]});
 }
 
@@ -144,7 +144,7 @@ export const tasks = {
   // 2. Build the iOS app using a setup environment
   build: (
     options: AppleBuildOptions,
-    ...args: $ReadOnlyArray<string>
+    ...args: ReadonlyArray<string>
   ): {
     validate: Task<void>,
     hasPodsInstalled: Task<void>,
@@ -166,7 +166,7 @@ export const tasks = {
             fs.constants.F_OK | fs.constants.R_OK,
           );
         } catch (e) {
-          throw new Error('Please run: yarn run boostrap ios: ' + e.message);
+          throw new Error('Please run: yarn run bootstrap ios: ' + e.message);
         }
       }
       checkPodfileInSyncWithManifest(

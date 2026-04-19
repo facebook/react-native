@@ -24,11 +24,9 @@ RCT_EXPORT_MODULE(FileReaderModule)
 
 @synthesize moduleRegistry = _moduleRegistry;
 
-RCT_EXPORT_METHOD(readAsText
-                  : (NSDictionary<NSString *, id> *)blob encoding
-                  : (NSString *)encoding resolve
-                  : (RCTPromiseResolveBlock)resolve reject
-                  : (RCTPromiseRejectBlock)reject)
+RCT_EXPORT_METHOD(
+    readAsText : (NSDictionary<NSString *, id> *)blob encoding : (NSString *)encoding resolve : (RCTPromiseResolveBlock)
+        resolve reject : (RCTPromiseRejectBlock)reject)
 {
   RCTBlobManager *blobManager = [_moduleRegistry moduleForName:"BlobModule"];
   dispatch_async(blobManager.methodQueue, ^{
@@ -56,10 +54,9 @@ RCT_EXPORT_METHOD(readAsText
   });
 }
 
-RCT_EXPORT_METHOD(readAsDataURL
-                  : (NSDictionary<NSString *, id> *)blob resolve
-                  : (RCTPromiseResolveBlock)resolve reject
-                  : (RCTPromiseRejectBlock)reject)
+RCT_EXPORT_METHOD(
+    readAsDataURL : (NSDictionary<NSString *, id> *)blob resolve : (RCTPromiseResolveBlock)
+        resolve reject : (RCTPromiseRejectBlock)reject)
 {
   RCTBlobManager *blobManager = [_moduleRegistry moduleForName:"BlobModule"];
   dispatch_async(blobManager.methodQueue, ^{

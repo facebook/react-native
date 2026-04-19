@@ -200,6 +200,7 @@ async function getNightlyTarballUrl(
   return await computeNightlyTarballURL(
     version,
     buildType,
+    'react',
     coordinate,
     artifactName,
   );

@@ -85,7 +85,7 @@ public class ReactImageView(
     context: Context,
     private val draweeControllerBuilder: AbstractDraweeControllerBuilder<*, *, *, *>,
     private val globalImageLoadListener: GlobalImageLoadListener?,
-    private var callerContext: Any?
+    private var callerContext: Any?,
 ) : GenericDraweeView(context, buildHierarchy(context)) {
 
   private val sources: MutableList<ImageSource> = mutableListOf()
@@ -129,9 +129,7 @@ public class ReactImageView(
     if (!shouldNotify) {
       downloadListener = null
     } else {
-      val eventDispatcher =
-          UIManagerHelper.getEventDispatcherForReactTag((context as ReactContext), id)
-
+      val eventDispatcher = UIManagerHelper.getEventDispatcher((context as ReactContext))
       downloadListener =
           object : ReactImageDownloadListener<ImageInfo>() {
             override fun onProgressChange(loaded: Int, total: Int) {
@@ -146,7 +144,9 @@ public class ReactImageView(
                       id,
                       imageSource?.source,
                       loaded,
-                      total))
+                      total,
+                  )
+              )
             }
 
             override fun onSubmit(id: String, callerContext: Any?) {
@@ -154,13 +154,14 @@ public class ReactImageView(
                 return
               }
               eventDispatcher.dispatchEvent(
-                  createLoadStartEvent(UIManagerHelper.getSurfaceId(this@ReactImageView), getId()))
+                  createLoadStartEvent(UIManagerHelper.getSurfaceId(this@ReactImageView), getId())
+              )
             }
 
             override fun onFinalImageSet(
                 id: String,
                 imageInfo: ImageInfo?,
-                animatable: Animatable?
+                animatable: Animatable?,
             ) {
               if (imageInfo != null && imageSource != null && eventDispatcher != null) {
                 eventDispatcher.dispatchEvent(
@@ -169,9 +170,12 @@ public class ReactImageView(
                         getId(),
                         imageSource?.source,
                         imageInfo.width,
-                        imageInfo.height))
+                        imageInfo.height,
+                    )
+                )
                 eventDispatcher.dispatchEvent(
-                    createLoadEndEvent(UIManagerHelper.getSurfaceId(this@ReactImageView), getId()))
+                    createLoadEndEvent(UIManagerHelper.getSurfaceId(this@ReactImageView), getId())
+                )
               }
             }
 
@@ -181,7 +185,11 @@ public class ReactImageView(
               }
               eventDispatcher.dispatchEvent(
                   createErrorEvent(
-                      UIManagerHelper.getSurfaceId(this@ReactImageView), getId(), throwable))
+                      UIManagerHelper.getSurfaceId(this@ReactImageView),
+                      getId(),
+                      throwable,
+                  )
+              )
             }
           }
     }
@@ -288,7 +296,8 @@ public class ReactImageView(
                 source.getString("uri"),
                 source.getDouble("width"),
                 source.getDouble("height"),
-                cacheControl)
+                cacheControl,
+            )
         if (Uri.EMPTY == imageSource.uri) {
           warnImageSource(source.getString("uri"))
           imageSource = getTransparentBitmapImageSource(context)
@@ -361,15 +370,17 @@ public class ReactImageView(
   public override fun hasOverlappingRendering(): Boolean = false
 
   public override fun onDraw(canvas: Canvas) {
-    BackgroundStyleApplicator.clipToPaddingBox(this, canvas)
-    try {
-      super.onDraw(canvas)
-    } catch (e: RuntimeException) {
-      // Only provide updates if downloadListener is set (shouldNotify is true)
-      if (downloadListener != null) {
-        val eventDispatcher =
-            UIManagerHelper.getEventDispatcherForReactTag(context as ReactContext, id)
-        eventDispatcher?.dispatchEvent(createErrorEvent(UIManagerHelper.getSurfaceId(this), id, e))
+    BackgroundStyleApplicator.clipToPaddingBoxWithAntiAliasing(this, canvas) {
+      try {
+        super.onDraw(canvas)
+      } catch (e: RuntimeException) {
+        // Only provide updates if downloadListener is set (shouldNotify is true)
+        if (downloadListener != null) {
+          val eventDispatcher = UIManagerHelper.getEventDispatcher(context as ReactContext)
+          eventDispatcher?.dispatchEvent(
+              createErrorEvent(UIManagerHelper.getSurfaceId(this), id, e)
+          )
+        }
       }
     }
   }
@@ -400,14 +411,16 @@ public class ReactImageView(
 
     // We store this in a local variable as it's coming from super.getHierarchy()
     val hierarchy = this.hierarchy
-    hierarchy.actualImageScaleType = scaleType
+    hierarchy.setActualImageScaleType(scaleType)
 
-    if (defaultImageDrawable != null) {
-      hierarchy.setPlaceholderImage(defaultImageDrawable, scaleType)
+    val defaultDrawable = defaultImageDrawable
+    if (defaultDrawable != null) {
+      hierarchy.setPlaceholderImage(defaultDrawable, scaleType)
     }
 
-    if (loadingImageDrawable != null) {
-      hierarchy.setPlaceholderImage(loadingImageDrawable, ScalingUtils.ScaleType.CENTER)
+    val loadingDrawable = loadingImageDrawable
+    if (loadingDrawable != null) {
+      hierarchy.setPlaceholderImage(loadingDrawable, ScalingUtils.ScaleType.CENTER)
     }
 
     val roundingParams = hierarchy.roundingParams
@@ -472,7 +485,11 @@ public class ReactImageView(
         draweeControllerBuilder
             as
             AbstractDraweeControllerBuilder<
-                *, ImageRequest, CloseableReference<CloseableImage>, ImageInfo>
+                *,
+                ImageRequest,
+                CloseableReference<CloseableImage>,
+                ImageInfo,
+            >
 
     // This builder is reused
     builder.reset()
@@ -581,8 +598,10 @@ public class ReactImageView(
     // 3. ReactImageView detects the null src; displays a warning in LogBox (via this code).
     // 3. LogBox renders an <Image/>, which fabric preallocates.
     // 4. Rinse and repeat.
-    if (ReactBuildConfig.DEBUG &&
-        !ReactNativeNewArchitectureFeatureFlags.enableBridgelessArchitecture()) {
+    if (
+        ReactBuildConfig.DEBUG &&
+            !ReactNativeNewArchitectureFeatureFlags.enableBridgelessArchitecture()
+    ) {
       RNLog.w(context as ReactContext, "ReactImageView: Image source \"$uri\" doesn't exist")
     }
   }
@@ -590,7 +609,7 @@ public class ReactImageView(
   private inner class TilePostprocessor : BasePostprocessor() {
     override fun process(
         source: Bitmap,
-        bitmapFactory: PlatformBitmapFactory
+        bitmapFactory: PlatformBitmapFactory,
     ): CloseableReference<Bitmap> {
       val destRect = Rect(0, 0, width, height)
       scaleType.getTransform(tileMatrix, destRect, source.width, source.height, 0.0f, 0.0f)
@@ -623,7 +642,8 @@ public class ReactImageView(
     private fun buildHierarchy(context: Context) =
         GenericDraweeHierarchyBuilder(context.resources)
             .setRoundingParams(
-                RoundingParams.fromCornersRadius(0f).apply { setPaintFilterBitmap(true) })
+                RoundingParams.fromCornersRadius(0f).apply { setPaintFilterBitmap(true) }
+            )
             .build()
   }
 }

@@ -110,6 +110,6 @@ internal object Systrace {
   enum class EventScope(val code: Char) {
     THREAD('t'),
     PROCESS('p'),
-    GLOBAL('g')
+    GLOBAL('g'),
   }
 }

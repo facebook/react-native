@@ -38,7 +38,7 @@ function findCommunityPlatformPackage(
   // root. This is also what `@react-native-community/cli` assumes (see
   // https://github.com/react-native-community/cli/blob/14.x/packages/cli-tools/src/findProjectRoot.ts).
   const main = require.resolve(spec, {paths: [startDir]});
-  // $FlowIgnore[unsupported-syntax]
+  // $FlowFixMe[unsupported-syntax]
   return require(main);
 }
 
@@ -114,9 +114,9 @@ commands.push(codegenCommand);
 
 const config = {
   commands,
-  platforms: {} /*:: as {[string]: $ReadOnly<{
-      projectConfig: mixed,
-      dependencyConfig: mixed,
+  platforms: {} /*:: as {[string]: Readonly<{
+      projectConfig: unknown,
+      dependencyConfig: unknown,
     }>} */,
 };
 

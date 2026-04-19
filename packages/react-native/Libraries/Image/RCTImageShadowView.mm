@@ -9,7 +9,7 @@
 
 #import <React/RCTLog.h>
 
-#ifndef RCT_FIT_RM_OLD_COMPONENT
+#ifndef RCT_REMOVE_LEGACY_ARCH
 
 @implementation RCTImageShadowView
 

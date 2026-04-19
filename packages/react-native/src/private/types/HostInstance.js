@@ -8,6 +8,9 @@
  * @format
  */
 
+// $FlowExpectedError[nonstrict-import] Making this module `strict-local` would require too many modules to revert back to `strict-local` as well.
+import type ReactNativeElement from '../webapis/dom/nodes/ReactNativeElement';
+
 export type MeasureOnSuccessCallback = (
   x: number,
   y: number,
@@ -105,7 +108,7 @@ export interface LegacyHostInstanceMethods {
   setNativeProps(nativeProps: {...}): void;
 }
 
-export type HostInstance = LegacyHostInstanceMethods;
+export type HostInstance = ReactNativeElement;
 
 /** @deprecated Use HostInstance instead */
 export type NativeMethods = LegacyHostInstanceMethods;

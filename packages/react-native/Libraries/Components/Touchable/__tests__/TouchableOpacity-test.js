@@ -10,9 +10,9 @@
 
 'use strict';
 
-const {create} = require('../../../../jest/renderer');
 const Text = require('../../../Text/Text').default;
 const TouchableOpacity = require('../TouchableOpacity').default;
+const {create} = require('@react-native/jest-preset/jest/renderer');
 const React = require('react');
 
 describe('TouchableOpacity', () => {

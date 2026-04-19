@@ -31,7 +31,10 @@ package com.facebook.react.uimanager.annotations
  */
 @Retention(AnnotationRetention.RUNTIME)
 @Target(
-    AnnotationTarget.FUNCTION, AnnotationTarget.PROPERTY_GETTER, AnnotationTarget.PROPERTY_SETTER)
+    AnnotationTarget.FUNCTION,
+    AnnotationTarget.PROPERTY_GETTER,
+    AnnotationTarget.PROPERTY_SETTER,
+)
 public annotation class ReactPropGroup(
 
     /**
@@ -72,7 +75,7 @@ public annotation class ReactPropGroup(
      * method annotated with [ReactProp] if property with a given name gets removed from the
      * component description in JS
      */
-    public val defaultLong: Long = 0L
+    public val defaultLong: Long = 0L,
 ) {
   public companion object {
     // Used as a default value for "customType" property as "null" is not allowed. Moreover, when

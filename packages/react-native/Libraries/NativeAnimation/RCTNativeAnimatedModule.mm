@@ -118,11 +118,9 @@ RCT_EXPORT_METHOD(disconnectAnimatedNodes : (double)parentTag childTag : (double
   }];
 }
 
-RCT_EXPORT_METHOD(startAnimatingNode
-                  : (double)animationId nodeTag
-                  : (double)nodeTag config
-                  : (NSDictionary<NSString *, id> *)config endCallback
-                  : (RCTResponseSenderBlock)callBack)
+RCT_EXPORT_METHOD(
+    startAnimatingNode : (double)animationId nodeTag : (double)nodeTag config : (NSDictionary<NSString *, id> *)
+        config endCallback : (RCTResponseSenderBlock)callBack)
 {
   [self addOperationBlock:^(RCTNativeAnimatedNodesManager *nodesManager) {
     [nodesManager startAnimatingNode:[NSNumber numberWithDouble:animationId]
@@ -228,10 +226,9 @@ RCT_EXPORT_METHOD(stopListeningToAnimatedNodeValue : (double)tag)
   }];
 }
 
-RCT_EXPORT_METHOD(addAnimatedEventToView
-                  : (double)viewTag eventName
-                  : (nonnull NSString *)eventName eventMapping
-                  : (JS::NativeAnimatedModule::EventMapping &)eventMapping)
+RCT_EXPORT_METHOD(
+    addAnimatedEventToView : (double)viewTag eventName : (nonnull NSString *)
+        eventName eventMapping : (JS::NativeAnimatedModule::EventMapping &)eventMapping)
 {
   NSMutableDictionary *eventMappingDict = [NSMutableDictionary new];
   eventMappingDict[@"nativeEventPath"] = RCTConvertVecToArray(eventMapping.nativeEventPath());
@@ -247,10 +244,9 @@ RCT_EXPORT_METHOD(addAnimatedEventToView
   }];
 }
 
-RCT_EXPORT_METHOD(removeAnimatedEventFromView
-                  : (double)viewTag eventName
-                  : (nonnull NSString *)eventName animatedNodeTag
-                  : (double)animatedNodeTag)
+RCT_EXPORT_METHOD(
+    removeAnimatedEventFromView : (double)viewTag eventName : (nonnull NSString *)eventName animatedNodeTag : (double)
+        animatedNodeTag)
 {
   [self addOperationBlock:^(RCTNativeAnimatedNodesManager *nodesManager) {
     [nodesManager removeAnimatedEventFromView:[NSNumber numberWithDouble:viewTag]

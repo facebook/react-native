@@ -8,7 +8,6 @@
 #pragma once
 
 #include <ReactCommon/RuntimeExecutor.h>
-#include <cstdint>
 #include <unordered_map>
 #include <vector>
 
@@ -18,12 +17,7 @@ namespace facebook::react {
 
 using TimerHandle = int;
 
-enum class TimerSource {
-  Unknown,
-  SetTimeout,
-  SetInterval,
-  RequestAnimationFrame
-};
+enum class TimerSource { Unknown, SetTimeout, SetInterval, RequestAnimationFrame };
 
 /*
  * Wraps a jsi::Function to make it copyable so we can pass it into a lambda.
@@ -34,12 +28,12 @@ struct TimerCallback {
       std::vector<jsi::Value> args,
       bool repeat,
       TimerSource source = TimerSource::Unknown)
-      : callback_(std::move(callback)),
-        args_(std::move(args)),
-        repeat(repeat),
-        source(source) {}
+      : callback_(std::move(callback)), args_(std::move(args)), repeat(repeat), source(source)
+  {
+  }
 
-  void invoke(jsi::Runtime& runtime) {
+  void invoke(jsi::Runtime &runtime)
+  {
     callback_.call(runtime, args_.data(), args_.size());
   }
 
@@ -51,39 +45,37 @@ struct TimerCallback {
 
 class TimerManager {
  public:
-  explicit TimerManager(
-      std::unique_ptr<PlatformTimerRegistry> platformTimerRegistry) noexcept;
+  explicit TimerManager(std::unique_ptr<PlatformTimerRegistry> platformTimerRegistry) noexcept;
+  TimerManager(const TimerManager &) = delete;
+  TimerManager(TimerManager &&) = delete;
+  TimerManager &operator=(const TimerManager &) = delete;
+  TimerManager &operator=(TimerManager &&) = delete;
+  ~TimerManager() noexcept;
 
   void setRuntimeExecutor(RuntimeExecutor runtimeExecutor) noexcept;
 
-  void callReactNativeMicrotasks(jsi::Runtime& runtime);
-
   void callTimer(TimerHandle handle);
 
-  void attachGlobals(jsi::Runtime& runtime);
+  void attachGlobals(jsi::Runtime &runtime);
+
+  void quit();
 
  private:
-  TimerHandle createReactNativeMicrotask(
-      jsi::Function&& callback,
-      std::vector<jsi::Value>&& args);
-
-  void deleteReactNativeMicrotask(jsi::Runtime& runtime, TimerHandle handle);
-
   TimerHandle createTimer(
-      jsi::Function&& callback,
-      std::vector<jsi::Value>&& args,
+      jsi::Function &&callback,
+      std::vector<jsi::Value> &&args,
       double delay,
       TimerSource source = TimerSource::Unknown);
 
-  void deleteTimer(jsi::Runtime& runtime, TimerHandle handle);
+  void deleteTimer(jsi::Runtime &runtime, TimerHandle handle);
 
   TimerHandle createRecurringTimer(
-      jsi::Function&& callback,
-      std::vector<jsi::Value>&& args,
+      jsi::Function &&callback,
+      std::vector<jsi::Value> &&args,
       double delay,
       TimerSource source = TimerSource::Unknown);
 
-  void deleteRecurringTimer(jsi::Runtime& runtime, TimerHandle handle);
+  void deleteRecurringTimer(jsi::Runtime &runtime, TimerHandle handle);
 
   RuntimeExecutor runtimeExecutor_;
   std::unique_ptr<PlatformTimerRegistry> platformTimerRegistry_;
@@ -96,11 +88,6 @@ class TimerManager {
   // As per WHATWG HTML 8.6.1 (Timers) ids must be greater than zero, i.e. start
   // at 1
   TimerHandle timerIndex_{1};
-
-  // The React Native microtask queue is used to back public APIs including
-  // `queueMicrotask`, `clearImmediate`, and `setImmediate` (which is used by
-  // the Promise polyfill) when the JSVM microtask mechanism is not used.
-  std::vector<TimerHandle> reactNativeMicrotasksQueue_;
 };
 
 } // namespace facebook::react

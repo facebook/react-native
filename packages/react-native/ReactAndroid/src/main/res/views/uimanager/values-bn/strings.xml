@@ -4,7 +4,7 @@
 <!-- FB Locale: bn_IN -->
 <resources exclude-from-buck-resource-map="true">
     <string name="link_description" gender="unknown">লিঙ্ক</string>
-    <string name="image_description" gender="unknown">ইমেজ</string>
+    <string name="image_description" gender="unknown">ছবি</string>
     <string name="imagebutton_description" gender="unknown">বোতাম, ছবি</string>
     <string name="header_description" gender="unknown">শিরোনাম</string>
     <string name="alert_description" gender="unknown">অ্যালার্ট</string>

@@ -31,7 +31,7 @@ type ActivityType = component(
   }
 );
 
-export default function renderApplication<Props: Object>(
+export default function renderApplication<Props extends Object>(
   RootComponent: React.ComponentType<Props>,
   initialProps: Props,
   rootTag: any,
@@ -76,6 +76,7 @@ export default function renderApplication<Props: Object>(
   if (useOffscreen && displayMode != null) {
     // $FlowFixMe[incompatible-type]
     // $FlowFixMe[prop-missing]
+    // $FlowFixMe[missing-export]
     const Activity: ActivityType = React.unstable_Activity;
 
     renderable = (

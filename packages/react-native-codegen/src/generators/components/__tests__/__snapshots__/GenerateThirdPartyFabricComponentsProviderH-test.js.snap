@@ -56,6 +56,15 @@ Class<RCTComponentViewProtocol> CommandNativeComponentCls(void) __attribute__((u
 Class<RCTComponentViewProtocol> ExcludedAndroidComponentCls(void) __attribute__((used)); // EXCLUDE_ANDROID
 
 Class<RCTComponentViewProtocol> MultiFileIncludedNativeComponentCls(void) __attribute__((used)); // EXCLUDE_IOS_TWO_COMPONENTS_DIFFERENT_FILES
+Class<RCTComponentViewProtocol> AllPropCls(void) __attribute__((used)); // ALL_PROP
+Class<RCTComponentViewProtocol> AllPropWithOptionalGenCls(void) __attribute__((used)); // ALL_PROP_WITH_OPTIONAL_GEN
+Class<RCTComponentViewProtocol> AllPropWithOptionalObjectGenCls(void) __attribute__((used)); // ALL_PROP_WITH_OPTIONAL_OBJECT_GEN
+Class<RCTComponentViewProtocol> ArrayPropsWithOptionalGenNativeComponentCls(void) __attribute__((used)); // ARRAY_PROPS_WITH_OPTIONAL_GEN
+Class<RCTComponentViewProtocol> ArrayPropsWithOptionalObjectGenNativeComponentCls(void) __attribute__((used)); // ARRAY_PROPS_WITH_OPTIONAL_OBJECT_GEN
+Class<RCTComponentViewProtocol> ArrayPropsOptionalGenNativeComponentCls(void) __attribute__((used)); // ARRAY_PROPS_WITH_NESTED_OBJECT_WITH_OPTIONAL_GEN
+Class<RCTComponentViewProtocol> ArrayPropsOptionalObjectGenNativeComponentCls(void) __attribute__((used)); // ARRAY_PROPS_WITH_NESTED_OBJECT_WITH_OPTIONAL_OBJECT_GEN
+Class<RCTComponentViewProtocol> ObjectPropsWithOptionalGenCls(void) __attribute__((used)); // OBJECT_PROPS_WITH_OPTIONAL_GEN
+Class<RCTComponentViewProtocol> ObjectPropsWithOptionalObjectGenCls(void) __attribute__((used)); // OBJECT_PROPS_WITH_OPTIONAL_OBJECT_GEN
 
 #endif
 #endif

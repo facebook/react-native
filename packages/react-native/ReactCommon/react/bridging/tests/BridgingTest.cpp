@@ -140,15 +140,17 @@ TEST_F(BridgingTest, weakbjectTest) {
   auto object = jsi::Object(rt);
   auto weakobject = jsi::WeakObject(rt, object);
 
-  EXPECT_TRUE(jsi::Object::strictEquals(
-      rt,
-      object,
-      bridging::fromJs<jsi::WeakObject>(rt, object, invoker)
-          .lock(rt)
-          .asObject(rt)));
+  EXPECT_TRUE(
+      jsi::Object::strictEquals(
+          rt,
+          object,
+          bridging::fromJs<jsi::WeakObject>(rt, object, invoker)
+              .lock(rt)
+              .asObject(rt)));
 
-  EXPECT_TRUE(jsi::Object::strictEquals(
-      rt, object, bridging::toJs(rt, weakobject).asObject(rt)));
+  EXPECT_TRUE(
+      jsi::Object::strictEquals(
+          rt, object, bridging::toJs(rt, weakobject).asObject(rt)));
 }
 
 TEST_F(BridgingTest, arrayTest) {
@@ -443,11 +445,12 @@ void addEventSubscription(
       rt,
       [lastEvent = lastEvent](const EventType& event) { *lastEvent = event; },
       invoker);
-  eventSubscriptionsWithListener.emplace_back(std::make_pair(
-      jsi::Object(eventEmitterJs.asFunction(rt)
-                      .callWithThis(rt, eventEmitterJs, listenJs)
-                      .asObject(rt)),
-      std::move(lastEvent)));
+  eventSubscriptionsWithListener.emplace_back(
+      std::make_pair(
+          jsi::Object(eventEmitterJs.asFunction(rt)
+                          .callWithThis(rt, eventEmitterJs, listenJs)
+                          .asObject(rt)),
+          std::move(lastEvent)));
 }
 
 } // namespace

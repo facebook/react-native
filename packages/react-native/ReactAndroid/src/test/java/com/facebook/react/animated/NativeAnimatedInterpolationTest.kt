@@ -75,7 +75,9 @@ class NativeAnimatedInterpolationTest {
                 input,
                 output,
                 InterpolationAnimatedNode.EXTRAPOLATE_TYPE_CLAMP,
-                InterpolationAnimatedNode.EXTRAPOLATE_TYPE_CLAMP))
+                InterpolationAnimatedNode.EXTRAPOLATE_TYPE_CLAMP,
+            )
+        )
         .isEqualTo(1.0)
     assertThat(
             InterpolationAnimatedNode.interpolate(
@@ -83,7 +85,9 @@ class NativeAnimatedInterpolationTest {
                 input,
                 output,
                 InterpolationAnimatedNode.EXTRAPOLATE_TYPE_CLAMP,
-                InterpolationAnimatedNode.EXTRAPOLATE_TYPE_CLAMP))
+                InterpolationAnimatedNode.EXTRAPOLATE_TYPE_CLAMP,
+            )
+        )
         .isEqualTo(0.0)
   }
 
@@ -97,7 +101,9 @@ class NativeAnimatedInterpolationTest {
                 input,
                 output,
                 InterpolationAnimatedNode.EXTRAPOLATE_TYPE_IDENTITY,
-                InterpolationAnimatedNode.EXTRAPOLATE_TYPE_IDENTITY))
+                InterpolationAnimatedNode.EXTRAPOLATE_TYPE_IDENTITY,
+            )
+        )
         .isEqualTo(30.0)
     assertThat(
             InterpolationAnimatedNode.interpolate(
@@ -105,7 +111,9 @@ class NativeAnimatedInterpolationTest {
                 input,
                 output,
                 InterpolationAnimatedNode.EXTRAPOLATE_TYPE_IDENTITY,
-                InterpolationAnimatedNode.EXTRAPOLATE_TYPE_IDENTITY))
+                InterpolationAnimatedNode.EXTRAPOLATE_TYPE_IDENTITY,
+            )
+        )
         .isEqualTo(5.0)
   }
 
@@ -125,7 +133,8 @@ class NativeAnimatedInterpolationTest {
     val output =
         arrayOf(
             doubleArrayOf(20.0, 20.0, 20.0, 80.0, 80.0, 80.0, 80.0, 20.0),
-            doubleArrayOf(40.0, 40.0, 33.0, 60.0, 60.0, 60.0, 65.0, 40.0))
+            doubleArrayOf(40.0, 40.0, 33.0, 60.0, 60.0, 60.0, 65.0, 40.0),
+        )
     val pattern = "M20,20L20,80L80,80L80,20Z"
     assertThat(
             InterpolationAnimatedNode.interpolateString(
@@ -134,7 +143,9 @@ class NativeAnimatedInterpolationTest {
                 input,
                 output,
                 InterpolationAnimatedNode.EXTRAPOLATE_TYPE_IDENTITY,
-                InterpolationAnimatedNode.EXTRAPOLATE_TYPE_IDENTITY))
+                InterpolationAnimatedNode.EXTRAPOLATE_TYPE_IDENTITY,
+            )
+        )
         .isEqualTo("M20,20L20,80L80,80L80,20Z")
     assertThat(
             InterpolationAnimatedNode.interpolateString(
@@ -143,7 +154,9 @@ class NativeAnimatedInterpolationTest {
                 input,
                 output,
                 InterpolationAnimatedNode.EXTRAPOLATE_TYPE_IDENTITY,
-                InterpolationAnimatedNode.EXTRAPOLATE_TYPE_IDENTITY))
+                InterpolationAnimatedNode.EXTRAPOLATE_TYPE_IDENTITY,
+            )
+        )
         .isEqualTo("M30,30L26.5,70L70,70L72.5,30Z")
   }
 
@@ -153,5 +166,6 @@ class NativeAnimatedInterpolationTest {
           input,
           output,
           InterpolationAnimatedNode.EXTRAPOLATE_TYPE_EXTEND,
-          InterpolationAnimatedNode.EXTRAPOLATE_TYPE_EXTEND)
+          InterpolationAnimatedNode.EXTRAPOLATE_TYPE_EXTEND,
+      )
 }

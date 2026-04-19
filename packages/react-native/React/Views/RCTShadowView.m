@@ -16,7 +16,7 @@
 #import "UIView+Private.h"
 #import "UIView+React.h"
 
-#ifndef RCT_FIT_RM_OLD_COMPONENT
+#ifndef RCT_REMOVE_LEGACY_ARCH
 
 typedef void (^RCTActionBlock)(RCTShadowView *shadowViewSelf, id value);
 typedef void (^RCTResetActionBlock)(RCTShadowView *shadowViewSelf);
@@ -294,9 +294,8 @@ static void RCTProcessMetaPropsBorder(const YGValue metaProps[META_PROP_COUNT], 
 {
   YGNodeRef yogaNode = _yogaNode;
 
-  CGSize oldMinimumSize = (CGSize){
-      RCTCoreGraphicsFloatFromYogaValue(YGNodeStyleGetMinWidth(yogaNode), 0.0),
-      RCTCoreGraphicsFloatFromYogaValue(YGNodeStyleGetMinHeight(yogaNode), 0.0)};
+  CGSize oldMinimumSize = (CGSize){RCTCoreGraphicsFloatFromYogaValue(YGNodeStyleGetMinWidth(yogaNode), 0.0),
+                                   RCTCoreGraphicsFloatFromYogaValue(YGNodeStyleGetMinHeight(yogaNode), 0.0)};
 
   if (!CGSizeEqualToSize(oldMinimumSize, minimumSize)) {
     YGNodeStyleSetMinWidth(yogaNode, RCTYogaFloatFromCoreGraphicsFloat(minimumSize.width));
@@ -738,7 +737,7 @@ RCT_STYLE_PROPERTY(AspectRatio, aspectRatio, AspectRatio, float)
 
 @end
 
-#else // RCT_FIT_RM_OLD_COMPONENT
+#else // RCT_REMOVE_LEGACY_ARCH
 @implementation RCTShadowView
 @synthesize reactTag = _reactTag;
 @synthesize rootTag = _rootTag;
@@ -826,4 +825,4 @@ RCT_STYLE_PROPERTY(AspectRatio, aspectRatio, AspectRatio, float)
 }
 
 @end
-#endif // RCT_FIT_RM_OLD_COMPONENT
+#endif // RCT_REMOVE_LEGACY_ARCH

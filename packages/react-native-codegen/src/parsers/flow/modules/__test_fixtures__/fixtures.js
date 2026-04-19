@@ -126,6 +126,7 @@ import * as TurboModuleRegistry from '../TurboModuleRegistry';
 export interface Spec extends TurboModule {
   +passBool?: (arg: boolean) => void;
   +passNumber: (arg: number) => void;
+  +passBooleanLiteral: (arg: true) => void;
   +passNumberLiteral: (arg: 4) => void;
   +passString: (arg: string) => void;
   +passStringish: (arg: Stringish) => void;

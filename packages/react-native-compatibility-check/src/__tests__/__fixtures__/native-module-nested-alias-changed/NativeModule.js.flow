@@ -18,6 +18,6 @@ export interface Spec extends TurboModule {
   +exampleFunction: (a: MyType, b: number) => void;
 }
 
-export default (TurboModuleRegistry.getEnforcing<Spec>(
+export default TurboModuleRegistry.getEnforcing<Spec>(
   'NativeModuleTest',
-): Spec);
+) as Spec;

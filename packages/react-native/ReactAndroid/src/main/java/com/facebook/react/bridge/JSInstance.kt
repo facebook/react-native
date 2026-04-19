@@ -7,13 +7,13 @@
 
 package com.facebook.react.bridge
 
-import com.facebook.react.common.annotations.internal.LegacyArchitecture
+import com.facebook.react.common.annotations.internal.InteropLegacyArchitecture
 
 /**
  * This interface includes the methods needed to use a running JS instance, without specifying any
  * of the bridge-specific initialization or lifecycle management.
  */
-@LegacyArchitecture
+@InteropLegacyArchitecture
 public interface JSInstance {
   public fun invokeCallback(callbackID: Int, arguments: NativeArrayInterface)
 

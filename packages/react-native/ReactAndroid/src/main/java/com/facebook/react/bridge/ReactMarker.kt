@@ -77,7 +77,7 @@ public object ReactMarker {
       tag: String?,
       instanceKey: Int,
       timestamp: Long,
-      counter: Int
+      counter: Int,
   ) {
     for (listener in fabricMarkerListeners) {
       listener.logFabricMarker(name, tag, instanceKey, timestamp, counter)
@@ -90,7 +90,7 @@ public object ReactMarker {
       name: ReactMarkerConstants,
       tag: String?,
       instanceKey: Int,
-      timestamp: Long
+      timestamp: Long,
   ) {
     for (listener in fabricMarkerListeners) {
       listener.logFabricMarker(name, tag, instanceKey, timestamp, 0)
@@ -193,7 +193,7 @@ public object ReactMarker {
         name: ReactMarkerConstants,
         tag: String?,
         instanceKey: Int,
-        timestamp: Long
+        timestamp: Long,
     )
 
     public fun logFabricMarker(
@@ -201,7 +201,7 @@ public object ReactMarker {
         tag: String?,
         instanceKey: Int,
         timestamp: Long,
-        counter: Int
+        counter: Int,
     ): Unit = logFabricMarker(name, tag, instanceKey, timestamp)
   }
 }

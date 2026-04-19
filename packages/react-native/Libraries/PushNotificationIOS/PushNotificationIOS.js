@@ -89,7 +89,7 @@ export type FetchResult = {
 /**
  * An event emitted by PushNotificationIOS.
  */
-export type PushNotificationEventName = $Keys<{
+export type PushNotificationEventName = keyof {
   /**
    * Fired when a remote notification is received. The handler will be invoked
    * with an instance of `PushNotificationIOS`. This will handle notifications
@@ -116,7 +116,7 @@ export type PushNotificationEventName = $Keys<{
    */
   registrationError: string,
   ...
-}>;
+};
 
 export interface PushNotification {
   /**
@@ -210,7 +210,7 @@ class PushNotificationIOS {
       NativePushNotificationManagerIOS,
       'PushNotificationManager is not available.',
     );
-    // $FlowFixMe[prop-missing]
+    // $FlowFixMe[incompatible-type]
     NativePushNotificationManagerIOS.presentLocalNotification(details);
   }
 
@@ -235,7 +235,7 @@ class PushNotificationIOS {
       NativePushNotificationManagerIOS,
       'PushNotificationManager is not available.',
     );
-    // $FlowFixMe[prop-missing]
+    // $FlowFixMe[incompatible-type]
     NativePushNotificationManagerIOS.scheduleLocalNotification(details);
   }
 

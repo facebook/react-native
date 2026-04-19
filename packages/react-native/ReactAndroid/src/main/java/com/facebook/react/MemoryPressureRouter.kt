@@ -44,7 +44,9 @@ public class MemoryPressureRouter(context: Context) : ComponentCallbacks2 {
   public override fun onConfigurationChanged(newConfig: Configuration): Unit = Unit
 
   @Deprecated(
-      "onLowMemory is deprecated, use onTrimMemory instead.", ReplaceWith("onTrimMemory(level)"))
+      "onLowMemory is deprecated, use onTrimMemory instead.",
+      ReplaceWith("onTrimMemory(level)"),
+  )
   public override fun onLowMemory(): Unit = Unit
 
   private fun dispatchMemoryPressure(level: Int) {

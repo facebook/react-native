@@ -15,7 +15,7 @@ import type {RNTesterModuleExample} from '../../types/RNTesterTypes';
 const NativeCxxModuleExampleExample = require('./NativeCxxModuleExampleExample');
 const React = require('react');
 
-exports.displayName = (undefined: ?string);
+exports.displayName = undefined as ?string;
 exports.title = 'Cxx TurboModule';
 exports.category = 'Basic';
 exports.description = 'Usage of Cxx TurboModule';

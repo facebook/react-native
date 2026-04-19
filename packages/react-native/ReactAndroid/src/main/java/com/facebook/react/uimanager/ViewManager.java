@@ -15,7 +15,6 @@ import androidx.annotation.Nullable;
 import com.facebook.common.logging.FLog;
 import com.facebook.react.bridge.BaseJavaModule;
 import com.facebook.react.bridge.ReactApplicationContext;
-import com.facebook.react.bridge.ReactContext;
 import com.facebook.react.bridge.ReactNoCrashSoftException;
 import com.facebook.react.bridge.ReactSoftExceptionLogger;
 import com.facebook.react.bridge.ReadableArray;
@@ -54,7 +53,7 @@ public abstract class ViewManager<T extends View, C extends ReactShadowNode>
    * null signals that View Recycling is disabled. `enableViewRecycling` must be explicitly called
    * in a concrete constructor to enable View Recycling per ViewManager.
    */
-  @Nullable private HashMap<Integer, Stack<T>> mRecyclableViews = null;
+  @Nullable private Map<Integer, Stack<T>> mRecyclableViews = null;
 
   public ViewManager() {
     super(null);
@@ -487,14 +486,13 @@ public abstract class ViewManager<T extends View, C extends ReactShadowNode>
    * <p>Subclasses can override this method to implement custom resource prefetching for the
    * ViewManager.
    *
+   * @param surfaceId surface ID
    * @param reactContext {@link com.facebook.react.bridge.ReactContext} used for the view.
-   * @param surfaceId {@link int} surface ID
-   * @param reactTag reactTag that should be set as ID of the view instance
    * @param params {@link MapBuffer} prefetch request params defined in C++
    */
   @UnstableReactNativeAPI
-  public void experimental_prefetchResource(
-      ReactContext reactContext, int surfaceId, int reactTag, MapBuffer params) {
+  public void experimental_prefetchResources(
+      int surfaceId, ThemedReactContext reactContext, MapBuffer params) {
     return;
   }
 

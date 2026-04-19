@@ -62,20 +62,38 @@ class SPMManager
   end
 
   def clean_spm_dependencies_from_target(project, new_targets)
-    project.root_object.package_references.delete_if { |pkg| (pkg.class == Xcodeproj::Project::Object::XCRemoteSwiftPackageReference) }
+    project.root_object.package_references.delete_if { |pkg|
+      (pkg.class == Xcodeproj::Project::Object::XCRemoteSwiftPackageReference) ||
+      (pkg.class == Xcodeproj::Project::Object::XCLocalSwiftPackageReference)
+    }
   end
 
   def add_spm_to_target(project, target, url, requirement, products)
-    pkg_class = Xcodeproj::Project::Object::XCRemoteSwiftPackageReference
-    ref_class = Xcodeproj::Project::Object::XCSwiftPackageProductDependency
-    pkg = project.root_object.package_references.find { |p| p.class == pkg_class && p.repositoryURL == url }
-    if !pkg
-      pkg = project.new(pkg_class)
-      pkg.repositoryURL = url
-      pkg.requirement = requirement
-      log(" Adding package to workspace: #{pkg.inspect}")
-      project.root_object.package_references << pkg
+    # Determine if this is a local path or remote URL
+    is_local_path = File.exist?(url)
+
+    if is_local_path
+      pkg_class = Xcodeproj::Project::Object::XCLocalSwiftPackageReference
+      pkg = project.root_object.package_references.find { |p| p.class == pkg_class && p.relative_path == url }
+      if !pkg
+        pkg = project.new(pkg_class)
+        pkg.relative_path = url
+        log(" Adding local package to workspace: #{pkg.inspect}")
+        project.root_object.package_references << pkg
+      end
+    else
+      pkg_class = Xcodeproj::Project::Object::XCRemoteSwiftPackageReference
+      pkg = project.root_object.package_references.find { |p| p.class == pkg_class && p.repositoryURL == url }
+      if !pkg
+        pkg = project.new(pkg_class)
+        pkg.repositoryURL = url
+        pkg.requirement = requirement
+        log(" Adding remote package to workspace: #{pkg.inspect}")
+        project.root_object.package_references << pkg
+      end
     end
+
+    ref_class = Xcodeproj::Project::Object::XCSwiftPackageProductDependency
     products.each do |product_name|
       ref = target.package_product_dependencies.find do |r|
         r.class == ref_class && r.package == pkg && r.product_name == product_name

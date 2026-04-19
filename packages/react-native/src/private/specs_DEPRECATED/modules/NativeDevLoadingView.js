@@ -17,8 +17,9 @@ export interface Spec extends TurboModule {
     message: string,
     withColor: ?number,
     withBackgroundColor: ?number,
+    withDismissButton: ?boolean,
   ) => void;
   +hide: () => void;
 }
 
-export default (TurboModuleRegistry.get<Spec>('DevLoadingView'): ?Spec);
+export default TurboModuleRegistry.get<Spec>('DevLoadingView') as ?Spec;

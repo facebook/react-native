@@ -183,7 +183,7 @@ export default function MyNativeView(props: {}): React.Node {
               currentBGColor + 1 >= colors.length ? 0 : currentBGColor + 1;
             let newColor = colors[nextBGColor];
             RNTMyNativeViewCommands.callNativeMethodToChangeBackgroundColor(
-              // $FlowFixMe[incompatible-call]
+              // $FlowFixMe[incompatible-type]
               ref.current,
               newColor,
             );
@@ -215,7 +215,7 @@ export default function MyNativeView(props: {}): React.Node {
               colors[(randomColorId + 1) % 5],
             ];
             RNTMyNativeViewCommands.callNativeMethodToAddOverlays(
-              // $FlowFixMe[incompatible-call]
+              // $FlowFixMe[incompatible-type]
               ref.current,
               overlayColors,
             );
@@ -226,7 +226,7 @@ export default function MyNativeView(props: {}): React.Node {
           title="Remove Overlays"
           onPress={() => {
             RNTMyNativeViewCommands.callNativeMethodToRemoveOverlays(
-              // $FlowFixMe[incompatible-call]
+              // $FlowFixMe[incompatible-type]
               ref.current,
             );
             callNativeMethodToRemoveOverlays(legacyRef.current);
@@ -287,7 +287,7 @@ export default function MyNativeView(props: {}): React.Node {
         title="Fire Legacy Style Event"
         onPress={() => {
           RNTMyNativeViewCommands.fireLagacyStyleEvent(
-            // $FlowFixMe[incompatible-call]
+            // $FlowFixMe[incompatible-type]
             ref.current,
           );
         }}

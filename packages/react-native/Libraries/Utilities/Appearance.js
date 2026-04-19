@@ -14,7 +14,6 @@ import typeof INativeAppearance from './NativeAppearance';
 
 import NativeEventEmitter from '../EventEmitter/NativeEventEmitter';
 import EventEmitter from '../vendor/emitter/EventEmitter';
-import invariant from 'invariant';
 
 export type {AppearancePreferences};
 
@@ -36,7 +35,7 @@ let lazyState: ?{
 /**
  * Ensures that all state and listeners are lazily initialized correctly.
  */
-function getState(): $NonMaybeType<typeof lazyState> {
+function getState(): NonNullable<typeof lazyState> {
   if (lazyState != null) {
     return lazyState;
   }
@@ -51,7 +50,7 @@ function getState(): $NonMaybeType<typeof lazyState> {
       eventEmitter,
     };
   } else {
-    const state: $NonMaybeType<typeof lazyState> = {
+    const state: NonNullable<typeof lazyState> = {
       NativeAppearance,
       appearance: null,
       eventEmitter,
@@ -60,7 +59,7 @@ function getState(): $NonMaybeType<typeof lazyState> {
       appearanceChanged: [AppearancePreferences],
     }>(NativeAppearance).addListener('appearanceChanged', newAppearance => {
       state.appearance = {
-        colorScheme: toColorScheme(newAppearance.colorScheme),
+        colorScheme: newAppearance.colorScheme,
       };
       eventEmitter.emit('change', state.appearance);
     });
@@ -83,7 +82,7 @@ export function getColorScheme(): ?ColorSchemeName {
       // Lazily initialize `state.appearance`. This should only
       // happen once because we never reassign a null value to it.
       state.appearance = {
-        colorScheme: toColorScheme(NativeAppearance.getColorScheme()),
+        colorScheme: NativeAppearance.getColorScheme(),
       };
     }
     colorScheme = state.appearance.colorScheme;
@@ -94,13 +93,18 @@ export function getColorScheme(): ?ColorSchemeName {
 /**
  * Updates the current color scheme to the supplied value.
  */
-export function setColorScheme(colorScheme: ?ColorSchemeName): void {
+export function setColorScheme(colorScheme: ColorSchemeName): void {
   const state = getState();
   const {NativeAppearance} = state;
   if (NativeAppearance != null) {
-    NativeAppearance.setColorScheme(colorScheme ?? 'unspecified');
+    NativeAppearance.setColorScheme(colorScheme);
     state.appearance = {
-      colorScheme: toColorScheme(NativeAppearance.getColorScheme()),
+      // When setting to 'unspecified', get the actual system color scheme.
+      // Fall back to the passed value if getColorScheme() returns null.
+      colorScheme:
+        colorScheme === 'unspecified'
+          ? (NativeAppearance.getColorScheme() ?? colorScheme)
+          : colorScheme,
     };
   }
 }
@@ -113,15 +117,4 @@ export function addChangeListener(
 ): EventSubscription {
   const {eventEmitter} = getState();
   return eventEmitter.addListener('change', listener);
-}
-
-/**
- * TODO: (hramos) T52919652 Use ?ColorSchemeName once codegen supports union
- */
-function toColorScheme(colorScheme: ?string): ?ColorSchemeName {
-  invariant(
-    colorScheme === 'dark' || colorScheme === 'light' || colorScheme == null,
-    "Unrecognized color scheme. Did you mean 'dark', 'light' or null?",
-  );
-  return colorScheme;
 }

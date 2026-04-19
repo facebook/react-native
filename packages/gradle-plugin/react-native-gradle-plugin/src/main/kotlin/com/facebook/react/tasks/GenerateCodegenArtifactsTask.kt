@@ -81,6 +81,8 @@ abstract class GenerateCodegenArtifactsTask : Exec() {
             "--libraryName",
             libraryName,
             "--javaPackageName",
-            codegenJavaPackageName))
+            codegenJavaPackageName,
+        )
+    )
   }
 }

@@ -158,7 +158,7 @@ type LoopAnimationConfig = {
 
 const loop = function (
   animation: CompositeAnimation,
-  // $FlowFixMe[prop-missing]
+  // $FlowFixMe[incompatible-type]
   {iterations = -1}: LoopAnimationConfig = {},
 ): CompositeAnimation {
   return emptyAnimation;

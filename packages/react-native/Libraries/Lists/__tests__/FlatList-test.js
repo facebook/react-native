@@ -10,8 +10,8 @@
 
 'use strict';
 
-const {create} = require('../../../jest/renderer');
 const FlatList = require('../FlatList').default;
+const {create} = require('@react-native/jest-preset/jest/renderer');
 const React = require('react');
 const {createRef} = require('react');
 
@@ -36,7 +36,7 @@ describe('FlatList', () => {
     expect(component).toMatchSnapshot();
   });
   it('renders simple list using ListItemComponent', async () => {
-    function ListItemComponent({item}: $ReadOnly<{item: {key: string}}>) {
+    function ListItemComponent({item}: Readonly<{item: {key: string}}>) {
       return <item value={item.key} />;
     }
     const component = await create(
@@ -48,7 +48,7 @@ describe('FlatList', () => {
     expect(component).toMatchSnapshot();
   });
   it('renders simple list using ListItemComponent (multiple columns)', async () => {
-    function ListItemComponent({item}: $ReadOnly<{item: {key: string}}>) {
+    function ListItemComponent({item}: Readonly<{item: {key: string}}>) {
       return <item value={item.key} />;
     }
     const component = await create(
@@ -84,7 +84,7 @@ describe('FlatList', () => {
         ListHeaderComponent={() => <header />}
         data={new Array<void>(5).fill().map((_, ii) => ({id: String(ii)}))}
         keyExtractor={(item, index) => item.id}
-        // $FlowFixMe[prop-missing]
+        // $FlowFixMe[incompatible-type]
         getItemLayout={({index}: $FlowFixMe) => ({
           length: 50,
           offset: index * 50,
@@ -137,7 +137,7 @@ describe('FlatList', () => {
     jest.resetModules();
     jest.unmock('../../Components/ScrollView/ScrollView');
 
-    function ListItemComponent({item}: $ReadOnly<{item: {key: string}}>) {
+    function ListItemComponent({item}: Readonly<{item: {key: string}}>) {
       return <item value={item.key} />;
     }
     const listRef = createRef<React.ElementRef<typeof FlatList>>();
@@ -201,7 +201,7 @@ describe('FlatList', () => {
 
     const component = await create(
       <FlatList
-        // $FlowFixMe[prop-missing]
+        // $FlowFixMe[incompatible-type]
         data={arrayLike}
         renderItem={({item}) => <item value={item.key} />}
       />,

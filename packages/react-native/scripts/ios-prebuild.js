@@ -27,7 +27,7 @@ const packageJsonPath = path.join(
 
 const prebuildLog = createLogger('Prebuild');
 
-// $FlowIgnore[unsupported-syntax]
+// $FlowFixMe[unsupported-syntax]
 const {version: currentVersion} = require(packageJsonPath);
 
 async function main() {

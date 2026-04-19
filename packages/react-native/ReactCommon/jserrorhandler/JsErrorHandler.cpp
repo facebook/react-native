@@ -10,6 +10,7 @@
 #include <glog/logging.h>
 #include <react/bridging/Bridging.h>
 #include <react/featureflags/ReactNativeFeatureFlags.h>
+#include <ostream>
 #include <string>
 #include "StackTraceParser.h"
 
@@ -219,7 +220,7 @@ std::ostream& operator<<(
 
 JsErrorHandler::JsErrorHandler(JsErrorHandler::OnJsError onJsError)
     : _onJsError(std::move(onJsError)),
-      _inErrorHandler(std::make_shared<bool>(false)){
+      _inErrorHandler(std::make_shared<bool>(false)) {
 
       };
 

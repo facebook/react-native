@@ -21,7 +21,6 @@ function getNativeTagFromHostElement(elem: ?HostInstance | number): ?number {
     return elem;
   }
   if (elem != null) {
-    // $FlowExpectedError - accessing non-public property
     return elem.__nativeTag;
   }
   return undefined;
@@ -79,7 +78,7 @@ function PointerEventPointerOverOutTestCase(
         assert_equals(
           innerOverRef.current,
           innerOutRef.current,
-          'pointerover is recieved before pointerout',
+          'pointerover is received before pointerout',
         );
         switch (innerOverRef.current) {
           case 0: {
@@ -145,7 +144,7 @@ function PointerEventPointerOverOutTestCase(
           assert_equals(
             outerOwnOverRef.current,
             outerOwnOutRef.current,
-            'outer: pointerover is recieved before pointerout',
+            'outer: pointerover is received before pointerout',
           );
           outerOwnOverRef.current++;
         } else {
@@ -168,7 +167,7 @@ function PointerEventPointerOverOutTestCase(
           assert_equals(
             outerOwnOverRef.current,
             outerOwnOutRef.current + 1,
-            'outer: pointerout is recieved after pointerover',
+            'outer: pointerout is received after pointerover',
           );
           if (outerOwnOutRef.current === 1) {
             assert_equals(innerOutRef.current, 2, 'inner should be done now');
@@ -179,7 +178,7 @@ function PointerEventPointerOverOutTestCase(
           assert_equals(
             outerOutRef.current - outerOwnOutRef.current,
             innerOutRef.current - 1,
-            'pointerout: should only recieve this via bubbling',
+            'pointerout: should only receive this via bubbling',
           );
         }
       });
@@ -207,7 +206,7 @@ function PointerEventPointerOverOutTestCase(
   );
 }
 
-type Props = $ReadOnly<{}>;
+type Props = Readonly<{}>;
 export default function PointerEventPointerOverOut(
   props: Props,
 ): React.MixedElement {

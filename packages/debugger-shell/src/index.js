@@ -18,9 +18,9 @@ declare module.exports: typeof Node;
 // Because Electron doesn't support package.json `exports`, we need to
 // switch at runtime.
 if ('electron' in process.versions) {
-  // $FlowIgnore[invalid-export]
+  // $FlowFixMe[invalid-export]
   module.exports = require('./electron');
 } else {
-  // $FlowIgnore[invalid-export]
+  // $FlowFixMe[invalid-export]
   module.exports = require('./node');
 }

@@ -7,11 +7,12 @@
 
 #pragma once
 
-#include "NetworkTypes.h"
-
+#include <map>
 #include <string>
 
 namespace facebook::react::jsinspector_modern {
+
+using Headers = std::map<std::string, std::string>;
 
 /**
  * Get the HTTP reason phrase for a given status code (RFC 9110).
@@ -22,6 +23,6 @@ std::string httpReasonPhrase(uint16_t status);
  * Get the MIME type for a response based on the 'Content-Type' header. If
  * the header is not present, returns 'application/octet-stream'.
  */
-std::string mimeTypeFromHeaders(const Headers& headers);
+std::string mimeTypeFromHeaders(const Headers &headers);
 
 } // namespace facebook::react::jsinspector_modern

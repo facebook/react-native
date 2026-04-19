@@ -18,6 +18,8 @@ export class URLSearchParams {
   }
 
   constructor(params?: Record<string, string> | string | [string, string][]) {
+    /* $FlowFixMe[invalid-compare] Error discovered during Constant Condition
+     * roll out. See https://fburl.com/workplace/5whu3i34. */
     if (params === null) {
       return;
     }
@@ -129,6 +131,7 @@ export class URLSearchParams {
       }
     }
 
+    // $FlowFixMe[incompatible-use]
     return entries[Symbol.iterator]();
   }
 

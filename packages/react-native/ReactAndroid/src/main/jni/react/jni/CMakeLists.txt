@@ -51,13 +51,9 @@ include(${REACT_ANDROID_DIR}/src/main/jni/first-party/jni-lib-merge/SoMerging-ut
 add_library(
         reactnativejni
         OBJECT
-          CatalystInstanceImpl.cpp
           InspectorNetworkRequestListener.cpp
-          InspectorNetworkReporter.cpp
           JExecutor.cpp
-          JInspector.cpp
           JMessageQueueThread.cpp
-          JReactCxxErrorHandler.cpp
           JReactSoftExceptionLogger.cpp
           JRuntimeExecutor.cpp
           JRuntimeScheduler.cpp
@@ -68,8 +64,7 @@ add_library(
           MethodInvoker.cpp
           ModuleRegistryBuilder.cpp
           OnLoad.cpp
-          ReactInstanceManagerInspectorTarget.cpp
-          SafeReleaseJniRef.cpp
+        SafeReleaseJniRef.cpp
 )
 target_merge_so(reactnativejni)
 
@@ -82,10 +77,8 @@ target_link_libraries(reactnativejni
         fbjni
         folly_runtime
         glog_init
-        jsinspector_network
         logger
         react_cxxreact
-        react_featureflags
         react_renderer_runtimescheduler
         reactnativejni_common
         runtimeexecutor

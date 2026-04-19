@@ -445,6 +445,7 @@ RCT_ENUM_CONVERTER(
   return type;
 }
 
+#if !TARGET_OS_TV
 RCT_MULTI_ENUM_CONVERTER(
     UIDataDetectorTypes,
     (@{
@@ -460,6 +461,7 @@ RCT_MULTI_ENUM_CONVERTER(
     }),
     UIDataDetectorTypePhoneNumber,
     unsignedLongLongValue)
+#endif
 
 RCT_ENUM_CONVERTER(
     UIKeyboardAppearance,
@@ -499,6 +501,7 @@ RCT_ENUM_CONVERTER(
     UIUserInterfaceStyleUnspecified,
     integerValue)
 
+#if !TARGET_OS_TV
 RCT_ENUM_CONVERTER(
     UIInterfaceOrientationMask,
     (@{
@@ -510,13 +513,18 @@ RCT_ENUM_CONVERTER(
     }),
     NSNotFound,
     unsignedIntegerValue)
+#endif
 
 RCT_ENUM_CONVERTER(
     UIModalPresentationStyle,
     (@{
       @"fullScreen" : @(UIModalPresentationFullScreen),
+#if !TARGET_OS_TV
       @"pageSheet" : @(UIModalPresentationPageSheet),
+#endif
+#if !TARGET_OS_TV || __TV_OS_VERSION_MIN_REQUIRED >= 260000
       @"formSheet" : @(UIModalPresentationFormSheet),
+#endif
       @"overFullScreen" : @(UIModalPresentationOverFullScreen),
     }),
     UIModalPresentationFullScreen,
@@ -857,7 +865,7 @@ static UIColor *RCTColorFromSemanticColorName(NSString *semanticColorName)
     RCTAssert([UIColor respondsToSelector:selector], @"RCTUIColor does not respond to a semantic color selector.");
     Class klass = [UIColor class];
     IMP imp = [klass methodForSelector:selector];
-    id (*getSemanticColorObject)(id, SEL) = (id(*)(id, SEL))imp;
+    id (*getSemanticColorObject)(id, SEL) = (id (*)(id, SEL))imp;
     id colorObject = getSemanticColorObject(klass, selector);
     if ([colorObject isKindOfClass:[UIColor class]]) {
       color = colorObject;
@@ -1073,7 +1081,7 @@ NSArray *RCTConvertArrayValue(SEL type, id json)
   __block BOOL copy = NO;
   __block NSArray *values = json = [RCTConvert NSArray:json];
   [json enumerateObjectsUsingBlock:^(id jsonValue, NSUInteger idx, __unused BOOL *stop) {
-    id value = ((id(*)(Class, SEL, id))objc_msgSend)([RCTConvert class], type, jsonValue);
+    id value = ((id (*)(Class, SEL, id))objc_msgSend)([RCTConvert class], type, jsonValue);
     if (copy) {
       if (value) {
         [(NSMutableArray *)values addObject:value];

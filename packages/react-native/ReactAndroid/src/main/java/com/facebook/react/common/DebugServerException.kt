@@ -52,8 +52,7 @@ internal class DebugServerException : RuntimeException {
         |\u2022 If you're on a physical device connected to the same machine, run 'adb reverse tcp:<PORT> tcp:<PORT> to forward requests from your device
         |\u2022 If your device is on the same Wi-Fi network, set 'Debug server host & port for device' in 'Dev settings' to your machine's IP address and the port of the local dev server - e.g. 10.0.1.1:<PORT>
         |
-        |
-        """
+        |"""
             .trimMargin()
 
     @JvmStatic

@@ -45,6 +45,6 @@ export interface Spec extends TurboModule {
   +getValueWithPromise: (error: Array<boolean>) => Promise<Array<string>>;
 }
 
-export default (TurboModuleRegistry.getEnforcing<Spec>(
+export default TurboModuleRegistry.getEnforcing<Spec>(
   'SampleTurboModuleArrays',
-): Spec);
+) as Spec;

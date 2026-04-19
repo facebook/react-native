@@ -32,4 +32,4 @@ export interface Spec extends TurboModule {
   ) => void;
 }
 
-export default (TurboModuleRegistry.get<Spec>('AlertManager'): ?Spec);
+export default TurboModuleRegistry.get<Spec>('AlertManager') as ?Spec;

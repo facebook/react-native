@@ -14,5 +14,6 @@ package com.facebook.react.common.annotations
     message =
         "This API is provided only for React Native frameworks and not intended for general users. " +
             "This API can change between minor versions in alignment with React Native frameworks " +
-            "and won't be considered a breaking change.")
+            "and won't be considered a breaking change.",
+)
 public annotation class FrameworkAPI

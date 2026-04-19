@@ -24,12 +24,12 @@ try {
 } catch (e) {
   // Fallback to lib when source doesn't exit (e.g. when installed as a dev dependency)
   FlowParser =
-    // $FlowIgnore[cannot-resolve-module]
+    // $FlowFixMe[cannot-resolve-module]
     require('@react-native/codegen/lib/parsers/flow/parser').FlowParser;
   TypeScriptParser =
-    // $FlowIgnore[cannot-resolve-module]
+    // $FlowFixMe[cannot-resolve-module]
     require('@react-native/codegen/lib/parsers/typescript/parser').TypeScriptParser;
-  // $FlowIgnore[cannot-resolve-module]
+  // $FlowFixMe[cannot-resolve-module]
   RNCodegen = require('@react-native/codegen/lib/generators/RNCodegen');
 }
 
@@ -102,6 +102,58 @@ function isCodegenDeclaration(declaration) {
   return false;
 }
 
+function isCodegenNativeCommandsDeclaration(declaration) {
+  if (!declaration) {
+    return false;
+  }
+
+  // Handle direct calls: codegenNativeCommands()
+  if (
+    declaration.type === 'CallExpression' &&
+    declaration.callee &&
+    declaration.callee.type === 'Identifier' &&
+    declaration.callee.name === 'codegenNativeCommands'
+  ) {
+    return true;
+  }
+
+  // Handle coverage instrumentation: (cov_xxx().s[0]++, codegenNativeCommands())
+  if (declaration.type === 'SequenceExpression' && declaration.expressions) {
+    // Get the last expression in the sequence (the actual function call)
+    const lastExpression =
+      declaration.expressions[declaration.expressions.length - 1];
+    // Recursively check if the last expression is a valid codegenNativeCommands call
+    return isCodegenNativeCommandsDeclaration(lastExpression);
+  }
+
+  // Handle Flow type casts: (codegenNativeCommands(): NativeCommands)
+  if (
+    (declaration.type === 'TypeCastExpression' ||
+      declaration.type === 'AsExpression') &&
+    declaration.expression &&
+    declaration.expression.type === 'CallExpression' &&
+    declaration.expression.callee &&
+    declaration.expression.callee.type === 'Identifier' &&
+    declaration.expression.callee.name === 'codegenNativeCommands'
+  ) {
+    return true;
+  }
+
+  // Handle TypeScript assertions: codegenNativeCommands() as NativeCommands
+  if (
+    declaration.type === 'TSAsExpression' &&
+    declaration.expression &&
+    declaration.expression.type === 'CallExpression' &&
+    declaration.expression.callee &&
+    declaration.expression.callee.type === 'Identifier' &&
+    declaration.expression.callee.name === 'codegenNativeCommands'
+  ) {
+    return true;
+  }
+
+  return false;
+}
+
 module.exports = function ({parse, types: t}) {
   return {
     pre(state) {
@@ -125,12 +177,12 @@ module.exports = function ({parse, types: t}) {
           const firstDeclaration = path.node.declaration.declarations[0];
 
           if (firstDeclaration.type === 'VariableDeclarator') {
-            if (
-              firstDeclaration.init &&
-              firstDeclaration.init.type === 'CallExpression' &&
-              firstDeclaration.init.callee.type === 'Identifier' &&
-              firstDeclaration.init.callee.name === 'codegenNativeCommands'
-            ) {
+            // Check if this is a valid codegenNativeCommands call, handling type annotations
+            const isValidCommandsExport = isCodegenNativeCommandsDeclaration(
+              firstDeclaration.init,
+            );
+
+            if (isValidCommandsExport) {
               if (
                 firstDeclaration.id.type === 'Identifier' &&
                 firstDeclaration.id.name !== 'Commands'

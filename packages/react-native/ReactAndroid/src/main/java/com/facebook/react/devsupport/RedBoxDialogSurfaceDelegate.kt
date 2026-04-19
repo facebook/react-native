@@ -47,7 +47,8 @@ internal class RedBoxDialogSurfaceDelegate(private val devSupportManager: DevSup
       val message = devSupportManager.lastErrorTitle
       FLog.e(
           ReactConstants.TAG,
-          "Unable to launch redbox because react activity is not available, here is the error that redbox would've displayed: ${(message ?: "N/A")}")
+          "Unable to launch redbox because react activity is not available, here is the error that redbox would've displayed: ${(message ?: "N/A")}",
+      )
       return
     }
 
@@ -76,7 +77,8 @@ internal class RedBoxDialogSurfaceDelegate(private val devSupportManager: DevSup
       }
       FLog.e(
           ReactConstants.TAG,
-          "Unable to launch redbox because react activity and react context is not available, here is the error that redbox would've displayed: ${message ?: "N/A"}")
+          "Unable to launch redbox because react activity and react context is not available, here is the error that redbox would've displayed: ${message ?: "N/A"}",
+      )
       return
     }
 
@@ -123,6 +125,7 @@ internal class RedBoxDialogSurfaceDelegate(private val devSupportManager: DevSup
               .apply {
                 requestWindowFeature(Window.FEATURE_NO_TITLE)
                 setContentView(checkNotNull(redBoxContentView))
+                setOnCancelListener { devSupportManager.hideRedboxDialog() }
               }
     }
     dialog?.show()
@@ -153,7 +156,8 @@ internal class RedBoxDialogSurfaceDelegate(private val devSupportManager: DevSup
             override fun onHostPause() = Unit
 
             override fun onHostDestroy() = Unit
-          })
+          }
+      )
     }
   }
 }

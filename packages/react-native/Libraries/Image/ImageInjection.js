@@ -8,11 +8,8 @@
  * @format
  */
 
-import type {
-  AbstractImageAndroid,
-  AbstractImageIOS,
-  ImageType as ImageComponent,
-} from './ImageTypes.flow';
+import type {HostInstance} from '../..';
+import type {AbstractImageAndroid, AbstractImageIOS} from './ImageTypes.flow';
 
 import useMergeRefs from '../Utilities/useMergeRefs';
 import * as React from 'react';
@@ -33,7 +30,7 @@ export function unstable_getImageComponentDecorator(): ?ImageComponentDecorator 
   return injectedImageComponentDecorator;
 }
 
-type ImageInstance = React.ElementRef<ImageComponent>;
+type ImageInstance = HostInstance;
 
 type ImageAttachedCallback = (
   imageInstance: ImageInstance,

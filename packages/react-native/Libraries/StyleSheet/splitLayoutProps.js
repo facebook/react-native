@@ -18,9 +18,9 @@ export default function splitLayoutProps(props: ?____ViewStyle_Internal): {
   let inner: ?____ViewStyle_Internal = null;
 
   if (props != null) {
-    // $FlowIgnore[incompatible-exact] Will contain a subset of keys from `props`.
+    // $FlowFixMe[incompatible-exact] Will contain a subset of keys from `props`.
     outer = {};
-    // $FlowIgnore[incompatible-exact] Will contain a subset of keys from `props`.
+    // $FlowFixMe[incompatible-exact] Will contain a subset of keys from `props`.
     inner = {};
 
     for (const prop of Object.keys(props)) {

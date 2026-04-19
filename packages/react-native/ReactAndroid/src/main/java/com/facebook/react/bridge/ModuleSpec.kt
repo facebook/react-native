@@ -18,7 +18,7 @@ import javax.inject.Provider
 public class ModuleSpec
 private constructor(
     @get:JvmName("provider") public val provider: Provider<out NativeModule>,
-    @get:JvmName("moduleName") public val name: String? = null
+    @get:JvmName("moduleName") public val name: String? = null,
 ) {
   public fun getProvider(): Provider<out NativeModule> = provider
 
@@ -34,7 +34,7 @@ private constructor(
     @JvmStatic
     public fun nativeModuleSpec(
         type: Class<out NativeModule>,
-        provider: Provider<out NativeModule>
+        provider: Provider<out NativeModule>,
     ): ModuleSpec {
       val annotation: ReactModule? = type.getAnnotation(ReactModule::class.java)
 
@@ -42,7 +42,8 @@ private constructor(
         FLog.w(
             TAG,
             "Could not find @ReactModule annotation on ${type.name}. " +
-                "Creating the module eagerly to get the name. Consider adding the annotation.")
+                "Creating the module eagerly to get the name. Consider adding the annotation.",
+        )
         val nativeModule: NativeModule = provider.get()
         ModuleSpec(provider, nativeModule.name)
       } else {
@@ -53,7 +54,7 @@ private constructor(
     @JvmStatic
     public fun nativeModuleSpec(
         className: String,
-        provider: Provider<out NativeModule>
+        provider: Provider<out NativeModule>,
     ): ModuleSpec = ModuleSpec(provider, className)
   }
 }

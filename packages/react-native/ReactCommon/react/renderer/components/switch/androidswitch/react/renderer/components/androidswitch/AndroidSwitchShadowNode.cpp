@@ -9,6 +9,7 @@
 
 namespace facebook::react {
 
+// NOLINTNEXTLINE(modernize-avoid-c-arrays)
 extern const char AndroidSwitchComponentName[] = "AndroidSwitch";
 
 void AndroidSwitchShadowNode::setAndroidSwitchMeasurementsManager(

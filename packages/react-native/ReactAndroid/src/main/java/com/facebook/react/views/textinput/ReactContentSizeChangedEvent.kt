@@ -17,7 +17,7 @@ internal class ReactContentSizeChangedEvent(
     surfaceId: Int,
     viewId: Int,
     private val contentWidth: Float,
-    private val contentHeight: Float
+    private val contentHeight: Float,
 ) : Event<ReactTextChangedEvent>(surfaceId, viewId) {
   override fun getEventName(): String = EVENT_NAME
 

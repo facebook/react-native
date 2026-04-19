@@ -22,17 +22,17 @@ struct ShadowView;
 
 class FabricMountingManager final {
  public:
-  FabricMountingManager(
-      jni::global_ref<JFabricUIManager::javaobject>& javaUIManager);
-  FabricMountingManager(const FabricMountingManager&) = delete;
+  FabricMountingManager(jni::global_ref<JFabricUIManager::javaobject> &javaUIManager);
+  FabricMountingManager(const FabricMountingManager &) = delete;
+  ~FabricMountingManager();
 
   void onSurfaceStart(SurfaceId surfaceId);
 
   void onSurfaceStop(SurfaceId surfaceId);
 
-  void maybePreallocateShadowNode(const ShadowNode& shadowNode);
+  void maybePreallocateShadowNode(const ShadowNode &shadowNode);
 
-  void destroyUnmountedShadowNode(const ShadowNodeFamily& family);
+  void destroyUnmountedShadowNode(const ShadowNodeFamily &family);
 
   /*
    * Drains preallocatedViewsQueue_ by calling preallocateShadowView on each
@@ -40,29 +40,41 @@ class FabricMountingManager final {
    */
   void drainPreallocateViewsQueue();
 
-  void executeMount(const MountingTransaction& transaction);
+  /*
+   * Preallocates a view on the Java side and registers the tag in
+   * allocatedViewRegistry_ so that executeMount skips the redundant Create
+   * mount item for this tag.
+   */
+  void preallocateShadowView(const ShadowView &shadowView);
 
-  void dispatchCommand(
-      const ShadowView& shadowView,
-      const std::string& commandName,
-      const folly::dynamic& args);
+  /*
+   * Returns true if the given tag is registered in allocatedViewRegistry_
+   * for the given surface. A registered tag means executeMount will skip
+   * the Create mount item (the view was already preallocated).
+   */
+  bool isViewAllocated(SurfaceId surfaceId, Tag tag);
 
-  void sendAccessibilityEvent(
-      const ShadowView& shadowView,
-      const std::string& eventType);
+  void executeMount(const MountingTransaction &transaction);
 
-  void setIsJSResponder(
-      const ShadowView& shadowView,
-      bool isJSResponder,
-      bool blockNativeResponder);
+  void dispatchCommand(const ShadowView &shadowView, const std::string &commandName, const folly::dynamic &args);
+
+  void sendAccessibilityEvent(const ShadowView &shadowView, const std::string &eventType);
+
+  void setIsJSResponder(const ShadowView &shadowView, bool isJSResponder, bool blockNativeResponder);
 
   void onAnimationStarted();
 
   void onAllAnimationsComplete();
 
-  void synchronouslyUpdateViewOnUIThread(
-      Tag viewTag,
-      const folly::dynamic& props);
+  void synchronouslyUpdateViewOnUIThread(Tag viewTag, const folly::dynamic &props);
+
+  void captureViewSnapshot(Tag tag, SurfaceId surfaceId);
+
+  void setViewSnapshot(Tag sourceTag, Tag targetTag, SurfaceId surfaceId);
+
+  void clearPendingSnapshots();
+
+  void scheduleReactRevisionMerge(SurfaceId surfaceId);
 
  private:
   bool isOnMainThread();
@@ -81,15 +93,8 @@ class FabricMountingManager final {
    */
   std::vector<ShadowView> preallocatedViewsQueue_{};
 
-  std::unordered_map<SurfaceId, std::unordered_set<Tag>>
-      allocatedViewRegistry_{};
+  std::unordered_map<SurfaceId, std::unordered_set<Tag>> allocatedViewRegistry_{};
   std::recursive_mutex allocatedViewsMutex_;
-
-  /*
-   * Calls FabricUIManager.preallocateView() on the Java side if view needs to
-   * be preallocated.
-   */
-  void preallocateShadowView(const ShadowView& shadowView);
 };
 
 } // namespace facebook::react

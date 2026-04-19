@@ -13,14 +13,13 @@
 
 namespace facebook::react {
 
-constexpr const char LayoutConformanceShadowNodeComponentName[] =
-    "LayoutConformance";
+// NOLINTNEXTLINE(facebook-hte-CArray,modernize-avoid-c-arrays)
+constexpr const char LayoutConformanceShadowNodeComponentName[] = "LayoutConformance";
 
-class LayoutConformanceShadowNode final
-    : public ConcreteShadowNode<
-          LayoutConformanceShadowNodeComponentName,
-          YogaLayoutableShadowNode,
-          LayoutConformanceProps> {
+class LayoutConformanceShadowNode final : public ConcreteShadowNode<
+                                              LayoutConformanceShadowNodeComponentName,
+                                              YogaLayoutableShadowNode,
+                                              LayoutConformanceProps> {
  public:
   using ConcreteShadowNode::ConcreteShadowNode;
 };

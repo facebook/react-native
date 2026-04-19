@@ -17,17 +17,17 @@ describe('NativeAnimatedAllowlist', () => {
   it('checks invalid style props', () => {
     const {isSupportedStyleProp} = require('../NativeAnimatedAllowlist');
 
-    // $FlowExpectedError[incompatible-call]
+    // $FlowExpectedError[incompatible-type]
     expect(isSupportedStyleProp(null)).toBe(false);
-    // $FlowExpectedError[incompatible-call]
+    // $FlowExpectedError[incompatible-type]
     expect(isSupportedStyleProp(undefined)).toBe(false);
-    // $FlowExpectedError[incompatible-call]
+    // $FlowExpectedError[incompatible-type]
     expect(isSupportedStyleProp({})).toBe(false);
-    // $FlowExpectedError[incompatible-call]
+    // $FlowExpectedError[incompatible-type]
     expect(isSupportedStyleProp([])).toBe(false);
-    // $FlowExpectedError[incompatible-call]
+    // $FlowExpectedError[incompatible-type]
     expect(isSupportedStyleProp(true)).toBe(false);
-    // $FlowExpectedError[incompatible-call]
+    // $FlowExpectedError[incompatible-type]
     expect(isSupportedStyleProp(false)).toBe(false);
   });
 

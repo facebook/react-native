@@ -12,7 +12,6 @@ import '@react-native/fantom/src/setUpDefaultReactNativeEnvironment';
 
 import type {TextInputInstance} from '../TextInput.flow';
 
-import ensureInstance from '../../../../src/private/__tests__/utilities/ensureInstance';
 import * as Fantom from '@react-native/fantom';
 import nullthrows from 'nullthrows';
 import * as React from 'react';
@@ -60,10 +59,8 @@ describe('<TextInput>', () => {
           );
         });
 
-        const element = ensureInstance(nodeRef.current, ReactNativeElement);
-
         Fantom.runOnUIThread(() => {
-          Fantom.enqueueNativeEvent(element, 'change', {
+          Fantom.enqueueNativeEvent(nodeRef, 'change', {
             text: 'Hello World',
           });
         });
@@ -86,10 +83,8 @@ describe('<TextInput>', () => {
           root.render(<TextInput onChangeText={onChangeText} ref={nodeRef} />);
         });
 
-        const element = ensureInstance(nodeRef.current, ReactNativeElement);
-
         Fantom.runOnUIThread(() => {
-          Fantom.enqueueNativeEvent(element, 'change', {
+          Fantom.enqueueNativeEvent(nodeRef, 'change', {
             text: 'Hello World',
           });
         });
@@ -113,12 +108,10 @@ describe('<TextInput>', () => {
           root.render(<TextInput onFocus={focusEvent} ref={nodeRef} />);
         });
 
-        const element = ensureInstance(nodeRef.current, ReactNativeElement);
-
         expect(focusEvent).toHaveBeenCalledTimes(0);
 
         Fantom.runOnUIThread(() => {
-          Fantom.enqueueNativeEvent(element, 'focus');
+          Fantom.enqueueNativeEvent(nodeRef, 'focus');
         });
 
         // The tasks have not run.
@@ -141,12 +134,10 @@ describe('<TextInput>', () => {
           root.render(<TextInput onBlur={blurEvent} ref={nodeRef} />);
         });
 
-        const element = ensureInstance(nodeRef.current, ReactNativeElement);
-
         expect(blurEvent).toHaveBeenCalledTimes(0);
 
         Fantom.runOnUIThread(() => {
-          Fantom.enqueueNativeEvent(element, 'blur');
+          Fantom.enqueueNativeEvent(nodeRef, 'blur');
         });
 
         // The tasks have not run.
@@ -381,6 +372,64 @@ describe('<TextInput>', () => {
           instance.blur();
         });
 
+        expect(instance.isFocused()).toBe(false);
+      });
+
+      it('returns false if the input is unmounted', () => {
+        const root = Fantom.createRoot();
+        const ref = createRef<TextInputInstance>();
+
+        Fantom.runTask(() => {
+          root.render(<TextInput nativeID="text-input" ref={ref} />);
+        });
+
+        const instance = nullthrows(ref.current);
+
+        expect(instance.isFocused()).toBe(false);
+
+        Fantom.runTask(() => {
+          instance.focus();
+        });
+
+        expect(instance.isFocused()).toBe(true);
+
+        Fantom.runTask(() => {
+          // unmount TextInput
+          root.render(<></>);
+        });
+
+        expect(instance.isFocused()).toBe(false);
+      });
+
+      it('returns false if the input is unmounted and never focused', () => {
+        Fantom.runTask(() => {
+          // TextInputState is global, so we need to clean up the state to be sure that we
+          // don't have a focused input ref
+          TextInput.State.blurTextInput(
+            TextInput.State.currentlyFocusedInput(),
+          );
+        });
+
+        expect(TextInput.State.currentlyFocusedInput()).toBe(null);
+
+        const root = Fantom.createRoot();
+        const ref = createRef<TextInputInstance>();
+
+        Fantom.runTask(() => {
+          root.render(<TextInput nativeID="text-input" ref={ref} />);
+        });
+
+        const instance = nullthrows(ref.current);
+
+        expect(instance.isFocused()).toBe(false);
+
+        Fantom.runTask(() => {
+          // unmount TextInput
+          root.render(<></>);
+        });
+
+        expect(instance.getNativeRef()).toBe(null);
+        expect(TextInput.State.currentlyFocusedInput()).toBe(null);
         expect(instance.isFocused()).toBe(false);
       });
     });

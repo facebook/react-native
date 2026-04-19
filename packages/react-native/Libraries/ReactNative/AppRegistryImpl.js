@@ -26,8 +26,6 @@ import createPerformanceLogger from '../Utilities/createPerformanceLogger';
 import SceneTracker from '../Utilities/SceneTracker';
 import {coerceDisplayMode} from './DisplayMode';
 import HeadlessJsTaskError from './HeadlessJsTaskError';
-import NativeHeadlessJsTaskSupport from './NativeHeadlessJsTaskSupport';
-import renderApplication from './renderApplication';
 import {unmountComponentAtNodeAndRemoveContainer} from './RendererProxy';
 import invariant from 'invariant';
 
@@ -86,6 +84,7 @@ export function registerComponent(
 ): string {
   const scopedPerformanceLogger = createPerformanceLogger();
   runnables[appKey] = (appParameters, displayMode) => {
+    const renderApplication = require('./renderApplication').default;
     renderApplication(
       componentProviderInstrumentationHook(
         componentProvider,
@@ -120,11 +119,11 @@ export function registerSection(
   registerComponent(appKey, component, true);
 }
 
-export function getAppKeys(): $ReadOnlyArray<string> {
+export function getAppKeys(): ReadonlyArray<string> {
   return Object.keys(runnables);
 }
 
-export function getSectionKeys(): $ReadOnlyArray<string> {
+export function getSectionKeys(): ReadonlyArray<string> {
   return Object.keys(sections);
 }
 
@@ -258,6 +257,9 @@ export function startHeadlessTask(
   taskKey: string,
   data: any,
 ): void {
+  const NativeHeadlessJsTaskSupport =
+    require('./NativeHeadlessJsTaskSupport').default;
+
   const taskProvider = taskProviders.get(taskKey);
   if (!taskProvider) {
     console.warn(`No task registered for key ${taskKey}`);

@@ -15,7 +15,7 @@ import type {RNTesterModuleExample} from '../../types/RNTesterTypes';
 import RNTesterBlock from '../../components/RNTesterBlock';
 import RNTesterPage from '../../components/RNTesterPage';
 import RNTesterText from '../../components/RNTesterText';
-import React from 'react';
+import * as React from 'react';
 import {useCallback, useState} from 'react';
 import {
   Image,
@@ -34,7 +34,7 @@ function blobToBase64(blob: Blob) {
       if (typeof result === 'string') {
         resolve(result);
       } else {
-        reject('error: incompatible types');
+        reject(new Error('error: incompatible types'));
       }
     };
     reader.readAsDataURL(blob);

@@ -26,15 +26,17 @@ describe('console.timeStamp()', () => {
 
   it("doesn't throw when additional arguments are specified", () => {
     expect(() =>
-      console.timeStamp('label', 100, 500, 'Track', 'Group', 'error'),
+      console.timeStamp('label', 100, 500, 'Track', 'Group', 'error', {
+        tooltipText: 'Image processing failed',
+      }),
     ).not.toThrow();
   });
 
   it("doesn't throw when invalid arguments are specified", () => {
-    // $FlowExpectedError[incompatible-call]
+    // $FlowExpectedError[incompatible-type]
     expect(() => console.timeStamp({})).not.toThrow();
     expect(() =>
-      // $FlowExpectedError[incompatible-call]
+      // $FlowExpectedError[incompatible-type]
       console.timeStamp('label', true, null, {}, [], () => {}),
     ).not.toThrow();
   });

@@ -10,7 +10,7 @@
 
 'use strict';
 
-const {execSync} = require('child_process');
+const {spawnSync} = require('child_process');
 const fs = require('fs');
 const yargs = require('yargs');
 
@@ -66,7 +66,9 @@ function replaceRNDepsConfiguration(
   fs.mkdirSync(finalLocation, {recursive: true});
 
   console.log('Extracting the tarball', tarballURLPath);
-  execSync(`tar -xf ${tarballURLPath} -C ${finalLocation}`);
+  spawnSync('tar', ['-xf', tarballURLPath, '-C', finalLocation], {
+    stdio: 'inherit',
+  });
 
   // Now we need to remove the extra third-party folder as we do in the podspec's prepare-script
   // We need to take the ReactNativeDependencies.xcframework folder and move it up one level

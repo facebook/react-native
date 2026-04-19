@@ -34,12 +34,12 @@ class LocalPodspecPatchTests < Test::Unit::TestCase
         local_podspec = LocalPodspecPatch.pods_to_update(:react_native_path => react_native_path, dir_manager: DirMock, file_manager: FileMock)
 
         # Assert
-        assert_equal(local_podspec, [])
-        assert_equal(DirMock.glob_invocation, ["#{react_native_path}/third-party-podspecs/*"])
-        assert_equal(FileMock.exist_invocation_params, [
+        assert_equal([], local_podspec)
+        assert_equal(["#{react_native_path}/third-party-podspecs/*"], DirMock.glob_invocation)
+        assert_equal([
             FileMock.join(mocked_pwd, "Pods/Local Podspecs", "boost.podspec.json"),
             FileMock.join(mocked_pwd, "Pods/Local Podspecs", "DoubleConversion.podspec.json"),
-        ])
+        ], FileMock.exist_invocation_params)
     end
 
     def test_podsToUpdate_whenFilesExistsWithSameVersions_returnsEmpty
@@ -53,12 +53,12 @@ class LocalPodspecPatchTests < Test::Unit::TestCase
         local_podspec = LocalPodspecPatch.pods_to_update(:react_native_path => react_native_path, dir_manager: DirMock, file_manager: FileMock)
 
         # Assert
-        assert_equal(local_podspec, [])
-        assert_equal(DirMock.glob_invocation, ["#{react_native_path}/third-party-podspecs/*"])
-        assert_equal(FileMock.exist_invocation_params, [
+        assert_equal([], local_podspec)
+        assert_equal(["#{react_native_path}/third-party-podspecs/*"], DirMock.glob_invocation)
+        assert_equal([
             FileMock.join(mocked_pwd, "Pods/Local Podspecs", "boost.podspec.json"),
             FileMock.join(mocked_pwd, "Pods/Local Podspecs", "DoubleConversion.podspec.json"),
-        ])
+        ], FileMock.exist_invocation_params)
     end
 
     def test_podsToUpdate_whenFilesExistsWithDifferentVersions_returnsThem
@@ -72,15 +72,15 @@ class LocalPodspecPatchTests < Test::Unit::TestCase
         local_podspec = LocalPodspecPatch.pods_to_update(:react_native_path => react_native_path, dir_manager: DirMock, file_manager: FileMock)
 
         # Assert
-        assert_equal(local_podspec, [
+        assert_equal([
             "boost",
             "DoubleConversion"
-        ])
-        assert_equal(DirMock.glob_invocation, ["#{react_native_path}/third-party-podspecs/*"])
-        assert_equal(FileMock.exist_invocation_params, [
+        ], local_podspec)
+        assert_equal(["#{react_native_path}/third-party-podspecs/*"], DirMock.glob_invocation)
+        assert_equal([
             FileMock.join(mocked_pwd, "Pods/Local Podspecs", "boost.podspec.json"),
             FileMock.join(mocked_pwd, "Pods/Local Podspecs", "DoubleConversion.podspec.json"),
-        ])
+        ], FileMock.exist_invocation_params)
     end
 
     # ======================================== #
@@ -101,10 +101,10 @@ class LocalPodspecPatchTests < Test::Unit::TestCase
 
         new_changes = Pod::Lockfile.new().patch_detect_changes_with_podfile(changes)
 
-        assert_equal(new_changes, {
+        assert_equal({
             :unchanged => ["some_pod"],
             :changed => ["boost", "DoubleConversion", "another_pod"]
-        })
+        }, new_changes)
     end
 
     def test_patchDetectChangesWithPodfile_whenLocalPodsUnchanged_movesLocalPodsToChangeSet()
@@ -122,10 +122,10 @@ class LocalPodspecPatchTests < Test::Unit::TestCase
 
         new_changes = Pod::Lockfile.new().patch_detect_changes_with_podfile(changes)
 
-        assert_equal(new_changes, {
+        assert_equal({
             :unchanged => ["first_pod"],
             :changed => ["another_pod", "boost", "DoubleConversion"]
-        })
+        }, new_changes)
     end
 
     # ========= #

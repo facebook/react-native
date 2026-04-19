@@ -18,7 +18,7 @@ import com.facebook.react.uimanager.events.Event
 internal class ReactTextInputEndEditingEvent(
     surfaceId: Int,
     viewId: Int,
-    private val text: String
+    private val text: String,
 ) : Event<ReactTextInputEndEditingEvent>(surfaceId, viewId) {
   override fun getEventName(): String = EVENT_NAME
 

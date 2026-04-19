@@ -12,27 +12,24 @@
 namespace facebook::react {
 
 using NativePartialReloadAndProfileConfig =
-    NativeReactDevToolsRuntimeSettingsModulePartialReloadAndProfileConfig<
-        std::optional<bool>,
-        std::optional<bool>>;
+    NativeReactDevToolsRuntimeSettingsModulePartialReloadAndProfileConfig<std::optional<bool>, std::optional<bool>>;
 
 template <>
 struct Bridging<NativePartialReloadAndProfileConfig>
     : NativeReactDevToolsRuntimeSettingsModulePartialReloadAndProfileConfigBridging<
           NativePartialReloadAndProfileConfig> {};
 
-using NativeReloadAndProfileConfig =
-    NativeReactDevToolsRuntimeSettingsModuleReloadAndProfileConfig<bool, bool>;
+using NativeReloadAndProfileConfig = NativeReactDevToolsRuntimeSettingsModuleReloadAndProfileConfig<bool, bool>;
 
 template <>
 struct Bridging<NativeReloadAndProfileConfig>
-    : NativeReactDevToolsRuntimeSettingsModuleReloadAndProfileConfigBridging<
-          NativeReloadAndProfileConfig> {};
+    : NativeReactDevToolsRuntimeSettingsModuleReloadAndProfileConfigBridging<NativeReloadAndProfileConfig> {};
 
 class DevToolsRuntimeSettings {
  public:
   // static to persist across Turbo Module reloads
-  static DevToolsRuntimeSettings& getInstance() {
+  static DevToolsRuntimeSettings &getInstance()
+  {
     static DevToolsRuntimeSettings instance;
     return instance;
   }
@@ -44,10 +41,10 @@ class DevToolsRuntimeSettings {
 
  public:
   ~DevToolsRuntimeSettings() = default;
-  DevToolsRuntimeSettings(const DevToolsRuntimeSettings&) = delete;
-  DevToolsRuntimeSettings(DevToolsRuntimeSettings&&) = delete;
-  void operator=(const DevToolsRuntimeSettings&) = delete;
-  void operator=(DevToolsRuntimeSettings&&) = delete;
+  DevToolsRuntimeSettings(const DevToolsRuntimeSettings &) = delete;
+  DevToolsRuntimeSettings(DevToolsRuntimeSettings &&) = delete;
+  void operator=(const DevToolsRuntimeSettings &) = delete;
+  void operator=(DevToolsRuntimeSettings &&) = delete;
 
   void setReloadAndProfileConfig(NativePartialReloadAndProfileConfig config);
   NativeReloadAndProfileConfig getReloadAndProfileConfig() const;

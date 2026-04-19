@@ -20,7 +20,7 @@ internal class ReactTextScrollWatcher(private val editText: ReactEditText) : Scr
 
   init {
     val reactContext = UIManagerHelper.getReactContext(editText)
-    eventDispatcher = UIManagerHelper.getEventDispatcherForReactTag(reactContext, editText.id)
+    eventDispatcher = UIManagerHelper.getEventDispatcher(reactContext)
     surfaceId = UIManagerHelper.getSurfaceId(reactContext)
   }
 
@@ -38,7 +38,8 @@ internal class ReactTextScrollWatcher(private val editText: ReactEditText) : Scr
               0, // can't get content width
               0, // can't get content height
               editText.width,
-              editText.height)
+              editText.height,
+          )
 
       eventDispatcher?.dispatchEvent(event)
 

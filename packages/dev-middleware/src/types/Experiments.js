@@ -8,11 +8,11 @@
  * @format
  */
 
-export type Experiments = $ReadOnly<{
+export type Experiments = Readonly<{
   /**
    * Enables the handling of GET requests in the /open-debugger endpoint,
    * in addition to POST requests. GET requests respond by redirecting to
-   * the debugger frontend, instead of opening it using the BrowserLauncher
+   * the debugger frontend, instead of opening it using the DevToolLauncher
    * interface.
    */
   enableOpenDebuggerRedirect: boolean,
@@ -20,15 +20,17 @@ export type Experiments = $ReadOnly<{
   /**
    * Enables the Network panel in the debugger frontend.
    */
-  // NOTE: Used by Expo, exposing a tab labelled "Network (Expo, unstable)"
+  // NOTE: Used by Expo, exposing a tab labelled "Network (Expo)"
   enableNetworkInspector: boolean,
 
   /**
-   * Launch the Fusebox frontend in a standalone shell instead of a browser.
-   * When this is enabled, we will use the optional unstable_showFuseboxShell
-   * method on the framework-provided BrowserLauncher, or throw an error if the
-   * method is missing. Note that the default BrowserLauncher does *not*
-   * implement unstable_showFuseboxShell.
+   * Launch the debugger frontend in a standalone shell instead of a browser.
+   * When this is enabled, we will use the optional launchDebuggerShell
+   * method on the DevToolLauncher, or throw an error if the method is missing.
+   *
+   * NOTE: Disabling this also disables support for concurrent sessions in the
+   * inspector proxy. Without the standalone shell, the proxy remains responsible
+   * for keeping only one debugger frontend active at a time per page.
    */
   enableStandaloneFuseboxShell: boolean,
 }>;

@@ -18,11 +18,11 @@ namespace facebook::react {
 std::string JSExecutor::getSyntheticBundlePath(
     uint32_t bundleId,
     const std::string& bundlePath) {
-#ifndef RCT_FIT_RM_OLD_RUNTIME
+#ifndef RCT_REMOVE_LEGACY_ARCH
   if (bundleId == RAMBundleRegistry::MAIN_BUNDLE_ID) {
     return bundlePath;
   }
-#endif // RCT_FIT_RM_OLD_RUNTIME
+#endif // RCT_REMOVE_LEGACY_ARCH
 
   std::array<char, 32> buffer{};
   std::snprintf(buffer.data(), buffer.size(), "seg-%u.js", bundleId);

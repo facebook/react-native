@@ -9,14 +9,14 @@ package com.facebook.react.fabric
 
 import android.annotation.SuppressLint
 import com.facebook.jni.HybridClassBase
-import com.facebook.proguard.annotations.DoNotStrip
+import com.facebook.proguard.annotations.DoNotStripAny
 import com.facebook.react.bridge.NativeMap
 import com.facebook.react.bridge.RuntimeExecutor
 import com.facebook.react.bridge.RuntimeScheduler
 import com.facebook.react.fabric.events.EventBeatManager
 import com.facebook.react.uimanager.PixelUtil.getDisplayMetricDensity
 
-@DoNotStrip
+@DoNotStripAny
 @SuppressLint("MissingNativeLoadLibrary")
 internal class FabricUIManagerBinding : HybridClassBase() {
   init {
@@ -46,13 +46,13 @@ internal class FabricUIManagerBinding : HybridClassBase() {
       offsetX: Float,
       offsetY: Float,
       isRTL: Boolean,
-      doLeftAndRightSwapInRTL: Boolean
+      doLeftAndRightSwapInRTL: Boolean,
   )
 
   external fun startSurfaceWithSurfaceHandler(
       surfaceId: Int,
       surfaceHandler: SurfaceHandlerBinding,
-      isMountable: Boolean
+      isMountable: Boolean,
   )
 
   external fun findNextFocusableElement(parentTag: Int, focusedTag: Int, direction: Int): Int
@@ -74,14 +74,22 @@ internal class FabricUIManagerBinding : HybridClassBase() {
       offsetX: Float,
       offsetY: Float,
       isRTL: Boolean,
-      doLeftAndRightSwapInRTL: Boolean
+      doLeftAndRightSwapInRTL: Boolean,
   )
 
   external fun driveCxxAnimations()
 
+  external fun driveAnimationBackend(frameTimeMs: Double)
+
   external fun drainPreallocateViewsQueue()
 
   external fun reportMount(surfaceId: Int)
+
+  external fun setAnimationBackendChoreographer(
+      animationBackendChoreographer: AnimationBackendChoreographer
+  )
+
+  external fun mergeReactRevision(surfaceId: Int)
 
   fun register(
       runtimeExecutor: RuntimeExecutor,
@@ -89,10 +97,21 @@ internal class FabricUIManagerBinding : HybridClassBase() {
       fabricUIManager: FabricUIManager,
       eventBeatManager: EventBeatManager,
       componentFactory: ComponentFactory,
+      animationBackendChoreographer: AnimationBackendChoreographer,
   ) {
     fabricUIManager.setBinding(this)
+    animationBackendChoreographer.frameCallback = AnimationFrameCallback { frameTimeMs: Double ->
+      driveAnimationBackend(frameTimeMs)
+    }
+    setAnimationBackendChoreographer(animationBackendChoreographer)
+
     installFabricUIManager(
-        runtimeExecutor, runtimeScheduler, fabricUIManager, eventBeatManager, componentFactory)
+        runtimeExecutor,
+        runtimeScheduler,
+        fabricUIManager,
+        eventBeatManager,
+        componentFactory,
+    )
     setPixelDensity(getDisplayMetricDensity())
   }
 

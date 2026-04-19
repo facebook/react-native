@@ -8,15 +8,15 @@
  * @format
  */
 
-import type {ViewToken} from 'react-native/Libraries/Lists/ViewabilityHelper';
+import type {
+  ViewabilityConfig,
+  ViewToken,
+} from 'react-native/Libraries/Lists/ViewabilityHelper';
 
 import SectionListBaseExample from './SectionListBaseExample';
 import * as React from 'react';
 import {useRef, useState} from 'react';
-import {SectionList, StyleSheet, View} from 'react-native';
-
-type SectionListProps = React.ElementProps<typeof SectionList>;
-type ViewabilityConfig = SectionListProps['viewabilityConfig'];
+import {StyleSheet, View} from 'react-native';
 
 const BASE_VIEWABILITY_CONFIG = {
   minimumViewTime: 1000,

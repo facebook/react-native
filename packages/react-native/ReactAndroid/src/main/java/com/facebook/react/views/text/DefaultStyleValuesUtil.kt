@@ -41,6 +41,10 @@ public object DefaultStyleValuesUtil {
   public fun getDefaultTextColor(context: Context): ColorStateList? =
       getDefaultTextAttribute(context, android.R.attr.textColor)
 
+  @JvmStatic
+  public fun getTextColorSecondary(context: Context): ColorStateList? =
+      getDefaultTextAttribute(context, android.R.attr.textColorSecondary)
+
   /**
    * Utility method that returns the default text highlight color as define by the theme
    *

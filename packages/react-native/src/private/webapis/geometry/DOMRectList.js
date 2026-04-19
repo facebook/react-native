@@ -19,7 +19,7 @@ import {setPlatformObject} from '../webidl/PlatformObjects';
 // IMPORTANT: The Flow type definition for this module is defined in `DOMRectList.js.flow`
 // because Flow only supports indexers in classes in declaration files.
 
-// $FlowFixMe[prop-missing] Flow doesn't understand [Symbol.iterator]() {} and thinks this class doesn't implement the Iterable interface.
+// $FlowFixMe[incompatible-type] Flow doesn't understand [Symbol.iterator]() {} and thinks this class doesn't implement the Iterable interface.
 export default class DOMRectList implements Iterable<DOMRectReadOnly> {
   #length: number;
 
@@ -29,7 +29,7 @@ export default class DOMRectList implements Iterable<DOMRectReadOnly> {
    * @private This is not defined in the declaration file, so users will not see
    *          the signature of the constructor.
    */
-  constructor(elements: $ReadOnlyArray<DOMRectReadOnly>) {
+  constructor(elements: ReadonlyArray<DOMRectReadOnly>) {
     for (let i = 0; i < elements.length; i++) {
       Object.defineProperty(this, i, {
         value: elements[i],
@@ -73,7 +73,7 @@ setPlatformObject(DOMRectList);
  * `DOMRectList.js.flow`, not here.
  */
 export function createDOMRectList(
-  elements: $ReadOnlyArray<DOMRectReadOnly>,
+  elements: ReadonlyArray<DOMRectReadOnly>,
 ): DOMRectList {
   return new DOMRectList(elements);
 }

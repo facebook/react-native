@@ -9,11 +9,12 @@
 #import <React/RCTView.h>
 #import <UIKit/UIKit.h>
 
-#ifndef RCT_FIT_RM_OLD_COMPONENT
+#ifndef RCT_REMOVE_LEGACY_ARCH
 
 @class RCTBridge;
 @class RCTImageSource;
 
+__attribute__((deprecated("This API will be removed along with the legacy architecture.")))
 @interface RCTImageView : RCTView
 
 - (instancetype)initWithBridge:(RCTBridge *)bridge NS_DESIGNATED_INITIALIZER;
@@ -28,4 +29,4 @@
 
 @end
 
-#endif // RCT_FIT_RM_OLD_COMPONENT
+#endif // RCT_REMOVE_LEGACY_ARCH

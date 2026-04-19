@@ -5,13 +5,13 @@
  * LICENSE file in the root directory of this source tree.
  */
 
-#include <cxxreact/JSExecutor.h>
+#include "EventQueueProcessor.h"
+
 #include <logger/react_native_log.h>
 #include <react/featureflags/ReactNativeFeatureFlags.h>
+
 #include "EventEmitter.h"
 #include "EventLogger.h"
-#include "EventQueue.h"
-#include "ShadowNodeFamily.h"
 
 namespace facebook::react {
 
@@ -96,7 +96,8 @@ void EventQueueProcessor::flushEvents(
         event.eventTarget.get(),
         event.type,
         reactPriority,
-        *event.eventPayload);
+        *event.eventPayload,
+        event.eventStartTimeStamp);
 
     if (eventLogger != nullptr) {
       eventLogger->onEventProcessingEnd(event.loggingTag);

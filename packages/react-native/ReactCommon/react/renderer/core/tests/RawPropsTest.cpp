@@ -12,10 +12,10 @@
 #include <react/debug/flags.h>
 #include <react/renderer/core/ConcreteShadowNode.h>
 #include <react/renderer/core/PropsParserContext.h>
+#include <react/renderer/core/RawProps.h>
+#include <react/renderer/core/RawPropsParser.h>
 #include <react/renderer/core/ShadowNode.h>
 #include <react/renderer/core/propsConversions.h>
-
-#include "TestComponent.h"
 
 using namespace facebook;
 using namespace facebook::react;
@@ -240,9 +240,10 @@ TEST(RawPropsTest, handleRawPropsPrimitiveTypes) {
   ContextContainer contextContainer{};
   PropsParserContext parserContext{-1, contextContainer};
 
-  auto raw = RawProps(folly::dynamic::object("intValue", (int)42)(
-      "doubleValue", (double)17.42)("floatValue", (float)66.67)(
-      "stringValue", "helloworld")("boolValue", true));
+  auto raw = RawProps(
+      folly::dynamic::object("intValue", (int)42)("doubleValue", (double)17.42)(
+          "floatValue", (float)66.67)("stringValue", "helloworld")(
+          "boolValue", true));
 
   auto parser = RawPropsParser();
   parser.prepare<PropsPrimitiveTypes>();
@@ -261,9 +262,10 @@ TEST(RawPropsTest, handleRawPropsPrimitiveTypesGetTwice) {
   ContextContainer contextContainer{};
   PropsParserContext parserContext{-1, contextContainer};
 
-  auto raw = RawProps(folly::dynamic::object("intValue", (int)42)(
-      "doubleValue", (double)17.42)("floatValue", (float)66.67)(
-      "stringValue", "helloworld")("boolValue", true));
+  auto raw = RawProps(
+      folly::dynamic::object("intValue", (int)42)("doubleValue", (double)17.42)(
+          "floatValue", (float)66.67)("stringValue", "helloworld")(
+          "boolValue", true));
 
   auto parser = RawPropsParser();
   parser.prepare<PropsPrimitiveTypes>();
@@ -290,9 +292,10 @@ TEST(RawPropsTest, handleRawPropsPrimitiveTypesGetOutOfOrder) {
   ContextContainer contextContainer{};
   PropsParserContext parserContext{-1, contextContainer};
 
-  auto raw = RawProps(folly::dynamic::object("intValue", (int)42)(
-      "doubleValue", (double)17.42)("floatValue", (float)66.67)(
-      "stringValue", "helloworld")("boolValue", true));
+  auto raw = RawProps(
+      folly::dynamic::object("intValue", (int)42)("doubleValue", (double)17.42)(
+          "floatValue", (float)66.67)("stringValue", "helloworld")(
+          "boolValue", true));
 
   auto parser = RawPropsParser();
   parser.prepare<PropsPrimitiveTypes>();

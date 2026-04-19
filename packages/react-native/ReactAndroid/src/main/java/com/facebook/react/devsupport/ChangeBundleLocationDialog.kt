@@ -29,13 +29,10 @@ internal object ChangeBundleLocationDialog {
   fun show(
       context: Context,
       devSettings: DeveloperSettings,
-      onClickListener: ChangeBundleLocationDialogListener
+      onClickListener: ChangeBundleLocationDialogListener,
   ) {
     val settings = devSettings.packagerConnectionSettings
     val currentHost = settings.debugServerHost
-    settings.debugServerHost = ""
-    val defaultHost = settings.debugServerHost
-    settings.debugServerHost = currentHost
 
     val layout = LinearLayout(context)
     layout.orientation = LinearLayout.VERTICAL
@@ -47,7 +44,9 @@ internal object ChangeBundleLocationDialog {
     label.text = context.getString(R.string.catalyst_change_bundle_location_input_label)
     label.layoutParams =
         LinearLayout.LayoutParams(
-            LinearLayout.LayoutParams.MATCH_PARENT, LinearLayout.LayoutParams.WRAP_CONTENT)
+            LinearLayout.LayoutParams.MATCH_PARENT,
+            LinearLayout.LayoutParams.WRAP_CONTENT,
+        )
 
     val input = EditText(context)
     // This makes it impossible to enter a newline in the input field
@@ -58,11 +57,11 @@ internal object ChangeBundleLocationDialog {
     input.setTextColor(-0x1000000)
     input.setText(currentHost)
 
-    val defaultHostSuggestion = Button(context)
-    defaultHostSuggestion.text = defaultHost
-    defaultHostSuggestion.textSize = 12f
-    defaultHostSuggestion.isAllCaps = false
-    defaultHostSuggestion.setOnClickListener { input.setText(defaultHost) }
+    val currentHostSuggestion = Button(context)
+    currentHostSuggestion.text = currentHost
+    currentHostSuggestion.textSize = 12f
+    currentHostSuggestion.isAllCaps = false
+    currentHostSuggestion.setOnClickListener { input.setText(currentHost) }
 
     val networkHost = getDevServerNetworkIpAndPort(context)
     val networkHostSuggestion = Button(context)
@@ -75,17 +74,27 @@ internal object ChangeBundleLocationDialog {
     suggestionRow.orientation = LinearLayout.HORIZONTAL
     suggestionRow.layoutParams =
         LinearLayout.LayoutParams(
-            LinearLayout.LayoutParams.MATCH_PARENT, LinearLayout.LayoutParams.WRAP_CONTENT)
-    suggestionRow.addView(defaultHostSuggestion)
-    suggestionRow.addView(networkHostSuggestion)
+            LinearLayout.LayoutParams.MATCH_PARENT,
+            LinearLayout.LayoutParams.WRAP_CONTENT,
+        )
+    suggestionRow.addView(currentHostSuggestion)
+
+    if (currentHost != networkHost) {
+      // We don't want to display two buttons with the same host suggestion.
+      suggestionRow.addView(networkHostSuggestion)
+    }
 
     val instructions = TextView(context)
     instructions.text =
         context.getString(
-            R.string.catalyst_change_bundle_location_instructions, getAdbReverseTcpCommand(context))
+            R.string.catalyst_change_bundle_location_instructions,
+            getAdbReverseTcpCommand(context),
+        )
     val instructionsParams =
         LinearLayout.LayoutParams(
-            LinearLayout.LayoutParams.MATCH_PARENT, LinearLayout.LayoutParams.WRAP_CONTENT)
+            LinearLayout.LayoutParams.MATCH_PARENT,
+            LinearLayout.LayoutParams.WRAP_CONTENT,
+        )
     instructionsParams.setMargins(0, paddingSmall, 0, paddingLarge)
     instructions.layoutParams = instructionsParams
 

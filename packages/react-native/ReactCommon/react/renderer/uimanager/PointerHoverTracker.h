@@ -23,15 +23,12 @@ class PointerHoverTracker {
   using Unique = std::unique_ptr<PointerHoverTracker>;
   using EventPath = std::vector<std::reference_wrapper<const ShadowNode>>;
 
-  PointerHoverTracker(
-      std::shared_ptr<const ShadowNode> target,
-      const UIManager& uiManager);
+  PointerHoverTracker(std::shared_ptr<const ShadowNode> target, const UIManager &uiManager);
 
-  const ShadowNode* getTarget(const UIManager& uiManager) const;
-  bool hasSameTarget(const PointerHoverTracker& other) const;
-  bool areAnyTargetsListeningToEvents(
-      std::initializer_list<ViewEvents::Offset> eventTypes,
-      const UIManager& uiManager) const;
+  const ShadowNode *getTarget(const UIManager &uiManager) const;
+  bool hasSameTarget(const PointerHoverTracker &other) const;
+  bool areAnyTargetsListeningToEvents(std::initializer_list<ViewEvents::Offset> eventTypes, const UIManager &uiManager)
+      const;
 
   /**
    * Performs a diff between the current and given trackers and returns a tuple
@@ -39,9 +36,7 @@ class PointerHoverTracker {
    * have been added. Note that the order of these lists are from parents ->
    * children.
    */
-  std::tuple<EventPath, EventPath> diffEventPath(
-      const PointerHoverTracker& other,
-      const UIManager& uiManager) const;
+  std::tuple<EventPath, EventPath> diffEventPath(const PointerHoverTracker &other, const UIManager &uiManager) const;
 
   void markAsOld();
 
@@ -59,9 +54,7 @@ class PointerHoverTracker {
    * A thin wrapper around `UIManager::getNewestCloneOfShadowNode` that only
    * actually gets the newest clone only if the tracker is marked as "old".
    */
-  const ShadowNode* getLatestNode(
-      const ShadowNode& node,
-      const UIManager& uiManager) const;
+  const ShadowNode *getLatestNode(const ShadowNode &node, const UIManager &uiManager) const;
 
   /**
    * Retrieves the list of shadow node references in the event's path starting

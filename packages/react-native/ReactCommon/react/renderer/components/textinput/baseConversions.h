@@ -14,10 +14,8 @@
 
 namespace facebook::react {
 
-inline void fromRawValue(
-    const PropsParserContext& /*context*/,
-    const RawValue& value,
-    SubmitBehavior& result) {
+inline void fromRawValue(const PropsParserContext & /*context*/, const RawValue &value, SubmitBehavior &result)
+{
   auto string = static_cast<std::string>(value);
   if (string == "newline") {
     result = SubmitBehavior::Newline;
@@ -30,7 +28,8 @@ inline void fromRawValue(
   }
 }
 
-inline folly::dynamic toDynamic(const SubmitBehavior& value) {
+inline folly::dynamic toDynamic(const SubmitBehavior &value)
+{
   switch (value) {
     case SubmitBehavior::Newline:
       return "newline";

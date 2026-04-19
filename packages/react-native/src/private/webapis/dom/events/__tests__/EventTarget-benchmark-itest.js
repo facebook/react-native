@@ -4,6 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
+ * @fantom_flags enableNativeEventTargetEventDispatching:*
  * @flow strict-local
  * @format
  */
@@ -17,7 +18,7 @@ import EventTarget from 'react-native/src/private/webapis/dom/events/EventTarget
 
 let event: Event;
 let eventTarget: EventTarget;
-let eventTargets: $ReadOnlyArray<EventTarget>;
+let eventTargets: ReadonlyArray<EventTarget>;
 
 unstable_benchmark
   .suite('EventTarget', {

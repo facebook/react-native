@@ -40,7 +40,9 @@ public class WritableNativeMap : ReadableNativeMap(), WritableMap {
   // Note: this consumes the map so do not reuse it.
   override fun putArray(key: String, value: ReadableArray?) {
     Assertions.assertCondition(
-        value == null || value is ReadableNativeArray, "Illegal type provided")
+        value == null || value is ReadableNativeArray,
+        "Illegal type provided",
+    )
     putNativeArray(key, value as ReadableNativeArray?)
   }
 

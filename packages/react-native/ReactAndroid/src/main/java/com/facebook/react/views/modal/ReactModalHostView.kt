@@ -37,11 +37,10 @@ import com.facebook.react.bridge.ReactContext
 import com.facebook.react.bridge.UiThreadUtil
 import com.facebook.react.bridge.WritableMap
 import com.facebook.react.bridge.WritableNativeMap
+import com.facebook.react.common.annotations.UnstableReactNativeAPI
 import com.facebook.react.common.annotations.VisibleForTesting
 import com.facebook.react.common.build.ReactBuildConfig
 import com.facebook.react.config.ReactFeatureFlags
-import com.facebook.react.uimanager.DisplayMetricsHolder
-import com.facebook.react.uimanager.DisplayMetricsHolder.getStatusBarHeightPx
 import com.facebook.react.uimanager.JSPointerDispatcher
 import com.facebook.react.uimanager.JSTouchDispatcher
 import com.facebook.react.uimanager.PixelUtil.pxToDp
@@ -51,13 +50,11 @@ import com.facebook.react.uimanager.ThemedReactContext
 import com.facebook.react.uimanager.UIManagerModule
 import com.facebook.react.uimanager.events.EventDispatcher
 import com.facebook.react.views.common.ContextUtils
-import com.facebook.react.views.modal.ReactModalHostView.DialogRootViewGroup
 import com.facebook.react.views.view.ReactViewGroup
 import com.facebook.react.views.view.disableEdgeToEdge
 import com.facebook.react.views.view.enableEdgeToEdge
 import com.facebook.react.views.view.isEdgeToEdgeFeatureFlagOn
 import com.facebook.react.views.view.setStatusBarTranslucency
-import com.facebook.yoga.annotations.DoNotStrip
 
 /**
  * ReactModalHostView is a view that sits in the view hierarchy representing a Modal view.
@@ -72,7 +69,6 @@ import com.facebook.yoga.annotations.DoNotStrip
  *    addition and removal of views to the DialogRootViewGroup.
  */
 @SuppressLint("ViewConstructor")
-@DoNotStrip
 public class ReactModalHostView(context: ThemedReactContext) :
     ViewGroup(context), LifecycleEventListener {
 
@@ -131,7 +127,6 @@ public class ReactModalHostView(context: ThemedReactContext) :
   private var createNewDialog = false
 
   init {
-    initStatusBarHeight(context)
     dialogRootViewGroup = DialogRootViewGroup(context)
   }
 
@@ -202,6 +197,9 @@ public class ReactModalHostView(context: ThemedReactContext) :
 
     dialog?.let { nonNullDialog ->
       if (nonNullDialog.isShowing) {
+        nonNullDialog.window?.let { window ->
+          (context as ThemedReactContext).onExtraWindowDestroy(window)
+        }
         val dialogContext =
             ContextUtils.findContextOfType(nonNullDialog.context, Activity::class.java)
         if (dialogContext == null || !dialogContext.isFinishing) {
@@ -280,7 +278,8 @@ public class ReactModalHostView(context: ThemedReactContext) :
     val window = requireNotNull(newDialog.window)
     window.setFlags(
         WindowManager.LayoutParams.FLAG_NOT_FOCUSABLE,
-        WindowManager.LayoutParams.FLAG_NOT_FOCUSABLE)
+        WindowManager.LayoutParams.FLAG_NOT_FOCUSABLE,
+    )
 
     newDialog.setContentView(contentView)
     updateProperties()
@@ -327,7 +326,8 @@ public class ReactModalHostView(context: ThemedReactContext) :
             }
             return false
           }
-        })
+        }
+    )
 
     window.setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_ADJUST_RESIZE)
     if (hardwareAccelerated) {
@@ -336,12 +336,15 @@ public class ReactModalHostView(context: ThemedReactContext) :
     val flagSecureSet = isFlagSecureSet(currentActivity)
     if (flagSecureSet) {
       window.setFlags(
-          WindowManager.LayoutParams.FLAG_SECURE, WindowManager.LayoutParams.FLAG_SECURE)
+          WindowManager.LayoutParams.FLAG_SECURE,
+          WindowManager.LayoutParams.FLAG_SECURE,
+      )
     }
     if (currentActivity?.isFinishing == false) {
       newDialog.show()
       updateSystemAppearance()
       window.clearFlags(WindowManager.LayoutParams.FLAG_NOT_FOCUSABLE)
+      (context as ThemedReactContext).onExtraWindowCreate(window)
     }
   }
 
@@ -400,7 +403,9 @@ public class ReactModalHostView(context: ThemedReactContext) :
       } else {
         dialogWindow.setDimAmount(0.5f)
         dialogWindow.setFlags(
-            WindowManager.LayoutParams.FLAG_DIM_BEHIND, WindowManager.LayoutParams.FLAG_DIM_BEHIND)
+            WindowManager.LayoutParams.FLAG_DIM_BEHIND,
+            WindowManager.LayoutParams.FLAG_DIM_BEHIND,
+        )
       }
     } catch (e: IllegalArgumentException) {
       // This is to prevent a crash from the following error, without a clear repro steps:
@@ -484,26 +489,6 @@ public class ReactModalHostView(context: ThemedReactContext) :
 
   private companion object {
     private const val TAG = "ReactModalHost"
-
-    // We store the status bar height to be able to properly position
-    // the modal on the first render.
-    private var statusBarHeight = 0
-
-    private fun initStatusBarHeight(reactContext: ReactContext) {
-      statusBarHeight = getStatusBarHeightPx(reactContext.currentActivity)
-    }
-
-    @JvmStatic
-    @DoNotStrip
-    private fun getScreenDisplayMetricsWithoutInsets(): Long {
-      val displayMetrics = DisplayMetricsHolder.getScreenDisplayMetrics()
-      return encodeFloatsToLong(
-          displayMetrics.widthPixels.toFloat().pxToDp(),
-          (displayMetrics.heightPixels - statusBarHeight).toFloat().pxToDp())
-    }
-
-    private fun encodeFloatsToLong(width: Float, height: Float): Long =
-        (width.toRawBits().toLong()) shl 32 or (height.toRawBits().toLong())
   }
 
   /**
@@ -580,7 +565,8 @@ public class ReactModalHostView(context: ThemedReactContext) :
                       .getNativeModule(UIManagerModule::class.java)
                       ?.updateNodeSize(id, viewWidth, viewHeight)
                 }
-              })
+              }
+          )
         }
       }
     }
@@ -611,7 +597,7 @@ public class ReactModalHostView(context: ThemedReactContext) :
 
     override fun onInterceptHoverEvent(event: MotionEvent): Boolean {
       eventDispatcher?.let { jSPointerDispatcher?.handleMotionEvent(event, it, true) }
-      return super.onHoverEvent(event)
+      return super.onInterceptHoverEvent(event)
     }
 
     override fun onHoverEvent(event: MotionEvent): Boolean {
@@ -619,9 +605,10 @@ public class ReactModalHostView(context: ThemedReactContext) :
       return super.onHoverEvent(event)
     }
 
+    @OptIn(UnstableReactNativeAPI::class)
     override fun onChildStartedNativeGesture(childView: View?, ev: MotionEvent) {
       eventDispatcher?.let { eventDispatcher ->
-        jSTouchDispatcher.onChildStartedNativeGesture(ev, eventDispatcher)
+        jSTouchDispatcher.onChildStartedNativeGesture(ev, eventDispatcher, reactContext)
         jSPointerDispatcher?.onChildStartedNativeGesture(childView, ev, eventDispatcher)
       }
     }

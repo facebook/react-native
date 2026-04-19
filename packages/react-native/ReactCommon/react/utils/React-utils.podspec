@@ -34,11 +34,11 @@ Pod::Spec.new do |s|
   s.header_dir             = "react/utils"
   s.exclude_files          = "tests"
 
-  if ENV['USE_FRAMEWORKS'] && ReactNativeCoreUtils.build_rncore_from_source()
-    s.module_name            = "React_utils"
-    s.header_mappings_dir  = "../.."
+  if ENV['USE_FRAMEWORKS']
     header_search_paths = header_search_paths + ["\"$(PODS_TARGET_SRCROOT)/platform/ios\""]
   end
+
+  resolve_use_frameworks(s, header_mappings_dir: "../..", module_name: "React_utils")
 
   s.pod_target_xcconfig    = { "USE_HEADERMAP" => "NO",
                                "CLANG_CXX_LANGUAGE_STANDARD" => rct_cxx_language_standard(),
@@ -47,7 +47,9 @@ Pod::Spec.new do |s|
 
   s.dependency "React-jsi", version
 
-  depend_on_js_engine(s)
+  if use_hermes()
+    s.dependency "hermes-engine"
+  end
   add_rn_third_party_dependencies(s)
   add_rncore_dependency(s)
 

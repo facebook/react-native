@@ -15,15 +15,18 @@ import path from 'path';
 
 type BundleOptions = {
   ...RunBuildOptions,
-  out: $NonMaybeType<RunBuildOptions['out']>,
+  customTransformOptions: ?{
+    collectCoverage: boolean,
+  },
+  out: NonNullable<RunBuildOptions['out']>,
   testPath: string,
 };
 
 const PROJECT_ROOT = path.resolve(__dirname, '..', '..', '..');
 
 export async function createBundle(options: BundleOptions): Promise<void> {
-  let bundleResult;
-  let bundleError;
+  let lastBundleResult;
+  let lastBundleError;
 
   // Retry in case Metro hasn't seen the changes in the filesystem yet.
   // TODO(T231910841): Remove this when Metro fixes consistency issues when resolving HTTP requests.
@@ -33,22 +36,42 @@ export async function createBundle(options: BundleOptions): Promise<void> {
       await sleep(500);
     }
 
+    lastBundleError = null;
+    lastBundleResult = null;
+
     try {
-      bundleResult = await fetch(getBundleURL(options));
+      lastBundleResult = await fetch(getBundleURL(options));
     } catch (e) {
-      bundleError = e;
+      lastBundleError = e;
     }
 
     attemps++;
-  } while (attemps < 3 && (bundleError || bundleResult?.status === 404));
+  } while (
+    attemps < 3 &&
+    (lastBundleError || lastBundleResult?.status === 404)
+  );
 
-  if (bundleError || bundleResult?.ok !== true) {
-    throw new Error(
-      `Failed to request bundle from Metro: ${bundleError?.message ?? (await bundleResult?.text()) ?? ''}`,
-    );
+  if (lastBundleError || lastBundleResult?.ok !== true) {
+    let errorMessage =
+      lastBundleError?.message ?? (await lastBundleResult?.text()) ?? '';
+
+    try {
+      const parsed = JSON.parse(errorMessage);
+      if (typeof parsed.message === 'string') {
+        errorMessage = parsed.message;
+      }
+    } catch {
+      // Not JSON — use the raw text as-is.
+    }
+
+    throw new Error(`Failed to request bundle from Metro:\n${errorMessage}`);
   }
 
-  await fs.promises.writeFile(options.out, await bundleResult.text(), 'utf8');
+  await fs.promises.writeFile(
+    options.out,
+    await lastBundleResult.text(),
+    'utf8',
+  );
 }
 
 export async function createSourceMap(options: BundleOptions): Promise<void> {
@@ -84,6 +107,7 @@ function getBundleBaseURL({
   dev,
   sourceMap,
   sourceMapUrl,
+  customTransformOptions,
 }: BundleOptions): URL {
   const requestPath = path.relative(PROJECT_ROOT, entry).replace(/\.js$/, '');
   const port = getMetroPort();
@@ -108,6 +132,10 @@ function getBundleBaseURL({
 
   if (sourceMapUrl != null) {
     baseURL.searchParams.append('sourceMapUrl', sourceMapUrl);
+  }
+
+  if (customTransformOptions?.collectCoverage) {
+    baseURL.searchParams.append('transform.collectCoverage', 'true');
   }
 
   return baseURL;

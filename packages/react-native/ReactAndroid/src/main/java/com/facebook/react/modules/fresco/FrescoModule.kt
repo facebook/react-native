@@ -39,7 +39,7 @@ public open class FrescoModule
 constructor(
     reactContext: ReactApplicationContext?,
     private val clearOnDestroy: Boolean = true,
-    imagePipelineConfig: ImagePipelineConfig? = null
+    imagePipelineConfig: ImagePipelineConfig? = null,
 ) :
     ReactContextBaseJavaModule(reactContext),
     ModuleDataCleaner.Cleanable,
@@ -63,7 +63,7 @@ constructor(
       reactContext: ReactApplicationContext?,
       imagePipeline: ImagePipeline?,
       clearOnDestroy: Boolean = true,
-      hasBeenInitializedExternally: Boolean = false
+      hasBeenInitializedExternally: Boolean = false,
   ) : this(reactContext, clearOnDestroy) {
     pipeline = imagePipeline
     if (hasBeenInitializedExternally) {
@@ -88,7 +88,8 @@ constructor(
       FLog.w(
           ReactConstants.TAG,
           "Fresco has already been initialized with a different config. " +
-              "The new Fresco configuration will be ignored!")
+              "The new Fresco configuration will be ignored!",
+      )
     }
     config = null
   }

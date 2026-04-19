@@ -13,6 +13,7 @@ import com.facebook.react.bridge.ReactApplicationContext
 import com.facebook.react.bridge.UiThreadUtil
 import java.util.WeakHashMap
 
+@Suppress("DEPRECATION")
 public abstract class ViewGroupManager<T : ViewGroup>
 @JvmOverloads
 constructor(reactContext: ReactApplicationContext? = null) :

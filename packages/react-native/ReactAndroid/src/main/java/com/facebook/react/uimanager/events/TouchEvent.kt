@@ -14,8 +14,6 @@ import androidx.core.util.Pools.SynchronizedPool
 import com.facebook.infer.annotation.Assertions
 import com.facebook.react.bridge.ReactSoftExceptionLogger
 import com.facebook.react.bridge.SoftAssertions
-import com.facebook.react.uimanager.common.UIManagerType
-import com.facebook.react.uimanager.common.ViewUtil.getUIManagerType
 import com.facebook.react.uimanager.events.TouchEventType.Companion.getJSEventName
 
 /**
@@ -49,11 +47,13 @@ public class TouchEvent private constructor() : Event<TouchEvent>() {
       gestureStartTime: Long,
       viewX: Float,
       viewY: Float,
-      touchEventCoalescingKeyHelper: TouchEventCoalescingKeyHelper
+      touchEventCoalescingKeyHelper: TouchEventCoalescingKeyHelper,
   ) {
     super.init(surfaceId, viewTag, motionEventToCopy.eventTime)
     SoftAssertions.assertCondition(
-        gestureStartTime != UNSET, "Gesture start time must be initialized")
+        gestureStartTime != UNSET,
+        "Gesture start time must be initialized",
+    )
     var coalescingKey: Short = 0
     val action = motionEventToCopy.action and MotionEvent.ACTION_MASK
     when (action) {
@@ -113,25 +113,12 @@ public class TouchEvent private constructor() : Event<TouchEvent>() {
 
   override fun getCoalescingKey(): Short = coalescingKey
 
-  @Deprecated("Deprecated in Java")
-  override fun dispatch(rctEventEmitter: RCTEventEmitter) {
-    if (verifyMotionEvent()) {
-      TouchesHelper.sendTouchesLegacy(rctEventEmitter, this)
-    }
-  }
-
   override fun dispatchModern(rctEventEmitter: RCTModernEventEmitter) {
     if (!verifyMotionEvent()) {
       return
     }
 
-    @UIManagerType val uiManagerType = getUIManagerType(viewTag, surfaceId)
-    if (uiManagerType == UIManagerType.FABRIC) {
-      // TouchesHelper.sendTouchEvent can be inlined here post Fabric rollout
-      TouchesHelper.sendTouchEvent(rctEventEmitter, this)
-    } else if (uiManagerType == UIManagerType.LEGACY) {
-      TouchesHelper.sendTouchesLegacy(rctEventEmitter, this)
-    }
+    TouchesHelper.sendTouchEvent(rctEventEmitter, this)
   }
 
   public override fun getEventCategory(): Int {
@@ -150,7 +137,9 @@ public class TouchEvent private constructor() : Event<TouchEvent>() {
           TAG,
           IllegalStateException(
               "Cannot dispatch a TouchEvent that has no MotionEvent; the TouchEvent has been" +
-                  " recycled"))
+                  " recycled"
+          ),
+      )
       return false
     }
     return true
@@ -164,7 +153,8 @@ public class TouchEvent private constructor() : Event<TouchEvent>() {
 
     @Deprecated(
         "Please use the other overload of the obtain method, which explicitly provides surfaceId",
-        ReplaceWith("obtain(surfaceId, ...)"))
+        ReplaceWith("obtain(surfaceId, ...)"),
+    )
     @JvmStatic
     public fun obtain(
         viewTag: Int,
@@ -173,7 +163,7 @@ public class TouchEvent private constructor() : Event<TouchEvent>() {
         gestureStartTime: Long,
         viewX: Float,
         viewY: Float,
-        touchEventCoalescingKeyHelper: TouchEventCoalescingKeyHelper
+        touchEventCoalescingKeyHelper: TouchEventCoalescingKeyHelper,
     ): TouchEvent {
       return obtain(
           -1,
@@ -183,7 +173,8 @@ public class TouchEvent private constructor() : Event<TouchEvent>() {
           gestureStartTime,
           viewX,
           viewY,
-          touchEventCoalescingKeyHelper)
+          touchEventCoalescingKeyHelper,
+      )
     }
 
     @JvmStatic
@@ -195,7 +186,7 @@ public class TouchEvent private constructor() : Event<TouchEvent>() {
         gestureStartTime: Long,
         viewX: Float,
         viewY: Float,
-        touchEventCoalescingKeyHelper: TouchEventCoalescingKeyHelper
+        touchEventCoalescingKeyHelper: TouchEventCoalescingKeyHelper,
     ): TouchEvent {
       var event = EVENTS_POOL.acquire()
       if (event == null) {
@@ -209,7 +200,8 @@ public class TouchEvent private constructor() : Event<TouchEvent>() {
           gestureStartTime,
           viewX,
           viewY,
-          touchEventCoalescingKeyHelper)
+          touchEventCoalescingKeyHelper,
+      )
       return event
     }
   }

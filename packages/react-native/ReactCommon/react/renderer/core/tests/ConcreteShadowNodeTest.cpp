@@ -26,7 +26,10 @@ TEST(ConcreteShadowNodeTest, testSetStateData) {
 
   auto shadowNode = builder.build(element);
 
-  shadowNode->setStateData({{10, 11}, {{21, 22}, {301, 302}}, 0});
+  shadowNode->setStateData(
+      {{.x = 10, .y = 11},
+       {.origin = {.x = 21, .y = 22}, .size = {.width = 301, .height = 302}},
+       0});
 
   EXPECT_NE(
       shadowNode->getState(), shadowNode->getFamily().getMostRecentState());

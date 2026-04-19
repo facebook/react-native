@@ -261,7 +261,7 @@ const PromptOptions = () => {
 
       <Pressable
         style={styles.wrapper}
-        /* $FlowFixMe[incompatible-call] Natural Inference rollout. See
+        /* $FlowFixMe[incompatible-type] Natural Inference rollout. See
          * https://fburl.com/workplace/6291gfvu */
         onPress={() => Alert.prompt('Type a value', null, customButtons)}>
         <View style={styles.button}>
@@ -308,7 +308,7 @@ const PromptOptions = () => {
           Alert.prompt(
             'Type a value',
             null,
-            /* $FlowFixMe[incompatible-call] Natural Inference rollout. See
+            /* $FlowFixMe[incompatible-type] Natural Inference rollout. See
              * https://fburl.com/workplace/6291gfvu */
             customButtons,
             'login-password',
@@ -379,6 +379,7 @@ const styles = StyleSheet.create({
 export const examples = [
   {
     title: 'Alert with default Button',
+    name: 'default-button',
     description:
       "It can be used to show some information to user that doesn't require an action.",
     render(): React.Node {
@@ -394,6 +395,7 @@ export const examples = [
   },
   {
     title: 'Alert with three Buttons',
+    name: 'three-buttons',
     description: 'It can be used when there are three possible actions',
     render(): React.Node {
       return <AlertWithThreeButtons />;
@@ -450,14 +452,14 @@ export const examples = [
   },
 ];
 
-export default ({
+export default {
   framework: 'React',
   title: 'Alerts',
   category: 'UI',
   documentationURL: 'https://reactnative.dev/docs/alert',
   description:
     'Alerts display a concise and informative message and prompt the user to make a decision.',
-  /* $FlowFixMe[incompatible-cast] Natural Inference rollout. See
+  /* $FlowFixMe[incompatible-type] Natural Inference rollout. See
    * https://fburl.com/workplace/6291gfvu */
   examples,
-}: RNTesterModule);
+} as RNTesterModule;

@@ -32,6 +32,20 @@ CullingContext CullingContext::adjustCullingContextIfNeeded(
                 /* includeTransform */ true);
         cullingContext.frame.size =
             scrollViewShadowNode->getLayoutMetrics().frame.size;
+
+        // Enlarge the frame if an outset ratio is defined
+        auto outsetRatio = ReactNativeFeatureFlags::viewCullingOutsetRatio();
+        if (outsetRatio > 0) {
+          auto xOutset = static_cast<float>(
+              floor(cullingContext.frame.size.width * outsetRatio));
+          auto yOutset = static_cast<float>(
+              floor(cullingContext.frame.size.height * outsetRatio));
+          cullingContext.frame.origin.x -= xOutset;
+          cullingContext.frame.origin.y -= yOutset;
+          cullingContext.frame.size.width += 2.0f * xOutset;
+          cullingContext.frame.size.height += 2.0f * yOutset;
+        }
+
         cullingContext.transform = Transform::Identity();
 
         if (layoutMetrics.layoutDirection == LayoutDirection::RightToLeft) {

@@ -86,7 +86,7 @@ RCT_EXPORT_METHOD(alertWithArgs : (JS::NativeAlertManager::Args &)args callback 
   UIKeyboardType keyboardType = [RCTConvert UIKeyboardType:args.keyboardType()];
   UIUserInterfaceStyle userInterfaceStyle = [RCTConvert UIUserInterfaceStyle:args.userInterfaceStyle()];
 
-  if (!title && !message) {
+  if ((title == nullptr) && (message == nullptr)) {
     RCTLogError(@"Must specify either an alert title, or message, or both");
     return;
   }
@@ -193,7 +193,7 @@ RCT_EXPORT_METHOD(alertWithArgs : (JS::NativeAlertManager::Args &)args callback 
       }
     }
 
-    if (!self->_alertControllers) {
+    if (self->_alertControllers == nullptr) {
       self->_alertControllers = [NSHashTable weakObjectsHashTable];
     }
     [self->_alertControllers addObject:alertController];

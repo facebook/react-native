@@ -10,8 +10,16 @@
 
 import type {PartialViewConfigWithoutName} from './PlatformBaseViewConfig';
 
-import * as ReactNativeFeatureFlags from '../../src/private/featureflags/ReactNativeFeatureFlags';
 import ReactNativeStyleAttributes from '../Components/View/ReactNativeStyleAttributes';
+import {
+  backgroundImageAttribute,
+  backgroundPositionAttribute,
+  backgroundRepeatAttribute,
+  backgroundSizeAttribute,
+  boxShadowAttribute,
+  colorAttribute,
+  filterAttribute,
+} from '../Components/View/ReactNativeStyleAttributes';
 import {DynamicallyInjectedByGestureHandler} from './ViewConfigIgnore';
 
 const bubblingEventTypes = {
@@ -122,6 +130,18 @@ const bubblingEventTypes = {
       bubbled: 'onFocus',
     },
   },
+  topKeyDown: {
+    phasedRegistrationNames: {
+      captured: 'onKeyDownCapture',
+      bubbled: 'onKeyDown',
+    },
+  },
+  topKeyUp: {
+    phasedRegistrationNames: {
+      captured: 'onKeyUpCapture',
+      bubbled: 'onKeyUp',
+    },
+  },
 };
 
 const directEventTypes = {
@@ -176,27 +196,25 @@ const directEventTypes = {
 
 const validAttributesForNonEventProps = {
   // @ReactProps from BaseViewManager
-  backgroundColor: {process: require('../StyleSheet/processColor').default},
+  backgroundColor: colorAttribute,
   transform: true,
   transformOrigin: true,
-  experimental_backgroundImage: {
-    process: require('../StyleSheet/processBackgroundImage').default,
-  },
-  boxShadow: ReactNativeFeatureFlags.enableNativeCSSParsing()
-    ? (true as const)
-    : {process: require('../StyleSheet/processBoxShadow').default},
-  filter: ReactNativeFeatureFlags.enableNativeCSSParsing()
-    ? (true as const)
-    : {process: require('../StyleSheet/processFilter').default},
+  experimental_backgroundImage: backgroundImageAttribute,
+  experimental_backgroundSize: backgroundSizeAttribute,
+  experimental_backgroundPosition: backgroundPositionAttribute,
+  experimental_backgroundRepeat: backgroundRepeatAttribute,
+  boxShadow: boxShadowAttribute,
+  filter: filterAttribute,
   mixBlendMode: true,
   isolation: true,
   opacity: true,
   elevation: true,
-  shadowColor: {process: require('../StyleSheet/processColor').default},
+  shadowColor: colorAttribute,
   zIndex: true,
   renderToHardwareTextureAndroid: true,
   testID: true,
   nativeID: true,
+  id: true,
   accessibilityLabelledBy: true,
   accessibilityLabel: true,
   accessibilityHint: true,
@@ -209,6 +227,19 @@ const validAttributesForNonEventProps = {
   experimental_accessibilityOrder: true,
   importantForAccessibility: true,
   screenReaderFocusable: true,
+  'aria-busy': true,
+  'aria-checked': true,
+  'aria-disabled': true,
+  'aria-expanded': true,
+  'aria-hidden': true,
+  'aria-label': true,
+  'aria-labelledby': true,
+  'aria-live': true,
+  'aria-selected': true,
+  'aria-valuemax': true,
+  'aria-valuemin': true,
+  'aria-valuenow': true,
+  'aria-valuetext': true,
   role: true,
   rotation: true,
   scaleX: true,
@@ -284,7 +315,7 @@ const validAttributesForNonEventProps = {
   borderLeftWidth: true,
   borderRightWidth: true,
 
-  outlineColor: {process: require('../StyleSheet/processColor').default},
+  outlineColor: colorAttribute,
   outlineOffset: true,
   outlineStyle: true,
   outlineWidth: true,
@@ -340,37 +371,18 @@ const validAttributesForNonEventProps = {
   nativeForegroundAndroid: true,
   needsOffscreenAlphaCompositing: true,
 
-  borderColor: {
-    process: require('../StyleSheet/processColor').default,
-  },
-  borderLeftColor: {
-    process: require('../StyleSheet/processColor').default,
-  },
-  borderRightColor: {
-    process: require('../StyleSheet/processColor').default,
-  },
-  borderTopColor: {
-    process: require('../StyleSheet/processColor').default,
-  },
-  borderBottomColor: {
-    process: require('../StyleSheet/processColor').default,
-  },
-  borderStartColor: {
-    process: require('../StyleSheet/processColor').default,
-  },
-  borderEndColor: {
-    process: require('../StyleSheet/processColor').default,
-  },
-  borderBlockColor: {
-    process: require('../StyleSheet/processColor').default,
-  },
-  borderBlockEndColor: {
-    process: require('../StyleSheet/processColor').default,
-  },
-  borderBlockStartColor: {
-    process: require('../StyleSheet/processColor').default,
-  },
+  borderColor: colorAttribute,
+  borderLeftColor: colorAttribute,
+  borderRightColor: colorAttribute,
+  borderTopColor: colorAttribute,
+  borderBottomColor: colorAttribute,
+  borderStartColor: colorAttribute,
+  borderEndColor: colorAttribute,
+  borderBlockColor: colorAttribute,
+  borderBlockEndColor: colorAttribute,
+  borderBlockStartColor: colorAttribute,
   focusable: true,
+  tabIndex: true,
   backfaceVisibility: true,
 } as const;
 

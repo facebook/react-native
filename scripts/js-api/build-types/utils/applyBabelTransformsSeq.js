@@ -17,7 +17,7 @@ import * as babel from '@babel/core';
  */
 async function applyBabelTransformsSeq(
   source: string,
-  transforms: $ReadOnlyArray<PluginObj<mixed>>,
+  transforms: ReadonlyArray<PluginObj<unknown>>,
 ): Promise<string> {
   const parsed = await babel.parseAsync(source, {
     plugins: ['@babel/plugin-syntax-typescript'],
@@ -33,7 +33,7 @@ async function applyBabelTransformsSeq(
       if (result == null) {
         throw new Error('Unexpected null result from Babel transform');
       }
-      // $FlowIgnore[incompatible-cast]
+      // $FlowFixMe[incompatible-type]
       return result.ast as BabelNodeFile;
     });
   }, Promise.resolve(parsed));

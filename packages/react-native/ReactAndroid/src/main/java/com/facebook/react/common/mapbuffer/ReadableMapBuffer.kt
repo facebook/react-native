@@ -32,12 +32,16 @@ private constructor(
     // Byte data of the mapBuffer
     private val buffer: ByteBuffer,
     // Offset to the start of the MapBuffer
-    private val offsetToMapBuffer: Int
+    private val offsetToMapBuffer: Int,
 ) : HybridClassBase(), MapBuffer {
 
   // Amount of items serialized on the ByteBuffer
   override var count: Int = 0
     private set
+
+  // returns the relative offset of the first byte of dynamic data
+  private val offsetForDynamicData: Int
+    get() = getKeyOffsetForBucketIndex(count)
 
   init {
     readHeader()
@@ -55,10 +59,6 @@ private constructor(
     // count
     count = readUnsignedShort(buffer.position()).toInt()
   }
-
-  // returns the relative offset of the first byte of dynamic data
-  private val offsetForDynamicData: Int
-    get() = getKeyOffsetForBucketIndex(count)
 
   /**
    * @param intKey Key to search for

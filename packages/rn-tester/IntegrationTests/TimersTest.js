@@ -16,7 +16,7 @@ const ReactNative = require('react-native');
 const {StyleSheet, Text, View} = ReactNative;
 const {TestModule} = ReactNative.NativeModules;
 
-type Props = $ReadOnly<{}>;
+type Props = Readonly<{}>;
 
 type State = {
   count: number,
@@ -283,4 +283,4 @@ const styles = StyleSheet.create({
 });
 
 TimersTest.displayName = 'TimersTest';
-module.exports = TimersTest;
+export default TimersTest;

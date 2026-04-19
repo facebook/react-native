@@ -13,23 +13,44 @@ import type {
   TestCaseResult,
   TestSuiteResult,
 } from '../runtime/setup';
-import type {TestSnapshotResults} from '../runtime/snapshotContext';
+import type {
+  TestInlineSnapshotResults,
+  TestSnapshotResults,
+} from '../runtime/snapshotContext';
+import type {BenchmarkResult} from '../src/Benchmark';
+import type {CoverageMap} from './coverage/types.flow';
+import type {PendingInlineSnapshot} from './snapshotUtils';
 import type {
   AsyncCommandResult,
   ConsoleLogMessage,
+  EnvironmentOverrides,
   HermesVariant,
 } from './utils';
 
+import {printBenchmarkResultsRanking} from './benchmarkUtils';
 import {createBundle, createSourceMap} from './bundling';
+import {shouldCollectCoverage} from './coverageUtils';
 import entrypointTemplate from './entrypoint-template';
 import * as EnvironmentOptions from './EnvironmentOptions';
 import {run as runHermesCompiler} from './executables/hermesc';
-import {run as runFantomTester} from './executables/tester';
+import {
+  getFantomTesterPath,
+  run as runFantomTester,
+} from './executables/tester';
 import formatFantomConfig from './formatFantomConfig';
 import getFantomTestConfigs from './getFantomTestConfigs';
-import {getTestBuildOutputPath} from './paths';
+import processLLVMCoverage from './llvm/processLLVMCoverage';
+import {
+  JS_HEAP_SNAPSHOTS_OUTPUT_PATH,
+  JS_TRACES_OUTPUT_PATH,
+  buildJSHeapSnapshotsOutputPathTemplate,
+  buildJSTracesOutputPath,
+  getTestBuildOutputPath,
+} from './paths';
 import {
   getInitialSnapshotData,
+  processInlineSnapshotResults,
+  saveInlineSnapshotsToSource,
   updateSnapshotsAndGetJestSnapshotResult,
 } from './snapshotUtils';
 import {
@@ -37,6 +58,7 @@ import {
   getDebugInfoFromCommandResult,
   printConsoleLog,
   runCommand,
+  symbolicateJSTrace,
   symbolicateStackTrace,
 } from './utils';
 import fs from 'fs';
@@ -49,6 +71,11 @@ import readline from 'readline';
 
 const TEST_BUILD_OUTPUT_PATH = getTestBuildOutputPath();
 fs.mkdirSync(TEST_BUILD_OUTPUT_PATH, {recursive: true});
+fs.mkdirSync(JS_HEAP_SNAPSHOTS_OUTPUT_PATH, {recursive: true});
+
+if (EnvironmentOptions.profileJS) {
+  fs.mkdirSync(JS_TRACES_OUTPUT_PATH, {recursive: true});
+}
 
 function buildError(
   failureDetail: FailureDetail,
@@ -66,7 +93,7 @@ function buildError(
 
 async function processRNTesterCommandResult(
   result: AsyncCommandResult,
-): Promise<TestSuiteResult> {
+): Promise<[TestSuiteResult, ?BenchmarkResult]> {
   const stdoutChunks = [];
   const stderrChunks = [];
 
@@ -78,7 +105,7 @@ async function processRNTesterCommandResult(
     stderrChunks.push(chunk);
   });
 
-  let testResult;
+  let testResult, benchmarkResult;
 
   const rl = readline.createInterface({input: result.childProcess.stdout});
   rl.on('line', (rawLine: string) => {
@@ -101,6 +128,9 @@ async function processRNTesterCommandResult(
     switch (parsed?.type) {
       case 'test-result':
         testResult = parsed;
+        break;
+      case 'benchmark-result':
+        benchmarkResult = parsed;
         break;
       case 'console-log':
         printConsoleLog(parsed);
@@ -138,24 +168,26 @@ async function processRNTesterCommandResult(
     );
   }
 
-  return testResult;
+  return [testResult, benchmarkResult];
 }
 
 function generateBytecodeBundle({
   sourcePath,
   bytecodePath,
-  isOptimizedMode,
+  enableOptimized,
   hermesVariant,
+  enableCoverage,
 }: {
-  sourcePath: string,
   bytecodePath: string,
-  isOptimizedMode: boolean,
+  enableCoverage: boolean,
+  enableOptimized: boolean,
   hermesVariant: HermesVariant,
+  sourcePath: string,
 }): void {
   const hermesCompilerCommandResult = runHermesCompiler(
     [
       '-emit-binary',
-      isOptimizedMode ? '-O' : null,
+      enableOptimized ? '-O' : null,
       '-max-diagnostic-width',
       '80',
       '-out',
@@ -163,8 +195,9 @@ function generateBytecodeBundle({
       sourcePath,
     ].filter(Boolean),
     {
-      isOptimizedMode,
+      enableOptimized,
       hermesVariant,
+      enableCoverage,
     },
   );
 
@@ -176,6 +209,7 @@ function generateBytecodeBundle({
 module.exports = async function runTest(
   globalConfig: {
     updateSnapshot: 'all' | 'new' | 'none',
+    collectCoverage: boolean,
     ...
   },
   config: {
@@ -187,7 +221,8 @@ module.exports = async function runTest(
   environment: {...},
   runtime: {...},
   testPath: string,
-): mixed {
+): unknown {
+  let coverageMap: CoverageMap = {};
   const snapshotResolver = await buildSnapshotResolver(config);
   const snapshotPath = snapshotResolver.resolveSnapshotPath(testPath);
   const snapshotState = new SnapshotState(snapshotPath, {
@@ -209,6 +244,8 @@ module.exports = async function runTest(
   );
 
   const testResultsByConfig = [];
+  const benchmarkResults = [];
+  const allPendingInlineSnapshots: Array<PendingInlineSnapshot> = [];
 
   const skippedTestResults = ({
     ancestorTitles,
@@ -225,6 +262,7 @@ module.exports = async function runTest(
       fullName: title,
       numPassingAsserts: 0,
       snapshotResults: {} as TestSnapshotResults,
+      inlineSnapshotResults: [] as TestInlineSnapshotResults,
       status: 'pending' as TestCaseResult['status'],
       testFilePath: testPath,
       title,
@@ -267,6 +305,23 @@ module.exports = async function runTest(
       continue;
     }
 
+    const jsTraceOutputPath = EnvironmentOptions.profileJS
+      ? buildJSTracesOutputPath({
+          testPath,
+          testConfig,
+          isMultiConfigTest: testConfigs.length > 1,
+        })
+      : null;
+
+    const [
+      jsHeapSnapshotOutputPathTemplate,
+      jsHeapSnapshotOutputPathTemplateToken,
+    ] = buildJSHeapSnapshotsOutputPathTemplate({
+      testPath,
+      testConfig,
+      isMultiConfigTest: testConfigs.length > 1,
+    });
+
     const entrypointContents = entrypointTemplate({
       testPath: `${path.relative(TEST_BUILD_OUTPUT_PATH, testPath)}`,
       setupModulePath: `${path.relative(TEST_BUILD_OUTPUT_PATH, setupModulePath)}`,
@@ -276,6 +331,9 @@ module.exports = async function runTest(
         updateSnapshot: snapshotState._updateSnapshot,
         data: getInitialSnapshotData(snapshotState),
       },
+      jsHeapSnapshotOutputPathTemplate,
+      jsHeapSnapshotOutputPathTemplateToken,
+      jsTraceOutputPath,
     });
 
     const entrypointPath = path.join(
@@ -284,6 +342,7 @@ module.exports = async function runTest(
     );
     const testJSBundlePath = entrypointPath + '.bundle.js';
     const testBytecodeBundlePath = testJSBundlePath + '.hbc';
+    const testCoveragePath = entrypointPath + '.profraw';
 
     fs.mkdirSync(path.dirname(entrypointPath), {recursive: true});
     fs.writeFileSync(entrypointPath, entrypointContents, 'utf8');
@@ -291,6 +350,12 @@ module.exports = async function runTest(
     const sourceMapPath = path.join(
       path.dirname(testJSBundlePath),
       path.basename(testJSBundlePath, '.js') + '.map',
+    );
+
+    const collectCoverage = shouldCollectCoverage(
+      testPath,
+      testContents,
+      globalConfig,
     );
 
     const bundleOptions = {
@@ -301,6 +366,9 @@ module.exports = async function runTest(
       dev: !testConfig.isJsOptimized,
       sourceMap: true,
       sourceMapUrl: sourceMapPath,
+      customTransformOptions: {
+        collectCoverage,
+      },
     };
 
     await createBundle({
@@ -312,7 +380,8 @@ module.exports = async function runTest(
       generateBytecodeBundle({
         sourcePath: testJSBundlePath,
         bytecodePath: testBytecodeBundlePath,
-        isOptimizedMode: testConfig.isJsOptimized,
+        enableCoverage: collectCoverage,
+        enableOptimized: testConfig.isJsOptimized,
         hermesVariant: testConfig.hermesVariant,
       });
     }
@@ -326,27 +395,58 @@ module.exports = async function runTest(
       EnvironmentOptions.printCLIOutput ? 'info' : 'error',
     ];
 
+    if (EnvironmentOptions.debugJS) {
+      rnTesterCommandArgs.push(
+        '--inspectorPort',
+        nullthrows(process.env.__FANTOM_METRO_PORT__),
+      );
+    }
+
+    const env: EnvironmentOverrides = {
+      LLVM_PROFILE_FILE: collectCoverage ? testCoveragePath : undefined,
+    };
+
+    const rnTesterOptions = {
+      enableOptimized: testConfig.isNativeOptimized,
+      hermesVariant: testConfig.hermesVariant,
+      enableCoverage: collectCoverage,
+    };
     const rnTesterCommandResult = EnvironmentOptions.isOSS
       ? runCommand(
           path.join(__dirname, '..', 'build', 'tester', 'fantom_tester'),
           rnTesterCommandArgs,
+          env,
         )
-      : runFantomTester(rnTesterCommandArgs, {
-          isOptimizedMode: testConfig.isNativeOptimized,
-          hermesVariant: testConfig.hermesVariant,
-        });
+      : runFantomTester(rnTesterCommandArgs, rnTesterOptions, env);
 
-    const processedResult = await processRNTesterCommandResult(
-      rnTesterCommandResult,
-    );
+    const [processedResult, benchmarkResult] =
+      await processRNTesterCommandResult(rnTesterCommandResult);
 
-    if (containsError(processedResult)) {
+    const hasInlineSnapshotUpdates =
+      processedResult.testResults?.some(r =>
+        r.inlineSnapshotResults.some(ir => !ir.pass),
+      ) ?? false;
+
+    if (
+      containsError(processedResult) ||
+      EnvironmentOptions.profileJS ||
+      hasInlineSnapshotUpdates
+    ) {
       await createSourceMap({
         ...bundleOptions,
         out: sourceMapPath,
       }).catch(error => {
         console.error('Failed to generate source map', error);
       });
+    }
+
+    if (EnvironmentOptions.profileJS && jsTraceOutputPath != null) {
+      symbolicateJSTrace(jsTraceOutputPath, sourceMapPath);
+      console.info(
+        '🔥 JS sampling profiler trace saved to',
+        jsTraceOutputPath,
+        '\n',
+      );
     }
 
     const testResultError = processedResult.error;
@@ -368,6 +468,20 @@ module.exports = async function runTest(
         ),
         snapshotResults: testResult.snapshotResults,
       })) ?? [];
+
+    // Process inline snapshot results (requires source map for symbolication)
+    if (hasInlineSnapshotUpdates) {
+      const inlineResults = nullthrows(processedResult.testResults).map(
+        r => r.inlineSnapshotResults,
+      );
+      const pending = processInlineSnapshotResults(
+        snapshotState,
+        inlineResults,
+        sourceMapPath,
+        testPath,
+      );
+      allPendingInlineSnapshots.push(...pending);
+    }
 
     // Display the Fantom test configuration as a suffix of the name of the root
     // `describe` block of the test, or adds one if the test doesn't have it.
@@ -395,8 +509,45 @@ module.exports = async function runTest(
       });
     }
 
+    if (benchmarkResult != null) {
+      benchmarkResults.push({
+        title: testResults[0]?.ancestorTitles?.[0] ?? maybeCommonAncestor,
+        result: benchmarkResult,
+      });
+    }
+
     testResultsByConfig.push(testResults);
+
+    coverageMap = processedResult.coverageMap || {};
+
+    if (globalConfig.collectCoverage) {
+      try {
+        const binaryPath = EnvironmentOptions.isOSS
+          ? path.join(__dirname, '..', 'build', 'tester', 'fantom_tester')
+          : getFantomTesterPath(rnTesterOptions);
+
+        const cppCoverageMap = await processLLVMCoverage(
+          testCoveragePath,
+          binaryPath,
+        );
+
+        Object.entries(cppCoverageMap || {}).forEach(
+          ([filename, fileCoverage]) => {
+            coverageMap[filename] = fileCoverage;
+          },
+        );
+      } catch (error) {
+        printConsoleLog({
+          type: 'console-log',
+          level: 'warn',
+          message: `Failed to process C++ coverage: ${String(error)} ${String(error.stack)}`,
+        });
+      }
+    }
   }
+
+  // Write pending inline snapshots to the test source file
+  saveInlineSnapshotsToSource(testPath, allPendingInlineSnapshots);
 
   const endTime = Date.now();
 
@@ -411,6 +562,8 @@ module.exports = async function runTest(
     snapshotResults,
   );
 
+  printBenchmarkResultsRanking(benchmarkResults);
+
   return {
     testFilePath: testPath,
     failureMessage: formatResultsErrors(
@@ -419,6 +572,7 @@ module.exports = async function runTest(
       globalConfig,
       testPath,
     ),
+    coverage: coverageMap,
     leaks: false,
     openHandles: [],
     perfStats: {

@@ -18,7 +18,7 @@
 
 - (instancetype)initWithTag:(NSNumber *)tag config:(NSDictionary<NSString *, id> *)config
 {
-  if ((self = [super initWithTag:tag config:config])) {
+  if ((self = [super initWithTag:tag config:config]) != nullptr) {
     _animationId = config[@"animationId"];
     _toValueNodeTag = config[@"toValue"];
     _valueNodeTag = config[@"value"];

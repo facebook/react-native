@@ -23,6 +23,7 @@ export interface Spec extends TurboModule {
       incrementalUpdates: boolean,
       timeout: number,
       withCredentials: boolean,
+      +unstable_devToolsRequestId?: string,
     },
     callback: (requestId: number) => void,
   ) => void;
@@ -34,4 +35,4 @@ export interface Spec extends TurboModule {
   +removeListeners: (count: number) => void;
 }
 
-export default (TurboModuleRegistry.getEnforcing<Spec>('Networking'): Spec);
+export default TurboModuleRegistry.getEnforcing<Spec>('Networking') as Spec;

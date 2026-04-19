@@ -62,7 +62,7 @@ async function main() {
       'create-diff': createDiff,
       'no-build': noBuild,
     },
-    /* $FlowFixMe[incompatible-call] Natural Inference rollout. See
+    /* $FlowFixMe[incompatible-type] Natural Inference rollout. See
      * https://fburl.com/workplace/6291gfvu */
   } = parseArgs(config);
 
@@ -163,9 +163,9 @@ async function buildDebuggerFrontend(
   packagePath /*: string */,
   scratchPath /*: string */,
   localCheckoutPath /*: ?string */,
-  {branch, gclientSyncOptions, noBuild} /*: $ReadOnly<{
+  {branch, gclientSyncOptions, noBuild} /*: Readonly<{
     branch: string,
-    gclientSyncOptions: $ReadOnly<{nohooks: boolean}>,
+    gclientSyncOptions: Readonly<{nohooks: boolean}>,
     noBuild: boolean,
   }>*/,
 ) /*: Promise<{checkoutPath: string}> */ {
@@ -244,7 +244,7 @@ async function checkoutDevToolsFrontend(
 async function setupGclientWorkspace(
   scratchPath /*: string */,
   checkoutPath /*: string */,
-  {nohooks} /*: $ReadOnly<{nohooks: boolean}> */,
+  {nohooks} /*: Readonly<{nohooks: boolean}> */,
 ) {
   process.stdout.write('Setting up gclient workspace' + '\n');
   await spawnSafe(
@@ -345,12 +345,12 @@ async function copyLicenseToPackage(
 }
 
 async function generateBuildInfo(
-  info /*: $ReadOnly<{
+  info /*: Readonly<{
   checkoutPath: string,
   isLocalCheckout: boolean,
   branch: string,
   packagePath: string,
-  gclientSyncOptions: $ReadOnly<{nohooks: boolean}>,
+  gclientSyncOptions: Readonly<{nohooks: boolean}>,
   gnArgsSummary: string,
   noBuild: boolean,
 }> */,
@@ -588,7 +588,7 @@ async function createSyncDiff(
   {
     checkoutPath,
     noBuild,
-  } /*: $ReadOnly<{checkoutPath: string, noBuild: boolean}> */,
+  } /*: Readonly<{checkoutPath: string, noBuild: boolean}> */,
 ) {
   process.stdout.write('Creating a sync diff\n');
   const {packagePath, baseGitRevision} = diffBaseInfo;

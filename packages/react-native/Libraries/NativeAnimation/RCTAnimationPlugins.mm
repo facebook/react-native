@@ -13,21 +13,21 @@
 
 #import "RCTAnimationPlugins.h"
 
-#import <string>
-#import <unordered_map>
+#import <string_view>
 
-Class RCTAnimationClassProvider(const char *name) {
-  // Intentionally leak to avoid crashing after static destructors are run.
-  static const auto sCoreModuleClassMap = new const std::unordered_map<std::string, Class (*)(void)>{
-    {"NativeAnimatedModule", RCTNativeAnimatedModuleCls},
-    {"NativeAnimatedTurboModule", RCTNativeAnimatedTurboModuleCls},
-  };
+using namespace std::literals;
 
-  auto p = sCoreModuleClassMap->find(name);
-  if (p != sCoreModuleClassMap->end()) {
-    auto classFunc = p->second;
-    return classFunc();
+Class RCTAnimationClassProvider(const char *name)
+{
+
+  if (name == "NativeAnimatedModule"sv) {
+    return RCTNativeAnimatedModuleCls();
   }
+
+  if (name == "NativeAnimatedTurboModule"sv) {
+    return RCTNativeAnimatedTurboModuleCls();
+  }
+
   return nil;
 }
 

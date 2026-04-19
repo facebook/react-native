@@ -10,10 +10,11 @@
 #include <string>
 
 #include <android/asset_manager.h>
-#include <cxxreact/JSExecutor.h>
 #include <fbjni/fbjni.h>
 
 namespace facebook::react {
+
+class JSBigString;
 
 struct JAssetManager : jni::JavaClass<JAssetManager> {
   static constexpr auto kJavaDescriptor = "Landroid/content/res/AssetManager;";
@@ -22,11 +23,8 @@ struct JAssetManager : jni::JavaClass<JAssetManager> {
 /**
  * Helper method for loading JS script from android asset
  */
-AAssetManager* extractAssetManager(
-    jni::alias_ref<JAssetManager::javaobject> assetManager);
+AAssetManager *extractAssetManager(jni::alias_ref<JAssetManager::javaobject> assetManager);
 
-std::unique_ptr<const JSBigString> loadScriptFromAssets(
-    AAssetManager* assetManager,
-    const std::string& assetName);
+std::unique_ptr<const JSBigString> loadScriptFromAssets(AAssetManager *assetManager, const std::string &assetName);
 
 } // namespace facebook::react

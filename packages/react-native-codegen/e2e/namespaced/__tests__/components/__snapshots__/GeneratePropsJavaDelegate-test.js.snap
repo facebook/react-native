@@ -20,6 +20,7 @@ import com.facebook.react.uimanager.BaseViewManager;
 import com.facebook.react.uimanager.BaseViewManagerDelegate;
 import com.facebook.react.uimanager.LayoutShadowNode;
 
+@SuppressWarnings(\\"deprecation\\")
 public class ArrayPropsNativeComponentViewManagerDelegate<T extends View, U extends BaseViewManager<T, ? extends LayoutShadowNode> & ArrayPropsNativeComponentViewManagerInterface<T>> extends BaseViewManagerDelegate<T, U> {
   public ArrayPropsNativeComponentViewManagerDelegate(U viewManager) {
     super(viewManager);
@@ -94,6 +95,7 @@ import com.facebook.react.uimanager.BaseViewManager;
 import com.facebook.react.uimanager.BaseViewManagerDelegate;
 import com.facebook.react.uimanager.LayoutShadowNode;
 
+@SuppressWarnings(\\"deprecation\\")
 public class BooleanPropNativeComponentViewManagerDelegate<T extends View, U extends BaseViewManager<T, ? extends LayoutShadowNode> & BooleanPropNativeComponentViewManagerInterface<T>> extends BaseViewManagerDelegate<T, U> {
   public BooleanPropNativeComponentViewManagerDelegate(U viewManager) {
     super(viewManager);
@@ -136,6 +138,7 @@ import com.facebook.react.uimanager.BaseViewManager;
 import com.facebook.react.uimanager.BaseViewManagerDelegate;
 import com.facebook.react.uimanager.LayoutShadowNode;
 
+@SuppressWarnings(\\"deprecation\\")
 public class ColorPropNativeComponentViewManagerDelegate<T extends View, U extends BaseViewManager<T, ? extends LayoutShadowNode> & ColorPropNativeComponentViewManagerInterface<T>> extends BaseViewManagerDelegate<T, U> {
   public ColorPropNativeComponentViewManagerDelegate(U viewManager) {
     super(viewManager);
@@ -175,6 +178,7 @@ import com.facebook.react.uimanager.BaseViewManager;
 import com.facebook.react.uimanager.BaseViewManagerDelegate;
 import com.facebook.react.uimanager.LayoutShadowNode;
 
+@SuppressWarnings(\\"deprecation\\")
 public class DimensionPropNativeComponentViewManagerDelegate<T extends View, U extends BaseViewManager<T, ? extends LayoutShadowNode> & DimensionPropNativeComponentViewManagerInterface<T>> extends BaseViewManagerDelegate<T, U> {
   public DimensionPropNativeComponentViewManagerDelegate(U viewManager) {
     super(viewManager);
@@ -213,6 +217,7 @@ import com.facebook.react.uimanager.BaseViewManager;
 import com.facebook.react.uimanager.BaseViewManagerDelegate;
 import com.facebook.react.uimanager.LayoutShadowNode;
 
+@SuppressWarnings(\\"deprecation\\")
 public class EdgeInsetsPropNativeComponentViewManagerDelegate<T extends View, U extends BaseViewManager<T, ? extends LayoutShadowNode> & EdgeInsetsPropNativeComponentViewManagerInterface<T>> extends BaseViewManagerDelegate<T, U> {
   public EdgeInsetsPropNativeComponentViewManagerDelegate(U viewManager) {
     super(viewManager);
@@ -245,6 +250,7 @@ import com.facebook.react.uimanager.BaseViewManager;
 import com.facebook.react.uimanager.BaseViewManagerDelegate;
 import com.facebook.react.uimanager.LayoutShadowNode;
 
+@SuppressWarnings(\\"deprecation\\")
 public class EnumPropNativeComponentViewManagerDelegate<T extends View, U extends BaseViewManager<T, ? extends LayoutShadowNode> & EnumPropNativeComponentViewManagerInterface<T>> extends BaseViewManagerDelegate<T, U> {
   public EnumPropNativeComponentViewManagerDelegate(U viewManager) {
     super(viewManager);
@@ -286,6 +292,7 @@ import com.facebook.react.uimanager.BaseViewManager;
 import com.facebook.react.uimanager.BaseViewManagerDelegate;
 import com.facebook.react.uimanager.LayoutShadowNode;
 
+@SuppressWarnings(\\"deprecation\\")
 public class EventNestedObjectPropsNativeComponentViewManagerDelegate<T extends View, U extends BaseViewManager<T, ? extends LayoutShadowNode> & EventNestedObjectPropsNativeComponentViewManagerInterface<T>> extends BaseViewManagerDelegate<T, U> {
   public EventNestedObjectPropsNativeComponentViewManagerDelegate(U viewManager) {
     super(viewManager);
@@ -324,6 +331,7 @@ import com.facebook.react.uimanager.BaseViewManager;
 import com.facebook.react.uimanager.BaseViewManagerDelegate;
 import com.facebook.react.uimanager.LayoutShadowNode;
 
+@SuppressWarnings(\\"deprecation\\")
 public class EventPropsNativeComponentViewManagerDelegate<T extends View, U extends BaseViewManager<T, ? extends LayoutShadowNode> & EventPropsNativeComponentViewManagerInterface<T>> extends BaseViewManagerDelegate<T, U> {
   public EventPropsNativeComponentViewManagerDelegate(U viewManager) {
     super(viewManager);
@@ -362,6 +370,7 @@ import com.facebook.react.uimanager.BaseViewManager;
 import com.facebook.react.uimanager.BaseViewManagerDelegate;
 import com.facebook.react.uimanager.LayoutShadowNode;
 
+@SuppressWarnings(\\"deprecation\\")
 public class FloatPropsNativeComponentViewManagerDelegate<T extends View, U extends BaseViewManager<T, ? extends LayoutShadowNode> & FloatPropsNativeComponentViewManagerInterface<T>> extends BaseViewManagerDelegate<T, U> {
   public FloatPropsNativeComponentViewManagerDelegate(U viewManager) {
     super(viewManager);
@@ -419,6 +428,7 @@ import com.facebook.react.uimanager.BaseViewManager;
 import com.facebook.react.uimanager.BaseViewManagerDelegate;
 import com.facebook.react.uimanager.LayoutShadowNode;
 
+@SuppressWarnings(\\"deprecation\\")
 public class ImagePropNativeComponentViewManagerDelegate<T extends View, U extends BaseViewManager<T, ? extends LayoutShadowNode> & ImagePropNativeComponentViewManagerInterface<T>> extends BaseViewManagerDelegate<T, U> {
   public ImagePropNativeComponentViewManagerDelegate(U viewManager) {
     super(viewManager);
@@ -457,6 +467,7 @@ import com.facebook.react.uimanager.BaseViewManager;
 import com.facebook.react.uimanager.BaseViewManagerDelegate;
 import com.facebook.react.uimanager.LayoutShadowNode;
 
+@SuppressWarnings(\\"deprecation\\")
 public class IntegerPropNativeComponentViewManagerDelegate<T extends View, U extends BaseViewManager<T, ? extends LayoutShadowNode> & IntegerPropNativeComponentViewManagerInterface<T>> extends BaseViewManagerDelegate<T, U> {
   public IntegerPropNativeComponentViewManagerDelegate(U viewManager) {
     super(viewManager);
@@ -501,6 +512,7 @@ import com.facebook.react.uimanager.BaseViewManager;
 import com.facebook.react.uimanager.BaseViewManagerDelegate;
 import com.facebook.react.uimanager.LayoutShadowNode;
 
+@SuppressWarnings(\\"deprecation\\")
 public class InterfaceOnlyNativeComponentViewManagerDelegate<T extends View, U extends BaseViewManager<T, ? extends LayoutShadowNode> & InterfaceOnlyNativeComponentViewManagerInterface<T>> extends BaseViewManagerDelegate<T, U> {
   public InterfaceOnlyNativeComponentViewManagerDelegate(U viewManager) {
     super(viewManager);
@@ -540,6 +552,7 @@ import com.facebook.react.uimanager.BaseViewManager;
 import com.facebook.react.uimanager.BaseViewManagerDelegate;
 import com.facebook.react.uimanager.LayoutShadowNode;
 
+@SuppressWarnings(\\"deprecation\\")
 public class MixedPropNativeComponentViewManagerDelegate<T extends View, U extends BaseViewManager<T, ? extends LayoutShadowNode> & MixedPropNativeComponentViewManagerInterface<T>> extends BaseViewManagerDelegate<T, U> {
   public MixedPropNativeComponentViewManagerDelegate(U viewManager) {
     super(viewManager);
@@ -580,6 +593,7 @@ import com.facebook.react.uimanager.BaseViewManager;
 import com.facebook.react.uimanager.BaseViewManagerDelegate;
 import com.facebook.react.uimanager.LayoutShadowNode;
 
+@SuppressWarnings(\\"deprecation\\")
 public class MultiNativePropNativeComponentViewManagerDelegate<T extends View, U extends BaseViewManager<T, ? extends LayoutShadowNode> & MultiNativePropNativeComponentViewManagerInterface<T>> extends BaseViewManagerDelegate<T, U> {
   public MultiNativePropNativeComponentViewManagerDelegate(U viewManager) {
     super(viewManager);
@@ -627,6 +641,7 @@ import com.facebook.react.uimanager.BaseViewManager;
 import com.facebook.react.uimanager.BaseViewManagerDelegate;
 import com.facebook.react.uimanager.LayoutShadowNode;
 
+@SuppressWarnings(\\"deprecation\\")
 public class NoPropsNoEventsNativeComponentViewManagerDelegate<T extends View, U extends BaseViewManager<T, ? extends LayoutShadowNode> & NoPropsNoEventsNativeComponentViewManagerInterface<T>> extends BaseViewManagerDelegate<T, U> {
   public NoPropsNoEventsNativeComponentViewManagerDelegate(U viewManager) {
     super(viewManager);
@@ -660,6 +675,7 @@ import com.facebook.react.uimanager.BaseViewManager;
 import com.facebook.react.uimanager.BaseViewManagerDelegate;
 import com.facebook.react.uimanager.LayoutShadowNode;
 
+@SuppressWarnings(\\"deprecation\\")
 public class ObjectPropsNativeComponentManagerDelegate<T extends View, U extends BaseViewManager<T, ? extends LayoutShadowNode> & ObjectPropsNativeComponentManagerInterface<T>> extends BaseViewManagerDelegate<T, U> {
   public ObjectPropsNativeComponentManagerDelegate(U viewManager) {
     super(viewManager);
@@ -705,6 +721,7 @@ import com.facebook.react.uimanager.BaseViewManager;
 import com.facebook.react.uimanager.BaseViewManagerDelegate;
 import com.facebook.react.uimanager.LayoutShadowNode;
 
+@SuppressWarnings(\\"deprecation\\")
 public class PointPropNativeComponentViewManagerDelegate<T extends View, U extends BaseViewManager<T, ? extends LayoutShadowNode> & PointPropNativeComponentViewManagerInterface<T>> extends BaseViewManagerDelegate<T, U> {
   public PointPropNativeComponentViewManagerDelegate(U viewManager) {
     super(viewManager);
@@ -743,6 +760,7 @@ import com.facebook.react.uimanager.BaseViewManager;
 import com.facebook.react.uimanager.BaseViewManagerDelegate;
 import com.facebook.react.uimanager.LayoutShadowNode;
 
+@SuppressWarnings(\\"deprecation\\")
 public class StringPropNativeComponentViewManagerDelegate<T extends View, U extends BaseViewManager<T, ? extends LayoutShadowNode> & StringPropNativeComponentViewManagerInterface<T>> extends BaseViewManagerDelegate<T, U> {
   public StringPropNativeComponentViewManagerDelegate(U viewManager) {
     super(viewManager);

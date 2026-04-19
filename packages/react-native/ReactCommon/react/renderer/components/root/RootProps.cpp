@@ -31,6 +31,6 @@ RootProps::RootProps(
     const LayoutContext& layoutContext)
     : ViewProps(),
       layoutConstraints(layoutConstraints),
-      layoutContext(layoutContext){};
+      layoutContext(layoutContext) {};
 
 } // namespace facebook::react

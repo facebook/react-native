@@ -10,4 +10,4 @@ add_library(hermes SHARED IMPORTED GLOBAL)
 set_target_properties(hermes
         PROPERTIES
         IMPORTED_LOCATION
-        ${CMAKE_CURRENT_SOURCE_DIR}/jni/${ANDROID_ABI}/libhermes.so)
+        ${CMAKE_CURRENT_SOURCE_DIR}/jni/${ANDROID_ABI}/libhermesvm.so)

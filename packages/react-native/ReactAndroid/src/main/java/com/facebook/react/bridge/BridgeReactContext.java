@@ -40,7 +40,8 @@ import java.util.Objects;
  */
 @VisibleForTesting
 @LegacyArchitecture(logLevel = LegacyArchitectureLogLevel.ERROR)
-@Deprecated
+@Deprecated(
+    since = "This class is part of Legacy Architecture and will be removed in a future release")
 @Nullsafe(Nullsafe.Mode.LOCAL)
 public class BridgeReactContext extends ReactApplicationContext {
   static {

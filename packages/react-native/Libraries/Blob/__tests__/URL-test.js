@@ -139,5 +139,33 @@ describe('URL', function () {
     );
     unsortedParams.sort();
     expect(unsortedParams.toString()).toBe('a=first&b=second&c=third&z=last');
+
+    // searchParams.set() should replace values not duplicate them
+    const urlWithSearchParams = new URL(
+      'https://example.com/api/data?foo=bar&baz=qux',
+    );
+    urlWithSearchParams.searchParams.set('foo', 'newFoo');
+    urlWithSearchParams.searchParams.set('test', '12345');
+    expect(urlWithSearchParams.toString()).toBe(
+      'https://example.com/api/data?foo=newFoo&baz=qux&test=12345',
+    );
+
+    //url.search setter should replace search params
+    const urlSearchSetter = new URL(
+      'https://example.com/api/data?foo=bar&baz=qux',
+    );
+
+    urlSearchSetter.search = 'foo=overwritten&hello=world';
+
+    expect(urlSearchSetter.toString()).toBe(
+      'https://example.com/api/data?foo=overwritten&hello=world',
+    );
+
+    //URL constructor should not add trailing slash to paths
+    const urlWithoutTrailing = new URL('https://example.com/path/to/resource');
+
+    expect(urlWithoutTrailing.toString()).toBe(
+      'https://example.com/path/to/resource',
+    );
   });
 });

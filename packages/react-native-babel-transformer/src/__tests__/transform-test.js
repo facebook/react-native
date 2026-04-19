@@ -41,7 +41,7 @@ it('exposes the correct absolute path to a source file to plugins', () => {
       enableBabelRCLookup: false,
       globalPrefix: '__metro__',
       hot: false,
-      // $FlowFixMe[incompatible-call] TODO: Remove when `inlineRequires` has been removed from metro-babel-transformer in OSS
+      // $FlowFixMe[incompatible-type] TODO: Remove when `inlineRequires` has been removed from metro-babel-transformer in OSS
       inlineRequires: true,
       minify: false,
       platform: null,

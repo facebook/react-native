@@ -15,6 +15,7 @@
 #include <react/renderer/components/view/propsConversions.h>
 #include <react/renderer/core/graphicsConversions.h>
 #include <react/renderer/core/propsConversions.h>
+#include <react/renderer/graphics/TransformUtils.h>
 
 namespace facebook::react {
 
@@ -95,7 +96,68 @@ HostPlatformViewProps::HostPlatformViewProps(
                     rawProps,
                     "screenReaderFocusable",
                     sourceProps.screenReaderFocusable,
-                    {})) {}
+                    {})),
+      nextFocusDown(
+          ReactNativeFeatureFlags::enableCppPropsIteratorSetter()
+              ? sourceProps.nextFocusDown
+              : convertRawProp(
+                    context,
+                    rawProps,
+                    "nextFocusDown",
+                    sourceProps.nextFocusDown,
+                    {})),
+      nextFocusForward(
+          ReactNativeFeatureFlags::enableCppPropsIteratorSetter()
+              ? sourceProps.nextFocusForward
+              : convertRawProp(
+                    context,
+                    rawProps,
+                    "nextFocusForward",
+                    sourceProps.nextFocusForward,
+                    {})),
+      nextFocusLeft(
+          ReactNativeFeatureFlags::enableCppPropsIteratorSetter()
+              ? sourceProps.nextFocusLeft
+              : convertRawProp(
+                    context,
+                    rawProps,
+                    "nextFocusLeft",
+                    sourceProps.nextFocusLeft,
+                    {})),
+      nextFocusRight(
+          ReactNativeFeatureFlags::enableCppPropsIteratorSetter()
+              ? sourceProps.nextFocusRight
+              : convertRawProp(
+                    context,
+                    rawProps,
+                    "nextFocusRight",
+                    sourceProps.nextFocusRight,
+                    {})),
+      nextFocusUp(
+          ReactNativeFeatureFlags::enableCppPropsIteratorSetter()
+              ? sourceProps.nextFocusUp
+              : convertRawProp(
+                    context,
+                    rawProps,
+                    "nextFocusUp",
+                    sourceProps.nextFocusUp,
+                    {})) {
+  if (!ReactNativeFeatureFlags::enableCppPropsIteratorSetter()) {
+    if (ReactNativeFeatureFlags::enableNativeViewPropTransformations()) {
+      // tabIndex -> focusable
+      auto* tabIndexValue = rawProps.at("tabIndex", nullptr, nullptr);
+      if (tabIndexValue != nullptr) {
+        if (tabIndexValue->hasValue()) {
+          int tabIndex = 0;
+          fromRawValue(context, *tabIndexValue, tabIndex);
+          focusable = tabIndex == 0;
+        } else {
+          focusable = {};
+        }
+      }
+    }
+  }
+}
 
 #define VIEW_EVENT_CASE(eventType)                      \
   case CONSTEXPR_RAW_PROPS_KEY_HASH("on" #eventType): { \
@@ -130,6 +192,24 @@ void HostPlatformViewProps::setProp(
     RAW_SET_PROP_SWITCH_CASE_BASIC(needsOffscreenAlphaCompositing);
     RAW_SET_PROP_SWITCH_CASE_BASIC(renderToHardwareTextureAndroid);
     RAW_SET_PROP_SWITCH_CASE_BASIC(screenReaderFocusable);
+    RAW_SET_PROP_SWITCH_CASE_BASIC(nextFocusDown);
+    RAW_SET_PROP_SWITCH_CASE_BASIC(nextFocusForward);
+    RAW_SET_PROP_SWITCH_CASE_BASIC(nextFocusLeft);
+    RAW_SET_PROP_SWITCH_CASE_BASIC(nextFocusRight);
+    RAW_SET_PROP_SWITCH_CASE_BASIC(nextFocusUp);
+    case CONSTEXPR_RAW_PROPS_KEY_HASH("tabIndex"): {
+      if (!ReactNativeFeatureFlags::enableNativeViewPropTransformations()) {
+        return;
+      }
+      if (value.hasValue()) {
+        int tabIndex = 0;
+        fromRawValue(context, value, tabIndex);
+        focusable = tabIndex == 0;
+      } else {
+        focusable = defaults.focusable;
+      }
+      return;
+    }
   }
 }
 
@@ -299,7 +379,7 @@ static void updateBorderStyleProps(
           break;
       }
     } else {
-      result["borderStyle"] = NULL;
+      result["borderStyle"] = folly::dynamic(nullptr);
     }
   }
 }
@@ -379,69 +459,6 @@ inline static void updateNativeDrawableProp(
   }
 
   result[propName] = nativeDrawableResult;
-}
-
-inline static void updateTransformOperationValue(
-    const std::string& operationName,
-    const ValueUnit& valueUnit,
-    folly::dynamic& resultTranslateArray) {
-  folly::dynamic resultTranslate = folly::dynamic::object();
-  if (valueUnit.unit == UnitType::Percent) {
-    resultTranslate[operationName] = std::to_string(valueUnit.value) + "%";
-  } else {
-    resultTranslate[operationName] = valueUnit.value;
-  }
-  resultTranslateArray.push_back(std::move(resultTranslate));
-}
-
-inline static void updateTransformProps(
-    const Transform& transform,
-    const TransformOperation& operation,
-    folly::dynamic& resultTranslateArray) {
-  // See serialization rules in:
-  // react-native-github/packages/react-native/ReactCommon/react/renderer/components/view/conversions.h?lines=592
-  std::string operationName;
-  switch (operation.type) {
-    case TransformOperationType::Scale:
-      operationName = "scale";
-      if (operation.x == operation.y && operation.x == operation.z) {
-        updateTransformOperationValue(
-            operationName, operation.x, resultTranslateArray);
-        return;
-      }
-      break;
-    case TransformOperationType::Translate:
-      operationName = "translate";
-      break;
-    case TransformOperationType::Rotate:
-      operationName = "rotate";
-      break;
-    case TransformOperationType::Perspective:
-      operationName = "perspective";
-      break;
-    case TransformOperationType::Arbitrary:
-      operationName = "matrix";
-      resultTranslateArray[operationName] = transform;
-      break;
-    case TransformOperationType::Identity:
-      // Do nothing
-      break;
-    case TransformOperationType::Skew:
-      operationName = "skew";
-      break;
-  }
-  if (operation.x.value != 0) {
-    updateTransformOperationValue(
-        operationName + "X", operation.x, resultTranslateArray);
-  }
-  if (operation.y.value != 0) {
-    updateTransformOperationValue(
-        operationName + "Y", operation.y, resultTranslateArray);
-  }
-  if (operation.z.value != 0) {
-    updateTransformOperationValue(
-        operationName + "Z", operation.z, resultTranslateArray);
-  }
 }
 
 inline static void updateAccessibilityStateProp(
@@ -597,12 +614,17 @@ folly::dynamic HostPlatformViewProps::getDiffProps(
     result["removeClippedSubviews"] = removeClippedSubviews;
   }
 
+  if (collapsableChildren != oldProps->collapsableChildren) {
+    result["collapsableChildren"] = collapsableChildren;
+  }
+
   if (onLayout != oldProps->onLayout) {
     result["onLayout"] = onLayout;
   }
 
   if (zIndex != oldProps->zIndex) {
-    result["zIndex"] = zIndex.value();
+    result["zIndex"] =
+        zIndex.has_value() ? zIndex.value() : folly::dynamic(nullptr);
   }
 
   if (boxShadow != oldProps->boxShadow) {
@@ -613,26 +635,16 @@ folly::dynamic HostPlatformViewProps::getDiffProps(
     result["filter"] = toDynamic(filter);
   }
 
+  if (backgroundImage != oldProps->backgroundImage) {
+    result["experimental_backgroundImage"] = toDynamic(backgroundImage);
+  }
+
   if (mixBlendMode != oldProps->mixBlendMode) {
     result["mixBlendMode"] = toString(mixBlendMode);
   }
 
   if (pointerEvents != oldProps->pointerEvents) {
-    std::string value;
-    switch (pointerEvents) {
-      case PointerEventsMode::BoxOnly:
-        result["pointerEvents"] = "box-only";
-        break;
-      case PointerEventsMode::BoxNone:
-        result["pointerEvents"] = "box-none";
-        break;
-      case PointerEventsMode::None:
-        result["pointerEvents"] = "none";
-        break;
-      default:
-        result["pointerEvents"] = "auto";
-        break;
-    }
+    result["pointerEvents"] = toString(pointerEvents);
   }
 
   if (hitSlop != oldProps->hitSlop) {
@@ -892,7 +904,7 @@ folly::dynamic HostPlatformViewProps::getDiffProps(
 
   if (accessibilityState != oldProps->accessibilityState) {
     updateAccessibilityStateProp(
-        result, oldProps->accessibilityState, accessibilityState);
+        result, accessibilityState, oldProps->accessibilityState);
   }
 
   if (accessibilityLabel != oldProps->accessibilityLabel) {
@@ -917,17 +929,7 @@ folly::dynamic HostPlatformViewProps::getDiffProps(
   }
 
   if (accessibilityLiveRegion != oldProps->accessibilityLiveRegion) {
-    switch (accessibilityLiveRegion) {
-      case AccessibilityLiveRegion::Assertive:
-        result["accessibilityLiveRegion"] = "assertive";
-        break;
-      case AccessibilityLiveRegion::Polite:
-        result["accessibilityLiveRegion"] = "polite";
-        break;
-      case AccessibilityLiveRegion::None:
-        result["accessibilityLiveRegion"] = "none";
-        break;
-    }
+    result["accessibilityLiveRegion"] = toString(accessibilityLiveRegion);
   }
 
   if (accessibilityHint != oldProps->accessibilityHint) {
@@ -1003,19 +1005,46 @@ folly::dynamic HostPlatformViewProps::getDiffProps(
   }
 
   if (importantForAccessibility != oldProps->importantForAccessibility) {
-    switch (importantForAccessibility) {
-      case ImportantForAccessibility::Auto:
-        result["importantForAccessibility"] = "auto";
-        break;
-      case ImportantForAccessibility::Yes:
-        result["importantForAccessibility"] = "yes";
-        break;
-      case ImportantForAccessibility::No:
-        result["importantForAccessibility"] = "no";
-        break;
-      case ImportantForAccessibility::NoHideDescendants:
-        result["importantForAccessibility"] = "noHideDescendants";
-        break;
+    result["importantForAccessibility"] = toString(importantForAccessibility);
+  }
+
+  if (nextFocusDown != oldProps->nextFocusDown) {
+    if (nextFocusDown.has_value()) {
+      result["nextFocusDown"] = nextFocusDown.value();
+    } else {
+      result["nextFocusDown"] = folly::dynamic(nullptr);
+    }
+  }
+
+  if (nextFocusForward != oldProps->nextFocusForward) {
+    if (nextFocusForward.has_value()) {
+      result["nextFocusForward"] = nextFocusForward.value();
+    } else {
+      result["nextFocusForward"] = folly::dynamic(nullptr);
+    }
+  }
+
+  if (nextFocusLeft != oldProps->nextFocusLeft) {
+    if (nextFocusLeft.has_value()) {
+      result["nextFocusLeft"] = nextFocusLeft.value();
+    } else {
+      result["nextFocusLeft"] = folly::dynamic(nullptr);
+    }
+  }
+
+  if (nextFocusRight != oldProps->nextFocusRight) {
+    if (nextFocusRight.has_value()) {
+      result["nextFocusRight"] = nextFocusRight.value();
+    } else {
+      result["nextFocusRight"] = folly::dynamic(nullptr);
+    }
+  }
+
+  if (nextFocusUp != oldProps->nextFocusUp) {
+    if (nextFocusUp.has_value()) {
+      result["nextFocusUp"] = nextFocusUp.value();
+    } else {
+      result["nextFocusUp"] = folly::dynamic(nullptr);
     }
   }
 

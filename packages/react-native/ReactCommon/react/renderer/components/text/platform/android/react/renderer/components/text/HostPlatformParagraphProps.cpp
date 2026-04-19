@@ -52,7 +52,7 @@ HostPlatformParagraphProps::HostPlatformParagraphProps(
                     sourceProps.dataDetectorType,
                     {}))
 
-          {};
+{};
 
 void HostPlatformParagraphProps::setProp(
     const PropsParserContext& context,
@@ -160,7 +160,7 @@ folly::dynamic HostPlatformParagraphProps::getDiffProps(
     result["textAlignVertical"] =
         paragraphAttributes.textAlignVertical.has_value()
         ? toString(paragraphAttributes.textAlignVertical.value())
-        : nullptr;
+        : folly::dynamic(nullptr);
   }
 
   if (isSelectable != oldProps->isSelectable) {

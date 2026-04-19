@@ -94,7 +94,7 @@ TEST(CSSShadow, trailing_color) {
   EXPECT_EQ(shadow.spreadDistance.value, 0.0f);
   EXPECT_EQ(shadow.spreadDistance.unit, CSSLengthUnit::Px);
 
-  CSSColor red{255u, 0u, 0u, 255u};
+  CSSColor red{.r = 255u, .g = 0u, .b = 0u, .a = 255u};
   EXPECT_EQ(shadow.color, red);
   EXPECT_FALSE(shadow.inset);
 }
@@ -113,7 +113,7 @@ TEST(CSSShadow, leading_color) {
   EXPECT_EQ(shadow.spreadDistance.value, 0.0f);
   EXPECT_EQ(shadow.spreadDistance.unit, CSSLengthUnit::Px);
 
-  CSSColor red{255u, 0u, 0u, 255u};
+  CSSColor red{.r = 255u, .g = 0u, .b = 0u, .a = 255u};
   EXPECT_EQ(shadow.color, red);
   EXPECT_FALSE(shadow.inset);
 }
@@ -132,7 +132,7 @@ TEST(CSSShadow, color_function) {
   EXPECT_EQ(shadow.spreadDistance.value, 0.0f);
   EXPECT_EQ(shadow.spreadDistance.unit, CSSLengthUnit::Px);
 
-  CSSColor red{255u, 0u, 0u, 128u};
+  CSSColor red{.r = 255u, .g = 0u, .b = 0u, .a = 128u};
   EXPECT_EQ(shadow.color, red);
   EXPECT_FALSE(shadow.inset);
 }
@@ -202,7 +202,7 @@ TEST(CSShadow, color_length_inset) {
   EXPECT_EQ(shadow.spreadDistance.value, 0.0f);
   EXPECT_EQ(shadow.spreadDistance.unit, CSSLengthUnit::Px);
 
-  CSSColor red{255u, 0u, 0u, 255u};
+  CSSColor red{.r = 255u, .g = 0u, .b = 0u, .a = 255u};
   EXPECT_EQ(shadow.color, red);
   EXPECT_TRUE(shadow.inset);
 }
@@ -224,7 +224,7 @@ TEST(CSSShadow, multiple_shadows) {
   EXPECT_EQ(shadows[0].spreadDistance.value, 0.0f);
   EXPECT_EQ(shadows[0].spreadDistance.unit, CSSLengthUnit::Px);
 
-  CSSColor red{255u, 0u, 0u, 255u};
+  CSSColor red{.r = 255u, .g = 0u, .b = 0u, .a = 255u};
   EXPECT_EQ(shadows[0].color, red);
   EXPECT_FALSE(shadows[0].inset);
 
@@ -268,7 +268,7 @@ TEST(CSSShadow, multiple_shadows_with_new_line) {
   EXPECT_EQ(shadows[0].spreadDistance.value, 0.0f);
   EXPECT_EQ(shadows[0].spreadDistance.unit, CSSLengthUnit::Px);
 
-  CSSColor red{255u, 0u, 0u, 255u};
+  CSSColor red{.r = 255u, .g = 0u, .b = 0u, .a = 255u};
   EXPECT_EQ(shadows[0].color, red);
   EXPECT_FALSE(shadows[0].inset);
 

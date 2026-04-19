@@ -10,12 +10,15 @@
 
 #include <android/asset_manager.h>
 #include <android/asset_manager_jni.h>
+#include <cxxreact/JSBigString.h>
 #include <fbjni/fbjni.h>
+#include <react/jni/JSLoader.h>
 #include <react/jni/JniHelper.h>
 
 namespace facebook::react {
 
 namespace {
+
 AAssetManager* assetManager_ = nullptr;
 
 AAssetManager* getAssetManager() {
@@ -52,17 +55,9 @@ bool ResourceLoader::isResourceFile(const std::string& path) {
   return true;
 }
 
-std::string ResourceLoader::getResourceFileContents(const std::string& path) {
-  auto asset = AAssetManager_open(
-      getAssetManager(), path.c_str(), AASSET_MODE_STREAMING);
-  if (asset == nullptr) {
-    throw std::runtime_error("File not found " + path);
-  }
-
-  std::string result(
-      (const char*)AAsset_getBuffer(asset), (size_t)AAsset_getLength(asset));
-  AAsset_close(asset);
-  return result;
+std::unique_ptr<const JSBigString> ResourceLoader::getResourceFileContents(
+    const std::string& path) {
+  return loadScriptFromAssets(getAssetManager(), path);
 }
 
 std::filesystem::path ResourceLoader::getCacheRootPath() {

@@ -32,7 +32,7 @@ export function createViewConfig(
       PlatformBaseViewConfig.directEventTypes,
       partialViewConfig.directEventTypes,
     ),
-    // $FlowFixMe[incompatible-return]
+    // $FlowFixMe[incompatible-type]
     validAttributes: composeIndexers(
       // $FlowFixMe[incompatible-call] `style` property confuses Flow.
       PlatformBaseViewConfig.validAttributes,

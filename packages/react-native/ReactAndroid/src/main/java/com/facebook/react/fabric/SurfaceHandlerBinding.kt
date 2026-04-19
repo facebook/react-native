@@ -13,12 +13,6 @@ import com.facebook.react.fabric.mounting.LayoutMetricsConversions
 
 internal open class SurfaceHandlerBinding(moduleName: String) : HybridClassBase() {
 
-  init {
-    initHybrid(NO_SURFACE_ID, moduleName)
-  }
-
-  private external fun initHybrid(surfaceId: Int, moduleName: String)
-
   val surfaceId: Int
     get() = _getSurfaceId()
 
@@ -27,6 +21,12 @@ internal open class SurfaceHandlerBinding(moduleName: String) : HybridClassBase(
 
   val moduleName: String
     get() = _getModuleName()
+
+  init {
+    initHybrid(NO_SURFACE_ID, moduleName)
+  }
+
+  private external fun initHybrid(surfaceId: Int, moduleName: String)
 
   private external fun _getSurfaceId(): Int
 
@@ -42,7 +42,7 @@ internal open class SurfaceHandlerBinding(moduleName: String) : HybridClassBase(
       doLeftAndRightSwapInRTL: Boolean,
       isRTL: Boolean,
       pixelDensity: Float,
-      fontScale: Float
+      fontScale: Float,
   ) {
     setLayoutConstraintsNative(
         LayoutMetricsConversions.getMinSize(widthMeasureSpec) / pixelDensity,
@@ -54,7 +54,8 @@ internal open class SurfaceHandlerBinding(moduleName: String) : HybridClassBase(
         doLeftAndRightSwapInRTL,
         isRTL,
         pixelDensity,
-        fontScale)
+        fontScale,
+    )
   }
 
   private external fun setLayoutConstraintsNative(
@@ -67,7 +68,7 @@ internal open class SurfaceHandlerBinding(moduleName: String) : HybridClassBase(
       doLeftAndRightSwapInRTL: Boolean,
       isRTL: Boolean,
       pixelDensity: Float,
-      fontScale: Float
+      fontScale: Float,
   )
 
   external fun setProps(props: NativeMap?)

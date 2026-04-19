@@ -12,10 +12,8 @@
 
 namespace facebook::react {
 
-PlatformTimerRegistryImpl::~PlatformTimerRegistryImpl() noexcept {
-  LOG(INFO)
-      << "PlatformTimerRegistryImpl::~PlatformTimerRegistryImpl() was called (address: "
-      << this << ").";
+void PlatformTimerRegistryImpl::quit() {
+  LOG(INFO) << "Shutting down PlatformTimerRegistryImpl...";
   taskDispatchThread_.quit();
   std::lock_guard<std::mutex> guard(timersMutex_);
   timers_.clear();

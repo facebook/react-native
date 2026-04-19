@@ -44,10 +44,9 @@ public class ReactDrawerLayoutManager :
 
   protected override fun addEventEmitters(
       reactContext: ThemedReactContext,
-      view: ReactDrawerLayout
+      view: ReactDrawerLayout,
   ) {
-    val eventDispatcher =
-        UIManagerHelper.getEventDispatcherForReactTag(reactContext, view.id) ?: return
+    val eventDispatcher = UIManagerHelper.getEventDispatcher(reactContext) ?: return
     view.addDrawerListener(DrawerEventEmitter(view, eventDispatcher))
   }
 
@@ -91,7 +90,9 @@ public class ReactDrawerLayoutManager :
       "right" -> view.setDrawerPosition(Gravity.END)
       else -> {
         FLog.w(
-            ReactConstants.TAG, "drawerPosition must be 'left' or 'right', received$drawerPosition")
+            ReactConstants.TAG,
+            "drawerPosition must be 'left' or 'right', received$drawerPosition",
+        )
         view.setDrawerPosition(Gravity.START)
       }
     }
@@ -158,11 +159,12 @@ public class ReactDrawerLayoutManager :
   @Deprecated(
       message =
           "This method is deprecated. Use receiveCommand(ReactDrawerLayout, String, ReadableArray) instead",
-      replaceWith = ReplaceWith("receiveCommand(ReactDrawerLayout, String, ReadableArray)"))
+      replaceWith = ReplaceWith("receiveCommand(ReactDrawerLayout, String, ReadableArray)"),
+  )
   public override fun receiveCommand(
       view: ReactDrawerLayout,
       commandId: Int,
-      args: ReadableArray?
+      args: ReadableArray?,
   ): Unit {
     when (commandId) {
       OPEN_DRAWER -> view.openDrawer()
@@ -176,7 +178,8 @@ public class ReactDrawerLayoutManager :
               mapOf(
                   DRAWER_POSITION_LEFT to Gravity.START,
                   DRAWER_POSITION_RIGHT to Gravity.END,
-              ))
+              )
+      )
 
   public override fun getExportedCustomDirectEventTypeConstants(): Map<String, Any> {
     val eventTypeConstants = super.getExportedCustomDirectEventTypeConstants() ?: mutableMapOf()
@@ -199,7 +202,8 @@ public class ReactDrawerLayoutManager :
     }
     if (index != 0 && index != 1) {
       throw JSApplicationIllegalArgumentException(
-          "The only valid indices for drawer's child are 0 or 1. Got $index instead.")
+          "The only valid indices for drawer's child are 0 or 1. Got $index instead."
+      )
     }
     parent.addView(child, index)
     parent.setDrawerProperties()
@@ -209,26 +213,30 @@ public class ReactDrawerLayoutManager :
 
   internal class DrawerEventEmitter(
       private val drawerLayout: DrawerLayout,
-      private val eventDispatcher: EventDispatcher
+      private val eventDispatcher: EventDispatcher,
   ) : DrawerListener {
     override fun onDrawerSlide(view: View, v: Float) {
       eventDispatcher.dispatchEvent(
-          DrawerSlideEvent(UIManagerHelper.getSurfaceId(drawerLayout), drawerLayout.id, v))
+          DrawerSlideEvent(UIManagerHelper.getSurfaceId(drawerLayout), drawerLayout.id, v)
+      )
     }
 
     override fun onDrawerOpened(view: View) {
       eventDispatcher.dispatchEvent(
-          DrawerOpenedEvent(UIManagerHelper.getSurfaceId(drawerLayout), drawerLayout.id))
+          DrawerOpenedEvent(UIManagerHelper.getSurfaceId(drawerLayout), drawerLayout.id)
+      )
     }
 
     override fun onDrawerClosed(view: View) {
       eventDispatcher.dispatchEvent(
-          DrawerClosedEvent(UIManagerHelper.getSurfaceId(drawerLayout), drawerLayout.id))
+          DrawerClosedEvent(UIManagerHelper.getSurfaceId(drawerLayout), drawerLayout.id)
+      )
     }
 
     override fun onDrawerStateChanged(i: Int) {
       eventDispatcher.dispatchEvent(
-          DrawerStateChangedEvent(UIManagerHelper.getSurfaceId(drawerLayout), drawerLayout.id, i))
+          DrawerStateChangedEvent(UIManagerHelper.getSurfaceId(drawerLayout), drawerLayout.id, i)
+      )
     }
   }
 

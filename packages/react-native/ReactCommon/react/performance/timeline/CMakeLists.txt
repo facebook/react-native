@@ -16,6 +16,7 @@ target_compile_options(react_performance_timeline PRIVATE -Wpedantic)
 
 target_include_directories(react_performance_timeline PUBLIC ${REACT_COMMON_DIR})
 target_link_libraries(react_performance_timeline
+        jsinspector
         jsinspector_tracing
         reactperflogger
         react_featureflags

@@ -16,12 +16,12 @@ namespace facebook::react {
 AttributedStringBox::AttributedStringBox()
     : mode_(Mode::Value),
       value_(std::make_shared<const AttributedString>(AttributedString{})),
-      opaquePointer_({}){};
+      opaquePointer_({}) {};
 
 AttributedStringBox::AttributedStringBox(const AttributedString& value)
     : mode_(Mode::Value),
       value_(std::make_shared<const AttributedString>(value)),
-      opaquePointer_({}){};
+      opaquePointer_({}) {};
 
 AttributedStringBox::AttributedStringBox(std::shared_ptr<void> opaquePointer)
     : mode_(Mode::OpaquePointer),
@@ -77,12 +77,6 @@ bool operator==(
     case AttributedStringBox::Mode::OpaquePointer:
       return lhs.getOpaquePointer() == rhs.getOpaquePointer();
   }
-}
-
-bool operator!=(
-    const AttributedStringBox& lhs,
-    const AttributedStringBox& rhs) {
-  return !(lhs == rhs);
 }
 
 } // namespace facebook::react

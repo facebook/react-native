@@ -55,6 +55,7 @@ package ${packageName};
 
 ${imports}
 
+@SuppressWarnings("deprecation")
 public class ${className}<T extends ${extendClasses}, U extends BaseViewManager<T, ? extends LayoutShadowNode> & ${interfaceClassName}<T>> extends BaseViewManagerDelegate<T, U> {
   public ${className}(U viewManager) {
     super(viewManager);
@@ -131,7 +132,7 @@ function getJavaValueForProp(
         case 'DimensionPrimitive':
           return 'DimensionPropConverter.getDimension(value)';
         default:
-          (typeAnnotation.name: empty);
+          typeAnnotation.name as empty;
           throw new Error('Received unknown ReservedPropTypeAnnotation');
       }
     case 'ArrayTypeAnnotation': {
@@ -147,7 +148,7 @@ function getJavaValueForProp(
     case 'MixedTypeAnnotation':
       return 'new DynamicFromObject(value)';
     default:
-      (typeAnnotation: empty);
+      typeAnnotation as empty;
       throw new Error('Received invalid typeAnnotation');
   }
 }
@@ -189,7 +190,7 @@ function getCommandArgJavaType(
         case 'RootTag':
           return `args.getDouble(${index})`;
         default:
-          (typeAnnotation.name: empty);
+          typeAnnotation.name as empty;
           throw new Error(`Receieved invalid type: ${typeAnnotation.name}`);
       }
     case 'BooleanTypeAnnotation':
@@ -205,7 +206,7 @@ function getCommandArgJavaType(
     case 'ArrayTypeAnnotation':
       return `args.getArray(${index})`;
     default:
-      (typeAnnotation.type: empty);
+      typeAnnotation.type as empty;
       throw new Error(`Receieved invalid type: ${typeAnnotation.type}`);
   }
 }
@@ -250,11 +251,11 @@ function getClassExtendString(component: ComponentShape): string {
             case 'ReactNativeCoreViewProps':
               return 'View';
             default:
-              (extendProps.knownTypeName: empty);
+              extendProps.knownTypeName as empty;
               throw new Error('Invalid knownTypeName');
           }
         default:
-          (extendProps.type: empty);
+          extendProps.type as empty;
           throw new Error('Invalid extended type');
       }
     })
@@ -299,6 +300,7 @@ module.exports = {
     packageName?: string,
     assumeNonnull: boolean = false,
     headerPrefix?: string,
+    includeGetDebugPropsImplementation?: boolean = false,
   ): FilesOutput {
     // TODO: This doesn't support custom package name yet.
     const normalizedPackageName = 'com.facebook.react.viewmanagers';

@@ -52,9 +52,9 @@ inline MeasureMode measureMode(SizingMode mode) {
       return MeasureMode::Undefined;
     case SizingMode::FitContent:
       return MeasureMode::AtMost;
+    default:
+      fatalWithMessage("Invalid SizingMode");
   }
-
-  fatalWithMessage("Invalid SizingMode");
 }
 
 inline SizingMode sizingMode(MeasureMode mode) {
@@ -65,9 +65,9 @@ inline SizingMode sizingMode(MeasureMode mode) {
       return SizingMode::MaxContent;
     case MeasureMode::AtMost:
       return SizingMode::FitContent;
+    default:
+      fatalWithMessage("Invalid MeasureMode");
   }
-
-  fatalWithMessage("Invalid MeasureMode");
 }
 
 } // namespace facebook::yoga

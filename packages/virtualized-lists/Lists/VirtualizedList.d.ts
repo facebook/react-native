@@ -152,7 +152,11 @@ export interface VirtualizedListWithoutRenderItemProps<ItemT>
   /**
    * Rendered in between each item, but not at the top or bottom
    */
-  ItemSeparatorComponent?: React.ComponentType<any> | null | undefined;
+  ItemSeparatorComponent?:
+    | React.ComponentType<any>
+    | React.ReactElement
+    | null
+    | undefined;
 
   /**
    * Rendered when the list is empty. Can be a React Component Class, a render function, or

@@ -9,10 +9,18 @@
  */
 
 import type {RNTesterModuleExample} from '../../types/RNTesterTypes';
+import type {AnimatedNode} from 'react-native/Libraries/Animated/AnimatedExports';
 
 import * as React from 'react';
-import {useEffect, useRef, useState} from 'react';
-import {Animated, Easing, StyleSheet, Text, View} from 'react-native';
+import {useEffect, useState} from 'react';
+import {
+  Animated,
+  Easing,
+  StyleSheet,
+  Text,
+  View,
+  useAnimatedValue,
+} from 'react-native';
 
 function AnimateTransformSingleProp() {
   const [theta] = useState(new Animated.Value(45));
@@ -52,7 +60,7 @@ function AnimateTransformSingleProp() {
 }
 
 function TransformOriginExample() {
-  const rotateAnim = useRef(new Animated.Value(0)).current;
+  const rotateAnim = useAnimatedValue(0);
 
   useEffect(() => {
     Animated.loop(
@@ -144,6 +152,13 @@ function TranslatePercentage() {
   return <View style={styles.translatePercentageView} />;
 }
 
+function TranslateMatrix2D() {
+  return <View style={styles.translateMatrix2D} />;
+}
+function TranslateMatrix3D() {
+  return <View style={styles.translateMatrix3D} />;
+}
+
 const styles = StyleSheet.create({
   container: {
     height: 500,
@@ -219,7 +234,16 @@ const styles = StyleSheet.create({
     height: 50,
     position: 'absolute',
     top: 0,
-    transform: [{translate: [200, 350]}, {scale: 2.5}, {rotate: '-0.2rad'}],
+    transform: [
+      {
+        translate: [200, 350] as [
+          number | string | AnimatedNode,
+          number | string | AnimatedNode,
+        ],
+      },
+      {scale: 2.5},
+      {rotate: '-0.2rad'},
+    ],
     width: 100,
   },
   box5: {
@@ -231,7 +255,16 @@ const styles = StyleSheet.create({
     width: 50,
   },
   box5Transform: {
-    transform: [{translate: [-50, 35]}, {rotate: '50deg'}, {scale: 2}],
+    transform: [
+      {
+        translate: [-50, 35] as [
+          number | string | AnimatedNode,
+          number | string | AnimatedNode,
+        ],
+      },
+      {rotate: '50deg'},
+      {scale: 2},
+    ],
   },
   box6: {
     backgroundColor: 'salmon',
@@ -288,6 +321,18 @@ const styles = StyleSheet.create({
     alignSelf: 'flex-start',
     backgroundColor: 'lightblue',
   },
+  translateMatrix2D: {
+    transform: [{matrix: [1, 0, 0, 0, 1, 0, 0, 0, 1]}],
+    width: 50,
+    height: 50,
+    backgroundColor: 'red',
+  },
+  translateMatrix3D: {
+    transform: [{matrix: [1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1]}],
+    height: 50,
+    width: 50,
+    backgroundColor: 'green',
+  },
 });
 
 exports.title = 'Transforms';
@@ -304,11 +349,14 @@ exports.examples = [
   },
   {
     title: 'Translate, Rotate, Scale',
+    name: 'translate-rotate-scale',
     description:
       "translateX: 100, translateY: 50, rotate: '30deg', scaleX: 2, scaleY: 2",
     render(): React.Node {
       return (
-        <View style={styles.container}>
+        <View
+          testID="transform-translate-rotate-scale"
+          style={styles.container}>
           <View style={styles.box1} />
         </View>
       );
@@ -316,11 +364,14 @@ exports.examples = [
   },
   {
     title: 'Scale, Translate, Rotate, ',
+    name: 'scale-translate-rotate',
     description:
       "scaleX: 2, scaleY: 2, translateX: 100, translateY: 50, rotate: '30deg'",
     render(): React.Node {
       return (
-        <View style={styles.container}>
+        <View
+          testID="transform-scale-translate-rotate"
+          style={styles.container}>
           <View style={styles.box2} />
         </View>
       );
@@ -328,10 +379,11 @@ exports.examples = [
   },
   {
     title: 'Rotate',
+    name: 'rotate',
     description: "rotate: '30deg'",
     render(): React.Node {
       return (
-        <View style={styles.container}>
+        <View testID="transform-rotate" style={styles.container}>
           <View style={styles.box3step1} />
         </View>
       );
@@ -339,10 +391,11 @@ exports.examples = [
   },
   {
     title: 'Rotate, Scale',
+    name: 'rotate-scale',
     description: "rotate: '30deg', scaleX: 2, scaleY: 2",
     render(): React.Node {
       return (
-        <View style={styles.container}>
+        <View testID="transform-rotate-scale" style={styles.container}>
           <View style={styles.box3step2} />
         </View>
       );
@@ -350,11 +403,14 @@ exports.examples = [
   },
   {
     title: 'Rotate, Scale, Translate ',
+    name: 'rotate-scale-translate',
     description:
       "rotate: '30deg', scaleX: 2, scaleY: 2, translateX: 100, translateY: 50",
     render(): React.Node {
       return (
-        <View style={styles.container}>
+        <View
+          testID="transform-rotate-scale-translate"
+          style={styles.container}>
           <View style={styles.box3step3} />
         </View>
       );
@@ -362,10 +418,13 @@ exports.examples = [
   },
   {
     title: 'Translate, Scale, Rotate',
+    name: 'translate-scale-rotate',
     description: "translate: [200, 350], scale: 2.5, rotate: '-0.2rad'",
     render(): React.Node {
       return (
-        <View style={styles.container}>
+        <View
+          testID="transform-translate-scale-rotate"
+          style={styles.container}>
           <View style={styles.box4} />
         </View>
       );
@@ -373,10 +432,13 @@ exports.examples = [
   },
   {
     title: 'Translate, Rotate, Scale',
+    name: 'translate-rotate-scale-2',
     description: "translate: [-50, 35], rotate: '50deg', scale: 2",
     render(): React.Node {
       return (
-        <View style={styles.container}>
+        <View
+          testID="transform-translate-rotate-scale-2"
+          style={styles.container}>
           <View style={[styles.box5, styles.box5Transform]} />
         </View>
       );
@@ -391,10 +453,11 @@ exports.examples = [
   },
   {
     title: 'Transform using a string',
+    name: 'string-transform',
     description: "transform: 'translate(-50px, 35px) rotate(50deg) scale(2)'",
     render(): React.Node {
       return (
-        <View style={styles.container}>
+        <View testID="transform-string" style={styles.container}>
           <View style={[styles.box7, styles.box7Transform]} />
         </View>
       );
@@ -409,9 +472,34 @@ exports.examples = [
   },
   {
     title: 'Translate Percentage',
+    name: 'translate-percentage',
     description: "transform: 'translate(50%)'",
     render(): React.Node {
-      return <TranslatePercentage />;
+      return (
+        <View testID="transform-translate-percentage">
+          <TranslatePercentage />
+        </View>
+      );
+    },
+  },
+  {
+    title: 'Transform Matrix 2D',
+    name: 'matrix-2d',
+    description: "transform: 'matrix(1, 0, 0, 0, 1, 0, 0, 0, 1)'",
+    render(): React.Node {
+      return (
+        <View testID="transform-matrix-2d">
+          <TranslateMatrix2D />
+        </View>
+      );
+    },
+  },
+  {
+    title: 'Transform Matrix 3D',
+    description:
+      "transform: 'matrix(1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1)'",
+    render(): React.Node {
+      return <TranslateMatrix3D />;
     },
   },
 ] as Array<RNTesterModuleExample>;

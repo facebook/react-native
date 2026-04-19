@@ -22,7 +22,7 @@ type ErrorInfo = {
 };
 
 function getExtendedError(
-  errorValue: mixed,
+  errorValue: unknown,
   errorInfo: ErrorInfo,
 ): ExtendedError {
   let error;
@@ -32,18 +32,18 @@ function getExtendedError(
   if (errorValue instanceof Error) {
     /* $FlowFixMe[class-object-subtyping] added when improving typing for
      * this parameters */
-    // $FlowFixMe[incompatible-cast]
-    error = (errorValue: ExtendedError);
+    // $FlowFixMe[incompatible-type]
+    error = errorValue as ExtendedError;
   } else if (typeof errorValue === 'string') {
     /* $FlowFixMe[class-object-subtyping] added when improving typing for
      * this parameters */
-    // $FlowFixMe[incompatible-cast]
-    error = (new SyntheticError(errorValue): ExtendedError);
+    // $FlowFixMe[incompatible-type]
+    error = new SyntheticError(errorValue) as ExtendedError;
   } else {
     /* $FlowFixMe[class-object-subtyping] added when improving typing for
      * this parameters */
-    // $FlowFixMe[incompatible-cast]
-    error = (new SyntheticError('Unspecified error'): ExtendedError);
+    // $FlowFixMe[incompatible-type]
+    error = new SyntheticError('Unspecified error') as ExtendedError;
   }
   try {
     // $FlowFixMe[incompatible-use] this is in try/catch.
@@ -56,14 +56,17 @@ function getExtendedError(
   return error;
 }
 
-export function onUncaughtError(errorValue: mixed, errorInfo: ErrorInfo): void {
+export function onUncaughtError(
+  errorValue: unknown,
+  errorInfo: ErrorInfo,
+): void {
   const error = getExtendedError(errorValue, errorInfo);
 
   // Uncaught errors are fatal.
   ExceptionsManager.handleException(error, true);
 }
 
-export function onCaughtError(errorValue: mixed, errorInfo: ErrorInfo): void {
+export function onCaughtError(errorValue: unknown, errorInfo: ErrorInfo): void {
   const error = getExtendedError(errorValue, errorInfo);
 
   // Caught errors are not fatal.
@@ -71,7 +74,7 @@ export function onCaughtError(errorValue: mixed, errorInfo: ErrorInfo): void {
 }
 
 export function onRecoverableError(
-  errorValue: mixed,
+  errorValue: unknown,
   errorInfo: ErrorInfo,
 ): void {
   const error = getExtendedError(errorValue, errorInfo);

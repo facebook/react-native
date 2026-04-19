@@ -7,8 +7,8 @@
 
 @file:Suppress(
     "DEPRECATION_ERROR", // Conflicting okhttp versions
-    "DEPRECATION" // Need to migrate away from AsyncTasks
-    )
+    "DEPRECATION", // Need to migrate away from AsyncTasks
+)
 
 package com.facebook.react.devsupport
 
@@ -33,12 +33,12 @@ import android.widget.TextView
 import com.facebook.common.logging.FLog
 import com.facebook.react.R
 import com.facebook.react.common.ReactConstants
+import com.facebook.react.devsupport.inspector.DevSupportHttpClient
 import com.facebook.react.devsupport.interfaces.DevSupportManager
 import com.facebook.react.devsupport.interfaces.ErrorType
 import com.facebook.react.devsupport.interfaces.RedBoxHandler
 import com.facebook.react.devsupport.interfaces.StackFrame
 import okhttp3.MediaType
-import okhttp3.OkHttpClient
 import okhttp3.Request
 import okhttp3.RequestBody
 import org.json.JSONObject
@@ -139,7 +139,8 @@ internal class RedBoxContentView(
         holder.fileView.text = StackTraceHelper.formatFrameSource(frame)
         holder.methodView.setTextColor(if (frame.isCollapsed) 0xFFAAAAAA.toInt() else Color.WHITE)
         holder.fileView.setTextColor(
-            if (frame.isCollapsed) 0xFF808080.toInt() else 0xFFB3B3B3.toInt())
+            if (frame.isCollapsed) 0xFF808080.toInt() else 0xFFB3B3B3.toInt()
+        )
         return frameView
       }
     }
@@ -164,7 +165,7 @@ internal class RedBoxContentView(
                 .query(null)
                 .build()
                 .toString()
-        val client = OkHttpClient()
+        val client = DevSupportHttpClient.httpClient
         for (frame in stackFrames) {
           val payload = stackFrameToJson(checkNotNull(frame)).toString()
           val body: RequestBody = RequestBody.create(JSON, payload)
@@ -186,7 +187,9 @@ internal class RedBoxContentView(
                   "file" to frame.file,
                   "methodName" to frame.method,
                   "lineNumber" to frame.line,
-                  "column" to frame.column))
+                  "column" to frame.column,
+              )
+          )
     }
   }
 
@@ -240,7 +243,9 @@ internal class RedBoxContentView(
   override fun onItemClick(parent: AdapterView<*>?, view: View, position: Int, id: Long) {
     OpenStackFrameTask(devSupportManager)
         .executeOnExecutor(
-            AsyncTask.THREAD_POOL_EXECUTOR, stackView.adapter.getItem(position) as StackFrame)
+            AsyncTask.THREAD_POOL_EXECUTOR,
+            stackView.adapter.getItem(position) as StackFrame,
+        )
   }
 
   /** Refresh the content view with latest errors from dev support manager */

@@ -10,10 +10,10 @@ package com.facebook.react.views.text;
 import android.content.Context;
 import android.graphics.Canvas;
 import android.graphics.Rect;
-import android.graphics.drawable.Drawable;
 import android.os.Build;
 import android.text.Layout;
 import android.text.Spannable;
+import android.text.SpannableString;
 import android.text.Spanned;
 import android.text.TextUtils;
 import android.text.method.LinkMovementMethod;
@@ -37,6 +37,7 @@ import com.facebook.react.bridge.Arguments;
 import com.facebook.react.bridge.ReactContext;
 import com.facebook.react.bridge.WritableMap;
 import com.facebook.react.common.ReactConstants;
+import com.facebook.react.common.annotations.UnstableReactNativeAPI;
 import com.facebook.react.common.build.ReactBuildConfig;
 import com.facebook.react.internal.SystraceSection;
 import com.facebook.react.uimanager.BackgroundStyleApplicator;
@@ -52,8 +53,8 @@ import com.facebook.react.uimanager.style.BorderRadiusProp;
 import com.facebook.react.uimanager.style.BorderStyle;
 import com.facebook.react.uimanager.style.LogicalEdge;
 import com.facebook.react.uimanager.style.Overflow;
+import com.facebook.react.views.text.internal.span.ReactFragmentIndexSpan;
 import com.facebook.react.views.text.internal.span.ReactTagSpan;
-import com.facebook.react.views.text.internal.span.TextInlineImageSpan;
 import com.facebook.react.views.text.internal.span.TextInlineViewPlaceholderSpan;
 import com.facebook.yoga.YogaMeasureMode;
 
@@ -66,7 +67,6 @@ public class ReactTextView extends AppCompatTextView implements ReactCompoundVie
   // https://github.com/aosp-mirror/platform_frameworks_base/blob/master/core/java/android/widget/TextView.java#L854
   private static final int DEFAULT_GRAVITY = Gravity.TOP | Gravity.START;
 
-  private boolean mContainsImages;
   private int mNumberOfLines;
   private @Nullable TextUtils.TruncateAt mEllipsizeLocation;
   private boolean mAdjustsFontSizeToFit;
@@ -79,6 +79,7 @@ public class ReactTextView extends AppCompatTextView implements ReactCompoundVie
   private Overflow mOverflow = Overflow.VISIBLE;
 
   private @Nullable Spannable mSpanned;
+  private @Nullable PreparedLayout mPreparedLayout;
 
   public ReactTextView(Context context) {
     super(context);
@@ -102,6 +103,7 @@ public class ReactTextView extends AppCompatTextView implements ReactCompoundVie
     mLetterSpacing = 0.f;
     mOverflow = Overflow.VISIBLE;
     mSpanned = null;
+    mPreparedLayout = null;
   }
 
   /* package */ void recycleView() {
@@ -234,6 +236,10 @@ public class ReactTextView extends AppCompatTextView implements ReactCompoundVie
 
     for (TextInlineViewPlaceholderSpan placeholder : placeholders) {
       View child = uiManager.resolveView(placeholder.getReactTag());
+
+      if (child == null) {
+        continue;
+      }
 
       int start = text.getSpanStart(placeholder);
       int line = layout.getLineForOffset(start);
@@ -377,38 +383,21 @@ public class ReactTextView extends AppCompatTextView implements ReactCompoundVie
 
   public void setText(ReactTextUpdate update) {
     try (SystraceSection s = new SystraceSection("ReactTextView.setText(ReactTextUpdate)")) {
-      mContainsImages = update.containsImages();
       // Android's TextView crashes when it tries to relayout if LayoutParams are
       // null; explicitly set the LayoutParams to prevent this crash. See:
       // https://github.com/facebook/react-native/pull/7011
       if (getLayoutParams() == null) {
         setLayoutParams(EMPTY_LAYOUT_PARAMS);
       }
-      Spannable spannable = update.getText();
+      Spanned spanned = update.getText();
       if (mLinkifyMaskType > 0) {
-        Linkify.addLinks(spannable, mLinkifyMaskType);
+        if (!(spanned instanceof Spannable)) {
+          spanned = new SpannableString(spanned);
+        }
+        Linkify.addLinks((Spannable) spanned, mLinkifyMaskType);
         setMovementMethod(LinkMovementMethod.getInstance());
       }
-      setText(spannable);
-      float paddingLeft = update.getPaddingLeft();
-      float paddingTop = update.getPaddingTop();
-      float paddingRight = update.getPaddingRight();
-      float paddingBottom = update.getPaddingBottom();
-
-      // In Fabric padding is set by the update of Layout Metrics and not as part of the "setText"
-      // operation
-      // TODO T56559197: remove this condition when we migrate 100% to Fabric
-      if (paddingLeft != ReactConstants.UNSET
-          && paddingTop != ReactConstants.UNSET
-          && paddingRight != ReactConstants.UNSET
-          && paddingBottom != ReactConstants.UNSET) {
-
-        setPadding(
-            (int) Math.floor(paddingLeft),
-            (int) Math.floor(paddingTop),
-            (int) Math.floor(paddingRight),
-            (int) Math.floor(paddingBottom));
-      }
+      setText(spanned);
 
       int nextTextAlign = update.getTextAlign();
       if (nextTextAlign != getGravityHorizontal()) {
@@ -463,74 +452,39 @@ public class ReactTextView extends AppCompatTextView implements ReactCompoundVie
       // if no such span can be found we will send the textview's react id as a touch handler
       // In case when there are more than one spans with same length we choose the last one
       // from the spans[] array, since it correspond to the most inner react element
-      ReactTagSpan[] spans = spannedText.getSpans(index, index, ReactTagSpan.class);
+      if (mPreparedLayout != null) {
+        ReactFragmentIndexSpan[] fragmentSpans =
+            spannedText.getSpans(index, index, ReactFragmentIndexSpan.class);
 
-      if (spans != null) {
-        int targetSpanTextLength = text.length();
-        for (int i = 0; i < spans.length; i++) {
-          int spanStart = spannedText.getSpanStart(spans[i]);
-          int spanEnd = spannedText.getSpanEnd(spans[i]);
-          if (spanEnd >= index && (spanEnd - spanStart) <= targetSpanTextLength) {
-            target = spans[i].getReactTag();
-            targetSpanTextLength = (spanEnd - spanStart);
+        if (fragmentSpans != null) {
+          int targetSpanTextLength = text.length();
+          for (int i = 0; i < fragmentSpans.length; i++) {
+            int spanStart = spannedText.getSpanStart(fragmentSpans[i]);
+            int spanEnd = spannedText.getSpanEnd(fragmentSpans[i]);
+            if (spanEnd >= index && (spanEnd - spanStart) <= targetSpanTextLength) {
+              target = mPreparedLayout.getReactTags()[fragmentSpans[i].getFragmentIndex()];
+              targetSpanTextLength = (spanEnd - spanStart);
+            }
+          }
+        }
+      } else {
+        ReactTagSpan[] spans = spannedText.getSpans(index, index, ReactTagSpan.class);
+
+        if (spans != null) {
+          int targetSpanTextLength = text.length();
+          for (int i = 0; i < spans.length; i++) {
+            int spanStart = spannedText.getSpanStart(spans[i]);
+            int spanEnd = spannedText.getSpanEnd(spans[i]);
+            if (spanEnd >= index && (spanEnd - spanStart) <= targetSpanTextLength) {
+              target = spans[i].getReactTag();
+              targetSpanTextLength = (spanEnd - spanStart);
+            }
           }
         }
       }
     }
 
     return target;
-  }
-
-  @Override
-  protected boolean verifyDrawable(Drawable drawable) {
-    if (mContainsImages && getText() instanceof Spanned) {
-      Spanned text = (Spanned) getText();
-      TextInlineImageSpan[] spans = text.getSpans(0, text.length(), TextInlineImageSpan.class);
-      for (TextInlineImageSpan span : spans) {
-        if (span.getDrawable() == drawable) {
-          return true;
-        }
-      }
-    }
-    return super.verifyDrawable(drawable);
-  }
-
-  @Override
-  public void invalidateDrawable(Drawable drawable) {
-    if (mContainsImages && getText() instanceof Spanned) {
-      Spanned text = (Spanned) getText();
-      TextInlineImageSpan[] spans = text.getSpans(0, text.length(), TextInlineImageSpan.class);
-      for (TextInlineImageSpan span : spans) {
-        if (span.getDrawable() == drawable) {
-          invalidate();
-        }
-      }
-    }
-    super.invalidateDrawable(drawable);
-  }
-
-  @Override
-  public void onDetachedFromWindow() {
-    super.onDetachedFromWindow();
-    if (mContainsImages && getText() instanceof Spanned) {
-      Spanned text = (Spanned) getText();
-      TextInlineImageSpan[] spans = text.getSpans(0, text.length(), TextInlineImageSpan.class);
-      for (TextInlineImageSpan span : spans) {
-        span.onDetachedFromWindow();
-      }
-    }
-  }
-
-  @Override
-  public void onStartTemporaryDetach() {
-    super.onStartTemporaryDetach();
-    if (mContainsImages && getText() instanceof Spanned) {
-      Spanned text = (Spanned) getText();
-      TextInlineImageSpan[] spans = text.getSpans(0, text.length(), TextInlineImageSpan.class);
-      for (TextInlineImageSpan span : spans) {
-        span.onStartTemporaryDetach();
-      }
-    }
   }
 
   @Override
@@ -550,26 +504,6 @@ public class ReactTextView extends AppCompatTextView implements ReactCompoundVie
       setTextIsSelectable(true);
     } else {
       setTextIsSelectable(false);
-    }
-
-    if (mContainsImages && getText() instanceof Spanned) {
-      Spanned text = (Spanned) getText();
-      TextInlineImageSpan[] spans = text.getSpans(0, text.length(), TextInlineImageSpan.class);
-      for (TextInlineImageSpan span : spans) {
-        span.onAttachedToWindow();
-      }
-    }
-  }
-
-  @Override
-  public void onFinishTemporaryDetach() {
-    super.onFinishTemporaryDetach();
-    if (mContainsImages && getText() instanceof Spanned) {
-      Spanned text = (Spanned) getText();
-      TextInlineImageSpan[] spans = text.getSpans(0, text.length(), TextInlineImageSpan.class);
-      for (TextInlineImageSpan span : spans) {
-        span.onFinishTemporaryDetach();
-      }
     }
   }
 
@@ -645,6 +579,7 @@ public class ReactTextView extends AppCompatTextView implements ReactCompoundVie
     mShouldAdjustSpannableFontSize = true;
   }
 
+  @Override
   public void setLetterSpacing(float letterSpacing) {
     if (Float.isNaN(letterSpacing)) {
       return;
@@ -712,6 +647,22 @@ public class ReactTextView extends AppCompatTextView implements ReactCompoundVie
 
   public @Nullable Spannable getSpanned() {
     return mSpanned;
+  }
+
+  /**
+   * Get the PreparedLayout originally generated by the Fabric renderer, if using {@code
+   * enablePreparedTextLayout()}
+   *
+   * <p>TODO: Should be made internal when ReactTextView is converted to Kotlin
+   */
+  @UnstableReactNativeAPI
+  @Nullable
+  public PreparedLayout getPreparedLayout() {
+    return mPreparedLayout;
+  }
+
+  /* package */ void setPreparedLayout(@Nullable PreparedLayout preparedLayout) {
+    mPreparedLayout = preparedLayout;
   }
 
   public void setLinkifyMask(int mask) {

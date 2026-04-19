@@ -11,22 +11,22 @@
 
 namespace facebook::react {
 
-class ReactNativeFeatureFlagsOverridesOSSStable
-    : public ReactNativeFeatureFlagsDefaults {
+class ReactNativeFeatureFlagsOverridesOSSStable : public ReactNativeFeatureFlagsDefaults {
  public:
-  bool enableBridgelessArchitecture() override {
+  bool enableBridgelessArchitecture() override
+  {
     return true;
   }
-  bool enableFabricRenderer() override {
+  bool enableFabricRenderer() override
+  {
     return true;
   }
-  bool useTurboModules() override {
+  bool useTurboModules() override
+  {
     return true;
   }
-  bool useNativeViewConfigsInBridgelessMode() override {
-    return true;
-  }
-  bool useShadowNodeStateOnClone() override {
+  bool useNativeViewConfigsInBridgelessMode() override
+  {
     return true;
   }
 };

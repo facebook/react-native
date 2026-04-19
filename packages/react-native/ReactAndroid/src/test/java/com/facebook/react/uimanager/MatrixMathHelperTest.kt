@@ -29,8 +29,25 @@ class MatrixMathHelperTest {
 
     MatrixMathHelper.decomposeMatrix(
         doubleArrayOf(
-            1.0, 0.0, 0.0, 0.0, 0.0, 1.0, 0.0, 0.0, 0.0, 0.0, 1.0, 0.0, 0.0, 0.0, 0.0, 1.0),
-        ctx)
+            1.0,
+            0.0,
+            0.0,
+            0.0,
+            0.0,
+            1.0,
+            0.0,
+            0.0,
+            0.0,
+            0.0,
+            1.0,
+            0.0,
+            0.0,
+            0.0,
+            0.0,
+            1.0,
+        ),
+        ctx,
+    )
 
     assertThat(ctx.rotationDegrees).containsSequence(0.0, 0.0, 0.0)
 
@@ -111,10 +128,42 @@ class MatrixMathHelperTest {
   fun testMultiplyInto() {
     val matrixA =
         doubleArrayOf(
-            1.0, 2.0, 3.0, 4.0, 5.0, 6.0, 7.0, 8.0, 9.0, 10.0, 11.0, 12.0, 13.0, 14.0, 15.0, 16.0)
+            1.0,
+            2.0,
+            3.0,
+            4.0,
+            5.0,
+            6.0,
+            7.0,
+            8.0,
+            9.0,
+            10.0,
+            11.0,
+            12.0,
+            13.0,
+            14.0,
+            15.0,
+            16.0,
+        )
     val matrixB =
         doubleArrayOf(
-            2.0, 0.0, 0.0, 0.0, 0.0, 2.0, 0.0, 0.0, 0.0, 0.0, 2.0, 0.0, 0.0, 0.0, 0.0, 2.0)
+            2.0,
+            0.0,
+            0.0,
+            0.0,
+            0.0,
+            2.0,
+            0.0,
+            0.0,
+            0.0,
+            0.0,
+            2.0,
+            0.0,
+            0.0,
+            0.0,
+            0.0,
+            2.0,
+        )
     val result = DoubleArray(16)
 
     MatrixMathHelper.multiplyInto(result, matrixA, matrixB)
@@ -136,7 +185,8 @@ class MatrixMathHelperTest {
             26.0,
             28.0,
             30.0,
-            32.0)
+            32.0,
+        )
 
     assertThat(result).containsExactly(*expected)
   }
@@ -147,7 +197,23 @@ class MatrixMathHelperTest {
 
     val expected =
         doubleArrayOf(
-            1.0, 0.0, 0.0, 0.0, 0.0, 1.0, 0.0, 0.0, 0.0, 0.0, 1.0, 0.0, 0.0, 0.0, 0.0, 1.0)
+            1.0,
+            0.0,
+            0.0,
+            0.0,
+            0.0,
+            1.0,
+            0.0,
+            0.0,
+            0.0,
+            0.0,
+            1.0,
+            0.0,
+            0.0,
+            0.0,
+            0.0,
+            1.0,
+        )
 
     assertThat(identity).containsExactly(*expected)
   }
@@ -156,13 +222,45 @@ class MatrixMathHelperTest {
   fun testResetIdentityMatrix() {
     val matrix =
         doubleArrayOf(
-            5.0, 2.0, 3.0, 4.0, 1.0, 6.0, 7.0, 8.0, 9.0, 10.0, 11.0, 12.0, 13.0, 14.0, 15.0, 16.0)
+            5.0,
+            2.0,
+            3.0,
+            4.0,
+            1.0,
+            6.0,
+            7.0,
+            8.0,
+            9.0,
+            10.0,
+            11.0,
+            12.0,
+            13.0,
+            14.0,
+            15.0,
+            16.0,
+        )
 
     MatrixMathHelper.resetIdentityMatrix(matrix)
 
     val expected =
         doubleArrayOf(
-            1.0, 0.0, 0.0, 0.0, 0.0, 1.0, 0.0, 0.0, 0.0, 0.0, 1.0, 0.0, 0.0, 0.0, 0.0, 1.0)
+            1.0,
+            0.0,
+            0.0,
+            0.0,
+            0.0,
+            1.0,
+            0.0,
+            0.0,
+            0.0,
+            0.0,
+            1.0,
+            0.0,
+            0.0,
+            0.0,
+            0.0,
+            1.0,
+        )
 
     assertThat(matrix).containsExactly(*expected)
   }
@@ -174,7 +272,23 @@ class MatrixMathHelperTest {
 
     val matrix =
         doubleArrayOf(
-            2.0, 0.0, 0.0, 0.0, 0.0, 2.0, 0.0, 0.0, 0.0, 0.0, 2.0, 0.0, 0.0, 0.0, 0.0, 2.0)
+            2.0,
+            0.0,
+            0.0,
+            0.0,
+            0.0,
+            2.0,
+            0.0,
+            0.0,
+            0.0,
+            0.0,
+            2.0,
+            0.0,
+            0.0,
+            0.0,
+            0.0,
+            2.0,
+        )
     assertThat(MatrixMathHelper.determinant(matrix)).isEqualTo(16.0)
   }
 
@@ -182,13 +296,45 @@ class MatrixMathHelperTest {
   fun testInverse() {
     val matrix =
         doubleArrayOf(
-            2.0, 0.0, 0.0, 0.0, 0.0, 2.0, 0.0, 0.0, 0.0, 0.0, 2.0, 0.0, 0.0, 0.0, 0.0, 2.0)
+            2.0,
+            0.0,
+            0.0,
+            0.0,
+            0.0,
+            2.0,
+            0.0,
+            0.0,
+            0.0,
+            0.0,
+            2.0,
+            0.0,
+            0.0,
+            0.0,
+            0.0,
+            2.0,
+        )
 
     val inverse = MatrixMathHelper.inverse(matrix)
 
     val expected =
         doubleArrayOf(
-            0.5, 0.0, 0.0, 0.0, 0.0, 0.5, 0.0, 0.0, 0.0, 0.0, 0.5, 0.0, 0.0, 0.0, 0.0, 0.5)
+            0.5,
+            0.0,
+            0.0,
+            0.0,
+            0.0,
+            0.5,
+            0.0,
+            0.0,
+            0.0,
+            0.0,
+            0.5,
+            0.0,
+            0.0,
+            0.0,
+            0.0,
+            0.5,
+        )
 
     assertThat(inverse).containsExactly(*expected)
   }
@@ -197,13 +343,45 @@ class MatrixMathHelperTest {
   fun testTranspose() {
     val matrix =
         doubleArrayOf(
-            1.0, 2.0, 3.0, 4.0, 5.0, 6.0, 7.0, 8.0, 9.0, 10.0, 11.0, 12.0, 13.0, 14.0, 15.0, 16.0)
+            1.0,
+            2.0,
+            3.0,
+            4.0,
+            5.0,
+            6.0,
+            7.0,
+            8.0,
+            9.0,
+            10.0,
+            11.0,
+            12.0,
+            13.0,
+            14.0,
+            15.0,
+            16.0,
+        )
 
     val transposed = MatrixMathHelper.transpose(matrix)
 
     val expected =
         doubleArrayOf(
-            1.0, 5.0, 9.0, 13.0, 2.0, 6.0, 10.0, 14.0, 3.0, 7.0, 11.0, 15.0, 4.0, 8.0, 12.0, 16.0)
+            1.0,
+            5.0,
+            9.0,
+            13.0,
+            2.0,
+            6.0,
+            10.0,
+            14.0,
+            3.0,
+            7.0,
+            11.0,
+            15.0,
+            4.0,
+            8.0,
+            12.0,
+            16.0,
+        )
 
     assertThat(transposed).containsExactly(*expected)
   }
@@ -213,7 +391,23 @@ class MatrixMathHelperTest {
     val vector = doubleArrayOf(1.0, 2.0, 3.0, 1.0)
     val matrix =
         doubleArrayOf(
-            2.0, 0.0, 0.0, 0.0, 0.0, 2.0, 0.0, 0.0, 0.0, 0.0, 2.0, 0.0, 0.0, 0.0, 0.0, 1.0)
+            2.0,
+            0.0,
+            0.0,
+            0.0,
+            0.0,
+            2.0,
+            0.0,
+            0.0,
+            0.0,
+            0.0,
+            2.0,
+            0.0,
+            0.0,
+            0.0,
+            0.0,
+            1.0,
+        )
     val result = DoubleArray(4)
 
     MatrixMathHelper.multiplyVectorByMatrix(vector, matrix, result)
@@ -527,7 +721,7 @@ class MatrixMathHelperTest {
       degreesZ: Double,
       rotX: Double,
       rotY: Double,
-      rotZ: Double
+      rotZ: Double,
   ) {
     val ctx = MatrixDecompositionContext()
     val matrixX = createRotateX(degreesToRadians(degreesX))

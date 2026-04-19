@@ -348,6 +348,7 @@ const styles = StyleSheet.create({
 const examples = [
   {
     title: 'Change content based on Press',
+    name: 'content-press',
     render(): React.Node {
       return <ContentPress />;
     },
@@ -373,7 +374,7 @@ const examples = [
   {
     title: 'Change child based on Press',
     description:
-      ('You should be able to press the button, move your finger while pressing, and release it with the proper status updates.': string),
+      'You should be able to press the button, move your finger while pressing, and release it with the proper status updates.' as string,
     render(): React.Node {
       return (
         <View style={styles.row}>
@@ -399,8 +400,9 @@ const examples = [
   },
   {
     title: 'Pressable feedback events',
+    name: 'feedback-events',
     description: ('<Pressable> components accept onPress, onPressIn, ' +
-      'onPressOut, and onLongPress as props.': string),
+      'onPressOut, and onLongPress as props.') as string,
     render: function (): React.Node {
       return <PressableFeedbackEvents />;
     },
@@ -408,7 +410,7 @@ const examples = [
   {
     title: 'Pressable with Ripple and Animated child',
     description:
-      ('Pressable can have an AnimatedComponent as a direct child.': string),
+      'Pressable can have an AnimatedComponent as a direct child.' as string,
     platform: 'android',
     render: function (): React.Node {
       const mScale = new Animated.Value(1);
@@ -435,7 +437,7 @@ const examples = [
   {
     title: 'Pressable with custom Ripple',
     description:
-      ("Pressable can specify ripple's radius, color and borderless params": string),
+      "Pressable can specify ripple's radius, color and borderless params" as string,
     platform: 'android',
     render: function (): React.Node {
       const nativeFeedbackButton = {
@@ -512,6 +514,7 @@ const examples = [
   },
   {
     title: '<Text onPress={fn}> with highlight',
+    name: 'text-press',
     render: function (): React.Node {
       return <TextOnPressBox />;
     },
@@ -520,7 +523,7 @@ const examples = [
     title: 'Pressable delay for events',
     description: ('<Pressable> also accept delayPressIn, ' +
       'delayPressOut, and delayLongPress as props. These props impact the ' +
-      'timing of feedback events.': string),
+      'timing of feedback events.') as string,
     render: function (): React.Node {
       return <PressableDelayEvents />;
     },
@@ -536,9 +539,10 @@ const examples = [
   },
   {
     title: 'Pressable Hit Slop',
+    name: 'hit-slop',
     description:
       ('<Pressable> components accept hitSlop prop which extends the touch area ' +
-        'without changing the view bounds.': string),
+        'without changing the view bounds.') as string,
     render: function (): React.Node {
       return <PressableHitSlop />;
     },
@@ -546,7 +550,7 @@ const examples = [
   {
     title: 'Pressable Native Methods',
     description:
-      ('<Pressable> components expose native methods like `measure`.': string),
+      '<Pressable> components expose native methods like `measure`.' as string,
     render: function (): React.Node {
       return <PressableNativeMethods />;
     },
@@ -555,7 +559,7 @@ const examples = [
     title: 'Disabled Pressable',
     description:
       ('<Pressable> components accept disabled prop which prevents ' +
-        'any interaction with component': string),
+        'any interaction with component') as string,
     render: function (): React.Node {
       return <PressableDisabled />;
     },
@@ -563,21 +567,58 @@ const examples = [
   {
     title: 'Pressable with aria-label="label"',
     description: ('Note: This prop changes the text that a screen ' +
-      'reader announces (there are no visual differences).': string),
+      'reader announces (there are no visual differences).') as string,
     render: function (): React.Node {
       return <PressableAriaLabel />;
+    },
+  },
+  {
+    title: 'Pressable with box-shadow',
+    description: 'Pressables with box-shadow' as string,
+    render: function PressableWithBoxShadow(): React.Node {
+      const [parentColor, setParentColor] = useState('red');
+      const [childColor, setChildColor] = useState('blue');
+      return (
+        <Pressable
+          pointerEvents="box-none"
+          style={{
+            width: 300,
+            height: 300,
+            overflow: 'hidden',
+            transform: [{scale: 0.5}],
+            boxShadow: '0 0 100px 0 rgba(0, 0, 0, 0.5)',
+            backgroundColor: parentColor,
+          }}
+          onPress={() => {
+            setParentColor(parentColor === 'red' ? 'orange' : 'red');
+          }}>
+          <Pressable
+            style={{
+              position: 'absolute',
+              bottom: 0,
+              right: 0,
+              backgroundColor: childColor,
+              height: 50,
+              width: 100,
+            }}
+            onPress={() => {
+              setChildColor(childColor === 'blue' ? 'green' : 'blue');
+            }}
+          />
+        </Pressable>
+      );
     },
   },
   ...PressableExampleFbInternal.examples,
 ];
 
-module.exports = ({
+module.exports = {
   title: 'Pressable',
   documentationURL: 'https://reactnative.dev/docs/pressable',
   category: 'UI',
   description: 'Component for making views pressable.',
   displayName: 'Pressable',
-  /* $FlowFixMe[incompatible-cast] Natural Inference rollout. See
+  /* $FlowFixMe[incompatible-type] Natural Inference rollout. See
    * https://fburl.com/workplace/6291gfvu */
   examples,
-}: RNTesterModule);
+} as RNTesterModule;

@@ -23,7 +23,7 @@ TEST(FindNodeAtPointTest, withoutTransform) {
       .tag(1)
       .finalize([](ViewShadowNode &shadowNode){
         auto layoutMetrics = EmptyLayoutMetrics;
-        layoutMetrics.frame.size = {1000, 1000};
+        layoutMetrics.frame.size = {.width=1000, .height=1000};
         shadowNode.setLayoutMetrics(layoutMetrics);
       })
       .children({
@@ -31,8 +31,8 @@ TEST(FindNodeAtPointTest, withoutTransform) {
         .tag(2)
         .finalize([](ViewShadowNode &shadowNode){
           auto layoutMetrics = EmptyLayoutMetrics;
-          layoutMetrics.frame.origin = {100, 100};
-          layoutMetrics.frame.size = {100, 100};
+          layoutMetrics.frame.origin = {.x=100, .y=100};
+          layoutMetrics.frame.size = {.width=100, .height=100};
           shadowNode.setLayoutMetrics(layoutMetrics);
         })
         .children({
@@ -40,8 +40,8 @@ TEST(FindNodeAtPointTest, withoutTransform) {
           .tag(3)
           .finalize([](ViewShadowNode &shadowNode){
             auto layoutMetrics = EmptyLayoutMetrics;
-            layoutMetrics.frame.origin = {10, 10};
-            layoutMetrics.frame.size = {10, 10};
+            layoutMetrics.frame.origin = {.x=10, .y=10};
+            layoutMetrics.frame.size = {.width=10, .height=10};
             shadowNode.setLayoutMetrics(layoutMetrics);
           })
         })
@@ -66,19 +66,19 @@ TEST(FindNodeAtPointTest, viewIsTranslated) {
       .tag(1)
       .finalize([](ScrollViewShadowNode &shadowNode){
         auto layoutMetrics = EmptyLayoutMetrics;
-        layoutMetrics.frame.size = {1000, 1000};
+        layoutMetrics.frame.size = {.width=1000, .height=1000};
         shadowNode.setLayoutMetrics(layoutMetrics);
       })
       .stateData([](ScrollViewState &data) {
-        data.contentOffset = {100, 100};
+        data.contentOffset = {.x=100, .y=100};
       })
       .children({
         Element<ViewShadowNode>()
         .tag(2)
         .finalize([](ViewShadowNode &shadowNode){
           auto layoutMetrics = EmptyLayoutMetrics;
-          layoutMetrics.frame.origin = {100, 100};
-          layoutMetrics.frame.size = {100, 100};
+          layoutMetrics.frame.origin = {.x=100, .y=100};
+          layoutMetrics.frame.size = {.width=100, .height=100};
           shadowNode.setLayoutMetrics(layoutMetrics);
         })
         .children({
@@ -86,8 +86,8 @@ TEST(FindNodeAtPointTest, viewIsTranslated) {
           .tag(3)
           .finalize([](ViewShadowNode &shadowNode){
             auto layoutMetrics = EmptyLayoutMetrics;
-            layoutMetrics.frame.origin = {10, 10};
-            layoutMetrics.frame.size = {10, 10};
+            layoutMetrics.frame.origin = {.x=10, .y=10};
+            layoutMetrics.frame.size = {.width=10, .height=10};
             shadowNode.setLayoutMetrics(layoutMetrics);
           })
         })
@@ -110,7 +110,7 @@ TEST(FindNodeAtPointTest, viewIsScaled) {
       .tag(1)
       .finalize([](ViewShadowNode &shadowNode){
         auto layoutMetrics = EmptyLayoutMetrics;
-        layoutMetrics.frame.size = {1000, 1000};
+        layoutMetrics.frame.size = {.width=1000, .height=1000};
         shadowNode.setLayoutMetrics(layoutMetrics);
       })
       .children({
@@ -118,8 +118,8 @@ TEST(FindNodeAtPointTest, viewIsScaled) {
         .tag(2)
         .finalize([](ViewShadowNode &shadowNode){
           auto layoutMetrics = EmptyLayoutMetrics;
-          layoutMetrics.frame.origin = {100, 100};
-          layoutMetrics.frame.size = {100, 100};
+          layoutMetrics.frame.origin = {.x=100, .y=100};
+          layoutMetrics.frame.size = {.width=100, .height=100};
           shadowNode.setLayoutMetrics(layoutMetrics);
         })
         .children({
@@ -132,8 +132,8 @@ TEST(FindNodeAtPointTest, viewIsScaled) {
           })
           .finalize([](ViewShadowNode &shadowNode){
             auto layoutMetrics = EmptyLayoutMetrics;
-            layoutMetrics.frame.origin = {10, 10};
-            layoutMetrics.frame.size = {10, 10};
+            layoutMetrics.frame.origin = {.x=10, .y=10};
+            layoutMetrics.frame.size = {.width=10, .height=10};
             shadowNode.setLayoutMetrics(layoutMetrics);
           })
         })
@@ -155,7 +155,7 @@ TEST(FindNodeAtPointTest, overlappingViews) {
       .tag(1)
       .finalize([](ViewShadowNode &shadowNode){
         auto layoutMetrics = EmptyLayoutMetrics;
-        layoutMetrics.frame.size = {100, 100};
+        layoutMetrics.frame.size = {.width=100, .height=100};
         shadowNode.setLayoutMetrics(layoutMetrics);
       })
       .children({
@@ -163,16 +163,16 @@ TEST(FindNodeAtPointTest, overlappingViews) {
         .tag(2)
         .finalize([](ViewShadowNode &shadowNode){
           auto layoutMetrics = EmptyLayoutMetrics;
-          layoutMetrics.frame.origin = {25, 25};
-          layoutMetrics.frame.size = {50, 50};
+          layoutMetrics.frame.origin = {.x=25, .y=25};
+          layoutMetrics.frame.size = {.width=50, .height=50};
           shadowNode.setLayoutMetrics(layoutMetrics);
         }),
         Element<ViewShadowNode>()
         .tag(3)
         .finalize([](ViewShadowNode &shadowNode){
           auto layoutMetrics = EmptyLayoutMetrics;
-          layoutMetrics.frame.origin = {50, 50};
-          layoutMetrics.frame.size = {50, 50};
+          layoutMetrics.frame.origin = {.x=50, .y=50};
+          layoutMetrics.frame.size = {.width=50, .height=50};
           shadowNode.setLayoutMetrics(layoutMetrics);
         })
     });
@@ -192,7 +192,7 @@ TEST(FindNodeAtPointTest, overlappingViewsWithZIndex) {
       .tag(1)
       .finalize([](ViewShadowNode &shadowNode){
         auto layoutMetrics = EmptyLayoutMetrics;
-        layoutMetrics.frame.size = {100, 100};
+        layoutMetrics.frame.size = {.width=100, .height=100};
         shadowNode.setLayoutMetrics(layoutMetrics);
       })
       .children({
@@ -207,16 +207,16 @@ TEST(FindNodeAtPointTest, overlappingViewsWithZIndex) {
         })
         .finalize([](ViewShadowNode &shadowNode){
           auto layoutMetrics = EmptyLayoutMetrics;
-          layoutMetrics.frame.origin = {25, 25};
-          layoutMetrics.frame.size = {50, 50};
+          layoutMetrics.frame.origin = {.x=25, .y=25};
+          layoutMetrics.frame.size = {.width=50, .height=50};
           shadowNode.setLayoutMetrics(layoutMetrics);
         }),
         Element<ViewShadowNode>()
         .tag(3)
         .finalize([](ViewShadowNode &shadowNode){
           auto layoutMetrics = EmptyLayoutMetrics;
-          layoutMetrics.frame.origin = {50, 50};
-          layoutMetrics.frame.size = {50, 50};
+          layoutMetrics.frame.origin = {.x=50, .y=50};
+          layoutMetrics.frame.size = {.width=50, .height=50};
           shadowNode.setLayoutMetrics(layoutMetrics);
         })
     });
@@ -241,7 +241,7 @@ TEST(FindNodeAtPointTest, overlappingViewsWithParentPointerEventsBoxOnly) {
       })
       .finalize([](ViewShadowNode &shadowNode){
         auto layoutMetrics = EmptyLayoutMetrics;
-        layoutMetrics.frame.size = {100, 100};
+        layoutMetrics.frame.size = {.width=100, .height=100};
         shadowNode.setLayoutMetrics(layoutMetrics);
       })
       .children({
@@ -249,16 +249,16 @@ TEST(FindNodeAtPointTest, overlappingViewsWithParentPointerEventsBoxOnly) {
         .tag(2)
         .finalize([](ViewShadowNode &shadowNode){
           auto layoutMetrics = EmptyLayoutMetrics;
-          layoutMetrics.frame.origin = {50, 50};
-          layoutMetrics.frame.size = {50, 50};
+          layoutMetrics.frame.origin = {.x=50, .y=50};
+          layoutMetrics.frame.size = {.width=50, .height=50};
           shadowNode.setLayoutMetrics(layoutMetrics);
         }),
         Element<ViewShadowNode>()
         .tag(3)
         .finalize([](ViewShadowNode &shadowNode){
           auto layoutMetrics = EmptyLayoutMetrics;
-          layoutMetrics.frame.origin = {50, 50};
-          layoutMetrics.frame.size = {50, 50};
+          layoutMetrics.frame.origin = {.x=50, .y=50};
+          layoutMetrics.frame.size = {.width=50, .height=50};
           shadowNode.setLayoutMetrics(layoutMetrics);
         })
     });
@@ -283,7 +283,7 @@ TEST(FindNodeAtPointTest, overlappingViewsWithParentPointerEventsBoxNone) {
       })
       .finalize([](ViewShadowNode &shadowNode){
         auto layoutMetrics = EmptyLayoutMetrics;
-        layoutMetrics.frame.size = {100, 100};
+        layoutMetrics.frame.size = {.width=100, .height=100};
         shadowNode.setLayoutMetrics(layoutMetrics);
       })
       .children({
@@ -298,16 +298,16 @@ TEST(FindNodeAtPointTest, overlappingViewsWithParentPointerEventsBoxNone) {
         })
         .finalize([](ViewShadowNode &shadowNode){
           auto layoutMetrics = EmptyLayoutMetrics;
-          layoutMetrics.frame.origin = {25, 25};
-          layoutMetrics.frame.size = {50, 50};
+          layoutMetrics.frame.origin = {.x=25, .y=25};
+          layoutMetrics.frame.size = {.width=50, .height=50};
           shadowNode.setLayoutMetrics(layoutMetrics);
         }),
         Element<ViewShadowNode>()
         .tag(3)
         .finalize([](ViewShadowNode &shadowNode){
           auto layoutMetrics = EmptyLayoutMetrics;
-          layoutMetrics.frame.origin = {50, 50};
-          layoutMetrics.frame.size = {50, 50};
+          layoutMetrics.frame.origin = {.x=50, .y=50};
+          layoutMetrics.frame.size = {.width=50, .height=50};
           shadowNode.setLayoutMetrics(layoutMetrics);
         })
     });
@@ -332,7 +332,7 @@ TEST(FindNodeAtPointTest, overlappingViewsWithParentPointerEventsNone) {
       })
       .finalize([](ViewShadowNode &shadowNode){
         auto layoutMetrics = EmptyLayoutMetrics;
-        layoutMetrics.frame.size = {100, 100};
+        layoutMetrics.frame.size = {.width=100, .height=100};
         shadowNode.setLayoutMetrics(layoutMetrics);
       })
       .children({
@@ -347,16 +347,16 @@ TEST(FindNodeAtPointTest, overlappingViewsWithParentPointerEventsNone) {
         })
         .finalize([](ViewShadowNode &shadowNode){
           auto layoutMetrics = EmptyLayoutMetrics;
-          layoutMetrics.frame.origin = {25, 25};
-          layoutMetrics.frame.size = {50, 50};
+          layoutMetrics.frame.origin = {.x=25, .y=25};
+          layoutMetrics.frame.size = {.width=50, .height=50};
           shadowNode.setLayoutMetrics(layoutMetrics);
         }),
         Element<ViewShadowNode>()
         .tag(3)
         .finalize([](ViewShadowNode &shadowNode){
           auto layoutMetrics = EmptyLayoutMetrics;
-          layoutMetrics.frame.origin = {50, 50};
-          layoutMetrics.frame.size = {50, 50};
+          layoutMetrics.frame.origin = {.x=50, .y=50};
+          layoutMetrics.frame.size = {.width=50, .height=50};
           shadowNode.setLayoutMetrics(layoutMetrics);
         })
     });
@@ -381,7 +381,7 @@ TEST(FindNodeAtPointTest, invertedList) {
       .tag(1)
       .finalize([](ScrollViewShadowNode &shadowNode){
         auto layoutMetrics = EmptyLayoutMetrics;
-        layoutMetrics.frame.size = {100, 200};
+        layoutMetrics.frame.size = {.width=100, .height=200};
         shadowNode.setLayoutMetrics(layoutMetrics);
       })
       .children({
@@ -389,16 +389,16 @@ TEST(FindNodeAtPointTest, invertedList) {
         .tag(2)
         .finalize([](ViewShadowNode &shadowNode){
           auto layoutMetrics = EmptyLayoutMetrics;
-          layoutMetrics.frame.origin = {0, 0};
-          layoutMetrics.frame.size = {100, 100};
+          layoutMetrics.frame.origin = {.x=0, .y=0};
+          layoutMetrics.frame.size = {.width=100, .height=100};
           shadowNode.setLayoutMetrics(layoutMetrics);
         }),
         Element<ViewShadowNode>()
         .tag(3)
         .finalize([](ViewShadowNode &shadowNode){
           auto layoutMetrics = EmptyLayoutMetrics;
-          layoutMetrics.frame.origin = {0, 100};
-          layoutMetrics.frame.size = {100, 100};
+          layoutMetrics.frame.origin = {.x=0, .y=100};
+          layoutMetrics.frame.size = {.width=100, .height=100};
           shadowNode.setLayoutMetrics(layoutMetrics);
         })
     });
@@ -424,22 +424,25 @@ TEST(FindNodeAtPointTest, considersOverflowAreaOfTheParent) {
           .tag(1)
           .finalize([](ViewShadowNode& shadowNode) {
             auto layoutMetrics = EmptyLayoutMetrics;
-            layoutMetrics.frame.size = {100, 100};
+            layoutMetrics.frame.size = {.width = 100, .height = 100};
             shadowNode.setLayoutMetrics(layoutMetrics);
           })
           .children({Element<ViewShadowNode>()
                          .tag(2)
                          .finalize([](ViewShadowNode& shadowNode) {
                            auto layoutMetrics = EmptyLayoutMetrics;
-                           layoutMetrics.frame.size = {100, 0};
-                           layoutMetrics.overflowInset = {0, 0, 0, -100};
+                           layoutMetrics.frame.size = {
+                               .width = 100, .height = 0};
+                           layoutMetrics.overflowInset = {
+                               .left = 0, .top = 0, .right = 0, .bottom = -100};
 
                            shadowNode.setLayoutMetrics(layoutMetrics);
                          })
                          .children({Element<ViewShadowNode>().tag(3).finalize(
                              [](ViewShadowNode& shadowNode) {
                                auto layoutMetrics = EmptyLayoutMetrics;
-                               layoutMetrics.frame.size = {100, 100};
+                               layoutMetrics.frame.size = {
+                                   .width = 100, .height = 100};
                                shadowNode.setLayoutMetrics(layoutMetrics);
                              })})});
 

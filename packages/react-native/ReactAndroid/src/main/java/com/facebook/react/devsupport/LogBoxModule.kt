@@ -17,7 +17,7 @@ import com.facebook.react.module.annotations.ReactModule
 @ReactModule(name = NativeLogBoxSpec.NAME)
 internal class LogBoxModule(
     reactContext: ReactApplicationContext?,
-    devSupportManager: DevSupportManager
+    devSupportManager: DevSupportManager,
 ) : NativeLogBoxSpec(reactContext) {
   private val surfaceDelegate: SurfaceDelegate =
       devSupportManager.createSurfaceDelegate(NAME)

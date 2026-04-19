@@ -14,6 +14,7 @@ import android.os.Bundle
 import com.facebook.react.bridge.ReactContext
 import com.facebook.react.bridge.queue.ReactQueueConfiguration
 import com.facebook.react.common.LifecycleState
+import com.facebook.react.devsupport.DevMenuConfiguration
 import com.facebook.react.devsupport.interfaces.DevSupportManager
 import com.facebook.react.interfaces.TaskInterface
 import com.facebook.react.interfaces.fabric.ReactSurface
@@ -55,7 +56,7 @@ public interface ReactHost {
   /** To be called when the host activity is resumed. */
   public fun onHostResume(
       activity: Activity?,
-      defaultBackButtonImpl: DefaultHardwareBackBtnHandler?
+      defaultBackButtonImpl: DefaultHardwareBackBtnHandler?,
   )
 
   /** To be called when the host activity is resumed. */
@@ -83,7 +84,7 @@ public interface ReactHost {
   public fun createSurface(
       context: Context,
       moduleName: String,
-      initialProps: Bundle?
+      initialProps: Bundle?,
   ): ReactSurface
 
   /**
@@ -147,7 +148,7 @@ public interface ReactHost {
   public fun destroy(
       reason: String,
       ex: Exception?,
-      onDestroyFinished: (instanceDestroyedSuccessfully: Boolean) -> Unit = {}
+      onDestroyFinished: (instanceDestroyedSuccessfully: Boolean) -> Unit = {},
   ): TaskInterface<Void>
 
   /**
@@ -189,4 +190,24 @@ public interface ReactHost {
 
   /** Remove a listener previously added with [addReactInstanceEventListener]. */
   public fun removeReactInstanceEventListener(listener: ReactInstanceEventListener)
+
+  /** Set the DevMenu configuration. */
+  public fun setDevMenuConfiguration(config: DevMenuConfiguration): Unit = Unit
+
+  /** Sets the source of the bundle to be loaded from the file system and reloads the app. */
+  public fun setBundleSource(filePath: String): Unit = Unit
+
+  /**
+   * Sets the source of the bundle to be loaded from the packager server, updates the packager
+   * connection and reloads the app.
+   *
+   * @param debugServerHost host and port of the server, for example "localhost:8081"
+   * @param moduleName the module name to load, for example "js/RNTesterApp.android"
+   * @param queryMapper a function that takes current packager options and returns updated options
+   */
+  public fun setBundleSource(
+      debugServerHost: String,
+      moduleName: String,
+      queryMapper: (Map<String, String>) -> Map<String, String> = { it },
+  ): Unit = Unit
 }

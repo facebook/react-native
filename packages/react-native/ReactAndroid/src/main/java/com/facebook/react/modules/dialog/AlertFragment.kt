@@ -66,7 +66,7 @@ public class AlertFragment : DialogFragment, DialogInterface.OnClickListener {
     public fun createDialog(
         activityContext: Context,
         arguments: Bundle,
-        fragment: DialogInterface.OnClickListener
+        fragment: DialogInterface.OnClickListener,
     ): Dialog =
         if (isAppCompatTheme(activityContext)) {
           createAppCompatDialog(activityContext, arguments, fragment)
@@ -105,7 +105,8 @@ public class AlertFragment : DialogFragment, DialogInterface.OnClickListener {
 
       val accessibleTitle: TextView =
           Assertions.assertNotNull<TextView>(
-              titleContainer.findViewById<TextView>(R.id.alert_title))
+              titleContainer.findViewById<TextView>(R.id.alert_title)
+          )
       accessibleTitle.text = titleText
       accessibleTitle.isFocusable = true
 
@@ -117,12 +118,13 @@ public class AlertFragment : DialogFragment, DialogInterface.OnClickListener {
             object : AccessibilityDelegateCompat() {
               override fun onInitializeAccessibilityNodeInfo(
                   view: View,
-                  info: AccessibilityNodeInfoCompat
+                  info: AccessibilityNodeInfoCompat,
               ) {
                 super.onInitializeAccessibilityNodeInfo(accessibleTitle, info)
                 info.isHeading = true
               }
-            })
+            },
+        )
       }
 
       return titleContainer
@@ -135,7 +137,7 @@ public class AlertFragment : DialogFragment, DialogInterface.OnClickListener {
     private fun createAppCompatDialog(
         activityContext: Context,
         arguments: Bundle,
-        fragment: DialogInterface.OnClickListener
+        fragment: DialogInterface.OnClickListener,
     ): Dialog {
       val builder = AlertDialog.Builder(activityContext)
 
@@ -176,7 +178,7 @@ public class AlertFragment : DialogFragment, DialogInterface.OnClickListener {
     private fun createAppDialog(
         activityContext: Context,
         arguments: Bundle,
-        fragment: DialogInterface.OnClickListener
+        fragment: DialogInterface.OnClickListener,
     ): Dialog {
       val builder = android.app.AlertDialog.Builder(activityContext)
 

@@ -21,7 +21,7 @@ type NonAnimatedNodeObject<TStyleProp> = TStyleProp extends AnimatedNode
   : TStyleProp;
 
 function flattenStyle<
-  TStyleProp: ____DangerouslyImpreciseAnimatedStyleProp_Internal,
+  TStyleProp extends ____DangerouslyImpreciseAnimatedStyleProp_Internal,
 >(
   style: ?TStyleProp,
   // $FlowFixMe[underconstrained-implicit-instantiation]
@@ -31,7 +31,7 @@ function flattenStyle<
   }
 
   if (!Array.isArray(style)) {
-    // $FlowFixMe[incompatible-return]
+    // $FlowFixMe[incompatible-type]
     return style;
   }
 
@@ -49,7 +49,7 @@ function flattenStyle<
       }
     }
   }
-  // $FlowFixMe[incompatible-return]
+  // $FlowFixMe[incompatible-type]
   return result;
 }
 

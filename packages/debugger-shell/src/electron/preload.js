@@ -16,7 +16,7 @@ contextBridge.executeInMainWorld({
     let didDecorateInspectorFrontendHostInstance = false;
     // reactNativeDecorateInspectorFrontendHostInstance was introduced in
     // https://github.com/facebook/react-native-devtools-frontend/pull/168
-    // $FlowIgnore[prop-missing]
+    // $FlowFixMe[prop-missing]
     globalThis.reactNativeDecorateInspectorFrontendHostInstance = (
       InspectorFrontendHostInstance: $FlowFixMe,
     ) => {

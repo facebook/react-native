@@ -4,7 +4,6 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @fantom_flags enableFixForParentTagDuringReparenting:true
  * @fantom_flags enableViewCulling:true
  * @flow strict-local
  * @format
@@ -14,13 +13,11 @@ import '@react-native/fantom/src/setUpDefaultReactNativeEnvironment';
 
 import type {HostInstance} from 'react-native';
 
-import ensureInstance from '../../../../src/private/__tests__/utilities/ensureInstance';
 import * as Fantom from '@react-native/fantom';
 import nullthrows from 'nullthrows';
 import * as React from 'react';
 import {createRef, useState} from 'react';
 import {FlatList, Modal, ScrollView, View} from 'react-native';
-import ReactNativeElement from 'react-native/src/private/webapis/dom/nodes/ReactNativeElement';
 
 test('basic culling', () => {
   const root = Fantom.createRoot({viewportWidth: 100, viewportHeight: 100});
@@ -47,9 +44,7 @@ test('basic culling', () => {
     'Insert {type: "ScrollView", parentNativeID: (root), index: 0, nativeID: (N/A)}',
   ]);
 
-  const element = ensureInstance(nodeRef.current, ReactNativeElement);
-
-  Fantom.scrollTo(element, {
+  Fantom.scrollTo(nodeRef, {
     x: 0,
     y: 60,
   });
@@ -62,7 +57,7 @@ test('basic culling', () => {
     'Update {type: "ScrollView", nativeID: (N/A)}',
   ]);
 
-  Fantom.scrollTo(element, {
+  Fantom.scrollTo(nodeRef, {
     x: 0,
     y: 0,
   });
@@ -119,10 +114,8 @@ test('recursive culling', () => {
     'Insert {type: "ScrollView", parentNativeID: (root), index: 0, nativeID: (N/A)}',
   ]);
 
-  const element = ensureInstance(nodeRef.current, ReactNativeElement);
-
   // === Scroll down to the edge of child AA ===
-  Fantom.scrollTo(element, {
+  Fantom.scrollTo(nodeRef, {
     x: 0,
     y: 30,
   });
@@ -133,7 +126,7 @@ test('recursive culling', () => {
 
   // === Scroll down past child AA ===
 
-  Fantom.scrollTo(element, {
+  Fantom.scrollTo(nodeRef, {
     x: 0,
     y: 36,
   });
@@ -145,7 +138,7 @@ test('recursive culling', () => {
   ]);
 
   // === Scroll down past child AB ===
-  Fantom.scrollTo(element, {
+  Fantom.scrollTo(nodeRef, {
     x: 0,
     y: 51,
   });
@@ -157,7 +150,7 @@ test('recursive culling', () => {
   ]);
 
   // === Scroll down past element A ===
-  Fantom.scrollTo(element, {
+  Fantom.scrollTo(nodeRef, {
     x: 0,
     y: 56,
   });
@@ -169,7 +162,7 @@ test('recursive culling', () => {
   ]);
 
   // Scroll element B into viewport. Just child BA should be created.
-  Fantom.scrollTo(element, {
+  Fantom.scrollTo(nodeRef, {
     x: 0,
     y: 155,
   });
@@ -183,7 +176,7 @@ test('recursive culling', () => {
   ]);
 
   // Scroll child BA into viewport.
-  Fantom.scrollTo(element, {
+  Fantom.scrollTo(nodeRef, {
     x: 0,
     y: 165,
   });
@@ -195,7 +188,7 @@ test('recursive culling', () => {
   ]);
 
   // Scroll back to start
-  Fantom.scrollTo(element, {
+  Fantom.scrollTo(nodeRef, {
     x: 0,
     y: 0,
   });
@@ -217,7 +210,7 @@ test('recursive culling', () => {
   ]);
 
   // Scroll past element A
-  Fantom.scrollTo(element, {
+  Fantom.scrollTo(nodeRef, {
     x: 0,
     y: 85,
   });
@@ -266,9 +259,7 @@ test('recursive culling when initial offset is negative', () => {
     'Insert {type: "ScrollView", parentNativeID: (root), index: 0, nativeID: (N/A)}',
   ]);
 
-  const element = ensureInstance(nodeRef.current, ReactNativeElement);
-
-  Fantom.scrollTo(element, {
+  Fantom.scrollTo(nodeRef, {
     x: 0,
     y: 0,
   });
@@ -329,9 +320,7 @@ test('deep nesting', () => {
     'Insert {type: "ScrollView", parentNativeID: (root), index: 0, nativeID: (N/A)}',
   ]);
 
-  const element = ensureInstance(nodeRef.current, ReactNativeElement);
-
-  Fantom.scrollTo(element, {
+  Fantom.scrollTo(nodeRef, {
     x: 0,
     y: 40,
   });
@@ -346,7 +335,7 @@ test('deep nesting', () => {
     'Insert {type: "View", parentNativeID: (N/A), index: 1, nativeID: "element B"}',
   ]);
 
-  Fantom.scrollTo(element, {
+  Fantom.scrollTo(nodeRef, {
     x: 0,
     y: 150,
   });
@@ -490,9 +479,7 @@ test('initial render', () => {
     'Insert {type: "ScrollView", parentNativeID: (root), index: 0, nativeID: (N/A)}',
   ]);
 
-  const element = ensureInstance(nodeRef.current, ReactNativeElement);
-
-  Fantom.scrollTo(element, {
+  Fantom.scrollTo(nodeRef, {
     x: 0,
     y: 100,
   });
@@ -562,9 +549,7 @@ test('basic culling smaller ScrollView', () => {
     'Insert {type: "ScrollView", parentNativeID: (root), index: 0, nativeID: (N/A)}',
   ]);
 
-  const element = ensureInstance(nodeRef.current, ReactNativeElement);
-
-  Fantom.scrollTo(element, {
+  Fantom.scrollTo(nodeRef, {
     x: 0,
     y: 11,
   });
@@ -625,9 +610,7 @@ test('culling with transform move', () => {
     'Insert {type: "ScrollView", parentNativeID: (root), index: 0, nativeID: (N/A)}',
   ]);
 
-  const element = ensureInstance(nodeRef.current, ReactNativeElement);
-
-  Fantom.scrollTo(element, {
+  Fantom.scrollTo(nodeRef, {
     x: 0,
     y: 1,
   });
@@ -670,9 +653,7 @@ test('culling with recursive transform move', () => {
     'Insert {type: "ScrollView", parentNativeID: (root), index: 0, nativeID: (N/A)}',
   ]);
 
-  const element = ensureInstance(nodeRef.current, ReactNativeElement);
-
-  Fantom.scrollTo(element, {
+  Fantom.scrollTo(nodeRef, {
     x: 0,
     y: 1,
   });
@@ -714,9 +695,7 @@ test('culling with transform scale', () => {
     'Insert {type: "ScrollView", parentNativeID: (root), index: 0, nativeID: (N/A)}',
   ]);
 
-  const element = ensureInstance(nodeRef.current, ReactNativeElement);
-
-  Fantom.scrollTo(element, {
+  Fantom.scrollTo(nodeRef, {
     x: 0,
     y: 121,
   });
@@ -775,10 +754,8 @@ test('culling inside of Modal', () => {
     );
   });
 
-  const element = ensureInstance(nodeRef.current, ReactNativeElement);
-
   Fantom.runOnUIThread(() => {
-    Fantom.enqueueModalSizeUpdate(element, {
+    Fantom.enqueueModalSizeUpdate(nodeRef, {
       width: 100,
       height: 100,
     });
@@ -901,9 +878,7 @@ describe('reparenting', () => {
       'Insert {type: "ScrollView", parentNativeID: (root), index: 0, nativeID: (N/A)}',
     ]);
 
-    const element = ensureInstance(nodeRef.current, ReactNativeElement);
-
-    Fantom.scrollTo(element, {
+    Fantom.scrollTo(nodeRef, {
       x: 0,
       y: 60,
     });
@@ -1579,10 +1554,8 @@ describe('reparenting', () => {
       'Insert {type: "View", parentNativeID: (N/A), index: 0, nativeID: "child"}',
     ]);
 
-    const element = ensureInstance(nodeRef.current, ReactNativeElement);
-
     // Scroll down to see the grandchild.
-    Fantom.scrollTo(element, {
+    Fantom.scrollTo(nodeRef, {
       x: 0,
       y: 115,
     });
@@ -1670,10 +1643,8 @@ describe('reparenting', () => {
       'Insert {type: "View", parentNativeID: (N/A), index: 0, nativeID: "child"}',
     ]);
 
-    const element = ensureInstance(nodeRef.current, ReactNativeElement);
-
     // Scroll down to see the grandchild.
-    Fantom.scrollTo(element, {
+    Fantom.scrollTo(nodeRef, {
       x: 0,
       y: 118,
     });
@@ -1912,10 +1883,8 @@ describe('reparenting', () => {
       'Insert {type: "View", parentNativeID: (N/A), index: 0, nativeID: (N/A)}',
     ]);
 
-    const element = ensureInstance(nodeRef.current, ReactNativeElement);
-
     // Scroll to reveal grandchild.
-    Fantom.scrollTo(element, {
+    Fantom.scrollTo(nodeRef, {
       x: 0,
       y: 70,
     });
@@ -2002,10 +1971,8 @@ describe('reparenting', () => {
       'Insert {type: "View", parentNativeID: (N/A), index: 0, nativeID: (N/A)}',
     ]);
 
-    const element = ensureInstance(nodeRef.current, ReactNativeElement);
-
     // Scroll to reveal grandchild.
-    Fantom.scrollTo(element, {
+    Fantom.scrollTo(nodeRef, {
       x: 0,
       y: 70,
     });
@@ -2215,9 +2182,7 @@ describe('reparenting', () => {
       'Insert {type: "View", parentNativeID: "unflattened", index: 0, nativeID: "child"}',
     ]);
 
-    const element = ensureInstance(nodeRef.current, ReactNativeElement);
-
-    Fantom.scrollTo(element, {
+    Fantom.scrollTo(nodeRef, {
       x: 0,
       y: 50,
     });
@@ -2313,9 +2278,7 @@ describe('reparenting', () => {
       'Insert {type: "View", parentNativeID: "unflattened", index: 0, nativeID: "child"}',
     ]);
 
-    const element = ensureInstance(nodeRef.current, ReactNativeElement);
-
-    Fantom.scrollTo(element, {
+    Fantom.scrollTo(nodeRef, {
       x: 0,
       y: 50,
     });
@@ -2464,10 +2427,9 @@ describe('opt out mechanism - Unstable_uncullableView & Unstable_uncullableTrace
         </ScrollView>,
       );
     });
-    const element = ensureInstance(nodeRef.current, ReactNativeElement);
 
     Fantom.runOnUIThread(() => {
-      Fantom.enqueueModalSizeUpdate(element, {
+      Fantom.enqueueModalSizeUpdate(nodeRef, {
         width: 100,
         height: 100,
       });
@@ -2518,10 +2480,8 @@ describe('opt out mechanism - Unstable_uncullableView & Unstable_uncullableTrace
       );
     });
 
-    const element = ensureInstance(nodeRef.current, ReactNativeElement);
-
     Fantom.runOnUIThread(() => {
-      Fantom.enqueueModalSizeUpdate(element, {
+      Fantom.enqueueModalSizeUpdate(nodeRef, {
         width: 100,
         height: 100,
       });
@@ -2604,6 +2564,38 @@ describe('horizontal ScrollView in RTL script', () => {
       'Create {type: "View", nativeID: "item2"}',
       'Insert {type: "View", parentNativeID: (N/A), index: 0, nativeID: "item2"}',
       'Insert {type: "AndroidHorizontalScrollContentView", parentNativeID: (N/A), index: 0, nativeID: (N/A)}',
+      'Insert {type: "ScrollView", parentNativeID: (root), index: 0, nativeID: (N/A)}',
+    ]);
+  });
+});
+
+describe('Views with no layout', () => {
+  it('are not culled', () => {
+    const root = Fantom.createRoot({viewportWidth: 100, viewportHeight: 100});
+
+    Fantom.runTask(() => {
+      root.render(
+        <ScrollView style={{height: 100, width: 100}}>
+          <View nativeID={'viewWithLayout'} style={{height: 100, width: 100}} />
+          <View style={{height: 1000, width: 100}} />
+          <View
+            nativeID={'culledViewWithLayout'}
+            style={{height: 100, width: 100}}
+          />
+          <View nativeID={'viewWithoutLayout'} style={{height: 0, width: 0}} />
+        </ScrollView>,
+      );
+    });
+
+    expect(root.takeMountingManagerLogs()).toEqual([
+      'Update {type: "RootView", nativeID: (root)}',
+      'Create {type: "ScrollView", nativeID: (N/A)}',
+      'Create {type: "View", nativeID: (N/A)}',
+      'Create {type: "View", nativeID: "viewWithLayout"}',
+      'Create {type: "View", nativeID: "viewWithoutLayout"}',
+      'Insert {type: "View", parentNativeID: (N/A), index: 0, nativeID: "viewWithLayout"}',
+      'Insert {type: "View", parentNativeID: (N/A), index: 1, nativeID: "viewWithoutLayout"}',
+      'Insert {type: "View", parentNativeID: (N/A), index: 0, nativeID: (N/A)}',
       'Insert {type: "ScrollView", parentNativeID: (root), index: 0, nativeID: (N/A)}',
     ]);
   });

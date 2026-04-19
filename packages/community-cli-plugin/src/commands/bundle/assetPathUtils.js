@@ -8,7 +8,7 @@
  * @format
  */
 
-export type PackagerAsset = $ReadOnly<{
+export type PackagerAsset = Readonly<{
   httpServerLocation: string,
   name: string,
   type: string,
@@ -41,6 +41,8 @@ function getAndroidAssetSuffix(scale: number): string {
 // See https://developer.android.com/guide/topics/resources/drawable-resource.html
 const drawableFileTypes: Set<string> = new Set<string>([
   'gif',
+  'heic',
+  'heif',
   'jpeg',
   'jpg',
   'png',
@@ -73,7 +75,7 @@ function getResourceIdentifier(asset: PackagerAsset): string {
     .toLowerCase()
     .replace(/\//g, '_') // Encode folder structure in file name
     .replace(/([^a-z0-9_])/g, '') // Remove illegal chars
-    .replace(/^assets_/, ''); // Remove "assets_" prefix
+    .replace(/^(?:assets|assetsunstable_path)_/, ''); // Remove "assets_" or "assetsunstable_path_" prefix
 }
 
 function getBasePath(asset: PackagerAsset): string {

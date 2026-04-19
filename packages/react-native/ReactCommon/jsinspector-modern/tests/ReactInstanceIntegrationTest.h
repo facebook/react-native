@@ -24,33 +24,30 @@ namespace facebook::react::jsinspector_modern {
 using namespace ::testing;
 
 enum ReactInstanceIntegrationTestMode {
-  LEGACY_HERMES,
   FUSEBOX,
 };
 
-class ReactInstanceIntegrationTest
-    : public Test,
-      public ::testing::WithParamInterface<ReactInstanceIntegrationTestMode> {
+class ReactInstanceIntegrationTest : public Test,
+                                     public ::testing::WithParamInterface<ReactInstanceIntegrationTestMode> {
  protected:
   ReactInstanceIntegrationTest();
 
   void SetUp() override;
   void TearDown() override;
 
-  jsi::Value run(const std::string& script);
+  jsi::Value run(const std::string &script);
   bool verbose(bool isVerbose);
 
-  void send(
-      const std::string& method,
-      const folly::dynamic& params = folly::dynamic::object());
-  void sendJSONString(const std::string& message);
+  void send(const std::string &method, const folly::dynamic &params = folly::dynamic::object());
+  void sendJSONString(const std::string &message);
 
-  jsi::Runtime* runtime;
+  jsi::Runtime *runtime;
   std::unique_ptr<react::ReactInstance> instance;
   std::shared_ptr<MockMessageQueueThread> messageQueueThread;
   std::shared_ptr<ErrorUtils> errorHandler;
 
-  MockRemoteConnection& getRemoteConnection() {
+  NiceMock<MockRemoteConnection> &getRemoteConnection()
+  {
     EXPECT_EQ(mockRemoteConnections_.objectsVended(), 1);
     auto rawPtr = mockRemoteConnections_[0];
     assert(rawPtr);
@@ -64,7 +61,7 @@ class ReactInstanceIntegrationTest
   size_t id_ = 1;
   bool verbose_ = false;
   std::optional<int> pageId_;
-  UniquePtrFactory<MockRemoteConnection> mockRemoteConnections_;
+  UniquePtrFactory<NiceMock<MockRemoteConnection>> mockRemoteConnections_;
   std::unique_ptr<ILocalConnection> clientToVM_;
   folly::QueuedImmediateExecutor immediateExecutor_;
   MockHostTargetDelegate hostTargetDelegate_;

@@ -31,7 +31,7 @@ server.on('connection', ws => {
   ws.on('message', message => {
     console.log('Received message:', message);
     if (respondWithBinary) {
-      // $FlowFixMe[incompatible-call]
+      // $FlowFixMe[incompatible-type]
       message = Buffer.from(message);
     }
     if (message === 'getImage') {

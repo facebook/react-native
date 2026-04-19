@@ -49,6 +49,10 @@ export interface Spec extends TurboModule {
   +flattenAnimatedNodeOffset: (nodeTag: number) => void;
   +extractAnimatedNodeOffset: (nodeTag: number) => void;
   +connectAnimatedNodeToView: (nodeTag: number, viewTag: number) => void;
+  +connectAnimatedNodeToShadowNodeFamily?: (
+    nodeTag: number,
+    shadowNode: Object,
+  ) => void;
   +disconnectAnimatedNodeFromView: (nodeTag: number, viewTag: number) => void;
   +restoreDefaultValues: (nodeTag: number) => void;
   +dropAnimatedNode: (tag: number) => void;

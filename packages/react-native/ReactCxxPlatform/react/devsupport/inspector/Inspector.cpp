@@ -41,8 +41,9 @@ class InspectorHostTargetDelegate
     };
   }
 
-  void onReload(const jsinspector_modern::HostTargetDelegate::PageReloadRequest&
-                /*request*/) override {
+  void onReload(
+      const jsinspector_modern::HostTargetDelegate::PageReloadRequest&
+      /*request*/) override {
     if (liveReloadCallbackFn_ != nullptr) {
       liveReloadCallbackFn_();
     }
@@ -69,9 +70,9 @@ class InspectorHostTargetDelegate
     http::NetworkCallbacks callbacks{
         .onResponse =
             [executor](uint32_t responseCode, const http::Headers& headers) {
-              executor([responseCode,
-                        headers](jsinspector_modern::NetworkRequestListener&
-                                     listener) {
+              executor([responseCode, headers](
+                           jsinspector_modern::NetworkRequestListener&
+                               listener) {
                 facebook::react::jsinspector_modern::Headers responseHeaders;
                 for (const auto& [key, value] : headers) {
                   responseHeaders[key] = value;
@@ -179,7 +180,7 @@ void Inspector::ensureHostTarget(
       });
   static_cast<InspectorHostTargetDelegate&>(*hostDelegate_).setTarget(target_);
   jsinspector_modern::InspectorTargetCapabilities capabilities{
-      .nativePageReloads = true, .prefersFuseboxFrontend = true};
+      .nativePageReloads = true};
   pageId_ = jsinspector_modern::getInspectorInstance().addPage(
       std::string(INTEGRATION_NAME),
       "", /*vm*/

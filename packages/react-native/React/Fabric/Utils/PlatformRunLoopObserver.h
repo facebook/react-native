@@ -20,10 +20,7 @@ namespace facebook::react {
  */
 class PlatformRunLoopObserver : public RunLoopObserver {
  public:
-  PlatformRunLoopObserver(
-      RunLoopObserver::Activity activities,
-      RunLoopObserver::WeakOwner owner,
-      CFRunLoopRef runLoop);
+  PlatformRunLoopObserver(RunLoopObserver::Activity activities, RunLoopObserver::WeakOwner owner, CFRunLoopRef runLoop);
 
   ~PlatformRunLoopObserver();
 
@@ -43,13 +40,10 @@ class PlatformRunLoopObserver : public RunLoopObserver {
  */
 class MainRunLoopObserver final : public PlatformRunLoopObserver {
  public:
-  MainRunLoopObserver(
-      RunLoopObserver::Activity activities,
-      RunLoopObserver::WeakOwner owner)
-      : PlatformRunLoopObserver(
-            activities,
-            std::move(owner),
-            CFRunLoopGetMain()) {}
+  MainRunLoopObserver(RunLoopObserver::Activity activities, RunLoopObserver::WeakOwner owner)
+      : PlatformRunLoopObserver(activities, std::move(owner), CFRunLoopGetMain())
+  {
+  }
 };
 
 } // namespace facebook::react

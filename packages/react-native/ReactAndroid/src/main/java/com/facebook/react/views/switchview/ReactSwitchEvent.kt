@@ -18,7 +18,8 @@ internal class ReactSwitchEvent(surfaceId: Int, viewId: Int, private val isCheck
 
   @Deprecated(
       "Use the constructor with surfaceId, viewId and isChecked parameters.",
-      replaceWith = ReplaceWith("ReactSwitchEvent(surfaceId, viewId, isChecked)"))
+      replaceWith = ReplaceWith("ReactSwitchEvent(surfaceId, viewId, isChecked)"),
+  )
   constructor(viewId: Int, isChecked: Boolean) : this(ViewUtil.NO_SURFACE_ID, viewId, isChecked)
 
   override fun getEventName(): String = EVENT_NAME

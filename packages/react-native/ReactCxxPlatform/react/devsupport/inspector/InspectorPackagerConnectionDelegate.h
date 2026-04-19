@@ -19,20 +19,19 @@ namespace facebook::react {
 
 class IWebSocketClient;
 
-class InspectorPackagerConnectionDelegate final
-    : public jsinspector_modern::InspectorPackagerConnectionDelegate {
+class InspectorPackagerConnectionDelegate final : public jsinspector_modern::InspectorPackagerConnectionDelegate {
   class WebSocket : public jsinspector_modern::IWebSocket {
    public:
     WebSocket(
-        const std::string& url,
+        const std::string &url,
         std::weak_ptr<jsinspector_modern::IWebSocketDelegate> webSocketDelegate,
         std::weak_ptr<InspectorThread> inspectorThread,
-        const WebSocketClientFactory& webSocketClientFactory);
+        const WebSocketClientFactory &webSocketClientFactory);
     ~WebSocket() override;
-    WebSocket(const WebSocket& other) = delete;
-    WebSocket& operator=(WebSocket& other) = delete;
-    WebSocket(WebSocket&& other) = delete;
-    WebSocket& operator=(WebSocket&& other) = delete;
+    WebSocket(const WebSocket &other) = delete;
+    WebSocket &operator=(WebSocket &other) = delete;
+    WebSocket(WebSocket &&other) = delete;
+    WebSocket &operator=(WebSocket &&other) = delete;
 
     void send(std::string_view message) override;
 
@@ -48,13 +47,12 @@ class InspectorPackagerConnectionDelegate final
       WebSocketClientFactory webSocketClientFactory) noexcept;
 
   std::unique_ptr<jsinspector_modern::IWebSocket> connectWebSocket(
-      const std::string& url,
+      const std::string &url,
       std::weak_ptr<jsinspector_modern::IWebSocketDelegate> delegate) override;
 
   void scheduleCallback(
       std::function<void(void)> callback,
-      std::chrono::milliseconds delayMs =
-          std::chrono::milliseconds::zero()) override;
+      std::chrono::milliseconds delayMs = std::chrono::milliseconds::zero()) override;
 
  private:
   std::weak_ptr<InspectorThread> inspectorThread_;

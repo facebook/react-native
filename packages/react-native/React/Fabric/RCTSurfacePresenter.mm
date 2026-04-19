@@ -246,7 +246,7 @@ using namespace facebook::react;
   toolbox.contextContainer = _contextContainer;
   toolbox.componentRegistryFactory = componentRegistryFactory;
 
-  auto weakRuntimeScheduler = _contextContainer->find<std::weak_ptr<RuntimeScheduler>>("RuntimeScheduler");
+  auto weakRuntimeScheduler = _contextContainer->find<std::weak_ptr<RuntimeScheduler>>(RuntimeSchedulerKey);
   auto runtimeScheduler = weakRuntimeScheduler.has_value() ? weakRuntimeScheduler.value().lock() : nullptr;
   if (runtimeScheduler) {
     runtimeExecutor = [runtimeScheduler](std::function<void(jsi::Runtime & runtime)> &&callback) {
@@ -305,6 +305,15 @@ using namespace facebook::react;
 - (void)schedulerShouldRenderTransactions:(std::shared_ptr<const MountingCoordinator>)mountingCoordinator
 {
   [_mountingManager scheduleTransaction:mountingCoordinator];
+}
+
+- (void)schedulerShouldMergeReactRevision:(SurfaceId)surfaceId
+{
+  auto scheduler = [self scheduler];
+  RCTExecuteOnMainQueue(^{
+    scheduler.uiManager->getShadowTreeRegistry().visit(
+        surfaceId, [](const ShadowTree &shadowTree) { shadowTree.mergeReactRevision(); });
+  });
 }
 
 - (void)schedulerDidDispatchCommand:(const ShadowView &)shadowView

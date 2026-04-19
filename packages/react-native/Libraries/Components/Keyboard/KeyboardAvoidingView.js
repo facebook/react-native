@@ -26,7 +26,7 @@ import Keyboard from './Keyboard';
 import * as React from 'react';
 import {createRef} from 'react';
 
-export type KeyboardAvoidingViewProps = $ReadOnly<{
+export type KeyboardAvoidingViewProps = Readonly<{
   ...ViewProps,
 
   /**
@@ -208,7 +208,7 @@ class KeyboardAvoidingView extends React.Component<
       ];
     } else {
       this._subscriptions = [
-        Keyboard.addListener('keyboardDidHide', this._onKeyboardChange),
+        Keyboard.addListener('keyboardDidHide', this._onKeyboardHide),
         Keyboard.addListener('keyboardDidShow', this._onKeyboardChange),
       ];
     }

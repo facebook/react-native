@@ -12,7 +12,7 @@ import com.facebook.react.bridge.ReadableMap
 
 internal class TrackingAnimatedNode(
     config: ReadableMap,
-    private val nativeAnimatedNodesManager: NativeAnimatedNodesManager
+    private val nativeAnimatedNodesManager: NativeAnimatedNodesManager,
 ) : AnimatedNode() {
   private val animationConfig: JavaOnlyMap = JavaOnlyMap.deepClone(config.getMap("animationConfig"))
   private val animationId: Int = config.getInt("animationId")
@@ -25,7 +25,11 @@ internal class TrackingAnimatedNode(
     if (valAnimatedNode != null) {
       animationConfig.putDouble("toValue", valAnimatedNode.getValue())
     } else {
-      animationConfig.putNull("toValue")
+      val drivenNode = nativeAnimatedNodesManager.getNodeById(valueNode) as? ValueAnimatedNode
+      if (drivenNode == null) {
+        return
+      }
+      animationConfig.putDouble("toValue", drivenNode.getValue())
     }
     nativeAnimatedNodesManager.startAnimatingNode(animationId, valueNode, animationConfig, null)
   }

@@ -23,6 +23,7 @@ import type {
 import type {AliasResolver} from './Utils';
 
 const {unwrapNullable} = require('../../parsers/parsers-commons');
+const {parseValidUnionType} = require('../Utils');
 const {createAliasResolver, getModules} = require('./Utils');
 
 type FilesOutput = Map<string, string>;
@@ -41,7 +42,7 @@ const HostFunctionTemplate = ({
   propertyName,
   jniSignature,
   jsReturnType,
-}: $ReadOnly<{
+}: Readonly<{
   hasteModuleName: string,
   propertyName: string,
   jniSignature: string,
@@ -57,10 +58,10 @@ const ModuleClassConstructorTemplate = ({
   hasteModuleName,
   eventEmitters,
   methods,
-}: $ReadOnly<{
+}: Readonly<{
   hasteModuleName: string,
-  eventEmitters: $ReadOnlyArray<NativeModuleEventEmitterShape>,
-  methods: $ReadOnlyArray<{
+  eventEmitters: ReadonlyArray<NativeModuleEventEmitterShape>,
+  methods: ReadonlyArray<{
     propertyName: string,
     argCount: number,
   }>,
@@ -93,7 +94,7 @@ ${methods
 const ModuleLookupTemplate = ({
   moduleName,
   hasteModuleName,
-}: $ReadOnly<{moduleName: string, hasteModuleName: string}>) => {
+}: Readonly<{moduleName: string, hasteModuleName: string}>) => {
   return `  if (moduleName == "${moduleName}") {
     return std::make_shared<${hasteModuleName}SpecJSI>(params);
   }`;
@@ -104,11 +105,11 @@ const FileTemplate = ({
   include,
   modules,
   moduleLookups,
-}: $ReadOnly<{
+}: Readonly<{
   libraryName: string,
   include: string,
   modules: string,
-  moduleLookups: $ReadOnlyArray<{
+  moduleLookups: ReadonlyArray<{
     hasteModuleName: string,
     moduleName: string,
   }>,
@@ -156,7 +157,7 @@ function translateReturnTypeToKind(
         case 'RootTag':
           return 'NumberKind';
         default:
-          (realTypeAnnotation.name: empty);
+          realTypeAnnotation.name as empty;
           throw new Error(
             `Invalid ReservedFunctionValueTypeName name, got ${realTypeAnnotation.name}`,
           );
@@ -167,9 +168,9 @@ function translateReturnTypeToKind(
       return 'StringKind';
     case 'StringLiteralTypeAnnotation':
       return 'StringKind';
-    case 'StringLiteralUnionTypeAnnotation':
-      return 'StringKind';
     case 'BooleanTypeAnnotation':
+      return 'BooleanKind';
+    case 'BooleanLiteralTypeAnnotation':
       return 'BooleanKind';
     case 'EnumDeclaration':
       switch (typeAnnotation.memberType) {
@@ -183,17 +184,19 @@ function translateReturnTypeToKind(
           );
       }
     case 'UnionTypeAnnotation':
-      switch (typeAnnotation.memberType) {
-        case 'NumberTypeAnnotation':
+      const validUnionType = parseValidUnionType(realTypeAnnotation);
+      switch (validUnionType) {
+        case 'boolean':
+          return 'BooleanKind';
+        case 'number':
           return 'NumberKind';
-        case 'ObjectTypeAnnotation':
+        case 'object':
           return 'ObjectKind';
-        case 'StringTypeAnnotation':
+        case 'string':
           return 'StringKind';
         default:
-          throw new Error(
-            `Unsupported union member returning value, found: ${realTypeAnnotation.memberType}"`,
-          );
+          validUnionType as empty;
+          throw new Error(`Unsupported union member type`);
       }
     case 'NumberTypeAnnotation':
       return 'NumberKind';
@@ -214,7 +217,7 @@ function translateReturnTypeToKind(
     case 'ArrayTypeAnnotation':
       return 'ArrayKind';
     default:
-      (realTypeAnnotation.type: 'MixedTypeAnnotation');
+      realTypeAnnotation.type as 'MixedTypeAnnotation';
       throw new Error(
         `Unknown prop type for returning value, found: ${realTypeAnnotation.type}"`,
       );
@@ -243,7 +246,7 @@ function translateParamTypeToJniType(
         case 'RootTag':
           return !isRequired ? 'Ljava/lang/Double;' : 'D';
         default:
-          (realTypeAnnotation.name: empty);
+          realTypeAnnotation.name as empty;
           throw new Error(
             `Invalid ReservedFunctionValueTypeName name, got ${realTypeAnnotation.name}`,
           );
@@ -252,9 +255,9 @@ function translateParamTypeToJniType(
       return 'Ljava/lang/String;';
     case 'StringLiteralTypeAnnotation':
       return 'Ljava/lang/String;';
-    case 'StringLiteralUnionTypeAnnotation':
-      return 'Ljava/lang/String;';
     case 'BooleanTypeAnnotation':
+      return !isRequired ? 'Ljava/lang/Boolean;' : 'Z';
+    case 'BooleanLiteralTypeAnnotation':
       return !isRequired ? 'Ljava/lang/Boolean;' : 'Z';
     case 'EnumDeclaration':
       switch (typeAnnotation.memberType) {
@@ -268,17 +271,19 @@ function translateParamTypeToJniType(
           );
       }
     case 'UnionTypeAnnotation':
-      switch (typeAnnotation.memberType) {
-        case 'NumberTypeAnnotation':
+      const validUnionType = parseValidUnionType(realTypeAnnotation);
+      switch (validUnionType) {
+        case 'boolean':
+          return !isRequired ? 'Ljava/lang/Boolean;' : 'Z';
+        case 'number':
           return !isRequired ? 'Ljava/lang/Double;' : 'D';
-        case 'ObjectTypeAnnotation':
+        case 'object':
           return 'Lcom/facebook/react/bridge/ReadableMap;';
-        case 'StringTypeAnnotation':
+        case 'string':
           return 'Ljava/lang/String;';
         default:
-          throw new Error(
-            `Unsupported union prop value, found: ${realTypeAnnotation.memberType}"`,
-          );
+          validUnionType as empty;
+          throw new Error(`Unsupported union member type`);
       }
     case 'NumberTypeAnnotation':
       return !isRequired ? 'Ljava/lang/Double;' : 'D';
@@ -299,7 +304,7 @@ function translateParamTypeToJniType(
     case 'FunctionTypeAnnotation':
       return 'Lcom/facebook/react/bridge/Callback;';
     default:
-      (realTypeAnnotation.type: 'MixedTypeAnnotation');
+      realTypeAnnotation.type as 'MixedTypeAnnotation';
       throw new Error(
         `Unknown prop type for method arg, found: ${realTypeAnnotation.type}"`,
       );
@@ -323,7 +328,7 @@ function translateReturnTypeToJniType(
         case 'RootTag':
           return nullable ? 'Ljava/lang/Double;' : 'D';
         default:
-          (realTypeAnnotation.name: empty);
+          realTypeAnnotation.name as empty;
           throw new Error(
             `Invalid ReservedFunctionValueTypeName name, got ${realTypeAnnotation.name}`,
           );
@@ -334,9 +339,9 @@ function translateReturnTypeToJniType(
       return 'Ljava/lang/String;';
     case 'StringLiteralTypeAnnotation':
       return 'Ljava/lang/String;';
-    case 'StringLiteralUnionTypeAnnotation':
-      return 'Ljava/lang/String;';
     case 'BooleanTypeAnnotation':
+      return nullable ? 'Ljava/lang/Boolean;' : 'Z';
+    case 'BooleanLiteralTypeAnnotation':
       return nullable ? 'Ljava/lang/Boolean;' : 'Z';
     case 'EnumDeclaration':
       switch (typeAnnotation.memberType) {
@@ -350,17 +355,19 @@ function translateReturnTypeToJniType(
           );
       }
     case 'UnionTypeAnnotation':
-      switch (typeAnnotation.memberType) {
-        case 'NumberTypeAnnotation':
+      const validUnionType = parseValidUnionType(realTypeAnnotation);
+      switch (validUnionType) {
+        case 'boolean':
+          return nullable ? 'Ljava/lang/Boolean;' : 'Z';
+        case 'number':
           return nullable ? 'Ljava/lang/Double;' : 'D';
-        case 'ObjectTypeAnnotation':
-          return 'Lcom/facebook/react/bridge/WritableMap;';
-        case 'StringTypeAnnotation':
+        case 'object':
+          return 'Lcom/facebook/react/bridge/ReadableMap;';
+        case 'string':
           return 'Ljava/lang/String;';
         default:
-          throw new Error(
-            `Unsupported union member type, found: ${realTypeAnnotation.memberType}"`,
-          );
+          validUnionType as empty;
+          throw new Error(`Unsupported union member type`);
       }
     case 'NumberTypeAnnotation':
       return nullable ? 'Ljava/lang/Double;' : 'D';
@@ -381,7 +388,7 @@ function translateReturnTypeToJniType(
     case 'ArrayTypeAnnotation':
       return 'Lcom/facebook/react/bridge/WritableArray;';
     default:
-      (realTypeAnnotation.type: 'MixedTypeAnnotation');
+      realTypeAnnotation.type as 'MixedTypeAnnotation';
       throw new Error(
         `Unknown prop type for method return type, found: ${realTypeAnnotation.type}"`,
       );
@@ -520,7 +527,7 @@ module.exports = {
       })
       .join('\n');
 
-    const moduleLookups: $ReadOnlyArray<{
+    const moduleLookups: ReadonlyArray<{
       hasteModuleName: string,
       moduleName: string,
     }> = Object.keys(nativeModules)

@@ -11,8 +11,8 @@
 
 namespace facebook::react {
 
-inline static void
-handleJSError(jsi::Runtime& runtime, const jsi::JSError& error, bool isFatal) {
+inline static void handleJSError(jsi::Runtime &runtime, const jsi::JSError &error, bool isFatal)
+{
   auto errorUtils = runtime.global().getProperty(runtime, "ErrorUtils");
   if (errorUtils.isUndefined() || !errorUtils.isObject() ||
       !errorUtils.getObject(runtime).hasProperty(runtime, "reportFatalError") ||
@@ -29,13 +29,11 @@ handleJSError(jsi::Runtime& runtime, const jsi::JSError& error, bool isFatal) {
   // TODO(janzer): Rewrite this function to return the processed error
   // instead of just reporting it through the native module
   if (isFatal) {
-    auto func = errorUtils.asObject(runtime).getPropertyAsFunction(
-        runtime, "reportFatalError");
+    auto func = errorUtils.asObject(runtime).getPropertyAsFunction(runtime, "reportFatalError");
 
     func.call(runtime, error.value());
   } else {
-    auto func = errorUtils.asObject(runtime).getPropertyAsFunction(
-        runtime, "reportError");
+    auto func = errorUtils.asObject(runtime).getPropertyAsFunction(runtime, "reportError");
 
     func.call(runtime, error.value());
   }

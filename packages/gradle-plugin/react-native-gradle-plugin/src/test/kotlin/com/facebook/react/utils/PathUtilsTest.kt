@@ -14,6 +14,7 @@ import com.facebook.react.tests.OsRule
 import com.facebook.react.tests.WithOs
 import java.io.File
 import org.assertj.core.api.Assertions.assertThat
+import org.gradle.process.ProcessExecutionException
 import org.gradle.testfixtures.ProjectBuilder
 import org.junit.Assume.assumeTrue
 import org.junit.Rule
@@ -99,7 +100,7 @@ class PathUtilsTest {
     assertThat(actual.readText()).isEqualTo("<!-- nothing to see here -->")
   }
 
-  @Test(expected = IllegalStateException::class)
+  @Test(expected = ProcessExecutionException::class)
   fun detectedCliPath_failsIfNotFound() {
     val project = ProjectBuilder.builder().build()
     val extension = TestReactExtension(project)
@@ -147,16 +148,17 @@ class PathUtilsTest {
     tempFolder.newFolder("node_modules/react-native/ReactAndroid/hermes-engine/build/hermes/bin/")
     val expected =
         tempFolder.newFile(
-            "node_modules/react-native/ReactAndroid/hermes-engine/build/hermes/bin/hermesc")
+            "node_modules/react-native/ReactAndroid/hermes-engine/build/hermes/bin/hermesc"
+        )
 
     assertThat(detectOSAwareHermesCommand(tempFolder.root, "")).isEqualTo(expected.toString())
   }
 
   @Test
   @WithOs(OS.MAC)
-  fun detectOSAwareHermesCommand_withBundledHermescInsideRN() {
-    tempFolder.newFolder("node_modules/react-native/sdks/hermesc/osx-bin/")
-    val expected = tempFolder.newFile("node_modules/react-native/sdks/hermesc/osx-bin/hermesc")
+  fun detectOSAwareHermesCommand_withHermescFromNPM() {
+    tempFolder.newFolder("node_modules/hermes-compiler/hermesc/osx-bin/")
+    val expected = tempFolder.newFile("node_modules/hermes-compiler/hermesc/osx-bin/hermesc")
 
     assertThat(detectOSAwareHermesCommand(tempFolder.root, "")).isEqualTo(expected.toString())
   }
@@ -189,7 +191,8 @@ class PathUtilsTest {
     tempFolder.newFolder("node_modules/react-native/ReactAndroid/hermes-engine/build/hermes/bin/")
     val expected =
         tempFolder.newFile(
-            "node_modules/react-native/ReactAndroid/hermes-engine/build/hermes/bin/hermesc")
+            "node_modules/react-native/ReactAndroid/hermes-engine/build/hermes/bin/hermesc"
+        )
     tempFolder.newFolder("node_modules/react-native/sdks/hermesc/osx-bin/")
     tempFolder.newFile("node_modules/react-native/sdks/hermesc/osx-bin/hermesc")
 
@@ -202,7 +205,9 @@ class PathUtilsTest {
         .isEqualTo(
             File(
                 tempFolder.root,
-                "node_modules/react-native/ReactAndroid/hermes-engine/build/hermes/bin/hermesc"))
+                "node_modules/react-native/ReactAndroid/hermes-engine/build/hermes/bin/hermesc",
+            )
+        )
   }
 
   @Test
@@ -212,7 +217,9 @@ class PathUtilsTest {
         .isEqualTo(
             File(
                 tempFolder.root,
-                "node_modules/react-native/ReactAndroid/hermes-engine/build/hermes/bin/hermesc.exe"))
+                "node_modules/react-native/ReactAndroid/hermes-engine/build/hermes/bin/hermesc.exe",
+            )
+        )
   }
 
   @Test
@@ -304,12 +311,13 @@ class PathUtilsTest {
       writeText(
           // language=json
           """
-      {
-        "name": "a-library",
-        "codegenConfig": {}
-      }
-      """
-              .trimIndent())
+          {
+            "name": "a-library",
+            "codegenConfig": {}
+          }
+          """
+              .trimIndent()
+      )
     }
     val project = ProjectBuilder.builder().withProjectDir(moduleFolder).build()
     project.plugins.apply("com.android.library")

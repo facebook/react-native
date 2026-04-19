@@ -20,12 +20,12 @@ import * as IntersectionObserverManager from './internals/IntersectionObserverMa
 export type IntersectionObserverCallback = (
   entries: Array<IntersectionObserverEntry>,
   observer: IntersectionObserver,
-) => mixed;
+) => unknown;
 
 export interface IntersectionObserverInit {
   root?: ?ReactNativeElement;
-  // rootMargin?: string, // This option exists on the Web but it's not currently supported in React Native.
-  threshold?: number | $ReadOnlyArray<number>;
+  rootMargin?: string;
+  threshold?: number | ReadonlyArray<number>;
 
   /**
    * This is a React Native specific option (not spec compliant) that specifies
@@ -37,7 +37,7 @@ export interface IntersectionObserverInit {
    * Note: If `rnRootThreshold` is set, and `threshold` is not set,
    * `threshold` will not default to [0] (as per spec)
    */
-  rnRootThreshold?: number | $ReadOnlyArray<number>;
+  rnRootThreshold?: number | ReadonlyArray<number>;
 }
 
 /**
@@ -56,18 +56,18 @@ export interface IntersectionObserverInit {
  * changes in degree of visibility; however, you can watch multiple target
  * elements with the same observer.
  *
- * This implementation only supports the `threshold` option at the moment
- * (`root` and `rootMargin` are not supported) and provides a React Native specific
- * option `rnRootThreshold`.
+ * This implementation supports `threshold`, `root`, and `rootMargin` options and
+ * provides a React Native specific option `rnRootThreshold`.
  *
  */
 export default class IntersectionObserver {
   _callback: IntersectionObserverCallback;
-  _thresholds: $ReadOnlyArray<number>;
+  _thresholds: ReadonlyArray<number>;
   _observationTargets: Set<ReactNativeElement> = new Set();
   _intersectionObserverId: ?IntersectionObserverId;
-  _rootThresholds: $ReadOnlyArray<number> | null;
+  _rootThresholds: ReadonlyArray<number> | null;
   _root: ReactNativeElement | null;
+  _rootMargin: string;
 
   constructor(
     callback: IntersectionObserverCallback,
@@ -85,19 +85,30 @@ export default class IntersectionObserver {
       );
     }
 
-    // $FlowExpectedError[prop-missing] it's not typed in React Native but exists on Web.
-    if (options?.rootMargin != null) {
-      throw new TypeError(
-        "Failed to construct 'IntersectionObserver': rootMargin is not supported",
-      );
-    }
-
     if (
       options?.root != null &&
       !(options?.root instanceof ReactNativeElement)
     ) {
       throw new TypeError(
         "Failed to construct 'IntersectionObserver': Failed to read the 'root' property from 'IntersectionObserverInit': The provided value is not of type '(null or ReactNativeElement)",
+      );
+    }
+
+    if (options != null && 'delay' in options) {
+      throw new Error(
+        "Failed to construct 'IntersectionObserver': The 'delay' option is not supported.",
+      );
+    }
+
+    if (options != null && 'scrollMargin' in options) {
+      throw new Error(
+        "Failed to construct 'IntersectionObserver': The 'scrollMargin' option is not supported.",
+      );
+    }
+
+    if (options != null && 'trackVisibility' in options) {
+      throw new Error(
+        "Failed to construct 'IntersectionObserver': The 'trackVisibility' option is not supported.",
       );
     }
 
@@ -109,6 +120,7 @@ export default class IntersectionObserver {
       this._rootThresholds != null, // only provide default if no rootThreshold
     );
     this._root = options?.root ?? null;
+    this._rootMargin = normalizeRootMargin(options?.rootMargin);
   }
 
   /**
@@ -128,12 +140,9 @@ export default class IntersectionObserver {
    * Each side of the rectangle represented by `rootMargin` is added to the
    * corresponding side in the root element's bounding box before the
    * intersection test is performed.
-   *
-   * NOTE: This cannot currently be configured and `rootMargin` is always
-   * `null`.
    */
   get rootMargin(): string {
-    return '0px 0px 0px 0px';
+    return this._rootMargin;
   }
 
   /**
@@ -146,7 +155,7 @@ export default class IntersectionObserver {
    * If no value was passed to the constructor, and no `rnRootThreshold`
    * is set, `0` is used.
    */
-  get thresholds(): $ReadOnlyArray<number> {
+  get thresholds(): ReadonlyArray<number> {
     return this._thresholds;
   }
 
@@ -157,8 +166,38 @@ export default class IntersectionObserver {
    * Notifications for a target are generated when any of the thresholds specified
    * in `rnRootThreshold` or `threshold` are crossed for that target.
    */
-  get rnRootThresholds(): $ReadOnlyArray<number> | null {
+  get rnRootThresholds(): ReadonlyArray<number> | null {
     return this._rootThresholds;
+  }
+
+  /**
+   * The `delay` option is not supported.
+   * @throws {Error} Always throws an error indicating this property is not supported.
+   */
+  get delay(): number {
+    throw new Error(
+      "Failed to read the 'delay' property from 'IntersectionObserver': This property is not supported.",
+    );
+  }
+
+  /**
+   * The `scrollMargin` option is not supported.
+   * @throws {Error} Always throws an error indicating this property is not supported.
+   */
+  get scrollMargin(): string {
+    throw new Error(
+      "Failed to read the 'scrollMargin' property from 'IntersectionObserver': This property is not supported.",
+    );
+  }
+
+  /**
+   * The `trackVisibility` option is not supported.
+   * @throws {Error} Always throws an error indicating this property is not supported.
+   */
+  get trackVisibility(): boolean {
+    throw new Error(
+      "Failed to read the 'trackVisibility' property from 'IntersectionObserver': This property is not supported.",
+    );
   }
 
   /**
@@ -276,9 +315,9 @@ setPlatformObject(IntersectionObserver);
  * normalizeThresholds([], true);           // → []
  */
 function normalizeThreshold(
-  threshold: mixed,
+  threshold: unknown,
   defaultEmpty: boolean = false,
-): $ReadOnlyArray<number> {
+): ReadonlyArray<number> {
   if (Array.isArray(threshold)) {
     if (threshold.length > 0) {
       return threshold
@@ -314,8 +353,8 @@ function normalizeThreshold(
  * normalizeRootThresholds([null, null]);       // → null
  */
 function normalizeRootThreshold(
-  rootThreshold: mixed,
-): null | $ReadOnlyArray<number> {
+  rootThreshold: unknown,
+): null | ReadonlyArray<number> {
   if (Array.isArray(rootThreshold)) {
     const normalizedArr = rootThreshold
       .map(rt => normalizeThresholdValue(rt, 'rnRootThreshold'))
@@ -329,7 +368,7 @@ function normalizeRootThreshold(
 }
 
 function normalizeThresholdValue(
-  threshold: mixed,
+  threshold: unknown,
   property: string,
 ): null | number {
   if (threshold == null) {
@@ -350,4 +389,74 @@ function normalizeThresholdValue(
   }
 
   return thresholdAsNumber;
+}
+
+/**
+ * Validates and normalizes the rootMargin value.
+ * Accepts CSS margin syntax (e.g., "10px", "10px 20px", "10px 20px 30px 40px").
+ * Returns the normalized string or throws an error if invalid.
+ *
+ * Per W3C spec, rootMargin must be specified in pixels or percent.
+ * This implementation validates the basic format.
+ */
+function normalizeRootMargin(rootMargin: unknown): string {
+  if (rootMargin == null || rootMargin === '') {
+    return '0px 0px 0px 0px';
+  }
+
+  if (typeof rootMargin !== 'string') {
+    throw new TypeError(
+      "Failed to construct 'IntersectionObserver': Failed to read the 'rootMargin' property from 'IntersectionObserverInit': The provided value is not of type 'string'.",
+    );
+  }
+
+  const marginStr = rootMargin.trim();
+  if (marginStr === '') {
+    return '0px 0px 0px 0px';
+  }
+
+  // Split by whitespace and validate each value
+  const parts = marginStr.split(/\s+/);
+  if (parts.length > 4) {
+    throw new SyntaxError(
+      "Failed to construct 'IntersectionObserver': Failed to parse rootMargin: Too many values (expected 1-4).",
+    );
+  }
+
+  // Validate each part matches the pattern: optional minus, digits, and unit (px or %)
+  const validPattern = /^-?\d+(\.\d+)?(px|%)$/;
+  for (const part of parts) {
+    if (!validPattern.test(part)) {
+      throw new SyntaxError(
+        `Failed to construct 'IntersectionObserver': Failed to parse rootMargin: '${part}' is not a valid length. Only 'px' and '%' units are allowed.`,
+      );
+    }
+  }
+
+  // Normalize to 4 values following CSS margin shorthand rules
+  let normalized: Array<string>;
+  switch (parts.length) {
+    case 1:
+      // All sides the same
+      normalized = [parts[0], parts[0], parts[0], parts[0]];
+      break;
+    case 2:
+      // Vertical | Horizontal
+      normalized = [parts[0], parts[1], parts[0], parts[1]];
+      break;
+    case 3:
+      // Top | Horizontal | Bottom
+      normalized = [parts[0], parts[1], parts[2], parts[1]];
+      break;
+    case 4:
+      // Top | Right | Bottom | Left
+      normalized = parts;
+      break;
+    default:
+      throw new SyntaxError(
+        "Failed to construct 'IntersectionObserver': Failed to parse rootMargin.",
+      );
+  }
+
+  return normalized.join(' ');
 }

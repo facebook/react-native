@@ -13,8 +13,10 @@ namespace facebook::react {
 
 Size LayoutConstraints::clamp(const Size& size) const {
   return {
-      std::max(minimumSize.width, std::min(maximumSize.width, size.width)),
-      std::max(minimumSize.height, std::min(maximumSize.height, size.height))};
+      .width =
+          std::max(minimumSize.width, std::min(maximumSize.width, size.width)),
+      .height = std::max(
+          minimumSize.height, std::min(maximumSize.height, size.height))};
 }
 
 } // namespace facebook::react

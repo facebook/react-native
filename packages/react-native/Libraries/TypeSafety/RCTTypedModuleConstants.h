@@ -5,6 +5,7 @@
  * LICENSE file in the root directory of this source tree.
  */
 
+#include <type_traits>
 #include <utility>
 
 #import <Foundation/Foundation.h>
@@ -32,10 +33,44 @@
 
 namespace facebook::react {
 
+namespace detail {
+
+// Helper to detect if T is a Builder type.
+// Builder types have: nested Input struct and buildUnsafeRawValue() method.
+template <typename T, typename = void>
+struct IsBuilder : std::false_type {};
+
+template <typename T>
+struct IsBuilder<T, std::void_t<typename T::Input, decltype(std::declval<T>().buildUnsafeRawValue())>>
+    : std::true_type {};
+
+// Resolve Builder to its parent Constants type.
+// For backwards compatibility: if T is a Builder type (e.g., JS::X::Constants::Builder),
+// we resolve to the parent Constants type (JS::X::Constants).
+//
+// This requires Builder to have a type alias `using ResultT = Constants;` defined by codegen.
+template <typename T, bool = IsBuilder<T>::value>
+struct ResolveConstantsType {
+  // Not a Builder, use T as-is
+  using type = T;
+};
+
+// Specialization for Builder types that have ResultT defined
+template <typename T>
+struct ResolveConstantsType<T, true> {
+  // Use T::ResultT which points to the parent Constants type (added by codegen)
+  using type = typename T::ResultT;
+};
+
+} // namespace detail
+
 // Objective-C doesn't allow arbitrary types in its lightweight generics, only object and block types. We can work
 // around that by having the struct type we care about be a block-argument. The block never exists at runtime.
+//
+// For backwards compatibility: if T is a Builder type (e.g., JS::Module::Constants::Builder),
+// ModuleConstants<Builder> resolves to the same type as ModuleConstants<Constants>.
 template <typename T>
-using ModuleConstants = _RCTTypedModuleConstants<void (^)(T)> *;
+using ModuleConstants = _RCTTypedModuleConstants<void (^)(typename detail::ResolveConstantsType<T>::type)> *;
 
 template <typename T>
 ModuleConstants<T> typedConstants(typename T::Builder::Input &&value)

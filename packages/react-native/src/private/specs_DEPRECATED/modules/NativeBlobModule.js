@@ -58,4 +58,4 @@ if (NativeModule != null) {
   };
 }
 
-export default (NativeBlobModule: ?Spec);
+export default NativeBlobModule as ?Spec;

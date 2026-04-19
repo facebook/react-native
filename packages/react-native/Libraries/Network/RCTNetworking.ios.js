@@ -18,12 +18,12 @@ import {type RCTNetworkingEventDefinitions} from './RCTNetworkingEventDefinition
 import {type NativeResponseType} from './XMLHttpRequest';
 
 const RCTNetworking = {
-  addListener<K: $Keys<RCTNetworkingEventDefinitions>>(
+  addListener<K extends keyof RCTNetworkingEventDefinitions>(
     eventType: K,
-    listener: (...RCTNetworkingEventDefinitions[K]) => mixed,
-    context?: mixed,
+    listener: (...RCTNetworkingEventDefinitions[K]) => unknown,
+    context?: unknown,
   ): EventSubscription {
-    // $FlowFixMe[incompatible-call]
+    // $FlowFixMe[incompatible-type]
     return RCTDeviceEventEmitter.addListener(eventType, listener, context);
   },
 
@@ -40,6 +40,8 @@ const RCTNetworking = {
     withCredentials: boolean,
   ) {
     const body = convertRequestBody(data);
+    const devToolsRequestId =
+      global.__NETWORK_REPORTER__?.createDevToolsRequestId();
     NativeNetworkingIOS.sendRequest(
       {
         method,
@@ -50,6 +52,7 @@ const RCTNetworking = {
         incrementalUpdates,
         timeout,
         withCredentials,
+        unstable_devToolsRequestId: devToolsRequestId,
       },
       callback,
     );

@@ -16,7 +16,7 @@ jobs:
     runs-on: ubuntu-latest
     if: github.repository == 'facebook/react-native'
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v6
       - name: Apply Needs Attention Label
         uses: react-native-community/needs-attention@v2.0.0
         with:

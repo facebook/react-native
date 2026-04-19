@@ -48,7 +48,7 @@ RCT_EXPORT_MODULE()
 {
   dispatch_async(_methodQueue, ^{
     [self removeImageForTag:imageTag];
-    if (block) {
+    if (block != nullptr) {
       block();
     }
   });
@@ -58,7 +58,7 @@ RCT_EXPORT_MODULE()
 {
   RCTAssertThread(_methodQueue, @"Must be called on RCTImageStoreManager thread");
 
-  if (!_store) {
+  if (_store == nullptr) {
     _store = [NSMutableDictionary new];
     _id = 0;
   }
@@ -106,13 +106,12 @@ RCT_EXPORT_METHOD(hasImageForTag : (NSString *)imageTag callback : (RCTResponseS
 }
 
 // TODO (#5906496): Name could be more explicit - something like getBase64EncodedDataForTag:?
-RCT_EXPORT_METHOD(getBase64ForTag
-                  : (NSString *)imageTag successCallback
-                  : (RCTResponseSenderBlock)successCallback errorCallback
-                  : (RCTResponseSenderBlock)errorCallback)
+RCT_EXPORT_METHOD(
+    getBase64ForTag : (NSString *)imageTag successCallback : (RCTResponseSenderBlock)
+        successCallback errorCallback : (RCTResponseSenderBlock)errorCallback)
 {
   NSData *imageData = _store[imageTag];
-  if (!imageData) {
+  if (imageData == nullptr) {
     errorCallback(
         @[ RCTJSErrorFromNSError(RCTErrorWithMessage([NSString stringWithFormat:@"Invalid imageTag: %@", imageTag])) ]);
     return;
@@ -123,16 +122,15 @@ RCT_EXPORT_METHOD(getBase64ForTag
   });
 }
 
-RCT_EXPORT_METHOD(addImageFromBase64
-                  : (NSString *)base64String successCallback
-                  : (RCTResponseSenderBlock)successCallback errorCallback
-                  : (RCTResponseSenderBlock)errorCallback)
+RCT_EXPORT_METHOD(
+    addImageFromBase64 : (NSString *)base64String successCallback : (RCTResponseSenderBlock)
+        successCallback errorCallback : (RCTResponseSenderBlock)errorCallback)
 
 {
   // Dispatching to a background thread to perform base64 decoding
   dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), ^{
     NSData *imageData = [[NSData alloc] initWithBase64EncodedString:base64String options:0];
-    if (imageData) {
+    if (imageData != nullptr) {
       dispatch_async(self->_methodQueue, ^{
         successCallback(@[ [self _storeImageData:imageData] ]);
       });
@@ -164,14 +162,14 @@ RCT_EXPORT_METHOD(addImageFromBase64
 
     NSString *imageTag = request.URL.absoluteString;
     NSData *imageData = self->_store[imageTag];
-    if (!imageData) {
+    if (imageData == nullptr) {
       NSError *error = RCTErrorWithMessage([NSString stringWithFormat:@"Invalid imageTag: %@", imageTag]);
       [delegate URLRequest:cancellationBlock didCompleteWithError:error];
       return;
     }
 
     CGImageSourceRef sourceRef = CGImageSourceCreateWithData((__bridge CFDataRef)imageData, NULL);
-    if (!sourceRef) {
+    if (sourceRef == nullptr) {
       NSError *error =
           RCTErrorWithMessage([NSString stringWithFormat:@"Unable to decode data for imageTag: %@", imageTag]);
       [delegate URLRequest:cancellationBlock didCompleteWithError:error];
@@ -197,7 +195,7 @@ RCT_EXPORT_METHOD(addImageFromBase64
 
 - (void)cancelRequest:(id)requestToken
 {
-  if (requestToken) {
+  if (requestToken != nullptr) {
     ((void (^)(void))requestToken)();
   }
 }

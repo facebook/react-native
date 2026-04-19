@@ -13,6 +13,10 @@
 const reactNativeModules = require('./react-native-modules');
 
 module.exports = {
+  meta: {
+    name: '@react-native/eslint-plugin-specs',
+    version: require('./package.json').version,
+  },
   rules: {
     'react-native-modules': reactNativeModules,
   },

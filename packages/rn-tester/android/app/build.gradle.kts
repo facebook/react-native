@@ -61,7 +61,14 @@ react {
 
   /* Hermes Commands */
   //   The hermes compiler command to run. By default it is 'hermesc'
-  hermesCommand = "$reactNativeDirPath/ReactAndroid/hermes-engine/build/hermes/bin/hermesc"
+  hermesCommand =
+      if (
+          project.findProperty("react.internal.useHermesStable")?.toString()?.toBoolean() == true ||
+              project.findProperty("react.internal.useHermesNightly")?.toString()?.toBoolean() ==
+                  true
+      )
+          "$rootDir/node_modules/hermes-compiler/hermesc/%OS-BIN%/hermesc"
+      else "$reactNativeDirPath/ReactAndroid/hermes-engine/build/hermes/bin/hermesc"
 
   autolinkLibrariesWithApp()
 }
@@ -102,7 +109,9 @@ android {
     versionName = "1.0"
     testBuildType =
         System.getProperty(
-            "testBuildType", "debug") // This will later be used to control the test apk build type
+            "testBuildType",
+            "debug",
+        ) // This will later be used to control the test apk build type
     testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
     buildConfigField("String", "JS_MAIN_MODULE_NAME", "\"js/RNTesterApp.android\"")
     buildConfigField("String", "BUNDLE_ASSET_NAME", "\"RNTesterApp.android.bundle\"")
@@ -120,7 +129,7 @@ android {
   buildTypes {
     release {
       isMinifyEnabled = enableProguardInReleaseBuilds
-      proguardFiles(getDefaultProguardFile("proguard-android.txt"))
+      proguardFiles(getDefaultProguardFile("proguard-android-optimize.txt"))
       signingConfig = signingConfigs.getByName("debug")
     }
   }
@@ -133,7 +142,8 @@ android {
         listOf(
             "src/main/res",
             "src/main/public_res",
-        ))
+        )
+    )
   }
 }
 
@@ -175,8 +185,12 @@ tasks.withType<KotlinCompile>().configureEach {
 }
 
 afterEvaluate {
-  if (project.findProperty("react.internal.useHermesNightly") == null ||
-      project.findProperty("react.internal.useHermesNightly").toString() == "false") {
+  if (
+      (project.findProperty("react.internal.useHermesNightly") == null ||
+          project.findProperty("react.internal.useHermesNightly").toString() == "false") &&
+          (project.findProperty("react.internal.useHermesStable") == null ||
+              project.findProperty("react.internal.useHermesStable").toString() == "false")
+  ) {
     // As we're consuming Hermes from source, we want to make sure
     // `hermesc` is built before we actually invoke the `emit*HermesResource` task
     tasks

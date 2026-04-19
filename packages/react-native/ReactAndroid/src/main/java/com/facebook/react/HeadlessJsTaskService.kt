@@ -145,7 +145,8 @@ public abstract class HeadlessJsTaskService : Service(), HeadlessJsTaskEventList
               invokeStartTask(context, taskConfig)
               reactHost.removeReactInstanceEventListener(this)
             }
-          })
+          }
+      )
       reactHost.start()
     } else {
       val reactInstanceManager = reactNativeHost.reactInstanceManager
@@ -155,7 +156,8 @@ public abstract class HeadlessJsTaskService : Service(), HeadlessJsTaskEventList
               invokeStartTask(context, taskConfig)
               reactInstanceManager.removeReactInstanceEventListener(this)
             }
-          })
+          }
+      )
       reactInstanceManager.createReactContextInBackground()
     }
   }
@@ -175,7 +177,9 @@ public abstract class HeadlessJsTaskService : Service(), HeadlessJsTaskEventList
         wakeLock =
             powerManager
                 .newWakeLock(
-                    PowerManager.PARTIAL_WAKE_LOCK, HeadlessJsTaskService::class.java.canonicalName)
+                    PowerManager.PARTIAL_WAKE_LOCK,
+                    HeadlessJsTaskService::class.java.canonicalName,
+                )
                 .also { lock ->
                   lock.setReferenceCounted(false)
                   lock.acquire()

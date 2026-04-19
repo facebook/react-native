@@ -22,7 +22,7 @@ internal class InteropEvent(
     @get:JvmName("eventName") val interopEventName: String,
     @get:JvmName("eventData") val eventData: WritableMap?,
     surfaceId: Int,
-    viewTag: Int
+    viewTag: Int,
 ) : Event<InteropEvent>(surfaceId, viewTag) {
 
   override fun getEventName(): String = interopEventName

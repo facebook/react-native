@@ -18,7 +18,7 @@ ViewShadowNodeProps::ViewShadowNodeProps(
     const PropsParserContext& context,
     const ViewShadowNodeProps& sourceProps,
     const RawProps& rawProps)
-    : ViewProps(context, sourceProps, rawProps){};
+    : ViewProps(context, sourceProps, rawProps) {};
 
 ViewShadowNode::ViewShadowNode(
     const ShadowNodeFragment& fragment,
@@ -48,6 +48,7 @@ void ViewShadowNode::initialize() noexcept {
   };
 
   bool formsStackingContext = !viewProps.collapsable ||
+      viewProps.pointerEvents == PointerEventsMode::BoxOnly ||
       viewProps.pointerEvents == PointerEventsMode::None ||
       !viewProps.nativeId.empty() || viewProps.accessible ||
       viewProps.opacity != 1.0 || viewProps.transform != Transform{} ||

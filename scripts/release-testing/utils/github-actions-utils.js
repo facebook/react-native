@@ -80,8 +80,8 @@ async function _getActionRunsOnBranch() /*: Promise<WorkflowRuns> */ {
     headers: ciHeaders,
   };
 
-  // $FlowIgnore[prop-missing] Conflicting .flowconfig in Meta's monorepo
-  // $FlowIgnore[incompatible-call]
+  // $FlowFixMe[prop-missing] Conflicting .flowconfig in Meta's monorepo
+  // $FlowFixMe[incompatible-type]
   const response = await fetch(url, options);
   if (!response.ok) {
     throw new Error(JSON.stringify(await response.json()));
@@ -100,8 +100,8 @@ async function _getArtifacts(run_id /*: number */) /*: Promise<Artifacts> */ {
     headers: ciHeaders,
   };
 
-  // $FlowIgnore[prop-missing] Conflicting .flowconfig in Meta's monorepo
-  // $FlowIgnore[incompatible-call]
+  // $FlowFixMe[prop-missing] Conflicting .flowconfig in Meta's monorepo
+  // $FlowFixMe[incompatible-type]
   const response = await fetch(url, options);
   if (!response.ok) {
     throw new Error(JSON.stringify(await response.json()));
@@ -210,7 +210,7 @@ async function artifactURLForRNTesterAPK(
 }
 
 async function artifactURLForHermesRNTesterApp() /*: Promise<string> */ {
-  return getArtifactURL('RNTesterApp-NewArch-Hermes-Debug');
+  return getArtifactURL('RNTesterApp-NewArch-Debug');
 }
 
 async function artifactURLForMavenLocal() /*: Promise<string> */ {
@@ -223,7 +223,9 @@ async function getArtifactURL(
   const filteredUrls = artifacts.artifacts.filter(a => a.name === artifactName);
 
   if (filteredUrls.length === 0) {
-    console.error(`No artifact found with name ${artifactName}`);
+    console.error(
+      `No artifact found with name ${artifactName}.\n\nAvailable artifacts: ${artifacts.artifacts.map(a => a.name).join('  ')}`,
+    );
     process.exit(1);
   }
   return filteredUrls[0].archive_download_url;

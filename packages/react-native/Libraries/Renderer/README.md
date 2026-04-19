@@ -19,4 +19,4 @@ as you will still be using the older renderer from the folder mentioned above. B
 
 For the sake of React 18, the first version of React Native compatible with React 18 is **0.69.0**. Users on React Native 0.68.0 and previous versions won't be able to use React 18.
 
-If you use the `react-native upgrade` command or the React Native Upgrade Helper, you'll bump to the correct React version once you upgrade React Native.
+If you use the [React Native Upgrade Helper](https://react-native-community.github.io/upgrade-helper/), you'll bump to the correct React version once you upgrade React Native.

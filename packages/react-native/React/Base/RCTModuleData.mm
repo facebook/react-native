@@ -7,7 +7,7 @@
 
 #import "RCTModuleData.h"
 
-#ifndef RCT_FIT_RM_OLD_RUNTIME
+#ifndef RCT_REMOVE_LEGACY_ARCH
 
 #import <objc/runtime.h>
 #import <atomic>
@@ -241,7 +241,7 @@ RCT_NOT_IMPLEMENTED(-(instancetype)init);
     RCT_PROFILE_BEGIN_EVENT(RCTProfileTagAlways, @"[RCTModuleData setBridgeForInstance]", nil);
     @try {
       [(id)_instance setValue:_bridge forKey:@"bridge"];
-    } @catch (NSException *exception) {
+    } @catch (NSException *) {
       RCTLogError(
           @"%@ has no setter or ivar for its bridge, which is not "
            "permitted. You must either @synthesize the bridge property, "
@@ -291,7 +291,7 @@ RCT_NOT_IMPLEMENTED(-(instancetype)init);
       if (implementsMethodQueue) {
         @try {
           [(id)_instance setValue:_methodQueue forKey:@"methodQueue"];
-        } @catch (NSException *exception) {
+        } @catch (NSException *) {
           RCTLogError(
               @"%@ is returning nil for its methodQueue, which is not "
                "permitted. You must either return a pre-initialized "
@@ -488,7 +488,7 @@ RCT_NOT_IMPLEMENTED(-(instancetype)init);
 
 @end
 
-#else // RCT_FIT_RM_OLD_RUNTIME
+#else // RCT_REMOVE_LEGACY_ARCH
 @implementation RCTModuleData
 
 - (instancetype)initWithModuleClass:(Class)moduleClass
@@ -521,4 +521,4 @@ RCT_NOT_IMPLEMENTED(-(instancetype)init);
 
 @end
 
-#endif // RCT_FIT_RM_OLD_RUNTIME
+#endif // RCT_REMOVE_LEGACY_ARCH

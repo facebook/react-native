@@ -14,8 +14,7 @@ namespace facebook::react {
 
 extern const char LegacyViewManagerAndroidInteropComponentName[];
 
-using LegacyViewManagerAndroidInteropShadowNode = ConcreteViewShadowNode<
-    LegacyViewManagerAndroidInteropComponentName,
-    LegacyViewManagerInteropViewProps>;
+using LegacyViewManagerAndroidInteropShadowNode =
+    ConcreteViewShadowNode<LegacyViewManagerAndroidInteropComponentName, LegacyViewManagerInteropViewProps>;
 
 } // namespace facebook::react

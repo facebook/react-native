@@ -14,7 +14,7 @@ internal class DispatchStringCommandMountItem(
     private val surfaceId: Int,
     private val reactTag: Int,
     private val commandId: String,
-    private val commandArgs: ReadableArray
+    private val commandArgs: ReadableArray,
 ) : DispatchCommandMountItem() {
 
   override fun getSurfaceId(): Int = surfaceId

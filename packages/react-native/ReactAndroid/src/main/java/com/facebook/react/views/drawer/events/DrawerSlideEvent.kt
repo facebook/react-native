@@ -18,7 +18,9 @@ internal class DrawerSlideEvent : Event<DrawerSlideEvent> {
   private val offset: Float
 
   @Deprecated(
-      "Use constructor with surfaceId", ReplaceWith("DrawerSlideEvent(surfaceId, viewId, offset)"))
+      "Use constructor with surfaceId",
+      ReplaceWith("DrawerSlideEvent(surfaceId, viewId, offset)"),
+  )
   constructor(viewId: Int, offset: Float) : this(ViewUtil.NO_SURFACE_ID, viewId, offset)
 
   constructor(surfaceId: Int, viewId: Int, offset: Float) : super(surfaceId, viewId) {

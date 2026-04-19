@@ -45,7 +45,9 @@ import org.robolectric.annotation.Config
             ShadowSoLoader::class,
             ShadowNativeLoader::class,
             ShadowArguments::class,
-            ShadowWritableNativeArray::class])
+            ShadowWritableNativeArray::class,
+        ]
+)
 @OptIn(FrameworkAPI::class)
 class BridgelessReactContextTest {
   private lateinit var context: Context

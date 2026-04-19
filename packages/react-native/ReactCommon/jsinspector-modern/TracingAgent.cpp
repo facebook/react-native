@@ -6,156 +6,104 @@
  */
 
 #include "TracingAgent.h"
+#include "HostTargetTracing.h"
 
 #include <jsinspector-modern/tracing/PerformanceTracer.h>
 #include <jsinspector-modern/tracing/RuntimeSamplingProfileTraceEventSerializer.h>
 #include <jsinspector-modern/tracing/TraceEventSerializer.h>
+#include <jsinspector-modern/tracing/TracingMode.h>
 
 namespace facebook::react::jsinspector_modern {
 
-namespace {
+TracingAgent::TracingAgent(
+    FrontendChannel frontendChannel,
+    SessionState& sessionState,
+    HostTargetController& hostTargetController)
+    : frontendChannel_(std::move(frontendChannel)),
+      sessionState_(sessionState),
+      hostTargetController_(hostTargetController) {}
 
-/**
- * Threshold for the size Trace Event chunk, that will be flushed out with
- * Tracing.dataCollected event.
- */
-const uint16_t TRACE_EVENT_CHUNK_SIZE = 1000;
-
-/**
- * The maximum number of ProfileChunk trace events
- * that will be sent in a single CDP Tracing.dataCollected message.
- * TODO(T219394401): Increase the size once we manage the queue on OkHTTP side
- * properly and avoid WebSocket disconnections when sending a message larger
- * than 16MB.
- */
-const uint16_t PROFILE_TRACE_EVENT_CHUNK_SIZE = 1;
-
-void serializeTraceEventsInChunks(
-    std::vector<tracing::TraceEvent>&& traceEvents,
-    uint16_t chunkSize,
-    const std::function<void(folly::dynamic&& eventsChunk)>& resultCallback) {
-  auto serializedTraceEvents = folly::dynamic::array();
-  for (auto&& traceEvent : traceEvents) {
-    // Emit trace events
-    serializedTraceEvents.push_back(
-        tracing::TraceEventSerializer::serialize(std::move(traceEvent)));
-
-    if (serializedTraceEvents.size() == chunkSize) {
-      resultCallback(std::move(serializedTraceEvents));
-      serializedTraceEvents = folly::dynamic::array();
-    }
-  }
-  if (!serializedTraceEvents.empty()) {
-    resultCallback(std::move(serializedTraceEvents));
+TracingAgent::~TracingAgent() {
+  // Agents are owned by the session. If the agent is destroyed, it means that
+  // the session was destroyed. We should stop pending recording.
+  if (sessionState_.hasPendingTraceRecording) {
+    hostTargetController_.stopTracing();
   }
 }
 
-} // namespace
-
-TracingAgent::TracingAgent(
-    FrontendChannel frontendChannel,
-    const SessionState& sessionState)
-    : frontendChannel_(std::move(frontendChannel)),
-      sessionState_(sessionState) {}
-
 bool TracingAgent::handleRequest(const cdp::PreparsedRequest& req) {
   if (req.method == "Tracing.start") {
-    // @cdp Tracing.start support is experimental.
+    auto& inspector = getInspectorInstance();
+    if (inspector.getSystemState().registeredHostsCount > 1) {
+      frontendChannel_(
+          cdp::jsonError(
+              req.id,
+              cdp::ErrorCode::InternalError,
+              "The Tracing domain is unavailable when multiple React Native hosts are registered."));
+
+      return true;
+    }
+
     if (sessionState_.isDebuggerDomainEnabled) {
-      frontendChannel_(cdp::jsonError(
-          req.id,
-          cdp::ErrorCode::InternalError,
-          "Debugger domain is expected to be disabled before starting Tracing"));
-
-      return true;
-    }
-    if (!instanceAgent_) {
-      frontendChannel_(cdp::jsonError(
-          req.id,
-          cdp::ErrorCode::InternalError,
-          "Couldn't find instance available for Tracing"));
+      frontendChannel_(
+          cdp::jsonError(
+              req.id,
+              cdp::ErrorCode::InternalError,
+              "Debugger domain is expected to be disabled before starting Tracing"));
 
       return true;
     }
 
-    bool correctlyStartedPerformanceTracer =
-        tracing::PerformanceTracer::getInstance().startTracing();
+    /**
+     * This logic has to be updated with the next upgrade of Chrome
+     * DevTools Frotnend fork.
+     *
+     * At the moment of writing this, our fork uses categories field, which is
+     * marked as depreacted in CDP spec.
+     *
+     * Latest versions of Chrome DevTools in stable channel of Chromium are
+     * already using traceConfig field.
+     */
+    std::set<tracing::Category> enabledCategories;
+    if (req.params.isObject() && req.params.count("categories") != 0 &&
+        req.params["categories"].isString()) {
+      enabledCategories = tracing::parseSerializedTracingCategories(
+          req.params["categories"].getString());
+    }
 
-    if (!correctlyStartedPerformanceTracer) {
-      frontendChannel_(cdp::jsonError(
-          req.id,
-          cdp::ErrorCode::InternalError,
-          "Tracing session already started"));
+    bool didNotHaveAlreadyRunningRecording = hostTargetController_.startTracing(
+        tracing::Mode::CDP, std::move(enabledCategories));
+    if (!didNotHaveAlreadyRunningRecording) {
+      // @cdp Tracing.start fails if there is a tracing session already running
+      // in the current target. This matches Chrome's behavior.
+      frontendChannel_(
+          cdp::jsonError(
+              req.id,
+              cdp::ErrorCode::InvalidRequest,
+              "Tracing has already been started"));
 
       return true;
     }
 
-    instanceAgent_->startTracing();
-    instanceTracingStartTimestamp_ = HighResTimeStamp::now();
+    sessionState_.hasPendingTraceRecording = true;
     frontendChannel_(cdp::jsonResult(req.id));
 
     return true;
   } else if (req.method == "Tracing.end") {
-    // @cdp Tracing.end support is experimental.
-    if (!instanceAgent_) {
-      frontendChannel_(cdp::jsonError(
-          req.id,
-          cdp::ErrorCode::InternalError,
-          "Couldn't find instance available for Tracing"));
+    auto tracingProfile = hostTargetController_.stopTracing();
 
-      return true;
-    }
-
-    instanceAgent_->stopTracing();
-
-    tracing::PerformanceTracer& performanceTracer =
-        tracing::PerformanceTracer::getInstance();
-    auto collectedEvents = performanceTracer.stopTracing();
-    if (!collectedEvents) {
-      frontendChannel_(cdp::jsonError(
-          req.id,
-          cdp::ErrorCode::InternalError,
-          "Tracing session not started"));
-
-      return true;
-    }
-
+    sessionState_.hasPendingTraceRecording = false;
     // Send response to Tracing.end request.
     frontendChannel_(cdp::jsonResult(req.id));
 
-    auto dataCollectedCallback = [this](folly::dynamic&& eventsChunk) {
-      frontendChannel_(cdp::jsonNotification(
-          "Tracing.dataCollected",
-          folly::dynamic::object("value", std::move(eventsChunk))));
-    };
-
-    serializeTraceEventsInChunks(
-        std::move(*collectedEvents),
-        TRACE_EVENT_CHUNK_SIZE,
-        dataCollectedCallback);
-
-    auto tracingProfile = instanceAgent_->collectTracingProfile();
-    tracing::IdGenerator profileIdGenerator;
-    tracing::RuntimeSamplingProfileTraceEventSerializer::serializeAndDispatch(
-        std::move(tracingProfile.runtimeSamplingProfile),
-        profileIdGenerator,
-        instanceTracingStartTimestamp_,
-        dataCollectedCallback,
-        PROFILE_TRACE_EVENT_CHUNK_SIZE);
-
-    frontendChannel_(cdp::jsonNotification(
-        "Tracing.tracingComplete",
-        folly::dynamic::object("dataLossOccurred", false)));
-
+    emitNotificationsForTracingProfile(
+        std::move(tracingProfile),
+        frontendChannel_,
+        /* isBackgroundTrace */ false);
     return true;
   }
 
   return false;
-}
-
-void TracingAgent::setCurrentInstanceAgent(
-    std::shared_ptr<InstanceAgent> instanceAgent) {
-  instanceAgent_ = std::move(instanceAgent);
 }
 
 } // namespace facebook::react::jsinspector_modern

@@ -16,7 +16,7 @@ import com.facebook.react.bridge.ReadableMap
  */
 internal class SubtractionAnimatedNode(
     config: ReadableMap,
-    private val nativeAnimatedNodesManager: NativeAnimatedNodesManager
+    private val nativeAnimatedNodesManager: NativeAnimatedNodesManager,
 ) : ValueAnimatedNode() {
   private val inputNodes: IntArray
 
@@ -42,7 +42,8 @@ internal class SubtractionAnimatedNode(
         }
       } else {
         throw JSApplicationCausedNativeException(
-            "Illegal node ID set as an input for Animated.subtract node")
+            "Illegal node ID set as an input for Animated.subtract node"
+        )
       }
     }
   }

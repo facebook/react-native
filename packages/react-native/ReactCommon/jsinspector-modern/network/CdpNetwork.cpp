@@ -13,28 +13,17 @@ namespace facebook::react::jsinspector_modern::cdp::network {
 
 namespace {
 
-folly::dynamic headersToDynamic(const std::optional<Headers>& headers) {
+folly::dynamic headersToDynamic(const Headers& headers) {
   folly::dynamic result = folly::dynamic::object;
 
-  if (headers) {
-    for (const auto& [key, value] : *headers) {
-      result[key] = value;
-    }
+  for (const auto& [key, value] : headers) {
+    result[key] = value;
   }
 
   return result;
 }
 
 } // namespace
-
-/* static */ Request Request::fromInputParams(const RequestInfo& requestInfo) {
-  return {
-      .url = requestInfo.url,
-      .method = requestInfo.httpMethod,
-      .headers = requestInfo.headers,
-      .postData = requestInfo.httpBody,
-  };
-}
 
 folly::dynamic Request::toDynamic() const {
   folly::dynamic result = folly::dynamic::object;
@@ -48,14 +37,14 @@ folly::dynamic Request::toDynamic() const {
 }
 
 /* static */ Response Response::fromInputParams(
-    const ResponseInfo& responseInfo,
+    const std::string& url,
+    uint16_t status,
+    const Headers& headers,
     int encodedDataLength) {
-  auto headers = responseInfo.headers.value_or(Headers());
-
   return {
-      .url = responseInfo.url,
-      .status = responseInfo.statusCode,
-      .statusText = httpReasonPhrase(responseInfo.statusCode),
+      .url = url,
+      .status = status,
+      .statusText = httpReasonPhrase(status),
       .headers = headers,
       .mimeType = mimeTypeFromHeaders(headers),
       .encodedDataLength = encodedDataLength,

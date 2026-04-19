@@ -25,8 +25,10 @@ internal class ReactAndroidHWInputDeviceHelper {
   fun handleKeyEvent(ev: KeyEvent, context: ReactContext) {
     val eventKeyCode = ev.keyCode
     val eventKeyAction = ev.action
-    if ((eventKeyAction == KeyEvent.ACTION_UP || eventKeyAction == KeyEvent.ACTION_DOWN) &&
-        KEY_EVENTS_ACTIONS.containsKey(eventKeyCode)) {
+    if (
+        (eventKeyAction == KeyEvent.ACTION_UP || eventKeyAction == KeyEvent.ACTION_DOWN) &&
+            KEY_EVENTS_ACTIONS.containsKey(eventKeyCode)
+    ) {
       dispatchEvent(context, KEY_EVENTS_ACTIONS[eventKeyCode], lastFocusedViewId, eventKeyAction)
     }
   }
@@ -78,6 +80,8 @@ internal class ReactAndroidHWInputDeviceHelper {
             KeyEvent.KEYCODE_DPAD_CENTER to "select",
             KeyEvent.KEYCODE_ENTER to "select",
             KeyEvent.KEYCODE_SPACE to "select",
+            KeyEvent.KEYCODE_MEDIA_PLAY to "play",
+            KeyEvent.KEYCODE_MEDIA_PAUSE to "pause",
             KeyEvent.KEYCODE_MEDIA_PLAY_PAUSE to "playPause",
             KeyEvent.KEYCODE_MEDIA_REWIND to "rewind",
             KeyEvent.KEYCODE_MEDIA_FAST_FORWARD to "fastForward",

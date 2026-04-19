@@ -42,4 +42,4 @@ class TestScriptPhases < Test::Unit::TestCase
         assert_equal(snap_get_script_phases_no_codegen_discovery, result)
     end
 
-  end
+end

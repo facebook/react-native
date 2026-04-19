@@ -33,6 +33,8 @@ std::string RenderOutput::render(
   for (const auto& child : children) {
     result.push_back(renderView(*child, options));
   }
+
+  treesMutated_.erase(tree.getRootStubView().surfaceId);
   return folly::toJson(result);
 }
 
@@ -68,8 +70,8 @@ folly::dynamic RenderOutput::renderView(
     }
   }
 #endif
-
   element["props"] = props;
+
   return element;
 }
 

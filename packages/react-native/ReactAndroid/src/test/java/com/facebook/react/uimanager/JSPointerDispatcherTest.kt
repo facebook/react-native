@@ -76,7 +76,10 @@ class JSPointerDispatcherTest {
     val childRect = getChildViewRectInRootCoordinates(0)
     val ev =
         createMotionEvent(
-            MotionEvent.ACTION_DOWN, childRect.centerX().toFloat(), childRect.centerY().toFloat())
+            MotionEvent.ACTION_DOWN,
+            childRect.centerX().toFloat(),
+            childRect.centerY().toFloat(),
+        )
     val mockDispatcher: EventDispatcher = mock()
     pointerDispatcher.handleMotionEvent(ev, mockDispatcher, false)
     verify(mockDispatcher).dispatchEvent(argThat(EventWithName(PointerEventHelper.POINTER_DOWN)))

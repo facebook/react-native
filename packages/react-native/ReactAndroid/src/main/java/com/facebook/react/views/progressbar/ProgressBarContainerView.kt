@@ -55,7 +55,10 @@ internal class ProgressBarContainerView(context: Context) : FrameLayout(context)
     addView(
         progressBar,
         ViewGroup.LayoutParams(
-            ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.MATCH_PARENT))
+            ViewGroup.LayoutParams.MATCH_PARENT,
+            ViewGroup.LayoutParams.MATCH_PARENT,
+        ),
+    )
   }
 
   private fun setColor(progressBar: ProgressBar) {

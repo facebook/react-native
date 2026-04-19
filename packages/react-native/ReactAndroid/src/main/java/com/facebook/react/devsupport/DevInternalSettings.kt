@@ -59,9 +59,11 @@ internal class DevInternalSettings(applicationContext: Context, private val list
 
   override fun onSharedPreferenceChanged(sharedPreferences: SharedPreferences, key: String?) {
     if (listener != null) {
-      if (PREFS_FPS_DEBUG_KEY == key ||
-          PREFS_JS_DEV_MODE_DEBUG_KEY == key ||
-          PREFS_JS_MINIFY_DEBUG_KEY == key) {
+      if (
+          PREFS_FPS_DEBUG_KEY == key ||
+              PREFS_JS_DEV_MODE_DEBUG_KEY == key ||
+              PREFS_JS_MINIFY_DEBUG_KEY == key
+      ) {
         listener.onInternalSettingsChanged()
       }
     }

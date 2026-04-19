@@ -156,6 +156,7 @@ exports[`LogBoxInspectorStackFrame should render stack frame without press feedb
         "pressed": "transparent",
       }
     }
+    onPress={[Function]}
     style={
       Object {
         "borderRadius": 5,

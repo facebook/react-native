@@ -216,4 +216,96 @@ describe('ReactNativeDocument', () => {
     expect(isUnreachable(weakDocument)).toBe(true);
     expect(isUnreachable(weakNode)).toBe(true);
   });
+
+  describe('getElementById', () => {
+    it('returns the first element with the given ID, doing a depth-first search', () => {
+      let lastNode;
+      let fooNode;
+      let barFirstNode;
+      let barLastNode;
+      let bazNode;
+
+      const root = Fantom.createRoot();
+      Fantom.runTask(() => {
+        root.render(
+          <View
+            ref={node => {
+              lastNode = node;
+            }}>
+            <View
+              id="foo"
+              key="foo"
+              ref={node => {
+                fooNode = node;
+              }}
+            />
+            <View
+              id="bar"
+              key="bar"
+              ref={node => {
+                barFirstNode = node;
+              }}
+            />
+            <View key="parent">
+              <View id="bar" />
+              <View
+                id="baz"
+                ref={node => {
+                  bazNode = node;
+                }}
+              />
+            </View>
+          </View>,
+        );
+      });
+
+      const element = ensureInstance(lastNode, ReactNativeElement);
+      const document = ensureInstance(
+        element.ownerDocument,
+        ReactNativeDocument,
+      );
+
+      expect(document.getElementById('foo')).toBe(fooNode);
+      expect(document.getElementById('bar')).toBe(barFirstNode);
+      expect(document.getElementById('baz')).toBe(bazNode);
+      expect(document.getElementById('foobar')).toBe(null);
+
+      // Remove foo and first bar.
+      Fantom.runTask(() => {
+        root.render(
+          <View
+            ref={node => {
+              lastNode = node;
+            }}>
+            <View key="parent">
+              <View
+                id="bar"
+                ref={node => {
+                  barLastNode = node;
+                }}
+              />
+              <View
+                id="baz"
+                ref={node => {
+                  bazNode = node;
+                }}
+              />
+            </View>
+          </View>,
+        );
+      });
+
+      expect(document.getElementById('foo')).toBe(null);
+      expect(document.getElementById('bar')).toBe(barLastNode);
+      expect(document.getElementById('baz')).toBe(bazNode);
+
+      Fantom.runTask(() => {
+        root.destroy();
+      });
+
+      expect(document.getElementById('foo')).toBe(null);
+      expect(document.getElementById('bar')).toBe(null);
+      expect(document.getElementById('baz')).toBe(null);
+    });
+  });
 });

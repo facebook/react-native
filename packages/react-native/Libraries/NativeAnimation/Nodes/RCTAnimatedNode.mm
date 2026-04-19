@@ -16,7 +16,7 @@
 
 - (instancetype)initWithTag:(NSNumber *)tag config:(NSDictionary<NSString *, id> *)config
 {
-  if ((self = [super init])) {
+  if ((self = [super init]) != nullptr) {
     _nodeTag = tag;
     _config = [config copy];
   }
@@ -37,10 +37,10 @@ RCT_NOT_IMPLEMENTED(-(instancetype)init)
 
 - (void)addChild:(RCTAnimatedNode *)child
 {
-  if (!_childNodes) {
+  if (_childNodes == nullptr) {
     _childNodes = [NSMapTable strongToWeakObjectsMapTable];
   }
-  if (child) {
+  if (child != nullptr) {
     [_childNodes setObject:child forKey:child.nodeTag];
     [child onAttachedToNode:self];
   }
@@ -48,10 +48,10 @@ RCT_NOT_IMPLEMENTED(-(instancetype)init)
 
 - (void)removeChild:(RCTAnimatedNode *)child
 {
-  if (!_childNodes) {
+  if (_childNodes == nullptr) {
     return;
   }
-  if (child) {
+  if (child != nullptr) {
     [_childNodes removeObjectForKey:child.nodeTag];
     [child onDetachedFromNode:self];
   }
@@ -59,20 +59,20 @@ RCT_NOT_IMPLEMENTED(-(instancetype)init)
 
 - (void)onAttachedToNode:(RCTAnimatedNode *)parent
 {
-  if (!_parentNodes) {
+  if (_parentNodes == nullptr) {
     _parentNodes = [NSMapTable strongToWeakObjectsMapTable];
   }
-  if (parent) {
+  if (parent != nullptr) {
     [_parentNodes setObject:parent forKey:parent.nodeTag];
   }
 }
 
 - (void)onDetachedFromNode:(RCTAnimatedNode *)parent
 {
-  if (!_parentNodes) {
+  if (_parentNodes == nullptr) {
     return;
   }
-  if (parent) {
+  if (parent != nullptr) {
     [_parentNodes removeObjectForKey:parent.nodeTag];
   }
 }

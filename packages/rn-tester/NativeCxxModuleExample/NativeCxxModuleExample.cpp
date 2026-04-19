@@ -186,10 +186,11 @@ void NativeCxxModuleExample::voidFunc(jsi::Runtime& /*rt*/) {
   emitOnPress();
   emitOnClick<std::string>("value from callback on click!");
   emitOnChange(ObjectStruct{1, "two", std::nullopt});
-  emitOnSubmit(std::vector{
-      ObjectStruct{1, "two", std::nullopt},
-      ObjectStruct{3, "four", std::nullopt},
-      ObjectStruct{5, "six", std::nullopt}});
+  emitOnSubmit(
+      std::vector{
+          ObjectStruct{1, "two", std::nullopt},
+          ObjectStruct{3, "four", std::nullopt},
+          ObjectStruct{5, "six", std::nullopt}});
   emitOnEvent(NativeCxxModuleExampleEnumNone::NA);
 }
 
@@ -217,13 +218,14 @@ void NativeCxxModuleExample::emitCustomDeviceEvent(
       eventName,
       [jsInvoker = jsInvoker_](
           jsi::Runtime& rt, std::vector<jsi::Value>& args) {
-        args.emplace_back(jsi::Array::createWithElements(
-            rt,
-            jsi::Value(true),
-            jsi::Value(42),
-            jsi::String::createFromAscii(rt, "stringArg"),
-            bridging::toJs(
-                rt, CustomDeviceEvent{"one", 2, std::nullopt}, jsInvoker)));
+        args.emplace_back(
+            jsi::Array::createWithElements(
+                rt,
+                jsi::Value(true),
+                jsi::Value(42),
+                jsi::String::createFromAscii(rt, "stringArg"),
+                bridging::toJs(
+                    rt, CustomDeviceEvent{"one", 2, std::nullopt}, jsInvoker)));
       });
 }
 

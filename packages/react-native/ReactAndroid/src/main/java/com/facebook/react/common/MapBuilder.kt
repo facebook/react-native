@@ -45,7 +45,7 @@ public object MapBuilder {
       k4: K,
       v4: V,
       k5: K,
-      v5: V
+      v5: V,
   ): MutableMap<K, V> = hashMapOf(k1 to v1, k2 to v2, k3 to v3, k4 to v4, k5 to v5)
 
   /** Returns map containing the given entries. */
@@ -62,7 +62,7 @@ public object MapBuilder {
       k5: K,
       v5: V,
       k6: K,
-      v6: V
+      v6: V,
   ): MutableMap<K, V> = hashMapOf(k1 to v1, k2 to v2, k3 to v3, k4 to v4, k5 to v5, k6 to v6)
 
   /** Returns map containing the given entries. */
@@ -81,7 +81,7 @@ public object MapBuilder {
       k6: K,
       v6: V,
       k7: K,
-      v7: V
+      v7: V,
   ): MutableMap<K, V> =
       hashMapOf(k1 to v1, k2 to v2, k3 to v3, k4 to v4, k5 to v5, k6 to v6, k7 to v7)
 

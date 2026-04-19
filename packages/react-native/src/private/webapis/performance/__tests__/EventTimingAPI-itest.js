@@ -10,30 +10,20 @@
 
 import '@react-native/fantom/src/setUpDefaultReactNativeEnvironment';
 
-import type Performance from 'react-native/src/private/webapis/performance/Performance';
-import type {PerformanceObserverEntryList} from 'react-native/src/private/webapis/performance/PerformanceObserver';
-
 import MaybeNativePerformance from '../specs/NativePerformance';
 import * as Fantom from '@react-native/fantom';
 import nullthrows from 'nullthrows';
 import {useState} from 'react';
 import {Text, View} from 'react-native';
-import setUpPerformanceObserver from 'react-native/src/private/setup/setUpPerformanceObserver';
-import {PerformanceEventTiming} from 'react-native/src/private/webapis/performance/EventTiming';
-import {PerformanceObserver} from 'react-native/src/private/webapis/performance/PerformanceObserver';
 
 const NativePerformance = nullthrows(MaybeNativePerformance);
-
-setUpPerformanceObserver();
-
-declare var performance: Performance;
 
 function sleep(ms: number) {
   const end = performance.now() + ms;
   while (performance.now() < end) {}
 }
 
-function ensurePerformanceEventTiming(value: mixed): PerformanceEventTiming {
+function ensurePerformanceEventTiming(value: unknown): PerformanceEventTiming {
   if (!(value instanceof PerformanceEventTiming)) {
     throw new Error(
       `Expected instance of PerformanceEventTiming but got ${String(value)}`,
@@ -194,6 +184,44 @@ describe('Event Timing API', () => {
     expect(entry.interactionId).toBeGreaterThanOrEqual(0);
   });
 
+  it('provides the event timeStamp as startTime', () => {
+    const callback = jest.fn();
+
+    const observer = new PerformanceObserver(callback);
+    observer.observe({entryTypes: ['event']});
+
+    let eventTimeStamp;
+
+    const root = Fantom.createRoot();
+    Fantom.runTask(() => {
+      root.render(
+        <View
+          onClick={event => {
+            eventTimeStamp = event.timeStamp;
+          }}
+        />,
+      );
+    });
+
+    const element = nullthrows(root.document.documentElement.firstElementChild);
+
+    expect(callback).not.toHaveBeenCalled();
+
+    Fantom.dispatchNativeEvent(element, 'click');
+
+    expect(callback).toHaveBeenCalledTimes(1);
+
+    const entryList = callback.mock.lastCall[0] as PerformanceObserverEntryList;
+    const entries = entryList.getEntries();
+
+    expect(entries.length).toBe(1);
+
+    const entry = ensurePerformanceEventTiming(entries[0]);
+
+    expect(eventTimeStamp).not.toBeUndefined();
+    expect(entry.startTime).toBe(eventTimeStamp);
+  });
+
   it('reports number of dispatched events via performance.eventCounts', () => {
     NativePerformance.clearEventCountsForTesting?.();
 
@@ -249,6 +277,21 @@ describe('Event Timing API', () => {
     ]);
 
     expect([...performance.eventCounts.values()]).toEqual([1, 1, 3]);
+  });
+
+  it('does NOT allow creating instances of PerformanceEventTiming directly', () => {
+    expect(() => {
+      return new PerformanceEventTiming();
+    }).toThrow(
+      "Failed to construct 'PerformanceEventTiming': Illegal constructor",
+    );
+  });
+
+  it('does NOT allow creating instances of EventCounts directly', () => {
+    expect(() => {
+      // $FlowExpectedError[cannot-resolve-name]
+      return new EventCounts();
+    }).toThrow("Failed to construct 'EventCounts': Illegal constructor");
   });
 
   describe('durationThreshold option', () => {

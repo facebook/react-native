@@ -9,7 +9,7 @@
 
 import type * as React from 'react';
 import {Constructor} from '../../../types/private/Utilities';
-import {NativeMethods} from '../../../types/public/ReactNativeTypes';
+import {HostInstance} from '../../../types/public/ReactNativeTypes';
 import {ViewProps} from '../View/ViewPropTypes';
 
 /**
@@ -23,7 +23,7 @@ import {ViewProps} from '../View/ViewPropTypes';
  */
 declare class SafeAreaViewComponent extends React.Component<ViewProps> {}
 
-declare const SafeAreaViewBase: Constructor<NativeMethods> &
+declare const SafeAreaViewBase: Constructor<HostInstance> &
   typeof SafeAreaViewComponent;
 
 /**

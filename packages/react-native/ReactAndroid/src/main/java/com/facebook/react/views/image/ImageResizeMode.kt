@@ -21,6 +21,19 @@ public object ImageResizeMode {
   private const val RESIZE_MODE_REPEAT = "repeat"
   private const val RESIZE_MODE_NONE = "none"
 
+  @JvmSynthetic
+  public fun fromInt(resizeMode: Int): String {
+    return when (resizeMode) {
+      0 -> RESIZE_MODE_COVER
+      1 -> RESIZE_MODE_CONTAIN
+      2 -> RESIZE_MODE_STRETCH
+      3 -> RESIZE_MODE_CENTER
+      4 -> RESIZE_MODE_REPEAT
+      5 -> RESIZE_MODE_NONE
+      else -> RESIZE_MODE_NONE
+    }
+  }
+
   /** Converts JS resize modes into `ScalingUtils.ScaleType`. See `ImageResizeMode.js`. */
   @JvmStatic
   public fun toScaleType(resizeModeValue: String?): ScalingUtils.ScaleType {
@@ -44,11 +57,13 @@ public object ImageResizeMode {
   /** Converts JS resize modes into `Shader.TileMode`. See `ImageResizeMode.js`. */
   @JvmStatic
   public fun toTileMode(resizeModeValue: String?): TileMode {
-    if (RESIZE_MODE_CONTAIN == resizeModeValue ||
-        RESIZE_MODE_COVER == resizeModeValue ||
-        RESIZE_MODE_STRETCH == resizeModeValue ||
-        RESIZE_MODE_CENTER == resizeModeValue ||
-        RESIZE_MODE_NONE == resizeModeValue) {
+    if (
+        RESIZE_MODE_CONTAIN == resizeModeValue ||
+            RESIZE_MODE_COVER == resizeModeValue ||
+            RESIZE_MODE_STRETCH == resizeModeValue ||
+            RESIZE_MODE_CENTER == resizeModeValue ||
+            RESIZE_MODE_NONE == resizeModeValue
+    ) {
       return TileMode.CLAMP
     }
     if (RESIZE_MODE_REPEAT == resizeModeValue) {

@@ -7,15 +7,20 @@
 
 package com.facebook.react.runtime
 
-import com.facebook.jni.HybridData
-import com.facebook.jni.annotations.DoNotStripAny
+import com.facebook.jni.HybridClassBase
+import com.facebook.jni.annotations.DoNotStrip
 import com.facebook.react.bridge.WritableArray
 import com.facebook.react.bridge.WritableNativeArray
 import com.facebook.react.modules.core.JavaScriptTimerExecutor
 import com.facebook.soloader.SoLoader
 
-@DoNotStripAny
-internal class JSTimerExecutor(private val mHybridData: HybridData) : JavaScriptTimerExecutor {
+@DoNotStrip
+internal class JSTimerExecutor() : HybridClassBase(), JavaScriptTimerExecutor {
+  init {
+    initHybrid()
+  }
+
+  private external fun initHybrid()
 
   private external fun callTimers(timerIDs: WritableNativeArray)
 

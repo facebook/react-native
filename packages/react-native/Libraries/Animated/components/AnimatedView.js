@@ -15,7 +15,8 @@ import View from '../../Components/View/View';
 import createAnimatedComponent from '../createAnimatedComponent';
 import * as React from 'react';
 
-export default (createAnimatedComponent(View): AnimatedComponentType<
+// $FlowFixMe[incompatible-type]
+export default createAnimatedComponent(View) as AnimatedComponentType<
   ViewProps,
   React.ElementRef<typeof View>,
->);
+>;

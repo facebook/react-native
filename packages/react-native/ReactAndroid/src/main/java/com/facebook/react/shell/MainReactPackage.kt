@@ -15,6 +15,7 @@ import com.facebook.react.bridge.ModuleSpec
 import com.facebook.react.bridge.NativeModule
 import com.facebook.react.bridge.ReactApplicationContext
 import com.facebook.react.common.ClassFinder
+import com.facebook.react.common.annotations.UnstableReactNativeAPI
 import com.facebook.react.internal.featureflags.ReactNativeFeatureFlags
 import com.facebook.react.module.annotations.ReactModule
 import com.facebook.react.module.annotations.ReactModuleList
@@ -52,17 +53,17 @@ import com.facebook.react.views.progressbar.ReactProgressBarViewManager
 import com.facebook.react.views.safeareaview.ReactSafeAreaViewManager
 import com.facebook.react.views.scroll.ReactHorizontalScrollContainerViewManager
 import com.facebook.react.views.scroll.ReactHorizontalScrollViewManager
+import com.facebook.react.views.scroll.ReactNestedScrollViewManager
 import com.facebook.react.views.scroll.ReactScrollViewManager
 import com.facebook.react.views.swiperefresh.SwipeRefreshLayoutManager
 import com.facebook.react.views.switchview.ReactSwitchManager
 import com.facebook.react.views.text.PreparedLayoutTextViewManager
-import com.facebook.react.views.text.ReactRawTextManager
 import com.facebook.react.views.text.ReactTextViewManager
-import com.facebook.react.views.text.ReactVirtualTextViewManager
-import com.facebook.react.views.text.frescosupport.FrescoBasedReactTextInlineImageViewManager
+import com.facebook.react.views.text.SelectableTextViewManager
 import com.facebook.react.views.textinput.ReactTextInputManager
 import com.facebook.react.views.unimplementedview.ReactUnimplementedViewManager
 import com.facebook.react.views.view.ReactViewManager
+import com.facebook.react.views.virtual.view.ReactVirtualViewManager
 
 /**
  * Package defining basic modules and view managers.
@@ -96,7 +97,9 @@ import com.facebook.react.views.view.ReactViewManager
             ToastModule::class,
             VibrationModule::class,
             WebSocketModule::class,
-        ])
+        ]
+)
+@OptIn(UnstableReactNativeAPI::class)
 public class MainReactPackage
 @JvmOverloads
 constructor(private val config: MainPackageConfig? = null) :
@@ -133,32 +136,35 @@ constructor(private val config: MainPackageConfig? = null) :
         else -> null
       }
 
+  @Suppress("DEPRECATION")
   override fun createViewManagers(reactContext: ReactApplicationContext): List<ViewManager<*, *>> =
       listOf(
           ReactDrawerLayoutManager(),
           ReactHorizontalScrollViewManager(),
           ReactHorizontalScrollContainerViewManager(),
           ReactProgressBarViewManager(),
-          ReactScrollViewManager(),
+          if (ReactNativeFeatureFlags.useNestedScrollViewAndroid()) ReactNestedScrollViewManager()
+          else ReactScrollViewManager(),
           ReactSwitchManager(),
           ReactSafeAreaViewManager(),
           SwipeRefreshLayoutManager(),
           // Native equivalents
-          FrescoBasedReactTextInlineImageViewManager(),
           ReactImageManager(),
           ReactModalHostManager(),
-          ReactRawTextManager(),
           ReactTextInputManager(),
           if (ReactNativeFeatureFlags.enablePreparedTextLayout()) PreparedLayoutTextViewManager()
           else ReactTextViewManager(),
+          SelectableTextViewManager(),
           ReactViewManager(),
-          ReactVirtualTextViewManager(),
-          ReactUnimplementedViewManager())
+          ReactVirtualViewManager(),
+          ReactUnimplementedViewManager(),
+      )
 
   /**
    * A map of view managers that should be registered with
    * [com.facebook.react.uimanager.UIManagerModule]
    */
+  @Suppress("DEPRECATION")
   @SuppressLint("VisibleForTests")
   public val viewManagersMap: Map<String, ModuleSpec> =
       mapOf(
@@ -173,16 +179,17 @@ constructor(private val config: MainPackageConfig? = null) :
           ReactSafeAreaViewManager.REACT_CLASS to
               ModuleSpec.viewManagerSpec { ReactSafeAreaViewManager() },
           ReactScrollViewManager.REACT_CLASS to
-              ModuleSpec.viewManagerSpec { ReactScrollViewManager() },
+              ModuleSpec.viewManagerSpec {
+                if (ReactNativeFeatureFlags.useNestedScrollViewAndroid())
+                    ReactNestedScrollViewManager()
+                else ReactScrollViewManager()
+              },
           ReactSwitchManager.REACT_CLASS to ModuleSpec.viewManagerSpec { ReactSwitchManager() },
           SwipeRefreshLayoutManager.REACT_CLASS to
               ModuleSpec.viewManagerSpec { SwipeRefreshLayoutManager() },
-          FrescoBasedReactTextInlineImageViewManager.REACT_CLASS to
-              ModuleSpec.viewManagerSpec { FrescoBasedReactTextInlineImageViewManager() },
           ReactImageManager.REACT_CLASS to ModuleSpec.viewManagerSpec { ReactImageManager() },
           ReactModalHostManager.REACT_CLASS to
               ModuleSpec.viewManagerSpec { ReactModalHostManager() },
-          ReactRawTextManager.REACT_CLASS to ModuleSpec.viewManagerSpec { ReactRawTextManager() },
           ReactTextInputManager.REACT_CLASS to
               ModuleSpec.viewManagerSpec { ReactTextInputManager() },
           ReactTextViewManager.REACT_CLASS to
@@ -191,11 +198,14 @@ constructor(private val config: MainPackageConfig? = null) :
                     PreparedLayoutTextViewManager()
                 else ReactTextViewManager()
               },
+          SelectableTextViewManager.REACT_CLASS to
+              ModuleSpec.viewManagerSpec { SelectableTextViewManager() },
           ReactViewManager.REACT_CLASS to ModuleSpec.viewManagerSpec { ReactViewManager() },
-          ReactVirtualTextViewManager.REACT_CLASS to
-              ModuleSpec.viewManagerSpec { ReactVirtualTextViewManager() },
+          ReactVirtualViewManager.REACT_CLASS to
+              ModuleSpec.viewManagerSpec { ReactVirtualViewManager() },
           ReactUnimplementedViewManager.REACT_CLASS to
-              ModuleSpec.viewManagerSpec { ReactUnimplementedViewManager() })
+              ModuleSpec.viewManagerSpec { ReactUnimplementedViewManager() },
+      )
 
   public override fun getViewManagers(reactContext: ReactApplicationContext): List<ModuleSpec> =
       viewManagersMap.values.toList()
@@ -205,7 +215,7 @@ constructor(private val config: MainPackageConfig? = null) :
 
   override fun createViewManager(
       reactContext: ReactApplicationContext,
-      viewManagerName: String
+      viewManagerName: String,
   ): ViewManager<*, *>? {
     val spec = viewManagersMap[viewManagerName]
     return spec?.provider?.get() as? ViewManager<*, *>
@@ -218,7 +228,8 @@ constructor(private val config: MainPackageConfig? = null) :
     try {
       val reactModuleInfoProviderClass =
           ClassFinder.findClass(
-              "com.facebook.react.shell.MainReactPackage$\$ReactModuleInfoProvider")
+              "com.facebook.react.shell.MainReactPackage$\$ReactModuleInfoProvider"
+          )
       @Suppress("DEPRECATION")
       return reactModuleInfoProviderClass?.newInstance() as? ReactModuleInfoProvider
           ?: fallbackForMissingClass()
@@ -226,10 +237,14 @@ constructor(private val config: MainPackageConfig? = null) :
       return fallbackForMissingClass()
     } catch (e: InstantiationException) {
       throw RuntimeException(
-          "No ReactModuleInfoProvider for MainReactPackage$\$ReactModuleInfoProvider", e)
+          "No ReactModuleInfoProvider for MainReactPackage$\$ReactModuleInfoProvider",
+          e,
+      )
     } catch (e: IllegalAccessException) {
       throw RuntimeException(
-          "No ReactModuleInfoProvider for MainReactPackage$\$ReactModuleInfoProvider", e)
+          "No ReactModuleInfoProvider for MainReactPackage$\$ReactModuleInfoProvider",
+          e,
+      )
     }
   }
 
@@ -262,7 +277,8 @@ constructor(private val config: MainPackageConfig? = null) :
                 SoundManagerModule::class.java,
                 ToastModule::class.java,
                 VibrationModule::class.java,
-                WebSocketModule::class.java)
+                WebSocketModule::class.java,
+            )
             .filterNotNull()
             .toTypedArray()
 
@@ -278,7 +294,8 @@ constructor(private val config: MainPackageConfig? = null) :
                       reactModule.canOverrideExistingModule,
                       reactModule.needsEagerInit,
                       reactModule.isCxxModule,
-                      classIsTurboModule(moduleClass))
+                      classIsTurboModule(moduleClass),
+                  )
             }
     return ReactModuleInfoProvider { moduleMap }
   }

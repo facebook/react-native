@@ -8,9 +8,9 @@
  * @format
  */
 
-import ensureInstance from '../../../src/private/__tests__/utilities/ensureInstance';
-import ReadOnlyElement from '../../../src/private/webapis/dom/nodes/ReadOnlyElement';
-import View from '../../Components/View/View';
+import type ReactNativeDocument from '../../../src/private/webapis/dom/nodes/ReactNativeDocument';
+import type ReadOnlyElement from '../../../src/private/webapis/dom/nodes/ReadOnlyElement';
+
 import AppContainer from '../../ReactNative/AppContainer';
 import LogBoxInspectorContainer from '../LogBoxInspectorContainer';
 import * as Fantom from '@react-native/fantom';
@@ -34,36 +34,6 @@ interface NotificationUI {
   message: ?string;
 }
 
-function findById(node: ReadOnlyElement, id: string): ?ReadOnlyElement {
-  if (node.id === id) {
-    return node;
-  }
-
-  for (const child of node.children) {
-    const found = findById(child, id);
-    if (found) {
-      return found;
-    }
-  }
-
-  return null;
-}
-
-function findTextById(node: ReadOnlyElement, id: string): ?string {
-  if (node.id === id) {
-    return node.textContent;
-  }
-
-  for (const child of node.children) {
-    const found = findTextById(child, id);
-    if (found != null) {
-      return found;
-    }
-  }
-
-  return null;
-}
-
 function findTextByIds(
   node: ReadOnlyElement,
   id: string,
@@ -82,26 +52,28 @@ function findTextByIds(
 }
 
 // Finds the LogBox notification UI by searching for the text IDs.
-function findLogBoxNotificationUI(node: ReadOnlyElement): NotificationUI {
+function findLogBoxNotificationUI(doc: ReactNativeDocument): NotificationUI {
   return {
-    count: findTextById(node, 'logbox_notification_count_text'),
-    message: findTextById(node, 'logbox_notification_message_text'),
+    count: doc.getElementById('logbox_notification_count_text')?.textContent,
+    message: doc.getElementById('logbox_notification_message_text')
+      ?.textContent,
   };
 }
 
 // Finds the LogBox inspector UI by searching for the text IDs.
-function findLogBoxInspectorUI(node: ReadOnlyElement): InspectorUI {
+function findLogBoxInspectorUI(doc: ReactNativeDocument): InspectorUI {
   return {
-    header: findTextById(node, 'logbox_header_title_text'),
-    title: findTextById(node, 'logbox_message_title_text'),
-    message: findTextById(node, 'logbox_message_contents_text'),
+    header: doc.getElementById('logbox_header_title_text')?.textContent,
+    title: doc.getElementById('logbox_message_title_text')?.textContent,
+    message: doc.getElementById('logbox_message_contents_text')?.textContent,
     // codeFrames: undefined,
     componentStackFrames: findTextByIds(
-      node,
+      doc.documentElement,
       'logbox_component_stack_frame_text',
     ),
-    stackFrames: getStackFrames(node),
-    isDismissable: findTextById(node, 'logbox_dismissable_text') == null,
+    stackFrames: getStackFrames(doc.documentElement),
+    isDismissable:
+      doc.getElementById('logbox_dismissable_text')?.textContent == null,
   };
 }
 
@@ -173,100 +145,81 @@ export function renderLogBox(
   // Returns the LogBox notification UI as an object.
   getNotificationUI: () => ?NotificationUI,
 } {
-  let inspectorNode;
-
   const logBoxRoot = Fantom.createRoot();
   Fantom.runTask(() => {
-    logBoxRoot.render(
-      <View
-        ref={node => {
-          inspectorNode = node;
-        }}>
-        <LogBoxInspectorContainer />
-      </View>,
-    );
+    logBoxRoot.render(<LogBoxInspectorContainer />);
   });
 
   expect(logBoxRoot.getRenderedOutput().toJSX()).toBe(null);
 
-  const logBoxInstance = ensureInstance(inspectorNode, ReadOnlyElement);
+  const logBoxDoc = logBoxRoot.document;
 
-  let appNode;
   const root = Fantom.createRoot();
   Fantom.runTask(() => {
     root.render(
-      <View
-        ref={node => {
-          appNode = node;
-        }}>
-        <AppContainer rootTag={root.getRootTag()}>{children}</AppContainer>
-      </View>,
+      <AppContainer rootTag={root.getRootTag()}>{children}</AppContainer>,
     );
   });
+
+  const appDoc = root.document;
 
   return {
     isOpen: () => {
       return logBoxRoot.getRenderedOutput().toJSX() != null;
     },
     openNotification: () => {
-      const appInstance = ensureInstance(appNode, ReadOnlyElement);
       const button = nullthrows(
-        findById(appInstance, 'logbox_open_button_error'),
+        appDoc.getElementById('logbox_open_button_error'),
       );
 
       Fantom.dispatchNativeEvent(button, 'click');
     },
     dimissNotification: () => {
-      const appInstance = ensureInstance(appNode, ReadOnlyElement);
       const button = nullthrows(
-        findById(appInstance, 'logbox_dismiss_button_error'),
+        appDoc.getElementById('logbox_dismiss_button_error'),
       );
 
       Fantom.dispatchNativeEvent(button, 'click');
     },
     mimimizeInspector: () => {
       const button = nullthrows(
-        findById(logBoxInstance, 'logbox_footer_button_minimize'),
+        logBoxDoc.getElementById('logbox_footer_button_minimize'),
       );
 
       Fantom.dispatchNativeEvent(button, 'click');
     },
     dismissInspector: () => {
       const button = nullthrows(
-        findById(logBoxInstance, 'logbox_footer_button_dismiss'),
+        logBoxDoc.getElementById('logbox_footer_button_dismiss'),
       );
 
       Fantom.dispatchNativeEvent(button, 'click');
     },
     nextLog: () => {
       const button = nullthrows(
-        findById(logBoxInstance, 'logbox_header_button_next'),
+        logBoxDoc.getElementById('logbox_header_button_next'),
       );
 
       Fantom.dispatchNativeEvent(button, 'click');
     },
     previousLog: () => {
       const button = nullthrows(
-        findById(logBoxInstance, 'logbox_header_button_prev'),
+        logBoxDoc.getElementById('logbox_header_button_prev'),
       );
 
       Fantom.dispatchNativeEvent(button, 'click');
     },
     getInspectorUI: () => {
-      if (findById(logBoxInstance, 'logbox_inspector') == null) {
+      if (logBoxDoc.getElementById('logbox_inspector') == null) {
         return null;
       }
-      return findLogBoxInspectorUI(logBoxInstance);
+      return findLogBoxInspectorUI(logBoxDoc);
     },
     getNotificationUI: () => {
-      if (appNode == null) {
+      if (appDoc.getElementById('logbox_notification') == null) {
         return null;
       }
-      const appInstance = ensureInstance(appNode, ReadOnlyElement);
-      if (findById(appInstance, 'logbox_notification') == null) {
-        return null;
-      }
-      return findLogBoxNotificationUI(appInstance);
+      return findLogBoxNotificationUI(appDoc);
     },
   };
 }

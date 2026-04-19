@@ -395,7 +395,8 @@ JNIArgs convertJSIArgsToJNIArgs(
             "boolean", argIndex, methodName, arg, &rt);
       }
       jarg->l = makeGlobalIfNecessary(
-          jni::JBoolean::valueOf(arg->getBool()).release());
+          jni::JBoolean::valueOf(static_cast<unsigned char>(arg->getBool()))
+              .release());
     } else if (type == "Ljava/lang/String;") {
       if (!arg->isString()) {
         throw JavaTurboModuleArgumentConversionException(

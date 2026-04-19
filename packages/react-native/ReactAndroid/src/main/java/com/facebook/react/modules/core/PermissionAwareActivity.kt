@@ -27,6 +27,6 @@ public interface PermissionAwareActivity {
   public fun requestPermissions(
       permissions: Array<String>,
       requestCode: Int,
-      listener: PermissionListener?
+      listener: PermissionListener?,
   )
 }

@@ -26,16 +26,20 @@ internal object JSStackTrace {
     for (i in 0 until stack.size()) {
       val frame = stack.getMap(i) ?: continue
       stringBuilder.append(frame.getString(METHOD_NAME_KEY)).append("@").append(parseFileId(frame))
-      if (frame.hasKey(LINE_NUMBER_KEY) &&
-          !frame.isNull(LINE_NUMBER_KEY) &&
-          frame.getType(LINE_NUMBER_KEY) == ReadableType.Number) {
+      if (
+          frame.hasKey(LINE_NUMBER_KEY) &&
+              !frame.isNull(LINE_NUMBER_KEY) &&
+              frame.getType(LINE_NUMBER_KEY) == ReadableType.Number
+      ) {
         stringBuilder.append(frame.getInt(LINE_NUMBER_KEY))
       } else {
         stringBuilder.append(-1)
       }
-      if (frame.hasKey(COLUMN_KEY) &&
-          !frame.isNull(COLUMN_KEY) &&
-          frame.getType(COLUMN_KEY) == ReadableType.Number) {
+      if (
+          frame.hasKey(COLUMN_KEY) &&
+              !frame.isNull(COLUMN_KEY) &&
+              frame.getType(COLUMN_KEY) == ReadableType.Number
+      ) {
         stringBuilder.append(":").append(frame.getInt(COLUMN_KEY))
       }
       stringBuilder.append("\n")
@@ -51,9 +55,11 @@ internal object JSStackTrace {
   // stack traces with a single source map file.
   // NOTE: The ".js" suffix is kept to avoid ambiguities between "module-id:line" and "line:column".
   private fun parseFileId(frame: ReadableMap): String {
-    if (frame.hasKey(FILE_KEY) &&
-        !frame.isNull(FILE_KEY) &&
-        frame.getType(FILE_KEY) == ReadableType.String) {
+    if (
+        frame.hasKey(FILE_KEY) &&
+            !frame.isNull(FILE_KEY) &&
+            frame.getType(FILE_KEY) == ReadableType.String
+    ) {
       val file = frame.getString(FILE_KEY)
       if (file != null) {
         val matcher = FILE_ID_PATTERN.matcher(file)

@@ -20,15 +20,11 @@ struct IDevUIDelegate {
 
   virtual void hideDownloadBundleProgress() = 0;
 
-  virtual void showLoadingView(
-      const std::string& message,
-      SharedColor textColor,
-      SharedColor backgroundColor) = 0;
+  virtual void showLoadingView(const std::string &message, SharedColor textColor, SharedColor backgroundColor) = 0;
 
   virtual void hideLoadingView() = 0;
 
-  virtual void showDebuggerOverlay(
-      std::function<void()>&& resumeDebuggerFn) = 0;
+  virtual void showDebuggerOverlay(std::function<void()> &&resumeDebuggerFn) = 0;
 
   virtual void hideDebuggerOverlay() = 0;
 };

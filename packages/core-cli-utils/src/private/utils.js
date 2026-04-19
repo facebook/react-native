@@ -55,7 +55,7 @@ export function isOnPath(dep: string, description: string): PathCheckResult {
 }
 
 export function assertDependencies(
-  ...deps: $ReadOnlyArray<ReturnType<typeof isOnPath>>
+  ...deps: ReadonlyArray<ReturnType<typeof isOnPath>>
 ) {
   for (const {found, dep, description} of deps) {
     if (!found) {

@@ -17,10 +17,10 @@
 #include <ReactCommon/BindingsInstallerHolder.h>
 #include <ReactCommon/CxxTurboModuleUtils.h>
 #include <ReactCommon/JavaInteropTurboModule.h>
-#include <ReactCommon/TurboCxxModule.h>
 #include <ReactCommon/TurboModuleBinding.h>
 #include <ReactCommon/TurboModulePerfLogger.h>
-#include <react/jni/CxxModuleWrapper.h>
+#include <react/featureflags/ReactNativeFeatureFlags.h>
+#include <react/jni/CxxModuleWrapperBase.h>
 
 namespace facebook::react {
 
@@ -95,24 +95,20 @@ class JMethodDescriptor : public jni::JavaClass<JMethodDescriptor> {
 } // namespace
 
 TurboModuleManager::TurboModuleManager(
-    RuntimeExecutor runtimeExecutor,
     std::shared_ptr<CallInvoker> jsCallInvoker,
     std::shared_ptr<NativeMethodCallInvoker> nativeMethodCallInvoker,
     jni::alias_ref<TurboModuleManagerDelegate::javaobject> delegate)
-    : runtimeExecutor_(std::move(runtimeExecutor)),
-      jsCallInvoker_(std::move(jsCallInvoker)),
+    : jsCallInvoker_(std::move(jsCallInvoker)),
       nativeMethodCallInvoker_(std::move(nativeMethodCallInvoker)),
       delegate_(jni::make_global(delegate)) {}
 
 jni::local_ref<TurboModuleManager::jhybriddata> TurboModuleManager::initHybrid(
     jni::alias_ref<jhybridobject> /* unused */,
-    jni::alias_ref<JRuntimeExecutor::javaobject> runtimeExecutor,
     jni::alias_ref<CallInvokerHolder::javaobject> jsCallInvokerHolder,
     jni::alias_ref<NativeMethodCallInvokerHolder::javaobject>
         nativeMethodCallInvokerHolder,
     jni::alias_ref<TurboModuleManagerDelegate::javaobject> delegate) {
   return makeCxxInstance(
-      runtimeExecutor->cthis()->get(),
       jsCallInvokerHolder->cthis()->getCallInvoker(),
       nativeMethodCallInvokerHolder->cthis()->getNativeMethodCallInvoker(),
       delegate);
@@ -122,14 +118,16 @@ void TurboModuleManager::registerNatives() {
   registerHybrid({
       makeNativeMethod("initHybrid", TurboModuleManager::initHybrid),
       makeNativeMethod(
-          "installJSIBindings", TurboModuleManager::installJSIBindings),
+          "dispatchJSBindingInstall",
+          TurboModuleManager::dispatchJSBindingInstall),
   });
 }
 
-TurboModuleProviderFunctionType TurboModuleManager::createTurboModuleProvider(
-    jni::alias_ref<jhybridobject> javaPart,
-    jsi::Runtime* runtime) {
-  return [runtime, weakJavaPart = jni::make_weak(javaPart)](
+TurboModuleProviderFunctionTypeWithRuntime
+TurboModuleManager::createTurboModuleProvider(
+    jni::alias_ref<jhybridobject> javaPart) {
+  return [weakJavaPart = jni::make_weak(javaPart)](
+             jsi::Runtime& runtime,
              const std::string& name) -> std::shared_ptr<TurboModule> {
     auto javaPart = weakJavaPart.lockLocal();
     if (!javaPart) {
@@ -141,7 +139,7 @@ TurboModuleProviderFunctionType TurboModuleManager::createTurboModuleProvider(
       return nullptr;
     }
 
-    return cxxPart->getTurboModule(javaPart, name, *runtime);
+    return cxxPart->getTurboModule(javaPart, name, runtime);
   };
 }
 
@@ -177,11 +175,24 @@ std::shared_ptr<TurboModule> TurboModuleManager::getTurboModule(
     return turboModule;
   }
 
+  // TODO(T248203434): Remove this workaround once fixed in fbjni
+  // NOTE: We use jstring instead of std::string for the method signature to
+  // work around a bug in fbjni's exception handling. When a Java method throws
+  // an exception, fbjni's JMethod::operator() needs to check for pending
+  // exceptions via FACEBOOK_JNI_THROW_PENDING_EXCEPTION(). However, if we pass
+  // std::string, fbjni creates a temporary local_ref<JString> for the argument.
+  // C++ destroys temporaries at the end of the full-expression, which happens
+  // AFTER the JNI call returns but BEFORE the exception check. The destructor
+  // calls JNI functions (GetObjectRefType) while there's a pending exception,
+  // which violates JNI rules and causes ART's CheckJNI to abort the process.
+  //
+  // By pre-converting to jstring here, we control the lifetime of the
+  // local_ref<JString> so it extends past the exception check.
   static auto getTurboJavaModule =
-      javaPart->getClass()
-          ->getMethod<jni::alias_ref<JTurboModule>(const std::string&)>(
-              "getTurboJavaModule");
-  auto moduleInstance = getTurboJavaModule(javaPart.get(), name);
+      javaPart->getClass()->getMethod<jni::alias_ref<JTurboModule>(jstring)>(
+          "getTurboJavaModule");
+  auto jname = jni::make_jstring(name);
+  auto moduleInstance = getTurboJavaModule(javaPart.get(), jname.get());
   if (moduleInstance) {
     TurboModulePerfLogger::moduleJSRequireEndingStart(moduleName);
     JavaTurboModule::InitParams params = {
@@ -208,28 +219,22 @@ std::shared_ptr<TurboModule> TurboModuleManager::getTurboModule(
     return turboModule;
   }
 
-  static auto getTurboLegacyCxxModule =
-      javaPart->getClass()
-          ->getMethod<jni::alias_ref<CxxModuleWrapper::javaobject>(
-              const std::string&)>("getTurboLegacyCxxModule");
-  auto legacyCxxModule = getTurboLegacyCxxModule(javaPart.get(), name);
-  if (legacyCxxModule) {
-    TurboModulePerfLogger::moduleJSRequireEndingStart(moduleName);
-
-    auto turboModule = std::make_shared<react::TurboCxxModule>(
-        legacyCxxModule->cthis()->getModule(), jsCallInvoker_);
-    turboModuleCache_.insert({name, turboModule});
-
-    TurboModulePerfLogger::moduleJSRequireEndingEnd(moduleName);
-    return turboModule;
-  }
-
   return nullptr;
 }
 
-TurboModuleProviderFunctionType TurboModuleManager::createLegacyModuleProvider(
+TurboModuleProviderFunctionTypeWithRuntime
+TurboModuleManager::createLegacyModuleProvider(
     jni::alias_ref<jhybridobject> javaPart) {
+  bool shouldCreateLegacyModules =
+      ReactNativeFeatureFlags::enableBridgelessArchitecture() &&
+      ReactNativeFeatureFlags::useTurboModuleInterop();
+
+  if (!shouldCreateLegacyModules) {
+    return nullptr;
+  }
+
   return [weakJavaPart = jni::make_weak(javaPart)](
+             jsi::Runtime& /*runtime*/,
              const std::string& name) -> std::shared_ptr<TurboModule> {
     auto javaPart = weakJavaPart.lockLocal();
     if (!javaPart) {
@@ -260,28 +265,24 @@ std::shared_ptr<TurboModule> TurboModuleManager::getLegacyModule(
 
   TurboModulePerfLogger::moduleJSRequireBeginningEnd(moduleName);
 
-  static auto getLegacyCxxModule =
-      javaPart->getClass()
-          ->getMethod<jni::alias_ref<CxxModuleWrapper::javaobject>(
-              const std::string&)>("getLegacyCxxModule");
-  auto legacyCxxModule = getLegacyCxxModule(javaPart.get(), name);
-
-  if (legacyCxxModule) {
-    TurboModulePerfLogger::moduleJSRequireEndingStart(moduleName);
-
-    auto turboModule = std::make_shared<react::TurboCxxModule>(
-        legacyCxxModule->cthis()->getModule(), jsCallInvoker_);
-    legacyModuleCache_.insert({name, turboModule});
-
-    TurboModulePerfLogger::moduleJSRequireEndingEnd(moduleName);
-    return turboModule;
-  }
-
+  // TODO(T248203434): Remove this workaround once fixed in fbjni
+  // NOTE: We use jstring instead of std::string for the method signature to
+  // work around a bug in fbjni's exception handling. When a Java method throws
+  // an exception, fbjni's JMethod::operator() needs to check for pending
+  // exceptions via FACEBOOK_JNI_THROW_PENDING_EXCEPTION(). However, if we pass
+  // std::string, fbjni creates a temporary local_ref<JString> for the argument.
+  // C++ destroys temporaries at the end of the full-expression, which happens
+  // AFTER the JNI call returns but BEFORE the exception check. The destructor
+  // calls JNI functions (GetObjectRefType) while there's a pending exception,
+  // which violates JNI rules and causes ART's CheckJNI to abort the process.
+  //
+  // By pre-converting to jstring here, we control the lifetime of the
+  // local_ref<JString> so it extends past the exception check.
   static auto getLegacyJavaModule =
-      javaPart->getClass()
-          ->getMethod<jni::alias_ref<JNativeModule>(const std::string&)>(
-              "getLegacyJavaModule");
-  auto moduleInstance = getLegacyJavaModule(javaPart.get(), name);
+      javaPart->getClass()->getMethod<jni::alias_ref<JNativeModule>(jstring)>(
+          "getLegacyJavaModule");
+  auto jname = jni::make_jstring(name);
+  auto moduleInstance = getLegacyJavaModule(javaPart.get(), jname.get());
 
   if (moduleInstance) {
     TurboModulePerfLogger::moduleJSRequireEndingStart(moduleName);
@@ -318,22 +319,27 @@ std::shared_ptr<TurboModule> TurboModuleManager::getLegacyModule(
   return nullptr;
 }
 
-void TurboModuleManager::installJSIBindings(
+void TurboModuleManager::installJSBindings(
+    jsi::Runtime& runtime,
+    jni::alias_ref<jhybridobject> javaPart) {
+  TurboModuleBinding::install(
+      runtime,
+      createTurboModuleProvider(javaPart),
+      createLegacyModuleProvider(javaPart));
+}
+
+void TurboModuleManager::dispatchJSBindingInstall(
     jni::alias_ref<jhybridobject> javaPart,
-    bool shouldCreateLegacyModules) {
+    jni::alias_ref<JRuntimeExecutor::javaobject> runtimeExecutor) {
   auto cxxPart = javaPart->cthis();
   if (cxxPart == nullptr || !cxxPart->jsCallInvoker_) {
     return; // Runtime doesn't exist when attached to Chrome debugger.
   }
 
-  cxxPart->runtimeExecutor_([javaPart = jni::make_global(javaPart),
-                             shouldCreateLegacyModules](jsi::Runtime& runtime) {
-    TurboModuleBinding::install(
-        runtime,
-        createTurboModuleProvider(javaPart, &runtime),
-        shouldCreateLegacyModules ? createLegacyModuleProvider(javaPart)
-                                  : nullptr);
-  });
+  runtimeExecutor->cthis()->get()(
+      [javaPart = jni::make_global(javaPart)](jsi::Runtime& runtime) {
+        installJSBindings(runtime, javaPart);
+      });
 }
 
 } // namespace facebook::react

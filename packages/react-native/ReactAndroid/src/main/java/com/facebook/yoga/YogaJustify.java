@@ -10,12 +10,16 @@
 package com.facebook.yoga;
 
 public enum YogaJustify {
-  FLEX_START(0),
-  CENTER(1),
-  FLEX_END(2),
-  SPACE_BETWEEN(3),
-  SPACE_AROUND(4),
-  SPACE_EVENLY(5);
+  AUTO(0),
+  FLEX_START(1),
+  CENTER(2),
+  FLEX_END(3),
+  SPACE_BETWEEN(4),
+  SPACE_AROUND(5),
+  SPACE_EVENLY(6),
+  STRETCH(7),
+  START(8),
+  END(9);
 
   private final int mIntValue;
 
@@ -29,12 +33,16 @@ public enum YogaJustify {
 
   public static YogaJustify fromInt(int value) {
     switch (value) {
-      case 0: return FLEX_START;
-      case 1: return CENTER;
-      case 2: return FLEX_END;
-      case 3: return SPACE_BETWEEN;
-      case 4: return SPACE_AROUND;
-      case 5: return SPACE_EVENLY;
+      case 0: return AUTO;
+      case 1: return FLEX_START;
+      case 2: return CENTER;
+      case 3: return FLEX_END;
+      case 4: return SPACE_BETWEEN;
+      case 5: return SPACE_AROUND;
+      case 6: return SPACE_EVENLY;
+      case 7: return STRETCH;
+      case 8: return START;
+      case 9: return END;
       default: throw new IllegalArgumentException("Unknown enum value: " + value);
     }
   }

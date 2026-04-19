@@ -20,6 +20,7 @@ import com.facebook.react.module.model.ReactModuleInfoProvider
 import com.facebook.react.modules.core.DefaultHardwareBackBtnHandler
 import com.facebook.react.modules.core.DeviceEventManagerModule
 import com.facebook.react.modules.core.ExceptionsManagerModule
+import com.facebook.react.modules.core.HeadlessJsTaskSupportModule
 import com.facebook.react.modules.debug.DevMenuModule
 import com.facebook.react.modules.debug.DevSettingsModule
 import com.facebook.react.modules.debug.SourceCodeModule
@@ -37,10 +38,13 @@ import java.util.HashMap
             SourceCodeModule::class,
             LogBoxModule::class,
             DeviceEventManagerModule::class,
-            ExceptionsManagerModule::class])
+            ExceptionsManagerModule::class,
+            HeadlessJsTaskSupportModule::class,
+        ]
+)
 internal class CoreReactPackage(
     private val devSupportManager: DevSupportManager,
-    private val hardwareBackBtnHandler: DefaultHardwareBackBtnHandler
+    private val hardwareBackBtnHandler: DefaultHardwareBackBtnHandler,
 ) : BaseReactPackage() {
 
   override fun getModule(name: String, reactContext: ReactApplicationContext): NativeModule? =
@@ -55,6 +59,7 @@ internal class CoreReactPackage(
 
         LogBoxModule.NAME -> LogBoxModule(reactContext, devSupportManager)
         ExceptionsManagerModule.NAME -> ExceptionsManagerModule(devSupportManager)
+        HeadlessJsTaskSupportModule.NAME -> HeadlessJsTaskSupportModule(reactContext)
         else -> null
       }
 
@@ -75,7 +80,8 @@ internal class CoreReactPackage(
         is IllegalAccessException ->
             throw RuntimeException(
                 "No ReactModuleInfoProvider for ${CoreReactPackage::class.java.name}$\$ReactModuleInfoProvider",
-                e)
+                e,
+            )
         else -> throw e
       }
     }
@@ -93,6 +99,7 @@ internal class CoreReactPackage(
             DeviceEventManagerModule::class.java,
             LogBoxModule::class.java,
             ExceptionsManagerModule::class.java,
+            HeadlessJsTaskSupportModule::class.java,
         )
     val reactModuleInfoMap: MutableMap<String, ReactModuleInfo> = HashMap()
     for (moduleClass in moduleList) {
@@ -105,7 +112,8 @@ internal class CoreReactPackage(
                 reactModule.canOverrideExistingModule,
                 reactModule.needsEagerInit,
                 reactModule.isCxxModule,
-                ReactModuleInfo.classIsTurboModule(moduleClass))
+                ReactModuleInfo.classIsTurboModule(moduleClass),
+            )
       }
     }
     return ReactModuleInfoProvider { reactModuleInfoMap }

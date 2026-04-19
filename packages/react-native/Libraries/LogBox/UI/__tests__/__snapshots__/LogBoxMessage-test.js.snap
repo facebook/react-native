@@ -77,38 +77,6 @@ Array [
 ]
 `;
 
-exports[`LogBoxMessage Should strip "Warning: " without breaking substitution 1`] = `
-Array [
-  <Text>
-    normal 
-  </Text>,
-  <Text
-    style={Object {}}
-  >
-    substitution
-  </Text>,
-  <Text>
-     normal
-  </Text>,
-]
-`;
-
-exports[`LogBoxMessage Should strip "Warning: Warning: " without breaking substitution 1`] = `
-Array [
-  <Text>
-    normal 
-  </Text>,
-  <Text
-    style={Object {}}
-  >
-    substitution
-  </Text>,
-  <Text>
-     normal
-  </Text>,
-]
-`;
-
 exports[`LogBoxMessage should render a plaintext message and clean the content 1`] = `
 <Text>
   This should not start with Error:

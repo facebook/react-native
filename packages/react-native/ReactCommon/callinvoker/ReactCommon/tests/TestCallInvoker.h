@@ -10,34 +10,40 @@
 #include <ReactCommon/CallInvoker.h>
 #include <jsi/jsi.h>
 #include <list>
-#include <memory>
 
 namespace facebook::react {
 
 class TestCallInvoker : public CallInvoker {
  public:
-  explicit TestCallInvoker(std::shared_ptr<facebook::jsi::Runtime> runtime)
-      : runtime_(runtime) {}
+  explicit TestCallInvoker(facebook::jsi::Runtime &runtime) : runtime_(runtime) {}
 
-  void invokeAsync(CallFunc&& func) noexcept override {
+  void invokeAsync(CallFunc &&func) noexcept override
+  {
     queue_.push_back(std::move(func));
   }
 
-  void invokeSync(CallFunc&& func) override {
-    func(*runtime_);
+  void invokeSync(CallFunc &&func) override
+  {
+    func(runtime_);
   }
 
-  void flushQueue() {
+  void flushQueue()
+  {
     while (!queue_.empty()) {
-      queue_.front()(*runtime_);
+      queue_.front()(runtime_);
       queue_.pop_front();
-      runtime_->drainMicrotasks(); // Run microtasks every cycle.
+      runtime_.drainMicrotasks(); // Run microtasks every cycle.
     }
   }
 
+  size_t queueSize()
+  {
+    return queue_.size();
+  }
+
  private:
+  facebook::jsi::Runtime &runtime_;
   std::list<CallFunc> queue_{};
-  std::shared_ptr<facebook::jsi::Runtime> runtime_{};
 };
 
 } // namespace facebook::react

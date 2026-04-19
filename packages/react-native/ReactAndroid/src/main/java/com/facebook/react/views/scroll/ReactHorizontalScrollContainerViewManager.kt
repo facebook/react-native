@@ -25,7 +25,7 @@ public class ReactHorizontalScrollContainerViewManager : ReactViewManager() {
       reactTag: Int,
       context: ThemedReactContext,
       initialProps: ReactStylesDiffMap?,
-      stateWrapper: StateWrapper?
+      stateWrapper: StateWrapper?,
   ): ReactViewGroup {
     check(uiManagerType == null)
     uiManagerType = ViewUtil.getUIManagerType(reactTag)

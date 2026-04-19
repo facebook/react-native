@@ -6,25 +6,37 @@
  */
 
 #include <react/debug/react_native_expect.h>
+#include <react/featureflags/ReactNativeFeatureFlags.h>
 #include <react/renderer/core/RawValue.h>
+#include <react/renderer/css/CSSColor.h>
+#include <react/renderer/css/CSSValueParser.h>
 #include <react/renderer/graphics/Color.h>
 #include <react/utils/ContextContainer.h>
 
 #pragma once
 
 namespace facebook::react {
-using parsePlatformColorFn =
-    SharedColor (*)(const ContextContainer&, int32_t, const RawValue&);
+using parsePlatformColorFn = SharedColor (*)(const ContextContainer &, int32_t, const RawValue &);
 
 inline void fromRawValueShared(
-    const ContextContainer& contextContainer,
+    const ContextContainer &contextContainer,
     int32_t surfaceId,
-    const RawValue& value,
-    SharedColor& result,
-    parsePlatformColorFn parsePlatformColor) {
+    const RawValue &value,
+    SharedColor &result,
+    parsePlatformColorFn parsePlatformColor)
+{
   ColorComponents colorComponents = {0, 0, 0, 0};
 
-  if (value.hasType<int>()) {
+  if (ReactNativeFeatureFlags::enableNativeCSSParsing() && value.hasType<std::string>()) {
+    auto cssColor = parseCSSProperty<CSSColor>((std::string)value);
+    if (std::holds_alternative<CSSColor>(cssColor)) {
+      auto c = std::get<CSSColor>(cssColor);
+      result = hostPlatformColorFromRGBA(c.r, c.g, c.b, c.a);
+      return;
+    }
+    // Unparseable string - fall through to parsePlatformColor
+    result = parsePlatformColor(contextContainer, surfaceId, value);
+  } else if (value.hasType<int>()) {
     auto argb = (int64_t)value;
     auto ratio = 255.f;
     colorComponents.alpha = ((argb >> 24) & 0xFF) / ratio;
@@ -45,7 +57,7 @@ inline void fromRawValueShared(
     result = colorFromComponents(colorComponents);
   } else {
     if (value.hasType<std::unordered_map<std::string, RawValue>>()) {
-      const auto& items = (std::unordered_map<std::string, RawValue>)value;
+      const auto &items = (std::unordered_map<std::string, RawValue>)value;
       if (items.find("space") != items.end()) {
         colorComponents.red = (float)items.at("r");
         colorComponents.green = (float)items.at("g");

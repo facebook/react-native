@@ -7,7 +7,7 @@
 
 #import <React/RCTTextViewManager.h>
 
-#ifndef RCT_FIT_RM_OLD_COMPONENT
+#ifndef RCT_REMOVE_LEGACY_ARCH
 
 #import <React/RCTShadowView+Layout.h>
 #import <React/RCTShadowView.h>
@@ -94,4 +94,4 @@ RCT_EXPORT_VIEW_PROPERTY(selectable, BOOL)
 
 @end
 
-#endif // RCT_FIT_RM_OLD_COMPONENT
+#endif // RCT_REMOVE_LEGACY_ARCH

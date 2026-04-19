@@ -86,7 +86,7 @@ class BlobManager {
     });
     const size = items.reduce((acc, curr) => {
       if (curr.type === 'string') {
-        /* $FlowFixMe[incompatible-call] Natural Inference rollout. See
+        /* $FlowFixMe[incompatible-type] Natural Inference rollout. See
          * https://fburl.com/workplace/6291gfvu */
         return acc + global.unescape(encodeURI(curr.data)).length;
       } else {

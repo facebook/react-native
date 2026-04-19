@@ -11,6 +11,7 @@
 #include <react/renderer/core/ReactPrimitives.h>
 #include <react/renderer/debug/DebugStringConvertible.h>
 #include <react/renderer/graphics/Point.h>
+#include <react/timing/primitives.h>
 
 namespace facebook::react {
 
@@ -110,19 +111,23 @@ struct PointerEvent : public EventPayload {
    * was fired.
    */
   int button;
+  /*
+   * The time when the event occurred.
+   */
+  HighResTimeStamp timeStamp{};
 
   /*
    * EventPayload implementations
    */
-  jsi::Value asJSIValue(jsi::Runtime& runtime) const override;
+  jsi::Value asJSIValue(jsi::Runtime &runtime) const override;
   EventPayloadType getType() const override;
 };
 
 #if RN_DEBUG_STRING_CONVERTIBLE
 
-std::string getDebugName(const PointerEvent& pointerEvent);
+std::string getDebugName(const PointerEvent &pointerEvent);
 std::vector<DebugStringConvertibleObject> getDebugProps(
-    const PointerEvent& pointerEvent,
+    const PointerEvent &pointerEvent,
     DebugStringConvertibleOptions options);
 
 #endif

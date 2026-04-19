@@ -18,10 +18,10 @@ import type {
   NativeModuleEnumMember,
   NativeModuleEnumMemberType,
   NativeModuleParamTypeAnnotation,
+  NativeModuleUnionTypeAnnotationMemberType,
   Nullable,
   PropTypeAnnotation,
   SchemaType,
-  UnionTypeAnnotationMemberType,
 } from '../../CodegenSchema';
 import type {ParserType} from '../errors';
 import type {
@@ -108,8 +108,8 @@ class TypeScriptParser implements Parser {
   }
 
   remapUnionTypeAnnotationMemberNames(
-    membersTypes: $FlowFixMe[],
-  ): UnionTypeAnnotationMemberType[] {
+    membersTypes: Array<$FlowFixMe>,
+  ): Array<NativeModuleUnionTypeAnnotationMemberType> {
     const remapLiteral = (item: $FlowFixMe) => {
       return item.literal
         ? item.literal.type
@@ -118,15 +118,9 @@ class TypeScriptParser implements Parser {
         : 'ObjectTypeAnnotation';
     };
 
-    /* $FlowFixMe[incompatible-return] Natural Inference rollout. See
+    /* $FlowFixMe[incompatible-type] Natural Inference rollout. See
      * https://fburl.com/workplace/6291gfvu */
     return [...new Set(membersTypes.map(remapLiteral))];
-  }
-
-  getStringLiteralUnionTypeAnnotationStringLiterals(
-    membersTypes: $FlowFixMe[],
-  ): string[] {
-    return membersTypes.map((item: $FlowFixMe) => item.literal.value);
   }
 
   parseFile(filename: string): SchemaType {
@@ -163,7 +157,7 @@ class TypeScriptParser implements Parser {
 
   getFunctionTypeAnnotationParameters(
     functionTypeAnnotation: $FlowFixMe,
-  ): $ReadOnlyArray<$FlowFixMe> {
+  ): ReadonlyArray<$FlowFixMe> {
     return functionTypeAnnotation.parameters;
   }
 
@@ -254,7 +248,7 @@ class TypeScriptParser implements Parser {
 
   parseEnumMembers(
     typeAnnotation: $FlowFixMe,
-  ): $ReadOnlyArray<NativeModuleEnumMember> {
+  ): ReadonlyArray<NativeModuleEnumMember> {
     return typeAnnotation.members.map(member => {
       const value =
         member.initializer?.operator === '-'
@@ -304,9 +298,7 @@ class TypeScriptParser implements Parser {
     return types[typeAnnotation.typeParameters.params[0].typeName.name];
   }
 
-  /**
-   * TODO(T108222691): Use flow-types for @babel/parser
-   */
+  // TODO(T108222691): Use flow-types for @babel/parser
   getTypes(ast: $FlowFixMe): TypeDeclarationMap {
     return ast.body.reduce((types, node) => {
       switch (node.type) {
@@ -391,7 +383,7 @@ class TypeScriptParser implements Parser {
     return annotatedElement.typeAnnotation.members;
   }
 
-  bodyProperties(typeAlias: TypeDeclarationMap): $ReadOnlyArray<$FlowFixMe> {
+  bodyProperties(typeAlias: TypeDeclarationMap): ReadonlyArray<$FlowFixMe> {
     return typeAlias.body.body;
   }
 
@@ -522,11 +514,11 @@ class TypeScriptParser implements Parser {
   }
 
   getProps(
-    typeDefinition: $ReadOnlyArray<PropAST>,
+    typeDefinition: ReadonlyArray<PropAST>,
     types: TypeDeclarationMap,
   ): {
-    props: $ReadOnlyArray<NamedShape<PropTypeAnnotation>>,
-    extendsProps: $ReadOnlyArray<ExtendsPropsShape>,
+    props: ReadonlyArray<NamedShape<PropTypeAnnotation>>,
+    extendsProps: ReadonlyArray<ExtendsPropsShape>,
   } {
     const extendsProps: Array<ExtendsPropsShape> = [];
     const componentPropAsts: Array<PropAST> = [];

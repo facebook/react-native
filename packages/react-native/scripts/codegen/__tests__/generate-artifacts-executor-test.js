@@ -42,18 +42,18 @@ const packageJson = JSON.stringify({
     });
 
     [
-      'RCTAppDependencyProvider.h',
-      'RCTAppDependencyProvider.mm',
-      'RCTModuleProviders.h',
-      'RCTModuleProviders.mm',
-      'RCTModulesConformingToProtocolsProvider.h',
-      'RCTModulesConformingToProtocolsProvider.mm',
-      'RCTThirdPartyComponentsProvider.h',
-      'RCTThirdPartyComponentsProvider.mm',
-      'ReactAppDependencyProvider.podspec',
-      'ReactCodegen.podspec',
-      'RCTUnstableModulesRequiringMainQueueSetupProvider.h',
-      'RCTUnstableModulesRequiringMainQueueSetupProvider.mm',
+      'ReactAppDependencyProvider/RCTAppDependencyProvider.h',
+      'ReactAppDependencyProvider/RCTAppDependencyProvider.mm',
+      'ReactCodegen/RCTModuleProviders.h',
+      'ReactCodegen/RCTModuleProviders.mm',
+      'ReactCodegen/RCTModulesConformingToProtocolsProvider.h',
+      'ReactCodegen/RCTModulesConformingToProtocolsProvider.mm',
+      'ReactCodegen/RCTThirdPartyComponentsProvider.h',
+      'ReactCodegen/RCTThirdPartyComponentsProvider.mm',
+      'ReactAppDependencyProvider/ReactAppDependencyProvider.podspec',
+      'ReactCodegen/ReactCodegen.podspec',
+      'ReactCodegen/RCTUnstableModulesRequiringMainQueueSetupProvider.h',
+      'ReactCodegen/RCTUnstableModulesRequiringMainQueueSetupProvider.mm',
     ].forEach(file => {
       it(`"${file}" should match snapshot`, () => {
         const generatedFileDir = path.join(outputDir, 'build/generated/ios');
@@ -404,6 +404,106 @@ describe('delete empty files and folders', () => {
       path.normalize('build/emptyFolder1'),
       path.normalize('build/emptyFolder2'),
       path.normalize('build'),
+    ]);
+  });
+});
+
+describe('findFilesWithExtension', () => {
+  beforeEach(() => {
+    jest.resetModules();
+  });
+
+  it('skips hidden files and folders', () => {
+    const targetFolder = '/project/ios';
+
+    jest.mock('fs', () => ({
+      readdirSync: dirPath => {
+        if (dirPath === targetFolder) {
+          return ['.hidden', '.git', 'visible.mm'];
+        }
+        return [];
+      },
+      existsSync: () => true,
+      statSync: () => ({
+        isDirectory: () => false,
+      }),
+      readFileSync: () => packageJson,
+    }));
+
+    const {
+      findFilesWithExtension: findFiles,
+    } = require('../generate-artifacts-executor/generateRCTThirdPartyComponents');
+
+    const result = findFiles(targetFolder, '.mm');
+    expect(result).toEqual([path.join(targetFolder, 'visible.mm')]);
+  });
+
+  it('allows .pnpm folder', () => {
+    const targetFolder = '/project/node_modules';
+    const pnpmFolder = path.join(targetFolder, '.pnpm');
+    const packageFolder = path.join(pnpmFolder, 'some-package');
+
+    jest.mock('fs', () => ({
+      readdirSync: dirPath => {
+        if (dirPath === targetFolder) {
+          return ['.pnpm', '.hidden'];
+        }
+        if (dirPath === pnpmFolder) {
+          return ['some-package'];
+        }
+        if (dirPath === packageFolder) {
+          return ['Component.mm'];
+        }
+        return [];
+      },
+      existsSync: () => true,
+      statSync: filePath => ({
+        isDirectory: () =>
+          filePath === pnpmFolder ||
+          filePath === packageFolder ||
+          filePath === path.join(targetFolder, '.hidden'),
+      }),
+      readFileSync: () => packageJson,
+    }));
+
+    const {
+      findFilesWithExtension: findFiles,
+    } = require('../generate-artifacts-executor/generateRCTThirdPartyComponents');
+
+    const result = findFiles(targetFolder, '.mm');
+    expect(result).toEqual([path.join(packageFolder, 'Component.mm')]);
+  });
+
+  it('works when project is under a hidden folder', () => {
+    // This test verifies the fix for projects under hidden folders
+    // like ~/.jenkins/workspace/ or /.hidden-ci/builds/
+    const targetFolder = '/.jenkins/workspace/my-project/ios';
+
+    jest.mock('fs', () => ({
+      readdirSync: dirPath => {
+        if (dirPath === targetFolder) {
+          return ['Components'];
+        }
+        if (dirPath === path.join(targetFolder, 'Components')) {
+          return ['MyComponent.mm'];
+        }
+        return [];
+      },
+      existsSync: () => true,
+      statSync: filePath => ({
+        isDirectory: () => filePath === path.join(targetFolder, 'Components'),
+      }),
+      readFileSync: () => packageJson,
+    }));
+
+    const {
+      findFilesWithExtension: findFiles,
+    } = require('../generate-artifacts-executor/generateRCTThirdPartyComponents');
+
+    const result = findFiles(targetFolder, '.mm');
+    // Should find the file even though the absolute path contains /.jenkins/
+    expect(result).toEqual([
+      path.join(targetFolder, 'Components', 'MyComponent.mm'),
     ]);
   });
 });

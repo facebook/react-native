@@ -13,10 +13,10 @@ import static com.facebook.react.uimanager.common.UIManagerType.FABRIC;
 import static com.facebook.react.uimanager.common.UIManagerType.LEGACY;
 import static com.facebook.systrace.Systrace.TRACE_TAG_REACT;
 
+import android.annotation.SuppressLint;
 import android.content.Context;
 import android.graphics.BlendMode;
 import android.graphics.Canvas;
-import android.graphics.Insets;
 import android.graphics.Paint;
 import android.graphics.Point;
 import android.graphics.Rect;
@@ -24,18 +24,18 @@ import android.os.Build;
 import android.os.Bundle;
 import android.util.AttributeSet;
 import android.util.DisplayMetrics;
-import android.view.DisplayCutout;
 import android.view.KeyEvent;
 import android.view.MotionEvent;
 import android.view.Surface;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.ViewTreeObserver;
-import android.view.WindowInsets;
 import android.view.WindowManager;
 import android.widget.FrameLayout;
 import androidx.annotation.Nullable;
-import androidx.annotation.RequiresApi;
+import androidx.core.graphics.Insets;
+import androidx.core.view.ViewCompat;
+import androidx.core.view.WindowInsetsCompat;
 import com.facebook.common.logging.FLog;
 import com.facebook.infer.annotation.Assertions;
 import com.facebook.infer.annotation.ThreadConfined;
@@ -57,6 +57,7 @@ import com.facebook.react.modules.appregistry.AppRegistry;
 import com.facebook.react.modules.deviceinfo.DeviceInfoModule;
 import com.facebook.react.uimanager.DisplayMetricsHolder;
 import com.facebook.react.uimanager.IllegalViewOperationException;
+import com.facebook.react.uimanager.JSKeyDispatcher;
 import com.facebook.react.uimanager.JSPointerDispatcher;
 import com.facebook.react.uimanager.JSTouchDispatcher;
 import com.facebook.react.uimanager.PixelUtil;
@@ -105,6 +106,7 @@ public class ReactRootView extends FrameLayout implements RootView, ReactRoot {
   private boolean mShouldLogContentAppeared;
   private @Nullable JSTouchDispatcher mJSTouchDispatcher;
   private @Nullable JSPointerDispatcher mJSPointerDispatcher;
+  private @Nullable JSKeyDispatcher mJSKeyDispatcher;
   private final ReactAndroidHWInputDeviceHelper mAndroidHWInputDeviceHelper =
       new ReactAndroidHWInputDeviceHelper();
   private boolean mWasMeasured = false;
@@ -205,10 +207,14 @@ public class ReactRootView extends FrameLayout implements RootView, ReactRoot {
       return;
     }
 
-    EventDispatcher eventDispatcher =
-        UIManagerHelper.getEventDispatcher(getCurrentReactContext(), getUIManagerType());
+    @Nullable ReactContext reactContext = getCurrentReactContext();
+    if (reactContext == null) {
+      return;
+    }
+
+    EventDispatcher eventDispatcher = UIManagerHelper.getEventDispatcher(reactContext);
     if (eventDispatcher != null) {
-      mJSTouchDispatcher.onChildStartedNativeGesture(ev, eventDispatcher);
+      mJSTouchDispatcher.onChildStartedNativeGesture(ev, eventDispatcher, reactContext);
       if (childView != null && mJSPointerDispatcher != null) {
         mJSPointerDispatcher.onChildStartedNativeGesture(childView, ev, eventDispatcher);
       }
@@ -221,8 +227,7 @@ public class ReactRootView extends FrameLayout implements RootView, ReactRoot {
       return;
     }
 
-    EventDispatcher eventDispatcher =
-        UIManagerHelper.getEventDispatcher(getCurrentReactContext(), getUIManagerType());
+    EventDispatcher eventDispatcher = UIManagerHelper.getEventDispatcher(getCurrentReactContext());
     if (eventDispatcher != null) {
       mJSTouchDispatcher.onChildEndedNativeGesture(ev, eventDispatcher);
       if (mJSPointerDispatcher != null) {
@@ -328,10 +333,17 @@ public class ReactRootView extends FrameLayout implements RootView, ReactRoot {
       FLog.w(TAG, "Unable to handle key event as the catalyst instance has not been attached");
       return super.dispatchKeyEvent(ev);
     }
+
     ReactContext context = getCurrentReactContext();
-    if (context != null) {
-      mAndroidHWInputDeviceHelper.handleKeyEvent(ev, context);
+    if (context == null) {
+      return super.dispatchKeyEvent(ev);
     }
+
+    mAndroidHWInputDeviceHelper.handleKeyEvent(ev, context);
+
+    // Dispatch during the capture phase before children handle the event as the focus could shift
+    dispatchJSKeyEvent(ev);
+
     return super.dispatchKeyEvent(ev);
   }
 
@@ -347,6 +359,17 @@ public class ReactRootView extends FrameLayout implements RootView, ReactRoot {
     ReactContext context = getCurrentReactContext();
     if (context != null) {
       mAndroidHWInputDeviceHelper.clearFocus(context);
+
+      if (mJSKeyDispatcher != null && ReactNativeFeatureFlags.enableKeyEvents()) {
+        if (gainFocus) {
+          @Nullable View focusedChild = getFocusedChild();
+          if (focusedChild != null) {
+            mJSKeyDispatcher.setFocusedView(focusedChild.getId());
+          }
+        } else {
+          mJSKeyDispatcher.clearFocus();
+        }
+      }
     }
     super.onFocusChanged(gainFocus, direction, previouslyFocusedRect);
   }
@@ -364,6 +387,10 @@ public class ReactRootView extends FrameLayout implements RootView, ReactRoot {
     ReactContext context = getCurrentReactContext();
     if (context != null) {
       mAndroidHWInputDeviceHelper.onFocusChanged(focused, context);
+
+      if (mJSKeyDispatcher != null && ReactNativeFeatureFlags.enableKeyEvents()) {
+        mJSKeyDispatcher.setFocusedView(focused.getId());
+      }
     }
     super.requestChildFocus(child, focused);
   }
@@ -381,8 +408,7 @@ public class ReactRootView extends FrameLayout implements RootView, ReactRoot {
       return;
     }
 
-    EventDispatcher eventDispatcher =
-        UIManagerHelper.getEventDispatcher(getCurrentReactContext(), getUIManagerType());
+    EventDispatcher eventDispatcher = UIManagerHelper.getEventDispatcher(getCurrentReactContext());
     if (eventDispatcher != null) {
       mJSPointerDispatcher.handleMotionEvent(event, eventDispatcher, isCapture);
     }
@@ -398,10 +424,33 @@ public class ReactRootView extends FrameLayout implements RootView, ReactRoot {
       return;
     }
 
-    EventDispatcher eventDispatcher =
-        UIManagerHelper.getEventDispatcher(getCurrentReactContext(), getUIManagerType());
+    EventDispatcher eventDispatcher = UIManagerHelper.getEventDispatcher(getCurrentReactContext());
     if (eventDispatcher != null) {
       mJSTouchDispatcher.handleTouchEvent(event, eventDispatcher, getCurrentReactContext());
+    }
+  }
+
+  protected void dispatchJSKeyEvent(KeyEvent ev) {
+    if (!ReactNativeFeatureFlags.enableKeyEvents()) {
+      // Silently return early if key events are disabled
+      return;
+    }
+    if (!hasActiveReactContext() || !isViewAttachedToReactInstance()) {
+      FLog.w(
+          TAG, "Unable to dispatch key event to JS as the catalyst instance has not been attached");
+      return;
+    }
+    if (mJSKeyDispatcher == null) {
+      FLog.w(TAG, "Unable to dispatch key event to JS before the dispatcher is available");
+      return;
+    }
+    ReactContext context = getCurrentReactContext();
+    if (context != null) {
+      EventDispatcher eventDispatcher = UIManagerHelper.getEventDispatcher(context);
+      int surfaceId = UIManagerHelper.getSurfaceId(context);
+      if (eventDispatcher != null) {
+        mJSKeyDispatcher.handleKeyEvent(ev, eventDispatcher, surfaceId);
+      }
     }
   }
 
@@ -563,6 +612,7 @@ public class ReactRootView extends FrameLayout implements RootView, ReactRoot {
     return appProperties != null ? appProperties.getString("surfaceID") : null;
   }
 
+  @Override
   public AtomicInteger getState() {
     return mState;
   }
@@ -661,6 +711,10 @@ public class ReactRootView extends FrameLayout implements RootView, ReactRoot {
       mJSPointerDispatcher = new JSPointerDispatcher(this);
     }
 
+    if (ReactNativeFeatureFlags.enableKeyEvents()) {
+      mJSKeyDispatcher = new JSKeyDispatcher();
+    }
+
     if (mRootViewEventListener != null) {
       mRootViewEventListener.onAttachedToReactInstance(this);
     }
@@ -739,15 +793,14 @@ public class ReactRootView extends FrameLayout implements RootView, ReactRoot {
     if (ReactFeatureFlags.dispatchPointerEvents) {
       mJSPointerDispatcher = new JSPointerDispatcher(this);
     }
+    if (ReactNativeFeatureFlags.enableKeyEvents()) {
+      mJSKeyDispatcher = new JSKeyDispatcher();
+    }
   }
 
   @VisibleForTesting
   /* package */ void simulateCheckForKeyboardForTesting() {
-    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R) {
-      getCustomGlobalLayoutListener().checkForKeyboardEvents();
-    } else {
-      getCustomGlobalLayoutListener().checkForKeyboardEventsLegacy();
-    }
+    getCustomGlobalLayoutListener().checkForKeyboardEvents();
   }
 
   private CustomGlobalLayoutListener getCustomGlobalLayoutListener() {
@@ -795,6 +848,9 @@ public class ReactRootView extends FrameLayout implements RootView, ReactRoot {
     }
   }
 
+  @SuppressLint("ClassImplementsFinalize") // Used for memory leak detection during development.
+  // The finalize method only performs an assertion check and doesn't do cleanup,
+  // so the typical finalize() risks (performance, deadlocks) don't apply here.
   @Override
   protected void finalize() throws Throwable {
     super.finalize();
@@ -807,6 +863,7 @@ public class ReactRootView extends FrameLayout implements RootView, ReactRoot {
             + " or in the onDestroyView() of your hosting Fragment.");
   }
 
+  @Override
   public int getRootViewTag() {
     return mRootViewTag;
   }
@@ -815,6 +872,7 @@ public class ReactRootView extends FrameLayout implements RootView, ReactRoot {
     return mRootViewTag != 0 && mRootViewTag != NO_ID;
   }
 
+  @Override
   public void setRootViewTag(int rootViewTag) {
     mRootViewTag = rootViewTag;
   }
@@ -871,16 +929,13 @@ public class ReactRootView extends FrameLayout implements RootView, ReactRoot {
 
   private class CustomGlobalLayoutListener implements ViewTreeObserver.OnGlobalLayoutListener {
     private final Rect mVisibleViewArea;
-    private final int mMinKeyboardHeightDetected;
 
     private boolean mKeyboardIsVisible = false;
-    private int mKeyboardHeight = 0; // Only used in checkForKeyboardEventsLegacy path
     private int mDeviceRotation = 0;
 
     /* package */ CustomGlobalLayoutListener() {
       DisplayMetricsHolder.initDisplayMetricsIfNotInitialized(getContext().getApplicationContext());
       mVisibleViewArea = new Rect();
-      mMinKeyboardHeightDetected = (int) PixelUtil.toPixelFromDIP(60);
     }
 
     @Override
@@ -889,31 +944,25 @@ public class ReactRootView extends FrameLayout implements RootView, ReactRoot {
         return;
       }
 
-      if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R) {
-        checkForKeyboardEvents();
-      } else {
-        checkForKeyboardEventsLegacy();
-      }
-
+      checkForKeyboardEvents();
       checkForDeviceOrientationChanges();
       checkForDeviceDimensionsChanges();
     }
 
-    @RequiresApi(api = Build.VERSION_CODES.R)
     private void checkForKeyboardEvents() {
       getRootView().getWindowVisibleDisplayFrame(mVisibleViewArea);
-      WindowInsets rootInsets = getRootView().getRootWindowInsets();
+      WindowInsetsCompat rootInsets = ViewCompat.getRootWindowInsets(getRootView());
       if (rootInsets == null) {
         return;
       }
 
-      boolean keyboardIsVisible = rootInsets.isVisible(WindowInsets.Type.ime());
+      boolean keyboardIsVisible = rootInsets.isVisible(WindowInsetsCompat.Type.ime());
       if (keyboardIsVisible != mKeyboardIsVisible) {
         mKeyboardIsVisible = keyboardIsVisible;
+        Insets barInsets = rootInsets.getInsets(WindowInsetsCompat.Type.systemBars());
 
         if (keyboardIsVisible) {
-          Insets imeInsets = rootInsets.getInsets(WindowInsets.Type.ime());
-          Insets barInsets = rootInsets.getInsets(WindowInsets.Type.systemBars());
+          Insets imeInsets = rootInsets.getInsets(WindowInsetsCompat.Type.ime());
           int height = imeInsets.bottom - barInsets.bottom;
 
           ViewGroup.LayoutParams rootLayoutParams = getRootView().getLayoutParams();
@@ -936,59 +985,11 @@ public class ReactRootView extends FrameLayout implements RootView, ReactRoot {
           sendEvent(
               "keyboardDidHide",
               createKeyboardEventPayload(
-                  PixelUtil.toDIPFromPixel(mVisibleViewArea.height()),
+                  PixelUtil.toDIPFromPixel(mVisibleViewArea.bottom + barInsets.bottom),
                   0,
                   PixelUtil.toDIPFromPixel(mVisibleViewArea.width()),
                   0));
         }
-      }
-    }
-
-    private void checkForKeyboardEventsLegacy() {
-      getRootView().getWindowVisibleDisplayFrame(mVisibleViewArea);
-
-      int notchHeight = 0;
-      if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.P) {
-        WindowInsets insets = getRootView().getRootWindowInsets();
-        if (insets != null) {
-          DisplayCutout displayCutout = insets.getDisplayCutout();
-          if (displayCutout != null) {
-            notchHeight = displayCutout.getSafeInsetTop();
-          }
-        }
-      }
-      final int heightDiff =
-          DisplayMetricsHolder.getWindowDisplayMetrics().heightPixels
-              - mVisibleViewArea.bottom
-              + notchHeight;
-
-      boolean isKeyboardShowingOrKeyboardHeightChanged =
-          mKeyboardHeight != heightDiff && heightDiff > mMinKeyboardHeightDetected;
-
-      if (isKeyboardShowingOrKeyboardHeightChanged) {
-        mKeyboardHeight = heightDiff;
-        mKeyboardIsVisible = true;
-        sendEvent(
-            "keyboardDidShow",
-            createKeyboardEventPayload(
-                PixelUtil.toDIPFromPixel(mVisibleViewArea.bottom),
-                PixelUtil.toDIPFromPixel(mVisibleViewArea.left),
-                PixelUtil.toDIPFromPixel(mVisibleViewArea.width()),
-                PixelUtil.toDIPFromPixel(mKeyboardHeight)));
-        return;
-      }
-
-      boolean isKeyboardHidden = mKeyboardHeight != 0 && heightDiff <= mMinKeyboardHeightDetected;
-      if (isKeyboardHidden) {
-        mKeyboardHeight = 0;
-        mKeyboardIsVisible = false;
-        sendEvent(
-            "keyboardDidHide",
-            createKeyboardEventPayload(
-                PixelUtil.toDIPFromPixel(mVisibleViewArea.height()),
-                0,
-                PixelUtil.toDIPFromPixel(mVisibleViewArea.width()),
-                0));
       }
     }
 

@@ -177,7 +177,7 @@ TEST(CSSFilter, drop_shadow_no_blur_pre_color) {
       std::get<CSSDropShadowFilter>(value).standardDeviation.unit,
       CSSLengthUnit::Px);
 
-  CSSColor red{255, 0, 0, 255};
+  CSSColor red{.r = 255, .g = 0, .b = 0, .a = 255};
   EXPECT_EQ(std::get<CSSDropShadowFilter>(value).color, red);
 }
 
@@ -195,7 +195,7 @@ TEST(CSSFilter, drop_shadow_no_blur_post_color) {
   EXPECT_EQ(
       std::get<CSSDropShadowFilter>(value).standardDeviation.unit,
       CSSLengthUnit::Px);
-  CSSColor red{255, 0, 0, 255};
+  CSSColor red{.r = 255, .g = 0, .b = 0, .a = 255};
 
   EXPECT_EQ(std::get<CSSDropShadowFilter>(value).color, red);
 }
@@ -231,7 +231,7 @@ TEST(CSSFilter, drop_shadow_with_blur_pre_color) {
       std::get<CSSDropShadowFilter>(value).standardDeviation.unit,
       CSSLengthUnit::Px);
 
-  CSSColor red{255, 0, 0, 255};
+  CSSColor red{.r = 255, .g = 0, .b = 0, .a = 255};
   EXPECT_EQ(std::get<CSSDropShadowFilter>(value).color, red);
 }
 
@@ -250,7 +250,7 @@ TEST(CSSFilter, drop_shadow_with_blur_post_color) {
       std::get<CSSDropShadowFilter>(value).standardDeviation.unit,
       CSSLengthUnit::Px);
 
-  CSSColor red{255, 0, 0, 255};
+  CSSColor red{.r = 255, .g = 0, .b = 0, .a = 255};
   EXPECT_EQ(std::get<CSSDropShadowFilter>(value).color, red);
 }
 
@@ -550,7 +550,7 @@ TEST(CSSFilter, filter_list) {
   EXPECT_EQ(
       std::get<CSSDropShadowFilter>(list[2]).standardDeviation.unit,
       CSSLengthUnit::Px);
-  CSSColor red{255, 0, 0, 255};
+  CSSColor red{.r = 255, .g = 0, .b = 0, .a = 255};
   EXPECT_EQ(std::get<CSSDropShadowFilter>(list[2]).color, red);
 
   EXPECT_TRUE(std::holds_alternative<CSSDropShadowFilter>(list[3]));

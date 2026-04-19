@@ -10,10 +10,7 @@
 
 'use strict';
 
-const {
-  createHermesPrebuiltArtifactsTarball,
-} = require('../../../packages/react-native/scripts/hermes/hermes-utils');
-const {echo, exec, exit, popd, pushd, test} = require('shelljs');
+const {echo, exec, exit, test} = require('shelljs');
 
 /*::
 type BuildType = 'dry-run' | 'release' | 'nightly';
@@ -120,35 +117,6 @@ function publishExternalArtifactsToMaven(
   echo('Finished publishing external artifacts to Maven Central');
 }
 
-function generateiOSArtifacts(
-  jsiFolder /*: string */,
-  hermesCoreSourceFolder /*: string */,
-  buildType /*: 'Debug' | string */,
-  targetFolder /*: string */,
-) /*: string */ {
-  pushd(`${hermesCoreSourceFolder}`);
-
-  //Generating iOS Artifacts
-  exec(
-    `JSI_PATH=${jsiFolder} BUILD_TYPE=${buildType} ${hermesCoreSourceFolder}/utils/build-mac-framework.sh`,
-  );
-
-  exec(
-    `JSI_PATH=${jsiFolder} BUILD_TYPE=${buildType} ${hermesCoreSourceFolder}/utils/build-ios-framework.sh`,
-  );
-
-  popd();
-
-  const tarballOutputPath = createHermesPrebuiltArtifactsTarball(
-    hermesCoreSourceFolder,
-    buildType,
-    targetFolder,
-    true, // this is excludeDebugSymbols, we keep it as the default
-  );
-
-  return tarballOutputPath;
-}
-
 function failIfTagExists(version /*: string */, buildType /*: BuildType */) {
   // When dry-run in stable branch, the tag already exists.
   // We are bypassing the tag-existence check when in a dry-run to have the CI pass
@@ -175,7 +143,6 @@ function checkIfTagExists(version /*: string */) {
 
 module.exports = {
   generateAndroidArtifacts,
-  generateiOSArtifacts,
   publishAndroidArtifactsToMaven,
   publishExternalArtifactsToMaven,
   failIfTagExists,

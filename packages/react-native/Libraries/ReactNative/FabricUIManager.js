@@ -71,7 +71,7 @@ export interface Spec {
   +dispatchCommand: (
     node: Node,
     commandName: string,
-    args: Array<mixed>,
+    args: Array<unknown>,
   ) => void;
   +findNodeAtPoint: (
     node: Node,
@@ -92,6 +92,11 @@ export interface Spec {
     /* width: */ number,
     /* height: */ number,
   ];
+  +setIsJSResponder: (
+    node: Node | NativeElementReference,
+    isJSResponder: boolean,
+    blockNativeResponder: boolean,
+  ) => void;
   +unstable_DefaultEventPriority: number;
   +unstable_DiscreteEventPriority: number;
   +unstable_ContinuousEventPriority: number;
@@ -124,6 +129,7 @@ const CACHED_PROPERTIES = [
   'dispatchCommand',
   'compareDocumentPosition',
   'getBoundingClientRect',
+  'setIsJSResponder',
   'unstable_DefaultEventPriority',
   'unstable_DiscreteEventPriority',
   'unstable_ContinuousEventPriority',
@@ -154,7 +160,7 @@ export function getFabricUIManager(): ?Spec {
  */
 function createProxyWithCachedProperties(
   implementation: Spec,
-  propertiesToCache: $ReadOnlyArray<string>,
+  propertiesToCache: ReadonlyArray<string>,
 ): Spec {
   const proxy = Object.create(implementation);
   for (const propertyName of propertiesToCache) {

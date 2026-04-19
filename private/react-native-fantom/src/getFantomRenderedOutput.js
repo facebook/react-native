@@ -22,14 +22,14 @@ export type RenderOutputConfig = {
 type FantomJsonObject = {
   type: string,
   props: {[key: string]: string},
-  children: $ReadOnlyArray<FantomJsonObject | string>,
+  children: ReadonlyArray<FantomJsonObject | string>,
 };
 
-type FantomJson = FantomJsonObject | $ReadOnlyArray<FantomJsonObject>;
+type FantomJson = FantomJsonObject | ReadonlyArray<FantomJsonObject>;
 
 type FantomRenderedOutputConfig = {
   // RegExp patterns to match prop names
-  props?: $ReadOnlyArray<string>,
+  props?: ReadonlyArray<string>,
 };
 
 class FantomRenderedOutput {
@@ -41,6 +41,14 @@ class FantomRenderedOutput {
 
   toJSON(): FantomJson {
     return Array.isArray(this.#json) ? [...this.#json] : {...this.#json};
+  }
+
+  toJSONObject(): FantomJsonObject {
+    if (Array.isArray(this.#json)) {
+      throw new Error('Cannot convert array to JSON object');
+    }
+
+    return {...this.#json};
   }
 
   toJSX(): React.Node {
@@ -125,9 +133,11 @@ export default function getFantomRenderedOutput(
 }
 
 function convertRawJsonToJSX(
-  actualJSON: FantomJsonObject | $ReadOnlyArray<FantomJsonObject>,
+  actualJSON: FantomJsonObject | ReadonlyArray<FantomJsonObject>,
 ): React.Node {
   let actualJSX;
+  /* $FlowFixMe[invalid-compare] Error discovered during Constant Condition
+   * roll out. See https://fburl.com/workplace/5whu3i34. */
   if (actualJSON === null || typeof actualJSON === 'string') {
     actualJSX = actualJSON;
   } else if (Array.isArray(actualJSON)) {
@@ -152,7 +162,7 @@ function convertRawJsonToJSX(
 
 function createJSXElementForTestComparison(
   type: string,
-  props: mixed,
+  props: unknown,
   key?: ?string,
 ): React.Node {
   const Tag = type;

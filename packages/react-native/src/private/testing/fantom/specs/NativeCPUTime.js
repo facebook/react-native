@@ -21,4 +21,4 @@ export interface Spec extends TurboModule {
   +hasAccurateCPUTimeNanosForBenchmarks: () => boolean;
 }
 
-export default (TurboModuleRegistry.getEnforcing<Spec>('CPUTimeCxx'): Spec);
+export default TurboModuleRegistry.getEnforcing<Spec>('CPUTimeCxx') as Spec;

@@ -21,6 +21,7 @@ import com.facebook.react.bridge.ReactContext
 import com.facebook.react.common.ReactConstants
 import com.facebook.react.devsupport.InspectorFlags.getFuseboxEnabled
 import com.facebook.react.devsupport.InspectorFlags.getIsProfilingBuild
+import com.facebook.react.devsupport.inspector.DevSupportHttpClient
 import com.facebook.react.devsupport.interfaces.DevBundleDownloadListener
 import com.facebook.react.devsupport.interfaces.PackagerStatusCallback
 import com.facebook.react.modules.debug.interfaces.DeveloperSettings
@@ -39,7 +40,6 @@ import java.io.UnsupportedEncodingException
 import java.security.MessageDigest
 import java.security.NoSuchAlgorithmException
 import java.util.Locale
-import java.util.concurrent.TimeUnit
 import okhttp3.Call
 import okhttp3.Callback
 import okhttp3.OkHttpClient
@@ -58,11 +58,12 @@ import okio.Okio
  * - Genymotion emulator with default settings: 10.0.3.2
  */
 @SuppressLint(
-    "StaticFieldLeak") // TODO: This entire class should be rewritten to don't use AsyncTask
+    "StaticFieldLeak"
+) // TODO: This entire class should be rewritten to don't use AsyncTask
 public open class DevServerHelper(
     private val settings: DeveloperSettings,
     private val applicationContext: Context,
-    private val packagerConnectionSettings: PackagerConnectionSettings
+    private val packagerConnectionSettings: PackagerConnectionSettings,
 ) {
   public interface PackagerCommandListener {
     public fun onPackagerConnected()
@@ -78,19 +79,15 @@ public open class DevServerHelper(
   }
 
   public val websocketProxyURL: String
-    get() = "ws://${packagerConnectionSettings.debugServerHost}/debugger-proxy?role=client"
+    get() =
+        "${DevSupportHttpClient.wsScheme(packagerConnectionSettings.debugServerHost)}://${packagerConnectionSettings.debugServerHost}/debugger-proxy?role=client"
 
   private enum class BundleType(val typeID: String) {
     BUNDLE("bundle"),
-    MAP("map")
+    MAP("map"),
   }
 
-  private val client: OkHttpClient =
-      OkHttpClient.Builder()
-          .connectTimeout(HTTP_CONNECT_TIMEOUT_MS.toLong(), TimeUnit.MILLISECONDS)
-          .readTimeout(0, TimeUnit.MILLISECONDS)
-          .writeTimeout(0, TimeUnit.MILLISECONDS)
-          .build()
+  private val client: OkHttpClient = DevSupportHttpClient.httpClient
   private val bundleDownloader: BundleDownloader = BundleDownloader(client)
   private val packagerStatusCheck: PackagerStatusCheck = PackagerStatusCheck(client)
   private val packageName: String = applicationContext.packageName
@@ -119,7 +116,8 @@ public open class DevServerHelper(
               "android-%s-%s-%s",
               packageName,
               androidId,
-              if (getFuseboxEnabled()) "fusebox" else "legacy")
+              if (getFuseboxEnabled()) "fusebox" else "legacy",
+          )
       return getSHA256(rawDeviceId)
     }
 
@@ -127,12 +125,14 @@ public open class DevServerHelper(
     get() =
         String.format(
             Locale.US,
-            "http://%s/inspector/device?name=%s&app=%s&device=%s&profiling=%b",
+            "%s://%s/inspector/device?name=%s&app=%s&device=%s&profiling=%b",
+            DevSupportHttpClient.httpScheme(packagerConnectionSettings.debugServerHost),
             packagerConnectionSettings.debugServerHost,
             Uri.encode(getFriendlyDeviceName()),
             Uri.encode(packageName),
             Uri.encode(inspectorDeviceId),
-            getIsProfilingBuild())
+            getIsProfilingBuild(),
+        )
 
   /** Whether we should enable dev mode when requesting JS bundles. */
   private val devMode: Boolean
@@ -180,7 +180,11 @@ public open class DevServerHelper(
             checkNotNull(clientId)
             packagerClient =
                 JSPackagerClient(
-                        clientId, packagerConnectionSettings, handlers, onPackagerConnectedCallback)
+                        clientId,
+                        packagerConnectionSettings,
+                        handlers,
+                        onPackagerConnectedCallback,
+                    )
                     .apply { init() }
 
             return null
@@ -217,7 +221,10 @@ public open class DevServerHelper(
             }
             inspectorPackagerConnection =
                 CxxInspectorPackagerConnection(
-                        this@DevServerHelper.inspectorDeviceUrl, deviceName, packageName)
+                        this@DevServerHelper.inspectorDeviceUrl,
+                        deviceName,
+                        packageName,
+                    )
                     .apply { connect() }
             return null
           }
@@ -247,10 +254,15 @@ public open class DevServerHelper(
       outputFile: File,
       bundleURL: String?,
       bundleInfo: BundleDownloader.BundleInfo?,
-      requestBuilder: Request.Builder = Request.Builder()
+      requestBuilder: Request.Builder = Request.Builder(),
   ) {
     bundleDownloader.downloadBundleFromURL(
-        callback, outputFile, bundleURL, bundleInfo, requestBuilder)
+        callback,
+        outputFile,
+        bundleURL,
+        bundleInfo,
+        requestBuilder,
+    )
   }
 
   private fun createSplitBundleURL(mainModuleID: String, host: String): String =
@@ -261,11 +273,15 @@ public open class DevServerHelper(
       type: BundleType,
       host: String = packagerConnectionSettings.debugServerHost,
       modulesOnly: Boolean = false,
-      runModule: Boolean = true
+      runModule: Boolean = true,
   ): String {
     val dev = devMode
     val additionalOptionsBuilder = StringBuilder()
-    for ((key, value) in packagerConnectionSettings.additionalOptionsForPackager) {
+    val packagerOptions =
+        packagerConnectionSettings.updatePackagerOptions(
+            packagerConnectionSettings.additionalOptionsForPackager
+        )
+    for ((key, value) in packagerOptions) {
       if (value.isEmpty()) {
         continue
       }
@@ -273,7 +289,8 @@ public open class DevServerHelper(
     }
     return (String.format(
         Locale.US,
-        "http://%s/%s.%s?platform=android&dev=%s&lazy=%s&minify=%s&app=%s&modulesOnly=%s&runModule=%s",
+        "%s://%s/%s.%s?platform=android&dev=%s&lazy=%s&minify=%s&app=%s&modulesOnly=%s&runModule=%s",
+        DevSupportHttpClient.httpScheme(host),
         host,
         mainModuleID,
         type.typeID,
@@ -282,7 +299,8 @@ public open class DevServerHelper(
         jSMinifyMode,
         packageName,
         if (modulesOnly) "true" else "false",
-        if (runModule) "true" else "false") +
+        if (runModule) "true" else "false",
+    ) +
         (if (getFuseboxEnabled()) "&excludeSource=true&sourcePaths=url-server" else "") +
         additionalOptionsBuilder.toString())
   }
@@ -329,22 +347,40 @@ public open class DevServerHelper(
           "Failed to fetch resource synchronously - resourcePath: \"%s\", outputFile: \"%s\"",
           resourcePath,
           outputFile.absolutePath,
-          e)
+          e,
+      )
       return null
     }
   }
 
   /** Attempt to open the JS debugger on the host machine (on-device CDP debugging). */
-  public fun openDebugger(context: ReactContext?, errorMessage: String?) {
+  public fun openDebugger(
+      context: ReactContext?,
+      errorMessage: String?,
+      panel: String?,
+  ) {
     // TODO(huntie): Requests to dev server should not assume 'http' URL scheme
-    val requestUrl =
+    val requestUrlBuilder = StringBuilder()
+
+    requestUrlBuilder.append(
         String.format(
             Locale.US,
-            "http://%s/open-debugger?device=%s",
+            "%s://%s/open-debugger?device=%s",
+            DevSupportHttpClient.httpScheme(packagerConnectionSettings.debugServerHost),
             packagerConnectionSettings.debugServerHost,
-            Uri.encode(inspectorDeviceId))
+            Uri.encode(inspectorDeviceId),
+        )
+    )
+
+    if (panel != null) {
+      requestUrlBuilder.append("&panel=" + Uri.encode(panel))
+    }
+
     val request =
-        Request.Builder().url(requestUrl).method("POST", RequestBody.create(null, "")).build()
+        Request.Builder()
+            .url(requestUrlBuilder.toString())
+            .method("POST", RequestBody.create(null, ""))
+            .build()
 
     client
         .newCall(request)
@@ -355,11 +391,11 @@ public open class DevServerHelper(
               }
 
               override fun onResponse(call: Call, response: Response) = Unit
-            })
+            }
+        )
   }
 
   private companion object {
-    private const val HTTP_CONNECT_TIMEOUT_MS = 5000
     private const val DEBUGGER_MSG_DISABLE = "{ \"id\":1,\"method\":\"Debugger.disable\" }"
 
     private fun getSHA256(string: String): String {
@@ -397,7 +433,8 @@ public open class DevServerHelper(
           result[16],
           result[17],
           result[18],
-          result[19])
+          result[19],
+      )
     }
 
     private fun createResourceURL(host: String, resourcePathParam: String): String {
@@ -407,7 +444,13 @@ public open class DevServerHelper(
         FLog.w(ReactConstants.TAG, "Resource path should not begin with `/`, removing it.")
         resourcePath = resourcePath.substring(1)
       }
-      return String.format(Locale.US, "http://%s/%s", host, resourcePath)
+      return String.format(
+          Locale.US,
+          "%s://%s/%s",
+          DevSupportHttpClient.httpScheme(host),
+          host,
+          resourcePath,
+      )
     }
   }
 }

@@ -47,7 +47,7 @@ it('refuses non-spec compliant colors', () => {
   expect(normalizeColor('rgb (0, 1, 2)')).toBe(null);
   expect(normalizeColor('rgba(0 0 0 0.0)')).toBe(null);
   expect(normalizeColor('hsv(0, 1, 2)')).toBe(null);
-  // $FlowExpectedError - Intentionally malformed argument.
+  // $FlowExpectedError[incompatible-type]  - Intentionally malformed argument.
   expect(normalizeColor({r: 10, g: 10, b: 10})).toBe(null);
   expect(normalizeColor('hsl(1%, 2, 3)')).toBe(null);
   expect(normalizeColor('rgb(1%, 2%, 3%)')).toBe(null);

@@ -23,7 +23,7 @@ void initializePerfetto() {
 #endif
     args.use_monotonic_clock = true;
     perfetto::Tracing::Initialize(args);
-    perfetto::TrackEvent::Register();
+    facebook::react::TrackEvent::Register();
   });
 }
 

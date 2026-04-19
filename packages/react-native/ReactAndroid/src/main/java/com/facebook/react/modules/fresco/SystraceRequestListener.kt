@@ -34,7 +34,7 @@ internal class SystraceRequestListener : BaseRequestListener() {
   override fun onProducerFinishWithSuccess(
       requestId: String,
       producerName: String,
-      extraMap: Map<String, String>?
+      extraMap: Map<String, String>?,
   ) {
     if (!Systrace.isTracing(Systrace.TRACE_TAG_REACT)) {
       return
@@ -51,7 +51,7 @@ internal class SystraceRequestListener : BaseRequestListener() {
       requestId: String,
       producerName: String,
       t: Throwable,
-      extraMap: Map<String, String>?
+      extraMap: Map<String, String>?,
   ) {
     if (!Systrace.isTracing(Systrace.TRACE_TAG_REACT)) {
       return
@@ -67,7 +67,7 @@ internal class SystraceRequestListener : BaseRequestListener() {
   override fun onProducerFinishWithCancellation(
       requestId: String,
       producerName: String,
-      extraMap: Map<String, String>?
+      extraMap: Map<String, String>?,
   ) {
     if (!Systrace.isTracing(Systrace.TRACE_TAG_REACT)) {
       return
@@ -92,14 +92,17 @@ internal class SystraceRequestListener : BaseRequestListener() {
     entryName.append("_")
     entryName.append(eventName.replace(':', '_'))
     Systrace.traceInstant(
-        Systrace.TRACE_TAG_REACT, entryName.toString(), Systrace.EventScope.THREAD)
+        Systrace.TRACE_TAG_REACT,
+        entryName.toString(),
+        Systrace.EventScope.THREAD,
+    )
   }
 
   override fun onRequestStart(
       request: ImageRequest,
       callerContext: Any,
       requestId: String,
-      isPrefetch: Boolean
+      isPrefetch: Boolean,
   ) {
     if (!Systrace.isTracing(Systrace.TRACE_TAG_REACT)) {
       return
@@ -130,7 +133,7 @@ internal class SystraceRequestListener : BaseRequestListener() {
       request: ImageRequest,
       requestId: String,
       throwable: Throwable,
-      isPrefetch: Boolean
+      isPrefetch: Boolean,
   ) {
     if (!Systrace.isTracing(Systrace.TRACE_TAG_REACT)) {
       return

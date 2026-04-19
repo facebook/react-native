@@ -36,8 +36,9 @@ const uint16_t HERMES_SAMPLING_FREQUENCY_HZ = 10000;
 class HermesRuntimeSamplingProfileDelegate {
  public:
   explicit HermesRuntimeSamplingProfileDelegate(
-      std::shared_ptr<HermesRuntime> hermesRuntime)
-      : hermesRuntime_(std::move(hermesRuntime)) {}
+      std::shared_ptr<jsi::Runtime> runtime,
+      hermes::HermesRuntime& hermesRuntime)
+      : runtime_(std::move(runtime)), hermesRuntime_(hermesRuntime) {}
 
   void startSampling() {
     auto* hermesAPI = jsi::castInterface<IHermesRootAPI>(makeHermesRootAPI());
@@ -52,11 +53,12 @@ class HermesRuntimeSamplingProfileDelegate {
   tracing::RuntimeSamplingProfile collectSamplingProfile() {
     return tracing::HermesRuntimeSamplingProfileSerializer::
         serializeToTracingSamplingProfile(
-            hermesRuntime_->dumpSampledTraceToProfile());
+            hermesRuntime_.dumpSampledTraceToProfile());
   }
 
  private:
-  std::shared_ptr<HermesRuntime> hermesRuntime_;
+  std::shared_ptr<jsi::Runtime> runtime_;
+  HermesRuntime& hermesRuntime_;
 };
 
 } // namespace
@@ -78,6 +80,14 @@ class HermesRuntimeTargetDelegate::Impl final : public RuntimeTargetDelegate {
       return &hermesStackTrace_;
     }
 
+    const HermesStackTrace& operator*() const {
+      return hermesStackTrace_;
+    }
+
+    const HermesStackTrace* operator->() const {
+      return &hermesStackTrace_;
+    }
+
    private:
     HermesStackTrace hermesStackTrace_;
   };
@@ -85,13 +95,16 @@ class HermesRuntimeTargetDelegate::Impl final : public RuntimeTargetDelegate {
  public:
   explicit Impl(
       HermesRuntimeTargetDelegate& delegate,
-      std::shared_ptr<HermesRuntime> hermesRuntime)
+      std::shared_ptr<jsi::Runtime> runtime,
+      HermesRuntime& hermesRuntime)
       : delegate_(delegate),
-        runtime_(hermesRuntime),
-        cdpDebugAPI_(CDPDebugAPI::create(*runtime_)),
+        runtime_(runtime),
+        hermesRuntime_(hermesRuntime),
+        cdpDebugAPI_(CDPDebugAPI::create(hermesRuntime_)),
         samplingProfileDelegate_(
             std::make_unique<HermesRuntimeSamplingProfileDelegate>(
-                std::move(hermesRuntime))) {}
+                std::move(runtime),
+                hermesRuntime_)) {}
 
   CDPDebugAPI& getCDPDebugAPI() {
     return *cdpDebugAPI_;
@@ -111,7 +124,7 @@ class HermesRuntimeTargetDelegate::Impl final : public RuntimeTargetDelegate {
         sessionState,
         std::move(previouslyExportedState),
         executionContextDescription,
-        *runtime_,
+        hermesRuntime_,
         delegate_,
         std::move(runtimeExecutor)));
   }
@@ -201,7 +214,7 @@ class HermesRuntimeTargetDelegate::Impl final : public RuntimeTargetDelegate {
     // properly representing the stack trace in other use cases, where native
     // frames aren't stripped on serialisation.
     return std::make_unique<HermesStackTraceWrapper>(
-        runtime_->getDebugger().captureStackTrace());
+        hermesRuntime_.getDebugger().captureStackTrace());
   }
 
   void enableSamplingProfiler() override {
@@ -216,9 +229,51 @@ class HermesRuntimeTargetDelegate::Impl final : public RuntimeTargetDelegate {
     return samplingProfileDelegate_->collectSamplingProfile();
   }
 
+  std::optional<folly::dynamic> serializeStackTrace(
+      const StackTrace& stackTrace) override {
+    if (auto* hermesStackTraceWrapper =
+            dynamic_cast<const HermesStackTraceWrapper*>(&stackTrace)) {
+      // The logic below is duplicated from
+      // facebook::hermes::cdp::message::makeCallFrames in
+      // hermes/cdp/MessageConverters.cpp (and rewritten to use Folly).
+      // TODO: Use a suitable Hermes API (D83560910 / D83560972 / D83562078) to
+      // serialize the stack trace to CDP-formatted JSON.
+      folly::dynamic cdpStackTrace = folly::dynamic::object();
+      auto& hermesStackTrace = **hermesStackTraceWrapper;
+      if (hermesStackTrace.callFrameCount() > 0) {
+        folly::dynamic callFrames = folly::dynamic::array();
+        callFrames.reserve(hermesStackTrace.callFrameCount());
+        for (int i = 0, n = hermesStackTrace.callFrameCount(); i != n; i++) {
+          auto callFrame = hermesStackTrace.callFrameForIndex(i);
+          if (callFrame.location.fileId ==
+              facebook::hermes::debugger::kInvalidLocation) {
+            continue;
+          }
+          folly::dynamic callFrameObj = folly::dynamic::object();
+          callFrameObj["functionName"] = callFrame.functionName;
+          callFrameObj["scriptId"] = std::to_string(callFrame.location.fileId);
+          callFrameObj["url"] = callFrame.location.fileName;
+          if (callFrame.location.line !=
+              facebook::hermes::debugger::kInvalidLocation) {
+            callFrameObj["lineNumber"] = callFrame.location.line - 1;
+          }
+          if (callFrame.location.column !=
+              facebook::hermes::debugger::kInvalidLocation) {
+            callFrameObj["columnNumber"] = callFrame.location.column - 1;
+          }
+          callFrames.push_back(std::move(callFrameObj));
+        }
+        cdpStackTrace["callFrames"] = std::move(callFrames);
+      }
+      return cdpStackTrace;
+    }
+    return std::nullopt;
+  }
+
  private:
   HermesRuntimeTargetDelegate& delegate_;
-  std::shared_ptr<HermesRuntime> runtime_;
+  std::shared_ptr<jsi::Runtime> runtime_;
+  HermesRuntime& hermesRuntime_;
   const std::unique_ptr<CDPDebugAPI> cdpDebugAPI_;
   std::unique_ptr<HermesRuntimeSamplingProfileDelegate>
       samplingProfileDelegate_;
@@ -235,11 +290,13 @@ class HermesRuntimeTargetDelegate::Impl final
  public:
   explicit Impl(
       HermesRuntimeTargetDelegate&,
-      std::shared_ptr<HermesRuntime> hermesRuntime)
-      : FallbackRuntimeTargetDelegate{hermesRuntime->description()},
+      std::shared_ptr<jsi::Runtime> runtime,
+      HermesRuntime& hermesRuntime)
+      : FallbackRuntimeTargetDelegate{hermesRuntime.description()},
         samplingProfileDelegate_(
             std::make_unique<HermesRuntimeSamplingProfileDelegate>(
-                std::move(hermesRuntime))) {}
+                std::move(runtime),
+                hermesRuntime)) {}
 
   void enableSamplingProfiler() override {
     samplingProfileDelegate_->startSampling();
@@ -261,8 +318,9 @@ class HermesRuntimeTargetDelegate::Impl final
 #endif // HERMES_ENABLE_DEBUGGER
 
 HermesRuntimeTargetDelegate::HermesRuntimeTargetDelegate(
-    std::shared_ptr<HermesRuntime> hermesRuntime)
-    : impl_(std::make_unique<Impl>(*this, std::move(hermesRuntime))) {}
+    std::shared_ptr<jsi::Runtime> runtime,
+    HermesRuntime& hermesRuntime)
+    : impl_(std::make_unique<Impl>(*this, std::move(runtime), hermesRuntime)) {}
 
 HermesRuntimeTargetDelegate::~HermesRuntimeTargetDelegate() = default;
 
@@ -309,6 +367,11 @@ void HermesRuntimeTargetDelegate::disableSamplingProfiler() {
 tracing::RuntimeSamplingProfile
 HermesRuntimeTargetDelegate::collectSamplingProfile() {
   return impl_->collectSamplingProfile();
+}
+
+std::optional<folly::dynamic> HermesRuntimeTargetDelegate::serializeStackTrace(
+    const StackTrace& stackTrace) {
+  return impl_->serializeStackTrace(stackTrace);
 }
 
 #ifdef HERMES_ENABLE_DEBUGGER

@@ -23,7 +23,7 @@ import java.util.Locale
  *
  * NB: Requires API 16 for use of FpsDebugFrameCallback.
  */
-internal class FpsView(reactContext: ReactContext?) : FrameLayout(reactContext!!) {
+internal class FpsView(reactContext: ReactContext) : FrameLayout(reactContext) {
   private val textView: TextView
   private val frameCallback: FpsDebugFrameCallback
   private val fpsMonitorRunnable: FPSMonitorRunnable
@@ -31,7 +31,7 @@ internal class FpsView(reactContext: ReactContext?) : FrameLayout(reactContext!!
   init {
     inflate(reactContext, R.layout.fps_view, this)
     textView = findViewById<View>(R.id.fps_text) as TextView
-    frameCallback = FpsDebugFrameCallback(reactContext!!)
+    frameCallback = FpsDebugFrameCallback(reactContext)
     fpsMonitorRunnable = FPSMonitorRunnable()
     setCurrentFPS(0.0, 0.0, 0, 0, frameCallback.isRunningOnFabric)
   }
@@ -54,7 +54,7 @@ internal class FpsView(reactContext: ReactContext?) : FrameLayout(reactContext!!
       currentJSFPS: Double,
       droppedUIFrames: Int,
       total4PlusFrameStutters: Int,
-      runningOnFabric: Boolean
+      runningOnFabric: Boolean,
   ) {
     var fpsString =
         String.format(
@@ -62,7 +62,8 @@ internal class FpsView(reactContext: ReactContext?) : FrameLayout(reactContext!!
             "UI: %.1f fps\n%d dropped so far\n%d stutters (4+) so far",
             currentFPS,
             droppedUIFrames,
-            total4PlusFrameStutters)
+            total4PlusFrameStutters,
+        )
     if (!runningOnFabric) {
       // The JS FPS is only relevant for the legacy architecture, as Fabric we don't use
       // BridgeIdleDebugListener to track JS frame drops.
@@ -89,7 +90,8 @@ internal class FpsView(reactContext: ReactContext?) : FrameLayout(reactContext!!
           frameCallback.jsFPS,
           totalFramesDropped,
           total4PlusFrameStutters,
-          frameCallback.isRunningOnFabric)
+          frameCallback.isRunningOnFabric,
+      )
       frameCallback.reset()
       postDelayed(this, UPDATE_INTERVAL_MS.toLong())
     }

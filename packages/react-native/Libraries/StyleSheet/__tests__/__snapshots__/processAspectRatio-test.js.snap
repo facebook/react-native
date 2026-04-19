@@ -6,7 +6,7 @@ exports[`processAspectRatio should not accept invalid formats 2`] = `"aspectRati
 
 exports[`processAspectRatio should not accept invalid formats 3`] = `"aspectRatio must either be a number, a ratio string or \`auto\`. You passed: auto 1/1"`;
 
-exports[`processAspectRatio should not accept non string truthy types 1`] = `"aspectRatio must either be a number, a ratio string or \`auto\`. You passed: function () {}"`;
+exports[`processAspectRatio should not accept non string truthy types 1`] = `"aspectRatio must either be a number, a ratio string or \`auto\`. You passed: () => {}"`;
 
 exports[`processAspectRatio should not accept non string truthy types 2`] = `"aspectRatio must either be a number, a ratio string or \`auto\`. You passed: 1,2,3"`;
 

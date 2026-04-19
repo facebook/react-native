@@ -120,47 +120,56 @@ static BOOL CGColorsAreEqual(CGColorRef color1, CGColorRef color2)
   [UITraitCollection setCurrentTraitCollection:savedTraitCollection];
 }
 
+static NSArray<NSNumber *> *UIColorAsNSUInt(UIColor *color)
+{
+  CGFloat red, green, blue, alpha;
+
+  [color getRed:&red green:&green blue:&blue alpha:&alpha];
+
+  return @[ @(alpha * 255), @(red * 255), @(green * 255), @(blue * 255) ];
+}
+
 - (void)testGenerateFallbacks
 {
-  NSDictionary<NSString *, NSNumber *> *semanticColors = @{
+  NSDictionary<NSString *, NSArray<NSNumber *> *> *semanticColors = @{
     // https://developer.apple.com/documentation/uikit/uicolor/ui_element_colors
     // Label Colors
-    @"labelColor" : @(0xFF000000),
-    @"secondaryLabelColor" : @(0x993c3c43),
-    @"tertiaryLabelColor" : @(0x4c3c3c43),
-    @"quaternaryLabelColor" : @(0x2d3c3c43),
+    @"labelColor" : UIColorAsNSUInt(UIColor.labelColor),
+    @"secondaryLabelColor" : UIColorAsNSUInt(UIColor.secondaryLabelColor),
+    @"tertiaryLabelColor" : UIColorAsNSUInt(UIColor.tertiaryLabelColor),
+    @"quaternaryLabelColor" : UIColorAsNSUInt(UIColor.quaternaryLabelColor),
     // Fill Colors
-    @"systemFillColor" : @(0x33787880),
-    @"secondarySystemFillColor" : @(0x28787880),
-    @"tertiarySystemFillColor" : @(0x1e767680),
-    @"quaternarySystemFillColor" : @(0x14747480),
+    @"systemFillColor" : UIColorAsNSUInt(UIColor.systemFillColor),
+    @"secondarySystemFillColor" : UIColorAsNSUInt(UIColor.secondarySystemFillColor),
+    @"tertiarySystemFillColor" : UIColorAsNSUInt(UIColor.tertiarySystemFillColor),
+    @"quaternarySystemFillColor" : UIColorAsNSUInt(UIColor.quaternarySystemFillColor),
     // Text Colors
-    @"placeholderTextColor" : @(0x4c3c3c43),
+    @"placeholderTextColor" : UIColorAsNSUInt(UIColor.placeholderTextColor),
     // Standard Content Background Colors
-    @"systemBackgroundColor" : @(0xFFffffff),
-    @"secondarySystemBackgroundColor" : @(0xFFf2f2f7),
-    @"tertiarySystemBackgroundColor" : @(0xFFffffff),
+    @"systemBackgroundColor" : UIColorAsNSUInt(UIColor.systemBackgroundColor),
+    @"secondarySystemBackgroundColor" : UIColorAsNSUInt(UIColor.secondarySystemBackgroundColor),
+    @"tertiarySystemBackgroundColor" : UIColorAsNSUInt(UIColor.tertiarySystemBackgroundColor),
     // Grouped Content Background Colors
-    @"systemGroupedBackgroundColor" : @(0xFFf2f2f7),
-    @"secondarySystemGroupedBackgroundColor" : @(0xFFffffff),
-    @"tertiarySystemGroupedBackgroundColor" : @(0xFFf2f2f7),
+    @"systemGroupedBackgroundColor" : UIColorAsNSUInt(UIColor.systemGroupedBackgroundColor),
+    @"secondarySystemGroupedBackgroundColor" : UIColorAsNSUInt(UIColor.secondarySystemGroupedBackgroundColor),
+    @"tertiarySystemGroupedBackgroundColor" : UIColorAsNSUInt(UIColor.tertiarySystemGroupedBackgroundColor),
     // Separator Colors
-    @"separatorColor" : @(0x493c3c43),
-    @"opaqueSeparatorColor" : @(0xFFc6c6c8),
+    @"separatorColor" : UIColorAsNSUInt(UIColor.separatorColor),
+    @"opaqueSeparatorColor" : UIColorAsNSUInt(UIColor.opaqueSeparatorColor),
     // Link Color
-    @"linkColor" : @(0xFF007aff),
+    @"linkColor" : UIColorAsNSUInt(UIColor.linkColor),
     // https://developer.apple.com/documentation/uikit/uicolor/standard_colors
     // Adaptable Colors
-    @"systemBrownColor" : @(0xFFa2845e),
-    @"systemIndigoColor" : @(0xFF5856d6),
+    @"systemBrownColor" : UIColorAsNSUInt(UIColor.systemBrownColor),
+    @"systemIndigoColor" : UIColorAsNSUInt(UIColor.systemIndigoColor),
     // Adaptable Gray Colors
-    @"systemGray2Color" : @(0xFFaeaeb2),
-    @"systemGray3Color" : @(0xFFc7c7cc),
-    @"systemGray4Color" : @(0xFFd1d1d6),
-    @"systemGray5Color" : @(0xFFe5e5ea),
-    @"systemGray6Color" : @(0xFFf2f2f7),
+    @"systemGray2Color" : UIColorAsNSUInt(UIColor.systemGray2Color),
+    @"systemGray3Color" : UIColorAsNSUInt(UIColor.systemGray3Color),
+    @"systemGray4Color" : UIColorAsNSUInt(UIColor.systemGray4Color),
+    @"systemGray5Color" : UIColorAsNSUInt(UIColor.systemGray5Color),
+    @"systemGray6Color" : UIColorAsNSUInt(UIColor.systemGray6Color),
     // Clear Color
-    @"clearColor" : @(0x00000000),
+    @"clearColor" : UIColorAsNSUInt(UIColor.clearColor),
   };
 
   id savedTraitCollection = nil;
@@ -175,12 +184,11 @@ static BOOL CGColorsAreEqual(CGColorRef color1, CGColorRef color2)
     UIColor *value = [RCTConvert UIColor:json];
     XCTAssertNotNil(value);
 
-    NSNumber *fallback = [semanticColors objectForKey:semanticColor];
-    NSUInteger rgbValue = [fallback unsignedIntegerValue];
-    NSUInteger alpha1 = ((rgbValue & 0xFF000000) >> 24);
-    NSUInteger red1 = ((rgbValue & 0x00FF0000) >> 16);
-    NSUInteger green1 = ((rgbValue & 0x0000FF00) >> 8);
-    NSUInteger blue1 = ((rgbValue & 0x000000FF) >> 0);
+    NSArray<NSNumber *> *fallback = [semanticColors objectForKey:semanticColor];
+    NSUInteger alpha1 = [fallback[0] unsignedIntegerValue];
+    NSUInteger red1 = [fallback[1] unsignedIntegerValue];
+    NSUInteger green1 = [fallback[2] unsignedIntegerValue];
+    NSUInteger blue1 = [fallback[3] unsignedIntegerValue];
 
     CGFloat rgba[4];
     RCTGetRGBAColorComponents([value CGColor], rgba);

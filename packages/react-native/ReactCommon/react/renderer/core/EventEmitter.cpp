@@ -10,21 +10,19 @@
 #include <cxxreact/TraceSection.h>
 #include <folly/dynamic.h>
 #include <jsi/jsi.h>
-
-#include "DynamicEventPayload.h"
-#include "RawEvent.h"
+#include <react/renderer/core/DynamicEventPayload.h>
+#include <react/renderer/core/RawEvent.h>
 
 namespace facebook::react {
-
 static bool hasPrefix(const std::string& str, const std::string& prefix) {
   return str.compare(0, prefix.length(), prefix) == 0;
 }
 
 // TODO(T29874519): Get rid of "top" prefix once and for all.
 /*
- * Replaces "on" with "top" if present. Or capitalizes the first letter and adds
- * "top" prefix. E.g. "eventName" becomes "topEventName", "onEventName" also
- * becomes "topEventName".
+ * Replaces "on" with "top" if present. Or capitalizes the first letter and
+ * adds "top" prefix. E.g. "eventName" becomes "topEventName", "onEventName"
+ * also becomes "topEventName".
  */
 /* static */ std::string EventEmitter::normalizeEventType(std::string type) {
   auto prefixedType = std::move(type);
@@ -61,16 +59,37 @@ void EventEmitter::dispatchEvent(
     RawEvent::Category category) const {
   dispatchEvent(
       std::move(type),
-      std::make_shared<DynamicEventPayload>(std::move(payload)),
+      DynamicEventPayload::create(std::move(payload)),
       category);
+}
+
+void EventEmitter::dispatchEvent(
+    std::string type,
+    folly::dynamic&& payload,
+    RawEvent::Category category,
+    HighResTimeStamp eventTimestamp) const {
+  dispatchEvent(
+      std::move(type),
+      DynamicEventPayload::create(std::move(payload)),
+      category,
+      eventTimestamp);
 }
 
 void EventEmitter::dispatchUniqueEvent(
     std::string type,
     folly::dynamic&& payload) const {
   dispatchUniqueEvent(
+      std::move(type), DynamicEventPayload::create(std::move(payload)));
+}
+
+void EventEmitter::dispatchUniqueEvent(
+    std::string type,
+    folly::dynamic&& payload,
+    HighResTimeStamp eventTimestamp) const {
+  dispatchUniqueEvent(
       std::move(type),
-      std::make_shared<DynamicEventPayload>(std::move(payload)));
+      DynamicEventPayload::create(std::move(payload)),
+      eventTimestamp);
 }
 
 void EventEmitter::dispatchEvent(
@@ -85,8 +104,29 @@ void EventEmitter::dispatchEvent(
 
 void EventEmitter::dispatchEvent(
     std::string type,
+    const ValueFactory& payloadFactory,
+    RawEvent::Category category,
+    HighResTimeStamp eventTimestamp) const {
+  dispatchEvent(
+      std::move(type),
+      std::make_shared<ValueFactoryEventPayload>(payloadFactory),
+      category,
+      eventTimestamp);
+}
+
+void EventEmitter::dispatchEvent(
+    std::string type,
     SharedEventPayload payload,
     RawEvent::Category category) const {
+  dispatchEvent(
+      std::move(type), std::move(payload), category, HighResTimeStamp::now());
+}
+
+void EventEmitter::dispatchEvent(
+    std::string type,
+    SharedEventPayload payload,
+    RawEvent::Category category,
+    HighResTimeStamp eventTimestamp) const {
   TraceSection s("EventEmitter::dispatchEvent", "type", type);
 
   auto eventDispatcher = eventDispatcher_.lock();
@@ -99,7 +139,9 @@ void EventEmitter::dispatchEvent(
       std::move(payload),
       eventTarget_,
       shadowNodeFamily_,
-      category));
+      category,
+      false,
+      eventTimestamp));
 }
 
 void EventEmitter::dispatchUniqueEvent(
@@ -112,7 +154,25 @@ void EventEmitter::dispatchUniqueEvent(
 
 void EventEmitter::dispatchUniqueEvent(
     std::string type,
+    const ValueFactory& payloadFactory,
+    HighResTimeStamp eventTimestamp) const {
+  dispatchUniqueEvent(
+      std::move(type),
+      std::make_shared<ValueFactoryEventPayload>(payloadFactory),
+      eventTimestamp);
+}
+
+void EventEmitter::dispatchUniqueEvent(
+    std::string type,
     SharedEventPayload payload) const {
+  dispatchUniqueEvent(
+      std::move(type), std::move(payload), HighResTimeStamp::now());
+}
+
+void EventEmitter::dispatchUniqueEvent(
+    std::string type,
+    SharedEventPayload payload,
+    HighResTimeStamp eventTimestamp) const {
   TraceSection s("EventEmitter::dispatchUniqueEvent");
 
   auto eventDispatcher = eventDispatcher_.lock();
@@ -125,10 +185,12 @@ void EventEmitter::dispatchUniqueEvent(
       std::move(payload),
       eventTarget_,
       shadowNodeFamily_,
-      RawEvent::Category::Continuous));
+      RawEvent::Category::Continuous,
+      true,
+      eventTimestamp));
 }
 
-void EventEmitter::setEnabled(bool enabled) const {
+void EventEmitter::setEnabled(bool enabled) {
   enableCounter_ += enabled ? 1 : -1;
 
   bool shouldBeEnabled = enableCounter_ > 0;
@@ -139,10 +201,10 @@ void EventEmitter::setEnabled(bool enabled) const {
     }
   }
 
-  // Note: Initially, the state of `eventTarget_` and the value `enableCounter_`
-  // is mismatched intentionally (it's `non-null` and `0` accordingly). We need
-  // this to support an initial nebula state where the event target must be
-  // retained without any associated mounted node.
+  // Note: Initially, the state of `eventTarget_` and the value
+  // `enableCounter_` is mismatched intentionally (it's `non-null` and `0`
+  // accordingly). We need this to support an initial nebula state where the
+  // event target must be retained without any associated mounted node.
   bool shouldBeRetained = enableCounter_ > 0;
   if (shouldBeRetained != (eventTarget_ != nullptr)) {
     if (!shouldBeRetained) {
@@ -152,7 +214,7 @@ void EventEmitter::setEnabled(bool enabled) const {
 }
 
 void EventEmitter::setShadowNodeFamily(
-    std::weak_ptr<const ShadowNodeFamily> shadowNodeFamily) const {
+    std::weak_ptr<const ShadowNodeFamily> shadowNodeFamily) {
   shadowNodeFamily_ = std::move(shadowNodeFamily);
 }
 

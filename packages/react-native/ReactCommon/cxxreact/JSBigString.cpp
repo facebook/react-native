@@ -98,7 +98,7 @@ std::unique_ptr<const JSBigFileString> JSBigFileString::fromPath(
     throw std::runtime_error(message.c_str());
   }
 
-  struct stat fileInfo {};
+  struct stat fileInfo{};
   int res = ::fstat(fd, &fileInfo);
 
   if (res == -1) {

@@ -16,7 +16,8 @@ ImageComponentDescriptor::ImageComponentDescriptor(
     const ComponentDescriptorParameters& parameters)
     : ConcreteComponentDescriptor(parameters),
       imageManager_(
-          getManagerByName<ImageManager>(contextContainer_, ImageManagerKey)){};
+          getManagerByName<ImageManager>(contextContainer_, ImageManagerKey)) {
+      };
 
 void ImageComponentDescriptor::adopt(ShadowNode& shadowNode) const {
   ConcreteComponentDescriptor::adopt(shadowNode);

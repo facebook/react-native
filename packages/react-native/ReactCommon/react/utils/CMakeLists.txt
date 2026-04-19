@@ -30,7 +30,7 @@ target_include_directories(react_utils
 target_link_libraries(react_utils
         glog
         glog_init
-        jsireact
+        jsi
         react_debug)
 target_compile_reactnative_options(react_utils PRIVATE)
 target_compile_options(react_utils PRIVATE -Wpedantic)

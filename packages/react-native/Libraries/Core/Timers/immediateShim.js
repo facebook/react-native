@@ -6,6 +6,7 @@
  *
  * @flow
  * @format
+ * @deprecated
  */
 
 'use strict';
@@ -40,7 +41,7 @@ export function setImmediate(callback: Function, ...args: any): number {
     clearedImmediates.delete(id);
   }
 
-  // $FlowFixMe[incompatible-call]
+  // $FlowFixMe[incompatible-type]
   global.queueMicrotask(() => {
     if (!clearedImmediates.has(id)) {
       callback.apply(undefined, args);
@@ -54,7 +55,7 @@ export function setImmediate(callback: Function, ...args: any): number {
 }
 
 /**
- * @param {number} immediateID The ID of the immediate to be clearred.
+ * @param {number} immediateID The ID of the immediate to be cleared.
  */
 export function clearImmediate(immediateID: number) {
   clearedImmediates.add(immediateID);

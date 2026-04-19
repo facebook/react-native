@@ -147,6 +147,8 @@ const builtinTypeResolvers: {
           const propName =
             propNode.type === 'Identifier' ? propNode.name : propNode.value;
 
+          /* $FlowFixMe[incompatible-type] Error exposed after improved typing
+           * of Array.{includes,indexOf,lastIndexOf} */
           return !stringLiteralElements.includes(propName);
         }),
       ),

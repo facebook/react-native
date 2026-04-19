@@ -31,12 +31,12 @@ export function getNativeNodeReferenceFromReactNativeDocumentInstanceHandle(
 export function getPublicInstanceFromReactNativeDocumentInstanceHandle(
   instanceHandle: ReactNativeDocumentInstanceHandle,
 ): ?ReactNativeDocument {
-  // $FlowExpectedError[incompatible-return] React defines public instances as "mixed" because it can't access the definition from React Native.
+  // $FlowExpectedError[incompatible-type] React defines public instances as "mixed" because it can't access the definition from React Native.
   return RendererProxy.getPublicInstanceFromRootTag(Number(instanceHandle));
 }
 
 export function isReactNativeDocumentInstanceHandle(
-  instanceHandle: mixed,
+  instanceHandle: unknown,
   // $FlowExpectedError[incompatible-type-guard]
 ): instanceHandle is ReactNativeDocumentInstanceHandle {
   // $FlowFixMe[incompatible-type-guard]

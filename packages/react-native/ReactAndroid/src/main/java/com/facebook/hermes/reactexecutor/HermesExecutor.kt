@@ -29,8 +29,8 @@ public class HermesExecutor internal constructor(enableDebugger: Boolean, debugg
     @Throws(UnsatisfiedLinkError::class)
     public fun loadLibrary() {
       if (mode == null) {
-        // libhermes must be loaded explicitly to invoke its JNI_OnLoad.
-        SoLoader.loadLibrary("hermes")
+        // libhermesvm must be loaded explicitly to invoke its JNI_OnLoad.
+        SoLoader.loadLibrary("hermesvm")
         SoLoader.loadLibrary("hermes_executor")
         // libhermes_executor is built differently for Debug & Release so we load the proper mode.
         mode = if (ReactBuildConfig.DEBUG) "Debug" else "Release"
@@ -41,7 +41,7 @@ public class HermesExecutor internal constructor(enableDebugger: Boolean, debugg
     @JvmStatic
     private external fun initHybridDefaultConfig(
         enableDebugger: Boolean,
-        debuggerName: String
+        debuggerName: String,
     ): HybridData
 
     @DoNotStrip
@@ -49,7 +49,7 @@ public class HermesExecutor internal constructor(enableDebugger: Boolean, debugg
     private external fun initHybrid(
         enableDebugger: Boolean,
         debuggerName: String,
-        heapSizeMB: Long
+        heapSizeMB: Long,
     ): HybridData
   }
 }

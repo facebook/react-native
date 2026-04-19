@@ -9,7 +9,7 @@
 
 import type * as React from 'react';
 import {Constructor} from '../../../types/private/Utilities';
-import {NativeMethods} from '../../../types/public/ReactNativeTypes';
+import {HostInstance} from '../../../types/public/ReactNativeTypes';
 import {ColorValue} from '../../StyleSheet/StyleSheet';
 import {ViewProps} from '../View/ViewPropTypes';
 
@@ -49,7 +49,7 @@ export interface RefreshControlPropsAndroid extends ViewProps {
   /**
    * Size of the refresh indicator, see RefreshControl.SIZE.
    */
-  size?: number | undefined;
+  size?: 'default' | 'large' | undefined;
 }
 
 export interface RefreshControlProps
@@ -80,7 +80,7 @@ export interface RefreshControlProps
  * in the `onRefresh` function otherwise the refresh indicator will stop immediately.
  */
 declare class RefreshControlComponent extends React.Component<RefreshControlProps> {}
-declare const RefreshControlBase: Constructor<NativeMethods> &
+declare const RefreshControlBase: Constructor<HostInstance> &
   typeof RefreshControlComponent;
 export class RefreshControl extends RefreshControlBase {
   static SIZE: Object; // Undocumented
