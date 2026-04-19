@@ -90,6 +90,16 @@ bool TracingAgent::handleRequest(const cdp::PreparsedRequest& req) {
 
     return true;
   } else if (req.method == "Tracing.end") {
+    if (!sessionState_.hasPendingTraceRecording) {
+      frontendChannel_(
+          cdp::jsonError(
+              req.id,
+              cdp::ErrorCode::InvalidRequest,
+              "Tracing has not been started"));
+
+      return true;
+    }
+
     auto tracingProfile = hostTargetController_.stopTracing();
 
     sessionState_.hasPendingTraceRecording = false;
