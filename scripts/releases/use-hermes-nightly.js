@@ -15,7 +15,7 @@ const {updateHermesVersionsToNightly} = require('./utils/hermes-utils');
 
 async function main() {
   const {packageJson} = await getReactNativePackage();
-  const hermesCompilerVersion = packageJson.dependencies['hermes-compiler'];
+  const hermesCompilerVersion = packageJson.dependencies?.['hermes-compiler'];
 
   if (hermesCompilerVersion !== '0.0.0') {
     return;
