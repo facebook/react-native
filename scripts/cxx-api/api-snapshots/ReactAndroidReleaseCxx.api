@@ -1535,6 +1535,7 @@ class facebook::react::AnimatedNode {
 class facebook::react::AnimatedPropsRegistry {
   public std::pair<std::unordered_set<std::shared_ptr<const facebook::react::ShadowNodeFamily>>&, facebook::react::SnapshotMap&> getMap(facebook::react::SurfaceId surfaceId);
   public void clear(facebook::react::SurfaceId surfaceId);
+  public void clearOnSurfaceStop(facebook::react::SurfaceId surfaceId);
   public void update(const std::unordered_map<facebook::react::SurfaceId, facebook::react::SurfaceUpdates>& surfaceUpdates);
 }
 
@@ -1544,6 +1545,7 @@ class facebook::react::AnimationBackend : public facebook::react::UIManagerAnima
   public using ResumeCallback = std::function<void()>;
   public virtual facebook::react::CallbackId start(const facebook::react::UIManagerAnimationBackend::Callback& callback) override;
   public virtual void clearRegistry(facebook::react::SurfaceId surfaceId) override;
+  public virtual void clearRegistryOnSurfaceStop(facebook::react::SurfaceId surfaceId) override;
   public virtual void onAnimationFrame(facebook::react::AnimationTimestamp timestamp) override;
   public virtual void pushAnimationMutations(const facebook::react::UIManagerAnimationBackend::Callback& callback) override;
   public virtual void registerJSInvoker(std::shared_ptr<facebook::react::CallInvoker> jsInvoker) override;
@@ -5210,6 +5212,7 @@ class facebook::react::UIManagerAnimationBackend {
   public using Callback = std::function<facebook::react::AnimationMutations(facebook::react::AnimationTimestamp)>;
   public virtual facebook::react::CallbackId start(const facebook::react::UIManagerAnimationBackend::Callback& callback) = 0;
   public virtual void clearRegistry(facebook::react::SurfaceId surfaceId) = 0;
+  public virtual void clearRegistryOnSurfaceStop(facebook::react::SurfaceId surfaceId) = 0;
   public virtual void onAnimationFrame(facebook::react::AnimationTimestamp timestamp) = 0;
   public virtual void pushAnimationMutations(const facebook::react::UIManagerAnimationBackend::Callback& callback) = 0;
   public virtual void registerJSInvoker(std::shared_ptr<facebook::react::CallInvoker> jsInvoker) = 0;

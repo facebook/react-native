@@ -257,6 +257,10 @@ void AnimationBackend::clearRegistry(SurfaceId surfaceId) {
   animatedPropsRegistry_->clear(surfaceId);
 }
 
+void AnimationBackend::clearRegistryOnSurfaceStop(SurfaceId surfaceId) {
+  animatedPropsRegistry_->clearOnSurfaceStop(surfaceId);
+}
+
 void AnimationBackend::registerJSInvoker(
     std::shared_ptr<CallInvoker> jsInvoker) {
   if (!jsInvoker_) {
