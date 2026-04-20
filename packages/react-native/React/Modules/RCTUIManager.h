@@ -96,13 +96,13 @@ RCT_EXTERN NSString *const RCTUIManagerWillUpdateViewsDueToContentSizeMultiplier
 
 /**
  * Schedule a block to be executed on the UI thread. Useful if you need to execute
- * view logic after all currently queued view updates have completed.
+ * view logic afterAll currently queued view updates have completed.
  */
 - (void)addUIBlock:(RCTViewManagerUIBlock)block;
 
 /**
  * Schedule a block to be executed on the UI thread. Useful if you need to execute
- * view logic before all currently queued view updates have completed.
+ * view logic beforeAll currently queued view updates have completed.
  */
 - (void)prependUIBlock:(RCTViewManagerUIBlock)block;
 

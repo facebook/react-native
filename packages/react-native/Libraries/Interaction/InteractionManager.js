@@ -91,7 +91,7 @@ const InteractionManagerStub = {
   },
 
   /**
-   * Schedule a function to run after all interactions have completed. Returns a cancellable
+   * Schedule a function to run afterAll interactions have completed. Returns a cancellable
    * "promise".
    *
    * @deprecated

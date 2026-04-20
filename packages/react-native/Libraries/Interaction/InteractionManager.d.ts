@@ -49,7 +49,7 @@ export interface InteractionManagerStatic {
   ): EmitterSubscription;
 
   /**
-   * Schedule a function to run after all interactions have completed.
+   * Schedule a function to run afterAll interactions have completed.
    * Returns a cancellable
    *
    * @deprecated

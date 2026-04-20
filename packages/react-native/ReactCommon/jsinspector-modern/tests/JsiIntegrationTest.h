@@ -81,7 +81,7 @@ class JsiIntegrationPortableTestBase : public ::testing::Test, private HostTarge
 
   /**
    * Noop in JsiIntegrationPortableTest, but can be overridden by derived
-   * fixture classes to load some code at startup and after each reload.
+   * fixture classes to load some code at startup and afterEach reload.
    */
   virtual void loadMainBundle() {}
 

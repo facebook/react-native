@@ -294,7 +294,7 @@ public abstract class ViewManager<T extends View, C extends ReactShadowNode>
   protected void addEventEmitters(@NonNull ThemedReactContext reactContext, @NonNull T view) {}
 
   /**
-   * Callback that will be triggered after all properties are updated in current update transaction
+   * Callback that will be triggered afterAll properties are updated in current update transaction
    * (all @ReactProp handlers for properties updated in current transaction have been called). If
    * you want to override this method you should call super.onAfterUpdateTransaction from it as the
    * parent class of the ViewManager may rely on callback being executed.

@@ -33,7 +33,7 @@ public class ReactChoreographer private constructor(choreographerProvider: Chore
     /** Events that make JS do things. */
     TIMERS_EVENTS(3),
     /**
-     * Event used to trigger the idle callback. Called after all UI work has been dispatched to JS.
+     * Event used to trigger the idle callback. Called afterAll UI work has been dispatched to JS.
      */
     IDLE_EVENT(4),
   }

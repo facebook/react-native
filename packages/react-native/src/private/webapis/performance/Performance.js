@@ -276,7 +276,7 @@ export default class Performance {
 
           switch (typeof start) {
             case 'undefined': {
-              // This will be handled after all options have been processed.
+              // This will be handled afterAll options have been processed.
               break;
             }
             case 'number': {
@@ -294,7 +294,7 @@ export default class Performance {
 
           switch (typeof end) {
             case 'undefined': {
-              // This will be handled after all options have been processed.
+              // This will be handled afterAll options have been processed.
               break;
             }
             case 'number': {
@@ -312,7 +312,7 @@ export default class Performance {
 
           switch (typeof duration) {
             case 'undefined': {
-              // This will be handled after all options have been processed.
+              // This will be handled afterAll options have been processed.
               break;
             }
             case 'number': {

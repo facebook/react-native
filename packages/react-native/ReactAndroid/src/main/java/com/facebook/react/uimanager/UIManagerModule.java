@@ -583,7 +583,7 @@ public class UIManagerModule extends ReactContextBaseJavaModule
 
   /**
    * Schedule a block to be executed on the UI thread. Useful if you need to execute view logic
-   * after all currently queued view updates have completed.
+   * afterAll currently queued view updates have completed.
    *
    * @param block that contains UI logic you want to execute.
    *     <p>Usage Example:
@@ -596,7 +596,7 @@ public class UIManagerModule extends ReactContextBaseJavaModule
 
   /**
    * Schedule a block to be executed on the UI thread. Useful if you need to execute view logic
-   * before all currently queued view updates have completed.
+   * beforeAll currently queued view updates have completed.
    *
    * @param block that contains UI logic you want to execute.
    */

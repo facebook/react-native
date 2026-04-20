@@ -1269,7 +1269,7 @@ RCT_NOT_IMPLEMENTED(-(instancetype)initWithBundleURL : (__unused NSURL *)bundleU
   // Ordering here is tricky.  Ideally, the C++ bridge would provide
   // functionality to defer calls until after the app is loaded.  Until that
   // happens, we do this.  _pendingCount keeps a count of blocks which have
-  // been deferred.  It is incremented using an atomic barrier call before each
+  // been deferred.  It is incremented using an atomic barrier call beforeEach
   // block is added to the js queue, and decremented using an atomic barrier
   // call after the block is executed.  If _pendingCount is zero, there is no
   // work either in the js queue, or in _pendingCalls, so it is safe to add new
