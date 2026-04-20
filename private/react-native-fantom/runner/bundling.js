@@ -28,6 +28,8 @@ export async function createBundle(options: BundleOptions): Promise<void> {
   let lastBundleResult;
   let lastBundleError;
 
+  const bundleURL = getBundleURL(options);
+
   // Retry in case Metro hasn't seen the changes in the filesystem yet.
   // TODO(T231910841): Remove this when Metro fixes consistency issues when resolving HTTP requests.
   let attemps = 0;
@@ -40,7 +42,7 @@ export async function createBundle(options: BundleOptions): Promise<void> {
     lastBundleResult = null;
 
     try {
-      lastBundleResult = await fetch(getBundleURL(options));
+      lastBundleResult = await fetch(bundleURL);
     } catch (e) {
       lastBundleError = e;
     }
@@ -72,6 +74,15 @@ export async function createBundle(options: BundleOptions): Promise<void> {
     await lastBundleResult.text(),
     'utf8',
   );
+
+  // Each test uses a unique entrypoint, so the bundle graph will never be
+  // requested again. Send DELETE to evict Metro's cached dependency graph
+  // and delta calculator for this bundle, freeing the memory.
+  try {
+    await fetch(bundleURL, {method: 'DELETE'});
+  } catch {
+    // Best-effort cleanup — don't fail the test if eviction fails.
+  }
 }
 
 export async function createSourceMap(options: BundleOptions): Promise<void> {
