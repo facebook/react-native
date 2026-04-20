@@ -89,6 +89,19 @@ jobs:
     steps:
       - name: Checkout
         uses: actions/checkout@v6
+      - name: Verify NPM token
+        run: |
+          if [[ -z "$GHA_NPM_TOKEN" ]]; then
+            echo "⚠️ No NPM token found. Skipping validation."
+            exit 0
+          fi
+          echo "//registry.npmjs.org/:_authToken=$GHA_NPM_TOKEN" > ~/.npmrc
+          if ! npm whoami > /dev/null 2>&1; then
+            echo "❌ NPM token is invalid or expired. Aborting release."
+            exit 1
+          fi
+          echo "✅ NPM token is valid ($(npm whoami))"
+          rm -f ~/.npmrc
       - name: Build and Publish NPM Package
         uses: ./.github/actions/build-npm-package
         with:
