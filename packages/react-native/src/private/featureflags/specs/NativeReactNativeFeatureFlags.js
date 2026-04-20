@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<0e66e4ae4407000706cd243ad17aa605>>
+ * @generated SignedSource<<ae4a5328443babd1437e366861d71524>>
  * @flow strict
  * @noformat
  */
@@ -94,6 +94,8 @@ export interface Spec extends TurboModule {
   +perfMonitorV2Enabled?: () => boolean;
   +preparedTextCacheSize?: () => number;
   +preventShadowTreeCommitExhaustion?: () => boolean;
+  +redBoxV2Android?: () => boolean;
+  +redBoxV2IOS?: () => boolean;
   +shouldPressibilityUseW3CPointerEventsForHover?: () => boolean;
   +shouldTriggerResponderTransferOnScrollAndroid?: () => boolean;
   +skipActivityIdentityAssertionOnHostPause?: () => boolean;

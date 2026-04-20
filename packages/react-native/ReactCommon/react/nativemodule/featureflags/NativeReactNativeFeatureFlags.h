@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<3e07a28d13e142ba3c734ca111eb4974>>
+ * @generated SignedSource<<f87cbe5c6e20353ab0a21765f9265282>>
  */
 
 /**
@@ -173,6 +173,10 @@ class NativeReactNativeFeatureFlags
   double preparedTextCacheSize(jsi::Runtime& runtime);
 
   bool preventShadowTreeCommitExhaustion(jsi::Runtime& runtime);
+
+  bool redBoxV2Android(jsi::Runtime& runtime);
+
+  bool redBoxV2IOS(jsi::Runtime& runtime);
 
   bool shouldPressibilityUseW3CPointerEventsForHover(jsi::Runtime& runtime);
 
