@@ -4248,8 +4248,6 @@ void facebook::react::fromRawValue(const facebook::react::PropsParserContext& co
 void facebook::react::fromRawValue(const facebook::react::PropsParserContext& context, const facebook::react::RawValue& value, facebook::react::FontVariant& result);
 void facebook::react::fromRawValue(const facebook::react::PropsParserContext& context, const facebook::react::RawValue& value, facebook::react::FontWeight& result);
 void facebook::react::fromRawValue(const facebook::react::PropsParserContext& context, const facebook::react::RawValue& value, facebook::react::HyphenationFrequency& result);
-void facebook::react::fromRawValue(const facebook::react::PropsParserContext& context, const facebook::react::RawValue& value, facebook::react::ImageResizeMode& result);
-void facebook::react::fromRawValue(const facebook::react::PropsParserContext& context, const facebook::react::RawValue& value, facebook::react::ImageSource& result);
 void facebook::react::fromRawValue(const facebook::react::PropsParserContext& context, const facebook::react::RawValue& value, facebook::react::ImportantForAccessibility& result);
 void facebook::react::fromRawValue(const facebook::react::PropsParserContext& context, const facebook::react::RawValue& value, facebook::react::KeyboardAppearance& result);
 void facebook::react::fromRawValue(const facebook::react::PropsParserContext& context, const facebook::react::RawValue& value, facebook::react::KeyboardType& result);
@@ -4290,6 +4288,8 @@ void facebook::react::fromRawValue(const facebook::react::PropsParserContext& co
 void facebook::react::fromRawValue(const facebook::react::PropsParserContext& context, const facebook::react::RawValue& value, std::vector<facebook::react::FilterFunction>& result);
 void facebook::react::fromRawValue(const facebook::react::PropsParserContext&, const facebook::react::RawValue& value, facebook::react::AccessibilityValue& result);
 void facebook::react::fromRawValue(const facebook::react::PropsParserContext&, const facebook::react::RawValue& value, facebook::react::BlendMode& result);
+void facebook::react::fromRawValue(const facebook::react::PropsParserContext&, const facebook::react::RawValue& value, facebook::react::ImageResizeMode& result);
+void facebook::react::fromRawValue(const facebook::react::PropsParserContext&, const facebook::react::RawValue& value, facebook::react::ImageSource& result);
 void facebook::react::fromRawValue(const facebook::react::PropsParserContext&, const facebook::react::RawValue& value, facebook::react::Isolation& result);
 void facebook::react::fromRawValue(const facebook::react::PropsParserContext&, const facebook::react::RawValue& value, facebook::react::LayoutConformance& result);
 void facebook::react::fromRawValue(const facebook::react::PropsParserContext&, const facebook::react::RawValue& value, facebook::react::LineBreakMode& result);
@@ -6412,7 +6412,10 @@ class facebook::react::NativeVibrationSpecJSI : public facebook::react::ObjCTurb
 
 class facebook::react::NativeViewTransition : public facebook::react::NativeViewTransitionCxxSpec<facebook::react::NativeViewTransition> {
   public NativeViewTransition(std::shared_ptr<facebook::react::CallInvoker> jsInvoker);
+  public facebook::jsi::Value findPseudoElementShadowNodeByTag(facebook::jsi::Runtime& rt, double reactTag);
   public std::optional<facebook::jsi::Object> getViewTransitionInstance(facebook::jsi::Runtime& rt, const std::string& name, const std::string& pseudo);
+  public void transitionAnimationFinished(facebook::jsi::Runtime& rt, double animationId);
+  public void waitForTransitionAnimation(facebook::jsi::Runtime& rt, double animationId);
 }
 
 class facebook::react::NativeWebSocketModuleSpecJSI : public facebook::react::ObjCTurboModule {
@@ -7863,13 +7866,17 @@ class facebook::react::UIManagerNativeAnimatedDelegateImpl : public facebook::re
 
 class facebook::react::UIManagerViewTransitionDelegate {
   public virtual std::optional<facebook::react::UIManagerViewTransitionDelegate::ViewTransitionInstance> getViewTransitionInstance(const std::string& name, const std::string& pseudo);
-  public virtual std::shared_ptr<const facebook::react::ShadowNode> findPseudoElementShadowNodeByTag(facebook::react::Tag tag) const;
+  public virtual std::shared_ptr<const facebook::react::ShadowNode> findPseudoElementShadowNodeByTag(facebook::react::Tag) const;
   public virtual void applyViewTransitionName(const facebook::react::ShadowNode& shadowNode, const std::string& name, const std::string& className);
   public virtual void cancelViewTransitionName(const facebook::react::ShadowNode& shadowNode, const std::string& name);
-  public virtual void createViewTransitionInstance(const std::string& name, facebook::react::Tag pseudoElementTag);
+  public virtual void createViewTransitionInstance(const std::string&, facebook::react::Tag);
   public virtual void restoreViewTransitionName(const facebook::react::ShadowNode& shadowNode);
   public virtual void startViewTransition(std::function<void()> mutationCallback, std::function<void()> onReadyCallback, std::function<void()> onCompleteCallback);
   public virtual void startViewTransitionEnd();
+  public virtual void startViewTransitionReadyFinished();
+  public virtual void suspendOnActiveViewTransition();
+  public virtual void transitionAnimationFinished(int animationId);
+  public virtual void waitForTransitionAnimation(int animationId);
   public virtual ~UIManagerViewTransitionDelegate() = default;
 }
 
@@ -7936,20 +7943,26 @@ class facebook::react::ViewShadowNodeProps : public facebook::react::HostPlatfor
   public ViewShadowNodeProps(const facebook::react::PropsParserContext& context, const facebook::react::ViewShadowNodeProps& sourceProps, const facebook::react::RawProps& rawProps);
 }
 
-class facebook::react::ViewTransitionModule : public facebook::react::UIManagerViewTransitionDelegate, public facebook::react::UIManagerCommitHook {
+class facebook::react::ViewTransitionModule : public facebook::react::UIManagerViewTransitionDelegate, public facebook::react::UIManagerCommitHook, public facebook::react::MountingOverrideDelegate {
+  public virtual bool shouldOverridePullTransaction() const override;
   public virtual facebook::react::RootShadowNode::Unshared shadowTreeWillCommit(const facebook::react::ShadowTree& shadowTree, const facebook::react::RootShadowNode::Shared& oldRootShadowNode, const facebook::react::RootShadowNode::Unshared& newRootShadowNode, const facebook::react::ShadowTreeCommitOptions& commitOptions) noexcept override;
+  public virtual std::optional<facebook::react::MountingTransaction> pullTransaction(facebook::react::SurfaceId surfaceId, facebook::react::MountingTransaction::Number number, const facebook::react::TransactionTelemetry& telemetry, facebook::react::ShadowViewMutationList mutations) const override;
   public virtual std::optional<facebook::react::UIManagerViewTransitionDelegate::ViewTransitionInstance> getViewTransitionInstance(const std::string& name, const std::string& pseudo) override;
   public virtual std::shared_ptr<const facebook::react::ShadowNode> findPseudoElementShadowNodeByTag(facebook::react::Tag tag) const override;
   public virtual void applyViewTransitionName(const facebook::react::ShadowNode& shadowNode, const std::string& name, const std::string& className) override;
   public virtual void cancelViewTransitionName(const facebook::react::ShadowNode& shadowNode, const std::string& name) override;
-  public virtual void commitHookWasRegistered(const facebook::react::UIManager& uiManager) noexcept override;
-  public virtual void commitHookWasUnregistered(const facebook::react::UIManager& uiManager) noexcept override;
+  public virtual void commitHookWasRegistered(const facebook::react::UIManager&) noexcept override;
+  public virtual void commitHookWasUnregistered(const facebook::react::UIManager&) noexcept override;
   public virtual void createViewTransitionInstance(const std::string& name, facebook::react::Tag pseudoElementTag) override;
   public virtual void restoreViewTransitionName(const facebook::react::ShadowNode& shadowNode) override;
   public virtual void startViewTransition(std::function<void()> mutationCallback, std::function<void()> onReadyCallback, std::function<void()> onCompleteCallback) override;
   public virtual void startViewTransitionEnd() override;
-  public void setUIManager(facebook::react::UIManager* uiManager);
-  public ~ViewTransitionModule() override = default;
+  public virtual void startViewTransitionReadyFinished() override;
+  public virtual void suspendOnActiveViewTransition() override;
+  public virtual void transitionAnimationFinished(int animationId) override;
+  public virtual void waitForTransitionAnimation(int animationId) override;
+  public void initialize(facebook::react::UIManager* uiManager, std::weak_ptr<facebook::react::ViewTransitionModule> weakThis);
+  public ~ViewTransitionModule() override;
 }
 
 struct facebook::react::ViewTransitionModule::AnimationKeyFrameView {
@@ -9907,7 +9920,7 @@ struct facebook::react::NativePerformanceEntry {
 }
 
 struct facebook::react::PerformanceEntrySorter {
-  public bool operator()(const facebook::react::PerformanceEntry& lhs, const facebook::react::PerformanceEntry& rhs);
+  public bool operator()(const facebook::react::PerformanceEntry& lhs, const facebook::react::PerformanceEntry& rhs) const;
 }
 
 struct facebook::react::PerformanceEventTiming : public facebook::react::AbstractPerformanceEntry {
@@ -13949,42 +13962,48 @@ std::shared_ptr<U> facebook::jsi::dynamicInterfaceCast(T&& ptr);
 
 class facebook::jsi::Array : public facebook::jsi::Object {
   public Array(facebook::jsi::Array&&) = default;
-  public Array(facebook::jsi::Runtime& runtime, size_t length);
+  public Array(facebook::jsi::IRuntime& runtime, size_t length);
   public facebook::jsi::Array& operator=(facebook::jsi::Array&&) = default;
-  public facebook::jsi::Value getValueAtIndex(facebook::jsi::Runtime& runtime, size_t i) const;
-  public size_t length(facebook::jsi::Runtime& runtime) const;
-  public size_t size(facebook::jsi::Runtime& runtime) const;
-  public static facebook::jsi::Array createWithElements(facebook::jsi::Runtime& runtime, std::initializer_list<facebook::jsi::Value> elements);
+  public facebook::jsi::Value getValueAtIndex(facebook::jsi::IRuntime& runtime, size_t i) const;
+  public size_t length(facebook::jsi::IRuntime& runtime) const;
+  public size_t push(facebook::jsi::IRuntime& runtime, const facebook::jsi::Value* elements, size_t count);
+  public size_t push(facebook::jsi::IRuntime& runtime, std::initializer_list<facebook::jsi::Value> elements);
+  public size_t size(facebook::jsi::IRuntime& runtime) const;
+  public static facebook::jsi::Array createWithElements(facebook::jsi::IRuntime& runtime, std::initializer_list<facebook::jsi::Value> elements);
   template <typename T>
-  public void setValueAtIndex(facebook::jsi::Runtime& runtime, size_t i, T&& value) const;
+  public void setValueAtIndex(facebook::jsi::IRuntime& runtime, size_t i, T&& value) const;
   template <typename... Args>
-  public static facebook::jsi::Array createWithElements(facebook::jsi::Runtime& runtime, Args &&... args);
+  public size_t push(facebook::jsi::IRuntime& runtime, Args &&... args);
+  template <typename... Args>
+  public static facebook::jsi::Array createWithElements(facebook::jsi::IRuntime& runtime, Args &&... args);
 }
 
 class facebook::jsi::ArrayBuffer : public facebook::jsi::Object {
   public ArrayBuffer(facebook::jsi::ArrayBuffer&&) = default;
-  public ArrayBuffer(facebook::jsi::Runtime& runtime, std::shared_ptr<facebook::jsi::MutableBuffer> buffer);
+  public ArrayBuffer(facebook::jsi::IRuntime& runtime, std::shared_ptr<facebook::jsi::MutableBuffer> buffer);
+  public bool detached(facebook::jsi::IRuntime& runtime) const;
   public facebook::jsi::ArrayBuffer& operator=(facebook::jsi::ArrayBuffer&&) = default;
-  public size_t length(facebook::jsi::Runtime& runtime) const;
-  public size_t size(facebook::jsi::Runtime& runtime) const;
-  public uint8_t* data(facebook::jsi::Runtime& runtime) const;
+  public size_t length(facebook::jsi::IRuntime& runtime) const;
+  public size_t size(facebook::jsi::IRuntime& runtime) const;
+  public std::shared_ptr<facebook::jsi::MutableBuffer> tryGetMutableBuffer(facebook::jsi::IRuntime& runtime) const;
+  public uint8_t* data(facebook::jsi::IRuntime& runtime) const;
 }
 
 class facebook::jsi::BigInt : public facebook::jsi::Pointer {
   public BigInt(facebook::jsi::BigInt&& other) = default;
+  public BigInt(facebook::jsi::IRuntime::PointerValue::Runtime::PointerValue* ptr);
   public BigInt(facebook::jsi::Pointer&& other) noexcept;
-  public BigInt(facebook::jsi::Runtime::PointerValue* ptr);
-  public bool isInt64(facebook::jsi::Runtime& runtime) const;
-  public bool isUint64(facebook::jsi::Runtime& runtime) const;
+  public bool isInt64(facebook::jsi::IRuntime& runtime) const;
+  public bool isUint64(facebook::jsi::IRuntime& runtime) const;
   public facebook::jsi::BigInt& operator=(facebook::jsi::BigInt&& other) = default;
-  public facebook::jsi::String toString(facebook::jsi::Runtime& runtime, int radix = 10) const;
-  public int64_t asInt64(facebook::jsi::Runtime& runtime) const;
-  public int64_t getInt64(facebook::jsi::Runtime& runtime) const;
-  public static bool strictEquals(facebook::jsi::Runtime& runtime, const facebook::jsi::BigInt& a, const facebook::jsi::BigInt& b);
-  public static facebook::jsi::BigInt fromInt64(facebook::jsi::Runtime& runtime, int64_t value);
-  public static facebook::jsi::BigInt fromUint64(facebook::jsi::Runtime& runtime, uint64_t value);
-  public uint64_t asUint64(facebook::jsi::Runtime& runtime) const;
-  public uint64_t getUint64(facebook::jsi::Runtime& runtime) const;
+  public facebook::jsi::String toString(facebook::jsi::IRuntime& runtime, int radix = 10) const;
+  public int64_t asInt64(facebook::jsi::IRuntime& runtime) const;
+  public int64_t getInt64(facebook::jsi::IRuntime& runtime) const;
+  public static bool strictEquals(facebook::jsi::IRuntime& runtime, const facebook::jsi::BigInt& a, const facebook::jsi::BigInt& b);
+  public static facebook::jsi::BigInt fromInt64(facebook::jsi::IRuntime& runtime, int64_t value);
+  public static facebook::jsi::BigInt fromUint64(facebook::jsi::IRuntime& runtime, uint64_t value);
+  public uint64_t asUint64(facebook::jsi::IRuntime& runtime) const;
+  public uint64_t getUint64(facebook::jsi::IRuntime& runtime) const;
 }
 
 class facebook::jsi::Buffer {
@@ -14016,22 +14035,22 @@ class facebook::jsi::FileBuffer : public facebook::jsi::Buffer {
 
 class facebook::jsi::Function : public facebook::jsi::Object {
   public Function(facebook::jsi::Function&&) = default;
-  public bool isHostFunction(facebook::jsi::Runtime& runtime) const;
+  public bool isHostFunction(facebook::jsi::IRuntime& runtime) const;
   public facebook::jsi::Function& operator=(facebook::jsi::Function&&) = default;
-  public facebook::jsi::HostFunctionType& getHostFunction(facebook::jsi::Runtime& runtime) const;
-  public facebook::jsi::Value call(facebook::jsi::Runtime& runtime, const facebook::jsi::Value* args, size_t count) const;
-  public facebook::jsi::Value call(facebook::jsi::Runtime& runtime, std::initializer_list<facebook::jsi::Value> args) const;
-  public facebook::jsi::Value callAsConstructor(facebook::jsi::Runtime& runtime, const facebook::jsi::Value* args, size_t count) const;
-  public facebook::jsi::Value callAsConstructor(facebook::jsi::Runtime& runtime, std::initializer_list<facebook::jsi::Value> args) const;
-  public facebook::jsi::Value callWithThis(facebook::jsi::Runtime& Runtime, const facebook::jsi::Object& jsThis, const facebook::jsi::Value* args, size_t count) const;
-  public facebook::jsi::Value callWithThis(facebook::jsi::Runtime& runtime, const facebook::jsi::Object& jsThis, std::initializer_list<facebook::jsi::Value> args) const;
-  public static facebook::jsi::Function createFromHostFunction(facebook::jsi::Runtime& runtime, const facebook::jsi::PropNameID& name, unsigned int paramCount, facebook::jsi::HostFunctionType func);
+  public facebook::jsi::HostFunctionType& getHostFunction(facebook::jsi::IRuntime& runtime) const;
+  public facebook::jsi::Value call(facebook::jsi::IRuntime& runtime, const facebook::jsi::Value* args, size_t count) const;
+  public facebook::jsi::Value call(facebook::jsi::IRuntime& runtime, std::initializer_list<facebook::jsi::Value> args) const;
+  public facebook::jsi::Value callAsConstructor(facebook::jsi::IRuntime& runtime, const facebook::jsi::Value* args, size_t count) const;
+  public facebook::jsi::Value callAsConstructor(facebook::jsi::IRuntime& runtime, std::initializer_list<facebook::jsi::Value> args) const;
+  public facebook::jsi::Value callWithThis(facebook::jsi::IRuntime& Runtime, const facebook::jsi::Object& jsThis, const facebook::jsi::Value* args, size_t count) const;
+  public facebook::jsi::Value callWithThis(facebook::jsi::IRuntime& runtime, const facebook::jsi::Object& jsThis, std::initializer_list<facebook::jsi::Value> args) const;
+  public static facebook::jsi::Function createFromHostFunction(facebook::jsi::IRuntime& runtime, const facebook::jsi::PropNameID& name, unsigned int paramCount, facebook::jsi::HostFunctionType func);
   template <typename... Args>
-  public facebook::jsi::Value call(facebook::jsi::Runtime& runtime, Args &&... args) const;
+  public facebook::jsi::Value call(facebook::jsi::IRuntime& runtime, Args &&... args) const;
   template <typename... Args>
-  public facebook::jsi::Value callAsConstructor(facebook::jsi::Runtime& runtime, Args &&... args) const;
+  public facebook::jsi::Value callAsConstructor(facebook::jsi::IRuntime& runtime, Args &&... args) const;
   template <typename... Args>
-  public facebook::jsi::Value callWithThis(facebook::jsi::Runtime& runtime, const facebook::jsi::Object& jsThis, Args &&... args) const;
+  public facebook::jsi::Value callWithThis(facebook::jsi::IRuntime& runtime, const facebook::jsi::Object& jsThis, Args &&... args) const;
 }
 
 class facebook::jsi::HostObject {
@@ -14039,6 +14058,124 @@ class facebook::jsi::HostObject {
   public virtual std::vector<facebook::jsi::PropNameID> getPropertyNames(facebook::jsi::Runtime& rt);
   public virtual void set(facebook::jsi::Runtime&, const facebook::jsi::PropNameID& name, const facebook::jsi::Value& value);
   public virtual ~HostObject();
+}
+
+class facebook::jsi::IRuntime : public facebook::jsi::ICast {
+  protected virtual ~IRuntime() = default;
+  public static constexpr facebook::jsi::UUID uuid;
+  public virtual ScopeState* pushScope() = 0;
+  public virtual bool bigintIsInt64(const facebook::jsi::BigInt&) = 0;
+  public virtual bool bigintIsUint64(const facebook::jsi::BigInt&) = 0;
+  public virtual bool compare(const facebook::jsi::PropNameID&, const facebook::jsi::PropNameID&) = 0;
+  public virtual bool detached(const facebook::jsi::ArrayBuffer&) = 0;
+  public virtual bool drainMicrotasks(int maxMicrotasksHint = -1) = 0;
+  public virtual bool hasNativeState(const facebook::jsi::Object&) = 0;
+  public virtual bool hasProperty(const facebook::jsi::Object&, const facebook::jsi::PropNameID& name) = 0;
+  public virtual bool hasProperty(const facebook::jsi::Object&, const facebook::jsi::String& name) = 0;
+  public virtual bool hasProperty(const facebook::jsi::Object&, const facebook::jsi::Value& name) = 0;
+  public virtual bool instanceOf(const facebook::jsi::Object& o, const facebook::jsi::Function& f) = 0;
+  public virtual bool isArray(const facebook::jsi::Object&) const = 0;
+  public virtual bool isArrayBuffer(const facebook::jsi::Object&) const = 0;
+  public virtual bool isFunction(const facebook::jsi::Object&) const = 0;
+  public virtual bool isHostFunction(const facebook::jsi::Function&) const = 0;
+  public virtual bool isHostObject(const facebook::jsi::Object&) const = 0;
+  public virtual bool isInspectable() = 0;
+  public virtual bool isTypedArray(const facebook::jsi::Object&) const = 0;
+  public virtual bool isUint8Array(const facebook::jsi::Object&) const = 0;
+  public virtual bool strictEquals(const facebook::jsi::BigInt& a, const facebook::jsi::BigInt& b) const = 0;
+  public virtual bool strictEquals(const facebook::jsi::Object& a, const facebook::jsi::Object& b) const = 0;
+  public virtual bool strictEquals(const facebook::jsi::String& a, const facebook::jsi::String& b) const = 0;
+  public virtual bool strictEquals(const facebook::jsi::Symbol& a, const facebook::jsi::Symbol& b) const = 0;
+  public virtual const void* getRuntimeDataImpl(const facebook::jsi::UUID& dataUUID) = 0;
+  public virtual facebook::jsi::Array createArray(size_t length) = 0;
+  public virtual facebook::jsi::Array getPropertyNames(const facebook::jsi::Object&) = 0;
+  public virtual facebook::jsi::ArrayBuffer buffer(const facebook::jsi::TypedArray& typedArray) = 0;
+  public virtual facebook::jsi::ArrayBuffer createArrayBuffer(std::shared_ptr<facebook::jsi::MutableBuffer> buffer) = 0;
+  public virtual facebook::jsi::BigInt createBigIntFromInt64(int64_t) = 0;
+  public virtual facebook::jsi::BigInt createBigIntFromUint64(uint64_t) = 0;
+  public virtual facebook::jsi::Function createFunctionFromHostFunction(const facebook::jsi::PropNameID& name, unsigned int paramCount, facebook::jsi::HostFunctionType func) = 0;
+  public virtual facebook::jsi::HostFunctionType& getHostFunction(const facebook::jsi::Function&) = 0;
+  public virtual facebook::jsi::IRuntime::PointerValue* cloneBigInt(const facebook::jsi::IRuntime::PointerValue* pv) = 0;
+  public virtual facebook::jsi::IRuntime::PointerValue* cloneObject(const facebook::jsi::IRuntime::PointerValue* pv) = 0;
+  public virtual facebook::jsi::IRuntime::PointerValue* clonePropNameID(const facebook::jsi::IRuntime::PointerValue* pv) = 0;
+  public virtual facebook::jsi::IRuntime::PointerValue* cloneString(const facebook::jsi::IRuntime::PointerValue* pv) = 0;
+  public virtual facebook::jsi::IRuntime::PointerValue* cloneSymbol(const facebook::jsi::IRuntime::PointerValue* pv) = 0;
+  public virtual facebook::jsi::Instrumentation& instrumentation() = 0;
+  public virtual facebook::jsi::Object createObject() = 0;
+  public virtual facebook::jsi::Object createObject(std::shared_ptr<facebook::jsi::HostObject> ho) = 0;
+  public virtual facebook::jsi::Object createObjectWithPrototype(const facebook::jsi::Value& prototype) = 0;
+  public virtual facebook::jsi::Object global() = 0;
+  public virtual facebook::jsi::PropNameID createPropNameIDFromAscii(const char* str, size_t length) = 0;
+  public virtual facebook::jsi::PropNameID createPropNameIDFromString(const facebook::jsi::String& str) = 0;
+  public virtual facebook::jsi::PropNameID createPropNameIDFromSymbol(const facebook::jsi::Symbol& sym) = 0;
+  public virtual facebook::jsi::PropNameID createPropNameIDFromUtf8(const uint8_t* utf8, size_t length) = 0;
+  public virtual facebook::jsi::PropNameID createPropNameIDFromUtf16(const char16_t* utf16, size_t length) = 0;
+  public virtual facebook::jsi::String bigintToString(const facebook::jsi::BigInt&, int) = 0;
+  public virtual facebook::jsi::String createStringFromAscii(const char* str, size_t length) = 0;
+  public virtual facebook::jsi::String createStringFromUtf8(const uint8_t* utf8, size_t length) = 0;
+  public virtual facebook::jsi::String createStringFromUtf16(const char16_t* utf16, size_t length) = 0;
+  public virtual facebook::jsi::Uint8Array createUint8Array(const facebook::jsi::ArrayBuffer& buffer, size_t offset, size_t length) = 0;
+  public virtual facebook::jsi::Uint8Array createUint8Array(size_t length) = 0;
+  public virtual facebook::jsi::Value call(const facebook::jsi::Function&, const facebook::jsi::Value& jsThis, const facebook::jsi::Value* args, size_t count) = 0;
+  public virtual facebook::jsi::Value callAsConstructor(const facebook::jsi::Function&, const facebook::jsi::Value* args, size_t count) = 0;
+  public virtual facebook::jsi::Value createError(const facebook::jsi::String& msg) = 0;
+  public virtual facebook::jsi::Value createEvalError(const facebook::jsi::String& msg) = 0;
+  public virtual facebook::jsi::Value createRangeError(const facebook::jsi::String& msg) = 0;
+  public virtual facebook::jsi::Value createReferenceError(const facebook::jsi::String& msg) = 0;
+  public virtual facebook::jsi::Value createSyntaxError(const facebook::jsi::String& msg) = 0;
+  public virtual facebook::jsi::Value createTypeError(const facebook::jsi::String& msg) = 0;
+  public virtual facebook::jsi::Value createURIError(const facebook::jsi::String& msg) = 0;
+  public virtual facebook::jsi::Value createValueFromJsonUtf8(const uint8_t* json, size_t length) = 0;
+  public virtual facebook::jsi::Value evaluateJavaScript(const std::shared_ptr<const facebook::jsi::Buffer>& buffer, const std::string& sourceURL) = 0;
+  public virtual facebook::jsi::Value evaluatePreparedJavaScript(const std::shared_ptr<const facebook::jsi::PreparedJavaScript>& js) = 0;
+  public virtual facebook::jsi::Value getProperty(const facebook::jsi::Object&, const facebook::jsi::PropNameID& name) = 0;
+  public virtual facebook::jsi::Value getProperty(const facebook::jsi::Object&, const facebook::jsi::String& name) = 0;
+  public virtual facebook::jsi::Value getProperty(const facebook::jsi::Object&, const facebook::jsi::Value& name) = 0;
+  public virtual facebook::jsi::Value getPrototypeOf(const facebook::jsi::Object& object) = 0;
+  public virtual facebook::jsi::Value getValueAtIndex(const facebook::jsi::Array&, size_t i) = 0;
+  public virtual facebook::jsi::Value lockWeakObject(const facebook::jsi::WeakObject&) = 0;
+  public virtual facebook::jsi::WeakObject createWeakObject(const facebook::jsi::Object&) = 0;
+  public virtual size_t byteLength(const facebook::jsi::TypedArray& typedArray) = 0;
+  public virtual size_t byteOffset(const facebook::jsi::TypedArray& typedArray) = 0;
+  public virtual size_t length(const facebook::jsi::String& str) = 0;
+  public virtual size_t length(const facebook::jsi::TypedArray& typedArray) = 0;
+  public virtual size_t push(const facebook::jsi::Array&, const facebook::jsi::Value*, size_t) = 0;
+  public virtual size_t size(const facebook::jsi::Array&) = 0;
+  public virtual size_t size(const facebook::jsi::ArrayBuffer&) = 0;
+  public virtual std::shared_ptr<const facebook::jsi::PreparedJavaScript> prepareJavaScript(const std::shared_ptr<const facebook::jsi::Buffer>& buffer, std::string sourceURL) = 0;
+  public virtual std::shared_ptr<facebook::jsi::HostObject> getHostObject(const facebook::jsi::Object&) = 0;
+  public virtual std::shared_ptr<facebook::jsi::MutableBuffer> tryGetMutableBuffer(const facebook::jsi::ArrayBuffer& arrayBuffer) = 0;
+  public virtual std::shared_ptr<facebook::jsi::NativeState> getNativeState(const facebook::jsi::Object&) = 0;
+  public virtual std::shared_ptr<void> getRuntimeData(const facebook::jsi::UUID& dataUUID) = 0;
+  public virtual std::string description() = 0;
+  public virtual std::string symbolToString(const facebook::jsi::Symbol&) = 0;
+  public virtual std::string utf8(const facebook::jsi::PropNameID&) = 0;
+  public virtual std::string utf8(const facebook::jsi::String&) = 0;
+  public virtual std::u16string utf16(const facebook::jsi::PropNameID& sym) = 0;
+  public virtual std::u16string utf16(const facebook::jsi::String& str) = 0;
+  public virtual uint8_t* data(const facebook::jsi::ArrayBuffer&) = 0;
+  public virtual uint64_t truncate(const facebook::jsi::BigInt&) = 0;
+  public virtual void deleteProperty(const facebook::jsi::Object&, const facebook::jsi::PropNameID& name) = 0;
+  public virtual void deleteProperty(const facebook::jsi::Object&, const facebook::jsi::String& name) = 0;
+  public virtual void deleteProperty(const facebook::jsi::Object&, const facebook::jsi::Value& name) = 0;
+  public virtual void getPropNameIdData(const facebook::jsi::PropNameID& sym, void* ctx, void(*)(void* ctx, bool ascii, const void* data, size_t num) cb) = 0;
+  public virtual void getStringData(const facebook::jsi::String& str, void* ctx, void(*)(void* ctx, bool ascii, const void* data, size_t num) cb) = 0;
+  public virtual void popScope(ScopeState*) = 0;
+  public virtual void queueMicrotask(const facebook::jsi::Function& callback) = 0;
+  public virtual void setExternalMemoryPressure(const facebook::jsi::Object& obj, size_t amount) = 0;
+  public virtual void setNativeState(const facebook::jsi::Object&, std::shared_ptr<facebook::jsi::NativeState> state) = 0;
+  public virtual void setPropertyValue(const facebook::jsi::Object&, const facebook::jsi::PropNameID& name, const facebook::jsi::Value& value) = 0;
+  public virtual void setPropertyValue(const facebook::jsi::Object&, const facebook::jsi::String& name, const facebook::jsi::Value& value) = 0;
+  public virtual void setPropertyValue(const facebook::jsi::Object&, const facebook::jsi::Value& name, const facebook::jsi::Value& value) = 0;
+  public virtual void setPrototypeOf(const facebook::jsi::Object& object, const facebook::jsi::Value& prototype) = 0;
+  public virtual void setRuntimeData(const facebook::jsi::UUID& dataUUID, const std::shared_ptr<void>& data) = 0;
+  public virtual void setRuntimeDataImpl(const facebook::jsi::UUID& dataUUID, const void* data, void(*)(const void* data) deleter) = 0;
+  public virtual void setValueAtIndexImpl(const facebook::jsi::Array&, size_t i, const facebook::jsi::Value& value) = 0;
+}
+
+struct facebook::jsi::IRuntime::PointerValue {
+  protected virtual ~PointerValue() = default;
+  public virtual void invalidate() noexcept = 0;
 }
 
 class facebook::jsi::Instrumentation {
@@ -14065,15 +14202,21 @@ struct facebook::jsi::Instrumentation::HeapSnapshotOptions {
 
 class facebook::jsi::JSError : public facebook::jsi::JSIException {
   public JSError(const facebook::jsi::JSError&) = default;
-  public JSError(facebook::jsi::Runtime& r, facebook::jsi::Value&& value);
-  public JSError(facebook::jsi::Runtime& rt, const char* message);
-  public JSError(facebook::jsi::Runtime& rt, std::string message);
-  public JSError(facebook::jsi::Runtime& rt, std::string message, std::string stack);
+  public JSError(facebook::jsi::IRuntime& r, facebook::jsi::Value&& value);
+  public JSError(facebook::jsi::IRuntime& rt, const char* message);
+  public JSError(facebook::jsi::IRuntime& rt, std::string message);
+  public JSError(facebook::jsi::IRuntime& rt, std::string message, std::string stack);
   public JSError(facebook::jsi::Value&& value, std::string message, std::string stack);
-  public JSError(std::string what, facebook::jsi::Runtime& rt, facebook::jsi::Value&& value);
+  public JSError(std::string what, facebook::jsi::IRuntime& rt, facebook::jsi::Value&& value);
   public const facebook::jsi::Value& value() const;
   public const std::string& getMessage() const;
   public const std::string& getStack() const;
+  public static facebook::jsi::JSError createEvalError(facebook::jsi::IRuntime& rt, const std::string& message);
+  public static facebook::jsi::JSError createRangeError(facebook::jsi::IRuntime& rt, const std::string& message);
+  public static facebook::jsi::JSError createReferenceError(facebook::jsi::IRuntime& rt, const std::string& message);
+  public static facebook::jsi::JSError createSyntaxError(facebook::jsi::IRuntime& rt, const std::string& message);
+  public static facebook::jsi::JSError createTypeError(facebook::jsi::IRuntime& rt, const std::string& message);
+  public static facebook::jsi::JSError createURIError(facebook::jsi::IRuntime& rt, const std::string& message);
   public virtual ~JSError();
 }
 
@@ -14103,78 +14246,84 @@ class facebook::jsi::NativeState {
 }
 
 class facebook::jsi::Object : public facebook::jsi::Pointer {
-  protected void setPropertyValue(facebook::jsi::Runtime& runtime, const facebook::jsi::PropNameID& name, const facebook::jsi::Value& value) const;
-  protected void setPropertyValue(facebook::jsi::Runtime& runtime, const facebook::jsi::String& name, const facebook::jsi::Value& value) const;
-  protected void setPropertyValue(facebook::jsi::Runtime& runtime, const facebook::jsi::Value& name, const facebook::jsi::Value& value) const;
+  protected void setPropertyValue(facebook::jsi::IRuntime& runtime, const facebook::jsi::PropNameID& name, const facebook::jsi::Value& value) const;
+  protected void setPropertyValue(facebook::jsi::IRuntime& runtime, const facebook::jsi::String& name, const facebook::jsi::Value& value) const;
+  protected void setPropertyValue(facebook::jsi::IRuntime& runtime, const facebook::jsi::Value& name, const facebook::jsi::Value& value) const;
+  public Object(facebook::jsi::IRuntime& runtime);
+  public Object(facebook::jsi::IRuntime::PointerValue::Runtime::PointerValue* ptr);
   public Object(facebook::jsi::Object&& other) = default;
   public Object(facebook::jsi::Pointer&& other) noexcept;
-  public Object(facebook::jsi::Runtime& runtime);
-  public Object(facebook::jsi::Runtime::PointerValue* ptr);
-  public bool hasNativeState(facebook::jsi::Runtime& runtime) const;
-  public bool hasProperty(facebook::jsi::Runtime& runtime, const char* name) const;
-  public bool hasProperty(facebook::jsi::Runtime& runtime, const facebook::jsi::PropNameID& name) const;
-  public bool hasProperty(facebook::jsi::Runtime& runtime, const facebook::jsi::String& name) const;
-  public bool hasProperty(facebook::jsi::Runtime& runtime, const facebook::jsi::Value& name) const;
-  public bool instanceOf(facebook::jsi::Runtime& rt, const facebook::jsi::Function& ctor) const;
-  public bool isArray(facebook::jsi::Runtime& runtime) const;
-  public bool isArrayBuffer(facebook::jsi::Runtime& runtime) const;
-  public bool isFunction(facebook::jsi::Runtime& runtime) const;
-  public bool isHostObject(facebook::jsi::Runtime& runtime) const;
-  public facebook::jsi::Array asArray(facebook::jsi::Runtime& runtime) const;
-  public facebook::jsi::Array asArray(facebook::jsi::Runtime& runtime);
-  public facebook::jsi::Array getArray(facebook::jsi::Runtime& runtime) const;
-  public facebook::jsi::Array getArray(facebook::jsi::Runtime& runtime);
-  public facebook::jsi::Array getPropertyNames(facebook::jsi::Runtime& runtime) const;
-  public facebook::jsi::ArrayBuffer getArrayBuffer(facebook::jsi::Runtime& runtime) const;
-  public facebook::jsi::ArrayBuffer getArrayBuffer(facebook::jsi::Runtime& runtime);
-  public facebook::jsi::Function asFunction(facebook::jsi::Runtime& runtime) const;
-  public facebook::jsi::Function asFunction(facebook::jsi::Runtime& runtime);
-  public facebook::jsi::Function getFunction(facebook::jsi::Runtime& runtime) const;
-  public facebook::jsi::Function getFunction(facebook::jsi::Runtime& runtime);
-  public facebook::jsi::Function getPropertyAsFunction(facebook::jsi::Runtime& runtime, const char* name) const;
-  public facebook::jsi::Object getPropertyAsObject(facebook::jsi::Runtime& runtime, const char* name) const;
+  public bool hasNativeState(facebook::jsi::IRuntime& runtime) const;
+  public bool hasProperty(facebook::jsi::IRuntime& runtime, const char* name) const;
+  public bool hasProperty(facebook::jsi::IRuntime& runtime, const facebook::jsi::PropNameID& name) const;
+  public bool hasProperty(facebook::jsi::IRuntime& runtime, const facebook::jsi::String& name) const;
+  public bool hasProperty(facebook::jsi::IRuntime& runtime, const facebook::jsi::Value& name) const;
+  public bool instanceOf(facebook::jsi::IRuntime& rt, const facebook::jsi::Function& ctor) const;
+  public bool isArray(facebook::jsi::IRuntime& runtime) const;
+  public bool isArrayBuffer(facebook::jsi::IRuntime& runtime) const;
+  public bool isFunction(facebook::jsi::IRuntime& runtime) const;
+  public bool isHostObject(facebook::jsi::IRuntime& runtime) const;
+  public bool isTypedArray(facebook::jsi::IRuntime& runtime) const;
+  public bool isUint8Array(facebook::jsi::IRuntime& runtime) const;
+  public facebook::jsi::Array asArray(facebook::jsi::IRuntime& runtime) const;
+  public facebook::jsi::Array asArray(facebook::jsi::IRuntime& runtime);
+  public facebook::jsi::Array getArray(facebook::jsi::IRuntime& runtime) const;
+  public facebook::jsi::Array getArray(facebook::jsi::IRuntime& runtime);
+  public facebook::jsi::Array getPropertyNames(facebook::jsi::IRuntime& runtime) const;
+  public facebook::jsi::ArrayBuffer getArrayBuffer(facebook::jsi::IRuntime& runtime) const;
+  public facebook::jsi::ArrayBuffer getArrayBuffer(facebook::jsi::IRuntime& runtime);
+  public facebook::jsi::Function asFunction(facebook::jsi::IRuntime& runtime) const;
+  public facebook::jsi::Function asFunction(facebook::jsi::IRuntime& runtime);
+  public facebook::jsi::Function getFunction(facebook::jsi::IRuntime& runtime) const;
+  public facebook::jsi::Function getFunction(facebook::jsi::IRuntime& runtime);
+  public facebook::jsi::Function getPropertyAsFunction(facebook::jsi::IRuntime& runtime, const char* name) const;
+  public facebook::jsi::Object getPropertyAsObject(facebook::jsi::IRuntime& runtime, const char* name) const;
   public facebook::jsi::Object& operator=(facebook::jsi::Object&& other) = default;
-  public facebook::jsi::Value getProperty(facebook::jsi::Runtime& runtime, const char* name) const;
-  public facebook::jsi::Value getProperty(facebook::jsi::Runtime& runtime, const facebook::jsi::PropNameID& name) const;
-  public facebook::jsi::Value getProperty(facebook::jsi::Runtime& runtime, const facebook::jsi::String& name) const;
-  public facebook::jsi::Value getProperty(facebook::jsi::Runtime& runtime, const facebook::jsi::Value& name) const;
-  public facebook::jsi::Value getPrototype(facebook::jsi::Runtime& runtime) const;
-  public static bool strictEquals(facebook::jsi::Runtime& runtime, const facebook::jsi::Object& a, const facebook::jsi::Object& b);
-  public static facebook::jsi::Object create(facebook::jsi::Runtime& runtime, const facebook::jsi::Value& prototype);
-  public static facebook::jsi::Object createFromHostObject(facebook::jsi::Runtime& runtime, std::shared_ptr<facebook::jsi::HostObject> ho);
-  public std::shared_ptr<facebook::jsi::HostObject> getHostObject(facebook::jsi::Runtime& runtime) const;
-  public void deleteProperty(facebook::jsi::Runtime& runtime, const char* name) const;
-  public void deleteProperty(facebook::jsi::Runtime& runtime, const facebook::jsi::PropNameID& name) const;
-  public void deleteProperty(facebook::jsi::Runtime& runtime, const facebook::jsi::String& name) const;
-  public void deleteProperty(facebook::jsi::Runtime& runtime, const facebook::jsi::Value& name) const;
-  public void setExternalMemoryPressure(facebook::jsi::Runtime& runtime, size_t amt) const;
-  public void setNativeState(facebook::jsi::Runtime& runtime, std::shared_ptr<facebook::jsi::NativeState> state) const;
-  public void setPrototype(facebook::jsi::Runtime& runtime, const facebook::jsi::Value& prototype) const;
+  public facebook::jsi::TypedArray asTypedArray(facebook::jsi::IRuntime& runtime) const;
+  public facebook::jsi::TypedArray getTypedArray(facebook::jsi::IRuntime& runtime) const;
+  public facebook::jsi::Uint8Array asUint8Array(facebook::jsi::IRuntime& runtime) const;
+  public facebook::jsi::Uint8Array getUint8Array(facebook::jsi::IRuntime& runtime) const;
+  public facebook::jsi::Value getProperty(facebook::jsi::IRuntime& runtime, const char* name) const;
+  public facebook::jsi::Value getProperty(facebook::jsi::IRuntime& runtime, const facebook::jsi::PropNameID& name) const;
+  public facebook::jsi::Value getProperty(facebook::jsi::IRuntime& runtime, const facebook::jsi::String& name) const;
+  public facebook::jsi::Value getProperty(facebook::jsi::IRuntime& runtime, const facebook::jsi::Value& name) const;
+  public facebook::jsi::Value getPrototype(facebook::jsi::IRuntime& runtime) const;
+  public static bool strictEquals(facebook::jsi::IRuntime& runtime, const facebook::jsi::Object& a, const facebook::jsi::Object& b);
+  public static facebook::jsi::Object create(facebook::jsi::IRuntime& runtime, const facebook::jsi::Value& prototype);
+  public static facebook::jsi::Object createFromHostObject(facebook::jsi::IRuntime& runtime, std::shared_ptr<facebook::jsi::HostObject> ho);
+  public std::shared_ptr<facebook::jsi::HostObject> getHostObject(facebook::jsi::IRuntime& runtime) const;
+  public void deleteProperty(facebook::jsi::IRuntime& runtime, const char* name) const;
+  public void deleteProperty(facebook::jsi::IRuntime& runtime, const facebook::jsi::PropNameID& name) const;
+  public void deleteProperty(facebook::jsi::IRuntime& runtime, const facebook::jsi::String& name) const;
+  public void deleteProperty(facebook::jsi::IRuntime& runtime, const facebook::jsi::Value& name) const;
+  public void setExternalMemoryPressure(facebook::jsi::IRuntime& runtime, size_t amt) const;
+  public void setNativeState(facebook::jsi::IRuntime& runtime, std::shared_ptr<facebook::jsi::NativeState> state) const;
+  public void setPrototype(facebook::jsi::IRuntime& runtime, const facebook::jsi::Value& prototype) const;
   template <typename T = facebook::jsi::HostObject>
-  public bool isHostObject(facebook::jsi::Runtime& runtime) const;
+  public bool isHostObject(facebook::jsi::IRuntime& runtime) const;
   template <typename T = facebook::jsi::HostObject>
-  public std::shared_ptr<T> asHostObject(facebook::jsi::Runtime& runtime) const;
+  public std::shared_ptr<T> asHostObject(facebook::jsi::IRuntime& runtime) const;
   template <typename T = facebook::jsi::HostObject>
-  public std::shared_ptr<T> getHostObject(facebook::jsi::Runtime& runtime) const;
+  public std::shared_ptr<T> getHostObject(facebook::jsi::IRuntime& runtime) const;
   template <typename T = facebook::jsi::NativeState>
-  public bool hasNativeState(facebook::jsi::Runtime& runtime) const;
+  public bool hasNativeState(facebook::jsi::IRuntime& runtime) const;
   template <typename T = facebook::jsi::NativeState>
-  public std::shared_ptr<T> getNativeState(facebook::jsi::Runtime& runtime) const;
+  public std::shared_ptr<T> getNativeState(facebook::jsi::IRuntime& runtime) const;
   template <typename T>
-  public void setProperty(facebook::jsi::Runtime& runtime, const char* name, T&& value) const;
+  public void setProperty(facebook::jsi::IRuntime& runtime, const char* name, T&& value) const;
   template <typename T>
-  public void setProperty(facebook::jsi::Runtime& runtime, const facebook::jsi::PropNameID& name, T&& value) const;
+  public void setProperty(facebook::jsi::IRuntime& runtime, const facebook::jsi::PropNameID& name, T&& value) const;
   template <typename T>
-  public void setProperty(facebook::jsi::Runtime& runtime, const facebook::jsi::String& name, T&& value) const;
+  public void setProperty(facebook::jsi::IRuntime& runtime, const facebook::jsi::String& name, T&& value) const;
   template <typename T>
-  public void setProperty(facebook::jsi::Runtime& runtime, const facebook::jsi::Value& name, T&& value) const;
+  public void setProperty(facebook::jsi::IRuntime& runtime, const facebook::jsi::Value& name, T&& value) const;
 }
 
 class facebook::jsi::Pointer {
+  protected Pointer(facebook::jsi::IRuntime::PointerValue::Runtime::PointerValue* ptr);
   protected Pointer(facebook::jsi::Pointer&& other) noexcept;
-  protected Pointer(facebook::jsi::Runtime::PointerValue* ptr);
+  protected facebook::jsi::IRuntime::PointerValue::Runtime::PointerValue* ptr_;
   protected facebook::jsi::Pointer& operator=(facebook::jsi::Pointer&& other) noexcept;
-  protected facebook::jsi::Runtime::PointerValue* ptr_;
   protected ~Pointer();
 }
 
@@ -14184,144 +14333,98 @@ class facebook::jsi::PreparedJavaScript {
 }
 
 class facebook::jsi::PropNameID : public facebook::jsi::Pointer {
+  public PropNameID(facebook::jsi::IRuntime& runtime, const facebook::jsi::PropNameID& other);
+  public PropNameID(facebook::jsi::IRuntime::PointerValue::Runtime::PointerValue* ptr);
   public PropNameID(facebook::jsi::Pointer&& other) noexcept;
   public PropNameID(facebook::jsi::PropNameID&& other) = default;
-  public PropNameID(facebook::jsi::Runtime& runtime, const facebook::jsi::PropNameID& other);
-  public PropNameID(facebook::jsi::Runtime::PointerValue* ptr);
   public facebook::jsi::PropNameID& operator=(facebook::jsi::PropNameID&& other) = default;
-  public static bool compare(facebook::jsi::Runtime& runtime, const facebook::jsi::PropNameID& a, const facebook::jsi::PropNameID& b);
-  public static facebook::jsi::PropNameID forAscii(facebook::jsi::Runtime& runtime, const char* str);
-  public static facebook::jsi::PropNameID forAscii(facebook::jsi::Runtime& runtime, const char* str, size_t length);
-  public static facebook::jsi::PropNameID forAscii(facebook::jsi::Runtime& runtime, const std::string& str);
-  public static facebook::jsi::PropNameID forString(facebook::jsi::Runtime& runtime, const facebook::jsi::String& str);
-  public static facebook::jsi::PropNameID forSymbol(facebook::jsi::Runtime& runtime, const facebook::jsi::Symbol& sym);
-  public static facebook::jsi::PropNameID forUtf8(facebook::jsi::Runtime& runtime, const std::string& utf8);
-  public static facebook::jsi::PropNameID forUtf8(facebook::jsi::Runtime& runtime, const uint8_t* utf8, size_t length);
-  public static facebook::jsi::PropNameID forUtf16(facebook::jsi::Runtime& runtime, const char16_t* utf16, size_t length);
-  public static facebook::jsi::PropNameID forUtf16(facebook::jsi::Runtime& runtime, const std::u16string& str);
-  public std::string utf8(facebook::jsi::Runtime& runtime) const;
-  public std::u16string utf16(facebook::jsi::Runtime& runtime) const;
+  public static bool compare(facebook::jsi::IRuntime& runtime, const facebook::jsi::PropNameID& a, const facebook::jsi::PropNameID& b);
+  public static facebook::jsi::PropNameID forAscii(facebook::jsi::IRuntime& runtime, const char* str);
+  public static facebook::jsi::PropNameID forAscii(facebook::jsi::IRuntime& runtime, const char* str, size_t length);
+  public static facebook::jsi::PropNameID forAscii(facebook::jsi::IRuntime& runtime, const std::string& str);
+  public static facebook::jsi::PropNameID forString(facebook::jsi::IRuntime& runtime, const facebook::jsi::String& str);
+  public static facebook::jsi::PropNameID forSymbol(facebook::jsi::IRuntime& runtime, const facebook::jsi::Symbol& sym);
+  public static facebook::jsi::PropNameID forUtf8(facebook::jsi::IRuntime& runtime, const std::string& utf8);
+  public static facebook::jsi::PropNameID forUtf8(facebook::jsi::IRuntime& runtime, const uint8_t* utf8, size_t length);
+  public static facebook::jsi::PropNameID forUtf16(facebook::jsi::IRuntime& runtime, const char16_t* utf16, size_t length);
+  public static facebook::jsi::PropNameID forUtf16(facebook::jsi::IRuntime& runtime, const std::u16string& str);
+  public std::string utf8(facebook::jsi::IRuntime& runtime) const;
+  public std::u16string utf16(facebook::jsi::IRuntime& runtime) const;
   template <size_t N>
   public static std::vector<facebook::jsi::PropNameID> names(facebook::jsi::PropNameID(&&propertyNames)[N]);
   template <typename CB>
-  public void getPropNameIdData(facebook::jsi::Runtime& runtime, CB& cb) const;
+  public void getPropNameIdData(facebook::jsi::IRuntime& runtime, CB& cb) const;
   template <typename... Args>
-  public static std::vector<facebook::jsi::PropNameID> names(facebook::jsi::Runtime& runtime, Args &&... args);
+  public static std::vector<facebook::jsi::PropNameID> names(facebook::jsi::IRuntime& runtime, Args &&... args);
 }
 
-class facebook::jsi::Runtime : public facebook::jsi::ICast {
-  protected static const facebook::jsi::Runtime::PointerValue* getPointerValue(const facebook::jsi::Pointer& pointer);
-  protected static const facebook::jsi::Runtime::PointerValue* getPointerValue(const facebook::jsi::Value& value);
-  protected static facebook::jsi::Runtime::PointerValue* getPointerValue(facebook::jsi::Pointer& pointer);
-  protected virtual ScopeState* pushScope();
-  protected virtual bool bigintIsInt64(const facebook::jsi::BigInt&) = 0;
-  protected virtual bool bigintIsUint64(const facebook::jsi::BigInt&) = 0;
-  protected virtual bool compare(const facebook::jsi::PropNameID&, const facebook::jsi::PropNameID&) = 0;
-  protected virtual bool hasNativeState(const facebook::jsi::Object&) = 0;
-  protected virtual bool hasProperty(const facebook::jsi::Object&, const facebook::jsi::PropNameID& name) = 0;
-  protected virtual bool hasProperty(const facebook::jsi::Object&, const facebook::jsi::String& name) = 0;
-  protected virtual bool hasProperty(const facebook::jsi::Object&, const facebook::jsi::Value& name);
-  protected virtual bool instanceOf(const facebook::jsi::Object& o, const facebook::jsi::Function& f) = 0;
-  protected virtual bool isArray(const facebook::jsi::Object&) const = 0;
-  protected virtual bool isArrayBuffer(const facebook::jsi::Object&) const = 0;
-  protected virtual bool isFunction(const facebook::jsi::Object&) const = 0;
-  protected virtual bool isHostFunction(const facebook::jsi::Function&) const = 0;
-  protected virtual bool isHostObject(const facebook::jsi::Object&) const = 0;
-  protected virtual bool strictEquals(const facebook::jsi::BigInt& a, const facebook::jsi::BigInt& b) const = 0;
-  protected virtual bool strictEquals(const facebook::jsi::Object& a, const facebook::jsi::Object& b) const = 0;
-  protected virtual bool strictEquals(const facebook::jsi::String& a, const facebook::jsi::String& b) const = 0;
-  protected virtual bool strictEquals(const facebook::jsi::Symbol& a, const facebook::jsi::Symbol& b) const = 0;
-  protected virtual const void* getRuntimeDataImpl(const facebook::jsi::UUID& uuid);
-  protected virtual facebook::jsi::Array createArray(size_t length) = 0;
-  protected virtual facebook::jsi::Array getPropertyNames(const facebook::jsi::Object&) = 0;
-  protected virtual facebook::jsi::ArrayBuffer createArrayBuffer(std::shared_ptr<facebook::jsi::MutableBuffer> buffer) = 0;
-  protected virtual facebook::jsi::BigInt createBigIntFromInt64(int64_t) = 0;
-  protected virtual facebook::jsi::BigInt createBigIntFromUint64(uint64_t) = 0;
-  protected virtual facebook::jsi::Function createFunctionFromHostFunction(const facebook::jsi::PropNameID& name, unsigned int paramCount, facebook::jsi::HostFunctionType func) = 0;
-  protected virtual facebook::jsi::HostFunctionType& getHostFunction(const facebook::jsi::Function&) = 0;
-  protected virtual facebook::jsi::Object createObject() = 0;
-  protected virtual facebook::jsi::Object createObject(std::shared_ptr<facebook::jsi::HostObject> ho) = 0;
-  protected virtual facebook::jsi::Object createObjectWithPrototype(const facebook::jsi::Value& prototype);
-  protected virtual facebook::jsi::PropNameID createPropNameIDFromAscii(const char* str, size_t length) = 0;
-  protected virtual facebook::jsi::PropNameID createPropNameIDFromString(const facebook::jsi::String& str) = 0;
-  protected virtual facebook::jsi::PropNameID createPropNameIDFromSymbol(const facebook::jsi::Symbol& sym) = 0;
-  protected virtual facebook::jsi::PropNameID createPropNameIDFromUtf8(const uint8_t* utf8, size_t length) = 0;
-  protected virtual facebook::jsi::PropNameID createPropNameIDFromUtf16(const char16_t* utf16, size_t length);
-  protected virtual facebook::jsi::Runtime::PointerValue* cloneBigInt(const facebook::jsi::Runtime::PointerValue* pv) = 0;
-  protected virtual facebook::jsi::Runtime::PointerValue* cloneObject(const facebook::jsi::Runtime::PointerValue* pv) = 0;
-  protected virtual facebook::jsi::Runtime::PointerValue* clonePropNameID(const facebook::jsi::Runtime::PointerValue* pv) = 0;
-  protected virtual facebook::jsi::Runtime::PointerValue* cloneString(const facebook::jsi::Runtime::PointerValue* pv) = 0;
-  protected virtual facebook::jsi::Runtime::PointerValue* cloneSymbol(const facebook::jsi::Runtime::PointerValue* pv) = 0;
-  protected virtual facebook::jsi::String bigintToString(const facebook::jsi::BigInt&, int) = 0;
-  protected virtual facebook::jsi::String createStringFromAscii(const char* str, size_t length) = 0;
-  protected virtual facebook::jsi::String createStringFromUtf8(const uint8_t* utf8, size_t length) = 0;
-  protected virtual facebook::jsi::String createStringFromUtf16(const char16_t* utf16, size_t length);
-  protected virtual facebook::jsi::Value call(const facebook::jsi::Function&, const facebook::jsi::Value& jsThis, const facebook::jsi::Value* args, size_t count) = 0;
-  protected virtual facebook::jsi::Value callAsConstructor(const facebook::jsi::Function&, const facebook::jsi::Value* args, size_t count) = 0;
-  protected virtual facebook::jsi::Value createValueFromJsonUtf8(const uint8_t* json, size_t length);
-  protected virtual facebook::jsi::Value getProperty(const facebook::jsi::Object&, const facebook::jsi::PropNameID& name) = 0;
-  protected virtual facebook::jsi::Value getProperty(const facebook::jsi::Object&, const facebook::jsi::String& name) = 0;
-  protected virtual facebook::jsi::Value getProperty(const facebook::jsi::Object&, const facebook::jsi::Value& name);
-  protected virtual facebook::jsi::Value getPrototypeOf(const facebook::jsi::Object& object);
-  protected virtual facebook::jsi::Value getValueAtIndex(const facebook::jsi::Array&, size_t i) = 0;
-  protected virtual facebook::jsi::Value lockWeakObject(const facebook::jsi::WeakObject&) = 0;
-  protected virtual facebook::jsi::WeakObject createWeakObject(const facebook::jsi::Object&) = 0;
-  protected virtual size_t size(const facebook::jsi::Array&) = 0;
-  protected virtual size_t size(const facebook::jsi::ArrayBuffer&) = 0;
-  protected virtual std::shared_ptr<facebook::jsi::HostObject> getHostObject(const facebook::jsi::Object&) = 0;
-  protected virtual std::shared_ptr<facebook::jsi::NativeState> getNativeState(const facebook::jsi::Object&) = 0;
-  protected virtual std::string symbolToString(const facebook::jsi::Symbol&) = 0;
-  protected virtual std::string utf8(const facebook::jsi::PropNameID&) = 0;
-  protected virtual std::string utf8(const facebook::jsi::String&) = 0;
-  protected virtual std::u16string utf16(const facebook::jsi::PropNameID& sym);
-  protected virtual std::u16string utf16(const facebook::jsi::String& str);
-  protected virtual uint8_t* data(const facebook::jsi::ArrayBuffer&) = 0;
-  protected virtual uint64_t truncate(const facebook::jsi::BigInt&) = 0;
-  protected virtual void deleteProperty(const facebook::jsi::Object&, const facebook::jsi::PropNameID& name);
-  protected virtual void deleteProperty(const facebook::jsi::Object&, const facebook::jsi::String& name);
-  protected virtual void deleteProperty(const facebook::jsi::Object&, const facebook::jsi::Value& name);
-  protected virtual void getPropNameIdData(const facebook::jsi::PropNameID& sym, void* ctx, void(*)(void* ctx, bool ascii, const void* data, size_t num) cb);
-  protected virtual void getStringData(const facebook::jsi::String& str, void* ctx, void(*)(void* ctx, bool ascii, const void* data, size_t num) cb);
-  protected virtual void popScope(ScopeState*);
-  protected virtual void setExternalMemoryPressure(const facebook::jsi::Object& obj, size_t amount) = 0;
-  protected virtual void setNativeState(const facebook::jsi::Object&, std::shared_ptr<facebook::jsi::NativeState> state) = 0;
-  protected virtual void setPropertyValue(const facebook::jsi::Object&, const facebook::jsi::PropNameID& name, const facebook::jsi::Value& value) = 0;
-  protected virtual void setPropertyValue(const facebook::jsi::Object&, const facebook::jsi::String& name, const facebook::jsi::Value& value) = 0;
-  protected virtual void setPropertyValue(const facebook::jsi::Object&, const facebook::jsi::Value& name, const facebook::jsi::Value& value);
-  protected virtual void setPrototypeOf(const facebook::jsi::Object& object, const facebook::jsi::Value& prototype);
-  protected virtual void setRuntimeDataImpl(const facebook::jsi::UUID& uuid, const void* data, void(*)(const void* data) deleter);
-  protected virtual void setValueAtIndexImpl(const facebook::jsi::Array&, size_t i, const facebook::jsi::Value& value) = 0;
-  public std::shared_ptr<void> getRuntimeData(const facebook::jsi::UUID& uuid);
-  public virtual bool drainMicrotasks(int maxMicrotasksHint = -1) = 0;
-  public virtual bool isInspectable() = 0;
+class facebook::jsi::Runtime : public facebook::jsi::IRuntime {
+  protected static const facebook::jsi::IRuntime::PointerValue* getPointerValue(const facebook::jsi::Pointer& pointer);
+  protected static const facebook::jsi::IRuntime::PointerValue* getPointerValue(const facebook::jsi::Value& value);
+  protected static facebook::jsi::IRuntime::PointerValue* getPointerValue(facebook::jsi::Pointer& pointer);
+  public virtual ScopeState* pushScope() override;
+  public virtual bool detached(const facebook::jsi::ArrayBuffer&) override;
+  public virtual bool hasProperty(const facebook::jsi::Object&, const facebook::jsi::PropNameID& name) = 0;
+  public virtual bool hasProperty(const facebook::jsi::Object&, const facebook::jsi::String& name) = 0;
+  public virtual bool hasProperty(const facebook::jsi::Object&, const facebook::jsi::Value& name) override;
+  public virtual bool isTypedArray(const facebook::jsi::Object&) const override;
+  public virtual bool isUint8Array(const facebook::jsi::Object&) const override;
+  public virtual const void* getRuntimeDataImpl(const facebook::jsi::UUID& dataUUID) override;
+  public virtual facebook::jsi::ArrayBuffer buffer(const facebook::jsi::TypedArray& typedArray) override;
   public virtual facebook::jsi::ICast* castInterface(const facebook::jsi::UUID& interfaceUUID) override;
-  public virtual facebook::jsi::Instrumentation& instrumentation();
-  public virtual facebook::jsi::Object global() = 0;
-  public virtual facebook::jsi::Value evaluateJavaScript(const std::shared_ptr<const facebook::jsi::Buffer>& buffer, const std::string& sourceURL) = 0;
-  public virtual facebook::jsi::Value evaluatePreparedJavaScript(const std::shared_ptr<const facebook::jsi::PreparedJavaScript>& js) = 0;
-  public virtual std::shared_ptr<const facebook::jsi::PreparedJavaScript> prepareJavaScript(const std::shared_ptr<const facebook::jsi::Buffer>& buffer, std::string sourceURL) = 0;
-  public virtual std::string description() = 0;
-  public virtual void queueMicrotask(const facebook::jsi::Function& callback) = 0;
-  public virtual ~Runtime();
-  public void setRuntimeData(const facebook::jsi::UUID& uuid, const std::shared_ptr<void>& data);
+  public virtual facebook::jsi::Instrumentation& instrumentation() override;
+  public virtual facebook::jsi::Object createObjectWithPrototype(const facebook::jsi::Value& prototype) override;
+  public virtual facebook::jsi::PropNameID createPropNameIDFromUtf16(const char16_t* utf16, size_t length) override;
+  public virtual facebook::jsi::String createStringFromUtf16(const char16_t* utf16, size_t length) override;
+  public virtual facebook::jsi::Uint8Array createUint8Array(const facebook::jsi::ArrayBuffer& buffer, size_t offset, size_t length) override;
+  public virtual facebook::jsi::Uint8Array createUint8Array(size_t length) override;
+  public virtual facebook::jsi::Value createError(const facebook::jsi::String& msg) override;
+  public virtual facebook::jsi::Value createEvalError(const facebook::jsi::String& msg) override;
+  public virtual facebook::jsi::Value createRangeError(const facebook::jsi::String& msg) override;
+  public virtual facebook::jsi::Value createReferenceError(const facebook::jsi::String& msg) override;
+  public virtual facebook::jsi::Value createSyntaxError(const facebook::jsi::String& msg) override;
+  public virtual facebook::jsi::Value createTypeError(const facebook::jsi::String& msg) override;
+  public virtual facebook::jsi::Value createURIError(const facebook::jsi::String& msg) override;
+  public virtual facebook::jsi::Value createValueFromJsonUtf8(const uint8_t* json, size_t length) override;
+  public virtual facebook::jsi::Value getProperty(const facebook::jsi::Object&, const facebook::jsi::PropNameID& name) = 0;
+  public virtual facebook::jsi::Value getProperty(const facebook::jsi::Object&, const facebook::jsi::String& name) = 0;
+  public virtual facebook::jsi::Value getProperty(const facebook::jsi::Object&, const facebook::jsi::Value& name) override;
+  public virtual facebook::jsi::Value getPrototypeOf(const facebook::jsi::Object& object) override;
+  public virtual size_t byteLength(const facebook::jsi::TypedArray& typedArray) override;
+  public virtual size_t byteOffset(const facebook::jsi::TypedArray& typedArray) override;
+  public virtual size_t length(const facebook::jsi::String& str) override;
+  public virtual size_t length(const facebook::jsi::TypedArray& typedArray) override;
+  public virtual size_t push(const facebook::jsi::Array&, const facebook::jsi::Value*, size_t) override;
+  public virtual std::shared_ptr<facebook::jsi::MutableBuffer> tryGetMutableBuffer(const facebook::jsi::ArrayBuffer& arrayBuffer) override;
+  public virtual std::shared_ptr<void> getRuntimeData(const facebook::jsi::UUID& uuid) override;
+  public virtual std::u16string utf16(const facebook::jsi::PropNameID& sym) override;
+  public virtual std::u16string utf16(const facebook::jsi::String& str) override;
+  public virtual void deleteProperty(const facebook::jsi::Object&, const facebook::jsi::PropNameID& name) override;
+  public virtual void deleteProperty(const facebook::jsi::Object&, const facebook::jsi::String& name) override;
+  public virtual void deleteProperty(const facebook::jsi::Object&, const facebook::jsi::Value& name) override;
+  public virtual void getPropNameIdData(const facebook::jsi::PropNameID& sym, void* ctx, void(*)(void* ctx, bool ascii, const void* data, size_t num) cb) override;
+  public virtual void getStringData(const facebook::jsi::String& str, void* ctx, void(*)(void* ctx, bool ascii, const void* data, size_t num) cb) override;
+  public virtual void popScope(ScopeState*) override;
+  public virtual void setPropertyValue(const facebook::jsi::Object&, const facebook::jsi::PropNameID& name, const facebook::jsi::Value& value) = 0;
+  public virtual void setPropertyValue(const facebook::jsi::Object&, const facebook::jsi::String& name, const facebook::jsi::Value& value) = 0;
+  public virtual void setPropertyValue(const facebook::jsi::Object&, const facebook::jsi::Value& name, const facebook::jsi::Value& value) override;
+  public virtual void setPrototypeOf(const facebook::jsi::Object& object, const facebook::jsi::Value& prototype) override;
+  public virtual void setRuntimeData(const facebook::jsi::UUID& uuid, const std::shared_ptr<void>& data) override;
+  public virtual void setRuntimeDataImpl(const facebook::jsi::UUID& dataUUID, const void* data, void(*)(const void* data) deleter) override;
+  public virtual ~Runtime() override;
   template <typename T>
-  protected static T make(facebook::jsi::Runtime::PointerValue* pv);
-}
-
-struct facebook::jsi::Runtime::PointerValue {
-  protected virtual ~PointerValue() = default;
-  public virtual void invalidate() noexcept = 0;
+  protected static T make(facebook::jsi::IRuntime::PointerValue* pv);
 }
 
 class facebook::jsi::Scope {
   public Scope(const facebook::jsi::Scope&) = delete;
-  public Scope(facebook::jsi::Runtime& rt);
+  public Scope(facebook::jsi::IRuntime& rt);
   public Scope(facebook::jsi::Scope&&) = delete;
   public facebook::jsi::Scope& operator=(const facebook::jsi::Scope&) = delete;
   public facebook::jsi::Scope& operator=(facebook::jsi::Scope&&) = delete;
   public ~Scope();
   template <typename F>
-  public static decltype(f()) callInNewScope(facebook::jsi::Runtime& rt, F f);
+  public static decltype(f()) callInNewScope(facebook::jsi::IRuntime& rt, F f);
 }
 
 class facebook::jsi::SourceJavaScriptPreparation : public facebook::jsi::PreparedJavaScript, public facebook::jsi::Buffer {
@@ -14332,22 +14435,23 @@ class facebook::jsi::SourceJavaScriptPreparation : public facebook::jsi::Prepare
 }
 
 class facebook::jsi::String : public facebook::jsi::Pointer {
+  public String(facebook::jsi::IRuntime::PointerValue::Runtime::PointerValue* ptr);
   public String(facebook::jsi::Pointer&& other) noexcept;
-  public String(facebook::jsi::Runtime::PointerValue* ptr);
   public String(facebook::jsi::String&& other) = default;
   public facebook::jsi::String& operator=(facebook::jsi::String&& other) = default;
-  public static bool strictEquals(facebook::jsi::Runtime& runtime, const facebook::jsi::String& a, const facebook::jsi::String& b);
-  public static facebook::jsi::String createFromAscii(facebook::jsi::Runtime& runtime, const char* str);
-  public static facebook::jsi::String createFromAscii(facebook::jsi::Runtime& runtime, const char* str, size_t length);
-  public static facebook::jsi::String createFromAscii(facebook::jsi::Runtime& runtime, const std::string& str);
-  public static facebook::jsi::String createFromUtf8(facebook::jsi::Runtime& runtime, const std::string& utf8);
-  public static facebook::jsi::String createFromUtf8(facebook::jsi::Runtime& runtime, const uint8_t* utf8, size_t length);
-  public static facebook::jsi::String createFromUtf16(facebook::jsi::Runtime& runtime, const char16_t* utf16, size_t length);
-  public static facebook::jsi::String createFromUtf16(facebook::jsi::Runtime& runtime, const std::u16string& utf16);
-  public std::string utf8(facebook::jsi::Runtime& runtime) const;
-  public std::u16string utf16(facebook::jsi::Runtime& runtime) const;
+  public size_t length(facebook::jsi::IRuntime& runtime) const;
+  public static bool strictEquals(facebook::jsi::IRuntime& runtime, const facebook::jsi::String& a, const facebook::jsi::String& b);
+  public static facebook::jsi::String createFromAscii(facebook::jsi::IRuntime& runtime, const char* str);
+  public static facebook::jsi::String createFromAscii(facebook::jsi::IRuntime& runtime, const char* str, size_t length);
+  public static facebook::jsi::String createFromAscii(facebook::jsi::IRuntime& runtime, const std::string& str);
+  public static facebook::jsi::String createFromUtf8(facebook::jsi::IRuntime& runtime, const std::string& utf8);
+  public static facebook::jsi::String createFromUtf8(facebook::jsi::IRuntime& runtime, const uint8_t* utf8, size_t length);
+  public static facebook::jsi::String createFromUtf16(facebook::jsi::IRuntime& runtime, const char16_t* utf16, size_t length);
+  public static facebook::jsi::String createFromUtf16(facebook::jsi::IRuntime& runtime, const std::u16string& utf16);
+  public std::string utf8(facebook::jsi::IRuntime& runtime) const;
+  public std::u16string utf16(facebook::jsi::IRuntime& runtime) const;
   template <typename CB>
-  public void getStringData(facebook::jsi::Runtime& runtime, CB& cb) const;
+  public void getStringData(facebook::jsi::IRuntime& runtime, CB& cb) const;
 }
 
 class facebook::jsi::StringBuffer : public facebook::jsi::Buffer {
@@ -14357,18 +14461,27 @@ class facebook::jsi::StringBuffer : public facebook::jsi::Buffer {
 }
 
 class facebook::jsi::Symbol : public facebook::jsi::Pointer {
+  public Symbol(facebook::jsi::IRuntime::PointerValue::Runtime::PointerValue* ptr);
   public Symbol(facebook::jsi::Pointer&& other) noexcept;
-  public Symbol(facebook::jsi::Runtime::PointerValue* ptr);
   public Symbol(facebook::jsi::Symbol&& other) = default;
   public facebook::jsi::Symbol& operator=(facebook::jsi::Symbol&& other) = default;
-  public static bool strictEquals(facebook::jsi::Runtime& runtime, const facebook::jsi::Symbol& a, const facebook::jsi::Symbol& b);
-  public std::string toString(facebook::jsi::Runtime& runtime) const;
+  public static bool strictEquals(facebook::jsi::IRuntime& runtime, const facebook::jsi::Symbol& a, const facebook::jsi::Symbol& b);
+  public std::string toString(facebook::jsi::IRuntime& runtime) const;
 }
 
 class facebook::jsi::ThreadSafeRuntime : public facebook::jsi::Runtime {
   public virtual facebook::jsi::Runtime& getUnsafeRuntime() = 0;
   public virtual void lock() const = 0;
   public virtual void unlock() const = 0;
+}
+
+class facebook::jsi::TypedArray : public facebook::jsi::Object {
+  public TypedArray(facebook::jsi::TypedArray&&) = default;
+  public facebook::jsi::ArrayBuffer buffer(facebook::jsi::IRuntime& runtime);
+  public facebook::jsi::TypedArray& operator=(facebook::jsi::TypedArray&&) = default;
+  public size_t byteLength(facebook::jsi::IRuntime& runtime);
+  public size_t byteOffset(facebook::jsi::IRuntime& runtime);
+  public size_t length(facebook::jsi::IRuntime& runtime);
 }
 
 class facebook::jsi::UUID {
@@ -14391,15 +14504,22 @@ struct facebook::jsi::UUID::Hash {
   public std::size_t operator()(const facebook::jsi::UUID& uuid) const noexcept;
 }
 
+class facebook::jsi::Uint8Array : public facebook::jsi::TypedArray {
+  public Uint8Array(facebook::jsi::IRuntime& runtime, const facebook::jsi::ArrayBuffer& buffer, size_t offset, size_t length);
+  public Uint8Array(facebook::jsi::IRuntime& runtime, size_t length);
+  public Uint8Array(facebook::jsi::Uint8Array&&) = default;
+  public facebook::jsi::Uint8Array& operator=(facebook::jsi::Uint8Array&&) = default;
+}
+
 class facebook::jsi::Value {
   public Value() noexcept;
   public Value(bool b);
   public Value(double d);
-  public Value(facebook::jsi::Runtime& runtime, const facebook::jsi::BigInt& bigint);
-  public Value(facebook::jsi::Runtime& runtime, const facebook::jsi::Object& obj);
-  public Value(facebook::jsi::Runtime& runtime, const facebook::jsi::String& str);
-  public Value(facebook::jsi::Runtime& runtime, const facebook::jsi::Symbol& sym);
-  public Value(facebook::jsi::Runtime& runtime, const facebook::jsi::Value& value);
+  public Value(facebook::jsi::IRuntime& runtime, const facebook::jsi::BigInt& bigint);
+  public Value(facebook::jsi::IRuntime& runtime, const facebook::jsi::Object& obj);
+  public Value(facebook::jsi::IRuntime& runtime, const facebook::jsi::String& str);
+  public Value(facebook::jsi::IRuntime& runtime, const facebook::jsi::Symbol& sym);
+  public Value(facebook::jsi::IRuntime& runtime, const facebook::jsi::Value& value);
   public Value(facebook::jsi::Value&& other) noexcept;
   public Value(int i);
   public Value(std::nullptr_t);
@@ -14407,6 +14527,7 @@ class facebook::jsi::Value {
   public bool getBool() const;
   public bool isBigInt() const;
   public bool isBool() const;
+  public bool isInteger() const;
   public bool isNull() const;
   public bool isNumber() const;
   public bool isObject() const;
@@ -14415,43 +14536,43 @@ class facebook::jsi::Value {
   public bool isUndefined() const;
   public double asNumber() const;
   public double getNumber() const;
-  public facebook::jsi::BigInt asBigInt(facebook::jsi::Runtime& runtime) const;
-  public facebook::jsi::BigInt asBigInt(facebook::jsi::Runtime& runtime);
-  public facebook::jsi::BigInt getBigInt(facebook::jsi::Runtime& runtime) const;
-  public facebook::jsi::BigInt getBigInt(facebook::jsi::Runtime&);
-  public facebook::jsi::Object asObject(facebook::jsi::Runtime& runtime) const;
-  public facebook::jsi::Object asObject(facebook::jsi::Runtime& runtime);
-  public facebook::jsi::Object getObject(facebook::jsi::Runtime& runtime) const;
-  public facebook::jsi::Object getObject(facebook::jsi::Runtime&);
-  public facebook::jsi::String asString(facebook::jsi::Runtime& runtime) const;
-  public facebook::jsi::String asString(facebook::jsi::Runtime& runtime);
-  public facebook::jsi::String getString(facebook::jsi::Runtime& runtime) const;
-  public facebook::jsi::String getString(facebook::jsi::Runtime&);
-  public facebook::jsi::String toString(facebook::jsi::Runtime& runtime) const;
-  public facebook::jsi::Symbol asSymbol(facebook::jsi::Runtime& runtime) const;
-  public facebook::jsi::Symbol asSymbol(facebook::jsi::Runtime& runtime);
-  public facebook::jsi::Symbol getSymbol(facebook::jsi::Runtime& runtime) const;
-  public facebook::jsi::Symbol getSymbol(facebook::jsi::Runtime&);
+  public facebook::jsi::BigInt asBigInt(facebook::jsi::IRuntime& runtime) const;
+  public facebook::jsi::BigInt asBigInt(facebook::jsi::IRuntime& runtime);
+  public facebook::jsi::BigInt getBigInt(facebook::jsi::IRuntime& runtime) const;
+  public facebook::jsi::BigInt getBigInt(facebook::jsi::IRuntime&);
+  public facebook::jsi::Object asObject(facebook::jsi::IRuntime& runtime) const;
+  public facebook::jsi::Object asObject(facebook::jsi::IRuntime& runtime);
+  public facebook::jsi::Object getObject(facebook::jsi::IRuntime& runtime) const;
+  public facebook::jsi::Object getObject(facebook::jsi::IRuntime&);
+  public facebook::jsi::String asString(facebook::jsi::IRuntime& runtime) const;
+  public facebook::jsi::String asString(facebook::jsi::IRuntime& runtime);
+  public facebook::jsi::String getString(facebook::jsi::IRuntime& runtime) const;
+  public facebook::jsi::String getString(facebook::jsi::IRuntime&);
+  public facebook::jsi::String toString(facebook::jsi::IRuntime& runtime) const;
+  public facebook::jsi::Symbol asSymbol(facebook::jsi::IRuntime& runtime) const;
+  public facebook::jsi::Symbol asSymbol(facebook::jsi::IRuntime& runtime);
+  public facebook::jsi::Symbol getSymbol(facebook::jsi::IRuntime& runtime) const;
+  public facebook::jsi::Symbol getSymbol(facebook::jsi::IRuntime&);
   public facebook::jsi::Value& operator=(facebook::jsi::Value&& other) noexcept;
-  public static bool strictEquals(facebook::jsi::Runtime& runtime, const facebook::jsi::Value& a, const facebook::jsi::Value& b);
-  public static facebook::jsi::Value createFromJsonUtf8(facebook::jsi::Runtime& runtime, const uint8_t* json, size_t length);
+  public static bool strictEquals(facebook::jsi::IRuntime& runtime, const facebook::jsi::Value& a, const facebook::jsi::Value& b);
+  public static facebook::jsi::Value createFromJsonUtf8(facebook::jsi::IRuntime& runtime, const uint8_t* json, size_t length);
   public static facebook::jsi::Value null();
   public static facebook::jsi::Value undefined();
   public ~Value();
   template <typename T = void>
   public Value(const char*);
   template <typename T = void>
-  public Value(facebook::jsi::Runtime&, const char*);
+  public Value(facebook::jsi::IRuntime&, const char*);
   template <typename T, typename = std::enable_if_t<std::is_base_of<facebook::jsi::Symbol, T>::value || std::is_base_of<facebook::jsi::BigInt, T>::value || std::is_base_of<facebook::jsi::String, T>::value || std::is_base_of<facebook::jsi::Object, T>::value>>
   public Value(T&& other);
 }
 
 class facebook::jsi::WeakObject : public facebook::jsi::Pointer {
+  public WeakObject(facebook::jsi::IRuntime& runtime, const facebook::jsi::Object& o);
+  public WeakObject(facebook::jsi::IRuntime::PointerValue::Runtime::PointerValue* ptr);
   public WeakObject(facebook::jsi::Pointer&& other) noexcept;
-  public WeakObject(facebook::jsi::Runtime& runtime, const facebook::jsi::Object& o);
-  public WeakObject(facebook::jsi::Runtime::PointerValue* ptr);
   public WeakObject(facebook::jsi::WeakObject&& other) = default;
-  public facebook::jsi::Value lock(facebook::jsi::Runtime& runtime) const;
+  public facebook::jsi::Value lock(facebook::jsi::IRuntime& runtime) const;
   public facebook::jsi::WeakObject& operator=(facebook::jsi::WeakObject&& other) = default;
 }
 
@@ -14467,6 +14588,7 @@ class facebook::jsi::RuntimeDecorator : public facebook::jsi::Runtime {
   protected virtual bool bigintIsInt64(const facebook::jsi::BigInt& b) override;
   protected virtual bool bigintIsUint64(const facebook::jsi::BigInt& b) override;
   protected virtual bool compare(const facebook::jsi::PropNameID& a, const facebook::jsi::PropNameID& b) override;
+  protected virtual bool detached(const facebook::jsi::ArrayBuffer& ab) override;
   protected virtual bool hasNativeState(const facebook::jsi::Object& o) override;
   protected virtual bool hasProperty(const facebook::jsi::Object& o, const facebook::jsi::PropNameID& name) override;
   protected virtual bool hasProperty(const facebook::jsi::Object& o, const facebook::jsi::String& name) override;
@@ -14477,18 +14599,26 @@ class facebook::jsi::RuntimeDecorator : public facebook::jsi::Runtime {
   protected virtual bool isFunction(const facebook::jsi::Object& o) const override;
   protected virtual bool isHostFunction(const facebook::jsi::Function& f) const override;
   protected virtual bool isHostObject(const facebook::jsi::Object& o) const override;
+  protected virtual bool isTypedArray(const facebook::jsi::Object& o) const override;
+  protected virtual bool isUint8Array(const facebook::jsi::Object& o) const override;
   protected virtual bool strictEquals(const facebook::jsi::BigInt& a, const facebook::jsi::BigInt& b) const override;
   protected virtual bool strictEquals(const facebook::jsi::Object& a, const facebook::jsi::Object& b) const override;
   protected virtual bool strictEquals(const facebook::jsi::String& a, const facebook::jsi::String& b) const override;
   protected virtual bool strictEquals(const facebook::jsi::Symbol& a, const facebook::jsi::Symbol& b) const override;
-  protected virtual const void* getRuntimeDataImpl(const facebook::jsi::UUID& uuid) override;
+  protected virtual const void* getRuntimeDataImpl(const facebook::jsi::UUID& dataUUID) override;
   protected virtual facebook::jsi::Array createArray(size_t length) override;
   protected virtual facebook::jsi::Array getPropertyNames(const facebook::jsi::Object& o) override;
+  protected virtual facebook::jsi::ArrayBuffer buffer(const facebook::jsi::TypedArray& typedArray) override;
   protected virtual facebook::jsi::ArrayBuffer createArrayBuffer(std::shared_ptr<facebook::jsi::MutableBuffer> buffer) override;
   protected virtual facebook::jsi::BigInt createBigIntFromInt64(int64_t value) override;
   protected virtual facebook::jsi::BigInt createBigIntFromUint64(uint64_t value) override;
   protected virtual facebook::jsi::Function createFunctionFromHostFunction(const facebook::jsi::PropNameID& name, unsigned int paramCount, facebook::jsi::HostFunctionType func) override;
   protected virtual facebook::jsi::HostFunctionType& getHostFunction(const facebook::jsi::Function& f) override;
+  protected virtual facebook::jsi::IRuntime::PointerValue::Runtime::PointerValue* cloneBigInt(const facebook::jsi::IRuntime::PointerValue::Runtime::PointerValue* pv) override;
+  protected virtual facebook::jsi::IRuntime::PointerValue::Runtime::PointerValue* cloneObject(const facebook::jsi::IRuntime::PointerValue::Runtime::PointerValue* pv) override;
+  protected virtual facebook::jsi::IRuntime::PointerValue::Runtime::PointerValue* clonePropNameID(const facebook::jsi::IRuntime::PointerValue::Runtime::PointerValue* pv) override;
+  protected virtual facebook::jsi::IRuntime::PointerValue::Runtime::PointerValue* cloneString(const facebook::jsi::IRuntime::PointerValue::Runtime::PointerValue* pv) override;
+  protected virtual facebook::jsi::IRuntime::PointerValue::Runtime::PointerValue* cloneSymbol(const facebook::jsi::IRuntime::PointerValue::Runtime::PointerValue* pv) override;
   protected virtual facebook::jsi::Object createObject() override;
   protected virtual facebook::jsi::Object createObject(std::shared_ptr<facebook::jsi::HostObject> ho) override;
   protected virtual facebook::jsi::Object createObjectWithPrototype(const facebook::jsi::Value& prototype) override;
@@ -14497,15 +14627,12 @@ class facebook::jsi::RuntimeDecorator : public facebook::jsi::Runtime {
   protected virtual facebook::jsi::PropNameID createPropNameIDFromSymbol(const facebook::jsi::Symbol& sym) override;
   protected virtual facebook::jsi::PropNameID createPropNameIDFromUtf8(const uint8_t* utf8, size_t length) override;
   protected virtual facebook::jsi::PropNameID createPropNameIDFromUtf16(const char16_t* utf16, size_t length) override;
-  protected virtual facebook::jsi::Runtime::PointerValue* cloneBigInt(const facebook::jsi::Runtime::PointerValue* pv) override;
-  protected virtual facebook::jsi::Runtime::PointerValue* cloneObject(const facebook::jsi::Runtime::PointerValue* pv) override;
-  protected virtual facebook::jsi::Runtime::PointerValue* clonePropNameID(const facebook::jsi::Runtime::PointerValue* pv) override;
-  protected virtual facebook::jsi::Runtime::PointerValue* cloneString(const facebook::jsi::Runtime::PointerValue* pv) override;
-  protected virtual facebook::jsi::Runtime::PointerValue* cloneSymbol(const facebook::jsi::Runtime::PointerValue* pv) override;
   protected virtual facebook::jsi::String bigintToString(const facebook::jsi::BigInt& bigint, int radix) override;
   protected virtual facebook::jsi::String createStringFromAscii(const char* str, size_t length) override;
   protected virtual facebook::jsi::String createStringFromUtf8(const uint8_t* utf8, size_t length) override;
   protected virtual facebook::jsi::String createStringFromUtf16(const char16_t* utf16, size_t length) override;
+  protected virtual facebook::jsi::Uint8Array createUint8Array(const facebook::jsi::ArrayBuffer& buffer, size_t offset, size_t length) override;
+  protected virtual facebook::jsi::Uint8Array createUint8Array(size_t length) override;
   protected virtual facebook::jsi::Value call(const facebook::jsi::Function& f, const facebook::jsi::Value& jsThis, const facebook::jsi::Value* args, size_t count) override;
   protected virtual facebook::jsi::Value callAsConstructor(const facebook::jsi::Function& f, const facebook::jsi::Value* args, size_t count) override;
   protected virtual facebook::jsi::Value getProperty(const facebook::jsi::Object& o, const facebook::jsi::PropNameID& name) override;
@@ -14515,9 +14642,14 @@ class facebook::jsi::RuntimeDecorator : public facebook::jsi::Runtime {
   protected virtual facebook::jsi::Value getValueAtIndex(const facebook::jsi::Array& a, size_t i) override;
   protected virtual facebook::jsi::Value lockWeakObject(const facebook::jsi::WeakObject& wo) override;
   protected virtual facebook::jsi::WeakObject createWeakObject(const facebook::jsi::Object& o) override;
+  protected virtual size_t byteLength(const facebook::jsi::TypedArray& typedArray) override;
+  protected virtual size_t byteOffset(const facebook::jsi::TypedArray& typedArray) override;
+  protected virtual size_t length(const facebook::jsi::TypedArray& typedArray) override;
+  protected virtual size_t push(const facebook::jsi::Array& a, const facebook::jsi::Value* elements, size_t count) override;
   protected virtual size_t size(const facebook::jsi::Array& a) override;
   protected virtual size_t size(const facebook::jsi::ArrayBuffer& ab) override;
   protected virtual std::shared_ptr<facebook::jsi::HostObject> getHostObject(const facebook::jsi::Object& o) override;
+  protected virtual std::shared_ptr<facebook::jsi::MutableBuffer> tryGetMutableBuffer(const facebook::jsi::ArrayBuffer& arrayBuffer) override;
   protected virtual std::shared_ptr<facebook::jsi::NativeState> getNativeState(const facebook::jsi::Object& o) override;
   protected virtual std::string flushAndDisableBridgeTrafficTrace() override;
   protected virtual std::string getRecordedGCStats() override;
@@ -14543,7 +14675,7 @@ class facebook::jsi::RuntimeDecorator : public facebook::jsi::Runtime {
   protected virtual void setPropertyValue(const facebook::jsi::Object& o, const facebook::jsi::String& name, const facebook::jsi::Value& value) override;
   protected virtual void setPropertyValue(const facebook::jsi::Object& o, const facebook::jsi::Value& name, const facebook::jsi::Value& value) override;
   protected virtual void setPrototypeOf(const facebook::jsi::Object& object, const facebook::jsi::Value& prototype) override;
-  protected virtual void setRuntimeDataImpl(const facebook::jsi::UUID& uuid, const void* data, void(*)(const void* data) deleter) override;
+  protected virtual void setRuntimeDataImpl(const facebook::jsi::UUID& dataUUID, const void* data, void(*)(const void* data) deleter) override;
   protected virtual void setValueAtIndexImpl(const facebook::jsi::Array& a, size_t i, const facebook::jsi::Value& value) override;
   protected virtual void startHeapSampling(size_t samplingInterval) override;
   protected virtual void stopHeapSampling(std::ostream& os) override;
@@ -14573,6 +14705,7 @@ class facebook::jsi::WithRuntimeDecorator : public facebook::jsi::RuntimeDecorat
   protected virtual bool bigintIsInt64(const facebook::jsi::BigInt& bi) override;
   protected virtual bool bigintIsUint64(const facebook::jsi::BigInt& bi) override;
   protected virtual bool compare(const facebook::jsi::PropNameID& a, const facebook::jsi::PropNameID& b) override;
+  protected virtual bool detached(const facebook::jsi::ArrayBuffer& ab) override;
   protected virtual bool hasNativeState(const facebook::jsi::Object& o) override;
   protected virtual bool hasProperty(const facebook::jsi::Object& o, const facebook::jsi::PropNameID& name) override;
   protected virtual bool hasProperty(const facebook::jsi::Object& o, const facebook::jsi::String& name) override;
@@ -14583,6 +14716,8 @@ class facebook::jsi::WithRuntimeDecorator : public facebook::jsi::RuntimeDecorat
   protected virtual bool isFunction(const facebook::jsi::Object& o) const override;
   protected virtual bool isHostFunction(const facebook::jsi::Function& f) const override;
   protected virtual bool isHostObject(const facebook::jsi::Object& o) const override;
+  protected virtual bool isTypedArray(const facebook::jsi::Object& o) const override;
+  protected virtual bool isUint8Array(const facebook::jsi::Object& o) const override;
   protected virtual bool strictEquals(const facebook::jsi::BigInt& a, const facebook::jsi::BigInt& b) const override;
   protected virtual bool strictEquals(const facebook::jsi::Object& a, const facebook::jsi::Object& b) const override;
   protected virtual bool strictEquals(const facebook::jsi::String& a, const facebook::jsi::String& b) const override;
@@ -14590,11 +14725,17 @@ class facebook::jsi::WithRuntimeDecorator : public facebook::jsi::RuntimeDecorat
   protected virtual const void* getRuntimeDataImpl(const facebook::jsi::UUID& uuid) override;
   protected virtual facebook::jsi::Array createArray(size_t length) override;
   protected virtual facebook::jsi::Array getPropertyNames(const facebook::jsi::Object& o) override;
+  protected virtual facebook::jsi::ArrayBuffer buffer(const facebook::jsi::TypedArray& typedArray) override;
   protected virtual facebook::jsi::ArrayBuffer createArrayBuffer(std::shared_ptr<facebook::jsi::MutableBuffer> buffer) override;
   protected virtual facebook::jsi::BigInt createBigIntFromInt64(int64_t i) override;
   protected virtual facebook::jsi::BigInt createBigIntFromUint64(uint64_t i) override;
   protected virtual facebook::jsi::Function createFunctionFromHostFunction(const facebook::jsi::PropNameID& name, unsigned int paramCount, facebook::jsi::HostFunctionType func) override;
   protected virtual facebook::jsi::HostFunctionType& getHostFunction(const facebook::jsi::Function& f) override;
+  protected virtual facebook::jsi::IRuntime::PointerValue::Runtime::PointerValue* cloneBigInt(const facebook::jsi::IRuntime::PointerValue::Runtime::PointerValue* pv) override;
+  protected virtual facebook::jsi::IRuntime::PointerValue::Runtime::PointerValue* cloneObject(const facebook::jsi::IRuntime::PointerValue::Runtime::PointerValue* pv) override;
+  protected virtual facebook::jsi::IRuntime::PointerValue::Runtime::PointerValue* clonePropNameID(const facebook::jsi::IRuntime::PointerValue::Runtime::PointerValue* pv) override;
+  protected virtual facebook::jsi::IRuntime::PointerValue::Runtime::PointerValue* cloneString(const facebook::jsi::IRuntime::PointerValue::Runtime::PointerValue* pv) override;
+  protected virtual facebook::jsi::IRuntime::PointerValue::Runtime::PointerValue* cloneSymbol(const facebook::jsi::IRuntime::PointerValue::Runtime::PointerValue* pv) override;
   protected virtual facebook::jsi::Object createObject() override;
   protected virtual facebook::jsi::Object createObject(std::shared_ptr<facebook::jsi::HostObject> ho) override;
   protected virtual facebook::jsi::Object createObjectWithPrototype(const facebook::jsi::Value& prototype) override;
@@ -14603,15 +14744,12 @@ class facebook::jsi::WithRuntimeDecorator : public facebook::jsi::RuntimeDecorat
   protected virtual facebook::jsi::PropNameID createPropNameIDFromSymbol(const facebook::jsi::Symbol& sym) override;
   protected virtual facebook::jsi::PropNameID createPropNameIDFromUtf8(const uint8_t* utf8, size_t length) override;
   protected virtual facebook::jsi::PropNameID createPropNameIDFromUtf16(const char16_t* utf16, size_t length) override;
-  protected virtual facebook::jsi::Runtime::PointerValue* cloneBigInt(const facebook::jsi::Runtime::PointerValue* pv) override;
-  protected virtual facebook::jsi::Runtime::PointerValue* cloneObject(const facebook::jsi::Runtime::PointerValue* pv) override;
-  protected virtual facebook::jsi::Runtime::PointerValue* clonePropNameID(const facebook::jsi::Runtime::PointerValue* pv) override;
-  protected virtual facebook::jsi::Runtime::PointerValue* cloneString(const facebook::jsi::Runtime::PointerValue* pv) override;
-  protected virtual facebook::jsi::Runtime::PointerValue* cloneSymbol(const facebook::jsi::Runtime::PointerValue* pv) override;
   protected virtual facebook::jsi::String bigintToString(const facebook::jsi::BigInt& bi, int i) override;
   protected virtual facebook::jsi::String createStringFromAscii(const char* str, size_t length) override;
   protected virtual facebook::jsi::String createStringFromUtf8(const uint8_t* utf8, size_t length) override;
   protected virtual facebook::jsi::String createStringFromUtf16(const char16_t* utf16, size_t length) override;
+  protected virtual facebook::jsi::Uint8Array createUint8Array(const facebook::jsi::ArrayBuffer& buffer, size_t offset, size_t length) override;
+  protected virtual facebook::jsi::Uint8Array createUint8Array(size_t length) override;
   protected virtual facebook::jsi::Value call(const facebook::jsi::Function& f, const facebook::jsi::Value& jsThis, const facebook::jsi::Value* args, size_t count) override;
   protected virtual facebook::jsi::Value callAsConstructor(const facebook::jsi::Function& f, const facebook::jsi::Value* args, size_t count) override;
   protected virtual facebook::jsi::Value createValueFromJsonUtf8(const uint8_t* json, size_t length) override;
@@ -14622,9 +14760,14 @@ class facebook::jsi::WithRuntimeDecorator : public facebook::jsi::RuntimeDecorat
   protected virtual facebook::jsi::Value getValueAtIndex(const facebook::jsi::Array& a, size_t i) override;
   protected virtual facebook::jsi::Value lockWeakObject(const facebook::jsi::WeakObject& wo) override;
   protected virtual facebook::jsi::WeakObject createWeakObject(const facebook::jsi::Object& o) override;
+  protected virtual size_t byteLength(const facebook::jsi::TypedArray& typedArray) override;
+  protected virtual size_t byteOffset(const facebook::jsi::TypedArray& typedArray) override;
+  protected virtual size_t length(const facebook::jsi::TypedArray& typedArray) override;
+  protected virtual size_t push(const facebook::jsi::Array& a, const facebook::jsi::Value* elements, size_t count) override;
   protected virtual size_t size(const facebook::jsi::Array& a) override;
   protected virtual size_t size(const facebook::jsi::ArrayBuffer& ab) override;
   protected virtual std::shared_ptr<facebook::jsi::HostObject> getHostObject(const facebook::jsi::Object& o) override;
+  protected virtual std::shared_ptr<facebook::jsi::MutableBuffer> tryGetMutableBuffer(const facebook::jsi::ArrayBuffer& arrayBuffer) override;
   protected virtual std::shared_ptr<facebook::jsi::NativeState> getNativeState(const facebook::jsi::Object& o) override;
   protected virtual std::string symbolToString(const facebook::jsi::Symbol& sym) override;
   protected virtual std::string utf8(const facebook::jsi::PropNameID& id) override;
@@ -14662,22 +14805,22 @@ class facebook::jsi::WithRuntimeDecorator : public facebook::jsi::RuntimeDecorat
 }
 
 
-facebook::jsi::PropNameID facebook::jsi::detail::toPropNameID(facebook::jsi::Runtime& runtime, const char* name);
-facebook::jsi::PropNameID facebook::jsi::detail::toPropNameID(facebook::jsi::Runtime& runtime, const std::string& name);
-facebook::jsi::PropNameID&& facebook::jsi::detail::toPropNameID(facebook::jsi::Runtime&, facebook::jsi::PropNameID&& name);
-facebook::jsi::Value facebook::jsi::detail::toValue(facebook::jsi::Runtime& runtime, const char* str);
-facebook::jsi::Value facebook::jsi::detail::toValue(facebook::jsi::Runtime& runtime, const facebook::jsi::Value& value);
-facebook::jsi::Value facebook::jsi::detail::toValue(facebook::jsi::Runtime& runtime, const std::string& str);
-facebook::jsi::Value facebook::jsi::detail::toValue(facebook::jsi::Runtime&, bool b);
-facebook::jsi::Value facebook::jsi::detail::toValue(facebook::jsi::Runtime&, double d);
-facebook::jsi::Value facebook::jsi::detail::toValue(facebook::jsi::Runtime&, float f);
-facebook::jsi::Value facebook::jsi::detail::toValue(facebook::jsi::Runtime&, int i);
-facebook::jsi::Value facebook::jsi::detail::toValue(facebook::jsi::Runtime&, std::nullptr_t);
-facebook::jsi::Value&& facebook::jsi::detail::toValue(facebook::jsi::Runtime&, facebook::jsi::Value&& value);
+facebook::jsi::PropNameID facebook::jsi::detail::toPropNameID(facebook::jsi::IRuntime& runtime, const char* name);
+facebook::jsi::PropNameID facebook::jsi::detail::toPropNameID(facebook::jsi::IRuntime& runtime, const std::string& name);
+facebook::jsi::PropNameID&& facebook::jsi::detail::toPropNameID(facebook::jsi::IRuntime&, facebook::jsi::PropNameID&& name);
+facebook::jsi::Value facebook::jsi::detail::toValue(facebook::jsi::IRuntime& runtime, const char* str);
+facebook::jsi::Value facebook::jsi::detail::toValue(facebook::jsi::IRuntime& runtime, const facebook::jsi::Value& value);
+facebook::jsi::Value facebook::jsi::detail::toValue(facebook::jsi::IRuntime& runtime, const std::string& str);
+facebook::jsi::Value facebook::jsi::detail::toValue(facebook::jsi::IRuntime&, bool b);
+facebook::jsi::Value facebook::jsi::detail::toValue(facebook::jsi::IRuntime&, double d);
+facebook::jsi::Value facebook::jsi::detail::toValue(facebook::jsi::IRuntime&, float f);
+facebook::jsi::Value facebook::jsi::detail::toValue(facebook::jsi::IRuntime&, int i);
+facebook::jsi::Value facebook::jsi::detail::toValue(facebook::jsi::IRuntime&, std::nullptr_t);
+facebook::jsi::Value&& facebook::jsi::detail::toValue(facebook::jsi::IRuntime&, facebook::jsi::Value&& value);
 template <typename E, typename... Args>
 void facebook::jsi::detail::throwOrDie(Args &&... args);
 template <typename T>
-facebook::jsi::Value facebook::jsi::detail::toValue(facebook::jsi::Runtime& runtime, const T& other);
+facebook::jsi::Value facebook::jsi::detail::toValue(facebook::jsi::IRuntime& runtime, const T& other);
 
 template <typename R, typename L>
 class facebook::jsi::detail::ThreadSafeRuntimeImpl : public facebook::jsi::WithRuntimeDecorator<facebook::jsi::detail::WithLock<R, L>, R, facebook::jsi::ThreadSafeRuntime> {

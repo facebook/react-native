@@ -73,9 +73,9 @@ jobs:
         run: pip install doxmlparser natsort pyyaml
       - name: Validate C++ API snapshots
         shell: bash
-        continue-on-error: true
         run: yarn cxx-api-validate --output-dir /tmp/cxx-api-snapshots
       - name: Upload C++ API snapshots
+        if: always()
         uses: actions/upload-artifact@v6
         with:
           name: cxx-api-snapshots
