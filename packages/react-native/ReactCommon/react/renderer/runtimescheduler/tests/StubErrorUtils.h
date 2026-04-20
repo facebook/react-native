@@ -45,8 +45,7 @@ class StubErrorUtils : public jsi::HostObject {
           runtime,
           name,
           1,
-          [this](
-              jsi::Runtime &runtime, const jsi::Value &, const jsi::Value *arguments, size_t) noexcept -> jsi::Value {
+          [this](jsi::Runtime &, const jsi::Value &, const jsi::Value *, size_t) noexcept -> jsi::Value {
             reportFatalCallCount_++;
             return jsi::Value::undefined();
           });
