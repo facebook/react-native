@@ -712,10 +712,10 @@ static NSSet<NSNumber *> *returnKeyTypesSet;
   return {
       .text = RCTStringFromNSString(_backedTextInputView.attributedText.string),
       .selectionRange = [self _selectionRange],
-      .eventCount = static_cast<int>(_mostRecentEventCount),
+      .contentSize = RCTSizeFromCGSize(_backedTextInputView.contentSize),
       .contentOffset = RCTPointFromCGPoint(_backedTextInputView.contentOffset),
       .contentInset = RCTEdgeInsetsFromUIEdgeInsets(_backedTextInputView.contentInset),
-      .contentSize = RCTSizeFromCGSize(_backedTextInputView.contentSize),
+      .eventCount = static_cast<int>(_mostRecentEventCount),
       .layoutMeasurement = RCTSizeFromCGSize(_backedTextInputView.bounds.size),
       .zoomScale = _backedTextInputView.zoomScale,
   };
