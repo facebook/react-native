@@ -156,6 +156,8 @@ class ShadowTree final {
    */
   void mergeReactRevision() const;
 
+  void noop() const {};
+
  private:
   constexpr static ShadowTreeRevision::Number INITIAL_REVISION{0};
 
