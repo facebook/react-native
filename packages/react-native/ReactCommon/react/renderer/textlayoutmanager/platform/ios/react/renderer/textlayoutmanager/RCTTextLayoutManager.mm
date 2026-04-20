@@ -209,7 +209,8 @@ static NSLineBreakMode RCTNSLineBreakModeFromEllipsizeMode(EllipsizeMode ellipsi
 
                                  CGFloat baseline = [layoutManager locationForGlyphAtIndex:range.location].y;
                                  auto line = LineMeasurement{
-                                     std::string([renderedString UTF8String]),
+                                     std::string(
+                                         [renderedString UTF8String] != nullptr ? [renderedString UTF8String] : ""),
                                      rect,
                                      overallRect.size.height - baseline,
                                      font.capHeight,
