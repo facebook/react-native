@@ -2,110 +2,17 @@
 
 ## v0.85.2
 
-### Breaking
-
-
-
-#### Android specific
-
-
-
-#### iOS specific
-
-
-
 ### Added
 
 - Add pushAnimationMutations to AnimationBackend for targeted event-driven animation updates ([e4f0509973](https://github.com/facebook/react-native/commit/e4f0509973241d43f969401f81e85f0cd25ccc94) by Bartlomiej Bloniarz)
-
-#### Android specific
-
-
-
-#### iOS specific
-
-
-
-### Changed
-
-
-
-#### Android specific
-
-
-
-#### iOS specific
-
-
-
-### Deprecated
-
-
-
-#### Android specific
-
-
-
-#### iOS specific
-
-
-
-### Removed
-
-
-
-#### Android specific
-
-
-
-#### iOS specific
-
-
 
 ### Fixed
 
 - Fix potential data corruption in animation backend when ShadowTree commits are retried by copying RawProps instead of moving them ([77d3df8cab](https://github.com/facebook/react-native/commit/77d3df8cab3dccfd4fefad6a80603fadcfc45106) by Bartlomiej Bloniarz)
 
-#### Android specific
-
-
-
 #### iOS specific
 
-
-
-### Security
-
-
-
-#### Android specific
-
-
-
-#### iOS specific
-
-
-
-### Unknown
-
-- Release 0.85.2 ([67baaf384c](https://github.com/facebook/react-native/commit/67baaf384c371e55eb5f14c62c9b39ec1588f79f) by [@react-native-bot](https://github.com/react-native-bot))
-- Skip use-hermes-nightly when hermes-compiler is already pinned ([d19e7157ef](https://github.com/facebook/react-native/commit/d19e7157eff0f4d235ff2f456cef029f8f4ea97b) by [@alanjhughes](https://github.com/alanjhughes))
-- Fix loading banner stuck after a reload ([5300582697](https://github.com/facebook/react-native/commit/530058269728e21c761383213a18fa53bd6b6bd3) by [@alanjhughes](https://github.com/alanjhughes))
-- Bump Podfile.lock ([c634640a1e](https://github.com/facebook/react-native/commit/c634640a1e0c22bcf4703644e25834572444d286) by [@react-native-bot](https://github.com/react-native-bot))
-- Release 0.85.1 ([2c0ae27482](https://github.com/facebook/react-native/commit/2c0ae274825ab752b9831c12d231b7a55585f79d) by [@react-native-bot](https://github.com/react-native-bot))
-
-#### Android Unknown
-
-
-
-#### iOS Unknown
-
-
-
-#### Failed to parse
-
-
-
+- Fix "Loading from Metro..." banner getting stuck after reloads in quick succession ([e122c24c27](https://github.com/facebook/react-native/commit/e122c24c273f5fb6e0a2d6b1c961d75ac9bc90b7) by [@alanjhughes](https://github.com/alanjhughes))
 
 ## v0.83.5
 
