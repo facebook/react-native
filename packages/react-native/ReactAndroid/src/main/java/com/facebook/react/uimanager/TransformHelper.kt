@@ -44,29 +44,18 @@ public object TransformHelper {
   }
 
   @Deprecated(
-      "Use processTransform(ReadableArray, DoubleArray, Float, Float, ReadableArray, Boolean) instead",
+      "Use processTransform(ReadableArray, DoubleArray, Float, Float, ReadableArray) instead",
       ReplaceWith("processTransform(...)"),
   )
   @JvmStatic
   public fun processTransform(transforms: ReadableArray, result: DoubleArray) {
-    processTransform(transforms, result, 0f, 0f, null, false)
+    processTransform(transforms, result, 0f, 0f, null)
   }
 
   @Deprecated(
-      "Use processTransform(ReadableArray, DoubleArray, Float, Float, ReadableArray, Boolean) instead",
+      "Use processTransform(ReadableArray, DoubleArray, Float, Float, ReadableArray) instead",
       ReplaceWith("processTransform(...)"),
   )
-  @JvmStatic
-  public fun processTransform(
-      transforms: ReadableArray,
-      result: DoubleArray,
-      viewWidth: Float,
-      viewHeight: Float,
-      transformOrigin: ReadableArray?,
-  ) {
-    processTransform(transforms, result, viewWidth, viewHeight, transformOrigin, false)
-  }
-
   @JvmStatic
   public fun processTransform(
       transforms: ReadableArray,
@@ -76,7 +65,18 @@ public object TransformHelper {
       transformOrigin: ReadableArray?,
       allowPercentageResolution: Boolean,
   ) {
-    if (allowPercentageResolution && transforms is NativeArray && transformOrigin is NativeArray?) {
+    processTransform(transforms, result, viewWidth, viewHeight, transformOrigin)
+  }
+
+  @JvmStatic
+  public fun processTransform(
+      transforms: ReadableArray,
+      result: DoubleArray,
+      viewWidth: Float,
+      viewHeight: Float,
+      transformOrigin: ReadableArray?,
+  ) {
+    if (transforms is NativeArray && transformOrigin is NativeArray?) {
       nativeProcessTransform(transforms, result, viewWidth, viewHeight, transformOrigin)
       return
     }
@@ -88,7 +88,6 @@ public object TransformHelper {
             viewWidth,
             viewHeight,
             transformOrigin,
-            allowPercentageResolution,
         )
 
     if (offsets != null) {
@@ -148,11 +147,11 @@ public object TransformHelper {
           "translate" -> {
             val value = transform.getArray(transformType)!!
             val x =
-                if (value.getType(0) == ReadableType.String && allowPercentageResolution)
+                if (value.getType(0) == ReadableType.String)
                     parseTranslateValue(value.getString(0)!!, viewWidth.toDouble())
                 else value.getDouble(0)
             val y =
-                if (value.getType(1) == ReadableType.String && allowPercentageResolution)
+                if (value.getType(1) == ReadableType.String)
                     parseTranslateValue(value.getString(1)!!, viewHeight.toDouble())
                 else value.getDouble(1)
             val z = if (value.size() > 2) value.getDouble(2) else 0.0
@@ -160,20 +159,14 @@ public object TransformHelper {
           }
           "translateX" -> {
             val translateValue =
-                if (
-                    transform.getType(transformType) == ReadableType.String &&
-                        allowPercentageResolution
-                )
+                if (transform.getType(transformType) == ReadableType.String)
                     parseTranslateValue(transform.getString(transformType)!!, viewWidth.toDouble())
                 else transform.getDouble(transformType)
             MatrixMathHelper.applyTranslate2D(helperMatrix, translateValue, 0.0)
           }
           "translateY" -> {
             val translateValue =
-                if (
-                    transform.getType(transformType) == ReadableType.String &&
-                        allowPercentageResolution
-                )
+                if (transform.getType(transformType) == ReadableType.String)
                     parseTranslateValue(transform.getString(transformType)!!, viewHeight.toDouble())
                 else transform.getDouble(transformType)
             MatrixMathHelper.applyTranslate2D(helperMatrix, 0.0, translateValue)
@@ -214,7 +207,6 @@ public object TransformHelper {
       viewWidth: Float,
       viewHeight: Float,
       transformOrigin: ReadableArray?,
-      allowPercentageResolution: Boolean,
   ): DoubleArray? {
     if (transformOrigin == null || (viewHeight == 0f && viewWidth == 0f)) {
       return null
@@ -228,12 +220,10 @@ public object TransformHelper {
       when (transformOrigin.getType(i)) {
         ReadableType.Number -> origin[i] = transformOrigin.getDouble(i)
         ReadableType.String -> {
-          if (allowPercentageResolution) {
-            val part = transformOrigin.getString(i)!!
-            if (part.endsWith("%")) {
-              val valPercent = part.dropLast(1).toDouble()
-              origin[i] = (if (i == 0) viewWidth else viewHeight) * valPercent / 100.0
-            }
+          val part = transformOrigin.getString(i)!!
+          if (part.endsWith("%")) {
+            val valPercent = part.dropLast(1).toDouble()
+            origin[i] = (if (i == 0) viewWidth else viewHeight) * valPercent / 100.0
           }
         }
         else -> {}

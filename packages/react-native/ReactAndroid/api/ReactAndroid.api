@@ -3062,7 +3062,6 @@ public final class com/facebook/react/runtime/ReactSurfaceView : com/facebook/re
 	public fun <init> (Landroid/content/Context;Lcom/facebook/react/runtime/ReactSurfaceImpl;)V
 	public fun getCurrentReactContext ()Lcom/facebook/react/bridge/ReactContext;
 	public fun getJSModuleName ()Ljava/lang/String;
-	public fun getUIManagerType ()I
 	public fun handleException (Ljava/lang/Throwable;)V
 	public fun hasActiveReactContext ()Z
 	public fun hasActiveReactInstance ()Z
@@ -3071,7 +3070,6 @@ public final class com/facebook/react/runtime/ReactSurfaceView : com/facebook/re
 	public fun onChildStartedNativeGesture (Landroid/view/View;Landroid/view/MotionEvent;)V
 	public fun requestChildFocus (Landroid/view/View;Landroid/view/View;)V
 	public fun requestDisallowInterceptTouchEvent (Z)V
-	public fun setIsFabric (Z)V
 }
 
 public abstract class com/facebook/react/runtime/cxxreactpackage/CxxReactPackage {
@@ -5520,7 +5518,6 @@ public final class com/facebook/react/views/scroll/ReactHorizontalScrollContaine
 	public static final field Companion Lcom/facebook/react/views/scroll/ReactHorizontalScrollContainerViewManager$Companion;
 	public static final field REACT_CLASS Ljava/lang/String;
 	public fun <init> ()V
-	public synthetic fun createViewInstance (ILcom/facebook/react/uimanager/ThemedReactContext;Lcom/facebook/react/uimanager/ReactStylesDiffMap;Lcom/facebook/react/uimanager/StateWrapper;)Landroid/view/View;
 	public synthetic fun createViewInstance (Lcom/facebook/react/uimanager/ThemedReactContext;)Landroid/view/View;
 	public fun createViewInstance (Lcom/facebook/react/uimanager/ThemedReactContext;)Lcom/facebook/react/views/view/ReactViewGroup;
 	public fun getName ()Ljava/lang/String;

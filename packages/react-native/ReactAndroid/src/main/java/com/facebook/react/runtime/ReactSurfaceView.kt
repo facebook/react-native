@@ -26,7 +26,6 @@ import com.facebook.react.uimanager.IllegalViewOperationException
 import com.facebook.react.uimanager.JSKeyDispatcher
 import com.facebook.react.uimanager.JSPointerDispatcher
 import com.facebook.react.uimanager.JSTouchDispatcher
-import com.facebook.react.uimanager.common.UIManagerType
 import com.facebook.systrace.Systrace
 import java.util.Objects
 import kotlin.math.max
@@ -149,14 +148,6 @@ public class ReactSurfaceView(context: Context?, internal val surface: ReactSurf
     val e = IllegalViewOperationException(Objects.toString(t.message, ""), this, t)
     (surface.reactHost ?: throw e).handleHostException(e)
   }
-
-  override fun setIsFabric(isFabric: Boolean) {
-    // This surface view is always on Fabric regardless.
-    super.setIsFabric(true)
-  }
-
-  // This surface view is always on Fabric.
-  @UIManagerType override fun getUIManagerType(): Int = UIManagerType.FABRIC
 
   override fun getJSModuleName(): String = surface.moduleName
 

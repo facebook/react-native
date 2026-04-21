@@ -62,8 +62,6 @@ import com.facebook.react.uimanager.PixelUtil.toDIPFromPixel
 import com.facebook.react.uimanager.ReactAccessibilityDelegate
 import com.facebook.react.uimanager.StateWrapper
 import com.facebook.react.uimanager.UIManagerHelper
-import com.facebook.react.uimanager.common.UIManagerType
-import com.facebook.react.uimanager.common.ViewUtil.getUIManagerType
 import com.facebook.react.uimanager.events.EventDispatcher
 import com.facebook.react.uimanager.style.BorderRadiusProp
 import com.facebook.react.uimanager.style.BorderStyle
@@ -1098,9 +1096,6 @@ public open class ReactEditText public constructor(context: Context) : AppCompat
     if (!haveText) {
       if (hint != null && hint.isNotEmpty()) {
         sb.append(hint)
-      } else if (getUIManagerType(this) != UIManagerType.FABRIC) {
-        // Measure something so we have correct height, even if there's no string.
-        sb.append("I")
       }
     }
 

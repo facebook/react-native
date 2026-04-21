@@ -10,7 +10,6 @@ package com.facebook.react;
 import static com.facebook.infer.annotation.ThreadConfined.UI;
 import static com.facebook.react.uimanager.BlendModeHelper.needsIsolatedLayer;
 import static com.facebook.react.uimanager.common.UIManagerType.FABRIC;
-import static com.facebook.react.uimanager.common.UIManagerType.LEGACY;
 import static com.facebook.systrace.Systrace.TRACE_TAG_REACT;
 
 import android.annotation.SuppressLint;
@@ -51,6 +50,7 @@ import com.facebook.react.bridge.UiThreadUtil;
 import com.facebook.react.bridge.WritableMap;
 import com.facebook.react.bridge.WritableNativeMap;
 import com.facebook.react.common.annotations.VisibleForTesting;
+import com.facebook.react.common.annotations.internal.LegacyArchitecture;
 import com.facebook.react.config.ReactFeatureFlags;
 import com.facebook.react.internal.featureflags.ReactNativeFeatureFlags;
 import com.facebook.react.modules.appregistry.AppRegistry;
@@ -69,7 +69,6 @@ import com.facebook.react.uimanager.RootView;
 import com.facebook.react.uimanager.RootViewUtil;
 import com.facebook.react.uimanager.UIManagerHelper;
 import com.facebook.react.uimanager.common.UIManagerType;
-import com.facebook.react.uimanager.common.ViewUtil;
 import com.facebook.react.uimanager.events.EventDispatcher;
 import com.facebook.systrace.Systrace;
 import java.util.concurrent.atomic.AtomicInteger;
@@ -116,7 +115,6 @@ public class ReactRootView extends FrameLayout implements RootView, ReactRoot {
   private int mLastHeight = 0;
   private int mLastOffsetX = Integer.MIN_VALUE;
   private int mLastOffsetY = Integer.MIN_VALUE;
-  private @UIManagerType int mUIManagerType = LEGACY;
   private final AtomicInteger mState = new AtomicInteger(STATE_STOPPED);
 
   public ReactRootView(Context context) {
@@ -307,9 +305,7 @@ public class ReactRootView extends FrameLayout implements RootView, ReactRoot {
   protected boolean drawChild(Canvas canvas, View child, long drawingTime) {
 
     BlendMode mixBlendMode = null;
-    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q
-        && ViewUtil.getUIManagerType(this) == UIManagerType.FABRIC
-        && needsIsolatedLayer(this)) {
+    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q && needsIsolatedLayer(this)) {
       mixBlendMode = (BlendMode) child.getTag(R.id.mix_blend_mode);
       if (mixBlendMode != null) {
         Paint p = new Paint();
@@ -474,7 +470,7 @@ public class ReactRootView extends FrameLayout implements RootView, ReactRoot {
   }
 
   private boolean isFabric() {
-    return getUIManagerType() == FABRIC;
+    return true;
   }
 
   @Override
@@ -646,9 +642,7 @@ public class ReactRootView extends FrameLayout implements RootView, ReactRoot {
     final ReactContext reactApplicationContext = getCurrentReactContext();
 
     if (reactApplicationContext != null) {
-      @Nullable
-      UIManager uiManager =
-          UIManagerHelper.getUIManager(reactApplicationContext, getUIManagerType());
+      @Nullable UIManager uiManager = UIManagerHelper.getUIManager(reactApplicationContext, FABRIC);
       // Ignore calling updateRootLayoutSpecs if UIManager is not properly initialized.
       if (uiManager != null) {
         // In Fabric only, get position of view within screen
@@ -887,15 +881,18 @@ public class ReactRootView extends FrameLayout implements RootView, ReactRoot {
     getCurrentReactContext().handleException(e);
   }
 
+  @LegacyArchitecture
+  @Deprecated
   public void setIsFabric(boolean isFabric) {
-    mUIManagerType = isFabric ? FABRIC : LEGACY;
+    /* noop */
   }
 
   @Override
   public @UIManagerType int getUIManagerType() {
-    return mUIManagerType;
+    return FABRIC;
   }
 
+  @LegacyArchitecture
   @Nullable
   public ReactInstanceManager getReactInstanceManager() {
     return mReactInstanceManager;

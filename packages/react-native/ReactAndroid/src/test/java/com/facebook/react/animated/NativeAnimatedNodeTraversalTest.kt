@@ -9,7 +9,6 @@
 
 package com.facebook.react.animated
 
-import android.annotation.SuppressLint
 import com.facebook.react.bridge.Callback
 import com.facebook.react.bridge.CatalystInstance
 import com.facebook.react.bridge.JavaOnlyArray
@@ -33,6 +32,7 @@ import org.mockito.ArgumentMatchers.anyInt
 import org.mockito.ArgumentMatchers.eq
 import org.mockito.kotlin.atMost
 import org.mockito.kotlin.mock
+import org.mockito.kotlin.never
 import org.mockito.kotlin.reset
 import org.mockito.kotlin.times
 import org.mockito.kotlin.verify
@@ -1075,11 +1075,9 @@ class NativeAnimatedNodeTraversalTest {
     assertThat(stylesCaptor.value.getDouble("opacity")).isEqualTo(10.0)
   }
 
-  @SuppressLint("CheckResult")
   @Test
-  fun testRestoreDefaultProps() {
+  fun testRestoreDefaultPropsIsNoOp() {
     val viewTag: Int = 1001
-    // restoreDefaultProps not called in Fabric, make sure it's a non-Fabric tag
     val propsNodeTag = 3
     nativeAnimatedNodesManager.createAnimatedNode(
         1,
@@ -1097,29 +1095,9 @@ class NativeAnimatedNodeTraversalTest {
     nativeAnimatedNodesManager.connectAnimatedNodes(2, propsNodeTag)
     nativeAnimatedNodesManager.connectAnimatedNodeToView(propsNodeTag, viewTag)
 
-    val frames: JavaOnlyArray = JavaOnlyArray.of(0.0, 0.5, 1.0)
-    val animationCallback: Callback = mock<Callback>()
-    nativeAnimatedNodesManager.startAnimatingNode(
-        1,
-        1,
-        JavaOnlyMap.of("type", "frames", "frames", frames, "toValue", 0.0),
-        animationCallback,
-    )
-
-    val stylesCaptor: ArgumentCaptor<ReadableMap> = ArgumentCaptor.forClass(ReadableMap::class.java)
-
-    for (i in 0 until frames.size()) {
-      reset(uiManagerMock)
-      nativeAnimatedNodesManager.runUpdates(nextFrameTime())
-    }
-
-    verify(uiManagerMock).synchronouslyUpdateViewOnUIThread(eq(viewTag), stylesCaptor.capture())
-    assertThat(stylesCaptor.value.getDouble("opacity")).isEqualTo(0.0)
-
     reset(uiManagerMock)
     nativeAnimatedNodesManager.restoreDefaultValues(propsNodeTag)
-    verify(uiManagerMock).synchronouslyUpdateViewOnUIThread(eq(viewTag), stylesCaptor.capture())
-    assertThat(stylesCaptor.value.isNull("opacity")).isTrue
+    verify(uiManagerMock, never()).synchronouslyUpdateViewOnUIThread(anyInt(), any<ReadableMap>())
   }
 
   /**

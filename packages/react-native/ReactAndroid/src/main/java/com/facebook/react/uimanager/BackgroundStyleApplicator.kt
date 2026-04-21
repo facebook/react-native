@@ -24,8 +24,6 @@ import com.facebook.react.bridge.ReadableArray
 import com.facebook.react.common.annotations.UnstableReactNativeAPI
 import com.facebook.react.uimanager.PixelUtil.dpToPx
 import com.facebook.react.uimanager.PixelUtil.pxToDp
-import com.facebook.react.uimanager.common.UIManagerType
-import com.facebook.react.uimanager.common.ViewUtil
 import com.facebook.react.uimanager.drawable.BackgroundDrawable
 import com.facebook.react.uimanager.drawable.BackgroundImageDrawable
 import com.facebook.react.uimanager.drawable.BorderDrawable
@@ -279,17 +277,13 @@ public object BackgroundStyleApplicator {
   }
 
   /**
-   * Sets the outline color for the view (Fabric only).
+   * Sets the outline color for the view.
    *
    * @param view The view to apply the outline color to
    * @param outlineColor The outline color, or null to remove
    */
   @JvmStatic
   public fun setOutlineColor(view: View, @ColorInt outlineColor: Int?) {
-    if (ViewUtil.getUIManagerType(view) != UIManagerType.FABRIC) {
-      return
-    }
-
     val outline = ensureOutlineDrawable(view)
     if (outlineColor != null) {
       outline.outlineColor = outlineColor
@@ -305,17 +299,13 @@ public object BackgroundStyleApplicator {
   @JvmStatic public fun getOutlineColor(view: View): Int? = getOutlineDrawable(view)?.outlineColor
 
   /**
-   * Sets the outline offset for the view (Fabric only).
+   * Sets the outline offset for the view.
    *
    * @param view The view to apply the outline offset to
    * @param outlineOffset The outline offset in DIPs
    */
   @JvmStatic
   public fun setOutlineOffset(view: View, outlineOffset: Float): Unit {
-    if (ViewUtil.getUIManagerType(view) != UIManagerType.FABRIC) {
-      return
-    }
-
     val outline = ensureOutlineDrawable(view)
     outline.outlineOffset = outlineOffset.dpToPx()
   }
@@ -329,17 +319,13 @@ public object BackgroundStyleApplicator {
   public fun getOutlineOffset(view: View): Float? = getOutlineDrawable(view)?.outlineOffset
 
   /**
-   * Sets the outline style for the view (Fabric only).
+   * Sets the outline style for the view.
    *
    * @param view The view to apply the outline style to
    * @param outlineStyle The outline style (solid, dashed, dotted), or null to remove
    */
   @JvmStatic
   public fun setOutlineStyle(view: View, outlineStyle: OutlineStyle?): Unit {
-    if (ViewUtil.getUIManagerType(view) != UIManagerType.FABRIC) {
-      return
-    }
-
     val outline = ensureOutlineDrawable(view)
     if (outlineStyle != null) {
       outline.outlineStyle = outlineStyle
@@ -355,17 +341,13 @@ public object BackgroundStyleApplicator {
   public fun getOutlineStyle(view: View): OutlineStyle? = getOutlineDrawable(view)?.outlineStyle
 
   /**
-   * Sets the outline width for the view (Fabric only).
+   * Sets the outline width for the view.
    *
    * @param view The view to apply the outline width to
    * @param width The outline width in DIPs
    */
   @JvmStatic
   public fun setOutlineWidth(view: View, width: Float) {
-    if (ViewUtil.getUIManagerType(view) != UIManagerType.FABRIC) {
-      return
-    }
-
     val outline = ensureOutlineDrawable(view)
     outline.outlineWidth = width.dpToPx()
   }
@@ -379,17 +361,13 @@ public object BackgroundStyleApplicator {
   public fun getOutlineWidth(view: View): Float? = getOutlineDrawable(view)?.outlineOffset
 
   /**
-   * Sets box shadows for the view (Fabric only).
+   * Sets box shadows for the view.
    *
    * @param view The view to apply box shadows to
    * @param shadows The list of box shadow styles to apply
    */
   @JvmStatic
   public fun setBoxShadow(view: View, shadows: List<BoxShadow>) {
-    if (ViewUtil.getUIManagerType(view) != UIManagerType.FABRIC) {
-      return
-    }
-
     var innerShadows = mutableListOf<InsetBoxShadowDrawable>()
     var outerShadows = mutableListOf<OutsetBoxShadowDrawable>()
 
@@ -443,7 +421,7 @@ public object BackgroundStyleApplicator {
   }
 
   /**
-   * Sets box shadows for the view from a ReadableArray (Fabric only).
+   * Sets box shadows for the view from a ReadableArray.
    *
    * @param view The view to apply box shadows to
    * @param shadows The array of box shadow definitions, or null to remove all shadows

@@ -26,36 +26,28 @@ import android.view.View;
 import android.view.ViewGroup;
 import androidx.annotation.Nullable;
 import androidx.appcompat.widget.AppCompatTextView;
-import androidx.appcompat.widget.TintContextWrapper;
 import androidx.core.view.AccessibilityDelegateCompat;
 import androidx.core.view.ViewCompat;
 import androidx.customview.widget.ExploreByTouchHelper;
 import com.facebook.common.logging.FLog;
-import com.facebook.infer.annotation.Assertions;
 import com.facebook.infer.annotation.Nullsafe;
 import com.facebook.react.bridge.Arguments;
-import com.facebook.react.bridge.ReactContext;
 import com.facebook.react.bridge.WritableMap;
 import com.facebook.react.common.ReactConstants;
 import com.facebook.react.common.annotations.UnstableReactNativeAPI;
-import com.facebook.react.common.build.ReactBuildConfig;
 import com.facebook.react.internal.SystraceSection;
 import com.facebook.react.uimanager.BackgroundStyleApplicator;
 import com.facebook.react.uimanager.LengthPercentage;
 import com.facebook.react.uimanager.LengthPercentageType;
 import com.facebook.react.uimanager.PixelUtil;
 import com.facebook.react.uimanager.ReactCompoundView;
-import com.facebook.react.uimanager.UIManagerModule;
 import com.facebook.react.uimanager.ViewDefaults;
-import com.facebook.react.uimanager.common.UIManagerType;
-import com.facebook.react.uimanager.common.ViewUtil;
 import com.facebook.react.uimanager.style.BorderRadiusProp;
 import com.facebook.react.uimanager.style.BorderStyle;
 import com.facebook.react.uimanager.style.LogicalEdge;
 import com.facebook.react.uimanager.style.Overflow;
 import com.facebook.react.views.text.internal.span.ReactFragmentIndexSpan;
 import com.facebook.react.views.text.internal.span.ReactTagSpan;
-import com.facebook.react.views.text.internal.span.TextInlineViewPlaceholderSpan;
 import com.facebook.yoga.YogaMeasureMode;
 
 @Nullsafe(Nullsafe.Mode.LOCAL)
@@ -181,164 +173,14 @@ public class ReactTextView extends AppCompatTextView implements ReactCompoundVie
     return json;
   }
 
-  private ReactContext getReactContext() {
-    Context context = getContext();
-    return (context instanceof TintContextWrapper)
-        ? (ReactContext) ((TintContextWrapper) context).getBaseContext()
-        : (ReactContext) context;
-  }
-
   @Override
   protected void onLayout(
       boolean changed, int textViewLeft, int textViewTop, int textViewRight, int textViewBottom) {
     // TODO T62882314: Delete this method when Fabric is fully released in OSS
-    int reactTag = getId();
-    if (!(getText() instanceof Spanned)
-        || ViewUtil.getUIManagerType(reactTag) == UIManagerType.FABRIC
-        || ReactBuildConfig.UNSTABLE_ENABLE_MINIFY_LEGACY_ARCHITECTURE) {
-      /**
-       * In general, {@link #setText} is called via {@link ReactTextViewManager#updateExtraData}
-       * before we are laid out. This ordering is a requirement because we utilize the data from
-       * setText in onLayout.
-       *
-       * <p>However, it's possible for us to get an extra layout before we've received our setText
-       * call. If this happens before the initial setText call, then getText() will have its default
-       * value which isn't a Spanned and we need to bail out. That's fine because we'll get a
-       * setText followed by a layout later.
-       *
-       * <p>The cause for the extra early layout is that an ancestor gets transitioned from a
-       * layout-only node to a non layout-only node.
-       */
-      return;
-    }
-
-    ReactContext reactContext = getReactContext();
-    UIManagerModule uiManager =
-        Assertions.assertNotNull(reactContext.getNativeModule(UIManagerModule.class));
-
-    Spanned text = (Spanned) getText();
-    Layout layout = getLayout();
-    if (layout == null) {
-      // Text layout is calculated during pre-draw phase, so in some cases it can be empty during
-      // layout phase, which usually happens before drawing.
-      // The text layout is created by private {@link assumeLayout} method, which we can try to
-      // invoke directly through reflection or indirectly through some methods that compute it
-      // (e.g. {@link getExtendedPaddingTop}).
-      // It is safer, however, to just early return here, as next measure/layout passes are way more
-      // likely to have the text layout computed.
-      return;
-    }
-
-    TextInlineViewPlaceholderSpan[] placeholders =
-        text.getSpans(0, text.length(), TextInlineViewPlaceholderSpan.class);
-    int textViewWidth = textViewRight - textViewLeft;
-    int textViewHeight = textViewBottom - textViewTop;
-
-    for (TextInlineViewPlaceholderSpan placeholder : placeholders) {
-      View child = uiManager.resolveView(placeholder.getReactTag());
-
-      if (child == null) {
-        continue;
-      }
-
-      int start = text.getSpanStart(placeholder);
-      int line = layout.getLineForOffset(start);
-      boolean isLineTruncated = layout.getEllipsisCount(line) > 0;
-
-      if ( // This truncation check works well on recent versions of Android (tested on 5.1.1 and
-      // 6.0.1) but not on Android 4.4.4. The reason is that getEllipsisCount is buggy on
-      // Android 4.4.4. Specifically, it incorrectly returns 0 if an inline view is the first
-      // thing to be truncated.
-      (isLineTruncated && start >= layout.getLineStart(line) + layout.getEllipsisStart(line))
-          ||
-
-          // This truncation check works well on Android 4.4.4 but not on others (e.g. 6.0.1).
-          // On Android 4.4.4, getLineEnd returns the first truncated character whereas on 6.0.1,
-          // it appears to return the position after the last character on the line even if that
-          // character is truncated.
-          line >= mNumberOfLines
-          || start >= layout.getLineEnd(line)) {
-        // On some versions of Android (e.g. 4.4.4, 5.1.1), getPrimaryHorizontal can infinite
-        // loop when called on a character that appears after the ellipsis. Avoid this bug by
-        // special casing the character truncation case.
-        child.setVisibility(View.GONE);
-      } else {
-        int width = placeholder.getWidth();
-        int height = placeholder.getHeight();
-
-        // Calculate if the direction of the placeholder character is Right-To-Left.
-        boolean isRtlChar = layout.isRtlCharAt(start);
-
-        boolean isRtlParagraph = layout.getParagraphDirection(line) == Layout.DIR_RIGHT_TO_LEFT;
-
-        int placeholderHorizontalPosition;
-        // There's a bug on Samsung devices where calling getPrimaryHorizontal on
-        // the last offset in the layout will result in an endless loop. Work around
-        // this bug by avoiding getPrimaryHorizontal in that case.
-        if (start == text.length() - 1) {
-          boolean endsWithNewLine =
-              text.length() > 0 && text.charAt(layout.getLineEnd(line) - 1) == '\n';
-          float lineWidth = endsWithNewLine ? layout.getLineMax(line) : layout.getLineWidth(line);
-          placeholderHorizontalPosition =
-              isRtlParagraph
-                  // Equivalent to `layout.getLineLeft(line)` but `getLineLeft` returns incorrect
-                  // values when the paragraph is RTL and `setSingleLine(true)`.
-                  ? textViewWidth - (int) lineWidth
-                  : (int) layout.getLineRight(line) - width;
-        } else {
-          // The direction of the paragraph may not be exactly the direction the string is heading
-          // in at the
-          // position of the placeholder. So, if the direction of the character is the same as the
-          // paragraph
-          // use primary, secondary otherwise.
-          boolean characterAndParagraphDirectionMatch = isRtlParagraph == isRtlChar;
-
-          placeholderHorizontalPosition =
-              characterAndParagraphDirectionMatch
-                  ? (int) layout.getPrimaryHorizontal(start)
-                  : (int) layout.getSecondaryHorizontal(start);
-
-          if (isRtlParagraph) {
-            // Adjust `placeholderHorizontalPosition` to work around an Android bug.
-            // The bug is when the paragraph is RTL and `setSingleLine(true)`, some layout
-            // methods such as `getPrimaryHorizontal`, `getSecondaryHorizontal`, and
-            // `getLineRight` return incorrect values. Their return values seem to be off
-            // by the same number of pixels so subtracting these values cancels out the error.
-            //
-            // The result is equivalent to bugless versions of
-            // `getPrimaryHorizontal`/`getSecondaryHorizontal`.
-            placeholderHorizontalPosition =
-                textViewWidth - ((int) layout.getLineRight(line) - placeholderHorizontalPosition);
-          }
-
-          if (isRtlChar) {
-            placeholderHorizontalPosition -= width;
-          }
-        }
-
-        int leftRelativeToTextView =
-            isRtlChar
-                ? placeholderHorizontalPosition + getTotalPaddingRight()
-                : placeholderHorizontalPosition + getTotalPaddingLeft();
-
-        int left = textViewLeft + leftRelativeToTextView;
-
-        // Vertically align the inline view to the baseline of the line of text.
-        int topRelativeToTextView = getTotalPaddingTop() + layout.getLineBaseline(line) - height;
-        int top = textViewTop + topRelativeToTextView;
-
-        boolean isFullyClipped =
-            textViewWidth <= leftRelativeToTextView || textViewHeight <= topRelativeToTextView;
-        int layoutVisibility = isFullyClipped ? View.GONE : View.VISIBLE;
-        int layoutLeft = left;
-        int layoutTop = top;
-        int layoutRight = left + width;
-        int layoutBottom = top + height;
-
-        child.setVisibility(layoutVisibility);
-        child.layout(layoutLeft, layoutTop, layoutRight, layoutBottom);
-      }
-    }
+    // In Fabric, setText is called via ReactTextViewManager#updateExtraData
+    // before we are laid out. This ordering is a requirement because we utilize the data from
+    // setText in onLayout. The early return here is safe because the text layout is handled
+    // correctly in Fabric.
   }
 
   @Override
