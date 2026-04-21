@@ -20,6 +20,7 @@ import * as Benchmark from './Benchmark';
 import {getConstants} from './Constants';
 import getFantomRenderedOutput from './getFantomRenderedOutput';
 import {LogBox} from 'react-native';
+import ErrorUtils from 'react-native/Libraries/vendor/core/ErrorUtils';
 import NativeFantom, {
   NativeEventCategory,
 } from 'react-native/src/private/testing/fantom/specs/NativeFantom';
@@ -164,6 +165,24 @@ export function scheduleTask(task: () => void | Promise<void>) {
 
 let flushingQueue = false;
 let isLogBoxCheckEnabled = true;
+let pendingError: unknown = null;
+
+// Install a Fantom-specific global error handler that captures the first error
+// reported during the current work loop into `pendingError`. `runWorkLoop()`
+// re-throws the captured error after `flushMessageQueue()` returns, so errors
+// thrown inside `runTask` callbacks (or microtasks queued by them) propagate
+// out and become observable as Jest test failures.
+//
+// This overrides the handler installed by `setUpErrorHandling.js`, which in
+// Fantom (where LogBox is not installed) only `console.error`s the error.
+// Subsequent errors during the same work loop are ignored: only the first one
+// is re-thrown, since it is typically the most informative; subsequent errors
+// are usually follow-on noise.
+ErrorUtils.setGlobalHandler((error: unknown, _isFatal: boolean) => {
+  if (pendingError == null) {
+    pendingError = error;
+  }
+});
 
 /**
  * Runs a task on the event loop.
@@ -331,6 +350,10 @@ export function runWorkLoop(): void {
     runLogBoxCheck();
   }
 
+  // Clear any error captured outside of a work loop (e.g., during module setup)
+  // so it does not spuriously fail the next work loop.
+  pendingError = null;
+
   try {
     flushingQueue = true;
     NativeFantom.flushMessageQueue();
@@ -340,8 +363,19 @@ export function runWorkLoop(): void {
 
   if (__DEV__) {
     // We also do it after because a task might trigger the initialization of the environment that enables LogBox,
-    // which could be equally dangerous.
+    // which could be equally dangerous. If LogBox is now installed, this throws
+    // and intentionally takes precedence over any captured task error: the
+    // LogBox diagnostic is more actionable.
     runLogBoxCheck();
+  }
+
+  // Re-throw the first error captured by the global handler during this work
+  // loop, so the failure propagates out of `runTask` / `runWorkLoop` and Jest
+  // marks the test as failed with the original error.
+  const errorToThrow = pendingError;
+  pendingError = null;
+  if (errorToThrow != null) {
+    throw errorToThrow;
   }
 }
 
