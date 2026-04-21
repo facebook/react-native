@@ -141,6 +141,43 @@ class RCTHostHostTargetDelegate : public facebook::react::jsinspector_modern::Ho
     [networkHelper_ loadNetworkResourceWithParams:params executor:executor];
   }
 
+#if TARGET_OS_IPHONE
+  bool onSetEmulatedMedia(const SetEmulatedMediaRequest &request) override
+  {
+    RCTAssertMainQueue();
+    UIWindow *keyWindow = nil;
+    for (UIScene *scene in RCTSharedApplication().connectedScenes) {
+      if (scene.activationState == UISceneActivationStateForegroundActive &&
+          [scene isKindOfClass:[UIWindowScene class]]) {
+        auto *windowScene = (UIWindowScene *)scene;
+        for (UIWindow *win in windowScene.windows) {
+          if (win.isKeyWindow) {
+            keyWindow = win;
+            break;
+          }
+        }
+      }
+      if (keyWindow != nil) {
+        break;
+      }
+    }
+
+    if (keyWindow == nil) {
+      return false;
+    }
+
+    UIUserInterfaceStyle style = UIUserInterfaceStyleUnspecified;
+    if (request.colorScheme == "dark") {
+      style = UIUserInterfaceStyleDark;
+    } else if (request.colorScheme == "light") {
+      style = UIUserInterfaceStyleLight;
+    }
+
+    keyWindow.overrideUserInterfaceStyle = style;
+    return true;
+  }
+#endif
+
 #if TARGET_OS_IPHONE && defined(REACT_NATIVE_DEBUGGER_ENABLED)
   std::optional<std::string> captureScreenshot(const PageCaptureScreenshotRequest &request) override
   {

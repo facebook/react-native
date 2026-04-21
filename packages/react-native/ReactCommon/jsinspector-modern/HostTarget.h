@@ -148,6 +148,19 @@ class HostTargetDelegate : public LoadNetworkResourceDelegate {
     std::optional<int> quality;
   };
 
+  struct SetEmulatedMediaRequest {
+    /**
+     * The color scheme to emulate: "light", "dark", or "" (reset to system
+     * default).
+     */
+    std::string colorScheme;
+
+    inline bool operator==(const SetEmulatedMediaRequest &rhs) const
+    {
+      return colorScheme == rhs.colorScheme;
+    }
+  };
+
   virtual ~HostTargetDelegate() override;
 
   /**
@@ -204,6 +217,18 @@ class HostTargetDelegate : public LoadNetworkResourceDelegate {
   virtual std::optional<std::string> captureScreenshot(const PageCaptureScreenshotRequest & /*request*/)
   {
     return std::nullopt;
+  }
+
+  /**
+   * Called when the debugger requests an emulated media override via
+   * @cdp Emulation.setEmulatedMedia. Currently only supports the
+   * prefers-color-scheme media feature.
+   *
+   * \returns true if the override was applied successfully.
+   */
+  virtual bool onSetEmulatedMedia(const SetEmulatedMediaRequest & /*request*/)
+  {
+    return false;
   }
 
   /**

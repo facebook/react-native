@@ -159,6 +159,16 @@ std::optional<std::string> JReactHostInspectorTarget::captureScreenshot(
   return std::nullopt;
 }
 
+bool JReactHostInspectorTarget::onSetEmulatedMedia(
+    const jsinspector_modern::HostTargetDelegate::SetEmulatedMediaRequest&
+        request) {
+  if (auto javaReactHostImplStrong = javaReactHostImpl_->get()) {
+    javaReactHostImplStrong->setEmulatedMedia(request.colorScheme);
+    return true;
+  }
+  return false;
+}
+
 HostTarget* JReactHostInspectorTarget::getInspectorTarget() {
   return inspectorTarget_ ? inspectorTarget_.get() : nullptr;
 }

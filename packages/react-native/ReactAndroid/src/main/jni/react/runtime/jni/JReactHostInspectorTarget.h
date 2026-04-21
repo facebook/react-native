@@ -152,6 +152,12 @@ struct JReactHostImpl : public jni::JavaClass<JReactHostImpl> {
         "captureScreenshot");
     return method(self(), jni::make_jstring(format), static_cast<jint>(quality));
   }
+
+  void setEmulatedMedia(const std::string &colorScheme)
+  {
+    static auto method = javaClassStatic()->getMethod<void(jni::local_ref<jni::JString>)>("setEmulatedMedia");
+    method(self(), jni::make_jstring(colorScheme));
+  }
 };
 
 /**
@@ -284,6 +290,7 @@ class JReactHostInspectorTarget : public jni::HybridClass<JReactHostInspectorTar
       jsinspector_modern::ScopedExecutor<jsinspector_modern::NetworkRequestListener> executor) override;
   std::optional<std::string> captureScreenshot(
       const jsinspector_modern::HostTargetDelegate::PageCaptureScreenshotRequest &request) override;
+  bool onSetEmulatedMedia(const jsinspector_modern::HostTargetDelegate::SetEmulatedMediaRequest &request) override;
   jsinspector_modern::HostTargetTracingDelegate *getTracingDelegate() override;
 
  private:

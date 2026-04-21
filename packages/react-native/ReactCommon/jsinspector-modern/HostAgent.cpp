@@ -9,6 +9,7 @@
 #include "InstanceAgent.h"
 
 #ifdef REACT_NATIVE_DEBUGGER_ENABLED
+#include "EmulationAgent.h"
 #include "InspectorFlags.h"
 #include "InspectorInterfaces.h"
 #include "NetworkIOAgent.h"
@@ -50,7 +51,8 @@ class HostAgent::Impl final {
         sessionState_(sessionState),
         networkIOAgent_(NetworkIOAgent(frontendChannel, std::move(executor))),
         tracingAgent_(
-            TracingAgent(frontendChannel, sessionState, targetController)) {}
+            TracingAgent(frontendChannel, sessionState, targetController)),
+        emulationAgent_(EmulationAgent(frontendChannel, targetController)) {}
 
   ~Impl() {
     if (isPausedInDebuggerOverlayVisible_) {
@@ -380,6 +382,11 @@ class HostAgent::Impl final {
       return;
     }
 
+    if (!requestState.isFinishedHandlingRequest &&
+        emulationAgent_.handleRequest(req)) {
+      return;
+    }
+
     if (!requestState.isFinishedHandlingRequest && instanceAgent_ &&
         instanceAgent_->handleRequest(req)) {
       return;
@@ -509,6 +516,8 @@ class HostAgent::Impl final {
   NetworkIOAgent networkIOAgent_;
 
   TracingAgent tracingAgent_;
+
+  EmulationAgent emulationAgent_;
 };
 
 #else

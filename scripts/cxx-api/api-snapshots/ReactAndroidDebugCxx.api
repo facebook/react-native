@@ -2821,6 +2821,7 @@ class facebook::react::JReactHostInspectorTarget : public jni::HybridClass<faceb
   public static constexpr auto kJavaDescriptor;
   public static jni::local_ref<JReactHostInspectorTarget::jhybriddata> initHybrid(jni::alias_ref<JReactHostInspectorTarget::jhybridobject> jobj, jni::alias_ref<facebook::react::JReactHostImpl> reactHost, jni::alias_ref<JExecutor::javaobject> javaExecutor);
   public static void registerNatives();
+  public virtual bool onSetEmulatedMedia(const facebook::react::jsinspector_modern::HostTargetDelegate::SetEmulatedMediaRequest&) override;
   public virtual facebook::react::jsinspector_modern::HostTargetMetadata getMetadata() override;
   public virtual facebook::react::jsinspector_modern::HostTargetTracingDelegate* getTracingDelegate() override;
   public virtual std::optional<std::string> captureScreenshot(const facebook::react::jsinspector_modern::HostTargetDelegate::PageCaptureScreenshotRequest&) override;
@@ -7278,6 +7279,7 @@ struct facebook::react::JReactHostImpl : public facebook::jni::JavaClass<faceboo
   public jni::local_ref<jni::JString> captureScreenshot(const std::string& format, int quality) const;
   public static constexpr auto kJavaDescriptor;
   public void loadNetworkResource(const std::string& url, jni::local_ref<InspectorNetworkRequestListener::javaobject> listener) const;
+  public void setEmulatedMedia(const std::string& colorScheme);
   public void setPausedInDebuggerMessage(std::optional<std::string> message);
 }
 
@@ -10320,6 +10322,11 @@ class facebook::react::jsinspector_modern::ConsoleTaskOrchestrator {
   public ~ConsoleTaskOrchestrator() = default;
 }
 
+class facebook::react::jsinspector_modern::EmulationAgent {
+  public EmulationAgent(facebook::react::jsinspector_modern::FrontendChannel frontendChannel, facebook::react::jsinspector_modern::HostTargetController& hostTargetController);
+  public bool handleRequest(const facebook::react::jsinspector_modern::cdp::PreparsedRequest& req);
+}
+
 class facebook::react::jsinspector_modern::ExecutionContextManager {
   public int32_t allocateExecutionContextId();
 }
@@ -10417,6 +10424,7 @@ class facebook::react::jsinspector_modern::HostTargetDelegate : public facebook:
   public HostTargetDelegate(facebook::react::jsinspector_modern::HostTargetDelegate&&) = delete;
   public facebook::react::jsinspector_modern::HostTargetDelegate& operator=(const facebook::react::jsinspector_modern::HostTargetDelegate&) = delete;
   public facebook::react::jsinspector_modern::HostTargetDelegate& operator=(facebook::react::jsinspector_modern::HostTargetDelegate&&) = delete;
+  public virtual bool onSetEmulatedMedia(const facebook::react::jsinspector_modern::HostTargetDelegate::SetEmulatedMediaRequest&);
   public virtual facebook::react::jsinspector_modern::HostTargetMetadata getMetadata() = 0;
   public virtual facebook::react::jsinspector_modern::HostTargetTracingDelegate* getTracingDelegate();
   public virtual std::optional<std::string> captureScreenshot(const facebook::react::jsinspector_modern::HostTargetDelegate::PageCaptureScreenshotRequest&);
@@ -10440,6 +10448,11 @@ struct facebook::react::jsinspector_modern::HostTargetDelegate::PageReloadReques
   public bool operator==(const facebook::react::jsinspector_modern::HostTargetDelegate::PageReloadRequest& rhs) const;
   public std::optional<bool> ignoreCache;
   public std::optional<std::string> scriptToEvaluateOnLoad;
+}
+
+struct facebook::react::jsinspector_modern::HostTargetDelegate::SetEmulatedMediaRequest {
+  public bool operator==(const facebook::react::jsinspector_modern::HostTargetDelegate::SetEmulatedMediaRequest& rhs) const;
+  public std::string colorScheme;
 }
 
 class facebook::react::jsinspector_modern::HostTargetTraceRecording {

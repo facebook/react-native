@@ -12,6 +12,7 @@ import android.content.Context
 import android.content.Intent
 import android.nfc.NfcAdapter
 import android.os.Bundle
+import androidx.appcompat.app.AppCompatDelegate
 import androidx.core.graphics.createBitmap
 import com.facebook.common.logging.FLog
 import com.facebook.infer.annotation.Assertions
@@ -446,6 +447,19 @@ public class ReactHostImpl(
   @DoNotStrip
   private fun loadNetworkResource(url: String, listener: InspectorNetworkRequestListener) {
     InspectorNetworkHelper.loadNetworkResource(url, listener)
+  }
+
+  @DoNotStrip
+  private fun setEmulatedMedia(colorScheme: String) {
+    UiThreadUtil.runOnUiThread {
+      val mode =
+          when (colorScheme) {
+            "dark" -> AppCompatDelegate.MODE_NIGHT_YES
+            "light" -> AppCompatDelegate.MODE_NIGHT_NO
+            else -> AppCompatDelegate.MODE_NIGHT_FOLLOW_SYSTEM
+          }
+      AppCompatDelegate.setDefaultNightMode(mode)
+    }
   }
 
   @DoNotStrip
