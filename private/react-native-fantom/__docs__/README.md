@@ -303,6 +303,24 @@ memory heap and print a message indicating where it was saved. E.g.:
 You can have multiple calls to `Fantom.takeJSMemoryHeapSnapshot()` in your test,
 and each one will create a different file.
 
+### Running the full suite locally
+
+When running the entire suite locally, set `FANTOM_FORCE_CI_MODE=1`:
+
+```shell
+FANTOM_FORCE_CI_MODE=1 yarn fantom
+```
+
+In CI mode, `globalSetup` pre-builds the entire
+`(hermesVariant × enableOptimized)` binary matrix once up-front (see
+[`global-setup/build.js`](../runner/global-setup/build.js)) and per-test buck2
+invocations are skipped. This eliminates buck2 daemon contention from the worker
+pool, which can otherwise cause sporadic build failures when many workers race
+to build different binary variants at the same time.
+
+CI environments (`SANDCASTLE`, `GITHUB_ACTIONS`) auto-detect this mode — see
+[`runner/EnvironmentOptions.js`](../runner/EnvironmentOptions.js).
+
 ### FAQ
 
 #### How is this different from Jest tests?
