@@ -7,8 +7,6 @@
 
 #include "EventTarget.h"
 
-#include <react/debug/react_native_assert.h>
-
 namespace facebook::react {
 
 using Tag = EventTarget::Tag;
@@ -51,11 +49,16 @@ void EventTarget::release(jsi::Runtime& /*runtime*/) {
   // It takes it only to ensure thread-safety (if the caller has the reference,
   // we are on a proper thread).
 
-  if (--retainCount_ == 0) {
+  // retainCount_ is unsigned. retain() early-returns when the target is
+  // disabled but the matching release() still runs, so we can land here with
+  // a zero count; an unconditional decrement would wrap to SIZE_MAX and the
+  // strong handle would never be cleared again.
+  if (retainCount_ > 0) {
+    --retainCount_;
+  }
+  if (retainCount_ == 0) {
     strongInstanceHandle_ = jsi::Value::null();
   }
-
-  react_native_assert(retainCount_ >= 0);
 }
 
 jsi::Value EventTarget::getInstanceHandle(jsi::Runtime& runtime) const {
