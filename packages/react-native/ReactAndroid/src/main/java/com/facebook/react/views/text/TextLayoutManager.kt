@@ -991,8 +991,14 @@ internal object TextLayoutManager {
       }
     }
 
-    val widthInSP = calculatedWidth.pxToDp()
-    val heightInSP = calculatedHeight.pxToDp()
+    // Reserve room for the text stroke halo so it isn't clipped, matching iOS behavior in
+    // RCTTextShadowView.mm. Respects EXACTLY/AT_MOST constraints so parents that asked for a
+    // specific size still get one.
+    val paddedWidth = applyStrokePadding(calculatedWidth, text, width, widthYogaMeasureMode)
+    val paddedHeight = applyStrokePadding(calculatedHeight, text, height, heightYogaMeasureMode)
+
+    val widthInSP = paddedWidth.pxToDp()
+    val heightInSP = paddedHeight.pxToDp()
 
     return YogaMeasureOutput.make(widthInSP, heightInSP)
   }
@@ -1015,9 +1021,14 @@ internal object TextLayoutManager {
     val calculatedHeight =
         calculateHeight(layout, height, heightYogaMeasureMode, calculatedLineCount)
 
+    // Reserve room for the text stroke halo so it isn't clipped, matching iOS behavior in
+    // RCTTextShadowView.mm. Respects EXACTLY/AT_MOST constraints.
+    val paddedWidth = applyStrokePadding(calculatedWidth, text, width, widthYogaMeasureMode)
+    val paddedHeight = applyStrokePadding(calculatedHeight, text, height, heightYogaMeasureMode)
+
     val retList = ArrayList<Float>()
-    retList.add(calculatedWidth.pxToDp())
-    retList.add(calculatedHeight.pxToDp())
+    retList.add(paddedWidth.pxToDp())
+    retList.add(paddedHeight.pxToDp())
 
     val metrics = AttachmentMetrics()
     var lastAttachmentFoundInSpan: Int
@@ -1123,6 +1134,25 @@ internal object TextLayoutManager {
       }
     }
     return calculatedHeight
+  }
+
+  /**
+   * Adds stroke width padding to a measured dimension so the stroke halo isn't clipped. Mirrors
+   * iOS behavior in [RCTTextShadowView.mm] where `size.width`/`size.height` are expanded by the
+   * stroke width before clamping to the container's max size. Returns [dimension] unchanged when
+   * no [StrokeStyleSpan] is present or when Yoga requested an EXACTLY-sized box.
+   */
+  private fun applyStrokePadding(
+      dimension: Float,
+      text: Spanned,
+      constraint: Float,
+      measureMode: YogaMeasureMode
+  ): Float {
+    if (measureMode == YogaMeasureMode.EXACTLY) return dimension
+    val strokeWidth = StrokeStyleSpan.getMaxStrokeWidth(text)
+    if (strokeWidth <= 0f) return dimension
+    val padded = dimension + strokeWidth
+    return if (measureMode == YogaMeasureMode.AT_MOST) min(padded, constraint) else padded
   }
 
   private fun nextAttachmentMetrics(

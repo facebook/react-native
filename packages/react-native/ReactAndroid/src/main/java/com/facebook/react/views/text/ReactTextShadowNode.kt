@@ -33,6 +33,7 @@ import com.facebook.react.uimanager.annotations.ReactProp
 import com.facebook.react.uimanager.events.RCTEventEmitter
 import com.facebook.react.views.text.FontMetricsUtil.getFontMetrics
 import com.facebook.react.views.text.internal.span.ReactAbsoluteSizeSpan
+import com.facebook.react.views.text.internal.span.StrokeStyleSpan
 import com.facebook.react.views.text.internal.span.TextInlineViewPlaceholderSpan
 import com.facebook.yoga.YogaBaselineFunction
 import com.facebook.yoga.YogaConstants
@@ -144,6 +145,25 @@ public constructor(reactTextViewManagerCallback: ReactTextViewManagerCallback? =
         layoutHeight = height
       }
     }
+
+    // Reserve room for the text stroke halo so it isn't clipped on multi-line text. Matches the
+    // Fabric path (TextLayoutManager.applyStrokePadding) and iOS (RCTTextShadowView.mm).
+    val strokeWidth = StrokeStyleSpan.getMaxStrokeWidth(text)
+    if (strokeWidth > 0f) {
+      if (widthMode != YogaMeasureMode.EXACTLY) {
+        layoutWidth += strokeWidth
+        if (widthMode == YogaMeasureMode.AT_MOST && layoutWidth > width) {
+          layoutWidth = width
+        }
+      }
+      if (heightMode != YogaMeasureMode.EXACTLY) {
+        layoutHeight += strokeWidth
+        if (heightMode == YogaMeasureMode.AT_MOST && layoutHeight > height) {
+          layoutHeight = height
+        }
+      }
+    }
+
     YogaMeasureOutput.make(layoutWidth, layoutHeight)
   }
 

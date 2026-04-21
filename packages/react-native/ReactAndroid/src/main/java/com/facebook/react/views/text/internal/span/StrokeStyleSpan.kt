@@ -72,5 +72,23 @@ public class StrokeStyleSpan(
       val spans = spanned.getSpans(0, spanned.length, StrokeStyleSpan::class.java)
       return spans.firstOrNull()
     }
+
+    /**
+     * Returns the maximum stroke width across all [StrokeStyleSpan]s in [spanned], or 0 if none are
+     * present. Used by the measurement pipeline to reserve room for the stroke halo so it isn't
+     * clipped on multi-line text (matches iOS behavior in RCTTextShadowView.mm).
+     */
+    @JvmStatic
+    public fun getMaxStrokeWidth(spanned: Spanned?): Float {
+      if (spanned == null) return 0f
+      val spans = spanned.getSpans(0, spanned.length, StrokeStyleSpan::class.java)
+      var maxWidth = 0f
+      for (span in spans) {
+        if (span.width > maxWidth) {
+          maxWidth = span.width
+        }
+      }
+      return maxWidth
+    }
   }
 }
