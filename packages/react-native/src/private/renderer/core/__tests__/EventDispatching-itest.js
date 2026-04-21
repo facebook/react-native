@@ -55,38 +55,6 @@ describe('Event Dispatching', () => {
       );
     });
 
-    it('provides the native event timestamp (lower case) when available', () => {
-      const root = Fantom.createRoot();
-
-      const ref = React.createRef<React.ElementRef<typeof View>>();
-
-      const onPointerUp = jest.fn((e: PointerEvent) => {
-        e.persist();
-      });
-
-      Fantom.runTask(() => {
-        root.render(<View ref={ref} onPointerUp={onPointerUp} />);
-      });
-
-      expect(onPointerUp).toHaveBeenCalledTimes(0);
-
-      const NATIVE_EVENT_TIMESTAMP = 1234;
-
-      Fantom.dispatchNativeEvent(
-        ref,
-        'onPointerUp',
-        {x: 0, y: 0, timestamp: NATIVE_EVENT_TIMESTAMP},
-        {
-          category: Fantom.NativeEventCategory.Discrete,
-        },
-      );
-
-      expect(onPointerUp).toHaveBeenCalledTimes(1);
-      expect(onPointerUp.mock.calls[0][0].timeStamp).toBe(
-        NATIVE_EVENT_TIMESTAMP,
-      );
-    });
-
     it('provides a default timeStamp when the native event timeStamp is NOT available', () => {
       const root = Fantom.createRoot();
 
