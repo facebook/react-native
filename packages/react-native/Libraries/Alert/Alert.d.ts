@@ -90,5 +90,6 @@ export type AlertType =
   | 'secure-text'
   | 'login-password';
 
-export const Alert: AlertStatic;
+declare const $$Alert: AlertStatic;
 export type Alert = AlertStatic;
+export default $$Alert;

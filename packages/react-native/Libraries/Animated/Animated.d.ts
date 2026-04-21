@@ -8,9 +8,9 @@
  */
 
 import type * as React from 'react';
-import {ScrollView} from '../Components/ScrollView/ScrollView';
-import {View} from '../Components/View/View';
-import {Image} from '../Image/Image';
+import ScrollView from '../Components/ScrollView/ScrollView';
+import View from '../Components/View/View';
+import Image from '../Image/Image';
 import {FlatListComponent, FlatListProps} from '../Lists/FlatList';
 import {
   DefaultSectionT,
@@ -18,10 +18,10 @@ import {
   SectionListProps,
 } from '../Lists/SectionList';
 import {ColorValue} from '../StyleSheet/StyleSheet';
-import {Text} from '../Text/Text';
+import Text from '../Text/Text';
 import {NativeSyntheticEvent} from '../Types/CoreEventTypes';
 
-export namespace Animated {
+declare namespace Animated {
   type AnimatedValue = Value;
   type AnimatedValueXY = ValueXY;
 
@@ -633,3 +633,4 @@ declare const _View: typeof View;
 declare const _Image: typeof Image;
 declare const _Text: typeof Text;
 declare const _ScrollView: typeof ScrollView;
+export default Animated;

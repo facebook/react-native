@@ -29,4 +29,5 @@ type RCTNativeAppEventEmitter = DeviceEventEmitterStatic;
  * Deprecated - subclass NativeEventEmitter to create granular event modules instead of
  * adding all event listeners directly to RCTNativeAppEventEmitter.
  */
-export const NativeAppEventEmitter: RCTNativeAppEventEmitter;
+declare const $$NativeAppEventEmitter: RCTNativeAppEventEmitter;
+export default $$NativeAppEventEmitter;

@@ -7,7 +7,7 @@
  * @format
  */
 
-import {NativeEventEmitter} from '../EventEmitter/NativeEventEmitter';
+import NativeEventEmitter from '../EventEmitter/NativeEventEmitter';
 import {EmitterSubscription} from '../vendor/emitter/EventEmitter';
 
 export interface LinkingImpl extends NativeEventEmitter {
@@ -57,5 +57,6 @@ export interface LinkingImpl extends NativeEventEmitter {
   ): Promise<void>;
 }
 
-export const Linking: LinkingImpl;
+declare const $$Linking: LinkingImpl;
 export type Linking = LinkingImpl;
+export default $$Linking;

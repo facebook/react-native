@@ -1053,7 +1053,7 @@ declare class TextInputComponent extends React.Component<TextInputProps> {}
 declare const TextInputBase: Constructor<HostInstance> &
   Constructor<TimerMixin> &
   typeof TextInputComponent;
-export class TextInput extends TextInputBase {
+declare class TextInput extends TextInputBase {
   /**
    * Access the current focus state.
    */
@@ -1074,3 +1074,5 @@ export class TextInput extends TextInputBase {
    */
   setSelection: (start: number, end: number) => void;
 }
+
+export default TextInput;

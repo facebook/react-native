@@ -54,5 +54,6 @@ export interface AppStateStatic {
   ): NativeEventSubscription;
 }
 
-export const AppState: AppStateStatic;
+declare const $$AppState: AppStateStatic;
 export type AppState = AppStateStatic;
+export default $$AppState;

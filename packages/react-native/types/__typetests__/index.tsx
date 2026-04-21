@@ -129,6 +129,9 @@ import {
   processColor,
   experimental_LayoutConformance as LayoutConformance,
   ViewProps,
+  UTFSequence,
+  unstable_TextAncestorContext as TextAncestorContext,
+  ReactNativeVersion,
 } from 'react-native';
 
 declare module 'react-native' {
@@ -164,6 +167,36 @@ function testDimensions() {
     dimensionsListener,
   );
   subscription.remove();
+}
+
+function TextUTFSequence() {
+  const str: string = UTFSequence.BOM;
+  // @ts-expect-error - expected string
+  const str2: number = UTFSequence.PIZZA;
+}
+
+function TestReactNativeVersion() {
+  const major: number = ReactNativeVersion.major;
+  const prerelease: string | null = ReactNativeVersion.prerelease;
+  // @ts-expect-error - number is expected
+  const major2: string = ReactNativeVersion.major;
+  // @ts-expect-error - prerelease can be null or string
+  const prerelease2: number | undefined = ReactNativeVersion.prerelease;
+}
+
+function TestTextAncestorContext() {
+  return (
+    <>
+      <TextAncestorContext.Provider value={true}>
+        <></>
+      </TextAncestorContext.Provider>
+      <TextAncestorContext.Provider
+        // @ts-expect-error - bool value is expected
+        value="not bool">
+        <></>
+      </TextAncestorContext.Provider>
+    </>
+  );
 }
 
 function TextUseWindowDimensions() {

@@ -21,7 +21,7 @@ import {ViewProps} from '../View/ViewPropTypes';
 declare class KeyboardAvoidingViewComponent extends React.Component<KeyboardAvoidingViewProps> {}
 declare const KeyboardAvoidingViewBase: Constructor<TimerMixin> &
   typeof KeyboardAvoidingViewComponent;
-export class KeyboardAvoidingView extends KeyboardAvoidingViewBase {}
+declare class KeyboardAvoidingView extends KeyboardAvoidingViewBase {}
 
 export interface KeyboardAvoidingViewProps extends ViewProps {
   behavior?: 'height' | 'position' | 'padding' | undefined;
@@ -44,3 +44,4 @@ export interface KeyboardAvoidingViewProps extends ViewProps {
    */
   enabled?: boolean | undefined;
 }
+export default KeyboardAvoidingView;

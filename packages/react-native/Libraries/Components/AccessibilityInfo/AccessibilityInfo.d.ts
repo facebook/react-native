@@ -188,5 +188,6 @@ export interface AccessibilityInfoStatic {
   ) => void;
 }
 
-export const AccessibilityInfo: AccessibilityInfoStatic;
+declare const $$AccessibilityInfo: AccessibilityInfoStatic;
 export type AccessibilityInfo = AccessibilityInfoStatic;
+export default $$AccessibilityInfo;

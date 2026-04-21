@@ -225,6 +225,5 @@ export interface TextProps
  */
 declare class TextComponent extends React.Component<TextProps> {}
 declare const TextBase: Constructor<HostInstance> & typeof TextComponent;
-export class Text extends TextBase {}
-
-export const unstable_TextAncestorContext: React.Context<boolean>;
+declare class Text extends TextBase {}
+export default Text;

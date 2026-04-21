@@ -18,3 +18,9 @@ export function findNodeHandle(
     | React.Component<any, any>
     | React.ComponentClass<any>,
 ): null | NodeHandle;
+
+/**
+ * React Native also implements unstable_batchedUpdates
+ */
+export function unstable_batchedUpdates<A, R>(callback: (a: A) => R, a: A): R;
+export function unstable_batchedUpdates<R>(callback: () => R): R;

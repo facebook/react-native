@@ -14,5 +14,6 @@ export interface SettingsStatic {
   clearWatch(watchId: number): void;
 }
 
-export const Settings: SettingsStatic;
+declare const $$Settings: SettingsStatic;
 export type Settings = SettingsStatic;
+export default $$Settings;

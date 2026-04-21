@@ -23,7 +23,7 @@ export interface Touchable {
   onTouchEndCapture?: ((event: GestureResponderEvent) => void) | undefined;
 }
 
-export const Touchable: {
+declare const $$Touchable: {
   TOUCH_TARGET_DEBUG: boolean;
   renderDebugView: (config: {
     color: string | number;
@@ -34,7 +34,7 @@ export const Touchable: {
 /**
  * @see https://github.com/facebook/react-native/blob/0.34-stable\Libraries\Components\Touchable\Touchable.js
  */
-interface TouchableMixin {
+export interface TouchableMixin {
   /**
    * Invoked when the item should be highlighted. Mixers should implement this
    * to visually distinguish the `VisualRect` so that the user knows that
@@ -88,3 +88,4 @@ interface TouchableMixin {
   touchableGetPressOutDelayMS(): number;
   touchableGetHitSlop(): Insets;
 }
+export default $$Touchable;

@@ -19,10 +19,10 @@ interface RecursiveArray<T>
   extends Array<T | ReadonlyArray<T> | RecursiveArray<T>> {}
 export type StyleProp<T> = T | RecursiveArray<T | Falsy> | Falsy;
 
-type OpaqueColorValue = symbol & {__TYPE__: 'Color'};
+export type OpaqueColorValue = symbol & {__TYPE__: 'Color'};
 export type ColorValue = string | OpaqueColorValue;
 
-export namespace StyleSheet {
+declare namespace StyleSheet {
   type NamedStyles<T> = {[P in keyof T]: ViewStyle | TextStyle | ImageStyle};
 
   /**
@@ -128,3 +128,5 @@ export namespace StyleSheet {
    */
   export const absoluteFill: AbsoluteFillStyle;
 }
+
+export default StyleSheet;

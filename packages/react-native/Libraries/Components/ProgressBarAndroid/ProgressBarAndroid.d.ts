@@ -80,4 +80,5 @@ declare const ProgressBarAndroidBase: Constructor<HostInstance> &
  * @see https://github.com/react-native-progress-view/progress-bar-android
  * @deprecated
  */
-export class ProgressBarAndroid extends ProgressBarAndroidBase {}
+declare class ProgressBarAndroid extends ProgressBarAndroidBase {}
+export default ProgressBarAndroid;

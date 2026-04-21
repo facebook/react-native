@@ -76,5 +76,6 @@ export interface ShareStatic {
   dismissedAction: 'dismissedAction';
 }
 
-export const Share: ShareStatic;
+declare const $$Share: ShareStatic;
+export default $$Share;
 export type Share = ShareStatic;

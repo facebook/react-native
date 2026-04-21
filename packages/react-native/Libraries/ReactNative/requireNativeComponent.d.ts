@@ -20,4 +20,6 @@ import {HostComponent} from '../../types/public/ReactNativeTypes';
  * `HostComponent` because TypeScript assumes anonymous JSX intrinsics (e.g. a `string`) not
  * to have any props.
  */
-export function requireNativeComponent<T>(viewName: string): HostComponent<T>;
+export default function requireNativeComponent<T>(
+  viewName: string,
+): HostComponent<T>;

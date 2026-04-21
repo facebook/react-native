@@ -119,4 +119,5 @@ export type ModalProps = ModalBaseProps &
   ModalPropsAndroid &
   ViewProps;
 
-export class Modal extends React.Component<ModalProps> {}
+declare class Modal extends React.Component<ModalProps> {}
+export default Modal;

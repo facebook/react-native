@@ -109,6 +109,6 @@ export interface UIManagerStatic {
   ) => void;
 }
 
-export const UIManager: UIManagerStatic;
+declare const $$UIManager: UIManagerStatic;
 export type UIManager = UIManagerStatic;
-export default UIManager;
+export default $$UIManager;

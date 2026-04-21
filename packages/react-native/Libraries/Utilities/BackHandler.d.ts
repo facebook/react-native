@@ -40,5 +40,6 @@ export interface BackHandlerStatic {
   ): NativeEventSubscription;
 }
 
-export const BackHandler: BackHandlerStatic;
+declare const $$BackHandler: BackHandlerStatic;
 export type BackHandler = BackHandlerStatic;
+export default $$BackHandler;

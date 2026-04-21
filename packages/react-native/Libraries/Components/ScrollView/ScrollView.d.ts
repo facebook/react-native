@@ -20,7 +20,7 @@ import {
 import {RefreshControlProps} from '../RefreshControl/RefreshControl';
 import {Touchable} from '../Touchable/Touchable';
 import {ViewProps} from '../View/ViewPropTypes';
-import {View} from '../View/View';
+import View from '../View/View';
 
 // See https://reactnative.dev/docs/scrollview#contentoffset
 export interface PointProp {
@@ -53,7 +53,7 @@ interface SubscribableMixin {
   ): void;
 }
 
-interface ScrollResponderMixin extends SubscribableMixin {
+export interface ScrollResponderMixin extends SubscribableMixin {
   /**
    * Invoke this from an `onScroll` event.
    */
@@ -552,13 +552,13 @@ export interface ScrollViewPropsAndroid {
   scrollPerfTag?: string | undefined;
 
   /**
-     * Used to override default value of overScroll mode.
+   * Used to override default value of overScroll mode.
 
-        * Possible values:
-        *   - 'auto' - Default value, allow a user to over-scroll this view only if the content is large enough to meaningfully scroll.
-        *   - 'always' - Always allow a user to over-scroll this view.
-        *   - 'never' - Never allow a user to over-scroll this view.
-        */
+   * Possible values:
+   *   - 'auto' - Default value, allow a user to over-scroll this view only if the content is large enough to meaningfully scroll.
+   *   - 'always' - Always allow a user to over-scroll this view.
+   *   - 'never' - Never allow a user to over-scroll this view.
+   */
   overScrollMode?: 'auto' | 'always' | 'never' | undefined;
 
   /**
@@ -913,8 +913,8 @@ export interface PublicScrollViewInstance
 declare class ScrollViewComponent extends React.Component<ScrollViewProps> {}
 export declare const ScrollViewBase: Constructor<ScrollResponderMixin> &
   typeof ScrollViewComponent;
-export interface ScrollView extends ScrollViewImperativeMethods {}
-export class ScrollView extends ScrollViewBase {
+interface ScrollView extends ScrollViewImperativeMethods {}
+declare class ScrollView extends ScrollViewBase {
   /**
    * @deprecated Use scrollTo instead
    */
@@ -963,3 +963,5 @@ export interface NativeScrollEvent {
    */
   targetContentOffset?: NativeScrollPoint | undefined;
 }
+
+export default ScrollView;

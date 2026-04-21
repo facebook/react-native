@@ -17,4 +17,5 @@ export interface DevMenuStatic {
   show(): void;
 }
 
-export const DevMenu: DevMenuStatic;
+declare const $$DevMenu: DevMenuStatic;
+export default $$DevMenu;

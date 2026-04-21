@@ -73,7 +73,7 @@ export interface StatusBarProps
   hidden?: boolean | undefined;
 }
 
-export class StatusBar extends React.Component<StatusBarProps> {
+declare class StatusBar extends React.Component<StatusBarProps> {
   /**
    * The current height of the status bar on the device.
    * @platform android
@@ -140,3 +140,5 @@ export class StatusBar extends React.Component<StatusBarProps> {
     props: StatusBarProps,
   ) => StatusBarProps;
 }
+
+export default StatusBar;

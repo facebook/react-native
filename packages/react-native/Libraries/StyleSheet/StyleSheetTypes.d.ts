@@ -7,7 +7,7 @@
  * @format
  */
 
-import {Animated} from '../Animated/Animated';
+import Animated from '../Animated/Animated';
 import {ImageResizeMode} from '../Image/ImageResizeMode';
 import {ColorValue} from './StyleSheet';
 

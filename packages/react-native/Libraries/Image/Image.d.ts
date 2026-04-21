@@ -61,7 +61,7 @@ export interface ImagePropsIOS {
   onPartialLoad?: (() => void) | undefined;
 }
 
-interface ImagePropsAndroid {
+export interface ImagePropsAndroid {
   /**
    * The mechanism that should be used to resize the image when the image's dimensions
    * differ from the image view's dimensions. Defaults to `auto`.
@@ -339,7 +339,7 @@ export interface ImageSize {
 
 declare class ImageComponent extends React.Component<ImageProps> {}
 declare const ImageBase: Constructor<HostInstance> & typeof ImageComponent;
-export class Image extends ImageBase {
+declare class Image extends ImageBase {
   static getSize(uri: string): Promise<ImageSize>;
   static getSize(
     uri: string,
@@ -376,14 +376,4 @@ export class Image extends ImageBase {
   ): ImageResolvedAssetSource;
 }
 
-export interface ImageBackgroundProps extends ImagePropsBase {
-  children?: React.ReactNode | undefined;
-  imageStyle?: StyleProp<ImageStyle> | undefined;
-  style?: StyleProp<ViewStyle> | undefined;
-  imageRef?(image: Image): void;
-}
-
-declare class ImageBackgroundComponent extends React.Component<ImageBackgroundProps> {}
-declare const ImageBackgroundBase: Constructor<HostInstance> &
-  typeof ImageBackgroundComponent;
-export class ImageBackground extends ImageBackgroundBase {}
+export default Image;

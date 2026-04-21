@@ -18,4 +18,6 @@ type LayoutConformanceProps = {
   children: React.ReactNode;
 };
 
-export const experimental_LayoutConformance: React.ComponentType<LayoutConformanceProps>;
+declare const experimental_LayoutConformance: React.ComponentType<LayoutConformanceProps>;
+
+export default experimental_LayoutConformance;

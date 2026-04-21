@@ -238,7 +238,9 @@ export abstract class FlatListComponent<
   setNativeProps: (props: {[key: string]: unknown}) => void;
 }
 
-export class FlatList<ItemT = any> extends FlatListComponent<
+declare class FlatList<ItemT = any> extends FlatListComponent<
   ItemT,
   FlatListProps<ItemT>
 > {}
+
+export default FlatList;

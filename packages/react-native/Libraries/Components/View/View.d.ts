@@ -20,10 +20,11 @@ import {HostInstance} from '../../../types/public/ReactNativeTypes';
  */
 declare class ViewComponent extends React.Component<ViewProps> {}
 declare const ViewBase: Constructor<HostInstance> & typeof ViewComponent;
-export class View extends ViewBase {
+declare class View extends ViewBase {
   /**
    * Is 3D Touch / Force Touch available (i.e. will touch events include `force`)
    * @platform ios
    */
   static forceTouchAvailable: boolean;
 }
+export default View;

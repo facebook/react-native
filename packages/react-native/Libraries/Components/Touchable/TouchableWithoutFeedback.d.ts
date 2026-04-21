@@ -148,4 +148,5 @@ declare class TouchableWithoutFeedbackComponent extends React.Component<Touchabl
 declare const TouchableWithoutFeedbackBase: Constructor<TimerMixin> &
   Constructor<TouchableMixin> &
   typeof TouchableWithoutFeedbackComponent;
-export class TouchableWithoutFeedback extends TouchableWithoutFeedbackBase {}
+declare class TouchableWithoutFeedback extends TouchableWithoutFeedbackBase {}
+export default TouchableWithoutFeedback;

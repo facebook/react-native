@@ -198,5 +198,6 @@ export interface PanResponderStatic {
   create(config: PanResponderCallbacks): PanResponderInstance;
 }
 
-export const PanResponder: PanResponderStatic;
+export const $$PanResponder: PanResponderStatic;
 export type PanResponder = PanResponderStatic;
+export default $$PanResponder;

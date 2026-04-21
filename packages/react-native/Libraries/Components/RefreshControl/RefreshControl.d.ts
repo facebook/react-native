@@ -82,6 +82,7 @@ export interface RefreshControlProps
 declare class RefreshControlComponent extends React.Component<RefreshControlProps> {}
 declare const RefreshControlBase: Constructor<HostInstance> &
   typeof RefreshControlComponent;
-export class RefreshControl extends RefreshControlBase {
+declare class RefreshControl extends RefreshControlBase {
   static SIZE: Object; // Undocumented
 }
+export default RefreshControl;

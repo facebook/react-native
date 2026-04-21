@@ -13,4 +13,6 @@ type RegisterCallableModule = (
   moduleOrFactory: Module | (() => Module),
 ) => void;
 
-export const registerCallableModule: RegisterCallableModule;
+declare const registerCallableModule: RegisterCallableModule;
+
+export default registerCallableModule;

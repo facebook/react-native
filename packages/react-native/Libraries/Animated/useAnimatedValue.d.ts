@@ -7,9 +7,9 @@
  * @format
  */
 
-import type {Animated} from './Animated';
+import type Animated from './Animated';
 
-export function useAnimatedValue(
+export default function useAnimatedValue(
   initialValue: number,
   config?: Animated.AnimatedConfig,
 ): Animated.Value;

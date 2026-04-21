@@ -61,3 +61,4 @@ declare class NativeEventEmitter extends EventEmitter {
    */
   removeAllListeners(eventType: string): void;
 }
+export default NativeEventEmitter;

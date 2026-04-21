@@ -39,5 +39,6 @@ export interface VibrationStatic {
   cancel(): void;
 }
 
-export const Vibration: VibrationStatic;
+declare const $$Vibration: VibrationStatic;
 export type Vibration = VibrationStatic;
+export default $$Vibration;

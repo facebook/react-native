@@ -80,5 +80,6 @@ export interface LayoutAnimationStatic {
   spring: (onAnimationDidEnd?: () => void) => void;
 }
 
-export const LayoutAnimation: LayoutAnimationStatic;
+declare const $$LayoutAnimation: LayoutAnimationStatic;
 export type LayoutAnimation = LayoutAnimationStatic;
+export default $$LayoutAnimation;

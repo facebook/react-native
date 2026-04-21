@@ -7,7 +7,7 @@
  * @format
  */
 
-import {NativeEventEmitter} from '../EventEmitter/NativeEventEmitter';
+import NativeEventEmitter from '../EventEmitter/NativeEventEmitter';
 
 /**
  * The DevSettings module exposes methods for customizing settings for developers in development.
@@ -29,4 +29,5 @@ export interface DevSettingsStatic extends NativeEventEmitter {
   reload(reason?: string): void;
 }
 
-export const DevSettings: DevSettingsStatic;
+declare const $$DevSettings: DevSettingsStatic;
+export default $$DevSettings;

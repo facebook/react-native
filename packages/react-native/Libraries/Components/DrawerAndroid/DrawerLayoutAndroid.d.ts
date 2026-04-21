@@ -123,7 +123,7 @@ interface DrawerPosition {
 declare class DrawerLayoutAndroidComponent extends React.Component<DrawerLayoutAndroidProps> {}
 declare const DrawerLayoutAndroidBase: Constructor<HostInstance> &
   typeof DrawerLayoutAndroidComponent;
-export class DrawerLayoutAndroid extends DrawerLayoutAndroidBase {
+declare class DrawerLayoutAndroid extends DrawerLayoutAndroidBase {
   /**
    * drawer's positions.
    */
@@ -139,3 +139,4 @@ export class DrawerLayoutAndroid extends DrawerLayoutAndroidBase {
    */
   closeDrawer(): void;
 }
+export default DrawerLayoutAndroid;

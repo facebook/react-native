@@ -12,10 +12,7 @@ import type {
   ListRenderItemInfo,
   VirtualizedListWithoutRenderItemProps,
 } from '@react-native/virtualized-lists';
-import type {
-  ScrollView,
-  ScrollViewProps,
-} from '../Components/ScrollView/ScrollView';
+import ScrollView, {ScrollViewProps} from '../Components/ScrollView/ScrollView';
 import {NodeHandle} from '../ReactNative/RendererProxy';
 import {StyleProp} from '../StyleSheet/StyleSheet';
 import {ViewStyle} from '../StyleSheet/StyleSheetTypes';
@@ -24,7 +21,7 @@ import {ViewStyle} from '../StyleSheet/StyleSheetTypes';
  * @see https://reactnative.dev/docs/sectionlist
  */
 
-type DefaultSectionT = {
+export type DefaultSectionT = {
   [key: string]: any;
 };
 
@@ -254,7 +251,7 @@ export abstract class SectionListComponent<
   getScrollableNode(): NodeHandle | undefined;
 }
 
-export class SectionList<
+declare class SectionList<
   ItemT = any,
   SectionT = DefaultSectionT,
 > extends SectionListComponent<SectionListProps<ItemT, SectionT>> {}
@@ -269,3 +266,4 @@ export interface SectionListStatic<ItemT, SectionT = DefaultSectionT>
    */
   scrollToLocation?(params: SectionListScrollParams): void;
 }
+export default SectionList;

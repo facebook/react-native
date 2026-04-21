@@ -10,7 +10,7 @@
 import type * as React from 'react';
 import {ColorValue, StyleProp} from '../../StyleSheet/StyleSheet';
 import {ViewStyle} from '../../StyleSheet/StyleSheetTypes';
-import {View} from '../../Components/View/View';
+import View from '../../Components/View/View';
 import {TouchableWithoutFeedbackProps} from './TouchableWithoutFeedback';
 
 /**
@@ -57,6 +57,7 @@ export interface TouchableHighlightProps extends TouchableWithoutFeedbackProps {
  *
  * @see https://reactnative.dev/docs/touchablehighlight
  */
-export const TouchableHighlight: React.ForwardRefExoticComponent<
+declare const TouchableHighlight: React.ForwardRefExoticComponent<
   React.PropsWithoutRef<TouchableHighlightProps> & React.RefAttributes<View>
 >;
+export default TouchableHighlight;

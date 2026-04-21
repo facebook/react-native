@@ -115,4 +115,5 @@ export interface SwitchProps extends SwitchPropsIOS {
  */
 declare class SwitchComponent extends React.Component<SwitchProps> {}
 declare const SwitchBase: Constructor<HostInstance> & typeof SwitchComponent;
-export class Switch extends SwitchBase {}
+declare class Switch extends SwitchBase {}
+export default Switch;

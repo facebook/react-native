@@ -21,5 +21,6 @@ export interface I18nManagerStatic {
 }
 
 /** https://reactnative.dev/blog/2016/08/19/right-to-left-support-for-react-native-apps */
-export const I18nManager: I18nManagerStatic;
+declare const $$I18nManager: I18nManagerStatic;
 export type I18nManager = I18nManagerStatic;
+export default $$I18nManager;

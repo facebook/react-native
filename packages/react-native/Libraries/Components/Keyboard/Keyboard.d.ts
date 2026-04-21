@@ -7,7 +7,7 @@
  * @format
  */
 
-import {NativeEventEmitter} from '../../EventEmitter/NativeEventEmitter';
+import NativeEventEmitter from '../../EventEmitter/NativeEventEmitter';
 import {EmitterSubscription} from '../../vendor/emitter/EventEmitter';
 
 export type KeyboardEventName =
@@ -106,4 +106,5 @@ export interface KeyboardStatic extends NativeEventEmitter {
   metrics(): KeyboardMetrics | undefined;
 }
 
-export const Keyboard: KeyboardStatic;
+declare const $$Keyboard: KeyboardStatic;
+export default $$Keyboard;

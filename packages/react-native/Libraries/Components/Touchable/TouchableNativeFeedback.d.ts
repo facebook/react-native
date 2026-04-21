@@ -72,7 +72,7 @@ export interface TouchableNativeFeedbackProps
 declare class TouchableNativeFeedbackComponent extends React.Component<TouchableNativeFeedbackProps> {}
 declare const TouchableNativeFeedbackBase: Constructor<TouchableMixin> &
   typeof TouchableNativeFeedbackComponent;
-export class TouchableNativeFeedback extends TouchableNativeFeedbackBase {
+declare class TouchableNativeFeedback extends TouchableNativeFeedbackBase {
   /**
    * Creates an object that represents android theme's default background for
    * selectable elements (?android:attr/selectableItemBackground).
@@ -112,3 +112,4 @@ export class TouchableNativeFeedback extends TouchableNativeFeedbackBase {
   ): RippleBackgroundPropType;
   static canUseNativeForeground(): boolean;
 }
+export default TouchableNativeFeedback;

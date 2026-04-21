@@ -18,7 +18,8 @@ export interface ClipboardStatic {
  * @see https://github.com/react-native-clipboard/clipboard
  * @deprecated
  */
-export const Clipboard: ClipboardStatic;
+declare const $$Clipboard: ClipboardStatic;
+export default $$Clipboard;
 /**
  * Clipboard has been extracted from react-native core and will be removed in a future release.
  * It can now be installed and imported from `@react-native-clipboard/clipboard` instead of 'react-native'.

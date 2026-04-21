@@ -7,9 +7,9 @@
  * @format
  */
 
-import type {Animated} from './Animated';
+import type Animated from './Animated';
 
-export function useAnimatedColor(
+export default function useAnimatedColor(
   inputValue?: Animated.AnimatedColorInputValue,
   config?: Animated.AnimatedConfig | null | undefined,
 ): Animated.AnimatedColor;

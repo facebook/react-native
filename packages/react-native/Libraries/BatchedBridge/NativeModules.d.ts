@@ -22,4 +22,6 @@ interface NativeModulesStatic {
  * @example
  * const MyModule = NativeModules.ModuleName
  */
-export const NativeModules: NativeModulesStatic;
+declare const NativeModules: NativeModulesStatic;
+
+export default NativeModules;

@@ -83,5 +83,6 @@ export interface ActionSheetIOSStatic {
   dismissActionSheet: () => void;
 }
 
-export const ActionSheetIOS: ActionSheetIOSStatic;
+declare const $$ActionSheetIOS: ActionSheetIOSStatic;
 export type ActionSheetIOS = ActionSheetIOSStatic;
+export default $$ActionSheetIOS;

@@ -18,7 +18,7 @@ import {ViewStyle} from '../../StyleSheet/StyleSheetTypes';
  * To use this component wrap your custom toolbar with the InputAccessoryView component, and set a nativeID. Then, pass
  * that nativeID as the inputAccessoryViewID of whatever TextInput you desire.
  */
-export class InputAccessoryView extends React.Component<InputAccessoryViewProps> {}
+declare class InputAccessoryView extends React.Component<InputAccessoryViewProps> {}
 
 export interface InputAccessoryViewProps {
   backgroundColor?: ColorValue | undefined;
@@ -32,3 +32,4 @@ export interface InputAccessoryViewProps {
 
   style?: StyleProp<ViewStyle> | undefined;
 }
+export default InputAccessoryView;

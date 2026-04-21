@@ -159,5 +159,6 @@ export interface PermissionsAndroidStatic {
   ): Promise<{[key in Permission]: PermissionStatus}>;
 }
 
-export const PermissionsAndroid: PermissionsAndroidStatic;
+declare const $$PermissionsAndroid: PermissionsAndroidStatic;
 export type PermissionsAndroid = PermissionsAndroidStatic;
+export default $$PermissionsAndroid;

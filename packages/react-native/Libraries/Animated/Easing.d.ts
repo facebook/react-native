@@ -34,4 +34,5 @@ export interface EasingStatic {
 }
 
 export type Easing = EasingStatic;
-export const Easing: EasingStatic;
+declare const $$Easing: EasingStatic;
+export default $$Easing;

@@ -104,4 +104,5 @@ export type Platform =
   | PlatformMacOSStatic
   | PlatformWebStatic;
 
-export const Platform: Platform;
+declare const $$Platform: Platform;
+export default $$Platform;

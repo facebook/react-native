@@ -17,7 +17,7 @@ import {
   NativeSyntheticEvent,
   TargetedEvent,
 } from '../../Types/CoreEventTypes';
-import {View} from '../View/View';
+import View from '../View/View';
 import {AccessibilityProps} from '../View/ViewAccessibility';
 import {ViewProps} from '../View/ViewPropTypes';
 
@@ -167,6 +167,7 @@ export interface PressableProps
 }
 
 // TODO use React.AbstractComponent when available
-export const Pressable: React.ForwardRefExoticComponent<
+declare const Pressable: React.ForwardRefExoticComponent<
   PressableProps & React.RefAttributes<View>
 >;
+export default Pressable;

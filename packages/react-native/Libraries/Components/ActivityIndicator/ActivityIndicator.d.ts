@@ -48,7 +48,7 @@ export interface ActivityIndicatorProps extends ViewProps {
 declare class ActivityIndicatorComponent extends React.Component<ActivityIndicatorProps> {}
 declare const ActivityIndicatorBase: Constructor<HostInstance> &
   typeof ActivityIndicatorComponent;
-export class ActivityIndicator extends ActivityIndicatorBase {}
+declare class ActivityIndicator extends ActivityIndicatorBase {}
 
 /**
  * @see https://reactnative.dev/docs/activityindicatorios#props
@@ -84,3 +84,4 @@ export interface ActivityIndicatorIOSProps extends ViewProps {
 
   style?: StyleProp<ViewStyle> | undefined;
 }
+export default ActivityIndicator;

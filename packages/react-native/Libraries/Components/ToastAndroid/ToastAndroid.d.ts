@@ -105,5 +105,6 @@ export interface ToastAndroidStatic {
   CENTER: number;
 }
 
-export const ToastAndroid: ToastAndroidStatic;
+declare const $$ToastAndroid: ToastAndroidStatic;
 export type ToastAndroid = ToastAndroidStatic;
+export default $$ToastAndroid;

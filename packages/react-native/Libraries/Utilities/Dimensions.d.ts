@@ -74,6 +74,5 @@ export interface Dimensions {
   ): EmitterSubscription;
 }
 
-export function useWindowDimensions(): ScaledSize;
-
-export const Dimensions: Dimensions;
+declare const $$Dimensions: Dimensions;
+export default $$Dimensions;

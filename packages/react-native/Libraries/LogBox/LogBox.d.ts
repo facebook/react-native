@@ -24,5 +24,6 @@ export interface LogBoxStatic {
   uninstall(): void;
 }
 
-export const LogBox: LogBoxStatic;
+declare const $$LogBox: LogBoxStatic;
 export type LogBox = LogBoxStatic;
+export default $$LogBox;

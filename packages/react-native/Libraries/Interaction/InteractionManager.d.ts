@@ -84,4 +84,5 @@ export interface InteractionManagerStatic {
   setDeadline(deadline: number): void;
 }
 
-export const InteractionManager: InteractionManagerStatic;
+declare const $$InteractionManager: InteractionManagerStatic;
+export default $$InteractionManager;

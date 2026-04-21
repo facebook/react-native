@@ -30,4 +30,5 @@ declare const SafeAreaViewBase: Constructor<HostInstance> &
  * @deprecated
  * Use `react-native-safe-area-context` instead. This component is deprecated and will be removed in a future release.
  */
-export class SafeAreaView extends SafeAreaViewBase {}
+declare class SafeAreaView extends SafeAreaViewBase {}
+export default SafeAreaView;

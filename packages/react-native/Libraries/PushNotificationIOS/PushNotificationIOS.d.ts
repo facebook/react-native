@@ -285,7 +285,8 @@ export interface PushNotificationIOSStatic {
  * @see https://github.com/react-native-community/react-native-push-notification-ios
  * @deprecated
  */
-export const PushNotificationIOS: PushNotificationIOSStatic;
+declare const $$PushNotificationIOS: PushNotificationIOSStatic;
+export default $$PushNotificationIOS;
 /**
  * PushNotificationIOS has been extracted from react-native core and will be removed in a future release.
  * It can now be installed and imported from `@react-native-community/push-notification-ios` instead of 'react-native'.

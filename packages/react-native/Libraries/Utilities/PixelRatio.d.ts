@@ -61,4 +61,5 @@ export interface PixelRatioStatic {
   startDetecting(): void;
 }
 
-export const PixelRatio: PixelRatioStatic;
+declare const $$PixelRatio: PixelRatioStatic;
+export default $$PixelRatio;

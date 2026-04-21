@@ -39,4 +39,5 @@ export interface ButtonProps
   color?: ColorValue | undefined;
 }
 
-export class Button extends React.Component<ButtonProps> {}
+declare class Button extends React.Component<ButtonProps> {}
+export default Button;

@@ -8,7 +8,7 @@
  */
 
 import type * as React from 'react';
-import {View} from '../../Components/View/View';
+import View from '../../Components/View/View';
 import {TouchableWithoutFeedbackProps} from './TouchableWithoutFeedback';
 
 export interface TVProps {
@@ -77,6 +77,7 @@ export interface TouchableOpacityProps
  *
  * @see https://reactnative.dev/docs/touchableopacity
  */
-export const TouchableOpacity: React.ForwardRefExoticComponent<
+declare const TouchableOpacity: React.ForwardRefExoticComponent<
   React.PropsWithoutRef<TouchableOpacityProps> & React.RefAttributes<View>
 >;
+export default TouchableOpacity;
