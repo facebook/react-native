@@ -123,6 +123,25 @@ export function getBuckModesForPlatform({
     );
   }
 
+  // When coverage instrumentation is enabled, the active build platform
+  // may not carry a `hermes_build_mode` constraint, causing
+  // `rn_build_mode()` in `tools/build_defs/oss/rn_defs.bzl` to fall back
+  // to the non-debug path. That leaves `REACT_NATIVE_DEBUG` undefined,
+  // which breaks dev-mode tests that use debug-only native APIs (e.g.
+  // timer mocking via `installHighResTimeStampMock`).
+  //
+  // Explicitly stack the `hermes_build_mode` constraint so the build
+  // reflects the test's intended dev/opt mode regardless of how the
+  // coverage build is configured.
+  if (enableCoverage) {
+    result.push(
+      '--modifier',
+      enableOptimized
+        ? 'fbsource//xplat/hermes/constraints:opt'
+        : 'fbsource//xplat/hermes/constraints:dev',
+    );
+  }
+
   return result;
 }
 
