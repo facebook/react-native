@@ -634,6 +634,17 @@ const definitions: FeatureFlagDefinitions = {
       },
       ossReleaseStage: 'none',
     },
+    fixDifferentiatorParentTagForUnflattenCase: {
+      defaultValue: false,
+      metadata: {
+        dateAdded: '2026-04-18',
+        description:
+          'Fix incorrect parentTag passed as parentTagForUpdate in the unflatten-unflatten branch of calculateShadowViewMutationsFlattener, which causes UPDATE mutations to reference a parent being created in the same batch.',
+        expectedReleaseValue: true,
+        purpose: 'experimentation',
+      },
+      ossReleaseStage: 'none',
+    },
     fixFindShadowNodeByTagRaceCondition: {
       defaultValue: false,
       metadata: {

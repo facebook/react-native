@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<77ba6c5db120016e6e1f8af195ab3690>>
+ * @generated SignedSource<<a070acdbab967adb2c8c81e9e89b8636>>
  */
 
 /**
@@ -79,6 +79,7 @@ internal class ReactNativeFeatureFlagsLocalAccessor : ReactNativeFeatureFlagsAcc
   private var enableViewRecyclingForViewCache: Boolean? = null
   private var enableVirtualViewContainerStateExperimentalCache: Boolean? = null
   private var enableVirtualViewDebugFeaturesCache: Boolean? = null
+  private var fixDifferentiatorParentTagForUnflattenCaseCache: Boolean? = null
   private var fixFindShadowNodeByTagRaceConditionCache: Boolean? = null
   private var fixMappingOfEventPrioritiesBetweenFabricAndReactCache: Boolean? = null
   private var fixYogaFlexBasisFitContentInMainAxisCache: Boolean? = null
@@ -660,6 +661,16 @@ internal class ReactNativeFeatureFlagsLocalAccessor : ReactNativeFeatureFlagsAcc
       cached = currentProvider.enableVirtualViewDebugFeatures()
       accessedFeatureFlags.add("enableVirtualViewDebugFeatures")
       enableVirtualViewDebugFeaturesCache = cached
+    }
+    return cached
+  }
+
+  override fun fixDifferentiatorParentTagForUnflattenCase(): Boolean {
+    var cached = fixDifferentiatorParentTagForUnflattenCaseCache
+    if (cached == null) {
+      cached = currentProvider.fixDifferentiatorParentTagForUnflattenCase()
+      accessedFeatureFlags.add("fixDifferentiatorParentTagForUnflattenCase")
+      fixDifferentiatorParentTagForUnflattenCaseCache = cached
     }
     return cached
   }

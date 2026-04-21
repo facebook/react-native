@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<3d49e243422f2c220ab36f3e32a78e38>>
+ * @generated SignedSource<<dfc9fd9ddf5f24ae1dfd55a20794078c>>
  */
 
 /**
@@ -317,6 +317,11 @@ bool NativeReactNativeFeatureFlags::enableVirtualViewContainerStateExperimental(
 bool NativeReactNativeFeatureFlags::enableVirtualViewDebugFeatures(
     jsi::Runtime& /*runtime*/) {
   return ReactNativeFeatureFlags::enableVirtualViewDebugFeatures();
+}
+
+bool NativeReactNativeFeatureFlags::fixDifferentiatorParentTagForUnflattenCase(
+    jsi::Runtime& /*runtime*/) {
+  return ReactNativeFeatureFlags::fixDifferentiatorParentTagForUnflattenCase();
 }
 
 bool NativeReactNativeFeatureFlags::fixFindShadowNodeByTagRaceCondition(

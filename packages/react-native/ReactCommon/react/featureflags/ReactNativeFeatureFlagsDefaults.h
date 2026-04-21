@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<33fd238aafa83c5a42803d3f11d55944>>
+ * @generated SignedSource<<830f0c43b8031c84208bed9b4bedc607>>
  */
 
 /**
@@ -244,6 +244,10 @@ class ReactNativeFeatureFlagsDefaults : public ReactNativeFeatureFlagsProvider {
   }
 
   bool enableVirtualViewDebugFeatures() override {
+    return false;
+  }
+
+  bool fixDifferentiatorParentTagForUnflattenCase() override {
     return false;
   }
 
