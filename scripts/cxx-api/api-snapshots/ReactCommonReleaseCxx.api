@@ -581,8 +581,6 @@ T facebook::react::get(const std::unique_ptr<facebook::react::AnimatedPropBase>&
 template <typename T>
 bool facebook::react::floatEquality(T a, T b, T epsilon = static_cast<T>(facebook::react::kDefaultEpsilon));
 template <typename T>
-void facebook::react::fromRawValue(const facebook::react::PropsParserContext& context, const facebook::react::RawValue& rawValue, T& result);
-template <typename T>
 void facebook::react::fromRawValue(const facebook::react::PropsParserContext& context, const facebook::react::RawValue& rawValue, T& result, T defaultValue);
 template <typename T>
 void facebook::react::fromRawValue(const facebook::react::PropsParserContext& context, const facebook::react::RawValue& rawValue, std::optional<T>& result);
@@ -590,6 +588,8 @@ template <typename T>
 void facebook::react::fromRawValue(const facebook::react::PropsParserContext& context, const facebook::react::RawValue& rawValue, std::vector<T>& result);
 template <typename T>
 void facebook::react::fromRawValue(const facebook::react::PropsParserContext& context, const facebook::react::RawValue& rawValue, std::vector<std::vector<T>>& result);
+template <typename T>
+void facebook::react::fromRawValue(const facebook::react::PropsParserContext&, const facebook::react::RawValue& rawValue, T& result);
 template <typename TManager>
 std::shared_ptr<TManager> facebook::react::getManagerByName(std::shared_ptr<const facebook::react::ContextContainer>& contextContainer, const char name[]);
 uint8_t facebook::react::alphaFromColor(facebook::react::SharedColor color) noexcept;

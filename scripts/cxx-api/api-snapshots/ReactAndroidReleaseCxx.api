@@ -1012,8 +1012,6 @@ folly::dynamic facebook::react::toDynamic(const std::vector<T>& arrayValue);
 template <typename T>
 jni::local_ref<jni::JWeakReference<T>> facebook::react::makeJWeakReference(jni::alias_ref<T> ref);
 template <typename T>
-void facebook::react::fromRawValue(const facebook::react::PropsParserContext& context, const facebook::react::RawValue& rawValue, T& result);
-template <typename T>
 void facebook::react::fromRawValue(const facebook::react::PropsParserContext& context, const facebook::react::RawValue& rawValue, T& result, T defaultValue);
 template <typename T>
 void facebook::react::fromRawValue(const facebook::react::PropsParserContext& context, const facebook::react::RawValue& rawValue, std::optional<T>& result);
@@ -1021,6 +1019,8 @@ template <typename T>
 void facebook::react::fromRawValue(const facebook::react::PropsParserContext& context, const facebook::react::RawValue& rawValue, std::vector<T>& result);
 template <typename T>
 void facebook::react::fromRawValue(const facebook::react::PropsParserContext& context, const facebook::react::RawValue& rawValue, std::vector<std::vector<T>>& result);
+template <typename T>
+void facebook::react::fromRawValue(const facebook::react::PropsParserContext&, const facebook::react::RawValue& rawValue, T& result);
 template <typename TManager>
 std::shared_ptr<TManager> facebook::react::getManagerByName(std::shared_ptr<const facebook::react::ContextContainer>& contextContainer, const char name[]);
 uint8_t facebook::react::alphaFromColor(facebook::react::SharedColor color) noexcept;
