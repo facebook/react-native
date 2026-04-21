@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<dd8221f4b150b4b3bec3dafd4b745482>>
+ * @generated SignedSource<<74209bb4a44619a1ce16d68cfeeb0653>>
  */
 
 /**
@@ -1464,10 +1464,6 @@ class ReactNestedScrollView extends NestedScrollView
       int oldBottom) {
     if (mContentView == null) {
       return;
-    }
-
-    if (mMaintainVisibleContentPositionHelper != null) {
-      mMaintainVisibleContentPositionHelper.updateScrollPosition();
     }
 
     if (isShown() && isContentReady()) {

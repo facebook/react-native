@@ -1681,8 +1681,6 @@ public class ReactHorizontalScrollView extends HorizontalScrollView
     // does not work in RTL.
     if (v.getLayoutDirection() == LAYOUT_DIRECTION_RTL) {
       adjustPositionForContentChangeRTL(left, right, oldLeft, oldRight);
-    } else if (mMaintainVisibleContentPositionHelper != null) {
-      mMaintainVisibleContentPositionHelper.updateScrollPosition();
     }
     ReactScrollViewHelper.emitLayoutChangeEvent(this);
   }

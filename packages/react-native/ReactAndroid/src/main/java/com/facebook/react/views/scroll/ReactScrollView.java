@@ -1458,10 +1458,6 @@ public class ReactScrollView extends ScrollView
       return;
     }
 
-    if (mMaintainVisibleContentPositionHelper != null) {
-      mMaintainVisibleContentPositionHelper.updateScrollPosition();
-    }
-
     if (isShown() && isContentReady()) {
       int currentScrollY = getScrollY();
       int maxScrollY = getMaxScrollY();

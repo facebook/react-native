@@ -82,14 +82,6 @@ internal class MaintainVisibleScrollPositionHelper<ScrollViewT>(
     uIManager.removeUIManagerEventListener(this)
   }
 
-  /**
-   * Update the scroll position of the managed ScrollView. This should be called after layout has
-   * been updated.
-   *
-   * On Fabric this will be called internally in `didMountItems`.
-   */
-  fun updateScrollPosition() = Unit
-
   private fun updateScrollPositionInternal() {
     val config = config ?: return
     val firstVisibleViewRef = firstVisibleViewRef ?: return
