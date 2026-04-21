@@ -747,9 +747,11 @@ const {isOSS} = Fantom.getConstants();
       );
     });
 
-    Fantom.dispatchNativeEvent(ref, 'onTouchStart', touchStart(), {
-      category: Fantom.NativeEventCategory.Discrete,
-    });
+    expect(() =>
+      Fantom.dispatchNativeEvent(ref, 'onTouchStart', touchStart(), {
+        category: Fantom.NativeEventCategory.Discrete,
+      }),
+    ).toThrow('shouldSet error');
 
     // Grant should not have been called since the negotiation threw
     expect(onResponderGrant).toHaveBeenCalledTimes(0);
@@ -777,9 +779,11 @@ const {isOSS} = Fantom.getConstants();
 
     // Error in onResponderGrant is caught per-handler.
     // The system should not crash.
-    Fantom.dispatchNativeEvent(ref, 'onTouchStart', touchStart(), {
-      category: Fantom.NativeEventCategory.Discrete,
-    });
+    expect(() =>
+      Fantom.dispatchNativeEvent(ref, 'onTouchStart', touchStart(), {
+        category: Fantom.NativeEventCategory.Discrete,
+      }),
+    ).toThrow('grant error');
 
     Fantom.dispatchNativeEvent(ref, 'onTouchEnd', touchEnd(), {
       category: Fantom.NativeEventCategory.Discrete,
@@ -810,9 +814,11 @@ const {isOSS} = Fantom.getConstants();
     });
 
     // Error in move is caught, responder remains active
-    Fantom.dispatchNativeEvent(ref, 'onTouchMove', touchMove(), {
-      category: Fantom.NativeEventCategory.Continuous,
-    });
+    expect(() =>
+      Fantom.dispatchNativeEvent(ref, 'onTouchMove', touchMove(), {
+        category: Fantom.NativeEventCategory.Continuous,
+      }),
+    ).toThrow('move error');
 
     // Responder should still be active — release fires on touch end
     Fantom.dispatchNativeEvent(ref, 'onTouchEnd', touchEnd(), {
@@ -845,9 +851,11 @@ const {isOSS} = Fantom.getConstants();
     Fantom.dispatchNativeEvent(ref, 'onTouchStart', touchStart(), {
       category: Fantom.NativeEventCategory.Discrete,
     });
-    Fantom.dispatchNativeEvent(ref, 'onTouchEnd', touchEnd(), {
-      category: Fantom.NativeEventCategory.Discrete,
-    });
+    expect(() =>
+      Fantom.dispatchNativeEvent(ref, 'onTouchEnd', touchEnd(), {
+        category: Fantom.NativeEventCategory.Discrete,
+      }),
+    ).toThrow('release error');
 
     // Second touch — responder was cleared, so grant fires again
     Fantom.dispatchNativeEvent(ref, 'onTouchStart', touchStart(), {
@@ -856,9 +864,11 @@ const {isOSS} = Fantom.getConstants();
 
     expect(onResponderGrant).toHaveBeenCalledTimes(2);
 
-    Fantom.dispatchNativeEvent(ref, 'onTouchEnd', touchEnd(), {
-      category: Fantom.NativeEventCategory.Discrete,
-    });
+    expect(() =>
+      Fantom.dispatchNativeEvent(ref, 'onTouchEnd', touchEnd(), {
+        category: Fantom.NativeEventCategory.Discrete,
+      }),
+    ).toThrow('release error');
   });
 
   it('error in onResponderTerminationRequest does not crash the system', () => {
@@ -887,9 +897,11 @@ const {isOSS} = Fantom.getConstants();
 
     // Parent tries to take over on move. terminationRequest throws.
     // The system should not crash.
-    Fantom.dispatchNativeEvent(childRef, 'onTouchMove', touchMove(), {
-      category: Fantom.NativeEventCategory.Continuous,
-    });
+    expect(() =>
+      Fantom.dispatchNativeEvent(childRef, 'onTouchMove', touchMove(), {
+        category: Fantom.NativeEventCategory.Continuous,
+      }),
+    ).toThrow('terminationRequest error');
 
     Fantom.dispatchNativeEvent(childRef, 'onTouchEnd', touchEnd(), {
       category: Fantom.NativeEventCategory.Discrete,

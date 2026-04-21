@@ -1039,17 +1039,29 @@ const {isOSS} = Fantom.getConstants();
           );
         });
 
-        Fantom.dispatchNativeEvent(
-          childRef,
-          'onPointerUp',
-          {x: 0, y: 0},
-          {
-            category: Fantom.NativeEventCategory.Discrete,
-          },
-        );
+        const dispatch = () =>
+          Fantom.dispatchNativeEvent(
+            childRef,
+            'onPointerUp',
+            {x: 0, y: 0},
+            {
+              category: Fantom.NativeEventCategory.Discrete,
+            },
+          );
 
-        // The error should have been caught and reported
-        expect(mockConsoleError).toHaveBeenCalled();
+        if (ReactNativeFeatureFlags.enableNativeEventTargetEventDispatching()) {
+          // EventTarget-style dispatch catches per-listener errors and
+          // reports them via `console.error` (see `EventTarget.js`), so the
+          // dispatch itself does not throw.
+          dispatch();
+          expect(mockConsoleError).toHaveBeenCalled();
+        } else {
+          // Legacy dispatch surfaces the first per-handler error via
+          // Fantom's global handler, which re-throws synchronously after
+          // dispatch completes.
+          expect(dispatch).toThrow('handler error');
+        }
+
         // The parent bubble handler should still fire despite child's error
         expect(parentHandler).toHaveBeenCalledTimes(1);
       });

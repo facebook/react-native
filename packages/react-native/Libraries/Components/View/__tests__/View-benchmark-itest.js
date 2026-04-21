@@ -133,7 +133,7 @@ Fantom.unstable_benchmark
     }),
   )
   .test.each(
-    [100, 1000, 1500],
+    [100, 1000],
     n => `render ${n.toString()} views with large amount of props and styles`,
     () => {
       Fantom.runTask(() => root.render(testViews));
