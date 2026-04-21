@@ -80,7 +80,7 @@ component View(
     }
 
     if (tabIndex !== undefined) {
-      processedProps.focusable = !tabIndex;
+      processedProps.focusable = tabIndex >= 0;
     }
 
     if (
