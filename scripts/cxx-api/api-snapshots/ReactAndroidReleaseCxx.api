@@ -927,6 +927,7 @@ std::pair<facebook::react::Float, facebook::react::Float> facebook::react::calcu
 std::string facebook::react::base64Encode(const std::string_view s);
 std::string facebook::react::componentNameByReactViewName(std::string viewName);
 std::string facebook::react::generateRandomUuidString();
+std::string facebook::react::toString(const double& value);
 std::string facebook::react::toString(const facebook::react::AccessibilityRole& accessibilityRole);
 std::string facebook::react::toString(const facebook::react::AttributedString::Range& range);
 std::string facebook::react::toString(const facebook::react::BlendMode& blendMode);
