@@ -15,7 +15,7 @@ import type {
 } from '../utils';
 
 import {debugCpp, isCI, profileCpp} from '../EnvironmentOptions';
-import {CPP_TRACES_OUTPUT_PATH, NATIVE_BUILD_OUTPUT_PATH} from '../paths';
+import {CPP_TRACES_OUTPUT_PATH, getNativeBuildOutputPath} from '../paths';
 import {
   getBuckModesForPlatform,
   getBuckOptionsForHermes,
@@ -43,7 +43,7 @@ export function getFantomTesterPath({
   ...options
 }: TesterOptions): string {
   return path.join(
-    NATIVE_BUILD_OUTPUT_PATH,
+    getNativeBuildOutputPath(),
     `fantom-tester-${(hermesVariant as string).toLowerCase()}-${options.enableOptimized ? 'opt' : 'dev'}${options.enableCoverage ? '-coverage' : ''}`,
   );
 }

@@ -14,7 +14,7 @@ import {createBundle} from '../bundling';
 import {isCI} from '../EnvironmentOptions';
 import {build as buildHermesCompiler} from '../executables/hermesc';
 import {build as buildFantomTester} from '../executables/tester';
-import {NATIVE_BUILD_OUTPUT_PATH} from '../paths';
+import {getNativeBuildOutputPath} from '../paths';
 import {HermesVariant} from '../utils';
 // $FlowExpectedError[untyped-import]
 import fs from 'fs';
@@ -43,11 +43,7 @@ export default async function build(
   enableCoverage: boolean,
   env: EnvironmentOverrides,
 ): Promise<void> {
-  try {
-    fs.rmSync(NATIVE_BUILD_OUTPUT_PATH, {recursive: true});
-  } catch {}
-
-  fs.mkdirSync(NATIVE_BUILD_OUTPUT_PATH, {recursive: true});
+  fs.mkdirSync(getNativeBuildOutputPath(), {recursive: true});
 
   if (isCI) {
     for (const enableOptimized of [false, true]) {

@@ -21,6 +21,17 @@ export const NATIVE_BUILD_OUTPUT_PATH: string = path.join(
   OUTPUT_PATH,
   'native-builds',
 );
+
+export function getNativeBuildOutputPath(): string {
+  const fantomRunID = process.env.__FANTOM_RUN_ID__;
+  if (fantomRunID == null) {
+    throw new Error(
+      'Expected Fantom run ID to be set by global setup, but it was not (process.env.__FANTOM_RUN_ID__ is null)',
+    );
+  }
+  return path.join(NATIVE_BUILD_OUTPUT_PATH, fantomRunID);
+}
+
 export const JS_TRACES_OUTPUT_PATH: string = path.join(
   OUTPUT_PATH,
   'js-traces',
