@@ -86,7 +86,7 @@
     "eslint-plugin-relay": "^1.8.3",
     "fb-dotslash": "0.5.8",
     "flow-api-translator": "0.35.0",
-    "flow-bin": "^0.309.0",
+    "flow-bin": "^0.310.0",
     "hermes-eslint": "0.35.0",
     "hermes-transform": "0.35.0",
     "ini": "^5.0.0",
