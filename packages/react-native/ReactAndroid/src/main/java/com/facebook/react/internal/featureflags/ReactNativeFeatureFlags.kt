@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<99a7d3e814f4b037ed4496b6eee4f264>>
+ * @generated SignedSource<<45d368406f020ca101d9b87c7e2527b1>>
  */
 
 /**
@@ -443,6 +443,18 @@ public object ReactNativeFeatureFlags {
    */
   @JvmStatic
   public fun preventShadowTreeCommitExhaustion(): Boolean = accessor.preventShadowTreeCommitExhaustion()
+
+  /**
+   * Use the redesigned RedBox error overlay on Android, styled to match the LogBox visual language.
+   */
+  @JvmStatic
+  public fun redBoxV2Android(): Boolean = accessor.redBoxV2Android()
+
+  /**
+   * Use the redesigned RedBox error overlay on iOS, styled to match the LogBox visual language.
+   */
+  @JvmStatic
+  public fun redBoxV2IOS(): Boolean = accessor.redBoxV2IOS()
 
   /**
    * Function used to enable / disable Pressibility from using W3C Pointer Events for its hover callbacks

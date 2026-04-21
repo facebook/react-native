@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<77ba6c5db120016e6e1f8af195ab3690>>
+ * @generated SignedSource<<7d3853cb7e319830aab97792e1520ff7>>
  */
 
 /**
@@ -93,6 +93,8 @@ internal class ReactNativeFeatureFlagsLocalAccessor : ReactNativeFeatureFlagsAcc
   private var perfMonitorV2EnabledCache: Boolean? = null
   private var preparedTextCacheSizeCache: Double? = null
   private var preventShadowTreeCommitExhaustionCache: Boolean? = null
+  private var redBoxV2AndroidCache: Boolean? = null
+  private var redBoxV2IOSCache: Boolean? = null
   private var shouldPressibilityUseW3CPointerEventsForHoverCache: Boolean? = null
   private var shouldTriggerResponderTransferOnScrollAndroidCache: Boolean? = null
   private var skipActivityIdentityAssertionOnHostPauseCache: Boolean? = null
@@ -800,6 +802,26 @@ internal class ReactNativeFeatureFlagsLocalAccessor : ReactNativeFeatureFlagsAcc
       cached = currentProvider.preventShadowTreeCommitExhaustion()
       accessedFeatureFlags.add("preventShadowTreeCommitExhaustion")
       preventShadowTreeCommitExhaustionCache = cached
+    }
+    return cached
+  }
+
+  override fun redBoxV2Android(): Boolean {
+    var cached = redBoxV2AndroidCache
+    if (cached == null) {
+      cached = currentProvider.redBoxV2Android()
+      accessedFeatureFlags.add("redBoxV2Android")
+      redBoxV2AndroidCache = cached
+    }
+    return cached
+  }
+
+  override fun redBoxV2IOS(): Boolean {
+    var cached = redBoxV2IOSCache
+    if (cached == null) {
+      cached = currentProvider.redBoxV2IOS()
+      accessedFeatureFlags.add("redBoxV2IOS")
+      redBoxV2IOSCache = cached
     }
     return cached
   }

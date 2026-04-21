@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<d1f406d9418791758ce4532e16a22f73>>
+ * @generated SignedSource<<fb0cf2ec1c97f749bff6a72c1fec524d>>
  * @flow strict
  * @noformat
  */
@@ -116,6 +116,8 @@ export type ReactNativeFeatureFlags = $ReadOnly<{
   perfMonitorV2Enabled: Getter<boolean>,
   preparedTextCacheSize: Getter<number>,
   preventShadowTreeCommitExhaustion: Getter<boolean>,
+  redBoxV2Android: Getter<boolean>,
+  redBoxV2IOS: Getter<boolean>,
   shouldPressibilityUseW3CPointerEventsForHover: Getter<boolean>,
   shouldTriggerResponderTransferOnScrollAndroid: Getter<boolean>,
   skipActivityIdentityAssertionOnHostPause: Getter<boolean>,
@@ -478,6 +480,14 @@ export const preparedTextCacheSize: Getter<number> = createNativeFlagGetter('pre
  * Enables a new mechanism in ShadowTree to prevent problems caused by multiple threads trying to commit concurrently. If a thread tries to commit a few times unsuccessfully, it will acquire a lock and try again.
  */
 export const preventShadowTreeCommitExhaustion: Getter<boolean> = createNativeFlagGetter('preventShadowTreeCommitExhaustion', false);
+/**
+ * Use the redesigned RedBox error overlay on Android, styled to match the LogBox visual language.
+ */
+export const redBoxV2Android: Getter<boolean> = createNativeFlagGetter('redBoxV2Android', false);
+/**
+ * Use the redesigned RedBox error overlay on iOS, styled to match the LogBox visual language.
+ */
+export const redBoxV2IOS: Getter<boolean> = createNativeFlagGetter('redBoxV2IOS', false);
 /**
  * Function used to enable / disable Pressibility from using W3C Pointer Events for its hover callbacks
  */
