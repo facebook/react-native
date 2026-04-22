@@ -6,6 +6,7 @@ exclude_patterns:
   - "*/test/*"
   - "*/test_helper/*"
   - "*/stubs/*"
+  - "*/metainternal/*"
 
 exclude_symbols:
   - "Fantom"
