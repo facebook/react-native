@@ -20,6 +20,9 @@ static RCTRedBox2ErrorData *RCTRedBox2ErrorDataFromParsedError(const ParsedError
   RCTRedBox2ErrorData *data = [[RCTRedBox2ErrorData alloc] init];
   data.title = [NSString stringWithUTF8String:parsed.title.c_str()];
   data.message = [NSString stringWithUTF8String:parsed.message.c_str()];
+  data.isCompileError = parsed.isCompileError;
+  data.isRetryable = parsed.isRetryable;
+
   if (parsed.codeFrame.has_value()) {
     const auto &cf = *parsed.codeFrame;
     data.codeFrame = [NSString stringWithUTF8String:cf.content.c_str()];
