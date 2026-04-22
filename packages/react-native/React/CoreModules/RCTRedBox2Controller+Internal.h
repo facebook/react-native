@@ -11,7 +11,7 @@
 
 #if RCT_DEV_MENU
 
-using RCTRedBox2ButtonPressHandler = void (^)(void);
+typedef void (^RCTRedBox2ButtonPressHandler)(void);
 
 @interface RCTRedBox2Controller : UIViewController <RCTRedBox2Controlling, UITableViewDelegate, UITableViewDataSource>
 
