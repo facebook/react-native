@@ -14,6 +14,7 @@
 
 #include <array>
 
+#import "RCTJscSafeUrl+Internal.h"
 #import "RCTRedBox2AnsiParser+Internal.h"
 #import "RCTRedBox2ErrorParser+Internal.h"
 #import "RCTRedBoxHMRClient+Internal.h"
@@ -410,7 +411,13 @@ static const NSTimeInterval kAutoRetryInterval = 20.0;
 
 - (NSString *)formatFrameSource:(RCTJSStackFrame *)stackFrame
 {
-  NSString *fileName = RCTNilIfNull(stackFrame.file) ? [stackFrame.file lastPathComponent] : @"<unknown file>";
+  NSString *file = [RCTJscSafeUrl normalUrlFromJscSafeUrl:stackFrame.file];
+  // Strip query string (e.g. ?platform=ios&dev=true) before extracting the filename.
+  NSRange queryRange = [file rangeOfString:@"?"];
+  if (queryRange.location != NSNotFound) {
+    file = [file substringToIndex:queryRange.location];
+  }
+  NSString *fileName = RCTNilIfNull(file) ? [file lastPathComponent] : @"<unknown file>";
   NSString *lineInfo = [NSString stringWithFormat:@"%@:%lld", fileName, (long long)stackFrame.lineNumber];
 
   if (stackFrame.column != 0) {
@@ -619,8 +626,7 @@ static const NSTimeInterval kAutoRetryInterval = 20.0;
   // File name label below the code frame
   UILabel *fileLabel = [[UILabel alloc] init];
   fileLabel.translatesAutoresizingMaskIntoConstraints = NO;
-  NSString *fileName = errorData.codeFrameFileName.lastPathComponent ? errorData.codeFrameFileName.lastPathComponent
-                                                                     : errorData.codeFrameFileName;
+  NSString *fileName = errorData.codeFrameFileName.lastPathComponent ?: errorData.codeFrameFileName;
   if (errorData.codeFrameRow > 0) {
     fileLabel.text = [NSString
         stringWithFormat:@"%@ (%ld:%ld)", fileName, (long)errorData.codeFrameRow, (long)errorData.codeFrameColumn + 1];
