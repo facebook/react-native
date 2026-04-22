@@ -24,6 +24,7 @@ struct ParsedError {
   std::string message;
   std::optional<CodeFrame> codeFrame;
   bool isCompileError = false;
+  bool isRetryable = true;
 };
 
 /**
