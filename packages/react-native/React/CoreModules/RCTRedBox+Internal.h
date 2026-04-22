@@ -6,18 +6,23 @@
  */
 
 #import <React/RCTDefines.h>
-
-#import "RCTRedBox+Internal.h"
-#import "RCTRedBox.h"
+#import <UIKit/UIKit.h>
 
 #if RCT_DEV_MENU
 
-@interface RCTRedBoxController : UIViewController <RCTRedBoxControlling, UITableViewDelegate, UITableViewDataSource>
+@class RCTJSStackFrame;
+
+@protocol RCTRedBoxControllerActionDelegate <NSObject>
+
+- (void)redBoxController:(UIViewController *)redBoxController openStackFrameInEditor:(RCTJSStackFrame *)stackFrame;
+- (void)reloadFromRedBoxController:(UIViewController *)redBoxController;
+- (void)loadExtraDataViewController;
+
+@end
+
+@protocol RCTRedBoxControlling <NSObject>
 
 @property (nonatomic, weak) id<RCTRedBoxControllerActionDelegate> actionDelegate;
-
-- (instancetype)initWithCustomButtonTitles:(NSArray<NSString *> *)customButtonTitles
-                      customButtonHandlers:(NSArray<RCTRedBoxButtonPressHandler> *)customButtonHandlers;
 
 - (void)showErrorMessage:(NSString *)message
                withStack:(NSArray<RCTJSStackFrame *> *)stack
