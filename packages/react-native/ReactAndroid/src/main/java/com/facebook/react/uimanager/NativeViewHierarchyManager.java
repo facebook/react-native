@@ -31,16 +31,19 @@ public class NativeViewHierarchyManager {
   /**
    * @deprecated Use new architecture instead.
    */
+  @Deprecated
   public NativeViewHierarchyManager(ViewManagerRegistry viewManagers) {}
 
   /**
    * @deprecated Use new architecture instead.
    */
+  @Deprecated
   public NativeViewHierarchyManager(ViewManagerRegistry viewManagers, RootViewManager manager) {}
 
   /**
    * @deprecated Use new architecture instead.
    */
+  @Deprecated
   public final synchronized @Nullable View resolveView(int tag) {
     return null;
   }
@@ -48,6 +51,7 @@ public class NativeViewHierarchyManager {
   /**
    * @deprecated Use new architecture instead.
    */
+  @Deprecated
   public final synchronized @Nullable ViewManager resolveViewManager(int tag) {
     return null;
   }
@@ -55,21 +59,25 @@ public class NativeViewHierarchyManager {
   /**
    * @deprecated Use new architecture instead.
    */
+  @Deprecated
   public void setLayoutAnimationEnabled(boolean enabled) {}
 
   /**
    * @deprecated Use new architecture instead.
    */
+  @Deprecated
   public synchronized void updateInstanceHandle(int tag, long instanceHandle) {}
 
   /**
    * @deprecated Use new architecture instead.
    */
+  @Deprecated
   public synchronized void updateProperties(int tag, ReactStylesDiffMap props) {}
 
   /**
    * @deprecated Use new architecture instead.
    */
+  @Deprecated
   public synchronized void updateViewExtraData(int tag, Object extraData) {}
 
   /**
@@ -82,6 +90,7 @@ public class NativeViewHierarchyManager {
   /**
    * @deprecated Use new architecture instead.
    */
+  @Deprecated
   public synchronized void updateLayout(
       int parentTag,
       int tag,
@@ -94,6 +103,7 @@ public class NativeViewHierarchyManager {
   /**
    * @deprecated Use new architecture instead.
    */
+  @Deprecated
   public synchronized long getInstanceHandle(int reactTag) {
     return 0;
   }
@@ -101,6 +111,7 @@ public class NativeViewHierarchyManager {
   /**
    * @deprecated Use new architecture instead.
    */
+  @Deprecated
   public synchronized void createView(
       ThemedReactContext themedContext,
       int tag,
@@ -110,6 +121,7 @@ public class NativeViewHierarchyManager {
   /**
    * @deprecated Use new architecture instead.
    */
+  @Deprecated
   public synchronized void manageChildren(
       int tag,
       @Nullable int[] indicesToRemove,
@@ -119,31 +131,37 @@ public class NativeViewHierarchyManager {
   /**
    * @deprecated Use new architecture instead.
    */
+  @Deprecated
   public synchronized void setChildren(int tag, ReadableArray childrenTags) {}
 
   /**
    * @deprecated Use new architecture instead.
    */
+  @Deprecated
   public synchronized void addRootView(int tag, View view) {}
 
   /**
    * @deprecated Use new architecture instead.
    */
+  @Deprecated
   protected final synchronized void addRootViewGroup(int tag, View view) {}
 
   /**
    * @deprecated Use new architecture instead.
    */
+  @Deprecated
   protected synchronized void dropView(View view) {}
 
   /**
    * @deprecated Use new architecture instead.
    */
+  @Deprecated
   public synchronized void removeRootView(int rootViewTag) {}
 
   /**
    * @deprecated Use new architecture instead.
    */
+  @Deprecated
   public synchronized int getRootViewNum() {
     return 0;
   }
@@ -151,16 +169,19 @@ public class NativeViewHierarchyManager {
   /**
    * @deprecated Use new architecture instead.
    */
+  @Deprecated
   public synchronized void measure(int tag, int[] outputBuffer) {}
 
   /**
    * @deprecated Use new architecture instead.
    */
+  @Deprecated
   public synchronized void measureInWindow(int tag, int[] outputBuffer) {}
 
   /**
    * @deprecated Use new architecture instead.
    */
+  @Deprecated
   public synchronized int findTargetTagForTouch(int reactTag, float touchX, float touchY) {
     return 0;
   }
@@ -168,12 +189,14 @@ public class NativeViewHierarchyManager {
   /**
    * @deprecated Use new architecture instead.
    */
+  @Deprecated
   public synchronized void setJSResponder(
       int reactTag, int initialReactTag, boolean blockNativeResponder) {}
 
   /**
    * @deprecated Use new architecture instead.
    */
+  @Deprecated
   public synchronized void clearJSResponder() {}
 
   /**
@@ -186,11 +209,13 @@ public class NativeViewHierarchyManager {
   /**
    * @deprecated Use new architecture instead.
    */
+  @Deprecated
   public synchronized void dispatchCommand(
       int reactTag, String commandId, @Nullable ReadableArray args) {}
 
   /**
    * @deprecated Use new architecture instead.
    */
+  @Deprecated
   public synchronized void sendAccessibilityEvent(int tag, int eventType) {}
 }
