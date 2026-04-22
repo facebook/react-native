@@ -93,6 +93,7 @@ let reactRendererConsistency = RNTarget(
 let reactDebug = RNTarget(
   name: .reactDebug,
   path: "ReactCommon/react/debug",
+  excludedPaths: ["tests", "redbox/tests"],
   dependencies: [.reactNativeDependencies]
 )
 /// React-jsi.podspec
