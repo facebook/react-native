@@ -94,7 +94,7 @@ export function registerComponent(
       appParameters.rootTag,
       wrapperComponentProvider && wrapperComponentProvider(appParameters),
       rootViewStyleProvider && rootViewStyleProvider(appParameters),
-      appParameters.fabric,
+      true, // fabric - deprecated, always true
       scopedPerformanceLogger,
       appKey === 'LogBox', // is logbox
       appKey,
