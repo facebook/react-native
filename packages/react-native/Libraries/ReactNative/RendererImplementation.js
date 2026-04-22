@@ -51,6 +51,7 @@ const getMethod: (<MethodName extends keyof ReactFabricType>(
   return function (arg1, arg2, arg3, arg4, arg5, arg6) {
     if (cachedImpl == null) {
       // $FlowExpectedError[prop-missing]
+      // $FlowExpectedError[invalid-computed-prop]
       cachedImpl = getRenderer()[methodName];
     }
 

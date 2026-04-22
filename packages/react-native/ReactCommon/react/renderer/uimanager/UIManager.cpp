@@ -272,8 +272,12 @@ void UIManager::setSurfaceProps(
 ShadowTree::Unique UIManager::stopSurface(SurfaceId surfaceId) const {
   TraceSection s("UIManager::stopSurface");
 
-  // Stop any ongoing animations.
+  // Stop any ongoing layout animations.
   stopSurfaceForAnimationDelegate(surfaceId);
+
+  if (ReactNativeFeatureFlags::useSharedAnimatedBackend()) {
+    animationBackend_->clearRegistryOnSurfaceStop(surfaceId);
+  }
 
   // Waiting for all concurrent commits to be finished and unregistering the
   // `ShadowTree`.

@@ -46,8 +46,8 @@ void NativeFantomTestSpecificMethods::registerForcedCloneCommitHook(
 }
 
 void NativeFantomTestSpecificMethods::takeFunctionAndNoop(
-    jsi::Runtime& runtime,
-    jsi::Function function) {}
+    jsi::Runtime& /* runtime */,
+    jsi::Function /* callback */) {}
 
 void NativeFantomTestSpecificMethods::setRootNodeSize(
     jsi::Runtime& runtime,

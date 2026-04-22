@@ -16,8 +16,6 @@ import com.facebook.common.logging.FLog
 import com.facebook.react.bridge.UiThreadUtil
 import com.facebook.react.common.ReactConstants
 import com.facebook.react.touch.ReactHitSlopView
-import com.facebook.react.uimanager.common.UIManagerType
-import com.facebook.react.uimanager.common.ViewUtil
 import java.util.EnumSet
 
 /**
@@ -86,7 +84,7 @@ public object TouchTargetHelper {
     // Store eventCoords in array so that they are modified to be relative to the targetView found.
     viewCoords[0] = eventX
     viewCoords[1] = eventY
-    val nativeTargetView = findTouchTargetViewWithPointerEvents(viewCoords, viewGroup, null)
+    val nativeTargetView = findTouchTargetViewWithPointerEvents(viewCoords, viewGroup)
     if (nativeTargetView != null) {
       val reactTargetView = findClosestReactAncestor(nativeTargetView)
       if (reactTargetView != null) {
@@ -193,10 +191,7 @@ public object TouchTargetHelper {
         if (view is ReactOverflowViewWithInset) {
           // If the touch point is outside of the overflow inset for the view, we can safely ignore
           // it.
-          if (
-              ViewUtil.getUIManagerType(view.id) == UIManagerType.FABRIC &&
-                  !isTouchPointInViewWithOverflowInset(eventCoords[0], eventCoords[1], view)
-          ) {
+          if (!isTouchPointInViewWithOverflowInset(eventCoords[0], eventCoords[1], view)) {
             return null
           }
 

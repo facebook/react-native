@@ -28,6 +28,18 @@ export const EVENT_TARGET_GET_THE_PARENT_KEY: symbol = Symbol(
 );
 
 /**
+ * Use this symbol as key for a method to provide an additional event listener
+ * from props in an `EventTarget` subclass.
+ *
+ * During event dispatch, this method is called before processing explicitly
+ * registered `addEventListener` listeners. If it returns a non-null callback,
+ * that callback is invoked as an event listener.
+ */
+export const EVENT_TARGET_GET_DECLARATIVE_LISTENER_KEY: symbol = Symbol(
+  'EventTarget[get listener from props]',
+);
+
+/**
  * This is only exposed to implement the method in `EventTarget`.
  * Do NOT use this directly (use the `dispatchTrustedEvent` method instead).
  */

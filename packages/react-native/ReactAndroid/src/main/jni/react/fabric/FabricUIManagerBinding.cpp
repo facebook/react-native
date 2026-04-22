@@ -797,6 +797,29 @@ void FabricUIManagerBinding::schedulerDidUpdateShadowTree(
   // no-op
 }
 
+void FabricUIManagerBinding::schedulerDidCaptureViewSnapshot(
+    Tag tag,
+    SurfaceId surfaceId) {
+  if (mountingManager_) {
+    mountingManager_->captureViewSnapshot(tag, surfaceId);
+  }
+}
+
+void FabricUIManagerBinding::schedulerDidSetViewSnapshot(
+    Tag sourceTag,
+    Tag targetTag,
+    SurfaceId surfaceId) {
+  if (mountingManager_) {
+    mountingManager_->setViewSnapshot(sourceTag, targetTag, surfaceId);
+  }
+}
+
+void FabricUIManagerBinding::schedulerDidClearPendingSnapshots() {
+  if (mountingManager_) {
+    mountingManager_->clearPendingSnapshots();
+  }
+}
+
 void FabricUIManagerBinding::onAnimationStarted() {
   auto mountingManager = getMountingManager("onAnimationStarted");
   if (!mountingManager) {

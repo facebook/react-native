@@ -237,15 +237,7 @@ Error: ${e.message}`;
         const changeId = body?.changeId;
         if (changeId != null && changeId !== lastMarkerChangeId) {
           lastMarkerChangeId = changeId;
-          performance.mark('Fast Refresh - Update done', {
-            detail: {
-              devtools: {
-                dataType: 'marker',
-                color: 'primary',
-                tooltipText: 'Fast Refresh \u269b',
-              },
-            },
-          });
+          emitFastRefreshCompleteEvents();
         }
       }
     });
@@ -391,6 +383,27 @@ function showCompileError() {
   // because the stack trace is meaningless:
   error.preventSymbolication = true;
   throw error;
+}
+
+function emitFastRefreshCompleteEvents() {
+  // Add marker entry in performance timeline
+  performance.mark('Fast Refresh - Update done', {
+    detail: {
+      devtools: {
+        dataType: 'marker',
+        color: 'primary',
+        tooltipText: 'Fast Refresh \u269b',
+      },
+    },
+  });
+
+  // Notify CDP clients via internal binding
+  if (
+    // $FlowFixMe[prop-missing] - Injected by RuntimeTarget
+    typeof globalThis.__notifyFastRefreshComplete === 'function'
+  ) {
+    globalThis.__notifyFastRefreshComplete();
+  }
 }
 
 export default HMRClient;

@@ -46,24 +46,26 @@ internal class AnimationBackendChoreographer(
   }
 
   fun pause() {
+    val shouldRemove: Boolean
     synchronized(paused) {
-      if (!paused.getAndSet(true) && callbackPosted.getAndSet(false)) {
-        reactChoreographer.removeFrameCallback(
-            ReactChoreographer.CallbackType.NATIVE_ANIMATED_MODULE,
-            choreographerCallback,
-        )
-      }
+      shouldRemove = !paused.getAndSet(true) && callbackPosted.getAndSet(false)
+    }
+    if (shouldRemove) {
+      reactChoreographer.removeFrameCallback(
+          ReactChoreographer.CallbackType.NATIVE_ANIMATED_MODULE,
+          choreographerCallback,
+      )
     }
   }
 
   private fun scheduleCallback() {
-    synchronized(paused) {
-      if (!paused.get() && !callbackPosted.getAndSet(true)) {
-        reactChoreographer.postFrameCallback(
-            ReactChoreographer.CallbackType.NATIVE_ANIMATED_MODULE,
-            choreographerCallback,
-        )
-      }
+    val shouldPost: Boolean
+    synchronized(paused) { shouldPost = !paused.get() && !callbackPosted.getAndSet(true) }
+    if (shouldPost) {
+      reactChoreographer.postFrameCallback(
+          ReactChoreographer.CallbackType.NATIVE_ANIMATED_MODULE,
+          choreographerCallback,
+      )
     }
   }
 

@@ -36,7 +36,6 @@ import com.facebook.react.uimanager.PixelUtil
 import com.facebook.react.uimanager.PixelUtil.dpToPx
 import com.facebook.react.uimanager.PixelUtil.pxToDp
 import com.facebook.react.uimanager.ReactAccessibilityDelegate
-import com.facebook.react.util.AndroidVersion.VERSION_CODE_VANILLA_ICE_CREAM
 import com.facebook.react.views.text.internal.span.CustomLetterSpacingSpan
 import com.facebook.react.views.text.internal.span.CustomLineHeightSpan
 import com.facebook.react.views.text.internal.span.CustomStyleSpan
@@ -634,63 +633,14 @@ internal object TextLayoutManager {
       )
     }
 
-    // Pre-Android 15: Use existing advance-based logic
-    if (
-        Build.VERSION.SDK_INT < VERSION_CODE_VANILLA_ICE_CREAM ||
-            !ReactNativeFeatureFlags.fixTextClippingAndroid15useBoundsForWidth()
-    ) {
-      val desiredWidth = ceil(Layout.getDesiredWidth(text, paint)).toInt()
-
-      val layoutWidth =
-          when (widthYogaMeasureMode) {
-            YogaMeasureMode.EXACTLY -> floor(width).toInt()
-            YogaMeasureMode.AT_MOST -> min(desiredWidth, floor(width).toInt())
-            else -> desiredWidth
-          }
-      return buildLayout(
-          text,
-          layoutWidth,
-          includeFontPadding,
-          textBreakStrategy,
-          hyphenationFrequency,
-          alignment,
-          justificationMode,
-          ellipsizeMode,
-          maxNumberOfLines,
-          paint,
-      )
-    }
-
-    // Android 15+: Need to account for visual bounds
-    // Step 1: Create unconstrained layout to get visual bounds width
-    val unconstrainedLayout =
-        buildLayout(
-            text,
-            Int.MAX_VALUE / 2,
-            includeFontPadding,
-            textBreakStrategy,
-            hyphenationFrequency,
-            alignment,
-            justificationMode,
-            null,
-            ReactConstants.UNSET,
-            paint,
-        )
-
-    // Calculate visual bounds width from unconstrained layout
-    var desiredVisualWidth = 0f
-    for (i in 0 until unconstrainedLayout.lineCount) {
-      val lineWidth = unconstrainedLayout.getLineRight(i) - unconstrainedLayout.getLineLeft(i)
-      desiredVisualWidth = max(desiredVisualWidth, lineWidth)
-    }
+    val desiredWidth = ceil(Layout.getDesiredWidth(text, paint)).toInt()
 
     val layoutWidth =
         when (widthYogaMeasureMode) {
-          YogaMeasureMode.AT_MOST -> min(ceil(desiredVisualWidth).toInt(), floor(width).toInt())
-          else -> ceil(desiredVisualWidth).toInt()
+          YogaMeasureMode.EXACTLY -> floor(width).toInt()
+          YogaMeasureMode.AT_MOST -> min(desiredWidth, floor(width).toInt())
+          else -> desiredWidth
         }
-
-    // Step 2: Create final layout with correct width
     return buildLayout(
         text,
         layoutWidth,
@@ -735,16 +685,6 @@ internal object TextLayoutManager {
 
     if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.P) {
       builder.setUseLineSpacingFromFallbacks(true)
-    }
-
-    // setUseBoundsForWidth added in API 35 — use reflection to support internal targets that
-    // compile against an SDK older than 35.
-    // https://developer.android.com/reference/android/text/StaticLayout.Builder#setUseBoundsForWidth(boolean)
-    if (
-        Build.VERSION.SDK_INT >= VERSION_CODE_VANILLA_ICE_CREAM &&
-            ReactNativeFeatureFlags.fixTextClippingAndroid15useBoundsForWidth()
-    ) {
-      setUseBoundsForWidthMethod?.invoke(builder, true)
     }
 
     return builder.build()

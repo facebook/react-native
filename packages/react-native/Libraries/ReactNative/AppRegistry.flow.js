@@ -31,7 +31,6 @@ export type AppConfig = {
 export type AppParameters = {
   initialProps: Readonly<{[string]: unknown, ...}>,
   rootTag: RootTag,
-  fabric?: boolean,
 };
 export type Runnable = (
   appParameters: AppParameters,

@@ -646,7 +646,7 @@ describe('AccessibilityInfo', () => {
         mockNativeAccessibilityManagerIOS.getCurrentPrefersCrossFadeTransitionsState =
           null;
 
-        const result: mixed =
+        const result: unknown =
           await AccessibilityInfo.prefersCrossFadeTransitions().catch(e => e);
 
         invariant(
@@ -692,7 +692,7 @@ describe('AccessibilityInfo', () => {
         mockNativeAccessibilityManagerIOS.getCurrentDarkerSystemColorsState =
           null;
 
-        const result: mixed =
+        const result: unknown =
           await AccessibilityInfo.isDarkerSystemColorsEnabled().catch(e => e);
 
         invariant(
@@ -725,7 +725,7 @@ describe('AccessibilityInfo', () => {
 
         mockNativeAccessibilityInfoAndroid.isHighTextContrastEnabled = null;
 
-        const result: mixed =
+        const result: unknown =
           await AccessibilityInfo.isHighTextContrastEnabled().catch(e => e);
 
         invariant(

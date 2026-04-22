@@ -19,6 +19,7 @@ import com.facebook.react.internal.featureflags.ReactNativeFeatureFlags
 import java.io.IOException
 import java.net.SocketTimeoutException
 import okhttp3.Headers
+import okhttp3.MultipartBody
 import okhttp3.RequestBody
 import okio.Buffer
 
@@ -260,6 +261,13 @@ internal object NetworkEventUtil {
 
     if (body.isOneShot()) {
       // Fallback - body cannot be read twice
+      return "[Preview unavailable]"
+    }
+
+    // MultipartBody does not propagate isOneShot() from its parts, so check each
+    // part explicitly. Reading a one-shot part here would drain the underlying
+    // stream and cause the real request to fail.
+    if (body is MultipartBody && body.parts().any { it.body().isOneShot() }) {
       return "[Preview unavailable]"
     }
 

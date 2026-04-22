@@ -19,7 +19,7 @@ const path = require('path');
 
 function generateNativeCode(
   outputPath /*: string */,
-  schemaInfos /*: $ReadOnlyArray<$FlowFixMe> */,
+  schemaInfos /*: ReadonlyArray<$FlowFixMe> */,
   includesGeneratedCode /*: boolean */,
   platform /*: string */,
   forceOutputPath /*: boolean */ = false,

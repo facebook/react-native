@@ -133,7 +133,7 @@ const testConfigs = [
 
 function transformCode(
   code: string,
-  options: {[string]: mixed},
+  options: {[string]: unknown},
 ): string | null {
   const result = babel.transformSync(code, {
     babelrc: false,
@@ -156,7 +156,7 @@ function ensureDirectoryExists(dir: string): void {
   }
 }
 
-function makeHeader(description: string, options: {[string]: mixed}): string {
+function makeHeader(description: string, options: {[string]: unknown}): string {
   return `/**
  * Copyright (c) Meta Platforms, Inc. and affiliates.
  *

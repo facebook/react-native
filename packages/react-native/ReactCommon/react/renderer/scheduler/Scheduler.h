@@ -94,6 +94,9 @@ class Scheduler final : public UIManagerDelegate {
       bool blockNativeResponder) override;
   void uiManagerShouldSynchronouslyUpdateViewOnUIThread(Tag tag, const folly::dynamic &props) override;
   void uiManagerDidUpdateShadowTree(const std::unordered_map<Tag, folly::dynamic> &tagToProps) override;
+  void uiManagerDidCaptureViewSnapshot(Tag tag, SurfaceId surfaceId) override;
+  void uiManagerDidSetViewSnapshot(Tag sourceTag, Tag targetTag, SurfaceId surfaceId) override;
+  void uiManagerDidClearPendingSnapshots() override;
   void uiManagerShouldAddEventListener(std::shared_ptr<const EventListener> listener) final;
   void uiManagerShouldRemoveEventListener(const std::shared_ptr<const EventListener> &listener) final;
   void uiManagerDidFinishReactCommit(const ShadowTree &shadowTree) override;
@@ -147,7 +150,7 @@ class Scheduler final : public UIManagerDelegate {
 
   RuntimeScheduler *runtimeScheduler_{nullptr};
 
-  std::unique_ptr<ViewTransitionModule> viewTransitionModule_;
+  std::shared_ptr<ViewTransitionModule> viewTransitionModule_;
 
   mutable std::shared_mutex onSurfaceStartCallbackMutex_;
   OnSurfaceStartCallback onSurfaceStartCallback_;

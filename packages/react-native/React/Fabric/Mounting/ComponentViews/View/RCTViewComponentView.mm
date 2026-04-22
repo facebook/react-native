@@ -567,6 +567,9 @@ const CGFloat BACKGROUND_COLOR_ZPOSITION = -1024.0f;
       case BlendMode::Luminosity:
         self.layer.compositingFilter = @"luminosityBlendMode";
         break;
+      case BlendMode::PlusLighter:
+        self.layer.compositingFilter = @"linearDodgeBlendMode";
+        break;
       case BlendMode::Normal:
         self.layer.compositingFilter = nil;
         break;
@@ -1718,7 +1721,7 @@ static NSString *RCTRecursiveAccessibilityLabel(UIView *view)
 
 - (BOOL)canBecomeFirstResponder
 {
-  return YES;
+  return ReactNativeFeatureFlags::enableImperativeFocus();
 }
 
 - (void)handleCommand:(const NSString *)commandName args:(const NSArray *)args

@@ -1,24 +1,18 @@
 // Jest Snapshot v1, https://goo.gl/fbAQLP
 
-exports[`LogBoxButton should render TouchableWithoutFeedback and pass through props 1`] = `
-<TouchableWithoutFeedback
+exports[`LogBoxButton should render Pressable and pass through props 1`] = `
+<Pressable
+  focusable={true}
   hitSlop={Object {}}
+  onBlur={[Function]}
+  onFocus={[Function]}
   onPress={[Function]}
-  onPressIn={[Function]}
-  onPressOut={[Function]}
+  style={[Function]}
 >
-  <View
-    style={
-      Object {
-        "backgroundColor": "black",
-      }
-    }
-  >
-    <Text>
-      Press me
-    </Text>
-  </View>
-</TouchableWithoutFeedback>
+  <Text>
+    Press me
+  </Text>
+</Pressable>
 `;
 
 exports[`LogBoxButton should render only a view without an onPress 1`] = `

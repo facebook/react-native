@@ -8,6 +8,7 @@
 package com.facebook.react.fabric.mounting
 
 import android.annotation.SuppressLint
+import android.graphics.Bitmap
 import android.os.SystemClock
 import android.view.View
 import android.view.ViewGroup
@@ -15,6 +16,7 @@ import android.view.ViewParent
 import androidx.annotation.AnyThread
 import androidx.annotation.UiThread
 import androidx.collection.SparseArrayCompat
+import androidx.core.graphics.drawable.toDrawable
 import com.facebook.common.logging.FLog
 import com.facebook.infer.annotation.ThreadConfined
 import com.facebook.react.bridge.GuardedRunnable
@@ -282,7 +284,14 @@ internal constructor(
       return
     }
 
-    val parentViewState = getViewState(parentTag)
+    val parentViewState = getNullableViewState(parentTag)
+    if (parentViewState == null) {
+      ReactSoftExceptionLogger.logSoftException(
+          ReactSoftExceptionLogger.Categories.SURFACE_MOUNTING_MANAGER_MISSING_VIEWSTATE,
+          ReactNoCrashSoftException("Unable to find viewState for tag: [$parentTag] for addViewAt"),
+      )
+      return
+    }
     if (parentViewState.view !is ViewGroup) {
       val message =
           "Unable to add a view into a view that is not a ViewGroup. ParentTag: $parentTag - Tag: $tag - Index: $index"
@@ -290,7 +299,14 @@ internal constructor(
       throw IllegalStateException(message)
     }
     val parentView = parentViewState.view as ViewGroup
-    val viewState = getViewState(tag)
+    val viewState = getNullableViewState(tag)
+    if (viewState == null) {
+      ReactSoftExceptionLogger.logSoftException(
+          ReactSoftExceptionLogger.Categories.SURFACE_MOUNTING_MANAGER_MISSING_VIEWSTATE,
+          ReactNoCrashSoftException("Unable to find viewState for tag: [$tag] for addViewAt"),
+      )
+      return
+    }
     val view = viewState.view
     checkNotNull(view) { "Unable to find view for viewState $viewState and tag $tag" }
 
@@ -1074,6 +1090,13 @@ internal constructor(
           )
 
   private fun getNullableViewState(reactTag: Int): ViewState? = tagToViewState[reactTag]
+
+  /** Applies a bitmap as the background of the view with the given tag, if it exists. */
+  @UiThread
+  public fun applyViewSnapshot(tag: Int, bitmap: Bitmap) {
+    val view = getNullableViewState(tag)?.view ?: return
+    view.background = bitmap.toDrawable(view.resources)
+  }
 
   public fun printSurfaceState(): Unit {
     FLog.e(TAG, "Views created for surface $surfaceId:")

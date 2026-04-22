@@ -23,6 +23,7 @@ target_link_libraries(react_nativemodule_defaults
         react_nativemodule_idlecallbacks
         react_nativemodule_intersectionobserver
         react_nativemodule_mutationobserver
+        react_nativemodule_viewtransition
         react_nativemodule_webperformance
         react_renderer_animated
 )

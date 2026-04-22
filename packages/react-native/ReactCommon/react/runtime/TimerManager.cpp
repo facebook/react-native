@@ -132,7 +132,9 @@ TimerHandle TimerManager::createRecurringTimer(
   return timerID;
 }
 
-void TimerManager::deleteTimer(jsi::Runtime& runtime, TimerHandle timerHandle) {
+void TimerManager::deleteTimer(
+    jsi::Runtime& /* runtime */,
+    TimerHandle timerHandle) {
   if (timerHandle < 0) {
     /**
      * Do nothing for negative values to match web spec.
@@ -150,7 +152,7 @@ void TimerManager::deleteTimer(jsi::Runtime& runtime, TimerHandle timerHandle) {
 }
 
 void TimerManager::deleteRecurringTimer(
-    jsi::Runtime& runtime,
+    jsi::Runtime& /* runtime */,
     TimerHandle timerHandle) {
   if (timerHandle < 0) {
     /**

@@ -124,6 +124,8 @@ SharedDebugStringConvertibleList DebugStringConvertible::getDebugProps() const {
   return {};
 }
 
+#endif
+
 /*
  * `toString`-family implementation.
  */
@@ -151,6 +153,16 @@ std::string toString(const double& value) {
   }
   return result;
 }
+
+std::string toString(const double doubleValue, char suffix) {
+  auto result = toString(doubleValue);
+  if (suffix != '\0') {
+    result += suffix;
+  }
+  return result;
+}
+
+#if RN_DEBUG_STRING_CONVERTIBLE
 
 std::string toString(const void* value) {
   if (value == nullptr) {

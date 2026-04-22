@@ -41,7 +41,7 @@ describe('ShadowTreeBranching', () => {
       'Insert {type: "View", parentNativeID: (root), index: 0, nativeID: "view"}',
     ]);
 
-    let updatesBeforeEndOfTask: $ReadOnlyArray<string> = [];
+    let updatesBeforeEndOfTask: ReadonlyArray<string> = [];
 
     Fantom.runTask(() => {
       root.render(
@@ -68,7 +68,7 @@ describe('ShadowTreeBranching', () => {
   it('should not skip intermediate React commits', () => {
     const root = Fantom.createRoot();
 
-    let updatesBeforeEndOfTask: $ReadOnlyArray<string> = [];
+    let updatesBeforeEndOfTask: ReadonlyArray<string> = [];
 
     // When rendered with `shouldTriggerIntermediate=false`, it renders two views
     // both with blue background. When rendered with `shouldTriggerIntermediate=true`,

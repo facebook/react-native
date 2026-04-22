@@ -26,7 +26,7 @@ const MODULES_PROTOCOLS_MM_TEMPLATE_PATH = path.join(
 );
 
 function generateCustomURLHandlers(
-  libraries /*: $ReadOnlyArray<$FlowFixMe> */,
+  libraries /*: ReadonlyArray<$FlowFixMe> */,
   outputDir /*: string */,
 ) {
   const iosAnnotations = parseiOSAnnotations(libraries);

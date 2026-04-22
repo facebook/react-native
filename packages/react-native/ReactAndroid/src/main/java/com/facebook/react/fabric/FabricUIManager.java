@@ -101,6 +101,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Queue;
 import java.util.Set;
+import java.util.concurrent.ConcurrentLinkedQueue;
 import java.util.concurrent.CopyOnWriteArrayList;
 
 /**
@@ -193,12 +194,21 @@ public class FabricUIManager
   private final Set<SynchronousEvent> mSynchronousEvents = new HashSet<>();
 
   /**
+   * Queue of surface IDs that need their React revision merged. Drained during doFrame so that
+   * synchronous events dispatched by the merge are processed in the same frame.
+   */
+  private final ConcurrentLinkedQueue<Integer> mPendingReactRevisionMerges =
+      new ConcurrentLinkedQueue<>();
+
+  /**
    * This is used to keep track of whether or not the FabricUIManager has been destroyed. Once the
    * Catalyst instance is being destroyed, we should cease all operation here.
    */
   private volatile boolean mDestroyed = false;
 
   private boolean mDriveCxxAnimations = false;
+
+  private @Nullable ViewTransitionSnapshotManager mViewTransitionSnapshotManager;
 
   private long mDispatchViewUpdatesTime = 0l;
   private long mCommitStartTime = 0l;
@@ -803,6 +813,40 @@ public class FabricUIManager
         ReactMarkerConstants.FABRIC_UPDATE_UI_MAIN_THREAD_END, null, commitNumber);
   }
 
+  /** Called from C++ via JNI. */
+  @SuppressLint("NotInvokedPrivateMethod")
+  @SuppressWarnings("unused")
+  @AnyThread
+  @ThreadConfined(ANY)
+  private void captureViewSnapshot(final int reactTag, final int surfaceId) {
+    getViewTransitionSnapshotManager().captureViewSnapshot(reactTag, surfaceId);
+  }
+
+  /** Called from C++ via JNI. */
+  @SuppressLint("NotInvokedPrivateMethod")
+  @SuppressWarnings("unused")
+  @AnyThread
+  @ThreadConfined(ANY)
+  private void setViewSnapshot(final int sourceTag, final int targetTag, final int surfaceId) {
+    getViewTransitionSnapshotManager().setViewSnapshot(sourceTag, targetTag);
+  }
+
+  /** Called from C++ via JNI. */
+  @SuppressLint("NotInvokedPrivateMethod")
+  @SuppressWarnings("unused")
+  @AnyThread
+  @ThreadConfined(ANY)
+  private void clearPendingSnapshots() {
+    getViewTransitionSnapshotManager().clearPendingSnapshots();
+  }
+
+  private synchronized ViewTransitionSnapshotManager getViewTransitionSnapshotManager() {
+    if (mViewTransitionSnapshotManager == null) {
+      mViewTransitionSnapshotManager = new ViewTransitionSnapshotManager(this, mMountingManager);
+    }
+    return mViewTransitionSnapshotManager;
+  }
+
   @SuppressLint("NotInvokedPrivateMethod")
   @SuppressWarnings("unused")
   @AnyThread
@@ -956,13 +1000,7 @@ public class FabricUIManager
         mBinding.mergeReactRevision(surfaceId);
       }
     } else {
-      UiThreadUtil.runOnUiThread(
-          () -> {
-            FabricUIManagerBinding binding = mBinding;
-            if (binding != null) {
-              binding.mergeReactRevision(surfaceId);
-            }
-          });
+      mPendingReactRevisionMerges.add(surfaceId);
     }
   }
 
@@ -1556,6 +1594,18 @@ public class FabricUIManager
       if (mDestroyed) {
         FLog.w(TAG, "Not flushing pending UI operations: FabricUIManager is destroyed");
         return;
+      }
+
+      // Drain pending React revision merges first so that animations,
+      // preallocation, and mount items operate against the latest revision.
+      if (ReactNativeFeatureFlags.enableFabricCommitBranching()) {
+        FabricUIManagerBinding binding = mBinding;
+        if (binding != null) {
+          Integer mergeSurfaceId;
+          while ((mergeSurfaceId = mPendingReactRevisionMerges.poll()) != null) {
+            binding.mergeReactRevision(mergeSurfaceId);
+          }
+        }
       }
 
       // Drive any animations from C++.

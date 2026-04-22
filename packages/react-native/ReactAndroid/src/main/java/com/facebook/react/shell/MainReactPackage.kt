@@ -63,6 +63,7 @@ import com.facebook.react.views.text.SelectableTextViewManager
 import com.facebook.react.views.textinput.ReactTextInputManager
 import com.facebook.react.views.unimplementedview.ReactUnimplementedViewManager
 import com.facebook.react.views.view.ReactViewManager
+import com.facebook.react.views.virtual.view.ReactVirtualViewManager
 
 /**
  * Package defining basic modules and view managers.
@@ -155,6 +156,7 @@ constructor(private val config: MainPackageConfig? = null) :
           else ReactTextViewManager(),
           SelectableTextViewManager(),
           ReactViewManager(),
+          ReactVirtualViewManager(),
           ReactUnimplementedViewManager(),
       )
 
@@ -199,6 +201,8 @@ constructor(private val config: MainPackageConfig? = null) :
           SelectableTextViewManager.REACT_CLASS to
               ModuleSpec.viewManagerSpec { SelectableTextViewManager() },
           ReactViewManager.REACT_CLASS to ModuleSpec.viewManagerSpec { ReactViewManager() },
+          ReactVirtualViewManager.REACT_CLASS to
+              ModuleSpec.viewManagerSpec { ReactVirtualViewManager() },
           ReactUnimplementedViewManager.REACT_CLASS to
               ModuleSpec.viewManagerSpec { ReactUnimplementedViewManager() },
       )

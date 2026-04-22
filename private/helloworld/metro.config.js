@@ -46,4 +46,4 @@ const config = {
 module.exports = mergeConfig(
   getDefaultConfig(__dirname),
   config,
-) /*:: as $ReadOnly<InputConfigT> */;
+) /*:: as Readonly<InputConfigT> */;

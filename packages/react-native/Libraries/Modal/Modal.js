@@ -288,12 +288,16 @@ class Modal extends React.Component<ModalProps, ModalState> {
       return null;
     }
 
-    const containerStyles = {
-      backgroundColor:
-        this.props.transparent === true
-          ? 'transparent'
-          : (this.props.backdropColor ?? 'white'),
-    };
+    // Only override backgroundColor when transparent or backdropColor are
+    // explicitly set, so that these Modal-specific props take precedence
+    // over the generic style prop. The default backgroundColor ('white')
+    // is defined in styles.container below.
+    const containerStyles: {backgroundColor?: ColorValue} = {};
+    if (this.props.transparent === true) {
+      containerStyles.backgroundColor = 'transparent';
+    } else if (this.props.backdropColor != null) {
+      containerStyles.backgroundColor = this.props.backdropColor;
+    }
 
     let animationType = this.props.animationType || 'none';
 
@@ -349,7 +353,7 @@ class Modal extends React.Component<ModalProps, ModalState> {
           <ScrollView.Context.Provider value={null}>
             <View
               // $FlowFixMe[incompatible-type]
-              style={[styles.container, containerStyles]}
+              style={[styles.container, this.props.style, containerStyles]}
               collapsable={false}>
               {innerChildren}
             </View>
@@ -380,6 +384,7 @@ const styles = StyleSheet.create({
     [side]: 0,
     top: 0,
     flex: 1,
+    backgroundColor: 'white',
   },
 });
 

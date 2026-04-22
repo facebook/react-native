@@ -15,7 +15,10 @@ import type {InstanceHandle} from './internals/NodeInternals';
 import type ReactNativeDocument from './ReactNativeDocument';
 import type ReadOnlyElement from './ReadOnlyElement';
 
+import * as ReactNativeFeatureFlags from '../../../featureflags/ReactNativeFeatureFlags';
 import {setPlatformObject} from '../../webidl/PlatformObjects';
+import EventTarget from '../events/EventTarget';
+import {EVENT_TARGET_GET_THE_PARENT_KEY} from '../events/internals/EventTargetInternals';
 import {createNodeList} from '../oldstylecollections/NodeList';
 import {
   getNativeNodeReference,
@@ -26,16 +29,45 @@ import {
 } from './internals/NodeInternals';
 import NativeDOM from './specs/NativeDOM';
 
-export default class ReadOnlyNode {
+// $FlowFixMe[unsupported-variance-annotation]
+// $FlowFixMe[incompatible-type]
+const ReadOnlyNodeBase: typeof Object =
+  ReactNativeFeatureFlags.enableNativeEventTargetEventDispatching()
+    ? EventTarget
+    : // $FlowFixMe[incompatible-type]
+      Object;
+
+// Ideally, this class would be exported as-is, but calling super() in a
+// subclass is a very slow operation the way that Babel transforms it at
+// the moment.
+//
+// This is a very hot code path (ReadOnlyNode is a base class for all
+// ReactNativeElement instances, which are instantiated once per rendered
+// host component in the tree) and we can't regress performance here.
+//
+// The optimization we're doing is using an old-style function constructor,
+// where we're not required to use `super()`, and we make that constructor
+// extend this class so it inherits all the methods and it sets the class
+// hierarchy correctly.
+
+class ReadOnlyNode extends ReadOnlyNodeBase {
   constructor(
     instanceHandle: InstanceHandle,
     // This will be null for the document node itself.
     ownerDocument: ReactNativeDocument | null,
   ) {
+    super();
     // This constructor is inlined in `ReactNativeElement` so if you modify
     // this make sure that their implementation stays in sync.
     setOwnerDocument(this, ownerDocument);
     setInstanceHandle(this, instanceHandle);
+  }
+
+  // Implement the "get the parent" algorithm for EventTarget.
+  // This enables event propagation (capture/bubble) through the node tree.
+  // $FlowExpectedError[unsupported-syntax]
+  [EVENT_TARGET_GET_THE_PARENT_KEY](): EventTarget | null {
+    return this.parentNode;
   }
 
   get childNodes(): NodeList<ReadOnlyNode> {
@@ -293,6 +325,43 @@ export default class ReadOnlyNode {
 }
 
 setPlatformObject(ReadOnlyNode);
+
+type ReadOnlyNodeT = ReadOnlyNode;
+
+function replaceConstructorWithoutSuper(
+  ReadOnlyNodeClass: Class<ReadOnlyNodeT>,
+): Class<ReadOnlyNodeT> {
+  // Alternative constructor just implemented to provide a better performance than
+  // calling super() in the original class.
+  // eslint-disable-next-line no-shadow
+  function ReadOnlyNode(
+    this: ReadOnlyNodeT,
+    instanceHandle: InstanceHandle,
+    ownerDocument: ReactNativeDocument | null,
+  ) {
+    setOwnerDocument(this, ownerDocument);
+    setInstanceHandle(this, instanceHandle);
+  }
+
+  ReadOnlyNode.prototype = ReadOnlyNodeClass.prototype;
+
+  // Copy static properties (ELEMENT_NODE, DOCUMENT_NODE, TEXT_NODE,
+  // DOCUMENT_POSITION_*, etc.) so that external callers that import this
+  // constructor can still access them.
+  // $FlowFixMe[unsafe-object-assign]
+  // $FlowFixMe[not-an-object]
+  Object.assign(ReadOnlyNode, ReadOnlyNodeClass);
+
+  // $FlowExpectedError[incompatible-type]
+  return ReadOnlyNode;
+}
+
+export default replaceConstructorWithoutSuper(
+  ReadOnlyNode,
+) as typeof ReadOnlyNode;
+
+// Temporary type until we ship ReadOnlyNode extending EventTarget ungated.
+export type ReadOnlyNodeWithEventTarget = ReadOnlyNode & EventTarget;
 
 export function getChildNodes(
   node: ReadOnlyNode,

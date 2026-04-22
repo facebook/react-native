@@ -623,7 +623,8 @@ folly::dynamic HostPlatformViewProps::getDiffProps(
   }
 
   if (zIndex != oldProps->zIndex) {
-    result["zIndex"] = zIndex.value();
+    result["zIndex"] =
+        zIndex.has_value() ? zIndex.value() : folly::dynamic(nullptr);
   }
 
   if (boxShadow != oldProps->boxShadow) {

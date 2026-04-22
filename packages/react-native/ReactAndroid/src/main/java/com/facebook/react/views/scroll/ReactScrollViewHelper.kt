@@ -30,7 +30,6 @@ import com.facebook.react.uimanager.ReactClippingViewGroup
 import com.facebook.react.uimanager.StateWrapper
 import com.facebook.react.uimanager.UIManagerHelper
 import com.facebook.react.uimanager.common.UIManagerType
-import com.facebook.react.uimanager.common.ViewUtil
 import java.lang.ref.WeakReference
 import java.util.concurrent.CopyOnWriteArrayList
 import kotlin.math.abs
@@ -44,6 +43,7 @@ public object ReactScrollViewHelper {
   private const val CONTENT_OFFSET_LEFT = "contentOffsetLeft"
   private const val CONTENT_OFFSET_TOP = "contentOffsetTop"
   private const val SCROLL_AWAY_PADDING_TOP = "scrollAwayPaddingTop"
+  private const val SCROLL_AWAY_PADDING_BOTTOM = "scrollAwayPaddingBottom"
 
   public const val MOMENTUM_DELAY: Long = 20
   public const val OVER_SCROLL_ALWAYS: String = "always"
@@ -346,9 +346,6 @@ public object ReactScrollViewHelper {
           scrollY,
       )
     }
-    if (ViewUtil.getUIManagerType(scrollView.id) == UIManagerType.LEGACY) {
-      return
-    }
     // NOTE: if the state wrapper is null, we shouldn't even update
     // the scroll state because there is a chance of going out of sync!
     if (scrollView.stateWrapper == null) {
@@ -372,6 +369,7 @@ public object ReactScrollViewHelper {
       where T : HasScrollState?, T : HasStateWrapper?, T : ViewGroup {
     val scrollState = scrollView.reactScrollViewScrollState
     val scrollAwayPaddingTop = scrollState.scrollAwayPaddingTop
+    val scrollAwayPaddingBottom = scrollState.scrollAwayPaddingBottom
     val scrollPos = scrollState.lastStateUpdateScroll
     val scrollX = scrollPos.x
     val scrollY = scrollPos.y
@@ -393,6 +391,10 @@ public object ReactScrollViewHelper {
           SCROLL_AWAY_PADDING_TOP,
           toDIPFromPixel(scrollAwayPaddingTop.toFloat()).toDouble(),
       )
+      newStateData.putDouble(
+          SCROLL_AWAY_PADDING_BOTTOM,
+          toDIPFromPixel(scrollAwayPaddingBottom.toFloat()).toDouble(),
+      )
       stateWrapper.updateState(newStateData)
     }
   }
@@ -413,9 +415,14 @@ public object ReactScrollViewHelper {
     val scrollX = toPixelFromDIP(stateData.getDouble(CONTENT_OFFSET_LEFT)).toInt()
     val scrollY = toPixelFromDIP(stateData.getDouble(CONTENT_OFFSET_TOP)).toInt()
     val scrollAwayPaddingTop = toPixelFromDIP(stateData.getDouble(SCROLL_AWAY_PADDING_TOP)).toInt()
+    val scrollAwayPaddingBottom =
+        toPixelFromDIP(stateData.getDouble(SCROLL_AWAY_PADDING_BOTTOM)).toInt()
 
     val scrollState =
-        scrollView.reactScrollViewScrollState.copy(scrollAwayPaddingTop = scrollAwayPaddingTop)
+        scrollView.reactScrollViewScrollState.copy(
+            scrollAwayPaddingTop = scrollAwayPaddingTop,
+            scrollAwayPaddingBottom = scrollAwayPaddingBottom,
+        )
     scrollState.setLastStateUpdateScroll(scrollX, scrollY)
     scrollView.reactScrollViewScrollState = scrollState
   }
@@ -622,6 +629,8 @@ public object ReactScrollViewHelper {
       val finalAnimatedPositionScroll: Point = Point(),
       /** Get the padding on the top for nav bar */
       var scrollAwayPaddingTop: Int = 0,
+      /** Get the padding on the bottom for tab bar */
+      var scrollAwayPaddingBottom: Int = 0,
       /** Get the Fabric state of last scroll position */
       val lastStateUpdateScroll: Point = Point(-1, -1),
       /** Get true if the previous animation was canceled */

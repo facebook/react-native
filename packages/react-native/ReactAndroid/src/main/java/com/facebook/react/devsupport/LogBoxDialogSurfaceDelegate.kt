@@ -66,7 +66,11 @@ internal class LogBoxDialogSurfaceDelegate(private val devSupportManager: DevSup
 
     dialog = LogBoxDialog(context, reactRootView)
     dialog?.let { dialog ->
-      dialog.setCancelable(false)
+      dialog.setCancelable(true)
+      dialog.setCanceledOnTouchOutside(false)
+      dialog.setOnCancelListener {
+        devSupportManager.currentReactContext?.emitDeviceEvent("hardwareBackPress")
+      }
       dialog.show()
     }
   }

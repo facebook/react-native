@@ -15,7 +15,7 @@ import type HTMLCollection from '../oldstylecollections/HTMLCollection';
 import DOMRect from '../../geometry/DOMRect';
 import {createHTMLCollection} from '../oldstylecollections/HTMLCollection';
 import {
-  getInstanceHandle,
+  getCurrentProps,
   getNativeElementReference,
 } from './internals/NodeInternals';
 import {getElementSibling} from './internals/Traversal';
@@ -86,11 +86,9 @@ export default class ReadOnlyElement extends ReadOnlyNode {
   }
 
   get id(): string {
-    const instanceHandle = getInstanceHandle(this);
-    // TODO: migrate off this private React API
-    // $FlowExpectedError[incompatible-use]
-    const props = instanceHandle?.stateNode?.canonical?.currentProps;
-    return props?.id ?? props?.nativeID ?? '';
+    const props = getCurrentProps(this);
+    const id = props.id ?? props.nativeID;
+    return typeof id === 'string' ? id : '';
   }
 
   get lastElementChild(): ReadOnlyElement | null {

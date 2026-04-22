@@ -93,10 +93,17 @@ AnimatedPropsRegistry::getMap(SurfaceId surfaceId) {
 
 void AnimatedPropsRegistry::clear(SurfaceId surfaceId) {
   auto lock = std::lock_guard(mutex_);
+  if (auto it = surfaceContexts_.find(surfaceId);
+      it != surfaceContexts_.end()) {
+    auto& surfaceContext = it->second;
+    surfaceContext.families.clear();
+    surfaceContext.map.clear();
+  }
+}
 
-  auto& surfaceContext = surfaceContexts_[surfaceId];
-  surfaceContext.families.clear();
-  surfaceContext.map.clear();
+void AnimatedPropsRegistry::clearOnSurfaceStop(SurfaceId surfaceId) {
+  auto lock = std::lock_guard(mutex_);
+  surfaceContexts_.erase(surfaceId);
 }
 
 } // namespace facebook::react

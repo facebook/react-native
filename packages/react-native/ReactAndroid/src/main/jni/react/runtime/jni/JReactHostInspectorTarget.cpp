@@ -145,6 +145,30 @@ void JReactHostInspectorTarget::loadNetworkResource(
   }
 }
 
+std::optional<std::string> JReactHostInspectorTarget::captureScreenshot(
+    const jsinspector_modern::HostTargetDelegate::PageCaptureScreenshotRequest&
+        request) {
+  if (auto javaReactHostImplStrong = javaReactHostImpl_->get()) {
+    std::string format = request.format.value_or("png");
+    int quality = request.quality.value_or(-1);
+    auto result = javaReactHostImplStrong->captureScreenshot(format, quality);
+    if (result) {
+      return result->toStdString();
+    }
+  }
+  return std::nullopt;
+}
+
+bool JReactHostInspectorTarget::onSetEmulatedMedia(
+    const jsinspector_modern::HostTargetDelegate::SetEmulatedMediaRequest&
+        request) {
+  if (auto javaReactHostImplStrong = javaReactHostImpl_->get()) {
+    javaReactHostImplStrong->setEmulatedMedia(request.colorScheme);
+    return true;
+  }
+  return false;
+}
+
 HostTarget* JReactHostInspectorTarget::getInspectorTarget() {
   return inspectorTarget_ ? inspectorTarget_.get() : nullptr;
 }

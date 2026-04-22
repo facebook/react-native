@@ -13,13 +13,13 @@
 #import <objc/runtime.h>
 #import <stdatomic.h>
 
+#import <React/RCTDefines.h>
 #import <UIKit/UIKit.h>
 
 #import "RCTAssert.h"
 #import "RCTBridge+Private.h"
 #import "RCTBridge.h"
 #import "RCTComponentData.h"
-#import "RCTDefines.h"
 #import "RCTLog.h"
 #import "RCTModuleData.h"
 #import "RCTReloadCommand.h"

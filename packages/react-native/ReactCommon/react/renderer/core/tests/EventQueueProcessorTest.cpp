@@ -48,8 +48,8 @@ class EventQueueProcessorTest : public testing::Test {
       eventPriorities_.push_back(priority);
     };
 
-    auto dummyEventPipeConclusion = [](jsi::Runtime& runtime) {};
-    auto dummyStatePipe = [](const StateUpdate& stateUpdate) {};
+    auto dummyEventPipeConclusion = [](jsi::Runtime&) {};
+    auto dummyStatePipe = [](const StateUpdate&) {};
     auto mockEventLogger = std::make_shared<MockEventLogger>();
 
     eventProcessor_ = std::make_unique<EventQueueProcessor>(

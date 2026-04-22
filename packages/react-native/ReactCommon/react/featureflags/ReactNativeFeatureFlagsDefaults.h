@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<aabacee6a60e5939fdc52f692c3ae49c>>
+ * @generated SignedSource<<f6932d0a9c4afcb1b00eb1feba80c823>>
  */
 
 /**
@@ -73,14 +73,6 @@ class ReactNativeFeatureFlagsDefaults : public ReactNativeFeatureFlagsProvider {
 
   bool enableAccumulatedUpdatesInRawPropsAndroid() override {
     return false;
-  }
-
-  bool enableAndroidAntialiasedBorderRadiusClipping() override {
-    return false;
-  }
-
-  bool enableAndroidLinearText() override {
-    return true;
   }
 
   bool enableAndroidTextMeasurementOptimizations() override {
@@ -255,15 +247,15 @@ class ReactNativeFeatureFlagsDefaults : public ReactNativeFeatureFlagsProvider {
     return false;
   }
 
+  bool fixDifferentiatorParentTagForUnflattenCase() override {
+    return false;
+  }
+
   bool fixFindShadowNodeByTagRaceCondition() override {
     return false;
   }
 
   bool fixMappingOfEventPrioritiesBetweenFabricAndReact() override {
-    return false;
-  }
-
-  bool fixTextClippingAndroid15useBoundsForWidth() override {
     return false;
   }
 
@@ -287,6 +279,10 @@ class ReactNativeFeatureFlagsDefaults : public ReactNativeFeatureFlagsProvider {
     return true;
   }
 
+  bool fuseboxScreenshotCaptureEnabled() override {
+    return false;
+  }
+
   bool hideOffscreenVirtualViewsOnIOS() override {
     return false;
   }
@@ -308,6 +304,14 @@ class ReactNativeFeatureFlagsDefaults : public ReactNativeFeatureFlagsProvider {
   }
 
   bool preventShadowTreeCommitExhaustion() override {
+    return false;
+  }
+
+  bool redBoxV2Android() override {
+    return false;
+  }
+
+  bool redBoxV2IOS() override {
     return false;
   }
 

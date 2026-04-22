@@ -476,4 +476,21 @@ export {
 } from './src/private/components/virtualview/VirtualView';
 export type {ModeChangeEvent} from './src/private/components/virtualview/VirtualView';
 
+export {VirtualArray as unstable_VirtualArray} from './src/private/components/virtualcollection/Virtual';
+export type {
+  Item as unstable_VirtualItem,
+  VirtualCollection as unstable_VirtualCollection,
+} from './src/private/components/virtualcollection/Virtual';
+export {createVirtualCollectionView as unstable_createVirtualCollectionView} from './src/private/components/virtualcollection/VirtualCollectionView';
+export type {
+  VirtualCollectionGenerator as unstable_VirtualCollectionGenerator,
+  VirtualCollectionLayoutComponent as unstable_VirtualCollectionLayoutComponent,
+  VirtualCollectionViewComponent as unstable_VirtualCollectionViewComponent,
+} from './src/private/components/virtualcollection/VirtualCollectionView';
+export {default as unstable_VirtualColumn} from './src/private/components/virtualcollection/column/VirtualColumn';
+export {default as unstable_VirtualColumnGenerator} from './src/private/components/virtualcollection/column/VirtualColumnGenerator';
+export {default as unstable_VirtualRow} from './src/private/components/virtualcollection/row/VirtualRow';
+export {default as unstable_getScrollParent} from './src/private/components/virtualcollection/dom/getScrollParent';
+export {DEFAULT_INITIAL_NUM_TO_RENDER as unstable_DEFAULT_INITIAL_NUM_TO_RENDER} from './src/private/components/virtualcollection/FlingConstants';
+
 // #endregion

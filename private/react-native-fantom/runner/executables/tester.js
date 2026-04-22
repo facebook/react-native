@@ -125,14 +125,6 @@ export function run(
   options: TesterOptions,
   env: EnvironmentOverrides,
 ): AsyncCommandResult {
-  if (isCI && debugCpp) {
-    throw new Error('Cannot run Fantom with C++ debugging on CI');
-  }
-
-  if (isCI && profileCpp) {
-    throw new Error('Cannot run Fantom with C++ profiling on CI');
-  }
-
   if (!isCI && !debugCpp) {
     build(options, env);
   }

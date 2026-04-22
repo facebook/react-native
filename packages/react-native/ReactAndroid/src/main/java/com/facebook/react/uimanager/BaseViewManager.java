@@ -33,8 +33,6 @@ import com.facebook.react.common.ReactConstants;
 import com.facebook.react.uimanager.ReactAccessibilityDelegate.AccessibilityRole;
 import com.facebook.react.uimanager.ReactAccessibilityDelegate.Role;
 import com.facebook.react.uimanager.annotations.ReactProp;
-import com.facebook.react.uimanager.common.UIManagerType;
-import com.facebook.react.uimanager.common.ViewUtil;
 import com.facebook.react.uimanager.events.BlurEvent;
 import com.facebook.react.uimanager.events.EventDispatcher;
 import com.facebook.react.uimanager.events.FocusEvent;
@@ -235,20 +233,16 @@ public abstract class BaseViewManager<T extends View, C extends LayoutShadowNode
 
   @ReactProp(name = ViewProps.FILTER, customType = "Filter")
   public void setFilter(@NonNull T view, @Nullable ReadableArray filter) {
-    if (ViewUtil.getUIManagerType(view) == UIManagerType.FABRIC) {
-      view.setTag(R.id.filter, filter);
-    }
+    view.setTag(R.id.filter, filter);
   }
 
   @ReactProp(name = ViewProps.MIX_BLEND_MODE)
   public void setMixBlendMode(@NonNull T view, @Nullable String mixBlendMode) {
-    if (ViewUtil.getUIManagerType(view) == UIManagerType.FABRIC) {
-      view.setTag(R.id.mix_blend_mode, BlendModeHelper.parseMixBlendMode(mixBlendMode));
-      // We need to trigger drawChild for the parent ViewGroup which will set the
-      // mixBlendMode compositing on the child
-      if (view.getParent() instanceof View) {
-        ((View) view.getParent()).invalidate();
-      }
+    view.setTag(R.id.mix_blend_mode, BlendModeHelper.parseMixBlendMode(mixBlendMode));
+    // We need to trigger drawChild for the parent ViewGroup which will set the
+    // mixBlendMode compositing on the child
+    if (view.getParent() instanceof View) {
+      ((View) view.getParent()).invalidate();
     }
   }
 
@@ -592,16 +586,13 @@ public abstract class BaseViewManager<T extends View, C extends LayoutShadowNode
       return;
     }
 
-    boolean allowPercentageResolution = ViewUtil.getUIManagerType(view) == UIManagerType.FABRIC;
-
     sMatrixDecompositionContext.reset();
     TransformHelper.processTransform(
         transforms,
         sTransformDecompositionArray,
         PixelUtil.toDIPFromPixel(view.getWidth()),
         PixelUtil.toDIPFromPixel(view.getHeight()),
-        transformOrigin,
-        allowPercentageResolution);
+        transformOrigin);
     MatrixMathHelper.decomposeMatrix(sTransformDecompositionArray, sMatrixDecompositionContext);
     view.setTranslationX(
         PixelUtil.toPixelFromDIP(

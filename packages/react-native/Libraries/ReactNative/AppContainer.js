@@ -15,7 +15,6 @@ import * as React from 'react';
 
 export type Props = Readonly<{
   children?: React.Node,
-  fabric?: boolean,
   rootTag: number | RootTag,
   initialProps?: {...},
   WrapperComponent?: ?React.ComponentType<any>,

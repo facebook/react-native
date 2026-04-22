@@ -92,21 +92,16 @@ export interface Spec {
     /* width: */ number,
     /* height: */ number,
   ];
+  +setIsJSResponder: (
+    node: Node | NativeElementReference,
+    isJSResponder: boolean,
+    blockNativeResponder: boolean,
+  ) => void;
   +unstable_DefaultEventPriority: number;
   +unstable_DiscreteEventPriority: number;
   +unstable_ContinuousEventPriority: number;
   +unstable_IdleEventPriority: number;
   +unstable_getCurrentEventPriority: () => number;
-  +unstable_getViewTransitionInstance: (
-    name: string,
-    pseudo: string,
-  ) => ?{
-    x: number,
-    y: number,
-    width: number,
-    height: number,
-    nativeTag: number,
-  };
 }
 
 let nativeFabricUIManagerProxy: ?Spec;
@@ -134,12 +129,12 @@ const CACHED_PROPERTIES = [
   'dispatchCommand',
   'compareDocumentPosition',
   'getBoundingClientRect',
+  'setIsJSResponder',
   'unstable_DefaultEventPriority',
   'unstable_DiscreteEventPriority',
   'unstable_ContinuousEventPriority',
   'unstable_IdleEventPriority',
   'unstable_getCurrentEventPriority',
-  'unstable_getViewTransitionInstance',
 ];
 
 // This is exposed as a getter because apps using the legacy renderer AND

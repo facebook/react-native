@@ -687,6 +687,10 @@ tasks.withType<KotlinCompile>().configureEach {
   exclude("com/facebook/annotationprocessors/**")
   exclude("com/facebook/react/processing/**")
   exclude("com/facebook/react/module/processing/**")
+  // These are instrumentation tests that require a device/emulator and native test
+  // libraries not available in the OSS Gradle build (Buck-only).
+  exclude("com/facebook/react/fabric/FabricMountingManagerInstrumentationTest.kt")
+  exclude("com/facebook/react/fabric/FabricMountingManagerTestHelper.kt")
 }
 
 dependencies {

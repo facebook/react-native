@@ -51,6 +51,12 @@ class SchedulerDelegateImpl : public SchedulerDelegate {
 
   void schedulerDidUpdateShadowTree(const std::unordered_map<Tag, folly::dynamic> &tagToProps) override;
 
+  void schedulerDidCaptureViewSnapshot(Tag tag, SurfaceId surfaceId) override;
+
+  void schedulerDidSetViewSnapshot(Tag sourceTag, Tag targetTag, SurfaceId surfaceId) override;
+
+  void schedulerDidClearPendingSnapshots() override;
+
   std::shared_ptr<IMountingManager> mountingManager_;
   std::shared_ptr<UIManager> uiManager_;
 };

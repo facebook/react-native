@@ -199,7 +199,7 @@ function formatTypeAnnotation(annotation: CompleteTypeAnnotation): string {
       let validUnionType;
       try {
         validUnionType = parseValidUnionType(annotation);
-      } catch (_e: mixed) {
+      } catch (_e: unknown) {
         // parseValidUnionType throws for unsupported union types
         return 'Union<mixed>';
       }

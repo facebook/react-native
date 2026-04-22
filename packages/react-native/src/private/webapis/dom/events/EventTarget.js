@@ -15,6 +15,7 @@
 
 import type {EventPhase} from './Event';
 
+import * as ReactNativeFeatureFlags from '../../../featureflags/ReactNativeFeatureFlags';
 import {setPlatformObject} from '../../webidl/PlatformObjects';
 import Event from './Event';
 import {
@@ -30,6 +31,7 @@ import {
   setTarget,
 } from './internals/EventInternals';
 import {
+  EVENT_TARGET_GET_DECLARATIVE_LISTENER_KEY,
   EVENT_TARGET_GET_THE_PARENT_KEY,
   INTERNAL_DISPATCH_METHOD_KEY,
 } from './internals/EventTargetInternals';
@@ -210,6 +212,21 @@ export default class EventTarget {
   }
 
   /**
+   * This a "protected" method to be overridden by a subclass to provide
+   * an additional event listener extracted from props.
+   *
+   * Called during event dispatch before explicitly registered listeners.
+   * Return a callback to be invoked as an event listener, or null.
+   */
+  // $FlowExpectedError[unsupported-syntax]
+  [EVENT_TARGET_GET_DECLARATIVE_LISTENER_KEY](
+    eventType: string,
+    isCapture: boolean,
+  ): EventCallback | null {
+    return null;
+  }
+
+  /**
    * This a "protected" method to be overridden by a subclass to allow event
    * propagation.
    *
@@ -333,24 +350,53 @@ function invoke(
   event: Event,
   eventPhase: EventPhase,
 ) {
-  const listenersByType = getListenersForPhase(
-    eventTarget,
-    eventPhase === Event.CAPTURING_PHASE,
-  );
+  const isCapture = eventPhase === Event.CAPTURING_PHASE;
 
   setCurrentTarget(event, eventTarget);
 
-  const maybeListeners = listenersByType?.get(event.type);
-  if (maybeListeners == null) {
-    return;
+  // Build the list of listeners to invoke:
+  // When the flag is enabled, prop-based listeners fire first, then
+  // explicitly registered addEventListener listeners.
+  // When disabled, only addEventListener listeners are used (legacy path).
+  let listeners: Array<EventListenerRegistration>;
+
+  if (ReactNativeFeatureFlags.enableNativeEventTargetEventDispatching()) {
+    // $FlowExpectedError[prop-missing]
+    const propListener: EventCallback | null = eventTarget[
+      EVENT_TARGET_GET_DECLARATIVE_LISTENER_KEY
+    ](event.type, isCapture);
+
+    const listenersByType = getListenersForPhase(eventTarget, isCapture);
+    const maybeListeners = listenersByType?.get(event.type);
+
+    if (propListener == null && maybeListeners == null) {
+      return;
+    }
+
+    listeners = [];
+
+    if (propListener != null) {
+      listeners.push({
+        callback: propListener,
+        passive: false,
+        once: false,
+        removed: false,
+      });
+    }
+
+    if (maybeListeners != null) {
+      for (const registration of maybeListeners.values()) {
+        listeners.push(registration);
+      }
+    }
+  } else {
+    const listenersByType = getListenersForPhase(eventTarget, isCapture);
+    const maybeListeners = listenersByType?.get(event.type);
+    if (maybeListeners == null) {
+      return;
+    }
+    listeners = Array.from(maybeListeners.values());
   }
-
-  // This is a copy so listeners added during dispatch are NOT executed.
-  // Note that `maybeListeners.values()` is a live view of the map instead of an
-  // immutable copy.
-  const listeners = Array.from(maybeListeners.values());
-
-  setCurrentTarget(event, eventTarget);
 
   for (const listener of listeners) {
     if (listener.removed) {
@@ -358,11 +404,7 @@ function invoke(
     }
 
     if (listener.once) {
-      eventTarget.removeEventListener(
-        event.type,
-        listener.callback,
-        eventPhase === Event.CAPTURING_PHASE,
-      );
+      eventTarget.removeEventListener(event.type, listener.callback, isCapture);
     }
 
     if (listener.passive) {
