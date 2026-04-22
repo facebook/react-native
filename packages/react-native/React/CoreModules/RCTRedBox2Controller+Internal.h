@@ -8,16 +8,17 @@
 #import <React/RCTDefines.h>
 
 #import "RCTRedBox+Internal.h"
-#import "RCTRedBox.h"
 
 #if RCT_DEV_MENU
 
-@interface RCTRedBoxController : UIViewController <RCTRedBoxControlling, UITableViewDelegate, UITableViewDataSource>
+using RCTRedBox2ButtonPressHandler = void (^)(void);
+
+@interface RCTRedBox2Controller : UIViewController <RCTRedBoxControlling, UITableViewDelegate, UITableViewDataSource>
 
 @property (nonatomic, weak) id<RCTRedBoxControllerActionDelegate> actionDelegate;
 
 - (instancetype)initWithCustomButtonTitles:(NSArray<NSString *> *)customButtonTitles
-                      customButtonHandlers:(NSArray<RCTRedBoxButtonPressHandler> *)customButtonHandlers;
+                      customButtonHandlers:(NSArray<RCTRedBox2ButtonPressHandler> *)customButtonHandlers;
 
 - (void)showErrorMessage:(NSString *)message
                withStack:(NSArray<RCTJSStackFrame *> *)stack
@@ -25,7 +26,6 @@
              errorCookie:(int)errorCookie;
 
 - (void)dismiss;
-
 @end
 
 #endif
