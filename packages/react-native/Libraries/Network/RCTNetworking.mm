@@ -319,7 +319,7 @@ RCT_EXPORT_MODULE()
   request.HTTPMethod = [RCTConvert NSString:RCTNilIfNull(query[@"method"])].uppercaseString ?: @"GET";
   request.HTTPShouldHandleCookies = [RCTConvert BOOL:query[@"withCredentials"]];
 
-  if (request.HTTPShouldHandleCookies == YES) {
+  if (request.HTTPShouldHandleCookies) {
     // Load and set the cookie header.
     NSArray<NSHTTPCookie *> *cookies = [[NSHTTPCookieStorage sharedHTTPCookieStorage] cookiesForURL:URL];
     request.allHTTPHeaderFields = [NSHTTPCookie requestHeaderFieldsWithCookies:cookies];
