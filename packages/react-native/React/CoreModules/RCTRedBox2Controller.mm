@@ -47,6 +47,8 @@ struct SectionState {
   bool visible = false;
 };
 
+static const NSTimeInterval kAutoRetryInterval = 20.0;
+
 @implementation RCTRedBox2Controller {
   UITableView *_stackTraceTableView;
   UILabel *_headerTitleLabel;
@@ -58,6 +60,10 @@ struct SectionState {
   int _lastErrorCookie;
   RCTRedBox2ErrorData *_errorData;
   std::array<SectionState, kSectionCount> _sectionStates;
+  NSTimer *_autoRetryTimer;
+  NSInteger _autoRetryCountdown;
+  UIButton *_reloadButton;
+  NSString *_reloadBaseText;
 }
 
 - (instancetype)initWithCustomButtonTitles:(NSArray<NSString *> *)customButtonTitles
@@ -147,9 +153,8 @@ struct SectionState {
   UIButton *dismissButton = [self footerButton:dismissText
                        accessibilityIdentifier:@"redbox-dismiss"
                                       selector:@selector(dismiss)];
-  UIButton *reloadButton = [self footerButton:reloadText
-                      accessibilityIdentifier:@"redbox-reload"
-                                     selector:@selector(reload)];
+  _reloadBaseText = reloadText;
+  _reloadButton = [self footerButton:reloadText accessibilityIdentifier:@"redbox-reload" selector:@selector(reload)];
   UIButton *copyButton = [self footerButton:copyText
                     accessibilityIdentifier:@"redbox-copy"
                                    selector:@selector(copyStack)];
@@ -162,7 +167,7 @@ struct SectionState {
   buttonStackView.backgroundColor = RCTRedBox2BackgroundColor();
 
   [buttonStackView addArrangedSubview:dismissButton];
-  [buttonStackView addArrangedSubview:reloadButton];
+  [buttonStackView addArrangedSubview:_reloadButton];
   [buttonStackView addArrangedSubview:copyButton];
 
   for (NSUInteger i = 0; i < [_customButtonTitles count]; i++) {
@@ -281,16 +286,27 @@ struct SectionState {
     if (!isRootViewControllerPresented) {
       [RCTKeyWindow().rootViewController presentViewController:self animated:NO completion:nil];
     }
+
+    // Update all UI from _errorData (view is now guaranteed to be loaded)
+    _headerTitleLabel.text = _errorData.isCompileError ? @"Failed to compile" : @"Error";
+    [_stackTraceTableView reloadData];
+    [_stackTraceTableView scrollToRowAtIndexPath:[NSIndexPath indexPathForRow:0 inSection:0]
+                                atScrollPosition:UITableViewScrollPositionTop
+                                        animated:NO];
+
+    [self startAutoRetryIfApplicable];
   }
 }
 
 - (void)dismiss
 {
+  [self stopAutoRetry];
   [self dismissViewControllerAnimated:NO completion:nil];
 }
 
 - (void)reload
 {
+  [self stopAutoRetry];
   if (_actionDelegate != nil) {
     [_actionDelegate reloadFromRedBoxController:self];
   } else {
@@ -298,6 +314,49 @@ struct SectionState {
     RCTTriggerReloadCommandListeners(@"Redbox");
     [self dismiss];
   }
+}
+
+#pragma mark - Auto-Retry
+
+- (void)startAutoRetryIfApplicable
+{
+  [self stopAutoRetry];
+  if (!_errorData.isRetryable) {
+    return;
+  }
+  _autoRetryCountdown = (NSInteger)kAutoRetryInterval;
+  [self updateReloadButtonTitle];
+  _autoRetryTimer = [NSTimer scheduledTimerWithTimeInterval:1.0
+                                                     target:self
+                                                   selector:@selector(autoRetryTick)
+                                                   userInfo:nil
+                                                    repeats:YES];
+}
+
+- (void)stopAutoRetry
+{
+  [_autoRetryTimer invalidate];
+  _autoRetryTimer = nil;
+  if (_reloadButton) {
+    [_reloadButton setTitle:_reloadBaseText forState:UIControlStateNormal];
+  }
+}
+
+- (void)autoRetryTick
+{
+  _autoRetryCountdown--;
+  if (_autoRetryCountdown <= 0) {
+    [self stopAutoRetry];
+    [self reload];
+  } else {
+    [self updateReloadButtonTitle];
+  }
+}
+
+- (void)updateReloadButtonTitle
+{
+  NSString *title = [NSString stringWithFormat:@"%@ (%lds)", _reloadBaseText, (long)_autoRetryCountdown];
+  [_reloadButton setTitle:title forState:UIControlStateNormal];
 }
 
 - (void)copyStack
