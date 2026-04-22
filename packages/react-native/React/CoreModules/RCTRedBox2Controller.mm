@@ -99,7 +99,9 @@ static const NSTimeInterval kAutoRetryInterval = 20.0;
   _stackTraceTableView.delegate = self;
   _stackTraceTableView.dataSource = self;
   _stackTraceTableView.backgroundColor = [UIColor clearColor];
+#if !TARGET_OS_TV
   _stackTraceTableView.separatorStyle = UITableViewCellSeparatorStyleNone;
+#endif
   _stackTraceTableView.indicatorStyle = UIScrollViewIndicatorStyleWhite;
   _stackTraceTableView.bounces = NO;
   [self.view addSubview:_stackTraceTableView];
