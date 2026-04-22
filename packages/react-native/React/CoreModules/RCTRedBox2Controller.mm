@@ -16,6 +16,7 @@
 
 #import "RCTRedBox2AnsiParser+Internal.h"
 #import "RCTRedBox2ErrorParser+Internal.h"
+#import "RCTRedBoxHMRClient+Internal.h"
 
 // @lint-ignore-every CLANGTIDY clang-diagnostic-switch-default
 // NOTE: clang-diagnostic-switch-default conflicts with clang-diagnostic-switch-enum
@@ -64,6 +65,7 @@ static const NSTimeInterval kAutoRetryInterval = 20.0;
   NSInteger _autoRetryCountdown;
   UIButton *_reloadButton;
   NSString *_reloadBaseText;
+  RCTRedBoxHMRClient *_hmrClient;
 }
 
 - (instancetype)initWithCustomButtonTitles:(NSArray<NSString *> *)customButtonTitles
@@ -295,6 +297,7 @@ static const NSTimeInterval kAutoRetryInterval = 20.0;
                                         animated:NO];
 
     [self startAutoRetryIfApplicable];
+    [self _startHMRClient];
   }
 }
 
@@ -306,6 +309,7 @@ static const NSTimeInterval kAutoRetryInterval = 20.0;
 
 - (void)reload
 {
+  [self _stopHMRClient];
   [self stopAutoRetry];
   if (_actionDelegate != nil) {
     [_actionDelegate reloadFromRedBoxController:self];
@@ -314,6 +318,28 @@ static const NSTimeInterval kAutoRetryInterval = 20.0;
     RCTTriggerReloadCommandListeners(@"Redbox");
     [self dismiss];
   }
+}
+
+#pragma mark - Native HMR Connection
+
+- (void)_startHMRClient
+{
+  [self _stopHMRClient];
+  if (!_bundleURL) {
+    return;
+  }
+  __weak __typeof(self) weakSelf = self;
+  _hmrClient = [[RCTRedBoxHMRClient alloc] initWithBundleURL:_bundleURL
+                                                onFileChange:^{
+                                                  [weakSelf reload];
+                                                }];
+  [_hmrClient start];
+}
+
+- (void)_stopHMRClient
+{
+  [_hmrClient stop];
+  _hmrClient = nil;
 }
 
 #pragma mark - Auto-Retry

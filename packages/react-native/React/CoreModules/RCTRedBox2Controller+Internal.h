@@ -13,7 +13,7 @@
 
 using RCTRedBox2ButtonPressHandler = void (^)(void);
 
-@interface RCTRedBox2Controller : UIViewController <RCTRedBoxControlling, UITableViewDelegate, UITableViewDataSource>
+@interface RCTRedBox2Controller : UIViewController <RCTRedBox2Controlling, UITableViewDelegate, UITableViewDataSource>
 
 @property (nonatomic, weak) id<RCTRedBoxControllerActionDelegate> actionDelegate;
 
@@ -24,6 +24,9 @@ using RCTRedBox2ButtonPressHandler = void (^)(void);
                withStack:(NSArray<RCTJSStackFrame *> *)stack
                 isUpdate:(BOOL)isUpdate
              errorCookie:(int)errorCookie;
+
+/// The bundle URL used by the app, for the native HMR connection.
+@property (nonatomic, strong, nullable) NSURL *bundleURL;
 
 - (void)dismiss;
 @end
