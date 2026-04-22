@@ -16,10 +16,10 @@ function main() {
  const hermesCompilerVersion = packageJson.dependencies['hermes-compiler'];
 
  if (hermesCompilerVersion === '0.0.0') {
-   console.log(`Hermes compiler version not set. Updating to the latest nightly release.`);
-   execSync('yarn workspace react-native add hermes-compiler@nightly --exact', { stdio: 'inherit' });
+   console.log(`Hermes compiler version not set. Updating to the latest-v1 release.`);
+   execSync('yarn workspace react-native add hermes-compiler@latest-v1 --exact', { stdio: 'inherit' });
  } else {
-   console.log(`Hermes compiler version set to ${hermesCompilerVersion}. Not setting nightly hermes.`);
+   console.log(`Hermes compiler version set to ${hermesCompilerVersion}. Not setting hermes.`);
  }
 }
 
