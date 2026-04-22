@@ -586,6 +586,7 @@ describe('AccessibilityInfo', () => {
         const isReduceMotionEnabled =
           await AccessibilityInfo.isReduceMotionEnabled();
 
+        expect(mockGetCurrentReduceMotionState).toHaveBeenCalled();
         expect(isReduceMotionEnabled).toBe(true);
       });
 
