@@ -556,7 +556,7 @@ describe('AccessibilityInfo', () => {
         expect(isReduceMotionEnabled).toBe(true);
       });
 
-      it('should throw error if isReduceMotionEnabled is not available', async () => {
+      it('should throw error if NativeAccessibilityInfoAndroid is not available', async () => {
         /* $FlowFixMe[incompatible-type] */
         Platform.OS = 'android';
 
