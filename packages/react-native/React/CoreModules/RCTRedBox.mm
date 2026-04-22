@@ -165,6 +165,14 @@ RCT_EXPORT_MODULE()
   [self showErrorMessage:message withParsedStack:stack isUpdate:YES errorCookie:errorCookie];
 }
 
+- (id<RCTRedBox2Controlling>)_redBox2Controller
+{
+  if ([_controller conformsToProtocol:@protocol(RCTRedBox2Controlling)]) {
+    return (id<RCTRedBox2Controlling>)_controller;
+  }
+  return nil;
+}
+
 - (void)showErrorMessage:(NSString *)message
          withParsedStack:(NSArray<RCTJSStackFrame *> *)stack
                 isUpdate:(BOOL)isUpdate
@@ -195,6 +203,7 @@ RCT_EXPORT_MODULE()
       }
       self->_controller.actionDelegate = self;
     }
+    [self _redBox2Controller].bundleURL = self->_overrideBundleURL ?: self->_bundleManager.bundleURL;
     [self->_controller showErrorMessage:errorInfo.errorMessage
                               withStack:errorInfo.stack
                                isUpdate:isUpdate
