@@ -423,6 +423,45 @@ static YGSize RCTTextShadowViewMeasure(
     float height,
     YGMeasureMode heightMode)
 {
+  RCTTextShadowView *shadowTextView = (__bridge RCTTextShadowView *)YGNodeGetContext(node);
+
+  // --- PERBAIKAN UTAMA (FIX) ---
+  // Cek apakah komponen Text ini benar-benar punya isi.
+  // Jika string kosong, langsung kembalikan ukuran (0, 0).
+  // Ini mencegah "ghost width/height" akibat padding atau epsilon pada teks kosong.
+  NSAttributedString *attributedText = [shadowTextView attributedTextWithBaseTextAttributes:nil];
+  if (shadowTextView == nil || attributedText.length == 0) {
+    return (YGSize){0, 0};
+  }
+  // --- AKHIR PERBAIKAN ---
+
+  CGSize maximumSize = (CGSize){
+      widthMode == YGMeasureModeUndefined ? CGFLOAT_MAX : RCTCoreGraphicsFloatFromYogaFloat(width),
+      heightMode == YGMeasureModeUndefined ? CGFLOAT_MAX : RCTCoreGraphicsFloatFromYogaFloat(height),
+  };
+
+  // Kalkulasi layout hanya dilakukan jika teks TIDAK kosong
+  NSTextStorage *textStorage = [shadowTextView textStorageAndLayoutManagerThatFitsSize:maximumSize
+                                                                    exclusiveOwnership:NO];
+
+  NSLayoutManager *layoutManager = textStorage.layoutManagers.firstObject;
+  NSTextContainer *textContainer = layoutManager.textContainers.firstObject;
+  [layoutManager ensureLayoutForTextContainer:textContainer];
+  CGSize size = [layoutManager usedRectForTextContainer:textContainer].size;
+
+  CGFloat letterSpacing = shadowTextView.textAttributes.letterSpacing;
+  if (!isnan(letterSpacing) && letterSpacing < 0) {
+    size.width -= letterSpacing;
+  }
+
+  size = (CGSize){MIN(RCTCeilPixelValue(size.width), maximumSize.width),
+                  MIN(RCTCeilPixelValue(size.height), maximumSize.height)};
+
+  // Epsilon value to handle floating point rounding issues in Yoga
+  CGFloat epsilon = 0.001;
+  return (YGSize){RCTYogaFloatFromCoreGraphicsFloat(size.width + epsilon),
+                  RCTYogaFloatFromCoreGraphicsFloat(size.height + epsilon)};
+}
   CGSize maximumSize = (CGSize){
       widthMode == YGMeasureModeUndefined ? CGFLOAT_MAX : RCTCoreGraphicsFloatFromYogaFloat(width),
       heightMode == YGMeasureModeUndefined ? CGFLOAT_MAX : RCTCoreGraphicsFloatFromYogaFloat(height),

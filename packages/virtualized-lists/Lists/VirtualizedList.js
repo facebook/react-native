@@ -1272,42 +1272,38 @@ class VirtualizedList extends StateSafePureComponent<
 
   /* $FlowFixMe[missing-local-annot] The type annotation(s) required by Flow's
    * LTI update could not be added via codemod */
-  _defaultRenderScrollComponent = props => {
+    _defaultRenderScrollComponent = props => {
     const onRefresh = props.onRefresh;
     if (this._isNestedWithSameOrientation()) {
-      // Prevent VirtualizedList._onContentSizeChange from being triggered by a bubbling onContentSizeChange event.
-      // This could lead to internal inconsistencies within VirtualizedList.
       const {onContentSizeChange, ...otherProps} = props;
       return <View {...otherProps} />;
     } else if (onRefresh) {
-      invariant(
-        typeof props.refreshing === 'boolean',
-        '`refreshing` prop must be set as a boolean in order to use `onRefresh`, but got `' +
-          JSON.stringify(props.refreshing ?? 'undefined') +
-          '`',
-      );
+      /* * Fix Issue #17553: 
+       * Apply inversion style to RefreshControl when the list is inverted 
+       * so the activity indicator appears at the visual top.
+       */
+      const inversionStyle = props.inverted 
+        ? (horizontalOrDefault(props.horizontal) ? styles.horizontallyInverted : styles.verticallyInverted) 
+        : null;
+
       return (
-        // $FlowFixMe[prop-missing] Invalid prop usage
-        // $FlowFixMe[incompatible-use]
         <ScrollView
           {...props}
           refreshControl={
             props.refreshControl == null ? (
               <RefreshControl
-                // $FlowFixMe[incompatible-type]
                 refreshing={props.refreshing}
                 onRefresh={onRefresh}
                 progressViewOffset={props.progressViewOffset}
+                style={inversionStyle} 
               />
             ) : (
-              props.refreshControl
+              props.inverted ? <View style={inversionStyle}>{props.refreshControl}</View> : props.refreshControl
             )
           }
         />
       );
     } else {
-      // $FlowFixMe[prop-missing] Invalid prop usage
-      // $FlowFixMe[incompatible-use]
       return <ScrollView {...props} />;
     }
   };
