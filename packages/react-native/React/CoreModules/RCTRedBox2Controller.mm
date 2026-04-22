@@ -12,6 +12,14 @@
 #import <React/RCTReloadCommand.h>
 #import <React/RCTUtils.h>
 
+#include <array>
+
+#import "RCTRedBox2AnsiParser+Internal.h"
+#import "RCTRedBox2ErrorParser+Internal.h"
+
+// @lint-ignore-every CLANGTIDY clang-diagnostic-switch-default
+// NOTE: clang-diagnostic-switch-default conflicts with clang-diagnostic-switch-enum
+
 #if RCT_DEV_MENU
 
 #pragma mark - RCTRedBox2Controller
@@ -32,6 +40,13 @@ static UIColor *RCTRedBox2TextColor(CGFloat opacity)
   return [UIColor colorWithWhite:1.0 alpha:opacity];
 }
 
+enum class Section : uint8_t { Message, CodeFrame, CallStack, kMaxValue };
+static constexpr size_t kSectionCount = static_cast<size_t>(Section::kMaxValue);
+
+struct SectionState {
+  bool visible = false;
+};
+
 @implementation RCTRedBox2Controller {
   UITableView *_stackTraceTableView;
   UILabel *_headerTitleLabel;
@@ -41,6 +56,8 @@ static UIColor *RCTRedBox2TextColor(CGFloat opacity)
   NSArray<NSString *> *_customButtonTitles;
   NSArray<RCTRedBox2ButtonPressHandler> *_customButtonHandlers;
   int _lastErrorCookie;
+  RCTRedBox2ErrorData *_errorData;
+  std::array<SectionState, kSectionCount> _sectionStates;
 }
 
 - (instancetype)initWithCustomButtonTitles:(NSArray<NSString *> *)customButtonTitles
@@ -255,6 +272,10 @@ static UIColor *RCTRedBox2TextColor(CGFloat opacity)
     _lastErrorMessage = [messageWithoutAnsi substringToIndex:MIN((NSUInteger)10000, messageWithoutAnsi.length)];
     _lastErrorCookie = errorCookie;
 
+    // Parse the message to extract structure (title, code frame, etc.)
+    _errorData = [RCTRedBox2ErrorParser parseErrorMessage:message name:nil componentStack:nil isFatal:YES];
+    [self updateSectionVisibility];
+
     [_stackTraceTableView reloadData];
 
     if (!isRootViewControllerPresented) {
@@ -313,23 +334,77 @@ static UIColor *RCTRedBox2TextColor(CGFloat opacity)
   return lineInfo;
 }
 
+#pragma mark - Section Helpers
+
+- (void)updateSectionVisibility
+{
+  _sectionStates = {};
+  _sectionStates[static_cast<size_t>(Section::Message)].visible = true;
+  _sectionStates[static_cast<size_t>(Section::CodeFrame)].visible = _errorData.codeFrame.length > 0;
+  _sectionStates[static_cast<size_t>(Section::CallStack)].visible =
+      _lastStackTrace.count > 0 && _errorData.codeFrame.length == 0;
+}
+
+- (NSInteger)visibleSectionCount
+{
+  NSInteger count = 0;
+  for (size_t i = 0; i < kSectionCount; i++) {
+    if (_sectionStates[i].visible) {
+      count++;
+    }
+  }
+  return count;
+}
+
+- (Section)sectionForIndex:(NSInteger)index
+{
+  NSInteger visible = 0;
+  for (size_t i = 0; i < kSectionCount; i++) {
+    if (_sectionStates[i].visible) {
+      if (visible == index) {
+        return static_cast<Section>(i);
+      }
+      visible++;
+    }
+  }
+  RCTAssert(NO, @"Invalid section index %ld", (long)index);
+  return Section::kMaxValue;
+}
+
+- (NSString *)displayMessage
+{
+  return _errorData.message.length > 0 ? [self stripAnsi:_errorData.message] : _lastErrorMessage;
+}
+
 #pragma mark - TableView DataSource & Delegate
 
 - (NSInteger)numberOfSectionsInTableView:(__unused UITableView *)tableView
 {
-  return _lastStackTrace.count > 0 ? 2 : 1;
+  return [self visibleSectionCount];
 }
 
 - (NSInteger)tableView:(__unused UITableView *)tableView numberOfRowsInSection:(NSInteger)section
 {
-  return section == 0 ? 1 : static_cast<NSInteger>(_lastStackTrace.count);
+  if ([self sectionForIndex:section] == Section::CallStack) {
+    return static_cast<NSInteger>(_lastStackTrace.count);
+  }
+  return 1;
 }
 
 - (UITableViewCell *)tableView:(UITableView *)tableView cellForRowAtIndexPath:(NSIndexPath *)indexPath
 {
-  if (indexPath.section == 0) {
-    UITableViewCell *cell = [tableView dequeueReusableCellWithIdentifier:@"msg-cell"];
-    return [self reuseCell:cell forErrorMessage:_lastErrorMessage];
+  switch ([self sectionForIndex:indexPath.section]) {
+    case Section::Message: {
+      UITableViewCell *cell = [tableView dequeueReusableCellWithIdentifier:@"msg-cell"];
+      return [self reuseCell:cell forErrorMessage:[self displayMessage]];
+    }
+    case Section::CodeFrame: {
+      UITableViewCell *cell = [tableView dequeueReusableCellWithIdentifier:@"code-cell"];
+      return [self reuseCell:cell forCodeFrame:_errorData];
+    }
+    case Section::CallStack:
+    case Section::kMaxValue:
+      break;
   }
   UITableViewCell *cell = [tableView dequeueReusableCellWithIdentifier:@"cell"];
   NSUInteger index = indexPath.row;
@@ -375,7 +450,7 @@ static UIColor *RCTRedBox2TextColor(CGFloat opacity)
     ]];
   }
 
-  _errorCategoryLabel.text = @"Error";
+  _errorCategoryLabel.text = _errorData.title;
   UILabel *messageLabel = [cell.contentView viewWithTag:100];
   messageLabel.text = message;
 
@@ -415,55 +490,153 @@ static UIColor *RCTRedBox2TextColor(CGFloat opacity)
   return cell;
 }
 
-- (CGFloat)tableView:(UITableView *)tableView heightForRowAtIndexPath:(NSIndexPath *)indexPath
+- (UITableViewCell *)reuseCell:(UITableViewCell *)cell forCodeFrame:(RCTRedBox2ErrorData *)errorData
 {
-  if (indexPath.section == 0) {
-    return UITableViewAutomaticDimension;
-  } else {
-    return 50;
+  if (cell == nullptr) {
+    cell = [[UITableViewCell alloc] initWithStyle:UITableViewCellStyleDefault reuseIdentifier:@"code-cell"];
+    cell.backgroundColor = [UIColor clearColor];
+    cell.selectionStyle = UITableViewCellSelectionStyleNone;
   }
+
+  // Remove old subviews
+  for (UIView *subview in cell.contentView.subviews) {
+    [subview removeFromSuperview];
+  }
+
+  // Code frame container with rounded corners
+  UIView *container = [[UIView alloc] init];
+  container.translatesAutoresizingMaskIntoConstraints = NO;
+  container.backgroundColor = RCTRedBox2BackgroundColor();
+  container.layer.cornerRadius = 3;
+  container.clipsToBounds = YES;
+  [cell.contentView addSubview:container];
+
+  // Render code frame with ANSI syntax highlighting
+  UIFont *codeFont = [UIFont fontWithName:@"Menlo-Regular" size:12];
+  NSAttributedString *highlighted = [RCTRedBox2AnsiParser attributedStringFromAnsiText:errorData.codeFrame
+                                                                              baseFont:codeFont
+                                                                             baseColor:[UIColor whiteColor]];
+
+  UILabel *codeLabel = [[UILabel alloc] init];
+  codeLabel.translatesAutoresizingMaskIntoConstraints = NO;
+  codeLabel.attributedText = highlighted;
+  codeLabel.numberOfLines = 0;
+  codeLabel.lineBreakMode = NSLineBreakByClipping;
+
+  UIScrollView *codeScrollView = [[UIScrollView alloc] init];
+  codeScrollView.translatesAutoresizingMaskIntoConstraints = NO;
+  codeScrollView.showsHorizontalScrollIndicator = YES;
+  codeScrollView.showsVerticalScrollIndicator = NO;
+  codeScrollView.bounces = NO;
+  [codeScrollView addSubview:codeLabel];
+  [container addSubview:codeScrollView];
+
+  // File name label below the code frame
+  UILabel *fileLabel = [[UILabel alloc] init];
+  fileLabel.translatesAutoresizingMaskIntoConstraints = NO;
+  NSString *fileName = errorData.codeFrameFileName.lastPathComponent ? errorData.codeFrameFileName.lastPathComponent
+                                                                     : errorData.codeFrameFileName;
+  if (errorData.codeFrameRow > 0) {
+    fileLabel.text = [NSString
+        stringWithFormat:@"%@ (%ld:%ld)", fileName, (long)errorData.codeFrameRow, (long)errorData.codeFrameColumn + 1];
+  } else if (fileName.length > 0) {
+    fileLabel.text = fileName;
+  }
+  fileLabel.textColor = RCTRedBox2TextColor(0.5);
+  fileLabel.font = [UIFont fontWithName:@"Menlo-Regular" size:12];
+  fileLabel.textAlignment = NSTextAlignmentCenter;
+  [cell.contentView addSubview:fileLabel];
+
+  [NSLayoutConstraint activateConstraints:@[
+    [container.topAnchor constraintEqualToAnchor:cell.contentView.topAnchor constant:5],
+    [container.leadingAnchor constraintEqualToAnchor:cell.contentView.leadingAnchor constant:10],
+    [container.trailingAnchor constraintEqualToAnchor:cell.contentView.trailingAnchor constant:-10],
+
+    [codeScrollView.topAnchor constraintEqualToAnchor:container.topAnchor constant:10],
+    [codeScrollView.leadingAnchor constraintEqualToAnchor:container.leadingAnchor constant:10],
+    [codeScrollView.trailingAnchor constraintEqualToAnchor:container.trailingAnchor constant:-10],
+    [codeScrollView.bottomAnchor constraintEqualToAnchor:container.bottomAnchor constant:-10],
+
+    [codeLabel.topAnchor constraintEqualToAnchor:codeScrollView.topAnchor],
+    [codeLabel.leadingAnchor constraintEqualToAnchor:codeScrollView.leadingAnchor],
+    [codeLabel.trailingAnchor constraintEqualToAnchor:codeScrollView.trailingAnchor],
+    [codeLabel.bottomAnchor constraintEqualToAnchor:codeScrollView.bottomAnchor],
+    [codeLabel.heightAnchor constraintEqualToAnchor:codeScrollView.heightAnchor],
+
+    [fileLabel.topAnchor constraintEqualToAnchor:container.bottomAnchor constant:10],
+    [fileLabel.leadingAnchor constraintEqualToAnchor:cell.contentView.leadingAnchor constant:10],
+    [fileLabel.trailingAnchor constraintEqualToAnchor:cell.contentView.trailingAnchor constant:-10],
+    [fileLabel.bottomAnchor constraintEqualToAnchor:cell.contentView.bottomAnchor constant:-10],
+  ]];
+
+  return cell;
 }
 
-- (CGFloat)tableView:(__unused UITableView *)tableView estimatedHeightForRowAtIndexPath:(NSIndexPath *)indexPath
+- (CGFloat)tableView:(__unused UITableView *)tableView heightForRowAtIndexPath:(NSIndexPath *)indexPath
 {
-  if (indexPath.section == 0) {
-    return 100;
+  auto section = [self sectionForIndex:indexPath.section];
+  if (section == Section::Message || section == Section::CodeFrame) {
+    return UITableViewAutomaticDimension;
   }
   return 50;
 }
 
+- (CGFloat)tableView:(__unused UITableView *)tableView estimatedHeightForRowAtIndexPath:(NSIndexPath *)indexPath
+{
+  switch ([self sectionForIndex:indexPath.section]) {
+    case Section::Message:
+      return 100;
+    case Section::CodeFrame:
+      return 200;
+    case Section::CallStack:
+    case Section::kMaxValue:
+      return 50;
+  }
+}
+
+- (UIView *)sectionHeaderViewWithTitle:(NSString *)title
+{
+  UIView *headerView = [[UIView alloc] initWithFrame:CGRectMake(0, 0, 0, 38)];
+  headerView.backgroundColor = [UIColor clearColor];
+
+  UILabel *label = [[UILabel alloc] init];
+  label.translatesAutoresizingMaskIntoConstraints = NO;
+  label.text = title;
+  label.textColor = [UIColor whiteColor];
+  label.font = [UIFont systemFontOfSize:18 weight:UIFontWeightSemibold];
+  [headerView addSubview:label];
+
+  [NSLayoutConstraint activateConstraints:@[
+    [label.leadingAnchor constraintEqualToAnchor:headerView.leadingAnchor constant:12],
+    [label.trailingAnchor constraintEqualToAnchor:headerView.trailingAnchor constant:-12],
+    [label.bottomAnchor constraintEqualToAnchor:headerView.bottomAnchor constant:-10],
+  ]];
+
+  return headerView;
+}
+
 - (UIView *)tableView:(__unused UITableView *)tableView viewForHeaderInSection:(NSInteger)section
 {
-  if (section == 1) {
-    UIView *headerView = [[UIView alloc] initWithFrame:CGRectMake(0, 0, 0, 38)];
-    headerView.backgroundColor = [UIColor clearColor];
-
-    UILabel *label = [[UILabel alloc] init];
-    label.translatesAutoresizingMaskIntoConstraints = NO;
-    label.text = @"Call Stack";
-    label.textColor = [UIColor whiteColor];
-    label.font = [UIFont systemFontOfSize:18 weight:UIFontWeightSemibold];
-    [headerView addSubview:label];
-
-    [NSLayoutConstraint activateConstraints:@[
-      [label.leadingAnchor constraintEqualToAnchor:headerView.leadingAnchor constant:12],
-      [label.trailingAnchor constraintEqualToAnchor:headerView.trailingAnchor constant:-12],
-      [label.bottomAnchor constraintEqualToAnchor:headerView.bottomAnchor constant:-10],
-    ]];
-
-    return headerView;
+  switch ([self sectionForIndex:section]) {
+    case Section::CodeFrame:
+      return [self sectionHeaderViewWithTitle:@"Source"];
+    case Section::CallStack:
+      return [self sectionHeaderViewWithTitle:@"Call Stack"];
+    case Section::Message:
+    case Section::kMaxValue:
+      return nil;
   }
-  return nil;
 }
 
 - (CGFloat)tableView:(__unused UITableView *)tableView heightForHeaderInSection:(NSInteger)section
 {
-  return section == 1 ? 38 : 0;
+  auto s = [self sectionForIndex:section];
+  return (s == Section::CodeFrame || s == Section::CallStack) ? 38 : 0;
 }
 
 - (void)tableView:(UITableView *)tableView didSelectRowAtIndexPath:(NSIndexPath *)indexPath
 {
-  if (indexPath.section == 1) {
+  if ([self sectionForIndex:indexPath.section] == Section::CallStack) {
     NSUInteger row = indexPath.row;
     RCTJSStackFrame *stackFrame = _lastStackTrace[row];
     [_actionDelegate redBoxController:self openStackFrameInEditor:stackFrame];
