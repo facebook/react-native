@@ -33,4 +33,10 @@
 
 @end
 
+@protocol RCTRedBox2Controlling <RCTRedBoxControlling>
+
+@property (nonatomic, strong, nullable) NSURL *bundleURL;
+
+@end
+
 #endif
