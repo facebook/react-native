@@ -23,6 +23,7 @@ TEST(RedBoxErrorParserTest, ParsesBabelTransformError) {
   EXPECT_EQ(result.codeFrame->row, 10);
   EXPECT_EQ(result.codeFrame->column, 5);
   EXPECT_TRUE(result.isCompileError);
+  EXPECT_TRUE(result.isRetryable);
 }
 
 TEST(RedBoxErrorParserTest, ParsesMetroError) {
@@ -75,6 +76,7 @@ TEST(RedBoxErrorParserTest, DefaultsToUncaughtError) {
   EXPECT_EQ(result.message, "TypeError: undefined is not a function");
   EXPECT_FALSE(result.codeFrame.has_value());
   EXPECT_FALSE(result.isCompileError);
+  EXPECT_TRUE(result.isRetryable);
 }
 
 TEST(RedBoxErrorParserTest, UsesNameForTitle) {

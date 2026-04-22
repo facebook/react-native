@@ -25,6 +25,10 @@
 @property (nonatomic, assign) NSInteger codeFrameRow;
 /// Column number in the source file
 @property (nonatomic, assign) NSInteger codeFrameColumn;
+/// Whether this is a compile-time error (syntax, transform, resolution) vs a runtime error
+@property (nonatomic, assign) BOOL isCompileError;
+/// Whether auto-retry is appropriate (compile errors, connectivity failures, etc.)
+@property (nonatomic, assign) BOOL isRetryable;
 
 @end
 
