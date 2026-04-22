@@ -15,7 +15,7 @@ const {
   TEMPLATES_FOLDER_PATH,
   packageJson,
 } = require('./constants');
-const {codegenLog} = require('./utils');
+const {codegenLog, writeFileSyncIfChanged} = require('./utils');
 const {execSync} = require('child_process');
 const fs = require('fs');
 const path = require('path');
@@ -39,7 +39,7 @@ function generateReactCodegenPodspec(
     .replace(/{input-files}/, inputFiles)
     .replace(/{codegen-script}/, codegenScript);
   const finalPathPodspec = path.join(outputPath, 'ReactCodegen.podspec');
-  fs.writeFileSync(finalPathPodspec, finalPodspec);
+  writeFileSyncIfChanged(finalPathPodspec, finalPodspec);
   codegenLog(`Generated podspec: ${finalPathPodspec}`);
 }
 

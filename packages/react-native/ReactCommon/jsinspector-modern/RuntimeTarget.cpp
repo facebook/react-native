@@ -8,28 +8,14 @@
 #include "SessionState.h"
 
 #include <jsinspector-modern/RuntimeTarget.h>
-#include <jsinspector-modern/tracing/PerformanceTracer.h>
+#include <jsinspector-modern/RuntimeTargetGlobalStateObserver.h>
+#include <jsinspector-modern/RuntimeTargetTracingStateObserver.h>
 
 #include <utility>
 
 using namespace facebook::jsi;
 
 namespace facebook::react::jsinspector_modern {
-
-namespace {
-
-void emitSessionStatusChangeForObserverWithValue(
-    jsi::Runtime& runtime,
-    const jsi::Value& value) {
-  auto globalObj = runtime.global();
-  auto observer =
-      globalObj.getPropertyAsObject(runtime, "__DEBUGGER_SESSION_OBSERVER__");
-  auto onSessionStatusChange =
-      observer.getPropertyAsFunction(runtime, "onSessionStatusChange");
-  onSessionStatusChange.call(runtime, value);
-}
-
-} // namespace
 
 std::shared_ptr<RuntimeTarget> RuntimeTarget::create(
     const ExecutionContextDescription& executionContextDescription,
@@ -57,9 +43,12 @@ void RuntimeTarget::installGlobals() {
   // NOTE: RuntimeTarget::installDebuggerSessionObserver is in
   // RuntimeTargetDebuggerSessionObserver.cpp
   installDebuggerSessionObserver();
+  installTracingStateObserver();
   // NOTE: RuntimeTarget::installNetworkReporterAPI is in
   // RuntimeTargetNetwork.cpp
   installNetworkReporterAPI();
+
+  installFastRefreshHandler();
 }
 
 std::shared_ptr<RuntimeAgent> RuntimeTarget::createAgent(
@@ -141,10 +130,45 @@ void RuntimeTarget::installBindingHandler(const std::string& bindingName) {
   });
 }
 
+void RuntimeTarget::installFastRefreshHandler() {
+  jsExecutor_([selfExecutor = executorFromThis()](jsi::Runtime& runtime) {
+    auto globalObj = runtime.global();
+    try {
+      auto name =
+          jsi::PropNameID::forUtf8(runtime, "__notifyFastRefreshComplete");
+      globalObj.setProperty(
+          runtime,
+          name,
+          jsi::Function::createFromHostFunction(
+              runtime,
+              name,
+              0,
+              [selfExecutor](
+                  jsi::Runtime& /*rt*/,
+                  const jsi::Value&,
+                  const jsi::Value*,
+                  size_t) -> jsi::Value {
+                selfExecutor([](auto& self) {
+                  self.agents_.forEach(
+                      [](auto& agent) { agent.notifyFastRefreshComplete(); });
+                });
+
+                return jsi::Value::undefined();
+              }));
+    } catch (jsi::JSError&) {
+      // Swallow JavaScript exceptions that occur while setting up the global.
+    }
+  });
+}
+
 void RuntimeTarget::emitDebuggerSessionCreated() {
   jsExecutor_([selfExecutor = executorFromThis()](jsi::Runtime& runtime) {
     try {
-      emitSessionStatusChangeForObserverWithValue(runtime, jsi::Value(true));
+      emitGlobalStateObserverChange(
+          runtime,
+          "__DEBUGGER_SESSION_OBSERVER__",
+          "onSessionStatusChange",
+          true);
     } catch (jsi::JSError&) {
       // Suppress any errors, they should not be visible to the user
       // and should not affect runtime.
@@ -155,7 +179,28 @@ void RuntimeTarget::emitDebuggerSessionCreated() {
 void RuntimeTarget::emitDebuggerSessionDestroyed() {
   jsExecutor_([selfExecutor = executorFromThis()](jsi::Runtime& runtime) {
     try {
-      emitSessionStatusChangeForObserverWithValue(runtime, jsi::Value(false));
+      emitGlobalStateObserverChange(
+          runtime,
+          "__DEBUGGER_SESSION_OBSERVER__",
+          "onSessionStatusChange",
+          false);
+    } catch (jsi::JSError&) {
+      // Suppress any errors, they should not be visible to the user
+      // and should not affect runtime.
+    }
+  });
+}
+
+void RuntimeTarget::installTracingStateObserver() {
+  jsExecutor_([](jsi::Runtime& runtime) {
+    jsinspector_modern::installTracingStateObserver(runtime);
+  });
+}
+
+void RuntimeTarget::emitTracingStateChange(bool isTracing) {
+  jsExecutor_([isTracing](jsi::Runtime& runtime) {
+    try {
+      emitTracingStateObserverChange(runtime, isTracing);
     } catch (jsi::JSError&) {
       // Suppress any errors, they should not be visible to the user
       // and should not affect runtime.
@@ -279,6 +324,10 @@ void RuntimeTargetController::disableSamplingProfiler() {
 tracing::RuntimeSamplingProfile
 RuntimeTargetController::collectSamplingProfile() {
   return target_.collectSamplingProfile();
+}
+
+void RuntimeTargetController::emitTracingStateChange(bool isTracing) {
+  target_.emitTracingStateChange(isTracing);
 }
 
 void RuntimeTargetController::notifyDomainStateChanged(

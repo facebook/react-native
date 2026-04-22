@@ -13,6 +13,7 @@
 #include <cxxreact/TraceSection.h>
 #include <react/debug/react_native_assert.h>
 #include <react/featureflags/ReactNativeFeatureFlags.h>
+#include <react/renderer/animationbackend/AnimationBackend.h>
 #include <react/renderer/componentregistry/ComponentDescriptorRegistry.h>
 #include <react/renderer/core/EventQueueProcessor.h>
 #include <react/renderer/core/LayoutContext.h>
@@ -55,6 +56,16 @@ Scheduler::Scheduler(
   auto uiManager =
       std::make_shared<UIManager>(runtimeExecutor_, contextContainer_);
 
+  if (ReactNativeFeatureFlags::useSharedAnimatedBackend()) {
+    auto animationBackend = std::make_shared<AnimationBackend>(
+        schedulerToolbox.animationChoreographer, uiManager);
+
+    schedulerToolbox.animationChoreographer->setAnimationBackend(
+        animationBackend);
+
+    uiManager->unstable_setAnimationBackend(animationBackend);
+  }
+
   auto eventOwnerBox = std::make_shared<EventBeat::OwnerBox>();
   eventOwnerBox->owner = eventDispatcher_;
 
@@ -74,14 +85,15 @@ Scheduler::Scheduler(
 
   auto eventPipe = [uiManager](
                        jsi::Runtime& runtime,
-                       const EventTarget* eventTarget,
+                       EventTarget* eventTarget,
                        const std::string& type,
                        ReactEventPriority priority,
-                       const EventPayload& payload) {
+                       const EventPayload& payload,
+                       HighResTimeStamp eventTimestamp) {
     uiManager->visitBinding(
         [&](const UIManagerBinding& uiManagerBinding) {
           uiManagerBinding.dispatchEvent(
-              runtime, eventTarget, type, priority, payload);
+              runtime, eventTarget, type, priority, payload, eventTimestamp);
         },
         runtime);
   };
@@ -146,6 +158,12 @@ Scheduler::Scheduler(
   }
   uiManager_->setAnimationDelegate(animationDelegate);
 
+  // Initialize ViewTransitionModule
+  if (ReactNativeFeatureFlags::viewTransitionEnabled()) {
+    viewTransitionModule_ = std::make_shared<ViewTransitionModule>();
+    viewTransitionModule_->initialize(uiManager_.get(), viewTransitionModule_);
+  }
+
   uiManager->registerMountHook(*eventPerformanceLogger_);
 }
 
@@ -175,6 +193,7 @@ Scheduler::~Scheduler() {
   // The thread-safety of this operation is guaranteed by this requirement.
   uiManager_->setDelegate(nullptr);
   uiManager_->setAnimationDelegate(nullptr);
+  uiManager_->setViewTransitionDelegate(nullptr);
 
   if (cdpMetricsReporter_) {
     performanceEntryReporter_->removeEventListener(&*cdpMetricsReporter_);
@@ -345,6 +364,27 @@ void Scheduler::uiManagerDidUpdateShadowTree(
   }
 }
 
+void Scheduler::uiManagerDidCaptureViewSnapshot(Tag tag, SurfaceId surfaceId) {
+  if (delegate_ != nullptr) {
+    delegate_->schedulerDidCaptureViewSnapshot(tag, surfaceId);
+  }
+}
+
+void Scheduler::uiManagerDidSetViewSnapshot(
+    Tag sourceTag,
+    Tag targetTag,
+    SurfaceId surfaceId) {
+  if (delegate_ != nullptr) {
+    delegate_->schedulerDidSetViewSnapshot(sourceTag, targetTag, surfaceId);
+  }
+}
+
+void Scheduler::uiManagerDidClearPendingSnapshots() {
+  if (delegate_ != nullptr) {
+    delegate_->schedulerDidClearPendingSnapshots();
+  }
+}
+
 void Scheduler::uiManagerShouldAddEventListener(
     std::shared_ptr<const EventListener> listener) {
   addEventListener(listener);
@@ -353,6 +393,22 @@ void Scheduler::uiManagerShouldAddEventListener(
 void Scheduler::uiManagerShouldRemoveEventListener(
     const std::shared_ptr<const EventListener>& listener) {
   removeEventListener(listener);
+}
+
+void Scheduler::uiManagerDidFinishReactCommit(const ShadowTree& shadowTree) {
+  auto surfaceId = shadowTree.getSurfaceId();
+  runtimeScheduler_->scheduleRenderingUpdate(
+      surfaceId, [surfaceId, uiManager = uiManager_]() {
+        uiManager->getShadowTreeRegistry().visit(
+            surfaceId,
+            [](const ShadowTree& tree) { tree.promoteReactRevision(); });
+      });
+}
+
+void Scheduler::uiManagerDidPromoteReactRevision(const ShadowTree& shadowTree) {
+  if (delegate_ != nullptr) {
+    delegate_->schedulerShouldMergeReactRevision(shadowTree.getSurfaceId());
+  }
 }
 
 void Scheduler::uiManagerDidStartSurface(const ShadowTree& shadowTree) {

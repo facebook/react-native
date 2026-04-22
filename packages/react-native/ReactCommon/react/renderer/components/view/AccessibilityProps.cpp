@@ -15,6 +15,24 @@
 
 namespace facebook::react {
 
+static AccessibilityLabelledBy parseCommaSeparatedList(const std::string& str) {
+  AccessibilityLabelledBy result;
+  size_t pos = 0;
+  while (pos < str.size()) {
+    auto commaPos = str.find(',', pos);
+    if (commaPos == std::string::npos) {
+      commaPos = str.size();
+    }
+    auto start = str.find_first_not_of(' ', pos);
+    if (start < commaPos) {
+      auto end = str.find_last_not_of(' ', commaPos - 1);
+      result.value.push_back(str.substr(start, end - start + 1));
+    }
+    pos = commaPos + 1;
+  }
+  return result;
+}
+
 AccessibilityProps::AccessibilityProps(
     const PropsParserContext& context,
     const AccessibilityProps& sourceProps,
@@ -216,7 +234,14 @@ AccessibilityProps::AccessibilityProps(
                     rawProps,
                     "testID",
                     sourceProps.testId,
-                    "")) {
+                    "")),
+      canonicalAccessibilityLabel_(sourceProps.canonicalAccessibilityLabel_),
+      canonicalAccessibilityLiveRegion_(
+          sourceProps.canonicalAccessibilityLiveRegion_),
+      canonicalImportantForAccessibility_(
+          sourceProps.canonicalImportantForAccessibility_),
+      canonicalAccessibilityElementsHidden_(
+          sourceProps.canonicalAccessibilityElementsHidden_) {
   // It is a (severe!) perf deoptimization to request props out-of-order.
   // Thus, since we need to request the same prop twice here
   // (accessibilityRole) we "must" do them subsequently here to prevent
@@ -254,6 +279,244 @@ AccessibilityProps::AccessibilityProps(
     } else {
       fromRawValue(context, *precedentRoleValue, accessibilityTraits);
     }
+
+    if (ReactNativeFeatureFlags::enableNativeViewPropTransformations()) {
+      static auto defaults = AccessibilityProps{};
+
+      // Update canonical values from explicit props if present.
+      // These track the user-set accessibility* prop values separately
+      // from any aria-* override, so we can restore them when an
+      // aria-* alias is cleared.
+      auto* explicitLabel = rawProps.at("accessibilityLabel", nullptr, nullptr);
+      if (explicitLabel != nullptr) {
+        canonicalAccessibilityLabel_ = explicitLabel->hasValue()
+            ? accessibilityLabel
+            : defaults.accessibilityLabel;
+      }
+
+      auto* explicitLiveRegion =
+          rawProps.at("accessibilityLiveRegion", nullptr, nullptr);
+      if (explicitLiveRegion != nullptr) {
+        canonicalAccessibilityLiveRegion_ = explicitLiveRegion->hasValue()
+            ? accessibilityLiveRegion
+            : defaults.accessibilityLiveRegion;
+      }
+
+      auto* explicitIFA =
+          rawProps.at("importantForAccessibility", nullptr, nullptr);
+      if (explicitIFA != nullptr) {
+        canonicalImportantForAccessibility_ = explicitIFA->hasValue()
+            ? importantForAccessibility
+            : defaults.importantForAccessibility;
+      }
+
+      auto* explicitAEH =
+          rawProps.at("accessibilityElementsHidden", nullptr, nullptr);
+      if (explicitAEH != nullptr) {
+        canonicalAccessibilityElementsHidden_ = explicitAEH->hasValue()
+            ? accessibilityElementsHidden
+            : defaults.accessibilityElementsHidden;
+      }
+
+      // aria-label -> accessibilityLabel
+      auto* ariaLabel = rawProps.at("aria-label", nullptr, nullptr);
+      if (ariaLabel != nullptr) {
+        if (ariaLabel->hasValue()) {
+          fromRawValue(context, *ariaLabel, accessibilityLabel);
+        } else {
+          accessibilityLabel = canonicalAccessibilityLabel_;
+        }
+      }
+
+      // aria-labelledby -> accessibilityLabelledBy (comma-split string ->
+      // array)
+      auto* ariaLabelledBy = rawProps.at("aria-labelledby", nullptr, nullptr);
+      if (ariaLabelledBy != nullptr) {
+        if (ariaLabelledBy->hasValue()) {
+          if (ariaLabelledBy->hasType<std::string>()) {
+            accessibilityLabelledBy =
+                parseCommaSeparatedList((std::string)*ariaLabelledBy);
+          } else {
+            fromRawValue(context, *ariaLabelledBy, accessibilityLabelledBy);
+          }
+        } else {
+          accessibilityLabelledBy = defaults.accessibilityLabelledBy;
+        }
+      }
+
+      // aria-live -> accessibilityLiveRegion (map "off" -> None)
+      auto* ariaLive = rawProps.at("aria-live", nullptr, nullptr);
+      if (ariaLive != nullptr) {
+        if (ariaLive->hasValue()) {
+          if (ariaLive->hasType<std::string>()) {
+            auto str = (std::string)*ariaLive;
+            if (str == "off") {
+              accessibilityLiveRegion = AccessibilityLiveRegion::None;
+            } else {
+              fromRawValue(context, *ariaLive, accessibilityLiveRegion);
+            }
+          }
+        } else {
+          accessibilityLiveRegion = canonicalAccessibilityLiveRegion_;
+        }
+      }
+
+      // aria-hidden -> accessibilityElementsHidden +
+      // importantForAccessibility
+      auto* ariaHidden = rawProps.at("aria-hidden", nullptr, nullptr);
+      if (ariaHidden != nullptr) {
+        if (ariaHidden->hasValue()) {
+          fromRawValue(context, *ariaHidden, accessibilityElementsHidden);
+          if (accessibilityElementsHidden) {
+            importantForAccessibility =
+                ImportantForAccessibility::NoHideDescendants;
+          } else {
+            importantForAccessibility = canonicalImportantForAccessibility_;
+          }
+        } else {
+          accessibilityElementsHidden = canonicalAccessibilityElementsHidden_;
+          importantForAccessibility = canonicalImportantForAccessibility_;
+        }
+      }
+
+      // aria-busy -> accessibilityState.busy
+      auto* ariaBusy = rawProps.at("aria-busy", nullptr, nullptr);
+      if (ariaBusy != nullptr) {
+        if (ariaBusy->hasValue()) {
+          if (!accessibilityState.has_value()) {
+            accessibilityState = AccessibilityState{};
+          }
+          fromRawValue(context, *ariaBusy, accessibilityState->busy);
+        } else {
+          if (accessibilityState.has_value()) {
+            accessibilityState->busy = AccessibilityState{}.busy;
+          }
+        }
+      }
+
+      // aria-checked -> accessibilityState.checked
+      auto* ariaChecked = rawProps.at("aria-checked", nullptr, nullptr);
+      if (ariaChecked != nullptr) {
+        if (ariaChecked->hasValue()) {
+          if (!accessibilityState.has_value()) {
+            accessibilityState = AccessibilityState{};
+          }
+          if (ariaChecked->hasType<std::string>()) {
+            if ((std::string)*ariaChecked == "mixed") {
+              accessibilityState->checked = AccessibilityState::Mixed;
+            }
+          } else if (ariaChecked->hasType<bool>()) {
+            accessibilityState->checked = (bool)*ariaChecked
+                ? AccessibilityState::Checked
+                : AccessibilityState::Unchecked;
+          }
+        } else {
+          if (accessibilityState.has_value()) {
+            accessibilityState->checked = AccessibilityState{}.checked;
+          }
+        }
+      }
+
+      // aria-disabled -> accessibilityState.disabled
+      auto* ariaDisabled = rawProps.at("aria-disabled", nullptr, nullptr);
+      if (ariaDisabled != nullptr) {
+        if (ariaDisabled->hasValue()) {
+          if (!accessibilityState.has_value()) {
+            accessibilityState = AccessibilityState{};
+          }
+          fromRawValue(context, *ariaDisabled, accessibilityState->disabled);
+        } else {
+          if (accessibilityState.has_value()) {
+            accessibilityState->disabled = AccessibilityState{}.disabled;
+          }
+        }
+      }
+
+      // aria-expanded -> accessibilityState.expanded
+      auto* ariaExpanded = rawProps.at("aria-expanded", nullptr, nullptr);
+      if (ariaExpanded != nullptr) {
+        if (ariaExpanded->hasValue()) {
+          if (!accessibilityState.has_value()) {
+            accessibilityState = AccessibilityState{};
+          }
+          fromRawValue(context, *ariaExpanded, accessibilityState->expanded);
+        } else {
+          if (accessibilityState.has_value()) {
+            accessibilityState->expanded = AccessibilityState{}.expanded;
+          }
+        }
+      }
+
+      // aria-selected -> accessibilityState.selected
+      auto* ariaSelected = rawProps.at("aria-selected", nullptr, nullptr);
+      if (ariaSelected != nullptr) {
+        if (ariaSelected->hasValue()) {
+          if (!accessibilityState.has_value()) {
+            accessibilityState = AccessibilityState{};
+          }
+          fromRawValue(context, *ariaSelected, accessibilityState->selected);
+        } else {
+          if (accessibilityState.has_value()) {
+            accessibilityState->selected = AccessibilityState{}.selected;
+          }
+        }
+      }
+
+      // If all aria-state fields have been reset to defaults, clear the
+      // optional entirely so the view reports no accessibilityState.
+      if (accessibilityState.has_value() &&
+          *accessibilityState == AccessibilityState{}) {
+        accessibilityState = std::nullopt;
+      }
+
+      // aria-valuemax -> accessibilityValue.max
+      auto* ariaValueMax = rawProps.at("aria-valuemax", nullptr, nullptr);
+      if (ariaValueMax != nullptr) {
+        if (ariaValueMax->hasValue()) {
+          if (ariaValueMax->hasType<int>()) {
+            accessibilityValue.max = (int)*ariaValueMax;
+          }
+        } else {
+          accessibilityValue.max = std::nullopt;
+        }
+      }
+
+      // aria-valuemin -> accessibilityValue.min
+      auto* ariaValueMin = rawProps.at("aria-valuemin", nullptr, nullptr);
+      if (ariaValueMin != nullptr) {
+        if (ariaValueMin->hasValue()) {
+          if (ariaValueMin->hasType<int>()) {
+            accessibilityValue.min = (int)*ariaValueMin;
+          }
+        } else {
+          accessibilityValue.min = std::nullopt;
+        }
+      }
+
+      // aria-valuenow -> accessibilityValue.now
+      auto* ariaValueNow = rawProps.at("aria-valuenow", nullptr, nullptr);
+      if (ariaValueNow != nullptr) {
+        if (ariaValueNow->hasValue()) {
+          if (ariaValueNow->hasType<int>()) {
+            accessibilityValue.now = (int)*ariaValueNow;
+          }
+        } else {
+          accessibilityValue.now = std::nullopt;
+        }
+      }
+
+      // aria-valuetext -> accessibilityValue.text
+      auto* ariaValueText = rawProps.at("aria-valuetext", nullptr, nullptr);
+      if (ariaValueText != nullptr) {
+        if (ariaValueText->hasValue()) {
+          if (ariaValueText->hasType<std::string>()) {
+            accessibilityValue.text = (std::string)*ariaValueText;
+          }
+        } else {
+          accessibilityValue.text = std::nullopt;
+        }
+      }
+    }
   }
 }
 
@@ -267,26 +530,56 @@ void AccessibilityProps::setProp(
   switch (hash) {
     RAW_SET_PROP_SWITCH_CASE_BASIC(accessible);
     RAW_SET_PROP_SWITCH_CASE_BASIC(accessibilityState);
-    RAW_SET_PROP_SWITCH_CASE_BASIC(accessibilityLabel);
-    RAW_SET_PROP_SWITCH_CASE_BASIC(accessibilityOrder);
-    RAW_SET_PROP_SWITCH_CASE_BASIC(accessibilityLabelledBy);
-    RAW_SET_PROP_SWITCH_CASE_BASIC(accessibilityHint);
-    RAW_SET_PROP_SWITCH_CASE_BASIC(accessibilityLanguage);
-    RAW_SET_PROP_SWITCH_CASE_BASIC(accessibilityShowsLargeContentViewer);
-    RAW_SET_PROP_SWITCH_CASE_BASIC(accessibilityLargeContentTitle);
-    RAW_SET_PROP_SWITCH_CASE_BASIC(accessibilityValue);
-    RAW_SET_PROP_SWITCH_CASE_BASIC(accessibilityActions);
-    RAW_SET_PROP_SWITCH_CASE_BASIC(accessibilityViewIsModal);
-    RAW_SET_PROP_SWITCH_CASE_BASIC(accessibilityElementsHidden);
-    RAW_SET_PROP_SWITCH_CASE_BASIC(accessibilityIgnoresInvertColors);
-    RAW_SET_PROP_SWITCH_CASE_BASIC(accessibilityRespondsToUserInteraction);
-    RAW_SET_PROP_SWITCH_CASE_BASIC(onAccessibilityTap);
-    RAW_SET_PROP_SWITCH_CASE_BASIC(onAccessibilityMagicTap);
-    RAW_SET_PROP_SWITCH_CASE_BASIC(onAccessibilityEscape);
-    RAW_SET_PROP_SWITCH_CASE_BASIC(onAccessibilityAction);
-    RAW_SET_PROP_SWITCH_CASE_BASIC(importantForAccessibility);
-    RAW_SET_PROP_SWITCH_CASE_BASIC(role);
-    RAW_SET_PROP_SWITCH_CASE(testId, "testID");
+    case CONSTEXPR_RAW_PROPS_KEY_HASH("accessibilityLabel"): {
+      fromRawValue(
+          context, value, accessibilityLabel, defaults.accessibilityLabel);
+      canonicalAccessibilityLabel_ = accessibilityLabel;
+      return;
+    }
+      RAW_SET_PROP_SWITCH_CASE_BASIC(accessibilityOrder);
+      RAW_SET_PROP_SWITCH_CASE_BASIC(accessibilityLabelledBy);
+    case CONSTEXPR_RAW_PROPS_KEY_HASH("accessibilityLiveRegion"): {
+      fromRawValue(
+          context,
+          value,
+          accessibilityLiveRegion,
+          defaults.accessibilityLiveRegion);
+      canonicalAccessibilityLiveRegion_ = accessibilityLiveRegion;
+      return;
+    }
+      RAW_SET_PROP_SWITCH_CASE_BASIC(accessibilityHint);
+      RAW_SET_PROP_SWITCH_CASE_BASIC(accessibilityLanguage);
+      RAW_SET_PROP_SWITCH_CASE_BASIC(accessibilityShowsLargeContentViewer);
+      RAW_SET_PROP_SWITCH_CASE_BASIC(accessibilityLargeContentTitle);
+      RAW_SET_PROP_SWITCH_CASE_BASIC(accessibilityValue);
+      RAW_SET_PROP_SWITCH_CASE_BASIC(accessibilityActions);
+      RAW_SET_PROP_SWITCH_CASE_BASIC(accessibilityViewIsModal);
+    case CONSTEXPR_RAW_PROPS_KEY_HASH("accessibilityElementsHidden"): {
+      fromRawValue(
+          context,
+          value,
+          accessibilityElementsHidden,
+          defaults.accessibilityElementsHidden);
+      canonicalAccessibilityElementsHidden_ = accessibilityElementsHidden;
+      return;
+    }
+      RAW_SET_PROP_SWITCH_CASE_BASIC(accessibilityIgnoresInvertColors);
+      RAW_SET_PROP_SWITCH_CASE_BASIC(accessibilityRespondsToUserInteraction);
+      RAW_SET_PROP_SWITCH_CASE_BASIC(onAccessibilityTap);
+      RAW_SET_PROP_SWITCH_CASE_BASIC(onAccessibilityMagicTap);
+      RAW_SET_PROP_SWITCH_CASE_BASIC(onAccessibilityEscape);
+      RAW_SET_PROP_SWITCH_CASE_BASIC(onAccessibilityAction);
+    case CONSTEXPR_RAW_PROPS_KEY_HASH("importantForAccessibility"): {
+      fromRawValue(
+          context,
+          value,
+          importantForAccessibility,
+          defaults.importantForAccessibility);
+      canonicalImportantForAccessibility_ = importantForAccessibility;
+      return;
+    }
+      RAW_SET_PROP_SWITCH_CASE_BASIC(role);
+      RAW_SET_PROP_SWITCH_CASE(testId, "testID");
     case CONSTEXPR_RAW_PROPS_KEY_HASH("accessibilityRole"): {
       AccessibilityTraits traits = AccessibilityTraits::None;
       std::string roleString;
@@ -297,6 +590,223 @@ void AccessibilityProps::setProp(
 
       accessibilityTraits = traits;
       accessibilityRole = roleString;
+      return;
+    }
+    case CONSTEXPR_RAW_PROPS_KEY_HASH("aria-label"): {
+      if (!ReactNativeFeatureFlags::enableNativeViewPropTransformations()) {
+        return;
+      }
+      if (value.hasValue()) {
+        fromRawValue(context, value, accessibilityLabel);
+      } else {
+        accessibilityLabel = canonicalAccessibilityLabel_;
+      }
+      return;
+    }
+    case CONSTEXPR_RAW_PROPS_KEY_HASH("aria-labelledby"): {
+      if (!ReactNativeFeatureFlags::enableNativeViewPropTransformations()) {
+        return;
+      }
+      if (value.hasValue()) {
+        if (value.hasType<std::string>()) {
+          accessibilityLabelledBy = parseCommaSeparatedList((std::string)value);
+        } else {
+          fromRawValue(context, value, accessibilityLabelledBy);
+        }
+      } else {
+        accessibilityLabelledBy = defaults.accessibilityLabelledBy;
+      }
+      return;
+    }
+    case CONSTEXPR_RAW_PROPS_KEY_HASH("aria-live"): {
+      if (!ReactNativeFeatureFlags::enableNativeViewPropTransformations()) {
+        return;
+      }
+      if (value.hasValue()) {
+        if (value.hasType<std::string>()) {
+          auto str = (std::string)value;
+          if (str == "off") {
+            accessibilityLiveRegion = AccessibilityLiveRegion::None;
+          } else {
+            fromRawValue(context, value, accessibilityLiveRegion);
+          }
+        }
+      } else {
+        accessibilityLiveRegion = canonicalAccessibilityLiveRegion_;
+      }
+      return;
+    }
+    case CONSTEXPR_RAW_PROPS_KEY_HASH("aria-hidden"): {
+      if (!ReactNativeFeatureFlags::enableNativeViewPropTransformations()) {
+        return;
+      }
+      if (value.hasValue()) {
+        fromRawValue(context, value, accessibilityElementsHidden);
+        if (accessibilityElementsHidden) {
+          importantForAccessibility =
+              ImportantForAccessibility::NoHideDescendants;
+        } else {
+          importantForAccessibility = canonicalImportantForAccessibility_;
+        }
+      } else {
+        accessibilityElementsHidden = canonicalAccessibilityElementsHidden_;
+        importantForAccessibility = canonicalImportantForAccessibility_;
+      }
+      return;
+    }
+    case CONSTEXPR_RAW_PROPS_KEY_HASH("aria-busy"): {
+      if (!ReactNativeFeatureFlags::enableNativeViewPropTransformations()) {
+        return;
+      }
+      if (value.hasValue()) {
+        if (!accessibilityState.has_value()) {
+          accessibilityState = AccessibilityState{};
+        }
+        fromRawValue(context, value, accessibilityState->busy);
+      } else {
+        if (accessibilityState.has_value()) {
+          accessibilityState->busy = AccessibilityState{}.busy;
+          if (*accessibilityState == AccessibilityState{}) {
+            accessibilityState = std::nullopt;
+          }
+        }
+      }
+      return;
+    }
+    case CONSTEXPR_RAW_PROPS_KEY_HASH("aria-checked"): {
+      if (!ReactNativeFeatureFlags::enableNativeViewPropTransformations()) {
+        return;
+      }
+      if (value.hasValue()) {
+        if (!accessibilityState.has_value()) {
+          accessibilityState = AccessibilityState{};
+        }
+        if (value.hasType<std::string>()) {
+          if ((std::string)value == "mixed") {
+            accessibilityState->checked = AccessibilityState::Mixed;
+          }
+        } else if (value.hasType<bool>()) {
+          accessibilityState->checked = (bool)value
+              ? AccessibilityState::Checked
+              : AccessibilityState::Unchecked;
+        }
+      } else {
+        if (accessibilityState.has_value()) {
+          accessibilityState->checked = AccessibilityState{}.checked;
+          if (*accessibilityState == AccessibilityState{}) {
+            accessibilityState = std::nullopt;
+          }
+        }
+      }
+      return;
+    }
+    case CONSTEXPR_RAW_PROPS_KEY_HASH("aria-disabled"): {
+      if (!ReactNativeFeatureFlags::enableNativeViewPropTransformations()) {
+        return;
+      }
+      if (value.hasValue()) {
+        if (!accessibilityState.has_value()) {
+          accessibilityState = AccessibilityState{};
+        }
+        fromRawValue(context, value, accessibilityState->disabled);
+      } else {
+        if (accessibilityState.has_value()) {
+          accessibilityState->disabled = AccessibilityState{}.disabled;
+          if (*accessibilityState == AccessibilityState{}) {
+            accessibilityState = std::nullopt;
+          }
+        }
+      }
+      return;
+    }
+    case CONSTEXPR_RAW_PROPS_KEY_HASH("aria-expanded"): {
+      if (!ReactNativeFeatureFlags::enableNativeViewPropTransformations()) {
+        return;
+      }
+      if (value.hasValue()) {
+        if (!accessibilityState.has_value()) {
+          accessibilityState = AccessibilityState{};
+        }
+        fromRawValue(context, value, accessibilityState->expanded);
+      } else {
+        if (accessibilityState.has_value()) {
+          accessibilityState->expanded = AccessibilityState{}.expanded;
+          if (*accessibilityState == AccessibilityState{}) {
+            accessibilityState = std::nullopt;
+          }
+        }
+      }
+      return;
+    }
+    case CONSTEXPR_RAW_PROPS_KEY_HASH("aria-selected"): {
+      if (!ReactNativeFeatureFlags::enableNativeViewPropTransformations()) {
+        return;
+      }
+      if (value.hasValue()) {
+        if (!accessibilityState.has_value()) {
+          accessibilityState = AccessibilityState{};
+        }
+        fromRawValue(context, value, accessibilityState->selected);
+      } else {
+        if (accessibilityState.has_value()) {
+          accessibilityState->selected = AccessibilityState{}.selected;
+          if (*accessibilityState == AccessibilityState{}) {
+            accessibilityState = std::nullopt;
+          }
+        }
+      }
+      return;
+    }
+    case CONSTEXPR_RAW_PROPS_KEY_HASH("aria-valuemax"): {
+      if (!ReactNativeFeatureFlags::enableNativeViewPropTransformations()) {
+        return;
+      }
+      if (value.hasValue()) {
+        if (value.hasType<int>()) {
+          accessibilityValue.max = (int)value;
+        }
+      } else {
+        accessibilityValue.max = std::nullopt;
+      }
+      return;
+    }
+    case CONSTEXPR_RAW_PROPS_KEY_HASH("aria-valuemin"): {
+      if (!ReactNativeFeatureFlags::enableNativeViewPropTransformations()) {
+        return;
+      }
+      if (value.hasValue()) {
+        if (value.hasType<int>()) {
+          accessibilityValue.min = (int)value;
+        }
+      } else {
+        accessibilityValue.min = std::nullopt;
+      }
+      return;
+    }
+    case CONSTEXPR_RAW_PROPS_KEY_HASH("aria-valuenow"): {
+      if (!ReactNativeFeatureFlags::enableNativeViewPropTransformations()) {
+        return;
+      }
+      if (value.hasValue()) {
+        if (value.hasType<int>()) {
+          accessibilityValue.now = (int)value;
+        }
+      } else {
+        accessibilityValue.now = std::nullopt;
+      }
+      return;
+    }
+    case CONSTEXPR_RAW_PROPS_KEY_HASH("aria-valuetext"): {
+      if (!ReactNativeFeatureFlags::enableNativeViewPropTransformations()) {
+        return;
+      }
+      if (value.hasValue()) {
+        if (value.hasType<std::string>()) {
+          accessibilityValue.text = (std::string)value;
+        }
+      } else {
+        accessibilityValue.text = std::nullopt;
+      }
       return;
     }
   }

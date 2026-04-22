@@ -27,6 +27,7 @@
 #include <react/renderer/uimanager/UIManagerAnimationDelegate.h>
 #include <react/renderer/uimanager/UIManagerBinding.h>
 #include <react/renderer/uimanager/UIManagerDelegate.h>
+#include <react/renderer/viewtransition/ViewTransitionModule.h>
 #include <react/utils/ContextContainer.h>
 
 namespace facebook::react {
@@ -46,8 +47,6 @@ class Scheduler final : public UIManagerDelegate {
 
   /*
    * Registers and unregisters a `SurfaceHandler` object in the `Scheduler`.
-   * All registered `SurfaceHandler` objects must be unregistered
-   * (with the same `Scheduler`) before their deallocation.
    */
   void registerSurface(const SurfaceHandler &surfaceHandler) const noexcept;
   void unregisterSurface(const SurfaceHandler &surfaceHandler) const noexcept;
@@ -95,8 +94,13 @@ class Scheduler final : public UIManagerDelegate {
       bool blockNativeResponder) override;
   void uiManagerShouldSynchronouslyUpdateViewOnUIThread(Tag tag, const folly::dynamic &props) override;
   void uiManagerDidUpdateShadowTree(const std::unordered_map<Tag, folly::dynamic> &tagToProps) override;
+  void uiManagerDidCaptureViewSnapshot(Tag tag, SurfaceId surfaceId) override;
+  void uiManagerDidSetViewSnapshot(Tag sourceTag, Tag targetTag, SurfaceId surfaceId) override;
+  void uiManagerDidClearPendingSnapshots() override;
   void uiManagerShouldAddEventListener(std::shared_ptr<const EventListener> listener) final;
   void uiManagerShouldRemoveEventListener(const std::shared_ptr<const EventListener> &listener) final;
+  void uiManagerDidFinishReactCommit(const ShadowTree &shadowTree) override;
+  void uiManagerDidPromoteReactRevision(const ShadowTree &shadowTree) override;
   void uiManagerDidStartSurface(const ShadowTree &shadowTree) override;
 
 #pragma mark - ContextContainer
@@ -145,6 +149,8 @@ class Scheduler final : public UIManagerDelegate {
   std::shared_ptr<const ContextContainer> contextContainer_;
 
   RuntimeScheduler *runtimeScheduler_{nullptr};
+
+  std::shared_ptr<ViewTransitionModule> viewTransitionModule_;
 
   mutable std::shared_mutex onSurfaceStartCallbackMutex_;
   OnSurfaceStartCallback onSurfaceStartCallback_;

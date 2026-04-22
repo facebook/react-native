@@ -509,7 +509,7 @@ class VirtualizedList extends StateSafePureComponent<
   static _createRenderMask(
     props: VirtualizedListProps,
     cellsAroundViewport: {first: number, last: number},
-    additionalRegions?: ?$ReadOnlyArray<{first: number, last: number}>,
+    additionalRegions?: ?ReadonlyArray<{first: number, last: number}>,
   ): CellRenderMask {
     const itemCount = props.getItemCount(props.data);
 
@@ -971,15 +971,15 @@ class VirtualizedList extends StateSafePureComponent<
     // 2a. Add a cell for ListEmptyComponent if applicable
     const itemCount = this.props.getItemCount(data);
     if (itemCount === 0 && ListEmptyComponent) {
-      const element: ExactReactElement_DEPRECATED<any> = ((isValidElement(
-        ListEmptyComponent,
-      ) ? (
-        ListEmptyComponent
-      ) : (
-        // $FlowFixMe[not-a-component]
-        // $FlowFixMe[incompatible-type]
-        <ListEmptyComponent />
-      )): any);
+      const element: ExactReactElement_DEPRECATED<any> = (
+        isValidElement(ListEmptyComponent) ? (
+          ListEmptyComponent
+        ) : (
+          // $FlowFixMe[not-a-component]
+          // $FlowFixMe[incompatible-type]
+          <ListEmptyComponent />
+        )
+      ) as any;
       cells.push(
         <VirtualizedListCellContextProvider
           cellKey={this._getCellKey() + '-empty'}
@@ -1952,7 +1952,7 @@ class VirtualizedList extends StateSafePureComponent<
 
   _getNonViewportRenderRegions = (
     props: CellMetricProps,
-  ): $ReadOnlyArray<{
+  ): ReadonlyArray<{
     first: number,
     last: number,
   }> => {

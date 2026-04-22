@@ -1055,7 +1055,7 @@ TEST_F(HostTargetTest, NetworkLoadNetworkResourceStreamInterrupted) {
       })
       .RetiresOnSaturation();
 
-  // Load the resource, receiving headers succesfully.
+  // Load the resource, receiving headers successfully.
   toPage_->sendMessage(R"({
                            "id": 1,
                            "method": "Network.loadNetworkResource",
@@ -1269,7 +1269,7 @@ TEST_F(HostTargetTest, NetworkLoadNetworkResourceStreamClosed) {
       })
       .RetiresOnSaturation();
 
-  // Load the resource, receiving headers succesfully.
+  // Load the resource, receiving headers successfully.
   toPage_->sendMessage(R"({
                            "id": 1,
                            "method": "Network.loadNetworkResource",
@@ -1358,7 +1358,7 @@ TEST_F(HostTargetTest, NetworkLoadNetworkResourceAgentDisconnect) {
       })
       .RetiresOnSaturation();
 
-  // Load the resource, receiving headers succesfully.
+  // Load the resource, receiving headers successfully.
   toPage_->sendMessage(R"({
                            "id": 1,
                            "method": "Network.loadNetworkResource",
@@ -1577,6 +1577,18 @@ TEST_F(HostTargetTest, TracingDelegateIsNotifiedOnDirectTracingCall) {
       .Times(1)
       .RetiresOnSaturation();
   page_->stopTracing();
+}
+
+TEST_F(HostTargetProtocolTest, CaptureScreenshotNotSupportedWhenFlagDisabled) {
+  EXPECT_CALL(
+      fromPage(),
+      onMessage(JsonParsed(AllOf(
+          AtJsonPtr("/error/code", Eq(-32601)), AtJsonPtr("/id", Eq(1))))))
+      .RetiresOnSaturation();
+  toPage_->sendMessage(R"({
+                           "id": 1,
+                           "method": "Page.captureScreenshot"
+                         })");
 }
 
 } // namespace facebook::react::jsinspector_modern

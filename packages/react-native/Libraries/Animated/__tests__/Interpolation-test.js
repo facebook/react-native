@@ -17,7 +17,7 @@ import {PlatformColor} from '../../../Libraries/StyleSheet/PlatformColorValueTyp
 import Easing from '../Easing';
 import AnimatedInterpolation from '../nodes/AnimatedInterpolation';
 
-function createInterpolation<T: InterpolationConfigSupportedOutputType>(
+function createInterpolation<T extends InterpolationConfigSupportedOutputType>(
   config: InterpolationConfigType<T>,
 ): number => T {
   let parentValue = null;

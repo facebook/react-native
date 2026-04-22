@@ -29,10 +29,10 @@ const ModuleTemplate = ({
   methodSerializationOutputs,
 }: Readonly<{
   hasteModuleName: string,
-  structs: $ReadOnlyArray<Struct>,
+  structs: ReadonlyArray<Struct>,
   moduleName: string,
-  eventEmitters: $ReadOnlyArray<NativeModuleEventEmitterShape>,
-  methodSerializationOutputs: $ReadOnlyArray<MethodSerializationOutput>,
+  eventEmitters: ReadonlyArray<NativeModuleEventEmitterShape>,
+  methodSerializationOutputs: ReadonlyArray<MethodSerializationOutput>,
 }>) => `
 @implementation ${hasteModuleName}SpecBase
 ${eventEmitters
@@ -129,7 +129,7 @@ const MethodMapEntryTemplate = ({
 }: Readonly<{
   hasteModuleName: string,
   methodName: string,
-  structParamRecords: $ReadOnlyArray<StructParameterRecord>,
+  structParamRecords: ReadonlyArray<StructParameterRecord>,
   argCount: number,
 }>) => `
         methodMap_["${methodName}"] = MethodMetadata {${argCount}, __hostFunction_${hasteModuleName}SpecJSI_${methodName}};
@@ -141,10 +141,10 @@ const MethodMapEntryTemplate = ({
 
 function serializeModuleSource(
   hasteModuleName: string,
-  structs: $ReadOnlyArray<Struct>,
+  structs: ReadonlyArray<Struct>,
   moduleName: string,
-  eventEmitters: $ReadOnlyArray<NativeModuleEventEmitterShape>,
-  methodSerializationOutputs: $ReadOnlyArray<MethodSerializationOutput>,
+  eventEmitters: ReadonlyArray<NativeModuleEventEmitterShape>,
+  methodSerializationOutputs: ReadonlyArray<MethodSerializationOutput>,
 ): string {
   return ModuleTemplate({
     hasteModuleName,

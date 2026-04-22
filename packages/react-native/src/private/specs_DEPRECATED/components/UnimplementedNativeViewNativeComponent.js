@@ -21,6 +21,6 @@ type UnimplementedNativeViewNativeProps = Readonly<{
 
 // NOTE: This component is not implemented in paper
 // Do not require this file in paper builds
-export default (codegenNativeComponent<UnimplementedNativeViewNativeProps>(
+export default codegenNativeComponent<UnimplementedNativeViewNativeProps>(
   'UnimplementedNativeView',
-): HostComponent<UnimplementedNativeViewNativeProps>);
+) as HostComponent<UnimplementedNativeViewNativeProps>;

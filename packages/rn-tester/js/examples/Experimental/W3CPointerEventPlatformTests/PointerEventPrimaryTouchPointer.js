@@ -45,7 +45,7 @@ function PointerEventPrimaryTouchPointerTestCase(
 ) {
   const {harness} = props;
 
-  const detected_eventsRef = useRef(({}: {[string]: boolean}));
+  const detected_eventsRef = useRef({} as {[string]: boolean});
 
   const handleIncomingPointerEvent = useCallback(
     (boxLabel: string, eventType: string, isPrimary: boolean) => {

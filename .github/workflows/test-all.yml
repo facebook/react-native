@@ -33,8 +33,64 @@ jobs:
 
           echo "Should I run E2E tests? ${{ inputs.run-e2e-tests }}"
 
-  prebuild_apple_dependencies:
+  check_code_changes:
+    runs-on: ubuntu-latest
     if: github.repository == 'facebook/react-native'
+    outputs:
+      any_code_change: ${{ steps.filter_exclusions.outputs.any_code_change == 'true' || github.event_name != 'pull_request' }}
+      should_test_android: ${{ steps.filter_exclusions.outputs.should_test_android == 'true' || github.event_name != 'pull_request' }}
+      should_test_ios: ${{ steps.filter_exclusions.outputs.should_test_ios == 'true' || github.event_name != 'pull_request' }}
+      debugger_shell: ${{ steps.filter_inclusions.outputs.debugger_shell }}
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v6
+      - name: Check for code changes (exclusion patterns)
+        uses: dorny/paths-filter@209e61402dbca8aa44f967535da6666b284025ed
+        id: filter_exclusions
+        with:
+          predicate-quantifier: every
+          filters: |
+            any_code_change:
+              - '**'
+              - '!**/__docs__/**'
+              - '!**/*.md'
+            should_test_android:
+              # Not an isolated iOS change
+              - '**'
+              - '!packages/react-native/React/**'
+              - '!packages/react-native/ReactApple/**'
+              - '!packages/react-native/**/*.m'
+              - '!packages/react-native/**/*.mm'
+              - '!packages/react-native/**/*.podspec'
+              - '!packages/rn-tester/RNTester/**'
+              - '!packages/rn-tester/RNTesterPods*/**'
+              - '!packages/rn-tester/Podfile*'
+            should_test_ios:
+              # Not an isolated Android change
+              - '**'
+              - '!gradle/**'
+              - '!gradle*'
+              - '!packages/gradle-plugin/**'
+              - '!packages/react-native/ReactAndroid/**'
+              - '!packages/react-native/**/*.java'
+              - '!packages/react-native/**/*.kt'
+              - '!packages/react-native/**/*.gradle*'
+              - '!packages/react-native-popup-menu-android/**'
+              - '!packages/rn-tester/android/**'
+      - name: Check for code changes (inclusion patterns)
+        uses: dorny/paths-filter@209e61402dbca8aa44f967535da6666b284025ed
+        id: filter_inclusions
+        with:
+          filters: |
+            debugger_shell:
+              - 'packages/debugger-shell/**'
+              - 'scripts/debugger-shell/**'
+
+  prebuild_apple_dependencies:
+    needs: check_code_changes
+    if: |
+      needs.check_code_changes.outputs.any_code_change == 'true' &&
+      needs.check_code_changes.outputs.should_test_ios == 'true'
     uses: ./.github/workflows/prebuild-ios-dependencies.yml
     secrets: inherit
 
@@ -60,6 +116,10 @@ jobs:
 
   test_ios_rntester_dynamic_frameworks:
     runs-on: macos-15-large
+    needs: check_code_changes
+    if: |
+      needs.check_code_changes.outputs.any_code_change == 'true' &&
+      needs.check_code_changes.outputs.should_test_ios == 'true'
     strategy:
       fail-fast: false
       matrix:
@@ -115,8 +175,6 @@ jobs:
         run: ls -lR /tmp/RNTesterBuild
       - name: Setup xcode
         uses: ./.github/actions/setup-xcode
-        with:
-          platform: ios
       - name: Run E2E Tests
         uses: ./.github/actions/maestro-ios
         with:
@@ -137,8 +195,6 @@ jobs:
         uses: actions/checkout@v6
       - name: Setup xcode
         uses: ./.github/actions/setup-xcode
-        with:
-          platform: ios
       - name: Setup node.js
         uses: ./.github/actions/setup-node
       - name: Run yarn
@@ -195,7 +251,7 @@ jobs:
 
           export RCT_USE_LOCAL_RN_DEP=/tmp/third-party/ReactNativeDependencies${{ matrix.flavor }}.xcframework.tar.gz
           # Disable prebuilds for now, as they are causing issues with E2E tests for 0.82-stable branch
-          # export RCT_TESTONLY_RNCORE_TARBALL_PATH="/tmp/ReactCore/ReactCore${{ matrix.flavor }}.xcframework.tar.gz"
+          export RCT_TESTONLY_RNCORE_TARBALL_PATH="/tmp/ReactCore/ReactCore${{ matrix.flavor }}.xcframework.tar.gz"
           RCT_NEW_ARCH_ENABLED=$NEW_ARCH_ENABLED bundle exec pod install
 
           xcodebuild \
@@ -282,35 +338,60 @@ jobs:
           flavor: ${{ matrix.flavor }}
           working-directory: /tmp/RNTestProject
 
-  run_fantom_tests:
+  build_fantom_runner:
     runs-on: 8-core-ubuntu
-    needs: [set_release_type]
+    needs: [set_release_type, check_code_changes, lint]
+    if: needs.check_code_changes.outputs.any_code_change == 'true'
     container:
       image: reactnativecommunity/react-native-android:latest
       env:
+        # Set the encoding to resolve a known character encoding issue with decompressing tar.gz files in containers
+        # via Gradle: https://github.com/gradle/gradle/issues/23391#issuecomment-1878979127
+        LC_ALL: C.UTF8
         TERM: "dumb"
         GRADLE_OPTS: "-Dorg.gradle.daemon=false"
         ORG_GRADLE_PROJECT_SIGNING_PWD: ${{ secrets.ORG_GRADLE_PROJECT_SIGNING_PWD }}
         ORG_GRADLE_PROJECT_SIGNING_KEY: ${{ secrets.ORG_GRADLE_PROJECT_SIGNING_KEY }}
+        REACT_NATIVE_DOWNLOADS_DIR: /opt/react-native-downloads
     steps:
       - name: Checkout
         uses: actions/checkout@v6
-      - name: Build and Test Fantom
-        uses: ./.github/actions/run-fantom-tests
+      - name: Build Fantom Runner
+        uses: ./.github/actions/build-fantom-runner
         with:
           release-type: ${{ needs.set_release_type.outputs.RELEASE_TYPE }}
           gradle-cache-encryption-key: ${{ secrets.GRADLE_CACHE_ENCRYPTION_KEY }}
 
-  build_android:
+  run_fantom_tests:
     runs-on: 8-core-ubuntu
-    needs: [set_release_type]
+    needs: [build_fantom_runner]
     container:
       image: reactnativecommunity/react-native-android:latest
       env:
         TERM: "dumb"
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v6
+      - name: Run Fantom Tests
+        uses: ./.github/actions/run-fantom-tests
+
+  build_android:
+    runs-on: 8-core-ubuntu
+    needs: [set_release_type, check_code_changes]
+    if: |
+      needs.check_code_changes.outputs.any_code_change == 'true' &&
+      needs.check_code_changes.outputs.should_test_android == 'true'
+    container:
+      image: reactnativecommunity/react-native-android:latest
+      env:
+        # Set the encoding to resolve a known character encoding issue with decompressing tar.gz files in containers
+        # via Gradle: https://github.com/gradle/gradle/issues/23391#issuecomment-1878979127
+        LC_ALL: C.UTF8
+        TERM: "dumb"
         GRADLE_OPTS: "-Dorg.gradle.daemon=false"
         ORG_GRADLE_PROJECT_SIGNING_PWD: ${{ secrets.ORG_GRADLE_PROJECT_SIGNING_PWD }}
         ORG_GRADLE_PROJECT_SIGNING_KEY: ${{ secrets.ORG_GRADLE_PROJECT_SIGNING_KEY }}
+        REACT_NATIVE_DOWNLOADS_DIR: /opt/react-native-downloads
     steps:
       - name: Checkout
         uses: actions/checkout@v6
@@ -363,7 +444,11 @@ jobs:
       image: reactnativecommunity/react-native-android:latest
       env:
         TERM: "dumb"
+        # Set the encoding to resolve a known character encoding issue with decompressing tar.gz files in containers
+        # via Gradle: https://github.com/gradle/gradle/issues/23391#issuecomment-1878979127
+        LC_ALL: C.UTF8
         GRADLE_OPTS: "-Dorg.gradle.daemon=false"
+        REACT_NATIVE_DOWNLOADS_DIR: /opt/react-native-downloads
     steps:
       - name: Checkout
         uses: actions/checkout@v6
@@ -386,6 +471,7 @@ jobs:
       TERM: "dumb"
       GRADLE_OPTS: "-Dorg.gradle.daemon=false"
       TARGET_ARCHITECTURE: "arm64-v8a"
+      REACT_NATIVE_DOWNLOADS_DIR: /opt/react-native-downloads
     continue-on-error: true
     strategy:
       fail-fast: false
@@ -473,13 +559,44 @@ jobs:
           flavor: ${{ matrix.flavor }}
           use-frameworks: ${{ matrix.use_frameworks }}
 
-  test_js:
+  lint:
     runs-on: ubuntu-latest
     if: github.repository == 'facebook/react-native'
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v6
+      - name: Install dependencies
+        uses: ./.github/actions/yarn-install
+      - name: Lint file structure
+        shell: bash
+        run: ./.github/workflow-scripts/lint_files.sh
+      - name: Run shellcheck
+        shell: bash
+        run: ./.github/workflow-scripts/analyze_scripts.sh
+      - name: Prettier
+        shell: bash
+        run: yarn run format-check
+      - name: markdownlint
+        shell: bash
+        run: yarn run lint-markdown
+      - name: ESLint
+        shell: bash
+        run: ./.github/workflow-scripts/exec_swallow_error.sh yarn lint --format junit -o ./reports/junit/eslint/results.xml
+      - name: Flow
+        shell: bash
+        run: yarn flow-check
+      - name: TypeScript
+        shell: bash
+        run: yarn test-typescript
+
+  test_js:
+    runs-on: ubuntu-latest
+    needs: [check_code_changes, lint]
+    if: needs.check_code_changes.outputs.any_code_change == 'true'
     strategy:
       fail-fast: false
       matrix:
-        node-version: ["24", "22.11.0"]
+        node-version: ["24", "22", "20.19.4"]
     steps:
       - name: Checkout
         uses: actions/checkout@v6
@@ -488,18 +605,41 @@ jobs:
         with:
           node-version: ${{ matrix.node-version }}
 
-  lint:
+  build_js_types:
     runs-on: ubuntu-latest
-    if: github.repository == 'facebook/react-native'
-    env:
-      GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+    needs: [check_code_changes, lint]
+    if: needs.check_code_changes.outputs.any_code_change == 'true'
     steps:
       - name: Checkout
         uses: actions/checkout@v6
-      - name: Run all the linters
-        uses: ./.github/actions/lint
-        with:
-          github-token: ${{ env.GH_TOKEN }}
+      - name: Setup Node.js
+        uses: ./.github/actions/setup-node
+      - name: Install dependencies
+        uses: ./.github/actions/yarn-install
+      - name: Build react-native package types
+        shell: bash
+        run: yarn build-types --skip-snapshot
+      - name: Validate generated types
+        shell: bash
+        run: yarn test-generated-typescript
+
+  build_debugger_shell:
+    runs-on: ubuntu-latest
+    needs: check_code_changes
+    if: needs.check_code_changes.outputs.debugger_shell == 'true'
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v6
+      - name: Setup Node.js
+        uses: ./.github/actions/setup-node
+      - name: Install dependencies
+        uses: ./.github/actions/yarn-install
+      - name: Build packages
+        shell: bash
+        run: yarn build --prepack
+      - name: Verify debugger-shell build
+        shell: bash
+        run: node scripts/debugger-shell/build-binary.js
 
   # This job should help with the E2E flakyness.
   # In case E2E tests fails, it launches a new retry-workflow workflow, passing the current run_id as input.

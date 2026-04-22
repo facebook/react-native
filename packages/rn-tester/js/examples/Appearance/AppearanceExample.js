@@ -200,6 +200,7 @@ exports.examples = [
   },
   {
     title: 'Context forced to light theme',
+    name: 'forced-light',
     render(): React.MixedElement {
       return (
         <RNTesterThemeContext.Provider value={themes.light}>
@@ -214,6 +215,7 @@ exports.examples = [
   },
   {
     title: 'Context forced to dark theme',
+    name: 'forced-dark',
     render(): React.MixedElement {
       return (
         <RNTesterThemeContext.Provider value={themes.dark}>

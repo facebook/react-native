@@ -18,7 +18,7 @@ import {setPlatformObject} from '../webidl/PlatformObjects';
 import * as MutationObserverManager from './internals/MutationObserverManager';
 
 export type MutationObserverCallback = (
-  mutationRecords: $ReadOnlyArray<MutationRecord>,
+  mutationRecords: ReadonlyArray<MutationRecord>,
   observer: MutationObserver,
 ) => unknown;
 
@@ -29,7 +29,7 @@ export interface MutationObserverInit {
 
   // Unsupported:
   +attributes?: boolean;
-  +attributeFilter?: $ReadOnlyArray<string>;
+  +attributeFilter?: ReadonlyArray<string>;
   +attributeOldValue?: boolean;
   +characterData?: boolean;
   +characterDataOldValue?: boolean;

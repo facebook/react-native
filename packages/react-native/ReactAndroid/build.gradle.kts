@@ -100,6 +100,8 @@ val preparePrefab by
                       Pair("../ReactCommon/hermes/inspector-modern/", "hermes/inspector-modern/"),
                       // fabricjni
                       Pair("src/main/jni/react/fabric", "react/fabric/"),
+                      // uimanagerjni
+                      Pair("src/main/jni/react/uimanager", "react/uimanager/"),
                       // glog
                       Pair(File(buildDir, "third-party-ndk/glog/exported/").absolutePath, ""),
                       // jsiinpsector
@@ -268,6 +270,18 @@ val preparePrefab by
                       // yoga
                       Pair("../ReactCommon/yoga/", ""),
                       Pair("src/main/jni/first-party/yogajni/jni", ""),
+                      // oscompat
+                      Pair("../ReactCommon/oscompat/", "oscompat/"),
+                      // react_renderer_animationbackend
+                      Pair(
+                          "../ReactCommon/react/renderer/animationbackend/",
+                          "react/renderer/animationbackend/",
+                      ),
+                      // react_renderer_viewtransition
+                      Pair(
+                          "../ReactCommon/react/renderer/viewtransition/",
+                          "react/renderer/viewtransition/",
+                      ),
                   ),
               ),
               PrefabPreprocessingEntry(
@@ -280,11 +294,10 @@ val preparePrefab by
       outputDir.set(prefabHeadersDir)
     }
 
-val createNativeDepsDirectories by
-    tasks.registering {
-      downloadsDir.mkdirs()
-      thirdPartyNdkDir.mkdirs()
-    }
+val createNativeDepsDirectories by tasks.registering {
+  downloadsDir.mkdirs()
+  thirdPartyNdkDir.mkdirs()
+}
 
 val downloadBoostDest = File(downloadsDir, "boost_${BOOST_VERSION}.tar.gz")
 val downloadBoost by
@@ -425,23 +438,21 @@ val prepareGlog by
     }
 
 // Tasks used by Fantom to download the Native 3p dependencies used.
-val prepareNative3pDependencies by
-    tasks.registering {
-      dependsOn(
-          prepareBoost,
-          prepareDoubleConversion,
-          prepareFastFloat,
-          prepareFmt,
-          prepareFolly,
-          prepareGlog,
-      )
-    }
+val prepareNative3pDependencies by tasks.registering {
+  dependsOn(
+      prepareBoost,
+      prepareDoubleConversion,
+      prepareFastFloat,
+      prepareFmt,
+      prepareFolly,
+      prepareGlog,
+  )
+}
 
-val prepareKotlinBuildScriptModel by
-    tasks.registering {
-      // This task is run when Gradle Sync is running.
-      // We create it here so we can let it depend on preBuild inside the android{}
-    }
+val prepareKotlinBuildScriptModel by tasks.registering {
+  // This task is run when Gradle Sync is running.
+  // We create it here so we can let it depend on preBuild inside the android{}
+}
 
 // As ReactAndroid builds from source, the codegen needs to be built before it can be invoked.
 // This is not the case for users of React Native, as we ship a compiled version of the codegen.
@@ -676,6 +687,10 @@ tasks.withType<KotlinCompile>().configureEach {
   exclude("com/facebook/annotationprocessors/**")
   exclude("com/facebook/react/processing/**")
   exclude("com/facebook/react/module/processing/**")
+  // These are instrumentation tests that require a device/emulator and native test
+  // libraries not available in the OSS Gradle build (Buck-only).
+  exclude("com/facebook/react/fabric/FabricMountingManagerInstrumentationTest.kt")
+  exclude("com/facebook/react/fabric/FabricMountingManagerTestHelper.kt")
 }
 
 dependencies {

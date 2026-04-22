@@ -53,7 +53,7 @@ export type PerformanceMeasureOptions =
       end?: DOMHighResTimeStamp | string,
     }>;
 
-const ENTRY_TYPES_AVAILABLE_FROM_TIMELINE: $ReadOnlyArray<PerformanceEntryType> =
+const ENTRY_TYPES_AVAILABLE_FROM_TIMELINE: ReadonlyArray<PerformanceEntryType> =
   ['mark', 'measure'];
 
 const NativePerformance = nullthrows(MaybeNativePerformance);

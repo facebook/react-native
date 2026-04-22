@@ -575,7 +575,7 @@ namespace facebook::react {
     }
 
     static facebook::jsi::Value __hostFunction_NativeSampleTurboModuleSpecJSI_getEnums(facebook::jsi::Runtime& rt, TurboModule &turboModule, const facebook::jsi::Value* args, size_t count) {
-      return static_cast<ObjCTurboModule&>(turboModule).invokeObjCMethod(rt, StringKind, \\"getEnums\\", @selector(getEnums:enumFloat:enumString:), args, count);
+      return static_cast<ObjCTurboModule&>(turboModule).invokeObjCMethod(rt, StringKind, \\"getEnums\\", @selector(getEnums:enumString:), args, count);
     }
 
     static facebook::jsi::Value __hostFunction_NativeSampleTurboModuleSpecJSI_getConstants(facebook::jsi::Runtime& rt, TurboModule &turboModule, const facebook::jsi::Value* args, size_t count) {
@@ -621,7 +621,7 @@ namespace facebook::react {
         methodMap_[\\"getValueWithOptionalArg\\"] = MethodMetadata {1, __hostFunction_NativeSampleTurboModuleSpecJSI_getValueWithOptionalArg};
         
         
-        methodMap_[\\"getEnums\\"] = MethodMetadata {3, __hostFunction_NativeSampleTurboModuleSpecJSI_getEnums};
+        methodMap_[\\"getEnums\\"] = MethodMetadata {2, __hostFunction_NativeSampleTurboModuleSpecJSI_getEnums};
         
         
         methodMap_[\\"getConstants\\"] = MethodMetadata {0, __hostFunction_NativeSampleTurboModuleSpecJSI_getConstants};

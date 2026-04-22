@@ -12,14 +12,14 @@ import type {EdgeInsetsProp} from '../../StyleSheet/EdgeInsetsPropType';
 import type {ViewStyleProp} from '../../StyleSheet/StyleSheet';
 import type {GestureResponderEvent} from '../../Types/CoreEventTypes';
 
-import TouchableWithoutFeedback from '../../Components/Touchable/TouchableWithoutFeedback';
+import Pressable from '../../Components/Pressable/Pressable';
 import View from '../../Components/View/View';
 import StyleSheet from '../../StyleSheet/StyleSheet';
 import * as LogBoxStyle from './LogBoxStyle';
 import * as React from 'react';
 import {useState} from 'react';
 
-type Props = Readonly<{
+component LogBoxButton(
   id?: string,
   backgroundColor: Readonly<{
     default: string,
@@ -28,46 +28,67 @@ type Props = Readonly<{
   children?: React.Node,
   hitSlop?: ?EdgeInsetsProp,
   onPress?: ?(event: GestureResponderEvent) => void,
+  onFocusChange?: ?(focused: boolean) => void,
   style?: ViewStyleProp,
-}>;
+) {
+  const [focused, setFocused] = useState(false);
 
-function LogBoxButton(props: Props): React.Node {
-  const [pressed, setPressed] = useState(false);
-
-  let backgroundColor = props.backgroundColor;
-  if (!backgroundColor) {
-    backgroundColor = {
+  let resolvedBackgroundColor = backgroundColor;
+  if (!resolvedBackgroundColor) {
+    resolvedBackgroundColor = {
       default: LogBoxStyle.getBackgroundColor(0.95),
       pressed: LogBoxStyle.getBackgroundColor(0.6),
     };
   }
 
-  const content = (
-    <View
-      id={props.id}
-      style={StyleSheet.compose(
-        {
-          backgroundColor: pressed
-            ? backgroundColor.pressed
-            : backgroundColor.default,
-        },
-        props.style,
-      )}>
-      {props.children}
-    </View>
-  );
+  if (onPress == null) {
+    return (
+      <View
+        id={id}
+        style={StyleSheet.compose(
+          {backgroundColor: resolvedBackgroundColor.default},
+          style,
+        )}>
+        {children}
+      </View>
+    );
+  }
 
-  return props.onPress == null ? (
-    content
-  ) : (
-    <TouchableWithoutFeedback
-      hitSlop={props.hitSlop}
-      onPress={props.onPress}
-      onPressIn={() => setPressed(true)}
-      onPressOut={() => setPressed(false)}>
-      {content}
-    </TouchableWithoutFeedback>
+  return (
+    <Pressable
+      id={id}
+      focusable={true}
+      hitSlop={hitSlop}
+      onPress={onPress}
+      onFocus={() => {
+        setFocused(true);
+        onFocusChange?.(true);
+      }}
+      onBlur={() => {
+        setFocused(false);
+        onFocusChange?.(false);
+      }}
+      style={({pressed}) =>
+        StyleSheet.compose(
+          {
+            backgroundColor: pressed
+              ? resolvedBackgroundColor.pressed
+              : resolvedBackgroundColor.default,
+          },
+          focused ? StyleSheet.compose(style, styles.focusRing) : style,
+        )
+      }>
+      {children}
+    </Pressable>
   );
 }
+
+const styles = StyleSheet.create({
+  focusRing: {
+    borderWidth: 2,
+    borderColor: LogBoxStyle.getTextColor(0.6),
+    borderRadius: 4,
+  },
+});
 
 export default LogBoxButton;

@@ -12,8 +12,6 @@ import com.facebook.react.bridge.JSApplicationIllegalArgumentException
 import com.facebook.react.bridge.JavaOnlyMap
 import com.facebook.react.bridge.ReadableMap
 import com.facebook.react.bridge.UIManager
-import com.facebook.react.uimanager.common.UIManagerType
-import com.facebook.react.uimanager.common.ViewUtil.getUIManagerType
 
 /**
  * Animated node that represents view properties. There is a special handling logic implemented for
@@ -28,6 +26,11 @@ internal class PropsAnimatedNode(
   private val propNodeMapping: MutableMap<String, Int>
   private val propMap = JavaOnlyMap()
   private var connectedViewUIManager: UIManager? = null
+
+  val connectedView: View?
+    // resolveView throws an [IllegalViewOperationException] when the view doesn't exist
+    // (this can happen if the surface is being deallocated).
+    get() = runCatching { connectedViewUIManager?.resolveView(connectedViewTag) }.getOrNull()
 
   init {
     val props = config.getMap("props")
@@ -62,23 +65,8 @@ internal class PropsAnimatedNode(
   }
 
   fun restoreDefaultValues() {
-    // Cannot restore default values if this view has already been disconnected.
-    if (connectedViewTag == -1) {
-      return
-    }
-    // Don't restore default values in Fabric.
-    // In Non-Fabric this had the effect of "restore the value to whatever the value was on the
-    // ShadowNode instead of in the View hierarchy". However, "synchronouslyUpdateViewOnUIThread"
-    // will not have that impact on Fabric, because the FabricUIManager doesn't have access to the
-    // ShadowNode layer.
-    if (getUIManagerType(connectedViewTag) == UIManagerType.FABRIC) {
-      return
-    }
-    val it = propMap.keySetIterator()
-    while (it.hasNextKey()) {
-      propMap.putNull(it.nextKey())
-    }
-    connectedViewUIManager?.synchronouslyUpdateViewOnUIThread(connectedViewTag, propMap)
+    // In Fabric, we don't restore default values since the FabricUIManager doesn't have access
+    // to the ShadowNode layer. This method was only relevant for the legacy Paper renderer.
   }
 
   fun updateView() {
@@ -111,11 +99,6 @@ internal class PropsAnimatedNode(
     }
     connectedViewUIManager?.synchronouslyUpdateViewOnUIThread(connectedViewTag, propMap)
   }
-
-  val connectedView: View?
-    // resolveView throws an [IllegalViewOperationException] when the view doesn't exist
-    // (this can happen if the surface is being deallocated).
-    get() = runCatching { connectedViewUIManager?.resolveView(connectedViewTag) }.getOrNull()
 
   override fun prettyPrint(): String =
       "PropsAnimatedNode[$tag] connectedViewTag: $connectedViewTag " +

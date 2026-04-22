@@ -35,9 +35,9 @@ export default class MutationRecord {
     const target: ReactNativeElement = nativeRecord.target;
     this._target = target;
     // $FlowExpectedError[incompatible-type] the codegen doesn't support the actual type.
-    const addedNodes: $ReadOnlyArray<ReadOnlyNode> = nativeRecord.addedNodes;
+    const addedNodes: ReadonlyArray<ReadOnlyNode> = nativeRecord.addedNodes;
     this._addedNodes = createNodeList(addedNodes);
-    const removedNodes: $ReadOnlyArray<ReadOnlyNode> =
+    const removedNodes: ReadonlyArray<ReadOnlyNode> =
       // $FlowFixMe[incompatible-type]
       nativeRecord.removedNodes;
     this._removedNodes = createNodeList(removedNodes);

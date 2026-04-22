@@ -48,7 +48,7 @@ export type TestTaskTiming = {
 
 export type BenchmarkResult = {
   type: string,
-  timings: $ReadOnlyArray<TestTaskTiming>,
+  timings: ReadonlyArray<TestTaskTiming>,
 };
 
 type InternalTestOptions = Readonly<{
@@ -66,13 +66,13 @@ type TestWithArgOptions<TestArgType> =
 
 interface ParameterizedTestFunction {
   <TestArgType>(
-    testArgs: $ReadOnlyArray<TestArgType>,
+    testArgs: ReadonlyArray<TestArgType>,
     name: TestWithArgName<TestArgType>,
     fn: (testArg: TestArgType) => ReturnType<SyncFn>,
     options?: TestWithArgOptions<TestArgType>,
   ): SuiteAPI;
   only: <TestArgType>(
-    testArgs: $ReadOnlyArray<TestArgType>,
+    testArgs: ReadonlyArray<TestArgType>,
     name: TestWithArgName<TestArgType>,
     fn: (testArg: TestArgType) => ReturnType<SyncFn>,
     options?: TestWithArgOptions<TestArgType>,
@@ -113,7 +113,7 @@ export function suite(
       throw new Error('No benchmark tests defined');
     }
 
-    const {isRunningFromCI, forceTestModeForBenchmarks} = getConstants();
+    const {isRunningFromCI, runBenchmarks} = getConstants();
 
     // If we're running from CI and there's no verification function, there's
     // no point in running the benchmark.
@@ -121,7 +121,7 @@ export function suite(
     // logic in the benchmark doesn't break.
     const isTestOnly =
       suiteOptions.testOnly === true ||
-      forceTestModeForBenchmarks ||
+      !runBenchmarks ||
       (isRunningFromCI && verifyFns.length === 0);
 
     const benchOptions: BenchOptions = isTestOnly
@@ -180,7 +180,11 @@ export function suite(
       bench.add(task.name, task.fn, options);
     }
 
-    if (!isTestOnly) {
+    if (isTestOnly) {
+      console.log(
+        `Running benchmark in test mode: ${suiteName}. Use --benchmarks to run in benchmark mode.`,
+      );
+    } else {
       console.log(`Running benchmark: ${suiteName}. Please wait.`);
     }
 
@@ -211,7 +215,9 @@ export function suite(
         'Failing focused test to prevent it from being committed',
       );
     }
-    reportBenchmarkResult(createBenchmarkResultsObject(bench, tasks));
+    if (!isTestOnly) {
+      reportBenchmarkResult(createBenchmarkResultsObject(bench, tasks));
+    }
   });
 
   const test = (name: string, fn: SyncFn, options?: FnOptions): SuiteAPI => {
@@ -243,7 +249,7 @@ export function suite(
 
   // $FlowFixMe[incompatible-type]
   const testEach: ParameterizedTestFunction = <TestArgType>(
-    testArgs: $ReadOnlyArray<TestArgType>,
+    testArgs: ReadonlyArray<TestArgType>,
     name: TestWithArgName<TestArgType>,
     fn: (testArg: TestArgType) => ReturnType<SyncFn>,
     options?: TestWithArgOptions<TestArgType>,

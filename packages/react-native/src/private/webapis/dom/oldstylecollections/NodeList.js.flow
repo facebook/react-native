@@ -30,5 +30,5 @@ declare export default class NodeList<+T> implements Iterable<T>, ArrayLike<T> {
 }
 
 declare export function createNodeList<T>(
-  elements: $ReadOnlyArray<T>,
+  elements: ReadonlyArray<T>,
 ): NodeList<T>;

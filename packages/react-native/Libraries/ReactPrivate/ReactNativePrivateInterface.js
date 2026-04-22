@@ -8,6 +8,7 @@
  * @format
  */
 
+import typeof dispatchNativeEvent from '../../src/private/renderer/events/dispatchNativeEvent';
 import typeof CustomEvent from '../../src/private/webapis/dom/events/CustomEvent';
 import typeof BatchedBridge from '../BatchedBridge/BatchedBridge';
 import typeof legacySendAccessibilityEvent from '../Components/AccessibilityInfo/legacySendAccessibilityEvent';
@@ -132,5 +133,9 @@ module.exports = {
   get getInternalInstanceHandleFromPublicInstance(): getInternalInstanceHandleFromPublicInstance {
     return require('../ReactNative/ReactFabricPublicInstance/ReactFabricPublicInstance')
       .getInternalInstanceHandleFromPublicInstance;
+  },
+  get dispatchNativeEvent(): dispatchNativeEvent {
+    return require('../../src/private/renderer/events/dispatchNativeEvent')
+      .default;
   },
 };

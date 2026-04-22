@@ -70,7 +70,7 @@ const defaultBuildOptions = {
 };
 
 function getBuildOptions(
-  packageName: $Keys<BuildConfig['packages']>,
+  packageName: keyof BuildConfig['packages'],
 ): Required<BuildOptions> {
   return {
     ...defaultBuildOptions,
@@ -79,7 +79,7 @@ function getBuildOptions(
 }
 
 function getBabelConfig(
-  packageName: $Keys<BuildConfig['packages']>,
+  packageName: keyof BuildConfig['packages'],
 ): BabelCoreOptions {
   const {target} = getBuildOptions(packageName);
 
@@ -90,7 +90,7 @@ function getBabelConfig(
 }
 
 function getTypeScriptCompilerOptions(
-  packageName: $Keys<BuildConfig['packages']>,
+  packageName: keyof BuildConfig['packages'],
 ): Object {
   const {target} = getBuildOptions(packageName);
 

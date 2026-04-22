@@ -13,10 +13,27 @@ require_relative './utils.rb'
 ### building ReactNativeCore from source (then this function does nothing).
 def add_rncore_dependency(s)
     if !ReactNativeCoreUtils.build_rncore_from_source()
+        # Add the dependency
+        s.dependency "React-Core-prebuilt"
+
         current_pod_target_xcconfig = s.to_hash["pod_target_xcconfig"] || {}
         current_pod_target_xcconfig = current_pod_target_xcconfig.to_h unless current_pod_target_xcconfig.is_a?(Hash)
-        s.dependency "React-Core-prebuilt"
-        current_pod_target_xcconfig["HEADER_SEARCH_PATHS"] ||= [] << "$(PODS_ROOT)/React-Core-prebuilt/React.xcframework/Headers"
+
+        # Add VFS overlay flags for both Objective-C and Swift
+        # The VFS overlay file is pre-resolved at pod install time for each platform slice.
+        # We reference it directly in the xcframework using the React-VFS.yaml file that
+        # is written to the React-Core-prebuilt folder during setup_vfs_overlay.
+        # See scripts/ios-prebuild/__docs__/README.md for more details on VFS overlays.
+        vfs_overlay_flag = "-ivfsoverlay $(PODS_ROOT)/React-Core-prebuilt/React-VFS.yaml"
+        current_pod_target_xcconfig["OTHER_CFLAGS"] ||= "$(inherited)"
+        current_pod_target_xcconfig["OTHER_CFLAGS"] += " #{vfs_overlay_flag}"
+        current_pod_target_xcconfig["OTHER_CPLUSPLUSFLAGS"] ||= "$(inherited)"
+        current_pod_target_xcconfig["OTHER_CPLUSPLUSFLAGS"] += " #{vfs_overlay_flag}"
+        # For Swift, we need to use -Xcc to pass flags to the underlying Clang compiler
+        # Both the flag and its argument need separate -Xcc prefixes
+        current_pod_target_xcconfig["OTHER_SWIFT_FLAGS"] ||= "$(inherited)"
+        current_pod_target_xcconfig["OTHER_SWIFT_FLAGS"] += " -Xcc -ivfsoverlay -Xcc $(PODS_ROOT)/React-Core-prebuilt/React-VFS.yaml"
+
         s.pod_target_xcconfig = current_pod_target_xcconfig
     end
 end
@@ -450,4 +467,96 @@ class ReactNativeCoreUtils
         return latest_nightly
     end
 
+    # Processes the VFS overlay file from the React.xcframework to resolve the ${ROOT_PATH} placeholder.
+    # This method should be called from react_native_post_install after pod install completes.
+    #
+    # The VFS overlay file maps header import paths to their actual locations within the xcframework.
+    # Since the xcframework contains platform-specific slices, we generate a resolved VFS file for each
+    # slice and also create a default VFS file that can be used immediately (before script phases run).
+    def self.process_vfs_overlay()
+        return if @@build_from_source
+
+        prebuilt_path = File.join(Pod::Config.instance.project_pods_root, "React-Core-prebuilt")
+        xcframework_path = File.join(prebuilt_path, "React.xcframework")
+        vfs_template_path = File.join(xcframework_path, "React-VFS-template.yaml")
+
+        unless File.exist?(vfs_template_path)
+            rncore_log("VFS overlay template not found at #{vfs_template_path}", :error)
+            exit 1
+        end
+
+        rncore_log("Processing VFS overlay file...")
+
+        # Read the template content
+        vfs_template_content = File.read(vfs_template_path)
+
+        # Write the VFS file - use the top-level xcframework path
+        # so that ${ROOT_PATH}/Headers points to the xcframework's Headers folder
+        resolved_vfs_content = vfs_template_content.gsub('${ROOT_PATH}', xcframework_path)
+        resolved_vfs_path = File.join(prebuilt_path, "React-VFS.yaml")
+        File.write(resolved_vfs_path, resolved_vfs_content)
+        rncore_log("  Created VFS overlay at #{resolved_vfs_path}")
+
+        rncore_log("VFS overlay setup complete")
+    end
+
+    # Configures the xcconfig files for aggregate (main app) targets to enable VFS overlay for React Native Core.
+    # This is needed because the main app target does not go through podspec processing,
+    # so it won't get the VFS overlay flags from add_rncore_dependency.
+    #
+    # Parameters:
+    # - installer: The CocoaPods installer object
+    def self.configure_aggregate_xcconfig(installer)
+        return if @@build_from_source
+
+        prebuilt_path = File.join(Pod::Config.instance.project_pods_root, "React-Core-prebuilt")
+        vfs_overlay_path = File.join(prebuilt_path, "React-VFS.yaml")
+
+        unless File.exist?(vfs_overlay_path)
+            rncore_log("VFS overlay not found at #{vfs_overlay_path}, skipping prebuilt xcconfig configuration", :error)
+            exit 1
+        end
+
+        rncore_log("Configuring xcconfig for prebuilt React Native Core...")
+
+        vfs_overlay_flag = " -ivfsoverlay \"#{vfs_overlay_path}\""
+        swift_vfs_overlay_flag = " -Xcc -ivfsoverlay -Xcc \"#{vfs_overlay_path}\""
+
+        # Add flags to aggregate target xcconfigs (these are used by the main app target)
+        installer.aggregate_targets.each do |aggregate_target|
+            aggregate_target.xcconfigs.each do |config_name, config_file|
+                add_vfs_overlay_flags(config_file.attributes, vfs_overlay_flag, swift_vfs_overlay_flag)
+                xcconfig_path = aggregate_target.xcconfig_path(config_name)
+                config_file.save_as(xcconfig_path)
+            end
+        end
+
+        # Add flags to ALL pod targets (for third-party pods that don't call add_rncore_dependency)
+        installer.pod_targets.each do |pod_target|
+            pod_target.build_settings.each do |config_name, build_settings|
+                xcconfig_path = pod_target.xcconfig_path(config_name)
+                next unless File.exist?(xcconfig_path)
+
+                xcconfig = Xcodeproj::Config.new(xcconfig_path)
+
+                # Check if VFS overlay is already present
+                other_cflags = xcconfig.attributes["OTHER_CFLAGS"] || ""
+                next if other_cflags.include?("ivfsoverlay")
+
+                add_vfs_overlay_flags(xcconfig.attributes, vfs_overlay_flag, swift_vfs_overlay_flag)
+                xcconfig.save_as(xcconfig_path)
+            end
+        end
+
+        rncore_log("Prebuilt xcconfig configuration complete")
+    end
+
+    # Helper method to add VFS overlay flags to an xcconfig attributes map
+    def self.add_vfs_overlay_flags(attributes, vfs_overlay_flag, swift_vfs_overlay_flag)
+        ReactNativePodsUtils.add_flag_to_map_with_inheritance(attributes, "OTHER_CFLAGS", vfs_overlay_flag)
+        ReactNativePodsUtils.add_flag_to_map_with_inheritance(attributes, "OTHER_CPLUSPLUSFLAGS", vfs_overlay_flag)
+        ReactNativePodsUtils.add_flag_to_map_with_inheritance(attributes, "OTHER_SWIFT_FLAGS", swift_vfs_overlay_flag)
+        # Suppress incomplete umbrella warnings for the prebuilt frameworks (it is expected, as our umbrella headers do not include all headers)
+        ReactNativePodsUtils.add_flag_to_map_with_inheritance(attributes, "OTHER_SWIFT_FLAGS", " -Xcc -Wno-incomplete-umbrella")
+    end
 end

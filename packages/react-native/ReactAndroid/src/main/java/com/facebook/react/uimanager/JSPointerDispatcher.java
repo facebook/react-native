@@ -55,8 +55,7 @@ public class JSPointerDispatcher {
   private final ViewGroup mRootViewGroup;
 
   private static final int[] sRootScreenCoords = {0, 0};
-
-  // Set globally for hover interactions, referenced for coalescing hover events
+  private static final Rect sChildCoords = new Rect(0, 0, 1, 1);
 
   public JSPointerDispatcher(ViewGroup viewGroup) {
     mRootViewGroup = viewGroup;
@@ -659,9 +658,9 @@ public class JSPointerDispatcher {
 
         // cancel events need to report client coordinates of (0, 0) and offset coordinates relative
         // to the root view
-        int[] childOffset = getChildOffsetRelativeToRoot(targetView);
+        Rect childOffset = getChildOffsetRelativeToRoot(targetView);
         PointerEventState normalizedEventState =
-            normalizeToRoot(eventState, childOffset[0], childOffset[1]);
+            normalizeToRoot(eventState, childOffset.left, childOffset.top);
         Assertions.assertNotNull(eventDispatcher)
             .dispatchEvent(
                 PointerEvent.obtain(
@@ -677,10 +676,16 @@ public class JSPointerDispatcher {
   }
 
   // returns child (0, 0) relative to root coordinate system
-  private int[] getChildOffsetRelativeToRoot(View childView) {
-    Rect childCoords = new Rect(0, 0, 1, 1);
-    mRootViewGroup.offsetDescendantRectToMyCoords(childView, childCoords);
-    return new int[] {childCoords.top, childCoords.left};
+  private Rect getChildOffsetRelativeToRoot(View childView) {
+    sChildCoords.set(0, 0, 1, 1);
+    if (childView.getRootView() != mRootViewGroup.getRootView()) {
+      // NOTE: if we are here it means the target view has been reparented, so we can't call
+      // mRootViewGroup.offsetDescendantRectToMyCoords because an exception will be thrown.
+      // We still return (0, 0) to ensure the cancel event is dispatched.
+      return sChildCoords;
+    }
+    mRootViewGroup.offsetDescendantRectToMyCoords(childView, sChildCoords);
+    return sChildCoords;
   }
 
   // Returns a copy of `original` with coordinates zeroed relative to the provided root coordinates.

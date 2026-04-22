@@ -35,7 +35,7 @@ export default class HTMLCollection<T> implements Iterable<T>, ArrayLike<T> {
    * @private This is not defined in the declaration file, so users will not see
    *          the signature of the constructor.
    */
-  constructor(elements: $ReadOnlyArray<T>) {
+  constructor(elements: ReadonlyArray<T>) {
     for (let i = 0; i < elements.length; i++) {
       REUSABLE_PROPERTY_DESCRIPTOR.value = elements[i];
       Object.defineProperty(this, i, REUSABLE_PROPERTY_DESCRIPTOR);
@@ -82,7 +82,7 @@ setPlatformObject(HTMLCollection);
  * `HTMLCollection.js.flow`, not here.
  */
 export function createHTMLCollection<T>(
-  elements: $ReadOnlyArray<T>,
+  elements: ReadonlyArray<T>,
 ): HTMLCollection<T> {
   return new HTMLCollection(elements);
 }

@@ -103,12 +103,12 @@
 }
 
 - (instancetype)initWithTurboModuleDelegate:(id<RCTTurboModuleManagerDelegate>)turboModuleManagerDelegate
-                               hostDelegate:(id<RCTHostDelegate>)hostdelegate
+                               hostDelegate:(id<RCTHostDelegate>)hostDelegate
                               configuration:(RCTRootViewFactoryConfiguration *)configuration
 {
   if (self = [super init]) {
     _configuration = configuration;
-    _hostDelegate = hostdelegate;
+    _hostDelegate = hostDelegate;
     _contextContainer = std::make_shared<const facebook::react::ContextContainer>();
     _turboModuleManagerDelegate = turboModuleManagerDelegate;
   }
@@ -190,7 +190,11 @@
   RCTSurfaceHostingProxyRootView *surfaceHostingProxyRootView =
       [[RCTSurfaceHostingProxyRootView alloc] initWithSurface:surface];
 
+#if TARGET_OS_TV
+  surfaceHostingProxyRootView.backgroundColor = [UIColor clearColor];
+#else
   surfaceHostingProxyRootView.backgroundColor = [UIColor systemBackgroundColor];
+#endif
   if (_configuration.customizeRootView != nil) {
     _configuration.customizeRootView(surfaceHostingProxyRootView);
   }
@@ -207,7 +211,11 @@
                            initProps:(NSDictionary *)initProps
 {
   UIView *rootView = RCTAppSetupDefaultRootView(bridge, moduleName, initProps, YES);
+#if !TARGET_OS_TV
   rootView.backgroundColor = [UIColor systemBackgroundColor];
+#else
+  rootView.backgroundColor = [UIColor blackColor];
+#endif
   return rootView;
 }
 

@@ -16,7 +16,7 @@ import type {
   JSONSerializable,
   MessageFromDevice,
   MessageToDevice,
-  WrappedEvent,
+  WrappedEventToDevice,
 } from '../inspector-proxy/types';
 
 import nullthrows from 'nullthrows';
@@ -106,9 +106,14 @@ export class DeviceMock extends DeviceAgent {
     | Promise<GetPagesResponse['payload'] | void>
     | void,
   > = jest.fn();
-  +wrappedEvent: JestMockFn<[message: WrappedEvent], void> = jest.fn();
+  +wrappedEvent: JestMockFn<[message: WrappedEventToDevice], void> = jest.fn();
   +wrappedEventParsed: JestMockFn<
-    [payload: {...WrappedEvent['payload'], wrappedEvent: JSONSerializable}],
+    [
+      payload: {
+        ...WrappedEventToDevice['payload'],
+        wrappedEvent: JSONSerializable,
+      },
+    ],
     void,
   > = jest.fn();
 
@@ -132,12 +137,12 @@ export class DeviceMock extends DeviceAgent {
         });
         break;
       default:
-        (message: empty);
+        message as empty;
         throw new Error(`Unhandled event ${message.event}`);
     }
   }
 
-  #sendPayloadIfNonNull<Event: MessageFromDevice['event']>(
+  #sendPayloadIfNonNull<Event extends MessageFromDevice['event']>(
     event: Event,
     maybePayload:
       | MessageFromDevice['payload']

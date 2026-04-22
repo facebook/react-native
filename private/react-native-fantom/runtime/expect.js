@@ -528,6 +528,30 @@ class Expect {
     }
   }
 
+  toMatchInlineSnapshot(expected?: string): void {
+    if (this.#isNot) {
+      throw new ErrorWithCustomBlame(
+        'Snapshot matchers cannot be used with not.',
+      ).blameToPreviousFrame();
+    }
+
+    const receivedValue = format(this.#received, {
+      plugins: [plugins.ReactElement],
+    });
+
+    const stackTrace = new Error().stack ?? '';
+
+    try {
+      snapshotContext.toMatchInlineSnapshot(
+        receivedValue,
+        expected,
+        stackTrace,
+      );
+    } catch (err) {
+      throw new ErrorWithCustomBlame(err.message).blameToPreviousFrame();
+    }
+  }
+
   #isExpectedResult(pass: boolean): boolean {
     return this.#isNot ? !pass : pass;
   }

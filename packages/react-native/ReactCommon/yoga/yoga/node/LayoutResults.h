@@ -111,9 +111,6 @@ struct LayoutResults {
   }
 
   bool operator==(LayoutResults layout) const;
-  bool operator!=(LayoutResults layout) const {
-    return !(*this == layout);
-  }
 
  private:
   Direction direction_ : bitCount<Direction>() = Direction::Inherit;

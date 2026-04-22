@@ -133,6 +133,7 @@ public class ReactScrollView extends ScrollView
   private int mFadingEdgeLengthStart;
   private int mFadingEdgeLengthEnd;
   private boolean mEmittedOverScrollSinceScrollBegin;
+  private boolean mScrollsChildToFocus = true;
 
   public ReactScrollView(Context context) {
     this(context, null);
@@ -196,6 +197,7 @@ public class ReactScrollView extends ScrollView
     mFadingEdgeLengthStart = 0;
     mFadingEdgeLengthEnd = 0;
     mEmittedOverScrollSinceScrollBegin = false;
+    mScrollsChildToFocus = true;
   }
 
   /* package */ void recycleView() {
@@ -290,12 +292,17 @@ public class ReactScrollView extends ScrollView
     mScrollEnabled = scrollEnabled;
   }
 
+  @Override
   public boolean getScrollEnabled() {
     return mScrollEnabled;
   }
 
   public void setPagingEnabled(boolean pagingEnabled) {
     mPagingEnabled = pagingEnabled;
+  }
+
+  public void setScrollsChildToFocus(boolean scrollsChildToFocus) {
+    mScrollsChildToFocus = scrollsChildToFocus;
   }
 
   public void setDecelerationRate(float decelerationRate) {
@@ -475,9 +482,6 @@ public class ReactScrollView extends ScrollView
     if (mMaintainVisibleContentPositionHelper != null) {
       mMaintainVisibleContentPositionHelper.stop();
     }
-    if (mVirtualViewContainerState != null) {
-      mVirtualViewContainerState.cleanup();
-    }
   }
 
   @Override
@@ -510,7 +514,7 @@ public class ReactScrollView extends ScrollView
    */
   @Override
   public void requestChildFocus(View child, View focused) {
-    if (focused != null) {
+    if (focused != null && mScrollsChildToFocus) {
       scrollToChild(focused);
     }
     requestChildFocusWithoutScroll(child, focused);
@@ -523,6 +527,14 @@ public class ReactScrollView extends ScrollView
    */
   protected void requestChildFocusWithoutScroll(View child, View focused) {
     super.requestChildFocus(child, focused);
+  }
+
+  @Override
+  public boolean requestChildRectangleOnScreen(View child, Rect rectangle, boolean immediate) {
+    if (!mScrollsChildToFocus) {
+      return false;
+    }
+    return super.requestChildRectangleOnScreen(child, rectangle, immediate);
   }
 
   private int getScrollDelta(View descendent) {
@@ -665,6 +677,11 @@ public class ReactScrollView extends ScrollView
 
   @Override
   public boolean dispatchGenericMotionEvent(MotionEvent ev) {
+    // Ignore generic motion events (joystick, mouse wheel, trackpad) if scrolling is disabled
+    if (!mScrollEnabled) {
+      return false;
+    }
+
     // We do not dispatch the motion event if its children are not supposed to receive it
     if (!PointerEvents.canChildrenBeTouchTarget(mPointerEvents)) {
       return false;
@@ -764,6 +781,14 @@ public class ReactScrollView extends ScrollView
   }
 
   @Override
+  public boolean getClipToPadding() {
+    if (ReactNativeFeatureFlags.syncAndroidClipToPaddingWithOverflow()) {
+      return mOverflow != Overflow.VISIBLE;
+    }
+    return super.getClipToPadding();
+  }
+
+  @Override
   public void getClippingRect(Rect outClippingRect) {
     outClippingRect.set(Assertions.assertNotNull(mClippingRect));
   }
@@ -856,6 +881,7 @@ public class ReactScrollView extends ScrollView
   }
 
   @Nullable
+  @Override
   public StateWrapper getStateWrapper() {
     return mStateWrapper;
   }
@@ -1321,6 +1347,7 @@ public class ReactScrollView extends ScrollView
    * <p>`smoothScrollTo` changes `contentOffset` and we need to keep `contentOffset` in sync between
    * scroll view and state. Calling raw `smoothScrollTo` doesn't update state.
    */
+  @Override
   public void reactSmoothScrollTo(int x, int y) {
     ReactScrollViewHelper.smoothScrollTo(this, x, y);
     setPendingContentOffsets(x, y);
@@ -1431,10 +1458,6 @@ public class ReactScrollView extends ScrollView
       return;
     }
 
-    if (mMaintainVisibleContentPositionHelper != null) {
-      mMaintainVisibleContentPositionHelper.updateScrollPosition();
-    }
-
     if (isShown() && isContentReady()) {
       int currentScrollY = getScrollY();
       int maxScrollY = getMaxScrollY();
@@ -1492,11 +1515,12 @@ public class ReactScrollView extends ScrollView
    * and that you are **not** overriding the ScrollView content view to pass in a `translateY`
    * style. `translateY` must never be set from ReactJS while using this feature!
    */
-  public void setScrollAwayTopPaddingEnabledUnstable(int topPadding) {
-    setScrollAwayTopPaddingEnabledUnstable(topPadding, true);
+  public void setScrollAwayPaddingEnabledUnstable(int topPadding, int bottomPadding) {
+    setScrollAwayPaddingEnabledUnstable(topPadding, bottomPadding, true);
   }
 
-  public void setScrollAwayTopPaddingEnabledUnstable(int topPadding, boolean updateState) {
+  public void setScrollAwayPaddingEnabledUnstable(
+      int topPadding, int bottomPadding, boolean updateState) {
     int count = getChildCount();
 
     Assertions.assertCondition(
@@ -1513,17 +1537,18 @@ public class ReactScrollView extends ScrollView
       // Add the topPadding value as the bottom padding for the ScrollView.
       // Otherwise, we'll push down the contents of the scroll view down too
       // far off screen.
-      setPadding(0, 0, 0, topPadding);
+      setPadding(0, 0, 0, topPadding + bottomPadding);
     }
 
     if (updateState) {
-      updateScrollAwayState(topPadding);
+      updateScrollAwayState(topPadding, bottomPadding);
     }
     setRemoveClippedSubviews(mRemoveClippedSubviews);
   }
 
-  private void updateScrollAwayState(int scrollAwayPaddingTop) {
+  private void updateScrollAwayState(int scrollAwayPaddingTop, int scrollAwayPaddingBottom) {
     getReactScrollViewScrollState().setScrollAwayPaddingTop(scrollAwayPaddingTop);
+    getReactScrollViewScrollState().setScrollAwayPaddingBottom(scrollAwayPaddingBottom);
     ReactScrollViewHelper.forceUpdateState(this);
   }
 
@@ -1532,7 +1557,8 @@ public class ReactScrollView extends ScrollView
     mReactScrollViewScrollState = scrollState;
     if (ReactNativeFeatureFlags.enableViewCulling()
         || ReactNativeFeatureFlags.useTraitHiddenOnAndroid()) {
-      setScrollAwayTopPaddingEnabledUnstable(scrollState.getScrollAwayPaddingTop(), false);
+      setScrollAwayPaddingEnabledUnstable(
+          scrollState.getScrollAwayPaddingTop(), scrollState.getScrollAwayPaddingBottom(), false);
 
       Point scrollPosition = scrollState.getLastStateUpdateScroll();
       scrollTo(scrollPosition.x, scrollPosition.y);

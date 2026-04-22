@@ -124,7 +124,7 @@ type RCTModalHostViewNativeProps = Readonly<{
    * See https://reactnative.dev/docs/modal#supportedorientations
    */
   supportedOrientations?: WithDefault<
-    $ReadOnlyArray<
+    ReadonlyArray<
       | 'portrait'
       | 'portrait-upside-down'
       | 'landscape'
@@ -147,10 +147,10 @@ type RCTModalHostViewNativeProps = Readonly<{
   identifier?: WithDefault<Int32, 0>,
 }>;
 
-export default (codegenNativeComponent<RCTModalHostViewNativeProps>(
+export default codegenNativeComponent<RCTModalHostViewNativeProps>(
   'ModalHostView',
   {
     interfaceOnly: true,
     paperComponentName: 'RCTModalHostView',
   },
-): HostComponent<RCTModalHostViewNativeProps>);
+) as HostComponent<RCTModalHostViewNativeProps>;

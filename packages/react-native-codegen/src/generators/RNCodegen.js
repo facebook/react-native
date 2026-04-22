@@ -10,12 +10,6 @@
 
 'use strict';
 
-/*
-TODO:
-
-- ViewConfigs should spread in View's valid attributes
-*/
-
 import type {SchemaType} from '../CodegenSchema';
 
 const schemaValidator = require('../SchemaValidator.js');

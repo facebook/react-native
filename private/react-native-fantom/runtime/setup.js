@@ -8,8 +8,13 @@
  * @format
  */
 
+import type {CoverageMap} from '../runner/coverage/types.flow';
 import type {BenchmarkResult} from '../src/Benchmark';
-import type {SnapshotConfig, TestSnapshotResults} from './snapshotContext';
+import type {
+  SnapshotConfig,
+  TestInlineSnapshotResults,
+  TestSnapshotResults,
+} from './snapshotContext';
 
 import {getConstants} from '../src/Constants';
 import expect from './expect';
@@ -27,6 +32,7 @@ export type TestCaseResult = {
   failureDetails: Array<FailureDetail>,
   numPassingAsserts: number,
   snapshotResults: TestSnapshotResults,
+  inlineSnapshotResults: TestInlineSnapshotResults,
   // location: string,
 };
 
@@ -35,8 +41,6 @@ export type FailureDetail = {
   stack?: string,
   cause?: FailureDetail,
 };
-
-export opaque type CoverageMap = unknown;
 
 export type TestSuiteResult =
   | {
@@ -318,6 +322,7 @@ function runSpec(spec: Spec): TestCaseResult {
     failureDetails: [],
     numPassingAsserts: 0,
     snapshotResults: {},
+    inlineSnapshotResults: [],
   };
 
   if (!shouldRunSuite(spec)) {
@@ -357,6 +362,7 @@ function runSpec(spec: Spec): TestCaseResult {
   }
 
   result.snapshotResults = snapshotContext.getSnapshotResults();
+  result.inlineSnapshotResults = snapshotContext.getInlineSnapshotResults();
   return result;
 }
 

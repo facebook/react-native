@@ -16,10 +16,6 @@ import com.facebook.react.internal.featureflags.ReactNativeFeatureFlagsDefaults
 import com.facebook.react.internal.featureflags.ReactNativeFeatureFlagsForTests
 import com.facebook.testutils.shadows.ShadowArguments
 import java.net.SocketTimeoutException
-import okhttp3.Headers
-import okhttp3.Protocol
-import okhttp3.Request
-import okhttp3.Response
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.After
 import org.junit.Before
@@ -265,24 +261,17 @@ class NetworkEventUtilTest {
   fun testOnResponseReceived() {
     val requestId = 1
     val statusCode = 200
-    val headers = Headers.Builder().add("Content-Type", "application/json").build()
+    val headersMap = mapOf("Content-Type" to "application/json")
     val url = "http://example.com"
 
-    val request = Request.Builder().url(url).build()
-    val response =
-        Response.Builder()
-            .protocol(Protocol.HTTP_1_1)
-            .request(request)
-            .headers(headers)
-            .code(statusCode)
-            .message("OK")
-            .build()
     NetworkEventUtil.onResponseReceived(
         reactContext,
         requestId,
         "test_devtools_request_$requestId",
         url,
-        response,
+        statusCode,
+        headersMap,
+        0L,
     )
 
     val eventNameCaptor = ArgumentCaptor.forClass(String::class.java)
@@ -306,15 +295,6 @@ class NetworkEventUtilTest {
   @Test
   fun testNullReactContext() {
     val url = "http://example.com"
-    val request = Request.Builder().url(url).build()
-    val response =
-        Response.Builder()
-            .protocol(Protocol.HTTP_1_1)
-            .request(request)
-            .headers(Headers.Builder().build())
-            .code(200)
-            .message("OK")
-            .build()
 
     NetworkEventUtil.onDataSend(null, 1, 100, 1000)
     NetworkEventUtil.onIncrementalDataReceived(
@@ -336,7 +316,15 @@ class NetworkEventUtilTest {
     )
     NetworkEventUtil.onRequestError(null, 1, "test_devtools_request_1", "error", null)
     NetworkEventUtil.onRequestSuccess(null, 1, "test_devtools_request_1", 0)
-    NetworkEventUtil.onResponseReceived(null, 1, "test_devtools_request_1", url, response)
+    NetworkEventUtil.onResponseReceived(
+        null,
+        1,
+        "test_devtools_request_1",
+        url,
+        200,
+        emptyMap(),
+        0L,
+    )
 
     verify(reactContext, never()).emitDeviceEvent(any<String>(), any())
   }

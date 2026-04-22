@@ -19,6 +19,7 @@
 
 #include <react/renderer/element/Element.h>
 #include <react/renderer/element/testUtils.h>
+#include <yoga/numeric/FloatOptional.h>
 
 namespace facebook::react {
 
@@ -227,6 +228,39 @@ TEST_F(YogaDirtyFlagTest, updatingStateForScrollViewMistNotDirtyYogaNode) {
 
   EXPECT_FALSE(
       static_cast<RootShadowNode&>(*newRootShadowNode).layoutIfNeeded());
+}
+
+TEST_F(YogaDirtyFlagTest, clonedPropsPreserveAspectRatio) {
+  ContextContainer contextContainer{};
+  PropsParserContext parserContext{-1, contextContainer};
+
+  /*
+   * Cloning props with empty RawProps must preserve aspectRatio set on the
+   * source props.
+   */
+  auto newRootShadowNode = rootShadowNode_->cloneTree(
+      innerShadowNode_->getFamily(), [&](const ShadowNode& oldShadowNode) {
+        // First clone: set aspectRatio to 1.5
+        auto viewProps = std::make_shared<ViewShadowNodeProps>();
+        viewProps->yogaStyle.setAspectRatio(yoga::FloatOptional(1.5f));
+        auto nodeWithAspectRatio =
+            oldShadowNode.clone(ShadowNodeFragment{.props = viewProps});
+
+        // Second clone: clone props with empty RawProps (simulating a prop
+        // update that does not touch aspectRatio)
+        auto& componentDescriptor =
+            nodeWithAspectRatio->getComponentDescriptor();
+        auto clonedProps = componentDescriptor.cloneProps(
+            parserContext, nodeWithAspectRatio->getProps(), RawProps());
+
+        auto& clonedViewProps =
+            static_cast<const ViewShadowNodeProps&>(*clonedProps);
+        EXPECT_TRUE(clonedViewProps.yogaStyle.aspectRatio().isDefined());
+        EXPECT_EQ(clonedViewProps.yogaStyle.aspectRatio().unwrap(), 1.5f);
+
+        return nodeWithAspectRatio->clone(
+            ShadowNodeFragment{.props = clonedProps});
+      });
 }
 
 } // namespace facebook::react

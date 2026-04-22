@@ -8,8 +8,8 @@
  * @format
  */
 
-import {create} from '../../../jest/renderer';
 import Button from '../Button';
+import {create} from '@react-native/jest-preset/jest/renderer';
 import * as React from 'react';
 
 describe('<Button />', () => {

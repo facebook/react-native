@@ -37,7 +37,7 @@ declare module 'execa' {
     shell?: boolean | string,
     stderr?: ?StdIoOption,
     stdin?: ?StdIoOption,
-    stdio?: 'pipe' | 'ignore' | 'inherit' | $ReadOnlyArray<?StdIoOption>,
+    stdio?: 'pipe' | 'ignore' | 'inherit' | ReadonlyArray<?StdIoOption>,
     stdout?: ?StdIoOption,
     stripEof?: boolean,
     timeout?: number,
@@ -90,7 +90,7 @@ declare module 'execa' {
   declare interface Execa {
     (
       file: string,
-      args?: $ReadOnlyArray<string>,
+      args?: ReadonlyArray<string>,
       options?: Readonly<Options>,
     ): ExecaPromise;
     (file: string, options?: Readonly<Options>): ExecaPromise;
@@ -100,13 +100,13 @@ declare module 'execa' {
 
     node(
       path: string,
-      args?: $ReadOnlyArray<string>,
+      args?: ReadonlyArray<string>,
       options?: Readonly<Options>,
     ): void;
 
     sync(
       file: string,
-      args?: $ReadOnlyArray<string>,
+      args?: ReadonlyArray<string>,
       options?: Readonly<SyncOptions>,
     ): SyncResult;
     sync(file: string, options?: Readonly<SyncOptions>): SyncResult;

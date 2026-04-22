@@ -11,7 +11,7 @@
 jest.unmock('../View');
 jest.unmock('../ViewNativeComponent');
 
-import {create} from '../../../../jest/renderer';
+import {create} from '@react-native/jest-preset/jest/renderer';
 import * as React from 'react';
 
 const View = require('../View').default;

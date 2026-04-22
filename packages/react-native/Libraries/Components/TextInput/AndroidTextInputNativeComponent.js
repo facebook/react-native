@@ -24,6 +24,7 @@ import type {TextInputNativeCommands} from './TextInputNativeCommands';
 
 import * as NativeComponentRegistry from '../../NativeComponent/NativeComponentRegistry';
 import codegenNativeCommands from '../../Utilities/codegenNativeCommands';
+import {colorAttribute} from '../View/ReactNativeStyleAttributes';
 
 export type KeyboardType =
   // Cross Platform
@@ -89,8 +90,15 @@ export type AndroidTextInputNativeProps = Readonly<{
    * - `cc-exp-month`
    * - `cc-exp-year`
    * - `cc-number`
+   * - `2fa-app-otp`
    * - `email`
+   * - `email-otp`
+   * - `flight-confirmation-code`
+   * - `flight-number`
    * - `gender`
+   * - `gift-card-number`
+   * - `gift-card-pin`
+   * - `loyalty-account-number`
    * - `name`
    * - `name-family`
    * - `name-given`
@@ -102,17 +110,22 @@ export type AndroidTextInputNativeProps = Readonly<{
    * - `password-new`
    * - `postal-address`
    * - `postal-address-country`
+   * - `postal-address-dependent-locality`
    * - `postal-address-extended`
    * - `postal-address-extended-postal-code`
    * - `postal-address-locality`
    * - `postal-address-region`
+   * - `postal-address-unit`
    * - `postal-code`
+   * - `promo-code`
    * - `street-address`
    * - `sms-otp`
    * - `tel`
    * - `tel-country-code`
    * - `tel-national`
    * - `tel-device`
+   * - `upi-vpa`
+   * - `wifi-password`
    * - `username`
    * - `username-new`
    * - `off`
@@ -120,6 +133,7 @@ export type AndroidTextInputNativeProps = Readonly<{
    * @platform android
    */
   autoComplete?: WithDefault<
+    | '2fa-app-otp'
     | 'birthdate-day'
     | 'birthdate-full'
     | 'birthdate-month'
@@ -131,7 +145,13 @@ export type AndroidTextInputNativeProps = Readonly<{
     | 'cc-exp-year'
     | 'cc-number'
     | 'email'
+    | 'email-otp'
+    | 'flight-confirmation-code'
+    | 'flight-number'
     | 'gender'
+    | 'gift-card-number'
+    | 'gift-card-pin'
+    | 'loyalty-account-number'
     | 'name'
     | 'name-family'
     | 'name-given'
@@ -143,17 +163,22 @@ export type AndroidTextInputNativeProps = Readonly<{
     | 'password-new'
     | 'postal-address'
     | 'postal-address-country'
+    | 'postal-address-dependent-locality'
     | 'postal-address-extended'
     | 'postal-address-extended-postal-code'
     | 'postal-address-locality'
     | 'postal-address-region'
+    | 'postal-address-unit'
     | 'postal-code'
+    | 'promo-code'
     | 'street-address'
     | 'sms-otp'
     | 'tel'
     | 'tel-country-code'
     | 'tel-national'
     | 'tel-device'
+    | 'upi-vpa'
+    | 'wifi-password'
     | 'username'
     | 'username-new'
     | 'off',
@@ -648,41 +673,33 @@ export const __INTERNAL_VIEW_CONFIG: PartialViewConfig = {
     placeholder: true,
     inlineImagePadding: true,
     contextMenuHidden: true,
-    textShadowColor: {
-      process: require('../../StyleSheet/processColor').default,
-    },
+    textShadowColor: colorAttribute,
     maxLength: true,
     selectTextOnFocus: true,
     textShadowRadius: true,
-    underlineColorAndroid: {
-      process: require('../../StyleSheet/processColor').default,
-    },
+    underlineColorAndroid: colorAttribute,
     textDecorationLine: true,
     submitBehavior: true,
     textAlignVertical: true,
     fontStyle: true,
     textShadowOffset: true,
-    selectionColor: {process: require('../../StyleSheet/processColor').default},
-    selectionHandleColor: {
-      process: require('../../StyleSheet/processColor').default,
-    },
-    placeholderTextColor: {
-      process: require('../../StyleSheet/processColor').default,
-    },
+    selectionColor: colorAttribute,
+    selectionHandleColor: colorAttribute,
+    placeholderTextColor: colorAttribute,
     importantForAutofill: true,
     lineHeight: true,
     textTransform: true,
     returnKeyType: true,
     keyboardType: true,
     multiline: true,
-    color: {process: require('../../StyleSheet/processColor').default},
+    color: colorAttribute,
     autoComplete: true,
     numberOfLines: true,
     letterSpacing: true,
     returnKeyLabel: true,
     fontSize: true,
     onKeyPress: true,
-    cursorColor: {process: require('../../StyleSheet/processColor').default},
+    cursorColor: colorAttribute,
     text: true,
     showSoftInputOnFocus: true,
     textAlign: true,
@@ -704,22 +721,16 @@ export const __INTERNAL_VIEW_CONFIG: PartialViewConfig = {
     editable: true,
     fontVariant: true,
     borderBottomRightRadius: true,
-    borderBottomColor: {
-      process: require('../../StyleSheet/processColor').default,
-    },
+    borderBottomColor: colorAttribute,
     borderRadius: true,
-    borderRightColor: {
-      process: require('../../StyleSheet/processColor').default,
-    },
-    borderColor: {process: require('../../StyleSheet/processColor').default},
+    borderRightColor: colorAttribute,
+    borderColor: colorAttribute,
     borderTopRightRadius: true,
     borderStyle: true,
     borderBottomLeftRadius: true,
-    borderLeftColor: {
-      process: require('../../StyleSheet/processColor').default,
-    },
+    borderLeftColor: colorAttribute,
     borderTopLeftRadius: true,
-    borderTopColor: {process: require('../../StyleSheet/processColor').default},
+    borderTopColor: colorAttribute,
   },
 };
 
@@ -730,4 +741,4 @@ let AndroidTextInputNativeComponent =
   );
 
 // flowlint-next-line unclear-type:off
-export default ((AndroidTextInputNativeComponent: any): HostComponent<AndroidTextInputNativeProps>);
+export default AndroidTextInputNativeComponent as any as HostComponent<AndroidTextInputNativeProps>;

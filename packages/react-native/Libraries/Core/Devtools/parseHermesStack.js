@@ -56,7 +56,7 @@ type HermesStackEntry = HermesStackEntryFrame | HermesStackEntrySkipped;
 
 export type HermesParsedStack = Readonly<{
   message: string,
-  entries: $ReadOnlyArray<HermesStackEntry>,
+  entries: ReadonlyArray<HermesStackEntry>,
 }>;
 
 // Capturing groups:

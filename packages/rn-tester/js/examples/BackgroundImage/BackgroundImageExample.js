@@ -361,7 +361,6 @@ exports.examples = [
               style={{
                 experimental_backgroundImage:
                   'linear-gradient(45deg, #667eea, #764ba2)',
-                experimental_backgroundSize: 'cover',
                 borderRadius: 20,
               }}
               testID="background-image-borders-1"
@@ -373,7 +372,6 @@ exports.examples = [
               style={{
                 experimental_backgroundImage:
                   'radial-gradient(circle, #f093fb, #f5576c)',
-                experimental_backgroundSize: 'cover',
                 borderWidth: 10,
                 borderColor: 'red',
               }}
@@ -386,7 +384,6 @@ exports.examples = [
               style={{
                 experimental_backgroundImage:
                   'radial-gradient(circle, #f093fb, #f5576c)',
-                experimental_backgroundSize: 'cover',
                 borderTopLeftRadius: 10,
                 borderTopRightRadius: 20,
                 borderBottomLeftRadius: 30,
@@ -401,7 +398,6 @@ exports.examples = [
               style={{
                 experimental_backgroundImage:
                   'radial-gradient(circle, #f093fb, #f5576c)',
-                experimental_backgroundSize: 'cover',
                 borderTopWidth: 10,
                 borderTopColor: 'red',
                 borderBottomWidth: 20,

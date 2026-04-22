@@ -91,4 +91,4 @@ PerformanceEntry_public.prototype = PerformanceEntry.prototype;
 
 setPlatformObject(PerformanceEntry);
 
-export type PerformanceEntryList = $ReadOnlyArray<PerformanceEntry>;
+export type PerformanceEntryList = ReadonlyArray<PerformanceEntry>;

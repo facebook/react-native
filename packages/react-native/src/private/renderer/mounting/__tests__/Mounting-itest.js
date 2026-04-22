@@ -4,6 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
+ * @fantom_flags enableFabricCommitBranching:* useLISAlgorithmInDifferentiator:*
  * @flow strict-local
  * @format
  */
@@ -13,6 +14,7 @@ import '@react-native/fantom/src/setUpDefaultReactNativeEnvironment';
 import type {HostInstance} from 'react-native';
 
 import ensureInstance from '../../../__tests__/utilities/ensureInstance';
+import * as ReactNativeFeatureFlags from '../../../featureflags/ReactNativeFeatureFlags';
 import * as Fantom from '@react-native/fantom';
 import * as React from 'react';
 import {View} from 'react-native';
@@ -86,6 +88,80 @@ describe('ViewFlattening', () => {
   });
 
   /**
+   * Test worst-case reordering: moving the first child to the end.
+   *
+   *    P -> [A,B,C,D,E]  ==>  P -> [B,C,D,E,A]
+   *
+   * The greedy two-pointer encounters A vs B mismatch at the first
+   * position and generates excessive REMOVE+INSERT pairs:
+   * 4 removes + 4 inserts = 8 mutations.
+   *
+   * The LIS algorithm identifies [B,C,D,E] as the longest increasing
+   * subsequence — those children stay in place, and only A needs to
+   * move: 1 remove + 1 insert = 2 mutations.
+   */
+  test('reordering: move first child to last (worst case for greedy)', () => {
+    const root = Fantom.createRoot();
+
+    Fantom.runTask(() => {
+      root.render(
+        <View nativeID="P">
+          <View key="A" nativeID="A" />
+          <View key="B" nativeID="B" />
+          <View key="C" nativeID="C" />
+          <View key="D" nativeID="D" />
+          <View key="E" nativeID="E" />
+        </View>,
+      );
+    });
+
+    root.takeMountingManagerLogs();
+
+    Fantom.runTask(() => {
+      root.render(
+        <View nativeID="P">
+          <View key="B" nativeID="B" />
+          <View key="C" nativeID="C" />
+          <View key="D" nativeID="D" />
+          <View key="E" nativeID="E" />
+          <View key="A" nativeID="A" />
+        </View>,
+      );
+    });
+
+    expect(root.getRenderedOutput().toJSX()).toEqual(
+      <rn-view nativeID="P">
+        <rn-view key="0" nativeID="B" />
+        <rn-view key="1" nativeID="C" />
+        <rn-view key="2" nativeID="D" />
+        <rn-view key="3" nativeID="E" />
+        <rn-view key="4" nativeID="A" />
+      </rn-view>,
+    );
+
+    const logs = root.takeMountingManagerLogs();
+    if (ReactNativeFeatureFlags.useLISAlgorithmInDifferentiator()) {
+      // LIS = [B,C,D,E], only A moves: 1 remove + 1 insert = 2 mutations
+      expect(logs).toEqual([
+        'Remove {type: "View", parentNativeID: "P", index: 0, nativeID: "A"}',
+        'Insert {type: "View", parentNativeID: "P", index: 4, nativeID: "A"}',
+      ]);
+    } else {
+      // Greedy: 4 removes + 4 inserts = 8 mutations
+      expect(logs).toEqual([
+        'Remove {type: "View", parentNativeID: "P", index: 4, nativeID: "E"}',
+        'Remove {type: "View", parentNativeID: "P", index: 3, nativeID: "D"}',
+        'Remove {type: "View", parentNativeID: "P", index: 2, nativeID: "C"}',
+        'Remove {type: "View", parentNativeID: "P", index: 1, nativeID: "B"}',
+        'Insert {type: "View", parentNativeID: "P", index: 0, nativeID: "B"}',
+        'Insert {type: "View", parentNativeID: "P", index: 1, nativeID: "C"}',
+        'Insert {type: "View", parentNativeID: "P", index: 2, nativeID: "D"}',
+        'Insert {type: "View", parentNativeID: "P", index: 3, nativeID: "E"}',
+      ]);
+    }
+  });
+
+  /**
    * Test reparenting mutation instruction generation.
    * We cannot practically handle all possible use-cases here.
    */
@@ -140,18 +216,28 @@ describe('ViewFlattening', () => {
     expect(root.getRenderedOutput().toJSX()).toEqual(
       <rn-view nativeID="G">
         <rn-view nativeID="H">
-          <rn-view width="100.000000" nativeID="A" />
+          <rn-view width="100" nativeID="A" />
         </rn-view>
       </rn-view>,
     );
 
-    expect(root.takeMountingManagerLogs()).toEqual([
-      'Update {type: "View", nativeID: "A"}',
-      'Remove {type: "View", parentNativeID: "G", index: 0, nativeID: "A"}',
-      'Create {type: "View", nativeID: "H"}',
-      'Insert {type: "View", parentNativeID: "G", index: 0, nativeID: "H"}',
-      'Insert {type: "View", parentNativeID: "H", index: 0, nativeID: "A"}',
-    ]);
+    if (ReactNativeFeatureFlags.useLISAlgorithmInDifferentiator()) {
+      expect(root.takeMountingManagerLogs()).toEqual([
+        'Update {type: "View", nativeID: "A"}',
+        'Remove {type: "View", parentNativeID: "G", index: 0, nativeID: "A"}',
+        'Create {type: "View", nativeID: "H"}',
+        'Insert {type: "View", parentNativeID: "H", index: 0, nativeID: "A"}',
+        'Insert {type: "View", parentNativeID: "G", index: 0, nativeID: "H"}',
+      ]);
+    } else {
+      expect(root.takeMountingManagerLogs()).toEqual([
+        'Update {type: "View", nativeID: "A"}',
+        'Remove {type: "View", parentNativeID: "G", index: 0, nativeID: "A"}',
+        'Create {type: "View", nativeID: "H"}',
+        'Insert {type: "View", parentNativeID: "G", index: 0, nativeID: "H"}',
+        'Insert {type: "View", parentNativeID: "H", index: 0, nativeID: "A"}',
+      ]);
+    }
 
     // The view is reparented 1 level down with a different sibling
     // Root -> G* -> H* -> I* -> J -> [B*, A*] [nodes with * are _not_ flattened]
@@ -175,20 +261,31 @@ describe('ViewFlattening', () => {
         <rn-view nativeID="H">
           <rn-view nativeID="I">
             <rn-view key="0" nativeID="B" />
-            <rn-view key="1" nativeID="A" width="100.000000" />
+            <rn-view key="1" nativeID="A" width="100" />
           </rn-view>
         </rn-view>
       </rn-view>,
     );
 
-    expect(root.takeMountingManagerLogs()).toEqual([
-      'Remove {type: "View", parentNativeID: "H", index: 0, nativeID: "A"}',
-      'Create {type: "View", nativeID: "I"}',
-      'Create {type: "View", nativeID: "B"}',
-      'Insert {type: "View", parentNativeID: "H", index: 0, nativeID: "I"}',
-      'Insert {type: "View", parentNativeID: "I", index: 0, nativeID: "B"}',
-      'Insert {type: "View", parentNativeID: "I", index: 1, nativeID: "A"}',
-    ]);
+    if (ReactNativeFeatureFlags.useLISAlgorithmInDifferentiator()) {
+      expect(root.takeMountingManagerLogs()).toEqual([
+        'Remove {type: "View", parentNativeID: "H", index: 0, nativeID: "A"}',
+        'Create {type: "View", nativeID: "I"}',
+        'Create {type: "View", nativeID: "B"}',
+        'Insert {type: "View", parentNativeID: "I", index: 0, nativeID: "B"}',
+        'Insert {type: "View", parentNativeID: "I", index: 1, nativeID: "A"}',
+        'Insert {type: "View", parentNativeID: "H", index: 0, nativeID: "I"}',
+      ]);
+    } else {
+      expect(root.takeMountingManagerLogs()).toEqual([
+        'Remove {type: "View", parentNativeID: "H", index: 0, nativeID: "A"}',
+        'Create {type: "View", nativeID: "I"}',
+        'Create {type: "View", nativeID: "B"}',
+        'Insert {type: "View", parentNativeID: "H", index: 0, nativeID: "I"}',
+        'Insert {type: "View", parentNativeID: "I", index: 0, nativeID: "B"}',
+        'Insert {type: "View", parentNativeID: "I", index: 1, nativeID: "A"}',
+      ]);
+    }
 
     // The view is reparented 1 level further down with its order with the sibling
     // swapped
@@ -213,7 +310,7 @@ describe('ViewFlattening', () => {
         <rn-view nativeID="H">
           <rn-view nativeID="I">
             <rn-view nativeID="J">
-              <rn-view key="0" nativeID="A" width="100.000000" />
+              <rn-view key="0" nativeID="A" width="100" />
               <rn-view key="1" nativeID="B" />
             </rn-view>
           </rn-view>
@@ -221,14 +318,25 @@ describe('ViewFlattening', () => {
       </rn-view>,
     );
 
-    expect(root.takeMountingManagerLogs()).toEqual([
-      'Remove {type: "View", parentNativeID: "I", index: 1, nativeID: "A"}',
-      'Remove {type: "View", parentNativeID: "I", index: 0, nativeID: "B"}',
-      'Create {type: "View", nativeID: "J"}',
-      'Insert {type: "View", parentNativeID: "I", index: 0, nativeID: "J"}',
-      'Insert {type: "View", parentNativeID: "J", index: 0, nativeID: "A"}',
-      'Insert {type: "View", parentNativeID: "J", index: 1, nativeID: "B"}',
-    ]);
+    if (ReactNativeFeatureFlags.useLISAlgorithmInDifferentiator()) {
+      expect(root.takeMountingManagerLogs()).toEqual([
+        'Remove {type: "View", parentNativeID: "I", index: 1, nativeID: "A"}',
+        'Remove {type: "View", parentNativeID: "I", index: 0, nativeID: "B"}',
+        'Create {type: "View", nativeID: "J"}',
+        'Insert {type: "View", parentNativeID: "J", index: 0, nativeID: "A"}',
+        'Insert {type: "View", parentNativeID: "J", index: 1, nativeID: "B"}',
+        'Insert {type: "View", parentNativeID: "I", index: 0, nativeID: "J"}',
+      ]);
+    } else {
+      expect(root.takeMountingManagerLogs()).toEqual([
+        'Remove {type: "View", parentNativeID: "I", index: 1, nativeID: "A"}',
+        'Remove {type: "View", parentNativeID: "I", index: 0, nativeID: "B"}',
+        'Create {type: "View", nativeID: "J"}',
+        'Insert {type: "View", parentNativeID: "I", index: 0, nativeID: "J"}',
+        'Insert {type: "View", parentNativeID: "J", index: 0, nativeID: "A"}',
+        'Insert {type: "View", parentNativeID: "J", index: 1, nativeID: "B"}',
+      ]);
+    }
   });
 
   test('parent-child switching from unflattened-flattened to flattened-unflattened', () => {
@@ -339,15 +447,28 @@ describe('ViewFlattening', () => {
         </View>,
       );
     });
-    expect(root.takeMountingManagerLogs()).toEqual([
-      'Update {type: "View", nativeID: "child"}',
-      'Remove {type: "View", parentNativeID: (root), index: 0, nativeID: (N/A)}',
-      'Remove {type: "View", parentNativeID: (N/A), index: 0, nativeID: "child"}',
-      'Delete {type: "View", nativeID: (N/A)}',
-      'Create {type: "View", nativeID: (N/A)}',
-      'Insert {type: "View", parentNativeID: (root), index: 0, nativeID: (N/A)}',
-      'Insert {type: "View", parentNativeID: (N/A), index: 0, nativeID: "child"}',
-    ]);
+
+    if (ReactNativeFeatureFlags.useLISAlgorithmInDifferentiator()) {
+      expect(root.takeMountingManagerLogs()).toEqual([
+        'Update {type: "View", nativeID: "child"}',
+        'Remove {type: "View", parentNativeID: (root), index: 0, nativeID: (N/A)}',
+        'Remove {type: "View", parentNativeID: (N/A), index: 0, nativeID: "child"}',
+        'Delete {type: "View", nativeID: (N/A)}',
+        'Create {type: "View", nativeID: (N/A)}',
+        'Insert {type: "View", parentNativeID: (N/A), index: 0, nativeID: "child"}',
+        'Insert {type: "View", parentNativeID: (root), index: 0, nativeID: (N/A)}',
+      ]);
+    } else {
+      expect(root.takeMountingManagerLogs()).toEqual([
+        'Update {type: "View", nativeID: "child"}',
+        'Remove {type: "View", parentNativeID: (root), index: 0, nativeID: (N/A)}',
+        'Remove {type: "View", parentNativeID: (N/A), index: 0, nativeID: "child"}',
+        'Delete {type: "View", nativeID: (N/A)}',
+        'Create {type: "View", nativeID: (N/A)}',
+        'Insert {type: "View", parentNativeID: (root), index: 0, nativeID: (N/A)}',
+        'Insert {type: "View", parentNativeID: (N/A), index: 0, nativeID: "child"}',
+      ]);
+    }
   });
 
   test('#51378: view with rgba(255,255,255,127/256) background color is not flattened', () => {
@@ -377,8 +498,8 @@ describe('ViewFlattening', () => {
         .toJSX(),
     ).toEqual(
       <rn-view
-        width="100.000000"
-        height="100.000000"
+        width="100"
+        height="100"
         backgroundColor="rgba(255, 255, 255, 0.498039)"
       />,
     );

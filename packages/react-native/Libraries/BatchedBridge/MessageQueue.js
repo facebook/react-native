@@ -52,7 +52,7 @@ class MessageQueue {
 
   _debugInfo: {[number]: [number, number], ...};
   _remoteModuleTable: {[number]: string, ...};
-  _remoteMethodTable: {[number]: $ReadOnlyArray<string>, ...};
+  _remoteMethodTable: {[number]: ReadonlyArray<string>, ...};
 
   __spy: ?(data: SpyData) => void;
 
@@ -347,7 +347,7 @@ class MessageQueue {
   createDebugLookup(
     moduleID: number,
     name: string,
-    methods: ?$ReadOnlyArray<string>,
+    methods: ?ReadonlyArray<string>,
   ) {
     if (__DEV__) {
       this._remoteModuleTable[moduleID] = name;
@@ -372,7 +372,7 @@ class MessageQueue {
     } else {
       try {
         fn();
-      } catch (error) {
+      } catch (error: unknown) {
         ErrorUtils.reportFatalError(error);
       }
     }

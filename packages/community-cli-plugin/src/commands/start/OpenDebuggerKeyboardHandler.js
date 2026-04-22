@@ -22,7 +22,7 @@ type PageDescription = Readonly<{
 export default class OpenDebuggerKeyboardHandler {
   #devServerUrl: string;
   #reporter: TerminalReporter;
-  #targetsShownForSelection: ?$ReadOnlyArray<PageDescription> = null;
+  #targetsShownForSelection: ?ReadonlyArray<PageDescription> = null;
 
   constructor({
     devServerUrl,
@@ -82,7 +82,7 @@ export default class OpenDebuggerKeyboardHandler {
       if (res.status !== 200) {
         throw new Error(`Unexpected status code: ${res.status}`);
       }
-      const targets = (await res.json()) as $ReadOnlyArray<PageDescription>;
+      const targets = (await res.json()) as ReadonlyArray<PageDescription>;
       if (!Array.isArray(targets)) {
         throw new Error('Expected array.');
       }

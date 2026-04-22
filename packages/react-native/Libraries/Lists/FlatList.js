@@ -519,7 +519,7 @@ class FlatList<ItemT = any> extends React.PureComponent<FlatListProps<ItemT>> {
   _getItem = (
     data: $ArrayLike<ItemT>,
     index: number,
-  ): ?(ItemT | $ReadOnlyArray<ItemT>) => {
+  ): ?(ItemT | ReadonlyArray<ItemT>) => {
     const numColumns = numColumnsOrDefault(this.props.numColumns);
     if (numColumns > 1) {
       const ret = [];
@@ -564,7 +564,7 @@ class FlatList<ItemT = any> extends React.PureComponent<FlatListProps<ItemT>> {
       );
       return items
         .map((item, kk) =>
-          keyExtractor(((item: $FlowFixMe): ItemT), index * numColumns + kk),
+          keyExtractor(item as $FlowFixMe as ItemT, index * numColumns + kk),
         )
         .join(':');
     }

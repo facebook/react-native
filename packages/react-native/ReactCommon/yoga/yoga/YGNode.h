@@ -257,7 +257,7 @@ YG_EXPORT bool YGNodeIsReferenceBaseline(YGNodeConstRef node);
 YG_EXPORT void YGNodeSetNodeType(YGNodeRef node, YGNodeType nodeType);
 
 /**
- * Wwhether a leaf node's layout results may be truncated during layout
+ * Whether a leaf node's layout results may be truncated during layout
  * rounding.
  */
 YG_EXPORT YGNodeType YGNodeGetNodeType(YGNodeConstRef node);

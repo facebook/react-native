@@ -58,7 +58,7 @@ export function flushValue(rootNode: AnimatedNode): void {
   function findAnimatedStyles(node: AnimatedNode) {
     // $FlowFixMe[prop-missing]
     if (typeof node.update === 'function') {
-      leaves.add((node: any));
+      leaves.add(node as any);
     } else {
       node.__getChildren().forEach(findAnimatedStyles);
     }
@@ -301,7 +301,7 @@ export default class AnimatedValue extends AnimatedWithChildren {
    * Interpolates the value before updating the property, e.g. mapping 0-1 to
    * 0-10.
    */
-  interpolate<OutputT: InterpolationConfigSupportedOutputType>(
+  interpolate<OutputT extends InterpolationConfigSupportedOutputType>(
     config: InterpolationConfigType<OutputT>,
   ): AnimatedInterpolation<OutputT> {
     return new AnimatedInterpolation(this, config);

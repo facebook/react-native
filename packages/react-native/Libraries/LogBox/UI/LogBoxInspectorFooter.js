@@ -20,6 +20,7 @@ import * as React from 'react';
 type Props = Readonly<{
   onDismiss: () => void,
   onMinimize: () => void,
+  onCopy: () => void,
   level?: ?LogLevel,
 }>;
 
@@ -47,6 +48,11 @@ export default function LogBoxInspectorFooter(props: Props): React.Node {
         id="logbox_footer_button_minimize"
         text="Minimize"
         onPress={props.onMinimize}
+      />
+      <LogBoxInspectorFooterButton
+        id="logbox_footer_button_copy"
+        text="Copy"
+        onPress={props.onCopy}
       />
     </View>
   );

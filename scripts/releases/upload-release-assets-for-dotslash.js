@@ -30,15 +30,15 @@ import type {DotSlashProvider, DotSlashHttpProvider, DotSlashArtifactInfo} from 
 import type {IOctokit} from './utils/octokit-utils';
 
 type GitHubReleaseAsset = {id: string, ...};
-type ReleaseAssetMap = $ReadOnlyMap<string, GitHubReleaseAsset>;
+type ReleaseAssetMap = ReadonlyMap<string, GitHubReleaseAsset>;
 
-type ReleaseInfo = $ReadOnly<{
+type ReleaseInfo = Readonly<{
   releaseId: string,
   releaseTag: string,
   existingAssetsByName: ReleaseAssetMap,
 }>;
 
-type ExecutionOptions = $ReadOnly<{
+type ExecutionOptions = Readonly<{
   force: boolean,
   dryRun: boolean,
 }>;
@@ -191,7 +191,7 @@ async function fetchUpstreamAssetAndUploadToRelease(
     artifactInfo,
     dotslashFilename,
   } /*: {
-  providers: $ReadOnlyArray<DotSlashProvider>,
+  providers: ReadonlyArray<DotSlashProvider>,
   suggestedFilename: string,
   artifactInfo: DotSlashArtifactInfo,
   dotslashFilename: string,

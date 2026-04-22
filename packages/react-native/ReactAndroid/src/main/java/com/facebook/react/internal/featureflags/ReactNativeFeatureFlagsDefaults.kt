@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<c0ce8173a283c6089f706d6a5f961bc2>>
+ * @generated SignedSource<<1b44996cc8dbba36e443551235dd89a8>>
  */
 
 /**
@@ -29,13 +29,13 @@ public open class ReactNativeFeatureFlagsDefaults : ReactNativeFeatureFlagsProvi
 
   override fun cxxNativeAnimatedEnabled(): Boolean = false
 
+  override fun defaultTextToOverflowHidden(): Boolean = true
+
   override fun disableEarlyViewCommandExecution(): Boolean = false
 
   override fun disableImageViewPreallocationAndroid(): Boolean = false
 
   override fun disableMountItemReorderingAndroid(): Boolean = false
-
-  override fun disableOldAndroidAttachmentMetricsWorkarounds(): Boolean = true
 
   override fun disableSubviewClippingAndroid(): Boolean = false
 
@@ -47,10 +47,6 @@ public open class ReactNativeFeatureFlagsDefaults : ReactNativeFeatureFlagsProvi
 
   override fun enableAccumulatedUpdatesInRawPropsAndroid(): Boolean = false
 
-  override fun enableAndroidAntialiasedBorderRadiusClipping(): Boolean = false
-
-  override fun enableAndroidLinearText(): Boolean = false
-
   override fun enableAndroidTextMeasurementOptimizations(): Boolean = false
 
   override fun enableBridgelessArchitecture(): Boolean = false
@@ -61,6 +57,8 @@ public open class ReactNativeFeatureFlagsDefaults : ReactNativeFeatureFlagsProvi
 
   override fun enableDestroyShadowTreeRevisionAsync(): Boolean = false
 
+  override fun enableDifferentiatorMutationVectorPreallocation(): Boolean = false
+
   override fun enableDoubleMeasurementFixAndroid(): Boolean = false
 
   override fun enableEagerMainQueueModulesOnIOS(): Boolean = false
@@ -68,6 +66,8 @@ public open class ReactNativeFeatureFlagsDefaults : ReactNativeFeatureFlagsProvi
   override fun enableEagerRootViewAttachment(): Boolean = false
 
   override fun enableExclusivePropsUpdateAndroid(): Boolean = false
+
+  override fun enableFabricCommitBranching(): Boolean = false
 
   override fun enableFabricLogs(): Boolean = false
 
@@ -105,7 +105,11 @@ public open class ReactNativeFeatureFlagsDefaults : ReactNativeFeatureFlagsProvi
 
   override fun enableModuleArgumentNSNullConversionIOS(): Boolean = false
 
+  override fun enableMutationObserverByDefault(): Boolean = false
+
   override fun enableNativeCSSParsing(): Boolean = false
+
+  override fun enableNativeViewPropTransformations(): Boolean = false
 
   override fun enableNetworkEventReporting(): Boolean = true
 
@@ -131,19 +135,23 @@ public open class ReactNativeFeatureFlagsDefaults : ReactNativeFeatureFlagsProvi
 
   override fun enableVirtualViewDebugFeatures(): Boolean = false
 
-  override fun enableVirtualViewRenderState(): Boolean = true
+  override fun fixDifferentiatorParentTagForUnflattenCase(): Boolean = false
 
-  override fun enableVirtualViewWindowFocusDetection(): Boolean = false
+  override fun fixFindShadowNodeByTagRaceCondition(): Boolean = false
 
   override fun fixMappingOfEventPrioritiesBetweenFabricAndReact(): Boolean = false
 
-  override fun fixTextClippingAndroid15useBoundsForWidth(): Boolean = false
+  override fun fixYogaFlexBasisFitContentInMainAxis(): Boolean = false
 
   override fun fuseboxAssertSingleHostState(): Boolean = true
 
   override fun fuseboxEnabledRelease(): Boolean = false
 
+  override fun fuseboxFrameRecordingEnabled(): Boolean = false
+
   override fun fuseboxNetworkInspectionEnabled(): Boolean = true
+
+  override fun fuseboxScreenshotCaptureEnabled(): Boolean = false
 
   override fun hideOffscreenVirtualViewsOnIOS(): Boolean = false
 
@@ -157,31 +165,33 @@ public open class ReactNativeFeatureFlagsDefaults : ReactNativeFeatureFlagsProvi
 
   override fun preventShadowTreeCommitExhaustion(): Boolean = false
 
+  override fun redBoxV2Android(): Boolean = false
+
+  override fun redBoxV2IOS(): Boolean = false
+
   override fun shouldPressibilityUseW3CPointerEventsForHover(): Boolean = false
-
-  override fun shouldResetClickableWhenRecyclingView(): Boolean = true
-
-  override fun shouldResetOnClickListenerWhenRecyclingView(): Boolean = true
-
-  override fun shouldSetEnabledBasedOnAccessibilityState(): Boolean = true
-
-  override fun shouldSetIsClickableByDefault(): Boolean = false
 
   override fun shouldTriggerResponderTransferOnScrollAndroid(): Boolean = false
 
   override fun skipActivityIdentityAssertionOnHostPause(): Boolean = false
 
+  override fun syncAndroidClipToPaddingWithOverflow(): Boolean = false
+
   override fun traceTurboModulePromiseRejectionsOnAndroid(): Boolean = false
 
   override fun updateRuntimeShadowNodeReferencesOnCommit(): Boolean = false
+
+  override fun updateRuntimeShadowNodeReferencesOnCommitThread(): Boolean = false
 
   override fun useAlwaysAvailableJSErrorHandling(): Boolean = false
 
   override fun useFabricInterop(): Boolean = true
 
+  override fun useLISAlgorithmInDifferentiator(): Boolean = false
+
   override fun useNativeViewConfigsInBridgelessMode(): Boolean = false
 
-  override fun useShadowNodeStateOnClone(): Boolean = true
+  override fun useNestedScrollViewAndroid(): Boolean = false
 
   override fun useSharedAnimatedBackend(): Boolean = false
 
@@ -191,9 +201,11 @@ public open class ReactNativeFeatureFlagsDefaults : ReactNativeFeatureFlagsProvi
 
   override fun useTurboModules(): Boolean = false
 
+  override fun useUnorderedMapInDifferentiator(): Boolean = false
+
   override fun viewCullingOutsetRatio(): Double = 0.0
 
-  override fun virtualViewHysteresisRatio(): Double = 0.0
+  override fun viewTransitionEnabled(): Boolean = false
 
   override fun virtualViewPrerenderRatio(): Double = 5.0
 }

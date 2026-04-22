@@ -352,9 +352,11 @@ static inline UIViewAnimationOptions animationOptionsWithCurve(UIViewAnimationCu
   MAP_SCROLL_VIEW_PROP(maximumZoomScale);
   MAP_SCROLL_VIEW_PROP(minimumZoomScale);
   MAP_SCROLL_VIEW_PROP(scrollEnabled);
+#if !TARGET_OS_TV
   MAP_SCROLL_VIEW_PROP(pagingEnabled);
   MAP_SCROLL_VIEW_PROP(pinchGestureEnabled);
   MAP_SCROLL_VIEW_PROP(scrollsToTop);
+#endif
   MAP_SCROLL_VIEW_PROP(showsHorizontalScrollIndicator);
   MAP_SCROLL_VIEW_PROP(showsVerticalScrollIndicator);
 
@@ -682,6 +684,11 @@ static inline UIViewAnimationOptions animationOptionsWithCurve(UIViewAnimationCu
   _scrollView.contentOffset = RCTCGPointFromPoint(props.contentOffset);
   // Reset zoom scale to default
   _scrollView.zoomScale = 1.0;
+  // Invalidate cached content size so that updateState: recalculates the
+  // container frame after zoomScale reset (which may have mutated it in RTL).
+  _contentSize = CGSizeZero;
+  // Reset contentInset to prevent stale insets leaking into recycled scroll views.
+  _scrollView.contentInset = UIEdgeInsetsZero;
   // We set the default behavior to "never" so that iOS
   // doesn't do weird things to UIScrollView insets automatically
   // and keeps it as an opt-in behavior.

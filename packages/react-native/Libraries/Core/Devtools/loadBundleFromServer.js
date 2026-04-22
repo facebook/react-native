@@ -15,6 +15,11 @@ import getDevServer from './getDevServer';
 
 declare var global: {
   globalEvalWithSourceUrl?: (string, string) => unknown,
+  __BUNDLE_LOADER_REPORTER__?: {
+    onStart: (url: string | URL) => void,
+    onSuccess: (url: string | URL) => void,
+    onError: (url: string | URL, error: Error) => void,
+  },
   ...
 };
 
@@ -153,6 +158,7 @@ export default function loadBundleFromServer(
   }
   DevLoadingView.showMessage('Downloading...', 'load');
   ++pendingRequests;
+  global.__BUNDLE_LOADER_REPORTER__?.onStart(requestUrl);
 
   loadPromise = asyncRequest(requestUrl)
     .then<void>(({body, headers}) => {
@@ -183,9 +189,11 @@ export default function loadBundleFromServer(
         // eslint-disable-next-line no-eval
         eval(body);
       }
+      global.__BUNDLE_LOADER_REPORTER__?.onSuccess(requestUrl);
     })
     .catch<void>(e => {
       cachedPromisesByUrl.delete(requestUrl);
+      global.__BUNDLE_LOADER_REPORTER__?.onError(requestUrl, e);
       throw e;
     })
     .finally(() => {

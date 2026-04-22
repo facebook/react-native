@@ -41,8 +41,6 @@ jobs:
       - name: Setup xcode
         if: steps.restore-ios-slice.outputs.cache-hit != 'true'
         uses: ./.github/actions/setup-xcode
-        with:
-          platform: ${{ matrix.slice }}
       - name: Yarn Install
         if: steps.restore-ios-slice.outputs.cache-hit != 'true'
         uses: ./.github/actions/yarn-install
@@ -146,8 +144,6 @@ jobs:
       - name: Setup xcode
         if: steps.restore-ios-xcframework.outputs.cache-hit != 'true'
         uses: ./.github/actions/setup-xcode
-        with:
-          xcode-version: '16.2.0'
       - name: Yarn Install
         if: steps.restore-ios-xcframework.outputs.cache-hit != 'true'
         uses: ./.github/actions/yarn-install

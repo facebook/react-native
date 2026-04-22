@@ -35,6 +35,5 @@ class RawPropsKey final {
 };
 
 bool operator==(const RawPropsKey &lhs, const RawPropsKey &rhs) noexcept;
-bool operator!=(const RawPropsKey &lhs, const RawPropsKey &rhs) noexcept;
 
 } // namespace facebook::react

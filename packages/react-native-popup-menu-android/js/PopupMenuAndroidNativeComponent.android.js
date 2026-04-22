@@ -29,7 +29,7 @@ type NativeProps = Readonly<{
   ...ViewProps,
 
   //Props
-  menuItems?: ?$ReadOnlyArray<string>,
+  menuItems?: ?ReadonlyArray<string>,
 
   onPopupMenuSelectionChange?: DirectEventHandler<PopupMenuSelectionEvent>,
   onPopupMenuDismiss?: DirectEventHandler<PopupMenuDismissEvent>,
@@ -45,6 +45,6 @@ export const Commands: NativeCommands = codegenNativeCommands<NativeCommands>({
   supportedCommands: ['show'],
 });
 
-export default (codegenNativeComponent<NativeProps>(
+export default codegenNativeComponent<NativeProps>(
   'AndroidPopupMenu',
-): HostComponent<NativeProps>);
+) as HostComponent<NativeProps>;

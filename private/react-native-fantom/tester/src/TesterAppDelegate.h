@@ -13,6 +13,7 @@
 #include <string>
 #include <vector>
 
+#include "TesterAnimationChoreographer.h"
 #include "TesterMountingManager.h"
 
 namespace facebook::jsi {
@@ -71,6 +72,8 @@ class TesterAppDelegate {
   std::vector<std::string> consoleLogs_{};
 
   std::shared_ptr<TesterMountingManager> mountingManager_;
+
+  std::shared_ptr<TesterAnimationChoreographer> animationChoreographer_;
 
  private:
   void runUITick();

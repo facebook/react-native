@@ -86,7 +86,8 @@ std::string NativeFantom::getRenderedOutput(
     SurfaceId surfaceId,
     NativeFantomGetRenderedOutputRenderFormatOptions options) {
   RenderFormatOptions formatOptions{
-      options.includeRoot, options.includeLayoutMetrics};
+      .includeRoot = options.includeRoot,
+      .includeLayoutMetrics = options.includeLayoutMetrics};
 
   auto viewTree = appDelegate_.mountingManager_->getViewTree(surfaceId);
   return appDelegate_.mountingManager_->renderer()->render(
@@ -124,10 +125,10 @@ void NativeFantom::enqueueNativeEvent(
     std::optional<bool> isUnique) {
   if (isUnique.value_or(false)) {
     shadowNode->getEventEmitter()->dispatchUniqueEvent(
-        std::move(type), payload.value_or(folly::dynamic::object()));
+        type, payload.value_or(folly::dynamic::object()));
   } else {
     shadowNode->getEventEmitter()->dispatchEvent(
-        std::move(type),
+        type,
         payload.value_or(folly::dynamic::object()),
         category.value_or(RawEvent::Category::Unspecified));
   }

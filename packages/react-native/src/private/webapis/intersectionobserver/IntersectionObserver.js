@@ -25,7 +25,7 @@ export type IntersectionObserverCallback = (
 export interface IntersectionObserverInit {
   root?: ?ReactNativeElement;
   rootMargin?: string;
-  threshold?: number | $ReadOnlyArray<number>;
+  threshold?: number | ReadonlyArray<number>;
 
   /**
    * This is a React Native specific option (not spec compliant) that specifies
@@ -37,7 +37,7 @@ export interface IntersectionObserverInit {
    * Note: If `rnRootThreshold` is set, and `threshold` is not set,
    * `threshold` will not default to [0] (as per spec)
    */
-  rnRootThreshold?: number | $ReadOnlyArray<number>;
+  rnRootThreshold?: number | ReadonlyArray<number>;
 }
 
 /**
@@ -62,10 +62,10 @@ export interface IntersectionObserverInit {
  */
 export default class IntersectionObserver {
   _callback: IntersectionObserverCallback;
-  _thresholds: $ReadOnlyArray<number>;
+  _thresholds: ReadonlyArray<number>;
   _observationTargets: Set<ReactNativeElement> = new Set();
   _intersectionObserverId: ?IntersectionObserverId;
-  _rootThresholds: $ReadOnlyArray<number> | null;
+  _rootThresholds: ReadonlyArray<number> | null;
   _root: ReactNativeElement | null;
   _rootMargin: string;
 
@@ -155,7 +155,7 @@ export default class IntersectionObserver {
    * If no value was passed to the constructor, and no `rnRootThreshold`
    * is set, `0` is used.
    */
-  get thresholds(): $ReadOnlyArray<number> {
+  get thresholds(): ReadonlyArray<number> {
     return this._thresholds;
   }
 
@@ -166,7 +166,7 @@ export default class IntersectionObserver {
    * Notifications for a target are generated when any of the thresholds specified
    * in `rnRootThreshold` or `threshold` are crossed for that target.
    */
-  get rnRootThresholds(): $ReadOnlyArray<number> | null {
+  get rnRootThresholds(): ReadonlyArray<number> | null {
     return this._rootThresholds;
   }
 
@@ -317,7 +317,7 @@ setPlatformObject(IntersectionObserver);
 function normalizeThreshold(
   threshold: unknown,
   defaultEmpty: boolean = false,
-): $ReadOnlyArray<number> {
+): ReadonlyArray<number> {
   if (Array.isArray(threshold)) {
     if (threshold.length > 0) {
       return threshold
@@ -354,7 +354,7 @@ function normalizeThreshold(
  */
 function normalizeRootThreshold(
   rootThreshold: unknown,
-): null | $ReadOnlyArray<number> {
+): null | ReadonlyArray<number> {
   if (Array.isArray(rootThreshold)) {
     const normalizedArr = rootThreshold
       .map(rt => normalizeThresholdValue(rt, 'rnRootThreshold'))

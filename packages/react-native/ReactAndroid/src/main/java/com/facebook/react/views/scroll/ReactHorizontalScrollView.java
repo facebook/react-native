@@ -136,6 +136,7 @@ public class ReactHorizontalScrollView extends HorizontalScrollView
   private int mFadingEdgeLengthStart = 0;
   private int mFadingEdgeLengthEnd = 0;
   private boolean mEmittedOverScrollSinceScrollBegin = false;
+  private boolean mScrollsChildToFocus = true;
 
   public ReactHorizontalScrollView(Context context) {
     this(context, null);
@@ -157,7 +158,7 @@ public class ReactHorizontalScrollView extends HorizontalScrollView
   /**
    * Set all default values here as opposed to in the constructor or field defaults. It is important
    * that these properties are set during the constructor, but also on-demand whenever an existing
-   * ReactTextView is recycled.
+   * ReactHorizontalScrollView is recycled.
    */
   private void initView() {
     mOverflowInset = new Rect();
@@ -199,6 +200,7 @@ public class ReactHorizontalScrollView extends HorizontalScrollView
     mMaintainVisibleContentPositionHelper = null;
     mFadingEdgeLengthStart = 0;
     mFadingEdgeLengthEnd = 0;
+    mScrollsChildToFocus = true;
   }
 
   /* package */ void recycleView() {
@@ -238,6 +240,7 @@ public class ReactHorizontalScrollView extends HorizontalScrollView
     }
   }
 
+  @Override
   public boolean getScrollEnabled() {
     return mScrollEnabled;
   }
@@ -322,6 +325,10 @@ public class ReactHorizontalScrollView extends HorizontalScrollView
 
   public void setPagingEnabled(boolean pagingEnabled) {
     mPagingEnabled = pagingEnabled;
+  }
+
+  public void setScrollsChildToFocus(boolean scrollsChildToFocus) {
+    mScrollsChildToFocus = scrollsChildToFocus;
   }
 
   public void setDecelerationRate(float decelerationRate) {
@@ -455,6 +462,14 @@ public class ReactHorizontalScrollView extends HorizontalScrollView
   }
 
   @Override
+  public boolean getClipToPadding() {
+    if (ReactNativeFeatureFlags.syncAndroidClipToPaddingWithOverflow()) {
+      return mOverflow != Overflow.VISIBLE;
+    }
+    return super.getClipToPadding();
+  }
+
+  @Override
   public void onDraw(Canvas canvas) {
     if (mOverflow != Overflow.VISIBLE) {
       BackgroundStyleApplicator.clipToPaddingBox(this, canvas);
@@ -538,14 +553,14 @@ public class ReactHorizontalScrollView extends HorizontalScrollView
 
   /**
    * Since ReactHorizontalScrollView handles layout changes on JS side, it does not call
-   * super.onlayout due to which mIsLayoutDirty flag in HorizontalScrollView remains true and
+   * super.onLayout due to which mIsLayoutDirty flag in HorizontalScrollView remains true and
    * prevents scrolling to child when requestChildFocus is called. Overriding this method and
    * scrolling to child without checking any layout dirty flag. This will fix focus navigation issue
    * for KeyEvents which are not handled in HorizontalScrollView, for example: KEYCODE_TAB.
    */
   @Override
   public void requestChildFocus(View child, View focused) {
-    if (focused != null && !mPagingEnabled) {
+    if (focused != null && !mPagingEnabled && mScrollsChildToFocus) {
       scrollToChild(focused);
     }
     requestChildFocusWithoutScroll(child, focused);
@@ -554,10 +569,18 @@ public class ReactHorizontalScrollView extends HorizontalScrollView
   /**
    * In rare cases where an app overrides the built-in ReactScrollView by overriding it, and also
    * needs to customize scroll into view on focus behaviors, this protected method can be used to
-   * unblocks such customization.
+   * unblock such customization.
    */
   protected void requestChildFocusWithoutScroll(View child, View focused) {
     super.requestChildFocus(child, focused);
+  }
+
+  @Override
+  public boolean requestChildRectangleOnScreen(View child, Rect rectangle, boolean immediate) {
+    if (!mScrollsChildToFocus) {
+      return false;
+    }
+    return super.requestChildRectangleOnScreen(child, rectangle, immediate);
   }
 
   @Override
@@ -829,6 +852,11 @@ public class ReactHorizontalScrollView extends HorizontalScrollView
 
   @Override
   public boolean dispatchGenericMotionEvent(MotionEvent ev) {
+    // Ignore generic motion events (joystick, mouse wheel, trackpad) if scrolling is disabled
+    if (!mScrollEnabled) {
+      return false;
+    }
+
     // We do not dispatch the motion event if its children are not supposed to receive it
     if (!PointerEvents.canChildrenBeTouchTarget(mPointerEvents)) {
       return false;
@@ -968,9 +996,6 @@ public class ReactHorizontalScrollView extends HorizontalScrollView
     if (mMaintainVisibleContentPositionHelper != null) {
       mMaintainVisibleContentPositionHelper.stop();
     }
-    if (mVirtualViewContainerState != null) {
-      mVirtualViewContainerState.cleanup();
-    }
   }
 
   @Override
@@ -984,10 +1009,10 @@ public class ReactHorizontalScrollView extends HorizontalScrollView
         return nextFocus;
       }
 
-      @Nullable View nextfocusableView = findNextFocusableView(this, focused, direction);
+      @Nullable View nextFocusableView = findNextFocusableView(this, focused, direction);
 
-      if (nextfocusableView != null) {
-        return nextfocusableView;
+      if (nextFocusableView != null) {
+        return nextFocusableView;
       }
     }
 
@@ -1575,6 +1600,7 @@ public class ReactHorizontalScrollView extends HorizontalScrollView
    * <p>`smoothScrollTo` changes `contentOffset` and we need to keep `contentOffset` in sync between
    * scroll view and state. Calling raw `smoothScrollTo` doesn't update state.
    */
+  @Override
   public void reactSmoothScrollTo(int x, int y) {
     ReactScrollViewHelper.smoothScrollTo(this, x, y);
     setPendingContentOffsets(x, y);
@@ -1655,8 +1681,6 @@ public class ReactHorizontalScrollView extends HorizontalScrollView
     // does not work in RTL.
     if (v.getLayoutDirection() == LAYOUT_DIRECTION_RTL) {
       adjustPositionForContentChangeRTL(left, right, oldLeft, oldRight);
-    } else if (mMaintainVisibleContentPositionHelper != null) {
-      mMaintainVisibleContentPositionHelper.updateScrollPosition();
     }
     ReactScrollViewHelper.emitLayoutChangeEvent(this);
   }
@@ -1676,7 +1700,7 @@ public class ReactHorizontalScrollView extends HorizontalScrollView
 
     if (mScroller != null && !mScroller.isFinished()) {
       // Calculate the velocity and position of the fling animation at the time of this layout
-      // event, which may be later than the last ScrollView tick. These values are not commited to
+      // event, which may be later than the last ScrollView tick. These values are not committed to
       // the underlying ScrollView, which will recalculate positions on its next tick.
       int scrollerXBeforeTick = mScroller.getCurrX();
       boolean hasMoreTicks = mScroller.computeScrollOffset();
@@ -1718,6 +1742,7 @@ public class ReactHorizontalScrollView extends HorizontalScrollView
   }
 
   @Nullable
+  @Override
   public StateWrapper getStateWrapper() {
     return mStateWrapper;
   }

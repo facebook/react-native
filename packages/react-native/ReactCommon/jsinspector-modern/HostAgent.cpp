@@ -9,6 +9,7 @@
 #include "InstanceAgent.h"
 
 #ifdef REACT_NATIVE_DEBUGGER_ENABLED
+#include "EmulationAgent.h"
 #include "InspectorFlags.h"
 #include "InspectorInterfaces.h"
 #include "NetworkIOAgent.h"
@@ -50,7 +51,8 @@ class HostAgent::Impl final {
         sessionState_(sessionState),
         networkIOAgent_(NetworkIOAgent(frontendChannel, std::move(executor))),
         tracingAgent_(
-            TracingAgent(frontendChannel, sessionState, targetController)) {}
+            TracingAgent(frontendChannel, sessionState, targetController)),
+        emulationAgent_(EmulationAgent(frontendChannel, targetController)) {}
 
   ~Impl() {
     if (isPausedInDebuggerOverlayVisible_) {
@@ -198,6 +200,42 @@ class HostAgent::Impl final {
           .shouldSendOKResponse = true,
       };
     }
+    if (InspectorFlags::getInstance().getScreenshotCaptureEnabled()) {
+      if (req.method == "Page.captureScreenshot") {
+        std::optional<std::string> format;
+        std::optional<int> quality;
+
+        if (req.params.isObject()) {
+          if (req.params.count("format") != 0u) {
+            format = req.params.at("format").asString();
+          }
+          if (req.params.count("quality") != 0u) {
+            quality = static_cast<int>(req.params.at("quality").asInt());
+          }
+        }
+
+        auto base64Data = targetController_.getDelegate().captureScreenshot(
+            {.format = format, .quality = quality});
+
+        if (base64Data.has_value()) {
+          frontendChannel_(
+              cdp::jsonResult(
+                  req.id,
+                  folly::dynamic::object("data", std::move(*base64Data))));
+        } else {
+          frontendChannel_(
+              cdp::jsonError(
+                  req.id,
+                  cdp::ErrorCode::InternalError,
+                  "Failed to capture screenshot"));
+        }
+
+        return {
+            .isFinishedHandlingRequest = true,
+            .shouldSendOKResponse = false,
+        };
+      }
+    }
     if (req.method == "Overlay.setPausedInDebuggerMessage") {
       auto message =
           req.params.isObject() && (req.params.count("message") != 0u)
@@ -236,13 +274,11 @@ class HostAgent::Impl final {
         emitSystemStateChanged(isSingleHost);
       }
 
-      auto stashedTraceRecording =
-          targetController_.getDelegate()
-              .unstable_getHostTracingProfileThatWillBeEmittedOnInitialization();
-      if (stashedTraceRecording.has_value()) {
-        tracingAgent_.emitExternalHostTracingProfile(
-            std::move(stashedTraceRecording.value()));
-      }
+      auto emitted = targetController_.maybeEmitStashedBackgroundTrace();
+      assert(
+          emitted &&
+          "Expected to find at least one session eligible to receive a background trace after ReactNativeApplication.enable");
+      (void)emitted;
 
       return {
           .isFinishedHandlingRequest = true,
@@ -346,6 +382,11 @@ class HostAgent::Impl final {
       return;
     }
 
+    if (!requestState.isFinishedHandlingRequest &&
+        emulationAgent_.handleRequest(req)) {
+      return;
+    }
+
     if (!requestState.isFinishedHandlingRequest && instanceAgent_ &&
         instanceAgent_->handleRequest(req)) {
       return;
@@ -381,16 +422,8 @@ class HostAgent::Impl final {
     }
   }
 
-  bool hasFuseboxClientConnected() const {
-    return fuseboxClientType_ == FuseboxClientType::Fusebox;
-  }
-
-  void emitExternalTracingProfile(
-      tracing::HostTracingProfile tracingProfile) const {
-    assert(
-        hasFuseboxClientConnected() &&
-        "Attempted to emit a trace recording to a non-Fusebox client");
-    tracingAgent_.emitExternalHostTracingProfile(std::move(tracingProfile));
+  bool isEligibleForBackgroundTrace() const {
+    return sessionState_.isReactNativeApplicationDomainEnabled;
   }
 
   void emitSystemStateChanged(bool isSingleHost) {
@@ -483,6 +516,8 @@ class HostAgent::Impl final {
   NetworkIOAgent networkIOAgent_;
 
   TracingAgent tracingAgent_;
+
+  EmulationAgent emulationAgent_;
 };
 
 #else
@@ -503,10 +538,9 @@ class HostAgent::Impl final {
 
   void handleRequest(const cdp::PreparsedRequest& req) {}
   void setCurrentInstanceAgent(std::shared_ptr<InstanceAgent> agent) {}
-  bool hasFuseboxClientConnected() const {
+  bool isEligibleForBackgroundTrace() const {
     return false;
   }
-  void emitExternalTracingProfile(tracing::HostTracingProfile tracingProfile) {}
   void emitSystemStateChanged(bool isSingleHost) {}
 };
 
@@ -538,17 +572,8 @@ void HostAgent::setCurrentInstanceAgent(
   impl_->setCurrentInstanceAgent(std::move(instanceAgent));
 }
 
-bool HostAgent::hasFuseboxClientConnected() const {
-  return impl_->hasFuseboxClientConnected();
-}
-
-void HostAgent::emitExternalTracingProfile(
-    tracing::HostTracingProfile tracingProfile) const {
-  impl_->emitExternalTracingProfile(std::move(tracingProfile));
-}
-
-void HostAgent::emitSystemStateChanged(bool isSingleHost) const {
-  impl_->emitSystemStateChanged(isSingleHost);
+bool HostAgent::isEligibleForBackgroundTrace() const {
+  return impl_->isEligibleForBackgroundTrace();
 }
 
 #pragma mark - Tracing

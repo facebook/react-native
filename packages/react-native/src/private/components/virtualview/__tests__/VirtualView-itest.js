@@ -11,7 +11,7 @@
 import '@react-native/fantom/src/setUpDefaultReactNativeEnvironment';
 
 import type {Rect} from '../VirtualView';
-import type {NativeModeChangeEvent} from '../VirtualViewExperimentalNativeComponent';
+import type {NativeModeChangeEvent} from '../VirtualViewNativeComponent';
 
 import ensureInstance from '../../../__tests__/utilities/ensureInstance';
 import isUnreachable from '../../../__tests__/utilities/isUnreachable';
@@ -158,12 +158,7 @@ describe('styles', () => {
 
     expect(
       root.getRenderedOutput({props: ['minHeight', 'minWidth']}).toJSX(),
-    ).toEqual(
-      <rn-virtualViewExperimental
-        minHeight="100.000000"
-        minWidth="100.000000"
-      />,
-    );
+    ).toEqual(<rn-virtualViewExperimental minHeight="100" minWidth="100" />);
   });
 });
 
@@ -360,8 +355,10 @@ export function dispatchModeChangeEvent(
 /**
  * Helper to create a callback ref that records instances using WeakRefs.
  */
-function createWeakRefCallback<T: interface {} = interface {}>(): Readonly<{
-  weakRefs: $ReadOnlyArray<WeakRef<T>>,
+function createWeakRefCallback<
+  T extends interface {} = interface {},
+>(): Readonly<{
+  weakRefs: ReadonlyArray<WeakRef<T>>,
   callbackRef: React.RefSetter<T>,
 }> {
   const weakRefs: Array<WeakRef<T>> = [];

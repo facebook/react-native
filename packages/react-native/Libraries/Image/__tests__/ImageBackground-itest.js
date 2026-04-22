@@ -107,7 +107,7 @@ describe('<ImageBackground>', () => {
 
         expect(
           root.getRenderedOutput({props: ['width|height']}).toJSX(),
-        ).toEqual(<rn-image width="100.000000" height="100.000000" />);
+        ).toEqual(<rn-image width="100" height="100" />);
       });
     });
   });

@@ -26,7 +26,6 @@ import com.facebook.react.uimanager.IllegalViewOperationException
 import com.facebook.react.uimanager.JSKeyDispatcher
 import com.facebook.react.uimanager.JSPointerDispatcher
 import com.facebook.react.uimanager.JSTouchDispatcher
-import com.facebook.react.uimanager.common.UIManagerType
 import com.facebook.systrace.Systrace
 import java.util.Objects
 import kotlin.math.max
@@ -36,7 +35,7 @@ import kotlin.math.max
  * rendering a React component.
  */
 @OptIn(FrameworkAPI::class, UnstableReactNativeAPI::class)
-public class ReactSurfaceView(context: Context?, private val surface: ReactSurfaceImpl) :
+public class ReactSurfaceView(context: Context?, internal val surface: ReactSurfaceImpl) :
     ReactRootView(context) {
   private val jsTouchDispatcher: JSTouchDispatcher = JSTouchDispatcher(this)
   private var jsPointerDispatcher: JSPointerDispatcher? = null
@@ -44,6 +43,20 @@ public class ReactSurfaceView(context: Context?, private val surface: ReactSurfa
   private var wasMeasured = false
   private var widthMeasureSpec = 0
   private var heightMeasureSpec = 0
+
+  private val viewportOffset: Point
+    get() {
+      val locationOnScreen = IntArray(2)
+      getLocationOnScreen(locationOnScreen)
+
+      // we need to subtract visibleWindowCoords - to subtract possible window insets, split
+      // screen or multi window
+      val visibleWindowFrame = Rect()
+      getWindowVisibleDisplayFrame(visibleWindowFrame)
+      locationOnScreen[0] -= visibleWindowFrame.left
+      locationOnScreen[1] -= visibleWindowFrame.top
+      return Point(locationOnScreen[0], locationOnScreen[1])
+    }
 
   init {
     if (ReactFeatureFlags.dispatchPointerEvents) {
@@ -105,20 +118,6 @@ public class ReactSurfaceView(context: Context?, private val surface: ReactSurfa
     }
   }
 
-  private val viewportOffset: Point
-    get() {
-      val locationOnScreen = IntArray(2)
-      getLocationOnScreen(locationOnScreen)
-
-      // we need to subtract visibleWindowCoords - to subtract possible window insets, split
-      // screen or multi window
-      val visibleWindowFrame = Rect()
-      getWindowVisibleDisplayFrame(visibleWindowFrame)
-      locationOnScreen[0] -= visibleWindowFrame.left
-      locationOnScreen[1] -= visibleWindowFrame.top
-      return Point(locationOnScreen[0], locationOnScreen[1])
-    }
-
   override fun requestDisallowInterceptTouchEvent(disallowIntercept: Boolean) {
     // Override in order to still receive events to onInterceptTouchEvent even when some other
     // views disallow that, but propagate it up the tree if possible.
@@ -149,14 +148,6 @@ public class ReactSurfaceView(context: Context?, private val surface: ReactSurfa
     val e = IllegalViewOperationException(Objects.toString(t.message, ""), this, t)
     (surface.reactHost ?: throw e).handleHostException(e)
   }
-
-  override fun setIsFabric(isFabric: Boolean) {
-    // This surface view is always on Fabric regardless.
-    super.setIsFabric(true)
-  }
-
-  // This surface view is always on Fabric.
-  @UIManagerType override fun getUIManagerType(): Int = UIManagerType.FABRIC
 
   override fun getJSModuleName(): String = surface.moduleName
 

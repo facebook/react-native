@@ -12,6 +12,7 @@ import com.facebook.react.utils.DependencyUtils.configureDependencies
 import com.facebook.react.utils.DependencyUtils.configureRepositories
 import com.facebook.react.utils.DependencyUtils.exclusiveEnterpriseRepository
 import com.facebook.react.utils.DependencyUtils.getDependencySubstitutions
+import com.facebook.react.utils.DependencyUtils.isNightly
 import com.facebook.react.utils.DependencyUtils.mavenRepoFromURI
 import com.facebook.react.utils.DependencyUtils.mavenRepoFromUrl
 import com.facebook.react.utils.DependencyUtils.readVersionAndGroupStrings
@@ -35,7 +36,7 @@ class DependencyUtilsTest {
     val project = createProject()
     project.extensions.extraProperties.set("react.internal.mavenLocalRepo", localMaven.absolutePath)
 
-    configureRepositories(project)
+    configureRepositories(project, false)
 
     assertThat(
             project.repositories.firstOrNull {
@@ -46,26 +47,11 @@ class DependencyUtilsTest {
   }
 
   @Test
-  fun configureRepositories_containsSnapshotRepo() {
-    val repositoryURI = URI.create("https://central.sonatype.com/repository/maven-snapshots/")
-    val project = createProject()
-
-    configureRepositories(project)
-
-    assertThat(
-            project.repositories.firstOrNull {
-              it is MavenArtifactRepository && it.url == repositoryURI
-            }
-        )
-        .isNotNull()
-  }
-
-  @Test
   fun configureRepositories_containsMavenCentral() {
     val repositoryURI = URI.create("https://repo.maven.apache.org/maven2/")
     val project = createProject()
 
-    configureRepositories(project)
+    configureRepositories(project, false)
 
     assertThat(
             project.repositories.firstOrNull {
@@ -80,7 +66,7 @@ class DependencyUtilsTest {
     val repositoryURI = URI.create("https://dl.google.com/dl/android/maven2/")
     val project = createProject()
 
-    configureRepositories(project)
+    configureRepositories(project, false)
 
     assertThat(
             project.repositories.firstOrNull {
@@ -95,7 +81,7 @@ class DependencyUtilsTest {
     val repositoryURI = URI.create("https://www.jitpack.io")
     val project = createProject()
 
-    configureRepositories(project)
+    configureRepositories(project, false)
 
     assertThat(
             project.repositories.firstOrNull {
@@ -115,7 +101,7 @@ class DependencyUtilsTest {
         repositoryURI.toString(),
     )
 
-    configureRepositories(project)
+    configureRepositories(project, false)
 
     assertThat(project.repositories).hasSize(1)
     assertThat(
@@ -132,7 +118,7 @@ class DependencyUtilsTest {
     var project = createProject()
     project.extensions.extraProperties.set("includeJitpackRepository", "false")
 
-    configureRepositories(project)
+    configureRepositories(project, false)
 
     assertThat(
             project.repositories.firstOrNull {
@@ -145,7 +131,7 @@ class DependencyUtilsTest {
     project = createProject()
     project.extensions.extraProperties.set("react.includeJitpackRepository", "false")
 
-    configureRepositories(project)
+    configureRepositories(project, false)
 
     assertThat(
             project.repositories.firstOrNull {
@@ -161,7 +147,7 @@ class DependencyUtilsTest {
     var project = createProject()
     project.extensions.extraProperties.set("includeJitpackRepository", "true")
 
-    configureRepositories(project)
+    configureRepositories(project, false)
 
     assertThat(
             project.repositories.firstOrNull {
@@ -174,7 +160,37 @@ class DependencyUtilsTest {
     project = createProject()
     project.extensions.extraProperties.set("react.includeJitpackRepository", "true")
 
-    configureRepositories(project)
+    configureRepositories(project, false)
+
+    assertThat(
+            project.repositories.firstOrNull {
+              it is MavenArtifactRepository && it.url == repositoryURI
+            }
+        )
+        .isNotNull()
+  }
+
+  @Test
+  fun configureRepositories_notNightly_doesNotContainSonatype() {
+    val repositoryURI = URI.create("https://central.sonatype.com/repository/maven-snapshots/")
+    var project = createProject()
+
+    configureRepositories(project, false)
+
+    assertThat(
+            project.repositories.firstOrNull {
+              it is MavenArtifactRepository && it.url == repositoryURI
+            }
+        )
+        .isNull()
+  }
+
+  @Test
+  fun configureRepositories_nightly_containSonatype() {
+    val repositoryURI = URI.create("https://central.sonatype.com/repository/maven-snapshots/")
+    var project = createProject()
+
+    configureRepositories(project, true)
 
     assertThat(
             project.repositories.firstOrNull {
@@ -192,7 +208,7 @@ class DependencyUtilsTest {
     val project = createProject()
     project.extensions.extraProperties.set("react.internal.mavenLocalRepo", localMaven.absolutePath)
 
-    configureRepositories(project)
+    configureRepositories(project, false)
 
     val indexOfLocalRepo =
         project.repositories.indexOfFirst {
@@ -211,7 +227,7 @@ class DependencyUtilsTest {
     val mavenCentralURI = URI.create("https://repo.maven.apache.org/maven2/")
     val project = createProject()
 
-    configureRepositories(project)
+    configureRepositories(project, false)
 
     val indexOfSnapshotRepo =
         project.repositories.indexOfFirst {
@@ -231,7 +247,7 @@ class DependencyUtilsTest {
     val appProject = ProjectBuilder.builder().withName("app").withParent(rootProject).build()
     val libProject = ProjectBuilder.builder().withName("lib").withParent(rootProject).build()
 
-    configureRepositories(appProject)
+    configureRepositories(appProject, false)
 
     assertThat(
             appProject.repositories.firstOrNull {
@@ -259,7 +275,7 @@ class DependencyUtilsTest {
       repo.content { content -> content.excludeGroup("com.facebook.react") }
     }
 
-    configureRepositories(appProject)
+    configureRepositories(appProject, false)
 
     // We need to make sure we have Maven Central defined twice, one by the library,
     // and another is the override by RNGP.
@@ -598,7 +614,8 @@ class DependencyUtilsTest {
           )
         }
 
-    val strings = readVersionAndGroupStrings(propertiesFile, hermesVersionFile)
+    val project = createProject()
+    val strings = readVersionAndGroupStrings(project, propertiesFile, hermesVersionFile)
     val versionString = strings.versionString
     val hermesVersionString = strings.hermesVersionString
     val hermesV1VersionString = strings.hermesV1VersionString
@@ -635,7 +652,8 @@ class DependencyUtilsTest {
           )
         }
 
-    val strings = readVersionAndGroupStrings(propertiesFile, hermesVersionFile)
+    val project = createProject()
+    val strings = readVersionAndGroupStrings(project, propertiesFile, hermesVersionFile)
     val versionString = strings.versionString
     val hermesVersionString = strings.hermesVersionString
     val hermesV1VersionString = strings.hermesV1VersionString
@@ -667,7 +685,8 @@ class DependencyUtilsTest {
           )
         }
 
-    val strings = readVersionAndGroupStrings(propertiesFile, hermesVersionFile)
+    val project = createProject()
+    val strings = readVersionAndGroupStrings(project, propertiesFile, hermesVersionFile)
     val versionString = strings.versionString
     val hermesVersionString = strings.hermesVersionString
     val hermesV1VersionString = strings.hermesV1VersionString
@@ -701,7 +720,8 @@ class DependencyUtilsTest {
           )
         }
 
-    val strings = readVersionAndGroupStrings(propertiesFile, hermesVersionFile)
+    val project = createProject()
+    val strings = readVersionAndGroupStrings(project, propertiesFile, hermesVersionFile)
     val versionString = strings.versionString
     val hermesVersionString = strings.hermesVersionString
     val hermesV1VersionString = strings.hermesV1VersionString
@@ -736,7 +756,8 @@ class DependencyUtilsTest {
           )
         }
 
-    val strings = readVersionAndGroupStrings(propertiesFile, hermesVersionFile)
+    val project = createProject()
+    val strings = readVersionAndGroupStrings(project, propertiesFile, hermesVersionFile)
     val reactGroupString = strings.reactGroupString
     val hermesGroupString = strings.hermesGroupString
 
@@ -768,7 +789,8 @@ class DependencyUtilsTest {
           )
         }
 
-    val strings = readVersionAndGroupStrings(propertiesFile, hermesVersionFile)
+    val project = createProject()
+    val strings = readVersionAndGroupStrings(project, propertiesFile, hermesVersionFile)
     val reactGroupString = strings.reactGroupString
     val hermesGroupString = strings.hermesGroupString
 
@@ -839,5 +861,40 @@ class DependencyUtilsTest {
   fun exclusiveEnterpriseRepository_defaultIsTrue() {
     val project = createProject(tempFolder.root)
     assertThat(project.exclusiveEnterpriseRepository()).isNull()
+  }
+
+  @Test
+  fun isNightly_returnsTrue_forValidNightlyVersions() {
+    val trueCases =
+        listOf(
+            "0.85.0-nightly-20260128-36f07a1b2",
+            "0.82.0-nightly-date-commit",
+            "0.0.0-20230505-2109-9b69263a1",
+            "0.0.0-date-commit",
+            "0.0.0-nightly-",
+        )
+
+    trueCases.forEach { version ->
+      assert(version.isNightly()) { "Expected '$version' to be detected as nightly" }
+    }
+  }
+
+  @Test
+  fun isNightly_returnsFalse_forNonNightlyVersions() {
+    val falseCases =
+        listOf(
+            "0.83.0", // Standard version
+            "0.0.1",
+            "nightly", // Missing hyphens
+            "0.83.0-nightly", // Missing trailing hyphen
+            "any-nightly", // Missing trailing hyphen
+            "nightly-build", // Missing leading hyphen
+            "", // Empty string
+            "   ", // Blank string
+        )
+
+    falseCases.forEach { version ->
+      assert(!version.isNightly()) { "Expected '$version' to NOT be detected as nightly" }
+    }
   }
 }

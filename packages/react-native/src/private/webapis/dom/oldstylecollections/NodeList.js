@@ -37,7 +37,7 @@ export default class NodeList<T> implements Iterable<T>, ArrayLike<T> {
    * @private This is not defined in the declaration file, so users will not see
    *          the signature of the constructor.
    */
-  constructor(elements: $ReadOnlyArray<T>) {
+  constructor(elements: ReadonlyArray<T>) {
     for (let i = 0; i < elements.length; i++) {
       REUSABLE_PROPERTY_DESCRIPTOR.value = elements[i];
       Object.defineProperty(this, i, REUSABLE_PROPERTY_DESCRIPTOR);
@@ -105,6 +105,6 @@ setPlatformObject(NodeList);
  * We can do that because the external definition of `NodeList` lives in
  * `NodeList.js.flow`, not here.
  */
-export function createNodeList<T>(elements: $ReadOnlyArray<T>): NodeList<T> {
+export function createNodeList<T>(elements: ReadonlyArray<T>): NodeList<T> {
   return new NodeList(elements);
 }

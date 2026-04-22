@@ -21,9 +21,9 @@ public abstract class YogaConfig {
 
   public abstract fun getErrata(): YogaErrata
 
-  public abstract fun setLogger(logger: YogaLogger)
+  public abstract fun setLogger(logger: YogaLogger?)
 
-  public abstract fun getLogger(): YogaLogger
+  public abstract fun getLogger(): YogaLogger?
 
   protected abstract fun getNativePointer(): Long
 

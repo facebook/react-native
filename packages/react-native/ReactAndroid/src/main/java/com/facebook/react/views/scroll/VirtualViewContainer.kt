@@ -9,7 +9,6 @@ package com.facebook.react.views.scroll
 
 import android.graphics.Rect
 import android.view.ViewGroup
-import android.view.ViewTreeObserver
 import com.facebook.common.logging.FLog
 import com.facebook.react.common.build.ReactBuildConfig
 import com.facebook.react.internal.featureflags.ReactNativeFeatureFlags
@@ -48,21 +47,10 @@ internal fun rectsOverlap(rect1: Rect, rect2: Rect): Boolean {
 
 internal abstract class VirtualViewContainerState {
   protected val prerenderRatio: Double = ReactNativeFeatureFlags.virtualViewPrerenderRatio()
-  protected val hysteresisRatio: Double = ReactNativeFeatureFlags.virtualViewHysteresisRatio()
   protected abstract val virtualViews: MutableCollection<VirtualView>
   protected val emptyRect: Rect = Rect()
   protected val visibleRect: Rect = Rect()
   protected val prerenderRect: Rect = Rect()
-  protected val hysteresisRect: Rect = Rect()
-  protected val onWindowFocusChangeListener =
-      if (ReactNativeFeatureFlags.enableVirtualViewWindowFocusDetection()) {
-        ViewTreeObserver.OnWindowFocusChangeListener {
-          debugLog("onWindowFocusChanged")
-          updateModes()
-        }
-      } else {
-        null
-      }
   protected val scrollView: ViewGroup
 
   companion object {
@@ -78,15 +66,6 @@ internal abstract class VirtualViewContainerState {
 
   constructor(scrollView: ViewGroup) {
     this.scrollView = scrollView
-    if (onWindowFocusChangeListener != null) {
-      scrollView.viewTreeObserver.addOnWindowFocusChangeListener(onWindowFocusChangeListener)
-    }
-  }
-
-  fun cleanup() {
-    if (onWindowFocusChangeListener != null) {
-      scrollView.viewTreeObserver.removeOnWindowFocusChangeListener(onWindowFocusChangeListener)
-    }
   }
 
   open fun onChange(virtualView: VirtualView) {
@@ -111,10 +90,7 @@ internal abstract class VirtualViewContainerState {
     updateModes()
   }
 
-  /**
-   * Refreshes the coordinates for the Rects this class cares about (visibleRect, prerenderRect,
-   * hysteresisRect)
-   */
+  /** Refreshes the coordinates for the Rects this class cares about (visibleRect, prerenderRect) */
   protected fun updateRects() {
     scrollView.getDrawingRect(visibleRect)
 
@@ -126,7 +102,6 @@ internal abstract class VirtualViewContainerState {
       // should set the other rects here in case scrollview is suddenly empty after the other rects
       // are non-empty
       prerenderRect.set(visibleRect)
-      hysteresisRect.set(prerenderRect)
       return
     }
 
@@ -136,17 +111,9 @@ internal abstract class VirtualViewContainerState {
         (-prerenderRect.height() * prerenderRatio).toInt(),
     )
 
-    hysteresisRect.set(prerenderRect)
-    hysteresisRect.inset(
-        (-visibleRect.width() * hysteresisRatio).toInt(),
-        (-visibleRect.height() * hysteresisRatio).toInt(),
-    )
-
     debugLog(
         "updateRects",
-        {
-          "visibleRect ${visibleRect.toString()} prerenderRect ${prerenderRect.toString()} hysteresisRect ${hysteresisRect.toString()}"
-        },
+        { "visibleRect ${visibleRect.toString()} prerenderRect ${prerenderRect.toString()}" },
     )
   }
 

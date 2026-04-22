@@ -33,7 +33,7 @@ function buildCommandSchema(
   optional: boolean,
   typeAnnotation: {
     type: 'FunctionTypeAnnotation',
-    params: $ReadOnlyArray<{
+    params: ReadonlyArray<{
       name: string,
       optional: boolean,
       typeAnnotation: CommandParamTypeAnnotation,
@@ -131,7 +131,7 @@ function buildCommandSchema(
         };
         break;
       default:
-        (type: unknown);
+        (type) as unknown;
         throw new Error(
           `Unsupported param type for method "${name}", param "${paramName}". Found ${type}`,
         );
@@ -224,10 +224,10 @@ function getCommandArrayElementTypeType(
 }
 
 function getCommands(
-  commandTypeAST: $ReadOnlyArray<EventTypeAST>,
+  commandTypeAST: ReadonlyArray<EventTypeAST>,
   types: TypeDeclarationMap,
   parser: Parser,
-): $ReadOnlyArray<NamedShape<CommandTypeAnnotation>> {
+): ReadonlyArray<NamedShape<CommandTypeAnnotation>> {
   return commandTypeAST
     .filter(property => property.type === 'ObjectTypeProperty')
     .map(property => buildCommandSchema(property, types, parser))

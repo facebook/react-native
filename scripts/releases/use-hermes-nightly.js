@@ -10,9 +10,20 @@
 
 'use strict';
 
+const {getReactNativePackage} = require('../shared/monorepoUtils');
 const {updateHermesVersionsToNightly} = require('./utils/hermes-utils');
 
 async function main() {
+  const {packageJson} = await getReactNativePackage();
+  const hermesCompilerVersion = packageJson.dependencies?.['hermes-compiler'];
+
+  if (hermesCompilerVersion != null && hermesCompilerVersion !== '0.0.0') {
+    console.log(
+      `Skipping hermes nightly update: hermes-compiler is pinned to ${hermesCompilerVersion}`,
+    );
+    return;
+  }
+
   await updateHermesVersionsToNightly();
 }
 

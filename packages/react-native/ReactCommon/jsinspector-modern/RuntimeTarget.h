@@ -21,6 +21,7 @@
 #include <jsinspector-modern/tracing/TraceRecordingState.h>
 
 #include <memory>
+#include <optional>
 #include <utility>
 
 #ifndef JSINSPECTOR_EXPORT
@@ -147,6 +148,11 @@ class RuntimeTargetController {
    */
   tracing::RuntimeSamplingProfile collectSamplingProfile();
 
+  /**
+   * Emits a tracing state change to JavaScript via the tracing state observer.
+   */
+  void emitTracingStateChange(bool isTracing);
+
  private:
   RuntimeTarget &target_;
 };
@@ -262,6 +268,7 @@ class JSINSPECTOR_EXPORT RuntimeTarget : public EnableExecutorFromThis<RuntimeTa
    * session - HostTargetTraceRecording.
    */
   std::weak_ptr<RuntimeTracingAgent> tracingAgent_;
+
   /**
    * Start sampling profiler for a particular JavaScript runtime.
    */
@@ -289,6 +296,12 @@ class JSINSPECTOR_EXPORT RuntimeTarget : public EnableExecutorFromThis<RuntimeTa
   void installGlobals();
 
   /**
+   * Installs __notifyFastRefreshComplete on the runtime's global object.
+   * When called from JS, dispatches to all connected RuntimeAgents.
+   */
+  void installFastRefreshHandler();
+
+  /**
    * Install the console API handler.
    */
   void installConsoleHandler();
@@ -303,6 +316,13 @@ class JSINSPECTOR_EXPORT RuntimeTarget : public EnableExecutorFromThis<RuntimeTa
    * determining the status of the debugger session.
    */
   void installDebuggerSessionObserver();
+
+  /**
+   * Installs __TRACING_STATE_OBSERVER__ object on the JavaScript's global
+   * object, which can be referenced from JavaScript side for determining the
+   * status of performance tracing.
+   */
+  void installTracingStateObserver();
 
   /**
    * Installs the private __NETWORK_REPORTER__ object on the Runtime's
@@ -321,6 +341,11 @@ class JSINSPECTOR_EXPORT RuntimeTarget : public EnableExecutorFromThis<RuntimeTa
    * onStatusChange on __DEBUGGER_SESSION_OBSERVER__.
    */
   void emitDebuggerSessionDestroyed();
+
+  /**
+   * Emits a tracing state change to JavaScript via the tracing state observer.
+   */
+  void emitTracingStateChange(bool isTracing);
 
   /**
    * \returns a globally unique ID for a network request.

@@ -108,7 +108,7 @@ async function main() {
 
   await setHermesTag(hermesTag, hermesV1Tag);
 
-  await updateHermesCompilerVersionInDependencies(hermesVersion);
+  await updateHermesCompilerVersionInDependencies(hermesV1Version);
   await updateHermesRuntimeDependenciesVersions(hermesVersion, hermesV1Version);
 }
 

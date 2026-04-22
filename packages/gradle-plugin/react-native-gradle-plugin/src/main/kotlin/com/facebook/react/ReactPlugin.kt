@@ -55,8 +55,8 @@ class ReactPlugin : Plugin<Project> {
                 project,
             )
 
-    if (project.rootProject.isHermesV1Enabled) {
-      rootExtension.hermesV1Enabled.set(true)
+    if (!project.rootProject.isHermesV1Enabled) {
+      rootExtension.hermesV1Enabled.set(false)
     }
 
     // App Only Configuration
@@ -74,10 +74,10 @@ class ReactPlugin : Plugin<Project> {
         val hermesVersionPropertiesFile =
             File(reactNativeDir, "sdks/hermes-engine/version.properties")
         val versionAndGroupStrings =
-            readVersionAndGroupStrings(propertiesFile, hermesVersionPropertiesFile)
+            readVersionAndGroupStrings(project, propertiesFile, hermesVersionPropertiesFile)
         val hermesV1Enabled = rootExtension.hermesV1Enabled.get()
         configureDependencies(project, versionAndGroupStrings, hermesV1Enabled)
-        configureRepositories(project)
+        configureRepositories(project, versionAndGroupStrings.isNightly)
       }
 
       configureReactNativeNdk(project, extension)

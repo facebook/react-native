@@ -15,51 +15,28 @@ import com.facebook.react.bridge.Arguments
 import com.facebook.react.bridge.ReactApplicationContext
 import com.facebook.react.bridge.WritableMap
 import com.facebook.react.bridge.buildReadableArray
-import com.facebook.react.common.build.ReactBuildConfig
 import com.facebook.react.internal.featureflags.ReactNativeFeatureFlags
+import java.io.IOException
 import java.net.SocketTimeoutException
 import okhttp3.Headers
-import okhttp3.Protocol
-import okhttp3.Request
-import okhttp3.Response
+import okhttp3.MultipartBody
+import okhttp3.RequestBody
+import okio.Buffer
 
 /**
  * Utility class for reporting network lifecycle events to JavaScript and InspectorNetworkReporter.
  */
 internal object NetworkEventUtil {
-  @JvmStatic
-  fun onCreateRequest(devToolsRequestId: String, request: Request) {
-    if (ReactNativeFeatureFlags.enableNetworkEventReporting()) {
-      val headersMap = okHttpHeadersToMap(request.headers())
-      var requestBody = ""
+  private const val MAX_BODY_PREVIEW_SIZE = 512 * 1024 // 512KB
 
-      if (ReactBuildConfig.DEBUG) {
-        // Debug build: Process request body for preview (CDP only)
-        requestBody =
-            (request.body() as? ProgressRequestBody)?.getBodyPreview()
-                ?: request.body()?.toString().orEmpty()
-      }
-
-      InspectorNetworkReporter.reportRequestStart(
-          devToolsRequestId,
-          request.url().toString(),
-          request.method(),
-          headersMap,
-          requestBody,
-          request.body()?.contentLength() ?: 0,
-      )
-      InspectorNetworkReporter.reportConnectionTiming(devToolsRequestId, headersMap)
-    }
-  }
-
-  @Deprecated("Compatibility overload")
   @JvmStatic
   fun onCreateRequest(
       devToolsRequestId: String,
       requestUrl: String,
       requestMethod: String,
       requestHeaders: Map<String, String>,
-      requestBody: String,
+      /** Request body for DevTools preview. Only populate in debug builds. */
+      requestBodyForDevTools: String?,
       encodedDataLength: Long,
   ) {
     if (ReactNativeFeatureFlags.enableNetworkEventReporting()) {
@@ -68,7 +45,7 @@ internal object NetworkEventUtil {
           requestUrl,
           requestMethod,
           requestHeaders,
-          requestBody,
+          requestBodyForDevTools.orEmpty(),
           encodedDataLength,
       )
       InspectorNetworkReporter.reportConnectionTiming(devToolsRequestId, requestHeaders)
@@ -229,11 +206,12 @@ internal object NetworkEventUtil {
       requestId: Int,
       devToolsRequestId: String,
       requestUrl: String?,
-      response: Response,
+      statusCode: Int,
+      headers: Map<String, String>,
+      contentLength: Long,
   ) {
-    val headersMap = okHttpHeadersToMap(response.headers())
     val headersBundle = Bundle()
-    for ((headerName, headerValue) in headersMap) {
+    for ((headerName, headerValue) in headers) {
       headersBundle.putString(headerName, headerValue)
     }
 
@@ -241,59 +219,24 @@ internal object NetworkEventUtil {
       InspectorNetworkReporter.reportResponseStart(
           devToolsRequestId,
           requestUrl.orEmpty(),
-          response.code(),
-          headersMap,
-          response.body()?.contentLength() ?: 0,
+          statusCode,
+          headers,
+          contentLength,
       )
     }
     reactContext?.emitDeviceEvent(
         "didReceiveNetworkResponse",
         Arguments.createArray().apply {
           pushInt(requestId)
-          pushInt(response.code())
+          pushInt(statusCode)
           pushMap(Arguments.fromBundle(headersBundle))
           pushString(requestUrl)
         },
     )
   }
 
-  @Deprecated("Compatibility overload")
   @JvmStatic
-  fun onResponseReceived(
-      reactContext: ReactApplicationContext?,
-      requestId: Int,
-      devToolsRequestId: String,
-      statusCode: Int,
-      headers: WritableMap?,
-      url: String?,
-  ) {
-    val headersBuilder = Headers.Builder()
-    headers?.let { map ->
-      val iterator = map.keySetIterator()
-      while (iterator.hasNextKey()) {
-        val key = iterator.nextKey()
-        val value = map.getString(key)
-        if (value != null) {
-          headersBuilder.add(key, value)
-        }
-      }
-    }
-    onResponseReceived(
-        reactContext,
-        requestId,
-        devToolsRequestId,
-        url,
-        Response.Builder()
-            .protocol(Protocol.HTTP_1_1)
-            .request(Request.Builder().url(url.orEmpty()).build())
-            .headers(headersBuilder.build())
-            .code(statusCode)
-            .message("")
-            .build(),
-    )
-  }
-
-  private fun okHttpHeadersToMap(headers: Headers): Map<String, String> {
+  fun okHttpHeadersToMap(headers: Headers): Map<String, String> {
     val responseHeaders = mutableMapOf<String, String>()
     for (i in 0 until headers.size()) {
       val headerName = headers.name(i)
@@ -305,5 +248,41 @@ internal object NetworkEventUtil {
       }
     }
     return responseHeaders
+  }
+
+  @JvmStatic
+  fun getRequestBodyPreview(requestBody: RequestBody?): String? {
+    if (requestBody == null) {
+      return null
+    }
+
+    // Unwrap ProgressRequestBody
+    val body = (requestBody as? ProgressRequestBody)?.innerBody() ?: requestBody
+
+    if (body.isOneShot()) {
+      // Fallback - body cannot be read twice
+      return "[Preview unavailable]"
+    }
+
+    // MultipartBody does not propagate isOneShot() from its parts, so check each
+    // part explicitly. Reading a one-shot part here would drain the underlying
+    // stream and cause the real request to fail.
+    if (body is MultipartBody && body.parts().any { it.body().isOneShot() }) {
+      return "[Preview unavailable]"
+    }
+
+    return try {
+      val buffer = Buffer()
+      body.writeTo(buffer)
+
+      val size = buffer.size()
+      if (size <= MAX_BODY_PREVIEW_SIZE) {
+        buffer.readUtf8()
+      } else {
+        buffer.readUtf8(MAX_BODY_PREVIEW_SIZE.toLong()) + "... (truncated, ${size} bytes total)"
+      }
+    } catch (e: IOException) {
+      "[Preview unavailable]"
+    }
   }
 }

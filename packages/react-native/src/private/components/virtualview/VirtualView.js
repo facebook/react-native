@@ -11,16 +11,16 @@
 import type {ViewStyleProp} from '../../../../Libraries/StyleSheet/StyleSheet';
 import type {NativeSyntheticEvent} from '../../../../Libraries/Types/CoreEventTypes';
 import type {HostInstance} from '../../types/HostInstance';
-import type {NativeModeChangeEvent} from './VirtualViewExperimentalNativeComponent';
+import type {NativeModeChangeEvent} from './VirtualViewNativeComponent';
 
+import UIManager from '../../../../Libraries/ReactNative/UIManager';
 import StyleSheet from '../../../../Libraries/StyleSheet/StyleSheet';
-import * as ReactNativeFeatureFlags from '../../featureflags/ReactNativeFeatureFlags';
 import {useVirtualViewLogging} from './logger/VirtualViewLogger';
-import VirtualViewNativeComponent from './VirtualViewExperimentalNativeComponent';
+import VirtualViewExperimentalNativeComponent from './VirtualViewExperimentalNativeComponent';
+import VirtualViewProperNativeComponent from './VirtualViewNativeComponent';
 import nullthrows from 'nullthrows';
 import * as React from 'react';
-// $FlowFixMe[missing-export]
-import {startTransition, unstable_Activity as Activity, useState} from 'react';
+import {startTransition, useState} from 'react';
 
 // @see VirtualViewNativeComponent
 export enum VirtualViewMode {
@@ -49,6 +49,15 @@ export type ModeChangeEvent = Readonly<{
   mode: VirtualViewMode,
   target: HostInstance,
 }>;
+
+// If `VirtualView` exists and `VirtualViewExperimental` does not, that means
+// the new version was renamed to `VirtualView`. Eventually, this can be deleted
+// with a single remaining import of `VirtualViewNativeComponent`.
+const VirtualViewNativeComponent: typeof VirtualViewExperimentalNativeComponent =
+  UIManager.hasViewManagerConfig('VirtualView') &&
+  !UIManager.hasViewManagerConfig('VirtualViewExperimental')
+    ? VirtualViewProperNativeComponent
+    : VirtualViewExperimentalNativeComponent;
 
 type VirtualViewComponent = component(
   children?: React.Node,
@@ -144,17 +153,7 @@ function createVirtualView(initialState: State): VirtualViewComponent {
             : style
         }
         onModeChange={handleModeChange}>
-        {
-          match (ReactNativeFeatureFlags.virtualViewActivityBehavior()) {
-            'activity-without-mode' =>
-              <Activity>{isHidden ? null : children}</Activity>,
-            'activity-with-hidden-mode' =>
-              <Activity mode={isHidden ? 'hidden' : 'visible'}>
-                {children}
-              </Activity>,
-            'no-activity' | _ => isHidden ? null : children,
-          }
-        }
+        {isHidden ? null : children}
       </VirtualViewNativeComponent>
     );
   }

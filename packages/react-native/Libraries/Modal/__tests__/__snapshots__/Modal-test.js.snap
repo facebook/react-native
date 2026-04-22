@@ -26,13 +26,13 @@ exports[`Modal should render as <RCTModalHostView> when not mocked 1`] = `
     style={
       Array [
         Object {
+          "backgroundColor": "white",
           "flex": 1,
           "left": 0,
           "top": 0,
         },
-        Object {
-          "backgroundColor": "white",
-        },
+        undefined,
+        Object {},
       ]
     }
   >

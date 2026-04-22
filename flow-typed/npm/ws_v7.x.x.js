@@ -134,6 +134,7 @@ declare type ws$CloseListener = (code: number, reason: string) => unknown;
 declare type ws$ErrorListener = (error: Error) => unknown;
 declare type ws$MessageListener = (
   data: string | Buffer | ArrayBuffer | Array<Buffer>,
+  isBinary: boolean,
 ) => unknown;
 declare type ws$OpenListener = () => unknown;
 declare type ws$PingListener = (Buffer) => unknown;
@@ -338,6 +339,7 @@ declare class ws$WebSocket extends events$EventEmitter {
 }
 
 declare module 'ws' {
+  declare export type Server = ws$WebSocketServer;
   declare module.exports: typeof ws$WebSocket;
 }
 

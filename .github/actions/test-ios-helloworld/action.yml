@@ -15,8 +15,6 @@ runs:
   steps:
     - name: Setup xcode
       uses: ./.github/actions/setup-xcode
-      with:
-        platform: ios
     - name: Setup node.js
       uses: ./.github/actions/setup-node
     - name: Run yarn install

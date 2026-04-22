@@ -27,7 +27,9 @@ import com.facebook.proguard.annotations.DoNotStrip
 import com.facebook.react.uimanager.BackgroundStyleApplicator
 import com.facebook.react.uimanager.ReactCompoundView
 import com.facebook.react.uimanager.style.Overflow
+import com.facebook.react.views.text.internal.span.DrawCommandSpan
 import com.facebook.react.views.text.internal.span.ReactFragmentIndexSpan
+import com.facebook.react.views.text.internal.span.ReactLinkSpan
 import kotlin.collections.ArrayList
 import kotlin.math.roundToInt
 
@@ -66,9 +68,7 @@ internal class PreparedLayoutTextView(context: Context) : ViewGroup(context), Re
       }
     }
 
-  // T221698007: This is closest to existing behavior, but does not align with web. We may want to
-  // change in the future if not too breaking.
-  var overflow: Overflow = Overflow.HIDDEN
+  var overflow: Overflow = Overflow.VISIBLE
     set(value) {
       if (field != value) {
         field = value
@@ -84,21 +84,17 @@ internal class PreparedLayoutTextView(context: Context) : ViewGroup(context), Re
     @DoNotStrip get() = preparedLayout?.layout?.text
 
   init {
-    initView()
     // ViewGroup by default says only its children will draw
     setWillNotDraw(false)
   }
 
-  private fun initView() {
+  fun recycleView(): Unit {
+    BackgroundStyleApplicator.reset(this)
+    overflow = Overflow.VISIBLE
     clickableSpans = emptyList()
     selection = null
+    selectionColor = null
     preparedLayout = null
-  }
-
-  fun recycleView(): Unit {
-    initView()
-    BackgroundStyleApplicator.reset(this)
-    overflow = Overflow.HIDDEN
   }
 
   override fun onDraw(canvas: Canvas) {
@@ -119,10 +115,36 @@ internal class PreparedLayoutTextView(context: Context) : ViewGroup(context), Re
             selectionColor ?: DefaultStyleValuesUtil.getDefaultTextColorHighlight(context)
       }
 
+      val spanned = text as? Spanned
+      val drawCommandSpans =
+          spanned?.getSpans(0, spanned.length, DrawCommandSpan::class.java) ?: emptyArray()
+
+      if (spanned != null) {
+        for (span in drawCommandSpans) {
+          span.onPreDraw(
+              spanned.getSpanStart(span),
+              spanned.getSpanEnd(span),
+              canvas,
+              layout,
+          )
+        }
+      }
+
       if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.UPSIDE_DOWN_CAKE) {
         Api34Utils.draw(layout, canvas, selection?.path, selectionPaint)
       } else {
         layout.draw(canvas, selection?.path, selectionPaint, 0)
+      }
+
+      if (spanned != null) {
+        for (span in drawCommandSpans) {
+          span.onDraw(
+              spanned.getSpanStart(span),
+              spanned.getSpanEnd(span),
+              canvas,
+              layout,
+          )
+        }
       }
     }
   }
@@ -181,12 +203,12 @@ internal class PreparedLayoutTextView(context: Context) : ViewGroup(context), Re
 
     if (action == MotionEvent.ACTION_UP) {
       clearSelection()
-      clickableSpan.onClick(this)
-    } else if (action == MotionEvent.ACTION_DOWN) {
-      val layout = checkNotNull(preparedLayout).layout
-      val start = (layout.text as Spanned).getSpanStart(clickableSpan)
-      val end = (layout.text as Spanned).getSpanEnd(clickableSpan)
-      setSelection(start, end)
+
+      // This will already get triggered by reactTagForTouch() based hit testing if it is React
+      // managed clickable text. We still want to click any native ClickableSpan (e.g. for URIs).
+      if (clickableSpan !is ReactLinkSpan) {
+        clickableSpan.onClick(this)
+      }
     }
 
     return true

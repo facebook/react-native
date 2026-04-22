@@ -98,7 +98,7 @@ module.exports = {
         '**/__fixtures__/**/*.js',
         '**/__mocks__/**/*.js',
         '**/__tests__/**/*.js',
-        'packages/react-native/jest/**/*.js',
+        'packages/jest-preset/jest/**/*.js',
         'packages/rn-tester/**/*.js',
       ],
       globals: {

@@ -29,6 +29,11 @@ kotlin {
   explicitApi()
 }
 
+tasks.withType<JavaCompile>().configureEach {
+  options.compilerArgs.add("-Xlint:deprecation,unchecked")
+  options.compilerArgs.add("-Werror")
+}
+
 dependencies {
   // Build React Native from source
   implementation(project(":packages:react-native:ReactAndroid"))

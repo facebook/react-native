@@ -10,8 +10,8 @@
 
 'use strict';
 
-const {create} = require('../../../../jest/renderer');
 const StatusBar = require('../StatusBar').default;
+const {create} = require('@react-native/jest-preset/jest/renderer');
 const React = require('react');
 
 describe('StatusBar', () => {

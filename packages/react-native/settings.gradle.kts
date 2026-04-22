@@ -47,8 +47,28 @@ buildscript {
   val properties = java.util.Properties()
   val propertiesToInherit = listOf("hermesV1Enabled", "react.hermesV1Enabled")
 
+  // We cannot assume that the node_modules are next to the android project, for example
+  // in monorepos, they might get hoisted.
+  // In a composite build, this included build can access the invoking (consumer) build
+  // via `gradle.parent`. We use its StartParameter to locate the app's `gradle.properties`:
+  // - `projectDir/gradle.properties` when Gradle is run with `-p <androidDir>`
+  // - `currentDir/gradle.properties` when run from the app android folder
+  // If neither exists, we keep the legacy RN fallback path below.
+
+  val parentGradle = gradle.parent
+  val parentProjectDir = parentGradle?.startParameter?.projectDir
+  val parentCurrentDir = parentGradle?.startParameter?.currentDir
+  val gradlePropertiesCandidates =
+      listOfNotNull(
+          parentProjectDir?.resolve("gradle.properties"),
+          parentCurrentDir?.resolve("gradle.properties"),
+          // Backward-compatible fallback for classic RN app layouts.
+          file("../../android/gradle.properties"),
+      )
+
   try {
-    file("../../android/gradle.properties").inputStream().use { properties.load(it) }
+    val propertiesFile = gradlePropertiesCandidates.firstOrNull { it.exists() }
+    propertiesFile?.inputStream()?.use { properties.load(it) }
 
     gradle.rootProject {
       propertiesToInherit.forEach { property ->

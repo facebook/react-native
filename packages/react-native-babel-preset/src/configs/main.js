@@ -16,6 +16,7 @@ const lazyImports = require('./lazy-imports');
 const EXCLUDED_FIRST_PARTY_PATHS = [
   /[/\\]node_modules[/\\]/,
   /[/\\]packages[/\\]react-native[/\\]/,
+  /[/\\]packages[/\\]jest-preset[/\\]/,
   /[/\\]packages[/\\]virtualized-lists[/\\]/,
   /[/\\]private[/\\]react-native-fantom[/\\]/,
 ];
@@ -54,25 +55,40 @@ const getPreset = (src, options, babel) => {
   const transformProfile =
     options?.unstable_transformProfile ?? babel?.caller(getTransformProfile);
 
-  const isHermesStable = transformProfile === 'hermes-stable';
-  const isHermesCanary = transformProfile === 'hermes-canary';
-  const isHermes = isHermesStable || isHermesCanary;
+  const dev = options?.dev ?? babel?.env('development') ?? false;
+
+  // Hermes V1 (aka Static Hermes) uses more optimised profiles.
+  // There is currently no difference between stable and canary, but canary
+  // may in future be used to test features in pre-prod Hermes versions.
+  const isHermesV1 =
+    transformProfile === 'hermes-stable' ||
+    transformProfile === 'hermes-canary';
 
   // We enable regenerator in dev builds for the time being because
-  // Static Hermes doesn't yet fully support debugging native generators.
+  // Hermes V1 doesn't yet fully support debugging native generators.
   // (e.g. - it's not possible to inspect local variables when paused in a
   // generator).
   //
   // Use native generators in release mode because it has already yielded perf
-  // wins. The next release of Static Hermes will close this gap, so this won't
+  // wins. The next release of Hermes will close this gap, so this won't
   // be permanent.
-  const enableRegenerator = isHermes && options.dev;
+  const enableRegenerator = isHermesV1 && dev;
+
+  // Preserve class syntax and related if we're using Hermes V1.
+  const preserveClasses = isHermesV1;
+
+  // Preserve private class fields and methods if the experiment is enabled.
+  const preserveClassPrivate = TRUE_VALS.has(
+    options?.customTransformOptions?.unstable_preserveClassPrivate,
+  );
+
+  // Preserve async/await syntax if the experiment is enabled.
+  const preserveAsync = TRUE_VALS.has(
+    options?.customTransformOptions?.unstable_preserveAsync,
+  );
 
   const isNull = src == null;
   const hasClass = isNull || src.indexOf('class') !== -1;
-  const preserveClasses = TRUE_VALS.has(
-    options?.customTransformOptions?.unstable_preserveClasses,
-  );
 
   const extraPlugins = [];
   const firstPartyPlugins = [];
@@ -127,7 +143,7 @@ const getPreset = (src, options, babel) => {
     require('@babel/plugin-transform-destructuring'),
     {useBuiltIns: true},
   ]);
-  if (isNull || src.indexOf('async') !== -1) {
+  if (!preserveAsync && (isNull || src.indexOf('async') !== -1)) {
     extraPlugins.push([
       require('@babel/plugin-transform-async-generator-functions'),
     ]);
@@ -155,11 +171,11 @@ const getPreset = (src, options, babel) => {
     ]);
   }
 
-  if (options && options.dev && !options.disableDeepImportWarnings) {
+  if (options && dev && !options.disableDeepImportWarnings) {
     firstPartyPlugins.push([require('../plugin-warn-on-deep-imports.js')]);
   }
 
-  if (options && options.dev && !options.useTransformReactJSXExperimental) {
+  if (options && dev && !options.useTransformReactJSXExperimental) {
     extraPlugins.push([require('@babel/plugin-transform-react-jsx-source')]);
     extraPlugins.push([require('@babel/plugin-transform-react-jsx-self')]);
   }
@@ -215,11 +231,15 @@ const getPreset = (src, options, babel) => {
           ...(preserveClasses
             ? []
             : [[require('@babel/plugin-transform-class-properties'), {loose}]]),
-          [require('@babel/plugin-transform-private-methods'), {loose}],
-          [
-            require('@babel/plugin-transform-private-property-in-object'),
-            {loose},
-          ],
+          ...(preserveClassPrivate
+            ? []
+            : [
+                [require('@babel/plugin-transform-private-methods'), {loose}],
+                [
+                  require('@babel/plugin-transform-private-property-in-object'),
+                  {loose},
+                ],
+              ]),
           [require('@babel/plugin-syntax-dynamic-import')],
           [require('@babel/plugin-syntax-export-default-from')],
           ...passthroughSyntaxPlugins,
@@ -262,12 +282,6 @@ const getPreset = (src, options, babel) => {
 };
 
 module.exports = (options, babel) => {
-  if (options.withDevTools == null) {
-    const env = process.env.BABEL_ENV || process.env.NODE_ENV;
-    if (!env || env === 'development') {
-      return getPreset(null, {...options, dev: true}, babel);
-    }
-  }
   return getPreset(null, options, babel);
 };
 

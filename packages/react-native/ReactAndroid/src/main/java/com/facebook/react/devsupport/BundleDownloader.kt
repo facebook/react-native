@@ -169,12 +169,12 @@ public class BundleDownloader public constructor(private val client: OkHttpClien
           DebugServerException(
               ("""
                     Error while reading multipart response.
-                    
+
                     Response body was empty: ${response.code()}
-                    
+
                     URL: $url
-                    
-                    
+
+
                     """
                   .trimIndent())
           )
@@ -231,7 +231,11 @@ public class BundleDownloader public constructor(private val client: OkHttpClien
                     if (progress.has("total")) {
                       total = progress.getInt("total")
                     }
-                    callback.onProgress(status, done, total)
+                    var percent: Int? = null
+                    if (progress.has("percent")) {
+                      percent = progress.getInt("percent")
+                    }
+                    callback.onProgress(status, done, total, percent)
                   } catch (e: JSONException) {
                     FLog.e(ReactConstants.TAG, "Error parsing progress JSON. $e")
                   }
@@ -248,6 +252,7 @@ public class BundleDownloader public constructor(private val client: OkHttpClien
                       "Downloading",
                       (loaded / 1024).toInt(),
                       (total / 1024).toInt(),
+                      null,
                   )
                 }
               }
@@ -258,12 +263,12 @@ public class BundleDownloader public constructor(private val client: OkHttpClien
           DebugServerException(
               ("""
                     Error while reading multipart response.
-                    
+
                     Response code: ${response.code()}
-                    
+
                     URL: $url
-                    
-                    
+
+
                     """
                   .trimIndent())
           )

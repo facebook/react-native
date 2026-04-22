@@ -42,13 +42,14 @@ class EventQueueProcessorTest : public testing::Test {
                          const EventTarget* /*eventTarget*/,
                          const std::string& type,
                          ReactEventPriority priority,
-                         const EventPayload& /*payload*/) {
+                         const EventPayload& /*payload*/,
+                         HighResTimeStamp /*eventTimestamp*/) {
       eventTypes_.push_back(type);
       eventPriorities_.push_back(priority);
     };
 
-    auto dummyEventPipeConclusion = [](jsi::Runtime& runtime) {};
-    auto dummyStatePipe = [](const StateUpdate& stateUpdate) {};
+    auto dummyEventPipeConclusion = [](jsi::Runtime&) {};
+    auto dummyStatePipe = [](const StateUpdate&) {};
     auto mockEventLogger = std::make_shared<MockEventLogger>();
 
     eventProcessor_ = std::make_unique<EventQueueProcessor>(

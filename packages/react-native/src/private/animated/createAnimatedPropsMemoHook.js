@@ -24,13 +24,13 @@ type CompositeKey = {
   [string]:
     | CompositeKeyComponent
     | AnimatedEvent
-    | $ReadOnlyArray<unknown>
+    | ReadonlyArray<unknown>
     | Readonly<{[string]: unknown}>,
 };
 
 type CompositeKeyComponent =
   | AnimatedNode
-  | $ReadOnlyArray<CompositeKeyComponent | null>
+  | ReadonlyArray<CompositeKeyComponent | null>
   | Readonly<{[string]: CompositeKeyComponent}>;
 
 type $ReadOnlyCompositeKey = Readonly<{
@@ -38,13 +38,13 @@ type $ReadOnlyCompositeKey = Readonly<{
   [string]:
     | $ReadOnlyCompositeKeyComponent
     | AnimatedEvent
-    | $ReadOnlyArray<unknown>
+    | ReadonlyArray<unknown>
     | Readonly<{[string]: unknown}>,
 }>;
 
 type $ReadOnlyCompositeKeyComponent =
   | AnimatedNode
-  | $ReadOnlyArray<$ReadOnlyCompositeKeyComponent | null>
+  | ReadonlyArray<$ReadOnlyCompositeKeyComponent | null>
   | Readonly<{[string]: $ReadOnlyCompositeKeyComponent}>;
 
 type AnimatedPropsMemoHook = (
@@ -160,8 +160,8 @@ export function createCompositeKeyForProps(
  * If `array` contains no `AnimatedNode` instances, this returns null.
  */
 function createCompositeKeyForArray(
-  array: $ReadOnlyArray<unknown>,
-): $ReadOnlyArray<$ReadOnlyCompositeKeyComponent | null> | null {
+  array: ReadonlyArray<unknown>,
+): ReadonlyArray<$ReadOnlyCompositeKeyComponent | null> | null {
   let compositeKey: Array<$ReadOnlyCompositeKeyComponent | null> | null = null;
 
   for (let ii = 0, length = array.length; ii < length; ii++) {

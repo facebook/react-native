@@ -20,7 +20,7 @@
  */
 
 const {execSync} = require('child_process');
-const argv /*:$ReadOnly<{
+const argv /*:Readonly<{
   maxWorkers?: number,
   jestBinary?: string,
   flowBinary?: string,
@@ -53,10 +53,9 @@ try {
 
   describe('Test: feature flags codegen');
   execAndLog(`${YARN_BINARY} run featureflags --verify-unchanged`);
+
   describe('Test: eslint');
   execAndLog(`${YARN_BINARY} run lint`);
-  describe('Test: No JS build artifacts');
-  execAndLog(`${YARN_BINARY} run build --validate`);
 
   describe('Test: Validate JS API snapshot');
   execAndLog(`${YARN_BINARY} run build-types --validate`);

@@ -57,7 +57,7 @@ export type MethodSerializationOutput = Readonly<{
   methodName: string,
   protocolMethod: string,
   selector: string,
-  structParamRecords: $ReadOnlyArray<StructParameterRecord>,
+  structParamRecords: ReadonlyArray<StructParameterRecord>,
   returnJSType: ReturnJSType,
   argCount: number,
 }>;
@@ -67,7 +67,7 @@ function serializeMethod(
   property: NativeModulePropertyShape,
   structCollector: StructCollector,
   resolveAlias: AliasResolver,
-): $ReadOnlyArray<MethodSerializationOutput> {
+): ReadonlyArray<MethodSerializationOutput> {
   const {name: methodName, typeAnnotation: nullableTypeAnnotation} = property;
   const [propertyTypeAnnotation] = unwrapNullable(nullableTypeAnnotation);
   const {params} = propertyTypeAnnotation;
@@ -250,7 +250,7 @@ function getParamObjCType(
         case 'RootTag':
           return notStruct(isRequired ? 'double' : 'NSNumber *');
         default:
-          (structTypeAnnotation.name: empty);
+          structTypeAnnotation.name as empty;
           throw new Error(
             `Unsupported type for param "${paramName}" in ${methodName}. Found: ${structTypeAnnotation.type}`,
           );
@@ -290,7 +290,7 @@ function getParamObjCType(
     case 'GenericObjectTypeAnnotation':
       return notStruct(wrapOptional('NSDictionary *', !nullable));
     default:
-      (structTypeAnnotation.type: empty);
+      structTypeAnnotation.type as empty;
       throw new Error(
         `Unsupported type for param "${paramName}" in ${methodName}. Found: ${typeAnnotation.type}`,
       );
@@ -330,7 +330,7 @@ function getReturnObjCType(
         case 'RootTag':
           return wrapOptional('NSNumber *', isRequired);
         default:
-          (typeAnnotation.name: empty);
+          typeAnnotation.name as empty;
           throw new Error(
             `Unsupported return type for ${methodName}. Found: ${typeAnnotation.name}`,
           );
@@ -382,13 +382,13 @@ function getReturnObjCType(
           // In the legacy codegen, we don't surround NSSTring * with _Nullable
           return wrapOptional('NSString *', isRequired);
         default:
-          (validUnionType: empty);
+          validUnionType as empty;
           throw new Error(`Unsupported union member type`);
       }
     case 'GenericObjectTypeAnnotation':
       return wrapOptional('NSDictionary *', isRequired);
     default:
-      (typeAnnotation.type: 'MixedTypeAnnotation');
+      typeAnnotation.type as 'MixedTypeAnnotation';
       throw new Error(
         `Unsupported return type for ${methodName}. Found: ${typeAnnotation.type}`,
       );
@@ -456,11 +456,11 @@ function getReturnJSType(
         case 'string':
           return 'StringKind';
         default:
-          (validUnionType: empty);
+          validUnionType as empty;
           throw new Error(`Unsupported union member types`);
       }
     default:
-      (typeAnnotation.type: 'MixedTypeAnnotation');
+      typeAnnotation.type as 'MixedTypeAnnotation';
       throw new Error(
         `Unsupported return type for ${methodName}. Found: ${typeAnnotation.type}`,
       );
@@ -472,7 +472,7 @@ function serializeConstantsProtocolMethods(
   property: NativeModulePropertyShape,
   structCollector: StructCollector,
   resolveAlias: AliasResolver,
-): $ReadOnlyArray<MethodSerializationOutput> {
+): ReadonlyArray<MethodSerializationOutput> {
   const [propertyTypeAnnotation] = unwrapNullable(property.typeAnnotation);
   if (propertyTypeAnnotation.params.length !== 0) {
     throw new Error(

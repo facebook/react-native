@@ -82,7 +82,7 @@ export default class TimingAnimation extends Animation {
 
   __getNativeAnimationConfig(): Readonly<{
     type: 'frames',
-    frames: $ReadOnlyArray<number>,
+    frames: ReadonlyArray<number>,
     toValue: number,
     iterations: number,
     platformConfig: ?PlatformConfig,

@@ -63,7 +63,7 @@ function roundRect(rect: unknown): ?{
 /**
  * Showcase clipping when the root has overflow: hidden
  */
-function IntersectionObserverClippingRootExample(): React.Node {
+component IntersectionObserverClippingRootExample() {
   const rootRef = useRef<?HostInstance>(null);
   const targetRef = useRef<?HostInstance>(null);
   const [intersectionEntry, setIntersectionEntry] =
@@ -77,7 +77,7 @@ function IntersectionObserverClippingRootExample(): React.Node {
   }, [rootMarginInput]);
 
   const onObserve = useCallback(
-    (entries: $ReadOnlyArray<IntersectionObserverEntry>) => {
+    (entries: ReadonlyArray<IntersectionObserverEntry>) => {
       entries.forEach(entry => {
         setIntersectionEntry(entry);
       });

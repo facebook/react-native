@@ -39,7 +39,7 @@ export type Runnable = (
 ) => void;
 export type Runnables = {[appKey: string]: Runnable};
 export type Registry = {
-  sections: $ReadOnlyArray<string>,
+  sections: ReadonlyArray<string>,
   runnables: Runnables,
   ...
 };

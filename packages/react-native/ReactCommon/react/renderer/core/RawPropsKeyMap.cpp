@@ -75,7 +75,7 @@ void RawPropsKeyMap::reindex() noexcept {
 
   buckets_.resize(kPropNameLengthHardCap);
 
-  auto length = RawPropsPropNameLength{0};
+  RawPropsPropNameLength length = 0;
   for (size_t i = 0; i < items_.size(); i++) {
     auto& item = items_[i];
     if (item.length != length) {
@@ -96,6 +96,9 @@ RawPropsValueIndex RawPropsKeyMap::at(
     RawPropsPropNameLength length) noexcept {
   react_native_assert(length > 0);
   react_native_assert(length < kPropNameLengthHardCap);
+  if (length == 0 || length >= kPropNameLengthHardCap) [[unlikely]] {
+    return kRawPropsValueIndexEmpty;
+  }
   // 1. Find the bucket.
   auto lower = int{buckets_[length - 1]};
   auto upper = int{buckets_[length]} - 1;

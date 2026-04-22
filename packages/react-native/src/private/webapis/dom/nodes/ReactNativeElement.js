@@ -29,7 +29,10 @@ import {Commands as ViewCommands} from '../../../../../Libraries/Components/View
 import {create as createAttributePayload} from '../../../../../Libraries/ReactNative/ReactFabricPublicInstance/ReactNativeAttributePayload';
 import warnForStyleProps from '../../../../../Libraries/ReactNative/ReactFabricPublicInstance/warnForStyleProps';
 import * as ReactNativeFeatureFlags from '../../../featureflags/ReactNativeFeatureFlags';
+import {getEventTypePropName} from '../../../renderer/events/ReactNativeEventTypeMapping';
+import {EVENT_TARGET_GET_DECLARATIVE_LISTENER_KEY} from '../events/internals/EventTargetInternals';
 import {
+  getCurrentProps,
   getNativeElementReference,
   getPublicInstanceFromInstanceHandle,
   setInstanceHandle,
@@ -214,6 +217,27 @@ class ReactNativeElement extends ReadOnlyElement implements NativeMethods {
     if (node != null && updatePayload != null) {
       NativeDOM.setNativeProps(node, updatePayload);
     }
+  }
+
+  // Provide event listeners from React props during EventTarget dispatch.
+  // This is called by EventTarget.invoke() before explicit addEventListener
+  // listeners, allowing prop-based handlers to be resolved at dispatch time
+  // without registering them via addEventListener during commit.
+  // $FlowExpectedError[unsupported-syntax]
+  [EVENT_TARGET_GET_DECLARATIVE_LISTENER_KEY](
+    eventType: string,
+    isCapture: boolean,
+  ): ((event: Event) => void) | null {
+    const currentProps = getCurrentProps(this);
+    if (currentProps == null) {
+      return null;
+    }
+    const propName = getEventTypePropName(eventType, isCapture);
+    if (propName == null) {
+      return null;
+    }
+    const handler = currentProps[propName];
+    return typeof handler === 'function' ? handler : null;
   }
 }
 

@@ -14,7 +14,7 @@ import * as React from 'react';
 import {StyleSheet, Text, View} from 'react-native';
 
 type Props = Readonly<{
-  instructions?: $ReadOnlyArray<string>,
+  instructions?: ReadonlyArray<string>,
   style?: ?ViewStyleProp,
 }>;
 export default function RNTesterPlatformTestInstructions({

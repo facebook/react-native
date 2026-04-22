@@ -38,7 +38,9 @@ NSString *__nullable RCTHomePathForURL(NSURL *__nullable URL);
 BOOL RCTIsHomeAssetURL(NSURL *__nullable imageURL);
 
 // Returns the current device's orientation
+#if !TARGET_OS_TV
 UIDeviceOrientation RCTDeviceOrientation(void);
+#endif
 
 // Whether the New Architecture is enabled or not
 BOOL RCTIsNewArchEnabled(void)
@@ -309,10 +311,12 @@ void RCTUnsafeExecuteOnMainQueueSync(dispatch_block_t block)
     return;
   }
 
+#if !TARGET_OS_TV
   if (ReactNativeFeatureFlags::enableMainQueueCoordinatorOnIOS()) {
     unsafeExecuteOnMainThreadSync(block);
     return;
   }
+#endif
 
   dispatch_sync(dispatch_get_main_queue(), ^{
     block();
@@ -337,10 +341,12 @@ static void RCTUnsafeExecuteOnMainQueueOnceSync(dispatch_once_t *onceToken, disp
     return;
   }
 
+#if !TARGET_OS_TV
   if (ReactNativeFeatureFlags::enableMainQueueCoordinatorOnIOS()) {
     unsafeExecuteOnMainThreadSync(block);
     return;
   }
+#endif
 
   dispatch_sync(dispatch_get_main_queue(), executeOnce);
 }
@@ -381,10 +387,12 @@ CGFloat RCTFontSizeMultiplier(void)
   return mapping[RCTSharedApplication().preferredContentSizeCategory].floatValue;
 }
 
+#if !TARGET_OS_TV
 UIDeviceOrientation RCTDeviceOrientation(void)
 {
   return [[UIDevice currentDevice] orientation];
 }
+#endif
 
 CGSize RCTScreenSize(void)
 {
@@ -397,11 +405,16 @@ CGSize RCTScreenSize(void)
     });
   });
 
+#if !TARGET_OS_TV
   if (UIDeviceOrientationIsLandscape(RCTDeviceOrientation())) {
     return CGSizeMake(portraitSize.height, portraitSize.width);
   } else {
     return CGSizeMake(portraitSize.width, portraitSize.height);
   }
+#else
+  // tvOS doesn't have device orientation, always return landscape size
+  return CGSizeMake(portraitSize.height, portraitSize.width);
+#endif
 }
 
 CGSize RCTViewportSize(void)
@@ -412,6 +425,9 @@ CGSize RCTViewportSize(void)
 
 CGSize RCTSwitchSize(void)
 {
+#if TARGET_OS_TV
+  return CGSizeMake(0, 0);
+#else
   static CGSize rctSwitchSize;
   static dispatch_once_t onceToken;
   dispatch_once(&onceToken, ^{
@@ -420,6 +436,7 @@ CGSize RCTSwitchSize(void)
     });
   });
   return rctSwitchSize;
+#endif
 }
 
 CGFloat RCTRoundPixelValue(CGFloat value)
@@ -629,7 +646,9 @@ UIWindow *__nullable RCTKeyWindow(void)
     // We have apps internally that might use UIScenes which are not window scenes.
     // Calling keyWindow on a UIScene which is not a UIWindowScene can cause a crash
     UIWindowScene *windowScene = (UIWindowScene *)sceneToUse;
-    return windowScene.keyWindow;
+    if (@available(iOS 15.0, tvOS 15.0, *)) {
+      return windowScene.keyWindow;
+    }
   }
 
   return nil;

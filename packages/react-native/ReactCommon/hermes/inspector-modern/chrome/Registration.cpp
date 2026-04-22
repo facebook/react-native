@@ -8,10 +8,13 @@
 #include "Registration.h"
 #include "ConnectionDemux.h"
 
-#if defined(HERMES_ENABLE_DEBUGGER) && !defined(HERMES_V1_ENABLED)
+#if defined(HERMES_ENABLE_DEBUGGER)
+
+#include <hermes/hermes.h>
+
+#if !defined(HERMES_V1_ENABLED)
 
 namespace facebook::hermes::inspector_modern::chrome {
-
 namespace {
 
 ConnectionDemux& demux() {
@@ -34,4 +37,42 @@ void disableDebugging(DebugSessionToken session) {
 
 } // namespace facebook::hermes::inspector_modern::chrome
 
-#endif // defined(HERMES_ENABLE_DEBUGGER) && !defined(HERMES_V1_ENABLED)
+#else
+
+namespace facebook::hermes::inspector_modern {
+class RuntimeAdapter {
+  // Backwards compatibility definition fallback for libraries that are compiled
+  // without `HERMES_V1_ENABLED` but are linked against React Native with
+  // `HERMES_V1_ENABLED` which doesn't provide this symbol.
+ public:
+  virtual ~RuntimeAdapter() = 0;
+  virtual HermesRuntime& getRuntime() = 0;
+  virtual void tickleJs();
+};
+
+namespace chrome {
+
+using DebugSessionToken = int;
+
+DebugSessionToken enableDebugging(
+    std::unique_ptr<RuntimeAdapter>,
+    const std::string&) {
+  // Backwards compatibility fallback for libraries that are compiled without
+  // `HERMES_V1_ENABLED` but are linked against React Native with
+  // `HERMES_V1_ENABLED` which doesn't provide this symbol.
+  return -1;
+};
+
+void disableDebugging(DebugSessionToken) {
+  // Backwards compatibility fallback for libraries that are compiled without
+  // `HERMES_V1_ENABLED` but are linked against React Native with
+  // `HERMES_V1_ENABLED` which doesn't provide this symbol.
+}
+
+} // namespace chrome
+
+} // namespace facebook::hermes::inspector_modern
+
+#endif // !defined(HERMES_V1_ENABLED)
+
+#endif // defined(HERMES_ENABLE_DEBUGGER)

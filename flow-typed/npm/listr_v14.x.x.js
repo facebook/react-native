@@ -55,7 +55,7 @@ declare module 'listr' {
       options?: Options,
     ): void;
     add<ReturnT>(task: TaskSpec<ContextT, ReturnT>): this;
-    add<ReturnT>(tasks: $ReadOnlyArray<TaskSpec<ContextT, ReturnT>>): this;
+    add<ReturnT>(tasks: ReadonlyArray<TaskSpec<ContextT, ReturnT>>): this;
     run(ctx?: ContextT): Promise<ContextT>;
   }
 }

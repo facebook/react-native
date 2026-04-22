@@ -6,7 +6,7 @@ inputs:
     default: 2.6.10
   run-unit-tests:
     description: whether unit tests should run or not.
-    default: "true"
+    default: false
   flavor:
     description: The flavor of the build. Must be one of "Debug", "Release".
     default: Debug
@@ -24,8 +24,6 @@ runs:
   steps:
     - name: Setup xcode
       uses: ./.github/actions/setup-xcode
-      with:
-        platform: ios
     - name: Setup node.js
       uses: ./.github/actions/setup-node
     - name: Run yarn

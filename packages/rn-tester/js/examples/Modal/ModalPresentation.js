@@ -381,9 +381,9 @@ const styles = StyleSheet.create({
   },
 });
 
-export default ({
+export default {
   description: 'Modals can be presented with or without animation',
   name: 'basic',
   render: (): React.Node => <ModalPresentation />,
   title: 'Modal Presentation',
-}: RNTesterModuleExample);
+} as RNTesterModuleExample;

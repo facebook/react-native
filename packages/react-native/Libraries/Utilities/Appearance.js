@@ -99,7 +99,12 @@ export function setColorScheme(colorScheme: ColorSchemeName): void {
   if (NativeAppearance != null) {
     NativeAppearance.setColorScheme(colorScheme);
     state.appearance = {
-      colorScheme,
+      // When setting to 'unspecified', get the actual system color scheme.
+      // Fall back to the passed value if getColorScheme() returns null.
+      colorScheme:
+        colorScheme === 'unspecified'
+          ? (NativeAppearance.getColorScheme() ?? colorScheme)
+          : colorScheme,
     };
   }
 }

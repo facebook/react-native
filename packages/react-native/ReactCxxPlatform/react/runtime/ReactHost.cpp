@@ -18,6 +18,7 @@
 #include <react/devsupport/IDevUIDelegate.h>
 #include <react/devsupport/PackagerConnection.h>
 #include <react/devsupport/inspector/Inspector.h>
+#include <react/featureflags/ReactNativeFeatureFlags.h>
 #include <react/http/IHttpClient.h>
 #include <react/http/IWebSocketClient.h>
 #include <react/io/ResourceLoader.h>
@@ -34,7 +35,7 @@
 #include <react/runtime/hermes/HermesInstance.h>
 #include <react/threading/MessageQueueThreadImpl.h>
 
-#include "TurboModuleManager.h"
+#include "ReactCxxTurboModuleProvider.h"
 
 namespace facebook::react {
 
@@ -52,6 +53,7 @@ struct ReactInstanceData {
   std::shared_ptr<NativeAnimatedNodesManagerProvider>
       animatedNodesManagerProvider;
   ReactInstance::BindingsInstallFunc bindingsInstallFunc;
+  std::shared_ptr<AnimationChoreographer> animationChoreographer;
 };
 
 ReactHost::ReactHost(
@@ -66,7 +68,8 @@ ReactHost::ReactHost(
     std::shared_ptr<SurfaceDelegate> logBoxSurfaceDelegate,
     std::shared_ptr<NativeAnimatedNodesManagerProvider>
         animatedNodesManagerProvider,
-    ReactInstance::BindingsInstallFunc bindingsInstallFunc)
+    ReactInstance::BindingsInstallFunc bindingsInstallFunc,
+    std::shared_ptr<AnimationChoreographer> animationChoreographer)
     : reactInstanceConfig_(std::move(reactInstanceConfig)) {
   auto componentRegistryFactory =
       mountingManager->getComponentRegistryFactory();
@@ -82,7 +85,8 @@ ReactHost::ReactHost(
       .turboModuleProviders = std::move(turboModuleProviders),
       .logBoxSurfaceDelegate = logBoxSurfaceDelegate,
       .animatedNodesManagerProvider = animatedNodesManagerProvider,
-      .bindingsInstallFunc = std::move(bindingsInstallFunc)});
+      .bindingsInstallFunc = std::move(bindingsInstallFunc),
+      .animationChoreographer = std::move(animationChoreographer)});
   if (!reactInstanceData_->contextContainer
            ->find<MessageQueueThreadFactory>(MessageQueueThreadFactoryKey)
            .has_value()) {
@@ -223,12 +227,16 @@ void ReactHost::createReactInstance() {
         return runLoopObserverManager->createEventBeat(
             ownerBox, *runtimeScheduler);
       };
+  toolbox.animationChoreographer = reactInstanceData_->animationChoreographer;
 
-  schedulerDelegate_ = std::make_unique<SchedulerDelegateImpl>(
+  auto schedulerDelegate = std::make_unique<SchedulerDelegateImpl>(
       reactInstanceData_->mountingManager);
   scheduler_ =
-      std::make_unique<Scheduler>(toolbox, nullptr, schedulerDelegate_.get());
+      std::make_unique<Scheduler>(toolbox, nullptr, schedulerDelegate.get());
+
   surfaceManager_ = std::make_unique<SurfaceManager>(*scheduler_);
+  schedulerDelegate->setUIManager(scheduler_->getUIManager());
+  schedulerDelegate_ = std::move(schedulerDelegate);
 
   reactInstanceData_->mountingManager->setSchedulerTaskExecutor(
       [this](SchedulerTask&& task) { runOnScheduler(std::move(task)); });
@@ -243,7 +251,7 @@ void ReactHost::createReactInstance() {
   }
 
   auto liveReloadCallback = [this]() { reloadReactInstance(); };
-  TurboModuleManager turboModuleManager(
+  ReactCxxTurboModuleProvider turboModuleManager(
       reactInstanceData_->turboModuleProviders,
       jsInvoker,
       reactInstanceData_->onJsError,
@@ -305,6 +313,9 @@ void ReactHost::destroyReactInstance() {
 
   reactInstanceData_->contextContainer->erase(RuntimeSchedulerKey);
   reactInstanceData_->mountingManager->setSchedulerTaskExecutor(nullptr);
+  reactInstanceData_->mountingManager = nullptr;
+  reactInstanceData_->contextContainer = nullptr;
+  reactInstanceData_->turboModuleProviders.clear();
   reactInstance_ = nullptr;
   reactInstanceData_->messageQueueThread = nullptr;
 }

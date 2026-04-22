@@ -26,7 +26,6 @@ import type IntersectionObserverEntry from '../IntersectionObserverEntry';
 import type {NativeIntersectionObserverToken} from '../specs/NativeIntersectionObserver';
 
 import * as Systrace from '../../../../../Libraries/Performance/Systrace';
-import warnOnce from '../../../../../Libraries/Utilities/warnOnce';
 import {
   getInstanceHandle,
   getNativeNodeReference,
@@ -123,7 +122,7 @@ export function observe({
   target: ReactNativeElement,
 }): boolean {
   if (NativeIntersectionObserver == null) {
-    warnNoNativeIntersectionObserver();
+    throwIfNoNativeIntersectionObserver();
     return false;
   }
 
@@ -187,7 +186,7 @@ export function unobserve(
   target: ReactNativeElement,
 ): void {
   if (NativeIntersectionObserver == null) {
-    warnNoNativeIntersectionObserver();
+    throwIfNoNativeIntersectionObserver();
     return;
   }
 
@@ -232,7 +231,7 @@ function notifyIntersectionObservers(): void {
 
 function doNotifyIntersectionObservers(): void {
   if (NativeIntersectionObserver == null) {
-    warnNoNativeIntersectionObserver();
+    throwIfNoNativeIntersectionObserver();
     return;
   }
 
@@ -283,9 +282,6 @@ function doNotifyIntersectionObservers(): void {
   }
 }
 
-function warnNoNativeIntersectionObserver() {
-  warnOnce(
-    'missing-native-intersection-observer',
-    'Missing native implementation of IntersectionObserver',
-  );
+function throwIfNoNativeIntersectionObserver() {
+  throw new Error('Missing native implementation of IntersectionObserver');
 }

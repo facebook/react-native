@@ -39,7 +39,7 @@ public object YogaNative {
 
   @JvmStatic public external fun jni_YGConfigGetErrataJNI(nativePointer: Long): Int
 
-  @JvmStatic public external fun jni_YGConfigSetLoggerJNI(nativePointer: Long, logger: YogaLogger)
+  @JvmStatic public external fun jni_YGConfigSetLoggerJNI(nativePointer: Long, logger: YogaLogger?)
 
   // YGNode related
   @JvmStatic public external fun jni_YGNodeNewJNI(): Long

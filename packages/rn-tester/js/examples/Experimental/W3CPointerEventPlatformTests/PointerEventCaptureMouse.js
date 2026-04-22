@@ -46,7 +46,7 @@ function PointerEventCaptureMouseTestCase(
       try {
         // $FlowFixMe[prop-missing]
         target0.setPointerCapture(evt.nativeEvent.pointerId);
-      } catch (e) {}
+      } catch {}
     }
   }, []);
 

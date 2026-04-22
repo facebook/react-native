@@ -20,10 +20,14 @@ import * as Benchmark from './Benchmark';
 import {getConstants} from './Constants';
 import getFantomRenderedOutput from './getFantomRenderedOutput';
 import {LogBox} from 'react-native';
+import ErrorUtils from 'react-native/Libraries/vendor/core/ErrorUtils';
 import NativeFantom, {
   NativeEventCategory,
 } from 'react-native/src/private/testing/fantom/specs/NativeFantom';
-import {getNativeNodeReference} from 'react-native/src/private/webapis/dom/nodes/internals/NodeInternals';
+import {
+  getInstanceHandle,
+  getNativeNodeReference,
+} from 'react-native/src/private/webapis/dom/nodes/internals/NodeInternals';
 import ReadOnlyNode from 'react-native/src/private/webapis/dom/nodes/ReadOnlyNode';
 
 const nativeRuntimeScheduler = global.nativeRuntimeScheduler;
@@ -161,6 +165,24 @@ export function scheduleTask(task: () => void | Promise<void>) {
 
 let flushingQueue = false;
 let isLogBoxCheckEnabled = true;
+let pendingError: unknown = null;
+
+// Install a Fantom-specific global error handler that captures the first error
+// reported during the current work loop into `pendingError`. `runWorkLoop()`
+// re-throws the captured error after `flushMessageQueue()` returns, so errors
+// thrown inside `runTask` callbacks (or microtasks queued by them) propagate
+// out and become observable as Jest test failures.
+//
+// This overrides the handler installed by `setUpErrorHandling.js`, which in
+// Fantom (where LogBox is not installed) only `console.error`s the error.
+// Subsequent errors during the same work loop are ignored: only the first one
+// is re-thrown, since it is typically the most informative; subsequent errors
+// are usually follow-on noise.
+ErrorUtils.setGlobalHandler((error: unknown, _isFatal: boolean) => {
+  if (pendingError == null) {
+    pendingError = error;
+  }
+});
 
 /**
  * Runs a task on the event loop.
@@ -238,6 +260,33 @@ export function unstable_getFabricUpdateProps(nodeOrRef: NodeOrRef): Readonly<{
 }
 
 /**
+ * Returns the names of event handlers registered on a component's shadow node.
+ *
+ * @param nodeOrRef - The node or ref for which to retrieve event handlers.
+ * @returns Array of event handler prop names (e.g. `['onLayout', 'onTouchStart']`)
+ */
+export function getDefinedEventHandlers(
+  nodeOrRef: NodeOrRef,
+): ReadonlyArray<string> {
+  const node = getNode(nodeOrRef);
+  const instanceHandle = getInstanceHandle(node);
+  if (typeof instanceHandle !== 'object' || instanceHandle == null) {
+    return [];
+  }
+  // WARNING: This uses React private API (fiber internals).
+  // $FlowExpectedError[incompatible-type]
+  const memoizedProps = (
+    instanceHandle as {memoizedProps?: {[string]: unknown}}
+  ).memoizedProps;
+  if (memoizedProps == null) {
+    return [];
+  }
+  return Object.keys(memoizedProps).filter(
+    key => key.startsWith('on') && typeof memoizedProps[key] === 'function',
+  );
+}
+
+/**
  * Simulates running a task on the UI thread and forces side effect to drain
  * the event queue, scheduling events to be dispatched to JavaScript.
  * To be used when enqueuing native events.
@@ -301,6 +350,10 @@ export function runWorkLoop(): void {
     runLogBoxCheck();
   }
 
+  // Clear any error captured outside of a work loop (e.g., during module setup)
+  // so it does not spuriously fail the next work loop.
+  pendingError = null;
+
   try {
     flushingQueue = true;
     NativeFantom.flushMessageQueue();
@@ -310,8 +363,19 @@ export function runWorkLoop(): void {
 
   if (__DEV__) {
     // We also do it after because a task might trigger the initialization of the environment that enables LogBox,
-    // which could be equally dangerous.
+    // which could be equally dangerous. If LogBox is now installed, this throws
+    // and intentionally takes precedence over any captured task error: the
+    // LogBox diagnostic is more actionable.
     runLogBoxCheck();
+  }
+
+  // Re-throw the first error captured by the global handler during this work
+  // loop, so the failure propagates out of `runTask` / `runWorkLoop` and Jest
+  // marks the test as failed with the original error.
+  const errorToThrow = pendingError;
+  pendingError = null;
+  if (errorToThrow != null) {
+    throw errorToThrow;
   }
 }
 
@@ -680,28 +744,6 @@ function getNode(nodeOrRef: NodeOrRef): ReadOnlyNode {
   } else {
     throw new TypeError('Could not get node from ref');
   }
-}
-
-/**
- * Quick and dirty polyfills required by tinybench.
- */
-
-if (typeof global.Event === 'undefined') {
-  global.Event =
-    require('react-native/src/private/webapis/dom/events/Event').default;
-} else {
-  console.warn(
-    'The global Event class is already defined. If this API is already defined by React Native, you might want to remove this logic.',
-  );
-}
-
-if (typeof global.EventTarget === 'undefined') {
-  global.EventTarget =
-    require('react-native/src/private/webapis/dom/events/EventTarget').default;
-} else {
-  console.warn(
-    'The global Event class is already defined. If this API is already defined by React Native, you might want to remove this logic.',
-  );
 }
 
 global.__FANTOM_PACKAGE_LOADED__ = true;

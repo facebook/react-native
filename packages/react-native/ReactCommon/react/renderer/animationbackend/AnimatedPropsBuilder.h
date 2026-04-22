@@ -52,9 +52,17 @@ struct AnimatedPropsBuilder {
   {
     props.push_back(std::make_unique<AnimatedProp<CascadedRectangleEdges<yoga::StyleLength>>>(POSITION, value));
   }
-  void setTransform(Transform &t)
+  void setFlex(yoga::FloatOptional value)
   {
-    props.push_back(std::make_unique<AnimatedProp<Transform>>(TRANSFORM, std::move(t)));
+    props.push_back(std::make_unique<AnimatedProp<yoga::FloatOptional>>(FLEX, value));
+  }
+  void setTransform(const Transform &t)
+  {
+    props.push_back(std::make_unique<AnimatedProp<Transform>>(TRANSFORM, t));
+  }
+  void setTransformOrigin(const TransformOrigin &value)
+  {
+    props.push_back(std::make_unique<AnimatedProp<TransformOrigin>>(TRANSFORM_ORIGIN, value));
   }
   void setBackgroundColor(SharedColor value)
   {
@@ -211,6 +219,10 @@ struct AnimatedPropsBuilder {
   void setMixBlendMode(BlendMode value)
   {
     props.push_back(std::make_unique<AnimatedProp<BlendMode>>(MIX_BLEND_MODE, value));
+  }
+  void setBackfaceVisibility(BackfaceVisibility value)
+  {
+    props.push_back(std::make_unique<AnimatedProp<BackfaceVisibility>>(BACKFACE_VISIBILITY, value));
   }
   void storeDynamic(folly::dynamic &d)
   {

@@ -87,7 +87,7 @@ export type ImageRequireSource = number;
 export type ImageSource =
   | ImageRequireSource
   | ImageURISource
-  | $ReadOnlyArray<ImageURISource>;
+  | ReadonlyArray<ImageURISource>;
 
 type ImageSourceProperties = {
   body?: ?string,

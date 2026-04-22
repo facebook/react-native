@@ -35,13 +35,17 @@ internal object DependencyUtils {
       val hermesV1VersionString: String,
       val reactGroupString: String = DEFAULT_INTERNAL_REACT_PUBLISHING_GROUP,
       val hermesGroupString: String = DEFAULT_INTERNAL_HERMES_PUBLISHING_GROUP,
-  )
+      private val isHermesNightly: Boolean = false,
+  ) {
+    val isNightly: Boolean
+      get() = versionString.isNightly() || isHermesNightly
+  }
 
   /**
    * This method takes care of configuring the repositories{} block for both the app and all the 3rd
    * party libraries which are auto-linked.
    */
-  fun configureRepositories(project: Project) {
+  fun configureRepositories(project: Project, isNightly: Boolean) {
     val exclusiveEnterpriseRepository = project.rootProject.exclusiveEnterpriseRepository()
     if (exclusiveEnterpriseRepository != null) {
       project.logger.lifecycle(
@@ -67,9 +71,11 @@ internal object DependencyUtils {
           return@allprojects
         }
 
-        // We add the snapshot for users on nightlies.
-        mavenRepoFromUrl("https://central.sonatype.com/repository/maven-snapshots/") { repo ->
-          repo.content { it.excludeGroup("org.webkit") }
+        if (isNightly) {
+          // We add the snapshot for users on nightlies.
+          mavenRepoFromUrl("https://central.sonatype.com/repository/maven-snapshots/") { repo ->
+            repo.content { it.excludeGroup("org.webkit") }
+          }
         }
         repositories.mavenCentral { repo ->
           // We don't want to fetch JSC from Maven Central as there are older versions there.
@@ -204,13 +210,17 @@ internal object DependencyUtils {
     return dependencySubstitution
   }
 
-  fun readVersionAndGroupStrings(propertiesFile: File, hermesVersionFile: File): Coordinates {
+  fun readVersionAndGroupStrings(
+      project: Project,
+      propertiesFile: File,
+      hermesVersionFile: File,
+  ): Coordinates {
     val reactAndroidProperties = Properties()
     propertiesFile.inputStream().use { reactAndroidProperties.load(it) }
     val versionStringFromFile = (reactAndroidProperties[INTERNAL_VERSION_NAME] as? String).orEmpty()
     // If on a nightly, we need to fetch the -SNAPSHOT artifact from Sonatype.
     val versionString =
-        if (versionStringFromFile.startsWith("0.0.0") || "-nightly-" in versionStringFromFile) {
+        if (versionStringFromFile.isNightly()) {
           "$versionStringFromFile-SNAPSHOT"
         } else {
           versionStringFromFile
@@ -237,6 +247,7 @@ internal object DependencyUtils {
 
     val hermesV1Version =
         (hermesVersionProperties[INTERNAL_HERMES_V1_VERSION_NAME] as? String).orEmpty()
+    val isHermesNightly = (project.findProperty(INTERNAL_USE_HERMES_NIGHTLY) as? String).toBoolean()
 
     return Coordinates(
         versionString,
@@ -244,6 +255,7 @@ internal object DependencyUtils {
         hermesV1Version,
         reactGroupString,
         hermesGroupString,
+        isHermesNightly,
     )
   }
 
@@ -273,6 +285,8 @@ internal object DependencyUtils {
             property(INCLUDE_JITPACK_REPOSITORY).toString().toBoolean()
         else -> INCLUDE_JITPACK_REPOSITORY_DEFAULT
       }
+
+  internal fun String.isNightly(): Boolean = this.startsWith("0.0.0") || "-nightly-" in this
 
   internal fun Project.exclusiveEnterpriseRepository() =
       when {

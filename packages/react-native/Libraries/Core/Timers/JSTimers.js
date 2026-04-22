@@ -11,6 +11,7 @@
 
 import NativeTiming from './NativeTiming';
 
+const toError = require('../../../src/private/utilities/toError').default;
 const BatchedBridge = require('../../BatchedBridge/BatchedBridge').default;
 const Systrace = require('../../Performance/Systrace');
 const invariant = require('invariant');
@@ -129,9 +130,9 @@ function _callTimer(timerID: number, frameTime: number, didTimeout: ?boolean) {
     } else {
       console.error('Tried to call a callback with invalid type: ' + type);
     }
-  } catch (e) {
+  } catch (e: unknown) {
     // Don't rethrow so that we can run all timers.
-    errors.push(e);
+    errors.push(toError(e));
   }
 
   if (__DEV__) {
@@ -475,11 +476,11 @@ let ExportedJSTimers: {
 if (!NativeTiming) {
   console.warn("Timing native module is not available, can't set timers.");
   // $FlowFixMe[incompatible-type] : we can assume timers are generally available
-  ExportedJSTimers = ({
+  ExportedJSTimers = {
     callReactNativeMicrotasks: JSTimers.callReactNativeMicrotasks,
     queueReactNativeMicrotask: JSTimers.queueReactNativeMicrotask,
     // $FlowFixMe[incompatible-variance]
-  }: typeof JSTimers);
+  } as typeof JSTimers;
 } else {
   // $FlowFixMe[incompatible-variance]
   ExportedJSTimers = JSTimers;

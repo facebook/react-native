@@ -5,6 +5,8 @@
  * LICENSE file in the root directory of this source tree.
  */
 
+#include <react/renderer/graphics/Transform.h>
+#include <react/renderer/graphics/TransformUtils.h>
 #include <stdexcept>
 #include "AnimatedPropsSerializer.h"
 
@@ -51,27 +53,42 @@ void packOpacity(folly::dynamic& dyn, const AnimatedPropBase& animatedProp) {
 }
 
 void packTransform(folly::dynamic& dyn, const AnimatedPropBase& animatedProp) {
-  const auto transform = get<Transform>(animatedProp);
-  const auto matrixArray = folly::dynamic::array(
-      transform.matrix[0],
-      transform.matrix[1],
-      transform.matrix[2],
-      transform.matrix[3],
-      transform.matrix[4],
-      transform.matrix[5],
-      transform.matrix[6],
-      transform.matrix[7],
-      transform.matrix[8],
-      transform.matrix[9],
-      transform.matrix[10],
-      transform.matrix[11],
-      transform.matrix[12],
-      transform.matrix[13],
-      transform.matrix[14],
-      transform.matrix[15]);
-  dyn.insert(
-      "transform",
-      folly::dynamic::array(folly::dynamic::object("matrix", matrixArray)));
+  const auto& transform = get<Transform>(animatedProp);
+  auto transformArray = folly::dynamic::array();
+
+  for (const auto& operation : transform.operations) {
+    updateTransformProps(transform, operation, transformArray);
+  }
+
+  dyn.insert("transform", transformArray);
+}
+
+std::string unitTypeToString(UnitType unit) {
+  switch (unit) {
+    case UnitType::Undefined:
+      return "undefined";
+    case UnitType::Point:
+      return "point";
+    case UnitType::Percent:
+      return "percent";
+    default:
+      throw std::runtime_error("Unknown unit type");
+  }
+}
+
+void packTransformOrigin(
+    folly::dynamic& dyn,
+    const AnimatedPropBase& animatedProp) {
+  const auto& transformOrigin = get<TransformOrigin>(animatedProp);
+  auto originArray = folly::dynamic::array();
+  for (const auto& xyValue : transformOrigin.xy) {
+    folly::dynamic valueObj = folly::dynamic::object();
+    valueObj["value"] = xyValue.value;
+    valueObj["unit"] = unitTypeToString(xyValue.unit);
+    originArray.push_back(valueObj);
+  }
+  originArray.push_back(transformOrigin.z);
+  dyn.insert("transformOrigin", originArray);
 }
 
 void packBackgroundColor(
@@ -462,9 +479,9 @@ void packBoxShadow(folly::dynamic& dyn, const AnimatedPropBase& animatedProp) {
 void packMixBlendMode(
     folly::dynamic& dyn,
     const AnimatedPropBase& animatedProp) {
-  const auto& blendMode = get<BlendMode>(animatedProp);
+  const auto& mixBlendMode = get<BlendMode>(animatedProp);
   std::string blendModeStr;
-  switch (blendMode) {
+  switch (mixBlendMode) {
     case BlendMode::Normal:
       blendModeStr = "normal";
       break;
@@ -513,10 +530,34 @@ void packMixBlendMode(
     case BlendMode::Luminosity:
       blendModeStr = "luminosity";
       break;
+    case BlendMode::PlusLighter:
+      blendModeStr = "plus-lighter";
+      break;
     default:
       throw std::runtime_error("Unknown blend mode");
   }
   dyn.insert("mixBlendMode", blendModeStr);
+}
+
+void packBackfaceVisibility(
+    folly::dynamic& dyn,
+    const AnimatedPropBase& animatedProp) {
+  const auto& backfaceVisibility = get<BackfaceVisibility>(animatedProp);
+  std::string visibilityStr;
+  switch (backfaceVisibility) {
+    case BackfaceVisibility::Auto:
+      visibilityStr = "auto";
+      break;
+    case BackfaceVisibility::Visible:
+      visibilityStr = "visible";
+      break;
+    case BackfaceVisibility::Hidden:
+      visibilityStr = "hidden";
+      break;
+    default:
+      throw std::runtime_error("Unknown backface visibility");
+  }
+  dyn.insert("backfaceVisibility", visibilityStr);
 }
 
 void packAnimatedProp(
@@ -529,6 +570,10 @@ void packAnimatedProp(
 
     case TRANSFORM:
       packTransform(dyn, *animatedProp);
+      break;
+
+    case TRANSFORM_ORIGIN:
+      packTransformOrigin(dyn, *animatedProp);
       break;
 
     case BACKGROUND_COLOR:
@@ -607,6 +652,10 @@ void packAnimatedProp(
       packMixBlendMode(dyn, *animatedProp);
       break;
 
+    case BACKFACE_VISIBILITY:
+      packBackfaceVisibility(dyn, *animatedProp);
+      break;
+
     case WIDTH:
     case HEIGHT:
     case FLEX:
@@ -637,6 +686,8 @@ void packAnimatedProp(
     case Z_INDEX:
     case DIRECTION:
       throw std::runtime_error("Tried to synchronously update layout props");
+    default:
+      throw std::runtime_error("Unknown animated prop");
   }
 }
 

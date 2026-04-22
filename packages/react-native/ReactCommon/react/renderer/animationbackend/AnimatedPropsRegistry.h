@@ -24,11 +24,11 @@ struct PropsSnapshot {
 
 struct SurfaceContext {
   std::unordered_map<Tag, std::unique_ptr<PropsSnapshot>> pendingMap, map;
-  std::unordered_set<const ShadowNodeFamily *> pendingFamilies, families;
+  std::unordered_set<std::shared_ptr<const ShadowNodeFamily>> pendingFamilies, families;
 };
 
 struct SurfaceUpdates {
-  std::unordered_set<const ShadowNodeFamily *> families;
+  std::unordered_set<std::shared_ptr<const ShadowNodeFamily>> families;
   std::unordered_map<Tag, AnimatedProps> propsMap;
   bool hasLayoutUpdates{false};
 };
@@ -39,7 +39,8 @@ class AnimatedPropsRegistry {
  public:
   void update(const std::unordered_map<SurfaceId, SurfaceUpdates> &surfaceUpdates);
   void clear(SurfaceId surfaceId);
-  std::pair<std::unordered_set<const ShadowNodeFamily *> &, SnapshotMap &> getMap(SurfaceId surfaceId);
+  void clearOnSurfaceStop(SurfaceId surfaceId);
+  std::pair<std::unordered_set<std::shared_ptr<const ShadowNodeFamily>> &, SnapshotMap &> getMap(SurfaceId surfaceId);
 
  private:
   std::unordered_map<SurfaceId, SurfaceContext> surfaceContexts_;
@@ -66,6 +67,10 @@ inline void updateProp(const PropName propName, BaseViewProps &viewProps, const 
 
     case TRANSFORM:
       viewProps.transform = snapshot.props.transform;
+      break;
+
+    case TRANSFORM_ORIGIN:
+      viewProps.transformOrigin = snapshot.props.transformOrigin;
       break;
 
     case BORDER_RADII:
@@ -284,6 +289,13 @@ inline void updateProp(const PropName propName, BaseViewProps &viewProps, const 
     case MIX_BLEND_MODE:
       viewProps.mixBlendMode = snapshot.props.mixBlendMode;
       break;
+
+    case BACKFACE_VISIBILITY:
+      viewProps.backfaceVisibility = snapshot.props.backfaceVisibility;
+      break;
+
+    default:
+      throw std::runtime_error("Unknown property name");
   }
 }
 

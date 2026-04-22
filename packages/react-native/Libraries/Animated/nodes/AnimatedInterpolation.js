@@ -33,11 +33,11 @@ export type InterpolationConfigSupportedOutputType =
   | NativeColorValue;
 
 export type InterpolationConfigType<
-  OutputT: InterpolationConfigSupportedOutputType,
+  OutputT extends InterpolationConfigSupportedOutputType,
 > = Readonly<{
   ...AnimatedNodeConfig,
-  inputRange: $ReadOnlyArray<number>,
-  outputRange: $ReadOnlyArray<OutputT>,
+  inputRange: ReadonlyArray<number>,
+  outputRange: ReadonlyArray<OutputT>,
   easing?: (input: number) => number,
   extrapolate?: ExtrapolateType,
   extrapolateLeft?: ExtrapolateType,
@@ -51,7 +51,7 @@ export type InterpolationConfigType<
 function createNumericInterpolation(
   config: InterpolationConfigType<number>,
 ): (input: number) => number {
-  const outputRange: $ReadOnlyArray<number> = (config.outputRange: any);
+  const outputRange: ReadonlyArray<number> = config.outputRange as any;
   const inputRange = config.inputRange;
 
   const easing = config.easing || Easing.linear;
@@ -73,11 +73,11 @@ function createNumericInterpolation(
   return input => {
     invariant(
       typeof input === 'number',
-      'Cannot interpolation an input which is not a number',
+      'Cannot interpolate an input which is not a number',
     );
 
     const range = findRange(input, inputRange);
-    return (interpolate(
+    return interpolate(
       input,
       inputRange[range],
       inputRange[range + 1],
@@ -86,7 +86,7 @@ function createNumericInterpolation(
       easing,
       extrapolateLeft,
       extrapolateRight,
-    ): any);
+    ) as any;
   };
 }
 
@@ -187,7 +187,7 @@ function mapStringToNumericComponents(
   input: string,
 ):
   | {isColor: true, components: [number, number, number, number]}
-  | {isColor: false, components: $ReadOnlyArray<number | string>} {
+  | {isColor: false, components: ReadonlyArray<number | string>} {
   let normalizedColor = normalizeColor(input);
   invariant(
     normalizedColor == null || typeof normalizedColor !== 'object',
@@ -205,7 +205,7 @@ function mapStringToNumericComponents(
     const components: Array<string | number> = [];
     let lastMatchEnd = 0;
     let match: RegExp$matchResult;
-    while ((match = (numericComponentRegex.exec(input): any)) != null) {
+    while ((match = numericComponentRegex.exec(input) as any) != null) {
       if (match.index > lastMatchEnd) {
         components.push(input.substring(lastMatchEnd, match.index));
       }
@@ -262,7 +262,7 @@ function createStringInterpolation(
     );
   }
 
-  const numericComponents: $ReadOnlyArray<$ReadOnlyArray<number>> =
+  const numericComponents: ReadonlyArray<ReadonlyArray<number>> =
     outputRange.map(output =>
       isColor
         ? // $FlowFixMe[incompatible-type]
@@ -297,7 +297,7 @@ function createStringInterpolation(
   }
 }
 
-function findRange(input: number, inputRange: $ReadOnlyArray<number>) {
+function findRange(input: number, inputRange: ReadonlyArray<number>) {
   let i;
   for (i = 1; i < inputRange.length - 1; ++i) {
     if (inputRange[i] >= input) {
@@ -307,10 +307,9 @@ function findRange(input: number, inputRange: $ReadOnlyArray<number>) {
   return i - 1;
 }
 
-function checkValidRanges<OutputT: InterpolationConfigSupportedOutputType>(
-  inputRange: $ReadOnlyArray<number>,
-  outputRange: $ReadOnlyArray<OutputT>,
-) {
+function checkValidRanges<
+  OutputT extends InterpolationConfigSupportedOutputType,
+>(inputRange: ReadonlyArray<number>, outputRange: ReadonlyArray<OutputT>) {
   checkInfiniteRange('outputRange', outputRange);
   checkInfiniteRange('inputRange', inputRange);
   checkValidInputRange(inputRange);
@@ -325,7 +324,7 @@ function checkValidRanges<OutputT: InterpolationConfigSupportedOutputType>(
   );
 }
 
-function checkValidInputRange(arr: $ReadOnlyArray<number>) {
+function checkValidInputRange(arr: ReadonlyArray<number>) {
   invariant(arr.length >= 2, 'inputRange must have at least 2 elements');
   const message =
     'inputRange must be monotonically non-decreasing ' + String(arr);
@@ -334,10 +333,9 @@ function checkValidInputRange(arr: $ReadOnlyArray<number>) {
   }
 }
 
-function checkInfiniteRange<OutputT: InterpolationConfigSupportedOutputType>(
-  name: string,
-  arr: $ReadOnlyArray<OutputT>,
-) {
+function checkInfiniteRange<
+  OutputT extends InterpolationConfigSupportedOutputType,
+>(name: string, arr: ReadonlyArray<OutputT>) {
   invariant(arr.length >= 2, name + ' must have at least 2 elements');
   invariant(
     arr.length !== 2 || arr[0] !== -Infinity || arr[1] !== Infinity,
@@ -347,12 +345,12 @@ function checkInfiniteRange<OutputT: InterpolationConfigSupportedOutputType>(
      * etc. If you really mean this implicit string conversion, you can do
      * something like String(myThing) */
     // $FlowFixMe[unsafe-addition]
-    name + 'cannot be ]-infinity;+infinity[ ' + arr,
+    name + ' cannot be ]-infinity;+infinity[ ' + arr,
   );
 }
 
 export default class AnimatedInterpolation<
-  OutputT: InterpolationConfigSupportedOutputType,
+  OutputT extends InterpolationConfigSupportedOutputType,
 > extends AnimatedWithChildren {
   _parent: AnimatedNode;
   _config: InterpolationConfigType<OutputT>;
@@ -376,13 +374,13 @@ export default class AnimatedInterpolation<
     if (!this._interpolation) {
       const config = this._config;
       if (config.outputRange && typeof config.outputRange[0] === 'string') {
-        this._interpolation = (createStringInterpolation((config: any)): any);
+        this._interpolation = createStringInterpolation(config as any) as any;
       } else if (typeof config.outputRange[0] === 'object') {
-        this._interpolation = (createPlatformColorInterpolation(
-          (config: any),
-        ): any);
+        this._interpolation = createPlatformColorInterpolation(
+          config as any,
+        ) as any;
       } else {
-        this._interpolation = (createNumericInterpolation((config: any)): any);
+        this._interpolation = createNumericInterpolation(config as any) as any;
       }
     }
     return this._interpolation;
@@ -402,7 +400,7 @@ export default class AnimatedInterpolation<
     return this._getInterpolation()(parentValue);
   }
 
-  interpolate<NewOutputT: number | string>(
+  interpolate<NewOutputT extends number | string>(
     config: InterpolationConfigType<NewOutputT>,
   ): AnimatedInterpolation<NewOutputT> {
     return new AnimatedInterpolation(this, config);
@@ -428,7 +426,7 @@ export default class AnimatedInterpolation<
     let outputType = null;
     if (typeof outputRange[0] === 'string') {
       // $FlowFixMe[incompatible-type]
-      outputRange = ((outputRange: $ReadOnlyArray<string>).map(value => {
+      outputRange = (outputRange as ReadonlyArray<string>).map(value => {
         const processedColor = processColor(value);
         if (typeof processedColor === 'number') {
           outputType = 'color';
@@ -436,7 +434,7 @@ export default class AnimatedInterpolation<
         } else {
           return NativeAnimatedHelper.transformDataType(value);
         }
-      }): any);
+      }) as any;
     } else if (typeof outputRange[0] === 'object') {
       outputType = 'platform_color';
     }

@@ -179,7 +179,7 @@ function renderTableRow({item}: ListRenderItemInfo<PlatformTestResult>) {
 type Props = Readonly<{
   numPending: number,
   reset: () => void,
-  results: $ReadOnlyArray<PlatformTestResult>,
+  results: ReadonlyArray<PlatformTestResult>,
   style?: ?ViewStyleProp,
 }>;
 export default function RNTesterPlatformTestResultView(

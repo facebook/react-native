@@ -8,9 +8,9 @@
  * @format
  */
 
-import {create, update} from '../../../../jest/renderer';
 import {AnimatedEvent} from '../../../../Libraries/Animated/AnimatedEvent';
 import createAnimatedPropsHook from '../createAnimatedPropsHook';
+import {create, update} from '@react-native/jest-preset/jest/renderer';
 import {useLayoutEffect} from 'react';
 
 describe('useAnimatedProps', () => {

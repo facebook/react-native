@@ -11,7 +11,8 @@
 import type {RNTesterModuleExample} from '../../types/RNTesterTypes';
 
 import RNTesterText from '../../components/RNTesterText';
-import React, {useEffect, useState} from 'react';
+import * as React from 'react';
+import {useEffect, useState} from 'react';
 import {Dimensions, useWindowDimensions} from 'react-native';
 
 type Props = {dim: string};

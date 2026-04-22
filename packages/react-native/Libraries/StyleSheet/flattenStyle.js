@@ -21,7 +21,7 @@ type NonAnimatedNodeObject<TStyleProp> = TStyleProp extends AnimatedNode
   : TStyleProp;
 
 function flattenStyle<
-  TStyleProp: ____DangerouslyImpreciseAnimatedStyleProp_Internal,
+  TStyleProp extends ____DangerouslyImpreciseAnimatedStyleProp_Internal,
 >(
   style: ?TStyleProp,
   // $FlowFixMe[underconstrained-implicit-instantiation]

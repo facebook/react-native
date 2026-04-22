@@ -14,6 +14,15 @@ typedef NSURLSessionConfiguration * (^NSURLSessionConfigurationProvider)(void);
  * app.
  */
 RCT_EXTERN void RCTSetCustomNSURLSessionConfigurationProvider(NSURLSessionConfigurationProvider /*provider*/);
+
+typedef NSURLRequest *_Nullable (^RCTHTTPRequestInterceptor)(NSURLRequest *request);
+/**
+ * The block provided via this function can inspect/modify HTTP requests before
+ * they are sent. Return a modified request to override, or nil to use the
+ * original request unchanged.
+ */
+RCT_EXTERN void RCTSetCustomHTTPRequestInterceptor(RCTHTTPRequestInterceptor /*interceptor*/);
+
 /**
  * This is the default RCTURLRequestHandler implementation for HTTP requests.
  */

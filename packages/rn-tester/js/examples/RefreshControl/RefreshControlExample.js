@@ -11,7 +11,7 @@
 import type {RNTesterModuleExample} from '../../types/RNTesterTypes';
 
 import RNTesterText from '../../components/RNTesterText';
-import React from 'react';
+import * as React from 'react';
 import {
   RefreshControl,
   ScrollView,
@@ -68,7 +68,7 @@ class Row extends React.Component<
 type RefreshControlExampleState = Readonly<{
   isRefreshing: boolean,
   loaded: number,
-  rowData: $ReadOnlyArray<Data>,
+  rowData: ReadonlyArray<Data>,
 }>;
 
 class RefreshControlExample extends React.Component<

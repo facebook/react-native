@@ -137,6 +137,9 @@ constructor(
     public const val NAME: String = NativeAppearanceSpec.NAME
     private const val APPEARANCE_CHANGED_EVENT_NAME = "appearanceChanged"
 
+    // Must remain `var` (not `val`) — this field is set from JNI in
+    // configurePlatformColorCacheInvalidationHook.cpp. Android 17+ crashes
+    // if JNI modifies a static final field (which `val` compiles to).
     @DoNotStrip private var invalidatePlatformColorCache: Runnable? = null
   }
 }

@@ -42,18 +42,18 @@ const {
   parseValidUnionType,
 } = require('../../Utils');
 
-type StructContext = 'CONSTANTS' | 'REGULAR';
+export type StructContext = 'CONSTANTS' | 'REGULAR';
 
 export type RegularStruct = Readonly<{
   context: 'REGULAR',
   name: string,
-  properties: $ReadOnlyArray<StructProperty>,
+  properties: ReadonlyArray<StructProperty>,
 }>;
 
 export type ConstantsStruct = Readonly<{
   context: 'CONSTANTS',
   name: string,
-  properties: $ReadOnlyArray<StructProperty>,
+  properties: ReadonlyArray<StructProperty>,
 }>;
 
 export type Struct = RegularStruct | ConstantsStruct;
@@ -155,7 +155,7 @@ class StructCollector {
                 type: 'StringTypeAnnotation',
               });
             default:
-              (validUnionType: empty);
+              validUnionType as empty;
               throw new Error(`Unsupported union member types`);
           }
         } catch (ex) {
@@ -235,12 +235,12 @@ class StructCollector {
         });
         break;
       default:
-        (structContext: empty);
+        structContext as empty;
         throw new Error(`Detected an invalid struct context: ${structContext}`);
     }
   }
 
-  getAllStructs(): $ReadOnlyArray<Struct> {
+  getAllStructs(): ReadonlyArray<Struct> {
     return [...this._structs.values()];
   }
 

@@ -1374,12 +1374,12 @@ it('does not over-render when there is less than initialNumToRender cells', asyn
     );
   });
 
-  // Check that the first render clamps to the last item when intialNumToRender
+  // Check that the first render clamps to the last item when initialNumToRender
   // goes over it.
   expect(component).toMatchSnapshot();
 });
 
-it('retains intitial render if initialScrollIndex == 0', async () => {
+it('retains initial render if initialScrollIndex == 0', async () => {
   const items = generateItems(20);
   const ITEM_HEIGHT = 10;
 
@@ -1415,7 +1415,7 @@ it('retains intitial render if initialScrollIndex == 0', async () => {
   expect(component).toMatchSnapshot();
 });
 
-it('discards intitial render if initialScrollIndex != 0', async () => {
+it('discards initial render if initialScrollIndex != 0', async () => {
   const items = generateItems(20);
   const ITEM_HEIGHT = 10;
 
@@ -1612,12 +1612,11 @@ it('adjusts render area with non-zero initialScrollIndex', async () => {
       content: {width: 10, height: 200},
     });
     simulateScroll(component, {x: 0, y: 10}); // simulate scroll offset for initialScrollIndex
-
-    // TODO: Rewrite test to tolerate subtle timing changes.
-    jest.advanceTimersToNextTimer(3);
   });
 
-  // We should expand the render area after receiving a message indcating we
+  await advanceUntilRenderAreaChanged(component);
+
+  // We should expand the render area after receiving a message indicating we
   // arrived at initialScrollIndex.
   expect(component).toMatchSnapshot();
 });
@@ -1711,7 +1710,7 @@ it('renders no spacers up to initialScrollIndex on first render when virtualizat
   });
 
   // There should be no spacers present in an offset initial render with
-  // virtualiztion disabled. Only initialNumToRender items starting at
+  // virtualization disabled. Only initialNumToRender items starting at
   // initialScrollIndex.
   expect(component).toMatchSnapshot();
 });
@@ -1734,7 +1733,7 @@ it('expands first in viewport to render up to maxToRenderPerBatch on initial ren
   });
 
   // When virtualization is disabled we may render items before initialItemIndex
-  // if initialItemIndex + initialNumToRender < maToRenderPerBatch. Expect cells
+  // if initialItemIndex + initialNumToRender < maxToRenderPerBatch. Expect cells
   // 0-3 to be rendered in this example, even though initialScrollIndex is 4.
   expect(component).toMatchSnapshot();
 });
@@ -2622,6 +2621,29 @@ function simulateScroll(component, position) {
       zoomScale: 1,
     },
   });
+}
+
+async function advanceUntilRenderAreaChanged(component) {
+  const instance = component.getInstance();
+  const initialRenderArea = instance.state.cellsAroundViewport;
+  const MAX_TIMER_STEPS = 20;
+
+  for (let step = 0; step < MAX_TIMER_STEPS; step++) {
+    const currentRenderArea = instance.state.cellsAroundViewport;
+    const renderAreaChanged =
+      currentRenderArea.first !== initialRenderArea.first ||
+      currentRenderArea.last !== initialRenderArea.last;
+
+    if (renderAreaChanged) {
+      return;
+    }
+
+    await act(() => {
+      jest.advanceTimersToNextTimer(1);
+    });
+  }
+
+  throw new Error(`Render area did not change`);
 }
 
 function performAllBatches() {

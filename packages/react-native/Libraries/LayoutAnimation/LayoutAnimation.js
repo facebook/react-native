@@ -131,17 +131,17 @@ function createLayoutAnimation(
 }
 
 const Presets = {
-  easeInEaseOut: (createLayoutAnimation(
+  easeInEaseOut: createLayoutAnimation(
     300,
     'easeInEaseOut',
     'opacity',
-  ): LayoutAnimationConfig),
-  linear: (createLayoutAnimation(
+  ) as LayoutAnimationConfig,
+  linear: createLayoutAnimation(
     500,
     'linear',
     'opacity',
-  ): LayoutAnimationConfig),
-  spring: ({
+  ) as LayoutAnimationConfig,
+  spring: {
     duration: 700,
     create: {
       type: 'linear',
@@ -155,7 +155,7 @@ const Presets = {
       type: 'linear',
       property: 'opacity',
     },
-  }: LayoutAnimationConfig),
+  } as LayoutAnimationConfig,
 };
 
 /**
@@ -205,15 +205,15 @@ const LayoutAnimation = {
     console.error('LayoutAnimation.checkConfig(...) has been disabled.');
   },
   Presets,
-  easeInEaseOut: (configureNext.bind(null, Presets.easeInEaseOut): (
+  easeInEaseOut: configureNext.bind(null, Presets.easeInEaseOut) as (
     onAnimationDidEnd?: OnAnimationDidEndCallback,
-  ) => void),
-  linear: (configureNext.bind(null, Presets.linear): (
+  ) => void,
+  linear: configureNext.bind(null, Presets.linear) as (
     onAnimationDidEnd?: OnAnimationDidEndCallback,
-  ) => void),
-  spring: (configureNext.bind(null, Presets.spring): (
+  ) => void,
+  spring: configureNext.bind(null, Presets.spring) as (
     onAnimationDidEnd?: OnAnimationDidEndCallback,
-  ) => void),
+  ) => void,
   setEnabled: setLayoutAnimationEnabled,
 };
 

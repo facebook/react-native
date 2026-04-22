@@ -64,7 +64,7 @@ export function createStringifySafeWithLimits(limits: {
         retval = `{ ... object with ${keys.length} keys ... }`;
       } else if (keys.length > maxObjectKeysLimit) {
         // Return a sample of the keys.
-        retval = ({}: {[string]: unknown});
+        retval = {} as {[string]: unknown};
         for (let k of keys.slice(0, maxObjectKeysLimit)) {
           retval[k] = value[k];
         }
@@ -84,7 +84,7 @@ export function createStringifySafeWithLimits(limits: {
     } else if (typeof arg === 'function') {
       try {
         return arg.toString();
-      } catch (e) {
+      } catch {
         return '[function unknown]';
       }
     } else if (arg instanceof Error) {
@@ -98,12 +98,12 @@ export function createStringifySafeWithLimits(limits: {
           return '["' + typeof arg + '" failed to stringify]';
         }
         return ret;
-      } catch (e) {
+      } catch {
         if (typeof arg.toString === 'function') {
           try {
             // $FlowFixMe[incompatible-use] : toString shouldn't take any arguments in general.
             return arg.toString();
-          } catch (E) {}
+          } catch {}
         }
       }
     }

@@ -61,7 +61,7 @@ export default class AnimatedNode {
   }
   __addChild(child: AnimatedNode) {}
   __removeChild(child: AnimatedNode) {}
-  __getChildren(): $ReadOnlyArray<AnimatedNode> {
+  __getChildren(): ReadonlyArray<AnimatedNode> {
     return [];
   }
 

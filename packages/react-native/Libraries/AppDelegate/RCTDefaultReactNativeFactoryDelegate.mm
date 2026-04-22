@@ -45,6 +45,10 @@
 {
 #if USE_THIRD_PARTY_JSC != 1
   return jsrt_create_hermes_factory();
+#else
+  [NSException raise:@"JSRuntimeFactory"
+              format:@"createJSRuntimeFactory must be overridden when using third-party JSC"];
+  return nil;
 #endif
 }
 
@@ -59,7 +63,11 @@
 {
   UIView *rootView = RCTAppSetupDefaultRootView(bridge, moduleName, initProps, YES);
 
+#if TARGET_OS_TV
+  rootView.backgroundColor = [UIColor clearColor];
+#else
   rootView.backgroundColor = [UIColor systemBackgroundColor];
+#endif
 
   return rootView;
 }

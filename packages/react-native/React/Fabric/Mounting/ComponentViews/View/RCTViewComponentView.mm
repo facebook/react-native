@@ -6,6 +6,7 @@
  */
 
 #import "RCTViewComponentView.h"
+#import <React/RCTSurfaceHostingProxyRootView.h>
 
 #import <CoreGraphics/CoreGraphics.h>
 #import <QuartzCore/QuartzCore.h>
@@ -53,6 +54,7 @@ const CGFloat BACKGROUND_COLOR_ZPOSITION = -1024.0f;
   BOOL _useCustomContainerView;
   NSMutableSet<NSString *> *_accessibilityOrderNativeIDs;
   RCTSwiftUIContainerViewWrapper *_swiftUIWrapper;
+  BOOL _focusable;
 }
 
 #ifdef RCT_DYNAMIC_FRAMEWORKS
@@ -67,7 +69,9 @@ const CGFloat BACKGROUND_COLOR_ZPOSITION = -1024.0f;
   if (self = [super initWithFrame:frame]) {
     _props = ViewShadowNode::defaultSharedProps();
     _reactSubviews = [NSMutableArray new];
+#if !TARGET_OS_TV
     self.multipleTouchEnabled = YES;
+#endif
     _useCustomContainerView = NO;
     _removeClippedSubviews = NO;
   }
@@ -155,11 +159,18 @@ const CGFloat BACKGROUND_COLOR_ZPOSITION = -1024.0f;
     [_reactSubviews removeObjectAtIndex:index];
   } else {
     RCTAssert(
-        childComponentView.superview == self.currentContainerView,
-        @"Attempt to unmount a view which is mounted inside different view. (parent: %@, child: %@, index: %@)",
+        childComponentView.superview != nil,
+        @"Attempt to unmount a view which is not mounted. (parent: %@, child: %@, index: %@)",
         self,
         childComponentView,
         @(index));
+    RCTAssert(
+        childComponentView.superview == self.currentContainerView,
+        @"Attempt to unmount a view which is mounted inside a different view. (parent: %@, child: %@, index: %@, existing parent: %@)",
+        self,
+        childComponentView,
+        @(index),
+        @([childComponentView.superview tag]));
     RCTAssert(
         (self.currentContainerView.subviews.count > index) &&
             [self.currentContainerView.subviews objectAtIndex:index] == childComponentView,
@@ -172,6 +183,30 @@ const CGFloat BACKGROUND_COLOR_ZPOSITION = -1024.0f;
   }
 
   [childComponentView removeFromSuperview];
+}
+
+- (void)_updateRemoveClippedSubviewsState
+{
+  if (_removeClippedSubviews) {
+    // Toggled ON: populate _reactSubviews from the current view hierarchy.
+    // Actual clipping will happen on the next scroll event.
+    RCTAssert(
+        _reactSubviews.count == 0,
+        @"_reactSubviews should be empty when toggling removeClippedSubviews on. (view: %@, count: %@)",
+        self,
+        @(_reactSubviews.count));
+    if (self.currentContainerView.subviews.count > 0) {
+      _reactSubviews = [NSMutableArray arrayWithArray:self.currentContainerView.subviews];
+    }
+  } else {
+    // Toggled OFF: re-mount all children in the correct order, then clear the tracking array.
+    // addSubview: on an already-present child moves it to the front, so iterating in order
+    // produces the correct subview ordering.
+    for (UIView *view in _reactSubviews) {
+      [self.currentContainerView addSubview:view];
+    }
+    [_reactSubviews removeAllObjects];
+  }
 }
 
 - (void)updateClippedSubviewsWithClipRect:(CGRect)clipRect relativeToView:(UIView *)clipView
@@ -239,9 +274,7 @@ const CGFloat BACKGROUND_COLOR_ZPOSITION = -1024.0f;
   if (!ReactNativeFeatureFlags::enableViewCulling()) {
     if (oldViewProps.removeClippedSubviews != newViewProps.removeClippedSubviews) {
       _removeClippedSubviews = newViewProps.removeClippedSubviews;
-      if (_removeClippedSubviews && self.currentContainerView.subviews.count > 0) {
-        _reactSubviews = [NSMutableArray arrayWithArray:self.currentContainerView.subviews];
-      }
+      [self _updateRemoveClippedSubviewsState];
     }
   }
 
@@ -376,6 +409,7 @@ const CGFloat BACKGROUND_COLOR_ZPOSITION = -1024.0f;
 
   // `accessibilityShowsLargeContentViewer`
   if (oldViewProps.accessibilityShowsLargeContentViewer != newViewProps.accessibilityShowsLargeContentViewer) {
+#if !TARGET_OS_TV
     if (@available(iOS 13.0, *)) {
       if (newViewProps.accessibilityShowsLargeContentViewer) {
         self.showsLargeContentViewer = YES;
@@ -385,13 +419,16 @@ const CGFloat BACKGROUND_COLOR_ZPOSITION = -1024.0f;
         self.showsLargeContentViewer = NO;
       }
     }
+#endif
   }
 
   // `accessibilityLargeContentTitle`
   if (oldViewProps.accessibilityLargeContentTitle != newViewProps.accessibilityLargeContentTitle) {
+#if !TARGET_OS_TV
     if (@available(iOS 13.0, *)) {
       self.largeContentTitle = RCTNSStringFromStringNilIfEmpty(newViewProps.accessibilityLargeContentTitle);
     }
+#endif
   }
 
   // `accessibilityOrder`
@@ -475,6 +512,13 @@ const CGFloat BACKGROUND_COLOR_ZPOSITION = -1024.0f;
     needsInvalidateLayer = YES;
   }
 
+  // `focusable`
+#if TARGET_OS_TV
+  if (oldViewProps.focusable != newViewProps.focusable) {
+    _focusable = (bool)newViewProps.focusable;
+  }
+#endif
+
   // `mixBlendMode`
   if (oldViewProps.mixBlendMode != newViewProps.mixBlendMode) {
     switch (newViewProps.mixBlendMode) {
@@ -523,6 +567,9 @@ const CGFloat BACKGROUND_COLOR_ZPOSITION = -1024.0f;
       case BlendMode::Luminosity:
         self.layer.compositingFilter = @"luminosityBlendMode";
         break;
+      case BlendMode::PlusLighter:
+        self.layer.compositingFilter = @"linearDodgeBlendMode";
+        break;
       case BlendMode::Normal:
         self.layer.compositingFilter = nil;
         break;
@@ -560,6 +607,12 @@ const CGFloat BACKGROUND_COLOR_ZPOSITION = -1024.0f;
   // re-applying individual sub-values which weren't changed.
   [super updateLayoutMetrics:layoutMetrics oldLayoutMetrics:_layoutMetrics];
 
+  // Capture the frame size that was used by updateProps to resolve the
+  // transform, before overwriting _layoutMetrics. This is important because
+  // _layoutMetrics may be stale (e.g., from a recycled view) and differ from
+  // the oldLayoutMetrics parameter (which comes from the shadow tree).
+  auto previousFrameSize = _layoutMetrics.frame.size;
+
   _layoutMetrics = layoutMetrics;
   _needsInvalidateLayer = YES;
 
@@ -577,8 +630,12 @@ const CGFloat BACKGROUND_COLOR_ZPOSITION = -1024.0f;
     _backgroundColorLayer.frame = CGRectMake(0, 0, self.layer.bounds.size.width, self.layer.bounds.size.height);
   }
 
+  // Recompute the transform whenever the layout size differs from what was
+  // used in updateProps. Using previousFrameSize (the stored _layoutMetrics)
+  // instead of the oldLayoutMetrics parameter ensures correctness even when
+  // the view was recycled with stale dimensions.
   if ((_props->transformOrigin.isSet() || !_props->transform.operations.empty()) &&
-      layoutMetrics.frame.size != oldLayoutMetrics.frame.size) {
+      layoutMetrics.frame.size != previousFrameSize) {
     auto newTransform = _props->resolveTransform(layoutMetrics);
     self.layer.transform = RCTCATransform3DFromTransformMatrix(newTransform);
   }
@@ -648,6 +705,7 @@ const CGFloat BACKGROUND_COLOR_ZPOSITION = -1024.0f;
   _isJSResponder = NO;
   _removeClippedSubviews = NO;
   _reactSubviews = [NSMutableArray new];
+  _layoutMetrics = {};
 }
 
 - (void)setPropKeysManagedByAnimated_DO_NOT_USE_THIS_IS_BROKEN:(NSSet<NSString *> *_Nullable)props
@@ -939,7 +997,8 @@ static RCTBorderStyle RCTBorderStyleFromOutlineStyle(OutlineStyle outlineStyle)
     layer.shadowPath = nil;
   }
 
-#if defined(__IPHONE_OS_VERSION_MAX_ALLOWED) && __IPHONE_OS_VERSION_MAX_ALLOWED >= 170000 /* __IPHONE_17_0 */
+#if !TARGET_OS_TV && defined(__IPHONE_OS_VERSION_MAX_ALLOWED) && \
+    __IPHONE_OS_VERSION_MAX_ALLOWED >= 170000 /* __IPHONE_17_0 */
   // Stage 1.5. Cursor / Hover Effects
   if (@available(iOS 17.0, *)) {
     UIHoverStyle *hoverStyle = nil;
@@ -1360,6 +1419,10 @@ static NSString *RCTRecursiveAccessibilityLabel(UIView *view)
   // Result string is initialized lazily to prevent useless but costly allocations.
   NSMutableString *result = nil;
   for (UIView *subview in view.subviews) {
+    // Skip subviews that have accessibilityElementsHidden set to YES
+    if (subview.accessibilityElementsHidden) {
+      continue;
+    }
     NSString *label = subview.accessibilityLabel;
     if (!label) {
       label = RCTRecursiveAccessibilityLabel(subview);
@@ -1398,6 +1461,11 @@ static NSString *RCTRecursiveAccessibilityLabel(UIView *view)
 - (BOOL)wantsToCooptLabel
 {
   return !super.accessibilityLabel && super.isAccessibilityElement;
+}
+
+- (BOOL)canBecomeFocused
+{
+  return _focusable;
 }
 
 - (BOOL)isAccessibilityElement
@@ -1649,9 +1717,11 @@ static NSString *RCTRecursiveAccessibilityLabel(UIView *view)
   }
 }
 
+#pragma mark - Focus Events
+
 - (BOOL)canBecomeFirstResponder
 {
-  return YES;
+  return ReactNativeFeatureFlags::enableImperativeFocus();
 }
 
 - (void)handleCommand:(const NSString *)commandName args:(const NSArray *)args
@@ -1667,17 +1737,42 @@ static NSString *RCTRecursiveAccessibilityLabel(UIView *view)
   }
 }
 
+#if TARGET_OS_TV
+/// Finds the containing RCTSurfaceHostingProxyRootView by walking up the view
+/// hierarchy.
+- (RCTSurfaceHostingProxyRootView *)containingRootView
+{
+  UIView *view = self;
+  while (view != nil) {
+    if ([view isKindOfClass:[RCTSurfaceHostingProxyRootView class]]) {
+      return (RCTSurfaceHostingProxyRootView *)view;
+    }
+    view = view.superview;
+  }
+  return nil;
+}
+#endif
+
 - (void)focus
 {
   [self becomeFirstResponder];
+
+#if TARGET_OS_TV
+  RCTSurfaceHostingProxyRootView *rootView = [self containingRootView];
+  if (rootView == nil) {
+    return;
+  }
+
+  rootView.reactPreferredFocusedView = self;
+  [rootView setNeedsFocusUpdate];
+  [rootView updateFocusIfNeeded];
+#endif
 }
 
 - (void)blur
 {
   [self resignFirstResponder];
 }
-
-#pragma mark - Focus Events
 
 - (BOOL)becomeFirstResponder
 {
@@ -1704,6 +1799,30 @@ static NSString *RCTRecursiveAccessibilityLabel(UIView *view)
 
   return YES;
 }
+
+#if TARGET_OS_TV
+
+- (void)didUpdateFocusInContext:(UIFocusUpdateContext *)context
+       withAnimationCoordinator:(UIFocusAnimationCoordinator *)coordinator
+{
+  if (context.previouslyFocusedView == context.nextFocusedView) {
+    return;
+  }
+
+  // Do not resignFirstRespodner if we lost focus, let whoever took focus
+  // becomeFirstResponder thereby resigning for us. If we resign here,
+  // first responder will be assigned to some ancestor view and they
+  // can temporarily call onFocus/onBlur
+  if (context.nextFocusedView == self) {
+    [self becomeFirstResponder];
+  } else if (context.previouslyFocusedView == self && context.nextFocusedView == nil) {
+    [self resignFirstResponder];
+  }
+
+  [super didUpdateFocusInContext:context withAnimationCoordinator:coordinator];
+}
+
+#endif
 
 @end
 
