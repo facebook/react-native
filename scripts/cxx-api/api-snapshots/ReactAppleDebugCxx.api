@@ -6703,7 +6703,7 @@ class facebook::react::RAMBundleRegistry {
 
 class facebook::react::RCTBlobCollector : public facebook::jsi::HostObject {
   public RCTBlobCollector(RCTBlobManager* blobManager, const std::string& blobId);
-  public static void install(RCTBlobManager* blobManager);
+  public static void install(facebook::jsi::Runtime& runtime, RCTBlobManager* blobManager);
   public ~RCTBlobCollector();
 }
 
