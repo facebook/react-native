@@ -1,5 +1,8 @@
 name: E2E Android Template App
 
+permissions:
+  contents: read
+
 on:
   workflow_call:
     outputs:

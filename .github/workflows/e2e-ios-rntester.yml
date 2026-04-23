@@ -1,5 +1,8 @@
 name: E2E iOS RNTester
 
+permissions:
+  contents: read
+
 on:
   workflow_call:
     outputs:
