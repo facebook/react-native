@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<877387fd0971e2e6c4ed81ec60ce3f2b>>
+ * @generated SignedSource<<55da460bc2f8c915552eeae11f0b2e3e>>
  */
 
 /**
@@ -185,8 +185,6 @@ class NativeReactNativeFeatureFlags
   bool shouldTriggerResponderTransferOnScrollAndroid(jsi::Runtime& runtime);
 
   bool skipActivityIdentityAssertionOnHostPause(jsi::Runtime& runtime);
-
-  bool syncAndroidClipToPaddingWithOverflow(jsi::Runtime& runtime);
 
   bool traceTurboModulePromiseRejectionsOnAndroid(jsi::Runtime& runtime);
 

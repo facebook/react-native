@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<f6932d0a9c4afcb1b00eb1feba80c823>>
+ * @generated SignedSource<<6aa42056b9acfeb38e3ea612b6421a15>>
  */
 
 /**
@@ -324,10 +324,6 @@ class ReactNativeFeatureFlagsDefaults : public ReactNativeFeatureFlagsProvider {
   }
 
   bool skipActivityIdentityAssertionOnHostPause() override {
-    return false;
-  }
-
-  bool syncAndroidClipToPaddingWithOverflow() override {
     return false;
   }
 

@@ -850,16 +850,6 @@ const definitions: FeatureFlagDefinitions = {
       },
       ossReleaseStage: 'none',
     },
-    syncAndroidClipToPaddingWithOverflow: {
-      defaultValue: false,
-      metadata: {
-        description:
-          'Sync clipToPadding on Android views with the overflow property',
-        expectedReleaseValue: true,
-        purpose: 'release',
-      },
-      ossReleaseStage: 'none',
-    },
     traceTurboModulePromiseRejectionsOnAndroid: {
       defaultValue: false,
       metadata: {

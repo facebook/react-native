@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<84350973e4f2cb0783d0553cffc831f8>>
+ * @generated SignedSource<<2a4b0d699f7e7e701defd972cd79b116>>
  */
 
 /**
@@ -718,15 +718,6 @@ class ReactNativeFeatureFlagsDynamicProvider : public ReactNativeFeatureFlagsDef
     }
 
     return ReactNativeFeatureFlagsDefaults::skipActivityIdentityAssertionOnHostPause();
-  }
-
-  bool syncAndroidClipToPaddingWithOverflow() override {
-    auto value = values_["syncAndroidClipToPaddingWithOverflow"];
-    if (!value.isNull()) {
-      return value.getBool();
-    }
-
-    return ReactNativeFeatureFlagsDefaults::syncAndroidClipToPaddingWithOverflow();
   }
 
   bool traceTurboModulePromiseRejectionsOnAndroid() override {

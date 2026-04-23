@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<505f532777eb5c18637f61b824600234>>
+ * @generated SignedSource<<6a15a6444767342acf4da0c0c8aa6208>>
  */
 
 /**
@@ -324,10 +324,6 @@ bool ReactNativeFeatureFlags::shouldTriggerResponderTransferOnScrollAndroid() {
 
 bool ReactNativeFeatureFlags::skipActivityIdentityAssertionOnHostPause() {
   return getAccessor().skipActivityIdentityAssertionOnHostPause();
-}
-
-bool ReactNativeFeatureFlags::syncAndroidClipToPaddingWithOverflow() {
-  return getAccessor().syncAndroidClipToPaddingWithOverflow();
 }
 
 bool ReactNativeFeatureFlags::traceTurboModulePromiseRejectionsOnAndroid() {
