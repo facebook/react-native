@@ -14,12 +14,15 @@ import type {RNTesterModule} from '../../types/RNTesterTypes';
 
 import hotdog from '../../assets/hotdog.jpg';
 import * as React from 'react';
+import {useState} from 'react';
 import {
   DynamicColorIOS,
   Image,
   Platform,
   PlatformColor,
+  Pressable,
   StyleSheet,
+  Text,
   View,
 } from 'react-native';
 
@@ -622,5 +625,42 @@ export default {
         );
       },
     },
+    {
+      title: 'Border radius with transparent → opaque background',
+      name: 'border-radius-transparent-to-opaque',
+      description:
+        'Tap the box to toggle its background between transparent and opaque. ' +
+        'Both states should render as a circle. Regression guard for #52415.',
+      render: function (): React.Node {
+        return <TransparentToOpaqueBorderRadiusExample />;
+      },
+    },
   ],
 } as RNTesterModule;
+
+function TransparentToOpaqueBorderRadiusExample(): React.Node {
+  const [opaque, setOpaque] = useState(false);
+  return (
+    <Pressable
+      onPress={() => setOpaque(prev => !prev)}
+      testID="border-test-transparent-to-opaque">
+      <View style={{padding: 16, backgroundColor: 'lightgray'}}>
+        <View
+          style={{
+            width: 50,
+            height: 50,
+            borderRadius: 25,
+            backgroundColor: opaque ? 'red' : 'transparent',
+          }}
+        />
+        <Text style={{marginTop: 12}}>
+          Tap to toggle. backgroundColor is currently{' '}
+          <Text style={{fontWeight: 'bold'}}>
+            {opaque ? 'red' : 'transparent'}
+          </Text>
+          . Both states should render the box as a circle.
+        </Text>
+      </View>
+    </Pressable>
+  );
+}

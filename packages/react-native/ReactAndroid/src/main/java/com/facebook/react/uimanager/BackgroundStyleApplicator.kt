@@ -211,9 +211,14 @@ public object BackgroundStyleApplicator {
         compositeBackgroundDrawable.borderRadius ?: BorderRadiusStyle()
     compositeBackgroundDrawable.borderRadius?.set(corner, radius)
 
-    if (view is ImageView) {
-      ensureBackgroundDrawable(view)
-    }
+    // Eagerly create the BackgroundDrawable so subsequent backgroundColor
+    // changes can mutate the existing drawable in place instead of
+    // replacing view.background with a freshly-constructed composite whose
+    // inner BackgroundDrawable has 0x0 bounds on first draw. Without this,
+    // a backgroundColor transition from transparent to opaque leaves the
+    // view rendering as a rectangle even though borderRadius is set.
+    // See https://github.com/facebook/react-native/issues/52415.
+    ensureBackgroundDrawable(view)
     compositeBackgroundDrawable.background?.borderRadius = compositeBackgroundDrawable.borderRadius
     compositeBackgroundDrawable.backgroundImage?.borderRadius =
         compositeBackgroundDrawable.borderRadius
