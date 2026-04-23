@@ -23,7 +23,6 @@ const {
   isProfilingRenderer,
   renderElement,
   sendAccessibilityEvent,
-  unmountComponentAtNodeAndRemoveContainer,
   unstable_batchedUpdates,
 } = jest.requireActual<TRendererImplementation>(
   'react-native/Libraries/ReactNative/RendererImplementation',
@@ -40,6 +39,5 @@ export {
   isProfilingRenderer,
   renderElement,
   sendAccessibilityEvent,
-  unmountComponentAtNodeAndRemoveContainer,
   unstable_batchedUpdates,
 };

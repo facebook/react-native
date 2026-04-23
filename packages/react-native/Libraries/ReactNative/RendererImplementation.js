@@ -10,8 +10,6 @@
 
 import type {HostInstance} from '../../src/private/types/HostInstance';
 import typeof ReactFabricType from '../Renderer/shims/ReactFabric';
-import typeof ReactNativeType from '../Renderer/shims/ReactNative';
-import type {RootTag} from './RootTag';
 
 import {
   onCaughtError,
@@ -21,7 +19,6 @@ import {
 import * as React from 'react';
 
 let cachedFabricRenderer;
-let cachedPaperRenderer;
 
 function getFabricRenderer(): ReactFabricType {
   if (cachedFabricRenderer == null) {
@@ -30,21 +27,10 @@ function getFabricRenderer(): ReactFabricType {
   return cachedFabricRenderer;
 }
 
-function getPaperRenderer(): ReactNativeType {
-  if (cachedPaperRenderer == null) {
-    cachedPaperRenderer = require('../Renderer/shims/ReactNative').default;
-  }
-  return cachedPaperRenderer;
-}
-
-const getMethod: (<MethodName extends keyof ReactFabricType>(
+const getMethod: <MethodName extends keyof ReactFabricType>(
   () => ReactFabricType,
   MethodName,
-) => ReactFabricType[MethodName]) &
-  (<MethodName extends keyof ReactNativeType>(
-    () => ReactNativeType,
-    MethodName,
-  ) => ReactNativeType[MethodName]) = (getRenderer, methodName) => {
+) => ReactFabricType[MethodName] = (getRenderer, methodName) => {
   let cachedImpl;
 
   // $FlowExpectedError[incompatible-type]
@@ -66,14 +52,7 @@ function getFabricMethod<MethodName extends keyof ReactFabricType>(
   return getMethod(getFabricRenderer, methodName);
 }
 
-function getPaperMethod<MethodName extends keyof ReactNativeType>(
-  methodName: MethodName,
-): ReactNativeType[MethodName] {
-  return getMethod(getPaperRenderer, methodName);
-}
-
 let cachedFabricRender;
-let cachedPaperRender;
 
 export function renderElement({
   element,
@@ -86,52 +65,29 @@ export function renderElement({
   useFabric: boolean,
   useConcurrentRoot: boolean,
 }): void {
-  if (useFabric) {
-    if (cachedFabricRender == null) {
-      cachedFabricRender = getFabricRenderer().render;
-    }
-
-    cachedFabricRender(element, rootTag, null, useConcurrentRoot, {
-      onCaughtError,
-      onUncaughtError,
-      onRecoverableError,
-    });
-  } else {
-    if (cachedPaperRender == null) {
-      cachedPaperRender = getPaperRenderer().render;
-    }
-
-    cachedPaperRender(element, rootTag, undefined, {
-      onCaughtError,
-      onUncaughtError,
-      onRecoverableError,
-    });
+  if (cachedFabricRender == null) {
+    cachedFabricRender = getFabricRenderer().render;
   }
+
+  cachedFabricRender(element, rootTag, null, useConcurrentRoot, {
+    onCaughtError,
+    onUncaughtError,
+    onRecoverableError,
+  });
 }
 
 let cachedFabricDispatchCommand;
-let cachedPaperDispatchCommand;
 
 export function dispatchCommand(
   handle: HostInstance,
   command: string,
   args: Array<unknown>,
 ): void {
-  if (global.RN$Bridgeless === true) {
-    // Note: this function has the same implementation in the legacy and new renderer.
-    // However, evaluating the old renderer comes with some side effects.
-    if (cachedFabricDispatchCommand == null) {
-      cachedFabricDispatchCommand = getFabricRenderer().dispatchCommand;
-    }
-
-    return cachedFabricDispatchCommand(handle, command, args);
-  } else {
-    if (cachedPaperDispatchCommand == null) {
-      cachedPaperDispatchCommand = getPaperRenderer().dispatchCommand;
-    }
-
-    return cachedPaperDispatchCommand(handle, command, args);
+  if (cachedFabricDispatchCommand == null) {
+    cachedFabricDispatchCommand = getFabricRenderer().dispatchCommand;
   }
+
+  return cachedFabricDispatchCommand(handle, command, args);
 }
 
 export const findHostInstance_DEPRECATED: <
@@ -139,31 +95,25 @@ export const findHostInstance_DEPRECATED: <
 >(
   // $FlowExpectedError[incompatible-type]
   componentOrHandle: ?(React.ElementRef<TElementType> | number),
-) => ?HostInstance = getPaperMethod('findHostInstance_DEPRECATED');
+) => ?HostInstance = getFabricMethod('findHostInstance_DEPRECATED');
 
 export const findNodeHandle: <TElementType extends React.ElementType>(
   // $FlowExpectedError[incompatible-type]
   componentOrHandle: ?(React.ElementRef<TElementType> | number),
-) => ?number = getPaperMethod('findNodeHandle');
+) => ?number = getFabricMethod('findNodeHandle');
 
-export const sendAccessibilityEvent: ReactNativeType['sendAccessibilityEvent'] =
-  getPaperMethod('sendAccessibilityEvent');
+export const sendAccessibilityEvent: ReactFabricType['sendAccessibilityEvent'] =
+  getFabricMethod('sendAccessibilityEvent');
 
-/**
- * This method is used by AppRegistry to unmount a root when using the old
- * React Native renderer (Paper).
- */
-export const unmountComponentAtNodeAndRemoveContainer: (
-  rootTag: RootTag,
-) => void =
-  // $FlowExpectedError[incompatible-type]
-  getPaperMethod('unmountComponentAtNodeAndRemoveContainer');
+export function unstable_batchedUpdates<T>(
+  fn: (bookkeeping: T) => void,
+  bookkeeping: T,
+): void {
+  fn(bookkeeping);
+}
 
-export const unstable_batchedUpdates: ReactNativeType['unstable_batchedUpdates'] =
-  getPaperMethod('unstable_batchedUpdates');
-
-export const isChildPublicInstance: ReactNativeType['isChildPublicInstance'] =
-  getPaperMethod('isChildPublicInstance');
+export const isChildPublicInstance: ReactFabricType['isChildPublicInstance'] =
+  getFabricMethod('isChildPublicInstance');
 
 export const getNodeFromInternalInstanceHandle: ReactFabricType['getNodeFromInternalInstanceHandle'] =
   getFabricMethod('getNodeFromInternalInstanceHandle');
