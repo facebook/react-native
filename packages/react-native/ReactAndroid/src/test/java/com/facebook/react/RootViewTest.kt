@@ -9,9 +9,11 @@
 
 package com.facebook.react
 
+import android.annotation.SuppressLint
 import android.app.Activity
 import android.graphics.Insets
 import android.graphics.Rect
+import android.view.ViewGroup
 import android.view.WindowInsets
 import android.view.WindowManager
 import com.facebook.react.bridge.Arguments
@@ -106,5 +108,87 @@ class RootViewTest {
     params.putMap("endCoordinates", endCoordinates)
     params.putString("easing", "keyboard")
     verify(reactContext, times(1)).emitDeviceEvent("keyboardDidShow", params)
+  }
+
+  // Regression test for the keyboard re-emit behavior. Without the
+  // height-change re-emit in `checkForKeyboardEvents`, JS consumers that
+  // cache `endCoordinates` (KeyboardAvoidingView, ScrollView, Keyboard.metrics)
+  // observe stale geometry when the IME height changes (e.g., emoji panel
+  // toggle) without a visibility transition.
+  @SuppressLint("NewApi", "DeprecatedClass")
+  @Test
+  fun testCheckForKeyboardEventsReEmitsOnHeightChange() {
+    val instanceManager: ReactInstanceManager = mock()
+    val activity = Robolectric.buildActivity(Activity::class.java).create().get()
+    whenever(instanceManager.currentReactContext).thenReturn(reactContext)
+
+    val imeBottom = intArrayOf(370)
+    val imeVisible = booleanArrayOf(true)
+
+    val rootView: ReactRootView =
+        object : ReactRootView(activity) {
+          override fun getWindowVisibleDisplayFrame(outRect: Rect) {
+            outRect.set(0, 0, 370, 100)
+          }
+
+          override fun getRootWindowInsets(): WindowInsets =
+              WindowInsets.Builder()
+                  .setInsets(WindowInsets.Type.ime(), Insets.of(0, 0, 0, imeBottom[0]))
+                  .setVisible(WindowInsets.Type.ime(), imeVisible[0])
+                  .build()
+
+          override fun getLayoutParams(): ViewGroup.LayoutParams = WindowManager.LayoutParams()
+        }
+
+    rootView.startReactApplication(instanceManager, "")
+
+    // 1) Initial show — keyboardDidShow fires once with height=370.
+    rootView.simulateCheckForKeyboardForTesting()
+    verify(reactContext, times(1)).emitDeviceEvent("keyboardDidShow", showParams(370.0))
+
+    // 2) Idempotent layout pass with same height — must NOT re-emit.
+    rootView.simulateCheckForKeyboardForTesting()
+    verify(reactContext, times(1)).emitDeviceEvent("keyboardDidShow", showParams(370.0))
+
+    // 3) IME height grows (e.g., emoji panel) — must re-emit with new height.
+    //    This is the case the regression silently dropped.
+    imeBottom[0] = 420
+    rootView.simulateCheckForKeyboardForTesting()
+    verify(reactContext, times(1)).emitDeviceEvent("keyboardDidShow", showParams(420.0))
+
+    // 4) Hide — keyboardDidHide fires once.
+    imeVisible[0] = false
+    rootView.simulateCheckForKeyboardForTesting()
+    verify(reactContext, times(1)).emitDeviceEvent("keyboardDidHide", hideParams())
+
+    // 5) Idempotent layout pass with keyboard still hidden — must NOT re-emit.
+    rootView.simulateCheckForKeyboardForTesting()
+    verify(reactContext, times(1)).emitDeviceEvent("keyboardDidHide", hideParams())
+  }
+
+  private fun showParams(keyboardHeight: Double): com.facebook.react.bridge.WritableMap {
+    val params = Arguments.createMap()
+    val endCoordinates = Arguments.createMap()
+    params.putDouble("duration", 0.0)
+    endCoordinates.putDouble("width", 370.0)
+    endCoordinates.putDouble("screenX", 0.0)
+    endCoordinates.putDouble("height", keyboardHeight)
+    endCoordinates.putDouble("screenY", 100.0)
+    params.putMap("endCoordinates", endCoordinates)
+    params.putString("easing", "keyboard")
+    return params
+  }
+
+  private fun hideParams(): com.facebook.react.bridge.WritableMap {
+    val params = Arguments.createMap()
+    val endCoordinates = Arguments.createMap()
+    params.putDouble("duration", 0.0)
+    endCoordinates.putDouble("width", 370.0)
+    endCoordinates.putDouble("screenX", 0.0)
+    endCoordinates.putDouble("height", 0.0)
+    endCoordinates.putDouble("screenY", 100.0)
+    params.putMap("endCoordinates", endCoordinates)
+    params.putString("easing", "keyboard")
+    return params
   }
 }
