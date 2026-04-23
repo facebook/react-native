@@ -751,6 +751,28 @@ const definitions: FeatureFlagDefinitions = {
       },
       ossReleaseStage: 'experimental',
     },
+    redBoxV2Android: {
+      defaultValue: false,
+      metadata: {
+        dateAdded: '2026-03-25',
+        description:
+          'Use the redesigned RedBox error overlay on Android, styled to match the LogBox visual language.',
+        expectedReleaseValue: true,
+        purpose: 'experimentation',
+      },
+      ossReleaseStage: 'none',
+    },
+    redBoxV2IOS: {
+      defaultValue: false,
+      metadata: {
+        dateAdded: '2026-03-25',
+        description:
+          'Use the redesigned RedBox error overlay on iOS, styled to match the LogBox visual language.',
+        expectedReleaseValue: true,
+        purpose: 'experimentation',
+      },
+      ossReleaseStage: 'none',
+    },
     shouldPressibilityUseW3CPointerEventsForHover: {
       defaultValue: false,
       metadata: {

@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<554bd02cd328ba462d4e703b653d6cdd>>
+ * @generated SignedSource<<f5aa0f101192f55b7ac12705d7667424>>
  */
 
 /**
@@ -226,6 +226,12 @@ class JReactNativeFeatureFlagsCxxInterop
     facebook::jni::alias_ref<JReactNativeFeatureFlagsCxxInterop>);
 
   static bool preventShadowTreeCommitExhaustion(
+    facebook::jni::alias_ref<JReactNativeFeatureFlagsCxxInterop>);
+
+  static bool redBoxV2Android(
+    facebook::jni::alias_ref<JReactNativeFeatureFlagsCxxInterop>);
+
+  static bool redBoxV2IOS(
     facebook::jni::alias_ref<JReactNativeFeatureFlagsCxxInterop>);
 
   static bool shouldPressibilityUseW3CPointerEventsForHover(

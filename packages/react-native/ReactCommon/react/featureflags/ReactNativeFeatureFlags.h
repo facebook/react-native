@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<ec187a2009bd901f242bf65034357e5f>>
+ * @generated SignedSource<<26b7504c2446d37c6540609a620854cb>>
  */
 
 /**
@@ -368,6 +368,16 @@ class ReactNativeFeatureFlags {
    * Enables a new mechanism in ShadowTree to prevent problems caused by multiple threads trying to commit concurrently. If a thread tries to commit a few times unsuccessfully, it will acquire a lock and try again.
    */
   RN_EXPORT static bool preventShadowTreeCommitExhaustion();
+
+  /**
+   * Use the redesigned RedBox error overlay on Android, styled to match the LogBox visual language.
+   */
+  RN_EXPORT static bool redBoxV2Android();
+
+  /**
+   * Use the redesigned RedBox error overlay on iOS, styled to match the LogBox visual language.
+   */
+  RN_EXPORT static bool redBoxV2IOS();
 
   /**
    * Function used to enable / disable Pressibility from using W3C Pointer Events for its hover callbacks

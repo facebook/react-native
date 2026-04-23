@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<6e8731d9d7642d65b9b707741ef71873>>
+ * @generated SignedSource<<1434eae86af219c2c989aade2e59968d>>
  */
 
 /**
@@ -637,6 +637,24 @@ class ReactNativeFeatureFlagsDynamicProvider : public ReactNativeFeatureFlagsDef
     }
 
     return ReactNativeFeatureFlagsDefaults::preventShadowTreeCommitExhaustion();
+  }
+
+  bool redBoxV2Android() override {
+    auto value = values_["redBoxV2Android"];
+    if (!value.isNull()) {
+      return value.getBool();
+    }
+
+    return ReactNativeFeatureFlagsDefaults::redBoxV2Android();
+  }
+
+  bool redBoxV2IOS() override {
+    auto value = values_["redBoxV2IOS"];
+    if (!value.isNull()) {
+      return value.getBool();
+    }
+
+    return ReactNativeFeatureFlagsDefaults::redBoxV2IOS();
   }
 
   bool shouldPressibilityUseW3CPointerEventsForHover() override {

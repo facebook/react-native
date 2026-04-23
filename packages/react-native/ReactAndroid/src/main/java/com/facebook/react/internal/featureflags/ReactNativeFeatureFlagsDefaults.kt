@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<fd1d27cb393bb274b44db0bcec73c7f8>>
+ * @generated SignedSource<<9158a8f1750ec5e9e530399fe09f52cf>>
  */
 
 /**
@@ -154,6 +154,10 @@ public open class ReactNativeFeatureFlagsDefaults : ReactNativeFeatureFlagsProvi
   override fun preparedTextCacheSize(): Double = 200.0
 
   override fun preventShadowTreeCommitExhaustion(): Boolean = false
+
+  override fun redBoxV2Android(): Boolean = false
+
+  override fun redBoxV2IOS(): Boolean = false
 
   override fun shouldPressibilityUseW3CPointerEventsForHover(): Boolean = false
 

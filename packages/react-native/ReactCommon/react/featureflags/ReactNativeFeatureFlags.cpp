@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<20973c91d9d7e791598083c0cee5b934>>
+ * @generated SignedSource<<9ceab23bb1cb8d569411222993ef9f1e>>
  */
 
 /**
@@ -288,6 +288,14 @@ double ReactNativeFeatureFlags::preparedTextCacheSize() {
 
 bool ReactNativeFeatureFlags::preventShadowTreeCommitExhaustion() {
   return getAccessor().preventShadowTreeCommitExhaustion();
+}
+
+bool ReactNativeFeatureFlags::redBoxV2Android() {
+  return getAccessor().redBoxV2Android();
+}
+
+bool ReactNativeFeatureFlags::redBoxV2IOS() {
+  return getAccessor().redBoxV2IOS();
 }
 
 bool ReactNativeFeatureFlags::shouldPressibilityUseW3CPointerEventsForHover() {
