@@ -148,6 +148,138 @@ describe('<TextInput>', () => {
         expect(blurEvent).toHaveBeenCalledTimes(1);
       });
     });
+
+    describe('id and nativeID', () => {
+      it(`has 'id' propagated as 'nativeID' to the mounting layer`, () => {
+        const root = Fantom.createRoot();
+
+        Fantom.runTask(() => {
+          root.render(<TextInput id="alpha" />);
+        });
+
+        expect(root.getRenderedOutput({props: ['nativeID']}).toJSX()).toEqual(
+          <rn-androidTextInput nativeID="alpha" />,
+        );
+      });
+
+      it(`has 'nativeID' propagated correctly`, () => {
+        const root = Fantom.createRoot();
+
+        Fantom.runTask(() => {
+          root.render(<TextInput nativeID="alpha" />);
+        });
+
+        expect(root.getRenderedOutput({props: ['nativeID']}).toJSX()).toEqual(
+          <rn-androidTextInput nativeID="alpha" />,
+        );
+      });
+
+      it(`has a precedence of 'id' over 'nativeID'`, () => {
+        const root = Fantom.createRoot();
+
+        Fantom.runTask(() => {
+          root.render(<TextInput id="alpha" nativeID="gamma" />);
+        });
+
+        expect(root.getRenderedOutput({props: ['nativeID']}).toJSX()).toEqual(
+          <rn-androidTextInput nativeID="alpha" />,
+        );
+      });
+    });
+
+    describe('testID', () => {
+      it('is propagated to the mounting layer', () => {
+        const root = Fantom.createRoot();
+
+        Fantom.runTask(() => {
+          root.render(<TextInput testID="my-test-id" />);
+        });
+
+        expect(root.getRenderedOutput({props: ['testID']}).toJSX()).toEqual(
+          <rn-androidTextInput testID="my-test-id" />,
+        );
+      });
+    });
+
+    describe('aria-label and accessibilityLabel', () => {
+      it(`has 'aria-label' propagated as 'accessibilityLabel'`, () => {
+        const root = Fantom.createRoot();
+
+        Fantom.runTask(() => {
+          root.render(<TextInput aria-label="label" />);
+        });
+
+        expect(
+          root.getRenderedOutput({props: ['accessibilityLabel']}).toJSX(),
+        ).toEqual(<rn-androidTextInput accessibilityLabel="label" />);
+      });
+
+      it(`has 'accessibilityLabel' propagated correctly`, () => {
+        const root = Fantom.createRoot();
+
+        Fantom.runTask(() => {
+          root.render(<TextInput accessibilityLabel="label" />);
+        });
+
+        expect(
+          root.getRenderedOutput({props: ['accessibilityLabel']}).toJSX(),
+        ).toEqual(<rn-androidTextInput accessibilityLabel="label" />);
+      });
+    });
+
+    describe('aria-* and accessibilityState', () => {
+      it(`maps 'aria-*' state props to 'accessibilityState'`, () => {
+        const root = Fantom.createRoot();
+
+        Fantom.runTask(() => {
+          root.render(
+            <TextInput
+              aria-busy={true}
+              aria-checked={true}
+              aria-disabled={true}
+              aria-expanded={true}
+              aria-selected={true}
+            />,
+          );
+        });
+
+        expect(
+          root.getRenderedOutput({props: ['accessibilityState']}).toJSX(),
+        ).toEqual(
+          <rn-androidTextInput accessibilityState="{disabled:true,selected:true,checked:Checked,busy:true,expanded:true}" />,
+        );
+      });
+    });
+
+    describe('accessibilityRole', () => {
+      it('is propagated to the mounting layer', () => {
+        const root = Fantom.createRoot();
+
+        Fantom.runTask(() => {
+          root.render(<TextInput accessibilityRole="button" />);
+        });
+
+        expect(
+          root.getRenderedOutput({props: ['accessibilityRole']}).toJSX(),
+        ).toEqual(<rn-androidTextInput accessibilityRole="button" />);
+      });
+    });
+
+    describe('style', () => {
+      it('propagates style values to the mounting layer', () => {
+        const root = Fantom.createRoot();
+
+        Fantom.runTask(() => {
+          root.render(<TextInput style={{backgroundColor: 'white'}} />);
+        });
+
+        expect(
+          root.getRenderedOutput({props: ['backgroundColor']}).toJSX(),
+        ).toEqual(
+          <rn-androidTextInput backgroundColor="rgba(255, 255, 255, 1)" />,
+        );
+      });
+    });
   });
 
   describe('ref', () => {
@@ -275,6 +407,43 @@ describe('<TextInput>', () => {
           'Insert {type: "AndroidTextInput", parentNativeID: (root), index: 0, nativeID: "text-input"}',
           'Command {type: "AndroidTextInput", nativeID: "text-input", name: "focus"}',
         ]);
+      });
+
+      it('unfocuses any previously focused TextInput when a new one is focused', () => {
+        const root = Fantom.createRoot();
+        const ref1 = createRef<TextInputInstance>();
+        const ref2 = createRef<TextInputInstance>();
+
+        Fantom.runTask(() => {
+          root.render(
+            <>
+              <TextInput nativeID="text-input-1" ref={ref1} />
+              <TextInput nativeID="text-input-2" ref={ref2} />
+            </>,
+          );
+        });
+
+        const instance1 = nullthrows(ref1.current);
+        const instance2 = nullthrows(ref2.current);
+
+        expect(instance1.isFocused()).toBe(false);
+        expect(instance2.isFocused()).toBe(false);
+
+        Fantom.runTask(() => {
+          instance1.focus();
+        });
+
+        expect(instance1.isFocused()).toBe(true);
+        expect(instance2.isFocused()).toBe(false);
+        expect(TextInput.State.currentlyFocusedInput()).toBe(instance1);
+
+        Fantom.runTask(() => {
+          instance2.focus();
+        });
+
+        expect(instance1.isFocused()).toBe(false);
+        expect(instance2.isFocused()).toBe(true);
+        expect(TextInput.State.currentlyFocusedInput()).toBe(instance2);
       });
     });
 
@@ -458,5 +627,9 @@ describe('<TextInput>', () => {
         ]);
       });
     });
+  });
+
+  it('has the correct displayName', () => {
+    expect(TextInput.displayName).toBe('TextInput');
   });
 });
