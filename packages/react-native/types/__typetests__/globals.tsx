@@ -216,3 +216,22 @@ const formData = new FormData();
 formData.append('file', { fileName: 'example' });
 console.log(formData.getParts());
 console.log(formData.getAll('username'));
+
+const textEncoder = new TextEncoder();
+const encodingValue: string = textEncoder.encoding;
+const encoded: Uint8Array = textEncoder.encode();
+const encoded2: Uint8Array = textEncoder.encode('hello');
+const encodeIntoResult = textEncoder.encodeInto('hello', new Uint8Array(10));
+const readCount: number = encodeIntoResult.read;
+const writtenCount: number = encodeIntoResult.written;
+
+const textDecoder = new TextDecoder();
+const textDecoderWithLabel = new TextDecoder('utf-8');
+const textDecoderWithOptions = new TextDecoder('utf-8', { fatal: true, ignoreBOM: false });
+const decoderEncoding: string = textDecoder.encoding;
+const decoderFatal: boolean = textDecoder.fatal;
+const decoderIgnoreBOM: boolean = textDecoder.ignoreBOM;
+const decoded: string = textDecoder.decode();
+const decoded2: string = textDecoder.decode(new Uint8Array([72, 101, 108, 108, 111]));
+const decoded3: string = textDecoder.decode(new Uint8Array([72, 101, 108, 108, 111]), { stream: true });
+const decoded4: string = textDecoder.decode(new ArrayBuffer(5));

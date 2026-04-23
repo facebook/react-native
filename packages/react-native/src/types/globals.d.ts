@@ -521,6 +521,59 @@ declare global {
     ): URLSearchParams;
   };
 
+  interface TextEncoderEncodeIntoResult {
+    read: number;
+    written: number;
+  }
+
+  /**
+   * Encodes strings to bytes using UTF-8.
+   * Available in Hermes since React Native 0.74.
+   *
+   * [MDN Reference](https://developer.mozilla.org/docs/Web/API/TextEncoder)
+   */
+  interface TextEncoder {
+    /** Always `"utf-8"`. */
+    readonly encoding: string;
+    encode(input?: string): Uint8Array;
+    encodeInto(
+      source: string,
+      destination: Uint8Array,
+    ): TextEncoderEncodeIntoResult;
+  }
+
+  var TextEncoder: {
+    prototype: TextEncoder;
+    new (): TextEncoder;
+  };
+
+  interface TextDecoderOptions {
+    fatal?: boolean;
+    ignoreBOM?: boolean;
+  }
+
+  interface TextDecodeOptions {
+    stream?: boolean;
+  }
+
+  /**
+   * Decodes bytes to strings. Supports UTF-8 and several legacy encodings.
+   * Available in Hermes since React Native 0.85.
+   *
+   * [MDN Reference](https://developer.mozilla.org/docs/Web/API/TextDecoder)
+   */
+  interface TextDecoder {
+    readonly encoding: string;
+    readonly fatal: boolean;
+    readonly ignoreBOM: boolean;
+    decode(input?: BufferSource, options?: TextDecodeOptions): string;
+  }
+
+  var TextDecoder: {
+    prototype: TextDecoder;
+    new (label?: string, options?: TextDecoderOptions): TextDecoder;
+  };
+
   interface WebSocketMessageEvent extends Event {
     data?: any | undefined;
   }
