@@ -57,6 +57,7 @@ jobs:
         with:
           ruby-version: "3.2.0"
           flavor: Debug
+          use-hermes-nightly: ${{ !endsWith(github.ref_name, '-stable') }}
 
   test_ios_rntester:
     runs-on: macos-15-large
@@ -76,6 +77,7 @@ jobs:
         with:
           use-frameworks: ${{ matrix.frameworks }}
           flavor: ${{ matrix.flavor }}
+          use-hermes-nightly: ${{ !endsWith(github.ref_name, '-stable') }}
 
   test_e2e_ios_rntester:
     runs-on: macos-15-large
@@ -397,10 +399,12 @@ jobs:
       - name: Run yarn install
         uses: ./.github/actions/yarn-install
       - name: Set nightly Hermes versions
+        if: ${{ !endsWith(github.ref_name, '-stable') }}
         shell: bash
         run: |
           node ./scripts/releases/use-hermes-nightly.js
       - name: Run yarn install again, with the correct hermes version
+        if: ${{ !endsWith(github.ref_name, '-stable') }}
         uses: ./.github/actions/yarn-install
       - name: Prepare the Helloworld application
         shell: bash
@@ -434,6 +438,7 @@ jobs:
         with:
           ruby-version: 3.2.0
           flavor: Debug
+          use-hermes-nightly: ${{ !endsWith(github.ref_name, '-stable') }}
 
   test_ios_helloworld:
     runs-on: macos-15
@@ -456,6 +461,7 @@ jobs:
         with:
           flavor: ${{ matrix.flavor }}
           use-frameworks: ${{ matrix.use_frameworks }}
+          use-hermes-nightly: ${{ !endsWith(github.ref_name, '-stable') }}
 
   test_js:
     runs-on: ubuntu-latest

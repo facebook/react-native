@@ -17,6 +17,10 @@ inputs:
     description: Whether we want to run E2E tests or not
     required: false
     default: false
+  use-hermes-nightly:
+    description: Whether to override pinned Hermes versions with the latest nightly
+    required: false
+    default: 'true'
 
 runs:
   using: composite
@@ -34,10 +38,12 @@ runs:
       with:
         ruby-version: ${{ inputs.ruby-version }}
     - name: Set nightly Hermes versions
+      if: ${{ inputs.use-hermes-nightly == 'true' }}
       shell: bash
       run: |
         node ./scripts/releases/use-hermes-nightly.js
     - name: Run yarn install again, with the correct hermes version
+      if: ${{ inputs.use-hermes-nightly == 'true' }}
       uses: ./.github/actions/yarn-install
     - name: Prepare IOS Tests
       if: ${{ inputs.run-unit-tests == 'true' }}
