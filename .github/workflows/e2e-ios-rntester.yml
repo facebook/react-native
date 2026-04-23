@@ -1,0 +1,52 @@
+name: E2E iOS RNTester
+
+on:
+  workflow_call:
+    outputs:
+      status:
+        description: "The result of the E2E tests (success or failure)"
+        value: ${{ jobs.report.outputs.status }}
+
+jobs:
+  test:
+    runs-on: macos-15-large
+    strategy:
+      fail-fast: false
+      matrix:
+        flavor: [Debug, Release]
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v6
+      - name: Setup Node.js
+        uses: ./.github/actions/setup-node
+      - name: Download App
+        uses: actions/download-artifact@v7
+        with:
+          name: RNTesterApp-NewArch-${{ matrix.flavor }}
+          path: /tmp/RNTesterBuild/RNTester.app
+      - name: Check downloaded folder content
+        run: ls -lR /tmp/RNTesterBuild
+      - name: Setup xcode
+        uses: ./.github/actions/setup-xcode
+      - name: Run E2E Tests
+        uses: ./.github/actions/maestro-ios
+        with:
+          app-path: "/tmp/RNTesterBuild/RNTester.app"
+          app-id: com.meta.RNTester.localDevelopment
+          maestro-flow: ./packages/rn-tester/.maestro/
+          flavor: ${{ matrix.flavor }}
+
+  report:
+    needs: test
+    if: always()
+    runs-on: ubuntu-latest
+    outputs:
+      status: ${{ steps.check.outputs.status }}
+    steps:
+      - id: check
+        run: |
+          if [[ "${{ needs.test.result }}" == "failure" ]]; then
+            echo "status=failure" >> $GITHUB_OUTPUT
+          else
+            echo "status=success" >> $GITHUB_OUTPUT
+          fi
