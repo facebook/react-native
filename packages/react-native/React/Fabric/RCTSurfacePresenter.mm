@@ -361,7 +361,7 @@ using namespace facebook::react;
     UIView *rootView = surface.view;
     if (!rootView) {
       RCTLogWarn(@"measure cannot find root view for surface #%d", surfaceId);
-      callbackCopy(folly::dynamic::array(0, 0, 0, 0, 0, 0));
+      callbackCopy(folly::dynamic::array(0.0, 0.0, 0.0, 0.0, 0.0, 0.0));
       return;
     }
     [self->_mountingManager measureAsyncOnUI:tag rootView:rootView callback:callbackCopy];

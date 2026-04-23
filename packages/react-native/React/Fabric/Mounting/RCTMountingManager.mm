@@ -351,7 +351,7 @@ static void RCTPerformMountInstructions(
   UIView<RCTComponentViewProtocol> *view = [self->_componentViewRegistry findComponentViewWithTag:reactTag];
   if (!view) {
     RCTLogWarn(@"measure cannot find view with tag #%ld", (long)reactTag);
-    callback(folly::dynamic::array(0, 0, 0, 0, 0, 0));
+    callback(folly::dynamic::array(0.0, 0.0, 0.0, 0.0, 0.0, 0.0));
     return;
   }
 
