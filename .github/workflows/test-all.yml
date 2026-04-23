@@ -8,6 +8,9 @@ on:
       - main
       - "*-stable"
 
+permissions:
+  contents: read
+
 jobs:
   set_release_type:
     runs-on: ubuntu-latest
@@ -510,6 +513,9 @@ jobs:
   # This job only handles Fantom test retries on main.
   rerun-failed-jobs:
     runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      actions: write
     needs: [run_fantom_tests]
     if: ${{ github.ref == 'refs/heads/main' && always() }}
     steps:
