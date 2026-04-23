@@ -638,13 +638,8 @@ public object BackgroundStyleApplicator {
               compositeBackgroundDrawable.borderInsets,
           )
       val newComposite = compositeBackgroundDrawable.withNewBackground(background)
-      // Carry the existing composite's bounds over so the freshly
-      // constructed BackgroundDrawable has the view's real dimensions when
-      // it first draws. Without this, setBackgroundColor called after the
-      // view has been laid out (e.g. a transparent -> opaque transition)
-      // would leave the drawable with 0x0 bounds on its first draw and the
-      // border-radius path would collapse to a rectangle.
-      // See https://github.com/facebook/react-native/issues/52415.
+      // Carry bounds over so the new BackgroundDrawable is primed with
+      // the view's real size on first draw. See #52415.
       newComposite.bounds = compositeBackgroundDrawable.bounds
       view.background = newComposite
       background
