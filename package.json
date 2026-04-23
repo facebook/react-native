@@ -97,7 +97,7 @@
     "jest-junit": "^16.0.0",
     "jest-snapshot": "^29.7.0",
     "jsonc-parser": "2.2.1",
-    "markdownlint-cli2": "^0.17.2",
+    "markdownlint-cli2": "^0.21.0",
     "markdownlint-rule-relative-links": "^3.0.0",
     "memfs": "^4.38.2",
     "metro-babel-register": "^0.84.2",
