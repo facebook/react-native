@@ -97,8 +97,25 @@ const CGFloat BACKGROUND_COLOR_ZPOSITION = -1024.0f;
   }
 }
 
+// Rejects hits against views whose 2D transform collapses an axis (e.g. `scaleX: 0`,
+// `scaleY: 0`, or any other non-invertible affine). Such views are visually degenerate, and
+// UIKit's `-convertPoint:fromView:` falls back to the original matrix when
+// `CGAffineTransformInvert` can't invert, so without this check the degenerate transform is
+// applied to the touch point and the view can still register hits along the collapsed axis.
+static BOOL RCTLayerTransformCollapsesAxis(CALayer *layer)
+{
+  CATransform3D t = layer.transform;
+  // Determinant of the 2x2 projection onto the XY plane. Anything non-zero is invertible; we
+  // treat values within float epsilon as zero to avoid numerical issues near machine precision.
+  CGFloat det = t.m11 * t.m22 - t.m12 * t.m21;
+  return fabs(det) < (CGFloat)1e-6;
+}
+
 - (BOOL)pointInside:(CGPoint)point withEvent:(UIEvent *)event
 {
+  if (RCTLayerTransformCollapsesAxis(self.layer)) {
+    return NO;
+  }
   if (UIEdgeInsetsEqualToEdgeInsets(self.hitTestEdgeInsets, UIEdgeInsetsZero)) {
     return [super pointInside:point withEvent:event];
   }

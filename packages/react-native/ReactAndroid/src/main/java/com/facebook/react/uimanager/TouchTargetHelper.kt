@@ -212,7 +212,11 @@ public object TouchTargetHelper {
       for (i in childrenCount - 1 downTo 0) {
         val child = viewGroup.getChildAt(i)
         val childPoint = tempPoint
-        getChildPoint(eventCoords[0], eventCoords[1], viewGroup, child, childPoint)
+        if (!getChildPoint(eventCoords[0], eventCoords[1], viewGroup, child, childPoint)) {
+          // Child's transform is non-invertible (e.g. scaleX: 0 or scaleY: 0): the child is
+          // visually degenerate, so it must not receive touches.
+          continue
+        }
         // The childPoint value will contain the view coordinates relative to the child.
         // We need to store the existing X,Y for the viewGroup away as it is possible this child
         // will not actually be the target and so we restore them if not
@@ -277,7 +281,13 @@ public object TouchTargetHelper {
   /**
    * Returns the coordinates of a touch in the child View. It is transform-aware and will invert the
    * transform Matrix to find the true local points. This code is taken from {@link
-   * ViewGroup#isTransformedTouchPointInView()}
+   * ViewGroup#isTransformedTouchPointInView()}.
+   *
+   * Returns `true` when [outLocalPoint] was populated with coordinates in the child's coordinate
+   * space. Returns `false` when the child's transform matrix is not invertible (for example
+   * `scaleX: 0` or `scaleY: 0`). On `false`, [outLocalPoint] is left in an indeterminate state and
+   * callers must skip the child — the shared [inverseMatrix] field is retained from the previous
+   * successful `invert`, so using it here would leak coordinates from another view.
    */
   private fun getChildPoint(
       x: Float,
@@ -285,21 +295,24 @@ public object TouchTargetHelper {
       parent: ViewGroup,
       child: View,
       outLocalPoint: PointF,
-  ) {
+  ): Boolean {
     var localX = x + parent.scrollX - child.left
     var localY = y + parent.scrollY - child.top
     val matrix = child.matrix
     if (!matrix.isIdentity) {
+      val inverseMatrix = inverseMatrix
+      if (!matrix.invert(inverseMatrix)) {
+        return false
+      }
       val localXY = matrixTransformCoords
       localXY[0] = localX
       localXY[1] = localY
-      val inverseMatrix = inverseMatrix
-      matrix.invert(inverseMatrix)
       inverseMatrix.mapPoints(localXY)
       localX = localXY[0]
       localY = localXY[1]
     }
     outLocalPoint.set(localX, localY)
+    return true
   }
 
   /**
