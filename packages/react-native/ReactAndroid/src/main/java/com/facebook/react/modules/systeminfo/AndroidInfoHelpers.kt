@@ -111,8 +111,8 @@ public object AndroidInfoHelpers {
 
   @Synchronized
   private fun getMetroHostPropValue(): String {
-    if (metroHostPropValue != null) {
-      return metroHostPropValue!!
+    metroHostPropValue?.let {
+      return it
     }
     var process: Process? = null
     var reader: BufferedReader? = null
