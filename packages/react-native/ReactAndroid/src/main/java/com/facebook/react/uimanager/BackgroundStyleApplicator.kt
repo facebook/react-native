@@ -211,14 +211,9 @@ public object BackgroundStyleApplicator {
         compositeBackgroundDrawable.borderRadius ?: BorderRadiusStyle()
     compositeBackgroundDrawable.borderRadius?.set(corner, radius)
 
-    // Eagerly create the BackgroundDrawable so subsequent backgroundColor
-    // changes can mutate the existing drawable in place instead of
-    // replacing view.background with a freshly-constructed composite whose
-    // inner BackgroundDrawable has 0x0 bounds on first draw. Without this,
-    // a backgroundColor transition from transparent to opaque leaves the
-    // view rendering as a rectangle even though borderRadius is set.
-    // See https://github.com/facebook/react-native/issues/52415.
-    ensureBackgroundDrawable(view)
+    if (view is ImageView) {
+      ensureBackgroundDrawable(view)
+    }
     compositeBackgroundDrawable.background?.borderRadius = compositeBackgroundDrawable.borderRadius
     compositeBackgroundDrawable.backgroundImage?.borderRadius =
         compositeBackgroundDrawable.borderRadius
@@ -642,7 +637,16 @@ public object BackgroundStyleApplicator {
               compositeBackgroundDrawable.borderRadius,
               compositeBackgroundDrawable.borderInsets,
           )
-      view.background = compositeBackgroundDrawable.withNewBackground(background)
+      val newComposite = compositeBackgroundDrawable.withNewBackground(background)
+      // Carry the existing composite's bounds over so the freshly
+      // constructed BackgroundDrawable has the view's real dimensions when
+      // it first draws. Without this, setBackgroundColor called after the
+      // view has been laid out (e.g. a transparent -> opaque transition)
+      // would leave the drawable with 0x0 bounds on its first draw and the
+      // border-radius path would collapse to a rectangle.
+      // See https://github.com/facebook/react-native/issues/52415.
+      newComposite.bounds = compositeBackgroundDrawable.bounds
+      view.background = newComposite
       background
     }
   }
