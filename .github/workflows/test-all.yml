@@ -8,6 +8,9 @@ on:
       - main
       - "*-stable"
 
+permissions:
+  contents: read
+
 jobs:
   set_release_type:
     runs-on: ubuntu-latest
@@ -502,6 +505,8 @@ jobs:
   # This is exactly the same as rerunning failed tests from the GH UI, but automated.
   rerun-failed-jobs:
     runs-on: ubuntu-latest
+    permissions:
+      actions: write
     needs: [test_e2e_ios_rntester, test_e2e_android_rntester, test_e2e_ios_templateapp, test_e2e_android_templateapp]
     if: ${{ github.ref == 'refs/heads/main' && always() }}
     steps:
