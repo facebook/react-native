@@ -159,7 +159,7 @@ jobs:
   test_e2e_ios_rntester:
     needs: test_ios_rntester
     uses: ./.github/workflows/e2e-ios-rntester.yml
-    continue-on-error: ${{ github.event_name == 'pull_request' }}
+    continue-on-error: true
     secrets: inherit
 
   test_e2e_ios_rntester_retry_1:
@@ -173,13 +173,12 @@ jobs:
     needs: test_e2e_ios_rntester_retry_1
     if: ${{ always() && needs.test_e2e_ios_rntester_retry_1.outputs.status == 'failure' }}
     uses: ./.github/workflows/e2e-ios-rntester.yml
-    continue-on-error: true
     secrets: inherit
 
   test_e2e_ios_templateapp:
     needs: [build_npm_package, prebuild_apple_dependencies]
     uses: ./.github/workflows/e2e-ios-templateapp.yml
-    continue-on-error: ${{ github.event_name == 'pull_request' }}
+    continue-on-error: true
     secrets: inherit
 
   test_e2e_ios_templateapp_retry_1:
@@ -193,13 +192,12 @@ jobs:
     needs: test_e2e_ios_templateapp_retry_1
     if: ${{ always() && needs.test_e2e_ios_templateapp_retry_1.outputs.status == 'failure' }}
     uses: ./.github/workflows/e2e-ios-templateapp.yml
-    continue-on-error: true
     secrets: inherit
 
   test_e2e_android_templateapp:
     needs: build_npm_package
     uses: ./.github/workflows/e2e-android-templateapp.yml
-    continue-on-error: ${{ github.event_name == 'pull_request' }}
+    continue-on-error: true
     secrets: inherit
 
   test_e2e_android_templateapp_retry_1:
@@ -213,7 +211,6 @@ jobs:
     needs: test_e2e_android_templateapp_retry_1
     if: ${{ always() && needs.test_e2e_android_templateapp_retry_1.outputs.status == 'failure' }}
     uses: ./.github/workflows/e2e-android-templateapp.yml
-    continue-on-error: true
     secrets: inherit
 
   build_fantom_runner:
@@ -241,17 +238,23 @@ jobs:
           gradle-cache-encryption-key: ${{ secrets.GRADLE_CACHE_ENCRYPTION_KEY }}
 
   run_fantom_tests:
-    runs-on: 8-core-ubuntu
-    needs: [build_fantom_runner]
-    container:
-      image: reactnativecommunity/react-native-android:latest
-      env:
-        TERM: "dumb"
-    steps:
-      - name: Checkout
-        uses: actions/checkout@v6
-      - name: Run Fantom Tests
-        uses: ./.github/actions/run-fantom-tests
+    needs: build_fantom_runner
+    uses: ./.github/workflows/fantom-tests.yml
+    continue-on-error: true
+    secrets: inherit
+
+  run_fantom_tests_retry_1:
+    needs: run_fantom_tests
+    if: ${{ always() && needs.run_fantom_tests.outputs.status == 'failure' }}
+    uses: ./.github/workflows/fantom-tests.yml
+    continue-on-error: true
+    secrets: inherit
+
+  run_fantom_tests_retry_2:
+    needs: run_fantom_tests_retry_1
+    if: ${{ always() && needs.run_fantom_tests_retry_1.outputs.status == 'failure' }}
+    uses: ./.github/workflows/fantom-tests.yml
+    secrets: inherit
 
   build_android:
     runs-on: 8-core-ubuntu
@@ -282,7 +285,7 @@ jobs:
   test_e2e_android_rntester:
     needs: build_android
     uses: ./.github/workflows/e2e-android-rntester.yml
-    continue-on-error: ${{ github.event_name == 'pull_request' }}
+    continue-on-error: true
     secrets: inherit
 
   test_e2e_android_rntester_retry_1:
@@ -296,7 +299,6 @@ jobs:
     needs: test_e2e_android_rntester_retry_1
     if: ${{ always() && needs.test_e2e_android_rntester_retry_1.outputs.status == 'failure' }}
     uses: ./.github/workflows/e2e-android-rntester.yml
-    continue-on-error: true
     secrets: inherit
 
   build_npm_package:
@@ -509,31 +511,3 @@ jobs:
         shell: bash
         run: node scripts/debugger-shell/build-binary.js
 
-  # E2E test retries are now handled by the retry_1/retry_2 reusable workflow jobs above.
-  # This job only handles Fantom test retries on main.
-  rerun-failed-jobs:
-    runs-on: ubuntu-latest
-    permissions:
-      contents: read
-      actions: write
-    needs: [run_fantom_tests]
-    if: ${{ github.ref == 'refs/heads/main' && always() }}
-    steps:
-      - name: Checkout
-        uses: actions/checkout@v6
-      - name: Rerun failed jobs in the current workflow
-        env:
-          GH_TOKEN: ${{ github.token }}
-        run: |
-          SHOULD_RETRY=${{fromJSON(github.run_attempt) < 3}}
-          if [[ $SHOULD_RETRY == "false" ]]; then
-            exit 0
-          fi
-
-          FANTOM_TESTS_FAILED=${{ needs.run_fantom_tests.result == 'failure' }}
-          echo "FANTOM_TESTS_FAILED: $FANTOM_TESTS_FAILED"
-
-          if [[ $FANTOM_TESTS_FAILED == "true" ]]; then
-            echo "Rerunning failed jobs in the current workflow"
-            gh workflow run retry-workflow.yml -F run_id=${{ github.run_id }}
-          fi
