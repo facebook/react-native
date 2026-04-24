@@ -162,7 +162,6 @@ static NSString *RCTGenerateFormBoundary()
   NSMutableArray<id<RCTNetworkingRequestHandler>> *_requestHandlers;
   NSMutableArray<id<RCTNetworkingResponseHandler>> *_responseHandlers;
   NSMutableArray<id<RCTNetworkingTextResponseHandler>> *_textResponseHandlers;
-  dispatch_queue_t _requestQueue;
 }
 
 @synthesize methodQueue = _methodQueue;

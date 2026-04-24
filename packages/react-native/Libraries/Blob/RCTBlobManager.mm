@@ -42,7 +42,6 @@ static NSString *const kBlobURIScheme = @"blob";
   std::mutex _blobsMutex;
 
   NSOperationQueue *_queue;
-  dispatch_queue_t _processingQueue;
 }
 
 RCT_EXPORT_MODULE(BlobModule)
