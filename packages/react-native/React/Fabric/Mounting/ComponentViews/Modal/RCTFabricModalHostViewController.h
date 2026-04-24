@@ -5,13 +5,13 @@
  * LICENSE file in the root directory of this source tree.
  */
 
-#import <UIKit/UIKit.h>
+#import <React/RCTViewController.h>
 
 @protocol RCTFabricModalHostViewControllerDelegate <NSObject>
 - (void)boundsDidChange:(CGRect)newBounds;
 @end
 
-@interface RCTFabricModalHostViewController : UIViewController
+@interface RCTFabricModalHostViewController : RCTViewController
 
 @property (nonatomic, weak) id<RCTFabricModalHostViewControllerDelegate> delegate;
 

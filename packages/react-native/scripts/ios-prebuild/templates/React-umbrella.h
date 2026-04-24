@@ -274,6 +274,7 @@
 #import <React/RCTVibration.h>
 #import <React/RCTVibrationPlugins.h>
 #import <React/RCTView.h>
+#import <React/RCTViewController.h>
 #import <React/RCTViewManager.h>
 #import <React/RCTViewUtils.h>
 #import <React/RCTVirtualTextShadowView.h>
