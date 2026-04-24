@@ -8,51 +8,13 @@
  * @format
  */
 
-import type {HostInstance} from '../../src/private/types/HostInstance';
-import typeof ReactFabricType from '../Renderer/shims/ReactFabric';
-
 import {
   onCaughtError,
   onRecoverableError,
   onUncaughtError,
 } from '../../src/private/renderer/errorhandling/ErrorHandlers';
+import ReactFabric from '../Renderer/shims/ReactFabric';
 import * as React from 'react';
-
-let cachedFabricRenderer;
-
-function getFabricRenderer(): ReactFabricType {
-  if (cachedFabricRenderer == null) {
-    cachedFabricRenderer = require('../Renderer/shims/ReactFabric').default;
-  }
-  return cachedFabricRenderer;
-}
-
-const getMethod: <MethodName extends keyof ReactFabricType>(
-  () => ReactFabricType,
-  MethodName,
-) => ReactFabricType[MethodName] = (getRenderer, methodName) => {
-  let cachedImpl;
-
-  // $FlowExpectedError[incompatible-type]
-  return function (arg1, arg2, arg3, arg4, arg5, arg6) {
-    if (cachedImpl == null) {
-      // $FlowExpectedError[prop-missing]
-      // $FlowExpectedError[invalid-computed-prop]
-      cachedImpl = getRenderer()[methodName];
-    }
-
-    // $FlowExpectedError[extra-arg]
-    return cachedImpl(arg1, arg2, arg3, arg4, arg5);
-  };
-};
-
-function getFabricMethod<MethodName extends keyof ReactFabricType>(
-  methodName: MethodName,
-): ReactFabricType[MethodName] {
-  return getMethod(getFabricRenderer, methodName);
-}
-
-let cachedFabricRender;
 
 export function renderElement({
   element,
@@ -61,11 +23,7 @@ export function renderElement({
   element: React.MixedElement,
   rootTag: number,
 }): void {
-  if (cachedFabricRender == null) {
-    cachedFabricRender = getFabricRenderer().render;
-  }
-
-  cachedFabricRender(
+  ReactFabric.render(
     element,
     rootTag,
     /* callback */ null,
@@ -78,34 +36,22 @@ export function renderElement({
   );
 }
 
-let cachedFabricDispatchCommand;
-
-export function dispatchCommand(
-  handle: HostInstance,
-  command: string,
-  args: Array<unknown>,
-): void {
-  if (cachedFabricDispatchCommand == null) {
-    cachedFabricDispatchCommand = getFabricRenderer().dispatchCommand;
-  }
-
-  return cachedFabricDispatchCommand(handle, command, args);
-}
-
-export const findHostInstance_DEPRECATED: <
-  TElementType extends React.ElementType,
->(
-  // $FlowExpectedError[incompatible-type]
-  componentOrHandle: ?(React.ElementRef<TElementType> | number),
-) => ?HostInstance = getFabricMethod('findHostInstance_DEPRECATED');
-
-export const findNodeHandle: <TElementType extends React.ElementType>(
-  // $FlowExpectedError[incompatible-type]
-  componentOrHandle: ?(React.ElementRef<TElementType> | number),
-) => ?number = getFabricMethod('findNodeHandle');
-
-export const sendAccessibilityEvent: ReactFabricType['sendAccessibilityEvent'] =
-  getFabricMethod('sendAccessibilityEvent');
+// NOTE: these cannot be combined into a single destructuring statement because
+// `flow-api-translator` (used by `yarn build-types` to generate the
+// open-source type definitions) does not support destructuring in variable
+// declarations.
+export const dispatchCommand = ReactFabric.dispatchCommand;
+export const findHostInstance_DEPRECATED =
+  ReactFabric.findHostInstance_DEPRECATED;
+export const findNodeHandle = ReactFabric.findNodeHandle;
+export const sendAccessibilityEvent = ReactFabric.sendAccessibilityEvent;
+export const isChildPublicInstance = ReactFabric.isChildPublicInstance;
+export const getNodeFromInternalInstanceHandle =
+  ReactFabric.getNodeFromInternalInstanceHandle;
+export const getPublicInstanceFromInternalInstanceHandle =
+  ReactFabric.getPublicInstanceFromInternalInstanceHandle;
+export const getPublicInstanceFromRootTag =
+  ReactFabric.getPublicInstanceFromRootTag;
 
 export function unstable_batchedUpdates<T>(
   fn: (bookkeeping: T) => void,
@@ -113,18 +59,6 @@ export function unstable_batchedUpdates<T>(
 ): void {
   fn(bookkeeping);
 }
-
-export const isChildPublicInstance: ReactFabricType['isChildPublicInstance'] =
-  getFabricMethod('isChildPublicInstance');
-
-export const getNodeFromInternalInstanceHandle: ReactFabricType['getNodeFromInternalInstanceHandle'] =
-  getFabricMethod('getNodeFromInternalInstanceHandle');
-
-export const getPublicInstanceFromInternalInstanceHandle: ReactFabricType['getPublicInstanceFromInternalInstanceHandle'] =
-  getFabricMethod('getPublicInstanceFromInternalInstanceHandle');
-
-export const getPublicInstanceFromRootTag: ReactFabricType['getPublicInstanceFromRootTag'] =
-  getFabricMethod('getPublicInstanceFromRootTag');
 
 export function isProfilingRenderer(): boolean {
   return Boolean(__DEV__);
