@@ -29,6 +29,7 @@ public object DisplayMetricsHolder {
   @JvmStatic private var windowDisplayMetrics: DisplayMetrics? = null
   @JvmStatic private var screenDisplayMetrics: DisplayMetrics? = null
 
+  // TODO(0.87): Remove once we are out of the non-breaking window (see 8d21ffda60)
   /** The metrics of the window associated to the Context used to initialize ReactNative */
   @JvmStatic
   public fun getWindowDisplayMetrics(): DisplayMetrics {
@@ -36,6 +37,7 @@ public object DisplayMetricsHolder {
     return windowDisplayMetrics as DisplayMetrics
   }
 
+  // TODO(0.87): Remove once we are out of the non-breaking window (see 8d21ffda60)
   @JvmStatic
   public fun setWindowDisplayMetrics(displayMetrics: DisplayMetrics?) {
     windowDisplayMetrics = displayMetrics
@@ -84,6 +86,7 @@ public object DisplayMetricsHolder {
     DisplayMetricsHolder.screenDisplayMetrics = screenDisplayMetrics
   }
 
+  // TODO(0.87): Remove once we are out of the non-breaking window (see 8d21ffda60)
   @JvmStatic
   public fun getDisplayMetricsWritableMap(fontScale: Double): WritableMap {
     checkNotNull(windowDisplayMetrics) { INITIALIZATION_MISSING_MESSAGE }
