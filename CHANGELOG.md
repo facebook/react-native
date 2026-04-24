@@ -1,5 +1,111 @@
 # Changelog
 
+## v0.83.7
+
+### Breaking
+
+
+
+#### Android specific
+
+
+
+#### iOS specific
+
+
+
+### Added
+
+
+
+#### Android specific
+
+
+
+#### iOS specific
+
+
+
+### Changed
+
+
+
+#### Android specific
+
+
+
+#### iOS specific
+
+
+
+### Deprecated
+
+
+
+#### Android specific
+
+
+
+#### iOS specific
+
+
+
+### Removed
+
+
+
+#### Android specific
+
+
+
+#### iOS specific
+
+
+
+### Fixed
+
+
+
+#### Android specific
+
+
+
+#### iOS specific
+
+
+
+### Security
+
+
+
+#### Android specific
+
+
+
+#### iOS specific
+
+
+
+### Unknown
+
+- Release 0.83.7 ([29e48317ab](https://github.com/facebook/react-native/commit/29e48317ab158573b277271c3ad2f0b07bd80dc0) by [@react-native-bot](https://github.com/react-native-bot))
+- Add redbox subspec to React-debug pod ([5c63f8d7e9](https://github.com/facebook/react-native/commit/5c63f8d7e96432f45b751841bb42200f0f392152) by [@motiz88](https://github.com/motiz88))
+- Bump Podfile.lock ([707b614751](https://github.com/facebook/react-native/commit/707b6147517e44cfdc8feb7eb693b6ba9d41e083) by [@react-native-bot](https://github.com/react-native-bot))
+- Release 0.83.6 ([1a973f4abc](https://github.com/facebook/react-native/commit/1a973f4abc15368ab408a8d81d244a80b5259879) by [@react-native-bot](https://github.com/react-native-bot))
+
+#### Android Unknown
+
+- Skip Hermes nightly override on stable branches ([d81b786328](https://github.com/facebook/react-native/commit/d81b786328af7f85a0e6f8b3d449c775aca4eb5d) by [@motiz88](https://github.com/motiz88))
+
+#### iOS Unknown
+
+
+
+#### Failed to parse
+
+
+
+
 ## v0.85.2
 
 ### Added
