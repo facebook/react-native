@@ -159,58 +159,58 @@ jobs:
   test_e2e_ios_rntester:
     needs: test_ios_rntester
     uses: ./.github/workflows/e2e-ios-rntester.yml
-    continue-on-error: true
     secrets: inherit
 
   test_e2e_ios_rntester_retry_1:
     needs: test_e2e_ios_rntester
     if: ${{ always() && needs.test_e2e_ios_rntester.outputs.status == 'failure' }}
     uses: ./.github/workflows/e2e-ios-rntester.yml
-    continue-on-error: true
     secrets: inherit
 
   test_e2e_ios_rntester_retry_2:
     needs: test_e2e_ios_rntester_retry_1
     if: ${{ always() && needs.test_e2e_ios_rntester_retry_1.outputs.status == 'failure' }}
     uses: ./.github/workflows/e2e-ios-rntester.yml
+    with:
+      fail-on-error: true
     secrets: inherit
 
   test_e2e_ios_templateapp:
     needs: [build_npm_package, prebuild_apple_dependencies]
     uses: ./.github/workflows/e2e-ios-templateapp.yml
-    continue-on-error: true
     secrets: inherit
 
   test_e2e_ios_templateapp_retry_1:
     needs: test_e2e_ios_templateapp
     if: ${{ always() && needs.test_e2e_ios_templateapp.outputs.status == 'failure' }}
     uses: ./.github/workflows/e2e-ios-templateapp.yml
-    continue-on-error: true
     secrets: inherit
 
   test_e2e_ios_templateapp_retry_2:
     needs: test_e2e_ios_templateapp_retry_1
     if: ${{ always() && needs.test_e2e_ios_templateapp_retry_1.outputs.status == 'failure' }}
     uses: ./.github/workflows/e2e-ios-templateapp.yml
+    with:
+      fail-on-error: true
     secrets: inherit
 
   test_e2e_android_templateapp:
     needs: build_npm_package
     uses: ./.github/workflows/e2e-android-templateapp.yml
-    continue-on-error: true
     secrets: inherit
 
   test_e2e_android_templateapp_retry_1:
     needs: test_e2e_android_templateapp
     if: ${{ always() && needs.test_e2e_android_templateapp.outputs.status == 'failure' }}
     uses: ./.github/workflows/e2e-android-templateapp.yml
-    continue-on-error: true
     secrets: inherit
 
   test_e2e_android_templateapp_retry_2:
     needs: test_e2e_android_templateapp_retry_1
     if: ${{ always() && needs.test_e2e_android_templateapp_retry_1.outputs.status == 'failure' }}
     uses: ./.github/workflows/e2e-android-templateapp.yml
+    with:
+      fail-on-error: true
     secrets: inherit
 
   build_fantom_runner:
@@ -240,20 +240,20 @@ jobs:
   run_fantom_tests:
     needs: build_fantom_runner
     uses: ./.github/workflows/fantom-tests.yml
-    continue-on-error: true
     secrets: inherit
 
   run_fantom_tests_retry_1:
     needs: run_fantom_tests
     if: ${{ always() && needs.run_fantom_tests.outputs.status == 'failure' }}
     uses: ./.github/workflows/fantom-tests.yml
-    continue-on-error: true
     secrets: inherit
 
   run_fantom_tests_retry_2:
     needs: run_fantom_tests_retry_1
     if: ${{ always() && needs.run_fantom_tests_retry_1.outputs.status == 'failure' }}
     uses: ./.github/workflows/fantom-tests.yml
+    with:
+      fail-on-error: true
     secrets: inherit
 
   build_android:
@@ -285,20 +285,20 @@ jobs:
   test_e2e_android_rntester:
     needs: build_android
     uses: ./.github/workflows/e2e-android-rntester.yml
-    continue-on-error: true
     secrets: inherit
 
   test_e2e_android_rntester_retry_1:
     needs: test_e2e_android_rntester
     if: ${{ always() && needs.test_e2e_android_rntester.outputs.status == 'failure' }}
     uses: ./.github/workflows/e2e-android-rntester.yml
-    continue-on-error: true
     secrets: inherit
 
   test_e2e_android_rntester_retry_2:
     needs: test_e2e_android_rntester_retry_1
     if: ${{ always() && needs.test_e2e_android_rntester_retry_1.outputs.status == 'failure' }}
     uses: ./.github/workflows/e2e-android-rntester.yml
+    with:
+      fail-on-error: true
     secrets: inherit
 
   build_npm_package:
