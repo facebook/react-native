@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<f79ca61a0da053a1661eca4d3a35b081>>
+ * @generated SignedSource<<4f9f5c1c46217ed6802abd5f786aac19>>
  */
 
 /**
@@ -95,6 +95,7 @@ internal class ReactNativeFeatureFlagsCxxAccessor : ReactNativeFeatureFlagsAcces
   private var shouldPressibilityUseW3CPointerEventsForHoverCache: Boolean? = null
   private var shouldTriggerResponderTransferOnScrollAndroidCache: Boolean? = null
   private var skipActivityIdentityAssertionOnHostPauseCache: Boolean? = null
+  private var syncAndroidClipBoundsWithOverflowCache: Boolean? = null
   private var traceTurboModulePromiseRejectionsOnAndroidCache: Boolean? = null
   private var updateRuntimeShadowNodeReferencesOnCommitCache: Boolean? = null
   private var updateRuntimeShadowNodeReferencesOnCommitThreadCache: Boolean? = null
@@ -783,6 +784,15 @@ internal class ReactNativeFeatureFlagsCxxAccessor : ReactNativeFeatureFlagsAcces
     if (cached == null) {
       cached = ReactNativeFeatureFlagsCxxInterop.skipActivityIdentityAssertionOnHostPause()
       skipActivityIdentityAssertionOnHostPauseCache = cached
+    }
+    return cached
+  }
+
+  override fun syncAndroidClipBoundsWithOverflow(): Boolean {
+    var cached = syncAndroidClipBoundsWithOverflowCache
+    if (cached == null) {
+      cached = ReactNativeFeatureFlagsCxxInterop.syncAndroidClipBoundsWithOverflow()
+      syncAndroidClipBoundsWithOverflowCache = cached
     }
     return cached
   }
