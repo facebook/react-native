@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<b6d6b8aae3449760d857e5dd52588b03>>
+ * @generated SignedSource<<50a1a0eeaef6bb9f8a7f7491bad8f24d>>
  */
 
 /**
@@ -31,7 +31,6 @@ internal class ReactNativeFeatureFlagsCxxAccessor : ReactNativeFeatureFlagsAcces
   private var disableTextLayoutManagerCacheAndroidCache: Boolean? = null
   private var disableViewPreallocationAndroidCache: Boolean? = null
   private var enableAccessibilityOrderCache: Boolean? = null
-  private var enableAccumulatedUpdatesInRawPropsAndroidCache: Boolean? = null
   private var enableAndroidTextMeasurementOptimizationsCache: Boolean? = null
   private var enableBridgelessArchitectureCache: Boolean? = null
   private var enableCppPropsIteratorSetterCache: Boolean? = null
@@ -208,15 +207,6 @@ internal class ReactNativeFeatureFlagsCxxAccessor : ReactNativeFeatureFlagsAcces
     if (cached == null) {
       cached = ReactNativeFeatureFlagsCxxInterop.enableAccessibilityOrder()
       enableAccessibilityOrderCache = cached
-    }
-    return cached
-  }
-
-  override fun enableAccumulatedUpdatesInRawPropsAndroid(): Boolean {
-    var cached = enableAccumulatedUpdatesInRawPropsAndroidCache
-    if (cached == null) {
-      cached = ReactNativeFeatureFlagsCxxInterop.enableAccumulatedUpdatesInRawPropsAndroid()
-      enableAccumulatedUpdatesInRawPropsAndroidCache = cached
     }
     return cached
   }

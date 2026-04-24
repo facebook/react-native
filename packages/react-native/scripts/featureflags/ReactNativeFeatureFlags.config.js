@@ -169,17 +169,6 @@ const definitions: FeatureFlagDefinitions = {
       },
       ossReleaseStage: 'experimental',
     },
-    enableAccumulatedUpdatesInRawPropsAndroid: {
-      defaultValue: false,
-      metadata: {
-        dateAdded: '2024-12-10',
-        description:
-          'When enabled, Android will accumulate updates in rawProps to reduce the number of mounting instructions for cascading re-renders.',
-        expectedReleaseValue: true,
-        purpose: 'experimentation',
-      },
-      ossReleaseStage: 'none',
-    },
     enableAndroidTextMeasurementOptimizations: {
       defaultValue: false,
       metadata: {

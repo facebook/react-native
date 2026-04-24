@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<615cabb1e51b7bf29c58e68141e603e3>>
+ * @generated SignedSource<<228ce570811e3f6cefa9892809c8445b>>
  * @flow strict
  * @noformat
  */
@@ -58,7 +58,6 @@ export type ReactNativeFeatureFlags = $ReadOnly<{
   disableTextLayoutManagerCacheAndroid: Getter<boolean>,
   disableViewPreallocationAndroid: Getter<boolean>,
   enableAccessibilityOrder: Getter<boolean>,
-  enableAccumulatedUpdatesInRawPropsAndroid: Getter<boolean>,
   enableAndroidTextMeasurementOptimizations: Getter<boolean>,
   enableBridgelessArchitecture: Getter<boolean>,
   enableCppPropsIteratorSetter: Getter<boolean>,
@@ -249,10 +248,6 @@ export const disableViewPreallocationAndroid: Getter<boolean> = createNativeFlag
  * When enabled, the accessibilityOrder prop will propagate to native platforms and define the accessibility order.
  */
 export const enableAccessibilityOrder: Getter<boolean> = createNativeFlagGetter('enableAccessibilityOrder', false);
-/**
- * When enabled, Android will accumulate updates in rawProps to reduce the number of mounting instructions for cascading re-renders.
- */
-export const enableAccumulatedUpdatesInRawPropsAndroid: Getter<boolean> = createNativeFlagGetter('enableAccumulatedUpdatesInRawPropsAndroid', false);
 /**
  * Enables various optimizations throughout the path of measuring text on Android.
  */

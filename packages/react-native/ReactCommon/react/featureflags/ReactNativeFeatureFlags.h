@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<ec9479d555f4e08095fbde0bfd09c479>>
+ * @generated SignedSource<<12fbac6785a1f5a3e3aa0f669b18a9d9>>
  */
 
 /**
@@ -93,11 +93,6 @@ class ReactNativeFeatureFlags {
    * When enabled, the accessibilityOrder prop will propagate to native platforms and define the accessibility order.
    */
   RN_EXPORT static bool enableAccessibilityOrder();
-
-  /**
-   * When enabled, Android will accumulate updates in rawProps to reduce the number of mounting instructions for cascading re-renders.
-   */
-  RN_EXPORT static bool enableAccumulatedUpdatesInRawPropsAndroid();
 
   /**
    * Enables various optimizations throughout the path of measuring text on Android.

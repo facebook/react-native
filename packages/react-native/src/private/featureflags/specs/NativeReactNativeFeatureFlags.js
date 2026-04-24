@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<af90304d252d40df52756ab27d5523f7>>
+ * @generated SignedSource<<038fe7fa598b4bd91343038ffbf1e9e5>>
  * @flow strict
  * @noformat
  */
@@ -36,7 +36,6 @@ export interface Spec extends TurboModule {
   +disableTextLayoutManagerCacheAndroid?: () => boolean;
   +disableViewPreallocationAndroid?: () => boolean;
   +enableAccessibilityOrder?: () => boolean;
-  +enableAccumulatedUpdatesInRawPropsAndroid?: () => boolean;
   +enableAndroidTextMeasurementOptimizations?: () => boolean;
   +enableBridgelessArchitecture?: () => boolean;
   +enableCppPropsIteratorSetter?: () => boolean;

@@ -339,15 +339,11 @@ jni::local_ref<jobject> getProps(
 
     return ReadableNativeMap::newObjectCxxArgs(std::move(diff));
   }
-  if (ReactNativeFeatureFlags::enableAccumulatedUpdatesInRawPropsAndroid()) {
-    if (oldProps == nullptr) {
-      return ReadableNativeMap::newObjectCxxArgs(newProps->rawProps);
-    } else {
-      return ReadableNativeMap::newObjectCxxArgs(
-          diffDynamicProps(oldProps->rawProps, newProps->rawProps));
-    }
+  if (oldProps == nullptr) {
+    return ReadableNativeMap::newObjectCxxArgs(newProps->rawProps);
   }
-  return ReadableNativeMap::newObjectCxxArgs(newProps->rawProps);
+  return ReadableNativeMap::newObjectCxxArgs(
+      diffDynamicProps(oldProps->rawProps, newProps->rawProps));
 }
 
 struct InstructionBuffer {
@@ -725,28 +721,15 @@ void FabricMountingManager::executeMount(
 
             bool shouldCreateView =
                 !allocatedViewTags.contains(newChildShadowView.tag);
-            if (ReactNativeFeatureFlags::
-                    enableAccumulatedUpdatesInRawPropsAndroid()) {
-              if (shouldCreateView) {
-                LOG(ERROR) << "Emitting insert for unallocated view "
-                           << newChildShadowView.tag;
-              }
-              (maintainMutationOrder ? cppCommonMountItems
-                                     : cppUpdatePropsMountItems)
-                  .push_back(
-                      CppMountItem::UpdatePropsMountItem(
-                          {}, newChildShadowView));
-            } else {
-              if (shouldCreateView) {
-                LOG(ERROR) << "Emitting insert for unallocated view "
-                           << newChildShadowView.tag;
-                (maintainMutationOrder ? cppCommonMountItems
-                                       : cppUpdatePropsMountItems)
-                    .push_back(
-                        CppMountItem::UpdatePropsMountItem(
-                            {}, newChildShadowView));
-              }
+            if (shouldCreateView) {
+              LOG(ERROR) << "Emitting insert for unallocated view "
+                         << newChildShadowView.tag;
             }
+            (maintainMutationOrder ? cppCommonMountItems
+                                   : cppUpdatePropsMountItems)
+                .push_back(
+                    CppMountItem::UpdatePropsMountItem(
+                        {}, newChildShadowView));
 
             // State
             if (newChildShadowView.state) {

@@ -117,8 +117,7 @@ class ConcreteComponentDescriptor : public ComponentDescriptor {
     auto shadowNodeProps = ShadowNodeT::Props(context, rawProps, props);
 #ifdef RN_SERIALIZABLE_STATE
     bool fallbackToDynamicRawPropsAccumulation = true;
-    if (ReactNativeFeatureFlags::enableExclusivePropsUpdateAndroid() &&
-        ReactNativeFeatureFlags::enableAccumulatedUpdatesInRawPropsAndroid()) {
+    if (ReactNativeFeatureFlags::enableExclusivePropsUpdateAndroid()) {
       // When exclusive props update is enabled, we only apply Props 1.5 processing
       // (raw props merging) when Props 2.0 is not available.
       if (ReactNativeFeatureFlags::enablePropsUpdateReconciliationAndroid()) {

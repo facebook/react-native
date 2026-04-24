@@ -76,14 +76,6 @@ void Props::initializeDynamicProps(
     const Props& sourceProps,
     const RawProps& rawProps,
     const std::function<bool(const std::string&)>& filterObjectKeys) {
-  // Always merge the previous rawProps with the incoming patch so that
-  // `rawProps` reflects the full accumulated state for this shadow node.
-  // Without this, a shadow node reconstructed from a subsequent JS update
-  // only stores the latest prop diff in its rawProps. If the same shadow
-  // node later un-flattens and the Differentiator emits a CREATE mutation
-  // for it, FabricMountingManager::getProps ships only that partial diff
-  // to Java — causing props like borderRadius to never reach the newly
-  // created native view.
   auto& oldRawProps = sourceProps.rawProps;
   auto newRawProps = rawProps.toDynamic(filterObjectKeys);
   auto mergedRawProps =

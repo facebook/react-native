@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<411aef7b1b977407b52e4f23e95db0a5>>
+ * @generated SignedSource<<4b634360db1cb90223867041ea754fdc>>
  */
 
 /**
@@ -102,12 +102,6 @@ class ReactNativeFeatureFlagsJavaProvider
   bool enableAccessibilityOrder() override {
     static const auto method =
         getReactNativeFeatureFlagsProviderJavaClass()->getMethod<jboolean()>("enableAccessibilityOrder");
-    return method(javaProvider_);
-  }
-
-  bool enableAccumulatedUpdatesInRawPropsAndroid() override {
-    static const auto method =
-        getReactNativeFeatureFlagsProviderJavaClass()->getMethod<jboolean()>("enableAccumulatedUpdatesInRawPropsAndroid");
     return method(javaProvider_);
   }
 
@@ -650,11 +644,6 @@ bool JReactNativeFeatureFlagsCxxInterop::enableAccessibilityOrder(
   return ReactNativeFeatureFlags::enableAccessibilityOrder();
 }
 
-bool JReactNativeFeatureFlagsCxxInterop::enableAccumulatedUpdatesInRawPropsAndroid(
-    facebook::jni::alias_ref<JReactNativeFeatureFlagsCxxInterop> /*unused*/) {
-  return ReactNativeFeatureFlags::enableAccumulatedUpdatesInRawPropsAndroid();
-}
-
 bool JReactNativeFeatureFlagsCxxInterop::enableAndroidTextMeasurementOptimizations(
     facebook::jni::alias_ref<JReactNativeFeatureFlagsCxxInterop> /*unused*/) {
   return ReactNativeFeatureFlags::enableAndroidTextMeasurementOptimizations();
@@ -1119,9 +1108,6 @@ void JReactNativeFeatureFlagsCxxInterop::registerNatives() {
       makeNativeMethod(
         "enableAccessibilityOrder",
         JReactNativeFeatureFlagsCxxInterop::enableAccessibilityOrder),
-      makeNativeMethod(
-        "enableAccumulatedUpdatesInRawPropsAndroid",
-        JReactNativeFeatureFlagsCxxInterop::enableAccumulatedUpdatesInRawPropsAndroid),
       makeNativeMethod(
         "enableAndroidTextMeasurementOptimizations",
         JReactNativeFeatureFlagsCxxInterop::enableAndroidTextMeasurementOptimizations),

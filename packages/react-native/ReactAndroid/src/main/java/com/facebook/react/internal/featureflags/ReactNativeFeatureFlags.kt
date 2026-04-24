@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<82da59cbfb06937bba284ff1df2c64d6>>
+ * @generated SignedSource<<497133038b4ac4b29ab8d172a82285fc>>
  */
 
 /**
@@ -95,12 +95,6 @@ public object ReactNativeFeatureFlags {
    */
   @JvmStatic
   public fun enableAccessibilityOrder(): Boolean = accessor.enableAccessibilityOrder()
-
-  /**
-   * When enabled, Android will accumulate updates in rawProps to reduce the number of mounting instructions for cascading re-renders.
-   */
-  @JvmStatic
-  public fun enableAccumulatedUpdatesInRawPropsAndroid(): Boolean = accessor.enableAccumulatedUpdatesInRawPropsAndroid()
 
   /**
    * Enables various optimizations throughout the path of measuring text on Android.

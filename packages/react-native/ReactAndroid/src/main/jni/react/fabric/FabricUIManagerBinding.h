@@ -159,10 +159,6 @@ class FabricUIManagerBinding : public jni::HybridClass<FabricUIManagerBinding>,
       surfaceHandlerRegistry_{};
   std::shared_mutex surfaceHandlerRegistryMutex_; // Protects `surfaceHandlerRegistry_`.
 
-  // Track pending transactions, one per surfaceId
-  std::mutex pendingTransactionsMutex_;
-  std::vector<MountingTransaction> pendingTransactions_;
-
   float pointScaleFactor_ = 1;
 
   bool enableFabricLogs_{false};

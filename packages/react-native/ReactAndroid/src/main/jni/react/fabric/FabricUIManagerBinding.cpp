@@ -620,35 +620,9 @@ FabricUIManagerBinding::getMountingManager(const char* locationHint) {
 }
 
 void FabricUIManagerBinding::schedulerDidFinishTransaction(
-    const std::shared_ptr<const MountingCoordinator>& mountingCoordinator) {
-  if (ReactNativeFeatureFlags::enableAccumulatedUpdatesInRawPropsAndroid()) {
-    // We don't do anything here. We will pull the transaction in
-    // `schedulerShouldRenderTransactions`.
-  } else {
-    // We shouldn't be pulling the transaction here (which triggers diffing of
-    // the trees to determine the mutations to run on the host platform),
-    // but we have to due to current limitations in the Android implementation.
-    auto mountingTransaction = mountingCoordinator->pullTransaction(
-        /* willPerformAsynchronously = */ true);
-    if (!mountingTransaction.has_value()) {
-      return;
-    }
-
-    std::unique_lock<std::mutex> lock(pendingTransactionsMutex_);
-    auto pendingTransaction = std::find_if(
-        pendingTransactions_.begin(),
-        pendingTransactions_.end(),
-        [&](const auto& transaction) {
-          return transaction.getSurfaceId() ==
-              mountingTransaction->getSurfaceId();
-        });
-
-    if (pendingTransaction != pendingTransactions_.end()) {
-      pendingTransaction->mergeWith(std::move(*mountingTransaction));
-    } else {
-      pendingTransactions_.push_back(std::move(*mountingTransaction));
-    }
-  }
+    const std::shared_ptr<const MountingCoordinator>& /*mountingCoordinator*/) {
+  // We don't do anything here. We will pull the transaction in
+  // `schedulerShouldRenderTransactions`.
 }
 
 void FabricUIManagerBinding::schedulerShouldRenderTransactions(
@@ -671,33 +645,11 @@ void FabricUIManagerBinding::schedulerShouldRenderTransactions(
     }
   }
 
-  if (ReactNativeFeatureFlags::enableAccumulatedUpdatesInRawPropsAndroid()) {
-    auto mountingTransaction = mountingCoordinator->pullTransaction(
-        /* willPerformAsynchronously = */ true);
-    if (mountingTransaction.has_value()) {
-      auto transaction = std::move(*mountingTransaction);
-      mountingManager->executeMount(transaction);
-    }
-  } else {
-    std::vector<MountingTransaction> pendingTransactions;
-
-    {
-      // Retain the lock to access the pending transactions but not to execute
-      // the mount operations because that method can call into this method
-      // again.
-      //
-      // This can be re-entrant when mounting manager triggers state updates
-      // synchronously (this can happen when committing from the UI thread).
-      // This is safe because we're already combining all the transactions for
-      // the same surface ID in a single transaction in the pending transactions
-      // list, so operations won't run out of order.
-      std::unique_lock<std::mutex> lock(pendingTransactionsMutex_);
-      pendingTransactions_.swap(pendingTransactions);
-    }
-
-    for (auto& transaction : pendingTransactions) {
-      mountingManager->executeMount(transaction);
-    }
+  auto mountingTransaction = mountingCoordinator->pullTransaction(
+      /* willPerformAsynchronously = */ true);
+  if (mountingTransaction.has_value()) {
+    auto transaction = std::move(*mountingTransaction);
+    mountingManager->executeMount(transaction);
   }
 }
 
