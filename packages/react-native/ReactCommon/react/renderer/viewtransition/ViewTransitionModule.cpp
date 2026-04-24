@@ -97,12 +97,40 @@ void ViewTransitionModule::applyViewTransitionName(
       // Find the pseudo element created from this specific source tag
       auto& pseudoElementsBySourceTag = it->second;
       auto innerIt = pseudoElementsBySourceTag.find(tag);
+
       if (innerIt != pseudoElementsBySourceTag.end()) {
+        // Only clone the pseudo-element if the layout metrics changed
+        // since it was last created/refreshed (e.g. due to scrolling or
+        // React updates).
+        auto& cachedMetrics = innerIt->second.lastAppliedLayoutMetrics;
+        if (cachedMetrics.originFromRoot.x !=
+                keyframeMetrics.originFromRoot.x ||
+            cachedMetrics.originFromRoot.y !=
+                keyframeMetrics.originFromRoot.y ||
+            cachedMetrics.size.width != keyframeMetrics.size.width ||
+            cachedMetrics.size.height != keyframeMetrics.size.height) {
+          auto updatedRawProps = RawProps(
+              folly::dynamic::object("left", keyframeMetrics.originFromRoot.x)(
+                  "top", keyframeMetrics.originFromRoot.y)(
+                  "width", keyframeMetrics.size.width)(
+                  "height", keyframeMetrics.size.height)(
+                  "pointerEvents", "none")("opacity", 0)("collapsable", false)(
+                  "position", "absolute"));
+
+          auto updatedNode = uiManager_->cloneNode(
+              *innerIt->second.node,
+              nullptr /* children */,
+              std::move(updatedRawProps));
+          if (updatedNode != nullptr) {
+            innerIt->second.node = updatedNode;
+            cachedMetrics = keyframeMetrics;
+          }
+        }
         oldPseudoElementNodes_[name] = innerIt->second.node;
-      } else if (!pseudoElementsBySourceTag.empty()) {
-        // Fallback to first available entry for this name
-        oldPseudoElementNodes_[name] =
-            pseudoElementsBySourceTag.begin()->second.node;
+      } else {
+        LOG(WARNING)
+            << "applyViewTransitionName: old pseudo element shadow node doesn't exist for source tag "
+            << tag << " with name " << name;
       }
     } else {
       LOG(WARNING)
@@ -173,7 +201,9 @@ void ViewTransitionModule::createViewTransitionInstance(
         oldPseudoElementNodes_[name] = pseudoElementNode;
       }
       oldPseudoElementNodesRepository_[name][view.tag] = InactivePseudoElement{
-          .node = pseudoElementNode, .sourceTag = view.tag};
+          .node = pseudoElementNode,
+          .sourceTag = view.tag,
+          .lastAppliedLayoutMetrics = view.layoutMetrics};
     }
   }
 }
