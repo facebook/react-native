@@ -405,7 +405,12 @@ export * as Systrace from './Libraries/Performance/Systrace';
 export {default as ToastAndroid} from './Libraries/Components/ToastAndroid/ToastAndroid';
 export * as TurboModuleRegistry from './Libraries/TurboModule/TurboModuleRegistry';
 export {default as UIManager} from './Libraries/ReactNative/UIManager';
-export {unstable_batchedUpdates} from './Libraries/ReactNative/RendererProxy';
+export function unstable_batchedUpdates<T>(
+  fn: (bookkeeping: T) => void,
+  bookkeeping: T,
+): void {
+  fn(bookkeeping);
+}
 export {default as useAnimatedValue} from './Libraries/Animated/useAnimatedValue';
 export {default as useAnimatedValueXY} from './Libraries/Animated/useAnimatedValueXY';
 export {default as useAnimatedColor} from './Libraries/Animated/useAnimatedColor';

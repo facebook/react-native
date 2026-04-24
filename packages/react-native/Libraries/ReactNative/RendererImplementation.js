@@ -53,13 +53,6 @@ export const getPublicInstanceFromInternalInstanceHandle =
 export const getPublicInstanceFromRootTag =
   ReactFabric.getPublicInstanceFromRootTag;
 
-export function unstable_batchedUpdates<T>(
-  fn: (bookkeeping: T) => void,
-  bookkeeping: T,
-): void {
-  fn(bookkeeping);
-}
-
 export function isProfilingRenderer(): boolean {
   return Boolean(__DEV__);
 }
