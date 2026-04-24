@@ -325,7 +325,7 @@ category UIView(React) {
   public virtual void removeReactSubview:(UIView* subview);
 }
 
-category UIViewController(RCTViewControllerAppearance) {
+category UIViewController(React) {
   public @property (assign, readonly) BOOL reactViewControllerIsVisible;
   public virtual void reactAddViewControllerAppearanceListener:(id<RCTViewControllerAppearanceListener> listener);
   public virtual void reactNotifyViewControllerDidAppear:(BOOL animated);
@@ -1164,7 +1164,7 @@ interface RCTExceptionsManager : public NSObject <RCTBridgeModule> {
   public virtual void reportSoftException:stack:exceptionId:(_Nullable NSString* message, _Nullable NSArray<NSDictionary*>* stack, double exceptionId);
 }
 
-interface RCTFabricModalHostViewController : public RCTViewController {
+interface RCTFabricModalHostViewController : public UIViewController {
   public @property (assign) UIInterfaceOrientationMask supportedInterfaceOrientations;
   public @property (weak) id<RCTFabricModalHostViewControllerDelegate> delegate;
 }
@@ -1525,7 +1525,7 @@ interface RCTModalHostViewComponentView : public RCTViewComponentView <UIAdaptiv
   public virtual void presentViewController:animated:completion:(UIViewController* modalViewController, BOOL animated, void(^)(void) completion);
 }
 
-interface RCTModalHostViewController : public RCTViewController {
+interface RCTModalHostViewController : public UIViewController {
   public @property (assign) UIInterfaceOrientationMask supportedInterfaceOrientations;
   public @property (copy) void(^boundsDidChangeBlock)(CGRect newBounds);
 }
@@ -2475,9 +2475,6 @@ interface RCTViewComponentView : public UIView <RCTComponentViewProtocol, RCTTou
   public virtual void updateProps:oldProps:(const facebook::react::Props::Shared& props, const facebook::react::Props::Shared& oldProps);
 }
 
-interface RCTViewController : public UIViewController {
-}
-
 interface RCTViewManager : public NSObject <RCTBridgeModule> {
   public @property (weak) RCTBridge* bridge;
   public CGFloat RCTJSONParseOnlyNumber(id json);
@@ -2541,7 +2538,7 @@ interface RCTWrapperView : public UIView {
   public virtual instancetype initWithBridge:(RCTBridge* bridge);
 }
 
-interface RCTWrapperViewController : public RCTViewController {
+interface RCTWrapperViewController : public UIViewController {
   public virtual instancetype initWithContentView:(UIView* contentView);
 }
 
