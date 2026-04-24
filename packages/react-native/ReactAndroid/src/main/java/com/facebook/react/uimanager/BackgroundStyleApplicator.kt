@@ -637,11 +637,7 @@ public object BackgroundStyleApplicator {
               compositeBackgroundDrawable.borderRadius,
               compositeBackgroundDrawable.borderInsets,
           )
-      val newComposite = compositeBackgroundDrawable.withNewBackground(background)
-      // Carry bounds over so the new BackgroundDrawable is primed with
-      // the view's real size on first draw.
-      newComposite.bounds = compositeBackgroundDrawable.bounds
-      view.background = newComposite
+      view.background = compositeBackgroundDrawable.withNewBackground(background)
       background
     }
   }
