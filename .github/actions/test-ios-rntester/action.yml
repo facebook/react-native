@@ -49,29 +49,33 @@ runs:
       if: ${{ inputs.run-unit-tests == 'true' }}
       uses: ./.github/actions/prepare-ios-tests
     - name: Download ReactNativeDependencies
+      if: ${{ inputs.use-frameworks != 'DynamicFrameworks' }}
       uses: actions/download-artifact@v4
       with:
         name: ReactNativeDependencies${{ inputs.flavor }}.xcframework.tar.gz
         path: /tmp/third-party/
     - name: Print third-party folder
+      if: ${{ inputs.use-frameworks != 'DynamicFrameworks' }}
       shell: bash
       run: ls -lR /tmp/third-party
     - name: Download React Native Prebuilds
+      if: ${{ inputs.use-frameworks != 'DynamicFrameworks' }}
       uses: actions/download-artifact@v4
       with:
         name: ReactCore${{ inputs.flavor }}.xcframework.tar.gz
         path: /tmp/ReactCore
     - name: Print ReactCore folder
+      if: ${{ inputs.use-frameworks != 'DynamicFrameworks' }}
       shell: bash
       run: ls -lR /tmp/ReactCore
     - name: Install CocoaPods dependencies
       shell: bash
       run: |
-        export RCT_USE_LOCAL_RN_DEP="/tmp/third-party/ReactNativeDependencies${{ inputs.flavor }}.xcframework.tar.gz"
-        export RCT_TESTONLY_RNCORE_TARBALL_PATH="/tmp/ReactCore/ReactCore${{ inputs.flavor }}.xcframework.tar.gz"
-
         if [[ ${{ inputs.use-frameworks }} == "DynamicFrameworks" ]]; then
           export USE_FRAMEWORKS=dynamic
+        else
+          export RCT_USE_LOCAL_RN_DEP="/tmp/third-party/ReactNativeDependencies${{ inputs.flavor }}.xcframework.tar.gz"
+          export RCT_TESTONLY_RNCORE_TARBALL_PATH="/tmp/ReactCore/ReactCore${{ inputs.flavor }}.xcframework.tar.gz"
         fi
 
         cd packages/rn-tester
