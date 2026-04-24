@@ -49,10 +49,9 @@ jobs:
       - name: Set Hermes version
         shell: bash
         run: |
-          if [ "${{ inputs.use-hermes-nightly }}" == "true" ]; then
+          HERMES_VERSION=$(sed -n 's/^HERMES_VERSION_NAME=//p' packages/react-native/sdks/hermes-engine/version.properties)
+          if [ "$HERMES_VERSION" == "1000.0.0" ]; then
             HERMES_VERSION="nightly"
-          else
-            HERMES_VERSION=$(sed -n 's/^HERMES_VERSION_NAME=//p' packages/react-native/sdks/hermes-engine/version.properties)
           fi
           echo "Using Hermes version: $HERMES_VERSION"
           echo "HERMES_VERSION=$HERMES_VERSION" >> $GITHUB_ENV
