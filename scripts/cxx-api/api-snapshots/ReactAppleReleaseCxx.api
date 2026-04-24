@@ -325,6 +325,14 @@ category UIView(React) {
   public virtual void removeReactSubview:(UIView* subview);
 }
 
+category UIViewController(RCTViewControllerAppearance) {
+  public @property (assign, readonly) BOOL reactViewControllerIsVisible;
+  public virtual void reactAddViewControllerAppearanceListener:(id<RCTViewControllerAppearanceListener> listener);
+  public virtual void reactNotifyViewControllerDidAppear:(BOOL animated);
+  public virtual void reactNotifyViewControllerDidDisappear:(BOOL animated);
+  public virtual void reactRemoveViewControllerAppearanceListener:(id<RCTViewControllerAppearanceListener> listener);
+}
+
 class ObjCTimerRegistry : public facebook::react::PlatformTimerRegistry {
   public ObjCTimerRegistry();
   public RCTTiming* _Null_unspecified timing;
@@ -1156,7 +1164,7 @@ interface RCTExceptionsManager : public NSObject <RCTBridgeModule> {
   public virtual void reportSoftException:stack:exceptionId:(_Nullable NSString* message, _Nullable NSArray<NSDictionary*>* stack, double exceptionId);
 }
 
-interface RCTFabricModalHostViewController : public UIViewController {
+interface RCTFabricModalHostViewController : public RCTViewController {
   public @property (assign) UIInterfaceOrientationMask supportedInterfaceOrientations;
   public @property (weak) id<RCTFabricModalHostViewControllerDelegate> delegate;
 }
@@ -1517,7 +1525,7 @@ interface RCTModalHostViewComponentView : public RCTViewComponentView <UIAdaptiv
   public virtual void presentViewController:animated:completion:(UIViewController* modalViewController, BOOL animated, void(^)(void) completion);
 }
 
-interface RCTModalHostViewController : public UIViewController {
+interface RCTModalHostViewController : public RCTViewController {
   public @property (assign) UIInterfaceOrientationMask supportedInterfaceOrientations;
   public @property (copy) void(^boundsDidChangeBlock)(CGRect newBounds);
 }
@@ -2467,6 +2475,9 @@ interface RCTViewComponentView : public UIView <RCTComponentViewProtocol, RCTTou
   public virtual void updateProps:oldProps:(const facebook::react::Props::Shared& props, const facebook::react::Props::Shared& oldProps);
 }
 
+interface RCTViewController : public UIViewController {
+}
+
 interface RCTViewManager : public NSObject <RCTBridgeModule> {
   public @property (weak) RCTBridge* bridge;
   public CGFloat RCTJSONParseOnlyNumber(id json);
@@ -2530,7 +2541,7 @@ interface RCTWrapperView : public UIView {
   public virtual instancetype initWithBridge:(RCTBridge* bridge);
 }
 
-interface RCTWrapperViewController : public UIViewController {
+interface RCTWrapperViewController : public RCTViewController {
   public virtual instancetype initWithContentView:(UIView* contentView);
 }
 
@@ -3491,6 +3502,11 @@ protocol RCTUnimplementedNativeViewViewProtocol : public NSObject {
 
 protocol RCTValueAnimatedNodeObserver : public NSObject {
   public virtual void animatedNode:didUpdateValue:(RCTValueAnimatedNode* node, CGFloat value);
+}
+
+protocol RCTViewControllerAppearanceListener : public NSObject {
+  public virtual void reactViewControllerDidAppear:animated:(UIViewController* viewController, BOOL animated);
+  public virtual void reactViewControllerDidDisappear:animated:(UIViewController* viewController, BOOL animated);
 }
 
 protocol RCTVirtualViewContainerProtocol {
