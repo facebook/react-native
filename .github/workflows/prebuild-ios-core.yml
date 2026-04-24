@@ -8,11 +8,6 @@ on:
         type: string
         required: false
         default: ''
-      use-hermes-nightly:
-        description: 'Whether to use the hermes nightly build or read the version from the versions.properties file'
-        type: boolean
-        required: false
-        default: false
 
 jobs:
   build-rn-slice:
@@ -47,12 +42,9 @@ jobs:
       - name: Set Hermes version
         shell: bash
         run: |
-          if [ "${{ inputs.use-hermes-nightly }}" == "true" ]; then
-            # We are not publishing nightly versions of Hermes V1 yet.
-            # For now, we can use the latest version of Hermes V1 published on maven and npm.
+          HERMES_VERSION=$(sed -n 's/^HERMES_V1_VERSION_NAME=//p' packages/react-native/sdks/hermes-engine/version.properties)
+          if [ "$HERMES_VERSION" == "1000.0.0" ]; then
             HERMES_VERSION="latest-v1"
-          else
-            HERMES_VERSION=$(sed -n 's/^HERMES_V1_VERSION_NAME=//p' packages/react-native/sdks/hermes-engine/version.properties)
           fi
           echo "Using Hermes version: $HERMES_VERSION"
           echo "HERMES_VERSION=$HERMES_VERSION" >> $GITHUB_ENV

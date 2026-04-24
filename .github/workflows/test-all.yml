@@ -96,8 +96,6 @@ jobs:
 
   prebuild_react_native_core:
     uses: ./.github/workflows/prebuild-ios-core.yml
-    with:
-      use-hermes-nightly: ${{ !endsWith(github.ref_name, '-stable') }}
     secrets: inherit
     needs: [prebuild_apple_dependencies]
 

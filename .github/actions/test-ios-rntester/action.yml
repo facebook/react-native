@@ -35,7 +35,10 @@ runs:
     - name: Set nightly Hermes versions
       shell: bash
       run: |
-        node ./scripts/releases/use-hermes-nightly.js
+        HERMES_VERSION=$(sed -n 's/^HERMES_VERSION_NAME=//p' packages/react-native/sdks/hermes-engine/version.properties)
+        if [ "$HERMES_VERSION" == "1000.0.0" ]; then
+          node ./scripts/releases/use-hermes-nightly.js
+        fi
     - name: Run yarn install again, with the correct hermes version
       uses: ./.github/actions/yarn-install
     - name: Prepare IOS Tests
