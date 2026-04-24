@@ -1,110 +1,5 @@
 # Changelog
 
-## v0.83.8
-
-### Breaking
-
-
-
-#### Android specific
-
-
-
-#### iOS specific
-
-
-
-### Added
-
-
-
-#### Android specific
-
-
-
-#### iOS specific
-
-- Fix missing header search path for React-featureflags in React-CoreModules ([2ff85bcba2](https://github.com/facebook/react-native/commit/2ff85bcba292dcd0d395a7fc218cbff79e5f2116) by [@radko93](https://github.com/radko93))
-
-### Changed
-
-
-
-#### Android specific
-
-
-
-#### iOS specific
-
-
-
-### Deprecated
-
-
-
-#### Android specific
-
-
-
-#### iOS specific
-
-
-
-### Removed
-
-
-
-#### Android specific
-
-
-
-#### iOS specific
-
-
-
-### Fixed
-
-
-
-#### Android specific
-
-
-
-#### iOS specific
-
-
-
-### Security
-
-
-
-#### Android specific
-
-
-
-#### iOS specific
-
-
-
-### Unknown
-
-- Release 0.83.8 ([e745903b6a](https://github.com/facebook/react-native/commit/e745903b6ad275879532460c5ef73955b0e3be79) by [@react-native-bot](https://github.com/react-native-bot))
-- Bump Podfile.lock ([f04c06d717](https://github.com/facebook/react-native/commit/f04c06d717ed69a3050ee6c1e231e2d9a2782311) by [@react-native-bot](https://github.com/react-native-bot))
-- Release 0.83.7 ([29e48317ab](https://github.com/facebook/react-native/commit/29e48317ab158573b277271c3ad2f0b07bd80dc0) by [@react-native-bot](https://github.com/react-native-bot))
-
-#### Android Unknown
-
-
-
-#### iOS Unknown
-
-
-
-#### Failed to parse
-
-
-
-
 ## v0.85.2
 
 ### Added
@@ -525,6 +420,16 @@
 - **Touch Handling**: Remove redundant gesture to tap button when the layer beneath is already tappable ([8b8cceac89](https://github.com/facebook/react-native/commit/8b8cceac89a5962fb2bc52025702f2c023d41055) by [@emily8rown](https://github.com/emily8rown))
 - **Touch Handling**: Respect `cancelsTouchesInView` when canceling touches in `RCTSurfaceTouchHandler` ([5634e8a601](https://github.com/facebook/react-native/commit/5634e8a601caf0faa174bac3511929de767609ac) by [@intmain](https://github.com/intmain))
 - **View**: Fix duplicate shadow bug during component recycling by cleaning up visual layers in prepareForRecycle ([7dcedf1def](https://github.com/facebook/react-native/commit/7dcedf1def880163ab7ca07b2575a8153029a925) by Atharv Soni)
+
+## v0.83.8
+
+### Fixed
+
+- Fix missing header search path for React-featureflags in React-CoreModules ([2ff85bcba2](https://github.com/facebook/react-native/commit/2ff85bcba292dcd0d395a7fc218cbff79e5f2116) by [@radko93](https://github.com/radko93))
+
+## v0.83.7
+
+- Changes to experimental features only.
 
 ## v0.83.6
 
