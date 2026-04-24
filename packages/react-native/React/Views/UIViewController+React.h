@@ -17,7 +17,7 @@ NS_ASSUME_NONNULL_BEGIN
 
 @end
 
-@interface UIViewController (RCTViewControllerAppearance)
+@interface UIViewController (React)
 
 @property (nonatomic, assign, readonly) BOOL reactViewControllerIsVisible;
 
@@ -26,17 +26,11 @@ NS_ASSUME_NONNULL_BEGIN
 
 /**
  * Call from `viewDidAppear:` / `viewDidDisappear:` in UIViewController subclasses
- * that cannot inherit from RCTViewController.
+ * that want to notify registered React Native appearance listeners.
  */
 - (void)reactNotifyViewControllerDidAppear:(BOOL)animated;
 - (void)reactNotifyViewControllerDidDisappear:(BOOL)animated;
 
-@end
-
-/**
- * UIViewController subclass that forwards appearance events to registered listeners.
- */
-@interface RCTViewController : UIViewController
 @end
 
 NS_ASSUME_NONNULL_END

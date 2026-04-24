@@ -274,7 +274,6 @@
 #import <React/RCTVibration.h>
 #import <React/RCTVibrationPlugins.h>
 #import <React/RCTView.h>
-#import <React/RCTViewController.h>
 #import <React/RCTViewManager.h>
 #import <React/RCTViewUtils.h>
 #import <React/RCTVirtualTextShadowView.h>
@@ -284,6 +283,7 @@
 #import <React/RCTWrapperViewController.h>
 #import <React/UIView+Private.h>
 #import <React/UIView+React.h>
+#import <React/UIViewController+React.h>
 
 FOUNDATION_EXPORT double ReactVersionNumber;
 FOUNDATION_EXPORT const unsigned char ReactVersionString[];

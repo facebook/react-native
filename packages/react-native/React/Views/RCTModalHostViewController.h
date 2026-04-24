@@ -5,12 +5,12 @@
  * LICENSE file in the root directory of this source tree.
  */
 
-#import <React/RCTViewController.h>
+#import <UIKit/UIKit.h>
 
 #ifndef RCT_REMOVE_LEGACY_ARCH
 
 __attribute__((deprecated("This API will be removed along with the legacy architecture.")))
-@interface RCTModalHostViewController : RCTViewController
+@interface RCTModalHostViewController : UIViewController
 
 @property (nonatomic, copy) void (^boundsDidChangeBlock)(CGRect newBounds);
 
