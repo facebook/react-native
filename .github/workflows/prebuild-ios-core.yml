@@ -45,8 +45,6 @@ jobs:
           HERMES_VERSION=$(sed -n 's/^HERMES_V1_VERSION_NAME=//p' packages/react-native/sdks/hermes-engine/version.properties)
           if [ "$HERMES_VERSION" == "1000.0.0" ]; then
             HERMES_VERSION="latest-v1"
-          else
-            HERMES_VERSION="hermes-v${HERMES_VERSION}"
           fi
           echo "Using Hermes version: $HERMES_VERSION"
           echo "HERMES_VERSION=$HERMES_VERSION" >> $GITHUB_ENV
