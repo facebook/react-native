@@ -57,23 +57,25 @@ let cachedFabricRender;
 export function renderElement({
   element,
   rootTag,
-  useFabric,
-  useConcurrentRoot,
 }: {
   element: React.MixedElement,
   rootTag: number,
-  useFabric: boolean,
-  useConcurrentRoot: boolean,
 }): void {
   if (cachedFabricRender == null) {
     cachedFabricRender = getFabricRenderer().render;
   }
 
-  cachedFabricRender(element, rootTag, null, useConcurrentRoot, {
-    onCaughtError,
-    onUncaughtError,
-    onRecoverableError,
-  });
+  cachedFabricRender(
+    element,
+    rootTag,
+    /* callback */ null,
+    /* useConcurrentRoot */ true,
+    {
+      onCaughtError,
+      onUncaughtError,
+      onRecoverableError,
+    },
+  );
 }
 
 let cachedFabricDispatchCommand;
