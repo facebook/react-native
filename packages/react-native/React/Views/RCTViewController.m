@@ -9,65 +9,51 @@
 
 #import <objc/runtime.h>
 
-@interface RCTViewControllerAppearanceState : NSObject
-
-@property (nonatomic, strong, readonly) NSHashTable<id<RCTViewControllerAppearanceListener>> *listeners;
-@property (nonatomic, assign) BOOL visible;
-
-@end
-
-@implementation RCTViewControllerAppearanceState
-
-- (instancetype)init
+static void RCTSetViewControllerIsVisible(UIViewController *viewController, BOOL isVisible)
 {
-  if (self = [super init]) {
-    _listeners = [NSHashTable weakObjectsHashTable];
-  }
-  return self;
+  objc_setAssociatedObject(
+      viewController, @selector(reactViewControllerIsVisible), @(isVisible), OBJC_ASSOCIATION_RETAIN_NONATOMIC);
 }
-
-@end
 
 @implementation UIViewController (RCTViewControllerAppearance)
 
-- (RCTViewControllerAppearanceState *)reactViewControllerAppearanceState
+- (NSHashTable<id<RCTViewControllerAppearanceListener>> *)reactViewControllerAppearanceListeners
 {
-  RCTViewControllerAppearanceState *state =
-      objc_getAssociatedObject(self, @selector(reactViewControllerAppearanceState));
-  if (!state) {
-    state = [RCTViewControllerAppearanceState new];
+  NSHashTable<id<RCTViewControllerAppearanceListener>> *listeners =
+      objc_getAssociatedObject(self, @selector(reactViewControllerAppearanceListeners));
+  if (!listeners) {
+    listeners = [NSHashTable weakObjectsHashTable];
     objc_setAssociatedObject(
-        self, @selector(reactViewControllerAppearanceState), state, OBJC_ASSOCIATION_RETAIN_NONATOMIC);
+        self, @selector(reactViewControllerAppearanceListeners), listeners, OBJC_ASSOCIATION_RETAIN_NONATOMIC);
   }
-  return state;
+  return listeners;
 }
 
 - (BOOL)reactViewControllerIsVisible
 {
-  return [self reactViewControllerAppearanceState].visible;
+  return [objc_getAssociatedObject(self, @selector(reactViewControllerIsVisible)) boolValue];
 }
 
 - (void)reactAddViewControllerAppearanceListener:(id<RCTViewControllerAppearanceListener>)listener
 {
-  RCTViewControllerAppearanceState *state = [self reactViewControllerAppearanceState];
-  [state.listeners addObject:listener];
+  [[self reactViewControllerAppearanceListeners] addObject:listener];
 
-  if (state.visible && [listener respondsToSelector:@selector(reactViewControllerDidAppear:animated:)]) {
+  if (self.reactViewControllerIsVisible &&
+      [listener respondsToSelector:@selector(reactViewControllerDidAppear:animated:)]) {
     [listener reactViewControllerDidAppear:self animated:NO];
   }
 }
 
 - (void)reactRemoveViewControllerAppearanceListener:(id<RCTViewControllerAppearanceListener>)listener
 {
-  [[self reactViewControllerAppearanceState].listeners removeObject:listener];
+  [[self reactViewControllerAppearanceListeners] removeObject:listener];
 }
 
 - (void)reactNotifyViewControllerDidAppear:(BOOL)animated
 {
-  RCTViewControllerAppearanceState *state = [self reactViewControllerAppearanceState];
-  state.visible = YES;
+  RCTSetViewControllerIsVisible(self, YES);
 
-  for (id<RCTViewControllerAppearanceListener> listener in state.listeners.allObjects) {
+  for (id<RCTViewControllerAppearanceListener> listener in [self reactViewControllerAppearanceListeners].allObjects) {
     if ([listener respondsToSelector:@selector(reactViewControllerDidAppear:animated:)]) {
       [listener reactViewControllerDidAppear:self animated:animated];
     }
@@ -76,10 +62,9 @@
 
 - (void)reactNotifyViewControllerDidDisappear:(BOOL)animated
 {
-  RCTViewControllerAppearanceState *state = [self reactViewControllerAppearanceState];
-  state.visible = NO;
+  RCTSetViewControllerIsVisible(self, NO);
 
-  for (id<RCTViewControllerAppearanceListener> listener in state.listeners.allObjects) {
+  for (id<RCTViewControllerAppearanceListener> listener in [self reactViewControllerAppearanceListeners].allObjects) {
     if ([listener respondsToSelector:@selector(reactViewControllerDidDisappear:animated:)]) {
       [listener reactViewControllerDidDisappear:self animated:animated];
     }
