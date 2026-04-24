@@ -8,11 +8,6 @@ on:
         type: string
         required: false
         default: ''
-      use-hermes-nightly:
-        description: 'Whether to use the hermes nightly build or read the version from the versions.properties file'
-        type: boolean
-        required: false
-        default: false
 
 jobs:
   build-rn-slice:
