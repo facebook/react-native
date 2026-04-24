@@ -123,6 +123,7 @@
     "react-is": "19.2.3",
     "on-headers": "1.1.0",
     "compression": "1.8.1",
-    "@microsoft/api-extractor/minimatch": "3.1.4"
+    "@microsoft/api-extractor/minimatch": "3.1.4",
+    "lodash": "4.18.1"
   }
 }
