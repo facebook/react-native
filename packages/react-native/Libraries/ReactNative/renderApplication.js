@@ -97,8 +97,6 @@ export default function renderApplication<Props extends Object>(
   Renderer.renderElement({
     element: renderable,
     rootTag,
-    useFabric: true,
-    useConcurrentRoot: true,
   });
   performanceLogger.stopTimespan('renderApplication_React_render');
 }
