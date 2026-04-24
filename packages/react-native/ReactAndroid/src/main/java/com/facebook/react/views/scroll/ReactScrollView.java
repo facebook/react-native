@@ -692,6 +692,7 @@ public class ReactScrollView extends ScrollView
       float vScroll = ev.getAxisValue(MotionEvent.AXIS_VSCROLL);
       if (vScroll != 0) {
         // Perform the scroll
+        enableFpsListener();
         boolean result = super.dispatchGenericMotionEvent(ev);
         // Schedule snap alignment to run after scrolling stops
         if (result
@@ -702,6 +703,7 @@ public class ReactScrollView extends ScrollView
           // Cancel any pending post-touch runnable and reschedule
           if (mPostTouchRunnable != null) {
             removeCallbacks(mPostTouchRunnable);
+            mPostTouchRunnable = null;
           }
           mPostTouchRunnable =
               new Runnable() {
@@ -715,9 +717,12 @@ public class ReactScrollView extends ScrollView
                     velocityY = 0;
                   }
                   flingAndSnap(velocityY);
+                  handlePostTouchScrolling(0, velocityY);
                 }
               };
           postOnAnimationDelayed(mPostTouchRunnable, ReactScrollViewHelper.MOMENTUM_DELAY);
+        } else {
+          handlePostTouchScrolling(0, 0);
         }
         return result;
       }

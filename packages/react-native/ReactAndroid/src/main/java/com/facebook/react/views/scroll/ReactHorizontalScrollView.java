@@ -859,6 +859,7 @@ public class ReactHorizontalScrollView extends HorizontalScrollView
       float hScroll = ev.getAxisValue(MotionEvent.AXIS_HSCROLL);
       if (hScroll != 0) {
         // Perform the scroll
+        enableFpsListener();
         boolean result = super.dispatchGenericMotionEvent(ev);
         // Schedule snap alignment to run after scrolling stops
         if (result
@@ -866,9 +867,10 @@ public class ReactHorizontalScrollView extends HorizontalScrollView
                 || mSnapInterval != 0
                 || mSnapOffsets != null
                 || mSnapToAlignment != SNAP_ALIGNMENT_DISABLED)) {
-          // Cancel any pending runnable and reschedule
+          // Cancel any pending post-touch runnable and reschedule
           if (mPostTouchRunnable != null) {
             removeCallbacks(mPostTouchRunnable);
+            mPostTouchRunnable = null;
           }
           mPostTouchRunnable =
               new Runnable() {
@@ -882,9 +884,12 @@ public class ReactHorizontalScrollView extends HorizontalScrollView
                     velocityX = 0;
                   }
                   flingAndSnap(velocityX);
+                  handlePostTouchScrolling(velocityX, 0);
                 }
               };
           postOnAnimationDelayed(mPostTouchRunnable, ReactScrollViewHelper.MOMENTUM_DELAY);
+        } else {
+          handlePostTouchScrolling(0, 0);
         }
         return result;
       }
@@ -1212,6 +1217,7 @@ public class ReactHorizontalScrollView extends HorizontalScrollView
                 }
                 ReactScrollViewHelper.notifyUserDrivenScrollEnded_internal(
                     ReactHorizontalScrollView.this);
+                disableFpsListener();
               } else {
                 if (mPagingEnabled && !mSnappingToPage) {
                   // If we have pagingEnabled and we have not snapped to the page
