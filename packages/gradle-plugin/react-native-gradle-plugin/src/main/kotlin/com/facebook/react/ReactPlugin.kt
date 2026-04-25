@@ -231,15 +231,16 @@ class ReactPlugin : Plugin<Project> {
     // This equivalent to this DSL:
     //
     // android { sourceSets { main { java { srcDirs += "$generatedSrcDir/java" } } } }
+    // NB: .srcDir (any) deprecated in AGP 9 in favour of .directories (typed) mutable set
     if (isLibrary) {
       project.extensions.getByType(LibraryAndroidComponentsExtension::class.java).finalizeDsl { ext
         ->
-        ext.sourceSets.getByName("main").java.srcDir(generatedSrcDir.get().dir("java").asFile)
+        ext.sourceSets.getByName("main").java.directories.add(generatedSrcDir.get().dir("java").asFile.absolutePath)
       }
     } else {
       project.extensions.getByType(ApplicationAndroidComponentsExtension::class.java).finalizeDsl {
           ext ->
-        ext.sourceSets.getByName("main").java.srcDir(generatedSrcDir.get().dir("java").asFile)
+        ext.sourceSets.getByName("main").java.directories.add(generatedSrcDir.get().dir("java").asFile.absolutePath)
       }
     }
 

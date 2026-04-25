@@ -627,8 +627,8 @@ android {
             "src/main/res/views/view",
         )
     )
-    java.exclude("com/facebook/react/processing")
-    java.exclude("com/facebook/react/module/processing")
+    java.filter.exclude("com/facebook/react/processing/**")
+    java.filter.exclude("com/facebook/react/module/processing/**")
   }
 
   lint {

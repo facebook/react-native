@@ -6,7 +6,6 @@
  */
 
 apply plugin: "com.android.application"
-apply plugin: "org.jetbrains.kotlin.android"
 apply plugin: "com.facebook.react"
 
 // Build a simple config (instead of depending on npx @react-native-community/cli config).
