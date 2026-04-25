@@ -42,21 +42,22 @@ internal class DeviceInfoModule(reactContext: ReactApplicationContext) :
 
     val activity = reactApplicationContext.currentActivity ?: return windowDisplayMetrics
     val bounds = WindowMetricsCalculator.getOrCreate().computeCurrentWindowMetrics(activity).bounds
-    var width = bounds.width()
-    var height = bounds.height()
 
-    // WindowMetrics bounds include system bars. When edge-to-edge is not enabled, we subtract them
-    // so that window dimensions reflect the usable content area.
-    if (!isEdgeToEdgeFeatureFlagOn) {
+    if (isEdgeToEdgeFeatureFlagOn) {
+      windowDisplayMetrics.widthPixels = bounds.width()
+      windowDisplayMetrics.heightPixels = bounds.height()
+    } else {
+      // WindowMetrics bounds include system bars. When edge-to-edge is not enabled, we subtract
+      // them so that window dimensions reflect the usable content area. If insets aren't yet
+      // available (e.g. before the first layout pass), fall back to resources.displayMetrics,
+      // which already excludes system bars in non-edge-to-edge mode.
       ViewCompat.getRootWindowInsets(activity.window.decorView)?.let {
         val insets = it.getInsets(WindowInsetsCompat.Type.systemBars())
-        width -= (insets.left + insets.right)
-        height -= (insets.top + insets.bottom)
+        windowDisplayMetrics.widthPixels = bounds.width() - (insets.left + insets.right)
+        windowDisplayMetrics.heightPixels = bounds.height() - (insets.top + insets.bottom)
       }
     }
 
-    windowDisplayMetrics.widthPixels = width
-    windowDisplayMetrics.heightPixels = height
     return windowDisplayMetrics
   }
 
