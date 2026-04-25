@@ -72,6 +72,13 @@ class FileReader extends EventTarget {
   }
 
   readAsArrayBuffer(blob: ?Blob): void {
+    if (this._readyState === LOADING) {
+      throw new DOMException(
+        'The object is in an invalid state.',
+        'InvalidStateError',
+      );
+    }
+
     this._aborted = false;
 
     if (blob == null) {
@@ -79,6 +86,9 @@ class FileReader extends EventTarget {
         "Failed to execute 'readAsArrayBuffer' on 'FileReader': parameter 1 is not of type 'Blob'",
       );
     }
+
+    this._readyState = LOADING;
+    this.dispatchEvent(new Event('loadstart'));
 
     NativeFileReaderModule.readAsDataURL(blob.data).then(
       (text: string) => {
@@ -103,6 +113,13 @@ class FileReader extends EventTarget {
   }
 
   readAsDataURL(blob: ?Blob): void {
+    if (this._readyState === LOADING) {
+      throw new DOMException(
+        'The object is in an invalid state.',
+        'InvalidStateError',
+      );
+    }
+
     this._aborted = false;
 
     if (blob == null) {
@@ -110,6 +127,9 @@ class FileReader extends EventTarget {
         "Failed to execute 'readAsDataURL' on 'FileReader': parameter 1 is not of type 'Blob'",
       );
     }
+
+    this._readyState = LOADING;
+    this.dispatchEvent(new Event('loadstart'));
 
     NativeFileReaderModule.readAsDataURL(blob.data).then(
       (text: string) => {
@@ -130,6 +150,13 @@ class FileReader extends EventTarget {
   }
 
   readAsText(blob: ?Blob, encoding: string = 'UTF-8'): void {
+    if (this._readyState === LOADING) {
+      throw new DOMException(
+        'The object is in an invalid state.',
+        'InvalidStateError',
+      );
+    }
+
     this._aborted = false;
 
     if (blob == null) {
@@ -137,6 +164,9 @@ class FileReader extends EventTarget {
         "Failed to execute 'readAsText' on 'FileReader': parameter 1 is not of type 'Blob'",
       );
     }
+
+    this._readyState = LOADING;
+    this.dispatchEvent(new Event('loadstart'));
 
     NativeFileReaderModule.readAsText(blob.data, encoding).then(
       (text: string) => {
