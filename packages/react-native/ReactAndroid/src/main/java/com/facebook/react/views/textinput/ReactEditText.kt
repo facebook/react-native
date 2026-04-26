@@ -36,6 +36,7 @@ import android.view.MotionEvent
 import android.view.View
 import android.view.ViewGroup
 import android.view.accessibility.AccessibilityNodeInfo
+import android.view.inputmethod.BaseInputConnection
 import android.view.inputmethod.EditorInfo
 import android.view.inputmethod.InputConnection
 import android.view.inputmethod.InputMethodManager
@@ -679,9 +680,19 @@ public open class ReactEditText public constructor(context: Context) : AppCompat
     disableTextDiffing = true
 
     // On some devices, when the text is cleared, buggy keyboards will not clear the composing
-    // text so, we have to set text to null, which will clear the currently composing text.
+    // text. We remove composing spans explicitly and clear the text via replace() on the existing
+    // Editable rather than setText(null), which would recreate the buffer and cause the cursor
+    // to lose its gravity-based positioning (e.g. jumping to the right for centered text).
     if (reactTextUpdate.text.length == 0) {
-      text = null
+      val currentText = editableText
+      if (currentText != null) {
+        BaseInputConnection.removeComposingSpans(currentText)
+        if (currentText.isNotEmpty()) {
+          currentText.replace(0, currentText.length, "")
+        }
+      } else {
+        text = null
+      }
     } else {
       // When we update text, we trigger onChangeText code that will
       // try to update state if the wrapper is available. Temporarily disable
