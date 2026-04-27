@@ -327,6 +327,98 @@ declare class DOMRectList {
   [index: number]: DOMRect;
 }
 
+declare class MutationRecord {
+  // Always an empty NodeList for `attributes` and `characterData` mutations.
+  // React Native currently only supports `childList`, so this contains the
+  // added nodes for that mutation type.
+  +addedNodes: NodeList<Node>;
+  // Always `null` in React Native (only `childList` mutations are supported).
+  +attributeName: null;
+  // Always `null` in React Native (only `childList` mutations are supported).
+  +nextSibling: null;
+  // Always `null` in React Native (only `childList` mutations are supported,
+  // and `attributeOldValue`/`characterDataOldValue` are not supported).
+  +oldValue: null;
+  // Always `null` in React Native (only `childList` mutations are supported).
+  +previousSibling: null;
+  // Always an empty NodeList for `attributes` and `characterData` mutations.
+  // React Native currently only supports `childList`, so this contains the
+  // removed nodes for that mutation type.
+  +removedNodes: NodeList<Node>;
+  +target: Node;
+  // React Native currently only supports `childList` mutations.
+  +type: 'childList';
+}
+
+// React Native currently only supports `childList` mutations, so `childList`
+// is required and must be `true`. The `attributes`/`attributeFilter`/
+// `attributeOldValue`/`characterData`/`characterDataOldValue` options are not
+// supported and will throw if provided.
+declare type MutationObserverInit = {
+  +childList: true,
+  +subtree?: boolean,
+  ...
+};
+
+declare class MutationObserver {
+  constructor(
+    callback: (
+      arr: Array<MutationRecord>,
+      observer: MutationObserver,
+    ) => unknown,
+  ): void;
+  disconnect(): void;
+  observe(target: Node, options: MutationObserverInit): void;
+}
+
+declare type IntersectionObserverEntry = {
+  +boundingClientRect: DOMRectReadOnly,
+  +intersectionRatio: number,
+  +intersectionRect: DOMRectReadOnly,
+  +isIntersecting: boolean,
+  // Always non-null in React Native.
+  +rootBounds: DOMRectReadOnly,
+  // React Native-specific extension. Equivalent to `intersectionRatio` but
+  // computed against the `rnRootThreshold` root-relative thresholds.
+  +rnRootIntersectionRatio: number,
+  +target: Element,
+  +time: DOMHighResTimeStamp,
+  ...
+};
+
+declare type IntersectionObserverCallback = (
+  entries: Array<IntersectionObserverEntry>,
+  observer: IntersectionObserver,
+) => unknown;
+
+declare type IntersectionObserverOptions = {
+  root?: Node | null,
+  rootMargin?: string,
+  threshold?: number | Array<number>,
+  // React Native-specific extension. Thresholds expressed as a fraction of the
+  // root's size (instead of the target's size).
+  rnRootThreshold?: number | Array<number>,
+  ...
+};
+
+// The `delay`, `scrollMargin` and `trackVisibility` options are not supported
+// in React Native and will throw if provided.
+declare class IntersectionObserver {
+  constructor(
+    callback: IntersectionObserverCallback,
+    options?: IntersectionObserverOptions,
+  ): void;
+  disconnect(): void;
+  observe(target: Element): void;
+  +root: Element | null;
+  +rootMargin: string;
+  // React Native-specific extension. The thresholds expressed as a fraction of
+  // the root's size (set via the `rnRootThreshold` option).
+  +rnRootThresholds: ReadonlyArray<number> | null;
+  +thresholds: ReadonlyArray<number>;
+  unobserve(target: Element): void;
+}
+
 declare class CloseEvent extends Event {
   code: number;
   reason: string;
