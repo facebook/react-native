@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<2a4b0d699f7e7e701defd972cd79b116>>
+ * @generated SignedSource<<27db9899bab6acfdc4e674d4ca4a0f0a>>
  */
 
 /**
@@ -277,6 +277,15 @@ class ReactNativeFeatureFlagsDynamicProvider : public ReactNativeFeatureFlagsDef
     }
 
     return ReactNativeFeatureFlagsDefaults::enableFontScaleChangesUpdatingLayout();
+  }
+
+  bool enableIOSExperimentalAutoFocusImplementation() override {
+    auto value = values_["enableIOSExperimentalAutoFocusImplementation"];
+    if (!value.isNull()) {
+      return value.getBool();
+    }
+
+    return ReactNativeFeatureFlagsDefaults::enableIOSExperimentalAutoFocusImplementation();
   }
 
   bool enableIOSTextBaselineOffsetPerLine() override {
