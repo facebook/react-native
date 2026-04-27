@@ -325,6 +325,16 @@ const definitions: FeatureFlagDefinitions = {
       },
       ossReleaseStage: 'none',
     },
+    enableIOSExperimentalAutoFocusImplementation: {
+      defaultValue: false,
+      metadata: {
+        dateAdded: '2025-11-19',
+        description: 'Fixes #56595 by moving the autoFocus from didMoveToWindow to viewDidAppear',
+        expectedReleaseValue: true,
+        purpose: 'experimentation',
+      },
+      ossReleaseStage: 'experimental',
+    },
     enableIOSTextBaselineOffsetPerLine: {
       defaultValue: false,
       metadata: {
