@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<84ac5b80585f9185c879c81822718d86>>
+ * @generated SignedSource<<27361d399f26a6f7462a82f9fbfd5d48>>
  */
 
 /**
@@ -74,6 +74,8 @@ public open class ReactNativeFeatureFlagsDefaults : ReactNativeFeatureFlagsProvi
   override fun enableFabricRenderer(): Boolean = false
 
   override fun enableFontScaleChangesUpdatingLayout(): Boolean = true
+
+  override fun enableIOSExperimentalAutoFocusImplementation(): Boolean = false
 
   override fun enableIOSTextBaselineOffsetPerLine(): Boolean = false
 

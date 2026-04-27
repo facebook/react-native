@@ -5,11 +5,11 @@
  * LICENSE file in the root directory of this source tree.
  */
 
-#import <UIKit/UIKit.h>
+#import <React/RCTViewController.h>
 
 @class RCTWrapperViewController;
 
-@interface RCTWrapperViewController : UIViewController
+@interface RCTWrapperViewController : RCTViewController
 
 - (instancetype)initWithContentView:(UIView *)contentView NS_DESIGNATED_INITIALIZER;
 
