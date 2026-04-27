@@ -6457,6 +6457,8 @@ public class com/facebook/react/views/view/ReactViewGroup : android/view/ViewGro
 	protected fun drawChild (Landroid/graphics/Canvas;Landroid/view/View;J)Z
 	public fun endViewTransition (Landroid/view/View;)V
 	public final fun getAxOrderList ()Ljava/util/List;
+	public fun getClipBounds ()Landroid/graphics/Rect;
+	public fun getClipBounds (Landroid/graphics/Rect;)Z
 	public fun getClippingRect (Landroid/graphics/Rect;)V
 	public fun getHitSlopRect ()Landroid/graphics/Rect;
 	public fun getOverflow ()Ljava/lang/String;

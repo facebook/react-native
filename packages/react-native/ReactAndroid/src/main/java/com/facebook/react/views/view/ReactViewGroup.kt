@@ -37,6 +37,7 @@ import com.facebook.react.touch.OnInterceptTouchEventListener
 import com.facebook.react.touch.ReactHitSlopView
 import com.facebook.react.touch.ReactInterceptingViewGroup
 import com.facebook.react.uimanager.BackgroundStyleApplicator.clipToPaddingBox
+import com.facebook.react.uimanager.BackgroundStyleApplicator.getPaddingBoxRect
 import com.facebook.react.uimanager.BackgroundStyleApplicator.setBackgroundColor
 import com.facebook.react.uimanager.BackgroundStyleApplicator.setBorderColor
 import com.facebook.react.uimanager.BackgroundStyleApplicator.setBorderRadius
@@ -819,6 +820,39 @@ public open class ReactViewGroup public constructor(context: Context?) :
           }
       invalidate()
     }
+
+  /**
+   * Returns the clip bounds for this view based on the overflow property.
+   *
+   * When overflow is hidden or scroll, returns the padding box rect (the area inside the borders)
+   * so that systems querying [View.getClipBounds] can determine the view's clipping region. Returns
+   * null when overflow is visible (no clipping).
+   */
+  override fun getClipBounds(): Rect? {
+    if (
+        ReactNativeFeatureFlags.syncAndroidClipBoundsWithOverflow() &&
+            _overflow != null &&
+            _overflow != Overflow.VISIBLE
+    ) {
+      val rect = Rect()
+      getPaddingBoxRect(this, rect)
+      return rect
+    }
+    return super.getClipBounds()
+  }
+
+  /** See [getClipBounds]. */
+  override fun getClipBounds(outRect: Rect): Boolean {
+    if (
+        ReactNativeFeatureFlags.syncAndroidClipBoundsWithOverflow() &&
+            _overflow != null &&
+            _overflow != Overflow.VISIBLE
+    ) {
+      getPaddingBoxRect(this, outRect)
+      return true
+    }
+    return super.getClipBounds(outRect)
+  }
 
   override fun setOverflowInset(left: Int, top: Int, right: Int, bottom: Int) {
     if (

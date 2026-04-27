@@ -466,6 +466,35 @@ public object BackgroundStyleApplicator {
   }
 
   /**
+   * Populates [outRect] with the padding box rect of the view.
+   *
+   * The padding box is the area within the borders of the view. For views without a
+   * [CompositeBackgroundDrawable] or without borders, this returns the full view bounds.
+   *
+   * This is useful for overriding [View.getClipBounds] to communicate the view's clipping region to
+   * the Android framework (e.g. for [View.getGlobalVisibleRect] calculations).
+   *
+   * @param view The view whose padding box to compute
+   * @param outRect The rect to populate with the padding box bounds
+   */
+  internal fun getPaddingBoxRect(view: View, outRect: Rect) {
+    val composite = getCompositeBackgroundDrawable(view)
+    val computedBorderInsets =
+        composite?.borderInsets?.resolve(composite.layoutDirection, view.context)
+    if (computedBorderInsets == null) {
+      outRect.set(0, 0, view.width, view.height)
+      return
+    }
+
+    val left = (computedBorderInsets.left.dpToPx()).toInt()
+    val top = (computedBorderInsets.top.dpToPx()).toInt()
+    val right = (view.width.toFloat() - computedBorderInsets.right.dpToPx()).toInt()
+    val bottom = (view.height.toFloat() - computedBorderInsets.bottom.dpToPx()).toInt()
+
+    outRect.set(left, top, right, bottom)
+  }
+
+  /**
    * Clips the canvas to the padding box of the view.
    *
    * The padding box is the area within the borders of the view, accounting for border radius if
