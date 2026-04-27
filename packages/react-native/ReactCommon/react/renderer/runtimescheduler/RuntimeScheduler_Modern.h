@@ -13,6 +13,7 @@
 #include <react/renderer/runtimescheduler/Task.h>
 #include <atomic>
 #include <memory>
+#include <mutex>
 #include <queue>
 #include <shared_mutex>
 
@@ -155,6 +156,8 @@ class RuntimeScheduler_Modern final : public RuntimeSchedulerBase {
       RuntimeSchedulerIntersectionObserverDelegate*
           intersectionObserverDelegate) override;
 
+  void clear() noexcept override;
+
  private:
   std::atomic<uint_fast8_t> syncTaskRequests_{0};
 
@@ -220,6 +223,14 @@ class RuntimeScheduler_Modern final : public RuntimeSchedulerBase {
    */
   bool isEventLoopScheduled_{false};
 
+  /**
+   * Protects `pendingRenderingUpdates_` and
+   * `surfaceIdsWithPendingRenderingUpdates_` so that the queue can be safely
+   * cleared from another thread (e.g. when the owning `Scheduler` is
+   * destroyed) without racing with the JS thread that normally pushes and
+   * drains it.
+   */
+  std::mutex renderingUpdatesMutex_;
   std::queue<RuntimeSchedulerRenderingUpdate> pendingRenderingUpdates_;
   std::unordered_set<SurfaceId> surfaceIdsWithPendingRenderingUpdates_;
 

@@ -64,6 +64,7 @@ class RuntimeSchedulerBase {
   virtual void setIntersectionObserverDelegate(
       RuntimeSchedulerIntersectionObserverDelegate*
           intersectionObserverDelegate) = 0;
+  virtual void clear() noexcept = 0;
 };
 
 // This is a proxy for RuntimeScheduler implementation, which will be selected
@@ -179,6 +180,8 @@ class RuntimeScheduler final : RuntimeSchedulerBase {
   void setIntersectionObserverDelegate(
       RuntimeSchedulerIntersectionObserverDelegate*
           intersectionObserverDelegate) override;
+
+  void clear() noexcept override;
 
  private:
   // Actual implementation, stored as a unique pointer to simplify memory

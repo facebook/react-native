@@ -35928,6 +35928,7 @@ class RuntimeSchedulerBase {
   virtual void setIntersectionObserverDelegate(
       RuntimeSchedulerIntersectionObserverDelegate*
           intersectionObserverDelegate) = 0;
+  virtual void clear() noexcept = 0;
 };
 class RuntimeScheduler final : RuntimeSchedulerBase {
  public:
@@ -35972,6 +35973,7 @@ class RuntimeScheduler final : RuntimeSchedulerBase {
   void setIntersectionObserverDelegate(
       RuntimeSchedulerIntersectionObserverDelegate*
           intersectionObserverDelegate) override;
+  void clear() noexcept override;
 };
 } // namespace facebook::react
 
@@ -36072,6 +36074,7 @@ class RuntimeScheduler_Legacy final : public RuntimeSchedulerBase {
   void setIntersectionObserverDelegate(
       RuntimeSchedulerIntersectionObserverDelegate*
           intersectionObserverDelegate) override;
+  void clear() noexcept override;
 };
   std::atomic<uint_fast8_t> runtimeAccessRequests_{0};
   std::atomic_bool isSynchronous_{false};
@@ -36136,6 +36139,7 @@ class RuntimeScheduler_Modern final : public RuntimeSchedulerBase {
   void setIntersectionObserverDelegate(
       RuntimeSchedulerIntersectionObserverDelegate*
           intersectionObserverDelegate) override;
+  void clear() noexcept override;
 };
   std::priority_queue<
       std::shared_ptr<Task>,
@@ -36172,6 +36176,7 @@ class RuntimeScheduler_Modern final : public RuntimeSchedulerBase {
       HighResTimeStamp endTime);
   std::function<HighResTimeStamp()> now_;
   bool isEventLoopScheduled_{false};
+  std::mutex renderingUpdatesMutex_;
   std::queue<RuntimeSchedulerRenderingUpdate> pendingRenderingUpdates_;
   std::unordered_set<SurfaceId> surfaceIdsWithPendingRenderingUpdates_;
   std::atomic<ShadowTreeRevisionConsistencyManager*>
