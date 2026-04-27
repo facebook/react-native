@@ -17,6 +17,8 @@
 #import <React/RCTUITextField.h>
 #import <React/RCTUITextView.h>
 #import <React/RCTUtils.h>
+#import <React/UIView+React.h>
+#import <React/UIViewController+React.h>
 
 #import "RCTConversions.h"
 #import "RCTTextInputNativeCommands.h"
@@ -32,6 +34,7 @@ using namespace facebook::react;
 
 @interface RCTTextInputComponentView () <
     RCTBackedTextInputDelegate,
+    RCTViewControllerAppearanceListener,
     RCTTextInputViewProtocol
 #if !TARGET_OS_TV
     ,
@@ -70,6 +73,8 @@ static NSSet<NSNumber *> *returnKeyTypesSet;
    */
   BOOL _comingFromJS;
   BOOL _didMoveToWindow;
+  BOOL _didAutoFocus;
+  __weak UIViewController *_viewController;
 
   /*
    * Newly initialized default typing attributes contain a no-op NSParagraphStyle and NSShadow. These cause inequality
@@ -95,6 +100,7 @@ static NSSet<NSNumber *> *returnKeyTypesSet;
     _ignoreNextTextInputCall = NO;
     _comingFromJS = NO;
     _didMoveToWindow = NO;
+    _didAutoFocus = NO;
     _originalTypingAttributes = [_backedTextInputView.typingAttributes copy];
     _previousContentSize = CGSizeZero;
 
@@ -121,12 +127,11 @@ static NSSet<NSNumber *> *returnKeyTypesSet;
 {
   [super didMoveToWindow];
 
+  [_viewController reactRemoveViewControllerAppearanceListener:self];
+  _viewController = self.window ? [self reactViewController] : nil;
+  [_viewController reactAddViewControllerAppearanceListener:self];
+
   if (self.window && !_didMoveToWindow) {
-    const auto &props = static_cast<const TextInputProps &>(*_props);
-    if (props.autoFocus) {
-      [_backedTextInputView becomeFirstResponder];
-      [self scrollCursorIntoView];
-    }
     _didMoveToWindow = YES;
     [self initializeReturnKeyType];
   }
@@ -384,10 +389,25 @@ static NSSet<NSNumber *> *returnKeyTypesSet;
   _lastStringStateWasUpdatedWith = nil;
   _ignoreNextTextInputCall = NO;
   _didMoveToWindow = NO;
+  _didAutoFocus = NO;
+  [_viewController reactRemoveViewControllerAppearanceListener:self];
+  _viewController = nil;
   _backedTextInputView.inputAccessoryViewID = nil;
   _backedTextInputView.inputAccessoryView = nil;
   _hasInputAccessoryView = false;
   [_backedTextInputView resignFirstResponder];
+}
+
+#pragma mark - RCTViewControllerAppearanceListener
+
+- (void)reactViewControllerDidAppear:(UIViewController *)viewController animated:(BOOL)animated
+{
+  const auto &props = static_cast<const TextInputProps &>(*_props);
+  if (props.autoFocus && !_didAutoFocus) {
+    _didAutoFocus = YES;
+    [_backedTextInputView becomeFirstResponder];
+    [self scrollCursorIntoView];
+  }
 }
 
 #pragma mark - RCTBackedTextInputDelegate
