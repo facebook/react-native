@@ -142,3 +142,11 @@ Larger discussions and proposals are discussed in [**@react-native-community/dis
 React Native is MIT licensed, as found in the [LICENSE][l] file.
 
 [l]: https://github.com/facebook/react-native/blob/main/LICENSE
+
+## 💰 Bounty Contribution
+
+- **Task:** SoLoaderDSONotFoundError: couldn't find DSO to load: libreactnative.so
+- **Reward:** $1500
+- **Source:** GitHub-Paid
+- **Date:** 2026-04-27
+
