@@ -108,7 +108,7 @@ declare class PerformanceEntry {
   entryType: string;
   name: string;
   startTime: DOMHighResTimeStamp;
-  toJSON(): string;
+  toJSON(): {[string]: unknown};
 }
 
 // https://w3c.github.io/user-timing/#performancemark
@@ -127,7 +127,7 @@ declare class PerformanceServerTiming {
   description: string;
   duration: DOMHighResTimeStamp;
   name: string;
-  toJSON(): string;
+  toJSON(): {[string]: unknown};
 }
 
 // https://www.w3.org/TR/resource-timing-2/#sec-performanceresourcetiming
@@ -224,7 +224,7 @@ declare class Performance {
     endMark?: string,
   ): PerformanceMeasure;
   now(): DOMHighResTimeStamp;
-  toJSON(): string;
+  toJSON(): {[string]: unknown};
 }
 
 declare var performance: Performance;
