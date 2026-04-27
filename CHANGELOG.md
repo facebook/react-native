@@ -1,5 +1,111 @@
 # Changelog
 
+## v0.83.9
+
+### Breaking
+
+
+
+#### Android specific
+
+
+
+#### iOS specific
+
+
+
+### Added
+
+
+
+#### Android specific
+
+
+
+#### iOS specific
+
+
+
+### Changed
+
+
+
+#### Android specific
+
+
+
+#### iOS specific
+
+
+
+### Deprecated
+
+
+
+#### Android specific
+
+
+
+#### iOS specific
+
+
+
+### Removed
+
+
+
+#### Android specific
+
+
+
+#### iOS specific
+
+
+
+### Fixed
+
+
+
+#### Android specific
+
+
+
+#### iOS specific
+
+
+
+### Security
+
+
+
+#### Android specific
+
+
+
+#### iOS specific
+
+
+
+### Unknown
+
+- Release 0.83.9 ([e46ba6498d](https://github.com/facebook/react-native/commit/e46ba6498d54084273038617ca43d346f11acc4d) by [@react-native-bot](https://github.com/react-native-bot))
+- Skip prebuilds for DynamicFrameworks CI jobs ([3770421e96](https://github.com/facebook/react-native/commit/3770421e96059be32f0d8d2d326d8b38eb538a3e) by [@cipolleschi](https://github.com/cipolleschi))
+- Bump Podfile.lock ([373a1f7b00](https://github.com/facebook/react-native/commit/373a1f7b00f479870801bb28b84ce02ceee2410e) by [@react-native-bot](https://github.com/react-native-bot))
+- Release 0.83.8 ([e745903b6a](https://github.com/facebook/react-native/commit/e745903b6ad275879532460c5ef73955b0e3be79) by [@react-native-bot](https://github.com/react-native-bot))
+
+#### Android Unknown
+
+
+
+#### iOS Unknown
+
+
+
+#### Failed to parse
+
+
+
+
 ## v0.85.2
 
 ### Added
