@@ -127,12 +127,18 @@ static NSSet<NSNumber *> *returnKeyTypesSet;
 {
   [super didMoveToWindow];
 
-  [_viewController reactRemoveViewControllerAppearanceListener:self];
-  _viewController = self.window ? [self reactViewController] : nil;
-  [_viewController reactAddViewControllerAppearanceListener:self];
+  bool enableNewAutoFocusImpl = ReactNativeFeatureFlags::enableIOSExperimentalAutoFocusImplementation();
+  if (enableNewAutoFocusImpl) {
+    [_viewController reactRemoveViewControllerAppearanceListener:self];
+    _viewController = self.window ? [self reactViewController] : nil;
+    [_viewController reactAddViewControllerAppearanceListener:self];
+  }
 
   if (self.window && !_didMoveToWindow) {
     _didMoveToWindow = YES;
+    if (!enableNewAutoFocusImpl) {
+      [self tryAutoFocus];
+    }
     [self initializeReturnKeyType];
   }
 
@@ -398,9 +404,9 @@ static NSSet<NSNumber *> *returnKeyTypesSet;
   [_backedTextInputView resignFirstResponder];
 }
 
-#pragma mark - RCTViewControllerAppearanceListener
+#pragma mark - Auto focus / RCTViewControllerAppearanceListener
 
-- (void)reactViewControllerDidAppear:(UIViewController *)viewController animated:(BOOL)animated
+- (void)tryAutoFocus
 {
   const auto &props = static_cast<const TextInputProps &>(*_props);
   if (props.autoFocus && !_didAutoFocus) {
@@ -408,6 +414,11 @@ static NSSet<NSNumber *> *returnKeyTypesSet;
     [_backedTextInputView becomeFirstResponder];
     [self scrollCursorIntoView];
   }
+}
+
+- (void)reactViewControllerDidAppear:(UIViewController *)viewController animated:(BOOL)animated
+{
+  [self tryAutoFocus];
 }
 
 #pragma mark - RCTBackedTextInputDelegate
