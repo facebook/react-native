@@ -1836,8 +1836,7 @@ it('retains initial render region when an item is appended', async () => {
   expect(component).toMatchSnapshot();
 });
 
-// TODO: Revisit this test case after upgrading to React 19.
-skipTestSilenceLinter(
+it(
   'retains batch render region when an item is appended',
   async () => {
     const items = generateItems(10);
@@ -1860,12 +1859,9 @@ skipTestSilenceLinter(
         viewport: {width: 10, height: 50},
         content: {width: 10, height: 100},
       });
-      performAllBatches();
     });
 
-    await act(async () => {
-      await jest.runAllTimersAsync();
-    });
+    await advanceUntilLastCellIndexRendered(component, items.length - 1);
 
     await act(() => {
       component.update(
@@ -2639,11 +2635,28 @@ async function advanceUntilRenderAreaChanged(component) {
     }
 
     await act(() => {
-      jest.advanceTimersToNextTimer(1);
+      performNextBatch();
     });
   }
 
   throw new Error(`Render area did not change`);
+}
+
+async function advanceUntilLastCellIndexRendered(component, targetLastIndex) {
+  const instance = component.getInstance();
+  const MAX_TIMER_STEPS = 20;
+
+  for (let step = 0; step < MAX_TIMER_STEPS; step++) {
+    if (instance.state.cellsAroundViewport.last === targetLastIndex) {
+      return;
+    }
+
+    await act(() => {
+      performNextBatch();
+    });
+  }
+
+  throw new Error(`Target last index ${targetLastIndex} not rendered`);
 }
 
 function performAllBatches() {
