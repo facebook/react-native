@@ -2475,6 +2475,9 @@ interface RCTViewComponentView : public UIView <RCTComponentViewProtocol, RCTTou
   public virtual void updateProps:oldProps:(const facebook::react::Props::Shared& props, const facebook::react::Props::Shared& oldProps);
 }
 
+interface RCTViewController : public UIViewController {
+}
+
 interface RCTViewManager : public NSObject <RCTBridgeModule> {
   public @property (weak) RCTBridge* bridge;
   public CGFloat RCTJSONParseOnlyNumber(id json);
@@ -2538,7 +2541,7 @@ interface RCTWrapperView : public UIView {
   public virtual instancetype initWithBridge:(RCTBridge* bridge);
 }
 
-interface RCTWrapperViewController : public UIViewController {
+interface RCTWrapperViewController : public RCTViewController {
   public virtual instancetype initWithContentView:(UIView* contentView);
 }
 
