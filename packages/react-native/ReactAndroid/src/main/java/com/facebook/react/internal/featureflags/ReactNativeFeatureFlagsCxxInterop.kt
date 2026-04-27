@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<62d1f0fcdf8e3165480da12575d62826>>
+ * @generated SignedSource<<8916e9f4a938a69ff175c806db9835d4>>
  */
 
 /**
@@ -177,6 +177,8 @@ public object ReactNativeFeatureFlagsCxxInterop {
   @DoNotStrip @JvmStatic public external fun shouldTriggerResponderTransferOnScrollAndroid(): Boolean
 
   @DoNotStrip @JvmStatic public external fun skipActivityIdentityAssertionOnHostPause(): Boolean
+
+  @DoNotStrip @JvmStatic public external fun syncAndroidClipBoundsWithOverflow(): Boolean
 
   @DoNotStrip @JvmStatic public external fun traceTurboModulePromiseRejectionsOnAndroid(): Boolean
 

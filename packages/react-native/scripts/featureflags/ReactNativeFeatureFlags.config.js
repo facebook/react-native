@@ -850,6 +850,16 @@ const definitions: FeatureFlagDefinitions = {
       },
       ossReleaseStage: 'none',
     },
+    syncAndroidClipBoundsWithOverflow: {
+      defaultValue: false,
+      metadata: {
+        description:
+          'Override getClipBounds on Android views to return the padding box when overflow is hidden',
+        expectedReleaseValue: true,
+        purpose: 'release',
+      },
+      ossReleaseStage: 'none',
+    },
     traceTurboModulePromiseRejectionsOnAndroid: {
       defaultValue: false,
       metadata: {

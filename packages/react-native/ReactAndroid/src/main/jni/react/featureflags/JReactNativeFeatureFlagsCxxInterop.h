@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<773741594e911047dac28904e9fc9544>>
+ * @generated SignedSource<<4be32bad403baeca1a28f19ad181c42c>>
  */
 
 /**
@@ -253,6 +253,9 @@ class JReactNativeFeatureFlagsCxxInterop
     facebook::jni::alias_ref<JReactNativeFeatureFlagsCxxInterop>);
 
   static bool skipActivityIdentityAssertionOnHostPause(
+    facebook::jni::alias_ref<JReactNativeFeatureFlagsCxxInterop>);
+
+  static bool syncAndroidClipBoundsWithOverflow(
     facebook::jni::alias_ref<JReactNativeFeatureFlagsCxxInterop>);
 
   static bool traceTurboModulePromiseRejectionsOnAndroid(

@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<eb70fd41bc36f1a49849e29bea081007>>
+ * @generated SignedSource<<cd8218c8b8588f3317bf63ce8d608548>>
  */
 
 /**
@@ -479,6 +479,12 @@ public object ReactNativeFeatureFlags {
    */
   @JvmStatic
   public fun skipActivityIdentityAssertionOnHostPause(): Boolean = accessor.skipActivityIdentityAssertionOnHostPause()
+
+  /**
+   * Override getClipBounds on Android views to return the padding box when overflow is hidden
+   */
+  @JvmStatic
+  public fun syncAndroidClipBoundsWithOverflow(): Boolean = accessor.syncAndroidClipBoundsWithOverflow()
 
   /**
    * Enables storing js caller stack when creating promise in native module. This is useful in case of Promise rejection and tracing the cause.
