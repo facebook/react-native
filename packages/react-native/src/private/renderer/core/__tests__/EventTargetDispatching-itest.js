@@ -964,6 +964,322 @@ const {isOSS} = Fantom.getConstants();
       },
     );
 
+    (ReactNativeFeatureFlags.enableNativeEventTargetEventDispatching()
+      ? describe
+      : describe.skip)('bubbling to document element and document', () => {
+      it('event bubbles from child up to the document element', () => {
+        const root = Fantom.createRoot();
+        const childRef = React.createRef<React.ElementRef<typeof View>>();
+        const documentElementHandler = jest.fn();
+
+        Fantom.runTask(() => {
+          root.render(<View ref={childRef} />);
+        });
+
+        asEventTarget(root.document.documentElement).addEventListener(
+          'pointerup',
+          documentElementHandler,
+        );
+
+        Fantom.dispatchNativeEvent(
+          childRef,
+          'onPointerUp',
+          {x: 0, y: 0},
+          {
+            category: Fantom.NativeEventCategory.Discrete,
+          },
+        );
+
+        expect(documentElementHandler).toHaveBeenCalledTimes(1);
+      });
+
+      it('event bubbles from child up to the document', () => {
+        const root = Fantom.createRoot();
+        const childRef = React.createRef<React.ElementRef<typeof View>>();
+        const documentHandler = jest.fn();
+
+        Fantom.runTask(() => {
+          root.render(<View ref={childRef} />);
+        });
+
+        asEventTarget(root.document).addEventListener(
+          'pointerup',
+          documentHandler,
+        );
+
+        Fantom.dispatchNativeEvent(
+          childRef,
+          'onPointerUp',
+          {x: 0, y: 0},
+          {
+            category: Fantom.NativeEventCategory.Discrete,
+          },
+        );
+
+        expect(documentHandler).toHaveBeenCalledTimes(1);
+      });
+
+      it('event bubbles from a deeply nested child up to document element and document', () => {
+        const root = Fantom.createRoot();
+        const childRef = React.createRef<React.ElementRef<typeof View>>();
+        const documentElementHandler = jest.fn();
+        const documentHandler = jest.fn();
+
+        Fantom.runTask(() => {
+          root.render(
+            <View>
+              <View>
+                <View>
+                  <View ref={childRef} />
+                </View>
+              </View>
+            </View>,
+          );
+        });
+
+        asEventTarget(root.document.documentElement).addEventListener(
+          'pointerup',
+          documentElementHandler,
+        );
+        asEventTarget(root.document).addEventListener(
+          'pointerup',
+          documentHandler,
+        );
+
+        Fantom.dispatchNativeEvent(
+          childRef,
+          'onPointerUp',
+          {x: 0, y: 0},
+          {
+            category: Fantom.NativeEventCategory.Discrete,
+          },
+        );
+
+        expect(documentElementHandler).toHaveBeenCalledTimes(1);
+        expect(documentHandler).toHaveBeenCalledTimes(1);
+      });
+
+      it('capture phase on document fires before capture phase on document element', () => {
+        const root = Fantom.createRoot();
+        const childRef = React.createRef<React.ElementRef<typeof View>>();
+        const order: Array<string> = [];
+
+        Fantom.runTask(() => {
+          root.render(
+            <View
+              ref={childRef}
+              onPointerUpCapture={() => {
+                order.push('child-capture');
+              }}
+              onPointerUp={() => {
+                order.push('child-bubble');
+              }}
+            />,
+          );
+        });
+
+        asEventTarget(root.document).addEventListener(
+          'pointerup',
+          () => {
+            order.push('document-capture');
+          },
+          {capture: true},
+        );
+        asEventTarget(root.document.documentElement).addEventListener(
+          'pointerup',
+          () => {
+            order.push('documentElement-capture');
+          },
+          {capture: true},
+        );
+        asEventTarget(root.document.documentElement).addEventListener(
+          'pointerup',
+          () => {
+            order.push('documentElement-bubble');
+          },
+        );
+        asEventTarget(root.document).addEventListener('pointerup', () => {
+          order.push('document-bubble');
+        });
+
+        Fantom.dispatchNativeEvent(
+          childRef,
+          'onPointerUp',
+          {x: 0, y: 0},
+          {
+            category: Fantom.NativeEventCategory.Discrete,
+          },
+        );
+
+        expect(order).toEqual([
+          'document-capture',
+          'documentElement-capture',
+          'child-capture',
+          'child-bubble',
+          'documentElement-bubble',
+          'document-bubble',
+        ]);
+      });
+
+      it('event.target points to the original child and event.currentTarget transitions through document element and document', () => {
+        const root = Fantom.createRoot();
+        const childRef = React.createRef<React.ElementRef<typeof View>>();
+        const targets: Array<{target: unknown, currentTarget: unknown}> = [];
+
+        Fantom.runTask(() => {
+          root.render(<View ref={childRef} />);
+        });
+
+        asEventTarget(root.document.documentElement).addEventListener(
+          'pointerup',
+          (e: $FlowFixMe) => {
+            targets.push({target: e.target, currentTarget: e.currentTarget});
+          },
+        );
+        asEventTarget(root.document).addEventListener(
+          'pointerup',
+          (e: $FlowFixMe) => {
+            targets.push({target: e.target, currentTarget: e.currentTarget});
+          },
+        );
+
+        Fantom.dispatchNativeEvent(
+          childRef,
+          'onPointerUp',
+          {x: 0, y: 0},
+          {
+            category: Fantom.NativeEventCategory.Discrete,
+          },
+        );
+
+        expect(targets).toHaveLength(2);
+
+        // event.target is always the original target element
+        expect(targets[0].target).toBe(childRef.current);
+        expect(targets[1].target).toBe(childRef.current);
+
+        // event.currentTarget changes at each propagation step
+        expect(targets[0].currentTarget).toBe(root.document.documentElement);
+        expect(targets[1].currentTarget).toBe(root.document);
+      });
+
+      it('stopPropagation on document element prevents document handler from firing', () => {
+        const root = Fantom.createRoot();
+        const childRef = React.createRef<React.ElementRef<typeof View>>();
+        const documentHandler = jest.fn();
+        const documentElementHandler = jest.fn((e: $FlowFixMe) => {
+          e.stopPropagation();
+        });
+
+        Fantom.runTask(() => {
+          root.render(<View ref={childRef} />);
+        });
+
+        asEventTarget(root.document.documentElement).addEventListener(
+          'pointerup',
+          documentElementHandler,
+        );
+        asEventTarget(root.document).addEventListener(
+          'pointerup',
+          documentHandler,
+        );
+
+        Fantom.dispatchNativeEvent(
+          childRef,
+          'onPointerUp',
+          {x: 0, y: 0},
+          {
+            category: Fantom.NativeEventCategory.Discrete,
+          },
+        );
+
+        expect(documentElementHandler).toHaveBeenCalledTimes(1);
+        expect(documentHandler).toHaveBeenCalledTimes(0);
+      });
+
+      it('removeEventListener on document element stops events from being received', () => {
+        const root = Fantom.createRoot();
+        const childRef = React.createRef<React.ElementRef<typeof View>>();
+        const documentElementHandler = jest.fn();
+
+        Fantom.runTask(() => {
+          root.render(<View ref={childRef} />);
+        });
+
+        asEventTarget(root.document.documentElement).addEventListener(
+          'pointerup',
+          documentElementHandler,
+        );
+
+        Fantom.dispatchNativeEvent(
+          childRef,
+          'onPointerUp',
+          {x: 0, y: 0},
+          {
+            category: Fantom.NativeEventCategory.Discrete,
+          },
+        );
+
+        expect(documentElementHandler).toHaveBeenCalledTimes(1);
+
+        asEventTarget(root.document.documentElement).removeEventListener(
+          'pointerup',
+          documentElementHandler,
+        );
+
+        Fantom.dispatchNativeEvent(
+          childRef,
+          'onPointerUp',
+          {x: 0, y: 0},
+          {
+            category: Fantom.NativeEventCategory.Discrete,
+          },
+        );
+
+        expect(documentElementHandler).toHaveBeenCalledTimes(1);
+      });
+
+      it('direct (non-bubbling) events do not reach the document element or document', () => {
+        const root = Fantom.createRoot();
+        const childRef = React.createRef<React.ElementRef<typeof View>>();
+        const childHandler = jest.fn();
+        const documentElementHandler = jest.fn();
+        const documentHandler = jest.fn();
+
+        Fantom.runTask(() => {
+          root.render(<View ref={childRef} onLayout={childHandler} />);
+        });
+
+        asEventTarget(root.document.documentElement).addEventListener(
+          'layout',
+          documentElementHandler,
+        );
+        asEventTarget(root.document).addEventListener(
+          'layout',
+          documentHandler,
+        );
+
+        const childCallsBefore = childHandler.mock.calls.length;
+
+        Fantom.dispatchNativeEvent(
+          childRef,
+          'onLayout',
+          {layout: {x: 0, y: 0, width: 100, height: 50}},
+          {
+            category: Fantom.NativeEventCategory.Discrete,
+          },
+        );
+
+        // Child handler fires
+        expect(
+          childHandler.mock.calls.length - childCallsBefore,
+        ).toBeGreaterThan(0);
+        // Non-bubbling events don't reach the document element or the document
+        expect(documentElementHandler).toHaveBeenCalledTimes(0);
+        expect(documentHandler).toHaveBeenCalledTimes(0);
+      });
+    });
+
     it('stopPropagation in capture phase prevents all bubble-phase handlers', () => {
       const root = Fantom.createRoot();
       const childRef = React.createRef<React.ElementRef<typeof View>>();
