@@ -356,6 +356,11 @@ internal class MountingManager(
     )
   }
 
+  @AnyThread
+  @ThreadConfined(ThreadConfined.ANY)
+  fun hasPendingEvents(surfaceId: Int, reactTag: Int): Boolean =
+      getSurfaceMountingManager(surfaceId, reactTag)?.hasPendingEvents(reactTag) ?: false
+
   private fun getSurfaceMountingManager(surfaceId: Int, reactTag: Int): SurfaceMountingManager? =
       if (surfaceId == ViewUtil.NO_SURFACE_ID) getSurfaceManagerForView(reactTag)
       else getSurfaceManager(surfaceId)

@@ -1227,6 +1227,21 @@ public class FabricUIManager
       return;
     }
 
+    // If a previous event for this tag was queued for the UI thread but has not yet been
+    // dispatched, route this one through the same path so that JS observes events in receive
+    // order. Synchronous dispatches keep their fast path.
+    if (!experimentalIsSynchronous && mMountingManager.hasPendingEvents(surfaceId, reactTag)) {
+      mMountingManager.enqueuePendingEvent(
+          surfaceId,
+          reactTag,
+          eventName,
+          canCoalesceEvent,
+          params,
+          eventCategory,
+          eventTimestamp);
+      return;
+    }
+
     if (experimentalIsSynchronous) {
       UiThreadUtil.assertOnUiThread();
       // add() returns true only if there are no equivalent events already in the set

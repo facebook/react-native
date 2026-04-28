@@ -56,6 +56,7 @@ import java.util.ArrayDeque
 import java.util.LinkedList
 import java.util.Queue
 import java.util.concurrent.ConcurrentHashMap
+import java.util.concurrent.atomic.AtomicInteger
 import kotlin.concurrent.Volatile
 
 /** Returns true if the collection contains [key]. */
@@ -1151,18 +1152,34 @@ internal constructor(
 
     val viewEvent =
         PendingViewEvent(eventName, params, eventCategory, canCoalesceEvent, eventTimestamp)
+    // Mark that an enqueue is in flight before posting; readers on other threads must observe this
+    // before they decide to dispatch directly, so events stay in receive order.
+    viewState.pendingEventOps.incrementAndGet()
     UiThreadUtil.runOnUiThread {
-      val eventEmitter = viewState.eventEmitter
-      if (eventEmitter != null) {
-        viewEvent.dispatch(eventEmitter)
-      } else {
-        val queue =
-            viewState.pendingEventQueue
-                ?: LinkedList<PendingViewEvent>().also { viewState.pendingEventQueue = it }
-        queue.add(viewEvent)
+      try {
+        val eventEmitter = viewState.eventEmitter
+        if (eventEmitter != null) {
+          viewEvent.dispatch(eventEmitter)
+        } else {
+          val queue =
+              viewState.pendingEventQueue
+                  ?: LinkedList<PendingViewEvent>().also { viewState.pendingEventQueue = it }
+          queue.add(viewEvent)
+        }
+      } finally {
+        viewState.pendingEventOps.decrementAndGet()
       }
     }
   }
+
+  /**
+   * Returns true if an enqueuePendingEvent call for [reactTag] has been posted to the UI thread but
+   * has not yet executed. Callers should route subsequent events through [enqueuePendingEvent] in
+   * that case to preserve receive order.
+   */
+  @AnyThread
+  internal fun hasPendingEvents(reactTag: Int): Boolean =
+      (tagToViewState[reactTag]?.pendingEventOps?.get() ?: 0) > 0
 
   public fun markActiveTouchForTag(reactTag: Int): Unit {
     viewsWithActiveTouches.add(reactTag)
@@ -1191,6 +1208,10 @@ internal constructor(
     var eventEmitter: EventEmitterWrapper? = null
 
     @ThreadConfined(ThreadConfined.UI) var pendingEventQueue: Queue<PendingViewEvent>? = null
+
+    // Tracks enqueuePendingEvent operations posted to the UI thread but not yet executed. Read from
+    // any thread to detect in-flight events that must not be bypassed by a direct dispatch.
+    val pendingEventOps: AtomicInteger = AtomicInteger(0)
 
     override fun toString(): String {
       val isLayoutOnly = viewManager == null
