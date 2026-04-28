@@ -30,6 +30,9 @@ component View(
   const hasTextAncestor = use(TextAncestorContext);
 
   let resolvedProps = props;
+
+  // When flag is disabled, perform prop transformations of `aria-*`, `id`, and `tabIndex`
+  // props in JS. When flag is enabled, these transformations are performed faster in C++.
   if (!ReactNativeFeatureFlags.enableNativeViewPropTransformations()) {
     const {
       accessibilityState,
@@ -125,6 +128,8 @@ component View(
       <ViewNativeComponent {...resolvedProps} ref={ref} />
     );
 
+  // If nested within a Text component, reset the ancestor context so that children
+  // of this view are not treated as text descendants.
   if (hasTextAncestor) {
     return (
       <TextAncestorContext value={false}>{actualView}</TextAncestorContext>
