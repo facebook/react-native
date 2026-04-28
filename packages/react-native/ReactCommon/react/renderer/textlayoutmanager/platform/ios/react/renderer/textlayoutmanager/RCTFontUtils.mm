@@ -337,10 +337,22 @@ UIFont *RCTFontWithFontProperties(RCTFontProperties fontProperties)
         if (rawFontFamilies.count >= 1) {
           NSArray *updatedFontNames = fontNames;
           
-          for (NSString *name in rawFontFamilies) {
+          for (NSString *rawName in rawFontFamilies) {
+            // Trim surrounding whitespace so tokens like " CustomFont-Bold"
+            // produced by `, ` separators still match via -fontWithName:
+            NSString *name = [rawName stringByTrimmingCharactersInSet:[NSCharacterSet whitespaceAndNewlineCharacterSet]];
+            if (name.length == 0) {
+              continue;
+            }
             UIFont *font = [UIFont fontWithName:name size:effectiveFontSize];
             if (font) {
-              updatedFontNames = [updatedFontNames arrayByAddingObject:font.fontName];
+              // Expand to all faces of the resolved family so the candidate loop
+              // below can pick italic/weighted variants. Mirrors what the
+              // single-name path does
+              updatedFontNames = [updatedFontNames arrayByAddingObjectsFromArray:
+                                  [UIFont fontNamesForFamilyName:font.familyName]];
+              // Default the weight to the first resolved face when not explicitly set from fontProperties.weight
+              fontWeight = fontWeight ?: RCTGetFontWeight(font);
             }
           }
           
