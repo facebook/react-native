@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<2dd0956bc9a42c6eebde2c915706d346>>
+ * @generated SignedSource<<4e19cdce9383c287c849b912fa74586c>>
  */
 
 /**
@@ -40,6 +40,7 @@ internal class ReactNativeFeatureFlagsCxxAccessor : ReactNativeFeatureFlagsAcces
   private var enableFabricRendererCache: Boolean? = null
   private var enableFixForParentTagDuringReparentingCache: Boolean? = null
   private var enableFontScaleChangesUpdatingLayoutCache: Boolean? = null
+  private var enableIOSExperimentalAutoFocusImplementationCache: Boolean? = null
   private var enableIOSTextBaselineOffsetPerLineCache: Boolean? = null
   private var enableIOSViewClipToPaddingBoxCache: Boolean? = null
   private var enableInteropViewManagerClassLookUpOptimizationIOSCache: Boolean? = null
@@ -261,6 +262,15 @@ internal class ReactNativeFeatureFlagsCxxAccessor : ReactNativeFeatureFlagsAcces
     if (cached == null) {
       cached = ReactNativeFeatureFlagsCxxInterop.enableFontScaleChangesUpdatingLayout()
       enableFontScaleChangesUpdatingLayoutCache = cached
+    }
+    return cached
+  }
+
+  override fun enableIOSExperimentalAutoFocusImplementation(): Boolean {
+    var cached = enableIOSExperimentalAutoFocusImplementationCache
+    if (cached == null) {
+      cached = ReactNativeFeatureFlagsCxxInterop.enableIOSExperimentalAutoFocusImplementation()
+      enableIOSExperimentalAutoFocusImplementationCache = cached
     }
     return cached
   }

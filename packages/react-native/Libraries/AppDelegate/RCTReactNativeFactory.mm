@@ -13,6 +13,7 @@
 #import <React/RCTUtils.h>
 #import <ReactCommon/RCTHost.h>
 #import <objc/runtime.h>
+#import <react/featureflags/ReactNativeFeatureFlags.h>
 #import <react/featureflags/ReactNativeFeatureFlagsOverridesOSSCanary.h>
 #import <react/featureflags/ReactNativeFeatureFlagsOverridesOSSExperimental.h>
 #import <react/featureflags/ReactNativeFeatureFlagsOverridesOSSStable.h>
@@ -51,21 +52,37 @@ using namespace facebook::react;
   if (self = [super init]) {
     self.delegate = delegate;
     [self _setUpFeatureFlags:releaseLevel];
-
-    auto newArchEnabled = [self newArchEnabled];
-    auto fabricEnabled = [self fabricEnabled];
-
-    [RCTColorSpaceUtils applyDefaultColorSpace:[self defaultColorSpace]];
-    RCTEnableTurboModule([self turboModuleEnabled]);
-
-    self.rootViewFactory = [self createRCTRootViewFactory];
-
-    if (newArchEnabled || fabricEnabled) {
-      [RCTComponentViewFactory currentComponentViewFactory].thirdPartyFabricComponentsProvider = self;
-    }
+    [self _setUpReactNativeFactory];
   }
 
   return self;
+}
+
+- (instancetype)initWithDelegate:(id<RCTReactNativeFactoryDelegate>)delegate
+            featureFlagsProvider:(std::unique_ptr<ReactNativeFeatureFlagsProvider>)featureFlagsProvider
+{
+  if (self = [super init]) {
+    self.delegate = delegate;
+    [self _setUpFeatureFlagsWithProvider:std::move(featureFlagsProvider)];
+    [self _setUpReactNativeFactory];
+  }
+
+  return self;
+}
+
+- (void)_setUpReactNativeFactory
+{
+  auto newArchEnabled = [self newArchEnabled];
+  auto fabricEnabled = [self fabricEnabled];
+
+  [RCTColorSpaceUtils applyDefaultColorSpace:[self defaultColorSpace]];
+  RCTEnableTurboModule([self turboModuleEnabled]);
+
+  self.rootViewFactory = [self createRCTRootViewFactory];
+
+  if (newArchEnabled || fabricEnabled) {
+    [RCTComponentViewFactory currentComponentViewFactory].thirdPartyFabricComponentsProvider = self;
+  }
 }
 
 - (void)startReactNativeWithModuleName:(NSString *)moduleName inWindow:(UIWindow *_Nullable)window
@@ -345,6 +362,23 @@ using namespace facebook::react;
         ReactNativeFeatureFlags::override(std::make_unique<ReactNativeFeatureFlagsOverridesOSSExperimental>());
         break;
     }
+  });
+}
+
+- (void)_setUpFeatureFlagsWithProvider:(std::unique_ptr<ReactNativeFeatureFlagsProvider>)featureFlagsProvider
+{
+  if (featureFlagsProvider == nullptr) {
+    [NSException
+         raise:@"RCTReactNativeFactory::_setUpFeatureFlagsWithProvider called with a null provider"
+        format:@"A ReactNativeFeatureFlagsProvider must be provided"];
+    return;
+  }
+
+  __block auto featureFlagsProviderBlock = std::move(featureFlagsProvider);
+
+  static dispatch_once_t setupFeatureFlagsToken;
+  dispatch_once(&setupFeatureFlagsToken, ^{
+    ReactNativeFeatureFlags::override(std::move(featureFlagsProviderBlock));
   });
 }
 

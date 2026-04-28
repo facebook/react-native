@@ -15,9 +15,14 @@
 #import "RCTUIConfiguratorProtocol.h"
 
 #if defined(__cplusplus) // Don't conform to protocols requiring C++ when it's not defined.
+#include <memory>
 #import <React/RCTComponentViewFactory.h>
 #import <ReactCommon/RCTHost.h>
 #import <ReactCommon/RCTTurboModuleManager.h>
+
+namespace facebook::react {
+class ReactNativeFeatureFlagsProvider;
+}
 
 #endif
 
@@ -89,6 +94,12 @@ typedef NS_ENUM(NSInteger, RCTReleaseLevel) { Canary, Experimental, Stable };
 - (instancetype)initWithDelegate:(id<RCTReactNativeFactoryDelegate>)delegate;
 
 - (instancetype)initWithDelegate:(id<RCTReactNativeFactoryDelegate>)delegate releaseLevel:(RCTReleaseLevel)releaseLevel;
+
+#if defined(__cplusplus)
+/// Initializes React Native with the provided feature flag provider.
+- (instancetype)initWithDelegate:(id<RCTReactNativeFactoryDelegate>)delegate
+            featureFlagsProvider:(std::unique_ptr<facebook::react::ReactNativeFeatureFlagsProvider>)featureFlagsProvider;
+#endif
 
 - (void)startReactNativeWithModuleName:(NSString *)moduleName inWindow:(UIWindow *_Nullable)window;
 

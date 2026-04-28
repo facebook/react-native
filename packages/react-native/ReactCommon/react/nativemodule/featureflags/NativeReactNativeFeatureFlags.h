@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<1ca9ccfa126df99262008fef58ee996b>>
+ * @generated SignedSource<<5595823614f9ec3f20d95ce21cb7b4d2>>
  */
 
 /**
@@ -75,6 +75,8 @@ class NativeReactNativeFeatureFlags
   bool enableFixForParentTagDuringReparenting(jsi::Runtime& runtime);
 
   bool enableFontScaleChangesUpdatingLayout(jsi::Runtime& runtime);
+
+  bool enableIOSExperimentalAutoFocusImplementation(jsi::Runtime& runtime);
 
   bool enableIOSTextBaselineOffsetPerLine(jsi::Runtime& runtime);
 

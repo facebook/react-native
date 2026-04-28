@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<f80a47becb09a059ea728db783473b32>>
+ * @generated SignedSource<<94e87435c32d010d0a3943fd71fc099f>>
  * @flow strict
  * @noformat
  */
@@ -71,6 +71,7 @@ export type ReactNativeFeatureFlags = $ReadOnly<{
   enableFabricRenderer: Getter<boolean>,
   enableFixForParentTagDuringReparenting: Getter<boolean>,
   enableFontScaleChangesUpdatingLayout: Getter<boolean>,
+  enableIOSExperimentalAutoFocusImplementation: Getter<boolean>,
   enableIOSTextBaselineOffsetPerLine: Getter<boolean>,
   enableIOSViewClipToPaddingBox: Getter<boolean>,
   enableInteropViewManagerClassLookUpOptimizationIOS: Getter<boolean>,
@@ -281,6 +282,10 @@ export const enableFixForParentTagDuringReparenting: Getter<boolean> = createNat
  * Enables font scale changes updating layout for measurable nodes.
  */
 export const enableFontScaleChangesUpdatingLayout: Getter<boolean> = createNativeFlagGetter('enableFontScaleChangesUpdatingLayout', false);
+/**
+ * Fixes #56595 by moving the autoFocus from didMoveToWindow to viewDidAppear
+ */
+export const enableIOSExperimentalAutoFocusImplementation: Getter<boolean> = createNativeFlagGetter('enableIOSExperimentalAutoFocusImplementation', false);
 /**
  * Applies base offset for each line of text separately on iOS.
  */
