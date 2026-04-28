@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<85d9a99e79df5428b4b6264cedbc505c>>
+ * @generated SignedSource<<10aa043b91c4189bd7772066085e168d>>
  */
 
 /**
@@ -1127,6 +1127,24 @@ bool ReactNativeFeatureFlagsAccessor::useSilenceErrorSMMViewNotFound() {
   return flagValue.value();
 }
 
+bool ReactNativeFeatureFlagsAccessor::useTraitHiddenOnIOS() {
+  auto flagValue = useTraitHiddenOnIOS_.load();
+
+  if (!flagValue.has_value()) {
+    // This block is not exclusive but it is not necessary.
+    // If multiple threads try to initialize the feature flag, we would only
+    // be accessing the provider multiple times but the end state of this
+    // instance and the returned flag value would be the same.
+
+    markFlagAsAccessed(61, "useTraitHiddenOnIOS");
+
+    flagValue = currentProvider_->useTraitHiddenOnIOS();
+    useTraitHiddenOnIOS_ = flagValue;
+  }
+
+  return flagValue.value();
+}
+
 bool ReactNativeFeatureFlagsAccessor::useTurboModuleInterop() {
   auto flagValue = useTurboModuleInterop_.load();
 
@@ -1136,7 +1154,7 @@ bool ReactNativeFeatureFlagsAccessor::useTurboModuleInterop() {
     // be accessing the provider multiple times but the end state of this
     // instance and the returned flag value would be the same.
 
-    markFlagAsAccessed(61, "useTurboModuleInterop");
+    markFlagAsAccessed(62, "useTurboModuleInterop");
 
     flagValue = currentProvider_->useTurboModuleInterop();
     useTurboModuleInterop_ = flagValue;
@@ -1154,7 +1172,7 @@ bool ReactNativeFeatureFlagsAccessor::useTurboModules() {
     // be accessing the provider multiple times but the end state of this
     // instance and the returned flag value would be the same.
 
-    markFlagAsAccessed(62, "useTurboModules");
+    markFlagAsAccessed(63, "useTurboModules");
 
     flagValue = currentProvider_->useTurboModules();
     useTurboModules_ = flagValue;
@@ -1172,7 +1190,7 @@ double ReactNativeFeatureFlagsAccessor::virtualViewPrerenderRatio() {
     // be accessing the provider multiple times but the end state of this
     // instance and the returned flag value would be the same.
 
-    markFlagAsAccessed(63, "virtualViewPrerenderRatio");
+    markFlagAsAccessed(64, "virtualViewPrerenderRatio");
 
     flagValue = currentProvider_->virtualViewPrerenderRatio();
     virtualViewPrerenderRatio_ = flagValue;
@@ -1190,7 +1208,7 @@ bool ReactNativeFeatureFlagsAccessor::runtimeCrashUiThreadUtils() {
     // be accessing the provider multiple times but the end state of this
     // instance and the returned flag value would be the same.
 
-    markFlagAsAccessed(64, "runtimeCrashUiThreadUtils");
+    markFlagAsAccessed(65, "runtimeCrashUiThreadUtils");
 
     flagValue = currentProvider_->runtimeCrashUiThreadUtils();
     runtimeCrashUiThreadUtils_ = flagValue;

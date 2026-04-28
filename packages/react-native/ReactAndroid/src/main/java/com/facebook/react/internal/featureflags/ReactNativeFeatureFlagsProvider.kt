@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<0a4b05562ed8b30b7d4dabd5c8680d6d>>
+ * @generated SignedSource<<2877a4acf03951884d1d663fdf00b9f8>>
  */
 
 /**
@@ -144,6 +144,8 @@ public interface ReactNativeFeatureFlagsProvider {
   @DoNotStrip public fun useShadowNodeStateOnClone(): Boolean
 
   @DoNotStrip public fun useSilenceErrorSMMViewNotFound(): Boolean
+
+  @DoNotStrip public fun useTraitHiddenOnIOS(): Boolean
 
   @DoNotStrip public fun useTurboModuleInterop(): Boolean
 

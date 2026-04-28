@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<073595986845439fdcb30edc52dadc30>>
+ * @generated SignedSource<<f4d8c8c96e3d7075dc71b8ac048fc7e0>>
  */
 
 /**
@@ -211,6 +211,9 @@ class JReactNativeFeatureFlagsCxxInterop
     facebook::jni::alias_ref<JReactNativeFeatureFlagsCxxInterop>);
 
   static bool useSilenceErrorSMMViewNotFound(
+    facebook::jni::alias_ref<JReactNativeFeatureFlagsCxxInterop>);
+
+  static bool useTraitHiddenOnIOS(
     facebook::jni::alias_ref<JReactNativeFeatureFlagsCxxInterop>);
 
   static bool useTurboModuleInterop(

@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<64b1d9667e6869ea4ba406222b307464>>
+ * @generated SignedSource<<c3ce57d947ffe2b5b404acd4a8527ae0>>
  */
 
 /**
@@ -405,6 +405,12 @@ class ReactNativeFeatureFlagsJavaProvider
     return method(javaProvider_);
   }
 
+  bool useTraitHiddenOnIOS() override {
+    static const auto method =
+        getReactNativeFeatureFlagsProviderJavaClass()->getMethod<jboolean()>("useTraitHiddenOnIOS");
+    return method(javaProvider_);
+  }
+
   bool useTurboModuleInterop() override {
     static const auto method =
         getReactNativeFeatureFlagsProviderJavaClass()->getMethod<jboolean()>("useTurboModuleInterop");
@@ -738,6 +744,11 @@ bool JReactNativeFeatureFlagsCxxInterop::useSilenceErrorSMMViewNotFound(
   return ReactNativeFeatureFlags::useSilenceErrorSMMViewNotFound();
 }
 
+bool JReactNativeFeatureFlagsCxxInterop::useTraitHiddenOnIOS(
+    facebook::jni::alias_ref<JReactNativeFeatureFlagsCxxInterop> /*unused*/) {
+  return ReactNativeFeatureFlags::useTraitHiddenOnIOS();
+}
+
 bool JReactNativeFeatureFlagsCxxInterop::useTurboModuleInterop(
     facebook::jni::alias_ref<JReactNativeFeatureFlagsCxxInterop> /*unused*/) {
   return ReactNativeFeatureFlags::useTurboModuleInterop();
@@ -972,6 +983,9 @@ void JReactNativeFeatureFlagsCxxInterop::registerNatives() {
       makeNativeMethod(
         "useSilenceErrorSMMViewNotFound",
         JReactNativeFeatureFlagsCxxInterop::useSilenceErrorSMMViewNotFound),
+      makeNativeMethod(
+        "useTraitHiddenOnIOS",
+        JReactNativeFeatureFlagsCxxInterop::useTraitHiddenOnIOS),
       makeNativeMethod(
         "useTurboModuleInterop",
         JReactNativeFeatureFlagsCxxInterop::useTurboModuleInterop),

@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<52f0e78c7c4e53f8adac6cc796a79d7c>>
+ * @generated SignedSource<<627e0e191716b63f3a5dd7fd343506b9>>
  */
 
 /**
@@ -592,6 +592,15 @@ class ReactNativeFeatureFlagsDynamicProvider : public ReactNativeFeatureFlagsDef
     }
 
     return ReactNativeFeatureFlagsDefaults::useSilenceErrorSMMViewNotFound();
+  }
+
+  bool useTraitHiddenOnIOS() override {
+    auto value = values_["useTraitHiddenOnIOS"];
+    if (!value.isNull()) {
+      return value.getBool();
+    }
+
+    return ReactNativeFeatureFlagsDefaults::useTraitHiddenOnIOS();
   }
 
   bool useTurboModuleInterop() override {

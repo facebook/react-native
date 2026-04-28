@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<94a1d6bbc5595c495a2c54851a9c5b5b>>
+ * @generated SignedSource<<a03d363d13ff18dd87d15dc223c9c32d>>
  */
 
 /**
@@ -395,6 +395,12 @@ public object ReactNativeFeatureFlags {
    */
   @JvmStatic
   public fun useSilenceErrorSMMViewNotFound(): Boolean = accessor.useSilenceErrorSMMViewNotFound()
+
+  /**
+   * iOS only. When true (default), shadow nodes carrying ShadowNodeTraits::Trait::Hidden are filtered out of the mounting slice. When false, those nodes stay in the slice and are hidden via UIView.hidden = YES in updateLayoutMetrics:.
+   */
+  @JvmStatic
+  public fun useTraitHiddenOnIOS(): Boolean = accessor.useTraitHiddenOnIOS()
 
   /**
    * In Bridgeless mode, should legacy NativeModules use the TurboModule system?

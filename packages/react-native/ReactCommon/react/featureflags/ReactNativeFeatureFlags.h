@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<7b1258f9970366f0c068f28e2c16ce12>>
+ * @generated SignedSource<<8dc801da5ad5fd085dcedb245f7dee08>>
  */
 
 /**
@@ -343,6 +343,11 @@ class ReactNativeFeatureFlags {
    * Don't hard crash in SurfaceMountingManager when a view is not found. Instead, log a soft error.
    */
   RN_EXPORT static bool useSilenceErrorSMMViewNotFound();
+
+  /**
+   * iOS only. When true (default), shadow nodes carrying ShadowNodeTraits::Trait::Hidden are filtered out of the mounting slice. When false, those nodes stay in the slice and are hidden via UIView.hidden = YES in updateLayoutMetrics:.
+   */
+  RN_EXPORT static bool useTraitHiddenOnIOS();
 
   /**
    * In Bridgeless mode, should legacy NativeModules use the TurboModule system?

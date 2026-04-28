@@ -692,6 +692,17 @@ const definitions: FeatureFlagDefinitions = {
       },
       ossReleaseStage: 'none',
     },
+    useTraitHiddenOnIOS: {
+      defaultValue: true,
+      metadata: {
+        dateAdded: '2026-04-29',
+        description:
+          'iOS only. When true (default), shadow nodes carrying ShadowNodeTraits::Trait::Hidden are filtered out of the mounting slice. When false, those nodes stay in the slice and are hidden via UIView.hidden = YES in updateLayoutMetrics:.',
+        expectedReleaseValue: false,
+        purpose: 'experimentation',
+      },
+      ossReleaseStage: 'none',
+    },
     useTurboModuleInterop: {
       defaultValue: false,
       metadata: {

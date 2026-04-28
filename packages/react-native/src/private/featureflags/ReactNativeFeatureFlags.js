@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<94e87435c32d010d0a3943fd71fc099f>>
+ * @generated SignedSource<<2d214619ebe2d8c61230de56ebfd95f6>>
  * @flow strict
  * @noformat
  */
@@ -112,6 +112,7 @@ export type ReactNativeFeatureFlags = $ReadOnly<{
   useRawPropsJsiValue: Getter<boolean>,
   useShadowNodeStateOnClone: Getter<boolean>,
   useSilenceErrorSMMViewNotFound: Getter<boolean>,
+  useTraitHiddenOnIOS: Getter<boolean>,
   useTurboModuleInterop: Getter<boolean>,
   useTurboModules: Getter<boolean>,
   virtualViewPrerenderRatio: Getter<number>,
@@ -446,6 +447,10 @@ export const useShadowNodeStateOnClone: Getter<boolean> = createNativeFlagGetter
  * Don't hard crash in SurfaceMountingManager when a view is not found. Instead, log a soft error.
  */
 export const useSilenceErrorSMMViewNotFound: Getter<boolean> = createNativeFlagGetter('useSilenceErrorSMMViewNotFound', false);
+/**
+ * iOS only. When true (default), shadow nodes carrying ShadowNodeTraits::Trait::Hidden are filtered out of the mounting slice. When false, those nodes stay in the slice and are hidden via UIView.hidden = YES in updateLayoutMetrics:.
+ */
+export const useTraitHiddenOnIOS: Getter<boolean> = createNativeFlagGetter('useTraitHiddenOnIOS', true);
 /**
  * In Bridgeless mode, should legacy NativeModules use the TurboModule system?
  */
