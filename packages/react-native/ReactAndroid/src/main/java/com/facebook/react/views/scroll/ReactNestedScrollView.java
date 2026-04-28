@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<41d03f4948562c0fae870a660e6e1eac>>
+ * @generated SignedSource<<2aa191314924bd0f969fba0e64b86142>>
  */
 
 /**
@@ -106,6 +106,7 @@ class ReactNestedScrollView extends NestedScrollView
   private final VelocityHelper mVelocityHelper = new VelocityHelper();
   private final Rect mTempRect = new Rect();
   private final ValueAnimator DEFAULT_FLING_ANIMATOR = ObjectAnimator.ofInt(this, "scrollY", 0, 0);
+  private final @Nullable FpsListener mFpsListener;
 
   private Rect mOverflowInset;
   private @Nullable VirtualViewContainerState mVirtualViewContainerState;
@@ -118,7 +119,6 @@ class ReactNestedScrollView extends NestedScrollView
   private boolean mRemoveClippedSubviews;
   private boolean mScrollEnabled;
   private boolean mSendMomentumEvents;
-  private @Nullable FpsListener mFpsListener;
   private @Nullable String mScrollPerfTag;
   private @Nullable Drawable mEndBackground;
   private int mEndFillColor;

@@ -101,6 +101,7 @@ public class ReactHorizontalScrollView extends HorizontalScrollView
   private final VelocityHelper mVelocityHelper = new VelocityHelper();
   private final Rect mTempRect = new Rect();
   private final ValueAnimator DEFAULT_FLING_ANIMATOR = ObjectAnimator.ofInt(this, "scrollX", 0, 0);
+  private final @Nullable FpsListener mFpsListener;
 
   private Rect mOverflowInset = new Rect();
   private @Nullable VirtualViewContainerState mVirtualViewContainerState;
@@ -113,7 +114,6 @@ public class ReactHorizontalScrollView extends HorizontalScrollView
   private boolean mRemoveClippedSubviews;
   private boolean mScrollEnabled = true;
   private boolean mSendMomentumEvents;
-  private @Nullable FpsListener mFpsListener = null;
   private @Nullable String mScrollPerfTag;
   private @Nullable Drawable mEndBackground;
   private int mEndFillColor = Color.TRANSPARENT;
@@ -177,7 +177,6 @@ public class ReactHorizontalScrollView extends HorizontalScrollView
     mRemoveClippedSubviews = false;
     mScrollEnabled = true;
     mSendMomentumEvents = false;
-    mFpsListener = null;
     mScrollPerfTag = null;
     mEndBackground = null;
     mEndFillColor = Color.TRANSPARENT;
