@@ -9,7 +9,17 @@
 
 package com.facebook.react.modules.deviceinfo
 
+import android.app.Activity
+import android.graphics.Rect
 import android.util.DisplayMetrics
+import android.view.View
+import android.view.Window
+import androidx.core.graphics.Insets
+import androidx.core.view.ViewCompat
+import androidx.core.view.WindowInsetsCompat
+import androidx.window.layout.WindowMetrics
+import androidx.window.layout.WindowMetricsCalculator
+import androidx.window.layout.WindowMetricsCalculatorDecorator
 import com.facebook.react.bridge.BridgeReactContext
 import com.facebook.react.bridge.JavaOnlyMap
 import com.facebook.react.bridge.ReactContext
@@ -17,6 +27,7 @@ import com.facebook.react.bridge.ReactTestHelper
 import com.facebook.react.bridge.WritableMap
 import com.facebook.react.internal.featureflags.ReactNativeFeatureFlagsForTests
 import com.facebook.react.uimanager.DisplayMetricsHolder
+import com.facebook.react.views.view.isEdgeToEdgeFeatureFlagOn
 import com.facebook.testutils.shadows.ShadowNativeLoader
 import com.facebook.testutils.shadows.ShadowNativeMap
 import com.facebook.testutils.shadows.ShadowReadableNativeMap
@@ -33,6 +44,7 @@ import org.mockito.ArgumentMatchers
 import org.mockito.MockedStatic
 import org.mockito.Mockito.mockStatic
 import org.mockito.kotlin.doReturn
+import org.mockito.kotlin.mock
 import org.mockito.kotlin.spy
 import org.mockito.kotlin.times
 import org.mockito.kotlin.verify
@@ -80,6 +92,7 @@ class DeviceInfoModuleTest : TestCase() {
   @After
   fun teardown() {
     displayMetricsHolder.close()
+    isEdgeToEdgeFeatureFlagOn = false
   }
 
   @Test
@@ -150,8 +163,86 @@ class DeviceInfoModuleTest : TestCase() {
     assertThat(windowMap.hasKey("densityDpi")).isTrue()
   }
 
+  @Test
+  fun getWindowDisplayMetrics_usesBoundsWhenEdgeToEdgeOn() {
+    isEdgeToEdgeFeatureFlagOn = true
+
+    val activity = mock<Activity>()
+    doReturn(activity).whenever(reactContext).currentActivity
+
+    val bounds = Rect(0, 0, 1080, 2400)
+    val calculator = mockCalculator(activity, bounds)
+
+    withWindowMetricsCalculator(calculator) {
+      val metrics = deviceInfoModule.getWindowDisplayMetrics()
+      assertThat(metrics.widthPixels).isEqualTo(bounds.width())
+      assertThat(metrics.heightPixels).isEqualTo(bounds.height())
+    }
+  }
+
+  @Test
+  fun getWindowDisplayMetrics_subtractsSystemBarsWhenEdgeToEdgeOff() {
+    isEdgeToEdgeFeatureFlagOn = false
+
+    val window = mock<Window>()
+    val decorView = mock<View>()
+    whenever(window.decorView).thenReturn(decorView)
+    val activity = mock<Activity>()
+    whenever(activity.window).thenReturn(window)
+    doReturn(activity).whenever(reactContext).currentActivity
+
+    val bounds = Rect(0, 0, 1080, 2400)
+    val calculator = mockCalculator(activity, bounds)
+    val rootInsets = mockRootInsets(Insets.of(20, 80, 30, 100))
+
+    withWindowMetricsCalculator(calculator) {
+      mockStatic(ViewCompat::class.java).use { viewCompatStatic ->
+        viewCompatStatic
+            .`when`<WindowInsetsCompat?> { ViewCompat.getRootWindowInsets(decorView) }
+            .thenReturn(rootInsets)
+
+        val metrics = deviceInfoModule.getWindowDisplayMetrics()
+        assertThat(metrics.widthPixels).isEqualTo(bounds.width() - (20 + 30))
+        assertThat(metrics.heightPixels).isEqualTo(bounds.height() - (80 + 100))
+      }
+    }
+  }
+
   private fun givenDisplayMetricsHolderContains(fakeDisplayMetrics: WritableMap?) {
     doReturn(fakeDisplayMetrics).whenever(deviceInfoModule).getDisplayMetricsWritableMap()
+  }
+
+  private fun mockCalculator(activity: Activity, bounds: Rect): WindowMetricsCalculator {
+    val windowMetrics = mock<WindowMetrics>()
+    whenever(windowMetrics.bounds).thenReturn(bounds)
+    val calculator = mock<WindowMetricsCalculator>()
+    whenever(calculator.computeCurrentWindowMetrics(activity)).thenReturn(windowMetrics)
+    return calculator
+  }
+
+  private fun mockRootInsets(insets: Insets): WindowInsetsCompat {
+    val rootInsets = mock<WindowInsetsCompat>()
+    val type = WindowInsetsCompat.Type.systemBars() or WindowInsetsCompat.Type.displayCutout()
+    whenever(rootInsets.getInsets(type)).thenReturn(insets)
+    return rootInsets
+  }
+
+  @Suppress("RestrictedApi")
+  private fun withWindowMetricsCalculator(
+      target: WindowMetricsCalculator,
+      block: () -> Unit,
+  ) {
+    WindowMetricsCalculator.overrideDecorator(
+        object : WindowMetricsCalculatorDecorator {
+          override fun decorate(calculator: WindowMetricsCalculator): WindowMetricsCalculator =
+              target
+        }
+    )
+    try {
+      block()
+    } finally {
+      WindowMetricsCalculator.reset()
+    }
   }
 
   companion object {

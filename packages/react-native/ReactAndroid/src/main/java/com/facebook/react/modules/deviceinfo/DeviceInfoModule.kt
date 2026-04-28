@@ -8,6 +8,7 @@
 package com.facebook.react.modules.deviceinfo
 
 import android.util.DisplayMetrics
+import androidx.annotation.VisibleForTesting
 import androidx.core.view.ViewCompat
 import androidx.core.view.WindowInsetsCompat
 import androidx.window.layout.WindowMetricsCalculator
@@ -36,7 +37,8 @@ internal class DeviceInfoModule(reactContext: ReactApplicationContext) :
     reactContext.addLifecycleEventListener(this)
   }
 
-  private fun getWindowDisplayMetrics(): DisplayMetrics {
+  @VisibleForTesting
+  internal fun getWindowDisplayMetrics(): DisplayMetrics {
     val windowDisplayMetrics = DisplayMetrics()
     windowDisplayMetrics.setTo(reactApplicationContext.resources.displayMetrics)
 
@@ -64,7 +66,8 @@ internal class DeviceInfoModule(reactContext: ReactApplicationContext) :
     return windowDisplayMetrics
   }
 
-  fun getDisplayMetricsWritableMap(): WritableMap =
+  @VisibleForTesting
+  internal fun getDisplayMetricsWritableMap(): WritableMap =
       WritableNativeMap().apply {
         putMap(
             "windowPhysicalPixels",

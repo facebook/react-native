@@ -14,6 +14,7 @@ import android.view.View
 import android.view.Window
 import android.view.WindowInsetsController
 import android.view.WindowManager
+import androidx.annotation.VisibleForTesting
 import androidx.core.view.ViewCompat
 import androidx.core.view.WindowCompat
 import androidx.core.view.WindowInsetsCompat
@@ -35,7 +36,7 @@ internal val DarkNavigationBarColor = Color.argb(0x80, 0x1b, 0x1b, 0x1b)
  * as enabled elsewhere in the application.
  */
 public var isEdgeToEdgeFeatureFlagOn: Boolean = false
-  private set
+  @VisibleForTesting internal set
 
 public fun setEdgeToEdgeFeatureFlagOn() {
   isEdgeToEdgeFeatureFlagOn = true
