@@ -83,21 +83,21 @@ export function registerComponent(
 ): string {
   runnables[appKey] = (appParameters, displayMode) => {
     const renderApplication = require('./renderApplication').default;
-    renderApplication(
-      componentProviderInstrumentationHook(
+    renderApplication({
+      RootComponent: componentProviderInstrumentationHook(
         componentProvider,
         DeprecatedPerformanceLoggerStub,
       ),
-      appParameters.initialProps,
-      appParameters.rootTag,
-      wrapperComponentProvider && wrapperComponentProvider(appParameters),
-      rootViewStyleProvider && rootViewStyleProvider(appParameters),
-      true, // fabric - deprecated, always true
-      undefined, // formerly scopedPerformanceLogger; reserved positional slot
-      appKey === 'LogBox', // is logbox
-      appKey,
+      initialProps: appParameters.initialProps,
+      rootTag: appParameters.rootTag,
+      WrapperComponent:
+        wrapperComponentProvider && wrapperComponentProvider(appParameters),
+      rootViewStyle:
+        rootViewStyleProvider && rootViewStyleProvider(appParameters),
+      isLogBox: appKey === 'LogBox',
+      debugName: appKey,
       displayMode,
-    );
+    });
   };
   if (section) {
     sections[appKey] = runnables[appKey];

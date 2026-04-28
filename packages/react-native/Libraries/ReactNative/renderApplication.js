@@ -4,47 +4,49 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @flow
+ * @flow strict-local
  * @format
  */
 
 import type {ViewStyleProp} from '../StyleSheet/StyleSheet';
+import type {RootTag} from './RootTag';
 
 import AppContainer from './AppContainer';
 import DisplayMode, {type DisplayModeType} from './DisplayMode';
 import getCachedComponentWithDebugName from './getCachedComponentWithDebugName';
 import * as Renderer from './RendererProxy';
+import {createRootTag} from './RootTag';
 import invariant from 'invariant';
 import * as React from 'react';
 
 // require BackHandler so it sets the default handler that exits the app if no listeners respond
 import '../Utilities/BackHandler';
 
-type ActivityType = component(
-  ...{
-    mode: 'visible' | 'hidden',
-    children: React.Node,
-  }
-);
+type ActivityType = component(mode: 'visible' | 'hidden', children: React.Node);
 
-export default function renderApplication<Props extends Object>(
-  RootComponent: React.ComponentType<Props>,
+export type RenderApplicationOptions<Props extends {...}> = {
+  RootComponent: component(...Props),
   initialProps: Props,
-  rootTag: any,
-  WrapperComponent?: ?React.ComponentType<any>,
+  rootTag: number | RootTag,
+  WrapperComponent?: ?component(initialProps: Props, children: React.Node),
   rootViewStyle?: ?ViewStyleProp,
-  // Keep this parameter for backwards compatibility only. It is always treated as
-  // true internally.
-  fabric?: true | void,
-  // Reserved positional slot (formerly `scopedPerformanceLogger`). Preserved so
-  // existing callers that supply this argument continue to type-check; the
-  // value is ignored.
-  _unused?: void,
   isLogBox?: boolean,
   debugName?: string,
   displayMode?: ?DisplayModeType,
   useOffscreen?: boolean,
-) {
+};
+
+export default function renderApplication<Props extends {...}>({
+  RootComponent,
+  initialProps,
+  rootTag,
+  WrapperComponent,
+  rootViewStyle,
+  isLogBox,
+  debugName,
+  displayMode,
+  useOffscreen,
+}: RenderApplicationOptions<Props>) {
   invariant(rootTag, 'Expect to have a valid rootTag, instead got ', rootTag);
 
   let renderable: React.MixedElement = (
@@ -58,7 +60,7 @@ export default function renderApplication<Props extends Object>(
     </AppContainer>
   );
 
-  if (__DEV__ && debugName) {
+  if (__DEV__ && debugName != null) {
     const RootComponentWithMeaningfulName = getCachedComponentWithDebugName(
       `${debugName}(RootComponent)`,
     );
@@ -69,7 +71,7 @@ export default function renderApplication<Props extends Object>(
     );
   }
 
-  if (useOffscreen && displayMode != null) {
+  if (useOffscreen === true && displayMode != null) {
     // $FlowFixMe[incompatible-type]
     // $FlowFixMe[missing-export]
     // $FlowFixMe[prop-missing] `unstable_Activity` is not yet in the React types.
@@ -85,6 +87,6 @@ export default function renderApplication<Props extends Object>(
 
   Renderer.renderElement({
     element: renderable,
-    rootTag,
+    rootTag: createRootTag(rootTag),
   });
 }

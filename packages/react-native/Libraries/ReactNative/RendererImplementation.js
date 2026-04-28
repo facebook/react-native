@@ -8,6 +8,8 @@
  * @format
  */
 
+import type {RootTag} from './RootTag';
+
 import {
   onCaughtError,
   onRecoverableError,
@@ -21,11 +23,11 @@ export function renderElement({
   rootTag,
 }: {
   element: React.MixedElement,
-  rootTag: number,
+  rootTag: RootTag,
 }): void {
   ReactFabric.render(
     element,
-    rootTag,
+    Number(rootTag),
     /* callback */ null,
     /* useConcurrentRoot */ true,
     {
