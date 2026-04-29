@@ -21,6 +21,9 @@
 #include <react/renderer/mounting/ShadowViewMutation.h>
 #include <react/renderer/mounting/stubs/stubs.h>
 
+#include <react/featureflags/ReactNativeFeatureFlags.h>
+#include <react/featureflags/ReactNativeFeatureFlagsDefaults.h>
+
 namespace facebook::react {
 
 class StackingContextTest : public ::testing::Test {
@@ -974,5 +977,64 @@ TEST_F(StackingContextTest, zIndexAndFlattenedNodes) {
     EXPECT_EQ(viewTree.getRootStubView().children.at(3)->tag, 3);
 #endif
   });
+}
+
+namespace {
+
+// Override that flips the iOS slice-skip flag off so that Hidden subtrees
+// stay in the mount slice and are hidden via UIView.hidden = YES (the path
+// in UIView+ComponentViewProtocol since 2018) instead of being torn down
+// via REMOVE + DELETE.
+class UseTraitHiddenOnIOSDisabledOverride
+    : public ReactNativeFeatureFlagsDefaults {
+ public:
+  bool useTraitHiddenOnIOS() override {
+    return false;
+  }
+};
+
+} // namespace
+
+// Companion to the `display: none` assertions above. The default-flag
+// case (current iOS behaviour: views removed) is already covered there.
+// This test pins the opt-out: with `useTraitHiddenOnIOS = false`, an iOS
+// `display: none` subtree must stay in the mount slice — i.e. the view
+// tree should match what Android already produces with
+// `useTraitHiddenOnAndroid = false` (its default).
+//
+// Skipped on Android: the `useTraitHiddenOnIOS` gate is unreachable
+// there because the surrounding block is `#ifdef ANDROID && useTraitHiddenOnAndroid()`.
+TEST_F(
+    StackingContextTest,
+    displayNoneRespectsUseTraitHiddenOnIOSOptOut) {
+#ifdef ANDROID
+  GTEST_SKIP() << "useTraitHiddenOnIOS gate is unreachable on Android";
+#else
+  ReactNativeFeatureFlags::override(
+      std::make_unique<UseTraitHiddenOnIOSDisabledOverride>());
+
+  mutateViewShadowNodeProps_(nodeBB_, [](ViewProps& props) {
+    auto& yogaStyle = props.yogaStyle;
+    yogaStyle.setDisplay(yoga::Display::None);
+  });
+
+  testViewTree_([](const StubViewTree& viewTree) {
+    // With useTraitHiddenOnIOS = false, the Hidden subtree stays in the
+    // mount slice. These expectations mirror the existing `#ifdef ANDROID`
+    // assertion in `zIndexAndFlattenedNodes` for the same display:none
+    // mutation.
+    EXPECT_EQ(viewTree.size(), 8);
+
+    // nodeBB_ (tag 6) forms a stacking context and is present.
+    EXPECT_EQ(viewTree.getRootStubView().children.size(), 5);
+
+    // The root view subviews are [6, 10, 9, 5, 3].
+    EXPECT_EQ(viewTree.getRootStubView().children.at(0)->tag, 6);
+    EXPECT_EQ(viewTree.getRootStubView().children.at(1)->tag, 10);
+    EXPECT_EQ(viewTree.getRootStubView().children.at(2)->tag, 9);
+    EXPECT_EQ(viewTree.getRootStubView().children.at(3)->tag, 5);
+    EXPECT_EQ(viewTree.getRootStubView().children.at(4)->tag, 3);
+  });
+#endif
 }
 } // namespace facebook::react

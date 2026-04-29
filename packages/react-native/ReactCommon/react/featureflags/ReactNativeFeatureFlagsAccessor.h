@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<9334675799ea378311b8c675ed419b1d>>
+ * @generated SignedSource<<d34324172201668ef16dd273f62a65c7>>
  */
 
 /**
@@ -118,6 +118,7 @@ class ReactNativeFeatureFlagsAccessor {
   bool useNestedScrollViewAndroid();
   bool useSharedAnimatedBackend();
   bool useTraitHiddenOnAndroid();
+  bool useTraitHiddenOnIOS();
   bool useTurboModuleInterop();
   bool useTurboModules();
   bool useUnorderedMapInDifferentiator();
@@ -135,7 +136,7 @@ class ReactNativeFeatureFlagsAccessor {
   std::unique_ptr<ReactNativeFeatureFlagsProvider> currentProvider_;
   bool wasOverridden_;
 
-  std::array<std::atomic<const char*>, 92> accessedFeatureFlags_;
+  std::array<std::atomic<const char*>, 93> accessedFeatureFlags_;
 
   std::atomic<std::optional<bool>> commonTestFlag_;
   std::atomic<std::optional<bool>> cdpInteractionMetricsEnabled_;
@@ -223,6 +224,7 @@ class ReactNativeFeatureFlagsAccessor {
   std::atomic<std::optional<bool>> useNestedScrollViewAndroid_;
   std::atomic<std::optional<bool>> useSharedAnimatedBackend_;
   std::atomic<std::optional<bool>> useTraitHiddenOnAndroid_;
+  std::atomic<std::optional<bool>> useTraitHiddenOnIOS_;
   std::atomic<std::optional<bool>> useTurboModuleInterop_;
   std::atomic<std::optional<bool>> useTurboModules_;
   std::atomic<std::optional<bool>> useUnorderedMapInDifferentiator_;

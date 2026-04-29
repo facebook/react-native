@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<4a2fd61cbcdb28042f09ccb03c970674>>
+ * @generated SignedSource<<7861725f5c1354b87caba6b7c0e406a7>>
  */
 
 /**
@@ -369,6 +369,10 @@ class ReactNativeFeatureFlagsDefaults : public ReactNativeFeatureFlagsProvider {
 
   bool useTraitHiddenOnAndroid() override {
     return false;
+  }
+
+  bool useTraitHiddenOnIOS() override {
+    return true;
   }
 
   bool useTurboModuleInterop() override {

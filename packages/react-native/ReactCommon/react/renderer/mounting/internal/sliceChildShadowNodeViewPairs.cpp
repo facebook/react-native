@@ -58,9 +58,20 @@ static void sliceChildShadowNodeViewPairsRecursively(
     auto& childShadowNode = *sharedChildShadowNode;
     // T153547836: Disabled on Android because the mounting infrastructure
     // is not fully ready yet.
+    //
+    // On iOS, the Trait::Hidden slice-skip destroys host views via REMOVE +
+    // DELETE on every `display: none` toggle. Apps that mutate native state
+    // imperatively via Fabric Commands lose that state silently, because
+    // Commands have no prop-shape for React to replay onto the new instance.
+    // `useTraitHiddenOnIOS` lets such apps opt out and fall back to the
+    // hide-via-`UIView.hidden` path that has been in
+    // `UIView+ComponentViewProtocol.updateLayoutMetrics:` since 2018
+    // (D8460108). Defaults to `true` so existing behaviour is preserved.
     if (
 #ifdef ANDROID
         ReactNativeFeatureFlags::useTraitHiddenOnAndroid() &&
+#elif defined(__APPLE__)
+        ReactNativeFeatureFlags::useTraitHiddenOnIOS() &&
 #endif
         childShadowNode.getTraits().check(ShadowNodeTraits::Trait::Hidden)) {
       continue;

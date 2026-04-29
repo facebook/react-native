@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<cbe90c2bf8ba9d34804d97c31edfd31a>>
+ * @generated SignedSource<<e23bcf89e2a15139f6a1511ebb7d6fc8>>
  */
 
 /**
@@ -110,6 +110,7 @@ internal class ReactNativeFeatureFlagsLocalAccessor : ReactNativeFeatureFlagsAcc
   private var useNestedScrollViewAndroidCache: Boolean? = null
   private var useSharedAnimatedBackendCache: Boolean? = null
   private var useTraitHiddenOnAndroidCache: Boolean? = null
+  private var useTraitHiddenOnIOSCache: Boolean? = null
   private var useTurboModuleInteropCache: Boolean? = null
   private var useTurboModulesCache: Boolean? = null
   private var useUnorderedMapInDifferentiatorCache: Boolean? = null
@@ -973,6 +974,16 @@ internal class ReactNativeFeatureFlagsLocalAccessor : ReactNativeFeatureFlagsAcc
       cached = currentProvider.useTraitHiddenOnAndroid()
       accessedFeatureFlags.add("useTraitHiddenOnAndroid")
       useTraitHiddenOnAndroidCache = cached
+    }
+    return cached
+  }
+
+  override fun useTraitHiddenOnIOS(): Boolean {
+    var cached = useTraitHiddenOnIOSCache
+    if (cached == null) {
+      cached = currentProvider.useTraitHiddenOnIOS()
+      accessedFeatureFlags.add("useTraitHiddenOnIOS")
+      useTraitHiddenOnIOSCache = cached
     }
     return cached
   }

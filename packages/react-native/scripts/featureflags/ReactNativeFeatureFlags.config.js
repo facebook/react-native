@@ -965,6 +965,17 @@ const definitions: FeatureFlagDefinitions = {
       },
       ossReleaseStage: 'none',
     },
+    useTraitHiddenOnIOS: {
+      defaultValue: true,
+      metadata: {
+        dateAdded: '2026-04-30',
+        description:
+          'Use Trait::hidden slice-skip on iOS. When false, Hidden subtrees stay mounted and hide via UIView.hidden = YES (the path in UIView+ComponentViewProtocol since 2018) instead of REMOVE + DELETE.',
+        expectedReleaseValue: true,
+        purpose: 'experimentation',
+      },
+      ossReleaseStage: 'none',
+    },
     useTurboModuleInterop: {
       defaultValue: false,
       metadata: {

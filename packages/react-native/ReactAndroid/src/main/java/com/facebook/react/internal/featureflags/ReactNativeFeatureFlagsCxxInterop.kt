@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<8916e9f4a938a69ff175c806db9835d4>>
+ * @generated SignedSource<<9a216ce4f720f39e338ba9eb40e3503d>>
  */
 
 /**
@@ -199,6 +199,8 @@ public object ReactNativeFeatureFlagsCxxInterop {
   @DoNotStrip @JvmStatic public external fun useSharedAnimatedBackend(): Boolean
 
   @DoNotStrip @JvmStatic public external fun useTraitHiddenOnAndroid(): Boolean
+
+  @DoNotStrip @JvmStatic public external fun useTraitHiddenOnIOS(): Boolean
 
   @DoNotStrip @JvmStatic public external fun useTurboModuleInterop(): Boolean
 

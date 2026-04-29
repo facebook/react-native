@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<b99eaffc2d11a08a6efe32b2e2732965>>
+ * @generated SignedSource<<592d2f00a3b2ff81533cf74f27068819>>
  */
 
 /**
@@ -555,6 +555,12 @@ class ReactNativeFeatureFlagsJavaProvider
     return method(javaProvider_);
   }
 
+  bool useTraitHiddenOnIOS() override {
+    static const auto method =
+        getReactNativeFeatureFlagsProviderJavaClass()->getMethod<jboolean()>("useTraitHiddenOnIOS");
+    return method(javaProvider_);
+  }
+
   bool useTurboModuleInterop() override {
     static const auto method =
         getReactNativeFeatureFlagsProviderJavaClass()->getMethod<jboolean()>("useTurboModuleInterop");
@@ -1025,6 +1031,11 @@ bool JReactNativeFeatureFlagsCxxInterop::useTraitHiddenOnAndroid(
   return ReactNativeFeatureFlags::useTraitHiddenOnAndroid();
 }
 
+bool JReactNativeFeatureFlagsCxxInterop::useTraitHiddenOnIOS(
+    facebook::jni::alias_ref<JReactNativeFeatureFlagsCxxInterop> /*unused*/) {
+  return ReactNativeFeatureFlags::useTraitHiddenOnIOS();
+}
+
 bool JReactNativeFeatureFlagsCxxInterop::useTurboModuleInterop(
     facebook::jni::alias_ref<JReactNativeFeatureFlagsCxxInterop> /*unused*/) {
   return ReactNativeFeatureFlags::useTurboModuleInterop();
@@ -1344,6 +1355,9 @@ void JReactNativeFeatureFlagsCxxInterop::registerNatives() {
       makeNativeMethod(
         "useTraitHiddenOnAndroid",
         JReactNativeFeatureFlagsCxxInterop::useTraitHiddenOnAndroid),
+      makeNativeMethod(
+        "useTraitHiddenOnIOS",
+        JReactNativeFeatureFlagsCxxInterop::useTraitHiddenOnIOS),
       makeNativeMethod(
         "useTurboModuleInterop",
         JReactNativeFeatureFlagsCxxInterop::useTurboModuleInterop),

@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<8e9b09843bf4a0312b254559a975f612>>
+ * @generated SignedSource<<21d1871f9323c4adc17695dcc141a60d>>
  */
 
 /**
@@ -468,6 +468,11 @@ class ReactNativeFeatureFlags {
    * Use Trait::hidden on Android
    */
   RN_EXPORT static bool useTraitHiddenOnAndroid();
+
+  /**
+   * Use Trait::hidden slice-skip on iOS. When false, Hidden subtrees stay mounted and hide via UIView.hidden = YES (the path in UIView+ComponentViewProtocol since 2018) instead of REMOVE + DELETE.
+   */
+  RN_EXPORT static bool useTraitHiddenOnIOS();
 
   /**
    * In Bridgeless mode, should legacy NativeModules use the TurboModule system?

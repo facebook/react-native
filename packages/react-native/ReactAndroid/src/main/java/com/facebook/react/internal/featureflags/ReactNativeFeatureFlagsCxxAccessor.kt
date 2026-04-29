@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<4f9f5c1c46217ed6802abd5f786aac19>>
+ * @generated SignedSource<<e2704fec486263b5f74ab909f9d2f533>>
  */
 
 /**
@@ -106,6 +106,7 @@ internal class ReactNativeFeatureFlagsCxxAccessor : ReactNativeFeatureFlagsAcces
   private var useNestedScrollViewAndroidCache: Boolean? = null
   private var useSharedAnimatedBackendCache: Boolean? = null
   private var useTraitHiddenOnAndroidCache: Boolean? = null
+  private var useTraitHiddenOnIOSCache: Boolean? = null
   private var useTurboModuleInteropCache: Boolean? = null
   private var useTurboModulesCache: Boolean? = null
   private var useUnorderedMapInDifferentiatorCache: Boolean? = null
@@ -883,6 +884,15 @@ internal class ReactNativeFeatureFlagsCxxAccessor : ReactNativeFeatureFlagsAcces
     if (cached == null) {
       cached = ReactNativeFeatureFlagsCxxInterop.useTraitHiddenOnAndroid()
       useTraitHiddenOnAndroidCache = cached
+    }
+    return cached
+  }
+
+  override fun useTraitHiddenOnIOS(): Boolean {
+    var cached = useTraitHiddenOnIOSCache
+    if (cached == null) {
+      cached = ReactNativeFeatureFlagsCxxInterop.useTraitHiddenOnIOS()
+      useTraitHiddenOnIOSCache = cached
     }
     return cached
   }

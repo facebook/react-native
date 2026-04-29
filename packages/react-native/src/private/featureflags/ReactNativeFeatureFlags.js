@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<aa202d346e68c3dd641d557306964ebe>>
+ * @generated SignedSource<<133adf1c55824bb238caf569f94829ca>>
  * @flow strict
  * @noformat
  */
@@ -133,6 +133,7 @@ export type ReactNativeFeatureFlags = $ReadOnly<{
   useNestedScrollViewAndroid: Getter<boolean>,
   useSharedAnimatedBackend: Getter<boolean>,
   useTraitHiddenOnAndroid: Getter<boolean>,
+  useTraitHiddenOnIOS: Getter<boolean>,
   useTurboModuleInterop: Getter<boolean>,
   useTurboModules: Getter<boolean>,
   useUnorderedMapInDifferentiator: Getter<boolean>,
@@ -549,6 +550,10 @@ export const useSharedAnimatedBackend: Getter<boolean> = createNativeFlagGetter(
  * Use Trait::hidden on Android
  */
 export const useTraitHiddenOnAndroid: Getter<boolean> = createNativeFlagGetter('useTraitHiddenOnAndroid', false);
+/**
+ * Use Trait::hidden slice-skip on iOS. When false, Hidden subtrees stay mounted and hide via UIView.hidden = YES (the path in UIView+ComponentViewProtocol since 2018) instead of REMOVE + DELETE.
+ */
+export const useTraitHiddenOnIOS: Getter<boolean> = createNativeFlagGetter('useTraitHiddenOnIOS', true);
 /**
  * In Bridgeless mode, should legacy NativeModules use the TurboModule system?
  */

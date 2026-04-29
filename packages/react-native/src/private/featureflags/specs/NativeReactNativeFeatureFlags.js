@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<5ab72b9af228bc7e591bc0addaf6150e>>
+ * @generated SignedSource<<4832bd4ef65113e677d266f15200ec37>>
  * @flow strict
  * @noformat
  */
@@ -111,6 +111,7 @@ export interface Spec extends TurboModule {
   +useNestedScrollViewAndroid?: () => boolean;
   +useSharedAnimatedBackend?: () => boolean;
   +useTraitHiddenOnAndroid?: () => boolean;
+  +useTraitHiddenOnIOS?: () => boolean;
   +useTurboModuleInterop?: () => boolean;
   +useTurboModules?: () => boolean;
   +useUnorderedMapInDifferentiator?: () => boolean;
