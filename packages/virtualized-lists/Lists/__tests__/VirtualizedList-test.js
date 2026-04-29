@@ -1836,52 +1836,49 @@ it('retains initial render region when an item is appended', async () => {
   expect(component).toMatchSnapshot();
 });
 
-it(
-  'retains batch render region when an item is appended',
-  async () => {
-    const items = generateItems(10);
-    const ITEM_HEIGHT = 10;
+it('retains batch render region when an item is appended', async () => {
+  const items = generateItems(10);
+  const ITEM_HEIGHT = 10;
 
-    let component;
-    await act(() => {
-      component = create(
-        <VirtualizedList
-          initialNumToRender={1}
-          maxToRenderPerBatch={1}
-          {...baseItemProps(items)}
-          {...fixedHeightItemLayoutProps(ITEM_HEIGHT)}
-        />,
-      );
+  let component;
+  await act(() => {
+    component = create(
+      <VirtualizedList
+        initialNumToRender={1}
+        maxToRenderPerBatch={1}
+        {...baseItemProps(items)}
+        {...fixedHeightItemLayoutProps(ITEM_HEIGHT)}
+      />,
+    );
+  });
+
+  await act(() => {
+    simulateLayout(component, {
+      viewport: {width: 10, height: 50},
+      content: {width: 10, height: 100},
     });
+  });
 
-    await act(() => {
-      simulateLayout(component, {
-        viewport: {width: 10, height: 50},
-        content: {width: 10, height: 100},
-      });
-    });
+  await advanceUntilLastCellIndexRendered(component, items.length - 1);
 
-    await advanceUntilLastCellIndexRendered(component, items.length - 1);
+  await act(() => {
+    component.update(
+      <VirtualizedList
+        initialNumToRender={1}
+        maxToRenderPerBatch={1}
+        {...baseItemProps(items)}
+        {...fixedHeightItemLayoutProps(ITEM_HEIGHT)}
+        data={generateItems(11)}
+      />,
+    );
+  });
 
-    await act(() => {
-      component.update(
-        <VirtualizedList
-          initialNumToRender={1}
-          maxToRenderPerBatch={1}
-          {...baseItemProps(items)}
-          {...fixedHeightItemLayoutProps(ITEM_HEIGHT)}
-          data={generateItems(11)}
-        />,
-      );
-    });
-
-    // Adding an item to the list after batch render should keep the existing
-    // rendered items rendered. We batch render 10 items, then add an 11th. Expect
-    // the first ten items to be present, with a spacer for the 11th until the
-    // next batch render.
-    expect(component).toMatchSnapshot();
-  },
-);
+  // Adding an item to the list after batch render should keep the existing
+  // rendered items rendered. We batch render 10 items, then add an 11th. Expect
+  // the first ten items to be present, with a spacer for the 11th until the
+  // next batch render.
+  expect(component).toMatchSnapshot();
+});
 
 it('constrains batch render region when an item is removed', async () => {
   const items = generateItems(10);
