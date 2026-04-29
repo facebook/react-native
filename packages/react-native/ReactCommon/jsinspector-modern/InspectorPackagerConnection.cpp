@@ -14,6 +14,7 @@
 #include <glog/logging.h>
 #include <cerrno>
 #include <chrono>
+#include <exception>
 #include <utility>
 
 using namespace std::literals;
@@ -22,6 +23,7 @@ namespace facebook::react::jsinspector_modern {
 
 static constexpr const std::chrono::duration RECONNECT_DELAY =
     std::chrono::milliseconds{2000};
+static constexpr const std::chrono::milliseconds MAX_RECONNECT_DELAY{120000};
 static constexpr const char* INVALID = "<invalid>";
 
 // InspectorPackagerConnection::Impl method definitions
@@ -301,6 +303,8 @@ void InspectorPackagerConnection::Impl::didReceiveMessage(
 
 void InspectorPackagerConnection::Impl::didOpen() {
   connected_ = true;
+  reconnectDelayMs_ = RECONNECT_DELAY;
+  suppressConnectionErrors_ = false;
 }
 
 void InspectorPackagerConnection::Impl::didClose() {
@@ -333,7 +337,15 @@ void InspectorPackagerConnection::Impl::connect() {
         << "Illegal state: Can't connect after having previously been closed.";
     return;
   }
-  webSocket_ = delegate_->connectWebSocket(url_, weak_from_this());
+  try {
+    webSocket_ = delegate_->connectWebSocket(url_, weak_from_this());
+  } catch (const std::exception& e) {
+    LOG(ERROR) << "Failed to create WebSocket connection: " << e.what();
+    reconnect();
+  } catch (...) {
+    LOG(ERROR) << "Failed to create WebSocket connection: unknown error";
+    reconnect();
+  }
 }
 
 void InspectorPackagerConnection::Impl::reconnect() {
@@ -357,6 +369,11 @@ void InspectorPackagerConnection::Impl::reconnect() {
 
   reconnectPending_ = true;
 
+  auto currentDelay = reconnectDelayMs_;
+
+  // Exponential backoff: double the delay for next time, up to the max.
+  reconnectDelayMs_ = std::min(reconnectDelayMs_ * 2, MAX_RECONNECT_DELAY);
+
   delegate_->scheduleCallback(
       [weakSelf = weak_from_this()] {
         auto strongSelf = weakSelf.lock();
@@ -370,7 +387,7 @@ void InspectorPackagerConnection::Impl::reconnect() {
           strongSelf->connect();
         }
       },
-      RECONNECT_DELAY);
+      currentDelay);
 }
 
 void InspectorPackagerConnection::Impl::closeQuietly() {

@@ -132,6 +132,9 @@ class InspectorPackagerConnection::Impl : public IWebSocketDelegate,
   // Whether a reconnection is currently pending.
   bool reconnectPending_{false};
 
+  // Current reconnect delay in milliseconds, used for exponential backoff.
+  std::chrono::milliseconds reconnectDelayMs_{2000};
+
   SessionId nextSessionId_{1};
 };
 
