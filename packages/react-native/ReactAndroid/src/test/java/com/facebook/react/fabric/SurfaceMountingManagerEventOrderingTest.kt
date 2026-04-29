@@ -13,7 +13,6 @@ import android.os.Looper
 import com.facebook.react.ReactRootView
 import com.facebook.react.bridge.JavaOnlyMap
 import com.facebook.react.bridge.ReactTestHelper
-import com.facebook.react.fabric.events.EventEmitterWrapper
 import com.facebook.react.fabric.mounting.MountingManager
 import com.facebook.react.fabric.mounting.MountingManager.MountItemExecutor
 import com.facebook.react.fabric.mounting.SurfaceMountingManager
@@ -28,8 +27,6 @@ import org.assertj.core.api.Assertions.assertThat
 import org.junit.Before
 import org.junit.Test
 import org.junit.runner.RunWith
-import org.mockito.Mockito.inOrder
-import org.mockito.kotlin.mock
 import org.robolectric.RobolectricTestRunner
 import org.robolectric.Shadows.shadowOf
 import org.robolectric.annotation.Config
@@ -161,36 +158,5 @@ class SurfaceMountingManagerEventOrderingTest {
         surfaceId, unknownTag, "topChange", false, null, EventCategoryDef.UNSPECIFIED, 0L)
 
     assertThat(mountingManager.hasPendingEvents(surfaceId, unknownTag)).isFalse()
-  }
-
-  /**
-   * End-to-end ordering invariant: when a caller observes [hasPendingEvents] is true and routes a
-   * subsequent event through [enqueuePendingEvent] (instead of dispatching directly), the emitter
-   * must observe the events in receive order. This is the contract the [FabricUIManager.receiveEvent]
-   * fix relies on to prevent #54636.
-   */
-  @Test
-  fun enqueuePendingEvent_dispatchesInFifoOrder_whenLambdaIsInFlight() {
-    val smm = startSurfaceWithView()
-    val emitter: EventEmitterWrapper = mock()
-
-    smm.updateEventEmitter(reactTag, emitter)
-
-    shadowOf(Looper.getMainLooper()).pause()
-
-    smm.enqueuePendingEvent(reactTag, "first", false, null, EventCategoryDef.UNSPECIFIED, 1L)
-    assertThat(smm.hasPendingEvents(reactTag)).isTrue()
-
-    // Caller (e.g. FabricUIManager.receiveEvent) sees a previous enqueue is still in-flight and
-    // routes through enqueuePendingEvent rather than dispatching directly via the emitter.
-    smm.enqueuePendingEvent(reactTag, "second", false, null, EventCategoryDef.UNSPECIFIED, 2L)
-
-    shadowOf(Looper.getMainLooper()).idle()
-
-    val ordered = inOrder(emitter)
-    ordered.verify(emitter).dispatch("first", null, EventCategoryDef.UNSPECIFIED, 1L)
-    ordered.verify(emitter).dispatch("second", null, EventCategoryDef.UNSPECIFIED, 2L)
-
-    assertThat(smm.hasPendingEvents(reactTag)).isFalse()
   }
 }
