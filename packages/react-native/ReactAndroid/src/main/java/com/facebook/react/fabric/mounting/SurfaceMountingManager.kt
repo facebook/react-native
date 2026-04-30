@@ -307,8 +307,7 @@ internal constructor(
       )
       return
     }
-    val view = viewState.view
-    checkNotNull(view) { "Unable to find view for viewState $viewState and tag $tag" }
+    val view = viewState.view ?: return
 
     // Display children before inserting
     if (SHOW_CHANGED_VIEW_HIERARCHIES) {
