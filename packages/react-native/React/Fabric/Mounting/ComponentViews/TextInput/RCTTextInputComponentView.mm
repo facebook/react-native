@@ -879,8 +879,30 @@ static NSSet<NSNumber *> *returnKeyTypesSet;
     return [newText.string isEqualToString:oldText.string];
   } else {
     return RCTIsAttributedStringEffectivelySame(
-        newText, oldText, _originalTypingAttributes, static_cast<const TextInputProps &>(*_props).textAttributes);
+        newText,
+        oldText,
+        [self _insensitiveTypingAttributes],
+        static_cast<const TextInputProps &>(*_props).textAttributes);
   }
+}
+
+// UIKit injects typing attributes lazily — e.g. NSBackgroundColor while marked text is
+// in flight during autocorrect/IME composition. The set captured at init only contains
+// pre-focus attributes (NSColor, NSParagraphStyle, NSFont), so attributes added after
+// focus would be treated as JS-imposed differences and trigger a destructive
+// `setAttributedText:` mid-composition (the controlled-input "jumbled text" bug). Union
+// the init snapshot with the live typing attributes so the comparison stays insensitive
+// to anything UIKit silently adds.
+- (NSDictionary<NSAttributedStringKey, id> *)_insensitiveTypingAttributes
+{
+  NSDictionary<NSAttributedStringKey, id> *liveTypingAttributes = _backedTextInputView.typingAttributes;
+  if (liveTypingAttributes.count == 0) {
+    return _originalTypingAttributes;
+  }
+  NSMutableDictionary<NSAttributedStringKey, id> *merged =
+      [NSMutableDictionary dictionaryWithDictionary:_originalTypingAttributes];
+  [merged addEntriesFromDictionary:liveTypingAttributes];
+  return merged;
 }
 
 - (SubmitBehavior)getSubmitBehavior
