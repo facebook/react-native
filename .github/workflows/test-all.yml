@@ -116,6 +116,7 @@ jobs:
         with:
           ruby-version: "3.2.0"
           flavor: Debug
+          use-hermes-nightly: ${{ !endsWith(github.ref_name, '-stable') }}
 
   test_ios_rntester_dynamic_frameworks:
     runs-on: macos-15-large
@@ -136,6 +137,7 @@ jobs:
           flavor: ${{ matrix.flavor }}
           use-frameworks: true
           run-unit-tests: false # tests for dynamic frameworks are already run in the test_ios_rntester job; this is to just a test build from source (no prebuilds)
+          use-hermes-nightly: ${{ !endsWith(github.ref_name, '-stable') }}
 
   test_ios_rntester:
     runs-on: macos-15-large
@@ -155,6 +157,7 @@ jobs:
         with:
           use-frameworks: ${{ matrix.frameworks }}
           flavor: ${{ matrix.flavor }}
+          use-hermes-nightly: ${{ !endsWith(github.ref_name, '-stable') }}
 
   test_e2e_ios_rntester:
     needs: test_ios_rntester
@@ -369,10 +372,12 @@ jobs:
       - name: Run yarn install
         uses: ./.github/actions/yarn-install
       - name: Set nightly Hermes versions
+        if: ${{ !endsWith(github.ref_name, '-stable') }}
         shell: bash
         run: |
           node ./scripts/releases/use-hermes-nightly.js
       - name: Run yarn install again, with the correct hermes version
+        if: ${{ !endsWith(github.ref_name, '-stable') }}
         uses: ./.github/actions/yarn-install
       - name: Prepare the Helloworld application
         shell: bash
@@ -406,6 +411,7 @@ jobs:
         with:
           ruby-version: 3.2.0
           flavor: Debug
+          use-hermes-nightly: ${{ !endsWith(github.ref_name, '-stable') }}
 
   test_ios_helloworld:
     runs-on: macos-15
@@ -428,6 +434,7 @@ jobs:
         with:
           flavor: ${{ matrix.flavor }}
           use-frameworks: ${{ matrix.use_frameworks }}
+          use-hermes-nightly: ${{ !endsWith(github.ref_name, '-stable') }}
 
   lint:
     runs-on: ubuntu-latest
