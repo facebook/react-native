@@ -223,7 +223,7 @@ BaseViewProps::BaseViewProps(
               : convertRawProp(
                     context,
                     rawProps,
-                    "experimental_backgroundImage",
+                    "backgroundImage",
                     sourceProps.backgroundImage,
                     {})),
       backgroundSize(
@@ -403,7 +403,7 @@ void BaseViewProps::setProp(
   switch (hash) {
     RAW_SET_PROP_SWITCH_CASE_BASIC(opacity);
     RAW_SET_PROP_SWITCH_CASE_BASIC(backgroundColor);
-    RAW_SET_PROP_SWITCH_CASE(backgroundImage, "experimental_backgroundImage");
+    RAW_SET_PROP_SWITCH_CASE_BASIC(backgroundImage);
     RAW_SET_PROP_SWITCH_CASE(backgroundSize, "experimental_backgroundSize");
     RAW_SET_PROP_SWITCH_CASE(
         backgroundPosition, "experimental_backgroundPosition");
