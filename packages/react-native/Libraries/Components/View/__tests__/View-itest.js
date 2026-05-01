@@ -335,8 +335,7 @@ describe('<View>', () => {
               <>
                 <View
                   style={{
-                    backgroundImage:
-                      'radial-gradient(#e66465, #9198e5)',
+                    backgroundImage: 'radial-gradient(#e66465, #9198e5)',
                   }}
                 />
                 <View

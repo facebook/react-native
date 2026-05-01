@@ -85,8 +85,7 @@ exports.examples = [
             <Text>45deg</Text>
             <BackgroundImageBox
               style={{
-                backgroundImage:
-                  'linear-gradient(45deg, #ff6b6b, #4ecdc4)',
+                backgroundImage: 'linear-gradient(45deg, #ff6b6b, #4ecdc4)',
               }}
               testID="background-image-angle-1"
             />
@@ -95,8 +94,7 @@ exports.examples = [
             <Text>90deg</Text>
             <BackgroundImageBox
               style={{
-                backgroundImage:
-                  'linear-gradient(90deg, #a8edea, #fed6e3)',
+                backgroundImage: 'linear-gradient(90deg, #a8edea, #fed6e3)',
               }}
               testID="background-image-angle-2"
             />
@@ -105,8 +103,7 @@ exports.examples = [
             <Text>180deg</Text>
             <BackgroundImageBox
               style={{
-                backgroundImage:
-                  'linear-gradient(180deg, #ffecd2, #fcb69f)',
+                backgroundImage: 'linear-gradient(180deg, #ffecd2, #fcb69f)',
               }}
               testID="background-image-angle-3"
             />
@@ -165,8 +162,7 @@ exports.examples = [
             <Text>Circle</Text>
             <BackgroundImageBox
               style={{
-                backgroundImage:
-                  'radial-gradient(circle, #ff6b6b, #4ecdc4)',
+                backgroundImage: 'radial-gradient(circle, #ff6b6b, #4ecdc4)',
               }}
               testID="background-image-radial-1"
             />
@@ -175,8 +171,7 @@ exports.examples = [
             <Text>Ellipse</Text>
             <BackgroundImageBox
               style={{
-                backgroundImage:
-                  'radial-gradient(ellipse, #a8edea, #fed6e3)',
+                backgroundImage: 'radial-gradient(ellipse, #a8edea, #fed6e3)',
               }}
               testID="background-image-radial-2"
             />
@@ -212,8 +207,7 @@ exports.examples = [
                 style={{
                   width: 200,
                   height: 200,
-                  backgroundImage:
-                    'linear-gradient(45deg, #ff6b6b, #4ecdc4)',
+                  backgroundImage: 'linear-gradient(45deg, #ff6b6b, #4ecdc4)',
                   experimental_backgroundRepeat: 'space',
                   experimental_backgroundSize: '50px 50px',
                 }}
@@ -228,8 +222,7 @@ exports.examples = [
                 style={{
                   width: 200,
                   height: 200,
-                  backgroundImage:
-                    'linear-gradient(90deg, #a8edea, #fed6e3)',
+                  backgroundImage: 'linear-gradient(90deg, #a8edea, #fed6e3)',
                   experimental_backgroundRepeat: 'round',
                   experimental_backgroundSize: '60px 60px',
                 }}
@@ -242,8 +235,7 @@ exports.examples = [
                 style={{
                   width: 200,
                   height: 200,
-                  backgroundImage:
-                    'radial-gradient(circle, #ffecd2, #fcb69f)',
+                  backgroundImage: 'radial-gradient(circle, #ffecd2, #fcb69f)',
                   experimental_backgroundRepeat: 'no-repeat',
                   experimental_backgroundSize: '100px 100px',
                   backgroundColor: 'purple',
@@ -266,8 +258,7 @@ exports.examples = [
             <Text>center</Text>
             <BackgroundImageBox
               style={{
-                backgroundImage:
-                  'radial-gradient(circle, #ff6b6b, #4ecdc4)',
+                backgroundImage: 'radial-gradient(circle, #ff6b6b, #4ecdc4)',
                 experimental_backgroundRepeat: 'no-repeat',
                 experimental_backgroundPosition: 'center',
                 experimental_backgroundSize: '50px 50px',
@@ -280,8 +271,7 @@ exports.examples = [
             <Text>25% 75%</Text>
             <BackgroundImageBox
               style={{
-                backgroundImage:
-                  'radial-gradient(circle, #a8edea, #fed6e3)',
+                backgroundImage: 'radial-gradient(circle, #a8edea, #fed6e3)',
                 experimental_backgroundRepeat: 'no-repeat',
                 experimental_backgroundPosition: '25% 75%',
                 borderWidth: 1,
@@ -294,8 +284,7 @@ exports.examples = [
             <Text>right bottom</Text>
             <BackgroundImageBox
               style={{
-                backgroundImage:
-                  'radial-gradient(circle, #ffecd2, #fcb69f)',
+                backgroundImage: 'radial-gradient(circle, #ffecd2, #fcb69f)',
                 experimental_backgroundRepeat: 'no-repeat',
                 experimental_backgroundPosition: 'right bottom',
                 borderWidth: 1,
@@ -359,8 +348,7 @@ exports.examples = [
             <Text>borderRadius</Text>
             <BackgroundImageBox
               style={{
-                backgroundImage:
-                  'linear-gradient(45deg, #667eea, #764ba2)',
+                backgroundImage: 'linear-gradient(45deg, #667eea, #764ba2)',
                 borderRadius: 20,
               }}
               testID="background-image-borders-1"
@@ -370,8 +358,7 @@ exports.examples = [
             <Text>borderWidth + borderColor</Text>
             <BackgroundImageBox
               style={{
-                backgroundImage:
-                  'radial-gradient(circle, #f093fb, #f5576c)',
+                backgroundImage: 'radial-gradient(circle, #f093fb, #f5576c)',
                 borderWidth: 10,
                 borderColor: 'red',
               }}
@@ -382,8 +369,7 @@ exports.examples = [
             <Text>non uniform borderRadius</Text>
             <BackgroundImageBox
               style={{
-                backgroundImage:
-                  'radial-gradient(circle, #f093fb, #f5576c)',
+                backgroundImage: 'radial-gradient(circle, #f093fb, #f5576c)',
                 borderTopLeftRadius: 10,
                 borderTopRightRadius: 20,
                 borderBottomLeftRadius: 30,
@@ -396,8 +382,7 @@ exports.examples = [
             <Text>non uniform borderWidth</Text>
             <BackgroundImageBox
               style={{
-                backgroundImage:
-                  'radial-gradient(circle, #f093fb, #f5576c)',
+                backgroundImage: 'radial-gradient(circle, #f093fb, #f5576c)',
                 borderTopWidth: 10,
                 borderTopColor: 'red',
                 borderBottomWidth: 20,
