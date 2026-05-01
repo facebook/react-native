@@ -10384,6 +10384,7 @@ class facebook::react::jsinspector_modern::IWebSocketDelegate {
 }
 
 class facebook::react::jsinspector_modern::InspectorFlags {
+  public InspectorFlags(const facebook::react::jsinspector_modern::InspectorFlags&) = delete;
   public bool getAssertSingleHostState() const;
   public bool getFrameRecordingEnabled() const;
   public bool getFuseboxEnabled() const;
@@ -10391,6 +10392,7 @@ class facebook::react::jsinspector_modern::InspectorFlags {
   public bool getNetworkInspectionEnabled() const;
   public bool getPerfIssuesEnabled() const;
   public bool getScreenshotCaptureEnabled() const;
+  public facebook::react::jsinspector_modern::InspectorFlags& operator=(const facebook::react::jsinspector_modern::InspectorFlags&) = delete;
   public static facebook::react::jsinspector_modern::InspectorFlags& getInstance();
   public void dangerouslyDisableFuseboxForTest();
   public void dangerouslyResetFlags();

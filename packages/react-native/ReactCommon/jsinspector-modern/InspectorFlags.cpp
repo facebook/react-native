@@ -50,7 +50,10 @@ bool InspectorFlags::getPerfIssuesEnabled() const {
 }
 
 void InspectorFlags::dangerouslyResetFlags() {
-  *this = InspectorFlags{};
+  std::lock_guard<std::mutex> lock(mutex_);
+  cachedValues_.reset();
+  inconsistentFlagsStateLogged_ = false;
+  fuseboxDisabledForTest_ = false;
 }
 
 void InspectorFlags::dangerouslyDisableFuseboxForTest() {
@@ -84,6 +87,8 @@ const InspectorFlags::Values& InspectorFlags::loadFlagsAndAssertUnchanged()
       .perfIssuesEnabled = ReactNativeFeatureFlags::perfIssuesEnabled(),
   };
 
+  // Protect against concurrent calls
+  std::lock_guard<std::mutex> lock(mutex_);
   if (cachedValues_.has_value() && !inconsistentFlagsStateLogged_) {
     if (cachedValues_ != newValues) {
       LOG(ERROR)
@@ -93,7 +98,6 @@ const InspectorFlags::Values& InspectorFlags::loadFlagsAndAssertUnchanged()
       inconsistentFlagsStateLogged_ = true;
     }
   }
-
   cachedValues_ = newValues;
 
   return cachedValues_.value();
