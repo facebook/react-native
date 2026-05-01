@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<d7b3c513adfc1a5f1d29f0e481282a96>>
+ * @generated SignedSource<<629e0071deb87fcfc23fec013025012c>>
  */
 
 /**
@@ -282,6 +282,12 @@ class ReactNativeFeatureFlagsJavaProvider
   bool enableModuleArgumentNSNullConversionIOS() override {
     static const auto method =
         getReactNativeFeatureFlagsProviderJavaClass()->getMethod<jboolean()>("enableModuleArgumentNSNullConversionIOS");
+    return method(javaProvider_);
+  }
+
+  bool enableMutationObserverByDefault() override {
+    static const auto method =
+        getReactNativeFeatureFlagsProviderJavaClass()->getMethod<jboolean()>("enableMutationObserverByDefault");
     return method(javaProvider_);
   }
 
@@ -770,6 +776,11 @@ bool JReactNativeFeatureFlagsCxxInterop::enableModuleArgumentNSNullConversionIOS
   return ReactNativeFeatureFlags::enableModuleArgumentNSNullConversionIOS();
 }
 
+bool JReactNativeFeatureFlagsCxxInterop::enableMutationObserverByDefault(
+    facebook::jni::alias_ref<JReactNativeFeatureFlagsCxxInterop> /*unused*/) {
+  return ReactNativeFeatureFlags::enableMutationObserverByDefault();
+}
+
 bool JReactNativeFeatureFlagsCxxInterop::enableNativeCSSParsing(
     facebook::jni::alias_ref<JReactNativeFeatureFlagsCxxInterop> /*unused*/) {
   return ReactNativeFeatureFlags::enableNativeCSSParsing();
@@ -1154,6 +1165,9 @@ void JReactNativeFeatureFlagsCxxInterop::registerNatives() {
       makeNativeMethod(
         "enableModuleArgumentNSNullConversionIOS",
         JReactNativeFeatureFlagsCxxInterop::enableModuleArgumentNSNullConversionIOS),
+      makeNativeMethod(
+        "enableMutationObserverByDefault",
+        JReactNativeFeatureFlagsCxxInterop::enableMutationObserverByDefault),
       makeNativeMethod(
         "enableNativeCSSParsing",
         JReactNativeFeatureFlagsCxxInterop::enableNativeCSSParsing),

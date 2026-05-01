@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<b522f15f814b0aa1c39fb4ca3c774b4f>>
+ * @generated SignedSource<<bf97f4c89920b390b07c209c2252a1d4>>
  */
 
 /**
@@ -275,6 +275,12 @@ public object ReactNativeFeatureFlags {
    */
   @JvmStatic
   public fun enableModuleArgumentNSNullConversionIOS(): Boolean = accessor.enableModuleArgumentNSNullConversionIOS()
+
+  /**
+   * Enables the MutationObserver Web API in React Native.
+   */
+  @JvmStatic
+  public fun enableMutationObserverByDefault(): Boolean = accessor.enableMutationObserverByDefault()
 
   /**
    * Parse CSS strings using the Fabric CSS parser instead of ViewConfig processing
