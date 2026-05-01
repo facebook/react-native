@@ -112,8 +112,7 @@ exports.examples = [
       return (
         <GradientBox
           style={{
-            backgroundImage:
-              'linear-gradient(to bottom right, yellow, green)',
+            backgroundImage: 'linear-gradient(to bottom right, yellow, green)',
           }}
           testID="linear-gradient-diagonal"
         />
@@ -128,8 +127,7 @@ exports.examples = [
       return (
         <GradientBox
           style={{
-            backgroundImage:
-              'linear-gradient(135deg, gray, brown)',
+            backgroundImage: 'linear-gradient(135deg, gray, brown)',
           }}
           testID="linear-gradient-angle"
         />
@@ -181,8 +179,7 @@ exports.examples = [
       return (
         <GradientBox
           style={{
-            backgroundImage:
-              'linear-gradient(to bottom right, yellow, green)',
+            backgroundImage: 'linear-gradient(to bottom right, yellow, green)',
             borderRadius: 16,
           }}
           testID="linear-gradient-uniform-borders"
@@ -197,8 +194,7 @@ exports.examples = [
       return (
         <GradientBox
           style={{
-            backgroundImage:
-              'linear-gradient(to bottom right, yellow, green)',
+            backgroundImage: 'linear-gradient(to bottom right, yellow, green)',
             borderTopRightRadius: 8,
             borderTopLeftRadius: 80,
           }}
@@ -299,8 +295,7 @@ exports.examples = [
         <GradientBox
           testID="linear-gradient-transparent-color-transition"
           style={{
-            backgroundImage:
-              'linear-gradient(to right, red, transparent)',
+            backgroundImage: 'linear-gradient(to right, red, transparent)',
           }}
         />
       );

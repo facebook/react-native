@@ -73,8 +73,7 @@ exports.examples = [
       return (
         <GradientBox
           style={{
-            backgroundImage:
-              'radial-gradient(at 70% 30%, red, blue)',
+            backgroundImage: 'radial-gradient(at 70% 30%, red, blue)',
           }}
           testID="radial-gradient-position"
         />
@@ -145,8 +144,7 @@ exports.examples = [
         <GradientBox
           testID="radial-gradient-with-uniform-borders"
           style={{
-            backgroundImage:
-              'radial-gradient(circle at center, yellow, green)',
+            backgroundImage: 'radial-gradient(circle at center, yellow, green)',
             borderRadius: 16,
           }}
         />
