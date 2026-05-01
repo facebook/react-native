@@ -945,6 +945,17 @@ const definitions: FeatureFlagDefinitions = {
       },
       ossReleaseStage: 'none',
     },
+    useOptimizedViewRegistryOnAndroid: {
+      defaultValue: false,
+      metadata: {
+        dateAdded: '2026-04-28',
+        description:
+          'Use MutableIntObjectMap with ReadWriteLock instead of ConcurrentHashMap for the view registry in SurfaceMountingManager to reduce memory overhead and GC pressure.',
+        expectedReleaseValue: true,
+        purpose: 'experimentation',
+      },
+      ossReleaseStage: 'none',
+    },
     useSharedAnimatedBackend: {
       defaultValue: false,
       metadata: {
