@@ -43,10 +43,18 @@ export default function dispatchNativeEvent(
   // Normal EventTarget dispatch
   const bubbleConfig = customBubblingEventTypes[type];
   const directConfig = customDirectEventTypes[type];
-  const bubbles = bubbleConfig != null;
 
   // Skip events that are not registered in the view config
-  if (bubbles || directConfig != null) {
+  if (bubbleConfig != null || directConfig != null) {
+    // Honor `skipBubbling` declared in the view config: when set, the bubble
+    // phase only fires on the target itself (matching the legacy renderer's
+    // behavior). The synthesized event reports `bubbles: false`, which causes
+    // the EventTarget bubble loop to short-circuit after dispatching to the
+    // target. Capture-phase listeners are unaffected.
+    const bubbles =
+      bubbleConfig != null &&
+      bubbleConfig.phasedRegistrationNames.skipBubbling !== true;
+
     const eventType = topLevelTypeToEventType(type);
     const options: {bubbles: boolean, cancelable: boolean} = {
       bubbles,
