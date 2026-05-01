@@ -88,6 +88,7 @@
 #import <React/RCTDevMenu.h>
 #import <React/RCTDevSupportHttpHeaders.h>
 #import <React/RCTDevSettings.h>
+#import <React/RCTDevSupportHttpHeaders.h>
 #import <React/RCTDevToolsRuntimeSettingsModule.h>
 #import <React/RCTDeviceInfo.h>
 #import <React/RCTDiffClampAnimatedNode.h>
