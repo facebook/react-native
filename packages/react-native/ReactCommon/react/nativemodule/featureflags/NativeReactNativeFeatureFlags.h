@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<0afa249e55277f5029eec0a740ad00b2>>
+ * @generated SignedSource<<b79f4636dde682a2e2559fc1a90efb82>>
  */
 
 /**
@@ -93,10 +93,6 @@ class NativeReactNativeFeatureFlags
   bool enableIOSViewClipToPaddingBox(jsi::Runtime& runtime);
 
   bool enableImagePrefetchingAndroid(jsi::Runtime& runtime);
-
-  bool enableImagePrefetchingJNIBatchingAndroid(jsi::Runtime& runtime);
-
-  bool enableImagePrefetchingOnUiThreadAndroid(jsi::Runtime& runtime);
 
   bool enableImmediateUpdateModeForContentOffsetChanges(jsi::Runtime& runtime);
 

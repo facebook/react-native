@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<13f834a8abe75fd71b75aa7d94a40303>>
+ * @generated SignedSource<<16024bed6914b4b74d4a50de142e872a>>
  */
 
 /**
@@ -140,14 +140,6 @@ bool ReactNativeFeatureFlags::enableIOSViewClipToPaddingBox() {
 
 bool ReactNativeFeatureFlags::enableImagePrefetchingAndroid() {
   return getAccessor().enableImagePrefetchingAndroid();
-}
-
-bool ReactNativeFeatureFlags::enableImagePrefetchingJNIBatchingAndroid() {
-  return getAccessor().enableImagePrefetchingJNIBatchingAndroid();
-}
-
-bool ReactNativeFeatureFlags::enableImagePrefetchingOnUiThreadAndroid() {
-  return getAccessor().enableImagePrefetchingOnUiThreadAndroid();
 }
 
 bool ReactNativeFeatureFlags::enableImmediateUpdateModeForContentOffsetChanges() {

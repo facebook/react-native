@@ -1011,15 +1011,8 @@ public class FabricUIManager
   @UnstableReactNativeAPI
   public void experimental_prefetchResources(
       int surfaceId, String componentName, ReadableMapBuffer params) {
-    if (ReactNativeFeatureFlags.enableImagePrefetchingOnUiThreadAndroid()) {
-      mMountItemDispatcher.addMountItem(
-          new PrefetchResourcesMountItem(surfaceId, componentName, params));
-    } else {
-      SurfaceMountingManager surfaceMountingManager = mMountingManager.getSurfaceManager(surfaceId);
-      if (surfaceMountingManager != null) {
-        surfaceMountingManager.experimental_prefetchResources(surfaceId, componentName, params);
-      }
-    }
+    mMountItemDispatcher.addMountItem(
+        new PrefetchResourcesMountItem(surfaceId, componentName, params));
   }
 
   void setBinding(FabricUIManagerBinding binding) {

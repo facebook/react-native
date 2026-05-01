@@ -659,7 +659,7 @@ void FabricUIManagerBinding::schedulerShouldRenderTransactions(
     return;
   }
 
-  if (ReactNativeFeatureFlags::enableImagePrefetchingJNIBatchingAndroid()) {
+  if (ReactNativeFeatureFlags::enableImagePrefetchingAndroid()) {
     auto weakImageFetcher =
         scheduler_->getContextContainer()->find<std::weak_ptr<ImageFetcher>>(
             ImageFetcherKey);

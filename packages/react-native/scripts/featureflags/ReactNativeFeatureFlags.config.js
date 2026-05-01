@@ -357,28 +357,6 @@ const definitions: FeatureFlagDefinitions = {
       },
       ossReleaseStage: 'none',
     },
-    enableImagePrefetchingJNIBatchingAndroid: {
-      defaultValue: false,
-      metadata: {
-        dateAdded: '2025-11-10',
-        description:
-          'When enabled, Android will build and initiate image prefetch requests on ImageShadowNode::layout and batch them together in a single JNI call',
-        expectedReleaseValue: true,
-        purpose: 'experimentation',
-      },
-      ossReleaseStage: 'none',
-    },
-    enableImagePrefetchingOnUiThreadAndroid: {
-      defaultValue: false,
-      metadata: {
-        dateAdded: '2025-09-02',
-        description:
-          'When enabled, Android will initiate image prefetch requested on ImageShadowNode::layout on the UI thread',
-        expectedReleaseValue: true,
-        purpose: 'experimentation',
-      },
-      ossReleaseStage: 'none',
-    },
     enableImmediateUpdateModeForContentOffsetChanges: {
       defaultValue: false,
       metadata: {
