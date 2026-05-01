@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<db6a2d2e1d96e088574d91ae2825fe5e>>
+ * @generated SignedSource<<932505a847d2290ab5940471b8a52891>>
  */
 
 /**
@@ -576,6 +576,15 @@ class ReactNativeFeatureFlagsDynamicProvider : public ReactNativeFeatureFlagsDef
     return ReactNativeFeatureFlagsDefaults::fuseboxEnabledRelease();
   }
 
+  bool fuseboxFrameRecordingEnabled() override {
+    auto value = values_["fuseboxFrameRecordingEnabled"];
+    if (!value.isNull()) {
+      return value.getBool();
+    }
+
+    return ReactNativeFeatureFlagsDefaults::fuseboxFrameRecordingEnabled();
+  }
+
   bool fuseboxNetworkInspectionEnabled() override {
     auto value = values_["fuseboxNetworkInspectionEnabled"];
     if (!value.isNull()) {
@@ -583,6 +592,15 @@ class ReactNativeFeatureFlagsDynamicProvider : public ReactNativeFeatureFlagsDef
     }
 
     return ReactNativeFeatureFlagsDefaults::fuseboxNetworkInspectionEnabled();
+  }
+
+  bool fuseboxScreenshotCaptureEnabled() override {
+    auto value = values_["fuseboxScreenshotCaptureEnabled"];
+    if (!value.isNull()) {
+      return value.getBool();
+    }
+
+    return ReactNativeFeatureFlagsDefaults::fuseboxScreenshotCaptureEnabled();
   }
 
   bool hideOffscreenVirtualViewsOnIOS() override {

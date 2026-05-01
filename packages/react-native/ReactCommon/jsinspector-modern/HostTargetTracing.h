@@ -35,10 +35,10 @@ void emitNotificationsForTracingProfile(
     std::convertible_to<std::ranges::range_value_t<ChannelsRange>, FrontendChannel>
 {
   /**
-   * Threshold for the size Trace Event chunk, that will be flushed out with
-   * Tracing.dataCollected event.
+   * Maximum serialized byte size of a Trace Event chunk before it is flushed
+   * with a Tracing.dataCollected event.
    */
-  static constexpr uint16_t TRACE_EVENT_CHUNK_SIZE = 1000;
+  static constexpr size_t TRACE_EVENT_CHUNK_MAX_BYTES = 10 * 1024 * 1024; // 10 MiB
 
   /**
    * The maximum number of ProfileChunk trace events
@@ -65,7 +65,7 @@ void emitNotificationsForTracingProfile(
               cdp::jsonNotification("Tracing.dataCollected", folly::dynamic::object("value", serializedChunk)));
         }
       },
-      TRACE_EVENT_CHUNK_SIZE,
+      TRACE_EVENT_CHUNK_MAX_BYTES,
       PROFILE_TRACE_EVENT_CHUNK_SIZE);
 
   for (auto &frontendChannel : channels) {
