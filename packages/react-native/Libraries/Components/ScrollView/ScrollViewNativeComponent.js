@@ -104,6 +104,7 @@ export const __INTERNAL_VIEW_CONFIG: PartialViewConfig =
           },
         },
         validAttributes: {
+          allowsKeyboardScrolling: true,
           alwaysBounceHorizontal: true,
           alwaysBounceVertical: true,
           automaticallyAdjustContentInsets: true,

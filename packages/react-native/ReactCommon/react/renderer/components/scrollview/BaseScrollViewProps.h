@@ -29,6 +29,7 @@ class BaseScrollViewProps : public ViewProps {
 
 #pragma mark - Props
 
+  bool allowsKeyboardScrolling{true};
   bool alwaysBounceHorizontal{};
   bool alwaysBounceVertical{};
   bool bounces{true};

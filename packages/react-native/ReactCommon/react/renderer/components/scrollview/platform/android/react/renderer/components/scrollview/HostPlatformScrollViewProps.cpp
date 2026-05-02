@@ -156,6 +156,10 @@ folly::dynamic HostPlatformScrollViewProps::getDiffProps(
 
   folly::dynamic result = ViewProps::getDiffProps(oldProps);
 
+  if (allowsKeyboardScrolling != oldProps->allowsKeyboardScrolling) {
+    result["allowsKeyboardScrolling"] = allowsKeyboardScrolling;
+  }
+
   if (alwaysBounceHorizontal != oldProps->alwaysBounceHorizontal) {
     result["alwaysBounceHorizontal"] = alwaysBounceHorizontal;
   }

@@ -530,6 +530,14 @@ if (Platform.OS === 'ios') {
       return <ScrollToOptions />;
     },
   });
+  examples.push({
+    title: '<ScrollView> allowsKeyboardScrolling\n',
+    description:
+      'When true, the scroll view allows scrolling its content with hardware keyboard input. The default value is true. Available on iOS 17 and later.',
+    render(): React.Node {
+      return <AllowsKeyboardScrollingExample />;
+    },
+  });
 } else if (Platform.OS === 'android') {
   examples.push({
     title: '<ScrollView> EndFillColor & FadingEdgeLength\n',
@@ -605,6 +613,32 @@ const ScrollsChildToFocusExample = () => {
       <RNTesterText>
         When false, focusing a TextInput will not automatically scroll it into
         view.
+      </RNTesterText>
+    </View>
+  );
+};
+
+const AllowsKeyboardScrollingExample = () => {
+  const [allowsKeyboardScrolling, setAllowsKeyboardScrolling] = useState(true);
+  return (
+    <View>
+      <RNTesterText style={styles.text}>
+        Connect a hardware keyboard and use Page Up, Page Down, Home, or End
+        keys to scroll.
+      </RNTesterText>
+      <ScrollView
+        style={[styles.scrollView, {height: 200}]}
+        nestedScrollEnabled
+        allowsKeyboardScrolling={allowsKeyboardScrolling}>
+        <TextInput style={styles.textInput} placeholder="Focusable TextInput" />
+        {ITEMS.map(createItemRow)}
+      </ScrollView>
+      <Button
+        label={'allowsKeyboardScrolling: ' + allowsKeyboardScrolling.toString()}
+        onPress={() => setAllowsKeyboardScrolling(!allowsKeyboardScrolling)}
+      />
+      <RNTesterText>
+        When false, hardware keyboard keys will not scroll the view.
       </RNTesterText>
     </View>
   );

@@ -21,6 +21,7 @@ import type {ViewProps} from '../View/ViewPropTypes';
 
 export type ScrollViewNativeProps = Readonly<{
   ...ViewProps,
+  allowsKeyboardScrolling?: ?boolean,
   alwaysBounceHorizontal?: ?boolean,
   alwaysBounceVertical?: ?boolean,
   automaticallyAdjustContentInsets?: ?boolean,
