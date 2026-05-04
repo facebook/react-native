@@ -29,6 +29,7 @@ exports[`LogBoxInspectorMessageHeader should not render "See More" if expanded 1
   >
     <Text
       id="logbox_message_title_text"
+      maxFontSizeMultiplier={1.5}
       style={
         Array [
           Object {
@@ -49,6 +50,7 @@ exports[`LogBoxInspectorMessageHeader should not render "See More" if expanded 1
   </View>
   <Text
     id="logbox_message_contents_text"
+    maxFontSizeMultiplier={1.5}
     style={
       Object {
         "color": "rgba(255, 255, 255, 1)",
@@ -108,6 +110,7 @@ exports[`LogBoxInspectorMessageHeader should not render See More button for shor
   >
     <Text
       id="logbox_message_title_text"
+      maxFontSizeMultiplier={1.5}
       style={
         Array [
           Object {
@@ -128,6 +131,7 @@ exports[`LogBoxInspectorMessageHeader should not render See More button for shor
   </View>
   <Text
     id="logbox_message_contents_text"
+    maxFontSizeMultiplier={1.5}
     style={
       Object {
         "color": "rgba(255, 255, 255, 1)",
@@ -187,6 +191,7 @@ exports[`LogBoxInspectorMessageHeader should render "See More" if collapsed 1`] 
   >
     <Text
       id="logbox_message_title_text"
+      maxFontSizeMultiplier={1.5}
       style={
         Array [
           Object {
@@ -207,6 +212,7 @@ exports[`LogBoxInspectorMessageHeader should render "See More" if collapsed 1`] 
   </View>
   <Text
     id="logbox_message_contents_text"
+    maxFontSizeMultiplier={1.5}
     style={
       Object {
         "color": "rgba(255, 255, 255, 1)",
@@ -234,6 +240,7 @@ exports[`LogBoxInspectorMessageHeader should render "See More" if collapsed 1`] 
       }
     />
     <Text
+      maxFontSizeMultiplier={1.5}
       onPress={[Function]}
       style={
         Object {
@@ -279,6 +286,7 @@ exports[`LogBoxInspectorMessageHeader should render error 1`] = `
   >
     <Text
       id="logbox_message_title_text"
+      maxFontSizeMultiplier={1.5}
       style={
         Array [
           Object {
@@ -299,6 +307,7 @@ exports[`LogBoxInspectorMessageHeader should render error 1`] = `
   </View>
   <Text
     id="logbox_message_contents_text"
+    maxFontSizeMultiplier={1.5}
     style={
       Object {
         "color": "rgba(255, 255, 255, 1)",
@@ -358,6 +367,7 @@ exports[`LogBoxInspectorMessageHeader should render fatal 1`] = `
   >
     <Text
       id="logbox_message_title_text"
+      maxFontSizeMultiplier={1.5}
       style={
         Array [
           Object {
@@ -378,6 +388,7 @@ exports[`LogBoxInspectorMessageHeader should render fatal 1`] = `
   </View>
   <Text
     id="logbox_message_contents_text"
+    maxFontSizeMultiplier={1.5}
     style={
       Object {
         "color": "rgba(255, 255, 255, 1)",
@@ -437,6 +448,7 @@ exports[`LogBoxInspectorMessageHeader should render syntax error 1`] = `
   >
     <Text
       id="logbox_message_title_text"
+      maxFontSizeMultiplier={1.5}
       style={
         Array [
           Object {
@@ -457,6 +469,7 @@ exports[`LogBoxInspectorMessageHeader should render syntax error 1`] = `
   </View>
   <Text
     id="logbox_message_contents_text"
+    maxFontSizeMultiplier={1.5}
     style={
       Object {
         "color": "rgba(255, 255, 255, 1)",

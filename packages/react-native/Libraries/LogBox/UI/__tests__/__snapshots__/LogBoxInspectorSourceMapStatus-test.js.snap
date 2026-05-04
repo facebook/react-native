@@ -44,6 +44,7 @@ exports[`LogBoxInspectorSourceMapStatus should render for failed 1`] = `
     }
   />
   <Text
+    maxFontSizeMultiplier={1.5}
     style={
       Array [
         Object {
@@ -111,6 +112,7 @@ exports[`LogBoxInspectorSourceMapStatus should render for pending 1`] = `
     }
   />
   <Text
+    maxFontSizeMultiplier={1.5}
     style={
       Array [
         Object {

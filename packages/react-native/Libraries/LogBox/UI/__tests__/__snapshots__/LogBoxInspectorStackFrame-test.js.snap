@@ -28,6 +28,7 @@ exports[`LogBoxInspectorStackFrame should render collapsed stack frame with dimm
   >
     <Text
       id="logbox_stack_frame_text"
+      maxFontSizeMultiplier={1.5}
       style={
         Array [
           Object {
@@ -49,6 +50,7 @@ exports[`LogBoxInspectorStackFrame should render collapsed stack frame with dimm
     </Text>
     <Text
       ellipsizeMode="middle"
+      maxFontSizeMultiplier={1.5}
       numberOfLines={1}
       style={
         Array [
@@ -101,6 +103,7 @@ exports[`LogBoxInspectorStackFrame should render stack frame 1`] = `
   >
     <Text
       id="logbox_stack_frame_text"
+      maxFontSizeMultiplier={1.5}
       style={
         Array [
           Object {
@@ -119,6 +122,7 @@ exports[`LogBoxInspectorStackFrame should render stack frame 1`] = `
     </Text>
     <Text
       ellipsizeMode="middle"
+      maxFontSizeMultiplier={1.5}
       numberOfLines={1}
       style={
         Array [
@@ -168,6 +172,7 @@ exports[`LogBoxInspectorStackFrame should render stack frame without press feedb
   >
     <Text
       id="logbox_stack_frame_text"
+      maxFontSizeMultiplier={1.5}
       style={
         Array [
           Object {
@@ -186,6 +191,7 @@ exports[`LogBoxInspectorStackFrame should render stack frame without press feedb
     </Text>
     <Text
       ellipsizeMode="middle"
+      maxFontSizeMultiplier={1.5}
       numberOfLines={1}
       style={
         Array [
