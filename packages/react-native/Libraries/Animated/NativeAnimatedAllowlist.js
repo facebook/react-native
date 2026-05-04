@@ -59,6 +59,27 @@ const SUPPORTED_STYLES: {[string]: true} = {
   scaleY: true,
   translateX: true,
   translateY: true,
+  // eslint-disable-next-line react-hooks/rules-of-hooks
+  ...(ReactNativeFeatureFlags.useSharedAnimatedBackend()
+    ? {
+        /* dimension */
+        height: true,
+        maxHeight: true,
+        maxWidth: true,
+        minHeight: true,
+        minWidth: true,
+        width: true,
+        /* position */
+        bottom: true,
+        end: true,
+        left: true,
+        right: true,
+        start: true,
+        top: true,
+        /* flex */
+        flex: true,
+      }
+    : {}),
 };
 
 const SUPPORTED_TRANSFORMS: {[string]: true} = {

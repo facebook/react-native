@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<dd8221f4b150b4b3bec3dafd4b745482>>
+ * @generated SignedSource<<2aa191314924bd0f969fba0e64b86142>>
  */
 
 /**
@@ -106,6 +106,7 @@ class ReactNestedScrollView extends NestedScrollView
   private final VelocityHelper mVelocityHelper = new VelocityHelper();
   private final Rect mTempRect = new Rect();
   private final ValueAnimator DEFAULT_FLING_ANIMATOR = ObjectAnimator.ofInt(this, "scrollY", 0, 0);
+  private final @Nullable FpsListener mFpsListener;
 
   private Rect mOverflowInset;
   private @Nullable VirtualViewContainerState mVirtualViewContainerState;
@@ -118,7 +119,6 @@ class ReactNestedScrollView extends NestedScrollView
   private boolean mRemoveClippedSubviews;
   private boolean mScrollEnabled;
   private boolean mSendMomentumEvents;
-  private @Nullable FpsListener mFpsListener;
   private @Nullable String mScrollPerfTag;
   private @Nullable Drawable mEndBackground;
   private int mEndFillColor;
@@ -700,6 +700,7 @@ class ReactNestedScrollView extends NestedScrollView
       float vScroll = ev.getAxisValue(MotionEvent.AXIS_VSCROLL);
       if (vScroll != 0) {
         // Perform the scroll
+        enableFpsListener();
         boolean result = super.dispatchGenericMotionEvent(ev);
         // Schedule snap alignment to run after scrolling stops
         if (result
@@ -710,6 +711,7 @@ class ReactNestedScrollView extends NestedScrollView
           // Cancel any pending post-touch runnable and reschedule
           if (mPostTouchRunnable != null) {
             removeCallbacks(mPostTouchRunnable);
+            mPostTouchRunnable = null;
           }
           mPostTouchRunnable =
               new Runnable() {
@@ -723,9 +725,12 @@ class ReactNestedScrollView extends NestedScrollView
                     velocityY = 0;
                   }
                   flingAndSnap(velocityY);
+                  handlePostTouchScrolling(0, velocityY);
                 }
               };
           postOnAnimationDelayed(mPostTouchRunnable, ReactScrollViewHelper.MOMENTUM_DELAY);
+        } else {
+          handlePostTouchScrolling(0, 0);
         }
         return result;
       }
@@ -786,14 +791,6 @@ class ReactNestedScrollView extends NestedScrollView
     } finally {
       Systrace.endSection(Systrace.TRACE_TAG_REACT);
     }
-  }
-
-  @Override
-  public boolean getClipToPadding() {
-    if (ReactNativeFeatureFlags.syncAndroidClipToPaddingWithOverflow()) {
-      return mOverflow != Overflow.VISIBLE;
-    }
-    return super.getClipToPadding();
   }
 
   @Override
@@ -1464,10 +1461,6 @@ class ReactNestedScrollView extends NestedScrollView
       int oldBottom) {
     if (mContentView == null) {
       return;
-    }
-
-    if (mMaintainVisibleContentPositionHelper != null) {
-      mMaintainVisibleContentPositionHelper.updateScrollPosition();
     }
 
     if (isShown() && isContentReady()) {

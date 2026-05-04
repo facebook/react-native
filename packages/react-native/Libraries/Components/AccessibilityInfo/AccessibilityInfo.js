@@ -136,7 +136,7 @@ const AccessibilityInfo = {
             reject,
           );
         } else {
-          reject(new Error('AccessibilityInfo native module is not available'));
+          reject(new Error('NativeAccessibilityManagerIOS is not available'));
         }
       });
     }
@@ -171,7 +171,7 @@ const AccessibilityInfo = {
             reject,
           );
         } else {
-          reject(new Error('AccessibilityInfo native module is not available'));
+          reject(new Error('NativeAccessibilityManagerIOS is not available'));
         }
       });
     }
@@ -191,7 +191,7 @@ const AccessibilityInfo = {
         if (NativeAccessibilityInfoAndroid != null) {
           NativeAccessibilityInfoAndroid.isReduceMotionEnabled(resolve);
         } else {
-          reject(new Error('AccessibilityInfo native module is not available'));
+          reject(new Error('NativeAccessibilityInfoAndroid is not available'));
         }
       } else {
         if (NativeAccessibilityManagerIOS != null) {
@@ -211,6 +211,8 @@ const AccessibilityInfo = {
    *
    * Returns a promise which resolves to a boolean.
    * The result is `true` when high text contrast is enabled and `false` otherwise.
+   *
+   * See https://reactnative.dev/docs/accessibilityinfo#ishightextcontrastenabled-android
    */
   isHighTextContrastEnabled(): Promise<boolean> {
     if (Platform.OS === 'android') {
@@ -235,6 +237,8 @@ const AccessibilityInfo = {
    *
    * Returns a promise which resolves to a boolean.
    * The result is `true` when dark system colors is enabled and `false` otherwise.
+   *
+   * See https://reactnative.dev/docs/accessibilityinfo#isdarkersystemcolorsenabled-ios
    */
   isDarkerSystemColorsEnabled(): Promise<boolean> {
     if (Platform.OS === 'android') {
@@ -512,7 +516,9 @@ const AccessibilityInfo = {
   getRecommendedTimeoutMillis(originalTimeout: number): Promise<number> {
     if (Platform.OS === 'android') {
       return new Promise((resolve, reject) => {
-        if (NativeAccessibilityInfoAndroid?.getRecommendedTimeoutMillis) {
+        if (
+          NativeAccessibilityInfoAndroid?.getRecommendedTimeoutMillis != null
+        ) {
           NativeAccessibilityInfoAndroid.getRecommendedTimeoutMillis(
             originalTimeout,
             resolve,

@@ -116,37 +116,27 @@ describe('Fantom', () => {
         LogBox.uninstall();
       });
 
-      // TODO: T223804378 when error handling is fixed, this should verify using `toThrow`
       it('should throw when running a task inside another task', () => {
-        let threw = false;
-
-        Fantom.runTask(() => {
-          // TODO replace with expect(() => { ... }).toThrow() when error handling is fixed
-          try {
+        expect(() => {
+          Fantom.runTask(() => {
             Fantom.runTask(() => {});
-          } catch {
-            threw = true;
-          }
-        });
-        expect(threw).toBe(true);
-
-        threw = false;
-
-        Fantom.runTask(() => {
-          queueMicrotask(() => {
-            try {
-              Fantom.runTask(() => {});
-            } catch {
-              threw = true;
-            }
           });
-        });
-        expect(threw).toBe(true);
+        }).toThrow(
+          'Nested `runTask` calls are not allowed. If you want to schedule a task from inside another task, use `scheduleTask` instead.',
+        );
+
+        expect(() => {
+          Fantom.runTask(() => {
+            queueMicrotask(() => {
+              Fantom.runTask(() => {});
+            });
+          });
+        }).toThrow(
+          'Nested `runTask` calls are not allowed. If you want to schedule a task from inside another task, use `scheduleTask` instead.',
+        );
       });
 
-      // TODO: fix error handling and make this pass
-      // eslint-disable-next-line jest/no-disabled-tests
-      it.skip('should re-throw errors from the task synchronously', () => {
+      it('should re-throw errors from the task synchronously', () => {
         expect(() => {
           Fantom.runTask(() => {
             throw new Error('test error');
@@ -154,9 +144,7 @@ describe('Fantom', () => {
         }).toThrow('test error');
       });
 
-      // TODO: fix error handling and make this pass
-      // eslint-disable-next-line jest/no-disabled-tests
-      it.skip('should re-throw errors from microtasks synchronously', () => {
+      it('should re-throw errors from microtasks synchronously', () => {
         expect(() => {
           Fantom.runTask(() => {
             queueMicrotask(() => {

@@ -115,4 +115,81 @@ class SurfaceMountingManagerTest {
     smm.createView("RCTView", 42, JavaOnlyMap.of(), null, null, true)
     assertThat(smm.getView(42)).isSameAs(viewBefore)
   }
+
+  /** Calling deleteView twice should not crash — second call logs a soft exception. */
+  @Test
+  fun deleteView_isIdempotent() {
+    val smm = startSurface()
+    smm.preallocateView("RCTView", 42, JavaOnlyMap.of(), null, true)
+    smm.deleteView(42)
+    smm.deleteView(42)
+    assertThat(smm.getViewExists(42)).isFalse()
+  }
+
+  /** createView works for a tag that was never preallocated (normal non-preallocated path). */
+  @Test
+  fun createView_afterDeleteWithoutPreallocate() {
+    val smm = startSurface()
+
+    smm.createView("RCTView", 42, JavaOnlyMap.of(), null, null, true)
+    assertThat(smm.getViewExists(42)).isTrue()
+
+    smm.deleteView(42)
+    assertThat(smm.getViewExists(42)).isFalse()
+
+    smm.createView("RCTView", 42, JavaOnlyMap.of(), null, null, true)
+    assertThat(smm.getViewExists(42)).isTrue()
+  }
+
+  /**
+   * Validates the fix works with multiple concurrent tag recycling — the real-world scenario with
+   * concurrent renders where several preallocated views are destroyed.
+   */
+  @Test
+  fun preallocateAndDeleteMultipleTags_thenRecreate() {
+    val smm = startSurface()
+
+    smm.preallocateView("RCTView", 42, JavaOnlyMap.of(), null, true)
+    smm.preallocateView("RCTView", 43, JavaOnlyMap.of(), null, true)
+    smm.preallocateView("RCTView", 44, JavaOnlyMap.of(), null, true)
+
+    smm.deleteView(42)
+    smm.deleteView(43)
+    smm.deleteView(44)
+
+    for (tag in intArrayOf(42, 43, 44)) {
+      assertThat(smm.getViewExists(tag)).isFalse()
+      smm.createView("RCTView", tag, JavaOnlyMap.of(), null, null, true)
+      assertThat(smm.getViewExists(tag)).isTrue()
+      smm.addViewAt(surfaceId, tag, 0)
+      assertThat(smm.getView(tag)).isNotNull()
+    }
+  }
+
+  /** Calling preallocateView twice with the same tag is a no-op (same view returned). */
+  @Test
+  fun preallocateView_isIdempotent() {
+    val smm = startSurface()
+
+    smm.preallocateView("RCTView", 42, JavaOnlyMap.of(), null, true)
+    val viewBefore = smm.getView(42)
+
+    smm.preallocateView("RCTView", 42, JavaOnlyMap.of(), null, true)
+    assertThat(smm.getView(42)).isSameAs(viewBefore)
+  }
+
+  /** preallocateView recreates a view after it was preallocated and then deleted. */
+  @Test
+  fun deleteView_thenPreallocateView_recreatesView() {
+    val smm = startSurface()
+
+    smm.preallocateView("RCTView", 42, JavaOnlyMap.of(), null, true)
+    assertThat(smm.getViewExists(42)).isTrue()
+
+    smm.deleteView(42)
+    assertThat(smm.getViewExists(42)).isFalse()
+
+    smm.preallocateView("RCTView", 42, JavaOnlyMap.of(), null, true)
+    assertThat(smm.getViewExists(42)).isTrue()
+  }
 }

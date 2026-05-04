@@ -17,7 +17,7 @@
 
 namespace facebook::react {
 
-inline void fromRawValue(const PropsParserContext &context, const RawValue &value, ImageSource &result)
+inline void fromRawValue(const PropsParserContext & /* context */, const RawValue &value, ImageSource &result)
 {
   if (value.hasType<std::string>()) {
     result = {
@@ -116,7 +116,7 @@ inline std::string toString(const ImageSource &value)
   return "{uri: " + value.uri + "}";
 }
 
-inline void fromRawValue(const PropsParserContext &context, const RawValue &value, ImageResizeMode &result)
+inline void fromRawValue(const PropsParserContext & /* context */, const RawValue &value, ImageResizeMode &result)
 {
   react_native_expect(value.hasType<std::string>());
   if (!value.hasType<std::string>()) {

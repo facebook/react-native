@@ -16,8 +16,10 @@ import {useEffect, useState} from 'react';
 import {
   Animated,
   Easing,
+  Pressable,
   StyleSheet,
   Text,
+  TextInput,
   View,
   useAnimatedValue,
 } from 'react-native';
@@ -157,6 +159,56 @@ function TranslateMatrix2D() {
 }
 function TranslateMatrix3D() {
   return <View style={styles.translateMatrix3D} />;
+}
+
+// Regression example for #50797: a view with `scaleY: 0` (or any non-invertible transform)
+// must not receive touches. The first row uses a literal `scaleY: 0`; the second row lets you
+// type a scale so you can verify touches disappear exactly when scale reaches 0 and come back
+// when it's non-zero. "last tapped" should never show "zero-scale" for the first row.
+function ScaleZeroHitTestExample(): React.Node {
+  const [text, setText] = useState('0.5');
+  const [scale, setScale] = useState(0.5);
+  const [lastTapped, setLastTapped] = useState('(none)');
+
+  return (
+    <View testID="transform-scale-zero-hit-test">
+      <View style={styles.scaleZeroRow}>
+        <View style={styles.scaleZeroHidden}>
+          <Pressable
+            testID="scale-zero-hidden-pressable"
+            onPress={() => setLastTapped('zero-scale')}
+            style={styles.scaleZeroTarget}
+          />
+        </View>
+      </View>
+      <View style={styles.scaleZeroRow}>
+        <View style={{height: 100, transform: [{scaleY: scale}]}}>
+          <Pressable
+            testID="scale-zero-variable-pressable"
+            onPress={() => setLastTapped(`variable (scaleY=${scale})`)}
+            style={styles.scaleZeroTarget}
+          />
+        </View>
+      </View>
+      <View style={styles.scaleZeroInputRow}>
+        <Text>Scale for second row:</Text>
+        <TextInput
+          testID="scale-zero-input"
+          value={text}
+          keyboardType="numeric"
+          style={styles.scaleZeroInput}
+          onChangeText={next => {
+            setText(next);
+            const parsed = parseFloat(next);
+            if (isFinite(parsed)) {
+              setScale(parsed);
+            }
+          }}
+        />
+      </View>
+      <Text testID="scale-zero-last-tapped">Last tapped: {lastTapped}</Text>
+    </View>
+  );
 }
 
 const styles = StyleSheet.create({
@@ -333,6 +385,30 @@ const styles = StyleSheet.create({
     width: 50,
     backgroundColor: 'green',
   },
+  scaleZeroRow: {
+    backgroundColor: 'green',
+    marginTop: 10,
+  },
+  scaleZeroHidden: {
+    height: 100,
+    transform: [{scaleY: 0}],
+  },
+  scaleZeroTarget: {
+    flex: 1,
+    backgroundColor: 'red',
+  },
+  scaleZeroInputRow: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    marginTop: 12,
+    columnGap: 8,
+  },
+  scaleZeroInput: {
+    flex: 1,
+    borderWidth: StyleSheet.hairlineWidth,
+    paddingHorizontal: 8,
+    paddingVertical: 4,
+  },
 });
 
 exports.title = 'Transforms';
@@ -500,6 +576,15 @@ exports.examples = [
       "transform: 'matrix(1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1)'",
     render(): React.Node {
       return <TranslateMatrix3D />;
+    },
+  },
+  {
+    title: 'Zero-scale hit test (regression for #50797)',
+    name: 'scale-zero-hit-test',
+    description:
+      'A view with scaleY: 0 must not receive touches and must not inherit a sibling view’s hit region',
+    render(): React.Node {
+      return <ScaleZeroHitTestExample />;
     },
   },
 ] as Array<RNTesterModuleExample>;

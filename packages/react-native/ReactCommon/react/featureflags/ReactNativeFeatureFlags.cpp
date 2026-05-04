@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<f86521eb5833e76014b3197a6ab23b60>>
+ * @generated SignedSource<<16024bed6914b4b74d4a50de142e872a>>
  */
 
 /**
@@ -74,14 +74,6 @@ bool ReactNativeFeatureFlags::enableAccumulatedUpdatesInRawPropsAndroid() {
   return getAccessor().enableAccumulatedUpdatesInRawPropsAndroid();
 }
 
-bool ReactNativeFeatureFlags::enableAndroidAntialiasedBorderRadiusClipping() {
-  return getAccessor().enableAndroidAntialiasedBorderRadiusClipping();
-}
-
-bool ReactNativeFeatureFlags::enableAndroidLinearText() {
-  return getAccessor().enableAndroidLinearText();
-}
-
 bool ReactNativeFeatureFlags::enableAndroidTextMeasurementOptimizations() {
   return getAccessor().enableAndroidTextMeasurementOptimizations();
 }
@@ -148,14 +140,6 @@ bool ReactNativeFeatureFlags::enableIOSViewClipToPaddingBox() {
 
 bool ReactNativeFeatureFlags::enableImagePrefetchingAndroid() {
   return getAccessor().enableImagePrefetchingAndroid();
-}
-
-bool ReactNativeFeatureFlags::enableImagePrefetchingJNIBatchingAndroid() {
-  return getAccessor().enableImagePrefetchingJNIBatchingAndroid();
-}
-
-bool ReactNativeFeatureFlags::enableImagePrefetchingOnUiThreadAndroid() {
-  return getAccessor().enableImagePrefetchingOnUiThreadAndroid();
 }
 
 bool ReactNativeFeatureFlags::enableImmediateUpdateModeForContentOffsetChanges() {
@@ -254,6 +238,10 @@ bool ReactNativeFeatureFlags::enableVirtualViewDebugFeatures() {
   return getAccessor().enableVirtualViewDebugFeatures();
 }
 
+bool ReactNativeFeatureFlags::fixDifferentiatorParentTagForUnflattenCase() {
+  return getAccessor().fixDifferentiatorParentTagForUnflattenCase();
+}
+
 bool ReactNativeFeatureFlags::fixFindShadowNodeByTagRaceCondition() {
   return getAccessor().fixFindShadowNodeByTagRaceCondition();
 }
@@ -282,6 +270,10 @@ bool ReactNativeFeatureFlags::fuseboxNetworkInspectionEnabled() {
   return getAccessor().fuseboxNetworkInspectionEnabled();
 }
 
+bool ReactNativeFeatureFlags::fuseboxScreenshotCaptureEnabled() {
+  return getAccessor().fuseboxScreenshotCaptureEnabled();
+}
+
 bool ReactNativeFeatureFlags::hideOffscreenVirtualViewsOnIOS() {
   return getAccessor().hideOffscreenVirtualViewsOnIOS();
 }
@@ -306,6 +298,14 @@ bool ReactNativeFeatureFlags::preventShadowTreeCommitExhaustion() {
   return getAccessor().preventShadowTreeCommitExhaustion();
 }
 
+bool ReactNativeFeatureFlags::redBoxV2Android() {
+  return getAccessor().redBoxV2Android();
+}
+
+bool ReactNativeFeatureFlags::redBoxV2IOS() {
+  return getAccessor().redBoxV2IOS();
+}
+
 bool ReactNativeFeatureFlags::shouldPressibilityUseW3CPointerEventsForHover() {
   return getAccessor().shouldPressibilityUseW3CPointerEventsForHover();
 }
@@ -318,8 +318,8 @@ bool ReactNativeFeatureFlags::skipActivityIdentityAssertionOnHostPause() {
   return getAccessor().skipActivityIdentityAssertionOnHostPause();
 }
 
-bool ReactNativeFeatureFlags::syncAndroidClipToPaddingWithOverflow() {
-  return getAccessor().syncAndroidClipToPaddingWithOverflow();
+bool ReactNativeFeatureFlags::syncAndroidClipBoundsWithOverflow() {
+  return getAccessor().syncAndroidClipBoundsWithOverflow();
 }
 
 bool ReactNativeFeatureFlags::traceTurboModulePromiseRejectionsOnAndroid() {
@@ -352,6 +352,10 @@ bool ReactNativeFeatureFlags::useNativeViewConfigsInBridgelessMode() {
 
 bool ReactNativeFeatureFlags::useNestedScrollViewAndroid() {
   return getAccessor().useNestedScrollViewAndroid();
+}
+
+bool ReactNativeFeatureFlags::useOptimizedViewRegistryOnAndroid() {
+  return getAccessor().useOptimizedViewRegistryOnAndroid();
 }
 
 bool ReactNativeFeatureFlags::useSharedAnimatedBackend() {

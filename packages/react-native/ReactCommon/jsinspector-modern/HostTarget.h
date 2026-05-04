@@ -16,6 +16,7 @@
 #include "ScopedExecutor.h"
 #include "WeakList.h"
 
+#include <functional>
 #include <optional>
 #include <set>
 #include <string>
@@ -134,6 +135,32 @@ class HostTargetDelegate : public LoadNetworkResourceDelegate {
     }
   };
 
+  struct PageCaptureScreenshotRequest {
+    /**
+     * Image compression format. Defaults to "png".
+     * Allowed values: "jpeg", "png", "webp".
+     */
+    std::optional<std::string> format;
+
+    /**
+     * Compression quality from range [0..100] (jpeg only).
+     */
+    std::optional<int> quality;
+  };
+
+  struct SetEmulatedMediaRequest {
+    /**
+     * The color scheme to emulate: "light", "dark", or "" (reset to system
+     * default).
+     */
+    std::string colorScheme;
+
+    inline bool operator==(const SetEmulatedMediaRequest &rhs) const
+    {
+      return colorScheme == rhs.colorScheme;
+    }
+  };
+
   virtual ~HostTargetDelegate() override;
 
   /**
@@ -179,6 +206,29 @@ class HostTargetDelegate : public LoadNetworkResourceDelegate {
   {
     throw NotImplementedException(
         "LoadNetworkResourceDelegate.loadNetworkResource is not implemented by this host target delegate.");
+  }
+
+  /**
+   * Called when the debugger requests a screenshot of the current page via
+   * @cdp Page.captureScreenshot. The delegate should capture the current
+   * view, encode it to the requested format, and return base64-encoded
+   * image data. Return std::nullopt on failure.
+   */
+  virtual std::optional<std::string> captureScreenshot(const PageCaptureScreenshotRequest & /*request*/)
+  {
+    return std::nullopt;
+  }
+
+  /**
+   * Called when the debugger requests an emulated media override via
+   * @cdp Emulation.setEmulatedMedia. Currently only supports the
+   * prefers-color-scheme media feature.
+   *
+   * \returns true if the override was applied successfully.
+   */
+  virtual bool onSetEmulatedMedia(const SetEmulatedMediaRequest & /*request*/)
+  {
+    return false;
   }
 
   /**

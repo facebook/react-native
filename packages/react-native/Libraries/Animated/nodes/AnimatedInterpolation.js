@@ -73,7 +73,7 @@ function createNumericInterpolation(
   return input => {
     invariant(
       typeof input === 'number',
-      'Cannot interpolation an input which is not a number',
+      'Cannot interpolate an input which is not a number',
     );
 
     const range = findRange(input, inputRange);
@@ -345,7 +345,7 @@ function checkInfiniteRange<
      * etc. If you really mean this implicit string conversion, you can do
      * something like String(myThing) */
     // $FlowFixMe[unsafe-addition]
-    name + 'cannot be ]-infinity;+infinity[ ' + arr,
+    name + ' cannot be ]-infinity;+infinity[ ' + arr,
   );
 }
 

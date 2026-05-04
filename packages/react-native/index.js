@@ -362,9 +362,8 @@ module.exports = {
   get UIManager() {
     return require('./Libraries/ReactNative/UIManager').default;
   },
-  get unstable_batchedUpdates() {
-    return require('./Libraries/ReactNative/RendererProxy')
-      .unstable_batchedUpdates;
+  unstable_batchedUpdates<T>(fn: (bookkeeping: T) => void, bookkeeping: T) {
+    fn(bookkeeping);
   },
   get useAnimatedValue() {
     return require('./Libraries/Animated/useAnimatedValue').default;

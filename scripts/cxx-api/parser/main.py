@@ -10,10 +10,15 @@ Main entry point for building API snapshots from Doxygen XML output.
 from __future__ import annotations
 
 import os
+import re
+from dataclasses import dataclass
 
 from doxmlparser import compound, index
 
 from .builders import (
+    _member_types_reference_excluded_symbol,
+    _should_exclude_symbol,
+    compile_exclude_patterns,
     create_category_scope,
     create_class_scope,
     create_enum_scope,
@@ -24,22 +29,25 @@ from .builders import (
     get_typedef_member,
     get_variable_member,
 )
+from .member import (
+    FriendMember,
+    FunctionMember,
+    PropertyMember,
+    TypedefMember,
+    VariableMember,
+)
+from .scope import Scope, StructLikeScopeKind
+from .scope.extendable import Extendable
 from .snapshot import Snapshot
-from .utils import has_scope_resolution_outside_angles, parse_qualified_path
-
-
-def _should_exclude_symbol(name: str, exclude_symbols: list[str]) -> bool:
-    """
-    Check if a compound name should be excluded based on symbol patterns.
-
-    Each pattern in exclude_symbols is treated as a substring match against
-    the compound's qualified name.
-    """
-    return any(pattern in name for pattern in exclude_symbols)
+from .utils import (
+    format_parsed_type,
+    has_scope_resolution_outside_angles,
+    parse_qualified_path,
+)
 
 
 def _process_namespace_sections(
-    snapshot, namespace_scope, compound_object, exclude_symbols: list[str]
+    snapshot, namespace_scope, compound_object, exclude_symbols: list[re.Pattern]
 ):
     """
     Process all section definitions inside a namespace compound.
@@ -55,9 +63,10 @@ def _process_namespace_sections(
                 if _should_exclude_symbol(qualified_name, exclude_symbols):
                     continue
                 is_static = variable_def.static == "yes"
-                namespace_scope.add_member(
-                    get_variable_member(variable_def, "public", is_static)
-                )
+                var_member = get_variable_member(variable_def, "public", is_static)
+                if _member_types_reference_excluded_symbol(var_member, exclude_symbols):
+                    continue
+                namespace_scope.add_member(var_member)
         elif section_def.kind == "func":
             for function_def in section_def.memberdef:
                 # Skip out-of-class definitions (e.g. "Strct<T>::convert")
@@ -69,15 +78,23 @@ def _process_namespace_sections(
                 function_static = function_def.static == "yes"
 
                 if not function_static:
-                    namespace_scope.add_member(
-                        get_function_member(function_def, "public")
-                    )
+                    func_member = get_function_member(function_def, "public")
+                    if _member_types_reference_excluded_symbol(
+                        func_member, exclude_symbols
+                    ):
+                        continue
+                    namespace_scope.add_member(func_member)
         elif section_def.kind == "typedef":
             for typedef_def in section_def.memberdef:
                 qualified_name = f"{compound_name}::{typedef_def.get_name()}"
                 if _should_exclude_symbol(qualified_name, exclude_symbols):
                     continue
-                namespace_scope.add_member(get_typedef_member(typedef_def, "public"))
+                typedef_member = get_typedef_member(typedef_def, "public")
+                if _member_types_reference_excluded_symbol(
+                    typedef_member, exclude_symbols
+                ):
+                    continue
+                namespace_scope.add_member(typedef_member)
         elif section_def.kind == "enum":
             for enum_def in section_def.memberdef:
                 qualified_name = f"{compound_name}::{enum_def.get_name()}"
@@ -128,7 +145,7 @@ def _handle_concept_compound(snapshot, compound_object):
     namespace_scope.add_member(get_concept_member(compound_object))
 
 
-def _handle_class_compound(snapshot, compound_object):
+def _handle_class_compound(snapshot, compound_object, exclude_symbols=None):
     """
     Handle class, struct, and union compound definitions.
     """
@@ -140,11 +157,11 @@ def _handle_class_compound(snapshot, compound_object):
 
     # Handle Objective-C interfaces separately
     if is_objc_interface:
-        create_interface_scope(snapshot, compound_object)
+        create_interface_scope(snapshot, compound_object, exclude_symbols)
         return
 
     # classes and structs are represented by the same scope with a different kind
-    create_class_scope(snapshot, compound_object)
+    create_class_scope(snapshot, compound_object, exclude_symbols)
 
 
 # Dispatch table for compound kinds that map directly to a single builder call.
@@ -170,17 +187,220 @@ _IGNORED_COMPOUNDS = frozenset(
 )
 
 
+@dataclass
+class ExcludedSymbolReference:
+    symbol: str
+    pattern: str
+    scope: str
+    context: str
+
+
+def _check_text_for_excluded_patterns(
+    text: str,
+    scope_name: str,
+    context: str,
+    exclude_symbols: list[re.Pattern],
+    results: list[ExcludedSymbolReference],
+) -> None:
+    """Append an ExcludedSymbolReference for each pattern found in *text*."""
+    for pattern in exclude_symbols:
+        if pattern.search(text):
+            results.append(
+                ExcludedSymbolReference(
+                    symbol=text,
+                    pattern=pattern.pattern,
+                    scope=scope_name,
+                    context=context,
+                )
+            )
+
+
+def _check_arguments_for_excluded_patterns(
+    arguments: list,
+    scope_name: str,
+    context_prefix: str,
+    exclude_symbols: list[re.Pattern],
+    results: list[ExcludedSymbolReference],
+) -> None:
+    """Check every argument's type string for excluded patterns."""
+    for arg in arguments:
+        # Argument is a tuple: (qualifiers, type, name, default_value)
+        arg_type = arg[1]
+        if arg_type:
+            _check_text_for_excluded_patterns(
+                arg_type,
+                scope_name,
+                f"{context_prefix} parameter type",
+                exclude_symbols,
+                results,
+            )
+
+
+def _check_member_for_excluded_patterns(
+    member,
+    scope_name: str,
+    exclude_symbols: list[re.Pattern],
+    results: list[ExcludedSymbolReference],
+) -> None:
+    """Check a single member for type references matching excluded patterns."""
+    member_name = f"{scope_name}::{member.name}"
+
+    if isinstance(member, FunctionMember):
+        if member.type:
+            _check_text_for_excluded_patterns(
+                member.type,
+                member_name,
+                "return type",
+                exclude_symbols,
+                results,
+            )
+        _check_arguments_for_excluded_patterns(
+            member.arguments,
+            member_name,
+            "function",
+            exclude_symbols,
+            results,
+        )
+
+    elif isinstance(member, VariableMember):
+        type_str = format_parsed_type(member._parsed_type)
+        if type_str:
+            _check_text_for_excluded_patterns(
+                type_str,
+                member_name,
+                "variable type",
+                exclude_symbols,
+                results,
+            )
+        _check_arguments_for_excluded_patterns(
+            member._fp_arguments,
+            member_name,
+            "function pointer",
+            exclude_symbols,
+            results,
+        )
+
+    elif isinstance(member, TypedefMember):
+        value = member.get_value()
+        if value:
+            _check_text_for_excluded_patterns(
+                value,
+                member_name,
+                "typedef target type",
+                exclude_symbols,
+                results,
+            )
+        _check_arguments_for_excluded_patterns(
+            member._fp_arguments,
+            member_name,
+            "function pointer",
+            exclude_symbols,
+            results,
+        )
+
+    elif isinstance(member, PropertyMember):
+        if member.type:
+            _check_text_for_excluded_patterns(
+                member.type,
+                member_name,
+                "property type",
+                exclude_symbols,
+                results,
+            )
+
+    elif isinstance(member, FriendMember):
+        _check_text_for_excluded_patterns(
+            member.name,
+            member_name,
+            "friend declaration",
+            exclude_symbols,
+            results,
+        )
+
+    if member.specialization_args:
+        for arg in member.specialization_args:
+            _check_text_for_excluded_patterns(
+                arg,
+                member_name,
+                "member specialization argument",
+                exclude_symbols,
+                results,
+            )
+
+
+def _walk_scope_for_excluded_patterns(
+    scope: Scope,
+    exclude_symbols: list[re.Pattern],
+    results: list[ExcludedSymbolReference],
+) -> None:
+    """Recursively walk a scope tree checking for excluded pattern references."""
+    scope_name = scope.get_qualified_name() or "(root)"
+
+    # Check base classes (StructLikeScopeKind, ProtocolScopeKind, InterfaceScopeKind)
+    if isinstance(scope.kind, Extendable):
+        for base in scope.kind.base_classes:
+            _check_text_for_excluded_patterns(
+                base.name,
+                scope_name,
+                "base class",
+                exclude_symbols,
+                results,
+            )
+
+    # Check specialization args
+    if isinstance(scope.kind, StructLikeScopeKind) and scope.kind.specialization_args:
+        for arg in scope.kind.specialization_args:
+            _check_text_for_excluded_patterns(
+                arg,
+                scope_name,
+                "specialization argument",
+                exclude_symbols,
+                results,
+            )
+
+    for member in scope.get_members():
+        _check_member_for_excluded_patterns(
+            member, scope_name, exclude_symbols, results
+        )
+
+    for inner in scope.inner_scopes.values():
+        _walk_scope_for_excluded_patterns(inner, exclude_symbols, results)
+
+
+def find_excluded_symbol_references(
+    snapshot: Snapshot,
+    exclude_symbols: list[re.Pattern],
+) -> list[ExcludedSymbolReference]:
+    """
+    Walk the snapshot scope tree after it has been finalized and find
+    references to excluded symbols in type strings, base classes, and
+    other type references.
+
+    This detects cases where a non-excluded symbol references an excluded
+    symbol (e.g., a class inherits from an excluded base, a function returns
+    an excluded type, etc.).
+    """
+    if not exclude_symbols:
+        return []
+
+    results: list[ExcludedSymbolReference] = []
+    _walk_scope_for_excluded_patterns(snapshot.root_scope, exclude_symbols, results)
+    return results
+
+
 def build_snapshot(xml_dir: str, exclude_symbols: list[str] | None = None) -> Snapshot:
     """
     Reads the Doxygen XML output and builds a snapshot of the C++ API.
 
     Args:
         xml_dir: Path to the Doxygen XML output directory.
-        exclude_symbols: Optional list of substring patterns. Compounds whose
-            qualified name contains any of these patterns will be excluded.
+        exclude_symbols: Optional list of regex patterns. Compounds whose
+            qualified name matches any of these patterns will be excluded.
     """
     if exclude_symbols is None:
         exclude_symbols = []
+
+    compiled_patterns = compile_exclude_patterns(exclude_symbols)
 
     index_path = os.path.join(xml_dir, "index.xml")
     if not os.path.exists(index_path):
@@ -201,7 +421,7 @@ def build_snapshot(xml_dir: str, exclude_symbols: list[str] | None = None) -> Sn
             if compound_object.prot == "private":
                 continue
 
-            if _should_exclude_symbol(compound_object.compoundname, exclude_symbols):
+            if _should_exclude_symbol(compound_object.compoundname, compiled_patterns):
                 continue
 
             kind = compound_object.kind
@@ -211,11 +431,24 @@ def build_snapshot(xml_dir: str, exclude_symbols: list[str] | None = None) -> Sn
             elif kind in _COMPOUND_HANDLERS:
                 handler = _COMPOUND_HANDLERS[kind]
                 if handler == _handle_namespace_compound:
-                    handler(snapshot, compound_object, exclude_symbols)
+                    handler(snapshot, compound_object, compiled_patterns)
+                elif handler == _handle_class_compound:
+                    handler(snapshot, compound_object, compiled_patterns)
+                elif handler in (
+                    create_category_scope,
+                    create_protocol_scope,
+                    create_interface_scope,
+                ):
+                    handler(snapshot, compound_object, compiled_patterns)
                 else:
                     handler(snapshot, compound_object)
             else:
                 print(f"Unknown compound kind: {kind}")
 
     snapshot.finish()
+
+    snapshot.excluded_symbol_references = find_excluded_symbol_references(
+        snapshot, compiled_patterns
+    )
+
     return snapshot

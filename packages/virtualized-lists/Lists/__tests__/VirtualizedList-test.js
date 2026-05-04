@@ -1612,10 +1612,9 @@ it('adjusts render area with non-zero initialScrollIndex', async () => {
       content: {width: 10, height: 200},
     });
     simulateScroll(component, {x: 0, y: 10}); // simulate scroll offset for initialScrollIndex
-
-    // TODO: Rewrite test to tolerate subtle timing changes.
-    jest.advanceTimersToNextTimer(3);
   });
+
+  await advanceUntilRenderAreaChanged(component);
 
   // We should expand the render area after receiving a message indicating we
   // arrived at initialScrollIndex.
@@ -2622,6 +2621,29 @@ function simulateScroll(component, position) {
       zoomScale: 1,
     },
   });
+}
+
+async function advanceUntilRenderAreaChanged(component) {
+  const instance = component.getInstance();
+  const initialRenderArea = instance.state.cellsAroundViewport;
+  const MAX_TIMER_STEPS = 20;
+
+  for (let step = 0; step < MAX_TIMER_STEPS; step++) {
+    const currentRenderArea = instance.state.cellsAroundViewport;
+    const renderAreaChanged =
+      currentRenderArea.first !== initialRenderArea.first ||
+      currentRenderArea.last !== initialRenderArea.last;
+
+    if (renderAreaChanged) {
+      return;
+    }
+
+    await act(() => {
+      jest.advanceTimersToNextTimer(1);
+    });
+  }
+
+  throw new Error(`Render area did not change`);
 }
 
 function performAllBatches() {

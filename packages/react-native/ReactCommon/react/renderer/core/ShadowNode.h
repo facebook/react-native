@@ -83,7 +83,7 @@ class ShadowNode : public Sealable, public DebugStringConvertible, public jsi::N
   ShadowNode(const ShadowNode &shadowNode) noexcept = delete;
   ShadowNode &operator=(const ShadowNode &other) noexcept = delete;
 
-  virtual ~ShadowNode() override = default;
+  ~ShadowNode() override = default;
 
   /*
    * Clones the shadow node using the ShadowNode's ComponentDescriptor.
@@ -118,7 +118,7 @@ class ShadowNode : public Sealable, public DebugStringConvertible, public jsi::N
    * Called, once a fully derived ShadowNode clone has been created via
    * ComponentDescriptor::cloneShadowNode.
    */
-  virtual void completeClone(const ShadowNode &sourceShadowNode, const ShadowNodeFragment &fragment) {}
+  virtual void completeClone(const ShadowNode & /* sourceShadowNode */, const ShadowNodeFragment & /* fragment */) {}
 
 #pragma mark - Getters
 

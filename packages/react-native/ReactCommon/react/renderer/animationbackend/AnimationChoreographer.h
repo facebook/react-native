@@ -8,6 +8,7 @@
 #pragma once
 
 #include <react/renderer/uimanager/UIManagerAnimationBackend.h>
+#include <react/timing/primitives.h>
 
 namespace facebook::react {
 
@@ -21,6 +22,10 @@ class AnimationChoreographer {
 
   virtual void resume() = 0;
   virtual void pause() = 0;
+  virtual AnimationTimestamp now() const
+  {
+    return HighResTimeStamp::now().toChronoSteadyClockTimePoint().time_since_epoch();
+  }
   void setAnimationBackend(std::weak_ptr<UIManagerAnimationBackend> animationBackend)
   {
     animationBackend_ = animationBackend;

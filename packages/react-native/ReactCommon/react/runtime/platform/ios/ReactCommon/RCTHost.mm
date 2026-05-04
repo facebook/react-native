@@ -141,6 +141,102 @@ class RCTHostHostTargetDelegate : public facebook::react::jsinspector_modern::Ho
     [networkHelper_ loadNetworkResourceWithParams:params executor:executor];
   }
 
+#if TARGET_OS_IPHONE
+  bool onSetEmulatedMedia(const SetEmulatedMediaRequest &request) override
+  {
+    RCTAssertMainQueue();
+    UIWindow *keyWindow = nil;
+    for (UIScene *scene in RCTSharedApplication().connectedScenes) {
+      if (scene.activationState == UISceneActivationStateForegroundActive &&
+          [scene isKindOfClass:[UIWindowScene class]]) {
+        auto *windowScene = (UIWindowScene *)scene;
+        for (UIWindow *win in windowScene.windows) {
+          if (win.isKeyWindow) {
+            keyWindow = win;
+            break;
+          }
+        }
+      }
+      if (keyWindow != nil) {
+        break;
+      }
+    }
+
+    if (keyWindow == nil) {
+      return false;
+    }
+
+    UIUserInterfaceStyle style = UIUserInterfaceStyleUnspecified;
+    if (request.colorScheme == "dark") {
+      style = UIUserInterfaceStyleDark;
+    } else if (request.colorScheme == "light") {
+      style = UIUserInterfaceStyleLight;
+    }
+
+    keyWindow.overrideUserInterfaceStyle = style;
+    return true;
+  }
+#endif
+
+#if TARGET_OS_IPHONE && defined(REACT_NATIVE_DEBUGGER_ENABLED)
+  std::optional<std::string> captureScreenshot(const PageCaptureScreenshotRequest &request) override
+  {
+    UIWindow *keyWindow = nil;
+    for (UIScene *scene in UIApplication.sharedApplication.connectedScenes) {
+      if (scene.activationState == UISceneActivationStateForegroundActive &&
+          [scene isKindOfClass:[UIWindowScene class]]) {
+        auto *windowScene = (UIWindowScene *)scene;
+        for (UIWindow *win in windowScene.windows) {
+          if (win.isKeyWindow) {
+            keyWindow = win;
+            break;
+          }
+        }
+      }
+      if (keyWindow != nil) {
+        break;
+      }
+    }
+
+    if (keyWindow == nil) {
+      return std::nullopt;
+    }
+
+    UIView *rootView = keyWindow.rootViewController.view != nil ? keyWindow.rootViewController.view : keyWindow;
+    CGSize viewSize = rootView.bounds.size;
+
+    UIGraphicsImageRendererFormat *format = [UIGraphicsImageRendererFormat defaultFormat];
+    format.scale = 1.0;
+    UIGraphicsImageRenderer *renderer = [[UIGraphicsImageRenderer alloc] initWithSize:viewSize format:format];
+
+    UIImage *image = [renderer imageWithActions:^(UIGraphicsImageRendererContext *context) {
+      [rootView drawViewHierarchyInRect:CGRectMake(0, 0, viewSize.width, viewSize.height) afterScreenUpdates:NO];
+    }];
+
+    if (image == nil) {
+      return std::nullopt;
+    }
+
+    NSData *encodedData = nil;
+    std::string formatStr = request.format.value_or("png");
+
+    if (formatStr == "jpeg") {
+      CGFloat quality = request.quality.has_value() ? (*request.quality / 100.0) : 0.8;
+      encodedData = UIImageJPEGRepresentation(image, quality);
+    } else {
+      // Default to PNG for "png" and "webp" (WebP encoding not available via UIKit)
+      encodedData = UIImagePNGRepresentation(image);
+    }
+
+    if (encodedData == nil) {
+      return std::nullopt;
+    }
+
+    NSString *base64String = [encodedData base64EncodedStringWithOptions:0];
+    return std::string([base64String UTF8String]);
+  }
+#endif
+
 #if TARGET_OS_IPHONE && defined(REACT_NATIVE_DEBUGGER_ENABLED)
   jsinspector_modern::HostTargetTracingDelegate *getTracingDelegate() override
   {

@@ -773,6 +773,14 @@ public class NetworkingModule(
                       e.message,
                       e,
                   )
+                } catch (e: OutOfMemoryError) {
+                  NetworkEventUtil.onRequestError(
+                      reactApplicationContext,
+                      requestId,
+                      devToolsRequestId,
+                      "Out of memory while processing network response",
+                      null,
+                  )
                 }
               }
             }

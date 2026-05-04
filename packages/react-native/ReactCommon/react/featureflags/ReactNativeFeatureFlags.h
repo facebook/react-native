@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<a218accbb46d69a2d1bf54e0213b3421>>
+ * @generated SignedSource<<33ffe2572bbaeba64d2167dbac4bb0ab>>
  */
 
 /**
@@ -100,16 +100,6 @@ class ReactNativeFeatureFlags {
   RN_EXPORT static bool enableAccumulatedUpdatesInRawPropsAndroid();
 
   /**
-   * Enable antialiased border radius clipping for Android API 28 and below using manual masking with Porter-Duff compositing
-   */
-  RN_EXPORT static bool enableAndroidAntialiasedBorderRadiusClipping();
-
-  /**
-   * Enables linear text rendering on Android wherever subpixel text rendering is enabled
-   */
-  RN_EXPORT static bool enableAndroidLinearText();
-
-  /**
    * Enables various optimizations throughout the path of measuring text on Android.
    */
   RN_EXPORT static bool enableAndroidTextMeasurementOptimizations();
@@ -193,16 +183,6 @@ class ReactNativeFeatureFlags {
    * When enabled, Android will build and initiate image prefetch requests on ImageShadowNode::layout
    */
   RN_EXPORT static bool enableImagePrefetchingAndroid();
-
-  /**
-   * When enabled, Android will build and initiate image prefetch requests on ImageShadowNode::layout and batch them together in a single JNI call
-   */
-  RN_EXPORT static bool enableImagePrefetchingJNIBatchingAndroid();
-
-  /**
-   * When enabled, Android will initiate image prefetch requested on ImageShadowNode::layout on the UI thread
-   */
-  RN_EXPORT static bool enableImagePrefetchingOnUiThreadAndroid();
 
   /**
    * Dispatches state updates for content offset changes synchronously on the main thread.
@@ -325,6 +305,11 @@ class ReactNativeFeatureFlags {
   RN_EXPORT static bool enableVirtualViewDebugFeatures();
 
   /**
+   * Fix incorrect parentTag passed as parentTagForUpdate in the unflatten-unflatten branch of calculateShadowViewMutationsFlattener, which causes UPDATE mutations to reference a parent being created in the same batch.
+   */
+  RN_EXPORT static bool fixDifferentiatorParentTagForUnflattenCase();
+
+  /**
    * Fix a use-after-free race condition in findShadowNodeByTag_DEPRECATED by using getCurrentRevision() instead of tryCommit() with a raw pointer.
    */
   RN_EXPORT static bool fixFindShadowNodeByTagRaceCondition();
@@ -360,6 +345,11 @@ class ReactNativeFeatureFlags {
   RN_EXPORT static bool fuseboxNetworkInspectionEnabled();
 
   /**
+   * Enable Page.captureScreenshot CDP method support in the React Native DevTools CDP backend. This flag is global and should not be changed across React Host lifetimes.
+   */
+  RN_EXPORT static bool fuseboxScreenshotCaptureEnabled();
+
+  /**
    * Hides offscreen VirtualViews on iOS by setting hidden = YES to avoid extra cost of views
    */
   RN_EXPORT static bool hideOffscreenVirtualViewsOnIOS();
@@ -390,6 +380,16 @@ class ReactNativeFeatureFlags {
   RN_EXPORT static bool preventShadowTreeCommitExhaustion();
 
   /**
+   * Use the redesigned RedBox error overlay on Android, styled to match the LogBox visual language.
+   */
+  RN_EXPORT static bool redBoxV2Android();
+
+  /**
+   * Use the redesigned RedBox error overlay on iOS, styled to match the LogBox visual language.
+   */
+  RN_EXPORT static bool redBoxV2IOS();
+
+  /**
    * Function used to enable / disable Pressibility from using W3C Pointer Events for its hover callbacks
    */
   RN_EXPORT static bool shouldPressibilityUseW3CPointerEventsForHover();
@@ -405,9 +405,9 @@ class ReactNativeFeatureFlags {
   RN_EXPORT static bool skipActivityIdentityAssertionOnHostPause();
 
   /**
-   * Sync clipToPadding on Android views with the overflow property
+   * Override getClipBounds on Android views to return the padding box when overflow is hidden
    */
-  RN_EXPORT static bool syncAndroidClipToPaddingWithOverflow();
+  RN_EXPORT static bool syncAndroidClipBoundsWithOverflow();
 
   /**
    * Enables storing js caller stack when creating promise in native module. This is useful in case of Promise rejection and tracing the cause.
@@ -448,6 +448,11 @@ class ReactNativeFeatureFlags {
    * When enabled, ReactScrollView will extend NestedScrollView instead of ScrollView on Android for improved nested scrolling support.
    */
   RN_EXPORT static bool useNestedScrollViewAndroid();
+
+  /**
+   * Use MutableIntObjectMap with ReadWriteLock instead of ConcurrentHashMap for the view registry in SurfaceMountingManager to reduce memory overhead and GC pressure.
+   */
+  RN_EXPORT static bool useOptimizedViewRegistryOnAndroid();
 
   /**
    * Use shared animation backend in C++ Animated

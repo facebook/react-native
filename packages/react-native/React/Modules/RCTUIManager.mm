@@ -8,6 +8,7 @@
 #import "RCTUIManager.h"
 
 #import <AVFoundation/AVFoundation.h>
+#import <React/RCTDefines.h>
 #import <React/RCTSurfacePresenterStub.h>
 #import <react/featureflags/ReactNativeFeatureFlags.h>
 
@@ -17,7 +18,6 @@
 #import "RCTComponent.h"
 #import "RCTComponentData.h"
 #import "RCTConvert.h"
-#import "RCTDefines.h"
 #import "RCTEventDispatcherProtocol.h"
 #import "RCTLayoutAnimation.h"
 #import "RCTLayoutAnimationGroup.h"

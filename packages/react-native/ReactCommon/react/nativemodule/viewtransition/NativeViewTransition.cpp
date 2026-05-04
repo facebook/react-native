@@ -51,4 +51,42 @@ std::optional<jsi::Object> NativeViewTransition::getViewTransitionInstance(
   return result;
 }
 
+jsi::Value NativeViewTransition::findPseudoElementShadowNodeByTag(
+    jsi::Runtime& rt,
+    double reactTag) {
+  auto& uiManager = UIManagerBinding::getBinding(rt)->getUIManager();
+  auto* viewTransitionDelegate = uiManager.getViewTransitionDelegate();
+  if (viewTransitionDelegate != nullptr) {
+    auto shadowNode = viewTransitionDelegate->findPseudoElementShadowNodeByTag(
+        static_cast<Tag>(reactTag));
+    if (shadowNode) {
+      return Bridging<std::shared_ptr<const ShadowNode>>::toJs(rt, shadowNode);
+    }
+  }
+
+  return jsi::Value::null();
+}
+
+void NativeViewTransition::waitForTransitionAnimation(
+    jsi::Runtime& rt,
+    double animationId) {
+  auto& uiManager = UIManagerBinding::getBinding(rt)->getUIManager();
+  auto* viewTransitionDelegate = uiManager.getViewTransitionDelegate();
+  if (viewTransitionDelegate != nullptr) {
+    viewTransitionDelegate->waitForTransitionAnimation(
+        static_cast<int>(animationId));
+  }
+}
+
+void NativeViewTransition::transitionAnimationFinished(
+    jsi::Runtime& rt,
+    double animationId) {
+  auto& uiManager = UIManagerBinding::getBinding(rt)->getUIManager();
+  auto* viewTransitionDelegate = uiManager.getViewTransitionDelegate();
+  if (viewTransitionDelegate != nullptr) {
+    viewTransitionDelegate->transitionAnimationFinished(
+        static_cast<int>(animationId));
+  }
+}
+
 } // namespace facebook::react

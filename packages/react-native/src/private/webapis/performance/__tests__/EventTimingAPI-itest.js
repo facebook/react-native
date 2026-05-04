@@ -38,7 +38,7 @@ describe('Event Timing API', () => {
     const callback = jest.fn();
 
     const observer = new PerformanceObserver(callback);
-    observer.observe({entryTypes: ['event']});
+    observer.observe({type: 'event', durationThreshold: 0});
 
     const root = Fantom.createRoot();
     Fantom.runTask(() => {
@@ -79,7 +79,7 @@ describe('Event Timing API', () => {
     const callback = jest.fn();
 
     const observer = new PerformanceObserver(callback);
-    observer.observe({entryTypes: ['event']});
+    observer.observe({type: 'event', durationThreshold: 0});
 
     const SIMULATED_PROCESSING_DELAY = 50;
 
@@ -132,7 +132,7 @@ describe('Event Timing API', () => {
     const callback = jest.fn();
 
     const observer = new PerformanceObserver(callback);
-    observer.observe({entryTypes: ['event']});
+    observer.observe({type: 'event', durationThreshold: 0});
 
     function MyComponent() {
       const [count, setCount] = useState(0);
@@ -188,7 +188,7 @@ describe('Event Timing API', () => {
     const callback = jest.fn();
 
     const observer = new PerformanceObserver(callback);
-    observer.observe({entryTypes: ['event']});
+    observer.observe({type: 'event', durationThreshold: 0});
 
     let eventTimeStamp;
 
@@ -311,6 +311,52 @@ describe('Event Timing API', () => {
             onClick={event => {
               if (forceDelay) {
                 sleep(50);
+              }
+              setCount(count + 1);
+            }}>
+            <Text>{count}</Text>
+          </View>
+        );
+      }
+
+      const root = Fantom.createRoot();
+      Fantom.runTask(() => {
+        root.render(<MyComponent />);
+      });
+
+      const element = nullthrows(
+        root.document.documentElement.firstElementChild,
+      );
+
+      expect(callback).not.toHaveBeenCalled();
+
+      Fantom.dispatchNativeEvent(element, 'click');
+
+      expect(callback).toHaveBeenCalledTimes(0);
+
+      forceDelay = true;
+
+      Fantom.dispatchNativeEvent(element, 'click');
+
+      expect(callback).toHaveBeenCalledTimes(1);
+    });
+
+    it('defaults to 104ms for event entries per W3C spec', () => {
+      const callback = jest.fn();
+
+      const observer = new PerformanceObserver(callback);
+      observer.observe({type: 'event'});
+
+      let forceDelay = false;
+
+      function MyComponent() {
+        const [count, setCount] = useState(0);
+
+        return (
+          <View
+            onClick={event => {
+              if (forceDelay) {
+                sleep(104);
               }
               setCount(count + 1);
             }}>

@@ -28,7 +28,6 @@ void RCTDefaultCxxLogFunction(ReactNativeLogLevel level, const char *message)
       break;
     case ReactNativeLogLevelFatal:
       LOG(FATAL) << message;
-      break;
   }
 }
 

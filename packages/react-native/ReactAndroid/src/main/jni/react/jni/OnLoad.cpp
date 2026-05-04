@@ -11,7 +11,7 @@
 #include <fbjni/fbjni.h>
 
 #include "InspectorNetworkRequestListener.h"
-#include "JavaScriptExecutorHolder.h"
+#include "TransformHelper.h"
 
 #ifndef WITH_GLOGINIT
 #define WITH_GLOGINIT 1
@@ -34,6 +34,7 @@ extern "C" JNIEXPORT jint JNI_OnLoad(JavaVM* vm, void* reserved) {
     FLAGS_minloglevel = 0;
 #endif
     InspectorNetworkRequestListener::registerNatives();
+    TransformHelper::registerNatives();
   });
 }
 

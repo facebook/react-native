@@ -76,4 +76,15 @@ void SchedulerDelegateImpl::schedulerDidUpdateShadowTree(
   mountingManager_->onUpdateShadowTree(tagToProps);
 }
 
+void SchedulerDelegateImpl::schedulerDidCaptureViewSnapshot(
+    Tag /*tag*/,
+    SurfaceId /*surfaceId*/) {}
+
+void SchedulerDelegateImpl::schedulerDidSetViewSnapshot(
+    Tag /*sourceTag*/,
+    Tag /*targetTag*/,
+    SurfaceId /*surfaceId*/) {}
+
+void SchedulerDelegateImpl::schedulerDidClearPendingSnapshots() {}
+
 } // namespace facebook::react

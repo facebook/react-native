@@ -37,6 +37,7 @@ import com.facebook.react.touch.OnInterceptTouchEventListener
 import com.facebook.react.touch.ReactHitSlopView
 import com.facebook.react.touch.ReactInterceptingViewGroup
 import com.facebook.react.uimanager.BackgroundStyleApplicator.clipToPaddingBox
+import com.facebook.react.uimanager.BackgroundStyleApplicator.getPaddingBoxRect
 import com.facebook.react.uimanager.BackgroundStyleApplicator.setBackgroundColor
 import com.facebook.react.uimanager.BackgroundStyleApplicator.setBorderColor
 import com.facebook.react.uimanager.BackgroundStyleApplicator.setBorderRadius
@@ -58,8 +59,6 @@ import com.facebook.react.uimanager.ReactClippingViewGroupHelper.calculateClippi
 import com.facebook.react.uimanager.ReactOverflowViewWithInset
 import com.facebook.react.uimanager.ReactPointerEventsView
 import com.facebook.react.uimanager.ReactZIndexedViewGroup
-import com.facebook.react.uimanager.common.UIManagerType
-import com.facebook.react.uimanager.common.ViewUtil.getUIManagerType
 import com.facebook.react.uimanager.style.BorderRadiusProp
 import com.facebook.react.uimanager.style.BorderStyle
 import com.facebook.react.uimanager.style.LogicalEdge
@@ -166,9 +165,6 @@ public open class ReactViewGroup public constructor(context: Context?) :
    */
   private fun initView() {
     clipChildren = false
-    if (ReactNativeFeatureFlags.syncAndroidClipToPaddingWithOverflow()) {
-      clipToPadding = false
-    }
 
     _removeClippedSubviews = false
     inSubviewClippingLoop = false
@@ -822,11 +818,41 @@ public open class ReactViewGroup public constructor(context: Context?) :
           } else {
             Overflow.fromString(overflow)
           }
-      if (ReactNativeFeatureFlags.syncAndroidClipToPaddingWithOverflow()) {
-        clipToPadding = _overflow != Overflow.VISIBLE
-      }
       invalidate()
     }
+
+  /**
+   * Returns the clip bounds for this view based on the overflow property.
+   *
+   * When overflow is hidden or scroll, returns the padding box rect (the area inside the borders)
+   * so that systems querying [View.getClipBounds] can determine the view's clipping region. Returns
+   * null when overflow is visible (no clipping).
+   */
+  override fun getClipBounds(): Rect? {
+    if (
+        ReactNativeFeatureFlags.syncAndroidClipBoundsWithOverflow() &&
+            _overflow != null &&
+            _overflow != Overflow.VISIBLE
+    ) {
+      val rect = Rect()
+      getPaddingBoxRect(this, rect)
+      return rect
+    }
+    return super.getClipBounds()
+  }
+
+  /** See [getClipBounds]. */
+  override fun getClipBounds(outRect: Rect): Boolean {
+    if (
+        ReactNativeFeatureFlags.syncAndroidClipBoundsWithOverflow() &&
+            _overflow != null &&
+            _overflow != Overflow.VISIBLE
+    ) {
+      getPaddingBoxRect(this, outRect)
+      return true
+    }
+    return super.getClipBounds(outRect)
+  }
 
   override fun setOverflowInset(left: Int, top: Int, right: Int, bottom: Int) {
     if (
@@ -851,11 +877,7 @@ public open class ReactViewGroup public constructor(context: Context?) :
   }
 
   override fun draw(canvas: Canvas) {
-    if (
-        Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q &&
-            getUIManagerType(this) == UIManagerType.FABRIC &&
-            needsIsolatedLayer(this)
-    ) {
+    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q && needsIsolatedLayer(this)) {
       // Check if the view is a stacking context and has children, if it does, do the rendering
       // offscreen and then composite back. This follows the idea of group isolation on blending
       // https://www.w3.org/TR/compositing-1/#isolationblending
@@ -890,11 +912,7 @@ public open class ReactViewGroup public constructor(context: Context?) :
     }
 
     var mixBlendMode: BlendMode? = null
-    if (
-        Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q &&
-            getUIManagerType(this) == UIManagerType.FABRIC &&
-            needsIsolatedLayer(this)
-    ) {
+    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q && needsIsolatedLayer(this)) {
       mixBlendMode = child.getTag(R.id.mix_blend_mode) as? BlendMode
       if (mixBlendMode != null) {
         val p = Paint()
@@ -997,12 +1015,12 @@ public open class ReactViewGroup public constructor(context: Context?) :
     } else if (axOrderParentOrderList != null) {
       // view is a container so add its children normally
       if (!isFocusable) {
-        super.addChildrenForAccessibility(outChildren)
+        safeAddChildrenForAccessibility(outChildren)
         return
 
         // If this view can coopt, turn the focusability off its children but add them to the tree
       } else if (isFocusable && (contentDescription == null || contentDescription == "")) {
-        super.addChildrenForAccessibility(outChildren)
+        safeAddChildrenForAccessibility(outChildren)
         for (i in 0..<childCount) {
           ReactAxOrderHelper.disableFocusForSubtree(getChildAt(i), axOrderParentOrderList)
         }
@@ -1012,7 +1030,23 @@ public open class ReactViewGroup public constructor(context: Context?) :
         return
       }
     } else {
+      safeAddChildrenForAccessibility(outChildren)
+    }
+  }
+
+  private fun safeAddChildrenForAccessibility(outChildren: ArrayList<View>) {
+    try {
       super.addChildrenForAccessibility(outChildren)
+    } catch (error: IllegalArgumentException) {
+      // Android 16 can race while building accessibility child lists during fast re-parenting.
+      if (error.message?.contains("descendant of this view") == true) {
+        logSoftException(
+            ReactSoftExceptionLogger.Categories.RVG_ADD_CHILDREN_FOR_ACCESSIBILITY,
+            error,
+        )
+      } else {
+        throw error
+      }
     }
   }
 

@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<0a11729f1b111fde6049b982045cfa6f>>
+ * @generated SignedSource<<0042e6f884ccf466dda224021ff7a86a>>
  */
 
 /**
@@ -75,14 +75,6 @@ class ReactNativeFeatureFlagsDefaults : public ReactNativeFeatureFlagsProvider {
     return false;
   }
 
-  bool enableAndroidAntialiasedBorderRadiusClipping() override {
-    return false;
-  }
-
-  bool enableAndroidLinearText() override {
-    return true;
-  }
-
   bool enableAndroidTextMeasurementOptimizations() override {
     return false;
   }
@@ -148,14 +140,6 @@ class ReactNativeFeatureFlagsDefaults : public ReactNativeFeatureFlagsProvider {
   }
 
   bool enableImagePrefetchingAndroid() override {
-    return false;
-  }
-
-  bool enableImagePrefetchingJNIBatchingAndroid() override {
-    return false;
-  }
-
-  bool enableImagePrefetchingOnUiThreadAndroid() override {
     return false;
   }
 
@@ -255,6 +239,10 @@ class ReactNativeFeatureFlagsDefaults : public ReactNativeFeatureFlagsProvider {
     return false;
   }
 
+  bool fixDifferentiatorParentTagForUnflattenCase() override {
+    return false;
+  }
+
   bool fixFindShadowNodeByTagRaceCondition() override {
     return false;
   }
@@ -283,12 +271,16 @@ class ReactNativeFeatureFlagsDefaults : public ReactNativeFeatureFlagsProvider {
     return true;
   }
 
+  bool fuseboxScreenshotCaptureEnabled() override {
+    return false;
+  }
+
   bool hideOffscreenVirtualViewsOnIOS() override {
     return false;
   }
 
   bool overrideBySynchronousMountPropsAtMountingAndroid() override {
-    return false;
+    return true;
   }
 
   bool perfIssuesEnabled() override {
@@ -307,6 +299,14 @@ class ReactNativeFeatureFlagsDefaults : public ReactNativeFeatureFlagsProvider {
     return false;
   }
 
+  bool redBoxV2Android() override {
+    return false;
+  }
+
+  bool redBoxV2IOS() override {
+    return false;
+  }
+
   bool shouldPressibilityUseW3CPointerEventsForHover() override {
     return false;
   }
@@ -319,7 +319,7 @@ class ReactNativeFeatureFlagsDefaults : public ReactNativeFeatureFlagsProvider {
     return false;
   }
 
-  bool syncAndroidClipToPaddingWithOverflow() override {
+  bool syncAndroidClipBoundsWithOverflow() override {
     return false;
   }
 
@@ -352,6 +352,10 @@ class ReactNativeFeatureFlagsDefaults : public ReactNativeFeatureFlagsProvider {
   }
 
   bool useNestedScrollViewAndroid() override {
+    return false;
+  }
+
+  bool useOptimizedViewRegistryOnAndroid() override {
     return false;
   }
 

@@ -142,4 +142,45 @@ static Props::Shared makeViewProps(bool removeClippedSubviews)
   XCTAssertNil(child2.superview);
 }
 
+#pragma mark - hitTest against non-invertible transforms (#50797)
+
+- (void)testHitTestReturnsNilForZeroScaleYView
+{
+  RCTViewComponentView *view = [RCTViewComponentView new];
+  view.frame = CGRectMake(0, 0, 100, 100);
+  view.layer.transform = CATransform3DMakeScale(1, 0, 1);
+
+  XCTAssertNil([view hitTest:CGPointMake(50, 50) withEvent:nil]);
+}
+
+- (void)testHitTestReturnsNilForZeroScaleXView
+{
+  RCTViewComponentView *view = [RCTViewComponentView new];
+  view.frame = CGRectMake(0, 0, 100, 100);
+  view.layer.transform = CATransform3DMakeScale(0, 1, 1);
+
+  XCTAssertNil([view hitTest:CGPointMake(50, 50) withEvent:nil]);
+}
+
+- (void)testHitTestReturnsSelfForIdentityTransform
+{
+  RCTViewComponentView *view = [RCTViewComponentView new];
+  view.frame = CGRectMake(0, 0, 100, 100);
+
+  XCTAssertEqual([view hitTest:CGPointMake(50, 50) withEvent:nil], view);
+}
+
+- (void)testHitTestAfterScaleTransitionedToZeroReturnsNil
+{
+  // #50797 variant: a view scaled to 0.9 first and then to 0.0 should stop receiving hits.
+  RCTViewComponentView *view = [RCTViewComponentView new];
+  view.frame = CGRectMake(0, 0, 100, 100);
+
+  view.layer.transform = CATransform3DMakeScale(1, 0.9, 1);
+  XCTAssertEqual([view hitTest:CGPointMake(50, 50) withEvent:nil], view);
+
+  view.layer.transform = CATransform3DMakeScale(1, 0, 1);
+  XCTAssertNil([view hitTest:CGPointMake(50, 50) withEvent:nil]);
+}
+
 @end

@@ -16,22 +16,25 @@ else
   export FANTOM_FORCE_OSS_BUILD=1
 fi
 
-export NODE_OPTIONS='--max-old-space-size=8192'
+# The Fantom Jest process hosts a single shared Metro server. Each test
+# triggers a fresh Metro bundle build whose dependency graph (transformed
+# modules, source maps, inverse-deps, file-watcher subscription) lives in
+# memory until the per-test DELETE evicts it. With the maxWorkers cap in
+# jest.config.js (~16 in-flight bundles at peak), 16 GB gives ~40% heap
+# headroom over the observed steady state of ~6 GB.
+export NODE_OPTIONS='--max-old-space-size=16384'
 
-# Parse arguments to check for --benchmarks flag
-INCLUDE_BENCHMARKS=false
+# Parse arguments to extract custom flags
 ARGS=()
 for arg in "$@"; do
-  if [[ "$arg" == "--benchmarks" ]]; then
-    INCLUDE_BENCHMARKS=true
-  else
-    ARGS+=("$arg")
-  fi
+  case "$arg" in
+    --benchmarks) export FANTOM_RUN_BENCHMARKS=1 ;;
+    *) ARGS+=("$arg") ;;
+  esac
 done
 
-# When --benchmarks is passed, set env var so jest.config.js includes benchmark tests
-if [[ "$INCLUDE_BENCHMARKS" == true ]]; then
-  FANTOM_INCLUDE_BENCHMARKS=1 yarn jest --config private/react-native-fantom/config/jest.config.js "${ARGS[@]}"
-else
-  yarn jest --config private/react-native-fantom/config/jest.config.js "${ARGS[@]}"
+if [[ -n "$FANTOM_RUN_BENCHMARKS" ]]; then
+  ARGS+=("--runInBand")
 fi
+
+yarn jest --config private/react-native-fantom/config/jest.config.js "${ARGS[@]}"

@@ -160,9 +160,8 @@ Scheduler::Scheduler(
 
   // Initialize ViewTransitionModule
   if (ReactNativeFeatureFlags::viewTransitionEnabled()) {
-    viewTransitionModule_ = std::make_unique<ViewTransitionModule>();
-    viewTransitionModule_->setUIManager(uiManager_.get());
-    uiManager_->setViewTransitionDelegate(viewTransitionModule_.get());
+    viewTransitionModule_ = std::make_shared<ViewTransitionModule>();
+    viewTransitionModule_->initialize(uiManager_.get(), viewTransitionModule_);
   }
 
   uiManager->registerMountHook(*eventPerformanceLogger_);
@@ -362,6 +361,27 @@ void Scheduler::uiManagerDidUpdateShadowTree(
     const std::unordered_map<Tag, folly::dynamic>& tagToProps) {
   if (delegate_ != nullptr) {
     delegate_->schedulerDidUpdateShadowTree(tagToProps);
+  }
+}
+
+void Scheduler::uiManagerDidCaptureViewSnapshot(Tag tag, SurfaceId surfaceId) {
+  if (delegate_ != nullptr) {
+    delegate_->schedulerDidCaptureViewSnapshot(tag, surfaceId);
+  }
+}
+
+void Scheduler::uiManagerDidSetViewSnapshot(
+    Tag sourceTag,
+    Tag targetTag,
+    SurfaceId surfaceId) {
+  if (delegate_ != nullptr) {
+    delegate_->schedulerDidSetViewSnapshot(sourceTag, targetTag, surfaceId);
+  }
+}
+
+void Scheduler::uiManagerDidClearPendingSnapshots() {
+  if (delegate_ != nullptr) {
+    delegate_->schedulerDidClearPendingSnapshots();
   }
 }
 

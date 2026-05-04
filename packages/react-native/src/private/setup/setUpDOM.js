@@ -73,4 +73,24 @@ export default function setUpDOM() {
     'HTMLElement',
     () => require('../webapis/dom/nodes/ReactNativeElement').default,
   );
+
+  polyfillGlobal('Event', () => require('../webapis/dom/events/Event').default);
+
+  polyfillGlobal(
+    'EventTarget',
+    () => require('../webapis/dom/events/EventTarget').default,
+  );
+
+  polyfillGlobal(
+    'CustomEvent',
+    () => require('../webapis/dom/events/CustomEvent').default,
+  );
+
+  // Expose a global function that the React renderer can call to check
+  // if EventTarget-based event dispatching is enabled.
+  // We use a global function because we don't have another mechanism to pass
+  // feature flags from RN to React in OSS (similar to RN$enableMicrotasksInReact
+  // in setUpTimers.js).
+  global.RN$isNativeEventTargetEventDispatchingEnabled = () =>
+    require('../featureflags/ReactNativeFeatureFlags').enableNativeEventTargetEventDispatching();
 }

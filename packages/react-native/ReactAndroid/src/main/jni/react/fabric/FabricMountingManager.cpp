@@ -52,6 +52,15 @@ void FabricMountingManager::onSurfaceStop(SurfaceId surfaceId) {
   allocatedViewRegistry_.erase(surfaceId);
 }
 
+bool FabricMountingManager::isViewAllocated(SurfaceId surfaceId, Tag tag) {
+  std::lock_guard lock(allocatedViewsMutex_);
+  auto it = allocatedViewRegistry_.find(surfaceId);
+  if (it == allocatedViewRegistry_.end()) {
+    return false;
+  }
+  return it->second.count(tag) > 0;
+}
+
 namespace {
 
 #ifdef REACT_NATIVE_DEBUG
@@ -1218,6 +1227,30 @@ void FabricMountingManager::synchronouslyUpdateViewOnUIThread(
   auto propsMap = reinterpret_cast<ReadableMap::javaobject>(
       ReadableNativeMap::newObjectCxxArgs(props).release());
   synchronouslyUpdateViewOnUIThreadJNI(javaUIManager_, viewTag, propsMap);
+}
+
+void FabricMountingManager::captureViewSnapshot(Tag tag, SurfaceId surfaceId) {
+  static auto captureViewSnapshotJNI =
+      JFabricUIManager::javaClassStatic()->getMethod<void(jint, jint)>(
+          "captureViewSnapshot");
+  captureViewSnapshotJNI(javaUIManager_, tag, surfaceId);
+}
+
+void FabricMountingManager::setViewSnapshot(
+    Tag sourceTag,
+    Tag targetTag,
+    SurfaceId surfaceId) {
+  static auto setViewSnapshotJNI =
+      JFabricUIManager::javaClassStatic()->getMethod<void(jint, jint, jint)>(
+          "setViewSnapshot");
+  setViewSnapshotJNI(javaUIManager_, sourceTag, targetTag, surfaceId);
+}
+
+void FabricMountingManager::clearPendingSnapshots() {
+  static auto clearPendingSnapshotsJNI =
+      JFabricUIManager::javaClassStatic()->getMethod<void()>(
+          "clearPendingSnapshots");
+  clearPendingSnapshotsJNI(javaUIManager_);
 }
 
 void FabricMountingManager::scheduleReactRevisionMerge(SurfaceId surfaceId) {

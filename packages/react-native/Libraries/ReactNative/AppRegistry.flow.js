@@ -10,8 +10,8 @@
 
 import type {ViewStyleProp} from '../StyleSheet/StyleSheet';
 import type {RootTag} from '../Types/RootTagTypes';
-import type {IPerformanceLogger} from '../Utilities/createPerformanceLogger';
 import type {DisplayModeType} from './DisplayMode';
+import type {IPerformanceLogger} from './IPerformanceLogger.flow';
 
 type HeadlessTask = (taskData: any) => Promise<void>;
 export type TaskProvider = () => HeadlessTask;
@@ -31,7 +31,6 @@ export type AppConfig = {
 export type AppParameters = {
   initialProps: Readonly<{[string]: unknown, ...}>,
   rootTag: RootTag,
-  fabric?: boolean,
 };
 export type Runnable = (
   appParameters: AppParameters,

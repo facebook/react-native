@@ -80,7 +80,7 @@ const definitions: FeatureFlagDefinitions = {
         expectedReleaseValue: true,
         purpose: 'experimentation',
       },
-      ossReleaseStage: 'none',
+      ossReleaseStage: 'experimental',
     },
     defaultTextToOverflowHidden: {
       defaultValue: true,
@@ -175,28 +175,6 @@ const definitions: FeatureFlagDefinitions = {
         dateAdded: '2024-12-10',
         description:
           'When enabled, Android will accumulate updates in rawProps to reduce the number of mounting instructions for cascading re-renders.',
-        expectedReleaseValue: true,
-        purpose: 'experimentation',
-      },
-      ossReleaseStage: 'none',
-    },
-    enableAndroidAntialiasedBorderRadiusClipping: {
-      defaultValue: false,
-      metadata: {
-        dateAdded: '2025-11-14',
-        description:
-          'Enable antialiased border radius clipping for Android API 28 and below using manual masking with Porter-Duff compositing',
-        expectedReleaseValue: true,
-        purpose: 'experimentation',
-      },
-      ossReleaseStage: 'none',
-    },
-    enableAndroidLinearText: {
-      defaultValue: true,
-      metadata: {
-        dateAdded: '2025-09-09',
-        description:
-          'Enables linear text rendering on Android wherever subpixel text rendering is enabled',
         expectedReleaseValue: true,
         purpose: 'experimentation',
       },
@@ -374,28 +352,6 @@ const definitions: FeatureFlagDefinitions = {
         dateAdded: '2025-06-21',
         description:
           'When enabled, Android will build and initiate image prefetch requests on ImageShadowNode::layout',
-        expectedReleaseValue: true,
-        purpose: 'experimentation',
-      },
-      ossReleaseStage: 'none',
-    },
-    enableImagePrefetchingJNIBatchingAndroid: {
-      defaultValue: false,
-      metadata: {
-        dateAdded: '2025-11-10',
-        description:
-          'When enabled, Android will build and initiate image prefetch requests on ImageShadowNode::layout and batch them together in a single JNI call',
-        expectedReleaseValue: true,
-        purpose: 'experimentation',
-      },
-      ossReleaseStage: 'none',
-    },
-    enableImagePrefetchingOnUiThreadAndroid: {
-      defaultValue: false,
-      metadata: {
-        dateAdded: '2025-09-02',
-        description:
-          'When enabled, Android will initiate image prefetch requested on ImageShadowNode::layout on the UI thread',
         expectedReleaseValue: true,
         purpose: 'experimentation',
       },
@@ -656,6 +612,17 @@ const definitions: FeatureFlagDefinitions = {
       },
       ossReleaseStage: 'none',
     },
+    fixDifferentiatorParentTagForUnflattenCase: {
+      defaultValue: false,
+      metadata: {
+        dateAdded: '2026-04-18',
+        description:
+          'Fix incorrect parentTag passed as parentTagForUpdate in the unflatten-unflatten branch of calculateShadowViewMutationsFlattener, which causes UPDATE mutations to reference a parent being created in the same batch.',
+        expectedReleaseValue: true,
+        purpose: 'experimentation',
+      },
+      ossReleaseStage: 'none',
+    },
     fixFindShadowNodeByTagRaceCondition: {
       defaultValue: false,
       metadata: {
@@ -731,6 +698,17 @@ const definitions: FeatureFlagDefinitions = {
       },
       ossReleaseStage: 'none',
     },
+    fuseboxScreenshotCaptureEnabled: {
+      defaultValue: false,
+      metadata: {
+        dateAdded: '2026-04-01',
+        description:
+          'Enable Page.captureScreenshot CDP method support in the React Native DevTools CDP backend. This flag is global and should not be changed across React Host lifetimes.',
+        expectedReleaseValue: true,
+        purpose: 'experimentation',
+      },
+      ossReleaseStage: 'none',
+    },
     hideOffscreenVirtualViewsOnIOS: {
       defaultValue: false,
       metadata: {
@@ -743,7 +721,7 @@ const definitions: FeatureFlagDefinitions = {
       ossReleaseStage: 'none',
     },
     overrideBySynchronousMountPropsAtMountingAndroid: {
-      defaultValue: false,
+      defaultValue: true,
       metadata: {
         dateAdded: '2025-09-04',
         description:
@@ -796,6 +774,28 @@ const definitions: FeatureFlagDefinitions = {
       },
       ossReleaseStage: 'experimental',
     },
+    redBoxV2Android: {
+      defaultValue: false,
+      metadata: {
+        dateAdded: '2026-03-25',
+        description:
+          'Use the redesigned RedBox error overlay on Android, styled to match the LogBox visual language.',
+        expectedReleaseValue: true,
+        purpose: 'experimentation',
+      },
+      ossReleaseStage: 'none',
+    },
+    redBoxV2IOS: {
+      defaultValue: false,
+      metadata: {
+        dateAdded: '2026-03-25',
+        description:
+          'Use the redesigned RedBox error overlay on iOS, styled to match the LogBox visual language.',
+        expectedReleaseValue: true,
+        purpose: 'experimentation',
+      },
+      ossReleaseStage: 'none',
+    },
     shouldPressibilityUseW3CPointerEventsForHover: {
       defaultValue: false,
       metadata: {
@@ -828,11 +828,11 @@ const definitions: FeatureFlagDefinitions = {
       },
       ossReleaseStage: 'none',
     },
-    syncAndroidClipToPaddingWithOverflow: {
+    syncAndroidClipBoundsWithOverflow: {
       defaultValue: false,
       metadata: {
         description:
-          'Sync clipToPadding on Android views with the overflow property',
+          'Override getClipBounds on Android views to return the padding box when overflow is hidden',
         expectedReleaseValue: true,
         purpose: 'release',
       },
@@ -923,6 +923,17 @@ const definitions: FeatureFlagDefinitions = {
       },
       ossReleaseStage: 'none',
     },
+    useOptimizedViewRegistryOnAndroid: {
+      defaultValue: false,
+      metadata: {
+        dateAdded: '2026-04-28',
+        description:
+          'Use MutableIntObjectMap with ReadWriteLock instead of ConcurrentHashMap for the view registry in SurfaceMountingManager to reduce memory overhead and GC pressure.',
+        expectedReleaseValue: true,
+        purpose: 'experimentation',
+      },
+      ossReleaseStage: 'none',
+    },
     useSharedAnimatedBackend: {
       defaultValue: false,
       metadata: {
@@ -931,7 +942,7 @@ const definitions: FeatureFlagDefinitions = {
         expectedReleaseValue: true,
         purpose: 'experimentation',
       },
-      ossReleaseStage: 'none',
+      ossReleaseStage: 'experimental',
     },
     useTraitHiddenOnAndroid: {
       defaultValue: false,
@@ -1050,6 +1061,17 @@ const definitions: FeatureFlagDefinitions = {
         description:
           'Disable prop maintainVisibleContentPosition in ScrollView',
         expectedReleaseValue: false,
+        purpose: 'experimentation',
+      },
+      ossReleaseStage: 'none',
+    },
+    enableNativeEventTargetEventDispatching: {
+      defaultValue: false,
+      metadata: {
+        dateAdded: '2026-04-13',
+        description:
+          'When enabled, the React Native renderer dispatches events through the W3C EventTarget API (addEventListener/dispatchEvent) instead of the legacy plugin-based system.',
+        expectedReleaseValue: true,
         purpose: 'experimentation',
       },
       ossReleaseStage: 'none',

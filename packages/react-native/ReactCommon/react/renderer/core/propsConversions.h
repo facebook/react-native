@@ -101,7 +101,7 @@ void fromRawValue(const PropsParserContext &context, const RawValue &rawValue, T
 }
 
 template <typename T>
-void fromRawValue(const PropsParserContext &context, const RawValue &rawValue, T &result)
+void fromRawValue(const PropsParserContext & /* context */, const RawValue &rawValue, T &result)
 {
   result = (T)rawValue;
 }

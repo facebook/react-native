@@ -659,7 +659,7 @@ void FabricUIManagerBinding::schedulerShouldRenderTransactions(
     return;
   }
 
-  if (ReactNativeFeatureFlags::enableImagePrefetchingJNIBatchingAndroid()) {
+  if (ReactNativeFeatureFlags::enableImagePrefetchingAndroid()) {
     auto weakImageFetcher =
         scheduler_->getContextContainer()->find<std::weak_ptr<ImageFetcher>>(
             ImageFetcherKey);
@@ -795,6 +795,29 @@ void FabricUIManagerBinding::schedulerShouldSynchronouslyUpdateViewOnUIThread(
 void FabricUIManagerBinding::schedulerDidUpdateShadowTree(
     const std::unordered_map<Tag, folly::dynamic>& /*tagToProps*/) {
   // no-op
+}
+
+void FabricUIManagerBinding::schedulerDidCaptureViewSnapshot(
+    Tag tag,
+    SurfaceId surfaceId) {
+  if (mountingManager_) {
+    mountingManager_->captureViewSnapshot(tag, surfaceId);
+  }
+}
+
+void FabricUIManagerBinding::schedulerDidSetViewSnapshot(
+    Tag sourceTag,
+    Tag targetTag,
+    SurfaceId surfaceId) {
+  if (mountingManager_) {
+    mountingManager_->setViewSnapshot(sourceTag, targetTag, surfaceId);
+  }
+}
+
+void FabricUIManagerBinding::schedulerDidClearPendingSnapshots() {
+  if (mountingManager_) {
+    mountingManager_->clearPendingSnapshots();
+  }
 }
 
 void FabricUIManagerBinding::onAnimationStarted() {

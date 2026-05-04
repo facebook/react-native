@@ -11,6 +11,7 @@
 import Keyboard from '../../Components/Keyboard/Keyboard';
 import View from '../../Components/View/View';
 import StyleSheet from '../../StyleSheet/StyleSheet';
+import BackHandler from '../../Utilities/BackHandler';
 import * as LogBoxData from '../Data/LogBoxData';
 import LogBoxLog, {type LogLevel} from '../Data/LogBoxLog';
 import LogBoxInspectorBody from './LogBoxInspectorBody';
@@ -30,7 +31,7 @@ type Props = Readonly<{
 }>;
 
 export default function LogBoxInspector(props: Props): React.Node {
-  const {logs, selectedIndex} = props;
+  const {logs, selectedIndex, onMinimize} = props;
   let log = logs[selectedIndex];
 
   useEffect(() => {
@@ -54,6 +55,20 @@ export default function LogBoxInspector(props: Props): React.Node {
   useEffect(() => {
     Keyboard.dismiss();
   }, []);
+
+  useEffect(() => {
+    if (log == null) {
+      return;
+    }
+    const subscription = BackHandler.addEventListener(
+      'hardwareBackPress',
+      () => {
+        onMinimize();
+        return true;
+      },
+    );
+    return () => subscription.remove();
+  }, [log, onMinimize]);
 
   function _handleRetry() {
     LogBoxData.retrySymbolicateLogNow(log);

@@ -20,14 +20,10 @@ import android.os.Build
 import android.view.View
 import android.widget.ImageView
 import androidx.annotation.ColorInt
-import androidx.core.graphics.withClip
 import com.facebook.react.bridge.ReadableArray
 import com.facebook.react.common.annotations.UnstableReactNativeAPI
-import com.facebook.react.internal.featureflags.ReactNativeFeatureFlags
 import com.facebook.react.uimanager.PixelUtil.dpToPx
 import com.facebook.react.uimanager.PixelUtil.pxToDp
-import com.facebook.react.uimanager.common.UIManagerType
-import com.facebook.react.uimanager.common.ViewUtil
 import com.facebook.react.uimanager.drawable.BackgroundDrawable
 import com.facebook.react.uimanager.drawable.BackgroundImageDrawable
 import com.facebook.react.uimanager.drawable.BorderDrawable
@@ -281,17 +277,13 @@ public object BackgroundStyleApplicator {
   }
 
   /**
-   * Sets the outline color for the view (Fabric only).
+   * Sets the outline color for the view.
    *
    * @param view The view to apply the outline color to
    * @param outlineColor The outline color, or null to remove
    */
   @JvmStatic
   public fun setOutlineColor(view: View, @ColorInt outlineColor: Int?) {
-    if (ViewUtil.getUIManagerType(view) != UIManagerType.FABRIC) {
-      return
-    }
-
     val outline = ensureOutlineDrawable(view)
     if (outlineColor != null) {
       outline.outlineColor = outlineColor
@@ -307,17 +299,13 @@ public object BackgroundStyleApplicator {
   @JvmStatic public fun getOutlineColor(view: View): Int? = getOutlineDrawable(view)?.outlineColor
 
   /**
-   * Sets the outline offset for the view (Fabric only).
+   * Sets the outline offset for the view.
    *
    * @param view The view to apply the outline offset to
    * @param outlineOffset The outline offset in DIPs
    */
   @JvmStatic
   public fun setOutlineOffset(view: View, outlineOffset: Float): Unit {
-    if (ViewUtil.getUIManagerType(view) != UIManagerType.FABRIC) {
-      return
-    }
-
     val outline = ensureOutlineDrawable(view)
     outline.outlineOffset = outlineOffset.dpToPx()
   }
@@ -331,17 +319,13 @@ public object BackgroundStyleApplicator {
   public fun getOutlineOffset(view: View): Float? = getOutlineDrawable(view)?.outlineOffset
 
   /**
-   * Sets the outline style for the view (Fabric only).
+   * Sets the outline style for the view.
    *
    * @param view The view to apply the outline style to
    * @param outlineStyle The outline style (solid, dashed, dotted), or null to remove
    */
   @JvmStatic
   public fun setOutlineStyle(view: View, outlineStyle: OutlineStyle?): Unit {
-    if (ViewUtil.getUIManagerType(view) != UIManagerType.FABRIC) {
-      return
-    }
-
     val outline = ensureOutlineDrawable(view)
     if (outlineStyle != null) {
       outline.outlineStyle = outlineStyle
@@ -357,17 +341,13 @@ public object BackgroundStyleApplicator {
   public fun getOutlineStyle(view: View): OutlineStyle? = getOutlineDrawable(view)?.outlineStyle
 
   /**
-   * Sets the outline width for the view (Fabric only).
+   * Sets the outline width for the view.
    *
    * @param view The view to apply the outline width to
    * @param width The outline width in DIPs
    */
   @JvmStatic
   public fun setOutlineWidth(view: View, width: Float) {
-    if (ViewUtil.getUIManagerType(view) != UIManagerType.FABRIC) {
-      return
-    }
-
     val outline = ensureOutlineDrawable(view)
     outline.outlineWidth = width.dpToPx()
   }
@@ -381,17 +361,13 @@ public object BackgroundStyleApplicator {
   public fun getOutlineWidth(view: View): Float? = getOutlineDrawable(view)?.outlineOffset
 
   /**
-   * Sets box shadows for the view (Fabric only).
+   * Sets box shadows for the view.
    *
    * @param view The view to apply box shadows to
    * @param shadows The list of box shadow styles to apply
    */
   @JvmStatic
   public fun setBoxShadow(view: View, shadows: List<BoxShadow>) {
-    if (ViewUtil.getUIManagerType(view) != UIManagerType.FABRIC) {
-      return
-    }
-
     var innerShadows = mutableListOf<InsetBoxShadowDrawable>()
     var outerShadows = mutableListOf<OutsetBoxShadowDrawable>()
 
@@ -445,7 +421,7 @@ public object BackgroundStyleApplicator {
   }
 
   /**
-   * Sets box shadows for the view from a ReadableArray (Fabric only).
+   * Sets box shadows for the view from a ReadableArray.
    *
    * @param view The view to apply box shadows to
    * @param shadows The array of box shadow definitions, or null to remove all shadows
@@ -487,6 +463,35 @@ public object BackgroundStyleApplicator {
   @JvmStatic
   public fun clipToPaddingBox(view: View, canvas: Canvas) {
     clipToPaddingBoxWithAntiAliasing(view, canvas, null)
+  }
+
+  /**
+   * Populates [outRect] with the padding box rect of the view.
+   *
+   * The padding box is the area within the borders of the view. For views without a
+   * [CompositeBackgroundDrawable] or without borders, this returns the full view bounds.
+   *
+   * This is useful for overriding [View.getClipBounds] to communicate the view's clipping region to
+   * the Android framework (e.g. for [View.getGlobalVisibleRect] calculations).
+   *
+   * @param view The view whose padding box to compute
+   * @param outRect The rect to populate with the padding box bounds
+   */
+  internal fun getPaddingBoxRect(view: View, outRect: Rect) {
+    val composite = getCompositeBackgroundDrawable(view)
+    val computedBorderInsets =
+        composite?.borderInsets?.resolve(composite.layoutDirection, view.context)
+    if (computedBorderInsets == null) {
+      outRect.set(0, 0, view.width, view.height)
+      return
+    }
+
+    val left = (computedBorderInsets.left.dpToPx()).toInt()
+    val top = (computedBorderInsets.top.dpToPx()).toInt()
+    val right = (view.width.toFloat() - computedBorderInsets.right.dpToPx()).toInt()
+    val bottom = (view.height.toFloat() - computedBorderInsets.bottom.dpToPx()).toInt()
+
+    outRect.set(left, top, right, bottom)
   }
 
   /**
@@ -542,8 +547,7 @@ public object BackgroundStyleApplicator {
       // On Android 28 and below, use antialiased clipping with Porter-Duff compositing. On newer
       // Android versions, use the standard clipPath.
       if (
-          ReactNativeFeatureFlags.enableAndroidAntialiasedBorderRadiusClipping() &&
-              Build.VERSION.SDK_INT <= Build.VERSION_CODES.P &&
+          Build.VERSION.SDK_INT <= Build.VERSION_CODES.P &&
               view.width > 0 &&
               view.height > 0 &&
               drawContent != null
@@ -575,49 +579,50 @@ public object BackgroundStyleApplicator {
       paddingBoxPath: Path,
       drawContent: () -> Unit,
   ) {
-    // Clip to the view's own bounds before saveLayer. On API <= 28 hardware-accelerated canvases,
+    // Save the layer for Porter-Duff compositing
+    val saveCount = canvas.saveLayer(0f, 0f, view.width.toFloat(), view.height.toFloat(), null)
+
+    // Clip to the view's own bounds inside the layer. On API <= 28 hardware-accelerated canvases,
     // the window boundary is tracked by the GPU scissor but not reflected in the canvas clip stack.
     // Without an explicit software clip, saveLayer may allocate a buffer with uninitialized pixels
-    // beyond the GPU scissor. Adding clipRect in the view's local coordinate space forces HWUI to
-    // include it in the clip stack, ensuring saveLayer properly constrains its buffer. This clip is
-    // stable across parent transform animations since it's in the view's own coordinate space.
-    canvas.withClip(0, 0, view.width, view.height) {
-      // Save the layer for Porter-Duff compositing
-      val saveCount = canvas.saveLayer(0f, 0f, view.width.toFloat(), view.height.toFloat(), null)
+    // beyond the GPU scissor. Adding clipRect inside the layer (rather than wrapping it with
+    // canvas.withClip) avoids an extra save/restore nesting level that breaks Porter-Duff
+    // compositing on API 24's HWUI renderer. The saveLayer already saves and restores the clip
+    // state, so a separate save/restore wrapper is unnecessary.
+    canvas.clipRect(0, 0, view.width, view.height)
 
-      // Draw the content first
-      drawContent()
+    // Draw the content first
+    drawContent()
 
-      val maskPaint = Paint(Paint.ANTI_ALIAS_FLAG)
-      maskPaint.style = Paint.Style.FILL
+    val maskPaint = Paint(Paint.ANTI_ALIAS_FLAG)
+    maskPaint.style = Paint.Style.FILL
 
-      // Transparent pixels with INVERSE_WINDING only works on API 28
-      if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.P) {
-        maskPaint.xfermode = PorterDuffXfermode(PorterDuff.Mode.DST_IN)
-        maskPaint.color = Color.TRANSPARENT
-        paddingBoxPath.setFillType(Path.FillType.INVERSE_WINDING)
-        canvas.drawPath(paddingBoxPath, maskPaint)
-      } else {
-        // API < 28: Use a nested saveLayer with DST_IN compositing to mask content to the
-        // padding box path. EVEN_ODD fill + DST_OUT has rendering bugs on API 24's hardware
-        // renderer, so we avoid that technique. Instead, draw the mask shape into a separate
-        // layer; when restored with DST_IN, content is preserved only where the mask is opaque.
-        val dstInPaint = Paint()
-        dstInPaint.xfermode = PorterDuffXfermode(PorterDuff.Mode.DST_IN)
-        val maskSave =
-            canvas.saveLayer(0f, 0f, view.width.toFloat(), view.height.toFloat(), dstInPaint)
-        // Clear the layer to ensure it starts fully transparent. On API 24, saveLayer may not
-        // initialize the buffer to transparent, causing DST_IN to see non-zero alpha everywhere.
-        canvas.drawColor(Color.TRANSPARENT, PorterDuff.Mode.CLEAR)
-        maskPaint.xfermode = null
-        maskPaint.color = Color.BLACK
-        canvas.drawPath(paddingBoxPath, maskPaint)
-        canvas.restoreToCount(maskSave)
-      }
-
-      // Restore the layer
-      canvas.restoreToCount(saveCount)
+    // Transparent pixels with INVERSE_WINDING only works on API 28
+    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.P) {
+      maskPaint.xfermode = PorterDuffXfermode(PorterDuff.Mode.DST_IN)
+      maskPaint.color = Color.TRANSPARENT
+      paddingBoxPath.setFillType(Path.FillType.INVERSE_WINDING)
+      canvas.drawPath(paddingBoxPath, maskPaint)
+    } else {
+      // API < 28: Use a nested saveLayer with DST_IN compositing to mask content to the
+      // padding box path. EVEN_ODD fill + DST_OUT has rendering bugs on API 24's hardware
+      // renderer, so we avoid that technique. Instead, draw the mask shape into a separate
+      // layer; when restored with DST_IN, content is preserved only where the mask is opaque.
+      val dstInPaint = Paint()
+      dstInPaint.xfermode = PorterDuffXfermode(PorterDuff.Mode.DST_IN)
+      val maskSave =
+          canvas.saveLayer(0f, 0f, view.width.toFloat(), view.height.toFloat(), dstInPaint)
+      // Clear the layer to ensure it starts fully transparent. On API 24, saveLayer may not
+      // initialize the buffer to transparent, causing DST_IN to see non-zero alpha everywhere.
+      canvas.drawColor(Color.TRANSPARENT, PorterDuff.Mode.CLEAR)
+      maskPaint.xfermode = null
+      maskPaint.color = Color.BLACK
+      canvas.drawPath(paddingBoxPath, maskPaint)
+      canvas.restoreToCount(maskSave)
     }
+
+    // Restore the layer
+    canvas.restoreToCount(saveCount)
   }
 
   /**

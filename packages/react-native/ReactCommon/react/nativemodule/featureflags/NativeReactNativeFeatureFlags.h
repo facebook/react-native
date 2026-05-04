@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<0461c053059cd8e566296db2a3c9a82e>>
+ * @generated SignedSource<<b79f4636dde682a2e2559fc1a90efb82>>
  */
 
 /**
@@ -60,10 +60,6 @@ class NativeReactNativeFeatureFlags
 
   bool enableAccumulatedUpdatesInRawPropsAndroid(jsi::Runtime& runtime);
 
-  bool enableAndroidAntialiasedBorderRadiusClipping(jsi::Runtime& runtime);
-
-  bool enableAndroidLinearText(jsi::Runtime& runtime);
-
   bool enableAndroidTextMeasurementOptimizations(jsi::Runtime& runtime);
 
   bool enableBridgelessArchitecture(jsi::Runtime& runtime);
@@ -97,10 +93,6 @@ class NativeReactNativeFeatureFlags
   bool enableIOSViewClipToPaddingBox(jsi::Runtime& runtime);
 
   bool enableImagePrefetchingAndroid(jsi::Runtime& runtime);
-
-  bool enableImagePrefetchingJNIBatchingAndroid(jsi::Runtime& runtime);
-
-  bool enableImagePrefetchingOnUiThreadAndroid(jsi::Runtime& runtime);
 
   bool enableImmediateUpdateModeForContentOffsetChanges(jsi::Runtime& runtime);
 
@@ -150,6 +142,8 @@ class NativeReactNativeFeatureFlags
 
   bool enableVirtualViewDebugFeatures(jsi::Runtime& runtime);
 
+  bool fixDifferentiatorParentTagForUnflattenCase(jsi::Runtime& runtime);
+
   bool fixFindShadowNodeByTagRaceCondition(jsi::Runtime& runtime);
 
   bool fixMappingOfEventPrioritiesBetweenFabricAndReact(jsi::Runtime& runtime);
@@ -164,6 +158,8 @@ class NativeReactNativeFeatureFlags
 
   bool fuseboxNetworkInspectionEnabled(jsi::Runtime& runtime);
 
+  bool fuseboxScreenshotCaptureEnabled(jsi::Runtime& runtime);
+
   bool hideOffscreenVirtualViewsOnIOS(jsi::Runtime& runtime);
 
   bool overrideBySynchronousMountPropsAtMountingAndroid(jsi::Runtime& runtime);
@@ -176,13 +172,17 @@ class NativeReactNativeFeatureFlags
 
   bool preventShadowTreeCommitExhaustion(jsi::Runtime& runtime);
 
+  bool redBoxV2Android(jsi::Runtime& runtime);
+
+  bool redBoxV2IOS(jsi::Runtime& runtime);
+
   bool shouldPressibilityUseW3CPointerEventsForHover(jsi::Runtime& runtime);
 
   bool shouldTriggerResponderTransferOnScrollAndroid(jsi::Runtime& runtime);
 
   bool skipActivityIdentityAssertionOnHostPause(jsi::Runtime& runtime);
 
-  bool syncAndroidClipToPaddingWithOverflow(jsi::Runtime& runtime);
+  bool syncAndroidClipBoundsWithOverflow(jsi::Runtime& runtime);
 
   bool traceTurboModulePromiseRejectionsOnAndroid(jsi::Runtime& runtime);
 
@@ -199,6 +199,8 @@ class NativeReactNativeFeatureFlags
   bool useNativeViewConfigsInBridgelessMode(jsi::Runtime& runtime);
 
   bool useNestedScrollViewAndroid(jsi::Runtime& runtime);
+
+  bool useOptimizedViewRegistryOnAndroid(jsi::Runtime& runtime);
 
   bool useSharedAnimatedBackend(jsi::Runtime& runtime);
 

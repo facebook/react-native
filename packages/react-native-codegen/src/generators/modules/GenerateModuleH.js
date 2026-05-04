@@ -537,7 +537,15 @@ function generateEnum(
 
   return EnumTemplate({
     enumName,
-    values: members.map(member => toSafeCppString(member.name)).join(', '),
+    values: members
+      .map(member => {
+        const name = toSafeCppString(member.name);
+        if (Number.isInteger(member.value.value)) {
+          return `${name} = ${member.value.value}`;
+        }
+        return name;
+      })
+      .join(', '),
     fromCases,
     toCases,
     nativeEnumMemberType,

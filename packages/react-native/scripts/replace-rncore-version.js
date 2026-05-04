@@ -73,6 +73,18 @@ function replaceRNCoreConfiguration(
   const tmpExtractDir = path.join(tmpDir, 'React-Core-prebuilt');
   fs.mkdirSync(tmpExtractDir, {recursive: true});
 
+  // Preserve Expo-generated modulemap before replacing directories
+  const useFrameworksModulemapName = 'React-use-frameworks.modulemap';
+  const useFrameworksModulemapPath = path.join(
+    finalLocation,
+    useFrameworksModulemapName,
+  );
+  let savedModulemap = null;
+  if (fs.existsSync(useFrameworksModulemapPath)) {
+    console.log('Preserving', useFrameworksModulemapName);
+    savedModulemap = fs.readFileSync(useFrameworksModulemapPath);
+  }
+
   try {
     console.log('Extracting the tarball to temp dir', tarballURLPath);
     const result = spawnSync(
@@ -135,6 +147,14 @@ function replaceRNCoreConfiguration(
   } finally {
     // Clean up temp directory
     fs.rmSync(tmpDir, {force: true, recursive: true});
+
+    // Restore Expo-generated modulemap after directory replacement.
+    // Runs in finally so it is not skipped if mv/cp partially fails.
+    if (savedModulemap != null) {
+      const restoredPath = path.join(finalLocation, useFrameworksModulemapName);
+      fs.writeFileSync(restoredPath, savedModulemap);
+      console.log('Restored', useFrameworksModulemapName);
+    }
   }
 }
 
