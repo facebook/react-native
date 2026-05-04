@@ -86,10 +86,7 @@ component TappableLinks(content: string, style: void | TextStyleProp) {
   if (startIndex < content.length) {
     const text = content.substring(startIndex);
     fragments.push(
-      <Text
-        key={++indexCounter}
-        maxFontSizeMultiplier={1.5}
-        style={style}>
+      <Text key={++indexCounter} maxFontSizeMultiplier={1.5} style={style}>
         {text}
       </Text>,
     );
@@ -114,9 +111,7 @@ component LogBoxMessage(
   const {content, substitutions}: Message = message;
 
   if (plaintext === true) {
-    return (
-      <Text maxFontSizeMultiplier={1}>{cleanContent(content)}</Text>
-    );
+    return <Text maxFontSizeMultiplier={1}>{cleanContent(content)}</Text>;
   }
 
   const resolvedMaxLength = maxLength != null ? maxLength : Infinity;
