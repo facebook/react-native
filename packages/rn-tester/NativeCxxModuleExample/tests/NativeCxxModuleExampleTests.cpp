@@ -35,8 +35,8 @@ TEST_F(NativeCxxModuleExampleTests, GetArrayReturnsCorrectValues) {
 TEST_F(NativeCxxModuleExampleTests, GetArrayBufferReturnsCorrectValues) {
   // Create an ArrayBuffer with known data
   std::vector<uint8_t> inputData = {1, 2, 3, 4, 5};
-  auto inputBuffer =
-      std::make_shared<OwnedMutableBuffer>(inputData.data(), inputData.size());
+  auto inputBuffer = std::make_shared<BorrowedMutableBuffer>(
+      inputData.data(), inputData.size());
   jsi::ArrayBuffer arg(*runtime_, std::move(inputBuffer));
 
   auto result = module_->getArrayBuffer(*runtime_, std::move(arg));
@@ -47,7 +47,7 @@ TEST_F(NativeCxxModuleExampleTests, GetArrayBufferReturnsCorrectValues) {
 }
 
 TEST_F(NativeCxxModuleExampleTests, GetArrayBufferEmptyReturnsEmpty) {
-  auto inputBuffer = std::make_shared<OwnedMutableBuffer>(nullptr, 0);
+  auto inputBuffer = std::make_shared<BorrowedMutableBuffer>(nullptr, 0);
   jsi::ArrayBuffer arg(*runtime_, std::move(inputBuffer));
 
   auto result = module_->getArrayBuffer(*runtime_, std::move(arg));

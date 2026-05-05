@@ -102,6 +102,17 @@ jsi::Value convertObjCObjectToJSIValue(jsi::Runtime &runtime, id value)
     return convertNSDictionaryToJSIObject(runtime, (NSDictionary *)value);
   } else if ([value isKindOfClass:[NSArray class]]) {
     return convertNSArrayToJSIArray(runtime, (NSArray *)value);
+  } else if ([value isKindOfClass:[NSData class]]) {
+    // Zero-copy: wrap the NSData's memory directly. ARC retains the NSData via
+    // the release callback's block capture, preventing deallocation while the
+    // JS ArrayBuffer is alive. The release callback fires when the JS GC
+    // collects the ArrayBuffer.
+    auto data = (NSData *)value;
+    auto buffer = std::make_shared<BorrowedMutableBuffer>(
+        const_cast<uint8_t *>(static_cast<const uint8_t *>(data.bytes)), data.length, [retainedData = data]() {
+          (void)retainedData;
+        });
+    return {runtime, jsi::ArrayBuffer(runtime, std::move(buffer))};
   } else if (value == (id)kCFNull) {
     return jsi::Value::null();
   }
@@ -197,7 +208,11 @@ id convertJSIValueToObjCObject(
     }
     if (o.isArrayBuffer(runtime)) {
       auto ab = o.getArrayBuffer(runtime);
-      return [NSData dataWithBytes:ab.data(runtime) length:ab.size(runtime)];
+      // Zero-copy: wrap the JS ArrayBuffer's memory without copying.
+      // Safe because this is only called during synchronous argument setup,
+      // and the JS ArrayBuffer is alive for the duration of the call.
+      // freeWhenDone:NO ensures NSMutableData does not free the JS-owned memory.
+      return [NSMutableData dataWithBytesNoCopy:(void *)ab.data(runtime) length:ab.size(runtime) freeWhenDone:NO];
     }
     return convertJSIObjectToNSDictionary(runtime, o, jsInvoker, useNSNull);
   }
@@ -531,9 +546,18 @@ jsi::Value ObjCTurboModule::convertReturnIdToJSIValue(
     case PromiseKind:
       throw jsi::JSError(runtime, "convertReturnIdToJSIValue: PromiseKind wasn't handled properly.");
     case ArrayBufferKind: {
-      auto data = (NSData *)result;
-      auto buffer = std::make_shared<OwnedMutableBuffer>(static_cast<const uint8_t *>(data.bytes), data.length);
-      returnValue = jsi::ArrayBuffer(runtime, std::move(buffer));
+      auto mutableData = (NSMutableData *)result;
+      if (mutableData != nil && mutableData.length > 0) {
+        // Zero-copy: wrap the NSMutableData's memory directly. ARC retains the
+        // NSMutableData via the release callback's block capture, preventing
+        // deallocation while the JS ArrayBuffer is alive. The release callback
+        // fires when the JS GC collects the ArrayBuffer.
+        auto buffer = std::make_shared<BorrowedMutableBuffer>(
+            static_cast<uint8_t *>(mutableData.mutableBytes), mutableData.length, [retainedData = mutableData]() {
+              (void)retainedData;
+            });
+        returnValue = jsi::ArrayBuffer(runtime, std::move(buffer));
+      }
       break;
     }
   }

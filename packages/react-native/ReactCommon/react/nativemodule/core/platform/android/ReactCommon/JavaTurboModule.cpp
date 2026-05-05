@@ -436,7 +436,7 @@ JNIArgs convertJSIArgsToJNIArgs(
       auto jParams = JDynamicNative::newObjectCxxArgs(dynamicFromValue);
       jarg->l = makeGlobalIfNecessary(jParams.release());
     } else if (type == "Ljava/nio/ByteBuffer;") {
-      if (!arg->isObject()) {
+      if (!arg->isObject() || !arg->getObject(rt).isArrayBuffer(rt)) {
         throw JavaTurboModuleArgumentConversionException(
             "ArrayBuffer", static_cast<int>(argIndex), methodName, arg, &rt);
       }
@@ -992,10 +992,16 @@ jsi::Value JavaTurboModule::invokeJavaMethod(
         auto size = jByteBuffer->getDirectSize();
 
         if (size > 0) {
-          // Copy the data from the ByteBuffer into a new ArrayBuffer.
-          // We must copy because the ByteBuffer's lifetime is managed by Java.
-          auto buffer = std::make_shared<OwnedMutableBuffer>(
-              jByteBuffer->getDirectBytes(), static_cast<size_t>(size));
+          // Zero-copy: wrap the ByteBuffer's memory directly. A JNI global
+          // reference prevents Java GC from collecting the ByteBuffer while
+          // the JS ArrayBuffer is alive. The release callback drops the
+          // global ref when the JS GC collects the ArrayBuffer.
+          auto globalRef = jni::make_global(jByteBuffer);
+          auto data = globalRef->getDirectBytes();
+          auto buffer = std::make_shared<BorrowedMutableBuffer>(
+              data,
+              static_cast<size_t>(size),
+              [prevent_gc = std::move(globalRef)]() { (void)prevent_gc; });
           auto arrayBuffer = jsi::ArrayBuffer(runtime, std::move(buffer));
           returnValue = jsi::Value(runtime, arrayBuffer);
         }

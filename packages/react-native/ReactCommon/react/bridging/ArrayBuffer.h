@@ -10,55 +10,60 @@
 #include <react/bridging/Base.h>
 
 #include <cstring>
-#include <iterator>
-#include <vector>
+#include <functional>
 
 namespace facebook::react {
 
 /**
- * A concrete implementation of jsi::MutableBuffer that owns a copy of the data.
- * Used when creating jsi::ArrayBuffer from native data (e.g., NSData,
- * ByteBuffer) where we need to copy the data to ensure proper memory
- * ownership.
+ * A non-owning implementation of jsi::MutableBuffer that borrows a pointer to
+ * externally-managed memory. The caller MUST ensure the underlying data outlives
+ * the buffer, or provide a release callback that prevents the source from being
+ * deallocated (e.g., a JNI global_ref or an ARC-retained ObjC object).
+ *
+ * When the BorrowedMutableBuffer is destroyed, the optional release callback is
+ * invoked, allowing the prevent-GC reference to be dropped.
+ *
+ * Thread safety: The release callback may be invoked on any thread (typically
+ * the JS thread during garbage collection). Callers must ensure the release
+ * callback is safe to invoke from any thread. JNI DeleteGlobalRef and ARC
+ * release are both thread-safe.
+ *
+ * The release callback must not throw exceptions. Throwing from the destructor
+ * will terminate the process.
  */
-class OwnedMutableBuffer : public jsi::MutableBuffer {
+class BorrowedMutableBuffer : public jsi::MutableBuffer {
  public:
-  OwnedMutableBuffer(const uint8_t *data, size_t size) : data_(data, std::next(data, static_cast<std::ptrdiff_t>(size)))
+  BorrowedMutableBuffer(uint8_t *data, size_t size, std::function<void()> release = nullptr)
+      : data_(data), size_(size), release_(std::move(release))
   {
   }
 
-  explicit OwnedMutableBuffer(size_t size) : data_(size, 0) {}
+  ~BorrowedMutableBuffer() override
+  {
+    if (release_) {
+      release_();
+    }
+  }
 
-  explicit OwnedMutableBuffer(std::vector<uint8_t> data) : data_(std::move(data)) {}
+  BorrowedMutableBuffer(const BorrowedMutableBuffer &) = delete;
+  BorrowedMutableBuffer &operator=(const BorrowedMutableBuffer &) = delete;
+  BorrowedMutableBuffer(BorrowedMutableBuffer &&) = delete;
+  BorrowedMutableBuffer &operator=(BorrowedMutableBuffer &&) = delete;
 
   size_t size() const override
   {
-    return data_.size();
+    return size_;
   }
 
   uint8_t *data() override
   {
-    return data_.data();
+    return data_;
   }
 
  private:
-  std::vector<uint8_t> data_;
-};
-
-template <>
-struct Bridging<std::vector<uint8_t>> {
-  static std::vector<uint8_t> fromJs(jsi::Runtime &rt, const jsi::ArrayBuffer &buffer)
-  {
-    auto size = buffer.size(rt);
-    auto data = buffer.data(rt);
-    return {data, std::next(data, static_cast<std::ptrdiff_t>(size))};
-  }
-
-  static jsi::ArrayBuffer toJs(jsi::Runtime &rt, const std::vector<uint8_t> &data)
-  {
-    auto buffer = std::make_shared<OwnedMutableBuffer>(data.data(), data.size());
-    return {rt, std::move(buffer)};
-  }
+  uint8_t *data_;
+  size_t size_;
+  std::function<void()> release_;
 };
 
 } // namespace facebook::react

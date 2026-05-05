@@ -8,6 +8,7 @@
 #include "NativeCxxModuleExample.h"
 #include <react/bridging/ArrayBuffer.h>
 #include <react/debug/react_native_assert.h>
+#include <cstring>
 #include <iomanip>
 #include <ostream>
 #include <sstream>
@@ -269,10 +270,14 @@ AsyncPromise<> NativeCxxModuleExample::promiseAssert(jsi::Runtime& rt) {
 jsi::ArrayBuffer NativeCxxModuleExample::getArrayBuffer(
     jsi::Runtime& rt,
     jsi::ArrayBuffer arg) {
-  // Return a copy of the input ArrayBuffer
+  // Return a copy of the input ArrayBuffer. We copy into a heap-allocated
+  // vector that is kept alive by the BorrowedMutableBuffer release callback.
   auto size = arg.size(rt);
   auto data = arg.data(rt);
-  auto buffer = std::make_shared<OwnedMutableBuffer>(data, size);
+  auto owned = std::make_shared<std::vector<uint8_t>>(size);
+  std::memcpy(owned->data(), data, size);
+  auto buffer = std::make_shared<BorrowedMutableBuffer>(
+      owned->data(), owned->size(), [owned]() { (void)owned; });
   return {rt, std::move(buffer)};
 }
 

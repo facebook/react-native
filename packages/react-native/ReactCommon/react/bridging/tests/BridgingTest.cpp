@@ -780,33 +780,43 @@ TEST_F(BridgingTest, dynamicTest) {
   EXPECT_TRUE(undefinedFromJsResult.isNull());
 }
 
-TEST_F(BridgingTest, arrayBufferTest) {
-  // Test round-trip: vector<uint8_t> -> ArrayBuffer -> vector<uint8_t>
-  auto vec = std::vector<uint8_t>({1, 2, 3, 4, 5});
-  auto arrayBuffer = bridging::toJs(rt, vec, invoker);
-  auto result =
-      bridging::fromJs<std::vector<uint8_t>>(rt, arrayBuffer, invoker);
-  EXPECT_EQ(vec, result);
+TEST_F(BridgingTest, borrowedMutableBufferTest) {
+  // Test basic construction and accessors
+  std::vector<uint8_t> source = {1, 2, 3, 4, 5};
+  auto borrowed = BorrowedMutableBuffer(source.data(), source.size());
+  EXPECT_EQ(source.size(), borrowed.size());
+  EXPECT_EQ(source.data(), borrowed.data()); // pointer identity, no copy
 
-  // Test empty vector round-trip
-  auto emptyVec = std::vector<uint8_t>();
-  auto emptyArrayBuffer = bridging::toJs(rt, emptyVec, invoker);
-  auto emptyResult =
-      bridging::fromJs<std::vector<uint8_t>>(rt, emptyArrayBuffer, invoker);
-  EXPECT_TRUE(emptyResult.empty());
+  // Test that data is readable through the borrowed pointer
+  EXPECT_EQ(0, std::memcmp(borrowed.data(), source.data(), source.size()));
 
-  // Test OwnedMutableBuffer constructed from size
-  auto sizedBuffer = OwnedMutableBuffer(4);
-  EXPECT_EQ(4, sizedBuffer.size());
-  // Should be zero-initialized
-  auto expected_zeros = std::vector<uint8_t>(4, 0);
-  EXPECT_EQ(0, std::memcmp(sizedBuffer.data(), expected_zeros.data(), 4));
+  // Test mutability through borrowed pointer
+  *borrowed.data() = 99;
+  EXPECT_EQ(99, source[0]); // mutation visible through original
 
-  // Test OwnedMutableBuffer constructed from vector
-  auto inputVec = std::vector<uint8_t>({10, 20, 30});
-  auto vecBuffer = OwnedMutableBuffer(inputVec);
-  EXPECT_EQ(3, vecBuffer.size());
-  EXPECT_EQ(0, std::memcmp(vecBuffer.data(), inputVec.data(), inputVec.size()));
+  // Test release callback is invoked on destruction
+  bool released = false;
+  {
+    auto buffer = BorrowedMutableBuffer(
+        source.data(), source.size(), [&released]() { released = true; });
+    EXPECT_FALSE(released);
+  }
+  EXPECT_TRUE(released);
+
+  // Test with nullptr release callback (no-op)
+  {
+    auto buffer = BorrowedMutableBuffer(source.data(), source.size());
+    // Should not crash on destruction
+  }
+
+  // Test zero-copy round-trip through jsi::ArrayBuffer
+  source[0] = 1; // restore
+  auto mutableBuffer =
+      std::make_shared<BorrowedMutableBuffer>(source.data(), source.size());
+  auto originalPtr = mutableBuffer->data();
+  auto arrayBuffer = jsi::ArrayBuffer(rt, std::move(mutableBuffer));
+  EXPECT_EQ(source.size(), arrayBuffer.size(rt));
+  EXPECT_EQ(originalPtr, arrayBuffer.data(rt)); // pointer identity preserved
 }
 
 TEST_F(BridgingTest, highResTimeStampTest) {

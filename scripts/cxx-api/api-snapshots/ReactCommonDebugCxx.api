@@ -1148,6 +1148,15 @@ class facebook::react::BindingsInstaller {
   public virtual facebook::react::ReactInstance::BindingsInstallFunc getBindingsInstallFunc();
 }
 
+class facebook::react::BorrowedMutableBuffer : public facebook::jsi::MutableBuffer {
+  public BorrowedMutableBuffer(const facebook::react::BorrowedMutableBuffer&) = delete;
+  public BorrowedMutableBuffer(uint8_t* data, size_t size, std::function<void()> release = nullptr);
+  public facebook::react::BorrowedMutableBuffer& operator=(const facebook::react::BorrowedMutableBuffer&) = delete;
+  public virtual size_t size() const override;
+  public virtual uint8_t* data() override;
+  public ~BorrowedMutableBuffer() override;
+}
+
 class facebook::react::BridgelessNativeMethodCallInvoker : public facebook::react::NativeMethodCallInvoker {
   public BridgelessNativeMethodCallInvoker(std::shared_ptr<facebook::react::MessageQueueThread> messageQueueThread);
   public virtual void invokeAsync(const std::string& methodName, facebook::react::NativeMethodCallFunc&& func) noexcept override;
@@ -2544,14 +2553,6 @@ class facebook::react::ObjectAnimatedNode : public facebook::react::AnimatedNode
 class facebook::react::OperatorAnimatedNode : public facebook::react::ValueAnimatedNode {
   protected std::vector<facebook::react::Tag> inputNodes_;
   public OperatorAnimatedNode(facebook::react::Tag tag, const folly::dynamic& config, facebook::react::NativeAnimatedNodesManager& manager);
-}
-
-class facebook::react::OwnedMutableBuffer : public facebook::jsi::MutableBuffer {
-  public OwnedMutableBuffer(const uint8_t* data, size_t size);
-  public OwnedMutableBuffer(size_t size);
-  public OwnedMutableBuffer(std::vector<uint8_t> data);
-  public virtual size_t size() const override;
-  public virtual uint8_t* data() override;
 }
 
 class facebook::react::ParagraphAttributes : public facebook::react::DebugStringConvertible {
@@ -6581,11 +6582,6 @@ struct facebook::react::Bridging<std::string> {
 
 struct facebook::react::Bridging<std::string_view> {
   public static facebook::jsi::String toJs(facebook::jsi::Runtime& rt, std::string_view value);
-}
-
-struct facebook::react::Bridging<std::vector<uint8_t>> {
-  public static facebook::jsi::ArrayBuffer toJs(facebook::jsi::Runtime& rt, const std::vector<uint8_t>& data);
-  public static std::vector<uint8_t> fromJs(facebook::jsi::Runtime& rt, const facebook::jsi::ArrayBuffer& buffer);
 }
 
 template <typename R, typename... Args>

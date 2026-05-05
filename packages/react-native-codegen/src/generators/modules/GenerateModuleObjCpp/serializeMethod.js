@@ -221,7 +221,7 @@ function getParamObjCType(
       return notStruct(wrapOptional('NSArray *', !nullable));
     }
     case 'ArrayBufferTypeAnnotation': {
-      return notStruct(wrapOptional('NSData *', !nullable));
+      return notStruct(wrapOptional('NSMutableData *', !nullable));
     }
   }
 
@@ -392,7 +392,7 @@ function getReturnObjCType(
     case 'GenericObjectTypeAnnotation':
       return wrapOptional('NSDictionary *', isRequired);
     case 'ArrayBufferTypeAnnotation':
-      return wrapOptional('NSData *', isRequired);
+      return wrapOptional('NSMutableData *', isRequired);
     default:
       typeAnnotation.type as 'MixedTypeAnnotation';
       throw new Error(
