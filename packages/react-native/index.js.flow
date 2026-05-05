@@ -22,17 +22,33 @@
 
 // #region Components
 
+// - TypeScript function component interop -
+//
+// Each component has a companion type export (/* @ts-only */) mapping its name
+// to its instance type. This enables ref type compatibility under TypeScript
+// (e.g. `useRef<View>()`) where `View` resolves to `ReactNativeElement` rather
+// than the component function type.
+
+/* eslint-disable no-unused-vars */
+import type {PublicScrollViewInstance as _PublicScrollViewInstance} from './Libraries/Components/ScrollView/ScrollView';
+import type {TextInputInstance as _TextInputInstance} from './Libraries/Components/TextInput/TextInput.flow';
+import type {HostInstance as _HostInstance} from './src/private/types/HostInstance';
+/* eslint-enable no-unused-vars */
+
 export type {ActivityIndicatorProps} from './Libraries/Components/ActivityIndicator/ActivityIndicator';
 export {default as ActivityIndicator} from './Libraries/Components/ActivityIndicator/ActivityIndicator';
+/* @ts-only export type ActivityIndicator = _HostInstance; */
 
 export type {ButtonProps} from './Libraries/Components/Button';
 export {default as Button} from './Libraries/Components/Button';
+/* @ts-only export type Button = _HostInstance; */
 
 export type {
   DrawerLayoutAndroidProps,
   DrawerSlideEvent,
 } from './Libraries/Components/DrawerAndroid/DrawerLayoutAndroid';
 export {default as DrawerLayoutAndroid} from './Libraries/Components/DrawerAndroid/DrawerLayoutAndroid';
+/* @ts-only export type DrawerLayoutAndroid = _HostInstance; */
 
 export type {FlatListProps} from './Libraries/Lists/FlatList';
 export {default as FlatList} from './Libraries/Lists/FlatList';
@@ -56,13 +72,17 @@ export type {
   ImageURISource,
 } from './Libraries/Image/ImageSource';
 export {default as Image} from './Libraries/Image/Image';
+/* @ts-only export type Image = _HostInstance; */
 export {default as ImageBackground} from './Libraries/Image/ImageBackground';
+/* @ts-only export type ImageBackground = _HostInstance; */
 
 export type {InputAccessoryViewProps} from './Libraries/Components/TextInput/InputAccessoryView';
 export {default as InputAccessoryView} from './Libraries/Components/TextInput/InputAccessoryView';
+/* @ts-only export type InputAccessoryView = _HostInstance; */
 
 export type {KeyboardAvoidingViewProps} from './Libraries/Components/Keyboard/KeyboardAvoidingView';
 export {default as KeyboardAvoidingView} from './Libraries/Components/Keyboard/KeyboardAvoidingView';
+/* @ts-only export type KeyboardAvoidingView = _HostInstance; */
 
 export type {LayoutConformanceProps} from './Libraries/Components/LayoutConformance/LayoutConformance';
 export {default as experimental_LayoutConformance} from './Libraries/Components/LayoutConformance/LayoutConformance';
@@ -74,6 +94,7 @@ export type {
   ModalPropsIOS,
 } from './Libraries/Modal/Modal';
 export {default as Modal} from './Libraries/Modal/Modal';
+/* @ts-only export type Modal = _HostInstance; */
 
 export type {
   PressableAndroidRippleConfig,
@@ -81,9 +102,11 @@ export type {
   PressableStateCallbackType,
 } from './Libraries/Components/Pressable/Pressable';
 export {default as Pressable} from './Libraries/Components/Pressable/Pressable';
+/* @ts-only export type Pressable = _HostInstance; */
 
 export type {ProgressBarAndroidProps} from './Libraries/Components/ProgressBarAndroid/ProgressBarAndroid';
 export {default as ProgressBarAndroid} from './Libraries/Components/ProgressBarAndroid/ProgressBarAndroid';
+/* @ts-only export type ProgressBarAndroid = _HostInstance; */
 
 export type {
   RefreshControlProps,
@@ -91,8 +114,10 @@ export type {
   RefreshControlPropsIOS,
 } from './Libraries/Components/RefreshControl/RefreshControl';
 export {default as RefreshControl} from './Libraries/Components/RefreshControl/RefreshControl';
+/* @ts-only export type RefreshControl = _HostInstance; */
 
 export {default as SafeAreaView} from './Libraries/Components/SafeAreaView/SafeAreaView';
+/* @ts-only export type SafeAreaView = _HostInstance; */
 
 export type {
   ScrollViewImperativeMethods,
@@ -103,6 +128,7 @@ export type {
   ScrollViewPropsIOS,
 } from './Libraries/Components/ScrollView/ScrollView';
 export {default as ScrollView} from './Libraries/Components/ScrollView/ScrollView';
+/* @ts-only export type ScrollView = _PublicScrollViewInstance; */
 
 export type {
   SectionListProps,
@@ -118,15 +144,18 @@ export type {
   StatusBarStyle,
 } from './Libraries/Components/StatusBar/StatusBar';
 export {default as StatusBar} from './Libraries/Components/StatusBar/StatusBar';
+/* @ts-only export type StatusBar = _HostInstance; */
 
 export type {
   SwitchChangeEvent,
   SwitchProps,
 } from './Libraries/Components/Switch/Switch';
 export {default as Switch} from './Libraries/Components/Switch/Switch';
+/* @ts-only export type Switch = _HostInstance; */
 
 export type {TextProps} from './Libraries/Text/Text';
 export {default as Text} from './Libraries/Text/Text';
+/* @ts-only export type Text = _HostInstance; */
 export type {NativeTextProps as unstable_NativeTextProps} from './Libraries/Text/TextNativeComponent';
 export {NativeText as unstable_NativeText} from './Libraries/Text/TextNativeComponent';
 export {default as unstable_TextAncestorContext} from './Libraries/Text/TextAncestorContext';
@@ -151,20 +180,25 @@ export type {
   SubmitBehavior,
 } from './Libraries/Components/TextInput/TextInput';
 export {default as TextInput} from './Libraries/Components/TextInput/TextInput';
+/* @ts-only export type TextInput = _TextInputInstance; */
 
 export {default as Touchable} from './Libraries/Components/Touchable/Touchable';
 
 export type {TouchableHighlightProps} from './Libraries/Components/Touchable/TouchableHighlight';
 export {default as TouchableHighlight} from './Libraries/Components/Touchable/TouchableHighlight';
+/* @ts-only export type TouchableHighlight = _HostInstance; */
 
 export type {TouchableNativeFeedbackProps} from './Libraries/Components/Touchable/TouchableNativeFeedback';
 export {default as TouchableNativeFeedback} from './Libraries/Components/Touchable/TouchableNativeFeedback';
+/* @ts-only export type TouchableNativeFeedback = _HostInstance; */
 
 export type {TouchableOpacityProps} from './Libraries/Components/Touchable/TouchableOpacity';
 export {default as TouchableOpacity} from './Libraries/Components/Touchable/TouchableOpacity';
+/* @ts-only export type TouchableOpacity = _HostInstance; */
 
 export type {TouchableWithoutFeedbackProps} from './Libraries/Components/Touchable/TouchableWithoutFeedback';
 export {default as TouchableWithoutFeedback} from './Libraries/Components/Touchable/TouchableWithoutFeedback';
+/* @ts-only export type TouchableWithoutFeedback = _HostInstance; */
 
 export type {
   AccessibilityActionEvent,
@@ -182,6 +216,7 @@ export type {
   ViewPropsIOS,
 } from './Libraries/Components/View/ViewPropTypes';
 export {default as View} from './Libraries/Components/View/View';
+/* @ts-only export type View = _HostInstance; */
 export {default as unstable_NativeView} from './Libraries/Components/View/ViewNativeComponent';
 
 export type {

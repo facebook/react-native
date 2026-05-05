@@ -50,8 +50,14 @@ async function translateSourceFile(
   source: string,
   filePath: string,
 ): Promise<TranslateSourceFileResult> {
+  // Uncomment /* @ts-only ... */ blocks
+  const preprocessed = source.replace(
+    /\/\* @ts-only\s*([\s\S]*?)\s*\*\//g,
+    '$1',
+  );
+
   // Parse Flow source
-  const parsed = await parse(source);
+  const parsed = await parse(preprocessed);
 
   // Apply pre-transforms
   const preTransformResult = await applyPreTransforms(parsed);
