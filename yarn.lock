@@ -3033,7 +3033,7 @@ babel-plugin-syntax-hermes-parser@0.35.0:
 
 babel-plugin-syntax-hermes-parser@0.36.0:
   version "0.36.0"
-  resolved "https://registry.facebook.net/babel-plugin-syntax-hermes-parser/-/babel-plugin-syntax-hermes-parser-0.36.0.tgz#51e429f32f23b197c477a20525798a7a97709c80"
+  resolved "https://registry.yarnpkg.com/babel-plugin-syntax-hermes-parser/-/babel-plugin-syntax-hermes-parser-0.36.0.tgz#51e429f32f23b197c477a20525798a7a97709c80"
   integrity sha512-LhD0xdoedDw7ansQgXbB2DADLZIK/LRXuWNBPuVzMc5S2WK5GyT89tCM+cQzxFGO0mGyLK6D5TrVOJJzAoDy8Q==
   dependencies:
     hermes-parser "0.36.0"
@@ -4736,7 +4736,7 @@ flora-colossus@^2.0.0:
 
 flow-api-translator@0.36.0:
   version "0.36.0"
-  resolved "https://registry.facebook.net/flow-api-translator/-/flow-api-translator-0.36.0.tgz#18737e0d74c339d6dda33ba9d179f99595f6f9f2"
+  resolved "https://registry.yarnpkg.com/flow-api-translator/-/flow-api-translator-0.36.0.tgz#18737e0d74c339d6dda33ba9d179f99595f6f9f2"
   integrity sha512-mzyczOh7gYKa1Uo2NqjVEzVDwLWZxIqrinF68TQ/48susbxX8HG3TshVb03eO4Ngp83JBVpNUJyarYeGYK8t4Q==
   dependencies:
     "@babel/code-frame" "^7.16.0"
@@ -4751,7 +4751,7 @@ flow-api-translator@0.36.0:
 
 flow-bin@^0.312.0:
   version "0.312.0"
-  resolved "https://registry.facebook.net/flow-bin/-/flow-bin-0.312.0.tgz#4962c29a740beff72eb4b89b0f9625213b3a82d8"
+  resolved "https://registry.yarnpkg.com/flow-bin/-/flow-bin-0.312.0.tgz#4962c29a740beff72eb4b89b0f9625213b3a82d8"
   integrity sha512-SVjNNbWt8d69cj6dLXy5P8pq3p6dpje8cL3PvPEqY2KoloiYdpxjOOEZTFvliZV7gxKzGB83iGLA1ct6TH/7hw==
 
 flow-enums-runtime@^0.0.6:
@@ -5133,12 +5133,12 @@ hasown@^2.0.0, hasown@^2.0.1, hasown@^2.0.2:
 
 hermes-compiler@0.0.0:
   version "0.0.0"
-  resolved "https://registry.facebook.net/hermes-compiler/-/hermes-compiler-0.0.0.tgz#8d9f6a0b2740ce34d71258fec684e7b6bfd97efa"
+  resolved "https://registry.yarnpkg.com/hermes-compiler/-/hermes-compiler-0.0.0.tgz#8d9f6a0b2740ce34d71258fec684e7b6bfd97efa"
   integrity sha512-boVFutx6ME/Km2mB6vvsQcdnazEYYI/jV1pomx1wcFUG/EVqTkr5CU0CW9bKipOA/8Hyu3NYwW3THg2Q1kNCfA==
 
 hermes-eslint@0.36.0:
   version "0.36.0"
-  resolved "https://registry.facebook.net/hermes-eslint/-/hermes-eslint-0.36.0.tgz#d8148b7425e7c5ce02e6aa4e092fc1edb0419fa7"
+  resolved "https://registry.yarnpkg.com/hermes-eslint/-/hermes-eslint-0.36.0.tgz#d8148b7425e7c5ce02e6aa4e092fc1edb0419fa7"
   integrity sha512-oEmTrP/Onp8kA5N23/yF4kGgSKB+9KH0CsrY+zGsgq6nK4CqY0y7Atv51X+F4deBHxWngLOvYBLt32HtOps78Q==
   dependencies:
     esrecurse "^4.3.0"
@@ -5157,7 +5157,7 @@ hermes-estree@0.35.0:
 
 hermes-estree@0.36.0:
   version "0.36.0"
-  resolved "https://registry.facebook.net/hermes-estree/-/hermes-estree-0.36.0.tgz#5b8c162e986159baf86bc4d01612cff9845ab0f7"
+  resolved "https://registry.yarnpkg.com/hermes-estree/-/hermes-estree-0.36.0.tgz#5b8c162e986159baf86bc4d01612cff9845ab0f7"
   integrity sha512-A1+8zn5oss2CFP7pKsOaxorQG6FNIz1WU1VDqruLPPZl3LVgeE2C5xfFg8Ow6/Ow4mSslLLtYP1J3n38eKyW9w==
 
 hermes-parser@0.25.1, hermes-parser@^0.25.1:
@@ -5176,14 +5176,14 @@ hermes-parser@0.35.0:
 
 hermes-parser@0.36.0:
   version "0.36.0"
-  resolved "https://registry.facebook.net/hermes-parser/-/hermes-parser-0.36.0.tgz#756d6b07301789c5ff0ac3ac7ff6bffa8be7098c"
+  resolved "https://registry.yarnpkg.com/hermes-parser/-/hermes-parser-0.36.0.tgz#756d6b07301789c5ff0ac3ac7ff6bffa8be7098c"
   integrity sha512-GdpwMmH5x6IpC1cijvcvYnlPB60Mh6kTSF/NFdYV/j56gYdi+0RIakYs+eqOV+bbO0SW7mgVVGSsTJxyPQfo3w==
   dependencies:
     hermes-estree "0.36.0"
 
 hermes-transform@0.36.0:
   version "0.36.0"
-  resolved "https://registry.facebook.net/hermes-transform/-/hermes-transform-0.36.0.tgz#88ed181f4ac16985290928f03124e1107505698d"
+  resolved "https://registry.yarnpkg.com/hermes-transform/-/hermes-transform-0.36.0.tgz#88ed181f4ac16985290928f03124e1107505698d"
   integrity sha512-GB4vu6D/JMNX4jpgyr2suZCNdR8toaMdxF2598UiBzQhP89lAFs8c/pMWYEbfX8Y44Bvzzx0ztfJnrWzKls8HA==
   dependencies:
     "@babel/code-frame" "^7.16.0"
@@ -7818,7 +7818,7 @@ prelude-ls@^1.2.1:
 
 prettier-plugin-hermes-parser@0.36.0:
   version "0.36.0"
-  resolved "https://registry.facebook.net/prettier-plugin-hermes-parser/-/prettier-plugin-hermes-parser-0.36.0.tgz#8839207d3a4290b7afe1bd54fbc5154f963b8cf2"
+  resolved "https://registry.yarnpkg.com/prettier-plugin-hermes-parser/-/prettier-plugin-hermes-parser-0.36.0.tgz#8839207d3a4290b7afe1bd54fbc5154f963b8cf2"
   integrity sha512-CtlJ5l0DC48SN3OWSht5jAEIFU92xwHSe87/Bl005/9TlHyN2aAmPa6T/A2JLiIgRT/lGsCtc6srwEMM3/5k4w==
 
 prettier@3.6.2:
