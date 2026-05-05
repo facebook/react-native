@@ -320,6 +320,26 @@ void ReactHost::destroyReactInstance() {
   reactInstanceData_->messageQueueThread = nullptr;
 }
 
+void ReactHost::unstable_recreateSchedulerDelegateForTesting() {
+  // Mirrors iOS RCTScheduler dealloc ordering (RCTScheduler.mm: setDelegate
+  // (nullptr) followed by destruction of the previous SchedulerDelegateProxy,
+  // while the RuntimeScheduler outlives both). The RuntimeScheduler may still
+  // hold queued rendering-update lambdas that captured the previous
+  // delegate's raw pointer by value.
+  //
+  // Allocate the replacement BEFORE destroying the previous one so the new
+  // SchedulerDelegate lands at a distinct address. Otherwise the allocator
+  // tends to reuse the just-freed slot, masking the use-after-free in
+  // queued lambdas behind a same-address re-allocation.
+  auto fresh = std::make_unique<SchedulerDelegateImpl>(
+      reactInstanceData_->mountingManager);
+  fresh->setUIManager(scheduler_->getUIManager());
+  scheduler_->setDelegate(nullptr);
+  schedulerDelegate_ = nullptr;
+  scheduler_->setDelegate(fresh.get());
+  schedulerDelegate_ = std::move(fresh);
+}
+
 void ReactHost::reloadReactInstance() {
   if (isReloadingReactInstance_.exchange(true)) {
     return;

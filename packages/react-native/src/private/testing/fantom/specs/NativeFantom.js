@@ -110,6 +110,13 @@ interface Spec extends TurboModule {
   flushMessageQueue: () => void;
   flushEventQueue: () => void;
   produceFramesForDuration: (miliseconds: number) => void;
+  /**
+   * Test-only. Mirrors the iOS RCTScheduler dealloc lifecycle by tearing
+   * down the host's current SchedulerDelegate and installing a fresh one,
+   * while leaving the RuntimeScheduler (and any queued rendering-update
+   * lambdas) alive. Used to reproduce SchedulerDelegate-lifecycle UAFs.
+   */
+  unstable_recreateSchedulerDelegate: () => void;
   validateEmptyMessageQueue: () => void;
   getRenderedOutput: (
     surfaceId: RootTag,

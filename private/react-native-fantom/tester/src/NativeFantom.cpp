@@ -14,6 +14,7 @@
 #include <react/renderer/components/modal/ModalHostViewShadowNode.h>
 #include <react/renderer/components/scrollview/ScrollViewShadowNode.h>
 #include <react/renderer/uimanager/UIManagerBinding.h>
+#include <react/runtime/ReactHost.h>
 #include <fstream>
 #include <iostream>
 
@@ -73,6 +74,11 @@ void NativeFantom::validateEmptyMessageQueue(jsi::Runtime& /*runtime*/) {
   if (appDelegate_.hasPendingTasksInMessageQueue()) {
     throw std::runtime_error("MessageQueue is not empty");
   }
+}
+
+void NativeFantom::unstable_recreateSchedulerDelegate(
+    jsi::Runtime& /*runtime*/) {
+  appDelegate_.reactHost_->unstable_recreateSchedulerDelegateForTesting();
 }
 
 std::vector<std::string> NativeFantom::takeMountingManagerLogs(

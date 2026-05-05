@@ -380,6 +380,27 @@ export function runWorkLoop(): void {
 }
 
 /**
+ * Test-only. Mirrors the iOS RCTScheduler dealloc lifecycle: detach the
+ * host's current SchedulerDelegate from the Scheduler and destroy it, then
+ * install a fresh one — all while the RuntimeScheduler (and any queued
+ * rendering-update lambdas) remains alive. Used to reproduce
+ * SchedulerDelegate-lifecycle bugs (e.g. queued lambdas that captured a
+ * raw delegate pointer by value).
+ *
+ * @example
+ * ```
+ * dispatchCommand(element, 'someCommand', []);
+ * Fantom.unstable_recreateSchedulerDelegate();
+ * Fantom.runWorkLoop(); // pending lambda drains against the now-recreated
+ *                      // delegate; if it dereferences the previous one,
+ *                      // the test process crashes.
+ * ```
+ */
+export function unstable_recreateSchedulerDelegate(): void {
+  NativeFantom.unstable_recreateSchedulerDelegate();
+}
+
+/**
  * Set this flag to `false` to let Fantom run tasks with LogBox installed
  * (necessary only if you are testing LogBox specifically).
  *

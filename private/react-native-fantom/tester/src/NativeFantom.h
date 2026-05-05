@@ -93,6 +93,8 @@ class NativeFantom : public NativeFantomCxxSpec<NativeFantom> {
   void flushEventQueue(jsi::Runtime &runtime);
   void validateEmptyMessageQueue(jsi::Runtime &runtime);
 
+  void unstable_recreateSchedulerDelegate(jsi::Runtime &runtime);
+
   std::vector<std::string> takeMountingManagerLogs(jsi::Runtime &runtime, SurfaceId surfaceId);
 
   std::string getRenderedOutput(

@@ -92,6 +92,16 @@ class ReactHost {
 
   void emitDeviceEvent(folly::dynamic &&args);
 
+  /*
+   * Test-only. Mirrors the iOS RCTScheduler dealloc lifecycle: detach the
+   * SchedulerDelegate from the Scheduler and destroy it, then install a
+   * fresh one — all while the RuntimeScheduler (and any queued rendering
+   * update lambdas) remains alive. This lets Fantom tests reproduce
+   * lifecycle bugs where a queued lambda outlived its captured raw
+   * SchedulerDelegate pointer.
+   */
+  void unstable_recreateSchedulerDelegateForTesting();
+
  private:
   void createReactInstance();
   void destroyReactInstance();
