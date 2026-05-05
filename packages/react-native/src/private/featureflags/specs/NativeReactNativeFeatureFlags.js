@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<6e8201091111a8451911f4e72cdc0932>>
+ * @generated SignedSource<<1fe579457854f95d09dd24e4578dbc65>>
  * @flow strict
  * @noformat
  */
@@ -69,6 +69,7 @@ export interface Spec extends TurboModule {
   +enableNetworkEventReporting?: () => boolean;
   +enablePreparedTextLayout?: () => boolean;
   +enablePropsUpdateReconciliationAndroid?: () => boolean;
+  +enableSchedulerDelegateInvalidation?: () => boolean;
   +enableSwiftUIBasedFilters?: () => boolean;
   +enableViewCulling?: () => boolean;
   +enableViewRecycling?: () => boolean;
