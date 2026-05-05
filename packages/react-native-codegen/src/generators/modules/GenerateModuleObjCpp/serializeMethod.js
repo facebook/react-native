@@ -51,7 +51,8 @@ type ReturnJSType =
   | 'ObjectKind'
   | 'ArrayKind'
   | 'NumberKind'
-  | 'StringKind';
+  | 'StringKind'
+  | 'ArrayBufferKind';
 
 export type MethodSerializationOutput = Readonly<{
   methodName: string,
@@ -218,6 +219,9 @@ function getParamObjCType(
        *   Array<Animal> => NSArray<JS::NativeSampleTurboModule::Animal *>, etc.
        */
       return notStruct(wrapOptional('NSArray *', !nullable));
+    }
+    case 'ArrayBufferTypeAnnotation': {
+      return notStruct(wrapOptional('NSData *', !nullable));
     }
   }
 
@@ -387,6 +391,8 @@ function getReturnObjCType(
       }
     case 'GenericObjectTypeAnnotation':
       return wrapOptional('NSDictionary *', isRequired);
+    case 'ArrayBufferTypeAnnotation':
+      return wrapOptional('NSData *', isRequired);
     default:
       typeAnnotation.type as 'MixedTypeAnnotation';
       throw new Error(
@@ -433,6 +439,8 @@ function getReturnJSType(
       return 'BooleanKind';
     case 'GenericObjectTypeAnnotation':
       return 'ObjectKind';
+    case 'ArrayBufferTypeAnnotation':
+      return 'ArrayBufferKind';
     case 'EnumDeclaration':
       switch (typeAnnotation.memberType) {
         case 'NumberTypeAnnotation':

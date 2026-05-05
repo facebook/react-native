@@ -1207,6 +1207,76 @@ exports[`RN Codegen Flow Parser can generate fixture NATIVE_MODULE_WITH_ARRAY_WI
 }"
 `;
 
+exports[`RN Codegen Flow Parser can generate fixture NATIVE_MODULE_WITH_ARRAYBUFFER 1`] = `
+"{
+  'modules': {
+    'NativeSampleTurboModule': {
+      'type': 'NativeModule',
+      'aliasMap': {},
+      'enumMap': {},
+      'spec': {
+        'eventEmitters': [],
+        'methods': [
+          {
+            'name': 'getArrayBuffer',
+            'optional': false,
+            'typeAnnotation': {
+              'type': 'FunctionTypeAnnotation',
+              'returnTypeAnnotation': {
+                'type': 'ArrayBufferTypeAnnotation'
+              },
+              'params': [
+                {
+                  'name': 'buffer',
+                  'optional': false,
+                  'typeAnnotation': {
+                    'type': 'ArrayBufferTypeAnnotation'
+                  }
+                }
+              ]
+            }
+          },
+          {
+            'name': 'saveData',
+            'optional': false,
+            'typeAnnotation': {
+              'type': 'FunctionTypeAnnotation',
+              'returnTypeAnnotation': {
+                'type': 'VoidTypeAnnotation'
+              },
+              'params': [
+                {
+                  'name': 'data',
+                  'optional': false,
+                  'typeAnnotation': {
+                    'type': 'ArrayBufferTypeAnnotation'
+                  }
+                }
+              ]
+            }
+          },
+          {
+            'name': 'loadData',
+            'optional': false,
+            'typeAnnotation': {
+              'type': 'FunctionTypeAnnotation',
+              'returnTypeAnnotation': {
+                'type': 'NullableTypeAnnotation',
+                'typeAnnotation': {
+                  'type': 'ArrayBufferTypeAnnotation'
+                }
+              },
+              'params': []
+            }
+          }
+        ]
+      },
+      'moduleName': 'SampleTurboModule'
+    }
+  }
+}"
+`;
+
 exports[`RN Codegen Flow Parser can generate fixture NATIVE_MODULE_WITH_BASIC_ARRAY 1`] = `
 "{
   'modules': {

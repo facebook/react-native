@@ -397,6 +397,10 @@ export interface NativeModuleMixedTypeAnnotation {
   readonly type: 'MixedTypeAnnotation';
 }
 
+export interface NativeModuleArrayBufferTypeAnnotation {
+  readonly type: 'ArrayBufferTypeAnnotation';
+}
+
 export type NativeModuleEventEmitterBaseTypeAnnotation =
   | NativeModuleBooleanTypeAnnotation
   | NativeModuleDoubleTypeAnnotation
@@ -434,6 +438,7 @@ export type NativeModuleBaseTypeAnnotation =
   | NativeModuleObjectTypeAnnotation
   | NativeModuleUnionTypeAnnotation
   | NativeModuleMixedTypeAnnotation
+  | NativeModuleArrayBufferTypeAnnotation
   | NativeModuleArrayTypeAnnotation<NativeModuleBaseTypeAnnotation>;
 
 export type NativeModuleParamTypeAnnotation =

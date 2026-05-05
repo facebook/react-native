@@ -35,7 +35,8 @@ type JSReturnType =
   | 'NumberKind'
   | 'PromiseKind'
   | 'ObjectKind'
-  | 'ArrayKind';
+  | 'ArrayKind'
+  | 'ArrayBufferKind';
 
 const HostFunctionTemplate = ({
   hasteModuleName,
@@ -216,6 +217,8 @@ function translateReturnTypeToKind(
       return 'ObjectKind';
     case 'ArrayTypeAnnotation':
       return 'ArrayKind';
+    case 'ArrayBufferTypeAnnotation':
+      return 'ArrayBufferKind';
     default:
       realTypeAnnotation.type as 'MixedTypeAnnotation';
       throw new Error(
@@ -303,6 +306,8 @@ function translateParamTypeToJniType(
       return 'Lcom/facebook/react/bridge/ReadableArray;';
     case 'FunctionTypeAnnotation':
       return 'Lcom/facebook/react/bridge/Callback;';
+    case 'ArrayBufferTypeAnnotation':
+      return 'Ljava/nio/ByteBuffer;';
     default:
       realTypeAnnotation.type as 'MixedTypeAnnotation';
       throw new Error(
@@ -387,6 +392,8 @@ function translateReturnTypeToJniType(
       return 'Lcom/facebook/react/bridge/WritableMap;';
     case 'ArrayTypeAnnotation':
       return 'Lcom/facebook/react/bridge/WritableArray;';
+    case 'ArrayBufferTypeAnnotation':
+      return 'Ljava/nio/ByteBuffer;';
     default:
       realTypeAnnotation.type as 'MixedTypeAnnotation';
       throw new Error(

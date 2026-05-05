@@ -195,6 +195,10 @@ id convertJSIValueToObjCObject(
     if (o.isFunction(runtime)) {
       return convertJSIFunctionToCallback(runtime, o.getFunction(runtime), jsInvoker);
     }
+    if (o.isArrayBuffer(runtime)) {
+      auto ab = o.getArrayBuffer(runtime);
+      return [NSData dataWithBytes:ab.data(runtime) length:ab.size(runtime)];
+    }
     return convertJSIObjectToNSDictionary(runtime, o, jsInvoker, useNSNull);
   }
 
@@ -526,6 +530,12 @@ jsi::Value ObjCTurboModule::convertReturnIdToJSIValue(
       throw jsi::JSError(runtime, "convertReturnIdToJSIValue: FunctionKind is not supported yet.");
     case PromiseKind:
       throw jsi::JSError(runtime, "convertReturnIdToJSIValue: PromiseKind wasn't handled properly.");
+    case ArrayBufferKind: {
+      auto data = (NSData *)result;
+      auto buffer = std::make_shared<OwnedMutableBuffer>(static_cast<const uint8_t *>(data.bytes), data.length);
+      returnValue = jsi::ArrayBuffer(runtime, std::move(buffer));
+      break;
+    }
   }
 
   return returnValue;
@@ -813,7 +823,8 @@ jsi::Value ObjCTurboModule::invokeObjCMethod(
     case StringKind:
     case ObjectKind:
     case ArrayKind:
-    case FunctionKind: {
+    case FunctionKind:
+    case ArrayBufferKind: {
       id result = performMethodInvocation(runtime, true, methodName, inv, retainedObjectsForInvocation);
       TurboModulePerfLogger::syncMethodCallReturnConversionStart(moduleName, methodName);
       returnValue = convertReturnIdToJSIValue(runtime, methodName, returnType, result);

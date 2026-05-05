@@ -19,6 +19,7 @@ import type {
   Int32TypeAnnotation,
   NamedShape,
   NativeModuleAliasMap,
+  NativeModuleArrayBufferTypeAnnotation,
   NativeModuleBaseTypeAnnotation,
   NativeModuleEnumDeclaration,
   NativeModuleEnumMap,
@@ -165,6 +166,14 @@ function emitMixed(
 ): Nullable<NativeModuleMixedTypeAnnotation> {
   return wrapNullable(nullable, {
     type: 'MixedTypeAnnotation',
+  });
+}
+
+function emitArrayBuffer(
+  nullable: boolean,
+): Nullable<NativeModuleArrayBufferTypeAnnotation> {
+  return wrapNullable(nullable, {
+    type: 'ArrayBufferTypeAnnotation',
   });
 }
 
@@ -666,6 +675,7 @@ function emitCommonTypes(
     UnsafeMixed: cxxOnly ? emitMixed : emitGenericObject,
     unknown: cxxOnly ? emitMixed : emitGenericObject,
     UnknownTypeAnnotation: cxxOnly ? emitMixed : emitGenericObject,
+    ArrayBuffer: emitArrayBuffer,
   };
 
   const typeAnnotationName = parser.convertKeywordToTypeAnnotation(
@@ -789,6 +799,7 @@ module.exports = {
   emitStringProp,
   emitStringLiteral,
   emitMixed,
+  emitArrayBuffer,
   emitUnion,
   emitPartial,
   emitCommonTypes,

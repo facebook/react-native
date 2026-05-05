@@ -10,6 +10,7 @@
 
 #include <cxxreact/MoveWrapper.h>
 #include <cxxreact/TraceSection.h>
+#include <fbjni/ByteBuffer.h>
 #include <fbjni/fbjni.h>
 #include <glog/logging.h>
 #include <jsi/jsi.h>
@@ -434,6 +435,19 @@ JNIArgs convertJSIArgsToJNIArgs(
       auto dynamicFromValue = jsi::dynamicFromValue(rt, *arg);
       auto jParams = JDynamicNative::newObjectCxxArgs(dynamicFromValue);
       jarg->l = makeGlobalIfNecessary(jParams.release());
+    } else if (type == "Ljava/nio/ByteBuffer;") {
+      if (!arg->isObject()) {
+        throw JavaTurboModuleArgumentConversionException(
+            "ArrayBuffer", static_cast<int>(argIndex), methodName, arg, &rt);
+      }
+      auto arrayBuffer = arg->getObject(rt).getArrayBuffer(rt);
+      auto data = arrayBuffer.data(rt);
+      auto size = arrayBuffer.size(rt);
+      // Create a direct ByteBuffer wrapping the ArrayBuffer's memory.
+      // Safe because the JS ArrayBuffer is alive for the duration of
+      // this synchronous call.
+      auto byteBuffer = jni::JByteBuffer::wrapBytes(data, size);
+      jarg->l = makeGlobalIfNecessary(byteBuffer.release());
     } else {
       throw JavaTurboModuleInvalidArgumentTypeException(
           type, argIndex, methodName);
@@ -962,6 +976,34 @@ jsi::Value JavaTurboModule::invokeJavaMethod(
           });
       TMPL::asyncMethodCallEnd(moduleName, methodName);
       return jsPromise;
+    }
+    case ArrayBufferKind: {
+      auto returnObject =
+          env->CallObjectMethodA(instance, methodID, jargs.data());
+      checkJNIErrorForMethodCall();
+
+      TMPL::syncMethodCallExecutionEnd(moduleName, methodName);
+      TMPL::syncMethodCallReturnConversionStart(moduleName, methodName);
+
+      jsi::Value returnValue = jsi::Value::null();
+      if (returnObject != nullptr) {
+        auto jByteBuffer = jni::adopt_local(
+            static_cast<jni::JByteBuffer::javaobject>(returnObject));
+        auto size = jByteBuffer->getDirectSize();
+
+        if (size > 0) {
+          // Copy the data from the ByteBuffer into a new ArrayBuffer.
+          // We must copy because the ByteBuffer's lifetime is managed by Java.
+          auto buffer = std::make_shared<OwnedMutableBuffer>(
+              jByteBuffer->getDirectBytes(), static_cast<size_t>(size));
+          auto arrayBuffer = jsi::ArrayBuffer(runtime, std::move(buffer));
+          returnValue = jsi::Value(runtime, arrayBuffer);
+        }
+      }
+
+      TMPL::syncMethodCallReturnConversionEnd(moduleName, methodName);
+      TMPL::syncMethodCallEnd(moduleName, methodName);
+      return returnValue;
     }
     default:
       throw std::runtime_error(

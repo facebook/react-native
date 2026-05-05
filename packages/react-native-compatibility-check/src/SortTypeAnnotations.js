@@ -157,6 +157,8 @@ export function compareTypeAnnotationForSorting(
       return typeA.name.localeCompare(typeB.name);
     case 'MixedTypeAnnotation':
       return 0;
+    case 'ArrayBufferTypeAnnotation':
+      return 0;
     default:
       typeA.type as empty;
       return -1;
@@ -281,6 +283,8 @@ function typeAnnotationArbitraryOrder(annotation: CompleteTypeAnnotation) {
       return 28;
     case 'UnionTypeAnnotation':
       return 30;
+    case 'ArrayBufferTypeAnnotation':
+      return 31;
     default:
       annotation.type as empty;
       return -1;

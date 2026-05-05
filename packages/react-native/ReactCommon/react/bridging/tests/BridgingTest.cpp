@@ -780,6 +780,35 @@ TEST_F(BridgingTest, dynamicTest) {
   EXPECT_TRUE(undefinedFromJsResult.isNull());
 }
 
+TEST_F(BridgingTest, arrayBufferTest) {
+  // Test round-trip: vector<uint8_t> -> ArrayBuffer -> vector<uint8_t>
+  auto vec = std::vector<uint8_t>({1, 2, 3, 4, 5});
+  auto arrayBuffer = bridging::toJs(rt, vec, invoker);
+  auto result =
+      bridging::fromJs<std::vector<uint8_t>>(rt, arrayBuffer, invoker);
+  EXPECT_EQ(vec, result);
+
+  // Test empty vector round-trip
+  auto emptyVec = std::vector<uint8_t>();
+  auto emptyArrayBuffer = bridging::toJs(rt, emptyVec, invoker);
+  auto emptyResult =
+      bridging::fromJs<std::vector<uint8_t>>(rt, emptyArrayBuffer, invoker);
+  EXPECT_TRUE(emptyResult.empty());
+
+  // Test OwnedMutableBuffer constructed from size
+  auto sizedBuffer = OwnedMutableBuffer(4);
+  EXPECT_EQ(4, sizedBuffer.size());
+  // Should be zero-initialized
+  auto expected_zeros = std::vector<uint8_t>(4, 0);
+  EXPECT_EQ(0, std::memcmp(sizedBuffer.data(), expected_zeros.data(), 4));
+
+  // Test OwnedMutableBuffer constructed from vector
+  auto inputVec = std::vector<uint8_t>({10, 20, 30});
+  auto vecBuffer = OwnedMutableBuffer(inputVec);
+  EXPECT_EQ(3, vecBuffer.size());
+  EXPECT_EQ(0, std::memcmp(vecBuffer.data(), inputVec.data(), inputVec.size()));
+}
+
 TEST_F(BridgingTest, highResTimeStampTest) {
   HighResTimeStamp timestamp = HighResTimeStamp::now();
   EXPECT_EQ(

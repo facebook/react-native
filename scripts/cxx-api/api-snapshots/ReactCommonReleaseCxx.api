@@ -2543,6 +2543,14 @@ class facebook::react::OperatorAnimatedNode : public facebook::react::ValueAnima
   public OperatorAnimatedNode(facebook::react::Tag tag, const folly::dynamic& config, facebook::react::NativeAnimatedNodesManager& manager);
 }
 
+class facebook::react::OwnedMutableBuffer : public facebook::jsi::MutableBuffer {
+  public OwnedMutableBuffer(const uint8_t* data, size_t size);
+  public OwnedMutableBuffer(size_t size);
+  public OwnedMutableBuffer(std::vector<uint8_t> data);
+  public virtual size_t size() const override;
+  public virtual uint8_t* data() override;
+}
+
 class facebook::react::ParagraphAttributes : public facebook::react::DebugStringConvertible {
   public Float maximumFontSize;
   public Float minimumFontScale;
@@ -4876,6 +4884,7 @@ enum facebook::react::TransformOperationType : uint8_t {
 }
 
 enum facebook::react::TurboModuleMethodValueKind {
+  ArrayBufferKind,
   ArrayKind,
   BooleanKind,
   FunctionKind,
@@ -6563,6 +6572,11 @@ struct facebook::react::Bridging<std::string> {
 
 struct facebook::react::Bridging<std::string_view> {
   public static facebook::jsi::String toJs(facebook::jsi::Runtime& rt, std::string_view value);
+}
+
+struct facebook::react::Bridging<std::vector<uint8_t>> {
+  public static facebook::jsi::ArrayBuffer toJs(facebook::jsi::Runtime& rt, const std::vector<uint8_t>& data);
+  public static std::vector<uint8_t> fromJs(facebook::jsi::Runtime& rt, const facebook::jsi::ArrayBuffer& buffer);
 }
 
 template <typename R, typename... Args>
@@ -8576,11 +8590,13 @@ struct facebook::react::bridging::is_optional<std::optional<T>> : public std::tr
 
 struct facebook::react::bridging::Converter<facebook::jsi::Object> : public facebook::react::bridging::ConverterBase<facebook::jsi::Object> {
   public operator facebook::jsi::Array();
+  public operator facebook::jsi::ArrayBuffer();
   public operator facebook::jsi::Function();
 }
 
 struct facebook::react::bridging::Converter<facebook::jsi::Value> : public facebook::react::bridging::ConverterBase<facebook::jsi::Value> {
   public operator facebook::jsi::Array();
+  public operator facebook::jsi::ArrayBuffer();
   public operator facebook::jsi::Function();
   public operator facebook::jsi::Object();
   public operator facebook::jsi::String();
