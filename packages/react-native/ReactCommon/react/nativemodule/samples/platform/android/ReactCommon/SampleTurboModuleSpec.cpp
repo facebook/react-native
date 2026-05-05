@@ -328,6 +328,24 @@ __hostFunction_NativeSampleTurboModuleSpecJSI_getImageUrl(
           cachedMethodId);
 }
 
+static facebook::jsi::Value
+__hostFunction_NativeSampleTurboModuleSpecJSI_getArrayBuffer(
+    facebook::jsi::Runtime& rt,
+    TurboModule& turboModule,
+    const facebook::jsi::Value* args,
+    size_t count) {
+  static jmethodID cachedMethodId = nullptr;
+  return static_cast<JavaTurboModule&>(turboModule)
+      .invokeJavaMethod(
+          rt,
+          ArrayBufferKind,
+          "getArrayBuffer",
+          "(Ljava/nio/ByteBuffer;)Ljava/nio/ByteBuffer;",
+          args,
+          count,
+          cachedMethodId);
+}
+
 NativeSampleTurboModuleSpecJSI::NativeSampleTurboModuleSpecJSI(
     const JavaTurboModule::InitParams& params)
     : JavaTurboModule(params) {
@@ -393,6 +411,9 @@ NativeSampleTurboModuleSpecJSI::NativeSampleTurboModuleSpecJSI(
   methodMap_["getImageUrl"] = MethodMetadata{
       .argCount = 0,
       .invoker = __hostFunction_NativeSampleTurboModuleSpecJSI_getImageUrl};
+  methodMap_["getArrayBuffer"] = MethodMetadata{
+      .argCount = 1,
+      .invoker = __hostFunction_NativeSampleTurboModuleSpecJSI_getArrayBuffer};
   eventEmitterMap_["onPress"] =
       std::make_shared<AsyncEventEmitter<folly::dynamic>>();
   eventEmitterMap_["onClick"] =

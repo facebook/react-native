@@ -104,6 +104,7 @@ inline JS::NativeSampleTurboModule::Constants::Builder::Builder(Constants i)
 - (NSDictionary *)getObjectAssert:(NSDictionary *)arg;
 - (void)promiseAssert:(RCTPromiseResolveBlock)resolve reject:(RCTPromiseRejectBlock)reject;
 - (void)getImageUrl:(RCTPromiseResolveBlock)resolve reject:(RCTPromiseRejectBlock)reject;
+- (NSData *)getArrayBuffer:(NSData *)arg;
 - (facebook::react::ModuleConstants<JS::NativeSampleTurboModule::Constants>)constantsToExport;
 - (facebook::react::ModuleConstants<JS::NativeSampleTurboModule::Constants>)getConstants;
 

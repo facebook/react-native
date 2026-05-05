@@ -21,6 +21,7 @@ import com.facebook.react.bridge.WritableArray;
 import com.facebook.react.bridge.WritableMap;
 import com.facebook.react.common.build.ReactBuildConfig;
 import com.facebook.react.turbomodule.core.interfaces.TurboModule;
+import java.nio.ByteBuffer;
 import java.util.Arrays;
 import java.util.HashSet;
 import java.util.Map;
@@ -165,4 +166,10 @@ public abstract class NativeSampleTurboModuleSpec extends ReactContextBaseJavaMo
   @ReactMethod
   @DoNotStrip
   public void getImageUrl(Promise promise) {}
+
+  @ReactMethod(isBlockingSynchronousMethod = true)
+  @DoNotStrip
+  public ByteBuffer getArrayBuffer(ByteBuffer arg) {
+    return null;
+  }
 }

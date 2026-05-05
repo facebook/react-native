@@ -60,7 +60,24 @@ RCT_JSON_CONVERTER(NSString)
 RCT_JSON_CONVERTER(NSNumber)
 
 RCT_CUSTOM_CONVERTER(NSSet *, NSSet, [NSSet setWithArray:json])
-RCT_CUSTOM_CONVERTER(NSData *, NSData, [json dataUsingEncoding:NSUTF8StringEncoding])
+
++ (NSData *)NSData:(id)json RCT_DYNAMIC
+{
+  // Return NSData as-is (e.g., when bridging ArrayBuffer from JS).
+  if ([json isKindOfClass:[NSData class]]) {
+    return json;
+  }
+  if (!RCT_DEBUG) {
+    return [json dataUsingEncoding:NSUTF8StringEncoding];
+  } else {
+    @try {
+      return [json dataUsingEncoding:NSUTF8StringEncoding];
+    } @catch (__unused NSException *e) {
+      RCTLogConvertError(json, @"NSData");
+      return nil;
+    }
+  }
+}
 
 + (NSIndexSet *)NSIndexSet:(id)json
 {

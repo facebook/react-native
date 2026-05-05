@@ -27,6 +27,7 @@ import com.facebook.react.bridge.WritableNativeMap
 import com.facebook.react.module.annotations.ReactModule
 import com.facebook.react.turbomodule.core.interfaces.BindingsInstallerHolder
 import com.facebook.react.turbomodule.core.interfaces.TurboModuleWithJSIBindings
+import java.nio.ByteBuffer
 import java.util.UUID
 
 @DoNotStrip
@@ -223,6 +224,13 @@ public class SampleTurboModule(private val context: ReactApplicationContext) :
   @Suppress("unused")
   override fun promiseAssert(promise: Promise) {
     assert(false) { "Intentional assert from JVM promiseAssert" }
+  }
+
+  @DoNotStrip
+  @Suppress("unused")
+  override fun getArrayBuffer(arg: ByteBuffer): ByteBuffer {
+    log("getArrayBuffer", arg, arg)
+    return arg
   }
 
   @DoNotStrip

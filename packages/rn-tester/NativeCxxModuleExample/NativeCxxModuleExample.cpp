@@ -6,6 +6,7 @@
  */
 
 #include "NativeCxxModuleExample.h"
+#include <react/bridging/ArrayBuffer.h>
 #include <react/debug/react_native_assert.h>
 #include <iomanip>
 #include <ostream>
@@ -264,5 +265,15 @@ AsyncPromise<> NativeCxxModuleExample::promiseAssert(jsi::Runtime& rt) {
   promise.reject("Asserts disabled");
   return promise;
 };
+
+jsi::ArrayBuffer NativeCxxModuleExample::getArrayBuffer(
+    jsi::Runtime& rt,
+    jsi::ArrayBuffer arg) {
+  // Return a copy of the input ArrayBuffer
+  auto size = arg.size(rt);
+  auto data = arg.data(rt);
+  auto buffer = std::make_shared<OwnedMutableBuffer>(data, size);
+  return {rt, std::move(buffer)};
+}
 
 } // namespace facebook::react

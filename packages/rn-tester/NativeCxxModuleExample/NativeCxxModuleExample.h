@@ -182,6 +182,8 @@ class NativeCxxModuleExample : public NativeCxxModuleExampleCxxSpec<NativeCxxMod
 
   AsyncPromise<> promiseAssert(jsi::Runtime &rt);
 
+  jsi::ArrayBuffer getArrayBuffer(jsi::Runtime &rt, jsi::ArrayBuffer arg);
+
  private:
   std::optional<AsyncCallback<std::string>> valueCallback_;
 };
