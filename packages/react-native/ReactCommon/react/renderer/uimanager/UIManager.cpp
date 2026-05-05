@@ -275,10 +275,6 @@ ShadowTree::Unique UIManager::stopSurface(SurfaceId surfaceId) const {
   // Stop any ongoing layout animations.
   stopSurfaceForAnimationDelegate(surfaceId);
 
-  if (ReactNativeFeatureFlags::useSharedAnimatedBackend()) {
-    animationBackend_->clearRegistryOnSurfaceStop(surfaceId);
-  }
-
   // Waiting for all concurrent commits to be finished and unregistering the
   // `ShadowTree`.
   auto shadowTree = getShadowTreeRegistry().remove(surfaceId);
@@ -295,6 +291,18 @@ ShadowTree::Unique UIManager::stopSurface(SurfaceId surfaceId) const {
       leakChecker_->stopSurface(surfaceId);
     }
   }
+
+  if (ReactNativeFeatureFlags::useSharedAnimatedBackend()) {
+    runtimeExecutor_(
+        [surfaceId,
+         animationBackendWeak = std::weak_ptr<UIManagerAnimationBackend>(
+             animationBackend_)](jsi::Runtime& /*runtime*/) {
+          if (auto animationBackend = animationBackendWeak.lock()) {
+            animationBackend->clearRegistryOnSurfaceStop(surfaceId);
+          }
+        });
+  }
+
   return shadowTree;
 }
 
