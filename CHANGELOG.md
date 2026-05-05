@@ -1,5 +1,113 @@
 # Changelog
 
+## v0.85.3
+
+### Breaking
+
+
+
+#### Android specific
+
+
+
+#### iOS specific
+
+
+
+### Added
+
+
+
+#### Android specific
+
+
+
+#### iOS specific
+
+
+
+### Changed
+
+
+
+#### Android specific
+
+
+
+#### iOS specific
+
+
+
+### Deprecated
+
+
+
+#### Android specific
+
+
+
+#### iOS specific
+
+
+
+### Removed
+
+
+
+#### Android specific
+
+
+
+#### iOS specific
+
+
+
+### Fixed
+
+
+
+#### Android specific
+
+
+
+#### iOS specific
+
+- Fix silent tar extraction failure on EdenFS in replace-rncore-version.js by extracting to a temp directory first ([9bc7d38be0](https://github.com/facebook/react-native/commit/9bc7d38be0771ae4006206fcb174956f53adf508) by [@motiz88](https://github.com/motiz88))
+
+### Security
+
+
+
+#### Android specific
+
+
+
+#### iOS specific
+
+
+
+### Unknown
+
+- Release 0.85.3 ([22ea81b5e3](https://github.com/facebook/react-native/commit/22ea81b5e37b0cf23be1d8fb32bb7f55e1fcf3d8) by [@react-native-bot](https://github.com/react-native-bot))
+- Skip prebuilds for DynamicFrameworks CI jobs (#56593) ([753c19bea4](https://github.com/facebook/react-native/commit/753c19bea4ab854eb8000b2b5bab814261a46596) by [@motiz88](https://github.com/motiz88))
+- Update debugger-frontend from 8edd9be...194d3f8 (#253) ([9966cbdf4d](https://github.com/facebook/react-native/commit/9966cbdf4da99ee036a75bec4da9bb2e1ee7a9c4) by [@motiz88](https://github.com/motiz88))
+- Use pinned Hermes version when version.properties is not 1000.0.0 ([5e3a3ba995](https://github.com/facebook/react-native/commit/5e3a3ba995026b42c2ea0ad7ee4758fcf73005e6) by [@cipolleschi](https://github.com/cipolleschi))
+- Bump Podfile.lock ([000470849f](https://github.com/facebook/react-native/commit/000470849fef4399c61cebed19a7b5179c092524) by [@react-native-bot](https://github.com/react-native-bot))
+- Release 0.85.2 ([67baaf384c](https://github.com/facebook/react-native/commit/67baaf384c371e55eb5f14c62c9b39ec1588f79f) by [@react-native-bot](https://github.com/react-native-bot))
+
+#### Android Unknown
+
+
+
+#### iOS Unknown
+
+
+
+#### Failed to parse
+
+
+
+
 ## v0.85.2
 
 ### Added
