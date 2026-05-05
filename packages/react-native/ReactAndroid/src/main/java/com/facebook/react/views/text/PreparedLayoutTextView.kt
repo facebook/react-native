@@ -48,10 +48,14 @@ internal class PreparedLayoutTextView(context: Context) : ViewGroup(context), Re
   var preparedLayout: PreparedLayout? = null
     set(value) {
       if (field != value) {
+        val effectiveValue = value?.maybeProxyStatefulSpans()
         val lastSelection = selection
         if (lastSelection != null) {
-          if (value != null && field?.layout?.text.toString() == value.layout.text.toString()) {
-            value.layout.getSelectionPath(
+          if (
+              effectiveValue != null &&
+                  field?.layout?.text.toString() == effectiveValue.layout.text.toString()
+          ) {
+            effectiveValue.layout.getSelectionPath(
                 lastSelection.start,
                 lastSelection.end,
                 lastSelection.path,
@@ -61,9 +65,10 @@ internal class PreparedLayoutTextView(context: Context) : ViewGroup(context), Re
           }
         }
 
-        clickableSpans = value?.layout?.text?.let { filterClickableSpans(it) } ?: emptyList()
+        clickableSpans =
+            effectiveValue?.layout?.text?.let { filterClickableSpans(it) } ?: emptyList()
 
-        field = value
+        field = effectiveValue
         invalidate()
       }
     }
@@ -392,6 +397,22 @@ internal class PreparedLayoutTextView(context: Context) : ViewGroup(context), Re
       }
 
       return spans
+    }
+
+    /**
+     * If the layout contains [StatefulSpan]s, returns a new [PreparedLayout] whose spannable has
+     * independent clones of those spans. Otherwise returns the receiver unchanged.
+     */
+    private fun PreparedLayout.maybeProxyStatefulSpans(): PreparedLayout {
+      val proxyLayout = MutableSpannableLayout.createIfNeeded(layout) ?: return this
+      return PreparedLayout(
+          proxyLayout,
+          maximumNumberOfLines,
+          verticalOffset,
+          reactTags,
+          textBreakStrategy,
+          justificationMode,
+      )
     }
   }
 }
