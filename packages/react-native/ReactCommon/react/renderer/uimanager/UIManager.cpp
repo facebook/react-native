@@ -210,7 +210,8 @@ void UIManager::completeSurface(
     // after we commit a specific one.
     lazyShadowTreeRevisionConsistencyManager_->updateCurrentRevision(surfaceId);
 
-    if (ReactNativeFeatureFlags::useSharedAnimatedBackend()) {
+    if (ReactNativeFeatureFlags::useSharedAnimatedBackend() &&
+        animationBackend_) {
       animationBackend_->clearRegistry(surfaceId);
     }
   }
