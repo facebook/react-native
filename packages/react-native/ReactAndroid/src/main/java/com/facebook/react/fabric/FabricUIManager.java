@@ -1199,42 +1199,22 @@ public class FabricUIManager
       return;
     }
 
-    EventEmitterWrapper eventEmitter = mMountingManager.getEventEmitter(surfaceId, reactTag);
-    if (eventEmitter == null) {
-      if (mMountingManager.getViewExists(reactTag)) {
-        // The view is pre-allocated and created. However, it hasn't been mounted yet. We will have
-        // access to the event emitter later when the view is mounted. For now just save the event
-        // in the view state and trigger it later.
-        mMountingManager.enqueuePendingEvent(
-            surfaceId,
-            reactTag,
-            eventName,
-            canCoalesceEvent,
-            params,
-            eventCategory,
-            eventTimestamp);
-      } else {
-        // This can happen if the view has disappeared from the screen (because of async events)
-        FLog.i(TAG, "Unable to invoke event: " + eventName + " for reactTag: " + reactTag);
-      }
-      return;
-    }
-
     if (experimentalIsSynchronous) {
       UiThreadUtil.assertOnUiThread();
-      // add() returns true only if there are no equivalent events already in the set
-      boolean firstEventForFrame =
-          mSynchronousEvents.add(new SynchronousEvent(surfaceId, reactTag, eventName));
-      if (firstEventForFrame) {
-        eventEmitter.dispatchEventSynchronously(eventName, params, eventTimestamp);
-      }
-    } else {
-      if (canCoalesceEvent) {
-        eventEmitter.dispatchUnique(eventName, params, eventTimestamp);
-      } else {
-        eventEmitter.dispatch(eventName, params, eventCategory, eventTimestamp);
+      EventEmitterWrapper eventEmitter = mMountingManager.getEventEmitter(surfaceId, reactTag);
+      if (eventEmitter != null) {
+        // add() returns true only if there are no equivalent events already in the set
+        boolean firstEventForFrame =
+            mSynchronousEvents.add(new SynchronousEvent(surfaceId, reactTag, eventName));
+        if (firstEventForFrame) {
+          eventEmitter.dispatchEventSynchronously(eventName, params, eventTimestamp);
+        }
+        return;
       }
     }
+
+    mMountingManager.dispatchEvent(
+        surfaceId, reactTag, eventName, canCoalesceEvent, params, eventCategory, eventTimestamp);
   }
 
   @Override

@@ -1241,6 +1241,45 @@ internal constructor(
     }
   }
 
+  @AnyThread
+  internal fun dispatchEvent(
+      reactTag: Int,
+      eventName: String,
+      canCoalesceEvent: Boolean,
+      params: WritableMap?,
+      @EventCategoryDef eventCategory: Int,
+      eventTimestamp: Long,
+  ) {
+    val viewState = registryGet(reactTag)
+    if (viewState == null) {
+      // This can happen if the view has disappeared from the screen (because of async events)
+      FLog.i(TAG, "Unable to invoke event: %s for reactTag: %d", eventName, reactTag)
+      return
+    }
+
+    val eventEmitter = viewState.eventEmitter
+    if (eventEmitter == null) {
+      // The view is pre-allocated and created. However, it hasn't been mounted yet. We will have
+      // access to the event emitter later when the view is mounted. For now just save the event
+      // in the view state and trigger it later.
+      enqueuePendingEvent(
+          reactTag,
+          eventName,
+          canCoalesceEvent,
+          params,
+          eventCategory,
+          eventTimestamp,
+      )
+      return
+    }
+
+    if (canCoalesceEvent) {
+      eventEmitter.dispatchUnique(eventName, params, eventTimestamp)
+    } else {
+      eventEmitter.dispatch(eventName, params, eventCategory, eventTimestamp)
+    }
+  }
+
   public fun markActiveTouchForTag(reactTag: Int): Unit {
     viewsWithActiveTouches.add(reactTag)
   }
