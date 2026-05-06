@@ -30,7 +30,7 @@ import com.facebook.react.uimanager.BackgroundStyleApplicator
 import com.facebook.react.uimanager.ReactCompoundView
 import com.facebook.react.uimanager.style.Overflow
 import com.facebook.react.views.text.internal.span.AnimatedEffectSpan
-import com.facebook.react.views.text.internal.span.DrawCommandSpan
+import com.facebook.react.views.text.internal.span.CanvasEffectSpan
 import com.facebook.react.views.text.internal.span.ReactFragmentIndexSpan
 import com.facebook.react.views.text.internal.span.ReactLinkSpan
 import kotlin.collections.ArrayList
@@ -134,11 +134,11 @@ internal class PreparedLayoutTextView(context: Context) : ViewGroup(context), Re
       }
 
       val spanned = text as? Spanned
-      val drawCommandSpans =
-          spanned?.getSpans(0, spanned.length, DrawCommandSpan::class.java) ?: emptyArray()
+      val canvasEffectSpans =
+          spanned?.getSpans(0, spanned.length, CanvasEffectSpan::class.java) ?: emptyArray()
 
       if (spanned != null) {
-        for (span in drawCommandSpans) {
+        for (span in canvasEffectSpans) {
           span.onPreDraw(
               spanned.getSpanStart(span),
               spanned.getSpanEnd(span),
@@ -155,7 +155,7 @@ internal class PreparedLayoutTextView(context: Context) : ViewGroup(context), Re
       }
 
       if (spanned != null) {
-        for (span in drawCommandSpans) {
+        for (span in canvasEffectSpans) {
           span.onDraw(
               spanned.getSpanStart(span),
               spanned.getSpanEnd(span),

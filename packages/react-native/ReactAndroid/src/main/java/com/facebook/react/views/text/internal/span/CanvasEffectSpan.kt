@@ -9,13 +9,12 @@ package com.facebook.react.views.text.internal.span
 
 import android.graphics.Canvas
 import android.text.Layout
-import android.text.style.UpdateAppearance
 
 /**
- * May be overridden to implement character styles which are applied by [PreparedLayoutTextView]
- * during the drawing of text, against the underlying Android canvas
+ * A span which draws a static effect on top of text. [onPreDraw] and [onDraw] hooks are called
+ * during [PreparedLayoutTextView] drawing, providing glyph layout information for custom rendering.
  */
-public abstract class DrawCommandSpan : UpdateAppearance, ReactSpan {
+public abstract class CanvasEffectSpan {
   /**
    * Called before the text is drawn. This happens after the Paragraph component has drawn its
    * background, but may be called before text spans with their own background color are drawn.
