@@ -17,6 +17,7 @@ TEST_F(BridgingTest, jsiTest) {
   jsi::Value object = jsi::Object(rt);
   jsi::Value array = jsi::Array::createWithElements(rt, value, object);
   jsi::Value func = function("() => {}");
+  jsi::Value arrayBuffer = eval("new ArrayBuffer(0)");
 
   // The bridging mechanism needs to know how to copy and downcast values.
   EXPECT_NO_THROW(bridging::fromJs<jsi::Value>(rt, value, invoker));
@@ -24,6 +25,7 @@ TEST_F(BridgingTest, jsiTest) {
   EXPECT_NO_THROW(bridging::fromJs<jsi::Object>(rt, object, invoker));
   EXPECT_NO_THROW(bridging::fromJs<jsi::Array>(rt, array, invoker));
   EXPECT_NO_THROW(bridging::fromJs<jsi::Function>(rt, func, invoker));
+  EXPECT_NO_THROW(bridging::fromJs<jsi::ArrayBuffer>(rt, arrayBuffer, invoker));
 
   // Should throw when attempting an invalid cast.
   EXPECT_JSI_THROW(bridging::fromJs<jsi::Object>(rt, value, invoker));
@@ -31,6 +33,7 @@ TEST_F(BridgingTest, jsiTest) {
   EXPECT_JSI_THROW(bridging::fromJs<jsi::Array>(rt, object, invoker));
   EXPECT_JSI_THROW(bridging::fromJs<jsi::Array>(rt, string, invoker));
   EXPECT_JSI_THROW(bridging::fromJs<jsi::Array>(rt, func, invoker));
+  EXPECT_JSI_THROW(bridging::fromJs<jsi::ArrayBuffer>(rt, value, invoker));
 
   // Should be able to generically no-op convert JSI.
   EXPECT_NO_THROW(bridging::toJs(rt, value, invoker));
@@ -189,6 +192,28 @@ TEST_F(BridgingTest, arrayTest) {
       {"foo", "bar"}, {"baz", "qux"}};
   auto jsiHeaders = bridging::toJs(rt, headers, invoker);
   EXPECT_EQ(headers.size(), jsiHeaders.size(rt));
+}
+
+TEST_F(BridgingTest, arrayBufferTest) {
+  auto rawBuf = eval("new ArrayBuffer(7)");
+  auto buf = bridging::fromJs<jsi::ArrayBuffer>(rt, rawBuf, invoker);
+  EXPECT_EQ(7, buf.size(rt));
+
+  auto typedArrayBuf = eval("new Uint8Array([1, 2, 3]).buffer");
+  auto fromTa =
+      bridging::fromJs<jsi::ArrayBuffer>(rt, typedArrayBuf, invoker);
+  EXPECT_EQ(3, fromTa.size(rt));
+
+  auto jsVal = bridging::toJs(rt, std::move(buf), invoker);
+  EXPECT_TRUE(jsVal.asObject(rt).isArrayBuffer(rt));
+  auto roundTrip =
+      bridging::fromJs<jsi::ArrayBuffer>(rt, jsVal, invoker);
+  EXPECT_EQ(7, roundTrip.size(rt));
+
+  EXPECT_JSI_THROW(
+      bridging::fromJs<jsi::ArrayBuffer>(rt, jsi::Value(1), invoker));
+  EXPECT_JSI_THROW(
+      bridging::fromJs<jsi::ArrayBuffer>(rt, jsi::Object(rt), invoker));
 }
 
 TEST_F(BridgingTest, functionTest) {

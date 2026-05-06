@@ -52,6 +52,12 @@ std::vector<std::optional<ObjectStruct>> NativeCxxModuleExample::getArray(
   return arg;
 }
 
+jsi::ArrayBuffer NativeCxxModuleExample::getArrayBuffer(
+    jsi::Runtime& /*rt*/,
+    jsi::ArrayBuffer arg) {
+  return arg;
+}
+
 bool NativeCxxModuleExample::getBool(jsi::Runtime& /*rt*/, bool arg) {
   return arg;
 }

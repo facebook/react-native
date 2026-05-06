@@ -8,6 +8,7 @@
 #include <NativeCxxModuleExample/NativeCxxModuleExample.h>
 #include <ReactCommon/TurboModuleTestFixture.h>
 #include <gtest/gtest.h>
+#include <cstdint>
 #include <memory>
 #include <optional>
 #include <vector>
@@ -29,6 +30,19 @@ TEST_F(NativeCxxModuleExampleTests, GetArrayReturnsCorrectValues) {
   ASSERT_EQ(result.size(), 1);
   EXPECT_EQ(result[0]->a, 1);
   EXPECT_EQ(result[0]->b, "2");
+}
+
+TEST_F(NativeCxxModuleExampleTests, GetArrayBufferReturnsCorrectValues) {
+  auto eval = runtime_->global().getPropertyAsFunction(*runtime_, "eval");
+  jsi::ArrayBuffer buf = eval.call(*runtime_, "new Uint8Array([1,2,3]).buffer")
+                             .getObject(*runtime_)
+                             .getArrayBuffer(*runtime_);
+  jsi::ArrayBuffer out = module_->getArrayBuffer(*runtime_, std::move(buf));
+  EXPECT_EQ(out.size(*runtime_), 3);
+  uint8_t* bytes = out.data(*runtime_);
+  EXPECT_EQ(bytes[0], 1);
+  EXPECT_EQ(bytes[1], 2);
+  EXPECT_EQ(bytes[2], 3);
 }
 
 TEST_F(NativeCxxModuleExampleTests, GetBoolReturnsCorrectValues) {

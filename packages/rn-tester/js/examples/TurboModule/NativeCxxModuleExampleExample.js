@@ -40,6 +40,7 @@ type Examples =
   | 'callback'
   | 'callbackWithSubscription'
   | 'getArray'
+  | 'getArrayBuffer'
   | 'getBool'
   | 'getConstants'
   | 'getCustomEnum'
@@ -102,6 +103,14 @@ class NativeCxxModuleExampleExample extends React.Component<{}, State> {
         {a: 2, b: 'bar'},
         null,
       ]),
+    getArrayBuffer: () => {
+      const view = new Uint8Array([1, 2, 3]);
+      const output = NativeCxxModuleExample?.getArrayBuffer(view.buffer);
+      if (output == null) {
+        return null;
+      }
+      return new Uint8Array(output).toString();
+    },
     getBool: () => NativeCxxModuleExample?.getBool(true),
     getConstants: () => NativeCxxModuleExample?.getConstants(),
     getCustomEnum: () => NativeCxxModuleExample?.getCustomEnum(EnumInt.IB),

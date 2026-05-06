@@ -322,7 +322,36 @@ export interface Spec extends TurboModule {
 export default TurboModuleRegistry.getEnforcing<Spec>('MixedValuesEnumNativeModule');
 `;
 
+const NATIVE_MODULE_WITH_ARRAY_BUFFER_IN_OBJECT_PROPERTY = `
+/**
+ * Copyright (c) Meta Platforms, Inc. and affiliates.
+ *
+ * This source code is licensed under the MIT license found in the
+ * LICENSE file in the root directory of this source tree.
+ *
+ * @flow strict-local
+ * @format
+ */
+
+'use strict';
+
+import type {TurboModule} from '../RCTExport';
+import * as TurboModuleRegistry from '../TurboModuleRegistry';
+
+type Row = {
+  buf: ArrayBuffer,
+};
+
+export interface Spec extends TurboModule {
+  +useRow: (row: Row) => void;
+}
+
+export default TurboModuleRegistry.getEnforcing<Spec>('SampleTurboModule');
+
+`;
+
 module.exports = {
+  NATIVE_MODULE_WITH_ARRAY_BUFFER_IN_OBJECT_PROPERTY,
   NATIVE_MODULES_WITH_READ_ONLY_OBJECT_NO_TYPE_FOR_CONTENT,
   NATIVE_MODULES_WITH_UNNAMED_PARAMS,
   NATIVE_MODULES_WITH_PROMISE_WITHOUT_TYPE,

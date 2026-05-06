@@ -387,6 +387,10 @@ function getReturnObjCType(
       }
     case 'GenericObjectTypeAnnotation':
       return wrapOptional('NSDictionary *', isRequired);
+    case 'ArrayBufferTypeAnnotation':
+      throw new Error(
+        `Unsupported return type for ${methodName}: ArrayBuffer is only supported for C++ TurboModules.`,
+      );
     default:
       typeAnnotation.type as 'MixedTypeAnnotation';
       throw new Error(
@@ -459,6 +463,10 @@ function getReturnJSType(
           validUnionType as empty;
           throw new Error(`Unsupported union member types`);
       }
+    case 'ArrayBufferTypeAnnotation':
+      throw new Error(
+        `Unsupported return type for ${methodName}: ArrayBuffer is only supported for C++ TurboModules.`,
+      );
     default:
       typeAnnotation.type as 'MixedTypeAnnotation';
       throw new Error(

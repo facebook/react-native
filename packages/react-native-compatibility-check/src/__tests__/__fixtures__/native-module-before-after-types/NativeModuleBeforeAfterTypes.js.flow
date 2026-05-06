@@ -21,6 +21,7 @@ type AfterMismatchGeneric<Foo> = {};
 type BeforeMatchingGeneric<T> = {};
 type AfterMatchingGeneric<T> = {};
 
+type ArrayBufferType = ArrayBuffer;
 type BooleanType = boolean;
 type StringType = string;
 
@@ -45,6 +46,7 @@ export interface Spec extends TurboModule {
   +beforeMatchingGeneric: <T>(a: BeforeMatchingGeneric<T>) => void;
   +afterMatchingGeneric: <T>(a: AfterMatchingGeneric<T>) => void;
 
+  +arrayBufferType: (a: ArrayBufferType) => void;
   +booleanType: (a: BooleanType) => void;
   +stringType: (a: StringType) => void;
 

@@ -218,6 +218,7 @@ const UnsupportedObjectPropertyTypeToInvalidPropertyValueTypeMap = {
   FunctionTypeAnnotation: 'FunctionTypeAnnotation',
   VoidTypeAnnotation: 'void',
   PromiseTypeAnnotation: 'Promise',
+  ArrayBufferTypeAnnotation: 'ArrayBuffer',
 };
 
 function throwIfPropertyValueTypeIsUnsupported(
@@ -277,6 +278,7 @@ function throwIfArrayElementTypeAnnotationIsUnsupported(
     FunctionTypeAnnotation: 'FunctionTypeAnnotation',
     VoidTypeAnnotation: 'void',
     PromiseTypeAnnotation: 'Promise',
+    ArrayBufferTypeAnnotation: 'ArrayBuffer',
     // TODO: Added as a work-around for now until TupleTypeAnnotation are fully supported in both flow and TS
     // Right now they are partially treated as UnionTypeAnnotation
     // UnionTypeAnnotation: 'UnionTypeAnnotation',

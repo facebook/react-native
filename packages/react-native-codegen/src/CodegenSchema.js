@@ -68,6 +68,10 @@ export type VoidTypeAnnotation = Readonly<{
   type: 'VoidTypeAnnotation',
 }>;
 
+export type ArrayBufferTypeAnnotation = Readonly<{
+  type: 'ArrayBufferTypeAnnotation',
+}>;
+
 export type ObjectTypeAnnotation<+T> = Readonly<{
   type: 'ObjectTypeAnnotation',
   properties: ReadonlyArray<NamedShape<T>>,
@@ -411,6 +415,7 @@ export type NativeModuleEventEmitterTypeAnnotation =
   | ArrayTypeAnnotation<NativeModuleEventEmitterBaseTypeAnnotation>;
 
 export type NativeModuleBaseTypeAnnotation =
+  | ArrayBufferTypeAnnotation
   | StringTypeAnnotation
   | StringLiteralTypeAnnotation
   | StringLiteralUnionTypeAnnotation

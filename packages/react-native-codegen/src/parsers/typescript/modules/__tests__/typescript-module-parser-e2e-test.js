@@ -17,6 +17,7 @@ import type {
 
 const {
   MissingTypeParameterGenericParserError,
+  ParserError,
   UnnamedFunctionParamParserError,
   UnsupportedGenericParserError,
   UnsupportedTypeAnnotationParserError,
@@ -791,6 +792,19 @@ describe('TypeScript Module Parser', () => {
         unwrapNullable(functionTypeAnnotation.returnTypeAnnotation);
       expect(returnTypeAnnotation.type).toBe('VoidTypeAnnotation');
       expect(isReturnTypeAnnotationNullable).toBe(false);
+    });
+
+    it('should fail parsing when a method returns Promise<ArrayBuffer>', () => {
+      expect(() =>
+        parseModule(`
+          import type {TurboModule} from 'RCTExport';
+          import * as TurboModuleRegistry from 'TurboModuleRegistry';
+          export interface Spec extends TurboModule {
+            load(): Promise<ArrayBuffer>;
+          }
+          export default TurboModuleRegistry.get<Spec>('Foo');
+        `),
+      ).toThrow(ParserError);
     });
 
     [true, false].forEach(IS_RETURN_TYPE_NULLABLE => {
