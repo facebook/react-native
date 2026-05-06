@@ -396,7 +396,6 @@ bool ReactHost::loadScriptFromDevServer() {
     devServerHelper_->setupHMRClient();
     return true;
   } catch (...) {
-    devServerHelper_->setSourcePath("");
     LOG(WARNING)
         << "Unable to download JS bundle from Metro, falling back to prebuilt JS bundle. "
         << "To start Metro, run in command line: 'cd ~/fbsource/xplat/js && js1 run'";
