@@ -17,11 +17,11 @@ export type ColorSchemeName = 'light' | 'dark';
 export type ColorSchemeOverride = 'light' | 'dark' | 'unspecified';
 
 export type AppearancePreferences = {
-  colorScheme?: ?ColorSchemeName,
+  colorScheme: ColorSchemeName,
 };
 
 export interface Spec extends TurboModule {
-  +getColorScheme: () => ?ColorSchemeName;
+  +getColorScheme: () => ColorSchemeName;
   +setColorScheme: (colorScheme: ColorSchemeOverride) => void;
 
   // RCTEventEmitter

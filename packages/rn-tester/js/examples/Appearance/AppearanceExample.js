@@ -24,7 +24,7 @@ function ColorSchemeSubscription() {
 
   useEffect(() => {
     const subscription = Appearance.addChangeListener(
-      ({colorScheme: newColorScheme}: {colorScheme: ?ColorSchemeName}) => {
+      ({colorScheme: newColorScheme}) => {
         setColorScheme(newColorScheme);
       },
     );

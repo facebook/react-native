@@ -15,7 +15,7 @@ type ColorSchemeOverride = ColorSchemeName | 'unspecified';
 
 export namespace Appearance {
   type AppearancePreferences = {
-    colorScheme: ColorSchemeName;
+    colorScheme: ColorSchemeName | null;
   };
 
   type AppearanceListener = (preferences: AppearancePreferences) => void;
@@ -32,7 +32,7 @@ export namespace Appearance {
    * - `null` will only be returned if the native Appearance module is
    *   unavailable (out of tree platforms).
    */
-  export function getColorScheme(): ColorSchemeName | null | undefined;
+  export function getColorScheme(): ColorSchemeName | null;
 
   /**
    * Force the application to always adopt a light or dark interface style. Pass
@@ -54,5 +54,9 @@ export namespace Appearance {
 /**
  * Returns the active color scheme (`'light'` or `'dark'`). Automatically
  * re-renders the component when the color scheme changes.
+ *
+ * Notes:
+ * - `null` will only be returned if the native Appearance module is unavailable
+ *   (out of tree platforms).
  */
-export function useColorScheme(): ColorSchemeName;
+export function useColorScheme(): ColorSchemeName | null;
