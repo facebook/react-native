@@ -119,14 +119,8 @@ internal object DependencyUtils {
   fun configureDependencies(
       project: Project,
       coordinates: Coordinates,
-      hermesV1Enabled: Boolean = true,
   ) {
-    if (
-        coordinates.versionString.isBlank() ||
-            (!hermesV1Enabled && coordinates.hermesVersionString.isBlank()) ||
-            (hermesV1Enabled && coordinates.hermesV1VersionString.isBlank())
-    )
-        return
+    if (coordinates.versionString.isBlank() || coordinates.hermesV1VersionString.isBlank()) return
     project.rootProject.allprojects { eachProject ->
       eachProject.configurations.all { configuration ->
         // Here we set a dependencySubstitution for both react-native and hermes-engine as those
@@ -134,8 +128,7 @@ internal object DependencyUtils {
         // This allows users to import libraries that are still using
         // implementation("com.facebook.react:react-native:+") and resolve the right dependency.
         configuration.resolutionStrategy.dependencySubstitution {
-          getDependencySubstitutions(coordinates, hermesV1Enabled).forEach { (module, dest, reason)
-            ->
+          getDependencySubstitutions(coordinates).forEach { (module, dest, reason) ->
             it.substitute(it.module(module)).using(it.module(dest)).because(reason)
           }
         }
@@ -146,7 +139,7 @@ internal object DependencyUtils {
           // Contributors only: The hermes-engine version is forced only if the user has
           // not opted into using nightlies for local development.
           configuration.resolutionStrategy.force(
-              "${coordinates.hermesGroupString}:hermes-android:${if (hermesV1Enabled) coordinates.hermesV1VersionString else coordinates.hermesVersionString}"
+              "${coordinates.hermesGroupString}:hermes-android:${coordinates.hermesV1VersionString}"
           )
         }
       }
@@ -155,12 +148,10 @@ internal object DependencyUtils {
 
   internal fun getDependencySubstitutions(
       coordinates: Coordinates,
-      hermesV1Enabled: Boolean = true,
   ): List<Triple<String, String, String>> {
     val dependencySubstitution = mutableListOf<Triple<String, String, String>>()
-    val hermesVersion =
-        if (hermesV1Enabled) coordinates.hermesV1VersionString else coordinates.hermesVersionString
-    val hermesVersionString = "${coordinates.hermesGroupString}:hermes-android:${hermesVersion}"
+    val hermesVersionString =
+        "${coordinates.hermesGroupString}:hermes-android:${coordinates.hermesV1VersionString}"
     dependencySubstitution.add(
         Triple(
             "com.facebook.react:react-native",

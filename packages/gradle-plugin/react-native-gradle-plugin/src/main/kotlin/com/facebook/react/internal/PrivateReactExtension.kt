@@ -59,5 +59,4 @@ abstract class PrivateReactExtension @Inject constructor(project: Project) {
   val codegenDir: DirectoryProperty =
       objects.directoryProperty().convention(root.dir("node_modules/@react-native/codegen"))
 
-  val hermesV1Enabled: Property<Boolean> = objects.property(Boolean::class.java).convention(true)
 }
