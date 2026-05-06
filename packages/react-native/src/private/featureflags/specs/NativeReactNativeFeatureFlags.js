@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<1fe579457854f95d09dd24e4578dbc65>>
+ * @generated SignedSource<<a3897b24bfc4cc5e86c4d2ad4783eb80>>
  * @flow strict
  * @noformat
  */
@@ -116,6 +116,7 @@ export interface Spec extends TurboModule {
   +useUnorderedMapInDifferentiator?: () => boolean;
   +viewCullingOutsetRatio?: () => number;
   +viewTransitionEnabled?: () => boolean;
+  +viewTransitionUseHardwareBitmapAndroid?: () => boolean;
   +virtualViewPrerenderRatio?: () => number;
 }
 

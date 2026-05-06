@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<1df283aec4b56f36271a187341e7103d>>
+ * @generated SignedSource<<616585aab3d23395dad8164afe614da6>>
  */
 
 /**
@@ -217,6 +217,8 @@ class NativeReactNativeFeatureFlags
   double viewCullingOutsetRatio(jsi::Runtime& runtime);
 
   bool viewTransitionEnabled(jsi::Runtime& runtime);
+
+  bool viewTransitionUseHardwareBitmapAndroid(jsi::Runtime& runtime);
 
   double virtualViewPrerenderRatio(jsi::Runtime& runtime);
 };

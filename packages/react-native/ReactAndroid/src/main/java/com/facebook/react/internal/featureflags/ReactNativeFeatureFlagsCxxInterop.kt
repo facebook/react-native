@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<a737810bf0211590401c2afb464aaf37>>
+ * @generated SignedSource<<c398ef6325753f5666737fb84309c09e>>
  */
 
 /**
@@ -209,6 +209,8 @@ public object ReactNativeFeatureFlagsCxxInterop {
   @DoNotStrip @JvmStatic public external fun viewCullingOutsetRatio(): Double
 
   @DoNotStrip @JvmStatic public external fun viewTransitionEnabled(): Boolean
+
+  @DoNotStrip @JvmStatic public external fun viewTransitionUseHardwareBitmapAndroid(): Boolean
 
   @DoNotStrip @JvmStatic public external fun virtualViewPrerenderRatio(): Double
 

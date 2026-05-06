@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<9e5b3192d1bec953c116d959ad63283d>>
+ * @generated SignedSource<<4ba79f6843185d86bc9ad487b99d86a4>>
  */
 
 /**
@@ -204,6 +204,8 @@ public open class ReactNativeFeatureFlagsDefaults : ReactNativeFeatureFlagsProvi
   override fun viewCullingOutsetRatio(): Double = 0.0
 
   override fun viewTransitionEnabled(): Boolean = false
+
+  override fun viewTransitionUseHardwareBitmapAndroid(): Boolean = false
 
   override fun virtualViewPrerenderRatio(): Double = 5.0
 }

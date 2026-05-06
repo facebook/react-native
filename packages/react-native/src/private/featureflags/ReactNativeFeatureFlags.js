@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<349263e08085c42598f13da74ffbf584>>
+ * @generated SignedSource<<6af41ac4c6f410c4896e511a7741cbe4>>
  * @flow strict
  * @noformat
  */
@@ -138,6 +138,7 @@ export type ReactNativeFeatureFlags = $ReadOnly<{
   useUnorderedMapInDifferentiator: Getter<boolean>,
   viewCullingOutsetRatio: Getter<number>,
   viewTransitionEnabled: Getter<boolean>,
+  viewTransitionUseHardwareBitmapAndroid: Getter<boolean>,
   virtualViewPrerenderRatio: Getter<number>,
 }>;
 
@@ -569,6 +570,10 @@ export const viewCullingOutsetRatio: Getter<number> = createNativeFlagGetter('vi
  * Enable the View Transition API for animating transitions between views.
  */
 export const viewTransitionEnabled: Getter<boolean> = createNativeFlagGetter('viewTransitionEnabled', false);
+/**
+ * Use hardware bitmaps for view transition snapshots on Android.
+ */
+export const viewTransitionUseHardwareBitmapAndroid: Getter<boolean> = createNativeFlagGetter('viewTransitionUseHardwareBitmapAndroid', false);
 /**
  * Initial prerender ratio for VirtualView.
  */

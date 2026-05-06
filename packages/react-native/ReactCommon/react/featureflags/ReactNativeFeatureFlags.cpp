@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<ad7a835ef9cbe3a9a6121ac127038668>>
+ * @generated SignedSource<<0a3c6a3353d22cf5909fd5a0f98a970e>>
  */
 
 /**
@@ -388,6 +388,10 @@ double ReactNativeFeatureFlags::viewCullingOutsetRatio() {
 
 bool ReactNativeFeatureFlags::viewTransitionEnabled() {
   return getAccessor().viewTransitionEnabled();
+}
+
+bool ReactNativeFeatureFlags::viewTransitionUseHardwareBitmapAndroid() {
+  return getAccessor().viewTransitionUseHardwareBitmapAndroid();
 }
 
 double ReactNativeFeatureFlags::virtualViewPrerenderRatio() {

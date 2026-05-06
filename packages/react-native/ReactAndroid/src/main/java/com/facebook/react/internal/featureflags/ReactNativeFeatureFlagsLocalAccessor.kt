@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<378d6a8de497d26ebbbf55885be27a21>>
+ * @generated SignedSource<<60a15dc6eb548f56216f284421c1e4da>>
  */
 
 /**
@@ -115,6 +115,7 @@ internal class ReactNativeFeatureFlagsLocalAccessor : ReactNativeFeatureFlagsAcc
   private var useUnorderedMapInDifferentiatorCache: Boolean? = null
   private var viewCullingOutsetRatioCache: Double? = null
   private var viewTransitionEnabledCache: Boolean? = null
+  private var viewTransitionUseHardwareBitmapAndroidCache: Boolean? = null
   private var virtualViewPrerenderRatioCache: Double? = null
 
   override fun commonTestFlag(): Boolean {
@@ -1023,6 +1024,16 @@ internal class ReactNativeFeatureFlagsLocalAccessor : ReactNativeFeatureFlagsAcc
       cached = currentProvider.viewTransitionEnabled()
       accessedFeatureFlags.add("viewTransitionEnabled")
       viewTransitionEnabledCache = cached
+    }
+    return cached
+  }
+
+  override fun viewTransitionUseHardwareBitmapAndroid(): Boolean {
+    var cached = viewTransitionUseHardwareBitmapAndroidCache
+    if (cached == null) {
+      cached = currentProvider.viewTransitionUseHardwareBitmapAndroid()
+      accessedFeatureFlags.add("viewTransitionUseHardwareBitmapAndroid")
+      viewTransitionUseHardwareBitmapAndroidCache = cached
     }
     return cached
   }

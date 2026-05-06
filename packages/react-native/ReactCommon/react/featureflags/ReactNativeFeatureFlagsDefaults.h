@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<3d1718afe5b2ed63a918ffe09a4a36b1>>
+ * @generated SignedSource<<86113211dcbece29ea894a2fcfa7dce5>>
  */
 
 /**
@@ -388,6 +388,10 @@ class ReactNativeFeatureFlagsDefaults : public ReactNativeFeatureFlagsProvider {
   }
 
   bool viewTransitionEnabled() override {
+    return false;
+  }
+
+  bool viewTransitionUseHardwareBitmapAndroid() override {
     return false;
   }
 

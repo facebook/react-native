@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<8b4288e3f5a8b26951150a3c75ad4356>>
+ * @generated SignedSource<<1756053d723019847c7c52bb0f663281>>
  */
 
 /**
@@ -493,6 +493,11 @@ class ReactNativeFeatureFlags {
    * Enable the View Transition API for animating transitions between views.
    */
   RN_EXPORT static bool viewTransitionEnabled();
+
+  /**
+   * Use hardware bitmaps for view transition snapshots on Android.
+   */
+  RN_EXPORT static bool viewTransitionUseHardwareBitmapAndroid();
 
   /**
    * Initial prerender ratio for VirtualView.

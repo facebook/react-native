@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<a2484c897651fcd970b33d8eef7d70f0>>
+ * @generated SignedSource<<b9bf95c8caeecac9fe6dd7ea6363953c>>
  */
 
 /**
@@ -1667,6 +1667,24 @@ bool ReactNativeFeatureFlagsAccessor::viewTransitionEnabled() {
   return flagValue.value();
 }
 
+bool ReactNativeFeatureFlagsAccessor::viewTransitionUseHardwareBitmapAndroid() {
+  auto flagValue = viewTransitionUseHardwareBitmapAndroid_.load();
+
+  if (!flagValue.has_value()) {
+    // This block is not exclusive but it is not necessary.
+    // If multiple threads try to initialize the feature flag, we would only
+    // be accessing the provider multiple times but the end state of this
+    // instance and the returned flag value would be the same.
+
+    markFlagAsAccessed(91, "viewTransitionUseHardwareBitmapAndroid");
+
+    flagValue = currentProvider_->viewTransitionUseHardwareBitmapAndroid();
+    viewTransitionUseHardwareBitmapAndroid_ = flagValue;
+  }
+
+  return flagValue.value();
+}
+
 double ReactNativeFeatureFlagsAccessor::virtualViewPrerenderRatio() {
   auto flagValue = virtualViewPrerenderRatio_.load();
 
@@ -1676,7 +1694,7 @@ double ReactNativeFeatureFlagsAccessor::virtualViewPrerenderRatio() {
     // be accessing the provider multiple times but the end state of this
     // instance and the returned flag value would be the same.
 
-    markFlagAsAccessed(91, "virtualViewPrerenderRatio");
+    markFlagAsAccessed(92, "virtualViewPrerenderRatio");
 
     flagValue = currentProvider_->virtualViewPrerenderRatio();
     virtualViewPrerenderRatio_ = flagValue;

@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<1eca66b21554b00725f2a9be894a0db9>>
+ * @generated SignedSource<<61221e9b185b4e9b9f0db0c99c7c9dc1>>
  */
 
 /**
@@ -575,6 +575,12 @@ public object ReactNativeFeatureFlags {
    */
   @JvmStatic
   public fun viewTransitionEnabled(): Boolean = accessor.viewTransitionEnabled()
+
+  /**
+   * Use hardware bitmaps for view transition snapshots on Android.
+   */
+  @JvmStatic
+  public fun viewTransitionUseHardwareBitmapAndroid(): Boolean = accessor.viewTransitionUseHardwareBitmapAndroid()
 
   /**
    * Initial prerender ratio for VirtualView.
