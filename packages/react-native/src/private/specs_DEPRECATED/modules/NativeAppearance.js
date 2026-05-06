@@ -12,7 +12,9 @@ import type {TurboModule} from '../../../../Libraries/TurboModule/RCTExport';
 
 import * as TurboModuleRegistry from '../../../../Libraries/TurboModule/TurboModuleRegistry';
 
-export type ColorSchemeName = 'light' | 'dark' | 'unspecified';
+export type ColorSchemeName = 'light' | 'dark';
+
+export type ColorSchemeOverride = 'light' | 'dark' | 'unspecified';
 
 export type AppearancePreferences = {
   colorScheme?: ?ColorSchemeName,
@@ -20,7 +22,7 @@ export type AppearancePreferences = {
 
 export interface Spec extends TurboModule {
   +getColorScheme: () => ?ColorSchemeName;
-  +setColorScheme: (colorScheme: ColorSchemeName) => void;
+  +setColorScheme: (colorScheme: ColorSchemeOverride) => void;
 
   // RCTEventEmitter
   +addListener: (eventName: string) => void;
