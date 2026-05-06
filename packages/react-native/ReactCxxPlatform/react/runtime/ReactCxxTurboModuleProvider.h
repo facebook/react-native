@@ -33,7 +33,8 @@ class ReactCxxTurboModuleProvider final {
       std::shared_ptr<SurfaceDelegate> logBoxSurfaceDelegate = nullptr,
       HttpClientFactory httpClientFactory = nullptr,
       WebSocketClientFactory webSocketClientFactory = nullptr,
-      std::function<void()> liveReloadCallback = nullptr);
+      std::function<void()> liveReloadCallback = nullptr,
+      std::shared_ptr<std::string> sourceURL = nullptr);
 
   std::shared_ptr<TurboModule> operator()(const std::string &name) const;
 
@@ -48,6 +49,7 @@ class ReactCxxTurboModuleProvider final {
   HttpClientFactory httpClientFactory_;
   WebSocketClientFactory webSocketClientFactory_;
   std::function<void()> liveReloadCallback_;
+  std::shared_ptr<std::string> sourceURL_;
 };
 
 } // namespace facebook::react
