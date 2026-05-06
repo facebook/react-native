@@ -137,7 +137,7 @@ if (project.findProperty("react.internal.useHermesStable")?.toString()?.toBoolea
     )
   }
 
-  hermesSubstitution = hermesCompilerVersion to "Users opted to use hermes V1 stable"
+  hermesSubstitution = hermesCompilerVersion to "Users opted to use prebuilt hermes release"
 } else {
   logger.warn(
       """
