@@ -95,4 +95,4 @@ async function prepareDebuggerShellFromDotSlashFile(
   };
 }
 
-export {spawnAndGetStderr, prepareDebuggerShellFromDotSlashFile};
+export {prepareDebuggerShellFromDotSlashFile};
