@@ -7,6 +7,7 @@
 
 #pragma once
 
+#include <atomic>
 #include <memory>
 
 #include <ReactCommon/RuntimeExecutor.h>
@@ -122,6 +123,11 @@ class Scheduler final : public UIManagerDelegate {
   friend class SurfaceHandler;
 
   SchedulerDelegate *delegate_;
+  // Invalidation token captured by-value into lambdas deferred via
+  // runtimeScheduler_->scheduleRenderingUpdate. Set to true on delegate
+  // change or Scheduler destruction so a lambda that outlives its captured
+  // raw delegate pointer can no-op instead of dereferencing dangling memory.
+  std::shared_ptr<std::atomic<bool>> delegateInvalidated_;
   SharedComponentDescriptorRegistry componentDescriptorRegistry_;
   RuntimeExecutor runtimeExecutor_;
   std::shared_ptr<UIManager> uiManager_;

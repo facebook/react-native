@@ -1,5 +1,20 @@
 # Changelog
 
+## v0.85.3
+
+### Changed
+
+- **React Native DevTools**: Update debugger-frontend from 8edd9be...194d3f8 ([9966cbdf4d](https://github.com/facebook/react-native/commit/9966cbdf4da99ee036a75bec4da9bb2e1ee7a9c4) by [@motiz88](https://github.com/motiz88))
+
+### Fixed
+
+- **Build**: Use pinned Hermes version when version.properties is not 1000.0.0 ([5e3a3ba995](https://github.com/facebook/react-native/commit/5e3a3ba995026b42c2ea0ad7ee4758fcf73005e6) by [@cipolleschi](https://github.com/cipolleschi))
+
+#### iOS specific
+
+- **Build**: Fix silent tar extraction failure on EdenFS in replace-rncore-version.js by extracting to a temp directory first ([9bc7d38be0](https://github.com/facebook/react-native/commit/9bc7d38be0771ae4006206fcb174956f53adf508) by [@motiz88](https://github.com/motiz88))
+- **Build**: Skip prebuilds for DynamicFrameworks CI jobs ([753c19bea4](https://github.com/facebook/react-native/commit/753c19bea4ab854eb8000b2b5bab814261a46596) by [@motiz88](https://github.com/motiz88))
+
 ## v0.85.2
 
 ### Added
