@@ -18,15 +18,18 @@ import android.text.Spanned
 import android.text.style.ClickableSpan
 import android.view.KeyEvent
 import android.view.MotionEvent
+import android.view.View
 import android.view.ViewGroup
 import androidx.annotation.ColorInt
 import androidx.annotation.DoNotInline
 import androidx.annotation.RequiresApi
 import androidx.core.view.ViewCompat
 import com.facebook.proguard.annotations.DoNotStrip
+import com.facebook.react.common.annotations.UnstableReactNativeAPI
 import com.facebook.react.uimanager.BackgroundStyleApplicator
 import com.facebook.react.uimanager.ReactCompoundView
 import com.facebook.react.uimanager.style.Overflow
+import com.facebook.react.views.text.internal.span.AnimatedEffectSpan
 import com.facebook.react.views.text.internal.span.DrawCommandSpan
 import com.facebook.react.views.text.internal.span.ReactFragmentIndexSpan
 import com.facebook.react.views.text.internal.span.ReactLinkSpan
@@ -44,6 +47,7 @@ internal class PreparedLayoutTextView(context: Context) : ViewGroup(context), Re
 
   private var clickableSpans: List<ClickableSpan> = emptyList()
   private var selection: TextSelection? = null
+  private var lastFrameTimeNanos: Long = 0L
 
   var preparedLayout: PreparedLayout? = null
     set(value) {
@@ -99,9 +103,18 @@ internal class PreparedLayoutTextView(context: Context) : ViewGroup(context), Re
     clickableSpans = emptyList()
     selection = null
     selectionColor = null
+    lastFrameTimeNanos = 0L
     preparedLayout = null
   }
 
+  override fun onVisibilityChanged(changedView: View, visibility: Int) {
+    super.onVisibilityChanged(changedView, visibility)
+    if (visibility != VISIBLE) {
+      lastFrameTimeNanos = 0L
+    }
+  }
+
+  @OptIn(UnstableReactNativeAPI::class)
   override fun onDraw(canvas: Canvas) {
     if (overflow != Overflow.VISIBLE) {
       BackgroundStyleApplicator.clipToPaddingBox(this, canvas)
@@ -149,6 +162,38 @@ internal class PreparedLayoutTextView(context: Context) : ViewGroup(context), Re
               canvas,
               layout,
           )
+        }
+      }
+
+      if (spanned != null) {
+        val animatedEffectSpans =
+            spanned.getSpans(0, spanned.length, AnimatedEffectSpan::class.java)
+
+        if (animatedEffectSpans.isNotEmpty()) {
+          val now = System.nanoTime()
+          val deltaNanos = if (lastFrameTimeNanos == 0L) 0L else now - lastFrameTimeNanos
+          lastFrameTimeNanos = now
+
+          var needsNextFrame = false
+          for (span in animatedEffectSpans) {
+            if (
+                span.onDraw(
+                    spanned.getSpanStart(span),
+                    spanned.getSpanEnd(span),
+                    canvas,
+                    layout,
+                    deltaNanos,
+                )
+            ) {
+              needsNextFrame = true
+            }
+          }
+
+          if (needsNextFrame) {
+            postInvalidateOnAnimation()
+          } else {
+            lastFrameTimeNanos = 0L
+          }
         }
       }
     }
