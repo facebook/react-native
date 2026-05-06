@@ -28,6 +28,6 @@ const subscribe = (onStoreChange: () => void) => {
  * - `null` will only be returned if the native Appearance module is unavailable
  *   (out of tree platforms).
  */
-export default function useColorScheme(): ?ColorSchemeName {
+export default function useColorScheme(): ColorSchemeName | null {
   return useSyncExternalStore(subscribe, getColorScheme);
 }

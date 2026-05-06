@@ -2653,7 +2653,7 @@ protocol NativeAppStateSpec : public NSObjectRCTBridgeModule, public RCTTurboMod
 }
 
 protocol NativeAppearanceSpec : public NSObjectRCTBridgeModule, public RCTTurboModule {
-  public virtual NSString* _Nullable getColorScheme();
+  public virtual NSString* getColorScheme();
   public virtual void addListener:(NSString* eventName);
   public virtual void removeListeners:(double count);
   public virtual void setColorScheme:(NSString* colorScheme);

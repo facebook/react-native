@@ -10,7 +10,7 @@
 
 import type {EventSubscription} from '../vendor/emitter/EventEmitter';
 import type {
-  AppearancePreferences,
+  AppearancePreferences as NativeAppearancePreferences,
   ColorSchemeName,
   ColorSchemeOverride,
 } from './NativeAppearance';
@@ -19,10 +19,14 @@ import typeof INativeAppearance from './NativeAppearance';
 import NativeEventEmitter from '../EventEmitter/NativeEventEmitter';
 import EventEmitter from '../vendor/emitter/EventEmitter';
 
-export type {AppearancePreferences, ColorSchemeName, ColorSchemeOverride};
+export type {ColorSchemeName, ColorSchemeOverride};
+
+export type AppearancePreferences = {
+  colorScheme: ColorSchemeName | null,
+};
 
 type Appearance = {
-  colorScheme: ?ColorSchemeName,
+  colorScheme: ColorSchemeName | null,
 };
 
 let lazyState: ?{
@@ -60,7 +64,7 @@ function getState(): NonNullable<typeof lazyState> {
       eventEmitter,
     };
     new NativeEventEmitter<{
-      appearanceChanged: [AppearancePreferences],
+      appearanceChanged: [NativeAppearancePreferences],
     }>(NativeAppearance).addListener('appearanceChanged', newAppearance => {
       state.appearance = {
         colorScheme: newAppearance.colorScheme,
@@ -84,7 +88,7 @@ function getState(): NonNullable<typeof lazyState> {
  * - `null` will only be returned if the native Appearance module is unavailable
  *   (out of tree platforms).
  */
-export function getColorScheme(): ?ColorSchemeName {
+export function getColorScheme(): ColorSchemeName | null {
   let colorScheme = null;
   const state = getState();
   const {NativeAppearance} = state;
@@ -114,7 +118,7 @@ export function setColorScheme(colorScheme: ColorSchemeOverride): void {
     state.appearance = {
       colorScheme:
         colorScheme === 'unspecified'
-          ? (NativeAppearance.getColorScheme() ?? null)
+          ? NativeAppearance.getColorScheme()
           : colorScheme,
     };
   }
@@ -126,7 +130,7 @@ export function setColorScheme(colorScheme: ColorSchemeOverride): void {
  * or a call to `setColorScheme()`.
  */
 export function addChangeListener(
-  listener: ({colorScheme: ?ColorSchemeName}) => void,
+  listener: (preferences: AppearancePreferences) => void,
 ): EventSubscription {
   const {eventEmitter} = getState();
   return eventEmitter.addListener('change', listener);
