@@ -18,7 +18,7 @@ import {useEffect, useState} from 'react';
 import {Appearance, Button, Text, View, useColorScheme} from 'react-native';
 
 function ColorSchemeSubscription() {
-  const [colorScheme, setColorScheme] = useState<?ColorSchemeName | string>(
+  const [colorScheme, setColorScheme] = useState<?ColorSchemeName>(
     Appearance.getColorScheme(),
   );
 
@@ -135,8 +135,9 @@ const ColorShowcase = (props: {themeName: string}) => (
 );
 
 const ToggleNativeAppearance = () => {
-  const [nativeColorScheme, setNativeColorScheme] =
-    useState<ColorSchemeName>('unspecified');
+  const [nativeColorScheme, setNativeColorScheme] = useState<
+    ColorSchemeName | 'unspecified',
+  >('unspecified');
   const colorScheme = useColorScheme();
 
   useEffect(() => {

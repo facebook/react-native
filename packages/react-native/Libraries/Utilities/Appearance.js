@@ -9,13 +9,17 @@
  */
 
 import type {EventSubscription} from '../vendor/emitter/EventEmitter';
-import type {AppearancePreferences, ColorSchemeName} from './NativeAppearance';
+import type {
+  AppearancePreferences,
+  ColorSchemeName,
+  ColorSchemeOverride,
+} from './NativeAppearance';
 import typeof INativeAppearance from './NativeAppearance';
 
 import NativeEventEmitter from '../EventEmitter/NativeEventEmitter';
 import EventEmitter from '../vendor/emitter/EventEmitter';
 
-export type {AppearancePreferences};
+export type {AppearancePreferences, ColorSchemeName, ColorSchemeOverride};
 
 type Appearance = {
   colorScheme: ?ColorSchemeName,
@@ -69,9 +73,16 @@ function getState(): NonNullable<typeof lazyState> {
 }
 
 /**
- * Returns the current color scheme preference. This value may change, so the
- * value should not be cached without either listening to changes or using
- * the `useColorScheme` hook.
+ * Returns the active color scheme (`'light'` or `'dark'`). This value may
+ * change at runtime, either at the system level (e.g. scheduled color scheme
+ * change at sunrise or sunset) or when overridden at the app level via
+ * `setColorScheme()`.
+ *
+ * Prefer `useColorScheme()` in React components.
+ *
+ * Notes:
+ * - `null` will only be returned if the native Appearance module is unavailable
+ *   (out of tree platforms).
  */
 export function getColorScheme(): ?ColorSchemeName {
   let colorScheme = null;
@@ -91,26 +102,28 @@ export function getColorScheme(): ?ColorSchemeName {
 }
 
 /**
- * Updates the current color scheme to the supplied value.
+ * Force the application to always adopt a light or dark interface style. Pass
+ * `'unspecified'` to reset and follow the system default (removes any
+ * override). This does not affect the system UI, only the application.
  */
-export function setColorScheme(colorScheme: ColorSchemeName): void {
+export function setColorScheme(colorScheme: ColorSchemeOverride): void {
   const state = getState();
   const {NativeAppearance} = state;
   if (NativeAppearance != null) {
     NativeAppearance.setColorScheme(colorScheme);
     state.appearance = {
-      // When setting to 'unspecified', get the actual system color scheme.
-      // Fall back to the passed value if getColorScheme() returns null.
       colorScheme:
         colorScheme === 'unspecified'
-          ? (NativeAppearance.getColorScheme() ?? colorScheme)
+          ? (NativeAppearance.getColorScheme() ?? null)
           : colorScheme,
     };
   }
 }
 
 /**
- * Add an event handler that is fired when appearance preferences change.
+ * Subscribe to color scheme changes. The listener receives the new appearance
+ * preferences whenever the color scheme changes, whether from a system event
+ * or a call to `setColorScheme()`.
  */
 export function addChangeListener(
   listener: ({colorScheme: ?ColorSchemeName}) => void,
