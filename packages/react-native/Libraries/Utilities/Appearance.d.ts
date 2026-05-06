@@ -11,7 +11,11 @@ import {NativeEventSubscription} from '../EventEmitter/RCTNativeAppEventEmitter'
 
 type ColorSchemeName = 'light' | 'dark';
 
-type ColorSchemeOverride = ColorSchemeName | 'unspecified';
+type ColorSchemeOverride =
+  | ColorSchemeName
+  | 'auto'
+  /** @deprecated Use 'auto' instead */
+  | 'unspecified';
 
 export namespace Appearance {
   type AppearancePreferences = {
@@ -36,8 +40,8 @@ export namespace Appearance {
 
   /**
    * Force the application to always adopt a light or dark interface style. Pass
-   * `'unspecified'` to reset and follow the system default (removes any
-   * override). This does not affect the system UI, only the application.
+   * `'auto'` to reset and follow the system default (removes any override).
+   * This does not affect the system UI, only the application.
    */
   export function setColorScheme(scheme: ColorSchemeOverride): void;
 

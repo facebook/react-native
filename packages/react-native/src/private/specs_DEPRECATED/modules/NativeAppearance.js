@@ -14,7 +14,7 @@ import * as TurboModuleRegistry from '../../../../Libraries/TurboModule/TurboMod
 
 export type ColorSchemeName = 'light' | 'dark';
 
-export type ColorSchemeOverride = 'light' | 'dark' | 'unspecified';
+export type ColorSchemeOverride = 'light' | 'dark' | 'auto' | 'unspecified';
 
 export type AppearancePreferences = {
   colorScheme: ColorSchemeName,

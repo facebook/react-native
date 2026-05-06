@@ -107,8 +107,8 @@ export function getColorScheme(): ColorSchemeName | null {
 
 /**
  * Force the application to always adopt a light or dark interface style. Pass
- * `'unspecified'` to reset and follow the system default (removes any
- * override). This does not affect the system UI, only the application.
+ * `'auto'` to reset and follow the system default (removes any override).
+ * This does not affect the system UI, only the application.
  */
 export function setColorScheme(colorScheme: ColorSchemeOverride): void {
   const state = getState();
@@ -117,7 +117,7 @@ export function setColorScheme(colorScheme: ColorSchemeOverride): void {
     NativeAppearance.setColorScheme(colorScheme);
     state.appearance = {
       colorScheme:
-        colorScheme === 'unspecified'
+        colorScheme === 'auto' || colorScheme === 'unspecified'
           ? NativeAppearance.getColorScheme()
           : colorScheme,
     };
