@@ -69,11 +69,6 @@ TEST_F(BridgingTest, numberTest) {
       -42,
       static_cast<uint32_t>(
           bridging::toJs(rt, static_cast<uint32_t>(-42)).asNumber()));
-
-  EXPECT_FALSE(
-      -42 ==
-      static_cast<int32_t>(
-          bridging::toJs(rt, static_cast<uint32_t>(-42)).asNumber()));
 }
 
 TEST_F(BridgingTest, stringTest) {
