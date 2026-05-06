@@ -304,6 +304,12 @@ class TouchableHighlightImpl extends React.Component<
 
   render(): React.Node {
     const child = React.Children.only<$FlowFixMe>(this.props.children);
+    if (__DEV__ && child.type === React.Fragment) {
+      console.error(
+        'TouchableHighlight does not support React.Fragment as a child. ' +
+          'Wrap the children in a single host element such as <View>.',
+      );
+    }
 
     // BACKWARD-COMPATIBILITY: Focus and blur events were never supported before
     // adopting `Pressability`, so preserve that behavior.
@@ -376,12 +382,14 @@ class TouchableHighlightImpl extends React.Component<
         testID={this.props.testID}
         ref={this.props.hostRef}
         {...eventHandlersWithoutBlurAndFocus}>
-        {cloneElement(child, {
-          style: StyleSheet.compose(
-            child.props.style,
-            this.state.extraStyles?.child,
-          ),
-        })}
+        {child.type === React.Fragment
+          ? child
+          : cloneElement(child, {
+              style: StyleSheet.compose(
+                child.props.style,
+                this.state.extraStyles?.child,
+              ),
+            })}
         {__DEV__ ? (
           <PressabilityDebugView color="green" hitSlop={this.props.hitSlop} />
         ) : null}
