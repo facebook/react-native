@@ -335,6 +335,13 @@ interface ScrollResponderMixin extends SubscribableMixin {
 
 export interface ScrollViewPropsIOS {
   /**
+   * When true, the scroll view allows scrolling its content with hardware
+   * keyboard input. The default value is true. Available on iOS 17 and later.
+   * @platform ios
+   * @see https://developer.apple.com/documentation/uikit/uiscrollview/allowskeyboardscrolling
+   */
+  allowsKeyboardScrolling?: boolean | undefined;
+  /**
    * When true the scroll view bounces horizontally when it reaches the end
    * even if the content is smaller than the scroll view itself. The default
    * value is true when `horizontal={true}` and false otherwise.

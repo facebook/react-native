@@ -176,6 +176,13 @@ type InnerViewInstance = React.ElementRef<typeof View>;
 
 export type ScrollViewPropsIOS = Readonly<{
   /**
+   * When true, the scroll view allows scrolling its content with hardware
+   * keyboard input. The default value is true. Available on iOS 17 and later.
+   * @platform ios
+   * @see https://developer.apple.com/documentation/uikit/uiscrollview/allowskeyboardscrolling
+   */
+  allowsKeyboardScrolling?: boolean,
+  /**
    * Controls whether iOS should automatically adjust the content inset
    * for scroll views that are placed behind a navigation bar or
    * tab bar/ toolbar. The default value is true.
@@ -1769,6 +1776,7 @@ class ScrollView extends React.Component<ScrollViewProps, ScrollViewState> {
     } = this.props;
     const props = {
       ...otherProps,
+      allowsKeyboardScrolling: this.props.allowsKeyboardScrolling !== false,
       alwaysBounceHorizontal,
       alwaysBounceVertical,
       style: StyleSheet.compose(baseStyle, this.props.style),

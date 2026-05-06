@@ -4618,6 +4618,7 @@ class facebook::react::BaseParagraphProps : public facebook::react::HostPlatform
 class facebook::react::BaseScrollViewProps : public facebook::react::HostPlatformViewProps {
   public BaseScrollViewProps() = default;
   public BaseScrollViewProps(const facebook::react::PropsParserContext& context, const facebook::react::BaseScrollViewProps& sourceProps, const facebook::react::RawProps& rawProps);
+  public bool allowsKeyboardScrolling;
   public bool alwaysBounceHorizontal;
   public bool alwaysBounceVertical;
   public bool automaticallyAdjustContentInsets;

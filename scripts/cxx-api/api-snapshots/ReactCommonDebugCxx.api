@@ -1003,6 +1003,7 @@ class facebook::react::BaseScrollViewProps : public facebook::react::HostPlatfor
   public Float scrollEventThrottle;
   public Float snapToInterval;
   public Float zoomScale;
+  public bool allowsKeyboardScrolling;
   public bool alwaysBounceHorizontal;
   public bool alwaysBounceVertical;
   public bool automaticallyAdjustContentInsets;

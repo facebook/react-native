@@ -540,6 +540,11 @@ static inline void RCTApplyTransformationAccordingLayoutDirection(
   }
 }
 
+- (void)setAllowsKeyboardScrolling:(BOOL)allowsKeyboardScrolling API_AVAILABLE(ios(17.0))
+{
+  _scrollView.allowsKeyboardScrolling = allowsKeyboardScrolling;
+}
+
 - (void)setContentInset:(UIEdgeInsets)contentInset
 {
   if (UIEdgeInsetsEqualToEdgeInsets(contentInset, _contentInset)) {

@@ -14,6 +14,7 @@ exports[`ScrollView renders its children: should deep render when mocked (please
 
 exports[`ScrollView renders its children: should deep render when not mocked (please verify output manually) 1`] = `
 <RCTScrollView
+  allowsKeyboardScrolling={true}
   alwaysBounceVertical={true}
   onContentSizeChange={null}
   onLayout={[Function]}
