@@ -58,7 +58,6 @@ import com.facebook.react.uimanager.ReactClippingViewGroup
 import com.facebook.react.uimanager.ReactClippingViewGroupHelper.calculateClippingRect
 import com.facebook.react.uimanager.ReactOverflowViewWithInset
 import com.facebook.react.uimanager.ReactPointerEventsView
-import com.facebook.react.uimanager.ReactZIndexedViewGroup
 import com.facebook.react.uimanager.style.BorderRadiusProp
 import com.facebook.react.uimanager.style.BorderStyle
 import com.facebook.react.uimanager.style.LogicalEdge
@@ -81,7 +80,6 @@ public open class ReactViewGroup public constructor(context: Context?) :
     ReactClippingViewGroup,
     ReactPointerEventsView,
     ReactHitSlopView,
-    ReactZIndexedViewGroup,
     ReactOverflowViewWithInset {
 
   public override val overflowInset: Rect = Rect()
@@ -620,20 +618,6 @@ public open class ReactViewGroup public constructor(context: Context?) :
     } else {
       child.setTag(R.id.view_clipped, null)
     }
-  }
-
-  /**
-   * No-op implementation for backward compatibility. Z-order is now managed at the C++ layer in
-   * Fabric.
-   */
-  override fun getZIndexMappedChildIndex(index: Int): Int = index
-
-  /**
-   * No-op implementation for backward compatibility. Z-order is now managed at the C++ layer in
-   * Fabric.
-   */
-  override fun updateDrawingOrder() {
-    // No-op: Z-order is managed at the C++ layer
   }
 
   override fun dispatchSetPressed(pressed: Boolean) {
