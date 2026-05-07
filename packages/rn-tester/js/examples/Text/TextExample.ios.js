@@ -1329,6 +1329,21 @@ const examples = [
             1111{'\n'}
             2222{'\n'}
           </Text>
+          <Text style={{fontFamily: 'KefaIII-Regular', fontSize: 28}}>
+            (E-H) [E-H]+ Case sensitive (OFF)
+          </Text>
+          <Text
+            style={{
+              fontFamily: 'KefaIII-Regular',
+              fontSize: 28,
+              fontVariant: ['case-sensitive'],
+            }}>
+            (E-H) [E-H]+ Case sensitive (ON)
+          </Text>
+          <Text style={{color: 'gray', fontSize: 12}}>
+            Note: the visual rendering differences for this font are only
+            discernible on-device, not in a simulator.
+          </Text>
         </View>
       );
     },

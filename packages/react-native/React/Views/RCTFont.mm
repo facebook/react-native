@@ -365,7 +365,11 @@ using RCTFontVariantDescriptor = NSDictionary;
       @"stylistic-twenty" : @{
         UIFontFeatureTypeIdentifierKey : @(kStylisticAlternativesType),
         UIFontFeatureSelectorIdentifierKey : @(kStylisticAltTwentyOnSelector),
-      }
+      },
+      @"case-sensitive" : @{
+        UIFontFeatureTypeIdentifierKey : @(kCaseSensitiveLayoutType),
+        UIFontFeatureSelectorIdentifierKey : @(kCaseSensitiveLayoutOnSelector),
+      },
     };
   });
   RCTFontVariantDescriptor *value = mapping[json];

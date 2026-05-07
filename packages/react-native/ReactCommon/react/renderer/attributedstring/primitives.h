@@ -62,7 +62,8 @@ enum class FontVariant : int {
   StylisticSeventeen = 1 << 22,
   StylisticEighteen = 1 << 23,
   StylisticNineteen = 1 << 24,
-  StylisticTwenty = 1 << 25
+  StylisticTwenty = 1 << 25,
+  CaseSensitive = 1 << 26
 };
 
 enum class DynamicTypeRamp {
@@ -132,7 +133,12 @@ enum class LineBreakMode {
   Tail // Truncate at tail of line: "abcd..."
 };
 
-enum class TextDecorationLineType { None, Underline, Strikethrough, UnderlineStrikethrough };
+enum class TextDecorationLineType {
+  None,
+  Underline,
+  Strikethrough,
+  UnderlineStrikethrough
+};
 
 enum class TextDecorationStyle { Solid, Double, Dotted, Dashed };
 

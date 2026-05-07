@@ -90,6 +90,7 @@ public object ReactTypefaceUtils {
         "stylistic-eighteen" -> features.add("'ss18'")
         "stylistic-nineteen" -> features.add("'ss19'")
         "stylistic-twenty" -> features.add("'ss20'")
+        "case-sensitive" -> features.add("'case'")
       }
     }
     return features.joinToString(", ")

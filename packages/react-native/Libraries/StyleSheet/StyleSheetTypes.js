@@ -990,7 +990,8 @@ export type ____FontVariant_Internal =
   | 'stylistic-seventeen'
   | 'stylistic-eighteen'
   | 'stylistic-nineteen'
-  | 'stylistic-twenty';
+  | 'stylistic-twenty'
+  | 'case-sensitive';
 
 export type ____FontVariantArray_Internal =
   ReadonlyArray<____FontVariant_Internal>;

@@ -28,6 +28,7 @@ enum class CSSKeyword : uint8_t {
   Baseline,
   Block,
   Bottom,
+  CaseSensitive,
   Center,
   Clip,
   Column,
@@ -150,6 +151,7 @@ CSS_DEFINE_KEYWORD(Auto, "auto")
 CSS_DEFINE_KEYWORD(Baseline, "baseline")
 CSS_DEFINE_KEYWORD(Block, "block")
 CSS_DEFINE_KEYWORD(Bottom, "bottom")
+CSS_DEFINE_KEYWORD(CaseSensitive, "case-sensitive")
 CSS_DEFINE_KEYWORD(Center, "center")
 CSS_DEFINE_KEYWORD(Clip, "clip")
 CSS_DEFINE_KEYWORD(Column, "column")
@@ -263,6 +265,7 @@ constexpr std::optional<KeywordT> parseCSSKeyword(std::string_view ident)
     CSS_HANDLE_KEYWORD(Baseline)
     CSS_HANDLE_KEYWORD(Block)
     CSS_HANDLE_KEYWORD(Bottom)
+    CSS_HANDLE_KEYWORD(CaseSensitive)
     CSS_HANDLE_KEYWORD(Center)
     CSS_HANDLE_KEYWORD(Clip)
     CSS_HANDLE_KEYWORD(Column)
@@ -361,7 +364,8 @@ constexpr std::optional<KeywordT> parseCSSKeyword(std::string_view ident)
 
 template <CSSKeywordSet KeywordT>
 struct CSSDataTypeParser<KeywordT> {
-  static constexpr auto consumePreservedToken(const CSSPreservedToken &token) -> std::optional<KeywordT>
+  static constexpr auto consumePreservedToken(const CSSPreservedToken &token)
+      -> std::optional<KeywordT>
   {
     if (token.type() == CSSTokenType::Ident) {
       return parseCSSKeyword<KeywordT>(token.stringValue());
