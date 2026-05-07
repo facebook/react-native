@@ -97,6 +97,15 @@ AsyncPromise<double> NativeCxxModuleExample::processAsyncBuffer(
   return promise;
 }
 
+AsyncPromise<SafeAsyncArrayBuffer> NativeCxxModuleExample::getAsyncBuffer(
+    jsi::Runtime& rt) {
+  auto promise = AsyncPromise<SafeAsyncArrayBuffer>(rt, jsInvoker_);
+  std::thread([promise]() mutable {
+    promise.resolve(SafeAsyncArrayBuffer::wrap({10, 20, 30, 40, 50}));
+  }).detach();
+  return promise;
+}
+
 bool NativeCxxModuleExample::getBool(jsi::Runtime& /*rt*/, bool arg) {
   return arg;
 }

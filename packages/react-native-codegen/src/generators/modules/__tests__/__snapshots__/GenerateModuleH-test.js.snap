@@ -67,6 +67,7 @@ protected:
     methodMap_[\\"getArrayBuffer\\"] = MethodMetadata {.argCount = 0, .invoker = __getArrayBuffer};
     methodMap_[\\"voidArrayBuffer\\"] = MethodMetadata {.argCount = 1, .invoker = __voidArrayBuffer};
     methodMap_[\\"voidNullableArrayBuffer\\"] = MethodMetadata {.argCount = 1, .invoker = __voidNullableArrayBuffer};
+    methodMap_[\\"promiseArrayBuffer\\"] = MethodMetadata {.argCount = 0, .invoker = __promiseArrayBuffer};
   }
   
 private:
@@ -91,6 +92,13 @@ private:
       \\"Expected voidNullableArrayBuffer(...) to have 2 parameters\\");
     bridging::callFromJs<void>(rt, &T::voidNullableArrayBuffer,  static_cast<NativeSampleTurboModuleCxxSpec*>(&turboModule)->jsInvoker_, static_cast<T*>(&turboModule),
       count <= 0 || args[0].isNull() || args[0].isUndefined() ? std::nullopt : std::make_optional(args[0].asObject(rt).getArrayBuffer(rt)));return jsi::Value::undefined();
+  }
+
+  static jsi::Value __promiseArrayBuffer(jsi::Runtime &rt, TurboModule &turboModule, const jsi::Value* /*args*/, size_t /*count*/) {
+    static_assert(
+      bridging::getParameterCount(&T::promiseArrayBuffer) == 1,
+      \\"Expected promiseArrayBuffer(...) to have 1 parameters\\");
+    return bridging::callFromJs<jsi::Value>(rt, &T::promiseArrayBuffer,  static_cast<NativeSampleTurboModuleCxxSpec*>(&turboModule)->jsInvoker_, static_cast<T*>(&turboModule));
   }
 };
 

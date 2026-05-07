@@ -85,6 +85,7 @@ export interface Spec extends TurboModule {
   +getArrayBuffer: (payload: ArrayBuffer) => ArrayBuffer;
   +createNativeBuffer: (size: number) => ArrayBuffer;
   +processAsyncBuffer: (payload: ArrayBuffer) => Promise<number>;
+  +getAsyncBuffer: () => Promise<ArrayBuffer>;
   +getBool: (arg: boolean) => boolean;
   +getConstants: () => ConstantsStruct;
   +getCustomEnum: (arg: EnumInt) => EnumInt;

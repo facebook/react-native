@@ -42,6 +42,7 @@ type Examples =
   | 'getArray'
   | 'getArrayBuffer'
   | 'processAsyncBuffer'
+  | 'getAsyncBuffer'
   | 'getBool'
   | 'getConstants'
   | 'getCustomEnum'
@@ -105,22 +106,17 @@ class NativeCxxModuleExampleExample extends React.Component<{}, State> {
         null,
       ]),
     getArrayBuffer: () => {
-      const view = new Uint8Array([1, 2, 3]);
-      const output = NativeCxxModuleExample?.getArrayBuffer(view.buffer);
-      if (output == null) {
-        return null;
-      }
-      return new Uint8Array(output).toString();
+      const view = new Uint8Array([1, 2, 3, 4, 5]);
+      const buffer = NativeCxxModuleExample?.getArrayBuffer(view.buffer);
+      return new Uint8Array(buffer).toString();
     },
     processAsyncBuffer: async () => {
-      const view = new Uint8Array([10, 20, 30]);
-      const nativeBuf = NativeCxxModuleExample?.createNativeBuffer(4);
+      const view = new Uint8Array([10, 20, 30, 40, 50]);
+      const nativeBuffer = NativeCxxModuleExample?.createNativeBuffer(4);
 
       const [byteSum, zeroCopyByteSum] = await Promise.all([
         NativeCxxModuleExample?.processAsyncBuffer(view.buffer),
-        nativeBuf == null
-          ? Promise.resolve(null)
-          : NativeCxxModuleExample?.processAsyncBuffer(nativeBuf),
+        NativeCxxModuleExample?.processAsyncBuffer(nativeBuffer),
       ]);
 
       this._setResult(
@@ -128,6 +124,10 @@ class NativeCxxModuleExampleExample extends React.Component<{}, State> {
         `sum=${String(byteSum + zeroCopyByteSum)}`,
       );
     },
+    getAsyncBuffer: () =>
+      NativeCxxModuleExample?.getAsyncBuffer().then(buffer => {
+        this._setResult('getAsyncBuffer', new Uint8Array(buffer).toString());
+      }),
     getBool: () => NativeCxxModuleExample?.getBool(true),
     getConstants: () => NativeCxxModuleExample?.getConstants(),
     getCustomEnum: () => NativeCxxModuleExample?.getCustomEnum(EnumInt.IB),

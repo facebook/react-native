@@ -43,13 +43,13 @@ class SafeAsyncArrayBuffer {
     if (buffer.detached(rt)) {
       throw jsi::JSError(rt, "SafeAsyncArrayBuffer: ArrayBuffer is detached");
     }
-    size_ = buffer.size(rt);
     auto mutableBuf = buffer.tryGetMutableBuffer(rt);
     if (mutableBuf) {
       mutableBuffer_ = std::move(mutableBuf);
     } else {
+      auto n = buffer.size(rt);
       auto src = buffer.data(rt);
-      ownedCopy_ = std::vector<uint8_t>(src, src + size_);
+      ownedCopy_ = std::vector<uint8_t>(src, src + n);
     }
   }
 
@@ -68,7 +68,7 @@ class SafeAsyncArrayBuffer {
           "SafeAsyncArrayBuffer::borrow: ArrayBuffer is not native-backed. "
           "Use SafeAsyncArrayBuffer(rt, buf) when the buffer origin is unknown.");
     }
-    return SafeAsyncArrayBuffer(std::move(mutableBuf), buffer.size(rt));
+    return SafeAsyncArrayBuffer(std::move(mutableBuf));
   }
 
   // Always copies. Valid for any ArrayBuffer.
@@ -81,7 +81,19 @@ class SafeAsyncArrayBuffer {
     }
     auto src = buffer.data(rt);
     auto n = buffer.size(rt);
-    return SafeAsyncArrayBuffer(std::vector<uint8_t>(src, src + n), n);
+    return SafeAsyncArrayBuffer(std::vector<uint8_t>(src, src + n));
+  }
+
+  // Wraps a natively-computed MutableBuffer. Safe to construct off the JS
+  // thread. Use when the buffer is already owned by native code.
+  static SafeAsyncArrayBuffer wrap(
+      std::shared_ptr<jsi::MutableBuffer> buf) noexcept {
+    return SafeAsyncArrayBuffer(std::move(buf));
+  }
+
+  // Takes ownership of a byte vector. Safe to construct off the JS thread.
+  static SafeAsyncArrayBuffer wrap(std::vector<uint8_t> bytes) noexcept {
+    return SafeAsyncArrayBuffer(std::move(bytes));
   }
 
   bool isNativeBacked() const noexcept {
@@ -93,7 +105,7 @@ class SafeAsyncArrayBuffer {
   }
 
   size_t size() const noexcept {
-    return size_;
+    return mutableBuffer_ ? mutableBuffer_->size() : ownedCopy_.size();
   }
 
   std::shared_ptr<jsi::MutableBuffer> getMutableBuffer() const noexcept {
@@ -102,16 +114,36 @@ class SafeAsyncArrayBuffer {
 
  private:
   explicit SafeAsyncArrayBuffer(
-      std::shared_ptr<jsi::MutableBuffer> buf,
-      size_t n) noexcept
-      : mutableBuffer_{std::move(buf)}, size_{n} {}
+      std::shared_ptr<jsi::MutableBuffer> buf) noexcept
+      : mutableBuffer_{std::move(buf)} {}
 
-  explicit SafeAsyncArrayBuffer(std::vector<uint8_t> bytes, size_t n) noexcept
-      : ownedCopy_{std::move(bytes)}, size_{n} {}
+  explicit SafeAsyncArrayBuffer(std::vector<uint8_t> bytes) noexcept
+      : ownedCopy_{std::move(bytes)} {}
 
   std::shared_ptr<jsi::MutableBuffer> mutableBuffer_;
   std::vector<uint8_t> ownedCopy_;
-  size_t size_{0};
+};
+
+template <>
+struct Bridging<SafeAsyncArrayBuffer> {
+  static jsi::Value toJs(jsi::Runtime& rt, SafeAsyncArrayBuffer buf) {
+    if (auto mutableBuf = buf.getMutableBuffer()) {
+      return jsi::Value(rt, rt.createArrayBuffer(std::move(mutableBuf)));
+    }
+    struct OwnedBuffer final : jsi::MutableBuffer {
+      explicit OwnedBuffer(SafeAsyncArrayBuffer b) noexcept
+          : buf_(std::move(b)) {}
+      size_t size() const override {
+        return buf_.size();
+      }
+      uint8_t* data() override {
+        return const_cast<uint8_t*>(buf_.data());
+      }
+      SafeAsyncArrayBuffer buf_;
+    };
+    auto owned = std::make_shared<OwnedBuffer>(std::move(buf));
+    return jsi::Value(rt, rt.createArrayBuffer(std::move(owned)));
+  }
 };
 
 } // namespace facebook::react
