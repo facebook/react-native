@@ -84,7 +84,7 @@ AsyncPromise<double> NativeCxxModuleExample::processAsyncBuffer(
     jsi::Runtime& rt,
     jsi::ArrayBuffer arg) {
   auto promise = AsyncPromise<double>(rt, jsInvoker_);
-  auto storage = SafeAsyncArrayBuffer(rt, arg);
+  auto storage = SafeAsyncArrayBuffer::acquire(rt, arg);
   std::thread([promise, storage = std::move(storage)]() mutable {
     auto sum = 0.0;
     auto bytes = storage.data();

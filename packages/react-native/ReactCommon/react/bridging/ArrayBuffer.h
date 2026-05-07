@@ -25,11 +25,7 @@ struct Bridging<jsi::ArrayBuffer> {
   }
 };
 
-// Buffer that safely outlives a synchronous TurboModule call and may be
-// accessed from any thread. Must be constructed on the JS thread.
-// Constructor auto-detects backing (zero-copy if native-backed, copy
-// otherwise). Use borrow() for an explicit zero-copy guarantee, copy() to
-// always copy.
+// Holds ArrayBuffer data for use off the JS thread. Move-only.
 class SafeAsyncArrayBuffer {
  public:
   SafeAsyncArrayBuffer(const SafeAsyncArrayBuffer&) = delete;
@@ -38,22 +34,24 @@ class SafeAsyncArrayBuffer {
   SafeAsyncArrayBuffer& operator=(SafeAsyncArrayBuffer&&) noexcept = default;
   ~SafeAsyncArrayBuffer() = default;
 
-  // Recommended: zero-copy if native-backed, copies otherwise.
-  SafeAsyncArrayBuffer(jsi::Runtime& rt, const jsi::ArrayBuffer& buffer) {
+  // Zero-copy if native-backed, copies otherwise.
+  static SafeAsyncArrayBuffer acquire(
+      jsi::Runtime& rt,
+      const jsi::ArrayBuffer& buffer) {
     if (buffer.detached(rt)) {
-      throw jsi::JSError(rt, "SafeAsyncArrayBuffer: ArrayBuffer is detached");
+      throw jsi::JSError(
+          rt, "SafeAsyncArrayBuffer::acquire: ArrayBuffer is detached");
     }
     auto mutableBuf = buffer.tryGetMutableBuffer(rt);
     if (mutableBuf) {
-      mutableBuffer_ = std::move(mutableBuf);
-    } else {
-      auto n = buffer.size(rt);
-      auto src = buffer.data(rt);
-      ownedCopy_ = std::vector<uint8_t>(src, src + n);
+      return SafeAsyncArrayBuffer(std::move(mutableBuf));
     }
+    auto n = buffer.size(rt);
+    auto src = buffer.data(rt);
+    return SafeAsyncArrayBuffer(std::vector<uint8_t>(src, src + n));
   }
 
-  // Zero-copy. Throws if buffer is not native-backed.
+  // Zero-copy. Throws if not native-backed.
   static SafeAsyncArrayBuffer borrow(
       jsi::Runtime& rt,
       const jsi::ArrayBuffer& buffer) {
@@ -66,12 +64,12 @@ class SafeAsyncArrayBuffer {
       throw jsi::JSError(
           rt,
           "SafeAsyncArrayBuffer::borrow: ArrayBuffer is not native-backed. "
-          "Use SafeAsyncArrayBuffer(rt, buf) when the buffer origin is unknown.");
+          "Use SafeAsyncArrayBuffer::acquire(rt, buffer) when the buffer origin is unknown.");
     }
     return SafeAsyncArrayBuffer(std::move(mutableBuf));
   }
 
-  // Always copies. Valid for any ArrayBuffer.
+  // Always copies.
   static SafeAsyncArrayBuffer copy(
       jsi::Runtime& rt,
       const jsi::ArrayBuffer& buffer) {
@@ -84,14 +82,13 @@ class SafeAsyncArrayBuffer {
     return SafeAsyncArrayBuffer(std::vector<uint8_t>(src, src + n));
   }
 
-  // Wraps a natively-computed MutableBuffer. Safe to construct off the JS
-  // thread. Use when the buffer is already owned by native code.
+  // Wraps a native MutableBuffer. Safe to call from any thread.
   static SafeAsyncArrayBuffer wrap(
-      std::shared_ptr<jsi::MutableBuffer> buf) noexcept {
-    return SafeAsyncArrayBuffer(std::move(buf));
+      std::shared_ptr<jsi::MutableBuffer> buffer) noexcept {
+    return SafeAsyncArrayBuffer(std::move(buffer));
   }
 
-  // Takes ownership of a byte vector. Safe to construct off the JS thread.
+  // Takes ownership of a byte vector. Safe to call from any thread.
   static SafeAsyncArrayBuffer wrap(std::vector<uint8_t> bytes) noexcept {
     return SafeAsyncArrayBuffer(std::move(bytes));
   }
@@ -114,8 +111,8 @@ class SafeAsyncArrayBuffer {
 
  private:
   explicit SafeAsyncArrayBuffer(
-      std::shared_ptr<jsi::MutableBuffer> buf) noexcept
-      : mutableBuffer_{std::move(buf)} {}
+      std::shared_ptr<jsi::MutableBuffer> buffer) noexcept
+      : mutableBuffer_{std::move(buffer)} {}
 
   explicit SafeAsyncArrayBuffer(std::vector<uint8_t> bytes) noexcept
       : ownedCopy_{std::move(bytes)} {}
@@ -126,8 +123,8 @@ class SafeAsyncArrayBuffer {
 
 template <>
 struct Bridging<SafeAsyncArrayBuffer> {
-  static jsi::Value toJs(jsi::Runtime& rt, SafeAsyncArrayBuffer buf) {
-    if (auto mutableBuf = buf.getMutableBuffer()) {
+  static jsi::Value toJs(jsi::Runtime& rt, SafeAsyncArrayBuffer buffer) {
+    if (auto mutableBuf = buffer.getMutableBuffer()) {
       return jsi::Value(rt, rt.createArrayBuffer(std::move(mutableBuf)));
     }
     struct OwnedBuffer final : jsi::MutableBuffer {
@@ -141,7 +138,7 @@ struct Bridging<SafeAsyncArrayBuffer> {
       }
       SafeAsyncArrayBuffer buf_;
     };
-    auto owned = std::make_shared<OwnedBuffer>(std::move(buf));
+    auto owned = std::make_shared<OwnedBuffer>(std::move(buffer));
     return jsi::Value(rt, rt.createArrayBuffer(std::move(owned)));
   }
 };
