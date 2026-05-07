@@ -1845,7 +1845,6 @@ public class com/facebook/react/devsupport/DevServerHelper {
 	public fun getDevServerSplitBundleURL (Ljava/lang/String;)Ljava/lang/String;
 	public fun getSourceMapUrl (Ljava/lang/String;)Ljava/lang/String;
 	public fun getSourceUrl (Ljava/lang/String;)Ljava/lang/String;
-	public final fun getWebsocketProxyURL ()Ljava/lang/String;
 	public fun isPackagerRunning (Lcom/facebook/react/devsupport/interfaces/PackagerStatusCallback;)V
 	public final fun openDebugger (Lcom/facebook/react/bridge/ReactContext;Ljava/lang/String;Ljava/lang/String;)V
 	public final fun openInspectorConnection ()V
