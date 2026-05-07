@@ -198,9 +198,7 @@ val configureFantomTester by
               "-DREACT_THIRD_PARTY_NDK_DIR=$reactAndroidBuildDir/third-party-ndk",
               "-DRN_ENABLE_DEBUG_STRING_CONVERTIBLE=ON",
           )
-
       cmdArgs.add("-DHERMES_V1_ENABLED=1")
-
       commandLine(cmdArgs)
       standardOutputFile.set(project.file("$buildDir/reports/configure-fantom_tester.log"))
       errorOutputFile.set(project.file("$buildDir/reports/configure-fantom_tester.error.log"))
