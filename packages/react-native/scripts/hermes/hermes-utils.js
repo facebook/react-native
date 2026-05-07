@@ -21,7 +21,6 @@ type BuildType = 'dry-run' | 'release' | 'nightly';
 
 const SDKS_DIR = path.normalize(path.join(__dirname, '..', '..', 'sdks'));
 const HERMES_TAG_FILE_PATH = path.join(SDKS_DIR, '.hermesversion');
-const HERMES_V1_TAG_FILE_PATH = path.join(SDKS_DIR, '.hermesv1version');
 
 function readHermesTag() /*: string */ {
   if (fs.existsSync(HERMES_TAG_FILE_PATH)) {
@@ -40,25 +39,6 @@ function readHermesTag() /*: string */ {
   }
 
   throw new Error('[Hermes] .hermesversion does not exist.');
-}
-
-function readHermesV1Tag() /*: string */ {
-  if (fs.existsSync(HERMES_V1_TAG_FILE_PATH)) {
-    const data = fs
-      .readFileSync(HERMES_V1_TAG_FILE_PATH, {
-        encoding: 'utf8',
-        flag: 'r',
-      })
-      .trim();
-
-    if (data.length > 0) {
-      return data;
-    } else {
-      throw new Error('[Hermes] .hermesv1version file is empty.');
-    }
-  }
-
-  throw new Error('[Hermes] .hermesv1version does not exist.');
 }
 
 async function updateHermesTag(
@@ -94,18 +74,15 @@ async function updateHermesTag(
 
 async function setHermesTag(
   hermesTag /*: string */,
-  hermesV1Tag /*: string */,
 ) {
   if (!fs.existsSync(SDKS_DIR)) {
     fs.mkdirSync(SDKS_DIR, {recursive: true});
   }
 
   await updateHermesTag(HERMES_TAG_FILE_PATH, hermesTag, 'Hermes');
-  await updateHermesTag(HERMES_V1_TAG_FILE_PATH, hermesV1Tag, 'Hermes V1');
 }
 
 module.exports = {
   readHermesTag,
-  readHermesV1Tag,
   setHermesTag,
 };
