@@ -18,6 +18,7 @@ const {MockedParser} = require('../parserMock');
 const {emitUnion} = require('../parsers-primitives');
 const {
   Visitor,
+  emitArrayBuffer,
   emitArrayType,
   emitBoolean,
   emitBoolProp,
@@ -821,6 +822,32 @@ describe('emitMixed', () => {
       const result = emitMixed(false);
       const expected = {
         type: 'MixedTypeAnnotation',
+      };
+
+      expect(result).toEqual(expected);
+    });
+  });
+});
+
+describe('emitArrayBuffer', () => {
+  describe('when nullable is true', () => {
+    it('returns nullable type annotation', () => {
+      const result = emitArrayBuffer(true);
+      const expected = {
+        type: 'NullableTypeAnnotation',
+        typeAnnotation: {
+          type: 'ArrayBufferTypeAnnotation',
+        },
+      };
+
+      expect(result).toEqual(expected);
+    });
+  });
+  describe('when nullable is false', () => {
+    it('returns non nullable type annotation', () => {
+      const result = emitArrayBuffer(false);
+      const expected = {
+        type: 'ArrayBufferTypeAnnotation',
       };
 
       expect(result).toEqual(expected);

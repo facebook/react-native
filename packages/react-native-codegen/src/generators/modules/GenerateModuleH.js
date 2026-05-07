@@ -146,6 +146,8 @@ function serializeArg(
       return wrap(val => `${val}.asObject(rt)`);
     case 'MixedTypeAnnotation':
       return wrap(val => `jsi::Value(rt, ${val})`);
+    case 'ArrayBufferTypeAnnotation':
+      return wrap(val => `${val}.asObject(rt).getArrayBuffer(rt)`);
     default:
       realTypeAnnotation.type as empty;
       throw new Error(
@@ -307,6 +309,8 @@ function translatePrimitiveJSTypeToCpp(
       return wrapOptional('jsi::Value', isRequired);
     case 'MixedTypeAnnotation':
       return wrapOptional('jsi::Value', isRequired);
+    case 'ArrayBufferTypeAnnotation':
+      return wrapOptional('jsi::ArrayBuffer', isRequired);
     default:
       realTypeAnnotation.type as empty;
       throw new Error(createErrorMessage(realTypeAnnotation.type));

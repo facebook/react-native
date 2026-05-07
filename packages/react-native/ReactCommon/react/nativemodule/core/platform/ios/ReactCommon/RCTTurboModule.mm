@@ -43,6 +43,29 @@ static int32_t getUniqueId()
 
 namespace facebook::react {
 
+namespace {
+// MutableBuffer backed by an NSMutableData. ARC retains the NSMutableData via
+// the strong member, so the underlying bytes stay alive for the buffer's
+// lifetime.
+class NSMutableDataMutableBuffer final : public jsi::MutableBuffer {
+ public:
+  explicit NSMutableDataMutableBuffer(NSMutableData *data) : data_(data) {}
+
+  size_t size() const override
+  {
+    return data_.length;
+  }
+
+  uint8_t *data() override
+  {
+    return static_cast<uint8_t *>(data_.mutableBytes);
+  }
+
+ private:
+  NSMutableData *data_; // strong (ARC) — keeps memory alive
+};
+} // namespace
+
 namespace TurboModuleConvertUtils {
 /**
  * All static helper functions are ObjC++ specific.
@@ -102,6 +125,13 @@ jsi::Value convertObjCObjectToJSIValue(jsi::Runtime &runtime, id value)
     return convertNSDictionaryToJSIObject(runtime, (NSDictionary *)value);
   } else if ([value isKindOfClass:[NSArray class]]) {
     return convertNSArrayToJSIArray(runtime, (NSArray *)value);
+  } else if ([value isKindOfClass:[NSData class]]) {
+    // Async path: the NSData lifetime cannot be guaranteed (it may be a
+    // temporary built inside the module). Copy into an owning
+    // VectorMutableBuffer so the JS ArrayBuffer is independent of the source.
+    auto data = (NSData *)value;
+    auto buffer = std::make_shared<VectorMutableBuffer>(static_cast<const uint8_t *>(data.bytes), data.length);
+    return {runtime, jsi::ArrayBuffer(runtime, std::move(buffer))};
   } else if (value == (id)kCFNull) {
     return jsi::Value::null();
   }
@@ -117,13 +147,15 @@ static NSArray *convertJSIArrayToNSArray(
     jsi::Runtime &runtime,
     const jsi::Array &value,
     const std::shared_ptr<CallInvoker> &jsInvoker,
-    BOOL useNSNull)
+    BOOL useNSNull,
+    BOOL isSync)
 {
   size_t size = value.size(runtime);
   NSMutableArray *result = [NSMutableArray new];
   for (size_t i = 0; i < size; i++) {
     // Insert kCFNull when it's `undefined` value to preserve the indices.
-    id convertedObject = convertJSIValueToObjCObject(runtime, value.getValueAtIndex(runtime, i), jsInvoker, useNSNull);
+    id convertedObject =
+        convertJSIValueToObjCObject(runtime, value.getValueAtIndex(runtime, i), jsInvoker, useNSNull, isSync);
     [result addObject:(convertedObject != nullptr) ? convertedObject : (id)kCFNull];
   }
   return result;
@@ -133,7 +165,8 @@ static NSDictionary *convertJSIObjectToNSDictionary(
     jsi::Runtime &runtime,
     const jsi::Object &value,
     const std::shared_ptr<CallInvoker> &jsInvoker,
-    BOOL useNSNull)
+    BOOL useNSNull,
+    BOOL isSync)
 {
   jsi::Array propertyNames = value.getPropertyNames(runtime);
   size_t size = propertyNames.size(runtime);
@@ -141,7 +174,7 @@ static NSDictionary *convertJSIObjectToNSDictionary(
   for (size_t i = 0; i < size; i++) {
     jsi::String name = propertyNames.getValueAtIndex(runtime, i).getString(runtime);
     NSString *k = convertJSIStringToNSString(runtime, name);
-    id v = convertJSIValueToObjCObject(runtime, value.getProperty(runtime, name), jsInvoker, useNSNull);
+    id v = convertJSIValueToObjCObject(runtime, value.getProperty(runtime, name), jsInvoker, useNSNull, isSync);
     if (v != nullptr) {
       result[k] = v;
     }
@@ -170,7 +203,8 @@ id convertJSIValueToObjCObject(
     jsi::Runtime &runtime,
     const jsi::Value &value,
     const std::shared_ptr<CallInvoker> &jsInvoker,
-    BOOL useNSNull)
+    BOOL useNSNull,
+    BOOL isSync)
 {
   if (value.isUndefined() || (value.isNull() && !useNSNull)) {
     return nil;
@@ -190,12 +224,26 @@ id convertJSIValueToObjCObject(
   if (value.isObject()) {
     jsi::Object o = value.getObject(runtime);
     if (o.isArray(runtime)) {
-      return convertJSIArrayToNSArray(runtime, o.getArray(runtime), jsInvoker, useNSNull);
+      return convertJSIArrayToNSArray(runtime, o.getArray(runtime), jsInvoker, useNSNull, isSync);
     }
     if (o.isFunction(runtime)) {
       return convertJSIFunctionToCallback(runtime, o.getFunction(runtime), jsInvoker);
     }
-    return convertJSIObjectToNSDictionary(runtime, o, jsInvoker, useNSNull);
+    if (o.isArrayBuffer(runtime)) {
+      auto ab = o.getArrayBuffer(runtime);
+      if (isSync) {
+        // Sync: the JS ArrayBuffer outlives this call, so the NSMutableData
+        // can safely wrap its memory directly. freeWhenDone:NO ensures the
+        // JS-owned memory is not freed by NSMutableData.
+        return [NSMutableData dataWithBytesNoCopy:(void *)ab.data(runtime) length:ab.size(runtime) freeWhenDone:NO];
+      }
+      // Async: the JS ArrayBuffer may be GC'd before the native module reads
+      // the buffer (e.g. dispatched to another queue, stored on a property).
+      // Copy into ObjC-owned NSMutableData to give the module independent
+      // ownership of the bytes.
+      return [NSMutableData dataWithBytes:ab.data(runtime) length:ab.size(runtime)];
+    }
+    return convertJSIObjectToNSDictionary(runtime, o, jsInvoker, useNSNull, isSync);
   }
 
   throw jsi::JSError(runtime, "Unsupported jsi::Value kind");
@@ -526,6 +574,24 @@ jsi::Value ObjCTurboModule::convertReturnIdToJSIValue(
       throw jsi::JSError(runtime, "convertReturnIdToJSIValue: FunctionKind is not supported yet.");
     case PromiseKind:
       throw jsi::JSError(runtime, "convertReturnIdToJSIValue: PromiseKind wasn't handled properly.");
+    case ArrayBufferKind: {
+      // Codegen guarantees the return type is NSMutableData *, but guard
+      // against modules that return a plain NSData (or anything else) and
+      // would otherwise UB on -mutableBytes.
+      if (result != nil && ![result isKindOfClass:[NSMutableData class]]) {
+        RCTLogError(@"TurboModule returned non-NSMutableData for ArrayBuffer return value.");
+        break;
+      }
+      auto mutableData = (NSMutableData *)result;
+      if (mutableData.length > 0) {
+        // Zero-copy: NSMutableDataMutableBuffer holds a strong (ARC) reference
+        // to the NSMutableData, keeping the bytes alive for the lifetime of
+        // the JS ArrayBuffer.
+        auto buffer = std::make_shared<NSMutableDataMutableBuffer>(mutableData);
+        returnValue = jsi::ArrayBuffer(runtime, std::move(buffer));
+      }
+      break;
+    }
   }
 
   return returnValue;
@@ -596,7 +662,8 @@ void ObjCTurboModule::setInvocationArg(
     const jsi::Value &arg,
     size_t i,
     NSInvocation *inv,
-    NSMutableArray *retainedObjectsForInvocation)
+    NSMutableArray *retainedObjectsForInvocation,
+    bool isSync)
 {
   if (arg.isBool()) {
     bool v = arg.getBool();
@@ -639,7 +706,7 @@ void ObjCTurboModule::setInvocationArg(
    * Convert arg to ObjC objects.
    */
   BOOL enableModuleArgumentNSNullConversionIOS = ReactNativeFeatureFlags::enableModuleArgumentNSNullConversionIOS();
-  id objCArg = convertJSIValueToObjCObject(runtime, arg, jsInvoker_, enableModuleArgumentNSNullConversionIOS);
+  id objCArg = convertJSIValueToObjCObject(runtime, arg, jsInvoker_, enableModuleArgumentNSNullConversionIOS, isSync);
   if (objCArg != nullptr) {
     NSString *methodNameNSString = @(methodName);
 
@@ -728,7 +795,7 @@ NSInvocation *ObjCTurboModule::createMethodInvocation(
   for (size_t i = 0; i < count; i++) {
     const jsi::Value &arg = args[i];
     const std::string objCArgType = [methodSignature getArgumentTypeAtIndex:i + 2];
-    setInvocationArg(runtime, methodName, objCArgType, arg, i, inv, retainedObjectsForInvocation);
+    setInvocationArg(runtime, methodName, objCArgType, arg, i, inv, retainedObjectsForInvocation, isSync);
   }
 
   if (isSync) {
@@ -813,7 +880,8 @@ jsi::Value ObjCTurboModule::invokeObjCMethod(
     case StringKind:
     case ObjectKind:
     case ArrayKind:
-    case FunctionKind: {
+    case FunctionKind:
+    case ArrayBufferKind: {
       id result = performMethodInvocation(runtime, true, methodName, inv, retainedObjectsForInvocation);
       TurboModulePerfLogger::syncMethodCallReturnConversionStart(moduleName, methodName);
       returnValue = convertReturnIdToJSIValue(runtime, methodName, returnType, result);

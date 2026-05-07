@@ -100,6 +100,8 @@ function formatTypeAnnotation(annotation: CompleteTypeAnnotation): string {
   switch (annotation.type) {
     case 'AnyTypeAnnotation':
       return 'any';
+    case 'ArrayBufferTypeAnnotation':
+      return 'ArrayBuffer';
     case 'ArrayTypeAnnotation':
       return 'Array<' + formatTypeAnnotation(annotation.elementType) + '>';
     case 'BooleanTypeAnnotation':

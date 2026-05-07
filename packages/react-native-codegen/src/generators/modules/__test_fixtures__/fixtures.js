@@ -2792,6 +2792,74 @@ const STRING_LITERALS: SchemaType = {
   },
 };
 
+const ARRAYBUFFER_MODULE: SchemaType = {
+  modules: {
+    NativeSampleTurboModule: {
+      type: 'NativeModule',
+      aliasMap: {},
+      enumMap: {},
+      spec: {
+        eventEmitters: [],
+        methods: [
+          {
+            name: 'getArrayBuffer',
+            optional: false,
+            typeAnnotation: {
+              type: 'FunctionTypeAnnotation',
+              returnTypeAnnotation: {
+                type: 'ArrayBufferTypeAnnotation',
+              },
+              params: [
+                {
+                  name: 'buffer',
+                  optional: false,
+                  typeAnnotation: {
+                    type: 'ArrayBufferTypeAnnotation',
+                  },
+                },
+              ],
+            },
+          },
+          {
+            name: 'saveData',
+            optional: false,
+            typeAnnotation: {
+              type: 'FunctionTypeAnnotation',
+              returnTypeAnnotation: {
+                type: 'VoidTypeAnnotation',
+              },
+              params: [
+                {
+                  name: 'data',
+                  optional: false,
+                  typeAnnotation: {
+                    type: 'ArrayBufferTypeAnnotation',
+                  },
+                },
+              ],
+            },
+          },
+          {
+            name: 'loadData',
+            optional: false,
+            typeAnnotation: {
+              type: 'FunctionTypeAnnotation',
+              returnTypeAnnotation: {
+                type: 'NullableTypeAnnotation',
+                typeAnnotation: {
+                  type: 'ArrayBufferTypeAnnotation',
+                },
+              },
+              params: [],
+            },
+          },
+        ],
+      },
+      moduleName: 'SampleTurboModule',
+    },
+  },
+};
+
 module.exports = {
   complex_objects: COMPLEX_OBJECTS,
   two_modules_different_files: TWO_MODULES_DIFFERENT_FILES,
@@ -2804,4 +2872,5 @@ module.exports = {
   SampleWithUppercaseName: SAMPLE_WITH_UPPERCASE_NAME,
   union_module: UNION_MODULE,
   string_literals: STRING_LITERALS,
+  arraybuffer_module: ARRAYBUFFER_MODULE,
 };

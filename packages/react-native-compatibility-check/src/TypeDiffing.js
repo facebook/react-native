@@ -183,6 +183,7 @@ export function compareTypeAnnotation(
     case 'NumberTypeAnnotation':
     case 'StringTypeAnnotation':
     case 'VoidTypeAnnotation':
+    case 'ArrayBufferTypeAnnotation':
       return {status: 'matching'};
     case 'ArrayTypeAnnotation':
       invariant(olderAnnotation.type === 'ArrayTypeAnnotation', EQUALITY_MSG);

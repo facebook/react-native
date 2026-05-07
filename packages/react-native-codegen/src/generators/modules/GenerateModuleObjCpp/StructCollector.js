@@ -132,6 +132,8 @@ class StructCollector {
         return wrapNullable(nullable, typeAnnotation);
       case 'MixedTypeAnnotation':
         throw new Error('Mixed types are unsupported in structs');
+      case 'ArrayBufferTypeAnnotation':
+        throw new Error('ArrayBuffer types are unsupported in structs');
       case 'UnionTypeAnnotation':
         try {
           const validUnionType = parseValidUnionType(typeAnnotation);

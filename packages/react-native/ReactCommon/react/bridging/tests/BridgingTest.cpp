@@ -775,6 +775,92 @@ TEST_F(BridgingTest, dynamicTest) {
   EXPECT_TRUE(undefinedFromJsResult.isNull());
 }
 
+TEST_F(BridgingTest, sharedMutableBufferTest) {
+  // Basic construction and accessors
+  std::vector<uint8_t> source = {1, 2, 3, 4, 5};
+  auto shared = SharedMutableBuffer(source.data(), source.size());
+  EXPECT_EQ(source.size(), shared.size());
+  EXPECT_EQ(source.data(), shared.data()); // pointer identity, no copy
+
+  // Mutability through the shared pointer is visible at the source
+  *shared.data() = 99;
+  EXPECT_EQ(99, source[0]);
+
+  // Release callback fires on destruction
+  bool released = false;
+  {
+    auto buffer = SharedMutableBuffer(
+        source.data(), source.size(), [&released]() { released = true; });
+    EXPECT_FALSE(released);
+  }
+  EXPECT_TRUE(released);
+
+  // No-op release callback does not crash
+  {
+    auto buffer = SharedMutableBuffer(source.data(), source.size());
+  }
+}
+
+// NOLINTBEGIN(cppcoreguidelines-pro-bounds-pointer-arithmetic)
+TEST_F(BridgingTest, vectorMutableBufferOwnsCopy) {
+  std::vector<uint8_t> source = {1, 2, 3, 4, 5};
+  auto buffer = std::make_shared<VectorMutableBuffer>(source);
+  EXPECT_EQ(5, buffer->size());
+  EXPECT_EQ(1, buffer->data()[0]);
+
+  // Mutating the source after construction does NOT affect the owned copy
+  source[0] = 99;
+  EXPECT_EQ(1, buffer->data()[0]);
+
+  // Construction from raw pointer + size also takes a copy
+  std::vector<uint8_t> source2 = {10, 20, 30};
+  auto buffer2 =
+      std::make_shared<VectorMutableBuffer>(source2.data(), source2.size());
+  source2[0] = 0xFF;
+  EXPECT_EQ(10, buffer2->data()[0]);
+}
+
+TEST_F(BridgingTest, arrayBufferBidirectionalMutation) {
+  // Modifications through jsi::ArrayBuffer are visible via the underlying
+  // MutableBuffer, and vice versa.
+  std::vector<uint8_t> original = {10, 20, 30, 40, 50};
+  auto buffer = std::make_shared<VectorMutableBuffer>(original);
+  auto* originalPtr = buffer->data();
+
+  auto arrayBuffer = jsi::ArrayBuffer(rt, buffer);
+  EXPECT_EQ(5, arrayBuffer.size(rt));
+  EXPECT_EQ(originalPtr, arrayBuffer.data(rt)); // pointer identity preserved
+
+  // Write through the ArrayBuffer
+  arrayBuffer.data(rt)[0] = 0xDE;
+  arrayBuffer.data(rt)[4] = 0xAD;
+  EXPECT_EQ(0xDE, buffer->data()[0]);
+  EXPECT_EQ(0xAD, buffer->data()[4]);
+  EXPECT_EQ(20, buffer->data()[1]); // middle bytes unchanged
+  EXPECT_EQ(30, buffer->data()[2]);
+  EXPECT_EQ(40, buffer->data()[3]);
+
+  // Write through the MutableBuffer
+  buffer->data()[2] = 0xBE;
+  EXPECT_EQ(0xBE, arrayBuffer.data(rt)[2]);
+}
+
+TEST_F(BridgingTest, arrayBufferSharedBufferRoundTrip) {
+  // SharedMutableBuffer over a stack vector, handed to jsi::ArrayBuffer.
+  // Mutations flow back to the original source (zero-copy semantics).
+  std::vector<uint8_t> source = {1, 2, 3, 4, 5};
+  auto sourcePtr = source.data();
+  auto buffer =
+      std::make_shared<SharedMutableBuffer>(source.data(), source.size());
+  auto arrayBuffer = jsi::ArrayBuffer(rt, std::move(buffer));
+
+  EXPECT_EQ(source.size(), arrayBuffer.size(rt));
+  EXPECT_EQ(sourcePtr, arrayBuffer.data(rt));
+  arrayBuffer.data(rt)[0] = 0x42;
+  EXPECT_EQ(0x42, source[0]); // mutation flows back to the borrowed source
+}
+// NOLINTEND(cppcoreguidelines-pro-bounds-pointer-arithmetic)
+
 TEST_F(BridgingTest, highResTimeStampTest) {
   HighResTimeStamp timestamp = HighResTimeStamp::now();
   EXPECT_EQ(

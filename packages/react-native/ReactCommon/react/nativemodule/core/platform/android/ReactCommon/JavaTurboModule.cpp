@@ -10,6 +10,7 @@
 
 #include <cxxreact/MoveWrapper.h>
 #include <cxxreact/TraceSection.h>
+#include <fbjni/ByteBuffer.h>
 #include <fbjni/fbjni.h>
 #include <glog/logging.h>
 #include <jsi/jsi.h>
@@ -30,6 +31,46 @@
 namespace facebook::react {
 
 namespace TMPL = TurboModulePerfLogger;
+
+namespace {
+// MutableBuffer backed by a JNI global reference to a direct
+// java.nio.ByteBuffer. The direct ByteBuffer's address is stable for the
+// lifetime of the global ref, so we cache it in the constructor.
+//
+// The destructor may run on a non-JVM thread when JS GC fires, so it attaches
+// the current thread before releasing the global ref.
+class JByteBufferMutableBuffer final : public jsi::MutableBuffer {
+ public:
+  explicit JByteBufferMutableBuffer(
+      jni::global_ref<jni::JByteBuffer> byteBuffer)
+      : byteBuffer_(std::move(byteBuffer)),
+        data_(byteBuffer_->getDirectBytes()),
+        size_(static_cast<size_t>(byteBuffer_->getDirectSize())) {}
+
+  ~JByteBufferMutableBuffer() override {
+    jni::ThreadScope threadScope;
+    byteBuffer_.reset();
+  }
+
+  JByteBufferMutableBuffer(const JByteBufferMutableBuffer&) = delete;
+  JByteBufferMutableBuffer& operator=(const JByteBufferMutableBuffer&) = delete;
+  JByteBufferMutableBuffer(JByteBufferMutableBuffer&&) = delete;
+  JByteBufferMutableBuffer& operator=(JByteBufferMutableBuffer&&) = delete;
+
+  size_t size() const override {
+    return size_;
+  }
+
+  uint8_t* data() override {
+    return data_;
+  }
+
+ private:
+  jni::global_ref<jni::JByteBuffer> byteBuffer_;
+  uint8_t* data_;
+  size_t size_;
+};
+} // namespace
 
 JavaTurboModule::JavaTurboModule(const InitParams& params)
     : TurboModule(params.moduleName, params.jsInvoker),
@@ -434,6 +475,28 @@ JNIArgs convertJSIArgsToJNIArgs(
       auto dynamicFromValue = jsi::dynamicFromValue(rt, *arg);
       auto jParams = JDynamicNative::newObjectCxxArgs(dynamicFromValue);
       jarg->l = makeGlobalIfNecessary(jParams.release());
+    } else if (type == "Ljava/nio/ByteBuffer;") {
+      if (!arg->isObject() || !arg->getObject(rt).isArrayBuffer(rt)) {
+        throw JavaTurboModuleArgumentConversionException(
+            "ArrayBuffer", static_cast<int>(argIndex), methodName, arg, &rt);
+      }
+      auto arrayBuffer = arg->getObject(rt).getArrayBuffer(rt);
+      auto data = arrayBuffer.data(rt);
+      auto size = arrayBuffer.size(rt);
+      jni::local_ref<jni::JByteBuffer> byteBuffer;
+      if (valueKind == VoidKind || valueKind == PromiseKind) {
+        // Async: the JS ArrayBuffer may be GC'd before Java reads the buffer.
+        // Allocate a Java-owned direct ByteBuffer and copy the bytes in.
+        byteBuffer = jni::JByteBuffer::allocateDirect(static_cast<jint>(size));
+        // Destination was just allocated with exactly `size` bytes above.
+        // NOLINTNEXTLINE(facebook-security-vulnerable-memcpy)
+        std::memcpy(byteBuffer->getDirectBytes(), data, size);
+      } else {
+        // Sync: the JS ArrayBuffer outlives the call. Wrap its memory directly
+        // for zero-copy.
+        byteBuffer = jni::JByteBuffer::wrapBytes(data, size);
+      }
+      jarg->l = makeGlobalIfNecessary(byteBuffer.release());
     } else {
       throw JavaTurboModuleInvalidArgumentTypeException(
           type, argIndex, methodName);
@@ -962,6 +1025,37 @@ jsi::Value JavaTurboModule::invokeJavaMethod(
           });
       TMPL::asyncMethodCallEnd(moduleName, methodName);
       return jsPromise;
+    }
+    case ArrayBufferKind: {
+      auto returnObject =
+          env->CallObjectMethodA(instance, methodID, jargs.data());
+      checkJNIErrorForMethodCall();
+
+      TMPL::syncMethodCallExecutionEnd(moduleName, methodName);
+      TMPL::syncMethodCallReturnConversionStart(moduleName, methodName);
+
+      jsi::Value returnValue = jsi::Value::null();
+      if (returnObject != nullptr) {
+        auto jByteBuffer = jni::adopt_local(
+            static_cast<jni::JByteBuffer::javaobject>(returnObject));
+        auto size = jByteBuffer->getDirectSize();
+
+        if (size > 0) {
+          // Zero-copy: a JNI global reference pins the ByteBuffer's memory for
+          // the lifetime of the JS ArrayBuffer. The destructor of
+          // JByteBufferMutableBuffer attaches the current thread before
+          // releasing the global ref, so it is safe to be invoked on any
+          // thread by the JS GC.
+          auto buffer = std::make_shared<JByteBufferMutableBuffer>(
+              jni::make_global(jByteBuffer));
+          auto arrayBuffer = jsi::ArrayBuffer(runtime, std::move(buffer));
+          returnValue = jsi::Value(runtime, arrayBuffer);
+        }
+      }
+
+      TMPL::syncMethodCallReturnConversionEnd(moduleName, methodName);
+      TMPL::syncMethodCallEnd(moduleName, methodName);
+      return returnValue;
     }
     default:
       throw std::runtime_error(

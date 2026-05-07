@@ -170,6 +170,7 @@ function translateEventEmitterTypeToJavaType(
     case 'FloatTypeAnnotation':
     case 'Int32TypeAnnotation':
     case 'VoidTypeAnnotation':
+    case 'ArrayBufferTypeAnnotation':
       // TODO: Add support for these types
       throw new Error(
         `Unsupported eventType for ${eventEmitter.name}. Found: ${eventEmitter.typeAnnotation.typeAnnotation.type}`,
@@ -267,6 +268,9 @@ function translateFunctionParamToJavaType(
     case 'FunctionTypeAnnotation':
       imports.add('com.facebook.react.bridge.Callback');
       return wrapOptional('Callback', isRequired);
+    case 'ArrayBufferTypeAnnotation':
+      imports.add('java.nio.ByteBuffer');
+      return wrapOptional('ByteBuffer', isRequired);
     default:
       realTypeAnnotation.type as 'MixedTypeAnnotation';
       throw new Error(createErrorMessage(realTypeAnnotation.type));
@@ -361,6 +365,9 @@ function translateFunctionReturnTypeToJavaType(
     case 'ArrayTypeAnnotation':
       imports.add('com.facebook.react.bridge.WritableArray');
       return wrapOptional('WritableArray', isRequired);
+    case 'ArrayBufferTypeAnnotation':
+      imports.add('java.nio.ByteBuffer');
+      return wrapOptional('ByteBuffer', isRequired);
     default:
       realTypeAnnotation.type as 'MixedTypeAnnotation';
       throw new Error(createErrorMessage(realTypeAnnotation.type));
@@ -442,6 +449,8 @@ function getFalsyReturnStatementFromReturnType(
     case 'GenericObjectTypeAnnotation':
       return 'return null;';
     case 'ArrayTypeAnnotation':
+      return 'return null;';
+    case 'ArrayBufferTypeAnnotation':
       return 'return null;';
     default:
       realTypeAnnotation.type as 'MixedTypeAnnotation';

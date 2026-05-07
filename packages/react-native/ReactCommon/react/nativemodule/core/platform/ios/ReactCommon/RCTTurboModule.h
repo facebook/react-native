@@ -35,7 +35,8 @@ id convertJSIValueToObjCObject(
     jsi::Runtime &runtime,
     const jsi::Value &value,
     const std::shared_ptr<CallInvoker> &jsInvoker,
-    BOOL useNSNull = NO);
+    BOOL useNSNull = NO,
+    BOOL isSync = NO);
 } // namespace TurboModuleConvertUtils
 
 template <>
@@ -121,7 +122,8 @@ class JSI_EXPORT ObjCTurboModule : public TurboModule {
       const jsi::Value &arg,
       size_t i,
       NSInvocation *inv,
-      NSMutableArray *retainedObjectsForInvocation);
+      NSMutableArray *retainedObjectsForInvocation,
+      bool isSync);
 
  private:
   // Does the NativeModule dispatch async methods to the JS thread?
