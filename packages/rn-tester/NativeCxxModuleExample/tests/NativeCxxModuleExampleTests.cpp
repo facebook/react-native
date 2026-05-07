@@ -8,6 +8,7 @@
 #include <NativeCxxModuleExample/NativeCxxModuleExample.h>
 #include <ReactCommon/TurboModuleTestFixture.h>
 #include <gtest/gtest.h>
+#include <cstring>
 #include <memory>
 #include <optional>
 #include <vector>
@@ -29,6 +30,30 @@ TEST_F(NativeCxxModuleExampleTests, GetArrayReturnsCorrectValues) {
   ASSERT_EQ(result.size(), 1);
   EXPECT_EQ(result[0]->a, 1);
   EXPECT_EQ(result[0]->b, "2");
+}
+
+TEST_F(NativeCxxModuleExampleTests, GetArrayBufferReturnsCorrectValues) {
+  // SharedMutableBuffer wraps inputData.data() without copying, so
+  // getArrayBuffer mutates inputData in place. Compare against the expected
+  // reversed bytes rather than against inputData itself.
+  std::vector<uint8_t> inputData = {1, 2, 3, 4, 5};
+  std::vector<uint8_t> expected = {5, 4, 3, 2, 1};
+  auto inputBuffer =
+      std::make_shared<SharedMutableBuffer>(inputData.data(), inputData.size());
+  jsi::ArrayBuffer arg(*runtime_, std::move(inputBuffer));
+
+  auto result = module_->getArrayBuffer(*runtime_, std::move(arg));
+  ASSERT_EQ(result.size(*runtime_), expected.size());
+  EXPECT_EQ(
+      std::memcmp(result.data(*runtime_), expected.data(), expected.size()), 0);
+}
+
+TEST_F(NativeCxxModuleExampleTests, GetArrayBufferEmptyReturnsEmpty) {
+  auto inputBuffer = std::make_shared<SharedMutableBuffer>(nullptr, 0);
+  jsi::ArrayBuffer arg(*runtime_, std::move(inputBuffer));
+
+  auto result = module_->getArrayBuffer(*runtime_, std::move(arg));
+  EXPECT_EQ(result.size(*runtime_), 0);
 }
 
 TEST_F(NativeCxxModuleExampleTests, GetBoolReturnsCorrectValues) {

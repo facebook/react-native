@@ -47,6 +47,7 @@ export interface Spec extends TurboModule {
   +getNumber: (arg: number) => number;
   +getString: (arg: string) => string;
   +getArray: (arg: Array<any>) => Array<any>;
+  +getArrayBuffer: (arg: ArrayBuffer) => ArrayBuffer;
   +getObject: (arg: Object) => Object;
   +getUnsafeObject: (arg: UnsafeObject) => UnsafeObject;
   +getRootTag: (arg: RootTag) => RootTag;

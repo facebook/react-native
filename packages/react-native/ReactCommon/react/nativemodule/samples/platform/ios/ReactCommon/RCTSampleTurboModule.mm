@@ -13,6 +13,8 @@
 #import <React/RCTUtils.h>
 #import <ReactCommon/RCTTurboModuleWithJSIBindings.h>
 #import <UIKit/UIKit.h>
+#import <algorithm>
+#import <span>
 
 using namespace facebook::react;
 
@@ -208,6 +210,16 @@ RCT_EXPORT_SYNCHRONOUS_TYPED_METHOD(NSDictionary *, getObjectAssert : (NSDiction
 RCT_EXPORT_METHOD(promiseAssert : (RCTPromiseResolveBlock)resolve reject : (RCTPromiseRejectBlock)reject)
 {
   RCTAssert(false, @"Intentional assert from ObjC promiseAssert");
+}
+
+RCT_EXPORT_SYNCHRONOUS_TYPED_METHOD(NSMutableData *, getArrayBuffer : (NSMutableData *)arg)
+{
+  // Reverse the bytes in place. The NSMutableData is backed by JS-owned memory
+  // wrapped via [NSMutableData dataWithBytesNoCopy:freeWhenDone:NO] for sync
+  // calls, so the underlying buffer is mutable.
+  std::span<uint8_t> bytes(static_cast<uint8_t *>(arg.mutableBytes), arg.length);
+  std::reverse(bytes.begin(), bytes.end());
+  return arg;
 }
 
 @end

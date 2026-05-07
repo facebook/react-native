@@ -6,9 +6,13 @@
  */
 
 #include "NativeCxxModuleExample.h"
+#include <react/bridging/ArrayBuffer.h>
 #include <react/debug/react_native_assert.h>
+#include <algorithm>
+#include <cstring>
 #include <iomanip>
 #include <ostream>
+#include <span>
 #include <sstream>
 #include <utility>
 
@@ -264,5 +268,15 @@ AsyncPromise<> NativeCxxModuleExample::promiseAssert(jsi::Runtime& rt) {
   promise.reject("Asserts disabled");
   return promise;
 };
+
+jsi::ArrayBuffer NativeCxxModuleExample::getArrayBuffer(
+    jsi::Runtime& rt,
+    jsi::ArrayBuffer arg) {
+  // Reverse the bytes of the input ArrayBuffer in place, mutating the
+  // JS-owned memory directly.
+  std::span<uint8_t> bytes(arg.data(rt), arg.size(rt));
+  std::reverse(bytes.begin(), bytes.end());
+  return arg;
+}
 
 } // namespace facebook::react

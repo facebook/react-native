@@ -31,6 +31,7 @@ type State = {
 type Examples =
   | 'callback'
   | 'getArray'
+  | 'getArrayBuffer'
   | 'getBool'
   | 'getConstants'
   | 'getCustomEnum'
@@ -101,6 +102,22 @@ class SampleTurboModuleExample extends React.Component<{}, State> {
         {a: 2, b: 'bar'},
         null,
       ]),
+    getArrayBuffer: () => {
+      if (!NativeSampleTurboModule.getArrayBuffer) {
+        return null;
+      }
+      const buffer = new ArrayBuffer(4);
+      const view = new Uint8Array(buffer);
+      view[0] = 1;
+      view[1] = 2;
+      view[2] = 3;
+      view[3] = 4;
+      const result = NativeSampleTurboModule.getArrayBuffer(buffer);
+      if (result) {
+        return Array.from(new Uint8Array(result));
+      }
+      return null;
+    },
     getObject: () =>
       NativeSampleTurboModule.getObject({a: 1, b: 'foo', c: null}),
     getUnsafeObject: () =>

@@ -224,6 +224,16 @@ static facebook::jsi::Value __hostFunction_NativeSampleTurboModuleSpecJSI_getIma
       .invokeObjCMethod(rt, PromiseKind, "getImageUrl", @selector(getImageUrl:reject:), args, count);
 }
 
+static facebook::jsi::Value __hostFunction_NativeSampleTurboModuleSpecJSI_getArrayBuffer(
+    facebook::jsi::Runtime &rt,
+    TurboModule &turboModule,
+    const facebook::jsi::Value *args,
+    size_t count)
+{
+  return static_cast<ObjCTurboModule &>(turboModule)
+      .invokeObjCMethod(rt, ArrayBufferKind, "getArrayBuffer", @selector(getArrayBuffer:), args, count);
+}
+
 static facebook::jsi::Value __hostFunction_NativeSampleTurboModuleSpecJSI_getConstants(
     facebook::jsi::Runtime &rt,
     TurboModule &turboModule,
@@ -276,6 +286,9 @@ NativeSampleTurboModuleSpecJSI::NativeSampleTurboModuleSpecJSI(const ObjCTurboMo
   methodMap_["promiseAssert"] = MethodMetadata{0, __hostFunction_NativeSampleTurboModuleSpecJSI_promiseAssert};
 
   methodMap_["getImageUrl"] = MethodMetadata{0, __hostFunction_NativeSampleTurboModuleSpecJSI_getImageUrl};
+
+  methodMap_["getArrayBuffer"] =
+      MethodMetadata{.argCount = 1, .invoker = __hostFunction_NativeSampleTurboModuleSpecJSI_getArrayBuffer};
 
   methodMap_["getConstants"] = MethodMetadata{0, __hostFunction_NativeSampleTurboModuleSpecJSI_getConstants};
 
