@@ -1012,6 +1012,7 @@ export interface Spec extends TurboModule {
   readonly getArrayBuffer: () => ArrayBuffer;
   readonly voidArrayBuffer: (arg: ArrayBuffer) => void;
   readonly voidNullableArrayBuffer: (arg: ArrayBuffer | null) => void;
+  readonly promiseArrayBuffer: () => Promise<ArrayBuffer>;
 }
 
 export default TurboModuleRegistry.getEnforcing<Spec>('SampleTurboModule');

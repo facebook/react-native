@@ -381,16 +381,6 @@ function emitPromise(
       });
     }
 
-    const [elementNonNullable] = unwrapNullable<$FlowFixMe>(elementTypeResult);
-
-    if (elementNonNullable.type === 'ArrayBufferTypeAnnotation') {
-      throw new ParserError(
-        hasteModuleName,
-        typeAnnotation,
-        'Promise<ArrayBuffer> is not yet supported for TurboModule specs.',
-      );
-    }
-
     return wrapNullable(nullable, {
       type: 'PromiseTypeAnnotation',
       elementType: elementTypeResult,

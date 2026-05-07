@@ -194,28 +194,6 @@ TEST_F(BridgingTest, arrayTest) {
   EXPECT_EQ(headers.size(), jsiHeaders.size(rt));
 }
 
-TEST_F(BridgingTest, arrayBufferTest) {
-  auto rawBuf = eval("new ArrayBuffer(7)");
-  auto buf = bridging::fromJs<jsi::ArrayBuffer>(rt, rawBuf, invoker);
-  EXPECT_EQ(7, buf.size(rt));
-
-  auto typedArrayBuf = eval("new Uint8Array([1, 2, 3]).buffer");
-  auto fromTa =
-      bridging::fromJs<jsi::ArrayBuffer>(rt, typedArrayBuf, invoker);
-  EXPECT_EQ(3, fromTa.size(rt));
-
-  auto jsVal = bridging::toJs(rt, std::move(buf), invoker);
-  EXPECT_TRUE(jsVal.asObject(rt).isArrayBuffer(rt));
-  auto roundTrip =
-      bridging::fromJs<jsi::ArrayBuffer>(rt, jsVal, invoker);
-  EXPECT_EQ(7, roundTrip.size(rt));
-
-  EXPECT_JSI_THROW(
-      bridging::fromJs<jsi::ArrayBuffer>(rt, jsi::Value(1), invoker));
-  EXPECT_JSI_THROW(
-      bridging::fromJs<jsi::ArrayBuffer>(rt, jsi::Object(rt), invoker));
-}
-
 TEST_F(BridgingTest, functionTest) {
   auto object = jsi::Object(rt);
   object.setProperty(rt, "foo", "bar");
@@ -798,6 +776,148 @@ TEST_F(BridgingTest, dynamicTest) {
   auto undefinedFromJsResult =
       bridging::fromJs<folly::dynamic>(rt, jsi::Value::undefined(), invoker);
   EXPECT_TRUE(undefinedFromJsResult.isNull());
+}
+
+TEST_F(BridgingTest, arrayBufferTest) {
+  auto rawBuf = eval("new ArrayBuffer(7)");
+  auto buf = bridging::fromJs<jsi::ArrayBuffer>(rt, rawBuf, invoker);
+  EXPECT_EQ(7, buf.size(rt));
+
+  auto typedArrayBuf = eval("new Uint8Array([1, 2, 3]).buffer");
+  auto fromTa = bridging::fromJs<jsi::ArrayBuffer>(rt, typedArrayBuf, invoker);
+  EXPECT_EQ(3, fromTa.size(rt));
+
+  auto jsVal = bridging::toJs(rt, std::move(buf), invoker);
+  EXPECT_TRUE(jsVal.asObject(rt).isArrayBuffer(rt));
+  auto roundTrip = bridging::fromJs<jsi::ArrayBuffer>(rt, jsVal, invoker);
+  EXPECT_EQ(7, roundTrip.size(rt));
+
+  EXPECT_JSI_THROW(
+      bridging::fromJs<jsi::ArrayBuffer>(rt, jsi::Value(1), invoker));
+  EXPECT_JSI_THROW(
+      bridging::fromJs<jsi::ArrayBuffer>(rt, jsi::Object(rt), invoker));
+}
+
+TEST_F(BridgingTest, safeAsyncArrayBufferConstructorTest) {
+  struct VectorBuffer : jsi::MutableBuffer {
+    explicit VectorBuffer(std::vector<uint8_t> data) : data_(std::move(data)) {}
+    size_t size() const override {
+      return data_.size();
+    }
+    uint8_t* data() override {
+      return data_.data();
+    }
+    std::vector<uint8_t> data_;
+  };
+
+  // JS-heap-allocated buffer: constructor copies, isNativeBacked() false.
+  {
+    auto jsBuf = eval("new Uint8Array([10, 20, 30]).buffer")
+                     .asObject(rt)
+                     .getArrayBuffer(rt);
+    auto safe = SafeAsyncArrayBuffer(rt, jsBuf);
+    EXPECT_FALSE(safe.isNativeBacked());
+    EXPECT_EQ(3, safe.size());
+    EXPECT_EQ(10, safe.data()[0]);
+    EXPECT_EQ(20, safe.data()[1]);
+    EXPECT_EQ(30, safe.data()[2]);
+    EXPECT_EQ(nullptr, safe.getMutableBuffer());
+  }
+
+  // Native-backed buffer: constructor borrows, isNativeBacked() true.
+  {
+    auto nativeBuf =
+        std::make_shared<VectorBuffer>(std::vector<uint8_t>{1, 2, 3, 4});
+    auto* rawPtr = nativeBuf.get();
+    auto jsBuf = jsi::ArrayBuffer(rt, nativeBuf);
+    auto safe = SafeAsyncArrayBuffer(rt, jsBuf);
+    EXPECT_TRUE(safe.isNativeBacked());
+    EXPECT_EQ(4, safe.size());
+    EXPECT_EQ(1, safe.data()[0]);
+    EXPECT_EQ(4, safe.data()[3]);
+    EXPECT_EQ(rawPtr, safe.getMutableBuffer().get());
+  }
+}
+
+TEST_F(BridgingTest, safeAsyncArrayBufferBorrowTest) {
+  struct VectorBuffer : jsi::MutableBuffer {
+    explicit VectorBuffer(std::vector<uint8_t> data) : data_(std::move(data)) {}
+    size_t size() const override {
+      return data_.size();
+    }
+    uint8_t* data() override {
+      return data_.data();
+    }
+    std::vector<uint8_t> data_;
+  };
+
+  // Native-backed buffer: borrow succeeds, zero-copy.
+  {
+    auto nativeBuf =
+        std::make_shared<VectorBuffer>(std::vector<uint8_t>{5, 6, 7});
+    auto* rawPtr = nativeBuf.get();
+    auto jsBuf = jsi::ArrayBuffer(rt, nativeBuf);
+    auto safe = SafeAsyncArrayBuffer::borrow(rt, jsBuf);
+    EXPECT_TRUE(safe.isNativeBacked());
+    EXPECT_EQ(3, safe.size());
+    EXPECT_EQ(5, safe.data()[0]);
+    EXPECT_EQ(rawPtr, safe.getMutableBuffer().get());
+  }
+
+  // JS-heap-allocated buffer: borrow throws.
+  {
+    auto jsBuf = eval("new ArrayBuffer(4)").asObject(rt).getArrayBuffer(rt);
+    EXPECT_JSI_THROW(SafeAsyncArrayBuffer::borrow(rt, jsBuf));
+  }
+}
+
+TEST_F(BridgingTest, safeAsyncArrayBufferCopyTest) {
+  struct VectorBuffer : jsi::MutableBuffer {
+    explicit VectorBuffer(std::vector<uint8_t> data) : data_(std::move(data)) {}
+    size_t size() const override {
+      return data_.size();
+    }
+    uint8_t* data() override {
+      return data_.data();
+    }
+    std::vector<uint8_t> data_;
+  };
+
+  // JS-heap-allocated buffer: copy succeeds.
+  {
+    auto jsBuf = eval("new Uint8Array([100, 200]).buffer")
+                     .asObject(rt)
+                     .getArrayBuffer(rt);
+    auto safe = SafeAsyncArrayBuffer::copy(rt, jsBuf);
+    EXPECT_FALSE(safe.isNativeBacked());
+    EXPECT_EQ(2, safe.size());
+    EXPECT_EQ(100, safe.data()[0]);
+    EXPECT_EQ(200, safe.data()[1]);
+    EXPECT_EQ(nullptr, safe.getMutableBuffer());
+  }
+
+  // Native-backed buffer: copy() still copies (isNativeBacked false).
+  {
+    auto nativeBuf =
+        std::make_shared<VectorBuffer>(std::vector<uint8_t>{9, 8, 7});
+    auto jsBuf = jsi::ArrayBuffer(rt, nativeBuf);
+    auto safe = SafeAsyncArrayBuffer::copy(rt, jsBuf);
+    EXPECT_FALSE(safe.isNativeBacked());
+    EXPECT_EQ(3, safe.size());
+    EXPECT_EQ(9, safe.data()[0]);
+    EXPECT_EQ(nullptr, safe.getMutableBuffer());
+  }
+}
+
+TEST_F(BridgingTest, safeAsyncArrayBufferMoveTest) {
+  auto jsBuf =
+      eval("new Uint8Array([1, 2, 3]).buffer").asObject(rt).getArrayBuffer(rt);
+  auto safe = SafeAsyncArrayBuffer(rt, jsBuf);
+  EXPECT_EQ(3, safe.size());
+
+  auto moved = std::move(safe);
+  EXPECT_EQ(3, moved.size());
+  EXPECT_EQ(1, moved.data()[0]);
 }
 
 TEST_F(BridgingTest, highResTimeStampTest) {

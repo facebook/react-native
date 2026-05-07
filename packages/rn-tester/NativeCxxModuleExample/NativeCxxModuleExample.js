@@ -83,6 +83,8 @@ export interface Spec extends TurboModule {
   +onEvent: CodegenTypes.EventEmitter<EnumNone>;
   +getArray: (arg: Array<ObjectStruct | null>) => Array<ObjectStruct | null>;
   +getArrayBuffer: (payload: ArrayBuffer) => ArrayBuffer;
+  +createNativeBuffer: (size: number) => ArrayBuffer;
+  +processAsyncBuffer: (payload: ArrayBuffer) => Promise<number>;
   +getBool: (arg: boolean) => boolean;
   +getConstants: () => ConstantsStruct;
   +getCustomEnum: (arg: EnumInt) => EnumInt;

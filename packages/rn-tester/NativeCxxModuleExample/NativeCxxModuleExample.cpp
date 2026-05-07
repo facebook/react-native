@@ -6,10 +6,12 @@
  */
 
 #include "NativeCxxModuleExample.h"
+#include <react/bridging/ArrayBuffer.h>
 #include <react/debug/react_native_assert.h>
 #include <iomanip>
 #include <ostream>
 #include <sstream>
+#include <thread>
 #include <utility>
 
 namespace facebook::react {
@@ -56,6 +58,43 @@ jsi::ArrayBuffer NativeCxxModuleExample::getArrayBuffer(
     jsi::Runtime& /*rt*/,
     jsi::ArrayBuffer arg) {
   return arg;
+}
+
+jsi::ArrayBuffer NativeCxxModuleExample::createNativeBuffer(
+    jsi::Runtime& rt,
+    int32_t size) {
+  struct VectorBuffer : jsi::MutableBuffer {
+    explicit VectorBuffer(std::initializer_list<uint8_t> init) : data_(init) {}
+
+    size_t size() const override {
+      return data_.size();
+    }
+    uint8_t* data() override {
+      return data_.data();
+    }
+    std::vector<uint8_t> data_;
+  };
+
+  auto buf = std::make_shared<VectorBuffer>(
+      std::initializer_list<uint8_t>{1, 2, 3, 4, 5, 6, 7, 8, 9, 10});
+  return jsi::ArrayBuffer(rt, std::move(buf));
+}
+
+AsyncPromise<double> NativeCxxModuleExample::processAsyncBuffer(
+    jsi::Runtime& rt,
+    jsi::ArrayBuffer arg) {
+  auto promise = AsyncPromise<double>(rt, jsInvoker_);
+  auto storage = SafeAsyncArrayBuffer(rt, arg);
+  std::thread([promise, storage = std::move(storage)]() mutable {
+    auto sum = 0.0;
+    auto bytes = storage.data();
+    for (size_t i = 0; i < storage.size(); ++i) {
+      sum += bytes[i];
+    }
+    promise.resolve(sum);
+  }).detach();
+
+  return promise;
 }
 
 bool NativeCxxModuleExample::getBool(jsi::Runtime& /*rt*/, bool arg) {

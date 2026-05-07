@@ -126,6 +126,10 @@ class NativeCxxModuleExample : public NativeCxxModuleExampleCxxSpec<NativeCxxMod
 
   jsi::ArrayBuffer getArrayBuffer(jsi::Runtime &rt, jsi::ArrayBuffer payload);
 
+  jsi::ArrayBuffer createNativeBuffer(jsi::Runtime& rt, int32_t size);
+
+  AsyncPromise<double> processAsyncBuffer(jsi::Runtime& rt, jsi::ArrayBuffer arg);
+
   bool getBool(jsi::Runtime &rt, bool arg);
 
   ConstantsStruct getConstants(jsi::Runtime &rt);

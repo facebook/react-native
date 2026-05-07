@@ -1173,6 +1173,20 @@ exports[`RN Codegen Flow Parser can generate fixture NATIVE_MODULE_WITH_ARRAY_BU
                 }
               ]
             }
+          },
+          {
+            'name': 'promiseArrayBuffer',
+            'optional': false,
+            'typeAnnotation': {
+              'type': 'FunctionTypeAnnotation',
+              'returnTypeAnnotation': {
+                'type': 'PromiseTypeAnnotation',
+                'elementType': {
+                  'type': 'ArrayBufferTypeAnnotation'
+                }
+              },
+              'params': []
+            }
           }
         ]
       },

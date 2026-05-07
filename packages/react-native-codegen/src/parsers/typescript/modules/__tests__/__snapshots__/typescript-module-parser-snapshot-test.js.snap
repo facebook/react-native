@@ -1160,6 +1160,20 @@ exports[`RN Codegen TypeScript Parser can generate fixture NATIVE_MODULE_WITH_AR
                 }
               ]
             }
+          },
+          {
+            'name': 'promiseArrayBuffer',
+            'optional': false,
+            'typeAnnotation': {
+              'type': 'FunctionTypeAnnotation',
+              'returnTypeAnnotation': {
+                'type': 'PromiseTypeAnnotation',
+                'elementType': {
+                  'type': 'ArrayBufferTypeAnnotation'
+                }
+              },
+              'params': []
+            }
           }
         ]
       },

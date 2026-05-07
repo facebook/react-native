@@ -654,35 +654,35 @@ describe('emitPromise', () => {
   });
 
   describe('when Promise element type resolves to ArrayBufferTypeAnnotation', () => {
-    it('throws when Promise resolves to ArrayBuffer', () => {
-      expect(() =>
-        emitPromise(
-          moduleName,
-          {
-            typeParameters: {
-              params: [{}],
-              type: 'TypeParameterInstantiation',
-            },
-            id: {
-              name: 'Promise',
-            },
+    it('returns PromiseTypeAnnotation with ArrayBuffer element type', () => {
+      const result = emitPromise(
+        moduleName,
+        {
+          typeParameters: {
+            params: [{}],
+            type: 'TypeParameterInstantiation',
           },
-          parser,
-          false,
-          {},
-          {},
-          {},
-          function <T>(f: () => T): $FlowFixMe {
-            return f();
+          id: {
+            name: 'Promise',
           },
-          false,
-          () => ({
-            type: 'ArrayBufferTypeAnnotation',
-          }),
-        ),
-      ).toThrow(
-        'Module testModuleName: Promise<ArrayBuffer> is not yet supported for TurboModule specs.',
+        },
+        parser,
+        false,
+        {},
+        {},
+        {},
+        function <T>(f: () => T): $FlowFixMe {
+          return f();
+        },
+        false,
+        () => ({
+          type: 'ArrayBufferTypeAnnotation',
+        }),
       );
+      expect(result).toEqual({
+        type: 'PromiseTypeAnnotation',
+        elementType: {type: 'ArrayBufferTypeAnnotation'},
+      });
     });
   });
 });

@@ -41,6 +41,7 @@ type Examples =
   | 'callbackWithSubscription'
   | 'getArray'
   | 'getArrayBuffer'
+  | 'processAsyncBuffer'
   | 'getBool'
   | 'getConstants'
   | 'getCustomEnum'
@@ -110,6 +111,22 @@ class NativeCxxModuleExampleExample extends React.Component<{}, State> {
         return null;
       }
       return new Uint8Array(output).toString();
+    },
+    processAsyncBuffer: async () => {
+      const view = new Uint8Array([10, 20, 30]);
+      const nativeBuf = NativeCxxModuleExample?.createNativeBuffer(4);
+
+      const [byteSum, zeroCopyByteSum] = await Promise.all([
+        NativeCxxModuleExample?.processAsyncBuffer(view.buffer),
+        nativeBuf == null
+          ? Promise.resolve(null)
+          : NativeCxxModuleExample?.processAsyncBuffer(nativeBuf),
+      ]);
+
+      this._setResult(
+        'processAsyncBuffer',
+        `sum=${String(byteSum + zeroCopyByteSum)}`,
+      );
     },
     getBool: () => NativeCxxModuleExample?.getBool(true),
     getConstants: () => NativeCxxModuleExample?.getConstants(),
