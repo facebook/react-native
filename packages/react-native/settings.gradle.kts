@@ -45,7 +45,7 @@ project(":packages:react-native").projectDir = file("/tmp")
 // and apply relevant properties to the :react-native project.
 buildscript {
   val properties = java.util.Properties()
-  val propertiesToInherit = listOf("hermesV1Enabled", "react.hermesV1Enabled")
+  val propertiesToInherit = emptyList<String>()
 
   // We cannot assume that the node_modules are next to the android project, for example
   // in monorepos, they might get hoisted.

@@ -18,10 +18,6 @@ object PropertyUtils {
   const val HERMES_ENABLED = "hermesEnabled"
   const val SCOPED_HERMES_ENABLED = "react.hermesEnabled"
 
-  /** Public property that toggles Hermes V1 */
-  const val HERMES_V1_ENABLED = "hermesV1Enabled"
-  const val SCOPED_HERMES_V1_ENABLED = "react.hermesV1Enabled"
-
   /** Public property that toggles edge-to-edge */
   const val EDGE_TO_EDGE_ENABLED = "edgeToEdgeEnabled"
   const val SCOPED_EDGE_TO_EDGE_ENABLED = "react.edgeToEdgeEnabled"
@@ -92,5 +88,4 @@ object PropertyUtils {
    * are stored in sdks/hermes-engine/version.properties
    */
   const val INTERNAL_HERMES_VERSION_NAME = "HERMES_VERSION_NAME"
-  const val INTERNAL_HERMES_V1_VERSION_NAME = "HERMES_V1_VERSION_NAME"
 }
