@@ -5,6 +5,8 @@
  * LICENSE file in the root directory of this source tree.
  */
 
+@file:Suppress("DEPRECATION_ERROR") // Conflicting okhttp versions
+
 package com.facebook.react.modules.network
 
 import android.os.Bundle
@@ -236,7 +238,7 @@ internal object NetworkEventUtil {
   @JvmStatic
   fun okHttpHeadersToMap(headers: Headers): Map<String, String> {
     val responseHeaders = mutableMapOf<String, String>()
-    for (i in 0 until headers.size) {
+    for (i in 0 until headers.size()) {
       val headerName = headers.name(i)
       // multiple values for the same header
       if (responseHeaders.containsKey(headerName)) {
@@ -259,14 +261,14 @@ internal object NetworkEventUtil {
 
     if (body.isOneShot()) {
       // Reading would drain the underlying stream and break the real upload,
-      // so fall back to a placeholder that includes the byte count when known.
+      // so fall back to a placeholder that includes the byte count when known
       return binaryPartLabel(body)
     }
 
     // MultipartBody does not propagate isOneShot() from its parts, so check each
     // part explicitly. Reading a one-shot part here would drain the underlying
     // stream and cause the real request to fail.
-    if (body is MultipartBody && body.parts.any { it.body.isOneShot() }) {
+    if (body is MultipartBody && body.parts().any { it.body().isOneShot() }) {
       return previewMultipartWithBinaryParts(body)
     }
 
@@ -274,7 +276,7 @@ internal object NetworkEventUtil {
       val buffer = Buffer()
       body.writeTo(buffer)
 
-      val size = buffer.size
+      val size = buffer.size()
       if (size <= MAX_BODY_PREVIEW_SIZE) {
         buffer.readUtf8()
       } else {
@@ -286,18 +288,18 @@ internal object NetworkEventUtil {
   }
 
   private fun previewMultipartWithBinaryParts(body: MultipartBody): String {
-    val boundary = body.boundary
+    val boundary = body.boundary()
     val out = StringBuilder()
 
-    for (part in body.parts) {
+    for (part in body.parts()) {
       out.append("--").append(boundary).append("\r\n")
 
-      part.headers?.let { headers ->
-        for (i in 0 until headers.size) {
+      part.headers()?.let { headers ->
+        for (i in 0 until headers.size()) {
           out.append(headers.name(i)).append(": ").append(headers.value(i)).append("\r\n")
         }
       }
-      val partBody = part.body
+      val partBody = part.body()
       partBody.contentType()?.let { out.append("Content-Type: ").append(it).append("\r\n") }
       out.append("\r\n")
 
