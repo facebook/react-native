@@ -251,14 +251,18 @@ function SkewExample(): React.Node {
   };
   const tapStyle =
     (extra: ViewStyleProp) =>
-    ({pressed}: PressableStateCallbackType): ViewStyleProp =>
-      [styles.skewBox, extra, pressed && styles.skewBoxPressed];
+    ({pressed}: PressableStateCallbackType): ViewStyleProp => [
+      styles.skewBox,
+      extra,
+      pressed && styles.skewBoxPressed,
+    ];
 
   return (
     <View testID="transform-skew-27649" style={styles.skewContainer}>
       <Text style={styles.skewLabel}>Last tapped: {tapped}</Text>
       <Text style={styles.skewNote}>
-        Tap any box to confirm hit testing follows the rendered shape.
+        Tap any box to confirm hit testing follows the rendered parallelogram on
+        both platforms.
       </Text>
       <View style={styles.skewRow}>
         <Pressable

@@ -600,7 +600,10 @@ public abstract class BaseViewManager<T extends View, C extends LayoutShadowNode
       view.setScaleY(1);
       view.setCameraDistance(0);
       view.setAnimationMatrix(affine);
-      view.setTag(R.id.skew_animation_matrix, Boolean.TRUE);
+      // Tag value is the matrix itself so TouchTargetHelper can use it for hit testing -- View's
+      // own getMatrix() does not compose mAnimationMatrix, so without this fallback the React
+      // hit-test path would still see the original rectangular bounds.
+      view.setTag(R.id.skew_animation_matrix, affine);
       return;
     }
 
