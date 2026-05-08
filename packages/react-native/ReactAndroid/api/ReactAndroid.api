@@ -2281,8 +2281,6 @@ public final class com/facebook/react/fabric/mounting/SurfaceMountingManager {
 	public final fun applyViewSnapshot (ILandroid/graphics/Bitmap;)V
 	public final fun attachRootView (Landroid/view/View;Lcom/facebook/react/uimanager/ThemedReactContext;)V
 	public final fun deleteView (I)V
-	public final fun enqueuePendingEvent (ILjava/lang/String;ZLcom/facebook/react/bridge/WritableMap;I)V
-	public final fun enqueuePendingEvent (ILjava/lang/String;ZLcom/facebook/react/bridge/WritableMap;IJ)V
 	public final fun getContext ()Lcom/facebook/react/uimanager/ThemedReactContext;
 	public final fun getSurfaceId ()I
 	public final fun getView (I)Landroid/view/View;

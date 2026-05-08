@@ -9,7 +9,6 @@ package com.facebook.react.fabric.mounting
 
 import android.annotation.SuppressLint
 import android.graphics.Bitmap
-import android.os.SystemClock
 import android.view.View
 import android.view.ViewGroup
 import android.view.ViewParent
@@ -965,21 +964,18 @@ internal constructor(
           }
           vs
         }
+
     val previousEventEmitterWrapper = viewState.eventEmitter
-    viewState.eventEmitter = eventEmitter
+    synchronized(viewState) {
+      viewState.eventEmitter = eventEmitter
+      // Invoke pending events queued to the view state
+      viewState.pendingEventQueue?.forEach { it.dispatch(eventEmitter) }
+      viewState.pendingEventQueue = null
+    }
 
     // Immediately destroy native side of wrapper, instead of waiting for Java GC.
     if (previousEventEmitterWrapper != eventEmitter && previousEventEmitterWrapper != null) {
       previousEventEmitterWrapper.destroy()
-    }
-
-    val pendingEventQueue = viewState.pendingEventQueue
-    if (pendingEventQueue != null) {
-      // Invoke pending event queued to the view state
-      for (viewEvent in pendingEventQueue) {
-        viewEvent.dispatch(eventEmitter)
-      }
-      viewState.pendingEventQueue = null
     }
   }
 
@@ -1191,57 +1187,6 @@ internal constructor(
   }
 
   @AnyThread
-  public fun enqueuePendingEvent(
-      reactTag: Int,
-      eventName: String,
-      canCoalesceEvent: Boolean,
-      params: WritableMap?,
-      @EventCategoryDef eventCategory: Int,
-  ): Unit {
-    enqueuePendingEvent(
-        reactTag,
-        eventName,
-        canCoalesceEvent,
-        params,
-        eventCategory,
-        SystemClock.uptimeMillis(),
-    )
-  }
-
-  @AnyThread
-  public fun enqueuePendingEvent(
-      reactTag: Int,
-      eventName: String,
-      canCoalesceEvent: Boolean,
-      params: WritableMap?,
-      @EventCategoryDef eventCategory: Int,
-      eventTimestamp: Long,
-  ): Unit {
-    // When the surface stopped we will reset the view state map. We are not going to enqueue
-    // pending events as they are not expected to be dispatched anyways.
-    val viewState = registryGet(reactTag)
-
-    if (viewState == null) {
-      // Cannot queue event without view state. Do nothing here.
-      return
-    }
-
-    val viewEvent =
-        PendingViewEvent(eventName, params, eventCategory, canCoalesceEvent, eventTimestamp)
-    UiThreadUtil.runOnUiThread {
-      val eventEmitter = viewState.eventEmitter
-      if (eventEmitter != null) {
-        viewEvent.dispatch(eventEmitter)
-      } else {
-        val queue =
-            viewState.pendingEventQueue
-                ?: LinkedList<PendingViewEvent>().also { viewState.pendingEventQueue = it }
-        queue.add(viewEvent)
-      }
-    }
-  }
-
-  @AnyThread
   internal fun dispatchEvent(
       reactTag: Int,
       eventName: String,
@@ -1252,31 +1197,43 @@ internal constructor(
   ) {
     val viewState = registryGet(reactTag)
     if (viewState == null) {
-      // This can happen if the view has disappeared from the screen (because of async events)
       FLog.i(TAG, "Unable to invoke event: %s for reactTag: %d", eventName, reactTag)
       return
     }
 
-    val eventEmitter = viewState.eventEmitter
-    if (eventEmitter == null) {
-      // The view is pre-allocated and created. However, it hasn't been mounted yet. We will have
-      // access to the event emitter later when the view is mounted. For now just save the event
-      // in the view state and trigger it later.
-      enqueuePendingEvent(
-          reactTag,
-          eventName,
-          canCoalesceEvent,
-          params,
-          eventCategory,
-          eventTimestamp,
-      )
-      return
+    var emitter = viewState.eventEmitter
+    if (emitter == null) {
+      synchronized(viewState) {
+        val emitterUnderLock = viewState.eventEmitter
+        if (emitterUnderLock != null) {
+          emitter = emitterUnderLock
+        } else {
+          // The view is pre-allocated and created. However, it hasn't been mounted yet. We will
+          // have access to the event emitter later when the view is mounted. For now just save the
+          // event in the view state and trigger it later.
+          val queue =
+              viewState.pendingEventQueue
+                  ?: LinkedList<PendingViewEvent>().also { viewState.pendingEventQueue = it }
+          queue.add(
+              PendingViewEvent(eventName, params, eventCategory, canCoalesceEvent, eventTimestamp)
+          )
+          return
+        }
+      }
     }
 
+    if (viewState.pendingEventQueue != null) {
+      // We have an emitter and also a pending event queue - we must lock
+      // and wait for the pending event queue to be cleared.
+      synchronized<Unit>(viewState) {}
+      assert(viewState.pendingEventQueue == null)
+    }
+
+    checkNotNull(emitter)
     if (canCoalesceEvent) {
-      eventEmitter.dispatchUnique(eventName, params, eventTimestamp)
+      emitter.dispatchUnique(eventName, params, eventTimestamp)
     } else {
-      eventEmitter.dispatch(eventName, params, eventCategory, eventTimestamp)
+      emitter.dispatch(eventName, params, eventCategory, eventTimestamp)
     }
   }
 
@@ -1304,9 +1261,8 @@ internal constructor(
   ) {
     var currentProps: ReactStylesDiffMap? = null
     var stateWrapper: StateWrapper? = null
-    var eventEmitter: EventEmitterWrapper? = null
-
-    @ThreadConfined(ThreadConfined.UI) var pendingEventQueue: Queue<PendingViewEvent>? = null
+    @Volatile var eventEmitter: EventEmitterWrapper? = null
+    @Volatile var pendingEventQueue: Queue<PendingViewEvent>? = null
 
     override fun toString(): String {
       val isLayoutOnly = viewManager == null
