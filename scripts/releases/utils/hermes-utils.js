@@ -116,8 +116,12 @@ async function updateHermesVersionsToNightly() {
   await updateHermesCompilerVersionInDependencies(
     hermesVersions.compilerV1Version,
   );
+  // Both Android Gradle and the iOS podspec now resolve Hermes from the single
+  // HERMES_VERSION_NAME key, so we must write the latest-v1 value into it.
+  // The legacy nightly v0 version (`runtimeVersion`) is not published to Maven
+  // Central and would leave Android falling back to BUILD_FROM_GITHUB_MAIN.
   await updateHermesRuntimeDependenciesVersions(
-    hermesVersions.runtimeVersion,
+    hermesVersions.runtimeV1Version,
     hermesVersions.runtimeV1Version,
   );
 }

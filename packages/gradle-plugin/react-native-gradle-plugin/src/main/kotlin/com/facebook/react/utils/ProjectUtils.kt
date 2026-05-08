@@ -13,11 +13,9 @@ import com.facebook.react.utils.KotlinStdlibCompatUtils.lowercaseCompat
 import com.facebook.react.utils.KotlinStdlibCompatUtils.toBooleanStrictOrNullCompat
 import com.facebook.react.utils.PropertyUtils.EDGE_TO_EDGE_ENABLED
 import com.facebook.react.utils.PropertyUtils.HERMES_ENABLED
-import com.facebook.react.utils.PropertyUtils.HERMES_V1_ENABLED
 import com.facebook.react.utils.PropertyUtils.REACT_NATIVE_ARCHITECTURES
 import com.facebook.react.utils.PropertyUtils.SCOPED_EDGE_TO_EDGE_ENABLED
 import com.facebook.react.utils.PropertyUtils.SCOPED_HERMES_ENABLED
-import com.facebook.react.utils.PropertyUtils.SCOPED_HERMES_V1_ENABLED
 import com.facebook.react.utils.PropertyUtils.SCOPED_REACT_NATIVE_ARCHITECTURES
 import com.facebook.react.utils.PropertyUtils.SCOPED_USE_THIRD_PARTY_JSC
 import com.facebook.react.utils.PropertyUtils.USE_THIRD_PARTY_JSC
@@ -28,8 +26,6 @@ import org.jetbrains.kotlin.gradle.plugin.extraProperties
 internal object ProjectUtils {
 
   const val HERMES_FALLBACK = true
-
-  const val HERMES_V1_ENABLED_FALLBACK = true
 
   internal fun Project.isNewArchEnabled(): Boolean = true
 
@@ -72,23 +68,6 @@ internal object ProjectUtils {
             project.property(USE_THIRD_PARTY_JSC).toString().toBoolean()) ||
             (project.hasProperty(SCOPED_USE_THIRD_PARTY_JSC) &&
                 project.property(SCOPED_USE_THIRD_PARTY_JSC).toString().toBoolean())
-
-  internal val Project.isHermesV1Enabled: Boolean
-    get() =
-        if (
-            project.hasProperty(HERMES_V1_ENABLED) || project.hasProperty(SCOPED_HERMES_V1_ENABLED)
-        ) {
-          (project.hasProperty(HERMES_V1_ENABLED) &&
-              project.property(HERMES_V1_ENABLED).toString().toBoolean()) ||
-              (project.hasProperty(SCOPED_HERMES_V1_ENABLED) &&
-                  project.property(SCOPED_HERMES_V1_ENABLED).toString().toBoolean()) ||
-              (project.extraProperties.has(HERMES_V1_ENABLED) &&
-                  project.extraProperties.get(HERMES_V1_ENABLED).toString().toBoolean()) ||
-              (project.extraProperties.has(SCOPED_HERMES_V1_ENABLED) &&
-                  project.extraProperties.get(SCOPED_HERMES_V1_ENABLED).toString().toBoolean())
-        } else {
-          HERMES_V1_ENABLED_FALLBACK
-        }
 
   internal fun Project.needsCodegenFromPackageJson(rootProperty: DirectoryProperty): Boolean {
     val parsedPackageJson = readPackageJsonFile(this, rootProperty)

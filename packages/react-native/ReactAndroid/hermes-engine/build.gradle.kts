@@ -5,7 +5,6 @@
  * LICENSE file in the root directory of this source tree.
  */
 
-import com.facebook.react.internal.PrivateReactExtension
 import com.facebook.react.tasks.internal.*
 import de.undercouch.gradle.tasks.download.Download
 import org.apache.tools.ant.taskdefs.condition.Os
@@ -50,8 +49,6 @@ fun getSDKManagerPath(): String {
   }
 }
 
-val hermesV1Enabled =
-    rootProject.extensions.getByType(PrivateReactExtension::class.java).hermesV1Enabled.get()
 val reactNativeRootDir = project(":packages:react-native:ReactAndroid").projectDir.parent
 val customDownloadDir = System.getenv("REACT_NATIVE_DOWNLOADS_DIR")
 val downloadsDir =
@@ -82,11 +79,11 @@ val hermesBuildOutputFileTree =
         .include("**/*.cmake", "**/*.marks", "**/compiler_depends.ts", "**/Makefile", "**/link.txt")
 
 val hermesVersionProvider: Provider<String> = providers.provider {
-  var hermesVersion = if (hermesV1Enabled) "250829098.0.0-stable" else "main"
+  var hermesVersion = "250829098.0.0-stable"
   val hermesVersionFile =
       File(
           reactNativeRootDir,
-          if (hermesV1Enabled) "sdks/.hermesv1version" else "sdks/.hermesversion",
+          "sdks/.hermesversion",
       )
 
   if (hermesVersionFile.exists()) {
@@ -172,9 +169,7 @@ fun configureBuildForHermesCommandLineArgs(
   if (Os.isFamily(Os.FAMILY_WINDOWS)) {
     cmakeCommandLine = cmakeCommandLine + "-GNMake Makefiles"
   }
-  if (hermesV1Enabled) {
-    cmakeCommandLine = cmakeCommandLine + "-DHERMESVM_HEAP_HV_MODE=HEAP_HV_PREFER32"
-  }
+  cmakeCommandLine = cmakeCommandLine + "-DHERMESVM_HEAP_HV_MODE=HEAP_HV_PREFER32"
 
   return cmakeCommandLine
 }
@@ -358,9 +353,7 @@ android {
             "-DHERMES_ENABLE_INTL=True",
         )
 
-        if (hermesV1Enabled) {
-          arguments("-DHERMESVM_HEAP_HV_MODE=HEAP_HV_PREFER32")
-        }
+        arguments("-DHERMESVM_HEAP_HV_MODE=HEAP_HV_PREFER32")
 
         targets("hermesvm")
       }
