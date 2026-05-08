@@ -9,6 +9,7 @@
 #include <react/bridging/ArrayBuffer.h>
 #include <react/debug/react_native_assert.h>
 #include <iomanip>
+#include <numeric>
 #include <ostream>
 #include <sstream>
 #include <thread>
@@ -23,6 +24,20 @@ std::string to_string_with_precision(double value, int precision = 2) {
   oss << std::setprecision(precision) << std::fixed << value;
   return oss.str();
 }
+
+struct IntegerSequence : jsi::MutableBuffer {
+  explicit IntegerSequence(int32_t size) : data_(size) {
+    std::iota(data_.begin(), data_.end(), 1);
+  }
+
+  size_t size() const override {
+    return data_.size();
+  }
+  uint8_t* data() override {
+    return data_.data();
+  }
+  std::vector<uint8_t> data_;
+};
 
 } // namespace
 
@@ -62,21 +77,8 @@ jsi::ArrayBuffer NativeCxxModuleExample::getArrayBuffer(
 
 jsi::ArrayBuffer NativeCxxModuleExample::createNativeBuffer(
     jsi::Runtime& rt,
-    int32_t size) {
-  struct VectorBuffer : jsi::MutableBuffer {
-    explicit VectorBuffer(std::initializer_list<uint8_t> init) : data_(init) {}
-
-    size_t size() const override {
-      return data_.size();
-    }
-    uint8_t* data() override {
-      return data_.data();
-    }
-    std::vector<uint8_t> data_;
-  };
-
-  auto buf = std::make_shared<VectorBuffer>(
-      std::initializer_list<uint8_t>{1, 2, 3, 4, 5, 6, 7, 8, 9, 10});
+    int32_t arg) {
+  auto buf = std::make_shared<IntegerSequence>(arg);
   return jsi::ArrayBuffer(rt, std::move(buf));
 }
 
@@ -84,7 +86,7 @@ AsyncPromise<double> NativeCxxModuleExample::processAsyncBuffer(
     jsi::Runtime& rt,
     jsi::ArrayBuffer arg) {
   auto promise = AsyncPromise<double>(rt, jsInvoker_);
-  auto storage = SafeAsyncArrayBuffer::acquire(rt, arg);
+  auto storage = AsyncArrayBuffer::acquire(rt, arg);
   std::thread([promise, storage = std::move(storage)]() mutable {
     auto sum = 0.0;
     auto bytes = storage.data();
@@ -97,11 +99,13 @@ AsyncPromise<double> NativeCxxModuleExample::processAsyncBuffer(
   return promise;
 }
 
-AsyncPromise<SafeAsyncArrayBuffer> NativeCxxModuleExample::getAsyncBuffer(
-    jsi::Runtime& rt) {
-  auto promise = AsyncPromise<SafeAsyncArrayBuffer>(rt, jsInvoker_);
-  std::thread([promise]() mutable {
-    promise.resolve(SafeAsyncArrayBuffer::wrap({10, 20, 30, 40, 50}));
+AsyncPromise<AsyncArrayBuffer> NativeCxxModuleExample::getAsyncBuffer(
+    jsi::Runtime& rt,
+    int32_t arg) {
+  auto promise = AsyncPromise<AsyncArrayBuffer>(rt, jsInvoker_);
+  std::thread([promise, arg]() mutable {
+    promise.resolve(
+        AsyncArrayBuffer::wrap(std::make_shared<IntegerSequence>(arg)));
   }).detach();
   return promise;
 }

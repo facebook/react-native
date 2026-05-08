@@ -45,6 +45,11 @@ TEST_F(NativeCxxModuleExampleTests, GetArrayBufferReturnsCorrectValues) {
   EXPECT_EQ(bytes[2], 3);
 }
 
+TEST_F(NativeCxxModuleExampleTests, CreateNativeBufferReturnsCorrectSize) {
+  jsi::ArrayBuffer buf = module_->createNativeBuffer(*runtime_, 42);
+  EXPECT_EQ(buf.size(*runtime_), 42);
+}
+
 TEST_F(NativeCxxModuleExampleTests, GetBoolReturnsCorrectValues) {
   EXPECT_FALSE(module_->getBool(*runtime_, false));
   EXPECT_TRUE(module_->getBool(*runtime_, true));
