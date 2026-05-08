@@ -5,8 +5,6 @@
  * LICENSE file in the root directory of this source tree.
  */
 
-@file:Suppress("DEPRECATION_ERROR") // Conflicting okhttp versions
-
 package com.facebook.react.modules.network
 
 import android.os.Bundle
@@ -238,7 +236,7 @@ internal object NetworkEventUtil {
   @JvmStatic
   fun okHttpHeadersToMap(headers: Headers): Map<String, String> {
     val responseHeaders = mutableMapOf<String, String>()
-    for (i in 0 until headers.size()) {
+    for (i in 0 until headers.size) {
       val headerName = headers.name(i)
       // multiple values for the same header
       if (responseHeaders.containsKey(headerName)) {
@@ -260,22 +258,23 @@ internal object NetworkEventUtil {
     val body = (requestBody as? ProgressRequestBody)?.innerBody() ?: requestBody
 
     if (body.isOneShot()) {
-      // Fallback - body cannot be read twice
-      return "[Preview unavailable]"
+      // Reading would drain the underlying stream and break the real upload,
+      // so fall back to a placeholder that includes the byte count when known.
+      return binaryPartLabel(body)
     }
 
     // MultipartBody does not propagate isOneShot() from its parts, so check each
     // part explicitly. Reading a one-shot part here would drain the underlying
     // stream and cause the real request to fail.
-    if (body is MultipartBody && body.parts().any { it.body().isOneShot() }) {
-      return "[Preview unavailable]"
+    if (body is MultipartBody && body.parts.any { it.body.isOneShot() }) {
+      return previewMultipartWithBinaryParts(body)
     }
 
     return try {
       val buffer = Buffer()
       body.writeTo(buffer)
 
-      val size = buffer.size()
+      val size = buffer.size
       if (size <= MAX_BODY_PREVIEW_SIZE) {
         buffer.readUtf8()
       } else {
@@ -284,5 +283,54 @@ internal object NetworkEventUtil {
     } catch (e: IOException) {
       "[Preview unavailable]"
     }
+  }
+
+  private fun previewMultipartWithBinaryParts(body: MultipartBody): String {
+    val boundary = body.boundary
+    val out = StringBuilder()
+
+    for (part in body.parts) {
+      out.append("--").append(boundary).append("\r\n")
+
+      part.headers?.let { headers ->
+        for (i in 0 until headers.size) {
+          out.append(headers.name(i)).append(": ").append(headers.value(i)).append("\r\n")
+        }
+      }
+      val partBody = part.body
+      partBody.contentType()?.let { out.append("Content-Type: ").append(it).append("\r\n") }
+      out.append("\r\n")
+
+      if (partBody.isOneShot()) {
+        out.append(binaryPartLabel(partBody))
+      } else {
+        try {
+          val partBuffer = Buffer()
+          partBody.writeTo(partBuffer)
+          out.append(partBuffer.readUtf8())
+        } catch (e: IOException) {
+          out.append("[Preview unavailable]")
+        }
+      }
+      out.append("\r\n")
+    }
+    out.append("--").append(boundary).append("--\r\n")
+
+    return if (out.length <= MAX_BODY_PREVIEW_SIZE) {
+      out.toString()
+    } else {
+      out.substring(0, MAX_BODY_PREVIEW_SIZE) + "... (truncated, ${out.length} bytes total)"
+    }
+  }
+
+  /** Placeholder for a one-shot body, including the byte count when known. */
+  private fun binaryPartLabel(body: RequestBody): String {
+    val length =
+        try {
+          body.contentLength()
+        } catch (e: IOException) {
+          -1L
+        }
+    return if (length >= 0) "[Binary data, $length bytes]" else "[Binary data]"
   }
 }
