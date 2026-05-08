@@ -140,7 +140,7 @@ export interface ScrollViewImperativeMethods {
   +getScrollableNode: () => ?number;
   +getInnerViewNode: () => ?number;
   +getInnerViewRef: () => InnerViewInstance | null;
-  +getNativeScrollRef: () => HostInstance | null;
+  +getNativeScrollRef: () => PublicScrollViewInstance | null;
   +scrollTo: (
     options?: ScrollViewScrollToOptions | number,
     deprecatedX?: number,
@@ -873,6 +873,9 @@ class ScrollView extends React.Component<ScrollViewProps, ScrollViewState> {
 
   getNativeScrollRef: ScrollViewImperativeMethods['getNativeScrollRef'] =
     () => {
+      // Object.assign in _scrollView's mutator augments nativeInstance in place,
+      // so it is already a PublicScrollViewInstance at runtime.
+      // $FlowFixMe[incompatible-type]
       return this._scrollView.nativeInstance;
     };
 
