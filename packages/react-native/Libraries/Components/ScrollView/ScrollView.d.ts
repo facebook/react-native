@@ -264,7 +264,7 @@ interface ScrollResponderMixin extends SubscribableMixin {
    *        down to make it meet the keyboard's top. Default is false.
    */
   scrollResponderScrollNativeHandleToKeyboard(
-    nodeHandle: any,
+    nodeHandle: number | HostInstance,
     additionalOffset?: number,
     preventNegativeScrollOffset?: boolean,
   ): void;
