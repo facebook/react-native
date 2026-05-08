@@ -66,6 +66,10 @@
   <!-- tag is used to invalidate transform style in view manager -->
   <item type="id" name="invalidate_transform"/>
 
+  <!-- tag stores Boolean.TRUE while a 2D-affine skew Matrix is active on the View via
+       setAnimationMatrix, so non-skew updates can clear it only on the transition out -->
+  <item type="id" name="skew_animation_matrix"/>
+
   <!-- tag is used to store if we should render the view to a hardware texture -->
   <item type="id" name="use_hardware_layer"/>
 
