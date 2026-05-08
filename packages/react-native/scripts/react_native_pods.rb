@@ -539,9 +539,11 @@ def react_native_post_install(
   rn_relative_to_pods = rn_real.relative_path_from(pods_dir_real)
   ReactNativePodsUtils.set_build_setting(installer, build_setting: "REACT_NATIVE_PATH", value: File.join("${PODS_ROOT}", rn_relative_to_pods.to_s))
   # Store the Podfile directory as a build setting so that shell scripts can
-  # locate it without relying on PODS_ROOT/.. (breaks when Pods/ is a symlink).
-  # Use Xcode variable substitution per-project so the value persisted in
-  # project.pbxproj is portable across machines.
+  # locate it without hardcoding an absolute path. Use Xcode variable
+  # substitution per-project so the value persisted in project.pbxproj is
+  # portable across machines: $(SRCROOT) is the Podfile dir for user projects
+  # (also avoids the PODS_ROOT/.. traversal that breaks when Pods/ is a
+  # symlink), and $(SRCROOT)/.. for the Pods project.
   installer.aggregate_targets.map(&:user_project).uniq(&:path).each do |user_project|
     user_project.build_configurations.each do |config|
       config.build_settings['PODFILE_DIR'] = '$(SRCROOT)'
