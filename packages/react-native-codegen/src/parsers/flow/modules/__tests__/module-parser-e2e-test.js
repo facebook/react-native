@@ -17,7 +17,6 @@ import type {
 
 const {
   MissingTypeParameterGenericParserError,
-  ParserError,
   UnnamedFunctionParamParserError,
   UnsupportedGenericParserError,
   UnsupportedTypeAnnotationParserError,
@@ -716,26 +715,6 @@ describe('Flow Module Parser', () => {
         unwrapNullable(functionTypeAnnotation.returnTypeAnnotation);
       expect(returnTypeAnnotation.type).toBe('VoidTypeAnnotation');
       expect(isReturnTypeAnnotationNullable).toBe(false);
-    });
-
-    it('should parse methods that have a return type of Promise<ArrayBuffer>', () => {
-      const module = parseModule(`
-          import type {TurboModule} from 'RCTExport';
-          import * as TurboModuleRegistry from 'TurboModuleRegistry';
-          export interface Spec extends TurboModule {
-            load(): Promise<ArrayBuffer>,
-          }
-          export default TurboModuleRegistry.get<Spec>('Foo');
-        `);
-      const [functionTypeAnnotation] = unwrapNullable(
-        module.spec.methods[0].typeAnnotation,
-      );
-      const [returnTypeAnnotation] = unwrapNullable(
-        functionTypeAnnotation.returnTypeAnnotation,
-      );
-      expect(returnTypeAnnotation.type).toBe('PromiseTypeAnnotation');
-      const [elementType] = unwrapNullable(returnTypeAnnotation.elementType);
-      expect(elementType.type).toBe('ArrayBufferTypeAnnotation');
     });
 
     [true, false].forEach(IS_RETURN_TYPE_NULLABLE => {

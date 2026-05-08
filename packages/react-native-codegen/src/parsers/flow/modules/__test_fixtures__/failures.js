@@ -322,7 +322,7 @@ export interface Spec extends TurboModule {
 export default TurboModuleRegistry.getEnforcing<Spec>('MixedValuesEnumNativeModule');
 `;
 
-const NATIVE_MODULE_WITH_ARRAY_BUFFER_IN_OBJECT_PROPERTY = `
+const NATIVE_MODULES_WITH_ARRAY_BUFFER_IN_OBJECT_PROPERTY = `
 /**
  * Copyright (c) Meta Platforms, Inc. and affiliates.
  *
@@ -351,7 +351,6 @@ export default TurboModuleRegistry.getEnforcing<Spec>('SampleTurboModule');
 `;
 
 module.exports = {
-  NATIVE_MODULE_WITH_ARRAY_BUFFER_IN_OBJECT_PROPERTY,
   NATIVE_MODULES_WITH_READ_ONLY_OBJECT_NO_TYPE_FOR_CONTENT,
   NATIVE_MODULES_WITH_UNNAMED_PARAMS,
   NATIVE_MODULES_WITH_PROMISE_WITHOUT_TYPE,
@@ -364,4 +363,5 @@ module.exports = {
   MIXED_VALUES_ENUM_NATIVE_MODULE,
   NUMERIC_VALUES_ENUM_NATIVE_MODULE,
   MAP_WITH_EXTRA_KEYS_NATIVE_MODULE,
+  NATIVE_MODULES_WITH_ARRAY_BUFFER_IN_OBJECT_PROPERTY,
 };

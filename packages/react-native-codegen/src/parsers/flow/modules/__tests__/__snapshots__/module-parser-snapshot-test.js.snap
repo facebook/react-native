@@ -13,7 +13,7 @@ export enum SomeEnum {
                      ^"
 `;
 
-exports[`RN Codegen Flow Parser Fails with error message NATIVE_MODULE_WITH_ARRAY_BUFFER_IN_OBJECT_PROPERTY 1`] = `"Module NativeSampleTurboModule: Object property '[object Object]' cannot have type 'ArrayBuffer'."`;
+exports[`RN Codegen Flow Parser Fails with error message NATIVE_MODULES_WITH_ARRAY_BUFFER_IN_OBJECT_PROPERTY 1`] = `"Module NativeSampleTurboModule: Object property '[object Object]' cannot have type 'ArrayBuffer'."`;
 
 exports[`RN Codegen Flow Parser Fails with error message NATIVE_MODULES_WITH_ARRAY_WITH_NO_TYPE_FOR_CONTENT 1`] = `"Module NativeSampleTurboModule: Generic 'Array' must have type parameters."`;
 

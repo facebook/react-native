@@ -108,7 +108,7 @@ class NativeCxxModuleExampleExample extends React.Component<{}, State> {
     getArrayBuffer: () => {
       const view = new Uint8Array([1, 2, 3, 4, 5]);
       const buffer = NativeCxxModuleExample?.getArrayBuffer(view.buffer);
-      return new Uint8Array(buffer).toString();
+      return new Uint8Array(buffer || []).toString();
     },
     processAsyncBuffer: async () => {
       const view = new Uint8Array([10, 20, 30, 40, 50]);
@@ -116,12 +116,14 @@ class NativeCxxModuleExampleExample extends React.Component<{}, State> {
 
       const [byteSum, zeroCopyByteSum] = await Promise.all([
         NativeCxxModuleExample?.processAsyncBuffer(view.buffer),
-        NativeCxxModuleExample?.processAsyncBuffer(nativeBuffer),
+        nativeBuffer != null
+          ? NativeCxxModuleExample?.processAsyncBuffer(nativeBuffer)
+          : Promise.resolve(0),
       ]);
 
       this._setResult(
         'processAsyncBuffer',
-        `sum=${String(byteSum + zeroCopyByteSum)}`,
+        `sum=${(byteSum ?? 0) + (zeroCopyByteSum ?? 0)}`,
       );
     },
     getAsyncBuffer: () =>
