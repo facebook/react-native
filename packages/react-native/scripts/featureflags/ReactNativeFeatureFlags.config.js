@@ -1065,17 +1065,6 @@ const definitions: FeatureFlagDefinitions = {
       },
       ossReleaseStage: 'none',
     },
-    disableMaintainVisibleContentPosition: {
-      defaultValue: false,
-      metadata: {
-        dateAdded: '2025-08-26',
-        description:
-          'Disable prop maintainVisibleContentPosition in ScrollView',
-        expectedReleaseValue: false,
-        purpose: 'experimentation',
-      },
-      ossReleaseStage: 'none',
-    },
     enableNativeEventTargetEventDispatching: {
       defaultValue: false,
       metadata: {
