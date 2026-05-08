@@ -540,7 +540,18 @@ def react_native_post_install(
   ReactNativePodsUtils.set_build_setting(installer, build_setting: "REACT_NATIVE_PATH", value: File.join("${PODS_ROOT}", rn_relative_to_pods.to_s))
   # Store the Podfile directory as a build setting so that shell scripts can
   # locate it without relying on PODS_ROOT/.. (breaks when Pods/ is a symlink).
-  ReactNativePodsUtils.set_build_setting(installer, build_setting: "PODFILE_DIR", value: Pod::Config.instance.installation_root.to_s)
+  # Use Xcode variable substitution per-project so the value persisted in
+  # project.pbxproj is portable across machines.
+  installer.aggregate_targets.map(&:user_project).uniq(&:path).each do |user_project|
+    user_project.build_configurations.each do |config|
+      config.build_settings['PODFILE_DIR'] = '$(SRCROOT)'
+    end
+    user_project.save
+  end
+  installer.pods_project.build_configurations.each do |config|
+    config.build_settings['PODFILE_DIR'] = '$(SRCROOT)/..'
+  end
+  installer.pods_project.save
   ReactNativePodsUtils.set_build_setting(installer, build_setting: "SWIFT_ACTIVE_COMPILATION_CONDITIONS", value: ['$(inherited)', 'DEBUG'], config_name: "Debug")
 
   if (ENV['RCT_REMOVE_LEGACY_ARCH'] == '1')
