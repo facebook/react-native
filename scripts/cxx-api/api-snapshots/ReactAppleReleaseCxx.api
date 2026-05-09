@@ -537,6 +537,15 @@ interface NativeRedBoxSpecBase : public NSObject {
   public virtual void setEventEmitterCallback:(EventEmitterCallbackWrapper* eventEmitterCallbackWrapper);
 }
 
+interface NativeSampleTurboModuleSpecBase : public NSObject {
+  protected facebook::react::EventEmitterCallback _eventEmitterCallback;
+  public virtual void emitOnChange:(NSDictionary* value);
+  public virtual void emitOnClick:(NSString* _Nonnull value);
+  public virtual void emitOnPress();
+  public virtual void emitOnSubmit:(NSArray<id<NSObject>>* value);
+  public virtual void setEventEmitterCallback:(EventEmitterCallbackWrapper* eventEmitterCallbackWrapper);
+}
+
 interface NativeSegmentFetcherSpecBase : public NSObject {
   protected facebook::react::EventEmitterCallback _eventEmitterCallback;
   public virtual void setEventEmitterCallback:(EventEmitterCallbackWrapper* eventEmitterCallbackWrapper);
@@ -2836,6 +2845,30 @@ protocol NativeReactDevToolsSettingsManagerSpec : public NSObjectRCTBridgeModule
 protocol NativeRedBoxSpec : public NSObjectRCTBridgeModule, public RCTTurboModule {
   public virtual void dismiss();
   public virtual void setExtraData:forIdentifier:(NSDictionary* extraData, NSString* forIdentifier);
+}
+
+protocol NativeSampleTurboModuleSpec : public NSObjectRCTBridgeModule, public RCTTurboModule {
+  public virtual NSArray<id<NSObject>>* getArray:(NSArray* arg);
+  public virtual NSDictionary* getObject:(NSDictionary* arg);
+  public virtual NSDictionary* getObjectAssert:(NSDictionary* arg);
+  public virtual NSDictionary* getObjectThrows:(NSDictionary* arg);
+  public virtual NSDictionary* getUnsafeObject:(NSDictionary* arg);
+  public virtual NSDictionary* getValue:y:z:(double x, NSString* y, NSDictionary* z);
+  public virtual NSNumber* getBool:(BOOL arg);
+  public virtual NSNumber* getEnum:(double arg);
+  public virtual NSNumber* getNumber:(double arg);
+  public virtual NSNumber* getRootTag:(double arg);
+  public virtual NSString* getString:(NSString* arg);
+  public virtual facebook::react::ModuleConstants<JS::NativeSampleTurboModule::Constants> constantsToExport();
+  public virtual facebook::react::ModuleConstants<JS::NativeSampleTurboModule::Constants> getConstants();
+  public virtual void getImageUrl:reject:(RCTPromiseResolveBlock resolve, RCTPromiseRejectBlock reject);
+  public virtual void getValueWithCallback:(RCTResponseSenderBlock callback);
+  public virtual void getValueWithPromise:resolve:reject:(BOOL error, RCTPromiseResolveBlock resolve, RCTPromiseRejectBlock reject);
+  public virtual void promiseAssert:reject:(RCTPromiseResolveBlock resolve, RCTPromiseRejectBlock reject);
+  public virtual void promiseThrows:reject:(RCTPromiseResolveBlock resolve, RCTPromiseRejectBlock reject);
+  public virtual void voidFunc();
+  public virtual void voidFuncAssert();
+  public virtual void voidFuncThrows();
 }
 
 protocol NativeSegmentFetcherSpec : public NSObjectRCTBridgeModule, public RCTTurboModule {
@@ -6357,6 +6390,10 @@ class facebook::react::NativeRedBoxSpecJSI : public facebook::react::ObjCTurboMo
   public NativeRedBoxSpecJSI(const facebook::react::ObjCTurboModule::InitParams& params);
 }
 
+class facebook::react::NativeSampleTurboModuleSpecJSI : public facebook::react::ObjCTurboModule {
+  public NativeSampleTurboModuleSpecJSI(const facebook::react::ObjCTurboModule::InitParams& params);
+}
+
 class facebook::react::NativeSegmentFetcherSpecJSI : public facebook::react::ObjCTurboModule {
   public NativeSegmentFetcherSpecJSI(const facebook::react::ObjCTurboModule::InitParams& params);
 }
@@ -8790,6 +8827,11 @@ enum facebook::react::ModalHostViewSupportedOrientations : facebook::react::Moda
   PortraitUpsideDown,
 }
 
+enum facebook::react::NativeSampleTurboModuleEnumInt {
+  A,
+  B,
+}
+
 enum facebook::react::NullValueStrategy {
   Ignore,
   Override,
@@ -10823,6 +10865,14 @@ struct facebook::react::NativePushNotificationManagerIOSPermissions {
   public bool operator==(const facebook::react::NativePushNotificationManagerIOSPermissions& other) const;
 }
 
+template <typename P0, typename P1, typename P2>
+struct facebook::react::NativeSampleTurboModuleObjectStruct {
+  public P0 a;
+  public P1 b;
+  public P2 c;
+  public bool operator==(const facebook::react::NativeSampleTurboModuleObjectStruct& other) const;
+}
+
 template <typename P0, typename P1>
 struct facebook::react::NativeAnimatedModuleEventMapping {
   public P0 nativeEventPath;
@@ -11213,6 +11263,19 @@ class facebook::react::NativeRedBoxCxxSpec : public facebook::react::TurboModule
 }
 
 template <typename T>
+class facebook::react::NativeSampleTurboModuleCxxSpec : public facebook::react::TurboModule {
+  protected NativeSampleTurboModuleCxxSpec(std::shared_ptr<facebook::react::CallInvoker> jsInvoker);
+  protected void emitOnPress();
+  public static constexpr std::string_view kModuleName;
+  template <typename OnChangeType>
+  protected void emitOnChange(OnChangeType value);
+  template <typename OnClickType>
+  protected void emitOnClick(OnClickType value);
+  template <typename OnSubmitType>
+  protected void emitOnSubmit(std::vector<OnSubmitType> value);
+}
+
+template <typename T>
 class facebook::react::NativeSegmentFetcherCxxSpec : public facebook::react::TurboModule {
   protected NativeSegmentFetcherCxxSpec(std::shared_ptr<facebook::react::CallInvoker> jsInvoker);
   public static constexpr std::string_view kModuleName;
@@ -11517,6 +11580,13 @@ struct facebook::react::NativeReactDevToolsRuntimeSettingsModuleReloadAndProfile
 }
 
 template <typename T>
+struct facebook::react::NativeSampleTurboModuleObjectStructBridging {
+  public static T fromJs(facebook::jsi::Runtime& rt, const facebook::jsi::Object& value, const std::shared_ptr<facebook::react::CallInvoker>& jsInvoker);
+  public static T types;
+  public static facebook::jsi::Object toJs(facebook::jsi::Runtime& rt, const T& value, const std::shared_ptr<facebook::react::CallInvoker>& jsInvoker);
+}
+
+template <typename T>
 struct facebook::react::NativeSourceCodeSourceCodeConstantsBridging {
   public static T fromJs(facebook::jsi::Runtime& rt, const facebook::jsi::Object& value, const std::shared_ptr<facebook::react::CallInvoker>& jsInvoker);
   public static T types;
@@ -11732,6 +11802,11 @@ struct facebook::react::Bridging<facebook::react::NativeReloadAndProfileConfig> 
 }
 
 struct facebook::react::Bridging<facebook::react::NativeRequestIdleCallbackOptions> : public facebook::react::NativeIdleCallbacksRequestIdleCallbackOptionsBridging<facebook::react::NativeRequestIdleCallbackOptions> {
+}
+
+struct facebook::react::Bridging<facebook::react::NativeSampleTurboModuleEnumInt> {
+  public static facebook::jsi::Value toJs(facebook::jsi::Runtime& rt, facebook::react::NativeSampleTurboModuleEnumInt value);
+  public static facebook::react::NativeSampleTurboModuleEnumInt fromJs(facebook::jsi::Runtime& rt, const facebook::jsi::Value& rawValue);
 }
 
 struct facebook::react::Bridging<facebook::react::PerformanceEntryType> {
@@ -15899,6 +15974,25 @@ struct JS::NativeReactDevToolsRuntimeSettingsModule::PartialReloadAndProfileConf
   protected PartialReloadAndProfileConfig(NSDictionary* const v);
   protected std::optional<bool> recordChangeDescriptions() const;
   protected std::optional<bool> shouldReloadAndProfile() const;
+}
+
+
+struct JS::NativeSampleTurboModule::Constants {
+  protected NSDictionary* unsafeRawValue() const;
+  protected static JS::NativeSampleTurboModule::Constants fromUnsafeRawValue(NSDictionary* const v);
+}
+
+struct JS::NativeSampleTurboModule::Constants::Builder {
+  protected Builder(JS::NativeSampleTurboModule::Constants i);
+  protected Builder(const JS::NativeSampleTurboModule::Constants::Builder::Input i);
+  protected NSDictionary* buildUnsafeRawValue() const;
+  protected using ResultT = JS::NativeSampleTurboModule::Constants;
+}
+
+struct JS::NativeSampleTurboModule::Constants::Builder::Input {
+  protected RCTRequired<NSString*> const3;
+  protected RCTRequired<bool> const1;
+  protected RCTRequired<double> const2;
 }
 
 
