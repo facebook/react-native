@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<62bf5997f9ee2799bf7fd2cd6d5a6cd1>>
+ * @generated SignedSource<<46d2d87deec97afaa3d5b89d22fc9ff7>>
  */
 
 /**
@@ -76,6 +76,7 @@ class ReactNativeFeatureFlagsAccessor {
   bool enableNetworkEventReporting();
   bool enablePreparedTextLayout();
   bool enablePropsUpdateReconciliationAndroid();
+  bool enableSchedulerDelegateInvalidation();
   bool enableSwiftUIBasedFilters();
   bool enableViewCulling();
   bool enableViewRecycling();
@@ -111,7 +112,6 @@ class ReactNativeFeatureFlagsAccessor {
   bool updateRuntimeShadowNodeReferencesOnCommitThread();
   bool useAlwaysAvailableJSErrorHandling();
   bool useFabricInterop();
-  bool useLISAlgorithmInDifferentiator();
   bool useNativeViewConfigsInBridgelessMode();
   bool useNestedScrollViewAndroid();
   bool useOptimizedViewRegistryOnAndroid();
@@ -122,6 +122,7 @@ class ReactNativeFeatureFlagsAccessor {
   bool useUnorderedMapInDifferentiator();
   double viewCullingOutsetRatio();
   bool viewTransitionEnabled();
+  bool viewTransitionUseHardwareBitmapAndroid();
   double virtualViewPrerenderRatio();
 
   void override(std::unique_ptr<ReactNativeFeatureFlagsProvider> provider);
@@ -134,7 +135,7 @@ class ReactNativeFeatureFlagsAccessor {
   std::unique_ptr<ReactNativeFeatureFlagsProvider> currentProvider_;
   bool wasOverridden_;
 
-  std::array<std::atomic<const char*>, 91> accessedFeatureFlags_;
+  std::array<std::atomic<const char*>, 92> accessedFeatureFlags_;
 
   std::atomic<std::optional<bool>> commonTestFlag_;
   std::atomic<std::optional<bool>> cdpInteractionMetricsEnabled_;
@@ -180,6 +181,7 @@ class ReactNativeFeatureFlagsAccessor {
   std::atomic<std::optional<bool>> enableNetworkEventReporting_;
   std::atomic<std::optional<bool>> enablePreparedTextLayout_;
   std::atomic<std::optional<bool>> enablePropsUpdateReconciliationAndroid_;
+  std::atomic<std::optional<bool>> enableSchedulerDelegateInvalidation_;
   std::atomic<std::optional<bool>> enableSwiftUIBasedFilters_;
   std::atomic<std::optional<bool>> enableViewCulling_;
   std::atomic<std::optional<bool>> enableViewRecycling_;
@@ -215,7 +217,6 @@ class ReactNativeFeatureFlagsAccessor {
   std::atomic<std::optional<bool>> updateRuntimeShadowNodeReferencesOnCommitThread_;
   std::atomic<std::optional<bool>> useAlwaysAvailableJSErrorHandling_;
   std::atomic<std::optional<bool>> useFabricInterop_;
-  std::atomic<std::optional<bool>> useLISAlgorithmInDifferentiator_;
   std::atomic<std::optional<bool>> useNativeViewConfigsInBridgelessMode_;
   std::atomic<std::optional<bool>> useNestedScrollViewAndroid_;
   std::atomic<std::optional<bool>> useOptimizedViewRegistryOnAndroid_;
@@ -226,6 +227,7 @@ class ReactNativeFeatureFlagsAccessor {
   std::atomic<std::optional<bool>> useUnorderedMapInDifferentiator_;
   std::atomic<std::optional<double>> viewCullingOutsetRatio_;
   std::atomic<std::optional<bool>> viewTransitionEnabled_;
+  std::atomic<std::optional<bool>> viewTransitionUseHardwareBitmapAndroid_;
   std::atomic<std::optional<double>> virtualViewPrerenderRatio_;
 };
 

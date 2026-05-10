@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<187ac62197545fbce9d537527b4aed3b>>
+ * @generated SignedSource<<dcf277b9f00976b0e40394d1e0bd053f>>
  */
 
 /**
@@ -25,9 +25,7 @@ public open class ReactNativeFeatureFlagsOverrides_RNOSS_Experimental_Android : 
 
   override fun cxxNativeAnimatedEnabled(): Boolean = true
 
-  override fun enableAccessibilityOrder(): Boolean = true
-
-  override fun enableSwiftUIBasedFilters(): Boolean = true
+  override fun enableSchedulerDelegateInvalidation(): Boolean = true
 
   override fun preventShadowTreeCommitExhaustion(): Boolean = true
 

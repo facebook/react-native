@@ -341,9 +341,12 @@ void InspectorPackagerConnection::Impl::connect() {
     webSocket_ = delegate_->connectWebSocket(url_, weak_from_this());
   } catch (const std::exception& e) {
     LOG(ERROR) << "Failed to create WebSocket connection: " << e.what();
-    reconnect();
+    webSocket_.reset();
   } catch (...) {
     LOG(ERROR) << "Failed to create WebSocket connection: unknown error";
+    webSocket_.reset();
+  }
+  if (!webSocket_ && !closed_) {
     reconnect();
   }
 }

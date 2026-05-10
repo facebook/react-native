@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<db736a8d95f961298d615d3b8fc136ea>>
+ * @generated SignedSource<<9061422bb5437e737602f33e74453779>>
  */
 
 /**
@@ -264,6 +264,11 @@ bool NativeReactNativeFeatureFlags::enablePropsUpdateReconciliationAndroid(
   return ReactNativeFeatureFlags::enablePropsUpdateReconciliationAndroid();
 }
 
+bool NativeReactNativeFeatureFlags::enableSchedulerDelegateInvalidation(
+    jsi::Runtime& /*runtime*/) {
+  return ReactNativeFeatureFlags::enableSchedulerDelegateInvalidation();
+}
+
 bool NativeReactNativeFeatureFlags::enableSwiftUIBasedFilters(
     jsi::Runtime& /*runtime*/) {
   return ReactNativeFeatureFlags::enableSwiftUIBasedFilters();
@@ -439,11 +444,6 @@ bool NativeReactNativeFeatureFlags::useFabricInterop(
   return ReactNativeFeatureFlags::useFabricInterop();
 }
 
-bool NativeReactNativeFeatureFlags::useLISAlgorithmInDifferentiator(
-    jsi::Runtime& /*runtime*/) {
-  return ReactNativeFeatureFlags::useLISAlgorithmInDifferentiator();
-}
-
 bool NativeReactNativeFeatureFlags::useNativeViewConfigsInBridgelessMode(
     jsi::Runtime& /*runtime*/) {
   return ReactNativeFeatureFlags::useNativeViewConfigsInBridgelessMode();
@@ -492,6 +492,11 @@ double NativeReactNativeFeatureFlags::viewCullingOutsetRatio(
 bool NativeReactNativeFeatureFlags::viewTransitionEnabled(
     jsi::Runtime& /*runtime*/) {
   return ReactNativeFeatureFlags::viewTransitionEnabled();
+}
+
+bool NativeReactNativeFeatureFlags::viewTransitionUseHardwareBitmapAndroid(
+    jsi::Runtime& /*runtime*/) {
+  return ReactNativeFeatureFlags::viewTransitionUseHardwareBitmapAndroid();
 }
 
 double NativeReactNativeFeatureFlags::virtualViewPrerenderRatio(

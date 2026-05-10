@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<592acf445c4b4e56651cd6afb57e46fa>>
+ * @generated SignedSource<<a7c69ce7e10faeb5328412c5e29552cf>>
  */
 
 /**
@@ -111,6 +111,8 @@ public interface ReactNativeFeatureFlagsProvider {
 
   @DoNotStrip public fun enablePropsUpdateReconciliationAndroid(): Boolean
 
+  @DoNotStrip public fun enableSchedulerDelegateInvalidation(): Boolean
+
   @DoNotStrip public fun enableSwiftUIBasedFilters(): Boolean
 
   @DoNotStrip public fun enableViewCulling(): Boolean
@@ -181,8 +183,6 @@ public interface ReactNativeFeatureFlagsProvider {
 
   @DoNotStrip public fun useFabricInterop(): Boolean
 
-  @DoNotStrip public fun useLISAlgorithmInDifferentiator(): Boolean
-
   @DoNotStrip public fun useNativeViewConfigsInBridgelessMode(): Boolean
 
   @DoNotStrip public fun useNestedScrollViewAndroid(): Boolean
@@ -202,6 +202,8 @@ public interface ReactNativeFeatureFlagsProvider {
   @DoNotStrip public fun viewCullingOutsetRatio(): Double
 
   @DoNotStrip public fun viewTransitionEnabled(): Boolean
+
+  @DoNotStrip public fun viewTransitionUseHardwareBitmapAndroid(): Boolean
 
   @DoNotStrip public fun virtualViewPrerenderRatio(): Double
 }

@@ -1493,6 +1493,9 @@ AccessibilityInfo.getRecommendedTimeoutMillis(5000).then(timeoutMiles =>
   ),
 );
 
+AccessibilityInfo.addEventListener('accessibilityServiceChanged', isEnabled =>
+  console.log(`AccessibilityInfo.accessibilityServiceChanged => ${isEnabled}`),
+);
 AccessibilityInfo.addEventListener(
   'announcementFinished',
   ({announcement, success}) =>
@@ -1503,8 +1506,17 @@ AccessibilityInfo.addEventListener(
 AccessibilityInfo.addEventListener('boldTextChanged', isEnabled =>
   console.log(`AccessibilityInfo.isBoldTextEnabled => ${isEnabled}`),
 );
+AccessibilityInfo.addEventListener('change', isEnabled =>
+  console.log(`AccessibilityInfo.change => ${isEnabled}`),
+);
+AccessibilityInfo.addEventListener('darkerSystemColorsChanged', isEnabled =>
+  console.log(`AccessibilityInfo.darkerSystemColorsChanged => ${isEnabled}`),
+);
 AccessibilityInfo.addEventListener('grayscaleChanged', isEnabled =>
   console.log(`AccessibilityInfo.isGrayscaleEnabled => ${isEnabled}`),
+);
+AccessibilityInfo.addEventListener('highTextContrastChanged', isEnabled =>
+  console.log(`AccessibilityInfo.highTextContrastChanged => ${isEnabled}`),
 );
 AccessibilityInfo.addEventListener('invertColorsChanged', isEnabled =>
   console.log(`AccessibilityInfo.isInvertColorsEnabled => ${isEnabled}`),

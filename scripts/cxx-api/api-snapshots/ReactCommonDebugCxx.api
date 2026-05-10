@@ -536,7 +536,6 @@ std::string facebook::react::toString(facebook::react::AccessibilityLiveRegion a
 std::string facebook::react::toString(facebook::react::PointerEventsMode value);
 std::string_view facebook::react::getInteractionTypeForEvent(std::string_view eventName);
 std::unordered_map<std::string, std::function<std::shared_ptr<facebook::react::TurboModule>(std::shared_ptr<facebook::react::CallInvoker> jsInvoker)>>& facebook::react::globalExportedCxxTurboModuleMap();
-std::vector<bool> facebook::react::longestIncreasingSubsequence(const std::vector<size_t>& values, const std::vector<bool>& include);
 std::vector<facebook::react::MarginValue> facebook::react::parseNormalizedRootMargin(const std::string& marginStr);
 std::vector<facebook::react::MethodCall> facebook::react::parseMethodCalls(folly::dynamic&& jsonData);
 std::vector<facebook::react::ShadowViewNodePair*> facebook::react::sliceChildShadowNodeViewPairs(const facebook::react::ShadowViewNodePair& shadowNodePair, facebook::react::ViewNodePairScope& viewNodePairScope, bool allowFlattened, facebook::react::Point layoutOffset, const facebook::react::CullingContext& cullingContext);

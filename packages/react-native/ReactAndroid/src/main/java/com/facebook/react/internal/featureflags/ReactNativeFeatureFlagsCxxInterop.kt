@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<d9aa2a16720aa9fd4378c0c14e4f8ffa>>
+ * @generated SignedSource<<81c6672ae539af203fae7e0f9cf541a6>>
  */
 
 /**
@@ -116,6 +116,8 @@ public object ReactNativeFeatureFlagsCxxInterop {
 
   @DoNotStrip @JvmStatic public external fun enablePropsUpdateReconciliationAndroid(): Boolean
 
+  @DoNotStrip @JvmStatic public external fun enableSchedulerDelegateInvalidation(): Boolean
+
   @DoNotStrip @JvmStatic public external fun enableSwiftUIBasedFilters(): Boolean
 
   @DoNotStrip @JvmStatic public external fun enableViewCulling(): Boolean
@@ -186,8 +188,6 @@ public object ReactNativeFeatureFlagsCxxInterop {
 
   @DoNotStrip @JvmStatic public external fun useFabricInterop(): Boolean
 
-  @DoNotStrip @JvmStatic public external fun useLISAlgorithmInDifferentiator(): Boolean
-
   @DoNotStrip @JvmStatic public external fun useNativeViewConfigsInBridgelessMode(): Boolean
 
   @DoNotStrip @JvmStatic public external fun useNestedScrollViewAndroid(): Boolean
@@ -207,6 +207,8 @@ public object ReactNativeFeatureFlagsCxxInterop {
   @DoNotStrip @JvmStatic public external fun viewCullingOutsetRatio(): Double
 
   @DoNotStrip @JvmStatic public external fun viewTransitionEnabled(): Boolean
+
+  @DoNotStrip @JvmStatic public external fun viewTransitionUseHardwareBitmapAndroid(): Boolean
 
   @DoNotStrip @JvmStatic public external fun virtualViewPrerenderRatio(): Double
 

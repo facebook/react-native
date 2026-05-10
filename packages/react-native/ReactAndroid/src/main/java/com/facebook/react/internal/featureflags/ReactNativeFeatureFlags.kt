@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<c9be40b9d016463d1531057598a6aa88>>
+ * @generated SignedSource<<d4e81be344e15b275d015651b4fa824d>>
  */
 
 /**
@@ -295,6 +295,12 @@ public object ReactNativeFeatureFlags {
   public fun enablePropsUpdateReconciliationAndroid(): Boolean = accessor.enablePropsUpdateReconciliationAndroid()
 
   /**
+   * Gates a defensive guard around Scheduler::uiManagerDidDispatchCommand and uiManagerDidFinishTransaction that prevents queued rendering-update lambdas from dereferencing the SchedulerDelegate after it has been destroyed (use-after-free).
+   */
+  @JvmStatic
+  public fun enableSchedulerDelegateInvalidation(): Boolean = accessor.enableSchedulerDelegateInvalidation()
+
+  /**
    * When enabled, it will use SwiftUI for filter effects like blur on iOS.
    */
   @JvmStatic
@@ -505,12 +511,6 @@ public object ReactNativeFeatureFlags {
   public fun useFabricInterop(): Boolean = accessor.useFabricInterop()
 
   /**
-   * Use Longest Increasing Subsequence algorithm in the Differentiator to minimize REMOVE/INSERT mutations during child list reconciliation.
-   */
-  @JvmStatic
-  public fun useLISAlgorithmInDifferentiator(): Boolean = accessor.useLISAlgorithmInDifferentiator()
-
-  /**
    * When enabled, the native view configs are used in bridgeless mode.
    */
   @JvmStatic
@@ -569,6 +569,12 @@ public object ReactNativeFeatureFlags {
    */
   @JvmStatic
   public fun viewTransitionEnabled(): Boolean = accessor.viewTransitionEnabled()
+
+  /**
+   * Use hardware bitmaps for view transition snapshots on Android.
+   */
+  @JvmStatic
+  public fun viewTransitionUseHardwareBitmapAndroid(): Boolean = accessor.viewTransitionUseHardwareBitmapAndroid()
 
   /**
    * Initial prerender ratio for VirtualView.

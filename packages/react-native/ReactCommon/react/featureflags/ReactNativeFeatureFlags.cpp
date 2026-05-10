@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<16024bed6914b4b74d4a50de142e872a>>
+ * @generated SignedSource<<9c49f2931ab219997bc29969de95805d>>
  */
 
 /**
@@ -202,6 +202,10 @@ bool ReactNativeFeatureFlags::enablePropsUpdateReconciliationAndroid() {
   return getAccessor().enablePropsUpdateReconciliationAndroid();
 }
 
+bool ReactNativeFeatureFlags::enableSchedulerDelegateInvalidation() {
+  return getAccessor().enableSchedulerDelegateInvalidation();
+}
+
 bool ReactNativeFeatureFlags::enableSwiftUIBasedFilters() {
   return getAccessor().enableSwiftUIBasedFilters();
 }
@@ -342,10 +346,6 @@ bool ReactNativeFeatureFlags::useFabricInterop() {
   return getAccessor().useFabricInterop();
 }
 
-bool ReactNativeFeatureFlags::useLISAlgorithmInDifferentiator() {
-  return getAccessor().useLISAlgorithmInDifferentiator();
-}
-
 bool ReactNativeFeatureFlags::useNativeViewConfigsInBridgelessMode() {
   return getAccessor().useNativeViewConfigsInBridgelessMode();
 }
@@ -384,6 +384,10 @@ double ReactNativeFeatureFlags::viewCullingOutsetRatio() {
 
 bool ReactNativeFeatureFlags::viewTransitionEnabled() {
   return getAccessor().viewTransitionEnabled();
+}
+
+bool ReactNativeFeatureFlags::viewTransitionUseHardwareBitmapAndroid() {
+  return getAccessor().viewTransitionUseHardwareBitmapAndroid();
 }
 
 double ReactNativeFeatureFlags::virtualViewPrerenderRatio() {

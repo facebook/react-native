@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<dfa447bb0ec655348c9e7e8232ff42b9>>
+ * @generated SignedSource<<963ea85be18e1df973142b74addf3b16>>
  */
 
 /**
@@ -441,6 +441,15 @@ class ReactNativeFeatureFlagsDynamicProvider : public ReactNativeFeatureFlagsDef
     return ReactNativeFeatureFlagsDefaults::enablePropsUpdateReconciliationAndroid();
   }
 
+  bool enableSchedulerDelegateInvalidation() override {
+    auto value = values_["enableSchedulerDelegateInvalidation"];
+    if (!value.isNull()) {
+      return value.getBool();
+    }
+
+    return ReactNativeFeatureFlagsDefaults::enableSchedulerDelegateInvalidation();
+  }
+
   bool enableSwiftUIBasedFilters() override {
     auto value = values_["enableSwiftUIBasedFilters"];
     if (!value.isNull()) {
@@ -756,15 +765,6 @@ class ReactNativeFeatureFlagsDynamicProvider : public ReactNativeFeatureFlagsDef
     return ReactNativeFeatureFlagsDefaults::useFabricInterop();
   }
 
-  bool useLISAlgorithmInDifferentiator() override {
-    auto value = values_["useLISAlgorithmInDifferentiator"];
-    if (!value.isNull()) {
-      return value.getBool();
-    }
-
-    return ReactNativeFeatureFlagsDefaults::useLISAlgorithmInDifferentiator();
-  }
-
   bool useNativeViewConfigsInBridgelessMode() override {
     auto value = values_["useNativeViewConfigsInBridgelessMode"];
     if (!value.isNull()) {
@@ -853,6 +853,15 @@ class ReactNativeFeatureFlagsDynamicProvider : public ReactNativeFeatureFlagsDef
     }
 
     return ReactNativeFeatureFlagsDefaults::viewTransitionEnabled();
+  }
+
+  bool viewTransitionUseHardwareBitmapAndroid() override {
+    auto value = values_["viewTransitionUseHardwareBitmapAndroid"];
+    if (!value.isNull()) {
+      return value.getBool();
+    }
+
+    return ReactNativeFeatureFlagsDefaults::viewTransitionUseHardwareBitmapAndroid();
   }
 
   double virtualViewPrerenderRatio() override {

@@ -28,16 +28,16 @@ type AccessibilityEventDefinitionsAndroid = {
 type AccessibilityEventDefinitionsIOS = {
   announcementFinished: [{announcement: string, success: boolean}],
   boldTextChanged: [boolean],
-  grayscaleChanged: [boolean],
-  invertColorsChanged: [boolean],
-  reduceTransparencyChanged: [boolean],
   darkerSystemColorsChanged: [boolean],
+  reduceTransparencyChanged: [boolean],
 };
 
 type AccessibilityEventDefinitions = {
   ...AccessibilityEventDefinitionsAndroid,
   ...AccessibilityEventDefinitionsIOS,
   change: [boolean], // screenReaderChanged
+  grayscaleChanged: [boolean],
+  invertColorsChanged: [boolean],
   reduceMotionChanged: [boolean],
   screenReaderChanged: [boolean],
 };
@@ -395,18 +395,18 @@ const AccessibilityInfo = {
    * - `screenReaderChanged`: Fires when the state of the screen reader changes. The argument
    *   to the event handler is a boolean. The boolean is `true` when a screen
    *   reader is enabled and `false` otherwise.
+   * - `grayscaleChanged`: Fires when the state of the gray scale toggle changes.
+   *   The argument to the event handler is a boolean. The boolean is `true` when gray scale
+   *   is enabled and `false` otherwise.
+   * - `invertColorsChanged`: Fires when the state of the invert colors toggle
+   *   changes. The argument to the event handler is a boolean. The boolean is `true` when invert
+   *   colors is enabled and `false` otherwise.
    *
    * These events are only supported on iOS:
    *
    * - `boldTextChanged`: iOS-only event. Fires when the state of the bold text toggle changes.
    *   The argument to the event handler is a boolean. The boolean is `true` when a bold text
    *   is enabled and `false` otherwise.
-   * - `grayscaleChanged`: iOS-only event. Fires when the state of the gray scale toggle changes.
-   *   The argument to the event handler is a boolean. The boolean is `true` when a gray scale
-   *   is enabled and `false` otherwise.
-   * - `invertColorsChanged`: iOS-only event. Fires when the state of the invert colors toggle
-   *   changes. The argument to the event handler is a boolean. The boolean is `true` when a invert
-   *   colors is enabled and `false` otherwise.
    * - `reduceTransparencyChanged`: iOS-only event. Fires when the state of the reduce transparency
    *   toggle changes.  The argument to the event handler is a boolean. The boolean is `true`
    *   when a reduce transparency is enabled and `false` otherwise.

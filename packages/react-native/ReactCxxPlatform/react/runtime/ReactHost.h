@@ -110,6 +110,7 @@ class ReactHost {
   std::unique_ptr<SurfaceManager> surfaceManager_;
 
   std::shared_ptr<DevServerHelper> devServerHelper_;
+  std::shared_ptr<std::string> sourceURL_ = std::make_shared<std::string>();
   std::shared_ptr<Inspector> inspector_;
   std::unique_ptr<PackagerConnection> packagerConnection_;
 

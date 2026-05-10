@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<e50e2f4cecf9be1fc2b21ed141ee708c>>
+ * @generated SignedSource<<d2f0e5328454ab9080743fe15f2dc229>>
  */
 
 /**
@@ -69,6 +69,7 @@ class ReactNativeFeatureFlagsProvider {
   virtual bool enableNetworkEventReporting() = 0;
   virtual bool enablePreparedTextLayout() = 0;
   virtual bool enablePropsUpdateReconciliationAndroid() = 0;
+  virtual bool enableSchedulerDelegateInvalidation() = 0;
   virtual bool enableSwiftUIBasedFilters() = 0;
   virtual bool enableViewCulling() = 0;
   virtual bool enableViewRecycling() = 0;
@@ -104,7 +105,6 @@ class ReactNativeFeatureFlagsProvider {
   virtual bool updateRuntimeShadowNodeReferencesOnCommitThread() = 0;
   virtual bool useAlwaysAvailableJSErrorHandling() = 0;
   virtual bool useFabricInterop() = 0;
-  virtual bool useLISAlgorithmInDifferentiator() = 0;
   virtual bool useNativeViewConfigsInBridgelessMode() = 0;
   virtual bool useNestedScrollViewAndroid() = 0;
   virtual bool useOptimizedViewRegistryOnAndroid() = 0;
@@ -115,6 +115,7 @@ class ReactNativeFeatureFlagsProvider {
   virtual bool useUnorderedMapInDifferentiator() = 0;
   virtual double viewCullingOutsetRatio() = 0;
   virtual bool viewTransitionEnabled() = 0;
+  virtual bool viewTransitionUseHardwareBitmapAndroid() = 0;
   virtual double virtualViewPrerenderRatio() = 0;
 };
 

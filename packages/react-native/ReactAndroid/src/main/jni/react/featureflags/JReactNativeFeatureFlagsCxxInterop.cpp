@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<55e4d6d6dc930b4ccf3e20cb77f7a042>>
+ * @generated SignedSource<<74f0602ce337a86730efe638ab8e966d>>
  */
 
 /**
@@ -303,6 +303,12 @@ class ReactNativeFeatureFlagsJavaProvider
     return method(javaProvider_);
   }
 
+  bool enableSchedulerDelegateInvalidation() override {
+    static const auto method =
+        getReactNativeFeatureFlagsProviderJavaClass()->getMethod<jboolean()>("enableSchedulerDelegateInvalidation");
+    return method(javaProvider_);
+  }
+
   bool enableSwiftUIBasedFilters() override {
     static const auto method =
         getReactNativeFeatureFlagsProviderJavaClass()->getMethod<jboolean()>("enableSwiftUIBasedFilters");
@@ -513,12 +519,6 @@ class ReactNativeFeatureFlagsJavaProvider
     return method(javaProvider_);
   }
 
-  bool useLISAlgorithmInDifferentiator() override {
-    static const auto method =
-        getReactNativeFeatureFlagsProviderJavaClass()->getMethod<jboolean()>("useLISAlgorithmInDifferentiator");
-    return method(javaProvider_);
-  }
-
   bool useNativeViewConfigsInBridgelessMode() override {
     static const auto method =
         getReactNativeFeatureFlagsProviderJavaClass()->getMethod<jboolean()>("useNativeViewConfigsInBridgelessMode");
@@ -576,6 +576,12 @@ class ReactNativeFeatureFlagsJavaProvider
   bool viewTransitionEnabled() override {
     static const auto method =
         getReactNativeFeatureFlagsProviderJavaClass()->getMethod<jboolean()>("viewTransitionEnabled");
+    return method(javaProvider_);
+  }
+
+  bool viewTransitionUseHardwareBitmapAndroid() override {
+    static const auto method =
+        getReactNativeFeatureFlagsProviderJavaClass()->getMethod<jboolean()>("viewTransitionUseHardwareBitmapAndroid");
     return method(javaProvider_);
   }
 
@@ -809,6 +815,11 @@ bool JReactNativeFeatureFlagsCxxInterop::enablePropsUpdateReconciliationAndroid(
   return ReactNativeFeatureFlags::enablePropsUpdateReconciliationAndroid();
 }
 
+bool JReactNativeFeatureFlagsCxxInterop::enableSchedulerDelegateInvalidation(
+    facebook::jni::alias_ref<JReactNativeFeatureFlagsCxxInterop> /*unused*/) {
+  return ReactNativeFeatureFlags::enableSchedulerDelegateInvalidation();
+}
+
 bool JReactNativeFeatureFlagsCxxInterop::enableSwiftUIBasedFilters(
     facebook::jni::alias_ref<JReactNativeFeatureFlagsCxxInterop> /*unused*/) {
   return ReactNativeFeatureFlags::enableSwiftUIBasedFilters();
@@ -984,11 +995,6 @@ bool JReactNativeFeatureFlagsCxxInterop::useFabricInterop(
   return ReactNativeFeatureFlags::useFabricInterop();
 }
 
-bool JReactNativeFeatureFlagsCxxInterop::useLISAlgorithmInDifferentiator(
-    facebook::jni::alias_ref<JReactNativeFeatureFlagsCxxInterop> /*unused*/) {
-  return ReactNativeFeatureFlags::useLISAlgorithmInDifferentiator();
-}
-
 bool JReactNativeFeatureFlagsCxxInterop::useNativeViewConfigsInBridgelessMode(
     facebook::jni::alias_ref<JReactNativeFeatureFlagsCxxInterop> /*unused*/) {
   return ReactNativeFeatureFlags::useNativeViewConfigsInBridgelessMode();
@@ -1037,6 +1043,11 @@ double JReactNativeFeatureFlagsCxxInterop::viewCullingOutsetRatio(
 bool JReactNativeFeatureFlagsCxxInterop::viewTransitionEnabled(
     facebook::jni::alias_ref<JReactNativeFeatureFlagsCxxInterop> /*unused*/) {
   return ReactNativeFeatureFlags::viewTransitionEnabled();
+}
+
+bool JReactNativeFeatureFlagsCxxInterop::viewTransitionUseHardwareBitmapAndroid(
+    facebook::jni::alias_ref<JReactNativeFeatureFlagsCxxInterop> /*unused*/) {
+  return ReactNativeFeatureFlags::viewTransitionUseHardwareBitmapAndroid();
 }
 
 double JReactNativeFeatureFlagsCxxInterop::virtualViewPrerenderRatio(
@@ -1208,6 +1219,9 @@ void JReactNativeFeatureFlagsCxxInterop::registerNatives() {
         "enablePropsUpdateReconciliationAndroid",
         JReactNativeFeatureFlagsCxxInterop::enablePropsUpdateReconciliationAndroid),
       makeNativeMethod(
+        "enableSchedulerDelegateInvalidation",
+        JReactNativeFeatureFlagsCxxInterop::enableSchedulerDelegateInvalidation),
+      makeNativeMethod(
         "enableSwiftUIBasedFilters",
         JReactNativeFeatureFlagsCxxInterop::enableSwiftUIBasedFilters),
       makeNativeMethod(
@@ -1313,9 +1327,6 @@ void JReactNativeFeatureFlagsCxxInterop::registerNatives() {
         "useFabricInterop",
         JReactNativeFeatureFlagsCxxInterop::useFabricInterop),
       makeNativeMethod(
-        "useLISAlgorithmInDifferentiator",
-        JReactNativeFeatureFlagsCxxInterop::useLISAlgorithmInDifferentiator),
-      makeNativeMethod(
         "useNativeViewConfigsInBridgelessMode",
         JReactNativeFeatureFlagsCxxInterop::useNativeViewConfigsInBridgelessMode),
       makeNativeMethod(
@@ -1345,6 +1356,9 @@ void JReactNativeFeatureFlagsCxxInterop::registerNatives() {
       makeNativeMethod(
         "viewTransitionEnabled",
         JReactNativeFeatureFlagsCxxInterop::viewTransitionEnabled),
+      makeNativeMethod(
+        "viewTransitionUseHardwareBitmapAndroid",
+        JReactNativeFeatureFlagsCxxInterop::viewTransitionUseHardwareBitmapAndroid),
       makeNativeMethod(
         "virtualViewPrerenderRatio",
         JReactNativeFeatureFlagsCxxInterop::virtualViewPrerenderRatio),

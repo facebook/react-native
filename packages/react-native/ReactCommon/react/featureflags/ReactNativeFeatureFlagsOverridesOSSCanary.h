@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<1b2061068e0d6c9ca362ceddd97862da>>
+ * @generated SignedSource<<dab6dad91b32e837d1a303382566fc3d>>
  */
 
 /**
@@ -27,6 +27,10 @@ class ReactNativeFeatureFlagsOverridesOSSCanary : public ReactNativeFeatureFlags
  public:
     ReactNativeFeatureFlagsOverridesOSSCanary() = default;
 
+  bool enableAccessibilityOrder() override {
+    return true;
+  }
+
   bool enableBridgelessArchitecture() override {
     return true;
   }
@@ -36,6 +40,10 @@ class ReactNativeFeatureFlagsOverridesOSSCanary : public ReactNativeFeatureFlags
   }
 
   bool enableIntersectionObserverByDefault() override {
+    return true;
+  }
+
+  bool enableSwiftUIBasedFilters() override {
     return true;
   }
 

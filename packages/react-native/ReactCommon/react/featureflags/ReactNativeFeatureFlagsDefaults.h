@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<0042e6f884ccf466dda224021ff7a86a>>
+ * @generated SignedSource<<3e3db9d13a20d62c9cfb80330de6b4e0>>
  */
 
 /**
@@ -203,6 +203,10 @@ class ReactNativeFeatureFlagsDefaults : public ReactNativeFeatureFlagsProvider {
     return false;
   }
 
+  bool enableSchedulerDelegateInvalidation() override {
+    return false;
+  }
+
   bool enableSwiftUIBasedFilters() override {
     return false;
   }
@@ -343,10 +347,6 @@ class ReactNativeFeatureFlagsDefaults : public ReactNativeFeatureFlagsProvider {
     return true;
   }
 
-  bool useLISAlgorithmInDifferentiator() override {
-    return false;
-  }
-
   bool useNativeViewConfigsInBridgelessMode() override {
     return false;
   }
@@ -384,6 +384,10 @@ class ReactNativeFeatureFlagsDefaults : public ReactNativeFeatureFlagsProvider {
   }
 
   bool viewTransitionEnabled() override {
+    return false;
+  }
+
+  bool viewTransitionUseHardwareBitmapAndroid() override {
     return false;
   }
 

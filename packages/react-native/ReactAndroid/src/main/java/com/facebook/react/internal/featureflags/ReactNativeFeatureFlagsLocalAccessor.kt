@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<4d09d820304f454bc3850da89087caec>>
+ * @generated SignedSource<<24972f077ba738a8191a2956be61b491>>
  */
 
 /**
@@ -68,6 +68,7 @@ internal class ReactNativeFeatureFlagsLocalAccessor : ReactNativeFeatureFlagsAcc
   private var enableNetworkEventReportingCache: Boolean? = null
   private var enablePreparedTextLayoutCache: Boolean? = null
   private var enablePropsUpdateReconciliationAndroidCache: Boolean? = null
+  private var enableSchedulerDelegateInvalidationCache: Boolean? = null
   private var enableSwiftUIBasedFiltersCache: Boolean? = null
   private var enableViewCullingCache: Boolean? = null
   private var enableViewRecyclingCache: Boolean? = null
@@ -103,7 +104,6 @@ internal class ReactNativeFeatureFlagsLocalAccessor : ReactNativeFeatureFlagsAcc
   private var updateRuntimeShadowNodeReferencesOnCommitThreadCache: Boolean? = null
   private var useAlwaysAvailableJSErrorHandlingCache: Boolean? = null
   private var useFabricInteropCache: Boolean? = null
-  private var useLISAlgorithmInDifferentiatorCache: Boolean? = null
   private var useNativeViewConfigsInBridgelessModeCache: Boolean? = null
   private var useNestedScrollViewAndroidCache: Boolean? = null
   private var useOptimizedViewRegistryOnAndroidCache: Boolean? = null
@@ -114,6 +114,7 @@ internal class ReactNativeFeatureFlagsLocalAccessor : ReactNativeFeatureFlagsAcc
   private var useUnorderedMapInDifferentiatorCache: Boolean? = null
   private var viewCullingOutsetRatioCache: Double? = null
   private var viewTransitionEnabledCache: Boolean? = null
+  private var viewTransitionUseHardwareBitmapAndroidCache: Boolean? = null
   private var virtualViewPrerenderRatioCache: Double? = null
 
   override fun commonTestFlag(): Boolean {
@@ -556,6 +557,16 @@ internal class ReactNativeFeatureFlagsLocalAccessor : ReactNativeFeatureFlagsAcc
     return cached
   }
 
+  override fun enableSchedulerDelegateInvalidation(): Boolean {
+    var cached = enableSchedulerDelegateInvalidationCache
+    if (cached == null) {
+      cached = currentProvider.enableSchedulerDelegateInvalidation()
+      accessedFeatureFlags.add("enableSchedulerDelegateInvalidation")
+      enableSchedulerDelegateInvalidationCache = cached
+    }
+    return cached
+  }
+
   override fun enableSwiftUIBasedFilters(): Boolean {
     var cached = enableSwiftUIBasedFiltersCache
     if (cached == null) {
@@ -906,16 +917,6 @@ internal class ReactNativeFeatureFlagsLocalAccessor : ReactNativeFeatureFlagsAcc
     return cached
   }
 
-  override fun useLISAlgorithmInDifferentiator(): Boolean {
-    var cached = useLISAlgorithmInDifferentiatorCache
-    if (cached == null) {
-      cached = currentProvider.useLISAlgorithmInDifferentiator()
-      accessedFeatureFlags.add("useLISAlgorithmInDifferentiator")
-      useLISAlgorithmInDifferentiatorCache = cached
-    }
-    return cached
-  }
-
   override fun useNativeViewConfigsInBridgelessMode(): Boolean {
     var cached = useNativeViewConfigsInBridgelessModeCache
     if (cached == null) {
@@ -1012,6 +1013,16 @@ internal class ReactNativeFeatureFlagsLocalAccessor : ReactNativeFeatureFlagsAcc
       cached = currentProvider.viewTransitionEnabled()
       accessedFeatureFlags.add("viewTransitionEnabled")
       viewTransitionEnabledCache = cached
+    }
+    return cached
+  }
+
+  override fun viewTransitionUseHardwareBitmapAndroid(): Boolean {
+    var cached = viewTransitionUseHardwareBitmapAndroidCache
+    if (cached == null) {
+      cached = currentProvider.viewTransitionUseHardwareBitmapAndroid()
+      accessedFeatureFlags.add("viewTransitionUseHardwareBitmapAndroid")
+      viewTransitionUseHardwareBitmapAndroidCache = cached
     }
     return cached
   }

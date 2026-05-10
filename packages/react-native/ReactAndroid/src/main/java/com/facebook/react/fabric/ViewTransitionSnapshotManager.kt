@@ -25,6 +25,7 @@ import com.facebook.react.bridge.UIManagerListener
 import com.facebook.react.bridge.UiThreadUtil
 import com.facebook.react.common.annotations.UnstableReactNativeAPI
 import com.facebook.react.fabric.mounting.MountingManager
+import com.facebook.react.internal.featureflags.ReactNativeFeatureFlags
 
 /**
  * Manages bitmap snapshots of views during view transitions. Captures bitmaps from old views and
@@ -76,9 +77,10 @@ internal class ViewTransitionSnapshotManager(
   }
 
   /**
-   * Captures a bitmap snapshot of the view identified by the given tag. On API 26+, uses PixelCopy
-   * to capture directly from the GPU-composited surface (faster for complex views, captures
-   * hardware-accelerated content). Falls back to View.draw() on older APIs.
+   * Captures a bitmap snapshot of the view identified by the given tag. When
+   * [ReactNativeFeatureFlags.viewTransitionUseHardwareBitmapAndroid] is enabled and API 26+, uses
+   * PixelCopy to capture directly from the GPU-composited surface. Otherwise falls back to
+   * View.draw() which runs synchronously.
    */
   fun captureViewSnapshot(reactTag: Int, surfaceId: Int) {
     UiThreadUtil.runOnUiThread {
@@ -87,15 +89,17 @@ internal class ViewTransitionSnapshotManager(
       val view = smm.getView(reactTag)
       if (view.width <= 0 || view.height <= 0) return@runOnUiThread
 
-      val window =
-          if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+      if (
+          ReactNativeFeatureFlags.viewTransitionUseHardwareBitmapAndroid() &&
+              Build.VERSION.SDK_INT >= Build.VERSION_CODES.O
+      ) {
+        val window =
             (view.context as? com.facebook.react.bridge.ReactContext)?.getCurrentActivity()?.window
-          } else {
-            null
-          }
-
-      if (window != null) {
-        captureHardwareBitmap(view, reactTag, window)
+        if (window != null) {
+          captureHardwareBitmap(view, reactTag, window)
+        } else {
+          captureSoftwareBitmap(view)?.let { onBitmapCaptured(reactTag, it) }
+        }
       } else {
         // Software fallback runs synchronously, so onBitmapCaptured always
         // completes before setViewSnapshot is called.

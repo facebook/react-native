@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<33ffe2572bbaeba64d2167dbac4bb0ab>>
+ * @generated SignedSource<<d15e79bbfac17a32fd7981538afc3683>>
  */
 
 /**
@@ -260,6 +260,11 @@ class ReactNativeFeatureFlags {
   RN_EXPORT static bool enablePropsUpdateReconciliationAndroid();
 
   /**
+   * Gates a defensive guard around Scheduler::uiManagerDidDispatchCommand and uiManagerDidFinishTransaction that prevents queued rendering-update lambdas from dereferencing the SchedulerDelegate after it has been destroyed (use-after-free).
+   */
+  RN_EXPORT static bool enableSchedulerDelegateInvalidation();
+
+  /**
    * When enabled, it will use SwiftUI for filter effects like blur on iOS.
    */
   RN_EXPORT static bool enableSwiftUIBasedFilters();
@@ -435,11 +440,6 @@ class ReactNativeFeatureFlags {
   RN_EXPORT static bool useFabricInterop();
 
   /**
-   * Use Longest Increasing Subsequence algorithm in the Differentiator to minimize REMOVE/INSERT mutations during child list reconciliation.
-   */
-  RN_EXPORT static bool useLISAlgorithmInDifferentiator();
-
-  /**
    * When enabled, the native view configs are used in bridgeless mode.
    */
   RN_EXPORT static bool useNativeViewConfigsInBridgelessMode();
@@ -488,6 +488,11 @@ class ReactNativeFeatureFlags {
    * Enable the View Transition API for animating transitions between views.
    */
   RN_EXPORT static bool viewTransitionEnabled();
+
+  /**
+   * Use hardware bitmaps for view transition snapshots on Android.
+   */
+  RN_EXPORT static bool viewTransitionUseHardwareBitmapAndroid();
 
   /**
    * Initial prerender ratio for VirtualView.
