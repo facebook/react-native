@@ -12,15 +12,17 @@ import type {TurboModule} from '../../../../Libraries/TurboModule/RCTExport';
 
 import * as TurboModuleRegistry from '../../../../Libraries/TurboModule/TurboModuleRegistry';
 
-export type ColorSchemeName = 'light' | 'dark' | 'unspecified';
+export type ColorSchemeName = 'light' | 'dark';
+
+export type ColorSchemeOverride = 'light' | 'dark' | 'auto' | 'unspecified';
 
 export type AppearancePreferences = {
-  colorScheme?: ?ColorSchemeName,
+  colorScheme: ColorSchemeName,
 };
 
 export interface Spec extends TurboModule {
-  +getColorScheme: () => ?ColorSchemeName;
-  +setColorScheme: (colorScheme: ColorSchemeName) => void;
+  +getColorScheme: () => ColorSchemeName;
+  +setColorScheme: (colorScheme: ColorSchemeOverride) => void;
 
   // RCTEventEmitter
   +addListener: (eventName: string) => void;

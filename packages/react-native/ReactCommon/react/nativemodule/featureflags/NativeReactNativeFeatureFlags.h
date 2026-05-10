@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<1df283aec4b56f36271a187341e7103d>>
+ * @generated SignedSource<<295f75a120dcf079af2846c5cabb8bb4>>
  */
 
 /**
@@ -196,8 +196,6 @@ class NativeReactNativeFeatureFlags
 
   bool useFabricInterop(jsi::Runtime& runtime);
 
-  bool useLISAlgorithmInDifferentiator(jsi::Runtime& runtime);
-
   bool useNativeViewConfigsInBridgelessMode(jsi::Runtime& runtime);
 
   bool useNestedScrollViewAndroid(jsi::Runtime& runtime);
@@ -217,6 +215,8 @@ class NativeReactNativeFeatureFlags
   double viewCullingOutsetRatio(jsi::Runtime& runtime);
 
   bool viewTransitionEnabled(jsi::Runtime& runtime);
+
+  bool viewTransitionUseHardwareBitmapAndroid(jsi::Runtime& runtime);
 
   double virtualViewPrerenderRatio(jsi::Runtime& runtime);
 };

@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<23e79788b0820f61ba95288412367247>>
+ * @generated SignedSource<<963ea85be18e1df973142b74addf3b16>>
  */
 
 /**
@@ -765,15 +765,6 @@ class ReactNativeFeatureFlagsDynamicProvider : public ReactNativeFeatureFlagsDef
     return ReactNativeFeatureFlagsDefaults::useFabricInterop();
   }
 
-  bool useLISAlgorithmInDifferentiator() override {
-    auto value = values_["useLISAlgorithmInDifferentiator"];
-    if (!value.isNull()) {
-      return value.getBool();
-    }
-
-    return ReactNativeFeatureFlagsDefaults::useLISAlgorithmInDifferentiator();
-  }
-
   bool useNativeViewConfigsInBridgelessMode() override {
     auto value = values_["useNativeViewConfigsInBridgelessMode"];
     if (!value.isNull()) {
@@ -862,6 +853,15 @@ class ReactNativeFeatureFlagsDynamicProvider : public ReactNativeFeatureFlagsDef
     }
 
     return ReactNativeFeatureFlagsDefaults::viewTransitionEnabled();
+  }
+
+  bool viewTransitionUseHardwareBitmapAndroid() override {
+    auto value = values_["viewTransitionUseHardwareBitmapAndroid"];
+    if (!value.isNull()) {
+      return value.getBool();
+    }
+
+    return ReactNativeFeatureFlagsDefaults::viewTransitionUseHardwareBitmapAndroid();
   }
 
   double virtualViewPrerenderRatio() override {

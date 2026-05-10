@@ -167,7 +167,7 @@ const definitions: FeatureFlagDefinitions = {
         expectedReleaseValue: true,
         purpose: 'experimentation',
       },
-      ossReleaseStage: 'experimental',
+      ossReleaseStage: 'canary',
     },
     enableAccumulatedUpdatesInRawPropsAndroid: {
       defaultValue: false,
@@ -534,7 +534,7 @@ const definitions: FeatureFlagDefinitions = {
         expectedReleaseValue: true,
         purpose: 'experimentation',
       },
-      ossReleaseStage: 'experimental',
+      ossReleaseStage: 'canary',
     },
     enableViewCulling: {
       defaultValue: false,
@@ -901,17 +901,6 @@ const definitions: FeatureFlagDefinitions = {
       },
       ossReleaseStage: 'none',
     },
-    useLISAlgorithmInDifferentiator: {
-      defaultValue: false,
-      metadata: {
-        dateAdded: '2026-03-12',
-        description:
-          'Use Longest Increasing Subsequence algorithm in the Differentiator to minimize REMOVE/INSERT mutations during child list reconciliation.',
-        expectedReleaseValue: true,
-        purpose: 'experimentation',
-      },
-      ossReleaseStage: 'none',
-    },
     useNativeViewConfigsInBridgelessMode: {
       defaultValue: false,
       metadata: {
@@ -1019,6 +1008,17 @@ const definitions: FeatureFlagDefinitions = {
       },
       ossReleaseStage: 'none',
     },
+    viewTransitionUseHardwareBitmapAndroid: {
+      defaultValue: false,
+      metadata: {
+        dateAdded: '2026-05-04',
+        description:
+          'Use hardware bitmaps for view transition snapshots on Android.',
+        expectedReleaseValue: true,
+        purpose: 'experimentation',
+      },
+      ossReleaseStage: 'none',
+    },
     virtualViewPrerenderRatio: {
       defaultValue: 5,
       metadata: {
@@ -1061,17 +1061,6 @@ const definitions: FeatureFlagDefinitions = {
         description:
           'Use the deferred cell render update mechanism for focus change in FlatList.',
         expectedReleaseValue: true,
-        purpose: 'experimentation',
-      },
-      ossReleaseStage: 'none',
-    },
-    disableMaintainVisibleContentPosition: {
-      defaultValue: false,
-      metadata: {
-        dateAdded: '2025-08-26',
-        description:
-          'Disable prop maintainVisibleContentPosition in ScrollView',
-        expectedReleaseValue: false,
         purpose: 'experimentation',
       },
       ossReleaseStage: 'none',

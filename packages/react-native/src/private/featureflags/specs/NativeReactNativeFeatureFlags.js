@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<1fe579457854f95d09dd24e4578dbc65>>
+ * @generated SignedSource<<198728d86480c873bf44fc0d8d1633ef>>
  * @flow strict
  * @noformat
  */
@@ -105,7 +105,6 @@ export interface Spec extends TurboModule {
   +updateRuntimeShadowNodeReferencesOnCommitThread?: () => boolean;
   +useAlwaysAvailableJSErrorHandling?: () => boolean;
   +useFabricInterop?: () => boolean;
-  +useLISAlgorithmInDifferentiator?: () => boolean;
   +useNativeViewConfigsInBridgelessMode?: () => boolean;
   +useNestedScrollViewAndroid?: () => boolean;
   +useOptimizedViewRegistryOnAndroid?: () => boolean;
@@ -116,6 +115,7 @@ export interface Spec extends TurboModule {
   +useUnorderedMapInDifferentiator?: () => boolean;
   +viewCullingOutsetRatio?: () => number;
   +viewTransitionEnabled?: () => boolean;
+  +viewTransitionUseHardwareBitmapAndroid?: () => boolean;
   +virtualViewPrerenderRatio?: () => number;
 }
 

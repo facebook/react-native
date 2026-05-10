@@ -18,18 +18,22 @@ import android.text.Spanned
 import android.text.style.ClickableSpan
 import android.view.KeyEvent
 import android.view.MotionEvent
+import android.view.View
 import android.view.ViewGroup
 import androidx.annotation.ColorInt
 import androidx.annotation.DoNotInline
 import androidx.annotation.RequiresApi
 import androidx.core.view.ViewCompat
 import com.facebook.proguard.annotations.DoNotStrip
+import com.facebook.react.common.annotations.UnstableReactNativeAPI
 import com.facebook.react.uimanager.BackgroundStyleApplicator
 import com.facebook.react.uimanager.ReactCompoundView
 import com.facebook.react.uimanager.style.Overflow
-import com.facebook.react.views.text.internal.span.DrawCommandSpan
+import com.facebook.react.views.text.internal.span.AnimatedEffectSpan
+import com.facebook.react.views.text.internal.span.CanvasEffectSpan
 import com.facebook.react.views.text.internal.span.ReactFragmentIndexSpan
 import com.facebook.react.views.text.internal.span.ReactLinkSpan
+import com.facebook.react.views.text.internal.span.TouchableSpan
 import kotlin.collections.ArrayList
 import kotlin.math.roundToInt
 
@@ -44,6 +48,7 @@ internal class PreparedLayoutTextView(context: Context) : ViewGroup(context), Re
 
   private var clickableSpans: List<ClickableSpan> = emptyList()
   private var selection: TextSelection? = null
+  private var lastFrameTimeNanos: Long = 0L
 
   var preparedLayout: PreparedLayout? = null
     set(value) {
@@ -99,9 +104,18 @@ internal class PreparedLayoutTextView(context: Context) : ViewGroup(context), Re
     clickableSpans = emptyList()
     selection = null
     selectionColor = null
+    lastFrameTimeNanos = 0L
     preparedLayout = null
   }
 
+  override fun onVisibilityChanged(changedView: View, visibility: Int) {
+    super.onVisibilityChanged(changedView, visibility)
+    if (visibility != VISIBLE) {
+      lastFrameTimeNanos = 0L
+    }
+  }
+
+  @OptIn(UnstableReactNativeAPI::class)
   override fun onDraw(canvas: Canvas) {
     if (overflow != Overflow.VISIBLE) {
       BackgroundStyleApplicator.clipToPaddingBox(this, canvas)
@@ -121,11 +135,11 @@ internal class PreparedLayoutTextView(context: Context) : ViewGroup(context), Re
       }
 
       val spanned = text as? Spanned
-      val drawCommandSpans =
-          spanned?.getSpans(0, spanned.length, DrawCommandSpan::class.java) ?: emptyArray()
+      val canvasEffectSpans =
+          spanned?.getSpans(0, spanned.length, CanvasEffectSpan::class.java) ?: emptyArray()
 
       if (spanned != null) {
-        for (span in drawCommandSpans) {
+        for (span in canvasEffectSpans) {
           span.onPreDraw(
               spanned.getSpanStart(span),
               spanned.getSpanEnd(span),
@@ -142,13 +156,45 @@ internal class PreparedLayoutTextView(context: Context) : ViewGroup(context), Re
       }
 
       if (spanned != null) {
-        for (span in drawCommandSpans) {
+        for (span in canvasEffectSpans) {
           span.onDraw(
               spanned.getSpanStart(span),
               spanned.getSpanEnd(span),
               canvas,
               layout,
           )
+        }
+      }
+
+      if (spanned != null) {
+        val animatedEffectSpans =
+            spanned.getSpans(0, spanned.length, AnimatedEffectSpan::class.java)
+
+        if (animatedEffectSpans.isNotEmpty()) {
+          val now = System.nanoTime()
+          val deltaNanos = if (lastFrameTimeNanos == 0L) 0L else now - lastFrameTimeNanos
+          lastFrameTimeNanos = now
+
+          var needsNextFrame = false
+          for (span in animatedEffectSpans) {
+            if (
+                span.onDraw(
+                    spanned.getSpanStart(span),
+                    spanned.getSpanEnd(span),
+                    canvas,
+                    layout,
+                    deltaNanos,
+                )
+            ) {
+              needsNextFrame = true
+            }
+          }
+
+          if (needsNextFrame) {
+            postInvalidateOnAnimation()
+          } else {
+            lastFrameTimeNanos = 0L
+          }
         }
       }
     }
@@ -185,19 +231,44 @@ internal class PreparedLayoutTextView(context: Context) : ViewGroup(context), Re
     invalidate()
   }
 
+  @OptIn(UnstableReactNativeAPI::class)
   override fun onTouchEvent(event: MotionEvent): Boolean {
-    if (!isEnabled || clickableSpans.isEmpty()) {
+    if (!isEnabled) {
       return super.onTouchEvent(event)
     }
 
     val action = event.actionMasked
     if (action == MotionEvent.ACTION_CANCEL) {
+      // Forward ACTION_CANCEL to all TouchableSpans so they can reset pressed/animation state
+      val spanned = text as? Spanned
+      for (span in spanned?.getSpans(0, spanned.length, TouchableSpan::class.java).orEmpty()) {
+        span.onTouchEvent(action, 0f, 0f)
+      }
       clearSelection()
       return false
     }
 
     val x = event.x.toInt()
     val y = event.y.toInt()
+
+    // Handle TouchableSpan (e.g., spoiler text) — independent of ClickableSpan.
+    // Only consume the event if the span actually handled it (e.g., spoiler not yet
+    // dismissed). If it returns false, fall through to ClickableSpan handling so that
+    // links under dismissed spoiler text remain tappable.
+    val touchableSpan = getSpanInCoords(x, y, TouchableSpan::class.java)
+    if (touchableSpan != null) {
+      val layoutX = event.x - paddingLeft
+      val layoutY = event.y - paddingTop - (preparedLayout?.verticalOffset ?: 0f)
+      if (touchableSpan.onTouchEvent(action, layoutX, layoutY)) {
+        invalidate()
+        return true
+      }
+    }
+
+    // Existing ClickableSpan handling
+    if (clickableSpans.isEmpty()) {
+      return super.onTouchEvent(event)
+    }
 
     val clickableSpan = getSpanInCoords(x, y, ClickableSpan::class.java)
 

@@ -78,10 +78,6 @@ public open class DevServerHelper(
     public fun customCommandHandlers(): Map<String, RequestHandler>?
   }
 
-  public val websocketProxyURL: String
-    get() =
-        "${DevSupportHttpClient.wsScheme(packagerConnectionSettings.debugServerHost)}://${packagerConnectionSettings.debugServerHost}/debugger-proxy?role=client"
-
   private enum class BundleType(val typeID: String) {
     BUNDLE("bundle"),
     MAP("map"),

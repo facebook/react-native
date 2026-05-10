@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<17621e5f711352812633c125b7858537>>
+ * @generated SignedSource<<46d2d87deec97afaa3d5b89d22fc9ff7>>
  */
 
 /**
@@ -112,7 +112,6 @@ class ReactNativeFeatureFlagsAccessor {
   bool updateRuntimeShadowNodeReferencesOnCommitThread();
   bool useAlwaysAvailableJSErrorHandling();
   bool useFabricInterop();
-  bool useLISAlgorithmInDifferentiator();
   bool useNativeViewConfigsInBridgelessMode();
   bool useNestedScrollViewAndroid();
   bool useOptimizedViewRegistryOnAndroid();
@@ -123,6 +122,7 @@ class ReactNativeFeatureFlagsAccessor {
   bool useUnorderedMapInDifferentiator();
   double viewCullingOutsetRatio();
   bool viewTransitionEnabled();
+  bool viewTransitionUseHardwareBitmapAndroid();
   double virtualViewPrerenderRatio();
 
   void override(std::unique_ptr<ReactNativeFeatureFlagsProvider> provider);
@@ -217,7 +217,6 @@ class ReactNativeFeatureFlagsAccessor {
   std::atomic<std::optional<bool>> updateRuntimeShadowNodeReferencesOnCommitThread_;
   std::atomic<std::optional<bool>> useAlwaysAvailableJSErrorHandling_;
   std::atomic<std::optional<bool>> useFabricInterop_;
-  std::atomic<std::optional<bool>> useLISAlgorithmInDifferentiator_;
   std::atomic<std::optional<bool>> useNativeViewConfigsInBridgelessMode_;
   std::atomic<std::optional<bool>> useNestedScrollViewAndroid_;
   std::atomic<std::optional<bool>> useOptimizedViewRegistryOnAndroid_;
@@ -228,6 +227,7 @@ class ReactNativeFeatureFlagsAccessor {
   std::atomic<std::optional<bool>> useUnorderedMapInDifferentiator_;
   std::atomic<std::optional<double>> viewCullingOutsetRatio_;
   std::atomic<std::optional<bool>> viewTransitionEnabled_;
+  std::atomic<std::optional<bool>> viewTransitionUseHardwareBitmapAndroid_;
   std::atomic<std::optional<double>> virtualViewPrerenderRatio_;
 };
 

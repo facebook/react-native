@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<ad7a835ef9cbe3a9a6121ac127038668>>
+ * @generated SignedSource<<9c49f2931ab219997bc29969de95805d>>
  */
 
 /**
@@ -346,10 +346,6 @@ bool ReactNativeFeatureFlags::useFabricInterop() {
   return getAccessor().useFabricInterop();
 }
 
-bool ReactNativeFeatureFlags::useLISAlgorithmInDifferentiator() {
-  return getAccessor().useLISAlgorithmInDifferentiator();
-}
-
 bool ReactNativeFeatureFlags::useNativeViewConfigsInBridgelessMode() {
   return getAccessor().useNativeViewConfigsInBridgelessMode();
 }
@@ -388,6 +384,10 @@ double ReactNativeFeatureFlags::viewCullingOutsetRatio() {
 
 bool ReactNativeFeatureFlags::viewTransitionEnabled() {
   return getAccessor().viewTransitionEnabled();
+}
+
+bool ReactNativeFeatureFlags::viewTransitionUseHardwareBitmapAndroid() {
+  return getAccessor().viewTransitionUseHardwareBitmapAndroid();
 }
 
 double ReactNativeFeatureFlags::virtualViewPrerenderRatio() {

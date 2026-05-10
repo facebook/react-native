@@ -1845,7 +1845,6 @@ public class com/facebook/react/devsupport/DevServerHelper {
 	public fun getDevServerSplitBundleURL (Ljava/lang/String;)Ljava/lang/String;
 	public fun getSourceMapUrl (Ljava/lang/String;)Ljava/lang/String;
 	public fun getSourceUrl (Ljava/lang/String;)Ljava/lang/String;
-	public final fun getWebsocketProxyURL ()Ljava/lang/String;
 	public fun isPackagerRunning (Lcom/facebook/react/devsupport/interfaces/PackagerStatusCallback;)V
 	public final fun openDebugger (Lcom/facebook/react/bridge/ReactContext;Ljava/lang/String;Ljava/lang/String;)V
 	public final fun openInspectorConnection ()V
@@ -2282,8 +2281,6 @@ public final class com/facebook/react/fabric/mounting/SurfaceMountingManager {
 	public final fun applyViewSnapshot (ILandroid/graphics/Bitmap;)V
 	public final fun attachRootView (Landroid/view/View;Lcom/facebook/react/uimanager/ThemedReactContext;)V
 	public final fun deleteView (I)V
-	public final fun enqueuePendingEvent (ILjava/lang/String;ZLcom/facebook/react/bridge/WritableMap;I)V
-	public final fun enqueuePendingEvent (ILjava/lang/String;ZLcom/facebook/react/bridge/WritableMap;IJ)V
 	public final fun getContext ()Lcom/facebook/react/uimanager/ThemedReactContext;
 	public final fun getSurfaceId ()I
 	public final fun getView (I)Landroid/view/View;
@@ -4090,11 +4087,6 @@ public final class com/facebook/react/uimanager/ReactStylesDiffMap {
 	public fun toString ()Ljava/lang/String;
 }
 
-public abstract interface class com/facebook/react/uimanager/ReactZIndexedViewGroup {
-	public abstract fun getZIndexMappedChildIndex (I)I
-	public abstract fun updateDrawingOrder ()V
-}
-
 public abstract interface class com/facebook/react/uimanager/RootView {
 	public abstract fun handleException (Ljava/lang/Throwable;)V
 	public abstract fun onChildEndedNativeGesture (Landroid/view/View;Landroid/view/MotionEvent;)V
@@ -4400,17 +4392,7 @@ public final class com/facebook/react/uimanager/ViewDefaults {
 	public static final field NUMBER_OF_LINES I
 }
 
-public final class com/facebook/react/uimanager/ViewGroupDrawingOrderHelper {
-	public fun <init> (Landroid/view/ViewGroup;)V
-	public final fun getChildDrawingOrder (II)I
-	public final fun handleAddView (Landroid/view/View;)V
-	public final fun handleRemoveView (Landroid/view/View;)V
-	public final fun shouldEnableCustomDrawingOrder ()Z
-	public final fun update ()V
-}
-
 public abstract class com/facebook/react/uimanager/ViewGroupManager : com/facebook/react/uimanager/BaseViewManager, com/facebook/react/uimanager/IViewGroupManager {
-	public static final field Companion Lcom/facebook/react/uimanager/ViewGroupManager$Companion;
 	public fun <init> ()V
 	public fun <init> (Lcom/facebook/react/bridge/ReactApplicationContext;)V
 	public synthetic fun <init> (Lcom/facebook/react/bridge/ReactApplicationContext;ILkotlin/jvm/internal/DefaultConstructorMarker;)V
@@ -4424,19 +4406,12 @@ public abstract class com/facebook/react/uimanager/ViewGroupManager : com/facebo
 	public synthetic fun getChildCount (Landroid/view/View;)I
 	public fun getChildCount (Landroid/view/ViewGroup;)I
 	public fun getShadowNodeClass ()Ljava/lang/Class;
-	public static final fun getViewZIndex (Landroid/view/View;)Ljava/lang/Integer;
 	public fun needsCustomLayoutForChildren ()Z
 	public fun removeView (Landroid/view/ViewGroup;Landroid/view/View;)V
 	public synthetic fun removeViewAt (Landroid/view/View;I)V
 	public fun removeViewAt (Landroid/view/ViewGroup;I)V
-	public static final fun setViewZIndex (Landroid/view/View;I)V
 	public synthetic fun updateExtraData (Landroid/view/View;Ljava/lang/Object;)V
 	public fun updateExtraData (Landroid/view/ViewGroup;Ljava/lang/Object;)V
-}
-
-public final class com/facebook/react/uimanager/ViewGroupManager$Companion {
-	public final fun getViewZIndex (Landroid/view/View;)Ljava/lang/Integer;
-	public final fun setViewZIndex (Landroid/view/View;I)V
 }
 
 public abstract class com/facebook/react/uimanager/ViewManager : com/facebook/react/bridge/BaseJavaModule {
@@ -6445,7 +6420,7 @@ public final class com/facebook/react/views/view/ReactDrawableHelper {
 	public static final fun createDrawableFromJSDescription (Landroid/content/Context;Lcom/facebook/react/bridge/ReadableMap;)Landroid/graphics/drawable/Drawable;
 }
 
-public class com/facebook/react/views/view/ReactViewGroup : android/view/ViewGroup, com/facebook/react/touch/ReactHitSlopView, com/facebook/react/touch/ReactInterceptingViewGroup, com/facebook/react/uimanager/ReactClippingViewGroup, com/facebook/react/uimanager/ReactOverflowViewWithInset, com/facebook/react/uimanager/ReactPointerEventsView, com/facebook/react/uimanager/ReactZIndexedViewGroup {
+public class com/facebook/react/views/view/ReactViewGroup : android/view/ViewGroup, com/facebook/react/touch/ReactHitSlopView, com/facebook/react/touch/ReactInterceptingViewGroup, com/facebook/react/uimanager/ReactClippingViewGroup, com/facebook/react/uimanager/ReactOverflowViewWithInset, com/facebook/react/uimanager/ReactPointerEventsView {
 	public fun <init> (Landroid/content/Context;)V
 	public fun addChildrenForAccessibility (Ljava/util/ArrayList;)V
 	public final fun cleanUpAxOrderListener ()V
@@ -6465,7 +6440,6 @@ public class com/facebook/react/views/view/ReactViewGroup : android/view/ViewGro
 	public fun getOverflowInset ()Landroid/graphics/Rect;
 	public fun getPointerEvents ()Lcom/facebook/react/uimanager/PointerEvents;
 	public fun getRemoveClippedSubviews ()Z
-	public fun getZIndexMappedChildIndex (I)I
 	public fun hasOverlappingRendering ()Z
 	protected fun onAttachedToWindow ()V
 	public fun onHoverEvent (Landroid/view/MotionEvent;)Z
@@ -6498,7 +6472,6 @@ public class com/facebook/react/views/view/ReactViewGroup : android/view/ViewGro
 	public final fun setTranslucentBackgroundDrawable (Landroid/graphics/drawable/Drawable;)V
 	public fun updateClippingRect ()V
 	public fun updateClippingRect (Ljava/util/Set;)V
-	public fun updateDrawingOrder ()V
 }
 
 public class com/facebook/react/views/view/ReactViewManager : com/facebook/react/views/view/ReactClippingViewManager {
