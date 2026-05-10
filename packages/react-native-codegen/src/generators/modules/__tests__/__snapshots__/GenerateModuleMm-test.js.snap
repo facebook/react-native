@@ -292,8 +292,12 @@ namespace facebook::react {
         eventEmitterMap_[\\"onEvent4\\"] = std::make_shared<AsyncEventEmitter<id>>();
         eventEmitterMap_[\\"onEvent5\\"] = std::make_shared<AsyncEventEmitter<id>>();
         eventEmitterMap_[\\"onEvent6\\"] = std::make_shared<AsyncEventEmitter<id>>();
-        setEventEmitterCallback([&](const std::string &name, id value) {
-          static_cast<AsyncEventEmitter<id> &>(*eventEmitterMap_[name]).emit(value);
+        auto emitterMap = eventEmitterMap_;
+        setEventEmitterCallback([emitterMap](const std::string &name, id value) {
+          auto it = emitterMap.find(name);
+          if (it != emitterMap.end() && it->second) {
+            static_cast<AsyncEventEmitter<id> &>(*it->second).emit(value);
+          }
         });
   }
 } // namespace facebook::react
@@ -675,8 +679,12 @@ namespace facebook::react {
         methodMap_[\\"getStringLiteral\\"] = MethodMetadata {1, __hostFunction_NativeSampleTurboModuleSpecJSI_getStringLiteral};
         
         eventEmitterMap_[\\"literalEvent\\"] = std::make_shared<AsyncEventEmitter<id>>();
-        setEventEmitterCallback([&](const std::string &name, id value) {
-          static_cast<AsyncEventEmitter<id> &>(*eventEmitterMap_[name]).emit(value);
+        auto emitterMap = eventEmitterMap_;
+        setEventEmitterCallback([emitterMap](const std::string &name, id value) {
+          auto it = emitterMap.find(name);
+          if (it != emitterMap.end() && it->second) {
+            static_cast<AsyncEventEmitter<id> &>(*it->second).emit(value);
+          }
         });
   }
 } // namespace facebook::react

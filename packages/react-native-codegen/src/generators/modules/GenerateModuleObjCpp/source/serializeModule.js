@@ -85,8 +85,12 @@ namespace facebook::react {
       }${
         eventEmitters.length > 0
           ? `
-        setEventEmitterCallback([&](const std::string &name, id value) {
-          static_cast<AsyncEventEmitter<id> &>(*eventEmitterMap_[name]).emit(value);
+        auto emitterMap = eventEmitterMap_;
+        setEventEmitterCallback([emitterMap](const std::string &name, id value) {
+          auto it = emitterMap.find(name);
+          if (it != emitterMap.end() && it->second) {
+            static_cast<AsyncEventEmitter<id> &>(*it->second).emit(value);
+          }
         });`
           : ''
       }
