@@ -41,6 +41,8 @@ class ReactPropAnnotationSetterTest {
 
     fun onBoxedIntSetterCalled(value: Int?)
 
+    fun onBoxedFloatSetterCalled(value: Float?)
+
     fun onArraySetterCalled(value: ReadableArray?)
 
     fun onMapSetterCalled(value: ReadableMap?)
@@ -50,6 +52,8 @@ class ReactPropAnnotationSetterTest {
     fun onIntGroupPropSetterCalled(index: Int, value: Int)
 
     fun onBoxedIntGroupPropSetterCalled(index: Int, value: Int?)
+
+    fun onBoxedFloatGroupPropSetterCalled(index: Int, value: Float?)
   }
 
   @Suppress("UNUSED_PARAMETER", "DEPRECATION")
@@ -128,6 +132,11 @@ class ReactPropAnnotationSetterTest {
       viewManagerUpdatesReceiver.onBoxedIntSetterCalled(value)
     }
 
+    @ReactProp(name = "boxedFloatProp")
+    fun setBoxedFloatProp(v: View?, value: Float?) {
+      viewManagerUpdatesReceiver.onBoxedFloatSetterCalled(value)
+    }
+
     @ReactProp(name = "arrayProp")
     fun setArrayProp(v: View?, value: ReadableArray?) {
       viewManagerUpdatesReceiver.onArraySetterCalled(value)
@@ -167,6 +176,11 @@ class ReactPropAnnotationSetterTest {
     @ReactPropGroup(names = ["boxedIntGroupPropFirst", "boxedIntGroupPropSecond"])
     fun setBoxedIntGroupProp(v: View?, index: Int, value: Int?) {
       viewManagerUpdatesReceiver.onBoxedIntGroupPropSetterCalled(index, value)
+    }
+
+    @ReactPropGroup(names = ["boxedFloatGroupPropFirst", "boxedFloatGroupPropSecond"])
+    fun setBoxedFloatGroupProp(v: View?, index: Int, value: Float?) {
+      viewManagerUpdatesReceiver.onBoxedFloatGroupPropSetterCalled(index, value)
     }
   }
 
@@ -315,6 +329,22 @@ class ReactPropAnnotationSetterTest {
   }
 
   @Test
+  fun testBoxedFloatSetter() {
+    viewManager.updateProperties(targetView, buildStyles("boxedFloatProp", 55.5))
+    Mockito.verify(updatesReceiverMock).onBoxedFloatSetterCalled(55.5f)
+    Mockito.verifyNoMoreInteractions(updatesReceiverMock)
+    Mockito.reset(updatesReceiverMock)
+    viewManager.updateProperties(targetView, buildStyles("boxedFloatProp", 1.0))
+    Mockito.verify(updatesReceiverMock).onBoxedFloatSetterCalled(1.0f)
+    Mockito.verifyNoMoreInteractions(updatesReceiverMock)
+    Mockito.reset(updatesReceiverMock)
+    viewManager.updateProperties(targetView, buildStyles("boxedFloatProp", null))
+    Mockito.verify(updatesReceiverMock).onBoxedFloatSetterCalled(null)
+    Mockito.verifyNoMoreInteractions(updatesReceiverMock)
+    Mockito.reset(updatesReceiverMock)
+  }
+
+  @Test
   fun testArraySetter() {
     val array: ReadableArray = JavaOnlyArray()
     viewManager.updateProperties(targetView, buildStyles("arrayProp", array))
@@ -400,6 +430,22 @@ class ReactPropAnnotationSetterTest {
     Mockito.reset(updatesReceiverMock)
     viewManager.updateProperties(targetView, buildStyles("boxedIntGroupPropSecond", null))
     Mockito.verify(updatesReceiverMock).onBoxedIntGroupPropSetterCalled(1, null)
+    Mockito.verifyNoMoreInteractions(updatesReceiverMock)
+    Mockito.reset(updatesReceiverMock)
+  }
+
+  @Test
+  fun testBoxedFloatGroupSetter() {
+    viewManager.updateProperties(targetView, buildStyles("boxedFloatGroupPropFirst", -7.75))
+    Mockito.verify(updatesReceiverMock).onBoxedFloatGroupPropSetterCalled(0, -7.75f)
+    Mockito.verifyNoMoreInteractions(updatesReceiverMock)
+    Mockito.reset(updatesReceiverMock)
+    viewManager.updateProperties(targetView, buildStyles("boxedFloatGroupPropSecond", 12345.0))
+    Mockito.verify(updatesReceiverMock).onBoxedFloatGroupPropSetterCalled(1, 12345.0f)
+    Mockito.verifyNoMoreInteractions(updatesReceiverMock)
+    Mockito.reset(updatesReceiverMock)
+    viewManager.updateProperties(targetView, buildStyles("boxedFloatGroupPropSecond", null))
+    Mockito.verify(updatesReceiverMock).onBoxedFloatGroupPropSetterCalled(1, null)
     Mockito.verifyNoMoreInteractions(updatesReceiverMock)
     Mockito.reset(updatesReceiverMock)
   }

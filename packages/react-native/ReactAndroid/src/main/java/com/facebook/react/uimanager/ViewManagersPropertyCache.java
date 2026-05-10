@@ -330,6 +330,29 @@ import java.util.Map;
     }
   }
 
+  private static class BoxedFloatPropSetter extends PropSetter {
+
+    public BoxedFloatPropSetter(ReactProp prop, Method setter) {
+      super(prop, "number", setter);
+    }
+
+    public BoxedFloatPropSetter(ReactPropGroup prop, Method setter, int index) {
+      super(prop, "number", setter, index);
+    }
+
+    @Override
+    protected @Nullable Object getValueOrDefault(Object value, Context context) {
+      if (value != null) {
+        if (value instanceof Double) {
+          return ((Double) value).floatValue();
+        } else {
+          return (Float) value;
+        }
+      }
+      return null;
+    }
+  }
+
   private static class BoxedColorPropSetter extends PropSetter {
 
     public BoxedColorPropSetter(ReactProp prop, Method setter) {
@@ -450,6 +473,8 @@ import java.util.Map;
         return new BoxedColorPropSetter(annotation, method);
       }
       return new BoxedIntPropSetter(annotation, method);
+    } else if (propTypeClass == Float.class) {
+      return new BoxedFloatPropSetter(annotation, method);
     } else if (propTypeClass == ReadableArray.class) {
       return new ArrayPropSetter(annotation, method);
     } else if (propTypeClass == ReadableMap.class) {
@@ -499,6 +524,10 @@ import java.util.Map;
         } else {
           props.put(names[i], new BoxedIntPropSetter(annotation, method, i));
         }
+      }
+    } else if (propTypeClass == Float.class) {
+      for (int i = 0; i < names.length; i++) {
+        props.put(names[i], new BoxedFloatPropSetter(annotation, method, i));
       }
     } else {
       throw new RuntimeException(

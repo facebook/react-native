@@ -66,6 +66,8 @@ class ReactPropConstantsTest {
 
     @ReactProp(name = "boxedIntProp") fun setBoxedIntProp(v: View?, value: Int?) = Unit
 
+    @ReactProp(name = "boxedFloatProp") fun setBoxedFloatProp(v: View?, value: Float?) = Unit
+
     @ReactProp(name = "arrayProp") fun setArrayProp(v: View?, value: ReadableArray?) = Unit
 
     @ReactProp(name = "mapProp") fun setMapProp(v: View?, value: ReadableMap?) = Unit
@@ -78,6 +80,9 @@ class ReactPropConstantsTest {
 
     @ReactPropGroup(names = ["boxedIntGroupPropFirst", "boxedIntGroupPropSecond"])
     fun setBoxedIntGroupProp(v: View?, index: Int, value: Int?) = Unit
+
+    @ReactPropGroup(names = ["boxedFloatGroupPropFirst", "boxedFloatGroupPropSecond"])
+    fun setBoxedFloatGroupProp(v: View?, index: Int, value: Float?) = Unit
 
     @ReactProp(name = "customIntProp", customType = "date")
     fun customIntProp(v: View?, value: Int) = Unit
@@ -112,6 +117,7 @@ class ReactPropConstantsTest {
                 "stringProp" to "String",
                 "boxedBoolProp" to "boolean",
                 "boxedIntProp" to "number",
+                "boxedFloatProp" to "number",
                 "arrayProp" to "Array",
                 "mapProp" to "Map",
                 "floatGroupPropFirst" to "number",
@@ -120,6 +126,8 @@ class ReactPropConstantsTest {
                 "intGroupPropSecond" to "number",
                 "boxedIntGroupPropFirst" to "number",
                 "boxedIntGroupPropSecond" to "number",
+                "boxedFloatGroupPropFirst" to "number",
+                "boxedFloatGroupPropSecond" to "number",
                 "customIntProp" to "date",
                 "customBoxedIntGroupPropFirst" to "color",
                 "customBoxedIntGroupPropSecond" to "color",
