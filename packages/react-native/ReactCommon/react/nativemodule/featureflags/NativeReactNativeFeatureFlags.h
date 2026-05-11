@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<9ad664ffda3606d894339dd64e364374>>
+ * @generated SignedSource<<1bc2c347fb241190b4ae048e12c5a885>>
  */
 
 /**
@@ -115,8 +115,6 @@ class NativeReactNativeFeatureFlags
   bool enableMutationObserverByDefault(jsi::Runtime& runtime);
 
   bool enableNativeCSSParsing(jsi::Runtime& runtime);
-
-  bool enableNativeViewPropTransformations(jsi::Runtime& runtime);
 
   bool enableNetworkEventReporting(jsi::Runtime& runtime);
 

@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<ef125427b8daa352919a846435008cad>>
+ * @generated SignedSource<<ec375fbc64b2b2b8995c1640a0369923>>
  */
 
 /**
@@ -60,7 +60,6 @@ internal class ReactNativeFeatureFlagsCxxAccessor : ReactNativeFeatureFlagsAcces
   private var enableModuleArgumentNSNullConversionIOSCache: Boolean? = null
   private var enableMutationObserverByDefaultCache: Boolean? = null
   private var enableNativeCSSParsingCache: Boolean? = null
-  private var enableNativeViewPropTransformationsCache: Boolean? = null
   private var enableNetworkEventReportingCache: Boolean? = null
   private var enablePreparedTextLayoutCache: Boolean? = null
   private var enablePropsUpdateReconciliationAndroidCache: Boolean? = null
@@ -470,15 +469,6 @@ internal class ReactNativeFeatureFlagsCxxAccessor : ReactNativeFeatureFlagsAcces
     if (cached == null) {
       cached = ReactNativeFeatureFlagsCxxInterop.enableNativeCSSParsing()
       enableNativeCSSParsingCache = cached
-    }
-    return cached
-  }
-
-  override fun enableNativeViewPropTransformations(): Boolean {
-    var cached = enableNativeViewPropTransformationsCache
-    if (cached == null) {
-      cached = ReactNativeFeatureFlagsCxxInterop.enableNativeViewPropTransformations()
-      enableNativeViewPropTransformationsCache = cached
     }
     return cached
   }

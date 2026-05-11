@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<1f63c355480af133d9245dad20da704c>>
+ * @generated SignedSource<<32c8c18771d6690f50d60dbc8e3d07e2>>
  */
 
 /**
@@ -276,12 +276,6 @@ class ReactNativeFeatureFlagsJavaProvider
   bool enableNativeCSSParsing() override {
     static const auto method =
         getReactNativeFeatureFlagsProviderJavaClass()->getMethod<jboolean()>("enableNativeCSSParsing");
-    return method(javaProvider_);
-  }
-
-  bool enableNativeViewPropTransformations() override {
-    static const auto method =
-        getReactNativeFeatureFlagsProviderJavaClass()->getMethod<jboolean()>("enableNativeViewPropTransformations");
     return method(javaProvider_);
   }
 
@@ -801,11 +795,6 @@ bool JReactNativeFeatureFlagsCxxInterop::enableNativeCSSParsing(
   return ReactNativeFeatureFlags::enableNativeCSSParsing();
 }
 
-bool JReactNativeFeatureFlagsCxxInterop::enableNativeViewPropTransformations(
-    facebook::jni::alias_ref<JReactNativeFeatureFlagsCxxInterop> /*unused*/) {
-  return ReactNativeFeatureFlags::enableNativeViewPropTransformations();
-}
-
 bool JReactNativeFeatureFlagsCxxInterop::enableNetworkEventReporting(
     facebook::jni::alias_ref<JReactNativeFeatureFlagsCxxInterop> /*unused*/) {
   return ReactNativeFeatureFlags::enableNetworkEventReporting();
@@ -1217,9 +1206,6 @@ void JReactNativeFeatureFlagsCxxInterop::registerNatives() {
       makeNativeMethod(
         "enableNativeCSSParsing",
         JReactNativeFeatureFlagsCxxInterop::enableNativeCSSParsing),
-      makeNativeMethod(
-        "enableNativeViewPropTransformations",
-        JReactNativeFeatureFlagsCxxInterop::enableNativeViewPropTransformations),
       makeNativeMethod(
         "enableNetworkEventReporting",
         JReactNativeFeatureFlagsCxxInterop::enableNetworkEventReporting),
