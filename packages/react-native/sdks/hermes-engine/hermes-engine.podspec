@@ -22,20 +22,7 @@ end
 package = JSON.parse(File.read(File.join(react_native_path, "package.json")))
 versionProperties = Hash[*File.read("version.properties").split(/[=\n]+/)]
 
-if ENV['RCT_HERMES_V1_ENABLED'] == "0"
-  version = versionProperties['HERMES_VERSION_NAME']
-else
-  version = versionProperties['HERMES_V1_VERSION_NAME']
-end
-
-# Local monorepo build
-# We don't want to build Hermes V1 from source
-if ENV['RCT_HERMES_V1_ENABLED'] == "0" && package['version'] == "1000.0.0" then
-  hermesCompilerVersion = package['dependencies']['hermes-compiler']
-  if hermesCompilerVersion != "0.0.0" then
-    version = hermesCompilerVersion
-  end
-end
+version = versionProperties['HERMES_VERSION_NAME']
 
 source_type = hermes_source_type(version, react_native_path)
 source = podspec_source(source_type, version, react_native_path)
