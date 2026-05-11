@@ -14,8 +14,7 @@ const {readHermesTag, setHermesTag} = require('../hermes-utils');
 // $FlowFixMe[untyped-import] (OSS) memfs
 const {memfs} = require('memfs');
 
-const hermesTag =
-  'hermes-2022-04-28-RNv0.69.0-15d07c2edd29a4ea0b8f15ab0588a0c1adb1200f';
+const hermesTag = '250829098.0.13';
 const ROOT_DIR = path.normalize(path.join(__dirname, '../../..'));
 const SDKS_DIR = path.join(ROOT_DIR, 'sdks');
 
