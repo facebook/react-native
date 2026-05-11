@@ -32,7 +32,8 @@ const GRADLE_PROPERTIES_PATH = path.join(
   'gradle.properties',
 );
 
-async function getLatestHermesNightlyVersion() /*: Promise<string> */ {
+// TODO: rename 'latest-v1' to 'latest' once V1 is the only Hermes on npm
+async function getLatestHermesVersion() /*: Promise<string> */ {
   return getPackageVersionStrByTag('hermes-compiler', 'latest-v1');
 }
 
@@ -86,15 +87,15 @@ async function updateHermesRuntimeDependenciesVersions(
   await fs.writeFile(MAVEN_VERSIONS_FILE_PATH, newVersionsFile.trim() + '\n');
 }
 
-async function updateHermesVersionsToNightly() {
-  const hermesVersion = await getLatestHermesNightlyVersion();
+async function updateHermesVersionsToPrebuilt() {
+  const hermesVersion = await getLatestHermesVersion();
   await updateHermesCompilerVersionInDependencies(hermesVersion);
   await updateHermesRuntimeDependenciesVersions(hermesVersion);
 }
 
 module.exports = {
   setStableHermesForReleaseBranch,
-  updateHermesVersionsToNightly,
+  updateHermesVersionsToPrebuilt,
   updateHermesCompilerVersionInDependencies,
   updateHermesRuntimeDependenciesVersions,
 };
