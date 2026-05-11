@@ -11,6 +11,7 @@
 import type {RNTesterModule} from '../../types/RNTesterTypes';
 
 import PlaygroundExample from './ChessboardExample';
+import PerformanceTestExample from './PerformanceTestExample';
 import SwipeableListExample from './SwipeableListExample';
 import * as ReactNativeFeatureFlags from 'react-native/src/private/featureflags/ReactNativeFeatureFlags';
 
@@ -25,5 +26,7 @@ export default {
   category: 'UI',
   description: `Examples demonstrating the Animation Backend for layout-updating animations. ${canUseBackend ? '' : 'You need to enable c++ Animated and the Animation Backend to see these examples.'}`,
   showIndividualExamples: true,
-  examples: canUseBackend ? [PlaygroundExample, SwipeableListExample] : [],
+  examples: canUseBackend
+    ? [PlaygroundExample, SwipeableListExample, PerformanceTestExample]
+    : [],
 } as RNTesterModule;
