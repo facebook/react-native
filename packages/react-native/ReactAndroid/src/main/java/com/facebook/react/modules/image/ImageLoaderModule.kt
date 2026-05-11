@@ -17,6 +17,7 @@ import com.facebook.datasource.DataSource
 import com.facebook.datasource.DataSubscriber
 import com.facebook.drawee.backends.pipeline.Fresco
 import com.facebook.fbreact.specs.NativeImageLoaderAndroidSpec
+import com.facebook.imagepipeline.common.RotationOptions
 import com.facebook.imagepipeline.core.ImagePipeline
 import com.facebook.imagepipeline.image.EncodedImage
 import com.facebook.imagepipeline.request.ImageRequest
@@ -83,7 +84,10 @@ internal class ImageLoaderModule : NativeImageLoaderAndroidSpec, LifecycleEventL
       return
     }
     val source = ImageSource(reactApplicationContext, uriString)
-    val request: ImageRequest = ImageRequestBuilder.newBuilderWithSource(source.uri).build()
+    val request: ImageRequest =
+        ImageRequestBuilder.newBuilderWithSource(source.uri)
+            .setRotationOptions(RotationOptions.disableRotation())
+            .build()
     val dataSource: DataSource<CloseableReference<PooledByteBuffer>> =
         this.imagePipeline.fetchEncodedImage(request, this.callerContext)
     dataSource.subscribe(createSizeSubscriber(promise), CallerThreadExecutor.getInstance())
@@ -106,6 +110,7 @@ internal class ImageLoaderModule : NativeImageLoaderAndroidSpec, LifecycleEventL
     val source = ImageSource(reactApplicationContext, uriString)
     val imageRequestBuilder: ImageRequestBuilder =
         ImageRequestBuilder.newBuilderWithSource(source.uri)
+            .setRotationOptions(RotationOptions.disableRotation())
     val request: ImageRequest =
         ReactNetworkImageRequest.fromBuilderWithHeaders(imageRequestBuilder, headers)
     val dataSource: DataSource<CloseableReference<PooledByteBuffer>> =
