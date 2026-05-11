@@ -65,7 +65,7 @@ Pod::Spec.new do |spec|
     end
 
     # When using the local prebuilt tarball, it should include hermesc compatible with the used VM.
-    # In other cases, when using Hermes V1, the prebuilt versioned binaries can be used.
+    # In other cases, the prebuilt versioned Hermes V1 hermesc binaries from the hermes-compiler npm package can be used.
     if source_type != HermesEngineSourceType::LOCAL_PREBUILT_TARBALL
       hermes_compiler_path = File.dirname(Pod::Executable.execute_command('node', ['-p',
         "require.resolve(\"hermes-compiler\", {paths: [\"#{react_native_path}\"]})", __dir__]).strip
