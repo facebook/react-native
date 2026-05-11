@@ -1322,21 +1322,6 @@ const {isOSS} = Fantom.getConstants();
     });
 
     describe('error handling', () => {
-      let originalConsoleError: typeof console.error;
-      let mockConsoleError: JestMockFn<$FlowFixMe, $FlowFixMe>;
-
-      beforeEach(() => {
-        originalConsoleError = console.error;
-        mockConsoleError = jest.fn();
-        // $FlowFixMe[cannot-write]
-        console.error = mockConsoleError;
-      });
-
-      afterEach(() => {
-        // $FlowFixMe[cannot-write]
-        console.error = originalConsoleError;
-      });
-
       it('error in event handler does not break dispatch to subsequent listeners', () => {
         const root = Fantom.createRoot();
         const childRef = React.createRef<React.ElementRef<typeof View>>();
@@ -1365,18 +1350,7 @@ const {isOSS} = Fantom.getConstants();
             },
           );
 
-        if (ReactNativeFeatureFlags.enableNativeEventTargetEventDispatching()) {
-          // EventTarget-style dispatch catches per-listener errors and
-          // reports them via `console.error` (see `EventTarget.js`), so the
-          // dispatch itself does not throw.
-          dispatch();
-          expect(mockConsoleError).toHaveBeenCalled();
-        } else {
-          // Legacy dispatch surfaces the first per-handler error via
-          // Fantom's global handler, which re-throws synchronously after
-          // dispatch completes.
-          expect(dispatch).toThrow('handler error');
-        }
+        expect(dispatch).toThrow('handler error');
 
         // The parent bubble handler should still fire despite child's error
         expect(parentHandler).toHaveBeenCalledTimes(1);
