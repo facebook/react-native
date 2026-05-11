@@ -243,10 +243,13 @@ NSMutableDictionary<NSAttributedStringKey, id> *RCTNSTextAttributesFromTextAttri
     auto textDecorationStyleValue = textAttributes.textDecorationStyle.value_or(TextDecorationStyle::Solid);
     UIColor *textDecorationColor = RCTUIColorFromSharedColor(textAttributes.textDecorationColor);
 
-    if (textDecorationStyleValue == TextDecorationStyle::Wavy) {
-      // UIKit's `NSUnderlineStyle` has no native wavy. Suppress the
-      // framework-drawn line and tag the range so `RCTTextLayoutManager`
-      // can paint a WebKit-style wavy stroke in its drawing pass.
+    // Custom drawing for styles UIKit can't render faithfully: wavy (no
+    // native value), and dotted/dashed (UIKit's pattern bits don't match
+    // browser geometry). The other styles continue to use NSUnderlineStyle.
+    bool needsCustomDrawing = textDecorationStyleValue == TextDecorationStyle::Wavy ||
+        textDecorationStyleValue == TextDecorationStyle::Dotted ||
+        textDecorationStyleValue == TextDecorationStyle::Dashed;
+    if (needsCustomDrawing) {
       UIColor *strokeColor = textDecorationColor ?: RCTUIColorFromSharedColor(textAttributes.foregroundColor);
       NSMutableArray<NSString *> *lines = [NSMutableArray array];
       if (textDecorationLineType == TextDecorationLineType::Underline ||
@@ -257,7 +260,11 @@ NSMutableDictionary<NSAttributedStringKey, id> *RCTNSTextAttributesFromTextAttri
           textDecorationLineType == TextDecorationLineType::UnderlineStrikethrough) {
         [lines addObject:@"line-through"];
       }
-      attributes[RCTWavyDecorationAttributeName] = @{@"lines" : lines, @"color" : strokeColor ?: [UIColor labelColor]};
+      NSString *styleKey = textDecorationStyleValue == TextDecorationStyle::Wavy
+          ? @"wavy"
+          : (textDecorationStyleValue == TextDecorationStyle::Dotted ? @"dotted" : @"dashed");
+      attributes[RCTCustomDecorationAttributeName] =
+          @{@"lines" : lines, @"color" : strokeColor ?: [UIColor labelColor], @"style" : styleKey};
     } else {
       NSUnderlineStyle style = RCTNSUnderlineStyleFromTextDecorationStyle(textDecorationStyleValue);
 

@@ -8,9 +8,12 @@
 package com.facebook.react.views.text
 
 import android.graphics.Canvas
+import android.graphics.Color
 import android.graphics.DashPathEffect
 import android.graphics.Paint
 import android.graphics.Path
+import android.os.Build
+import android.text.Layout
 import kotlin.math.max
 import kotlin.math.roundToInt
 
@@ -95,23 +98,78 @@ internal fun drawDecorationLine(
       val clamped = max(1f, thickness)
       val wavelength = 1f + 2f * (2f * clamped + 0.5f).roundToInt()
       val cpDistance = 0.5f + (3f * clamped + 0.5f).roundToInt()
-      Log.d(
-          "ReactWavyDecoration",
-          "wavelength=$wavelength cpDistance=$cpDistance thickness=$thickness x1=$x1 x2=$x2 y=$y")
       val path = Path()
       path.moveTo(x1, y)
       var x = x1
-      while (x + wavelength <= x2) {
-        val cp1x = x + wavelength / 2f
-        val cp2x = x + wavelength / 2f
+      // Loop while `x < x2` (not `x + wavelength <= x2`) so the wave
+      // continues through the final character (including trailing
+      // punctuation). The last cycle may extend a hair past the run,
+      // which reads as a natural underline trailer.
+      while (x < x2) {
+        val midX = x + wavelength / 2f
         val endX = x + wavelength
         // Two control points at the midpoint, one above (y - cp) and
         // one below (y + cp). Produces an oscillating S-curve per
         // wavelength, matching Chromium/Blink's wavy underline.
-        path.cubicTo(cp1x, y + cpDistance, cp2x, y - cpDistance, endX, y)
+        path.cubicTo(midX, y + cpDistance, midX, y - cpDistance, endX, y)
         x = endX
       }
       canvas.drawPath(path, paint)
     }
   }
+}
+
+/**
+ * Shared decoration drawing entry point used by [ReactUnderlineSpan] and
+ * [ReactStrikethroughSpan]. Computes a density-aware stroke thickness,
+ * sets up the paint, iterates the visible lines of the run, and delegates
+ * each line to [drawDecorationLine]. The caller-supplied [yOffsetForLine]
+ * computes the vertical position of the decoration line on each visible
+ * line of text (underline vs strikethrough being the only difference).
+ */
+internal inline fun drawSpannedDecoration(
+    start: Int,
+    end: Int,
+    canvas: Canvas,
+    layout: Layout,
+    color: Int,
+    style: TextDecorationStyle,
+    yOffsetForLine: (paint: Paint, baseline: Float, thickness: Float) -> Float,
+) {
+  val paint = layout.paint
+  val savedColor = paint.color
+  val savedStrokeWidth = paint.strokeWidth
+  val savedStyle = paint.style
+  val savedAntiAlias = paint.isAntiAlias
+  val effectiveColor = if (color != Color.TRANSPARENT) color else savedColor
+  // Density-aware minimum so the decoration reads consistently across
+  // display densities (`paint.density` is the px-per-dp ratio).
+  val minThickness = 1.5f * paint.density
+  val thickness =
+      if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
+        max(paint.underlineThickness, minThickness)
+      } else {
+        max(paint.fontMetrics.descent * 0.1f, minThickness)
+      }
+
+  paint.color = effectiveColor
+  paint.strokeWidth = thickness
+  paint.style = Paint.Style.STROKE
+  paint.isAntiAlias = true
+
+  val startLine = layout.getLineForOffset(start)
+  val endLine = layout.getLineForOffset(end)
+  for (line in startLine..endLine) {
+    val baseline = layout.getLineBaseline(line).toFloat()
+    val x1 =
+        if (line == startLine) layout.getPrimaryHorizontal(start) else layout.getLineLeft(line)
+    val x2 = if (line == endLine) layout.getPrimaryHorizontal(end) else layout.getLineRight(line)
+    val y = yOffsetForLine(paint, baseline, thickness)
+    drawDecorationLine(canvas, paint, x1, x2, y, thickness, style)
+  }
+
+  paint.color = savedColor
+  paint.strokeWidth = savedStrokeWidth
+  paint.style = savedStyle
+  paint.isAntiAlias = savedAntiAlias
 }
