@@ -318,7 +318,7 @@ internal object TextLayoutManager {
           ops.add(SetSpanOperation(start, end, ReactUnderlineSpan(textAttributes.textDecorationColor)))
         }
         if (textAttributes.isLineThroughTextDecorationSet) {
-          ops.add(SetSpanOperation(start, end, ReactStrikethroughSpan()))
+          ops.add(SetSpanOperation(start, end, ReactStrikethroughSpan(textAttributes.textDecorationColor)))
         }
         if (
             (textAttributes.textShadowOffsetDx != 0f ||
@@ -498,7 +498,7 @@ internal object TextLayoutManager {
         }
 
         if (fragment.props.isLineThroughTextDecorationSet) {
-          spannable.setSpan(ReactStrikethroughSpan(), start, end, spanFlags)
+          spannable.setSpan(ReactStrikethroughSpan(fragment.props.textDecorationColor), start, end, spanFlags)
         }
 
         if (
