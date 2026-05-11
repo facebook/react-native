@@ -20,6 +20,7 @@ import android.view.KeyEvent
 import android.view.MotionEvent
 import android.view.View
 import android.view.ViewGroup
+import android.view.ViewParent
 import androidx.annotation.ColorInt
 import androidx.annotation.DoNotInline
 import androidx.annotation.RequiresApi
@@ -28,6 +29,7 @@ import com.facebook.proguard.annotations.DoNotStrip
 import com.facebook.react.common.annotations.UnstableReactNativeAPI
 import com.facebook.react.uimanager.BackgroundStyleApplicator
 import com.facebook.react.uimanager.ReactCompoundView
+import com.facebook.react.uimanager.RootView
 import com.facebook.react.uimanager.style.Overflow
 import com.facebook.react.views.text.internal.span.AnimatedEffectSpan
 import com.facebook.react.views.text.internal.span.CanvasEffectSpan
@@ -260,6 +262,13 @@ internal class PreparedLayoutTextView(context: Context) : ViewGroup(context), Re
       val layoutX = event.x - paddingLeft
       val layoutY = event.y - paddingTop - (preparedLayout?.verticalOffset ?: 0f)
       if (touchableSpan.onTouchEvent(action, layoutX, layoutY)) {
+        if (action == MotionEvent.ACTION_DOWN) {
+          // Returning true from onTouchEvent stops Android's onClickListener path on parents,
+          // but RN's gesture responder runs at the JS layer and would still let an ancestor
+          // <Pressable> fire onPress on this gesture. Tell the React root we're taking over so
+          // it cancels in-flight JS responder tracking — same hook ScrollView uses on intercept.
+          findRootView()?.onChildStartedNativeGesture(this, event)
+        }
         invalidate()
         return true
       }
@@ -288,6 +297,15 @@ internal class PreparedLayoutTextView(context: Context) : ViewGroup(context), Re
     }
 
     return true
+  }
+
+  private fun findRootView(): RootView? {
+    var p: ViewParent? = parent
+    while (p != null) {
+      if (p is RootView) return p
+      p = p.parent
+    }
+    return null
   }
 
   private fun <T> getSpanInCoords(x: Int, y: Int, clazz: Class<T>): T? {

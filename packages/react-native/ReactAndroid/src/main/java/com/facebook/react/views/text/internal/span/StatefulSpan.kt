@@ -15,7 +15,7 @@ import com.facebook.react.common.annotations.UnstableReactNativeAPI
  * spannable so that each view gets independent state even when layouts are shared from a cache.
  */
 @UnstableReactNativeAPI
-public interface StatefulSpan {
+public interface StatefulSpan : TextEffectSpan {
   /** Returns a fresh instance with the same configuration but independent mutable state. */
   public fun clone(): StatefulSpan
 }

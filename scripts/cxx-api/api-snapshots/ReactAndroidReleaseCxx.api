@@ -456,6 +456,7 @@ const char facebook::react::RuntimeSchedulerKey[];
 const char facebook::react::SafeAreaViewComponentName[];
 const char facebook::react::ScrollViewComponentName[];
 const char facebook::react::TextComponentName[];
+const char facebook::react::TextEffectComponentName[];
 const char facebook::react::UnimplementedViewComponentName[];
 const char facebook::react::ViewComponentName[];
 const facebook::react::EventTag facebook::react::EMPTY_EVENT_TAG;
@@ -521,11 +522,14 @@ static constexpr facebook::react::MapBuffer::Key facebook::react::TA_KEY_ROLE;
 static constexpr facebook::react::MapBuffer::Key facebook::react::TA_KEY_TEXT_DECORATION_COLOR;
 static constexpr facebook::react::MapBuffer::Key facebook::react::TA_KEY_TEXT_DECORATION_LINE;
 static constexpr facebook::react::MapBuffer::Key facebook::react::TA_KEY_TEXT_DECORATION_STYLE;
+static constexpr facebook::react::MapBuffer::Key facebook::react::TA_KEY_TEXT_EFFECTS;
 static constexpr facebook::react::MapBuffer::Key facebook::react::TA_KEY_TEXT_SHADOW_COLOR;
 static constexpr facebook::react::MapBuffer::Key facebook::react::TA_KEY_TEXT_SHADOW_OFFSET_DX;
 static constexpr facebook::react::MapBuffer::Key facebook::react::TA_KEY_TEXT_SHADOW_OFFSET_DY;
 static constexpr facebook::react::MapBuffer::Key facebook::react::TA_KEY_TEXT_SHADOW_RADIUS;
 static constexpr facebook::react::MapBuffer::Key facebook::react::TA_KEY_TEXT_TRANSFORM;
+static constexpr facebook::react::MapBuffer::Key facebook::react::TE_KEY_NAME;
+static constexpr facebook::react::MapBuffer::Key facebook::react::TE_KEY_PROPS;
 static constexpr facebook::react::MapBuffer::Key facebook::react::TX_STATE_KEY_ATTRIBUTED_STRING;
 static constexpr facebook::react::MapBuffer::Key facebook::react::TX_STATE_KEY_HASH;
 static constexpr facebook::react::MapBuffer::Key facebook::react::TX_STATE_KEY_MOST_RECENT_EVENT_COUNT;
@@ -691,6 +695,8 @@ using facebook::react::TelemetryClock = std::chrono::steady_clock;
 using facebook::react::TelemetryDuration = std::chrono::nanoseconds;
 using facebook::react::TelemetryTimePoint = facebook::react::TelemetryClock::time_point;
 using facebook::react::TextComponentDescriptor = facebook::react::ConcreteComponentDescriptor<facebook::react::TextShadowNode>;
+using facebook::react::TextEffectComponentDescriptor = facebook::react::ConcreteComponentDescriptor<facebook::react::TextEffectShadowNode>;
+using facebook::react::TextEffectEventEmitter = facebook::react::TouchEventEmitter;
 using facebook::react::TextEventEmitter = facebook::react::TouchEventEmitter;
 using facebook::react::TextLayoutManagerExtended = facebook::react::detail::TextLayoutManagerExtended<facebook::react::TextLayoutManager>;
 using facebook::react::TextMeasureCache = facebook::react::SimpleThreadSafeCache<facebook::react::TextMeasureCacheKey, facebook::react::TextMeasurement, facebook::react::kSimpleThreadSafeCacheSizeCap>;
@@ -4945,7 +4951,20 @@ class facebook::react::TextAttributes : public facebook::react::DebugStringConve
   public std::optional<facebook::react::TextTransform> textTransform;
   public std::optional<facebook::react::WritingDirection> baseWritingDirection;
   public std::string fontFamily;
+  public std::vector<facebook::react::TextEffectInfo> textEffects;
   public void apply(facebook::react::TextAttributes textAttributes);
+}
+
+class facebook::react::TextEffectProps : public facebook::react::Props {
+  public TextEffectProps() = default;
+  public TextEffectProps(const facebook::react::PropsParserContext& context, const facebook::react::TextEffectProps& sourceProps, const facebook::react::RawProps& rawProps);
+  public folly::dynamic effectProps;
+  public std::string effectName;
+  public virtual facebook::react::ComponentName getDiffPropsImplementationTarget() const override;
+  public virtual folly::dynamic getDiffProps(const facebook::react::Props* prevProps) const override;
+}
+
+class facebook::react::TextEffectShadowNode : public facebook::react::ConcreteShadowNode<facebook::react::TextEffectComponentName, facebook::react::ShadowNode, facebook::react::TextEffectProps, facebook::react::TextEffectEventEmitter> {
 }
 
 class facebook::react::TextInputEventEmitter : public facebook::react::BaseViewEventEmitter {
@@ -7898,6 +7917,12 @@ struct facebook::react::SystraceSection : public facebook::react::DummyTraceSect
 struct facebook::react::Task : public facebook::jsi::NativeState {
   public Task(facebook::react::SchedulerPriority priority, facebook::jsi::Function&& callback, facebook::react::HighResTimeStamp expirationTime);
   public Task(facebook::react::SchedulerPriority priority, facebook::react::RawCallback&& callback, facebook::react::HighResTimeStamp expirationTime);
+}
+
+struct facebook::react::TextEffectInfo {
+  public bool operator==(const facebook::react::TextEffectInfo&) const = default;
+  public folly::dynamic props;
+  public std::string name;
 }
 
 struct facebook::react::TextLayoutContext {
@@ -13528,6 +13553,10 @@ struct std::hash<facebook::react::Size> {
 
 struct std::hash<facebook::react::TextAttributes> {
   public size_t operator()(const facebook::react::TextAttributes& textAttributes) const;
+}
+
+struct std::hash<facebook::react::TextEffectInfo> {
+  public size_t operator()(const facebook::react::TextEffectInfo& info) const;
 }
 
 struct std::hash<facebook::react::TextMeasureCacheKey> {
