@@ -33,6 +33,11 @@ class JSI_EXPORT JavaInteropTurboModule : public JavaTurboModule {
 
   std::vector<facebook::jsi::PropNameID> getPropertyNames(facebook::jsi::Runtime &runtime) override;
 
+  bool isInteropModule() const override
+  {
+    return true;
+  }
+
  protected:
   jsi::Value create(jsi::Runtime &runtime, const jsi::PropNameID &propName) override;
 

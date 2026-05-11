@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<4deb82376e94d28a1d1775930ece1ccd>>
+ * @generated SignedSource<<7afde6ebd381a85d83f8359b4ce256df>>
  */
 
 /**
@@ -267,6 +267,11 @@ bool NativeReactNativeFeatureFlags::enableSchedulerDelegateInvalidation(
 bool NativeReactNativeFeatureFlags::enableSwiftUIBasedFilters(
     jsi::Runtime& /*runtime*/) {
   return ReactNativeFeatureFlags::enableSwiftUIBasedFilters();
+}
+
+bool NativeReactNativeFeatureFlags::enableSyncVoidMethods(
+    jsi::Runtime& /*runtime*/) {
+  return ReactNativeFeatureFlags::enableSyncVoidMethods();
 }
 
 bool NativeReactNativeFeatureFlags::enableViewCulling(

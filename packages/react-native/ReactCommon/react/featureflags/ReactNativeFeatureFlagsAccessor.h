@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<8a068641229a3fbbe105a5368ea6bda9>>
+ * @generated SignedSource<<25437969132a4018b088032644908de4>>
  */
 
 /**
@@ -77,6 +77,7 @@ class ReactNativeFeatureFlagsAccessor {
   bool enablePropsUpdateReconciliationAndroid();
   bool enableSchedulerDelegateInvalidation();
   bool enableSwiftUIBasedFilters();
+  bool enableSyncVoidMethods();
   bool enableViewCulling();
   bool enableViewRecycling();
   bool enableViewRecyclingForImage();
@@ -135,7 +136,7 @@ class ReactNativeFeatureFlagsAccessor {
   std::unique_ptr<ReactNativeFeatureFlagsProvider> currentProvider_;
   bool wasOverridden_;
 
-  std::array<std::atomic<const char*>, 92> accessedFeatureFlags_;
+  std::array<std::atomic<const char*>, 93> accessedFeatureFlags_;
 
   std::atomic<std::optional<bool>> commonTestFlag_;
   std::atomic<std::optional<bool>> cdpInteractionMetricsEnabled_;
@@ -182,6 +183,7 @@ class ReactNativeFeatureFlagsAccessor {
   std::atomic<std::optional<bool>> enablePropsUpdateReconciliationAndroid_;
   std::atomic<std::optional<bool>> enableSchedulerDelegateInvalidation_;
   std::atomic<std::optional<bool>> enableSwiftUIBasedFilters_;
+  std::atomic<std::optional<bool>> enableSyncVoidMethods_;
   std::atomic<std::optional<bool>> enableViewCulling_;
   std::atomic<std::optional<bool>> enableViewRecycling_;
   std::atomic<std::optional<bool>> enableViewRecyclingForImage_;

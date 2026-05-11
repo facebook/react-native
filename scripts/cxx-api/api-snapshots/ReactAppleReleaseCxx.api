@@ -6479,6 +6479,7 @@ class facebook::react::ObjCInteropTurboModule : public facebook::react::ObjCTurb
   protected virtual facebook::jsi::Value create(facebook::jsi::Runtime& runtime, const facebook::jsi::PropNameID& propName) override;
   protected virtual void setInvocationArg(facebook::jsi::Runtime& runtime, const char* methodName, const std::string& objCArgType, const facebook::jsi::Value& arg, size_t i, NSInvocation* inv, NSMutableArray* retainedObjectsForInvocation) override;
   public ObjCInteropTurboModule(const facebook::react::ObjCTurboModule::InitParams& params);
+  public virtual bool isInteropModule() const override;
   public virtual std::vector<facebook::jsi::PropNameID> getPropertyNames(facebook::jsi::Runtime& runtime) override;
 }
 
@@ -6499,6 +6500,7 @@ class facebook::react::ObjCTurboModule : public facebook::react::TurboModule {
   public facebook::jsi::Value invokeObjCMethod(facebook::jsi::Runtime& runtime, facebook::react::TurboModuleMethodValueKind returnType, const std::string& methodName, SEL selector, const facebook::jsi::Value* args, size_t count);
   public id<RCTBridgeModule> instance_;
   public std::shared_ptr<facebook::react::NativeMethodCallInvoker> nativeMethodCallInvoker_;
+  public virtual bool isInteropModule() const;
 }
 
 struct facebook::react::ObjCTurboModule::InitParams {

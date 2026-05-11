@@ -746,6 +746,10 @@ bool ObjCTurboModule::isMethodSync(TurboModuleMethodValueKind returnType)
     return true;
   }
 
+  if (returnType == VoidKind && ReactNativeFeatureFlags::enableSyncVoidMethods() && !isInteropModule()) {
+    return true;
+  }
+
   return returnType != VoidKind && returnType != PromiseKind;
 }
 
@@ -798,13 +802,14 @@ jsi::Value ObjCTurboModule::invokeObjCMethod(
       break;
     }
     case VoidKind: {
-      performVoidMethodInvocation(runtime, methodName, inv, retainedObjectsForInvocation);
       if (isSyncInvocation) {
+        performMethodInvocation(runtime, true, methodName, inv, retainedObjectsForInvocation);
         TurboModulePerfLogger::syncMethodCallReturnConversionStart(moduleName, methodName);
-      }
-      returnValue = jsi::Value::undefined();
-      if (isSyncInvocation) {
+        returnValue = jsi::Value::undefined();
         TurboModulePerfLogger::syncMethodCallReturnConversionEnd(moduleName, methodName);
+      } else {
+        performVoidMethodInvocation(runtime, methodName, inv, retainedObjectsForInvocation);
+        returnValue = jsi::Value::undefined();
       }
       break;
     }

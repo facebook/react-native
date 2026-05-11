@@ -522,7 +522,10 @@ jsi::Value JavaTurboModule::invokeJavaMethod(
   const char* methodName = methodNameStr.c_str();
   const char* moduleName = name_.c_str();
 
-  bool isMethodSync = valueKind != VoidKind && valueKind != PromiseKind;
+  bool isMethodSync = valueKind != PromiseKind &&
+      (valueKind != VoidKind ||
+       (ReactNativeFeatureFlags::enableSyncVoidMethods() &&
+        !isInteropModule()));
 
   if (isMethodSync) {
     TMPL::syncMethodCallStart(moduleName, methodName);
@@ -546,12 +549,13 @@ jsi::Value JavaTurboModule::invokeJavaMethod(
   unsigned int maxReturnObjects = 3;
 
   /**
-   * When the return type is void, all JNI LocalReferences are converted to
-   * GlobalReferences. The LocalReferences are then promptly deleted
-   * after the conversion.
+   * When the return type is void and the method is async, all JNI
+   * LocalReferences are converted to GlobalReferences. The LocalReferences
+   * are then promptly deleted after the conversion.
    */
-  unsigned int actualArgCount =
-      valueKind == VoidKind ? 0 : static_cast<unsigned int>(argCount);
+  unsigned int actualArgCount = (valueKind == VoidKind && !isMethodSync)
+      ? 0
+      : static_cast<unsigned int>(argCount);
   unsigned int estimatedLocalRefCount =
       actualArgCount + maxReturnObjects + buffer;
 
@@ -802,6 +806,17 @@ jsi::Value JavaTurboModule::invokeJavaMethod(
       return returnValue;
     }
     case VoidKind: {
+      if (isMethodSync) {
+        env->CallVoidMethodA(instance, methodID, jargs.data());
+        checkJNIErrorForMethodCall();
+
+        TMPL::syncMethodCallExecutionEnd(moduleName, methodName);
+        TMPL::syncMethodCallReturnConversionStart(moduleName, methodName);
+        TMPL::syncMethodCallReturnConversionEnd(moduleName, methodName);
+        TMPL::syncMethodCallEnd(moduleName, methodName);
+        return jsi::Value::undefined();
+      }
+
       TMPL::asyncMethodCallArgConversionEnd(moduleName, methodName);
       TMPL::asyncMethodCallDispatch(moduleName, methodName);
 

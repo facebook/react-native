@@ -38,6 +38,11 @@ class JSI_EXPORT JavaTurboModule : public TurboModule {
   JavaTurboModule(const InitParams &params);
   virtual ~JavaTurboModule();
 
+  virtual bool isInteropModule() const
+  {
+    return false;
+  }
+
   jsi::Value invokeJavaMethod(
       jsi::Runtime &runtime,
       TurboModuleMethodValueKind valueKind,
