@@ -150,6 +150,15 @@ static UIColor *defaultPlaceholderColor(void)
   [self _invalidatePlaceholderVisibility];
 }
 
+- (void)setTextAlignmentVertical:(RCTUITextViewTextAlignmentVertical)textAlignmentVertical
+{
+  if (_textAlignmentVertical == textAlignmentVertical) {
+    return;
+  }
+  _textAlignmentVertical = textAlignmentVertical;
+  [self setNeedsLayout];
+}
+
 - (void)setDisableKeyboardShortcuts:(BOOL)disableKeyboardShortcuts
 {
   _disableKeyboardShortcuts = disableKeyboardShortcuts;
@@ -280,10 +289,45 @@ static UIColor *defaultPlaceholderColor(void)
 {
   [super layoutSubviews];
 
+  [self _applyVerticalAlignmentInset];
+
   CGRect textFrame = UIEdgeInsetsInsetRect(self.bounds, self.textContainerInset);
   CGFloat placeholderHeight = [_placeholderView sizeThatFits:textFrame.size].height;
   textFrame.size.height = MIN(placeholderHeight, textFrame.size.height);
   _placeholderView.frame = textFrame;
+}
+
+// Mirrors CSS Box Alignment Level 3 `align-content` on a block container
+// (https://drafts.csswg.org/css-align-3/#align-content-property): top is the
+// existing default, center vertically centers the content within the bounds,
+// bottom flushes it to the bottom. Overflow (content taller than bounds) falls
+// back to top so nothing gets clipped. UIScrollView's `contentInset.top` is
+// the right hook: it shifts the default scroll origin and is left untouched
+// by RN's existing wiring (only `textContainerInset` is set externally).
+- (void)_applyVerticalAlignmentInset
+{
+  CGFloat boundsHeight = CGRectGetHeight(self.bounds);
+  CGFloat contentHeight = self.contentSize.height;
+  CGFloat topInset = 0;
+  if (boundsHeight > contentHeight) {
+    switch (_textAlignmentVertical) {
+      case RCTUITextViewTextAlignmentVerticalCenter:
+        topInset = (boundsHeight - contentHeight) / 2;
+        break;
+      case RCTUITextViewTextAlignmentVerticalBottom:
+        topInset = boundsHeight - contentHeight;
+        break;
+      case RCTUITextViewTextAlignmentVerticalAuto:
+      case RCTUITextViewTextAlignmentVerticalTop:
+        topInset = 0;
+        break;
+    }
+  }
+  UIEdgeInsets contentInset = self.contentInset;
+  if (contentInset.top != topInset) {
+    contentInset.top = topInset;
+    self.contentInset = contentInset;
+  }
 }
 
 - (CGSize)intrinsicContentSize
