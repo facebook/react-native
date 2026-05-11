@@ -56,15 +56,7 @@ Pod::Spec.new do |spec|
 
     spec.subspec 'Pre-built' do |ss|
       ss.preserve_paths = ["destroot/bin/*"].concat(["**/*.{h,c,cpp}"])
-      if ENV["RCT_HERMES_V1_ENABLED"] == "0"
-        ss.source_files = "destroot/include/hermes/**/*.h"
-      else
-        # Hermes v1 is shipping a jsi/hermes.h header which is imported by the hermes.h header
-        # and that file is not present in React Native's JSI
-        # (see https://github.com/facebook/react-native/tree/main/packages/react-native/ReactCommon/jsi/jsi/ where there is
-        # hermes-interface.h but not hermes.h)
-        ss.source_files = ["destroot/include/hermes/**/*.h", "destroot/include/jsi/hermes.h"]
-      end
+      ss.source_files = ["destroot/include/hermes/**/*.h", "destroot/include/jsi/hermes.h"]
       ss.header_mappings_dir = "destroot/include"
       ss.ios.vendored_frameworks = "destroot/Library/Frameworks/universal/hermesvm.xcframework"
       ss.visionos.vendored_frameworks = "destroot/Library/Frameworks/universal/hermesvm.xcframework"
@@ -125,20 +117,6 @@ Pod::Spec.new do |spec|
       ss.source_files = ''
       ss.public_header_files = 'public/hermes/Public/*.h'
       ss.header_dir = 'hermes/Public'
-    end
-
-    if ENV['RCT_HERMES_V1_ENABLED'] == "0"
-      spec.subspec 'inspector' do |ss|
-        ss.source_files = ''
-        ss.public_header_files = 'API/hermes/inspector/*.h'
-        ss.header_dir = 'hermes/inspector'
-      end
-
-      spec.subspec 'inspector_chrome' do |ss|
-        ss.source_files = ''
-        ss.public_header_files = 'API/hermes/inspector/chrome/*.h'
-        ss.header_dir = 'hermes/inspector/chrome'
-      end
     end
 
     hermesc_path = "${PODS_ROOT}/hermes-engine/build_host_hermesc"

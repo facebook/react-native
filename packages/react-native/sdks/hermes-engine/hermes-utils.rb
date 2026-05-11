@@ -85,10 +85,6 @@ def hermes_commit_envvar_defined()
     return ENV.has_key?('HERMES_COMMIT')
 end
 
-def hermes_v1_enabled()
-    return ENV['RCT_HERMES_V1_ENABLED'] != "0"
-end
-
 def force_build_from_tag(react_native_path)
     return ENV[ENV_BUILD_FROM_SOURCE] === 'true' && File.exist?(hermestag_file(react_native_path))
 end
@@ -175,16 +171,12 @@ end
 def podspec_source_build_from_github_tag(react_native_path)
     tag = File.read(hermestag_file(react_native_path)).strip
 
-    if hermes_v1_enabled()
-        hermes_log("Using tag defined in sdks/.hermesv1version: #{tag}")
-    else
-        hermes_log("Using tag defined in sdks/.hermesversion: #{tag}")
-    end
+    hermes_log("Using tag defined in sdks/.hermesv1version: #{tag}")
     return {:git => HERMES_GITHUB_URL, :tag => tag}
 end
 
 def podspec_source_build_from_github_main()
-    branch = hermes_v1_enabled() ? "250829098.0.0-stable" : "main"
+    branch = "250829098.0.0-stable"
     hermes_log("Using the latest commit from #{branch}.")
     return {:git => HERMES_GITHUB_URL, :commit => `git ls-remote #{HERMES_GITHUB_URL} #{branch} | cut -f 1`.strip}
 end
@@ -210,11 +202,7 @@ def artifacts_dir()
 end
 
 def hermestag_file(react_native_path)
-    if hermes_v1_enabled()
-        return File.join(react_native_path, "sdks", ".hermesv1version")
-    else
-        return File.join(react_native_path, "sdks", ".hermesversion")
-    end
+    return File.join(react_native_path, "sdks", ".hermesv1version")
 end
 
 def release_tarball_url(version, build_type)
