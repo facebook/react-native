@@ -11,7 +11,6 @@
 #include <react/debug/react_native_assert.h>
 #include <react/featureflags/ReactNativeFeatureFlags.h>
 #include <react/renderer/animationbackend/AnimatedPropsSerializer.h>
-#include <react/renderer/graphics/Color.h>
 #include <chrono>
 #include <utility>
 
@@ -85,7 +84,7 @@ void AnimationBackend::applySurfaceUpdates(
     if (updates.hasLayoutUpdates) {
       commitUpdates(surfaceId, updates);
     } else {
-      synchronouslyUpdateProps(updates.propsMap);
+      synchronouslyUpdateProps(surfaceId, updates.propsMap);
     }
   }
 
@@ -194,16 +193,26 @@ void AnimationBackend::commitUpdates(
       });
 }
 
-void AnimationBackend::synchronouslyUpdateProps(
+void AnimationBackend::synchronouslyUpdatePropsUnbuffered(
     const std::unordered_map<Tag, AnimatedProps>& updates) {
   for (auto& [tag, animatedProps] : updates) {
-    // TODO: We shouldn't repack it into dynamic, but for that a rewrite
-    // of synchronouslyUpdateViewOnUIThread is needed
     auto dyn = animationbackend::packAnimatedProps(animatedProps);
     if (auto uiManager = uiManager_.lock()) {
       uiManager->synchronouslyUpdateViewOnUIThread(tag, dyn);
     }
   }
+}
+
+void AnimationBackend::synchronouslyUpdateProps(
+    SurfaceId surfaceId,
+    const std::unordered_map<Tag, AnimatedProps>& updates) {
+  if (ReactNativeFeatureFlags::optimizedAnimatedPropUpdates()) {
+    if (auto uiManager = uiManager_.lock()) {
+      uiManager->synchronouslyUpdateAnimatedPropsOnUIThread(surfaceId, updates);
+    }
+    return;
+  }
+  synchronouslyUpdatePropsUnbuffered(updates);
 }
 
 void AnimationBackend::requestAsyncFlushForSurfaces(
