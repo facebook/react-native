@@ -44,6 +44,7 @@ typedef NS_OPTIONS(NSInteger, RCTFontVariant) {
   RCTFontVariantStylisticEighteen = 1 << 23,
   RCTFontVariantStylisticNineteen = 1 << 24,
   RCTFontVariantStylisticTwenty = 1 << 25,
+  RCTFontVariantCaseSensitive = 1 << 26,
 };
 
 struct RCTFontProperties {

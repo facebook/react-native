@@ -372,6 +372,8 @@ inline std::optional<FontVariant> fontVariantFromCSSFontVariant(CSSFontVariant c
       return FontVariant::StylisticNineteen;
     case CSSFontVariant::StylisticTwenty:
       return FontVariant::StylisticTwenty;
+    case CSSFontVariant::CaseSensitive:
+      return FontVariant::CaseSensitive;
     case CSSFontVariant::CommonLigatures:
     case CSSFontVariant::NoCommonLigatures:
     case CSSFontVariant::DiscretionaryLigatures:
@@ -442,6 +444,8 @@ parseProcessedFontVariant(const PropsParserContext & /*context*/, const RawValue
         result = (FontVariant)((int)result | (int)FontVariant::StylisticNineteen);
       } else if (item == "stylistic-twenty") {
         result = (FontVariant)((int)result | (int)FontVariant::StylisticTwenty);
+      } else if (item == "case-sensitive") {
+        result = (FontVariant)((int)result | (int)FontVariant::CaseSensitive);
       } else {
         LOG(ERROR) << "Unsupported FontVariant value: " << item;
       }
@@ -563,6 +567,9 @@ inline std::string toString(const FontVariant &fontVariant)
   }
   if (((int)fontVariant & (int)FontVariant::StylisticTwenty) != 0) {
     result += "stylistic-twenty" + separator;
+  }
+  if (((int)fontVariant & (int)FontVariant::CaseSensitive) != 0) {
+    result += "case-sensitive" + separator;
   }
 
   if (!result.empty()) {
@@ -1236,6 +1243,9 @@ inline MapBuffer toMapBuffer(const FontVariant &fontVariant)
   }
   if ((int)fontVariant & (int)FontVariant::StylisticTwenty) {
     builder.putString(index++, "stylistic-twenty");
+  }
+  if ((int)fontVariant & (int)FontVariant::CaseSensitive) {
+    builder.putString(index++, "case-sensitive");
   }
 
   return builder.build();

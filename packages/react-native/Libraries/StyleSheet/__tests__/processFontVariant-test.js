@@ -28,6 +28,15 @@ describe('processFontVariant', () => {
     expect(processFontVariant('   tabular-nums')).toEqual(['tabular-nums']);
   });
 
+  it('should accept case-sensitive variant', () => {
+    expect(processFontVariant(['case-sensitive'])).toEqual(['case-sensitive']);
+    expect(processFontVariant('case-sensitive')).toEqual(['case-sensitive']);
+    expect(processFontVariant(['case-sensitive', 'tabular-nums'])).toEqual([
+      'case-sensitive',
+      'tabular-nums',
+    ]);
+  });
+
   it('should accept string with multiple values', () => {
     expect(processFontVariant('oldstyle-nums lining-nums')).toEqual([
       'oldstyle-nums',

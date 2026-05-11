@@ -166,6 +166,10 @@ static NSArray *RCTFontFeatures(RCTFontVariant fontVariant)
            UIFontFeatureTypeIdentifierKey : @(kStylisticAlternativesType),
            UIFontFeatureSelectorIdentifierKey : @(kStylisticAltTwentyOnSelector),
          }},
+        {RCTFontVariantCaseSensitive, @{
+           UIFontFeatureTypeIdentifierKey : @(kCaseSensitiveLayoutType),
+           UIFontFeatureSelectorIdentifierKey : @(kCaseSensitiveLayoutOnSelector),
+         }},
     };
   });
 
@@ -243,6 +247,9 @@ static NSArray *RCTFontFeatures(RCTFontVariant fontVariant)
   }
   if ((fontVariant & RCTFontVariantStylisticTwenty) != 0) {
     [fontFeatures addObject:mapping[RCTFontVariantStylisticTwenty]];
+  }
+  if ((fontVariant & RCTFontVariantCaseSensitive) != 0) {
+    [fontFeatures addObject:mapping[RCTFontVariantCaseSensitive]];
   }
 
   return fontFeatures;

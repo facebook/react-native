@@ -26,7 +26,8 @@ enum class CSSFontVariant : std::underlying_type_t<CSSKeyword> {
   CommonLigatures = to_underlying(CSSKeyword::CommonLigatures),
   NoCommonLigatures = to_underlying(CSSKeyword::NoCommonLigatures),
   DiscretionaryLigatures = to_underlying(CSSKeyword::DiscretionaryLigatures),
-  NoDiscretionaryLigatures = to_underlying(CSSKeyword::NoDiscretionaryLigatures),
+  NoDiscretionaryLigatures =
+      to_underlying(CSSKeyword::NoDiscretionaryLigatures),
   HistoricalLigatures = to_underlying(CSSKeyword::HistoricalLigatures),
   NoHistoricalLigatures = to_underlying(CSSKeyword::NoHistoricalLigatures),
   Contextual = to_underlying(CSSKeyword::Contextual),
@@ -52,6 +53,7 @@ enum class CSSFontVariant : std::underlying_type_t<CSSKeyword> {
   StylisticEighteen = to_underlying(CSSKeyword::StylisticEighteen),
   StylisticNineteen = to_underlying(CSSKeyword::StylisticNineteen),
   StylisticTwenty = to_underlying(CSSKeyword::StylisticTwenty),
+  CaseSensitive = to_underlying(CSSKeyword::CaseSensitive),
 };
 
 static_assert(CSSDataType<CSSFontVariant>);

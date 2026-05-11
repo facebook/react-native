@@ -568,7 +568,8 @@ export type FontVariant =
   | 'stylistic-seventeen'
   | 'stylistic-eighteen'
   | 'stylistic-nineteen'
-  | 'stylistic-twenty';
+  | 'stylistic-twenty'
+  | 'case-sensitive';
 export interface TextStyleIOS extends ViewStyle {
   fontVariant?: FontVariant[] | undefined;
   textDecorationColor?: ColorValue | undefined;
