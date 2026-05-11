@@ -10,16 +10,15 @@
 
 import type {HostInstance} from '../../src/private/types/HostInstance';
 import type {ViewProps} from '../Components/View/ViewPropTypes';
-import type {RootTag} from '../ReactNative/RootTag';
 import type {DirectEventHandler} from '../Types/CodegenTypes';
 
 import NativeEventEmitter from '../EventEmitter/NativeEventEmitter';
 import {type ColorValue} from '../StyleSheet/StyleSheet';
-import {type EventSubscription} from '../vendor/emitter/EventEmitter';
 import NativeModalManager from './NativeModalManager';
 import RCTModalHostView from './RCTModalHostViewNativeComponent';
 import VirtualizedLists from '@react-native/virtualized-lists';
 import * as React from 'react';
+import {useCallback, useContext, useEffect, useState} from 'react';
 
 const ScrollView = require('../Components/ScrollView/ScrollView').default;
 const View = require('../Components/View/View').default;
@@ -179,21 +178,25 @@ export type ModalProps = {
   ...ViewProps,
 };
 
-function confirmProps(props: ModalProps) {
+function confirmProps({
+  transparent,
+  presentationStyle,
+  navigationBarTranslucent,
+  statusBarTranslucent,
+  allowSwipeDismissal,
+  onRequestClose,
+}: ModalProps) {
   if (__DEV__) {
     if (
-      props.presentationStyle &&
-      props.presentationStyle !== 'overFullScreen' &&
-      props.transparent === true
+      presentationStyle &&
+      presentationStyle !== 'overFullScreen' &&
+      transparent === true
     ) {
       console.warn(
-        `Modal with '${props.presentationStyle}' presentation style and 'transparent' value is not supported.`,
+        `Modal with '${presentationStyle}' presentation style and 'transparent' value is not supported.`,
       );
     }
-    if (
-      props.navigationBarTranslucent === true &&
-      props.statusBarTranslucent !== true
-    ) {
+    if (navigationBarTranslucent === true && statusBarTranslucent !== true) {
       console.warn(
         'Modal with translucent navigation bar and without translucent status bar is not supported.',
       );
@@ -201,8 +204,8 @@ function confirmProps(props: ModalProps) {
 
     if (
       Platform.OS === 'ios' &&
-      props.allowSwipeDismissal === true &&
-      !props.onRequestClose
+      allowSwipeDismissal === true &&
+      !onRequestClose
     ) {
       console.warn(
         'Modal requires the onRequestClose prop when used with `allowSwipeDismissal`. This is necessary to prevent state corruption.',
@@ -211,163 +214,161 @@ function confirmProps(props: ModalProps) {
   }
 }
 
-// Create a state to track whether the Modal is rendering or not.
-// This is the only prop that controls whether the modal is rendered or not.
-type ModalState = {
-  isRendered: boolean,
+const onStartShouldSetResponder = () => true; // We don't want any responder events bubbling out of the modal.
+
+const Modal: component(
+  ref?: React.RefSetter<PublicModalInstance>,
+  ...props: ModalProps
+) = ({
+  backdropColor,
+  transparent,
+  children,
+  presentationStyle,
+  animationType,
+  onRequestClose,
+  onShow,
+  visible = true,
+  hardwareAccelerated = false,
+  ref: modalRef,
+  statusBarTranslucent,
+  navigationBarTranslucent,
+  supportedOrientations,
+  onOrientationChange,
+  allowSwipeDismissal,
+  testID,
+  onDismiss,
+}: {
+  ref?: React.RefSetter<PublicModalInstance>,
+  ...ModalProps,
+}): React.Node => {
+  const isVisible = visible === true;
+
+  // Create a state to track whether the Modal is rendering or not.
+  // This is the only prop that controls whether the modal is rendered or not.
+  const [isRendered, setIsRendered] = useState(visible === true);
+  const [identifier] = useState(() => uniqueModalIdentifier++);
+
+  useEffect(() => {
+    if (!ModalEventEmitter) {
+      return;
+    }
+
+    const eventSubscription = ModalEventEmitter.addListener(
+      'modalDismissed',
+      event => {
+        setIsRendered(false);
+        if (event.modalID === identifier) {
+          onDismiss?.();
+        }
+      },
+    );
+    return () => eventSubscription.remove();
+  }, [onDismiss, identifier]);
+
+  useEffect(() => {
+    if (isVisible) {
+      setIsRendered(true);
+    }
+  }, [isVisible]);
+
+  useEffect(() => {
+    return () => {
+      setIsRendered(false);
+    };
+  }, []);
+
+  useEffect(() => {
+    if (__DEV__) {
+      confirmProps({
+        transparent,
+        presentationStyle,
+        navigationBarTranslucent,
+        statusBarTranslucent,
+        allowSwipeDismissal,
+        onRequestClose,
+      });
+    }
+  }, [
+    transparent,
+    presentationStyle,
+    navigationBarTranslucent,
+    statusBarTranslucent,
+    allowSwipeDismissal,
+    onRequestClose,
+  ]);
+
+  const rootTag = useContext(RootTagContext);
+
+  const onDismissIos = useCallback(() => {
+    // OnDismiss is implemented on iOS only.
+    if (Platform.OS === 'ios') {
+      setIsRendered(false);
+      onDismiss?.();
+    }
+  }, [onDismiss]);
+
+  const shouldShowModal =
+    Platform.OS === 'ios' ? isRendered && isVisible : isVisible;
+
+  if (!shouldShowModal) {
+    return null;
+  }
+
+  const isTransparent = transparent === true;
+
+  // Only override backgroundColor when transparent or backdropColor are
+  // explicitly set, so that these Modal-specific props take precedence
+  // over the generic style prop. The default backgroundColor ('white')
+  // is defined in styles.container below.
+  const containerStyles = {};
+  if (this.props.transparent === true) {
+    containerStyles.backgroundColor = 'transparent';
+  } else if (this.props.backdropColor != null) {
+    containerStyles.backgroundColor = this.props.backdropColor;
+  }
+
+  return (
+    <RCTModalHostView
+      /* $FlowFixMe[incompatible-type] Natural Inference rollout. See
+       * https://fburl.com/workplace/6291gfvu */
+      animationType={animationType || 'none'}
+      presentationStyle={
+        presentationStyle || (isTransparent ? 'overFullScreen' : 'fullScreen')
+      }
+      transparent={transparent}
+      hardwareAccelerated={hardwareAccelerated}
+      onRequestClose={onRequestClose}
+      onShow={onShow}
+      onDismiss={onDismissIos}
+      ref={modalRef}
+      visible={visible}
+      statusBarTranslucent={statusBarTranslucent}
+      navigationBarTranslucent={navigationBarTranslucent}
+      identifier={identifier}
+      style={styles.modal}
+      // $FlowFixMe[method-unbinding] added when improving typing for this parameters
+      onStartShouldSetResponder={onStartShouldSetResponder}
+      supportedOrientations={supportedOrientations}
+      onOrientationChange={onOrientationChange}
+      allowSwipeDismissal={allowSwipeDismissal}
+      testID={testID}>
+      <VirtualizedListContextResetter>
+        <ScrollView.Context.Provider value={null}>
+          <View
+            // $FlowFixMe[incompatible-type]
+            style={[styles.container, this.props.style, containerStyles]}
+            collapsable={false}>
+            {__DEV__ ? (
+              <AppContainer rootTag={rootTag}>{children}</AppContainer>
+            ) : (
+              children
+            )}
+          </View>
+        </ScrollView.Context.Provider>
+      </VirtualizedListContextResetter>
+    </RCTModalHostView>
+  );
 };
-
-class Modal extends React.Component<ModalProps, ModalState> {
-  static defaultProps: {hardwareAccelerated: boolean, visible: boolean} = {
-    visible: true,
-    hardwareAccelerated: false,
-  };
-
-  static contextType: React.Context<RootTag> = RootTagContext;
-
-  _identifier: number;
-  _eventSubscription: ?EventSubscription;
-
-  constructor(props: ModalProps) {
-    super(props);
-    if (__DEV__) {
-      confirmProps(props);
-    }
-    this._identifier = uniqueModalIdentifier++;
-    this.state = {
-      isRendered: props.visible === true,
-    };
-  }
-
-  componentDidMount() {
-    // 'modalDismissed' is for the old renderer in iOS only
-    if (ModalEventEmitter) {
-      this._eventSubscription = ModalEventEmitter.addListener(
-        'modalDismissed',
-        event => {
-          this.setState({isRendered: false}, () => {
-            if (event.modalID === this._identifier && this.props.onDismiss) {
-              this.props.onDismiss();
-            }
-          });
-        },
-      );
-    }
-  }
-
-  componentWillUnmount() {
-    if (Platform.OS === 'ios') {
-      this.setState({isRendered: false});
-    }
-    if (this._eventSubscription) {
-      this._eventSubscription.remove();
-    }
-  }
-
-  componentDidUpdate(prevProps: ModalProps) {
-    if (prevProps.visible === false && this.props.visible === true) {
-      this.setState({isRendered: true});
-    }
-
-    if (__DEV__) {
-      confirmProps(this.props);
-    }
-  }
-
-  // Helper function to encapsulate platform specific logic to show or not the Modal.
-  _shouldShowModal(): boolean {
-    if (Platform.OS === 'ios') {
-      return this.props.visible === true || this.state.isRendered === true;
-    }
-
-    return this.props.visible === true;
-  }
-
-  render(): React.Node {
-    if (!this._shouldShowModal()) {
-      return null;
-    }
-
-    // Only override backgroundColor when transparent or backdropColor are
-    // explicitly set, so that these Modal-specific props take precedence
-    // over the generic style prop. The default backgroundColor ('white')
-    // is defined in styles.container below.
-    const containerStyles: {backgroundColor?: ColorValue} = {};
-    if (this.props.transparent === true) {
-      containerStyles.backgroundColor = 'transparent';
-    } else if (this.props.backdropColor != null) {
-      containerStyles.backgroundColor = this.props.backdropColor;
-    }
-
-    let animationType = this.props.animationType || 'none';
-
-    let presentationStyle = this.props.presentationStyle;
-    if (!presentationStyle) {
-      presentationStyle = 'fullScreen';
-      if (this.props.transparent === true) {
-        presentationStyle = 'overFullScreen';
-      }
-    }
-
-    const innerChildren = __DEV__ ? (
-      <AppContainer rootTag={this.context}>{this.props.children}</AppContainer>
-    ) : (
-      this.props.children
-    );
-
-    const onDismiss = () => {
-      // OnDismiss is implemented on iOS only.
-      if (Platform.OS === 'ios') {
-        this.setState({isRendered: false}, () => {
-          if (this.props.onDismiss) {
-            this.props.onDismiss();
-          }
-        });
-      }
-    };
-
-    return (
-      <RCTModalHostView
-        /* $FlowFixMe[incompatible-type] Natural Inference rollout. See
-         * https://fburl.com/workplace/6291gfvu */
-        animationType={animationType}
-        presentationStyle={presentationStyle}
-        transparent={this.props.transparent}
-        hardwareAccelerated={this.props.hardwareAccelerated}
-        onRequestClose={this.props.onRequestClose}
-        onShow={this.props.onShow}
-        onDismiss={onDismiss}
-        ref={this.props.modalRef}
-        visible={this.props.visible}
-        statusBarTranslucent={this.props.statusBarTranslucent}
-        navigationBarTranslucent={this.props.navigationBarTranslucent}
-        identifier={this._identifier}
-        style={styles.modal}
-        // $FlowFixMe[method-unbinding] added when improving typing for this parameters
-        onStartShouldSetResponder={this._shouldSetResponder}
-        supportedOrientations={this.props.supportedOrientations}
-        onOrientationChange={this.props.onOrientationChange}
-        allowSwipeDismissal={this.props.allowSwipeDismissal}
-        testID={this.props.testID}>
-        <VirtualizedListContextResetter>
-          <ScrollView.Context.Provider value={null}>
-            <View
-              // $FlowFixMe[incompatible-type]
-              style={[styles.container, this.props.style, containerStyles]}
-              collapsable={false}>
-              {innerChildren}
-            </View>
-          </ScrollView.Context.Provider>
-        </VirtualizedListContextResetter>
-      </RCTModalHostView>
-    );
-  }
-
-  // We don't want any responder events bubbling out of the modal.
-  _shouldSetResponder(): boolean {
-    return true;
-  }
-}
 
 const side = I18nManager.getConstants().isRTL ? 'right' : 'left';
 const styles = StyleSheet.create({
@@ -388,25 +389,9 @@ const styles = StyleSheet.create({
   },
 });
 
-type ModalRefProps = Readonly<{
-  ref?: React.RefSetter<PublicModalInstance>,
-}>;
+Modal.displayName = 'Modal';
 
-// NOTE: This wrapper component is necessary because `Modal` is a class
-// component and we need to map `ref` to a differently named prop. This can be
-// removed when `Modal` is a functional component.
-function Wrapper({
-  ref,
-  ...props
-}: {
-  ...ModalRefProps,
-  ...ModalProps,
-}): React.Node {
-  return <Modal {...props} modalRef={ref} />;
-}
-
-Wrapper.displayName = 'Modal';
 // $FlowExpectedError[prop-missing]
-Wrapper.Context = VirtualizedListContextResetter;
+Modal.Context = VirtualizedListContextResetter;
 
-export default Wrapper;
+export default Modal;
