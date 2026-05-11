@@ -7,6 +7,7 @@
 
 package com.facebook.react.modules.image
 
+import android.media.ExifInterface
 import android.net.Uri
 import android.util.SparseArray
 import com.facebook.common.executors.CallerThreadExecutor
@@ -131,9 +132,14 @@ internal class ImageLoaderModule : NativeImageLoaderAndroidSpec, LifecycleEventL
             var encodedImage: EncodedImage? = null
             try {
               encodedImage = EncodedImage(ref)
-              // Swap width and height when the image is rotated 90 or 270 degrees so the
-              // values reflect the visible dimensions, matching iOS behavior.
-              val rotated = encodedImage.rotationAngle == 90 || encodedImage.rotationAngle == 270
+              // Swap width and height when the image's EXIF orientation swaps the X/Y axes
+              // (90°/270° rotations, or transpose/transverse), so the values reflect the
+              // visible dimensions, matching iOS behavior.
+              val rotated =
+                  encodedImage.rotationAngle == 90 ||
+                      encodedImage.rotationAngle == 270 ||
+                      encodedImage.exifOrientation == ExifInterface.ORIENTATION_TRANSPOSE ||
+                      encodedImage.exifOrientation == ExifInterface.ORIENTATION_TRANSVERSE
               val width = if (rotated) encodedImage.height else encodedImage.width
               val height = if (rotated) encodedImage.width else encodedImage.height
               if (width < 0 || height < 0) {
