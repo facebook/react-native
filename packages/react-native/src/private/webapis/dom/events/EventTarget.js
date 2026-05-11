@@ -243,11 +243,14 @@ export default class EventTarget {
   }
 
   /**
-   * This is "protected" method to dispatch trusted events.
+   * This is "protected" method to dispatch trusted events. Mirrors the
+   * `dispatchEvent` return contract: returns `false` if the event was
+   * canceled (i.e. `event.defaultPrevented`), otherwise `true`.
    */
   // $FlowExpectedError[unsupported-syntax]
-  [INTERNAL_DISPATCH_METHOD_KEY](event: Event): void {
+  [INTERNAL_DISPATCH_METHOD_KEY](event: Event): boolean {
     dispatch(this, event);
+    return !event.defaultPrevented;
   }
 }
 

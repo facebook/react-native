@@ -48,7 +48,9 @@ export const INTERNAL_DISPATCH_METHOD_KEY: symbol = Symbol(
 );
 
 /**
- * Dispatches a trusted event to the given event target.
+ * Dispatches a trusted event to the given event target. Mirrors the
+ * `dispatchEvent` method on `EventTarget`: returns `false` if the event
+ * was canceled (i.e. `event.defaultPrevented`), otherwise `true`.
  *
  * This should only be used by the runtime to dispatch native events to
  * JavaScript.
@@ -56,7 +58,7 @@ export const INTERNAL_DISPATCH_METHOD_KEY: symbol = Symbol(
 export function dispatchTrustedEvent(
   eventTarget: EventTarget,
   event: Event,
-): void {
+): boolean {
   setIsTrusted(event, true);
 
   // $FlowExpectedError[prop-missing]
