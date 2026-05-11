@@ -368,10 +368,10 @@ jobs:
           cache-encryption-key: ${{ secrets.GRADLE_CACHE_ENCRYPTION_KEY }}
       - name: Run yarn install
         uses: ./.github/actions/yarn-install
-      - name: Set nightly Hermes versions
+      - name: Set Hermes prebuilt version
         shell: bash
         run: |
-          node ./scripts/releases/use-hermes-nightly.js
+          node ./scripts/releases/use-hermes-prebuilt.js
       - name: Run yarn install again, with the correct hermes version
         uses: ./.github/actions/yarn-install
       - name: Prepare the Helloworld application

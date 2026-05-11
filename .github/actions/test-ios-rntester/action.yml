@@ -32,10 +32,10 @@ runs:
       uses: ruby/setup-ruby@v1
       with:
         ruby-version: ${{ inputs.ruby-version }}
-    - name: Set nightly Hermes versions
+    - name: Set Hermes prebuilt version
       shell: bash
       run: |
-        node ./scripts/releases/use-hermes-nightly.js
+        node ./scripts/releases/use-hermes-prebuilt.js
     - name: Run yarn install again, with the correct hermes version
       uses: ./.github/actions/yarn-install
     - name: Prepare IOS Tests
