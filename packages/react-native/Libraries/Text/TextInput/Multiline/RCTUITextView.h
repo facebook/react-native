@@ -55,7 +55,7 @@ typedef NS_ENUM(NSInteger, RCTUITextViewTextAlignmentVertical) {
  * multiline value can sit centered or pushed to the bottom of a tall fixed
  * frame. Defaults to `Auto` (top-aligned, current behavior).
  */
-@property (nonatomic, assign) RCTUITextViewTextAlignmentVertical textAlignmentVertical;
+@property (nonatomic, assign) RCTUITextViewTextAlignmentVertical textAlignVertical;
 
 @property (nonatomic, strong, nullable) NSString *inputAccessoryViewID;
 @property (nonatomic, strong, nullable) NSString *inputAccessoryViewButtonLabel;

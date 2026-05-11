@@ -150,12 +150,12 @@ static UIColor *defaultPlaceholderColor(void)
   [self _invalidatePlaceholderVisibility];
 }
 
-- (void)setTextAlignmentVertical:(RCTUITextViewTextAlignmentVertical)textAlignmentVertical
+- (void)setTextAlignVertical:(RCTUITextViewTextAlignmentVertical)textAlignVertical
 {
-  if (_textAlignmentVertical == textAlignmentVertical) {
+  if (_textAlignVertical == textAlignVertical) {
     return;
   }
-  _textAlignmentVertical = textAlignmentVertical;
+  _textAlignVertical = textAlignVertical;
   [self setNeedsLayout];
 }
 
@@ -306,25 +306,28 @@ static UIColor *defaultPlaceholderColor(void)
 // by RN's existing wiring (only `textContainerInset` is set externally).
 - (void)_applyVerticalAlignmentInset
 {
+  // Fast path for apps that don't use the feature: skip the contentSize read.
+  if (_textAlignVertical == RCTUITextViewTextAlignmentVerticalAuto ||
+      _textAlignVertical == RCTUITextViewTextAlignmentVerticalTop) {
+    if (self.contentInset.top != 0) {
+      UIEdgeInsets contentInset = self.contentInset;
+      contentInset.top = 0;
+      self.contentInset = contentInset;
+    }
+    return;
+  }
   CGFloat boundsHeight = CGRectGetHeight(self.bounds);
   CGFloat contentHeight = self.contentSize.height;
   CGFloat topInset = 0;
   if (boundsHeight > contentHeight) {
-    switch (_textAlignmentVertical) {
-      case RCTUITextViewTextAlignmentVerticalCenter:
-        topInset = (boundsHeight - contentHeight) / 2;
-        break;
-      case RCTUITextViewTextAlignmentVerticalBottom:
-        topInset = boundsHeight - contentHeight;
-        break;
-      case RCTUITextViewTextAlignmentVerticalAuto:
-      case RCTUITextViewTextAlignmentVerticalTop:
-        topInset = 0;
-        break;
+    if (_textAlignVertical == RCTUITextViewTextAlignmentVerticalCenter) {
+      topInset = (boundsHeight - contentHeight) / 2;
+    } else if (_textAlignVertical == RCTUITextViewTextAlignmentVerticalBottom) {
+      topInset = boundsHeight - contentHeight;
     }
   }
-  UIEdgeInsets contentInset = self.contentInset;
-  if (contentInset.top != topInset) {
+  if (self.contentInset.top != topInset) {
+    UIEdgeInsets contentInset = self.contentInset;
     contentInset.top = topInset;
     self.contentInset = contentInset;
   }

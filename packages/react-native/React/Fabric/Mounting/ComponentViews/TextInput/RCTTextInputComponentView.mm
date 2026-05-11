@@ -200,7 +200,7 @@ static NSSet<NSNumber *> *returnKeyTypesSet;
   if (newTextInputProps.multiline &&
       newTextInputProps.paragraphAttributes.textAlignVertical !=
           oldTextInputProps.paragraphAttributes.textAlignVertical) {
-    [self _applyTextAlignmentVerticalToMultilineView:newTextInputProps.paragraphAttributes.textAlignVertical];
+    [self _applyTextAlignVerticalToMultilineView:newTextInputProps.paragraphAttributes.textAlignVertical];
   }
 
   if (newTextInputProps.traits.autocapitalizationType != oldTextInputProps.traits.autocapitalizationType) {
@@ -838,14 +838,14 @@ static NSSet<NSNumber *> *returnKeyTypesSet;
 
   if (multiline) {
     const auto &textInputProps = static_cast<const TextInputProps &>(*_props);
-    [self _applyTextAlignmentVerticalToMultilineView:textInputProps.paragraphAttributes.textAlignVertical];
+    [self _applyTextAlignVerticalToMultilineView:textInputProps.paragraphAttributes.textAlignVertical];
   }
 }
 
 // Single-line `UITextField` centers its content vertically inside the field
 // frame natively, so this routing is only meaningful when the backed view is
 // the multiline `RCTUITextView`. UITextField callers no-op.
-- (void)_applyTextAlignmentVerticalToMultilineView:
+- (void)_applyTextAlignVerticalToMultilineView:
     (const std::optional<facebook::react::TextAlignmentVertical> &)textAlignVertical
 {
   if (![_backedTextInputView isKindOfClass:[RCTUITextView class]]) {
@@ -868,7 +868,7 @@ static NSSet<NSNumber *> *returnKeyTypesSet;
         break;
     }
   }
-  ((RCTUITextView *)_backedTextInputView).textAlignmentVertical = mapped;
+  ((RCTUITextView *)_backedTextInputView).textAlignVertical = mapped;
 }
 
 - (void)_setShowSoftInputOnFocus:(BOOL)showSoftInputOnFocus
