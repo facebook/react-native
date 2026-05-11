@@ -27,7 +27,7 @@ import com.facebook.react.views.text.drawSpannedDecoration
 internal class ReactUnderlineSpan(
     private val color: Int = Color.TRANSPARENT,
     private val style: TextDecorationStyle = TextDecorationStyle.SOLID,
-) : DrawCommandSpan() {
+) : CanvasEffectSpan(), ReactSpan {
 
   override fun onDraw(start: Int, end: Int, canvas: Canvas, layout: Layout) {
     drawSpannedDecoration(start, end, canvas, layout, color, style) { _, baseline, thickness ->

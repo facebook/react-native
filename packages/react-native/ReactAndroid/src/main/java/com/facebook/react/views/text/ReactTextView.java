@@ -46,7 +46,7 @@ import com.facebook.react.uimanager.style.BorderRadiusProp;
 import com.facebook.react.uimanager.style.BorderStyle;
 import com.facebook.react.uimanager.style.LogicalEdge;
 import com.facebook.react.uimanager.style.Overflow;
-import com.facebook.react.views.text.internal.span.DrawCommandSpan;
+import com.facebook.react.views.text.internal.span.CanvasEffectSpan;
 import com.facebook.react.views.text.internal.span.ReactFragmentIndexSpan;
 import com.facebook.react.views.text.internal.span.ReactTagSpan;
 import com.facebook.yoga.YogaMeasureMode;
@@ -218,12 +218,12 @@ public class ReactTextView extends AppCompatTextView implements ReactCompoundVie
       if (spanned != null) {
         Layout layout = getLayout();
         if (layout != null) {
-          DrawCommandSpan[] drawSpans =
-              spanned.getSpans(0, spanned.length(), DrawCommandSpan.class);
+          CanvasEffectSpan[] drawSpans =
+              spanned.getSpans(0, spanned.length(), CanvasEffectSpan.class);
           if (drawSpans.length > 0) {
             canvas.save();
             canvas.translate(getCompoundPaddingLeft(), getExtendedPaddingTop());
-            for (DrawCommandSpan span : drawSpans) {
+            for (CanvasEffectSpan span : drawSpans) {
               int start = spanned.getSpanStart(span);
               int end = spanned.getSpanEnd(span);
               span.onDraw(start, end, canvas, layout);

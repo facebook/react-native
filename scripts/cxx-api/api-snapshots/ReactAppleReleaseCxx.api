@@ -9064,6 +9064,7 @@ enum facebook::react::TextDecorationStyle {
   Dotted,
   Double,
   Solid,
+  Wavy,
 }
 
 enum facebook::react::TextInputAccessoryVisibilityMode {
