@@ -680,7 +680,6 @@ class JSI_EXPORT IRuntime : public ICast {
   /// property of a JS string.
   virtual size_t length(const String& str) = 0;
 
- protected:
   virtual ~IRuntime() = default;
 };
 
