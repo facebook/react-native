@@ -95,6 +95,137 @@ static NSLineBreakMode RCTNSLineBreakModeFromEllipsizeMode(EllipsizeMode ellipsi
   CGContextRestoreGState(context);
 #endif
 
+  // Custom decoration pass: enumerate `RCTCustomDecorationAttributeName`
+  // ranges and paint each one ourselves. Covers wavy (no UIKit equivalent),
+  // dotted, and dashed (UIKit's pattern bits don't match browser geometry).
+  {
+    CGContextRef ctx = UIGraphicsGetCurrentContext();
+    if (ctx != nullptr) {
+      NSRange charRange = [layoutManager characterRangeForGlyphRange:glyphRange actualGlyphRange:nullptr];
+      [textStorage
+          enumerateAttribute:RCTCustomDecorationAttributeName
+                     inRange:charRange
+                     options:0
+                  usingBlock:^(NSDictionary *_Nullable attrs, NSRange attrRange, __unused BOOL *stop) {
+                    if (attrs == nil) {
+                      return;
+                    }
+                    NSArray<NSString *> *lines = attrs[@"lines"];
+                    UIColor *strokeColor = attrs[@"color"];
+                    NSString *style = attrs[@"style"];
+                    UIFont *font = [textStorage attribute:NSFontAttributeName
+                                                  atIndex:attrRange.location
+                                           effectiveRange:nullptr];
+                    if (font == nil || strokeColor == nil || style == nil) {
+                      return;
+                    }
+
+                    CGFloat fontSize = font.pointSize;
+                    // Thickness scales with the type size so the decoration
+                    // remains visible at small sizes and proportionate at
+                    // large ones. ~`fontSize / 12` plus a 1.5pt floor.
+                    CGFloat thickness = MAX(fontSize / 12.0f, 1.5f);
+                    // Wavelength = Blink's; control-point distance halved
+                    // so the iOS rendering reads as a subtle wave (Blink's
+                    // literal `0.5 + round(3 * t + 0.5)` is too pronounced
+                    // at iOS point sizes since the path is already drawn
+                    // in points, not device pixels).
+                    CGFloat wavyWavelength = 1.0f + 2.0f * round(2.0f * thickness + 0.5f);
+                    CGFloat wavyCpDistance = 0.5f + round(1.5f * thickness + 0.5f);
+
+                    NSRange targetGlyphRange = [layoutManager glyphRangeForCharacterRange:attrRange
+                                                                      actualCharacterRange:nullptr];
+
+                    CGContextSaveGState(ctx);
+                    CGContextSetStrokeColorWithColor(ctx, strokeColor.CGColor);
+                    CGContextSetLineWidth(ctx, thickness);
+                    CGContextSetShouldAntialias(ctx, YES);
+
+                    if ([style isEqualToString:@"dotted"]) {
+                      // Zero-length dash with round caps = circular dots.
+                      // Gap of ~2 * thickness between dot centers.
+                      CGFloat dotIntervals[2] = {0.0f, thickness * 2.0f};
+                      CGContextSetLineDash(ctx, 0, dotIntervals, 2);
+                      CGContextSetLineCap(ctx, kCGLineCapRound);
+                    } else if ([style isEqualToString:@"dashed"]) {
+                      // Short rectangular dashes with a tight gap.
+                      CGFloat dashIntervals[2] = {thickness * 2.0f, thickness};
+                      CGContextSetLineDash(ctx, 0, dashIntervals, 2);
+                      CGContextSetLineCap(ctx, kCGLineCapButt);
+                    } else {
+                      // wavy
+                      CGContextSetLineCap(ctx, kCGLineCapRound);
+                    }
+
+                    [layoutManager
+                        enumerateLineFragmentsForGlyphRange:targetGlyphRange
+                                                 usingBlock:^(
+                                                     CGRect lineRect,
+                                                     __unused CGRect usedRect,
+                                                     NSTextContainer *_Nonnull container,
+                                                     NSRange lineGlyphRange,
+                                                     __unused BOOL *_Nonnull innerStop) {
+                                                   NSRange intersection =
+                                                       NSIntersectionRange(targetGlyphRange, lineGlyphRange);
+                                                   if (intersection.length == 0) {
+                                                     return;
+                                                   }
+                                                   CGRect firstGlyphRect =
+                                                       [layoutManager boundingRectForGlyphRange:NSMakeRange(
+                                                                                                    intersection.location,
+                                                                                                    1)
+                                                                                inTextContainer:container];
+                                                   CGRect lastGlyphRect =
+                                                       [layoutManager boundingRectForGlyphRange:NSMakeRange(
+                                                                                                    NSMaxRange(intersection) -
+                                                                                                        1,
+                                                                                                    1)
+                                                                                inTextContainer:container];
+                                                   CGFloat x1 = firstGlyphRect.origin.x + frame.origin.x;
+                                                   CGFloat x2 = CGRectGetMaxX(lastGlyphRect) + frame.origin.x;
+                                                   CGFloat baseline = lineRect.origin.y + font.ascender + frame.origin.y;
+
+                                                   for (NSString *line in lines) {
+                                                     CGFloat y;
+                                                     if ([line isEqualToString:@"underline"]) {
+                                                       y = baseline + thickness + 1.0f;
+                                                     } else {
+                                                       y = baseline + (font.descender - font.ascender) / 2.0f + 1.0f;
+                                                     }
+                                                     CGContextBeginPath(ctx);
+                                                     CGContextMoveToPoint(ctx, x1, y);
+                                                     if ([style isEqualToString:@"wavy"]) {
+                                                       // Draw enough whole cycles to cover the run.
+                                                       // Looping while `x < x2` (rather than
+                                                       // `x + wavelength <= x2`) ensures the wave
+                                                       // continues through the final character
+                                                       // (including trailing punctuation) — the last
+                                                       // cycle may extend a hair past the text bound,
+                                                       // which reads as a natural underline trailer.
+                                                       CGFloat step = wavyWavelength / 2.0f;
+                                                       for (CGFloat x = x1; x < x2; x += wavyWavelength) {
+                                                         CGFloat midX = x + step;
+                                                         CGContextAddCurveToPoint(
+                                                             ctx,
+                                                             midX,
+                                                             y + wavyCpDistance,
+                                                             midX,
+                                                             y - wavyCpDistance,
+                                                             x + wavyWavelength,
+                                                             y);
+                                                       }
+                                                     } else {
+                                                       CGContextAddLineToPoint(ctx, x2, y);
+                                                     }
+                                                     CGContextStrokePath(ctx);
+                                                   }
+                                                 }];
+
+                    CGContextRestoreGState(ctx);
+                  }];
+    }
+  }
+
   if (block != nil) {
     __block UIBezierPath *highlightPath = nil;
     NSRange characterRange = [layoutManager characterRangeForGlyphRange:glyphRange actualGlyphRange:NULL];
