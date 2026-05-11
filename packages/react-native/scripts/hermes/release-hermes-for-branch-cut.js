@@ -176,16 +176,12 @@ async function releaseHermesForBranchCut() /*: Promise<void> */ {
       `  [DRY RUN] Would update hermes-compiler dependency to ${v1HermesVersion}`,
     );
     console.log(`  [DRY RUN] Would update version.properties:`);
-    console.log(`    - HERMES_VERSION_NAME: ${legacyHermesVersion}`);
-    console.log(`    - HERMES_V1_VERSION_NAME: ${v1HermesVersion}`);
+    console.log(`    - HERMES_VERSION_NAME: ${v1HermesVersion}`);
     console.log('  [DRY RUN] Would create commit: "Bump hermes version"');
   } else {
     await setHermesTag(releaseBranch, HERMES_V1_BRANCH);
     await updateHermesCompilerVersionInDependencies(v1HermesVersion);
-    await updateHermesRuntimeDependenciesVersions(
-      legacyHermesVersion,
-      v1HermesVersion,
-    );
+    await updateHermesRuntimeDependenciesVersions(v1HermesVersion);
     execInRepo('git add .', RN_REPO_ROOT);
     execInRepo('git commit -m "Bump hermes version"', RN_REPO_ROOT);
     console.log('✅ Commit created (not pushed yet).');
@@ -215,7 +211,7 @@ async function releaseHermesForBranchCut() /*: Promise<void> */ {
   if (DRY_RUN) {
     console.log(`  [DRY RUN] Would create branch ${rnBumpBranch} on RN main`);
     console.log(
-      `  [DRY RUN] Would update HERMES_V1_VERSION_NAME to ${newV1Version}`,
+      `  [DRY RUN] Would update HERMES_VERSION_NAME to ${newV1Version}`,
     );
     console.log(
       `  [DRY RUN] Would create PR: "Bump hermes version for RN release ${rnBranch}" → main`,
@@ -235,7 +231,7 @@ async function releaseHermesForBranchCut() /*: Promise<void> */ {
     );
     updateVersionProperties(
       versionPropertiesPath,
-      'HERMES_V1_VERSION_NAME',
+      'HERMES_VERSION_NAME',
       newV1Version,
     );
     execInRepo(
@@ -243,12 +239,12 @@ async function releaseHermesForBranchCut() /*: Promise<void> */ {
       RN_REPO_ROOT,
     );
     execInRepo(
-      `git commit -m "Bump hermes v1 version to ${newV1Version}"`,
+      `git commit -m "Bump hermes version to ${newV1Version}"`,
       RN_REPO_ROOT,
     );
     execInRepo(`git push -u origin ${rnBumpBranch}`, RN_REPO_ROOT);
     execSync(
-      `gh pr create --title "Bump hermes version for RN release ${rnBranch}" --body "Bumps HERMES_V1_VERSION_NAME to ${newV1Version} for the next release." --base main`,
+      `gh pr create --title "Bump hermes version for RN release ${rnBranch}" --body "Bumps HERMES_VERSION_NAME to ${newV1Version} for the next release." --base main`,
       {stdio: 'inherit', cwd: RN_REPO_ROOT},
     );
     console.log(`✅ Created PR for RN main Hermes V1 bump (${newV1Version})`);
@@ -268,7 +264,7 @@ async function releaseHermesForBranchCut() /*: Promise<void> */ {
 3. Update RN repo with Hermes versions and create commit
 4. Create PR to bump Hermes legacy to ${newLegacyVersion}
 5. Create PR to bump Hermes V1 to ${newV1Version}
-6. Create PR to bump RN main HERMES_V1_VERSION_NAME to ${newV1Version}
+6. Create PR to bump RN main HERMES_VERSION_NAME to ${newV1Version}
 
 Workflow URLs (when created):
   • Legacy Hermes: ${legacyWorkflowUrl}

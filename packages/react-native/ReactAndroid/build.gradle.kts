@@ -39,9 +39,6 @@ val downloadsDir =
 val thirdPartyNdkDir = File("$buildDir/third-party-ndk")
 val reactNativeRootDir = projectDir.parent
 
-val hermesV1Enabled =
-    rootProject.extensions.getByType(PrivateReactExtension::class.java).hermesV1Enabled.get()
-
 // We put the publishing version from gradle.properties inside ext. so other
 // subprojects can access it as well.
 extra["publishing_version"] = project.findProperty("VERSION_NAME")?.toString()!!
@@ -583,9 +580,7 @@ android {
             "-DCMAKE_POLICY_DEFAULT_CMP0069=NEW",
         )
 
-        if (hermesV1Enabled) {
-          arguments("-DHERMES_V1_ENABLED=1")
-        }
+        arguments("-DHERMES_V1_ENABLED=1")
 
         targets(
             "reactnative",
