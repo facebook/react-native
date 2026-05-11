@@ -551,6 +551,24 @@ to return true:wantsResponderID|                            |
                                +                            + */
 
 /**
+ * Returns whether a top-level event is one that the responder system needs to
+ * observe. Used as a fast-path in `processResponderEvent`: most events
+ * (`pointerup`, `pointermove`, `layout`, etc.) are not responder-relevant and
+ * — when no responder is currently set — produce no work.
+ */
+function isResponderRelevantTopLevelType(topLevelType: string): boolean {
+  return match (topLevelType) {
+    | 'topTouchStart'
+    | 'topTouchMove'
+    | 'topTouchEnd'
+    | 'topTouchCancel'
+    | 'topScroll'
+    | 'topSelectionChange' => true,
+    _ => false,
+  };
+}
+
+/**
  * Process a native event through the responder system.
  */
 export function processResponderEvent(
@@ -558,6 +576,15 @@ export function processResponderEvent(
   eventTarget: EventTarget | null,
   nativeEvent: {[string]: unknown},
 ): void {
+  // Fast path: if this event isn't one the responder system cares about and
+  // there is no active responder, exit immediately. This is the dominant case
+  // for non-touch events (pointer*, layout, etc.) on apps without an active
+  // gesture, and saves the touch counting + ResponderTouchHistoryStore +
+  // canTriggerTransfer work.
+  if (responderNode == null && !isResponderRelevantTopLevelType(topLevelType)) {
+    return;
+  }
+
   // Track touch count
   if (isStartish(topLevelType)) {
     trackedTouchCount += 1;
