@@ -1560,7 +1560,8 @@ class facebook::react::AnimationBackend : public facebook::react::UIManagerAnima
   public virtual void trigger() override;
   public void commitUpdates(facebook::react::SurfaceId surfaceId, facebook::react::SurfaceUpdates& surfaceUpdates);
   public void requestAsyncFlushForSurfaces(const std::set<facebook::react::SurfaceId>& surfaces);
-  public void synchronouslyUpdateProps(const std::unordered_map<facebook::react::Tag, facebook::react::AnimatedProps>& updates);
+  public void synchronouslyUpdateProps(facebook::react::SurfaceId surfaceId, const std::unordered_map<facebook::react::Tag, facebook::react::AnimatedProps>& updates);
+  public void synchronouslyUpdatePropsUnbuffered(const std::unordered_map<facebook::react::Tag, facebook::react::AnimatedProps>& updates);
 }
 
 class facebook::react::AnimationBackendCommitHook : public facebook::react::UIManagerCommitHook {

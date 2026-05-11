@@ -1595,6 +1595,7 @@ interface RCTMountingManager : public NSObject {
   public virtual void setContextContainer:(std::shared_ptr<const facebook::react::ContextContainer> contextContainer);
   public virtual void setIsJSResponder:blockNativeResponder:forShadowView:(BOOL isJSResponder, BOOL blockNativeResponder, const facebook::react::ShadowView& shadowView);
   public virtual void synchronouslyUpdateViewOnUIThread:changedProps:componentDescriptor:(ReactTag reactTag, folly::dynamic props, const facebook::react::ComponentDescriptor& componentDescriptor);
+  public virtual void synchronouslyUpdateViewOnUIThread:withProps:(ReactTag reactTag, facebook::react::Props::Shared newProps);
 }
 
 interface RCTMultilineTextInputView : public RCTBaseTextInputView {
@@ -3387,6 +3388,7 @@ protocol RCTSchedulerDelegate {
   public virtual void schedulerDidSendAccessibilityEvent:eventType:(const facebook::react::ShadowView& shadowView, const std::string& eventType);
   public virtual void schedulerDidSetIsJSResponder:blockNativeResponder:forShadowView:(BOOL isJSResponder, BOOL blockNativeResponder, const facebook::react::ShadowView& shadowView);
   public virtual void schedulerDidSynchronouslyUpdateViewOnUIThread:props:(facebook::react::Tag reactTag, folly::dynamic props);
+  public virtual void schedulerDidSynchronouslyUpdateViewWithAnimatedPropsOnUIThread:surfaceId:animatedProps:(facebook::react::Tag reactTag, facebook::react::SurfaceId surfaceId, const facebook::react::AnimatedProps& animatedProps);
   public virtual void schedulerShouldMergeReactRevision:(facebook::react::SurfaceId surfaceId);
   public virtual void schedulerShouldRenderTransactions:(std::shared_ptr<const facebook::react::MountingCoordinator> mountingCoordinator);
 }
@@ -4534,7 +4536,8 @@ class facebook::react::AnimationBackend : public facebook::react::UIManagerAnima
   public virtual void trigger() override;
   public void commitUpdates(facebook::react::SurfaceId surfaceId, facebook::react::SurfaceUpdates& surfaceUpdates);
   public void requestAsyncFlushForSurfaces(const std::set<facebook::react::SurfaceId>& surfaces);
-  public void synchronouslyUpdateProps(const std::unordered_map<facebook::react::Tag, facebook::react::AnimatedProps>& updates);
+  public void synchronouslyUpdateProps(facebook::react::SurfaceId surfaceId, const std::unordered_map<facebook::react::Tag, facebook::react::AnimatedProps>& updates);
+  public void synchronouslyUpdatePropsUnbuffered(const std::unordered_map<facebook::react::Tag, facebook::react::AnimatedProps>& updates);
 }
 
 class facebook::react::AnimationBackendCommitHook : public facebook::react::UIManagerCommitHook {

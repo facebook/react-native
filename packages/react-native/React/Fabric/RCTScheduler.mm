@@ -10,6 +10,7 @@
 #import <QuartzCore/CADisplayLink.h>
 #import <cxxreact/TraceSection.h>
 #import <react/featureflags/ReactNativeFeatureFlags.h>
+#import <react/renderer/animationbackend/AnimatedProps.h>
 #import <react/renderer/animations/LayoutAnimationDriver.h>
 #import <react/renderer/componentregistry/ComponentDescriptorFactory.h>
 #import <react/renderer/scheduler/Scheduler.h>
@@ -83,7 +84,12 @@ class SchedulerDelegateProxy : public SchedulerDelegate {
       SurfaceId surfaceId,
       const std::unordered_map<Tag, AnimatedProps> &updates) override
   {
-    // Not implemented on iOS yet -- filled in by a later commit.
+    RCTScheduler *scheduler = (__bridge RCTScheduler *)scheduler_;
+    for (const auto &[tag, animatedProps] : updates) {
+      [scheduler.delegate schedulerDidSynchronouslyUpdateViewWithAnimatedPropsOnUIThread:tag
+                                                                               surfaceId:surfaceId
+                                                                           animatedProps:animatedProps];
+    }
   }
 
   void schedulerDidUpdateShadowTree(const std::unordered_map<Tag, folly::dynamic> &tagToProps) override
