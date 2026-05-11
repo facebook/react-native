@@ -382,8 +382,7 @@ function invoke(
       try {
         propListener.call(eventTarget, event);
       } catch (error) {
-        // TODO: replace with `reportError` when it's available.
-        console.error(error);
+        reportListenerError(error);
       }
       global.event = currentEvent;
       return;
@@ -452,8 +451,7 @@ function invokeListeners(
         callback.handleEvent(event);
       }
     } catch (error) {
-      // TODO: replace with `reportError` when it's available.
-      console.error(error);
+      reportListenerError(error);
     }
 
     if (listener.passive) {
@@ -506,4 +504,20 @@ function getEventDispatchFlag(event: Event): boolean {
 function setEventDispatchFlag(event: Event, value: boolean): void {
   // $FlowExpectedError[prop-missing]
   event[EVENT_DISPATCH_FLAG] = value;
+}
+
+/**
+ * Surface a listener error to the global error handler without aborting the
+ * rest of the dispatch. Throws in a new task so the error becomes an
+ * uncaught exception (matching the legacy plugin path's behavior of
+ * propagating listener errors via React's runEventsInBatch +
+ * `rethrowCaughtError`, rather than swallowing them as a `console.error`).
+ *
+ * `setTimeout(0)` schedules a new macrotask; the throw inside it has no
+ * catcher above, so it bubbles up to the host's unhandled-error reporter.
+ */
+function reportListenerError(error: unknown): void {
+  setTimeout(() => {
+    throw error;
+  }, 0);
 }
