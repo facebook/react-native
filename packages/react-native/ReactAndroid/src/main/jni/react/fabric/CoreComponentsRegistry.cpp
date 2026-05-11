@@ -21,6 +21,7 @@
 #include <react/renderer/components/text/RawTextComponentDescriptor.h>
 #include <react/renderer/components/text/SelectableParagraphComponentDescriptor.h>
 #include <react/renderer/components/text/TextComponentDescriptor.h>
+#include <react/renderer/components/text/TextEffectComponentDescriptor.h>
 #include <react/renderer/components/view/LayoutConformanceComponentDescriptor.h>
 #include <react/renderer/components/view/ViewComponentDescriptor.h>
 #include <react/renderer/components/virtualview/VirtualViewComponentDescriptor.h>
@@ -61,6 +62,8 @@ void addCoreComponents(
       concreteComponentDescriptorProvider<SafeAreaViewComponentDescriptor>());
   providerRegistry->add(
       concreteComponentDescriptorProvider<TextComponentDescriptor>());
+  providerRegistry->add(
+      concreteComponentDescriptorProvider<TextEffectComponentDescriptor>());
   providerRegistry->add(
       concreteComponentDescriptorProvider<RawTextComponentDescriptor>());
   providerRegistry->add(

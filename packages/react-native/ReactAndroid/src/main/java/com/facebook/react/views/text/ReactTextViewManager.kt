@@ -160,6 +160,7 @@ public constructor(
             view.context.assets,
             attributedString,
             reactTextViewManagerCallback,
+            TextEffectRegistry.current,
         )
     view.setSpanned(spanned)
 
