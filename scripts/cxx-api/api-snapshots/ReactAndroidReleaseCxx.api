@@ -11715,7 +11715,6 @@ class facebook::jsi::HostObject {
 }
 
 class facebook::jsi::IRuntime : public facebook::jsi::ICast {
-  protected virtual ~IRuntime() = default;
   public static constexpr facebook::jsi::UUID uuid;
   public virtual ScopeState* pushScope() = 0;
   public virtual bool bigintIsInt64(const facebook::jsi::BigInt&) = 0;
@@ -11825,6 +11824,7 @@ class facebook::jsi::IRuntime : public facebook::jsi::ICast {
   public virtual void setRuntimeData(const facebook::jsi::UUID& dataUUID, const std::shared_ptr<void>& data) = 0;
   public virtual void setRuntimeDataImpl(const facebook::jsi::UUID& dataUUID, const void* data, void(*)(const void* data) deleter) = 0;
   public virtual void setValueAtIndexImpl(const facebook::jsi::Array&, size_t i, const facebook::jsi::Value& value) = 0;
+  public virtual ~IRuntime() = default;
 }
 
 struct facebook::jsi::IRuntime::PointerValue {
