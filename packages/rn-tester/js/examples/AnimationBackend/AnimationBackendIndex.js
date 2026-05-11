@@ -10,6 +10,7 @@
 
 import type {RNTesterModule} from '../../types/RNTesterTypes';
 
+import AllAnimatedPropsExample from './AllAnimatedPropsExample';
 import PlaygroundExample from './ChessboardExample';
 import PerformanceTestExample from './PerformanceTestExample';
 import SwipeableListExample from './SwipeableListExample';
@@ -27,6 +28,11 @@ export default {
   description: `Examples demonstrating the Animation Backend for layout-updating animations. ${canUseBackend ? '' : 'You need to enable c++ Animated and the Animation Backend to see these examples.'}`,
   showIndividualExamples: true,
   examples: canUseBackend
-    ? [PlaygroundExample, SwipeableListExample, PerformanceTestExample]
+    ? [
+        AllAnimatedPropsExample,
+        PlaygroundExample,
+        SwipeableListExample,
+        PerformanceTestExample,
+      ]
     : [],
 } as RNTesterModule;
