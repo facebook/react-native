@@ -47,6 +47,9 @@ jobs:
       - name: Set Hermes version
         shell: bash
         run: |
+          # Nightly RN builds resolve Hermes from npm's latest-v1 dist-tag (TODO:
+          # rename to 'latest' once V1 is the only Hermes on npm). Stable builds
+          # use the version pinned in version.properties.
           if [ "${{ inputs.use-hermes-nightly }}" == "true" ]; then
             HERMES_VERSION="latest-v1"
           else
