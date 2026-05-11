@@ -3815,6 +3815,10 @@ class facebook::react::NativeRedBoxSpecJSI : public facebook::react::JavaTurboMo
   public NativeRedBoxSpecJSI(const facebook::react::JavaTurboModule::InitParams& params);
 }
 
+class facebook::react::NativeSampleTurboModuleSpecJSI : public facebook::react::JavaTurboModule {
+  public NativeSampleTurboModuleSpecJSI(const facebook::react::JavaTurboModule::InitParams& params);
+}
+
 class facebook::react::NativeSegmentFetcherSpecJSI : public facebook::react::JavaTurboModule {
   public NativeSegmentFetcherSpecJSI(const facebook::react::JavaTurboModule::InitParams& params);
 }
@@ -6239,6 +6243,11 @@ enum facebook::react::ModalHostViewSupportedOrientations : facebook::react::Moda
   PortraitUpsideDown,
 }
 
+enum facebook::react::NativeSampleTurboModuleEnumInt {
+  A,
+  B,
+}
+
 enum facebook::react::NullValueStrategy {
   Ignore,
   Override,
@@ -8467,6 +8476,14 @@ struct facebook::react::NativeMutationObserverNativeMutationObserverObserveOptio
   public bool operator==(const facebook::react::NativeMutationObserverNativeMutationObserverObserveOptions& other) const;
 }
 
+template <typename P0, typename P1, typename P2>
+struct facebook::react::NativeSampleTurboModuleObjectStruct {
+  public P0 a;
+  public P1 b;
+  public P2 c;
+  public bool operator==(const facebook::react::NativeSampleTurboModuleObjectStruct& other) const;
+}
+
 template <typename P0, typename P1>
 struct facebook::react::NativeAnimatedModuleEventMapping {
   public P0 nativeEventPath;
@@ -8894,6 +8911,19 @@ class facebook::react::NativeRedBoxCxxSpec : public facebook::react::TurboModule
 }
 
 template <typename T>
+class facebook::react::NativeSampleTurboModuleCxxSpec : public facebook::react::TurboModule {
+  protected NativeSampleTurboModuleCxxSpec(std::shared_ptr<facebook::react::CallInvoker> jsInvoker);
+  protected void emitOnPress();
+  public static constexpr std::string_view kModuleName;
+  template <typename OnChangeType>
+  protected void emitOnChange(OnChangeType value);
+  template <typename OnClickType>
+  protected void emitOnClick(OnClickType value);
+  template <typename OnSubmitType>
+  protected void emitOnSubmit(std::vector<OnSubmitType> value);
+}
+
+template <typename T>
 class facebook::react::NativeSegmentFetcherCxxSpec : public facebook::react::TurboModule {
   protected NativeSegmentFetcherCxxSpec(std::shared_ptr<facebook::react::CallInvoker> jsInvoker);
   public static constexpr std::string_view kModuleName;
@@ -9218,6 +9248,13 @@ struct facebook::react::NativeReactDevToolsRuntimeSettingsModuleReloadAndProfile
 }
 
 template <typename T>
+struct facebook::react::NativeSampleTurboModuleObjectStructBridging {
+  public static T fromJs(facebook::jsi::Runtime& rt, const facebook::jsi::Object& value, const std::shared_ptr<facebook::react::CallInvoker>& jsInvoker);
+  public static T types;
+  public static facebook::jsi::Object toJs(facebook::jsi::Runtime& rt, const T& value, const std::shared_ptr<facebook::react::CallInvoker>& jsInvoker);
+}
+
+template <typename T>
 struct facebook::react::NativeSourceCodeSourceCodeConstantsBridging {
   public static T fromJs(facebook::jsi::Runtime& rt, const facebook::jsi::Object& value, const std::shared_ptr<facebook::react::CallInvoker>& jsInvoker);
   public static T types;
@@ -9433,6 +9470,11 @@ struct facebook::react::Bridging<facebook::react::NativeReloadAndProfileConfig> 
 }
 
 struct facebook::react::Bridging<facebook::react::NativeRequestIdleCallbackOptions> : public facebook::react::NativeIdleCallbacksRequestIdleCallbackOptionsBridging<facebook::react::NativeRequestIdleCallbackOptions> {
+}
+
+struct facebook::react::Bridging<facebook::react::NativeSampleTurboModuleEnumInt> {
+  public static facebook::jsi::Value toJs(facebook::jsi::Runtime& rt, facebook::react::NativeSampleTurboModuleEnumInt value);
+  public static facebook::react::NativeSampleTurboModuleEnumInt fromJs(facebook::jsi::Runtime& rt, const facebook::jsi::Value& rawValue);
 }
 
 struct facebook::react::Bridging<facebook::react::PerformanceEntryType> {
