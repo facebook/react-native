@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<9fa8df8bd4c6ef4efeddff62e8518472>>
+ * @generated SignedSource<<4342ccb696b4123b9d463a31c024b9bc>>
  */
 
 /**
@@ -269,12 +269,6 @@ public object ReactNativeFeatureFlags {
    */
   @JvmStatic
   public fun enableNativeCSSParsing(): Boolean = accessor.enableNativeCSSParsing()
-
-  /**
-   * When enabled, View.js passes aria-*, id, and tabIndex props directly to native, relying on C++ prop parsing instead of JS-side transformations.
-   */
-  @JvmStatic
-  public fun enableNativeViewPropTransformations(): Boolean = accessor.enableNativeViewPropTransformations()
 
   /**
    * Enable network event reporting hooks in each native platform through `NetworkReporter` (Web Perf APIs + CDP). This flag should be combined with `fuseboxNetworkInspectionEnabled` to enable Network CDP debugging.
