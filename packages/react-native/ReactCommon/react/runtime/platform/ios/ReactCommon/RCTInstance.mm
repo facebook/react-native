@@ -649,8 +649,8 @@ void RCTInstanceSetRuntimeDiagnosticFlags(NSString *flags)
   errorData[@"id"] = @(error.id);
   errorData[@"isFatal"] = @(error.isFatal);
 
-  id extraData =
-      TurboModuleConvertUtils::convertJSIValueToObjCObject(runtime, jsi::Value(runtime, error.extraData), nullptr);
+  id extraData = TurboModuleConvertUtils::convertJSIValueToObjCObject(
+      runtime, jsi::Value(runtime, error.extraData), nullptr, NO, NO);
   if (extraData) {
     errorData[@"extraData"] = extraData;
   }

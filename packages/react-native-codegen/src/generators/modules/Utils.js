@@ -12,6 +12,7 @@
 
 import type {
   NativeModuleAliasMap,
+  NativeModuleFunctionTypeAnnotation,
   NativeModuleObjectTypeAnnotation,
   NativeModuleSchema,
   NativeModuleTypeAnnotation,
@@ -77,9 +78,40 @@ function isArrayRecursiveMember(
   );
 }
 
+function hasArrayBufferType(
+  nativeModules: Readonly<{[hasteModuleName: string]: NativeModuleSchema}>,
+): boolean {
+  const isArrayBuffer = (
+    nullable: Nullable<NativeModuleTypeAnnotation>,
+  ): boolean => {
+    const [annotation] = unwrapNullable<NativeModuleTypeAnnotation>(nullable);
+    return annotation.type === 'ArrayBufferTypeAnnotation';
+  };
+
+  for (const hasteModuleName of Object.keys(nativeModules)) {
+    const {spec} = nativeModules[hasteModuleName];
+    for (const method of spec.methods) {
+      const [{params, returnTypeAnnotation}] =
+        unwrapNullable<NativeModuleFunctionTypeAnnotation>(
+          method.typeAnnotation,
+        );
+      if (isArrayBuffer(returnTypeAnnotation)) {
+        return true;
+      }
+      for (const param of params) {
+        if (isArrayBuffer(param.typeAnnotation)) {
+          return true;
+        }
+      }
+    }
+  }
+  return false;
+}
+
 module.exports = {
   createAliasResolver,
   getModules,
+  hasArrayBufferType,
   isDirectRecursiveMember,
   isArrayRecursiveMember,
 };

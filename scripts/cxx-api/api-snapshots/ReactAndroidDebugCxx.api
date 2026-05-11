@@ -4751,6 +4751,17 @@ class facebook::react::SharedColor {
   public std::string toString() const noexcept;
 }
 
+class facebook::react::SharedMutableBuffer : public facebook::jsi::MutableBuffer {
+  public SharedMutableBuffer(const facebook::react::SharedMutableBuffer&) = delete;
+  public SharedMutableBuffer(facebook::react::SharedMutableBuffer&&) = delete;
+  public SharedMutableBuffer(uint8_t* data, size_t size, std::function<void()> release = nullptr);
+  public facebook::react::SharedMutableBuffer& operator=(const facebook::react::SharedMutableBuffer&) = delete;
+  public facebook::react::SharedMutableBuffer& operator=(facebook::react::SharedMutableBuffer&&) = delete;
+  public virtual size_t size() const override;
+  public virtual uint8_t* data() override;
+  public ~SharedMutableBuffer() override;
+}
+
 class facebook::react::SpringAnimationDriver : public facebook::react::AnimationDriver {
   protected virtual bool update(double timeDeltaMs, bool restarting) override;
   public SpringAnimationDriver(int id, facebook::react::Tag animatedValueTag, std::optional<facebook::react::AnimationEndCallback> endCallback, folly::dynamic config, facebook::react::NativeAnimatedNodesManager* manager);
@@ -5392,6 +5403,13 @@ class facebook::react::ValueFactoryEventPayload : public facebook::react::EventP
   public ValueFactoryEventPayload(facebook::react::ValueFactory factory);
   public virtual facebook::jsi::Value asJSIValue(facebook::jsi::Runtime& runtime) const override;
   public virtual facebook::react::EventPayloadType getType() const override;
+}
+
+class facebook::react::VectorMutableBuffer : public facebook::jsi::MutableBuffer {
+  public VectorMutableBuffer(const uint8_t* source, size_t size);
+  public VectorMutableBuffer(std::vector<uint8_t> data);
+  public virtual size_t size() const override;
+  public virtual uint8_t* data() override;
 }
 
 class facebook::react::ViewComponentDescriptor : public facebook::react::ConcreteComponentDescriptor<facebook::react::ViewShadowNode> {
@@ -6561,6 +6579,7 @@ enum facebook::react::TransformOperationType : uint8_t {
 }
 
 enum facebook::react::TurboModuleMethodValueKind {
+  ArrayBufferKind,
   ArrayKind,
   BooleanKind,
   FunctionKind,
@@ -11616,11 +11635,13 @@ struct facebook::react::bridging::is_optional<std::optional<T>> : public std::tr
 
 struct facebook::react::bridging::Converter<facebook::jsi::Object> : public facebook::react::bridging::ConverterBase<facebook::jsi::Object> {
   public operator facebook::jsi::Array();
+  public operator facebook::jsi::ArrayBuffer();
   public operator facebook::jsi::Function();
 }
 
 struct facebook::react::bridging::Converter<facebook::jsi::Value> : public facebook::react::bridging::ConverterBase<facebook::jsi::Value> {
   public operator facebook::jsi::Array();
+  public operator facebook::jsi::ArrayBuffer();
   public operator facebook::jsi::Function();
   public operator facebook::jsi::Object();
   public operator facebook::jsi::String();

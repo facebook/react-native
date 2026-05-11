@@ -6480,7 +6480,7 @@ class facebook::react::ObjCInteropTurboModule : public facebook::react::ObjCTurb
   protected virtual NSString* getArgumentTypeName(facebook::jsi::Runtime& runtime, NSString* methodName, int argIndex) override;
   protected virtual facebook::jsi::Value convertReturnIdToJSIValue(facebook::jsi::Runtime& runtime, const char* methodName, facebook::react::TurboModuleMethodValueKind returnType, id result) override;
   protected virtual facebook::jsi::Value create(facebook::jsi::Runtime& runtime, const facebook::jsi::PropNameID& propName) override;
-  protected virtual void setInvocationArg(facebook::jsi::Runtime& runtime, const char* methodName, const std::string& objCArgType, const facebook::jsi::Value& arg, size_t i, NSInvocation* inv, NSMutableArray* retainedObjectsForInvocation) override;
+  protected virtual void setInvocationArg(facebook::jsi::Runtime& runtime, const char* methodName, const std::string& objCArgType, const facebook::jsi::Value& arg, size_t i, NSInvocation* inv, NSMutableArray* retainedObjectsForInvocation, bool isSync) override;
   public ObjCInteropTurboModule(const facebook::react::ObjCTurboModule::InitParams& params);
   public virtual std::vector<facebook::jsi::PropNameID> getPropertyNames(facebook::jsi::Runtime& runtime) override;
 }
@@ -6495,7 +6495,7 @@ struct facebook::react::ObjCInteropTurboModule::MethodDescriptor {
 class facebook::react::ObjCTurboModule : public facebook::react::TurboModule {
   protected virtual NSString* getArgumentTypeName(facebook::jsi::Runtime& runtime, NSString* methodName, int argIndex);
   protected virtual facebook::jsi::Value convertReturnIdToJSIValue(facebook::jsi::Runtime& runtime, const char* methodName, facebook::react::TurboModuleMethodValueKind returnType, id result);
-  protected virtual void setInvocationArg(facebook::jsi::Runtime& runtime, const char* methodName, const std::string& objCArgType, const facebook::jsi::Value& arg, size_t i, NSInvocation* inv, NSMutableArray* retainedObjectsForInvocation);
+  protected virtual void setInvocationArg(facebook::jsi::Runtime& runtime, const char* methodName, const std::string& objCArgType, const facebook::jsi::Value& arg, size_t i, NSInvocation* inv, NSMutableArray* retainedObjectsForInvocation, bool isSync);
   protected void setEventEmitterCallback(facebook::react::EventEmitterCallback eventEmitterCallback);
   protected void setMethodArgConversionSelector(NSString* methodName, size_t argIndex, NSString* fnName);
   public ObjCTurboModule(const facebook::react::ObjCTurboModule::InitParams& params);
@@ -7365,6 +7365,17 @@ class facebook::react::SharedColor {
   public std::string toString() const noexcept;
 }
 
+class facebook::react::SharedMutableBuffer : public facebook::jsi::MutableBuffer {
+  public SharedMutableBuffer(const facebook::react::SharedMutableBuffer&) = delete;
+  public SharedMutableBuffer(facebook::react::SharedMutableBuffer&&) = delete;
+  public SharedMutableBuffer(uint8_t* data, size_t size, std::function<void()> release = nullptr);
+  public facebook::react::SharedMutableBuffer& operator=(const facebook::react::SharedMutableBuffer&) = delete;
+  public facebook::react::SharedMutableBuffer& operator=(facebook::react::SharedMutableBuffer&&) = delete;
+  public virtual size_t size() const override;
+  public virtual uint8_t* data() override;
+  public ~SharedMutableBuffer() override;
+}
+
 class facebook::react::SpringAnimationDriver : public facebook::react::AnimationDriver {
   protected virtual bool update(double timeDeltaMs, bool restarting) override;
   public SpringAnimationDriver(int id, facebook::react::Tag animatedValueTag, std::optional<facebook::react::AnimationEndCallback> endCallback, folly::dynamic config, facebook::react::NativeAnimatedNodesManager* manager);
@@ -7981,6 +7992,13 @@ class facebook::react::ValueFactoryEventPayload : public facebook::react::EventP
   public ValueFactoryEventPayload(facebook::react::ValueFactory factory);
   public virtual facebook::jsi::Value asJSIValue(facebook::jsi::Runtime& runtime) const override;
   public virtual facebook::react::EventPayloadType getType() const override;
+}
+
+class facebook::react::VectorMutableBuffer : public facebook::jsi::MutableBuffer {
+  public VectorMutableBuffer(const uint8_t* source, size_t size);
+  public VectorMutableBuffer(std::vector<uint8_t> data);
+  public virtual size_t size() const override;
+  public virtual uint8_t* data() override;
 }
 
 class facebook::react::ViewComponentDescriptor : public facebook::react::ConcreteComponentDescriptor<facebook::react::ViewShadowNode> {
@@ -9164,6 +9182,7 @@ enum facebook::react::TransformOperationType : uint8_t {
 }
 
 enum facebook::react::TurboModuleMethodValueKind {
+  ArrayBufferKind,
   ArrayKind,
   BooleanKind,
   FunctionKind,
@@ -13769,7 +13788,7 @@ struct facebook::react::dom::RNMeasureRect {
 
 
 facebook::jsi::Value facebook::react::TurboModuleConvertUtils::convertObjCObjectToJSIValue(facebook::jsi::Runtime& runtime, id value);
-id facebook::react::TurboModuleConvertUtils::convertJSIValueToObjCObject(facebook::jsi::Runtime& runtime, const facebook::jsi::Value& value, const std::shared_ptr<facebook::react::CallInvoker>& jsInvoker, BOOL useNSNull = NO);
+id facebook::react::TurboModuleConvertUtils::convertJSIValueToObjCObject(facebook::jsi::Runtime& runtime, const facebook::jsi::Value& value, const std::shared_ptr<facebook::react::CallInvoker>& jsInvoker, BOOL useNSNull = NO, BOOL isSync = NO);
 
 
 static const facebook::react::Color facebook::react::HostPlatformColor::UndefinedColor;
@@ -13862,11 +13881,13 @@ struct facebook::react::bridging::is_optional<std::optional<T>> : public std::tr
 
 struct facebook::react::bridging::Converter<facebook::jsi::Object> : public facebook::react::bridging::ConverterBase<facebook::jsi::Object> {
   public operator facebook::jsi::Array();
+  public operator facebook::jsi::ArrayBuffer();
   public operator facebook::jsi::Function();
 }
 
 struct facebook::react::bridging::Converter<facebook::jsi::Value> : public facebook::react::bridging::ConverterBase<facebook::jsi::Value> {
   public operator facebook::jsi::Array();
+  public operator facebook::jsi::ArrayBuffer();
   public operator facebook::jsi::Function();
   public operator facebook::jsi::Object();
   public operator facebook::jsi::String();

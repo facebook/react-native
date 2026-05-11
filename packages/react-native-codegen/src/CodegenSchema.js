@@ -391,6 +391,10 @@ export type NativeModuleMixedTypeAnnotation = Readonly<{
   type: 'MixedTypeAnnotation',
 }>;
 
+export type NativeModuleArrayBufferTypeAnnotation = Readonly<{
+  type: 'ArrayBufferTypeAnnotation',
+}>;
+
 type NativeModuleEventEmitterBaseTypeAnnotation =
   | BooleanTypeAnnotation
   | DoubleTypeAnnotation
@@ -428,7 +432,8 @@ export type NativeModuleBaseTypeAnnotation =
   | NativeModuleArrayTypeAnnotation<Nullable<NativeModuleBaseTypeAnnotation>>
   | NativeModuleObjectTypeAnnotation
   | NativeModuleUnionTypeAnnotation
-  | NativeModuleMixedTypeAnnotation;
+  | NativeModuleMixedTypeAnnotation
+  | NativeModuleArrayBufferTypeAnnotation;
 
 export type NativeModuleParamTypeAnnotation =
   | NativeModuleBaseTypeAnnotation

@@ -995,6 +995,29 @@ export default TurboModuleRegistry.getEnforcing<Spec>('SampleTurboModule');
 
 `;
 
+const NATIVE_MODULE_WITH_ARRAYBUFFER = `
+/**
+ * Copyright (c) Meta Platforms, Inc. and affiliates.
+ *
+ * This source code is licensed under the MIT license found in the
+ * LICENSE file in the root directory of this source tree.
+ *
+ * @format
+ */
+
+import type {TurboModule} from 'react-native/Libraries/TurboModule/RCTExport';
+import * as TurboModuleRegistry from 'react-native/Libraries/TurboModule/TurboModuleRegistry';
+
+export interface Spec extends TurboModule {
+  readonly getArrayBuffer: (buffer: ArrayBuffer) => ArrayBuffer;
+  readonly saveData: (data: ArrayBuffer) => void;
+  readonly loadData: () => ArrayBuffer | null | undefined;
+}
+
+export default TurboModuleRegistry.getEnforcing<Spec>('SampleTurboModule');
+
+`;
+
 module.exports = {
   NATIVE_MODULE_WITH_OBJECT_WITH_OBJECT_DEFINED_IN_FILE_AS_PROPERTY,
   NATIVE_MODULE_WITH_ARRAY_WITH_UNION_AND_TOUPLE,
@@ -1032,4 +1055,5 @@ module.exports = {
   NAMESPACED_NATIVE_MODULE_WITH_FLOAT_AND_INT32,
   NAMESPACED_NATIVE_MODULE_WITH_UNSAFE_OBJECT,
   NAMESPACED_NATIVE_MODULE_WITH_EVENT_EMITTERS,
+  NATIVE_MODULE_WITH_ARRAYBUFFER,
 };

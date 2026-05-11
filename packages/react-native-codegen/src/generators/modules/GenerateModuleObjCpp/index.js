@@ -13,12 +13,34 @@ import type {NativeModulePropertyShape} from '../../../CodegenSchema';
 import type {SchemaType} from '../../../CodegenSchema';
 import type {MethodSerializationOutput} from './serializeMethod';
 
-const {createAliasResolver, getModules} = require('../Utils');
+const {
+  createAliasResolver,
+  getModules,
+  hasArrayBufferType,
+} = require('../Utils');
 const {serializeStruct} = require('./header/serializeStruct');
 const {EventEmitterHeaderTemplate} = require('./serializeEventEmitter');
 const {serializeMethod} = require('./serializeMethod');
 const {serializeModuleSource} = require('./source/serializeModule');
 const {StructCollector} = require('./StructCollector');
+
+const ArrayBufferContractComment = ` *
+ * ArrayBuffer ownership and lifetime contract (iOS):
+ *
+ * For \`NSData *\` / \`NSMutableData *\` *parameters*:
+ *   - Synchronous methods receive an NSMutableData that wraps the JS-owned
+ *     bytes (zero-copy, freeWhenDone:NO). The bytes are valid only for the
+ *     duration of the call. Implementations MUST consume or copy the bytes
+ *     before returning.
+ *   - Asynchronous methods (void return or Promise) receive an NSMutableData
+ *     whose bytes were copied into ObjC-owned storage before dispatch.
+ *     Implementations may safely retain the NSMutableData or read it from
+ *     any thread or queue.
+ *
+ * For \`NSMutableData *\` *return values*:
+ *   - The NSMutableData is held alive by an ARC strong reference for the
+ *     lifetime of the JS ArrayBuffer. The reference is released on JS GC,
+ *     which may run on any thread; ARC release is thread-safe.`;
 
 type FilesOutput = Map<string, string>;
 
@@ -63,11 +85,13 @@ const HeaderFileTemplate = ({
   moduleDeclarations,
   structInlineMethods,
   assumeNonnull,
+  hasArrayBuffer,
 }: Readonly<{
   headerFileName: string,
   moduleDeclarations: string,
   structInlineMethods: string,
   assumeNonnull: boolean,
+  hasArrayBuffer: boolean,
 }>) => {
   const headerFileNameWithNoExt = headerFileName.replace(/\.h$/, '');
 
@@ -83,7 +107,7 @@ const HeaderFileTemplate = ({
  * We create an umbrella header (and corresponding implementation) here since
  * Cxx compilation in BUCK has a limitation: source-code producing genrule()s
  * must have a single output. More files => more genrule()s => slower builds.
- */
+${hasArrayBuffer ? ArrayBufferContractComment + '\n' : ''} */
 
 #ifndef __cplusplus
 #error This file must be compiled as Obj-C++. If you are importing it, you must change your file extension to .mm.
@@ -230,6 +254,7 @@ module.exports = {
       moduleDeclarations: moduleDeclarations.join('\n'),
       structInlineMethods: structInlineMethods.join('\n'),
       assumeNonnull,
+      hasArrayBuffer: hasArrayBufferType(nativeModules),
     });
 
     const sourceFileName = `${libraryName}-generated.mm`;
