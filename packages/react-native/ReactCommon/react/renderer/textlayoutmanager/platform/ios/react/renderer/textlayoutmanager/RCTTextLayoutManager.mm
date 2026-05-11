@@ -95,6 +95,102 @@ static NSLineBreakMode RCTNSLineBreakModeFromEllipsizeMode(EllipsizeMode ellipsi
   CGContextRestoreGState(context);
 #endif
 
+  // Wavy decoration pass: enumerate `RCTWavyDecorationAttributeName` ranges
+  // and paint each one ourselves using WebKit's cubic-Bezier wave (UIKit's
+  // `NSUnderlineStyle` has no native wavy value).
+  {
+    CGContextRef ctx = UIGraphicsGetCurrentContext();
+    if (ctx != nullptr) {
+      NSRange charRange = [layoutManager characterRangeForGlyphRange:glyphRange actualGlyphRange:nullptr];
+      [textStorage
+          enumerateAttribute:RCTWavyDecorationAttributeName
+                     inRange:charRange
+                     options:0
+                  usingBlock:^(NSDictionary *_Nullable attrs, NSRange attrRange, __unused BOOL *stop) {
+                    if (attrs == nil) {
+                      return;
+                    }
+                    NSArray<NSString *> *lines = attrs[@"lines"];
+                    UIColor *strokeColor = attrs[@"color"];
+                    UIFont *font = [textStorage attribute:NSFontAttributeName
+                                                  atIndex:attrRange.location
+                                           effectiveRange:nullptr];
+                    if (font == nil || strokeColor == nil) {
+                      return;
+                    }
+
+                    CGFloat fontSize = font.pointSize;
+                    // WebKit constants from Source/WebCore/style/InlineTextBoxStyle.cpp:
+                    //   controlPointDistance = fontSize * 1.5 / 16
+                    //   step                 = fontSize / 4.5  (half-wavelength)
+                    CGFloat cpDistance = fontSize * 1.5f / 16.0f;
+                    CGFloat step = fontSize / 4.5f;
+                    CGFloat wavelength = 2.0f * step;
+                    CGFloat thickness = MAX(fontSize / 16.0f, 1.0f);
+
+                    NSRange wavyGlyphRange = [layoutManager glyphRangeForCharacterRange:attrRange
+                                                                    actualCharacterRange:nullptr];
+
+                    CGContextSaveGState(ctx);
+                    CGContextSetStrokeColorWithColor(ctx, strokeColor.CGColor);
+                    CGContextSetLineWidth(ctx, thickness);
+                    CGContextSetLineCap(ctx, kCGLineCapRound);
+                    CGContextSetShouldAntialias(ctx, YES);
+
+                    [layoutManager
+                        enumerateLineFragmentsForGlyphRange:wavyGlyphRange
+                                                 usingBlock:^(
+                                                     CGRect lineRect,
+                                                     __unused CGRect usedRect,
+                                                     NSTextContainer *_Nonnull container,
+                                                     NSRange lineGlyphRange,
+                                                     __unused BOOL *_Nonnull innerStop) {
+                                                   NSRange intersection =
+                                                       NSIntersectionRange(wavyGlyphRange, lineGlyphRange);
+                                                   if (intersection.length == 0) {
+                                                     return;
+                                                   }
+                                                   CGRect firstGlyphRect =
+                                                       [layoutManager boundingRectForGlyphRange:NSMakeRange(
+                                                                                                    intersection.location,
+                                                                                                    1)
+                                                                                inTextContainer:container];
+                                                   CGRect lastGlyphRect =
+                                                       [layoutManager boundingRectForGlyphRange:NSMakeRange(
+                                                                                                    NSMaxRange(intersection) -
+                                                                                                        1,
+                                                                                                    1)
+                                                                                inTextContainer:container];
+                                                   CGFloat x1 = firstGlyphRect.origin.x + frame.origin.x;
+                                                   CGFloat x2 = CGRectGetMaxX(lastGlyphRect) + frame.origin.x;
+                                                   CGFloat baseline = lineRect.origin.y + font.ascender + frame.origin.y;
+
+                                                   for (NSString *line in lines) {
+                                                     CGFloat y;
+                                                     if ([line isEqualToString:@"underline"]) {
+                                                       y = baseline + thickness + 1.0f;
+                                                     } else {
+                                                       // line-through: position near the x-height midline
+                                                       y = baseline + (font.descender - font.ascender) / 2.0f + 1.0f;
+                                                     }
+                                                     CGContextBeginPath(ctx);
+                                                     CGContextMoveToPoint(ctx, x1, y);
+                                                     for (CGFloat x = x1; x + wavelength <= x2; x += wavelength) {
+                                                       CGFloat midX = x + step;
+                                                       // Two control points at the midpoint, one above and one
+                                                       // below the y-axis, matching WebKit's wave shape.
+                                                       CGContextAddCurveToPoint(
+                                                           ctx, midX, y + cpDistance, midX, y - cpDistance, x + wavelength, y);
+                                                     }
+                                                     CGContextStrokePath(ctx);
+                                                   }
+                                                 }];
+
+                    CGContextRestoreGState(ctx);
+                  }];
+    }
+  }
+
   if (block != nil) {
     __block UIBezierPath *highlightPath = nil;
     NSRange characterRange = [layoutManager characterRangeForGlyphRange:glyphRange actualGlyphRange:NULL];

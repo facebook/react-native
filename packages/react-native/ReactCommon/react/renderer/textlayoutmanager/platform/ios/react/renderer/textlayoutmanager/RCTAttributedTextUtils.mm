@@ -240,29 +240,45 @@ NSMutableDictionary<NSAttributedStringKey, id> *RCTNSTextAttributesFromTextAttri
   // Decoration
   if (textAttributes.textDecorationLineType.value_or(TextDecorationLineType::None) != TextDecorationLineType::None) {
     auto textDecorationLineType = textAttributes.textDecorationLineType.value();
-
-    NSUnderlineStyle style = RCTNSUnderlineStyleFromTextDecorationStyle(
-        textAttributes.textDecorationStyle.value_or(TextDecorationStyle::Solid));
-
+    auto textDecorationStyleValue = textAttributes.textDecorationStyle.value_or(TextDecorationStyle::Solid);
     UIColor *textDecorationColor = RCTUIColorFromSharedColor(textAttributes.textDecorationColor);
 
-    // Underline
-    if (textDecorationLineType == TextDecorationLineType::Underline ||
-        textDecorationLineType == TextDecorationLineType::UnderlineStrikethrough) {
-      attributes[NSUnderlineStyleAttributeName] = @(style);
-
-      if (textDecorationColor) {
-        attributes[NSUnderlineColorAttributeName] = textDecorationColor;
+    if (textDecorationStyleValue == TextDecorationStyle::Wavy) {
+      // UIKit's `NSUnderlineStyle` has no native wavy. Suppress the
+      // framework-drawn line and tag the range so `RCTTextLayoutManager`
+      // can paint a WebKit-style wavy stroke in its drawing pass.
+      UIColor *strokeColor = textDecorationColor ?: RCTUIColorFromSharedColor(textAttributes.foregroundColor);
+      NSMutableArray<NSString *> *lines = [NSMutableArray array];
+      if (textDecorationLineType == TextDecorationLineType::Underline ||
+          textDecorationLineType == TextDecorationLineType::UnderlineStrikethrough) {
+        [lines addObject:@"underline"];
       }
-    }
+      if (textDecorationLineType == TextDecorationLineType::Strikethrough ||
+          textDecorationLineType == TextDecorationLineType::UnderlineStrikethrough) {
+        [lines addObject:@"line-through"];
+      }
+      attributes[RCTWavyDecorationAttributeName] = @{@"lines" : lines, @"color" : strokeColor ?: [UIColor labelColor]};
+    } else {
+      NSUnderlineStyle style = RCTNSUnderlineStyleFromTextDecorationStyle(textDecorationStyleValue);
 
-    // Strikethrough
-    if (textDecorationLineType == TextDecorationLineType::Strikethrough ||
-        textDecorationLineType == TextDecorationLineType::UnderlineStrikethrough) {
-      attributes[NSStrikethroughStyleAttributeName] = @(style);
+      // Underline
+      if (textDecorationLineType == TextDecorationLineType::Underline ||
+          textDecorationLineType == TextDecorationLineType::UnderlineStrikethrough) {
+        attributes[NSUnderlineStyleAttributeName] = @(style);
 
-      if (textDecorationColor) {
-        attributes[NSStrikethroughColorAttributeName] = textDecorationColor;
+        if (textDecorationColor) {
+          attributes[NSUnderlineColorAttributeName] = textDecorationColor;
+        }
+      }
+
+      // Strikethrough
+      if (textDecorationLineType == TextDecorationLineType::Strikethrough ||
+          textDecorationLineType == TextDecorationLineType::UnderlineStrikethrough) {
+        attributes[NSStrikethroughStyleAttributeName] = @(style);
+
+        if (textDecorationColor) {
+          attributes[NSStrikethroughColorAttributeName] = textDecorationColor;
+        }
       }
     }
   }

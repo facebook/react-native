@@ -11,22 +11,28 @@ import android.graphics.Canvas
 import android.graphics.Color
 import android.os.Build
 import android.text.Layout
+import com.facebook.react.views.text.TextDecorationStyle
+import com.facebook.react.views.text.drawDecorationLine
 import kotlin.math.max
 
 /**
- * Draws a strikethrough whose color may differ from the text color. Subclasses
- * [DrawCommandSpan] so [PreparedLayoutTextView] and [ReactTextView] invoke
- * [onDraw] after the layout renders its text. We do NOT extend
- * [android.text.style.StrikethroughSpan] here: the framework's `Layout.draw`
- * paints the strikethrough using `paint.color` with no field to override,
- * so the only way to get a distinct color is to draw it ourselves.
+ * Draws a strikethrough whose color may differ from the text color and
+ * whose stroke style may be `solid`, `double`, `dotted`, or `dashed`.
+ * Subclasses [DrawCommandSpan] so [PreparedLayoutTextView] and
+ * [ReactTextView] invoke [onDraw] after the layout renders its text. We
+ * do NOT extend [android.text.style.StrikethroughSpan] here: the
+ * framework's `Layout.draw` paints the strikethrough using `paint.color`
+ * with no field to override, so the only way to get a distinct color (or
+ * style) is to draw it ourselves.
  *
  * When [color] is [Color.TRANSPARENT] (the default when no
- * `textDecorationColor` prop was passed), the strikethrough is drawn in the
- * text's foreground color, matching the platform's prior behavior.
+ * `textDecorationColor` prop was passed), the strikethrough is drawn in
+ * the text's foreground color, matching the platform's prior behavior.
  */
-internal class ReactStrikethroughSpan(private val color: Int = Color.TRANSPARENT) :
-    DrawCommandSpan() {
+internal class ReactStrikethroughSpan(
+    private val color: Int = Color.TRANSPARENT,
+    private val style: TextDecorationStyle = TextDecorationStyle.SOLID,
+) : DrawCommandSpan() {
 
   override fun onDraw(start: Int, end: Int, canvas: Canvas, layout: Layout) {
     val paint = layout.paint
@@ -35,11 +41,15 @@ internal class ReactStrikethroughSpan(private val color: Int = Color.TRANSPARENT
     val savedStyle = paint.style
     val savedAntiAlias = paint.isAntiAlias
     val effectiveColor = if (color != Color.TRANSPARENT) color else savedColor
+    // Density-aware minimum so the strikethrough reads consistently
+    // across display densities. `paint.density` is the px-per-dp ratio
+    // at the current paint setup, so `1.5f * paint.density` gives ~1.5 dp.
+    val minThickness = 1.5f * paint.density
     val thickness =
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
-          max(paint.underlineThickness, 1.5f)
+          max(paint.underlineThickness, minThickness)
         } else {
-          max(paint.fontMetrics.descent * 0.1f, 1.5f)
+          max(paint.fontMetrics.descent * 0.1f, minThickness)
         }
 
     paint.color = effectiveColor
@@ -47,12 +57,14 @@ internal class ReactStrikethroughSpan(private val color: Int = Color.TRANSPARENT
     paint.style = android.graphics.Paint.Style.STROKE
     paint.isAntiAlias = true
 
-    // Position the strikethrough at the midpoint between the line's top
-    // and baseline so it sits near the x-height midline like the platform
-    // default. `fontMetrics.ascent` is negative and `descent` is positive,
-    // so the sum / 2 gives a small negative offset from the baseline.
+    // Position the strikethrough slightly below the midpoint between
+    // the line's top and baseline so it sits near the x-height midline
+    // like the platform default. `fontMetrics.ascent` is negative and
+    // `descent` is positive, so the sum / 2 gives a small negative
+    // offset from the baseline; the trailing `+ 1f` nudges it down to
+    // match the visual position users expect.
     val fm = paint.fontMetrics
-    val offset = (fm.ascent + fm.descent) / 2f
+    val offset = (fm.ascent + fm.descent) / 2f + 1f
 
     val startLine = layout.getLineForOffset(start)
     val endLine = layout.getLineForOffset(end)
@@ -63,7 +75,7 @@ internal class ReactStrikethroughSpan(private val color: Int = Color.TRANSPARENT
       val x2 =
           if (line == endLine) layout.getPrimaryHorizontal(end) else layout.getLineRight(line)
       val y = baseline + offset
-      canvas.drawLine(x1, y, x2, y, paint)
+      drawDecorationLine(canvas, paint, x1, x2, y, thickness, style)
     }
 
     paint.color = savedColor
