@@ -7,7 +7,62 @@
 
 package com.facebook.react.views.text.internal.span
 
-import android.text.style.UnderlineSpan
+import android.graphics.Canvas
+import android.graphics.Color
+import android.os.Build
+import android.text.Layout
+import kotlin.math.max
 
-/** Wraps [UnderlineSpan] as a [ReactSpan]. */
-internal class ReactUnderlineSpan : UnderlineSpan(), ReactSpan
+/**
+ * Draws an underline whose color may differ from the text color. Subclasses
+ * [DrawCommandSpan] so [PreparedLayoutTextView] invokes [onDraw] after the
+ * layout renders its text, ensuring the underline paints on top of any
+ * descenders. We do NOT extend [android.text.style.UnderlineSpan] here:
+ * the framework's `Layout.draw` reads `paint.color` for underline color
+ * regardless of `paint.underlineColor`, so the only way to get a distinct
+ * underline color is to draw it ourselves.
+ *
+ * When [color] is [Color.TRANSPARENT] (the default when no
+ * `textDecorationColor` prop was passed), the underline is drawn in the
+ * text's foreground color, matching the platform's prior behavior.
+ */
+internal class ReactUnderlineSpan(private val color: Int = Color.TRANSPARENT) :
+    DrawCommandSpan() {
+
+  override fun onDraw(start: Int, end: Int, canvas: Canvas, layout: Layout) {
+    val paint = layout.paint
+    val savedColor = paint.color
+    val savedStrokeWidth = paint.strokeWidth
+    val savedStyle = paint.style
+    val savedAntiAlias = paint.isAntiAlias
+    val effectiveColor = if (color != Color.TRANSPARENT) color else savedColor
+    val thickness =
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
+          max(paint.underlineThickness, 1.5f)
+        } else {
+          max(paint.fontMetrics.descent * 0.1f, 1.5f)
+        }
+
+    paint.color = effectiveColor
+    paint.strokeWidth = thickness
+    paint.style = android.graphics.Paint.Style.STROKE
+    paint.isAntiAlias = true
+
+    val startLine = layout.getLineForOffset(start)
+    val endLine = layout.getLineForOffset(end)
+    for (line in startLine..endLine) {
+      val baseline = layout.getLineBaseline(line).toFloat()
+      val x1 =
+          if (line == startLine) layout.getPrimaryHorizontal(start) else layout.getLineLeft(line)
+      val x2 =
+          if (line == endLine) layout.getPrimaryHorizontal(end) else layout.getLineRight(line)
+      val y = baseline + thickness + 1f
+      canvas.drawLine(x1, y, x2, y, paint)
+    }
+
+    paint.color = savedColor
+    paint.strokeWidth = savedStrokeWidth
+    paint.style = savedStyle
+    paint.isAntiAlias = savedAntiAlias
+  }
+}

@@ -315,7 +315,7 @@ internal object TextLayoutManager {
           )
         }
         if (textAttributes.isUnderlineTextDecorationSet) {
-          ops.add(SetSpanOperation(start, end, ReactUnderlineSpan()))
+          ops.add(SetSpanOperation(start, end, ReactUnderlineSpan(textAttributes.textDecorationColor)))
         }
         if (textAttributes.isLineThroughTextDecorationSet) {
           ops.add(SetSpanOperation(start, end, ReactStrikethroughSpan()))
@@ -494,7 +494,7 @@ internal object TextLayoutManager {
         }
 
         if (fragment.props.isUnderlineTextDecorationSet) {
-          spannable.setSpan(ReactUnderlineSpan(), start, end, spanFlags)
+          spannable.setSpan(ReactUnderlineSpan(fragment.props.textDecorationColor), start, end, spanFlags)
         }
 
         if (fragment.props.isLineThroughTextDecorationSet) {
