@@ -456,6 +456,7 @@ const char facebook::react::RuntimeSchedulerKey[];
 const char facebook::react::SafeAreaViewComponentName[];
 const char facebook::react::ScrollViewComponentName[];
 const char facebook::react::TextComponentName[];
+const char facebook::react::TextEffectComponentName[];
 const char facebook::react::UnimplementedViewComponentName[];
 const char facebook::react::ViewComponentName[];
 const facebook::react::EventTag facebook::react::EMPTY_EVENT_TAG;
@@ -521,11 +522,14 @@ static constexpr facebook::react::MapBuffer::Key facebook::react::TA_KEY_ROLE;
 static constexpr facebook::react::MapBuffer::Key facebook::react::TA_KEY_TEXT_DECORATION_COLOR;
 static constexpr facebook::react::MapBuffer::Key facebook::react::TA_KEY_TEXT_DECORATION_LINE;
 static constexpr facebook::react::MapBuffer::Key facebook::react::TA_KEY_TEXT_DECORATION_STYLE;
+static constexpr facebook::react::MapBuffer::Key facebook::react::TA_KEY_TEXT_EFFECTS;
 static constexpr facebook::react::MapBuffer::Key facebook::react::TA_KEY_TEXT_SHADOW_COLOR;
 static constexpr facebook::react::MapBuffer::Key facebook::react::TA_KEY_TEXT_SHADOW_OFFSET_DX;
 static constexpr facebook::react::MapBuffer::Key facebook::react::TA_KEY_TEXT_SHADOW_OFFSET_DY;
 static constexpr facebook::react::MapBuffer::Key facebook::react::TA_KEY_TEXT_SHADOW_RADIUS;
 static constexpr facebook::react::MapBuffer::Key facebook::react::TA_KEY_TEXT_TRANSFORM;
+static constexpr facebook::react::MapBuffer::Key facebook::react::TE_KEY_NAME;
+static constexpr facebook::react::MapBuffer::Key facebook::react::TE_KEY_PROPS;
 static constexpr facebook::react::MapBuffer::Key facebook::react::TX_STATE_KEY_ATTRIBUTED_STRING;
 static constexpr facebook::react::MapBuffer::Key facebook::react::TX_STATE_KEY_HASH;
 static constexpr facebook::react::MapBuffer::Key facebook::react::TX_STATE_KEY_MOST_RECENT_EVENT_COUNT;
@@ -691,6 +695,8 @@ using facebook::react::TelemetryClock = std::chrono::steady_clock;
 using facebook::react::TelemetryDuration = std::chrono::nanoseconds;
 using facebook::react::TelemetryTimePoint = facebook::react::TelemetryClock::time_point;
 using facebook::react::TextComponentDescriptor = facebook::react::ConcreteComponentDescriptor<facebook::react::TextShadowNode>;
+using facebook::react::TextEffectComponentDescriptor = facebook::react::ConcreteComponentDescriptor<facebook::react::TextEffectShadowNode>;
+using facebook::react::TextEffectEventEmitter = facebook::react::TouchEventEmitter;
 using facebook::react::TextEventEmitter = facebook::react::TouchEventEmitter;
 using facebook::react::TextLayoutManagerExtended = facebook::react::detail::TextLayoutManagerExtended<facebook::react::TextLayoutManager>;
 using facebook::react::TextMeasureCache = facebook::react::SimpleThreadSafeCache<facebook::react::TextMeasureCacheKey, facebook::react::TextMeasurement, facebook::react::kSimpleThreadSafeCacheSizeCap>;
@@ -3818,6 +3824,10 @@ class facebook::react::NativeRedBoxSpecJSI : public facebook::react::JavaTurboMo
   public NativeRedBoxSpecJSI(const facebook::react::JavaTurboModule::InitParams& params);
 }
 
+class facebook::react::NativeSampleTurboModuleSpecJSI : public facebook::react::JavaTurboModule {
+  public NativeSampleTurboModuleSpecJSI(const facebook::react::JavaTurboModule::InitParams& params);
+}
+
 class facebook::react::NativeSegmentFetcherSpecJSI : public facebook::react::JavaTurboModule {
   public NativeSegmentFetcherSpecJSI(const facebook::react::JavaTurboModule::InitParams& params);
 }
@@ -4950,7 +4960,20 @@ class facebook::react::TextAttributes : public facebook::react::DebugStringConve
   public std::optional<facebook::react::TextTransform> textTransform;
   public std::optional<facebook::react::WritingDirection> baseWritingDirection;
   public std::string fontFamily;
+  public std::vector<facebook::react::TextEffectInfo> textEffects;
   public void apply(facebook::react::TextAttributes textAttributes);
+}
+
+class facebook::react::TextEffectProps : public facebook::react::Props {
+  public TextEffectProps() = default;
+  public TextEffectProps(const facebook::react::PropsParserContext& context, const facebook::react::TextEffectProps& sourceProps, const facebook::react::RawProps& rawProps);
+  public folly::dynamic effectProps;
+  public std::string effectName;
+  public virtual facebook::react::ComponentName getDiffPropsImplementationTarget() const override;
+  public virtual folly::dynamic getDiffProps(const facebook::react::Props* prevProps) const override;
+}
+
+class facebook::react::TextEffectShadowNode : public facebook::react::ConcreteShadowNode<facebook::react::TextEffectComponentName, facebook::react::ShadowNode, facebook::react::TextEffectProps, facebook::react::TextEffectEventEmitter> {
 }
 
 class facebook::react::TextInputEventEmitter : public facebook::react::BaseViewEventEmitter {
@@ -6246,6 +6269,11 @@ enum facebook::react::ModalHostViewSupportedOrientations : facebook::react::Moda
   LandscapeRight,
   Portrait,
   PortraitUpsideDown,
+}
+
+enum facebook::react::NativeSampleTurboModuleEnumInt {
+  A,
+  B,
 }
 
 enum facebook::react::NullValueStrategy {
@@ -7900,6 +7928,12 @@ struct facebook::react::Task : public facebook::jsi::NativeState {
   public Task(facebook::react::SchedulerPriority priority, facebook::react::RawCallback&& callback, facebook::react::HighResTimeStamp expirationTime);
 }
 
+struct facebook::react::TextEffectInfo {
+  public bool operator==(const facebook::react::TextEffectInfo&) const = default;
+  public folly::dynamic props;
+  public std::string name;
+}
+
 struct facebook::react::TextLayoutContext {
   public bool operator==(const facebook::react::TextLayoutContext& rhs) const = default;
   public facebook::react::Float pointScaleFactor;
@@ -8476,6 +8510,14 @@ struct facebook::react::NativeMutationObserverNativeMutationObserverObserveOptio
   public bool operator==(const facebook::react::NativeMutationObserverNativeMutationObserverObserveOptions& other) const;
 }
 
+template <typename P0, typename P1, typename P2>
+struct facebook::react::NativeSampleTurboModuleObjectStruct {
+  public P0 a;
+  public P1 b;
+  public P2 c;
+  public bool operator==(const facebook::react::NativeSampleTurboModuleObjectStruct& other) const;
+}
+
 template <typename P0, typename P1>
 struct facebook::react::NativeAnimatedModuleEventMapping {
   public P0 nativeEventPath;
@@ -8900,6 +8942,19 @@ template <typename T>
 class facebook::react::NativeRedBoxCxxSpec : public facebook::react::TurboModule {
   protected NativeRedBoxCxxSpec(std::shared_ptr<facebook::react::CallInvoker> jsInvoker);
   public static constexpr std::string_view kModuleName;
+}
+
+template <typename T>
+class facebook::react::NativeSampleTurboModuleCxxSpec : public facebook::react::TurboModule {
+  protected NativeSampleTurboModuleCxxSpec(std::shared_ptr<facebook::react::CallInvoker> jsInvoker);
+  protected void emitOnPress();
+  public static constexpr std::string_view kModuleName;
+  template <typename OnChangeType>
+  protected void emitOnChange(OnChangeType value);
+  template <typename OnClickType>
+  protected void emitOnClick(OnClickType value);
+  template <typename OnSubmitType>
+  protected void emitOnSubmit(std::vector<OnSubmitType> value);
 }
 
 template <typename T>
@@ -9361,6 +9416,16 @@ struct facebook::react::NativeReactDevToolsRuntimeSettingsModuleReloadAndProfile
 }
 
 template <typename T>
+struct facebook::react::NativeSampleTurboModuleObjectStructBridging {
+  public static T fromJs(facebook::jsi::Runtime& rt, const facebook::jsi::Object& value, const std::shared_ptr<facebook::react::CallInvoker>& jsInvoker);
+  public static T types;
+  public static double aToJs(facebook::jsi::Runtime& rt, decltype(types.a) value);
+  public static facebook::jsi::Object toJs(facebook::jsi::Runtime& rt, const T& value, const std::shared_ptr<facebook::react::CallInvoker>& jsInvoker);
+  public static facebook::jsi::String bToJs(facebook::jsi::Runtime& rt, decltype(types.b) value);
+  public static std::optional<facebook::jsi::String> cToJs(facebook::jsi::Runtime& rt, decltype(types.c) value);
+}
+
+template <typename T>
 struct facebook::react::NativeSourceCodeSourceCodeConstantsBridging {
   public static T fromJs(facebook::jsi::Runtime& rt, const facebook::jsi::Object& value, const std::shared_ptr<facebook::react::CallInvoker>& jsInvoker);
   public static T types;
@@ -9577,6 +9642,11 @@ struct facebook::react::Bridging<facebook::react::NativeReloadAndProfileConfig> 
 }
 
 struct facebook::react::Bridging<facebook::react::NativeRequestIdleCallbackOptions> : public facebook::react::NativeIdleCallbacksRequestIdleCallbackOptionsBridging<facebook::react::NativeRequestIdleCallbackOptions> {
+}
+
+struct facebook::react::Bridging<facebook::react::NativeSampleTurboModuleEnumInt> {
+  public static facebook::jsi::Value toJs(facebook::jsi::Runtime& rt, facebook::react::NativeSampleTurboModuleEnumInt value);
+  public static facebook::react::NativeSampleTurboModuleEnumInt fromJs(facebook::jsi::Runtime& rt, const facebook::jsi::Value& rawValue);
 }
 
 struct facebook::react::Bridging<facebook::react::PerformanceEntryType> {
@@ -13630,6 +13700,10 @@ struct std::hash<facebook::react::Size> {
 
 struct std::hash<facebook::react::TextAttributes> {
   public size_t operator()(const facebook::react::TextAttributes& textAttributes) const;
+}
+
+struct std::hash<facebook::react::TextEffectInfo> {
+  public size_t operator()(const facebook::react::TextEffectInfo& info) const;
 }
 
 struct std::hash<facebook::react::TextMeasureCacheKey> {

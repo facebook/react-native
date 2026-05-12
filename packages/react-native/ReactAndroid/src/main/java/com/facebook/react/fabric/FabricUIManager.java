@@ -93,6 +93,7 @@ import com.facebook.react.uimanager.events.SynchronousEventReceiver;
 import com.facebook.react.views.text.PreparedLayout;
 import com.facebook.react.views.text.ReactTextViewManager;
 import com.facebook.react.views.text.ReactTextViewManagerCallback;
+import com.facebook.react.views.text.TextEffectRegistry;
 import com.facebook.react.views.text.TextLayoutManager;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -178,6 +179,8 @@ public class FabricUIManager
   private final FabricEventDispatcher mEventDispatcher;
   private final MountItemDispatcher mMountItemDispatcher;
   private final ViewManagerRegistry mViewManagerRegistry;
+
+  private final TextEffectRegistry mTextEffectRegistry = new TextEffectRegistry();
 
   private final BatchEventDispatchedListener mBatchEventDispatchedListener;
 
@@ -553,7 +556,8 @@ public class FabricUIManager
             PixelUtil.toPixelFromDIP(height),
             textViewManager instanceof ReactTextViewManagerCallback
                 ? (ReactTextViewManagerCallback) textViewManager
-                : null);
+                : null,
+            mTextEffectRegistry);
   }
 
   public int getColor(int surfaceId, String[] resourcePaths) {
@@ -641,7 +645,8 @@ public class FabricUIManager
         textViewManager instanceof ReactTextViewManagerCallback
             ? (ReactTextViewManagerCallback) textViewManager
             : null,
-        attachmentsPositions);
+        attachmentsPositions,
+        mTextEffectRegistry);
   }
 
   @AnyThread
@@ -666,7 +671,8 @@ public class FabricUIManager
         getYogaMeasureMode(minHeight, maxHeight),
         textViewManager instanceof ReactTextViewManagerCallback
             ? (ReactTextViewManagerCallback) textViewManager
-            : null);
+            : null,
+        mTextEffectRegistry);
   }
 
   @AnyThread
@@ -698,6 +704,11 @@ public class FabricUIManager
         getYogaMeasureMode(minWidth, maxWidth),
         getYogaSize(minHeight, maxHeight),
         getYogaMeasureMode(minHeight, maxHeight));
+  }
+
+  @UnstableReactNativeAPI
+  public TextEffectRegistry getTextEffectRegistry() {
+    return mTextEffectRegistry;
   }
 
   /**

@@ -39,10 +39,8 @@ const argv = yargs
 const DRY_RUN = argv['dry-run'];
 
 const HERMES_REPO_PATH = path.join(os.homedir(), 'git', 'hermes');
-const HERMES_LEGACY_BRANCH = 'main';
-const HERMES_LEGACY_LABEL = 'Hermes Legacy';
-const HERMES_V1_BRANCH = '250829098.0.0-stable';
-const HERMES_V1_LABEL = 'Hermes V1';
+const HERMES_BRANCH = '250829098.0.0-stable';
+const HERMES_LABEL = 'Hermes';
 const RN_REPO_ROOT = path.resolve(__dirname, '..', '..', '..', '..');
 
 async function releaseHermesForBranchCut() /*: Promise<void> */ {
@@ -98,20 +96,16 @@ async function releaseHermesForBranchCut() /*: Promise<void> */ {
     exit(1);
   }
 
-  // Step 3: Get versions from Hermes
-  console.log('\n📥 Fetching Hermes versions...');
+  // Step 3: Get version from Hermes
+  console.log('\n📥 Fetching Hermes version...');
 
-  const legacyHermesVersion = fetchHermesVersion(
-    HERMES_LEGACY_BRANCH,
-    HERMES_LEGACY_LABEL,
-  );
-  const v1HermesVersion = fetchHermesVersion(HERMES_V1_BRANCH, HERMES_V1_LABEL);
+  const hermesVersion = fetchHermesVersion(HERMES_BRANCH, HERMES_LABEL);
 
   console.log('');
   const {confirmVersions} = await inquirer.prompt({
     type: 'confirm',
     name: 'confirmVersions',
-    message: `Double-check the Hermes versions above. Do you want to proceed?`,
+    message: `Double-check the Hermes version above. Do you want to proceed?`,
   });
 
   if (!confirmVersions) {
@@ -119,103 +113,64 @@ async function releaseHermesForBranchCut() /*: Promise<void> */ {
     exit(0);
   }
 
-  // Step 4: Create release branch in Hermes
-  const releaseBranch = `release-v${legacyHermesVersion}`;
-  console.log('\n🌿 Creating release branch for legacy Hermes...');
-  execInRepo(`git checkout ${HERMES_LEGACY_BRANCH}`, HERMES_REPO_PATH, {
-    silent: true,
-  });
+  // Step 4: Trigger GitHub workflow
+  console.log('\n🔄 Triggering GitHub workflow...');
 
-  if (DRY_RUN) {
-    console.log(`  [DRY RUN] Would create and push branch: ${releaseBranch}`);
-  } else {
-    execInRepo(`git checkout -b ${releaseBranch}`, HERMES_REPO_PATH);
-    execInRepo(`git push -u origin ${releaseBranch}`, HERMES_REPO_PATH);
-    console.log(`✅ Created and pushed branch: ${releaseBranch}`);
-  }
-
-  // Step 5: Trigger GitHub workflows
-  console.log('\n🔄 Triggering GitHub workflows...');
-
-  const legacyWorkflowUrl = `https://github.com/facebook/hermes/actions/workflows/rn-build-hermes.yml?query=branch%3A${releaseBranch}`;
-  const v1WorkflowUrl = `https://github.com/facebook/hermes/actions/workflows/rn-build-hermes.yml?query=branch%3A${HERMES_V1_BRANCH}`;
+  const workflowUrl = `https://github.com/facebook/hermes/actions/workflows/rn-build-hermes.yml?query=branch%3A${HERMES_BRANCH}`;
 
   if (DRY_RUN) {
     console.log(
-      `  [DRY RUN] Would trigger workflow for ${releaseBranch} with release_type=Release`,
-    );
-    console.log(
-      `  [DRY RUN] Would trigger workflow for ${HERMES_V1_BRANCH} with release_type=Release`,
+      `  [DRY RUN] Would trigger workflow for ${HERMES_BRANCH} with release_type=Release`,
     );
   } else {
-    console.log(`  Triggering workflow for ${releaseBranch}...`);
+    console.log(`  Triggering workflow for ${HERMES_BRANCH}...`);
     execSync(
-      `gh workflow run rn-build-hermes.yml -R facebook/hermes -f branch=${releaseBranch} -f release_type=Release`,
+      `gh workflow run rn-build-hermes.yml -R facebook/hermes -f branch=${HERMES_BRANCH} -f release_type=Release`,
       {stdio: 'inherit'},
     );
-    console.log(`    → ${legacyWorkflowUrl}`);
+    console.log(`    → ${workflowUrl}`);
 
-    console.log(`  Triggering workflow for ${HERMES_V1_BRANCH}...`);
-    execSync(
-      `gh workflow run rn-build-hermes.yml -R facebook/hermes -f branch=${HERMES_V1_BRANCH} -f release_type=Release`,
-      {stdio: 'inherit'},
-    );
-    console.log(`    → ${v1WorkflowUrl}`);
-
-    console.log('✅ Workflows triggered successfully.');
+    console.log('✅ Workflow triggered successfully.');
   }
 
-  // Step 6: Update RN repo and create commit
+  // Step 5: Update RN repo and create commit
   console.log('\n⬆️ Bump Hermes version in RN release branch...');
 
   if (DRY_RUN) {
-    console.log(`  [DRY RUN] Would set Hermes tags:`);
-    console.log(`    - .hermesversion: ${releaseBranch}`);
-    console.log(`    - .hermesv1version: ${HERMES_V1_BRANCH}`);
+    console.log(`  [DRY RUN] Would set Hermes tag:`);
+    console.log(`    - .hermesv1version: ${HERMES_BRANCH}`);
     console.log(
-      `  [DRY RUN] Would update hermes-compiler dependency to ${v1HermesVersion}`,
+      `  [DRY RUN] Would update hermes-compiler dependency to ${hermesVersion}`,
     );
     console.log(`  [DRY RUN] Would update version.properties:`);
-    console.log(`    - HERMES_VERSION_NAME: ${legacyHermesVersion}`);
-    console.log(`    - HERMES_V1_VERSION_NAME: ${v1HermesVersion}`);
+    console.log(`    - HERMES_VERSION_NAME: ${hermesVersion}`);
     console.log('  [DRY RUN] Would create commit: "Bump hermes version"');
   } else {
-    await setHermesTag(releaseBranch, HERMES_V1_BRANCH);
-    await updateHermesCompilerVersionInDependencies(v1HermesVersion);
-    await updateHermesRuntimeDependenciesVersions(
-      legacyHermesVersion,
-      v1HermesVersion,
-    );
+    await setHermesTag(HERMES_BRANCH);
+    await updateHermesCompilerVersionInDependencies(hermesVersion);
+    await updateHermesRuntimeDependenciesVersions(hermesVersion);
     execInRepo('git add .', RN_REPO_ROOT);
     execInRepo('git commit -m "Bump hermes version"', RN_REPO_ROOT);
     console.log('✅ Commit created (not pushed yet).');
   }
 
-  // Step 7: Bump Hermes versions for next release (PRs)
-  const newLegacyVersion = createHermesBumpPR({
-    currentVersion: legacyHermesVersion,
-    baseBranch: HERMES_LEGACY_BRANCH,
-    bumpVersion: bumpMinorVersion,
-    label: HERMES_LEGACY_LABEL,
-    rnBranch,
-  });
-
-  const newV1Version = createHermesBumpPR({
-    currentVersion: v1HermesVersion,
-    baseBranch: HERMES_V1_BRANCH,
+  // Step 6: Bump Hermes version for next release (PR)
+  const newVersion = createHermesBumpPR({
+    currentVersion: hermesVersion,
+    baseBranch: HERMES_BRANCH,
     bumpVersion: bumpPatchVersion,
-    label: HERMES_V1_LABEL,
+    label: HERMES_LABEL,
     rnBranch,
   });
 
-  // Step 9: Bump RN main (PR)
-  console.log('\n📝 Creating PR to bump Hermes V1 version on RN main...');
-  const rnBumpBranch = `bump-hermes-v1-${newV1Version}`;
+  // Step 7: Bump RN main (PR)
+  console.log('\n📝 Creating PR to bump Hermes version on RN main...');
+  const rnBumpBranch = `bump-hermes-${newVersion}`;
 
   if (DRY_RUN) {
     console.log(`  [DRY RUN] Would create branch ${rnBumpBranch} on RN main`);
     console.log(
-      `  [DRY RUN] Would update HERMES_V1_VERSION_NAME to ${newV1Version}`,
+      `  [DRY RUN] Would update HERMES_VERSION_NAME to ${newVersion}`,
     );
     console.log(
       `  [DRY RUN] Would create PR: "Bump hermes version for RN release ${rnBranch}" → main`,
@@ -235,26 +190,26 @@ async function releaseHermesForBranchCut() /*: Promise<void> */ {
     );
     updateVersionProperties(
       versionPropertiesPath,
-      'HERMES_V1_VERSION_NAME',
-      newV1Version,
+      'HERMES_VERSION_NAME',
+      newVersion,
     );
     execInRepo(
       'git add packages/react-native/sdks/hermes-engine/version.properties',
       RN_REPO_ROOT,
     );
     execInRepo(
-      `git commit -m "Bump hermes v1 version to ${newV1Version}"`,
+      `git commit -m "Bump hermes version to ${newVersion}"`,
       RN_REPO_ROOT,
     );
     execInRepo(`git push -u origin ${rnBumpBranch}`, RN_REPO_ROOT);
     execSync(
-      `gh pr create --title "Bump hermes version for RN release ${rnBranch}" --body "Bumps HERMES_V1_VERSION_NAME to ${newV1Version} for the next release." --base main`,
+      `gh pr create --title "Bump hermes version for RN release ${rnBranch}" --body "Bumps HERMES_VERSION_NAME to ${newVersion} for the next release." --base main`,
       {stdio: 'inherit', cwd: RN_REPO_ROOT},
     );
-    console.log(`✅ Created PR for RN main Hermes V1 bump (${newV1Version})`);
+    console.log(`✅ Created PR for RN main Hermes bump (${newVersion})`);
   }
 
-  // Step 10: Return to stable branch and show summary
+  // Step 8: Return to stable branch and show summary
   if (!DRY_RUN) {
     execInRepo(`git checkout ${rnBranch}`, RN_REPO_ROOT, {silent: true});
   }
@@ -263,28 +218,24 @@ async function releaseHermesForBranchCut() /*: Promise<void> */ {
     console.log(`
 ✅ Dry run completed! Here's what would happen:
 
-1. Create release branch: ${releaseBranch}
-2. Trigger workflows on ${releaseBranch} and ${HERMES_V1_BRANCH}
-3. Update RN repo with Hermes versions and create commit
-4. Create PR to bump Hermes legacy to ${newLegacyVersion}
-5. Create PR to bump Hermes V1 to ${newV1Version}
-6. Create PR to bump RN main HERMES_V1_VERSION_NAME to ${newV1Version}
+1. Trigger workflow on ${HERMES_BRANCH}
+2. Update RN repo with Hermes version and create commit
+3. Create PR to bump Hermes to ${newVersion}
+4. Create PR to bump RN main HERMES_VERSION_NAME to ${newVersion}
 
-Workflow URLs (when created):
-  • Legacy Hermes: ${legacyWorkflowUrl}
-  • Hermes V1: ${v1WorkflowUrl}
+Workflow URL (when created):
+  • Hermes: ${workflowUrl}
 
-⚠️  IMPORTANT: Do NOT push the RN release branch until the workflows complete.
+⚠️  IMPORTANT: Do NOT push the RN release branch until the workflow completes.
 `);
   } else {
     console.log(`
 ✅ Branch cut workflow completed!
 
-Monitor the workflows here:
-  • Legacy Hermes: ${legacyWorkflowUrl}
-  • Hermes V1: ${v1WorkflowUrl}
+Monitor the workflow here:
+  • Hermes: ${workflowUrl}
 
-⚠️  IMPORTANT: Do NOT push the RN release branch until the workflows complete.
+⚠️  IMPORTANT: Do NOT push the RN release branch until the workflow completes.
 `);
   }
 }
@@ -397,13 +348,6 @@ function getHermesVersionFromPackageJson(repoPath /*: string */) /*: string */ {
   );
   const packageJson = JSON.parse(fs.readFileSync(packageJsonPath, 'utf8'));
   return packageJson.version;
-}
-
-function bumpMinorVersion(version /*: string */) /*: string */ {
-  const parts = version.split('.');
-  const major = parseInt(parts[0], 10);
-  const minor = parseInt(parts[1], 10);
-  return `${major}.${minor + 1}.0`;
 }
 
 function bumpPatchVersion(version /*: string */) /*: string */ {

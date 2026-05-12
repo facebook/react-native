@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<189cc2dd3b42cd736191f13b442e7317>>
+ * @generated SignedSource<<ec375fbc64b2b2b8995c1640a0369923>>
  */
 
 /**
@@ -60,7 +60,6 @@ internal class ReactNativeFeatureFlagsCxxAccessor : ReactNativeFeatureFlagsAcces
   private var enableModuleArgumentNSNullConversionIOSCache: Boolean? = null
   private var enableMutationObserverByDefaultCache: Boolean? = null
   private var enableNativeCSSParsingCache: Boolean? = null
-  private var enableNativeViewPropTransformationsCache: Boolean? = null
   private var enableNetworkEventReportingCache: Boolean? = null
   private var enablePreparedTextLayoutCache: Boolean? = null
   private var enablePropsUpdateReconciliationAndroidCache: Boolean? = null
@@ -84,6 +83,7 @@ internal class ReactNativeFeatureFlagsCxxAccessor : ReactNativeFeatureFlagsAcces
   private var fuseboxNetworkInspectionEnabledCache: Boolean? = null
   private var fuseboxScreenshotCaptureEnabledCache: Boolean? = null
   private var hideOffscreenVirtualViewsOnIOSCache: Boolean? = null
+  private var optimizedAnimatedPropUpdatesCache: Boolean? = null
   private var overrideBySynchronousMountPropsAtMountingAndroidCache: Boolean? = null
   private var perfIssuesEnabledCache: Boolean? = null
   private var perfMonitorV2EnabledCache: Boolean? = null
@@ -473,15 +473,6 @@ internal class ReactNativeFeatureFlagsCxxAccessor : ReactNativeFeatureFlagsAcces
     return cached
   }
 
-  override fun enableNativeViewPropTransformations(): Boolean {
-    var cached = enableNativeViewPropTransformationsCache
-    if (cached == null) {
-      cached = ReactNativeFeatureFlagsCxxInterop.enableNativeViewPropTransformations()
-      enableNativeViewPropTransformationsCache = cached
-    }
-    return cached
-  }
-
   override fun enableNetworkEventReporting(): Boolean {
     var cached = enableNetworkEventReportingCache
     if (cached == null) {
@@ -685,6 +676,15 @@ internal class ReactNativeFeatureFlagsCxxAccessor : ReactNativeFeatureFlagsAcces
     if (cached == null) {
       cached = ReactNativeFeatureFlagsCxxInterop.hideOffscreenVirtualViewsOnIOS()
       hideOffscreenVirtualViewsOnIOSCache = cached
+    }
+    return cached
+  }
+
+  override fun optimizedAnimatedPropUpdates(): Boolean {
+    var cached = optimizedAnimatedPropUpdatesCache
+    if (cached == null) {
+      cached = ReactNativeFeatureFlagsCxxInterop.optimizedAnimatedPropUpdates()
+      optimizedAnimatedPropUpdatesCache = cached
     }
     return cached
   }

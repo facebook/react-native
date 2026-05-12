@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<9061422bb5437e737602f33e74453779>>
+ * @generated SignedSource<<4deb82376e94d28a1d1775930ece1ccd>>
  */
 
 /**
@@ -244,11 +244,6 @@ bool NativeReactNativeFeatureFlags::enableNativeCSSParsing(
   return ReactNativeFeatureFlags::enableNativeCSSParsing();
 }
 
-bool NativeReactNativeFeatureFlags::enableNativeViewPropTransformations(
-    jsi::Runtime& /*runtime*/) {
-  return ReactNativeFeatureFlags::enableNativeViewPropTransformations();
-}
-
 bool NativeReactNativeFeatureFlags::enableNetworkEventReporting(
     jsi::Runtime& /*runtime*/) {
   return ReactNativeFeatureFlags::enableNetworkEventReporting();
@@ -362,6 +357,11 @@ bool NativeReactNativeFeatureFlags::fuseboxScreenshotCaptureEnabled(
 bool NativeReactNativeFeatureFlags::hideOffscreenVirtualViewsOnIOS(
     jsi::Runtime& /*runtime*/) {
   return ReactNativeFeatureFlags::hideOffscreenVirtualViewsOnIOS();
+}
+
+bool NativeReactNativeFeatureFlags::optimizedAnimatedPropUpdates(
+    jsi::Runtime& /*runtime*/) {
+  return ReactNativeFeatureFlags::optimizedAnimatedPropUpdates();
 }
 
 bool NativeReactNativeFeatureFlags::overrideBySynchronousMountPropsAtMountingAndroid(

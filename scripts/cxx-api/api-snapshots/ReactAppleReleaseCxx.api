@@ -537,6 +537,15 @@ interface NativeRedBoxSpecBase : public NSObject {
   public virtual void setEventEmitterCallback:(EventEmitterCallbackWrapper* eventEmitterCallbackWrapper);
 }
 
+interface NativeSampleTurboModuleSpecBase : public NSObject {
+  protected facebook::react::EventEmitterCallback _eventEmitterCallback;
+  public virtual void emitOnChange:(NSDictionary* value);
+  public virtual void emitOnClick:(NSString* _Nonnull value);
+  public virtual void emitOnPress();
+  public virtual void emitOnSubmit:(NSArray<id<NSObject>>* value);
+  public virtual void setEventEmitterCallback:(EventEmitterCallbackWrapper* eventEmitterCallbackWrapper);
+}
+
 interface NativeSegmentFetcherSpecBase : public NSObject {
   protected facebook::react::EventEmitterCallback _eventEmitterCallback;
   public virtual void setEventEmitterCallback:(EventEmitterCallbackWrapper* eventEmitterCallbackWrapper);
@@ -2838,6 +2847,30 @@ protocol NativeRedBoxSpec : public NSObjectRCTBridgeModule, public RCTTurboModul
   public virtual void setExtraData:forIdentifier:(NSDictionary* extraData, NSString* forIdentifier);
 }
 
+protocol NativeSampleTurboModuleSpec : public NSObjectRCTBridgeModule, public RCTTurboModule {
+  public virtual NSArray<id<NSObject>>* getArray:(NSArray* arg);
+  public virtual NSDictionary* getObject:(NSDictionary* arg);
+  public virtual NSDictionary* getObjectAssert:(NSDictionary* arg);
+  public virtual NSDictionary* getObjectThrows:(NSDictionary* arg);
+  public virtual NSDictionary* getUnsafeObject:(NSDictionary* arg);
+  public virtual NSDictionary* getValue:y:z:(double x, NSString* y, NSDictionary* z);
+  public virtual NSNumber* getBool:(BOOL arg);
+  public virtual NSNumber* getEnum:(double arg);
+  public virtual NSNumber* getNumber:(double arg);
+  public virtual NSNumber* getRootTag:(double arg);
+  public virtual NSString* getString:(NSString* arg);
+  public virtual facebook::react::ModuleConstants<JS::NativeSampleTurboModule::Constants> constantsToExport();
+  public virtual facebook::react::ModuleConstants<JS::NativeSampleTurboModule::Constants> getConstants();
+  public virtual void getImageUrl:reject:(RCTPromiseResolveBlock resolve, RCTPromiseRejectBlock reject);
+  public virtual void getValueWithCallback:(RCTResponseSenderBlock callback);
+  public virtual void getValueWithPromise:resolve:reject:(BOOL error, RCTPromiseResolveBlock resolve, RCTPromiseRejectBlock reject);
+  public virtual void promiseAssert:reject:(RCTPromiseResolveBlock resolve, RCTPromiseRejectBlock reject);
+  public virtual void promiseThrows:reject:(RCTPromiseResolveBlock resolve, RCTPromiseRejectBlock reject);
+  public virtual void voidFunc();
+  public virtual void voidFuncAssert();
+  public virtual void voidFuncThrows();
+}
+
 protocol NativeSegmentFetcherSpec : public NSObjectRCTBridgeModule, public RCTTurboModule {
   public virtual void fetchSegment:options:callback:(double segmentId, NSDictionary* options, RCTResponseSenderBlock callback);
   public virtual void getSegment:options:callback:(double segmentId, NSDictionary* options, RCTResponseSenderBlock callback);
@@ -3735,6 +3768,7 @@ const char facebook::react::RuntimeSchedulerKey[];
 const char facebook::react::SafeAreaViewComponentName[];
 const char facebook::react::ScrollViewComponentName[];
 const char facebook::react::TextComponentName[];
+const char facebook::react::TextEffectComponentName[];
 const char facebook::react::TextInputComponentName[];
 const char facebook::react::UnimplementedViewComponentName[];
 const char facebook::react::ViewComponentName[];
@@ -3914,6 +3948,8 @@ using facebook::react::TelemetryClock = std::chrono::steady_clock;
 using facebook::react::TelemetryDuration = std::chrono::nanoseconds;
 using facebook::react::TelemetryTimePoint = facebook::react::TelemetryClock::time_point;
 using facebook::react::TextComponentDescriptor = facebook::react::ConcreteComponentDescriptor<facebook::react::TextShadowNode>;
+using facebook::react::TextEffectComponentDescriptor = facebook::react::ConcreteComponentDescriptor<facebook::react::TextEffectShadowNode>;
+using facebook::react::TextEffectEventEmitter = facebook::react::TouchEventEmitter;
 using facebook::react::TextEventEmitter = facebook::react::TouchEventEmitter;
 using facebook::react::TextLayoutManagerExtended = facebook::react::detail::TextLayoutManagerExtended<facebook::react::TextLayoutManager>;
 using facebook::react::TextMeasureCache = facebook::react::SimpleThreadSafeCache<facebook::react::TextMeasureCacheKey, facebook::react::TextMeasurement, facebook::react::kSimpleThreadSafeCacheSizeCap>;
@@ -6357,6 +6393,10 @@ class facebook::react::NativeRedBoxSpecJSI : public facebook::react::ObjCTurboMo
   public NativeRedBoxSpecJSI(const facebook::react::ObjCTurboModule::InitParams& params);
 }
 
+class facebook::react::NativeSampleTurboModuleSpecJSI : public facebook::react::ObjCTurboModule {
+  public NativeSampleTurboModuleSpecJSI(const facebook::react::ObjCTurboModule::InitParams& params);
+}
+
 class facebook::react::NativeSegmentFetcherSpecJSI : public facebook::react::ObjCTurboModule {
   public NativeSegmentFetcherSpecJSI(const facebook::react::ObjCTurboModule::InitParams& params);
 }
@@ -7502,7 +7542,18 @@ class facebook::react::TextAttributes : public facebook::react::DebugStringConve
   public std::optional<facebook::react::TextTransform> textTransform;
   public std::optional<facebook::react::WritingDirection> baseWritingDirection;
   public std::string fontFamily;
+  public std::vector<facebook::react::TextEffectInfo> textEffects;
   public void apply(facebook::react::TextAttributes textAttributes);
+}
+
+class facebook::react::TextEffectProps : public facebook::react::Props {
+  public TextEffectProps() = default;
+  public TextEffectProps(const facebook::react::PropsParserContext& context, const facebook::react::TextEffectProps& sourceProps, const facebook::react::RawProps& rawProps);
+  public folly::dynamic effectProps;
+  public std::string effectName;
+}
+
+class facebook::react::TextEffectShadowNode : public facebook::react::ConcreteShadowNode<facebook::react::TextEffectComponentName, facebook::react::ShadowNode, facebook::react::TextEffectProps, facebook::react::TextEffectEventEmitter> {
 }
 
 class facebook::react::TextInputComponentDescriptor : public facebook::react::ConcreteComponentDescriptor<facebook::react::TextInputShadowNode> {
@@ -8788,6 +8839,11 @@ enum facebook::react::ModalHostViewSupportedOrientations : facebook::react::Moda
   LandscapeRight,
   Portrait,
   PortraitUpsideDown,
+}
+
+enum facebook::react::NativeSampleTurboModuleEnumInt {
+  A,
+  B,
 }
 
 enum facebook::react::NullValueStrategy {
@@ -10302,6 +10358,12 @@ struct facebook::react::Task : public facebook::jsi::NativeState {
   public Task(facebook::react::SchedulerPriority priority, facebook::react::RawCallback&& callback, facebook::react::HighResTimeStamp expirationTime);
 }
 
+struct facebook::react::TextEffectInfo {
+  public bool operator==(const facebook::react::TextEffectInfo&) const = default;
+  public folly::dynamic props;
+  public std::string name;
+}
+
 struct facebook::react::TextLayoutContext {
   public bool operator==(const facebook::react::TextLayoutContext& rhs) const = default;
   public facebook::react::Float pointScaleFactor;
@@ -10823,6 +10885,14 @@ struct facebook::react::NativePushNotificationManagerIOSPermissions {
   public bool operator==(const facebook::react::NativePushNotificationManagerIOSPermissions& other) const;
 }
 
+template <typename P0, typename P1, typename P2>
+struct facebook::react::NativeSampleTurboModuleObjectStruct {
+  public P0 a;
+  public P1 b;
+  public P2 c;
+  public bool operator==(const facebook::react::NativeSampleTurboModuleObjectStruct& other) const;
+}
+
 template <typename P0, typename P1>
 struct facebook::react::NativeAnimatedModuleEventMapping {
   public P0 nativeEventPath;
@@ -11213,6 +11283,19 @@ class facebook::react::NativeRedBoxCxxSpec : public facebook::react::TurboModule
 }
 
 template <typename T>
+class facebook::react::NativeSampleTurboModuleCxxSpec : public facebook::react::TurboModule {
+  protected NativeSampleTurboModuleCxxSpec(std::shared_ptr<facebook::react::CallInvoker> jsInvoker);
+  protected void emitOnPress();
+  public static constexpr std::string_view kModuleName;
+  template <typename OnChangeType>
+  protected void emitOnChange(OnChangeType value);
+  template <typename OnClickType>
+  protected void emitOnClick(OnClickType value);
+  template <typename OnSubmitType>
+  protected void emitOnSubmit(std::vector<OnSubmitType> value);
+}
+
+template <typename T>
 class facebook::react::NativeSegmentFetcherCxxSpec : public facebook::react::TurboModule {
   protected NativeSegmentFetcherCxxSpec(std::shared_ptr<facebook::react::CallInvoker> jsInvoker);
   public static constexpr std::string_view kModuleName;
@@ -11517,6 +11600,13 @@ struct facebook::react::NativeReactDevToolsRuntimeSettingsModuleReloadAndProfile
 }
 
 template <typename T>
+struct facebook::react::NativeSampleTurboModuleObjectStructBridging {
+  public static T fromJs(facebook::jsi::Runtime& rt, const facebook::jsi::Object& value, const std::shared_ptr<facebook::react::CallInvoker>& jsInvoker);
+  public static T types;
+  public static facebook::jsi::Object toJs(facebook::jsi::Runtime& rt, const T& value, const std::shared_ptr<facebook::react::CallInvoker>& jsInvoker);
+}
+
+template <typename T>
 struct facebook::react::NativeSourceCodeSourceCodeConstantsBridging {
   public static T fromJs(facebook::jsi::Runtime& rt, const facebook::jsi::Object& value, const std::shared_ptr<facebook::react::CallInvoker>& jsInvoker);
   public static T types;
@@ -11732,6 +11822,11 @@ struct facebook::react::Bridging<facebook::react::NativeReloadAndProfileConfig> 
 }
 
 struct facebook::react::Bridging<facebook::react::NativeRequestIdleCallbackOptions> : public facebook::react::NativeIdleCallbacksRequestIdleCallbackOptionsBridging<facebook::react::NativeRequestIdleCallbackOptions> {
+}
+
+struct facebook::react::Bridging<facebook::react::NativeSampleTurboModuleEnumInt> {
+  public static facebook::jsi::Value toJs(facebook::jsi::Runtime& rt, facebook::react::NativeSampleTurboModuleEnumInt value);
+  public static facebook::react::NativeSampleTurboModuleEnumInt fromJs(facebook::jsi::Runtime& rt, const facebook::jsi::Value& rawValue);
 }
 
 struct facebook::react::Bridging<facebook::react::PerformanceEntryType> {
@@ -15902,6 +15997,25 @@ struct JS::NativeReactDevToolsRuntimeSettingsModule::PartialReloadAndProfileConf
 }
 
 
+struct JS::NativeSampleTurboModule::Constants {
+  protected NSDictionary* unsafeRawValue() const;
+  protected static JS::NativeSampleTurboModule::Constants fromUnsafeRawValue(NSDictionary* const v);
+}
+
+struct JS::NativeSampleTurboModule::Constants::Builder {
+  protected Builder(JS::NativeSampleTurboModule::Constants i);
+  protected Builder(const JS::NativeSampleTurboModule::Constants::Builder::Input i);
+  protected NSDictionary* buildUnsafeRawValue() const;
+  protected using ResultT = JS::NativeSampleTurboModule::Constants;
+}
+
+struct JS::NativeSampleTurboModule::Constants::Builder::Input {
+  protected RCTRequired<NSString*> const3;
+  protected RCTRequired<bool> const1;
+  protected RCTRequired<double> const2;
+}
+
+
 struct JS::NativeSettingsManager::Constants {
   protected NSDictionary* unsafeRawValue() const;
   protected static JS::NativeSettingsManager::Constants fromUnsafeRawValue(NSDictionary* const v);
@@ -16029,6 +16143,10 @@ struct std::hash<facebook::react::Size> {
 
 struct std::hash<facebook::react::TextAttributes> {
   public size_t operator()(const facebook::react::TextAttributes& textAttributes) const;
+}
+
+struct std::hash<facebook::react::TextEffectInfo> {
+  public size_t operator()(const facebook::react::TextEffectInfo& info) const;
 }
 
 struct std::hash<facebook::react::TextMeasureCacheKey> {

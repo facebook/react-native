@@ -47,7 +47,7 @@ export default function renderApplication<Props extends {...}>({
   displayMode,
   useOffscreen,
 }: RenderApplicationOptions<Props>) {
-  invariant(rootTag, 'Expect to have a valid rootTag, instead got ', rootTag);
+  invariant(rootTag, 'Expect to have a valid rootTag, instead got %s', rootTag);
 
   let renderable: React.MixedElement = (
     <AppContainer

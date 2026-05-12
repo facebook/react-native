@@ -21,6 +21,7 @@ import type {
   MeasureOnSuccessCallback,
   NativeMethods,
 } from '../../../types/HostInstance';
+import type Event from '../events/Event';
 import type {InstanceHandle} from './internals/NodeInternals';
 import type ReactNativeDocument from './ReactNativeDocument';
 
@@ -30,6 +31,10 @@ import {create as createAttributePayload} from '../../../../../Libraries/ReactNa
 import warnForStyleProps from '../../../../../Libraries/ReactNative/ReactFabricPublicInstance/warnForStyleProps';
 import * as ReactNativeFeatureFlags from '../../../featureflags/ReactNativeFeatureFlags';
 import {getEventTypePropName} from '../../../renderer/events/ReactNativeEventTypeMapping';
+import {
+  getBubbledPropName,
+  getCapturedPropName,
+} from '../events/internals/EventInternals';
 import {EVENT_TARGET_GET_DECLARATIVE_LISTENER_KEY} from '../events/internals/EventTargetInternals';
 import {
   getCurrentProps,
@@ -223,16 +228,29 @@ class ReactNativeElement extends ReadOnlyElement implements NativeMethods {
   // This is called by EventTarget.invoke() before explicit addEventListener
   // listeners, allowing prop-based handlers to be resolved at dispatch time
   // without registering them via addEventListener during commit.
+  //
+  // Fast path: when `event` is a `LegacySyntheticEvent` (always the case for
+  // events created by `dispatchNativeEvent`), the React prop names have been
+  // pre-resolved on the event during construction. Reading them directly
+  // avoids the `getEventTypePropName(eventType, isCapture)` hash lookup per
+  // ancestor per phase.
   // $FlowExpectedError[unsupported-syntax]
   [EVENT_TARGET_GET_DECLARATIVE_LISTENER_KEY](
-    eventType: string,
+    event: Event,
     isCapture: boolean,
   ): ((event: Event) => void) | null {
     const currentProps = getCurrentProps(this);
     if (currentProps == null) {
       return null;
     }
-    const propName = getEventTypePropName(eventType, isCapture);
+    let propName = isCapture
+      ? getCapturedPropName(event)
+      : getBubbledPropName(event);
+    if (propName === undefined) {
+      // The event wasn't created via `dispatchNativeEvent` (e.g.,
+      // user-dispatched). Fall back to the mapping table.
+      propName = getEventTypePropName(event.type, isCapture);
+    }
     if (propName == null) {
       return null;
     }
