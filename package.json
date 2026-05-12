@@ -62,7 +62,7 @@
     "@react-native/metro-config": "0.87.0-main",
     "@tsconfig/node22": "22.0.2",
     "@types/react": "^19.1.0",
-    "@typescript-eslint/parser": "^8.36.0",
+    "@typescript-eslint/parser": "^8.59.2",
     "ansi-regex": "^5.0.0",
     "ansi-styles": "^4.2.1",
     "babel-plugin-minify-dead-code-elimination": "^0.5.2",
@@ -116,7 +116,7 @@
     "temp-dir": "^2.0.0",
     "tinybench": "^4.1.0",
     "tinyglobby": "^0.2.15",
-    "typescript": "5.8.3",
+    "typescript": "^6.0.3",
     "ws": "^7.5.10"
   },
   "resolutions": {
