@@ -158,10 +158,10 @@ class ReactNativeDependenciesUtils
 
         url = release_tarball_url(@@react_native_version, :debug)
         rndeps_log("Using tarball from URL: #{url}")
-        destinationDebug = download_stable_rndeps(@@react_native_path, @@react_native_version, :debug)
+        download_stable_rndeps(@@react_native_path, @@react_native_version, :debug)
         download_stable_rndeps(@@react_native_path, @@react_native_version, :release)
 
-        return {:http => URI::File.build(path: destinationDebug).to_s }
+        return {:http => url }
     end
 
     def self.release_tarball_url(version, build_type)
@@ -225,11 +225,10 @@ class ReactNativeDependenciesUtils
 
         url = nightly_tarball_url(version, :debug)
         rndeps_log("Using tarball from URL: #{url}")
-        destinationDebug = download_nightly_rndeps(@@react_native_path, @@react_native_version, :debug)
+        download_nightly_rndeps(@@react_native_path, @@react_native_version, :debug)
         download_nightly_rndeps(@@react_native_path, @@react_native_version, :release)
 
-        return {:http => URI::File.build(path: destinationDebug).to_s }
-        return {:http => url}
+        return {:http => url }
     end
 
     def self.download_rndeps_tarball(react_native_path, tarball_url, version, configuration)
