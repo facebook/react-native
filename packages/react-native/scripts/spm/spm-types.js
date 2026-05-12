@@ -61,8 +61,139 @@ export type SpmTarget = {
   exclude: Array<string>,
   publicHeadersPath: string | null,
   resources?: Array<string>,
-  extraCxxAbsHeaderPaths?: Array<string>,
-  _appRoot?: string | null,
+  // Swift target names this target depends on (already toSwiftName()'d).
+  // Emitted into the target's SPM `dependencies:` array so the compiler sees
+  // the dependent target's headers / module map.
+  spmTargetDependencies?: Array<string>,
+  // Explicit allowlist of source files (paths relative to target.path).
+  // Mirrors CocoaPods' `s.source_files`. When non-empty, the SPM target
+  // declares `sources: [...]` and only these files are compiled — test dirs,
+  // .js/.podspec/.md siblings, etc. can never sneak in. Null/empty means
+  // fall back to SPM's default scan of target.path.
+  sources?: ?Array<string>,
+};
+
+// Routing metadata kept alongside an SpmTarget in main(). Lives in a wrapper
+// (not on SpmTarget) so the target type stays describable from the outside.
+export type TargetEntry = {
+  target: SpmTarget,
+  origin: 'npm' | 'spmModule',
+  // Filled in for npm-origin entries during the mirror step; consumed by the
+  // synth-package emission step further down.
+  mirrorReady?: ?{
+    synthPkgDir: string,
+    mirroredResources: ?Array<string>,
+  },
+};
+
+// ---------------------------------------------------------------------------
+// autolinking.json shape (output of @react-native-community/cli config).
+// All fields are optional because the JSON is user-influenced; the consumer
+// checks at runtime.
+// ---------------------------------------------------------------------------
+export type AutolinkingIosPlatform = {
+  sourceDir?: ?string,
+  ...
+};
+// As parsed from autolinking.json — all fields optional because the JSON is
+// user-influenced. main() validates and narrows to AutolinkedDep before use.
+export type AutolinkingDepJson = {
+  root?: ?string,
+  platforms?: ?{ios?: ?AutolinkingIosPlatform, ...},
+  ...
+};
+export type RawAutolinkingJson = {
+  dependencies?: ?{[string]: AutolinkingDepJson},
+  ...
+};
+// Validated/normalized dep — name and ios platform are guaranteed present.
+// Produced from AutolinkingDepJson in main() and passed through
+// expandSpmDependencies to autolinkingDepToSpmTarget.
+export type AutolinkedDep = {
+  name: string,
+  root: string,
+  platforms: {ios: AutolinkingIosPlatform, ...},
+  // Populated by expandSpmDependencies from each dep's
+  // react-native.config.js `spm.dependencies` array.
+  spmDependencies?: Array<string>,
+  ...
+};
+
+// CLI `config` output minimally typed for the bits we read in
+// generate-spm-autolinking-config.js.
+export type CliConfigJson = {
+  root?: ?string,
+  reactNativePath?: ?string,
+  project?: ?{ios?: ?{sourceDir?: ?string, ...}, ...},
+  ...
+};
+
+// Entry shape for an spmModule declared in react-native.config.js.
+export type SpmModuleConfig = {
+  name: string,
+  path: string,
+  exclude?: Array<string>,
+  publicHeadersPath?: ?string,
+  // Optional CocoaPods-style glob allowlist (analog of s.source_files).
+  // When set, replaces auto source discovery for the module — only files
+  // matching one of these patterns are passed to SPM via `sources:`.
+  sources?: Array<string>,
+};
+
+// ---------------------------------------------------------------------------
+// Inputs to the Swift emitters in generate-spm-autolinking.js.
+// ---------------------------------------------------------------------------
+export type NpmDepRef = {
+  swiftName: string,
+  // Path passed to .package(path:). Relative to autolinked/ (the aggregator's
+  // dir). For in-place synth this is the dep's real source dir.
+  packagePath?: string,
+};
+
+export type AggregatorInput = {
+  npmDeps?: $ReadOnlyArray<NpmDepRef>,
+  inlineTargets?: $ReadOnlyArray<SpmTarget>,
+  hasReactDep?: boolean,
+  hasXcfwHeaders?: boolean,
+  hasDepsHeaders?: boolean,
+  codegenHeadersIncluded?: boolean,
+  xcframeworksRelPath?: ?string,
+};
+
+export type SynthPackageSpec = {
+  swiftName: string,
+  exclude?: Array<string>,
+  publicHeadersPath?: ?string,
+  // Explicit allowlist of source paths (relative to `targetPath`). When
+  // present and non-empty, the synth Package.swift emits `sources: [...]`
+  // — SPM will only compile these files.
+  sources?: ?Array<string>,
+  spmDependencies?: Array<{swiftName: string}>,
+  hasReactDep?: boolean,
+  hasXcfwHeaders?: boolean,
+  hasDepsHeaders?: boolean,
+  codegenHeadersIncluded?: boolean,
+  resources?: ?Array<string>,
+  isDynamic?: boolean,
+  targetPath?: string,
+  // Sub-package emission (legacy): synth Package.swift lives at a fixed depth
+  // under autolinked/packages/<Name>/, so appRoot is reachable via "../../.."
+  // and siblings via "../<Other>".
+  appRootRelativeToPackage?: string,
+  siblingPackageBaseRelative?: string,
+  // Wrapper-dir emission (current production layout): synth Package.swift
+  // lives under <outputDir>/packages/<SwiftName>/ with `root` being a dir
+  // symlink to the dep's real source dir. `appRoot` is hardcoded absolute,
+  // and cross-package includes resolve via `-I <autogenHeadersAbsolute>`
+  // instead of SPM's `publicHeadersPath` (so the dep's source dir stays
+  // untouched).
+  appRootAbsolute?: string,
+  siblingSynthAbsolutePaths?: {[swiftName: string]: string},
+  // Absolute path to <outputDir>/headers — added to cSettings/cxxSettings
+  // so cross-package `#import <SwiftName/Header.h>` resolves through
+  // <autogenHeaders>/<SwiftName>/<Header>.h file symlinks. Drops the need
+  // for per-package publicHeadersPath.
+  autogenHeadersAbsolute?: string,
 };
 
 

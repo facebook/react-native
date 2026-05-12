@@ -72,7 +72,7 @@ describe('generatePbxproj', () => {
     const result = generatePbxproj(minimalOpts);
     expect(result).toContain('/* Begin XCLocalSwiftPackageReference section */');
     expect(result).toContain('build/xcframeworks');
-    expect(result).toContain('autolinked');
+    expect(result).toContain('build/generated/autolinking');
     expect(result).toContain('build/generated/ios');
   });
 
@@ -108,6 +108,16 @@ describe('generatePbxproj', () => {
     const syncIdx = result.indexOf('Sync SPM Autolinking');
     const vfsIdx = result.indexOf('Prepare VFS Overlay');
     expect(syncIdx).toBeLessThan(vfsIdx);
+  });
+
+  it('sync script checks workspace lockfiles and hoisted node_modules', () => {
+    const result = generatePbxproj(minimalOpts);
+    expect(result).toContain('PROJECT_ROOT');
+    expect(result).toContain('dirname');
+    expect(result).toContain('pnpm-lock.yaml');
+    expect(result).toContain('bun.lockb');
+    expect(result).toContain('.pnp.cjs');
+    expect(result).toContain('node_modules');
   });
 
   it('sets correct build settings', () => {

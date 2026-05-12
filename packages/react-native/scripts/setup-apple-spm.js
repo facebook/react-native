@@ -13,11 +13,11 @@
 /*:: import type {SetupArgs} from './spm/spm-types'; */
 
 /**
- * setup-ios-spm.js – Entry point for setting up Swift Package Manager support
+ * setup-apple-spm.js – Entry point for setting up Swift Package Manager support
  * in a React Native app using prebuilt XCFrameworks from Maven.
  *
  * Usage (from your app directory, e.g. packages/rn-tester):
- *   node node_modules/react-native/scripts/setup-ios-spm.js [options]
+ *   node node_modules/react-native/scripts/setup-apple-spm.js [options]
  *
  * Options:
  *   --version <ver>             React Native version (e.g. 0.80.0). Defaults to
@@ -28,7 +28,7 @@
  *                               If checksums.json is missing, download-spm-artifacts.js runs automatically.
  *   --flavor <debug|release>    Artifact flavor (default: debug)
  *   --init                      First-time setup: also generates an initial main Package.swift.
- *   --clean                     Remove all generated SPM directories (build/, autolinked/, .build/)
+ *   --clean                     Remove all generated SPM directories (build/, .build/, legacy autolinked/)
  *                               and re-run the full setup. Open Xcode after this completes.
  *   --skip-codegen              Skip react-native codegen step
  *   --skip-download             Skip automatic artifact download even if checksums.json is missing
@@ -36,10 +36,11 @@
  *
  * Steps performed:
  *   1. react-native codegen → build/generated/ios/ + install SPM codegen template
- *   2. generate-spm-autolinking.js → autolinked/Package.swift
- *   3. download-spm-artifacts.js → <artifacts-dir>/ (skipped if already present)
- *   4. generate-spm-package.js → build/xcframeworks/Package.swift + symlinks (+ main Package.swift with --init)
- *   5. generate-spm-xcodeproj.js → <AppName>-SPM.xcodeproj (skipped with --skip-xcodeproj)
+ *   2. generate-spm-autolinking-config.js → build/generated/autolinking/autolinking.json
+ *   3. generate-spm-autolinking.js → build/generated/autolinking/Package.swift
+ *   4. download-spm-artifacts.js → <artifacts-dir>/ (skipped if already present)
+ *   5. generate-spm-package.js → build/xcframeworks/Package.swift + symlinks (+ main Package.swift with --init)
+ *   6. generate-spm-xcodeproj.js → <AppName>-SPM.xcodeproj (skipped with --skip-xcodeproj)
  *
  * The main Package.swift is committed by the developer and NOT overwritten on
  * subsequent runs. Use --init for first-time setup to generate an initial one.
@@ -49,9 +50,12 @@
 
 const {main: downloadArtifacts} = require('./spm/download-spm-artifacts');
 const {main: generateAutolinking} = require('./spm/generate-spm-autolinking');
+const {
+  generateAutolinkingConfig,
+} = require('./spm/generate-spm-autolinking-config');
 const {main: generatePackage} = require('./spm/generate-spm-package');
-const {main: generateXcodeproj} = require('./spm/generate-spm-xcodeproj');
 const {findSourcePath} = require('./spm/generate-spm-package');
+const {main: generateXcodeproj} = require('./spm/generate-spm-xcodeproj');
 const {
   defaultCacheDir,
   deriveAppName,
@@ -66,7 +70,7 @@ const fs = require('fs');
 const path = require('path');
 const yargs = require('yargs');
 
-const {log, warn: logError} = makeLogger('setup-ios-spm');
+const {log, warn: logError} = makeLogger('setup-apple-spm');
 
 function parseArgs(argv /*: Array<string> */) /*: SetupArgs */ {
   const parsed = yargs(argv)
@@ -159,8 +163,7 @@ function parseArgs(argv /*: Array<string> */) /*: SetupArgs */ {
 
 const SPM_GITIGNORE_ENTRIES = [
   'Package.resolved',
-  'autolinked/',
-  'build/generated/ios/',
+  'build/generated/',
   'build/xcframeworks/',
   '.build/',
 ];
@@ -212,7 +215,9 @@ async function main(argv /*:: ?: Array<string> */) /*: Promise<void> */ {
   if (args.clean) {
     const dirsToClean = [
       path.join(appRoot, 'build', 'xcframeworks'),
-      path.join(appRoot, 'build', 'generated', 'ios'),
+      path.join(appRoot, 'build', 'generated'),
+      // Legacy location (pre-build/generated/autolinking move) — remove
+      // when present so old workspaces upgrade cleanly.
       path.join(appRoot, 'autolinked'),
       path.join(appRoot, '.build'),
     ];
@@ -228,12 +233,31 @@ async function main(argv /*:: ?: Array<string> */) /*: Promise<void> */ {
     // Package.swift and .xcodeproj are not overwritten).
   }
 
-  // Locate react-native scripts.
-  // This script lives at <react-native-root>/scripts/setup-ios-spm.js, so
-  // __dirname's parent is always the correct react-native package root.
-  // We avoid walking node_modules to prevent accidentally resolving a symlinked
-  // or hoisted copy instead of the monorepo source.
-  const reactNativeRoot = path.resolve(__dirname, '..');
+  let autolinkingConfigResult = null;
+  log('Step 1/6: Generating autolinking.json (CLI config)...');
+  try {
+    autolinkingConfigResult = generateAutolinkingConfig({projectRoot});
+    log(`Wrote ${path.relative(appRoot, autolinkingConfigResult.outputPath)}`);
+  } catch (e) {
+    logError(
+      `generate-spm-autolinking-config failed: ${e.message}. External native modules may not be discovered.`,
+    );
+  }
+
+  // Prefer the React Native path resolved by the CLI config we already run for
+  // autolinking. Fall back to this script's package root for direct repo usage.
+  let reactNativeRoot = path.resolve(__dirname, '..');
+  const cliConfig = autolinkingConfigResult?.config;
+  const cliReactNativePath = cliConfig?.reactNativePath;
+  const cliConfigRoot = cliConfig?.root;
+  if (typeof cliReactNativePath === 'string' && cliReactNativePath.length > 0) {
+    reactNativeRoot = path.resolve(
+      typeof cliConfigRoot === 'string' && cliConfigRoot.length > 0
+        ? cliConfigRoot
+        : projectRoot,
+      cliReactNativePath,
+    );
+  }
 
   const scriptsDir = path.join(reactNativeRoot, 'scripts');
 
@@ -255,7 +279,7 @@ async function main(argv /*:: ?: Array<string> */) /*: Promise<void> */ {
 
   let codegenSucceeded = false;
   if (!args.skipCodegen) {
-    log('Step 1/5: Running react-native codegen...');
+    log('Step 2/6: Running react-native codegen...');
     try {
       // -p points to the project root (where package.json lives) so codegen
       // can discover specs and dependencies. -o points to appRoot so the
@@ -275,7 +299,7 @@ async function main(argv /*:: ?: Array<string> */) /*: Promise<void> */ {
       logError('Codegen failed. Continuing anyway...');
     }
   } else {
-    log('Step 1/5: Skipping codegen (--skip-codegen)');
+    log('Step 2/6: Skipping codegen (--skip-codegen)');
     // When skipping codegen, the output directory may already exist from a
     // previous run — treat that as success for template installation.
     codegenSucceeded = true;
@@ -304,7 +328,7 @@ async function main(argv /*:: ?: Array<string> */) /*: Promise<void> */ {
     log('Installed SPM codegen template → build/generated/ios/Package.swift');
   }
 
-  log('Step 2/5: Generating autolinked/Package.swift...');
+  log('Step 3/6: Generating build/generated/autolinking/Package.swift...');
   try {
     generateAutolinking([
       '--app-root',
@@ -332,7 +356,7 @@ async function main(argv /*:: ?: Array<string> */) /*: Promise<void> */ {
       process.exitCode = 1;
       return;
     }
-    const localXcfwDir = path.resolve(args.localXcframework, '..');
+    const localXcfwDir = path.resolve(localReactPath, '..');
     const xcfwLinksDir = path.join(appRoot, 'build', 'xcframeworks');
     fs.mkdirSync(xcfwLinksDir, {recursive: true});
 
@@ -388,7 +412,7 @@ async function main(argv /*:: ?: Array<string> */) /*: Promise<void> */ {
     !fs.existsSync(artifactsJsonPath);
 
   if (needsDownload === true && resolvedArtifactsDir != null) {
-    log('Step 3/5: Downloading xcframework artifacts...');
+    log('Step 4/6: Downloading xcframework artifacts...');
     try {
       await downloadArtifacts([
         '--version',
@@ -404,16 +428,16 @@ async function main(argv /*:: ?: Array<string> */) /*: Promise<void> */ {
       return;
     }
   } else if (resolvedArtifactsDir != null && args.skipDownload) {
-    log('Step 3/5: Skipping artifact download (--skip-download)');
+    log('Step 4/6: Skipping artifact download (--skip-download)');
   } else if (resolvedArtifactsDir != null) {
     log(
       `Step 3/5: Artifacts already present in ${displayPath(resolvedArtifactsDir)}`,
     );
   } else {
-    log('Step 3/5: No --artifacts-dir set, skipping download step');
+    log('Step 4/6: No --artifacts-dir set, skipping download step');
   }
 
-  log('Step 4/5: Generating xcframeworks sub-package...');
+  log('Step 5/6: Generating xcframeworks sub-package...');
   const packageArgs = [
     '--app-root',
     appRoot,
@@ -453,7 +477,7 @@ async function main(argv /*:: ?: Array<string> */) /*: Promise<void> */ {
       '\x1b[33mWARNING: Package.swift not found.\x1b[0m Run with --init to generate an initial one:',
     );
     log(
-      `  node ${path.relative(appRoot, path.join(scriptsDir, 'setup-ios-spm.js'))} --init`,
+      `  node ${path.relative(appRoot, path.join(scriptsDir, 'setup-apple-spm.js'))} --init`,
     );
     log('');
   }
@@ -483,7 +507,7 @@ async function main(argv /*:: ?: Array<string> */) /*: Promise<void> */ {
   }
 
   if (!args.skipXcodeproj) {
-    log('Step 5/5: Generating .xcodeproj...');
+    log('Step 6/6: Generating .xcodeproj...');
     const xcodeprojArgs = [
       '--app-root',
       appRoot,
@@ -507,7 +531,7 @@ async function main(argv /*:: ?: Array<string> */) /*: Promise<void> */ {
       return;
     }
   } else {
-    log('Step 5/5: Skipping .xcodeproj generation (--skip-xcodeproj)');
+    log('Step 6/6: Skipping .xcodeproj generation (--skip-xcodeproj)');
   }
 
   const appPkgJson = readPackageJson(projectRoot);

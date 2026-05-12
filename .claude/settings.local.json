@@ -1,0 +1,14 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(yarn install *)",
+      "Bash(yarn jest *)",
+      "Bash(node ../react-native/scripts/setup-ios-spm.js --skip-codegen --skip-download --skip-xcodeproj)",
+      "Read(//Users/chrfalch/Library/Developer/Xcode/DerivedData/RNTester-SPM-dzzleffmprhxdfbtzekowpzietdv/Build/Products/Debug-iphonesimulator/PackageFrameworks/ReactNativeTestLibraryCommon.framework/**)",
+      "Read(//Users/chrfalch/Library/Developer/Xcode/DerivedData/RNTester-SPM-dzzleffmprhxdfbtzekowpzietdv/Build/Intermediates.noindex/GeneratedModuleMaps-iphonesimulator/**)",
+      "Bash(mkdir -p /Users/chrfalch/repos/facebook/react-native/packages/react-native-test-library/common/include/ReactNativeTestLibraryCommon)",
+      "Bash(ln -sf /Users/chrfalch/repos/facebook/react-native/packages/react-native-test-library/common/TestLibraryCommon.h /Users/chrfalch/repos/facebook/react-native/packages/react-native-test-library/common/include/ReactNativeTestLibraryCommon/TestLibraryCommon.h)",
+      "Bash(swift package *)"
+    ]
+  }
+}

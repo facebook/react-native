@@ -338,7 +338,10 @@ function formatSpeed(bytesPerSec /*: number */) /*: string */ {
 function createProgressDisplay(lineCount /*: number */) /*: {
   update: (index: number, text: string) => void,
 } */ {
-  const lines /*: Array<string> */ = new Array(lineCount).fill('');
+  const lines /*: Array<string> */ = Array.from(
+    {length: lineCount},
+    () => '',
+  );
   let initialized = false;
 
   function update(index /*: number */, text /*: string */) {
@@ -612,10 +615,13 @@ async function main(argv /*:: ?: Array<string> */) /*: Promise<void> */ {
   if (rnVersion == null) {
     die('Could not determine RN version');
   }
+  // Re-bind to const so Flow keeps the non-null narrowing across the closures
+  // below (let-bound vars are widened across function boundaries).
+  const resolvedRnVersion /*: string */ = rnVersion;
 
   // Use the raw --version arg (e.g. 'nightly') as the cache key so the slot
   // stays stable even as the resolved nightly hash changes each day.
-  const cacheVersionKey = rawVersion ?? rnVersion;
+  const cacheVersionKey = rawVersion ?? resolvedRnVersion;
   const outputDir =
     args.output != null
       ? path.resolve(args.output)
@@ -627,7 +633,7 @@ async function main(argv /*:: ?: Array<string> */) /*: Promise<void> */ {
   fs.mkdirSync(outputDir, {recursive: true});
   fs.mkdirSync(downloadDir, {recursive: true});
 
-  log(`RN version : ${rnVersion}`);
+  log(`RN version : ${resolvedRnVersion}`);
   log(`Flavor     : ${flavor}`);
   log(`Output     : ${displayPath(outputDir)}`);
   log('');
@@ -636,9 +642,9 @@ async function main(argv /*:: ?: Array<string> */) /*: Promise<void> */ {
   log('Downloading artifacts in parallel...');
 
   const artifactSpecs = [
-    {label: 'react-core', name: 'React', resolve: () => resolveRNCoreArtifact(rnVersion, flavor)},
-    {label: 'rndeps', name: 'ReactNativeDependencies', resolve: () => resolveRNDepsArtifact(rnVersion, flavor)},
-    {label: 'hermes', name: 'hermes-engine', resolve: () => resolveHermesArtifact(rnVersion, flavor, rawVersion)},
+    {label: 'react-core', name: 'React', resolve: () => resolveRNCoreArtifact(resolvedRnVersion, flavor)},
+    {label: 'rndeps', name: 'ReactNativeDependencies', resolve: () => resolveRNDepsArtifact(resolvedRnVersion, flavor)},
+    {label: 'hermes', name: 'hermes-engine', resolve: () => resolveHermesArtifact(resolvedRnVersion, flavor, rawVersion)},
   ];
 
   const progress = createProgressDisplay(artifactSpecs.length);

@@ -26,14 +26,14 @@ open MyApp-SPM.xcodeproj
 ```
 
 A future CLI integration (e.g., an `--ios-build-system spm` flag on
-`react-native init`) could run `setup-ios-spm.js --init` automatically as part
+`react-native init`) could run `setup-apple-spm.js --init` automatically as part
 of project creation.
 
 ### Existing project
 
 ```bash
 cd MyApp/ios
-node ../node_modules/react-native/scripts/setup-ios-spm.js --init
+node ../node_modules/react-native/scripts/setup-apple-spm.js --init
 # CocoaPods setup continues to work — both can coexist
 open MyApp-SPM.xcodeproj
 ```
@@ -118,7 +118,7 @@ goes read-only in December 2026.
 
 ### Pipeline
 
-`setup-ios-spm.js` orchestrates five steps:
+`setup-apple-spm.js` orchestrates five steps:
 
 | # | Step | Script | Output |
 |---|------|--------|--------|
@@ -137,7 +137,7 @@ committed.
 
 ### Auto-sync build phase
 
-After initial setup, developers shouldn't need to re-run `setup-ios-spm.js`
+After initial setup, developers shouldn't need to re-run `setup-apple-spm.js`
 manually when dependencies change. The generated `.xcodeproj` includes a
 **Sync SPM Autolinking** pre-build phase (ordered first, before VFS overlay)
 that:
@@ -165,7 +165,7 @@ new version's cache directory.
 The sync step is **self-healing**: if xcframework artifacts are missing (e.g.,
 the local cache at `~/Library/Caches/com.facebook.ReactNative/` was deleted,
 or the project was freshly cloned), it automatically downloads them before
-proceeding with autolinking and package generation. This means `setup-ios-spm.js`
+proceeding with autolinking and package generation. This means `setup-apple-spm.js`
 is only strictly required for initial project scaffolding (`--init`); subsequent
 builds recover automatically.
 
@@ -178,7 +178,7 @@ Xcode provides no hook to run custom scripts during GUI clean actions.
 To fully reset SPM state, run:
 
 ```bash
-node setup-ios-spm.js --clean
+node setup-apple-spm.js --clean
 ```
 
 This removes `build/xcframeworks/`, `build/generated/ios/`, `autolinked/`, and
@@ -249,7 +249,7 @@ Subsequent runs only regenerate the sub-packages (`autolinked/` and
 Both `Package.swift` and `AppName-SPM.xcodeproj` are generated once during
 `--init` and committed. This is typically done by project scaffolding tools
 (`react-native init`, `expo init`) rather than by developers manually. After
-initial generation, these files are user-owned — subsequent `setup-ios-spm.js`
+initial generation, these files are user-owned — subsequent `setup-apple-spm.js`
 runs (without `--init`) only regenerate the sub-packages, not the root
 `Package.swift` or `.xcodeproj`. Teammates can clone the repo and open Xcode
 immediately — stub packages allow package resolution to succeed, and the
@@ -349,7 +349,7 @@ module.exports = {
 };
 ```
 
-**Planned (Phase 2):** When `setup-ios-spm.js` gains third-party library
+**Planned (Phase 2):** When `setup-apple-spm.js` gains third-party library
 support, it will:
 1. If `spm.xcframework` is declared, download the prebuilt binary (fast path).
 2. If the download fails or the `--source` flag is passed, fall back to
@@ -486,7 +486,7 @@ compilation support is a goal for specific use cases:
 
 The source compilation path would reuse the same SPM package structure but
 replace binary xcframework targets with source targets. This is planned as a
-`--source` flag to `setup-ios-spm.js`.
+`--source` flag to `setup-apple-spm.js`.
 
 ### SPM build tool plugins
 
@@ -542,7 +542,7 @@ required; libraries that don't provide them fall back to source compilation.
 
 ### Migration path for existing apps
 
-1. Run `setup-ios-spm.js --init` in the `ios/` directory.
+1. Run `setup-apple-spm.js --init` in the `ios/` directory.
 2. Commit the generated `Package.swift` and `AppName-SPM.xcodeproj`.
 3. Open the new `.xcodeproj` and build.
 4. Once validated, optionally remove CocoaPods files (`Podfile`, `Pods/`,
@@ -559,7 +559,7 @@ Xcode build and re-runs the sync step automatically. This downloads the new
 version's xcframeworks, regenerates the sub-packages, and updates autolinking.
 No manual edits to `Package.swift` are needed — the root `Package.swift` only
 references sub-packages by relative path, and those sub-packages are fully
-regenerated each run. Developers can also run `setup-ios-spm.js` manually to
+regenerated each run. Developers can also run `setup-apple-spm.js` manually to
 trigger the update before building.
 
 ## How we teach this
@@ -576,7 +576,7 @@ trigger the update before building.
 
 ### CLI discoverability
 
-- `setup-ios-spm.js --help` should provide clear usage instructions and
+- `setup-apple-spm.js --help` should provide clear usage instructions and
   explain each step.
 - Error messages should include actionable suggestions (e.g., "Run with --init
   for first-time setup").

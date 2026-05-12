@@ -130,22 +130,26 @@ function readPackageJson(dir /*: string */) /*: Object | null */ {
  * if no package.json is found anywhere up the tree.
  */
 function findProjectRoot(startDir /*: string */) /*: string */ {
-  let dir = path.resolve(startDir);
-  while (true) {
+  const start = path.resolve(startDir);
+  let dir = start;
+  // Bounded by filesystem depth — path.dirname converges to '/' or 'C:\\'.
+  // The `dir = ...` updates would otherwise drop the start-fallback narrowing.
+  while (dir !== path.dirname(dir)) {
     if (fs.existsSync(path.join(dir, 'package.json'))) {
       return dir;
     }
-    const parent = path.dirname(dir);
-    if (parent === dir) {
-      return path.resolve(startDir);
-    }
-    dir = parent;
+    dir = path.dirname(dir);
   }
+  // At filesystem root — last check before falling back.
+  if (fs.existsSync(path.join(dir, 'package.json'))) {
+    return dir;
+  }
+  return start;
 }
 
 /**
  * Resolve the react-native package root from an app directory.
- * Checks appRoot/node_modules, then projectRoot/node_modules,
+ * Checks appRoot/projectRoot and their ancestors for node_modules/react-native,
  * then falls back to __dirname-relative resolution (monorepo layout).
  *
  * Returns null if react-native cannot be found.
@@ -154,11 +158,29 @@ function resolveReactNativeRoot(
   appRoot /*: string */,
   projectRoot /*: string */,
 ) /*: string | null */ {
-  const candidates = [
-    path.join(appRoot, 'node_modules', 'react-native'),
-    path.join(projectRoot, 'node_modules', 'react-native'),
-    path.resolve(__dirname, '../..'),
-  ];
+  const candidates /*: Array<string> */ = [];
+  const seen /*: Set<string> */ = new Set();
+
+  function addAncestorCandidates(startDir /*: string */) /*: void */ {
+    let dir = path.resolve(startDir);
+    while (true) {
+      const candidate = path.join(dir, 'node_modules', 'react-native');
+      if (!seen.has(candidate)) {
+        seen.add(candidate);
+        candidates.push(candidate);
+      }
+      const parent = path.dirname(dir);
+      if (parent === dir) {
+        break;
+      }
+      dir = parent;
+    }
+  }
+
+  addAncestorCandidates(appRoot);
+  addAncestorCandidates(projectRoot);
+  candidates.push(path.resolve(__dirname, '../..'));
+
   for (const candidate of candidates) {
     if (fs.existsSync(candidate)) {
       return path.resolve(candidate);
@@ -205,7 +227,7 @@ function resolveAndWriteVFSOverlay(
 
 /**
  * Runs React Native codegen and installs the SPM Package.swift template
- * into build/generated/ios/. Used by both setup-ios-spm.js and
+ * into build/generated/ios/. Used by both setup-apple-spm.js and
  * sync-spm-autolinking.js.
  */
 function runCodegenAndInstallTemplate(

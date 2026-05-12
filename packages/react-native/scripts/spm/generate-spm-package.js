@@ -239,7 +239,7 @@ ${binaryTargets}
 
 /**
  * Generates an initial main Package.swift for the developer to commit.
- * This is a one-time generation; subsequent runs of setup-ios-spm.js
+ * This is a one-time generation; subsequent runs of setup-apple-spm.js
  * will NOT overwrite this file.
  */
 function generateInitialPackageSwift(opts /*: {
@@ -342,7 +342,7 @@ do {
             .library(name: "hermes-engine", targets: ["ReactNativeStub"]),
         ], targets: [.target(name: "ReactNativeStub", path: "_stub", sources: ["Stub.swift"])])
         """),
-        ("autolinked", """
+        ("build/generated/autolinking", """
         // swift-tools-version: 5.9
         import PackageDescription
         let package = Package(name: "Autolinked", products: [
@@ -374,8 +374,7 @@ let depsHeaders = URL(fileURLWithPath: packageDir + "/build/xcframeworks/ReactNa
     .resolvingSymlinksInPath().path + "/Headers"
 let vfsOverlay = packageDir + "/build/xcframeworks/React-VFS.yaml"
 
-let cFlags: [String] = ["-ivfsoverlay", vfsOverlay, "-I", xcfwHeaders,
-    "-I", packageDir + "/autolinked/sources"]
+let cFlags: [String] = ["-ivfsoverlay", vfsOverlay, "-I", xcfwHeaders]
 let cxxFlags: [String] = cFlags + ["-I", depsHeaders]
 let swiftFlags: [String] = ["-Xcc", "-ivfsoverlay", "-Xcc", vfsOverlay, "-Xcc", "-I", "-Xcc", xcfwHeaders]
 
@@ -386,7 +385,7 @@ let package = Package(
 ${productsSection}
     ],
     dependencies: [
-        .package(name: "Autolinked", path: "autolinked"),
+        .package(name: "Autolinked", path: "build/generated/autolinking"),
         .package(name: "React-GeneratedCode", path: "build/generated/ios"),
         .package(name: "ReactNative", path: "build/xcframeworks"),
     ],
@@ -414,9 +413,10 @@ function main(argv /*:: ?: Array<string> */) /*: void */ {
     return;
   }
 
-  let rnRoot = args.reactNativeRoot
-    ? path.resolve(args.reactNativeRoot)
-    : resolveReactNativeRoot(appRoot, projectRoot);
+  let rnRoot =
+    args.reactNativeRoot != null
+      ? path.resolve(args.reactNativeRoot)
+      : resolveReactNativeRoot(appRoot, projectRoot);
   if (rnRoot == null) {
     console.error(
       '[generate-spm-package] Could not find react-native. Pass --react-native-root.',

@@ -131,7 +131,7 @@ const SPM_PRODUCT_PACKAGES /*: Array<{product: string, packagePath: string, pack
     },
     {
       product: 'Autolinked',
-      packagePath: 'autolinked',
+      packagePath: 'build/generated/autolinking',
       packageName: 'Autolinked',
     },
     {
@@ -556,7 +556,7 @@ sed "4s|.*|  - name: '$LOCAL_HEADERS'|" "$SRC_VFS" > "$DST_VFS"
   // Sync SPM Autolinking: timestamp check + conditional node re-run
   const syncAutolinkingScript = `set -euo pipefail
 
-STAMP="$SRCROOT/autolinked/.spm-sync-stamp"
+STAMP="$SRCROOT/build/generated/autolinking/.spm-sync-stamp"
 STALE=0
 
 # Check 0: xcframework artifacts missing (fresh clone)
@@ -565,10 +565,13 @@ if [ ! -f "$SRCROOT/build/xcframeworks/artifacts.json" ] || \\
   STALE=1
 fi
 
-# Find project root (where package.json lives — may be parent of SRCROOT)
+# Find project root (where package.json lives — may be an ancestor of SRCROOT)
 PROJECT_ROOT="$SRCROOT"
-if [ ! -f "$PROJECT_ROOT/package.json" ] && [ -f "$PROJECT_ROOT/../package.json" ]; then
-  PROJECT_ROOT="$SRCROOT/.."
+while [ "$PROJECT_ROOT" != "/" ] && [ ! -f "$PROJECT_ROOT/package.json" ]; do
+  PROJECT_ROOT="$(dirname "$PROJECT_ROOT")"
+done
+if [ ! -f "$PROJECT_ROOT/package.json" ]; then
+  PROJECT_ROOT="$SRCROOT"
 fi
 
 # Check 1: dependency inputs (covers app projects after any package manager install)
@@ -581,14 +584,50 @@ for INPUT in \\
   fi
 done
 
-# Check node_modules mtime (works with npm, yarn, pnpm, bun — any package manager)
+# Check workspace lockfiles and package-manager metadata. These cover package
+# managers that do not reliably bump node_modules mtimes, and Yarn PnP projects
+# that do not have node_modules at all.
 if [ "$STALE" -eq 0 ]; then
-  # In monorepos, node_modules may be hoisted to the repo root
-  NM_DIR="$SRCROOT/node_modules"
-  if [ ! -d "$NM_DIR" ]; then
-    NM_DIR="$SRCROOT/../node_modules"
-  fi
-  if [ -d "$NM_DIR" ] && [ "$NM_DIR" -nt "$STAMP" ]; then
+  DIR="$PROJECT_ROOT"
+  while [ "$DIR" != "/" ]; do
+    for INPUT in \\
+      "$DIR/package-lock.json" \\
+      "$DIR/npm-shrinkwrap.json" \\
+      "$DIR/yarn.lock" \\
+      "$DIR/pnpm-lock.yaml" \\
+      "$DIR/bun.lock" \\
+      "$DIR/bun.lockb" \\
+      "$DIR/.pnp.cjs" \\
+      "$DIR/.pnp.loader.mjs"; do
+      if [ -f "$INPUT" ] && [ "$INPUT" -nt "$STAMP" ]; then
+        STALE=1
+        break
+      fi
+    done
+    if [ "$STALE" -eq 1 ]; then
+      break
+    fi
+    DIR="$(dirname "$DIR")"
+  done
+fi
+
+# Check node_modules mtime. In monorepos, node_modules may be hoisted to any
+# ancestor between the app package and the workspace root.
+if [ "$STALE" -eq 0 ]; then
+  DIR="$PROJECT_ROOT"
+  while [ "$DIR" != "/" ]; do
+    NM_DIR="$DIR/node_modules"
+    if [ -d "$NM_DIR" ] && [ "$NM_DIR" -nt "$STAMP" ]; then
+      STALE=1
+      break
+    fi
+    DIR="$(dirname "$DIR")"
+  done
+fi
+
+# Also check the app root directly when SRCROOT is not the package root.
+if [ "$STALE" -eq 0 ] && [ "$SRCROOT" != "$PROJECT_ROOT" ]; then
+  if [ -d "$SRCROOT/node_modules" ] && [ "$SRCROOT/node_modules" -nt "$STAMP" ]; then
     STALE=1
   fi
 fi
@@ -707,7 +746,12 @@ fi
       `ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon`,
       `CLANG_CXX_LANGUAGE_STANDARD = "c++20"`,
       `DEVELOPMENT_TEAM = ""`,
-      `HEADER_SEARCH_PATHS = (\n\t\t\t\t\t"$(inherited)",\n\t\t\t\t\t"$(SRCROOT)/build/xcframeworks/React.xcframework/Headers",\n\t\t\t\t\t"$(SRCROOT)/build/xcframeworks/React.xcframework/Headers/React_RCTAppDelegate",\n\t\t\t\t\t"$(SRCROOT)/build/xcframeworks/ReactNativeDependencies.xcframework/Headers",\n\t\t\t\t\t"$(SRCROOT)/autolinked/sources",\n\t\t\t\t)`,
+      // `build/generated/autolinking/headers/` is the centralized cross-package
+      // headers tree the autolinker writes (one subdir per dep, named after
+      // its SwiftName). With it on the search path, host-app sources can
+      // `#import <SwiftName/Header.h>` — the CocoaPods convention — even when
+      // per-package publicHeadersPath only exposes source-relative layouts.
+      `HEADER_SEARCH_PATHS = (\n\t\t\t\t\t"$(inherited)",\n\t\t\t\t\t"$(SRCROOT)/build/generated/autolinking/headers",\n\t\t\t\t\t"$(SRCROOT)/build/xcframeworks/React.xcframework/Headers",\n\t\t\t\t\t"$(SRCROOT)/build/xcframeworks/React.xcframework/Headers/React_RCTAppDelegate",\n\t\t\t\t\t"$(SRCROOT)/build/xcframeworks/ReactNativeDependencies.xcframework/Headers",\n\t\t\t\t)`,
       `INFOPLIST_FILE = ${infoPlistSetting}`,
       `IPHONEOS_DEPLOYMENT_TARGET = ${iosVersion}`,
       `LD_RUNPATH_SEARCH_PATHS = (\n\t\t\t\t\t/usr/lib/swift,\n\t\t\t\t\t"$(inherited)",\n\t\t\t\t\t"@executable_path/Frameworks",\n\t\t\t\t)`,
@@ -1003,9 +1047,10 @@ function main(argv /*:: ?: Array<string> */) /*: void */ {
     : null;
   const rawName = pkgJson?.name ?? path.basename(projectRoot);
 
-  let rnRoot = args.reactNativeRoot
-    ? path.resolve(args.reactNativeRoot)
-    : resolveReactNativeRoot(appRoot, projectRoot);
+  let rnRoot =
+    args.reactNativeRoot != null
+      ? path.resolve(args.reactNativeRoot)
+      : resolveReactNativeRoot(appRoot, projectRoot);
   if (rnRoot == null) {
     console.error(
       '[generate-spm-xcodeproj] Could not find react-native. Pass --react-native-root.',

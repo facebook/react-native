@@ -15,6 +15,7 @@ const {
   displayPath,
   makeLogger,
   readPackageJson,
+  resolveReactNativeRoot,
   toSwiftName,
 } = require('../spm-utils');
 const fs = require('fs');
@@ -183,5 +184,36 @@ describe('readPackageJson', () => {
 
   it('returns null for missing file', () => {
     expect(readPackageJson(tempDir)).toBeNull();
+  });
+});
+
+// ---------------------------------------------------------------------------
+// resolveReactNativeRoot
+// ---------------------------------------------------------------------------
+
+describe('resolveReactNativeRoot', () => {
+  let tempDir;
+
+  beforeEach(() => {
+    tempDir = fs.mkdtempSync(path.join(os.tmpdir(), 'spm-utils-test-'));
+  });
+
+  afterEach(() => {
+    fs.rmSync(tempDir, {recursive: true, force: true});
+  });
+
+  it('finds react-native hoisted above the app package root', () => {
+    const workspaceRoot = path.join(tempDir, 'workspace');
+    const appRoot = path.join(workspaceRoot, 'packages', 'app', 'ios');
+    const rnRoot = path.join(workspaceRoot, 'node_modules', 'react-native');
+    fs.mkdirSync(appRoot, {recursive: true});
+    fs.mkdirSync(rnRoot, {recursive: true});
+
+    expect(
+      resolveReactNativeRoot(
+        appRoot,
+        path.join(workspaceRoot, 'packages', 'app'),
+      ),
+    ).toBe(rnRoot);
   });
 });

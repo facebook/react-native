@@ -10,7 +10,17 @@
 
 'use strict';
 
-/*:: import type {AutolinkingArgs, SpmTarget} from './spm-types'; */
+/*:: import type {
+  AggregatorInput,
+  AutolinkedDep,
+  AutolinkingArgs,
+  NpmDepRef,
+  RawAutolinkingJson,
+  SpmModuleConfig,
+  SpmTarget,
+  SynthPackageSpec,
+  TargetEntry,
+} from './spm-types'; */
 
 /**
  * generate-spm-autolinking.js – Generates autolinked/Package.swift, the SPM
@@ -41,7 +51,12 @@
  *   - npm packages with their own Package.swift use .package(url: ...) instead of inline targets
  */
 
-const {displayPath, makeLogger, toSwiftName} = require('./spm-utils');
+const {
+  defaultReadConfig,
+  defaultResolveDep,
+  expandSpmDependencies,
+} = require('./expand-spm-dependencies');
+const {makeLogger, toSwiftName} = require('./spm-utils');
 const fs = require('fs');
 const path = require('path');
 const yargs = require('yargs');
@@ -91,15 +106,13 @@ function parseArgs(argv /*: Array<string> */) /*: AutolinkingArgs */ {
 /**
  * Reads autolinking.json and returns dependencies with iOS platform support.
  */
-// $FlowFixMe[unclear-type] autolinking JSON has dynamic shape
-function readAutolinkingJson(filePath /*: string */) /*: Object | null */ {
+function readAutolinkingJson(
+  filePath /*: string */,
+) /*: RawAutolinkingJson | null */ {
   if (!fs.existsSync(filePath)) {
     return null;
   }
-  // $FlowFixMe[incompatible-type] JSON.parse returns any
-  // $FlowFixMe[unclear-type] autolinking JSON has dynamic shape
-  const data /*: Object */ = JSON.parse(fs.readFileSync(filePath, 'utf8'));
-  return data;
+  return JSON.parse(fs.readFileSync(filePath, 'utf8'));
 }
 
 /**
@@ -121,13 +134,13 @@ function readAutolinkingJson(filePath /*: string */) /*: Object | null */ {
  */
 function readSpmModulesFromConfig(
   appRoot /*: string */,
-) /*: Array<{name: string, path: string, exclude?: Array<string>, publicHeadersPath?: string | null}> */ {
+) /*: Array<SpmModuleConfig> */ {
   const configPath = path.join(appRoot, 'react-native.config.js');
   if (!fs.existsSync(configPath)) {
     return [];
   }
   try {
-    // $FlowFixMe[unsupported-syntax]
+    // $FlowFixMe[unsupported-syntax] dynamic require by computed path
     const config = require(configPath);
     return config.spmModules ?? [];
   } catch (e) {
@@ -159,95 +172,147 @@ function inferPublicHeadersPath(sourcePath /*: string */) /*: string | null */ {
   return hasHeaders && !hasSubdirs ? '.' : null;
 }
 
+/*::
+type ExtensionFilter = $ReadOnlySet<string>;
+*/
+
+const HEADER_EXTENSIONS /*: ExtensionFilter */ = new Set(['.h', '.hpp']);
+const IMPL_EXTENSIONS /*: ExtensionFilter */ = new Set([
+  '.m',
+  '.mm',
+  '.c',
+  '.cpp',
+  '.swift',
+]);
+const ALL_SOURCE_EXTENSIONS /*: ExtensionFilter */ = new Set([
+  ...HEADER_EXTENSIONS,
+  ...IMPL_EXTENSIONS,
+]);
+
+// Directory names whose contents should never be included in an SPM target —
+// test fixtures, Android sources, vendored modules. Shared between the source
+// walker and the header linker so they agree on what to skip.
+const SKIP_DIRS_DEFAULT /*: $ReadOnlySet<string> */ = new Set([
+  'android',
+  'tests',
+  '__tests__',
+  '__mocks__',
+  'test',
+  'jest',
+  'node_modules',
+]);
+
+// Name of the dir-symlink inside each wrapper that points at the dep's real
+// source dir. With target.path = "." (the wrapper), SPM resolves source paths
+// like "<WRAPPER_ROOT_NAME>/Foo.mm" by following this link.
+const WRAPPER_ROOT_NAME = 'root';
+
 /**
- * Creates a "mirrored" source directory: a REAL directory at destDir whose
- * contents are individual file symlinks pointing to corresponding source files
- * in srcDir. Real subdirectories are created (not symlinked) so SPM's path
- * containment checks see only paths within the package root.
+ * Mirrors every header file under `srcDir` as a relative symlink at the same
+ * relative location under `destDir`. Used for the centralized cross-package
+ * headers tree at `<outputDir>/headers/<SwiftName>/` so consumers can resolve
+ * `#import <SwiftName/Header.h>` via a single `-I <outputDir>/headers` flag.
  *
- * Only source files (.m .mm .c .cpp .h .hpp .swift) are included.
- * Directories named in SKIP_DIRS_DEFAULT or skipDirNames are not recursed into.
- *
- * If destDir already exists as a directory symlink (legacy), it is removed first.
+ * Idempotent: existing symlinks pointing at the right target are left alone;
+ * stale entries are pruned. Header symlinks here are inert to Xcode (it
+ * doesn't navigate them as editable source — they're compiler-only).
  */
-function createMirroredSources(
+function linkHeaderTree(
   srcDir /*: string */,
   destDir /*: string */,
   skipDirNames /*: Set<string> */ = new Set(),
 ) /*: void */ {
-  // Guard: destDir must be non-empty and absolute to prevent accidental
-  // rmSync on wrong paths (e.g. empty string would resolve to cwd).
+  if (!srcDir || !path.isAbsolute(srcDir)) {
+    throw new Error(
+      `linkHeaderTree: srcDir must be a non-empty absolute path, got: "${srcDir}"`,
+    );
+  }
   if (!destDir || !path.isAbsolute(destDir)) {
     throw new Error(
-      `createMirroredSources: destDir must be a non-empty absolute path, got: "${destDir}"`,
+      `linkHeaderTree: destDir must be a non-empty absolute path, got: "${destDir}"`,
     );
   }
-  // Ensure destDir is within an expected autolinked/sources/ tree
-  if (!destDir.includes(`${path.sep}sources${path.sep}`)) {
-    throw new Error(
-      `createMirroredSources: destDir must be within a sources/ directory, got: "${destDir}"`,
-    );
+  if (!fs.existsSync(srcDir)) {
+    return;
   }
 
-  const SKIP_DIRS_DEFAULT = new Set([
-    'android',
-    'tests',
-    '__tests__',
-    '__mocks__',
-    'test',
-    'jest',
-  ]);
-  const SOURCE_EXTENSIONS = new Set([
-    '.m',
-    '.mm',
-    '.c',
-    '.cpp',
-    '.h',
-    '.hpp',
-    '.swift',
-  ]);
-
-  // Clean destDir to remove stale symlinks from previous runs (e.g. when the
-  // source path changes). Remove both directory symlinks and real directories.
-  try {
-    const stat = fs.lstatSync(destDir);
-    if (stat.isSymbolicLink()) {
-      fs.unlinkSync(destDir);
-    } else if (stat.isDirectory()) {
-      fs.rmSync(destDir, {recursive: true, force: true});
-    }
-  } catch {
-    // destDir does not exist – fine
-  }
-
-  function walk(src /*: string */, dest /*: string */) /*: void */ {
-    fs.mkdirSync(dest, {recursive: true});
+  /*:: type HeaderEntry = {relSrc: string, absSrc: string}; */
+  const headers /*: Array<HeaderEntry> */ = [];
+  function collect(dir /*: string */, relBase /*: string */) /*: void */ {
     const entries /*: Array<{name: string, isDirectory(): boolean, isFile(): boolean}> */ =
       // $FlowFixMe[incompatible-type] Dirent typing
-      fs.readdirSync(src, {withFileTypes: true});
+      fs.readdirSync(dir, {withFileTypes: true});
     for (const entry of entries) {
       const {name} = entry;
       if (entry.isDirectory()) {
-        if (SKIP_DIRS_DEFAULT.has(name) || skipDirNames.has(name)) {
-          continue;
-        }
-        walk(path.join(src, name), path.join(dest, name));
-      } else if (entry.isFile()) {
-        if (!SOURCE_EXTENSIONS.has(path.extname(name))) {
-          continue;
-        }
-        const linkPath = path.join(dest, name);
-        try {
-          fs.unlinkSync(linkPath);
-        } catch {
-          // nothing to remove
-        }
-        fs.symlinkSync(path.join(src, name), linkPath);
+        if (SKIP_DIRS_DEFAULT.has(name) || skipDirNames.has(name)) continue;
+        collect(path.join(dir, name), path.join(relBase, name));
+      } else if (entry.isFile() && HEADER_EXTENSIONS.has(path.extname(name))) {
+        headers.push({
+          relSrc: path.join(relBase, name),
+          absSrc: path.join(dir, name),
+        });
       }
     }
   }
+  collect(srcDir, '');
 
-  walk(srcDir, destDir);
+  if (headers.length === 0) {
+    try {
+      if (fs.lstatSync(destDir).isDirectory()) {
+        fs.rmSync(destDir, {recursive: true, force: true});
+      }
+    } catch {
+      // destDir does not exist – fine
+    }
+    return;
+  }
+
+  fs.mkdirSync(destDir, {recursive: true});
+
+  const expected /*: Set<string> */ = new Set();
+  for (const {relSrc, absSrc} of headers) {
+    const linkPath = path.join(destDir, relSrc);
+    expected.add(relSrc);
+    fs.mkdirSync(path.dirname(linkPath), {recursive: true});
+    const desiredTarget = path.relative(path.dirname(linkPath), absSrc);
+    try {
+      const existing = fs.lstatSync(linkPath);
+      if (
+        existing.isSymbolicLink() &&
+        fs.readlinkSync(linkPath) === desiredTarget
+      ) {
+        continue;
+      }
+      fs.unlinkSync(linkPath);
+    } catch {
+      // nothing to remove
+    }
+    fs.symlinkSync(desiredTarget, linkPath);
+  }
+
+  // Prune stale entries: walk destDir and delete anything not in `expected`.
+  function pruneWalk(dir /*: string */, relBase /*: string */) /*: void */ {
+    if (!fs.existsSync(dir)) return;
+    const entries /*: Array<{name: string, isDirectory(): boolean, isFile(): boolean, isSymbolicLink(): boolean}> */ =
+      // $FlowFixMe[incompatible-type] Dirent typing
+      fs.readdirSync(dir, {withFileTypes: true});
+    for (const entry of entries) {
+      const rel = path.join(relBase, entry.name);
+      const abs = path.join(dir, entry.name);
+      if (entry.isDirectory()) {
+        pruneWalk(abs, rel);
+        if (fs.readdirSync(abs).length === 0) {
+          fs.rmdirSync(abs);
+        }
+      } else {
+        if (!expected.has(rel)) {
+          fs.unlinkSync(abs);
+        }
+      }
+    }
+  }
+  pruneWalk(destDir, '');
 }
 
 /**
@@ -276,46 +341,86 @@ function findPrivacyManifest(sourcePath /*: string */) /*: string | null */ {
 }
 
 /**
- * Attempts to find an exclude list for a podspec by reading it
- * and looking for known test directories, .js files, etc.
+ * Recursively yields forward-slash paths (relative to sourcePath) for every
+ * regular file under sourcePath, skipping directories whose name is in
+ * SKIP_DIRS_DEFAULT. Used as the building block for both the auto-discovery
+ * (collectSpmSources) and explicit-glob (expandSpmSourceGlobs) paths so they
+ * agree on what's a candidate before extension/glob filtering applies.
  */
-function inferExcludes(sourcePath /*: string */) /*: Array<string> */ {
-  const excludes /*: Array<string> */ = [];
+function walkSourceFiles(sourcePath /*: string */) /*: Array<string> */ {
+  const out /*: Array<string> */ = [];
   if (!fs.existsSync(sourcePath)) {
-    return excludes;
+    return out;
   }
+  function walk(dir /*: string */, rel /*: string */) /*: void */ {
+    const entries /*: Array<{name: string, isDirectory(): boolean, isFile(): boolean, isSymbolicLink(): boolean}> */ =
+      // $FlowFixMe[incompatible-type] Dirent typing
+      fs.readdirSync(dir, {withFileTypes: true});
+    for (const entry of entries) {
+      const {name} = entry;
+      const childRel = rel === '' ? name : `${rel}/${name}`;
+      if (entry.isDirectory()) {
+        if (SKIP_DIRS_DEFAULT.has(name)) continue;
+        walk(path.join(dir, name), childRel);
+      } else if (entry.isFile() || entry.isSymbolicLink()) {
+        out.push(childRel);
+      }
+    }
+  }
+  walk(sourcePath, '');
+  return out;
+}
 
-  const entries /*: Array<{name: string, isDirectory(): boolean, isFile(): boolean}> */ =
-    // $FlowFixMe[incompatible-type] Dirent typing
-    fs.readdirSync(sourcePath, {withFileTypes: true});
-  for (const entry of entries) {
-    const name = entry.name;
-    // Common test directories
-    if (
-      entry.isDirectory() &&
-      (name === 'tests' ||
-        name === '__tests__' ||
-        name === 'test' ||
-        name === 'jest' ||
-        name === 'android' ||
-        name === 'CMakeLists.txt')
-    ) {
-      excludes.push(name + '/');
+/**
+ * Idempotent symlink: ensure `linkPath` is a symlink to `target`. If it
+ * already is, leave it untouched (preserves inode). If it points elsewhere
+ * or is a real file/directory, replace it. Returns true when the symlink
+ * was created or replaced, false when it was already correct.
+ */
+function ensureSymlink(
+  linkPath /*: string */,
+  target /*: string */,
+) /*: boolean */ {
+  try {
+    const stat = fs.lstatSync(linkPath);
+    if (stat.isSymbolicLink() && fs.readlinkSync(linkPath) === target) {
+      return false;
     }
-    // Common non-source files to exclude
-    if (
-      entry.isFile() &&
-      (name.endsWith('.js') ||
-        name.endsWith('.ts') ||
-        name.endsWith('.podspec') ||
-        name.endsWith('.md') ||
-        name === 'CMakeLists.txt' ||
-        name === 'package.json')
-    ) {
-      excludes.push(name);
+    if (stat.isSymbolicLink() || !stat.isDirectory()) {
+      fs.unlinkSync(linkPath);
+    } else {
+      fs.rmSync(linkPath, {recursive: true, force: true});
     }
+  } catch {
+    // linkPath does not exist – fine
   }
-  return excludes;
+  fs.symlinkSync(target, linkPath);
+  return true;
+}
+
+// Default sources allowlist when no explicit glob is provided — analog of
+// CocoaPods' `s.source_files` auto-discovery.
+function collectSpmSources(
+  sourcePath /*: string */,
+) /*: Array<string> */ {
+  return walkSourceFiles(sourcePath)
+    .filter(p => ALL_SOURCE_EXTENSIONS.has(path.extname(p)))
+    .sort();
+}
+
+// Filters walkSourceFiles output through CocoaPods-style globs via micromatch.
+// Skip-dir filtering applies before matching, so `**/*.{h,mm}` never returns
+// paths under `tests/`, `android/`, etc. — even if the pattern would match.
+function expandSpmSourceGlobs(
+  sourcePath /*: string */,
+  patterns /*: Array<string> */,
+) /*: Array<string> */ {
+  if (patterns.length === 0) {
+    return [];
+  }
+  // $FlowFixMe[untyped-import] micromatch ships no types
+  const micromatch = require('micromatch');
+  return micromatch(walkSourceFiles(sourcePath), patterns).sort();
 }
 
 /**
@@ -324,117 +429,44 @@ function inferExcludes(sourcePath /*: string */) /*: Array<string> */ {
  */
 function autolinkingDepToSpmTarget(
   depName /*: string */,
-  // $FlowFixMe[unclear-type] dep has dynamic shape from autolinking JSON
-  dep /*: Object */,
-  appRoot /*: string */,
+  dep /*: AutolinkedDep */,
+  outputDir /*: string */,
 ) /*: SpmTarget | null */ {
-  // $FlowFixMe[prop-missing] dep is Object, platforms is dynamic
-  const iosPlatform = dep.platforms?.ios;
-  if (iosPlatform == null) {
-    return null;
-  }
-
-  // $FlowFixMe[prop-missing] dep is Object, root is dynamic
+  const iosPlatform = dep.platforms.ios;
   const sourceDir = iosPlatform.sourceDir ?? dep.root;
   if (sourceDir == null) {
     return null;
   }
 
-  // Make path relative to autolinked/ (i.e., relative to appRoot/autolinked)
-  // Since autolinked/Package.swift is in appRoot/autolinked/
-  const autolinkedDir = path.join(appRoot, 'autolinked');
-  const relSourcePath = path.relative(autolinkedDir, sourceDir);
+  // target.path is stored relative to the autolinker's outputDir so main()'s
+  // `path.resolve(outputDir, target.path)` recovers the absolute source dir —
+  // same convention the spmModule branch in main() follows.
+  const relSourcePath = path.relative(outputDir, sourceDir);
 
   // Derive target name from package name (e.g. "@scope/my-pkg" → "MyPkg")
   const targetName = toSwiftName(depName);
 
-  // Infer excludes
-  const excludes = inferExcludes(sourceDir);
+  // No exclude inference — main()'s emission loop emits `sources:` (an
+  // explicit allowlist). User-supplied excludes still work.
 
   // Detect PrivacyInfo.xcprivacy
   const privacyManifest = findPrivacyManifest(sourceDir);
   const resources = privacyManifest != null ? [privacyManifest] : undefined;
 
+  // Map declared spm.dependencies (npm names) to Swift target names so the
+  // synth's .product(...) deps list reaches the consuming target.
+  const spmDeps /*: Array<string> */ = dep.spmDependencies ?? [];
+  const spmTargetDependencies =
+    spmDeps.length > 0 ? spmDeps.map(n => toSwiftName(n)) : undefined;
+
   return {
     name: targetName,
     path: relSourcePath,
-    exclude: excludes,
+    exclude: [],
     publicHeadersPath: inferPublicHeadersPath(sourceDir),
     resources,
+    spmTargetDependencies,
   };
-}
-
-/**
- * Generates the Swift declaration for a single SPM target.
- * When hasReactDep is true, each target declares a dependency on the "React"
- * product so Xcode propagates React.xcframework's framework search paths.
- * When hasXcfwHeaders is true, -I xcfwHeaders is added to cSettings/cxxSettings
- * so <ReactCommon/...> and other headers resolve directly from the merged layout.
- * When hasDepsHeaders is true, -I depsHeaders is added to cxxSettings only so
- * C++ code can #include <glog/...>, <folly/...>, <boost/...> etc.
- */
-function generateTargetDecl(
-  target /*: SpmTarget */,
-  hasReactDep /*: boolean */ = false,
-  hasXcfwHeaders /*: boolean */ = false,
-  hasDepsHeaders /*: boolean */ = false,
-  indent /*: string */ = '        ',
-) /*: string */ {
-  const excludesList =
-    target.exclude && target.exclude.length > 0
-      ? `\n${indent}    exclude: [${target.exclude.map(e => `"${e}"`).join(', ')}],`
-      : '';
-  const publicHeadersLine =
-    target.publicHeadersPath != null
-      ? `\n${indent}    publicHeadersPath: "${target.publicHeadersPath}",`
-      : '';
-  const depsLine = hasReactDep
-    ? `\n${indent}    dependencies: [.product(name: "ReactNative", package: "ReactNative")],`
-    : '';
-
-  // C settings (Objective-C .m files): VFS overlay for header identity mapping,
-  // React xcframework headers (merged layout), + React_RCTAppDelegate subdirectory.
-  const cFlagItems /*: Array<string> */ = hasXcfwHeaders
-    ? ['"-ivfsoverlay", vfsOverlay', '"-I", xcfwHeaders', '"-I", xcfwHeaders + "/React_RCTAppDelegate"']
-    : [];
-
-  // C++ settings (.mm, .cpp): same as C but also -I depsHeaders for glog/folly/boost.
-  // -fno-implicit-module-maps prevents clang from matching <react/...> to
-  // React.framework (case-insensitive), allowing -I and VFS to resolve C++ headers.
-  const cxxFlagItems /*: Array<string> */ =
-    hasXcfwHeaders && hasDepsHeaders
-      ? ['"-fno-implicit-module-maps"', ...cFlagItems, '"-I", depsHeaders']
-      : [...cFlagItems];
-
-  // Extra C++ include paths (e.g. for codegen output directories outside package).
-  // Using appRoot-relative Swift expressions avoids hardcoded absolute paths.
-  if (target.extraCxxAbsHeaderPaths && target.extraCxxAbsHeaderPaths.length > 0) {
-    for (const p of target.extraCxxAbsHeaderPaths) {
-      if (target._appRoot != null) {
-        const rel = path.relative(target._appRoot, p);
-        cxxFlagItems.push(`"-I", appRoot + "/${rel}"`);
-      } else {
-        cxxFlagItems.push(`"-I", "${p}"`);
-      }
-    }
-  }
-
-  const cFlags = `[${cFlagItems.join(', ')}]`;
-  const cxxFlagsWithExtras = `[${cxxFlagItems.join(', ')}]`;
-
-  const resourcesLine =
-    target.resources && target.resources.length > 0
-      ? `\n${indent}    resources: [${target.resources.map(r => `.copy("${r}")`).join(', ')}],`
-      : '';
-
-  return `${indent}.target(
-${indent}    name: "${target.name}",${depsLine}
-${indent}    path: "${target.path}",${excludesList}${publicHeadersLine}${resourcesLine}
-${indent}    cSettings: [.unsafeFlags(${cFlags})],
-${indent}    cxxSettings: [
-${indent}    .unsafeFlags(${cxxFlagsWithExtras})],
-${indent}    linkerSettings: [.linkedFramework("UIKit"), .linkedFramework("Foundation")]
-${indent})`;
 }
 
 /**
@@ -453,90 +485,132 @@ ${indent})`;
  * codegenReactHeadersPath – absolute path to build/generated/ios/ReactCodegen.
  *   When non-null, all C++ targets get -I <path> so <react/renderer/...> resolves.
  */
+/**
+ * Top-level autolinked/Package.swift — a thin aggregator that references each
+ * autolinked dep as its own sub-package (under packages/<SwiftName>) and
+ * re-exports them through a single AutolinkedAggregate target. Per-dep
+ * settings (header paths, cFlags, link order) live in each synth sub-package;
+ * see generateSynthPackageSwift below.
+ *
+ * input: { deps: Array<{swiftName: string}> }
+ */
 function generateAutolinkedPackageSwift(
-  targets /*: Array<SpmTarget> */,
-  xcframeworksRelPath /*: string | null */,
-  xcfwHeadersPath /*: string | null */ = null,
-  depsXcfwHeadersPath /*: string | null */ = null,
-  codegenHeadersPath /*: string | null */ = null,
-  codegenReactHeadersPath /*: string | null */ = null,
-  appRoot /*: string | null */ = null,
+  input /*: AggregatorInput */,
 ) /*: string */ {
-  const hasReactDep = xcframeworksRelPath != null;
-  // When xcframeworks are configured, always emit the xcfwHeaders/depsHeaders
-  // Swift variables. The generated Swift code resolves symlinks at Xcode build
-  // time via URL(fileURLWithPath:).resolvingSymlinksInPath(), so the paths
-  // don't need to exist at generation time. Gating on the JS-resolved path
-  // caused first-run failures where step 2 (autolinking) ran before step 4
-  // (xcframework symlink creation), producing a broken Package.swift.
-  const hasXcfwHeaders = xcframeworksRelPath != null;
-  const hasDepsHeaders = xcframeworksRelPath != null;
+  const npmDeps /*: $ReadOnlyArray<NpmDepRef> */ = input.npmDeps ?? [];
+  const inlineTargets /*: $ReadOnlyArray<SpmTarget> */ = input.inlineTargets ?? [];
+  const hasReactDep /*: boolean */ = input.hasReactDep !== false;
+  const hasXcfwHeaders /*: boolean */ = input.hasXcfwHeaders === true;
+  const hasDepsHeaders /*: boolean */ = input.hasDepsHeaders === true;
+  const codegenHeadersIncluded /*: boolean */ =
+    input.codegenHeadersIncluded === true;
+  // Relative path from autolinked/ to build/xcframeworks/, e.g. "../build/xcframeworks".
+  const xcframeworksRelPath /*: ?string */ = input.xcframeworksRelPath;
 
-  // SPM Package() argument order: name, platforms, products, dependencies, targets
-  const reactPackageDep =
-    xcframeworksRelPath != null
-      ? `    dependencies: [\n        .package(name: "ReactNative", path: "${xcframeworksRelPath}"),\n    ],\n`
-      : '';
-
-  if (targets.length === 0) {
-    return `// AUTO-GENERATED by scripts/generate-spm-autolinking.js – do not edit manually.
-// No native modules with iOS support were found.
-// swift-tools-version: 6.0
-import PackageDescription
-
-let package = Package(
-    name: "Autolinked",
-    platforms: [.iOS(.v15)],
-    products: [
-        .library(name: "Autolinked", targets: ["AutolinkedStub"]),
-    ],
-${reactPackageDep}    targets: [
-        .target(name: "AutolinkedStub", path: "sources/stub", sources: ["Stub.swift"]),
-    ]
-)
-`;
+  // Package-level dependencies: one .package(path:) per autolinked dep,
+  // plus ReactNative if any inline target needs to import React headers.
+  const packageDeps /*: Array<string> */ = npmDeps.map(d => {
+    const pkgPath = d.packagePath ?? `packages/${d.swiftName}`;
+    return `.package(name: "${d.swiftName}", path: "${pkgPath}")`;
+  });
+  if (
+    inlineTargets.length > 0 &&
+    hasReactDep &&
+    typeof xcframeworksRelPath === 'string'
+  ) {
+    packageDeps.push(
+      `.package(name: "ReactNative", path: "${xcframeworksRelPath}")`,
+    );
   }
 
-  const targetNames = targets.map(t => `"${t.name}"`).join(', ');
-  // Merge codegen paths into every target's extraCxxAbsHeaderPaths.
-  const targetDecls = targets
-    .map(t => {
-      const codegenPaths /*: Array<string> */ = [];
-      if (codegenHeadersPath != null) codegenPaths.push(codegenHeadersPath);
-      if (codegenReactHeadersPath != null)
-        codegenPaths.push(codegenReactHeadersPath);
-      const merged /*: SpmTarget */ = {
-        ...t,
-        extraCxxAbsHeaderPaths: [
-          ...(t.extraCxxAbsHeaderPaths ?? []),
-          ...codegenPaths,
-        ],
-        _appRoot: appRoot,
-      };
-      return generateTargetDecl(
-        merged,
-        hasReactDep,
-        hasXcfwHeaders,
-        hasDepsHeaders,
-      );
-    })
-    .join(',\n');
+  // AutolinkedAggregate's target dependencies: .product(...) for npm sub-package
+  // products and .target(...) for inline spmModule targets in the same package.
+  const aggregateDeps /*: Array<string> */ = [
+    ...npmDeps.map(
+      d => `.product(name: "${d.swiftName}", package: "${d.swiftName}")`,
+    ),
+    ...inlineTargets.map(t => `.target(name: "${t.name}")`),
+  ];
 
-  let xcfwHeadersVar = hasXcfwHeaders
-    ? `\nlet vfsOverlay = appRoot + "/build/xcframeworks/React-VFS.yaml"\n\n// React.xcframework/Headers – resolves the build/xcframeworks/ symlink to the real cache path.\nlet xcfwHeaders = URL(fileURLWithPath: appRoot + "/build/xcframeworks/React.xcframework").resolvingSymlinksInPath().path + "/Headers"\n`
+  // Per-target c/cxx flag stacks (shared across inline targets).
+  const cFlagsCore /*: Array<string> */ = hasXcfwHeaders
+    ? [
+        '"-ivfsoverlay", vfsOverlay',
+        '"-I", xcfwHeaders',
+        '"-I", xcfwHeaders + "/React_RCTAppDelegate"',
+      ]
+    : [];
+  const cxxFlagsCore /*: Array<string> */ = hasXcfwHeaders
+    ? ['"-fno-implicit-module-maps"', ...cFlagsCore]
+    : [];
+  if (hasDepsHeaders) {
+    cxxFlagsCore.push('"-I", depsHeaders');
+  }
+  if (codegenHeadersIncluded) {
+    cxxFlagsCore.push(
+      '"-I", appRoot + "/build/generated/ios"',
+      '"-I", appRoot + "/build/generated/ios/ReactCodegen"',
+    );
+  }
+
+  const inlineDecls = inlineTargets.map(t => {
+    const excludeLine =
+      t.exclude && t.exclude.length > 0
+        ? `\n            exclude: [${t.exclude.map(e => `"${e}"`).join(', ')}],`
+        : '';
+    const publicHeadersLine =
+      t.publicHeadersPath != null
+        ? `\n            publicHeadersPath: "${t.publicHeadersPath}",`
+        : '';
+    const resourcesLine =
+      t.resources && t.resources.length > 0
+        ? `\n            resources: [${t.resources.map(r => `.copy("${r}")`).join(', ')}],`
+        : '';
+    const cSettingsLine =
+      cFlagsCore.length > 0
+        ? `\n            cSettings: [.unsafeFlags([${cFlagsCore.join(', ')}])],`
+        : '';
+    const cxxSettingsLine =
+      cxxFlagsCore.length > 0
+        ? `\n            cxxSettings: [.unsafeFlags([${cxxFlagsCore.join(', ')}])],`
+        : '';
+    return `        .target(
+            name: "${t.name}",
+            dependencies: [.product(name: "ReactNative", package: "ReactNative")],
+            path: "${t.path}",${excludeLine}${publicHeadersLine}${resourcesLine}${cSettingsLine}${cxxSettingsLine}
+            linkerSettings: [.linkedFramework("UIKit"), .linkedFramework("Foundation"), .linkedFramework("CoreGraphics")]
+        )`;
+  });
+
+  const packageDepsBlock =
+    packageDeps.length > 0
+      ? `    dependencies: [\n        ${packageDeps.join(',\n        ')},\n    ],\n`
+      : '';
+  const aggregateDepsLine =
+    aggregateDeps.length > 0
+      ? `\n            dependencies: [${aggregateDeps.join(', ')}],`
+      : '';
+
+  const xcfwHeadersVar = hasXcfwHeaders
+    ? `\nlet vfsOverlay = appRoot + "/build/xcframeworks/React-VFS.yaml"\nlet xcfwHeaders = URL(fileURLWithPath: appRoot + "/build/xcframeworks/React.xcframework").resolvingSymlinksInPath().path + "/Headers"\n`
     : '';
   const depsHeadersVar = hasDepsHeaders
-    ? `\n// ReactNativeDependencies.xcframework/Headers – gives C++ targets\n// access to <glog/...>, <folly/...>, <boost/...>, etc.\nlet depsHeaders = URL(fileURLWithPath: appRoot + "/build/xcframeworks/ReactNativeDependencies.xcframework").resolvingSymlinksInPath().path + "/Headers"\n`
+    ? `let depsHeaders = URL(fileURLWithPath: appRoot + "/build/xcframeworks/ReactNativeDependencies.xcframework").resolvingSymlinksInPath().path + "/Headers"\n`
     : '';
 
+  const inlineDeclsBlock =
+    inlineDecls.length > 0 ? `,\n${inlineDecls.join(',\n')}` : '';
+
   return `// AUTO-GENERATED by scripts/generate-spm-autolinking.js – do not edit manually.
-// Re-generate by running: node node_modules/react-native/scripts/setup-ios-spm.js
+// Top-level Autolinked package. Every autolinked dep (npm or spmModule) is
+// referenced as .package(path: <dep-source-dir>) — each has its own synth
+// Package.swift written in-place. AutolinkedAggregate depends on every dep's
+// product so the app build pulls them all in.
 // swift-tools-version: 6.0
 
 import PackageDescription
 import Foundation
 
-// Derive all paths from this file's location – no machine-specific absolute paths.
 let packageDir = URL(fileURLWithPath: #filePath).deletingLastPathComponent().path
 let appRoot = packageDir + "/.."
 ${xcfwHeadersVar}${depsHeadersVar}
@@ -544,14 +618,208 @@ let package = Package(
     name: "Autolinked",
     platforms: [.iOS(.v15)],
     products: [
-        .library(
-            name: "Autolinked",
-            targets: [${targetNames}]),
+        .library(name: "Autolinked", targets: ["AutolinkedAggregate"]),
     ],
-${reactPackageDep}    targets: [
-${targetDecls},
+${packageDepsBlock}    targets: [
+        .target(
+            name: "AutolinkedAggregate",${aggregateDepsLine}
+            path: "AutolinkedAggregate"
+        )${inlineDeclsBlock}
     ],
-    // React Native headers require C++17 (std::optional, std::is_same_v, etc.)
+    cxxLanguageStandard: .cxx20
+)
+`;
+}
+
+/**
+ * Per-dep synthesized Package.swift.
+ *
+ * Two emission modes, selected by which spec fields are set:
+ *   - Wrapper-dir (production): set `appRootAbsolute`,
+ *     `siblingSynthAbsolutePaths`, and `autogenHeadersAbsolute`. The synth
+ *     file lives at <outputDir>/packages/<SwiftName>/Package.swift with
+ *     `targetPath: "root"` — `root` is a directory symlink to the real
+ *     source dir, so source files stay real (Xcode atomic-save works).
+ *     Cross-package angle includes resolve via `-I <autogenHeadersAbsolute>`
+ *     instead of SPM's `publicHeadersPath` (keeps source dirs untouched).
+ *   - Sub-package (legacy): set `appRootRelativeToPackage` +
+ *     `siblingPackageBaseRelative`. Kept only for backwards-compat tests.
+ */
+function generateSynthPackageSwift(
+  spec /*: SynthPackageSpec */,
+) /*: string */ {
+  const swiftName /*: string */ = spec.swiftName;
+  const exclude /*: Array<string> */ = spec.exclude ?? [];
+  const sources /*: ?Array<string> */ = spec.sources;
+  const publicHeadersPath /*: ?string */ = spec.publicHeadersPath ?? null;
+  const spmDependencies /*: Array<{swiftName: string}> */ =
+    spec.spmDependencies ?? [];
+  const hasReactDep /*: boolean */ = spec.hasReactDep !== false;
+  const hasXcfwHeaders /*: boolean */ = spec.hasXcfwHeaders === true;
+  const hasDepsHeaders /*: boolean */ = spec.hasDepsHeaders === true;
+  const codegenHeadersIncluded /*: boolean */ =
+    spec.codegenHeadersIncluded === true;
+  const resources /*: ?Array<string> */ = spec.resources;
+  const isDynamic /*: boolean */ = spec.isDynamic !== false;
+  const targetPath /*: string */ = spec.targetPath ?? `Sources/${swiftName}`;
+  const appRootAbsolute /*: ?string */ = spec.appRootAbsolute;
+  const autogenHeadersAbsolute /*: ?string */ = spec.autogenHeadersAbsolute;
+  const siblingSynthAbsolutePaths /*: {[string]: string} */ =
+    spec.siblingSynthAbsolutePaths ?? {};
+
+  // Package dependencies — ReactNative + each spm sibling synth package.
+  // In-place mode uses absolute paths (or appRoot + "/build/xcframeworks"
+  // for the React dep); sub-package mode walks up via relative paths.
+  const packageDeps /*: Array<string> */ = [];
+  if (appRootAbsolute != null) {
+    if (hasReactDep) {
+      packageDeps.push(
+        `.package(name: "ReactNative", path: appRoot + "/build/xcframeworks")`,
+      );
+    }
+    for (const dep of spmDependencies) {
+      const absPath = siblingSynthAbsolutePaths[dep.swiftName];
+      if (absPath == null) {
+        throw new Error(
+          `generateSynthPackageSwift: in-place mode requires siblingSynthAbsolutePaths["${dep.swiftName}"] for dep "${swiftName}"`,
+        );
+      }
+      packageDeps.push(
+        `.package(name: "${dep.swiftName}", path: "${absPath}")`,
+      );
+    }
+  } else {
+    const appRootRelativeToPackage /*: string */ =
+      spec.appRootRelativeToPackage ?? '/../../..';
+    const reactNativeRel = `${appRootRelativeToPackage}/build/xcframeworks`.replace(
+      /^\/+/,
+      '',
+    );
+    const siblingRel /*: string */ = spec.siblingPackageBaseRelative ?? '..';
+    if (hasReactDep) {
+      packageDeps.push(
+        `.package(name: "ReactNative", path: "${reactNativeRel}")`,
+      );
+    }
+    for (const dep of spmDependencies) {
+      packageDeps.push(
+        `.package(name: "${dep.swiftName}", path: "${siblingRel}/${dep.swiftName}")`,
+      );
+    }
+  }
+
+  // Target dependencies — products from each declared package dep.
+  const targetDeps /*: Array<string> */ = [];
+  if (hasReactDep) {
+    targetDeps.push('.product(name: "ReactNative", package: "ReactNative")');
+  }
+  for (const dep of spmDependencies) {
+    targetDeps.push(
+      `.product(name: "${dep.swiftName}", package: "${dep.swiftName}")`,
+    );
+  }
+
+  // C / C++ settings — same shape as the old inline emitter.
+  const cFlags /*: Array<string> */ = hasXcfwHeaders
+    ? [
+        '"-ivfsoverlay", vfsOverlay',
+        '"-I", xcfwHeaders',
+        '"-I", xcfwHeaders + "/React_RCTAppDelegate"',
+      ]
+    : [];
+  const cxxFlags /*: Array<string> */ = hasXcfwHeaders
+    ? ['"-fno-implicit-module-maps"', ...cFlags]
+    : [];
+  if (hasDepsHeaders) {
+    cxxFlags.push('"-I", depsHeaders');
+  }
+  if (codegenHeadersIncluded) {
+    cxxFlags.push(
+      '"-I", appRoot + "/build/generated/ios"',
+      '"-I", appRoot + "/build/generated/ios/ReactCodegen"',
+    );
+  }
+  // Centralized cross-package headers: each consumer gets -I <autogenHeaders>
+  // so `#import <Foo/Header.h>` resolves via <autogenHeaders>/Foo/Header.h
+  // (file symlink to the real header in Foo's source dir). Replaces the
+  // legacy per-package `publicHeadersPath` mechanism — keeps user source
+  // dirs free of generated `include/<Name>/` subdirs.
+  if (autogenHeadersAbsolute != null) {
+    cFlags.push(`"-I", "${autogenHeadersAbsolute}"`);
+    cxxFlags.push(`"-I", "${autogenHeadersAbsolute}"`);
+  }
+
+  // Helper Swift vars (only emitted when needed)
+  const xcfwHeadersVar = hasXcfwHeaders
+    ? `\nlet vfsOverlay = appRoot + "/build/xcframeworks/React-VFS.yaml"\nlet xcfwHeaders = URL(fileURLWithPath: appRoot + "/build/xcframeworks/React.xcframework").resolvingSymlinksInPath().path + "/Headers"\n`
+    : '';
+  const depsHeadersVar = hasDepsHeaders
+    ? `let depsHeaders = URL(fileURLWithPath: appRoot + "/build/xcframeworks/ReactNativeDependencies.xcframework").resolvingSymlinksInPath().path + "/Headers"\n`
+    : '';
+
+  const excludeLine =
+    exclude.length > 0
+      ? `\n            exclude: [${exclude.map(e => `"${e}"`).join(', ')}],`
+      : '';
+  // sources: explicit allowlist. One file per line because lists can run to
+  // dozens of entries and an unbroken array becomes unreadable in diffs.
+  const sourcesLine =
+    sources != null && sources.length > 0
+      ? `\n            sources: [\n${sources.map(s => `                "${s}",`).join('\n')}\n            ],`
+      : '';
+  const publicHeadersLine =
+    publicHeadersPath != null
+      ? `\n            publicHeadersPath: "${publicHeadersPath}",`
+      : '';
+  const resourcesLine =
+    resources != null && resources.length > 0
+      ? `\n            resources: [${resources.map(r => `.copy("${r}")`).join(', ')}],`
+      : '';
+
+  const packageDepsBlock =
+    packageDeps.length > 0
+      ? `    dependencies: [\n        ${packageDeps.join(',\n        ')},\n    ],\n`
+      : '';
+  const cSettingsLine =
+    cFlags.length > 0
+      ? `\n            cSettings: [.unsafeFlags([${cFlags.join(', ')}])],`
+      : '';
+  const cxxSettingsLine =
+    cxxFlags.length > 0
+      ? `\n            cxxSettings: [.unsafeFlags([${cxxFlags.join(', ')}])],`
+      : '';
+
+  // appRoot — either a hardcoded absolute path (in-place mode) or a
+  // relative-to-packageDir expression (sub-package mode).
+  const appRootDecl =
+    appRootAbsolute != null
+      ? `let appRoot = "${appRootAbsolute}"`
+      : `let packageDir = URL(fileURLWithPath: #filePath).deletingLastPathComponent().path
+let appRoot = packageDir + "${spec.appRootRelativeToPackage ?? '/../../..'}"`;
+
+  return `// AUTO-GENERATED by scripts/generate-spm-autolinking.js – do not edit manually.
+// Synth Package.swift for autolinked dep "${swiftName}".
+// swift-tools-version: 6.0
+
+import PackageDescription
+import Foundation
+
+${appRootDecl}
+${xcfwHeadersVar}${depsHeadersVar}
+let package = Package(
+    name: "${swiftName}",
+    platforms: [.iOS(.v15)],
+    products: [
+        .library(name: "${swiftName}"${isDynamic ? ', type: .dynamic' : ''}, targets: ["${swiftName}"]),
+    ],
+${packageDepsBlock}    targets: [
+        .target(
+            name: "${swiftName}",
+            dependencies: [${targetDeps.join(', ')}],
+            path: "${targetPath}",${excludeLine}${sourcesLine}${publicHeadersLine}${resourcesLine}${cSettingsLine}${cxxSettingsLine}
+            linkerSettings: [.linkedFramework("UIKit"), .linkedFramework("Foundation"), .linkedFramework("CoreGraphics")]
+        ),
+    ],
     cxxLanguageStandard: .cxx20
 )
 `;
@@ -559,8 +827,8 @@ ${targetDecls},
 
 function main(argv /*:: ?: Array<string> */) /*: void */ {
   const args = parseArgs(argv ?? process.argv.slice(2));
-  // Always resolve appRoot to absolute so path.join() produces absolute paths
-  // (e.g. for extraCxxAbsHeaderPaths that go into unsafeFlags).
+  // Resolve to absolute so path.join() produces absolute paths everywhere —
+  // entryAbsDirs, autogenHeadersAbsolute, etc. all assume absolute appRoot.
   const appRoot = path.resolve(args.appRoot);
 
   let rnRoot = args.reactNativeRoot;
@@ -593,29 +861,47 @@ function main(argv /*:: ?: Array<string> */) /*: void */ {
     args.autolinkingJson ??
     path.join(appRoot, 'build', 'generated', 'autolinking', 'autolinking.json');
 
+  // Output lands under <appRoot>/build/generated/autolinking/ — co-located
+  // with autolinking.json (written by generate-spm-autolinking-config.js) and
+  // alongside the iOS-conventional build/ tree (Pods/, build/xcframeworks/…).
   const outputDir =
     args.output != null
       ? path.resolve(appRoot, args.output)
-      : path.join(appRoot, 'autolinked');
+      : path.join(appRoot, 'build', 'generated', 'autolinking');
 
-  // Collect all targets
-  const targets /*: Array<SpmTarget> */ = [];
+  // Collect all targets along with their routing metadata.
+  const entries /*: Array<TargetEntry> */ = [];
 
-  // 1. From autolinking.json (npm packages with iOS native modules)
+  // 1. From autolinking.json (npm packages with iOS native modules), expanded
+  //    with transitive deps declared via `spm.dependencies` in each package's
+  //    react-native.config.js (analog of podspec `s.dependency`).
   const autolinkingData = readAutolinkingJson(autolinkingJsonPath);
-  // $FlowFixMe[prop-missing] autolinkingData is Object|null, dependencies is dynamic
-  if (autolinkingData?.dependencies) {
-    // $FlowFixMe[incompatible-use] Object.entries values typed as mixed
-    // $FlowFixMe[prop-missing] autolinkingData is Object|null, dependencies is dynamic
-    for (const [depName, dep] of Object.entries(autolinkingData.dependencies)) {
-      const target = autolinkingDepToSpmTarget(
-        depName,
-        // $FlowFixMe[incompatible-call] Object.entries values typed as mixed
-        dep,
-        appRoot,
-      );
+  const depsMap = autolinkingData?.dependencies;
+  if (depsMap != null) {
+    // Narrow each on-disk AutolinkingDepJson into the validated AutolinkedDep
+    // shape expected by expandSpmDependencies and autolinkingDepToSpmTarget.
+    const directDeps /*: Array<AutolinkedDep> */ = [];
+    for (const name of Object.keys(depsMap)) {
+      const dep = depsMap[name];
+      if (dep == null) continue;
+      const iosPlatform = dep.platforms?.ios;
+      const root = dep.root;
+      if (iosPlatform == null || root == null) continue;
+      directDeps.push({
+        name,
+        root,
+        platforms: {ios: iosPlatform},
+      });
+    }
+    const allDeps = expandSpmDependencies(directDeps, {
+      readConfig: defaultReadConfig,
+      resolveDep: defaultResolveDep,
+    });
+
+    for (const dep of allDeps) {
+      const target = autolinkingDepToSpmTarget(dep.name, dep, outputDir);
       if (target != null) {
-        targets.push(target);
+        entries.push({target, origin: 'npm'});
         log(`Found npm native module: ${target.name} → ${target.path}`);
       }
     }
@@ -625,90 +911,30 @@ function main(argv /*:: ?: Array<string> */) /*: void */ {
     );
   }
 
-  // 2. From react-native.config.js spmModules (user-defined extra modules)
+  // 2. From react-native.config.js spmModules (user-defined extra modules).
+  // If the module declares `sources: [glob, ...]` (CocoaPods-style), expand
+  // the globs now relative to its dir and attach the file list to the target
+  // so the emission loop below renders `sources: [...]` literally.
   const configModules = readSpmModulesFromConfig(appRoot);
-  const autolinkedDir = path.join(appRoot, 'autolinked');
   for (const mod of configModules) {
     const absPath = path.resolve(appRoot, mod.path);
-    const relPath = path.relative(autolinkedDir, absPath);
-    targets.push({
-      name: mod.name,
-      path: relPath,
-      exclude: mod.exclude ?? [],
-      publicHeadersPath: mod.publicHeadersPath ?? null,
+    const relPath = path.relative(outputDir, absPath);
+    const userSources =
+      Array.isArray(mod.sources) && mod.sources.length > 0
+        ? expandSpmSourceGlobs(absPath, mod.sources)
+        : null;
+    entries.push({
+      target: {
+        name: mod.name,
+        path: relPath,
+        exclude: mod.exclude ?? [],
+        publicHeadersPath: mod.publicHeadersPath ?? null,
+        sources: userSources,
+      },
+      origin: 'spmModule',
     });
     log(`Config module: ${mod.name} → ${relPath}`);
   }
-
-  // SPM source target path: must stay within the package root (outputDir).
-  // For targets whose real source is outside outputDir we create a REAL
-  // directory at outputDir/sources/<name>/ containing individual file symlinks.
-  // This avoids SPM's path-containment check (which resolves directory symlinks)
-  // while still keeping source file references up-to-date.
-  const sourcesDir = path.join(outputDir, 'sources');
-  const resolvedTargets /*: Array<SpmTarget> */ = targets.map(target => {
-    // Compute the absolute source path (target.path is relative to outputDir)
-    const absSource = path.resolve(outputDir, target.path);
-    const relFromOutput = path.relative(outputDir, absSource);
-
-    if (relFromOutput.startsWith('..')) {
-      // Source is outside the package root – mirror with individual file symlinks
-      fs.mkdirSync(sourcesDir, {recursive: true});
-      const mirrorDir = path.join(sourcesDir, target.name);
-
-      // Build the set of directory names to skip (from the target's exclude list)
-      const skipDirNames = new Set(
-        (target.exclude || [])
-          .filter(e => e.endsWith('/'))
-          .map(e => e.slice(0, -1)),
-      );
-      createMirroredSources(absSource, mirrorDir, skipDirNames);
-      log(`Mirrored: sources/${target.name} → ${path.relative(appRoot, absSource)}`);
-
-      // Symlink PrivacyInfo.xcprivacy into the mirrored directory if present.
-      // createMirroredSources only handles source extensions, so we copy it separately.
-      let mirroredResources /*: Array<string> | void */ = target.resources;
-      if (target.resources && target.resources.length > 0) {
-        mirroredResources = [];
-        for (const res of target.resources) {
-          const srcRes = path.join(absSource, res);
-          if (fs.existsSync(srcRes)) {
-            const destRes = path.join(mirrorDir, path.basename(res));
-            try {
-              fs.unlinkSync(destRes);
-            } catch {
-              // nothing to remove
-            }
-            fs.symlinkSync(srcRes, destRes);
-            // Resource path is now at root of mirrored dir
-            mirroredResources.push(path.basename(res));
-          }
-        }
-        if (mirroredResources.length === 0) {
-          mirroredResources = undefined;
-        }
-      }
-
-      // Use explicit publicHeadersPath if the target declares one; otherwise
-      // infer from the mirrored directory (which only contains the filtered
-      // source files – no test directories etc.)
-      const publicHeadersPath =
-        target.publicHeadersPath != null
-          ? target.publicHeadersPath
-          : inferPublicHeadersPath(mirrorDir);
-
-      // exclude: is handled by createMirroredSources; no further exclusions needed
-      return {
-        ...target,
-        path: `sources/${target.name}`,
-        exclude: [],
-        publicHeadersPath,
-        resources: mirroredResources,
-      };
-    }
-
-    return target;
-  });
 
   // Resolve xcframeworks package path relative to outputDir (autolinked/).
   // When provided this causes each target to declare a React dependency so
@@ -722,8 +948,6 @@ function main(argv /*:: ?: Array<string> */) /*: void */ {
     const absXcfw = path.resolve(appRoot, args.xcframeworksPath);
     xcframeworksRelPath = path.relative(outputDir, absXcfw);
   } else {
-    // Default: build/xcframeworks/ relative to appRoot.
-    // Use this path even if the directory doesn't exist yet.
     const defaultXcfw = path.join(appRoot, 'build', 'xcframeworks');
     xcframeworksRelPath = path.relative(outputDir, defaultXcfw);
   }
@@ -734,71 +958,310 @@ function main(argv /*:: ?: Array<string> */) /*: void */ {
     );
   }
 
-  // Resolve React.xcframework/Headers path so we can add -I xcfwHeaders to
-  // each target's cSettings/cxxSettings.  This lets <ReactCommon/...> and other
-  // non-framework headers resolve via the merged layout at xcframeworkPath/Headers.
-  let xcfwHeadersPath /*: string | null */ = null;
-  let depsXcfwHeadersPath /*: string | null */ = null;
-  if (xcframeworksRelPath != null) {
-    const absXcfwDir = path.resolve(outputDir, xcframeworksRelPath);
-    for (const [name, varName] of [
-      ['React.xcframework', 'xcfwHeadersPath'],
-      ['ReactNativeDependencies.xcframework', 'depsXcfwHeadersPath'],
-    ]) {
-      const link = path.join(absXcfwDir, name);
-      try {
-        const resolved = fs.realpathSync(link);
-        const hp = path.join(resolved, 'Headers');
-        if (fs.existsSync(hp)) {
-          if (varName === 'xcfwHeadersPath') {
-            xcfwHeadersPath = hp;
-            log(`xcfwHeaders: ${displayPath(hp)}`);
-          } else {
-            depsXcfwHeadersPath = hp;
-            log(`depsHeaders: ${displayPath(hp)}`);
-          }
-        }
-      } catch {
-        // xcframework symlink not present yet (first run before artifacts are set up)
-      }
-    }
-  }
-
-  // Codegen output header paths – needed by all autolinked targets that include
-  // codegen-generated headers (<ReactCodegen/...> or <react/renderer/...>).
+  // Codegen output header paths – needed by C++ autolinked targets that
+  // include codegen-generated headers (<ReactCodegen/...> or <react/renderer/...>).
   const codegenHeadersPath = path.join(appRoot, 'build', 'generated', 'ios');
   const codegenReactHeadersPath = path.join(codegenHeadersPath, 'ReactCodegen');
   const hasCodgenHeaders =
     fs.existsSync(codegenHeadersPath) && fs.existsSync(codegenReactHeadersPath);
   if (hasCodgenHeaders) {
     log(`codegenHeaders: ${path.relative(appRoot, codegenHeadersPath)}`);
-    log(`codegenReactHeaders: ${path.relative(appRoot, codegenReactHeadersPath)}`);
+    log(
+      `codegenReactHeaders: ${path.relative(appRoot, codegenReactHeadersPath)}`,
+    );
   }
 
-  // Generate Package.swift
-  const content = generateAutolinkedPackageSwift(
-    resolvedTargets,
-    xcframeworksRelPath,
-    xcfwHeadersPath,
-    depsXcfwHeadersPath,
-    hasCodgenHeaders ? codegenHeadersPath : null,
-    hasCodgenHeaders ? codegenReactHeadersPath : null,
-    appRoot,
-  );
+  const hasReactDep = xcframeworksRelPath != null;
+  const hasXcfwHeaders = xcframeworksRelPath != null;
+  const hasDepsHeaders = xcframeworksRelPath != null;
 
+  const AUTOGEN_MARKER =
+    '// AUTO-GENERATED by scripts/generate-spm-autolinking.js';
+
+  // A dep is "self-managed" when its source dir ships a hand-written
+  // Package.swift (i.e. one that lacks our AUTOGEN_MARKER). The autolinker
+  // skips wrapping it and references the dep's source dir directly — useful
+  // for libraries that want to ship a real SPM manifest and have full
+  // control over their target settings.
+  const isSelfManagedPackage = (absSource /*: string */) /*: boolean */ => {
+    const pkgSwift = path.join(absSource, 'Package.swift');
+    try {
+      const content = fs.readFileSync(pkgSwift, 'utf8');
+      return !content.includes(AUTOGEN_MARKER);
+    } catch {
+      return false;
+    }
+  };
+
+  // Each entry gets a wrapper dir at <outputDir>/packages/<SwiftName>/ that
+  // contains the synth Package.swift and a `root` directory symlink pointing
+  // at the dep's real source dir. SPM derives package identity from the path
+  // basename, so the wrapper's unique name (SwiftName) sidesteps the basename
+  // collision that in-place at the source dir would have. Files inside the
+  // source dir stay real, so Xcode's atomic-save works through the dir
+  // symlink (intermediate path components — even symlinks — resolve cleanly;
+  // the issue was only file-symlinks as the final path component).
+  const entryAbsDirs /*: Map<string, string> */ = new Map();
+  for (const entry of entries) {
+    entryAbsDirs.set(
+      entry.target.name,
+      path.resolve(outputDir, entry.target.path),
+    );
+  }
+
+  const packagesDir = path.join(outputDir, 'packages');
+  const headersDir = path.join(outputDir, 'headers');
+  fs.mkdirSync(packagesDir, {recursive: true});
+  fs.mkdirSync(headersDir, {recursive: true});
+
+  const wrapperDirs /*: Map<string, string> */ = new Map();
+  const selfManagedDirs /*: Map<string, string> */ = new Map();
+  const aggregatorPackageDeps /*: Array<NpmDepRef> */ = [];
+
+  for (const entry of entries) {
+    const {target} = entry;
+    const absSource /*: string */ = entryAbsDirs.get(target.name) ?? '';
+    if (!fs.existsSync(absSource)) {
+      log(`Skipping ${target.name}: source dir missing (${absSource})`);
+      continue;
+    }
+    if (isSelfManagedPackage(absSource)) {
+      selfManagedDirs.set(target.name, absSource);
+      log(`Self-managed: ${target.name} → ${path.relative(appRoot, absSource)} (using its own Package.swift)`);
+      continue;
+    }
+    const wrapperDir = path.join(packagesDir, target.name);
+    wrapperDirs.set(target.name, wrapperDir);
+    fs.mkdirSync(wrapperDir, {recursive: true});
+    ensureSymlink(path.join(wrapperDir, WRAPPER_ROOT_NAME), absSource);
+  }
+
+  // Sibling refs: each synth Package.swift declares its sibling deps via the
+  // dep's actual package root — wrapper dir for autolinker-managed deps,
+  // source dir for self-managed ones. SPM identity stays unique either way
+  // (wrapper basename = SwiftName; self-managed manifests declare the same
+  // package name).
+  const siblingPackagePaths /*: {[string]: string} */ = {};
+  for (const [name, wrapper] of wrapperDirs.entries()) {
+    siblingPackagePaths[name] = wrapper;
+  }
+  for (const [name, sourceDir] of selfManagedDirs.entries()) {
+    siblingPackagePaths[name] = sourceDir;
+  }
+
+  for (const entry of entries) {
+    const {target} = entry;
+    const absSource /*: string */ = entryAbsDirs.get(target.name) ?? '';
+
+    // Self-managed deps: skip the synth step entirely. The dep's own
+    // Package.swift handles its targets, headers, and React framework
+    // wiring. We just register it with the aggregator so the app pulls it
+    // in alongside autolinker-managed deps. The central headers/<SwiftName>/
+    // tree still gets populated so consumers (host app + sibling synths
+    // that hit -I autolinking/headers) can resolve `<SwiftName/Header.h>`
+    // by file path — synth packages use `-fno-implicit-module-maps`, so
+    // we can't rely on SPM's auto-generated module map alone.
+    if (selfManagedDirs.has(target.name)) {
+      linkHeaderTree(absSource, path.join(headersDir, target.name));
+      aggregatorPackageDeps.push({
+        swiftName: target.name,
+        packagePath: absSource,
+      });
+      continue;
+    }
+
+    const wrapperDir = wrapperDirs.get(target.name);
+    if (wrapperDir == null) continue;
+    const skipDirNames = new Set(
+      (target.exclude || [])
+        .filter(e => e.endsWith('/'))
+        .map(e => e.slice(0, -1)),
+    );
+
+    const siblingSynthAbsolutePaths /*: {[string]: string} */ = {};
+    for (const sibling of target.spmTargetDependencies ?? []) {
+      const sibPath = siblingPackagePaths[sibling];
+      if (sibPath != null) {
+        siblingSynthAbsolutePaths[sibling] = sibPath;
+      }
+    }
+
+    // target.path = "." (the wrapper dir) so SPM sees an empty `include/`
+    // sibling of `root/` for its required `publicHeadersPath`. Without that,
+    // SPM defaults publicHeadersPath to "include" and errors out when no
+    // such dir exists inside the dep's source tree. Sources come from
+    // `root/<...>` via the dir symlink — paths from auto-discovery or
+    // user globs are relative to the dep's source dir, so we prefix with
+    // `root/` to keep them inside target.path.
+    const withRoot = (p /*: string */) => `${WRAPPER_ROOT_NAME}/${p}`;
+    const prefixedExclude /*: Array<string> */ = (target.exclude ?? []).map(
+      withRoot,
+    );
+    const prefixedResources /*: ?Array<string> */ =
+      target.resources != null ? target.resources.map(withRoot) : undefined;
+
+    // sources: explicit allowlist. Pre-resolved on the target (spmModule
+    // glob expansion) or auto-collected here. We always emit `sources:` so
+    // SPM never falls back to scanning the source dir verbatim (which would
+    // pick up tests/, *.js, *.podspec, etc.).
+    const rawSources /*: Array<string> */ =
+      target.sources != null && target.sources.length > 0
+        ? target.sources
+        : collectSpmSources(absSource);
+    const prefixedSources /*: ?Array<string> */ =
+      rawSources.length > 0 ? rawSources.map(withRoot) : null;
+
+    const synthContent = generateSynthPackageSwift({
+      swiftName: target.name,
+      exclude: prefixedExclude,
+      sources: prefixedSources,
+      // Stub include/ subdir lives in the wrapper dir; satisfies SPM's
+      // publicHeadersPath requirement without exposing anything. Cross-pkg
+      // angle includes resolve via -I <outputDir>/headers
+      // (autogenHeadersAbsolute below) instead.
+      publicHeadersPath: 'include',
+      resources: prefixedResources,
+      spmDependencies: (target.spmTargetDependencies ?? []).map(swiftName => ({
+        swiftName,
+      })),
+      hasReactDep,
+      hasXcfwHeaders,
+      hasDepsHeaders,
+      codegenHeadersIncluded: hasCodgenHeaders,
+      isDynamic: false,
+      targetPath: '.',
+      appRootAbsolute: appRoot,
+      autogenHeadersAbsolute: headersDir,
+      siblingSynthAbsolutePaths,
+    });
+
+    fs.writeFileSync(
+      path.join(wrapperDir, 'Package.swift'),
+      synthContent,
+      'utf8',
+    );
+    // Centralized headers tree at <outputDir>/headers/<SwiftName>/<relpath>.h.
+    // Used two ways:
+    //   * SPM-internal: cFlags add `-I <outputDir>/headers`, so cross-package
+    //     angle includes like <SwiftName/Header.h> resolve.
+    //   * Host app + sibling consumers: each wrapper's `include/` is a dir
+    //     symlink to its slice of this tree, so `#import <RelPath/Header.h>`
+    //     (e.g. <ReactCommon/RCTSampleTurboModule.h>) resolves through SPM's
+    //     publicHeadersPath propagation (-I .../packages/<SwiftName>/include).
+    const pkgHeadersDir = path.join(headersDir, target.name);
+    linkHeaderTree(absSource, pkgHeadersDir, skipDirNames);
+
+    const includePath = path.join(wrapperDir, 'include');
+    if (fs.existsSync(pkgHeadersDir)) {
+      ensureSymlink(includePath, pkgHeadersDir);
+    } else {
+      // Header-less package (rare): keep an empty dir so SPM's
+      // publicHeadersPath: "include" requirement is still satisfied.
+      fs.mkdirSync(includePath, {recursive: true});
+    }
+
+    log(`Synth: packages/${target.name}/ → ${path.relative(appRoot, absSource)}`);
+
+    aggregatorPackageDeps.push({
+      swiftName: target.name,
+      packagePath: `packages/${target.name}`,
+    });
+  }
+
+  // Prune stale wrappers + header dirs for entries no longer autolinked.
+  // Preserve both wrapper-managed and self-managed names; only entries that
+  // are no longer autolinked at all get removed. Note: `packages/` only has
+  // wrapper-managed names (self-managed deps live in their own source dirs),
+  // but `headers/` has both since we populate the central tree for everyone.
+  const activeNames /*: Set<string> */ = new Set([
+    ...wrapperDirs.keys(),
+    ...selfManagedDirs.keys(),
+  ]);
+  for (const subdir of ['packages', 'headers']) {
+    const dir = path.join(outputDir, subdir);
+    try {
+      const existing /*: Array<{name: string, isSymbolicLink(): boolean, isDirectory(): boolean}> */ =
+        // $FlowFixMe[incompatible-type] Dirent typing
+        fs.readdirSync(dir, {withFileTypes: true});
+      for (const entry of existing) {
+        if (activeNames.has(entry.name)) continue;
+        const stale = path.join(dir, entry.name);
+        if (entry.isSymbolicLink() || !entry.isDirectory()) {
+          fs.unlinkSync(stale);
+        } else {
+          fs.rmSync(stale, {recursive: true, force: true});
+        }
+        log(`Removed stale ${subdir}/${entry.name}`);
+      }
+    } catch {
+      // dir doesn't exist – fine
+    }
+  }
+
+  // Top-level aggregator: references every entry as .package(path:) and
+  // depends on each via .product(...). No more inline targets — every
+  // autolinked dep is a real SPM package in its own source dir.
+  const aggregatorContent = generateAutolinkedPackageSwift({
+    npmDeps: aggregatorPackageDeps,
+    hasReactDep,
+    hasXcfwHeaders,
+    hasDepsHeaders,
+    codegenHeadersIncluded: hasCodgenHeaders,
+    xcframeworksRelPath,
+  });
   fs.mkdirSync(outputDir, {recursive: true});
   const outputPath = path.join(outputDir, 'Package.swift');
-  fs.writeFileSync(outputPath, content, 'utf8');
+  fs.writeFileSync(outputPath, aggregatorContent, 'utf8');
   log(`Generated: ${path.relative(appRoot, outputPath)}`);
 
-  // When there are no autolinked targets, create a stub source file so the
-  // placeholder target in Package.swift resolves without errors.
-  if (targets.length === 0) {
-    const stubDir = path.join(outputDir, 'sources', 'stub');
-    fs.mkdirSync(stubDir, {recursive: true});
-    const stubPath = path.join(stubDir, 'Stub.swift');
-    if (!fs.existsSync(stubPath)) {
-      fs.writeFileSync(stubPath, '// Placeholder — no autolinked native modules.\n', 'utf8');
+  // AutolinkedAggregate is glue; needs at least one source file (Swift, so we
+  // sidestep the Obj-C public-headers-dir requirement).
+  const aggregateDir = path.join(outputDir, 'AutolinkedAggregate');
+  fs.mkdirSync(aggregateDir, {recursive: true});
+  const stubPath = path.join(aggregateDir, 'AutolinkedAggregate.swift');
+  if (!fs.existsSync(stubPath)) {
+    fs.writeFileSync(
+      stubPath,
+      '// Placeholder. Real native modules live in transitively-referenced sub-packages.\n',
+      'utf8',
+    );
+  }
+  const legacyStub = path.join(aggregateDir, 'AutolinkedAggregate.m');
+  if (fs.existsSync(legacyStub)) {
+    fs.unlinkSync(legacyStub);
+  }
+
+  // One-time migration cleanup: remove the legacy <appRoot>/autolinked/ tree
+  // and any stale in-source `Package.swift` / `include/<Name>/` from the
+  // prior in-place layout (those files lived in user source dirs and have
+  // been replaced by the wrapper layout under outputDir).
+  const legacyAutolinkedDir = path.join(appRoot, 'autolinked');
+  if (
+    fs.existsSync(legacyAutolinkedDir) &&
+    path.resolve(legacyAutolinkedDir) !== path.resolve(outputDir)
+  ) {
+    fs.rmSync(legacyAutolinkedDir, {recursive: true, force: true});
+    log(`Removed legacy autolinked/ tree`);
+  }
+  for (const absSource of entryAbsDirs.values()) {
+    const legacyPkg = path.join(absSource, 'Package.swift');
+    try {
+      const content = fs.readFileSync(legacyPkg, 'utf8');
+      if (content.includes(AUTOGEN_MARKER)) {
+        fs.unlinkSync(legacyPkg);
+        log(`Removed legacy in-place synth: ${path.relative(appRoot, legacyPkg)}`);
+      }
+    } catch {
+      // not present – fine
+    }
+    const legacyInclude = path.join(absSource, 'include');
+    try {
+      if (fs.lstatSync(legacyInclude).isDirectory()) {
+        fs.rmSync(legacyInclude, {recursive: true, force: true});
+        log(`Removed legacy in-place include/: ${path.relative(appRoot, legacyInclude)}`);
+      }
+    } catch {
+      // not present – fine
     }
   }
 }
@@ -810,4 +1273,8 @@ if (require.main === module) {
 module.exports = {
   main,
   generateAutolinkedPackageSwift,
+  generateSynthPackageSwift,
+  linkHeaderTree,
+  collectSpmSources,
+  expandSpmSourceGlobs,
 };
