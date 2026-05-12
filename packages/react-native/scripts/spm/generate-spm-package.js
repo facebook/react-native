@@ -37,7 +37,15 @@
  * With --init:    also generates a starter main Package.swift for the developer to commit.
  */
 
-const {deriveAppName, displayPath, findProjectRoot, makeLogger, readPackageJson, resolveReactNativeRoot, toSwiftName} = require('./spm-utils');
+const {
+  deriveAppName,
+  displayPath,
+  findProjectRoot,
+  makeLogger,
+  readPackageJson,
+  resolveReactNativeRoot,
+  toSwiftName,
+} = require('./spm-utils');
 const fs = require('fs');
 const path = require('path');
 const yargs = require('yargs');
@@ -88,7 +96,8 @@ function parseArgs(argv /*: Array<string> */) /*: GeneratePackageArgs */ {
     })
     .option('output', {
       type: 'string',
-      describe: 'Output path for Package.swift (default: app-root/Package.swift)',
+      describe:
+        'Output path for Package.swift (default: app-root/Package.swift)',
     })
     .option('init', {
       type: 'boolean',
@@ -120,7 +129,10 @@ function parseArgs(argv /*: Array<string> */) /*: GeneratePackageArgs */ {
  * Find the app's main Swift/ObjC source directory.
  * Looks for directories that contain native iOS source files.
  */
-function findSourcePath(appRoot /*: string */, packageName /*: string */) /*: string */ {
+function findSourcePath(
+  appRoot /*: string */,
+  packageName /*: string */,
+) /*: string */ {
   // Derive from package name (e.g. "@react-native/tester" -> "Tester")
   const derived = toSwiftName(packageName.replace(/^@[^/]+\//, ''));
 
@@ -137,7 +149,8 @@ function findSourcePath(appRoot /*: string */, packageName /*: string */) /*: st
   // (contains .m, .mm, .swift, or .h files)
   try {
     // $FlowFixMe[incompatible-type] Dirent.name is string|Buffer in Flow but always string here
-    const entries /*: Array<{name: string, isDirectory(): boolean}> */ = fs.readdirSync(appRoot, {withFileTypes: true});
+    const entries /*: Array<{name: string, isDirectory(): boolean}> */ =
+      fs.readdirSync(appRoot, {withFileTypes: true});
     for (const entry of entries) {
       if (!entry.isDirectory()) continue;
       if (entry.name.startsWith('.') || entry.name === 'node_modules') continue;
@@ -175,7 +188,8 @@ function scanSourceFiles(sourceDir /*: string */) /*: ScanResult */ {
     if (!fs.existsSync(dir)) return;
     // $FlowFixMe[incompatible-type] Dirent.name is string|Buffer in Flow but always string here
     // $FlowFixMe[unclear-type] cast through any to coerce Dirent to simpler type
-    const dirEntries /*: Array<{name: string, isDirectory(): boolean}> */ = (fs.readdirSync(dir, {withFileTypes: true}) /*: any */);
+    const dirEntries /*: Array<{name: string, isDirectory(): boolean}> */ =
+      fs.readdirSync(dir, {withFileTypes: true}) /*: any */;
     for (const entry of dirEntries) {
       if (entry.name.startsWith('.')) continue;
       const full = path.join(dir, entry.name);
@@ -242,7 +256,8 @@ ${binaryTargets}
  * This is a one-time generation; subsequent runs of setup-apple-spm.js
  * will NOT overwrite this file.
  */
-function generateInitialPackageSwift(opts /*: {
+function generateInitialPackageSwift(
+  opts /*: {
   appName: string,
   targetName: string,
   sourcePath: string,
@@ -250,7 +265,8 @@ function generateInitialPackageSwift(opts /*: {
   swiftFiles: Array<string>,
   hasObjC: boolean,
   appRoot: string,
-} */) /*: string */ {
+} */,
+) /*: string */ {
   const {
     appName,
     targetName,
@@ -268,8 +284,13 @@ function generateInitialPackageSwift(opts /*: {
   // main.m/main.swift must be excluded because SPM treats them as executable
   // entry points, which is incompatible with .library products.
   const sourceDir = path.join(appRoot, sourcePath);
-  const resourceExcludes = ['main.m', 'main.swift', 'Info.plist', 'Images.xcassets', 'LaunchScreen.storyboard']
-    .filter(f => fs.existsSync(path.join(sourceDir, f)));
+  const resourceExcludes = [
+    'main.m',
+    'main.swift',
+    'Info.plist',
+    'Images.xcassets',
+    'LaunchScreen.storyboard',
+  ].filter(f => fs.existsSync(path.join(sourceDir, f)));
 
   const spmDeps = `dependencies: [
                 .product(name: "ReactNative", package: "ReactNative"),
@@ -281,7 +302,9 @@ function generateInitialPackageSwift(opts /*: {
             ],`;
 
   const formatExclude = (files /*: Array<string> */) =>
-    files.length > 0 ? `\n            exclude: [${files.map(f => `"${f}"`).join(', ')}],` : '';
+    files.length > 0
+      ? `\n            exclude: [${files.map(f => `"${f}"`).join(', ')}],`
+      : '';
 
   let targetsSection;
   if (isMixed) {
@@ -408,7 +431,9 @@ function main(argv /*:: ?: Array<string> */) /*: void */ {
   const projectRoot = findProjectRoot(appRoot);
   const pkgJson = readPackageJson(projectRoot);
   if (!pkgJson) {
-    console.error(`[generate-spm-package] No package.json found in ${appRoot} or parent directories`);
+    console.error(
+      `[generate-spm-package] No package.json found in ${appRoot} or parent directories`,
+    );
     process.exitCode = 1;
     return;
   }
@@ -456,7 +481,8 @@ function main(argv /*:: ?: Array<string> */) /*: void */ {
     }
 
     // $FlowFixMe[incompatible-type] JSON.parse returns any
-    const raw /*: {[string]: {xcframeworkPath: string, url: string}} */ = JSON.parse(fs.readFileSync(artifactsJsonPath, 'utf8'));
+    const raw /*: {[string]: {xcframeworkPath: string, url: string}} */ =
+      JSON.parse(fs.readFileSync(artifactsJsonPath, 'utf8'));
     const xcfwLinksDir = path.join(appRoot, 'build', 'xcframeworks');
     fs.mkdirSync(xcfwLinksDir, {recursive: true});
 
@@ -465,9 +491,15 @@ function main(argv /*:: ?: Array<string> */) /*: void */ {
     for (const [name, entry] of Object.entries(raw)) {
       const linkName = `${name}.xcframework`;
       const linkPath = path.join(xcfwLinksDir, linkName);
-      try { fs.unlinkSync(linkPath); } catch { /* doesn't exist yet */ }
+      try {
+        fs.unlinkSync(linkPath);
+      } catch {
+        /* doesn't exist yet */
+      }
       fs.symlinkSync(entry.xcframeworkPath, linkPath);
-      log(`Symlink: build/xcframeworks/${linkName} -> ${displayPath(entry.xcframeworkPath)}`);
+      log(
+        `Symlink: build/xcframeworks/${linkName} -> ${displayPath(entry.xcframeworkPath)}`,
+      );
       names.push(name);
     }
 
@@ -489,9 +521,13 @@ function main(argv /*:: ?: Array<string> */) /*: void */ {
   if (args.init) {
     const outputPath = args.output ?? path.join(appRoot, 'Package.swift');
 
-    const {swiftFiles, hasObjC} = scanSourceFiles(path.join(appRoot, sourcePath));
+    const {swiftFiles, hasObjC} = scanSourceFiles(
+      path.join(appRoot, sourcePath),
+    );
     if (swiftFiles.length > 0 && hasObjC) {
-      log(`Mixed language sources detected – will generate split ObjC/Swift targets`);
+      log(
+        `Mixed language sources detected – will generate split ObjC/Swift targets`,
+      );
       log(`  Swift: [${swiftFiles.join(', ')}]`);
     }
 
@@ -507,7 +543,9 @@ function main(argv /*:: ?: Array<string> */) /*: void */ {
 
     fs.mkdirSync(path.dirname(outputPath), {recursive: true});
     fs.writeFileSync(outputPath, content, 'utf8');
-    log(`Generated initial Package.swift: ${path.relative(appRoot, outputPath)}`);
+    log(
+      `Generated initial Package.swift: ${path.relative(appRoot, outputPath)}`,
+    );
     log(`This file is yours to commit and customize.`);
   }
 }

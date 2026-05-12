@@ -33,9 +33,7 @@
  * I/O is injected (readConfig, resolveDep) so the tests stay pure.
  */
 
-const {
-  expandSpmDependencies,
-} = require('../expand-spm-dependencies');
+const {expandSpmDependencies} = require('../expand-spm-dependencies');
 
 function makeReadConfig(configs /*: {[string]: ?Object} */) {
   return (root /*: string */) =>

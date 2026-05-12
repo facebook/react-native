@@ -89,7 +89,7 @@ function scanProjectFiles(sourceDir /*: string */) /*: ProjectFiles */ {
     // $FlowFixMe[incompatible-type]
     const entries /*: Array<{name: string, isDirectory(): boolean}> */ =
       // $FlowFixMe[unclear-type]
-      (fs.readdirSync(dir, {withFileTypes: true}) /*: any */);
+      fs.readdirSync(dir, {withFileTypes: true}) /*: any */;
     for (const entry of entries) {
       if (entry.name.startsWith('.')) {
         continue;
@@ -180,7 +180,10 @@ function serializePbxproj(
       out += `\t\t${entry.uuid}${comment} = {`;
 
       const fieldKeys = Object.keys(entry.fields);
-      if (fieldKeys.length <= 3 && !fieldKeys.some(k => entry.fields[k].includes('\n'))) {
+      if (
+        fieldKeys.length <= 3 &&
+        !fieldKeys.some(k => entry.fields[k].includes('\n'))
+      ) {
         // Single-line format for short entries
         out += fieldKeys.map(k => `${k} = ${entry.fields[k]};`).join(' ');
         out += `};\n`;

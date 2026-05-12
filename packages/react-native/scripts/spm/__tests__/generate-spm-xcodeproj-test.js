@@ -62,7 +62,9 @@ describe('generatePbxproj', () => {
   it('includes SPM product dependencies in frameworks phase', () => {
     const result = generatePbxproj(minimalOpts);
     expect(result).toContain('/* Begin PBXFrameworksBuildPhase section */');
-    expect(result).toContain('/* Begin XCSwiftPackageProductDependency section */');
+    expect(result).toContain(
+      '/* Begin XCSwiftPackageProductDependency section */',
+    );
     expect(result).toContain('ReactNative');
     expect(result).toContain('Autolinked');
     expect(result).toContain('ReactCodegen');
@@ -70,7 +72,9 @@ describe('generatePbxproj', () => {
 
   it('includes local package references', () => {
     const result = generatePbxproj(minimalOpts);
-    expect(result).toContain('/* Begin XCLocalSwiftPackageReference section */');
+    expect(result).toContain(
+      '/* Begin XCLocalSwiftPackageReference section */',
+    );
     expect(result).toContain('build/xcframeworks');
     expect(result).toContain('build/generated/autolinking');
     expect(result).toContain('build/generated/ios');

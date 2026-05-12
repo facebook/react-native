@@ -338,10 +338,7 @@ function formatSpeed(bytesPerSec /*: number */) /*: string */ {
 function createProgressDisplay(lineCount /*: number */) /*: {
   update: (index: number, text: string) => void,
 } */ {
-  const lines /*: Array<string> */ = Array.from(
-    {length: lineCount},
-    () => '',
-  );
+  const lines /*: Array<string> */ = Array.from({length: lineCount}, () => '');
   let initialized = false;
 
   function update(index /*: number */, text /*: string */) {
@@ -353,9 +350,7 @@ function createProgressDisplay(lineCount /*: number */) /*: {
     }
     lines[index] = text;
     const moveUp = lineCount - index;
-    process.stdout.write(
-      `\x1b[${moveUp}A\x1b[2K\r${text}\x1b[${moveUp}B\r`,
-    );
+    process.stdout.write(`\x1b[${moveUp}A\x1b[2K\r${text}\x1b[${moveUp}B\r`);
   }
 
   return {update};
@@ -399,7 +394,14 @@ async function download(
       const speed = intervalMs > 0 ? (intervalBytes / intervalMs) * 1000 : 0;
 
       if (onProgress) {
-        onProgress(path.basename(destPath), downloadedBytes, totalBytes, speed, final, elapsed);
+        onProgress(
+          path.basename(destPath),
+          downloadedBytes,
+          totalBytes,
+          speed,
+          final,
+          elapsed,
+        );
       } else {
         // Fallback: single-line progress (used when not in parallel mode)
         let line = `  ${formatBytes(downloadedBytes)}`;
@@ -561,10 +563,13 @@ async function processArtifact(
   const tarName = url.split('/').pop() ?? '';
   const tarPath = path.join(downloadDir, tarName);
 
-  await download(url, tarPath, onProgress
-    ? (name, downloaded, total, speed, done, elapsed) =>
-        onProgress(xcframeworkName, downloaded, total, speed, done, elapsed)
-    : undefined,
+  await download(
+    url,
+    tarPath,
+    onProgress
+      ? (name, downloaded, total, speed, done, elapsed) =>
+          onProgress(xcframeworkName, downloaded, total, speed, done, elapsed)
+      : undefined,
   );
 
   // Extract to a temp dir, rename to the expected name, then move into outputDir
@@ -601,9 +606,9 @@ async function main(argv /*:: ?: Array<string> */) /*: Promise<void> */ {
   let rnVersion = args.version;
   if (rnVersion == null) {
     // $FlowFixMe[incompatible-type] JSON.parse returns any
-    rnVersion = (JSON.parse(
+    rnVersion = JSON.parse(
       fs.readFileSync(path.join(rnRoot, 'package.json'), 'utf8'),
-    ) /*: {version: string} */).version;
+    ) /*: {version: string} */.version;
   }
   if (rnVersion === '1000.0.0') {
     log('Detected dev version (1000.0.0), resolving as nightly...');
@@ -642,9 +647,22 @@ async function main(argv /*:: ?: Array<string> */) /*: Promise<void> */ {
   log('Downloading artifacts in parallel...');
 
   const artifactSpecs = [
-    {label: 'react-core', name: 'React', resolve: () => resolveRNCoreArtifact(resolvedRnVersion, flavor)},
-    {label: 'rndeps', name: 'ReactNativeDependencies', resolve: () => resolveRNDepsArtifact(resolvedRnVersion, flavor)},
-    {label: 'hermes', name: 'hermes-engine', resolve: () => resolveHermesArtifact(resolvedRnVersion, flavor, rawVersion)},
+    {
+      label: 'react-core',
+      name: 'React',
+      resolve: () => resolveRNCoreArtifact(resolvedRnVersion, flavor),
+    },
+    {
+      label: 'rndeps',
+      name: 'ReactNativeDependencies',
+      resolve: () => resolveRNDepsArtifact(resolvedRnVersion, flavor),
+    },
+    {
+      label: 'hermes',
+      name: 'hermes-engine',
+      resolve: () =>
+        resolveHermesArtifact(resolvedRnVersion, flavor, rawVersion),
+    },
   ];
 
   const progress = createProgressDisplay(artifactSpecs.length);
@@ -655,10 +673,16 @@ async function main(argv /*:: ?: Array<string> */) /*: Promise<void> */ {
         progress.update(index, `  ${name}: already cached`);
       } else if (done) {
         const avg = elapsed > 0 ? formatSpeed(downloaded / elapsed) : '';
-        progress.update(index, `  ${name}: done ${formatBytes(downloaded)} in ${elapsed.toFixed(1)}s (${avg})`);
+        progress.update(
+          index,
+          `  ${name}: done ${formatBytes(downloaded)} in ${elapsed.toFixed(1)}s (${avg})`,
+        );
       } else if (total > 0) {
         const pct = ((downloaded / total) * 100).toFixed(1);
-        progress.update(index, `  ${name}: ${formatBytes(downloaded)} / ${formatBytes(total)} (${pct}%) @ ${formatSpeed(speed)}`);
+        progress.update(
+          index,
+          `  ${name}: ${formatBytes(downloaded)} / ${formatBytes(total)} (${pct}%) @ ${formatSpeed(speed)}`,
+        );
       } else {
         progress.update(index, `  ${name}: extracting...`);
       }
@@ -677,10 +701,14 @@ async function main(argv /*:: ?: Array<string> */) /*: Promise<void> */ {
           outputDir,
           makeCallback(index),
         );
-        return ({name: spec.name, error: undefined, ...r} /*: ArtifactResultEntry */);
+        return {
+          name: spec.name,
+          error: undefined,
+          ...r,
+        } /*: ArtifactResultEntry */;
       } catch (e) {
         progress.update(index, `  ${spec.name}: FAILED - ${e.message}`);
-        return ({name: spec.name, error: e.message} /*: ArtifactResultEntry */);
+        return {name: spec.name, error: e.message} /*: ArtifactResultEntry */;
       }
     }),
   );

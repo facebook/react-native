@@ -10,14 +10,25 @@
 
 'use strict';
 
-/*:: import type {SetupArgs} from './spm/spm-types'; */
+/*:: import type {CliConfigJson, SetupArgs} from './spm/spm-types'; */
 
 /**
  * setup-apple-spm.js – Entry point for setting up Swift Package Manager support
  * in a React Native app using prebuilt XCFrameworks from Maven.
  *
  * Usage (from your app directory, e.g. packages/rn-tester):
- *   node node_modules/react-native/scripts/setup-apple-spm.js [options]
+ *   node node_modules/react-native/scripts/setup-apple-spm.js [action] [options]
+ *
+ * Actions:
+ *   init                       First-time setup: generate root Package.swift,
+ *                              generated packages, artifacts, and .xcodeproj.
+ *   update                     Regenerate generated packages/artifacts/project
+ *                              without overwriting root Package.swift.
+ *   clean                      Remove generated SPM state only.
+ *   codegen                    Run only codegen and install the SPM template.
+ *   download                   Download/check xcframework artifacts only.
+ *
+ * With no action: runs init if Package.swift is missing, otherwise update.
  *
  * Options:
  *   --version <ver>             React Native version (e.g. 0.80.0). Defaults to
@@ -27,9 +38,6 @@
  *                               ~/Library/Caches/com.facebook.ReactNative/spm-artifacts/{version}/{flavor}/
  *                               If checksums.json is missing, download-spm-artifacts.js runs automatically.
  *   --flavor <debug|release>    Artifact flavor (default: debug)
- *   --init                      First-time setup: also generates an initial main Package.swift.
- *   --clean                     Remove all generated SPM directories (build/, .build/, legacy autolinked/)
- *                               and re-run the full setup. Open Xcode after this completes.
  *   --skip-codegen              Skip react-native codegen step
  *   --skip-download             Skip automatic artifact download even if checksums.json is missing
  *   --force-download            Clear cached artifacts and re-download from Maven
@@ -39,11 +47,11 @@
  *   2. generate-spm-autolinking-config.js → build/generated/autolinking/autolinking.json
  *   3. generate-spm-autolinking.js → build/generated/autolinking/Package.swift
  *   4. download-spm-artifacts.js → <artifacts-dir>/ (skipped if already present)
- *   5. generate-spm-package.js → build/xcframeworks/Package.swift + symlinks (+ main Package.swift with --init)
+ *   5. generate-spm-package.js → build/xcframeworks/Package.swift + symlinks (+ main Package.swift with init)
  *   6. generate-spm-xcodeproj.js → <AppName>-SPM.xcodeproj (skipped with --skip-xcodeproj)
  *
  * The main Package.swift is committed by the developer and NOT overwritten on
- * subsequent runs. Use --init for first-time setup to generate an initial one.
+ * subsequent runs. Use init for first-time setup to generate an initial one.
  *
  * After running: open <AppName>-SPM.xcodeproj in Xcode.
  */
@@ -72,9 +80,32 @@ const yargs = require('yargs');
 
 const {log, warn: logError} = makeLogger('setup-apple-spm');
 
+const VALID_ACTIONS = new Set([
+  'init',
+  'update',
+  'clean',
+  'codegen',
+  'download',
+]);
+
+/*::
+type AutolinkingConfigResult = {
+  config: CliConfigJson,
+  outputPath: string,
+  rawJson: string,
+};
+*/
+
 function parseArgs(argv /*: Array<string> */) /*: SetupArgs */ {
   const parsed = yargs(argv)
     .version(false)
+    .command('$0 [action]', 'Set up Apple SPM support')
+    .positional('action', {
+      type: 'string',
+      choices: Array.from(VALID_ACTIONS),
+      describe:
+        'Action to run: init, update, clean, codegen, or download. Defaults to init when Package.swift is missing, otherwise update.',
+    })
     .option('version', {
       type: 'string',
       describe:
@@ -92,17 +123,6 @@ function parseArgs(argv /*: Array<string> */) /*: SetupArgs */ {
       type: 'string',
       default: 'debug',
       describe: 'Artifact flavor (debug or release)',
-    })
-    .option('init', {
-      type: 'boolean',
-      default: false,
-      describe:
-        'First-time setup: also generates an initial main Package.swift',
-    })
-    .option('clean', {
-      type: 'boolean',
-      default: false,
-      describe: 'Remove all generated SPM directories and re-run setup.',
     })
     .option('skip-codegen', {
       type: 'boolean',
@@ -139,18 +159,33 @@ function parseArgs(argv /*: Array<string> */) /*: SetupArgs */ {
         'JS entry file relative to app root (default: package.json "main" or index.js)',
     })
     .usage(
-      'Usage: $0 [options]\n\nSets up Swift Package Manager support in a React Native app.',
+      'Usage: $0 [action] [options]\n\nSets up Swift Package Manager support in a React Native app.',
     )
+    .strictOptions()
     .help()
     .parseSync();
 
+  const positional = parsed._.map(String);
+  const requestedAction = parsed.action ?? positional[0] ?? null;
+  if (positional.length > 1) {
+    throw new Error(
+      `Expected at most one action, got: ${positional.join(', ')}`,
+    );
+  }
+  if (requestedAction != null && !VALID_ACTIONS.has(requestedAction)) {
+    throw new Error(
+      `Unknown action "${requestedAction}". Expected one of: ${Array.from(
+        VALID_ACTIONS,
+      ).join(', ')}`,
+    );
+  }
+
   return {
+    action: requestedAction,
     version: parsed.version ?? null,
     localXcframework: parsed['local-xcframework'] ?? null,
     artifactsDir: parsed['artifacts-dir'] ?? null,
     flavor: parsed.flavor,
-    init: parsed.init,
-    clean: parsed.clean,
     skipCodegen: parsed['skip-codegen'],
     skipDownload: parsed['skip-download'],
     forceDownload: parsed['force-download'],
@@ -170,7 +205,7 @@ const SPM_GITIGNORE_ENTRIES = [
 
 /**
  * Ensure the project's .gitignore contains entries for SPM-generated
- * directories. Called during --init so that generated artifacts are not
+ * directories. Called during init so that generated artifacts are not
  * accidentally committed.
  */
 function ensureGitignoreSpmEntries(appRoot /*: string */) {
@@ -199,51 +234,55 @@ function ensureGitignoreSpmEntries(appRoot /*: string */) {
   log(`Updated .gitignore with SPM entries: ${missing.join(', ')}`);
 }
 
-async function main(argv /*:: ?: Array<string> */) /*: Promise<void> */ {
-  const appRoot = process.cwd();
-  const projectRoot = findProjectRoot(appRoot);
-  const args = parseArgs(argv ?? process.argv.slice(2));
-
-  log(`Setting up SPM support in: ${displayPath(appRoot)}`);
-  if (projectRoot !== appRoot) {
-    log(`Project root (package.json): ${displayPath(projectRoot)}`);
-  }
-
-  // --clean: remove all generated SPM directories, then re-run setup so
-  // real packages are in place before Xcode opens. This avoids the problem
-  // where stubs are resolved by SPM and never re-resolved mid-build.
-  if (args.clean) {
-    const dirsToClean = [
-      path.join(appRoot, 'build', 'xcframeworks'),
-      path.join(appRoot, 'build', 'generated'),
-      // Legacy location (pre-build/generated/autolinking move) — remove
-      // when present so old workspaces upgrade cleanly.
-      path.join(appRoot, 'autolinked'),
-      path.join(appRoot, '.build'),
-    ];
-    log('Cleaning SPM generated directories...');
-    for (const dir of dirsToClean) {
-      if (fs.existsSync(dir)) {
-        fs.rmSync(dir, {recursive: true, force: true});
-        log(`  Removed ${path.relative(appRoot, dir)}/`);
-      }
+function cleanGeneratedState(appRoot /*: string */) {
+  const dirsToClean = [
+    path.join(appRoot, 'build', 'xcframeworks'),
+    path.join(appRoot, 'build', 'generated'),
+    // Legacy location (pre-build/generated/autolinking move) — remove
+    // when present so old workspaces upgrade cleanly.
+    path.join(appRoot, 'autolinked'),
+    path.join(appRoot, '.build'),
+  ];
+  log('Cleaning SPM generated directories...');
+  for (const dir of dirsToClean) {
+    if (fs.existsSync(dir)) {
+      fs.rmSync(dir, {recursive: true, force: true});
+      log(`  Removed ${path.relative(appRoot, dir)}/`);
     }
-    log('Re-running setup to regenerate real packages...');
-    // Fall through to the normal setup flow below (skip --init so
-    // Package.swift and .xcodeproj are not overwritten).
   }
+}
 
-  let autolinkingConfigResult = null;
-  log('Step 1/6: Generating autolinking.json (CLI config)...');
+function resolveAction(
+  requestedAction /*: SetupArgs['action'] */,
+  appRoot /*: string */,
+) /*: 'init' | 'update' | 'clean' | 'codegen' | 'download' */ {
+  if (requestedAction != null) {
+    return requestedAction;
+  }
+  return fs.existsSync(path.join(appRoot, 'Package.swift')) ? 'update' : 'init';
+}
+
+function loadAutolinkingConfig(
+  projectRoot /*: string */,
+  appRoot /*: string */,
+) /*: ?AutolinkingConfigResult */ {
+  log('Generating autolinking.json (CLI config)...');
   try {
-    autolinkingConfigResult = generateAutolinkingConfig({projectRoot});
-    log(`Wrote ${path.relative(appRoot, autolinkingConfigResult.outputPath)}`);
+    const result = generateAutolinkingConfig({projectRoot});
+    log(`Wrote ${path.relative(appRoot, result.outputPath)}`);
+    return result;
   } catch (e) {
     logError(
       `generate-spm-autolinking-config failed: ${e.message}. External native modules may not be discovered.`,
     );
+    return null;
   }
+}
 
+function resolveReactNativeRoot(
+  autolinkingConfigResult /*: ?AutolinkingConfigResult */,
+  projectRoot /*: string */,
+) /*: string */ {
   // Prefer the React Native path resolved by the CLI config we already run for
   // autolinking. Fall back to this script's package root for direct repo usage.
   let reactNativeRoot = path.resolve(__dirname, '..');
@@ -258,10 +297,13 @@ async function main(argv /*:: ?: Array<string> */) /*: Promise<void> */ {
       cliReactNativePath,
     );
   }
+  return reactNativeRoot;
+}
 
-  const scriptsDir = path.join(reactNativeRoot, 'scripts');
-
-  // Determine version
+function determineVersion(
+  args /*: SetupArgs */,
+  reactNativeRoot /*: string */,
+) /*: string */ {
   let version = args.version;
   if (version == null) {
     // $FlowFixMe[incompatible-type] JSON.parse returns any
@@ -270,16 +312,18 @@ async function main(argv /*:: ?: Array<string> */) /*: Promise<void> */ {
     );
     version = pkgJson.version;
   }
-  log(`React Native version: ${version}`);
-  if (args.localXcframework == null) {
-    log(
-      `Artifact cache:       ${displayPath(defaultCacheDir(args.version ?? version, args.flavor))}`,
-    );
-  }
+  return version;
+}
 
+function runCodegenStep(
+  projectRoot /*: string */,
+  appRoot /*: string */,
+  scriptsDir /*: string */,
+  skipCodegen /*: boolean */,
+) /*: void */ {
   let codegenSucceeded = false;
-  if (!args.skipCodegen) {
-    log('Step 2/6: Running react-native codegen...');
+  if (!skipCodegen) {
+    log('Running react-native codegen...');
     try {
       // -p points to the project root (where package.json lives) so codegen
       // can discover specs and dependencies. -o points to appRoot so the
@@ -299,7 +343,7 @@ async function main(argv /*:: ?: Array<string> */) /*: Promise<void> */ {
       logError('Codegen failed. Continuing anyway...');
     }
   } else {
-    log('Step 2/6: Skipping codegen (--skip-codegen)');
+    log('Skipping codegen (--skip-codegen)');
     // When skipping codegen, the output directory may already exist from a
     // previous run — treat that as success for template installation.
     codegenSucceeded = true;
@@ -327,75 +371,81 @@ async function main(argv /*:: ?: Array<string> */) /*: Promise<void> */ {
     fs.copyFileSync(spmTemplate, codegenPkgSwift);
     log('Installed SPM codegen template → build/generated/ios/Package.swift');
   }
+}
 
-  log('Step 3/6: Generating build/generated/autolinking/Package.swift...');
-  try {
-    generateAutolinking([
-      '--app-root',
-      appRoot,
-      '--react-native-root',
-      reactNativeRoot,
-    ]);
-  } catch (e) {
-    logError(`generate-spm-autolinking.js failed: ${e.message}`);
-    process.exitCode = 1;
-    return;
+function generateAutolinkingPackage(
+  appRoot /*: string */,
+  reactNativeRoot /*: string */,
+) {
+  log('Generating build/generated/autolinking/Package.swift...');
+  generateAutolinking([
+    '--app-root',
+    appRoot,
+    '--react-native-root',
+    reactNativeRoot,
+  ]);
+}
+
+function prepareLocalXcframeworkArtifacts(
+  args /*: SetupArgs */,
+  appRoot /*: string */,
+  version /*: string */,
+) /*: string | null */ {
+  if (args.localXcframework == null || args.artifactsDir != null) {
+    return args.artifactsDir;
   }
 
-  // When --local-xcframework is given, create build/xcframeworks/ with symlinks
-  // and a synthetic artifacts.json so the rest of the pipeline works normally.
-  if (args.localXcframework != null && args.artifactsDir == null) {
-    const localReactPath = path.resolve(args.localXcframework);
-    if (
-      !localReactPath.endsWith('.xcframework') ||
-      !fs.existsSync(localReactPath)
-    ) {
-      logError(
-        `--local-xcframework path does not exist or is not an .xcframework: ${localReactPath}`,
-      );
-      process.exitCode = 1;
-      return;
-    }
-    const localXcfwDir = path.resolve(localReactPath, '..');
-    const xcfwLinksDir = path.join(appRoot, 'build', 'xcframeworks');
-    fs.mkdirSync(xcfwLinksDir, {recursive: true});
-
-    // Build artifacts.json from the local xcframework + any siblings or cached deps
-    const artifacts /*: {[string]: {xcframeworkPath: string, url: string}} */ =
-      {};
-    artifacts.React = {xcframeworkPath: localReactPath, url: ''};
-
-    // Look for ReactNativeDependencies and hermes-engine alongside or in cache
-    for (const name of ['ReactNativeDependencies', 'hermes-engine']) {
-      const siblingPath = path.join(localXcfwDir, `${name}.xcframework`);
-      const cachePath = path.join(
-        defaultCacheDir(args.version ?? version, args.flavor),
-        `${name}.xcframework`,
-      );
-      if (fs.existsSync(siblingPath)) {
-        artifacts[name] = {xcframeworkPath: siblingPath, url: ''};
-      } else if (fs.existsSync(cachePath)) {
-        artifacts[name] = {xcframeworkPath: cachePath, url: ''};
-      }
-    }
-
-    fs.writeFileSync(
-      path.join(xcfwLinksDir, 'artifacts.json'),
-      JSON.stringify(artifacts, null, 2),
-      'utf8',
+  const localReactPath = path.resolve(args.localXcframework);
+  if (
+    !localReactPath.endsWith('.xcframework') ||
+    !fs.existsSync(localReactPath)
+  ) {
+    throw new Error(
+      `--local-xcframework path does not exist or is not an .xcframework: ${localReactPath}`,
     );
-    args.artifactsDir = xcfwLinksDir;
-    log(`Using local xcframework: ${displayPath(localReactPath)}`);
+  }
+  const localXcfwDir = path.resolve(localReactPath, '..');
+  const xcfwLinksDir = path.join(appRoot, 'build', 'xcframeworks');
+  fs.mkdirSync(xcfwLinksDir, {recursive: true});
+
+  // Build artifacts.json from the local xcframework + any siblings or cached deps
+  const artifacts /*: {[string]: {xcframeworkPath: string, url: string}} */ =
+    {};
+  artifacts.React = {xcframeworkPath: localReactPath, url: ''};
+
+  // Look for ReactNativeDependencies and hermes-engine alongside or in cache
+  for (const name of ['ReactNativeDependencies', 'hermes-engine']) {
+    const siblingPath = path.join(localXcfwDir, `${name}.xcframework`);
+    const cachePath = path.join(
+      defaultCacheDir(args.version ?? version, args.flavor),
+      `${name}.xcframework`,
+    );
+    if (fs.existsSync(siblingPath)) {
+      artifacts[name] = {xcframeworkPath: siblingPath, url: ''};
+    } else if (fs.existsSync(cachePath)) {
+      artifacts[name] = {xcframeworkPath: cachePath, url: ''};
+    }
   }
 
-  // Compute the artifacts directory:
-  //   - explicit --artifacts-dir → use as-is
-  //   - default → versioned cache in ~/Library/Caches/...
+  fs.writeFileSync(
+    path.join(xcfwLinksDir, 'artifacts.json'),
+    JSON.stringify(artifacts, null, 2),
+    'utf8',
+  );
+  log(`Using local xcframework: ${displayPath(localReactPath)}`);
+  return xcfwLinksDir;
+}
+
+async function ensureArtifacts(
+  args /*: SetupArgs */,
+  version /*: string */,
+  artifactsDir /*: string | null */,
+) /*: Promise<string | null> */ {
   const resolvedArtifactsDir =
-    args.artifactsDir != null
-      ? path.resolve(args.artifactsDir)
+    artifactsDir != null
+      ? path.resolve(artifactsDir)
       : defaultCacheDir(args.version ?? version, args.flavor);
-  // --force-download: clear cached artifacts so they get re-downloaded
+
   if (args.forceDownload && resolvedArtifactsDir != null) {
     log('Clearing cached artifacts (--force-download)...');
     fs.rmSync(resolvedArtifactsDir, {recursive: true, force: true});
@@ -412,32 +462,35 @@ async function main(argv /*:: ?: Array<string> */) /*: Promise<void> */ {
     !fs.existsSync(artifactsJsonPath);
 
   if (needsDownload === true && resolvedArtifactsDir != null) {
-    log('Step 4/6: Downloading xcframework artifacts...');
-    try {
-      await downloadArtifacts([
-        '--version',
-        args.version ?? version,
-        '--flavor',
-        args.flavor,
-        '--output',
-        resolvedArtifactsDir,
-      ]);
-    } catch (e) {
-      logError(`download-spm-artifacts.js failed: ${e.message}`);
-      process.exitCode = 1;
-      return;
-    }
+    log('Downloading xcframework artifacts...');
+    await downloadArtifacts([
+      '--version',
+      args.version ?? version,
+      '--flavor',
+      args.flavor,
+      '--output',
+      resolvedArtifactsDir,
+    ]);
   } else if (resolvedArtifactsDir != null && args.skipDownload) {
-    log('Step 4/6: Skipping artifact download (--skip-download)');
+    log('Skipping artifact download (--skip-download)');
   } else if (resolvedArtifactsDir != null) {
-    log(
-      `Step 3/5: Artifacts already present in ${displayPath(resolvedArtifactsDir)}`,
-    );
+    log(`Artifacts already present in ${displayPath(resolvedArtifactsDir)}`);
   } else {
-    log('Step 4/6: No --artifacts-dir set, skipping download step');
+    log('No --artifacts-dir set, skipping download step');
   }
 
-  log('Step 5/6: Generating xcframeworks sub-package...');
+  return resolvedArtifactsDir;
+}
+
+function generateXcframeworksPackage(
+  args /*: SetupArgs */,
+  appRoot /*: string */,
+  reactNativeRoot /*: string */,
+  version /*: string */,
+  resolvedArtifactsDir /*: string | null */,
+  shouldInit /*: boolean */,
+) {
+  log('Generating xcframeworks sub-package...');
   const packageArgs = [
     '--app-root',
     appRoot,
@@ -452,93 +505,94 @@ async function main(argv /*:: ?: Array<string> */) /*: Promise<void> */ {
   if (resolvedArtifactsDir != null) {
     packageArgs.push('--artifacts-dir', resolvedArtifactsDir);
   }
-  if (args.init) {
+  if (shouldInit) {
     packageArgs.push('--init');
   }
-  try {
-    generatePackage(packageArgs);
-  } catch (e) {
-    logError(`generate-spm-package.js failed: ${e.message}`);
-    process.exitCode = 1;
+  generatePackage(packageArgs);
+}
+
+function warnForMissingPackageSwift(
+  appRoot /*: string */,
+  scriptsDir /*: string */,
+) {
+  const mainPackageSwift = path.join(appRoot, 'Package.swift');
+  if (fs.existsSync(mainPackageSwift)) {
     return;
   }
 
-  resolveAndWriteVFSOverlay(appRoot, reactNativeRoot, {log});
+  log('');
+  log(
+    '\x1b[33mWARNING: Package.swift not found.\x1b[0m Run init to generate an initial one:',
+  );
+  log(
+    `  node ${path.relative(appRoot, path.join(scriptsDir, 'setup-apple-spm.js'))} init`,
+  );
+  log('');
+}
 
-  if (args.init) {
-    ensureGitignoreSpmEntries(appRoot);
-  }
-
-  // Warn if the main Package.swift is missing and --init was not passed.
+function warnForMissingVfsOverlayFlags(appRoot /*: string */) {
   const mainPackageSwift = path.join(appRoot, 'Package.swift');
-  if (!fs.existsSync(mainPackageSwift) && !args.init) {
+  if (!fs.existsSync(mainPackageSwift)) {
+    return;
+  }
+
+  const pkgContent = fs.readFileSync(mainPackageSwift, 'utf8');
+  if (!pkgContent.includes('ivfsoverlay')) {
     log('');
     log(
-      '\x1b[33mWARNING: Package.swift not found.\x1b[0m Run with --init to generate an initial one:',
+      '\x1b[33mWARNING: Your Package.swift does not include -ivfsoverlay flags.\x1b[0m',
     );
-    log(
-      `  node ${path.relative(appRoot, path.join(scriptsDir, 'setup-apple-spm.js'))} --init`,
-    );
+    log('Add the following to your Package.swift for stable header identity:');
+    log('');
+    log('  let vfsOverlay = packageDir + "/build/xcframeworks/React-VFS.yaml"');
+    log('');
+    log('  // Add to cFlags:');
+    log('  "-ivfsoverlay", vfsOverlay');
+    log('  // Add to swiftFlags:');
+    log('  "-Xcc", "-ivfsoverlay", "-Xcc", vfsOverlay');
     log('');
   }
+}
 
-  // Warn if existing Package.swift doesn't have -ivfsoverlay
-  if (fs.existsSync(mainPackageSwift)) {
-    const pkgContent = fs.readFileSync(mainPackageSwift, 'utf8');
-    if (!pkgContent.includes('ivfsoverlay')) {
-      log('');
-      log(
-        '\x1b[33mWARNING: Your Package.swift does not include -ivfsoverlay flags.\x1b[0m',
-      );
-      log(
-        'Add the following to your Package.swift for stable header identity:',
-      );
-      log('');
-      log(
-        '  let vfsOverlay = packageDir + "/build/xcframeworks/React-VFS.yaml"',
-      );
-      log('');
-      log('  // Add to cFlags:');
-      log('  "-ivfsoverlay", vfsOverlay');
-      log('  // Add to swiftFlags:');
-      log('  "-Xcc", "-ivfsoverlay", "-Xcc", vfsOverlay');
-      log('');
-    }
+function generateXcodeProject(
+  args /*: SetupArgs */,
+  appRoot /*: string */,
+  reactNativeRoot /*: string */,
+) {
+  if (args.skipXcodeproj) {
+    log('Skipping .xcodeproj generation (--skip-xcodeproj)');
+    return;
   }
 
-  if (!args.skipXcodeproj) {
-    log('Step 6/6: Generating .xcodeproj...');
-    const xcodeprojArgs = [
-      '--app-root',
-      appRoot,
-      '--react-native-root',
-      reactNativeRoot,
-    ];
-    if (args.bundleIdentifier != null) {
-      xcodeprojArgs.push('--bundle-identifier', args.bundleIdentifier);
-    }
-    if (args.productName != null) {
-      xcodeprojArgs.push('--app-name', args.productName);
-    }
-    if (args.entryFile != null) {
-      xcodeprojArgs.push('--entry-file', args.entryFile);
-    }
-    try {
-      generateXcodeproj(xcodeprojArgs);
-    } catch (e) {
-      logError(`generate-spm-xcodeproj.js failed: ${e.message}`);
-      process.exitCode = 1;
-      return;
-    }
-  } else {
-    log('Step 6/6: Skipping .xcodeproj generation (--skip-xcodeproj)');
+  log('Generating .xcodeproj...');
+  const xcodeprojArgs = [
+    '--app-root',
+    appRoot,
+    '--react-native-root',
+    reactNativeRoot,
+  ];
+  if (args.bundleIdentifier != null) {
+    xcodeprojArgs.push('--bundle-identifier', args.bundleIdentifier);
   }
+  if (args.productName != null) {
+    xcodeprojArgs.push('--app-name', args.productName);
+  }
+  if (args.entryFile != null) {
+    xcodeprojArgs.push('--entry-file', args.entryFile);
+  }
+  generateXcodeproj(xcodeprojArgs);
+}
 
+function logNextSteps(
+  projectRoot /*: string */,
+  appRoot /*: string */,
+  productName /*: string | null */,
+) {
   const appPkgJson = readPackageJson(projectRoot);
   const rawName =
     (appPkgJson != null ? appPkgJson.name : null) ?? path.basename(projectRoot);
   const sourcePath = findSourcePath(appRoot, rawName);
-  const appDisplayName = args.productName ?? deriveAppName(rawName, sourcePath);
+  const appDisplayName = productName ?? deriveAppName(rawName, sourcePath);
 
   log('');
   log('SPM setup complete!');
@@ -549,6 +603,118 @@ async function main(argv /*:: ?: Array<string> */) /*: Promise<void> */ {
   log('  • Build and run on Simulator or device');
   log('');
   log('Note: CocoaPods (pod install) still works in parallel.');
+}
+
+async function main(argv /*:: ?: Array<string> */) /*: Promise<void> */ {
+  const appRoot = process.cwd();
+  const projectRoot = findProjectRoot(appRoot);
+  const args = parseArgs(argv ?? process.argv.slice(2));
+  const action = resolveAction(args.action, appRoot);
+
+  log(`Running SPM ${action} in: ${displayPath(appRoot)}`);
+  if (projectRoot !== appRoot) {
+    log(`Project root (package.json): ${displayPath(projectRoot)}`);
+  }
+
+  if (action === 'clean') {
+    cleanGeneratedState(appRoot);
+    log('SPM generated state cleaned.');
+    return;
+  }
+
+  const needsCliConfig = action === 'init' || action === 'update';
+  const autolinkingConfigResult = needsCliConfig
+    ? loadAutolinkingConfig(projectRoot, appRoot)
+    : null;
+  const reactNativeRoot = resolveReactNativeRoot(
+    autolinkingConfigResult,
+    projectRoot,
+  );
+  const scriptsDir = path.join(reactNativeRoot, 'scripts');
+  const version = determineVersion(args, reactNativeRoot);
+  log(`React Native version: ${version}`);
+  if (args.localXcframework == null) {
+    log(
+      `Artifact cache:       ${displayPath(defaultCacheDir(args.version ?? version, args.flavor))}`,
+    );
+  }
+
+  if (action === 'codegen') {
+    runCodegenStep(projectRoot, appRoot, scriptsDir, false);
+    return;
+  }
+
+  let resolvedArtifactsDir = null;
+  if (action === 'download') {
+    try {
+      const artifactsDir = prepareLocalXcframeworkArtifacts(
+        args,
+        appRoot,
+        version,
+      );
+      await ensureArtifacts(args, version, artifactsDir);
+    } catch (e) {
+      logError(`Artifact setup failed: ${e.message}`);
+      process.exitCode = 1;
+    }
+    return;
+  }
+
+  runCodegenStep(projectRoot, appRoot, scriptsDir, args.skipCodegen);
+  try {
+    generateAutolinkingPackage(appRoot, reactNativeRoot);
+  } catch (e) {
+    logError(`generate-spm-autolinking.js failed: ${e.message}`);
+    process.exitCode = 1;
+    return;
+  }
+
+  try {
+    const artifactsDir = prepareLocalXcframeworkArtifacts(
+      args,
+      appRoot,
+      version,
+    );
+    resolvedArtifactsDir = await ensureArtifacts(args, version, artifactsDir);
+  } catch (e) {
+    logError(`Artifact setup failed: ${e.message}`);
+    process.exitCode = 1;
+    return;
+  }
+
+  try {
+    generateXcframeworksPackage(
+      args,
+      appRoot,
+      reactNativeRoot,
+      version,
+      resolvedArtifactsDir,
+      action === 'init',
+    );
+  } catch (e) {
+    logError(`generate-spm-package.js failed: ${e.message}`);
+    process.exitCode = 1;
+    return;
+  }
+
+  resolveAndWriteVFSOverlay(appRoot, reactNativeRoot, {log});
+
+  if (action === 'init') {
+    ensureGitignoreSpmEntries(appRoot);
+  } else {
+    warnForMissingPackageSwift(appRoot, scriptsDir);
+  }
+  warnForMissingVfsOverlayFlags(appRoot);
+
+  try {
+    generateXcodeProject(args, appRoot, reactNativeRoot);
+  } catch (e) {
+    logError(`generate-spm-xcodeproj.js failed: ${e.message}`);
+    process.exitCode = 1;
+    return;
+  }
+
+  logNextSteps(projectRoot, appRoot, args.productName);
 }
 
 if (require.main === module) {

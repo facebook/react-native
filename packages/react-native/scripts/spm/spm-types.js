@@ -10,12 +10,11 @@
 
 /*::
 export type SetupArgs = {
+  action: 'init' | 'update' | 'clean' | 'codegen' | 'download' | null,
   version: string | null,
   localXcframework: string | null,
   artifactsDir: string | null,
   flavor: string,
-  init: boolean,
-  clean: boolean,
   skipCodegen: boolean,
   skipDownload: boolean,
   forceDownload: boolean,

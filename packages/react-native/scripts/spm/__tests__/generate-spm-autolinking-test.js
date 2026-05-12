@@ -287,7 +287,8 @@ describe('generateSynthPackageSwift', () => {
       hasXcfwHeaders: true,
       targetPath: 'root',
       appRootAbsolute: '/abs/app/root',
-      autogenHeadersAbsolute: '/abs/app/root/build/generated/autolinking/headers',
+      autogenHeadersAbsolute:
+        '/abs/app/root/build/generated/autolinking/headers',
     });
     expect(result).toContain('path: "root"');
   });
@@ -410,7 +411,6 @@ describe('linkHeaderTree', () => {
   });
 });
 
-
 // ---------------------------------------------------------------------------
 // collectSpmSources — recursive auto-discovery used as the default `sources:`
 // allowlist. Skip-dirs (tests/, __tests__/, android/, …) are pruned at every
@@ -521,9 +521,11 @@ describe('expandSpmSourceGlobs', () => {
     fs.writeFileSync(path.join(dir, 'ios', 'Sub', 'Deep.mm'), '');
     fs.writeFileSync(path.join(dir, 'ios', 'ignored.txt'), '');
 
-    expect(
-      expandSpmSourceGlobs(dir, ['ios/**/*.{h,m,mm}']),
-    ).toEqual(['ios/Root.h', 'ios/Root.m', 'ios/Sub/Deep.mm']);
+    expect(expandSpmSourceGlobs(dir, ['ios/**/*.{h,m,mm}'])).toEqual([
+      'ios/Root.h',
+      'ios/Root.m',
+      'ios/Sub/Deep.mm',
+    ]);
   });
 
   it('single * stays within one segment', () => {

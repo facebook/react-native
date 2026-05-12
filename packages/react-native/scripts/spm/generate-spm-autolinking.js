@@ -400,9 +400,7 @@ function ensureSymlink(
 
 // Default sources allowlist when no explicit glob is provided — analog of
 // CocoaPods' `s.source_files` auto-discovery.
-function collectSpmSources(
-  sourcePath /*: string */,
-) /*: Array<string> */ {
+function collectSpmSources(sourcePath /*: string */) /*: Array<string> */ {
   return walkSourceFiles(sourcePath)
     .filter(p => ALL_SOURCE_EXTENSIONS.has(path.extname(p)))
     .sort();
@@ -498,7 +496,8 @@ function generateAutolinkedPackageSwift(
   input /*: AggregatorInput */,
 ) /*: string */ {
   const npmDeps /*: $ReadOnlyArray<NpmDepRef> */ = input.npmDeps ?? [];
-  const inlineTargets /*: $ReadOnlyArray<SpmTarget> */ = input.inlineTargets ?? [];
+  const inlineTargets /*: $ReadOnlyArray<SpmTarget> */ =
+    input.inlineTargets ?? [];
   const hasReactDep /*: boolean */ = input.hasReactDep !== false;
   const hasXcfwHeaders /*: boolean */ = input.hasXcfwHeaders === true;
   const hasDepsHeaders /*: boolean */ = input.hasDepsHeaders === true;
@@ -645,9 +644,7 @@ ${packageDepsBlock}    targets: [
  *   - Sub-package (legacy): set `appRootRelativeToPackage` +
  *     `siblingPackageBaseRelative`. Kept only for backwards-compat tests.
  */
-function generateSynthPackageSwift(
-  spec /*: SynthPackageSpec */,
-) /*: string */ {
+function generateSynthPackageSwift(spec /*: SynthPackageSpec */) /*: string */ {
   const swiftName /*: string */ = spec.swiftName;
   const exclude /*: Array<string> */ = spec.exclude ?? [];
   const sources /*: ?Array<string> */ = spec.sources;
@@ -691,10 +688,8 @@ function generateSynthPackageSwift(
   } else {
     const appRootRelativeToPackage /*: string */ =
       spec.appRootRelativeToPackage ?? '/../../..';
-    const reactNativeRel = `${appRootRelativeToPackage}/build/xcframeworks`.replace(
-      /^\/+/,
-      '',
-    );
+    const reactNativeRel =
+      `${appRootRelativeToPackage}/build/xcframeworks`.replace(/^\/+/, '');
     const siblingRel /*: string */ = spec.siblingPackageBaseRelative ?? '..';
     if (hasReactDep) {
       packageDeps.push(
@@ -1027,7 +1022,9 @@ function main(argv /*:: ?: Array<string> */) /*: void */ {
     }
     if (isSelfManagedPackage(absSource)) {
       selfManagedDirs.set(target.name, absSource);
-      log(`Self-managed: ${target.name} → ${path.relative(appRoot, absSource)} (using its own Package.swift)`);
+      log(
+        `Self-managed: ${target.name} → ${path.relative(appRoot, absSource)} (using its own Package.swift)`,
+      );
       continue;
     }
     const wrapperDir = path.join(packagesDir, target.name);
@@ -1160,7 +1157,9 @@ function main(argv /*:: ?: Array<string> */) /*: void */ {
       fs.mkdirSync(includePath, {recursive: true});
     }
 
-    log(`Synth: packages/${target.name}/ → ${path.relative(appRoot, absSource)}`);
+    log(
+      `Synth: packages/${target.name}/ → ${path.relative(appRoot, absSource)}`,
+    );
 
     aggregatorPackageDeps.push({
       swiftName: target.name,
@@ -1249,7 +1248,9 @@ function main(argv /*:: ?: Array<string> */) /*: void */ {
       const content = fs.readFileSync(legacyPkg, 'utf8');
       if (content.includes(AUTOGEN_MARKER)) {
         fs.unlinkSync(legacyPkg);
-        log(`Removed legacy in-place synth: ${path.relative(appRoot, legacyPkg)}`);
+        log(
+          `Removed legacy in-place synth: ${path.relative(appRoot, legacyPkg)}`,
+        );
       }
     } catch {
       // not present – fine
@@ -1258,7 +1259,9 @@ function main(argv /*:: ?: Array<string> */) /*: void */ {
     try {
       if (fs.lstatSync(legacyInclude).isDirectory()) {
         fs.rmSync(legacyInclude, {recursive: true, force: true});
-        log(`Removed legacy in-place include/: ${path.relative(appRoot, legacyInclude)}`);
+        log(
+          `Removed legacy in-place include/: ${path.relative(appRoot, legacyInclude)}`,
+        );
       }
     } catch {
       // not present – fine

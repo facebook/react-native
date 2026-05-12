@@ -1120,13 +1120,18 @@ function main(argv /*:: ?: Array<string> */) /*: void */ {
   );
 
   // Only write files that actually changed to avoid triggering Xcode reloads.
-  function writeIfChanged(filePath /*: string */, content /*: string */) /*: boolean */ {
+  function writeIfChanged(
+    filePath /*: string */,
+    content /*: string */,
+  ) /*: boolean */ {
     fs.mkdirSync(path.dirname(filePath), {recursive: true});
     try {
       if (fs.readFileSync(filePath, 'utf8') === content) {
         return false;
       }
-    } catch { /* file doesn't exist yet */ }
+    } catch {
+      /* file doesn't exist yet */
+    }
     fs.writeFileSync(filePath, content, 'utf8');
     return true;
   }

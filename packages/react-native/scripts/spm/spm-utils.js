@@ -201,13 +201,23 @@ function resolveAndWriteVFSOverlay(
   reactNativeRoot /*: string */,
   logger /*: {log: (msg: string) => void} */ = {log() {}},
 ) /*: boolean */ {
-  const xcfwPath = path.join(appRoot, 'build', 'xcframeworks', 'React.xcframework');
+  const xcfwPath = path.join(
+    appRoot,
+    'build',
+    'xcframeworks',
+    'React.xcframework',
+  );
   if (!fs.existsSync(xcfwPath)) {
     return false;
   }
   const realXcfwPath = fs.realpathSync(xcfwPath);
   const vfsTemplatePath = path.join(realXcfwPath, 'React-VFS-template.yaml');
-  const resolvedPath = path.join(appRoot, 'build', 'xcframeworks', 'React-VFS.yaml');
+  const resolvedPath = path.join(
+    appRoot,
+    'build',
+    'xcframeworks',
+    'React-VFS.yaml',
+  );
 
   if (fs.existsSync(vfsTemplatePath)) {
     const {resolveVFSOverlay} = require('../ios-prebuild/vfs');
@@ -216,7 +226,10 @@ function resolveAndWriteVFSOverlay(
     fs.writeFileSync(resolvedPath, resolved, 'utf8');
     logger.log('Resolved VFS overlay (from template)');
   } else {
-    const {createVFSOverlay, resolveVFSOverlay} = require('../ios-prebuild/vfs');
+    const {
+      createVFSOverlay,
+      resolveVFSOverlay,
+    } = require('../ios-prebuild/vfs');
     const template = createVFSOverlay(reactNativeRoot);
     const resolved = resolveVFSOverlay(template, realXcfwPath);
     fs.writeFileSync(resolvedPath, resolved, 'utf8');
@@ -250,9 +263,23 @@ function runCodegenAndInstallTemplate(
   execSync(codegenArgs, {stdio: 'inherit', cwd: projectRoot});
 
   // Install SPM codegen template
-  const codegenPkgSwift = path.join(appRoot, 'build', 'generated', 'ios', 'Package.swift');
-  const spmTemplate = path.join(scriptsDir, 'codegen', 'templates', 'Package.swift.spm-template');
-  if (fs.existsSync(spmTemplate) && fs.existsSync(path.dirname(codegenPkgSwift))) {
+  const codegenPkgSwift = path.join(
+    appRoot,
+    'build',
+    'generated',
+    'ios',
+    'Package.swift',
+  );
+  const spmTemplate = path.join(
+    scriptsDir,
+    'codegen',
+    'templates',
+    'Package.swift.spm-template',
+  );
+  if (
+    fs.existsSync(spmTemplate) &&
+    fs.existsSync(path.dirname(codegenPkgSwift))
+  ) {
     fs.copyFileSync(spmTemplate, codegenPkgSwift);
     logger.log('Installed SPM codegen template');
   }
