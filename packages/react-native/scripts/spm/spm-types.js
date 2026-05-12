@@ -10,7 +10,7 @@
 
 /*::
 export type SetupArgs = {
-  action: 'init' | 'update' | 'clean' | 'codegen' | 'download' | null,
+  action: 'init' | 'update' | 'sync' | 'clean' | 'codegen' | 'download' | null,
   version: string | null,
   localXcframework: string | null,
   artifactsDir: string | null,

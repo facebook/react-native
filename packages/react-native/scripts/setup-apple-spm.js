@@ -24,6 +24,10 @@
  *                              generated packages, artifacts, and .xcodeproj.
  *   update                     Regenerate generated packages/artifacts/project
  *                              without overwriting root Package.swift.
+ *   sync                       Lightweight sync invoked by the Xcode auto-sync
+ *                              build phase: regenerates autolinking and
+ *                              xcframeworks sub-packages and writes the
+ *                              .spm-sync-stamp file. Skips .xcodeproj regen.
  *   clean                      Remove generated SPM state only.
  *   codegen                    Run only codegen and install the SPM template.
  *   download                   Download/check xcframework artifacts only.
@@ -83,6 +87,7 @@ const {log, warn: logError} = makeLogger('setup-apple-spm');
 const VALID_ACTIONS = new Set([
   'init',
   'update',
+  'sync',
   'clean',
   'codegen',
   'download',
@@ -104,7 +109,7 @@ function parseArgs(argv /*: Array<string> */) /*: SetupArgs */ {
       type: 'string',
       choices: Array.from(VALID_ACTIONS),
       describe:
-        'Action to run: init, update, clean, codegen, or download. Defaults to init when Package.swift is missing, otherwise update.',
+        'Action to run: init, update, sync, clean, codegen, or download. Defaults to init when Package.swift is missing, otherwise update.',
     })
     .option('version', {
       type: 'string',
@@ -255,7 +260,7 @@ function cleanGeneratedState(appRoot /*: string */) {
 function resolveAction(
   requestedAction /*: SetupArgs['action'] */,
   appRoot /*: string */,
-) /*: 'init' | 'update' | 'clean' | 'codegen' | 'download' */ {
+) /*: 'init' | 'update' | 'sync' | 'clean' | 'codegen' | 'download' */ {
   if (requestedAction != null) {
     return requestedAction;
   }
@@ -511,10 +516,7 @@ function generateXcframeworksPackage(
   generatePackage(packageArgs);
 }
 
-function warnForMissingPackageSwift(
-  appRoot /*: string */,
-  scriptsDir /*: string */,
-) {
+function warnForMissingPackageSwift(appRoot /*: string */) {
   const mainPackageSwift = path.join(appRoot, 'Package.swift');
   if (fs.existsSync(mainPackageSwift)) {
     return;
@@ -524,9 +526,7 @@ function warnForMissingPackageSwift(
   log(
     '\x1b[33mWARNING: Package.swift not found.\x1b[0m Run init to generate an initial one:',
   );
-  log(
-    `  node ${path.relative(appRoot, path.join(scriptsDir, 'setup-apple-spm.js'))} init`,
-  );
+  log('  react-native spm init');
   log('');
 }
 
@@ -622,7 +622,8 @@ async function main(argv /*:: ?: Array<string> */) /*: Promise<void> */ {
     return;
   }
 
-  const needsCliConfig = action === 'init' || action === 'update';
+  const needsCliConfig =
+    action === 'init' || action === 'update' || action === 'sync';
   const autolinkingConfigResult = needsCliConfig
     ? loadAutolinkingConfig(projectRoot, appRoot)
     : null;
@@ -641,6 +642,22 @@ async function main(argv /*:: ?: Array<string> */) /*: Promise<void> */ {
 
   if (action === 'codegen') {
     runCodegenStep(projectRoot, appRoot, scriptsDir, false);
+    return;
+  }
+
+  if (action === 'sync') {
+    const {main: runSync} = require('./spm/sync-spm-autolinking');
+    try {
+      await runSync([
+        '--app-root',
+        appRoot,
+        '--react-native-root',
+        reactNativeRoot,
+      ]);
+    } catch (e) {
+      logError(`SPM sync failed: ${e.message}`);
+      process.exitCode = 1;
+    }
     return;
   }
 
@@ -702,7 +719,7 @@ async function main(argv /*:: ?: Array<string> */) /*: Promise<void> */ {
   if (action === 'init') {
     ensureGitignoreSpmEntries(appRoot);
   } else {
-    warnForMissingPackageSwift(appRoot, scriptsDir);
+    warnForMissingPackageSwift(appRoot);
   }
   warnForMissingVfsOverlayFlags(appRoot);
 

@@ -105,7 +105,7 @@ describe('generatePbxproj', () => {
   it('includes shell script build phases in correct order', () => {
     const result = generatePbxproj(minimalOpts);
     expect(result).toContain('Sync SPM Autolinking');
-    expect(result).toContain('sync-spm-autolinking.js');
+    expect(result).toContain('npx react-native spm sync');
     expect(result).toContain('Build JS Bundle');
     expect(result).toContain('Prepare VFS Overlay');
     // Sync must run before VFS overlay

@@ -7,28 +7,34 @@ XCFrameworks, as an alternative to CocoaPods.
 
 ```bash
 # First-time setup (generates Package.swift you commit)
-node node_modules/react-native/scripts/setup-apple-spm.js init
+react-native spm init
 
 # Open in Xcode — autolinking syncs automatically on build
 open MyApp-SPM.xcodeproj
 
 # Delete generated SPM state if things go wrong
-node node_modules/react-native/scripts/setup-apple-spm.js clean
+react-native spm clean
 ```
 
-After the initial `init` setup, you typically don't need to re-run
-`setup-apple-spm.js`. The generated `.xcodeproj` includes an **auto-sync build
-phase** that detects dependency changes and re-runs autolinking before
-compilation (see [Auto-Sync](#auto-sync-build-phase) below).
+After the initial `init`, you typically don't need to re-run `react-native
+spm`. The generated `.xcodeproj` includes an **auto-sync build phase** that
+detects dependency changes and re-runs autolinking before compilation (see
+[Auto-Sync](#auto-sync-build-phase) below).
 
-You can still run `setup-apple-spm.js` manually if needed (e.g., after
-`--force-download` or to regenerate the `.xcodeproj`).
+You can still run `react-native spm` manually if needed (e.g., after
+`--forceDownload` or to regenerate the `.xcodeproj`).
+
+> **Note:** `react-native spm` is a thin wrapper over
+> `node node_modules/react-native/scripts/setup-apple-spm.js`. If the CLI
+> alias is unavailable in your environment, invoke the script directly with
+> the same actions and the kebab-case flag equivalents (e.g.
+> `--force-download` instead of `--forceDownload`).
 
 CocoaPods continues to work in parallel.
 
 ## Pipeline
 
-`setup-apple-spm.js init` and `setup-apple-spm.js update` orchestrate these
+`react-native spm init` and `react-native spm update` orchestrate these
 steps:
 
 | Step | Script | Output |
@@ -76,39 +82,44 @@ so regenerating it from the same inputs produces identical output. Committing
 it means teammates can clone and open Xcode without running any setup commands
 — the auto-sync build phase handles the rest on first build.
 
-Re-run `setup-apple-spm.js` (or just step 5) when you add/remove native source
+Re-run `react-native spm` (or just step 5) when you add/remove native source
 files, then commit the updated `.xcodeproj`.
 
 ## CLI Actions
 
 ```bash
-node node_modules/react-native/scripts/setup-apple-spm.js [action] [options]
+react-native spm [action] [options]
 ```
 
-With no action, the script runs `init` if `Package.swift` is missing,
+With no action, the command runs `init` if `Package.swift` is missing,
 otherwise `update`.
 
 | Action | Description |
 |---|---|
 | `init` | Generate initial `Package.swift` and all generated SPM/Xcode state |
 | `update` | Regenerate generated SPM/Xcode state without overwriting root `Package.swift` |
+| `sync` | Lightweight resync invoked by the Xcode auto-sync build phase. Regenerates autolinking + xcframeworks sub-packages and writes `.spm-sync-stamp`. Skips `.xcodeproj` regen. |
 | `clean` | Remove generated SPM state only |
 | `codegen` | Run codegen and install the SPM codegen template only |
 | `download` | Download/check xcframework artifacts only |
 
 ## CLI Options
 
+Flags below use the `react-native spm` (camelCase) form. The raw script
+accepts kebab-case equivalents (e.g. `--skip-codegen`).
+
 | Option | Description |
 |---|---|
 | `--version <ver>` | RN version (default: from package.json) |
 | `--flavor <debug\|release>` | Artifact flavor (default: debug) |
-| `--local-xcframework <path>` | Use locally-built xcframework |
-| `--entry-file <path>` | JS entry file (default: package.json `main` or `index.js`) |
-| `--bundle-identifier <id>` | Override CFBundleIdentifier |
-| `--skip-codegen` | Skip codegen step |
-| `--skip-download` | Skip artifact download |
-| `--skip-xcodeproj` | Skip .xcodeproj generation |
-| `--force-download` | Clear cache and re-download |
+| `--localXcframework <path>` | Use locally-built xcframework |
+| `--entryFile <path>` | JS entry file (default: package.json `main` or `index.js`) |
+| `--bundleIdentifier <id>` | Override CFBundleIdentifier |
+| `--productName <name>` | Override PRODUCT_NAME |
+| `--skipCodegen` | Skip codegen step |
+| `--skipDownload` | Skip artifact download |
+| `--skipXcodeproj` | Skip .xcodeproj generation |
+| `--forceDownload` | Clear cache and re-download |
 
 ## Local Native Modules
 
@@ -148,7 +159,7 @@ SPM doesn't natively support. Two mechanisms solve this:
 The generated `.xcodeproj` includes a **Sync SPM Autolinking** shell script
 build phase that runs before all other phases. It keeps
 `build/generated/autolinking/Package.swift` up to date without requiring manual
-re-runs of `setup-apple-spm.js`.
+re-runs of `react-native spm`.
 
 **How it works:**
 
@@ -156,8 +167,9 @@ re-runs of `setup-apple-spm.js`.
    - `package.json` — dependency declarations
    - `react-native.config.js` — spmModules config
    - `node_modules/` directory mtime — updated by any package manager (npm, yarn, pnpm, bun); also checks parent `node_modules` for monorepo setups
-2. If any input is newer (or stamp is missing): runs `sync-spm-autolinking.js`
-   which re-executes autolinking + package generation + VFS overlay resolution.
+2. If any input is newer (or stamp is missing): runs `npx react-native spm sync`,
+   which re-executes autolinking + package generation + VFS overlay resolution
+   and writes the stamp file.
 3. If all inputs are fresh: exits immediately (~1ms).
 
 **Build phase ordering:**
@@ -181,23 +193,23 @@ Xcode's "Clean Build Folder" (Cmd+Shift+K) only removes DerivedData — it does
 not touch SPM-generated directories. To fully reset SPM state:
 
 ```bash
-node node_modules/react-native/scripts/setup-apple-spm.js clean
+react-native spm clean
 ```
 
 This removes `build/xcframeworks/`, `build/generated/`, legacy `autolinked/`,
-and `.build/`. It does not re-run setup. Run `setup-apple-spm.js update` or
+and `.build/`. It does not re-run setup. Run `react-native spm update` or
 open the checked-in `.xcodeproj` and build to regenerate state.
 
 ## Troubleshooting
 
 | Problem | Fix |
 |---------|-----|
-| "Package.swift not found" | Run `setup-apple-spm.js init` |
-| Missing headers | Re-run `setup-apple-spm.js` |
+| "Package.swift not found" | Run `react-native spm init` |
+| Missing headers | Re-run `react-native spm` |
 | "not contained in target" | Re-run setup (regenerates file-level symlinks) |
-| Codegen fails | Use `--skip-codegen` to iterate on other parts |
-| Wrong JS entry file | Pass `--entry-file` or set `"main"` in package.json |
+| Codegen fails | Use `--skipCodegen` to iterate on other parts |
+| Wrong JS entry file | Pass `--entryFile` or set `"main"` in package.json |
 | "SPM autolinking sync failed" warning | Check Xcode build log for details; node may not be in PATH — ensure `with-environment.sh` is present |
 | Autolinking not updating on build | Touch `package.json` to force a sync, or delete `build/generated/autolinking/.spm-sync-stamp` |
-| Build fails after clean with module map errors | Run `setup-apple-spm.js update`, then reopen Xcode |
-| Stale SPM state or corrupted build | Run `setup-apple-spm.js clean`, then `setup-apple-spm.js update` |
+| Build fails after clean with module map errors | Run `react-native spm update`, then reopen Xcode |
+| Stale SPM state or corrupted build | Run `react-native spm clean`, then `react-native spm update` |

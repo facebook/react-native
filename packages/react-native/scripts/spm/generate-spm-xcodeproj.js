@@ -652,7 +652,6 @@ fi
 echo "SPM sync inputs changed — re-syncing (codegen + autolinking)..."
 
 WITH_ENVIRONMENT="${reactNativePath}/scripts/xcode/with-environment.sh"
-SYNC_SCRIPT="${reactNativePath}/scripts/spm/sync-spm-autolinking.js"
 
 if [ -f "$WITH_ENVIRONMENT" ]; then
   # with-environment.sh references PODS_ROOT and $1, which may be unset.
@@ -663,13 +662,14 @@ if [ -f "$WITH_ENVIRONMENT" ]; then
   set -u
 fi
 
-if command -v node >/dev/null 2>&1; then
-  node "$SYNC_SCRIPT" --app-root "$SRCROOT" --react-native-root "$SRCROOT/${reactNativePath}" || {
+cd "$SRCROOT"
+if command -v npx >/dev/null 2>&1; then
+  npx react-native spm sync || {
     echo "warning: SPM sync failed — build may use stale codegen/autolinking"
     exit 0
   }
 else
-  echo "warning: node not found — skipping SPM sync"
+  echo "warning: npx not found — skipping SPM sync"
   exit 0
 fi
 `;
