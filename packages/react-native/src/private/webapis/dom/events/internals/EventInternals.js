@@ -35,6 +35,42 @@ export const TARGET_KEY: symbol = Symbol('target');
 // platform using the original timestamps.
 export const EVENT_INIT_TIMESTAMP_KEY: symbol = Symbol('eventInitTimestamp');
 
+// Internal slots used by the React Native renderer to pass pre-resolved
+// React prop names ("onPointerUp" / "onPointerUpCapture") through the event
+// to subclasses of `EventTarget` (i.e. `ReactNativeElement`). This avoids
+// recomputing `getEventTypePropName(event.type, isCapture)` per ancestor per
+// phase during dispatch, which is hot.
+export const BUBBLED_PROP_NAME_KEY: symbol = Symbol('bubbledPropName');
+export const CAPTURED_PROP_NAME_KEY: symbol = Symbol('capturedPropName');
+
+export function getBubbledPropName(event: Event): string | null | void {
+  // $FlowExpectedError[prop-missing]
+  return event[BUBBLED_PROP_NAME_KEY];
+}
+
+export function setBubbledPropName(
+  event: Event,
+  propName: string | null,
+): void {
+  // $FlowExpectedError[prop-missing]
+  // $FlowExpectedError[invalid-computed-prop]
+  event[BUBBLED_PROP_NAME_KEY] = propName;
+}
+
+export function getCapturedPropName(event: Event): string | null | void {
+  // $FlowExpectedError[prop-missing]
+  return event[CAPTURED_PROP_NAME_KEY];
+}
+
+export function setCapturedPropName(
+  event: Event,
+  propName: string | null,
+): void {
+  // $FlowExpectedError[prop-missing]
+  // $FlowExpectedError[invalid-computed-prop]
+  event[CAPTURED_PROP_NAME_KEY] = propName;
+}
+
 export function getCurrentTarget(event: Event): EventTarget | null {
   // $FlowExpectedError[prop-missing]
   return event[CURRENT_TARGET_KEY];

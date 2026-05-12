@@ -523,7 +523,7 @@ static inline UIViewAnimationOptions animationOptionsWithCurve(UIViewAnimationCu
     }
   }
 
-  return isPointInside ? self : nil;
+  return isPointInside ? _scrollView : nil;
 }
 
 /*

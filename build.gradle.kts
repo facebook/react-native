@@ -118,7 +118,7 @@ if (project.findProperty("react.internal.useHermesStable")?.toString()?.toBoolea
   val hermesVersionPropertiesFile =
       rootProject.file("./packages/react-native/sdks/hermes-engine/version.properties")
   hermesVersionPropertiesFile.inputStream().use { hermesVersions.load(it) }
-  val selectedHermesVersion = hermesVersions["HERMES_V1_VERSION_NAME"] as String
+  val selectedHermesVersion = hermesVersions["HERMES_VERSION_NAME"] as String
 
   hermesSubstitution = selectedHermesVersion to "Users opted to use stable hermes release"
 } else if (
@@ -137,15 +137,7 @@ if (project.findProperty("react.internal.useHermesStable")?.toString()?.toBoolea
     )
   }
 
-  val hermesV1Enabled = project.findProperty("hermesV1Enabled")?.toString()?.toBoolean() ?: true
-  // Hermes V1 stable releases are published without the -SNAPSHOT suffix.
-  // Legacy nightly builds use -SNAPSHOT.
-  val resolvedVersion =
-      if (hermesV1Enabled) hermesCompilerVersion else "$hermesCompilerVersion-SNAPSHOT"
-  val reason =
-      if (hermesV1Enabled) "Users opted to use hermes V1 stable"
-      else "Users opted to use hermes nightly"
-  hermesSubstitution = resolvedVersion to reason
+  hermesSubstitution = hermesCompilerVersion to "Users opted to use Hermes V1 prebuilt"
 } else {
   logger.warn(
       """

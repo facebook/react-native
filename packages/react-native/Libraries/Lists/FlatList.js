@@ -8,7 +8,7 @@
  * @format
  */
 
-import typeof ScrollViewNativeComponent from '../Components/ScrollView/ScrollViewNativeComponent';
+import type {PublicScrollViewInstance} from '../Components/ScrollView/ScrollView';
 import type {ViewStyleProp} from '../StyleSheet/StyleSheet';
 import type {
   ListRenderItem,
@@ -397,12 +397,8 @@ class FlatList<ItemT = any> extends React.PureComponent<FlatListProps<ItemT>> {
   /**
    * Provides a reference to the underlying host component
    */
-  getNativeScrollRef():
-    | ?React.ElementRef<typeof View>
-    | ?React.ElementRef<ScrollViewNativeComponent> {
+  getNativeScrollRef(): ?PublicScrollViewInstance {
     if (this._listRef) {
-      /* $FlowFixMe[incompatible-return] Suppresses errors found when fixing
-       * TextInput typing */
       return this._listRef.getScrollRef();
     }
   }

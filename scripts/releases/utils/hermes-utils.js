@@ -32,30 +32,9 @@ const GRADLE_PROPERTIES_PATH = path.join(
   'gradle.properties',
 );
 
-async function getLatestHermesNightlyVersion() /*: Promise<{
-  compilerVersion: string,
-  compilerV1Version: string,
-  runtimeVersion: string,
-  runtimeV1Version: string,
-}> */ {
-  // fetch the latest commitly version of hermes v0
-  const compilerVersion = await getPackageVersionStrByTag(
-    'hermes-compiler',
-    'nightly',
-  );
-  // fetch the latest version of hermes v1
-  const compilerV1Version = await getPackageVersionStrByTag(
-    'hermes-compiler',
-    'latest-v1',
-  );
-
-  return {
-    compilerVersion,
-    compilerV1Version,
-    // runtime version should match the compiler version
-    runtimeVersion: compilerVersion,
-    runtimeV1Version: compilerV1Version,
-  };
+// TODO: rename 'latest-v1' to 'latest' once V1 is the only Hermes on npm
+async function getLatestHermesVersion() /*: Promise<string> */ {
+  return getPackageVersionStrByTag('hermes-compiler', 'latest-v1');
 }
 
 /**
@@ -102,29 +81,21 @@ async function updateHermesCompilerVersionInDependencies(
 
 async function updateHermesRuntimeDependenciesVersions(
   hermesVersion /*: string */,
-  hermesV1Version /*: string */,
 ) /*: Promise<void> */ {
-  const newVersionsFile =
-    `HERMES_VERSION_NAME=${hermesVersion}\n` +
-    `HERMES_V1_VERSION_NAME=${hermesV1Version}`;
+  const newVersionsFile = `HERMES_VERSION_NAME=${hermesVersion}`;
 
   await fs.writeFile(MAVEN_VERSIONS_FILE_PATH, newVersionsFile.trim() + '\n');
 }
 
-async function updateHermesVersionsToNightly() {
-  const hermesVersions = await getLatestHermesNightlyVersion();
-  await updateHermesCompilerVersionInDependencies(
-    hermesVersions.compilerV1Version,
-  );
-  await updateHermesRuntimeDependenciesVersions(
-    hermesVersions.runtimeVersion,
-    hermesVersions.runtimeV1Version,
-  );
+async function updateHermesVersionsToPrebuilt() {
+  const hermesVersion = await getLatestHermesVersion();
+  await updateHermesCompilerVersionInDependencies(hermesVersion);
+  await updateHermesRuntimeDependenciesVersions(hermesVersion);
 }
 
 module.exports = {
   setStableHermesForReleaseBranch,
-  updateHermesVersionsToNightly,
+  updateHermesVersionsToPrebuilt,
   updateHermesCompilerVersionInDependencies,
   updateHermesRuntimeDependenciesVersions,
 };

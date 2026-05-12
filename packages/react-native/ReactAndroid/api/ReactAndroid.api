@@ -6141,6 +6141,7 @@ public final class com/facebook/react/views/text/TextAttributeProps {
 	public static final field TA_KEY_TEXT_DECORATION_COLOR I
 	public static final field TA_KEY_TEXT_DECORATION_LINE I
 	public static final field TA_KEY_TEXT_DECORATION_STYLE I
+	public static final field TA_KEY_TEXT_EFFECTS I
 	public static final field TA_KEY_TEXT_SHADOW_COLOR I
 	public static final field TA_KEY_TEXT_SHADOW_OFFSET_DX I
 	public static final field TA_KEY_TEXT_SHADOW_OFFSET_DY I
@@ -6207,6 +6208,9 @@ public final class com/facebook/react/views/text/TextAttributes {
 	public final fun setLineHeight (F)V
 	public final fun setMaxFontSizeMultiplier (F)V
 	public fun toString ()Ljava/lang/String;
+}
+
+public final class com/facebook/react/views/text/TextEffectRegistry$Companion {
 }
 
 public abstract interface class com/facebook/react/views/textinput/ContentSizeWatcher {

@@ -100,6 +100,11 @@ public class TextAttributeProps private constructor() {
   public var role: ReactAccessibilityDelegate.Role? = null
     private set
 
+  internal data class TextEffectEntry(val name: String, val props: String?)
+
+  internal var textEffects: List<TextEffectEntry> = emptyList()
+    private set
+
   public var fontStyle: Int = ReactConstants.UNSET
     private set
 
@@ -375,6 +380,9 @@ public class TextAttributeProps private constructor() {
     public const val TA_KEY_ROLE: Int = 26
     public const val TA_KEY_TEXT_TRANSFORM: Int = 27
     public const val TA_KEY_MAX_FONT_SIZE_MULTIPLIER: Int = 29
+    public const val TA_KEY_TEXT_EFFECTS: Int = 30
+    private const val TE_KEY_NAME: Int = 0
+    private const val TE_KEY_PROPS: Int = 1
 
     public const val UNSET: Int = -1
 
@@ -429,6 +437,22 @@ public class TextAttributeProps private constructor() {
           TA_KEY_TEXT_TRANSFORM -> result.setTextTransform(entry.stringValue)
           TA_KEY_MAX_FONT_SIZE_MULTIPLIER ->
               result.maxFontSizeMultiplier = entry.doubleValue.toFloat()
+          TA_KEY_TEXT_EFFECTS -> {
+            val effectsMap = entry.mapBufferValue
+            val list = mutableListOf<TextEffectEntry>()
+            for (j in 0 until effectsMap.count) {
+              val effectMap = effectsMap.getMapBuffer(j)
+              list.add(
+                  TextEffectEntry(
+                      name = effectMap.getString(TE_KEY_NAME),
+                      props =
+                          if (effectMap.contains(TE_KEY_PROPS)) effectMap.getString(TE_KEY_PROPS)
+                          else null,
+                  )
+              )
+            }
+            result.textEffects = list
+          }
         }
       }
 

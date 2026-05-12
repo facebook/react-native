@@ -472,17 +472,6 @@ const definitions: FeatureFlagDefinitions = {
       },
       ossReleaseStage: 'none',
     },
-    enableNativeViewPropTransformations: {
-      defaultValue: false,
-      metadata: {
-        dateAdded: '2026-02-26',
-        description:
-          'When enabled, View.js passes aria-*, id, and tabIndex props directly to native, relying on C++ prop parsing instead of JS-side transformations.',
-        expectedReleaseValue: true,
-        purpose: 'experimentation',
-      },
-      ossReleaseStage: 'none',
-    },
     enableNetworkEventReporting: {
       defaultValue: true,
       metadata: {
@@ -726,6 +715,17 @@ const definitions: FeatureFlagDefinitions = {
         dateAdded: '2025-06-30',
         description:
           'Hides offscreen VirtualViews on iOS by setting hidden = YES to avoid extra cost of views',
+        expectedReleaseValue: true,
+        purpose: 'experimentation',
+      },
+      ossReleaseStage: 'none',
+    },
+    optimizedAnimatedPropUpdates: {
+      defaultValue: false,
+      metadata: {
+        dateAdded: '2026-04-07',
+        description:
+          'When enabled, uses optimized platform-specific paths to apply animated props synchronously. On Android, this uses a batched int/double buffer protocol with a single JNI call. On iOS, this passes AnimatedProps directly through the delegate chain and applies them via cloneProps, avoiding the folly::dynamic round-trip.',
         expectedReleaseValue: true,
         purpose: 'experimentation',
       },

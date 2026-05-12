@@ -45,7 +45,6 @@ function generateSchemaInfo(
     schema: CodegenUtils.getCombineJSToSchema().combineSchemasInFileList(
       [pathToJavaScriptSources],
       platform,
-      /NativeSampleTurboModule/,
     ),
   };
 }

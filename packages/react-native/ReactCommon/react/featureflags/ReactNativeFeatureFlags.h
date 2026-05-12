@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<d15e79bbfac17a32fd7981538afc3683>>
+ * @generated SignedSource<<771a335070649f38cb559a95d80947aa>>
  */
 
 /**
@@ -240,11 +240,6 @@ class ReactNativeFeatureFlags {
   RN_EXPORT static bool enableNativeCSSParsing();
 
   /**
-   * When enabled, View.js passes aria-*, id, and tabIndex props directly to native, relying on C++ prop parsing instead of JS-side transformations.
-   */
-  RN_EXPORT static bool enableNativeViewPropTransformations();
-
-  /**
    * Enable network event reporting hooks in each native platform through `NetworkReporter` (Web Perf APIs + CDP). This flag should be combined with `fuseboxNetworkInspectionEnabled` to enable Network CDP debugging.
    */
   RN_EXPORT static bool enableNetworkEventReporting();
@@ -358,6 +353,11 @@ class ReactNativeFeatureFlags {
    * Hides offscreen VirtualViews on iOS by setting hidden = YES to avoid extra cost of views
    */
   RN_EXPORT static bool hideOffscreenVirtualViewsOnIOS();
+
+  /**
+   * When enabled, uses optimized platform-specific paths to apply animated props synchronously. On Android, this uses a batched int/double buffer protocol with a single JNI call. On iOS, this passes AnimatedProps directly through the delegate chain and applies them via cloneProps, avoiding the folly::dynamic round-trip.
+   */
+  RN_EXPORT static bool optimizedAnimatedPropUpdates();
 
   /**
    * Override props at mounting with synchronously mounted (i.e. direct manipulation) props from Native Animated.

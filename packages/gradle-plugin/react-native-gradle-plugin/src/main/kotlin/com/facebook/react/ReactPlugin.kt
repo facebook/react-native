@@ -28,8 +28,8 @@ import com.facebook.react.utils.DependencyUtils.readVersionAndGroupStrings
 import com.facebook.react.utils.JdkConfiguratorUtils.configureJavaToolChains
 import com.facebook.react.utils.JsonUtils
 import com.facebook.react.utils.NdkConfiguratorUtils.configureReactNativeNdk
-import com.facebook.react.utils.ProjectUtils.isHermesV1Enabled
 import com.facebook.react.utils.ProjectUtils.needsCodegenFromPackageJson
+import com.facebook.react.utils.PropertyUtils
 import com.facebook.react.utils.findPackageJsonFile
 import java.io.File
 import kotlin.system.exitProcess
@@ -55,8 +55,25 @@ class ReactPlugin : Plugin<Project> {
                 project,
             )
 
-    if (!project.rootProject.isHermesV1Enabled) {
-      rootExtension.hermesV1Enabled.set(false)
+    // Warn users if they still have the hermesV1Enabled property set.
+    if (
+        project.rootProject.hasProperty(PropertyUtils.HERMES_V1_ENABLED) ||
+            project.rootProject.hasProperty(PropertyUtils.SCOPED_HERMES_V1_ENABLED)
+    ) {
+      val value =
+          (project.rootProject.findProperty(PropertyUtils.HERMES_V1_ENABLED)
+                  ?: project.rootProject.findProperty(PropertyUtils.SCOPED_HERMES_V1_ENABLED))
+              .toString()
+              .toBoolean()
+      if (value) {
+        project.logger.warn(
+            "WARNING: The 'hermesV1Enabled' property is no longer needed. Hermes V1 is now always enabled. You can safely remove this property from your gradle.properties."
+        )
+      } else {
+        project.logger.warn(
+            "WARNING: Opting out of Hermes V1 is no longer supported. The 'hermesV1Enabled=false' property will be ignored. Hermes V1 is now always enabled. Please remove this property from your gradle.properties."
+        )
+      }
     }
 
     // App Only Configuration
@@ -75,8 +92,7 @@ class ReactPlugin : Plugin<Project> {
             File(reactNativeDir, "sdks/hermes-engine/version.properties")
         val versionAndGroupStrings =
             readVersionAndGroupStrings(project, propertiesFile, hermesVersionPropertiesFile)
-        val hermesV1Enabled = rootExtension.hermesV1Enabled.get()
-        configureDependencies(project, versionAndGroupStrings, hermesV1Enabled)
+        configureDependencies(project, versionAndGroupStrings)
         configureRepositories(project, versionAndGroupStrings.isNightly)
       }
 

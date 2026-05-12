@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<a7c69ce7e10faeb5328412c5e29552cf>>
+ * @generated SignedSource<<bcc599e04e3672d4bff293e267b3efa2>>
  */
 
 /**
@@ -103,8 +103,6 @@ public interface ReactNativeFeatureFlagsProvider {
 
   @DoNotStrip public fun enableNativeCSSParsing(): Boolean
 
-  @DoNotStrip public fun enableNativeViewPropTransformations(): Boolean
-
   @DoNotStrip public fun enableNetworkEventReporting(): Boolean
 
   @DoNotStrip public fun enablePreparedTextLayout(): Boolean
@@ -150,6 +148,8 @@ public interface ReactNativeFeatureFlagsProvider {
   @DoNotStrip public fun fuseboxScreenshotCaptureEnabled(): Boolean
 
   @DoNotStrip public fun hideOffscreenVirtualViewsOnIOS(): Boolean
+
+  @DoNotStrip public fun optimizedAnimatedPropUpdates(): Boolean
 
   @DoNotStrip public fun overrideBySynchronousMountPropsAtMountingAndroid(): Boolean
 

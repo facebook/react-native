@@ -63,13 +63,6 @@ class ReadOnlyNode extends ReadOnlyNodeBase {
     setInstanceHandle(this, instanceHandle);
   }
 
-  // Implement the "get the parent" algorithm for EventTarget.
-  // This enables event propagation (capture/bubble) through the node tree.
-  // $FlowExpectedError[unsupported-syntax]
-  [EVENT_TARGET_GET_THE_PARENT_KEY](): EventTarget | null {
-    return this.parentNode;
-  }
-
   get childNodes(): NodeList<ReadOnlyNode> {
     const childNodes = getChildNodes(this);
     return createNodeList(childNodes);
@@ -325,6 +318,24 @@ class ReadOnlyNode extends ReadOnlyNodeBase {
 }
 
 setPlatformObject(ReadOnlyNode);
+
+// Implement the "get the parent" algorithm for EventTarget by aliasing
+// `[EVENT_TARGET_GET_THE_PARENT_KEY]` directly to the `parentNode` getter
+// function on the prototype. This enables event propagation (capture/bubble)
+// through the node tree and avoids the extra function call that a
+// trampoline method (e.g. `() { return this.parentNode; }`) would add per
+// ancestor on the hot event-dispatch path.
+{
+  const parentNodeGetter = Object.getOwnPropertyDescriptor(
+    ReadOnlyNode.prototype,
+    'parentNode',
+  )?.get;
+  if (parentNodeGetter != null) {
+    // $FlowExpectedError[prop-missing]
+    // $FlowExpectedError[invalid-computed-prop]
+    ReadOnlyNode.prototype[EVENT_TARGET_GET_THE_PARENT_KEY] = parentNodeGetter;
+  }
+}
 
 type ReadOnlyNodeT = ReadOnlyNode;
 

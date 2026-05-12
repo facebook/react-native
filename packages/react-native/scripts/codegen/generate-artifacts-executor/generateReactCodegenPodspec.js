@@ -49,8 +49,13 @@ function getInputFiles(appPath /*: string */, appPkgJson /*: $FlowFixMe */) {
     return '[]';
   }
 
+  // Normalize appPath so any "Pods/.." segment is collapsed before find runs.
+  // Otherwise every find result inherits the search-root prefix containing
+  // "/Pods/" and gets dropped by the exclusion filter below.
+  const resolvedAppPath = path.resolve(appPath);
+
   const xcodeproj = String(
-    execSync(`find ${appPath} -type d -name "*.xcodeproj"`),
+    execSync(`find ${resolvedAppPath} -type d -name "*.xcodeproj"`),
   )
     .trim()
     .split('\n')
@@ -61,12 +66,12 @@ function getInputFiles(appPath /*: string */, appPkgJson /*: $FlowFixMe */) {
     )[0];
   if (!xcodeproj) {
     throw new Error(
-      `Cannot find .xcodeproj file inside ${appPath}. This is required to determine codegen spec paths relative to native project.`,
+      `Cannot find .xcodeproj file inside ${resolvedAppPath}. This is required to determine codegen spec paths relative to native project.`,
     );
   }
   const jsFiles = '-name "Native*.js" -or -name "*NativeComponent.js"';
   const tsFiles = '-name "Native*.ts" -or -name "*NativeComponent.ts"';
-  const findCommand = `find ${path.join(appPath, jsSrcsDir)} -type f -not -path "*/__mocks__/*" -and \\( ${jsFiles} -or ${tsFiles} \\)`;
+  const findCommand = `find ${path.join(resolvedAppPath, jsSrcsDir)} -type f -not -path "*/__mocks__/*" -and \\( ${jsFiles} -or ${tsFiles} \\)`;
   const list = String(execSync(findCommand))
     .trim()
     .split('\n')

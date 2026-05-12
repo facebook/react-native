@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<d4e81be344e15b275d015651b4fa824d>>
+ * @generated SignedSource<<4342ccb696b4123b9d463a31c024b9bc>>
  */
 
 /**
@@ -271,12 +271,6 @@ public object ReactNativeFeatureFlags {
   public fun enableNativeCSSParsing(): Boolean = accessor.enableNativeCSSParsing()
 
   /**
-   * When enabled, View.js passes aria-*, id, and tabIndex props directly to native, relying on C++ prop parsing instead of JS-side transformations.
-   */
-  @JvmStatic
-  public fun enableNativeViewPropTransformations(): Boolean = accessor.enableNativeViewPropTransformations()
-
-  /**
    * Enable network event reporting hooks in each native platform through `NetworkReporter` (Web Perf APIs + CDP). This flag should be combined with `fuseboxNetworkInspectionEnabled` to enable Network CDP debugging.
    */
   @JvmStatic
@@ -413,6 +407,12 @@ public object ReactNativeFeatureFlags {
    */
   @JvmStatic
   public fun hideOffscreenVirtualViewsOnIOS(): Boolean = accessor.hideOffscreenVirtualViewsOnIOS()
+
+  /**
+   * When enabled, uses optimized platform-specific paths to apply animated props synchronously. On Android, this uses a batched int/double buffer protocol with a single JNI call. On iOS, this passes AnimatedProps directly through the delegate chain and applies them via cloneProps, avoiding the folly::dynamic round-trip.
+   */
+  @JvmStatic
+  public fun optimizedAnimatedPropUpdates(): Boolean = accessor.optimizedAnimatedPropUpdates()
 
   /**
    * Override props at mounting with synchronously mounted (i.e. direct manipulation) props from Native Animated.

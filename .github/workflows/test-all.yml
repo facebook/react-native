@@ -100,7 +100,7 @@ jobs:
   prebuild_react_native_core:
     uses: ./.github/workflows/prebuild-ios-core.yml
     with:
-      use-hermes-nightly: ${{ !endsWith(github.ref_name, '-stable') }}
+      use-hermes-prebuilt: ${{ !endsWith(github.ref_name, '-stable') }}
     secrets: inherit
     needs: [prebuild_apple_dependencies]
 
@@ -368,10 +368,10 @@ jobs:
           cache-encryption-key: ${{ secrets.GRADLE_CACHE_ENCRYPTION_KEY }}
       - name: Run yarn install
         uses: ./.github/actions/yarn-install
-      - name: Set nightly Hermes versions
+      - name: Set Hermes prebuilt version
         shell: bash
         run: |
-          node ./scripts/releases/use-hermes-nightly.js
+          node ./scripts/releases/use-hermes-prebuilt.js
       - name: Run yarn install again, with the correct hermes version
         uses: ./.github/actions/yarn-install
       - name: Prepare the Helloworld application

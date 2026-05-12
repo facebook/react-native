@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<198728d86480c873bf44fc0d8d1633ef>>
+ * @generated SignedSource<<69bfd288593aebd59355309a7777cd79>>
  * @flow strict
  * @noformat
  */
@@ -65,7 +65,6 @@ export interface Spec extends TurboModule {
   +enableModuleArgumentNSNullConversionIOS?: () => boolean;
   +enableMutationObserverByDefault?: () => boolean;
   +enableNativeCSSParsing?: () => boolean;
-  +enableNativeViewPropTransformations?: () => boolean;
   +enableNetworkEventReporting?: () => boolean;
   +enablePreparedTextLayout?: () => boolean;
   +enablePropsUpdateReconciliationAndroid?: () => boolean;
@@ -89,6 +88,7 @@ export interface Spec extends TurboModule {
   +fuseboxNetworkInspectionEnabled?: () => boolean;
   +fuseboxScreenshotCaptureEnabled?: () => boolean;
   +hideOffscreenVirtualViewsOnIOS?: () => boolean;
+  +optimizedAnimatedPropUpdates?: () => boolean;
   +overrideBySynchronousMountPropsAtMountingAndroid?: () => boolean;
   +perfIssuesEnabled?: () => boolean;
   +perfMonitorV2Enabled?: () => boolean;
