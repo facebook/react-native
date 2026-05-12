@@ -7,17 +7,20 @@
 
 package com.facebook.react.modules.image
 
+import android.media.ExifInterface
 import android.net.Uri
 import android.util.SparseArray
 import com.facebook.common.executors.CallerThreadExecutor
+import com.facebook.common.memory.PooledByteBuffer
 import com.facebook.common.references.CloseableReference
 import com.facebook.datasource.BaseDataSubscriber
 import com.facebook.datasource.DataSource
 import com.facebook.datasource.DataSubscriber
 import com.facebook.drawee.backends.pipeline.Fresco
 import com.facebook.fbreact.specs.NativeImageLoaderAndroidSpec
+import com.facebook.imagepipeline.common.RotationOptions
 import com.facebook.imagepipeline.core.ImagePipeline
-import com.facebook.imagepipeline.image.CloseableImage
+import com.facebook.imagepipeline.image.EncodedImage
 import com.facebook.imagepipeline.request.ImageRequest
 import com.facebook.imagepipeline.request.ImageRequestBuilder
 import com.facebook.react.bridge.GuardedAsyncTask
@@ -82,39 +85,13 @@ internal class ImageLoaderModule : NativeImageLoaderAndroidSpec, LifecycleEventL
       return
     }
     val source = ImageSource(reactApplicationContext, uriString)
-    val request: ImageRequest = ImageRequestBuilder.newBuilderWithSource(source.uri).build()
-    val dataSource: DataSource<CloseableReference<CloseableImage>> =
-        this.imagePipeline.fetchDecodedImage(request, this.callerContext)
-    val dataSubscriber: DataSubscriber<CloseableReference<CloseableImage>> =
-        object : BaseDataSubscriber<CloseableReference<CloseableImage>>() {
-          override fun onNewResultImpl(dataSource: DataSource<CloseableReference<CloseableImage>>) {
-            if (!dataSource.isFinished) {
-              return
-            }
-            val ref = dataSource.result
-            if (ref != null) {
-              try {
-                val image: CloseableImage = ref.get()
-                val sizes = buildReadableMap {
-                  put("width", image.width)
-                  put("height", image.height)
-                }
-                promise.resolve(sizes)
-              } catch (e: Exception) {
-                promise.reject(ERROR_GET_SIZE_FAILURE, e)
-              } finally {
-                CloseableReference.closeSafely(ref)
-              }
-            } else {
-              promise.reject(ERROR_GET_SIZE_FAILURE, "Failed to get the size of the image")
-            }
-          }
-
-          override fun onFailureImpl(dataSource: DataSource<CloseableReference<CloseableImage>>) {
-            promise.reject(ERROR_GET_SIZE_FAILURE, dataSource.failureCause)
-          }
-        }
-    dataSource.subscribe(dataSubscriber, CallerThreadExecutor.getInstance())
+    val request: ImageRequest =
+        ImageRequestBuilder.newBuilderWithSource(source.uri)
+            .setRotationOptions(RotationOptions.disableRotation())
+            .build()
+    val dataSource: DataSource<CloseableReference<PooledByteBuffer>> =
+        this.imagePipeline.fetchEncodedImage(request, this.callerContext)
+    dataSource.subscribe(createSizeSubscriber(promise), CallerThreadExecutor.getInstance())
   }
 
   /**
@@ -134,41 +111,61 @@ internal class ImageLoaderModule : NativeImageLoaderAndroidSpec, LifecycleEventL
     val source = ImageSource(reactApplicationContext, uriString)
     val imageRequestBuilder: ImageRequestBuilder =
         ImageRequestBuilder.newBuilderWithSource(source.uri)
+            .setRotationOptions(RotationOptions.disableRotation())
     val request: ImageRequest =
         ReactNetworkImageRequest.fromBuilderWithHeaders(imageRequestBuilder, headers)
-    val dataSource: DataSource<CloseableReference<CloseableImage>> =
-        this.imagePipeline.fetchDecodedImage(request, this.callerContext)
-    val dataSubscriber: DataSubscriber<CloseableReference<CloseableImage>> =
-        object : BaseDataSubscriber<CloseableReference<CloseableImage>>() {
-          override fun onNewResultImpl(dataSource: DataSource<CloseableReference<CloseableImage>>) {
-            if (!dataSource.isFinished) {
-              return
-            }
-            val ref = dataSource.result
-            if (ref != null) {
-              try {
-                val image: CloseableImage = ref.get()
-                val sizes = buildReadableMap {
-                  put("width", image.width)
-                  put("height", image.height)
-                }
-                promise.resolve(sizes)
-              } catch (e: Exception) {
-                promise.reject(ERROR_GET_SIZE_FAILURE, e)
-              } finally {
-                CloseableReference.closeSafely(ref)
-              }
-            } else {
-              promise.reject(ERROR_GET_SIZE_FAILURE, "Failed to get the size of the image")
-            }
-          }
+    val dataSource: DataSource<CloseableReference<PooledByteBuffer>> =
+        this.imagePipeline.fetchEncodedImage(request, this.callerContext)
+    dataSource.subscribe(createSizeSubscriber(promise), CallerThreadExecutor.getInstance())
+  }
 
-          override fun onFailureImpl(dataSource: DataSource<CloseableReference<CloseableImage>>) {
-            promise.reject(ERROR_GET_SIZE_FAILURE, dataSource.failureCause)
+  private fun createSizeSubscriber(
+      promise: Promise
+  ): DataSubscriber<CloseableReference<PooledByteBuffer>> =
+      object : BaseDataSubscriber<CloseableReference<PooledByteBuffer>>() {
+        override fun onNewResultImpl(dataSource: DataSource<CloseableReference<PooledByteBuffer>>) {
+          if (!dataSource.isFinished) {
+            return
+          }
+          val ref = dataSource.result
+          if (ref != null) {
+            var encodedImage: EncodedImage? = null
+            try {
+              encodedImage = EncodedImage(ref)
+              // Swap width and height when the image's EXIF orientation swaps the X/Y axes
+              // (90°/270° rotations, or transpose/transverse), so the values reflect the
+              // visible dimensions, matching iOS behavior.
+              val rotated =
+                  encodedImage.rotationAngle == 90 ||
+                      encodedImage.rotationAngle == 270 ||
+                      encodedImage.exifOrientation == ExifInterface.ORIENTATION_TRANSPOSE ||
+                      encodedImage.exifOrientation == ExifInterface.ORIENTATION_TRANSVERSE
+              val width = if (rotated) encodedImage.height else encodedImage.width
+              val height = if (rotated) encodedImage.width else encodedImage.height
+              if (width < 0 || height < 0) {
+                promise.reject(ERROR_GET_SIZE_FAILURE, "Failed to get the size of the image")
+                return
+              }
+              val sizes = buildReadableMap {
+                put("width", width)
+                put("height", height)
+              }
+              promise.resolve(sizes)
+            } catch (e: Exception) {
+              promise.reject(ERROR_GET_SIZE_FAILURE, e)
+            } finally {
+              encodedImage?.close()
+              CloseableReference.closeSafely(ref)
+            }
+          } else {
+            promise.reject(ERROR_GET_SIZE_FAILURE, "Failed to get the size of the image")
           }
         }
-    dataSource.subscribe(dataSubscriber, CallerThreadExecutor.getInstance())
-  }
+
+        override fun onFailureImpl(dataSource: DataSource<CloseableReference<PooledByteBuffer>>) {
+          promise.reject(ERROR_GET_SIZE_FAILURE, dataSource.failureCause)
+        }
+      }
 
   /**
    * Prefetches the given image to the Fresco image disk cache.
