@@ -3,7 +3,6 @@ rn-tester.xcodeproj.local/
 
 # SPM – auto-generated at build time (do not commit)
 Package.resolved
-autolinked/
-build/generated/ios/
+build/generated/
 build/xcframeworks/
 .build/

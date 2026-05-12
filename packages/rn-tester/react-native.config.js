@@ -40,7 +40,7 @@ module.exports = {
     {
       name: 'ReactRCTPushNotification',
       path: '../react-native/Libraries/PushNotificationIOS',
-      exclude: ['RCTPushNotification.podspec'],
+      exclude: ['React-RCTPushNotification.podspec'],
     },
     {
       name: 'ScreenshotManager',

@@ -217,7 +217,7 @@
 			mainGroup = 32FFE54A99F6CB24DE17AE4C;
 			packageReferences = (
 				E1F47AFB2B12E4FC99C4CDDF /* XCLocalSwiftPackageReference "build/xcframeworks" */,
-				74A67208C0A83CB81EDB54A8 /* XCLocalSwiftPackageReference "autolinked" */,
+				0013C8A264793C0DBEED7A55 /* XCLocalSwiftPackageReference "build/generated/autolinking" */,
 				D97937E20DB28D59C5F20110 /* XCLocalSwiftPackageReference "build/generated/ios" */,
 			);
 			productRefGroup = B7373B02E7576E22B4877F78 /* Products */;
@@ -261,7 +261,7 @@
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 			shellPath = /bin/sh;
-			shellScript = "set -euo pipefail\n\nSTAMP=\"$SRCROOT/autolinked/.spm-sync-stamp\"\nSTALE=0\n\n# Check 0: xcframework artifacts missing (fresh clone)\nif [ ! -f \"$SRCROOT/build/xcframeworks/artifacts.json\" ] || \\\n   [ ! -d \"$SRCROOT/build/xcframeworks/React.xcframework\" ]; then\n  STALE=1\nfi\n\n# Find project root (where package.json lives — may be parent of SRCROOT)\nPROJECT_ROOT=\"$SRCROOT\"\nif [ ! -f \"$PROJECT_ROOT/package.json\" ] && [ -f \"$PROJECT_ROOT/../package.json\" ]; then\n  PROJECT_ROOT=\"$SRCROOT/..\"\nfi\n\n# Check 1: dependency inputs (covers app projects after any package manager install)\nfor INPUT in \\\n  \"$PROJECT_ROOT/package.json\" \\\n  \"$PROJECT_ROOT/react-native.config.js\"; do\n  if [ -f \"$INPUT\" ] && [ \"$INPUT\" -nt \"$STAMP\" ]; then\n    STALE=1\n    break\n  fi\ndone\n\n# Check node_modules mtime (works with npm, yarn, pnpm, bun — any package manager)\nif [ \"$STALE\" -eq 0 ]; then\n  # In monorepos, node_modules may be hoisted to the repo root\n  NM_DIR=\"$SRCROOT/node_modules\"\n  if [ ! -d \"$NM_DIR\" ]; then\n    NM_DIR=\"$SRCROOT/../node_modules\"\n  fi\n  if [ -d \"$NM_DIR\" ] && [ \"$NM_DIR\" -nt \"$STAMP\" ]; then\n    STALE=1\n  fi\nfi\n\n# Check 2: codegen spec files changed via git (covers monorepo after git pull)\nif [ \"$STALE\" -eq 0 ] && [ -f \"$STAMP\" ]; then\n  STAMP_TIME=$(stat -f %m \"$STAMP\" 2>/dev/null || stat -c %Y \"$STAMP\" 2>/dev/null || echo 0)\n  LATEST_SPEC_COMMIT=$(git -C \"$SRCROOT\" log -1 --format=%ct -- '*.js' '*.ts' 2>/dev/null || echo 0)\n  if [ \"$LATEST_SPEC_COMMIT\" -gt \"$STAMP_TIME\" ]; then\n    STALE=1\n  fi\nfi\n\nif [ ! -f \"$STAMP\" ]; then\n  STALE=1\nfi\n\nif [ \"$STALE\" -eq 0 ]; then\n  exit 0\nfi\n\necho \"SPM sync inputs changed — re-syncing (codegen + autolinking)...\"\n\nWITH_ENVIRONMENT=\"../react-native/scripts/xcode/with-environment.sh\"\nSYNC_SCRIPT=\"../react-native/scripts/spm/sync-spm-autolinking.js\"\n\nif [ -f \"$WITH_ENVIRONMENT\" ]; then\n  # with-environment.sh references PODS_ROOT and $1, which may be unset.\n  # Temporarily disable nounset to avoid failures when sourcing.\n  export PODS_ROOT=\"${PODS_ROOT:-$SRCROOT}\"\n  set +u\n  . \"$WITH_ENVIRONMENT\"\n  set -u\nfi\n\nif command -v node >/dev/null 2>&1; then\n  node \"$SYNC_SCRIPT\" --app-root \"$SRCROOT\" --react-native-root \"$SRCROOT/../react-native\" || {\n    echo \"warning: SPM sync failed — build may use stale codegen/autolinking\"\n    exit 0\n  }\nelse\n  echo \"warning: node not found — skipping SPM sync\"\n  exit 0\nfi\n";
+			shellScript = "set -euo pipefail\n\nSTAMP=\"$SRCROOT/build/generated/autolinking/.spm-sync-stamp\"\nSTALE=0\n\n# Check 0: xcframework artifacts missing (fresh clone)\nif [ ! -f \"$SRCROOT/build/xcframeworks/artifacts.json\" ] || \\\n   [ ! -d \"$SRCROOT/build/xcframeworks/React.xcframework\" ]; then\n  STALE=1\nfi\n\n# Find project root (where package.json lives — may be an ancestor of SRCROOT)\nPROJECT_ROOT=\"$SRCROOT\"\nwhile [ \"$PROJECT_ROOT\" != \"/\" ] && [ ! -f \"$PROJECT_ROOT/package.json\" ]; do\n  PROJECT_ROOT=\"$(dirname \"$PROJECT_ROOT\")\"\ndone\nif [ ! -f \"$PROJECT_ROOT/package.json\" ]; then\n  PROJECT_ROOT=\"$SRCROOT\"\nfi\n\n# Check 1: dependency inputs (covers app projects after any package manager install)\nfor INPUT in \\\n  \"$PROJECT_ROOT/package.json\" \\\n  \"$PROJECT_ROOT/react-native.config.js\"; do\n  if [ -f \"$INPUT\" ] && [ \"$INPUT\" -nt \"$STAMP\" ]; then\n    STALE=1\n    break\n  fi\ndone\n\n# Check workspace lockfiles and package-manager metadata. These cover package\n# managers that do not reliably bump node_modules mtimes, and Yarn PnP projects\n# that do not have node_modules at all.\nif [ \"$STALE\" -eq 0 ]; then\n  DIR=\"$PROJECT_ROOT\"\n  while [ \"$DIR\" != \"/\" ]; do\n    for INPUT in \\\n      \"$DIR/package-lock.json\" \\\n      \"$DIR/npm-shrinkwrap.json\" \\\n      \"$DIR/yarn.lock\" \\\n      \"$DIR/pnpm-lock.yaml\" \\\n      \"$DIR/bun.lock\" \\\n      \"$DIR/bun.lockb\" \\\n      \"$DIR/.pnp.cjs\" \\\n      \"$DIR/.pnp.loader.mjs\"; do\n      if [ -f \"$INPUT\" ] && [ \"$INPUT\" -nt \"$STAMP\" ]; then\n        STALE=1\n        break\n      fi\n    done\n    if [ \"$STALE\" -eq 1 ]; then\n      break\n    fi\n    DIR=\"$(dirname \"$DIR\")\"\n  done\nfi\n\n# Check node_modules mtime. In monorepos, node_modules may be hoisted to any\n# ancestor between the app package and the workspace root.\nif [ \"$STALE\" -eq 0 ]; then\n  DIR=\"$PROJECT_ROOT\"\n  while [ \"$DIR\" != \"/\" ]; do\n    NM_DIR=\"$DIR/node_modules\"\n    if [ -d \"$NM_DIR\" ] && [ \"$NM_DIR\" -nt \"$STAMP\" ]; then\n      STALE=1\n      break\n    fi\n    DIR=\"$(dirname \"$DIR\")\"\n  done\nfi\n\n# Also check the app root directly when SRCROOT is not the package root.\nif [ \"$STALE\" -eq 0 ] && [ \"$SRCROOT\" != \"$PROJECT_ROOT\" ]; then\n  if [ -d \"$SRCROOT/node_modules\" ] && [ \"$SRCROOT/node_modules\" -nt \"$STAMP\" ]; then\n    STALE=1\n  fi\nfi\n\n# Check 2: codegen spec files changed via git (covers monorepo after git pull)\nif [ \"$STALE\" -eq 0 ] && [ -f \"$STAMP\" ]; then\n  STAMP_TIME=$(stat -f %m \"$STAMP\" 2>/dev/null || stat -c %Y \"$STAMP\" 2>/dev/null || echo 0)\n  LATEST_SPEC_COMMIT=$(git -C \"$SRCROOT\" log -1 --format=%ct -- '*.js' '*.ts' 2>/dev/null || echo 0)\n  if [ \"$LATEST_SPEC_COMMIT\" -gt \"$STAMP_TIME\" ]; then\n    STALE=1\n  fi\nfi\n\nif [ ! -f \"$STAMP\" ]; then\n  STALE=1\nfi\n\nif [ \"$STALE\" -eq 0 ]; then\n  exit 0\nfi\n\necho \"SPM sync inputs changed — re-syncing (codegen + autolinking)...\"\n\nWITH_ENVIRONMENT=\"../react-native/scripts/xcode/with-environment.sh\"\nSYNC_SCRIPT=\"../react-native/scripts/spm/sync-spm-autolinking.js\"\n\nif [ -f \"$WITH_ENVIRONMENT\" ]; then\n  # with-environment.sh references PODS_ROOT and $1, which may be unset.\n  # Temporarily disable nounset to avoid failures when sourcing.\n  export PODS_ROOT=\"${PODS_ROOT:-$SRCROOT}\"\n  set +u\n  . \"$WITH_ENVIRONMENT\"\n  set -u\nfi\n\nif command -v node >/dev/null 2>&1; then\n  node \"$SYNC_SCRIPT\" --app-root \"$SRCROOT\" --react-native-root \"$SRCROOT/../react-native\" || {\n    echo \"warning: SPM sync failed — build may use stale codegen/autolinking\"\n    exit 0\n  }\nelse\n  echo \"warning: node not found — skipping SPM sync\"\n  exit 0\nfi\n";
 		};
 		81FE5423A9EB4933552FBA8F /* Prepare VFS Overlay */ = {
 			isa = PBXShellScriptBuildPhase;
@@ -380,10 +380,10 @@
 				DEVELOPMENT_TEAM = "";
 				HEADER_SEARCH_PATHS = (
 					"$(inherited)",
+					"$(SRCROOT)/build/generated/autolinking/headers",
 					"$(SRCROOT)/build/xcframeworks/React.xcframework/Headers",
 					"$(SRCROOT)/build/xcframeworks/React.xcframework/Headers/React_RCTAppDelegate",
 					"$(SRCROOT)/build/xcframeworks/ReactNativeDependencies.xcframework/Headers",
-					"$(SRCROOT)/autolinked/sources",
 				);
 				INFOPLIST_FILE = "$(SRCROOT)/RNTester/Info.plist";
 				IPHONEOS_DEPLOYMENT_TARGET = 15;
@@ -427,10 +427,10 @@
 				DEVELOPMENT_TEAM = "";
 				HEADER_SEARCH_PATHS = (
 					"$(inherited)",
+					"$(SRCROOT)/build/generated/autolinking/headers",
 					"$(SRCROOT)/build/xcframeworks/React.xcframework/Headers",
 					"$(SRCROOT)/build/xcframeworks/React.xcframework/Headers/React_RCTAppDelegate",
 					"$(SRCROOT)/build/xcframeworks/ReactNativeDependencies.xcframework/Headers",
-					"$(SRCROOT)/autolinked/sources",
 				);
 				INFOPLIST_FILE = "$(SRCROOT)/RNTester/Info.plist";
 				IPHONEOS_DEPLOYMENT_TARGET = 15;
@@ -490,7 +490,7 @@
 
 /* Begin XCLocalSwiftPackageReference section */
 		E1F47AFB2B12E4FC99C4CDDF /* XCLocalSwiftPackageReference "build/xcframeworks" */ = {isa = XCLocalSwiftPackageReference; relativePath = build/xcframeworks;};
-		74A67208C0A83CB81EDB54A8 /* XCLocalSwiftPackageReference "autolinked" */ = {isa = XCLocalSwiftPackageReference; relativePath = autolinked;};
+		0013C8A264793C0DBEED7A55 /* XCLocalSwiftPackageReference "build/generated/autolinking" */ = {isa = XCLocalSwiftPackageReference; relativePath = build/generated/autolinking;};
 		D97937E20DB28D59C5F20110 /* XCLocalSwiftPackageReference "build/generated/ios" */ = {isa = XCLocalSwiftPackageReference; relativePath = build/generated/ios;};
 /* End XCLocalSwiftPackageReference section */
 
@@ -498,7 +498,7 @@
 		6F0119ECFF25280A2D6CCA09 /* ReactNative */ = {isa = XCSwiftPackageProductDependency; package = E1F47AFB2B12E4FC99C4CDDF /* XCLocalSwiftPackageReference "build/xcframeworks" */; productName = ReactNative;};
 		9077C7053A8D5EBD548B1C63 /* ReactNativeDependencies */ = {isa = XCSwiftPackageProductDependency; package = E1F47AFB2B12E4FC99C4CDDF /* XCLocalSwiftPackageReference "build/xcframeworks" */; productName = ReactNativeDependencies;};
 		67307129B842BD6E66A40F66 /* hermes-engine */ = {isa = XCSwiftPackageProductDependency; package = E1F47AFB2B12E4FC99C4CDDF /* XCLocalSwiftPackageReference "build/xcframeworks" */; productName = "hermes-engine";};
-		093742F9A1206BBC0B50D6AE /* Autolinked */ = {isa = XCSwiftPackageProductDependency; package = 74A67208C0A83CB81EDB54A8 /* XCLocalSwiftPackageReference "autolinked" */; productName = Autolinked;};
+		093742F9A1206BBC0B50D6AE /* Autolinked */ = {isa = XCSwiftPackageProductDependency; package = 0013C8A264793C0DBEED7A55 /* XCLocalSwiftPackageReference "build/generated/autolinking" */; productName = Autolinked;};
 		46C1CDABA3006F86BFB380CD /* ReactCodegen */ = {isa = XCSwiftPackageProductDependency; package = D97937E20DB28D59C5F20110 /* XCLocalSwiftPackageReference "build/generated/ios" */; productName = ReactCodegen;};
 		D02918E89D38186C02228201 /* ReactAppDependencyProvider */ = {isa = XCSwiftPackageProductDependency; package = D97937E20DB28D59C5F20110 /* XCLocalSwiftPackageReference "build/generated/ios" */; productName = ReactAppDependencyProvider;};
 /* End XCSwiftPackageProductDependency section */

@@ -18,7 +18,7 @@ do {
             .library(name: "hermes-engine", targets: ["ReactNativeStub"]),
         ], targets: [.target(name: "ReactNativeStub", path: "_stub", sources: ["Stub.swift"])])
         """),
-        ("autolinked", """
+        ("build/generated/autolinking", """
         // swift-tools-version: 5.9
         import PackageDescription
         let package = Package(name: "Autolinked", products: [
@@ -50,8 +50,7 @@ let depsHeaders = URL(fileURLWithPath: packageDir + "/build/xcframeworks/ReactNa
     .resolvingSymlinksInPath().path + "/Headers"
 let vfsOverlay = packageDir + "/build/xcframeworks/React-VFS.yaml"
 
-let cFlags: [String] = ["-ivfsoverlay", vfsOverlay, "-I", xcfwHeaders,
-    "-I", packageDir + "/autolinked/sources"]
+let cFlags: [String] = ["-ivfsoverlay", vfsOverlay, "-I", xcfwHeaders]
 let cxxFlags: [String] = cFlags + ["-I", depsHeaders]
 let swiftFlags: [String] = ["-Xcc", "-ivfsoverlay", "-Xcc", vfsOverlay, "-Xcc", "-I", "-Xcc", xcfwHeaders]
 
@@ -63,7 +62,7 @@ let package = Package(
         .library(name: "RNTesterAppSwift", targets: ["RNTesterAppSwift"]),
     ],
     dependencies: [
-        .package(name: "Autolinked", path: "autolinked"),
+        .package(name: "Autolinked", path: "build/generated/autolinking"),
         .package(name: "React-GeneratedCode", path: "build/generated/ios"),
         .package(name: "ReactNative", path: "build/xcframeworks"),
     ],
