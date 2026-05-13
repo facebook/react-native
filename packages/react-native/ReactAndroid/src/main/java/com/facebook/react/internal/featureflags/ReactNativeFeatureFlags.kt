@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<4342ccb696b4123b9d463a31c024b9bc>>
+ * @generated SignedSource<<cbdf077f2804a04fa5930548a3b164a1>>
  */
 
 /**
@@ -365,6 +365,12 @@ public object ReactNativeFeatureFlags {
    */
   @JvmStatic
   public fun fixMappingOfEventPrioritiesBetweenFabricAndReact(): Boolean = accessor.fixMappingOfEventPrioritiesBetweenFabricAndReact()
+
+  /**
+   * Preserve the FPS performance listener across ScrollView recycling on Android. Without this fix, initView() nulls mFpsListener on recycle, silently disabling FPS tracking.
+   */
+  @JvmStatic
+  public fun fixScrollViewFpsListenerOnRecycleAndroid(): Boolean = accessor.fixScrollViewFpsListenerOnRecycleAndroid()
 
   /**
    * Fix flex basis computation to not apply FitContent constraint in the main axis for non-measure container nodes, preventing unnecessary re-measurement in scroll containers.

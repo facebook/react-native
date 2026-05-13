@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<69bfd288593aebd59355309a7777cd79>>
+ * @generated SignedSource<<2e70452201b6736cde127ffda7450341>>
  * @flow strict
  * @noformat
  */
@@ -81,6 +81,7 @@ export interface Spec extends TurboModule {
   +fixDifferentiatorParentTagForUnflattenCase?: () => boolean;
   +fixFindShadowNodeByTagRaceCondition?: () => boolean;
   +fixMappingOfEventPrioritiesBetweenFabricAndReact?: () => boolean;
+  +fixScrollViewFpsListenerOnRecycleAndroid?: () => boolean;
   +fixYogaFlexBasisFitContentInMainAxis?: () => boolean;
   +fuseboxAssertSingleHostState?: () => boolean;
   +fuseboxEnabledRelease?: () => boolean;

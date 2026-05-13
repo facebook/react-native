@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<361b1ff3430ffad98aaf24bea3824208>>
+ * @generated SignedSource<<cad8693388b5554356b58f57dc93f972>>
  * @flow strict
  * @noformat
  */
@@ -102,6 +102,7 @@ export type ReactNativeFeatureFlags = $ReadOnly<{
   fixDifferentiatorParentTagForUnflattenCase: Getter<boolean>,
   fixFindShadowNodeByTagRaceCondition: Getter<boolean>,
   fixMappingOfEventPrioritiesBetweenFabricAndReact: Getter<boolean>,
+  fixScrollViewFpsListenerOnRecycleAndroid: Getter<boolean>,
   fixYogaFlexBasisFitContentInMainAxis: Getter<boolean>,
   fuseboxAssertSingleHostState: Getter<boolean>,
   fuseboxEnabledRelease: Getter<boolean>,
@@ -423,6 +424,10 @@ export const fixFindShadowNodeByTagRaceCondition: Getter<boolean> = createNative
  * Uses the default event priority instead of the discreet event priority by default when dispatching events from Fabric to React.
  */
 export const fixMappingOfEventPrioritiesBetweenFabricAndReact: Getter<boolean> = createNativeFlagGetter('fixMappingOfEventPrioritiesBetweenFabricAndReact', false);
+/**
+ * Preserve the FPS performance listener across ScrollView recycling on Android. Without this fix, initView() nulls mFpsListener on recycle, silently disabling FPS tracking.
+ */
+export const fixScrollViewFpsListenerOnRecycleAndroid: Getter<boolean> = createNativeFlagGetter('fixScrollViewFpsListenerOnRecycleAndroid', false);
 /**
  * Fix flex basis computation to not apply FitContent constraint in the main axis for non-measure container nodes, preventing unnecessary re-measurement in scroll containers.
  */

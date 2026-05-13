@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<2ea91689e8761dc57bc35975d1161839>>
+ * @generated SignedSource<<338987fd80e285f22fb7cf9948b39581>>
  */
 
 /**
@@ -547,6 +547,15 @@ class ReactNativeFeatureFlagsDynamicProvider : public ReactNativeFeatureFlagsDef
     }
 
     return ReactNativeFeatureFlagsDefaults::fixMappingOfEventPrioritiesBetweenFabricAndReact();
+  }
+
+  bool fixScrollViewFpsListenerOnRecycleAndroid() override {
+    auto value = values_["fixScrollViewFpsListenerOnRecycleAndroid"];
+    if (!value.isNull()) {
+      return value.getBool();
+    }
+
+    return ReactNativeFeatureFlagsDefaults::fixScrollViewFpsListenerOnRecycleAndroid();
   }
 
   bool fixYogaFlexBasisFitContentInMainAxis() override {

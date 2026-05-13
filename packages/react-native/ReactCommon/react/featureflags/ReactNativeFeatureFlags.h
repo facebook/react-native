@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<771a335070649f38cb559a95d80947aa>>
+ * @generated SignedSource<<d09da25cd3891f9502ae844e36a6d038>>
  */
 
 /**
@@ -318,6 +318,11 @@ class ReactNativeFeatureFlags {
    * Uses the default event priority instead of the discreet event priority by default when dispatching events from Fabric to React.
    */
   RN_EXPORT static bool fixMappingOfEventPrioritiesBetweenFabricAndReact();
+
+  /**
+   * Preserve the FPS performance listener across ScrollView recycling on Android. Without this fix, initView() nulls mFpsListener on recycle, silently disabling FPS tracking.
+   */
+  RN_EXPORT static bool fixScrollViewFpsListenerOnRecycleAndroid();
 
   /**
    * Fix flex basis computation to not apply FitContent constraint in the main axis for non-measure container nodes, preventing unnecessary re-measurement in scroll containers.

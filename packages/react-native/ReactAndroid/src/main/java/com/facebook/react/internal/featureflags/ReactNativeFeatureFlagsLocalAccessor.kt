@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<9d07e8adeee69583b788069649306d8e>>
+ * @generated SignedSource<<6b839ac9b01a2cb9a173218c5c523ad1>>
  */
 
 /**
@@ -80,6 +80,7 @@ internal class ReactNativeFeatureFlagsLocalAccessor : ReactNativeFeatureFlagsAcc
   private var fixDifferentiatorParentTagForUnflattenCaseCache: Boolean? = null
   private var fixFindShadowNodeByTagRaceConditionCache: Boolean? = null
   private var fixMappingOfEventPrioritiesBetweenFabricAndReactCache: Boolean? = null
+  private var fixScrollViewFpsListenerOnRecycleAndroidCache: Boolean? = null
   private var fixYogaFlexBasisFitContentInMainAxisCache: Boolean? = null
   private var fuseboxAssertSingleHostStateCache: Boolean? = null
   private var fuseboxEnabledReleaseCache: Boolean? = null
@@ -673,6 +674,16 @@ internal class ReactNativeFeatureFlagsLocalAccessor : ReactNativeFeatureFlagsAcc
       cached = currentProvider.fixMappingOfEventPrioritiesBetweenFabricAndReact()
       accessedFeatureFlags.add("fixMappingOfEventPrioritiesBetweenFabricAndReact")
       fixMappingOfEventPrioritiesBetweenFabricAndReactCache = cached
+    }
+    return cached
+  }
+
+  override fun fixScrollViewFpsListenerOnRecycleAndroid(): Boolean {
+    var cached = fixScrollViewFpsListenerOnRecycleAndroidCache
+    if (cached == null) {
+      cached = currentProvider.fixScrollViewFpsListenerOnRecycleAndroid()
+      accessedFeatureFlags.add("fixScrollViewFpsListenerOnRecycleAndroid")
+      fixScrollViewFpsListenerOnRecycleAndroidCache = cached
     }
     return cached
   }

@@ -144,7 +144,8 @@ public class ReactHorizontalScrollView extends HorizontalScrollView
 
   public ReactHorizontalScrollView(Context context, @Nullable FpsListener fpsListener) {
     super(context);
-    mFpsListener = fpsListener;
+    mFpsListener =
+        ReactNativeFeatureFlags.fixScrollViewFpsListenerOnRecycleAndroid() ? fpsListener : null;
 
     ViewCompat.setAccessibilityDelegate(this, new ReactScrollViewAccessibilityDelegate());
 

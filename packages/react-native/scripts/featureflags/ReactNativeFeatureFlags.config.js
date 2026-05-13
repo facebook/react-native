@@ -645,6 +645,17 @@ const definitions: FeatureFlagDefinitions = {
       },
       ossReleaseStage: 'none',
     },
+    fixScrollViewFpsListenerOnRecycleAndroid: {
+      defaultValue: false,
+      metadata: {
+        dateAdded: '2026-05-13',
+        description:
+          'Preserve the FPS performance listener across ScrollView recycling on Android. Without this fix, initView() nulls mFpsListener on recycle, silently disabling FPS tracking.',
+        expectedReleaseValue: true,
+        purpose: 'experimentation',
+      },
+      ossReleaseStage: 'none',
+    },
     fixYogaFlexBasisFitContentInMainAxis: {
       defaultValue: false,
       metadata: {

@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<7be26fb138e59ef3dc34cec13d3813c4>>
+ * @generated SignedSource<<af415dfaecd300d90ff3dfd9304c07c8>>
  */
 
 /**
@@ -248,6 +248,10 @@ class ReactNativeFeatureFlagsDefaults : public ReactNativeFeatureFlagsProvider {
   }
 
   bool fixMappingOfEventPrioritiesBetweenFabricAndReact() override {
+    return false;
+  }
+
+  bool fixScrollViewFpsListenerOnRecycleAndroid() override {
     return false;
   }
 
