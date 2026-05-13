@@ -160,6 +160,7 @@ class ReactNativeCoreUtils
         rncore_log("  #{Pathname.new(destinationDebug).relative_path_from(Pathname.pwd).to_s}")
         rncore_log("  #{Pathname.new(destinationRelease).relative_path_from(Pathname.pwd).to_s}")
 
+        return {:http => stable_tarball_url(@@react_native_version, :debug) } unless @@download_dsyms
         return {:http => URI::File.build(path: destinationDebug).to_s }
     end
 
@@ -196,6 +197,7 @@ class ReactNativeCoreUtils
         rncore_log("Resolved nightly ReactNativeCore-prebuilt version:")
         rncore_log("  #{Pathname.new(destinationDebug).relative_path_from(Pathname.pwd).to_s}")
         rncore_log("  #{Pathname.new(destinationRelease).relative_path_from(Pathname.pwd).to_s}")
+        return {:http => nightly_tarball_url(@@react_native_version, :debug) } unless @@download_dsyms
         return {:http => URI::File.build(path: destinationDebug).to_s }
     end
 
