@@ -123,9 +123,9 @@ public interface YogaProps {
 
   public fun setIsReferenceBaseline(isReferenceBaseline: Boolean)
 
-  public fun setMeasureFunction(measureFunction: YogaMeasureFunction)
+  public fun setMeasureFunction(measureFunction: YogaMeasureFunction?)
 
-  public fun setBaselineFunction(yogaBaselineFunction: YogaBaselineFunction)
+  public fun setBaselineFunction(yogaBaselineFunction: YogaBaselineFunction?)
 
   /* Mutable properties - getter and setter with matching types */
 
