@@ -41,6 +41,13 @@ module.exports.getCacheKey = () => {
     readFileSync(require.resolve('./configs/lazy-imports.js')),
     readFileSync(require.resolve('./passthrough-syntax-plugins.js')),
     readFileSync(require.resolve('./plugin-warn-on-deep-imports.js')),
+    readFileSync(
+      require.resolve('./fix-hermes-v1-async-arrow-non-simple-params.js'),
+    ),
+    readFileSync(require.resolve('./fix-hermes-v1-class-in-finally.js')),
+    readFileSync(
+      require.resolve('./fix-hermes-v1-super-in-object-accessor.js'),
+    ),
   ].forEach(part => key.update(part));
   cacheKey = key.digest('hex');
   return cacheKey;

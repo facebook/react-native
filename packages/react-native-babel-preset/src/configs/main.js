@@ -238,6 +238,24 @@ const getPreset = (src, options, babel) => {
               ...options.hermesParserOptions,
             },
           ],
+          // Hermes V1 native runtime workarounds. Each plugin's header names
+          // the facebook/hermes commit that fixes the bug it patches. They are
+          // gated by the Hermes profile, not the Hermes version, so they do not
+          // self-disable: drop each one once RN bundles a Hermes that includes
+          // its fix.
+          ...(isHermesProfile
+            ? [
+                [require('../fix-hermes-v1-class-in-finally')],
+                [require('../fix-hermes-v1-super-in-object-accessor')],
+                ...(preserveAsync
+                  ? [
+                      [
+                        require('../fix-hermes-v1-async-arrow-non-simple-params'),
+                      ],
+                    ]
+                  : []),
+              ]
+            : []),
           [require('babel-plugin-transform-flow-enums')],
           ...(preserveBlockScoping
             ? []
