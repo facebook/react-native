@@ -221,11 +221,20 @@ const ResponderTouchHistoryStore = {
       instrumentationCallback(topLevelType, nativeEvent);
     }
 
+    if (nativeEvent.changedTouches == null) {
+      console.error(
+        'Touch event "%s" received with no changedTouches. This is likely ' +
+          'a bug in the native touch handling system.',
+        topLevelType,
+      );
+      return;
+    }
+
     if (isMoveish(topLevelType)) {
       nativeEvent.changedTouches.forEach(recordTouchMove);
     } else if (isStartish(topLevelType)) {
       nativeEvent.changedTouches.forEach(recordTouchStart);
-      touchHistory.numberActiveTouches = nativeEvent.touches.length;
+      touchHistory.numberActiveTouches = nativeEvent.touches?.length ?? 0;
       if (touchHistory.numberActiveTouches === 1) {
         touchHistory.indexOfSingleActiveTouch =
           // $FlowFixMe[incompatible-type] might be null according to type
@@ -233,7 +242,7 @@ const ResponderTouchHistoryStore = {
       }
     } else if (isEndish(topLevelType)) {
       nativeEvent.changedTouches.forEach(recordTouchEnd);
-      touchHistory.numberActiveTouches = nativeEvent.touches.length;
+      touchHistory.numberActiveTouches = nativeEvent.touches?.length ?? 0;
       if (touchHistory.numberActiveTouches === 1) {
         for (let i = 0; i < touchBank.length; i++) {
           const touchTrackToCheck = touchBank[i];
