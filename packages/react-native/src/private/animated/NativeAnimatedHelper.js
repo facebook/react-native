@@ -98,7 +98,8 @@ function createNativeOperations(): NonNullable<typeof NativeAnimatedModule> {
   if (
     ReactNativeFeatureFlags.cxxNativeAnimatedEnabled() &&
     //eslint-disable-next-line
-    ReactNativeFeatureFlags.useSharedAnimatedBackend()
+    ReactNativeFeatureFlags.useSharedAnimatedBackend() &&
+    NativeAnimatedModule?.connectAnimatedNodeToShadowNodeFamily != null
   ) {
     methodNames.push('connectAnimatedNodeToShadowNodeFamily');
   }
