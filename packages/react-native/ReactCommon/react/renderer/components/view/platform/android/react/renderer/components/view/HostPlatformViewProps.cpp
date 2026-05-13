@@ -456,8 +456,9 @@ inline static void updateAccessibilityStateProp(
   }
 
   if (!oldState.has_value() || newState->expanded != oldState->expanded) {
-    resultState["expanded"] =
-        newState->expanded.has_value() && newState->expanded.value();
+    if (newState->expanded.has_value()) {
+      resultState["expanded"] = newState->expanded.value();
+    }
   }
 
   if (!oldState.has_value() || newState->checked != oldState->checked) {
