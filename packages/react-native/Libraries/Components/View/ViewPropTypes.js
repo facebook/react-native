@@ -508,6 +508,7 @@ type ViewBaseProps = Readonly<{
   experimental_accessibilityOrder?: ?Array<string>,
 }>;
 
+/** @build-types emit-as-interface Nativewind, Expo compatibility */
 export type ViewProps = Readonly<{
   ...DirectEventProps,
   ...GestureResponderHandlers,
