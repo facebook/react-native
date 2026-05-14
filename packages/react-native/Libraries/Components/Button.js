@@ -27,6 +27,7 @@ import View from './View/View';
 import invariant from 'invariant';
 import * as React from 'react';
 
+/** @build-types emit-as-interface Uniwind compatibility */
 export type ButtonProps = Readonly<{
   /**
     Text to display inside the button. On Android the given title will be
