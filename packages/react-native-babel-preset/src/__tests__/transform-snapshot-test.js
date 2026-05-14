@@ -141,6 +141,18 @@ const testConfigs = [
     description:
       'Hermes stable transform profile in development mode with unstable_preserveBlockScoping enabled',
   },
+  {
+    name: 'hermes-stable-dev-preserve-destructuring',
+    options: {
+      dev: true,
+      unstable_transformProfile: 'hermes-stable',
+      customTransformOptions: {
+        unstable_preserveDestructuring: true,
+      },
+    },
+    description:
+      'Hermes stable transform profile in development mode with unstable_preserveDestructuring enabled',
+  },
 ];
 
 function transformCode(
@@ -501,6 +513,38 @@ describe('react-native-babel-preset transform snapshots', () => {
       expect(result).toContain('var ');
       expect(result).not.toContain('let ');
       expect(result).not.toContain('const ');
+    });
+
+    it('preserves destructuring with unstable_preserveDestructuring', () => {
+      const code = `
+        const {a, b, ...rest} = obj;
+        const [x, y, z = 10] = arr;
+        const {nested: {value}} = data;
+      `;
+      const result = transformCode(code, {
+        dev: false,
+        unstable_transformProfile: 'hermes-stable',
+        customTransformOptions: {
+          unstable_preserveDestructuring: true,
+        },
+      });
+      // Check that destructuring syntax is preserved (not transformed)
+      expect(result).toContain('...rest');
+      expect(result).toContain('z = 10');
+      expect(result).toContain('nested:');
+      expect(result).not.toContain('_objectWithoutProperties');
+      expect(result).not.toContain('_slicedToArray');
+    });
+
+    it('transforms destructuring without unstable_preserveDestructuring', () => {
+      const code = `
+        const {a, b, ...rest} = obj;
+      `;
+      const result = transformCode(code, {
+        dev: false,
+        unstable_transformProfile: 'hermes-stable',
+      });
+      expect(result).toContain('_objectWithoutProperties');
     });
   });
 });
