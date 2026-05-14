@@ -57,4 +57,5 @@ Pod::Spec.new do |s|
   add_dependency(s, "React-runtimeexecutor", :additional_framework_paths => ["platform/ios"])
   add_dependency(s, "React-graphics", :additional_framework_paths => ["react/renderer/graphics/platform/ios"])
   add_dependency(s, "React-RCTFBReactNativeSpec")
+  set_remove_legacy_arch_compiler_flag!(s)
 end

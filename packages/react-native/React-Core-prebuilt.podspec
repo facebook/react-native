@@ -75,4 +75,5 @@ Pod::Spec.new do |s|
 
     s.script_phase = script_phase
   end
+  set_remove_legacy_arch_compiler_flag!(s)
 end

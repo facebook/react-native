@@ -85,4 +85,5 @@ Pod::Spec.new do |s|
   depend_on_js_engine(s)
   add_rn_third_party_dependencies(s)
   add_rncore_dependency(s)
+  set_remove_legacy_arch_compiler_flag!(s)
 end

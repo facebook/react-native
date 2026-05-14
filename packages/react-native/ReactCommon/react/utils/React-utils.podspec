@@ -54,4 +54,5 @@ Pod::Spec.new do |s|
   add_rncore_dependency(s)
 
   add_dependency(s, "React-debug")
+  set_remove_legacy_arch_compiler_flag!(s)
 end

@@ -50,4 +50,5 @@ Pod::Spec.new do |s|
   if use_hermes()
     s.dependency 'hermes-engine'
   end
+  set_remove_legacy_arch_compiler_flag!(s)
 end

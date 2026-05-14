@@ -92,4 +92,5 @@ fi
       EOS
     }
   ]
+  set_remove_legacy_arch_compiler_flag!(s)
 end

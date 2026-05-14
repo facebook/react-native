@@ -69,4 +69,5 @@ Pod::Spec.new do |s|
       sss.dependency "React-utils", version
     end
   end
+  set_remove_legacy_arch_compiler_flag!(s)
 end

@@ -37,4 +37,5 @@ Pod::Spec.new do |s|
     ss.exclude_files        = "redbox/tests/**/*.{cpp,h}"
     ss.header_dir           = "react/debug/redbox"
   end
+  set_remove_legacy_arch_compiler_flag!(s)
 end

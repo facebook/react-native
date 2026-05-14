@@ -53,4 +53,5 @@ Pod::Spec.new do |s|
   s.dependency "React-RCTSettings", version
   s.dependency "React-RCTText", version
   s.dependency "React-RCTVibration", version
+  set_remove_legacy_arch_compiler_flag!(s)
 end

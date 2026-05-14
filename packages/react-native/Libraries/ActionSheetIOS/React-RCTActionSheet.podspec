@@ -31,4 +31,5 @@ Pod::Spec.new do |s|
   s.header_dir             = "RCTActionSheet"
 
   s.dependency "React-Core/RCTActionSheetHeaders", version
+  set_remove_legacy_arch_compiler_flag!(s)
 end

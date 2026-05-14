@@ -44,4 +44,5 @@ Pod::Spec.new do |s|
 
   add_dependency(s, "React-debug")
   add_dependency(s, "React-utils")
+  set_remove_legacy_arch_compiler_flag!(s)
 end

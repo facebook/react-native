@@ -109,4 +109,5 @@ Pod::Spec.new do |s|
     test_spec.source_files = podspec_sources("Tests/**/*.{mm}", "")
     test_spec.framework = "XCTest"
   end
+  set_remove_legacy_arch_compiler_flag!(s)
 end

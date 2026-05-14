@@ -40,4 +40,5 @@ Pod::Spec.new do |s|
 
   resolve_use_frameworks(s, header_mappings_dir: "../../..", module_name: "React_rendererconsistency")
 
+  set_remove_legacy_arch_compiler_flag!(s)
 end

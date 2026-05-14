@@ -34,4 +34,5 @@ Pod::Spec.new do |s|
     "SWIFT_VERSION" => "5.0",
   }
 
+  set_remove_legacy_arch_compiler_flag!(s)
 end

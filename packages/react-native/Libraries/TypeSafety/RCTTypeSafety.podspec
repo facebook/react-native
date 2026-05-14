@@ -36,4 +36,5 @@ Pod::Spec.new do |s|
   s.dependency "FBLazyVector", version
   s.dependency "RCTRequired", version
   s.dependency "React-Core", version
+  set_remove_legacy_arch_compiler_flag!(s)
 end

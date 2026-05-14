@@ -36,4 +36,5 @@ Pod::Spec.new do |s|
     "DEFINES_MODULE" => "YES",
   }
 
+  set_remove_legacy_arch_compiler_flag!(s)
 end

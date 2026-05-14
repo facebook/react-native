@@ -50,4 +50,5 @@ Pod::Spec.new do |s|
   add_dependency(s, "React-NativeModulesApple")
 
   add_rncore_dependency(s)
+  set_remove_legacy_arch_compiler_flag!(s)
 end

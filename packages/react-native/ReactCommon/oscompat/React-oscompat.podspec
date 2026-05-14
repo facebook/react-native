@@ -28,4 +28,5 @@ Pod::Spec.new do |s|
   s.source_files           = podspec_sources("*.{cpp,h}", "*.{h}")
   s.pod_target_xcconfig    = { "HEADER_SEARCH_PATHS" => "" }
   s.header_dir             = "oscompat"
+  set_remove_legacy_arch_compiler_flag!(s)
 end

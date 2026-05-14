@@ -57,4 +57,5 @@ Pod::Spec.new do |s|
   add_dependency(s, "React-performancetimeline")
   add_dependency(s, "React-runtimeexecutor", :additional_framework_paths => ["platform/ios"])
 
+  set_remove_legacy_arch_compiler_flag!(s)
 end

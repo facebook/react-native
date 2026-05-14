@@ -42,9 +42,31 @@ def min_supported_versions
   return  { :ios => min_ios_version_supported }
 end
 
+# Append `-DRCT_REMOVE_LEGACY_ARCH=1` to a podspec's `compiler_flags` so that
+# the legacy (Paper) architecture stays compiled out of OSS builds at the pod
+# target level, regardless of project-level flags. Each React-* podspec calls
+# this helper so the macro is set even if the consuming project skips
+# `react_native_post_install`. Mirrors `.define("RCT_REMOVE_LEGACY_ARCH", to:
+# "1")` in `Package.swift` and the project-level flag added by
+# `react_native_post_install`.
+def set_remove_legacy_arch_compiler_flag!(spec)
+  existing = spec.attributes_hash['compiler_flags']
+  existing_str = existing.is_a?(Array) ? existing.join(' ') : (existing || '').to_s
+  combined = existing_str.empty? ? '-DRCT_REMOVE_LEGACY_ARCH=1' : "#{existing_str} -DRCT_REMOVE_LEGACY_ARCH=1"
+  spec.compiler_flags = combined
+end
+
 # This function prepares the project for React Native, before processing
 # all the target exposed by the framework.
 def prepare_react_native_project!
+  # The legacy (Paper) architecture has been removed from the open-source iOS
+  # sources and is no longer a supported configuration. Force
+  # `RCT_REMOVE_LEGACY_ARCH=1` here so that every OSS app that calls
+  # `prepare_react_native_project!` builds React Native (and any pod that
+  # consults this env var) with the legacy arch compiled out. This matches
+  # what `Package.swift` already hard-codes for the SwiftPM flow.
+  ENV['RCT_REMOVE_LEGACY_ARCH'] = '1'
+
   # Temporary solution to suppress duplicated GUID error & master specs repo warning.
   # Can be removed once we move to generate files outside pod install.
   install! 'cocoapods', :deterministic_uuids => false, :warn_for_unused_master_specs_repo => false
@@ -91,9 +113,11 @@ def use_react_native! (
   # Users can still turn them off and build from source by setting the environment variable to 0.
   ENV['RCT_USE_RN_DEP'] = ENV['RCT_USE_RN_DEP'] == '0' ? '0' : '1'
   ENV['RCT_USE_PREBUILT_RNCORE'] = ENV['RCT_USE_PREBUILT_RNCORE'] == '0' ? '0' : '1'
-  # Make `REMOVE_LEGACY_ARCH` enabled by default. This will build React Native
-  # excluding the legacy arch unless the user turns this flag off explicitly.
-  ENV['RCT_REMOVE_LEGACY_ARCH'] = ENV['RCT_REMOVE_LEGACY_ARCH'] == '0' ? '0' : '1'
+  # `RCT_REMOVE_LEGACY_ARCH` is always on for OSS builds. The legacy (Paper)
+  # architecture has been removed from the iOS sources and the env var is
+  # hard-set in `prepare_react_native_project!`; we re-assert it here in case a
+  # consumer skipped that helper.
+  ENV['RCT_REMOVE_LEGACY_ARCH'] = '1'
 
   ReactNativePodsUtils.check_minimum_required_xcode()
 
@@ -554,11 +578,11 @@ def react_native_post_install(
   installer.pods_project.save
   ReactNativePodsUtils.set_build_setting(installer, build_setting: "SWIFT_ACTIVE_COMPILATION_CONDITIONS", value: ['$(inherited)', 'DEBUG'], config_name: "Debug")
 
-  if (ENV['RCT_REMOVE_LEGACY_ARCH'] == '1')
-    ReactNativePodsUtils.add_compiler_flag_to_project(installer, "-DRCT_REMOVE_LEGACY_ARCH=1")
-  else
-    ReactNativePodsUtils.remove_compiler_flag_from_project(installer, "-DRCT_REMOVE_LEGACY_ARCH=1")
-  end
+  # `RCT_REMOVE_LEGACY_ARCH=1` is mandatory in OSS builds; the legacy (Paper)
+  # architecture has been removed from the iOS sources. Apply the project-level
+  # compiler flag unconditionally so that any pod that does not bake the macro
+  # into its own xcconfig still gets it.
+  ReactNativePodsUtils.add_compiler_flag_to_project(installer, "-DRCT_REMOVE_LEGACY_ARCH=1")
 
   ReactNativePodsUtils.set_ccache_compiler_and_linker_build_settings(installer, react_native_path, ccache_enabled)
   ReactNativePodsUtils.updateOSDeploymentTarget(installer)

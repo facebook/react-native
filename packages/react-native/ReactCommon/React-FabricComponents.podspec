@@ -171,4 +171,5 @@ Pod::Spec.new do |s|
                               "react/renderer/textlayoutmanager/platform/cxx"
     ss.header_dir           = "react/renderer/textlayoutmanager"
   end
+  set_remove_legacy_arch_compiler_flag!(s)
 end

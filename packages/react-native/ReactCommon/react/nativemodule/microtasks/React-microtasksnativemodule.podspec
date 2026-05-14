@@ -49,4 +49,5 @@ Pod::Spec.new do |s|
 
   s.dependency "ReactCommon/turbomodule/core"
   add_dependency(s, "React-RCTFBReactNativeSpec")
+  set_remove_legacy_arch_compiler_flag!(s)
 end

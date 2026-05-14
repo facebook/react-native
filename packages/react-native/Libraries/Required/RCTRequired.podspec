@@ -27,4 +27,5 @@ Pod::Spec.new do |s|
   s.source                 = source
   s.source_files           = podspec_sources("**/*.{c,h,m,mm,cpp}", "**/*.h")
   s.header_dir             = "RCTRequired"
+  set_remove_legacy_arch_compiler_flag!(s)
 end

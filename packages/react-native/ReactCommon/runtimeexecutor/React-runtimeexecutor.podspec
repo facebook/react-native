@@ -53,4 +53,5 @@ Pod::Spec.new do |s|
   add_dependency(s, "React-utils", :additional_framework_paths => ["react/utils/platform/ios"])
 
 
+  set_remove_legacy_arch_compiler_flag!(s)
 end

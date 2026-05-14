@@ -53,4 +53,5 @@ Pod::Spec.new do |s|
 
   s.dependency "React-jsinspector"
   add_dependency(s, "React-jsitooling", :framework_name => "JSITooling")
+  set_remove_legacy_arch_compiler_flag!(s)
 end

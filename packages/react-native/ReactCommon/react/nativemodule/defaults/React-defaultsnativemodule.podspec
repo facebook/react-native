@@ -60,4 +60,5 @@ Pod::Spec.new do |s|
   add_dependency(s, "React-RCTFBReactNativeSpec")
   add_dependency(s, "React-featureflags")
   add_dependency(s, "React-featureflagsnativemodule")
+  set_remove_legacy_arch_compiler_flag!(s)
 end
