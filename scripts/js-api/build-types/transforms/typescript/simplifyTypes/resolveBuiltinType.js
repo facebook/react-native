@@ -15,6 +15,7 @@ import type {NodePath} from '@babel/traverse';
 
 import {replaceWithCleanup} from './utils';
 
+const collectTypeKeys = require('./collectTypeKeys');
 const t = require('@babel/types');
 const debug = require('debug')('build-types:transforms:inlineTypes');
 
@@ -80,6 +81,36 @@ const builtinTypeResolvers: {
       const constBody = tsTypeResolver?.(objectType, state.aliasToPathMap);
 
       if (!constBody || !t.isTSTypeLiteral(constBody)) {
+        const parentKeys = collectTypeKeys(
+          objectType,
+          state.aliasToPathMap,
+          state.interfaceToPathMap,
+        );
+
+        if (parentKeys != null) {
+          const overlappingKeys = stringLiteralElements.filter((key: string) =>
+            parentKeys.has(key),
+          );
+
+          if (overlappingKeys.length === 0) {
+            replaceWithCleanup(state, path, objectType);
+            path.skip();
+            return;
+          }
+
+          if (path.node.typeParameters) {
+            path.node.typeParameters.params[1] =
+              overlappingKeys.length === 1
+                ? t.tsLiteralType(t.stringLiteral(overlappingKeys[0]))
+                : t.tsUnionType(
+                    overlappingKeys.map((key: string) =>
+                      t.tsLiteralType(t.stringLiteral(key)),
+                    ),
+                  );
+          }
+          return;
+        }
+
         // Resolving the parameter failed, so we cannot do anything but update
         // the second type parameter to the resolved keys.
         if (path.node.typeParameters) {
