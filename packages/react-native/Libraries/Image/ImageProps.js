@@ -125,6 +125,7 @@ export type ImagePropsAndroid = Readonly<{
   resizeMultiplier?: ?number,
 }>;
 
+/** @build-types emit-as-interface Expo compatibility */
 export type ImagePropsBase = Readonly<{
   ...Omit<ViewProps, 'style'>,
   /**
