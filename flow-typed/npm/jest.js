@@ -1016,7 +1016,7 @@ declare function beforeEach(
   fn: (done: JestDoneFn) => ?Promise<unknown>,
   timeout?: number,
 ): void;
-/** Runs this function after all tests have finished inside this context */
+/** Runs this function afterAll tests have finished inside this context */
 declare function afterAll(
   fn: (done: JestDoneFn) => ?Promise<unknown>,
   timeout?: number,

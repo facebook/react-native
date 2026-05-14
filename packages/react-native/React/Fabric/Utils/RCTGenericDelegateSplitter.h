@@ -23,7 +23,7 @@ NS_ASSUME_NONNULL_BEGIN
 
 /*
  * Creates an object with a given block that will be used to connect a `sending` object with a given `receiving` object.
- * The class calls the block every time after each delegate adding or removing procedure, and it calls it twice: the
+ * The class calls the block every time afterEach delegate adding or removing procedure, and it calls it twice: the
  * first time with `nil` and the second time with actual delegate. This is required to establish a proper connection
  * between sending and receiving objects (to reset caches storing information about supported (or not) optional
  * methods).

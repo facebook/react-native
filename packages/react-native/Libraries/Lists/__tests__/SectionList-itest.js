@@ -445,7 +445,7 @@ describe('<SectionList>', () => {
         );
       });
 
-      // SectionSeparatorComponent renders before and after each section
+      // SectionSeparatorComponent renders before and afterEach section
       expect(root.getRenderedOutput({props: []}).toJSX()).toEqual(
         <rn-scrollView>
           <rn-view>
@@ -488,7 +488,7 @@ describe('<SectionList>', () => {
         );
       });
 
-      // SectionSeparatorComponent renders before and after each section's items.
+      // SectionSeparatorComponent renders before and afterEach section's items.
       // Leading separator (before first item): trailingItem is the first item in the section.
       // Trailing separator (after last item): leadingItem is the last item in the section.
       expect(root.getRenderedOutput({props: []}).toJSX()).toEqual(

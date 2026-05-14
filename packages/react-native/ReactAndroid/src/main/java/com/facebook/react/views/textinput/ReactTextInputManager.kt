@@ -1147,7 +1147,7 @@ public open class ReactTextInputManager public constructor() :
 
     // AUTOCAPITALIZE_FLAGS (0x7000) shares bit positions with TYPE_NUMBER_FLAG_SIGNED
     // (0x1000) and TYPE_NUMBER_FLAG_DECIMAL (0x2000). We apply autocapitalize here
-    // after all props are set so the resolved input class determines whether the
+    // afterAll props are set so the resolved input class determines whether the
     // flags are meaningful.
     private fun reconcileAutoCapitalize(view: ReactEditText) {
       val autoCapValue = view.stagedAutoCapitalize

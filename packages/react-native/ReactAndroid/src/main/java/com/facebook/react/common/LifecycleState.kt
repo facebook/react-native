@@ -11,7 +11,7 @@ package com.facebook.react.common
  * Lifecycle state for an Activity. The state right after pause and right before resume are the
  * basically the same so this enum is in terms of the forward lifecycle progression (onResume, etc).
  *
- * <p>BEFORE_CREATE is used before a ReactRootView is attached to ReactInstanceManager, or after all
+ * <p>BEFORE_CREATE is used before a ReactRootView is attached to ReactInstanceManager, or afterAll
  * the ReactRootView has been detached from the ReactInstanceManager.
  *
  * <p>BEFORE_RESUME is used after a ReactRootView is attached to ReactInstanceManager but before

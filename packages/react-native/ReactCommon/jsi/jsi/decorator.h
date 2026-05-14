@@ -646,7 +646,7 @@ struct AfterCaller<std::tuple<T...>> {
 } // namespace detail
 
 // A decorator which implements an around idiom.  A With instance is
-// RAII constructed before each call to the undecorated class; the
+// RAII constructed beforeEach call to the undecorated class; the
 // ctor is passed a single argument of type WithArg&.  Plain and Base
 // are used as in the base class.
 template <typename With, typename Plain = Runtime, typename Base = Runtime>

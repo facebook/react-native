@@ -302,7 +302,7 @@ export function setSelectedLog(proposedNewIndex: number): void {
   const logArray = Array.from(logs);
   let index = logArray.length - 1;
   while (index >= 0) {
-    // The latest syntax error is selected and displayed before all other logs.
+    // The latest syntax error is selected and displayed beforeAll other logs.
     if (logArray[index].level === 'syntax') {
       newIndex = index;
       break;

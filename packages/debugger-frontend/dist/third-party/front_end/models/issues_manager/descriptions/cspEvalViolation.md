@@ -1,6 +1,6 @@
 # Content Security Policy of your site blocks the use of 'eval' in JavaScript`
 
-The Content Security Policy (CSP) prevents the evaluation of arbitrary strings as JavaScript to make it more difficult for an attacker to inject unathorized code on your site.
+The Content Security Policy (CSP) prevents the evaluation of arbitrary strings as JavaScript to make it more difficult for an attacker to inject unauthorized code on your site.
 
 To solve this issue, avoid using `eval()`, `new Function()`, `setTimeout([string], ...)` and `setInterval([string], ...)` for evaluating strings.
 

@@ -49,4 +49,4 @@ of mutation.
 The clone implementation of the YogaLayoutableShadowNode will compare the
 previous set of children with the new set. If both sets have the same size and
 each node has equivalent styling, the cloned node is not being dirtied for
-layout. This allows for improving the layout data re-use on subsequent renders.
+layout. This allows for improving the layout data reuse on subsequent renders.

@@ -97,7 +97,7 @@ abstract class GeneratePackageListTask : DefaultTask() {
                 interpolated
               }
 
-          // Add comment with package name before each instance
+          // Add comment with package name beforeEach instance
           "// $name\n      $fqcnInstance"
         }
 

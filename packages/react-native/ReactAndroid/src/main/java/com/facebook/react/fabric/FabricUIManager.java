@@ -192,7 +192,7 @@ public class FabricUIManager
   @ThreadConfined(UI)
   private final DispatchUIFrameCallback mDispatchUIFrameCallback;
 
-  /** Set of events sent synchronously during the current frame render. Cleared after each frame. */
+  /** Set of events sent synchronously during the current frame render. Cleared afterEach frame. */
   @ThreadConfined(UI)
   private final Set<SynchronousEvent> mSynchronousEvents = new HashSet<>();
 
