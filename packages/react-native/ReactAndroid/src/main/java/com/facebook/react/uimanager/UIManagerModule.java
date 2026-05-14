@@ -568,12 +568,11 @@ public class UIManagerModule extends ReactContextBaseJavaModule
    * after all currently queued view updates have completed.
    *
    * @param block that contains UI logic you want to execute.
-   *     <p>Usage Example:
-   *     <p>UIManagerModule uiManager = reactContext.getNativeModule(UIManagerModule.class);
-   *     uiManager.addUIBlock(new UIBlock() { public void execute (NativeViewHierarchyManager nvhm)
-   *     { View view = nvhm.resolveView(tag); // ...execute your code on View (e.g. snapshot the
-   *     view) } });
+   * @deprecated This method is a no-op stub retained for backward compatibility. Use {@link
+   *     UIManagerListener} or View Commands instead.
    */
+  @Deprecated
+  @SuppressWarnings("deprecation")
   public void addUIBlock(UIBlock block) {}
 
   /**
@@ -581,7 +580,11 @@ public class UIManagerModule extends ReactContextBaseJavaModule
    * before all currently queued view updates have completed.
    *
    * @param block that contains UI logic you want to execute.
+   * @deprecated This method is a no-op stub retained for backward compatibility. Use {@link
+   *     UIManagerListener} or View Commands instead.
    */
+  @Deprecated
+  @SuppressWarnings("deprecation")
   public void prependUIBlock(UIBlock block) {}
 
   @Override
