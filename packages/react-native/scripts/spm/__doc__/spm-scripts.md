@@ -128,14 +128,16 @@ Modules not discovered via autolinking can be declared in `react-native.config.j
 
 ```js
 module.exports = {
-  spmModules: [
-    {
-      name: 'MyNativeModule',
-      path: 'ios/MyNativeModule',       // relative to app root
-      exclude: ['*.podspec'],            // optional
-      publicHeadersPath: '.',            // optional
-    },
-  ],
+  spm: {
+    modules: [
+      {
+        name: 'MyNativeModule',
+        path: 'ios/MyNativeModule',       // relative to app root
+        exclude: ['*.podspec'],            // optional
+        publicHeadersPath: '.',            // optional
+      },
+    ],
+  },
 };
 ```
 
@@ -166,7 +168,7 @@ re-runs of `react-native spm`.
 
 1. Compares timestamps of staleness inputs against `build/generated/autolinking/.spm-sync-stamp`:
    - `package.json` — dependency declarations
-   - `react-native.config.js` — spmModules config
+   - `react-native.config.js` — `spm.modules` config
    - `node_modules/` directory mtime — updated by any package manager (npm, yarn, pnpm, bun); also checks parent `node_modules` for monorepo setups
 2. If any input is newer (or stamp is missing): runs `npx react-native spm sync`,
    which re-executes autolinking + package generation + VFS overlay resolution

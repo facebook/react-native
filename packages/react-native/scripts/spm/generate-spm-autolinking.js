@@ -37,14 +37,14 @@
  *
  * Reads:
  *   - build/generated/autolinking/autolinking.json (produced by react-native codegen)
- *   - react-native.config.js (for spmModules extra modules, optional)
+ *   - react-native.config.js (for spm.modules extra modules, optional)
  *
  * Generates:
  *   - autolinked/Package.swift
  *
  * V1 behavior:
  *   - Processes npm-package native modules with platforms.ios != null from autolinking.json
- *   - Also processes any `spmModules` entries from react-native.config.js for local modules
+ *   - Also processes any `spm.modules` entries from react-native.config.js for local modules
  *   - Each target gets unsafeFlags for header resolution
  *
  * V2 behavior (future):
@@ -116,20 +116,22 @@ function readAutolinkingJson(
 }
 
 /**
- * Attempts to read react-native.config.js to find spmModules entries.
+ * Attempts to read react-native.config.js to find spm.modules entries.
  * These are extra modules not discoverable via autolinking.json.
  *
  * Expected structure in react-native.config.js:
  * module.exports = {
  *   ...
- *   spmModules: [
- *     {
- *       name: "MyNativeModule",
- *       path: "ios/MyNativeModule",            // relative to appRoot
- *       exclude: ["*.js", "*.podspec"],        // optional
- *       publicHeadersPath: ".",               // optional
- *     }
- *   ]
+ *   spm: {
+ *     modules: [
+ *       {
+ *         name: "MyNativeModule",
+ *         path: "ios/MyNativeModule",            // relative to appRoot
+ *         exclude: ["*.js", "*.podspec"],        // optional
+ *         publicHeadersPath: ".",                // optional
+ *       }
+ *     ]
+ *   }
  * }
  */
 function readSpmModulesFromConfig(
@@ -142,7 +144,7 @@ function readSpmModulesFromConfig(
   try {
     // $FlowFixMe[unsupported-syntax] dynamic require by computed path
     const config = require(configPath);
-    return config.spmModules ?? [];
+    return config.spm?.modules ?? [];
   } catch (e) {
     // Config might use Ruby interop or other patterns – skip
     return [];
@@ -962,7 +964,7 @@ function main(argv /*:: ?: Array<string> */) /*: void */ {
     );
   }
 
-  // 2. From react-native.config.js spmModules (user-defined extra modules).
+  // 2. From react-native.config.js spm.modules (user-defined extra modules).
   // If the module declares `sources: [glob, ...]` (CocoaPods-style), expand
   // the globs now relative to its dir and attach the file list to the target
   // so the emission loop below renders `sources: [...]` literally.
