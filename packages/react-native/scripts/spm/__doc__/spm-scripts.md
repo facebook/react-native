@@ -91,8 +91,8 @@ files, then commit the updated `.xcodeproj`.
 react-native spm [action] [options]
 ```
 
-With no action, the command runs `init` if `Package.swift` is missing,
-otherwise `update`.
+With no action, the command runs `update`. Use `init` explicitly for
+first-time setup (it generates the initial `Package.swift`).
 
 | Action | Description |
 |---|---|
@@ -113,6 +113,7 @@ accepts kebab-case equivalents (e.g. `--skip-codegen`).
 | `--version <ver>` | RN version (default: from package.json) |
 | `--flavor <debug\|release>` | Artifact flavor (default: debug) |
 | `--localXcframework <path>` | Use locally-built xcframework |
+| `--artifactsDir <path>` | Override the artifact cache directory |
 | `--entryFile <path>` | JS entry file (default: package.json `main` or `index.js`) |
 | `--bundleIdentifier <id>` | Override CFBundleIdentifier |
 | `--productName <name>` | Override PRODUCT_NAME |
