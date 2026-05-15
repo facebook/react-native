@@ -216,6 +216,32 @@ async function resolveNightlyVersion(
   return ver;
 }
 
+/**
+ * Returns the cache-slot key for a given raw version label.
+ *
+ * Stable versions ('0.80.0', '0.81.0', …) become their own slot.
+ * Dev / nightly labels ('1000.0.0', 'nightly') resolve to the current
+ * nightly version (e.g. '0.85.0-nightly-20260515-abc') so each published
+ * nightly is its own slot — a new nightly invalidates automatically
+ * instead of sticking on a stale `1000.0.0` cache forever.
+ *
+ * If the npm registry lookup fails (offline, transient error), falls back
+ * to the raw label so a previously-cached slot under that label can still
+ * be used. A subsequent download attempt would surface the real error.
+ */
+async function resolveCacheSlotVersion(
+  rawVersion /*: string */,
+) /*: Promise<string> */ {
+  if (rawVersion !== '1000.0.0' && rawVersion !== 'nightly') {
+    return rawVersion;
+  }
+  try {
+    return await resolveNightlyVersion('react-native');
+  } catch {
+    return rawVersion;
+  }
+}
+
 async function resolveLatestV1Version() /*: Promise<string> */ {
   log('  Resolving latest-v1 Hermes from npm...');
   // $FlowFixMe[incompatible-call] global fetch not in Flow stubs
@@ -624,9 +650,14 @@ async function main(argv /*:: ?: Array<string> */) /*: Promise<void> */ {
   // below (let-bound vars are widened across function boundaries).
   const resolvedRnVersion /*: string */ = rnVersion;
 
-  // Use the raw --version arg (e.g. 'nightly') as the cache key so the slot
-  // stays stable even as the resolved nightly hash changes each day.
-  const cacheVersionKey = rawVersion ?? resolvedRnVersion;
+  // Cache key: stable versions slot under their own number. Dev / nightly
+  // labels use the resolved nightly hash (e.g. "0.85.0-nightly-20260515-abc")
+  // so each published nightly is its own slot — picks up new specs and fixes
+  // automatically instead of sticking on a stale "1000.0.0" cache forever.
+  const cacheVersionKey =
+    rawVersion === 'nightly' || rawVersion === '1000.0.0' || rawVersion == null
+      ? resolvedRnVersion
+      : rawVersion;
   const outputDir =
     args.output != null
       ? path.resolve(args.output)
@@ -758,4 +789,4 @@ if (require.main === module) {
   });
 }
 
-module.exports = {main};
+module.exports = {main, resolveCacheSlotVersion};

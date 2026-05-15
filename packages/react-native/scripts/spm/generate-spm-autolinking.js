@@ -424,11 +424,17 @@ function expandSpmSourceGlobs(
 /**
  * Converts an autolinking.json dependency to an SPM target spec.
  * Returns null if the dependency doesn't have iOS support.
+ *
+ * `swiftNameByNpm` maps each autolinked dep's npm name to its resolved Swift
+ * name (populated by expandSpmDependencies, possibly overridden via the dep's
+ * `spm.name` config). Optional for backwards compatibility with callers that
+ * don't have the map; falls back to `toSwiftName(name)` per entry.
  */
 function autolinkingDepToSpmTarget(
   depName /*: string */,
   dep /*: AutolinkedDep */,
   outputDir /*: string */,
+  swiftNameByNpm /*: ?Map<string, string> */,
 ) /*: SpmTarget | null */ {
   const iosPlatform = dep.platforms.ios;
   const sourceDir = iosPlatform.sourceDir ?? dep.root;
@@ -441,8 +447,10 @@ function autolinkingDepToSpmTarget(
   // same convention the spmModule branch in main() follows.
   const relSourcePath = path.relative(outputDir, sourceDir);
 
-  // Derive target name from package name (e.g. "@scope/my-pkg" → "MyPkg")
-  const targetName = toSwiftName(depName);
+  // Prefer the resolved Swift name (which honors `spm.name` overrides set in
+  // the dep's react-native.config.js). Fall back to toSwiftName(depName) when
+  // the caller didn't run expandSpmDependencies.
+  const targetName = dep.swiftName ?? toSwiftName(depName);
 
   // No exclude inference — main()'s emission loop emits `sources:` (an
   // explicit allowlist). User-supplied excludes still work.
@@ -452,10 +460,14 @@ function autolinkingDepToSpmTarget(
   const resources = privacyManifest != null ? [privacyManifest] : undefined;
 
   // Map declared spm.dependencies (npm names) to Swift target names so the
-  // synth's .product(...) deps list reaches the consuming target.
+  // synth's .product(...) deps list reaches the consuming target. Each
+  // transitive npm name's Swift name comes from the map (honoring overrides);
+  // toSwiftName fallback handles entries the map doesn't know about.
   const spmDeps /*: Array<string> */ = dep.spmDependencies ?? [];
   const spmTargetDependencies =
-    spmDeps.length > 0 ? spmDeps.map(n => toSwiftName(n)) : undefined;
+    spmDeps.length > 0
+      ? spmDeps.map(n => swiftNameByNpm?.get(n) ?? toSwiftName(n))
+      : undefined;
 
   return {
     name: targetName,
@@ -590,11 +602,23 @@ function generateAutolinkedPackageSwift(
       ? `\n            dependencies: [${aggregateDeps.join(', ')}],`
       : '';
 
+  // See note in generateSynthPackageSwift on baking the resolved slot path
+  // into the manifest to bust SPM's manifest hash on every slot change.
+  const xcfwHeadersAbsolute /*: ?string */ = input.xcfwHeadersAbsolute;
+  const depsHeadersAbsolute /*: ?string */ = input.depsHeadersAbsolute;
+  const xcfwHeadersExpr =
+    xcfwHeadersAbsolute != null
+      ? `"${xcfwHeadersAbsolute}"`
+      : 'URL(fileURLWithPath: appRoot + "/build/xcframeworks/React.xcframework").resolvingSymlinksInPath().path + "/Headers"';
+  const depsHeadersExpr =
+    depsHeadersAbsolute != null
+      ? `"${depsHeadersAbsolute}"`
+      : 'URL(fileURLWithPath: appRoot + "/build/xcframeworks/ReactNativeDependencies.xcframework").resolvingSymlinksInPath().path + "/Headers"';
   const xcfwHeadersVar = hasXcfwHeaders
-    ? `\nlet vfsOverlay = appRoot + "/build/xcframeworks/React-VFS.yaml"\nlet xcfwHeaders = URL(fileURLWithPath: appRoot + "/build/xcframeworks/React.xcframework").resolvingSymlinksInPath().path + "/Headers"\n`
+    ? `\nlet vfsOverlay = appRoot + "/build/xcframeworks/React-VFS.yaml"\nlet xcfwHeaders = ${xcfwHeadersExpr}\n`
     : '';
   const depsHeadersVar = hasDepsHeaders
-    ? `let depsHeaders = URL(fileURLWithPath: appRoot + "/build/xcframeworks/ReactNativeDependencies.xcframework").resolvingSymlinksInPath().path + "/Headers"\n`
+    ? `let depsHeaders = ${depsHeadersExpr}\n`
     : '';
 
   const inlineDeclsBlock =
@@ -744,12 +768,29 @@ function generateSynthPackageSwift(spec /*: SynthPackageSpec */) /*: string */ {
     cxxFlags.push(`"-I", "${autogenHeadersAbsolute}"`);
   }
 
-  // Helper Swift vars (only emitted when needed)
+  // Helper Swift vars (only emitted when needed). When the caller resolves
+  // the symlink at generation time (xcfwHeadersAbsolute / depsHeadersAbsolute),
+  // we bake the absolute cache-slot path into the manifest as a string
+  // literal. SPM caches manifest evaluations by content hash — `.resolvingSymlinksInPath()`
+  // evaluated only at manifest parse time would otherwise leave the cached
+  // value pointing at the previous slot even after the symlinks are
+  // re-pointed by `spm update`. Embedding the resolved path directly forces
+  // a manifest-hash bump on every slot change.
+  const xcfwHeadersAbsolute /*: ?string */ = spec.xcfwHeadersAbsolute;
+  const depsHeadersAbsolute /*: ?string */ = spec.depsHeadersAbsolute;
+  const xcfwHeadersExpr =
+    xcfwHeadersAbsolute != null
+      ? `"${xcfwHeadersAbsolute}"`
+      : 'URL(fileURLWithPath: appRoot + "/build/xcframeworks/React.xcframework").resolvingSymlinksInPath().path + "/Headers"';
+  const depsHeadersExpr =
+    depsHeadersAbsolute != null
+      ? `"${depsHeadersAbsolute}"`
+      : 'URL(fileURLWithPath: appRoot + "/build/xcframeworks/ReactNativeDependencies.xcframework").resolvingSymlinksInPath().path + "/Headers"';
   const xcfwHeadersVar = hasXcfwHeaders
-    ? `\nlet vfsOverlay = appRoot + "/build/xcframeworks/React-VFS.yaml"\nlet xcfwHeaders = URL(fileURLWithPath: appRoot + "/build/xcframeworks/React.xcframework").resolvingSymlinksInPath().path + "/Headers"\n`
+    ? `\nlet vfsOverlay = appRoot + "/build/xcframeworks/React-VFS.yaml"\nlet xcfwHeaders = ${xcfwHeadersExpr}\n`
     : '';
   const depsHeadersVar = hasDepsHeaders
-    ? `let depsHeaders = URL(fileURLWithPath: appRoot + "/build/xcframeworks/ReactNativeDependencies.xcframework").resolvingSymlinksInPath().path + "/Headers"\n`
+    ? `let depsHeaders = ${depsHeadersExpr}\n`
     : '';
 
   const excludeLine =
@@ -893,8 +934,23 @@ function main(argv /*:: ?: Array<string> */) /*: void */ {
       resolveDep: defaultResolveDep,
     });
 
+    // Map every autolinked npm name to its resolved Swift name (post-override)
+    // so transitive references inside autolinkingDepToSpmTarget find the right
+    // target identifier — not just the auto-derived toSwiftName.
+    const swiftNameByNpm /*: Map<string, string> */ = new Map();
     for (const dep of allDeps) {
-      const target = autolinkingDepToSpmTarget(dep.name, dep, outputDir);
+      if (dep.swiftName != null) {
+        swiftNameByNpm.set(dep.name, dep.swiftName);
+      }
+    }
+
+    for (const dep of allDeps) {
+      const target = autolinkingDepToSpmTarget(
+        dep.name,
+        dep,
+        outputDir,
+        swiftNameByNpm,
+      );
       if (target != null) {
         entries.push({target, origin: 'npm'});
         log(`Found npm native module: ${target.name} → ${target.path}`);
@@ -965,6 +1021,27 @@ function main(argv /*:: ?: Array<string> */) /*: void */ {
       `codegenReactHeaders: ${path.relative(appRoot, codegenReactHeadersPath)}`,
     );
   }
+
+  // Resolve the symlinks at script run time so the slot's absolute path can
+  // be baked into the generated manifests. Falls back to null when the
+  // symlinks don't exist yet (first run before download); the emitter then
+  // keeps the legacy `.resolvingSymlinksInPath()` expression so SPM evaluates
+  // it at Xcode build time. After symlinks exist, baking the path forces
+  // SPM's manifest-cache hash to bump whenever the slot moves — otherwise
+  // the cached evaluation sticks on the prior slot and the autolinked
+  // targets compile against stale headers.
+  function resolveXcfwHeaders(name /*: string */) /*: string | null */ {
+    const symlinkPath = path.join(appRoot, 'build', 'xcframeworks', name);
+    try {
+      return fs.realpathSync(symlinkPath) + '/Headers';
+    } catch {
+      return null;
+    }
+  }
+  const xcfwHeadersAbsolute = resolveXcfwHeaders('React.xcframework');
+  const depsHeadersAbsolute = resolveXcfwHeaders(
+    'ReactNativeDependencies.xcframework',
+  );
 
   const hasReactDep = xcframeworksRelPath != null;
   const hasXcfwHeaders = xcframeworksRelPath != null;
@@ -1124,6 +1201,8 @@ function main(argv /*:: ?: Array<string> */) /*: void */ {
       hasReactDep,
       hasXcfwHeaders,
       hasDepsHeaders,
+      xcfwHeadersAbsolute,
+      depsHeadersAbsolute,
       codegenHeadersIncluded: hasCodgenHeaders,
       isDynamic: false,
       targetPath: '.',
@@ -1205,6 +1284,8 @@ function main(argv /*:: ?: Array<string> */) /*: void */ {
     hasReactDep,
     hasXcfwHeaders,
     hasDepsHeaders,
+    xcfwHeadersAbsolute,
+    depsHeadersAbsolute,
     codegenHeadersIncluded: hasCodgenHeaders,
     xcframeworksRelPath,
   });

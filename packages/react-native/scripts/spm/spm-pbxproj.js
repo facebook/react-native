@@ -82,6 +82,27 @@ function scanProjectFiles(sourceDir /*: string */) /*: ProjectFiles */ {
     '.jpg',
   ]);
 
+  // Directories that should never be walked into for app target sources:
+  // generated SPM output (build/), npm install state (node_modules/), and any
+  // sibling Xcode project bundles (*.xcodeproj). Without this, scanning an
+  // appRoot like `ios/` recursively picks up auto-generated `Package.swift`
+  // files under build/xcframeworks/, build/generated/ios/, etc. and shoves
+  // them into the xcodeproj's PBXSourcesBuildPhase — swiftc then refuses to
+  // compile multiple files named `Package.swift` in the same target.
+  const skipDirNames /*: Set<string> */ = new Set([
+    'build',
+    'node_modules',
+    'Pods',
+  ]);
+
+  // Test target dirs follow the Xcode convention `<AppName>Tests` and
+  // `<AppName>UITests`. Their .m / .swift files include <XCTest/XCTest.h>,
+  // which is only available to XCTest test targets — pulling them into the
+  // app target's source list breaks the build with "file not found".
+  // Skip-rule: case-insensitive ends-with "Tests" / "Test" / "UITests".
+  const isTestDir = (name /*: string */) /*: boolean */ =>
+    /(?:UI)?Tests?$/i.test(name);
+
   function walk(dir /*: string */, relBase /*: string */) /*: void */ {
     if (!fs.existsSync(dir)) {
       return;
@@ -94,6 +115,11 @@ function scanProjectFiles(sourceDir /*: string */) /*: ProjectFiles */ {
       if (entry.name.startsWith('.')) {
         continue;
       }
+      // SPM manifest, never a target source — would collide with itself when
+      // multiple sibling sub-packages define their own Package.swift.
+      if (entry.name === 'Package.swift') {
+        continue;
+      }
       const full = path.join(dir, entry.name);
       const rel = relBase ? `${relBase}/${entry.name}` : entry.name;
       const ext = path.extname(entry.name);
@@ -102,6 +128,13 @@ function scanProjectFiles(sourceDir /*: string */) /*: ProjectFiles */ {
         // .xcassets and .bundle are treated as single resources, not walked into
         if (ext === '.xcassets' || ext === '.bundle') {
           resources.push(rel);
+        } else if (
+          skipDirNames.has(entry.name) ||
+          ext === '.xcodeproj' ||
+          ext === '.xcworkspace' ||
+          isTestDir(entry.name)
+        ) {
+          continue;
         } else {
           walk(full, rel);
         }

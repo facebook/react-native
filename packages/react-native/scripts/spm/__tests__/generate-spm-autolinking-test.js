@@ -610,3 +610,52 @@ describe('generateSynthPackageSwift (sources: allowlist)', () => {
     expect(b).not.toContain('sources: [');
   });
 });
+
+// ---------------------------------------------------------------------------
+// spm.name override — verifies that a non-default Swift name (set by a
+// library author via react-native.config.js `spm.name`) flows verbatim into
+// the synth Package.swift: target name, library name, product references,
+// and sibling package paths all use the override.
+// ---------------------------------------------------------------------------
+
+describe('generateSynthPackageSwift (spm.name override)', () => {
+  it('uses the override Swift name for the target, library, and product', () => {
+    const result = generateSynthPackageSwift({
+      swiftName: 'worklets', // override from spm.name (default would be "ReactNativeWorklets")
+      hasReactDep: true,
+      hasXcfwHeaders: true,
+      targetPath: 'root',
+      appRootAbsolute: '/abs/app',
+      autogenHeadersAbsolute: '/abs/app/headers',
+    });
+    expect(result).toContain('name: "worklets"');
+    expect(result).toContain('.library(name: "worklets"');
+    expect(result).toContain('targets: ["worklets"]');
+    // The auto-derived name must not appear anywhere.
+    expect(result).not.toContain('ReactNativeWorklets');
+  });
+
+  it('emits the override name in sibling .package(...) and .product(...) refs when a transitive dep was overridden', () => {
+    // Simulates the case where reanimated declares spm.dependencies on
+    // react-native-worklets, and worklets has set spm.name: "worklets".
+    // The autolinker's swiftNameByNpm map resolves the transitive to
+    // "worklets" before passing it to generateSynthPackageSwift.
+    const result = generateSynthPackageSwift({
+      swiftName: 'reanimated',
+      hasReactDep: true,
+      hasXcfwHeaders: true,
+      targetPath: 'root',
+      appRootAbsolute: '/abs/app',
+      autogenHeadersAbsolute: '/abs/app/headers',
+      spmDependencies: [{swiftName: 'worklets'}],
+      siblingSynthAbsolutePaths: {worklets: '/abs/app/packages/worklets'},
+    });
+    expect(result).toContain(
+      '.package(name: "worklets", path: "/abs/app/packages/worklets")',
+    );
+    expect(result).toContain(
+      '.product(name: "worklets", package: "worklets")',
+    );
+    expect(result).not.toContain('ReactNativeWorklets');
+  });
+});

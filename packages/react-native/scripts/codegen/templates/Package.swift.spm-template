@@ -20,11 +20,16 @@
 import PackageDescription
 import Foundation
 
-// Derive all paths from this file's location – no machine-specific absolute paths.
+// Derive all paths from this file's location.
 let packageDir = URL(fileURLWithPath: #filePath).deletingLastPathComponent().path
 let appRoot = URL(fileURLWithPath: packageDir + "/../../..").standardized.path
-let xcfwHeaders = URL(fileURLWithPath: appRoot + "/build/xcframeworks/React.xcframework").resolvingSymlinksInPath().path + "/Headers"
-let depsHeaders = URL(fileURLWithPath: appRoot + "/build/xcframeworks/ReactNativeDependencies.xcframework").resolvingSymlinksInPath().path + "/Headers"
+// xcfwHeaders / depsHeaders: when the install step resolves the current
+// cache-slot symlinks, the placeholders below are replaced with absolute
+// string literals so SPM's manifest hash bumps on every slot change
+// (otherwise the cached `.resolvingSymlinksInPath()` value would stick on
+// the prior slot). Unsubstituted, falls back to the runtime expression.
+let xcfwHeaders = __SPM_XCFW_HEADERS_EXPR__
+let depsHeaders = __SPM_DEPS_HEADERS_EXPR__
 let vfsOverlay = appRoot + "/build/xcframeworks/React-VFS.yaml"
 
 let package = Package(

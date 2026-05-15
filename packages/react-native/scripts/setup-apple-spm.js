@@ -60,7 +60,10 @@
  * After running: open <AppName>-SPM.xcodeproj in Xcode.
  */
 
-const {main: downloadArtifacts} = require('./spm/download-spm-artifacts');
+const {
+  main: downloadArtifacts,
+  resolveCacheSlotVersion,
+} = require('./spm/download-spm-artifacts');
 const {main: generateAutolinking} = require('./spm/generate-spm-autolinking');
 const {
   generateAutolinkingConfig,
@@ -75,6 +78,7 @@ const {
   findProjectRoot,
   makeLogger,
   readPackageJson,
+  renderCodegenTemplate,
   resolveAndWriteVFSOverlay,
 } = require('./spm/spm-utils');
 const {execSync} = require('child_process');
@@ -373,7 +377,11 @@ function runCodegenStep(
     'Package.swift.spm-template',
   );
   if (codegenSucceeded && fs.existsSync(path.dirname(codegenPkgSwift))) {
-    fs.copyFileSync(spmTemplate, codegenPkgSwift);
+    const rendered = renderCodegenTemplate(
+      fs.readFileSync(spmTemplate, 'utf8'),
+      appRoot,
+    );
+    fs.writeFileSync(codegenPkgSwift, rendered, 'utf8');
     log('Installed SPM codegen template → build/generated/ios/Package.swift');
   }
 }
@@ -446,10 +454,16 @@ async function ensureArtifacts(
   version /*: string */,
   artifactsDir /*: string | null */,
 ) /*: Promise<string | null> */ {
+  // Resolve the cache-slot version before computing the cache dir. For dev /
+  // nightly labels this is the actual nightly hash, so each nightly gets its
+  // own slot and a new nightly invalidates the old slot automatically. Stable
+  // versions pass through unchanged.
+  const rawVersion = args.version ?? version;
+  const slotVersion = await resolveCacheSlotVersion(rawVersion);
   const resolvedArtifactsDir =
     artifactsDir != null
       ? path.resolve(artifactsDir)
-      : defaultCacheDir(args.version ?? version, args.flavor);
+      : defaultCacheDir(slotVersion, args.flavor);
 
   if (args.forceDownload && resolvedArtifactsDir != null) {
     log('Clearing cached artifacts (--force-download)...');
@@ -467,10 +481,10 @@ async function ensureArtifacts(
     !fs.existsSync(artifactsJsonPath);
 
   if (needsDownload === true && resolvedArtifactsDir != null) {
-    log('Downloading xcframework artifacts...');
+    log(`Downloading xcframework artifacts (slot: ${slotVersion})...`);
     await downloadArtifacts([
       '--version',
-      args.version ?? version,
+      rawVersion,
       '--flavor',
       args.flavor,
       '--output',
@@ -634,11 +648,10 @@ async function main(argv /*:: ?: Array<string> */) /*: Promise<void> */ {
   const scriptsDir = path.join(reactNativeRoot, 'scripts');
   const version = determineVersion(args, reactNativeRoot);
   log(`React Native version: ${version}`);
-  if (args.localXcframework == null) {
-    log(
-      `Artifact cache:       ${displayPath(defaultCacheDir(args.version ?? version, args.flavor))}`,
-    );
-  }
+  // The artifact cache directory is resolved later in ensureArtifacts so the
+  // nightly hash can be folded in for dev / nightly labels. That branch logs
+  // either "Downloading xcframework artifacts (slot: ...)" or
+  // "Artifacts already present in ...".
 
   if (action === 'codegen') {
     runCodegenStep(projectRoot, appRoot, scriptsDir, false);

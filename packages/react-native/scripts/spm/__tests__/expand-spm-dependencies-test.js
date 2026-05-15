@@ -33,7 +33,11 @@
  * I/O is injected (readConfig, resolveDep) so the tests stay pure.
  */
 
-const {expandSpmDependencies} = require('../expand-spm-dependencies');
+const {
+  expandSpmDependencies,
+  resolveSwiftName,
+} = require('../expand-spm-dependencies');
+const {toSwiftName} = require('../spm-utils');
 
 function makeReadConfig(configs /*: {[string]: ?Object} */) {
   return (root /*: string */) =>
@@ -52,13 +56,15 @@ function makeResolveDep(resolutions /*: {[string]: ?string} */) {
 // ---------------------------------------------------------------------------
 
 describe('expandSpmDependencies', () => {
-  it('returns direct deps unchanged when none declare spm.dependencies', () => {
+  it('returns direct deps with auto-derived swiftName when none declare spm.dependencies', () => {
     const direct = [{name: 'a', root: '/a', platforms: {ios: {}}}];
     const result = expandSpmDependencies(direct, {
       readConfig: makeReadConfig({'/a': {}}),
       resolveDep: makeResolveDep({}),
     });
-    expect(result).toEqual([{...direct[0], spmDependencies: []}]);
+    expect(result).toEqual([
+      {...direct[0], swiftName: toSwiftName('a'), spmDependencies: []},
+    ]);
   });
 
   it('pulls in one transitive dep declared by a direct dep', () => {
@@ -246,5 +252,124 @@ describe('expandSpmDependencies', () => {
       },
     });
     expect(receivedFromRoot).toBe('/apple');
+  });
+
+  // -------------------------------------------------------------------------
+  // swiftName resolution: each dep gets a Swift target name on the way out.
+  // Default is toSwiftName(npmName); the dep's react-native.config.js
+  // `spm.name` overrides it. Required for libraries whose import prefix
+  // differs from the auto-derived name (e.g. `react-native-worklets`
+  // publishes headers under `<worklets/...>`).
+  // -------------------------------------------------------------------------
+
+  it('populates swiftName via toSwiftName when no spm.name override is set', () => {
+    const direct = [
+      {name: 'react-native-foo', root: '/foo', platforms: {ios: {}}},
+    ];
+    const [foo] = expandSpmDependencies(direct, {
+      readConfig: makeReadConfig({'/foo': {}}),
+      resolveDep: makeResolveDep({}),
+    });
+    expect(foo.swiftName).toBe(toSwiftName('react-native-foo'));
+    expect(foo.swiftName).toBe('ReactNativeFoo');
+  });
+
+  it('uses spm.name as swiftName when the direct dep declares one', () => {
+    const direct = [
+      {name: 'react-native-worklets', root: '/w', platforms: {ios: {}}},
+    ];
+    const [w] = expandSpmDependencies(direct, {
+      readConfig: makeReadConfig({'/w': {spm: {name: 'worklets'}}}),
+      resolveDep: makeResolveDep({}),
+    });
+    expect(w.swiftName).toBe('worklets');
+  });
+
+  it('applies spm.name override to transitive deps too', () => {
+    const direct = [
+      {name: 'react-native-reanimated', root: '/r', platforms: {ios: {}}},
+    ];
+    const result = expandSpmDependencies(direct, {
+      readConfig: makeReadConfig({
+        '/r': {
+          dependency: {platforms: {ios: {}}},
+          spm: {name: 'reanimated', dependencies: ['react-native-worklets']},
+        },
+        '/w': {
+          dependency: {platforms: {ios: {}}},
+          spm: {name: 'worklets'},
+        },
+      }),
+      resolveDep: makeResolveDep({'react-native-worklets': '/w'}),
+    });
+    const reanimated = result.find(d => d.name === 'react-native-reanimated');
+    const worklets = result.find(d => d.name === 'react-native-worklets');
+    expect(reanimated.swiftName).toBe('reanimated');
+    expect(worklets.swiftName).toBe('worklets');
+  });
+
+  it('throws on swiftName collision between two deps (override vs auto-derived)', () => {
+    // 'react-native-worklets' would auto-derive to 'ReactNativeWorklets', but
+    // here a second dep overrides its spm.name to that same value.
+    const direct = [
+      {name: 'react-native-worklets', root: '/w', platforms: {ios: {}}},
+      {name: 'other-package', root: '/o', platforms: {ios: {}}},
+    ];
+    expect(() =>
+      expandSpmDependencies(direct, {
+        readConfig: makeReadConfig({
+          '/w': {},
+          '/o': {spm: {name: 'ReactNativeWorklets'}},
+        }),
+        resolveDep: makeResolveDep({}),
+      }),
+    ).toThrow(/ReactNativeWorklets/);
+  });
+
+  it('rejects empty-string spm.name with a clear error citing the npm name', () => {
+    const direct = [{name: 'a', root: '/a', platforms: {ios: {}}}];
+    expect(() =>
+      expandSpmDependencies(direct, {
+        readConfig: makeReadConfig({'/a': {spm: {name: ''}}}),
+        resolveDep: makeResolveDep({}),
+      }),
+    ).toThrow(/'a' has an invalid 'spm.name'/);
+  });
+
+  it('rejects non-string spm.name (e.g. number, object) with a clear error', () => {
+    const direct = [{name: 'a', root: '/a', platforms: {ios: {}}}];
+    expect(() =>
+      expandSpmDependencies(direct, {
+        readConfig: makeReadConfig({'/a': {spm: {name: 42}}}),
+        resolveDep: makeResolveDep({}),
+      }),
+    ).toThrow(/invalid 'spm.name'/);
+  });
+
+  it('rejects spm.name with disallowed characters (spaces, slashes, dots)', () => {
+    expect(() =>
+      resolveSwiftName('a', {spm: {name: 'foo bar'}}),
+    ).toThrow(/invalid 'spm.name'/);
+    expect(() => resolveSwiftName('a', {spm: {name: 'foo/bar'}})).toThrow(
+      /invalid 'spm.name'/,
+    );
+    expect(() => resolveSwiftName('a', {spm: {name: 'foo.bar'}})).toThrow(
+      /invalid 'spm.name'/,
+    );
+  });
+
+  it('accepts lowercase-with-hyphen and CamelCase spm.name values', () => {
+    expect(resolveSwiftName('a', {spm: {name: 'reanimated'}})).toBe(
+      'reanimated',
+    );
+    expect(resolveSwiftName('a', {spm: {name: 'hermes-engine'}})).toBe(
+      'hermes-engine',
+    );
+    expect(resolveSwiftName('a', {spm: {name: 'RNWorklets'}})).toBe(
+      'RNWorklets',
+    );
+    expect(resolveSwiftName('a', {spm: {name: 'react_native_foo'}})).toBe(
+      'react_native_foo',
+    );
   });
 });

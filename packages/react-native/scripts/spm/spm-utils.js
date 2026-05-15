@@ -240,6 +240,46 @@ function resolveAndWriteVFSOverlay(
  * into build/generated/ios/. Used by both setup-apple-spm.js and
  * sync-spm-autolinking.js.
  */
+
+/**
+ * Substitutes placeholders in the SPM codegen template before writing it.
+ *
+ * `__SPM_XCFW_HEADERS_EXPR__` and `__SPM_DEPS_HEADERS_EXPR__` become absolute
+ * string literals when the cache-slot symlinks resolve at install time, and
+ * the runtime `URL(...).resolvingSymlinksInPath()...` expression otherwise.
+ * Baking the absolute slot path bumps SPM's manifest hash on every slot
+ * change — without it the cached evaluation sticks on the prior slot and
+ * ReactCodegen compiles against stale headers.
+ */
+function renderCodegenTemplate(
+  template /*: string */,
+  appRoot /*: string */,
+) /*: string */ {
+  function resolveHeadersAbsolute(name /*: string */) /*: string | null */ {
+    const symlinkPath = path.join(appRoot, 'build', 'xcframeworks', name);
+    try {
+      return fs.realpathSync(symlinkPath) + '/Headers';
+    } catch {
+      return null;
+    }
+  }
+  const xcfwAbs = resolveHeadersAbsolute('React.xcframework');
+  const depsAbs = resolveHeadersAbsolute(
+    'ReactNativeDependencies.xcframework',
+  );
+  const xcfwExpr =
+    xcfwAbs != null
+      ? `"${xcfwAbs}"`
+      : 'URL(fileURLWithPath: appRoot + "/build/xcframeworks/React.xcframework").resolvingSymlinksInPath().path + "/Headers"';
+  const depsExpr =
+    depsAbs != null
+      ? `"${depsAbs}"`
+      : 'URL(fileURLWithPath: appRoot + "/build/xcframeworks/ReactNativeDependencies.xcframework").resolvingSymlinksInPath().path + "/Headers"';
+  return template
+    .replace('__SPM_XCFW_HEADERS_EXPR__', xcfwExpr)
+    .replace('__SPM_DEPS_HEADERS_EXPR__', depsExpr);
+}
+
 function runCodegenAndInstallTemplate(
   projectRoot /*: string */,
   appRoot /*: string */,
@@ -277,7 +317,11 @@ function runCodegenAndInstallTemplate(
     fs.existsSync(spmTemplate) &&
     fs.existsSync(path.dirname(codegenPkgSwift))
   ) {
-    fs.copyFileSync(spmTemplate, codegenPkgSwift);
+    const rendered = renderCodegenTemplate(
+      fs.readFileSync(spmTemplate, 'utf8'),
+      appRoot,
+    );
+    fs.writeFileSync(codegenPkgSwift, rendered, 'utf8');
     logger.log('Installed SPM codegen template');
   }
 }
@@ -292,5 +336,6 @@ module.exports = {
   findProjectRoot,
   resolveReactNativeRoot,
   resolveAndWriteVFSOverlay,
+  renderCodegenTemplate,
   runCodegenAndInstallTemplate,
 };

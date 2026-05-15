@@ -27,7 +27,10 @@
  *   5. Writes build/generated/autolinking/.spm-sync-stamp
  */
 
-const {main: downloadArtifacts} = require('./download-spm-artifacts');
+const {
+  main: downloadArtifacts,
+  resolveCacheSlotVersion,
+} = require('./download-spm-artifacts');
 const {main: generateAutolinking} = require('./generate-spm-autolinking');
 const {
   generateAutolinkingConfig,
@@ -35,6 +38,7 @@ const {
 const {main: generatePackage} = require('./generate-spm-package');
 const {
   defaultCacheDir,
+  displayPath,
   findProjectRoot,
   makeLogger,
   readPackageJson,
@@ -83,33 +87,40 @@ async function main(argv /*:: ?: Array<string> */) /*: Promise<void> */ {
   }
 
   const xcfwLinksDir = path.join(appRoot, 'build', 'xcframeworks');
-  const artifactsJsonPath = path.join(xcfwLinksDir, 'artifacts.json');
-  let artifactsDir /*: string | null */ = null;
+  const pkg = readPackageJson(reactNativeRoot);
+  const rawVersion = pkg?.version ?? '0.0.0';
+  const flavor = 'debug';
 
-  // Check if artifacts are missing or symlinks are broken (pointing to deleted cache)
-  const needsDownload =
-    !fs.existsSync(artifactsJsonPath) ||
-    !fs.existsSync(path.join(xcfwLinksDir, 'React.xcframework'));
+  // Resolve the cache slot for the current RN version. For dev / nightly
+  // labels this is the actual nightly hash, so we look at the right slot
+  // even when package.json still says '1000.0.0'. A new nightly publish
+  // means a new slot — old `1000.0.0` slots no longer prevent re-download.
+  const slotVersion = await resolveCacheSlotVersion(rawVersion);
+  const expectedCacheDir = defaultCacheDir(slotVersion, flavor);
+  const expectedArtifactsJson = path.join(expectedCacheDir, 'artifacts.json');
 
-  if (needsDownload) {
-    const pkg = readPackageJson(reactNativeRoot);
-    const version = pkg?.version ?? '0.0.0';
-    const flavor = 'debug';
-    const cacheDir = defaultCacheDir(version, flavor);
-
-    log('Downloading xcframework artifacts...');
+  if (!fs.existsSync(expectedArtifactsJson)) {
+    log(
+      `Downloading xcframework artifacts (slot: ${slotVersion}, ${displayPath(expectedCacheDir)})...`,
+    );
     await downloadArtifacts([
       '--version',
-      version,
+      rawVersion,
       '--flavor',
       flavor,
       '--output',
-      cacheDir,
+      expectedCacheDir,
     ]);
-    artifactsDir = cacheDir;
   } else {
-    artifactsDir = xcfwLinksDir;
+    log(
+      `Using cached xcframework artifacts (slot: ${slotVersion}, ${displayPath(expectedCacheDir)})`,
+    );
   }
+  // Always feed the expected slot into generate-spm-package — it rewrites the
+  // local symlinks at <app>/build/xcframeworks/ to point at this slot. If the
+  // version changed and they previously pointed at an older slot, this fixes
+  // them up. Idempotent when nothing changed.
+  const artifactsDir /*: string */ = expectedCacheDir;
 
   log('Re-generating build/generated/autolinking/Package.swift...');
   generateAutolinking([
@@ -120,18 +131,14 @@ async function main(argv /*:: ?: Array<string> */) /*: Promise<void> */ {
   ]);
 
   log('Re-generating xcframeworks sub-package...');
-  const packageArgs = [
+  generatePackage([
     '--app-root',
     appRoot,
     '--react-native-root',
     reactNativeRoot,
-  ];
-
-  if (artifactsDir != null) {
-    packageArgs.push('--artifacts-dir', artifactsDir);
-  }
-
-  generatePackage(packageArgs);
+    '--artifacts-dir',
+    artifactsDir,
+  ]);
 
   resolveAndWriteVFSOverlay(appRoot, reactNativeRoot, {log});
 

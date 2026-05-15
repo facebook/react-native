@@ -10,6 +10,8 @@
 
 'use strict';
 
+const {toSwiftName} = require('./spm-utils');
+
 /**
  * expand-spm-dependencies.js — Resolves transitive native deps declared via
  * `spm.dependencies` in a library's react-native.config.js.
@@ -49,6 +51,37 @@ type Options = {
 };
 */
 
+// Validates and returns the Swift target name for a dep. Falls back to
+// toSwiftName(npmName) when no override is set. The override is the dep's
+// `react-native.config.js` `spm.name`, intended for libraries whose import
+// prefix differs from the auto-derived name (e.g. `react-native-worklets`
+// publishes headers under `<worklets/...>` via the podspec `s.header_dir`,
+// so the SPM target name should be `worklets`, not `ReactNativeWorklets`).
+function resolveSwiftName(
+  npmName /*: string */,
+  config /*: ?RnConfig */,
+) /*: string */ {
+  // $FlowFixMe[prop-missing] config has dynamic shape
+  const override = config?.spm?.name;
+  if (override == null) {
+    return toSwiftName(npmName);
+  }
+  if (typeof override !== 'string' || override.length === 0) {
+    throw new Error(
+      `react-native autolinking: '${npmName}' has an invalid 'spm.name' override: expected a non-empty string, got ${JSON.stringify(override)}.`,
+    );
+  }
+  // Accept Swift-identifier style (TitleCase / snake_case) and header-dir
+  // style (lowercase, optional hyphens). Reject whitespace, slashes, and
+  // other characters that would break SPM target / module identifiers.
+  if (!/^[A-Za-z_][A-Za-z0-9_-]*$/.test(override)) {
+    throw new Error(
+      `react-native autolinking: '${npmName}' has an invalid 'spm.name' override '${override}': must start with a letter or underscore and contain only letters, digits, underscores, or hyphens.`,
+    );
+  }
+  return override;
+}
+
 function expandSpmDependencies(
   directDeps /*: Array<AutolinkedDep> */,
   options /*: Options */,
@@ -70,6 +103,11 @@ function expandSpmDependencies(
       continue;
     }
     const config = readConfig(current.root);
+    // Resolve swiftName lazily from the same config read we already need for
+    // spm.dependencies — saves a duplicate readConfig call per direct dep.
+    if (current.swiftName == null) {
+      current.swiftName = resolveSwiftName(currentName, config);
+    }
     // $FlowFixMe[prop-missing] config has dynamic shape
     const transitives /*: Array<string> */ = config?.spm?.dependencies ?? [];
 
@@ -97,6 +135,7 @@ function expandSpmDependencies(
           name: transitiveName,
           root: transitiveRoot,
           platforms: {ios: iosPlatform},
+          swiftName: resolveSwiftName(transitiveName, transitiveConfig),
           spmDependencies: [],
         });
         queue.push(transitiveName);
@@ -104,6 +143,26 @@ function expandSpmDependencies(
       currentSpmDeps.push(transitiveName);
     }
     current.spmDependencies = currentSpmDeps;
+  }
+
+  // Collision check: two deps mapping to the same Swift name (whether via
+  // override or auto-derivation) would clobber each other in the synth
+  // package layout and the centralized headers tree. Surface it now with a
+  // clear message instead of letting SPM emit a confusing duplicate-target
+  // error later.
+  const seen /*: Map<string, string> */ = new Map();
+  for (const dep of byName.values()) {
+    const swiftName = dep.swiftName;
+    if (swiftName == null) {
+      continue;
+    }
+    const existing = seen.get(swiftName);
+    if (existing != null) {
+      throw new Error(
+        `react-native autolinking: SPM Swift name collision: '${existing}' and '${dep.name}' both resolve to '${swiftName}'. Set a distinct 'spm.name' in one of their react-native.config.js files.`,
+      );
+    }
+    seen.set(swiftName, dep.name);
   }
 
   return Array.from(byName.values());
@@ -142,6 +201,7 @@ function defaultResolveDep(
 
 module.exports = {
   expandSpmDependencies,
+  resolveSwiftName,
   defaultReadConfig,
   defaultResolveDep,
 };

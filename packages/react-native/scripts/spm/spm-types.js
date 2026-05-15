@@ -112,6 +112,11 @@ export type AutolinkedDep = {
   name: string,
   root: string,
   platforms: {ios: AutolinkingIosPlatform, ...},
+  // Resolved Swift target / module / headers-subdir name. Defaults to
+  // toSwiftName(name) and is overridden by the dep's react-native.config.js
+  // `spm.name`. Populated by expandSpmDependencies — always present after
+  // expansion; optional in the type so caller-side construction stays simple.
+  swiftName?: string,
   // Populated by expandSpmDependencies from each dep's
   // react-native.config.js `spm.dependencies` array.
   spmDependencies?: Array<string>,
@@ -155,6 +160,12 @@ export type AggregatorInput = {
   hasReactDep?: boolean,
   hasXcfwHeaders?: boolean,
   hasDepsHeaders?: boolean,
+  // Absolute slot-resolved Headers dirs. When provided, baked into the
+  // manifest as string literals so SPM's manifest-hash bumps on every slot
+  // change (instead of `.resolvingSymlinksInPath()` being evaluated once and
+  // its result cached against the prior slot).
+  xcfwHeadersAbsolute?: ?string,
+  depsHeadersAbsolute?: ?string,
   codegenHeadersIncluded?: boolean,
   xcframeworksRelPath?: ?string,
 };
@@ -171,6 +182,10 @@ export type SynthPackageSpec = {
   hasReactDep?: boolean,
   hasXcfwHeaders?: boolean,
   hasDepsHeaders?: boolean,
+  // See AggregatorInput.xcfwHeadersAbsolute — same purpose at the synth
+  // layer (each per-dep Package.swift).
+  xcfwHeadersAbsolute?: ?string,
+  depsHeadersAbsolute?: ?string,
   codegenHeadersIncluded?: boolean,
   resources?: ?Array<string>,
   isDynamic?: boolean,
