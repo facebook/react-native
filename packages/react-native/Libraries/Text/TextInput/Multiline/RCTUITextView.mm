@@ -281,6 +281,11 @@ static UIColor *defaultPlaceholderColor(void)
   [super layoutSubviews];
 
   CGRect textFrame = UIEdgeInsetsInsetRect(self.bounds, self.textContainerInset);
+
+  // Sync NSTextContainer.size with the current container bounds to prevent
+  // _UITextLayoutFragmentView from retaining a stale width after frame changes.
+  self.textContainer.size = CGSizeMake(textFrame.size.width, CGFLOAT_MAX);
+
   CGFloat placeholderHeight = [_placeholderView sizeThatFits:textFrame.size].height;
   textFrame.size.height = MIN(placeholderHeight, textFrame.size.height);
   _placeholderView.frame = textFrame;
