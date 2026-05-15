@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<7be26fb138e59ef3dc34cec13d3813c4>>
+ * @generated SignedSource<<ce4fca61f4921c53df807ac40624f271>>
  */
 
 /**
@@ -240,10 +240,6 @@ class ReactNativeFeatureFlagsDefaults : public ReactNativeFeatureFlagsProvider {
   }
 
   bool fixDifferentiatorParentTagForUnflattenCase() override {
-    return false;
-  }
-
-  bool fixFindShadowNodeByTagRaceCondition() override {
     return false;
   }
 
