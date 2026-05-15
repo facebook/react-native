@@ -1296,6 +1296,20 @@ function main(argv /*:: ?: Array<string> */) /*: void */ {
   fs.writeFileSync(outputPath, aggregatorContent, 'utf8');
   log(`Generated: ${path.relative(appRoot, outputPath)}`);
 
+  // .spm-sync-watch-paths: absolute paths the Xcode auto-sync build phase
+  // should watch for add/remove of native source files. Updating the dir
+  // mtime via touch/rm of a child file is enough to invalidate the stamp,
+  // so the sync re-runs and the `sources:` allowlist is regenerated.
+  // Each module's source dir is already known via entryAbsDirs.
+  const watchPaths = Array.from(new Set(entryAbsDirs.values()))
+    .filter(p => p.length > 0 && fs.existsSync(p))
+    .sort();
+  fs.writeFileSync(
+    path.join(outputDir, '.spm-sync-watch-paths'),
+    watchPaths.join('\n') + (watchPaths.length > 0 ? '\n' : ''),
+    'utf8',
+  );
+
   // AutolinkedAggregate is glue; needs at least one source file (Swift, so we
   // sidestep the Obj-C public-headers-dir requirement).
   const aggregateDir = path.join(outputDir, 'AutolinkedAggregate');

@@ -632,6 +632,20 @@ if [ "$STALE" -eq 0 ] && [ "$SRCROOT" != "$PROJECT_ROOT" ]; then
   fi
 fi
 
+# Check 1.5: watched module source dirs (catches add/remove of source files
+# in spm.modules and autolinked deps). Directory mtime updates on both add
+# and remove of children, so a single -newer check covers both cases.
+WATCH_FILE="$SRCROOT/build/generated/autolinking/.spm-sync-watch-paths"
+if [ "$STALE" -eq 0 ] && [ -f "$WATCH_FILE" ]; then
+  while IFS= read -r DIR; do
+    [ -z "$DIR" ] && continue
+    if [ -d "$DIR" ] && [ -n "$(find "$DIR" -newer "$STAMP" -print -quit 2>/dev/null)" ]; then
+      STALE=1
+      break
+    fi
+  done < "$WATCH_FILE"
+fi
+
 # Check 2: codegen spec files changed via git (covers monorepo after git pull)
 if [ "$STALE" -eq 0 ] && [ -f "$STAMP" ]; then
   STAMP_TIME=$(stat -f %m "$STAMP" 2>/dev/null || stat -c %Y "$STAMP" 2>/dev/null || echo 0)
