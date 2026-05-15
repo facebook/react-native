@@ -177,9 +177,11 @@ static void computeFlexBasisForChild(
 
     // For height in the main axis (column direction): when the
     // FixFlexBasisFitContent feature is enabled, skip FitContent for
-    // non-measure container children. This makes the flex basis independent
-    // of the parent's content-determined height, preventing unnecessary
-    // re-measurement cascades when a sibling changes size in a ScrollView.
+    // non-measure container children inside scroll subtrees. This makes the
+    // flex basis independent of content-determined heights, preventing
+    // unnecessary re-measurement cascades when a sibling changes size in a
+    // ScrollView, while preserving viewport bounds for wrappers outside the
+    // scroll subtree.
     //
     // We only optimize the height (column) axis because text wrapping depends
     // on width constraints propagating through container nodes. Removing
@@ -188,8 +190,16 @@ static void computeFlexBasisForChild(
     bool applyHeightFitContent =
         isMainAxisRow || node->style().overflow() != Overflow::Scroll;
     if (fixFlexBasisFitContent) {
+      bool nodeHasScrollAncestor = false;
+      for (auto owner = node->getOwner(); owner != nullptr;
+           owner = owner->getOwner()) {
+        if (owner->style().overflow() == Overflow::Scroll) {
+          nodeHasScrollAncestor = true;
+          break;
+        }
+      }
       applyHeightFitContent = isMainAxisRow ||
-          (child->hasMeasureFunc() &&
+          ((child->hasMeasureFunc() || !nodeHasScrollAncestor) &&
            node->style().overflow() != Overflow::Scroll);
     }
     if (applyHeightFitContent && yoga::isUndefined(childHeight) &&
