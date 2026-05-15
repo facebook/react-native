@@ -25,6 +25,9 @@ on:
 env:
   DOXYGEN_VERSION: "1.16.1"
 
+permissions:
+  contents: read
+
 jobs:
   validate_cxx_api_snapshots:
     runs-on: ubuntu-latest
