@@ -261,5 +261,66 @@ if (isOSS) {
           root.destroy();
         },
       },
+    )
+    .test(
+      'dispatch event, nested 50 deep (bubbling), stable tree',
+      () => {
+        Fantom.dispatchNativeEvent(
+          ref,
+          'onPointerUp',
+          {x: 0, y: 0},
+          {
+            category: Fantom.NativeEventCategory.Discrete,
+          },
+        );
+      },
+      {
+        beforeAll: () => {
+          ref = React.createRef();
+          root = Fantom.createRoot();
+          Fantom.runTask(() => {
+            root.render(createNestedViews(50, ref));
+          });
+        },
+        afterAll: () => {
+          root.destroy();
+        },
+      },
+    )
+    .test(
+      'dispatch event, nested 50 deep (no handlers on ancestors), stable tree',
+      () => {
+        Fantom.dispatchNativeEvent(
+          ref,
+          'onPointerUp',
+          {x: 0, y: 0},
+          {
+            category: Fantom.NativeEventCategory.Discrete,
+          },
+        );
+      },
+      {
+        beforeAll: () => {
+          ref = React.createRef();
+          root = Fantom.createRoot();
+          Fantom.runTask(() => {
+            let views: React.MixedElement = (
+              <View
+                ref={ref}
+                collapsable={false}
+                onPointerUp={() => {}}
+                style={{width: 10, height: 10}}
+              />
+            );
+            for (let i = 0; i < 50; i++) {
+              views = <View collapsable={false}>{views}</View>;
+            }
+            root.render(views);
+          });
+        },
+        afterAll: () => {
+          root.destroy();
+        },
+      },
     );
 }
