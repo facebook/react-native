@@ -70,10 +70,8 @@ public abstract class YogaNodeJNIBase : YogaNode, Cloneable {
       throw IllegalStateException("Child already has a parent, it must be removed first.")
     }
 
-    if (children == null) {
-      children = ArrayList(4)
-    }
-    children!!.add(i, child)
+    val list = children ?: ArrayList<YogaNodeJNIBase>(4).also { children = it }
+    list.add(i, child)
     child.owner = this
     YogaNative.jni_YGNodeInsertChildJNI(nativePointer, child.nativePointer, i)
   }
@@ -89,8 +87,9 @@ public abstract class YogaNodeJNIBase : YogaNode, Cloneable {
     if (newChild !is YogaNodeJNIBase) {
       return
     }
-    children!!.removeAt(position)
-    children!!.add(position, newChild)
+    val list = checkNotNull(children) { "YogaNode does not have children" }
+    list.removeAt(position)
+    list.add(position, newChild)
     newChild.owner = this
     YogaNative.jni_YGNodeSwapChildJNI(nativePointer, newChild.nativePointer, position)
   }
@@ -98,9 +97,7 @@ public abstract class YogaNodeJNIBase : YogaNode, Cloneable {
   override fun cloneWithChildren(): YogaNodeJNIBase {
     try {
       val clonedYogaNode = super.clone() as YogaNodeJNIBase
-      if (clonedYogaNode.children != null) {
-        clonedYogaNode.children = ArrayList(clonedYogaNode.children!!)
-      }
+      clonedYogaNode.children?.let { clonedYogaNode.children = ArrayList(it) }
       val clonedNativePointer = YogaNative.jni_YGNodeCloneJNI(nativePointer)
       clonedYogaNode.owner = null
       clonedYogaNode.nativePointer = clonedNativePointer
@@ -540,11 +537,8 @@ public abstract class YogaNodeJNIBase : YogaNode, Cloneable {
   // methods are final by default, which enforces this constraint.
   @DoNotStrip
   public fun measure(width: Float, widthMode: Int, height: Float, heightMode: Int): Long {
-    if (!isMeasureDefined) {
-      throw RuntimeException("Measure function isn't defined!")
-    }
-
-    return measureFunction!!.measure(
+    val mf = checkNotNull(measureFunction) { "Measure function isn't defined!" }
+    return mf.measure(
         this,
         width,
         YogaMeasureMode.fromInt(widthMode),
@@ -560,8 +554,10 @@ public abstract class YogaNodeJNIBase : YogaNode, Cloneable {
 
   // Same JNI jmethodid caching concern as measure() — must not be overridden.
   @DoNotStrip
-  public fun baseline(width: Float, height: Float): Float =
-      baselineFunction!!.baseline(this, width, height)
+  public fun baseline(width: Float, height: Float): Float {
+    val bf = checkNotNull(baselineFunction) { "Baseline function isn't defined!" }
+    return bf.baseline(this, width, height)
+  }
 
   override val isMeasureDefined: Boolean
     get() = measureFunction != null
