@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<9d07e8adeee69583b788069649306d8e>>
+ * @generated SignedSource<<27e88ec53841585796515db0406909dd>>
  */
 
 /**
@@ -78,7 +78,6 @@ internal class ReactNativeFeatureFlagsLocalAccessor : ReactNativeFeatureFlagsAcc
   private var enableVirtualViewContainerStateExperimentalCache: Boolean? = null
   private var enableVirtualViewDebugFeaturesCache: Boolean? = null
   private var fixDifferentiatorParentTagForUnflattenCaseCache: Boolean? = null
-  private var fixFindShadowNodeByTagRaceConditionCache: Boolean? = null
   private var fixMappingOfEventPrioritiesBetweenFabricAndReactCache: Boolean? = null
   private var fixYogaFlexBasisFitContentInMainAxisCache: Boolean? = null
   private var fuseboxAssertSingleHostStateCache: Boolean? = null
@@ -653,16 +652,6 @@ internal class ReactNativeFeatureFlagsLocalAccessor : ReactNativeFeatureFlagsAcc
       cached = currentProvider.fixDifferentiatorParentTagForUnflattenCase()
       accessedFeatureFlags.add("fixDifferentiatorParentTagForUnflattenCase")
       fixDifferentiatorParentTagForUnflattenCaseCache = cached
-    }
-    return cached
-  }
-
-  override fun fixFindShadowNodeByTagRaceCondition(): Boolean {
-    var cached = fixFindShadowNodeByTagRaceConditionCache
-    if (cached == null) {
-      cached = currentProvider.fixFindShadowNodeByTagRaceCondition()
-      accessedFeatureFlags.add("fixFindShadowNodeByTagRaceCondition")
-      fixFindShadowNodeByTagRaceConditionCache = cached
     }
     return cached
   }

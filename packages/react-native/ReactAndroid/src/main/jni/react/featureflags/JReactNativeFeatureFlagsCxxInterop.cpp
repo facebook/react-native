@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<32c8c18771d6690f50d60dbc8e3d07e2>>
+ * @generated SignedSource<<52bf46b50e91dacdac8d43c4c00ea6f3>>
  */
 
 /**
@@ -360,12 +360,6 @@ class ReactNativeFeatureFlagsJavaProvider
   bool fixDifferentiatorParentTagForUnflattenCase() override {
     static const auto method =
         getReactNativeFeatureFlagsProviderJavaClass()->getMethod<jboolean()>("fixDifferentiatorParentTagForUnflattenCase");
-    return method(javaProvider_);
-  }
-
-  bool fixFindShadowNodeByTagRaceCondition() override {
-    static const auto method =
-        getReactNativeFeatureFlagsProviderJavaClass()->getMethod<jboolean()>("fixFindShadowNodeByTagRaceCondition");
     return method(javaProvider_);
   }
 
@@ -865,11 +859,6 @@ bool JReactNativeFeatureFlagsCxxInterop::fixDifferentiatorParentTagForUnflattenC
   return ReactNativeFeatureFlags::fixDifferentiatorParentTagForUnflattenCase();
 }
 
-bool JReactNativeFeatureFlagsCxxInterop::fixFindShadowNodeByTagRaceCondition(
-    facebook::jni::alias_ref<JReactNativeFeatureFlagsCxxInterop> /*unused*/) {
-  return ReactNativeFeatureFlags::fixFindShadowNodeByTagRaceCondition();
-}
-
 bool JReactNativeFeatureFlagsCxxInterop::fixMappingOfEventPrioritiesBetweenFabricAndReact(
     facebook::jni::alias_ref<JReactNativeFeatureFlagsCxxInterop> /*unused*/) {
   return ReactNativeFeatureFlags::fixMappingOfEventPrioritiesBetweenFabricAndReact();
@@ -1248,9 +1237,6 @@ void JReactNativeFeatureFlagsCxxInterop::registerNatives() {
       makeNativeMethod(
         "fixDifferentiatorParentTagForUnflattenCase",
         JReactNativeFeatureFlagsCxxInterop::fixDifferentiatorParentTagForUnflattenCase),
-      makeNativeMethod(
-        "fixFindShadowNodeByTagRaceCondition",
-        JReactNativeFeatureFlagsCxxInterop::fixFindShadowNodeByTagRaceCondition),
       makeNativeMethod(
         "fixMappingOfEventPrioritiesBetweenFabricAndReact",
         JReactNativeFeatureFlagsCxxInterop::fixMappingOfEventPrioritiesBetweenFabricAndReact),

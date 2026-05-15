@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<2ea91689e8761dc57bc35975d1161839>>
+ * @generated SignedSource<<2a2318da48b2d84076bea7d5be491da5>>
  */
 
 /**
@@ -529,15 +529,6 @@ class ReactNativeFeatureFlagsDynamicProvider : public ReactNativeFeatureFlagsDef
     }
 
     return ReactNativeFeatureFlagsDefaults::fixDifferentiatorParentTagForUnflattenCase();
-  }
-
-  bool fixFindShadowNodeByTagRaceCondition() override {
-    auto value = values_["fixFindShadowNodeByTagRaceCondition"];
-    if (!value.isNull()) {
-      return value.getBool();
-    }
-
-    return ReactNativeFeatureFlagsDefaults::fixFindShadowNodeByTagRaceCondition();
   }
 
   bool fixMappingOfEventPrioritiesBetweenFabricAndReact() override {

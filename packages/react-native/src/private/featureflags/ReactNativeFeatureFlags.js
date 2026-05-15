@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<361b1ff3430ffad98aaf24bea3824208>>
+ * @generated SignedSource<<7bfc94d9e70103821d872c31927a7658>>
  * @flow strict
  * @noformat
  */
@@ -100,7 +100,6 @@ export type ReactNativeFeatureFlags = $ReadOnly<{
   enableVirtualViewContainerStateExperimental: Getter<boolean>,
   enableVirtualViewDebugFeatures: Getter<boolean>,
   fixDifferentiatorParentTagForUnflattenCase: Getter<boolean>,
-  fixFindShadowNodeByTagRaceCondition: Getter<boolean>,
   fixMappingOfEventPrioritiesBetweenFabricAndReact: Getter<boolean>,
   fixYogaFlexBasisFitContentInMainAxis: Getter<boolean>,
   fuseboxAssertSingleHostState: Getter<boolean>,
@@ -415,10 +414,6 @@ export const enableVirtualViewDebugFeatures: Getter<boolean> = createNativeFlagG
  * Fix incorrect parentTag passed as parentTagForUpdate in the unflatten-unflatten branch of calculateShadowViewMutationsFlattener, which causes UPDATE mutations to reference a parent being created in the same batch.
  */
 export const fixDifferentiatorParentTagForUnflattenCase: Getter<boolean> = createNativeFlagGetter('fixDifferentiatorParentTagForUnflattenCase', false);
-/**
- * Fix a use-after-free race condition in findShadowNodeByTag_DEPRECATED by using getCurrentRevision() instead of tryCommit() with a raw pointer.
- */
-export const fixFindShadowNodeByTagRaceCondition: Getter<boolean> = createNativeFlagGetter('fixFindShadowNodeByTagRaceCondition', false);
 /**
  * Uses the default event priority instead of the discreet event priority by default when dispatching events from Fabric to React.
  */

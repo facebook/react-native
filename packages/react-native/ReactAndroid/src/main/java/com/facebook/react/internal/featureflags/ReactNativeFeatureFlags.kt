@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<4342ccb696b4123b9d463a31c024b9bc>>
+ * @generated SignedSource<<794be726d31bf395558bb987d94c3205>>
  */
 
 /**
@@ -353,12 +353,6 @@ public object ReactNativeFeatureFlags {
    */
   @JvmStatic
   public fun fixDifferentiatorParentTagForUnflattenCase(): Boolean = accessor.fixDifferentiatorParentTagForUnflattenCase()
-
-  /**
-   * Fix a use-after-free race condition in findShadowNodeByTag_DEPRECATED by using getCurrentRevision() instead of tryCommit() with a raw pointer.
-   */
-  @JvmStatic
-  public fun fixFindShadowNodeByTagRaceCondition(): Boolean = accessor.fixFindShadowNodeByTagRaceCondition()
 
   /**
    * Uses the default event priority instead of the discreet event priority by default when dispatching events from Fabric to React.

@@ -11,8 +11,6 @@
 
 #include <gtest/gtest.h>
 #include <jsi/jsi.h>
-#include <react/featureflags/ReactNativeFeatureFlags.h>
-#include <react/featureflags/ReactNativeFeatureFlagsDefaults.h>
 #include <react/renderer/core/ShadowNodeFragment.h>
 #include <react/renderer/element/Element.h>
 #include <react/renderer/element/testUtils.h>
@@ -20,20 +18,9 @@
 
 namespace facebook::react {
 
-class FindShadowNodeByTagTestFeatureFlags
-    : public ReactNativeFeatureFlagsDefaults {
- public:
-  bool fixFindShadowNodeByTagRaceCondition() override {
-    return true;
-  }
-};
-
 class FindShadowNodeByTagTest : public ::testing::Test {
  public:
   FindShadowNodeByTagTest() {
-    ReactNativeFeatureFlags::override(
-        std::make_unique<FindShadowNodeByTagTestFeatureFlags>());
-
     contextContainer_ = std::make_shared<ContextContainer>();
 
     ComponentDescriptorProviderRegistry componentDescriptorProviderRegistry{};
@@ -66,7 +53,6 @@ class FindShadowNodeByTagTest : public ::testing::Test {
     if (!surfaceStopped_) {
       uiManager_->stopSurface(surfaceId_);
     }
-    ReactNativeFeatureFlags::dangerouslyReset();
   }
 
  protected:
@@ -165,43 +151,6 @@ TEST_F(FindShadowNodeByTagTest, FindExistingNode) {
 TEST_F(FindShadowNodeByTagTest, FindNonExistentNode) {
   auto found = uiManager_->findShadowNodeByTag_DEPRECATED(9999);
   EXPECT_EQ(found, nullptr);
-}
-
-TEST_F(
-    FindShadowNodeByTagTest,
-    RawPointerFromTryCommitDanglesAfterSurfaceStop) {
-  // Observe root lifetime via weak_ptr
-  std::weak_ptr<const RootShadowNode> weakRoot;
-  {
-    auto rev = shadowTreePtr_->getCurrentRevision();
-    weakRoot = rev.rootShadowNode;
-  }
-  ASSERT_FALSE(weakRoot.expired());
-
-  // Simulate the old (buggy) pattern: capture raw pointer via tryCommit.
-  // This is exactly what findShadowNodeByTag_DEPRECATED used to do.
-  const RootShadowNode* rawPtr = nullptr;
-  shadowTreePtr_->tryCommit(
-      [&](const RootShadowNode& oldRoot) {
-        rawPtr = &oldRoot;
-        return nullptr; // cancel commit
-      },
-      {});
-  ASSERT_NE(rawPtr, nullptr);
-  ASSERT_EQ(rawPtr, weakRoot.lock().get());
-
-  // Stop the surface — releases all internal references (ShadowTree's
-  // currentRevision_ and MountingCoordinator's baseRevision_)
-  {
-    auto tree = uiManager_->stopSurface(surfaceId_);
-    surfaceStopped_ = true;
-    // tree goes out of scope here, destroying ShadowTree + MountingCoordinator
-  }
-
-  // Old root is now destroyed. rawPtr is dangling.
-  EXPECT_TRUE(weakRoot.expired())
-      << "Old root should be destroyed after surface stop, "
-         "proving that the raw pointer captured from tryCommit is dangling";
 }
 
 TEST_F(FindShadowNodeByTagTest, SharedPtrFromRevisionSurvivesSurfaceStop) {

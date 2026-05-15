@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<69bfd288593aebd59355309a7777cd79>>
+ * @generated SignedSource<<4ec4c0d0f1055b2d39d8aa42d68c0a77>>
  * @flow strict
  * @noformat
  */
@@ -79,7 +79,6 @@ export interface Spec extends TurboModule {
   +enableVirtualViewContainerStateExperimental?: () => boolean;
   +enableVirtualViewDebugFeatures?: () => boolean;
   +fixDifferentiatorParentTagForUnflattenCase?: () => boolean;
-  +fixFindShadowNodeByTagRaceCondition?: () => boolean;
   +fixMappingOfEventPrioritiesBetweenFabricAndReact?: () => boolean;
   +fixYogaFlexBasisFitContentInMainAxis?: () => boolean;
   +fuseboxAssertSingleHostState?: () => boolean;
