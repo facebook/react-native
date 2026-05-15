@@ -5,3 +5,6 @@ autolinked/
 build/generated/ios/
 build/xcframeworks/
 .build/
+
+# SPM – auto-generated at build time (do not commit)
+build/generated/
