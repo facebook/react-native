@@ -183,7 +183,6 @@ re-runs of `react-native spm`.
 | 4 | Frameworks (link) |
 | 5 | Resources (copy) |
 | 6 | Build JS Bundle |
-| 7 | Copy Hermes Framework |
 
 Failures are non-fatal — the phase emits `warning:` and exits 0, so the
 existing autolinking may still produce a successful build.
