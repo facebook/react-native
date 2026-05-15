@@ -165,6 +165,31 @@ const spmCommand /*: Command */ = {
       description:
         'JS entry file relative to app root (default: package.json "main" or index.js).',
     },
+    {
+      name: '--project',
+      description:
+        '[clean] Also remove Package.swift and <App>-SPM.xcodeproj/.',
+    },
+    {
+      name: '--derivedData',
+      description:
+        "[clean] Also remove this app's DerivedData (~/Library/Developer/Xcode/DerivedData/<App>-SPM-*).",
+    },
+    {
+      name: '--cache',
+      description:
+        '[clean] Also remove the cached xcframework slot for the current resolved version.',
+    },
+    {
+      name: '--all',
+      description:
+        '[clean] Shorthand for --project --derivedData --cache.',
+    },
+    {
+      name: '--yes',
+      description:
+        '[clean] Skip the confirmation prompt for destructive scopes.',
+    },
     // Workaround for @react-native-community/cli: when any positional equals
     // "init" (including our `spm init` action), the CLI naively appends
     // `--platform-name <platform>` to argv. Accept and ignore it so commander
@@ -198,6 +223,11 @@ const spmCommand /*: Command */ = {
       ['skipDownload', '--skip-download'],
       ['forceDownload', '--force-download'],
       ['skipXcodeproj', '--skip-xcodeproj'],
+      ['project', '--project'],
+      ['derivedData', '--derived-data'],
+      ['cache', '--cache'],
+      ['all', '--all'],
+      ['yes', '--yes'],
     ];
     for (const [key, flag] of boolOpts) {
       if (args[key]) {

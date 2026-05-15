@@ -22,6 +22,36 @@ export type SetupArgs = {
   bundleIdentifier: string | null,
   productName: string | null,
   entryFile: string | null,
+  // `clean` action scoping flags. Default (none set) keeps current behavior:
+  // only the generated dirs inside appRoot are removed. Each opt-in extends
+  // the deletion list:
+  //   cleanProject     → also Package.swift + <App>-SPM.xcodeproj/
+  //   cleanDerivedData → also ~/Library/Developer/Xcode/DerivedData/<App>-SPM-*
+  //   cleanCache       → also the current cache slot under
+  //                      ~/Library/Caches/.../spm-artifacts/<slot>/<flavor>/
+  //   cleanAll         → enables all three at once
+  //   cleanYes         → skips the confirmation prompt for derived-data / cache
+  cleanProject: boolean,
+  cleanDerivedData: boolean,
+  cleanCache: boolean,
+  cleanAll: boolean,
+  cleanYes: boolean,
+};
+
+export type CleanOpts = {
+  project?: boolean,
+  derivedData?: boolean,
+  cache?: boolean,
+  // Absolute path to the cache slot to remove. Caller resolves this so the
+  // function stays I/O-pure and easily testable.
+  cacheSlotDir?: ?string,
+  // Override the derived-data root (only used by tests).
+  derivedDataRoot?: ?string,
+};
+
+export type CleanTarget = {
+  path: string,
+  label: string,
 };
 
 export type DownloadArgs = {

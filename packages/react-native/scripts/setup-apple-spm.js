@@ -10,7 +10,7 @@
 
 'use strict';
 
-/*:: import type {CliConfigJson, SetupArgs} from './spm/spm-types'; */
+/*:: import type {CleanOpts, CleanTarget, CliConfigJson, SetupArgs} from './spm/spm-types'; */
 
 /**
  * setup-apple-spm.js – Entry point for setting up Swift Package Manager support
@@ -83,7 +83,9 @@ const {
 } = require('./spm/spm-utils');
 const {execSync} = require('child_process');
 const fs = require('fs');
+const os = require('os');
 const path = require('path');
+const readline = require('readline');
 const yargs = require('yargs');
 
 const {log, warn: logError} = makeLogger('setup-apple-spm');
@@ -167,6 +169,37 @@ function parseArgs(argv /*: Array<string> */) /*: SetupArgs */ {
       describe:
         'JS entry file relative to app root (default: package.json "main" or index.js)',
     })
+    // Scoping flags for the `clean` action. No-op for other actions.
+    .option('project', {
+      type: 'boolean',
+      default: false,
+      describe:
+        '[clean] Also remove Package.swift and <App>-SPM.xcodeproj/',
+    })
+    .option('derived-data', {
+      type: 'boolean',
+      default: false,
+      describe:
+        "[clean] Also remove this app's Xcode DerivedData (~/Library/Developer/Xcode/DerivedData/<App>-SPM-*)",
+    })
+    .option('cache', {
+      type: 'boolean',
+      default: false,
+      describe:
+        '[clean] Also remove the cached xcframework slot for the current resolved version',
+    })
+    .option('all', {
+      type: 'boolean',
+      default: false,
+      describe:
+        '[clean] Shorthand for --project --derived-data --cache',
+    })
+    .option('yes', {
+      type: 'boolean',
+      default: false,
+      describe:
+        "[clean] Skip the confirmation prompt for destructive scopes (--derived-data, --cache, --all)",
+    })
     .usage(
       'Usage: $0 [action] [options]\n\nSets up Swift Package Manager support in a React Native app.',
     )
@@ -202,6 +235,11 @@ function parseArgs(argv /*: Array<string> */) /*: SetupArgs */ {
     bundleIdentifier: parsed['bundle-identifier'] ?? null,
     productName: parsed['product-name'] ?? null,
     entryFile: parsed['entry-file'] ?? null,
+    cleanProject: parsed.project,
+    cleanDerivedData: parsed['derived-data'],
+    cleanCache: parsed.cache,
+    cleanAll: parsed.all,
+    cleanYes: parsed.yes,
   };
 }
 
@@ -243,22 +281,147 @@ function ensureGitignoreSpmEntries(appRoot /*: string */) {
   log(`Updated .gitignore with SPM entries: ${missing.join(', ')}`);
 }
 
-function cleanGeneratedState(appRoot /*: string */) {
-  const dirsToClean = [
-    path.join(appRoot, 'build', 'xcframeworks'),
-    path.join(appRoot, 'build', 'generated'),
-    // Legacy location (pre-build/generated/autolinking move) — remove
-    // when present so old workspaces upgrade cleanly.
-    path.join(appRoot, 'autolinked'),
-    path.join(appRoot, '.build'),
+/**
+ * Pure: enumerates what `clean` should remove based on opts. No I/O beyond
+ * one readdirSync on appRoot (to discover `<App>-SPM.xcodeproj/` names) and
+ * a readdirSync on the DerivedData root when `derivedData` is requested.
+ * The caller filters out paths that don't exist before deleting.
+ */
+function gatherCleanTargets(
+  appRoot /*: string */,
+  opts /*:: ?: CleanOpts */ = {},
+) /*: Array<CleanTarget> */ {
+  const targets /*: Array<CleanTarget> */ = [];
+
+  // Always: the generated dirs inside appRoot (current "clean" behavior).
+  const localGenerated = [
+    {
+      path: path.join(appRoot, 'build', 'xcframeworks'),
+      label: 'build/xcframeworks/',
+    },
+    {
+      path: path.join(appRoot, 'build', 'generated'),
+      label: 'build/generated/',
+    },
+    // Legacy location (pre-build/generated/autolinking move) — remove when
+    // present so old workspaces upgrade cleanly.
+    {path: path.join(appRoot, 'autolinked'), label: 'autolinked/ (legacy)'},
+    {path: path.join(appRoot, '.build'), label: '.build/'},
   ];
-  log('Cleaning SPM generated directories...');
-  for (const dir of dirsToClean) {
-    if (fs.existsSync(dir)) {
-      fs.rmSync(dir, {recursive: true, force: true});
-      log(`  Removed ${path.relative(appRoot, dir)}/`);
+  targets.push(...localGenerated);
+
+  // Discover any `<App>-SPM.xcodeproj/` inside appRoot. Used by both
+  // `--project` (delete it) and `--derived-data` (derive App name from it).
+  const xcodeprojNames /*: Array<string> */ = [];
+  try {
+    const entries /*: Array<{name: string, isDirectory(): boolean}> */ =
+      // $FlowFixMe[incompatible-type] Dirent typing
+      fs.readdirSync(appRoot, {withFileTypes: true});
+    for (const entry of entries) {
+      if (entry.isDirectory() && entry.name.endsWith('-SPM.xcodeproj')) {
+        xcodeprojNames.push(entry.name);
+      }
+    }
+  } catch {
+    // appRoot may not exist or be readable — leave list empty
+  }
+
+  if (opts.project === true) {
+    targets.push({
+      path: path.join(appRoot, 'Package.swift'),
+      label: 'Package.swift',
+    });
+    for (const name of xcodeprojNames) {
+      targets.push({path: path.join(appRoot, name), label: `${name}/`});
     }
   }
+
+  if (opts.derivedData === true) {
+    const derivedRoot =
+      opts.derivedDataRoot ??
+      path.join(os.homedir(), 'Library', 'Developer', 'Xcode', 'DerivedData');
+    // App-name prefixes to match against DerivedData entries. Derived from
+    // any *-SPM.xcodeproj in appRoot. If none exists, skip (we can't know
+    // which DerivedData entries belong to this app).
+    const appNames = xcodeprojNames.map(n => n.replace(/-SPM\.xcodeproj$/, ''));
+    if (appNames.length > 0) {
+      try {
+        const ddEntries /*: Array<{name: string, isDirectory(): boolean}> */ =
+          // $FlowFixMe[incompatible-type] Dirent typing
+          fs.readdirSync(derivedRoot, {withFileTypes: true});
+        for (const entry of ddEntries) {
+          if (!entry.isDirectory()) continue;
+          for (const appName of appNames) {
+            if (entry.name.startsWith(`${appName}-SPM-`)) {
+              targets.push({
+                path: path.join(derivedRoot, entry.name),
+                label: `~/Library/Developer/Xcode/DerivedData/${entry.name}/`,
+              });
+            }
+          }
+        }
+      } catch {
+        // DerivedData dir may not exist — that's fine
+      }
+    }
+  }
+
+  if (opts.cache === true && opts.cacheSlotDir != null) {
+    targets.push({
+      path: opts.cacheSlotDir,
+      label: displayPath(opts.cacheSlotDir),
+    });
+  }
+
+  return targets;
+}
+
+function cleanGeneratedState(
+  appRoot /*: string */,
+  opts /*:: ?: CleanOpts */ = {},
+) /*: void */ {
+  const targets = gatherCleanTargets(appRoot, opts);
+  const existing = targets.filter(t => fs.existsSync(t.path));
+  if (existing.length === 0) {
+    log('Nothing to clean.');
+    return;
+  }
+  log(`Cleaning ${existing.length} path(s)...`);
+  for (const target of existing) {
+    fs.rmSync(target.path, {recursive: true, force: true});
+    log(`  Removed ${target.label}`);
+  }
+}
+
+/**
+ * Prompts the user before running destructive scopes that touch state
+ * outside `appRoot` (DerivedData, the user-global xcframework cache).
+ * `--yes` skips the prompt; non-TTY stdin also auto-confirms so CI doesn't
+ * hang.
+ */
+function confirmDestructive(
+  targets /*: Array<CleanTarget> */,
+) /*: Promise<boolean> */ {
+  // $FlowFixMe[prop-missing] process.stdin.isTTY not in Flow stubs
+  if (process.stdin.isTTY !== true) {
+    return Promise.resolve(true);
+  }
+  log('');
+  log('About to remove:');
+  for (const t of targets) {
+    log(`  - ${t.label}`);
+  }
+  log('');
+  return new Promise(resolve => {
+    const rl = readline.createInterface({
+      input: process.stdin,
+      output: process.stdout,
+    });
+    rl.question('Proceed? [y/N] ', answer => {
+      rl.close();
+      resolve(answer.trim().toLowerCase() === 'y');
+    });
+  });
 }
 
 function resolveAction(
@@ -269,6 +432,55 @@ function resolveAction(
     return requestedAction;
   }
   return 'update';
+}
+
+/**
+ * Detects the JS-root-vs-ios-dir mismatch that produces silently-broken
+ * builds for standard RN apps. The community CLI writes
+ * `autolinking.json` under `<project.ios.sourceDir>/build/generated/autolinking/`
+ * (i.e. `<projectRoot>/ios/...`), while every SPM script anchors its
+ * inputs/outputs on `process.cwd()`. Running from the JS root therefore
+ * (a) writes outputs at `<projectRoot>/build/...` — away from the iOS
+ * project, and (b) makes the autolinker miss `autolinking.json` and
+ * silently skip every npm native dep. The build "succeeds" but anything
+ * touching a native module crashes at runtime.
+ *
+ * Returns null when the cwd is fine, or a string describing the problem
+ * when the user should `cd` into `ios/`.
+ */
+function describeRnRootMismatch(
+  appRoot /*: string */,
+  projectRoot /*: string */,
+) /*: string | null */ {
+  // Only relevant when cwd === projectRoot (i.e. user is at the JS root
+  // of their RN app). If they've already cd'd into a subdir, projectRoot
+  // walks up to find package.json and the two paths differ — leave alone.
+  if (path.resolve(appRoot) !== path.resolve(projectRoot)) {
+    return null;
+  }
+  // Standard RN layout has an `ios/` subdir holding the native project.
+  // Without it (e.g. rn-tester's flat layout), no mismatch to flag.
+  const iosSubdir = path.join(projectRoot, 'ios');
+  let isDir = false;
+  try {
+    isDir = fs.statSync(iosSubdir).isDirectory();
+  } catch {
+    return null;
+  }
+  if (!isDir) {
+    return null;
+  }
+  return (
+    `Detected standard RN layout: package.json at ${displayPath(projectRoot)}, ` +
+    `iOS project at ${displayPath(iosSubdir)}.\n\n` +
+    `Please run from the ios/ subdirectory:\n\n` +
+    `  cd ios && npx react-native spm <action>\n\n` +
+    `Running from the JS root would write SPM artifacts at the wrong location and ` +
+    `the autolinker would silently skip every npm native dependency (the community ` +
+    `CLI writes autolinking.json under <project>/ios/build/generated/autolinking/, ` +
+    `but this script would read it from <project>/build/generated/autolinking/). ` +
+    `The build would succeed but native modules would fail at runtime.`
+  );
 }
 
 function loadAutolinkingConfig(
@@ -630,9 +842,57 @@ async function main(argv /*:: ?: Array<string> */) /*: Promise<void> */ {
     log(`Project root (package.json): ${displayPath(projectRoot)}`);
   }
 
+  const mismatch = describeRnRootMismatch(appRoot, projectRoot);
+  if (mismatch != null) {
+    logError(mismatch);
+    process.exitCode = 1;
+    return;
+  }
+
   if (action === 'clean') {
-    cleanGeneratedState(appRoot);
-    log('SPM generated state cleaned.');
+    const wantProject = args.cleanProject || args.cleanAll;
+    const wantDerivedData = args.cleanDerivedData || args.cleanAll;
+    const wantCache = args.cleanCache || args.cleanAll;
+    const cleanOpts /*: CleanOpts */ = {
+      project: wantProject,
+      derivedData: wantDerivedData,
+      cache: wantCache,
+    };
+
+    // Resolve cache slot path only when --cache (or --all) is requested.
+    // Falls back silently if we can't determine a version — clean just
+    // skips the cache target instead of crashing.
+    if (wantCache) {
+      try {
+        const reactNativeRoot = path.resolve(__dirname, '..');
+        const rawVersion = args.version ?? determineVersion(args, reactNativeRoot);
+        const slotVersion = await resolveCacheSlotVersion(rawVersion);
+        cleanOpts.cacheSlotDir = defaultCacheDir(slotVersion, args.flavor);
+      } catch (e) {
+        logError(
+          `Could not resolve cache slot for --cache: ${e.message}. Skipping cache cleanup.`,
+        );
+      }
+    }
+
+    // Destructive scopes (DerivedData / cache) touch state outside appRoot.
+    // Ask for confirmation unless --yes is passed or stdin isn't a TTY.
+    const isDestructive = wantDerivedData || wantCache;
+    if (isDestructive && !args.cleanYes) {
+      const targets = gatherCleanTargets(appRoot, cleanOpts).filter(t =>
+        fs.existsSync(t.path),
+      );
+      if (targets.length > 0) {
+        const proceed = await confirmDestructive(targets);
+        if (!proceed) {
+          log('Aborted.');
+          return;
+        }
+      }
+    }
+
+    cleanGeneratedState(appRoot, cleanOpts);
+    log('SPM cleanup complete.');
     return;
   }
 
@@ -751,4 +1011,9 @@ if (require.main === module) {
   void main();
 }
 
-module.exports = {main};
+module.exports = {
+  main,
+  cleanGeneratedState,
+  gatherCleanTargets,
+  describeRnRootMismatch,
+};
