@@ -62,6 +62,11 @@ class JSI_EXPORT ObjCTurboModule : public TurboModule {
 
   ObjCTurboModule(const InitParams &params);
 
+  virtual bool isInteropModule() const
+  {
+    return false;
+  }
+
   jsi::Value invokeObjCMethod(
       jsi::Runtime &runtime,
       TurboModuleMethodValueKind returnType,

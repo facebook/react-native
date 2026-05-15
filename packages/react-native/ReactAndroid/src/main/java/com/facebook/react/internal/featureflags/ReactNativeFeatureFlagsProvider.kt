@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<bcc599e04e3672d4bff293e267b3efa2>>
+ * @generated SignedSource<<ccd35df7079700d8e7dc95e8fac53039>>
  */
 
 /**
@@ -112,6 +112,8 @@ public interface ReactNativeFeatureFlagsProvider {
   @DoNotStrip public fun enableSchedulerDelegateInvalidation(): Boolean
 
   @DoNotStrip public fun enableSwiftUIBasedFilters(): Boolean
+
+  @DoNotStrip public fun enableSyncVoidMethods(): Boolean
 
   @DoNotStrip public fun enableViewCulling(): Boolean
 

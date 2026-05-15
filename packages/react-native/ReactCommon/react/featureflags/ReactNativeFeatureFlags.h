@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<771a335070649f38cb559a95d80947aa>>
+ * @generated SignedSource<<7d77e761aea48d71ac2f19195bbedced>>
  */
 
 /**
@@ -263,6 +263,11 @@ class ReactNativeFeatureFlags {
    * When enabled, it will use SwiftUI for filter effects like blur on iOS.
    */
   RN_EXPORT static bool enableSwiftUIBasedFilters();
+
+  /**
+   * When enabled, TurboModule methods with void return type will be invoked synchronously on the JS thread instead of being dispatched asynchronously. Only applies to pure TurboModules, not interop modules.
+   */
+  RN_EXPORT static bool enableSyncVoidMethods();
 
   /**
    * Enables View Culling: as soon as a view goes off screen, it can be reused anywhere in the UI and pieced together with other items to create new UI elements.

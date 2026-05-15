@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<9d07e8adeee69583b788069649306d8e>>
+ * @generated SignedSource<<9481147f7c9af5ba0c2c3c3f609f7050>>
  */
 
 /**
@@ -69,6 +69,7 @@ internal class ReactNativeFeatureFlagsLocalAccessor : ReactNativeFeatureFlagsAcc
   private var enablePropsUpdateReconciliationAndroidCache: Boolean? = null
   private var enableSchedulerDelegateInvalidationCache: Boolean? = null
   private var enableSwiftUIBasedFiltersCache: Boolean? = null
+  private var enableSyncVoidMethodsCache: Boolean? = null
   private var enableViewCullingCache: Boolean? = null
   private var enableViewRecyclingCache: Boolean? = null
   private var enableViewRecyclingForImageCache: Boolean? = null
@@ -563,6 +564,16 @@ internal class ReactNativeFeatureFlagsLocalAccessor : ReactNativeFeatureFlagsAcc
       cached = currentProvider.enableSwiftUIBasedFilters()
       accessedFeatureFlags.add("enableSwiftUIBasedFilters")
       enableSwiftUIBasedFiltersCache = cached
+    }
+    return cached
+  }
+
+  override fun enableSyncVoidMethods(): Boolean {
+    var cached = enableSyncVoidMethodsCache
+    if (cached == null) {
+      cached = currentProvider.enableSyncVoidMethods()
+      accessedFeatureFlags.add("enableSyncVoidMethods")
+      enableSyncVoidMethodsCache = cached
     }
     return cached
   }

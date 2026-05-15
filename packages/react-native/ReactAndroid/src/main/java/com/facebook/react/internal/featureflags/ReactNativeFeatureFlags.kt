@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<4342ccb696b4123b9d463a31c024b9bc>>
+ * @generated SignedSource<<4b2133f0c7c9b0a7ef37e9b928faad64>>
  */
 
 /**
@@ -299,6 +299,12 @@ public object ReactNativeFeatureFlags {
    */
   @JvmStatic
   public fun enableSwiftUIBasedFilters(): Boolean = accessor.enableSwiftUIBasedFilters()
+
+  /**
+   * When enabled, TurboModule methods with void return type will be invoked synchronously on the JS thread instead of being dispatched asynchronously. Only applies to pure TurboModules, not interop modules.
+   */
+  @JvmStatic
+  public fun enableSyncVoidMethods(): Boolean = accessor.enableSyncVoidMethods()
 
   /**
    * Enables View Culling: as soon as a view goes off screen, it can be reused anywhere in the UI and pieced together with other items to create new UI elements.

@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<7be26fb138e59ef3dc34cec13d3813c4>>
+ * @generated SignedSource<<4cdbc660e72d8fc629a5469ee62407e1>>
  */
 
 /**
@@ -204,6 +204,10 @@ class ReactNativeFeatureFlagsDefaults : public ReactNativeFeatureFlagsProvider {
   }
 
   bool enableSwiftUIBasedFilters() override {
+    return false;
+  }
+
+  bool enableSyncVoidMethods() override {
     return false;
   }
 

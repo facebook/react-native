@@ -525,6 +525,17 @@ const definitions: FeatureFlagDefinitions = {
       },
       ossReleaseStage: 'canary',
     },
+    enableSyncVoidMethods: {
+      defaultValue: false,
+      metadata: {
+        dateAdded: '2026-05-07',
+        description:
+          'When enabled, TurboModule methods with void return type will be invoked synchronously on the JS thread instead of being dispatched asynchronously. Only applies to pure TurboModules, not interop modules.',
+        expectedReleaseValue: true,
+        purpose: 'experimentation',
+      },
+      ossReleaseStage: 'none',
+    },
     enableViewCulling: {
       defaultValue: false,
       metadata: {

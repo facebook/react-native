@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<361b1ff3430ffad98aaf24bea3824208>>
+ * @generated SignedSource<<3d79b833c54b48e0915077071619f791>>
  * @flow strict
  * @noformat
  */
@@ -91,6 +91,7 @@ export type ReactNativeFeatureFlags = $ReadOnly<{
   enablePropsUpdateReconciliationAndroid: Getter<boolean>,
   enableSchedulerDelegateInvalidation: Getter<boolean>,
   enableSwiftUIBasedFilters: Getter<boolean>,
+  enableSyncVoidMethods: Getter<boolean>,
   enableViewCulling: Getter<boolean>,
   enableViewRecycling: Getter<boolean>,
   enableViewRecyclingForImage: Getter<boolean>,
@@ -379,6 +380,10 @@ export const enableSchedulerDelegateInvalidation: Getter<boolean> = createNative
  * When enabled, it will use SwiftUI for filter effects like blur on iOS.
  */
 export const enableSwiftUIBasedFilters: Getter<boolean> = createNativeFlagGetter('enableSwiftUIBasedFilters', false);
+/**
+ * When enabled, TurboModule methods with void return type will be invoked synchronously on the JS thread instead of being dispatched asynchronously. Only applies to pure TurboModules, not interop modules.
+ */
+export const enableSyncVoidMethods: Getter<boolean> = createNativeFlagGetter('enableSyncVoidMethods', false);
 /**
  * Enables View Culling: as soon as a view goes off screen, it can be reused anywhere in the UI and pieced together with other items to create new UI elements.
  */

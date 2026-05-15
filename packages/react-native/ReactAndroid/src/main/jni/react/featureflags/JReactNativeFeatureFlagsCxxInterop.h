@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<aacbc520b40625dbdba328590cc78112>>
+ * @generated SignedSource<<ea2ed97e3e835c1fc96dd4d50daef879>>
  */
 
 /**
@@ -163,6 +163,9 @@ class JReactNativeFeatureFlagsCxxInterop
     facebook::jni::alias_ref<JReactNativeFeatureFlagsCxxInterop>);
 
   static bool enableSwiftUIBasedFilters(
+    facebook::jni::alias_ref<JReactNativeFeatureFlagsCxxInterop>);
+
+  static bool enableSyncVoidMethods(
     facebook::jni::alias_ref<JReactNativeFeatureFlagsCxxInterop>);
 
   static bool enableViewCulling(

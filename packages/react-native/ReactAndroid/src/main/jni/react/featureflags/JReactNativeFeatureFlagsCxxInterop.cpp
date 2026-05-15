@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<32c8c18771d6690f50d60dbc8e3d07e2>>
+ * @generated SignedSource<<f8fe31da669d498efb3d3b580ee57853>>
  */
 
 /**
@@ -306,6 +306,12 @@ class ReactNativeFeatureFlagsJavaProvider
   bool enableSwiftUIBasedFilters() override {
     static const auto method =
         getReactNativeFeatureFlagsProviderJavaClass()->getMethod<jboolean()>("enableSwiftUIBasedFilters");
+    return method(javaProvider_);
+  }
+
+  bool enableSyncVoidMethods() override {
+    static const auto method =
+        getReactNativeFeatureFlagsProviderJavaClass()->getMethod<jboolean()>("enableSyncVoidMethods");
     return method(javaProvider_);
   }
 
@@ -820,6 +826,11 @@ bool JReactNativeFeatureFlagsCxxInterop::enableSwiftUIBasedFilters(
   return ReactNativeFeatureFlags::enableSwiftUIBasedFilters();
 }
 
+bool JReactNativeFeatureFlagsCxxInterop::enableSyncVoidMethods(
+    facebook::jni::alias_ref<JReactNativeFeatureFlagsCxxInterop> /*unused*/) {
+  return ReactNativeFeatureFlags::enableSyncVoidMethods();
+}
+
 bool JReactNativeFeatureFlagsCxxInterop::enableViewCulling(
     facebook::jni::alias_ref<JReactNativeFeatureFlagsCxxInterop> /*unused*/) {
   return ReactNativeFeatureFlags::enableViewCulling();
@@ -1221,6 +1232,9 @@ void JReactNativeFeatureFlagsCxxInterop::registerNatives() {
       makeNativeMethod(
         "enableSwiftUIBasedFilters",
         JReactNativeFeatureFlagsCxxInterop::enableSwiftUIBasedFilters),
+      makeNativeMethod(
+        "enableSyncVoidMethods",
+        JReactNativeFeatureFlagsCxxInterop::enableSyncVoidMethods),
       makeNativeMethod(
         "enableViewCulling",
         JReactNativeFeatureFlagsCxxInterop::enableViewCulling),

@@ -3002,6 +3002,7 @@ class facebook::react::JWritableMapBuffer : public facebook::jni::JavaClass<face
 class facebook::react::JavaInteropTurboModule : public facebook::react::JavaTurboModule {
   protected virtual facebook::jsi::Value create(facebook::jsi::Runtime& runtime, const facebook::jsi::PropNameID& propName) override;
   public JavaInteropTurboModule(const facebook::react::JavaTurboModule::InitParams& params, const std::vector<facebook::react::JavaInteropTurboModule::MethodDescriptor>& methodDescriptors);
+  public virtual bool isInteropModule() const override;
   public virtual std::vector<facebook::jsi::PropNameID> getPropertyNames(facebook::jsi::Runtime& runtime) override;
 }
 
@@ -3044,6 +3045,7 @@ class facebook::react::JavaTurboModule : public facebook::react::TurboModule {
   protected void setEventEmitterCallback(jni::alias_ref<jobject>);
   public JavaTurboModule(const facebook::react::JavaTurboModule::InitParams& params);
   public facebook::jsi::Value invokeJavaMethod(facebook::jsi::Runtime& runtime, facebook::react::TurboModuleMethodValueKind valueKind, const std::string& methodName, const std::string& methodSignature, const facebook::jsi::Value* args, size_t argCount, jmethodID& cachedMethodID);
+  public virtual bool isInteropModule() const;
   public virtual ~JavaTurboModule();
 }
 
