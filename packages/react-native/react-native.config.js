@@ -117,7 +117,7 @@ const spmCommand /*: Command */ = {
   description:
     'Set up or maintain Swift Package Manager support for the iOS/macOS app. ' +
     'Actions: init, update, sync, clean, codegen, download. ' +
-    'With no action: runs init if Package.swift is missing, otherwise update.',
+    'With no action: defaults to update.',
   options: [
     {
       name: '--version <string>',
@@ -165,10 +165,18 @@ const spmCommand /*: Command */ = {
       description:
         'JS entry file relative to app root (default: package.json "main" or index.js).',
     },
+    // Workaround for @react-native-community/cli: when any positional equals
+    // "init" (including our `spm init` action), the CLI naively appends
+    // `--platform-name <platform>` to argv. Accept and ignore it so commander
+    // does not reject the unknown option.
+    {
+      name: '--platform-name <string>',
+      description: '(ignored — CLI compatibility shim for `spm init`)',
+    },
   ],
   func: async (argv, _config, args) => {
     const passthrough /*: Array<string> */ = [];
-    if (argv.length > 0) {
+    if (argv[0] != null) {
       passthrough.push(argv[0]);
     }
     const stringOpts /*: Array<[string, string]> */ = [

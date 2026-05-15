@@ -32,7 +32,7 @@
  *   codegen                    Run only codegen and install the SPM template.
  *   download                   Download/check xcframework artifacts only.
  *
- * With no action: runs init if Package.swift is missing, otherwise update.
+ * With no action: defaults to update.
  *
  * Options:
  *   --version <ver>             React Native version (e.g. 0.80.0). Defaults to
@@ -109,7 +109,7 @@ function parseArgs(argv /*: Array<string> */) /*: SetupArgs */ {
       type: 'string',
       choices: Array.from(VALID_ACTIONS),
       describe:
-        'Action to run: init, update, sync, clean, codegen, or download. Defaults to init when Package.swift is missing, otherwise update.',
+        'Action to run: init, update, sync, clean, codegen, or download. Defaults to update.',
     })
     .option('version', {
       type: 'string',
@@ -264,7 +264,7 @@ function resolveAction(
   if (requestedAction != null) {
     return requestedAction;
   }
-  return fs.existsSync(path.join(appRoot, 'Package.swift')) ? 'update' : 'init';
+  return 'update';
 }
 
 function loadAutolinkingConfig(

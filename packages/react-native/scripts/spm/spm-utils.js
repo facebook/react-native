@@ -191,14 +191,15 @@ function resolveReactNativeRoot(
 
 /**
  * Resolves the VFS overlay for React.xcframework and writes it to
- * build/xcframeworks/React-VFS.yaml. Prefers the template embedded in the
- * xcframework; falls back to generating one from podspecs.
+ * build/xcframeworks/React-VFS.yaml. Substitutes the ${ROOT_PATH}
+ * placeholder in the template (produced at xcframework build time by
+ * scripts/ios-prebuild/vfs.js) with the xcframework's on-disk path.
  *
- * Returns true if the overlay was written, false if xcframework not found.
+ * Returns true if the overlay was written, false otherwise.
  */
 function resolveAndWriteVFSOverlay(
   appRoot /*: string */,
-  reactNativeRoot /*: string */,
+  _reactNativeRoot /*: string */,
   logger /*: {log: (msg: string) => void} */ = {log() {}},
 ) /*: boolean */ {
   const xcfwPath = path.join(
@@ -212,29 +213,25 @@ function resolveAndWriteVFSOverlay(
   }
   const realXcfwPath = fs.realpathSync(xcfwPath);
   const vfsTemplatePath = path.join(realXcfwPath, 'React-VFS-template.yaml');
+  if (!fs.existsSync(vfsTemplatePath)) {
+    logger.log(
+      'No React-VFS-template.yaml in React.xcframework — skipping VFS overlay',
+    );
+    return false;
+  }
   const resolvedPath = path.join(
     appRoot,
     'build',
     'xcframeworks',
     'React-VFS.yaml',
   );
-
-  if (fs.existsSync(vfsTemplatePath)) {
-    const {resolveVFSOverlay} = require('../ios-prebuild/vfs');
-    const template = fs.readFileSync(vfsTemplatePath, 'utf8');
-    const resolved = resolveVFSOverlay(template, realXcfwPath);
-    fs.writeFileSync(resolvedPath, resolved, 'utf8');
-    logger.log('Resolved VFS overlay (from template)');
-  } else {
-    const {
-      createVFSOverlay,
-      resolveVFSOverlay,
-    } = require('../ios-prebuild/vfs');
-    const template = createVFSOverlay(reactNativeRoot);
-    const resolved = resolveVFSOverlay(template, realXcfwPath);
-    fs.writeFileSync(resolvedPath, resolved, 'utf8');
-    logger.log('Generated VFS overlay (from podspecs)');
-  }
+  const template = fs.readFileSync(vfsTemplatePath, 'utf8');
+  fs.writeFileSync(
+    resolvedPath,
+    template.split('${ROOT_PATH}').join(realXcfwPath),
+    'utf8',
+  );
+  logger.log('Resolved VFS overlay (from template)');
   return true;
 }
 
