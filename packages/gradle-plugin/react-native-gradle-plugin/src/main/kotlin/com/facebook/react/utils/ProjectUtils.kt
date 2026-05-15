@@ -9,8 +9,6 @@ package com.facebook.react.utils
 
 import com.facebook.react.ReactExtension
 import com.facebook.react.model.ModelPackageJson
-import com.facebook.react.utils.KotlinStdlibCompatUtils.lowercaseCompat
-import com.facebook.react.utils.KotlinStdlibCompatUtils.toBooleanStrictOrNullCompat
 import com.facebook.react.utils.PropertyUtils.EDGE_TO_EDGE_ENABLED
 import com.facebook.react.utils.PropertyUtils.HERMES_ENABLED
 import com.facebook.react.utils.PropertyUtils.REACT_NATIVE_ARCHITECTURES
@@ -38,17 +36,13 @@ internal object ProjectUtils {
               } else {
                 SCOPED_HERMES_ENABLED
               }
-          project
-              .property(propertyString)
-              .toString()
-              .lowercaseCompat()
-              .toBooleanStrictOrNullCompat() ?: true
+          project.property(propertyString).toString().lowercase().toBooleanStrictOrNull() ?: true
         } else if (project.extensions.extraProperties.has("react")) {
           @Suppress("UNCHECKED_CAST")
           val reactMap = project.extensions.extraProperties.get("react") as? Map<String, Any?>
           when (val enableHermesKey = reactMap?.get("enableHermes")) {
             is Boolean -> enableHermesKey
-            is String -> enableHermesKey.lowercaseCompat().toBooleanStrictOrNullCompat() ?: true
+            is String -> enableHermesKey.lowercase().toBooleanStrictOrNull() ?: true
             else -> HERMES_FALLBACK
           }
         } else {
