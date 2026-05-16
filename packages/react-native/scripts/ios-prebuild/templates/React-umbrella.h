@@ -17,6 +17,9 @@
 #endif
 #endif
 
+// RCTDefines.h defines RCT_EXTERN, RCT_EXTERN_C_BEGIN/END, RCT_EXPORT_METHOD, etc.
+// Must be loaded first so its macros are visible to subsequent umbrella headers (e.g. RCTBridgeConstants.h).
+#import <React/RCTDefines.h>
 #import <React/CoreModulesPlugins.h>
 #import <React/FBXXHashUtils.h>
 #import <React/NSTextStorage+FontScaling.h>
@@ -81,7 +84,6 @@
 #import <React/RCTDebuggingOverlay.h>
 #import <React/RCTDebuggingOverlayManager.h>
 #import <React/RCTDecayAnimation.h>
-#import <React/RCTDefines.h>
 #import <React/RCTDevLoadingView.h>
 #import <React/RCTDevLoadingViewProtocol.h>
 #import <React/RCTDevLoadingViewSetEnabled.h>
