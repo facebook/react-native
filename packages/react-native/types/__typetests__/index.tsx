@@ -543,6 +543,8 @@ export class TouchableOpacityTest extends React.Component {
           accessibilityLabelledBy="my-label-text"
           aria-labelledby="my-label-text"
         />
+        <TouchableOpacity accessibilityRole="grid" />
+        <TouchableOpacity accessibilityRole="pager" />
         <TouchableOpacity
           // @ts-expect-error - expected boolean value
           focusable={1}
