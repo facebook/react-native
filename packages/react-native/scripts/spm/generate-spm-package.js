@@ -10,12 +10,11 @@
 
 'use strict';
 
-/*:: import type {GeneratePackageArgs, ScanResult, GeneratePackageOpts} from './spm-types'; */
+/*:: import type {GeneratePackageArgs} from './spm-types'; */
 
 /**
- * generate-spm-package.js – Generates the xcframeworks sub-package and
- * (optionally) an initial main Package.swift for a React Native app using
- * prebuilt XCFrameworks via Swift Package Manager.
+ * generate-spm-package.js – Generates the xcframeworks sub-package for a
+ * React Native app using prebuilt XCFrameworks via Swift Package Manager.
  *
  * Usage:
  *   node generate-spm-package.js [options]
@@ -30,11 +29,10 @@
  *   --target-name <name>         Main app target name (default: derived from app-name)
  *   --source-path <path>         Path to app source relative to app-root (default: auto-detected)
  *   --ios-version <ver>          Minimum iOS version (default: 15)
- *   --output <path>              Output path for Package.swift (default: app-root/Package.swift)
- *   --init                       Generate initial main Package.swift (for first-time setup)
  *
- * Without --init: only generates build/xcframeworks/Package.swift + symlinks.
- * With --init:    also generates a starter main Package.swift for the developer to commit.
+ * Generates build/xcframeworks/Package.swift + symlinks. The xcodeproj
+ * references this sub-package directly; no separate app-level Package.swift
+ * is needed.
  */
 
 const {
@@ -94,18 +92,8 @@ function parseArgs(argv /*: Array<string> */) /*: GeneratePackageArgs */ {
       default: '15',
       describe: 'Minimum iOS version',
     })
-    .option('output', {
-      type: 'string',
-      describe:
-        'Output path for Package.swift (default: app-root/Package.swift)',
-    })
-    .option('init', {
-      type: 'boolean',
-      default: false,
-      describe: 'Generate initial main Package.swift (for first-time setup)',
-    })
     .usage(
-      'Usage: $0 [options]\n\nGenerates the xcframeworks sub-package (and optionally initial Package.swift) for a React Native app using SPM.',
+      'Usage: $0 [options]\n\nGenerates the xcframeworks sub-package for a React Native app using SPM.',
     )
     .help()
     .parseSync();
@@ -120,8 +108,6 @@ function parseArgs(argv /*: Array<string> */) /*: GeneratePackageArgs */ {
     targetName: parsed['target-name'] ?? null,
     sourcePath: parsed['source-path'] ?? null,
     iosVersion: parsed['ios-version'],
-    output: parsed.output ?? null,
-    init: parsed.init,
   };
 }
 
@@ -148,8 +134,8 @@ function findSourcePath(
   // Scan for a directory that looks like an iOS source root
   // (contains .m, .mm, .swift, or .h files)
   try {
-    // $FlowFixMe[incompatible-type] Dirent.name is string|Buffer in Flow but always string here
     const entries /*: Array<{name: string, isDirectory(): boolean}> */ =
+      // $FlowFixMe[incompatible-type] Dirent.name is string|Buffer in Flow but always string here
       fs.readdirSync(appRoot, {withFileTypes: true});
     for (const entry of entries) {
       if (!entry.isDirectory()) continue;
@@ -171,50 +157,12 @@ function findSourcePath(
 }
 
 /**
- * Scans a source directory for Swift vs ObjC/C++ files.
- * Returns { swiftFiles: string[], hasObjC: boolean } where swiftFiles are
- * paths relative to sourceDir.
- *
- * SPM cannot compile a single target that contains both Swift and ObjC/ObjC++
- * files. When both are present the generator splits them into two targets:
- *   - <targetName>     - ObjC/C++ files, publicHeadersPath: "."
- *   - <targetName>Swift - Swift files only, depends on <targetName>
- */
-function scanSourceFiles(sourceDir /*: string */) /*: ScanResult */ {
-  const swiftFiles /*: Array<string> */ = [];
-  let hasObjC = false;
-
-  function walk(dir /*: string */, relBase /*: string */) /*: void */ {
-    if (!fs.existsSync(dir)) return;
-    // $FlowFixMe[incompatible-type] Dirent.name is string|Buffer in Flow but always string here
-    // $FlowFixMe[unclear-type] cast through any to coerce Dirent to simpler type
-    const dirEntries /*: Array<{name: string, isDirectory(): boolean}> */ =
-      fs.readdirSync(dir, {withFileTypes: true}) /*: any */;
-    for (const entry of dirEntries) {
-      if (entry.name.startsWith('.')) continue;
-      const full = path.join(dir, entry.name);
-      const rel = relBase ? `${relBase}/${entry.name}` : entry.name;
-      if (entry.isDirectory()) {
-        walk(full, rel);
-      } else if (entry.name.endsWith('.swift')) {
-        swiftFiles.push(rel);
-      } else if (/\.(m|mm|c|cpp)$/.test(entry.name)) {
-        hasObjC = true;
-      }
-    }
-  }
-
-  walk(sourceDir, '');
-  return {swiftFiles, hasObjC};
-}
-
-/**
  * Generates the Package.swift for the xcframeworks sub-package.
  *
- * When using local xcframeworks (from the cache), we put the binary targets in a
- * dedicated Package.swift at build/xcframeworks/. This keeps them relative to
- * their own package root and lets both the main Package.swift AND the codegen
- * Package.swift reference them as a named package dependency.
+ * When using local xcframeworks (from the cache), we put the binary targets in
+ * a dedicated Package.swift at build/xcframeworks/. The generated .xcodeproj
+ * references this sub-package via XCLocalSwiftPackageReference; the codegen
+ * Package.swift also imports it as a named package dependency.
  */
 function generateXCFrameworksPackageSwift(
   names /*: Array<string> */,
@@ -271,175 +219,6 @@ ${products}
     targets: [
 ${binaryTargets}
     ]
-)
-`;
-}
-
-/**
- * Generates an initial main Package.swift for the developer to commit.
- * This is a one-time generation; subsequent runs of setup-apple-spm.js
- * will NOT overwrite this file.
- */
-function generateInitialPackageSwift(
-  opts /*: {
-  appName: string,
-  targetName: string,
-  sourcePath: string,
-  iosVersion: string,
-  swiftFiles: Array<string>,
-  hasObjC: boolean,
-  appRoot: string,
-} */,
-) /*: string */ {
-  const {
-    appName,
-    targetName,
-    sourcePath,
-    iosVersion,
-    swiftFiles,
-    hasObjC,
-    appRoot,
-  } = opts;
-
-  const isMixed = hasObjC && swiftFiles.length > 0;
-
-  // Resources and app entry point are handled by the .xcodeproj, not by SPM.
-  // Exclude them so SPM doesn't try to process them.
-  // main.m/main.swift must be excluded because SPM treats them as executable
-  // entry points, which is incompatible with .library products.
-  const sourceDir = path.join(appRoot, sourcePath);
-  const resourceExcludes = [
-    'main.m',
-    'main.swift',
-    'Info.plist',
-    'Images.xcassets',
-    'LaunchScreen.storyboard',
-  ].filter(f => fs.existsSync(path.join(sourceDir, f)));
-
-  const spmDeps = `dependencies: [
-                .product(name: "ReactNative", package: "ReactNative"),
-                .product(name: "ReactNativeDependencies", package: "ReactNative"),
-                .product(name: "hermes-engine", package: "ReactNative"),
-                .product(name: "Autolinked", package: "Autolinked"),
-                .product(name: "ReactCodegen", package: "React-GeneratedCode"),
-                .product(name: "ReactAppDependencyProvider", package: "React-GeneratedCode"),
-            ],`;
-
-  const formatExclude = (files /*: Array<string> */) =>
-    files.length > 0
-      ? `\n            exclude: [${files.map(f => `"${f}"`).join(', ')}],`
-      : '';
-
-  let targetsSection;
-  if (isMixed) {
-    const swiftSources = swiftFiles.map(f => `"${f}"`).join(', ');
-
-    targetsSection = `        .target(
-            name: "${targetName}",
-            ${spmDeps}
-            path: "${sourcePath}",${formatExclude([...swiftFiles, ...resourceExcludes])}
-            publicHeadersPath: ".",
-            cSettings: [.unsafeFlags(cFlags)],
-            cxxSettings: [.unsafeFlags(cxxFlags)]
-        ),
-        // Swift sources in a separate target (SPM does not allow mixed-language targets)
-        .target(
-            name: "${targetName}Swift",
-            dependencies: ["${targetName}"],
-            path: "${sourcePath}",
-            sources: [${swiftSources}],
-            swiftSettings: [.unsafeFlags(swiftFlags)]
-        ),`;
-  } else {
-    targetsSection = `        .target(
-            name: "${targetName}",
-            ${spmDeps}
-            path: "${sourcePath}",${formatExclude(resourceExcludes)}
-            cSettings: [.unsafeFlags(cFlags)],
-            cxxSettings: [.unsafeFlags(cxxFlags)],
-            swiftSettings: [.unsafeFlags(swiftFlags)]
-        ),`;
-  }
-
-  // Build products list: expose all targets as libraries so the .xcodeproj can link them
-  const targetNames = isMixed
-    ? [targetName, `${targetName}Swift`]
-    : [targetName];
-  const productsSection = targetNames
-    .map(t => `        .library(name: "${t}", targets: ["${t}"]),`)
-    .join('\n');
-
-  return `// swift-tools-version: 6.0
-import PackageDescription
-import Foundation
-
-let packageDir = URL(fileURLWithPath: #filePath).deletingLastPathComponent().path
-
-// Ensure stub sub-packages exist so SPM can resolve on fresh clones.
-// Overwritten by the auto-sync build phase on first build.
-do {
-    let fm = FileManager.default
-    let stubs: [(String, String)] = [
-        ("build/xcframeworks", """
-        // swift-tools-version: 5.9
-        import PackageDescription
-        let package = Package(name: "ReactNative", products: [
-            .library(name: "ReactNative", targets: ["ReactNativeStub"]),
-            .library(name: "ReactNativeDependencies", targets: ["ReactNativeStub"]),
-            .library(name: "hermes-engine", targets: ["ReactNativeStub"]),
-        ], targets: [.target(name: "ReactNativeStub", path: "_stub", sources: ["Stub.swift"])])
-        """),
-        ("build/generated/autolinking", """
-        // swift-tools-version: 5.9
-        import PackageDescription
-        let package = Package(name: "Autolinked", products: [
-            .library(name: "Autolinked", targets: ["AutolinkedStub"]),
-        ], targets: [.target(name: "AutolinkedStub", path: "_stub", sources: ["Stub.swift"])])
-        """),
-        ("build/generated/ios", """
-        // swift-tools-version: 5.9
-        import PackageDescription
-        let package = Package(name: "React-GeneratedCode", products: [
-            .library(name: "ReactCodegen", targets: ["ReactGeneratedCodeStub"]),
-            .library(name: "ReactAppDependencyProvider", targets: ["ReactGeneratedCodeStub"]),
-        ], targets: [.target(name: "ReactGeneratedCodeStub", path: "_stub", sources: ["Stub.swift"])])
-        """),
-    ]
-    for (dir, content) in stubs {
-        let pkgSwift = packageDir + "/" + dir + "/Package.swift"
-        if !fm.fileExists(atPath: pkgSwift) {
-            try? fm.createDirectory(atPath: packageDir + "/" + dir + "/_stub", withIntermediateDirectories: true)
-            try? content.write(toFile: pkgSwift, atomically: true, encoding: .utf8)
-            try? "// Placeholder".write(toFile: packageDir + "/" + dir + "/_stub/Stub.swift", atomically: true, encoding: .utf8)
-        }
-    }
-}
-
-let xcfwHeaders = URL(fileURLWithPath: packageDir + "/build/xcframeworks/React.xcframework")
-    .resolvingSymlinksInPath().path + "/Headers"
-let depsHeaders = URL(fileURLWithPath: packageDir + "/build/xcframeworks/ReactNativeDependencies.xcframework")
-    .resolvingSymlinksInPath().path + "/Headers"
-let vfsOverlay = packageDir + "/build/xcframeworks/React-VFS.yaml"
-
-let cFlags: [String] = ["-ivfsoverlay", vfsOverlay, "-I", xcfwHeaders]
-let cxxFlags: [String] = cFlags + ["-I", depsHeaders]
-let swiftFlags: [String] = ["-Xcc", "-ivfsoverlay", "-Xcc", vfsOverlay, "-Xcc", "-I", "-Xcc", xcfwHeaders]
-
-let package = Package(
-    name: "${appName}",
-    platforms: [.iOS(.v${iosVersion})],
-    products: [
-${productsSection}
-    ],
-    dependencies: [
-        .package(name: "Autolinked", path: "build/generated/autolinking"),
-        .package(name: "React-GeneratedCode", path: "build/generated/ios"),
-        .package(name: "ReactNative", path: "build/xcframeworks"),
-    ],
-    targets: [
-${targetsSection}
-    ],
-    cxxLanguageStandard: .cxx20
 )
 `;
 }
@@ -530,7 +309,10 @@ function main(argv /*:: ?: Array<string> */) /*: void */ {
     // Pass the absolute artifacts dir so the binary target paths reference the
     // current cache slot. When the slot changes (e.g. new nightly published),
     // Package.swift content changes — SPM/Xcode notice and re-copy the framework.
-    const xcfwPkgContent = generateXCFrameworksPackageSwift(names, artifactsDir);
+    const xcfwPkgContent = generateXCFrameworksPackageSwift(
+      names,
+      artifactsDir,
+    );
     const xcfwPkgPath = path.join(xcfwLinksDir, 'Package.swift');
     fs.writeFileSync(xcfwPkgPath, xcfwPkgContent, 'utf8');
     log(`Generated: ${path.relative(appRoot, xcfwPkgPath)}`);
@@ -544,37 +326,6 @@ function main(argv /*:: ?: Array<string> */) /*: void */ {
       log(`Auto-detected local xcframeworks: build/xcframeworks`);
     }
   }
-
-  if (args.init) {
-    const outputPath = args.output ?? path.join(appRoot, 'Package.swift');
-
-    const {swiftFiles, hasObjC} = scanSourceFiles(
-      path.join(appRoot, sourcePath),
-    );
-    if (swiftFiles.length > 0 && hasObjC) {
-      log(
-        `Mixed language sources detected – will generate split ObjC/Swift targets`,
-      );
-      log(`  Swift: [${swiftFiles.join(', ')}]`);
-    }
-
-    const content = generateInitialPackageSwift({
-      appName,
-      targetName,
-      sourcePath,
-      iosVersion: args.iosVersion,
-      swiftFiles,
-      hasObjC,
-      appRoot,
-    });
-
-    fs.mkdirSync(path.dirname(outputPath), {recursive: true});
-    fs.writeFileSync(outputPath, content, 'utf8');
-    log(
-      `Generated initial Package.swift: ${path.relative(appRoot, outputPath)}`,
-    );
-    log(`This file is yours to commit and customize.`);
-  }
 }
 
 if (require.main === module) {
@@ -584,7 +335,5 @@ if (require.main === module) {
 module.exports = {
   main,
   generateXCFrameworksPackageSwift,
-  generateInitialPackageSwift,
   findSourcePath,
-  scanSourceFiles,
 };

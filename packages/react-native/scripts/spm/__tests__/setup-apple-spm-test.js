@@ -12,6 +12,7 @@
 
 const {
   describeRnRootMismatch,
+  findExistingSpmXcodeproj,
   findLegacyXcodeproj,
   gatherCleanTargets,
   podfileNeedsPatch,
@@ -55,7 +56,7 @@ describe('gatherCleanTargets', () => {
     }
   });
 
-  it('--project adds Package.swift and any *-SPM.xcodeproj/ in appRoot', () => {
+  it('--project adds any *-SPM.xcodeproj/ in appRoot', () => {
     fs.mkdirSync(path.join(tempDir, 'MyApp-SPM.xcodeproj'));
     fs.mkdirSync(path.join(tempDir, 'Other-SPM.xcodeproj'));
     // A regular xcodeproj (not -SPM) should NOT be removed.
@@ -63,16 +64,17 @@ describe('gatherCleanTargets', () => {
 
     const result = gatherCleanTargets(tempDir, {project: true});
     const labels = result.map(t => t.label).sort();
-    expect(labels).toContain('Package.swift');
     expect(labels).toContain('MyApp-SPM.xcodeproj/');
     expect(labels).toContain('Other-SPM.xcodeproj/');
     expect(labels).not.toContain('Legacy.xcodeproj/');
   });
 
-  it('--project without any xcodeproj still includes Package.swift', () => {
+  it('--project without any xcodeproj is a no-op for the project scope', () => {
     const result = gatherCleanTargets(tempDir, {project: true});
     const labels = result.map(t => t.label);
-    expect(labels).toContain('Package.swift');
+    // Just the default generated targets — no Package.swift, no xcodeproj.
+    expect(labels.some(l => l.endsWith('.xcodeproj/'))).toBe(false);
+    expect(labels).not.toContain('Package.swift');
   });
 
   it('--derivedData removes only DerivedData entries that match a discovered *-SPM.xcodeproj prefix', () => {
@@ -131,9 +133,8 @@ describe('gatherCleanTargets', () => {
       cacheSlotDir: slot,
     });
     const labels = result.map(t => t.label);
-    // generated dirs (4) + Package.swift + xcodeproj + 1 DerivedData entry + 1 cache slot
-    expect(result.length).toBe(8);
-    expect(labels).toContain('Package.swift');
+    // generated dirs (4) + xcodeproj + 1 DerivedData entry + 1 cache slot
+    expect(result.length).toBe(7);
     expect(labels).toContain('MyApp-SPM.xcodeproj/');
     expect(labels.some(l => l.includes('MyApp-SPM-aaa'))).toBe(true);
     expect(result.some(t => t.path === slot)).toBe(true);
@@ -232,6 +233,49 @@ describe('findLegacyXcodeproj', () => {
   it('ignores .xcodeproj files (not directories) — defensive', () => {
     fs.writeFileSync(path.join(tempDir, 'NotAProject.xcodeproj'), '');
     expect(findLegacyXcodeproj(tempDir)).toBeNull();
+  });
+});
+
+// ---------------------------------------------------------------------------
+// findExistingSpmXcodeproj — drives the create-if-missing branch of
+// generateXcodeProject. The xcodeproj is committed to the repo and carries
+// signing/capabilities/build phases, so regenerating it unconditionally would
+// clobber Xcode-side edits. Returns the first `*-SPM.xcodeproj/` it finds at
+// the top level of appRoot, or null.
+// ---------------------------------------------------------------------------
+
+describe('findExistingSpmXcodeproj', () => {
+  let tempDir;
+
+  beforeEach(() => {
+    tempDir = fs.mkdtempSync(path.join(os.tmpdir(), 'spm-existing-xcodeproj-'));
+  });
+
+  afterEach(() => {
+    fs.rmSync(tempDir, {recursive: true, force: true});
+  });
+
+  it('returns the absolute path to the *-SPM.xcodeproj when present', () => {
+    fs.mkdirSync(path.join(tempDir, 'MyApp-SPM.xcodeproj'));
+    expect(findExistingSpmXcodeproj(tempDir)).toBe(
+      path.join(tempDir, 'MyApp-SPM.xcodeproj'),
+    );
+  });
+
+  it('returns null when no -SPM.xcodeproj exists (only legacy)', () => {
+    fs.mkdirSync(path.join(tempDir, 'MyApp.xcodeproj'));
+    expect(findExistingSpmXcodeproj(tempDir)).toBeNull();
+  });
+
+  it('returns null when appRoot does not exist (e.g. first init)', () => {
+    expect(
+      findExistingSpmXcodeproj(path.join(tempDir, 'no-such-dir')),
+    ).toBeNull();
+  });
+
+  it('ignores *.xcodeproj entries that are files, not directories', () => {
+    fs.writeFileSync(path.join(tempDir, 'Fake-SPM.xcodeproj'), '');
+    expect(findExistingSpmXcodeproj(tempDir)).toBeNull();
   });
 });
 

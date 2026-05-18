@@ -27,18 +27,19 @@ export type SetupArgs = {
   skipDownload: boolean,
   forceDownload: boolean,
   skipXcodeproj: boolean,
+  forceXcodeproj: boolean,
   bundleIdentifier: string | null,
   productName: string | null,
   entryFile: string | null,
   // `clean` action scoping flags. Default (none set) keeps current behavior:
   // only the generated dirs inside appRoot are removed. Each opt-in extends
   // the deletion list:
-  //   cleanProject     → also Package.swift + <App>-SPM.xcodeproj/
+  //   cleanProject     → also the committed <App>-SPM.xcodeproj/ (prompts)
   //   cleanDerivedData → also ~/Library/Developer/Xcode/DerivedData/<App>-SPM-*
   //   cleanCache       → also the current cache slot under
   //                      ~/Library/Caches/.../spm-artifacts/<slot>/<flavor>/
   //   cleanAll         → enables all three at once
-  //   cleanYes         → skips the confirmation prompt for derived-data / cache
+  //   cleanYes         → skips the confirmation prompt for destructive scopes
   cleanProject: boolean,
   cleanDerivedData: boolean,
   cleanCache: boolean,
@@ -273,13 +274,6 @@ export type GeneratePackageArgs = {
   targetName: string | null,
   sourcePath: string | null,
   iosVersion: string,
-  output: string | null,
-  init: boolean,
-};
-
-export type ScanResult = {
-  swiftFiles: Array<string>,
-  hasObjC: boolean,
 };
 
 export type GenerateXcodeprojArgs = {
@@ -306,25 +300,6 @@ export type PbxprojEntry = {
 };
 
 export type PbxprojSections = {[string]: Array<PbxprojEntry>};
-
-export type GeneratePackageOpts = {
-  appName: string,
-  targetName: string,
-  sourcePath: string,
-  iosVersion: string,
-  version: string,
-  localXcframework: string | null,
-  localArtifacts: {[string]: {xcframeworkPath: string, url: string}} | null,
-  xcframeworksPackagePath: string | null,
-  xcframeworkHeadersPath: string | null,
-  depsXcfwHeadersPath: string | null,
-  extraCxxAbsHeaderPaths: Array<string>,
-  appRoot: string,
-  codegenPackagePath: string,
-  autolinkedPackagePath: string,
-  swiftFiles: Array<string>,
-  hasObjC: boolean,
-};
 
 // ---------------------------------------------------------------------------
 // Scaffold types — for the `npx react-native spm scaffold` command that

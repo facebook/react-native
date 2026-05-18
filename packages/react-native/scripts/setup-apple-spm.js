@@ -20,10 +20,12 @@
  *   node node_modules/react-native/scripts/setup-apple-spm.js [action] [options]
  *
  * Actions:
- *   init                       First-time setup: generate root Package.swift,
- *                              generated packages, artifacts, and .xcodeproj.
- *   update                     Regenerate generated packages/artifacts/project
- *                              without overwriting root Package.swift.
+ *   init                       First-time setup: generate sub-packages,
+ *                              artifacts, and .xcodeproj. Adds SPM entries
+ *                              to .gitignore.
+ *   update                     Regenerate sub-packages/artifacts. Does NOT
+ *                              touch <App>-SPM.xcodeproj (it's committed —
+ *                              see below). Pass --force-xcodeproj to opt in.
  *   sync                       Lightweight sync invoked by the Xcode auto-sync
  *                              build phase: regenerates autolinking and
  *                              xcframeworks sub-packages and writes the
@@ -51,11 +53,19 @@
  *   2. generate-spm-autolinking-config.js → build/generated/autolinking/autolinking.json
  *   3. generate-spm-autolinking.js → build/generated/autolinking/Package.swift
  *   4. download-spm-artifacts.js → <artifacts-dir>/ (skipped if already present)
- *   5. generate-spm-package.js → build/xcframeworks/Package.swift + symlinks (+ main Package.swift with init)
- *   6. generate-spm-xcodeproj.js → <AppName>-SPM.xcodeproj (skipped with --skip-xcodeproj)
+ *   5. generate-spm-package.js → build/xcframeworks/Package.swift + symlinks
+ *   6. generate-spm-xcodeproj.js → <AppName>-SPM.xcodeproj (create-if-missing;
+ *                                  skipped with --skip-xcodeproj; opt back
+ *                                  into overwrite with --force-xcodeproj)
  *
- * The main Package.swift is committed by the developer and NOT overwritten on
- * subsequent runs. Use init for first-time setup to generate an initial one.
+ * Commit policy: <AppName>-SPM.xcodeproj is COMMITTED to your repo, like
+ * the legacy <AppName>.xcodeproj. It holds your signing, capabilities,
+ * Build Phases, schemes — edit it in Xcode the normal way. Its
+ * XCLocalSwiftPackageReference entries point at three stable sub-package
+ * paths under build/ (xcframeworks, generated/autolinking, generated/ios);
+ * adding/removing community deps changes the contents of those sub-packages
+ * (gitignored) and never requires regenerating the xcodeproj. No app-level
+ * Package.swift is generated or required.
  *
  * After running: open <AppName>-SPM.xcodeproj in Xcode.
  */
@@ -158,6 +168,12 @@ function parseArgs(argv /*: Array<string> */) /*: SetupArgs */ {
       default: false,
       describe: 'Skip .xcodeproj generation step',
     })
+    .option('force-xcodeproj', {
+      type: 'boolean',
+      default: false,
+      describe:
+        'Regenerate <App>-SPM.xcodeproj even if it already exists. WARNING: overwrites in-place Xcode edits (signing, capabilities, build phases). The xcodeproj is committed to your repo; SPM references stable sub-package paths under build/, so regeneration is not normally needed.',
+    })
     .option('bundle-identifier', {
       type: 'string',
       describe: 'Override CFBundleIdentifier in generated Info.plist',
@@ -175,7 +191,8 @@ function parseArgs(argv /*: Array<string> */) /*: SetupArgs */ {
     .option('project', {
       type: 'boolean',
       default: false,
-      describe: '[clean] Also remove Package.swift and <App>-SPM.xcodeproj/',
+      describe:
+        '[clean] Also remove the committed <App>-SPM.xcodeproj/ (will prompt for confirmation; bypass with --yes)',
     })
     .option('derived-data', {
       type: 'boolean',
@@ -232,6 +249,7 @@ function parseArgs(argv /*: Array<string> */) /*: SetupArgs */ {
     skipDownload: parsed['skip-download'],
     forceDownload: parsed['force-download'],
     skipXcodeproj: parsed['skip-xcodeproj'],
+    forceXcodeproj: parsed['force-xcodeproj'],
     bundleIdentifier: parsed['bundle-identifier'] ?? null,
     productName: parsed['product-name'] ?? null,
     entryFile: parsed['entry-file'] ?? null,
@@ -327,10 +345,6 @@ function gatherCleanTargets(
   }
 
   if (opts.project === true) {
-    targets.push({
-      path: path.join(appRoot, 'Package.swift'),
-      label: 'Package.swift',
-    });
     for (const name of xcodeprojNames) {
       targets.push({path: path.join(appRoot, name), label: `${name}/`});
     }
@@ -1045,7 +1059,6 @@ function generateXcframeworksPackage(
   reactNativeRoot /*: string */,
   version /*: string */,
   resolvedArtifactsDir /*: string | null */,
-  shouldInit /*: boolean */,
 ) {
   log('Generating xcframeworks sub-package...');
   const packageArgs = [
@@ -1062,48 +1075,7 @@ function generateXcframeworksPackage(
   if (resolvedArtifactsDir != null) {
     packageArgs.push('--artifacts-dir', resolvedArtifactsDir);
   }
-  if (shouldInit) {
-    packageArgs.push('--init');
-  }
   generatePackage(packageArgs);
-}
-
-function warnForMissingPackageSwift(appRoot /*: string */) {
-  const mainPackageSwift = path.join(appRoot, 'Package.swift');
-  if (fs.existsSync(mainPackageSwift)) {
-    return;
-  }
-
-  log('');
-  log(
-    '\x1b[33mWARNING: Package.swift not found.\x1b[0m Run init to generate an initial one:',
-  );
-  log('  react-native spm init');
-  log('');
-}
-
-function warnForMissingVfsOverlayFlags(appRoot /*: string */) {
-  const mainPackageSwift = path.join(appRoot, 'Package.swift');
-  if (!fs.existsSync(mainPackageSwift)) {
-    return;
-  }
-
-  const pkgContent = fs.readFileSync(mainPackageSwift, 'utf8');
-  if (!pkgContent.includes('ivfsoverlay')) {
-    log('');
-    log(
-      '\x1b[33mWARNING: Your Package.swift does not include -ivfsoverlay flags.\x1b[0m',
-    );
-    log('Add the following to your Package.swift for stable header identity:');
-    log('');
-    log('  let vfsOverlay = packageDir + "/build/xcframeworks/React-VFS.yaml"');
-    log('');
-    log('  // Add to cFlags:');
-    log('  "-ivfsoverlay", vfsOverlay');
-    log('  // Add to swiftFlags:');
-    log('  "-Xcc", "-ivfsoverlay", "-Xcc", vfsOverlay');
-    log('');
-  }
 }
 
 function generateXcodeProject(
@@ -1116,7 +1088,25 @@ function generateXcodeProject(
     return;
   }
 
-  log('Generating .xcodeproj...');
+  // The xcodeproj is committed; its XCLocalSwiftPackageReference entries
+  // point at three stable sub-package paths under build/, so adding/removing
+  // community deps never requires regenerating it. Regenerate only when
+  // missing (fresh clone / first init) or when the user explicitly opts in
+  // via --force-xcodeproj.
+  const existing = findExistingSpmXcodeproj(appRoot);
+  if (existing != null && !args.forceXcodeproj) {
+    log(
+      `Found existing ${path.basename(existing)}; skipping regeneration ` +
+        `(pass --force-xcodeproj to overwrite, e.g. after deleting it).`,
+    );
+    return;
+  }
+
+  log(
+    existing != null
+      ? `Regenerating .xcodeproj (--force-xcodeproj will overwrite Xcode-side edits)...`
+      : 'Generating .xcodeproj...',
+  );
   const xcodeprojArgs = [
     '--app-root',
     appRoot,
@@ -1133,6 +1123,26 @@ function generateXcodeProject(
     xcodeprojArgs.push('--entry-file', args.entryFile);
   }
   generateXcodeproj(xcodeprojArgs);
+}
+
+/**
+ * Returns the absolute path to the first `*-SPM.xcodeproj/` directory found
+ * directly inside `appRoot`, or null if none exists.
+ */
+function findExistingSpmXcodeproj(appRoot /*: string */) /*: string | null */ {
+  try {
+    const entries /*: Array<{name: string, isDirectory(): boolean}> */ =
+      // $FlowFixMe[incompatible-type] Dirent typing
+      fs.readdirSync(appRoot, {withFileTypes: true});
+    for (const entry of entries) {
+      if (entry.isDirectory() && entry.name.endsWith('-SPM.xcodeproj')) {
+        return path.join(appRoot, entry.name);
+      }
+    }
+  } catch {
+    /* appRoot may not exist on init */
+  }
+  return null;
 }
 
 function logNextSteps(
@@ -1202,9 +1212,12 @@ async function main(argv /*:: ?: Array<string> */) /*: Promise<void> */ {
       }
     }
 
-    // Destructive scopes (DerivedData / cache) touch state outside appRoot.
-    // Ask for confirmation unless --yes is passed or stdin isn't a TTY.
-    const isDestructive = wantDerivedData || wantCache;
+    // Destructive scopes ask for confirmation unless --yes is passed:
+    //   --derived-data / --cache   touch state outside appRoot
+    //   --project                  removes the committed <App>-SPM.xcodeproj/
+    // The xcodeproj carries the user's signing, capabilities, build phases
+    // and is committed to the repo — deleting it loses Xcode-side edits.
+    const isDestructive = wantDerivedData || wantCache || wantProject;
     if (isDestructive && !args.cleanYes) {
       const targets = gatherCleanTargets(appRoot, cleanOpts).filter(t =>
         fs.existsSync(t.path),
@@ -1317,7 +1330,6 @@ async function main(argv /*:: ?: Array<string> */) /*: Promise<void> */ {
       reactNativeRoot,
       version,
       resolvedArtifactsDir,
-      action === 'init',
     );
   } catch (e) {
     logError(`generate-spm-package.js failed: ${e.message}`);
@@ -1329,10 +1341,7 @@ async function main(argv /*:: ?: Array<string> */) /*: Promise<void> */ {
 
   if (action === 'init') {
     ensureGitignoreSpmEntries(appRoot);
-  } else {
-    warnForMissingPackageSwift(appRoot);
   }
-  warnForMissingVfsOverlayFlags(appRoot);
 
   try {
     generateXcodeProject(args, appRoot, reactNativeRoot);
@@ -1367,6 +1376,7 @@ module.exports = {
   cleanGeneratedState,
   gatherCleanTargets,
   describeRnRootMismatch,
+  findExistingSpmXcodeproj,
   findLegacyXcodeproj,
   podfileNeedsPatch,
 };
