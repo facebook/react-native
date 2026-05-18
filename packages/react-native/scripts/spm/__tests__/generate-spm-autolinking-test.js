@@ -11,8 +11,10 @@
 'use strict';
 
 const {
+  AUTOGEN_MARKER,
   collectSpmSources,
   expandSpmSourceGlobs,
+  findSelfManagedPackageDir,
   generateAutolinkedPackageSwift,
   generateSynthPackageSwift,
   linkHeaderTree,
@@ -655,5 +657,81 @@ describe('generateSynthPackageSwift (spm.name override)', () => {
     );
     expect(result).toContain('.product(name: "worklets", package: "worklets")');
     expect(result).not.toContain('ReactNativeWorklets');
+  });
+});
+
+// ---------------------------------------------------------------------------
+// findSelfManagedPackageDir — detects hand-authored Package.swift at either
+// the dep root or under ios/. The nested layout lets community libraries
+// keep their npm-package root free of SPM artifacts (.build/, .swiftpm/).
+// ---------------------------------------------------------------------------
+
+describe('findSelfManagedPackageDir', () => {
+  let depRoot;
+
+  beforeEach(() => {
+    depRoot = fs.mkdtempSync(path.join(os.tmpdir(), 'spm-selfmgd-'));
+  });
+
+  afterEach(() => {
+    fs.rmSync(depRoot, {recursive: true, force: true});
+  });
+
+  it('returns null when no Package.swift exists at any candidate location', () => {
+    expect(findSelfManagedPackageDir(depRoot)).toBe(null);
+  });
+
+  it('returns the dep root when <dep>/Package.swift exists without the AUTOGEN marker', () => {
+    fs.writeFileSync(
+      path.join(depRoot, 'Package.swift'),
+      '// swift-tools-version: 6.0\n// Hand-authored.\n',
+    );
+    expect(findSelfManagedPackageDir(depRoot)).toBe(depRoot);
+  });
+
+  it('returns null when <dep>/Package.swift carries the AUTOGEN marker', () => {
+    fs.writeFileSync(
+      path.join(depRoot, 'Package.swift'),
+      AUTOGEN_MARKER + '\n// synth wrapper content\n',
+    );
+    expect(findSelfManagedPackageDir(depRoot)).toBe(null);
+  });
+
+  it('returns <dep>/ios when only the nested manifest exists and lacks the AUTOGEN marker', () => {
+    fs.mkdirSync(path.join(depRoot, 'ios'));
+    fs.writeFileSync(
+      path.join(depRoot, 'ios', 'Package.swift'),
+      '// swift-tools-version: 6.0\n// Hand-authored nested manifest.\n',
+    );
+    expect(findSelfManagedPackageDir(depRoot)).toBe(path.join(depRoot, 'ios'));
+  });
+
+  it('prefers the root manifest when both root and nested manifests exist', () => {
+    fs.writeFileSync(
+      path.join(depRoot, 'Package.swift'),
+      '// Root manifest.\n',
+    );
+    fs.mkdirSync(path.join(depRoot, 'ios'));
+    fs.writeFileSync(
+      path.join(depRoot, 'ios', 'Package.swift'),
+      '// Nested manifest.\n',
+    );
+    expect(findSelfManagedPackageDir(depRoot)).toBe(depRoot);
+  });
+
+  it('falls back to the nested manifest when the root one is autolinker-generated', () => {
+    // Models the transition state: dep was previously autolinker-wrapped and
+    // recently shipped its own ios/Package.swift. The root file (a leftover
+    // synth manifest from a prior run) shouldn't shadow the hand-authored one.
+    fs.writeFileSync(
+      path.join(depRoot, 'Package.swift'),
+      AUTOGEN_MARKER + '\n// stale synth\n',
+    );
+    fs.mkdirSync(path.join(depRoot, 'ios'));
+    fs.writeFileSync(
+      path.join(depRoot, 'ios', 'Package.swift'),
+      '// Hand-authored nested manifest.\n',
+    );
+    expect(findSelfManagedPackageDir(depRoot)).toBe(path.join(depRoot, 'ios'));
   });
 });
