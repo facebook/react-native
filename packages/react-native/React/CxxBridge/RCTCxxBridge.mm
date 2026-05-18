@@ -1566,7 +1566,4 @@ RCT_NOT_IMPLEMENTED(-(instancetype)initWithBundleURL : (__unused NSURL *)bundleU
 
 @end
 
-#else // RCT_REMOVE_LEGACY_ARCH
-@implementation RCTCxxBridge
-@end
 #endif // RCT_REMOVE_LEGACY_ARCH
