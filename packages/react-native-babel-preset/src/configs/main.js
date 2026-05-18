@@ -92,6 +92,11 @@ const getPreset = (src, options, babel) => {
     options?.customTransformOptions?.unstable_preserveBlockScoping,
   );
 
+  // Preserve destructuring syntax if the experiment is enabled.
+  const preserveDestructuring = TRUE_VALS.has(
+    options?.customTransformOptions?.unstable_preserveDestructuring,
+  );
+
   const isNull = src == null;
   const hasClass = isNull || src.indexOf('class') !== -1;
 
@@ -144,10 +149,12 @@ const getPreset = (src, options, babel) => {
     ]);
   }
 
-  extraPlugins.push([
-    require('@babel/plugin-transform-destructuring'),
-    {useBuiltIns: true},
-  ]);
+  if (!preserveDestructuring) {
+    extraPlugins.push([
+      require('@babel/plugin-transform-destructuring'),
+      {useBuiltIns: true},
+    ]);
+  }
   if (!preserveAsync && (isNull || src.indexOf('async') !== -1)) {
     extraPlugins.push([
       require('@babel/plugin-transform-async-generator-functions'),
