@@ -188,9 +188,8 @@ internal class ReactTextViewAccessibilityDelegate(
     super.onInitializeAccessibilityNodeInfo(host, info)
     // PreparedLayoutTextView isn't actually a TextView, so we need to teach it about its text that
     // it is holding so TalkBack knows what to announce when focusing it.
-    if (host is PreparedLayoutTextView) {
-      info.text = host.text
-    }
+    val accessibilityText = if (host is PreparedLayoutTextView) host.text else info.text
+    info.text = accessibilityText.toPlainTextForAccessibility()
   }
 
   @Suppress("DEPRECATION")
@@ -364,3 +363,6 @@ private fun isWholeTextSingleLink(text: Spanned, spans: Array<ClickableSpan>): B
   val end = text.getSpanEnd(span)
   return start == 0 && end == text.length
 }
+
+private fun CharSequence?.toPlainTextForAccessibility(): CharSequence? =
+    if (this is Spanned) toString() else this
