@@ -264,9 +264,7 @@ function renderCodegenTemplate(
     }
   }
   const xcfwAbs = resolveHeadersAbsolute('React.xcframework');
-  const depsAbs = resolveHeadersAbsolute(
-    'ReactNativeDependencies.xcframework',
-  );
+  const depsAbs = resolveHeadersAbsolute('ReactNativeDependencies.xcframework');
   const xcfwExpr =
     xcfwAbs != null
       ? `"${xcfwAbs}"`

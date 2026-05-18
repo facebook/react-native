@@ -56,6 +56,7 @@ const {
   defaultResolveDep,
   expandSpmDependencies,
 } = require('./expand-spm-dependencies');
+const {readPodspec} = require('./read-podspec');
 const {makeLogger, toSwiftName} = require('./spm-utils');
 const fs = require('fs');
 const path = require('path');
@@ -432,6 +433,58 @@ function expandSpmSourceGlobs(
  * `spm.name` config). Optional for backwards compatibility with callers that
  * don't have the map; falls back to `toSwiftName(name)` per entry.
  */
+/**
+ * Read the dep's podspec (if any) and extract its declared
+ * `pod_target_xcconfig` HEADER_SEARCH_PATHS, substituted relative to the dep
+ * source dir. Returns paths suitable for an SPM `.headerSearchPath()`
+ * directive whose target.path is the dep root (entries are NOT yet prefixed
+ * with the synth wrapper's `root/` — the emission site adds that prefix
+ * because the wrapper's target.path is `.`, not the source dir).
+ *
+ * Without these, path-style angle includes like
+ * `<react/renderer/components/safeareacontext/X.h>` (used by
+ * react-native-safe-area-context, reanimated, screens, etc.) fail to resolve
+ * because the headers live under the dep's `common/cpp/` rather than under
+ * the framework-imported xcframework headers.
+ */
+function extractPodspecHeaderSearchPaths(
+  sourceDir /*: string */,
+) /*: Array<string> */ {
+  let podspecPath /*: ?string */ = null;
+  try {
+    const entries = fs.readdirSync(sourceDir);
+    const candidate = entries.find(e => e.endsWith('.podspec'));
+    if (candidate != null) {
+      podspecPath = path.join(sourceDir, candidate);
+    }
+  } catch {
+    return [];
+  }
+  if (podspecPath == null) return [];
+
+  let model;
+  try {
+    model = readPodspec(podspecPath);
+  } catch {
+    return [];
+  }
+
+  const out /*: Array<string> */ = [];
+  for (const raw of model.headerSearchPaths) {
+    const substituted = raw
+      .replace(/\$\(PODS_TARGET_SRCROOT\)/g, '.')
+      .replace(/\$\{PODS_TARGET_SRCROOT\}/g, '.');
+    // Drop entries still containing unresolved Xcode tokens — emitting them
+    // verbatim would surface as clang "no such file" failures.
+    if (/\$[({]/.test(substituted)) continue;
+    const cleaned = substituted.replace(/^\.\//, '').replace(/^\//, '');
+    if (cleaned.length > 0 && !out.includes(cleaned)) {
+      out.push(cleaned);
+    }
+  }
+  return out;
+}
+
 function autolinkingDepToSpmTarget(
   depName /*: string */,
   dep /*: AutolinkedDep */,
@@ -471,6 +524,8 @@ function autolinkingDepToSpmTarget(
       ? spmDeps.map(n => swiftNameByNpm?.get(n) ?? toSwiftName(n))
       : undefined;
 
+  const headerSearchPaths = extractPodspecHeaderSearchPaths(sourceDir);
+
   return {
     name: targetName,
     path: relSourcePath,
@@ -478,6 +533,8 @@ function autolinkingDepToSpmTarget(
     publicHeadersPath: inferPublicHeadersPath(sourceDir),
     resources,
     spmTargetDependencies,
+    headerSearchPaths:
+      headerSearchPaths.length > 0 ? headerSearchPaths : undefined,
   };
 }
 
@@ -675,6 +732,12 @@ function generateSynthPackageSwift(spec /*: SynthPackageSpec */) /*: string */ {
   const exclude /*: Array<string> */ = spec.exclude ?? [];
   const sources /*: ?Array<string> */ = spec.sources;
   const publicHeadersPath /*: ?string */ = spec.publicHeadersPath ?? null;
+  // Per-dep header search paths from the podspec's
+  // pod_target_xcconfig HEADER_SEARCH_PATHS — already prefixed by the caller
+  // with the synth wrapper's `root/` so they resolve relative to target.path.
+  // Emitted as `.headerSearchPath()` directives, which SPM accepts on
+  // cSettings / cxxSettings without needing absolute paths.
+  const headerSearchPaths /*: Array<string> */ = spec.headerSearchPaths ?? [];
   const spmDependencies /*: Array<{swiftName: string}> */ =
     spec.spmDependencies ?? [];
   const hasReactDep /*: boolean */ = spec.hasReactDep !== false;
@@ -818,13 +881,24 @@ function generateSynthPackageSwift(spec /*: SynthPackageSpec */) /*: string */ {
     packageDeps.length > 0
       ? `    dependencies: [\n        ${packageDeps.join(',\n        ')},\n    ],\n`
       : '';
+  // `.headerSearchPath(...)` entries from the podspec — rendered alongside
+  // the `.unsafeFlags(...)` block. Listing them as first-class directives
+  // keeps SPM's diagnostics meaningful (clang reports the dep-relative path
+  // on miss) and avoids the absolute-path noise the unsafeFlags route brings.
+  const headerSearchPathDirectives = headerSearchPaths
+    .map(p => `.headerSearchPath("${p}")`)
+    .join(', ');
+  const headerSearchPathPrefix =
+    headerSearchPathDirectives.length > 0
+      ? `${headerSearchPathDirectives}, `
+      : '';
   const cSettingsLine =
-    cFlags.length > 0
-      ? `\n            cSettings: [.unsafeFlags([${cFlags.join(', ')}])],`
+    cFlags.length > 0 || headerSearchPaths.length > 0
+      ? `\n            cSettings: [${headerSearchPathPrefix}.unsafeFlags([${cFlags.join(', ')}])],`
       : '';
   const cxxSettingsLine =
-    cxxFlags.length > 0
-      ? `\n            cxxSettings: [.unsafeFlags([${cxxFlags.join(', ')}])],`
+    cxxFlags.length > 0 || headerSearchPaths.length > 0
+      ? `\n            cxxSettings: [${headerSearchPathPrefix}.unsafeFlags([${cxxFlags.join(', ')}])],`
       : '';
 
   // appRoot — either a hardcoded absolute path (in-place mode) or a
@@ -1101,6 +1175,18 @@ function main(argv /*:: ?: Array<string> */) /*: void */ {
     }
     if (isSelfManagedPackage(absSource)) {
       selfManagedDirs.set(target.name, absSource);
+      // If a wrapper exists from a prior synth-mode run (i.e. the dep WAS
+      // autolinker-wrapped, then later transitioned to self-managed via
+      // `spm scaffold` or shipping its own Package.swift), remove the
+      // wrapper now. Without this, the pruning loop below preserves it
+      // (because the dep is "active" via selfManagedDirs) and Xcode's
+      // SwiftPM cache picks up the stale wrapper Package.swift instead of
+      // the self-managed one.
+      const staleWrapper = path.join(packagesDir, target.name);
+      if (fs.existsSync(staleWrapper)) {
+        fs.rmSync(staleWrapper, {recursive: true, force: true});
+        log(`Removed stale wrapper: packages/${target.name}/`);
+      }
       log(
         `Self-managed: ${target.name} → ${path.relative(appRoot, absSource)} (using its own Package.swift)`,
       );
@@ -1187,6 +1273,15 @@ function main(argv /*:: ?: Array<string> */) /*: void */ {
     const prefixedSources /*: ?Array<string> */ =
       rawSources.length > 0 ? rawSources.map(withRoot) : null;
 
+    // Podspec HEADER_SEARCH_PATHS were captured relative to the dep's source
+    // dir. The wrapper exposes the source dir under `root/` (target.path is
+    // `.`, the wrapper dir), so each entry must be prefixed with `root/` so
+    // clang sees the real subtree.
+    const prefixedHeaderSearchPaths /*: ?Array<string> */ =
+      target.headerSearchPaths != null && target.headerSearchPaths.length > 0
+        ? target.headerSearchPaths.map(withRoot)
+        : null;
+
     const synthContent = generateSynthPackageSwift({
       swiftName: target.name,
       exclude: prefixedExclude,
@@ -1197,6 +1292,7 @@ function main(argv /*:: ?: Array<string> */) /*: void */ {
       // (autogenHeadersAbsolute below) instead.
       publicHeadersPath: 'include',
       resources: prefixedResources,
+      headerSearchPaths: prefixedHeaderSearchPaths,
       spmDependencies: (target.spmTargetDependencies ?? []).map(swiftName => ({
         swiftName,
       })),

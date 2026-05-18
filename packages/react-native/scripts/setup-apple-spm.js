@@ -71,6 +71,7 @@ const {
 const {main: generatePackage} = require('./spm/generate-spm-package');
 const {findSourcePath} = require('./spm/generate-spm-package');
 const {main: generateXcodeproj} = require('./spm/generate-spm-xcodeproj');
+const {scaffoldAll} = require('./spm/scaffold-package-swift');
 const {
   defaultCacheDir,
   deriveAppName,
@@ -97,6 +98,7 @@ const VALID_ACTIONS = new Set([
   'clean',
   'codegen',
   'download',
+  'scaffold',
 ]);
 
 /*::
@@ -173,8 +175,7 @@ function parseArgs(argv /*: Array<string> */) /*: SetupArgs */ {
     .option('project', {
       type: 'boolean',
       default: false,
-      describe:
-        '[clean] Also remove Package.swift and <App>-SPM.xcodeproj/',
+      describe: '[clean] Also remove Package.swift and <App>-SPM.xcodeproj/',
     })
     .option('derived-data', {
       type: 'boolean',
@@ -191,14 +192,13 @@ function parseArgs(argv /*: Array<string> */) /*: SetupArgs */ {
     .option('all', {
       type: 'boolean',
       default: false,
-      describe:
-        '[clean] Shorthand for --project --derived-data --cache',
+      describe: '[clean] Shorthand for --project --derived-data --cache',
     })
     .option('yes', {
       type: 'boolean',
       default: false,
       describe:
-        "[clean] Skip the confirmation prompt for destructive scopes (--derived-data, --cache, --all)",
+        '[clean] Skip the confirmation prompt for destructive scopes (--derived-data, --cache, --all)',
     })
     .usage(
       'Usage: $0 [action] [options]\n\nSets up Swift Package Manager support in a React Native app.',
@@ -399,6 +399,194 @@ function cleanGeneratedState(
  * `--yes` skips the prompt; non-TTY stdin also auto-confirms so CI doesn't
  * hang.
  */
+/**
+ * Inspects a Podfile and decides what (if anything) to insert. Returns null
+ * when the file is missing, doesn't have a discoverable `target '...' do`
+ * line, or ALREADY has a top-level `project '<...>.xcodeproj'` directive.
+ * Otherwise returns the insertion point + the line we'd prepend before the
+ * first target block.
+ *
+ * Without a `project` directive, CocoaPods refuses to auto-pick between
+ * sibling xcodeprojs (`MyApp.xcodeproj` + `MyApp-SPM.xcodeproj`) with
+ * "Could not automatically select an Xcode project". This is the most
+ * common new-user footgun when SPM and CocoaPods coexist.
+ */
+function podfileNeedsPatch(
+  podfilePath /*: string */,
+) /*: {content: string, insertAt: number} | null */ {
+  if (!fs.existsSync(podfilePath)) {
+    return null;
+  }
+  const content = fs.readFileSync(podfilePath, 'utf8');
+  // Already has a top-level `project '...'` directive (allow leading
+  // whitespace; pin to start-of-line for top-level). Skip.
+  if (/^project\s+['"][^'"]+\.xcodeproj['"]/m.test(content)) {
+    return null;
+  }
+  // Find the first `target '<name>' do` — the directive must come before.
+  const m = content.match(/^(?<indent>[ \t]*)target\s+['"][^'"]+['"]\s+do/m);
+  if (m == null || m.index == null) {
+    return null;
+  }
+  // Insertion point: start of the line containing the `target` directive.
+  // m.index points there because we anchored with `^` + multiline flag.
+  return {content, insertAt: m.index};
+}
+
+/**
+ * Finds the legacy (non-SPM) `*.xcodeproj` in `appRoot` — the one
+ * CocoaPods should integrate with. We DON'T want CocoaPods picking the
+ * `<App>-SPM.xcodeproj/` we generate, because next `spm update` regenerates
+ * it from scratch and would wipe any pod-injected changes.
+ */
+function findLegacyXcodeproj(appRoot /*: string */) /*: string | null */ {
+  let entries /*: Array<{name: string, isDirectory(): boolean}> */;
+  try {
+    // $FlowFixMe[incompatible-type] Dirent typing
+    entries = fs.readdirSync(appRoot, {withFileTypes: true});
+  } catch {
+    return null;
+  }
+  const candidates = entries
+    .filter(e => {
+      // $FlowFixMe[incompatible-type] Dirent.name is string|Buffer in Flow stubs; always string in our usage.
+      const name /*: string */ = e.name;
+      return (
+        e.isDirectory() &&
+        name.endsWith('.xcodeproj') &&
+        !name.endsWith('-SPM.xcodeproj')
+      );
+    })
+    .map(e => {
+      // $FlowFixMe[incompatible-type] Dirent.name is string|Buffer in Flow stubs; always string in our usage.
+      const name /*: string */ = e.name;
+      return name;
+    });
+  // Most projects have exactly one legacy xcodeproj. If multiple exist,
+  // pick the first deterministically — the prompt below shows the user
+  // which one we'll write and they can decline if it's wrong.
+  return candidates[0] ?? null;
+}
+
+function confirmPodfilePatch() /*: Promise<boolean> */ {
+  // $FlowFixMe[prop-missing] process.stdin.isTTY not in Flow stubs
+  if (process.stdin.isTTY !== true) {
+    return Promise.resolve(true);
+  }
+  return new Promise(resolve => {
+    const rl = readline.createInterface({
+      input: process.stdin,
+      output: process.stdout,
+    });
+    rl.question(
+      'Add this `project` line to your Podfile now? [Y/n] ',
+      answer => {
+        rl.close();
+        const a = answer.trim().toLowerCase();
+        resolve(a === '' || a === 'y' || a === 'yes');
+      },
+    );
+  });
+}
+
+/**
+ * Detects the CocoaPods-vs-SPM ambiguity (Podfile + two sibling xcodeprojs)
+ * and offers to patch the Podfile. Runs only on `init` — once the user has
+ * declined we don't keep nagging on every `update`.
+ */
+async function maybePatchPodfile(
+  args /*: SetupArgs */,
+  appRoot /*: string */,
+) /*: Promise<void> */ {
+  const podfilePath = path.join(appRoot, 'Podfile');
+  const needs = podfileNeedsPatch(podfilePath);
+  if (needs == null) {
+    return;
+  }
+  const legacyXcodeproj = findLegacyXcodeproj(appRoot);
+  if (legacyXcodeproj == null) {
+    return;
+  }
+
+  log('');
+  log(
+    'Detected Podfile without an explicit `project` directive. ` pod install` ' +
+      'will refuse to choose between the legacy and SPM xcodeprojs in this dir ' +
+      `(error: "Could not automatically select an Xcode project").`,
+  );
+  log('');
+  log(`I can add this line to ${path.relative(appRoot, podfilePath)}:`);
+  log('');
+  log(`    project '${legacyXcodeproj}'`);
+  log('');
+  log(
+    `This pins CocoaPods to ${legacyXcodeproj} so it leaves the auto-generated ` +
+      `SPM xcodeproj alone.`,
+  );
+  log('');
+
+  const proceed = args.cleanYes ? true : await confirmPodfilePatch();
+  if (!proceed) {
+    log('Skipped Podfile patch. Add the line manually if `pod install` fails.');
+    return;
+  }
+
+  // Insert the directive immediately before the first `target ... do` line,
+  // with a brief explanatory comment so a reader knows why it's there.
+  const insertion =
+    `# Pin CocoaPods to ${legacyXcodeproj} so it doesn't pick the ` +
+    `auto-generated <App>-SPM.xcodeproj.\n` +
+    `# Added by \`npx react-native spm init\`.\n` +
+    `project '${legacyXcodeproj}'\n\n`;
+  const patched =
+    needs.content.slice(0, needs.insertAt) +
+    insertion +
+    needs.content.slice(needs.insertAt);
+  fs.writeFileSync(podfilePath, patched, 'utf8');
+  log(
+    `Patched ${path.relative(appRoot, podfilePath)} with project '${legacyXcodeproj}'.`,
+  );
+}
+
+/**
+ * Prompt before scaffolding `Package.swift` into `node_modules/<dep>/` for
+ * the first time. Default-Yes (`[Y/n]`) because spm-init/update has already
+ * opted into setting up SPM support — the prompt is mainly for awareness.
+ * Non-TTY (CI) auto-accepts.
+ */
+function confirmScaffold(
+  depNames /*: Array<string> */,
+) /*: Promise<boolean> */ {
+  // $FlowFixMe[prop-missing] process.stdin.isTTY not in Flow stubs
+  if (process.stdin.isTTY !== true) {
+    return Promise.resolve(true);
+  }
+  log('');
+  log(`Found ${depNames.length} community RN package(s) without SPM support:`);
+  for (const n of depNames) {
+    log(`  • ${n}`);
+  }
+  log('');
+  log(
+    'Scaffolding writes a Package.swift into node_modules/<dep>/ derived from\n' +
+      "the dep's podspec. node_modules gets wiped by `npm install` — to persist:\n" +
+      '  • add a `"postinstall": "npx react-native spm scaffold"` to package.json, OR\n' +
+      '  • `npx patch-package <dep>` after scaffolding.',
+  );
+  log('');
+  return new Promise(resolve => {
+    const rl = readline.createInterface({
+      input: process.stdin,
+      output: process.stdout,
+    });
+    rl.question('Generate Package.swift for the deps above? [Y/n] ', answer => {
+      rl.close();
+      const a = answer.trim().toLowerCase();
+      resolve(a === '' || a === 'y' || a === 'yes');
+    });
+  });
+}
+
 function confirmDestructive(
   targets /*: Array<CleanTarget> */,
 ) /*: Promise<boolean> */ {
@@ -427,7 +615,7 @@ function confirmDestructive(
 function resolveAction(
   requestedAction /*: SetupArgs['action'] */,
   appRoot /*: string */,
-) /*: 'init' | 'update' | 'sync' | 'clean' | 'codegen' | 'download' */ {
+) /*: 'init' | 'update' | 'sync' | 'clean' | 'codegen' | 'download' | 'scaffold' */ {
   if (requestedAction != null) {
     return requestedAction;
   }
@@ -609,6 +797,144 @@ function generateAutolinkingPackage(
     '--react-native-root',
     reactNativeRoot,
   ]);
+}
+
+/**
+ * Walks autolinking.json and writes a Package.swift into each community RN
+ * package that ships a podspec but no SPM manifest. Reuses the dep's
+ * podspec (via `pod ipc spec` when available) so the scaffolded file
+ * captures the dep's actual sources, header search paths, frameworks, and
+ * dependencies. Files carrying the scaffolder's own marker are regenerated
+ * when the cache slot changes (manifest-hash bump); files without the
+ * marker are left alone (upstream-shipped or user-managed).
+ *
+ * Runs as part of `init` / `update` / `scaffold` actions. Each invocation
+ * is a no-op for deps already in a clean state.
+ */
+async function runScaffold(
+  args /*: SetupArgs */,
+  appRoot /*: string */,
+  projectRoot /*: string */,
+  reactNativeRoot /*: string */,
+  // Caller's resolved action — same union as resolveAction's return type.
+  // Typed precisely so Flow accepts the `action === 'scaffold'` checks
+  // below (strict mode rejects `string === <singleton>` as invalid-compare).
+  action /*: 'init' | 'update' | 'sync' | 'clean' | 'codegen' | 'download' | 'scaffold' */,
+) /*: Promise<void> */ {
+  // Resolve the cache slot identifier so the scaffolded files carry it as
+  // a comment — that's how SPM's manifest hash bumps on slot transitions.
+  let cacheSlotLabel /*: ?string */ = null;
+  try {
+    const rawVersion = args.version ?? determineVersion(args, reactNativeRoot);
+    const slotVersion = await resolveCacheSlotVersion(rawVersion);
+    cacheSlotLabel = `${slotVersion}/${args.flavor}`;
+  } catch {
+    // Without a slot label the scaffolder still works; the file just
+    // doesn't get the slot-bump comment.
+  }
+
+  // Pass 1: dry-run to discover which deps would be scaffolded for the
+  // FIRST time (no existing Package.swift). Those are the only ones we
+  // prompt the user about — regens of files we already own happen silently.
+  let dryResults;
+  try {
+    dryResults = scaffoldAll({
+      appRoot,
+      projectRoot,
+      reactNativeRoot,
+      cacheSlotLabel,
+      force: action === 'scaffold',
+      dryRun: true,
+    });
+  } catch (e) {
+    logError(
+      `scaffold dry-run failed: ${e.message}. Continuing — community deps may not autolink.`,
+    );
+    return;
+  }
+
+  const newScaffoldDeps /*: Array<string> */ = [];
+  for (const r of dryResults) {
+    if (r.status === 'written' && r.previouslyExisted === false) {
+      newScaffoldDeps.push(r.depName);
+    }
+  }
+
+  // Decide which (if any) first-time deps the user wants scaffolded.
+  // - `scaffold` action: user explicitly asked → no prompt
+  // - `--yes`: bypass prompt
+  // - non-TTY (CI): auto-accept
+  // - otherwise: prompt with a list; default Yes
+  let skipDeps /*: Array<string> */ = [];
+  if (
+    newScaffoldDeps.length > 0 &&
+    action !== 'scaffold' &&
+    !args.cleanYes &&
+    process.stdin.isTTY === true
+  ) {
+    const proceed = await confirmScaffold(newScaffoldDeps);
+    if (!proceed) {
+      // Decline ALL first-time scaffolds; existing scaffolder-marker files
+      // still get regenerated (slot changes etc.).
+      skipDeps = newScaffoldDeps;
+      log(
+        'Skipping first-time scaffolds for this run. ' +
+          'Re-run `npx react-native spm scaffold` (or pass --yes) to accept.',
+      );
+    }
+  }
+
+  let results;
+  try {
+    results = scaffoldAll({
+      appRoot,
+      projectRoot,
+      reactNativeRoot,
+      cacheSlotLabel,
+      // `scaffold` action forces a re-render even when slot is unchanged,
+      // so a user re-running it after editing a podspec gets the new
+      // content. `update`/`init` are non-forcing (idempotent).
+      force: action === 'scaffold',
+      skipDeps,
+    });
+  } catch (e) {
+    logError(
+      `scaffold failed: ${e.message}. Continuing — community deps may not autolink.`,
+    );
+    return;
+  }
+
+  const written = results.filter(r => r.status === 'written');
+  const errored = results.filter(r => r.status === 'error');
+  const warned = results.filter(
+    r => r.status === 'written' && r.warnings && r.warnings.length > 0,
+  );
+
+  if (written.length > 0) {
+    log(`Scaffolded Package.swift for ${written.length} dep(s):`);
+    for (const r of written) {
+      log(`  • ${r.depName}`);
+    }
+    log('');
+    log(
+      'TIP: node_modules is wiped by `npm install`. To persist:\n' +
+        '  • add `"postinstall": "npx react-native spm scaffold"` to package.json (preferred), OR\n' +
+        '  • `npx patch-package <dep>` after scaffolding (cross-machine portability with caveats).',
+    );
+    log('');
+  }
+
+  for (const r of warned) {
+    if (r.status !== 'written') continue;
+    for (const w of r.warnings) {
+      log(`  ! ${r.depName}: ${w}`);
+    }
+  }
+
+  for (const r of errored) {
+    if (r.status !== 'error') continue;
+    logError(`  ! ${r.depName}: ${r.reason}`);
+  }
 }
 
 function prepareLocalXcframeworkArtifacts(
@@ -865,7 +1191,8 @@ async function main(argv /*:: ?: Array<string> */) /*: Promise<void> */ {
     if (wantCache) {
       try {
         const reactNativeRoot = path.resolve(__dirname, '..');
-        const rawVersion = args.version ?? determineVersion(args, reactNativeRoot);
+        const rawVersion =
+          args.version ?? determineVersion(args, reactNativeRoot);
         const slotVersion = await resolveCacheSlotVersion(rawVersion);
         cleanOpts.cacheSlotDir = defaultCacheDir(slotVersion, args.flavor);
       } catch (e) {
@@ -897,7 +1224,10 @@ async function main(argv /*:: ?: Array<string> */) /*: Promise<void> */ {
   }
 
   const needsCliConfig =
-    action === 'init' || action === 'update' || action === 'sync';
+    action === 'init' ||
+    action === 'update' ||
+    action === 'sync' ||
+    action === 'scaffold';
   const autolinkingConfigResult = needsCliConfig
     ? loadAutolinkingConfig(projectRoot, appRoot)
     : null;
@@ -949,6 +1279,14 @@ async function main(argv /*:: ?: Array<string> */) /*: Promise<void> */ {
     }
     return;
   }
+
+  // Scaffold Package.swift for community RN packages that don't ship SPM
+  // support. Runs BEFORE the autolinker so the autolinker sees the
+  // scaffolded files as self-managed (via isSelfManagedPackage's
+  // AUTOGEN_MARKER check) and references them directly from the aggregator.
+  // No-op for deps that already have an upstream Package.swift, opted out,
+  // or had no .podspec.
+  await runScaffold(args, appRoot, projectRoot, reactNativeRoot, action);
 
   runCodegenStep(projectRoot, appRoot, scriptsDir, args.skipCodegen);
   try {
@@ -1004,6 +1342,19 @@ async function main(argv /*:: ?: Array<string> */) /*: Promise<void> */ {
     return;
   }
 
+  // On `init` only: detect the CocoaPods ambiguity that occurs when the
+  // Podfile has no `project '<path>.xcodeproj'` directive and there's both
+  // a legacy and an SPM xcodeproj in the dir. Offer to add the directive
+  // pinning CocoaPods to the legacy project. Skipped on `update` so we
+  // don't keep nagging users who explicitly declined.
+  if (action === 'init') {
+    try {
+      await maybePatchPodfile(args, appRoot);
+    } catch (e) {
+      logError(`Podfile check failed: ${e.message}. Continuing.`);
+    }
+  }
+
   logNextSteps(projectRoot, appRoot, args.productName);
 }
 
@@ -1016,4 +1367,6 @@ module.exports = {
   cleanGeneratedState,
   gatherCleanTargets,
   describeRnRootMismatch,
+  findLegacyXcodeproj,
+  podfileNeedsPatch,
 };

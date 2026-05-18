@@ -653,9 +653,7 @@ describe('generateSynthPackageSwift (spm.name override)', () => {
     expect(result).toContain(
       '.package(name: "worklets", path: "/abs/app/packages/worklets")',
     );
-    expect(result).toContain(
-      '.product(name: "worklets", package: "worklets")',
-    );
+    expect(result).toContain('.product(name: "worklets", package: "worklets")');
     expect(result).not.toContain('ReactNativeWorklets');
   });
 });

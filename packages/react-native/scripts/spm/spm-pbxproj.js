@@ -110,7 +110,7 @@ function scanProjectFiles(sourceDir /*: string */) /*: ProjectFiles */ {
     // $FlowFixMe[incompatible-type]
     const entries /*: Array<{name: string, isDirectory(): boolean}> */ =
       // $FlowFixMe[unclear-type]
-      fs.readdirSync(dir, {withFileTypes: true}) /*: any */;
+      fs.readdirSync(dir, {withFileTypes: true}); /*: any */
     for (const entry of entries) {
       if (entry.name.startsWith('.')) {
         continue;

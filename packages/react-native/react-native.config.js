@@ -116,7 +116,7 @@ const spmCommand /*: Command */ = {
   name: 'spm [action]',
   description:
     'Set up or maintain Swift Package Manager support for the iOS/macOS app. ' +
-    'Actions: init, update, sync, clean, codegen, download. ' +
+    'Actions: init, update, sync, clean, codegen, download, scaffold. ' +
     'With no action: defaults to update.',
   options: [
     {
@@ -182,8 +182,7 @@ const spmCommand /*: Command */ = {
     },
     {
       name: '--all',
-      description:
-        '[clean] Shorthand for --project --derivedData --cache.',
+      description: '[clean] Shorthand for --project --derivedData --cache.',
     },
     {
       name: '--yes',

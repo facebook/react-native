@@ -145,7 +145,9 @@ describe('scanProjectFiles', () => {
 
   it('skips the build/ directory so nested Package.swift / generated artifacts never enter the source list', () => {
     fs.writeFileSync(path.join(tempDir, 'AppDelegate.swift'), '');
-    fs.mkdirSync(path.join(tempDir, 'build', 'xcframeworks'), {recursive: true});
+    fs.mkdirSync(path.join(tempDir, 'build', 'xcframeworks'), {
+      recursive: true,
+    });
     fs.writeFileSync(
       path.join(tempDir, 'build', 'xcframeworks', 'Package.swift'),
       '',

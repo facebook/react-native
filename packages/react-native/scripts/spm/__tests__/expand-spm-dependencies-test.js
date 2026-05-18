@@ -347,9 +347,9 @@ describe('expandSpmDependencies', () => {
   });
 
   it('rejects spm.name with disallowed characters (spaces, slashes, dots)', () => {
-    expect(() =>
-      resolveSwiftName('a', {spm: {name: 'foo bar'}}),
-    ).toThrow(/invalid 'spm.name'/);
+    expect(() => resolveSwiftName('a', {spm: {name: 'foo bar'}})).toThrow(
+      /invalid 'spm.name'/,
+    );
     expect(() => resolveSwiftName('a', {spm: {name: 'foo/bar'}})).toThrow(
       /invalid 'spm.name'/,
     );

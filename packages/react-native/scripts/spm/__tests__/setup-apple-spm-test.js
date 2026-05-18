@@ -12,7 +12,9 @@
 
 const {
   describeRnRootMismatch,
+  findLegacyXcodeproj,
   gatherCleanTargets,
+  podfileNeedsPatch,
 } = require('../../setup-apple-spm');
 const fs = require('fs');
 const os = require('os');
@@ -138,10 +140,9 @@ describe('gatherCleanTargets', () => {
   });
 
   it('non-existent appRoot still returns generated-dir targets (caller filters by existence)', () => {
-    const result = gatherCleanTargets(
-      path.join(tempDir, 'does-not-exist'),
-      {project: true},
-    );
+    const result = gatherCleanTargets(path.join(tempDir, 'does-not-exist'), {
+      project: true,
+    });
     // The function enumerates paths; existence is checked at deletion time.
     expect(result.length).toBeGreaterThan(0);
   });
@@ -191,5 +192,104 @@ describe('describeRnRootMismatch', () => {
     fs.writeFileSync(path.join(tempDir, 'ios'), '');
     const result = describeRnRootMismatch(tempDir, tempDir);
     expect(result).toBeNull();
+  });
+});
+
+// ---------------------------------------------------------------------------
+// findLegacyXcodeproj + podfileNeedsPatch — Podfile auto-patch helpers.
+// CocoaPods refuses to choose between sibling xcodeprojs when the Podfile
+// has no `project '...'` directive ("Could not automatically select an
+// Xcode project"). These two helpers detect the situation; the CLI prompts
+// the user to add the directive.
+// ---------------------------------------------------------------------------
+
+describe('findLegacyXcodeproj', () => {
+  let tempDir;
+
+  beforeEach(() => {
+    tempDir = fs.mkdtempSync(path.join(os.tmpdir(), 'spm-legacy-xcodeproj-'));
+  });
+
+  afterEach(() => {
+    fs.rmSync(tempDir, {recursive: true, force: true});
+  });
+
+  it('returns the non-SPM xcodeproj when both legacy and -SPM exist side-by-side', () => {
+    fs.mkdirSync(path.join(tempDir, 'MyApp.xcodeproj'));
+    fs.mkdirSync(path.join(tempDir, 'MyApp-SPM.xcodeproj'));
+    expect(findLegacyXcodeproj(tempDir)).toBe('MyApp.xcodeproj');
+  });
+
+  it('returns null when only the SPM-generated xcodeproj is present (nothing to pin to)', () => {
+    fs.mkdirSync(path.join(tempDir, 'MyApp-SPM.xcodeproj'));
+    expect(findLegacyXcodeproj(tempDir)).toBeNull();
+  });
+
+  it('returns null when appRoot does not exist', () => {
+    expect(findLegacyXcodeproj(path.join(tempDir, 'no-such-dir'))).toBeNull();
+  });
+
+  it('ignores .xcodeproj files (not directories) — defensive', () => {
+    fs.writeFileSync(path.join(tempDir, 'NotAProject.xcodeproj'), '');
+    expect(findLegacyXcodeproj(tempDir)).toBeNull();
+  });
+});
+
+describe('podfileNeedsPatch', () => {
+  let tempDir;
+
+  beforeEach(() => {
+    tempDir = fs.mkdtempSync(path.join(os.tmpdir(), 'spm-podfile-patch-'));
+  });
+
+  afterEach(() => {
+    fs.rmSync(tempDir, {recursive: true, force: true});
+  });
+
+  function writePodfile(content) {
+    const p = path.join(tempDir, 'Podfile');
+    fs.writeFileSync(p, content);
+    return p;
+  }
+
+  it('returns null when the Podfile does not exist', () => {
+    expect(podfileNeedsPatch(path.join(tempDir, 'no-such-Podfile'))).toBeNull();
+  });
+
+  it('returns null when the Podfile already has a top-level `project` directive', () => {
+    const p = writePodfile(
+      "platform :ios, '15.0'\nproject 'MyApp.xcodeproj'\n\ntarget 'MyApp' do\nend\n",
+    );
+    expect(podfileNeedsPatch(p)).toBeNull();
+  });
+
+  it('returns null when there is no `target ... do` block at all (unusual but possible)', () => {
+    const p = writePodfile("platform :ios, '15.0'\n# no targets here\n");
+    expect(podfileNeedsPatch(p)).toBeNull();
+  });
+
+  it('returns the insertion point (before the first target) when no project directive is present', () => {
+    const podContent =
+      "platform :ios, '15.0'\nprepare_react_native_project!\n\ntarget 'MyApp' do\n  use_react_native!()\nend\n";
+    const p = writePodfile(podContent);
+    const result = podfileNeedsPatch(p);
+    expect(result).not.toBeNull();
+    if (result != null) {
+      expect(result.content).toBe(podContent);
+      // The insertion point is the start of the line containing the first target.
+      expect(
+        podContent.slice(result.insertAt).startsWith("target 'MyApp' do"),
+      ).toBe(true);
+    }
+  });
+
+  it("ignores `project` references that aren't top-level directives (e.g. method args)", () => {
+    // Hypothetical false positive: a `project` token inside a call/comment.
+    // We only match `project '<...>.xcodeproj'` at start-of-line.
+    const p = writePodfile(
+      "# Note about the project 'foo.xcodeproj' goes here\ntarget 'MyApp' do\nend\n",
+    );
+    const result = podfileNeedsPatch(p);
+    expect(result).not.toBeNull();
   });
 });
