@@ -309,7 +309,7 @@ public class ReactActivityDelegate {
    * @return true if Fabric is enabled for this Activity, false otherwise.
    */
   protected boolean isFabricEnabled() {
-    return ReactNativeNewArchitectureFeatureFlags.enableFabricRenderer();
+    return true;
   }
 
   /**
