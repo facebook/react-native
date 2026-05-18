@@ -858,11 +858,6 @@ public class ReactHostImpl(
       )
 
       Assertions.assertCondition(
-          ReactNativeNewArchitectureFeatureFlags.enableFabricRenderer(),
-          "enableFabricRenderer FeatureFlag must be set to start ReactNative.",
-      )
-
-      Assertions.assertCondition(
           ReactNativeNewArchitectureFeatureFlags.useTurboModules(),
           "useTurboModules FeatureFlag must be set to start ReactNative.",
       )
