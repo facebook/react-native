@@ -12,6 +12,7 @@
 
 const {
   describeRnRootMismatch,
+  detectStandardRnLayoutRedirect,
   findExistingSpmXcodeproj,
   findLegacyXcodeproj,
   gatherCleanTargets,
@@ -193,6 +194,48 @@ describe('describeRnRootMismatch', () => {
     fs.writeFileSync(path.join(tempDir, 'ios'), '');
     const result = describeRnRootMismatch(tempDir, tempDir);
     expect(result).toBeNull();
+  });
+});
+
+// ---------------------------------------------------------------------------
+// detectStandardRnLayoutRedirect — pure detection helper used by main() to
+// decide whether to auto-redirect into the ios/ subdir. Non-destructive
+// actions (init/update/sync/codegen/download/scaffold) redirect with a
+// banner; clean keeps refusing via describeRnRootMismatch's full message.
+// ---------------------------------------------------------------------------
+
+describe('detectStandardRnLayoutRedirect', () => {
+  let tempDir;
+
+  beforeEach(() => {
+    tempDir = fs.mkdtempSync(path.join(os.tmpdir(), 'spm-redirect-'));
+  });
+
+  afterEach(() => {
+    fs.rmSync(tempDir, {recursive: true, force: true});
+  });
+
+  it('returns the ios/ subdir when cwd === projectRoot AND ios/ exists', () => {
+    fs.mkdirSync(path.join(tempDir, 'ios'));
+    expect(detectStandardRnLayoutRedirect(tempDir, tempDir)).toBe(
+      path.join(tempDir, 'ios'),
+    );
+  });
+
+  it('returns null when running from a subdirectory (already cd-ed)', () => {
+    fs.mkdirSync(path.join(tempDir, 'ios'));
+    expect(
+      detectStandardRnLayoutRedirect(path.join(tempDir, 'ios'), tempDir),
+    ).toBeNull();
+  });
+
+  it('returns null for flat layouts (no ios/ subdir, e.g. rn-tester)', () => {
+    expect(detectStandardRnLayoutRedirect(tempDir, tempDir)).toBeNull();
+  });
+
+  it('returns null when `ios` is a file, not a directory', () => {
+    fs.writeFileSync(path.join(tempDir, 'ios'), '');
+    expect(detectStandardRnLayoutRedirect(tempDir, tempDir)).toBeNull();
   });
 });
 

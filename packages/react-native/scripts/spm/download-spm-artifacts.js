@@ -632,9 +632,10 @@ async function main(argv /*:: ?: Array<string> */) /*: Promise<void> */ {
   let rnVersion = args.version;
   if (rnVersion == null) {
     // $FlowFixMe[incompatible-type] JSON.parse returns any
-    rnVersion = JSON.parse(
+    const rnPkg /*: {version: string} */ = JSON.parse(
       fs.readFileSync(path.join(rnRoot, 'package.json'), 'utf8'),
-    ) /*: {version: string} */.version;
+    );
+    rnVersion = rnPkg.version;
   }
   if (rnVersion === '1000.0.0') {
     log('Detected dev version (1000.0.0), resolving as nightly...');
@@ -732,14 +733,19 @@ async function main(argv /*:: ?: Array<string> */) /*: Promise<void> */ {
           outputDir,
           makeCallback(index),
         );
-        return {
+        const ok /*: ArtifactResultEntry */ = {
           name: spec.name,
           error: undefined,
           ...r,
-        } /*: ArtifactResultEntry */;
+        };
+        return ok;
       } catch (e) {
         progress.update(index, `  ${spec.name}: FAILED - ${e.message}`);
-        return {name: spec.name, error: e.message} /*: ArtifactResultEntry */;
+        const failed /*: ArtifactResultEntry */ = {
+          name: spec.name,
+          error: e.message,
+        };
+        return failed;
       }
     }),
   );

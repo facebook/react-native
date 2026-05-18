@@ -647,10 +647,12 @@ function resolveAction(
  * silently skip every npm native dep. The build "succeeds" but anything
  * touching a native module crashes at runtime.
  *
- * Returns null when the cwd is fine, or a string describing the problem
- * when the user should `cd` into `ios/`.
+ * Returns the absolute path to the redirected app root (`<projectRoot>/ios`)
+ * when the redirect heuristic applies, else null. Pure: no side effects.
+ * The caller decides whether to auto-redirect (non-destructive actions) or
+ * refuse (destructive actions like `clean`).
  */
-function describeRnRootMismatch(
+function detectStandardRnLayoutRedirect(
   appRoot /*: string */,
   projectRoot /*: string */,
 ) /*: string | null */ {
@@ -663,13 +665,27 @@ function describeRnRootMismatch(
   // Standard RN layout has an `ios/` subdir holding the native project.
   // Without it (e.g. rn-tester's flat layout), no mismatch to flag.
   const iosSubdir = path.join(projectRoot, 'ios');
-  let isDir = false;
   try {
-    isDir = fs.statSync(iosSubdir).isDirectory();
+    if (!fs.statSync(iosSubdir).isDirectory()) {
+      return null;
+    }
   } catch {
     return null;
   }
-  if (!isDir) {
+  return iosSubdir;
+}
+
+/**
+ * Formats the refuse-message for destructive actions (`clean`) — and for
+ * tooling that wants the long explanation. Returns null when no mismatch
+ * is detected (delegates the detection to detectStandardRnLayoutRedirect).
+ */
+function describeRnRootMismatch(
+  appRoot /*: string */,
+  projectRoot /*: string */,
+) /*: string | null */ {
+  const iosSubdir = detectStandardRnLayoutRedirect(appRoot, projectRoot);
+  if (iosSubdir == null) {
     return null;
   }
   return (
@@ -1168,21 +1184,32 @@ function logNextSteps(
 }
 
 async function main(argv /*:: ?: Array<string> */) /*: Promise<void> */ {
-  const appRoot = process.cwd();
+  let appRoot = process.cwd();
   const projectRoot = findProjectRoot(appRoot);
   const args = parseArgs(argv ?? process.argv.slice(2));
   const action = resolveAction(args.action, appRoot);
 
+  // Standard-RN-layout redirect: if invoked from the JS root and there's an
+  // `ios/` subdir, route the run there. `clean` keeps refusing because its
+  // destructive scopes (--project, --derived-data, --cache) shouldn't
+  // silently retarget a different directory.
+  const redirectTo = detectStandardRnLayoutRedirect(appRoot, projectRoot);
+  if (redirectTo != null) {
+    if (action === 'clean') {
+      logError(describeRnRootMismatch(appRoot, projectRoot) ?? '');
+      process.exitCode = 1;
+      return;
+    }
+    log(
+      `\x1b[33mDetected standard RN layout — running ${action} in ${displayPath(redirectTo)} ` +
+        `instead of ${displayPath(appRoot)}.\x1b[0m`,
+    );
+    appRoot = redirectTo;
+  }
+
   log(`Running SPM ${action} in: ${displayPath(appRoot)}`);
   if (projectRoot !== appRoot) {
     log(`Project root (package.json): ${displayPath(projectRoot)}`);
-  }
-
-  const mismatch = describeRnRootMismatch(appRoot, projectRoot);
-  if (mismatch != null) {
-    logError(mismatch);
-    process.exitCode = 1;
-    return;
   }
 
   if (action === 'clean') {
@@ -1376,6 +1403,7 @@ module.exports = {
   cleanGeneratedState,
   gatherCleanTargets,
   describeRnRootMismatch,
+  detectStandardRnLayoutRedirect,
   findExistingSpmXcodeproj,
   findLegacyXcodeproj,
   podfileNeedsPatch,
