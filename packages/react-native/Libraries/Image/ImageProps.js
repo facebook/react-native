@@ -343,6 +343,7 @@ export type ImageProps = Readonly<{
   style?: ?ImageStyleProp,
 }>;
 
+/** @build-types emit-as-interface Uniwind compatibility */
 export type ImageBackgroundProps = Readonly<{
   ...ImageProps,
   children?: React.Node,
