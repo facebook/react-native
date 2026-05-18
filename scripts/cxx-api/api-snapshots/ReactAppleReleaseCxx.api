@@ -1008,10 +1008,6 @@ interface RCTConvert : public NSObject {
 interface RCTCxxConvert : public NSObject {
 }
 
-interface RCTCxxMethod : public NSObject <RCTBridgeMethod> {
-  public virtual instancetype initWithCxxMethod:(const facebook::xplat::module::CxxModule::Method& cxxMethod);
-}
-
 interface RCTDataRequestHandler : public NSObject <RCTURLRequestHandler, RCTInvalidating> {
 }
 
@@ -5026,13 +5022,6 @@ class facebook::react::DevToolsRuntimeSettingsModule : public facebook::react::N
 class facebook::react::DiffClampAnimatedNode : public facebook::react::ValueAnimatedNode {
   public DiffClampAnimatedNode(facebook::react::Tag tag, const folly::dynamic& config, facebook::react::NativeAnimatedNodesManager& manager);
   public virtual void update() override;
-}
-
-class facebook::react::DispatchMessageQueueThread : public facebook::react::MessageQueueThread {
-  public DispatchMessageQueueThread(RCTModuleData* moduleData);
-  public virtual void quitSynchronous() override;
-  public virtual void runOnQueue(std::function<void()>&& func) override;
-  public void runOnQueueSync(std::function<void()>&& __unused func) override;
 }
 
 class facebook::react::DivisionAnimatedNode : public facebook::react::OperatorAnimatedNode {
