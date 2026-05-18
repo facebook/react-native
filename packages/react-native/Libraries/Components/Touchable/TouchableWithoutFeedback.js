@@ -36,6 +36,7 @@ export type TouchableWithoutFeedbackPropsAndroid = {
   touchSoundDisabled?: ?boolean,
 };
 
+/** @build-types emit-as-interface Expo compatibility */
 export type TouchableWithoutFeedbackProps = Readonly<
   {
     children?: ?React.Node,
