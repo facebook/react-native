@@ -60,6 +60,10 @@ jobs:
             should_test_android:
               # Not an isolated iOS change
               - '**'
+              # TESTING ONLY
+              - '!.github/actions/build-npm-package/action.yml'
+              - '!.github/workflows/test-all.yml'
+              # /TESTING ONLY
               - '!packages/react-native/React/**'
               - '!packages/react-native/ReactApple/**'
               - '!packages/react-native/**/*.m'
@@ -71,6 +75,10 @@ jobs:
             should_test_ios:
               # Not an isolated Android change
               - '**'
+              # TESTING ONLY
+              - '!.github/actions/build-npm-package/action.yml'
+              - '!.github/workflows/test-all.yml'
+              # /TESTING ONLY
               - '!gradle/**'
               - '!gradle*'
               - '!packages/gradle-plugin/**'
@@ -99,6 +107,7 @@ jobs:
 
   prebuild_react_native_core:
     uses: ./.github/workflows/prebuild-ios-core.yml
+    if: ${{ needs.prebuild_apple_dependencies.result == 'success' }}
     with:
       use-hermes-prebuilt: ${{ !endsWith(github.ref_name, '-stable') }}
     secrets: inherit
@@ -108,6 +117,7 @@ jobs:
     runs-on: macos-15
     needs:
       [prebuild_apple_dependencies, prebuild_react_native_core]
+    if: ${{ needs.prebuild_react_native_core.result == 'success' }}
     steps:
       - name: Checkout
         uses: actions/checkout@v6
@@ -141,6 +151,7 @@ jobs:
     runs-on: macos-15-large
     needs:
       [prebuild_apple_dependencies, prebuild_react_native_core]
+    if: ${{ needs.prebuild_react_native_core.result == 'success' }}
     continue-on-error: true
     strategy:
       fail-fast: false
@@ -158,6 +169,7 @@ jobs:
 
   test_e2e_ios_rntester:
     needs: test_ios_rntester
+    if: ${{ needs.test_ios_rntester.result == 'success' }}
     uses: ./.github/workflows/e2e-ios-rntester.yml
     secrets: inherit
 
@@ -176,7 +188,8 @@ jobs:
     secrets: inherit
 
   test_e2e_ios_templateapp:
-    needs: [build_npm_package, prebuild_apple_dependencies]
+    needs: [build_npm_package, prebuild_apple_dependencies, check_code_changes]
+    if: needs.check_code_changes.outputs.should_test_ios == 'true'
     uses: ./.github/workflows/e2e-ios-templateapp.yml
     secrets: inherit
 
@@ -195,7 +208,8 @@ jobs:
     secrets: inherit
 
   test_e2e_android_templateapp:
-    needs: build_npm_package
+    needs: [build_npm_package, build_android]
+    if: ${{ always() && needs.build_android.result == 'success' && needs.build_npm_package.result == 'success' }}
     uses: ./.github/workflows/e2e-android-templateapp.yml
     secrets: inherit
 
@@ -284,6 +298,7 @@ jobs:
 
   test_e2e_android_rntester:
     needs: build_android
+    if: ${{ needs.build_android.result == 'success' }}
     uses: ./.github/workflows/e2e-android-rntester.yml
     secrets: inherit
 
@@ -306,10 +321,15 @@ jobs:
     needs:
       [
         set_release_type,
+        check_code_changes,
         build_android,
         prebuild_apple_dependencies,
         prebuild_react_native_core,
       ]
+    if: |
+      always() &&
+      !contains(needs.*.result, 'failure') &&
+      !contains(needs.*.result, 'cancelled')
     container:
       image: reactnativecommunity/react-native-android:latest
       env:
@@ -327,10 +347,12 @@ jobs:
         with:
           release-type: ${{ needs.set_release_type.outputs.RELEASE_TYPE }}
           gradle-cache-encryption-key: ${{ secrets.GRADLE_CACHE_ENCRYPTION_KEY }}
+          skip-apple-prebuilts: ${{ needs.check_code_changes.outputs.should_test_ios == 'false' }}
 
   test_android_helloworld:
     runs-on: 4-core-ubuntu
-    needs: build_npm_package
+    needs: [build_npm_package, build_android]
+    if: ${{ always() && needs.build_android.result == 'success' && needs.build_npm_package.result == 'success' }}
     container:
       image: reactnativecommunity/react-native-android:latest
     env:
@@ -396,6 +418,7 @@ jobs:
   test_ios_helloworld_with_ruby_3_2_0:
     runs-on: macos-15
     needs: [prebuild_apple_dependencies, prebuild_react_native_core]
+    if: ${{ needs.prebuild_react_native_core.result == 'success' }}
     env:
       PROJECT_NAME: iOSTemplateProject
       YARN_ENABLE_IMMUTABLE_INSTALLS: false
@@ -410,6 +433,7 @@ jobs:
   test_ios_helloworld:
     runs-on: macos-15
     needs: [prebuild_apple_dependencies, prebuild_react_native_core]
+    if: ${{ needs.prebuild_react_native_core.result == 'success' }}
     strategy:
       matrix:
         flavor: [Debug, Release]
@@ -510,4 +534,3 @@ jobs:
       - name: Verify debugger-shell build
         shell: bash
         run: node scripts/debugger-shell/build-binary.js
-
