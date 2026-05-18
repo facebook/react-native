@@ -102,7 +102,6 @@ public object DefaultNewArchitectureEntryPoint {
       }
     }
 
-    privateFabricEnabled = fabricEnabled
     privateTurboModulesEnabled = turboModulesEnabled
     privateConcurrentReactEnabled = fabricEnabled
     privateBridgelessEnabled = bridgelessEnabled
@@ -120,7 +119,7 @@ public object DefaultNewArchitectureEntryPoint {
     val (isValid, errorMessage) =
         isConfigurationValid(
             privateTurboModulesEnabled,
-            privateFabricEnabled,
+            true,
             privateBridgelessEnabled,
         )
     if (!isValid) {
@@ -129,8 +128,6 @@ public object DefaultNewArchitectureEntryPoint {
 
     DefaultSoLoader.maybeLoadSoLibrary()
   }
-
-  private var privateFabricEnabled: Boolean = false
 
   @JvmStatic
   public val fabricEnabled: Boolean
