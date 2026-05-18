@@ -387,7 +387,11 @@ using namespace facebook;
  */
 - (NSMethodSignature *)methodSignatureForSelector:(SEL)sel;
 {
+#ifndef RCT_REMOVE_LEGACY_ARCH
   return [RCTCxxBridge instanceMethodSignatureForSelector:sel];
+#else
+  return [RCTBridge instanceMethodSignatureForSelector:sel];
+#endif
 }
 
 - (void)forwardInvocation:(NSInvocation *)invocation
