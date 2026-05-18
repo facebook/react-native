@@ -1,5 +1,110 @@
 # Changelog
 
+## v0.86.0-rc.1
+
+### Breaking
+
+
+
+#### Android specific
+
+
+
+#### iOS specific
+
+
+
+### Added
+
+
+
+#### Android specific
+
+
+
+#### iOS specific
+
+
+
+### Changed
+
+
+
+#### Android specific
+
+
+
+#### iOS specific
+
+
+
+### Deprecated
+
+
+
+#### Android specific
+
+
+
+#### iOS specific
+
+
+
+### Removed
+
+
+
+#### Android specific
+
+
+
+#### iOS specific
+
+
+
+### Fixed
+
+
+
+#### Android specific
+
+- `Image.getSize` and `Image.getSizeWithHeaders` now return the true source dimensions instead of Fresco's downsampled values ([8823a8009b](https://github.com/facebook/react-native/commit/8823a8009b18950d5be2682a86cfcf0c7014a068) by [@zoontek](https://github.com/zoontek))
+
+#### iOS specific
+
+- Persist `PODFILE_DIR` as `$(SRCROOT)`-relative so `project.pbxproj` is portable across machines ([44bb83bd84](https://github.com/facebook/react-native/commit/44bb83bd843a3b34779f1e7b1e09dbb3f4f38c6a) by [@zoontek](https://github.com/zoontek))
+
+### Security
+
+
+
+#### Android specific
+
+
+
+#### iOS specific
+
+
+
+### Unknown
+
+- Release 0.86.0-rc.1 ([94b6bcb34c](https://github.com/facebook/react-native/commit/94b6bcb34ca77e0aa81f487bb3ab958ff3556c4c) by [@react-native-bot](https://github.com/react-native-bot))
+- Bump Podfile.lock ([6b54fca2c0](https://github.com/facebook/react-native/commit/6b54fca2c02ae3ca9187c8a379fb3580f34d9ec9) by [@react-native-bot](https://github.com/react-native-bot))
+- Release 0.86.0-rc.0 ([1382a5d9a8](https://github.com/facebook/react-native/commit/1382a5d9a8f84a9e8ca64c6ecc6ec6d222e8367e) by [@react-native-bot](https://github.com/react-native-bot))
+
+#### Android Unknown
+
+
+
+#### iOS Unknown
+
+
+
+#### Failed to parse
+
+
+
+
 ## v0.86.0-rc.0
 
 ### Added
