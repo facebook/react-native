@@ -114,9 +114,7 @@ public object DefaultNewArchitectureEntryPoint {
   internal fun loadWithFeatureFlags(featureFlags: ReactNativeFeatureFlagsProvider) {
     ReactNativeFeatureFlags.override(featureFlags)
 
-    privateFabricEnabled = featureFlags.enableFabricRenderer()
     privateTurboModulesEnabled = featureFlags.useTurboModules()
-    privateConcurrentReactEnabled = featureFlags.enableFabricRenderer()
     privateBridgelessEnabled = featureFlags.enableBridgelessArchitecture()
 
     val (isValid, errorMessage) =
@@ -136,7 +134,7 @@ public object DefaultNewArchitectureEntryPoint {
 
   @JvmStatic
   public val fabricEnabled: Boolean
-    get() = privateFabricEnabled
+    get() = true
 
   private var privateTurboModulesEnabled: Boolean = false
 
@@ -148,7 +146,7 @@ public object DefaultNewArchitectureEntryPoint {
 
   @JvmStatic
   public val concurrentReactEnabled: Boolean
-    get() = privateConcurrentReactEnabled
+    get() = true
 
   private var privateBridgelessEnabled: Boolean = false
 
