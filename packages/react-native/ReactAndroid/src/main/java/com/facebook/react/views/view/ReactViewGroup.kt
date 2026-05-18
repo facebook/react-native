@@ -125,7 +125,7 @@ public open class ReactViewGroup public constructor(context: Context?) :
    * override all possible add methods for [ViewGroup] so that we can control this process whenever
    * the option is set. We also override [ViewGroup#getChildAt] and [ViewGroup#getChildCount] so
    * those methods may return views that are not attached. This is risky but allows us to perform a
-   * correct cleanup.
+   * correct cleanup in `NativeViewHierarchyManager`.
    */
   internal var _removeClippedSubviews = false
 
@@ -231,7 +231,7 @@ public open class ReactViewGroup public constructor(context: Context?) :
   @SuppressLint("MissingSuperCall")
   override fun requestLayout() {
     // No-op, terminate `requestLayout` here, UIManager handles laying out children and
-    // `layout` is called on all RN-managed views by the UIManager
+    // `layout` is called on all RN-managed views by `NativeViewHierarchyManager`
   }
 
   @TargetApi(23)

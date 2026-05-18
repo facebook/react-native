@@ -65,7 +65,7 @@ import java.util.concurrent.CopyOnWriteArrayList;
  * blocks could allow the platform UI system to interrupt and render a partial UI state.
  *
  * <p>To facilitate this, this module enqueues operations that are then applied to native view
- * hierarchy at the end of each transaction.
+ * hierarchy through {@link NativeViewHierarchyManager} at the end of each transaction.
  *
  * <p>
  *
@@ -194,6 +194,16 @@ public class UIManagerModule extends ReactContextBaseJavaModule
   @Deprecated
   public ViewManagerRegistry getViewManagerRegistry_DO_NOT_USE() {
     return mViewManagerRegistry;
+  }
+
+  /**
+   * @deprecated This method is a stub retained for backward compatibility with third-party
+   *     libraries. It always returns null. UIImplementation is part of the Legacy Architecture and
+   *     will be removed in a future release.
+   */
+  @Deprecated
+  public UIImplementation getUIImplementation() {
+    return new UIImplementation(null, null, null, 0);
   }
 
   private static Map<String, Object> createConstants(ViewManagerResolver viewManagerResolver) {

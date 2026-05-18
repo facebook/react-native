@@ -4206,6 +4206,63 @@ public abstract interface class com/facebook/react/uimanager/UIBlock {
 	public abstract fun execute (Lcom/facebook/react/uimanager/NativeViewHierarchyManager;)V
 }
 
+public class com/facebook/react/uimanager/UIImplementation {
+	protected fun <init> (Lcom/facebook/react/bridge/ReactApplicationContext;Lcom/facebook/react/uimanager/ViewManagerRegistry;Lcom/facebook/react/uimanager/UIViewOperationQueue;Lcom/facebook/react/uimanager/events/EventDispatcher;)V
+	public fun addUIBlock (Lcom/facebook/react/uimanager/UIBlock;)V
+	protected fun calculateRootLayout (Lcom/facebook/react/uimanager/ReactShadowNode;)V
+	public fun clearJSResponder ()V
+	public fun configureNextLayoutAnimation (Lcom/facebook/react/bridge/ReadableMap;Lcom/facebook/react/bridge/Callback;)V
+	protected fun createRootShadowNode ()Lcom/facebook/react/uimanager/ReactShadowNode;
+	protected fun createShadowNode (Ljava/lang/String;)Lcom/facebook/react/uimanager/ReactShadowNode;
+	public fun createView (ILjava/lang/String;ILcom/facebook/react/bridge/ReadableMap;)V
+	public fun dispatchViewManagerCommand (IILcom/facebook/react/bridge/ReadableArray;)V
+	public fun dispatchViewManagerCommand (ILjava/lang/String;Lcom/facebook/react/bridge/ReadableArray;)V
+	public fun dispatchViewUpdates (I)V
+	public fun findSubviewIn (IFFLcom/facebook/react/bridge/Callback;)V
+	public fun getProfiledBatchPerfCounters ()Ljava/util/Map;
+	public fun getRootViewNum ()I
+	protected fun handleCreateView (Lcom/facebook/react/uimanager/ReactShadowNode;ILcom/facebook/react/uimanager/ReactStylesDiffMap;)V
+	protected fun handleUpdateView (Lcom/facebook/react/uimanager/ReactShadowNode;Ljava/lang/String;Lcom/facebook/react/uimanager/ReactStylesDiffMap;)V
+	public fun manageChildren (ILcom/facebook/react/bridge/ReadableArray;Lcom/facebook/react/bridge/ReadableArray;Lcom/facebook/react/bridge/ReadableArray;Lcom/facebook/react/bridge/ReadableArray;Lcom/facebook/react/bridge/ReadableArray;)V
+	public fun measure (ILcom/facebook/react/bridge/Callback;)V
+	public fun measureInWindow (ILcom/facebook/react/bridge/Callback;)V
+	public fun measureLayout (IILcom/facebook/react/bridge/Callback;Lcom/facebook/react/bridge/Callback;)V
+	public fun measureLayoutRelativeToParent (ILcom/facebook/react/bridge/Callback;Lcom/facebook/react/bridge/Callback;)V
+	public fun onCatalystInstanceDestroyed ()V
+	public fun onHostDestroy ()V
+	public fun onHostPause ()V
+	public fun onHostResume ()V
+	public fun prependUIBlock (Lcom/facebook/react/uimanager/UIBlock;)V
+	public fun profileNextBatch ()V
+	public fun registerRootView (Landroid/view/View;ILcom/facebook/react/uimanager/ThemedReactContext;)V
+	public fun removeLayoutUpdateListener ()V
+	public fun removeRootShadowNode (I)V
+	public fun removeRootView (I)V
+	protected final fun removeShadowNode (Lcom/facebook/react/uimanager/ReactShadowNode;)V
+	public fun replaceExistingNonRootView (II)V
+	public fun resolveRootTagFromReactTag (I)I
+	public final fun resolveShadowNode (I)Lcom/facebook/react/uimanager/ReactShadowNode;
+	protected final fun resolveViewManager (Ljava/lang/String;)Lcom/facebook/react/uimanager/ViewManager;
+	public fun sendAccessibilityEvent (II)V
+	public fun setChildren (ILcom/facebook/react/bridge/ReadableArray;)V
+	public fun setJSResponder (IZ)V
+	public fun setLayoutAnimationEnabledExperimental (Z)V
+	public fun setLayoutUpdateListener (Lcom/facebook/react/uimanager/UIImplementation$LayoutUpdateListener;)V
+	public fun setViewLocalData (ILjava/lang/Object;)V
+	public fun synchronouslyUpdateViewOnUIThread (ILcom/facebook/react/uimanager/ReactStylesDiffMap;)V
+	public fun updateInsetsPadding (IIIII)V
+	public fun updateNodeSize (III)V
+	public fun updateRootView (III)V
+	public fun updateRootView (Lcom/facebook/react/uimanager/ReactShadowNode;II)V
+	public fun updateView (ILjava/lang/String;Lcom/facebook/react/bridge/ReadableMap;)V
+	protected fun updateViewHierarchy ()V
+	public fun viewIsDescendantOf (IILcom/facebook/react/bridge/Callback;)V
+}
+
+public abstract interface class com/facebook/react/uimanager/UIImplementation$LayoutUpdateListener {
+	public abstract fun onLayoutUpdated (Lcom/facebook/react/uimanager/ReactShadowNode;)V
+}
+
 public final class com/facebook/react/uimanager/UIManagerHelper {
 	public static final field INSTANCE Lcom/facebook/react/uimanager/UIManagerHelper;
 	public static final field PADDING_BOTTOM_INDEX I
@@ -4248,6 +4305,7 @@ public class com/facebook/react/uimanager/UIManagerModule : com/facebook/react/b
 	public fun getEventDispatcher ()Lcom/facebook/react/uimanager/events/EventDispatcher;
 	public fun getName ()Ljava/lang/String;
 	public fun getPerformanceCounters ()Ljava/util/Map;
+	public fun getUIImplementation ()Lcom/facebook/react/uimanager/UIImplementation;
 	public fun getViewManagerRegistry_DO_NOT_USE ()Lcom/facebook/react/uimanager/ViewManagerRegistry;
 	public fun initialize ()V
 	public fun invalidate ()V
@@ -4300,6 +4358,7 @@ public class com/facebook/react/uimanager/UIViewOperationQueue {
 	public fun enqueueDispatchCommand (IILcom/facebook/react/bridge/ReadableArray;)V
 	public fun enqueueDispatchCommand (ILjava/lang/String;Lcom/facebook/react/bridge/ReadableArray;)V
 	public fun enqueueFindTargetForTouch (IFFLcom/facebook/react/bridge/Callback;)V
+	public fun enqueueLayoutUpdateFinished (Lcom/facebook/react/uimanager/ReactShadowNode;Lcom/facebook/react/uimanager/UIImplementation$LayoutUpdateListener;)V
 	public fun enqueueManageChildren (I[I[Lcom/facebook/react/uimanager/ViewAtIndex;[I)V
 	public fun enqueueMeasure (ILcom/facebook/react/bridge/Callback;)V
 	public fun enqueueMeasureInWindow (ILcom/facebook/react/bridge/Callback;)V
