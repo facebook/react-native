@@ -5,6 +5,7 @@
 
 require 'net/http'
 require 'rexml/document'
+require 'digest'
 
 HERMES_GITHUB_URL = "https://github.com/facebook/hermes.git"
 ENV_BUILD_FROM_SOURCE = "RCT_BUILD_HERMES_FROM_SOURCE"
@@ -221,16 +222,77 @@ def download_stable_hermes(react_native_path, version, configuration)
     download_hermes_tarball(react_native_path, tarball_url, version, configuration)
 end
 
-def download_hermes_tarball(react_native_path, tarball_url, version, configuration)
-    destination_path = configuration == nil ?
-        "#{artifacts_dir()}/hermes-ios-#{version}.tar.gz" :
-        "#{artifacts_dir()}/hermes-ios-#{version}-#{configuration}.tar.gz"
+def shared_cache_dir()
+    return File.join(Dir.home, "Library", "Caches", "ReactNative")
+end
 
-    unless File.exist?(destination_path)
-      # Download to a temporary file first so we don't cache incomplete downloads.
-      tmp_file = "#{artifacts_dir()}/hermes-ios.download"
-      `mkdir -p "#{artifacts_dir()}" && curl "#{tarball_url}" -Lo "#{tmp_file}" && mv "#{tmp_file}" "#{destination_path}"`
+def fetch_maven_sha1(tarball_url)
+    sha1 = `curl -sL "#{tarball_url}.sha1"`.strip
+    return sha1.downcase if $?.success? && sha1.match?(/\A[a-fA-F0-9]{40}\z/)
+    nil
+end
+
+def validate_hermes_tarball(path, tarball_url)
+    expected_sha1 = fetch_maven_sha1(tarball_url)
+    basename = File.basename(path)
+    if expected_sha1.nil?
+      hermes_log("SHA1 not available from Maven for #{basename}. Skipping validation.", :info)
+      return true
     end
+    actual_sha1 = Digest::SHA1.file(path).hexdigest
+    if actual_sha1 == expected_sha1
+      hermes_log("SHA1 verified for #{basename}", :info)
+      return true
+    end
+    hermes_log("SHA1 mismatch for #{basename}: expected #{expected_sha1}, got #{actual_sha1}", :error)
+    return false
+end
+
+def download_hermes_tarball(react_native_path, tarball_url, version, configuration)
+    filename = configuration == nil ?
+        "hermes-ios-#{version}.tar.gz" :
+        "hermes-ios-#{version}-#{configuration}.tar.gz"
+    destination_path = "#{artifacts_dir()}/#{filename}"
+
+    if File.exist?(destination_path)
+      hermes_log("Tarball #{filename} already exists in Pods. Skipping download.", :info)
+      return destination_path
+    end
+
+    `mkdir -p "#{artifacts_dir()}"`
+
+    cached_path = File.join(shared_cache_dir(), filename)
+    if File.exist?(cached_path)
+      hermes_log("Verifying checksum for cached #{filename}...", :info)
+      if validate_hermes_tarball(cached_path, tarball_url)
+        hermes_log("Cache hit: copying #{filename} from shared cache (#{shared_cache_dir()})", :info)
+        FileUtils.cp(cached_path, destination_path)
+      else
+        hermes_log("Shared cache file #{filename} failed SHA verification. Re-downloading.", :info)
+        tmp_file = "#{artifacts_dir()}/hermes-ios.download"
+        `curl "#{tarball_url}" -Lo "#{tmp_file}" && mv "#{tmp_file}" "#{destination_path}"`
+        hermes_log("Verifying checksum for downloaded #{filename}...", :info)
+        if validate_hermes_tarball(destination_path, tarball_url)
+          FileUtils.cp(destination_path, cached_path)
+          hermes_log("Saved #{filename} to shared cache (#{shared_cache_dir()})", :info)
+        else
+          hermes_log("Downloaded file #{filename} failed SHA verification!", :error)
+        end
+      end
+    else
+      hermes_log("Cache miss: downloading #{filename} from #{tarball_url}", :info)
+      tmp_file = "#{artifacts_dir()}/hermes-ios.download"
+      `curl "#{tarball_url}" -Lo "#{tmp_file}" && mv "#{tmp_file}" "#{destination_path}"`
+      hermes_log("Verifying checksum for downloaded #{filename}...", :info)
+      if validate_hermes_tarball(destination_path, tarball_url)
+        `mkdir -p "#{shared_cache_dir()}"`
+        FileUtils.cp(destination_path, cached_path)
+        hermes_log("Saved #{filename} to shared cache (#{shared_cache_dir()})", :info)
+      else
+        hermes_log("Downloaded file #{filename} failed SHA verification!", :error)
+      end
+    end
+
     return destination_path
 end
 

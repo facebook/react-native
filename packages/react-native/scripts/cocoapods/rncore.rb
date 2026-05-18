@@ -174,14 +174,48 @@ class ReactNativeCoreUtils
     end
 
     def self.download_rncore_tarball(react_native_path, tarball_url, version, configuration)
-        destination_path = configuration == nil ?
-            "#{artifacts_dir()}/reactnative-core-#{version}.tar.gz" :
-            "#{artifacts_dir()}/reactnative-core-#{version}-#{configuration}.tar.gz"
+        filename = configuration == nil ?
+            "reactnative-core-#{version}.tar.gz" :
+            "reactnative-core-#{version}-#{configuration}.tar.gz"
+        destination_path = "#{artifacts_dir()}/#{filename}"
 
-        unless File.exist?(destination_path)
-          # Download to a temporary file first so we don't cache incomplete downloads.
+        if File.exist?(destination_path)
+          rncore_log("Tarball #{filename} already exists in Pods. Skipping download.")
+          return destination_path
+        end
+
+        `mkdir -p "#{artifacts_dir()}"`
+
+        cached_path = File.join(ReactNativePodsUtils.shared_cache_dir(), filename)
+        if File.exist?(cached_path)
+          rncore_log("Verifying checksum for cached #{filename}...")
+          if ReactNativePodsUtils.validate_tarball(cached_path, tarball_url)
+            rncore_log("Cache hit: copying #{filename} from shared cache (#{ReactNativePodsUtils.shared_cache_dir()})")
+            FileUtils.cp(cached_path, destination_path)
+          else
+            rncore_log("Shared cache file #{filename} failed SHA verification. Re-downloading.")
+            tmp_file = "#{artifacts_dir()}/reactnative-core.download"
+            `curl "#{tarball_url}" -Lo "#{tmp_file}" && mv "#{tmp_file}" "#{destination_path}"`
+            rncore_log("Verifying checksum for downloaded #{filename}...")
+            if ReactNativePodsUtils.validate_tarball(destination_path, tarball_url)
+              FileUtils.cp(destination_path, cached_path)
+              rncore_log("Saved #{filename} to shared cache (#{ReactNativePodsUtils.shared_cache_dir()})")
+            else
+              rncore_log("Downloaded file #{filename} failed SHA verification!", :error)
+            end
+          end
+        else
+          rncore_log("Cache miss: downloading #{filename} from #{tarball_url}")
           tmp_file = "#{artifacts_dir()}/reactnative-core.download"
-          `mkdir -p "#{artifacts_dir()}" && curl "#{tarball_url}" -Lo "#{tmp_file}" && mv "#{tmp_file}" "#{destination_path}"`
+          `curl "#{tarball_url}" -Lo "#{tmp_file}" && mv "#{tmp_file}" "#{destination_path}"`
+          rncore_log("Verifying checksum for downloaded #{filename}...")
+          if ReactNativePodsUtils.validate_tarball(destination_path, tarball_url)
+            `mkdir -p "#{ReactNativePodsUtils.shared_cache_dir()}"`
+            FileUtils.cp(destination_path, cached_path)
+            rncore_log("Saved #{filename} to shared cache (#{ReactNativePodsUtils.shared_cache_dir()})")
+          else
+            rncore_log("Downloaded file #{filename} failed SHA verification!", :error)
+          end
         end
 
         return destination_path
