@@ -60,7 +60,7 @@ std::pair<
     SnapshotMap&>
 AnimatedPropsRegistry::getMap(SurfaceId surfaceId) {
   auto lock = std::lock_guard(mutex_);
-  auto& [pendingMap, map, pendingFamilies, families] =
+  auto& [pendingMap, map, pendingFamilies, families, pendingRemovals] =
       surfaceContexts_[surfaceId];
 
   for (auto& family : pendingFamilies) {
@@ -88,6 +88,11 @@ AnimatedPropsRegistry::getMap(SurfaceId surfaceId) {
   pendingMap.clear();
   pendingFamilies.clear();
 
+  for (auto& tag : pendingRemovals) {
+    map.erase(tag);
+  }
+  pendingRemovals.clear();
+
   return {families, map};
 }
 
@@ -104,6 +109,14 @@ void AnimatedPropsRegistry::clear(SurfaceId surfaceId) {
 void AnimatedPropsRegistry::clearOnSurfaceStop(SurfaceId surfaceId) {
   auto lock = std::lock_guard(mutex_);
   surfaceContexts_.erase(surfaceId);
+}
+
+void AnimatedPropsRegistry::clearRegistryForTag(SurfaceId surfaceId, Tag tag) {
+  auto lock = std::lock_guard(mutex_);
+  if (auto it = surfaceContexts_.find(surfaceId);
+      it != surfaceContexts_.end()) {
+    it->second.pendingRemovals.insert(tag);
+  }
 }
 
 } // namespace facebook::react

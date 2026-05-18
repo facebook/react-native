@@ -25,6 +25,7 @@ struct PropsSnapshot {
 struct SurfaceContext {
   std::unordered_map<Tag, std::unique_ptr<PropsSnapshot>> pendingMap, map;
   std::unordered_set<std::shared_ptr<const ShadowNodeFamily>> pendingFamilies, families;
+  std::unordered_set<Tag> pendingRemovals;
 };
 
 struct SurfaceUpdates {
@@ -35,11 +36,24 @@ struct SurfaceUpdates {
 
 using SnapshotMap = std::unordered_map<Tag, std::unique_ptr<PropsSnapshot>>;
 
+// Threading model:
+// - UI thread writes to pending* containers (update(), clearRegistryForTag())
+// - Commit thread drains pending* into active containers in getMap(), then
+//   returns references for safe iteration by the commit hook.
+// - The mutex protects the handoff. After getMap() returns, only the commit
+//   thread reads map/families, while the UI thread only writes pending*.
 class AnimatedPropsRegistry {
  public:
+  // UI thread (animation frame). Writes to pending* containers.
   void update(const std::unordered_map<SurfaceId, SurfaceUpdates> &surfaceUpdates);
+  // UI thread (node disconnect). Writes to pendingRemovals.
+  void clearRegistryForTag(SurfaceId surfaceId, Tag tag);
+  // Commit/JS thread (flush at completeSurface and after animation end).
   void clear(SurfaceId surfaceId);
+  // JS thread (surface teardown).
   void clearOnSurfaceStop(SurfaceId surfaceId);
+  // JS thread (commit hook). Drains all pending* into active
+  // containers and returns references for iteration.
   std::pair<std::unordered_set<std::shared_ptr<const ShadowNodeFamily>> &, SnapshotMap &> getMap(SurfaceId surfaceId);
 
  private:

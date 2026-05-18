@@ -56,6 +56,7 @@ class AnimationBackend : public UIManagerAnimationBackend {
   void requestAsyncFlushForSurfaces(const std::set<SurfaceId> &surfaces);
   void clearRegistry(SurfaceId surfaceId) override;
   void clearRegistryOnSurfaceStop(SurfaceId surfaceId) override;
+  void clearRegistryForTag(SurfaceId surfaceId, Tag tag) override;
   void registerJSInvoker(std::shared_ptr<CallInvoker> jsInvoker) override;
 
   void onAnimationFrame(AnimationTimestamp timestamp) override;

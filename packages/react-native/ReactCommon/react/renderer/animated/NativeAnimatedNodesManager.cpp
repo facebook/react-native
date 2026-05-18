@@ -257,6 +257,13 @@ void NativeAnimatedNodesManager::disconnectAnimatedNodeFromView(
   if (node != nullptr) {
     node->disconnectFromView(viewTag);
     if (ReactNativeFeatureFlags::useSharedAnimatedBackend()) {
+      // Remove from AnimatedPropsRegistry to prevent unbounded memory growth
+      // on long-lived surfaces. connectedRootTag() is the surfaceId set at
+      // node creation time — no weak_ptr lock needed.
+      if (auto animationBackend = animationBackend_.lock()) {
+        animationBackend->clearRegistryForTag(
+            node->connectedRootTag(), viewTag);
+      }
       node->disconnectFromShadowNodeFamily();
     }
     {
