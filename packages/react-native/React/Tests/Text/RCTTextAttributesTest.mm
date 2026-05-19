@@ -5,6 +5,8 @@
  * LICENSE file in the root directory of this source tree.
  */
 
+#ifndef RCT_REMOVE_LEGACY_ARCH
+
 #import <Foundation/Foundation.h>
 #import <XCTest/XCTest.h>
 
@@ -47,3 +49,5 @@
 }
 
 @end
+
+#endif // RCT_REMOVE_LEGACY_ARCH
