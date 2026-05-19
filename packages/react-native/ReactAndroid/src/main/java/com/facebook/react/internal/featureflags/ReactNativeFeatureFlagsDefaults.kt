@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<f63cf074bb6687c479e2f4059662ff76>>
+ * @generated SignedSource<<f4b6d9ed2f6ccff6ab01e53f6048423c>>
  */
 
 /**
@@ -108,6 +108,8 @@ public open class ReactNativeFeatureFlagsDefaults : ReactNativeFeatureFlagsProvi
   override fun enablePreparedTextLayout(): Boolean = false
 
   override fun enablePropsUpdateReconciliationAndroid(): Boolean = false
+
+  override fun enableRuntimeSchedulerQueueClearingOnError(): Boolean = false
 
   override fun enableSchedulerDelegateInvalidation(): Boolean = false
 

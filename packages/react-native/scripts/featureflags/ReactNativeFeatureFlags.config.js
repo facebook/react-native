@@ -503,6 +503,17 @@ const definitions: FeatureFlagDefinitions = {
       },
       ossReleaseStage: 'none',
     },
+    enableRuntimeSchedulerQueueClearingOnError: {
+      defaultValue: false,
+      metadata: {
+        dateAdded: '2026-05-19',
+        description:
+          'When enabled, RuntimeScheduler_Modern clears pending tasks and rendering updates before handling an error.',
+        expectedReleaseValue: true,
+        purpose: 'experimentation',
+      },
+      ossReleaseStage: 'experimental',
+    },
     enableSchedulerDelegateInvalidation: {
       defaultValue: false,
       metadata: {

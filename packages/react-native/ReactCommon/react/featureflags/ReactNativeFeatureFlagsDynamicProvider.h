@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<2a2318da48b2d84076bea7d5be491da5>>
+ * @generated SignedSource<<ec98fe64276aaaa226710fad24b27415>>
  */
 
 /**
@@ -430,6 +430,15 @@ class ReactNativeFeatureFlagsDynamicProvider : public ReactNativeFeatureFlagsDef
     }
 
     return ReactNativeFeatureFlagsDefaults::enablePropsUpdateReconciliationAndroid();
+  }
+
+  bool enableRuntimeSchedulerQueueClearingOnError() override {
+    auto value = values_["enableRuntimeSchedulerQueueClearingOnError"];
+    if (!value.isNull()) {
+      return value.getBool();
+    }
+
+    return ReactNativeFeatureFlagsDefaults::enableRuntimeSchedulerQueueClearingOnError();
   }
 
   bool enableSchedulerDelegateInvalidation() override {

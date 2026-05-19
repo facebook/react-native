@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<27e88ec53841585796515db0406909dd>>
+ * @generated SignedSource<<6ee1cc911c3ebb12b31151441dd43605>>
  */
 
 /**
@@ -67,6 +67,7 @@ internal class ReactNativeFeatureFlagsLocalAccessor : ReactNativeFeatureFlagsAcc
   private var enableNetworkEventReportingCache: Boolean? = null
   private var enablePreparedTextLayoutCache: Boolean? = null
   private var enablePropsUpdateReconciliationAndroidCache: Boolean? = null
+  private var enableRuntimeSchedulerQueueClearingOnErrorCache: Boolean? = null
   private var enableSchedulerDelegateInvalidationCache: Boolean? = null
   private var enableSwiftUIBasedFiltersCache: Boolean? = null
   private var enableViewCullingCache: Boolean? = null
@@ -542,6 +543,16 @@ internal class ReactNativeFeatureFlagsLocalAccessor : ReactNativeFeatureFlagsAcc
       cached = currentProvider.enablePropsUpdateReconciliationAndroid()
       accessedFeatureFlags.add("enablePropsUpdateReconciliationAndroid")
       enablePropsUpdateReconciliationAndroidCache = cached
+    }
+    return cached
+  }
+
+  override fun enableRuntimeSchedulerQueueClearingOnError(): Boolean {
+    var cached = enableRuntimeSchedulerQueueClearingOnErrorCache
+    if (cached == null) {
+      cached = currentProvider.enableRuntimeSchedulerQueueClearingOnError()
+      accessedFeatureFlags.add("enableRuntimeSchedulerQueueClearingOnError")
+      enableRuntimeSchedulerQueueClearingOnErrorCache = cached
     }
     return cached
   }
