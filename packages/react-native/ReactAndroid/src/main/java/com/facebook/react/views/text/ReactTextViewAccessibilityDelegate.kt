@@ -10,8 +10,16 @@ package com.facebook.react.views.text
 import android.graphics.Rect
 import android.os.Bundle
 import android.text.Layout
+import android.text.SpannableString
 import android.text.Spanned
+import android.text.style.AbsoluteSizeSpan
+import android.text.style.BackgroundColorSpan
 import android.text.style.ClickableSpan
+import android.text.style.ForegroundColorSpan
+import android.text.style.StrikethroughSpan
+import android.text.style.StyleSpan
+import android.text.style.URLSpan
+import android.text.style.UnderlineSpan
 import android.view.View
 import android.widget.TextView
 import androidx.core.view.ViewCompat
@@ -20,7 +28,18 @@ import androidx.core.view.accessibility.AccessibilityNodeProviderCompat
 import com.facebook.react.R
 import com.facebook.react.common.annotations.UnstableReactNativeAPI
 import com.facebook.react.uimanager.ReactAccessibilityDelegate
+import com.facebook.react.views.text.internal.span.CustomLetterSpacingSpan
+import com.facebook.react.views.text.internal.span.CustomLineHeightSpan
+import com.facebook.react.views.text.internal.span.CustomStyleSpan
+import com.facebook.react.views.text.internal.span.ReactAbsoluteSizeSpan
+import com.facebook.react.views.text.internal.span.ReactBackgroundColorSpan
 import com.facebook.react.views.text.internal.span.ReactClickableSpan
+import com.facebook.react.views.text.internal.span.ReactForegroundColorSpan
+import com.facebook.react.views.text.internal.span.ReactLinkSpan
+import com.facebook.react.views.text.internal.span.ReactOpacitySpan
+import com.facebook.react.views.text.internal.span.ReactStrikethroughSpan
+import com.facebook.react.views.text.internal.span.ReactUnderlineSpan
+import com.facebook.react.views.text.internal.span.ShadowStyleSpan
 
 @OptIn(UnstableReactNativeAPI::class)
 internal class ReactTextViewAccessibilityDelegate(
@@ -189,7 +208,7 @@ internal class ReactTextViewAccessibilityDelegate(
     // PreparedLayoutTextView isn't actually a TextView, so we need to teach it about its text that
     // it is holding so TalkBack knows what to announce when focusing it.
     val accessibilityText = if (host is PreparedLayoutTextView) host.text else info.text
-    info.text = accessibilityText.toPlainTextForAccessibility()
+    info.text = accessibilityText.toAccessibilityTextWithoutVisualSpans()
   }
 
   @Suppress("DEPRECATION")
@@ -364,5 +383,42 @@ private fun isWholeTextSingleLink(text: Spanned, spans: Array<ClickableSpan>): B
   return start == 0 && end == text.length
 }
 
-private fun CharSequence?.toPlainTextForAccessibility(): CharSequence? =
-    if (this is Spanned) toString() else this
+private fun CharSequence?.toAccessibilityTextWithoutVisualSpans(): CharSequence? {
+  if (this !is Spanned) {
+    return this
+  }
+
+  return SpannableString(this).apply {
+    getSpans(0, length, Any::class.java)
+        .filter { isVisualSpanForAccessibility(it) }
+        .forEach { removeSpan(it) }
+  }
+}
+
+private fun isVisualSpanForAccessibility(span: Any): Boolean {
+  if (
+      span is URLSpan ||
+          span is ReactClickableSpan ||
+          span is ReactLinkSpan ||
+          span is ClickableSpan
+  ) {
+    return false
+  }
+
+  return span is ReactAbsoluteSizeSpan ||
+      span is ReactForegroundColorSpan ||
+      span is ReactBackgroundColorSpan ||
+      span is CustomStyleSpan ||
+      span is CustomLetterSpacingSpan ||
+      span is CustomLineHeightSpan ||
+      span is ReactOpacitySpan ||
+      span is ShadowStyleSpan ||
+      span is ReactUnderlineSpan ||
+      span is ReactStrikethroughSpan ||
+      span is AbsoluteSizeSpan ||
+      span is ForegroundColorSpan ||
+      span is BackgroundColorSpan ||
+      span is StyleSpan ||
+      span is UnderlineSpan ||
+      span is StrikethroughSpan
+}
