@@ -58,10 +58,21 @@ export type CleanOpts = {
   derivedDataRoot?: ?string,
 };
 
-export type CleanTarget = {
-  path: string,
-  label: string,
-};
+// A clean target is either a path to delete, or a rename action (used by
+// `--project` to restore the `<App>.xcodeproj.legacy` backup when removing
+// the SPM-managed xcodeproj it lives alongside). Discriminate on `kind`.
+export type CleanTarget =
+  | {
+      kind: 'delete',
+      path: string,
+      label: string,
+    }
+  | {
+      kind: 'rename',
+      from: string,
+      to: string,
+      label: string,
+    };
 
 export type DownloadArgs = {
   version: string | null,

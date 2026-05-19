@@ -67,6 +67,13 @@
  * (gitignored) and never requires regenerating the xcodeproj. No app-level
  * Package.swift is generated or required.
  *
+ * Legacy-xcodeproj migration: on `init`, if a CocoaPods-driven
+ * <AppName>.xcodeproj exists alongside the SPM xcodeproj, `init` offers to
+ * rename it to <AppName>.xcodeproj.legacy. The `.legacy` extension hides it
+ * from the community CLI's findXcodeProject heuristic, so `npm run ios`
+ * resolves to the SPM xcodeproj. Declining preserves both side-by-side;
+ * `init` then patches the Podfile to pin CocoaPods to the legacy project.
+ *
  * After running: open <AppName>-SPM.xcodeproj in Xcode.
  */
 
@@ -80,7 +87,10 @@ const {
 } = require('./spm/generate-spm-autolinking-config');
 const {main: generatePackage} = require('./spm/generate-spm-package');
 const {findSourcePath} = require('./spm/generate-spm-package');
-const {main: generateXcodeproj} = require('./spm/generate-spm-xcodeproj');
+const {
+  SPM_MANAGED_MARKER,
+  main: generateXcodeproj,
+} = require('./spm/generate-spm-xcodeproj');
 const {scaffoldAll} = require('./spm/scaffold-package-swift');
 const {
   defaultCacheDir,
@@ -300,10 +310,11 @@ function ensureGitignoreSpmEntries(appRoot /*: string */) {
 }
 
 /**
- * Pure: enumerates what `clean` should remove based on opts. No I/O beyond
- * one readdirSync on appRoot (to discover `<App>-SPM.xcodeproj/` names) and
- * a readdirSync on the DerivedData root when `derivedData` is requested.
- * The caller filters out paths that don't exist before deleting.
+ * Pure: enumerates what `clean` should do based on opts. Most targets are
+ * `delete` (path-based); `--project` may also emit a `rename` target when
+ * a `.legacy` backup exists alongside the SPM xcodeproj, restoring the
+ * pre-init CocoaPods state. No I/O beyond one readdirSync on appRoot and
+ * (when `derivedData` is requested) one on the DerivedData root.
  */
 function gatherCleanTargets(
   appRoot /*: string */,
@@ -312,32 +323,52 @@ function gatherCleanTargets(
   const targets /*: Array<CleanTarget> */ = [];
 
   // Always: the generated dirs inside appRoot (current "clean" behavior).
-  const localGenerated = [
+  targets.push(
     {
+      kind: 'delete',
       path: path.join(appRoot, 'build', 'xcframeworks'),
       label: 'build/xcframeworks/',
     },
     {
+      kind: 'delete',
       path: path.join(appRoot, 'build', 'generated'),
       label: 'build/generated/',
     },
     // Legacy location (pre-build/generated/autolinking move) — remove when
     // present so old workspaces upgrade cleanly.
-    {path: path.join(appRoot, 'autolinked'), label: 'autolinked/ (legacy)'},
-    {path: path.join(appRoot, '.build'), label: '.build/'},
-  ];
-  targets.push(...localGenerated);
+    {
+      kind: 'delete',
+      path: path.join(appRoot, 'autolinked'),
+      label: 'autolinked/ (legacy)',
+    },
+    {
+      kind: 'delete',
+      path: path.join(appRoot, '.build'),
+      label: '.build/',
+    },
+  );
 
-  // Discover any `<App>-SPM.xcodeproj/` inside appRoot. Used by both
-  // `--project` (delete it) and `--derived-data` (derive App name from it).
-  const xcodeprojNames /*: Array<string> */ = [];
+  // Identify SPM-managed xcodeprojs inside appRoot. Strategy:
+  //   1. Any `*.xcodeproj/` containing the `.spm-managed` marker (canonical).
+  //   2. Any `*-SPM.xcodeproj/` (backward compat with older generator output).
+  // Captured names + base names drive both --project deletion and
+  // --derived-data discovery (DerivedData entries are prefixed by the
+  // Xcode "project name" — typically the xcodeproj base name).
+  const spmXcodeprojNames /*: Array<string> */ = [];
   try {
     const entries /*: Array<{name: string, isDirectory(): boolean}> */ =
       // $FlowFixMe[incompatible-type] Dirent typing
       fs.readdirSync(appRoot, {withFileTypes: true});
     for (const entry of entries) {
-      if (entry.isDirectory() && entry.name.endsWith('-SPM.xcodeproj')) {
-        xcodeprojNames.push(entry.name);
+      if (!entry.isDirectory()) continue;
+      // $FlowFixMe[incompatible-type] Dirent.name is string|Buffer in Flow stubs
+      const name /*: string */ = entry.name;
+      if (!name.endsWith('.xcodeproj')) continue;
+      const hasMarker = fs.existsSync(
+        path.join(appRoot, name, SPM_MANAGED_MARKER),
+      );
+      if (hasMarker || name.endsWith('-SPM.xcodeproj')) {
+        spmXcodeprojNames.push(name);
       }
     }
   } catch {
@@ -345,8 +376,26 @@ function gatherCleanTargets(
   }
 
   if (opts.project === true) {
-    for (const name of xcodeprojNames) {
-      targets.push({path: path.join(appRoot, name), label: `${name}/`});
+    for (const name of spmXcodeprojNames) {
+      targets.push({
+        kind: 'delete',
+        path: path.join(appRoot, name),
+        label: `${name}/`,
+      });
+      // If a `.legacy` backup sits alongside, restore it as the canonical
+      // `<App>.xcodeproj`. Only safe when we're also deleting the SPM
+      // xcodeproj that occupies that name — otherwise the rename would
+      // collide with the still-present SPM project. We're inside the
+      // `for (name of spmXcodeprojNames)` loop, so that invariant holds.
+      const legacyBackup = path.join(appRoot, `${name}.legacy`);
+      if (fs.existsSync(legacyBackup)) {
+        targets.push({
+          kind: 'rename',
+          from: legacyBackup,
+          to: path.join(appRoot, name),
+          label: `${name}.legacy/ → ${name}/  (restore CocoaPods xcodeproj)`,
+        });
+      }
     }
   }
 
@@ -354,10 +403,11 @@ function gatherCleanTargets(
     const derivedRoot =
       opts.derivedDataRoot ??
       path.join(os.homedir(), 'Library', 'Developer', 'Xcode', 'DerivedData');
-    // App-name prefixes to match against DerivedData entries. Derived from
-    // any *-SPM.xcodeproj in appRoot. If none exists, skip (we can't know
-    // which DerivedData entries belong to this app).
-    const appNames = xcodeprojNames.map(n => n.replace(/-SPM\.xcodeproj$/, ''));
+    // Build app-name prefixes from the xcodeproj base names. We accept
+    // both `<App>-SPM-*` (old layout) and `<App>-*` (new layout) DerivedData
+    // entries. Trimming `.xcodeproj` is enough — Xcode names DerivedData
+    // dirs after the xcodeproj base name, not the target name.
+    const appNames = spmXcodeprojNames.map(n => n.replace(/\.xcodeproj$/, ''));
     if (appNames.length > 0) {
       try {
         const ddEntries /*: Array<{name: string, isDirectory(): boolean}> */ =
@@ -366,8 +416,9 @@ function gatherCleanTargets(
         for (const entry of ddEntries) {
           if (!entry.isDirectory()) continue;
           for (const appName of appNames) {
-            if (entry.name.startsWith(`${appName}-SPM-`)) {
+            if (entry.name.startsWith(`${appName}-`)) {
               targets.push({
+                kind: 'delete',
                 path: path.join(derivedRoot, entry.name),
                 label: `~/Library/Developer/Xcode/DerivedData/${entry.name}/`,
               });
@@ -382,6 +433,7 @@ function gatherCleanTargets(
 
   if (opts.cache === true && opts.cacheSlotDir != null) {
     targets.push({
+      kind: 'delete',
       path: opts.cacheSlotDir,
       label: displayPath(opts.cacheSlotDir),
     });
@@ -395,15 +447,34 @@ function cleanGeneratedState(
   opts /*:: ?: CleanOpts */ = {},
 ) /*: void */ {
   const targets = gatherCleanTargets(appRoot, opts);
-  const existing = targets.filter(t => fs.existsSync(t.path));
-  if (existing.length === 0) {
+  // Split into deletes and renames, filtering by source existence as we go.
+  // Run deletes BEFORE renames so the rename target slot is free (we'd
+  // otherwise rename `<App>.xcodeproj.legacy` → `<App>.xcodeproj` while the
+  // SPM `<App>.xcodeproj` still exists).
+  const deletes /*: Array<{path: string, label: string}> */ = [];
+  const renames /*: Array<{from: string, to: string, label: string}> */ = [];
+  for (const t of targets) {
+    if (t.kind === 'rename') {
+      if (fs.existsSync(t.from)) {
+        renames.push({from: t.from, to: t.to, label: t.label});
+      }
+    } else if (fs.existsSync(t.path)) {
+      deletes.push({path: t.path, label: t.label});
+    }
+  }
+  const total = deletes.length + renames.length;
+  if (total === 0) {
     log('Nothing to clean.');
     return;
   }
-  log(`Cleaning ${existing.length} path(s)...`);
-  for (const target of existing) {
-    fs.rmSync(target.path, {recursive: true, force: true});
-    log(`  Removed ${target.label}`);
+  log(`Cleaning ${total} action(s)...`);
+  for (const d of deletes) {
+    fs.rmSync(d.path, {recursive: true, force: true});
+    log(`  Removed ${d.label}`);
+  }
+  for (const r of renames) {
+    fs.renameSync(r.from, r.to);
+    log(`  ${r.label}`);
   }
 }
 
@@ -449,9 +520,11 @@ function podfileNeedsPatch(
 
 /**
  * Finds the legacy (non-SPM) `*.xcodeproj` in `appRoot` — the one
- * CocoaPods should integrate with. We DON'T want CocoaPods picking the
- * `<App>-SPM.xcodeproj/` we generate, because next `spm update` regenerates
- * it from scratch and would wipe any pod-injected changes.
+ * CocoaPods should integrate with. "Legacy" means: a `*.xcodeproj`
+ * directory that is NOT SPM-managed. SPM-managed xcodeprojs are
+ * identified by the `.spm-managed` sidecar marker, OR by the historical
+ * `-SPM.xcodeproj` filename suffix (backward compat with older
+ * generator output).
  */
 function findLegacyXcodeproj(appRoot /*: string */) /*: string | null */ {
   let entries /*: Array<{name: string, isDirectory(): boolean}> */;
@@ -465,11 +538,16 @@ function findLegacyXcodeproj(appRoot /*: string */) /*: string | null */ {
     .filter(e => {
       // $FlowFixMe[incompatible-type] Dirent.name is string|Buffer in Flow stubs; always string in our usage.
       const name /*: string */ = e.name;
-      return (
-        e.isDirectory() &&
-        name.endsWith('.xcodeproj') &&
-        !name.endsWith('-SPM.xcodeproj')
-      );
+      if (
+        !e.isDirectory() ||
+        !name.endsWith('.xcodeproj') ||
+        name.endsWith('-SPM.xcodeproj')
+      ) {
+        return false;
+      }
+      // A `<App>.xcodeproj/.spm-managed` marker means this is the SPM
+      // project sharing the legacy filename — not a CocoaPods target.
+      return !fs.existsSync(path.join(appRoot, name, SPM_MANAGED_MARKER));
     })
     .map(e => {
       // $FlowFixMe[incompatible-type] Dirent.name is string|Buffer in Flow stubs; always string in our usage.
@@ -480,6 +558,151 @@ function findLegacyXcodeproj(appRoot /*: string */) /*: string | null */ {
   // pick the first deterministically — the prompt below shows the user
   // which one we'll write and they can decline if it's wrong.
   return candidates[0] ?? null;
+}
+
+/**
+ * Pure decision helper for the legacy-xcodeproj rename migration.
+ *
+ * Background: the community CLI's `findXcodeProject` discovers the project
+ * by scanning the iOS dir and returning the first entry whose extension is
+ * `.xcodeproj`. With the legacy CocoaPods project AND the SPM project both
+ * named `<App>.xcodeproj` and `<App>-SPM.xcodeproj`, the legacy wins
+ * alphabetically — so `npm run ios` always builds the CocoaPods project.
+ *
+ * The fix: rename the legacy to `<App>.xcodeproj.legacy`. Its extension is
+ * then `.legacy`, invisible to `findXcodeProject`, leaving the SPM project
+ * as the only candidate.
+ *
+ * Returns one of:
+ *   - `{kind: 'rename', from, to}` — legacy active, no prior backup, ready to migrate
+ *   - `{kind: 'skip-no-legacy'}` — no `<App>.xcodeproj` to migrate
+ *   - `{kind: 'skip-already-migrated', legacy}` — `<App>.xcodeproj.legacy` exists, legacy gone
+ *   - `{kind: 'skip-conflict', from, to}` — both `<App>.xcodeproj` AND a `.legacy` backup exist; refuse, ask user
+ */
+function decideLegacyMigration(
+  appRoot /*: string */,
+) /*: {kind: 'rename', from: string, to: string}
+     | {kind: 'skip-no-legacy'}
+     | {kind: 'skip-already-migrated', legacy: string}
+     | {kind: 'skip-conflict', from: string, to: string} */ {
+  const legacyName = findLegacyXcodeproj(appRoot);
+  if (legacyName == null) {
+    // No active `<App>.xcodeproj`. Maybe there's a `.legacy` from a prior
+    // migration — report it so callers can log appropriately.
+    let entries /*: Array<{name: string, isDirectory(): boolean}> */;
+    try {
+      // $FlowFixMe[incompatible-type] Dirent typing
+      entries = fs.readdirSync(appRoot, {withFileTypes: true});
+    } catch {
+      return {kind: 'skip-no-legacy'};
+    }
+    const alreadyMigrated = entries.find(e => {
+      // $FlowFixMe[incompatible-type] Dirent.name is string|Buffer in Flow stubs
+      const name /*: string */ = e.name;
+      return e.isDirectory() && name.endsWith('.xcodeproj.legacy');
+    });
+    if (alreadyMigrated != null) {
+      // $FlowFixMe[incompatible-type] Dirent.name is string|Buffer in Flow stubs
+      const name /*: string */ = alreadyMigrated.name;
+      return {kind: 'skip-already-migrated', legacy: name};
+    }
+    return {kind: 'skip-no-legacy'};
+  }
+  const backupName = `${legacyName}.legacy`;
+  if (fs.existsSync(path.join(appRoot, backupName))) {
+    return {kind: 'skip-conflict', from: legacyName, to: backupName};
+  }
+  return {kind: 'rename', from: legacyName, to: backupName};
+}
+
+function confirmLegacyMigration(
+  from /*: string */,
+  to /*: string */,
+) /*: Promise<boolean> */ {
+  // $FlowFixMe[prop-missing] process.stdin.isTTY not in Flow stubs
+  if (process.stdin.isTTY !== true) {
+    return Promise.resolve(true);
+  }
+  return new Promise(resolve => {
+    const rl = readline.createInterface({
+      input: process.stdin,
+      output: process.stdout,
+    });
+    rl.question(
+      `Rename ${from} → ${to} so \`npm run ios\` uses the SPM xcodeproj? [Y/n] `,
+      answer => {
+        rl.close();
+        const a = answer.trim().toLowerCase();
+        resolve(a === '' || a === 'y' || a === 'yes');
+      },
+    );
+  });
+}
+
+/**
+ * On `spm init`: if a legacy CocoaPods `<App>.xcodeproj` exists, offer to
+ * rename it to `<App>.xcodeproj.legacy` so the SPM generator can write
+ * the new `<App>.xcodeproj` (same filename) in the now-free slot. This is
+ * what makes `npm run ios` resolve to the SPM xcodeproj unambiguously.
+ *
+ * Returns the new {from, to} names when a rename actually happened, so
+ * the caller can emit a "to roll back" hint in next-steps. Returns null
+ * when no rename occurred (no legacy / declined / already migrated /
+ * conflict).
+ */
+async function maybeMigrateLegacyXcodeproj(
+  args /*: SetupArgs */,
+  appRoot /*: string */,
+) /*: Promise<{from: string, to: string} | null> */ {
+  const decision = decideLegacyMigration(appRoot);
+  switch (decision.kind) {
+    case 'skip-no-legacy':
+      return null;
+    case 'skip-already-migrated':
+      log(
+        `Legacy ${decision.legacy} present (renamed by a prior \`spm init\`); ` +
+          `\`npm run ios\` resolves to the SPM xcodeproj.`,
+      );
+      return null;
+    case 'skip-conflict':
+      log(
+        `\x1b[33mFound both ${decision.from} and ${decision.to}.\x1b[0m ` +
+          `Skipping rename — resolve manually (remove one) before re-running init.`,
+      );
+      return null;
+    case 'rename': {
+      log('');
+      log(
+        `Found legacy CocoaPods ${decision.from}. The SPM xcodeproj uses the ` +
+          `same filename, so the legacy must be renamed first to free that ` +
+          `slot. The directory is preserved as ${decision.to} for rollback ` +
+          `(\`git mv\` tracks the rename cleanly).`,
+      );
+      log('');
+
+      const proceed = args.cleanYes
+        ? true
+        : await confirmLegacyMigration(decision.from, decision.to);
+      if (!proceed) {
+        // Refuse to continue — the next step (generateXcodeProject) would
+        // otherwise refuse anyway because the slot is taken by the legacy.
+        log(
+          `Skipped legacy rename. \`spm init\` cannot continue because the ` +
+            `legacy ${decision.from} occupies the slot the SPM xcodeproj ` +
+            `would use. Re-run init and accept the rename, or manually ` +
+            `rename to ${decision.to} first.`,
+        );
+        process.exitCode = 1;
+        throw new Error('Legacy rename declined — init cannot proceed');
+      }
+      fs.renameSync(
+        path.join(appRoot, decision.from),
+        path.join(appRoot, decision.to),
+      );
+      log(`Renamed: ${decision.from} → ${decision.to}`);
+      return {from: decision.from, to: decision.to};
+    }
+  }
 }
 
 function confirmPodfilePatch() /*: Promise<boolean> */ {
@@ -633,7 +856,13 @@ function resolveAction(
   if (requestedAction != null) {
     return requestedAction;
   }
-  return 'update';
+  // Auto-detect first-run: if no `<App>-SPM.xcodeproj/` exists yet, the user
+  // has never run init in this app — treat the implicit action as `init`.
+  // This is what triggers one-time setup steps (gitignore entries, the
+  // legacy-xcodeproj migration prompt, the Podfile patch). After the first
+  // run, the SPM xcodeproj is present and subsequent invocations default to
+  // `update` (sub-package regen only, no first-time setup).
+  return findExistingSpmXcodeproj(appRoot) != null ? 'update' : 'init';
 }
 
 /**
@@ -1104,6 +1333,23 @@ function generateXcodeProject(
     return;
   }
 
+  // Safety: the generator writes `<App>.xcodeproj` (same filename as the
+  // legacy CocoaPods project). If a legacy is sitting in that slot AND no
+  // SPM-managed marker is present, generation would silently overwrite the
+  // user's CocoaPods project. Refuse and ask them to accept the migration
+  // prompt (which renames legacy → `<App>.xcodeproj.legacy` first).
+  const legacy = findLegacyXcodeproj(appRoot);
+  if (legacy != null) {
+    logError(
+      `Refusing to generate .xcodeproj: ${legacy} appears to be a legacy ` +
+        `CocoaPods project. Re-run \`spm init\` and accept the rename prompt ` +
+        `(or manually rename to ${legacy}.legacy) before the SPM xcodeproj ` +
+        `can take its slot.`,
+    );
+    process.exitCode = 1;
+    throw new Error('Legacy xcodeproj would be overwritten');
+  }
+
   // The xcodeproj is committed; its XCLocalSwiftPackageReference entries
   // point at three stable sub-package paths under build/, so adding/removing
   // community deps never requires regenerating it. Regenerate only when
@@ -1142,29 +1388,48 @@ function generateXcodeProject(
 }
 
 /**
- * Returns the absolute path to the first `*-SPM.xcodeproj/` directory found
- * directly inside `appRoot`, or null if none exists.
+ * Returns the absolute path to the SPM-managed xcodeproj inside `appRoot`,
+ * or null if none exists. Two detection strategies (in order):
+ *
+ *   1. Any `*.xcodeproj/` containing the `.spm-managed` sidecar marker
+ *      (the canonical mark left by generate-spm-xcodeproj.js).
+ *   2. Any `*-SPM.xcodeproj/` (backward compat: older versions of the
+ *      generator used the `-SPM` filename suffix instead of a marker).
+ *
+ * The marker check wins when both strategies match a different dir.
  */
 function findExistingSpmXcodeproj(appRoot /*: string */) /*: string | null */ {
+  let entries /*: Array<{name: string, isDirectory(): boolean}> */;
   try {
-    const entries /*: Array<{name: string, isDirectory(): boolean}> */ =
-      // $FlowFixMe[incompatible-type] Dirent typing
-      fs.readdirSync(appRoot, {withFileTypes: true});
-    for (const entry of entries) {
-      if (entry.isDirectory() && entry.name.endsWith('-SPM.xcodeproj')) {
-        return path.join(appRoot, entry.name);
-      }
-    }
+    // $FlowFixMe[incompatible-type] Dirent typing
+    entries = fs.readdirSync(appRoot, {withFileTypes: true});
   } catch {
-    /* appRoot may not exist on init */
+    return null;
   }
-  return null;
+  let suffixMatch /*: string | null */ = null;
+  for (const entry of entries) {
+    if (!entry.isDirectory()) continue;
+    // $FlowFixMe[incompatible-type] Dirent.name is string|Buffer in Flow stubs
+    const name /*: string */ = entry.name;
+    if (!name.endsWith('.xcodeproj')) continue;
+    const absPath = path.join(appRoot, name);
+    if (fs.existsSync(path.join(absPath, SPM_MANAGED_MARKER))) {
+      return absPath;
+    }
+    // Remember a suffix-named candidate as fallback; only return it if no
+    // marker-tagged xcodeproj is found in this directory.
+    if (suffixMatch == null && name.endsWith('-SPM.xcodeproj')) {
+      suffixMatch = absPath;
+    }
+  }
+  return suffixMatch;
 }
 
 function logNextSteps(
   projectRoot /*: string */,
   appRoot /*: string */,
   productName /*: string | null */,
+  rename /*: {from: string, to: string} | null */,
 ) {
   const appPkgJson = readPackageJson(projectRoot);
   const rawName =
@@ -1176,36 +1441,47 @@ function logNextSteps(
   log('SPM setup complete!');
   log('');
   log('Next steps:');
-  log(`  • Open ${appDisplayName}-SPM.xcodeproj in Xcode`);
+  log(`  • Open ${appDisplayName}.xcodeproj in Xcode (or \`npm run ios\`)`);
   log('  • Set your Development Team in Signing & Capabilities');
   log('  • Build and run on Simulator or device');
-  log('');
-  log('Note: CocoaPods (pod install) still works in parallel.');
+
+  if (rename != null) {
+    log('');
+    log('To roll back to CocoaPods later:');
+    log(`  mv ${rename.to} ${rename.from}`);
+    log(`  rm -rf ${appDisplayName}.xcodeproj build/`);
+    log('Or:');
+    log('  npx react-native spm clean --project');
+  }
 }
 
 async function main(argv /*:: ?: Array<string> */) /*: Promise<void> */ {
   let appRoot = process.cwd();
   const projectRoot = findProjectRoot(appRoot);
   const args = parseArgs(argv ?? process.argv.slice(2));
-  const action = resolveAction(args.action, appRoot);
 
   // Standard-RN-layout redirect: if invoked from the JS root and there's an
-  // `ios/` subdir, route the run there. `clean` keeps refusing because its
-  // destructive scopes (--project, --derived-data, --cache) shouldn't
-  // silently retarget a different directory.
+  // `ios/` subdir, route the run there. Runs BEFORE resolveAction so the
+  // first-run heuristic (does `<App>-SPM.xcodeproj` exist?) checks the
+  // correct directory. `clean` keeps refusing because its destructive
+  // scopes (--project, --derived-data, --cache) shouldn't silently
+  // retarget a different directory.
   const redirectTo = detectStandardRnLayoutRedirect(appRoot, projectRoot);
   if (redirectTo != null) {
-    if (action === 'clean') {
+    const redirectAction = args.action ?? 'init';
+    if (redirectAction === 'clean') {
       logError(describeRnRootMismatch(appRoot, projectRoot) ?? '');
       process.exitCode = 1;
       return;
     }
     log(
-      `\x1b[33mDetected standard RN layout — running ${action} in ${displayPath(redirectTo)} ` +
+      `\x1b[33mDetected standard RN layout — running ${redirectAction} in ${displayPath(redirectTo)} ` +
         `instead of ${displayPath(appRoot)}.\x1b[0m`,
     );
     appRoot = redirectTo;
   }
+
+  const action = resolveAction(args.action, appRoot);
 
   log(`Running SPM ${action} in: ${displayPath(appRoot)}`);
   if (projectRoot !== appRoot) {
@@ -1246,9 +1522,14 @@ async function main(argv /*:: ?: Array<string> */) /*: Promise<void> */ {
     // and is committed to the repo — deleting it loses Xcode-side edits.
     const isDestructive = wantDerivedData || wantCache || wantProject;
     if (isDestructive && !args.cleanYes) {
-      const targets = gatherCleanTargets(appRoot, cleanOpts).filter(t =>
-        fs.existsSync(t.path),
-      );
+      const targets = gatherCleanTargets(appRoot, cleanOpts).filter(t => {
+        // Existence check varies by target shape: rename targets reference
+        // a `from` (the .legacy backup); delete targets reference a `path`.
+        if (t.kind === 'rename') {
+          return fs.existsSync(t.from);
+        }
+        return fs.existsSync(t.path);
+      });
       if (targets.length > 0) {
         const proceed = await confirmDestructive(targets);
         if (!proceed) {
@@ -1366,8 +1647,20 @@ async function main(argv /*:: ?: Array<string> */) /*: Promise<void> */ {
 
   resolveAndWriteVFSOverlay(appRoot, reactNativeRoot, {log});
 
+  let migrationRename /*: {from: string, to: string} | null */ = null;
   if (action === 'init') {
     ensureGitignoreSpmEntries(appRoot);
+
+    // Rename `<App>.xcodeproj` → `<App>.xcodeproj.legacy` so the SPM
+    // generator can use the bare `<App>.xcodeproj` slot. Must run BEFORE
+    // generateXcodeProject — otherwise the generator's safety check
+    // refuses (it won't clobber a legacy without a backup).
+    try {
+      migrationRename = await maybeMigrateLegacyXcodeproj(args, appRoot);
+    } catch (e) {
+      logError(`Legacy xcodeproj migration failed: ${e.message}.`);
+      return;
+    }
   }
 
   try {
@@ -1378,11 +1671,11 @@ async function main(argv /*:: ?: Array<string> */) /*: Promise<void> */ {
     return;
   }
 
-  // On `init` only: detect the CocoaPods ambiguity that occurs when the
-  // Podfile has no `project '<path>.xcodeproj'` directive and there's both
-  // a legacy and an SPM xcodeproj in the dir. Offer to add the directive
-  // pinning CocoaPods to the legacy project. Skipped on `update` so we
-  // don't keep nagging users who explicitly declined.
+  // On `init` only: the Podfile-patch flow is now mostly obsolete because
+  // the rename migration eliminates the dual-xcodeproj ambiguity that drove
+  // it. It still runs defensively in case the user has a Podfile and an
+  // unmigrated legacy somehow remains (e.g. they restored `.legacy` →
+  // active and re-ran init).
   if (action === 'init') {
     try {
       await maybePatchPodfile(args, appRoot);
@@ -1391,7 +1684,7 @@ async function main(argv /*:: ?: Array<string> */) /*: Promise<void> */ {
     }
   }
 
-  logNextSteps(projectRoot, appRoot, args.productName);
+  logNextSteps(projectRoot, appRoot, args.productName, migrationRename);
 }
 
 if (require.main === module) {
@@ -1402,9 +1695,11 @@ module.exports = {
   main,
   cleanGeneratedState,
   gatherCleanTargets,
+  decideLegacyMigration,
   describeRnRootMismatch,
   detectStandardRnLayoutRedirect,
   findExistingSpmXcodeproj,
   findLegacyXcodeproj,
   podfileNeedsPatch,
+  resolveAction,
 };

@@ -11,16 +11,30 @@
 'use strict';
 
 const {
+  cleanGeneratedState,
+  decideLegacyMigration,
   describeRnRootMismatch,
   detectStandardRnLayoutRedirect,
   findExistingSpmXcodeproj,
   findLegacyXcodeproj,
   gatherCleanTargets,
   podfileNeedsPatch,
+  resolveAction,
 } = require('../../setup-apple-spm');
+const {SPM_MANAGED_MARKER} = require('../generate-spm-xcodeproj');
 const fs = require('fs');
 const os = require('os');
 const path = require('path');
+
+// Helper: create an SPM-managed xcodeproj fixture (a directory containing
+// the .spm-managed sidecar marker). Mirrors what generate-spm-xcodeproj.js
+// writes at the end of generation.
+function mkSpmManagedXcodeproj(appRoot, name) {
+  const dir = path.join(appRoot, name);
+  fs.mkdirSync(dir, {recursive: true});
+  fs.writeFileSync(path.join(dir, SPM_MANAGED_MARKER), '# managed\n');
+  return dir;
+}
 
 // ---------------------------------------------------------------------------
 // gatherCleanTargets — pure enumeration of paths the `clean` action should
@@ -147,6 +161,95 @@ describe('gatherCleanTargets', () => {
     });
     // The function enumerates paths; existence is checked at deletion time.
     expect(result.length).toBeGreaterThan(0);
+  });
+
+  it('--project picks up marker-tagged xcodeprojs (new layout)', () => {
+    mkSpmManagedXcodeproj(tempDir, 'MyApp.xcodeproj');
+    const result = gatherCleanTargets(tempDir, {project: true});
+    const labels = result.map(t => t.label);
+    expect(labels).toContain('MyApp.xcodeproj/');
+  });
+
+  it('--project emits a rename target restoring `<App>.xcodeproj.legacy` when present', () => {
+    mkSpmManagedXcodeproj(tempDir, 'MyApp.xcodeproj');
+    fs.mkdirSync(path.join(tempDir, 'MyApp.xcodeproj.legacy'));
+    const result = gatherCleanTargets(tempDir, {project: true});
+    const rename = result.find(t => t.kind === 'rename');
+    expect(rename).toBeDefined();
+    if (rename != null && rename.kind === 'rename') {
+      expect(rename.from).toBe(path.join(tempDir, 'MyApp.xcodeproj.legacy'));
+      expect(rename.to).toBe(path.join(tempDir, 'MyApp.xcodeproj'));
+    }
+  });
+
+  it('--project does NOT emit a rename when no .legacy backup exists', () => {
+    mkSpmManagedXcodeproj(tempDir, 'MyApp.xcodeproj');
+    const result = gatherCleanTargets(tempDir, {project: true});
+    expect(result.some(t => t.kind === 'rename')).toBe(false);
+  });
+
+  it('--derivedData matches `<App>-*` for marker-tagged xcodeprojs (new layout)', () => {
+    mkSpmManagedXcodeproj(tempDir, 'MyApp.xcodeproj');
+    fs.mkdirSync(path.join(derivedRoot, 'MyApp-abc123'));
+    fs.mkdirSync(path.join(derivedRoot, 'Unrelated-xyz'));
+    const result = gatherCleanTargets(tempDir, {
+      derivedData: true,
+      derivedDataRoot: derivedRoot,
+    });
+    const labels = result.map(t => t.label);
+    expect(labels.some(l => l.includes('MyApp-abc123'))).toBe(true);
+    expect(labels.some(l => l.includes('Unrelated-xyz'))).toBe(false);
+  });
+});
+
+// ---------------------------------------------------------------------------
+// cleanGeneratedState — executes the enumeration from gatherCleanTargets.
+// Runs `delete`s before `rename`s so a `<App>.xcodeproj.legacy` → bare-name
+// restoration doesn't collide with the still-present SPM xcodeproj.
+// ---------------------------------------------------------------------------
+
+describe('cleanGeneratedState', () => {
+  let tempDir;
+
+  beforeEach(() => {
+    tempDir = fs.mkdtempSync(path.join(os.tmpdir(), 'spm-clean-state-'));
+  });
+
+  afterEach(() => {
+    fs.rmSync(tempDir, {recursive: true, force: true});
+  });
+
+  it('reverses the migration: deletes SPM xcodeproj and restores .legacy', () => {
+    mkSpmManagedXcodeproj(tempDir, 'MyApp.xcodeproj');
+    fs.mkdirSync(path.join(tempDir, 'MyApp.xcodeproj.legacy'));
+    // Leave a sentinel inside the legacy so we can prove it's the restored dir.
+    fs.writeFileSync(
+      path.join(tempDir, 'MyApp.xcodeproj.legacy', 'sentinel.txt'),
+      'legacy',
+    );
+
+    cleanGeneratedState(tempDir, {project: true});
+
+    expect(fs.existsSync(path.join(tempDir, 'MyApp.xcodeproj.legacy'))).toBe(
+      false,
+    );
+    expect(fs.existsSync(path.join(tempDir, 'MyApp.xcodeproj'))).toBe(true);
+    // No marker → it's the restored CocoaPods project, not the SPM one.
+    expect(
+      fs.existsSync(path.join(tempDir, 'MyApp.xcodeproj', SPM_MANAGED_MARKER)),
+    ).toBe(false);
+    expect(
+      fs.readFileSync(
+        path.join(tempDir, 'MyApp.xcodeproj', 'sentinel.txt'),
+        'utf8',
+      ),
+    ).toBe('legacy');
+  });
+
+  it('--project without a .legacy backup just deletes the SPM xcodeproj', () => {
+    mkSpmManagedXcodeproj(tempDir, 'MyApp.xcodeproj');
+    cleanGeneratedState(tempDir, {project: true});
+    expect(fs.existsSync(path.join(tempDir, 'MyApp.xcodeproj'))).toBe(false);
   });
 });
 
@@ -277,6 +380,20 @@ describe('findLegacyXcodeproj', () => {
     fs.writeFileSync(path.join(tempDir, 'NotAProject.xcodeproj'), '');
     expect(findLegacyXcodeproj(tempDir)).toBeNull();
   });
+
+  it('returns null when the only `<App>.xcodeproj` carries the SPM marker (new layout, no CocoaPods)', () => {
+    // After migration: legacy is renamed to `.legacy` and the SPM-generated
+    // `<App>.xcodeproj` takes the canonical filename. findLegacyXcodeproj
+    // must NOT misidentify the SPM project as a CocoaPods target.
+    mkSpmManagedXcodeproj(tempDir, 'MyApp.xcodeproj');
+    expect(findLegacyXcodeproj(tempDir)).toBeNull();
+  });
+
+  it('still finds a non-SPM xcodeproj when a marker-tagged one sits alongside it', () => {
+    mkSpmManagedXcodeproj(tempDir, 'MyApp.xcodeproj');
+    fs.mkdirSync(path.join(tempDir, 'OtherApp.xcodeproj'));
+    expect(findLegacyXcodeproj(tempDir)).toBe('OtherApp.xcodeproj');
+  });
 });
 
 // ---------------------------------------------------------------------------
@@ -298,14 +415,30 @@ describe('findExistingSpmXcodeproj', () => {
     fs.rmSync(tempDir, {recursive: true, force: true});
   });
 
-  it('returns the absolute path to the *-SPM.xcodeproj when present', () => {
+  it('returns the absolute path to a marker-tagged xcodeproj (new layout)', () => {
+    mkSpmManagedXcodeproj(tempDir, 'MyApp.xcodeproj');
+    expect(findExistingSpmXcodeproj(tempDir)).toBe(
+      path.join(tempDir, 'MyApp.xcodeproj'),
+    );
+  });
+
+  it('returns the *-SPM.xcodeproj path as backward-compat fallback', () => {
+    // Older generator output: name suffix, no marker file.
     fs.mkdirSync(path.join(tempDir, 'MyApp-SPM.xcodeproj'));
     expect(findExistingSpmXcodeproj(tempDir)).toBe(
       path.join(tempDir, 'MyApp-SPM.xcodeproj'),
     );
   });
 
-  it('returns null when no -SPM.xcodeproj exists (only legacy)', () => {
+  it('prefers the marker-tagged xcodeproj when both naming styles are present', () => {
+    fs.mkdirSync(path.join(tempDir, 'MyApp-SPM.xcodeproj'));
+    mkSpmManagedXcodeproj(tempDir, 'MyApp.xcodeproj');
+    expect(findExistingSpmXcodeproj(tempDir)).toBe(
+      path.join(tempDir, 'MyApp.xcodeproj'),
+    );
+  });
+
+  it('returns null when only a bare legacy xcodeproj exists (no marker)', () => {
     fs.mkdirSync(path.join(tempDir, 'MyApp.xcodeproj'));
     expect(findExistingSpmXcodeproj(tempDir)).toBeNull();
   });
@@ -319,6 +452,137 @@ describe('findExistingSpmXcodeproj', () => {
   it('ignores *.xcodeproj entries that are files, not directories', () => {
     fs.writeFileSync(path.join(tempDir, 'Fake-SPM.xcodeproj'), '');
     expect(findExistingSpmXcodeproj(tempDir)).toBeNull();
+  });
+});
+
+// ---------------------------------------------------------------------------
+// decideLegacyMigration — pure decision for the rename migration that hides
+// the legacy CocoaPods xcodeproj from the community CLI's findXcodeProject
+// (extension flips from `.xcodeproj` to `.legacy`). Driven by `spm init`.
+// ---------------------------------------------------------------------------
+
+describe('decideLegacyMigration', () => {
+  let tempDir;
+
+  beforeEach(() => {
+    tempDir = fs.mkdtempSync(path.join(os.tmpdir(), 'spm-migrate-legacy-'));
+  });
+
+  afterEach(() => {
+    fs.rmSync(tempDir, {recursive: true, force: true});
+  });
+
+  it('returns rename when an active legacy xcodeproj exists and no backup yet', () => {
+    fs.mkdirSync(path.join(tempDir, 'MyApp.xcodeproj'));
+    expect(decideLegacyMigration(tempDir)).toEqual({
+      kind: 'rename',
+      from: 'MyApp.xcodeproj',
+      to: 'MyApp.xcodeproj.legacy',
+    });
+  });
+
+  it('skip-no-legacy when neither legacy nor -SPM exist', () => {
+    expect(decideLegacyMigration(tempDir)).toEqual({kind: 'skip-no-legacy'});
+  });
+
+  it('skip-no-legacy when only the SPM xcodeproj is present', () => {
+    fs.mkdirSync(path.join(tempDir, 'MyApp-SPM.xcodeproj'));
+    expect(decideLegacyMigration(tempDir)).toEqual({kind: 'skip-no-legacy'});
+  });
+
+  it('skip-already-migrated when only the .legacy backup is present', () => {
+    fs.mkdirSync(path.join(tempDir, 'MyApp.xcodeproj.legacy'));
+    expect(decideLegacyMigration(tempDir)).toEqual({
+      kind: 'skip-already-migrated',
+      legacy: 'MyApp.xcodeproj.legacy',
+    });
+  });
+
+  it('skip-conflict when BOTH active legacy and a .legacy backup exist', () => {
+    fs.mkdirSync(path.join(tempDir, 'MyApp.xcodeproj'));
+    fs.mkdirSync(path.join(tempDir, 'MyApp.xcodeproj.legacy'));
+    expect(decideLegacyMigration(tempDir)).toEqual({
+      kind: 'skip-conflict',
+      from: 'MyApp.xcodeproj',
+      to: 'MyApp.xcodeproj.legacy',
+    });
+  });
+
+  it('ignores the SPM xcodeproj when computing the rename target', () => {
+    fs.mkdirSync(path.join(tempDir, 'MyApp.xcodeproj'));
+    fs.mkdirSync(path.join(tempDir, 'MyApp-SPM.xcodeproj'));
+    expect(decideLegacyMigration(tempDir)).toEqual({
+      kind: 'rename',
+      from: 'MyApp.xcodeproj',
+      to: 'MyApp.xcodeproj.legacy',
+    });
+  });
+
+  it('returns skip-no-legacy when appRoot does not exist', () => {
+    expect(decideLegacyMigration(path.join(tempDir, 'no-such-dir'))).toEqual({
+      kind: 'skip-no-legacy',
+    });
+  });
+
+  it('skip-no-legacy when a marker-tagged xcodeproj occupies the slot (post-migration steady state)', () => {
+    mkSpmManagedXcodeproj(tempDir, 'MyApp.xcodeproj');
+    expect(decideLegacyMigration(tempDir)).toEqual({kind: 'skip-no-legacy'});
+  });
+
+  it('skip-already-migrated when marker-tagged SPM + .legacy backup coexist', () => {
+    mkSpmManagedXcodeproj(tempDir, 'MyApp.xcodeproj');
+    fs.mkdirSync(path.join(tempDir, 'MyApp.xcodeproj.legacy'));
+    expect(decideLegacyMigration(tempDir)).toEqual({
+      kind: 'skip-already-migrated',
+      legacy: 'MyApp.xcodeproj.legacy',
+    });
+  });
+});
+
+// ---------------------------------------------------------------------------
+// resolveAction — explicit action wins; otherwise auto-detect first-run via
+// the presence of `<App>-SPM.xcodeproj/`. Fixes the silent-bootstrap bug
+// where `npx react-native spm` (no arg) defaulted to `update` and skipped
+// every one-time setup step (gitignore, legacy-rename prompt, Podfile patch).
+// ---------------------------------------------------------------------------
+
+describe('resolveAction', () => {
+  let tempDir;
+
+  beforeEach(() => {
+    tempDir = fs.mkdtempSync(path.join(os.tmpdir(), 'spm-resolve-action-'));
+  });
+
+  afterEach(() => {
+    fs.rmSync(tempDir, {recursive: true, force: true});
+  });
+
+  it('returns the requested action verbatim when one is given', () => {
+    fs.mkdirSync(path.join(tempDir, 'MyApp-SPM.xcodeproj'));
+    expect(resolveAction('clean', tempDir)).toBe('clean');
+    expect(resolveAction('init', tempDir)).toBe('init');
+    expect(resolveAction('update', tempDir)).toBe('update');
+    expect(resolveAction('scaffold', tempDir)).toBe('scaffold');
+  });
+
+  it('defaults to `init` when no -SPM.xcodeproj exists yet (first run)', () => {
+    expect(resolveAction(null, tempDir)).toBe('init');
+  });
+
+  it('defaults to `update` when a marker-tagged xcodeproj exists (subsequent runs)', () => {
+    mkSpmManagedXcodeproj(tempDir, 'MyApp.xcodeproj');
+    expect(resolveAction(null, tempDir)).toBe('update');
+  });
+
+  it('defaults to `update` when only a legacy-named -SPM.xcodeproj exists (backward compat)', () => {
+    fs.mkdirSync(path.join(tempDir, 'MyApp-SPM.xcodeproj'));
+    expect(resolveAction(null, tempDir)).toBe('update');
+  });
+
+  it('ignores a legacy xcodeproj when computing the implicit default', () => {
+    // Only the legacy CocoaPods project — no SPM xcodeproj yet → first run.
+    fs.mkdirSync(path.join(tempDir, 'MyApp.xcodeproj'));
+    expect(resolveAction(null, tempDir)).toBe('init');
   });
 });
 
