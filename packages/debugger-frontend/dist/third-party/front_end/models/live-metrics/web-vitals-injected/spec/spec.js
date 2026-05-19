@@ -1,0 +1,1 @@
+const t="__chromium_devtools_metrics_reporter",e="__chromium_devtools_kill_live_metrics",o=10,r=5;function _(t){return`layout-shift-${t.value}-${t.startTime}`}export{t as EVENT_BINDING_NAME,e as INTERNAL_KILL_SWITCH,r as LOAF_LIMIT,o as SCRIPTS_PER_LOAF_LIMIT,_ as getUniqueLayoutShiftId};

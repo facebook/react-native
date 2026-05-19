@@ -1,0 +1,125 @@
+/**
+ * Copyright (c) Meta Platforms, Inc. and affiliates.
+ *
+ * This source code is licensed under the MIT license found in the
+ * LICENSE file in the root directory of this source tree.
+ *
+ * @generated SignedSource<<4ec4c0d0f1055b2d39d8aa42d68c0a77>>
+ * @flow strict
+ * @noformat
+ */
+
+/**
+ * IMPORTANT: Do NOT modify this file directly.
+ *
+ * To change the definition of the flags, edit
+ *   packages/react-native/scripts/featureflags/ReactNativeFeatureFlags.config.js.
+ *
+ * To regenerate this code, run the following script from the repo root:
+ *   yarn featureflags --update
+ */
+
+import type {TurboModule} from '../../../../Libraries/TurboModule/RCTExport';
+
+import * as TurboModuleRegistry from '../../../../Libraries/TurboModule/TurboModuleRegistry';
+
+export interface Spec extends TurboModule {
+  +commonTestFlag?: () => boolean;
+  +commonTestFlagWithoutNativeImplementation?: () => boolean;
+  +cdpInteractionMetricsEnabled?: () => boolean;
+  +cxxNativeAnimatedEnabled?: () => boolean;
+  +defaultTextToOverflowHidden?: () => boolean;
+  +disableEarlyViewCommandExecution?: () => boolean;
+  +disableImageViewPreallocationAndroid?: () => boolean;
+  +disableMountItemReorderingAndroid?: () => boolean;
+  +disableSubviewClippingAndroid?: () => boolean;
+  +disableTextLayoutManagerCacheAndroid?: () => boolean;
+  +disableViewPreallocationAndroid?: () => boolean;
+  +enableAccessibilityOrder?: () => boolean;
+  +enableAccumulatedUpdatesInRawPropsAndroid?: () => boolean;
+  +enableAndroidTextMeasurementOptimizations?: () => boolean;
+  +enableBridgelessArchitecture?: () => boolean;
+  +enableCppPropsIteratorSetter?: () => boolean;
+  +enableCustomFocusSearchOnClippedElementsAndroid?: () => boolean;
+  +enableDestroyShadowTreeRevisionAsync?: () => boolean;
+  +enableDifferentiatorMutationVectorPreallocation?: () => boolean;
+  +enableDoubleMeasurementFixAndroid?: () => boolean;
+  +enableEagerMainQueueModulesOnIOS?: () => boolean;
+  +enableEagerRootViewAttachment?: () => boolean;
+  +enableExclusivePropsUpdateAndroid?: () => boolean;
+  +enableFabricCommitBranching?: () => boolean;
+  +enableFabricLogs?: () => boolean;
+  +enableFabricRenderer?: () => boolean;
+  +enableFontScaleChangesUpdatingLayout?: () => boolean;
+  +enableIOSTextBaselineOffsetPerLine?: () => boolean;
+  +enableIOSViewClipToPaddingBox?: () => boolean;
+  +enableImagePrefetchingAndroid?: () => boolean;
+  +enableImmediateUpdateModeForContentOffsetChanges?: () => boolean;
+  +enableImperativeFocus?: () => boolean;
+  +enableInteropViewManagerClassLookUpOptimizationIOS?: () => boolean;
+  +enableIntersectionObserverByDefault?: () => boolean;
+  +enableKeyEvents?: () => boolean;
+  +enableLayoutAnimationsOnAndroid?: () => boolean;
+  +enableLayoutAnimationsOnIOS?: () => boolean;
+  +enableMainQueueCoordinatorOnIOS?: () => boolean;
+  +enableModuleArgumentNSNullConversionIOS?: () => boolean;
+  +enableMutationObserverByDefault?: () => boolean;
+  +enableNativeCSSParsing?: () => boolean;
+  +enableNetworkEventReporting?: () => boolean;
+  +enablePreparedTextLayout?: () => boolean;
+  +enablePropsUpdateReconciliationAndroid?: () => boolean;
+  +enableSchedulerDelegateInvalidation?: () => boolean;
+  +enableSwiftUIBasedFilters?: () => boolean;
+  +enableViewCulling?: () => boolean;
+  +enableViewRecycling?: () => boolean;
+  +enableViewRecyclingForImage?: () => boolean;
+  +enableViewRecyclingForScrollView?: () => boolean;
+  +enableViewRecyclingForText?: () => boolean;
+  +enableViewRecyclingForView?: () => boolean;
+  +enableVirtualViewContainerStateExperimental?: () => boolean;
+  +enableVirtualViewDebugFeatures?: () => boolean;
+  +fixDifferentiatorParentTagForUnflattenCase?: () => boolean;
+  +fixMappingOfEventPrioritiesBetweenFabricAndReact?: () => boolean;
+  +fixYogaFlexBasisFitContentInMainAxis?: () => boolean;
+  +fuseboxAssertSingleHostState?: () => boolean;
+  +fuseboxEnabledRelease?: () => boolean;
+  +fuseboxFrameRecordingEnabled?: () => boolean;
+  +fuseboxNetworkInspectionEnabled?: () => boolean;
+  +fuseboxScreenshotCaptureEnabled?: () => boolean;
+  +hideOffscreenVirtualViewsOnIOS?: () => boolean;
+  +optimizedAnimatedPropUpdates?: () => boolean;
+  +overrideBySynchronousMountPropsAtMountingAndroid?: () => boolean;
+  +perfIssuesEnabled?: () => boolean;
+  +perfMonitorV2Enabled?: () => boolean;
+  +preparedTextCacheSize?: () => number;
+  +preventShadowTreeCommitExhaustion?: () => boolean;
+  +redBoxV2Android?: () => boolean;
+  +redBoxV2IOS?: () => boolean;
+  +shouldPressibilityUseW3CPointerEventsForHover?: () => boolean;
+  +shouldTriggerResponderTransferOnScrollAndroid?: () => boolean;
+  +skipActivityIdentityAssertionOnHostPause?: () => boolean;
+  +syncAndroidClipBoundsWithOverflow?: () => boolean;
+  +traceTurboModulePromiseRejectionsOnAndroid?: () => boolean;
+  +updateRuntimeShadowNodeReferencesOnCommit?: () => boolean;
+  +updateRuntimeShadowNodeReferencesOnCommitThread?: () => boolean;
+  +useAlwaysAvailableJSErrorHandling?: () => boolean;
+  +useFabricInterop?: () => boolean;
+  +useNativeViewConfigsInBridgelessMode?: () => boolean;
+  +useNestedScrollViewAndroid?: () => boolean;
+  +useOptimizedViewRegistryOnAndroid?: () => boolean;
+  +useSharedAnimatedBackend?: () => boolean;
+  +useTraitHiddenOnAndroid?: () => boolean;
+  +useTurboModuleInterop?: () => boolean;
+  +useTurboModules?: () => boolean;
+  +useUnorderedMapInDifferentiator?: () => boolean;
+  +viewCullingOutsetRatio?: () => number;
+  +viewTransitionEnabled?: () => boolean;
+  +viewTransitionUseHardwareBitmapAndroid?: () => boolean;
+  +virtualViewPrerenderRatio?: () => number;
+}
+
+const NativeReactNativeFeatureFlags: ?Spec = TurboModuleRegistry.get<Spec>(
+  'NativeReactNativeFeatureFlagsCxx',
+);
+
+export default NativeReactNativeFeatureFlags;

@@ -1,0 +1,86 @@
+name: Maestro E2E iOS
+description: Runs E2E Tests on iOS using Maestro
+inputs:
+  app-path:
+    required: true
+    description: The path to the .app file
+  app-id:
+    required: true
+    description: The id of the app to test
+  maestro-flow:
+    required: true
+    description: the folder that contains the maestro tests
+  flavor:
+    required: true
+    description: Whether we are building for Debug or Release
+    default: Release
+  working-directory:
+    required: false
+    default: "."
+    description: The directory from which metro should be started
+
+runs:
+  using: composite
+  steps:
+    - name: Installing Maestro
+      shell: bash
+      run: export MAESTRO_VERSION=1.40.0; curl -Ls "https://get.maestro.mobile.dev" | bash
+    - name: Installing Maestro dependencies
+      shell: bash
+      run: |
+        brew tap facebook/fb
+        brew install facebook/fb/idb-companion
+    - name: Set up JDK 17
+      uses: actions/setup-java@v5
+      with:
+        java-version: '17'
+        distribution: 'zulu'
+    - name: Setup node.js
+      uses: ./.github/actions/setup-node
+    - name: Run yarn install
+      uses: ./.github/actions/yarn-install
+    - name: Start Metro in Debug
+      shell: bash
+      if: ${{ inputs.flavor == 'Debug' }}
+      run: |
+        # build codegen or we will see a redbox
+        ./packages/react-native-codegen/scripts/oss/build.sh
+
+        cd ${{ inputs.working-directory }}
+        yarn start &
+        sleep 5 # to give metro time to load
+    - name: Run tests
+      id: run-tests
+      shell: bash
+      run: |
+        # Avoid exit from the job if one of the command returns an error.
+        # Maestro can fail in case of flakyness, we have some retry logic.
+        set +e
+
+        node .github/workflow-scripts/maestro-ios.js \
+          "${{ inputs.app-path }}" \
+          "${{ inputs.app-id }}" \
+          "${{ inputs.maestro-flow }}" \
+          "Hermes" \
+          "${{ inputs.flavor }}" \
+          "${{ inputs.working-directory }}"
+    - name: Store video record
+      if: always()
+      uses: actions/upload-artifact@v6
+      with:
+        name: e2e_ios_${{ inputs.app-id }}_report_${{ inputs.flavor }}_NewArch
+        overwrite: true
+        path: |
+          video_record_1.mov
+          video_record_2.mov
+          video_record_3.mov
+          video_record_4.mov
+          video_record_5.mov
+          report.xml
+    - name: Store Logs
+      if: failure() && steps.run-tests.outcome == 'failure'
+      uses: actions/upload-artifact@v6
+      with:
+        name: maestro-logs-${{ inputs.app-id }}-${{ inputs.flavor }}-NewArch
+        overwrite: true
+        path: /tmp/MaestroLogs

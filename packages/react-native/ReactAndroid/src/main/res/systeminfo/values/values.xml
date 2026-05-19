@@ -1,0 +1,5 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+  <integer name="react_native_dev_server_port">8081</integer>
+  <integer name="react_native_inspector_proxy_port">@integer/react_native_dev_server_port</integer>
+</resources>

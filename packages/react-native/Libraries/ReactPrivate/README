@@ -1,0 +1,1 @@
+JS modules in this folder are forwarding modules to allow React to require React Native internals.

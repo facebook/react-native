@@ -1,0 +1,51 @@
+{
+  "name": "@react-native/popup-menu-android",
+  "version": "0.87.0-main",
+  "description": "PopupMenu for the Android platform",
+  "main": "index.js",
+  "files": [
+    "js",
+    "android",
+    "react-native.config.js",
+    "!android/build",
+    "!**/__tests__",
+    "!**/__fixtures__",
+    "!**/__mocks__"
+  ],
+  "keywords": [
+    "react-native",
+    "android"
+  ],
+  "scripts": {
+    "prepublishOnly": "node ./scripts/prepublish-popup-menu-android.js"
+  },
+  "license": "MIT",
+  "devDependencies": {
+    "@react-native/codegen": "0.87.0-main"
+  },
+  "peerDependencies": {
+    "@types/react": "^19.1.0",
+    "react": "*",
+    "react-native": "1000.0.0"
+  },
+  "peerDependenciesMeta": {
+    "@types/react": {
+      "optional": true
+    }
+  },
+  "dependencies": {
+    "nullthrows": "^1.1.1"
+  },
+  "codegenConfig": {
+    "name": "ReactPopupMenuAndroidSpecs",
+    "type": "components",
+    "jsSrcsDir": "js",
+    "outputDir": {
+      "android": "android"
+    },
+    "includesGeneratedCode": true,
+    "android": {
+      "javaPackageName": "com.facebook.react.viewmanagers"
+    }
+  }
+}

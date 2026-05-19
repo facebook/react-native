@@ -1,0 +1,70 @@
+/*
+ * Copyright (c) Meta Platforms, Inc. and affiliates.
+ *
+ * This source code is licensed under the MIT license found in the
+ * LICENSE file in the root directory of this source tree.
+ */
+
+#include "ComponentBuilder.h"
+
+#include <utility>
+
+namespace facebook::react {
+
+ComponentBuilder::ComponentBuilder(
+    ComponentDescriptorRegistry::Shared componentDescriptorRegistry)
+    : componentDescriptorRegistry_(std::move(componentDescriptorRegistry)) {};
+
+std::shared_ptr<ShadowNode> ComponentBuilder::build(
+    const ElementFragment& elementFragment) const {
+  auto& componentDescriptor =
+      componentDescriptorRegistry_->at(elementFragment.componentHandle);
+
+  auto children = std::vector<std::shared_ptr<const ShadowNode>>{};
+  children.reserve(elementFragment.children.size());
+  for (const auto& childFragment : elementFragment.children) {
+    children.push_back(build(childFragment));
+  }
+
+  auto family = componentDescriptor.createFamily(
+      ShadowNodeFamilyFragment{
+          .tag = elementFragment.tag,
+          .surfaceId = elementFragment.surfaceId,
+          .instanceHandle = nullptr});
+
+  auto initialState =
+      componentDescriptor.createInitialState(elementFragment.props, family);
+
+  auto constShadowNode = componentDescriptor.createShadowNode(
+      ShadowNodeFragment{
+          .props = elementFragment.props,
+          .children = std::make_shared<
+              const std::vector<std::shared_ptr<const ShadowNode>>>(children),
+          .state = initialState},
+      family);
+
+  if (elementFragment.stateCallback) {
+    auto newState = componentDescriptor.createState(
+        *family, elementFragment.stateCallback(initialState));
+    constShadowNode = componentDescriptor.cloneShadowNode(
+        *constShadowNode,
+        ShadowNodeFragment{
+            .props = ShadowNodeFragment::propsPlaceholder(),
+            .children = ShadowNodeFragment::childrenPlaceholder(),
+            .state = newState});
+  }
+
+  auto shadowNode = std::const_pointer_cast<ShadowNode>(constShadowNode);
+
+  if (elementFragment.referenceCallback) {
+    elementFragment.referenceCallback(shadowNode);
+  }
+
+  if (elementFragment.finalizeCallback) {
+    elementFragment.finalizeCallback(*shadowNode);
+  }
+
+  return shadowNode;
+}
+
+} // namespace facebook::react

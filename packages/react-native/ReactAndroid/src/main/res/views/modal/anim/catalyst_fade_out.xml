@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="utf-8"?>
+<alpha xmlns:android="http://schemas.android.com/apk/res/android"
+           android:duration="@android:integer/config_shortAnimTime"
+           android:interpolator="@android:anim/accelerate_interpolator"
+           android:fromAlpha="1.0"
+           android:toAlpha="0.0"
+  />

@@ -1,0 +1,5 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+  <color name="catalyst_redbox_background">#eecc0000</color>
+  <color name="catalyst_logbox_background">#ffffffff</color>
+</resources>
