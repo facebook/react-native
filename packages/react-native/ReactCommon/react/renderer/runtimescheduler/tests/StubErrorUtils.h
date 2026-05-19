@@ -46,8 +46,15 @@ class StubErrorUtils : public jsi::HostObject {
           name,
           1,
           [this](
-              jsi::Runtime &runtime, const jsi::Value &, const jsi::Value *arguments, size_t) noexcept -> jsi::Value {
+              jsi::Runtime &runtime, const jsi::Value &, const jsi::Value *arguments, size_t count) noexcept -> jsi::Value {
             reportFatalCallCount_++;
+            if (count > 0 && arguments[0].isObject()) {
+              auto obj = arguments[0].getObject(runtime);
+              auto msgVal = obj.getProperty(runtime, "message");
+              if (msgVal.isString()) {
+                lastReportedMessage_ = msgVal.getString(runtime).utf8(runtime);
+              }
+            }
             return jsi::Value::undefined();
           });
     }
@@ -60,8 +67,14 @@ class StubErrorUtils : public jsi::HostObject {
     return reportFatalCallCount_;
   }
 
+  const std::string &getLastReportedMessage() const
+  {
+    return lastReportedMessage_;
+  }
+
  private:
   int reportFatalCallCount_;
+  std::string lastReportedMessage_;
 };
 
 } // namespace facebook::react

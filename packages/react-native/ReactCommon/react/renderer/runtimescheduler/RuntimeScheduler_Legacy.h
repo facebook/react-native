@@ -149,6 +149,8 @@ class RuntimeScheduler_Legacy final : public RuntimeSchedulerBase {
 
   void executeTask(jsi::Runtime &runtime, const std::shared_ptr<Task> &task, bool didUserCallbackTimeout);
 
+  void reportError(jsi::Runtime &runtime, jsi::JSError &error) const;
+
   /*
    * Returns a time point representing the current point in time. May be called
    * from multiple threads.

@@ -179,6 +179,16 @@ class RuntimeScheduler_Modern final : public RuntimeSchedulerBase {
 
   void executeTask(jsi::Runtime &runtime, Task &task, bool didUserCallbackTimeout) const;
 
+  /*
+   * Re-creates a jsi::JSError as a proper Error instance in the given runtime
+   * and forwards it to onTaskError_. This is necessary because the caught
+   * error's jsi::Value may belong to a different jsi::Runtime (e.g. when the
+   * error originates from a background Hermes instance). Using a cross-runtime
+   * Value is undefined behavior and causes LogBox to show "Unknown".
+   * getMessage() and getStack() are plain C++ strings and always safe to use.
+   */
+  void reportError(jsi::Runtime &runtime, jsi::JSError &error) const;
+
   void updateRendering(HighResTimeStamp taskEndTime);
 
   bool performingMicrotaskCheckpoint_{false};
