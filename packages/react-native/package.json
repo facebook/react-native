@@ -31,11 +31,13 @@
   "exports": {
     ".": {
       "react-native-strict-api": "./types_generated/index.d.ts",
+      "react-native-noflow": "./dist_noflow/index.js",
       "types": "./types/index.d.ts",
       "default": "./index.js"
     },
     "./*": {
       "react-native-strict-api": null,
+      "react-native-noflow": "./dist_noflow/*.js",
       "types": "./*.d.ts",
       "default": "./*.js"
     },
@@ -75,6 +77,7 @@
   "files": [
     "build.gradle.kts",
     "cli.js",
+    "dist_noflow",
     "flow",
     "gradle.properties",
     "gradle/libs.versions.toml",

@@ -174,8 +174,13 @@ fix_*.patch
 /private/react-native-fantom/.out/
 /private/react-native-fantom/tester/build/
 
-# [Experimental] Generated TS type definitions
-/packages/**/types_generated/
+# JS build output
+/packages/*/dist/
+/packages/*/dist_noflow/
+/packages/debugger-shell/build/
+
+# Generated TS type definitions
+/packages/*/types_generated/
 
 # Python
 __pycache__/

@@ -10,6 +10,10 @@
 
 require('../shared/babelRegister').registerForScript();
 
+/*::
+import type {BuildOptions} from './config';
+*/
+
 const {PACKAGES_DIR, REPO_ROOT} = require('../shared/consts');
 const {
   buildConfig,
@@ -30,8 +34,9 @@ const {parseArgs, styleText} = require('util');
 
 const SRC_DIR = 'src';
 const BUILD_DIR = 'dist';
+const NOFLOW_BUILD_DIR = 'dist_noflow';
 const JS_FILES_PATTERN = '**/*.js';
-const IGNORE_PATTERN = '**/__{tests,mocks,fixtures}__/**';
+const IGNORE_PATTERN = '**/__{tests,mocks,fixtures,flowtests}__/**';
 
 const config = {
   allowPositionals: true,
@@ -77,6 +82,13 @@ async function build() {
 
   let ok = true;
   for (const packageName of packagesToBuild) {
+    const {target} = getBuildOptions(packageName);
+
+    if (target === 'noflow') {
+      await buildNoFlowTarget(packageName);
+      continue;
+    }
+
     await buildPackage(packageName, prepack);
   }
 
@@ -163,8 +175,9 @@ async function buildFile(
 ) {
   const {silent = false} = options;
   const packageName = getPackageName(file);
-  const buildPath = getBuildPath(file);
-  const {emitFlowDefs, emitTypeScriptDefs} = getBuildOptions(packageName);
+  const buildOptions = getBuildOptions(packageName);
+  const {emitFlowDefs, emitTypeScriptDefs} = buildOptions;
+  const buildPath = getBuildPath(file, buildOptions);
 
   const logResult = ({copied, desc} /*: {copied: boolean, desc?: string} */) =>
     silent ||
@@ -224,6 +237,87 @@ async function buildFile(
   }
 
   logResult({copied: true});
+}
+
+async function buildNoFlowTarget(packageName /*: string */) {
+  try {
+    const buildOptions = getBuildOptions(packageName);
+    const {srcOverride} = buildOptions;
+
+    process.stdout.write(
+      `${packageName} ${styleText('yellow', '(noflow)')} ${styleText('dim', '.').repeat(63 - packageName.length)} `,
+    );
+
+    const files = glob.sync(
+      path.resolve(
+        PACKAGES_DIR,
+        packageName,
+        ...(srcOverride != null
+          ? ['{', srcOverride, '}']
+          : [SRC_DIR, '**/*.js']),
+      ),
+      {
+        nodir: true,
+        ignore: [IGNORE_PATTERN],
+      },
+    );
+
+    for (const file of files) {
+      const filePath = path.normalize(file);
+      const buildPath = getBuildPath(filePath, buildOptions);
+      const prettierConfig = {parser: 'babel'};
+      const source = await fs.readFile(file, 'utf-8');
+
+      await fs.mkdir(path.dirname(buildPath), {recursive: true});
+
+      // If file contains `@noflow`, copy only
+      if (/@noflow/.test(source)) {
+        await fs.copyFile(file, buildPath);
+        continue;
+      }
+
+      // Apply Flow transforms
+      const babelResult = await babel.transformFileAsync(
+        filePath,
+        getBabelConfig(packageName),
+      );
+      const transformed = await prettier.format(
+        babelResult.code,
+        /* $FlowFixMe[incompatible-type] Natural Inference rollout. See
+         * https://fburl.com/workplace/6291gfvu */
+        prettierConfig,
+      );
+
+      // Write transformed file with source map comment
+      const relativeSourcePath = path.relative(
+        path.dirname(buildPath),
+        filePath,
+      );
+      const sourceMapComment = `\n//# sourceMappingURL=${path.basename(buildPath)}.map`;
+      await fs.writeFile(buildPath, transformed + sourceMapComment);
+
+      // Write source map file
+      if (babelResult.map) {
+        const sourceMapPath = buildPath + '.map';
+        const sourceMap = {
+          ...babelResult.map,
+          sources: [relativeSourcePath],
+        };
+        await fs.writeFile(sourceMapPath, JSON.stringify(sourceMap, null, 2));
+      }
+    }
+
+    process.stdout.write(
+      styleText(['reset', 'inverse', 'bold', 'green'], ' DONE '),
+    );
+  } catch (e) {
+    process.stdout.write(
+      styleText(['reset', 'inverse', 'bold', 'red'], ' FAIL ') + '\n',
+    );
+    throw e;
+  } finally {
+    process.stdout.write('\n');
+  }
 }
 
 /*::
@@ -356,13 +450,19 @@ function getPackageName(file /*: string */) /*: string */ {
   return path.relative(PACKAGES_DIR, file).split(path.sep)[0];
 }
 
-function getBuildPath(file /*: string */) /*: string */ {
+function getBuildPath(
+  file /*: string */,
+  {srcOverride, target} /*: BuildOptions */,
+) /*: string */ {
   const packageDir = path.join(PACKAGES_DIR, getPackageName(file));
 
   return path.join(
     packageDir,
     file
-      .replace(path.join(packageDir, SRC_DIR), BUILD_DIR)
+      .replace(
+        path.join(packageDir, srcOverride ? '' : SRC_DIR),
+        target === 'noflow' ? NOFLOW_BUILD_DIR : BUILD_DIR,
+      )
       .replace('.flow.js', '.js'),
   );
 }

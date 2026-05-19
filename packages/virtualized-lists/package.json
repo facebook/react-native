@@ -22,16 +22,19 @@
   "exports": {
     ".": {
       "react-native-strict-api": "./types_generated/index.d.ts",
+      "react-native-noflow": "./dist_noflow/index.js",
       "types": "./index.d.ts",
       "default": "./index.js"
     },
     "./*": {
       "types": null,
+      "react-native-noflow": "./dist_noflow/*.js",
       "default": "./*.js"
     },
     "./package.json": "./package.json"
   },
   "files": [
+    "dist_noflow",
     "index.js",
     "index.d.ts",
     "Lists",
