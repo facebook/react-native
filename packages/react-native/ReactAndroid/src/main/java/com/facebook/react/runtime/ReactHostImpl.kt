@@ -806,7 +806,7 @@ public class ReactHostImpl(
   internal fun callFunctionOnModule(
       moduleName: String,
       methodName: String,
-      args: NativeArray,
+      args: NativeArray?,
   ): Task<Boolean> {
     val method = "callFunctionOnModule(\"$moduleName\", \"$methodName\")"
     return callWithExistingReactInstance(method) { reactInstance: ReactInstance ->
