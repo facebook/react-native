@@ -14,7 +14,7 @@
   },
   "license": "MIT",
   "engines": {
-    "node": ">= 20.19.4"
+    "node": ">= 22.13.0"
   },
   "main": "./jest-preset.js",
   "files": [
