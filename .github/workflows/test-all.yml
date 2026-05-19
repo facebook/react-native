@@ -451,6 +451,8 @@ jobs:
     steps:
       - name: Checkout
         uses: actions/checkout@v6
+      - name: Setup Node.js
+        uses: ./.github/actions/setup-node
       - name: Install dependencies
         uses: ./.github/actions/yarn-install
       - name: Lint file structure
@@ -482,7 +484,7 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        node-version: ["24", "22", "20.19.4"]
+        node-version: ["24", "22.13.0"]
     steps:
       - name: Checkout
         uses: actions/checkout@v6
