@@ -65,6 +65,8 @@ abstract class GenerateAutolinkingNewArchitecturesFileTask : DefaultTask() {
                 if(EXISTS "$nativeFolderPath")
                   add_subdirectory("$nativeFolderPath" ${libraryName}_autolinked_build)
                   list(APPEND AUTOLINKED_LIBRARIES $CODEGEN_LIB_PREFIX${libraryName})
+                else()
+                  message(WARNING "React Native: Skipping autolinked library '$CODEGEN_LIB_PREFIX${libraryName}' because the source directory does not exist: $nativeFolderPath")
                 endif()
                 """
                     .trimIndent()
@@ -82,6 +84,8 @@ abstract class GenerateAutolinkingNewArchitecturesFileTask : DefaultTask() {
                       "  list(APPEND AUTOLINKED_LIBRARIES $it)"
                     } ?: ""
                 }
+                else()
+                  message(WARNING "React Native: Skipping autolinked C++ module '${dep.cxxModuleCMakeListsModuleName ?: libraryName}' because the source directory does not exist: $nativeFolderPath")
                 endif()
                 """
                     .trimIndent()
