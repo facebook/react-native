@@ -6,23 +6,25 @@ XCFrameworks, as an alternative to CocoaPods.
 ## Quick Start
 
 ```bash
-# First-time setup (generates Package.swift you commit)
-react-native spm init
+cd ios
 
-# Open in Xcode — autolinking syncs automatically on build
-open MyApp-SPM.xcodeproj
+# First-time setup: prompts to rename any existing CocoaPods MyApp.xcodeproj
+# to MyApp.xcodeproj.legacy, then generates the SPM-managed MyApp.xcodeproj
+# in its place. `npx react-native spm` with no action auto-detects first-run
+# and routes to `init`.
+npx react-native spm
 
-# Delete generated SPM state if things go wrong
-react-native spm clean
+# Open in Xcode (or `npm run ios`). Autolinking syncs automatically on build.
+open MyApp.xcodeproj
 ```
 
-After the initial `init`, you typically don't need to re-run `react-native
-spm`. The generated `.xcodeproj` includes an **auto-sync build phase** that
-detects dependency changes and re-runs autolinking before compilation (see
-[Auto-Sync](#auto-sync-build-phase) below).
+After the initial run, the generated `.xcodeproj` includes an **auto-sync
+build phase** that detects dependency changes and re-runs autolinking before
+compilation (see [Auto-Sync](#auto-sync-build-phase) below) — you typically
+don't need to re-invoke `react-native spm` manually.
 
-You can still run `react-native spm` manually if needed (e.g., after
-`--forceDownload` or to regenerate the `.xcodeproj`).
+You can run it manually when needed (e.g., after `--forceDownload`, or
+`--force-xcodeproj` to regenerate the committed xcodeproj).
 
 > **Note:** `react-native spm` is a thin wrapper over
 > `node node_modules/react-native/scripts/setup-apple-spm.js`. If the CLI
@@ -30,7 +32,22 @@ You can still run `react-native spm` manually if needed (e.g., after
 > the same actions and the kebab-case flag equivalents (e.g.
 > `--force-download` instead of `--forceDownload`).
 
-CocoaPods continues to work in parallel.
+## Legacy CocoaPods xcodeproj
+
+On `init`, if a CocoaPods-driven `<App>.xcodeproj` exists, the script
+prompts to rename it to `<App>.xcodeproj.legacy`. The `.legacy` extension
+hides it from the community CLI's `findXcodeProject` heuristic so
+`npm run ios` resolves to the SPM xcodeproj unambiguously. The directory
+stays on disk for rollback — `git mv` tracks the rename cleanly.
+
+To roll back to CocoaPods:
+
+```bash
+npx react-native spm clean --project   # deletes SPM xcodeproj, restores .legacy
+# or manually:
+mv ios/MyApp.xcodeproj.legacy ios/MyApp.xcodeproj
+rm -rf ios/MyApp.xcodeproj ios/build/  # delete SPM artifacts
+```
 
 ## Pipeline
 
@@ -44,15 +61,16 @@ steps:
 | 3. Autolinking | `spm/generate-spm-autolinking.js` | `build/generated/autolinking/Package.swift` |
 | 4. Download | `spm/download-spm-artifacts.js` | Cached xcframeworks |
 | 5. Package | `spm/generate-spm-package.js` | `build/xcframeworks/Package.swift` + symlinks |
-| 6. Xcodeproj | `spm/generate-spm-xcodeproj.js` | `<AppName>-SPM.xcodeproj` |
+| 6. Xcodeproj | `spm/generate-spm-xcodeproj.js` | `<AppName>.xcodeproj` + `.spm-managed` marker (`init` only; create-if-missing) |
 | Auto-sync | `spm/sync-spm-autolinking.js` | Re-runs codegen/autolinking/package generation at Xcode build time |
 
 ## Directory Layout
 
 ```
-my-app/
-  Package.swift                    <-- committed
-  MyApp-SPM.xcodeproj/             <-- committed (deterministic output)
+my-app/ios/
+  MyApp.xcodeproj/                 <-- committed (SPM-managed; carries .spm-managed marker)
+  MyApp.xcodeproj.legacy/          <-- committed (preserved CocoaPods xcodeproj, if migrated)
+  Podfile                          <-- still present; CocoaPods coexistence is best-effort
   build/
     generated/
       autolinking/                 <-- gitignored (regenerated at build time)
@@ -60,8 +78,8 @@ my-app/
         autolinking.json
         packages/                  <-- package wrappers for native modules
         headers/                   <-- generated header symlinks
-    generated/ios/                 <-- codegen output
-    xcframeworks/                   <-- gitignored, symlinks to cached artifacts
+      ios/                         <-- gitignored, codegen output
+    xcframeworks/                  <-- gitignored, symlinks to cached artifacts
       React.xcframework -> ~/Library/Caches/.../React.xcframework
       ReactNativeDependencies.xcframework -> ...
       hermes-engine.xcframework -> ...
@@ -71,19 +89,21 @@ my-app/
 
 | Path | Commit? | Why |
 |------|---------|-----|
-| `Package.swift` | Yes | Developer-owned, customizable |
-| `MyApp-SPM.xcodeproj/` | Yes | Deterministic UUIDs; lets teammates clone and build immediately |
+| `MyApp.xcodeproj/` | Yes | SPM-managed; holds signing, capabilities, Build Phases. Deterministic UUIDs let teammates clone and build immediately. |
+| `MyApp.xcodeproj/.spm-managed` | Yes | Marker file; distinguishes the SPM xcodeproj from a CocoaPods one with the same filename. |
+| `MyApp.xcodeproj.legacy/` | Yes (if present) | Preserved CocoaPods project for rollback. |
 | `build/generated/` | No | Codegen/autolinking output; regenerated |
 | `build/xcframeworks/` | No | Symlinks to local cache; machine-specific |
 | `Package.resolved` | No | SPM resolution file; machine-specific |
 
 The `.xcodeproj` uses deterministic UUIDs (`SHA-256(projectName:section:id)`)
-so regenerating it from the same inputs produces identical output. Committing
-it means teammates can clone and open Xcode without running any setup commands
-— the auto-sync build phase handles the rest on first build.
-
-Re-run `react-native spm` (or just step 5) when you add/remove native source
-files, then commit the updated `.xcodeproj`.
+so regenerating from the same inputs produces identical output. Subsequent
+`spm update` runs are **create-if-missing** — they don't touch the committed
+xcodeproj (so signing / capabilities / Build Phases survive). The xcodeproj
+references three stable sub-package paths under `build/`; adding or removing
+community deps changes the sub-package contents (gitignored) and never
+requires regenerating the xcodeproj. Pass `--force-xcodeproj` to opt back
+into overwrite when you genuinely need it.
 
 ## CLI Actions
 
@@ -91,17 +111,23 @@ files, then commit the updated `.xcodeproj`.
 react-native spm [action] [options]
 ```
 
-With no action, the command runs `update`. Use `init` explicitly for
-first-time setup (it generates the initial `Package.swift`).
+With no action, the command **auto-detects first-run**: if no SPM-managed
+`<App>.xcodeproj` is present, it routes to `init`; otherwise `update`.
+
+When invoked from the JS root of a standard RN app (sibling `ios/` subdir),
+non-destructive actions (`init`, `update`, `sync`, `codegen`, `download`,
+`scaffold`) auto-redirect into `ios/` with a banner. `clean` refuses to
+redirect — `cd ios/` first.
 
 | Action | Description |
 |---|---|
-| `init` | Generate initial `Package.swift` and all generated SPM/Xcode state |
-| `update` | Regenerate generated SPM/Xcode state without overwriting root `Package.swift` |
+| `init` | First-time setup: gitignore entries, legacy-xcodeproj rename prompt, full pipeline incl. `.xcodeproj` generation. |
+| `update` | Regenerate sub-packages / artifacts. Does NOT touch the committed `.xcodeproj` unless `--force-xcodeproj`. |
 | `sync` | Lightweight resync invoked by the Xcode auto-sync build phase. Regenerates autolinking + xcframeworks sub-packages and writes `.spm-sync-stamp`. Skips `.xcodeproj` regen. |
-| `clean` | Remove generated SPM state only |
+| `clean` | Remove generated SPM state. Scoped by `--project` / `--derived-data` / `--cache` / `--all`. |
 | `codegen` | Run codegen and install the SPM codegen template only |
 | `download` | Download/check xcframework artifacts only |
+| `scaffold` | Generate `Package.swift` into `node_modules/<dep>/` for community RN libraries that ship only a podspec. |
 
 ## CLI Options
 
@@ -119,8 +145,14 @@ accepts kebab-case equivalents (e.g. `--skip-codegen`).
 | `--productName <name>` | Override PRODUCT_NAME |
 | `--skipCodegen` | Skip codegen step |
 | `--skipDownload` | Skip artifact download |
-| `--skipXcodeproj` | Skip .xcodeproj generation |
+| `--skipXcodeproj` | Skip `.xcodeproj` generation |
+| `--forceXcodeproj` | Regenerate `.xcodeproj` even when one exists (clobbers Xcode-side edits) |
 | `--forceDownload` | Clear cache and re-download |
+| `--project` | [clean] Also remove the committed `<App>.xcodeproj/`; restores `<App>.xcodeproj.legacy/` if present. |
+| `--derivedData` | [clean] Also remove this app's Xcode DerivedData entries |
+| `--cache` | [clean] Also remove the cached xcframework slot for the current version |
+| `--all` | [clean] Shorthand for `--project --derived-data --cache` |
+| `--yes` | [clean] Skip confirmation prompts for destructive scopes |
 
 ## Local Native Modules
 
@@ -192,21 +224,31 @@ existing autolinking may still produce a successful build.
 ## Cleaning
 
 Xcode's "Clean Build Folder" (Cmd+Shift+K) only removes DerivedData — it does
-not touch SPM-generated directories. To fully reset SPM state:
+not touch SPM-generated directories. To reset SPM state:
 
 ```bash
+# Default: remove generated dirs (build/xcframeworks/, build/generated/, .build/)
 react-native spm clean
+
+# Also delete the committed xcodeproj and restore .legacy backup (if present)
+react-native spm clean --project
+
+# Also blow away this app's DerivedData + cached xcframework slot
+react-native spm clean --all
 ```
 
-This removes `build/xcframeworks/`, `build/generated/`, legacy `autolinked/`,
-and `.build/`. It does not re-run setup. Run `react-native spm update` or
-open the checked-in `.xcodeproj` and build to regenerate state.
+The `--project` / `--derived-data` / `--cache` / `--all` scopes prompt for
+confirmation (bypass with `--yes`). After a plain `clean`, run
+`react-native spm update` or open the checked-in `.xcodeproj` and build to
+regenerate state.
 
 ## Troubleshooting
 
 | Problem | Fix |
 |---------|-----|
-| "Package.swift not found" | Run `react-native spm init` |
+| `npm run ios` builds the wrong project after init | The community CLI's `findXcodeProject` picks alphabetically; if both `<App>.xcodeproj` and `<App>-SPM.xcodeproj` (legacy generator output) coexist, manually rename one. Fresh installs use the rename-migration so only one is active. |
+| "could not load the shared scheme for `<App>`" from `npm run ios` | Stale scheme from older generator. Run `npx react-native spm update --force-xcodeproj` to regenerate. |
+| "Refusing to generate .xcodeproj: ... legacy CocoaPods project" | Accept the rename prompt during `init`, or manually rename `<App>.xcodeproj` → `<App>.xcodeproj.legacy` before the SPM xcodeproj can take its slot. |
 | Missing headers | Re-run `react-native spm` |
 | "not contained in target" | Re-run setup (regenerates file-level symlinks) |
 | Codegen fails | Use `--skipCodegen` to iterate on other parts |
@@ -215,3 +257,4 @@ open the checked-in `.xcodeproj` and build to regenerate state.
 | Autolinking not updating on build | Touch `package.json` to force a sync, or delete `build/generated/autolinking/.spm-sync-stamp` |
 | Build fails after clean with module map errors | Run `react-native spm update`, then reopen Xcode |
 | Stale SPM state or corrupted build | Run `react-native spm clean`, then `react-native spm update` |
+| Want to revert to CocoaPods | `react-native spm clean --project` (restores `.legacy` backup if present) |

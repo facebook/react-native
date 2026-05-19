@@ -20,22 +20,24 @@ of React Native internals and enabling fast, reproducible builds.
 
 ```bash
 npx react-native init MyApp
-cd MyApp/ios
-open MyApp-SPM.xcodeproj
-# Build and run from Xcode — no pod install, no Ruby toolchain
+cd MyApp
+npx react-native spm   # auto-detects first-run → init; prompts to rename legacy CocoaPods xcodeproj
+npm run ios
 ```
 
 A future CLI integration (e.g., an `--ios-build-system spm` flag on
 `react-native init`) could run `react-native spm init` automatically as part
-of project creation.
+of project creation, eliminating the manual step.
 
 ### Existing project
 
 ```bash
-cd MyApp/ios
-react-native spm init
-# CocoaPods setup continues to work — both can coexist
-open MyApp-SPM.xcodeproj
+cd MyApp
+npx react-native spm
+# Prompted: rename CocoaPods MyApp.xcodeproj → MyApp.xcodeproj.legacy?
+# Accept (Y) — the SPM xcodeproj writes to the now-free MyApp.xcodeproj slot,
+# `npm run ios` resolves to it unambiguously. The legacy stays on disk
+# (git mv tracks the rename cleanly) for rollback via `spm clean --project`.
 ```
 
 After initial setup, day-to-day development requires no extra commands. Adding
@@ -75,10 +77,14 @@ custom workarounds. First-class SPM support might help overcoming this barrier.
 
 ### Compatibility
 
-CocoaPods continues to work during the transition period. The SPM workflow
-generates a separate `AppName-SPM.xcodeproj` that coexists with the existing
-Pods-based project. Teams can migrate at their own pace before CocoaPods trunk
-goes read-only in December 2026.
+The SPM workflow generates an `AppName.xcodeproj` that takes the same
+filename slot as the legacy CocoaPods xcodeproj. On `init`, the script
+prompts to rename the existing CocoaPods project to `AppName.xcodeproj.legacy`
+— preserving it for rollback while letting the community CLI's
+`findXcodeProject` resolve `npm run ios` to the SPM project unambiguously.
+Teams can migrate at their own pace before CocoaPods trunk goes read-only
+in December 2026, and `spm clean --project` reverses the migration when
+needed.
 
 ## Detailed design
 
@@ -99,42 +105,48 @@ goes read-only in December 2026.
 └──────────────────┬──────────────────────────────┘
                    │ symlink
                    ▼
-┌─────────────────────────────────────────────────┐
-│  App Root                                       │
-│  ├── Package.swift              (committed)     │
-│  ├── AppName-SPM.xcodeproj/     (committed)     │
-│  ├── autolinked/                (generated)     │
-│  │   ├── Package.swift                          │
-│  │   └── sources/               (symlinks)      │
-│  └── build/                                     │
-│      ├── generated/ios/         (codegen)       │
-│      └── xcframeworks/          (symlinks)      │
-│          ├── Package.swift                      │
+┌──────────────────────────────────────────────────┐
+│  App ios/                                        │
+│  ├── AppName.xcodeproj/         (committed)      │
+│  │   └── .spm-managed           (marker file)    │
+│  ├── AppName.xcodeproj.legacy/  (committed if    │
+│  │                               rename was      │
+│  │                               accepted)       │
+│  └── build/                                      │
+│      ├── generated/                              │
+│      │   ├── autolinking/       (generated)      │
+│      │   │   ├── Package.swift                   │
+│      │   │   ├── autolinking.json                │
+│      │   │   └── packages/      (synth wrappers) │
+│      │   └── ios/               (codegen)        │
+│      └── xcframeworks/          (symlinks)       │
+│          ├── Package.swift                       │
 │          ├── React.xcframework -> cache          │
 │          ├── ReactNativeDependencies.xcframework │
 │          └── hermes-engine.xcframework           │
-└─────────────────────────────────────────────────┘
+└──────────────────────────────────────────────────┘
 ```
 
 ### Pipeline
 
-`react-native spm` orchestrates five steps (the underlying script is
+`react-native spm` orchestrates six steps (the underlying script is
 `scripts/setup-apple-spm.js`):
 
 | # | Step | Script | Output |
 |---|------|--------|--------|
-| 1 | Codegen | `generate-codegen-artifacts.js` | `build/generated/ios/` |
-| 2 | Autolinking | `spm/generate-spm-autolinking.js` | `autolinked/Package.swift` + source symlinks |
-| 3 | Download | `spm/download-spm-artifacts.js` | Cached xcframeworks |
-| 4 | Package | `spm/generate-spm-package.js` | `build/xcframeworks/Package.swift` + symlinks |
-| 5 | Xcodeproj | `spm/generate-spm-xcodeproj.js` | `AppName-SPM.xcodeproj` |
-| — | Sync (build-time) | `spm/sync-spm-autolinking.js` | Re-runs steps 1–4 when inputs change (downloads artifacts if missing) |
+| 1 | CLI config | `spm/generate-spm-autolinking-config.js` | `build/generated/autolinking/autolinking.json` |
+| 2 | Codegen | `generate-codegen-artifacts.js` | `build/generated/ios/` |
+| 3 | Autolinking | `spm/generate-spm-autolinking.js` | `build/generated/autolinking/Package.swift` + source symlinks |
+| 4 | Download | `spm/download-spm-artifacts.js` | Cached xcframeworks |
+| 5 | Package | `spm/generate-spm-package.js` | `build/xcframeworks/Package.swift` + symlinks |
+| 6 | Xcodeproj | `spm/generate-spm-xcodeproj.js` | `AppName.xcodeproj` + `.spm-managed` marker (`init` only; create-if-missing on subsequent runs) |
+| — | Sync (build-time) | `spm/sync-spm-autolinking.js` | Re-runs steps 1–5 when inputs change (downloads artifacts if missing) |
 
-When run with the `init` action, the script also appends SPM-specific entries to the
-project's `.gitignore` (e.g., `autolinked/`, `build/generated/ios/`,
-`build/xcframeworks/`, `.build/`, `Package.resolved`). Entries that already
-exist are not duplicated. This ensures generated artifacts are not accidentally
-committed.
+The `init` action additionally (a) prompts to rename any existing
+CocoaPods `<App>.xcodeproj` to `<App>.xcodeproj.legacy` before step 6, and
+(b) appends SPM-specific entries to `.gitignore`
+(`build/generated/`, `build/xcframeworks/`, `.build/`, `Package.resolved`).
+Existing entries are not duplicated.
 
 ### Auto-sync build phase
 
@@ -173,17 +185,26 @@ builds recover automatically.
 ### Cleaning generated SPM state
 
 Xcode's "Clean Build Folder" (Cmd+Shift+K) only removes DerivedData — it does
-not touch the project's `build/`, `autolinked/`, or `.build/` directories.
-Xcode provides no hook to run custom scripts during GUI clean actions.
+not touch the project's `build/` or `.build/` directories. Xcode provides no
+hook to run custom scripts during GUI clean actions.
 
-To fully reset SPM state, run:
+`react-native spm clean` is scoped by opt-in flags. The default removes only
+generated dirs under `appRoot`:
 
 ```bash
-react-native spm clean
+react-native spm clean             # build/xcframeworks/, build/generated/, .build/
+react-native spm clean --project   # also: delete SPM xcodeproj, restore .legacy backup
+react-native spm clean --derived-data  # also: this app's Xcode DerivedData entries
+react-native spm clean --cache         # also: cached xcframework slot for current version
+react-native spm clean --all           # = --project --derived-data --cache
 ```
 
-This removes `build/xcframeworks/`, `build/generated/ios/`, `autolinked/`, and
-`.build/`. Then run `react-native spm update` (or open the checked-in
+Destructive scopes (`--project`, `--derived-data`, `--cache`, `--all`) prompt
+for confirmation (bypass with `--yes`). `--project` is the reverse of the
+init-time rename migration — deleting the SPM xcodeproj and restoring
+`<App>.xcodeproj.legacy` to its original filename if a backup exists.
+
+After a plain `clean`, run `react-native spm update` (or open the checked-in
 `.xcodeproj` and build) to regenerate state. SPM package resolution is locked
 for the duration of a build — if only stubs were left in place, Xcode would
 resolve stubs and never pick up the real packages generated by the sync build
@@ -223,37 +244,34 @@ for CI environments where a specific path must be persisted across builds.
 
 ### Package graph
 
-SPM resolves three local packages as dependencies of the app target:
+The generated `<App>.xcodeproj` references three local packages directly
+via `XCLocalSwiftPackageReference` — no app-level `Package.swift` is required:
 
 ```
-AppName-SPM.xcodeproj
-  └── Package.swift (app root — committed, user-owned)
-        ├── build/xcframeworks/Package.swift
-        │     ├── ReactNative (product, wraps React binaryTarget)
-        │     ├── ReactNativeDependencies (binaryTarget)
-        │     └── hermes-engine (binaryTarget)
-        ├── build/generated/ios/Package.swift
-        │     ├── ReactCodegen (target — codegen output)
-        │     └── ReactAppDependencyProvider (target)
-        ├── autolinked/Package.swift
-        │     └── <AutolinkedModule>... (targets — symlinked sources)
-        └── build/generated/ios/ (codegen source path)
+AppName.xcodeproj
+  ├── XCLocalSwiftPackageReference → build/xcframeworks/Package.swift
+  │     ├── ReactNative (product, wraps React binaryTarget)
+  │     ├── ReactNativeDependencies (binaryTarget)
+  │     └── hermes-engine (binaryTarget)
+  ├── XCLocalSwiftPackageReference → build/generated/ios/Package.swift
+  │     ├── ReactCodegen (target — codegen output)
+  │     └── ReactAppDependencyProvider (target)
+  └── XCLocalSwiftPackageReference → build/generated/autolinking/Package.swift
+        └── <AutolinkedModule>... (targets — symlinked sources)
 ```
 
-The root `Package.swift` is generated once (`react-native spm init`) and committed. Developers
-can customize it — add dependencies, adjust settings, or add new targets.
-Subsequent runs only regenerate the sub-packages (`autolinked/` and
-`build/xcframeworks/`).
+These three sub-package paths are **stable**: adding or removing community
+deps changes the contents of `build/generated/autolinking/Package.swift`
+(gitignored) but never the xcodeproj's references. That's why the
+`.xcodeproj` is committed once and not regenerated on subsequent runs.
 
-Both `Package.swift` and `AppName-SPM.xcodeproj` are generated once during
-`react-native spm init` and committed. This is typically done by project
-scaffolding tools (`react-native init`, `expo init`) rather than by developers
-manually. After initial generation, these files are user-owned — subsequent
-`react-native spm update` runs only regenerate the sub-packages, not the root
-`Package.swift` or `.xcodeproj`. Teammates can clone the repo and open Xcode
-immediately — stub packages allow package resolution to succeed, and the
-auto-sync build phase downloads artifacts and handles autolinking on the first
-build.
+The xcodeproj generation is **create-if-missing** on `update` (use
+`--force-xcodeproj` for an explicit overwrite). This protects user-side
+Xcode edits — signing, capabilities, Build Phases, scheme settings — from
+being clobbered. Teammates can clone the repo and open Xcode immediately:
+stub `Package.swift` files in each sub-package directory let SPM resolution
+succeed before the first build, and the auto-sync build phase downloads
+artifacts and writes the real sub-packages on first compile.
 
 ### Header resolution
 
@@ -458,14 +476,16 @@ and network access, the `.xcodeproj` could be eliminated in favor of a purely
 SPM-native workflow — but this is a future direction that depends on Apple's
 roadmap, not something this proposal can resolve.
 
-### User-owned `Package.swift`
+### Committed xcodeproj edits
 
-The root `Package.swift` is generated once and committed. It only references
-sub-packages by relative path, so React Native upgrades do not require changes
-to it. However, developers who customize it (adding dependencies or targets)
-must understand the generated package structure. In rare cases where the
-sub-package layout changes across a major version, the root file may need
-manual updates.
+The generated `<App>.xcodeproj` is committed and may carry user edits —
+signing, capabilities, Build Phases, custom schemes. The `update` action is
+**create-if-missing** to protect those edits, which means the script does
+not propagate generator improvements into existing projects automatically.
+Bug fixes that change the emitted pbxproj need an explicit
+`--force-xcodeproj` run to take effect. A future improvement could
+preserve user-side edits through a merge step rather than full overwrite —
+see "Hardening `update --force-xcodeproj`" in unresolved questions.
 
 ## Alternatives
 
@@ -541,11 +561,18 @@ required; libraries that don't provide them fall back to source compilation.
 
 ### Migration path for existing apps
 
-1. Run `react-native spm init` in the `ios/` directory.
-2. Commit the generated `Package.swift` and `AppName-SPM.xcodeproj`.
-3. Open the new `.xcodeproj` and build.
-4. Once validated, optionally remove CocoaPods files (`Podfile`, `Pods/`,
-   `.xcworkspace`).
+1. Run `npx react-native spm` from the project root (auto-redirects into
+   `ios/`).
+2. Accept the rename prompt — your existing `AppName.xcodeproj` becomes
+   `AppName.xcodeproj.legacy` (preserved for rollback).
+3. Commit the new `AppName.xcodeproj/` (SPM-managed) and the renamed
+   `AppName.xcodeproj.legacy/`. `git mv` tracks the rename cleanly.
+4. Run `npm run ios` and verify the SPM build.
+5. Once validated, optionally delete the `.legacy` backup, `Podfile`,
+   `Pods/`, and `.xcworkspace`.
+
+To roll back: `npx react-native spm clean --project` deletes the SPM
+xcodeproj and renames `.legacy` back to the canonical filename.
 
 No changes to JavaScript code, Metro configuration, or Android setup are
 required.
@@ -556,10 +583,10 @@ After upgrading `react-native` in `package.json` and running `npm install`,
 the auto-sync build phase detects the `node_modules` mtime change on the next
 Xcode build and re-runs the sync step automatically. This downloads the new
 version's xcframeworks, regenerates the sub-packages, and updates autolinking.
-No manual edits to `Package.swift` are needed — the root `Package.swift` only
-references sub-packages by relative path, and those sub-packages are fully
-regenerated each run. Developers can also run `react-native spm` manually to
-trigger the update before building.
+No manual edits are needed — the xcodeproj's sub-package references are
+stable, and those sub-packages are fully regenerated each run. Developers
+can also run `react-native spm` manually to trigger the update before
+building.
 
 ## How we teach this
 
@@ -622,14 +649,14 @@ trigger the update before building.
    sources compile as an SPM target without producing a full release artifact.
    This would be useful for CI checks on pull requests.
 
-5. **Hardening `init` for existing projects.** Running `init` on a project
-   that already has `Package.swift` or `.xcodeproj` should detect existing
-   files and avoid overwriting user modifications. The current `.xcodeproj`
-   generation uses a simple template-based approach; adopting a proper Xcode
-   project parser/generator (e.g., `@bacons/xcode`) would enable safer
-   incremental updates — reading the existing project, merging changes, and
-   writing back without losing manual edits. This is planned work for
-   production readiness.
+5. **Hardening `update --force-xcodeproj`.** The default `update` is
+   create-if-missing, which preserves user edits but means generator
+   improvements don't propagate to existing projects automatically. Passing
+   `--force-xcodeproj` clobbers everything. A future improvement could read
+   the existing pbxproj, merge changes (signing, capabilities, custom Build
+   Phases), and write back — likely via a proper Xcode project
+   parser/generator (e.g., `@bacons/xcode`) rather than the current
+   template-based approach. Planned work for production readiness.
 
 6. **Auto-sync failure visibility.** The sync build phase currently emits
    `warning:` and exits 0 on failure, which means a broken autolinking state
