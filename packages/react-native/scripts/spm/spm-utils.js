@@ -278,26 +278,23 @@ function renderCodegenTemplate(
     .replace('__SPM_DEPS_HEADERS_EXPR__', depsExpr);
 }
 
-function runCodegenAndInstallTemplate(
-  projectRoot /*: string */,
+/**
+ * Renders the SPM codegen template into build/generated/ios/Package.swift.
+ * No-op when the template or the generated/ios dir is missing — codegen
+ * may not have produced output yet, or the project may be SPM-only.
+ */
+function installSpmCodegenTemplate(
   appRoot /*: string */,
   reactNativeRoot /*: string */,
   logger /*: {log: (msg: string) => void} */ = {log() {}},
 ) /*: void */ {
-  const scriptsDir = path.join(reactNativeRoot, 'scripts');
-  const codegenScript = path.join(scriptsDir, 'generate-codegen-artifacts.js');
-  if (!fs.existsSync(codegenScript)) {
-    return;
-  }
-
-  logger.log('Running codegen...');
-  const {execSync} = require('child_process');
-  const codegenArgs =
-    `node "${codegenScript}" -p "${projectRoot}" -t ios` +
-    (projectRoot !== appRoot ? ` -o "${appRoot}"` : '');
-  execSync(codegenArgs, {stdio: 'inherit', cwd: projectRoot});
-
-  // Install SPM codegen template
+  const spmTemplate = path.join(
+    reactNativeRoot,
+    'scripts',
+    'codegen',
+    'templates',
+    'Package.swift.spm-template',
+  );
   const codegenPkgSwift = path.join(
     appRoot,
     'build',
@@ -305,23 +302,41 @@ function runCodegenAndInstallTemplate(
     'ios',
     'Package.swift',
   );
-  const spmTemplate = path.join(
-    scriptsDir,
-    'codegen',
-    'templates',
-    'Package.swift.spm-template',
-  );
   if (
-    fs.existsSync(spmTemplate) &&
-    fs.existsSync(path.dirname(codegenPkgSwift))
+    !fs.existsSync(spmTemplate) ||
+    !fs.existsSync(path.dirname(codegenPkgSwift))
   ) {
-    const rendered = renderCodegenTemplate(
-      fs.readFileSync(spmTemplate, 'utf8'),
-      appRoot,
-    );
-    fs.writeFileSync(codegenPkgSwift, rendered, 'utf8');
-    logger.log('Installed SPM codegen template');
+    return;
   }
+  const rendered = renderCodegenTemplate(
+    fs.readFileSync(spmTemplate, 'utf8'),
+    appRoot,
+  );
+  fs.writeFileSync(codegenPkgSwift, rendered, 'utf8');
+  logger.log('Installed SPM codegen template');
+}
+
+function runCodegenAndInstallTemplate(
+  projectRoot /*: string */,
+  appRoot /*: string */,
+  reactNativeRoot /*: string */,
+  logger /*: {log: (msg: string) => void} */ = {log() {}},
+) /*: void */ {
+  const codegenScript = path.join(
+    reactNativeRoot,
+    'scripts',
+    'generate-codegen-artifacts.js',
+  );
+  if (!fs.existsSync(codegenScript)) {
+    return;
+  }
+  logger.log('Running codegen...');
+  const {execSync} = require('child_process');
+  const codegenArgs =
+    `node "${codegenScript}" -p "${projectRoot}" -t ios` +
+    (projectRoot !== appRoot ? ` -o "${appRoot}"` : '');
+  execSync(codegenArgs, {stdio: 'inherit', cwd: projectRoot});
+  installSpmCodegenTemplate(appRoot, reactNativeRoot, logger);
 }
 
 module.exports = {
@@ -335,5 +350,6 @@ module.exports = {
   resolveReactNativeRoot,
   resolveAndWriteVFSOverlay,
   renderCodegenTemplate,
+  installSpmCodegenTemplate,
   runCodegenAndInstallTemplate,
 };

@@ -59,18 +59,10 @@ const yargs = require('yargs');
 
 const {log} = makeLogger('generate-spm-xcodeproj');
 
-/**
- * Sidecar filename written inside the SPM-managed xcodeproj bundle. Used by
- * setup-apple-spm helpers (findExistingSpmXcodeproj, findLegacyXcodeproj) to
- * tell apart the SPM-generated `<App>.xcodeproj` from a legacy CocoaPods one
- * sharing the same filename. A simple marker file is more robust than
- * embedding a comment in `project.pbxproj`, which is parsed strictly.
- */
+// Sidecar inside the SPM-managed xcodeproj. Distinguishes the SPM-generated
+// `<App>.xcodeproj` from a legacy CocoaPods one with the same filename.
 const SPM_MANAGED_MARKER = '.spm-managed';
-const SPM_MANAGED_MARKER_HEADER =
-  '# This xcodeproj is managed by `npx react-native spm`. ' +
-  'Presence of this file distinguishes the SPM-generated <App>.xcodeproj ' +
-  'from a legacy CocoaPods <App>.xcodeproj sharing the same filename.';
+const SPM_MANAGED_MARKER_HEADER = '# Managed by `npx react-native spm`.';
 
 function parseArgs(argv /*: Array<string> */) /*: GenerateXcodeprojArgs */ {
   const parsed = yargs(argv)
@@ -241,19 +233,16 @@ function generatePbxproj(
     'XCBuildConfiguration',
     'target:Release',
   );
-  // Build unique sub-package references (deduplicated by path)
+  // Dedupe sub-package references by path (multiple products share a package).
   const uniquePackages /*: Array<{packagePath: string, packageName: string}> */ =
-    [];
-  const seenPaths = new Set /*:: <string> */();
-  for (const entry of SPM_PRODUCT_PACKAGES) {
-    if (!seenPaths.has(entry.packagePath)) {
-      seenPaths.add(entry.packagePath);
-      uniquePackages.push({
-        packagePath: entry.packagePath,
-        packageName: entry.packageName,
-      });
-    }
-  }
+    Array.from(
+      new Map(
+        SPM_PRODUCT_PACKAGES.map(e => [
+          e.packagePath,
+          {packagePath: e.packagePath, packageName: e.packageName},
+        ]),
+      ).values(),
+    );
   const localPkgRefUUIDs = uniquePackages.map(pkg =>
     uuid(appName, 'XCLocalSwiftPackageReference', pkg.packagePath),
   );
@@ -1199,15 +1188,8 @@ function main(argv /*:: ?: Array<string> */) /*: void */ {
     log(changed ? `Generated: ${rel}` : `Unchanged: ${rel}`);
   }
 
-  // Backward compat: previous generator emitted `<App>-SPM.xcodeproj`.
-  // If the user is upgrading and still has one lying around, leave it
-  // alone — the new generator only writes `<App>.xcodeproj`. They can
-  // delete the old one manually (or via `spm clean --project` once we
-  // detect it). We do NOT auto-delete to avoid surprising users who may
-  // have committed customizations to the old name.
-
-  // Ensure stub Package.swift files exist for all referenced SPM sub-packages
-  // so Xcode can resolve packages before the first build phase runs.
+  // Stub Package.swift files for each sub-package so Xcode resolves before
+  // the first build phase runs.
   ensureStubPackages(appRoot);
 }
 

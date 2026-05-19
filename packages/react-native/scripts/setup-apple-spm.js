@@ -97,12 +97,12 @@ const {
   deriveAppName,
   displayPath,
   findProjectRoot,
+  installSpmCodegenTemplate,
   makeLogger,
   readPackageJson,
-  renderCodegenTemplate,
   resolveAndWriteVFSOverlay,
+  runCodegenAndInstallTemplate,
 } = require('./spm/spm-utils');
-const {execSync} = require('child_process');
 const fs = require('fs');
 const os = require('os');
 const path = require('path');
@@ -309,13 +309,8 @@ function ensureGitignoreSpmEntries(appRoot /*: string */) {
   log(`Updated .gitignore with SPM entries: ${missing.join(', ')}`);
 }
 
-/**
- * Pure: enumerates what `clean` should do based on opts. Most targets are
- * `delete` (path-based); `--project` may also emit a `rename` target when
- * a `.legacy` backup exists alongside the SPM xcodeproj, restoring the
- * pre-init CocoaPods state. No I/O beyond one readdirSync on appRoot and
- * (when `derivedData` is requested) one on the DerivedData root.
- */
+// Enumerates clean targets. `--project` may emit a `rename` target restoring
+// `<App>.xcodeproj.legacy` alongside the SPM xcodeproj deletion.
 function gatherCleanTargets(
   appRoot /*: string */,
   opts /*:: ?: CleanOpts */ = {},
@@ -348,32 +343,9 @@ function gatherCleanTargets(
     },
   );
 
-  // Identify SPM-managed xcodeprojs inside appRoot. Strategy:
-  //   1. Any `*.xcodeproj/` containing the `.spm-managed` marker (canonical).
-  //   2. Any `*-SPM.xcodeproj/` (backward compat with older generator output).
-  // Captured names + base names drive both --project deletion and
-  // --derived-data discovery (DerivedData entries are prefixed by the
-  // Xcode "project name" — typically the xcodeproj base name).
-  const spmXcodeprojNames /*: Array<string> */ = [];
-  try {
-    const entries /*: Array<{name: string, isDirectory(): boolean}> */ =
-      // $FlowFixMe[incompatible-type] Dirent typing
-      fs.readdirSync(appRoot, {withFileTypes: true});
-    for (const entry of entries) {
-      if (!entry.isDirectory()) continue;
-      // $FlowFixMe[incompatible-type] Dirent.name is string|Buffer in Flow stubs
-      const name /*: string */ = entry.name;
-      if (!name.endsWith('.xcodeproj')) continue;
-      const hasMarker = fs.existsSync(
-        path.join(appRoot, name, SPM_MANAGED_MARKER),
-      );
-      if (hasMarker || name.endsWith('-SPM.xcodeproj')) {
-        spmXcodeprojNames.push(name);
-      }
-    }
-  } catch {
-    // appRoot may not exist or be readable — leave list empty
-  }
+  // Xcodeproj names drive both --project deletion and --derived-data
+  // discovery (DerivedData entries are prefixed by the xcodeproj base name).
+  const spmXcodeprojNames = listSpmXcodeprojs(appRoot).map(m => m.name);
 
   if (opts.project === true) {
     for (const name of spmXcodeprojNames) {
@@ -561,23 +533,10 @@ function findLegacyXcodeproj(appRoot /*: string */) /*: string | null */ {
 }
 
 /**
- * Pure decision helper for the legacy-xcodeproj rename migration.
- *
- * Background: the community CLI's `findXcodeProject` discovers the project
- * by scanning the iOS dir and returning the first entry whose extension is
- * `.xcodeproj`. With the legacy CocoaPods project AND the SPM project both
- * named `<App>.xcodeproj` and `<App>-SPM.xcodeproj`, the legacy wins
- * alphabetically — so `npm run ios` always builds the CocoaPods project.
- *
- * The fix: rename the legacy to `<App>.xcodeproj.legacy`. Its extension is
- * then `.legacy`, invisible to `findXcodeProject`, leaving the SPM project
- * as the only candidate.
- *
- * Returns one of:
- *   - `{kind: 'rename', from, to}` — legacy active, no prior backup, ready to migrate
- *   - `{kind: 'skip-no-legacy'}` — no `<App>.xcodeproj` to migrate
- *   - `{kind: 'skip-already-migrated', legacy}` — `<App>.xcodeproj.legacy` exists, legacy gone
- *   - `{kind: 'skip-conflict', from, to}` — both `<App>.xcodeproj` AND a `.legacy` backup exist; refuse, ask user
+ * The community CLI's findXcodeProject scans for `*.xcodeproj` directories
+ * and returns the first match. We rename the legacy to
+ * `<App>.xcodeproj.legacy` so its extension becomes `.legacy` — invisible
+ * to that heuristic, leaving the SPM project as the only candidate.
  */
 function decideLegacyMigration(
   appRoot /*: string */,
@@ -615,28 +574,42 @@ function decideLegacyMigration(
   return {kind: 'rename', from: legacyName, to: backupName};
 }
 
-function confirmLegacyMigration(
-  from /*: string */,
-  to /*: string */,
+/**
+ * Single TTY-gated Y/N prompt helper used by every interactive confirmation
+ * in this file. Non-TTY (CI / piped stdin) auto-confirms — every callsite
+ * either opted into the action explicitly or is downstream of an opt-in.
+ */
+function promptYesNo(
+  question /*: string */,
+  defaultYes /*: boolean */,
 ) /*: Promise<boolean> */ {
   // $FlowFixMe[prop-missing] process.stdin.isTTY not in Flow stubs
   if (process.stdin.isTTY !== true) {
     return Promise.resolve(true);
   }
+  const suffix = defaultYes ? '[Y/n]' : '[y/N]';
   return new Promise(resolve => {
     const rl = readline.createInterface({
       input: process.stdin,
       output: process.stdout,
     });
-    rl.question(
-      `Rename ${from} → ${to} so \`npm run ios\` uses the SPM xcodeproj? [Y/n] `,
-      answer => {
-        rl.close();
-        const a = answer.trim().toLowerCase();
-        resolve(a === '' || a === 'y' || a === 'yes');
-      },
-    );
+    rl.question(`${question} ${suffix} `, answer => {
+      rl.close();
+      const a = answer.trim().toLowerCase();
+      const yes = a === 'y' || a === 'yes';
+      resolve(defaultYes ? a === '' || yes : yes);
+    });
   });
+}
+
+function confirmLegacyMigration(
+  from /*: string */,
+  to /*: string */,
+) /*: Promise<boolean> */ {
+  return promptYesNo(
+    `Rename ${from} → ${to} so \`npm run ios\` uses the SPM xcodeproj?`,
+    true,
+  );
 }
 
 /**
@@ -706,24 +679,7 @@ async function maybeMigrateLegacyXcodeproj(
 }
 
 function confirmPodfilePatch() /*: Promise<boolean> */ {
-  // $FlowFixMe[prop-missing] process.stdin.isTTY not in Flow stubs
-  if (process.stdin.isTTY !== true) {
-    return Promise.resolve(true);
-  }
-  return new Promise(resolve => {
-    const rl = readline.createInterface({
-      input: process.stdin,
-      output: process.stdout,
-    });
-    rl.question(
-      'Add this `project` line to your Podfile now? [Y/n] ',
-      answer => {
-        rl.close();
-        const a = answer.trim().toLowerCase();
-        resolve(a === '' || a === 'y' || a === 'yes');
-      },
-    );
-  });
+  return promptYesNo('Add this `project` line to your Podfile now?', true);
 }
 
 /**
@@ -785,19 +741,9 @@ async function maybePatchPodfile(
   );
 }
 
-/**
- * Prompt before scaffolding `Package.swift` into `node_modules/<dep>/` for
- * the first time. Default-Yes (`[Y/n]`) because spm-init/update has already
- * opted into setting up SPM support — the prompt is mainly for awareness.
- * Non-TTY (CI) auto-accepts.
- */
 function confirmScaffold(
   depNames /*: Array<string> */,
 ) /*: Promise<boolean> */ {
-  // $FlowFixMe[prop-missing] process.stdin.isTTY not in Flow stubs
-  if (process.stdin.isTTY !== true) {
-    return Promise.resolve(true);
-  }
   log('');
   log(`Found ${depNames.length} community RN package(s) without SPM support:`);
   for (const n of depNames) {
@@ -811,42 +757,19 @@ function confirmScaffold(
       '  • `npx patch-package <dep>` after scaffolding.',
   );
   log('');
-  return new Promise(resolve => {
-    const rl = readline.createInterface({
-      input: process.stdin,
-      output: process.stdout,
-    });
-    rl.question('Generate Package.swift for the deps above? [Y/n] ', answer => {
-      rl.close();
-      const a = answer.trim().toLowerCase();
-      resolve(a === '' || a === 'y' || a === 'yes');
-    });
-  });
+  return promptYesNo('Generate Package.swift for the deps above?', true);
 }
 
 function confirmDestructive(
   targets /*: Array<CleanTarget> */,
 ) /*: Promise<boolean> */ {
-  // $FlowFixMe[prop-missing] process.stdin.isTTY not in Flow stubs
-  if (process.stdin.isTTY !== true) {
-    return Promise.resolve(true);
-  }
   log('');
   log('About to remove:');
   for (const t of targets) {
     log(`  - ${t.label}`);
   }
   log('');
-  return new Promise(resolve => {
-    const rl = readline.createInterface({
-      input: process.stdin,
-      output: process.stdout,
-    });
-    rl.question('Proceed? [y/N] ', answer => {
-      rl.close();
-      resolve(answer.trim().toLowerCase() === 'y');
-    });
-  });
+  return promptYesNo('Proceed?', false);
 }
 
 function resolveAction(
@@ -905,18 +828,13 @@ function detectStandardRnLayoutRedirect(
 }
 
 /**
- * Formats the refuse-message for destructive actions (`clean`) — and for
- * tooling that wants the long explanation. Returns null when no mismatch
- * is detected (delegates the detection to detectStandardRnLayoutRedirect).
+ * Builds the JS-root-mismatch refuse-message. Used by `clean`, which doesn't
+ * auto-redirect (destructive scopes shouldn't silently retarget).
  */
-function describeRnRootMismatch(
-  appRoot /*: string */,
+function formatRnRootMismatchMessage(
   projectRoot /*: string */,
-) /*: string | null */ {
-  const iosSubdir = detectStandardRnLayoutRedirect(appRoot, projectRoot);
-  if (iosSubdir == null) {
-    return null;
-  }
+  iosSubdir /*: string */,
+) /*: string */ {
   return (
     `Detected standard RN layout: package.json at ${displayPath(projectRoot)}, ` +
     `iOS project at ${displayPath(iosSubdir)}.\n\n` +
@@ -928,23 +846,6 @@ function describeRnRootMismatch(
     `but this script would read it from <project>/build/generated/autolinking/). ` +
     `The build would succeed but native modules would fail at runtime.`
   );
-}
-
-function loadAutolinkingConfig(
-  projectRoot /*: string */,
-  appRoot /*: string */,
-) /*: ?AutolinkingConfigResult */ {
-  log('Generating autolinking.json (CLI config)...');
-  try {
-    const result = generateAutolinkingConfig({projectRoot});
-    log(`Wrote ${path.relative(appRoot, result.outputPath)}`);
-    return result;
-  } catch (e) {
-    logError(
-      `generate-spm-autolinking-config failed: ${e.message}. External native modules may not be discovered.`,
-    );
-    return null;
-  }
 }
 
 function resolveReactNativeRoot(
@@ -986,76 +887,22 @@ function determineVersion(
 function runCodegenStep(
   projectRoot /*: string */,
   appRoot /*: string */,
-  scriptsDir /*: string */,
+  reactNativeRoot /*: string */,
   skipCodegen /*: boolean */,
 ) /*: void */ {
-  let codegenSucceeded = false;
-  if (!skipCodegen) {
-    log('Running react-native codegen...');
-    try {
-      // -p points to the project root (where package.json lives) so codegen
-      // can discover specs and dependencies. -o points to appRoot so the
-      // output (build/generated/ios/) lands in the current working directory,
-      // which may be a subdirectory like ios/.
-      const codegenArgs = [
-        `node "${path.join(scriptsDir, 'generate-codegen-artifacts.js')}"`,
-        `-p "${projectRoot}"`,
-        `-t ios`,
-      ];
-      if (projectRoot !== appRoot) {
-        codegenArgs.push(`-o "${appRoot}"`);
-      }
-      execSync(codegenArgs.join(' '), {stdio: 'inherit', cwd: projectRoot});
-      codegenSucceeded = true;
-    } catch (e) {
-      logError('Codegen failed. Continuing anyway...');
-    }
-  } else {
+  if (skipCodegen) {
+    // Output dir may already exist from a previous run; still refresh the
+    // SPM template so cache-slot changes propagate.
     log('Skipping codegen (--skip-codegen)');
-    // When skipping codegen, the output directory may already exist from a
-    // previous run — treat that as success for template installation.
-    codegenSucceeded = true;
+    installSpmCodegenTemplate(appRoot, reactNativeRoot, {log});
+    return;
   }
-
-  // Install SPM-specific codegen template (replaces the CocoaPods-oriented one).
-  // This self-contained template has all xcframework configuration built in,
-  // eliminating the need for post-generation patching.
-  // Only install when codegen succeeded to avoid overwriting a valid template
-  // with one that references non-existent generated files.
-  const codegenPkgSwift = path.join(
-    appRoot,
-    'build',
-    'generated',
-    'ios',
-    'Package.swift',
-  );
-  const spmTemplate = path.join(
-    scriptsDir,
-    'codegen',
-    'templates',
-    'Package.swift.spm-template',
-  );
-  if (codegenSucceeded && fs.existsSync(path.dirname(codegenPkgSwift))) {
-    const rendered = renderCodegenTemplate(
-      fs.readFileSync(spmTemplate, 'utf8'),
-      appRoot,
-    );
-    fs.writeFileSync(codegenPkgSwift, rendered, 'utf8');
-    log('Installed SPM codegen template → build/generated/ios/Package.swift');
+  log('Running react-native codegen...');
+  try {
+    runCodegenAndInstallTemplate(projectRoot, appRoot, reactNativeRoot, {log});
+  } catch {
+    logError('Codegen failed. Continuing anyway...');
   }
-}
-
-function generateAutolinkingPackage(
-  appRoot /*: string */,
-  reactNativeRoot /*: string */,
-) {
-  log('Generating build/generated/autolinking/Package.swift...');
-  generateAutolinking([
-    '--app-root',
-    appRoot,
-    '--react-native-root',
-    reactNativeRoot,
-  ]);
 }
 
 /**
@@ -1388,41 +1235,40 @@ function generateXcodeProject(
 }
 
 /**
- * Returns the absolute path to the SPM-managed xcodeproj inside `appRoot`,
- * or null if none exists. Two detection strategies (in order):
- *
- *   1. Any `*.xcodeproj/` containing the `.spm-managed` sidecar marker
- *      (the canonical mark left by generate-spm-xcodeproj.js).
- *   2. Any `*-SPM.xcodeproj/` (backward compat: older versions of the
- *      generator used the `-SPM` filename suffix instead of a marker).
- *
- * The marker check wins when both strategies match a different dir.
+ * Lists every SPM-managed xcodeproj directly inside `appRoot`. A xcodeproj
+ * is SPM-managed if it carries the `.spm-managed` sidecar marker or if its
+ * name still has the legacy `-SPM.xcodeproj` suffix (backward compat).
  */
-function findExistingSpmXcodeproj(appRoot /*: string */) /*: string | null */ {
+function listSpmXcodeprojs(
+  appRoot /*: string */,
+) /*: Array<{name: string, absPath: string, hasMarker: boolean}> */ {
   let entries /*: Array<{name: string, isDirectory(): boolean}> */;
   try {
     // $FlowFixMe[incompatible-type] Dirent typing
     entries = fs.readdirSync(appRoot, {withFileTypes: true});
   } catch {
-    return null;
+    return [];
   }
-  let suffixMatch /*: string | null */ = null;
+  const out = [];
   for (const entry of entries) {
     if (!entry.isDirectory()) continue;
     // $FlowFixMe[incompatible-type] Dirent.name is string|Buffer in Flow stubs
     const name /*: string */ = entry.name;
     if (!name.endsWith('.xcodeproj')) continue;
     const absPath = path.join(appRoot, name);
-    if (fs.existsSync(path.join(absPath, SPM_MANAGED_MARKER))) {
-      return absPath;
-    }
-    // Remember a suffix-named candidate as fallback; only return it if no
-    // marker-tagged xcodeproj is found in this directory.
-    if (suffixMatch == null && name.endsWith('-SPM.xcodeproj')) {
-      suffixMatch = absPath;
+    const hasMarker = fs.existsSync(path.join(absPath, SPM_MANAGED_MARKER));
+    if (hasMarker || name.endsWith('-SPM.xcodeproj')) {
+      out.push({name, absPath, hasMarker});
     }
   }
-  return suffixMatch;
+  return out;
+}
+
+// Returns the marker-tagged xcodeproj if any, else the first suffix-tagged
+// fallback, else null. Used by the create-if-missing branch and resolveAction.
+function findExistingSpmXcodeproj(appRoot /*: string */) /*: string | null */ {
+  const matches = listSpmXcodeprojs(appRoot);
+  return (matches.find(m => m.hasMarker) ?? matches[0])?.absPath ?? null;
 }
 
 function logNextSteps(
@@ -1470,7 +1316,7 @@ async function main(argv /*:: ?: Array<string> */) /*: Promise<void> */ {
   if (redirectTo != null) {
     const redirectAction = args.action ?? 'init';
     if (redirectAction === 'clean') {
-      logError(describeRnRootMismatch(appRoot, projectRoot) ?? '');
+      logError(formatRnRootMismatchMessage(projectRoot, redirectTo));
       process.exitCode = 1;
       return;
     }
@@ -1549,14 +1395,24 @@ async function main(argv /*:: ?: Array<string> */) /*: Promise<void> */ {
     action === 'update' ||
     action === 'sync' ||
     action === 'scaffold';
-  const autolinkingConfigResult = needsCliConfig
-    ? loadAutolinkingConfig(projectRoot, appRoot)
-    : null;
+  let autolinkingConfigResult /*: ?AutolinkingConfigResult */ = null;
+  if (needsCliConfig) {
+    log('Generating autolinking.json (CLI config)...');
+    try {
+      autolinkingConfigResult = generateAutolinkingConfig({projectRoot});
+      log(
+        `Wrote ${path.relative(appRoot, autolinkingConfigResult.outputPath)}`,
+      );
+    } catch (e) {
+      logError(
+        `generate-spm-autolinking-config failed: ${e.message}. External native modules may not be discovered.`,
+      );
+    }
+  }
   const reactNativeRoot = resolveReactNativeRoot(
     autolinkingConfigResult,
     projectRoot,
   );
-  const scriptsDir = path.join(reactNativeRoot, 'scripts');
   const version = determineVersion(args, reactNativeRoot);
   log(`React Native version: ${version}`);
   // The artifact cache directory is resolved later in ensureArtifacts so the
@@ -1565,7 +1421,7 @@ async function main(argv /*:: ?: Array<string> */) /*: Promise<void> */ {
   // "Artifacts already present in ...".
 
   if (action === 'codegen') {
-    runCodegenStep(projectRoot, appRoot, scriptsDir, false);
+    runCodegenStep(projectRoot, appRoot, reactNativeRoot, false);
     return;
   }
 
@@ -1609,9 +1465,15 @@ async function main(argv /*:: ?: Array<string> */) /*: Promise<void> */ {
   // or had no .podspec.
   await runScaffold(args, appRoot, projectRoot, reactNativeRoot, action);
 
-  runCodegenStep(projectRoot, appRoot, scriptsDir, args.skipCodegen);
+  runCodegenStep(projectRoot, appRoot, reactNativeRoot, args.skipCodegen);
+  log('Generating build/generated/autolinking/Package.swift...');
   try {
-    generateAutolinkingPackage(appRoot, reactNativeRoot);
+    generateAutolinking([
+      '--app-root',
+      appRoot,
+      '--react-native-root',
+      reactNativeRoot,
+    ]);
   } catch (e) {
     logError(`generate-spm-autolinking.js failed: ${e.message}`);
     process.exitCode = 1;
@@ -1696,7 +1558,6 @@ module.exports = {
   cleanGeneratedState,
   gatherCleanTargets,
   decideLegacyMigration,
-  describeRnRootMismatch,
   detectStandardRnLayoutRedirect,
   findExistingSpmXcodeproj,
   findLegacyXcodeproj,

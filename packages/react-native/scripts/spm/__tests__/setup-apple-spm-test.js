@@ -13,7 +13,6 @@
 const {
   cleanGeneratedState,
   decideLegacyMigration,
-  describeRnRootMismatch,
   detectStandardRnLayoutRedirect,
   findExistingSpmXcodeproj,
   findLegacyXcodeproj,
@@ -254,57 +253,10 @@ describe('cleanGeneratedState', () => {
 });
 
 // ---------------------------------------------------------------------------
-// describeRnRootMismatch — refuses runs that would silently produce broken
-// builds. The community CLI writes autolinking.json under <project>/ios/...,
-// but every SPM script anchors on cwd. Running from the JS root therefore
-// (a) writes outputs to the wrong dir, and (b) makes the autolinker miss
-// autolinking.json and skip every npm native dep. The guard catches the
-// standard "RN app with separate ios/ subdir" layout and routes the user
-// to `cd ios && ...`.
-// ---------------------------------------------------------------------------
-
-describe('describeRnRootMismatch', () => {
-  let tempDir;
-
-  beforeEach(() => {
-    tempDir = fs.mkdtempSync(path.join(os.tmpdir(), 'spm-cwd-guard-'));
-  });
-
-  afterEach(() => {
-    fs.rmSync(tempDir, {recursive: true, force: true});
-  });
-
-  it('returns a message when cwd === projectRoot AND a sibling ios/ exists', () => {
-    fs.mkdirSync(path.join(tempDir, 'ios'));
-    const result = describeRnRootMismatch(tempDir, tempDir);
-    expect(result).not.toBeNull();
-    expect(result).toMatch(/cd ios/);
-  });
-
-  it('returns null when running from a subdirectory (cwd !== projectRoot)', () => {
-    fs.mkdirSync(path.join(tempDir, 'ios'));
-    const result = describeRnRootMismatch(path.join(tempDir, 'ios'), tempDir);
-    expect(result).toBeNull();
-  });
-
-  it('returns null for flat layouts (no ios/ subdir, e.g. rn-tester)', () => {
-    // tempDir has no ios/ subdir
-    const result = describeRnRootMismatch(tempDir, tempDir);
-    expect(result).toBeNull();
-  });
-
-  it('returns null when a non-directory `ios` entry exists (e.g. a file)', () => {
-    fs.writeFileSync(path.join(tempDir, 'ios'), '');
-    const result = describeRnRootMismatch(tempDir, tempDir);
-    expect(result).toBeNull();
-  });
-});
-
-// ---------------------------------------------------------------------------
-// detectStandardRnLayoutRedirect — pure detection helper used by main() to
-// decide whether to auto-redirect into the ios/ subdir. Non-destructive
-// actions (init/update/sync/codegen/download/scaffold) redirect with a
-// banner; clean keeps refusing via describeRnRootMismatch's full message.
+// detectStandardRnLayoutRedirect — pure detection used by main() to decide
+// whether to auto-redirect into the ios/ subdir. Non-destructive actions
+// (init/update/sync/codegen/download/scaffold) redirect with a banner;
+// clean refuses with formatRnRootMismatchMessage instead.
 // ---------------------------------------------------------------------------
 
 describe('detectStandardRnLayoutRedirect', () => {
