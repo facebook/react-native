@@ -77,7 +77,7 @@ internal class BridgelessCatalystInstance(private val reactHost: ReactHostImpl) 
   }
 
   override fun callFunction(module: String, method: String, arguments: NativeArray?) {
-    throw UnsupportedOperationException("Unimplemented method 'callFunction'")
+    reactHost.callFunctionOnModule(module, method, arguments)
   }
 
   override fun destroy() {
