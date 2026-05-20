@@ -8,6 +8,8 @@
  * @format
  */
 
+import {PlatformColor} from '../../../StyleSheet/PlatformColorValueTypes';
+import Platform from '../../../Utilities/Platform';
 import {expectRendersMatchingSnapshot} from '../../../Utilities/ReactNativeTestTools';
 import View from '../../View/View';
 import Pressable from '../Pressable';
@@ -83,6 +85,71 @@ describe('<Pressable disabled={true} accessibilityState={{disabled: false}} />',
       'Pressable',
       () => (
         <Pressable disabled={true} accessibilityState={{disabled: false}}>
+          <View />
+        </Pressable>
+      ),
+      () => {
+        jest.dontMock('../Pressable');
+      },
+    );
+  });
+});
+
+describe('<Pressable android_ripple /> on Android', () => {
+  let originalOS: string;
+
+  beforeEach(() => {
+    originalOS = Platform.OS;
+    /* $FlowFixMe[incompatible-type] */
+    Platform.OS = 'android';
+  });
+
+  afterEach(() => {
+    /* $FlowFixMe[incompatible-type] */
+    Platform.OS = originalOS;
+  });
+
+  it('should set nativeBackgroundAndroid with numeric color and alpha', async () => {
+    await expectRendersMatchingSnapshot(
+      'Pressable',
+      () => (
+        <Pressable android_ripple={{color: '#FF0000', alpha: 0.5}}>
+          <View />
+        </Pressable>
+      ),
+      () => {
+        jest.dontMock('../Pressable');
+      },
+    );
+  });
+
+  it('should set nativeBackgroundAndroid with PlatformColor and alpha', async () => {
+    await expectRendersMatchingSnapshot(
+      'Pressable',
+      () => (
+        <Pressable
+          android_ripple={{
+            color: PlatformColor('?attr/colorAccent'),
+            alpha: 0.3,
+          }}>
+          <View />
+        </Pressable>
+      ),
+      () => {
+        jest.dontMock('../Pressable');
+      },
+    );
+  });
+
+  it('should not crash with an unresolvable PlatformColor', async () => {
+    await expectRendersMatchingSnapshot(
+      'Pressable',
+      () => (
+        <Pressable
+          android_ripple={{
+            color: PlatformColor('?attr/doesNotExist'),
+            alpha: 0.5,
+          }}>
           <View />
         </Pressable>
       ),

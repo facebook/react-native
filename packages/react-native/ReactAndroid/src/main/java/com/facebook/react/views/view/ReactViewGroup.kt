@@ -12,6 +12,7 @@ package com.facebook.react.views.view
 import android.annotation.SuppressLint
 import android.annotation.TargetApi
 import android.content.Context
+import android.content.res.Configuration
 import android.graphics.BlendMode
 import android.graphics.Canvas
 import android.graphics.Paint
@@ -28,6 +29,7 @@ import com.facebook.react.R
 import com.facebook.react.bridge.ReactNoCrashSoftException
 import com.facebook.react.bridge.ReactSoftExceptionLogger
 import com.facebook.react.bridge.ReactSoftExceptionLogger.logSoftException
+import com.facebook.react.bridge.ReadableMap
 import com.facebook.react.bridge.UiThreadUtil.assertOnUiThread
 import com.facebook.react.bridge.UiThreadUtil.runOnUiThread
 import com.facebook.react.common.ReactConstants.TAG
@@ -152,6 +154,9 @@ public open class ReactViewGroup public constructor(context: Context?) :
       null
   private var focusOnAttach = false
 
+  internal var nativeBackgroundMap: ReadableMap? = null
+  internal var nativeForegroundMap: ReadableMap? = null
+
   init {
     initView()
   }
@@ -179,6 +184,8 @@ public open class ReactViewGroup public constructor(context: Context?) :
     backfaceOpacity = 1f
     backfaceVisible = true
     childrenRemovedWhileTransitioning = null
+    nativeBackgroundMap = null
+    nativeForegroundMap = null
   }
 
   internal open fun recycleView() {
@@ -583,6 +590,29 @@ public open class ReactViewGroup public constructor(context: Context?) :
       requestFocusFromJS()
       focusOnAttach = false
     }
+  }
+
+  override fun onConfigurationChanged(newConfig: Configuration) {
+    super.onConfigurationChanged(newConfig)
+    if (nativeBackgroundMap != null) {
+      applyNativeBackground(nativeBackgroundMap)
+    }
+    if (nativeForegroundMap != null) {
+      applyNativeForeground(nativeForegroundMap)
+    }
+  }
+
+  internal fun applyNativeBackground(map: ReadableMap?) {
+    nativeBackgroundMap = map
+    setFeedbackUnderlay(
+        this,
+        map?.let { ReactDrawableHelper.createDrawableFromJSDescription(context, it) },
+    )
+  }
+
+  internal fun applyNativeForeground(map: ReadableMap?) {
+    nativeForegroundMap = map
+    foreground = map?.let { ReactDrawableHelper.createDrawableFromJSDescription(context, it) }
   }
 
   override fun onViewAdded(child: View) {
