@@ -342,6 +342,7 @@ describe('Image', () => {
   });
   it('forwards source.headers as a top-level prop on Android', async () => {
     jest.dontMock('../Image.android');
+    // $FlowExpectedError[missing-platform-support] Intentionally testing the Android-specific Image component.
     const ImageAndroid = require('../Image.android').default;
 
     const instance = await render.create(
@@ -351,11 +352,15 @@ describe('Image', () => {
     );
 
     const tree = instance.toJSON();
+    if (tree == null || Array.isArray(tree)) {
+      throw new Error('Expected a single rendered element');
+    }
     expect(tree.props.headers).toEqual({Authorization: 'Bearer xyz'});
   });
 
   it('forwards source.headers as a top-level prop on Android for array sources', async () => {
     jest.dontMock('../Image.android');
+    // $FlowExpectedError[missing-platform-support] Intentionally testing the Android-specific Image component.
     const ImageAndroid = require('../Image.android').default;
 
     const instance = await render.create(
@@ -365,6 +370,9 @@ describe('Image', () => {
     );
 
     const tree = instance.toJSON();
+    if (tree == null || Array.isArray(tree)) {
+      throw new Error('Expected a single rendered element');
+    }
     expect(tree.props.headers).toEqual({Authorization: 'Bearer xyz'});
   });
 });
