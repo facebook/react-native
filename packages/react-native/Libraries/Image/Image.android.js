@@ -124,6 +124,7 @@ const EMPTY_IMAGE_SOURCE = {
   uri: undefined,
   width: undefined,
   height: undefined,
+  headers: undefined,
 };
 
 /**
@@ -215,9 +216,17 @@ let BaseImage: AbstractImageAndroid = ({
     ];
     nativeProps.source = source_;
   } else {
-    const {uri, width: sourceWidth, height: sourceHeight} = source_;
+    const {
+      uri,
+      width: sourceWidth,
+      height: sourceHeight,
+      headers: sourceHeaders,
+    } = source_;
     if (uri === '') {
       console.warn('source.uri should not be an empty string');
+    }
+    if (sourceHeaders != null) {
+      nativeProps.headers = sourceHeaders;
     }
     nativeProps.style = [
       {width: sourceWidth ?? width, height: sourceHeight ?? height},
