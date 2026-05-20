@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<7be26fb138e59ef3dc34cec13d3813c4>>
+ * @generated SignedSource<<df8c0c8c4ec5942b5855b53beb497c1f>>
  */
 
 /**
@@ -199,6 +199,10 @@ class ReactNativeFeatureFlagsDefaults : public ReactNativeFeatureFlagsProvider {
     return false;
   }
 
+  bool enableRuntimeSchedulerQueueClearingOnError() override {
+    return false;
+  }
+
   bool enableSchedulerDelegateInvalidation() override {
     return false;
   }
@@ -240,10 +244,6 @@ class ReactNativeFeatureFlagsDefaults : public ReactNativeFeatureFlagsProvider {
   }
 
   bool fixDifferentiatorParentTagForUnflattenCase() override {
-    return false;
-  }
-
-  bool fixFindShadowNodeByTagRaceCondition() override {
     return false;
   }
 

@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<8a068641229a3fbbe105a5368ea6bda9>>
+ * @generated SignedSource<<7ca64bcbf3e769a24efe894e994b131e>>
  */
 
 /**
@@ -75,6 +75,7 @@ class ReactNativeFeatureFlagsAccessor {
   bool enableNetworkEventReporting();
   bool enablePreparedTextLayout();
   bool enablePropsUpdateReconciliationAndroid();
+  bool enableRuntimeSchedulerQueueClearingOnError();
   bool enableSchedulerDelegateInvalidation();
   bool enableSwiftUIBasedFilters();
   bool enableViewCulling();
@@ -86,7 +87,6 @@ class ReactNativeFeatureFlagsAccessor {
   bool enableVirtualViewContainerStateExperimental();
   bool enableVirtualViewDebugFeatures();
   bool fixDifferentiatorParentTagForUnflattenCase();
-  bool fixFindShadowNodeByTagRaceCondition();
   bool fixMappingOfEventPrioritiesBetweenFabricAndReact();
   bool fixYogaFlexBasisFitContentInMainAxis();
   bool fuseboxAssertSingleHostState();
@@ -180,6 +180,7 @@ class ReactNativeFeatureFlagsAccessor {
   std::atomic<std::optional<bool>> enableNetworkEventReporting_;
   std::atomic<std::optional<bool>> enablePreparedTextLayout_;
   std::atomic<std::optional<bool>> enablePropsUpdateReconciliationAndroid_;
+  std::atomic<std::optional<bool>> enableRuntimeSchedulerQueueClearingOnError_;
   std::atomic<std::optional<bool>> enableSchedulerDelegateInvalidation_;
   std::atomic<std::optional<bool>> enableSwiftUIBasedFilters_;
   std::atomic<std::optional<bool>> enableViewCulling_;
@@ -191,7 +192,6 @@ class ReactNativeFeatureFlagsAccessor {
   std::atomic<std::optional<bool>> enableVirtualViewContainerStateExperimental_;
   std::atomic<std::optional<bool>> enableVirtualViewDebugFeatures_;
   std::atomic<std::optional<bool>> fixDifferentiatorParentTagForUnflattenCase_;
-  std::atomic<std::optional<bool>> fixFindShadowNodeByTagRaceCondition_;
   std::atomic<std::optional<bool>> fixMappingOfEventPrioritiesBetweenFabricAndReact_;
   std::atomic<std::optional<bool>> fixYogaFlexBasisFitContentInMainAxis_;
   std::atomic<std::optional<bool>> fuseboxAssertSingleHostState_;

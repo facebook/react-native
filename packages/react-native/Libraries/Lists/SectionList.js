@@ -105,6 +105,7 @@ type OptionalSectionListProps<ItemT, SectionT = DefaultSectionT> = {
   removeClippedSubviews?: boolean,
 };
 
+/** @build-types emit-as-interface Uniwind compatibility */
 export type SectionListProps<ItemT, SectionT = DefaultSectionT> = {
   ...Omit<
     VirtualizedSectionListProps<ItemT, SectionT>,

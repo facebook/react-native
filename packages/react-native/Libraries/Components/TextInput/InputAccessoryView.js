@@ -76,6 +76,7 @@ import * as React from 'react';
  * For an example, look at InputAccessoryViewExample.js in RNTester.
  */
 
+/** @build-types emit-as-interface Expo compatibility */
 export type InputAccessoryViewProps = Readonly<{
   +children: React.Node,
   /**

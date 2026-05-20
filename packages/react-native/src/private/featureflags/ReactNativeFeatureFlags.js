@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<361b1ff3430ffad98aaf24bea3824208>>
+ * @generated SignedSource<<28f917839921b183310a5ad91bfff022>>
  * @flow strict
  * @noformat
  */
@@ -89,6 +89,7 @@ export type ReactNativeFeatureFlags = $ReadOnly<{
   enableNetworkEventReporting: Getter<boolean>,
   enablePreparedTextLayout: Getter<boolean>,
   enablePropsUpdateReconciliationAndroid: Getter<boolean>,
+  enableRuntimeSchedulerQueueClearingOnError: Getter<boolean>,
   enableSchedulerDelegateInvalidation: Getter<boolean>,
   enableSwiftUIBasedFilters: Getter<boolean>,
   enableViewCulling: Getter<boolean>,
@@ -100,7 +101,6 @@ export type ReactNativeFeatureFlags = $ReadOnly<{
   enableVirtualViewContainerStateExperimental: Getter<boolean>,
   enableVirtualViewDebugFeatures: Getter<boolean>,
   fixDifferentiatorParentTagForUnflattenCase: Getter<boolean>,
-  fixFindShadowNodeByTagRaceCondition: Getter<boolean>,
   fixMappingOfEventPrioritiesBetweenFabricAndReact: Getter<boolean>,
   fixYogaFlexBasisFitContentInMainAxis: Getter<boolean>,
   fuseboxAssertSingleHostState: Getter<boolean>,
@@ -372,6 +372,10 @@ export const enablePreparedTextLayout: Getter<boolean> = createNativeFlagGetter(
  */
 export const enablePropsUpdateReconciliationAndroid: Getter<boolean> = createNativeFlagGetter('enablePropsUpdateReconciliationAndroid', false);
 /**
+ * When enabled, RuntimeScheduler_Modern clears pending tasks and rendering updates before handling an error.
+ */
+export const enableRuntimeSchedulerQueueClearingOnError: Getter<boolean> = createNativeFlagGetter('enableRuntimeSchedulerQueueClearingOnError', false);
+/**
  * Gates a defensive guard around Scheduler::uiManagerDidDispatchCommand and uiManagerDidFinishTransaction that prevents queued rendering-update lambdas from dereferencing the SchedulerDelegate after it has been destroyed (use-after-free).
  */
 export const enableSchedulerDelegateInvalidation: Getter<boolean> = createNativeFlagGetter('enableSchedulerDelegateInvalidation', false);
@@ -415,10 +419,6 @@ export const enableVirtualViewDebugFeatures: Getter<boolean> = createNativeFlagG
  * Fix incorrect parentTag passed as parentTagForUpdate in the unflatten-unflatten branch of calculateShadowViewMutationsFlattener, which causes UPDATE mutations to reference a parent being created in the same batch.
  */
 export const fixDifferentiatorParentTagForUnflattenCase: Getter<boolean> = createNativeFlagGetter('fixDifferentiatorParentTagForUnflattenCase', false);
-/**
- * Fix a use-after-free race condition in findShadowNodeByTag_DEPRECATED by using getCurrentRevision() instead of tryCommit() with a raw pointer.
- */
-export const fixFindShadowNodeByTagRaceCondition: Getter<boolean> = createNativeFlagGetter('fixFindShadowNodeByTagRaceCondition', false);
 /**
  * Uses the default event priority instead of the discreet event priority by default when dispatching events from Fabric to React.
  */

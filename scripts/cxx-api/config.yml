@@ -43,6 +43,9 @@ platforms:
         definitions:
           NDEBUG: 1
           REACT_NATIVE_PRODUCTION: 1
+      newarch:
+        definitions:
+          RCT_REMOVE_LEGACY_ARCH: 1
   ReactAndroid:
     codegen:
       platform: android
@@ -73,6 +76,9 @@ platforms:
         definitions:
           NDEBUG: 1
           REACT_NATIVE_PRODUCTION: 1
+      newarch:
+        definitions:
+          RCT_REMOVE_LEGACY_ARCH: 1
   # ReactIOS?
   ReactApple:
     codegen:
@@ -110,3 +116,6 @@ platforms:
         definitions:
           NDEBUG: 1
           REACT_NATIVE_PRODUCTION: 1
+      newarch:
+        definitions:
+          RCT_REMOVE_LEGACY_ARCH: 1

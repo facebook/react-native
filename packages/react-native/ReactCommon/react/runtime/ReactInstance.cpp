@@ -235,7 +235,7 @@ void ReactInstance::loadScript(
   std::shared_ptr<const jsi::Buffer> buffer(std::move(script));
   std::string scriptName = simpleBasename(sourceURL);
 
-  runtimeScheduler_->scheduleWork([this,
+  runtimeScheduler_->scheduleWork([jsErrorHandler = jsErrorHandler_,
                                    scriptName,
                                    sourceURL,
                                    buffer = std::move(buffer),
@@ -273,8 +273,8 @@ void ReactInstance::loadScript(
      * pipeline from javascript. Remove this after we figure that out, or
      * after we just remove the js pipeline.
      */
-    if (!jsErrorHandler_->hasHandledFatalError()) {
-      jsErrorHandler_->setRuntimeReady();
+    if (!jsErrorHandler->hasHandledFatalError()) {
+      jsErrorHandler->setRuntimeReady();
     }
 
     if (hasLogger) {

@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<2ea91689e8761dc57bc35975d1161839>>
+ * @generated SignedSource<<ec98fe64276aaaa226710fad24b27415>>
  */
 
 /**
@@ -432,6 +432,15 @@ class ReactNativeFeatureFlagsDynamicProvider : public ReactNativeFeatureFlagsDef
     return ReactNativeFeatureFlagsDefaults::enablePropsUpdateReconciliationAndroid();
   }
 
+  bool enableRuntimeSchedulerQueueClearingOnError() override {
+    auto value = values_["enableRuntimeSchedulerQueueClearingOnError"];
+    if (!value.isNull()) {
+      return value.getBool();
+    }
+
+    return ReactNativeFeatureFlagsDefaults::enableRuntimeSchedulerQueueClearingOnError();
+  }
+
   bool enableSchedulerDelegateInvalidation() override {
     auto value = values_["enableSchedulerDelegateInvalidation"];
     if (!value.isNull()) {
@@ -529,15 +538,6 @@ class ReactNativeFeatureFlagsDynamicProvider : public ReactNativeFeatureFlagsDef
     }
 
     return ReactNativeFeatureFlagsDefaults::fixDifferentiatorParentTagForUnflattenCase();
-  }
-
-  bool fixFindShadowNodeByTagRaceCondition() override {
-    auto value = values_["fixFindShadowNodeByTagRaceCondition"];
-    if (!value.isNull()) {
-      return value.getBool();
-    }
-
-    return ReactNativeFeatureFlagsDefaults::fixFindShadowNodeByTagRaceCondition();
   }
 
   bool fixMappingOfEventPrioritiesBetweenFabricAndReact() override {

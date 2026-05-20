@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<ec375fbc64b2b2b8995c1640a0369923>>
+ * @generated SignedSource<<43aa532756b07f0b754cd74eb4811664>>
  */
 
 /**
@@ -63,6 +63,7 @@ internal class ReactNativeFeatureFlagsCxxAccessor : ReactNativeFeatureFlagsAcces
   private var enableNetworkEventReportingCache: Boolean? = null
   private var enablePreparedTextLayoutCache: Boolean? = null
   private var enablePropsUpdateReconciliationAndroidCache: Boolean? = null
+  private var enableRuntimeSchedulerQueueClearingOnErrorCache: Boolean? = null
   private var enableSchedulerDelegateInvalidationCache: Boolean? = null
   private var enableSwiftUIBasedFiltersCache: Boolean? = null
   private var enableViewCullingCache: Boolean? = null
@@ -74,7 +75,6 @@ internal class ReactNativeFeatureFlagsCxxAccessor : ReactNativeFeatureFlagsAcces
   private var enableVirtualViewContainerStateExperimentalCache: Boolean? = null
   private var enableVirtualViewDebugFeaturesCache: Boolean? = null
   private var fixDifferentiatorParentTagForUnflattenCaseCache: Boolean? = null
-  private var fixFindShadowNodeByTagRaceConditionCache: Boolean? = null
   private var fixMappingOfEventPrioritiesBetweenFabricAndReactCache: Boolean? = null
   private var fixYogaFlexBasisFitContentInMainAxisCache: Boolean? = null
   private var fuseboxAssertSingleHostStateCache: Boolean? = null
@@ -500,6 +500,15 @@ internal class ReactNativeFeatureFlagsCxxAccessor : ReactNativeFeatureFlagsAcces
     return cached
   }
 
+  override fun enableRuntimeSchedulerQueueClearingOnError(): Boolean {
+    var cached = enableRuntimeSchedulerQueueClearingOnErrorCache
+    if (cached == null) {
+      cached = ReactNativeFeatureFlagsCxxInterop.enableRuntimeSchedulerQueueClearingOnError()
+      enableRuntimeSchedulerQueueClearingOnErrorCache = cached
+    }
+    return cached
+  }
+
   override fun enableSchedulerDelegateInvalidation(): Boolean {
     var cached = enableSchedulerDelegateInvalidationCache
     if (cached == null) {
@@ -595,15 +604,6 @@ internal class ReactNativeFeatureFlagsCxxAccessor : ReactNativeFeatureFlagsAcces
     if (cached == null) {
       cached = ReactNativeFeatureFlagsCxxInterop.fixDifferentiatorParentTagForUnflattenCase()
       fixDifferentiatorParentTagForUnflattenCaseCache = cached
-    }
-    return cached
-  }
-
-  override fun fixFindShadowNodeByTagRaceCondition(): Boolean {
-    var cached = fixFindShadowNodeByTagRaceConditionCache
-    if (cached == null) {
-      cached = ReactNativeFeatureFlagsCxxInterop.fixFindShadowNodeByTagRaceCondition()
-      fixFindShadowNodeByTagRaceConditionCache = cached
     }
     return cached
   }

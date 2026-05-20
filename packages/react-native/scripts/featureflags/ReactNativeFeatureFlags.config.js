@@ -503,6 +503,17 @@ const definitions: FeatureFlagDefinitions = {
       },
       ossReleaseStage: 'none',
     },
+    enableRuntimeSchedulerQueueClearingOnError: {
+      defaultValue: false,
+      metadata: {
+        dateAdded: '2026-05-19',
+        description:
+          'When enabled, RuntimeScheduler_Modern clears pending tasks and rendering updates before handling an error.',
+        expectedReleaseValue: true,
+        purpose: 'experimentation',
+      },
+      ossReleaseStage: 'experimental',
+    },
     enableSchedulerDelegateInvalidation: {
       defaultValue: false,
       metadata: {
@@ -618,17 +629,6 @@ const definitions: FeatureFlagDefinitions = {
         dateAdded: '2026-04-18',
         description:
           'Fix incorrect parentTag passed as parentTagForUpdate in the unflatten-unflatten branch of calculateShadowViewMutationsFlattener, which causes UPDATE mutations to reference a parent being created in the same batch.',
-        expectedReleaseValue: true,
-        purpose: 'experimentation',
-      },
-      ossReleaseStage: 'none',
-    },
-    fixFindShadowNodeByTagRaceCondition: {
-      defaultValue: false,
-      metadata: {
-        dateAdded: '2026-02-25',
-        description:
-          'Fix a use-after-free race condition in findShadowNodeByTag_DEPRECATED by using getCurrentRevision() instead of tryCommit() with a raw pointer.',
         expectedReleaseValue: true,
         purpose: 'experimentation',
       },

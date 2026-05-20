@@ -7,6 +7,7 @@
 
 #import "RCTTurboModuleManager.h"
 #import "RCTInteropTurboModule.h"
+#import "RCTTurboModule.h"
 
 #import <atomic>
 #import <cassert>
@@ -165,23 +166,23 @@ bool isTurboModuleInstance(id module)
   return isTurboModuleClass([module class]);
 }
 
-} // namespace
+struct ModuleQueuePair {
+  id<RCTBridgeModule> module;
+  dispatch_queue_t methodQueue;
+};
 
 // Fallback lookup since RCT class prefix is sometimes stripped in the existing NativeModule system.
 // This will be removed in the future.
-static Class getFallbackClassFromName(const char *name)
+Class getFallbackClassFromName(const char *name)
 {
   Class moduleClass = NSClassFromString([NSString stringWithUTF8String:name]);
-  if (!moduleClass) {
+  if (moduleClass == nil) {
     moduleClass = NSClassFromString([NSString stringWithFormat:@"RCT%s", name]);
   }
   return moduleClass;
 }
 
-typedef struct {
-  id<RCTBridgeModule> module;
-  dispatch_queue_t methodQueue;
-} ModuleQueuePair;
+} // namespace
 
 @implementation RCTTurboModuleManager {
   std::shared_ptr<CallInvoker> _jsInvoker;

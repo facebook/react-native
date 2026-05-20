@@ -125,6 +125,7 @@ export type ImagePropsAndroid = Readonly<{
   resizeMultiplier?: ?number,
 }>;
 
+/** @build-types emit-as-interface Expo compatibility */
 export type ImagePropsBase = Readonly<{
   ...Omit<ViewProps, 'style'>,
   /**
@@ -342,6 +343,7 @@ export type ImageProps = Readonly<{
   style?: ?ImageStyleProp,
 }>;
 
+/** @build-types emit-as-interface Uniwind compatibility */
 export type ImageBackgroundProps = Readonly<{
   ...ImageProps,
   children?: React.Node,

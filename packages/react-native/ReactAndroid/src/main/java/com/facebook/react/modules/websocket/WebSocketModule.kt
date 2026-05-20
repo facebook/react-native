@@ -154,8 +154,8 @@ public class WebSocketModule(context: ReactApplicationContext) :
             sendEvent("websocketOpen", params)
           }
 
-          override fun onClosing(websocket: WebSocket, code: Int, reason: String) {
-            websocket.close(code, reason)
+          override fun onClosing(webSocket: WebSocket, code: Int, reason: String) {
+            webSocket.close(code, reason)
           }
 
           override fun onClosed(webSocket: WebSocket, code: Int, reason: String) {

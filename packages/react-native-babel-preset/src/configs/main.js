@@ -87,6 +87,16 @@ const getPreset = (src, options, babel) => {
     options?.customTransformOptions?.unstable_preserveAsync,
   );
 
+  // Preserve block scoping (let/const) if the experiment is enabled.
+  const preserveBlockScoping = TRUE_VALS.has(
+    options?.customTransformOptions?.unstable_preserveBlockScoping,
+  );
+
+  // Preserve destructuring syntax if the experiment is enabled.
+  const preserveDestructuring = TRUE_VALS.has(
+    options?.customTransformOptions?.unstable_preserveDestructuring,
+  );
+
   const isNull = src == null;
   const hasClass = isNull || src.indexOf('class') !== -1;
 
@@ -139,10 +149,12 @@ const getPreset = (src, options, babel) => {
     ]);
   }
 
-  extraPlugins.push([
-    require('@babel/plugin-transform-destructuring'),
-    {useBuiltIns: true},
-  ]);
+  if (!preserveDestructuring) {
+    extraPlugins.push([
+      require('@babel/plugin-transform-destructuring'),
+      {useBuiltIns: true},
+    ]);
+  }
   if (!preserveAsync && (isNull || src.indexOf('async') !== -1)) {
     extraPlugins.push([
       require('@babel/plugin-transform-async-generator-functions'),
@@ -227,7 +239,9 @@ const getPreset = (src, options, babel) => {
             },
           ],
           [require('babel-plugin-transform-flow-enums')],
-          [require('@babel/plugin-transform-block-scoping')],
+          ...(preserveBlockScoping
+            ? []
+            : [[require('@babel/plugin-transform-block-scoping')]]),
           ...(preserveClasses
             ? []
             : [[require('@babel/plugin-transform-class-properties'), {loose}]]),

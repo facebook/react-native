@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<4deb82376e94d28a1d1775930ece1ccd>>
+ * @generated SignedSource<<179ab277b9a55da3e2c5a9093269b38a>>
  */
 
 /**
@@ -259,6 +259,11 @@ bool NativeReactNativeFeatureFlags::enablePropsUpdateReconciliationAndroid(
   return ReactNativeFeatureFlags::enablePropsUpdateReconciliationAndroid();
 }
 
+bool NativeReactNativeFeatureFlags::enableRuntimeSchedulerQueueClearingOnError(
+    jsi::Runtime& /*runtime*/) {
+  return ReactNativeFeatureFlags::enableRuntimeSchedulerQueueClearingOnError();
+}
+
 bool NativeReactNativeFeatureFlags::enableSchedulerDelegateInvalidation(
     jsi::Runtime& /*runtime*/) {
   return ReactNativeFeatureFlags::enableSchedulerDelegateInvalidation();
@@ -312,11 +317,6 @@ bool NativeReactNativeFeatureFlags::enableVirtualViewDebugFeatures(
 bool NativeReactNativeFeatureFlags::fixDifferentiatorParentTagForUnflattenCase(
     jsi::Runtime& /*runtime*/) {
   return ReactNativeFeatureFlags::fixDifferentiatorParentTagForUnflattenCase();
-}
-
-bool NativeReactNativeFeatureFlags::fixFindShadowNodeByTagRaceCondition(
-    jsi::Runtime& /*runtime*/) {
-  return ReactNativeFeatureFlags::fixFindShadowNodeByTagRaceCondition();
 }
 
 bool NativeReactNativeFeatureFlags::fixMappingOfEventPrioritiesBetweenFabricAndReact(

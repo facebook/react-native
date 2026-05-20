@@ -226,9 +226,9 @@ public abstract class YogaNode : YogaProps {
 
   public abstract val layoutDirection: YogaDirection
 
-  abstract override fun setMeasureFunction(measureFunction: YogaMeasureFunction)
+  abstract override fun setMeasureFunction(measureFunction: YogaMeasureFunction?)
 
-  abstract override fun setBaselineFunction(yogaBaselineFunction: YogaBaselineFunction)
+  abstract override fun setBaselineFunction(yogaBaselineFunction: YogaBaselineFunction?)
 
   public abstract val isMeasureDefined: Boolean
 

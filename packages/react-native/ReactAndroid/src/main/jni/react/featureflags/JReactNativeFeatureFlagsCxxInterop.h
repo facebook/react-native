@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<aacbc520b40625dbdba328590cc78112>>
+ * @generated SignedSource<<7a73667c552251d722f6c9800f53d251>>
  */
 
 /**
@@ -159,6 +159,9 @@ class JReactNativeFeatureFlagsCxxInterop
   static bool enablePropsUpdateReconciliationAndroid(
     facebook::jni::alias_ref<JReactNativeFeatureFlagsCxxInterop>);
 
+  static bool enableRuntimeSchedulerQueueClearingOnError(
+    facebook::jni::alias_ref<JReactNativeFeatureFlagsCxxInterop>);
+
   static bool enableSchedulerDelegateInvalidation(
     facebook::jni::alias_ref<JReactNativeFeatureFlagsCxxInterop>);
 
@@ -190,9 +193,6 @@ class JReactNativeFeatureFlagsCxxInterop
     facebook::jni::alias_ref<JReactNativeFeatureFlagsCxxInterop>);
 
   static bool fixDifferentiatorParentTagForUnflattenCase(
-    facebook::jni::alias_ref<JReactNativeFeatureFlagsCxxInterop>);
-
-  static bool fixFindShadowNodeByTagRaceCondition(
     facebook::jni::alias_ref<JReactNativeFeatureFlagsCxxInterop>);
 
   static bool fixMappingOfEventPrioritiesBetweenFabricAndReact(

@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<5054704ec35884395b7b3668169a8871>>
+ * @generated SignedSource<<38e1f5a2dbb854a154e96c20e701b2e4>>
  */
 
 /**
@@ -803,6 +803,24 @@ bool ReactNativeFeatureFlagsAccessor::enablePropsUpdateReconciliationAndroid() {
   return flagValue.value();
 }
 
+bool ReactNativeFeatureFlagsAccessor::enableRuntimeSchedulerQueueClearingOnError() {
+  auto flagValue = enableRuntimeSchedulerQueueClearingOnError_.load();
+
+  if (!flagValue.has_value()) {
+    // This block is not exclusive but it is not necessary.
+    // If multiple threads try to initialize the feature flag, we would only
+    // be accessing the provider multiple times but the end state of this
+    // instance and the returned flag value would be the same.
+
+    markFlagAsAccessed(43, "enableRuntimeSchedulerQueueClearingOnError");
+
+    flagValue = currentProvider_->enableRuntimeSchedulerQueueClearingOnError();
+    enableRuntimeSchedulerQueueClearingOnError_ = flagValue;
+  }
+
+  return flagValue.value();
+}
+
 bool ReactNativeFeatureFlagsAccessor::enableSchedulerDelegateInvalidation() {
   auto flagValue = enableSchedulerDelegateInvalidation_.load();
 
@@ -812,7 +830,7 @@ bool ReactNativeFeatureFlagsAccessor::enableSchedulerDelegateInvalidation() {
     // be accessing the provider multiple times but the end state of this
     // instance and the returned flag value would be the same.
 
-    markFlagAsAccessed(43, "enableSchedulerDelegateInvalidation");
+    markFlagAsAccessed(44, "enableSchedulerDelegateInvalidation");
 
     flagValue = currentProvider_->enableSchedulerDelegateInvalidation();
     enableSchedulerDelegateInvalidation_ = flagValue;
@@ -830,7 +848,7 @@ bool ReactNativeFeatureFlagsAccessor::enableSwiftUIBasedFilters() {
     // be accessing the provider multiple times but the end state of this
     // instance and the returned flag value would be the same.
 
-    markFlagAsAccessed(44, "enableSwiftUIBasedFilters");
+    markFlagAsAccessed(45, "enableSwiftUIBasedFilters");
 
     flagValue = currentProvider_->enableSwiftUIBasedFilters();
     enableSwiftUIBasedFilters_ = flagValue;
@@ -848,7 +866,7 @@ bool ReactNativeFeatureFlagsAccessor::enableViewCulling() {
     // be accessing the provider multiple times but the end state of this
     // instance and the returned flag value would be the same.
 
-    markFlagAsAccessed(45, "enableViewCulling");
+    markFlagAsAccessed(46, "enableViewCulling");
 
     flagValue = currentProvider_->enableViewCulling();
     enableViewCulling_ = flagValue;
@@ -866,7 +884,7 @@ bool ReactNativeFeatureFlagsAccessor::enableViewRecycling() {
     // be accessing the provider multiple times but the end state of this
     // instance and the returned flag value would be the same.
 
-    markFlagAsAccessed(46, "enableViewRecycling");
+    markFlagAsAccessed(47, "enableViewRecycling");
 
     flagValue = currentProvider_->enableViewRecycling();
     enableViewRecycling_ = flagValue;
@@ -884,7 +902,7 @@ bool ReactNativeFeatureFlagsAccessor::enableViewRecyclingForImage() {
     // be accessing the provider multiple times but the end state of this
     // instance and the returned flag value would be the same.
 
-    markFlagAsAccessed(47, "enableViewRecyclingForImage");
+    markFlagAsAccessed(48, "enableViewRecyclingForImage");
 
     flagValue = currentProvider_->enableViewRecyclingForImage();
     enableViewRecyclingForImage_ = flagValue;
@@ -902,7 +920,7 @@ bool ReactNativeFeatureFlagsAccessor::enableViewRecyclingForScrollView() {
     // be accessing the provider multiple times but the end state of this
     // instance and the returned flag value would be the same.
 
-    markFlagAsAccessed(48, "enableViewRecyclingForScrollView");
+    markFlagAsAccessed(49, "enableViewRecyclingForScrollView");
 
     flagValue = currentProvider_->enableViewRecyclingForScrollView();
     enableViewRecyclingForScrollView_ = flagValue;
@@ -920,7 +938,7 @@ bool ReactNativeFeatureFlagsAccessor::enableViewRecyclingForText() {
     // be accessing the provider multiple times but the end state of this
     // instance and the returned flag value would be the same.
 
-    markFlagAsAccessed(49, "enableViewRecyclingForText");
+    markFlagAsAccessed(50, "enableViewRecyclingForText");
 
     flagValue = currentProvider_->enableViewRecyclingForText();
     enableViewRecyclingForText_ = flagValue;
@@ -938,7 +956,7 @@ bool ReactNativeFeatureFlagsAccessor::enableViewRecyclingForView() {
     // be accessing the provider multiple times but the end state of this
     // instance and the returned flag value would be the same.
 
-    markFlagAsAccessed(50, "enableViewRecyclingForView");
+    markFlagAsAccessed(51, "enableViewRecyclingForView");
 
     flagValue = currentProvider_->enableViewRecyclingForView();
     enableViewRecyclingForView_ = flagValue;
@@ -956,7 +974,7 @@ bool ReactNativeFeatureFlagsAccessor::enableVirtualViewContainerStateExperimenta
     // be accessing the provider multiple times but the end state of this
     // instance and the returned flag value would be the same.
 
-    markFlagAsAccessed(51, "enableVirtualViewContainerStateExperimental");
+    markFlagAsAccessed(52, "enableVirtualViewContainerStateExperimental");
 
     flagValue = currentProvider_->enableVirtualViewContainerStateExperimental();
     enableVirtualViewContainerStateExperimental_ = flagValue;
@@ -974,7 +992,7 @@ bool ReactNativeFeatureFlagsAccessor::enableVirtualViewDebugFeatures() {
     // be accessing the provider multiple times but the end state of this
     // instance and the returned flag value would be the same.
 
-    markFlagAsAccessed(52, "enableVirtualViewDebugFeatures");
+    markFlagAsAccessed(53, "enableVirtualViewDebugFeatures");
 
     flagValue = currentProvider_->enableVirtualViewDebugFeatures();
     enableVirtualViewDebugFeatures_ = flagValue;
@@ -992,28 +1010,10 @@ bool ReactNativeFeatureFlagsAccessor::fixDifferentiatorParentTagForUnflattenCase
     // be accessing the provider multiple times but the end state of this
     // instance and the returned flag value would be the same.
 
-    markFlagAsAccessed(53, "fixDifferentiatorParentTagForUnflattenCase");
+    markFlagAsAccessed(54, "fixDifferentiatorParentTagForUnflattenCase");
 
     flagValue = currentProvider_->fixDifferentiatorParentTagForUnflattenCase();
     fixDifferentiatorParentTagForUnflattenCase_ = flagValue;
-  }
-
-  return flagValue.value();
-}
-
-bool ReactNativeFeatureFlagsAccessor::fixFindShadowNodeByTagRaceCondition() {
-  auto flagValue = fixFindShadowNodeByTagRaceCondition_.load();
-
-  if (!flagValue.has_value()) {
-    // This block is not exclusive but it is not necessary.
-    // If multiple threads try to initialize the feature flag, we would only
-    // be accessing the provider multiple times but the end state of this
-    // instance and the returned flag value would be the same.
-
-    markFlagAsAccessed(54, "fixFindShadowNodeByTagRaceCondition");
-
-    flagValue = currentProvider_->fixFindShadowNodeByTagRaceCondition();
-    fixFindShadowNodeByTagRaceCondition_ = flagValue;
   }
 
   return flagValue.value();

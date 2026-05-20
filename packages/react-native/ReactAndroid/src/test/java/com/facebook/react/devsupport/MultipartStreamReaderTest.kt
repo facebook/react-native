@@ -34,10 +34,14 @@ class MultipartStreamReaderTest {
 
     val callback: CallCountTrackingChunkCallback =
         object : CallCountTrackingChunkCallback() {
-          override fun onChunkComplete(headers: Map<String, String>, body: Buffer, done: Boolean) {
-            super.onChunkComplete(headers, body, done)
+          override fun onChunkComplete(
+              headers: Map<String, String>,
+              body: Buffer,
+              isLastChunk: Boolean,
+          ) {
+            super.onChunkComplete(headers, body, isLastChunk)
 
-            assertThat(done).isTrue
+            assertThat(isLastChunk).isTrue
             assertThat(headers["Content-Type"]).isEqualTo("application/json; charset=utf-8")
             assertThat(body.readUtf8()).isEqualTo("{}")
           }
@@ -70,10 +74,14 @@ class MultipartStreamReaderTest {
 
     val callback: CallCountTrackingChunkCallback =
         object : CallCountTrackingChunkCallback() {
-          override fun onChunkComplete(headers: Map<String, String>, body: Buffer, done: Boolean) {
-            super.onChunkComplete(headers, body, done)
+          override fun onChunkComplete(
+              headers: Map<String, String>,
+              body: Buffer,
+              isLastChunk: Boolean,
+          ) {
+            super.onChunkComplete(headers, body, isLastChunk)
 
-            assertThat(done).isEqualTo(callCount == 3)
+            assertThat(isLastChunk).isEqualTo(callCount == 3)
             assertThat(body.readUtf8()).isEqualTo("$callCount")
           }
         }

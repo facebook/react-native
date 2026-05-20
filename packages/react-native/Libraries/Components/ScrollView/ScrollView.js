@@ -680,6 +680,7 @@ type ScrollViewBaseProps = Readonly<{
   scrollViewRef?: React.RefSetter<PublicScrollViewInstance>,
 }>;
 
+/** @build-types emit-as-interface Nativewind compatibility */
 export type ScrollViewProps = Readonly<{
   ...Omit<ViewProps, 'experimental_accessibilityOrder'>,
   ...ScrollViewPropsIOS,

@@ -4,6 +4,7 @@
 # LICENSE file in the root directory of this source tree.
 
 require 'shellwords'
+require 'digest'
 
 require_relative "./helpers.rb"
 require_relative "./jsengine.rb"
@@ -722,6 +723,51 @@ class ReactNativePodsUtils
 
         if header_mappings_dir != nil && ReactNativeCoreUtils.build_rncore_from_source()
             spec.header_mappings_dir = header_mappings_dir
+        end
+    end
+
+    # ==================== #
+    # Shared download cache #
+    # ==================== #
+
+    def self.skip_caches?
+        ENV['RCT_SKIP_CACHES'] == '1'
+    end
+
+    def self.shared_cache_dir()
+        return File.join(Dir.home, "Library", "Caches", "ReactNative")
+    end
+
+    def self.fetch_maven_sha1(tarball_url)
+        sha1 = `curl -sL "#{tarball_url}.sha1"`.strip
+        return sha1.downcase if $?.success? && sha1.match?(/\A[a-fA-F0-9]{40}\z/)
+        nil
+    end
+
+    def self.validate_tarball(path, tarball_url)
+        expected_sha1 = fetch_maven_sha1(tarball_url)
+        basename = File.basename(path)
+        if expected_sha1.nil?
+          cache_log("SHA1 not available from Maven for #{basename}. Skipping validation.")
+          return true
+        end
+        actual_sha1 = Digest::SHA1.file(path).hexdigest
+        if actual_sha1 == expected_sha1
+          cache_log("SHA1 verified for #{basename}")
+          return true
+        end
+        cache_log("SHA1 mismatch for #{basename}: expected #{expected_sha1}, got #{actual_sha1}", :error)
+        return false
+    end
+
+    def self.cache_log(message, level = :info)
+        return unless Object.const_defined?("Pod::UI")
+        prefix = '[Cache] '
+        case level
+        when :error
+            Pod::UI.puts prefix.red + message
+        else
+            Pod::UI.puts prefix.green + message
         end
     end
 end
