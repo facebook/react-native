@@ -103,7 +103,6 @@ public object DefaultNewArchitectureEntryPoint {
     }
 
     privateTurboModulesEnabled = turboModulesEnabled
-    privateConcurrentReactEnabled = fabricEnabled
     privateBridgelessEnabled = bridgelessEnabled
 
     DefaultSoLoader.maybeLoadSoLibrary()
@@ -138,8 +137,6 @@ public object DefaultNewArchitectureEntryPoint {
   @JvmStatic
   public val turboModulesEnabled: Boolean
     get() = privateTurboModulesEnabled
-
-  private var privateConcurrentReactEnabled: Boolean = false
 
   @JvmStatic
   public val concurrentReactEnabled: Boolean
