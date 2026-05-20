@@ -1750,10 +1750,9 @@ public final class com/facebook/react/defaults/DefaultNewArchitectureEntryPoint 
 }
 
 public class com/facebook/react/defaults/DefaultReactActivityDelegate : com/facebook/react/ReactActivityDelegate {
+	public fun <init> (Lcom/facebook/react/ReactActivity;Ljava/lang/String;)V
 	public fun <init> (Lcom/facebook/react/ReactActivity;Ljava/lang/String;Z)V
-	public synthetic fun <init> (Lcom/facebook/react/ReactActivity;Ljava/lang/String;ZILkotlin/jvm/internal/DefaultConstructorMarker;)V
 	public fun <init> (Lcom/facebook/react/ReactActivity;Ljava/lang/String;ZZ)V
-	protected fun isFabricEnabled ()Z
 }
 
 public final class com/facebook/react/defaults/DefaultReactHost {
