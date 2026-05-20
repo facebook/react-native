@@ -3458,6 +3458,7 @@ public final class com/facebook/react/uimanager/MeasureSpecAssertions {
 }
 
 public class com/facebook/react/uimanager/NativeViewHierarchyManager {
+	public static final field Companion Lcom/facebook/react/uimanager/NativeViewHierarchyManager$Companion;
 	public fun <init> (Lcom/facebook/react/uimanager/ViewManagerRegistry;)V
 	public fun <init> (Lcom/facebook/react/uimanager/ViewManagerRegistry;Lcom/facebook/react/uimanager/RootViewManager;)V
 	public fun addRootView (ILandroid/view/View;)V
@@ -3485,6 +3486,9 @@ public class com/facebook/react/uimanager/NativeViewHierarchyManager {
 	public fun updateLayout (IIIIIILcom/facebook/yoga/YogaDirection;)V
 	public fun updateProperties (ILcom/facebook/react/uimanager/ReactStylesDiffMap;)V
 	public fun updateViewExtraData (ILjava/lang/Object;)V
+}
+
+public final class com/facebook/react/uimanager/NativeViewHierarchyManager$Companion {
 }
 
 public final class com/facebook/react/uimanager/NativeViewHierarchyOptimizer {
