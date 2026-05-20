@@ -1180,8 +1180,16 @@ function main(argv /*:: ?: Array<string> */) /*: void */ {
 
   const packagesDir = path.join(outputDir, 'packages');
   const headersDir = path.join(outputDir, 'headers');
+  // libs/<SwiftName>/ symlinks for self-managed deps. The symlink basename
+  // is the Swift module name (guaranteed unique per dep), so SPM's
+  // path-basename-based package identity never collides — even when two
+  // libs ship their own Package.swift inside `ios/` (a common convention).
+  // Wiped on every run; populated below as self-managed deps are visited.
+  const libsDir = path.join(outputDir, 'libs');
   fs.mkdirSync(packagesDir, {recursive: true});
   fs.mkdirSync(headersDir, {recursive: true});
+  fs.rmSync(libsDir, {recursive: true, force: true});
+  fs.mkdirSync(libsDir, {recursive: true});
 
   const wrapperDirs /*: Map<string, string> */ = new Map();
   const selfManagedDirs /*: Map<string, string> */ = new Map();
@@ -1254,11 +1262,16 @@ function main(argv /*:: ?: Array<string> */) /*: void */ {
       // outside of ios/), and cross-package consumers should still resolve
       // them via the centralized -I path.
       linkHeaderTree(absSource, path.join(headersDir, target.name));
-      // packagePath is the directory containing Package.swift — for the
-      // nested layout this is <dep>/ios, not the dep root.
+      // Route the manifest reference through a uniquely-named symlink at
+      // libs/<SwiftName>/ so SPM derives the package identity from the
+      // alias basename. Two libs that both ship Package.swift inside their
+      // own `ios/` subdir would otherwise collide with identity "ios".
+      const realPackageDir = selfManagedDirs.get(target.name) ?? absSource;
+      const aliasPath = path.join(libsDir, target.name);
+      ensureSymlink(aliasPath, realPackageDir);
       aggregatorPackageDeps.push({
         swiftName: target.name,
-        packagePath: selfManagedDirs.get(target.name) ?? absSource,
+        packagePath: `libs/${target.name}`,
       });
       continue;
     }

@@ -117,7 +117,11 @@ needed.
 │      │   ├── autolinking/       (generated)      │
 │      │   │   ├── Package.swift                   │
 │      │   │   ├── autolinking.json                │
-│      │   │   └── packages/      (synth wrappers) │
+│      │   │   ├── packages/      (synth wrappers) │
+│      │   │   └── libs/          (alias symlinks  │
+│      │   │                       for self-managed│
+│      │   │                       deps; basename  │
+│      │   │                       = SwiftName)    │
 │      │   └── ios/               (codegen)        │
 │      └── xcframeworks/          (symlinks)       │
 │          ├── Package.swift                       │
@@ -309,6 +313,28 @@ module.exports = {
 Each entry becomes a target in `autolinked/Package.swift`. Sources outside the
 autolinked directory are mirrored with **file-level symlinks** (SPM rejects
 directory symlinks that resolve outside the package root).
+
+### Self-managed deps and package identity
+
+A community library that ships its own `Package.swift` (instead of being
+wrapped by the autolinker) is referenced directly. SPM derives the package
+identity for a `.package(path:)` dependency from the path's basename — and
+a common convention is to ship the manifest inside an `ios/` subdir
+(`<dep>/ios/Package.swift`). Two libs following that convention would both
+have identity `"ios"`, and SPM rejects with `Conflicting identity for ios`.
+
+To make every reference globally unique by construction, the autolinker
+materializes each self-managed dep as a symlink at
+`build/generated/autolinking/libs/<SwiftName>/` pointing at the dep's real
+manifest dir. The aggregator `Package.swift` then references the symlink
+(`path: "libs/<SwiftName>"`), and SPM uses the symlink basename — the
+library's Swift module name — as the package identity. Swift module names
+are already unique per dep (deriving from the npm package name), so this
+sidesteps the collision in all cases, including against the codegen
+package at `build/generated/ios/`.
+
+The `libs/` directory is wiped and recreated on every autolinker run, so
+stale aliases for uninstalled deps disappear automatically.
 
 ### Third-party library support
 

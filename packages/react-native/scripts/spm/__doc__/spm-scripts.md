@@ -76,7 +76,10 @@ my-app/ios/
       autolinking/                 <-- gitignored (regenerated at build time)
         Package.swift
         autolinking.json
-        packages/                  <-- package wrappers for native modules
+        packages/                  <-- synth wrappers for autolinker-managed deps
+        libs/                      <-- symlinks to self-managed deps' Package.swift
+                                       dirs, named by Swift module so SPM
+                                       package identity stays unique
         headers/                   <-- generated header symlinks
       ios/                         <-- gitignored, codegen output
     xcframeworks/                  <-- gitignored, symlinks to cached artifacts
@@ -176,6 +179,21 @@ module.exports = {
 Each entry becomes a target in `build/generated/autolinking/Package.swift`.
 Sources outside `build/generated/autolinking/` are automatically mirrored with
 file-level symlinks.
+
+## Self-managed community packages
+
+A community library that ships its own `Package.swift` is referenced
+directly by the autolinker instead of being wrapped. To keep SPM's
+package identity (which it derives from the path basename) unique across
+deps — even when several libs put their manifest inside an `ios/` subdir
+— each self-managed dep is exposed through a uniquely-named symlink at
+`build/generated/autolinking/libs/<SwiftName>/`. The aggregator
+`Package.swift` references that path, so two libs both shipping
+`<dep>/ios/Package.swift` never collide on identity `"ios"`.
+
+The `libs/` directory is wiped and recreated on every autolinker run,
+so deleting a dep via `npm uninstall` cleans up the alias automatically
+on the next build.
 
 ## Header Resolution
 
