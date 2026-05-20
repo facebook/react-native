@@ -35,6 +35,7 @@
  * is needed.
  */
 
+const {REQUIRED_ARTIFACTS} = require('./download-spm-artifacts');
 const {
   deriveAppName,
   displayPath,
@@ -286,6 +287,20 @@ function main(argv /*:: ?: Array<string> */) /*: void */ {
     // $FlowFixMe[incompatible-type] JSON.parse returns any
     const raw /*: {[string]: {xcframeworkPath: string, url: string}} */ =
       JSON.parse(fs.readFileSync(artifactsJsonPath, 'utf8'));
+    // Refuse to proceed with a partial artifact set. The generated xcodeproj
+    // references every REQUIRED_ARTIFACT as a package product, so a missing
+    // entry here would surface only as "Missing package product" in Xcode.
+    const missing = REQUIRED_ARTIFACTS.filter(name => raw[name] == null);
+    if (missing.length > 0) {
+      console.error(
+        `[generate-spm-package] artifacts.json is missing required entries: ${missing.join(', ')}`,
+      );
+      console.error(
+        `  Re-run with --force-download to refresh the cache slot at ${artifactsDir}`,
+      );
+      process.exitCode = 1;
+      return;
+    }
     const xcfwLinksDir = path.join(appRoot, 'build', 'xcframeworks');
     fs.mkdirSync(xcfwLinksDir, {recursive: true});
 

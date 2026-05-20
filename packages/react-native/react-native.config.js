@@ -153,6 +153,12 @@ const spmCommand /*: Command */ = {
       description: 'Skip .xcodeproj generation.',
     },
     {
+      name: '--forceXcodeproj',
+      description:
+        'Regenerate <App>.xcodeproj even when one already exists. ' +
+        'Clobbers Xcode-side edits (signing, capabilities, Build Phases).',
+    },
+    {
       name: '--bundleIdentifier <string>',
       description: 'Override CFBundleIdentifier in the generated Info.plist.',
     },
@@ -222,6 +228,7 @@ const spmCommand /*: Command */ = {
       ['skipDownload', '--skip-download'],
       ['forceDownload', '--force-download'],
       ['skipXcodeproj', '--skip-xcodeproj'],
+      ['forceXcodeproj', '--force-xcodeproj'],
       ['project', '--project'],
       ['derivedData', '--derived-data'],
       ['cache', '--cache'],

@@ -40,6 +40,7 @@ const {
   defaultCacheDir,
   displayPath,
   findProjectRoot,
+  installSpmCodegenTemplate,
   makeLogger,
   readPackageJson,
   resolveAndWriteVFSOverlay,
@@ -86,7 +87,6 @@ async function main(argv /*:: ?: Array<string> */) /*: Promise<void> */ {
     );
   }
 
-  const xcfwLinksDir = path.join(appRoot, 'build', 'xcframeworks');
   const pkg = readPackageJson(reactNativeRoot);
   const rawVersion = pkg?.version ?? '0.0.0';
   const flavor = 'debug';
@@ -139,6 +139,13 @@ async function main(argv /*:: ?: Array<string> */) /*: Promise<void> */ {
     '--artifacts-dir',
     artifactsDir,
   ]);
+
+  // Re-install the codegen template now that the xcframework symlinks have
+  // been (re-)pointed at the current slot. Without this, the template keeps
+  // the runtime URL expression from the first install and SPM's cached
+  // manifest eval pins the slot path — Xcode then compiles against headers
+  // from whichever slot was active when the cache was warmed.
+  installSpmCodegenTemplate(appRoot, reactNativeRoot, {log});
 
   resolveAndWriteVFSOverlay(appRoot, reactNativeRoot, {log});
 

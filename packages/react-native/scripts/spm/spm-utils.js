@@ -25,15 +25,24 @@ function makeLogger(name /*: string */) /*: {
   warn: (msg: string) => void,
   die: (msg: string) => empty,
 } */ {
+  // Prefix every newline-separated line of the message so multi-line output
+  // wraps cleanly when terminal log scrapers look for the `[name]` tag.
+  function format(color /*: string */, msg /*: string */) /*: string */ {
+    const prefix = `\x1b[${color}m[${name}]\x1b[0m`;
+    return msg
+      .split('\n')
+      .map(line => `${prefix} ${line}`)
+      .join('\n');
+  }
   return {
     log(msg /*: string */) /*: void */ {
-      console.log(`\x1b[32m[${name}]\x1b[0m ${msg}`);
+      console.log(format('32', msg));
     },
     warn(msg /*: string */) /*: void */ {
-      console.warn(`\x1b[33m[${name}]\x1b[0m ${msg}`);
+      console.warn(format('33', msg));
     },
     die(msg /*: string */) /*: empty */ {
-      console.error(`\x1b[31m[${name}]\x1b[0m ${msg}`);
+      console.error(format('31', msg));
       process.exitCode = 1;
       throw new Error(msg);
     },

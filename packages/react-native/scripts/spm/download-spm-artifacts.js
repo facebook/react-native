@@ -310,22 +310,27 @@ async function resolveRNDepsArtifact(
 }
 
 /**
- * Returns {url, version} for Hermes.
- * Respects HERMES_VERSION env var (nightly | latest-v1 | specific version).
+ * Returns {url, version} for Hermes. Hermes uses its own version space
+ * decoupled from React Native's nightly cadence — RN's `hermes-compiler`
+ * npm package publishes a `latest-v1` dist-tag that always resolves to a
+ * binary that's been built and uploaded to Maven. Our default mirrors RN's
+ * CocoaPods prebuild path (see scripts/ios-prebuild/hermes.js):
  *
- * @param {string} rnVersion  Resolved RN version (e.g. "0.85.0-nightly-...")
- * @param {string} flavor     debug or release
- * @param {string|null} rawVersion  Original --version arg before resolution (may be "nightly")
+ *   HERMES_VERSION unset       → 'latest-v1' dist-tag
+ *   HERMES_VERSION=latest-v1   → same (explicit)
+ *   HERMES_VERSION=nightly     → hermes-compiler@nightly dist-tag
+ *   HERMES_VERSION=<literal>   → use that version verbatim
+ *
+ * Note: rnVersion / rawVersion are intentionally not consulted. There is no
+ * guarantee a hermes-ios artifact exists for any given RN nightly hash —
+ * tying them together produces 404s like #(repro case from spikes/MyApp).
  */
 async function resolveHermesArtifact(
   rnVersion /*: string */,
   flavor /*: string */,
   rawVersion /*: string | null */,
 ) /*: Promise<ResolvedArtifact> */ {
-  // HERMES_VERSION overrides everything. If not set, use the raw --version arg
-  // (which may be 'nightly') so Hermes resolves its own nightly independently
-  // of the RN nightly string that was already resolved.
-  let version = process.env.HERMES_VERSION ?? rawVersion ?? rnVersion;
+  let version = process.env.HERMES_VERSION ?? 'latest-v1';
 
   if (version === 'nightly') {
     version = await resolveNightlyVersion('hermes-compiler');
@@ -359,13 +364,40 @@ function formatSpeed(bytesPerSec /*: number */) /*: string */ {
 
 /**
  * Creates a multi-line progress display that keeps N lines pinned at the
- * bottom of the terminal. Each line can be updated independently.
+ * bottom of the terminal. Each line is prefixed and truncated to the current
+ * terminal width — without truncation, a long line (e.g. a FAILED message
+ * carrying a URL) wraps to a second row and `\x1b[2K` only clears the first,
+ * leaving stray fragments after the next update.
  */
-function createProgressDisplay(lineCount /*: number */) /*: {
-  update: (index: number, text: string) => void,
-} */ {
-  const lines /*: Array<string> */ = Array.from({length: lineCount}, () => '');
+function createProgressDisplay(
+  lineCount /*: number */,
+  prefix /*: string */ = '',
+) /*: {update: (index: number, text: string) => void} */ {
   let initialized = false;
+
+  function truncateToWidth(s /*: string */) /*: string */ {
+    // $FlowFixMe[prop-missing] columns lives on tty$WriteStream not stream$Writable
+    const cols = process.stdout.columns ?? 120;
+    const budget = Math.max(10, cols - 1);
+    let out = '';
+    let visLen = 0;
+    let i = 0;
+    while (i < s.length) {
+      if (s[i] === '\x1b' && s[i + 1] === '[') {
+        // CSI escape: forward through the final letter without counting.
+        let j = i + 2;
+        while (j < s.length && !/[a-zA-Z]/.test(s[j])) j++;
+        out += s.slice(i, j + 1);
+        i = j + 1;
+      } else {
+        if (visLen >= budget - 1) return out + '…\x1b[0m';
+        out += s[i];
+        visLen++;
+        i++;
+      }
+    }
+    return out;
+  }
 
   function update(index /*: number */, text /*: string */) {
     if (!initialized) {
@@ -374,9 +406,9 @@ function createProgressDisplay(lineCount /*: number */) /*: {
       }
       initialized = true;
     }
-    lines[index] = text;
     const moveUp = lineCount - index;
-    process.stdout.write(`\x1b[${moveUp}A\x1b[2K\r${text}\x1b[${moveUp}B\r`);
+    const line = truncateToWidth(prefix + text);
+    process.stdout.write(`\x1b[${moveUp}A\x1b[2K\r${line}\x1b[${moveUp}B\r`);
   }
 
   return {update};
@@ -697,7 +729,10 @@ async function main(argv /*:: ?: Array<string> */) /*: Promise<void> */ {
     },
   ];
 
-  const progress = createProgressDisplay(artifactSpecs.length);
+  const progress = createProgressDisplay(
+    artifactSpecs.length,
+    '\x1b[32m[download-spm-artifacts]\x1b[0m ',
+  );
 
   const makeCallback = (index /*: number */) /*: ProgressCallback */ =>
     (name, downloaded, total, speed, done, elapsed) => {
@@ -751,10 +786,42 @@ async function main(argv /*:: ?: Array<string> */) /*: Promise<void> */ {
   );
   log('');
 
-  // Write artifacts.json – maps SPM target name → xcframework path + source URL
+  const succeeded = results.filter(r => r.error == null);
+  const failed = results.filter(r => r.error != null);
+
+  log('='.repeat(60));
+  if (succeeded.length > 0) {
+    log('Extracted xcframeworks:');
+    log('');
+    for (const r of succeeded) {
+      if (r.error == null) {
+        log(`  ${r.name}`);
+        log(`    path: ${displayPath(r.xcframeworkPath)}`);
+        log('');
+      }
+    }
+  }
+  // Abort on ANY failure — the three artifacts (React, ReactNativeDependencies,
+  // hermes-engine) are all required; proceeding with a partial set would only
+  // surface as a confusing build error in Xcode. We also intentionally do NOT
+  // write artifacts.json when there are failures: the orchestrator uses its
+  // presence as the "already present" signal, so a partial write would mask
+  // the problem and prevent retries.
+  if (failed.length > 0) {
+    log('Failed:');
+    for (const r of failed) {
+      warn(`  ${r.name}: ${r.error ?? 'unknown error'}`);
+    }
+    die(
+      `Failed to download ${failed.length} of ${results.length} artifact(s): ` +
+        failed.map(r => r.name).join(', '),
+    );
+  }
+
+  // Write artifacts.json only on full success.
   const artifactsJson /*: {[string]: {xcframeworkPath: string, url: string}} */ =
     {};
-  for (const r of results) {
+  for (const r of succeeded) {
     if (r.error == null) {
       artifactsJson[r.name] = {xcframeworkPath: r.xcframeworkPath, url: r.url};
     }
@@ -765,27 +832,53 @@ async function main(argv /*:: ?: Array<string> */) /*: Promise<void> */ {
     JSON.stringify(artifactsJson, null, 2) + '\n',
     'utf8',
   );
-
-  log('='.repeat(60));
-  const succeeded = results.filter(r => r.error == null);
-  const failed = results.filter(r => r.error != null);
-  if (succeeded.length > 0) {
-    log('Extracted xcframeworks:');
-    log('');
-    for (const r of succeeded) {
-      log(`  ${r.name}`);
-      log(`    path: ${displayPath(r.xcframeworkPath)}`);
-      log('');
-    }
-  }
-  if (failed.length > 0) {
-    log('Failed:');
-    for (const r of failed) {
-      warn(`  ${r.name}: ${r.error}`);
-    }
-    log('');
-  }
   log(`Artifact index: ${displayPath(artifactsJsonPath)}`);
+}
+
+// Canonical set of xcframework artifacts the SPM pipeline downloads. The
+// xcodeproj references all three as package products; missing any one
+// surfaces as "Missing package product" only at Xcode build time. Used by
+// `setup-apple-spm.js` to validate the cache before skipping a re-download.
+const REQUIRED_ARTIFACTS = [
+  'React',
+  'ReactNativeDependencies',
+  'hermes-engine',
+];
+
+/**
+ * Returns null if `artifacts.json` is present, complete (covers every entry
+ * in REQUIRED_ARTIFACTS), and each entry's xcframework dir exists on disk.
+ * Otherwise returns a string describing what's wrong — caller treats that as
+ * "needs re-download". Catches stale partial-write states from older runs
+ * that didn't fail loudly on download errors.
+ */
+function validateArtifactsCache(
+  artifactsDir /*: string */,
+) /*: string | null */ {
+  const artifactsJsonPath = path.join(artifactsDir, 'artifacts.json');
+  if (!fs.existsSync(artifactsJsonPath)) {
+    return `artifacts.json missing in ${artifactsDir}`;
+  }
+  let json /*: {[string]: {xcframeworkPath: string, url: string}} */;
+  try {
+    // $FlowFixMe[unclear-type] JSON.parse returns any
+    const parsed /*: any */ = JSON.parse(
+      fs.readFileSync(artifactsJsonPath, 'utf8'),
+    );
+    json = parsed;
+  } catch (e) {
+    return `artifacts.json is unreadable: ${e.message}`;
+  }
+  for (const name of REQUIRED_ARTIFACTS) {
+    const entry = json[name];
+    if (entry == null) {
+      return `artifacts.json missing entry for "${name}"`;
+    }
+    if (!fs.existsSync(entry.xcframeworkPath)) {
+      return `xcframework for "${name}" not found at ${entry.xcframeworkPath}`;
+    }
+  }
+  return null;
 }
 
 if (require.main === module) {
@@ -795,4 +888,10 @@ if (require.main === module) {
   });
 }
 
-module.exports = {main, resolveCacheSlotVersion};
+module.exports = {
+  main,
+  resolveCacheSlotVersion,
+  resolveHermesArtifact,
+  REQUIRED_ARTIFACTS,
+  validateArtifactsCache,
+};

@@ -80,6 +80,7 @@
 const {
   main: downloadArtifacts,
   resolveCacheSlotVersion,
+  validateArtifactsCache,
 } = require('./spm/download-spm-artifacts');
 const {main: generateAutolinking} = require('./spm/generate-spm-autolinking');
 const {
@@ -1114,34 +1115,36 @@ async function ensureArtifacts(
     fs.rmSync(resolvedArtifactsDir, {recursive: true, force: true});
   }
 
-  const artifactsJsonPath =
-    resolvedArtifactsDir != null
-      ? path.join(resolvedArtifactsDir, 'artifacts.json')
-      : null;
-  const needsDownload =
-    resolvedArtifactsDir != null &&
-    !args.skipDownload &&
-    artifactsJsonPath != null &&
-    !fs.existsSync(artifactsJsonPath);
-
-  if (needsDownload === true && resolvedArtifactsDir != null) {
-    log(`Downloading xcframework artifacts (slot: ${slotVersion})...`);
-    await downloadArtifacts([
-      '--version',
-      rawVersion,
-      '--flavor',
-      args.flavor,
-      '--output',
-      resolvedArtifactsDir,
-    ]);
-  } else if (resolvedArtifactsDir != null && args.skipDownload) {
-    log('Skipping artifact download (--skip-download)');
-  } else if (resolvedArtifactsDir != null) {
-    log(`Artifacts already present in ${displayPath(resolvedArtifactsDir)}`);
-  } else {
+  if (resolvedArtifactsDir == null) {
     log('No --artifacts-dir set, skipping download step');
+    return resolvedArtifactsDir;
+  }
+  if (args.skipDownload) {
+    log('Skipping artifact download (--skip-download)');
+    return resolvedArtifactsDir;
   }
 
+  // Validate the cache before trusting it. A bare existsSync(artifacts.json)
+  // check would accept a partial write from a prior failed download (e.g.
+  // hermes-engine 404 on a not-yet-published nightly) and silently propagate
+  // the gap into the xcodeproj, surfacing only as "Missing package product"
+  // in Xcode. validateArtifactsCache reads the JSON and confirms every
+  // REQUIRED_ARTIFACT has a present xcframework on disk.
+  const cacheError = validateArtifactsCache(resolvedArtifactsDir);
+  if (cacheError == null) {
+    log(`Artifacts already present in ${displayPath(resolvedArtifactsDir)}`);
+    return resolvedArtifactsDir;
+  }
+  log(`Cache incomplete (${cacheError}); re-downloading...`);
+  log(`Downloading xcframework artifacts (slot: ${slotVersion})...`);
+  await downloadArtifacts([
+    '--version',
+    rawVersion,
+    '--flavor',
+    args.flavor,
+    '--output',
+    resolvedArtifactsDir,
+  ]);
   return resolvedArtifactsDir;
 }
 
@@ -1506,6 +1509,15 @@ async function main(argv /*:: ?: Array<string> */) /*: Promise<void> */ {
     process.exitCode = 1;
     return;
   }
+
+  // Re-install the codegen Package.swift template AFTER the xcframework
+  // symlinks have been created. The earlier install (during runCodegenStep)
+  // hits resolveHeadersAbsolute's catch block because the symlinks don't
+  // exist yet — the template falls back to a runtime URL expression. SPM
+  // caches that manifest evaluation and never re-resolves on slot changes,
+  // so a stale slot path leaks into compile args. Re-installing now bakes
+  // the absolute path in, changing the manifest content and the SPM hash.
+  installSpmCodegenTemplate(appRoot, reactNativeRoot, {log});
 
   resolveAndWriteVFSOverlay(appRoot, reactNativeRoot, {log});
 
