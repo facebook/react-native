@@ -3457,8 +3457,8 @@ public final class com/facebook/react/uimanager/MeasureSpecAssertions {
 }
 
 public class com/facebook/react/uimanager/NativeViewHierarchyManager {
+	public static final field Companion Lcom/facebook/react/uimanager/NativeViewHierarchyManager$Companion;
 	public fun <init> (Lcom/facebook/react/uimanager/ViewManagerRegistry;)V
-	public fun <init> (Lcom/facebook/react/uimanager/ViewManagerRegistry;Lcom/facebook/react/uimanager/RootViewManager;)V
 	public fun addRootView (ILandroid/view/View;)V
 	protected final fun addRootViewGroup (ILandroid/view/View;)V
 	public fun clearJSResponder ()V
@@ -3469,7 +3469,6 @@ public class com/facebook/react/uimanager/NativeViewHierarchyManager {
 	public fun findTargetTagForTouch (IFF)I
 	public fun getInstanceHandle (I)J
 	public fun getRootViewNum ()I
-	public fun manageChildren (I[I[Lcom/facebook/react/uimanager/ViewAtIndex;[I)V
 	public fun measure (I[I)V
 	public fun measureInWindow (I[I)V
 	public fun removeRootView (I)V
@@ -3484,6 +3483,9 @@ public class com/facebook/react/uimanager/NativeViewHierarchyManager {
 	public fun updateLayout (IIIIIILcom/facebook/yoga/YogaDirection;)V
 	public fun updateProperties (ILcom/facebook/react/uimanager/ReactStylesDiffMap;)V
 	public fun updateViewExtraData (ILjava/lang/Object;)V
+}
+
+public final class com/facebook/react/uimanager/NativeViewHierarchyManager$Companion {
 }
 
 public final class com/facebook/react/uimanager/NativeViewHierarchyOptimizer {
