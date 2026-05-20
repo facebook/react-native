@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<44778a01f2e3f503ea31d340f89587b8>>
+ * @generated SignedSource<<a6828a75f6c05923ad06afc7727c38e1>>
  */
 
 /**
@@ -28,6 +28,10 @@ class ReactNativeFeatureFlagsOverridesOSSExperimental : public ReactNativeFeatur
     ReactNativeFeatureFlagsOverridesOSSExperimental() = default;
 
   bool cxxNativeAnimatedEnabled() override {
+    return true;
+  }
+
+  bool enableRuntimeSchedulerQueueClearingOnError() override {
     return true;
   }
 

@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<7bfc94d9e70103821d872c31927a7658>>
+ * @generated SignedSource<<28f917839921b183310a5ad91bfff022>>
  * @flow strict
  * @noformat
  */
@@ -89,6 +89,7 @@ export type ReactNativeFeatureFlags = $ReadOnly<{
   enableNetworkEventReporting: Getter<boolean>,
   enablePreparedTextLayout: Getter<boolean>,
   enablePropsUpdateReconciliationAndroid: Getter<boolean>,
+  enableRuntimeSchedulerQueueClearingOnError: Getter<boolean>,
   enableSchedulerDelegateInvalidation: Getter<boolean>,
   enableSwiftUIBasedFilters: Getter<boolean>,
   enableViewCulling: Getter<boolean>,
@@ -370,6 +371,10 @@ export const enablePreparedTextLayout: Getter<boolean> = createNativeFlagGetter(
  * When enabled, Android will receive prop updates based on the differences between the last rendered shadow node and the last committed shadow node.
  */
 export const enablePropsUpdateReconciliationAndroid: Getter<boolean> = createNativeFlagGetter('enablePropsUpdateReconciliationAndroid', false);
+/**
+ * When enabled, RuntimeScheduler_Modern clears pending tasks and rendering updates before handling an error.
+ */
+export const enableRuntimeSchedulerQueueClearingOnError: Getter<boolean> = createNativeFlagGetter('enableRuntimeSchedulerQueueClearingOnError', false);
 /**
  * Gates a defensive guard around Scheduler::uiManagerDidDispatchCommand and uiManagerDidFinishTransaction that prevents queued rendering-update lambdas from dereferencing the SchedulerDelegate after it has been destroyed (use-after-free).
  */

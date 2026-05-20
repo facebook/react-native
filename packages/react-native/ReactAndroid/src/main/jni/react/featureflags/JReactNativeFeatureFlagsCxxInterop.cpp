@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<52bf46b50e91dacdac8d43c4c00ea6f3>>
+ * @generated SignedSource<<50f384f98360c4fc9d16d7c25b82aec6>>
  */
 
 /**
@@ -294,6 +294,12 @@ class ReactNativeFeatureFlagsJavaProvider
   bool enablePropsUpdateReconciliationAndroid() override {
     static const auto method =
         getReactNativeFeatureFlagsProviderJavaClass()->getMethod<jboolean()>("enablePropsUpdateReconciliationAndroid");
+    return method(javaProvider_);
+  }
+
+  bool enableRuntimeSchedulerQueueClearingOnError() override {
+    static const auto method =
+        getReactNativeFeatureFlagsProviderJavaClass()->getMethod<jboolean()>("enableRuntimeSchedulerQueueClearingOnError");
     return method(javaProvider_);
   }
 
@@ -804,6 +810,11 @@ bool JReactNativeFeatureFlagsCxxInterop::enablePropsUpdateReconciliationAndroid(
   return ReactNativeFeatureFlags::enablePropsUpdateReconciliationAndroid();
 }
 
+bool JReactNativeFeatureFlagsCxxInterop::enableRuntimeSchedulerQueueClearingOnError(
+    facebook::jni::alias_ref<JReactNativeFeatureFlagsCxxInterop> /*unused*/) {
+  return ReactNativeFeatureFlags::enableRuntimeSchedulerQueueClearingOnError();
+}
+
 bool JReactNativeFeatureFlagsCxxInterop::enableSchedulerDelegateInvalidation(
     facebook::jni::alias_ref<JReactNativeFeatureFlagsCxxInterop> /*unused*/) {
   return ReactNativeFeatureFlags::enableSchedulerDelegateInvalidation();
@@ -1204,6 +1215,9 @@ void JReactNativeFeatureFlagsCxxInterop::registerNatives() {
       makeNativeMethod(
         "enablePropsUpdateReconciliationAndroid",
         JReactNativeFeatureFlagsCxxInterop::enablePropsUpdateReconciliationAndroid),
+      makeNativeMethod(
+        "enableRuntimeSchedulerQueueClearingOnError",
+        JReactNativeFeatureFlagsCxxInterop::enableRuntimeSchedulerQueueClearingOnError),
       makeNativeMethod(
         "enableSchedulerDelegateInvalidation",
         JReactNativeFeatureFlagsCxxInterop::enableSchedulerDelegateInvalidation),

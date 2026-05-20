@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<e91fab99f355307aac38de7a5c84e8dd>>
+ * @generated SignedSource<<43aa532756b07f0b754cd74eb4811664>>
  */
 
 /**
@@ -63,6 +63,7 @@ internal class ReactNativeFeatureFlagsCxxAccessor : ReactNativeFeatureFlagsAcces
   private var enableNetworkEventReportingCache: Boolean? = null
   private var enablePreparedTextLayoutCache: Boolean? = null
   private var enablePropsUpdateReconciliationAndroidCache: Boolean? = null
+  private var enableRuntimeSchedulerQueueClearingOnErrorCache: Boolean? = null
   private var enableSchedulerDelegateInvalidationCache: Boolean? = null
   private var enableSwiftUIBasedFiltersCache: Boolean? = null
   private var enableViewCullingCache: Boolean? = null
@@ -495,6 +496,15 @@ internal class ReactNativeFeatureFlagsCxxAccessor : ReactNativeFeatureFlagsAcces
     if (cached == null) {
       cached = ReactNativeFeatureFlagsCxxInterop.enablePropsUpdateReconciliationAndroid()
       enablePropsUpdateReconciliationAndroidCache = cached
+    }
+    return cached
+  }
+
+  override fun enableRuntimeSchedulerQueueClearingOnError(): Boolean {
+    var cached = enableRuntimeSchedulerQueueClearingOnErrorCache
+    if (cached == null) {
+      cached = ReactNativeFeatureFlagsCxxInterop.enableRuntimeSchedulerQueueClearingOnError()
+      enableRuntimeSchedulerQueueClearingOnErrorCache = cached
     }
     return cached
   }

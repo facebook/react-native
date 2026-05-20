@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<794be726d31bf395558bb987d94c3205>>
+ * @generated SignedSource<<56c989556810840e2dd2a42b66d431dc>>
  */
 
 /**
@@ -287,6 +287,12 @@ public object ReactNativeFeatureFlags {
    */
   @JvmStatic
   public fun enablePropsUpdateReconciliationAndroid(): Boolean = accessor.enablePropsUpdateReconciliationAndroid()
+
+  /**
+   * When enabled, RuntimeScheduler_Modern clears pending tasks and rendering updates before handling an error.
+   */
+  @JvmStatic
+  public fun enableRuntimeSchedulerQueueClearingOnError(): Boolean = accessor.enableRuntimeSchedulerQueueClearingOnError()
 
   /**
    * Gates a defensive guard around Scheduler::uiManagerDidDispatchCommand and uiManagerDidFinishTransaction that prevents queued rendering-update lambdas from dereferencing the SchedulerDelegate after it has been destroyed (use-after-free).
