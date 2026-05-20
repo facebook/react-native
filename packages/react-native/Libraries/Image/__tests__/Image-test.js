@@ -370,9 +370,6 @@ describe('Image', () => {
     );
 
     const tree = instance.toJSON();
-    if (tree == null || Array.isArray(tree)) {
-      throw new Error('Expected a single rendered element');
-    }
-    expect(tree.props.headers).toEqual({Authorization: 'Bearer xyz'});
+    expect(tree?.props.headers).toEqual({Authorization: 'Bearer xyz'});
   });
 });
