@@ -18,6 +18,7 @@ import {
   setCurrentTarget,
   setTarget,
 } from '../../webapis/dom/events/internals/EventInternals';
+import {getEventTargetParent} from '../../webapis/dom/events/internals/EventTargetInternals';
 import {
   getCurrentProps,
   getNativeElementReference,
@@ -78,6 +79,23 @@ function isEndish(topLevelType: string): boolean {
   return topLevelType === 'topTouchEnd' || topLevelType === 'topTouchCancel';
 }
 
+// Routes through the event-dispatch parent cache (shared with
+// `EventTarget.getEventPath`) and stops the walk when the parent is not
+// an element (e.g., when reaching the document at the top of the tree).
+function getResponderParentElement(
+  node: ReadOnlyElement,
+): ReadOnlyElement | null {
+  // `ReadOnlyElement` extends `EventTarget` at runtime when the new
+  // event-dispatching pipeline is enabled (the only case this module runs in).
+  // $FlowFixMe[incompatible-type]
+  const eventTarget: EventTarget = node;
+  const parent = getEventTargetParent(eventTarget);
+  if (parent instanceof ReadOnlyElement) {
+    return parent;
+  }
+  return null;
+}
+
 /**
  * Return the lowest common ancestor of A and B, or null if they are in
  * different trees.
@@ -95,12 +113,12 @@ function getLowestCommonAncestor(
   }
 
   // Walk up from A until we find an ancestor that contains B
-  let current: ?ReadOnlyElement = instA.parentElement;
+  let current: ?ReadOnlyElement = getResponderParentElement(instA);
   while (current != null) {
     if (current.contains(instB)) {
       return current;
     }
-    current = current.parentElement;
+    current = getResponderParentElement(current);
   }
 
   return null;
@@ -265,7 +283,7 @@ function negotiateResponder(
   }
 
   const dispatchNode: ReadOnlyElement | null = skipSelf
-    ? negotiationNode.parentElement
+    ? getResponderParentElement(negotiationNode)
     : negotiationNode;
   if (dispatchNode == null) {
     return null;
@@ -276,7 +294,7 @@ function negotiateResponder(
   let node: ?ReadOnlyElement = dispatchNode;
   while (node != null) {
     path.unshift(node);
-    node = node.parentElement;
+    node = getResponderParentElement(node);
   }
 
   const dispatchConfig = responderEventTypes[shouldSetEventName];

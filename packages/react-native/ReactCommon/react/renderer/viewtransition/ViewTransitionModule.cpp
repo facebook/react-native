@@ -17,6 +17,19 @@
 
 namespace facebook::react {
 
+namespace {
+
+RawProps makePseudoElementRawProps(
+    const ViewTransitionModule::AnimationKeyFrameViewLayoutMetrics& metrics) {
+  return RawProps(
+      folly::dynamic::object("position", "absolute")(
+          "left", metrics.originFromRoot.x)("top", metrics.originFromRoot.y)(
+          "width", metrics.size.width)("height", metrics.size.height)(
+          "pointerEvents", "none")("opacity", 0)("collapsable", false));
+}
+
+} // namespace
+
 ViewTransitionModule::~ViewTransitionModule() {
   if (uiManager_ != nullptr) {
     if (uiManager_->getViewTransitionDelegate() == this) {
@@ -109,13 +122,7 @@ void ViewTransitionModule::applyViewTransitionName(
                 keyframeMetrics.originFromRoot.y ||
             cachedMetrics.size.width != keyframeMetrics.size.width ||
             cachedMetrics.size.height != keyframeMetrics.size.height) {
-          auto updatedRawProps = RawProps(
-              folly::dynamic::object("left", keyframeMetrics.originFromRoot.x)(
-                  "top", keyframeMetrics.originFromRoot.y)(
-                  "width", keyframeMetrics.size.width)(
-                  "height", keyframeMetrics.size.height)(
-                  "pointerEvents", "none")("opacity", 0)("collapsable", false)(
-                  "position", "absolute"));
+          auto updatedRawProps = makePseudoElementRawProps(keyframeMetrics);
 
           auto updatedNode = uiManager_->cloneNode(
               *innerIt->second.node,
@@ -171,30 +178,16 @@ void ViewTransitionModule::createViewTransitionInstance(
 
   // Build props: absolute position matching old element, non-interactive
   if (pseudoElementTag > 0 && view.tag > 0) {
-    // Create a base node with layout props via createNode
     // TODO: T262559684 created dedicated shadow node type for old pseudo
     // element
-    auto rawProps = RawProps(
-        folly::dynamic::object("position", "absolute")(
-            "left", view.layoutMetrics.originFromRoot.x)(
-            "top", view.layoutMetrics.originFromRoot.y)(
-            "width", view.layoutMetrics.size.width)(
-            "height", view.layoutMetrics.size.height)("pointerEvents", "none")(
-            "opacity", 0)("collapsable", false));
+    auto rawProps = makePseudoElementRawProps(view.layoutMetrics);
 
-    auto baseNode = uiManager_->createNode(
+    auto pseudoElementNode = uiManager_->createNode(
         pseudoElementTag,
         "View",
         view.surfaceId,
         std::move(rawProps),
         nullptr /* instanceHandle */);
-
-    if (baseNode == nullptr) {
-      return;
-    }
-
-    // Clone the shadow node — bitmap will be set by platform
-    auto pseudoElementNode = baseNode->clone({});
 
     if (pseudoElementNode != nullptr) {
       if (!forNextTransition) {

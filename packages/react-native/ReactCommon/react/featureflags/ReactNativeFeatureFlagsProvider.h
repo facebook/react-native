@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<60fc10a6c06d8381177c7c4dbd488dd9>>
+ * @generated SignedSource<<417d41f906ec9966f937eb3e060d377b>>
  */
 
 /**
@@ -68,6 +68,7 @@ class ReactNativeFeatureFlagsProvider {
   virtual bool enableNetworkEventReporting() = 0;
   virtual bool enablePreparedTextLayout() = 0;
   virtual bool enablePropsUpdateReconciliationAndroid() = 0;
+  virtual bool enableRuntimeSchedulerQueueClearingOnError() = 0;
   virtual bool enableSchedulerDelegateInvalidation() = 0;
   virtual bool enableSwiftUIBasedFilters() = 0;
   virtual bool enableViewCulling() = 0;
@@ -79,7 +80,6 @@ class ReactNativeFeatureFlagsProvider {
   virtual bool enableVirtualViewContainerStateExperimental() = 0;
   virtual bool enableVirtualViewDebugFeatures() = 0;
   virtual bool fixDifferentiatorParentTagForUnflattenCase() = 0;
-  virtual bool fixFindShadowNodeByTagRaceCondition() = 0;
   virtual bool fixMappingOfEventPrioritiesBetweenFabricAndReact() = 0;
   virtual bool fixYogaFlexBasisFitContentInMainAxis() = 0;
   virtual bool fuseboxAssertSingleHostState() = 0;

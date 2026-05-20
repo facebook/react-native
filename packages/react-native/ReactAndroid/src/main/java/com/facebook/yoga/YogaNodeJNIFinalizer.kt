@@ -24,10 +24,10 @@ public class YogaNodeJNIFinalizer : YogaNodeJNIBase {
   }
 
   public fun freeNatives() {
-    if (mNativePointer != 0L) {
-      val nativePointer = mNativePointer
-      mNativePointer = 0
-      YogaNative.jni_YGNodeFinalizeJNI(nativePointer)
+    if (nativePointer != 0L) {
+      val nativePtr = nativePointer
+      nativePointer = 0
+      YogaNative.jni_YGNodeFinalizeJNI(nativePtr)
     }
   }
 }

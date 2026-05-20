@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<771a335070649f38cb559a95d80947aa>>
+ * @generated SignedSource<<501a0efcf0a4ab20827bdefc3a844b3f>>
  */
 
 /**
@@ -255,6 +255,11 @@ class ReactNativeFeatureFlags {
   RN_EXPORT static bool enablePropsUpdateReconciliationAndroid();
 
   /**
+   * When enabled, RuntimeScheduler_Modern clears pending tasks and rendering updates before handling an error.
+   */
+  RN_EXPORT static bool enableRuntimeSchedulerQueueClearingOnError();
+
+  /**
    * Gates a defensive guard around Scheduler::uiManagerDidDispatchCommand and uiManagerDidFinishTransaction that prevents queued rendering-update lambdas from dereferencing the SchedulerDelegate after it has been destroyed (use-after-free).
    */
   RN_EXPORT static bool enableSchedulerDelegateInvalidation();
@@ -308,11 +313,6 @@ class ReactNativeFeatureFlags {
    * Fix incorrect parentTag passed as parentTagForUpdate in the unflatten-unflatten branch of calculateShadowViewMutationsFlattener, which causes UPDATE mutations to reference a parent being created in the same batch.
    */
   RN_EXPORT static bool fixDifferentiatorParentTagForUnflattenCase();
-
-  /**
-   * Fix a use-after-free race condition in findShadowNodeByTag_DEPRECATED by using getCurrentRevision() instead of tryCommit() with a raw pointer.
-   */
-  RN_EXPORT static bool fixFindShadowNodeByTagRaceCondition();
 
   /**
    * Uses the default event priority instead of the discreet event priority by default when dispatching events from Fabric to React.

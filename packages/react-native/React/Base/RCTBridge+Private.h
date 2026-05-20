@@ -145,14 +145,14 @@ RCT_EXTERN void RCTRegisterModule(Class);
 
 @end
 
+#if !defined(RCT_REMOVE_LEGACY_ARCH)
 @interface RCTCxxBridge : RCTBridge
 
 // TODO(cjhopman): this seems unsafe unless we require that it is only called on the main js queue.
 @property (nonatomic, readonly) void *runtime;
 
-#ifndef RCT_REMOVE_LEGACY_ARCH
 - (instancetype)initWithParentBridge:(RCTBridge *)bridge NS_DESIGNATED_INITIALIZER
     __deprecated_msg("This API will be removed along with the legacy architecture.");
-#endif // RCT_REMOVE_LEGACY_ARCH
 
 @end
+#endif // RCT_REMOVE_LEGACY_ARCH

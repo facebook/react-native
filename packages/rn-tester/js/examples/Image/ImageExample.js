@@ -11,10 +11,12 @@
 'use strict';
 
 import type {RNTesterModuleExample} from '../../types/RNTesterTypes';
+import type {PlatformTestComponentBaseProps} from '../Experimental/PlatformTest/RNTesterPlatformTestTypes';
 import type {ImageProps, LayoutChangeEvent} from 'react-native';
 
 import RNTesterButton from '../../components/RNTesterButton';
 import RNTesterText from '../../components/RNTesterText';
+import RNTesterPlatformTest from '../Experimental/PlatformTest/RNTesterPlatformTest';
 import ImageCapInsetsExample from './ImageCapInsetsExample';
 import * as React from 'react';
 import {useEffect, useState} from 'react';
@@ -567,7 +569,7 @@ class OnPartialLoadExample extends React.Component<
         </RNTesterText>
         <Image
           source={{
-            uri: `https://images.pexels.com/photos/671557/pexels-photo-671557.jpeg?&buster=${Math.random()}`,
+            uri: `https://www.facebook.com/assets/react_native_oss_tests/large-image@1x.jpg&buster=${Math.random()}`,
           }}
           onPartialLoad={this.partialLoadHandler}
           style={styles.base}
@@ -672,6 +674,99 @@ const fullImage: ImageSource = {
 const smallImage = {
   uri: IMAGE1,
 };
+
+const GET_SIZE_TEST_IMAGES: ReadonlyArray<{
+  expectedHeight: number,
+  expectedWidth: number,
+  uri: string,
+  name: string,
+}> = [
+  {
+    expectedHeight: 492,
+    expectedWidth: 960,
+    uri: IMAGE1,
+    name: 'large PNG',
+  },
+  {
+    expectedHeight: 3000,
+    expectedWidth: 4500,
+    uri: 'https://www.facebook.com/assets/react_native_oss_tests/large-image@1x.jpg',
+    name: 'large JPEG with density 2',
+  },
+  {
+    expectedHeight: 1200,
+    expectedWidth: 1800,
+    // Rotated 90 degrees counter-clockwise
+    uri: 'https://www.facebook.com/assets/react_native_oss_tests/exif-6@1x.jpg',
+    name: 'EXIF rotated JPEG',
+  },
+];
+
+function getImageSize(uri: string): Promise<{height: number, width: number}> {
+  return new Promise((resolve, reject) => {
+    Image.getSize(uri, (width, height) => resolve({height, width}), reject);
+  });
+}
+
+function ImageGetSizePlatformTest(props: PlatformTestComponentBaseProps) {
+  const {harness} = props;
+  const asyncTest = harness.useAsyncTest(
+    'Image.getSize resolves source dimensions',
+    30000,
+  );
+
+  useEffect(() => {
+    let cancelled = false;
+
+    Promise.all(
+      GET_SIZE_TEST_IMAGES.map(image =>
+        getImageSize(image.uri).then(size => ({image, size})),
+      ),
+    )
+      .then(results => {
+        if (cancelled) {
+          return;
+        }
+
+        for (const result of results) {
+          asyncTest.step(({assert_equals}) => {
+            assert_equals(
+              result.size.width,
+              result.image.expectedWidth,
+              `${result.image.name} width`,
+            );
+            assert_equals(
+              result.size.height,
+              result.image.expectedHeight,
+              `${result.image.name} height`,
+            );
+          });
+        }
+      })
+      .catch((error: unknown) => {
+        if (!cancelled) {
+          asyncTest.step(({assert_true}) => {
+            assert_true(false, `Image.getSize failed: ${String(error)}`);
+          });
+        }
+      })
+      .finally(() => {
+        if (!cancelled) {
+          asyncTest.done();
+        }
+      });
+
+    return () => {
+      cancelled = true;
+    };
+  }, [asyncTest]);
+
+  return (
+    <RNTesterText>
+      Calling Image.getSize for {GET_SIZE_TEST_IMAGES.length} remote images.
+    </RNTesterText>
+  );
+}
 
 const styles = StyleSheet.create({
   base: {
@@ -1562,6 +1657,18 @@ exports.examples = [
     title: 'Image Size',
     render: function (): React.Node {
       return <ImageSizeExample source={fullImage} />;
+    },
+  },
+  {
+    title: 'Image.getSize',
+    render: function (): React.Node {
+      return (
+        <RNTesterPlatformTest
+          title="Image.getSize"
+          description="Calls Image.getSize and verifies the source dimensions returned by native image metadata."
+          component={ImageGetSizePlatformTest}
+        />
+      );
     },
   },
   {

@@ -1,5 +1,17 @@
 # Changelog
 
+## v0.86.0-rc.1
+
+### Fixed
+
+#### Android specific
+
+- **Image**: `Image.getSize` and `Image.getSizeWithHeaders` now return the true source dimensions instead of Fresco's downsampled values ([8823a8009b](https://github.com/facebook/react-native/commit/8823a8009b18950d5be2682a86cfcf0c7014a068) by [@zoontek](https://github.com/zoontek))
+
+#### iOS specific
+
+- **Build**: Persist `PODFILE_DIR` as `$(SRCROOT)`-relative so `project.pbxproj` is portable across machines ([44bb83bd84](https://github.com/facebook/react-native/commit/44bb83bd843a3b34779f1e7b1e09dbb3f4f38c6a) by [@zoontek](https://github.com/zoontek))
+
 ## v0.86.0-rc.0
 
 ### Added

@@ -26,6 +26,7 @@ import Keyboard from './Keyboard';
 import * as React from 'react';
 import {createRef} from 'react';
 
+/** @build-types emit-as-interface Uniwind compatibility */
 export type KeyboardAvoidingViewProps = Readonly<{
   ...ViewProps,
 

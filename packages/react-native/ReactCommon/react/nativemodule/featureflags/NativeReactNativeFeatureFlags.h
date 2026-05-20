@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<1bc2c347fb241190b4ae048e12c5a885>>
+ * @generated SignedSource<<98026af617f580de74cf9c0e596e8a96>>
  */
 
 /**
@@ -122,6 +122,8 @@ class NativeReactNativeFeatureFlags
 
   bool enablePropsUpdateReconciliationAndroid(jsi::Runtime& runtime);
 
+  bool enableRuntimeSchedulerQueueClearingOnError(jsi::Runtime& runtime);
+
   bool enableSchedulerDelegateInvalidation(jsi::Runtime& runtime);
 
   bool enableSwiftUIBasedFilters(jsi::Runtime& runtime);
@@ -143,8 +145,6 @@ class NativeReactNativeFeatureFlags
   bool enableVirtualViewDebugFeatures(jsi::Runtime& runtime);
 
   bool fixDifferentiatorParentTagForUnflattenCase(jsi::Runtime& runtime);
-
-  bool fixFindShadowNodeByTagRaceCondition(jsi::Runtime& runtime);
 
   bool fixMappingOfEventPrioritiesBetweenFabricAndReact(jsi::Runtime& runtime);
 

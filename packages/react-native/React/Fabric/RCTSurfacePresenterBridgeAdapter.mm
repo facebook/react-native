@@ -24,8 +24,8 @@
 
 using namespace facebook::react;
 
+#ifndef RCT_REMOVE_LEGACY_ARCH
 @interface RCTBridge ()
-- (std::shared_ptr<facebook::react::MessageQueueThread>)jsMessageThread;
 - (void)invokeAsync:(std::function<void()> &&)func;
 @end
 
@@ -203,3 +203,4 @@ RuntimeExecutor RCTRuntimeExecutorFromBridge(RCTBridge *bridge)
 }
 
 @end
+#endif

@@ -159,6 +159,7 @@ Pod::Spec.new do |s|
 
   s.subspec "scheduler" do |ss|
     ss.source_files         = podspec_sources("react/renderer/scheduler/**/*.{m,mm,cpp,h}", "react/renderer/scheduler/**/*.h")
+    ss.exclude_files        = "react/renderer/scheduler/tests"
     ss.header_dir           = "react/renderer/scheduler"
 
     ss.dependency             "React-Fabric/animationbackend"

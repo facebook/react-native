@@ -6,6 +6,9 @@ on:
   schedule:
     - cron: "15 2 * * *"
 
+permissions:
+  contents: read
+
 jobs:
   set_release_type:
     runs-on: ubuntu-latest

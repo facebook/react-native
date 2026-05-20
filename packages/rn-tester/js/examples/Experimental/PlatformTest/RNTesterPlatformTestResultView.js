@@ -275,7 +275,7 @@ export default function RNTesterPlatformTestResultView(
             <View style={styles.titleContainer}>
               <Text style={styles.title}>Results</Text>
               <Text style={styles.filteredText}>{filteredNotice}</Text>
-              <Text style={styles.summaryContainer}>
+              <View style={styles.summaryContainer}>
                 <RNTesterPlatformTestResultsText
                   numError={numError}
                   numFail={numFail}
@@ -283,7 +283,7 @@ export default function RNTesterPlatformTestResultView(
                   numPending={numPending}
                   numSkipped={numSkipped}
                 />
-              </Text>
+              </View>
             </View>
             <View style={styles.actionsContainer}>
               <FilterModalButton

@@ -182,7 +182,8 @@ type FlatListBaseProps<ItemT> = {
   ...OptionalFlatListProps<ItemT>,
 };
 
-export type FlatListProps<ItemT> = {
+/** @build-types emit-as-interface Nativewind compatibility */
+export type FlatListProps<ItemT> = Readonly<{
   ...Omit<
     VirtualizedListProps,
     | 'data'
@@ -194,7 +195,7 @@ export type FlatListProps<ItemT> = {
   >,
   ...FlatListBaseProps<ItemT>,
   ...
-};
+}>;
 
 /**
  * A performant interface for rendering simple, flat lists, supporting the most handy features:

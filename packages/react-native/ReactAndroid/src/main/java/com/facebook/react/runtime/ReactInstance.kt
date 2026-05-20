@@ -462,7 +462,7 @@ internal class ReactInstance(
 
   private external fun getJavaScriptContext(): Long
 
-  external fun callFunctionOnModule(moduleName: String, methodName: String, args: NativeArray)
+  external fun callFunctionOnModule(moduleName: String, methodName: String, args: NativeArray?)
 
   private external fun registerSegmentNative(segmentId: Int, segmentPath: String)
 

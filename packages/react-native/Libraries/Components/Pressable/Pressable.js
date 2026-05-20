@@ -156,6 +156,7 @@ type PressableBaseProps = Readonly<{
   unstable_pressDelay?: ?number,
 }>;
 
+/** @build-types emit-as-interface Uniwind compatibility */
 export type PressableProps = Readonly<{
   // Pressability may override `onMouseEnter` and `onMouseLeave` to
   // implement `onHoverIn` and `onHoverOut` in a platform-agnostic way.

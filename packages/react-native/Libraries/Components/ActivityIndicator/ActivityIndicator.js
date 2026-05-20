@@ -34,6 +34,7 @@ type ActivityIndicatorIOSProps = Readonly<{
   */
   hidesWhenStopped?: ?boolean,
 }>;
+/** @build-types emit-as-interface Uniwind compatibility */
 export type ActivityIndicatorProps = Readonly<{
   ...ViewProps,
   ...ActivityIndicatorIOSProps,

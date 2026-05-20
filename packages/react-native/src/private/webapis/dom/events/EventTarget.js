@@ -34,6 +34,7 @@ import {
   EVENT_TARGET_GET_DECLARATIVE_LISTENER_KEY,
   EVENT_TARGET_GET_THE_PARENT_KEY,
   INTERNAL_DISPATCH_METHOD_KEY,
+  getEventTargetParent,
 } from './internals/EventTargetInternals';
 
 export type EventCallback = (event: Event) => void;
@@ -341,8 +342,7 @@ function getEventPath(
 
   while (target != null) {
     path.push(target);
-    // $FlowExpectedError[prop-missing]
-    target = target[EVENT_TARGET_GET_THE_PARENT_KEY]();
+    target = getEventTargetParent(target);
   }
 
   return path;

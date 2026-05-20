@@ -267,6 +267,8 @@ type TextBaseProps = Readonly<{
 
 /**
  * @see https://reactnative.dev/docs/text#reference
+ *
+ * @build-types emit-as-interface Uniwind compatibility
  */
 export type TextProps = Readonly<{
   ...TextPointerEventProps,

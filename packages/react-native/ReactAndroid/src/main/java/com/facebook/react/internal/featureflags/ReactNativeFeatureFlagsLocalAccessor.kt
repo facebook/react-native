@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<9d07e8adeee69583b788069649306d8e>>
+ * @generated SignedSource<<6ee1cc911c3ebb12b31151441dd43605>>
  */
 
 /**
@@ -67,6 +67,7 @@ internal class ReactNativeFeatureFlagsLocalAccessor : ReactNativeFeatureFlagsAcc
   private var enableNetworkEventReportingCache: Boolean? = null
   private var enablePreparedTextLayoutCache: Boolean? = null
   private var enablePropsUpdateReconciliationAndroidCache: Boolean? = null
+  private var enableRuntimeSchedulerQueueClearingOnErrorCache: Boolean? = null
   private var enableSchedulerDelegateInvalidationCache: Boolean? = null
   private var enableSwiftUIBasedFiltersCache: Boolean? = null
   private var enableViewCullingCache: Boolean? = null
@@ -78,7 +79,6 @@ internal class ReactNativeFeatureFlagsLocalAccessor : ReactNativeFeatureFlagsAcc
   private var enableVirtualViewContainerStateExperimentalCache: Boolean? = null
   private var enableVirtualViewDebugFeaturesCache: Boolean? = null
   private var fixDifferentiatorParentTagForUnflattenCaseCache: Boolean? = null
-  private var fixFindShadowNodeByTagRaceConditionCache: Boolean? = null
   private var fixMappingOfEventPrioritiesBetweenFabricAndReactCache: Boolean? = null
   private var fixYogaFlexBasisFitContentInMainAxisCache: Boolean? = null
   private var fuseboxAssertSingleHostStateCache: Boolean? = null
@@ -547,6 +547,16 @@ internal class ReactNativeFeatureFlagsLocalAccessor : ReactNativeFeatureFlagsAcc
     return cached
   }
 
+  override fun enableRuntimeSchedulerQueueClearingOnError(): Boolean {
+    var cached = enableRuntimeSchedulerQueueClearingOnErrorCache
+    if (cached == null) {
+      cached = currentProvider.enableRuntimeSchedulerQueueClearingOnError()
+      accessedFeatureFlags.add("enableRuntimeSchedulerQueueClearingOnError")
+      enableRuntimeSchedulerQueueClearingOnErrorCache = cached
+    }
+    return cached
+  }
+
   override fun enableSchedulerDelegateInvalidation(): Boolean {
     var cached = enableSchedulerDelegateInvalidationCache
     if (cached == null) {
@@ -653,16 +663,6 @@ internal class ReactNativeFeatureFlagsLocalAccessor : ReactNativeFeatureFlagsAcc
       cached = currentProvider.fixDifferentiatorParentTagForUnflattenCase()
       accessedFeatureFlags.add("fixDifferentiatorParentTagForUnflattenCase")
       fixDifferentiatorParentTagForUnflattenCaseCache = cached
-    }
-    return cached
-  }
-
-  override fun fixFindShadowNodeByTagRaceCondition(): Boolean {
-    var cached = fixFindShadowNodeByTagRaceConditionCache
-    if (cached == null) {
-      cached = currentProvider.fixFindShadowNodeByTagRaceCondition()
-      accessedFeatureFlags.add("fixFindShadowNodeByTagRaceCondition")
-      fixFindShadowNodeByTagRaceConditionCache = cached
     }
     return cached
   }

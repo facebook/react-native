@@ -109,6 +109,7 @@ type SwitchPropsBase = {
   onValueChange?: ?(value: boolean) => Promise<void> | void,
 };
 
+/** @build-types emit-as-interface Expo compatibility */
 export type SwitchProps = Readonly<{
   ...ViewProps,
   ...SwitchPropsIOS,

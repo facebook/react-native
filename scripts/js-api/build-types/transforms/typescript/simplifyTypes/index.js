@@ -28,11 +28,16 @@ const mergeObjects: PluginObj<BaseVisitorState> = {
           string,
           NodePath<t.TSTypeAliasDeclaration>,
         >();
+        state.interfaceToPathMap = new Map<
+          string,
+          NodePath<t.TSInterfaceDeclaration>,
+        >();
         state.nodeToAliasMap = new Map<t.Node, string>();
         state.parentTypeAliases = new Set<string>();
 
         path.traverse(gatherTypeAliasesVisitor, {
           aliasToPathMap: state.aliasToPathMap,
+          interfaceToPathMap: state.interfaceToPathMap,
         });
       },
 

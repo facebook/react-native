@@ -98,7 +98,7 @@ function getTypeScriptCompilerOptions(
     case 'node':
       return {
         ...require('@tsconfig/node22/tsconfig.json').compilerOptions,
-        moduleResolution: ModuleResolutionKind.NodeJs,
+        moduleResolution: ModuleResolutionKind.Node16,
       };
   }
 }
