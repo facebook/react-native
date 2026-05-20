@@ -6468,6 +6468,7 @@ public class com/facebook/react/views/view/ReactViewGroup : android/view/ViewGro
 	public fun getZIndexMappedChildIndex (I)I
 	public fun hasOverlappingRendering ()Z
 	protected fun onAttachedToWindow ()V
+	protected fun onConfigurationChanged (Landroid/content/res/Configuration;)V
 	public fun onHoverEvent (Landroid/view/MotionEvent;)Z
 	public fun onInterceptTouchEvent (Landroid/view/MotionEvent;)Z
 	protected fun onLayout (ZIIII)V

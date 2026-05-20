@@ -11,6 +11,7 @@
 'use strict';
 
 import type {EdgeInsetsOrSizeProp} from '../../StyleSheet/EdgeInsetsPropType';
+import type {ProcessedColorValue} from '../../StyleSheet/processColor';
 import type {ViewStyleProp} from '../../StyleSheet/StyleSheet';
 import type {
   BlurEvent,
@@ -264,9 +265,10 @@ type AndroidDrawableThemeAttr = Readonly<{
 
 type AndroidDrawableRipple = Readonly<{
   type: 'RippleAndroid',
-  color?: ?number,
+  color?: ?ProcessedColorValue,
   borderless?: ?boolean,
   rippleRadius?: ?number,
+  alpha?: ?number,
 }>;
 
 type AndroidDrawable = AndroidDrawableThemeAttr | AndroidDrawableRipple;

@@ -7446,8 +7446,10 @@ enum facebook::react::NativeDrawable::Kind : uint8_t {
 struct facebook::react::NativeDrawable::Ripple {
   public bool borderless;
   public bool operator==(const facebook::react::NativeDrawable::Ripple& rhs) const;
+  public std::optional<facebook::react::Float> alpha;
   public std::optional<facebook::react::Float> rippleRadius;
-  public std::optional<int32_t> color;
+  public std::optional<facebook::react::SharedColor> color;
+  public std::optional<std::vector<std::string>> colorResourcePaths;
 }
 
 struct facebook::react::NativePerformanceEntry {

@@ -450,8 +450,25 @@ inline static void updateNativeDrawableProp(
       nativeDrawableResult["rippleRadius"] =
           nativeDrawableValue.ripple.rippleRadius.value();
     }
-    if (nativeDrawableValue.ripple.color.has_value()) {
-      nativeDrawableResult["color"] = nativeDrawableValue.ripple.color.value();
+    if (nativeDrawableValue.ripple.color.has_value() ||
+        nativeDrawableValue.ripple.colorResourcePaths.has_value()) {
+      if (nativeDrawableValue.ripple.colorResourcePaths.has_value()) {
+        folly::dynamic resourcePaths = folly::dynamic::array();
+        for (const auto& path :
+             nativeDrawableValue.ripple.colorResourcePaths.value()) {
+          resourcePaths.push_back(path);
+        }
+        folly::dynamic platformColorMap = folly::dynamic::object();
+        platformColorMap["resource_paths"] = resourcePaths;
+        nativeDrawableResult["color"] = platformColorMap;
+      } else {
+        nativeDrawableResult["color"] =
+            toAndroidRepr(nativeDrawableValue.ripple.color.value());
+      }
+      if (nativeDrawableValue.ripple.alpha.has_value()) {
+        nativeDrawableResult["alpha"] =
+            nativeDrawableValue.ripple.alpha.value();
+      }
     }
     nativeDrawableResult["borderless"] = nativeDrawableValue.ripple.borderless;
   } else {

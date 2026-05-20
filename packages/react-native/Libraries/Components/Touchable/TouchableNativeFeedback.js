@@ -8,6 +8,8 @@
  * @format
  */
 
+import type {ProcessedColorValue} from '../../StyleSheet/processColor';
+import type {ColorValue} from '../../StyleSheet/StyleSheet';
 import type {GestureResponderEvent} from '../../Types/CoreEventTypes';
 import type {TouchableWithoutFeedbackProps} from './TouchableWithoutFeedback';
 
@@ -20,7 +22,6 @@ import {findHostInstance_DEPRECATED} from '../../ReactNative/RendererProxy';
 import processColor from '../../StyleSheet/processColor';
 import Platform from '../../Utilities/Platform';
 import {Commands} from '../View/ViewNativeComponent';
-import invariant from 'invariant';
 import * as React from 'react';
 import {cloneElement} from 'react';
 
@@ -96,7 +97,7 @@ export type TouchableNativeFeedbackProps = Readonly<{
       }>
     | Readonly<{
         type: 'RippleAndroid',
-        color: ?number,
+        color: ?ProcessedColorValue,
         borderless: boolean,
         rippleRadius: ?number,
       }>
@@ -177,23 +178,18 @@ class TouchableNativeFeedback extends React.Component<
    * @param rippleRadius The radius of ripple effect
    */
   static Ripple: (
-    color: string,
+    color: ColorValue,
     borderless: boolean,
     rippleRadius?: ?number,
   ) => Readonly<{
     borderless: boolean,
-    color: ?number,
+    color: ?ProcessedColorValue,
     rippleRadius: ?number,
     type: 'RippleAndroid',
-  }> = (color: string, borderless: boolean, rippleRadius?: ?number) => {
+  }> = (color: ColorValue, borderless: boolean, rippleRadius?: ?number) => {
     const processedColor = processColor(color);
-    invariant(
-      processedColor == null || typeof processedColor === 'number',
-      'Unexpected color given for Ripple color',
-    );
     return {
       type: 'RippleAndroid',
-      // $FlowFixMe[incompatible-type]
       color: processedColor,
       borderless,
       rippleRadius,

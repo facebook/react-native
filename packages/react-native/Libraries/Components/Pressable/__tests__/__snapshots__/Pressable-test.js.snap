@@ -72,6 +72,292 @@ exports[`<Pressable /> should render as expected: should deep render when not mo
 </View>
 `;
 
+exports[`<Pressable android_ripple /> on Android should not crash with an unresolvable PlatformColor: should deep render when mocked (please verify output manually) 1`] = `
+<View
+  accessibilityState={
+    Object {
+      "busy": undefined,
+      "checked": undefined,
+      "disabled": undefined,
+      "expanded": undefined,
+      "selected": undefined,
+    }
+  }
+  accessibilityValue={
+    Object {
+      "max": undefined,
+      "min": undefined,
+      "now": undefined,
+      "text": undefined,
+    }
+  }
+  accessible={true}
+  collapsable={false}
+  focusable={true}
+  nativeBackgroundAndroid={
+    Object {
+      "alpha": 0.5,
+      "borderless": false,
+      "color": Object {
+        "semantic": Array [
+          "?attr/doesNotExist",
+        ],
+      },
+      "rippleRadius": undefined,
+      "type": "RippleAndroid",
+    }
+  }
+  onBlur={[Function]}
+  onClick={[Function]}
+  onFocus={[Function]}
+  onResponderGrant={[Function]}
+  onResponderMove={[Function]}
+  onResponderRelease={[Function]}
+  onResponderTerminate={[Function]}
+  onResponderTerminationRequest={[Function]}
+  onStartShouldSetResponder={[Function]}
+>
+  <View />
+</View>
+`;
+
+exports[`<Pressable android_ripple /> on Android should not crash with an unresolvable PlatformColor: should deep render when not mocked (please verify output manually) 1`] = `
+<View
+  accessibilityState={
+    Object {
+      "busy": undefined,
+      "checked": undefined,
+      "disabled": undefined,
+      "expanded": undefined,
+      "selected": undefined,
+    }
+  }
+  accessibilityValue={
+    Object {
+      "max": undefined,
+      "min": undefined,
+      "now": undefined,
+      "text": undefined,
+    }
+  }
+  accessible={true}
+  collapsable={false}
+  focusable={true}
+  nativeBackgroundAndroid={
+    Object {
+      "alpha": 0.5,
+      "borderless": false,
+      "color": Object {
+        "semantic": Array [
+          "?attr/doesNotExist",
+        ],
+      },
+      "rippleRadius": undefined,
+      "type": "RippleAndroid",
+    }
+  }
+  onBlur={[Function]}
+  onClick={[Function]}
+  onFocus={[Function]}
+  onResponderGrant={[Function]}
+  onResponderMove={[Function]}
+  onResponderRelease={[Function]}
+  onResponderTerminate={[Function]}
+  onResponderTerminationRequest={[Function]}
+  onStartShouldSetResponder={[Function]}
+>
+  <View />
+</View>
+`;
+
+exports[`<Pressable android_ripple /> on Android should set nativeBackgroundAndroid with PlatformColor and alpha: should deep render when mocked (please verify output manually) 1`] = `
+<View
+  accessibilityState={
+    Object {
+      "busy": undefined,
+      "checked": undefined,
+      "disabled": undefined,
+      "expanded": undefined,
+      "selected": undefined,
+    }
+  }
+  accessibilityValue={
+    Object {
+      "max": undefined,
+      "min": undefined,
+      "now": undefined,
+      "text": undefined,
+    }
+  }
+  accessible={true}
+  collapsable={false}
+  focusable={true}
+  nativeBackgroundAndroid={
+    Object {
+      "alpha": 0.3,
+      "borderless": false,
+      "color": Object {
+        "semantic": Array [
+          "?attr/colorAccent",
+        ],
+      },
+      "rippleRadius": undefined,
+      "type": "RippleAndroid",
+    }
+  }
+  onBlur={[Function]}
+  onClick={[Function]}
+  onFocus={[Function]}
+  onResponderGrant={[Function]}
+  onResponderMove={[Function]}
+  onResponderRelease={[Function]}
+  onResponderTerminate={[Function]}
+  onResponderTerminationRequest={[Function]}
+  onStartShouldSetResponder={[Function]}
+>
+  <View />
+</View>
+`;
+
+exports[`<Pressable android_ripple /> on Android should set nativeBackgroundAndroid with PlatformColor and alpha: should deep render when not mocked (please verify output manually) 1`] = `
+<View
+  accessibilityState={
+    Object {
+      "busy": undefined,
+      "checked": undefined,
+      "disabled": undefined,
+      "expanded": undefined,
+      "selected": undefined,
+    }
+  }
+  accessibilityValue={
+    Object {
+      "max": undefined,
+      "min": undefined,
+      "now": undefined,
+      "text": undefined,
+    }
+  }
+  accessible={true}
+  collapsable={false}
+  focusable={true}
+  nativeBackgroundAndroid={
+    Object {
+      "alpha": 0.3,
+      "borderless": false,
+      "color": Object {
+        "semantic": Array [
+          "?attr/colorAccent",
+        ],
+      },
+      "rippleRadius": undefined,
+      "type": "RippleAndroid",
+    }
+  }
+  onBlur={[Function]}
+  onClick={[Function]}
+  onFocus={[Function]}
+  onResponderGrant={[Function]}
+  onResponderMove={[Function]}
+  onResponderRelease={[Function]}
+  onResponderTerminate={[Function]}
+  onResponderTerminationRequest={[Function]}
+  onStartShouldSetResponder={[Function]}
+>
+  <View />
+</View>
+`;
+
+exports[`<Pressable android_ripple /> on Android should set nativeBackgroundAndroid with numeric color and alpha: should deep render when mocked (please verify output manually) 1`] = `
+<View
+  accessibilityState={
+    Object {
+      "busy": undefined,
+      "checked": undefined,
+      "disabled": undefined,
+      "expanded": undefined,
+      "selected": undefined,
+    }
+  }
+  accessibilityValue={
+    Object {
+      "max": undefined,
+      "min": undefined,
+      "now": undefined,
+      "text": undefined,
+    }
+  }
+  accessible={true}
+  collapsable={false}
+  focusable={true}
+  nativeBackgroundAndroid={
+    Object {
+      "alpha": 0.5,
+      "borderless": false,
+      "color": -65536,
+      "rippleRadius": undefined,
+      "type": "RippleAndroid",
+    }
+  }
+  onBlur={[Function]}
+  onClick={[Function]}
+  onFocus={[Function]}
+  onResponderGrant={[Function]}
+  onResponderMove={[Function]}
+  onResponderRelease={[Function]}
+  onResponderTerminate={[Function]}
+  onResponderTerminationRequest={[Function]}
+  onStartShouldSetResponder={[Function]}
+>
+  <View />
+</View>
+`;
+
+exports[`<Pressable android_ripple /> on Android should set nativeBackgroundAndroid with numeric color and alpha: should deep render when not mocked (please verify output manually) 1`] = `
+<View
+  accessibilityState={
+    Object {
+      "busy": undefined,
+      "checked": undefined,
+      "disabled": undefined,
+      "expanded": undefined,
+      "selected": undefined,
+    }
+  }
+  accessibilityValue={
+    Object {
+      "max": undefined,
+      "min": undefined,
+      "now": undefined,
+      "text": undefined,
+    }
+  }
+  accessible={true}
+  collapsable={false}
+  focusable={true}
+  nativeBackgroundAndroid={
+    Object {
+      "alpha": 0.5,
+      "borderless": false,
+      "color": -65536,
+      "rippleRadius": undefined,
+      "type": "RippleAndroid",
+    }
+  }
+  onBlur={[Function]}
+  onClick={[Function]}
+  onFocus={[Function]}
+  onResponderGrant={[Function]}
+  onResponderMove={[Function]}
+  onResponderRelease={[Function]}
+  onResponderTerminate={[Function]}
+  onResponderTerminationRequest={[Function]}
+  onStartShouldSetResponder={[Function]}
+>
+  <View />
+</View>
+`;
+
 exports[`<Pressable disabled={true} /> should be disabled when disabled is true: should deep render when mocked (please verify output manually) 1`] = `
 <View
   accessibilityState={
