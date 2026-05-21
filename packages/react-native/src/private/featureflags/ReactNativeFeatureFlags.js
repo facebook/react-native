@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<d76f42e46c039d6c07d021cbf906de35>>
+ * @generated SignedSource<<002a219eed0f854feb2ada440cbee27e>>
  * @flow strict
  * @noformat
  */
@@ -541,7 +541,7 @@ export const useTurboModuleInterop: Getter<boolean> = createNativeFlagGetter('us
 /**
  * When enabled, NativeModules will be executed by using the TurboModule system
  */
-export const useTurboModules: Getter<boolean> = createNativeFlagGetter('useTurboModules', false);
+export const useTurboModules: Getter<boolean> = createNativeFlagGetter('useTurboModules', true);
 /**
  * Use std::unordered_map instead of TinyMap in the Differentiator for improved lookup performance.
  */
