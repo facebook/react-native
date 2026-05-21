@@ -580,8 +580,6 @@ android {
             "-DCMAKE_POLICY_DEFAULT_CMP0069=NEW",
         )
 
-        arguments("-DHERMES_V1_ENABLED=1")
-
         targets(
             "reactnative",
             "jsi",
