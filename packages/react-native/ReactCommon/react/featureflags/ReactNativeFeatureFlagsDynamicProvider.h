@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<ec98fe64276aaaa226710fad24b27415>>
+ * @generated SignedSource<<75567ff0e5fe70fd9f22c211cdb3d541>>
  */
 
 /**
@@ -259,15 +259,6 @@ class ReactNativeFeatureFlagsDynamicProvider : public ReactNativeFeatureFlagsDef
     }
 
     return ReactNativeFeatureFlagsDefaults::enableFabricLogs();
-  }
-
-  bool enableFabricRenderer() override {
-    auto value = values_["enableFabricRenderer"];
-    if (!value.isNull()) {
-      return value.getBool();
-    }
-
-    return ReactNativeFeatureFlagsDefaults::enableFabricRenderer();
   }
 
   bool enableFontScaleChangesUpdatingLayout() override {
