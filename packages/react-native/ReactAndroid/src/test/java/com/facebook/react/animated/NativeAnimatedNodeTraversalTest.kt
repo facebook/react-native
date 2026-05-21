@@ -1076,7 +1076,7 @@ class NativeAnimatedNodeTraversalTest {
   }
 
   @Test
-  fun testRestoreDefaultPropsSendsNullUpdate() {
+  fun testRestoreDefaultPropsIsNoOp() {
     val viewTag: Int = 1001
     val propsNodeTag = 3
     nativeAnimatedNodesManager.createAnimatedNode(
@@ -1097,9 +1097,7 @@ class NativeAnimatedNodeTraversalTest {
 
     reset(uiManagerMock)
     nativeAnimatedNodesManager.restoreDefaultValues(propsNodeTag)
-    val stylesCaptor: ArgumentCaptor<ReadableMap> = ArgumentCaptor.forClass(ReadableMap::class.java)
-    verify(uiManagerMock).synchronouslyUpdateViewOnUIThread(eq(viewTag), stylesCaptor.capture())
-    assertThat(stylesCaptor.value.isNull("opacity")).isTrue()
+    verify(uiManagerMock, never()).synchronouslyUpdateViewOnUIThread(anyInt(), any<ReadableMap>())
   }
 
   /**
