@@ -6,9 +6,9 @@
   "repository": {
     "type": "git",
     "url": "git+https://github.com/facebook/react-native.git",
-    "directory": "packages/assets"
+    "directory": "packages/assets-registry"
   },
-  "homepage": "https://github.com/facebook/react-native/tree/HEAD/packages/assets#readme",
+  "homepage": "https://github.com/facebook/react-native/tree/HEAD/packages/assets-registry#readme",
   "keywords": [
     "assets",
     "registry",
