@@ -545,7 +545,7 @@ android {
   kotlin {
     compilerOptions {
       // Using '-Xjvm-default=all' to generate default java methods for interfaces
-      freeCompilerArgs = listOf("-Xjvm-default=all")
+      freeCompilerArgs = listOf("-jvm-default=no-compatibility")
       // Using -PenableWarningsAsErrors=true prop to enable allWarningsAsErrors
       allWarningsAsErrors = enableWarningsAsErrors()
     }
