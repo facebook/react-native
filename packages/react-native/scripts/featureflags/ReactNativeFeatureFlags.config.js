@@ -195,7 +195,7 @@ const definitions: FeatureFlagDefinitions = {
       defaultValue: false,
       metadata: {
         description:
-          'Feature flag to enable the new bridgeless architecture. Note: Enabling this will force enable the following flags: `useTurboModules` & `enableFabricRenderer`.',
+          'Feature flag to enable the new bridgeless architecture. Note: Enabling this will force enable the following flag: `useTurboModules`.',
         expectedReleaseValue: true,
         purpose: 'release',
       },
@@ -304,15 +304,6 @@ const definitions: FeatureFlagDefinitions = {
         purpose: 'operational',
       },
       ossReleaseStage: 'none',
-    },
-    enableFabricRenderer: {
-      defaultValue: false,
-      metadata: {
-        description: 'Enables the use of the Fabric renderer in the whole app.',
-        expectedReleaseValue: true,
-        purpose: 'release',
-      },
-      ossReleaseStage: 'canary',
     },
     enableFontScaleChangesUpdatingLayout: {
       defaultValue: true,

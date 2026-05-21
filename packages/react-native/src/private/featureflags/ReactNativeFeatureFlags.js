@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<28f917839921b183310a5ad91bfff022>>
+ * @generated SignedSource<<d76f42e46c039d6c07d021cbf906de35>>
  * @flow strict
  * @noformat
  */
@@ -70,7 +70,6 @@ export type ReactNativeFeatureFlags = $ReadOnly<{
   enableExclusivePropsUpdateAndroid: Getter<boolean>,
   enableFabricCommitBranching: Getter<boolean>,
   enableFabricLogs: Getter<boolean>,
-  enableFabricRenderer: Getter<boolean>,
   enableFontScaleChangesUpdatingLayout: Getter<boolean>,
   enableIOSTextBaselineOffsetPerLine: Getter<boolean>,
   enableIOSViewClipToPaddingBox: Getter<boolean>,
@@ -252,7 +251,7 @@ export const enableAccumulatedUpdatesInRawPropsAndroid: Getter<boolean> = create
  */
 export const enableAndroidTextMeasurementOptimizations: Getter<boolean> = createNativeFlagGetter('enableAndroidTextMeasurementOptimizations', false);
 /**
- * Feature flag to enable the new bridgeless architecture. Note: Enabling this will force enable the following flags: `useTurboModules` & `enableFabricRenderer`.
+ * Feature flag to enable the new bridgeless architecture. Note: Enabling this will force enable the following flag: `useTurboModules`.
  */
 export const enableBridgelessArchitecture: Getter<boolean> = createNativeFlagGetter('enableBridgelessArchitecture', false);
 /**
@@ -295,10 +294,6 @@ export const enableFabricCommitBranching: Getter<boolean> = createNativeFlagGett
  * This feature flag enables logs for Fabric.
  */
 export const enableFabricLogs: Getter<boolean> = createNativeFlagGetter('enableFabricLogs', false);
-/**
- * Enables the use of the Fabric renderer in the whole app.
- */
-export const enableFabricRenderer: Getter<boolean> = createNativeFlagGetter('enableFabricRenderer', false);
 /**
  * Enables font scale changes updating layout for measurable nodes.
  */
