@@ -957,7 +957,7 @@ const definitions: FeatureFlagDefinitions = {
       ossReleaseStage: 'canary',
     },
     useTurboModules: {
-      defaultValue: false,
+      defaultValue: true,
       metadata: {
         description:
           'When enabled, NativeModules will be executed by using the TurboModule system',
