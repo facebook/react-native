@@ -680,7 +680,15 @@ class ReactNestedScrollView extends NestedScrollView
       cancelPostTouchScrolling();
     }
 
-    return super.onTouchEvent(ev);
+    try {
+      return super.onTouchEvent(ev);
+    } catch (IllegalArgumentException e) {
+      // Log and ignore the error. This seems to be a bug in the android SDK and
+      // this is the commonly accepted workaround.
+      // https://tinyurl.com/mw6qkod (Stack Overflow)
+      FLog.w(ReactConstants.TAG, "Error handling touch event.", e);
+      return false;
+    }
   }
 
   @Override
