@@ -1611,6 +1611,23 @@ class facebook::react::AppRegistryBinding {
   public static void stopSurface(facebook::jsi::Runtime& runtime, facebook::react::SurfaceId surfaceId);
 }
 
+class facebook::react::AsyncArrayBuffer {
+  public AsyncArrayBuffer(const facebook::react::AsyncArrayBuffer&) = delete;
+  public AsyncArrayBuffer(facebook::react::AsyncArrayBuffer&&) noexcept = default;
+  public const uint8_t* data() const noexcept;
+  public facebook::react::AsyncArrayBuffer& operator=(const facebook::react::AsyncArrayBuffer&) = delete;
+  public facebook::react::AsyncArrayBuffer& operator=(facebook::react::AsyncArrayBuffer&&) noexcept = default;
+  public size_t size() const noexcept;
+  public static facebook::react::AsyncArrayBuffer acquire(facebook::jsi::Runtime& rt, const facebook::jsi::ArrayBuffer& buffer);
+  public static facebook::react::AsyncArrayBuffer borrow(facebook::jsi::Runtime& rt, const facebook::jsi::ArrayBuffer& buffer);
+  public static facebook::react::AsyncArrayBuffer copy(facebook::jsi::Runtime& rt, const facebook::jsi::ArrayBuffer& buffer);
+  public static facebook::react::AsyncArrayBuffer wrap(std::shared_ptr<facebook::jsi::MutableBuffer> buffer) noexcept;
+  public static facebook::react::AsyncArrayBuffer wrap(std::vector<uint8_t> bytes);
+  public std::shared_ptr<facebook::jsi::MutableBuffer> getMutableBuffer() const noexcept;
+  public uint8_t* data() noexcept;
+  public ~AsyncArrayBuffer() = default;
+}
+
 class facebook::react::AttributedString : public facebook::react::Sealable, public facebook::react::DebugStringConvertible {
   public bool compareTextAttributesWithoutFrame(const facebook::react::AttributedString& rhs) const;
   public bool isContentEqual(const facebook::react::AttributedString& rhs) const;
@@ -9439,6 +9456,11 @@ template <typename... Types>
 struct facebook::react::Bridging<std::tuple<Types...>> : public facebook::react::array_detail::BridgingStatic<std::tuple<Types...>, sizeof...(Types)> {
 }
 
+struct facebook::react::Bridging<facebook::jsi::ArrayBuffer> {
+  public static facebook::jsi::ArrayBuffer fromJs(facebook::jsi::Runtime& rt, const facebook::jsi::Object& obj);
+  public static facebook::jsi::Value toJs(facebook::jsi::Runtime& rt, facebook::jsi::ArrayBuffer buf);
+}
+
 struct facebook::react::Bridging<facebook::jsi::JSError> {
   public static facebook::jsi::JSError fromJs(facebook::jsi::Runtime& rt, const facebook::jsi::Value& value);
   public static facebook::jsi::JSError fromJs(facebook::jsi::Runtime& rt, facebook::jsi::Value&& value);
@@ -9448,6 +9470,10 @@ struct facebook::react::Bridging<facebook::jsi::JSError> {
 struct facebook::react::Bridging<facebook::jsi::WeakObject> {
   public static facebook::jsi::Value toJs(facebook::jsi::Runtime& rt, facebook::jsi::WeakObject& value);
   public static facebook::jsi::WeakObject fromJs(facebook::jsi::Runtime& rt, const facebook::jsi::Object& value);
+}
+
+struct facebook::react::Bridging<facebook::react::AsyncArrayBuffer> {
+  public static facebook::jsi::Value toJs(facebook::jsi::Runtime& rt, facebook::react::AsyncArrayBuffer buffer);
 }
 
 struct facebook::react::Bridging<facebook::react::EndResult> : public facebook::react::NativeAnimatedTurboModuleEndResultBridging<facebook::react::EndResult> {
@@ -9756,6 +9782,12 @@ template <typename CSSColor>
 std::optional<facebook::react::CSSColor> facebook::react::detail::parseModernHslFunction(facebook::react::CSSValueParser& parser);
 template <typename... ComponentT>
 constexpr std::optional<float> facebook::react::detail::normalizeComponent(const std::variant<std::monostate, ComponentT...>& component, float baseValue);
+
+class facebook::react::detail::OwnedBytesBuffer : public facebook::jsi::MutableBuffer {
+  public OwnedBytesBuffer(std::vector<uint8_t> bytes) noexcept;
+  public virtual size_t size() const override;
+  public virtual uint8_t* data() override;
+}
 
 enum facebook::react::detail::HexColorType {
   Long,
@@ -11471,11 +11503,13 @@ struct facebook::react::bridging::is_optional<std::optional<T>> : public std::tr
 
 struct facebook::react::bridging::Converter<facebook::jsi::Object> : public facebook::react::bridging::ConverterBase<facebook::jsi::Object> {
   public operator facebook::jsi::Array();
+  public operator facebook::jsi::ArrayBuffer();
   public operator facebook::jsi::Function();
 }
 
 struct facebook::react::bridging::Converter<facebook::jsi::Value> : public facebook::react::bridging::ConverterBase<facebook::jsi::Value> {
   public operator facebook::jsi::Array();
+  public operator facebook::jsi::ArrayBuffer();
   public operator facebook::jsi::Function();
   public operator facebook::jsi::Object();
   public operator facebook::jsi::String();

@@ -267,6 +267,10 @@ function translateFunctionParamToJavaType(
     case 'FunctionTypeAnnotation':
       imports.add('com.facebook.react.bridge.Callback');
       return wrapOptional('Callback', isRequired);
+    case 'ArrayBufferTypeAnnotation':
+      throw new Error(
+        `${createErrorMessage(realTypeAnnotation.type)} ArrayBuffer is only supported for C++ TurboModules.`,
+      );
     default:
       realTypeAnnotation.type as 'MixedTypeAnnotation';
       throw new Error(createErrorMessage(realTypeAnnotation.type));
@@ -361,6 +365,10 @@ function translateFunctionReturnTypeToJavaType(
     case 'ArrayTypeAnnotation':
       imports.add('com.facebook.react.bridge.WritableArray');
       return wrapOptional('WritableArray', isRequired);
+    case 'ArrayBufferTypeAnnotation':
+      throw new Error(
+        `${createErrorMessage(realTypeAnnotation.type)} ArrayBuffer is only supported for C++ TurboModules.`,
+      );
     default:
       realTypeAnnotation.type as 'MixedTypeAnnotation';
       throw new Error(createErrorMessage(realTypeAnnotation.type));
@@ -443,6 +451,10 @@ function getFalsyReturnStatementFromReturnType(
       return 'return null;';
     case 'ArrayTypeAnnotation':
       return 'return null;';
+    case 'ArrayBufferTypeAnnotation':
+      throw new Error(
+        `${createErrorMessage(realTypeAnnotation.type)} ArrayBuffer is only supported for C++ TurboModules.`,
+      );
     default:
       realTypeAnnotation.type as 'MixedTypeAnnotation';
       throw new Error(createErrorMessage(realTypeAnnotation.type));

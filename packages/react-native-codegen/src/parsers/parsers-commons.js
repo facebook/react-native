@@ -307,7 +307,8 @@ function parseObjectProperty(
   if (
     (propertyTypeAnnotation.type === 'FunctionTypeAnnotation' && !cxxOnly) ||
     propertyTypeAnnotation.type === 'PromiseTypeAnnotation' ||
-    propertyTypeAnnotation.type === 'VoidTypeAnnotation'
+    propertyTypeAnnotation.type === 'VoidTypeAnnotation' ||
+    propertyTypeAnnotation.type === 'ArrayBufferTypeAnnotation'
   ) {
     throwIfPropertyValueTypeIsUnsupported(
       hasteModuleName,
