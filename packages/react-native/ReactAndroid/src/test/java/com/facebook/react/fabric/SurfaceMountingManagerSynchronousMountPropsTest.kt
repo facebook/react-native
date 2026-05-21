@@ -121,7 +121,7 @@ class SurfaceMountingManagerSynchronousMountPropsTest {
     assertThat(smm.getView(tag).alpha).isEqualTo(0.3f)
   }
 
-  /** Multiple storeSynchronousMountPropsOverride calls should merge — later values win. */
+  /** Multiple storeSynchronousMountPropsOverride calls should merge; later values win. */
   @Test
   fun storeSynchronousProps_mergesMultipleCalls() {
     val smm = startSurface()
