@@ -194,8 +194,7 @@ const definitions: FeatureFlagDefinitions = {
     enableBridgelessArchitecture: {
       defaultValue: false,
       metadata: {
-        description:
-          'Feature flag to enable the new bridgeless architecture. Note: Enabling this will force enable the following flag: `useTurboModules`.',
+        description: 'Feature flag to enable the new bridgeless architecture.',
         expectedReleaseValue: true,
         purpose: 'release',
       },
@@ -953,16 +952,6 @@ const definitions: FeatureFlagDefinitions = {
           'In Bridgeless mode, should legacy NativeModules use the TurboModule system?',
         expectedReleaseValue: true,
         purpose: 'experimentation',
-      },
-      ossReleaseStage: 'canary',
-    },
-    useTurboModules: {
-      defaultValue: true,
-      metadata: {
-        description:
-          'When enabled, NativeModules will be executed by using the TurboModule system',
-        expectedReleaseValue: true,
-        purpose: 'release',
       },
       ossReleaseStage: 'canary',
     },

@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<002a219eed0f854feb2ada440cbee27e>>
+ * @generated SignedSource<<f842431ac69c18283b0f509fc0407f85>>
  * @flow strict
  * @noformat
  */
@@ -131,7 +131,6 @@ export type ReactNativeFeatureFlags = $ReadOnly<{
   useSharedAnimatedBackend: Getter<boolean>,
   useTraitHiddenOnAndroid: Getter<boolean>,
   useTurboModuleInterop: Getter<boolean>,
-  useTurboModules: Getter<boolean>,
   useUnorderedMapInDifferentiator: Getter<boolean>,
   viewCullingOutsetRatio: Getter<number>,
   viewTransitionEnabled: Getter<boolean>,
@@ -251,7 +250,7 @@ export const enableAccumulatedUpdatesInRawPropsAndroid: Getter<boolean> = create
  */
 export const enableAndroidTextMeasurementOptimizations: Getter<boolean> = createNativeFlagGetter('enableAndroidTextMeasurementOptimizations', false);
 /**
- * Feature flag to enable the new bridgeless architecture. Note: Enabling this will force enable the following flag: `useTurboModules`.
+ * Feature flag to enable the new bridgeless architecture.
  */
 export const enableBridgelessArchitecture: Getter<boolean> = createNativeFlagGetter('enableBridgelessArchitecture', false);
 /**
@@ -538,10 +537,6 @@ export const useTraitHiddenOnAndroid: Getter<boolean> = createNativeFlagGetter('
  * In Bridgeless mode, should legacy NativeModules use the TurboModule system?
  */
 export const useTurboModuleInterop: Getter<boolean> = createNativeFlagGetter('useTurboModuleInterop', false);
-/**
- * When enabled, NativeModules will be executed by using the TurboModule system
- */
-export const useTurboModules: Getter<boolean> = createNativeFlagGetter('useTurboModules', true);
 /**
  * Use std::unordered_map instead of TinyMap in the Differentiator for improved lookup performance.
  */

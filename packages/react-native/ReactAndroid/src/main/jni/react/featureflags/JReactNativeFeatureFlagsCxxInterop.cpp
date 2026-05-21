@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<2eec37a74572edf4fe6a95c277555c98>>
+ * @generated SignedSource<<bb79417efb0f63b2717ea8873b72da88>>
  */
 
 /**
@@ -549,12 +549,6 @@ class ReactNativeFeatureFlagsJavaProvider
     return method(javaProvider_);
   }
 
-  bool useTurboModules() override {
-    static const auto method =
-        getReactNativeFeatureFlagsProviderJavaClass()->getMethod<jboolean()>("useTurboModules");
-    return method(javaProvider_);
-  }
-
   bool useUnorderedMapInDifferentiator() override {
     static const auto method =
         getReactNativeFeatureFlagsProviderJavaClass()->getMethod<jboolean()>("useUnorderedMapInDifferentiator");
@@ -1014,11 +1008,6 @@ bool JReactNativeFeatureFlagsCxxInterop::useTurboModuleInterop(
   return ReactNativeFeatureFlags::useTurboModuleInterop();
 }
 
-bool JReactNativeFeatureFlagsCxxInterop::useTurboModules(
-    facebook::jni::alias_ref<JReactNativeFeatureFlagsCxxInterop> /*unused*/) {
-  return ReactNativeFeatureFlags::useTurboModules();
-}
-
 bool JReactNativeFeatureFlagsCxxInterop::useUnorderedMapInDifferentiator(
     facebook::jni::alias_ref<JReactNativeFeatureFlagsCxxInterop> /*unused*/) {
   return ReactNativeFeatureFlags::useUnorderedMapInDifferentiator();
@@ -1330,9 +1319,6 @@ void JReactNativeFeatureFlagsCxxInterop::registerNatives() {
       makeNativeMethod(
         "useTurboModuleInterop",
         JReactNativeFeatureFlagsCxxInterop::useTurboModuleInterop),
-      makeNativeMethod(
-        "useTurboModules",
-        JReactNativeFeatureFlagsCxxInterop::useTurboModules),
       makeNativeMethod(
         "useUnorderedMapInDifferentiator",
         JReactNativeFeatureFlagsCxxInterop::useUnorderedMapInDifferentiator),
