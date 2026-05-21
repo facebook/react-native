@@ -28,6 +28,4 @@ public open class ReactNativeNewArchitectureFeatureFlagsDefaults() :
   override fun useNativeViewConfigsInBridgelessMode(): Boolean = true
 
   override fun useTurboModuleInterop(): Boolean = true
-
-  override fun useTurboModules(): Boolean = true
 }
