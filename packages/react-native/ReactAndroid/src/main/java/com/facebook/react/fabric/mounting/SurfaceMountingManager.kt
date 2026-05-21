@@ -626,13 +626,14 @@ internal constructor(
   public fun storeSynchronousMountPropsOverride(reactTag: Int, props: ReadableMap): Unit {
     if (ReactNativeFeatureFlags.overrideBySynchronousMountPropsAtMountingAndroid()) {
       val propsMap = getMapFromPropsReadableMap(props)
-      var synchronousMountProps = tagToSynchronousMountProps[reactTag]
-      if (synchronousMountProps != null) {
-        synchronousMountProps.putAll(propsMap)
+      val synchronousMountProps = tagToSynchronousMountProps[reactTag] ?: mutableMapOf()
+      removeNullPropsFromPropsReadableMap(props, synchronousMountProps)
+      synchronousMountProps.putAll(propsMap)
+      if (synchronousMountProps.isEmpty()) {
+        tagToSynchronousMountProps.remove(reactTag)
       } else {
-        synchronousMountProps = propsMap
+        tagToSynchronousMountProps[reactTag] = synchronousMountProps
       }
-      tagToSynchronousMountProps[reactTag] = synchronousMountProps
     }
   }
 
@@ -1332,7 +1333,10 @@ internal constructor(
       for ((propKey, propValue) in patchMap) {
         if (outputReadableMap.hasKey(propKey)) {
           if (propKey == PROP_TRANSFORM) {
-            assert(outputReadableMap.getType(propKey) == ReadableType.Array && propValue is List<*>)
+            val outputType = outputReadableMap.getType(propKey)
+            assert(
+                (outputType == ReadableType.Array || outputType == ReadableType.Null) &&
+                    propValue is List<*>)
             val array = WritableNativeArray()
             for (item in propValue as List<*>) {
               if (item is Map<*, *>) {
@@ -1350,7 +1354,10 @@ internal constructor(
             }
             outputReadableMap.putArray(propKey, array)
           } else if (propKey == PROP_OPACITY) {
-            assert(outputReadableMap.getType(propKey) == ReadableType.Number && propValue is Number)
+            val outputType = outputReadableMap.getType(propKey)
+            assert(
+                (outputType == ReadableType.Number || outputType == ReadableType.Null) &&
+                    propValue is Number)
             outputReadableMap.putDouble(propKey, (propValue as Number).toDouble())
           }
         }
@@ -1385,6 +1392,19 @@ internal constructor(
       }
 
       return outputMap
+    }
+
+    private fun removeNullPropsFromPropsReadableMap(
+        readableMap: ReadableMap,
+        outputMap: MutableMap<String, Any>,
+    ) {
+      val iterator = readableMap.keySetIterator()
+      while (iterator.hasNextKey()) {
+        val propKey = iterator.nextKey()
+        if (readableMap.getType(propKey) == ReadableType.Null) {
+          outputMap.remove(propKey)
+        }
+      }
     }
 
     // prevents unchecked conversion warn of the <ViewGroup> type

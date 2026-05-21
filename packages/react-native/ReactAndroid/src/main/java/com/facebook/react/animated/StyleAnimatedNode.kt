@@ -58,5 +58,11 @@ internal class StyleAnimatedNode(
     }
   }
 
+  fun collectViewDefaultValues(propsMap: JavaOnlyMap) {
+    for (key in propMapping.keys) {
+      propsMap.putNull(key)
+    }
+  }
+
   override fun prettyPrint(): String = "StyleAnimatedNode[$tag] mPropMapping: $propMapping"
 }

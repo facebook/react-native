@@ -65,8 +65,21 @@ internal class PropsAnimatedNode(
   }
 
   fun restoreDefaultValues() {
-    // In Fabric, we don't restore default values since the FabricUIManager doesn't have access
-    // to the ShadowNode layer. This method was only relevant for the legacy Paper renderer.
+    if (connectedViewTag == -1) {
+      return
+    }
+
+    val defaultPropsMap = JavaOnlyMap()
+    for ((key, value) in propNodeMapping) {
+      val node = nativeAnimatedNodesManager.getNodeById(value)
+      requireNotNull(node) { "Mapped property node does not exist" }
+      if (node is StyleAnimatedNode) {
+        node.collectViewDefaultValues(defaultPropsMap)
+      } else {
+        defaultPropsMap.putNull(key)
+      }
+    }
+    connectedViewUIManager?.synchronouslyUpdateViewOnUIThread(connectedViewTag, defaultPropsMap)
   }
 
   fun updateView() {
