@@ -856,11 +856,6 @@ public class ReactHostImpl(
           ReactNativeNewArchitectureFeatureFlags.enableBridgelessArchitecture(),
           "enableBridgelessArchitecture FeatureFlag must be set to start ReactNative.",
       )
-
-      Assertions.assertCondition(
-          ReactNativeNewArchitectureFeatureFlags.useTurboModules(),
-          "useTurboModules FeatureFlag must be set to start ReactNative.",
-      )
     }
     if (ReactBuildConfig.UNSTABLE_ENABLE_MINIFY_LEGACY_ARCHITECTURE) {
       Assertions.assertCondition(
