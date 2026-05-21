@@ -169,15 +169,30 @@ public class JSPointerDispatcher {
           eventDispatcher);
     }
 
+    boolean primaryClick = eventState.getPrimaryPointerId() == activePointerId && eventState.supportsHover(activePointerId);
     List<ViewTarget> hitPathDown = mCurrentlyDownPointerIdsToHitPath.remove(activePointerId);
-    if (hitPathDown != null
-        && isAnyoneListeningForBubblingEvent(activeHitPath, EVENT.CLICK, EVENT.CLICK_CAPTURE)) {
-      List<ViewTarget> hitPathForClick = findHitPathIntersection(hitPathDown, activeHitPath);
-      if (!hitPathForClick.isEmpty()) {
-        final ViewTarget clickTarget = hitPathForClick.get(0);
-        eventDispatcher.dispatchEvent(
-            PointerEvent.obtain(
-                PointerEventHelper.CLICK, clickTarget.getViewId(), eventState, motionEvent));
+
+    if (primaryClick) {
+      if (hitPathDown != null
+          && isAnyoneListeningForBubblingEvent(activeHitPath, EVENT.CLICK, EVENT.CLICK_CAPTURE)) {
+        List<ViewTarget> hitPathForClick = findHitPathIntersection(hitPathDown, activeHitPath);
+        if (!hitPathForClick.isEmpty()) {
+          final ViewTarget clickTarget = hitPathForClick.get(0);
+          eventDispatcher.dispatchEvent(
+              PointerEvent.obtain(
+                  PointerEventHelper.CLICK, clickTarget.getViewId(), eventState, motionEvent));
+        }
+      }
+    } else {
+      if (hitPathDown != null
+          && isAnyoneListeningForBubblingEvent(activeHitPath, EVENT.AUXCLICK, EVENT.AUXCLICK_CAPTURE)) {
+        List<ViewTarget> hitPathForClick = findHitPathIntersection(hitPathDown, activeHitPath);
+        if (!hitPathForClick.isEmpty()) {
+          final ViewTarget clickTarget = hitPathForClick.get(0);
+          eventDispatcher.dispatchEvent(
+              PointerEvent.obtain(
+                  PointerEventHelper.AUXCLICK, clickTarget.getViewId(), eventState, motionEvent));
+        }
       }
     }
 

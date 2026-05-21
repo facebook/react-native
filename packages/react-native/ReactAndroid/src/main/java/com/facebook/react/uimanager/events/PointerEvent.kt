@@ -242,6 +242,7 @@ internal class PointerEvent private constructor() : Event<PointerEvent>() {
       PointerEventHelper.POINTER_LEAVE,
       PointerEventHelper.POINTER_OUT,
       PointerEventHelper.POINTER_OVER,
+      PointerEventHelper.AUXCLICK,
       PointerEventHelper.CLICK -> {
         pointersEventData = listOf(createW3CPointerEvent(activePointerIndex))
       }

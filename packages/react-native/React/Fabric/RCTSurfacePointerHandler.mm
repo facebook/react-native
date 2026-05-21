@@ -638,8 +638,12 @@ RCT_NOT_IMPLEMENTED(-(instancetype)initWithTarget : (id)target action : (SEL)act
         }
         case RCTPointerEventTypeEnd: {
           eventEmitter->onPointerUp(pointerEvent);
-          if (pointerEvent.isPrimary && pointerEvent.button == 0 && IsPointerWithinInitialTree(activePointer)) {
-            eventEmitter->onClick(std::move(pointerEvent));
+          if (pointerEvent.isPrimary && pointerEvent.button == 0) {
+            if (IsPointerWithinInitialTree(activePointer)) {
+              eventEmitter->onClick(std::move(pointerEvent));
+            }
+          } else if (IsPointerWithinInitialTree(activePointer)) {
+            eventEmitter->onAuxClick(std::move(pointerEvent));
           }
           break;
         }
