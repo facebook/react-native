@@ -248,4 +248,9 @@ struct BorderMetrics {
   bool operator==(const BorderMetrics &rhs) const = default;
 };
 
+inline bool areBorderRadiiCircular(const BorderRadii &borderRadii)
+{
+  return borderRadii.isUniform() && borderRadii.topLeft.horizontal == borderRadii.topLeft.vertical;
+}
+
 } // namespace facebook::react
