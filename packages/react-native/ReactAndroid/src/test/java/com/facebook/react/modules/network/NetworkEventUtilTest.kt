@@ -379,6 +379,40 @@ class NetworkEventUtilTest {
   }
 
   @Test
+  fun testGetRequestBodyPreviewDoesNotConsumeMultipartOneShotStream() {
+    // Regression guard: previewMultipartWithBinaryParts must not call writeTo() on a
+    // one-shot part. If it ever does, the underlying stream will be drained and the
+    // real upload will fail at request time.
+    val fileBytes = ByteArray(2048) { it.toByte() }
+    val stream = ByteArrayInputStream(fileBytes)
+    val streamingPart =
+        RequestBodyUtil.create(MediaType.parse("application/octet-stream"), stream)
+    val body =
+        MultipartBody.Builder("test-boundary")
+            .setType(MultipartBody.FORM)
+            .addFormDataPart("description", "an image")
+            .addFormDataPart("file", "photo.jpg", streamingPart)
+            .build()
+
+    NetworkEventUtil.getRequestBodyPreview(body)
+
+    assertThat(stream.available()).isEqualTo(fileBytes.size)
+  }
+
+  @Test
+  fun testGetRequestBodyPreviewDoesNotConsumeSingleOneShotStream() {
+    // Regression guard for the top-level one-shot branch: getRequestBodyPreview must
+    // only read contentLength() / contentType() on a one-shot body, never writeTo().
+    val fileBytes = ByteArray(512) { it.toByte() }
+    val stream = ByteArrayInputStream(fileBytes)
+    val body = RequestBodyUtil.create(MediaType.parse("application/octet-stream"), stream)
+
+    NetworkEventUtil.getRequestBodyPreview(body)
+
+    assertThat(stream.available()).isEqualTo(fileBytes.size)
+  }
+
+  @Test
   fun testNullReactContext() {
     val url = "http://example.com"
 
