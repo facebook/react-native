@@ -17,10 +17,6 @@ class ReactNativeFeatureFlagsOverridesOSSStable : public ReactNativeFeatureFlags
   {
     return true;
   }
-  bool useTurboModules() override
-  {
-    return true;
-  }
   bool useNativeViewConfigsInBridgelessMode() override
   {
     return true;
