@@ -112,7 +112,7 @@ public object DefaultNewArchitectureEntryPoint {
   internal fun loadWithFeatureFlags(featureFlags: ReactNativeFeatureFlagsProvider) {
     ReactNativeFeatureFlags.override(featureFlags)
 
-    privateTurboModulesEnabled = featureFlags.useTurboModules()
+    privateTurboModulesEnabled = true
     privateBridgelessEnabled = featureFlags.enableBridgelessArchitecture()
 
     val (isValid, errorMessage) =
