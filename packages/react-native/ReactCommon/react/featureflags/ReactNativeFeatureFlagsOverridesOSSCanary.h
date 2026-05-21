@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<9932dfb83101017446ec73ca4f80eae3>>
+ * @generated SignedSource<<72ef3ea85f4833a96fe222950d16278b>>
  */
 
 /**
@@ -48,10 +48,6 @@ class ReactNativeFeatureFlagsOverridesOSSCanary : public ReactNativeFeatureFlags
   }
 
   bool useTurboModuleInterop() override {
-    return true;
-  }
-
-  bool useTurboModules() override {
     return true;
   }
 };

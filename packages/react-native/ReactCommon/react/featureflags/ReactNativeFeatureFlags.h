@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<cd99d36a87ca4d3ea9a9b39767509316>>
+ * @generated SignedSource<<ac9244d8e244e6ee81a39b6c6d3fbf5e>>
  */
 
 /**
@@ -105,7 +105,7 @@ class ReactNativeFeatureFlags {
   RN_EXPORT static bool enableAndroidTextMeasurementOptimizations();
 
   /**
-   * Feature flag to enable the new bridgeless architecture. Note: Enabling this will force enable the following flag: `useTurboModules`.
+   * Feature flag to enable the new bridgeless architecture.
    */
   RN_EXPORT static bool enableBridgelessArchitecture();
 
@@ -463,11 +463,6 @@ class ReactNativeFeatureFlags {
    * In Bridgeless mode, should legacy NativeModules use the TurboModule system?
    */
   RN_EXPORT static bool useTurboModuleInterop();
-
-  /**
-   * When enabled, NativeModules will be executed by using the TurboModule system
-   */
-  RN_EXPORT static bool useTurboModules();
 
   /**
    * Use std::unordered_map instead of TinyMap in the Differentiator for improved lookup performance.

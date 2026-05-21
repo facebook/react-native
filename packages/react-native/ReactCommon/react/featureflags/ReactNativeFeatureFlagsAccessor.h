@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<ed78adbbbac46877c985caa9758a3b7c>>
+ * @generated SignedSource<<fda7bc739026295c2acd473ad6786942>>
  */
 
 /**
@@ -117,7 +117,6 @@ class ReactNativeFeatureFlagsAccessor {
   bool useSharedAnimatedBackend();
   bool useTraitHiddenOnAndroid();
   bool useTurboModuleInterop();
-  bool useTurboModules();
   bool useUnorderedMapInDifferentiator();
   double viewCullingOutsetRatio();
   bool viewTransitionEnabled();
@@ -134,7 +133,7 @@ class ReactNativeFeatureFlagsAccessor {
   std::unique_ptr<ReactNativeFeatureFlagsProvider> currentProvider_;
   bool wasOverridden_;
 
-  std::array<std::atomic<const char*>, 91> accessedFeatureFlags_;
+  std::array<std::atomic<const char*>, 90> accessedFeatureFlags_;
 
   std::atomic<std::optional<bool>> commonTestFlag_;
   std::atomic<std::optional<bool>> cdpInteractionMetricsEnabled_;
@@ -221,7 +220,6 @@ class ReactNativeFeatureFlagsAccessor {
   std::atomic<std::optional<bool>> useSharedAnimatedBackend_;
   std::atomic<std::optional<bool>> useTraitHiddenOnAndroid_;
   std::atomic<std::optional<bool>> useTurboModuleInterop_;
-  std::atomic<std::optional<bool>> useTurboModules_;
   std::atomic<std::optional<bool>> useUnorderedMapInDifferentiator_;
   std::atomic<std::optional<double>> viewCullingOutsetRatio_;
   std::atomic<std::optional<bool>> viewTransitionEnabled_;
