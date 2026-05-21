@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<56c989556810840e2dd2a42b66d431dc>>
+ * @generated SignedSource<<6fceacd47d09747b6c5868fbb89dc642>>
  */
 
 /**
@@ -109,7 +109,7 @@ public object ReactNativeFeatureFlags {
   public fun enableAndroidTextMeasurementOptimizations(): Boolean = accessor.enableAndroidTextMeasurementOptimizations()
 
   /**
-   * Feature flag to enable the new bridgeless architecture. Note: Enabling this will force enable the following flags: `useTurboModules` & `enableFabricRenderer`.
+   * Feature flag to enable the new bridgeless architecture. Note: Enabling this will force enable the following flag: `useTurboModules`.
    */
   @JvmStatic
   public fun enableBridgelessArchitecture(): Boolean = accessor.enableBridgelessArchitecture()
@@ -173,12 +173,6 @@ public object ReactNativeFeatureFlags {
    */
   @JvmStatic
   public fun enableFabricLogs(): Boolean = accessor.enableFabricLogs()
-
-  /**
-   * Enables the use of the Fabric renderer in the whole app.
-   */
-  @JvmStatic
-  public fun enableFabricRenderer(): Boolean = accessor.enableFabricRenderer()
 
   /**
    * Enables font scale changes updating layout for measurable nodes.

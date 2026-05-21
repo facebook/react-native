@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<7a73667c552251d722f6c9800f53d251>>
+ * @generated SignedSource<<2f2079e166be5c7d3066239ede9bee31>>
  */
 
 /**
@@ -100,9 +100,6 @@ class JReactNativeFeatureFlagsCxxInterop
     facebook::jni::alias_ref<JReactNativeFeatureFlagsCxxInterop>);
 
   static bool enableFabricLogs(
-    facebook::jni::alias_ref<JReactNativeFeatureFlagsCxxInterop>);
-
-  static bool enableFabricRenderer(
     facebook::jni::alias_ref<JReactNativeFeatureFlagsCxxInterop>);
 
   static bool enableFontScaleChangesUpdatingLayout(

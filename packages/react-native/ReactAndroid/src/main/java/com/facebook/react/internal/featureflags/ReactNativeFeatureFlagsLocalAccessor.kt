@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<6ee1cc911c3ebb12b31151441dd43605>>
+ * @generated SignedSource<<413b2f3808dacfde7b9b059fba25ce13>>
  */
 
 /**
@@ -48,7 +48,6 @@ internal class ReactNativeFeatureFlagsLocalAccessor : ReactNativeFeatureFlagsAcc
   private var enableExclusivePropsUpdateAndroidCache: Boolean? = null
   private var enableFabricCommitBranchingCache: Boolean? = null
   private var enableFabricLogsCache: Boolean? = null
-  private var enableFabricRendererCache: Boolean? = null
   private var enableFontScaleChangesUpdatingLayoutCache: Boolean? = null
   private var enableIOSTextBaselineOffsetPerLineCache: Boolean? = null
   private var enableIOSViewClipToPaddingBoxCache: Boolean? = null
@@ -353,16 +352,6 @@ internal class ReactNativeFeatureFlagsLocalAccessor : ReactNativeFeatureFlagsAcc
       cached = currentProvider.enableFabricLogs()
       accessedFeatureFlags.add("enableFabricLogs")
       enableFabricLogsCache = cached
-    }
-    return cached
-  }
-
-  override fun enableFabricRenderer(): Boolean {
-    var cached = enableFabricRendererCache
-    if (cached == null) {
-      cached = currentProvider.enableFabricRenderer()
-      accessedFeatureFlags.add("enableFabricRenderer")
-      enableFabricRendererCache = cached
     }
     return cached
   }
