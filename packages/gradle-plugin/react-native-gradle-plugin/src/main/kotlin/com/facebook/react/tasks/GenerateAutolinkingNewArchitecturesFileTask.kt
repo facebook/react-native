@@ -14,9 +14,9 @@ import java.io.File
 import org.gradle.api.DefaultTask
 import org.gradle.api.file.DirectoryProperty
 import org.gradle.api.file.RegularFileProperty
-import org.gradle.api.provider.MapProperty
-import org.gradle.api.tasks.Input
+import org.gradle.api.tasks.InputDirectory
 import org.gradle.api.tasks.InputFile
+import org.gradle.api.tasks.Optional
 import org.gradle.api.tasks.OutputDirectory
 import org.gradle.api.tasks.TaskAction
 
@@ -24,14 +24,13 @@ abstract class GenerateAutolinkingNewArchitecturesFileTask : DefaultTask() {
 
   init {
     group = "react"
-    generatedPureCxxCmakeListsPaths.convention(emptyMap<String, String>())
   }
 
   @get:InputFile abstract val autolinkInputFile: RegularFileProperty
 
   @get:OutputDirectory abstract val generatedOutputDirectory: DirectoryProperty
 
-  @get:Input abstract val generatedPureCxxCmakeListsPaths: MapProperty<String, String>
+  @get:Optional @get:InputDirectory abstract val generatedPureCxxSourceDirectory: DirectoryProperty
 
   @TaskAction
   fun taskAction() {
@@ -63,7 +62,8 @@ abstract class GenerateAutolinkingNewArchitecturesFileTask : DefaultTask() {
           val cmakeListsPath = cmakeListsPathForDependency(dep)
           val cxxModuleCMakeListsPath = dep.cxxModuleCMakeListsPath
           if (libraryName != null && cmakeListsPath != null) {
-            // If user provided a custom cmakeListsPath, let's honor it.
+            // If user provided a custom cmakeListsPath, let's honor it. Otherwise, pure C++
+            // dependencies use the app-owned generated codegen directory.
             val nativeFolderPath = sanitizeCmakeListsPath(cmakeListsPath)
             addDirectoryString +=
                 """
@@ -104,7 +104,23 @@ abstract class GenerateAutolinkingNewArchitecturesFileTask : DefaultTask() {
   private fun cmakeListsPathForDependency(
       dep: ModelAutolinkingDependenciesPlatformAndroidJson
   ): String? {
-    return dep.cmakeListsPath ?: dep.libraryName?.let { generatedPureCxxCmakeListsPaths.get()[it] }
+    if (dep.cmakeListsPath != null) {
+      return dep.cmakeListsPath
+    }
+
+    if (
+        dep.isPureCxxDependency != true ||
+            dep.libraryName == null ||
+            !generatedPureCxxSourceDirectory.isPresent
+    ) {
+      return null
+    }
+
+    return generatedPureCxxSourceDirectory
+        .get()
+        .file("${dep.libraryName}/jni/CMakeLists.txt")
+        .asFile
+        .absolutePath
   }
 
   internal fun generateCppFileContent(

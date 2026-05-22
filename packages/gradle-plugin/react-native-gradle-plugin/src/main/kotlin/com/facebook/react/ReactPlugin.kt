@@ -175,75 +175,38 @@ class ReactPlugin : Plugin<Project> {
       localExtension.jsRootDir.convention(localExtension.root)
     }
 
-    // We create the task to produce schema from JS files.
-    val generateCodegenSchemaTask =
-        project.tasks.register(
-            "generateCodegenSchemaFromJavaScript",
-            GenerateCodegenSchemaTask::class.java,
-        ) { it ->
-          it.nodeExecutableAndArgs.set(rootExtension.nodeExecutableAndArgs)
-          it.codegenDir.set(rootExtension.codegenDir)
-          it.generatedSrcDir.set(generatedSrcDir)
-          it.nodeWorkingDir.set(project.layout.projectDirectory.asFile.absolutePath)
+    // We're reading the package.json at configuration time to properly feed
+    // the `jsRootDir` @Input property of the schema task & the onlyIf for both codegen tasks.
+    val packageJson = findPackageJsonFile(project, rootExtension.root)
+    val parsedPackageJson = packageJson?.let { JsonUtils.fromPackageJson(it) }
 
-          // We're reading the package.json at configuration time to properly feed
-          // the `jsRootDir` @Input property of this task & the onlyIf. Therefore, the
-          // parsePackageJson should be invoked inside this lambda.
-          val packageJson = findPackageJsonFile(project, rootExtension.root)
-          val parsedPackageJson = packageJson?.let { JsonUtils.fromPackageJson(it) }
+    val jsSrcsDirInPackageJson = parsedPackageJson?.codegenConfig?.jsSrcsDir
+    val includesGeneratedCode = parsedPackageJson?.codegenConfig?.includesGeneratedCode ?: false
+    val needsCodegenFromPackageJson = project.needsCodegenFromPackageJson(rootExtension.root)
+    val shouldRunCodegen = { (isLibrary || needsCodegenFromPackageJson) && !includesGeneratedCode }
 
-          val jsSrcsDirInPackageJson = parsedPackageJson?.codegenConfig?.jsSrcsDir
-          val includesGeneratedCode =
-              parsedPackageJson?.codegenConfig?.includesGeneratedCode ?: false
-          if (jsSrcsDirInPackageJson != null) {
-            it.jsRootDir.set(File(packageJson.parentFile, jsSrcsDirInPackageJson))
-          } else {
-            it.jsRootDir.set(localExtension.jsRootDir)
-          }
-          it.jsInputFiles.set(
-              project.fileTree(it.jsRootDir) { tree ->
-                tree.include("**/*.js")
-                tree.include("**/*.jsx")
-                tree.include("**/*.ts")
-                tree.include("**/*.tsx")
-
-                tree.exclude("node_modules/**/*")
-                tree.exclude("**/*.d.ts")
-                // We want to exclude the build directory, to don't pick them up for execution
-                // avoidance.
-                tree.exclude("**/build/**/*")
-              }
-          )
-
-          val needsCodegenFromPackageJson = project.needsCodegenFromPackageJson(rootExtension.root)
-          it.onlyIf { (isLibrary || needsCodegenFromPackageJson) && !includesGeneratedCode }
-        }
-
-    // We create the task to generate Java code from schema.
+    // We create the tasks to produce schema from JS files and generate artifacts from schema.
     val generateCodegenArtifactsTask =
-        project.tasks.register(
-            "generateCodegenArtifactsFromSchema",
-            GenerateCodegenArtifactsTask::class.java,
-        ) { task ->
-          task.dependsOn(generateCodegenSchemaTask)
-          task.reactNativeDir.set(rootExtension.reactNativeDir)
-          task.nodeExecutableAndArgs.set(rootExtension.nodeExecutableAndArgs)
-          task.generatedSrcDir.set(generatedSrcDir)
-          task.packageJsonFile.set(findPackageJsonFile(project, rootExtension.root))
-          task.codegenJavaPackageName.set(localExtension.codegenJavaPackageName)
-          task.libraryName.set(localExtension.libraryName)
-          task.nodeWorkingDir.set(project.layout.projectDirectory.asFile.absolutePath)
-
-          // Please note that appNeedsCodegen is triggering a read of the package.json at
-          // configuration time as we need to feed the onlyIf condition of this task.
-          // Therefore, the appNeedsCodegen needs to be invoked inside this lambda.
-          val needsCodegenFromPackageJson = project.needsCodegenFromPackageJson(rootExtension.root)
-          val packageJson = findPackageJsonFile(project, rootExtension.root)
-          val parsedPackageJson = packageJson?.let { JsonUtils.fromPackageJson(it) }
-          val includesGeneratedCode =
-              parsedPackageJson?.codegenConfig?.includesGeneratedCode ?: false
-          task.onlyIf { (isLibrary || needsCodegenFromPackageJson) && !includesGeneratedCode }
-        }
+        registerCodegenTasks(
+            project = project,
+            rootExtension = rootExtension,
+            generatedSrcDir = generatedSrcDir,
+            packageJsonFile = packageJson,
+            schemaTaskName = "generateCodegenSchemaFromJavaScript",
+            artifactsTaskName = "generateCodegenArtifactsFromSchema",
+            configureJsRoot = { task ->
+              if (jsSrcsDirInPackageJson != null) {
+                task.jsRootDir.set(File(packageJson.parentFile, jsSrcsDirInPackageJson))
+              } else {
+                task.jsRootDir.set(localExtension.jsRootDir)
+              }
+            },
+            configureCodegenArtifacts = { task ->
+              task.codegenJavaPackageName.set(localExtension.codegenJavaPackageName)
+              task.libraryName.set(localExtension.libraryName)
+            },
+            onlyIf = shouldRunCodegen,
+        )
 
     // We update the android configuration to include the generated sources.
     // This equivalent to this DSL:
@@ -264,6 +227,68 @@ class ReactPlugin : Plugin<Project> {
     // `preBuild` is one of the base tasks automatically registered by AGP.
     // This will invoke the codegen before compiling the entire project.
     project.tasks.named("preBuild", Task::class.java).dependsOn(generateCodegenArtifactsTask)
+  }
+
+  private fun registerCodegenTasks(
+      project: Project,
+      rootExtension: PrivateReactExtension,
+      generatedSrcDir: Provider<Directory>,
+      packageJsonFile: File?,
+      schemaTaskName: String,
+      artifactsTaskName: String,
+      configureJsRoot: (GenerateCodegenSchemaTask) -> Unit,
+      configureCodegenArtifacts: (GenerateCodegenArtifactsTask) -> Unit,
+      onlyIf: () -> Boolean = { true },
+  ): TaskProvider<GenerateCodegenArtifactsTask> {
+    // We create the task to produce schema from JS files.
+    val generateCodegenSchemaTask =
+        project.tasks.register(
+            schemaTaskName,
+            GenerateCodegenSchemaTask::class.java,
+        ) { task ->
+          task.nodeExecutableAndArgs.set(rootExtension.nodeExecutableAndArgs)
+          task.codegenDir.set(rootExtension.codegenDir)
+          task.generatedSrcDir.set(generatedSrcDir)
+          task.nodeWorkingDir.set(project.layout.projectDirectory.asFile.absolutePath)
+
+          configureJsRoot(task)
+
+          task.jsInputFiles.set(
+              project.fileTree(task.jsRootDir) { tree ->
+                tree.include("**/*.js")
+                tree.include("**/*.jsx")
+                tree.include("**/*.ts")
+                tree.include("**/*.tsx")
+
+                tree.exclude("node_modules/**/*")
+                tree.exclude("**/*.d.ts")
+                // We want to exclude the build directory, to don't pick them up for execution
+                // avoidance.
+                tree.exclude("**/build/**/*")
+              }
+          )
+          task.onlyIf { onlyIf() }
+        }
+
+    // We create the task to generate Java code from schema.
+    return project.tasks.register(
+        artifactsTaskName,
+        GenerateCodegenArtifactsTask::class.java,
+    ) { task ->
+      task.dependsOn(generateCodegenSchemaTask)
+      task.reactNativeDir.set(rootExtension.reactNativeDir)
+      task.nodeExecutableAndArgs.set(rootExtension.nodeExecutableAndArgs)
+      task.generatedSrcDir.set(generatedSrcDir)
+      task.packageJsonFile.set(packageJsonFile)
+      task.nodeWorkingDir.set(project.layout.projectDirectory.asFile.absolutePath)
+
+      configureCodegenArtifacts(task)
+
+      // The caller decides whether codegen should run. For app/library projects this depends on
+      // package.json and includesGeneratedCode. Pure C++ dependencies are filtered before task
+      // registration, so their generated tasks can always run.
+      task.onlyIf { onlyIf() }
+    }
   }
 
   /** This function sets up Autolinking for App users */
@@ -293,18 +318,6 @@ class ReactPlugin : Plugin<Project> {
             generatedPureCxxSourceDir,
             pureCxxDependencies,
         )
-    val pureCxxCmakeListsPaths =
-        pureCxxDependencies
-            .mapNotNull { dependency ->
-              val libraryName = dependency.platforms?.android?.libraryName ?: return@mapNotNull null
-              libraryName to
-                  generatedPureCxxSourceDir
-                      .get()
-                      .file("$libraryName/jni/CMakeLists.txt")
-                      .asFile
-                      .absolutePath
-            }
-            .toMap()
 
     // We add a task called generateAutolinkingPackageList to do not clash with the existing task
     // called generatePackageList. This can to be renamed once we unlink the rn <-> cli
@@ -338,7 +351,11 @@ class ReactPlugin : Plugin<Project> {
         ) { task ->
           task.autolinkInputFile.set(rootGeneratedAutolinkingFile)
           task.generatedOutputDirectory.set(generatedAutolinkingJniDir)
-          task.generatedPureCxxCmakeListsPaths.set(pureCxxCmakeListsPaths)
+
+          if (pureCxxDependencies.isNotEmpty()) {
+            task.generatedPureCxxSourceDirectory.set(generatedPureCxxSourceDir)
+          }
+
           task.dependsOn(pureCxxCodegenTasks)
         }
     project.tasks
@@ -370,61 +387,42 @@ class ReactPlugin : Plugin<Project> {
       generatedPureCxxSourceDir: Provider<Directory>,
       dependencies: List<ModelAutolinkingDependenciesJson>,
   ): List<TaskProvider<GenerateCodegenArtifactsTask>> {
-    return dependencies.map { dependency ->
-      val android = dependency.platforms?.android!!
-      val libraryName = android.libraryName!!
+    // Pure C++ dependencies are not included as Gradle subprojects, so configureCodegen won't run
+    // for them. The app owns these generated codegen artifacts and links them from autolinking.
+    return dependencies.mapNotNull { dependency ->
+      val android = dependency.platforms?.android ?: return@mapNotNull null
+      val libraryName = android.libraryName ?: return@mapNotNull null
       val dependencyRoot = File(dependency.root)
       val packageJson = File(dependencyRoot, "package.json")
       val parsedPackageJson = JsonUtils.fromPackageJson(packageJson)
       val jsSrcsDir = parsedPackageJson?.codegenConfig?.jsSrcsDir
       val generatedSrcDir = generatedPureCxxSourceDir.map { it.dir(libraryName) }
       val taskNameSuffix = taskNameSuffixForDependency(dependency)
-      val generateCodegenSchemaTask =
-          project.tasks.register(
-              "generate${taskNameSuffix}CodegenSchemaFromJavaScript",
-              GenerateCodegenSchemaTask::class.java,
-          ) { task ->
-            task.nodeExecutableAndArgs.set(rootExtension.nodeExecutableAndArgs)
-            task.codegenDir.set(rootExtension.codegenDir)
-            task.generatedSrcDir.set(generatedSrcDir)
-            task.nodeWorkingDir.set(project.layout.projectDirectory.asFile.absolutePath)
+
+      registerCodegenTasks(
+          project = project,
+          rootExtension = rootExtension,
+          generatedSrcDir = generatedSrcDir,
+          packageJsonFile = packageJson,
+          schemaTaskName = "generate${taskNameSuffix}CodegenSchemaFromJavaScript",
+          artifactsTaskName = "generate${taskNameSuffix}CodegenArtifactsFromSchema",
+          configureJsRoot = { task ->
             if (jsSrcsDir != null) {
               task.jsRootDir.set(File(packageJson.parentFile, jsSrcsDir))
             } else {
               task.jsRootDir.set(dependencyRoot)
             }
-            task.jsInputFiles.set(
-                project.fileTree(task.jsRootDir) { tree ->
-                  tree.include("**/*.js")
-                  tree.include("**/*.jsx")
-                  tree.include("**/*.ts")
-                  tree.include("**/*.tsx")
-
-                  tree.exclude("node_modules/**/*")
-                  tree.exclude("**/*.d.ts")
-                  tree.exclude("**/build/**/*")
-                }
-            )
-          }
-
-      project.tasks.register(
-          "generate${taskNameSuffix}CodegenArtifactsFromSchema",
-          GenerateCodegenArtifactsTask::class.java,
-      ) { task ->
-        task.dependsOn(generateCodegenSchemaTask)
-        task.reactNativeDir.set(rootExtension.reactNativeDir)
-        task.nodeExecutableAndArgs.set(rootExtension.nodeExecutableAndArgs)
-        task.generatedSrcDir.set(generatedSrcDir)
-        task.packageJsonFile.set(packageJson)
-        val codegenJavaPackageName = parsedPackageJson?.codegenConfig?.android?.javaPackageName
-        if (codegenJavaPackageName != null) {
-          task.codegenJavaPackageName.set(codegenJavaPackageName)
-        } else {
-          task.codegenJavaPackageName.set(extension.codegenJavaPackageName)
-        }
-        task.libraryName.set(libraryName)
-        task.nodeWorkingDir.set(project.layout.projectDirectory.asFile.absolutePath)
-      }
+          },
+          configureCodegenArtifacts = { task ->
+            val codegenJavaPackageName = parsedPackageJson?.codegenConfig?.android?.javaPackageName
+            if (codegenJavaPackageName != null) {
+              task.codegenJavaPackageName.set(codegenJavaPackageName)
+            } else {
+              task.codegenJavaPackageName.set(extension.codegenJavaPackageName)
+            }
+            task.libraryName.set(libraryName)
+          },
+      )
     }
   }
 
@@ -449,8 +447,8 @@ class ReactPlugin : Plugin<Project> {
   }
 
   private fun taskNameSuffixForDependency(dependency: ModelAutolinkingDependenciesJson): String =
-      dependency.nameCleansed
-          .split(Regex("[^A-Za-z0-9]+"))
-          .filter { it.isNotEmpty() }
-          .joinToString("") { it.replaceFirstChar { char -> char.titlecase() } }
+      dependency.name
+          .map { char -> if (char.isLetterOrDigit()) char.toString() else "_${char.code}_" }
+          .joinToString("")
+          .replaceFirstChar { char -> char.titlecase() }
 }
