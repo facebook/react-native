@@ -393,54 +393,49 @@ class MessageQueue {
   }
 
   __callReactNativeMicrotasks() {
-    Systrace.beginEvent('JSTimers.callReactNativeMicrotasks()');
-    try {
+    Systrace.trace('JSTimers.callReactNativeMicrotasks()', () => {
       if (this._reactNativeMicrotasksCallback != null) {
         this._reactNativeMicrotasksCallback();
       }
-    } finally {
-      Systrace.endEvent();
-    }
+    });
   }
 
   __callFunction(module: string, method: string, args: unknown[]): void {
     this._lastFlush = Date.now();
     this._eventLoopStartTime = this._lastFlush;
-    if (__DEV__ || this.__spy) {
-      Systrace.beginEvent(`${module}.${method}(${stringifySafe(args)})`);
-    } else {
-      Systrace.beginEvent(`${module}.${method}(...)`);
-    }
-    try {
-      if (this.__spy) {
-        this.__spy({type: TO_JS, module, method, args});
-      }
-      const moduleMethods = this.getCallableModule(module);
-      if (!moduleMethods) {
-        const callableModuleNames = Object.keys(this._lazyCallableModules);
-        const n = callableModuleNames.length;
-        const callableModuleNameList = callableModuleNames.join(', ');
+    Systrace.trace(
+      __DEV__ || this.__spy
+        ? `${module}.${method}(${stringifySafe(args)})`
+        : `${module}.${method}(...)`,
+      () => {
+        if (this.__spy) {
+          this.__spy({type: TO_JS, module, method, args});
+        }
+        const moduleMethods = this.getCallableModule(module);
+        if (!moduleMethods) {
+          const callableModuleNames = Object.keys(this._lazyCallableModules);
+          const n = callableModuleNames.length;
+          const callableModuleNameList = callableModuleNames.join(', ');
 
-        // TODO(T122225939): Remove after investigation: Why are we getting to this line in bridgeless mode?
-        const isBridgelessMode =
-          global.RN$Bridgeless === true ? 'true' : 'false';
-        invariant(
-          false,
-          `Failed to call into JavaScript module method ${module}.${method}(). Module has not been registered as callable. Bridgeless Mode: ${isBridgelessMode}. Registered callable JavaScript modules (n = ${n}): ${callableModuleNameList}.
+          // TODO(T122225939): Remove after investigation: Why are we getting to this line in bridgeless mode?
+          const isBridgelessMode =
+            global.RN$Bridgeless === true ? 'true' : 'false';
+          invariant(
+            false,
+            `Failed to call into JavaScript module method ${module}.${method}(). Module has not been registered as callable. Bridgeless Mode: ${isBridgelessMode}. Registered callable JavaScript modules (n = ${n}): ${callableModuleNameList}.
           A frequent cause of the error is that the application entry file path is incorrect. This can also happen when the JS bundle is corrupt or there is an early initialization error when loading React Native.`,
-        );
-      }
-      // $FlowFixMe[invalid-computed-prop]
-      if (!moduleMethods[method]) {
-        invariant(
-          false,
-          `Failed to call into JavaScript module method ${module}.${method}(). Module exists, but the method is undefined.`,
-        );
-      }
-      moduleMethods[method].apply(moduleMethods, args);
-    } finally {
-      Systrace.endEvent();
-    }
+          );
+        }
+        // $FlowFixMe[invalid-computed-prop]
+        if (!moduleMethods[method]) {
+          invariant(
+            false,
+            `Failed to call into JavaScript module method ${module}.${method}(). Module exists, but the method is undefined.`,
+          );
+        }
+        moduleMethods[method].apply(moduleMethods, args);
+      },
+    );
   }
 
   __invokeCallback(cbID: number, args: unknown[]): void {
@@ -471,28 +466,24 @@ class MessageQueue {
       const profileName = debug
         ? '<callback for ' + module + '.' + method + '>'
         : cbID;
-      /* $FlowFixMe[constant-condition] Error discovered during Constant
-       * Condition roll out. See https://fburl.com/workplace/1v97vimq. */
-      if (callback && this.__spy) {
+      if (this.__spy) {
         this.__spy({type: TO_JS, module: null, method: profileName, args});
       }
-      Systrace.beginEvent(
+      Systrace.trace(
         `MessageQueue.invokeCallback(${profileName}, ${stringifySafe(args)})`,
+        () => {
+          this._successCallbacks.delete(callID);
+          this._failureCallbacks.delete(callID);
+          callback(...args);
+        },
       );
-    }
-
-    try {
+    } else {
       if (!callback) {
         return;
       }
-
       this._successCallbacks.delete(callID);
       this._failureCallbacks.delete(callID);
       callback(...args);
-    } finally {
-      if (__DEV__) {
-        Systrace.endEvent();
-      }
     }
   }
 }
