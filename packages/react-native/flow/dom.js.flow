@@ -1379,7 +1379,7 @@ declare class Attr extends Node {
   localName: string;
 }
 
-declare class HTMLCollection<+Elem extends HTMLElement> {
+declare class HTMLCollection<out Elem extends HTMLElement> {
   @@iterator(): Iterator<Elem>;
   length: number;
   item(nameOrIndex?: any, optionalIndex?: any): Elem | null;

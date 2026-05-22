@@ -72,14 +72,14 @@ export type ArrayBufferTypeAnnotation = Readonly<{
   type: 'ArrayBufferTypeAnnotation',
 }>;
 
-export type ObjectTypeAnnotation<+T> = Readonly<{
+export type ObjectTypeAnnotation<out T> = Readonly<{
   type: 'ObjectTypeAnnotation',
   properties: ReadonlyArray<NamedShape<T>>,
   // metadata for objects that generated from interfaces
   baseTypes?: ReadonlyArray<string>,
 }>;
 
-export type UnionTypeAnnotation<+T> = Readonly<{
+export type UnionTypeAnnotation<out T> = Readonly<{
   type: 'UnionTypeAnnotation',
   types: ReadonlyArray<T>,
 }>;
@@ -93,13 +93,13 @@ export type EventEmitterTypeAnnotation = Readonly<{
   typeAnnotation: NativeModuleEventEmitterTypeAnnotation | $FlowFixMe,
 }>;
 
-type FunctionTypeAnnotation<+P, +R> = Readonly<{
+type FunctionTypeAnnotation<out P, out R> = Readonly<{
   type: 'FunctionTypeAnnotation',
   params: ReadonlyArray<NamedShape<P>>,
   returnTypeAnnotation: R,
 }>;
 
-export type NamedShape<+T> = Readonly<{
+export type NamedShape<out T> = Readonly<{
   name: string,
   optional: boolean,
   typeAnnotation: T,
@@ -195,7 +195,7 @@ export type ComponentCommandArrayTypeAnnotation = ArrayTypeAnnotation<
   | MixedTypeAnnotation,
 >;
 
-export type ArrayTypeAnnotation<+T> = Readonly<{
+export type ArrayTypeAnnotation<out T> = Readonly<{
   type: 'ArrayTypeAnnotation',
   elementType: T,
 }>;
@@ -269,11 +269,11 @@ export type ReservedTypeAnnotation = Readonly<{
 /**
  * NativeModule Types
  */
-export type Nullable<+T extends NativeModuleTypeAnnotation> =
+export type Nullable<out T extends NativeModuleTypeAnnotation> =
   | NullableTypeAnnotation<T>
   | T;
 
-export type NullableTypeAnnotation<+T extends NativeModuleTypeAnnotation> =
+export type NullableTypeAnnotation<out T extends NativeModuleTypeAnnotation> =
   Readonly<{
     type: 'NullableTypeAnnotation',
     typeAnnotation: T,
@@ -321,7 +321,7 @@ export type NativeModuleObjectTypeAnnotation = ObjectTypeAnnotation<
 >;
 
 export type NativeModuleArrayTypeAnnotation<
-  +T extends Nullable<NativeModuleBaseTypeAnnotation>,
+  out T extends Nullable<NativeModuleBaseTypeAnnotation>,
 > = ArrayTypeAnnotation<
   | T
   /**

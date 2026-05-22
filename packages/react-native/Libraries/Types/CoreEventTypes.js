@@ -10,7 +10,7 @@
 
 import type {HostInstance} from '../../src/private/types/HostInstance';
 
-export type NativeSyntheticEvent<+T> = Readonly<{
+export type NativeSyntheticEvent<out T> = Readonly<{
   bubbles: ?boolean,
   cancelable: ?boolean,
   currentTarget: number | HostInstance,

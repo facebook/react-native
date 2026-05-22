@@ -19,7 +19,7 @@ export interface Item {}
  * An interface for a collection of items, without requiring that each item be
  * eagerly (or lazily) allocated.
  */
-export interface VirtualCollection<+T extends Item> {
+export interface VirtualCollection<out T extends Item> {
   /**
    * The number of items in the collection. This can either be a numeric scalar
    * or a getter function that is computed on access. However, it should remain
@@ -40,7 +40,7 @@ export interface VirtualCollection<+T extends Item> {
  * use, this is not recommended for larger arrays because each element of an
  * array is eagerly allocated.
  */
-export class VirtualArray<+T extends Item> implements VirtualCollection<T> {
+export class VirtualArray<out T extends Item> implements VirtualCollection<T> {
   +size: number;
   +at: (index: number) => T;
 
