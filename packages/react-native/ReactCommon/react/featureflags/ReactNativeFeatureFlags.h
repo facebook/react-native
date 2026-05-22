@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<b41796213163e3bae4f7e7ad75204d13>>
+ * @generated SignedSource<<f331dbd88bcaeb70b3b52aeaf3e58a29>>
  */
 
 /**
@@ -293,11 +293,6 @@ class ReactNativeFeatureFlags {
    * Enables the experimental version of `VirtualViewContainerState`.
    */
   RN_EXPORT static bool enableVirtualViewContainerStateExperimental();
-
-  /**
-   * Enables VirtualView debug features such as logging and overlays.
-   */
-  RN_EXPORT static bool enableVirtualViewDebugFeatures();
 
   /**
    * Fix incorrect parentTag passed as parentTagForUpdate in the unflatten-unflatten branch of calculateShadowViewMutationsFlattener, which causes UPDATE mutations to reference a parent being created in the same batch.

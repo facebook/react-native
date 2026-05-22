@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<37167dea60330101b87d35ee9cbd8531>>
+ * @generated SignedSource<<c939675c97b36966d0cc852389c23450>>
  */
 
 /**
@@ -342,12 +342,6 @@ class ReactNativeFeatureFlagsJavaProvider
   bool enableVirtualViewContainerStateExperimental() override {
     static const auto method =
         getReactNativeFeatureFlagsProviderJavaClass()->getMethod<jboolean()>("enableVirtualViewContainerStateExperimental");
-    return method(javaProvider_);
-  }
-
-  bool enableVirtualViewDebugFeatures() override {
-    static const auto method =
-        getReactNativeFeatureFlagsProviderJavaClass()->getMethod<jboolean()>("enableVirtualViewDebugFeatures");
     return method(javaProvider_);
   }
 
@@ -832,11 +826,6 @@ bool JReactNativeFeatureFlagsCxxInterop::enableVirtualViewContainerStateExperime
   return ReactNativeFeatureFlags::enableVirtualViewContainerStateExperimental();
 }
 
-bool JReactNativeFeatureFlagsCxxInterop::enableVirtualViewDebugFeatures(
-    facebook::jni::alias_ref<JReactNativeFeatureFlagsCxxInterop> /*unused*/) {
-  return ReactNativeFeatureFlags::enableVirtualViewDebugFeatures();
-}
-
 bool JReactNativeFeatureFlagsCxxInterop::fixDifferentiatorParentTagForUnflattenCase(
     facebook::jni::alias_ref<JReactNativeFeatureFlagsCxxInterop> /*unused*/) {
   return ReactNativeFeatureFlags::fixDifferentiatorParentTagForUnflattenCase();
@@ -1206,9 +1195,6 @@ void JReactNativeFeatureFlagsCxxInterop::registerNatives() {
       makeNativeMethod(
         "enableVirtualViewContainerStateExperimental",
         JReactNativeFeatureFlagsCxxInterop::enableVirtualViewContainerStateExperimental),
-      makeNativeMethod(
-        "enableVirtualViewDebugFeatures",
-        JReactNativeFeatureFlagsCxxInterop::enableVirtualViewDebugFeatures),
       makeNativeMethod(
         "fixDifferentiatorParentTagForUnflattenCase",
         JReactNativeFeatureFlagsCxxInterop::fixDifferentiatorParentTagForUnflattenCase),

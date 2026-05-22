@@ -15,7 +15,6 @@ import androidx.annotation.VisibleForTesting
 import com.facebook.common.logging.FLog
 import com.facebook.react.R
 import com.facebook.react.common.build.ReactBuildConfig
-import com.facebook.react.internal.featureflags.ReactNativeFeatureFlags
 import com.facebook.react.uimanager.ReactClippingViewGroup
 import com.facebook.react.uimanager.ReactRoot
 import com.facebook.react.views.scroll.VirtualView
@@ -287,13 +286,11 @@ public class ReactVirtualView(context: Context) :
     return null
   }
 
+  const val ENABLE_DEBUG_LOGS: Boolean = ReactBuildConfig.DEBUG && false
+
   internal inline fun debugLog(subtag: String, block: () -> String = { "" }) {
-    if (IS_DEBUG_BUILD && ReactNativeFeatureFlags.enableVirtualViewDebugFeatures()) {
-      FLog.d("$DEBUG_TAG:[$virtualViewID]:$subtag", block())
+    if (ENABLE_DEBUG_LOGS) {
+      FLog.d("ReactVirtualView:[$virtualViewID]:$subtag", block())
     }
   }
 }
-
-private const val DEBUG_TAG: String = "ReactVirtualView"
-private val IS_DEBUG_BUILD =
-    ReactBuildConfig.DEBUG || ReactBuildConfig.IS_INTERNAL_BUILD || ReactBuildConfig.ENABLE_PERFETTO

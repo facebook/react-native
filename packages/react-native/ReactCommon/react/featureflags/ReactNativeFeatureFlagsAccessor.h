@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<0dd9d8307ff12ff45ba01544f36f7f68>>
+ * @generated SignedSource<<0f17b690a3e57e30984b85f5c0bbc54e>>
  */
 
 /**
@@ -83,7 +83,6 @@ class ReactNativeFeatureFlagsAccessor {
   bool enableViewRecyclingForText();
   bool enableViewRecyclingForView();
   bool enableVirtualViewContainerStateExperimental();
-  bool enableVirtualViewDebugFeatures();
   bool fixDifferentiatorParentTagForUnflattenCase();
   bool fixMappingOfEventPrioritiesBetweenFabricAndReact();
   bool fixYogaFlexBasisFitContentInMainAxis();
@@ -132,7 +131,7 @@ class ReactNativeFeatureFlagsAccessor {
   std::unique_ptr<ReactNativeFeatureFlagsProvider> currentProvider_;
   bool wasOverridden_;
 
-  std::array<std::atomic<const char*>, 89> accessedFeatureFlags_;
+  std::array<std::atomic<const char*>, 88> accessedFeatureFlags_;
 
   std::atomic<std::optional<bool>> commonTestFlag_;
   std::atomic<std::optional<bool>> cdpInteractionMetricsEnabled_;
@@ -185,7 +184,6 @@ class ReactNativeFeatureFlagsAccessor {
   std::atomic<std::optional<bool>> enableViewRecyclingForText_;
   std::atomic<std::optional<bool>> enableViewRecyclingForView_;
   std::atomic<std::optional<bool>> enableVirtualViewContainerStateExperimental_;
-  std::atomic<std::optional<bool>> enableVirtualViewDebugFeatures_;
   std::atomic<std::optional<bool>> fixDifferentiatorParentTagForUnflattenCase_;
   std::atomic<std::optional<bool>> fixMappingOfEventPrioritiesBetweenFabricAndReact_;
   std::atomic<std::optional<bool>> fixYogaFlexBasisFitContentInMainAxis_;

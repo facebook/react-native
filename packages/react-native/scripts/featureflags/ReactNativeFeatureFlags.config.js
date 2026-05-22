@@ -593,16 +593,6 @@ const definitions: FeatureFlagDefinitions = {
       },
       ossReleaseStage: 'none',
     },
-    enableVirtualViewDebugFeatures: {
-      defaultValue: false,
-      metadata: {
-        description:
-          'Enables VirtualView debug features such as logging and overlays.',
-        expectedReleaseValue: false,
-        purpose: 'operational',
-      },
-      ossReleaseStage: 'none',
-    },
     fixDifferentiatorParentTagForUnflattenCase: {
       defaultValue: false,
       metadata: {

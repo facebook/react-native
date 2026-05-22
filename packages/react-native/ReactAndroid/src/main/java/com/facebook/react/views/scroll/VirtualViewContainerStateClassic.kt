@@ -8,8 +8,6 @@
 package com.facebook.react.views.scroll
 
 import android.view.ViewGroup
-import com.facebook.common.logging.FLog
-import com.facebook.react.internal.featureflags.ReactNativeFeatureFlags
 import com.facebook.react.views.virtual.VirtualViewMode
 
 internal class VirtualViewContainerStateClassic(scrollView: ViewGroup) :
@@ -23,7 +21,6 @@ internal class VirtualViewContainerStateClassic(scrollView: ViewGroup) :
     scrollView.getDrawingRect(visibleRect)
 
     if (visibleRect.isEmpty()) {
-      debugLog("updateModes", { "scrollView visibleRect is empty" })
       return
     }
 
@@ -52,18 +49,6 @@ internal class VirtualViewContainerStateClassic(scrollView: ViewGroup) :
       }
 
       vv.onModeChange(mode, thresholdRect)
-      debugLog(
-          "updateModes",
-          { "virtualView=${vv.virtualViewID} mode=$mode  rect=$rect thresholdRect=$thresholdRect" },
-      )
     }
-  }
-}
-
-private const val DEBUG_TAG: String = "VirtualViewContainerStateClassic"
-
-private inline fun debugLog(subtag: String, block: () -> String = { "" }) {
-  if (IS_DEBUG_BUILD && ReactNativeFeatureFlags.enableVirtualViewDebugFeatures()) {
-    FLog.d("$DEBUG_TAG:$subtag", block())
   }
 }

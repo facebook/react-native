@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<53aabf690e44b87c4887930f882158df>>
+ * @generated SignedSource<<12ea64df682b2285772cafb030a60e5e>>
  */
 
 /**
@@ -502,15 +502,6 @@ class ReactNativeFeatureFlagsDynamicProvider : public ReactNativeFeatureFlagsDef
     }
 
     return ReactNativeFeatureFlagsDefaults::enableVirtualViewContainerStateExperimental();
-  }
-
-  bool enableVirtualViewDebugFeatures() override {
-    auto value = values_["enableVirtualViewDebugFeatures"];
-    if (!value.isNull()) {
-      return value.getBool();
-    }
-
-    return ReactNativeFeatureFlagsDefaults::enableVirtualViewDebugFeatures();
   }
 
   bool fixDifferentiatorParentTagForUnflattenCase() override {
