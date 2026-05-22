@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<16ca9a4b47da90ea71300eb37287e28b>>
+ * @generated SignedSource<<32026408e198a903deb51eeb6157d3c5>>
  */
 
 /**
@@ -65,8 +65,6 @@ public object ReactNativeFeatureFlagsCxxInterop {
   @DoNotStrip @JvmStatic public external fun enableDifferentiatorMutationVectorPreallocation(): Boolean
 
   @DoNotStrip @JvmStatic public external fun enableDoubleMeasurementFixAndroid(): Boolean
-
-  @DoNotStrip @JvmStatic public external fun enableEagerMainQueueModulesOnIOS(): Boolean
 
   @DoNotStrip @JvmStatic public external fun enableEagerRootViewAttachment(): Boolean
 

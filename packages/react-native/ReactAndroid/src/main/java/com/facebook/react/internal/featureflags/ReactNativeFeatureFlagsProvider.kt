@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<972dbaef144818484bafff334cf97ef2>>
+ * @generated SignedSource<<f0e6af0192d195fb3fc4deaa1f269372>>
  */
 
 /**
@@ -60,8 +60,6 @@ public interface ReactNativeFeatureFlagsProvider {
   @DoNotStrip public fun enableDifferentiatorMutationVectorPreallocation(): Boolean
 
   @DoNotStrip public fun enableDoubleMeasurementFixAndroid(): Boolean
-
-  @DoNotStrip public fun enableEagerMainQueueModulesOnIOS(): Boolean
 
   @DoNotStrip public fun enableEagerRootViewAttachment(): Boolean
 
