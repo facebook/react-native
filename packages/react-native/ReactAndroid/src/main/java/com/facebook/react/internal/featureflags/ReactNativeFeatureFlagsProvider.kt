@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<972dbaef144818484bafff334cf97ef2>>
+ * @generated SignedSource<<4fa46d585a2fe3515557bf06f0e1189f>>
  */
 
 /**
@@ -192,8 +192,6 @@ public interface ReactNativeFeatureFlagsProvider {
   @DoNotStrip public fun useTraitHiddenOnAndroid(): Boolean
 
   @DoNotStrip public fun useTurboModuleInterop(): Boolean
-
-  @DoNotStrip public fun useUnorderedMapInDifferentiator(): Boolean
 
   @DoNotStrip public fun viewCullingOutsetRatio(): Double
 

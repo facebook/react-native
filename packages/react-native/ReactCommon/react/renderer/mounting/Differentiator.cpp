@@ -11,8 +11,8 @@
 #include <react/debug/react_native_assert.h>
 #include <react/featureflags/ReactNativeFeatureFlags.h>
 #include <algorithm>
+#include <unordered_map>
 #include "internal/CullingContext.h"
-#include "internal/DiffMap.h"
 #include "internal/ShadowViewNodePair.h"
 #include "internal/sliceChildShadowNodeViewPairs.h"
 
@@ -58,7 +58,9 @@ static std::ostream& operator<<(
 
 #ifdef DEBUG_LOGS_DIFFER
 template <typename KeyT, typename ValueT>
-static std::ostream& operator<<(std::ostream& out, DiffMap<KeyT, ValueT>& map) {
+static std::ostream& operator<<(
+    std::ostream& out,
+    const std::unordered_map<KeyT, ValueT>& map) {
   auto it = map.begin();
   if (it != map.end()) {
     out << *it->second;
@@ -143,7 +145,7 @@ struct OrderedMutationInstructionContainer {
 static void updateMatchedPairSubtrees(
     ViewNodePairScope& scope,
     OrderedMutationInstructionContainer& mutationContainer,
-    DiffMap<Tag, ShadowViewNodePair*>& newRemainingPairs,
+    std::unordered_map<Tag, ShadowViewNodePair*>& newRemainingPairs,
     std::vector<ShadowViewNodePair*>& oldChildPairs,
     Tag parentTag,
     const ShadowViewNodePair& oldPair,
@@ -164,11 +166,11 @@ static void calculateShadowViewMutationsFlattener(
     ReparentMode reparentMode,
     OrderedMutationInstructionContainer& mutationContainer,
     Tag parentTag,
-    DiffMap<Tag, ShadowViewNodePair*>& unvisitedOtherNodes,
+    std::unordered_map<Tag, ShadowViewNodePair*>& unvisitedOtherNodes,
     const ShadowViewNodePair& node,
     Tag parentTagForUpdate,
-    DiffMap<Tag, ShadowViewNodePair*>* parentSubVisitedOtherNewNodes,
-    DiffMap<Tag, ShadowViewNodePair*>* parentSubVisitedOtherOldNodes,
+    std::unordered_map<Tag, ShadowViewNodePair*>* parentSubVisitedOtherNewNodes,
+    std::unordered_map<Tag, ShadowViewNodePair*>* parentSubVisitedOtherOldNodes,
     const CullingContext& cullingContextForUnvisitedOtherNodes,
     const CullingContext& cullingContext);
 
@@ -183,7 +185,7 @@ static void calculateShadowViewMutationsFlattener(
 static void updateMatchedPairSubtrees(
     ViewNodePairScope& scope,
     OrderedMutationInstructionContainer& mutationContainer,
-    DiffMap<Tag, ShadowViewNodePair*>& newRemainingPairs,
+    std::unordered_map<Tag, ShadowViewNodePair*>& newRemainingPairs,
     std::vector<ShadowViewNodePair*>& oldChildPairs,
     Tag parentTag,
     const ShadowViewNodePair& oldPair,
@@ -239,8 +241,8 @@ static void updateMatchedPairSubtrees(
       // interwoven with children from other nodes, etc.
       auto oldFlattenedNodes = sliceChildShadowNodeViewPairsFromViewNodePair(
           oldPair, scope, true, oldCullingContextCopy);
-      auto unvisitedOldChildPairs =
-          DiffMap<Tag, ShadowViewNodePair*>(oldFlattenedNodes.size());
+      std::unordered_map<Tag, ShadowViewNodePair*> unvisitedOldChildPairs;
+      unvisitedOldChildPairs.reserve(oldFlattenedNodes.size());
       for (size_t i = 0, j = 0;
            i < oldChildPairs.size() && j < oldFlattenedNodes.size();
            i++) {
@@ -423,11 +425,11 @@ static void calculateShadowViewMutationsFlattener(
     ReparentMode reparentMode,
     OrderedMutationInstructionContainer& mutationContainer,
     Tag parentTag,
-    DiffMap<Tag, ShadowViewNodePair*>& unvisitedOtherNodes,
+    std::unordered_map<Tag, ShadowViewNodePair*>& unvisitedOtherNodes,
     const ShadowViewNodePair& node,
     Tag parentTagForUpdate,
-    DiffMap<Tag, ShadowViewNodePair*>* parentSubVisitedOtherNewNodes,
-    DiffMap<Tag, ShadowViewNodePair*>* parentSubVisitedOtherOldNodes,
+    std::unordered_map<Tag, ShadowViewNodePair*>* parentSubVisitedOtherNewNodes,
+    std::unordered_map<Tag, ShadowViewNodePair*>* parentSubVisitedOtherOldNodes,
     const CullingContext& cullingContextForUnvisitedOtherNodes,
     const CullingContext& cullingContext) {
   // Step 1: iterate through entire tree
@@ -446,8 +448,8 @@ static void calculateShadowViewMutationsFlattener(
 
   // Views in other tree that are visited by sub-flattening or
   // sub-unflattening
-  DiffMap<Tag, ShadowViewNodePair*> subVisitedOtherNewNodes{};
-  DiffMap<Tag, ShadowViewNodePair*> subVisitedOtherOldNodes{};
+  std::unordered_map<Tag, ShadowViewNodePair*> subVisitedOtherNewNodes{};
+  std::unordered_map<Tag, ShadowViewNodePair*> subVisitedOtherOldNodes{};
   auto subVisitedNewMap =
       (parentSubVisitedOtherNewNodes != nullptr ? parentSubVisitedOtherNewNodes
                                                 : &subVisitedOtherNewNodes);
@@ -456,8 +458,9 @@ static void calculateShadowViewMutationsFlattener(
                                                 : &subVisitedOtherOldNodes);
 
   // Candidates for full tree creation or deletion at the end of this function
-  auto deletionCreationCandidatePairs =
-      DiffMap<Tag, const ShadowViewNodePair*>(treeChildren.size());
+  std::unordered_map<Tag, const ShadowViewNodePair*>
+      deletionCreationCandidatePairs;
+  deletionCreationCandidatePairs.reserve(treeChildren.size());
 
   for (size_t index = 0;
        index < treeChildren.size() && index < treeChildren.size();
@@ -700,8 +703,9 @@ static void calculateShadowViewMutationsFlattener(
                   ? adjustedNewCullingContext
                   : adjustedOldCullingContext);
           // Construct unvisited nodes map
-          auto unvisitedRecursiveChildPairs =
-              DiffMap<Tag, ShadowViewNodePair*>(flattenedNodes.size());
+          std::unordered_map<Tag, ShadowViewNodePair*>
+              unvisitedRecursiveChildPairs;
+          unvisitedRecursiveChildPairs.reserve(flattenedNodes.size());
           for (auto& flattenedNode : flattenedNodes) {
             auto& newChild = *flattenedNode;
 
@@ -1056,9 +1060,11 @@ static void calculateShadowViewMutations(
     // Greedy Stage 4 algorithm.
     // Collect map of tags in the new list
     auto remainingCount = newChildPairs.size() - lastIndexAfterFirstStage;
-    auto newRemainingPairs = DiffMap<Tag, ShadowViewNodePair*>(remainingCount);
-    auto newInsertedPairs = DiffMap<Tag, ShadowViewNodePair*>(remainingCount);
-    auto deletionCandidatePairs = DiffMap<Tag, const ShadowViewNodePair*>{};
+    std::unordered_map<Tag, ShadowViewNodePair*> newRemainingPairs;
+    newRemainingPairs.reserve(remainingCount);
+    std::unordered_map<Tag, ShadowViewNodePair*> newInsertedPairs;
+    newInsertedPairs.reserve(remainingCount);
+    std::unordered_map<Tag, const ShadowViewNodePair*> deletionCandidatePairs{};
     for (index = lastIndexAfterFirstStage; index < newChildPairs.size();
          index++) {
       auto& newChildPair = *newChildPairs[index];

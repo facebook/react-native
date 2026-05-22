@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<bb79417efb0f63b2717ea8873b72da88>>
+ * @generated SignedSource<<e289807a5e54422b373acc929ce31e10>>
  */
 
 /**
@@ -549,12 +549,6 @@ class ReactNativeFeatureFlagsJavaProvider
     return method(javaProvider_);
   }
 
-  bool useUnorderedMapInDifferentiator() override {
-    static const auto method =
-        getReactNativeFeatureFlagsProviderJavaClass()->getMethod<jboolean()>("useUnorderedMapInDifferentiator");
-    return method(javaProvider_);
-  }
-
   double viewCullingOutsetRatio() override {
     static const auto method =
         getReactNativeFeatureFlagsProviderJavaClass()->getMethod<jdouble()>("viewCullingOutsetRatio");
@@ -1008,11 +1002,6 @@ bool JReactNativeFeatureFlagsCxxInterop::useTurboModuleInterop(
   return ReactNativeFeatureFlags::useTurboModuleInterop();
 }
 
-bool JReactNativeFeatureFlagsCxxInterop::useUnorderedMapInDifferentiator(
-    facebook::jni::alias_ref<JReactNativeFeatureFlagsCxxInterop> /*unused*/) {
-  return ReactNativeFeatureFlags::useUnorderedMapInDifferentiator();
-}
-
 double JReactNativeFeatureFlagsCxxInterop::viewCullingOutsetRatio(
     facebook::jni::alias_ref<JReactNativeFeatureFlagsCxxInterop> /*unused*/) {
   return ReactNativeFeatureFlags::viewCullingOutsetRatio();
@@ -1319,9 +1308,6 @@ void JReactNativeFeatureFlagsCxxInterop::registerNatives() {
       makeNativeMethod(
         "useTurboModuleInterop",
         JReactNativeFeatureFlagsCxxInterop::useTurboModuleInterop),
-      makeNativeMethod(
-        "useUnorderedMapInDifferentiator",
-        JReactNativeFeatureFlagsCxxInterop::useUnorderedMapInDifferentiator),
       makeNativeMethod(
         "viewCullingOutsetRatio",
         JReactNativeFeatureFlagsCxxInterop::viewCullingOutsetRatio),

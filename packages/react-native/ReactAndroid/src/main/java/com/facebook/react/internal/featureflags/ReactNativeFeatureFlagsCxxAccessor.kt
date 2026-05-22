@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<494ed85c58f80b4feb6fb9b83fe7a27e>>
+ * @generated SignedSource<<1ac9ff65ae410a6b1afa6c92c2e9a86b>>
  */
 
 /**
@@ -105,7 +105,6 @@ internal class ReactNativeFeatureFlagsCxxAccessor : ReactNativeFeatureFlagsAcces
   private var useSharedAnimatedBackendCache: Boolean? = null
   private var useTraitHiddenOnAndroidCache: Boolean? = null
   private var useTurboModuleInteropCache: Boolean? = null
-  private var useUnorderedMapInDifferentiatorCache: Boolean? = null
   private var viewCullingOutsetRatioCache: Double? = null
   private var viewTransitionEnabledCache: Boolean? = null
   private var viewTransitionUseHardwareBitmapAndroidCache: Boolean? = null
@@ -872,15 +871,6 @@ internal class ReactNativeFeatureFlagsCxxAccessor : ReactNativeFeatureFlagsAcces
     if (cached == null) {
       cached = ReactNativeFeatureFlagsCxxInterop.useTurboModuleInterop()
       useTurboModuleInteropCache = cached
-    }
-    return cached
-  }
-
-  override fun useUnorderedMapInDifferentiator(): Boolean {
-    var cached = useUnorderedMapInDifferentiatorCache
-    if (cached == null) {
-      cached = ReactNativeFeatureFlagsCxxInterop.useUnorderedMapInDifferentiator()
-      useUnorderedMapInDifferentiatorCache = cached
     }
     return cached
   }

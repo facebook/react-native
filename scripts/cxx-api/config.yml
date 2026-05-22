@@ -14,7 +14,6 @@ exclude_symbols:
   - "(?i)experimental"
   - "unstable_"
   - "UnstableLegacy"
-  - "TinyMap"
   - "packAnimatedProps"
   - "DO_NOT_USE"
   - "_DEPRECATED|DEPRECATED_"

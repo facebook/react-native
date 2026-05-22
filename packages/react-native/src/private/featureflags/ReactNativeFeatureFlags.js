@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<f842431ac69c18283b0f509fc0407f85>>
+ * @generated SignedSource<<1d2fba4cafe542180a63997159b5cd2a>>
  * @flow strict
  * @noformat
  */
@@ -131,7 +131,6 @@ export type ReactNativeFeatureFlags = $ReadOnly<{
   useSharedAnimatedBackend: Getter<boolean>,
   useTraitHiddenOnAndroid: Getter<boolean>,
   useTurboModuleInterop: Getter<boolean>,
-  useUnorderedMapInDifferentiator: Getter<boolean>,
   viewCullingOutsetRatio: Getter<number>,
   viewTransitionEnabled: Getter<boolean>,
   viewTransitionUseHardwareBitmapAndroid: Getter<boolean>,
@@ -537,10 +536,6 @@ export const useTraitHiddenOnAndroid: Getter<boolean> = createNativeFlagGetter('
  * In Bridgeless mode, should legacy NativeModules use the TurboModule system?
  */
 export const useTurboModuleInterop: Getter<boolean> = createNativeFlagGetter('useTurboModuleInterop', false);
-/**
- * Use std::unordered_map instead of TinyMap in the Differentiator for improved lookup performance.
- */
-export const useUnorderedMapInDifferentiator: Getter<boolean> = createNativeFlagGetter('useUnorderedMapInDifferentiator', false);
 /**
  * Outset the culling context frame with the provided ratio. The culling context frame size will be outset by width * ratio on the left and right, and height * ratio on the top and bottom.
  */

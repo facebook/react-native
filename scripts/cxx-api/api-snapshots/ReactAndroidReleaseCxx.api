@@ -8274,26 +8274,6 @@ class facebook::react::SimpleThreadSafeCache {
   public std::pair<const KeyT*, const ValueT*> getWithKey(const KeyT& key, facebook::react::CacheGeneratorFunction<ValueT> auto generator) const;
 }
 
-template <typename KeyT, typename ValueT>
-class facebook::react::DiffMap {
-  public DiffMap();
-  public DiffMap(size_t sizeHint);
-  public facebook::react::DiffMap::Iterator begin();
-  public facebook::react::DiffMap::Iterator end();
-  public facebook::react::DiffMap::Iterator find(KeyT key);
-  public using Pair = std::pair<KeyT, ValueT>;
-  public void erase(facebook::react::DiffMap::Iterator it);
-  public void insert(facebook::react::DiffMap::Pair pair);
-}
-
-class facebook::react::DiffMap::Iterator {
-  public bool operator!=(const facebook::react::DiffMap::Iterator& other) const;
-  public bool operator==(const facebook::react::DiffMap::Iterator& other) const;
-  public const facebook::react::DiffMap::Pair& operator*() const;
-  public const facebook::react::DiffMap::Pair* operator->() const;
-  public facebook::react::DiffMap::Iterator& operator++();
-}
-
 template <typename Lambda>
 class facebook::react::OnScopeExit {
   public OnScopeExit(const Lambda&& lambda) noexcept;

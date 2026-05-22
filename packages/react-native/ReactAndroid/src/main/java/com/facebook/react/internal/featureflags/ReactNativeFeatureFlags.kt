@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<8b35aa70eea734a8bfcbb7bd651ba8e2>>
+ * @generated SignedSource<<fb433838ff712ffa7b045065a35723f2>>
  */
 
 /**
@@ -539,12 +539,6 @@ public object ReactNativeFeatureFlags {
    */
   @JvmStatic
   public fun useTurboModuleInterop(): Boolean = accessor.useTurboModuleInterop()
-
-  /**
-   * Use std::unordered_map instead of TinyMap in the Differentiator for improved lookup performance.
-   */
-  @JvmStatic
-  public fun useUnorderedMapInDifferentiator(): Boolean = accessor.useUnorderedMapInDifferentiator()
 
   /**
    * Outset the culling context frame with the provided ratio. The culling context frame size will be outset by width * ratio on the left and right, and height * ratio on the top and bottom.

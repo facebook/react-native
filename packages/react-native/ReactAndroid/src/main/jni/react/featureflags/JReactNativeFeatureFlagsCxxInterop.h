@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<3007628255a078dafc01eb16b3d55fbe>>
+ * @generated SignedSource<<8e51c38f988854dd63291df26a78326e>>
  */
 
 /**
@@ -283,9 +283,6 @@ class JReactNativeFeatureFlagsCxxInterop
     facebook::jni::alias_ref<JReactNativeFeatureFlagsCxxInterop>);
 
   static bool useTurboModuleInterop(
-    facebook::jni::alias_ref<JReactNativeFeatureFlagsCxxInterop>);
-
-  static bool useUnorderedMapInDifferentiator(
     facebook::jni::alias_ref<JReactNativeFeatureFlagsCxxInterop>);
 
   static double viewCullingOutsetRatio(
