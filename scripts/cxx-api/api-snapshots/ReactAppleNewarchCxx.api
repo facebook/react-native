@@ -3677,6 +3677,7 @@ bool facebook::react::areAttributedStringFragmentsEquivalentDisplayWise(const fa
 bool facebook::react::areAttributedStringFragmentsEquivalentLayoutWise(const facebook::react::AttributedString::Fragment& lhs, const facebook::react::AttributedString::Fragment& rhs);
 bool facebook::react::areAttributedStringsEquivalentDisplayWise(const facebook::react::AttributedString& lhs, const facebook::react::AttributedString& rhs);
 bool facebook::react::areAttributedStringsEquivalentLayoutWise(const facebook::react::AttributedString& lhs, const facebook::react::AttributedString& rhs);
+bool facebook::react::areBorderRadiiCircular(const facebook::react::BorderRadii& borderRadii);
 bool facebook::react::areTextAttributesEquivalentLayoutWise(const facebook::react::TextAttributes& lhs, const facebook::react::TextAttributes& rhs);
 bool facebook::react::hasAccurateCPUTimeNanosForBenchmarks();
 bool facebook::react::hostPlatformColorIsColorMeaningful(facebook::react::Color color) noexcept;
