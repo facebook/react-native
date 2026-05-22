@@ -10,7 +10,7 @@
 
 import type {ArrayLike} from '../../utils/ArrayLikeUtils';
 
-declare export default class HTMLCollection<+T>
+declare export default class HTMLCollection<out T>
   // $FlowFixMe[incompatible-variance]
   implements Iterable<T>, ArrayLike<T>
 {
