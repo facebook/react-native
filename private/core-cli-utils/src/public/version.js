@@ -26,17 +26,17 @@
 //
 // For react-native@0.75.0 you have to have a version of XCode >= 12
 
-export const android = {
+const android = {
   ANDROID_NDK: '>= 23.x',
   ANDROID_SDK: '>= 33.x',
 };
 
-export const apple = {
+const apple = {
   COCOAPODS: '>= 1.10.0',
   XCODE: '>= 12.x',
 };
 
-export const common = {
+const common = {
   BUN: '>= 1.0.0',
   JAVA: '>= 17 <= 20',
   NODE_JS: '>= 18',
@@ -45,8 +45,10 @@ export const common = {
   YARN: '>= 1.10.x',
 };
 
-export const all = {
+const all = {
   ...apple,
   ...android,
   ...common,
 };
+
+module.exports = {all, android, apple, common};

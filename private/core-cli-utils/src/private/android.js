@@ -8,12 +8,15 @@
  * @format
  */
 
+/*::
 import type {Task} from './types';
 import type {ExecaPromise} from 'execa';
+*/
 
-import {isWindows, task} from './utils';
-import execa from 'execa';
+const {isWindows, task} = require('./utils');
+const execa = require('execa');
 
+/*::
 type AndroidBuildMode = 'Debug' | 'Release';
 
 type Path = string;
@@ -27,12 +30,13 @@ type Config = {
   newArchitecture?: boolean,
   sdk?: Path,
 };
+*/
 
 function gradle(
-  taskName: string,
-  args: Args,
-  options: {cwd: string, env?: {[k: string]: string | void}},
-): ExecaPromise {
+  taskName /*: string */,
+  args /*: Args */,
+  options /*: {cwd: string, env?: {[k: string]: string | void}} */,
+) /*: ExecaPromise */ {
   const gradlew = isWindows ? 'gradlew.bat' : './gradlew';
   return execa(gradlew, [taskName, ...args], {
     cwd: options.cwd,
@@ -40,11 +44,11 @@ function gradle(
   });
 }
 
-function androidSdkPath(sdk?: string): string {
+function androidSdkPath(sdk /*: ?string */) /*: string */ {
   return sdk ?? process.env.ANDROID_HOME ?? process.env.ANDROID_SDK ?? '';
 }
 
-function boolToStr(value: boolean): string {
+function boolToStr(value /*: boolean */) /*: string */ {
   return value ? 'true' : 'false';
 }
 
@@ -53,9 +57,8 @@ const FIRST = 1;
 //
 // Android Tasks
 //
-export const tasks = (
-  config: Config,
-): ({
+/*::
+type AndroidTasks = {
   assemble: (...gradleArgs: Args) => {
     run: Task<ExecaPromise>,
   },
@@ -65,8 +68,11 @@ export const tasks = (
   install: (...gradleArgs: Args) => {
     run: Task<ExecaPromise>,
   },
-}) => ({
-  assemble: (...gradleArgs: Args) => ({
+};
+*/
+
+const tasks = (config /*: Config */) /*: AndroidTasks */ => ({
+  assemble: (...gradleArgs /*: Args */) => ({
     run: task(FIRST, 'Assemble Android App', () => {
       const args = [];
       if (config.hermes != null) {
@@ -82,7 +88,7 @@ export const tasks = (
       });
     }),
   }),
-  build: (...gradleArgs: Args) => ({
+  build: (...gradleArgs /*: Args */) => ({
     run: task(FIRST, 'Assembles and tests Android App', () => {
       const args = [];
       if (config.hermes != null) {
@@ -101,10 +107,11 @@ export const tasks = (
   /**
    * Useful extra gradle arguments:
    *
+   *
    * -PreactNativeDevServerPort=8081 sets the port for the installed app to point towards a Metro
    *                                 server on (for example) 8081.
    */
-  install: (...gradleArgs: Args) => ({
+  install: (...gradleArgs /*: Args */) => ({
     run: task(FIRST, 'Installs the assembled Android App', () =>
       gradle(`${config.name}:install${config.mode}`, gradleArgs, {
         cwd: config.cwd,
@@ -118,3 +125,5 @@ export const tasks = (
   // CLI's code:
   // https://github.com/react-native-community/cli/blob/54d48a4e08a1aef334ae6168788e0157a666b4f5/packages/cli-platform-android/src/commands/runAndroid/index.ts#L272C1-L290C2
 });
+
+module.exports = {tasks};
