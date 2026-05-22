@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<c511e258f6ede1746fd8547cb774db5e>>
+ * @generated SignedSource<<ba2b6d1fb38bdb754817169614234b2a>>
  * @flow strict
  * @noformat
  */
@@ -44,7 +44,6 @@ export interface Spec extends TurboModule {
   +enableDestroyShadowTreeRevisionAsync?: () => boolean;
   +enableDifferentiatorMutationVectorPreallocation?: () => boolean;
   +enableDoubleMeasurementFixAndroid?: () => boolean;
-  +enableEagerMainQueueModulesOnIOS?: () => boolean;
   +enableEagerRootViewAttachment?: () => boolean;
   +enableExclusivePropsUpdateAndroid?: () => boolean;
   +enableFabricCommitBranching?: () => boolean;

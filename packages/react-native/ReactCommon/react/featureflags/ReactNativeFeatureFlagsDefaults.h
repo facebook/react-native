@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<37d25a3c42a4bc9dde1665aaacd1acbd>>
+ * @generated SignedSource<<77b6a81816eff29de7a95ccce85bff53>>
  */
 
 /**
@@ -100,10 +100,6 @@ class ReactNativeFeatureFlagsDefaults : public ReactNativeFeatureFlagsProvider {
   }
 
   bool enableDoubleMeasurementFixAndroid() override {
-    return false;
-  }
-
-  bool enableEagerMainQueueModulesOnIOS() override {
     return false;
   }
 

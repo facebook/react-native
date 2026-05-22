@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<a6fff34229abbd9beaa08bf39b379610>>
+ * @generated SignedSource<<a65763987ba462f3c46cd84dc8d75713>>
  */
 
 /**
@@ -100,10 +100,6 @@ bool ReactNativeFeatureFlags::enableDifferentiatorMutationVectorPreallocation() 
 
 bool ReactNativeFeatureFlags::enableDoubleMeasurementFixAndroid() {
   return getAccessor().enableDoubleMeasurementFixAndroid();
-}
-
-bool ReactNativeFeatureFlags::enableEagerMainQueueModulesOnIOS() {
-  return getAccessor().enableEagerMainQueueModulesOnIOS();
 }
 
 bool ReactNativeFeatureFlags::enableEagerRootViewAttachment() {
