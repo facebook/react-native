@@ -379,13 +379,10 @@ void RCTInstanceSetRuntimeDiagnosticFlags(NSString *flags)
      */
     NSArray<NSString *> *modulesRequiringMainQueueSetup = [_delegate unstableModulesRequiringMainQueueSetup];
 
-    std::shared_ptr<std::mutex> mutex = std::make_shared<std::mutex>();
-    std::shared_ptr<std::condition_variable> cv = std::make_shared<std::condition_variable>();
-    std::shared_ptr<bool> isReady = std::make_shared<bool>(false);
+    dispatch_semaphore_t moduleSetupComplete = dispatch_semaphore_create(0);
 
     _waitUntilModuleSetupComplete = ^{
-      std::unique_lock<std::mutex> lock(*mutex);
-      cv->wait(lock, [isReady] { return *isReady; });
+      dispatch_semaphore_wait(moduleSetupComplete, DISPATCH_TIME_FOREVER);
     };
 
     // TODO(T218039767): Integrate perf logging into main queue module init
@@ -398,9 +395,7 @@ void RCTInstanceSetRuntimeDiagnosticFlags(NSString *flags)
       RCTScreenScale();
       RCTSwitchSize();
 
-      std::lock_guard<std::mutex> lock(*mutex);
-      *isReady = true;
-      cv->notify_all();
+      dispatch_semaphore_signal(moduleSetupComplete);
     });
   }
 
