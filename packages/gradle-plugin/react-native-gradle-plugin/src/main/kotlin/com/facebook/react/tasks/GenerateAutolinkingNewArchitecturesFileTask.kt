@@ -14,6 +14,8 @@ import java.io.File
 import org.gradle.api.DefaultTask
 import org.gradle.api.file.DirectoryProperty
 import org.gradle.api.file.RegularFileProperty
+import org.gradle.api.provider.MapProperty
+import org.gradle.api.tasks.Input
 import org.gradle.api.tasks.InputFile
 import org.gradle.api.tasks.OutputDirectory
 import org.gradle.api.tasks.TaskAction
@@ -22,11 +24,14 @@ abstract class GenerateAutolinkingNewArchitecturesFileTask : DefaultTask() {
 
   init {
     group = "react"
+    generatedPureCxxCmakeListsPaths.convention(emptyMap<String, String>())
   }
 
   @get:InputFile abstract val autolinkInputFile: RegularFileProperty
 
   @get:OutputDirectory abstract val generatedOutputDirectory: DirectoryProperty
+
+  @get:Input abstract val generatedPureCxxCmakeListsPaths: MapProperty<String, String>
 
   @TaskAction
   fun taskAction() {
@@ -55,7 +60,7 @@ abstract class GenerateAutolinkingNewArchitecturesFileTask : DefaultTask() {
         packages.joinToString("\n") { dep ->
           var addDirectoryString = ""
           val libraryName = dep.libraryName
-          val cmakeListsPath = dep.cmakeListsPath
+          val cmakeListsPath = cmakeListsPathForDependency(dep)
           val cxxModuleCMakeListsPath = dep.cxxModuleCMakeListsPath
           if (libraryName != null && cmakeListsPath != null) {
             // If user provided a custom cmakeListsPath, let's honor it.
@@ -94,6 +99,12 @@ abstract class GenerateAutolinkingNewArchitecturesFileTask : DefaultTask() {
         }
 
     return CMAKE_TEMPLATE.replace("{{ libraryIncludes }}", libraryIncludes)
+  }
+
+  private fun cmakeListsPathForDependency(
+      dep: ModelAutolinkingDependenciesPlatformAndroidJson
+  ): String? {
+    return dep.cmakeListsPath ?: dep.libraryName?.let { generatedPureCxxCmakeListsPaths.get()[it] }
   }
 
   internal fun generateCppFileContent(

@@ -41,6 +41,7 @@ class GenerateAutolinkingNewArchitecturesFileTaskTest {
 
     assertThat(task.generatedOutputDirectory.get().asFile).isEqualTo(outputFolder)
     assertThat(task.generatedOutputDirectory.get().asFile).isEqualTo(outputFolder)
+    assertThat(task.generatedPureCxxCmakeListsPaths.get()).isEmpty()
   }
 
   @Test
@@ -176,6 +177,80 @@ class GenerateAutolinkingNewArchitecturesFileTaskTest {
             """
                 .trimIndent()
         )
+  }
+
+  @Test
+  fun generateCmakeFileContent_withGeneratedPureCxxPath_usesItWhenCmakeListsPathIsMissing() {
+    val task =
+        createTestTask<GenerateAutolinkingNewArchitecturesFileTask> {
+          it.generatedPureCxxCmakeListsPaths.set(
+              mapOf("aPackage" to "./generated/pureCxx/aPackage/jni/CMakeLists.txt")
+          )
+        }
+
+    val output =
+        task.generateCmakeFileContent(
+            listOf(
+                ModelAutolinkingDependenciesPlatformAndroidJson(
+                    sourceDir = "./a/directory",
+                    packageImportPath = "import com.facebook.react.aPackage;",
+                    packageInstance = "new APackage()",
+                    buildTypes = emptyList(),
+                    libraryName = "aPackage",
+                )
+            )
+        )
+
+    assertThat(output)
+        .contains(
+            """
+            if(EXISTS "./generated/pureCxx/aPackage/jni/")
+              add_subdirectory("./generated/pureCxx/aPackage/jni/" aPackage_autolinked_build)
+              list(APPEND AUTOLINKED_LIBRARIES react_codegen_aPackage)
+            else()
+              message(WARNING "React Native: Skipping autolinked library 'react_codegen_aPackage' because the source directory does not exist: ./generated/pureCxx/aPackage/jni/")
+            endif()
+            """
+                .trimIndent()
+        )
+  }
+
+  @Test
+  fun generateCmakeFileContent_withGeneratedPureCxxPath_preservesCmakeListsPath() {
+    val task =
+        createTestTask<GenerateAutolinkingNewArchitecturesFileTask> {
+          it.generatedPureCxxCmakeListsPaths.set(
+              mapOf("aPackage" to "./generated/pureCxx/aPackage/jni/CMakeLists.txt")
+          )
+        }
+
+    val output =
+        task.generateCmakeFileContent(
+            listOf(
+                ModelAutolinkingDependenciesPlatformAndroidJson(
+                    sourceDir = "./a/directory",
+                    packageImportPath = "import com.facebook.react.aPackage;",
+                    packageInstance = "new APackage()",
+                    buildTypes = emptyList(),
+                    libraryName = "aPackage",
+                    cmakeListsPath = "./a/directory/CMakeLists.txt",
+                )
+            )
+        )
+
+    assertThat(output)
+        .contains(
+            """
+            if(EXISTS "./a/directory/")
+              add_subdirectory("./a/directory/" aPackage_autolinked_build)
+              list(APPEND AUTOLINKED_LIBRARIES react_codegen_aPackage)
+            else()
+              message(WARNING "React Native: Skipping autolinked library 'react_codegen_aPackage' because the source directory does not exist: ./a/directory/")
+            endif()
+            """
+                .trimIndent()
+        )
+    assertThat(output).doesNotContain("./generated/pureCxx/aPackage/jni/")
   }
 
   @Test
