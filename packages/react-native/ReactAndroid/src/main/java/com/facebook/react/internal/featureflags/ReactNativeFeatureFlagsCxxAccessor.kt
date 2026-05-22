@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<494ed85c58f80b4feb6fb9b83fe7a27e>>
+ * @generated SignedSource<<ac5eda3a3d3570fa615c8ed816b1fda5>>
  */
 
 /**
@@ -39,7 +39,6 @@ internal class ReactNativeFeatureFlagsCxxAccessor : ReactNativeFeatureFlagsAcces
   private var enableDestroyShadowTreeRevisionAsyncCache: Boolean? = null
   private var enableDifferentiatorMutationVectorPreallocationCache: Boolean? = null
   private var enableDoubleMeasurementFixAndroidCache: Boolean? = null
-  private var enableEagerMainQueueModulesOnIOSCache: Boolean? = null
   private var enableEagerRootViewAttachmentCache: Boolean? = null
   private var enableExclusivePropsUpdateAndroidCache: Boolean? = null
   private var enableFabricCommitBranchingCache: Boolean? = null
@@ -278,15 +277,6 @@ internal class ReactNativeFeatureFlagsCxxAccessor : ReactNativeFeatureFlagsAcces
     if (cached == null) {
       cached = ReactNativeFeatureFlagsCxxInterop.enableDoubleMeasurementFixAndroid()
       enableDoubleMeasurementFixAndroidCache = cached
-    }
-    return cached
-  }
-
-  override fun enableEagerMainQueueModulesOnIOS(): Boolean {
-    var cached = enableEagerMainQueueModulesOnIOSCache
-    if (cached == null) {
-      cached = ReactNativeFeatureFlagsCxxInterop.enableEagerMainQueueModulesOnIOS()
-      enableEagerMainQueueModulesOnIOSCache = cached
     }
     return cached
   }

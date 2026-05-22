@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<0eb12f4ad26d7d2b558057e3a6bf2de7>>
+ * @generated SignedSource<<b572270a609542229263ba661247eb06>>
  */
 
 /**
@@ -73,8 +73,6 @@ class NativeReactNativeFeatureFlags
   bool enableDifferentiatorMutationVectorPreallocation(jsi::Runtime& runtime);
 
   bool enableDoubleMeasurementFixAndroid(jsi::Runtime& runtime);
-
-  bool enableEagerMainQueueModulesOnIOS(jsi::Runtime& runtime);
 
   bool enableEagerRootViewAttachment(jsi::Runtime& runtime);
 

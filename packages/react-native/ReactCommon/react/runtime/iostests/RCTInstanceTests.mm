@@ -15,24 +15,8 @@
 #import <ReactCommon/RCTInstance.h>
 #import <ReactCommon/RCTTurboModule.h>
 #import <ReactCommon/RCTTurboModuleManager.h>
-#import <react/featureflags/ReactNativeFeatureFlags.h>
-#import <react/featureflags/ReactNativeFeatureFlagsDefaults.h>
 
 using namespace facebook::react;
-
-namespace {
-class EagerMainQueueOverride : public ReactNativeFeatureFlagsDefaults {
- public:
-  explicit EagerMainQueueOverride(bool enabled) : enabled_(enabled) {}
-  bool enableEagerMainQueueModulesOnIOS() override
-  {
-    return enabled_;
-  }
-
- private:
-  bool enabled_;
-};
-} // namespace
 
 @interface FakeEagerModule : NSObject <RCTBridgeModule, RCTTurboModule>
 @property (class, readonly) NSCountedSet<NSString *> *initCounts;
@@ -114,7 +98,6 @@ static void (^sOnInit)(void);
 - (void)setUp
 {
   [super setUp];
-  ReactNativeFeatureFlags::dangerouslyReset();
   [FakeEagerModule reset];
 
   _mockDelegate = OCMProtocolMock(@protocol(RCTInstanceDelegate));
@@ -137,7 +120,6 @@ static void (^sOnInit)(void);
     [[NSNotificationCenter defaultCenter] removeObserver:_bundleLoadObserver];
     _bundleLoadObserver = nil;
   }
-  ReactNativeFeatureFlags::dangerouslyReset();
   [FakeEagerModule reset];
   _mockDelegate = nil;
   _mockTMMDelegate = nil;
@@ -165,20 +147,8 @@ static void (^sOnInit)(void);
                                  launchOptions:nil];
 }
 
-- (void)testFlagOff_doesNotConsultDelegate
+- (void)testConsultsDelegateExactlyOnce
 {
-  OCMReject([_mockDelegate unstableModulesRequiringMainQueueSetup]);
-
-  RCTInstance *instance = [self makeInstance];
-
-  XCTAssertEqual([FakeEagerModule.initCounts countForObject:FakeEagerModule.moduleName], 0u);
-
-  [instance invalidate];
-}
-
-- (void)testFlagOn_consultsDelegateExactlyOnce
-{
-  ReactNativeFeatureFlags::override(std::make_unique<EagerMainQueueOverride>(true));
   OCMStub([_mockDelegate unstableModulesRequiringMainQueueSetup]).andReturn(@[]);
 
   RCTInstance *instance = [self makeInstance];
@@ -188,9 +158,8 @@ static void (^sOnInit)(void);
   [instance invalidate];
 }
 
-- (void)testFlagOn_instantiatesRequestedModuleOnMainQueue
+- (void)testInstantiatesRequestedModuleOnMainQueue
 {
-  ReactNativeFeatureFlags::override(std::make_unique<EagerMainQueueOverride>(true));
   OCMStub([_mockDelegate unstableModulesRequiringMainQueueSetup]).andReturn(@[ FakeEagerModule.moduleName ]);
 
   RCTInstance *instance = [self makeInstance];
@@ -203,9 +172,8 @@ static void (^sOnInit)(void);
   [instance invalidate];
 }
 
-- (void)testFlagOn_bundleLoadAwaitsMainQueueModuleSetup
+- (void)testBundleLoadAwaitsMainQueueModuleSetup
 {
-  ReactNativeFeatureFlags::override(std::make_unique<EagerMainQueueOverride>(true));
   OCMStub([_mockDelegate unstableModulesRequiringMainQueueSetup]).andReturn(@[ FakeEagerModule.moduleName ]);
 
   // Hand the instance an empty bundle the moment it asks for one. The JS thread

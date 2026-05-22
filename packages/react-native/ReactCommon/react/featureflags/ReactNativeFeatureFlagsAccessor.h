@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<fda7bc739026295c2acd473ad6786942>>
+ * @generated SignedSource<<0dd9d8307ff12ff45ba01544f36f7f68>>
  */
 
 /**
@@ -51,7 +51,6 @@ class ReactNativeFeatureFlagsAccessor {
   bool enableDestroyShadowTreeRevisionAsync();
   bool enableDifferentiatorMutationVectorPreallocation();
   bool enableDoubleMeasurementFixAndroid();
-  bool enableEagerMainQueueModulesOnIOS();
   bool enableEagerRootViewAttachment();
   bool enableExclusivePropsUpdateAndroid();
   bool enableFabricCommitBranching();
@@ -133,7 +132,7 @@ class ReactNativeFeatureFlagsAccessor {
   std::unique_ptr<ReactNativeFeatureFlagsProvider> currentProvider_;
   bool wasOverridden_;
 
-  std::array<std::atomic<const char*>, 90> accessedFeatureFlags_;
+  std::array<std::atomic<const char*>, 89> accessedFeatureFlags_;
 
   std::atomic<std::optional<bool>> commonTestFlag_;
   std::atomic<std::optional<bool>> cdpInteractionMetricsEnabled_;
@@ -154,7 +153,6 @@ class ReactNativeFeatureFlagsAccessor {
   std::atomic<std::optional<bool>> enableDestroyShadowTreeRevisionAsync_;
   std::atomic<std::optional<bool>> enableDifferentiatorMutationVectorPreallocation_;
   std::atomic<std::optional<bool>> enableDoubleMeasurementFixAndroid_;
-  std::atomic<std::optional<bool>> enableEagerMainQueueModulesOnIOS_;
   std::atomic<std::optional<bool>> enableEagerRootViewAttachment_;
   std::atomic<std::optional<bool>> enableExclusivePropsUpdateAndroid_;
   std::atomic<std::optional<bool>> enableFabricCommitBranching_;
