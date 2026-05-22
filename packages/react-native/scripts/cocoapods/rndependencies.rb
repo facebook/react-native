@@ -70,7 +70,7 @@ class ReactNativeDependenciesUtils
         if ENV["RCT_USE_LOCAL_RN_DEP"]
             abort_if_use_local_rndeps_with_no_file()
             rndeps_log("Using local xcframework at #{ENV["RCT_USE_LOCAL_RN_DEP"]}")
-            return {:http => "file://#{ENV["RCT_USE_LOCAL_RN_DEP"]}" }
+            return {:http => ReactNativePodsUtils.local_file_uri(ENV["RCT_USE_LOCAL_RN_DEP"]) }
         end
 
         if ENV["RCT_USE_RN_DEP"] && ENV["RCT_USE_RN_DEP"] == "1"
