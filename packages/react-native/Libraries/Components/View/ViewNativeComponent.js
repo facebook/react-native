@@ -42,5 +42,3 @@ export const Commands: NativeCommands = codegenNativeCommands<NativeCommands>({
 // Additional note: Our long term plan is to reduce the overhead of the <Text>
 // and <View> wrappers so that we no longer have any reason to export these APIs.
 export default ViewNativeComponent;
-
-export type ViewNativeComponentType = HostComponent<Props>;
