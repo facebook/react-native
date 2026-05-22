@@ -202,9 +202,10 @@ class ReactPlugin : Plugin<Project> {
               task.libraryName.set(localExtension.libraryName)
             },
             onlyIf = { packageJson ->
-              // Please note that appNeedsCodegen is triggering a read of the package.json at
-              // configuration time as we need to feed the onlyIf condition of this task.
-              // Therefore, the appNeedsCodegen needs to be invoked inside this lambda.
+              // Please note that needsCodegenFromPackageJson is triggering a read of the
+              // package.json at configuration time as we need to feed the onlyIf condition of this
+              // task. Therefore, needsCodegenFromPackageJson needs to be invoked inside this
+              // lambda.
               val needsCodegenFromPackageJson =
                   project.needsCodegenFromPackageJson(rootExtension.root)
               val parsedPackageJson = packageJson?.let { JsonUtils.fromPackageJson(it) }
@@ -215,7 +216,7 @@ class ReactPlugin : Plugin<Project> {
         )
 
     // We update the android configuration to include the generated sources.
-    // This equivalent to this DSL:
+    // This is equivalent to this DSL:
     //
     // android { sourceSets { main { java { srcDirs += "$generatedSrcDir/java" } } } }
     if (isLibrary) {
@@ -270,7 +271,7 @@ class ReactPlugin : Plugin<Project> {
 
                 tree.exclude("node_modules/**/*")
                 tree.exclude("**/*.d.ts")
-                // We want to exclude the build directory, to don't pick them up for execution
+                // We want to exclude the build directory, to avoid picking them up for execution
                 // avoidance.
                 tree.exclude("**/build/**/*")
               }
@@ -331,9 +332,7 @@ class ReactPlugin : Plugin<Project> {
             pureCxxDependencies,
         )
 
-    // We add a task called generateAutolinkingPackageList to do not clash with the existing task
-    // called generatePackageList. This can to be renamed once we unlink the rn <-> cli
-    // dependency.
+    // We add a task called generateReactNativeEntryPoint to generate the React Native entry point.
     val generatePackageListTask =
         project.tasks.register(
             "generateAutolinkingPackageList",
@@ -374,9 +373,8 @@ class ReactPlugin : Plugin<Project> {
         .named("preBuild", Task::class.java)
         .dependsOn(generateAutolinkingNewArchitectureFilesTask)
 
-    // We let generateAutolinkingPackageList and generateEntryPoint depend on the preBuild task so
-    // it's executed before
-    // everything else.
+    // We make preBuild depend on generateAutolinkingPackageList and generateEntryPoint so they run
+    // before everything else.
     project.tasks
         .named("preBuild", Task::class.java)
         .dependsOn(generatePackageListTask, generateEntryPointTask)
