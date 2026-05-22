@@ -41,10 +41,6 @@ const buildConfig: BuildConfig = {
     'community-cli-plugin': {
       target: 'node',
     },
-    'core-cli-utils': {
-      emitTypeScriptDefs: true,
-      target: 'node',
-    },
     'debugger-shell': {
       emitTypeScriptDefs: true,
       target: 'node',

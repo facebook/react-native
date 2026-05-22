@@ -8,16 +8,18 @@
  * @format
  */
 
+/*::
 import type {Task} from './types';
+*/
 
-import execa from 'execa';
-import os from 'os';
+const execa = require('execa');
+const os = require('os');
 
-export function task<R>(
-  order: number,
-  label: string,
-  action: Task<R>['action'],
-): Task<R> {
+function task /*:: <R> */(
+  order /*: number */,
+  label /*: string */,
+  action /*: Task<R>['action'] */,
+) /*: Task<R> */ {
   return {
     action,
     label,
@@ -25,19 +27,24 @@ export function task<R>(
   };
 }
 
-export const isWindows = os.platform() === 'win32';
-export const isMacOS = os.platform() === 'darwin';
+const isWindows = os.platform() === 'win32';
+const isMacOS = os.platform() === 'darwin';
 
-export const toPascalCase = (label: string): string =>
+const toPascalCase = (label /*: string */) /*: string */ =>
   label.length === 0 ? '' : label[0].toUpperCase() + label.slice(1);
 
+/*::
 type PathCheckResult = {
   found: boolean,
   dep: string,
   description: string,
 };
+*/
 
-export function isOnPath(dep: string, description: string): PathCheckResult {
+function isOnPath(
+  dep /*: string */,
+  description /*: string */,
+) /*: PathCheckResult */ {
   const cmd = isWindows ? ['where', [dep]] : ['command', ['-v', dep]];
   try {
     return {
@@ -54,8 +61,8 @@ export function isOnPath(dep: string, description: string): PathCheckResult {
   }
 }
 
-export function assertDependencies(
-  ...deps: ReadonlyArray<ReturnType<typeof isOnPath>>
+function assertDependencies(
+  ...deps /*: ReadonlyArray<ReturnType<typeof isOnPath>> */
 ) {
   for (const {found, dep, description} of deps) {
     if (!found) {
@@ -63,3 +70,12 @@ export function assertDependencies(
     }
   }
 }
+
+module.exports = {
+  assertDependencies,
+  isMacOS,
+  isOnPath,
+  isWindows,
+  task,
+  toPascalCase,
+};

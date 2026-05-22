@@ -20,7 +20,7 @@
     "@babel/preset-env": "^7.25.3",
     "@babel/runtime": "^7.25.0",
     "@react-native/babel-preset": "0.87.0-main",
-    "@react-native/core-cli-utils": "0.87.0-main",
+    "@react-native/core-cli-utils": "*",
     "@react-native/eslint-config": "0.87.0-main",
     "@react-native/metro-config": "0.87.0-main",
     "@react-native/typescript-config": "0.87.0-main",
