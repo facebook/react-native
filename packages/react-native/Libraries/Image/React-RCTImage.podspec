@@ -41,7 +41,7 @@ Pod::Spec.new do |s|
                                "HEADER_SEARCH_PATHS" => header_search_paths.join(' '),
                                "DEFINES_MODULE" => "YES"
                              }
-  s.framework              = ["Accelerate", "UIKit", "QuartzCore", "ImageIO", "CoreGraphics"]
+  s.framework              = ["Accelerate", "UIKit", "QuartzCore", "ImageIO", "CoreGraphics", "UniformTypeIdentifiers"]
 
   s.dependency "RCTTypeSafety"
   s.dependency "React-jsi"
