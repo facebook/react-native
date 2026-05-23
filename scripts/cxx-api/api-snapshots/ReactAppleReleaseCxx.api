@@ -2850,6 +2850,7 @@ protocol NativeSampleTurboModuleSpec : public NSObjectRCTBridgeModule, public RC
   public virtual NSDictionary* getObjectThrows:(NSDictionary* arg);
   public virtual NSDictionary* getUnsafeObject:(NSDictionary* arg);
   public virtual NSDictionary* getValue:y:z:(double x, NSString* y, NSDictionary* z);
+  public virtual NSNumber* getBigInt:(NSNumber* arg);
   public virtual NSNumber* getBool:(BOOL arg);
   public virtual NSNumber* getEnum:(double arg);
   public virtual NSNumber* getNumber:(double arg);

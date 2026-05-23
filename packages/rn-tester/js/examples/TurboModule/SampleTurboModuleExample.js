@@ -41,6 +41,7 @@ type Examples =
   | 'getStrEnum'
   | 'getMap'
   | 'getNumber'
+  | 'getBigInt'
   | 'getObject'
   | 'getSet'
   | 'getString'
@@ -94,6 +95,8 @@ class SampleTurboModuleExample extends React.Component<{}, State> {
         ? NativeSampleTurboModule.getEnum(EnumInt.A)
         : null,
     getNumber: () => NativeSampleTurboModule.getNumber(99.95),
+    getBigInt: () =>
+      NativeSampleTurboModule?.getBigInt(BigInt('9223372036854775807')),
     getString: () => NativeSampleTurboModule.getString('Hello'),
     getArray: () =>
       NativeSampleTurboModule.getArray([
@@ -195,7 +198,9 @@ class SampleTurboModuleExample extends React.Component<{}, State> {
     return (
       <View style={styles.result}>
         <RNTesterText style={[styles.value]}>
-          {JSON.stringify(result.value)}
+          {typeof result.value === 'bigint'
+            ? result.value.toString()
+            : JSON.stringify(result.value)}
         </RNTesterText>
         <RNTesterText style={[styles.type]}>{result.type}</RNTesterText>
       </View>
