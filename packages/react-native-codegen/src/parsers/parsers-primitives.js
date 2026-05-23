@@ -11,7 +11,7 @@
 'use strict';
 
 import type {
-  ArrayBufferTypeAnnotation,
+  BigIntTypeAnnotation,
   BooleanLiteralTypeAnnotation,
   BooleanTypeAnnotation,
   DoubleTypeAnnotation,
@@ -86,6 +86,12 @@ function emitInt32Prop(
       type: 'Int32TypeAnnotation',
     },
   };
+}
+
+function emitBigInt(nullable: boolean): Nullable<BigIntTypeAnnotation> {
+  return wrapNullable(nullable, {
+    type: 'BigIntTypeAnnotation',
+  });
 }
 
 function emitNumber(
@@ -664,6 +670,8 @@ function emitCommonTypes(
   const typeMap = {
     Stringish: emitStringish,
     Int32: emitInt32,
+    BigInt: emitBigInt,
+    BigIntTypeAnnotation: emitBigInt,
     Double: emitDouble,
     Float: emitFloat,
     UnsafeObject: emitGenericObject,
