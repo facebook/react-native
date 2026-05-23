@@ -89,7 +89,7 @@ export interface NativeUIEvent {
   /**
    * Returns a long with details about the event, depending on the event type.
    */
-  +detail: number;
+  readonly detail: number;
 }
 
 /**
@@ -99,72 +99,72 @@ export interface NativeMouseEvent extends NativeUIEvent {
   /**
    * The X coordinate of the mouse pointer in global (screen) coordinates.
    */
-  +screenX: number;
+  readonly screenX: number;
   /**
    * The Y coordinate of the mouse pointer in global (screen) coordinates.
    */
-  +screenY: number;
+  readonly screenY: number;
   /**
    * The X coordinate of the mouse pointer relative to the whole document.
    */
-  +pageX: number;
+  readonly pageX: number;
   /**
    * The Y coordinate of the mouse pointer relative to the whole document.
    */
-  +pageY: number;
+  readonly pageY: number;
   /**
    * The X coordinate of the mouse pointer in local (DOM content) coordinates.
    */
-  +clientX: number;
+  readonly clientX: number;
   /**
    * The Y coordinate of the mouse pointer in local (DOM content) coordinates.
    */
-  +clientY: number;
+  readonly clientY: number;
   /**
    * Alias for NativeMouseEvent.clientX
    */
-  +x: number;
+  readonly x: number;
   /**
    * Alias for NativeMouseEvent.clientY
    */
-  +y: number;
+  readonly y: number;
   /**
    * Returns true if the control key was down when the mouse event was fired.
    */
-  +ctrlKey: boolean;
+  readonly ctrlKey: boolean;
   /**
    * Returns true if the shift key was down when the mouse event was fired.
    */
-  +shiftKey: boolean;
+  readonly shiftKey: boolean;
   /**
    * Returns true if the alt key was down when the mouse event was fired.
    */
-  +altKey: boolean;
+  readonly altKey: boolean;
   /**
    * Returns true if the meta key was down when the mouse event was fired.
    */
-  +metaKey: boolean;
+  readonly metaKey: boolean;
   /**
    * The button number that was pressed (if applicable) when the mouse event was fired.
    */
-  +button: number;
+  readonly button: number;
   /**
    * The buttons being depressed (if any) when the mouse event was fired.
    */
-  +buttons: number;
+  readonly buttons: number;
   /**
    * The secondary target for the event, if there is one.
    */
-  +relatedTarget: null | number | HostInstance;
+  readonly relatedTarget: null | number | HostInstance;
   // offset is proposed: https://drafts.csswg.org/cssom-view/#extensions-to-the-mouseevent-interface
   /**
    * The X coordinate of the mouse pointer between that event and the padding edge of the target node
    */
-  +offsetX: number;
+  readonly offsetX: number;
   /**
    * The Y coordinate of the mouse pointer between that event and the padding edge of the target node
    */
-  +offsetY: number;
+  readonly offsetY: number;
 }
 
 /**
@@ -174,48 +174,48 @@ export interface NativePointerEvent extends NativeMouseEvent {
   /**
    * A unique identifier for the pointer causing the event.
    */
-  +pointerId: number;
+  readonly pointerId: number;
   /**
    * The width (magnitude on the X axis), in CSS pixels, of the contact geometry of the pointer
    */
-  +width: number;
+  readonly width: number;
   /**
    * The height (magnitude on the Y axis), in CSS pixels, of the contact geometry of the pointer.
    */
-  +height: number;
+  readonly height: number;
   /**
    * The normalized pressure of the pointer input in the range 0 to 1, where 0 and 1 represent
    * the minimum and maximum pressure the hardware is capable of detecting, respectively.
    */
-  +pressure: number;
+  readonly pressure: number;
   /**
    * The normalized tangential pressure of the pointer input (also known as barrel pressure or
    * cylinder stress) in the range -1 to 1, where 0 is the neutral position of the control.
    */
-  +tangentialPressure: number;
+  readonly tangentialPressure: number;
   /**
    * The plane angle (in degrees, in the range of -90 to 90) between the Y–Z plane and the plane
    * containing both the pointer (e.g. pen stylus) axis and the Y axis.
    */
-  +tiltX: number;
+  readonly tiltX: number;
   /**
    * The plane angle (in degrees, in the range of -90 to 90) between the X–Z plane and the plane
    * containing both the pointer (e.g. pen stylus) axis and the X axis.
    */
-  +tiltY: number;
+  readonly tiltY: number;
   /**
    * The clockwise rotation of the pointer (e.g. pen stylus) around its major axis in degrees,
    * with a value in the range 0 to 359.
    */
-  +twist: number;
+  readonly twist: number;
   /**
    * Indicates the device type that caused the event (mouse, pen, touch, etc.)
    */
-  +pointerType: string;
+  readonly pointerType: string;
   /**
    * Indicates if the pointer represents the primary pointer of this pointer type.
    */
-  +isPrimary: boolean;
+  readonly isPrimary: boolean;
 }
 
 export type PointerEvent = NativeSyntheticEvent<NativePointerEvent>;
