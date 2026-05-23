@@ -1158,6 +1158,18 @@ class facebook::react::BaseViewProps : public facebook::react::YogaStylableProps
   public void setProp(const facebook::react::PropsParserContext& context, facebook::react::RawPropsPropNameHash hash, const char* propName, const facebook::react::RawValue& value);
 }
 
+class facebook::react::BigInt {
+  public BigInt(facebook::jsi::Runtime& rt, const facebook::jsi::BigInt& bigint);
+  public BigInt(int64_t value);
+  public BigInt(uint64_t value);
+  public bool isInt64() const;
+  public bool isUint64() const;
+  public bool operator==(const facebook::react::BigInt& other) const = default;
+  public facebook::jsi::BigInt toJSBigInt(facebook::jsi::Runtime& rt) const;
+  public int64_t asInt64() const;
+  public uint64_t asUint64() const;
+}
+
 class facebook::react::BigStringBuffer : public facebook::jsi::Buffer {
   public BigStringBuffer(std::unique_ptr<const facebook::react::JSBigString> script);
   public virtual const uint8_t* data() const override;
@@ -4917,6 +4929,7 @@ enum facebook::react::TransformOperationType : uint8_t {
 
 enum facebook::react::TurboModuleMethodValueKind {
   ArrayKind,
+  BigIntKind,
   BooleanKind,
   FunctionKind,
   NumberKind,
@@ -6669,8 +6682,9 @@ struct facebook::react::Bridging<facebook::jsi::WeakObject> {
   public static facebook::jsi::WeakObject fromJs(facebook::jsi::Runtime& rt, const facebook::jsi::Object& value);
 }
 
-struct facebook::react::Bridging<facebook::react::AsyncArrayBuffer> {
-  public static facebook::jsi::Value toJs(facebook::jsi::Runtime& rt, facebook::react::AsyncArrayBuffer buffer);
+struct facebook::react::Bridging<facebook::react::BigInt> {
+  public static facebook::jsi::BigInt toJs(facebook::jsi::Runtime& rt, const facebook::react::BigInt& value);
+  public static facebook::react::BigInt fromJs(facebook::jsi::Runtime& rt, const facebook::jsi::Value& value);
 }
 
 struct facebook::react::Bridging<facebook::react::EndResult> : public NativeAnimatedTurboModuleEndResultBridging<facebook::react::EndResult> {
