@@ -25,7 +25,7 @@ export interface VirtualCollection<out T extends Item> {
    * or a getter function that is computed on access. However, it should remain
    * constant for the lifetime of this object.
    */
-  +size: number;
+  readonly size: number;
 
   /**
    * If an item exists at the supplied index, this should return a consistent
@@ -41,8 +41,8 @@ export interface VirtualCollection<out T extends Item> {
  * array is eagerly allocated.
  */
 export class VirtualArray<out T extends Item> implements VirtualCollection<T> {
-  +size: number;
-  +at: (index: number) => T;
+  readonly size: number;
+  readonly at: (index: number) => T;
 
   constructor(input: Readonly<$ArrayLike<T>>) {
     const array = [...input];

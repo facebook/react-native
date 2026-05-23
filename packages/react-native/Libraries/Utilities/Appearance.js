@@ -30,14 +30,14 @@ type Appearance = {
 };
 
 let lazyState: ?{
-  +NativeAppearance: INativeAppearance,
+  readonly NativeAppearance: INativeAppearance,
   // Cache the color scheme to reduce the cost of reading it between changes.
   // NOTE: If `NativeAppearance` is null, this will always be null.
   appearance: ?Appearance,
   // NOTE: This is non-nullable to make it easier for `onChangedListener` to
   // return a non-nullable `EventSubscription` value. This is not the common
   // path, so we do not have to over-optimize it.
-  +eventEmitter: EventEmitter<{change: [Appearance]}>,
+  readonly eventEmitter: EventEmitter<{change: [Appearance]}>,
 };
 
 /**

@@ -26,20 +26,23 @@ type NativeProps = Readonly<{
 type NativeType = HostComponent<NativeProps>;
 
 interface NativeCommands {
-  +methodInt: (viewRef: React.ElementRef<NativeType>, a: Array<Int32>) => void;
-  +methodString: (
+  readonly methodInt: (
+    viewRef: React.ElementRef<NativeType>,
+    a: Array<Int32>,
+  ) => void;
+  readonly methodString: (
     viewRef: React.ElementRef<NativeType>,
     a: Array<string>,
   ) => void;
-  +methodBool: (
+  readonly methodBool: (
     viewRef: React.ElementRef<NativeType>,
     a: Array<boolean>,
   ) => void;
-  +methodFloat: (
+  readonly methodFloat: (
     viewRef: React.ElementRef<NativeType>,
     a: Array<Float>,
   ) => void;
-  +methodDouble: (
+  readonly methodDouble: (
     viewRef: React.ElementRef<NativeType>,
     a: Array<Double>,
   ) => void;

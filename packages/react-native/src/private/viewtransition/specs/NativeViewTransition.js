@@ -13,7 +13,7 @@ import type {TurboModule} from '../../../../Libraries/TurboModule/RCTExport';
 import * as TurboModuleRegistry from '../../../../Libraries/TurboModule/TurboModuleRegistry';
 
 export interface Spec extends TurboModule {
-  +getViewTransitionInstance: (
+  readonly getViewTransitionInstance: (
     name: string,
     pseudo: string,
   ) => ?{
@@ -23,9 +23,11 @@ export interface Spec extends TurboModule {
     height: number,
     nativeTag: number,
   };
-  +findPseudoElementShadowNodeByTag: (reactTag: number) => ?unknown /* Node */;
-  +waitForTransitionAnimation: (animationId: number) => void;
-  +transitionAnimationFinished: (animationId: number) => void;
+  readonly findPseudoElementShadowNodeByTag: (
+    reactTag: number,
+  ) => ?unknown /* Node */;
+  readonly waitForTransitionAnimation: (animationId: number) => void;
+  readonly transitionAnimationFinished: (animationId: number) => void;
 }
 
 export default TurboModuleRegistry.get<Spec>(

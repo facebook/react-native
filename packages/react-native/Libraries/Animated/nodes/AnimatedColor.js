@@ -30,18 +30,18 @@ export type AnimatedColorConfig = Readonly<{
 type ColorListenerCallback = (value: ColorValue) => unknown;
 
 export type RgbaValue = {
-  +r: number,
-  +g: number,
-  +b: number,
-  +a: number,
+  readonly r: number,
+  readonly g: number,
+  readonly b: number,
+  readonly a: number,
   ...
 };
 
 type RgbaAnimatedValue = {
-  +r: AnimatedValue,
-  +g: AnimatedValue,
-  +b: AnimatedValue,
-  +a: AnimatedValue,
+  readonly r: AnimatedValue,
+  readonly g: AnimatedValue,
+  readonly b: AnimatedValue,
+  readonly a: AnimatedValue,
   ...
 };
 
