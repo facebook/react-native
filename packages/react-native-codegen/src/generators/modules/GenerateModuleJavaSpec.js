@@ -155,6 +155,9 @@ function translateEventEmitterTypeToJavaType(
     case 'DoubleTypeAnnotation':
     case 'Int32TypeAnnotation':
       return 'double';
+    case 'BigIntTypeAnnotation':
+      imports.add('java.math.BigInteger');
+      return 'BigInteger';
     case 'BooleanTypeAnnotation':
     case 'BooleanLiteralTypeAnnotation':
       return 'boolean';
@@ -267,9 +270,11 @@ function translateFunctionParamToJavaType(
     case 'FunctionTypeAnnotation':
       imports.add('com.facebook.react.bridge.Callback');
       return wrapOptional('Callback', isRequired);
-    case 'ArrayBufferTypeAnnotation':
+    case 'BigIntTypeAnnotation':
       throw new Error(
-        `${createErrorMessage(realTypeAnnotation.type)} ArrayBuffer is only supported for C++ TurboModules.`,
+        createErrorMessage(
+          `${realTypeAnnotation.type} is not supported in Java TurboModules yet`,
+        ),
       );
     default:
       realTypeAnnotation.type as 'MixedTypeAnnotation';
@@ -365,9 +370,11 @@ function translateFunctionReturnTypeToJavaType(
     case 'ArrayTypeAnnotation':
       imports.add('com.facebook.react.bridge.WritableArray');
       return wrapOptional('WritableArray', isRequired);
-    case 'ArrayBufferTypeAnnotation':
+    case 'BigIntTypeAnnotation':
       throw new Error(
-        `${createErrorMessage(realTypeAnnotation.type)} ArrayBuffer is only supported for C++ TurboModules.`,
+        createErrorMessage(
+          `${realTypeAnnotation.type} is not supported in Java TurboModules yet`,
+        ),
       );
     default:
       realTypeAnnotation.type as 'MixedTypeAnnotation';
@@ -451,10 +458,8 @@ function getFalsyReturnStatementFromReturnType(
       return 'return null;';
     case 'ArrayTypeAnnotation':
       return 'return null;';
-    case 'ArrayBufferTypeAnnotation':
-      throw new Error(
-        `${createErrorMessage(realTypeAnnotation.type)} ArrayBuffer is only supported for C++ TurboModules.`,
-      );
+    case 'BigIntTypeAnnotation':
+      throw new Error(createErrorMessage(realTypeAnnotation.type));
     default:
       realTypeAnnotation.type as 'MixedTypeAnnotation';
       throw new Error(createErrorMessage(realTypeAnnotation.type));

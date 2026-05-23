@@ -393,6 +393,8 @@ class TypeScriptParser implements Parser {
         return 'ArrayTypeAnnotation';
       case 'TSBooleanKeyword':
         return 'BooleanTypeAnnotation';
+      case 'TSBigIntKeyword':
+        return 'BigIntTypeAnnotation';
       case 'TSNumberKeyword':
         return 'NumberTypeAnnotation';
       case 'TSVoidKeyword':
