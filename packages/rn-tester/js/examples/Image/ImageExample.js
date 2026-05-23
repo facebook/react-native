@@ -20,7 +20,7 @@ import RNTesterPlatformTest from '../Experimental/PlatformTest/RNTesterPlatformT
 import ImageCapInsetsExample from './ImageCapInsetsExample';
 import * as React from 'react';
 import {useEffect, useState} from 'react';
-import {Image, ImageBackground, StyleSheet, Text, View} from 'react-native';
+import {Image, ImageBackground, Platform, StyleSheet, Text, View} from 'react-native';
 
 const IMAGE1 =
   'https://www.facebook.com/assets/fb_lite_messaging/E2EE-settings@3x.png';
@@ -1136,7 +1136,13 @@ exports.examples = [
     render: function (): React.Node {
       return (
         <Image
-          defaultSource={require('../../assets/bunny.png')}
+          defaultSource={Platform.select({
+            ios: require('../../assets/bunny.png'),
+            // Android note:
+            // In development mode, require()'d images are not bundled into APK,
+            // so we use a different image that is known to be bundled.
+            android: __DEV__ ? { uri: "legacy_image" } : require('../../assets/alpha-hotdog.png'),
+          })}
           source={{
             // Note: Use a large image and bust cache so we can in fact
             // visualize the `defaultSource` image.
@@ -1146,7 +1152,6 @@ exports.examples = [
         />
       );
     },
-    platform: 'ios',
   },
   {
     title: 'Cache Policy',
