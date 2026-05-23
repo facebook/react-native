@@ -306,6 +306,7 @@ class NetworkEventUtilTest {
   @Test
   fun testGetRequestBodyPreviewReturnsBodyForStringRequest() {
     val payload = """{"key":"value"}"""
+    @Suppress("DEPRECATION")
     val body = RequestBody.create(MediaType.parse("application/json"), payload)
 
     assertThat(NetworkEventUtil.getRequestBodyPreview(body)).isEqualTo(payload)
@@ -314,7 +315,7 @@ class NetworkEventUtilTest {
   @Test
   fun testGetRequestBodyPreviewUnwrapsProgressRequestBody() {
     val payload = "hello world"
-    val inner = RequestBody.create(MediaType.parse("text/plain"), payload)
+    @Suppress("DEPRECATION") val inner = RequestBody.create(MediaType.parse("text/plain"), payload)
     val wrapped = ProgressRequestBody(inner) { _, _, _ -> }
 
     assertThat(NetworkEventUtil.getRequestBodyPreview(wrapped)).isEqualTo(payload)
