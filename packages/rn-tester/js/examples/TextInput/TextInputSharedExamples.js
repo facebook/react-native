@@ -1189,6 +1189,33 @@ module.exports = [
     render: () => <TextStylesExample />,
   },
   {
+    title: 'lineHeight baseline',
+    name: 'lineHeightBaseline',
+    render: function (): React.Node {
+      const inputStyle = {
+        fontSize: 16,
+        lineHeight: 32,
+        borderColor: '#ccc',
+        borderWidth: 1,
+        padding: 8,
+      };
+      return (
+        <View>
+          <WithLabel label="single-line">
+            <ExampleTextInput placeholder="placeholder" style={inputStyle} />
+          </WithLabel>
+          <WithLabel label="multi-line">
+            <ExampleTextInput
+              multiline
+              placeholder="placeholder"
+              style={inputStyle}
+            />
+          </WithLabel>
+        </View>
+      );
+    },
+  },
+  {
     title: 'showSoftInputOnFocus',
     render: function (): React.Node {
       return (

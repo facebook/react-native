@@ -11,6 +11,7 @@
 #import <React/UIView+React.h>
 
 #import <React/RCTBackedTextInputDelegateAdapter.h>
+#import <React/RCTBackedTextInputViewLineHeightUtils.h>
 #import <React/RCTTextAttributes.h>
 
 @implementation RCTUITextView {
@@ -364,6 +365,7 @@ static UIColor *defaultPlaceholderColor(void)
     [textAttributes setValue:defaultPlaceholderFont() forKey:NSFontAttributeName];
   }
 
+  RCTApplyPlaceholderBaselineOffset(textAttributes);
   return textAttributes;
 }
 
