@@ -8,6 +8,7 @@
 #include "NativeCxxModuleExample.h"
 #include <react/bridging/ArrayBuffer.h>
 #include <react/debug/react_native_assert.h>
+#include <cstdint>
 #include <iomanip>
 #include <numeric>
 #include <ostream>
@@ -326,5 +327,9 @@ AsyncPromise<> NativeCxxModuleExample::promiseAssert(jsi::Runtime& rt) {
   promise.reject("Asserts disabled");
   return promise;
 };
+
+BigInt NativeCxxModuleExample::getBigInt(jsi::Runtime& /*rt*/, BigInt arg) {
+  return arg;
+}
 
 } // namespace facebook::react
