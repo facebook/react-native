@@ -2,6 +2,16 @@
   "name": "helloworld",
   "version": "0.0.0",
   "private": true,
+  "codegenConfig": {
+    "name": "HelloWorldSpecs",
+    "type": "modules",
+    "jsSrcsDir": "specs",
+    "ios": {
+      "modulesProvider": {
+        "NativeCalculator": "NativeCalculatorProvider"
+      }
+    }
+  },
   "scripts": {
     "bootstrap": "node ./cli.js bootstrap",
     "build": "node ./cli.js build",
