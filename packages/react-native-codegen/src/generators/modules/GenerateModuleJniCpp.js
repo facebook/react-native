@@ -33,6 +33,7 @@ type JSReturnType =
   | 'StringKind'
   | 'BooleanKind'
   | 'NumberKind'
+  | 'BigIntKind'
   | 'PromiseKind'
   | 'ObjectKind'
   | 'ArrayKind';
@@ -208,6 +209,8 @@ function translateReturnTypeToKind(
       return 'NumberKind';
     case 'Int32TypeAnnotation':
       return 'NumberKind';
+    case 'BigIntTypeAnnotation':
+      return 'BigIntKind';
     case 'PromiseTypeAnnotation':
       return 'PromiseKind';
     case 'GenericObjectTypeAnnotation':
@@ -297,6 +300,8 @@ function translateParamTypeToJniType(
       return !isRequired ? 'Ljava/lang/Double;' : 'D';
     case 'Int32TypeAnnotation':
       return !isRequired ? 'Ljava/lang/Double;' : 'D';
+    case 'BigIntTypeAnnotation':
+      return 'Ljava/math/BigInteger;';
     case 'GenericObjectTypeAnnotation':
       return 'Lcom/facebook/react/bridge/ReadableMap;';
     case 'ObjectTypeAnnotation':
@@ -383,6 +388,8 @@ function translateReturnTypeToJniType(
       return nullable ? 'Ljava/lang/Double;' : 'D';
     case 'Int32TypeAnnotation':
       return nullable ? 'Ljava/lang/Double;' : 'D';
+    case 'BigIntTypeAnnotation':
+      return 'Ljava/math/BigInteger;';
     case 'PromiseTypeAnnotation':
       return 'Lcom/facebook/react/bridge/Promise;';
     case 'GenericObjectTypeAnnotation':

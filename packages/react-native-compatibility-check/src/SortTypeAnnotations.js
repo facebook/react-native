@@ -113,6 +113,7 @@ export function compareTypeAnnotationForSorting(
       );
     case 'NumberTypeAnnotation':
     case 'Int32TypeAnnotation':
+    case 'BigIntTypeAnnotation':
     case 'FloatTypeAnnotation':
     case 'DoubleTypeAnnotation':
       return 0;
@@ -284,7 +285,7 @@ function typeAnnotationArbitraryOrder(annotation: CompleteTypeAnnotation) {
       return 28;
     case 'UnionTypeAnnotation':
       return 30;
-    case 'ArrayBufferTypeAnnotation':
+    case 'BigIntTypeAnnotation':
       return 31;
     default:
       annotation.type as empty;

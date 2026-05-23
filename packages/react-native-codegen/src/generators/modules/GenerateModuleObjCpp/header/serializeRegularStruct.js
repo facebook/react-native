@@ -106,6 +106,8 @@ function toObjCValue(
       return RCTBridgingTo('Double');
     case 'Int32TypeAnnotation':
       return RCTBridgingTo('Double');
+    case 'BigIntTypeAnnotation':
+      return RCTBridgingTo('NSNumber');
     case 'DoubleTypeAnnotation':
       return RCTBridgingTo('Double');
     case 'BooleanTypeAnnotation':
