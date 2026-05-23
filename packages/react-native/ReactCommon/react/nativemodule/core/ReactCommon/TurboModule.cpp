@@ -21,6 +21,8 @@ TurboModuleMethodValueKind getTurboModuleMethodValueKind(
     return NumberKind;
   } else if (value->isString()) {
     return StringKind;
+  } else if (value->isBigInt()) {
+    return BigIntKind;
   } else if (value->isObject()) {
     auto object = value->asObject(rt);
     if (object.isArray(rt)) {

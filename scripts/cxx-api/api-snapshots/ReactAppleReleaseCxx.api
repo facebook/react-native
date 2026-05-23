@@ -9175,6 +9175,7 @@ enum facebook::react::TransformOperationType : uint8_t {
 
 enum facebook::react::TurboModuleMethodValueKind {
   ArrayKind,
+  BigIntKind,
   BooleanKind,
   FunctionKind,
   NumberKind,
