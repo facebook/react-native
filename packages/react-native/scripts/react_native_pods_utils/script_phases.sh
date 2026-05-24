@@ -16,8 +16,13 @@ cd "$RCT_SCRIPT_RN_DIR"
 CODEGEN_CLI_PATH=""
 
 error () {
-    echo "$1"
-    "[Codegen] $1" >> "${SCRIPT_OUTPUT_FILE_0}" 2>&1
+    # Print the full message (all positional args, space-separated) so multi-arg
+    # callers like find_node don't get truncated to just $1. Mirror the same
+    # message into SCRIPT_OUTPUT_FILE_0; the previous version was missing the
+    # leading `echo`, so the formatted string was instead being executed as a
+    # command and the shell error landed in the log file.
+    echo "$*"
+    echo "[Codegen] $*" >> "${SCRIPT_OUTPUT_FILE_0}" 2>&1
     exit 1
 }
 
