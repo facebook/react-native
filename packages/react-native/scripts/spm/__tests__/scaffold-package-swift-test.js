@@ -12,6 +12,7 @@
 
 const {
   SCAFFOLDER_MARKER,
+  SCAFFOLDER_VERSION,
   emitScaffoldedPackageSwift,
   scaffoldAll,
   scaffoldPackageSwiftForDep,
@@ -256,9 +257,12 @@ describe('emitScaffoldedPackageSwift', () => {
     };
   }
 
-  it('starts with the SCAFFOLDER marker (and NOT the autolinker AUTOGEN marker)', () => {
+  it('contains the SCAFFOLDER marker (after the line-1 swift-tools-version directive) and NOT the autolinker AUTOGEN marker', () => {
     const out = emitScaffoldedPackageSwift(baseSpec());
-    expect(out.startsWith(SCAFFOLDER_MARKER)).toBe(true);
+    // Line 1 is reserved for the swift-tools-version directive — SPM ignores
+    // it elsewhere. The scaffolder marker lives on a subsequent line.
+    expect(out.split('\n', 1)[0]).toMatch(/^\/\/ swift-tools-version: /);
+    expect(out).toContain(SCAFFOLDER_MARKER);
     // The autolinker's marker — must be absent so isSelfManagedPackage
     // treats this file as self-managed.
     expect(out).not.toContain(
@@ -415,7 +419,11 @@ end
       path.join(depRoot, 'Package.swift'),
       'utf8',
     );
-    expect(content.startsWith(SCAFFOLDER_MARKER)).toBe(true);
+    // Line 1 is the swift-tools-version directive; the scaffolder marker
+    // appears immediately after (still detectable by `isScaffolded` checks
+    // that scan the whole file).
+    expect(content.split('\n', 1)[0]).toMatch(/^\/\/ swift-tools-version: /);
+    expect(content).toContain(SCAFFOLDER_MARKER);
   });
 
   it('reports previouslyExisted=false for first-time scaffolds (so the CLI can prompt)', () => {
@@ -502,9 +510,12 @@ end
 
   it('skips re-scaffolding when the existing file carries the scaffolder marker AND the same cache slot', () => {
     makePodspec();
-    // Pre-existing scaffold from same slot
+    // Pre-existing scaffold from same slot AND current generator version
+    // — otherwise the version-bump skip-bypass kicks in.
     const prior =
-      SCAFFOLDER_MARKER + '\n// Cache slot: 0.87.0-X/debug\n// rest unchanged';
+      SCAFFOLDER_MARKER +
+      `\n// AUTO-SCAFFOLDED-VERSION: ${SCAFFOLDER_VERSION}` +
+      '\n// Cache slot: 0.87.0-X/debug\n// rest unchanged';
     fs.writeFileSync(path.join(depRoot, 'Package.swift'), prior);
     const result = scaffoldPackageSwiftForDep(
       makeDep(),
@@ -627,5 +638,121 @@ describe('scaffoldAll', () => {
     expect(results.find(r => r.depName === 'react-native-a').status).toBe(
       'skipped-no-podspec',
     );
+  });
+});
+
+// ---------------------------------------------------------------------------
+// SCAFFOLDER_VERSION — auto-regen when the emitter's output format changes
+//
+// Without versioning, a Package.swift scaffolded by an older generator stays
+// on disk indefinitely (skip-on-marker), even when our template has since
+// been fixed. Bumping SCAFFOLDER_VERSION triggers a one-time regeneration
+// on next scaffold. Edits are persisted via patch-package per the marker
+// comment, so destructive regen here aligns with the documented workflow.
+// ---------------------------------------------------------------------------
+
+describe('SCAFFOLDER_VERSION', () => {
+  it('is a positive integer', () => {
+    expect(Number.isInteger(SCAFFOLDER_VERSION)).toBe(true);
+    expect(SCAFFOLDER_VERSION).toBeGreaterThanOrEqual(1);
+  });
+
+  it('emitter writes the current version to the file', () => {
+    const out = emitScaffoldedPackageSwift({
+      swiftName: 'foo',
+      sources: [],
+      headerSearchPaths: [],
+      coreReactNative: false,
+      siblingNames: [],
+      extraFrameworks: [],
+      weakFrameworks: [],
+      compilerFlags: [],
+      publicHeadersPath: null,
+      resources: [],
+      warnings: [],
+    });
+    expect(out).toMatch(
+      new RegExp(`^// AUTO-SCAFFOLDED-VERSION: ${SCAFFOLDER_VERSION}$`, 'm'),
+    );
+  });
+});
+
+describe('scaffoldPackageSwiftForDep — version-based regen', () => {
+  let tempDir;
+  let depRoot;
+
+  beforeEach(() => {
+    tempDir = fs.mkdtempSync(path.join(os.tmpdir(), 'spm-scaffold-version-'));
+    depRoot = path.join(tempDir, 'node_modules', 'react-native-foo');
+    fs.mkdirSync(depRoot, {recursive: true});
+    fs.writeFileSync(
+      path.join(depRoot, 'package.json'),
+      JSON.stringify({name: 'react-native-foo', version: '1.0.0'}),
+    );
+    fs.writeFileSync(
+      path.join(depRoot, 'react-native-foo.podspec'),
+      "Pod::Spec.new do |s|\n  s.name = 'react-native-foo'\n  s.version = '1.0'\n  s.source_files = 'ios/**/*.{h,m,mm}'\nend\n",
+    );
+  });
+
+  afterEach(() => {
+    fs.rmSync(tempDir, {recursive: true, force: true});
+  });
+
+  function makeDep() {
+    return {
+      name: 'react-native-foo',
+      root: depRoot,
+      platforms: {ios: {}},
+    };
+  }
+
+  function makeCtx(overrides = {}) {
+    return {
+      appRoot: tempDir,
+      reactNativeRoot: depRoot,
+      force: false,
+      dryRun: false,
+      cacheSlotLabel: 'SLOT-A/debug',
+      skipDeps: new Set(),
+      ...overrides,
+    };
+  }
+
+  it('regenerates a file scaffolded under an older version, even without --force', () => {
+    const olderVersion = Math.max(1, SCAFFOLDER_VERSION - 1);
+    fs.writeFileSync(
+      path.join(depRoot, 'Package.swift'),
+      `${SCAFFOLDER_MARKER}\n// AUTO-SCAFFOLDED-VERSION: ${olderVersion}\n// Cache slot: SLOT-A/debug\n`,
+    );
+    const result = scaffoldPackageSwiftForDep(makeDep(), makeCtx());
+    expect(result.status).toBe('written');
+    const after = fs.readFileSync(path.join(depRoot, 'Package.swift'), 'utf8');
+    expect(after).toContain(
+      `// AUTO-SCAFFOLDED-VERSION: ${SCAFFOLDER_VERSION}`,
+    );
+  });
+
+  it('regenerates a marker-tagged file with NO version line (treats as v1)', () => {
+    fs.writeFileSync(
+      path.join(depRoot, 'Package.swift'),
+      `${SCAFFOLDER_MARKER}\n// Cache slot: SLOT-A/debug\n// pre-versioning scaffold\n`,
+    );
+    const result = scaffoldPackageSwiftForDep(makeDep(), makeCtx());
+    expect(result.status).toBe('written');
+    const after = fs.readFileSync(path.join(depRoot, 'Package.swift'), 'utf8');
+    expect(after).not.toContain('pre-versioning scaffold');
+    expect(after).toContain(
+      `// AUTO-SCAFFOLDED-VERSION: ${SCAFFOLDER_VERSION}`,
+    );
+  });
+
+  it('skips when the existing file is already at the current version and slot', () => {
+    fs.writeFileSync(
+      path.join(depRoot, 'Package.swift'),
+      `${SCAFFOLDER_MARKER}\n// AUTO-SCAFFOLDED-VERSION: ${SCAFFOLDER_VERSION}\n// Cache slot: SLOT-A/debug\n`,
+    );
+    const result = scaffoldPackageSwiftForDep(makeDep(), makeCtx());
+    expect(result.status).toBe('skipped-scaffolder-marker');
   });
 });
