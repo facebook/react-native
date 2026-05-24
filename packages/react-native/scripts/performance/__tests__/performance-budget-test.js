@@ -175,7 +175,7 @@ describe('checkPerformanceBudget', () => {
     ]);
   });
 
-  it('warns when budgeted data is missing from reports', () => {
+  it('fails when budgeted data is missing from reports', () => {
     const result = checkPerformanceBudget(
       {
         flows: {
@@ -202,20 +202,170 @@ describe('checkPerformanceBudget', () => {
     );
 
     expect(result).toEqual({
-      ok: true,
-      failures: [],
-      warnings: [
+      ok: false,
+      failures: [
         {
+          type: 'missing',
           flow: 'cold-start-home',
           metric: 'startupTimeMs',
           stat: 'p75',
           message: 'cold-start-home startupTimeMs has no reported p75 value',
         },
         {
+          type: 'missing',
           flow: 'open-search-screen',
           message: 'open-search-screen has no performance report',
         },
       ],
+      warnings: [],
+    });
+  });
+
+  it('fails when duplicate flow reports would make input ambiguous', () => {
+    const result = checkPerformanceBudget(
+      {
+        flows: {
+          'cold-start-home': {
+            startupTimeMs: {
+              p75: 2200,
+            },
+          },
+        },
+      },
+      [
+        {
+          flow: 'cold-start-home',
+          metrics: {
+            startupTimeMs: {
+              p75: 2460,
+            },
+          },
+        },
+        {
+          flow: 'cold-start-home',
+          metrics: {
+            startupTimeMs: {
+              p75: 2100,
+            },
+          },
+        },
+      ],
+    );
+
+    expect(result.ok).toBe(false);
+    expect(result.failures).toEqual([
+      {
+        type: 'duplicate_report',
+        flow: 'cold-start-home',
+        reportKind: 'current',
+        firstReportIndex: 0,
+        duplicateReportIndex: 1,
+        message:
+          'current performance reports contain duplicate flow cold-start-home at indexes 0 and 1',
+      },
+      {
+        type: 'absolute',
+        flow: 'cold-start-home',
+        metric: 'startupTimeMs',
+        stat: 'p75',
+        actual: 2460,
+        budget: 2200,
+        message:
+          'cold-start-home startupTimeMs p75 is 2460, exceeding budget 2200',
+      },
+    ]);
+  });
+
+  it('fails when duplicate baseline reports would make regression comparison ambiguous', () => {
+    const result = checkPerformanceBudget(
+      {
+        flows: {
+          'cold-start-home': {
+            startupTimeMs: {
+              p75: 2200,
+              maxRegressionPct: 10,
+            },
+          },
+        },
+      },
+      [
+        {
+          flow: 'cold-start-home',
+          metrics: {
+            startupTimeMs: {
+              p75: 1080,
+            },
+          },
+        },
+      ],
+      [
+        {
+          flow: 'cold-start-home',
+          metrics: {
+            startupTimeMs: {
+              p75: 1000,
+            },
+          },
+        },
+        {
+          flow: 'cold-start-home',
+          metrics: {
+            startupTimeMs: {
+              p75: 500,
+            },
+          },
+        },
+      ],
+    );
+
+    expect(result.ok).toBe(false);
+    expect(result.failures).toEqual([
+      {
+        type: 'duplicate_report',
+        flow: 'cold-start-home',
+        reportKind: 'baseline',
+        firstReportIndex: 0,
+        duplicateReportIndex: 1,
+        message:
+          'baseline performance reports contain duplicate flow cold-start-home at indexes 0 and 1',
+      },
+    ]);
+  });
+
+  it('fails with structured output for invalid report shapes', () => {
+    const result = checkPerformanceBudget(
+      {
+        flows: {
+          'cold-start-home': {
+            startupTimeMs: {
+              p75: 2200,
+            },
+          },
+        },
+      },
+      [
+        {
+          flow: 'cold-start-home',
+        },
+      ],
+    );
+
+    expect(result).toEqual({
+      ok: false,
+      failures: [
+        {
+          type: 'invalid_report',
+          reportKind: 'current',
+          reportIndex: 0,
+          message: 'current performance report at index 0 must include metrics',
+        },
+        {
+          type: 'missing',
+          flow: 'cold-start-home',
+          message: 'cold-start-home has no performance report',
+        },
+      ],
+      warnings: [],
     });
   });
 

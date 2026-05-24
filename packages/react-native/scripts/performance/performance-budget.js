@@ -61,7 +61,38 @@ type RegressionFailure = $ReadOnly<{
   +message: string,
 }>;
 
-type Failure = AbsoluteFailure | RegressionFailure;
+type MissingFailure = $ReadOnly<{
+  +type: 'missing',
+  +flow: string,
+  +metric?: string,
+  +stat?: string,
+  +message: string,
+}>;
+
+type ReportKind = 'current' | 'baseline';
+
+type InvalidReportFailure = $ReadOnly<{
+  +type: 'invalid_report',
+  +reportKind: ReportKind,
+  +reportIndex: number,
+  +message: string,
+}>;
+
+type DuplicateReportFailure = $ReadOnly<{
+  +type: 'duplicate_report',
+  +reportKind: ReportKind,
+  +flow: string,
+  +firstReportIndex: number,
+  +duplicateReportIndex: number,
+  +message: string,
+}>;
+
+type Failure =
+  | AbsoluteFailure
+  | RegressionFailure
+  | MissingFailure
+  | InvalidReportFailure
+  | DuplicateReportFailure;
 
 type Warning = $ReadOnly<{
   +flow: string,
@@ -77,30 +108,90 @@ type BudgetResult = $ReadOnly<{
 }>;
 */
 
+function isObject(value /*: mixed */) /*: boolean */ {
+  return typeof value === 'object' && value != null && !Array.isArray(value);
+}
+
 function reportByFlow(
-  reports /*: $ReadOnlyArray<PerformanceReport> */,
+  reports /*: $ReadOnlyArray<mixed> */,
+  reportKind /*: ReportKind */,
+  failures /*: Array<Failure> */,
 ) /*: Map<string, PerformanceReport> */ {
   const byFlow = new Map /*:: <string, PerformanceReport> */();
-  for (const report of reports) {
-    byFlow.set(report.flow, report);
-  }
+  const reportIndexes = new Map /*:: <string, number> */();
+
+  reports.forEach((reportValue, reportIndex) => {
+    if (!isObject(reportValue)) {
+      failures.push({
+        type: 'invalid_report',
+        reportKind,
+        reportIndex,
+        message: `${reportKind} performance report at index ${reportIndex} must be an object`,
+      });
+      return;
+    }
+
+    // $FlowFixMe[incompatible-type] Runtime validation above confirms this is an object.
+    const report /*: {[string]: mixed} */ = reportValue;
+    const flow = report.flow;
+    if (typeof flow !== 'string' || flow === '') {
+      failures.push({
+        type: 'invalid_report',
+        reportKind,
+        reportIndex,
+        message: `${reportKind} performance report at index ${reportIndex} must include flow`,
+      });
+      return;
+    }
+
+    const metrics = report.metrics;
+    if (!isObject(metrics)) {
+      failures.push({
+        type: 'invalid_report',
+        reportKind,
+        reportIndex,
+        message: `${reportKind} performance report at index ${reportIndex} must include metrics`,
+      });
+      return;
+    }
+
+    const firstReportIndex = reportIndexes.get(flow);
+    if (firstReportIndex != null) {
+      failures.push({
+        type: 'duplicate_report',
+        reportKind,
+        flow,
+        firstReportIndex,
+        duplicateReportIndex: reportIndex,
+        message: `${reportKind} performance reports contain duplicate flow ${flow} at indexes ${firstReportIndex} and ${reportIndex}`,
+      });
+      return;
+    }
+
+    // $FlowFixMe[incompatible-type] Runtime validation confirms the report contract used below.
+    const validatedReport /*: PerformanceReport */ = {flow, metrics};
+    reportIndexes.set(flow, reportIndex);
+    byFlow.set(flow, validatedReport);
+  });
+
   return byFlow;
 }
 
 function checkPerformanceBudget(
   budget /*: PerformanceBudget */,
-  reports /*: $ReadOnlyArray<PerformanceReport> */,
-  baselineReports /*: $ReadOnlyArray<PerformanceReport> */ = [],
+  reports /*: $ReadOnlyArray<mixed> */,
+  baselineReports /*: $ReadOnlyArray<mixed> */ = [],
 ) /*: BudgetResult */ {
   const failures /*: Array<Failure> */ = [];
   const warnings /*: Array<Warning> */ = [];
-  const reportsByFlow = reportByFlow(reports);
-  const baselinesByFlow = reportByFlow(baselineReports);
+  const reportsByFlow = reportByFlow(reports, 'current', failures);
+  const baselinesByFlow = reportByFlow(baselineReports, 'baseline', failures);
 
   for (const flow of Object.keys(budget.flows)) {
     const report = reportsByFlow.get(flow);
     if (report == null) {
-      warnings.push({
+      failures.push({
+        type: 'missing',
         flow,
         message: `${flow} has no performance report`,
       });
@@ -111,7 +202,8 @@ function checkPerformanceBudget(
     for (const metric of Object.keys(budgetedMetrics)) {
       const metricStats = report.metrics[metric];
       if (metricStats == null) {
-        warnings.push({
+        failures.push({
+          type: 'missing',
           flow,
           metric,
           message: `${flow} ${metric} has no reported metrics`,
@@ -128,7 +220,8 @@ function checkPerformanceBudget(
         const budgetValue = budgetedStats[stat];
         const actual = metricStats[stat];
         if (actual == null) {
-          warnings.push({
+          failures.push({
+            type: 'missing',
             flow,
             metric,
             stat,

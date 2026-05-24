@@ -44,7 +44,7 @@ describe('performance-budget-cli', () => {
             {
               flow: 'cold-start-home',
               message:
-                'cold-start-home startupTimeMs has no reported p75 value',
+                'cold-start-home startupTimeMs p75 has no baseline value for regression comparison',
             },
           ],
         }),
@@ -52,7 +52,7 @@ describe('performance-budget-cli', () => {
         'Performance budget passed',
         '',
         'Warnings:',
-        '- cold-start-home startupTimeMs has no reported p75 value',
+        '- cold-start-home startupTimeMs p75 has no baseline value for regression comparison',
       ]);
     });
 
