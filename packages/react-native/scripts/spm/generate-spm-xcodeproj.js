@@ -563,140 +563,11 @@ LOCAL_HEADERS="$SRCROOT/build/xcframeworks/React.xcframework/Headers"
 sed "4s|.*|  - name: '$LOCAL_HEADERS'|" "$SRC_VFS" > "$DST_VFS"
 `;
 
-  // Sync SPM Autolinking: timestamp check + conditional node re-run
-  const syncAutolinkingScript = `set -euo pipefail
-
-STAMP="$SRCROOT/build/generated/autolinking/.spm-sync-stamp"
-STALE=0
-
-# Check 0: xcframework artifacts missing (fresh clone)
-if [ ! -f "$SRCROOT/build/xcframeworks/artifacts.json" ] || \\
-   [ ! -d "$SRCROOT/build/xcframeworks/React.xcframework" ]; then
-  STALE=1
-fi
-
-# Find project root (where package.json lives — may be an ancestor of SRCROOT)
-PROJECT_ROOT="$SRCROOT"
-while [ "$PROJECT_ROOT" != "/" ] && [ ! -f "$PROJECT_ROOT/package.json" ]; do
-  PROJECT_ROOT="$(dirname "$PROJECT_ROOT")"
-done
-if [ ! -f "$PROJECT_ROOT/package.json" ]; then
-  PROJECT_ROOT="$SRCROOT"
-fi
-
-# Check 1: dependency inputs (covers app projects after any package manager install)
-for INPUT in \\
-  "$PROJECT_ROOT/package.json" \\
-  "$PROJECT_ROOT/react-native.config.js"; do
-  if [ -f "$INPUT" ] && [ "$INPUT" -nt "$STAMP" ]; then
-    STALE=1
-    break
-  fi
-done
-
-# Check workspace lockfiles and package-manager metadata. These cover package
-# managers that do not reliably bump node_modules mtimes, and Yarn PnP projects
-# that do not have node_modules at all.
-if [ "$STALE" -eq 0 ]; then
-  DIR="$PROJECT_ROOT"
-  while [ "$DIR" != "/" ]; do
-    for INPUT in \\
-      "$DIR/package-lock.json" \\
-      "$DIR/npm-shrinkwrap.json" \\
-      "$DIR/yarn.lock" \\
-      "$DIR/pnpm-lock.yaml" \\
-      "$DIR/bun.lock" \\
-      "$DIR/bun.lockb" \\
-      "$DIR/.pnp.cjs" \\
-      "$DIR/.pnp.loader.mjs"; do
-      if [ -f "$INPUT" ] && [ "$INPUT" -nt "$STAMP" ]; then
-        STALE=1
-        break
-      fi
-    done
-    if [ "$STALE" -eq 1 ]; then
-      break
-    fi
-    DIR="$(dirname "$DIR")"
-  done
-fi
-
-# Check node_modules mtime. In monorepos, node_modules may be hoisted to any
-# ancestor between the app package and the workspace root.
-if [ "$STALE" -eq 0 ]; then
-  DIR="$PROJECT_ROOT"
-  while [ "$DIR" != "/" ]; do
-    NM_DIR="$DIR/node_modules"
-    if [ -d "$NM_DIR" ] && [ "$NM_DIR" -nt "$STAMP" ]; then
-      STALE=1
-      break
-    fi
-    DIR="$(dirname "$DIR")"
-  done
-fi
-
-# Also check the app root directly when SRCROOT is not the package root.
-if [ "$STALE" -eq 0 ] && [ "$SRCROOT" != "$PROJECT_ROOT" ]; then
-  if [ -d "$SRCROOT/node_modules" ] && [ "$SRCROOT/node_modules" -nt "$STAMP" ]; then
-    STALE=1
-  fi
-fi
-
-# Check 1.5: watched module source dirs (catches add/remove of source files
-# in spm.modules and autolinked deps). Directory mtime updates on both add
-# and remove of children, so a single -newer check covers both cases.
-WATCH_FILE="$SRCROOT/build/generated/autolinking/.spm-sync-watch-paths"
-if [ "$STALE" -eq 0 ] && [ -f "$WATCH_FILE" ]; then
-  while IFS= read -r DIR; do
-    [ -z "$DIR" ] && continue
-    if [ -d "$DIR" ] && [ -n "$(find "$DIR" -newer "$STAMP" -print -quit 2>/dev/null)" ]; then
-      STALE=1
-      break
-    fi
-  done < "$WATCH_FILE"
-fi
-
-# Check 2: codegen spec files changed via git (covers monorepo after git pull)
-if [ "$STALE" -eq 0 ] && [ -f "$STAMP" ]; then
-  STAMP_TIME=$(stat -f %m "$STAMP" 2>/dev/null || stat -c %Y "$STAMP" 2>/dev/null || echo 0)
-  LATEST_SPEC_COMMIT=$(git -C "$SRCROOT" log -1 --format=%ct -- '*.js' '*.ts' 2>/dev/null || echo 0)
-  if [ "$LATEST_SPEC_COMMIT" -gt "$STAMP_TIME" ]; then
-    STALE=1
-  fi
-fi
-
-if [ ! -f "$STAMP" ]; then
-  STALE=1
-fi
-
-if [ "$STALE" -eq 0 ]; then
-  exit 0
-fi
-
-echo "SPM sync inputs changed — re-syncing (codegen + autolinking)..."
-
-WITH_ENVIRONMENT="${reactNativePath}/scripts/xcode/with-environment.sh"
-
-if [ -f "$WITH_ENVIRONMENT" ]; then
-  # with-environment.sh references PODS_ROOT and $1, which may be unset.
-  # Temporarily disable nounset to avoid failures when sourcing.
-  export PODS_ROOT="\${PODS_ROOT:-$SRCROOT}"
-  set +u
-  . "$WITH_ENVIRONMENT"
-  set -u
-fi
-
-cd "$SRCROOT"
-if command -v npx >/dev/null 2>&1; then
-  npx react-native spm sync || {
-    echo "warning: SPM sync failed — build may use stale codegen/autolinking"
-    exit 0
-  }
-else
-  echo "warning: npx not found — skipping SPM sync"
-  exit 0
-fi
-`;
+  // Sync SPM Autolinking: timestamp check + conditional node re-run.
+  // Built once at top-level so the same string flows into both the build
+  // phase (safety net) and the scheme pre-action (the one that actually
+  // runs before SPM resolution).
+  const syncAutolinkingScript = buildSyncAutolinkingScript(reactNativePath);
 
   // Helper: create a PBXShellScriptBuildPhase entry
   function shellScriptPhase(
@@ -877,6 +748,148 @@ fi
   return serializePbxproj('1', '77', projectUUID, sections);
 }
 
+// Sync SPM Autolinking: timestamp check + conditional node re-run. Shared by
+// the build phase (safety net) and the scheme pre-action (the one that
+// actually fires before SPM resolution, so a single build picks up
+// dep-graph changes from `npm install`).
+function buildSyncAutolinkingScript(
+  reactNativePath /*: string */,
+) /*: string */ {
+  return `set -euo pipefail
+
+STAMP="$SRCROOT/build/generated/autolinking/.spm-sync-stamp"
+STALE=0
+
+# Check 0: xcframework artifacts missing (fresh clone)
+if [ ! -f "$SRCROOT/build/xcframeworks/artifacts.json" ] || \\
+   [ ! -d "$SRCROOT/build/xcframeworks/React.xcframework" ]; then
+  STALE=1
+fi
+
+# Find project root (where package.json lives — may be an ancestor of SRCROOT)
+PROJECT_ROOT="$SRCROOT"
+while [ "$PROJECT_ROOT" != "/" ] && [ ! -f "$PROJECT_ROOT/package.json" ]; do
+  PROJECT_ROOT="$(dirname "$PROJECT_ROOT")"
+done
+if [ ! -f "$PROJECT_ROOT/package.json" ]; then
+  PROJECT_ROOT="$SRCROOT"
+fi
+
+# Check 1: dependency inputs (covers app projects after any package manager install)
+for INPUT in \\
+  "$PROJECT_ROOT/package.json" \\
+  "$PROJECT_ROOT/react-native.config.js"; do
+  if [ -f "$INPUT" ] && [ "$INPUT" -nt "$STAMP" ]; then
+    STALE=1
+    break
+  fi
+done
+
+# Check workspace lockfiles and package-manager metadata. These cover package
+# managers that do not reliably bump node_modules mtimes, and Yarn PnP projects
+# that do not have node_modules at all.
+if [ "$STALE" -eq 0 ]; then
+  DIR="$PROJECT_ROOT"
+  while [ "$DIR" != "/" ]; do
+    for INPUT in \\
+      "$DIR/package-lock.json" \\
+      "$DIR/npm-shrinkwrap.json" \\
+      "$DIR/yarn.lock" \\
+      "$DIR/pnpm-lock.yaml" \\
+      "$DIR/bun.lock" \\
+      "$DIR/bun.lockb" \\
+      "$DIR/.pnp.cjs" \\
+      "$DIR/.pnp.loader.mjs"; do
+      if [ -f "$INPUT" ] && [ "$INPUT" -nt "$STAMP" ]; then
+        STALE=1
+        break
+      fi
+    done
+    if [ "$STALE" -eq 1 ]; then
+      break
+    fi
+    DIR="$(dirname "$DIR")"
+  done
+fi
+
+# Check node_modules mtime. In monorepos, node_modules may be hoisted to any
+# ancestor between the app package and the workspace root.
+if [ "$STALE" -eq 0 ]; then
+  DIR="$PROJECT_ROOT"
+  while [ "$DIR" != "/" ]; do
+    NM_DIR="$DIR/node_modules"
+    if [ -d "$NM_DIR" ] && [ "$NM_DIR" -nt "$STAMP" ]; then
+      STALE=1
+      break
+    fi
+    DIR="$(dirname "$DIR")"
+  done
+fi
+
+# Also check the app root directly when SRCROOT is not the package root.
+if [ "$STALE" -eq 0 ] && [ "$SRCROOT" != "$PROJECT_ROOT" ]; then
+  if [ -d "$SRCROOT/node_modules" ] && [ "$SRCROOT/node_modules" -nt "$STAMP" ]; then
+    STALE=1
+  fi
+fi
+
+# Check 1.5: watched module source dirs (catches add/remove of source files
+# in spm.modules and autolinked deps). Directory mtime updates on both add
+# and remove of children, so a single -newer check covers both cases.
+WATCH_FILE="$SRCROOT/build/generated/autolinking/.spm-sync-watch-paths"
+if [ "$STALE" -eq 0 ] && [ -f "$WATCH_FILE" ]; then
+  while IFS= read -r DIR; do
+    [ -z "$DIR" ] && continue
+    if [ -d "$DIR" ] && [ -n "$(find "$DIR" -newer "$STAMP" -print -quit 2>/dev/null)" ]; then
+      STALE=1
+      break
+    fi
+  done < "$WATCH_FILE"
+fi
+
+# Check 2: codegen spec files changed via git (covers monorepo after git pull)
+if [ "$STALE" -eq 0 ] && [ -f "$STAMP" ]; then
+  STAMP_TIME=$(stat -f %m "$STAMP" 2>/dev/null || stat -c %Y "$STAMP" 2>/dev/null || echo 0)
+  LATEST_SPEC_COMMIT=$(git -C "$SRCROOT" log -1 --format=%ct -- '*.js' '*.ts' 2>/dev/null || echo 0)
+  if [ "$LATEST_SPEC_COMMIT" -gt "$STAMP_TIME" ]; then
+    STALE=1
+  fi
+fi
+
+if [ ! -f "$STAMP" ]; then
+  STALE=1
+fi
+
+if [ "$STALE" -eq 0 ]; then
+  exit 0
+fi
+
+echo "SPM sync inputs changed — re-syncing (codegen + autolinking)..."
+
+WITH_ENVIRONMENT="${reactNativePath}/scripts/xcode/with-environment.sh"
+
+if [ -f "$WITH_ENVIRONMENT" ]; then
+  # with-environment.sh references PODS_ROOT and $1, which may be unset.
+  # Temporarily disable nounset to avoid failures when sourcing.
+  export PODS_ROOT="\${PODS_ROOT:-$SRCROOT}"
+  set +u
+  . "$WITH_ENVIRONMENT"
+  set -u
+fi
+
+cd "$SRCROOT"
+if command -v npx >/dev/null 2>&1; then
+  npx react-native spm sync || {
+    echo "warning: SPM sync failed — build may use stale codegen/autolinking"
+    exit 0
+  }
+else
+  echo "warning: npx not found — skipping SPM sync"
+  exit 0
+fi
+`;
+}
+
 function generateXcworkspaceData(projName /*: string */) /*: string */ {
   return `<?xml version="1.0" encoding="UTF-8"?>
 <Workspace
@@ -888,11 +901,25 @@ function generateXcworkspaceData(projName /*: string */) /*: string */ {
 `;
 }
 
+// XML-attribute escape (the five named entities). The sync script uses `>`
+// and `&` for redirection and bg/and chains, plus `<` for heredocs and
+// comparisons — all of which break Xcode's scheme parser if left raw.
+function escapeXmlAttribute(s /*: string */) /*: string */ {
+  return s
+    .replace(/&/g, '&amp;')
+    .replace(/</g, '&lt;')
+    .replace(/>/g, '&gt;')
+    .replace(/"/g, '&quot;')
+    .replace(/'/g, '&apos;');
+}
+
 function generateXcscheme(
   appName /*: string */,
   targetUUID /*: string */,
   projName /*: string */,
+  syncScript /*: string */,
 ) /*: string */ {
+  const escapedSync = escapeXmlAttribute(syncScript);
   return `<?xml version="1.0" encoding="UTF-8"?>
 <Scheme
    LastUpgradeVersion = "1600"
@@ -900,6 +927,24 @@ function generateXcscheme(
    <BuildAction
       parallelizeBuildables = "YES"
       buildImplicitDependencies = "YES">
+      <PreActions>
+         <ExecutionAction
+            ActionType = "Xcode.IDEStandardExecutionActionsCore.ExecutionActionType.ShellScriptAction">
+            <ActionContent
+               title = "Sync SPM Autolinking"
+               scriptText = "${escapedSync}">
+               <EnvironmentBuildable>
+                  <BuildableReference
+                     BuildableIdentifier = "primary"
+                     BlueprintIdentifier = "${targetUUID}"
+                     BuildableName = "${appName}.app"
+                     BlueprintName = "${appName}"
+                     ReferencedContainer = "container:${projName}.xcodeproj">
+                  </BuildableReference>
+               </EnvironmentBuildable>
+            </ActionContent>
+         </ExecutionAction>
+      </PreActions>
       <BuildActionEntries>
          <BuildActionEntry
             buildForTesting = "YES"
@@ -1173,7 +1218,12 @@ function main(argv /*:: ?: Array<string> */) /*: void */ {
   }
 
   const xcworkspaceData = generateXcworkspaceData(projName);
-  const xcscheme = generateXcscheme(appName, targetUUID, projName);
+  const xcscheme = generateXcscheme(
+    appName,
+    targetUUID,
+    projName,
+    buildSyncAutolinkingScript(reactNativePath),
+  );
   const markerContent = `${SPM_MANAGED_MARKER_HEADER}\n`;
 
   const wrote = [
@@ -1200,6 +1250,7 @@ if (require.main === module) {
 module.exports = {
   main,
   generatePbxproj,
+  generateXcscheme,
   ensureStubPackages,
   SPM_MANAGED_MARKER,
 };
