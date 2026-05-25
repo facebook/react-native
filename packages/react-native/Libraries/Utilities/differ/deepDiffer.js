@@ -26,22 +26,17 @@ function unstable_setLogListeners(listeners: ?LogListeners) {
 }
 
 /**
- * Deep equality comparison for arbitrary JavaScript values.
+ * Deep equality comparison that recursively checks all properties.
+ * 
+ * Returns true if values differ, false if equal. Handles primitives, objects,
+ * arrays, and mixed types. Functions are considered equal by default unless
+ * unsafelyIgnoreFunctions is set to false.
  *
- * Recursively compares objects, arrays, and primitives. Functions are
- * considered equal unless explicitly configured otherwise. Returns true
- * if values differ, false if equal (useful for determining if updates are needed).
- *
- * @param {any} one - First value to compare
- * @param {any} two - Second value to compare
- * @param {Options|number} [maxDepthOrOptions] - Max depth (number) or options object
- * @param {Options} [maybeOptions] - Options when first arg is a number
- * @returns {boolean} True if values differ, false if equal
- *
- * @example
- *   deepDiffer(1, 2) // true (different)
- *   deepDiffer({a: 1}, {a: 1}) // false (equal)
- *   deepDiffer({a: {b: 1}}, {a: {b: 1}}, 3) // false (equal, max depth 3)
+ * @param {any} one - First value
+ * @param {any} two - Second value
+ * @param {Options|number} maxDepthOrOptions - Max recursion depth or options
+ * @param {Options} maybeOptions - Options when first is number
+ * @returns {boolean} True if different, false if equal
  */
 function deepDiffer(
   one: any,
