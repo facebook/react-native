@@ -13,6 +13,14 @@
 const dummySize = {width: undefined, height: undefined};
 type Size = {width: ?number, height: ?number};
 
+/**
+ * Compares two size objects for equality.
+ * Returns true if the sizes are different, false if equal.
+ *
+ * @param {Size} one - First size object
+ * @param {Size} two - Second size object
+ * @returns {boolean} True if sizes differ, false if equal
+ */
 function sizesDiffer(one: Size, two: Size): boolean {
   const defaultedOne = one || dummySize;
   const defaultedTwo = two || dummySize;
