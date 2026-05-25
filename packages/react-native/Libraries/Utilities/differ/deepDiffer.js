@@ -112,3 +112,25 @@ function deepDiffer(
 
 deepDiffer.unstable_setLogListeners = unstable_setLogListeners;
 export default deepDiffer;
+
+/**
+ * USAGE EXAMPLES:
+ * 
+ * // Primitive comparison
+ * deepDiffer(1, 2); // true
+ * deepDiffer('hello', 'hello'); // false
+ * 
+ * // Object comparison
+ * deepDiffer({a: 1}, {a: 1}); // false
+ * deepDiffer({a: 1, b: 2}, {a: 1}); // true
+ * 
+ * // Array comparison
+ * deepDiffer([1, 2], [1, 2]); // false
+ * deepDiffer([1, 2], [1, 3]); // true
+ * 
+ * // Nested structures
+ * deepDiffer({a: {b: [1, 2]}}, {a: {b: [1, 2]}}); // false
+ * 
+ * // With depth limit
+ * deepDiffer({a: {b: {c: 1}}}, {a: {b: {c: 2}}}, 2); // false (depth limited)
+ */

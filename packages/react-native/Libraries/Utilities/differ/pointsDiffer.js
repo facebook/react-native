@@ -30,6 +30,7 @@ const dummyPoint: Point = {x: undefined, y: undefined};
 function pointsDiffer(one: ?Point, two: ?Point): boolean {
   one = one || dummyPoint;
   two = two || dummyPoint;
+  // Null-safe comparison: handles undefined values gracefully
   return one !== two && (one.x !== two.x || one.y !== two.y);
 }
 
