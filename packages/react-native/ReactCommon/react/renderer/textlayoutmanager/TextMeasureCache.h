@@ -119,6 +119,7 @@ inline bool areTextAttributesEquivalentLayoutWise(const TextAttributes &lhs, con
              lhs.fontStyle,
              lhs.fontVariant,
              lhs.allowFontScaling,
+             lhs.maxFontSizeMultiplier,
              lhs.dynamicTypeRamp,
              lhs.alignment) ==
       std::tie(
@@ -127,6 +128,7 @@ inline bool areTextAttributesEquivalentLayoutWise(const TextAttributes &lhs, con
              rhs.fontStyle,
              rhs.fontVariant,
              rhs.allowFontScaling,
+             rhs.maxFontSizeMultiplier,
              rhs.dynamicTypeRamp,
              rhs.alignment) &&
       floatEquality(lhs.fontSize, rhs.fontSize) && floatEquality(lhs.fontSizeMultiplier, rhs.fontSizeMultiplier) &&
@@ -145,6 +147,7 @@ inline size_t textAttributesHashLayoutWise(const TextAttributes &textAttributes)
       textAttributes.fontStyle,
       textAttributes.fontVariant,
       textAttributes.allowFontScaling,
+      textAttributes.maxFontSizeMultiplier,
       textAttributes.dynamicTypeRamp,
       textAttributes.letterSpacing,
       textAttributes.lineHeight,
