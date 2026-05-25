@@ -1,5 +1,112 @@
 # Changelog
 
+## v0.86.0-rc.2
+
+### Breaking
+
+
+
+#### Android specific
+
+
+
+#### iOS specific
+
+
+
+### Added
+
+
+
+#### Android specific
+
+- `android_ripple` now accepts `PlatformColor` for ([60d8b282ea](https://github.com/facebook/react-native/commit/60d8b282eaf5bd2803fdaa838520f6ff41cc6737) by [@adrcotfas](https://github.com/adrcotfas))
+
+#### iOS specific
+
+
+
+### Changed
+
+
+
+#### Android specific
+
+
+
+#### iOS specific
+
+-   [IOS] [CHANGED] - Cache prebuilt iOS binaries (Hermes, ([9a0b05b8d0](https://github.com/facebook/react-native/commit/9a0b05b8d07f3468a08077119189406d56a230ba) by [@cipolleschi](https://github.com/cipolleschi))
+
+### Deprecated
+
+
+
+#### Android specific
+
+
+
+#### iOS specific
+
+
+
+### Removed
+
+
+
+#### Android specific
+
+
+
+#### iOS specific
+
+
+
+### Fixed
+
+
+
+#### Android specific
+
+
+
+#### iOS specific
+
+- Fixed escaping local file URIs for unicode paths in ruby scripts ([9563cb5b5a](https://github.com/facebook/react-native/commit/9563cb5b5a546d6daf09abc9d5594850129a4ae3) by [@chrfalch](https://github.com/chrfalch))
+- Fix Pod install checksum drifting ([814ebb12b6](https://github.com/facebook/react-native/commit/814ebb12b64cee51b91ada9fa0d90970feac9a9f) by [@chrfalch](https://github.com/chrfalch))
+- Load `RCTDefines.h` first in the prebuilt React umbrella and drop the `module *` submodule wildcard so RCT_* macros propagate to consumer pods under `use_frameworks!`. ([90c303fafb](https://github.com/facebook/react-native/commit/90c303fafb941155dbe379e6b3e74390a139872a) by [@wneel](https://github.com/wneel))
+
+### Security
+
+
+
+#### Android specific
+
+
+
+#### iOS specific
+
+
+
+### Unknown
+
+- Release 0.86.0-rc.2 ([19da7bb3b0](https://github.com/facebook/react-native/commit/19da7bb3b0baba8ef49568ec4841c21e9ad8d093) by [@react-native-bot](https://github.com/react-native-bot))
+- Bump Podfile.lock ([aa91ba2772](https://github.com/facebook/react-native/commit/aa91ba27721805d2c1a849e3aa085a44cb2d9515) by [@react-native-bot](https://github.com/react-native-bot))
+- Release 0.86.0-rc.1 ([94b6bcb34c](https://github.com/facebook/react-native/commit/94b6bcb34ca77e0aa81f487bb3ab958ff3556c4c) by [@react-native-bot](https://github.com/react-native-bot))
+
+#### Android Unknown
+
+
+
+#### iOS Unknown
+
+
+
+#### Failed to parse
+
+
+
+
 ## v0.86.0-rc.1
 
 ### Fixed
