@@ -265,7 +265,7 @@ internal class MountingManager(
       return
     }
 
-    getSurfaceManagerForViewEnforced(reactTag).storeSynchronousMountPropsOverride(reactTag, props)
+    getSurfaceManagerForView(reactTag)?.storeSynchronousMountPropsOverride(reactTag, props)
   }
 
   @UiThread
@@ -275,7 +275,7 @@ internal class MountingManager(
       return
     }
 
-    getSurfaceManagerForViewEnforced(reactTag).updatePropsSynchronously(reactTag, props)
+    getSurfaceManagerForView(reactTag)?.updatePropsSynchronously(reactTag, props)
   }
 
   /**
