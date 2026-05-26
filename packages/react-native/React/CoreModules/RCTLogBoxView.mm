@@ -83,9 +83,6 @@
 
 - (void)dealloc
 {
-#if !TARGET_OS_MACCATALYST // sharedApplication.delegate is not available on Mac Catalyst
-  [RCTSharedApplication().delegate.window makeKeyWindow];
-#endif
 }
 
 - (void)show

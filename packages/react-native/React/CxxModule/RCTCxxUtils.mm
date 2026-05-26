@@ -12,7 +12,6 @@
 #import <cxxreact/CxxNativeModule.h>
 #import <jsi/jsi.h>
 
-#import "DispatchMessageQueueThread.h"
 #import "RCTNativeModule.h"
 
 namespace facebook::react {

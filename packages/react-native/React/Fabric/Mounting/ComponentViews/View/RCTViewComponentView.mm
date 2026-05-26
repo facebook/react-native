@@ -97,8 +97,25 @@ const CGFloat BACKGROUND_COLOR_ZPOSITION = -1024.0f;
   }
 }
 
+// Rejects hits against views whose 2D transform collapses an axis (e.g. `scaleX: 0`,
+// `scaleY: 0`, or any other non-invertible affine). Such views are visually degenerate, and
+// UIKit's `-convertPoint:fromView:` falls back to the original matrix when
+// `CGAffineTransformInvert` can't invert, so without this check the degenerate transform is
+// applied to the touch point and the view can still register hits along the collapsed axis.
+static BOOL RCTLayerTransformCollapsesAxis(CALayer *layer)
+{
+  CATransform3D t = layer.transform;
+  // Determinant of the 2x2 projection onto the XY plane. Anything non-zero is invertible; we
+  // treat values within float epsilon as zero to avoid numerical issues near machine precision.
+  CGFloat det = t.m11 * t.m22 - t.m12 * t.m21;
+  return fabs(det) < (CGFloat)1e-6;
+}
+
 - (BOOL)pointInside:(CGPoint)point withEvent:(UIEvent *)event
 {
+  if (RCTLayerTransformCollapsesAxis(self.layer)) {
+    return NO;
+  }
   if (UIEdgeInsetsEqualToEdgeInsets(self.hitTestEdgeInsets, UIEdgeInsetsZero)) {
     return [super pointInside:point withEvent:event];
   }
@@ -1027,7 +1044,7 @@ static RCTBorderStyle RCTBorderStyleFromOutlineStyle(OutlineStyle outlineStyle)
   const bool useCoreAnimationBorderRendering =
       borderMetrics.borderColors.isUniform() && borderMetrics.borderWidths.isUniform() &&
       borderMetrics.borderStyles.isUniform() && borderMetrics.borderStyles.left == BorderStyle::Solid &&
-      borderMetrics.borderRadii.isUniform() &&
+      areBorderRadiiCircular(borderMetrics.borderRadii) &&
       (
           // iOS draws borders in front of the content whereas CSS draws them behind
           // the content. For this reason, only use iOS border drawing when clipping
@@ -1109,7 +1126,7 @@ static RCTBorderStyle RCTBorderStyleFromOutlineStyle(OutlineStyle outlineStyle)
     _outlineLayer.frame = CGRectInset(
         layer.bounds, -_props->outlineOffset - _props->outlineWidth, -_props->outlineOffset - _props->outlineWidth);
 
-    if (borderMetrics.borderRadii.isUniform() && borderMetrics.borderRadii.topLeft.horizontal == 0) {
+    if (areBorderRadiiCircular(borderMetrics.borderRadii) && borderMetrics.borderRadii.topLeft.horizontal == 0) {
       UIColor *outlineColor = RCTUIColorFromSharedColor(_props->outlineColor);
       _outlineLayer.borderWidth = _props->outlineWidth;
       _outlineLayer.borderColor = outlineColor.CGColor;
@@ -1285,7 +1302,7 @@ static RCTBorderStyle RCTBorderStyleFromOutlineStyle(OutlineStyle outlineStyle)
   if (self.currentContainerView.clipsToBounds) {
     BOOL clipToPaddingBox = ReactNativeFeatureFlags::enableIOSViewClipToPaddingBox();
     if (!clipToPaddingBox) {
-      if (borderMetrics.borderRadii.isUniform()) {
+      if (areBorderRadiiCircular(borderMetrics.borderRadii)) {
         self.currentContainerView.layer.cornerRadius = borderMetrics.borderRadii.topLeft.horizontal;
       } else {
         CALayer *maskLayer =
@@ -1308,7 +1325,7 @@ static RCTBorderStyle RCTBorderStyleFromOutlineStyle(OutlineStyle outlineStyle)
       }
     } else if (
         !borderMetrics.borderWidths.isUniform() || borderMetrics.borderWidths.left != 0 ||
-        !borderMetrics.borderRadii.isUniform()) {
+        !areBorderRadiiCircular(borderMetrics.borderRadii)) {
       CALayer *maskLayer = [self createMaskLayer:RCTCGRectFromRect(_layoutMetrics.getPaddingFrame())
                                     cornerInsets:RCTGetCornerInsets(
                                                      RCTCornerRadiiFromBorderRadii(borderMetrics.borderRadii),
@@ -1327,7 +1344,7 @@ static RCTBorderStyle RCTBorderStyleFromOutlineStyle(OutlineStyle outlineStyle)
   // Bounds is needed here to account for scaling transforms properly and ensure
   // we do not scale twice
   layer.frame = CGRectMake(0, 0, self.layer.bounds.size.width, self.layer.bounds.size.height);
-  if (borderMetrics.borderRadii.isUniform()) {
+  if (areBorderRadiiCircular(borderMetrics.borderRadii)) {
     layer.mask = nil;
     layer.cornerRadius = borderMetrics.borderRadii.topLeft.horizontal;
     layer.cornerCurve = CornerCurveFromBorderCurve(borderMetrics.borderCurves.topLeft);

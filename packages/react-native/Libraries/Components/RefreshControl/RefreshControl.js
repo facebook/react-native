@@ -72,6 +72,7 @@ type RefreshControlBaseProps = Readonly<{
   progressViewOffset?: ?number,
 }>;
 
+/** @build-types emit-as-interface Uniwind compatibility */
 export type RefreshControlProps = Readonly<{
   ...ViewProps,
   ...RefreshControlPropsIOS,

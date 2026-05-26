@@ -7,6 +7,7 @@
 
 #pragma once
 
+#include <mutex>
 #include <optional>
 
 namespace facebook::react::jsinspector_modern {
@@ -18,6 +19,9 @@ namespace facebook::react::jsinspector_modern {
 class InspectorFlags {
  public:
   static InspectorFlags &getInstance();
+
+  InspectorFlags(const InspectorFlags &) = delete;
+  InspectorFlags &operator=(const InspectorFlags &) = delete;
 
   /**
    * Flag determining if the inspector backend should strictly assert that only
@@ -81,10 +85,9 @@ class InspectorFlags {
   };
 
   InspectorFlags() = default;
-  InspectorFlags(const InspectorFlags &) = delete;
-  InspectorFlags &operator=(const InspectorFlags &) = default;
   ~InspectorFlags() = default;
 
+  mutable std::mutex mutex_;
   mutable std::optional<Values> cachedValues_;
   mutable bool inconsistentFlagsStateLogged_{false};
   bool fuseboxDisabledForTest_{false};

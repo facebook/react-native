@@ -13,7 +13,7 @@ import NativeTiming from './NativeTiming';
 
 const toError = require('../../../src/private/utilities/toError').default;
 const BatchedBridge = require('../../BatchedBridge/BatchedBridge').default;
-const Systrace = require('../../Performance/Systrace');
+const {trace} = require('../../Performance/Systrace');
 const invariant = require('invariant');
 
 /**
@@ -96,47 +96,47 @@ function _callTimer(timerID: number, frameTime: number, didTimeout: ?boolean) {
     return;
   }
 
-  if (__DEV__) {
-    Systrace.beginEvent(type + ' [invoke]');
-  }
-
-  // Clear the metadata
-  if (type !== 'setInterval') {
-    _clearIndex(timerIndex);
-  }
-
-  try {
-    if (
-      type === 'setTimeout' ||
-      type === 'setInterval' ||
-      type === 'queueReactNativeMicrotask'
-    ) {
-      callback();
-    } else if (type === 'requestAnimationFrame') {
-      callback(global.performance.now());
-    } else if (type === 'requestIdleCallback') {
-      callback({
-        timeRemaining: function () {
-          // TODO: Optimisation: allow running for longer than one frame if
-          // there are no pending JS calls on the bridge from native. This
-          // would require a way to check the bridge queue synchronously.
-          return Math.max(
-            0,
-            FRAME_DURATION - (global.performance.now() - frameTime),
-          );
-        },
-        didTimeout: !!didTimeout,
-      });
-    } else {
-      console.error('Tried to call a callback with invalid type: ' + type);
+  const doCallTimer = () => {
+    // Clear the metadata
+    if (type !== 'setInterval') {
+      _clearIndex(timerIndex);
     }
-  } catch (e: unknown) {
-    // Don't rethrow so that we can run all timers.
-    errors.push(toError(e));
-  }
+
+    try {
+      if (
+        type === 'setTimeout' ||
+        type === 'setInterval' ||
+        type === 'queueReactNativeMicrotask'
+      ) {
+        callback();
+      } else if (type === 'requestAnimationFrame') {
+        callback(global.performance.now());
+      } else if (type === 'requestIdleCallback') {
+        callback({
+          timeRemaining: function () {
+            // TODO: Optimisation: allow running for longer than one frame if
+            // there are no pending JS calls on the bridge from native. This
+            // would require a way to check the bridge queue synchronously.
+            return Math.max(
+              0,
+              FRAME_DURATION - (global.performance.now() - frameTime),
+            );
+          },
+          didTimeout: !!didTimeout,
+        });
+      } else {
+        console.error('Tried to call a callback with invalid type: ' + type);
+      }
+    } catch (e: unknown) {
+      // Don't rethrow so that we can run all timers.
+      errors.push(toError(e));
+    }
+  };
 
   if (__DEV__) {
-    Systrace.endEvent();
+    trace(type + ' [invoke]', doCallTimer);
+  } else {
+    doCallTimer();
   }
 }
 
@@ -149,24 +149,25 @@ function _callReactNativeMicrotasksPass() {
     return false;
   }
 
-  if (__DEV__) {
-    Systrace.beginEvent('callReactNativeMicrotasksPass()');
-  }
+  const runPass = () => {
+    // The main reason to extract a single pass is so that we can track
+    // in the system trace
+    const passReactNativeMicrotasks = reactNativeMicrotasks;
+    reactNativeMicrotasks = [];
 
-  // The main reason to extract a single pass is so that we can track
-  // in the system trace
-  const passReactNativeMicrotasks = reactNativeMicrotasks;
-  reactNativeMicrotasks = [];
-
-  // Use for loop rather than forEach as per @vjeux's advice
-  // https://github.com/facebook/react-native/commit/c8fd9f7588ad02d2293cac7224715f4af7b0f352#commitcomment-14570051
-  for (let i = 0; i < passReactNativeMicrotasks.length; ++i) {
-    _callTimer(passReactNativeMicrotasks[i], 0);
-  }
+    // Use for loop rather than forEach as per @vjeux's advice
+    // https://github.com/facebook/react-native/commit/c8fd9f7588ad02d2293cac7224715f4af7b0f352#commitcomment-14570051
+    for (let i = 0; i < passReactNativeMicrotasks.length; ++i) {
+      _callTimer(passReactNativeMicrotasks[i], 0);
+    }
+  };
 
   if (__DEV__) {
-    Systrace.endEvent();
+    trace('callReactNativeMicrotasksPass()', runPass);
+  } else {
+    runPass();
   }
+
   return reactNativeMicrotasks.length > 0;
 }
 

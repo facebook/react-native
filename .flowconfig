@@ -45,6 +45,7 @@ packages/react-native/flow/
 [options]
 enums=true
 experimental.pattern_matching=true
+experimental.allow_variance_keywords=true
 casting_syntax=both
 component_syntax=true
 
@@ -95,4 +96,4 @@ untyped-import
 untyped-type-import
 
 [version]
-^0.310.0
+^0.314.0

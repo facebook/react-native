@@ -806,7 +806,7 @@ public class ReactHostImpl(
   internal fun callFunctionOnModule(
       moduleName: String,
       methodName: String,
-      args: NativeArray,
+      args: NativeArray?,
   ): Task<Boolean> {
     val method = "callFunctionOnModule(\"$moduleName\", \"$methodName\")"
     return callWithExistingReactInstance(method) { reactInstance: ReactInstance ->
@@ -855,16 +855,6 @@ public class ReactHostImpl(
       Assertions.assertCondition(
           ReactNativeNewArchitectureFeatureFlags.enableBridgelessArchitecture(),
           "enableBridgelessArchitecture FeatureFlag must be set to start ReactNative.",
-      )
-
-      Assertions.assertCondition(
-          ReactNativeNewArchitectureFeatureFlags.enableFabricRenderer(),
-          "enableFabricRenderer FeatureFlag must be set to start ReactNative.",
-      )
-
-      Assertions.assertCondition(
-          ReactNativeNewArchitectureFeatureFlags.useTurboModules(),
-          "useTurboModules FeatureFlag must be set to start ReactNative.",
       )
     }
     if (ReactBuildConfig.UNSTABLE_ENABLE_MINIFY_LEGACY_ARCHITECTURE) {

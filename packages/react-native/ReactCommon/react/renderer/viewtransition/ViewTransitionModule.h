@@ -119,7 +119,10 @@ class ViewTransitionModule : public UIManagerViewTransitionDelegate,
 
   struct InactivePseudoElement {
     std::shared_ptr<const ShadowNode> node;
-    Tag sourceTag{0}; // tag of the original view this was created from
+    // tag of the original view this was created from
+    Tag sourceTag{0};
+    // Layout metrics last applied to the pseudo-element node's props.
+    AnimationKeyFrameViewLayoutMetrics lastAppliedLayoutMetrics{};
   };
   // pseudo-element nodes created for entering nodes, to be copied into
   // oldPseudoElementNodes_ during the next applyViewTransitionName call.

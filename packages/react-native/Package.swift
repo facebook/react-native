@@ -93,6 +93,7 @@ let reactRendererConsistency = RNTarget(
 let reactDebug = RNTarget(
   name: .reactDebug,
   path: "ReactCommon/react/debug",
+  excludedPaths: ["tests", "redbox/tests"],
   dependencies: [.reactNativeDependencies]
 )
 /// React-jsi.podspec
@@ -392,7 +393,7 @@ let reactCoreModules = RNTarget(
   name: .reactCoreModules,
   path: "React/CoreModules",
   excludedPaths: ["PlatformStubs/RCTStatusBarManager.mm"],
-  dependencies: [.reactNativeDependencies, .jsi, .yoga, .reactTurboModuleCore]
+  dependencies: [.reactNativeDependencies, .jsi, .yoga, .reactTurboModuleCore, .reactFeatureFlags]
 )
 
 /// React-runtimeCore.podspec
@@ -472,6 +473,7 @@ let reactFabric = RNTarget(
     "components/unimplementedview",
     "components/virtualview",
     "components/root/tests",
+    "scheduler/tests",
   ],
   dependencies: [.reactNativeDependencies, .reactJsiExecutor, .rctTypesafety, .reactTurboModuleCore, .jsi, .logger, .reactDebug, .reactFeatureFlags, .reactUtils, .reactRuntimeScheduler, .reactCxxReact, .reactRendererDebug, .reactGraphics, .yoga, .reactJsInspectorTracing],
   sources: ["animated", "animationbackend", "animations", "attributedstring", "core", "componentregistry", "componentregistry/native", "components/root", "components/view", "components/view/platform/cxx", "components/scrollview", "components/scrollview/platform/cxx", "components/scrollview/platform/ios", "components/legacyviewmanagerinterop", "components/legacyviewmanagerinterop/platform/ios", "dom", "scheduler", "mounting", "observers/events", "observers/intersection", "observers/mutation", "telemetry", "consistency", "leakchecker", "uimanager", "uimanager/consistency", "viewtransition"]

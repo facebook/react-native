@@ -7,30 +7,51 @@ outputs:
 runs:
   using: composite
   steps:
-    - name: Fetch PR and main, compute merge base
-      id: merge_base
-      shell: bash
-      env:
-        PR_SHA: ${{ github.event.pull_request.head.sha }}
-      run: |
-        git fetch origin main
-        git fetch origin "$PR_SHA" --depth=500
-        echo "merge_base=$(git merge-base "$PR_SHA" origin/main)" >> $GITHUB_OUTPUT
+    - name: Resolve API diff inputs
+      id: api_diff
+      uses: actions/github-script@v8
+      with:
+        script: |
+          // Check if we are targeting main or a stable branch
+          const baseRef = context.payload.pull_request.base.ref;
+          if (baseRef !== 'main' && !baseRef.endsWith('-stable')) {
+            core.setOutput('changed', false);
+            return;
+          }
 
-    - name: Extract before and after API snapshots
+          // Check if the diff touches ReactNativeApi.d.ts
+          const files = await github.paginate(github.rest.pulls.listFiles, {
+            ...context.repo,
+            pull_number: context.payload.pull_request.number,
+          });
+          const changed = files.some(f => f.filename === 'packages/react-native/ReactNativeApi.d.ts');
+          core.setOutput('changed', changed);
+          if (!changed) return;
+
+          // Calculate merge base
+          const {data} = await github.rest.repos.compareCommits({
+            ...context.repo,
+            base: context.payload.pull_request.base.ref,
+            head: context.payload.pull_request.head.sha,
+          });
+          core.setOutput('merge_base', data.merge_base_commit.sha);
+
+    - name: Fetch commits and extract API snapshots
+      if: steps.api_diff.outputs.changed == 'true'
       shell: bash
       env:
         SCRATCH_DIR: ${{ runner.temp }}/diff-js-api-changes
-        MERGE_BASE: ${{ steps.merge_base.outputs.merge_base }}
-        PR_SHA: ${{ github.event.pull_request.head.sha }}
       run: |
         mkdir -p $SCRATCH_DIR
-        git show "$MERGE_BASE":packages/react-native/ReactNativeApi.d.ts > $SCRATCH_DIR/ReactNativeApi-before.d.ts \
+        git fetch origin "${{ steps.api_diff.outputs.merge_base }}" --depth=1
+        git fetch origin "${{ github.event.pull_request.head.sha }}" --depth=1
+        git show "${{ steps.api_diff.outputs.merge_base }}":packages/react-native/ReactNativeApi.d.ts > $SCRATCH_DIR/ReactNativeApi-before.d.ts \
           || echo "" > $SCRATCH_DIR/ReactNativeApi-before.d.ts
-        git show "$PR_SHA":packages/react-native/ReactNativeApi.d.ts > $SCRATCH_DIR/ReactNativeApi-after.d.ts \
+        git show "${{ github.event.pull_request.head.sha }}":packages/react-native/ReactNativeApi.d.ts > $SCRATCH_DIR/ReactNativeApi-after.d.ts \
           || echo "" > $SCRATCH_DIR/ReactNativeApi-after.d.ts
 
     - name: Run breaking change detection
+      if: steps.api_diff.outputs.changed == 'true'
       shell: bash
       env:
         SCRATCH_DIR: ${{ runner.temp }}/diff-js-api-changes

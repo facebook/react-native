@@ -39,6 +39,53 @@ class UtilsTests < Test::Unit::TestCase
         $RN_PLATFORMS = nil
     end
 
+    # ===================== #
+    # TEST - localFileUri   #
+    # ===================== #
+
+    def test_localFileUri_whenPathContainsUnicode_returnsEscapedFileUri
+        # Arrange
+        path = "/tmp/rn-unicode/💻dev/React-Core-prebuilt.tar.gz"
+
+        # Act
+        result = ReactNativePodsUtils.local_file_uri(path)
+
+        # Assert
+        assert_equal("file:///tmp/rn-unicode/%F0%9F%92%BBdev/React-Core-prebuilt.tar.gz", result)
+    end
+
+    def test_localFileUri_whenPathContainsSpaces_returnsEscapedFileUri
+        # Arrange
+        path = "/tmp/rn space/React Core.tar.gz"
+
+        # Act
+        result = ReactNativePodsUtils.local_file_uri(path)
+
+        # Assert
+        assert_equal("file:///tmp/rn%20space/React%20Core.tar.gz", result)
+    end
+
+    def test_localFileUri_whenPathContainsOnlyAscii_returnsFileUri
+        # Arrange
+        path = "/tmp/rn-ascii/React-Core-prebuilt.tar.gz"
+
+        # Act
+        result = ReactNativePodsUtils.local_file_uri(path)
+
+        # Assert
+        assert_equal("file:///tmp/rn-ascii/React-Core-prebuilt.tar.gz", result)
+    end
+
+    def test_localFileUri_whenPathContainsUnicode_withoutEscapingUriFileBuildRaises
+        # Arrange
+        path = "/tmp/rn-unicode/💻dev/React-Core-prebuilt.tar.gz"
+
+        # Act & Assert
+        assert_raise(URI::InvalidComponentError) do
+            URI::File.build(path: path).to_s
+        end
+    end
+
     # ======================= #
     # TEST - warnIfNotOnArm64 #
     # ======================= #

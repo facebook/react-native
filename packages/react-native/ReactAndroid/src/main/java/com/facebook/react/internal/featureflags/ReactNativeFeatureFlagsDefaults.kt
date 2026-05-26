@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<1b44996cc8dbba36e443551235dd89a8>>
+ * @generated SignedSource<<8ff3ad95d98ae88de2f040518cc436a9>>
  */
 
 /**
@@ -61,8 +61,6 @@ public open class ReactNativeFeatureFlagsDefaults : ReactNativeFeatureFlagsProvi
 
   override fun enableDoubleMeasurementFixAndroid(): Boolean = false
 
-  override fun enableEagerMainQueueModulesOnIOS(): Boolean = false
-
   override fun enableEagerRootViewAttachment(): Boolean = false
 
   override fun enableExclusivePropsUpdateAndroid(): Boolean = false
@@ -71,8 +69,6 @@ public open class ReactNativeFeatureFlagsDefaults : ReactNativeFeatureFlagsProvi
 
   override fun enableFabricLogs(): Boolean = false
 
-  override fun enableFabricRenderer(): Boolean = false
-
   override fun enableFontScaleChangesUpdatingLayout(): Boolean = true
 
   override fun enableIOSTextBaselineOffsetPerLine(): Boolean = false
@@ -80,10 +76,6 @@ public open class ReactNativeFeatureFlagsDefaults : ReactNativeFeatureFlagsProvi
   override fun enableIOSViewClipToPaddingBox(): Boolean = false
 
   override fun enableImagePrefetchingAndroid(): Boolean = false
-
-  override fun enableImagePrefetchingJNIBatchingAndroid(): Boolean = false
-
-  override fun enableImagePrefetchingOnUiThreadAndroid(): Boolean = false
 
   override fun enableImmediateUpdateModeForContentOffsetChanges(): Boolean = false
 
@@ -109,13 +101,15 @@ public open class ReactNativeFeatureFlagsDefaults : ReactNativeFeatureFlagsProvi
 
   override fun enableNativeCSSParsing(): Boolean = false
 
-  override fun enableNativeViewPropTransformations(): Boolean = false
-
   override fun enableNetworkEventReporting(): Boolean = true
 
   override fun enablePreparedTextLayout(): Boolean = false
 
   override fun enablePropsUpdateReconciliationAndroid(): Boolean = false
+
+  override fun enableRuntimeSchedulerQueueClearingOnError(): Boolean = false
+
+  override fun enableSchedulerDelegateInvalidation(): Boolean = false
 
   override fun enableSwiftUIBasedFilters(): Boolean = false
 
@@ -137,8 +131,6 @@ public open class ReactNativeFeatureFlagsDefaults : ReactNativeFeatureFlagsProvi
 
   override fun fixDifferentiatorParentTagForUnflattenCase(): Boolean = false
 
-  override fun fixFindShadowNodeByTagRaceCondition(): Boolean = false
-
   override fun fixMappingOfEventPrioritiesBetweenFabricAndReact(): Boolean = false
 
   override fun fixYogaFlexBasisFitContentInMainAxis(): Boolean = false
@@ -155,7 +147,9 @@ public open class ReactNativeFeatureFlagsDefaults : ReactNativeFeatureFlagsProvi
 
   override fun hideOffscreenVirtualViewsOnIOS(): Boolean = false
 
-  override fun overrideBySynchronousMountPropsAtMountingAndroid(): Boolean = false
+  override fun optimizedAnimatedPropUpdates(): Boolean = false
+
+  override fun overrideBySynchronousMountPropsAtMountingAndroid(): Boolean = true
 
   override fun perfIssuesEnabled(): Boolean = false
 
@@ -175,7 +169,7 @@ public open class ReactNativeFeatureFlagsDefaults : ReactNativeFeatureFlagsProvi
 
   override fun skipActivityIdentityAssertionOnHostPause(): Boolean = false
 
-  override fun syncAndroidClipToPaddingWithOverflow(): Boolean = false
+  override fun syncAndroidClipBoundsWithOverflow(): Boolean = false
 
   override fun traceTurboModulePromiseRejectionsOnAndroid(): Boolean = false
 
@@ -187,11 +181,11 @@ public open class ReactNativeFeatureFlagsDefaults : ReactNativeFeatureFlagsProvi
 
   override fun useFabricInterop(): Boolean = true
 
-  override fun useLISAlgorithmInDifferentiator(): Boolean = false
-
   override fun useNativeViewConfigsInBridgelessMode(): Boolean = false
 
   override fun useNestedScrollViewAndroid(): Boolean = false
+
+  override fun useOptimizedViewRegistryOnAndroid(): Boolean = false
 
   override fun useSharedAnimatedBackend(): Boolean = false
 
@@ -199,13 +193,11 @@ public open class ReactNativeFeatureFlagsDefaults : ReactNativeFeatureFlagsProvi
 
   override fun useTurboModuleInterop(): Boolean = false
 
-  override fun useTurboModules(): Boolean = false
-
-  override fun useUnorderedMapInDifferentiator(): Boolean = false
-
   override fun viewCullingOutsetRatio(): Double = 0.0
 
   override fun viewTransitionEnabled(): Boolean = false
+
+  override fun viewTransitionUseHardwareBitmapAndroid(): Boolean = false
 
   override fun virtualViewPrerenderRatio(): Double = 5.0
 }

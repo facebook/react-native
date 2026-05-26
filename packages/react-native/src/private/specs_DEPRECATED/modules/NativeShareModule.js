@@ -13,8 +13,8 @@ import type {TurboModule} from '../../../../Libraries/TurboModule/RCTExport';
 import * as TurboModuleRegistry from '../../../../Libraries/TurboModule/TurboModuleRegistry';
 
 export interface Spec extends TurboModule {
-  +getConstants: () => {};
-  +share: (
+  readonly getConstants: () => {};
+  readonly share: (
     content: {title?: string, message?: string},
     dialogTitle?: string,
   ) => Promise<{action: string}>;

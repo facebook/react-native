@@ -57,25 +57,25 @@ const getPreset = (src, options, babel) => {
 
   const dev = options?.dev ?? babel?.env('development') ?? false;
 
-  // Hermes V1 (aka Static Hermes) uses more optimised profiles.
-  // There is currently no difference between stable and canary, but canary
-  // may in future be used to test features in pre-prod Hermes versions.
-  const isHermesV1 =
+  // Hermes V1 uses more optimised transform profiles. There is currently no
+  // difference between stable and canary, but canary may in future be used to
+  // test features in pre-prod Hermes V1 versions.
+  const isHermesProfile =
     transformProfile === 'hermes-stable' ||
     transformProfile === 'hermes-canary';
 
-  // We enable regenerator in dev builds for the time being because
+  // We enable regenerator in Hermes V1 dev builds for the time being because
   // Hermes V1 doesn't yet fully support debugging native generators.
   // (e.g. - it's not possible to inspect local variables when paused in a
   // generator).
   //
   // Use native generators in release mode because it has already yielded perf
-  // wins. The next release of Hermes will close this gap, so this won't
+  // wins. The next release of Hermes V1 will close this gap, so this won't
   // be permanent.
-  const enableRegenerator = isHermesV1 && dev;
+  const enableRegenerator = isHermesProfile && dev;
 
-  // Preserve class syntax and related if we're using Hermes V1.
-  const preserveClasses = isHermesV1;
+  // Preserve class syntax and related features for Hermes V1 profiles.
+  const preserveClasses = isHermesProfile;
 
   // Preserve private class fields and methods if the experiment is enabled.
   const preserveClassPrivate = TRUE_VALS.has(
@@ -85,6 +85,16 @@ const getPreset = (src, options, babel) => {
   // Preserve async/await syntax if the experiment is enabled.
   const preserveAsync = TRUE_VALS.has(
     options?.customTransformOptions?.unstable_preserveAsync,
+  );
+
+  // Preserve block scoping (let/const) if the experiment is enabled.
+  const preserveBlockScoping = TRUE_VALS.has(
+    options?.customTransformOptions?.unstable_preserveBlockScoping,
+  );
+
+  // Preserve destructuring syntax if the experiment is enabled.
+  const preserveDestructuring = TRUE_VALS.has(
+    options?.customTransformOptions?.unstable_preserveDestructuring,
   );
 
   const isNull = src == null;
@@ -139,10 +149,12 @@ const getPreset = (src, options, babel) => {
     ]);
   }
 
-  extraPlugins.push([
-    require('@babel/plugin-transform-destructuring'),
-    {useBuiltIns: true},
-  ]);
+  if (!preserveDestructuring) {
+    extraPlugins.push([
+      require('@babel/plugin-transform-destructuring'),
+      {useBuiltIns: true},
+    ]);
+  }
   if (!preserveAsync && (isNull || src.indexOf('async') !== -1)) {
     extraPlugins.push([
       require('@babel/plugin-transform-async-generator-functions'),
@@ -227,7 +239,9 @@ const getPreset = (src, options, babel) => {
             },
           ],
           [require('babel-plugin-transform-flow-enums')],
-          [require('@babel/plugin-transform-block-scoping')],
+          ...(preserveBlockScoping
+            ? []
+            : [[require('@babel/plugin-transform-block-scoping')]]),
           ...(preserveClasses
             ? []
             : [[require('@babel/plugin-transform-class-properties'), {loose}]]),

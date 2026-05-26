@@ -34,6 +34,7 @@ import {
   EVENT_TARGET_GET_DECLARATIVE_LISTENER_KEY,
   EVENT_TARGET_GET_THE_PARENT_KEY,
   INTERNAL_DISPATCH_METHOD_KEY,
+  getEventTargetParent,
 } from './internals/EventTargetInternals';
 
 export type EventCallback = (event: Event) => void;
@@ -54,9 +55,9 @@ export type AddEventListenerOptions = Readonly<{
 }>;
 
 type EventListenerRegistration = {
-  +callback: EventListener,
-  +passive: boolean,
-  +once: boolean,
+  readonly callback: EventListener,
+  readonly passive: boolean,
+  readonly once: boolean,
   removed: boolean,
 };
 
@@ -217,10 +218,14 @@ export default class EventTarget {
    *
    * Called during event dispatch before explicitly registered listeners.
    * Return a callback to be invoked as an event listener, or null.
+   *
+   * `event.type` is the event type. `isCapture` distinguishes the capture pass
+   * from the bubble pass — it cannot be derived from `event.eventPhase`,
+   * which is `AT_TARGET` during both passes through the target node.
    */
   // $FlowExpectedError[unsupported-syntax]
   [EVENT_TARGET_GET_DECLARATIVE_LISTENER_KEY](
-    eventType: string,
+    event: Event,
     isCapture: boolean,
   ): EventCallback | null {
     return null;
@@ -239,11 +244,14 @@ export default class EventTarget {
   }
 
   /**
-   * This is "protected" method to dispatch trusted events.
+   * This is "protected" method to dispatch trusted events. Mirrors the
+   * `dispatchEvent` return contract: returns `false` if the event was
+   * canceled (i.e. `event.defaultPrevented`), otherwise `true`.
    */
   // $FlowExpectedError[unsupported-syntax]
-  [INTERNAL_DISPATCH_METHOD_KEY](event: Event): void {
+  [INTERNAL_DISPATCH_METHOD_KEY](event: Event): boolean {
     dispatch(this, event);
+    return !event.defaultPrevented;
   }
 }
 
@@ -334,8 +342,7 @@ function getEventPath(
 
   while (target != null) {
     path.push(target);
-    // $FlowExpectedError[prop-missing]
-    target = target[EVENT_TARGET_GET_THE_PARENT_KEY]();
+    target = getEventTargetParent(target);
   }
 
   return path;
@@ -354,27 +361,38 @@ function invoke(
 
   setCurrentTarget(event, eventTarget);
 
-  // Build the list of listeners to invoke:
-  // When the flag is enabled, prop-based listeners fire first, then
-  // explicitly registered addEventListener listeners.
-  // When disabled, only addEventListener listeners are used (legacy path).
-  let listeners: Array<EventListenerRegistration>;
-
   if (ReactNativeFeatureFlags.enableNativeEventTargetEventDispatching()) {
+    // Resolve the prop-based listener. Pass the event so subclasses can read
+    // its `type` and any pre-resolved internal slots; pass `isCapture`
+    // separately because it can't be derived from `event.eventPhase` (which
+    // is `AT_TARGET` during both passes through the target node).
     // $FlowExpectedError[prop-missing]
     const propListener: EventCallback | null = eventTarget[
       EVENT_TARGET_GET_DECLARATIVE_LISTENER_KEY
-    ](event.type, isCapture);
+    ](event, isCapture);
 
     const listenersByType = getListenersForPhase(eventTarget, isCapture);
     const maybeListeners = listenersByType?.get(event.type);
 
-    if (propListener == null && maybeListeners == null) {
+    // Fast path: only a prop listener (no `addEventListener` listeners).
+    // This is the overwhelmingly common case for React-driven dispatch.
+    if (maybeListeners == null) {
+      if (propListener == null) {
+        return;
+      }
+      const currentEvent = global.event;
+      global.event = event;
+      try {
+        propListener.call(eventTarget, event);
+      } catch (error) {
+        reportListenerError(error);
+      }
+      global.event = currentEvent;
       return;
     }
 
-    listeners = [];
-
+    // Slow path: combine prop listener + addEventListener listeners.
+    const listeners: Array<EventListenerRegistration> = [];
     if (propListener != null) {
       listeners.push({
         callback: propListener,
@@ -383,21 +401,33 @@ function invoke(
         removed: false,
       });
     }
-
-    if (maybeListeners != null) {
-      for (const registration of maybeListeners.values()) {
-        listeners.push(registration);
-      }
+    for (const registration of maybeListeners.values()) {
+      listeners.push(registration);
     }
-  } else {
-    const listenersByType = getListenersForPhase(eventTarget, isCapture);
-    const maybeListeners = listenersByType?.get(event.type);
-    if (maybeListeners == null) {
-      return;
-    }
-    listeners = Array.from(maybeListeners.values());
+    invokeListeners(eventTarget, event, listeners, isCapture);
+    return;
   }
 
+  // Legacy path (flag OFF): only `addEventListener` listeners.
+  const listenersByType = getListenersForPhase(eventTarget, isCapture);
+  const maybeListeners = listenersByType?.get(event.type);
+  if (maybeListeners == null) {
+    return;
+  }
+  invokeListeners(
+    eventTarget,
+    event,
+    Array.from(maybeListeners.values()),
+    isCapture,
+  );
+}
+
+function invokeListeners(
+  eventTarget: EventTarget,
+  event: Event,
+  listeners: Array<EventListenerRegistration>,
+  isCapture: boolean,
+): void {
   for (const listener of listeners) {
     if (listener.removed) {
       continue;
@@ -424,8 +454,7 @@ function invoke(
         callback.handleEvent(event);
       }
     } catch (error) {
-      // TODO: replace with `reportError` when it's available.
-      console.error(error);
+      reportListenerError(error);
     }
 
     if (listener.passive) {
@@ -478,4 +507,20 @@ function getEventDispatchFlag(event: Event): boolean {
 function setEventDispatchFlag(event: Event, value: boolean): void {
   // $FlowExpectedError[prop-missing]
   event[EVENT_DISPATCH_FLAG] = value;
+}
+
+/**
+ * Surface a listener error to the global error handler without aborting the
+ * rest of the dispatch. Throws in a new task so the error becomes an
+ * uncaught exception (matching the legacy plugin path's behavior of
+ * propagating listener errors via React's runEventsInBatch +
+ * `rethrowCaughtError`, rather than swallowing them as a `console.error`).
+ *
+ * `setTimeout(0)` schedules a new macrotask; the throw inside it has no
+ * catcher above, so it bubbles up to the host's unhandled-error reporter.
+ */
+function reportListenerError(error: unknown): void {
+  setTimeout(() => {
+    throw error;
+  }, 0);
 }

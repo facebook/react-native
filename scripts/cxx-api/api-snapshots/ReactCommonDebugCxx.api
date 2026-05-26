@@ -153,6 +153,7 @@ const char facebook::react::RuntimeSchedulerKey[];
 const char facebook::react::SafeAreaViewComponentName[];
 const char facebook::react::ScrollViewComponentName[];
 const char facebook::react::TextComponentName[];
+const char facebook::react::TextEffectComponentName[];
 const char facebook::react::UnimplementedViewComponentName[];
 const char facebook::react::ViewComponentName[];
 const facebook::react::EventTag facebook::react::EMPTY_EVENT_TAG;
@@ -315,6 +316,8 @@ using facebook::react::TelemetryClock = std::chrono::steady_clock;
 using facebook::react::TelemetryDuration = std::chrono::nanoseconds;
 using facebook::react::TelemetryTimePoint = facebook::react::TelemetryClock::time_point;
 using facebook::react::TextComponentDescriptor = facebook::react::ConcreteComponentDescriptor<facebook::react::TextShadowNode>;
+using facebook::react::TextEffectComponentDescriptor = facebook::react::ConcreteComponentDescriptor<facebook::react::TextEffectShadowNode>;
+using facebook::react::TextEffectEventEmitter = facebook::react::TouchEventEmitter;
 using facebook::react::TextEventEmitter = facebook::react::TouchEventEmitter;
 using facebook::react::TextLayoutManagerExtended = facebook::react::detail::TextLayoutManagerExtended<TextLayoutManager>;
 using facebook::react::TextMeasureCache = facebook::react::SimpleThreadSafeCache<facebook::react::TextMeasureCacheKey, facebook::react::TextMeasurement, facebook::react::kSimpleThreadSafeCacheSizeCap>;
@@ -417,6 +420,7 @@ bool facebook::react::areAttributedStringFragmentsEquivalentDisplayWise(const fa
 bool facebook::react::areAttributedStringFragmentsEquivalentLayoutWise(const facebook::react::AttributedString::Fragment& lhs, const facebook::react::AttributedString::Fragment& rhs);
 bool facebook::react::areAttributedStringsEquivalentDisplayWise(const facebook::react::AttributedString& lhs, const facebook::react::AttributedString& rhs);
 bool facebook::react::areAttributedStringsEquivalentLayoutWise(const facebook::react::AttributedString& lhs, const facebook::react::AttributedString& rhs);
+bool facebook::react::areBorderRadiiCircular(const facebook::react::BorderRadii& borderRadii);
 bool facebook::react::areTextAttributesEquivalentLayoutWise(const facebook::react::TextAttributes& lhs, const facebook::react::TextAttributes& rhs);
 bool facebook::react::hasAccurateCPUTimeNanosForBenchmarks();
 bool facebook::react::isColorMeaningful(const facebook::react::SharedColor& color) noexcept;
@@ -536,7 +540,6 @@ std::string facebook::react::toString(facebook::react::AccessibilityLiveRegion a
 std::string facebook::react::toString(facebook::react::PointerEventsMode value);
 std::string_view facebook::react::getInteractionTypeForEvent(std::string_view eventName);
 std::unordered_map<std::string, std::function<std::shared_ptr<facebook::react::TurboModule>(std::shared_ptr<facebook::react::CallInvoker> jsInvoker)>>& facebook::react::globalExportedCxxTurboModuleMap();
-std::vector<bool> facebook::react::longestIncreasingSubsequence(const std::vector<size_t>& values, const std::vector<bool>& include);
 std::vector<facebook::react::MarginValue> facebook::react::parseNormalizedRootMargin(const std::string& marginStr);
 std::vector<facebook::react::MethodCall> facebook::react::parseMethodCalls(folly::dynamic&& jsonData);
 std::vector<facebook::react::ShadowViewNodePair*> facebook::react::sliceChildShadowNodeViewPairs(const facebook::react::ShadowViewNodePair& shadowNodePair, facebook::react::ViewNodePairScope& viewNodePairScope, bool allowFlattened, facebook::react::Point layoutOffset, const facebook::react::CullingContext& cullingContext);
@@ -934,6 +937,23 @@ class facebook::react::AppRegistryBinding {
   public static void setSurfaceProps(facebook::jsi::Runtime& runtime, facebook::react::SurfaceId surfaceId, const std::string& moduleName, const folly::dynamic& initialProps, facebook::react::DisplayMode displayMode);
   public static void startSurface(facebook::jsi::Runtime& runtime, facebook::react::SurfaceId surfaceId, const std::string& moduleName, const folly::dynamic& initialProps, facebook::react::DisplayMode displayMode);
   public static void stopSurface(facebook::jsi::Runtime& runtime, facebook::react::SurfaceId surfaceId);
+}
+
+class facebook::react::AsyncArrayBuffer {
+  public AsyncArrayBuffer(const facebook::react::AsyncArrayBuffer&) = delete;
+  public AsyncArrayBuffer(facebook::react::AsyncArrayBuffer&&) noexcept = default;
+  public const uint8_t* data() const noexcept;
+  public facebook::react::AsyncArrayBuffer& operator=(const facebook::react::AsyncArrayBuffer&) = delete;
+  public facebook::react::AsyncArrayBuffer& operator=(facebook::react::AsyncArrayBuffer&&) noexcept = default;
+  public size_t size() const noexcept;
+  public static facebook::react::AsyncArrayBuffer acquire(facebook::jsi::Runtime& rt, const facebook::jsi::ArrayBuffer& buffer);
+  public static facebook::react::AsyncArrayBuffer borrow(facebook::jsi::Runtime& rt, const facebook::jsi::ArrayBuffer& buffer);
+  public static facebook::react::AsyncArrayBuffer copy(facebook::jsi::Runtime& rt, const facebook::jsi::ArrayBuffer& buffer);
+  public static facebook::react::AsyncArrayBuffer wrap(std::shared_ptr<facebook::jsi::MutableBuffer> buffer) noexcept;
+  public static facebook::react::AsyncArrayBuffer wrap(std::vector<uint8_t> bytes);
+  public std::shared_ptr<facebook::jsi::MutableBuffer> getMutableBuffer() const noexcept;
+  public uint8_t* data() noexcept;
+  public ~AsyncArrayBuffer() = default;
 }
 
 class facebook::react::AttributedString : public facebook::react::Sealable, public facebook::react::DebugStringConvertible {
@@ -3466,7 +3486,18 @@ class facebook::react::TextAttributes : public facebook::react::DebugStringConve
   public std::optional<facebook::react::TextTransform> textTransform;
   public std::optional<facebook::react::WritingDirection> baseWritingDirection;
   public std::string fontFamily;
+  public std::vector<facebook::react::TextEffectInfo> textEffects;
   public void apply(facebook::react::TextAttributes textAttributes);
+}
+
+class facebook::react::TextEffectProps : public facebook::react::Props {
+  public TextEffectProps() = default;
+  public TextEffectProps(const facebook::react::PropsParserContext& context, const facebook::react::TextEffectProps& sourceProps, const facebook::react::RawProps& rawProps);
+  public folly::dynamic effectProps;
+  public std::string effectName;
+}
+
+class facebook::react::TextEffectShadowNode : public facebook::react::ConcreteShadowNode<facebook::react::TextEffectComponentName, facebook::react::ShadowNode, facebook::react::TextEffectProps, facebook::react::TextEffectEventEmitter> {
 }
 
 class facebook::react::TextInputEventEmitter : public facebook::react::BaseViewEventEmitter {
@@ -6050,6 +6081,12 @@ struct facebook::react::Task : public facebook::jsi::NativeState {
   public Task(facebook::react::SchedulerPriority priority, facebook::react::RawCallback&& callback, facebook::react::HighResTimeStamp expirationTime);
 }
 
+struct facebook::react::TextEffectInfo {
+  public bool operator==(const facebook::react::TextEffectInfo&) const = default;
+  public folly::dynamic props;
+  public std::string name;
+}
+
 struct facebook::react::TextLayoutContext {
   public Float pointScaleFactor;
   public bool operator==(const facebook::react::TextLayoutContext& rhs) const = default;
@@ -6328,26 +6365,6 @@ class facebook::react::SimpleThreadSafeCache {
   public ValueT get(const KeyT& key, facebook::react::CacheGeneratorFunction<ValueT> auto generator) const;
   public std::optional<ValueT> get(const KeyT& key) const;
   public std::pair<const KeyT*, const ValueT*> getWithKey(const KeyT& key, facebook::react::CacheGeneratorFunction<ValueT> auto generator) const;
-}
-
-template <typename KeyT, typename ValueT>
-class facebook::react::DiffMap {
-  public DiffMap();
-  public DiffMap(size_t sizeHint);
-  public facebook::react::DiffMap::Iterator begin();
-  public facebook::react::DiffMap::Iterator end();
-  public facebook::react::DiffMap::Iterator find(KeyT key);
-  public using Pair = std::pair<KeyT, ValueT>;
-  public void erase(facebook::react::DiffMap::Iterator it);
-  public void insert(facebook::react::DiffMap::Pair pair);
-}
-
-class facebook::react::DiffMap::Iterator {
-  public bool operator!=(const facebook::react::DiffMap::Iterator& other) const;
-  public bool operator==(const facebook::react::DiffMap::Iterator& other) const;
-  public const facebook::react::DiffMap::Pair& operator*() const;
-  public const facebook::react::DiffMap::Pair* operator->() const;
-  public facebook::react::DiffMap::Iterator& operator++();
 }
 
 template <typename Lambda>
@@ -6636,6 +6653,11 @@ template <typename... Types>
 struct facebook::react::Bridging<std::tuple<Types...>> : public facebook::react::array_detail::BridgingStatic<std::tuple<Types...>, sizeof...(Types)> {
 }
 
+struct facebook::react::Bridging<facebook::jsi::ArrayBuffer> {
+  public static facebook::jsi::ArrayBuffer fromJs(facebook::jsi::Runtime& rt, const facebook::jsi::Object& obj);
+  public static facebook::jsi::Value toJs(facebook::jsi::Runtime& rt, facebook::jsi::ArrayBuffer buf);
+}
+
 struct facebook::react::Bridging<facebook::jsi::JSError> {
   public static facebook::jsi::JSError fromJs(facebook::jsi::Runtime& rt, const facebook::jsi::Value& value);
   public static facebook::jsi::JSError fromJs(facebook::jsi::Runtime& rt, facebook::jsi::Value&& value);
@@ -6645,6 +6667,10 @@ struct facebook::react::Bridging<facebook::jsi::JSError> {
 struct facebook::react::Bridging<facebook::jsi::WeakObject> {
   public static facebook::jsi::Value toJs(facebook::jsi::Runtime& rt, facebook::jsi::WeakObject& value);
   public static facebook::jsi::WeakObject fromJs(facebook::jsi::Runtime& rt, const facebook::jsi::Object& value);
+}
+
+struct facebook::react::Bridging<facebook::react::AsyncArrayBuffer> {
+  public static facebook::jsi::Value toJs(facebook::jsi::Runtime& rt, facebook::react::AsyncArrayBuffer buffer);
 }
 
 struct facebook::react::Bridging<facebook::react::EndResult> : public NativeAnimatedTurboModuleEndResultBridging<facebook::react::EndResult> {
@@ -6943,6 +6969,12 @@ template <typename CSSColor>
 std::optional<facebook::react::CSSColor> facebook::react::detail::parseModernHslFunction(facebook::react::CSSValueParser& parser);
 template <typename... ComponentT>
 constexpr std::optional<float> facebook::react::detail::normalizeComponent(const std::variant<std::monostate, ComponentT...>& component, float baseValue);
+
+class facebook::react::detail::OwnedBytesBuffer : public facebook::jsi::MutableBuffer {
+  public OwnedBytesBuffer(std::vector<uint8_t> bytes) noexcept;
+  public virtual size_t size() const override;
+  public virtual uint8_t* data() override;
+}
 
 enum facebook::react::detail::HexColorType {
   Long,
@@ -7636,6 +7668,7 @@ class facebook::react::jsinspector_modern::IWebSocketDelegate {
 }
 
 class facebook::react::jsinspector_modern::InspectorFlags {
+  public InspectorFlags(const facebook::react::jsinspector_modern::InspectorFlags&) = delete;
   public bool getAssertSingleHostState() const;
   public bool getFrameRecordingEnabled() const;
   public bool getFuseboxEnabled() const;
@@ -7643,6 +7676,7 @@ class facebook::react::jsinspector_modern::InspectorFlags {
   public bool getNetworkInspectionEnabled() const;
   public bool getPerfIssuesEnabled() const;
   public bool getScreenshotCaptureEnabled() const;
+  public facebook::react::jsinspector_modern::InspectorFlags& operator=(const facebook::react::jsinspector_modern::InspectorFlags&) = delete;
   public static facebook::react::jsinspector_modern::InspectorFlags& getInstance();
   public void dangerouslyDisableFuseboxForTest();
   public void dangerouslyResetFlags();
@@ -8583,11 +8617,13 @@ struct facebook::react::bridging::is_optional<std::optional<T>> : public std::tr
 
 struct facebook::react::bridging::Converter<facebook::jsi::Object> : public facebook::react::bridging::ConverterBase<facebook::jsi::Object> {
   public operator facebook::jsi::Array();
+  public operator facebook::jsi::ArrayBuffer();
   public operator facebook::jsi::Function();
 }
 
 struct facebook::react::bridging::Converter<facebook::jsi::Value> : public facebook::react::bridging::ConverterBase<facebook::jsi::Value> {
   public operator facebook::jsi::Array();
+  public operator facebook::jsi::ArrayBuffer();
   public operator facebook::jsi::Function();
   public operator facebook::jsi::Object();
   public operator facebook::jsi::String();
@@ -10576,6 +10612,10 @@ struct std::hash<facebook::react::Size> {
 
 struct std::hash<facebook::react::TextAttributes> {
   public size_t operator()(const facebook::react::TextAttributes& textAttributes) const;
+}
+
+struct std::hash<facebook::react::TextEffectInfo> {
+  public size_t operator()(const facebook::react::TextEffectInfo& info) const;
 }
 
 struct std::hash<facebook::react::TextMeasureCacheKey> {

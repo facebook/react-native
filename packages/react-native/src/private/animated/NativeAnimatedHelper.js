@@ -32,7 +32,7 @@ import nullthrows from 'nullthrows';
 
 interface NativeAnimatedModuleSpec extends NativeAnimatedTurboModuleSpec {
   // connectAnimatedNodeToShadowNodeFamily is available only in NativeAnimatedNonTurboModule
-  +connectAnimatedNodeToShadowNodeFamily?: (
+  readonly connectAnimatedNodeToShadowNodeFamily?: (
     nodeTag: number,
     // $FlowExpectedError[unclear-type].
     shadowNode: Object,
@@ -98,7 +98,8 @@ function createNativeOperations(): NonNullable<typeof NativeAnimatedModule> {
   if (
     ReactNativeFeatureFlags.cxxNativeAnimatedEnabled() &&
     //eslint-disable-next-line
-    ReactNativeFeatureFlags.useSharedAnimatedBackend()
+    ReactNativeFeatureFlags.useSharedAnimatedBackend() &&
+    NativeAnimatedModule?.connectAnimatedNodeToShadowNodeFamily != null
   ) {
     methodNames.push('connectAnimatedNodeToShadowNodeFamily');
   }

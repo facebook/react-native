@@ -41,10 +41,6 @@ const buildConfig: BuildConfig = {
     'community-cli-plugin': {
       target: 'node',
     },
-    'core-cli-utils': {
-      emitTypeScriptDefs: true,
-      target: 'node',
-    },
     'debugger-shell': {
       emitTypeScriptDefs: true,
       target: 'node',
@@ -98,7 +94,7 @@ function getTypeScriptCompilerOptions(
     case 'node':
       return {
         ...require('@tsconfig/node22/tsconfig.json').compilerOptions,
-        moduleResolution: ModuleResolutionKind.NodeJs,
+        moduleResolution: ModuleResolutionKind.Node16,
       };
   }
 }

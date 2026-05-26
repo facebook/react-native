@@ -10,8 +10,11 @@ package com.facebook.react.views.view
 import android.app.Activity
 import android.graphics.Color
 import android.os.Build
+import android.view.View
 import android.view.Window
+import android.view.WindowInsetsController
 import android.view.WindowManager
+import androidx.annotation.VisibleForTesting
 import androidx.core.view.ViewCompat
 import androidx.core.view.WindowCompat
 import androidx.core.view.WindowInsetsCompat
@@ -33,7 +36,7 @@ internal val DarkNavigationBarColor = Color.argb(0x80, 0x1b, 0x1b, 0x1b)
  * as enabled elsewhere in the application.
  */
 public var isEdgeToEdgeFeatureFlagOn: Boolean = false
-  private set
+  @VisibleForTesting internal set
 
 public fun setEdgeToEdgeFeatureFlagOn() {
   isEdgeToEdgeFeatureFlagOn = true
@@ -90,6 +93,33 @@ internal fun Window.setStatusBarVisibility(isHidden: Boolean) {
     this.statusBarHide()
   } else {
     this.statusBarShow()
+  }
+}
+
+@Suppress("DEPRECATION")
+internal fun Window.setStatusBarStyle(style: String?) {
+  if (Build.VERSION.SDK_INT > Build.VERSION_CODES.R) {
+    if ("dark-content" == style) {
+      // dark-content means dark icons on a light status bar
+      insetsController?.setSystemBarsAppearance(
+          WindowInsetsController.APPEARANCE_LIGHT_STATUS_BARS,
+          WindowInsetsController.APPEARANCE_LIGHT_STATUS_BARS,
+      )
+    } else {
+      insetsController?.setSystemBarsAppearance(
+          0,
+          WindowInsetsController.APPEARANCE_LIGHT_STATUS_BARS,
+      )
+    }
+  } else {
+    var systemUiVisibilityFlags = decorView.systemUiVisibility
+    systemUiVisibilityFlags =
+        if ("dark-content" == style) {
+          systemUiVisibilityFlags or View.SYSTEM_UI_FLAG_LIGHT_STATUS_BAR
+        } else {
+          systemUiVisibilityFlags and View.SYSTEM_UI_FLAG_LIGHT_STATUS_BAR.inv()
+        }
+    decorView.systemUiVisibility = systemUiVisibilityFlags
   }
 }
 

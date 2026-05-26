@@ -6,6 +6,9 @@ on:
   schedule:
     - cron: "15 2 * * *"
 
+permissions:
+  contents: read
+
 jobs:
   set_release_type:
     runs-on: ubuntu-latest
@@ -29,7 +32,7 @@ jobs:
   prebuild_react_native_core:
     uses: ./.github/workflows/prebuild-ios-core.yml
     with:
-      use-hermes-nightly: true
+      use-hermes-prebuilt: true
       version-type: nightly
     secrets: inherit
     needs: [prebuild_apple_dependencies]

@@ -2600,6 +2600,89 @@ const CXX_ONLY_NATIVE_MODULES: SchemaType = {
   },
 };
 
+const ARRAY_BUFFER_NATIVE_MODULE: SchemaType = {
+  modules: {
+    NativeSampleTurboModule: {
+      type: 'NativeModule',
+      aliasMap: {},
+      enumMap: {},
+      spec: {
+        eventEmitters: [],
+        methods: [
+          {
+            name: 'getArrayBuffer',
+            optional: false,
+            typeAnnotation: {
+              type: 'FunctionTypeAnnotation',
+              returnTypeAnnotation: {
+                type: 'ArrayBufferTypeAnnotation',
+              },
+              params: [],
+            },
+          },
+          {
+            name: 'voidArrayBuffer',
+            optional: false,
+            typeAnnotation: {
+              type: 'FunctionTypeAnnotation',
+              returnTypeAnnotation: {
+                type: 'VoidTypeAnnotation',
+              },
+              params: [
+                {
+                  name: 'arg',
+                  optional: false,
+                  typeAnnotation: {
+                    type: 'ArrayBufferTypeAnnotation',
+                  },
+                },
+              ],
+            },
+          },
+          {
+            name: 'voidNullableArrayBuffer',
+            optional: false,
+            typeAnnotation: {
+              type: 'FunctionTypeAnnotation',
+              returnTypeAnnotation: {
+                type: 'VoidTypeAnnotation',
+              },
+              params: [
+                {
+                  name: 'arg',
+                  optional: false,
+                  typeAnnotation: {
+                    type: 'NullableTypeAnnotation',
+                    typeAnnotation: {
+                      type: 'ArrayBufferTypeAnnotation',
+                    },
+                  },
+                },
+              ],
+            },
+          },
+          {
+            name: 'promiseArrayBuffer',
+            optional: false,
+            typeAnnotation: {
+              type: 'FunctionTypeAnnotation',
+              returnTypeAnnotation: {
+                type: 'PromiseTypeAnnotation',
+                elementType: {
+                  type: 'ArrayBufferTypeAnnotation',
+                },
+              },
+              params: [],
+            },
+          },
+        ],
+      },
+      moduleName: 'SampleTurboModule',
+      excludedPlatforms: ['iOS', 'android'],
+    },
+  },
+};
+
 const SAMPLE_WITH_UPPERCASE_NAME: SchemaType = {
   modules: {
     NativeSampleTurboModule: {
@@ -2793,6 +2876,7 @@ const STRING_LITERALS: SchemaType = {
 };
 
 module.exports = {
+  array_buffer_native_module: ARRAY_BUFFER_NATIVE_MODULE,
   complex_objects: COMPLEX_OBJECTS,
   two_modules_different_files: TWO_MODULES_DIFFERENT_FILES,
   empty_native_modules: EMPTY_NATIVE_MODULES,

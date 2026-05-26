@@ -95,12 +95,10 @@ def use_react_native! (
   # excluding the legacy arch unless the user turns this flag off explicitly.
   ENV['RCT_REMOVE_LEGACY_ARCH'] = ENV['RCT_REMOVE_LEGACY_ARCH'] == '0' ? '0' : '1'
 
-  # Enable Hermes V1 by default.
-  # Users can still turn it off and use legacy hermes by setting the RCT_HERMES_V1_ENABLED
-  # environment variable to '0'.
-  ENV['RCT_HERMES_V1_ENABLED']= ENV['RCT_HERMES_V1_ENABLED'] == '0' ? '0' : '1'
-
   ReactNativePodsUtils.check_minimum_required_xcode()
+
+  # Enable Hermes V1 by default. Keep the env var setup for backward compatibility.
+  ENV['RCT_HERMES_V1_ENABLED'] = '1'
 
   # Current target definition is provided by Cocoapods and it refers to the target
   # that has invoked the `use_react_native!` function.
@@ -531,7 +529,29 @@ def react_native_post_install(
   ReactNativePodsUtils.fix_library_search_paths(installer)
   ReactNativePodsUtils.update_search_paths(installer)
   ReactNativePodsUtils.set_build_setting(installer, build_setting: "USE_HERMES", value: use_hermes())
-  ReactNativePodsUtils.set_build_setting(installer, build_setting: "REACT_NATIVE_PATH", value: File.join("${PODS_ROOT}", "..", react_native_path))
+  # Compute REACT_NATIVE_PATH relative to PODS_ROOT using real (physical)
+  # paths, so the relative traversal is correct even when Pods/ is a symlink.
+  pods_dir_real = Pathname.new(Pod::Config.instance.sandbox_root.to_s).realpath
+  rn_absolute = File.expand_path(react_native_path, Pod::Config.instance.installation_root.to_s)
+  rn_real = Pathname.new(rn_absolute).realpath
+  rn_relative_to_pods = rn_real.relative_path_from(pods_dir_real)
+  ReactNativePodsUtils.set_build_setting(installer, build_setting: "REACT_NATIVE_PATH", value: File.join("${PODS_ROOT}", rn_relative_to_pods.to_s))
+  # Store the Podfile directory as a build setting so that shell scripts can
+  # locate it without hardcoding an absolute path. Use Xcode variable
+  # substitution per-project so the value persisted in project.pbxproj is
+  # portable across machines: $(SRCROOT) is the Podfile dir for user projects
+  # (also avoids the PODS_ROOT/.. traversal that breaks when Pods/ is a
+  # symlink), and $(SRCROOT)/.. for the Pods project.
+  installer.aggregate_targets.map(&:user_project).uniq(&:path).each do |user_project|
+    user_project.build_configurations.each do |config|
+      config.build_settings['PODFILE_DIR'] = '$(SRCROOT)'
+    end
+    user_project.save
+  end
+  installer.pods_project.build_configurations.each do |config|
+    config.build_settings['PODFILE_DIR'] = '$(SRCROOT)/..'
+  end
+  installer.pods_project.save
   ReactNativePodsUtils.set_build_setting(installer, build_setting: "SWIFT_ACTIVE_COMPILATION_CONDITIONS", value: ['$(inherited)', 'DEBUG'], config_name: "Debug")
 
   if (ENV['RCT_REMOVE_LEGACY_ARCH'] == '1')

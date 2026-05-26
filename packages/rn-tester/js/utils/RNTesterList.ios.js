@@ -359,6 +359,17 @@ const APIs: Array<RNTesterModuleInfo> = (
           },
         ]
       : []),
+    // Basic check to detect the availability of the MutationObserver API.
+    // $FlowExpectedError[cannot-resolve-name]
+    ...(typeof MutationObserver === 'function'
+      ? [
+          {
+            key: 'MutationObserver',
+            category: 'UI',
+            module: require('../examples/MutationObserver/MutationObserverIndex'),
+          },
+        ]
+      : []),
     // Basic check to detect the availability of the modern Performance API.
     ...(typeof performance.getEntries === 'function'
       ? [

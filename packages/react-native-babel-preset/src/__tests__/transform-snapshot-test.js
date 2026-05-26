@@ -129,6 +129,30 @@ const testConfigs = [
     description:
       'Hermes stable transform profile in development mode with unstable_preserveAsync enabled',
   },
+  {
+    name: 'hermes-stable-dev-preserve-block-scoping',
+    options: {
+      dev: true,
+      unstable_transformProfile: 'hermes-stable',
+      customTransformOptions: {
+        unstable_preserveBlockScoping: true,
+      },
+    },
+    description:
+      'Hermes stable transform profile in development mode with unstable_preserveBlockScoping enabled',
+  },
+  {
+    name: 'hermes-stable-dev-preserve-destructuring',
+    options: {
+      dev: true,
+      unstable_transformProfile: 'hermes-stable',
+      customTransformOptions: {
+        unstable_preserveDestructuring: true,
+      },
+    },
+    description:
+      'Hermes stable transform profile in development mode with unstable_preserveDestructuring enabled',
+  },
 ];
 
 function transformCode(
@@ -450,6 +474,77 @@ describe('react-native-babel-preset transform snapshots', () => {
         unstable_transformProfile: 'hermes-stable',
       });
       expect(result).toContain('_asyncToGenerator');
+    });
+
+    it('preserves block scoping with unstable_preserveBlockScoping', () => {
+      const code = `
+        let x = 1;
+        const y = 2;
+        {
+          let x = 3;
+          const z = 4;
+        }
+      `;
+      const result = transformCode(code, {
+        dev: false,
+        unstable_transformProfile: 'hermes-stable',
+        customTransformOptions: {
+          unstable_preserveBlockScoping: true,
+        },
+      });
+      expect(result).toContain('let x = 1');
+      expect(result).toContain('const y = 2');
+      expect(result).toContain('let x = 3');
+      expect(result).toContain('const z = 4');
+    });
+
+    it('transforms block scoping without unstable_preserveBlockScoping', () => {
+      const code = `
+        let x = 1;
+        const y = 2;
+        {
+          let x = 3;
+        }
+      `;
+      const result = transformCode(code, {
+        dev: false,
+        unstable_transformProfile: 'hermes-stable',
+      });
+      expect(result).toContain('var ');
+      expect(result).not.toContain('let ');
+      expect(result).not.toContain('const ');
+    });
+
+    it('preserves destructuring with unstable_preserveDestructuring', () => {
+      const code = `
+        const {a, b, ...rest} = obj;
+        const [x, y, z = 10] = arr;
+        const {nested: {value}} = data;
+      `;
+      const result = transformCode(code, {
+        dev: false,
+        unstable_transformProfile: 'hermes-stable',
+        customTransformOptions: {
+          unstable_preserveDestructuring: true,
+        },
+      });
+      // Check that destructuring syntax is preserved (not transformed)
+      expect(result).toContain('...rest');
+      expect(result).toContain('z = 10');
+      expect(result).toContain('nested:');
+      expect(result).not.toContain('_objectWithoutProperties');
+      expect(result).not.toContain('_slicedToArray');
+    });
+
+    it('transforms destructuring without unstable_preserveDestructuring', () => {
+      const code = `
+        const {a, b, ...rest} = obj;
+      `;
+      const result = transformCode(code, {
+        dev: false,
+        unstable_transformProfile: 'hermes-stable',
+      });
+      expect(result).toContain('_objectWithoutProperties');
     });
   });
 });

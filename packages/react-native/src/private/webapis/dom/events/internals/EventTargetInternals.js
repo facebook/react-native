@@ -47,8 +47,31 @@ export const INTERNAL_DISPATCH_METHOD_KEY: symbol = Symbol(
   'EventTarget[dispatch]',
 );
 
+const EVENT_DISPATCH_PARENT_CACHE_KEY: symbol = Symbol(
+  'EventTarget[dispatch parent cache]',
+);
+
+export function getEventTargetParent(target: EventTarget): EventTarget | null {
+  // The slot is `undefined` until populated; a populated slot may hold
+  // `null` (no parent), so check against `undefined` rather than nullishness.
+  // $FlowExpectedError[prop-missing] symbol-keyed slot
+  const cached: EventTarget | null | void =
+    // $FlowExpectedError[prop-missing] symbol-keyed slot
+    target[EVENT_DISPATCH_PARENT_CACHE_KEY];
+  if (cached !== undefined) {
+    return cached;
+  }
+  // $FlowExpectedError[prop-missing] symbol-keyed method
+  const parent: EventTarget | null = target[EVENT_TARGET_GET_THE_PARENT_KEY]();
+  // $FlowExpectedError[prop-missing] symbol-keyed slot
+  target[EVENT_DISPATCH_PARENT_CACHE_KEY] = parent;
+  return parent;
+}
+
 /**
- * Dispatches a trusted event to the given event target.
+ * Dispatches a trusted event to the given event target. Mirrors the
+ * `dispatchEvent` method on `EventTarget`: returns `false` if the event
+ * was canceled (i.e. `event.defaultPrevented`), otherwise `true`.
  *
  * This should only be used by the runtime to dispatch native events to
  * JavaScript.
@@ -56,7 +79,7 @@ export const INTERNAL_DISPATCH_METHOD_KEY: symbol = Symbol(
 export function dispatchTrustedEvent(
   eventTarget: EventTarget,
   event: Event,
-): void {
+): boolean {
   setIsTrusted(event, true);
 
   // $FlowExpectedError[prop-missing]

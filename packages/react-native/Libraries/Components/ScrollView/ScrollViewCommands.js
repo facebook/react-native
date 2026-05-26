@@ -16,20 +16,20 @@ import * as React from 'react';
 
 type ScrollViewNativeComponentType = HostComponent<{...}>;
 interface NativeCommands {
-  +flashScrollIndicators: (
+  readonly flashScrollIndicators: (
     viewRef: React.ElementRef<ScrollViewNativeComponentType>,
   ) => void;
-  +scrollTo: (
+  readonly scrollTo: (
     viewRef: React.ElementRef<ScrollViewNativeComponentType>,
     x: Double,
     y: Double,
     animated: boolean,
   ) => void;
-  +scrollToEnd: (
+  readonly scrollToEnd: (
     viewRef: React.ElementRef<ScrollViewNativeComponentType>,
     animated: boolean,
   ) => void;
-  +zoomToRect: (
+  readonly zoomToRect: (
     viewRef: React.ElementRef<ScrollViewNativeComponentType>,
     rect: {
       x: Double,

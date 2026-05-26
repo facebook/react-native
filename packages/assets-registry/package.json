@@ -1,0 +1,31 @@
+{
+  "name": "@react-native/assets-registry",
+  "version": "0.87.0-main",
+  "description": "Asset support code for React Native.",
+  "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/facebook/react-native.git",
+    "directory": "packages/assets-registry"
+  },
+  "homepage": "https://github.com/facebook/react-native/tree/HEAD/packages/assets-registry#readme",
+  "keywords": [
+    "assets",
+    "registry",
+    "react-native",
+    "support"
+  ],
+  "bugs": "https://github.com/facebook/react-native/issues",
+  "engines": {
+    "node": "^22.13.0 || ^24.3.0 || >= 26.0.0"
+  },
+  "files": [
+    "path-support.js",
+    "registry.js",
+    "README.md",
+    "!**/__docs__/**",
+    "!**/__fixtures__/**",
+    "!**/__mocks__/**",
+    "!**/__tests__/**"
+  ]
+}

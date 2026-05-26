@@ -15,6 +15,8 @@ import android.graphics.Rect
 import android.view.KeyEvent
 import android.view.MotionEvent
 import android.view.View
+import androidx.core.view.ViewCompat
+import androidx.core.view.WindowInsetsCompat
 import com.facebook.common.logging.FLog
 import com.facebook.react.ReactRootView
 import com.facebook.react.bridge.ReactContext
@@ -26,6 +28,7 @@ import com.facebook.react.uimanager.IllegalViewOperationException
 import com.facebook.react.uimanager.JSKeyDispatcher
 import com.facebook.react.uimanager.JSPointerDispatcher
 import com.facebook.react.uimanager.JSTouchDispatcher
+import com.facebook.react.views.view.isEdgeToEdgeFeatureFlagOn
 import com.facebook.systrace.Systrace
 import java.util.Objects
 import kotlin.math.max
@@ -46,16 +49,24 @@ public class ReactSurfaceView(context: Context?, internal val surface: ReactSurf
 
   private val viewportOffset: Point
     get() {
-      val locationOnScreen = IntArray(2)
-      getLocationOnScreen(locationOnScreen)
+      val locationInWindow = IntArray(2)
+      getLocationInWindow(locationInWindow)
 
-      // we need to subtract visibleWindowCoords - to subtract possible window insets, split
-      // screen or multi window
-      val visibleWindowFrame = Rect()
-      getWindowVisibleDisplayFrame(visibleWindowFrame)
-      locationOnScreen[0] -= visibleWindowFrame.left
-      locationOnScreen[1] -= visibleWindowFrame.top
-      return Point(locationOnScreen[0], locationOnScreen[1])
+      if (!isEdgeToEdgeFeatureFlagOn) {
+        // When not in edge-to-edge mode, subtract the top system bar insets so the offset is
+        // relative to the content area (below the status bar / cutout).
+        ViewCompat.getRootWindowInsets(this)?.apply {
+          val insets =
+              getInsets(
+                  WindowInsetsCompat.Type.statusBars() or WindowInsetsCompat.Type.displayCutout()
+              )
+
+          locationInWindow[0] -= insets.left
+          locationInWindow[1] -= insets.top
+        }
+      }
+
+      return Point(locationInWindow[0], locationInWindow[1])
     }
 
   init {

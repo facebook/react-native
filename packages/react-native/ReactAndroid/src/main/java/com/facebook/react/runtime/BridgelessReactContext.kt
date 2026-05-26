@@ -17,7 +17,6 @@ import com.facebook.react.bridge.CatalystInstance
 import com.facebook.react.bridge.JavaScriptContextHolder
 import com.facebook.react.bridge.JavaScriptModule
 import com.facebook.react.bridge.JavaScriptModuleRegistry
-import com.facebook.react.bridge.NativeArray
 import com.facebook.react.bridge.NativeModule
 import com.facebook.react.bridge.ReactApplicationContext
 import com.facebook.react.bridge.ReactSoftExceptionLogger.logSoftException
@@ -117,8 +116,8 @@ internal class BridgelessReactContext(context: Context, private val reactHost: R
       private val reactHost: ReactHostImpl,
       private val jsModuleInterface: Class<out JavaScriptModule>,
   ) : InvocationHandler {
-    override fun invoke(proxy: Any, method: Method, args: Array<Any?>): Any? {
-      val jsArgs: NativeArray = Arguments.fromJavaArgs(args)
+    override fun invoke(proxy: Any, method: Method, args: Array<Any?>?): Any? {
+      val jsArgs = if (args != null) Arguments.fromJavaArgs(args) else null
       reactHost.callFunctionOnModule(
           JavaScriptModuleRegistry.getJSModuleName(jsModuleInterface),
           method.name,

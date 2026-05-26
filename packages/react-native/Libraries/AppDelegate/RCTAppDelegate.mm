@@ -67,6 +67,7 @@ using namespace facebook::react;
   return self.reactNativeFactory.rootViewFactory;
 }
 
+#if !defined(RCT_REMOVE_LEGACY_ARCH)
 - (RCTBridge *)bridge
 {
   return self.rootViewFactory.bridge;
@@ -86,5 +87,6 @@ using namespace facebook::react;
 {
   self.reactNativeFactory.rootViewFactory.bridgeAdapter = bridgeAdapter;
 }
+#endif
 
 @end

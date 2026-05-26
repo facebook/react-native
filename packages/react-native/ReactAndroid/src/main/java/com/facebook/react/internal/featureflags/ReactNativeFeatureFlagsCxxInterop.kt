@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<56869fda15f7167fab62223f1a3b6dfe>>
+ * @generated SignedSource<<0d71519602fd80a0f0c84eb7f2534607>>
  */
 
 /**
@@ -66,8 +66,6 @@ public object ReactNativeFeatureFlagsCxxInterop {
 
   @DoNotStrip @JvmStatic public external fun enableDoubleMeasurementFixAndroid(): Boolean
 
-  @DoNotStrip @JvmStatic public external fun enableEagerMainQueueModulesOnIOS(): Boolean
-
   @DoNotStrip @JvmStatic public external fun enableEagerRootViewAttachment(): Boolean
 
   @DoNotStrip @JvmStatic public external fun enableExclusivePropsUpdateAndroid(): Boolean
@@ -76,8 +74,6 @@ public object ReactNativeFeatureFlagsCxxInterop {
 
   @DoNotStrip @JvmStatic public external fun enableFabricLogs(): Boolean
 
-  @DoNotStrip @JvmStatic public external fun enableFabricRenderer(): Boolean
-
   @DoNotStrip @JvmStatic public external fun enableFontScaleChangesUpdatingLayout(): Boolean
 
   @DoNotStrip @JvmStatic public external fun enableIOSTextBaselineOffsetPerLine(): Boolean
@@ -85,10 +81,6 @@ public object ReactNativeFeatureFlagsCxxInterop {
   @DoNotStrip @JvmStatic public external fun enableIOSViewClipToPaddingBox(): Boolean
 
   @DoNotStrip @JvmStatic public external fun enableImagePrefetchingAndroid(): Boolean
-
-  @DoNotStrip @JvmStatic public external fun enableImagePrefetchingJNIBatchingAndroid(): Boolean
-
-  @DoNotStrip @JvmStatic public external fun enableImagePrefetchingOnUiThreadAndroid(): Boolean
 
   @DoNotStrip @JvmStatic public external fun enableImmediateUpdateModeForContentOffsetChanges(): Boolean
 
@@ -114,13 +106,15 @@ public object ReactNativeFeatureFlagsCxxInterop {
 
   @DoNotStrip @JvmStatic public external fun enableNativeCSSParsing(): Boolean
 
-  @DoNotStrip @JvmStatic public external fun enableNativeViewPropTransformations(): Boolean
-
   @DoNotStrip @JvmStatic public external fun enableNetworkEventReporting(): Boolean
 
   @DoNotStrip @JvmStatic public external fun enablePreparedTextLayout(): Boolean
 
   @DoNotStrip @JvmStatic public external fun enablePropsUpdateReconciliationAndroid(): Boolean
+
+  @DoNotStrip @JvmStatic public external fun enableRuntimeSchedulerQueueClearingOnError(): Boolean
+
+  @DoNotStrip @JvmStatic public external fun enableSchedulerDelegateInvalidation(): Boolean
 
   @DoNotStrip @JvmStatic public external fun enableSwiftUIBasedFilters(): Boolean
 
@@ -142,8 +136,6 @@ public object ReactNativeFeatureFlagsCxxInterop {
 
   @DoNotStrip @JvmStatic public external fun fixDifferentiatorParentTagForUnflattenCase(): Boolean
 
-  @DoNotStrip @JvmStatic public external fun fixFindShadowNodeByTagRaceCondition(): Boolean
-
   @DoNotStrip @JvmStatic public external fun fixMappingOfEventPrioritiesBetweenFabricAndReact(): Boolean
 
   @DoNotStrip @JvmStatic public external fun fixYogaFlexBasisFitContentInMainAxis(): Boolean
@@ -159,6 +151,8 @@ public object ReactNativeFeatureFlagsCxxInterop {
   @DoNotStrip @JvmStatic public external fun fuseboxScreenshotCaptureEnabled(): Boolean
 
   @DoNotStrip @JvmStatic public external fun hideOffscreenVirtualViewsOnIOS(): Boolean
+
+  @DoNotStrip @JvmStatic public external fun optimizedAnimatedPropUpdates(): Boolean
 
   @DoNotStrip @JvmStatic public external fun overrideBySynchronousMountPropsAtMountingAndroid(): Boolean
 
@@ -180,7 +174,7 @@ public object ReactNativeFeatureFlagsCxxInterop {
 
   @DoNotStrip @JvmStatic public external fun skipActivityIdentityAssertionOnHostPause(): Boolean
 
-  @DoNotStrip @JvmStatic public external fun syncAndroidClipToPaddingWithOverflow(): Boolean
+  @DoNotStrip @JvmStatic public external fun syncAndroidClipBoundsWithOverflow(): Boolean
 
   @DoNotStrip @JvmStatic public external fun traceTurboModulePromiseRejectionsOnAndroid(): Boolean
 
@@ -192,11 +186,11 @@ public object ReactNativeFeatureFlagsCxxInterop {
 
   @DoNotStrip @JvmStatic public external fun useFabricInterop(): Boolean
 
-  @DoNotStrip @JvmStatic public external fun useLISAlgorithmInDifferentiator(): Boolean
-
   @DoNotStrip @JvmStatic public external fun useNativeViewConfigsInBridgelessMode(): Boolean
 
   @DoNotStrip @JvmStatic public external fun useNestedScrollViewAndroid(): Boolean
+
+  @DoNotStrip @JvmStatic public external fun useOptimizedViewRegistryOnAndroid(): Boolean
 
   @DoNotStrip @JvmStatic public external fun useSharedAnimatedBackend(): Boolean
 
@@ -204,13 +198,11 @@ public object ReactNativeFeatureFlagsCxxInterop {
 
   @DoNotStrip @JvmStatic public external fun useTurboModuleInterop(): Boolean
 
-  @DoNotStrip @JvmStatic public external fun useTurboModules(): Boolean
-
-  @DoNotStrip @JvmStatic public external fun useUnorderedMapInDifferentiator(): Boolean
-
   @DoNotStrip @JvmStatic public external fun viewCullingOutsetRatio(): Double
 
   @DoNotStrip @JvmStatic public external fun viewTransitionEnabled(): Boolean
+
+  @DoNotStrip @JvmStatic public external fun viewTransitionUseHardwareBitmapAndroid(): Boolean
 
   @DoNotStrip @JvmStatic public external fun virtualViewPrerenderRatio(): Double
 

@@ -34,7 +34,7 @@ const VirtualColumn = createVirtualCollectionView(
 // TODO: Figure out component generic resolution.
 // @see https://fb.workplace.com/groups/flow/posts/29355518614070041
 // export default VirtualColumn as VirtualCollectionViewComponent<VirtualColumnLayoutProps>;
-export default VirtualColumn as component<+TItem extends Item>(
+export default VirtualColumn as component<out TItem extends Item>(
   children: (item: TItem, key: string) => React.Node,
   items: VirtualCollection<TItem>,
   itemToKey?: (TItem) => string,

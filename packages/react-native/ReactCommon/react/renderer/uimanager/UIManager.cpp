@@ -210,7 +210,8 @@ void UIManager::completeSurface(
     // after we commit a specific one.
     lazyShadowTreeRevisionConsistencyManager_->updateCurrentRevision(surfaceId);
 
-    if (ReactNativeFeatureFlags::useSharedAnimatedBackend()) {
+    if (ReactNativeFeatureFlags::useSharedAnimatedBackend() &&
+        animationBackend_) {
       animationBackend_->clearRegistry(surfaceId);
     }
   }
@@ -275,10 +276,6 @@ ShadowTree::Unique UIManager::stopSurface(SurfaceId surfaceId) const {
   // Stop any ongoing layout animations.
   stopSurfaceForAnimationDelegate(surfaceId);
 
-  if (ReactNativeFeatureFlags::useSharedAnimatedBackend()) {
-    animationBackend_->clearRegistryOnSurfaceStop(surfaceId);
-  }
-
   // Waiting for all concurrent commits to be finished and unregistering the
   // `ShadowTree`.
   auto shadowTree = getShadowTreeRegistry().remove(surfaceId);
@@ -295,6 +292,18 @@ ShadowTree::Unique UIManager::stopSurface(SurfaceId surfaceId) const {
       leakChecker_->stopSurface(surfaceId);
     }
   }
+
+  if (ReactNativeFeatureFlags::useSharedAnimatedBackend()) {
+    runtimeExecutor_(
+        [surfaceId,
+         animationBackendWeak = std::weak_ptr<UIManagerAnimationBackend>(
+             animationBackend_)](jsi::Runtime& /*runtime*/) {
+          if (auto animationBackend = animationBackendWeak.lock()) {
+            animationBackend->clearRegistryOnSurfaceStop(surfaceId);
+          }
+        });
+  }
+
   return shadowTree;
 }
 
@@ -530,30 +539,8 @@ std::shared_ptr<const ShadowNode> UIManager::findShadowNodeByTag_DEPRECATED(
   auto shadowNode = std::shared_ptr<const ShadowNode>{};
 
   shadowTreeRegistry_.enumerate([&](const ShadowTree& shadowTree, bool& stop) {
-    // Obtain a pointer to the root node. The flag-gated path uses
-    // getCurrentRevision() which keeps the root alive via shared_ptr for
-    // the entire traversal, fixing a use-after-free race condition.
-    RootShadowNode::Shared rootShadowNodeHolder;
-    const RootShadowNode* rootShadowNode = nullptr;
-    if (ReactNativeFeatureFlags::fixFindShadowNodeByTagRaceCondition()) {
-      rootShadowNodeHolder = shadowTree.getCurrentRevision().rootShadowNode;
-      rootShadowNode = rootShadowNodeHolder.get();
-    } else {
-      // TODO(T257154369): Remove after flag rollout.
-      // The public interface of `ShadowTree` discourages accessing a stored
-      // pointer to a root node because of the possible data race.
-      // To work around this, we ask for a commit and immediately cancel it
-      // returning `nullptr` instead of a new shadow tree.
-      // We don't want to add a way to access a stored pointer to a root
-      // node because this `findShadowNodeByTag` is deprecated. It is only
-      // added to make migration to the new architecture easier.
-      shadowTree.tryCommit(
-          [&](const RootShadowNode& oldRootShadowNode) {
-            rootShadowNode = &oldRootShadowNode;
-            return nullptr;
-          },
-          {/* default commit options */});
-    }
+    auto rootShadowNodeHolder = shadowTree.getCurrentRevision().rootShadowNode;
+    const auto* rootShadowNode = rootShadowNodeHolder.get();
 
     if (rootShadowNode != nullptr) {
       const auto& children = rootShadowNode->getChildren();

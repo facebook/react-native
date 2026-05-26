@@ -13,7 +13,7 @@
 // An interface shaped like a subset of the Octokit class from `@octokit/rest`.
 // Used to allow mocking in tests.
 export interface IOctokit {
-  +repos: Readonly<{
+  readonly repos: Readonly<{
     listReleaseAssets: (
       params: Readonly<{
         owner: string,

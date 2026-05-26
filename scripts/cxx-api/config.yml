@@ -6,6 +6,7 @@ exclude_patterns:
   - "*/test/*"
   - "*/test_helper/*"
   - "*/stubs/*"
+  - "*/metainternal/*"
 
 exclude_symbols:
   - "Fantom"
@@ -13,7 +14,6 @@ exclude_symbols:
   - "(?i)experimental"
   - "unstable_"
   - "UnstableLegacy"
-  - "TinyMap"
   - "packAnimatedProps"
   - "DO_NOT_USE"
   - "_DEPRECATED|DEPRECATED_"
@@ -42,6 +42,9 @@ platforms:
         definitions:
           NDEBUG: 1
           REACT_NATIVE_PRODUCTION: 1
+      newarch:
+        definitions:
+          RCT_REMOVE_LEGACY_ARCH: 1
   ReactAndroid:
     codegen:
       platform: android
@@ -72,6 +75,9 @@ platforms:
         definitions:
           NDEBUG: 1
           REACT_NATIVE_PRODUCTION: 1
+      newarch:
+        definitions:
+          RCT_REMOVE_LEGACY_ARCH: 1
   # ReactIOS?
   ReactApple:
     codegen:
@@ -109,3 +115,6 @@ platforms:
         definitions:
           NDEBUG: 1
           REACT_NATIVE_PRODUCTION: 1
+      newarch:
+        definitions:
+          RCT_REMOVE_LEGACY_ARCH: 1

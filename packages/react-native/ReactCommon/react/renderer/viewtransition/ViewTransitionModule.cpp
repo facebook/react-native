@@ -17,6 +17,19 @@
 
 namespace facebook::react {
 
+namespace {
+
+RawProps makePseudoElementRawProps(
+    const ViewTransitionModule::AnimationKeyFrameViewLayoutMetrics& metrics) {
+  return RawProps(
+      folly::dynamic::object("position", "absolute")(
+          "left", metrics.originFromRoot.x)("top", metrics.originFromRoot.y)(
+          "width", metrics.size.width)("height", metrics.size.height)(
+          "pointerEvents", "none")("opacity", 0)("collapsable", false));
+}
+
+} // namespace
+
 ViewTransitionModule::~ViewTransitionModule() {
   if (uiManager_ != nullptr) {
     if (uiManager_->getViewTransitionDelegate() == this) {
@@ -97,12 +110,34 @@ void ViewTransitionModule::applyViewTransitionName(
       // Find the pseudo element created from this specific source tag
       auto& pseudoElementsBySourceTag = it->second;
       auto innerIt = pseudoElementsBySourceTag.find(tag);
+
       if (innerIt != pseudoElementsBySourceTag.end()) {
+        // Only clone the pseudo-element if the layout metrics changed
+        // since it was last created/refreshed (e.g. due to scrolling or
+        // React updates).
+        auto& cachedMetrics = innerIt->second.lastAppliedLayoutMetrics;
+        if (cachedMetrics.originFromRoot.x !=
+                keyframeMetrics.originFromRoot.x ||
+            cachedMetrics.originFromRoot.y !=
+                keyframeMetrics.originFromRoot.y ||
+            cachedMetrics.size.width != keyframeMetrics.size.width ||
+            cachedMetrics.size.height != keyframeMetrics.size.height) {
+          auto updatedRawProps = makePseudoElementRawProps(keyframeMetrics);
+
+          auto updatedNode = uiManager_->cloneNode(
+              *innerIt->second.node,
+              nullptr /* children */,
+              std::move(updatedRawProps));
+          if (updatedNode != nullptr) {
+            innerIt->second.node = updatedNode;
+            cachedMetrics = keyframeMetrics;
+          }
+        }
         oldPseudoElementNodes_[name] = innerIt->second.node;
-      } else if (!pseudoElementsBySourceTag.empty()) {
-        // Fallback to first available entry for this name
-        oldPseudoElementNodes_[name] =
-            pseudoElementsBySourceTag.begin()->second.node;
+      } else {
+        LOG(WARNING)
+            << "applyViewTransitionName: old pseudo element shadow node doesn't exist for source tag "
+            << tag << " with name " << name;
       }
     } else {
       LOG(WARNING)
@@ -143,37 +178,25 @@ void ViewTransitionModule::createViewTransitionInstance(
 
   // Build props: absolute position matching old element, non-interactive
   if (pseudoElementTag > 0 && view.tag > 0) {
-    // Create a base node with layout props via createNode
     // TODO: T262559684 created dedicated shadow node type for old pseudo
     // element
-    auto rawProps = RawProps(
-        folly::dynamic::object("position", "absolute")(
-            "left", view.layoutMetrics.originFromRoot.x)(
-            "top", view.layoutMetrics.originFromRoot.y)(
-            "width", view.layoutMetrics.size.width)(
-            "height", view.layoutMetrics.size.height)("pointerEvents", "none")(
-            "opacity", 0)("collapsable", false));
+    auto rawProps = makePseudoElementRawProps(view.layoutMetrics);
 
-    auto baseNode = uiManager_->createNode(
+    auto pseudoElementNode = uiManager_->createNode(
         pseudoElementTag,
         "View",
         view.surfaceId,
         std::move(rawProps),
         nullptr /* instanceHandle */);
 
-    if (baseNode == nullptr) {
-      return;
-    }
-
-    // Clone the shadow node — bitmap will be set by platform
-    auto pseudoElementNode = baseNode->clone({});
-
     if (pseudoElementNode != nullptr) {
       if (!forNextTransition) {
         oldPseudoElementNodes_[name] = pseudoElementNode;
       }
       oldPseudoElementNodesRepository_[name][view.tag] = InactivePseudoElement{
-          .node = pseudoElementNode, .sourceTag = view.tag};
+          .node = pseudoElementNode,
+          .sourceTag = view.tag,
+          .lastAppliedLayoutMetrics = view.layoutMetrics};
     }
   }
 }

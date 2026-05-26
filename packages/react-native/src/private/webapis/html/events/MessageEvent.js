@@ -20,9 +20,9 @@ import type {EventInit} from '../../dom/events/Event';
 import Event from '../../dom/events/Event';
 
 export interface MessageEventInit extends EventInit {
-  +data?: unknown;
-  +origin?: string;
-  +lastEventId?: string;
+  readonly data?: unknown;
+  readonly origin?: string;
+  readonly lastEventId?: string;
   // Unsupported
   // +source?: MessageEventSource,
   // Unsupported

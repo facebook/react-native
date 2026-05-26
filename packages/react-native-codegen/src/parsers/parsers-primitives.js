@@ -11,6 +11,7 @@
 'use strict';
 
 import type {
+  ArrayBufferTypeAnnotation,
   BooleanLiteralTypeAnnotation,
   BooleanTypeAnnotation,
   DoubleTypeAnnotation,
@@ -124,6 +125,14 @@ function emitDoubleProp(
 function emitVoid(nullable: boolean): Nullable<VoidTypeAnnotation> {
   return wrapNullable(nullable, {
     type: 'VoidTypeAnnotation',
+  });
+}
+
+function emitArrayBuffer(
+  nullable: boolean,
+): Nullable<ArrayBufferTypeAnnotation> {
+  return wrapNullable(nullable, {
+    type: 'ArrayBufferTypeAnnotation',
   });
 }
 
@@ -351,20 +360,18 @@ function emitPromise(
       },
     });
   } else {
+    let elementTypeResult;
     try {
-      return wrapNullable(nullable, {
-        type: 'PromiseTypeAnnotation',
-        elementType: translateTypeAnnotation(
-          hasteModuleName,
-          typeAnnotation.typeParameters.params[0],
-          types,
-          aliasMap,
-          enumMap,
-          tryParse,
-          cxxOnly,
-          parser,
-        ),
-      });
+      elementTypeResult = translateTypeAnnotation(
+        hasteModuleName,
+        typeAnnotation.typeParameters.params[0],
+        types,
+        aliasMap,
+        enumMap,
+        tryParse,
+        cxxOnly,
+        parser,
+      );
     } catch {
       return wrapNullable(nullable, {
         type: 'PromiseTypeAnnotation',
@@ -373,6 +380,11 @@ function emitPromise(
         },
       });
     }
+
+    return wrapNullable(nullable, {
+      type: 'PromiseTypeAnnotation',
+      elementType: elementTypeResult,
+    });
   }
 }
 
@@ -666,6 +678,7 @@ function emitCommonTypes(
     UnsafeMixed: cxxOnly ? emitMixed : emitGenericObject,
     unknown: cxxOnly ? emitMixed : emitGenericObject,
     UnknownTypeAnnotation: cxxOnly ? emitMixed : emitGenericObject,
+    ArrayBuffer: emitArrayBuffer,
   };
 
   const typeAnnotationName = parser.convertKeywordToTypeAnnotation(
@@ -764,6 +777,7 @@ function emitUnionProp(
 }
 
 module.exports = {
+  emitArrayBuffer,
   emitArrayType,
   emitBoolean,
   emitBooleanLiteral,

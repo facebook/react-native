@@ -33,19 +33,6 @@ void Props::initialize(
       ? sourceProps.nativeId
       : convertRawProp(context, rawProps, "nativeID", sourceProps.nativeId, {});
 
-  if (!ReactNativeFeatureFlags::enableCppPropsIteratorSetter()) {
-    if (ReactNativeFeatureFlags::enableNativeViewPropTransformations()) {
-      // id -> nativeId
-      auto* idValue = rawProps.at("id", nullptr, nullptr);
-      if (idValue != nullptr) {
-        if (idValue->hasValue()) {
-          fromRawValue(context, *idValue, nativeId);
-        } else {
-          nativeId = {};
-        }
-      }
-    }
-  }
 #ifdef RN_SERIALIZABLE_STATE
   if (!ReactNativeFeatureFlags::enableExclusivePropsUpdateAndroid()) {
     initializeDynamicProps(sourceProps, rawProps, filterObjectKeys);
@@ -60,12 +47,6 @@ void Props::setProp(
     const RawValue& value) {
   switch (hash) {
     case CONSTEXPR_RAW_PROPS_KEY_HASH("nativeID"):
-      fromRawValue(context, value, nativeId, {});
-      return;
-    case CONSTEXPR_RAW_PROPS_KEY_HASH("id"):
-      if (!ReactNativeFeatureFlags::enableNativeViewPropTransformations()) {
-        return;
-      }
       fromRawValue(context, value, nativeId, {});
       return;
   }

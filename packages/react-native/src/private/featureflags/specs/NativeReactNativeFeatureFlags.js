@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<34f28785a9485e3654cd5534679d9b9d>>
+ * @generated SignedSource<<df603151f4546ce6736162403a98aaf0>>
  * @flow strict
  * @noformat
  */
@@ -44,18 +44,14 @@ export interface Spec extends TurboModule {
   +enableDestroyShadowTreeRevisionAsync?: () => boolean;
   +enableDifferentiatorMutationVectorPreallocation?: () => boolean;
   +enableDoubleMeasurementFixAndroid?: () => boolean;
-  +enableEagerMainQueueModulesOnIOS?: () => boolean;
   +enableEagerRootViewAttachment?: () => boolean;
   +enableExclusivePropsUpdateAndroid?: () => boolean;
   +enableFabricCommitBranching?: () => boolean;
   +enableFabricLogs?: () => boolean;
-  +enableFabricRenderer?: () => boolean;
   +enableFontScaleChangesUpdatingLayout?: () => boolean;
   +enableIOSTextBaselineOffsetPerLine?: () => boolean;
   +enableIOSViewClipToPaddingBox?: () => boolean;
   +enableImagePrefetchingAndroid?: () => boolean;
-  +enableImagePrefetchingJNIBatchingAndroid?: () => boolean;
-  +enableImagePrefetchingOnUiThreadAndroid?: () => boolean;
   +enableImmediateUpdateModeForContentOffsetChanges?: () => boolean;
   +enableImperativeFocus?: () => boolean;
   +enableInteropViewManagerClassLookUpOptimizationIOS?: () => boolean;
@@ -68,10 +64,11 @@ export interface Spec extends TurboModule {
   +enableModuleArgumentNSNullConversionIOS?: () => boolean;
   +enableMutationObserverByDefault?: () => boolean;
   +enableNativeCSSParsing?: () => boolean;
-  +enableNativeViewPropTransformations?: () => boolean;
   +enableNetworkEventReporting?: () => boolean;
   +enablePreparedTextLayout?: () => boolean;
   +enablePropsUpdateReconciliationAndroid?: () => boolean;
+  +enableRuntimeSchedulerQueueClearingOnError?: () => boolean;
+  +enableSchedulerDelegateInvalidation?: () => boolean;
   +enableSwiftUIBasedFilters?: () => boolean;
   +enableViewCulling?: () => boolean;
   +enableViewRecycling?: () => boolean;
@@ -82,7 +79,6 @@ export interface Spec extends TurboModule {
   +enableVirtualViewContainerStateExperimental?: () => boolean;
   +enableVirtualViewDebugFeatures?: () => boolean;
   +fixDifferentiatorParentTagForUnflattenCase?: () => boolean;
-  +fixFindShadowNodeByTagRaceCondition?: () => boolean;
   +fixMappingOfEventPrioritiesBetweenFabricAndReact?: () => boolean;
   +fixYogaFlexBasisFitContentInMainAxis?: () => boolean;
   +fuseboxAssertSingleHostState?: () => boolean;
@@ -91,6 +87,7 @@ export interface Spec extends TurboModule {
   +fuseboxNetworkInspectionEnabled?: () => boolean;
   +fuseboxScreenshotCaptureEnabled?: () => boolean;
   +hideOffscreenVirtualViewsOnIOS?: () => boolean;
+  +optimizedAnimatedPropUpdates?: () => boolean;
   +overrideBySynchronousMountPropsAtMountingAndroid?: () => boolean;
   +perfIssuesEnabled?: () => boolean;
   +perfMonitorV2Enabled?: () => boolean;
@@ -101,22 +98,21 @@ export interface Spec extends TurboModule {
   +shouldPressibilityUseW3CPointerEventsForHover?: () => boolean;
   +shouldTriggerResponderTransferOnScrollAndroid?: () => boolean;
   +skipActivityIdentityAssertionOnHostPause?: () => boolean;
-  +syncAndroidClipToPaddingWithOverflow?: () => boolean;
+  +syncAndroidClipBoundsWithOverflow?: () => boolean;
   +traceTurboModulePromiseRejectionsOnAndroid?: () => boolean;
   +updateRuntimeShadowNodeReferencesOnCommit?: () => boolean;
   +updateRuntimeShadowNodeReferencesOnCommitThread?: () => boolean;
   +useAlwaysAvailableJSErrorHandling?: () => boolean;
   +useFabricInterop?: () => boolean;
-  +useLISAlgorithmInDifferentiator?: () => boolean;
   +useNativeViewConfigsInBridgelessMode?: () => boolean;
   +useNestedScrollViewAndroid?: () => boolean;
+  +useOptimizedViewRegistryOnAndroid?: () => boolean;
   +useSharedAnimatedBackend?: () => boolean;
   +useTraitHiddenOnAndroid?: () => boolean;
   +useTurboModuleInterop?: () => boolean;
-  +useTurboModules?: () => boolean;
-  +useUnorderedMapInDifferentiator?: () => boolean;
   +viewCullingOutsetRatio?: () => number;
   +viewTransitionEnabled?: () => boolean;
+  +viewTransitionUseHardwareBitmapAndroid?: () => boolean;
   +virtualViewPrerenderRatio?: () => number;
 }
 

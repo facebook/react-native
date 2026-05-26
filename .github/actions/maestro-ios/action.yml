@@ -69,6 +69,7 @@ runs:
       uses: actions/upload-artifact@v6
       with:
         name: e2e_ios_${{ inputs.app-id }}_report_${{ inputs.flavor }}_NewArch
+        overwrite: true
         path: |
           video_record_1.mov
           video_record_2.mov
@@ -81,4 +82,5 @@ runs:
       uses: actions/upload-artifact@v6
       with:
         name: maestro-logs-${{ inputs.app-id }}-${{ inputs.flavor }}-NewArch
+        overwrite: true
         path: /tmp/MaestroLogs

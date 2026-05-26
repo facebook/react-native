@@ -44,7 +44,9 @@ if (reactDevToolsHook) {
 
 type ExternalInspection = {
   externalInspectingEnabled: boolean,
-  +reportToExternalInspection: (viewData: TouchedViewDataAtPoint) => void,
+  readonly reportToExternalInspection: (
+    viewData: TouchedViewDataAtPoint,
+  ) => void,
 };
 
 type InspectorDeferredProps = {
@@ -100,7 +102,6 @@ const ReactDevToolsOverlayDeferred = ({
 
 const AppContainer = ({
   children,
-  fabric,
   initialProps,
   internal_excludeInspector = false,
   internal_excludeLogBox = false,
@@ -165,7 +166,7 @@ const AppContainer = ({
 
   if (WrapperComponent != null) {
     innerView = (
-      <WrapperComponent initialProps={initialProps} fabric={fabric === true}>
+      <WrapperComponent initialProps={initialProps}>
         {innerView}
       </WrapperComponent>
     );

@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<b79648ebcea0a832589ae7d8e7678914>>
+ * @generated SignedSource<<faefd3313176e4c2d7d15c31088eb397>>
  */
 
 /**
@@ -51,18 +51,14 @@ class ReactNativeFeatureFlagsAccessor {
   bool enableDestroyShadowTreeRevisionAsync();
   bool enableDifferentiatorMutationVectorPreallocation();
   bool enableDoubleMeasurementFixAndroid();
-  bool enableEagerMainQueueModulesOnIOS();
   bool enableEagerRootViewAttachment();
   bool enableExclusivePropsUpdateAndroid();
   bool enableFabricCommitBranching();
   bool enableFabricLogs();
-  bool enableFabricRenderer();
   bool enableFontScaleChangesUpdatingLayout();
   bool enableIOSTextBaselineOffsetPerLine();
   bool enableIOSViewClipToPaddingBox();
   bool enableImagePrefetchingAndroid();
-  bool enableImagePrefetchingJNIBatchingAndroid();
-  bool enableImagePrefetchingOnUiThreadAndroid();
   bool enableImmediateUpdateModeForContentOffsetChanges();
   bool enableImperativeFocus();
   bool enableInteropViewManagerClassLookUpOptimizationIOS();
@@ -75,10 +71,11 @@ class ReactNativeFeatureFlagsAccessor {
   bool enableModuleArgumentNSNullConversionIOS();
   bool enableMutationObserverByDefault();
   bool enableNativeCSSParsing();
-  bool enableNativeViewPropTransformations();
   bool enableNetworkEventReporting();
   bool enablePreparedTextLayout();
   bool enablePropsUpdateReconciliationAndroid();
+  bool enableRuntimeSchedulerQueueClearingOnError();
+  bool enableSchedulerDelegateInvalidation();
   bool enableSwiftUIBasedFilters();
   bool enableViewCulling();
   bool enableViewRecycling();
@@ -89,7 +86,6 @@ class ReactNativeFeatureFlagsAccessor {
   bool enableVirtualViewContainerStateExperimental();
   bool enableVirtualViewDebugFeatures();
   bool fixDifferentiatorParentTagForUnflattenCase();
-  bool fixFindShadowNodeByTagRaceCondition();
   bool fixMappingOfEventPrioritiesBetweenFabricAndReact();
   bool fixYogaFlexBasisFitContentInMainAxis();
   bool fuseboxAssertSingleHostState();
@@ -98,6 +94,7 @@ class ReactNativeFeatureFlagsAccessor {
   bool fuseboxNetworkInspectionEnabled();
   bool fuseboxScreenshotCaptureEnabled();
   bool hideOffscreenVirtualViewsOnIOS();
+  bool optimizedAnimatedPropUpdates();
   bool overrideBySynchronousMountPropsAtMountingAndroid();
   bool perfIssuesEnabled();
   bool perfMonitorV2Enabled();
@@ -108,22 +105,21 @@ class ReactNativeFeatureFlagsAccessor {
   bool shouldPressibilityUseW3CPointerEventsForHover();
   bool shouldTriggerResponderTransferOnScrollAndroid();
   bool skipActivityIdentityAssertionOnHostPause();
-  bool syncAndroidClipToPaddingWithOverflow();
+  bool syncAndroidClipBoundsWithOverflow();
   bool traceTurboModulePromiseRejectionsOnAndroid();
   bool updateRuntimeShadowNodeReferencesOnCommit();
   bool updateRuntimeShadowNodeReferencesOnCommitThread();
   bool useAlwaysAvailableJSErrorHandling();
   bool useFabricInterop();
-  bool useLISAlgorithmInDifferentiator();
   bool useNativeViewConfigsInBridgelessMode();
   bool useNestedScrollViewAndroid();
+  bool useOptimizedViewRegistryOnAndroid();
   bool useSharedAnimatedBackend();
   bool useTraitHiddenOnAndroid();
   bool useTurboModuleInterop();
-  bool useTurboModules();
-  bool useUnorderedMapInDifferentiator();
   double viewCullingOutsetRatio();
   bool viewTransitionEnabled();
+  bool viewTransitionUseHardwareBitmapAndroid();
   double virtualViewPrerenderRatio();
 
   void override(std::unique_ptr<ReactNativeFeatureFlagsProvider> provider);
@@ -136,7 +132,7 @@ class ReactNativeFeatureFlagsAccessor {
   std::unique_ptr<ReactNativeFeatureFlagsProvider> currentProvider_;
   bool wasOverridden_;
 
-  std::array<std::atomic<const char*>, 93> accessedFeatureFlags_;
+  std::array<std::atomic<const char*>, 89> accessedFeatureFlags_;
 
   std::atomic<std::optional<bool>> commonTestFlag_;
   std::atomic<std::optional<bool>> cdpInteractionMetricsEnabled_;
@@ -157,18 +153,14 @@ class ReactNativeFeatureFlagsAccessor {
   std::atomic<std::optional<bool>> enableDestroyShadowTreeRevisionAsync_;
   std::atomic<std::optional<bool>> enableDifferentiatorMutationVectorPreallocation_;
   std::atomic<std::optional<bool>> enableDoubleMeasurementFixAndroid_;
-  std::atomic<std::optional<bool>> enableEagerMainQueueModulesOnIOS_;
   std::atomic<std::optional<bool>> enableEagerRootViewAttachment_;
   std::atomic<std::optional<bool>> enableExclusivePropsUpdateAndroid_;
   std::atomic<std::optional<bool>> enableFabricCommitBranching_;
   std::atomic<std::optional<bool>> enableFabricLogs_;
-  std::atomic<std::optional<bool>> enableFabricRenderer_;
   std::atomic<std::optional<bool>> enableFontScaleChangesUpdatingLayout_;
   std::atomic<std::optional<bool>> enableIOSTextBaselineOffsetPerLine_;
   std::atomic<std::optional<bool>> enableIOSViewClipToPaddingBox_;
   std::atomic<std::optional<bool>> enableImagePrefetchingAndroid_;
-  std::atomic<std::optional<bool>> enableImagePrefetchingJNIBatchingAndroid_;
-  std::atomic<std::optional<bool>> enableImagePrefetchingOnUiThreadAndroid_;
   std::atomic<std::optional<bool>> enableImmediateUpdateModeForContentOffsetChanges_;
   std::atomic<std::optional<bool>> enableImperativeFocus_;
   std::atomic<std::optional<bool>> enableInteropViewManagerClassLookUpOptimizationIOS_;
@@ -181,10 +173,11 @@ class ReactNativeFeatureFlagsAccessor {
   std::atomic<std::optional<bool>> enableModuleArgumentNSNullConversionIOS_;
   std::atomic<std::optional<bool>> enableMutationObserverByDefault_;
   std::atomic<std::optional<bool>> enableNativeCSSParsing_;
-  std::atomic<std::optional<bool>> enableNativeViewPropTransformations_;
   std::atomic<std::optional<bool>> enableNetworkEventReporting_;
   std::atomic<std::optional<bool>> enablePreparedTextLayout_;
   std::atomic<std::optional<bool>> enablePropsUpdateReconciliationAndroid_;
+  std::atomic<std::optional<bool>> enableRuntimeSchedulerQueueClearingOnError_;
+  std::atomic<std::optional<bool>> enableSchedulerDelegateInvalidation_;
   std::atomic<std::optional<bool>> enableSwiftUIBasedFilters_;
   std::atomic<std::optional<bool>> enableViewCulling_;
   std::atomic<std::optional<bool>> enableViewRecycling_;
@@ -195,7 +188,6 @@ class ReactNativeFeatureFlagsAccessor {
   std::atomic<std::optional<bool>> enableVirtualViewContainerStateExperimental_;
   std::atomic<std::optional<bool>> enableVirtualViewDebugFeatures_;
   std::atomic<std::optional<bool>> fixDifferentiatorParentTagForUnflattenCase_;
-  std::atomic<std::optional<bool>> fixFindShadowNodeByTagRaceCondition_;
   std::atomic<std::optional<bool>> fixMappingOfEventPrioritiesBetweenFabricAndReact_;
   std::atomic<std::optional<bool>> fixYogaFlexBasisFitContentInMainAxis_;
   std::atomic<std::optional<bool>> fuseboxAssertSingleHostState_;
@@ -204,6 +196,7 @@ class ReactNativeFeatureFlagsAccessor {
   std::atomic<std::optional<bool>> fuseboxNetworkInspectionEnabled_;
   std::atomic<std::optional<bool>> fuseboxScreenshotCaptureEnabled_;
   std::atomic<std::optional<bool>> hideOffscreenVirtualViewsOnIOS_;
+  std::atomic<std::optional<bool>> optimizedAnimatedPropUpdates_;
   std::atomic<std::optional<bool>> overrideBySynchronousMountPropsAtMountingAndroid_;
   std::atomic<std::optional<bool>> perfIssuesEnabled_;
   std::atomic<std::optional<bool>> perfMonitorV2Enabled_;
@@ -214,22 +207,21 @@ class ReactNativeFeatureFlagsAccessor {
   std::atomic<std::optional<bool>> shouldPressibilityUseW3CPointerEventsForHover_;
   std::atomic<std::optional<bool>> shouldTriggerResponderTransferOnScrollAndroid_;
   std::atomic<std::optional<bool>> skipActivityIdentityAssertionOnHostPause_;
-  std::atomic<std::optional<bool>> syncAndroidClipToPaddingWithOverflow_;
+  std::atomic<std::optional<bool>> syncAndroidClipBoundsWithOverflow_;
   std::atomic<std::optional<bool>> traceTurboModulePromiseRejectionsOnAndroid_;
   std::atomic<std::optional<bool>> updateRuntimeShadowNodeReferencesOnCommit_;
   std::atomic<std::optional<bool>> updateRuntimeShadowNodeReferencesOnCommitThread_;
   std::atomic<std::optional<bool>> useAlwaysAvailableJSErrorHandling_;
   std::atomic<std::optional<bool>> useFabricInterop_;
-  std::atomic<std::optional<bool>> useLISAlgorithmInDifferentiator_;
   std::atomic<std::optional<bool>> useNativeViewConfigsInBridgelessMode_;
   std::atomic<std::optional<bool>> useNestedScrollViewAndroid_;
+  std::atomic<std::optional<bool>> useOptimizedViewRegistryOnAndroid_;
   std::atomic<std::optional<bool>> useSharedAnimatedBackend_;
   std::atomic<std::optional<bool>> useTraitHiddenOnAndroid_;
   std::atomic<std::optional<bool>> useTurboModuleInterop_;
-  std::atomic<std::optional<bool>> useTurboModules_;
-  std::atomic<std::optional<bool>> useUnorderedMapInDifferentiator_;
   std::atomic<std::optional<double>> viewCullingOutsetRatio_;
   std::atomic<std::optional<bool>> viewTransitionEnabled_;
+  std::atomic<std::optional<bool>> viewTransitionUseHardwareBitmapAndroid_;
   std::atomic<std::optional<double>> virtualViewPrerenderRatio_;
 };
 

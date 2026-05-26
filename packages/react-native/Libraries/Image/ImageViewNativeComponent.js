@@ -45,7 +45,7 @@ type ImageHostComponentProps = Readonly<{
 }>;
 
 interface NativeCommands {
-  +setIsVisible_EXPERIMENTAL: (
+  readonly setIsVisible_EXPERIMENTAL: (
     viewRef: HostInstance,
     isVisible: boolean,
     time: number,

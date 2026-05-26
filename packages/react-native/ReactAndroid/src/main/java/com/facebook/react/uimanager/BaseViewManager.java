@@ -14,7 +14,6 @@ import android.text.TextUtils;
 import android.view.View;
 import android.view.View.OnFocusChangeListener;
 import android.view.ViewGroup;
-import android.view.ViewParent;
 import android.view.accessibility.AccessibilityEvent;
 import androidx.annotation.ColorInt;
 import androidx.annotation.NonNull;
@@ -285,12 +284,7 @@ public abstract class BaseViewManager<T extends View, C extends LayoutShadowNode
 
   @ReactProp(name = ViewProps.Z_INDEX)
   public void setZIndex(@NonNull T view, float zIndex) {
-    int integerZIndex = Math.round(zIndex);
-    ViewGroupManager.setViewZIndex(view, integerZIndex);
-    ViewParent parent = view.getParent();
-    if (parent instanceof ReactZIndexedViewGroup) {
-      ((ReactZIndexedViewGroup) parent).updateDrawingOrder();
-    }
+    // No-op: Z-order is managed at the C++ layer in Fabric
   }
 
   @ReactProp(name = ViewProps.RENDER_TO_HARDWARE_TEXTURE)

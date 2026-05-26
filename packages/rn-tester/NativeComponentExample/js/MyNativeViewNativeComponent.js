@@ -44,21 +44,23 @@ type NativeProps = Readonly<{
 export type MyNativeViewType = HostComponent<NativeProps>;
 
 interface NativeCommands {
-  +callNativeMethodToChangeBackgroundColor: (
+  readonly callNativeMethodToChangeBackgroundColor: (
     viewRef: React.ElementRef<MyNativeViewType>,
     color: string,
   ) => void;
 
-  +callNativeMethodToAddOverlays: (
+  readonly callNativeMethodToAddOverlays: (
     viewRef: React.ElementRef<MyNativeViewType>,
     overlayColors: ReadonlyArray<string>,
   ) => void;
 
-  +callNativeMethodToRemoveOverlays: (
+  readonly callNativeMethodToRemoveOverlays: (
     viewRef: React.ElementRef<MyNativeViewType>,
   ) => void;
 
-  +fireLagacyStyleEvent: (viewRef: React.ElementRef<MyNativeViewType>) => void;
+  readonly fireLagacyStyleEvent: (
+    viewRef: React.ElementRef<MyNativeViewType>,
+  ) => void;
 }
 
 export const Commands: NativeCommands = codegenNativeCommands<NativeCommands>({

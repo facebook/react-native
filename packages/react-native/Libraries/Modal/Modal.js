@@ -63,6 +63,7 @@ type OrientationChangeEvent = Readonly<{
   orientation: 'portrait' | 'landscape',
 }>;
 
+/** @build-types emit-as-interface Uniwind compatibility */
 export type ModalBaseProps = {
   /**
    * @deprecated Use animationType instead

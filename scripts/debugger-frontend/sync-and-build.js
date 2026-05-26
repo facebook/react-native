@@ -25,7 +25,7 @@ const supportsColor = require('supports-color');
 const {parseArgs, styleText} = require('util');
 
 const DEVTOOLS_FRONTEND_REPO_URL =
-  'https://github.com/facebook/react-native-devtools-frontend';
+  'https://github.com/react/react-native-devtools-frontend';
 
 const config = {
   allowPositionals: true,

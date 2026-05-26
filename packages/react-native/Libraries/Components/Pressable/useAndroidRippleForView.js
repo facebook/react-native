@@ -8,6 +8,7 @@
  * @format
  */
 
+import type {ProcessedColorValue} from '../../StyleSheet/processColor';
 import type {ColorValue} from '../../StyleSheet/StyleSheet';
 import type {GestureResponderEvent} from '../../Types/CoreEventTypes';
 
@@ -15,15 +16,15 @@ import processColor from '../../StyleSheet/processColor';
 import Platform from '../../Utilities/Platform';
 import View from '../View/View';
 import {Commands} from '../View/ViewNativeComponent';
-import invariant from 'invariant';
 import * as React from 'react';
 import {useMemo} from 'react';
 
 type NativeBackgroundProp = Readonly<{
   type: 'RippleAndroid',
-  color: ?number,
+  color: ?ProcessedColorValue,
   borderless: boolean,
   rippleRadius: ?number,
+  alpha: ?number,
 }>;
 
 export type PressableAndroidRippleConfig = {
@@ -31,6 +32,7 @@ export type PressableAndroidRippleConfig = {
   borderless?: boolean,
   radius?: number,
   foreground?: boolean,
+  alpha?: number,
 };
 
 /**
@@ -48,7 +50,7 @@ export default function useAndroidRippleForView(
     | Readonly<{nativeBackgroundAndroid: NativeBackgroundProp}>
     | Readonly<{nativeForegroundAndroid: NativeBackgroundProp}>,
 }> {
-  const {color, borderless, radius, foreground} = rippleConfig ?? {};
+  const {color, borderless, radius, foreground, alpha} = rippleConfig ?? {};
 
   return useMemo(() => {
     if (
@@ -56,16 +58,13 @@ export default function useAndroidRippleForView(
       (color != null || borderless != null || radius != null)
     ) {
       const processedColor = processColor(color);
-      invariant(
-        processedColor == null || typeof processedColor === 'number',
-        'Unexpected color given for Ripple color',
-      );
 
       const nativeRippleValue = {
         type: 'RippleAndroid',
         color: processedColor,
         borderless: borderless === true,
         rippleRadius: radius,
+        alpha: alpha ?? null,
       };
 
       return {
@@ -105,5 +104,5 @@ export default function useAndroidRippleForView(
       };
     }
     return null;
-  }, [borderless, color, foreground, radius, viewRef]);
+  }, [alpha, borderless, color, foreground, radius, viewRef]);
 }

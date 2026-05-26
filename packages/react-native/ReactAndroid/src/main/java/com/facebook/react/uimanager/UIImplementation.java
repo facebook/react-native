@@ -58,6 +58,7 @@ public class UIImplementation {
   /**
    * @deprecated This method is a stub and always returns null.
    */
+  @Deprecated
   protected ReactShadowNode createRootShadowNode() {
     return null;
   }
@@ -65,6 +66,7 @@ public class UIImplementation {
   /**
    * @deprecated This method is a stub and always returns null.
    */
+  @Deprecated
   protected ReactShadowNode createShadowNode(String className) {
     return null;
   }
@@ -72,6 +74,7 @@ public class UIImplementation {
   /**
    * @deprecated This method is a stub and always returns null.
    */
+  @Deprecated
   public final ReactShadowNode resolveShadowNode(int reactTag) {
     return null;
   }
@@ -79,6 +82,7 @@ public class UIImplementation {
   /**
    * @deprecated This method is a stub and always returns null.
    */
+  @Deprecated
   protected final @Nullable ViewManager resolveViewManager(String className) {
     return null;
   }

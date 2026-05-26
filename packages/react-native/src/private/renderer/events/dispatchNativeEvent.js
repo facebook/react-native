@@ -14,7 +14,11 @@ import {
   customBubblingEventTypes,
   customDirectEventTypes,
 } from '../../../../Libraries/Renderer/shims/ReactNativeViewConfigRegistry';
-import {setEventInitTimeStamp} from '../../webapis/dom/events/internals/EventInternals';
+import {
+  setBubbledPropName,
+  setCapturedPropName,
+  setEventInitTimeStamp,
+} from '../../webapis/dom/events/internals/EventInternals';
 import {dispatchTrustedEvent} from '../../webapis/dom/events/internals/EventTargetInternals';
 import LegacySyntheticEvent from './LegacySyntheticEvent';
 import {topLevelTypeToEventType} from './ReactNativeEventTypeMapping';
@@ -43,10 +47,18 @@ export default function dispatchNativeEvent(
   // Normal EventTarget dispatch
   const bubbleConfig = customBubblingEventTypes[type];
   const directConfig = customDirectEventTypes[type];
-  const bubbles = bubbleConfig != null;
 
   // Skip events that are not registered in the view config
-  if (bubbles || directConfig != null) {
+  if (bubbleConfig != null || directConfig != null) {
+    // Honor `skipBubbling` declared in the view config: when set, the bubble
+    // phase only fires on the target itself (matching the legacy renderer's
+    // behavior). The synthesized event reports `bubbles: false`, which causes
+    // the EventTarget bubble loop to short-circuit after dispatching to the
+    // target. Capture-phase listeners are unaffected.
+    const bubbles =
+      bubbleConfig != null &&
+      bubbleConfig.phasedRegistrationNames.skipBubbling !== true;
+
     const eventType = topLevelTypeToEventType(type);
     const options: {bubbles: boolean, cancelable: boolean} = {
       bubbles,
@@ -65,6 +77,26 @@ export default function dispatchNativeEvent(
       payload,
       bubbleConfig ?? directConfig,
     );
+
+    // Pre-resolve the React prop names ("onFoo" / "onFooCapture") once per
+    // dispatch and stash them on the event so per-ancestor
+    // `EVENT_TARGET_GET_DECLARATIVE_LISTENER_KEY` lookups can read them
+    // directly, avoiding the per-call `getEventTypePropName` hash lookup.
+    if (bubbleConfig != null) {
+      const phasedRegistrationNames = bubbleConfig.phasedRegistrationNames;
+      setBubbledPropName(
+        syntheticEvent,
+        phasedRegistrationNames.bubbled ?? null,
+      );
+      setCapturedPropName(
+        syntheticEvent,
+        phasedRegistrationNames.captured ?? null,
+      );
+    } else if (directConfig != null) {
+      setBubbledPropName(syntheticEvent, directConfig.registrationName ?? null);
+      setCapturedPropName(syntheticEvent, null);
+    }
+
     dispatchTrustedEvent(target, syntheticEvent);
   }
 

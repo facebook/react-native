@@ -101,6 +101,7 @@ public class ReactHorizontalScrollView extends HorizontalScrollView
   private final VelocityHelper mVelocityHelper = new VelocityHelper();
   private final Rect mTempRect = new Rect();
   private final ValueAnimator DEFAULT_FLING_ANIMATOR = ObjectAnimator.ofInt(this, "scrollX", 0, 0);
+  private final @Nullable FpsListener mFpsListener;
 
   private Rect mOverflowInset = new Rect();
   private @Nullable VirtualViewContainerState mVirtualViewContainerState;
@@ -113,7 +114,6 @@ public class ReactHorizontalScrollView extends HorizontalScrollView
   private boolean mRemoveClippedSubviews;
   private boolean mScrollEnabled = true;
   private boolean mSendMomentumEvents;
-  private @Nullable FpsListener mFpsListener = null;
   private @Nullable String mScrollPerfTag;
   private @Nullable Drawable mEndBackground;
   private int mEndFillColor = Color.TRANSPARENT;
@@ -177,7 +177,6 @@ public class ReactHorizontalScrollView extends HorizontalScrollView
     mRemoveClippedSubviews = false;
     mScrollEnabled = true;
     mSendMomentumEvents = false;
-    mFpsListener = null;
     mScrollPerfTag = null;
     mEndBackground = null;
     mEndFillColor = Color.TRANSPARENT;
@@ -459,14 +458,6 @@ public class ReactHorizontalScrollView extends HorizontalScrollView
   @Override
   public Rect getOverflowInset() {
     return mOverflowInset;
-  }
-
-  @Override
-  public boolean getClipToPadding() {
-    if (ReactNativeFeatureFlags.syncAndroidClipToPaddingWithOverflow()) {
-      return mOverflow != Overflow.VISIBLE;
-    }
-    return super.getClipToPadding();
   }
 
   @Override
@@ -847,7 +838,15 @@ public class ReactHorizontalScrollView extends HorizontalScrollView
       cancelPostTouchScrolling();
     }
 
-    return super.onTouchEvent(ev);
+    try {
+      return super.onTouchEvent(ev);
+    } catch (IllegalArgumentException e) {
+      // Log and ignore the error. This seems to be a bug in the android SDK and
+      // this is the commonly accepted workaround.
+      // https://tinyurl.com/mw6qkod (Stack Overflow)
+      FLog.w(ReactConstants.TAG, "Error handling touch event.", e);
+      return false;
+    }
   }
 
   @Override
@@ -867,6 +866,7 @@ public class ReactHorizontalScrollView extends HorizontalScrollView
       float hScroll = ev.getAxisValue(MotionEvent.AXIS_HSCROLL);
       if (hScroll != 0) {
         // Perform the scroll
+        enableFpsListener();
         boolean result = super.dispatchGenericMotionEvent(ev);
         // Schedule snap alignment to run after scrolling stops
         if (result
@@ -874,9 +874,10 @@ public class ReactHorizontalScrollView extends HorizontalScrollView
                 || mSnapInterval != 0
                 || mSnapOffsets != null
                 || mSnapToAlignment != SNAP_ALIGNMENT_DISABLED)) {
-          // Cancel any pending runnable and reschedule
+          // Cancel any pending post-touch runnable and reschedule
           if (mPostTouchRunnable != null) {
             removeCallbacks(mPostTouchRunnable);
+            mPostTouchRunnable = null;
           }
           mPostTouchRunnable =
               new Runnable() {
@@ -890,9 +891,12 @@ public class ReactHorizontalScrollView extends HorizontalScrollView
                     velocityX = 0;
                   }
                   flingAndSnap(velocityX);
+                  handlePostTouchScrolling(velocityX, 0);
                 }
               };
           postOnAnimationDelayed(mPostTouchRunnable, ReactScrollViewHelper.MOMENTUM_DELAY);
+        } else {
+          handlePostTouchScrolling(0, 0);
         }
         return result;
       }
@@ -1220,6 +1224,7 @@ public class ReactHorizontalScrollView extends HorizontalScrollView
                 }
                 ReactScrollViewHelper.notifyUserDrivenScrollEnded_internal(
                     ReactHorizontalScrollView.this);
+                disableFpsListener();
               } else {
                 if (mPagingEnabled && !mSnappingToPage) {
                   // If we have pagingEnabled and we have not snapped to the page

@@ -31,7 +31,6 @@ import {
   VScrollContentViewNativeComponent,
   VScrollViewNativeComponent,
 } from '../../../src/private/components/scrollview/VScrollViewNativeComponents';
-import * as ReactNativeFeatureFlags from '../../../src/private/featureflags/ReactNativeFeatureFlags';
 import AnimatedImplementation from '../../Animated/AnimatedImplementation';
 import FrameRateLogger from '../../Interaction/FrameRateLogger';
 import {findNodeHandle} from '../../ReactNative/RendererProxy';
@@ -136,19 +135,19 @@ export interface ScrollViewScrollToOptions {
 
 // Public methods for ScrollView
 export interface ScrollViewImperativeMethods {
-  +getScrollResponder: () => ScrollResponderType;
-  +getScrollableNode: () => ?number;
-  +getInnerViewNode: () => ?number;
-  +getInnerViewRef: () => InnerViewInstance | null;
-  +getNativeScrollRef: () => HostInstance | null;
-  +scrollTo: (
+  readonly getScrollResponder: () => ScrollResponderType;
+  readonly getScrollableNode: () => ?number;
+  readonly getInnerViewNode: () => ?number;
+  readonly getInnerViewRef: () => InnerViewInstance | null;
+  readonly getNativeScrollRef: () => PublicScrollViewInstance | null;
+  readonly scrollTo: (
     options?: ScrollViewScrollToOptions | number,
     deprecatedX?: number,
     deprecatedAnimated?: boolean,
   ) => void;
-  +scrollToEnd: (options?: ?ScrollViewScrollToOptions) => void;
-  +flashScrollIndicators: () => void;
-  +scrollResponderZoomTo: (
+  readonly scrollToEnd: (options?: ?ScrollViewScrollToOptions) => void;
+  readonly flashScrollIndicators: () => void;
+  readonly scrollResponderZoomTo: (
     rect: {
       x: number,
       y: number,
@@ -158,7 +157,7 @@ export interface ScrollViewImperativeMethods {
     },
     animated?: boolean, // deprecated, put this inside the rect argument instead
   ) => void;
-  +scrollResponderScrollNativeHandleToKeyboard: (
+  readonly scrollResponderScrollNativeHandleToKeyboard: (
     nodeHandle: number | HostInstance,
     additionalOffset?: number,
     preventNegativeScrollOffset?: boolean,
@@ -681,6 +680,7 @@ type ScrollViewBaseProps = Readonly<{
   scrollViewRef?: React.RefSetter<PublicScrollViewInstance>,
 }>;
 
+/** @build-types emit-as-interface Nativewind compatibility */
 export type ScrollViewProps = Readonly<{
   ...Omit<ViewProps, 'experimental_accessibilityOrder'>,
   ...ScrollViewPropsIOS,
@@ -873,6 +873,9 @@ class ScrollView extends React.Component<ScrollViewProps, ScrollViewState> {
 
   getNativeScrollRef: ScrollViewImperativeMethods['getNativeScrollRef'] =
     () => {
+      // Object.assign in _scrollView's mutator augments nativeInstance in place,
+      // so it is already a PublicScrollViewInstance at runtime.
+      // $FlowFixMe[incompatible-type]
       return this._scrollView.nativeInstance;
     };
 
@@ -1762,11 +1765,8 @@ class ScrollView extends React.Component<ScrollViewProps, ScrollViewState> {
 
     const baseStyle = horizontal ? styles.baseHorizontal : styles.baseVertical;
 
-    const {
-      experimental_endDraggingSensitivityMultiplier,
-      maintainVisibleContentPosition,
-      ...otherProps
-    } = this.props;
+    const {experimental_endDraggingSensitivityMultiplier, ...otherProps} =
+      this.props;
     const props = {
       ...otherProps,
       alwaysBounceHorizontal,
@@ -1819,10 +1819,6 @@ class ScrollView extends React.Component<ScrollViewProps, ScrollViewState> {
           this.props.snapToInterval != null ||
           this.props.snapToOffsets != null,
       }),
-      maintainVisibleContentPosition:
-        ReactNativeFeatureFlags.disableMaintainVisibleContentPosition()
-          ? undefined
-          : this.props.maintainVisibleContentPosition,
     };
 
     const {decelerationRate} = this.props;

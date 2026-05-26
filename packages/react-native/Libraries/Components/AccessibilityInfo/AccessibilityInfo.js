@@ -28,16 +28,16 @@ type AccessibilityEventDefinitionsAndroid = {
 type AccessibilityEventDefinitionsIOS = {
   announcementFinished: [{announcement: string, success: boolean}],
   boldTextChanged: [boolean],
-  grayscaleChanged: [boolean],
-  invertColorsChanged: [boolean],
-  reduceTransparencyChanged: [boolean],
   darkerSystemColorsChanged: [boolean],
+  reduceTransparencyChanged: [boolean],
 };
 
 type AccessibilityEventDefinitions = {
   ...AccessibilityEventDefinitionsAndroid,
   ...AccessibilityEventDefinitionsIOS,
   change: [boolean], // screenReaderChanged
+  grayscaleChanged: [boolean],
+  invertColorsChanged: [boolean],
   reduceMotionChanged: [boolean],
   screenReaderChanged: [boolean],
 };
@@ -136,7 +136,7 @@ const AccessibilityInfo = {
             reject,
           );
         } else {
-          reject(new Error('AccessibilityInfo native module is not available'));
+          reject(new Error('NativeAccessibilityManagerIOS is not available'));
         }
       });
     }
@@ -171,7 +171,7 @@ const AccessibilityInfo = {
             reject,
           );
         } else {
-          reject(new Error('AccessibilityInfo native module is not available'));
+          reject(new Error('NativeAccessibilityManagerIOS is not available'));
         }
       });
     }
@@ -191,7 +191,7 @@ const AccessibilityInfo = {
         if (NativeAccessibilityInfoAndroid != null) {
           NativeAccessibilityInfoAndroid.isReduceMotionEnabled(resolve);
         } else {
-          reject(new Error('AccessibilityInfo native module is not available'));
+          reject(new Error('NativeAccessibilityInfoAndroid is not available'));
         }
       } else {
         if (NativeAccessibilityManagerIOS != null) {
@@ -211,6 +211,8 @@ const AccessibilityInfo = {
    *
    * Returns a promise which resolves to a boolean.
    * The result is `true` when high text contrast is enabled and `false` otherwise.
+   *
+   * See https://reactnative.dev/docs/accessibilityinfo#ishightextcontrastenabled-android
    */
   isHighTextContrastEnabled(): Promise<boolean> {
     if (Platform.OS === 'android') {
@@ -235,6 +237,8 @@ const AccessibilityInfo = {
    *
    * Returns a promise which resolves to a boolean.
    * The result is `true` when dark system colors is enabled and `false` otherwise.
+   *
+   * See https://reactnative.dev/docs/accessibilityinfo#isdarkersystemcolorsenabled-ios
    */
   isDarkerSystemColorsEnabled(): Promise<boolean> {
     if (Platform.OS === 'android') {
@@ -391,18 +395,18 @@ const AccessibilityInfo = {
    * - `screenReaderChanged`: Fires when the state of the screen reader changes. The argument
    *   to the event handler is a boolean. The boolean is `true` when a screen
    *   reader is enabled and `false` otherwise.
+   * - `grayscaleChanged`: Fires when the state of the gray scale toggle changes.
+   *   The argument to the event handler is a boolean. The boolean is `true` when gray scale
+   *   is enabled and `false` otherwise.
+   * - `invertColorsChanged`: Fires when the state of the invert colors toggle
+   *   changes. The argument to the event handler is a boolean. The boolean is `true` when invert
+   *   colors is enabled and `false` otherwise.
    *
    * These events are only supported on iOS:
    *
    * - `boldTextChanged`: iOS-only event. Fires when the state of the bold text toggle changes.
    *   The argument to the event handler is a boolean. The boolean is `true` when a bold text
    *   is enabled and `false` otherwise.
-   * - `grayscaleChanged`: iOS-only event. Fires when the state of the gray scale toggle changes.
-   *   The argument to the event handler is a boolean. The boolean is `true` when a gray scale
-   *   is enabled and `false` otherwise.
-   * - `invertColorsChanged`: iOS-only event. Fires when the state of the invert colors toggle
-   *   changes. The argument to the event handler is a boolean. The boolean is `true` when a invert
-   *   colors is enabled and `false` otherwise.
    * - `reduceTransparencyChanged`: iOS-only event. Fires when the state of the reduce transparency
    *   toggle changes.  The argument to the event handler is a boolean. The boolean is `true`
    *   when a reduce transparency is enabled and `false` otherwise.
@@ -512,7 +516,9 @@ const AccessibilityInfo = {
   getRecommendedTimeoutMillis(originalTimeout: number): Promise<number> {
     if (Platform.OS === 'android') {
       return new Promise((resolve, reject) => {
-        if (NativeAccessibilityInfoAndroid?.getRecommendedTimeoutMillis) {
+        if (
+          NativeAccessibilityInfoAndroid?.getRecommendedTimeoutMillis != null
+        ) {
           NativeAccessibilityInfoAndroid.getRecommendedTimeoutMillis(
             originalTimeout,
             resolve,

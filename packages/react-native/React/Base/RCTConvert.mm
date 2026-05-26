@@ -494,6 +494,7 @@ RCT_ENUM_CONVERTER(
 RCT_ENUM_CONVERTER(
     UIUserInterfaceStyle,
     (@{
+      @"auto" : @(UIUserInterfaceStyleUnspecified),
       @"unspecified" : @(UIUserInterfaceStyleUnspecified),
       @"light" : @(UIUserInterfaceStyleLight),
       @"dark" : @(UIUserInterfaceStyleDark),

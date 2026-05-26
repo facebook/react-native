@@ -98,6 +98,7 @@ public class ReactScrollView extends ScrollView
   private final VelocityHelper mVelocityHelper = new VelocityHelper();
   private final Rect mTempRect = new Rect();
   private final ValueAnimator DEFAULT_FLING_ANIMATOR = ObjectAnimator.ofInt(this, "scrollY", 0, 0);
+  private final @Nullable FpsListener mFpsListener;
 
   private Rect mOverflowInset;
   private @Nullable VirtualViewContainerState mVirtualViewContainerState;
@@ -110,7 +111,6 @@ public class ReactScrollView extends ScrollView
   private boolean mRemoveClippedSubviews;
   private boolean mScrollEnabled;
   private boolean mSendMomentumEvents;
-  private @Nullable FpsListener mFpsListener;
   private @Nullable String mScrollPerfTag;
   private @Nullable Drawable mEndBackground;
   private int mEndFillColor;
@@ -672,7 +672,15 @@ public class ReactScrollView extends ScrollView
       cancelPostTouchScrolling();
     }
 
-    return super.onTouchEvent(ev);
+    try {
+      return super.onTouchEvent(ev);
+    } catch (IllegalArgumentException e) {
+      // Log and ignore the error. This seems to be a bug in the android SDK and
+      // this is the commonly accepted workaround.
+      // https://tinyurl.com/mw6qkod (Stack Overflow)
+      FLog.w(ReactConstants.TAG, "Error handling touch event.", e);
+      return false;
+    }
   }
 
   @Override
@@ -692,6 +700,7 @@ public class ReactScrollView extends ScrollView
       float vScroll = ev.getAxisValue(MotionEvent.AXIS_VSCROLL);
       if (vScroll != 0) {
         // Perform the scroll
+        enableFpsListener();
         boolean result = super.dispatchGenericMotionEvent(ev);
         // Schedule snap alignment to run after scrolling stops
         if (result
@@ -702,6 +711,7 @@ public class ReactScrollView extends ScrollView
           // Cancel any pending post-touch runnable and reschedule
           if (mPostTouchRunnable != null) {
             removeCallbacks(mPostTouchRunnable);
+            mPostTouchRunnable = null;
           }
           mPostTouchRunnable =
               new Runnable() {
@@ -715,9 +725,12 @@ public class ReactScrollView extends ScrollView
                     velocityY = 0;
                   }
                   flingAndSnap(velocityY);
+                  handlePostTouchScrolling(0, velocityY);
                 }
               };
           postOnAnimationDelayed(mPostTouchRunnable, ReactScrollViewHelper.MOMENTUM_DELAY);
+        } else {
+          handlePostTouchScrolling(0, 0);
         }
         return result;
       }
@@ -778,14 +791,6 @@ public class ReactScrollView extends ScrollView
     } finally {
       Systrace.endSection(Systrace.TRACE_TAG_REACT);
     }
-  }
-
-  @Override
-  public boolean getClipToPadding() {
-    if (ReactNativeFeatureFlags.syncAndroidClipToPaddingWithOverflow()) {
-      return mOverflow != Overflow.VISIBLE;
-    }
-    return super.getClipToPadding();
   }
 
   @Override

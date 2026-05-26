@@ -141,23 +141,7 @@ HostPlatformViewProps::HostPlatformViewProps(
                     rawProps,
                     "nextFocusUp",
                     sourceProps.nextFocusUp,
-                    {})) {
-  if (!ReactNativeFeatureFlags::enableCppPropsIteratorSetter()) {
-    if (ReactNativeFeatureFlags::enableNativeViewPropTransformations()) {
-      // tabIndex -> focusable
-      auto* tabIndexValue = rawProps.at("tabIndex", nullptr, nullptr);
-      if (tabIndexValue != nullptr) {
-        if (tabIndexValue->hasValue()) {
-          int tabIndex = 0;
-          fromRawValue(context, *tabIndexValue, tabIndex);
-          focusable = tabIndex == 0;
-        } else {
-          focusable = {};
-        }
-      }
-    }
-  }
-}
+                    {})) {}
 
 #define VIEW_EVENT_CASE(eventType)                      \
   case CONSTEXPR_RAW_PROPS_KEY_HASH("on" #eventType): { \
@@ -197,19 +181,6 @@ void HostPlatformViewProps::setProp(
     RAW_SET_PROP_SWITCH_CASE_BASIC(nextFocusLeft);
     RAW_SET_PROP_SWITCH_CASE_BASIC(nextFocusRight);
     RAW_SET_PROP_SWITCH_CASE_BASIC(nextFocusUp);
-    case CONSTEXPR_RAW_PROPS_KEY_HASH("tabIndex"): {
-      if (!ReactNativeFeatureFlags::enableNativeViewPropTransformations()) {
-        return;
-      }
-      if (value.hasValue()) {
-        int tabIndex = 0;
-        fromRawValue(context, value, tabIndex);
-        focusable = tabIndex == 0;
-      } else {
-        focusable = defaults.focusable;
-      }
-      return;
-    }
   }
 }
 
@@ -450,8 +421,25 @@ inline static void updateNativeDrawableProp(
       nativeDrawableResult["rippleRadius"] =
           nativeDrawableValue.ripple.rippleRadius.value();
     }
-    if (nativeDrawableValue.ripple.color.has_value()) {
-      nativeDrawableResult["color"] = nativeDrawableValue.ripple.color.value();
+    if (nativeDrawableValue.ripple.color.has_value() ||
+        nativeDrawableValue.ripple.colorResourcePaths.has_value()) {
+      if (nativeDrawableValue.ripple.colorResourcePaths.has_value()) {
+        folly::dynamic resourcePaths = folly::dynamic::array();
+        for (const auto& path :
+             nativeDrawableValue.ripple.colorResourcePaths.value()) {
+          resourcePaths.push_back(path);
+        }
+        folly::dynamic platformColorMap = folly::dynamic::object();
+        platformColorMap["resource_paths"] = resourcePaths;
+        nativeDrawableResult["color"] = platformColorMap;
+      } else {
+        nativeDrawableResult["color"] =
+            toAndroidRepr(nativeDrawableValue.ripple.color.value());
+      }
+      if (nativeDrawableValue.ripple.alpha.has_value()) {
+        nativeDrawableResult["alpha"] =
+            nativeDrawableValue.ripple.alpha.value();
+      }
     }
     nativeDrawableResult["borderless"] = nativeDrawableValue.ripple.borderless;
   } else {
@@ -485,8 +473,9 @@ inline static void updateAccessibilityStateProp(
   }
 
   if (!oldState.has_value() || newState->expanded != oldState->expanded) {
-    resultState["expanded"] =
-        newState->expanded.has_value() && newState->expanded.value();
+    if (newState->expanded.has_value()) {
+      resultState["expanded"] = newState->expanded.value();
+    }
   }
 
   if (!oldState.has_value() || newState->checked != oldState->checked) {

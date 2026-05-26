@@ -103,7 +103,7 @@ class ReactNativeCoreUtils
         if ENV["RCT_TESTONLY_RNCORE_TARBALL_PATH"]
             abort_if_use_local_rncore_with_no_file()
             rncore_log("Using local xcframework at #{ENV["RCT_TESTONLY_RNCORE_TARBALL_PATH"]}")
-            return {:http => "file://#{ENV["RCT_TESTONLY_RNCORE_TARBALL_PATH"]}" }
+            return {:http => ReactNativePodsUtils.local_file_uri(ENV["RCT_TESTONLY_RNCORE_TARBALL_PATH"]) }
         end
 
         if ENV["RCT_USE_PREBUILT_RNCORE"] == "1"
@@ -160,7 +160,8 @@ class ReactNativeCoreUtils
         rncore_log("  #{Pathname.new(destinationDebug).relative_path_from(Pathname.pwd).to_s}")
         rncore_log("  #{Pathname.new(destinationRelease).relative_path_from(Pathname.pwd).to_s}")
 
-        return {:http => URI::File.build(path: destinationDebug).to_s }
+        return {:http => stable_tarball_url(@@react_native_version, :debug) } unless @@download_dsyms
+        return {:http => ReactNativePodsUtils.local_file_uri(destinationDebug) }
     end
 
     def self.podspec_source_download_prebuilt_nightly_tarball()
@@ -196,7 +197,8 @@ class ReactNativeCoreUtils
         rncore_log("Resolved nightly ReactNativeCore-prebuilt version:")
         rncore_log("  #{Pathname.new(destinationDebug).relative_path_from(Pathname.pwd).to_s}")
         rncore_log("  #{Pathname.new(destinationRelease).relative_path_from(Pathname.pwd).to_s}")
-        return {:http => URI::File.build(path: destinationDebug).to_s }
+        return {:http => nightly_tarball_url(@@react_native_version, :debug) } unless @@download_dsyms
+        return {:http => ReactNativePodsUtils.local_file_uri(destinationDebug) }
     end
 
     def self.process_dsyms(frameworkTarball, dSymsTarball)
@@ -404,17 +406,69 @@ class ReactNativeCoreUtils
     end
 
     def self.download_rncore_tarball(react_native_path, tarball_url, version, configuration, dsyms = false)
-        destination_path = configuration == nil ?
-            "#{artifacts_dir()}/reactnative-core-#{version}#{dsyms ? "-dSYM" : ""}.tar.gz" :
-            "#{artifacts_dir()}/reactnative-core-#{version}#{dsyms ? "-dSYM" : ""}-#{configuration}.tar.gz"
+        filename = configuration == nil ?
+            "reactnative-core-#{version}#{dsyms ? "-dSYM" : ""}.tar.gz" :
+            "reactnative-core-#{version}#{dsyms ? "-dSYM" : ""}-#{configuration}.tar.gz"
+        destination_path = "#{artifacts_dir()}/#{filename}"
 
-        unless File.exist?(destination_path)
-          # Download to a temporary file first so we don't cache incomplete downloads.
-          rncore_log("Downloading ReactNativeCore-prebuilt #{dsyms ? "dSYMs " : ""}#{configuration ? configuration.to_s : ""} tarball from #{tarball_url} to #{Pathname.new(destination_path).relative_path_from(Pathname.pwd).to_s}")
+        if File.exist?(destination_path)
+          rncore_log("Tarball #{filename} already exists in Pods. Skipping download.")
+          return destination_path
+        end
+
+        `mkdir -p "#{artifacts_dir()}"`
+
+        if ReactNativePodsUtils.skip_caches?
+          rncore_log("RCT_SKIP_CACHES is set. Downloading #{filename} directly (bypassing shared cache).")
           tmp_file = "#{artifacts_dir()}/reactnative-core.download"
-          `mkdir -p "#{artifacts_dir()}" && curl "#{tarball_url}" -Lo "#{tmp_file}" && mv "#{tmp_file}" "#{destination_path}"`
+          `curl -A "react-native-#{version}" "#{tarball_url}" -Lo "#{tmp_file}" && mv "#{tmp_file}" "#{destination_path}"`
+          unless File.exist?(destination_path)
+            abort("[ReactNativeCore] Failed to download #{filename} from #{tarball_url}. Aborting.")
+          end
+          return destination_path
+        end
+
+        cached_path = File.join(ReactNativePodsUtils.shared_cache_dir(), filename)
+        if File.exist?(cached_path)
+          rncore_log("Verifying checksum for cached #{filename}...")
+          if ReactNativePodsUtils.validate_tarball(cached_path, tarball_url)
+            rncore_log("Cache hit: copying #{filename} from shared cache (#{ReactNativePodsUtils.shared_cache_dir()})")
+            FileUtils.cp(cached_path, destination_path)
+          else
+            rncore_log("Shared cache file #{filename} failed SHA verification. Re-downloading.")
+            File.delete(cached_path)
+            tmp_file = "#{artifacts_dir()}/reactnative-core.download"
+            `curl -A "react-native-#{version}" "#{tarball_url}" -Lo "#{tmp_file}" && mv "#{tmp_file}" "#{destination_path}"`
+            unless File.exist?(destination_path)
+              abort("[ReactNativeCore] Failed to download #{filename} from #{tarball_url}. Aborting.")
+            end
+            rncore_log("Verifying checksum for downloaded #{filename}...")
+            if ReactNativePodsUtils.validate_tarball(destination_path, tarball_url)
+              FileUtils.cp(destination_path, cached_path)
+              rncore_log("Saved #{filename} to shared cache (#{ReactNativePodsUtils.shared_cache_dir()})")
+            else
+              File.delete(destination_path) if File.exist?(destination_path)
+              abort("[ReactNativeCore] Downloaded file #{filename} failed SHA verification. Aborting.")
+            end
+          end
         else
-          rncore_log("Using downloaded ReactNativeCore-prebuilt #{dsyms ? "dSYMs " : ""}#{configuration ? configuration.to_s : ""} tarball at #{Pathname.new(destination_path).relative_path_from(Pathname.pwd).to_s}")
+          rncore_log("Cache miss: downloading #{filename} from #{tarball_url}")
+          # Download to a temporary file first so we don't cache incomplete downloads.
+          tmp_file = "#{artifacts_dir()}/reactnative-core.download"
+          `curl -A "react-native-#{version}" "#{tarball_url}" -Lo "#{tmp_file}" && mv "#{tmp_file}" "#{destination_path}"`
+          unless File.exist?(destination_path)
+            abort("[ReactNativeCore] Failed to download #{filename} from #{tarball_url}. Aborting.")
+          end
+          rncore_log("Verifying checksum for downloaded #{filename}...")
+          if ReactNativePodsUtils.validate_tarball(destination_path, tarball_url)
+            # Save to shared cache for future use
+            `mkdir -p "#{ReactNativePodsUtils.shared_cache_dir()}"`
+            FileUtils.cp(destination_path, cached_path)
+            rncore_log("Saved #{filename} to shared cache (#{ReactNativePodsUtils.shared_cache_dir()})")
+          else
+            File.delete(destination_path) if File.exist?(destination_path)
+            abort("[ReactNativeCore] Downloaded file #{filename} failed SHA verification. Aborting.")
+          end
         end
 
         return destination_path

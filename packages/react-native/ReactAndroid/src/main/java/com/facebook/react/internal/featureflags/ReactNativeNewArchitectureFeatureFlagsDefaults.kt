@@ -25,11 +25,7 @@ public open class ReactNativeNewArchitectureFeatureFlagsDefaults() :
 
   override fun enableBridgelessArchitecture(): Boolean = true
 
-  override fun enableFabricRenderer(): Boolean = true
-
   override fun useNativeViewConfigsInBridgelessMode(): Boolean = true
 
   override fun useTurboModuleInterop(): Boolean = true
-
-  override fun useTurboModules(): Boolean = true
 }

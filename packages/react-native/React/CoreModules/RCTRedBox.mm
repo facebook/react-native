@@ -16,8 +16,11 @@
 #import <React/RCTRedBoxExtraDataViewController.h>
 #import <React/RCTReloadCommand.h>
 #import <React/RCTUtils.h>
+#import <react/featureflags/ReactNativeFeatureFlags.h>
 
 #import "CoreModulesPlugins.h"
+#import "RCTRedBox+Internal.h"
+#import "RCTRedBox2Controller+Internal.h"
 #import "RCTRedBoxController+Internal.h"
 
 #if RCT_DEV_MENU
@@ -30,7 +33,7 @@
 @end
 
 @implementation RCTRedBox {
-  RCTRedBoxController *_controller;
+  id<RCTRedBoxControlling> _controller;
   NSMutableArray<id<RCTErrorCustomizer>> *_errorCustomizers;
   RCTRedBoxExtraDataViewController *_extraDataViewController;
   NSMutableArray<NSString *> *_customButtonTitles;
@@ -162,6 +165,14 @@ RCT_EXPORT_MODULE()
   [self showErrorMessage:message withParsedStack:stack isUpdate:YES errorCookie:errorCookie];
 }
 
+- (id<RCTRedBox2Controlling>)_redBox2Controller
+{
+  if ([_controller conformsToProtocol:@protocol(RCTRedBox2Controlling)]) {
+    return (id<RCTRedBox2Controlling>)_controller;
+  }
+  return nil;
+}
+
 - (void)showErrorMessage:(NSString *)message
          withParsedStack:(NSArray<RCTJSStackFrame *> *)stack
                 isUpdate:(BOOL)isUpdate
@@ -178,14 +189,21 @@ RCT_EXPORT_MODULE()
     [[self->_moduleRegistry moduleForName:"EventDispatcher"] sendDeviceEventWithName:@"collectRedBoxExtraData"
                                                                                 body:nil];
 #pragma clang diagnostic pop
-    if (!self->_controller) {
-      self->_controller = [[RCTRedBoxController alloc] initWithCustomButtonTitles:self->_customButtonTitles
-                                                             customButtonHandlers:self->_customButtonHandlers];
-      self->_controller.actionDelegate = self;
-    }
 
     RCTErrorInfo *errorInfo = [[RCTErrorInfo alloc] initWithErrorMessage:message stack:stack];
     errorInfo = [self _customizeError:errorInfo];
+
+    if (self->_controller == nullptr) {
+      if (facebook::react::ReactNativeFeatureFlags::redBoxV2IOS()) {
+        self->_controller = [[RCTRedBox2Controller alloc] initWithCustomButtonTitles:self->_customButtonTitles
+                                                                customButtonHandlers:self->_customButtonHandlers];
+      } else {
+        self->_controller = [[RCTRedBoxController alloc] initWithCustomButtonTitles:self->_customButtonTitles
+                                                               customButtonHandlers:self->_customButtonHandlers];
+      }
+      self->_controller.actionDelegate = self;
+    }
+    [self _redBox2Controller].bundleURL = self->_overrideBundleURL ?: self->_bundleManager.bundleURL;
     [self->_controller showErrorMessage:errorInfo.errorMessage
                               withStack:errorInfo.stack
                                isUpdate:isUpdate
@@ -196,9 +214,10 @@ RCT_EXPORT_MODULE()
 - (void)loadExtraDataViewController
 {
   dispatch_async(dispatch_get_main_queue(), ^{
+    UIViewController *controller = static_cast<UIViewController *>(self->_controller);
     // Make sure the CMD+E shortcut doesn't call this twice
-    if (self->_extraDataViewController != nil && ![self->_controller presentedViewController]) {
-      [self->_controller presentViewController:self->_extraDataViewController animated:YES completion:nil];
+    if (self->_extraDataViewController != nil && ([controller presentedViewController] == nullptr)) {
+      [controller presentViewController:self->_extraDataViewController animated:YES completion:nil];
     }
   });
 }
@@ -220,7 +239,7 @@ RCT_EXPORT_METHOD(dismiss)
   [self dismiss];
 }
 
-- (void)redBoxController:(__unused RCTRedBoxController *)redBoxController
+- (void)redBoxController:(__unused UIViewController *)redBoxController
     openStackFrameInEditor:(RCTJSStackFrame *)stackFrame
 {
   NSURL *const bundleURL = _overrideBundleURL ?: _bundleManager.bundleURL;
@@ -247,7 +266,7 @@ RCT_EXPORT_METHOD(dismiss)
   [self reloadFromRedBoxController:nil];
 }
 
-- (void)reloadFromRedBoxController:(__unused RCTRedBoxController *)redBoxController
+- (void)reloadFromRedBoxController:(__unused UIViewController *)redBoxController
 {
   if (_overrideReloadAction) {
     _overrideReloadAction();

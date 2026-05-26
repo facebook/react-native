@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<c9755da3d9f6bc425bc40b3f5bcc4492>>
+ * @generated SignedSource<<84065dfb7cbc3c88c1ed398bba68b2bd>>
  */
 
 /**
@@ -139,11 +139,6 @@ bool NativeReactNativeFeatureFlags::enableDoubleMeasurementFixAndroid(
   return ReactNativeFeatureFlags::enableDoubleMeasurementFixAndroid();
 }
 
-bool NativeReactNativeFeatureFlags::enableEagerMainQueueModulesOnIOS(
-    jsi::Runtime& /*runtime*/) {
-  return ReactNativeFeatureFlags::enableEagerMainQueueModulesOnIOS();
-}
-
 bool NativeReactNativeFeatureFlags::enableEagerRootViewAttachment(
     jsi::Runtime& /*runtime*/) {
   return ReactNativeFeatureFlags::enableEagerRootViewAttachment();
@@ -164,11 +159,6 @@ bool NativeReactNativeFeatureFlags::enableFabricLogs(
   return ReactNativeFeatureFlags::enableFabricLogs();
 }
 
-bool NativeReactNativeFeatureFlags::enableFabricRenderer(
-    jsi::Runtime& /*runtime*/) {
-  return ReactNativeFeatureFlags::enableFabricRenderer();
-}
-
 bool NativeReactNativeFeatureFlags::enableFontScaleChangesUpdatingLayout(
     jsi::Runtime& /*runtime*/) {
   return ReactNativeFeatureFlags::enableFontScaleChangesUpdatingLayout();
@@ -187,16 +177,6 @@ bool NativeReactNativeFeatureFlags::enableIOSViewClipToPaddingBox(
 bool NativeReactNativeFeatureFlags::enableImagePrefetchingAndroid(
     jsi::Runtime& /*runtime*/) {
   return ReactNativeFeatureFlags::enableImagePrefetchingAndroid();
-}
-
-bool NativeReactNativeFeatureFlags::enableImagePrefetchingJNIBatchingAndroid(
-    jsi::Runtime& /*runtime*/) {
-  return ReactNativeFeatureFlags::enableImagePrefetchingJNIBatchingAndroid();
-}
-
-bool NativeReactNativeFeatureFlags::enableImagePrefetchingOnUiThreadAndroid(
-    jsi::Runtime& /*runtime*/) {
-  return ReactNativeFeatureFlags::enableImagePrefetchingOnUiThreadAndroid();
 }
 
 bool NativeReactNativeFeatureFlags::enableImmediateUpdateModeForContentOffsetChanges(
@@ -259,11 +239,6 @@ bool NativeReactNativeFeatureFlags::enableNativeCSSParsing(
   return ReactNativeFeatureFlags::enableNativeCSSParsing();
 }
 
-bool NativeReactNativeFeatureFlags::enableNativeViewPropTransformations(
-    jsi::Runtime& /*runtime*/) {
-  return ReactNativeFeatureFlags::enableNativeViewPropTransformations();
-}
-
 bool NativeReactNativeFeatureFlags::enableNetworkEventReporting(
     jsi::Runtime& /*runtime*/) {
   return ReactNativeFeatureFlags::enableNetworkEventReporting();
@@ -277,6 +252,16 @@ bool NativeReactNativeFeatureFlags::enablePreparedTextLayout(
 bool NativeReactNativeFeatureFlags::enablePropsUpdateReconciliationAndroid(
     jsi::Runtime& /*runtime*/) {
   return ReactNativeFeatureFlags::enablePropsUpdateReconciliationAndroid();
+}
+
+bool NativeReactNativeFeatureFlags::enableRuntimeSchedulerQueueClearingOnError(
+    jsi::Runtime& /*runtime*/) {
+  return ReactNativeFeatureFlags::enableRuntimeSchedulerQueueClearingOnError();
+}
+
+bool NativeReactNativeFeatureFlags::enableSchedulerDelegateInvalidation(
+    jsi::Runtime& /*runtime*/) {
+  return ReactNativeFeatureFlags::enableSchedulerDelegateInvalidation();
 }
 
 bool NativeReactNativeFeatureFlags::enableSwiftUIBasedFilters(
@@ -329,11 +314,6 @@ bool NativeReactNativeFeatureFlags::fixDifferentiatorParentTagForUnflattenCase(
   return ReactNativeFeatureFlags::fixDifferentiatorParentTagForUnflattenCase();
 }
 
-bool NativeReactNativeFeatureFlags::fixFindShadowNodeByTagRaceCondition(
-    jsi::Runtime& /*runtime*/) {
-  return ReactNativeFeatureFlags::fixFindShadowNodeByTagRaceCondition();
-}
-
 bool NativeReactNativeFeatureFlags::fixMappingOfEventPrioritiesBetweenFabricAndReact(
     jsi::Runtime& /*runtime*/) {
   return ReactNativeFeatureFlags::fixMappingOfEventPrioritiesBetweenFabricAndReact();
@@ -372,6 +352,11 @@ bool NativeReactNativeFeatureFlags::fuseboxScreenshotCaptureEnabled(
 bool NativeReactNativeFeatureFlags::hideOffscreenVirtualViewsOnIOS(
     jsi::Runtime& /*runtime*/) {
   return ReactNativeFeatureFlags::hideOffscreenVirtualViewsOnIOS();
+}
+
+bool NativeReactNativeFeatureFlags::optimizedAnimatedPropUpdates(
+    jsi::Runtime& /*runtime*/) {
+  return ReactNativeFeatureFlags::optimizedAnimatedPropUpdates();
 }
 
 bool NativeReactNativeFeatureFlags::overrideBySynchronousMountPropsAtMountingAndroid(
@@ -424,9 +409,9 @@ bool NativeReactNativeFeatureFlags::skipActivityIdentityAssertionOnHostPause(
   return ReactNativeFeatureFlags::skipActivityIdentityAssertionOnHostPause();
 }
 
-bool NativeReactNativeFeatureFlags::syncAndroidClipToPaddingWithOverflow(
+bool NativeReactNativeFeatureFlags::syncAndroidClipBoundsWithOverflow(
     jsi::Runtime& /*runtime*/) {
-  return ReactNativeFeatureFlags::syncAndroidClipToPaddingWithOverflow();
+  return ReactNativeFeatureFlags::syncAndroidClipBoundsWithOverflow();
 }
 
 bool NativeReactNativeFeatureFlags::traceTurboModulePromiseRejectionsOnAndroid(
@@ -454,11 +439,6 @@ bool NativeReactNativeFeatureFlags::useFabricInterop(
   return ReactNativeFeatureFlags::useFabricInterop();
 }
 
-bool NativeReactNativeFeatureFlags::useLISAlgorithmInDifferentiator(
-    jsi::Runtime& /*runtime*/) {
-  return ReactNativeFeatureFlags::useLISAlgorithmInDifferentiator();
-}
-
 bool NativeReactNativeFeatureFlags::useNativeViewConfigsInBridgelessMode(
     jsi::Runtime& /*runtime*/) {
   return ReactNativeFeatureFlags::useNativeViewConfigsInBridgelessMode();
@@ -467,6 +447,11 @@ bool NativeReactNativeFeatureFlags::useNativeViewConfigsInBridgelessMode(
 bool NativeReactNativeFeatureFlags::useNestedScrollViewAndroid(
     jsi::Runtime& /*runtime*/) {
   return ReactNativeFeatureFlags::useNestedScrollViewAndroid();
+}
+
+bool NativeReactNativeFeatureFlags::useOptimizedViewRegistryOnAndroid(
+    jsi::Runtime& /*runtime*/) {
+  return ReactNativeFeatureFlags::useOptimizedViewRegistryOnAndroid();
 }
 
 bool NativeReactNativeFeatureFlags::useSharedAnimatedBackend(
@@ -484,16 +469,6 @@ bool NativeReactNativeFeatureFlags::useTurboModuleInterop(
   return ReactNativeFeatureFlags::useTurboModuleInterop();
 }
 
-bool NativeReactNativeFeatureFlags::useTurboModules(
-    jsi::Runtime& /*runtime*/) {
-  return ReactNativeFeatureFlags::useTurboModules();
-}
-
-bool NativeReactNativeFeatureFlags::useUnorderedMapInDifferentiator(
-    jsi::Runtime& /*runtime*/) {
-  return ReactNativeFeatureFlags::useUnorderedMapInDifferentiator();
-}
-
 double NativeReactNativeFeatureFlags::viewCullingOutsetRatio(
     jsi::Runtime& /*runtime*/) {
   return ReactNativeFeatureFlags::viewCullingOutsetRatio();
@@ -502,6 +477,11 @@ double NativeReactNativeFeatureFlags::viewCullingOutsetRatio(
 bool NativeReactNativeFeatureFlags::viewTransitionEnabled(
     jsi::Runtime& /*runtime*/) {
   return ReactNativeFeatureFlags::viewTransitionEnabled();
+}
+
+bool NativeReactNativeFeatureFlags::viewTransitionUseHardwareBitmapAndroid(
+    jsi::Runtime& /*runtime*/) {
+  return ReactNativeFeatureFlags::viewTransitionUseHardwareBitmapAndroid();
 }
 
 double NativeReactNativeFeatureFlags::virtualViewPrerenderRatio(

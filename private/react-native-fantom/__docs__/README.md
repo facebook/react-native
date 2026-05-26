@@ -70,9 +70,13 @@ only a subset of Jest's Global API is currently available. For example,
 APIs. If you are blocked by the lack of a specific API, please reach out to us.
 
 Most of the interesting APIs are available via the `@react-native/fantom`
-package:
+package. Test files should also import `setUpDefaultReactNativeEnvironment` at
+the top to set up the React Native environment. **Do not import
+`InitializeCore`** — it installs LogBox, which interferes with Fantom's error
+handling.
 
 ```javascript
+import '@react-native/fantom/src/setUpDefaultReactNativeEnvironment';
 import * as Fantom from '@react-native/fantom';
 
 describe('My feature', () => {
@@ -107,6 +111,97 @@ Similar to Jest, you can also run Fantom in watch mode using `--watch`:
 ```shell
 yarn fantom <regexForTestFiles> --watch
 ```
+
+### Conventions
+
+- Place test files in `__tests__` directories alongside the code being tested.
+- Benchmark tests use the `-benchmark-itest.js` suffix.
+- Use `Fantom.runTask()` to render and run synchronous operations; it ensures
+  the React work is flushed before assertions.
+- Access elements through refs and use the
+  [`ensureInstance`](../../../packages/react-native/src/private/__tests__/utilities/ensureInstance.js)
+  helper for type-safe access to the underlying instance:
+
+  ```javascript
+  import ensureInstance from 'react-native/src/private/__tests__/utilities/ensureInstance';
+
+  const element = ensureInstance(elementRef.current, ReactNativeElement);
+  ```
+
+- Prefer component-specific instance types (`TextInputInstance`,
+  `ScrollViewInstance`, etc.) over the generic `HostInstance` when available.
+- For components with imperative APIs (`focus`, `blur`, `clear`, etc.), test:
+  - Each method's behaviour and edge cases (e.g. `blur` when not focused).
+  - Method timing — that it works when called from refs, `useLayoutEffect`, and
+    `useEffect`.
+- Verify that native commands are dispatched with
+  `root.takeMountingManagerLogs()`.
+- Don't write tests with only trivial assertions like
+  `expect(element).toBeDefined()` when more complex behaviour is under test.
+  When a test fails, understand what should render rather than weakening the
+  assertion to make it pass.
+
+### Assertions
+
+Prefer evaluating rendered output inline with `.toEqual()` and inline JSX over
+`.toMatchSnapshot()` or weak numeric assertions like
+`element.childNodes.length`.
+
+```javascript
+// Get JSX representation
+expect(root.getRenderedOutput().toJSX()).toEqual(
+  <rn-view width="100" height="50" />,
+);
+
+// Include layout metrics
+expect(root.getRenderedOutput({includeLayoutMetrics: true}).toJSX()).toEqual(
+  <rn-view
+    layoutMetrics-frame="{x:0,y:0,width:100,height:50}"
+    layoutMetrics-displayType="Flex"
+  />,
+);
+
+// Filter to specific props for minimal assertions
+expect(root.getRenderedOutput({props: ['backgroundColor']}).toJSX()).toEqual(
+  <rn-view backgroundColor="rgba(255, 0, 0, 1)" />,
+);
+```
+
+For element-level assertions, get a typed reference and inspect tag names,
+layout metrics, or children:
+
+```javascript
+const elementRef = createRef<HostInstance>();
+
+Fantom.runTask(() => {
+  root.render(
+    <View ref={elementRef}>
+      <Text>the quick brown fox</Text>
+    </View>,
+  );
+});
+
+const element = ensureInstance(elementRef.current, ReactNativeElement);
+expect(element.tagName).toBe('RN:View');
+
+const bounds = element.getBoundingClientRect();
+expect(bounds.width).toBe(100);
+expect(bounds.height).toBe(50);
+
+expect(root.getRenderedOutput().toJSX()).toEqual(
+  <rn-view>
+    <rn-paragraph>the quick brown fox</rn-paragraph>
+  </rn-view>,
+);
+```
+
+### Limitations
+
+- `Fantom.runTask()` calls cannot be nested — doing so will throw.
+- Only a subset of Jest's Global API is available (e.g. `test.each` is not
+  implemented). Reach out if you're blocked by a specific missing API.
+- Tests must live within `packages/react-native`; Fantom is not currently
+  intended for application-specific code.
 
 ### Test configuration
 
@@ -302,6 +397,25 @@ memory heap and print a message indicating where it was saved. E.g.:
 
 You can have multiple calls to `Fantom.takeJSMemoryHeapSnapshot()` in your test,
 and each one will create a different file.
+
+#### C++ sampling profiler
+
+You can automatically record C++ sampling profiler traces (with DWARF call
+graphs) by wrapping the Fantom tester binary with Linux `perf record`. Run your
+fantom test with the flag `FANTOM_PROFILE_CPP`:
+
+```shell
+FANTOM_PROFILE_CPP=1 yarn fantom <regexForTestFiles>
+```
+
+Output is saved to `.out/cpp-traces/perf-<timestamp>.data`. Analyze it with:
+
+```shell
+perf report -i .out/cpp-traces/perf-<timestamp>.data
+```
+
+This is not available on CI (the runner will throw an error if attempted) and
+requires `perf` to be installed on the host.
 
 ### Running the full suite locally
 

@@ -31,14 +31,14 @@ export type DialogOptions = {
 };
 
 export interface Spec extends TurboModule {
-  +getConstants: () => {
-    +buttonClicked: DialogAction,
-    +dismissed: DialogAction,
-    +buttonPositive: DialogButtonKey,
-    +buttonNegative: DialogButtonKey,
-    +buttonNeutral: DialogButtonKey,
+  readonly getConstants: () => {
+    readonly buttonClicked: DialogAction,
+    readonly dismissed: DialogAction,
+    readonly buttonPositive: DialogButtonKey,
+    readonly buttonNegative: DialogButtonKey,
+    readonly buttonNeutral: DialogButtonKey,
   };
-  +showAlert: (
+  readonly showAlert: (
     config: DialogOptions,
     onError: (error: string) => void,
     onAction: (action: DialogAction, buttonKey?: DialogButtonKey) => void,

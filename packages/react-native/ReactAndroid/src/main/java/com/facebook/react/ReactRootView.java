@@ -928,6 +928,7 @@ public class ReactRootView extends FrameLayout implements RootView, ReactRoot {
     private final Rect mVisibleViewArea;
 
     private boolean mKeyboardIsVisible = false;
+    private int mKeyboardHeight = 0;
     private int mDeviceRotation = 0;
 
     /* package */ CustomGlobalLayoutListener() {
@@ -954,13 +955,17 @@ public class ReactRootView extends FrameLayout implements RootView, ReactRoot {
       }
 
       boolean keyboardIsVisible = rootInsets.isVisible(WindowInsetsCompat.Type.ime());
-      if (keyboardIsVisible != mKeyboardIsVisible) {
-        mKeyboardIsVisible = keyboardIsVisible;
-        Insets barInsets = rootInsets.getInsets(WindowInsetsCompat.Type.systemBars());
+      Insets barInsets = rootInsets.getInsets(WindowInsetsCompat.Type.systemBars());
 
-        if (keyboardIsVisible) {
-          Insets imeInsets = rootInsets.getInsets(WindowInsetsCompat.Type.ime());
-          int height = imeInsets.bottom - barInsets.bottom;
+      if (keyboardIsVisible) {
+        Insets imeInsets = rootInsets.getInsets(WindowInsetsCompat.Type.ime());
+        int height = imeInsets.bottom - barInsets.bottom;
+
+        // Re-emit on height change while keyboard stays visible (e.g., emoji
+        // panel toggle); JS consumers cache endCoordinates from keyboardDidShow.
+        if (!mKeyboardIsVisible || height != mKeyboardHeight) {
+          mKeyboardIsVisible = true;
+          mKeyboardHeight = height;
 
           ViewGroup.LayoutParams rootLayoutParams = getRootView().getLayoutParams();
           Assertions.assertCondition(rootLayoutParams instanceof WindowManager.LayoutParams);
@@ -978,15 +983,18 @@ public class ReactRootView extends FrameLayout implements RootView, ReactRoot {
                   PixelUtil.toDIPFromPixel(mVisibleViewArea.left),
                   PixelUtil.toDIPFromPixel(mVisibleViewArea.width()),
                   PixelUtil.toDIPFromPixel(height)));
-        } else {
-          sendEvent(
-              "keyboardDidHide",
-              createKeyboardEventPayload(
-                  PixelUtil.toDIPFromPixel(mVisibleViewArea.bottom + barInsets.bottom),
-                  0,
-                  PixelUtil.toDIPFromPixel(mVisibleViewArea.width()),
-                  0));
         }
+      } else if (mKeyboardIsVisible) {
+        mKeyboardIsVisible = false;
+        mKeyboardHeight = 0;
+
+        sendEvent(
+            "keyboardDidHide",
+            createKeyboardEventPayload(
+                PixelUtil.toDIPFromPixel(mVisibleViewArea.bottom + barInsets.bottom),
+                0,
+                PixelUtil.toDIPFromPixel(mVisibleViewArea.width()),
+                0));
       }
     }
 
