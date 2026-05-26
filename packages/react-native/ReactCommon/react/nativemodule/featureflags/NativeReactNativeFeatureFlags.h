@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<1a26271de9309c5f9c2435197e376847>>
+ * @generated SignedSource<<95947de110a15ea5c43af6213194058a>>
  */
 
 /**
@@ -137,8 +137,6 @@ class NativeReactNativeFeatureFlags
   bool enableViewRecyclingForView(jsi::Runtime& runtime);
 
   bool enableVirtualViewContainerStateExperimental(jsi::Runtime& runtime);
-
-  bool enableVirtualViewDebugFeatures(jsi::Runtime& runtime);
 
   bool fixDifferentiatorParentTagForUnflattenCase(jsi::Runtime& runtime);
 

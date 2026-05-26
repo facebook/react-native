@@ -17,7 +17,6 @@ import {
   VirtualViewMode,
   createHiddenVirtualView,
 } from '../virtualview/VirtualView';
-import FlingItemOverlay from './debug/FlingItemOverlay';
 import * as React from 'react';
 import {useCallback, useMemo, useState} from 'react';
 
@@ -108,9 +107,6 @@ export function createVirtualCollectionView<TLayoutProps extends {...}>(
               key={key}
               nativeID={key}
               removeClippedSubviews={removeClippedSubviews}>
-              {FlingItemOverlay == null ? null : (
-                <FlingItemOverlay nativeID={key} />
-              )}
               {children(item, key)}
             </VirtualView>
           );
