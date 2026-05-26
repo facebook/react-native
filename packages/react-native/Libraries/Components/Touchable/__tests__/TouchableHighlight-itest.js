@@ -395,6 +395,48 @@ describe('<TouchableHighlight>', () => {
           </rn-view>,
         );
       });
+
+      // Regression test for #54933: a `React.Fragment` cannot accept the
+      // underlay style applied via `cloneElement`, so the highlight effect
+      // is silently broken. Render the Fragment unchanged and surface an
+      // actionable dev warning pointing the user at wrapping in <View>.
+      it('logs a dev warning when given a React.Fragment as a child', () => {
+        const originalConsoleWarn = console.warn;
+        const mockConsoleWarn = jest.fn();
+        // $FlowExpectedError[cannot-write]
+        console.warn = mockConsoleWarn;
+
+        try {
+          const root = Fantom.createRoot();
+
+          Fantom.runTask(() => {
+            root.render(
+              <TouchableHighlight>
+                <React.Fragment>
+                  <Text>First</Text>
+                  <Text>Second</Text>
+                </React.Fragment>
+              </TouchableHighlight>,
+            );
+          });
+
+          expect(
+            root.getRenderedOutput({props: ['accessible']}).toJSX(),
+          ).toEqual(
+            <rn-view accessible="true">
+              <rn-paragraph key="0">First</rn-paragraph>
+              <rn-paragraph key="1">Second</rn-paragraph>
+            </rn-view>,
+          );
+          expect(mockConsoleWarn).toHaveBeenCalledTimes(1);
+          expect(mockConsoleWarn.mock.calls[0][0]).toContain(
+            'TouchableHighlight does not support React.Fragment as a child',
+          );
+        } finally {
+          // $FlowExpectedError[cannot-write]
+          console.warn = originalConsoleWarn;
+        }
+      });
     });
   });
 
