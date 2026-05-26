@@ -10,15 +10,17 @@
 package com.facebook.react.fabric
 
 import com.facebook.react.ReactRootView
+import com.facebook.react.bridge.JavaOnlyArray
 import com.facebook.react.bridge.JavaOnlyMap
 import com.facebook.react.bridge.ReactTestHelper
+import com.facebook.react.bridge.ReadableArray
 import com.facebook.react.fabric.mounting.MountingManager
-import com.facebook.react.fabric.mounting.MountingManager.MountItemExecutor
 import com.facebook.react.fabric.mounting.SurfaceMountingManager
 import com.facebook.react.internal.featureflags.ReactNativeFeatureFlagsForTests
 import com.facebook.react.uimanager.ThemedReactContext
 import com.facebook.react.uimanager.ViewManager
 import com.facebook.react.uimanager.ViewManagerRegistry
+import com.facebook.react.views.view.ReactViewGroup
 import com.facebook.react.views.view.ReactViewManager
 import com.facebook.testutils.shadows.ShadowNativeLoader
 import com.facebook.testutils.shadows.ShadowNativeMap
@@ -67,8 +69,8 @@ class SurfaceMountingManagerSynchronousMountPropsTest {
     themedReactContext = ThemedReactContext(reactContext, reactContext, null, -1)
     mountingManager =
         MountingManager(
-            ViewManagerRegistry(listOf<ViewManager<*, *>>(ReactViewManager())),
-            MountItemExecutor {},
+            ViewManagerRegistry(listOf<ViewManager<*, *>>(TestReactViewManager())),
+            {},
         )
   }
 
@@ -81,6 +83,25 @@ class SurfaceMountingManagerSynchronousMountPropsTest {
   private fun createAndAttachView(smm: SurfaceMountingManager, tag: Int) {
     smm.preallocateView("RCTView", tag, JavaOnlyMap.of(), null, true)
     smm.addViewAt(surfaceId, tag, 0)
+  }
+
+  private class TestReactViewManager : ReactViewManager() {
+    override fun setTransformProperty(
+        view: ReactViewGroup,
+        transforms: ReadableArray?,
+        transformOrigin: ReadableArray?,
+    ) {
+      view.translationY = 0.0f
+      if (transforms == null) {
+        return
+      }
+      for (i in 0..<transforms.size()) {
+        val transform = transforms.getMap(i) ?: continue
+        if (transform.hasKey("translateY")) {
+          view.translationY = transform.getDouble("translateY").toFloat()
+        }
+      }
+    }
   }
 
   /** Stored synchronous opacity should override a stale Fabric mount update. */
@@ -135,6 +156,80 @@ class SurfaceMountingManagerSynchronousMountPropsTest {
 
     // Synchronous value preserved
     assertThat(smm.getView(tag).alpha).isEqualTo(0.2f)
+  }
+
+  /** A null Fabric prop update should not clear the stored synchronous opacity override. */
+  @Test
+  fun updateProps_withNullOpacity_keepsStoredSynchronousProp() {
+    val smm = startSurface()
+    val tag = 42
+    createAndAttachView(smm, tag)
+
+    smm.storeSynchronousMountPropsOverride(tag, JavaOnlyMap.of("opacity", 0.3))
+    smm.updatePropsSynchronously(tag, JavaOnlyMap.of("opacity", 0.3))
+    assertThat(smm.getView(tag).alpha).isEqualTo(0.3f)
+
+    smm.updateProps(tag, JavaOnlyMap.of("opacity", null))
+
+    assertThat(smm.getView(tag).alpha).isEqualTo(0.3f)
+  }
+
+  /** A synchronous null update should clear the stored synchronous opacity override. */
+  @Test
+  fun updatePropsSynchronously_withNullOpacity_removesStoredSynchronousProp() {
+    val smm = startSurface()
+    val tag = 42
+    createAndAttachView(smm, tag)
+
+    smm.storeSynchronousMountPropsOverride(tag, JavaOnlyMap.of("opacity", 0.3))
+    smm.updatePropsSynchronously(tag, JavaOnlyMap.of("opacity", 0.3))
+    assertThat(smm.getView(tag).alpha).isEqualTo(0.3f)
+
+    smm.storeSynchronousMountPropsOverride(tag, JavaOnlyMap.of("opacity", null))
+    smm.updatePropsSynchronously(tag, JavaOnlyMap.of("opacity", null))
+    assertThat(smm.getView(tag).alpha).isEqualTo(1.0f)
+
+    smm.updateProps(tag, JavaOnlyMap.of("opacity", null))
+
+    assertThat(smm.getView(tag).alpha).isEqualTo(1.0f)
+  }
+
+  /** A null Fabric prop update should not clear the stored synchronous transform override. */
+  @Test
+  fun updateProps_withNullTransform_keepsStoredSynchronousProp() {
+    val smm = startSurface()
+    val tag = 42
+    val transform = JavaOnlyArray.of(JavaOnlyMap.of("translateY", 40.0))
+    createAndAttachView(smm, tag)
+
+    smm.storeSynchronousMountPropsOverride(tag, JavaOnlyMap.of("transform", transform))
+    smm.updatePropsSynchronously(tag, JavaOnlyMap.of("transform", transform))
+    assertThat(smm.getView(tag).translationY).isEqualTo(40.0f)
+
+    smm.updateProps(tag, JavaOnlyMap.of("transform", null))
+
+    assertThat(smm.getView(tag).translationY).isEqualTo(40.0f)
+  }
+
+  /** A synchronous null update should clear the stored synchronous transform override. */
+  @Test
+  fun updatePropsSynchronously_withNullTransform_removesStoredSynchronousProp() {
+    val smm = startSurface()
+    val tag = 42
+    val transform = JavaOnlyArray.of(JavaOnlyMap.of("translateY", 40.0))
+    createAndAttachView(smm, tag)
+
+    smm.storeSynchronousMountPropsOverride(tag, JavaOnlyMap.of("transform", transform))
+    smm.updatePropsSynchronously(tag, JavaOnlyMap.of("transform", transform))
+    assertThat(smm.getView(tag).translationY).isEqualTo(40.0f)
+
+    smm.storeSynchronousMountPropsOverride(tag, JavaOnlyMap.of("transform", null))
+    smm.updatePropsSynchronously(tag, JavaOnlyMap.of("transform", null))
+    assertThat(smm.getView(tag).translationY).isEqualTo(0.0f)
+
+    smm.updateProps(tag, JavaOnlyMap.of("transform", null))
+
+    assertThat(smm.getView(tag).translationY).isEqualTo(0.0f)
   }
 
   /**
