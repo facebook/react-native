@@ -9,8 +9,6 @@ package com.facebook.react.views.scroll
 
 import android.graphics.Rect
 import android.view.ViewGroup
-import com.facebook.common.logging.FLog
-import com.facebook.react.common.build.ReactBuildConfig
 import com.facebook.react.internal.featureflags.ReactNativeFeatureFlags
 import com.facebook.react.views.virtual.VirtualViewMode
 import java.util.*
@@ -69,11 +67,7 @@ internal abstract class VirtualViewContainerState {
   }
 
   open fun onChange(virtualView: VirtualView) {
-    if (virtualViews.add(virtualView)) {
-      debugLog("add", { "virtualViewID=${virtualView.virtualViewID}" })
-    } else {
-      debugLog("update", { "virtualViewID=${virtualView.virtualViewID}" })
-    }
+    virtualViews.add(virtualView)
     updateModes(virtualView)
   }
 
@@ -81,12 +75,10 @@ internal abstract class VirtualViewContainerState {
     assert(virtualViews.remove(virtualView)) {
       "Attempting to remove non-existent VirtualView: ${virtualView.virtualViewID}"
     }
-    debugLog("remove", { "virtualViewID=${virtualView.virtualViewID}" })
   }
 
   // Called on ScrollView onLayout or onScroll
   fun updateState() {
-    debugLog("updateState")
     updateModes()
   }
 
@@ -98,7 +90,6 @@ internal abstract class VirtualViewContainerState {
     // intentionally goes but curently ScrollView and v1 Fling use this check to determine if
     // "content ready"
     if (visibleRect.isEmpty()) {
-      debugLog("updateRects", { "scrollView visibleRect is empty" })
       // should set the other rects here in case scrollview is suddenly empty after the other rects
       // are non-empty
       prerenderRect.set(visibleRect)
@@ -110,22 +101,7 @@ internal abstract class VirtualViewContainerState {
         (-prerenderRect.width() * prerenderRatio).toInt(),
         (-prerenderRect.height() * prerenderRatio).toInt(),
     )
-
-    debugLog(
-        "updateRects",
-        { "visibleRect ${visibleRect.toString()} prerenderRect ${prerenderRect.toString()}" },
-    )
   }
 
   protected abstract fun updateModes(virtualView: VirtualView? = null)
-}
-
-private const val DEBUG_TAG: String = "VirtualViewContainerState"
-internal val IS_DEBUG_BUILD =
-    ReactBuildConfig.DEBUG || ReactBuildConfig.IS_INTERNAL_BUILD || ReactBuildConfig.ENABLE_PERFETTO
-
-private inline fun debugLog(subtag: String, block: () -> String = { "" }) {
-  if (IS_DEBUG_BUILD && ReactNativeFeatureFlags.enableVirtualViewDebugFeatures()) {
-    FLog.d("$DEBUG_TAG:$subtag", block())
-  }
 }

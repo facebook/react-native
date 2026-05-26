@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<17cac2c987328cb01ab6321fe7670cc5>>
+ * @generated SignedSource<<f67507377832e158acd47c7362a7211a>>
  * @flow strict
  * @noformat
  */
@@ -97,7 +97,6 @@ export type ReactNativeFeatureFlags = $ReadOnly<{
   enableViewRecyclingForText: Getter<boolean>,
   enableViewRecyclingForView: Getter<boolean>,
   enableVirtualViewContainerStateExperimental: Getter<boolean>,
-  enableVirtualViewDebugFeatures: Getter<boolean>,
   fixDifferentiatorParentTagForUnflattenCase: Getter<boolean>,
   fixMappingOfEventPrioritiesBetweenFabricAndReact: Getter<boolean>,
   fixYogaFlexBasisFitContentInMainAxis: Getter<boolean>,
@@ -399,10 +398,6 @@ export const enableViewRecyclingForView: Getter<boolean> = createNativeFlagGette
  * Enables the experimental version of `VirtualViewContainerState`.
  */
 export const enableVirtualViewContainerStateExperimental: Getter<boolean> = createNativeFlagGetter('enableVirtualViewContainerStateExperimental', false);
-/**
- * Enables VirtualView debug features such as logging and overlays.
- */
-export const enableVirtualViewDebugFeatures: Getter<boolean> = createNativeFlagGetter('enableVirtualViewDebugFeatures', false);
 /**
  * Fix incorrect parentTag passed as parentTagForUpdate in the unflatten-unflatten branch of calculateShadowViewMutationsFlattener, which causes UPDATE mutations to reference a parent being created in the same batch.
  */

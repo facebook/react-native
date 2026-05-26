@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<21e508305ffc719768389f668485e57f>>
+ * @generated SignedSource<<1655eb2f217476e64b03c97bce083192>>
  */
 
 /**
@@ -181,9 +181,6 @@ class JReactNativeFeatureFlagsCxxInterop
     facebook::jni::alias_ref<JReactNativeFeatureFlagsCxxInterop>);
 
   static bool enableVirtualViewContainerStateExperimental(
-    facebook::jni::alias_ref<JReactNativeFeatureFlagsCxxInterop>);
-
-  static bool enableVirtualViewDebugFeatures(
     facebook::jni::alias_ref<JReactNativeFeatureFlagsCxxInterop>);
 
   static bool fixDifferentiatorParentTagForUnflattenCase(

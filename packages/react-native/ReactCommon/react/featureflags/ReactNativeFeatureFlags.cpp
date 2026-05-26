@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<a65763987ba462f3c46cd84dc8d75713>>
+ * @generated SignedSource<<d3b31e5d51537d44d19f72b2d48f97f4>>
  */
 
 /**
@@ -228,10 +228,6 @@ bool ReactNativeFeatureFlags::enableViewRecyclingForView() {
 
 bool ReactNativeFeatureFlags::enableVirtualViewContainerStateExperimental() {
   return getAccessor().enableVirtualViewContainerStateExperimental();
-}
-
-bool ReactNativeFeatureFlags::enableVirtualViewDebugFeatures() {
-  return getAccessor().enableVirtualViewDebugFeatures();
 }
 
 bool ReactNativeFeatureFlags::fixDifferentiatorParentTagForUnflattenCase() {

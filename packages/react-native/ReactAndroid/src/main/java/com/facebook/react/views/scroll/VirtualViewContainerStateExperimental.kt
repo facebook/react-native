@@ -10,7 +10,7 @@ package com.facebook.react.views.scroll
 import android.graphics.Rect
 import android.view.ViewGroup
 import com.facebook.common.logging.FLog
-import com.facebook.react.internal.featureflags.ReactNativeFeatureFlags
+import com.facebook.react.common.build.ReactBuildConfig
 import com.facebook.react.views.virtual.VirtualViewMode
 
 internal class VirtualViewContainerStateExperimental(scrollView: ViewGroup) :
@@ -503,10 +503,10 @@ internal class IntervalTree(private val horizontal: Boolean) : MutableCollection
   }
 }
 
-private const val DEBUG_TAG: String = "VirtualViewContainerStateExperimental"
+private val ENABLE_DEBUG_LOGS = ReactBuildConfig.DEBUG && false
 
 private inline fun debugLog(subtag: String, block: () -> String = { "" }) {
-  if (IS_DEBUG_BUILD && ReactNativeFeatureFlags.enableVirtualViewDebugFeatures()) {
-    FLog.d("$DEBUG_TAG:$subtag", block())
+  if (ENABLE_DEBUG_LOGS) {
+    FLog.d("VirtualViewContainerStateExperimental:$subtag", block())
   }
 }
