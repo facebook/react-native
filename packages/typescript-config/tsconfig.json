@@ -18,7 +18,8 @@
         "es2021.weakref",
         "es2022.array",
         "es2022.object",
-        "es2022.string"
+        "es2022.string",
+        "es2022.error"
       ],
       "allowJs": true,
       "jsx": "react-native",
