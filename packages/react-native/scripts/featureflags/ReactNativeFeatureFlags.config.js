@@ -422,17 +422,6 @@ const definitions: FeatureFlagDefinitions = {
       },
       ossReleaseStage: 'none',
     },
-    enableMainQueueCoordinatorOnIOS: {
-      defaultValue: false,
-      metadata: {
-        dateAdded: '2025-05-17',
-        description:
-          'Make RCTUnsafeExecuteOnMainQueueSync less likely to deadlock, when used in conjuction with sync rendering/events.',
-        expectedReleaseValue: true,
-        purpose: 'experimentation',
-      },
-      ossReleaseStage: 'none',
-    },
     enableModuleArgumentNSNullConversionIOS: {
       defaultValue: false,
       metadata: {

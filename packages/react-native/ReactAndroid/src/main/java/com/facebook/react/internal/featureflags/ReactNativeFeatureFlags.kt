@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<fa3d35be13801d5991e6bfb2cef2ef43>>
+ * @generated SignedSource<<86c797c19cc585b74714ca3aa75bbd6d>>
  */
 
 /**
@@ -239,12 +239,6 @@ public object ReactNativeFeatureFlags {
    */
   @JvmStatic
   public fun enableLayoutAnimationsOnIOS(): Boolean = accessor.enableLayoutAnimationsOnIOS()
-
-  /**
-   * Make RCTUnsafeExecuteOnMainQueueSync less likely to deadlock, when used in conjuction with sync rendering/events.
-   */
-  @JvmStatic
-  public fun enableMainQueueCoordinatorOnIOS(): Boolean = accessor.enableMainQueueCoordinatorOnIOS()
 
   /**
    * Enable NSNull conversion when handling module arguments on iOS

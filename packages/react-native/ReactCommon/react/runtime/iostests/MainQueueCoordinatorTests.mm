@@ -11,48 +11,17 @@
 #import <ReactCommon/RuntimeExecutor.h>
 #import <ReactCommon/RuntimeExecutorSyncUIThreadUtils.h>
 #import <hermes/hermes.h>
-#import <react/featureflags/ReactNativeFeatureFlags.h>
-#import <react/featureflags/ReactNativeFeatureFlagsDefaults.h>
-#import <atomic>
 #import <chrono>
 #import <thread>
 
 using namespace facebook::react;
-
-namespace {
-class MainQueueCoordinatorOverride : public ReactNativeFeatureFlagsDefaults {
- public:
-  explicit MainQueueCoordinatorOverride(bool enabled) : enabled_(enabled) {}
-  bool enableMainQueueCoordinatorOnIOS() override
-  {
-    return enabled_;
-  }
-
- private:
-  bool enabled_;
-};
-} // namespace
 
 @interface MainQueueCoordinatorTests : XCTestCase
 @end
 
 @implementation MainQueueCoordinatorTests
 
-- (void)setUp
-{
-  [super setUp];
-  ReactNativeFeatureFlags::dangerouslyReset();
-}
-
-- (void)tearDown
-{
-  ReactNativeFeatureFlags::dangerouslyReset();
-  [super tearDown];
-}
-
-#pragma mark - RCTUnsafeExecuteOnMainQueueSync
-
-- (void)_assertRCTUnsafeExecuteOnMainQueueSyncRunsBlockOnMainFromBackgroundThread
+- (void)testRCTUnsafeExecuteOnMainQueueSync_runsBlockOnMainFromBG
 {
   XCTestExpectation *done = [self expectationWithDescription:@"BG-thread call completed"];
   __block BOOL ranOnMain = NO;
@@ -71,25 +40,8 @@ class MainQueueCoordinatorOverride : public ReactNativeFeatureFlagsDefaults {
   XCTAssertTrue(returnedToBG, @"BG thread must resume after sync call returns");
 }
 
-- (void)testRCTUnsafeExecuteOnMainQueueSync_flagOff_runsBlockOnMainFromBG
+- (void)testExecuteSynchronouslyOnSameThread_pumpsUITasksWhileWaitingForJS
 {
-  // Default off — exercises the dispatch_sync(main) branch.
-  [self _assertRCTUnsafeExecuteOnMainQueueSyncRunsBlockOnMainFromBackgroundThread];
-}
-
-- (void)testRCTUnsafeExecuteOnMainQueueSync_flagOn_runsBlockOnMainFromBG
-{
-  ReactNativeFeatureFlags::override(std::make_unique<MainQueueCoordinatorOverride>(true));
-  // Coordinator branch — `unsafeExecuteOnMainThreadSync` posts a UI task and waits.
-  [self _assertRCTUnsafeExecuteOnMainQueueSyncRunsBlockOnMainFromBackgroundThread];
-}
-
-#pragma mark - executeSynchronouslyOnSameThread_CAN_DEADLOCK
-
-- (void)testExecuteSynchronouslyOnSameThread_flagOn_pumpsUITasksWhileWaitingForJS
-{
-  ReactNativeFeatureFlags::override(std::make_unique<MainQueueCoordinatorOverride>(true));
-
   // A real runtime — needed only for the reference type. We never call into it.
   auto runtime = facebook::hermes::makeHermesRuntime();
 
@@ -104,9 +56,9 @@ class MainQueueCoordinatorOverride : public ReactNativeFeatureFlagsDefaults {
     }).detach();
   };
 
-  // Both threads only ever write on main, so plain ints are race-free. Held in
-  // a struct so we can capture a pointer from an ObjC block and a reference
-  // from a C++ lambda without `__block` (which doesn't compose with lambdas).
+  // Both writes happen on main, so plain ints are race-free. Held in a struct
+  // so we can capture a pointer from an ObjC block and a reference from a C++
+  // lambda without `__block` (which doesn't compose with lambdas).
   struct State {
     int sequence = 0;
     int uiTaskOrder = 0;
