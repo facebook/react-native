@@ -9,10 +9,10 @@
  */
 
 import type {ColorValue} from '../../StyleSheet/StyleSheet';
-
 import type {EventSubscription} from '../../vendor/emitter/EventEmitter';
-import * as Appearance from '../../Utilities/Appearance';
+
 import processColor from '../../StyleSheet/processColor';
+import * as Appearance from '../../Utilities/Appearance';
 import Platform from '../../Utilities/Platform';
 import NativeStatusBarManagerAndroid from './NativeStatusBarManagerAndroid';
 import NativeStatusBarManagerIOS from './NativeStatusBarManagerIOS';
