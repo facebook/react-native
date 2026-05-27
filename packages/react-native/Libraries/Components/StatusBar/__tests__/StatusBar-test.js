@@ -47,6 +47,33 @@ describe('StatusBar', () => {
       false,
     );
   });
+  it('resolves auto barStyle against the current color scheme', () => {
+    const Appearance = require('../../../Utilities/Appearance');
+    const Platform = require('../../../Utilities/Platform').default;
+
+    const nativeStatusBarManager =
+      Platform.OS === 'ios'
+        ? require('../NativeStatusBarManagerIOS').default
+        : require('../NativeStatusBarManagerAndroid').default;
+
+    const appearanceSpy = jest.spyOn(Appearance, 'getColorScheme');
+    const setStyleSpy = jest.spyOn(nativeStatusBarManager, 'setStyle');
+
+    appearanceSpy.mockReturnValue('light');
+    setStyleSpy.mockClear();
+
+    StatusBar.setBarStyle('auto');
+    expect(setStyleSpy.mock.calls[0][0]).toBe('dark-content');
+
+    appearanceSpy.mockReturnValue('dark');
+    setStyleSpy.mockClear();
+
+    StatusBar.setBarStyle('auto');
+    expect(setStyleSpy.mock.calls[0][0]).toBe('light-content');
+
+    appearanceSpy.mockRestore();
+    setStyleSpy.mockRestore();
+  });
   it('renders the statusbar but should not be visible', async () => {
     const component = await create(<StatusBar hidden={true} />);
     expect(component.toTree()?.props.hidden).toBe(true);
