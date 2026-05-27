@@ -556,8 +556,10 @@ def react_native_post_install(
 
   if (ENV['RCT_REMOVE_LEGACY_ARCH'] == '1')
     ReactNativePodsUtils.add_compiler_flag_to_project(installer, "-DRCT_REMOVE_LEGACY_ARCH=1")
+    ReactNativePodsUtils.add_swift_active_compilation_condition_to_project(installer, "RCT_REMOVE_LEGACY_ARCH")
   else
     ReactNativePodsUtils.remove_compiler_flag_from_project(installer, "-DRCT_REMOVE_LEGACY_ARCH=1")
+    ReactNativePodsUtils.remove_swift_active_compilation_condition_from_project(installer, "RCT_REMOVE_LEGACY_ARCH")
   end
 
   ReactNativePodsUtils.set_ccache_compiler_and_linker_build_settings(installer, react_native_path, ccache_enabled)

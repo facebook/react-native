@@ -480,6 +480,57 @@ class ReactNativePodsUtils
         end
     end
 
+    def self.add_swift_active_compilation_condition_to_project(installer, condition)
+        projects = self.extract_projects(installer)
+
+        projects.each do |project|
+            project.build_configurations.each do |config|
+                self.add_swift_condition_in_config(config, condition)
+            end
+            project.save()
+        end
+    end
+
+    def self.remove_swift_active_compilation_condition_from_project(installer, condition)
+        projects = self.extract_projects(installer)
+
+        projects.each do |project|
+            project.build_configurations.each do |config|
+                self.remove_swift_condition_in_config(config, condition)
+            end
+            project.save()
+        end
+    end
+
+    def self.add_swift_condition_in_config(config, condition)
+        key = "SWIFT_ACTIVE_COMPILATION_CONDITIONS"
+        current = config.build_settings[key]
+
+        # Normalise to array form so we can dedupe and preserve $(inherited)
+        # alongside any pre-existing conditions (e.g. DEBUG).
+        list = case current
+               when nil    then ["$(inherited)"]
+               when Array  then current.dup
+               when String then current.split(/\s+/).reject(&:empty?)
+               end
+
+        list << "$(inherited)" unless list.include?("$(inherited)")
+        list << condition unless list.include?(condition)
+
+        config.build_settings[key] = list
+    end
+
+    def self.remove_swift_condition_in_config(config, condition)
+        key = "SWIFT_ACTIVE_COMPILATION_CONDITIONS"
+        current = config.build_settings[key]
+        return if current.nil?
+
+        list = current.kind_of?(Array) ? current.dup : current.split(/\s+/).reject(&:empty?)
+        list.delete(condition)
+
+        config.build_settings[key] = list
+    end
+
     def self.add_compiler_flag_to_pods(installer, flag, configuration: nil)
         installer.target_installation_results.pod_target_installation_results.each do |pod_name, target_installation_result|
             target_installation_result.native_target.build_configurations.each do |config|
