@@ -13,11 +13,48 @@
 #include <react/featureflags/ReactNativeFeatureFlags.h>
 #include <react/renderer/components/image/ImageShadowNode.h>
 #include <react/renderer/core/LayoutContext.h>
+#include <react/renderer/graphics/Rect.h>
 #include <react/renderer/imagemanager/ImageRequestParams.h>
 
 namespace facebook::react {
 
 const char ImageComponentName[] = "Image";
+
+namespace {
+
+bool isImageVisible(
+    const LayoutContext& layoutContext,
+    const LayoutMetrics& layoutMetrics) {
+  if (layoutContext.viewportSize.width <= 0 ||
+      layoutContext.viewportSize.height <= 0 ||
+      layoutMetrics.frame.size.width <= 0 ||
+      layoutMetrics.frame.size.height <= 0) {
+    return true;
+  }
+
+  auto imageFrame = layoutContext.experimental_layoutFrame;
+  if (imageFrame.size.width <= 0 || imageFrame.size.height <= 0) {
+    imageFrame = Rect{
+        .origin = layoutContext.experimental_layoutOrigin,
+        .size = layoutMetrics.frame.size};
+  }
+  auto viewportFrame = Rect{
+      .origin = layoutContext.viewportOffset,
+      .size = layoutContext.viewportSize};
+  auto visibleFrame = Rect::intersect(imageFrame, viewportFrame);
+
+  return visibleFrame.size.width > 0 && visibleFrame.size.height > 0;
+}
+
+ImageRequestPriority getImageRequestPriority(
+    const LayoutContext& layoutContext,
+    const LayoutMetrics& layoutMetrics) {
+  return isImageVisible(layoutContext, layoutMetrics)
+      ? ImageRequestPriority::Immediate
+      : ImageRequestPriority::Prefetch;
+}
+
+} // namespace
 
 void ImageShadowNode::setImageManager(
     const std::shared_ptr<ImageManager>& imageManager) {
@@ -37,12 +74,16 @@ void ImageShadowNode::setImageManager(
     if (sources.size() <= 1 ||
         (layoutMetric.frame.size.width > 0 &&
          layoutMetric.frame.size.height > 0)) {
-      updateStateIfNeeded();
+      auto priority = ReactNativeFeatureFlags::
+                          enableImageRequestDowngradingForNonVisibleImages()
+          ? getStateData().getImageRequestParams().priority
+          : ImageRequestPriority::Immediate;
+      updateStateIfNeeded(priority);
     }
   }
 }
 
-void ImageShadowNode::updateStateIfNeeded() {
+void ImageShadowNode::updateStateIfNeeded(ImageRequestPriority priority) {
   ensureUnsealed();
 
   const auto& savedState = getStateData();
@@ -71,6 +112,9 @@ void ImageShadowNode::updateStateIfNeeded() {
               layoutMetrics_.frame.size.width * layoutMetrics_.pointScaleFactor,
           .height = layoutMetrics_.frame.size.height *
               layoutMetrics_.pointScaleFactor}
+#else
+      ,
+      priority
 #endif
   );
 
@@ -155,7 +199,12 @@ ImageSource ImageShadowNode::getImageSource() const {
 #pragma mark - LayoutableShadowNode
 
 void ImageShadowNode::layout(LayoutContext layoutContext) {
-  updateStateIfNeeded();
+  auto imageRequestPriority =
+      ReactNativeFeatureFlags::
+          enableImageRequestDowngradingForNonVisibleImages()
+      ? getImageRequestPriority(layoutContext, getLayoutMetrics())
+      : ImageRequestPriority::Immediate;
+  updateStateIfNeeded(imageRequestPriority);
   ConcreteViewShadowNode::layout(layoutContext);
 }
 

@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<f930d8c04c79ad156af580f2818fef24>>
+ * @generated SignedSource<<fa3d35be13801d5991e6bfb2cef2ef43>>
  */
 
 /**
@@ -191,6 +191,12 @@ public object ReactNativeFeatureFlags {
    */
   @JvmStatic
   public fun enableImagePrefetchingAndroid(): Boolean = accessor.enableImagePrefetchingAndroid()
+
+  /**
+   * When enabled, ImageShadowNode downgrades image requests to prefetch priority when layout determines that the image does not intersect the viewport.
+   */
+  @JvmStatic
+  public fun enableImageRequestDowngradingForNonVisibleImages(): Boolean = accessor.enableImageRequestDowngradingForNonVisibleImages()
 
   /**
    * Dispatches state updates for content offset changes synchronously on the main thread.

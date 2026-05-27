@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<135694971d264d19c84eb6aea5fc8425>>
+ * @generated SignedSource<<69c333993720f22c6db80f3aceae32cd>>
  */
 
 /**
@@ -51,6 +51,7 @@ internal class ReactNativeFeatureFlagsLocalAccessor : ReactNativeFeatureFlagsAcc
   private var enableIOSTextBaselineOffsetPerLineCache: Boolean? = null
   private var enableIOSViewClipToPaddingBoxCache: Boolean? = null
   private var enableImagePrefetchingAndroidCache: Boolean? = null
+  private var enableImageRequestDowngradingForNonVisibleImagesCache: Boolean? = null
   private var enableImmediateUpdateModeForContentOffsetChangesCache: Boolean? = null
   private var enableImperativeFocusCache: Boolean? = null
   private var enableInteropViewManagerClassLookUpOptimizationIOSCache: Boolean? = null
@@ -378,6 +379,16 @@ internal class ReactNativeFeatureFlagsLocalAccessor : ReactNativeFeatureFlagsAcc
       cached = currentProvider.enableImagePrefetchingAndroid()
       accessedFeatureFlags.add("enableImagePrefetchingAndroid")
       enableImagePrefetchingAndroidCache = cached
+    }
+    return cached
+  }
+
+  override fun enableImageRequestDowngradingForNonVisibleImages(): Boolean {
+    var cached = enableImageRequestDowngradingForNonVisibleImagesCache
+    if (cached == null) {
+      cached = currentProvider.enableImageRequestDowngradingForNonVisibleImages()
+      accessedFeatureFlags.add("enableImageRequestDowngradingForNonVisibleImages")
+      enableImageRequestDowngradingForNonVisibleImagesCache = cached
     }
     return cached
   }

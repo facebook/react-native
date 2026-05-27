@@ -8,6 +8,7 @@
 #pragma once
 
 #include "FantomImageLoader.h"
+#include "FantomImageManager.h"
 
 #include <react/renderer/mounting/stubs/StubViewTree.h>
 #include <react/renderer/uimanager/IMountingManager.h>
@@ -47,6 +48,7 @@ class TesterMountingManager : public IMountingManager {
   }
 
   std::shared_ptr<FantomImageLoader> imageLoader_;
+  std::shared_ptr<FantomImageManager> imageManager_;
 
   std::shared_ptr<IImageLoader> getImageLoader() noexcept override
   {
