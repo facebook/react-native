@@ -11,10 +11,7 @@
 import type {ColorValue} from '../../StyleSheet/StyleSheet';
 
 import type {EventSubscription} from '../../vendor/emitter/EventEmitter';
-import {
-  getColorScheme,
-  addChangeListener as addColorSchemeChangeListener,
-} from '../../Utilities/Appearance';
+import * as Appearance from '../../Utilities/Appearance';
 import processColor from '../../StyleSheet/processColor';
 import Platform from '../../Utilities/Platform';
 import NativeStatusBarManagerAndroid from './NativeStatusBarManagerAndroid';
@@ -147,7 +144,9 @@ type StackProps = {
  * the current color scheme.
  */
 function getAutoBarStyle(): 'light-content' | 'dark-content' {
-  return getColorScheme() === 'dark' ? 'light-content' : 'dark-content';
+  return Appearance.getColorScheme() === 'dark'
+    ? 'light-content'
+    : 'dark-content';
 }
 
 /**
@@ -444,7 +443,7 @@ class StatusBar extends React.Component<StatusBarProps> {
     if (StatusBar._mountedCount === 0) {
       // Re-run the native update when the system color scheme changes so any
       // `barStyle: 'auto'` entries resolve to the new appropriate value.
-      StatusBar._appearanceSubscription = addColorSchemeChangeListener(() => {
+      StatusBar._appearanceSubscription = Appearance.addChangeListener(() => {
         StatusBar._updatePropsStack();
       });
     }
