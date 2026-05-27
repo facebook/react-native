@@ -156,7 +156,7 @@ export type JSONSerializable =
   | string
   | null
   | ReadonlyArray<JSONSerializable>
-  | {+[string]: JSONSerializable};
+  | {readonly [string]: JSONSerializable};
 
 export type DeepReadOnly<T> =
   T extends ReadonlyArray<infer V>
