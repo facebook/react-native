@@ -16,8 +16,9 @@ cd "$RCT_SCRIPT_RN_DIR"
 CODEGEN_CLI_PATH=""
 
 error () {
-    echo "$1"
-    "[Codegen] $1" >> "${SCRIPT_OUTPUT_FILE_0}" 2>&1
+    message="$*"
+    echo "$message"
+    echo "[Codegen] $message" >> "${SCRIPT_OUTPUT_FILE_0}" 2>&1
     exit 1
 }
 
