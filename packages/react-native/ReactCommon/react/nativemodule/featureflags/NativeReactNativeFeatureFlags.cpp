@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<1b1d76d354f735488f8de5c1d0b83cc6>>
+ * @generated SignedSource<<8621fa2c2c8a2d88b54a3c3767510de3>>
  */
 
 /**
@@ -177,6 +177,11 @@ bool NativeReactNativeFeatureFlags::enableIOSViewClipToPaddingBox(
 bool NativeReactNativeFeatureFlags::enableImagePrefetchingAndroid(
     jsi::Runtime& /*runtime*/) {
   return ReactNativeFeatureFlags::enableImagePrefetchingAndroid();
+}
+
+bool NativeReactNativeFeatureFlags::enableImageRequestDowngradingForNonVisibleImages(
+    jsi::Runtime& /*runtime*/) {
+  return ReactNativeFeatureFlags::enableImageRequestDowngradingForNonVisibleImages();
 }
 
 bool NativeReactNativeFeatureFlags::enableImmediateUpdateModeForContentOffsetChanges(

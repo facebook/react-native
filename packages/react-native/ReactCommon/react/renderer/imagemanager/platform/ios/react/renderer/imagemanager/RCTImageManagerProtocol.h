@@ -12,5 +12,6 @@
 @protocol RCTImageManagerProtocol <NSObject>
 
 - (facebook::react::ImageRequest)requestImage:(facebook::react::ImageSource)imageSource
-                                    surfaceId:(facebook::react::SurfaceId)surfaceId;
+                                    surfaceId:(facebook::react::SurfaceId)surfaceId
+                                     priority:(facebook::react::ImageRequestPriority)priority;
 @end

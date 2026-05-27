@@ -21,7 +21,8 @@ NS_ASSUME_NONNULL_BEGIN
 - (instancetype)initWithImageLoader:(id<RCTImageLoaderWithAttributionProtocol>)imageLoader;
 
 - (facebook::react::ImageRequest)requestImage:(facebook::react::ImageSource)imageSource
-                                    surfaceId:(facebook::react::SurfaceId)surfaceId;
+                                    surfaceId:(facebook::react::SurfaceId)surfaceId
+                                     priority:(facebook::react::ImageRequestPriority)priority;
 
 @end
 

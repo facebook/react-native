@@ -57,7 +57,7 @@ class ImageShadowNode final
 
   std::shared_ptr<ImageManager> imageManager_;
 
-  void updateStateIfNeeded();
+  void updateStateIfNeeded(ImageRequestPriority priority);
 };
 
 } // namespace facebook::react
