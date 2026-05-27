@@ -34,7 +34,9 @@ using namespace facebook::react;
   return self;
 }
 
-- (ImageRequest)requestImage:(ImageSource)imageSource surfaceId:(SurfaceId)surfaceId
+- (ImageRequest)requestImage:(ImageSource)imageSource
+                   surfaceId:(SurfaceId)surfaceId
+                    priority:(ImageRequestPriority)priority
 {
   auto telemetry = std::make_shared<ImageTelemetry>(surfaceId);
   auto sharedCancelationFunction = SharedFunction<>();
@@ -82,7 +84,7 @@ using namespace facebook::react;
                                             scale:imageSource.scale
                                           clipped:YES
                                        resizeMode:RCTResizeModeStretch
-                                         priority:RCTImageLoaderPriorityImmediate
+                                         priority:RCTImageLoaderPriorityFromImageRequestPriority(priority)
                                       attribution:{
                                                       .surfaceId = surfaceId,
   }

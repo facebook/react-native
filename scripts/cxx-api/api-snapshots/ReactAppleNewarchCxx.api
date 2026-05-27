@@ -1198,7 +1198,7 @@ interface RCTImageLoader : public NSObject <RCTBridgeModule, RCTImageLoaderProto
 }
 
 interface RCTImageManager : public NSObject <RCTImageManagerProtocol> {
-  public virtual facebook::react::ImageRequest requestImage:surfaceId:(facebook::react::ImageSource imageSource, facebook::react::SurfaceId surfaceId);
+  public virtual facebook::react::ImageRequest requestImage:surfaceId:priority:(facebook::react::ImageSource imageSource, facebook::react::SurfaceId surfaceId, facebook::react::ImageRequestPriority priority);
   public virtual instancetype initWithImageLoader:(id<RCTImageLoaderWithAttributionProtocol> imageLoader);
 }
 
@@ -1936,7 +1936,7 @@ interface RCTSwitchComponentView : public RCTViewComponentView {
 }
 
 interface RCTSyncImageManager : public NSObject <RCTImageManagerProtocol> {
-  public virtual facebook::react::ImageRequest requestImage:surfaceId:(facebook::react::ImageSource imageSource, facebook::react::SurfaceId surfaceId);
+  public virtual facebook::react::ImageRequest requestImage:surfaceId:priority:(facebook::react::ImageSource imageSource, facebook::react::SurfaceId surfaceId, facebook::react::ImageRequestPriority priority);
   public virtual instancetype initWithImageLoader:(id<RCTImageLoaderWithAttributionProtocol> imageLoader);
 }
 
@@ -2878,7 +2878,7 @@ protocol RCTImageLoaderWithAttributionProtocol : public RCTImageLoaderProtocol, 
 }
 
 protocol RCTImageManagerProtocol : public NSObject {
-  public virtual facebook::react::ImageRequest requestImage:surfaceId:(facebook::react::ImageSource imageSource, facebook::react::SurfaceId surfaceId);
+  public virtual facebook::react::ImageRequest requestImage:surfaceId:priority:(facebook::react::ImageSource imageSource, facebook::react::SurfaceId surfaceId, facebook::react::ImageRequestPriority priority);
 }
 
 protocol RCTImageRedirectProtocol {
@@ -4989,9 +4989,10 @@ class facebook::react::ImageRequest {
 
 class facebook::react::ImageRequestParams {
   public ImageRequestParams();
-  public ImageRequestParams(facebook::react::Float blurRadius);
+  public ImageRequestParams(facebook::react::Float blurRadius, facebook::react::ImageRequestPriority priority = facebook::react::ImageRequestPriority::Immediate);
   public bool operator==(const facebook::react::ImageRequestParams& rhs) const = default;
   public facebook::react::Float blurRadius;
+  public facebook::react::ImageRequestPriority priority;
 }
 
 class facebook::react::ImageResponse {
@@ -8238,6 +8239,11 @@ enum facebook::react::HyphenationFrequency {
   Full,
   None,
   Normal,
+}
+
+enum facebook::react::ImageRequestPriority : int8_t {
+  Immediate,
+  Prefetch,
 }
 
 enum facebook::react::ImageResizeMode : int8_t {
