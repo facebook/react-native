@@ -5,14 +5,42 @@
  * LICENSE file in the root directory of this source tree.
  */
 
-#include <memory>
-
 #include <gtest/gtest.h>
 
-#include <react/renderer/textlayoutmanager/TextLayoutManager.h>
+#include <react/renderer/textlayoutmanager/TextMeasureCache.h>
 
 using namespace facebook::react;
 
-TEST(TextLayoutManagerTest, testSomething) {
-  // TODO:
+TEST(TextLayoutManagerTest, defaultTextAttributesAreLayoutEquivalent) {
+  TextAttributes lhs;
+  TextAttributes rhs;
+
+  EXPECT_TRUE(areTextAttributesEquivalentLayoutWise(lhs, rhs));
+  EXPECT_EQ(
+      textAttributesHashLayoutWise(lhs), textAttributesHashLayoutWise(rhs));
+}
+
+TEST(TextLayoutManagerTest, maxFontSizeMultiplierAffectsLayoutCacheEquality) {
+  TextAttributes lhs;
+  TextAttributes rhs;
+
+  lhs.fontSize = rhs.fontSize = 16;
+  lhs.fontSizeMultiplier = rhs.fontSizeMultiplier = 2;
+  lhs.maxFontSizeMultiplier = 1;
+  rhs.maxFontSizeMultiplier = 2;
+
+  EXPECT_FALSE(areTextAttributesEquivalentLayoutWise(lhs, rhs));
+}
+
+TEST(TextLayoutManagerTest, maxFontSizeMultiplierAffectsLayoutCacheHash) {
+  TextAttributes lhs;
+  TextAttributes rhs;
+
+  lhs.fontSize = rhs.fontSize = 16;
+  lhs.fontSizeMultiplier = rhs.fontSizeMultiplier = 2;
+  lhs.maxFontSizeMultiplier = 1;
+  rhs.maxFontSizeMultiplier = 2;
+
+  EXPECT_NE(
+      textAttributesHashLayoutWise(lhs), textAttributesHashLayoutWise(rhs));
 }
