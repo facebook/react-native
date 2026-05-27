@@ -1,0 +1,94 @@
+name: build-npm-package
+description: This action builds the NPM package and uploads it to Maven
+inputs:
+  release-type:
+    required: true
+    description: The type of release we are building. It could be nightly, release or dry-run
+  gha-npm-token:
+    required: false
+    description: The GHA npm token, required only to publish to npm
+    default: ''
+  gradle-cache-encryption-key:
+    description: The encryption key needed to store the Gradle Configuration cache
+  skip-apple-prebuilts:
+    description: When true, skip downloading prebuilt Apple artifacts (use when Apple prebuild jobs were skipped)
+    required: false
+    default: 'false'
+
+runs:
+  using: composite
+  steps:
+    - name: Setup git safe folders
+      shell: bash
+      run: git config --global --add safe.directory '*'
+    - name: Download ReactNativeDependencies
+      if: ${{ inputs.skip-apple-prebuilts != 'true' }}
+      uses: actions/download-artifact@v7
+      with:
+        pattern: ReactNativeDependencies*
+        path: ./packages/react-native/ReactAndroid/external-artifacts/artifacts
+        merge-multiple: true
+    - name: Download ReactCore artifacts
+      if: ${{ inputs.skip-apple-prebuilts != 'true' }}
+      uses: actions/download-artifact@v7
+      with:
+        pattern: ReactCore*
+        path: ./packages/react-native/ReactAndroid/external-artifacts/artifacts
+        merge-multiple: true
+    - name: Print Artifacts Directory
+      if: ${{ inputs.skip-apple-prebuilts != 'true' }}
+      shell: bash
+      run: ls -lR ./packages/react-native/ReactAndroid/external-artifacts/artifacts/
+    - name: Setup gradle
+      uses: ./.github/actions/setup-gradle
+      with:
+        cache-encryption-key: ${{ inputs.gradle-cache-encryption-key }}
+    - name: Setup node.js
+      uses: ./.github/actions/setup-node
+    - name: Install dependencies
+      uses: ./.github/actions/yarn-install
+    - name: Build packages
+      shell: bash
+      run: yarn build
+    - name: Build types
+      shell: bash
+      run: yarn build-types --skip-snapshot
+    # Continue with publish steps
+    - name: Set npm credentials
+      if: ${{ inputs.release-type == 'release' ||
+        inputs.release-type == 'nightly' }}
+      shell: bash
+      run: echo "//registry.npmjs.org/:_authToken=${{ inputs.gha-npm-token }}" > ~/.npmrc
+    - name: Publish NPM
+      shell: bash
+      run: |
+        echo "GRADLE_OPTS = $GRADLE_OPTS"
+        # We can't have a separate step because each command is executed in a separate shell
+        # so variables exported in a command are not visible in another.
+        if [[ "${{ inputs.release-type }}" == "dry-run" ]]; then
+          export ORG_GRADLE_PROJECT_reactNativeArchitectures="arm64-v8a"
+        else
+          export ORG_GRADLE_PROJECT_reactNativeArchitectures="armeabi-v7a,arm64-v8a,x86,x86_64"
+        fi
+        node ./scripts/releases-ci/publish-npm.js -t ${{ inputs.release-type }}
+    - name: Upload npm logs
+      uses: actions/upload-artifact@v6
+      with:
+        name: npm-logs
+        path: ~/.npm/_logs
+    - name: Build release package as a job artifact
+      if: ${{ inputs.release-type == 'dry-run' }}
+      shell: bash
+      run: |
+        mkdir -p build
+
+        FILENAME=$(cd packages/react-native; npm pack | tail -1)
+        mv "packages/react-native/$FILENAME" build/
+
+        echo "$FILENAME" > build/react-native-package-version
+    - name: Upload release package
+      uses: actions/upload-artifact@v6
+      if: ${{ inputs.release-type == 'dry-run' }}
+      with:
+        name: react-native-package
+        path: build

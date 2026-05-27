@@ -1,0 +1,50 @@
+name: Create Draft Release
+
+on:
+  workflow_call:
+    inputs:
+      hermesVersion:
+        required: false
+        type: string
+        description: The version of Hermes to use for this release (eg. 250829098.0.2). If not specified, it will read HERMES_VERSION_NAME from version.properties
+
+jobs:
+  create-draft-release:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v6
+        with:
+          token: ${{ secrets.REACT_NATIVE_BOT_GITHUB_TOKEN }}
+          fetch-depth: 0
+          fetch-tags: true
+      - name: Install dependencies
+        uses: ./.github/actions/yarn-install
+      - name: Configure Git
+        shell: bash
+        run: |
+          git config --local user.email "bot@reactnative.dev"
+          git config --local user.name "React Native Bot"
+      - name: Create draft release
+        uses: actions/github-script@v8
+        id: create-draft-release
+        with:
+          script: |
+            const {createDraftRelease} = require('./.github/workflow-scripts/createDraftRelease.js');
+            const version = '${{ github.ref_name }}';
+            const {isLatest} = require('./.github/workflow-scripts/publishTemplate.js');
+            return (await createDraftRelease(version, isLatest(), '${{secrets.REACT_NATIVE_BOT_GITHUB_TOKEN}}', '${{ inputs.hermesVersion }}')).id;
+          result-encoding: string
+      - name: Upload release assets for DotSlash
+        uses: actions/github-script@v8
+        env:
+          RELEASE_ID: ${{ steps.create-draft-release.outputs.result }}
+        with:
+          script: |
+            const {uploadReleaseAssetsForDotSlashFiles} = require('./scripts/releases/upload-release-assets-for-dotslash.js');
+            const version = '${{ github.ref_name }}';
+            await uploadReleaseAssetsForDotSlashFiles({
+              version,
+              token: '${{secrets.REACT_NATIVE_BOT_GITHUB_TOKEN}}',
+              releaseId: process.env.RELEASE_ID,
+            });

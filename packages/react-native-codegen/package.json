@@ -1,0 +1,57 @@
+{
+  "name": "@react-native/codegen",
+  "version": "0.87.0-main",
+  "description": "Code generation tools for React Native",
+  "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/facebook/react-native.git",
+    "directory": "packages/react-native-codegen"
+  },
+  "homepage": "https://github.com/facebook/react-native/tree/HEAD/packages/react-native-codegen#readme",
+  "keywords": [
+    "code",
+    "generation",
+    "codegen",
+    "tools",
+    "react-native"
+  ],
+  "bugs": "https://github.com/facebook/react-native/issues",
+  "engines": {
+    "node": "^22.13.0 || ^24.3.0 || >= 26.0.0"
+  },
+  "scripts": {
+    "build": "yarn clean && node scripts/build.js --verbose",
+    "clean": "rimraf lib",
+    "prepare": "yarn run build"
+  },
+  "files": [
+    "lib"
+  ],
+  "dependencies": {
+    "@babel/core": "^7.25.2",
+    "@babel/parser": "^7.29.0",
+    "hermes-parser": "0.36.1",
+    "invariant": "^2.2.4",
+    "nullthrows": "^1.1.1",
+    "tinyglobby": "^0.2.15",
+    "yargs": "^17.6.2"
+  },
+  "devDependencies": {
+    "@babel/core": "^7.25.2",
+    "@babel/plugin-syntax-dynamic-import": "^7.8.3",
+    "@babel/plugin-transform-class-properties": "^7.25.4",
+    "@babel/plugin-transform-flow-strip-types": "^7.25.2",
+    "@babel/plugin-transform-nullish-coalescing-operator": "^7.24.7",
+    "@babel/plugin-transform-optional-chaining": "^7.24.8",
+    "@babel/preset-env": "^7.25.3",
+    "babel-plugin-syntax-hermes-parser": "0.36.1",
+    "hermes-estree": "0.36.1",
+    "micromatch": "^4.0.4",
+    "prettier": "3.6.2",
+    "rimraf": "^3.0.2"
+  },
+  "peerDependencies": {
+    "@babel/core": "*"
+  }
+}

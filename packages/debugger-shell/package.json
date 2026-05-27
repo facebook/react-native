@@ -1,0 +1,58 @@
+{
+  "name": "@react-native/debugger-shell",
+  "productName": "React Native DevTools",
+  "version": "0.87.0-main",
+  "description": "Experimental debugger shell for React Native for use with @react-native/debugger-frontend",
+  "keywords": [
+    "react-native",
+    "tools"
+  ],
+  "homepage": "https://github.com/facebook/react-native/tree/HEAD/packages/debugger-shell#readme",
+  "bugs": "https://github.com/facebook/react-native/issues",
+  "main": "./src/index.js",
+  "exports": {
+    ".": {
+      "node": "./src/node/index.js",
+      "electron": "./src/electron/index.js"
+    },
+    "./package.json": "./package.json"
+  },
+  "publishConfig": {
+    "main": "./dist/index.js",
+    "exports": {
+      ".": {
+        "node": "./dist/node/index.js",
+        "electron": "./dist/electron/index.js"
+      },
+      "./package.json": "./package.json"
+    }
+  },
+  "scripts": {
+    "dev": "electron src/electron",
+    "prepack": "node ../../scripts/build/prepack.js"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/facebook/react-native.git",
+    "directory": "packages/debugger-shell"
+  },
+  "license": "MIT",
+  "engines": {
+    "node": "^22.13.0 || ^24.3.0 || >= 26.0.0"
+  },
+  "dependencies": {
+    "cross-spawn": "^7.0.6",
+    "debug": "^4.4.0",
+    "fb-dotslash": "0.5.8"
+  },
+  "devDependencies": {
+    "electron": "39.0.0",
+    "semver": "^7.1.3"
+  },
+  "files": [
+    "!**/__tests__/**",
+    "bin",
+    "dist",
+    "!src/electron"
+  ]
+}

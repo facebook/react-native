@@ -1,0 +1,31 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- See fburl.com/140690840 for information about i18n on Android -->
+<!-- @generated -->
+<!-- FB Locale: sq_AL -->
+<resources exclude-from-buck-resource-map="true">
+    <string name="link_description" gender="unknown">Lidhja</string>
+    <string name="image_description" gender="unknown">Imazh</string>
+    <string name="imagebutton_description" gender="unknown">Buton, imazh</string>
+    <string name="header_description" gender="unknown">Titull</string>
+    <string name="alert_description" gender="unknown">Sinjalizim</string>
+    <string name="combobox_description" gender="unknown">Kuti kombinimi</string>
+    <string name="menu_description" gender="unknown">Meny</string>
+    <string name="menubar_description" gender="unknown">Shiriti i menysë</string>
+    <string name="menuitem_description" gender="unknown">Artikull i menysë</string>
+    <string name="progressbar_description" gender="unknown">Shiriti i Progresit</string>
+    <string name="radiogroup_description" gender="unknown">Grupi i Radios</string>
+    <string name="scrollbar_description" gender="unknown">Shiriti i lëvizjes</string>
+    <string name="spinbutton_description" gender="unknown">Butoni i rrotullimit</string>
+    <string name="rn_tab_description" gender="unknown">Skedë</string>
+    <string name="tablist_description" gender="unknown">Lista e skedave</string>
+    <string name="timer_description" gender="unknown">Kohëmatësi</string>
+    <string name="toolbar_description" gender="unknown">Shiriti i mjeteve</string>
+    <string name="summary_description" gender="unknown">Përmbledhja</string>
+    <string name="state_busy_description" gender="unknown">I zënë</string>
+    <string name="state_expanded_description" gender="unknown">zgjeruar</string>
+    <string name="state_collapsed_description" gender="unknown">palosur</string>
+    <string name="state_unselected_description" gender="unknown">i pazgjedhur</string>
+    <string name="state_on_description" gender="unknown">aktive</string>
+    <string name="state_off_description" gender="unknown">joaktiv</string>
+    <string name="state_mixed_description" gender="unknown">përzier</string>
+</resources>

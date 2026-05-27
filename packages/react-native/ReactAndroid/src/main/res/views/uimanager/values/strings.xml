@@ -1,0 +1,103 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+  <string
+    name="link_description"
+    description="provides an interactive reference to a resource"
+    >Link</string>
+  <string
+    name="image_description"
+    description="images, code snippets, text, emojis, or other content that can be combined to deliver information in a visual manner"
+    >Image</string>
+  <string
+    name="imagebutton_description"
+    description="Displays a button with an image (instead of text) that can be pressed or clicked by the user"
+    >Button, Image</string>
+  <string
+    name="header_description"
+    description="heading to a page or section"
+    >Heading</string>
+  <string
+    name="alert_description"
+    description="important, and usually time-sensitive, information"
+    >Alert</string>
+  <string
+    name="combobox_description"
+    description="input that controls another element that can pop up to help the user set the value of that input"
+    >Combo Box</string>
+  <string
+    name="menu_description"
+    description="offers a list of choices to the user"
+    >Menu</string>
+  <string
+    name="menubar_description"
+    description="presentation of menu that usually remains visible and is usually presented horizontally"
+    >Menu Bar</string>
+  <string
+    name="menuitem_description"
+    description="an option in a set of choices contained by a menu or menubar"
+    >Menu Item</string>
+  <string
+    name="progressbar_description"
+    description="displays the progress status for tasks that take a long time"
+    >Progress Bar</string>
+  <string
+    name="radiogroup_description"
+    description="a group of radio buttons"
+    >Radio Group</string>
+  <string
+    name="scrollbar_description"
+    description="controls the scrolling of content within a viewing area"
+    >Scroll Bar</string>
+  <string
+    name="spinbutton_description"
+    description="defines a type of range that expects the user to select a value from among discrete choices"
+    >Spin Button</string>
+  <string
+    name="rn_tab_description"
+    description="an interactive element inside a tablist"
+    >Tab</string>
+  <string
+    name="tablist_description"
+    description="container for a set of tabs"
+    >Tab List</string>
+  <string
+    name="timer_description"
+    description="a numerical counter listing the amount of elapsed time from a starting point or the remaining time until an end point"
+    >Timer</string>
+  <string
+    name="toolbar_description"
+    description="a collection of commonly used function buttons or controls represented in a compact visual form"
+    >Tool Bar</string>
+  <string
+    name="summary_description"
+    description="provides a summary of current conditions, settings, or state, such as the current temperature in the Weather app"
+    >Summary</string>
+  <string
+    name="state_busy_description"
+    description="an element currently being updated or modified"
+    >busy</string>
+  <string
+    name="state_expanded_description"
+    description="a menu, dialog, accordian panel, or other widget which is expanded"
+    >expanded</string>
+  <string
+    name="state_collapsed_description"
+    description="a menu, dialog, accordian panel, or other widget which is collapsed"
+    >collapsed</string>
+  <string
+    name="state_unselected_description"
+    description="used to indicate which elements within single-selection and multiple-selection composite widgets are not selected"
+    >unselected</string>
+  <string
+    name="state_on_description"
+    description="a switch in its enabled state"
+    >on</string>
+  <string
+    name="state_off_description"
+    description="a switch in its disabled state"
+    >off</string>
+  <string
+    name="state_mixed_description"
+    description="a checkbox, radio button, or other widget which is both checked and unchecked"
+    >mixed</string>
+</resources>

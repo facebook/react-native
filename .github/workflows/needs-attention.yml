@@ -1,0 +1,28 @@
+name: Issue Needs Attention
+# This workflow is triggered on issue comments.
+on:
+  issue_comment:
+    types: [created]
+
+permissions:
+  contents: read
+
+jobs:
+  applyNeedsAttentionLabel:
+    permissions:
+      contents: read # for actions/checkout to fetch code
+      issues: write # for react-native-community/needs-attention to label issues
+    name: Apply Needs Attention Label
+    runs-on: ubuntu-latest
+    if: github.repository == 'facebook/react-native'
+    steps:
+      - uses: actions/checkout@v6
+      - name: Apply Needs Attention Label
+        uses: react-native-community/needs-attention@v2.0.0
+        with:
+          repo-token: ${{ secrets.GITHUB_TOKEN }}
+          response-required-label: "Needs: Author Feedback"
+          needs-attention-label: "Needs: Attention"
+        id: needs-attention
+      - name: Result
+        run: echo '${{ steps.needs-attention.outputs.result }}'

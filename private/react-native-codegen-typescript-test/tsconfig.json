@@ -1,0 +1,21 @@
+{
+  "compilerOptions": {
+    "lib": [
+      "es6"
+    ],
+    "module": "node16",
+    "moduleResolution": "node16",
+    "target": "es2015",
+    "types": ["jest", "node"],
+    "declaration": false,
+    "sourceMap": false,
+    "outDir": "./lib",
+    "noEmitOnError": true,
+    "noUnusedLocals": true,
+    "strictNullChecks": true,
+  },
+  "exclude": [
+    "node_modules",
+    "lib"
+  ]
+}

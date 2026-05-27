@@ -1,0 +1,54 @@
+/*
+ * Copyright (c) Meta Platforms, Inc. and affiliates.
+ *
+ * This source code is licensed under the MIT license found in the
+ * LICENSE file in the root directory of this source tree.
+ */
+
+#include "DynamicEventPayload.h"
+
+#include <jsi/JSIDynamic.h>
+#include <react/renderer/core/DynamicPointerEvent.h>
+
+namespace facebook::react {
+
+DynamicEventPayload::DynamicEventPayload(folly::dynamic&& payload)
+    : payload_(std::move(payload)) {}
+
+/* static */ SharedEventPayload DynamicEventPayload::create(
+    folly::dynamic&& payload) {
+  if (payload.find("pointerId") != payload.items().end()) {
+    return std::make_shared<DynamicPointerEvent>(std::move(payload));
+  } else {
+    return std::make_shared<DynamicEventPayload>(std::move(payload));
+  }
+}
+
+jsi::Value DynamicEventPayload::asJSIValue(jsi::Runtime& runtime) const {
+  return jsi::valueFromDynamic(runtime, payload_);
+}
+
+EventPayloadType DynamicEventPayload::getType() const {
+  return EventPayloadType::ValueFactory;
+}
+
+std::optional<double> DynamicEventPayload::extractValue(
+    const std::vector<std::string>& path) const {
+  auto dynamic = payload_;
+  for (auto& key : path) {
+    auto type = dynamic.type();
+    if (type == folly::dynamic::Type::OBJECT && !dynamic.empty()) {
+      dynamic = folly::dynamic(dynamic[key]);
+    } else if (type == folly::dynamic::Type::ARRAY && !dynamic.empty()) {
+      dynamic = folly::dynamic(dynamic[std::stoi(key)]);
+    }
+  }
+  if (dynamic.type() == folly::dynamic::Type::DOUBLE) {
+    return dynamic.asDouble();
+  } else if (dynamic.type() == folly::dynamic::Type::INT64) {
+    return static_cast<double>(dynamic.asInt());
+  }
+  return std::nullopt;
+}
+
+} // namespace facebook::react

@@ -1,0 +1,27 @@
+/**
+ * Copyright (c) Meta Platforms, Inc. and affiliates.
+ *
+ * This source code is licensed under the MIT license found in the
+ * LICENSE file in the root directory of this source tree.
+ *
+ * @flow strict-local
+ * @format
+ */
+
+import type {ImageType} from './ImageTypes.flow';
+
+export type {
+  ImageProgressEventIOS,
+  ImagePropsIOS,
+  ImagePropsAndroid,
+  ImageSourcePropType,
+  ImageLoadEvent,
+  ImageErrorEvent,
+  ImagePropsBase,
+  ImageProps,
+  ImageBackgroundProps,
+} from './ImageProps';
+
+export type {ImageResolvedAssetSource, ImageSize} from './ImageTypes.flow';
+
+declare export default ImageType;

@@ -1,0 +1,33 @@
+{
+  "name": "@react-native/js-polyfills",
+  "version": "0.87.0-main",
+  "description": "Polyfills for React Native.",
+  "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/facebook/react-native.git",
+    "directory": "packages/polyfills"
+  },
+  "homepage": "https://github.com/facebook/react-native/tree/HEAD/packages/polyfills#readme",
+  "keywords": [
+    "polyfill",
+    "polyfills",
+    "js",
+    "js-polyfills",
+    "react-native"
+  ],
+  "bugs": "https://github.com/facebook/react-native/issues",
+  "engines": {
+    "node": "^22.13.0 || ^24.3.0 || >= 26.0.0"
+  },
+  "files": [
+    "console.js",
+    "error-guard.js",
+    "index.js",
+    "README.md",
+    "!**/__docs__/**",
+    "!**/__fixtures__/**",
+    "!**/__mocks__/**",
+    "!**/__tests__/**"
+  ]
+}
