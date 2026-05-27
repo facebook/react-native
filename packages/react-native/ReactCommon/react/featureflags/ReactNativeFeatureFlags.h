@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<5ff6ec567d516d966cb2fadfc5cc93b3>>
+ * @generated SignedSource<<dcb1e3ba662f28194124dc63879f4fde>>
  */
 
 /**
@@ -213,11 +213,6 @@ class ReactNativeFeatureFlags {
    * When enabled, LayoutAnimations API will animate state changes on iOS.
    */
   RN_EXPORT static bool enableLayoutAnimationsOnIOS();
-
-  /**
-   * Make RCTUnsafeExecuteOnMainQueueSync less likely to deadlock, when used in conjuction with sync rendering/events.
-   */
-  RN_EXPORT static bool enableMainQueueCoordinatorOnIOS();
 
   /**
    * Enable NSNull conversion when handling module arguments on iOS
