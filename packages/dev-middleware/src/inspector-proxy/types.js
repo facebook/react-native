@@ -162,5 +162,5 @@ export type DeepReadOnly<T> =
   T extends ReadonlyArray<infer V>
     ? ReadonlyArray<DeepReadOnly<V>>
     : T extends {...}
-      ? {+[K in keyof T]: DeepReadOnly<T[K]>}
+      ? {readonly [K in keyof T]: DeepReadOnly<T[K]>}
       : T;
