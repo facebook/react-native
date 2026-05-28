@@ -77,15 +77,13 @@ class ReactTextViewAccessibilityDelegateTest {
   }
 
   @Test
-  fun reactTextViewAccessibilityNodeText_preservesMixedClickableAndUrlSpans() {
+  fun reactTextViewAccessibilityNodeText_preservesMixedClickableAndVisualSpans() {
     val clickableSpan =
         object : ClickableSpan() {
           override fun onClick(widget: View) = Unit
         }
-    val urlSpan = URLSpan("https://reactnative.dev")
     val text = createStyledText("Read docs now")
     text.setSpan(clickableSpan, 5, 9, Spanned.SPAN_EXCLUSIVE_EXCLUSIVE)
-    text.setSpan(urlSpan, 0, 4, Spanned.SPAN_INCLUSIVE_EXCLUSIVE)
     val textView = createReactTextView(text)
 
     val nodeInfo = createNodeInfo(textView)
@@ -96,11 +94,25 @@ class ReactTextViewAccessibilityDelegateTest {
     assertThat(nodeInfo.text.toString()).isEqualTo("Read docs now")
     assertAccessibilityTextDoesNotHaveVisualSpans(accessibilityText)
     assertPreservedSpanMatchesSource(sourceText, accessibilityText, clickableSpan)
-    assertPreservedSpanMatchesSource(sourceText, accessibilityText, urlSpan)
   }
 
   @Test
-  fun preparedLayoutTextViewAccessibilityNodeText_stripsStyleSpansAndPreservesClickableSpan() {
+  fun reactTextViewAccessibilityNodeText_preservesUrlSpanSemantics() {
+    val urlSpan = URLSpan("https://reactnative.dev")
+    val text = createStyledText("React Native")
+    text.setSpan(urlSpan, 0, 5, Spanned.SPAN_INCLUSIVE_EXCLUSIVE)
+    val textView = createReactTextView(text)
+
+    val nodeInfo = createNodeInfo(textView)
+    val accessibilityText = nodeInfo.text as Spanned
+
+    assertThat(nodeInfo.text.toString()).isEqualTo("React Native")
+    assertAccessibilityTextDoesNotHaveVisualSpans(accessibilityText)
+    assertAccessibilityTextHasClickableSpan(accessibilityText, 0, 5, Spanned.SPAN_INCLUSIVE_EXCLUSIVE)
+  }
+
+  @Test
+  fun preparedLayoutTextViewAccessibilityNodeText_keepsOnlyClickableSpans() {
     val text = createStyledText("Prepared text")
     val clickableSpan =
         object : ClickableSpan() {
@@ -132,6 +144,37 @@ class ReactTextViewAccessibilityDelegateTest {
     val accessibilityText = nodeInfo.text as Spanned
     assertAccessibilityTextDoesNotHaveVisualSpans(accessibilityText)
     assertPreservedSpanMatchesSource(textView.text as Spanned, accessibilityText, clickableSpan)
+  }
+
+  @Test
+  fun reactTextViewAccessibilityNodeText_trimsLongTextWithoutSplittingSurrogatePairs() {
+    val crossingBoundarySpan =
+        object : ClickableSpan() {
+          override fun onClick(widget: View) = Unit
+        }
+    val outsideRetainedTextSpan =
+        object : ClickableSpan() {
+          override fun onClick(widget: View) = Unit
+        }
+    val text = SpannableString("${"a".repeat(99_999)}\uD83D\uDE00b")
+    text.setSpan(crossingBoundarySpan, 99_998, 100_001, Spanned.SPAN_EXCLUSIVE_EXCLUSIVE)
+    text.setSpan(outsideRetainedTextSpan, 100_001, 100_002, Spanned.SPAN_EXCLUSIVE_EXCLUSIVE)
+    val textView = createReactTextView(text)
+
+    val nodeInfo = createNodeInfo(textView)
+    val accessibilityText = nodeInfo.text as Spanned
+
+    assertThat(nodeInfo.text.length).isEqualTo(99_999)
+    assertThat(nodeInfo.text.toString()).doesNotEndWith("\uD83D")
+    assertPreservedSpanMatchesRange(
+        accessibilityText,
+        crossingBoundarySpan,
+        99_998,
+        99_999,
+        Spanned.SPAN_EXCLUSIVE_EXCLUSIVE,
+    )
+    assertThat(accessibilityText.getSpans(0, accessibilityText.length, ClickableSpan::class.java))
+        .doesNotContain(outsideRetainedTextSpan)
   }
 
   private fun createReactTextViewWithStyledText(text: String): ReactTextView {
@@ -195,17 +238,44 @@ class ReactTextViewAccessibilityDelegateTest {
       accessibilityText: Spanned,
       sourceSpan: Any,
   ) {
+    assertPreservedSpanMatchesRange(
+        accessibilityText,
+        sourceSpan,
+        sourceText.getSpanStart(sourceSpan),
+        sourceText.getSpanEnd(sourceSpan),
+        sourceText.getSpanFlags(sourceSpan),
+    )
+  }
+
+  private fun assertPreservedSpanMatchesRange(
+      accessibilityText: Spanned,
+      sourceSpan: Any,
+      start: Int,
+      end: Int,
+      flags: Int,
+  ) {
     val preservedSpans =
         accessibilityText
-            .getSpans(
-                sourceText.getSpanStart(sourceSpan),
-                sourceText.getSpanEnd(sourceSpan),
-                sourceSpan.javaClass,
-            )
-            .filter { accessibilityText.getSpanStart(it) == sourceText.getSpanStart(sourceSpan) }
-            .filter { accessibilityText.getSpanEnd(it) == sourceText.getSpanEnd(sourceSpan) }
-            .filter { accessibilityText.getSpanFlags(it) == sourceText.getSpanFlags(sourceSpan) }
-
+            .getSpans(start, end, sourceSpan.javaClass)
+            .filter { accessibilityText.getSpanStart(it) == start }
+            .filter { accessibilityText.getSpanEnd(it) == end }
+            .filter { accessibilityText.getSpanFlags(it) == flags }
     assertThat(preservedSpans).isNotEmpty()
+  }
+
+  private fun assertAccessibilityTextHasClickableSpan(
+      accessibilityText: Spanned,
+      start: Int,
+      end: Int,
+      flags: Int,
+  ) {
+    val clickableSpans =
+        accessibilityText
+            .getSpans(start, end, ClickableSpan::class.java)
+            .filter { accessibilityText.getSpanStart(it) == start }
+            .filter { accessibilityText.getSpanEnd(it) == end }
+            .filter { accessibilityText.getSpanFlags(it) == flags }
+
+    assertThat(clickableSpans).isNotEmpty()
   }
 }

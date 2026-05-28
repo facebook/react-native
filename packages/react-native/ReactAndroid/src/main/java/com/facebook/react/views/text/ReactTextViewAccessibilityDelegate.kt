@@ -12,14 +12,7 @@ import android.os.Bundle
 import android.text.Layout
 import android.text.SpannableString
 import android.text.Spanned
-import android.text.style.AbsoluteSizeSpan
-import android.text.style.BackgroundColorSpan
 import android.text.style.ClickableSpan
-import android.text.style.ForegroundColorSpan
-import android.text.style.StrikethroughSpan
-import android.text.style.StyleSpan
-import android.text.style.URLSpan
-import android.text.style.UnderlineSpan
 import android.view.View
 import android.widget.TextView
 import androidx.core.view.ViewCompat
@@ -28,18 +21,7 @@ import androidx.core.view.accessibility.AccessibilityNodeProviderCompat
 import com.facebook.react.R
 import com.facebook.react.common.annotations.UnstableReactNativeAPI
 import com.facebook.react.uimanager.ReactAccessibilityDelegate
-import com.facebook.react.views.text.internal.span.CustomLetterSpacingSpan
-import com.facebook.react.views.text.internal.span.CustomLineHeightSpan
-import com.facebook.react.views.text.internal.span.CustomStyleSpan
-import com.facebook.react.views.text.internal.span.ReactAbsoluteSizeSpan
-import com.facebook.react.views.text.internal.span.ReactBackgroundColorSpan
 import com.facebook.react.views.text.internal.span.ReactClickableSpan
-import com.facebook.react.views.text.internal.span.ReactForegroundColorSpan
-import com.facebook.react.views.text.internal.span.ReactLinkSpan
-import com.facebook.react.views.text.internal.span.ReactOpacitySpan
-import com.facebook.react.views.text.internal.span.ReactStrikethroughSpan
-import com.facebook.react.views.text.internal.span.ReactUnderlineSpan
-import com.facebook.react.views.text.internal.span.ShadowStyleSpan
 
 @OptIn(UnstableReactNativeAPI::class)
 internal class ReactTextViewAccessibilityDelegate(
@@ -208,7 +190,7 @@ internal class ReactTextViewAccessibilityDelegate(
     // PreparedLayoutTextView isn't actually a TextView, so we need to teach it about its text that
     // it is holding so TalkBack knows what to announce when focusing it.
     val accessibilityText = if (host is PreparedLayoutTextView) host.text else info.text
-    info.text = accessibilityText.toAccessibilityTextWithoutVisualSpans()
+    info.text = accessibilityText.toAccessibilityTextWithClickableSpans()
   }
 
   @Suppress("DEPRECATION")
@@ -383,42 +365,52 @@ private fun isWholeTextSingleLink(text: Spanned, spans: Array<ClickableSpan>): B
   return start == 0 && end == text.length
 }
 
-private fun CharSequence?.toAccessibilityTextWithoutVisualSpans(): CharSequence? {
-  if (this !is Spanned) {
-    return this
+private const val PARCEL_SAFE_TEXT_LENGTH = 100_000
+
+private fun CharSequence?.toAccessibilityTextWithClickableSpans(): CharSequence? {
+  if (this == null) {
+    return null
   }
 
-  return SpannableString(this).apply {
-    getSpans(0, length, Any::class.java)
-        .filter { isVisualSpanForAccessibility(it) }
-        .forEach { removeSpan(it) }
+  val trimmedText = toString().trimToParcelableSize()
+  if (this !is Spanned) {
+    return trimmedText
+  }
+
+  val retainedLength = trimmedText.length
+  val clickableSpans =
+      getSpans(0, length, ClickableSpan::class.java).filter { span ->
+        val start = getSpanStart(span)
+        val end = getSpanEnd(span)
+        start >= 0 && end >= 0 && start != end && start < retainedLength && end > 0
+      }
+
+  if (clickableSpans.isEmpty()) {
+    return trimmedText
+  }
+
+  val sourceText = this
+  return SpannableString(trimmedText).apply {
+    for (span in clickableSpans) {
+      val start = sourceText.getSpanStart(span).coerceAtLeast(0)
+      val end = sourceText.getSpanEnd(span).coerceAtMost(retainedLength)
+      if (start < end) {
+        setSpan(span, start, end, sourceText.getSpanFlags(span))
+      }
+    }
   }
 }
 
-private fun isVisualSpanForAccessibility(span: Any): Boolean {
-  if (
-      span is URLSpan ||
-          span is ReactClickableSpan ||
-          span is ReactLinkSpan ||
-          span is ClickableSpan
-  ) {
-    return false
+private fun String.trimToParcelableSize(): String {
+  if (length <= PARCEL_SAFE_TEXT_LENGTH) {
+    return this
   }
 
-  return span is ReactAbsoluteSizeSpan ||
-      span is ReactForegroundColorSpan ||
-      span is ReactBackgroundColorSpan ||
-      span is CustomStyleSpan ||
-      span is CustomLetterSpacingSpan ||
-      span is CustomLineHeightSpan ||
-      span is ReactOpacitySpan ||
-      span is ShadowStyleSpan ||
-      span is ReactUnderlineSpan ||
-      span is ReactStrikethroughSpan ||
-      span is AbsoluteSizeSpan ||
-      span is ForegroundColorSpan ||
-      span is BackgroundColorSpan ||
-      span is StyleSpan ||
-      span is UnderlineSpan ||
-      span is StrikethroughSpan
+  val end =
+      if (Character.isHighSurrogate(this[PARCEL_SAFE_TEXT_LENGTH - 1])) {
+        PARCEL_SAFE_TEXT_LENGTH - 1
+      } else {
+        PARCEL_SAFE_TEXT_LENGTH
+      }
+  return substring(0, end)
 }
