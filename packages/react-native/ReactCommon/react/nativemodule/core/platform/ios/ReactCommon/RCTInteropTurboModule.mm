@@ -361,7 +361,8 @@ void ObjCInteropTurboModule::setInvocationArg(
     const jsi::Value &jsiArg,
     size_t index,
     NSInvocation *inv,
-    NSMutableArray *retainedObjectsForInvocation)
+    NSMutableArray *retainedObjectsForInvocation,
+		BOOL isSync)
 {
   NSString *methodName = @(methodNameCStr);
   std::string methodJsSignature = name_ + "." + methodNameCStr + "()";
@@ -373,7 +374,7 @@ void ObjCInteropTurboModule::setInvocationArg(
   SEL selector = selectorForType(argumentType);
 
   if ([RCTConvert respondsToSelector:selector]) {
-    id objCArg = TurboModuleConvertUtils::convertJSIValueToObjCObject(runtime, jsiArg, jsInvoker_, YES);
+    id objCArg = TurboModuleConvertUtils::convertJSIValueToObjCObject(runtime, jsiArg, jsInvoker_, YES, isSync);
 
     if (objCArgType == @encode(char)) {
       char arg = RCTConvertTo<char>(selector, objCArg);
@@ -582,7 +583,7 @@ void ObjCInteropTurboModule::setInvocationArg(
           runtime, errorPrefix + "JavaScript argument must be a plain object. Got " + getType(runtime, jsiArg));
     }
 
-    id arg = TurboModuleConvertUtils::convertJSIValueToObjCObject(runtime, jsiArg, jsInvoker_, YES);
+    id arg = TurboModuleConvertUtils::convertJSIValueToObjCObject(runtime, jsiArg, jsInvoker_, YES, isSync);
 
     RCTManagedPointer *(*convert)(id, SEL, id) = (__typeof__(convert))objc_msgSend;
     RCTManagedPointer *box = convert([RCTCxxConvert class], selector, arg);
