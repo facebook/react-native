@@ -22,6 +22,8 @@ try {
     require('@react-native/codegen/src/parsers/typescript/parser').TypeScriptParser;
   RNCodegen = require('@react-native/codegen/src/generators/RNCodegen');
 } catch (e) {
+  console.error('Failed to load codegen from source:', e.message);
+
   // Fallback to lib when source doesn't exit (e.g. when installed as a dev dependency)
   FlowParser =
     // $FlowFixMe[cannot-resolve-module]
