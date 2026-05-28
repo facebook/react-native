@@ -35,7 +35,8 @@ type JSReturnType =
   | 'NumberKind'
   | 'PromiseKind'
   | 'ObjectKind'
-  | 'ArrayKind';
+  | 'ArrayKind'
+  | 'ArrayBufferKind';
 
 const HostFunctionTemplate = ({
   hasteModuleName,
@@ -217,7 +218,7 @@ function translateReturnTypeToKind(
     case 'ArrayTypeAnnotation':
       return 'ArrayKind';
     case 'ArrayBufferTypeAnnotation':
-      throw new Error('ArrayBuffer is only supported for C++ TurboModules.');
+      return 'ArrayBufferKind';
     default:
       realTypeAnnotation.type as 'MixedTypeAnnotation';
       throw new Error(
@@ -306,7 +307,7 @@ function translateParamTypeToJniType(
     case 'FunctionTypeAnnotation':
       return 'Lcom/facebook/react/bridge/Callback;';
     case 'ArrayBufferTypeAnnotation':
-      throw new Error('ArrayBuffer is only supported for C++ TurboModules.');
+      return 'Ljava/nio/ByteBuffer;';
     default:
       realTypeAnnotation.type as 'MixedTypeAnnotation';
       throw new Error(
@@ -392,7 +393,7 @@ function translateReturnTypeToJniType(
     case 'ArrayTypeAnnotation':
       return 'Lcom/facebook/react/bridge/WritableArray;';
     case 'ArrayBufferTypeAnnotation':
-      throw new Error('ArrayBuffer is only supported for C++ TurboModules.');
+      return 'Ljava/nio/ByteBuffer;';
     default:
       realTypeAnnotation.type as 'MixedTypeAnnotation';
       throw new Error(

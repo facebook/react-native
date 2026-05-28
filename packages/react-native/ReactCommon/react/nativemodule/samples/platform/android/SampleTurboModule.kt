@@ -27,6 +27,7 @@ import com.facebook.react.bridge.WritableNativeMap
 import com.facebook.react.module.annotations.ReactModule
 import com.facebook.react.turbomodule.core.interfaces.BindingsInstallerHolder
 import com.facebook.react.turbomodule.core.interfaces.TurboModuleWithJSIBindings
+import java.nio.ByteBuffer
 import java.util.UUID
 
 @DoNotStrip
@@ -263,6 +264,30 @@ public class SampleTurboModule(private val context: ReactApplicationContext) :
   }
 
   override fun invalidate(): Unit = Unit
+
+  @DoNotStrip
+  @Suppress("unused")
+  override fun getArrayBuffer(buffer: ByteBuffer) : ByteBuffer {
+    error("ArrayBuffer is not yet supported in Java TurboModules")
+  }
+
+  @DoNotStrip
+  @Suppress("unused")
+  override fun createNativeBuffer(size: Double) : ByteBuffer {
+    error("ArrayBuffer is not yet supported in Java TurboModules")
+  }
+
+  @DoNotStrip
+  @Suppress("unused")
+  override fun processAsyncBuffer(payload: ByteBuffer, promise: Promise) {
+    promise.reject("UNSUPPORTED", "ArrayBuffer is not yet supported in Java TurboModules")
+  }
+
+  @DoNotStrip
+  @Suppress("unused")
+  override fun getAsyncBuffer(size: Double, promise: Promise) {
+    promise.reject("UNSUPPORTED", "ArrayBuffer is not yet supported in Java TurboModules")
+  }
 
   override fun getName(): String {
     return NAME
