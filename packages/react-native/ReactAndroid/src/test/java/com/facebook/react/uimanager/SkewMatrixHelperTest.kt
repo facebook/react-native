@@ -35,13 +35,11 @@ class SkewMatrixHelperTest {
           densityDpi = DisplayMetrics.DENSITY_DEFAULT
         }
     DisplayMetricsHolder.setScreenDisplayMetrics(metrics)
-    DisplayMetricsHolder.setWindowDisplayMetrics(metrics)
   }
 
   @After
   fun tearDown() {
     DisplayMetricsHolder.setScreenDisplayMetrics(null)
-    DisplayMetricsHolder.setWindowDisplayMetrics(null)
   }
 
   @Test
