@@ -119,6 +119,28 @@ class SkewMatrixHelperTest {
   }
 
   @Test
+  fun hasAffine2DSkewTransform_trueForSkewX() {
+    val transforms = JavaOnlyArray.of(JavaOnlyMap.of("skewX", "20deg"))
+    assertThat(SkewMatrixHelper.hasAffine2DSkewTransform(transforms)).isTrue()
+  }
+
+  @Test
+  fun hasAffine2DSkewTransform_falseForSkewWithRotateX() {
+    val transforms =
+        JavaOnlyArray.of(
+            JavaOnlyMap.of("skewX", "20deg"),
+            JavaOnlyMap.of("rotateX", "10deg"),
+        )
+    assertThat(SkewMatrixHelper.hasAffine2DSkewTransform(transforms)).isFalse()
+  }
+
+  @Test
+  fun hasAffine2DSkewTransform_falseForRotateOnly() {
+    val transforms = JavaOnlyArray.of(JavaOnlyMap.of("rotate", "30deg"))
+    assertThat(SkewMatrixHelper.hasAffine2DSkewTransform(transforms)).isFalse()
+  }
+
+  @Test
   fun buildAffine2DMatrix_pureSkewX_producesExpectedEntries() {
     val transforms = JavaOnlyArray.of(JavaOnlyMap.of("skewX", "20deg"))
     val values = matrixValues(SkewMatrixHelper.buildAffine2DMatrix(transforms, 0f, 0f, null))

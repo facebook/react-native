@@ -22,8 +22,16 @@ import com.facebook.react.common.ReactConstants
  */
 public object SkewMatrixHelper {
 
+  /**
+   * Returns true only when [transforms] both contains a `skewX` / `skewY` operation and is fully
+   * representable as a 2D-affine [Matrix] (see [isAffine2DTransform]) — i.e. the case
+   * [BaseViewManager.setTransformProperty] applies via `View.setAnimationMatrix` on Android Q+.
+   */
   @JvmStatic
-  public fun hasSkewTransform(transforms: ReadableArray): Boolean {
+  public fun hasAffine2DSkewTransform(transforms: ReadableArray): Boolean =
+      hasSkewTransform(transforms) && isAffine2DTransform(transforms)
+
+  internal fun hasSkewTransform(transforms: ReadableArray): Boolean {
     if (isRawMatrixShorthand(transforms)) return false
     for (i in 0 until transforms.size()) {
       if (transforms.getType(i) != ReadableType.Map) continue
@@ -41,8 +49,7 @@ public object SkewMatrixHelper {
    * a `translate` with a non-zero Z component, and the raw 16-element matrix shorthand used by
    * Fabric LayoutAnimations.
    */
-  @JvmStatic
-  public fun isAffine2DTransform(transforms: ReadableArray): Boolean {
+  internal fun isAffine2DTransform(transforms: ReadableArray): Boolean {
     if (isRawMatrixShorthand(transforms)) return false
     for (i in 0 until transforms.size()) {
       if (transforms.getType(i) != ReadableType.Map) continue
@@ -165,7 +172,7 @@ public object SkewMatrixHelper {
         if (!part.endsWith("%")) return defaultDip
         try {
           (part.dropLast(1).toDouble() * dimensionDip / 100.0).toFloat()
-        } catch (e: NumberFormatException) {
+        } catch (_: NumberFormatException) {
           defaultDip
         }
       }
@@ -198,7 +205,7 @@ public object SkewMatrixHelper {
       } else {
         s.toDouble()
       }
-    } catch (e: NumberFormatException) {
+    } catch (_: NumberFormatException) {
       FLog.w(ReactConstants.TAG, "Invalid translate value: $s")
       0.0
     }

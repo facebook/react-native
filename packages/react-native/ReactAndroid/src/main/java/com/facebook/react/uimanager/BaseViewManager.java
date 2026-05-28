@@ -583,8 +583,7 @@ public abstract class BaseViewManager<T extends View, C extends LayoutShadowNode
     }
 
     if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q
-        && SkewMatrixHelper.hasSkewTransform(transforms)
-        && SkewMatrixHelper.isAffine2DTransform(transforms)) {
+        && SkewMatrixHelper.hasAffine2DSkewTransform(transforms)) {
       Matrix affine =
           SkewMatrixHelper.buildAffine2DMatrix(
               transforms,
