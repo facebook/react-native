@@ -46,6 +46,10 @@ type Examples =
   | 'getString'
   | 'getUnion'
   | 'getValue'
+  | 'getArrayBuffer'
+  | 'createNativeBuffer'
+  | 'processAsyncBuffer'
+  | 'getAsyncBuffer'
   | 'promise'
   | 'rejectPromise'
   | 'voidFunc'
@@ -108,6 +112,39 @@ class SampleTurboModuleExample extends React.Component<{}, State> {
     getRootTag: () => NativeSampleTurboModule.getRootTag(this.context),
     getValue: () =>
       NativeSampleTurboModule.getValue(5, 'test', {a: 1, b: 'foo'}),
+    getArrayBuffer: () => {
+      const view = new Uint8Array([1, 2, 3, 4, 5]);
+      const buffer = NativeSampleTurboModule?.getArrayBuffer(view.buffer);
+      return new Uint8Array(buffer || []).toString();
+    },
+    createNativeBuffer: () => {
+      const buffer = NativeSampleTurboModule?.createNativeBuffer(8);
+      return new Uint8Array(buffer || []).toString();
+    },
+    processAsyncBuffer: async () => {
+      const view = new Uint8Array([10, 20, 30, 40, 50]);
+      const nativeBuffer = NativeSampleTurboModule?.createNativeBuffer(10);
+
+      const [byteSum, zeroCopyByteSum] = await Promise.all([
+        NativeSampleTurboModule?.processAsyncBuffer(view.buffer),
+        nativeBuffer != null
+          ? NativeSampleTurboModule?.processAsyncBuffer(nativeBuffer)
+          : Promise.resolve(0),
+      ]);
+
+      this._setResult(
+        'processAsyncBuffer',
+        `sum=${(byteSum ?? 0) + (zeroCopyByteSum ?? 0)}`,
+      );
+    },
+    getAsyncBuffer: async () => {
+      return NativeSampleTurboModule?.getAsyncBuffer(10).then(buffer => {
+        this._setResult(
+          'getAsyncBuffer',
+          new Uint8Array(buffer || []).toString(),
+        );
+      });
+    },
   };
 
   // $FlowFixMe[missing-local-annot]

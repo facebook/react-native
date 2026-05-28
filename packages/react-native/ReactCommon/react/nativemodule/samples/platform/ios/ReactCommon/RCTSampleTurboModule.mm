@@ -16,6 +16,16 @@
 
 using namespace facebook::react;
 
+static NSMutableData *RCTCreateIntegerSequenceBuffer(NSUInteger size)
+{
+  NSMutableData *buffer = [NSMutableData dataWithLength:size];
+  auto *bytes = static_cast<uint8_t *>(buffer.mutableBytes);
+  for (NSUInteger i = 0; i < size; i++) {
+    bytes[i] = i + 1;
+  }
+  return buffer;
+}
+
 @interface RCTSampleTurboModule () <RCTTurboModuleWithJSIBindings, RCTInitializing>
 @end
 
@@ -143,6 +153,49 @@ RCT_EXPORT_SYNCHRONOUS_TYPED_METHOD(NSDictionary *, getValue : (double)x y : (NS
     @"y" : (y != nullptr) ? y : [NSNull null],
     @"z" : (z != nullptr) ? z : [NSNull null],
   };
+}
+
+RCT_EXPORT_SYNCHRONOUS_TYPED_METHOD(NSMutableData *, getArrayBuffer : (NSMutableData *)buffer)
+{
+  auto data = static_cast<uint8_t *>(buffer.mutableBytes);
+  auto size = buffer.length;
+  for (size_t i = 0; i < size; ++i) {
+    data[i] = 10 * i;
+  }
+  return buffer;
+}
+
+RCT_EXPORT_SYNCHRONOUS_TYPED_METHOD(NSMutableData *, createNativeBuffer : (double)size)
+{
+  return RCTCreateIntegerSequenceBuffer(static_cast<NSUInteger>(size));
+}
+
+RCT_EXPORT_METHOD(
+    processAsyncBuffer : (NSMutableData *)payload resolve : (RCTPromiseResolveBlock)resolve reject : (RCTPromiseRejectBlock)reject)
+{
+  if ((resolve == nullptr) || (reject == nullptr)) {
+    return;
+  }
+
+  dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), ^{
+    uint8_t *bytes = static_cast<uint8_t *>(payload.mutableBytes);
+    double sum = 0;
+    for (NSInteger i = 0; i < payload.length; ++i) {
+      sum += bytes[i];
+    }
+    resolve(@(sum));
+  });
+}
+
+RCT_EXPORT_METHOD(getAsyncBuffer : (double)size resolve : (RCTPromiseResolveBlock)resolve reject : (RCTPromiseRejectBlock)reject)
+{
+  if ((resolve == nullptr) || (reject == nullptr)) {
+    return;
+  }
+
+  dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), ^{
+    resolve(RCTCreateIntegerSequenceBuffer(static_cast<NSUInteger>(size)));
+  });
 }
 
 RCT_EXPORT_METHOD(getValueWithCallback : (RCTResponseSenderBlock)callback)
