@@ -4110,6 +4110,13 @@ public abstract class com/facebook/react/uimanager/SimpleViewManager : com/faceb
 	public fun updateExtraData (Landroid/view/View;Ljava/lang/Object;)V
 }
 
+public final class com/facebook/react/uimanager/SkewMatrixHelper {
+	public static final field INSTANCE Lcom/facebook/react/uimanager/SkewMatrixHelper;
+	public static final fun buildAffine2DMatrix (Lcom/facebook/react/bridge/ReadableArray;FFLcom/facebook/react/bridge/ReadableArray;)Landroid/graphics/Matrix;
+	public static final fun hasSkewTransform (Lcom/facebook/react/bridge/ReadableArray;)Z
+	public static final fun isAffine2DTransform (Lcom/facebook/react/bridge/ReadableArray;)Z
+}
+
 public final class com/facebook/react/uimanager/Spacing {
 	public static final field ALL I
 	public static final field BLOCK I
