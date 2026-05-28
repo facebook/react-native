@@ -45,16 +45,6 @@ export interface EventInit {
 }
 
 export default class Event {
-  static readonly NONE: 0;
-  static readonly CAPTURING_PHASE: 1;
-  static readonly AT_TARGET: 2;
-  static readonly BUBBLING_PHASE: 3;
-
-  readonly NONE: 0;
-  readonly CAPTURING_PHASE: 1;
-  readonly AT_TARGET: 2;
-  readonly BUBBLING_PHASE: 3;
-
   _bubbles: boolean;
   _cancelable: boolean;
   _composed: boolean;
