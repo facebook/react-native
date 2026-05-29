@@ -86,14 +86,22 @@ void ViewTransitionModule::applyViewTransitionName(
       .size = layoutMetrics.frame.size,
       .pointScaleFactor = layoutMetrics.pointScaleFactor};
 
-  nameRegistry_[tag].insert(name);
+  // Calls outside mutationCallback are from the before-mutation phase (old
+  // state for an upcoming transition). Assign a provisional next transition ID
+  // so startViewTransitionEnd cleanup preserves these entries.
+  auto currentTransitionId =
+      insideMutationCallback_ ? activeTransitionId_ : activeTransitionId_ + 1;
+  nameRegistry_[tag].names.insert(name);
+  nameRegistry_[tag].transitionId = currentTransitionId;
 
-  // If applyViewTransitionName is called after transition started, this is the
-  // "new" state (end snapshot). Otherwise, this is the "old" state (start
-  // snapshot)
-  if (!transitionStarted_) {
+  // Old state: called outside mutationCallback (before-mutation phase).
+  // New state: called inside mutationCallback (after-mutation phase).
+  if (!insideMutationCallback_) {
     AnimationKeyFrameView oldView{
-        .layoutMetrics = keyframeMetrics, .tag = tag, .surfaceId = surfaceId};
+        .layoutMetrics = keyframeMetrics,
+        .tag = tag,
+        .surfaceId = surfaceId,
+        .transitionId = currentTransitionId};
     oldLayout_[name] = oldView;
 
     // Request the platform to capture a bitmap snapshot of the old view
@@ -147,7 +155,10 @@ void ViewTransitionModule::applyViewTransitionName(
 
   } else {
     AnimationKeyFrameView newView{
-        .layoutMetrics = keyframeMetrics, .tag = tag, .surfaceId = surfaceId};
+        .layoutMetrics = keyframeMetrics,
+        .tag = tag,
+        .surfaceId = surfaceId,
+        .transitionId = activeTransitionId_};
     newLayout_[name] = newView;
   }
 }
@@ -316,7 +327,7 @@ void ViewTransitionModule::cancelViewTransitionName(
 
 void ViewTransitionModule::restoreViewTransitionName(
     const ShadowNode& shadowNode) {
-  nameRegistry_[shadowNode.getTag()].merge(
+  nameRegistry_[shadowNode.getTag()].names.merge(
       cancelledNameRegistry_[shadowNode.getTag()]);
   cancelledNameRegistry_.erase(shadowNode.getTag());
 }
@@ -387,13 +398,16 @@ void ViewTransitionModule::startViewTransition(
 
   // Mark transition as started
   transitionStarted_ = true;
+  activeTransitionId_ = ++transitionIdCounter_;
   pendingAnimationIds_.clear();
   onCompleteCallback_ = onCompleteCallback;
 
   // Call mutation callback (including commitRoot, measureInstance,
   // applyViewTransitionName, createViewTransitionInstance for old & new)
   if (mutationCallback) {
+    insideMutationCallback_ = true;
     mutationCallback();
+    insideMutationCallback_ = false;
   }
 
   applySnapshotsOnPseudoElementShadowNodes();
@@ -442,13 +456,28 @@ void ViewTransitionModule::suspendOnActiveViewTransition() {
 }
 
 void ViewTransitionModule::startViewTransitionEnd() {
-  for (const auto& [tag, names] : nameRegistry_) {
-    for (const auto& name : names) {
-      oldLayout_.erase(name);
-      newLayout_.erase(name);
+  auto finishedId = activeTransitionId_;
+
+  // Only clear layout and registry entries belonging to the finished
+  // transition. A suspended transition's before-mutation phase may have
+  // already written entries with a newer transitionId — preserve those.
+  for (auto it = nameRegistry_.begin(); it != nameRegistry_.end();) {
+    if (it->second.transitionId == finishedId) {
+      for (const auto& name : it->second.names) {
+        if (auto oit = oldLayout_.find(name);
+            oit != oldLayout_.end() && oit->second.transitionId == finishedId) {
+          oldLayout_.erase(oit);
+        }
+        if (auto nit = newLayout_.find(name);
+            nit != newLayout_.end() && nit->second.transitionId == finishedId) {
+          newLayout_.erase(nit);
+        }
+      }
+      it = nameRegistry_.erase(it);
+    } else {
+      ++it;
     }
   }
-  nameRegistry_.clear();
   oldPseudoElementNodes_.clear();
 
   // Clear any pending bitmap snapshots that were captured but never consumed.
