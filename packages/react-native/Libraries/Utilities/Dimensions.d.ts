@@ -75,5 +75,6 @@ export interface Dimensions {
 }
 
 export function useWindowDimensions(): ScaledSize;
+export function useWindowDimensions<T>(selector: (state: ScaledSize) => T): T;
 
 export const Dimensions: Dimensions;
