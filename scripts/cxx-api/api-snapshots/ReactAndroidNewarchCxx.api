@@ -5279,6 +5279,7 @@ struct facebook::react::ViewTransitionModule::AnimationKeyFrameView {
   public facebook::react::SurfaceId surfaceId;
   public facebook::react::Tag tag;
   public facebook::react::ViewTransitionModule::AnimationKeyFrameViewLayoutMetrics layoutMetrics;
+  public uint32_t transitionId;
 }
 
 struct facebook::react::ViewTransitionModule::AnimationKeyFrameViewLayoutMetrics {
