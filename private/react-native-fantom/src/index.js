@@ -8,6 +8,7 @@
  * @format
  */
 
+import type {HostPlatform} from './Constants';
 import type {
   FantomRenderedOutput,
   RenderOutputConfig,
@@ -45,6 +46,16 @@ export type RootConfig = {
 };
 
 export {getConstants} from './Constants';
+
+/**
+ * Returns the host OS where the Fantom test runner is running (e.g.
+ * 'linux', 'macos', 'windows'). This is different from React Native's
+ * `Platform.OS`, which always reflects the React Native target platform
+ * being tested.
+ */
+export function getHostPlatform(): HostPlatform {
+  return getConstants().hostPlatform;
+}
 
 // Defaults use iPhone 14 values (very common device).
 const DEFAULT_VIEWPORT_WIDTH = 390;
