@@ -13,28 +13,28 @@ import type {TurboModule} from '../../../../Libraries/TurboModule/RCTExport';
 import * as TurboModuleRegistry from '../../../../Libraries/TurboModule/TurboModuleRegistry';
 
 export interface Spec extends TurboModule {
-  readonly isReduceMotionEnabled: (
+  +isReduceMotionEnabled: (
     onSuccess: (isReduceMotionEnabled: boolean) => void,
   ) => void;
-  readonly isInvertColorsEnabled?: (
+  +isInvertColorsEnabled?: (
     onSuccess: (isInvertColorsEnabled: boolean) => void,
   ) => void;
-  readonly isHighTextContrastEnabled?: (
+  +isHighTextContrastEnabled?: (
     onSuccess: (isHighTextContrastEnabled: boolean) => void,
   ) => void;
-  readonly isTouchExplorationEnabled: (
+  +isTouchExplorationEnabled: (
     onSuccess: (isScreenReaderEnabled: boolean) => void,
   ) => void;
-  readonly isAccessibilityServiceEnabled?: ?(
+  +isAccessibilityServiceEnabled?: ?(
     onSuccess: (isAccessibilityServiceEnabled: boolean) => void,
   ) => void;
-  readonly setAccessibilityFocus: (reactTag: number) => void;
-  readonly announceForAccessibility: (announcement: string) => void;
-  readonly getRecommendedTimeoutMillis?: (
+  +setAccessibilityFocus: (reactTag: number) => void;
+  +announceForAccessibility: (announcement: string) => void;
+  +getRecommendedTimeoutMillis?: (
     mSec: number,
     onSuccess: (recommendedTimeoutMillis: number) => void,
   ) => void;
-  readonly isGrayscaleEnabled?: (
+  +isGrayscaleEnabled?: (
     onSuccess: (isGrayscaleEnabled: boolean) => void,
   ) => void;
 }

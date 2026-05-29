@@ -56,55 +56,49 @@ export type PerformanceObserverInit = {
 };
 
 export interface Spec extends TurboModule {
-  readonly now: () => number;
-  readonly timeOrigin?: () => number;
+  +now: () => number;
+  +timeOrigin?: () => number;
 
-  readonly reportMark: (
-    name: string,
-    startTime: number,
-    entry: unknown,
-  ) => void;
-  readonly reportMeasure: (
+  +reportMark: (name: string, startTime: number, entry: unknown) => void;
+  +reportMeasure: (
     name: string,
     startTime: number,
     duration: number,
     entry: unknown,
   ) => void;
-  readonly getMarkTime: (name: string) => ?number;
-  readonly clearMarks: (entryName?: string) => void;
-  readonly clearMeasures: (entryName?: string) => void;
-  readonly getEntries: () => ReadonlyArray<RawPerformanceEntry>;
-  readonly getEntriesByName: (
+  +getMarkTime: (name: string) => ?number;
+  +clearMarks: (entryName?: string) => void;
+  +clearMeasures: (entryName?: string) => void;
+  +getEntries: () => ReadonlyArray<RawPerformanceEntry>;
+  +getEntriesByName: (
     entryName: string,
     entryType?: ?RawPerformanceEntryType,
   ) => ReadonlyArray<RawPerformanceEntry>;
-  readonly getEntriesByType: (
+  +getEntriesByType: (
     entryType: RawPerformanceEntryType,
   ) => ReadonlyArray<RawPerformanceEntry>;
-  readonly getEventCounts: () => ReadonlyArray<[string, number]>;
-  readonly getSimpleMemoryInfo: () => NativeMemoryInfo;
-  readonly getReactNativeStartupTiming: () => ReactNativeStartupTiming;
+  +getEventCounts: () => ReadonlyArray<[string, number]>;
+  +getSimpleMemoryInfo: () => NativeMemoryInfo;
+  +getReactNativeStartupTiming: () => ReactNativeStartupTiming;
 
-  readonly createObserver: (
+  +createObserver: (
     callback: NativeBatchedObserverCallback,
   ) => OpaqueNativeObserverHandle;
-  readonly getDroppedEntriesCount: (
-    observer: OpaqueNativeObserverHandle,
-  ) => number;
+  +getDroppedEntriesCount: (observer: OpaqueNativeObserverHandle) => number;
 
-  readonly observe: (
+  +observe: (
     observer: OpaqueNativeObserverHandle,
     options: PerformanceObserverInit,
   ) => void;
-  readonly disconnect: (observer: OpaqueNativeObserverHandle) => void;
-  readonly takeRecords: (
+  +disconnect: (observer: OpaqueNativeObserverHandle) => void;
+  +takeRecords: (
     observer: OpaqueNativeObserverHandle,
     sort: boolean,
   ) => ReadonlyArray<RawPerformanceEntry>;
 
-  readonly getSupportedPerformanceEntryTypes: () => ReadonlyArray<RawPerformanceEntryType>;
+  +getSupportedPerformanceEntryTypes: () => ReadonlyArray<RawPerformanceEntryType>;
 
-  readonly clearEventCountsForTesting: () => void;
+  +clearEventCountsForTesting: () => void;
 }
 
 export default TurboModuleRegistry.get<Spec>('NativePerformanceCxx') as ?Spec;

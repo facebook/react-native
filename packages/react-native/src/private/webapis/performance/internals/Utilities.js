@@ -20,7 +20,7 @@ export function warnNoNativePerformance() {
 
 declare var global: {
   // This value is defined directly via JSI, if available.
-  readonly nativePerformanceNow?: ?() => number,
+  +nativePerformanceNow?: ?() => number,
 };
 
 export const getCurrentTimeStamp: () => DOMHighResTimeStamp =

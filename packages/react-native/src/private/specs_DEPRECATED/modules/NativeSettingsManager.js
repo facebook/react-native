@@ -13,11 +13,11 @@ import type {TurboModule} from '../../../../Libraries/TurboModule/RCTExport';
 import * as TurboModuleRegistry from '../../../../Libraries/TurboModule/TurboModuleRegistry';
 
 export interface Spec extends TurboModule {
-  readonly getConstants: () => {
+  +getConstants: () => {
     settings: Object,
   };
-  readonly setValues: (values: Object) => void;
-  readonly deleteValues: (values: Array<string>) => void;
+  +setValues: (values: Object) => void;
+  +deleteValues: (values: Array<string>) => void;
 }
 
 export default TurboModuleRegistry.getEnforcing<Spec>(

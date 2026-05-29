@@ -63,8 +63,8 @@ RCTDeviceEventEmitter.addListener(DEVICE_BACK_EVENT, function (nativeEvent) {
  * ```
  */
 type TBackHandler = {
-  readonly exitApp: () => void,
-  readonly addEventListener: (
+  +exitApp: () => void,
+  +addEventListener: (
     eventName: BackPressEventName,
     handler: BackPressHandler,
   ) => {remove: () => void, ...},

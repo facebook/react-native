@@ -26,10 +26,10 @@ export type ImageSourceHeaders = {
 export function getImageSourcesFromImageProps(imageProps: ImageProps):
   | ?ResolvedAssetSource
   | ReadonlyArray<{
-      readonly uri: string,
-      readonly headers: ImageSourceHeaders,
-      readonly width: ?number,
-      readonly height: ?number,
+      +uri: string,
+      +headers: ImageSourceHeaders,
+      +width: ?number,
+      +height: ?number,
       ...
     }> {
   let source = resolveAssetSource(imageProps.source);

@@ -13,12 +13,12 @@ import type {TurboModule} from '../../../../Libraries/TurboModule/RCTExport';
 import * as TurboModuleRegistry from '../../../../Libraries/TurboModule/TurboModuleRegistry';
 
 export interface Spec extends TurboModule {
-  readonly getConstants: () => {};
-  readonly vibrate: (pattern: number) => void;
+  +getConstants: () => {};
+  +vibrate: (pattern: number) => void;
 
   // Android only
-  readonly vibrateByPattern: (pattern: Array<number>, repeat: number) => void;
-  readonly cancel: () => void;
+  +vibrateByPattern: (pattern: Array<number>, repeat: number) => void;
+  +cancel: () => void;
 }
 
 export default TurboModuleRegistry.getEnforcing<Spec>('Vibration') as Spec;

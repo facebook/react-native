@@ -19,14 +19,14 @@ type Permissions = {
 };
 
 type Notification = {
-  readonly alertTitle?: ?string,
-  readonly alertBody?: ?string,
-  readonly userInfo?: ?Object,
+  +alertTitle?: ?string,
+  +alertBody?: ?string,
+  +userInfo?: ?Object,
   /**
    * Identifier for the notification category. See the [Apple documentation](https://developer.apple.com/documentation/usernotifications/declaring_your_actionable_notification_types)
    * for more details.
    */
-  readonly category?: ?string,
+  +category?: ?string,
   /**
    * Actual type: string | number
    *
@@ -35,7 +35,7 @@ type Notification = {
    * If you use `presentLocalNotification`, both will be ignored
    * and the notification will be shown immediately.
    */
-  readonly fireDate?: ?number,
+  +fireDate?: ?number,
   /**
    * Seconds from now to display the notification.
    *
@@ -44,22 +44,22 @@ type Notification = {
    * If you use `presentLocalNotification`, both will be ignored
    * and the notification will be shown immediately.
    */
-  readonly fireIntervalSeconds?: ?number,
+  +fireIntervalSeconds?: ?number,
   /** Badge count to display on the app icon. */
-  readonly applicationIconBadgeNumber?: ?number,
+  +applicationIconBadgeNumber?: ?number,
   /** Whether to silence the notification sound. */
-  readonly isSilent?: ?boolean,
+  +isSilent?: ?boolean,
   /**
    * Custom notification sound. Can only be set when creating notifications.
    * This will be null for notifications retrieved via
    * getScheduledLocalNotifications or getDeliveredNotifications.
    */
-  readonly soundName?: ?string,
+  +soundName?: ?string,
 };
 
 export interface Spec extends TurboModule {
-  readonly getConstants: () => {};
-  readonly onFinishRemoteNotification: (
+  +getConstants: () => {};
+  +onFinishRemoteNotification: (
     notificationId: string,
     /**
      * Type:
@@ -69,37 +69,33 @@ export interface Spec extends TurboModule {
      */
     fetchResult: string,
   ) => void;
-  readonly setApplicationIconBadgeNumber: (num: number) => void;
-  readonly getApplicationIconBadgeNumber: (
-    callback: (num: number) => void,
-  ) => void;
-  readonly requestPermissions: (permission: {
-    readonly alert: boolean,
-    readonly badge: boolean,
-    readonly sound: boolean,
+  +setApplicationIconBadgeNumber: (num: number) => void;
+  +getApplicationIconBadgeNumber: (callback: (num: number) => void) => void;
+  +requestPermissions: (permission: {
+    +alert: boolean,
+    +badge: boolean,
+    +sound: boolean,
   }) => Promise<Permissions>;
-  readonly abandonPermissions: () => void;
-  readonly checkPermissions: (
-    callback: (permissions: Permissions) => void,
-  ) => void;
-  readonly presentLocalNotification: (notification: Notification) => void;
-  readonly scheduleLocalNotification: (notification: Notification) => void;
-  readonly cancelAllLocalNotifications: () => void;
-  readonly cancelLocalNotifications: (userInfo: Object) => void;
-  readonly getInitialNotification: () => Promise<?Notification>;
-  readonly getScheduledLocalNotifications: (
+  +abandonPermissions: () => void;
+  +checkPermissions: (callback: (permissions: Permissions) => void) => void;
+  +presentLocalNotification: (notification: Notification) => void;
+  +scheduleLocalNotification: (notification: Notification) => void;
+  +cancelAllLocalNotifications: () => void;
+  +cancelLocalNotifications: (userInfo: Object) => void;
+  +getInitialNotification: () => Promise<?Notification>;
+  +getScheduledLocalNotifications: (
     callback: (notification: Notification) => void,
   ) => void;
-  readonly removeAllDeliveredNotifications: () => void;
-  readonly removeDeliveredNotifications: (identifiers: Array<string>) => void;
-  readonly getDeliveredNotifications: (
+  +removeAllDeliveredNotifications: () => void;
+  +removeDeliveredNotifications: (identifiers: Array<string>) => void;
+  +getDeliveredNotifications: (
     callback: (notification: Array<Notification>) => void,
   ) => void;
-  readonly getAuthorizationStatus: (
+  +getAuthorizationStatus: (
     callback: (authorizationStatus: number) => void,
   ) => void;
-  readonly addListener: (eventType: string) => void;
-  readonly removeListeners: (count: number) => void;
+  +addListener: (eventType: string) => void;
+  +removeListeners: (count: number) => void;
 }
 
 export default TurboModuleRegistry.get<Spec>(

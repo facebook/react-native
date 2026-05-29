@@ -37,7 +37,7 @@ const styles = StyleSheet.create({
 });
 
 export type PopupMenuAndroidInstance = {
-  readonly show: () => void,
+  +show: () => void,
 };
 
 type Props = {

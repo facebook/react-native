@@ -30,7 +30,7 @@ export type AnimatedPropsAllowlist = Readonly<{
 }>;
 
 type TargetView = {
-  readonly instance: TargetViewInstance,
+  +instance: TargetViewInstance,
   connectedViewTag: ?number,
 };
 type TargetViewInstance = React.ElementRef<React.ElementType>;

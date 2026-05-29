@@ -16,9 +16,9 @@ import ExceptionsManager, {
 import * as React from 'react';
 
 type ErrorInfo = {
-  readonly componentStack?: ?string,
+  +componentStack?: ?string,
   // $FlowFixMe[unclear-type] unknown props and state.
-  readonly errorBoundary?: ?React.Component<any, any>,
+  +errorBoundary?: ?React.Component<any, any>,
 };
 
 function getExtendedError(

@@ -19,13 +19,13 @@ export interface Item {}
  * An interface for a collection of items, without requiring that each item be
  * eagerly (or lazily) allocated.
  */
-export interface VirtualCollection<out T extends Item> {
+export interface VirtualCollection<+T extends Item> {
   /**
    * The number of items in the collection. This can either be a numeric scalar
    * or a getter function that is computed on access. However, it should remain
    * constant for the lifetime of this object.
    */
-  readonly size: number;
+  +size: number;
 
   /**
    * If an item exists at the supplied index, this should return a consistent
@@ -40,7 +40,7 @@ export interface VirtualCollection<out T extends Item> {
  * use, this is not recommended for larger arrays because each element of an
  * array is eagerly allocated.
  */
-export class VirtualArray<out T extends Item> implements VirtualCollection<T> {
+export class VirtualArray<+T extends Item> implements VirtualCollection<T> {
   readonly size: number;
   readonly at: (index: number) => T;
 

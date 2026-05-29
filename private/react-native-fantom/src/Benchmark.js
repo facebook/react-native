@@ -87,7 +87,7 @@ interface TestFunction {
 }
 
 interface SuiteAPI {
-  readonly test: TestFunction;
+  +test: TestFunction;
   verify(fn: (results: SuiteResults) => void): SuiteAPI;
 }
 

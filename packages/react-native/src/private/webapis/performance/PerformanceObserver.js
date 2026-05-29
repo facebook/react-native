@@ -82,10 +82,10 @@ export type PerformanceObserverCallback = (
 ) => void;
 
 export interface PerformanceObserverInit {
-  readonly entryTypes?: Array<PerformanceEntryType>;
-  readonly type?: PerformanceEntryType;
-  readonly buffered?: boolean;
-  readonly durationThreshold?: DOMHighResTimeStamp;
+  +entryTypes?: Array<PerformanceEntryType>;
+  +type?: PerformanceEntryType;
+  +buffered?: boolean;
+  +durationThreshold?: DOMHighResTimeStamp;
 }
 
 function getSupportedPerformanceEntryTypes(): ReadonlyArray<PerformanceEntryType> {

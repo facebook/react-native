@@ -31,7 +31,7 @@ type Nullable = void | null;
 type Primitive = string | number | boolean | symbol | void;
 type Builtin = (...ReadonlyArray<empty>) => unknown | Date | Error | RegExp;
 
-export type WithAnimatedValue<out T> = T extends Builtin | Nullable
+export type WithAnimatedValue<+T> = T extends Builtin | Nullable
   ? T
   : T extends Primitive
     ?
@@ -51,7 +51,7 @@ export type WithAnimatedValue<out T> = T extends Builtin | Nullable
     : T extends ReadonlyArray<infer P>
       ? ReadonlyArray<WithAnimatedValue<P>>
       : T extends {...}
-        ? {readonly [K in keyof T]: WithAnimatedValue<T[K]>}
+        ? {+[K in keyof T]: WithAnimatedValue<T[K]>}
         : T;
 
 type NonAnimatedProps =
@@ -91,7 +91,7 @@ export type AnimatedBaseProps<Props extends {...}> = LooseOmit<
 
 export type AnimatedComponentType<
   Props extends {...},
-  out Instance = unknown,
+  +Instance = unknown,
 > = component(ref?: React.RefSetter<Instance>, ...AnimatedProps<Props>);
 
 export default function createAnimatedComponent<

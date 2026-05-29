@@ -65,14 +65,12 @@ export type PermissionType =
   */
 
 export interface Spec extends TurboModule {
-  readonly checkPermission: (permission: PermissionType) => Promise<boolean>;
-  readonly requestPermission: (
-    permission: PermissionType,
-  ) => Promise<PermissionStatus>;
-  readonly shouldShowRequestPermissionRationale: (
+  +checkPermission: (permission: PermissionType) => Promise<boolean>;
+  +requestPermission: (permission: PermissionType) => Promise<PermissionStatus>;
+  +shouldShowRequestPermissionRationale: (
     permission: string,
   ) => Promise<boolean>;
-  readonly requestMultiplePermissions: (
+  +requestMultiplePermissions: (
     permissions: Array<PermissionType>,
   ) => Promise<{[permission: PermissionType]: PermissionStatus, ...}>;
 }

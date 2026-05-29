@@ -21,7 +21,7 @@ const debug = require('debug')('build-types:transforms:inlineTypes');
 
 // TODO: Handle more builtin TS types
 const builtinTypeResolvers: {
-  readonly [K: string]: (
+  +[K: string]: (
     path: NodePath<t.TSTypeReference>,
     state: BaseVisitorState,
     tsTypeResolver?: TSTypeResolver,

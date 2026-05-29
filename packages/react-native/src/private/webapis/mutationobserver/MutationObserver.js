@@ -23,16 +23,16 @@ export type MutationObserverCallback = (
 ) => unknown;
 
 export interface MutationObserverInit {
-  readonly subtree?: boolean;
+  +subtree?: boolean;
   // This is the only supported option so it's required to be `true`.
-  readonly childList: true;
+  +childList: true;
 
   // Unsupported:
-  readonly attributes?: boolean;
-  readonly attributeFilter?: ReadonlyArray<string>;
-  readonly attributeOldValue?: boolean;
-  readonly characterData?: boolean;
-  readonly characterDataOldValue?: boolean;
+  +attributes?: boolean;
+  +attributeFilter?: ReadonlyArray<string>;
+  +attributeOldValue?: boolean;
+  +characterData?: boolean;
+  +characterDataOldValue?: boolean;
 }
 
 /**

@@ -13,12 +13,12 @@ import type {TurboModule} from '../../../../Libraries/TurboModule/RCTExport';
 import * as TurboModuleRegistry from '../../../../Libraries/TurboModule/TurboModuleRegistry';
 
 export interface Spec extends TurboModule {
-  readonly fetchSegment: (
+  +fetchSegment: (
     segmentId: number,
     options: Object, // flowlint-line unclear-type: off
     callback: (error: ?Object) => void, // flowlint-line unclear-type: off
   ) => void;
-  readonly getSegment?: (
+  +getSegment?: (
     segmentId: number,
     options: Object, // flowlint-line unclear-type: off
     callback: (error: ?Object, path: ?string) => void, // flowlint-line unclear-type: off

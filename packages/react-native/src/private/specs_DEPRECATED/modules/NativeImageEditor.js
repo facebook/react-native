@@ -13,17 +13,17 @@ import type {TurboModule} from '../../../../Libraries/TurboModule/RCTExport';
 import * as TurboModuleRegistry from '../../../../Libraries/TurboModule/TurboModuleRegistry';
 
 type Options = {
-  readonly offset: {
-    readonly x: number,
-    readonly y: number,
+  +offset: {
+    +x: number,
+    +y: number,
   },
-  readonly size: {
-    readonly width: number,
-    readonly height: number,
+  +size: {
+    +width: number,
+    +height: number,
   },
-  readonly displaySize?: ?{
-    readonly width: number,
-    readonly height: number,
+  +displaySize?: ?{
+    +width: number,
+    +height: number,
   },
   /**
    * Enum with potential values:
@@ -33,13 +33,13 @@ type Options = {
    *  - center
    *  - repeat
    */
-  readonly resizeMode?: ?string,
-  readonly allowExternalStorage?: boolean,
+  +resizeMode?: ?string,
+  +allowExternalStorage?: boolean,
 };
 
 export interface Spec extends TurboModule {
-  readonly getConstants: () => {};
-  readonly cropImage: (
+  +getConstants: () => {};
+  +cropImage: (
     uri: string,
     cropData: Options,
     successCallback: (uri: string) => void,

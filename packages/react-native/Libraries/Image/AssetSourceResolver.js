@@ -11,11 +11,11 @@
 'use strict';
 
 export type ResolvedAssetSource = {
-  readonly __packager_asset: boolean,
-  readonly width: ?number,
-  readonly height: ?number,
-  readonly uri: string,
-  readonly scale: number,
+  +__packager_asset: boolean,
+  +width: ?number,
+  +height: ?number,
+  +uri: string,
+  +scale: number,
 };
 
 // From @react-native/assets-registry

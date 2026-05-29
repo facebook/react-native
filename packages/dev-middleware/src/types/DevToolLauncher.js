@@ -27,7 +27,7 @@ export interface DevToolLauncher {
    * the host of dev-middleware. Implementations are responsible for rewriting
    * this as necessary where the server is remote.
    */
-  readonly launchDebuggerAppWindow: (url: string) => Promise<void>;
+  +launchDebuggerAppWindow: (url: string) => Promise<void>;
 
   /**
    * Attempt to open a debugger frontend URL in a standalone shell window
@@ -47,10 +47,7 @@ export interface DevToolLauncher {
    * the host of dev-middleware. Implementations are responsible for rewriting
    * this as necessary where the server is remote.
    */
-  readonly launchDebuggerShell?: (
-    url: string,
-    windowKey: string,
-  ) => Promise<void>;
+  +launchDebuggerShell?: (url: string, windowKey: string) => Promise<void>;
 
   /**
    * Attempt to prepare the debugger shell for use and returns a coded result
@@ -63,5 +60,5 @@ export interface DevToolLauncher {
    * SHOULD NOT return a rejecting promise in any case, and instead SHOULD report
    * errors via the returned result object.
    */
-  readonly prepareDebuggerShell?: () => Promise<DebuggerShellPreparationResult>;
+  +prepareDebuggerShell?: () => Promise<DebuggerShellPreparationResult>;
 }

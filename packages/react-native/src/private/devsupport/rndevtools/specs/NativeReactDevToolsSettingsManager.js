@@ -13,8 +13,8 @@ import type {TurboModule} from '../../../../../Libraries/TurboModule/RCTExport';
 import * as TurboModuleRegistry from '../../../../../Libraries/TurboModule/TurboModuleRegistry';
 
 export interface Spec extends TurboModule {
-  readonly setGlobalHookSettings: (settings: string) => void;
-  readonly getGlobalHookSettings: () => ?string;
+  +setGlobalHookSettings: (settings: string) => void;
+  +getGlobalHookSettings: () => ?string;
 }
 
 export default TurboModuleRegistry.get<Spec>(

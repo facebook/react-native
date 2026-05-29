@@ -21,34 +21,28 @@ type Animal = {
 
 export interface Spec extends TurboModule {
   // Exported methods.
-  readonly getConstants: () => {
+  +getConstants: () => {
     const1: Array<boolean>,
     const2: Array<number>,
     const3: Array<string>,
     id?: Array<?{prop: number}>,
   };
-  readonly voidFunc: () => void;
-  readonly getBool: (id: Array<boolean>) => Array<boolean>;
-  readonly getNumber: (arg: Array<number>) => Array<number>;
-  readonly getString: (arg: Array<string>) => Array<string>;
-  readonly getArray: (arg: Array<Array<any>>) => Array<Array<any>>;
-  readonly getObject: (arg: Array<Object>) => Array<Object>;
-  readonly getObjectShape: (
-    arg: Array<{prop: number}>,
-  ) => Array<{prop: number}>;
-  readonly getAlias: (arg: Array<Animal>) => Array<Animal>;
-  readonly getRootTag: (arg: Array<RootTag>) => Array<RootTag>;
-  readonly getValue: (
+  +voidFunc: () => void;
+  +getBool: (id: Array<boolean>) => Array<boolean>;
+  +getNumber: (arg: Array<number>) => Array<number>;
+  +getString: (arg: Array<string>) => Array<string>;
+  +getArray: (arg: Array<Array<any>>) => Array<Array<any>>;
+  +getObject: (arg: Array<Object>) => Array<Object>;
+  +getObjectShape: (arg: Array<{prop: number}>) => Array<{prop: number}>;
+  +getAlias: (arg: Array<Animal>) => Array<Animal>;
+  +getRootTag: (arg: Array<RootTag>) => Array<RootTag>;
+  +getValue: (
     x: Array<number>,
     y: Array<string>,
     z: Array<Object>,
   ) => Array<Object>;
-  readonly getValueWithCallback: (
-    callback: (value: Array<string>) => void,
-  ) => void;
-  readonly getValueWithPromise: (
-    error: Array<boolean>,
-  ) => Promise<Array<string>>;
+  +getValueWithCallback: (callback: (value: Array<string>) => void) => void;
+  +getValueWithPromise: (error: Array<boolean>) => Promise<Array<string>>;
 }
 
 export default TurboModuleRegistry.getEnforcing<Spec>(

@@ -128,7 +128,7 @@ class UnsupportedModulePropertyParserError extends ParserError {
 }
 
 class UnsupportedTypeAnnotationParserError extends ParserError {
-  readonly typeAnnotationType: string;
+  +typeAnnotationType: string;
   constructor(
     nativeModuleName: string,
     typeAnnotation: $FlowFixMe,

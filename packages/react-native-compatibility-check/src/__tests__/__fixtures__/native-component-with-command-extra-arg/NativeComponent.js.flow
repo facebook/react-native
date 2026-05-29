@@ -22,7 +22,7 @@ type NativeProps = Readonly<{
 type NativeType = HostComponent<NativeProps>;
 
 interface NativeCommands {
-  readonly methodInt: (
+  +methodInt: (
     viewRef: React.ElementRef<NativeType>,
     a: Int32,
     b: string,

@@ -21,10 +21,7 @@ type NativeProps = Readonly<{
 type NativeType = HostComponent<NativeProps>;
 
 interface NativeCommands {
-  readonly methodInt: (
-    viewRef: React.ElementRef<NativeType>,
-    a: string,
-  ) => void;
+  +methodInt: (viewRef: React.ElementRef<NativeType>, a: string) => void;
 }
 
 export const Commands: NativeCommands = codegenNativeCommands<NativeCommands>({

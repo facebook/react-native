@@ -14,10 +14,10 @@ import type {TurboModule} from '../../../../Libraries/TurboModule/RCTExport';
 import * as TurboModuleRegistry from '../../../../Libraries/TurboModule/TurboModuleRegistry';
 
 export interface Spec extends TurboModule {
-  readonly getConstants: () => {};
+  +getConstants: () => {};
   // Return [width, height] of image uri
-  readonly getSize: (uri: string) => Promise<ReadonlyArray<number>>;
-  readonly getSizeWithHeaders: (
+  +getSize: (uri: string) => Promise<ReadonlyArray<number>>;
+  +getSizeWithHeaders: (
     uri: string,
     headers: Object,
   ) => Promise<{
@@ -25,13 +25,13 @@ export interface Spec extends TurboModule {
     height: number,
     ...
   }>;
-  readonly prefetchImage: (uri: string) => Promise<boolean>;
-  readonly prefetchImageWithMetadata?: (
+  +prefetchImage: (uri: string) => Promise<boolean>;
+  +prefetchImageWithMetadata?: (
     uri: string,
     queryRootName: string,
     rootTag: RootTag,
   ) => Promise<boolean>;
-  readonly queryCache: (uris: Array<string>) => Promise<Object>;
+  +queryCache: (uris: Array<string>) => Promise<Object>;
 }
 
 export default TurboModuleRegistry.getEnforcing<Spec>('ImageLoader') as Spec;

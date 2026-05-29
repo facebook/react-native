@@ -21,10 +21,10 @@ const ViewNativeComponent: HostComponent<Props> =
   }));
 
 interface NativeCommands {
-  readonly focus: (viewRef: HostInstance) => void;
-  readonly blur: (viewRef: HostInstance) => void;
-  readonly hotspotUpdate: (viewRef: HostInstance, x: number, y: number) => void;
-  readonly setPressed: (viewRef: HostInstance, pressed: boolean) => void;
+  +focus: (viewRef: HostInstance) => void;
+  +blur: (viewRef: HostInstance) => void;
+  +hotspotUpdate: (viewRef: HostInstance, x: number, y: number) => void;
+  +setPressed: (viewRef: HostInstance, pressed: boolean) => void;
 }
 
 export const Commands: NativeCommands = codegenNativeCommands<NativeCommands>({

@@ -35,9 +35,9 @@ export type NativeMutationObserverObserveOptions = {
 };
 
 export interface Spec extends TurboModule {
-  readonly observe: (options: NativeMutationObserverObserveOptions) => void;
-  readonly unobserveAll: (mutationObserverId: number) => void;
-  readonly connect: (
+  +observe: (options: NativeMutationObserverObserveOptions) => void;
+  +unobserveAll: (mutationObserverId: number) => void;
+  +connect: (
     notifyMutationObservers: () => void,
     // We need this to retain the public instance before React removes the
     // reference to it (which happen in mutations that remove nodes, or when
@@ -46,8 +46,8 @@ export interface Spec extends TurboModule {
       instanceHandle: InstanceHandle,
     ) => ReadOnlyNode,
   ) => void;
-  readonly disconnect: () => void;
-  readonly takeRecords: () => ReadonlyArray<NativeMutationRecord>;
+  +disconnect: () => void;
+  +takeRecords: () => ReadonlyArray<NativeMutationRecord>;
 }
 
 export default TurboModuleRegistry.get<Spec>(

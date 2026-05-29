@@ -98,18 +98,16 @@ export class DeviceAgent {
 
 export class DeviceMock extends DeviceAgent {
   // Empty handlers
-  readonly connect: JestMockFn<[message: ConnectRequest], void> = jest.fn();
-  readonly disconnect: JestMockFn<[message: DisconnectRequest], void> =
-    jest.fn();
-  readonly getPages: JestMockFn<
+  +connect: JestMockFn<[message: ConnectRequest], void> = jest.fn();
+  +disconnect: JestMockFn<[message: DisconnectRequest], void> = jest.fn();
+  +getPages: JestMockFn<
     [message: GetPagesRequest],
     | GetPagesResponse['payload']
     | Promise<GetPagesResponse['payload'] | void>
     | void,
   > = jest.fn();
-  readonly wrappedEvent: JestMockFn<[message: WrappedEventToDevice], void> =
-    jest.fn();
-  readonly wrappedEventParsed: JestMockFn<
+  +wrappedEvent: JestMockFn<[message: WrappedEventToDevice], void> = jest.fn();
+  +wrappedEventParsed: JestMockFn<
     [
       payload: {
         ...WrappedEventToDevice['payload'],
