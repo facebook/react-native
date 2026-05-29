@@ -10,8 +10,6 @@
 
 import '@react-native/fantom/src/setUpDefaultReactNativeEnvironment';
 
-import type {TextInputInstance} from '../TextInput.flow';
-
 import * as Fantom from '@react-native/fantom';
 import nullthrows from 'nullthrows';
 import * as React from 'react';
@@ -45,7 +43,7 @@ describe('<TextInput>', () => {
     describe('onChange', () => {
       it('is called when the change native event is dispatched', () => {
         const root = Fantom.createRoot();
-        const nodeRef = createRef<TextInputInstance>();
+        const nodeRef = createRef<React.ElementRef<typeof TextInput>>();
         const onChange = jest.fn();
 
         Fantom.runTask(() => {
@@ -76,7 +74,7 @@ describe('<TextInput>', () => {
     describe('onChangeText', () => {
       it('is called when the change native event is dispatched', () => {
         const root = Fantom.createRoot();
-        const nodeRef = createRef<TextInputInstance>();
+        const nodeRef = createRef<React.ElementRef<typeof TextInput>>();
         const onChangeText = jest.fn();
 
         Fantom.runTask(() => {
@@ -100,7 +98,7 @@ describe('<TextInput>', () => {
     describe('onFocus', () => {
       it('is called when the focus native event is dispatched', () => {
         const root = Fantom.createRoot();
-        const nodeRef = createRef<TextInputInstance>();
+        const nodeRef = createRef<React.ElementRef<typeof TextInput>>();
 
         let focusEvent = jest.fn();
 
@@ -126,7 +124,7 @@ describe('<TextInput>', () => {
     describe('onBlur', () => {
       it('is called when the blur native event is dispatched', () => {
         const root = Fantom.createRoot();
-        const nodeRef = createRef<TextInputInstance>();
+        const nodeRef = createRef<React.ElementRef<typeof TextInput>>();
 
         let blurEvent = jest.fn();
 
@@ -284,7 +282,7 @@ describe('<TextInput>', () => {
 
   describe('ref', () => {
     it('is an element node', () => {
-      const ref = createRef<TextInputInstance>();
+      const ref = createRef<React.ElementRef<typeof TextInput>>();
 
       const root = Fantom.createRoot();
 
@@ -296,7 +294,7 @@ describe('<TextInput>', () => {
     });
 
     it('provides additional methods: clear, isFocused, getNativeRef, setSelection', () => {
-      const ref = createRef<TextInputInstance>();
+      const ref = createRef<React.ElementRef<typeof TextInput>>();
 
       const root = Fantom.createRoot();
 
@@ -313,7 +311,7 @@ describe('<TextInput>', () => {
     describe('focus()', () => {
       it('dispatches the focus command', () => {
         const root = Fantom.createRoot();
-        const ref = createRef<TextInputInstance>();
+        const ref = createRef<React.ElementRef<typeof TextInput>>();
 
         Fantom.runTask(() => {
           root.render(<TextInput nativeID="text-input" ref={ref} />);
@@ -411,8 +409,8 @@ describe('<TextInput>', () => {
 
       it('unfocuses any previously focused TextInput when a new one is focused', () => {
         const root = Fantom.createRoot();
-        const ref1 = createRef<TextInputInstance>();
-        const ref2 = createRef<TextInputInstance>();
+        const ref1 = createRef<React.ElementRef<typeof TextInput>>();
+        const ref2 = createRef<React.ElementRef<typeof TextInput>>();
 
         Fantom.runTask(() => {
           root.render(
@@ -450,7 +448,7 @@ describe('<TextInput>', () => {
     describe('blur()', () => {
       it('does NOT dispatch any commands if the input is NOT focused', () => {
         const root = Fantom.createRoot();
-        const ref = createRef<TextInputInstance>();
+        const ref = createRef<React.ElementRef<typeof TextInput>>();
 
         Fantom.runTask(() => {
           root.render(<TextInput nativeID="text-input" ref={ref} />);
@@ -469,7 +467,7 @@ describe('<TextInput>', () => {
 
       it('does dispatches the blur command if the input is focused', () => {
         const root = Fantom.createRoot();
-        const ref = createRef<TextInputInstance>();
+        const ref = createRef<React.ElementRef<typeof TextInput>>();
 
         Fantom.runTask(() => {
           root.render(<TextInput nativeID="text-input" ref={ref} />);
@@ -496,7 +494,7 @@ describe('<TextInput>', () => {
     describe('clear()', () => {
       it('dispatches the clear command', () => {
         const root = Fantom.createRoot();
-        const ref = createRef<TextInputInstance>();
+        const ref = createRef<React.ElementRef<typeof TextInput>>();
 
         Fantom.runTask(() => {
           root.render(
@@ -521,7 +519,7 @@ describe('<TextInput>', () => {
     describe('isFocused()', () => {
       it('returns true if the input is focused', () => {
         const root = Fantom.createRoot();
-        const ref = createRef<TextInputInstance>();
+        const ref = createRef<React.ElementRef<typeof TextInput>>();
 
         Fantom.runTask(() => {
           root.render(<TextInput nativeID="text-input" ref={ref} />);
@@ -546,7 +544,7 @@ describe('<TextInput>', () => {
 
       it('returns false if the input is unmounted', () => {
         const root = Fantom.createRoot();
-        const ref = createRef<TextInputInstance>();
+        const ref = createRef<React.ElementRef<typeof TextInput>>();
 
         Fantom.runTask(() => {
           root.render(<TextInput nativeID="text-input" ref={ref} />);
@@ -582,7 +580,7 @@ describe('<TextInput>', () => {
         expect(TextInput.State.currentlyFocusedInput()).toBe(null);
 
         const root = Fantom.createRoot();
-        const ref = createRef<TextInputInstance>();
+        const ref = createRef<React.ElementRef<typeof TextInput>>();
 
         Fantom.runTask(() => {
           root.render(<TextInput nativeID="text-input" ref={ref} />);
@@ -606,7 +604,7 @@ describe('<TextInput>', () => {
     describe('setSelection', () => {
       it('dispatches the setTextAndSelection command', () => {
         const root = Fantom.createRoot();
-        const ref = createRef<TextInputInstance>();
+        const ref = createRef<React.ElementRef<typeof TextInput>>();
 
         Fantom.runTask(() => {
           root.render(

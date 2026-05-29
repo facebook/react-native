@@ -25,7 +25,7 @@ import type IntersectionObserver, {
 import type IntersectionObserverEntry from '../IntersectionObserverEntry';
 import type {NativeIntersectionObserverToken} from '../specs/NativeIntersectionObserver';
 
-import * as Systrace from '../../../../../Libraries/Performance/Systrace';
+import {trace} from '../../../../../Libraries/Performance/Systrace';
 import {
   getInstanceHandle,
   getNativeNodeReference,
@@ -219,14 +219,10 @@ export function unobserve(
  * entries to dispatch.
  */
 function notifyIntersectionObservers(): void {
-  Systrace.beginEvent(
+  trace(
     'IntersectionObserverManager.notifyIntersectionObservers',
+    doNotifyIntersectionObservers,
   );
-  try {
-    doNotifyIntersectionObservers();
-  } finally {
-    Systrace.endEvent();
-  }
 }
 
 function doNotifyIntersectionObservers(): void {

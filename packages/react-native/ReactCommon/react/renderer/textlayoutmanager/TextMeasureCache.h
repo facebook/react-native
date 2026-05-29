@@ -130,7 +130,8 @@ inline bool areTextAttributesEquivalentLayoutWise(const TextAttributes &lhs, con
              rhs.dynamicTypeRamp,
              rhs.alignment) &&
       floatEquality(lhs.fontSize, rhs.fontSize) && floatEquality(lhs.fontSizeMultiplier, rhs.fontSizeMultiplier) &&
-      floatEquality(lhs.letterSpacing, rhs.letterSpacing) && floatEquality(lhs.lineHeight, rhs.lineHeight);
+      floatEquality(lhs.letterSpacing, rhs.letterSpacing) && floatEquality(lhs.lineHeight, rhs.lineHeight) &&
+      floatEquality(lhs.maxFontSizeMultiplier, rhs.maxFontSizeMultiplier);
 }
 
 inline size_t textAttributesHashLayoutWise(const TextAttributes &textAttributes)
@@ -145,6 +146,7 @@ inline size_t textAttributesHashLayoutWise(const TextAttributes &textAttributes)
       textAttributes.fontStyle,
       textAttributes.fontVariant,
       textAttributes.allowFontScaling,
+      textAttributes.maxFontSizeMultiplier,
       textAttributes.dynamicTypeRamp,
       textAttributes.letterSpacing,
       textAttributes.lineHeight,

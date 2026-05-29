@@ -105,6 +105,67 @@ describe('ImageSourceUtils', () => {
     expect(sources[1]).toEqual(expect.objectContaining({uri: uri2, scale: 1}));
   });
 
+  it('should parse srcSet values without spaces after commas', () => {
+    const imageProps = {
+      srcSet: 'uri1 1x,uri2 2x,uri3 3x',
+    };
+    const sources = getImageSourcesFromImageProps(imageProps);
+
+    expect(sources).toBeDefined();
+    expect(sources).toHaveLength(3);
+    if (!Array.isArray(sources)) {
+      throw new Error('Expected `sources` to be an array');
+    }
+    expect(sources[0]).toEqual(
+      expect.objectContaining({uri: 'uri1', scale: 1}),
+    );
+    expect(sources[1]).toEqual(
+      expect.objectContaining({uri: 'uri2', scale: 2}),
+    );
+    expect(sources[2]).toEqual(
+      expect.objectContaining({uri: 'uri3', scale: 3}),
+    );
+  });
+
+  it('should parse fractional srcSet scales', () => {
+    const imageProps = {
+      srcSet: 'uri1 1.5x, uri2 2x',
+    };
+    const sources = getImageSourcesFromImageProps(imageProps);
+
+    expect(sources).toBeDefined();
+    expect(sources).toHaveLength(2);
+    if (!Array.isArray(sources)) {
+      throw new Error('Expected `sources` to be an array');
+    }
+    expect(sources[0]).toEqual(
+      expect.objectContaining({uri: 'uri1', scale: 1.5}),
+    );
+    expect(sources[1]).toEqual(
+      expect.objectContaining({uri: 'uri2', scale: 2}),
+    );
+  });
+
+  it('should ignore srcSet entries with a bare x descriptor', () => {
+    const imageProps = {
+      src: 'fallbackUri',
+      srcSet: 'invalid x, uri2 2x',
+    };
+    const sources = getImageSourcesFromImageProps(imageProps);
+
+    expect(sources).toBeDefined();
+    expect(sources).toHaveLength(2);
+    if (!Array.isArray(sources)) {
+      throw new Error('Expected `sources` to be an array');
+    }
+    expect(sources[0]).toEqual(
+      expect.objectContaining({uri: 'uri2', scale: 2}),
+    );
+    expect(sources[1]).toEqual(
+      expect.objectContaining({uri: 'fallbackUri', scale: 1}),
+    );
+  });
+
   it('should warn when an unsupported scale is provided in srcSet', () => {
     const mockWarn = jest.spyOn(console, 'warn').mockImplementation(() => {});
     let uri1 = 'uri1';

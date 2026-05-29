@@ -8,23 +8,26 @@
  * @format
  */
 
+/*::
 import type {Task} from './types';
 import type {ExecaPromise} from 'execa';
+*/
 
-import {task} from './utils';
-import debug from 'debug';
-import execa from 'execa';
-import fs from 'fs';
-import path from 'path';
+const {task} = require('./utils');
+const debug = require('debug');
+const execa = require('execa');
+const fs = require('fs');
+const path = require('path');
 
 const log = debug('core-cli-utils');
 
+/*::
 type BundlerOptions = {
   // Metro's config: https://metrobundler.dev/docs/configuration/
   config?: string,
   // Typically index.{ios,android}.js
   entryFile: string,
-  +platform: 'ios' | 'android' | string,
+  readonly platform: 'ios' | 'android' | string,
   dev: boolean,
   // Metro built main bundle
   outputJsBundle: string,
@@ -55,34 +58,47 @@ type HermesConfig = {
 };
 
 type BundlerWatch = {
-  +mode: 'watch',
+  readonly mode: 'watch',
   callback?: (metro: ExecaPromise) => void,
 };
 
 type BundlerBuild = {
-  +mode: 'bundle',
+  readonly mode: 'bundle',
 };
 
 type Bundler = BundlerWatch | BundlerBuild;
+
+type Bundle = {
+  validate?: Task<void>,
+  javascript: Task<ExecaPromise>,
+  sourcemap?: Task<void>,
+  validateHermesc?: Task<ExecaPromise>,
+  convert?: Task<ExecaPromise>,
+  compose?: Task<ExecaPromise>,
+};
+*/
 
 const FIRST = 1,
   SECOND = 2,
   THIRD = 3,
   FOURTH = 4;
 
-function getNodePackagePath(packageName: string): string {
+function getNodePackagePath(packageName /*: string */) /*: string */ {
   // $FlowFixMe[prop-missing] type definition is incomplete
   return require.resolve(packageName, {cwd: [process.cwd(), ...module.paths]});
 }
 
-function metro(...args: ReadonlyArray<string>): ExecaPromise {
+function metro(...args /*: ReadonlyArray<string> */) /*: ExecaPromise */ {
   log(`🚇 metro ${args.join(' ')} `);
   return execa('npx', ['--offline', 'metro', ...args]);
 }
 
-export const tasks = {
-  bundle: (options: BundlerOptions, ...args: ReadonlyArray<string>): Bundle => {
-    const steps: Bundle = {
+const tasks = {
+  bundle: (
+    options /*: BundlerOptions */,
+    ...args /*: ReadonlyArray<string> */
+  ) /*: Bundle */ => {
+    const steps /*: Bundle */ = {
       /* eslint-disable sort-keys */
       validate: task(FIRST, 'Check if Metro is available', () => {
         try {
@@ -103,29 +119,16 @@ export const tasks = {
   },
 };
 
-type Bundle = {
-  validate?: Task<void>,
-  javascript: Task<ExecaPromise>,
-  sourcemap?: Task<void>,
-  validateHermesc?: Task<ExecaPromise>,
-  convert?: Task<ExecaPromise>,
-  compose?: Task<ExecaPromise>,
-};
-
 const bundleApp = (
-  options: BundlerOptions,
-  ...metroArgs: ReadonlyArray<string>
+  options /*: BundlerOptions */,
+  ...metroArgs /*: ReadonlyArray<string> */
 ) => {
   if (options.outputJsBundle === options.outputBundle) {
     throw new Error('outputJsBundle and outputBundle cannot be the same.');
   }
-  // When using Hermes, Metro should generate the JS bundle to an intermediate file
-  // to then be converted to bytecode in the outputBundle. Otherwise just write to
-  // the outputBundle directly.
   let output =
     options.jsvm === 'hermes' ? options.outputJsBundle : options.outputBundle;
 
-  // TODO: Fix this by not using Metro CLI, which appends a .js extension
   if (output === options.outputJsBundle && !output.endsWith('.js')) {
     log(
       `Appending .js to outputBundle (because metro cli does it if it's missing): ${output}`,
@@ -134,7 +137,7 @@ const bundleApp = (
   }
 
   const isSourceMaps = options.outputSourceMap != null;
-  const bundle: Bundle = {
+  const bundle /*: Bundle */ = {
     javascript: task(SECOND, 'Metro generating an .jsbundle', () => {
       const args = [
         '--platform',
@@ -146,7 +149,6 @@ const bundleApp = (
         output,
       ];
       if (options.jsvm === 'hermes' && !options.dev) {
-        // Hermes doesn't require JS minification
         args.push('--minify', 'false');
       } else {
         args.push('--minify', options.minify ? 'true' : 'false');
@@ -166,9 +168,9 @@ const bundleApp = (
     throw new Error('If jsvm == "hermes", hermes config must be provided.');
   }
 
-  const hermes: HermesConfig = options.hermes;
+  const hermes /*: HermesConfig */ = options.hermes;
 
-  const isHermesInstalled: boolean = fs.existsSync(hermes.path);
+  const isHermesInstalled /*: boolean */ = fs.existsSync(hermes.path);
   if (!isHermesInstalled) {
     throw new Error(
       'Hermes Pod must be installed before bundling.\n' +
@@ -176,11 +178,8 @@ const bundleApp = (
     );
   }
 
-  const hermesc: string = path.join(hermes.path, hermes.hermesc);
+  const hermesc /*: string */ = path.join(hermes.path, hermes.hermesc);
 
-  /*
-   * Hermes only tasks:
-   */
   let composeSourceMaps;
   if (isSourceMaps) {
     bundle.sourcemap = task(
@@ -244,3 +243,5 @@ const bundleApp = (
 
   return bundle;
 };
+
+module.exports = {tasks};

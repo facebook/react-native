@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<417d41f906ec9966f937eb3e060d377b>>
+ * @generated SignedSource<<8a9430ba71722a75779e2b5fb6564f0e>>
  */
 
 /**
@@ -44,16 +44,15 @@ class ReactNativeFeatureFlagsProvider {
   virtual bool enableDestroyShadowTreeRevisionAsync() = 0;
   virtual bool enableDifferentiatorMutationVectorPreallocation() = 0;
   virtual bool enableDoubleMeasurementFixAndroid() = 0;
-  virtual bool enableEagerMainQueueModulesOnIOS() = 0;
   virtual bool enableEagerRootViewAttachment() = 0;
   virtual bool enableExclusivePropsUpdateAndroid() = 0;
   virtual bool enableFabricCommitBranching() = 0;
   virtual bool enableFabricLogs() = 0;
-  virtual bool enableFabricRenderer() = 0;
   virtual bool enableFontScaleChangesUpdatingLayout() = 0;
   virtual bool enableIOSTextBaselineOffsetPerLine() = 0;
   virtual bool enableIOSViewClipToPaddingBox() = 0;
   virtual bool enableImagePrefetchingAndroid() = 0;
+  virtual bool enableImageRequestDowngradingForNonVisibleImages() = 0;
   virtual bool enableImmediateUpdateModeForContentOffsetChanges() = 0;
   virtual bool enableImperativeFocus() = 0;
   virtual bool enableInteropViewManagerClassLookUpOptimizationIOS() = 0;
@@ -61,7 +60,6 @@ class ReactNativeFeatureFlagsProvider {
   virtual bool enableKeyEvents() = 0;
   virtual bool enableLayoutAnimationsOnAndroid() = 0;
   virtual bool enableLayoutAnimationsOnIOS() = 0;
-  virtual bool enableMainQueueCoordinatorOnIOS() = 0;
   virtual bool enableModuleArgumentNSNullConversionIOS() = 0;
   virtual bool enableMutationObserverByDefault() = 0;
   virtual bool enableNativeCSSParsing() = 0;
@@ -78,7 +76,6 @@ class ReactNativeFeatureFlagsProvider {
   virtual bool enableViewRecyclingForText() = 0;
   virtual bool enableViewRecyclingForView() = 0;
   virtual bool enableVirtualViewContainerStateExperimental() = 0;
-  virtual bool enableVirtualViewDebugFeatures() = 0;
   virtual bool fixDifferentiatorParentTagForUnflattenCase() = 0;
   virtual bool fixMappingOfEventPrioritiesBetweenFabricAndReact() = 0;
   virtual bool fixYogaFlexBasisFitContentInMainAxis() = 0;
@@ -111,8 +108,6 @@ class ReactNativeFeatureFlagsProvider {
   virtual bool useSharedAnimatedBackend() = 0;
   virtual bool useTraitHiddenOnAndroid() = 0;
   virtual bool useTurboModuleInterop() = 0;
-  virtual bool useTurboModules() = 0;
-  virtual bool useUnorderedMapInDifferentiator() = 0;
   virtual double viewCullingOutsetRatio() = 0;
   virtual bool viewTransitionEnabled() = 0;
   virtual bool viewTransitionUseHardwareBitmapAndroid() = 0;

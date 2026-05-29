@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<5bed6b328143c5e4c7a7ad25e4c48536>>
+ * @generated SignedSource<<869507719729d76403ed47be393cc120>>
  * @flow strict
  * @noformat
  */
@@ -44,16 +44,15 @@ export interface Spec extends TurboModule {
   +enableDestroyShadowTreeRevisionAsync?: () => boolean;
   +enableDifferentiatorMutationVectorPreallocation?: () => boolean;
   +enableDoubleMeasurementFixAndroid?: () => boolean;
-  +enableEagerMainQueueModulesOnIOS?: () => boolean;
   +enableEagerRootViewAttachment?: () => boolean;
   +enableExclusivePropsUpdateAndroid?: () => boolean;
   +enableFabricCommitBranching?: () => boolean;
   +enableFabricLogs?: () => boolean;
-  +enableFabricRenderer?: () => boolean;
   +enableFontScaleChangesUpdatingLayout?: () => boolean;
   +enableIOSTextBaselineOffsetPerLine?: () => boolean;
   +enableIOSViewClipToPaddingBox?: () => boolean;
   +enableImagePrefetchingAndroid?: () => boolean;
+  +enableImageRequestDowngradingForNonVisibleImages?: () => boolean;
   +enableImmediateUpdateModeForContentOffsetChanges?: () => boolean;
   +enableImperativeFocus?: () => boolean;
   +enableInteropViewManagerClassLookUpOptimizationIOS?: () => boolean;
@@ -61,7 +60,6 @@ export interface Spec extends TurboModule {
   +enableKeyEvents?: () => boolean;
   +enableLayoutAnimationsOnAndroid?: () => boolean;
   +enableLayoutAnimationsOnIOS?: () => boolean;
-  +enableMainQueueCoordinatorOnIOS?: () => boolean;
   +enableModuleArgumentNSNullConversionIOS?: () => boolean;
   +enableMutationObserverByDefault?: () => boolean;
   +enableNativeCSSParsing?: () => boolean;
@@ -78,7 +76,6 @@ export interface Spec extends TurboModule {
   +enableViewRecyclingForText?: () => boolean;
   +enableViewRecyclingForView?: () => boolean;
   +enableVirtualViewContainerStateExperimental?: () => boolean;
-  +enableVirtualViewDebugFeatures?: () => boolean;
   +fixDifferentiatorParentTagForUnflattenCase?: () => boolean;
   +fixMappingOfEventPrioritiesBetweenFabricAndReact?: () => boolean;
   +fixYogaFlexBasisFitContentInMainAxis?: () => boolean;
@@ -111,8 +108,6 @@ export interface Spec extends TurboModule {
   +useSharedAnimatedBackend?: () => boolean;
   +useTraitHiddenOnAndroid?: () => boolean;
   +useTurboModuleInterop?: () => boolean;
-  +useTurboModules?: () => boolean;
-  +useUnorderedMapInDifferentiator?: () => boolean;
   +viewCullingOutsetRatio?: () => number;
   +viewTransitionEnabled?: () => boolean;
   +viewTransitionUseHardwareBitmapAndroid?: () => boolean;

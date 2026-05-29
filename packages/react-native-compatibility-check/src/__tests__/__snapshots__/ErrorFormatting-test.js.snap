@@ -271,6 +271,7 @@ Object {
           "errorCode": "addedProps",
           "message": "NativeModuleTest: Object added required properties, which native will not provide
   -- afterMismatchGeneric
+  -- arrayBufferType
   -- booleanType
   -- exampleFunction
   -- simpleArray

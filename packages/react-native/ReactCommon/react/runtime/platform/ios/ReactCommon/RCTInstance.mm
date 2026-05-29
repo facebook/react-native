@@ -371,38 +371,31 @@ void RCTInstanceSetRuntimeDiagnosticFlags(NSString *flags)
   // Initialize RCTModuleRegistry so that TurboModules can require other TurboModules.
   [_bridgeModuleDecorator.moduleRegistry setTurboModuleRegistry:_turboModuleManager];
 
-  if (ReactNativeFeatureFlags::enableEagerMainQueueModulesOnIOS()) {
-    /**
-     * Some native modules need to capture uikit objects on the main thread.
-     * Start initializing those modules on the main queue here. The JavaScript thread
-     * will wait until this module init finishes, before executing the js bundle.
-     */
-    NSArray<NSString *> *modulesRequiringMainQueueSetup = [_delegate unstableModulesRequiringMainQueueSetup];
+  /**
+   * Some native modules need to capture uikit objects on the main thread.
+   * Start initializing those modules on the main queue here. The JavaScript thread
+   * will wait until this module init finishes, before executing the js bundle.
+   */
+  NSArray<NSString *> *modulesRequiringMainQueueSetup = [_delegate unstableModulesRequiringMainQueueSetup];
 
-    std::shared_ptr<std::mutex> mutex = std::make_shared<std::mutex>();
-    std::shared_ptr<std::condition_variable> cv = std::make_shared<std::condition_variable>();
-    std::shared_ptr<bool> isReady = std::make_shared<bool>(false);
+  dispatch_semaphore_t moduleSetupComplete = dispatch_semaphore_create(0);
 
-    _waitUntilModuleSetupComplete = ^{
-      std::unique_lock<std::mutex> lock(*mutex);
-      cv->wait(lock, [isReady] { return *isReady; });
-    };
+  _waitUntilModuleSetupComplete = ^{
+    dispatch_semaphore_wait(moduleSetupComplete, DISPATCH_TIME_FOREVER);
+  };
 
-    // TODO(T218039767): Integrate perf logging into main queue module init
-    RCTExecuteOnMainQueue(^{
-      for (NSString *moduleName in modulesRequiringMainQueueSetup) {
-        [self->_bridgeModuleDecorator.moduleRegistry moduleForName:[moduleName UTF8String]];
-      }
+  // TODO(T218039767): Integrate perf logging into main queue module init
+  RCTExecuteOnMainQueue(^{
+    for (NSString *moduleName in modulesRequiringMainQueueSetup) {
+      [self->_bridgeModuleDecorator.moduleRegistry moduleForName:[moduleName UTF8String]];
+    }
 
-      RCTScreenSize();
-      RCTScreenScale();
-      RCTSwitchSize();
+    RCTScreenSize();
+    RCTScreenScale();
+    RCTSwitchSize();
 
-      std::lock_guard<std::mutex> lock(*mutex);
-      *isReady = true;
-      cv->notify_all();
-    });
-  }
+    dispatch_semaphore_signal(moduleSetupComplete);
+  });
 
   RCTLogSetBridgelessModuleRegistry(_bridgeModuleDecorator.moduleRegistry);
   RCTLogSetBridgelessCallableJSModules(_bridgeModuleDecorator.callableJSModules);

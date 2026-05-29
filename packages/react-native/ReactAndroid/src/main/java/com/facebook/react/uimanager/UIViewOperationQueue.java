@@ -131,9 +131,6 @@ public class UIViewOperationQueue {
 
   public void enqueueSendAccessibilityEvent(int tag, int eventType) {}
 
-  public void enqueueLayoutUpdateFinished(
-      ReactShadowNode node, UIImplementation.LayoutUpdateListener listener) {}
-
   public void enqueueUIBlock(UIBlock block) {}
 
   public void prependUIBlock(UIBlock block) {}

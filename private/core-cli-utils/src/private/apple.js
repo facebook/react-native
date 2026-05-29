@@ -8,14 +8,17 @@
  * @format
  */
 
+/*::
 import type {Task} from './types';
 import type {ExecaPromise} from 'execa';
+*/
 
-import {assertDependencies, isOnPath, task} from './utils';
-import execa from 'execa';
-import fs from 'fs';
-import path from 'path';
+const {assertDependencies, isOnPath, task} = require('./utils');
+const execa = require('execa');
+const fs = require('fs');
+const path = require('path');
 
+/*::
 type AppleBuildMode = 'Debug' | 'Release';
 
 type AppleBuildOptions = {
@@ -50,10 +53,11 @@ type AppleOptions = {
   // The environment variables to pass to the build command
   env?: {[key: string]: string | void, ...},
 };
+*/
 
 function checkPodfileInSyncWithManifest(
-  lockfilePath: string,
-  manifestLockfilePath: string,
+  lockfilePath /*: string */,
+  manifestLockfilePath /*: string */,
 ) {
   try {
     const expected = fs.readFileSync(lockfilePath, 'utf8');
@@ -63,8 +67,8 @@ function checkPodfileInSyncWithManifest(
         'Please run: yarn bootstrap ios, Podfile.lock and Pods/Manifest.lock are out of sync',
       );
     }
-  } catch (e) {
-    throw new Error('Please run: yarn run bootstrap ios: ' + e.message);
+  } catch (e /*: unknown */) {
+    throw new Error('Please run: yarn run bootstrap ios: ' + String(e));
   }
 }
 
@@ -74,23 +78,36 @@ const FIRST = 1,
   FOURTH = 4,
   FIFTH = 5;
 
-function getNodePackagePath(packageName: string): string {
+function getNodePackagePath(packageName /*: string */) /*: string */ {
   // $FlowFixMe[prop-missing] type definition is incomplete
   return require.resolve(packageName, {cwd: [process.cwd(), ...module.paths]});
 }
 
+/*::
+type BootstrapTasks = {
+  cleanupBuildFolder: Task<void>,
+  runCodegen: Task<void>,
+  validate: Task<void>,
+  installRubyGems: Task<ExecaPromise>,
+  installDependencies: Task<ExecaPromise>,
+};
+
+type BuildTasks = {
+  validate: Task<void>,
+  hasPodsInstalled: Task<void>,
+  build: Task<ExecaPromise>,
+};
+
+type InstallTasks = {
+  validate: Task<void>,
+  install: Task<ExecaPromise>,
+};
+*/
+
 /* eslint sort-keys: "off" */
-export const tasks = {
+const tasks = {
   // 1. Setup your environment for building the iOS apps
-  bootstrap: (
-    options: AppleBootstrapOption,
-  ): {
-    cleanupBuildFolder: Task<void>,
-    runCodegen: Task<void>,
-    validate: Task<void>,
-    installRubyGems: Task<ExecaPromise>,
-    installDependencies: Task<ExecaPromise>,
-  } => ({
+  bootstrap: (options /*: AppleBootstrapOption */) /*: BootstrapTasks */ => ({
     cleanupBuildFolder: task(FIRST, 'Cleanup build folder', () => {
       execa.sync('rm', ['-rf', 'build'], {
         cwd: options.cwd,
@@ -125,7 +142,7 @@ export const tasks = {
       }),
     ),
     installDependencies: task(FIFTH, 'Install CocoaPods dependencies', () => {
-      const env: {[string]: string | void} = {
+      const env /*: {[string]: string | void} */ = {
         RCT_NEW_ARCH_ENABLED: options.newArchitecture ? '1' : '0',
         USE_FRAMEWORKS: options.frameworks,
         USE_HERMES: options.hermes ? '1' : '0',
@@ -143,13 +160,9 @@ export const tasks = {
 
   // 2. Build the iOS app using a setup environment
   build: (
-    options: AppleBuildOptions,
-    ...args: ReadonlyArray<string>
-  ): {
-    validate: Task<void>,
-    hasPodsInstalled: Task<void>,
-    build: Task<ExecaPromise>,
-  } => ({
+    options /*: AppleBuildOptions */,
+    ...args /*: ReadonlyArray<string> */
+  ) /*: BuildTasks */ => ({
     validate: task(
       FIRST,
       "Check you've run xcode-select --install for xcodebuild",
@@ -165,8 +178,8 @@ export const tasks = {
             /* eslint-disable-next-line no-bitwise */
             fs.constants.F_OK | fs.constants.R_OK,
           );
-        } catch (e) {
-          throw new Error('Please run: yarn run bootstrap ios: ' + e.message);
+        } catch (e /*: unknown */) {
+          throw new Error('Please run: yarn run bootstrap ios: ' + String(e));
         }
       }
       checkPodfileInSyncWithManifest(
@@ -185,7 +198,6 @@ export const tasks = {
         _args.push('-scheme', options.scheme);
       }
       if (options.destination != null) {
-        // The user doesn't want a generic target, they know better.
         switch (options.destination) {
           case 'simulator':
             _args.push('-sdk', 'iphonesimulator');
@@ -204,9 +216,7 @@ export const tasks = {
 
   // 3. Install the built app on a simulator or device
   ios: {
-    install: (
-      options: AppleInstallApp,
-    ): {validate: Task<void>, install: Task<ExecaPromise>} => ({
+    install: (options /*: AppleInstallApp */) /*: InstallTasks */ => ({
       validate: task(
         FIRST,
         "Check you've run xcode-select --install for xcrun",
@@ -225,3 +235,5 @@ export const tasks = {
     }),
   },
 };
+
+module.exports = {tasks};

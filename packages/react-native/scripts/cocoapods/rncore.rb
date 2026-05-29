@@ -103,7 +103,7 @@ class ReactNativeCoreUtils
         if ENV["RCT_TESTONLY_RNCORE_TARBALL_PATH"]
             abort_if_use_local_rncore_with_no_file()
             rncore_log("Using local xcframework at #{ENV["RCT_TESTONLY_RNCORE_TARBALL_PATH"]}")
-            return {:http => "file://#{ENV["RCT_TESTONLY_RNCORE_TARBALL_PATH"]}" }
+            return {:http => ReactNativePodsUtils.local_file_uri(ENV["RCT_TESTONLY_RNCORE_TARBALL_PATH"]) }
         end
 
         if ENV["RCT_USE_PREBUILT_RNCORE"] == "1"
@@ -161,7 +161,7 @@ class ReactNativeCoreUtils
         rncore_log("  #{Pathname.new(destinationRelease).relative_path_from(Pathname.pwd).to_s}")
 
         return {:http => stable_tarball_url(@@react_native_version, :debug) } unless @@download_dsyms
-        return {:http => URI::File.build(path: destinationDebug).to_s }
+        return {:http => ReactNativePodsUtils.local_file_uri(destinationDebug) }
     end
 
     def self.podspec_source_download_prebuilt_nightly_tarball()
@@ -198,7 +198,7 @@ class ReactNativeCoreUtils
         rncore_log("  #{Pathname.new(destinationDebug).relative_path_from(Pathname.pwd).to_s}")
         rncore_log("  #{Pathname.new(destinationRelease).relative_path_from(Pathname.pwd).to_s}")
         return {:http => nightly_tarball_url(@@react_native_version, :debug) } unless @@download_dsyms
-        return {:http => URI::File.build(path: destinationDebug).to_s }
+        return {:http => ReactNativePodsUtils.local_file_uri(destinationDebug) }
     end
 
     def self.process_dsyms(frameworkTarball, dSymsTarball)

@@ -39,21 +39,21 @@ import {
 } from './internals/EventInternals';
 
 export interface EventInit {
-  +bubbles?: boolean;
-  +cancelable?: boolean;
-  +composed?: boolean;
+  readonly bubbles?: boolean;
+  readonly cancelable?: boolean;
+  readonly composed?: boolean;
 }
 
 export default class Event {
-  static +NONE: 0;
-  static +CAPTURING_PHASE: 1;
-  static +AT_TARGET: 2;
-  static +BUBBLING_PHASE: 3;
+  static readonly NONE: 0;
+  static readonly CAPTURING_PHASE: 1;
+  static readonly AT_TARGET: 2;
+  static readonly BUBBLING_PHASE: 3;
 
-  +NONE: 0;
-  +CAPTURING_PHASE: 1;
-  +AT_TARGET: 2;
-  +BUBBLING_PHASE: 3;
+  readonly NONE: 0;
+  readonly CAPTURING_PHASE: 1;
+  readonly AT_TARGET: 2;
+  readonly BUBBLING_PHASE: 3;
 
   _bubbles: boolean;
   _cancelable: boolean;

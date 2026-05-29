@@ -249,7 +249,7 @@ public open class ReactDelegate {
             ((ReactNativeNewArchitectureFeatureFlags.enableBridgelessArchitecture() &&
                 reactHost?.devSupportManager != null) ||
                 (reactNativeHost?.hasInstance() == true &&
-                    reactNativeHost?.useDeveloperSupport == true))
+                    reactNativeHost?.getUseDeveloperSupport() == true))
     ) {
       event.startTracking()
       return true
@@ -270,7 +270,8 @@ public open class ReactDelegate {
         }
       } else {
         if (
-            reactNativeHost?.hasInstance() == true && reactNativeHost?.useDeveloperSupport == true
+            reactNativeHost?.hasInstance() == true &&
+                reactNativeHost?.getUseDeveloperSupport() == true
         ) {
           reactNativeHost?.reactInstanceManager?.showDevOptionsDialog()
           return true

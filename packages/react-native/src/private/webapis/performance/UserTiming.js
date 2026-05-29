@@ -28,14 +28,14 @@ export type DetailType =
   | {devtools?: ExtensionMarkerPayload | ExtensionTrackEntryPayload, ...};
 
 export interface PerformanceMarkOptions {
-  +detail?: DetailType;
-  +startTime?: DOMHighResTimeStamp;
+  readonly detail?: DetailType;
+  readonly startTime?: DOMHighResTimeStamp;
 }
 
 export type TimeStampOrName = DOMHighResTimeStamp | string;
 
 export interface PerformanceMeasureInit extends PerformanceEntryInit {
-  +detail?: DetailType;
+  readonly detail?: DetailType;
 }
 
 class PerformanceMarkTemplate extends PerformanceEntry {

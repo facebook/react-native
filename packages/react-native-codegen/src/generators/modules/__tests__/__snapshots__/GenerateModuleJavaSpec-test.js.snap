@@ -41,6 +41,8 @@ public abstract class NativeSampleTurboModuleSpec extends ReactContextBaseJavaMo
 }
 `;
 
+exports[`GenerateModuleJavaSpec can generate fixture array_buffer_native_module 1`] = `Map {}`;
+
 exports[`GenerateModuleJavaSpec can generate fixture complex_objects 1`] = `
 Map {
   "java/com/facebook/fbreact/specs/NativeSampleTurboModuleSpec.java" => "

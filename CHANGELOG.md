@@ -1,5 +1,27 @@
 # Changelog
 
+## v0.86.0-rc.2
+
+### Added
+
+#### Android specific
+
+- **Pressable**: `android_ripple` now accepts `PlatformColor` ([60d8b282ea](https://github.com/facebook/react-native/commit/60d8b282eaf5bd2803fdaa838520f6ff41cc6737) by [@adrcotfas](https://github.com/adrcotfas))
+
+### Changed
+
+#### iOS specific
+
+- **Build**: Cache prebuilt iOS binaries ([9a0b05b8d0](https://github.com/facebook/react-native/commit/9a0b05b8d07f3468a08077119189406d56a230ba) by [@cipolleschi](https://github.com/cipolleschi))
+
+### Fixed
+
+#### iOS specific
+
+- **Build**: Fixed escaping local file URIs for unicode paths in ruby scripts ([9563cb5b5a](https://github.com/facebook/react-native/commit/9563cb5b5a546d6daf09abc9d5594850129a4ae3) by [@chrfalch](https://github.com/chrfalch))
+- **CocoaPods**: Fix Pod install checksum drifting ([814ebb12b6](https://github.com/facebook/react-native/commit/814ebb12b64cee51b91ada9fa0d90970feac9a9f) by [@chrfalch](https://github.com/chrfalch))
+- **CocoaPods**: Load `RCTDefines.h` first in the prebuilt React umbrella and drop the `module *` submodule wildcard so RCT_* macros propagate to consumer pods under `use_frameworks!`. ([90c303fafb](https://github.com/facebook/react-native/commit/90c303fafb941155dbe379e6b3e74390a139872a) by [@wneel](https://github.com/wneel))
+
 ## v0.86.0-rc.1
 
 ### Fixed

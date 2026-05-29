@@ -18,4 +18,4 @@ yarn add --dev @react-native/assets-registry
 To run the tests in this package, run the following commands from the React Native root folder:
 
 1. `yarn` to install the dependencies. You just need to run this once
-2. `yarn jest packages/assets`.
+2. `yarn jest packages/assets-registry`.

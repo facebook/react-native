@@ -30,9 +30,9 @@ type ObjectC = {|
 type ObjectUnion = ObjectA | ObjectB | ObjectC;
 
 export interface Spec extends TurboModule {
-  +exampleFunction: (a: ObjectUnion, b: number) => void;
-  +getConstants: () => {
-    +exampleConstant: number,
+  readonly exampleFunction: (a: ObjectUnion, b: number) => void;
+  readonly getConstants: () => {
+    readonly exampleConstant: number,
   };
 }
 

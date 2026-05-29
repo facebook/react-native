@@ -21,12 +21,12 @@ export type AppearancePreferences = {
 };
 
 export interface Spec extends TurboModule {
-  +getColorScheme: () => ColorSchemeName;
-  +setColorScheme: (colorScheme: ColorSchemeOverride) => void;
+  readonly getColorScheme: () => ColorSchemeName;
+  readonly setColorScheme: (colorScheme: ColorSchemeOverride) => void;
 
   // RCTEventEmitter
-  +addListener: (eventName: string) => void;
-  +removeListeners: (count: number) => void;
+  readonly addListener: (eventName: string) => void;
+  readonly removeListeners: (count: number) => void;
 }
 
 export default TurboModuleRegistry.get<Spec>('Appearance') as ?Spec;

@@ -5,6 +5,8 @@
  * LICENSE file in the root directory of this source tree.
  */
 
+@file:Suppress("DEPRECATION", "DEPRECATION_ERROR") // Conflicting okhttp versions
+
 package com.facebook.react.modules.network
 
 import com.facebook.react.bridge.Arguments
@@ -15,7 +17,11 @@ import com.facebook.react.internal.featureflags.ReactNativeFeatureFlags
 import com.facebook.react.internal.featureflags.ReactNativeFeatureFlagsDefaults
 import com.facebook.react.internal.featureflags.ReactNativeFeatureFlagsForTests
 import com.facebook.testutils.shadows.ShadowArguments
+import java.io.ByteArrayInputStream
 import java.net.SocketTimeoutException
+import okhttp3.MediaType
+import okhttp3.MultipartBody
+import okhttp3.RequestBody
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.After
 import org.junit.Before
@@ -290,6 +296,123 @@ class NetworkEventUtilTest {
     assertThat(args.getInt(1)).isEqualTo(statusCode)
     assertThat(args.getMap(2)).isEqualTo(expectedHeadersMap)
     assertThat(args.getString(3)).isEqualTo(url)
+  }
+
+  @Test
+  fun testGetRequestBodyPreviewReturnsNullForNullBody() {
+    assertThat(NetworkEventUtil.getRequestBodyPreview(null)).isNull()
+  }
+
+  @Test
+  fun testGetRequestBodyPreviewReturnsBodyForStringRequest() {
+    val payload = """{"key":"value"}"""
+    val body = RequestBody.create(MediaType.parse("application/json"), payload)
+
+    assertThat(NetworkEventUtil.getRequestBodyPreview(body)).isEqualTo(payload)
+  }
+
+  @Test
+  fun testGetRequestBodyPreviewUnwrapsProgressRequestBody() {
+    val payload = "hello world"
+    val inner = RequestBody.create(MediaType.parse("text/plain"), payload)
+    val wrapped = ProgressRequestBody(inner) { _, _, _ -> }
+
+    assertThat(NetworkEventUtil.getRequestBodyPreview(wrapped)).isEqualTo(payload)
+  }
+
+  @Test
+  fun testGetRequestBodyPreviewMultipartWithTextParts() {
+    val body =
+        MultipartBody.Builder("test-boundary")
+            .setType(MultipartBody.FORM)
+            .addFormDataPart("field1", "value1")
+            .addFormDataPart("field2", "value2")
+            .build()
+
+    val preview = NetworkEventUtil.getRequestBodyPreview(body)
+
+    assertThat(preview).isNotNull()
+    assertThat(preview).contains("--test-boundary")
+    assertThat(preview).contains("--test-boundary--")
+    assertThat(preview).contains("name=\"field1\"")
+    assertThat(preview).contains("value1")
+    assertThat(preview).contains("name=\"field2\"")
+    assertThat(preview).contains("value2")
+    assertThat(preview).doesNotContain("[Preview unavailable]")
+  }
+
+  @Test
+  fun testGetRequestBodyPreviewMultipartWithFilePartReplacesBinaryContent() {
+    val fileBytes = ByteArray(2048) { it.toByte() }
+    val streamingPart =
+        RequestBodyUtil.create(
+            MediaType.parse("application/octet-stream"),
+            ByteArrayInputStream(fileBytes),
+        )
+    val body =
+        MultipartBody.Builder("test-boundary")
+            .setType(MultipartBody.FORM)
+            .addFormDataPart("description", "an image")
+            .addFormDataPart("file", "photo.jpg", streamingPart)
+            .build()
+
+    val preview = NetworkEventUtil.getRequestBodyPreview(body)
+
+    assertThat(preview).isNotNull()
+    assertThat(preview).contains("--test-boundary")
+    assertThat(preview).contains("name=\"description\"")
+    assertThat(preview).contains("an image")
+    assertThat(preview).contains("name=\"file\"")
+    assertThat(preview).contains("filename=\"photo.jpg\"")
+    assertThat(preview).contains("[Binary data, 2048 bytes]")
+    assertThat(preview).doesNotContain("[Preview unavailable]")
+  }
+
+  @Test
+  fun testGetRequestBodyPreviewSingleOneShotBodyShowsPlaceholder() {
+    val fileBytes = ByteArray(512) { it.toByte() }
+    val body =
+        RequestBodyUtil.create(
+            MediaType.parse("application/octet-stream"),
+            ByteArrayInputStream(fileBytes),
+        )
+
+    val preview = NetworkEventUtil.getRequestBodyPreview(body)
+
+    assertThat(preview).isEqualTo("[Binary data, 512 bytes]")
+  }
+
+  @Test
+  fun testGetRequestBodyPreviewDoesNotConsumeMultipartOneShotStream() {
+    // Regression guard: previewMultipartWithBinaryParts must not call writeTo() on a
+    // one-shot part. If it ever does, the underlying stream will be drained and the
+    // real upload will fail at request time.
+    val fileBytes = ByteArray(2048) { it.toByte() }
+    val stream = ByteArrayInputStream(fileBytes)
+    val streamingPart = RequestBodyUtil.create(MediaType.parse("application/octet-stream"), stream)
+    val body =
+        MultipartBody.Builder("test-boundary")
+            .setType(MultipartBody.FORM)
+            .addFormDataPart("description", "an image")
+            .addFormDataPart("file", "photo.jpg", streamingPart)
+            .build()
+
+    NetworkEventUtil.getRequestBodyPreview(body)
+
+    assertThat(stream.available()).isEqualTo(fileBytes.size)
+  }
+
+  @Test
+  fun testGetRequestBodyPreviewDoesNotConsumeSingleOneShotStream() {
+    // Regression guard for the top-level one-shot branch: getRequestBodyPreview must
+    // only read contentLength() / contentType() on a one-shot body, never writeTo().
+    val fileBytes = ByteArray(512) { it.toByte() }
+    val stream = ByteArrayInputStream(fileBytes)
+    val body = RequestBodyUtil.create(MediaType.parse("application/octet-stream"), stream)
+
+    NetworkEventUtil.getRequestBodyPreview(body)
+
+    assertThat(stream.available()).isEqualTo(fileBytes.size)
   }
 
   @Test

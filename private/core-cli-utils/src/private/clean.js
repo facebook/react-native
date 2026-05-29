@@ -8,19 +8,27 @@
  * @format
  */
 
+/*::
 import type {Task} from './types';
 import type {ExecaPromise, Options as ExecaOptions} from 'execa';
+*/
 
-import {assertDependencies, isMacOS, isOnPath, isWindows, task} from './utils';
-import execa from 'execa';
-import {existsSync, readdirSync, rm} from 'fs';
-import os from 'os';
-import path from 'path';
+const {
+  assertDependencies,
+  isMacOS,
+  isOnPath,
+  isWindows,
+  task,
+} = require('./utils');
+const execa = require('execa');
+const {existsSync, readdirSync, rm} = require('fs');
+const os = require('os');
+const path = require('path');
 
 const FIRST = 1,
   SECOND = 2;
 
-const rmrf = (pathname: string) => {
+const rmrf = (pathname /*: string */) => {
   if (!existsSync(pathname)) {
     return;
   }
@@ -31,13 +39,13 @@ const rmrf = (pathname: string) => {
  * Removes the contents of a directory matching a given pattern, but keeps the directory.
  * @private
  */
-export function deleteDirectoryContents(
-  directory: string,
-  filePattern: RegExp,
-): () => Promise<void> {
+function deleteDirectoryContents(
+  directory /*: string */,
+  filePattern /*: RegExp */,
+) /*: () => Promise<void> */ {
   return async function deleteDirectoryContentsAction() {
     const base = path.dirname(directory);
-    const files = readdirSync(base).filter((filename: string) =>
+    const files = readdirSync(base).filter((filename /*: string */) =>
       filePattern.test(filename),
     );
     for (const filename of files) {
@@ -50,7 +58,7 @@ export function deleteDirectoryContents(
  * Removes a directory recursively.
  * @private
  */
-export function deleteDirectory(directory: string): () => Promise<void> {
+function deleteDirectory(directory /*: string */) /*: () => Promise<void> */ {
   return async function cleanDirectoryAction() {
     rmrf(directory);
   };
@@ -60,14 +68,15 @@ export function deleteDirectory(directory: string): () => Promise<void> {
  * Deletes the contents of the tmp directory matching a given pattern.
  * @private
  */
-export function deleteTmpDirectoryContents(
-  filepattern: RegExp,
-): () => Promise<void> {
+function deleteTmpDirectoryContents(
+  filepattern /*: RegExp */,
+) /*: () => Promise<void> */ {
   return deleteDirectoryContents(os.tmpdir(), filepattern);
 }
 
 const platformGradlew = isWindows ? 'gradlew.bat' : 'gradlew';
 
+/*::
 type CocoaPodsClean = {
   clean: Task<ExecaPromise>,
 };
@@ -104,14 +113,15 @@ type CleanTasks = {
   yarn: (projectRootDir: string) => YarnClean,
   cocoapods?: (projectRootDir: string) => CocoaPodsClean,
 };
+*/
 
 // The tasks that cleanup various build artefacts.
 /* eslint sort-keys: "off" */
-export const tasks: CleanTasks = {
+const tasks /*: CleanTasks */ = {
   /**
    * Cleans up the Android Gradle cache
    */
-  android: (androidSrcDir: ?string, opts?: ExecaOptions) => ({
+  android: (androidSrcDir /*: ?string */, opts /*: ?ExecaOptions */) => ({
     validate: task(FIRST, 'Check gradlew is available', () => {
       assertDependencies(isOnPath(platformGradlew, 'Gradle wrapper'));
     }),
@@ -150,37 +160,43 @@ export const tasks: CleanTasks = {
   /**
    * Cleans up the `node_modules` folder and optionally garbage collects the npm cache.
    */
-  npm: (projectRootDir: string) => ({
+  npm: (projectRootDir /*: string */) => ({
     node_modules: task(
       FIRST,
       '🧹 Clean node_modules',
       deleteDirectory(path.join(projectRootDir, 'node_modules')),
     ),
-    verify_cache: task(SECOND, '🔬 Verify npm cache', (opts?: ExecaOptions) =>
-      execa('npm', ['cache', 'verify'], {cwd: projectRootDir, ...opts}),
+    verify_cache: task(
+      SECOND,
+      '🔬 Verify npm cache',
+      (opts /*: ?ExecaOptions */) =>
+        execa('npm', ['cache', 'verify'], {cwd: projectRootDir, ...opts}),
     ),
   }),
 
   /**
    * Stops Watchman and clears its cache
    */
-  watchman: (projectRootDir: string) => ({
-    stop: task(FIRST, '✋ Stop Watchman', (opts?: ExecaOptions) =>
+  watchman: (projectRootDir /*: string */) => ({
+    stop: task(FIRST, '✋ Stop Watchman', (opts /*: ?ExecaOptions */) =>
       execa(isWindows ? 'tskill' : 'killall', ['watchman'], {
         cwd: projectRootDir,
         ...opts,
       }),
     ),
-    cache: task(SECOND, '🧹 Delete Watchman cache', (opts?: ExecaOptions) =>
-      execa('watchman', ['watch-del-all'], {cwd: projectRootDir, ...opts}),
+    cache: task(
+      SECOND,
+      '🧹 Delete Watchman cache',
+      (opts /*: ?ExecaOptions */) =>
+        execa('watchman', ['watch-del-all'], {cwd: projectRootDir, ...opts}),
     ),
   }),
 
   /**
    * Cleans up the Yarn cache
    */
-  yarn: (projectRootDir: string) => ({
-    clean: task(FIRST, '🧹 Clean Yarn cache', (opts?: ExecaOptions) =>
+  yarn: (projectRootDir /*: string */) => ({
+    clean: task(FIRST, '🧹 Clean Yarn cache', (opts /*: ?ExecaOptions */) =>
       execa('yarn', ['cache', 'clean'], {cwd: projectRootDir, ...opts}),
     ),
   }),
@@ -190,13 +206,22 @@ if (isMacOS) {
   /**
    * Cleans up the local and global CocoaPods cache
    */
-  tasks.cocoapods = (projectRootDir: string) => ({
-    // TODO: add project root
-    clean: task(FIRST, '🧹 Clean CocoaPods pod cache', (opts?: ExecaOptions) =>
-      execa('bundle', ['exec', 'pod', 'deintegrate'], {
-        cwd: projectRootDir,
-        ...opts,
-      }),
+  tasks.cocoapods = (projectRootDir /*: string */) => ({
+    clean: task(
+      FIRST,
+      '🧹 Clean CocoaPods pod cache',
+      (opts /*: ?ExecaOptions */) =>
+        execa('bundle', ['exec', 'pod', 'deintegrate'], {
+          cwd: projectRootDir,
+          ...opts,
+        }),
     ),
   });
 }
+
+module.exports = {
+  deleteDirectory,
+  deleteDirectoryContents,
+  deleteTmpDirectoryContents,
+  tasks,
+};

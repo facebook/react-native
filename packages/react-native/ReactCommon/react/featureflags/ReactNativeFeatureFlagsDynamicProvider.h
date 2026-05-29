@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<ec98fe64276aaaa226710fad24b27415>>
+ * @generated SignedSource<<b653dee4b92adb7177a7cd354b5e3573>>
  */
 
 /**
@@ -216,15 +216,6 @@ class ReactNativeFeatureFlagsDynamicProvider : public ReactNativeFeatureFlagsDef
     return ReactNativeFeatureFlagsDefaults::enableDoubleMeasurementFixAndroid();
   }
 
-  bool enableEagerMainQueueModulesOnIOS() override {
-    auto value = values_["enableEagerMainQueueModulesOnIOS"];
-    if (!value.isNull()) {
-      return value.getBool();
-    }
-
-    return ReactNativeFeatureFlagsDefaults::enableEagerMainQueueModulesOnIOS();
-  }
-
   bool enableEagerRootViewAttachment() override {
     auto value = values_["enableEagerRootViewAttachment"];
     if (!value.isNull()) {
@@ -261,15 +252,6 @@ class ReactNativeFeatureFlagsDynamicProvider : public ReactNativeFeatureFlagsDef
     return ReactNativeFeatureFlagsDefaults::enableFabricLogs();
   }
 
-  bool enableFabricRenderer() override {
-    auto value = values_["enableFabricRenderer"];
-    if (!value.isNull()) {
-      return value.getBool();
-    }
-
-    return ReactNativeFeatureFlagsDefaults::enableFabricRenderer();
-  }
-
   bool enableFontScaleChangesUpdatingLayout() override {
     auto value = values_["enableFontScaleChangesUpdatingLayout"];
     if (!value.isNull()) {
@@ -304,6 +286,15 @@ class ReactNativeFeatureFlagsDynamicProvider : public ReactNativeFeatureFlagsDef
     }
 
     return ReactNativeFeatureFlagsDefaults::enableImagePrefetchingAndroid();
+  }
+
+  bool enableImageRequestDowngradingForNonVisibleImages() override {
+    auto value = values_["enableImageRequestDowngradingForNonVisibleImages"];
+    if (!value.isNull()) {
+      return value.getBool();
+    }
+
+    return ReactNativeFeatureFlagsDefaults::enableImageRequestDowngradingForNonVisibleImages();
   }
 
   bool enableImmediateUpdateModeForContentOffsetChanges() override {
@@ -367,15 +358,6 @@ class ReactNativeFeatureFlagsDynamicProvider : public ReactNativeFeatureFlagsDef
     }
 
     return ReactNativeFeatureFlagsDefaults::enableLayoutAnimationsOnIOS();
-  }
-
-  bool enableMainQueueCoordinatorOnIOS() override {
-    auto value = values_["enableMainQueueCoordinatorOnIOS"];
-    if (!value.isNull()) {
-      return value.getBool();
-    }
-
-    return ReactNativeFeatureFlagsDefaults::enableMainQueueCoordinatorOnIOS();
   }
 
   bool enableModuleArgumentNSNullConversionIOS() override {
@@ -520,15 +502,6 @@ class ReactNativeFeatureFlagsDynamicProvider : public ReactNativeFeatureFlagsDef
     }
 
     return ReactNativeFeatureFlagsDefaults::enableVirtualViewContainerStateExperimental();
-  }
-
-  bool enableVirtualViewDebugFeatures() override {
-    auto value = values_["enableVirtualViewDebugFeatures"];
-    if (!value.isNull()) {
-      return value.getBool();
-    }
-
-    return ReactNativeFeatureFlagsDefaults::enableVirtualViewDebugFeatures();
   }
 
   bool fixDifferentiatorParentTagForUnflattenCase() override {
@@ -817,24 +790,6 @@ class ReactNativeFeatureFlagsDynamicProvider : public ReactNativeFeatureFlagsDef
     }
 
     return ReactNativeFeatureFlagsDefaults::useTurboModuleInterop();
-  }
-
-  bool useTurboModules() override {
-    auto value = values_["useTurboModules"];
-    if (!value.isNull()) {
-      return value.getBool();
-    }
-
-    return ReactNativeFeatureFlagsDefaults::useTurboModules();
-  }
-
-  bool useUnorderedMapInDifferentiator() override {
-    auto value = values_["useUnorderedMapInDifferentiator"];
-    if (!value.isNull()) {
-      return value.getBool();
-    }
-
-    return ReactNativeFeatureFlagsDefaults::useUnorderedMapInDifferentiator();
   }
 
   double viewCullingOutsetRatio() override {

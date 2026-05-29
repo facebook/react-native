@@ -138,7 +138,7 @@ export default class Device {
   // Logging reporting batches of cdp messages
   #cdpDebugLogging: CdpDebugLogging;
 
-  +#experiments: Experiments;
+  readonly #experiments: Experiments;
 
   constructor(deviceOptions: DeviceOptions) {
     this.#experiments = deviceOptions.experiments;

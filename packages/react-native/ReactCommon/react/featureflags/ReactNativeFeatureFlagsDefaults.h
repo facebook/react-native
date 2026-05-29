@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<df8c0c8c4ec5942b5855b53beb497c1f>>
+ * @generated SignedSource<<f6ec4d10a7330c120b77504ead7bf865>>
  */
 
 /**
@@ -103,10 +103,6 @@ class ReactNativeFeatureFlagsDefaults : public ReactNativeFeatureFlagsProvider {
     return false;
   }
 
-  bool enableEagerMainQueueModulesOnIOS() override {
-    return false;
-  }
-
   bool enableEagerRootViewAttachment() override {
     return false;
   }
@@ -123,10 +119,6 @@ class ReactNativeFeatureFlagsDefaults : public ReactNativeFeatureFlagsProvider {
     return false;
   }
 
-  bool enableFabricRenderer() override {
-    return false;
-  }
-
   bool enableFontScaleChangesUpdatingLayout() override {
     return true;
   }
@@ -140,6 +132,10 @@ class ReactNativeFeatureFlagsDefaults : public ReactNativeFeatureFlagsProvider {
   }
 
   bool enableImagePrefetchingAndroid() override {
+    return false;
+  }
+
+  bool enableImageRequestDowngradingForNonVisibleImages() override {
     return false;
   }
 
@@ -169,10 +165,6 @@ class ReactNativeFeatureFlagsDefaults : public ReactNativeFeatureFlagsProvider {
 
   bool enableLayoutAnimationsOnIOS() override {
     return true;
-  }
-
-  bool enableMainQueueCoordinatorOnIOS() override {
-    return false;
   }
 
   bool enableModuleArgumentNSNullConversionIOS() override {
@@ -236,10 +228,6 @@ class ReactNativeFeatureFlagsDefaults : public ReactNativeFeatureFlagsProvider {
   }
 
   bool enableVirtualViewContainerStateExperimental() override {
-    return false;
-  }
-
-  bool enableVirtualViewDebugFeatures() override {
     return false;
   }
 
@@ -368,14 +356,6 @@ class ReactNativeFeatureFlagsDefaults : public ReactNativeFeatureFlagsProvider {
   }
 
   bool useTurboModuleInterop() override {
-    return false;
-  }
-
-  bool useTurboModules() override {
-    return false;
-  }
-
-  bool useUnorderedMapInDifferentiator() override {
     return false;
   }
 
