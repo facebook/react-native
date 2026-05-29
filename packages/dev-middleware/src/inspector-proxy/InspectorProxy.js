@@ -93,7 +93,7 @@ export default class InspectorProxy implements InspectorProxyQueries {
 
   #eventReporter: ?EventReporter;
 
-  readonly #experiments: Experiments;
+  +#experiments: Experiments;
 
   // custom message handler factory allowing implementers to handle unsupported CDP messages.
   #customMessageHandler: ?CreateCustomMessageHandlerFn;

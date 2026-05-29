@@ -47,7 +47,7 @@ type AndroidSwitchNativeProps = Readonly<{
 type NativeType = HostComponent<AndroidSwitchNativeProps>;
 
 interface NativeCommands {
-  readonly setNativeValue: (
+  +setNativeValue: (
     viewRef: React.ElementRef<NativeType>,
     value: boolean,
   ) => void;

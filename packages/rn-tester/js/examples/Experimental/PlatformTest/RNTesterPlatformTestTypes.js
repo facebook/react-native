@@ -66,6 +66,6 @@ export type PlatformTestHarness = Readonly<{
 }>;
 
 export type PlatformTestComponentBaseProps = {
-  readonly harness: PlatformTestHarness,
+  +harness: PlatformTestHarness,
   ...
 };

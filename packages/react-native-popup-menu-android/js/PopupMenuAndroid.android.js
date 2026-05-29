@@ -28,7 +28,7 @@ type PopupMenuSelectionEvent = NativeSyntheticEvent<
 type PopupMenuDismissEvent = NativeSyntheticEvent<Readonly<{}>>;
 
 export type PopupMenuAndroidInstance = {
-  readonly show: () => void,
+  +show: () => void,
 };
 
 type Props = {

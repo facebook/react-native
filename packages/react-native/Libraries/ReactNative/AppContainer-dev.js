@@ -44,9 +44,7 @@ if (reactDevToolsHook) {
 
 type ExternalInspection = {
   externalInspectingEnabled: boolean,
-  readonly reportToExternalInspection: (
-    viewData: TouchedViewDataAtPoint,
-  ) => void,
+  +reportToExternalInspection: (viewData: TouchedViewDataAtPoint) => void,
 };
 
 type InspectorDeferredProps = {

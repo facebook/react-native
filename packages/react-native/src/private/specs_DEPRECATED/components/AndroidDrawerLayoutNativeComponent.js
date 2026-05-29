@@ -111,8 +111,8 @@ type AndroidDrawerLayoutNativeProps = Readonly<{
 type NativeType = HostComponent<AndroidDrawerLayoutNativeProps>;
 
 interface NativeCommands {
-  readonly openDrawer: (viewRef: React.ElementRef<NativeType>) => void;
-  readonly closeDrawer: (viewRef: React.ElementRef<NativeType>) => void;
+  +openDrawer: (viewRef: React.ElementRef<NativeType>) => void;
+  +closeDrawer: (viewRef: React.ElementRef<NativeType>) => void;
 }
 
 export const Commands: NativeCommands = codegenNativeCommands<NativeCommands>({

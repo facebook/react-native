@@ -55,7 +55,7 @@ type PullToRefreshNativeProps = Readonly<{
 type ComponentType = HostComponent<PullToRefreshNativeProps>;
 
 interface NativeCommands {
-  readonly setNativeRefreshing: (
+  +setNativeRefreshing: (
     viewRef: React.ElementRef<ComponentType>,
     refreshing: boolean,
   ) => void;

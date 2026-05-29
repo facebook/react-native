@@ -135,19 +135,19 @@ export interface ScrollViewScrollToOptions {
 
 // Public methods for ScrollView
 export interface ScrollViewImperativeMethods {
-  readonly getScrollResponder: () => ScrollResponderType;
-  readonly getScrollableNode: () => ?number;
-  readonly getInnerViewNode: () => ?number;
-  readonly getInnerViewRef: () => InnerViewInstance | null;
-  readonly getNativeScrollRef: () => PublicScrollViewInstance | null;
-  readonly scrollTo: (
+  +getScrollResponder: () => ScrollResponderType;
+  +getScrollableNode: () => ?number;
+  +getInnerViewNode: () => ?number;
+  +getInnerViewRef: () => InnerViewInstance | null;
+  +getNativeScrollRef: () => PublicScrollViewInstance | null;
+  +scrollTo: (
     options?: ScrollViewScrollToOptions | number,
     deprecatedX?: number,
     deprecatedAnimated?: boolean,
   ) => void;
-  readonly scrollToEnd: (options?: ?ScrollViewScrollToOptions) => void;
-  readonly flashScrollIndicators: () => void;
-  readonly scrollResponderZoomTo: (
+  +scrollToEnd: (options?: ?ScrollViewScrollToOptions) => void;
+  +flashScrollIndicators: () => void;
+  +scrollResponderZoomTo: (
     rect: {
       x: number,
       y: number,
@@ -157,7 +157,7 @@ export interface ScrollViewImperativeMethods {
     },
     animated?: boolean, // deprecated, put this inside the rect argument instead
   ) => void;
-  readonly scrollResponderScrollNativeHandleToKeyboard: (
+  +scrollResponderScrollNativeHandleToKeyboard: (
     nodeHandle: number | HostInstance,
     additionalOffset?: number,
     preventNegativeScrollOffset?: boolean,

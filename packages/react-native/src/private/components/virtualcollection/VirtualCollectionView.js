@@ -39,7 +39,7 @@ export type VirtualCollectionGenerator = Readonly<{
 }>;
 
 export type VirtualCollectionViewComponent<TLayoutProps extends {...}> =
-  component<out TItem extends Item>(
+  component<+TItem extends Item>(
     children: (item: TItem, key: string) => React.Node,
     items: VirtualCollection<TItem>,
     itemToKey?: (TItem) => string,
@@ -86,7 +86,7 @@ export function createVirtualCollectionView<TLayoutProps extends {...}>(
   VirtualLayout: VirtualCollectionLayoutComponent<TLayoutProps>,
   {initial, next}: VirtualCollectionGenerator,
 ): VirtualCollectionViewComponent<TLayoutProps> {
-  component VirtualCollectionView<out TItem extends Item>(
+  component VirtualCollectionView<+TItem extends Item>(
     children: (item: TItem, key: string) => React.Node,
     items: VirtualCollection<TItem>,
     itemToKey: TItem => string = defaultItemToKey,

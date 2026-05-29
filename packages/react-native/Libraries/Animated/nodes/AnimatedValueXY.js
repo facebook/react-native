@@ -45,8 +45,8 @@ export default class AnimatedValueXY extends AnimatedWithChildren {
 
   constructor(
     valueIn?: ?{
-      readonly x: number | AnimatedValue,
-      readonly y: number | AnimatedValue,
+      +x: number | AnimatedValue,
+      +y: number | AnimatedValue,
       ...
     },
     config?: ?AnimatedValueXYConfig,

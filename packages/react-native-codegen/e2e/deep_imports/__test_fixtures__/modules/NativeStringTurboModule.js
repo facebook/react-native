@@ -16,8 +16,8 @@ export type String = string;
 type AnotherString = String;
 
 export interface Spec extends TurboModule {
-  readonly getString: (arg: string) => string;
-  readonly getStringWithAlias: (arg: String) => AnotherString;
+  +getString: (arg: string) => string;
+  +getStringWithAlias: (arg: String) => AnotherString;
 }
 
 export default TurboModuleRegistry.getEnforcing<Spec>(

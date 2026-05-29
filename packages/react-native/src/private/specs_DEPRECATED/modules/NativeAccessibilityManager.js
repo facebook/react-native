@@ -13,55 +13,55 @@ import type {TurboModule} from '../../../../Libraries/TurboModule/RCTExport';
 import * as TurboModuleRegistry from '../../../../Libraries/TurboModule/TurboModuleRegistry';
 
 export interface Spec extends TurboModule {
-  readonly getCurrentBoldTextState: (
+  +getCurrentBoldTextState: (
     onSuccess: (isBoldTextEnabled: boolean) => void,
     onError: (error: Object) => void,
   ) => void;
-  readonly getCurrentGrayscaleState: (
+  +getCurrentGrayscaleState: (
     onSuccess: (isGrayscaleEnabled: boolean) => void,
     onError: (error: Object) => void,
   ) => void;
-  readonly getCurrentInvertColorsState: (
+  +getCurrentInvertColorsState: (
     onSuccess: (isInvertColorsEnabled: boolean) => void,
     onError: (error: Object) => void,
   ) => void;
-  readonly getCurrentReduceMotionState: (
+  +getCurrentReduceMotionState: (
     onSuccess: (isReduceMotionEnabled: boolean) => void,
     onError: (error: Object) => void,
   ) => void;
-  readonly getCurrentDarkerSystemColorsState?: (
+  +getCurrentDarkerSystemColorsState?: (
     onSuccess: (isDarkerSystemColorsEnabled: boolean) => void,
     onError: (error: Object) => void,
   ) => void;
-  readonly getCurrentPrefersCrossFadeTransitionsState?: (
+  +getCurrentPrefersCrossFadeTransitionsState?: (
     onSuccess: (prefersCrossFadeTransitions: boolean) => void,
     onError: (error: Object) => void,
   ) => void;
-  readonly getCurrentReduceTransparencyState: (
+  +getCurrentReduceTransparencyState: (
     onSuccess: (isReduceTransparencyEnabled: boolean) => void,
     onError: (error: Object) => void,
   ) => void;
-  readonly getCurrentVoiceOverState: (
+  +getCurrentVoiceOverState: (
     onSuccess: (isScreenReaderEnabled: boolean) => void,
     onError: (error: Object) => void,
   ) => void;
-  readonly setAccessibilityContentSizeMultipliers: (JSMultipliers: {
-    readonly extraSmall?: ?number,
-    readonly small?: ?number,
-    readonly medium?: ?number,
-    readonly large?: ?number,
-    readonly extraLarge?: ?number,
-    readonly extraExtraLarge?: ?number,
-    readonly extraExtraExtraLarge?: ?number,
-    readonly accessibilityMedium?: ?number,
-    readonly accessibilityLarge?: ?number,
-    readonly accessibilityExtraLarge?: ?number,
-    readonly accessibilityExtraExtraLarge?: ?number,
-    readonly accessibilityExtraExtraExtraLarge?: ?number,
+  +setAccessibilityContentSizeMultipliers: (JSMultipliers: {
+    +extraSmall?: ?number,
+    +small?: ?number,
+    +medium?: ?number,
+    +large?: ?number,
+    +extraLarge?: ?number,
+    +extraExtraLarge?: ?number,
+    +extraExtraExtraLarge?: ?number,
+    +accessibilityMedium?: ?number,
+    +accessibilityLarge?: ?number,
+    +accessibilityExtraLarge?: ?number,
+    +accessibilityExtraExtraLarge?: ?number,
+    +accessibilityExtraExtraExtraLarge?: ?number,
   }) => void;
-  readonly setAccessibilityFocus: (reactTag: number) => void;
-  readonly announceForAccessibility: (announcement: string) => void;
-  readonly announceForAccessibilityWithOptions?: (
+  +setAccessibilityFocus: (reactTag: number) => void;
+  +announceForAccessibility: (announcement: string) => void;
+  +announceForAccessibilityWithOptions?: (
     announcement: string,
     options: {queue?: boolean, priority?: 'low' | 'default' | 'high'},
   ) => void;

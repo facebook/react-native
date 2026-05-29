@@ -13,20 +13,20 @@ import type {TurboModule} from '../../../../Libraries/TurboModule/RCTExport';
 import * as TurboModuleRegistry from '../../../../Libraries/TurboModule/TurboModuleRegistry';
 
 export interface Spec extends TurboModule {
-  readonly getConstants: () => {
+  +getConstants: () => {
     SHORT: number,
     LONG: number,
     TOP: number,
     BOTTOM: number,
     CENTER: number,
   };
-  readonly show: (message: string, duration: number) => void;
-  readonly showWithGravity: (
+  +show: (message: string, duration: number) => void;
+  +showWithGravity: (
     message: string,
     duration: number,
     gravity: number,
   ) => void;
-  readonly showWithGravityAndOffset: (
+  +showWithGravityAndOffset: (
     message: string,
     duration: number,
     gravity: number,

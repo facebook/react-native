@@ -24,10 +24,8 @@ export type PartialReloadAndProfileConfig = {
 };
 
 export interface Spec extends TurboModule {
-  readonly setReloadAndProfileConfig: (
-    config: PartialReloadAndProfileConfig,
-  ) => void;
-  readonly getReloadAndProfileConfig: () => ReloadAndProfileConfig;
+  +setReloadAndProfileConfig: (config: PartialReloadAndProfileConfig) => void;
+  +getReloadAndProfileConfig: () => ReloadAndProfileConfig;
 }
 
 export default TurboModuleRegistry.get<Spec>(

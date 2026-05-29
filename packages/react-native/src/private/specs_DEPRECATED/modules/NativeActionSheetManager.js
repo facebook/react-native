@@ -13,44 +13,44 @@ import type {TurboModule} from '../../../../Libraries/TurboModule/RCTExport';
 import * as TurboModuleRegistry from '../../../../Libraries/TurboModule/TurboModuleRegistry';
 
 export interface Spec extends TurboModule {
-  readonly getConstants: () => {};
-  readonly showActionSheetWithOptions: (
+  +getConstants: () => {};
+  +showActionSheetWithOptions: (
     options: {
-      readonly title?: ?string,
-      readonly message?: ?string,
-      readonly options: ?Array<string>,
-      readonly destructiveButtonIndices?: ?Array<number>,
-      readonly cancelButtonIndex?: ?number,
-      readonly anchor?: ?number,
-      readonly tintColor?: ?number,
-      readonly cancelButtonTintColor?: ?number,
-      readonly disabledButtonTintColor?: ?number,
-      readonly userInterfaceStyle?: ?string,
-      readonly disabledButtonIndices?: Array<number>,
+      +title?: ?string,
+      +message?: ?string,
+      +options: ?Array<string>,
+      +destructiveButtonIndices?: ?Array<number>,
+      +cancelButtonIndex?: ?number,
+      +anchor?: ?number,
+      +tintColor?: ?number,
+      +cancelButtonTintColor?: ?number,
+      +disabledButtonTintColor?: ?number,
+      +userInterfaceStyle?: ?string,
+      +disabledButtonIndices?: Array<number>,
     },
     callback: (buttonIndex: number) => void,
   ) => void;
-  readonly showShareActionSheetWithOptions: (
+  +showShareActionSheetWithOptions: (
     options: {
-      readonly message?: ?string,
-      readonly url?: ?string,
-      readonly subject?: ?string,
-      readonly anchor?: ?number,
-      readonly tintColor?: ?number,
-      readonly cancelButtonTintColor?: ?number,
-      readonly disabledButtonTintColor?: ?number,
-      readonly excludedActivityTypes?: ?Array<string>,
-      readonly userInterfaceStyle?: ?string,
+      +message?: ?string,
+      +url?: ?string,
+      +subject?: ?string,
+      +anchor?: ?number,
+      +tintColor?: ?number,
+      +cancelButtonTintColor?: ?number,
+      +disabledButtonTintColor?: ?number,
+      +excludedActivityTypes?: ?Array<string>,
+      +userInterfaceStyle?: ?string,
     },
     failureCallback: (error: {
-      readonly domain: string,
-      readonly code: string,
-      readonly userInfo?: ?Object,
-      readonly message: string,
+      +domain: string,
+      +code: string,
+      +userInfo?: ?Object,
+      +message: string,
     }) => void,
     successCallback: (completed: boolean, activityType: ?string) => void,
   ) => void;
-  readonly dismissActionSheet?: () => void;
+  +dismissActionSheet?: () => void;
 }
 
 export default TurboModuleRegistry.get<Spec>('ActionSheetManager') as ?Spec;

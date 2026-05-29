@@ -35,13 +35,13 @@ export type DimensionsPayload = {
 };
 
 export type DeviceInfoConstants = {
-  readonly Dimensions: DimensionsPayload,
-  readonly isEdgeToEdge?: boolean,
-  readonly isIPhoneX_deprecated?: boolean,
+  +Dimensions: DimensionsPayload,
+  +isEdgeToEdge?: boolean,
+  +isIPhoneX_deprecated?: boolean,
 };
 
 export interface Spec extends TurboModule {
-  readonly getConstants: () => DeviceInfoConstants;
+  +getConstants: () => DeviceInfoConstants;
 }
 
 const NativeModule: Spec = TurboModuleRegistry.getEnforcing<Spec>('DeviceInfo');

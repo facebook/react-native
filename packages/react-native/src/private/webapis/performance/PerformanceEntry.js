@@ -29,9 +29,9 @@ export type PerformanceEntryJSON = {
 };
 
 export interface PerformanceEntryInit {
-  readonly name: string;
-  readonly startTime: DOMHighResTimeStamp;
-  readonly duration: DOMHighResTimeStamp;
+  +name: string;
+  +startTime: DOMHighResTimeStamp;
+  +duration: DOMHighResTimeStamp;
 }
 
 export class PerformanceEntry {

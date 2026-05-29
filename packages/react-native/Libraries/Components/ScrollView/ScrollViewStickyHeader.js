@@ -40,7 +40,7 @@ export type ScrollViewStickyHeaderProps = Readonly<{
 }>;
 
 interface Instance extends React.ElementRef<typeof Animated.View> {
-  readonly setNextHeaderY: number => void;
+  +setNextHeaderY: number => void;
 }
 
 const ScrollViewStickyHeader: component(

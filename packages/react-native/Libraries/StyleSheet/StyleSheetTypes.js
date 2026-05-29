@@ -1064,7 +1064,7 @@ export type ____DangerouslyImpreciseStyle_Internal = Readonly<{
   ...
 }>;
 
-export type StyleProp<out T> =
+export type StyleProp<+T> =
   | null
   | void
   | T
@@ -1092,7 +1092,7 @@ export type ____ImageStyleProp_Internal = StyleProp<
 export type ____Styles_Internal = {
   // $FlowFixMe[incompatible-exact]
   // $FlowFixMe[incompatible-type]
-  readonly [key: string]: Partial<____DangerouslyImpreciseStyle_Internal>,
+  +[key: string]: Partial<____DangerouslyImpreciseStyle_Internal>,
   ...
 };
 
@@ -1100,7 +1100,7 @@ export type ____Styles_Internal = {
 // ____FlattenStyleProp_Helper should be considered internal.
 type FlattenDepthLimiter = [void, 0, 1, 2, 3, 4, 5, 6, 7, 8, 9];
 type ____FlattenStyleProp_Helper<
-  out TStyleProp extends StyleProp<unknown>,
+  +TStyleProp extends StyleProp<unknown>,
   Depth extends Values<FlattenDepthLimiter> = 9,
 > = Depth extends 0
   ? empty
@@ -1114,7 +1114,7 @@ type ____FlattenStyleProp_Helper<
       : TStyleProp;
 
 export type ____FlattenStyleProp_Internal<
-  out TStyleProp extends StyleProp<unknown>,
+  +TStyleProp extends StyleProp<unknown>,
 > =
   ____FlattenStyleProp_Helper<TStyleProp> extends empty // $FlowFixMe[unclear-type]
     ? any

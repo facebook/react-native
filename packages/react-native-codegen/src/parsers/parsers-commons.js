@@ -107,7 +107,7 @@ function wrapModuleSchema(
 }
 
 // $FlowFixMe[unsupported-variance-annotation]
-function unwrapNullable<out T extends NativeModuleTypeAnnotation>(
+function unwrapNullable<+T extends NativeModuleTypeAnnotation>(
   x: Nullable<T>,
 ): [T, boolean] {
   if (x.type === 'NullableTypeAnnotation') {
@@ -118,7 +118,7 @@ function unwrapNullable<out T extends NativeModuleTypeAnnotation>(
 }
 
 // $FlowFixMe[unsupported-variance-annotation]
-function wrapNullable<out T extends NativeModuleTypeAnnotation>(
+function wrapNullable<+T extends NativeModuleTypeAnnotation>(
   nullable: boolean,
   typeAnnotation: T,
 ): Nullable<T> {

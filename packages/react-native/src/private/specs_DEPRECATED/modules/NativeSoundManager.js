@@ -16,7 +16,7 @@ import * as TurboModuleRegistry from '../../../../Libraries/TurboModule/TurboMod
  * Native Module used for playing sounds in native platform.
  */
 export interface Spec extends TurboModule {
-  readonly playTouchSound: () => void;
+  +playTouchSound: () => void;
 }
 
 export default TurboModuleRegistry.get<Spec>('SoundManager') as ?Spec;

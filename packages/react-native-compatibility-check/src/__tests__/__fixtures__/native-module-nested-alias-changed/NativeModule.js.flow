@@ -15,7 +15,7 @@ import * as TurboModuleRegistry from 'react-native/Libraries/TurboModule/TurboMo
 type MyType = () => Promise<number>;
 
 export interface Spec extends TurboModule {
-  readonly exampleFunction: (a: MyType, b: number) => void;
+  +exampleFunction: (a: MyType, b: number) => void;
 }
 
 export default TurboModuleRegistry.getEnforcing<Spec>(

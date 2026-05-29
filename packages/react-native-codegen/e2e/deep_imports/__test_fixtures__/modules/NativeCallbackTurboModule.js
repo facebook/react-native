@@ -16,8 +16,8 @@ export type String = string;
 type CB = (value: String) => void;
 
 export interface Spec extends TurboModule {
-  readonly getValueWithCallback: (callback: (value: string) => void) => void;
-  readonly getValueWithCallbackWithAlias: (c: CB) => void;
+  +getValueWithCallback: (callback: (value: string) => void) => void;
+  +getValueWithCallbackWithAlias: (c: CB) => void;
 }
 
 export default TurboModuleRegistry.getEnforcing<Spec>(

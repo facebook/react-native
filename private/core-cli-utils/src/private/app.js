@@ -27,7 +27,7 @@ type BundlerOptions = {
   config?: string,
   // Typically index.{ios,android}.js
   entryFile: string,
-  readonly platform: 'ios' | 'android' | string,
+  +platform: 'ios' | 'android' | string,
   dev: boolean,
   // Metro built main bundle
   outputJsBundle: string,
@@ -58,12 +58,12 @@ type HermesConfig = {
 };
 
 type BundlerWatch = {
-  readonly mode: 'watch',
+  +mode: 'watch',
   callback?: (metro: ExecaPromise) => void,
 };
 
 type BundlerBuild = {
-  readonly mode: 'bundle',
+  +mode: 'bundle',
 };
 
 type Bundler = BundlerWatch | BundlerBuild;

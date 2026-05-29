@@ -49,17 +49,17 @@ export type StateTypeWithEnums = {
 };
 
 export interface Spec extends TurboModule {
-  readonly getStatusRegular: (statusProp: StateType) => StatusRegularEnum;
-  readonly getStatusStr: (statusProp: StateType) => StatusStrEnum;
-  readonly getStatusNum: (statusProp: StateType) => StatusNumEnum;
-  readonly getStatusLowerCase: (statusProp: StateType) => StatusLowerCaseEnum;
-  readonly getStateType: (
+  +getStatusRegular: (statusProp: StateType) => StatusRegularEnum;
+  +getStatusStr: (statusProp: StateType) => StatusStrEnum;
+  +getStatusNum: (statusProp: StateType) => StatusNumEnum;
+  +getStatusLowerCase: (statusProp: StateType) => StatusLowerCaseEnum;
+  +getStateType: (
     a: StatusRegularEnum,
     b: StatusStrEnum,
     c: StatusNumEnum,
     d: StatusLowerCaseEnum,
   ) => StateType;
-  readonly getStateTypeWithEnums: (
+  +getStateTypeWithEnums: (
     paramOfTypeWithEnums: StateTypeWithEnums,
   ) => StateTypeWithEnums;
 }

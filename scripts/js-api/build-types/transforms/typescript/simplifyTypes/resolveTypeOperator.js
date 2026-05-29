@@ -18,7 +18,7 @@ const t = require('@babel/types');
 const debug = require('debug')('build-types:transforms:inlineTypes');
 
 const typeOperatorResolvers: {
-  readonly [K: string]: (
+  +[K: string]: (
     path: NodePath<t.TSTypeOperator>,
     state: BaseVisitorState,
   ) => void,

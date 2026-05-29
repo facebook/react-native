@@ -16,12 +16,10 @@ export type GenericObject = Object;
 type AnotherGenericObject = GenericObject;
 
 export interface Spec extends TurboModule {
-  readonly getGenericObject: (arg: Object) => Object;
-  readonly getGenericObjectReadOnly: (arg: Object) => Readonly<{a: string}>;
-  readonly getGenericObjectWithAlias: (
-    arg: GenericObject,
-  ) => AnotherGenericObject;
-  readonly difficultObject: (A: {
+  +getGenericObject: (arg: Object) => Object;
+  +getGenericObjectReadOnly: (arg: Object) => Readonly<{a: string}>;
+  +getGenericObjectWithAlias: (arg: GenericObject) => AnotherGenericObject;
+  +difficultObject: (A: {
     D: boolean,
     E: {
       D: boolean,
@@ -42,7 +40,7 @@ export interface Spec extends TurboModule {
     },
     F: string,
   };
-  readonly getConstants: () => {
+  +getConstants: () => {
     D: boolean,
     E: {
       D: boolean,

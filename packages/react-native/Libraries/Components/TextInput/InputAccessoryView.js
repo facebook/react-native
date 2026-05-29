@@ -78,7 +78,7 @@ import * as React from 'react';
 
 /** @build-types emit-as-interface Expo compatibility */
 export type InputAccessoryViewProps = Readonly<{
-  readonly children: React.Node,
+  +children: React.Node,
   /**
    * An ID which is used to associate this `InputAccessoryView` to
    * specified TextInput(s).

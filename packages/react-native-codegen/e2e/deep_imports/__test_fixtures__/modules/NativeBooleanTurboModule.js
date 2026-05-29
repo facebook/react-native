@@ -16,8 +16,8 @@ export type Boolean = boolean;
 type AnotherBoolean = Boolean;
 
 export interface Spec extends TurboModule {
-  readonly getBoolean: (arg: boolean) => boolean;
-  readonly getBooleanWithAlias: (arg: Boolean) => AnotherBoolean;
+  +getBoolean: (arg: boolean) => boolean;
+  +getBooleanWithAlias: (arg: Boolean) => AnotherBoolean;
 }
 
 export default TurboModuleRegistry.getEnforcing<Spec>(

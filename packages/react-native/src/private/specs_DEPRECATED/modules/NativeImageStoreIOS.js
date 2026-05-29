@@ -13,18 +13,15 @@ import type {TurboModule} from '../../../../Libraries/TurboModule/RCTExport';
 import * as TurboModuleRegistry from '../../../../Libraries/TurboModule/TurboModuleRegistry';
 
 export interface Spec extends TurboModule {
-  readonly getConstants: () => {};
-  readonly getBase64ForTag: (
+  +getConstants: () => {};
+  +getBase64ForTag: (
     uri: string,
     successCallback: (base64ImageData: string) => void,
     errorCallback: (error: {message: string}) => void,
   ) => void;
-  readonly hasImageForTag: (
-    uri: string,
-    callback: (hasImage: boolean) => void,
-  ) => void;
-  readonly removeImageForTag: (uri: string) => void;
-  readonly addImageFromBase64: (
+  +hasImageForTag: (uri: string, callback: (hasImage: boolean) => void) => void;
+  +removeImageForTag: (uri: string) => void;
+  +addImageFromBase64: (
     base64ImageData: string,
     successCallback: (uri: string) => void,
     errorCallback: (error: {message: string}) => void,

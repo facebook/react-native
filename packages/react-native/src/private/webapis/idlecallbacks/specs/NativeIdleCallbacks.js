@@ -24,11 +24,11 @@ export type IdleDeadline = {
 };
 
 export interface Spec extends TurboModule {
-  readonly requestIdleCallback: (
+  +requestIdleCallback: (
     callback: (idleDeadline: IdleDeadline) => unknown,
     options?: RequestIdleCallbackOptions,
   ) => IdleCallbackID;
-  readonly cancelIdleCallback: (handle: IdleCallbackID) => void;
+  +cancelIdleCallback: (handle: IdleCallbackID) => void;
 }
 
 export default TurboModuleRegistry.getEnforcing<Spec>(
