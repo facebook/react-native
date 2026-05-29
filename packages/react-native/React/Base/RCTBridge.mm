@@ -209,17 +209,6 @@ void RCTEnableTurboModuleInterop(BOOL enabled)
   turboModuleInteropEnabled = enabled;
 }
 
-static BOOL turboModuleInteropBridgeProxyEnabled = NO;
-BOOL RCTTurboModuleInteropBridgeProxyEnabled(void)
-{
-  return turboModuleInteropBridgeProxyEnabled;
-}
-
-void RCTEnableTurboModuleInteropBridgeProxy(BOOL enabled)
-{
-  turboModuleInteropBridgeProxyEnabled = enabled;
-}
-
 static BOOL fabricInteropLayerEnabled = YES;
 BOOL RCTFabricInteropLayerEnabled()
 {

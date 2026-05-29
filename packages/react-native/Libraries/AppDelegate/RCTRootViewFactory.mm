@@ -153,7 +153,6 @@
 {
   // Enable TurboModule interop by default in Bridgeless mode
   RCTEnableTurboModuleInterop(YES);
-  RCTEnableTurboModuleInteropBridgeProxy(YES);
 
   [self createReactHostIfNeeded:launchOptions
             bundleConfiguration:bundleConfiguration
