@@ -312,4 +312,9 @@ public class BridgeReactContext extends ReactApplicationContext {
     Assertions.assertNotNull(mCatalystInstance).registerSegment(segmentId, path);
     Assertions.assertNotNull(callback).invoke();
   }
+
+  @Override
+  public @Nullable RuntimeExecutor getRuntimeExecutor() {
+    return mCatalystInstance == null ? null : mCatalystInstance.getRuntimeExecutor();
+  }
 }

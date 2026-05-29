@@ -967,6 +967,7 @@ public abstract class com/facebook/react/bridge/ReactContext : android/content/C
 	public abstract fun getNativeModule (Ljava/lang/String;)Lcom/facebook/react/bridge/NativeModule;
 	public abstract fun getNativeModules ()Ljava/util/Collection;
 	public fun getNativeModulesMessageQueueThread ()Lcom/facebook/react/bridge/queue/MessageQueueThread;
+	public abstract fun getRuntimeExecutor ()Lcom/facebook/react/bridge/RuntimeExecutor;
 	public fun getScrollEndedListeners ()Lcom/facebook/react/bridge/ScrollEndedListeners;
 	public abstract fun getSourceURL ()Ljava/lang/String;
 	public fun getSystemService (Ljava/lang/String;)Ljava/lang/Object;
@@ -4162,6 +4163,7 @@ public final class com/facebook/react/uimanager/ThemedReactContext : com/faceboo
 	public fun getNativeModule (Ljava/lang/String;)Lcom/facebook/react/bridge/NativeModule;
 	public fun getNativeModules ()Ljava/util/Collection;
 	public final fun getReactApplicationContext ()Lcom/facebook/react/bridge/ReactApplicationContext;
+	public fun getRuntimeExecutor ()Lcom/facebook/react/bridge/RuntimeExecutor;
 	public fun getScrollEndedListeners ()Lcom/facebook/react/bridge/ScrollEndedListeners;
 	public fun getSourceURL ()Ljava/lang/String;
 	public final fun getSurfaceID ()Ljava/lang/String;

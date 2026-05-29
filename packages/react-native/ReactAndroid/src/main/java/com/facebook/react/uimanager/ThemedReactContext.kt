@@ -20,6 +20,7 @@ import com.facebook.react.bridge.LifecycleEventListener
 import com.facebook.react.bridge.NativeModule
 import com.facebook.react.bridge.ReactApplicationContext
 import com.facebook.react.bridge.ReactContext
+import com.facebook.react.bridge.RuntimeExecutor
 import com.facebook.react.bridge.ScrollEndedListeners
 import com.facebook.react.bridge.UIManager
 import com.facebook.react.common.annotations.internal.LegacyArchitecture
@@ -161,6 +162,8 @@ public class ThemedReactContext(
 
   override fun getJSCallInvokerHolder(): CallInvokerHolder? =
       reactApplicationContext.getJSCallInvokerHolder()
+
+  override fun getRuntimeExecutor(): RuntimeExecutor? = reactApplicationContext.runtimeExecutor
 
   @Deprecated(
       "This method is deprecated, please use UIManagerHelper.getUIManager() instead.",
