@@ -951,6 +951,29 @@ TEST_P(RuntimeSchedulerTest, basicSameThreadExecution) {
   EXPECT_TRUE(didRunSynchronousTask);
 }
 
+// Mirror of `basicSameThreadExecution` for the production call pattern: the
+// caller is the UI thread (XCTest test methods run on the main NSThread on
+// Apple), so `executeNowOnTheSameThread` routes through the coordinator path
+// in `executeSynchronouslyOnSameThread_CAN_DEADLOCK`. The off-main `driver`
+// thread drives the stub queue ("JS thread") so the main thread can wake up.
+TEST_P(RuntimeSchedulerTest, basicUIThreadExecution) {
+  bool didRunSynchronousTask = false;
+
+  std::thread driver([this]() {
+    stubQueue_->waitForTask();
+    stubQueue_->tick();
+  });
+
+  runtimeScheduler_->executeNowOnTheSameThread(
+      [&didRunSynchronousTask](jsi::Runtime& /*rt*/) {
+        didRunSynchronousTask = true;
+      });
+
+  driver.join();
+
+  EXPECT_TRUE(didRunSynchronousTask);
+}
+
 TEST_P(RuntimeSchedulerTest, sameThreadTaskCreatesImmediatePriorityTask) {
   bool didRunSynchronousTask = false;
   bool didRunSubsequentTask = false;

@@ -8,15 +8,20 @@
 #pragma once
 
 #include <react/renderer/graphics/Float.h>
+#include <react/renderer/imagemanager/primitives.h>
 
 namespace facebook::react {
 
 class ImageRequestParams {
  public:
   ImageRequestParams() {}
-  ImageRequestParams(Float blurRadius) : blurRadius(blurRadius) {}
+  ImageRequestParams(Float blurRadius, ImageRequestPriority priority = ImageRequestPriority::Immediate)
+      : blurRadius(blurRadius), priority(priority)
+  {
+  }
 
   Float blurRadius{};
+  ImageRequestPriority priority{ImageRequestPriority::Immediate};
 
   bool operator==(const ImageRequestParams &rhs) const = default;
 };

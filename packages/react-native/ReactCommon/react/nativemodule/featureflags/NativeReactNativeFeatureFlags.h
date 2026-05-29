@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<98026af617f580de74cf9c0e596e8a96>>
+ * @generated SignedSource<<9a21979a5eeb2f9daf8c061610199596>>
  */
 
 /**
@@ -74,8 +74,6 @@ class NativeReactNativeFeatureFlags
 
   bool enableDoubleMeasurementFixAndroid(jsi::Runtime& runtime);
 
-  bool enableEagerMainQueueModulesOnIOS(jsi::Runtime& runtime);
-
   bool enableEagerRootViewAttachment(jsi::Runtime& runtime);
 
   bool enableExclusivePropsUpdateAndroid(jsi::Runtime& runtime);
@@ -84,8 +82,6 @@ class NativeReactNativeFeatureFlags
 
   bool enableFabricLogs(jsi::Runtime& runtime);
 
-  bool enableFabricRenderer(jsi::Runtime& runtime);
-
   bool enableFontScaleChangesUpdatingLayout(jsi::Runtime& runtime);
 
   bool enableIOSTextBaselineOffsetPerLine(jsi::Runtime& runtime);
@@ -93,6 +89,8 @@ class NativeReactNativeFeatureFlags
   bool enableIOSViewClipToPaddingBox(jsi::Runtime& runtime);
 
   bool enableImagePrefetchingAndroid(jsi::Runtime& runtime);
+
+  bool enableImageRequestDowngradingForNonVisibleImages(jsi::Runtime& runtime);
 
   bool enableImmediateUpdateModeForContentOffsetChanges(jsi::Runtime& runtime);
 
@@ -107,8 +105,6 @@ class NativeReactNativeFeatureFlags
   bool enableLayoutAnimationsOnAndroid(jsi::Runtime& runtime);
 
   bool enableLayoutAnimationsOnIOS(jsi::Runtime& runtime);
-
-  bool enableMainQueueCoordinatorOnIOS(jsi::Runtime& runtime);
 
   bool enableModuleArgumentNSNullConversionIOS(jsi::Runtime& runtime);
 
@@ -141,8 +137,6 @@ class NativeReactNativeFeatureFlags
   bool enableViewRecyclingForView(jsi::Runtime& runtime);
 
   bool enableVirtualViewContainerStateExperimental(jsi::Runtime& runtime);
-
-  bool enableVirtualViewDebugFeatures(jsi::Runtime& runtime);
 
   bool fixDifferentiatorParentTagForUnflattenCase(jsi::Runtime& runtime);
 
@@ -207,10 +201,6 @@ class NativeReactNativeFeatureFlags
   bool useTraitHiddenOnAndroid(jsi::Runtime& runtime);
 
   bool useTurboModuleInterop(jsi::Runtime& runtime);
-
-  bool useTurboModules(jsi::Runtime& runtime);
-
-  bool useUnorderedMapInDifferentiator(jsi::Runtime& runtime);
 
   double viewCullingOutsetRatio(jsi::Runtime& runtime);
 

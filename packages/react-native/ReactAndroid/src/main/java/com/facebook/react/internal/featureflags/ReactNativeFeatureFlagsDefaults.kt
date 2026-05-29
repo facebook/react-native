@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<f4b6d9ed2f6ccff6ab01e53f6048423c>>
+ * @generated SignedSource<<738a114e73ddb940fb14efd0dff79d1b>>
  */
 
 /**
@@ -61,8 +61,6 @@ public open class ReactNativeFeatureFlagsDefaults : ReactNativeFeatureFlagsProvi
 
   override fun enableDoubleMeasurementFixAndroid(): Boolean = false
 
-  override fun enableEagerMainQueueModulesOnIOS(): Boolean = false
-
   override fun enableEagerRootViewAttachment(): Boolean = false
 
   override fun enableExclusivePropsUpdateAndroid(): Boolean = false
@@ -71,8 +69,6 @@ public open class ReactNativeFeatureFlagsDefaults : ReactNativeFeatureFlagsProvi
 
   override fun enableFabricLogs(): Boolean = false
 
-  override fun enableFabricRenderer(): Boolean = false
-
   override fun enableFontScaleChangesUpdatingLayout(): Boolean = true
 
   override fun enableIOSTextBaselineOffsetPerLine(): Boolean = false
@@ -80,6 +76,8 @@ public open class ReactNativeFeatureFlagsDefaults : ReactNativeFeatureFlagsProvi
   override fun enableIOSViewClipToPaddingBox(): Boolean = false
 
   override fun enableImagePrefetchingAndroid(): Boolean = false
+
+  override fun enableImageRequestDowngradingForNonVisibleImages(): Boolean = false
 
   override fun enableImmediateUpdateModeForContentOffsetChanges(): Boolean = false
 
@@ -94,8 +92,6 @@ public open class ReactNativeFeatureFlagsDefaults : ReactNativeFeatureFlagsProvi
   override fun enableLayoutAnimationsOnAndroid(): Boolean = false
 
   override fun enableLayoutAnimationsOnIOS(): Boolean = true
-
-  override fun enableMainQueueCoordinatorOnIOS(): Boolean = false
 
   override fun enableModuleArgumentNSNullConversionIOS(): Boolean = false
 
@@ -128,8 +124,6 @@ public open class ReactNativeFeatureFlagsDefaults : ReactNativeFeatureFlagsProvi
   override fun enableViewRecyclingForView(): Boolean = true
 
   override fun enableVirtualViewContainerStateExperimental(): Boolean = false
-
-  override fun enableVirtualViewDebugFeatures(): Boolean = false
 
   override fun fixDifferentiatorParentTagForUnflattenCase(): Boolean = false
 
@@ -194,10 +188,6 @@ public open class ReactNativeFeatureFlagsDefaults : ReactNativeFeatureFlagsProvi
   override fun useTraitHiddenOnAndroid(): Boolean = false
 
   override fun useTurboModuleInterop(): Boolean = false
-
-  override fun useTurboModules(): Boolean = false
-
-  override fun useUnorderedMapInDifferentiator(): Boolean = false
 
   override fun viewCullingOutsetRatio(): Double = 0.0
 

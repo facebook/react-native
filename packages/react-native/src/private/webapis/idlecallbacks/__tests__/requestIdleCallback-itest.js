@@ -13,8 +13,8 @@ import '@react-native/fantom/src/setUpDefaultReactNativeEnvironment';
 import * as Fantom from '@react-native/fantom';
 
 interface IdleDeadline {
-  +didTimeout: boolean;
-  +timeRemaining: () => number;
+  readonly didTimeout: boolean;
+  readonly timeRemaining: () => number;
 }
 
 function activeSleep(timeMs: number): void {

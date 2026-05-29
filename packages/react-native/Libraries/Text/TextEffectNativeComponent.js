@@ -15,7 +15,7 @@ import * as React from 'react';
 
 type NativeTextEffectProps = Readonly<{
   effectName?: ?string,
-  effectProps?: ?Readonly<{+[string]: unknown}>,
+  effectProps?: ?Readonly<{readonly [string]: unknown}>,
   children?: React.Node,
 }>;
 

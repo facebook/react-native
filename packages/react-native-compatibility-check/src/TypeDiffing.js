@@ -176,6 +176,7 @@ export function compareTypeAnnotation(
   switch (newerAnnotation.type) {
     case 'AnyTypeAnnotation':
     case 'MixedTypeAnnotation':
+    case 'ArrayBufferTypeAnnotation':
     case 'DoubleTypeAnnotation':
     case 'FloatTypeAnnotation':
     case 'Int32TypeAnnotation':

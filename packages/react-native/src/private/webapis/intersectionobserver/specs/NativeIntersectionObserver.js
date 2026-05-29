@@ -35,16 +35,16 @@ export type NativeIntersectionObserverObserveOptions = {
 export opaque type NativeIntersectionObserverToken = unknown;
 
 export interface Spec extends TurboModule {
-  +observeV2?: (
+  readonly observeV2?: (
     options: NativeIntersectionObserverObserveOptions,
   ) => NativeIntersectionObserverToken;
-  +unobserveV2?: (
+  readonly unobserveV2?: (
     intersectionObserverId: number,
     token: NativeIntersectionObserverToken,
   ) => void;
-  +connect: (notifyIntersectionObserversCallback: () => void) => void;
-  +disconnect: () => void;
-  +takeRecords: () => ReadonlyArray<NativeIntersectionObserverEntry>;
+  readonly connect: (notifyIntersectionObserversCallback: () => void) => void;
+  readonly disconnect: () => void;
+  readonly takeRecords: () => ReadonlyArray<NativeIntersectionObserverEntry>;
 }
 
 export default TurboModuleRegistry.get<Spec>(

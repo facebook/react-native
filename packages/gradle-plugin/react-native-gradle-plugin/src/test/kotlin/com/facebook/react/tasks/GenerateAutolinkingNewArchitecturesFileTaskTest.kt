@@ -128,11 +128,9 @@ class GenerateAutolinkingNewArchitecturesFileTaskTest {
             # or link against a old prefab target (this is needed for React Native 0.76 on).
             set(REACTNATIVE_MERGED_SO true)
 
+            set(AUTOLINKED_LIBRARIES)
 
 
-            set(AUTOLINKED_LIBRARIES
-              
-            )
             """
                 .trimIndent()
         )
@@ -155,15 +153,26 @@ class GenerateAutolinkingNewArchitecturesFileTaskTest {
             # or link against a old prefab target (this is needed for React Native 0.76 on).
             set(REACTNATIVE_MERGED_SO true)
 
-            add_subdirectory("./a/directory/" aPackage_autolinked_build)
-            add_subdirectory("./another/directory/with\ spaces/" anotherPackage_autolinked_build)
-            add_subdirectory("./another/directory/cxx/" anotherPackage_cxxmodule_autolinked_build)
+            set(AUTOLINKED_LIBRARIES)
 
-            set(AUTOLINKED_LIBRARIES
-              react_codegen_aPackage
-              react_codegen_anotherPackage
-            another_cxxModule
-            )
+            if(EXISTS "./a/directory/")
+              add_subdirectory("./a/directory/" aPackage_autolinked_build)
+              list(APPEND AUTOLINKED_LIBRARIES react_codegen_aPackage)
+            else()
+              message(WARNING "React Native: Skipping autolinked library 'react_codegen_aPackage' because the source directory does not exist: ./a/directory/")
+            endif()
+            if(EXISTS "./another/directory/with\ spaces/")
+              add_subdirectory("./another/directory/with\ spaces/" anotherPackage_autolinked_build)
+              list(APPEND AUTOLINKED_LIBRARIES react_codegen_anotherPackage)
+            else()
+              message(WARNING "React Native: Skipping autolinked library 'react_codegen_anotherPackage' because the source directory does not exist: ./another/directory/with\ spaces/")
+            endif()
+            if(EXISTS "./another/directory/cxx/")
+              add_subdirectory("./another/directory/cxx/" anotherPackage_cxxmodule_autolinked_build)
+              list(APPEND AUTOLINKED_LIBRARIES another_cxxModule)
+            else()
+              message(WARNING "React Native: Skipping autolinked C++ module 'another_cxxModule' because the source directory does not exist: ./another/directory/cxx/")
+            endif()
             """
                 .trimIndent()
         )

@@ -61,31 +61,39 @@ abstract class GenerateAutolinkingNewArchitecturesFileTask : DefaultTask() {
             // If user provided a custom cmakeListsPath, let's honor it.
             val nativeFolderPath = sanitizeCmakeListsPath(cmakeListsPath)
             addDirectoryString +=
-                "add_subdirectory(\"$nativeFolderPath\" ${libraryName}_autolinked_build)"
+                """
+                if(EXISTS "$nativeFolderPath")
+                  add_subdirectory("$nativeFolderPath" ${libraryName}_autolinked_build)
+                  list(APPEND AUTOLINKED_LIBRARIES $CODEGEN_LIB_PREFIX${libraryName})
+                else()
+                  message(WARNING "React Native: Skipping autolinked library '$CODEGEN_LIB_PREFIX${libraryName}' because the source directory does not exist: $nativeFolderPath")
+                endif()
+                """
+                    .trimIndent()
           }
           if (cxxModuleCMakeListsPath != null) {
             // If user provided a custom cxxModuleCMakeListsPath, let's honor it.
             val nativeFolderPath = sanitizeCmakeListsPath(cxxModuleCMakeListsPath)
             addDirectoryString +=
-                "\nadd_subdirectory(\"$nativeFolderPath\" ${libraryName}_cxxmodule_autolinked_build)"
+                """
+
+                if(EXISTS "$nativeFolderPath")
+                  add_subdirectory("$nativeFolderPath" ${libraryName}_cxxmodule_autolinked_build)
+                ${
+                    dep.cxxModuleCMakeListsModuleName?.let {
+                      "  list(APPEND AUTOLINKED_LIBRARIES $it)"
+                    } ?: ""
+                }
+                else()
+                  message(WARNING "React Native: Skipping autolinked C++ module '${dep.cxxModuleCMakeListsModuleName ?: libraryName}' because the source directory does not exist: $nativeFolderPath")
+                endif()
+                """
+                    .trimIndent()
           }
           addDirectoryString
         }
 
-    val libraryModules =
-        packages.joinToString("\n  ") { dep ->
-          var autolinkedLibraries = ""
-          if (dep.libraryName != null) {
-            autolinkedLibraries += "$CODEGEN_LIB_PREFIX${dep.libraryName}"
-          }
-          if (dep.cxxModuleCMakeListsModuleName != null) {
-            autolinkedLibraries += "\n${dep.cxxModuleCMakeListsModuleName}"
-          }
-          autolinkedLibraries
-        }
-
     return CMAKE_TEMPLATE.replace("{{ libraryIncludes }}", libraryIncludes)
-        .replace("{{ libraryModules }}", libraryModules)
   }
 
   internal fun generateCppFileContent(
@@ -173,11 +181,9 @@ abstract class GenerateAutolinkingNewArchitecturesFileTask : DefaultTask() {
         # or link against a old prefab target (this is needed for React Native 0.76 on).
         set(REACTNATIVE_MERGED_SO true)
 
-        {{ libraryIncludes }}
+        set(AUTOLINKED_LIBRARIES)
 
-        set(AUTOLINKED_LIBRARIES
-          {{ libraryModules }}
-        )
+        {{ libraryIncludes }}
         """
             .trimIndent()
 

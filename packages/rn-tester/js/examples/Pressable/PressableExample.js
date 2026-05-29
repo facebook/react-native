@@ -17,6 +17,7 @@ import {
   Animated,
   Image,
   Platform,
+  PlatformColor,
   Pressable,
   StyleSheet,
   Text,
@@ -508,6 +509,57 @@ const examples = [
             </Pressable>
             <Text>use foreground</Text>
           </View>
+        </View>
+      );
+    },
+  },
+  {
+    title: 'Pressable with PlatformColor ripple and alpha',
+    description:
+      'android_ripple accepts PlatformColor and a separate alpha (0–1) parameter' as string,
+    platform: 'android',
+    render: function (): React.Node {
+      const buttonStyle = {textAlign: 'center' as const, margin: 10};
+      return (
+        <View>
+          <Pressable
+            android_ripple={{
+              color: PlatformColor('?attr/colorAccent'),
+              borderless: false,
+            }}
+            style={{padding: 10, margin: 4, backgroundColor: '#eee'}}>
+            <Text style={buttonStyle}>
+              PlatformColor('?attr/colorAccent'), no alpha
+            </Text>
+          </Pressable>
+          <Pressable
+            android_ripple={{
+              color: PlatformColor('?attr/colorAccent'),
+              alpha: 0.3,
+              borderless: false,
+            }}
+            style={{padding: 10, margin: 4, backgroundColor: '#eee'}}>
+            <Text style={buttonStyle}>
+              PlatformColor('?attr/colorAccent'), alpha=0.3
+            </Text>
+          </Pressable>
+          <Pressable
+            android_ripple={{
+              color: '#FF0000',
+              borderless: false,
+            }}
+            style={{padding: 10, margin: 4, backgroundColor: '#eee'}}>
+            <Text style={buttonStyle}>Red (#FF0000), no alpha</Text>
+          </Pressable>
+          <Pressable
+            android_ripple={{
+              color: '#FF0000',
+              alpha: 0.5,
+              borderless: false,
+            }}
+            style={{padding: 10, margin: 4, backgroundColor: '#eee'}}>
+            <Text style={buttonStyle}>Red (#FF0000), alpha=0.5</Text>
+          </Pressable>
         </View>
       );
     },

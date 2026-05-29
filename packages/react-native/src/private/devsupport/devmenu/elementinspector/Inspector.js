@@ -49,7 +49,9 @@ export type ElementsHierarchy = InspectorData['hierarchy'];
 
 type ExternalInspection = {
   externalInspectingEnabled: boolean,
-  +reportToExternalInspection: (viewData: TouchedViewDataAtPoint) => void,
+  readonly reportToExternalInspection: (
+    viewData: TouchedViewDataAtPoint,
+  ) => void,
 };
 
 type Props = {

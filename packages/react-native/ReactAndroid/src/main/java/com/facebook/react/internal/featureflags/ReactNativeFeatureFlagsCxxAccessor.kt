@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<43aa532756b07f0b754cd74eb4811664>>
+ * @generated SignedSource<<d71556cf1226fe6a41dd388568153d3a>>
  */
 
 /**
@@ -39,16 +39,15 @@ internal class ReactNativeFeatureFlagsCxxAccessor : ReactNativeFeatureFlagsAcces
   private var enableDestroyShadowTreeRevisionAsyncCache: Boolean? = null
   private var enableDifferentiatorMutationVectorPreallocationCache: Boolean? = null
   private var enableDoubleMeasurementFixAndroidCache: Boolean? = null
-  private var enableEagerMainQueueModulesOnIOSCache: Boolean? = null
   private var enableEagerRootViewAttachmentCache: Boolean? = null
   private var enableExclusivePropsUpdateAndroidCache: Boolean? = null
   private var enableFabricCommitBranchingCache: Boolean? = null
   private var enableFabricLogsCache: Boolean? = null
-  private var enableFabricRendererCache: Boolean? = null
   private var enableFontScaleChangesUpdatingLayoutCache: Boolean? = null
   private var enableIOSTextBaselineOffsetPerLineCache: Boolean? = null
   private var enableIOSViewClipToPaddingBoxCache: Boolean? = null
   private var enableImagePrefetchingAndroidCache: Boolean? = null
+  private var enableImageRequestDowngradingForNonVisibleImagesCache: Boolean? = null
   private var enableImmediateUpdateModeForContentOffsetChangesCache: Boolean? = null
   private var enableImperativeFocusCache: Boolean? = null
   private var enableInteropViewManagerClassLookUpOptimizationIOSCache: Boolean? = null
@@ -56,7 +55,6 @@ internal class ReactNativeFeatureFlagsCxxAccessor : ReactNativeFeatureFlagsAcces
   private var enableKeyEventsCache: Boolean? = null
   private var enableLayoutAnimationsOnAndroidCache: Boolean? = null
   private var enableLayoutAnimationsOnIOSCache: Boolean? = null
-  private var enableMainQueueCoordinatorOnIOSCache: Boolean? = null
   private var enableModuleArgumentNSNullConversionIOSCache: Boolean? = null
   private var enableMutationObserverByDefaultCache: Boolean? = null
   private var enableNativeCSSParsingCache: Boolean? = null
@@ -73,7 +71,6 @@ internal class ReactNativeFeatureFlagsCxxAccessor : ReactNativeFeatureFlagsAcces
   private var enableViewRecyclingForTextCache: Boolean? = null
   private var enableViewRecyclingForViewCache: Boolean? = null
   private var enableVirtualViewContainerStateExperimentalCache: Boolean? = null
-  private var enableVirtualViewDebugFeaturesCache: Boolean? = null
   private var fixDifferentiatorParentTagForUnflattenCaseCache: Boolean? = null
   private var fixMappingOfEventPrioritiesBetweenFabricAndReactCache: Boolean? = null
   private var fixYogaFlexBasisFitContentInMainAxisCache: Boolean? = null
@@ -106,8 +103,6 @@ internal class ReactNativeFeatureFlagsCxxAccessor : ReactNativeFeatureFlagsAcces
   private var useSharedAnimatedBackendCache: Boolean? = null
   private var useTraitHiddenOnAndroidCache: Boolean? = null
   private var useTurboModuleInteropCache: Boolean? = null
-  private var useTurboModulesCache: Boolean? = null
-  private var useUnorderedMapInDifferentiatorCache: Boolean? = null
   private var viewCullingOutsetRatioCache: Double? = null
   private var viewTransitionEnabledCache: Boolean? = null
   private var viewTransitionUseHardwareBitmapAndroidCache: Boolean? = null
@@ -284,15 +279,6 @@ internal class ReactNativeFeatureFlagsCxxAccessor : ReactNativeFeatureFlagsAcces
     return cached
   }
 
-  override fun enableEagerMainQueueModulesOnIOS(): Boolean {
-    var cached = enableEagerMainQueueModulesOnIOSCache
-    if (cached == null) {
-      cached = ReactNativeFeatureFlagsCxxInterop.enableEagerMainQueueModulesOnIOS()
-      enableEagerMainQueueModulesOnIOSCache = cached
-    }
-    return cached
-  }
-
   override fun enableEagerRootViewAttachment(): Boolean {
     var cached = enableEagerRootViewAttachmentCache
     if (cached == null) {
@@ -329,15 +315,6 @@ internal class ReactNativeFeatureFlagsCxxAccessor : ReactNativeFeatureFlagsAcces
     return cached
   }
 
-  override fun enableFabricRenderer(): Boolean {
-    var cached = enableFabricRendererCache
-    if (cached == null) {
-      cached = ReactNativeFeatureFlagsCxxInterop.enableFabricRenderer()
-      enableFabricRendererCache = cached
-    }
-    return cached
-  }
-
   override fun enableFontScaleChangesUpdatingLayout(): Boolean {
     var cached = enableFontScaleChangesUpdatingLayoutCache
     if (cached == null) {
@@ -370,6 +347,15 @@ internal class ReactNativeFeatureFlagsCxxAccessor : ReactNativeFeatureFlagsAcces
     if (cached == null) {
       cached = ReactNativeFeatureFlagsCxxInterop.enableImagePrefetchingAndroid()
       enableImagePrefetchingAndroidCache = cached
+    }
+    return cached
+  }
+
+  override fun enableImageRequestDowngradingForNonVisibleImages(): Boolean {
+    var cached = enableImageRequestDowngradingForNonVisibleImagesCache
+    if (cached == null) {
+      cached = ReactNativeFeatureFlagsCxxInterop.enableImageRequestDowngradingForNonVisibleImages()
+      enableImageRequestDowngradingForNonVisibleImagesCache = cached
     }
     return cached
   }
@@ -433,15 +419,6 @@ internal class ReactNativeFeatureFlagsCxxAccessor : ReactNativeFeatureFlagsAcces
     if (cached == null) {
       cached = ReactNativeFeatureFlagsCxxInterop.enableLayoutAnimationsOnIOS()
       enableLayoutAnimationsOnIOSCache = cached
-    }
-    return cached
-  }
-
-  override fun enableMainQueueCoordinatorOnIOS(): Boolean {
-    var cached = enableMainQueueCoordinatorOnIOSCache
-    if (cached == null) {
-      cached = ReactNativeFeatureFlagsCxxInterop.enableMainQueueCoordinatorOnIOS()
-      enableMainQueueCoordinatorOnIOSCache = cached
     }
     return cached
   }
@@ -586,15 +563,6 @@ internal class ReactNativeFeatureFlagsCxxAccessor : ReactNativeFeatureFlagsAcces
     if (cached == null) {
       cached = ReactNativeFeatureFlagsCxxInterop.enableVirtualViewContainerStateExperimental()
       enableVirtualViewContainerStateExperimentalCache = cached
-    }
-    return cached
-  }
-
-  override fun enableVirtualViewDebugFeatures(): Boolean {
-    var cached = enableVirtualViewDebugFeaturesCache
-    if (cached == null) {
-      cached = ReactNativeFeatureFlagsCxxInterop.enableVirtualViewDebugFeatures()
-      enableVirtualViewDebugFeaturesCache = cached
     }
     return cached
   }
@@ -883,24 +851,6 @@ internal class ReactNativeFeatureFlagsCxxAccessor : ReactNativeFeatureFlagsAcces
     if (cached == null) {
       cached = ReactNativeFeatureFlagsCxxInterop.useTurboModuleInterop()
       useTurboModuleInteropCache = cached
-    }
-    return cached
-  }
-
-  override fun useTurboModules(): Boolean {
-    var cached = useTurboModulesCache
-    if (cached == null) {
-      cached = ReactNativeFeatureFlagsCxxInterop.useTurboModules()
-      useTurboModulesCache = cached
-    }
-    return cached
-  }
-
-  override fun useUnorderedMapInDifferentiator(): Boolean {
-    var cached = useUnorderedMapInDifferentiatorCache
-    if (cached == null) {
-      cached = ReactNativeFeatureFlagsCxxInterop.useUnorderedMapInDifferentiator()
-      useUnorderedMapInDifferentiatorCache = cached
     }
     return cached
   }

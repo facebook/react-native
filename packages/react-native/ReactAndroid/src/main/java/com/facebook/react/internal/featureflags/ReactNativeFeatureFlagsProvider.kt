@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<9945400608426bf3aa1163b9f212d07c>>
+ * @generated SignedSource<<a3dbeb4eec6efecc4fc355b15a984e58>>
  */
 
 /**
@@ -61,8 +61,6 @@ public interface ReactNativeFeatureFlagsProvider {
 
   @DoNotStrip public fun enableDoubleMeasurementFixAndroid(): Boolean
 
-  @DoNotStrip public fun enableEagerMainQueueModulesOnIOS(): Boolean
-
   @DoNotStrip public fun enableEagerRootViewAttachment(): Boolean
 
   @DoNotStrip public fun enableExclusivePropsUpdateAndroid(): Boolean
@@ -71,8 +69,6 @@ public interface ReactNativeFeatureFlagsProvider {
 
   @DoNotStrip public fun enableFabricLogs(): Boolean
 
-  @DoNotStrip public fun enableFabricRenderer(): Boolean
-
   @DoNotStrip public fun enableFontScaleChangesUpdatingLayout(): Boolean
 
   @DoNotStrip public fun enableIOSTextBaselineOffsetPerLine(): Boolean
@@ -80,6 +76,8 @@ public interface ReactNativeFeatureFlagsProvider {
   @DoNotStrip public fun enableIOSViewClipToPaddingBox(): Boolean
 
   @DoNotStrip public fun enableImagePrefetchingAndroid(): Boolean
+
+  @DoNotStrip public fun enableImageRequestDowngradingForNonVisibleImages(): Boolean
 
   @DoNotStrip public fun enableImmediateUpdateModeForContentOffsetChanges(): Boolean
 
@@ -94,8 +92,6 @@ public interface ReactNativeFeatureFlagsProvider {
   @DoNotStrip public fun enableLayoutAnimationsOnAndroid(): Boolean
 
   @DoNotStrip public fun enableLayoutAnimationsOnIOS(): Boolean
-
-  @DoNotStrip public fun enableMainQueueCoordinatorOnIOS(): Boolean
 
   @DoNotStrip public fun enableModuleArgumentNSNullConversionIOS(): Boolean
 
@@ -128,8 +124,6 @@ public interface ReactNativeFeatureFlagsProvider {
   @DoNotStrip public fun enableViewRecyclingForView(): Boolean
 
   @DoNotStrip public fun enableVirtualViewContainerStateExperimental(): Boolean
-
-  @DoNotStrip public fun enableVirtualViewDebugFeatures(): Boolean
 
   @DoNotStrip public fun fixDifferentiatorParentTagForUnflattenCase(): Boolean
 
@@ -194,10 +188,6 @@ public interface ReactNativeFeatureFlagsProvider {
   @DoNotStrip public fun useTraitHiddenOnAndroid(): Boolean
 
   @DoNotStrip public fun useTurboModuleInterop(): Boolean
-
-  @DoNotStrip public fun useTurboModules(): Boolean
-
-  @DoNotStrip public fun useUnorderedMapInDifferentiator(): Boolean
 
   @DoNotStrip public fun viewCullingOutsetRatio(): Double
 

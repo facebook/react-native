@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<56c989556810840e2dd2a42b66d431dc>>
+ * @generated SignedSource<<86c797c19cc585b74714ca3aa75bbd6d>>
  */
 
 /**
@@ -109,7 +109,7 @@ public object ReactNativeFeatureFlags {
   public fun enableAndroidTextMeasurementOptimizations(): Boolean = accessor.enableAndroidTextMeasurementOptimizations()
 
   /**
-   * Feature flag to enable the new bridgeless architecture. Note: Enabling this will force enable the following flags: `useTurboModules` & `enableFabricRenderer`.
+   * Feature flag to enable the new bridgeless architecture.
    */
   @JvmStatic
   public fun enableBridgelessArchitecture(): Boolean = accessor.enableBridgelessArchitecture()
@@ -145,12 +145,6 @@ public object ReactNativeFeatureFlags {
   public fun enableDoubleMeasurementFixAndroid(): Boolean = accessor.enableDoubleMeasurementFixAndroid()
 
   /**
-   * This infra allows native modules to initialize on the main thread, during React Native init.
-   */
-  @JvmStatic
-  public fun enableEagerMainQueueModulesOnIOS(): Boolean = accessor.enableEagerMainQueueModulesOnIOS()
-
-  /**
    * Feature flag to configure eager attachment of the root view/initialisation of the JS code.
    */
   @JvmStatic
@@ -175,12 +169,6 @@ public object ReactNativeFeatureFlags {
   public fun enableFabricLogs(): Boolean = accessor.enableFabricLogs()
 
   /**
-   * Enables the use of the Fabric renderer in the whole app.
-   */
-  @JvmStatic
-  public fun enableFabricRenderer(): Boolean = accessor.enableFabricRenderer()
-
-  /**
    * Enables font scale changes updating layout for measurable nodes.
    */
   @JvmStatic
@@ -203,6 +191,12 @@ public object ReactNativeFeatureFlags {
    */
   @JvmStatic
   public fun enableImagePrefetchingAndroid(): Boolean = accessor.enableImagePrefetchingAndroid()
+
+  /**
+   * When enabled, ImageShadowNode downgrades image requests to prefetch priority when layout determines that the image does not intersect the viewport.
+   */
+  @JvmStatic
+  public fun enableImageRequestDowngradingForNonVisibleImages(): Boolean = accessor.enableImageRequestDowngradingForNonVisibleImages()
 
   /**
    * Dispatches state updates for content offset changes synchronously on the main thread.
@@ -245,12 +239,6 @@ public object ReactNativeFeatureFlags {
    */
   @JvmStatic
   public fun enableLayoutAnimationsOnIOS(): Boolean = accessor.enableLayoutAnimationsOnIOS()
-
-  /**
-   * Make RCTUnsafeExecuteOnMainQueueSync less likely to deadlock, when used in conjuction with sync rendering/events.
-   */
-  @JvmStatic
-  public fun enableMainQueueCoordinatorOnIOS(): Boolean = accessor.enableMainQueueCoordinatorOnIOS()
 
   /**
    * Enable NSNull conversion when handling module arguments on iOS
@@ -347,12 +335,6 @@ public object ReactNativeFeatureFlags {
    */
   @JvmStatic
   public fun enableVirtualViewContainerStateExperimental(): Boolean = accessor.enableVirtualViewContainerStateExperimental()
-
-  /**
-   * Enables VirtualView debug features such as logging and overlays.
-   */
-  @JvmStatic
-  public fun enableVirtualViewDebugFeatures(): Boolean = accessor.enableVirtualViewDebugFeatures()
 
   /**
    * Fix incorrect parentTag passed as parentTagForUpdate in the unflatten-unflatten branch of calculateShadowViewMutationsFlattener, which causes UPDATE mutations to reference a parent being created in the same batch.
@@ -545,18 +527,6 @@ public object ReactNativeFeatureFlags {
    */
   @JvmStatic
   public fun useTurboModuleInterop(): Boolean = accessor.useTurboModuleInterop()
-
-  /**
-   * When enabled, NativeModules will be executed by using the TurboModule system
-   */
-  @JvmStatic
-  public fun useTurboModules(): Boolean = accessor.useTurboModules()
-
-  /**
-   * Use std::unordered_map instead of TinyMap in the Differentiator for improved lookup performance.
-   */
-  @JvmStatic
-  public fun useUnorderedMapInDifferentiator(): Boolean = accessor.useUnorderedMapInDifferentiator()
 
   /**
    * Outset the culling context frame with the provided ratio. The culling context frame size will be outset by width * ratio on the left and right, and height * ratio on the top and bottom.

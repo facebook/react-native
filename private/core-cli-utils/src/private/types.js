@@ -8,8 +8,10 @@
  * @format
  */
 
+/*::
 export type Task<R = unknown> = {
   order: number,
   label: string,
   action: () => R,
 };
+*/

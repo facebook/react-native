@@ -5,12 +5,18 @@
 
 require 'shellwords'
 require 'digest'
+require 'uri'
 
 require_relative "./helpers.rb"
 require_relative "./jsengine.rb"
 
 # Utilities class for React Native Cocoapods
 class ReactNativePodsUtils
+    # URI::File.build validates path components as ASCII, so escape the filesystem path first.
+    def self.local_file_uri(path)
+        URI::File.build(path: URI::DEFAULT_PARSER.escape(path)).to_s
+    end
+
     def self.warn_if_not_on_arm64
         if SysctlChecker.new().call_sysctl_arm64() == 1 && !Environment.new().ruby_platform().include?('arm64')
             Pod::UI.warn 'Do not use "pod install" from inside Rosetta2 (x86_64 emulation on arm64).'

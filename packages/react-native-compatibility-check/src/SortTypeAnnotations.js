@@ -46,6 +46,9 @@ export function compareTypeAnnotationForSorting(
   switch (typeA.type) {
     case 'AnyTypeAnnotation':
       return 0;
+    case 'ArrayBufferTypeAnnotation':
+      invariant(typeB.type === 'ArrayBufferTypeAnnotation', EQUALITY_MSG);
+      return originalPositionA - originalPositionB;
     case 'ArrayTypeAnnotation':
       invariant(typeB.type === 'ArrayTypeAnnotation', EQUALITY_MSG);
       return compareTypeAnnotationForSorting(
@@ -281,6 +284,8 @@ function typeAnnotationArbitraryOrder(annotation: CompleteTypeAnnotation) {
       return 28;
     case 'UnionTypeAnnotation':
       return 30;
+    case 'ArrayBufferTypeAnnotation':
+      return 31;
     default:
       annotation.type as empty;
       return -1;

@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<501a0efcf0a4ab20827bdefc3a844b3f>>
+ * @generated SignedSource<<dcb1e3ba662f28194124dc63879f4fde>>
  */
 
 /**
@@ -105,7 +105,7 @@ class ReactNativeFeatureFlags {
   RN_EXPORT static bool enableAndroidTextMeasurementOptimizations();
 
   /**
-   * Feature flag to enable the new bridgeless architecture. Note: Enabling this will force enable the following flags: `useTurboModules` & `enableFabricRenderer`.
+   * Feature flag to enable the new bridgeless architecture.
    */
   RN_EXPORT static bool enableBridgelessArchitecture();
 
@@ -135,11 +135,6 @@ class ReactNativeFeatureFlags {
   RN_EXPORT static bool enableDoubleMeasurementFixAndroid();
 
   /**
-   * This infra allows native modules to initialize on the main thread, during React Native init.
-   */
-  RN_EXPORT static bool enableEagerMainQueueModulesOnIOS();
-
-  /**
    * Feature flag to configure eager attachment of the root view/initialisation of the JS code.
    */
   RN_EXPORT static bool enableEagerRootViewAttachment();
@@ -160,11 +155,6 @@ class ReactNativeFeatureFlags {
   RN_EXPORT static bool enableFabricLogs();
 
   /**
-   * Enables the use of the Fabric renderer in the whole app.
-   */
-  RN_EXPORT static bool enableFabricRenderer();
-
-  /**
    * Enables font scale changes updating layout for measurable nodes.
    */
   RN_EXPORT static bool enableFontScaleChangesUpdatingLayout();
@@ -183,6 +173,11 @@ class ReactNativeFeatureFlags {
    * When enabled, Android will build and initiate image prefetch requests on ImageShadowNode::layout
    */
   RN_EXPORT static bool enableImagePrefetchingAndroid();
+
+  /**
+   * When enabled, ImageShadowNode downgrades image requests to prefetch priority when layout determines that the image does not intersect the viewport.
+   */
+  RN_EXPORT static bool enableImageRequestDowngradingForNonVisibleImages();
 
   /**
    * Dispatches state updates for content offset changes synchronously on the main thread.
@@ -218,11 +213,6 @@ class ReactNativeFeatureFlags {
    * When enabled, LayoutAnimations API will animate state changes on iOS.
    */
   RN_EXPORT static bool enableLayoutAnimationsOnIOS();
-
-  /**
-   * Make RCTUnsafeExecuteOnMainQueueSync less likely to deadlock, when used in conjuction with sync rendering/events.
-   */
-  RN_EXPORT static bool enableMainQueueCoordinatorOnIOS();
 
   /**
    * Enable NSNull conversion when handling module arguments on iOS
@@ -303,11 +293,6 @@ class ReactNativeFeatureFlags {
    * Enables the experimental version of `VirtualViewContainerState`.
    */
   RN_EXPORT static bool enableVirtualViewContainerStateExperimental();
-
-  /**
-   * Enables VirtualView debug features such as logging and overlays.
-   */
-  RN_EXPORT static bool enableVirtualViewDebugFeatures();
 
   /**
    * Fix incorrect parentTag passed as parentTagForUpdate in the unflatten-unflatten branch of calculateShadowViewMutationsFlattener, which causes UPDATE mutations to reference a parent being created in the same batch.
@@ -468,16 +453,6 @@ class ReactNativeFeatureFlags {
    * In Bridgeless mode, should legacy NativeModules use the TurboModule system?
    */
   RN_EXPORT static bool useTurboModuleInterop();
-
-  /**
-   * When enabled, NativeModules will be executed by using the TurboModule system
-   */
-  RN_EXPORT static bool useTurboModules();
-
-  /**
-   * Use std::unordered_map instead of TinyMap in the Differentiator for improved lookup performance.
-   */
-  RN_EXPORT static bool useUnorderedMapInDifferentiator();
 
   /**
    * Outset the culling context frame with the provided ratio. The culling context frame size will be outset by width * ratio on the left and right, and height * ratio on the top and bottom.

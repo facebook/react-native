@@ -340,4 +340,34 @@ describe('Image', () => {
       'foo-bar.jpg',
     ]);
   });
+
+  it('forwards source.headers as a top-level prop on Android', async () => {
+    jest.dontMock('../Image.android');
+    // $FlowFixMe[missing-platform-support] headers are forwarded as a top-level native prop only on Android
+    const ImageAndroid = require('../Image.android').default;
+
+    const instance = await render.create(
+      <ImageAndroid
+        source={{uri: 'foo-bar.jpg', headers: {Authorization: 'Bearer xyz'}}}
+      />,
+    );
+
+    const tree = instance.toJSON();
+    expect(tree?.props.headers).toEqual({Authorization: 'Bearer xyz'});
+  });
+
+  it('forwards source.headers as a top-level prop on Android for array sources', async () => {
+    jest.dontMock('../Image.android');
+    // $FlowFixMe[missing-platform-support] headers are forwarded as a top-level native prop only on Android
+    const ImageAndroid = require('../Image.android').default;
+
+    const instance = await render.create(
+      <ImageAndroid
+        source={[{uri: 'foo-bar.jpg', headers: {Authorization: 'Bearer xyz'}}]}
+      />,
+    );
+
+    const tree = instance.toJSON();
+    expect(tree?.props.headers).toEqual({Authorization: 'Bearer xyz'});
+  });
 });

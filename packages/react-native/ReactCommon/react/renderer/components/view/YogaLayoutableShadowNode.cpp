@@ -671,6 +671,13 @@ void YogaLayoutableShadowNode::layoutTree(
     yogaNode_.setHasNewLayout(false);
   }
 
+  if (ReactNativeFeatureFlags::
+          enableImageRequestDowngradingForNonVisibleImages()) {
+    layoutContext.experimental_layoutOrigin = layoutContext.viewportOffset;
+    layoutContext.experimental_layoutFrame = Rect{
+        .origin = layoutContext.viewportOffset,
+        .size = getLayoutMetrics().frame.size};
+  }
   layout(layoutContext);
 }
 
@@ -729,7 +736,21 @@ void YogaLayoutableShadowNode::layout(LayoutContext layoutContext) {
       childNode.setLayoutMetrics(newLayoutMetrics);
 
       if (newLayoutMetrics.displayType != DisplayType::None) {
-        childNode.layout(layoutContext);
+        auto childLayoutContext = layoutContext;
+        if (ReactNativeFeatureFlags::
+                enableImageRequestDowngradingForNonVisibleImages()) {
+          auto childFrame = Rect{
+              .origin = layoutContext.experimental_layoutOrigin +
+                  newLayoutMetrics.frame.origin + getContentOriginOffset(false),
+              .size = newLayoutMetrics.frame.size};
+          if (!childNode.getTraits().check(
+                  ShadowNodeTraits::Trait::RootNodeKind)) {
+            childFrame = childFrame * childNode.getTransform();
+          }
+          childLayoutContext.experimental_layoutOrigin = childFrame.origin;
+          childLayoutContext.experimental_layoutFrame = childFrame;
+        }
+        childNode.layout(childLayoutContext);
       }
     }
   }

@@ -29,7 +29,7 @@ export type PlatformConstantsIOS = {
 };
 
 export interface Spec extends TurboModule {
-  +getConstants: () => PlatformConstantsIOS;
+  readonly getConstants: () => PlatformConstantsIOS;
 }
 
 export default TurboModuleRegistry.getEnforcing<Spec>(

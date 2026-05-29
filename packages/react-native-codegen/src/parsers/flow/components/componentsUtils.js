@@ -17,7 +17,7 @@ const {verifyPropNotAlreadyDefined} = require('../../parsers-commons');
 const {getValueFromTypes} = require('../utils.js');
 
 // $FlowFixMe[unsupported-variance-annotation]
-function getTypeAnnotationForArray<+T>(
+function getTypeAnnotationForArray<out T>(
   name: string,
   typeAnnotation: $FlowFixMe,
   defaultValue: $FlowFixMe | null,
@@ -219,7 +219,7 @@ function flattenProperties(
 }
 
 // $FlowFixMe[unsupported-variance-annotation]
-function getTypeAnnotation<+T>(
+function getTypeAnnotation<out T>(
   name: string,
   annotation: $FlowFixMe | ASTNode,
   defaultValue: $FlowFixMe | null,

@@ -194,8 +194,7 @@ const definitions: FeatureFlagDefinitions = {
     enableBridgelessArchitecture: {
       defaultValue: false,
       metadata: {
-        description:
-          'Feature flag to enable the new bridgeless architecture. Note: Enabling this will force enable the following flags: `useTurboModules` & `enableFabricRenderer`.',
+        description: 'Feature flag to enable the new bridgeless architecture.',
         expectedReleaseValue: true,
         purpose: 'release',
       },
@@ -254,16 +253,6 @@ const definitions: FeatureFlagDefinitions = {
       },
       ossReleaseStage: 'none',
     },
-    enableEagerMainQueueModulesOnIOS: {
-      defaultValue: false,
-      metadata: {
-        description:
-          'This infra allows native modules to initialize on the main thread, during React Native init.',
-        expectedReleaseValue: true,
-        purpose: 'release',
-      },
-      ossReleaseStage: 'none',
-    },
     enableEagerRootViewAttachment: {
       defaultValue: false,
       metadata: {
@@ -305,15 +294,6 @@ const definitions: FeatureFlagDefinitions = {
       },
       ossReleaseStage: 'none',
     },
-    enableFabricRenderer: {
-      defaultValue: false,
-      metadata: {
-        description: 'Enables the use of the Fabric renderer in the whole app.',
-        expectedReleaseValue: true,
-        purpose: 'release',
-      },
-      ossReleaseStage: 'canary',
-    },
     enableFontScaleChangesUpdatingLayout: {
       defaultValue: true,
       metadata: {
@@ -352,6 +332,17 @@ const definitions: FeatureFlagDefinitions = {
         dateAdded: '2025-06-21',
         description:
           'When enabled, Android will build and initiate image prefetch requests on ImageShadowNode::layout',
+        expectedReleaseValue: true,
+        purpose: 'experimentation',
+      },
+      ossReleaseStage: 'none',
+    },
+    enableImageRequestDowngradingForNonVisibleImages: {
+      defaultValue: false,
+      metadata: {
+        dateAdded: '2026-05-21',
+        description:
+          'When enabled, ImageShadowNode downgrades image requests to prefetch priority when layout determines that the image does not intersect the viewport.',
         expectedReleaseValue: true,
         purpose: 'experimentation',
       },
@@ -428,17 +419,6 @@ const definitions: FeatureFlagDefinitions = {
           'When enabled, LayoutAnimations API will animate state changes on iOS.',
         expectedReleaseValue: true,
         purpose: 'release',
-      },
-      ossReleaseStage: 'none',
-    },
-    enableMainQueueCoordinatorOnIOS: {
-      defaultValue: false,
-      metadata: {
-        dateAdded: '2025-05-17',
-        description:
-          'Make RCTUnsafeExecuteOnMainQueueSync less likely to deadlock, when used in conjuction with sync rendering/events.',
-        expectedReleaseValue: true,
-        purpose: 'experimentation',
       },
       ossReleaseStage: 'none',
     },
@@ -610,16 +590,6 @@ const definitions: FeatureFlagDefinitions = {
           'Enables the experimental version of `VirtualViewContainerState`.',
         expectedReleaseValue: true,
         purpose: 'experimentation',
-      },
-      ossReleaseStage: 'none',
-    },
-    enableVirtualViewDebugFeatures: {
-      defaultValue: false,
-      metadata: {
-        description:
-          'Enables VirtualView debug features such as logging and overlays.',
-        expectedReleaseValue: false,
-        purpose: 'operational',
       },
       ossReleaseStage: 'none',
     },
@@ -964,27 +934,6 @@ const definitions: FeatureFlagDefinitions = {
         purpose: 'experimentation',
       },
       ossReleaseStage: 'canary',
-    },
-    useTurboModules: {
-      defaultValue: false,
-      metadata: {
-        description:
-          'When enabled, NativeModules will be executed by using the TurboModule system',
-        expectedReleaseValue: true,
-        purpose: 'release',
-      },
-      ossReleaseStage: 'canary',
-    },
-    useUnorderedMapInDifferentiator: {
-      defaultValue: false,
-      metadata: {
-        dateAdded: '2026-02-26',
-        description:
-          'Use std::unordered_map instead of TinyMap in the Differentiator for improved lookup performance.',
-        expectedReleaseValue: true,
-        purpose: 'experimentation',
-      },
-      ossReleaseStage: 'none',
     },
     viewCullingOutsetRatio: {
       defaultValue: 0,
