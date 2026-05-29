@@ -51,7 +51,7 @@ export type WithAnimatedValue<out T> = T extends Builtin | Nullable
     : T extends ReadonlyArray<infer P>
       ? ReadonlyArray<WithAnimatedValue<P>>
       : T extends {...}
-        ? {+[K in keyof T]: WithAnimatedValue<T[K]>}
+        ? {readonly [K in keyof T]: WithAnimatedValue<T[K]>}
         : T;
 
 type NonAnimatedProps =
