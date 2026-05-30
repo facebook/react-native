@@ -42,6 +42,10 @@ export type Int32TypeAnnotation = Readonly<{
   type: 'Int32TypeAnnotation',
 }>;
 
+export type BigIntTypeAnnotation = Readonly<{
+  type: 'BigIntTypeAnnotation',
+}>;
+
 export type NumberLiteralTypeAnnotation = Readonly<{
   type: 'NumberLiteralTypeAnnotation',
   value: number,
@@ -423,6 +427,7 @@ export type NativeModuleBaseTypeAnnotation =
   | NumberLiteralTypeAnnotation
   | BooleanLiteralTypeAnnotation
   | Int32TypeAnnotation
+  | BigIntTypeAnnotation
   | DoubleTypeAnnotation
   | FloatTypeAnnotation
   | BooleanTypeAnnotation

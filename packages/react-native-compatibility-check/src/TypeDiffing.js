@@ -180,6 +180,7 @@ export function compareTypeAnnotation(
     case 'DoubleTypeAnnotation':
     case 'FloatTypeAnnotation':
     case 'Int32TypeAnnotation':
+    case 'BigIntTypeAnnotation':
     case 'BooleanTypeAnnotation':
     case 'NumberTypeAnnotation':
     case 'StringTypeAnnotation':
