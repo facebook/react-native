@@ -159,7 +159,7 @@ class UIManager final : public ShadowTreeDelegate {
       RawProps rawProps) const;
 
   void appendChild(
-      const std::shared_ptr<const ShadowNode> &parentShadowNode,
+      const std::shared_ptr<ShadowNode> &parentShadowNode,
       const std::shared_ptr<const ShadowNode> &childShadowNode) const;
 
   void completeSurface(

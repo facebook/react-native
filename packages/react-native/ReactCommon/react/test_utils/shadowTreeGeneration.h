@@ -114,49 +114,59 @@ static inline std::shared_ptr<ShadowNode> messWithLayoutableOnlyFlag(
     const Entropy &entropy,
     const ShadowNode &shadowNode)
 {
-  auto oldProps = shadowNode.getProps();
-
-  ContextContainer contextContainer{};
-  PropsParserContext parserContext{-1, contextContainer};
-
-  auto newProps =
-      shadowNode.getComponentDescriptor().cloneProps(parserContext, oldProps, RawProps(folly::dynamic::object()));
-
-  auto &viewProps = const_cast<ViewProps &>(static_cast<const ViewProps &>(*newProps));
+  folly::dynamic dynamic = folly::dynamic::object();
 
   if (entropy.random<bool>(0.1)) {
-    viewProps.nativeId = entropy.random<bool>() ? "42" : "";
+    dynamic["nativeID"] = entropy.random<bool>() ? "42" : "";
   }
 
   if (entropy.random<bool>(0.1)) {
-    viewProps.backgroundColor = entropy.random<bool>() ? SharedColor() : whiteColor();
+    if (entropy.random<bool>()) {
+      dynamic["backgroundColor"] = nullptr;
+    } else {
+      dynamic["backgroundColor"] = 0xFFFFFFFF;
+    }
   }
 
   if (entropy.random<bool>(0.1)) {
-    viewProps.shadowColor = entropy.random<bool>() ? SharedColor() : blackColor();
+    if (entropy.random<bool>()) {
+      dynamic["shadowColor"] = nullptr;
+    } else {
+      dynamic["shadowColor"] = 0xFF000000;
+    }
   }
 
   if (entropy.random<bool>(0.1)) {
-    viewProps.accessible = entropy.random<bool>();
+    dynamic["accessible"] = entropy.random<bool>();
   }
 
   if (entropy.random<bool>(0.1)) {
-    viewProps.zIndex = entropy.random<int>();
+    dynamic["zIndex"] = entropy.random<int>();
   }
 
   if (entropy.random<bool>(0.1)) {
-    viewProps.pointerEvents = entropy.random<bool>() ? PointerEventsMode::Auto : PointerEventsMode::None;
+    dynamic["pointerEvents"] = entropy.random<bool>() ? "auto" : "none";
   }
 
   if (entropy.random<bool>(0.1)) {
-    viewProps.transform = entropy.random<bool>() ? Transform::Identity() : Transform::Perspective(42);
+    if (entropy.random<bool>()) {
+      dynamic["transform"] = folly::dynamic::array();
+    } else {
+      dynamic["transform"] = folly::dynamic::array(folly::dynamic::object("perspective", 42));
+    }
   }
 
 #ifdef ANDROID
   if (entropy.random<bool>(0.1)) {
-    viewProps.elevation = entropy.random<bool>() ? 1 : 0;
+    dynamic["elevation"] = entropy.random<bool>() ? 1 : 0;
   }
 #endif
+
+  ContextContainer contextContainer{};
+  PropsParserContext parserContext{-1, contextContainer};
+
+  auto oldProps = shadowNode.getProps();
+  auto newProps = shadowNode.getComponentDescriptor().cloneProps(parserContext, oldProps, RawProps(dynamic));
 
   return shadowNode.clone({newProps});
 }
@@ -167,39 +177,38 @@ static inline std::shared_ptr<ShadowNode> messWithNodeFlattenednessFlags(
     const Entropy &entropy,
     const ShadowNode &shadowNode)
 {
+  folly::dynamic dynamic = folly::dynamic::object();
+
+  if (entropy.random<bool>(0.5)) {
+    dynamic["nativeID"] = "";
+    dynamic["collapsable"] = true;
+    dynamic["backgroundColor"] = nullptr;
+    dynamic["shadowColor"] = nullptr;
+    dynamic["accessible"] = false;
+    dynamic["zIndex"] = nullptr;
+    dynamic["pointerEvents"] = "auto";
+    dynamic["transform"] = folly::dynamic::array();
+#ifdef ANDROID
+    dynamic["elevation"] = 0;
+#endif
+  } else {
+    dynamic["nativeID"] = "42";
+    dynamic["backgroundColor"] = 0xFFFFFFFF;
+    dynamic["shadowColor"] = 0xFF000000;
+    dynamic["accessible"] = true;
+    dynamic["zIndex"] = entropy.random<int>();
+    dynamic["pointerEvents"] = "none";
+    dynamic["transform"] = folly::dynamic::array(folly::dynamic::object("perspective", entropy.random<int>()));
+#ifdef ANDROID
+    dynamic["elevation"] = entropy.random<int>();
+#endif
+  }
+
   ContextContainer contextContainer{};
   PropsParserContext parserContext{-1, contextContainer};
 
   auto oldProps = shadowNode.getProps();
-  auto newProps =
-      shadowNode.getComponentDescriptor().cloneProps(parserContext, oldProps, RawProps(folly::dynamic::object()));
-
-  auto &viewProps = const_cast<ViewProps &>(static_cast<const ViewProps &>(*newProps));
-
-  if (entropy.random<bool>(0.5)) {
-    viewProps.nativeId = "";
-    viewProps.collapsable = true;
-    viewProps.backgroundColor = SharedColor();
-    viewProps.shadowColor = SharedColor();
-    viewProps.accessible = false;
-    viewProps.zIndex = {};
-    viewProps.pointerEvents = PointerEventsMode::Auto;
-    viewProps.transform = Transform::Identity();
-#ifdef ANDROID
-    viewProps.elevation = 0;
-#endif
-  } else {
-    viewProps.nativeId = "42";
-    viewProps.backgroundColor = whiteColor();
-    viewProps.shadowColor = blackColor();
-    viewProps.accessible = true;
-    viewProps.zIndex = {entropy.random<int>()};
-    viewProps.pointerEvents = PointerEventsMode::None;
-    viewProps.transform = Transform::Perspective(entropy.random<int>());
-#ifdef ANDROID
-    viewProps.elevation = entropy.random<int>();
-#endif
-  }
+  auto newProps = shadowNode.getComponentDescriptor().cloneProps(parserContext, oldProps, RawProps(dynamic));
 
   return shadowNode.clone({newProps});
 }
