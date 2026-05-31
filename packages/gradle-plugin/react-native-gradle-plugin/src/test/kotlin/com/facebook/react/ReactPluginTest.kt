@@ -7,6 +7,7 @@
 
 package com.facebook.react
 
+import com.facebook.react.model.ModelAutolinkingDependenciesJson
 import java.io.File
 import org.assertj.core.api.Assertions.assertThat
 import org.intellij.lang.annotations.Language
@@ -112,6 +113,62 @@ class ReactPluginTest {
 
     assertThat(result.map { it.name })
         .containsExactly("without-generated-code", "without-includes-generated-code")
+  }
+
+  @Test
+  fun taskNameSuffixForDependency_withSimpleName_capitalizesIt() {
+    val dependency =
+        ModelAutolinkingDependenciesJson(root = "./simple", name = "simple", platforms = null)
+
+    val result = ReactPlugin().taskNameSuffixForDependency(dependency)
+
+    assertThat(result).isEqualTo("Simple")
+  }
+
+  @Test
+  fun taskNameSuffixForDependency_withNonAlphanumericCharacters_encodesThem() {
+    val dependency =
+        ModelAutolinkingDependenciesJson(
+            root = "./node_modules/@foo/bar-baz",
+            name = "@foo/bar-baz",
+            platforms = null,
+        )
+
+    val result = ReactPlugin().taskNameSuffixForDependency(dependency)
+
+    assertThat(result).isEqualTo("_64_foo_47_bar_45_baz")
+  }
+
+  @Test
+  fun taskNameSuffixForDependency_withSimilarCleansedNames_avoidsCollisions() {
+    val plugin = ReactPlugin()
+    val suffixes =
+        listOf("@foo/bar", "foo.bar", "foo-bar", "foo_bar", "foo_45_bar").map { name ->
+          val dependency =
+              ModelAutolinkingDependenciesJson(
+                  root = "./node_modules/$name",
+                  name = name,
+                  platforms = null,
+              )
+
+          plugin.taskNameSuffixForDependency(dependency)
+        }
+
+    assertThat(suffixes).doesNotHaveDuplicates()
+  }
+
+  @Test
+  fun taskNameSuffixForDependency_withLocalModuleRoot_usesPackageName() {
+    val dependency =
+        ModelAutolinkingDependenciesJson(
+            root = "./modules/local-module",
+            name = "local-module",
+            platforms = null,
+        )
+
+    val result = ReactPlugin().taskNameSuffixForDependency(dependency)
+
+    assertThat(result).isEqualTo("Local_45_module")
   }
 
   private fun createPackage(name: String, includesGeneratedCode: Boolean? = null): File {

@@ -332,7 +332,9 @@ class ReactPlugin : Plugin<Project> {
             pureCxxDependencies,
         )
 
-    // We add a task called generateReactNativeEntryPoint to generate the React Native entry point.
+    // We add a task called generateAutolinkingPackageList to do not clash with the existing task
+    // called generatePackageList. This can to be renamed once we unlink the rn <-> cli
+    // dependency.
     val generatePackageListTask =
         project.tasks.register(
             "generateAutolinkingPackageList",
@@ -342,9 +344,7 @@ class ReactPlugin : Plugin<Project> {
           task.generatedOutputDirectory.set(generatedAutolinkingJavaDir)
         }
 
-    // We add a task called generateAutolinkingPackageList to do not clash with the existing task
-    // called generatePackageList. This can to be renamed once we unlink the rn <-> cli
-    // dependency.
+    // We add a task called generateReactNativeEntryPoint to generate the React Native entry point.
     val generateEntryPointTask =
         project.tasks.register(
             "generateReactNativeEntryPoint",
@@ -456,7 +456,7 @@ class ReactPlugin : Plugin<Project> {
         } ?: emptyList()
   }
 
-  private fun taskNameSuffixForDependency(dependency: ModelAutolinkingDependenciesJson): String =
+  internal fun taskNameSuffixForDependency(dependency: ModelAutolinkingDependenciesJson): String =
       dependency.name
           .map { char -> if (char.isLetterOrDigit()) char.toString() else "_${char.code}_" }
           .joinToString("")

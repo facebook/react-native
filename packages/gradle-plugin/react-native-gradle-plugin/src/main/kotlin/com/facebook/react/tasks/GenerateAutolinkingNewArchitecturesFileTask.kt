@@ -101,7 +101,7 @@ abstract class GenerateAutolinkingNewArchitecturesFileTask : DefaultTask() {
     return CMAKE_TEMPLATE.replace("{{ libraryIncludes }}", libraryIncludes)
   }
 
-  private fun cmakeListsPathForDependency(
+  internal fun cmakeListsPathForDependency(
       dep: ModelAutolinkingDependenciesPlatformAndroidJson
   ): String? {
     if (dep.cmakeListsPath != null) {
