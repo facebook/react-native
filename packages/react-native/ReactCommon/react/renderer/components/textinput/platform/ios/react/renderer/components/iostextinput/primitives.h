@@ -50,6 +50,14 @@ enum class ReturnKeyType {
 };
 
 // iOS-only
+enum class WritingToolsBehavior {
+  Default,
+  None,
+  Limited,
+  Complete,
+};
+
+// iOS-only
 enum class TextInputAccessoryVisibilityMode {
   Never,
   WhileEditing,
@@ -217,6 +225,14 @@ class TextInputTraits final {
    * Default value: `empty` (`null`).
    */
   std::optional<bool> smartInsertDelete{};
+
+  /*
+   * iOS-only (inherently iOS-specific)
+   * Controls the Writing Tools experience (rewrite, proofread, etc.) in the text
+   * selection menu. Requires iOS 18+ (`UIWritingToolsBehavior`).
+   * Default value: `Default`.
+   */
+  WritingToolsBehavior writingToolsBehavior{WritingToolsBehavior::Default};
 };
 
 } // namespace facebook::react

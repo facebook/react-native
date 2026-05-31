@@ -980,6 +980,23 @@ const textInputExamples: Array<RNTesterModuleExample> = [
     },
   },
   {
+    title: 'Writing tools behavior',
+    render: function (): React.Node {
+      const writingToolsBehaviors = ['default', 'none', 'limited', 'complete'] as const;
+      const examples = writingToolsBehaviors.map(type => {
+        return (
+          <WithLabel key={type} label={type}>
+            <ExampleTextInput
+              writingToolsBehavior={type}
+              defaultValue="Select this text to see Writing Tools"
+            />
+          </WithLabel>
+        );
+      });
+      return <View>{examples}</View>;
+    },
+  },
+  {
     title: 'Auto scroll cursor into view when focusing',
     render: function (): React.Node {
       return <TextInputWithFocusButton />;

@@ -63,6 +63,12 @@ static TextInputTraits convertRawProp(
       convertRawProp(context, rawProps, "passwordRules", sourceTraits.passwordRules, defaultTraits.passwordRules);
   traits.smartInsertDelete = convertRawProp(
       context, rawProps, "smartInsertDelete", sourceTraits.smartInsertDelete, defaultTraits.smartInsertDelete);
+  traits.writingToolsBehavior = convertRawProp(
+      context,
+      rawProps,
+      "writingToolsBehavior",
+      sourceTraits.writingToolsBehavior,
+      defaultTraits.writingToolsBehavior);
 
   traits.dataDetectorTypes = convertRawProp(
       context, rawProps, "dataDetectorTypes", sourceTraits.dataDetectorTypes, defaultTraits.dataDetectorTypes);

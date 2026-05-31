@@ -41,6 +41,11 @@ UITextInputPasswordRules *RCTUITextInputPasswordRulesFromString(const std::strin
 
 UITextSmartInsertDeleteType RCTUITextSmartInsertDeleteTypeFromOptionalBool(std::optional<bool> smartInsertDelete);
 
+#if defined(__IPHONE_OS_VERSION_MAX_ALLOWED) && __IPHONE_OS_VERSION_MAX_ALLOWED >= 180000 /* __IPHONE_18_0 */
+UIWritingToolsBehavior RCTUIWritingToolsBehaviorFromWritingToolsBehavior(
+    facebook::react::WritingToolsBehavior writingToolsBehavior);
+#endif
+
 #if !TARGET_OS_TV
 UIDataDetectorTypes RCTUITextViewDataDetectorTypesFromStringVector(const std::vector<std::string> &dataDetectorTypes);
 #endif

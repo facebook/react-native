@@ -41,4 +41,24 @@ RCT_ENUM_CONVERTER(
                                : UITextSmartInsertDeleteTypeNo;
 }
 
+#if defined(__IPHONE_OS_VERSION_MAX_ALLOWED) && __IPHONE_OS_VERSION_MAX_ALLOWED >= 180000 /* __IPHONE_18_0 */
++ (UIWritingToolsBehavior)UIWritingToolsBehavior:(id)json
+{
+  if (json == nil) {
+    return UIWritingToolsBehaviorDefault;
+  }
+  NSString *value = [RCTConvert NSString:json];
+  if ([value isEqualToString:@"none"]) {
+    return UIWritingToolsBehaviorNone;
+  }
+  if ([value isEqualToString:@"limited"]) {
+    return UIWritingToolsBehaviorLimited;
+  }
+  if ([value isEqualToString:@"complete"]) {
+    return UIWritingToolsBehaviorComplete;
+  }
+  return UIWritingToolsBehaviorDefault;
+}
+#endif
+
 @end

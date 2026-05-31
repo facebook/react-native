@@ -44,6 +44,13 @@ void RCTCopyBackedTextInput(
   toTextInput.keyboardType = fromTextInput.keyboardType;
   toTextInput.textContentType = fromTextInput.textContentType;
   toTextInput.smartInsertDeleteType = fromTextInput.smartInsertDeleteType;
+#if defined(__IPHONE_OS_VERSION_MAX_ALLOWED) && __IPHONE_OS_VERSION_MAX_ALLOWED >= 180000 /* __IPHONE_18_0 */
+  if (@available(iOS 18.0, tvOS 18.0, *)) {
+    id<UITextInputTraits> fromTraits = (id<UITextInputTraits>)fromTextInput;
+    id<UITextInputTraits> toTraits = (id<UITextInputTraits>)toTextInput;
+    toTraits.writingToolsBehavior = fromTraits.writingToolsBehavior;
+  }
+#endif
   toTextInput.passwordRules = fromTextInput.passwordRules;
   toTextInput.disableKeyboardShortcuts = fromTextInput.disableKeyboardShortcuts;
   toTextInput.acceptDragAndDropTypes = fromTextInput.acceptDragAndDropTypes;
@@ -270,6 +277,22 @@ UITextSmartInsertDeleteType RCTUITextSmartInsertDeleteTypeFromOptionalBool(std::
       ? (*smartInsertDelete ? UITextSmartInsertDeleteTypeYes : UITextSmartInsertDeleteTypeNo)
       : UITextSmartInsertDeleteTypeDefault;
 }
+
+#if defined(__IPHONE_OS_VERSION_MAX_ALLOWED) && __IPHONE_OS_VERSION_MAX_ALLOWED >= 180000 /* __IPHONE_18_0 */
+UIWritingToolsBehavior RCTUIWritingToolsBehaviorFromWritingToolsBehavior(WritingToolsBehavior writingToolsBehavior)
+{
+  switch (writingToolsBehavior) {
+    case WritingToolsBehavior::Default:
+      return UIWritingToolsBehaviorDefault;
+    case WritingToolsBehavior::None:
+      return UIWritingToolsBehaviorNone;
+    case WritingToolsBehavior::Limited:
+      return UIWritingToolsBehaviorLimited;
+    case WritingToolsBehavior::Complete:
+      return UIWritingToolsBehaviorComplete;
+  }
+}
+#endif
 
 #if !TARGET_OS_TV
 UIDataDetectorTypes RCTUITextViewDataDetectorTypesFromStringVector(const std::vector<std::string> &dataDetectorTypes)

@@ -350,6 +350,19 @@ export interface TextInputIOSProps {
    * The default value is `true`.
    */
   smartInsertDelete?: boolean | undefined;
+
+  /**
+   * Controls the Writing Tools experience (rewrite, proofread, etc.) in the text
+   * selection menu. Maps to `UIWritingToolsBehavior` (iOS 18+).
+   *
+   * - `'default'`: system chooses the appropriate experience
+   * - `'none'`: disable Writing Tools for this field
+   * - `'limited'`: panel-only experience (no inline rewrite)
+   * - `'complete'`: full experience including inline rewrite
+   *
+   * @platform ios
+   */
+  writingToolsBehavior?: 'default' | 'none' | 'limited' | 'complete' | undefined;
 }
 
 /**

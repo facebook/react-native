@@ -276,6 +276,16 @@ static NSSet<NSNumber *> *returnKeyTypesSet;
         RCTUITextSmartInsertDeleteTypeFromOptionalBool(newTextInputProps.traits.smartInsertDelete);
   }
 
+  if (newTextInputProps.traits.writingToolsBehavior != oldTextInputProps.traits.writingToolsBehavior) {
+#if defined(__IPHONE_OS_VERSION_MAX_ALLOWED) && __IPHONE_OS_VERSION_MAX_ALLOWED >= 180000 /* __IPHONE_18_0 */
+    if (@available(iOS 18.0, tvOS 18.0, *)) {
+      id<UITextInputTraits> textInputTraits = (id<UITextInputTraits>)_backedTextInputView;
+      textInputTraits.writingToolsBehavior = RCTUIWritingToolsBehaviorFromWritingToolsBehavior(
+          newTextInputProps.traits.writingToolsBehavior);
+    }
+#endif
+  }
+
   if (newTextInputProps.traits.showSoftInputOnFocus != oldTextInputProps.traits.showSoftInputOnFocus) {
     [self _setShowSoftInputOnFocus:newTextInputProps.traits.showSoftInputOnFocus];
   }

@@ -119,6 +119,29 @@ inline void fromRawValue(const PropsParserContext &context, const RawValue &valu
   result = ReturnKeyType::Default;
 }
 
+// iOS-only
+inline void fromRawValue(const PropsParserContext &context, const RawValue &value, WritingToolsBehavior &result)
+{
+  auto string = (std::string)value;
+  if (string == "default") {
+    result = WritingToolsBehavior::Default;
+    return;
+  }
+  if (string == "none") {
+    result = WritingToolsBehavior::None;
+    return;
+  }
+  if (string == "limited") {
+    result = WritingToolsBehavior::Limited;
+    return;
+  }
+  if (string == "complete") {
+    result = WritingToolsBehavior::Complete;
+    return;
+  }
+  result = WritingToolsBehavior::Default;
+}
+
 inline void
 fromRawValue(const PropsParserContext &context, const RawValue &value, TextInputAccessoryVisibilityMode &result)
 {

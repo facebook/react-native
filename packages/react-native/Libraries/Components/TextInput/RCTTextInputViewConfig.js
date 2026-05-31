@@ -150,6 +150,7 @@ const RCTTextInputViewConfig: PartialViewConfigWithoutName = {
     lineBreakStrategyIOS: true,
     lineBreakModeIOS: true,
     smartInsertDelete: true,
+    writingToolsBehavior: true,
     ...ConditionallyIgnoredEventHandlers({
       onChange: true,
       onSelectionChange: true,

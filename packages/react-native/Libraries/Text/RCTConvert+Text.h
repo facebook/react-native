@@ -17,6 +17,9 @@ NS_ASSUME_NONNULL_BEGIN
 + (UITextSpellCheckingType)UITextSpellCheckingType:(nullable id)json;
 + (RCTTextTransform)RCTTextTransform:(nullable id)json;
 + (UITextSmartInsertDeleteType)UITextSmartInsertDeleteType:(nullable id)json;
+#if defined(__IPHONE_OS_VERSION_MAX_ALLOWED) && __IPHONE_OS_VERSION_MAX_ALLOWED >= 180000 /* __IPHONE_18_0 */
++ (UIWritingToolsBehavior)UIWritingToolsBehavior:(nullable id)json API_AVAILABLE(ios(18.0), tvos(18.0));
+#endif
 
 @end
 
