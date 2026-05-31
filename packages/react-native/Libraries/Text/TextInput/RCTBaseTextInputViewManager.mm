@@ -50,15 +50,6 @@ RCT_REMAP_VIEW_PROPERTY(clearButtonMode, backedTextInputView.clearButtonMode, UI
 RCT_REMAP_VIEW_PROPERTY(scrollEnabled, backedTextInputView.scrollEnabled, BOOL)
 RCT_REMAP_VIEW_PROPERTY(secureTextEntry, backedTextInputView.secureTextEntry, BOOL)
 RCT_REMAP_VIEW_PROPERTY(smartInsertDelete, backedTextInputView.smartInsertDeleteType, UITextSmartInsertDeleteType)
-#if defined(__IPHONE_OS_VERSION_MAX_ALLOWED) && __IPHONE_OS_VERSION_MAX_ALLOWED >= 180000 /* __IPHONE_18_0 */
-RCT_CUSTOM_VIEW_PROPERTY(writingToolsBehavior, NSString, RCTBaseTextInputView)
-{
-  if (@available(iOS 18.0, tvOS 18.0, *)) {
-    id<UITextInputTraits> textInputTraits = (id<UITextInputTraits>)view.backedTextInputView;
-    textInputTraits.writingToolsBehavior = [RCTConvert UIWritingToolsBehavior:json];
-  }
-}
-#endif
 
 RCT_EXPORT_VIEW_PROPERTY(autoFocus, BOOL)
 RCT_EXPORT_VIEW_PROPERTY(submitBehavior, NSString)
