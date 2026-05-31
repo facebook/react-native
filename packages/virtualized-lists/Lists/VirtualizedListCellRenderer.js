@@ -22,6 +22,16 @@ import * as React from 'react';
 import {isValidElement} from 'react';
 import {StyleSheet, View} from 'react-native';
 
+type AccessibilityCollectionItem = Readonly<{
+  itemIndex: number,
+  rowIndex: number,
+  rowSpan: number,
+  columnIndex: number,
+  columnSpan: number,
+  heading: boolean,
+  ...
+}>;
+
 export type Props<ItemT> = {
   CellRendererComponent?: ?React.ComponentType<CellRendererProps<ItemT>>,
   ItemSeparatorComponent?: ?(
@@ -29,6 +39,7 @@ export type Props<ItemT> = {
     | React.MixedElement
   ),
   ListItemComponent?: ?(React.ComponentType<any> | React.MixedElement),
+  accessibilityCollectionItem?: ?AccessibilityCollectionItem,
   cellKey: string,
   horizontal: ?boolean,
   index: number,
@@ -49,6 +60,28 @@ export type Props<ItemT> = {
   renderItem?: ?ListRenderItem<ItemT>,
   ...
 };
+
+function addAccessibilityCollectionItem(
+  element: React.Node,
+  accessibilityCollectionItem: ?AccessibilityCollectionItem,
+): React.Node {
+  if (
+    accessibilityCollectionItem == null ||
+    !React.isValidElement(element) ||
+    element.type === React.Fragment
+  ) {
+    return element;
+  }
+
+  // $FlowFixMe[prop-missing] React.Element internal inspection.
+  if (element.props.accessibilityCollectionItem !== undefined) {
+    return element;
+  }
+
+  return React.cloneElement(element, {
+    accessibilityCollectionItem,
+  });
+}
 
 type SeparatorProps<ItemT> = Readonly<{
   highlighted: boolean,
@@ -178,6 +211,7 @@ export default class CellRenderer<ItemT> extends React.PureComponent<
       CellRendererComponent,
       ItemSeparatorComponent,
       ListItemComponent,
+      accessibilityCollectionItem,
       cellKey,
       horizontal,
       item,
@@ -186,11 +220,9 @@ export default class CellRenderer<ItemT> extends React.PureComponent<
       onCellLayout,
       renderItem,
     } = this.props;
-    const element = this._renderElement(
-      renderItem,
-      ListItemComponent,
-      item,
-      index,
+    const element = addAccessibilityCollectionItem(
+      this._renderElement(renderItem, ListItemComponent, item, index),
+      accessibilityCollectionItem,
     );
 
     // NOTE: that when this is a sticky header, `onLayout` will get automatically extracted and

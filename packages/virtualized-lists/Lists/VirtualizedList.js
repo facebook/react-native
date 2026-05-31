@@ -92,8 +92,49 @@ type State = {
   pendingScrollUpdateCount: number,
 };
 
+type AccessibilityCollectionItem = Readonly<{
+  itemIndex: number,
+  rowIndex: number,
+  rowSpan: number,
+  columnIndex: number,
+  columnSpan: number,
+  heading: boolean,
+  ...
+}>;
+
 function getScrollingThreshold(threshold: number, visibleLength: number) {
   return (threshold * visibleLength) / 2;
+}
+
+function createAccessibilityCollection(
+  itemCount: number,
+  horizontal: boolean,
+): {
+  itemCount: number,
+  rowCount: number,
+  columnCount: number,
+  hierarchical: boolean,
+} {
+  return {
+    itemCount,
+    rowCount: horizontal ? (itemCount > 0 ? 1 : 0) : itemCount,
+    columnCount: horizontal ? itemCount : 1,
+    hierarchical: false,
+  };
+}
+
+function createAccessibilityCollectionItem(
+  index: number,
+  horizontal: ?boolean,
+): AccessibilityCollectionItem {
+  return {
+    itemIndex: index,
+    rowIndex: horizontal === true ? 0 : index,
+    rowSpan: 1,
+    columnIndex: horizontal === true ? index : 0,
+    columnSpan: 1,
+    heading: false,
+  };
 }
 
 /**
@@ -811,6 +852,11 @@ class VirtualizedList extends StateSafePureComponent<
           CellRendererComponent={CellRendererComponent}
           ItemSeparatorComponent={ii < end ? ItemSeparatorComponent : undefined}
           ListItemComponent={ListItemComponent}
+          accessibilityCollectionItem={
+            Platform.OS === 'android'
+              ? createAccessibilityCollectionItem(ii, horizontal)
+              : undefined
+          }
           cellKey={key}
           horizontal={horizontal}
           index={ii}
@@ -1120,6 +1166,23 @@ class VirtualizedList extends StateSafePureComponent<
             }
           : undefined,
     };
+
+    if (Platform.OS === 'android' && !this._isNestedWithSameOrientation()) {
+      const scrollPropsForAndroid: any = scrollProps;
+      if (scrollPropsForAndroid.accessibilityCollection == null) {
+        scrollPropsForAndroid.accessibilityCollection =
+          createAccessibilityCollection(
+            itemCount,
+            horizontalOrDefault(this.props.horizontal),
+          );
+      }
+      if (
+        scrollPropsForAndroid.role == null &&
+        scrollPropsForAndroid.accessibilityRole == null
+      ) {
+        scrollPropsForAndroid.accessibilityRole = 'list';
+      }
+    }
 
     this._hasMore = this.state.cellsAroundViewport.last < itemCount - 1;
 

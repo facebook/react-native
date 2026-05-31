@@ -70,39 +70,49 @@ internal class ReactScrollViewAccessibilityDelegate : AccessibilityDelegateCompa
           } else {
             return
           }
-      var accessibilityCollectionItem: ReadableMap? =
-          nextChild.getTag(R.id.accessibility_collection_item) as ReadableMap
+      val accessibilityCollectionItemRange = findAccessibilityCollectionItemRange(nextChild)
 
-      if (nextChild !is ViewGroup) {
-        return
-      }
-
-      // If this child's accessibilityCollectionItem is null, we'll check one more
-      // nested child.
-      // Happens when getItemLayout is not passed in FlatList which adds an additional
-      // View in the hierarchy.
-      if (nextChild.childCount > 0 && accessibilityCollectionItem == null) {
-        val nestedNextChild = nextChild.getChildAt(0)
-        if (nestedNextChild != null) {
-          val nestedChildAccessibility =
-              nestedNextChild.getTag(R.id.accessibility_collection_item) as? ReadableMap
-          if (nestedChildAccessibility != null) {
-            accessibilityCollectionItem = nestedChildAccessibility
-          }
-        }
-      }
-
-      if (isVisible && accessibilityCollectionItem != null) {
+      if (isVisible && accessibilityCollectionItemRange != null) {
         if (firstVisibleIndex == null) {
-          firstVisibleIndex = accessibilityCollectionItem.getInt("itemIndex")
+          firstVisibleIndex = accessibilityCollectionItemRange.first
         }
-        lastVisibleIndex = accessibilityCollectionItem.getInt("itemIndex")
+        lastVisibleIndex = accessibilityCollectionItemRange.second
       }
 
       if (firstVisibleIndex != null && lastVisibleIndex != null) {
         event.fromIndex = firstVisibleIndex
         event.toIndex = lastVisibleIndex
       }
+    }
+  }
+
+  private fun findAccessibilityCollectionItemRange(view: View): Pair<Int, Int>? {
+    val accessibilityCollectionItem =
+        view.getTag(R.id.accessibility_collection_item) as? ReadableMap
+    if (accessibilityCollectionItem != null) {
+      val itemIndex = accessibilityCollectionItem.getInt("itemIndex")
+      return Pair(itemIndex, itemIndex)
+    }
+
+    if (view !is ViewGroup) {
+      return null
+    }
+
+    var firstItemIndex: Int? = null
+    var lastItemIndex: Int? = null
+    for (index in 0..<view.childCount) {
+      val childItemRange =
+          findAccessibilityCollectionItemRange(view.getChildAt(index)) ?: continue
+      if (firstItemIndex == null) {
+        firstItemIndex = childItemRange.first
+      }
+      lastItemIndex = childItemRange.second
+    }
+
+    return if (firstItemIndex != null && lastItemIndex != null) {
+      Pair(firstItemIndex, lastItemIndex)
+    } else {
+      null
     }
   }
 
