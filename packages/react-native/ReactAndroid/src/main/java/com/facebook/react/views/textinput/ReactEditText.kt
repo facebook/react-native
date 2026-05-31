@@ -22,6 +22,7 @@ import android.text.Spannable
 import android.text.SpannableStringBuilder
 import android.text.Spanned
 import android.text.TextPaint
+import android.text.TextUtils
 import android.text.TextWatcher
 import android.text.method.KeyListener
 import android.text.method.QwertyKeyListener
@@ -648,7 +649,7 @@ public open class ReactEditText public constructor(context: Context) : AppCompat
   public fun canUpdateWithEventCount(eventCounter: Int): Boolean = eventCounter >= nativeEventCount
 
   private fun maybeSetText(reactTextUpdate: ReactTextUpdate) {
-    if (isSecureText && (text == reactTextUpdate.text)) {
+    if (isSecureText && TextUtils.equals(text, reactTextUpdate.text)) {
       return
     }
 
