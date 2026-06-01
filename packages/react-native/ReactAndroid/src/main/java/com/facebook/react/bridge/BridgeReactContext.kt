@@ -282,4 +282,6 @@ public open class BridgeReactContext(context: Context) : ReactApplicationContext
     private const val LATE_NATIVE_MODULE_EXCEPTION_MESSAGE: String =
         "Trying to call native module after CatalystInstance has been destroyed!"
   }
+
+  override fun getRuntimeExecutor(): RuntimeExecutor? = mCatalystInstance?.runtimeExecutor
 }

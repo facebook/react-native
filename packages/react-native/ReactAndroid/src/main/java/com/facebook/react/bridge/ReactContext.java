@@ -201,6 +201,12 @@ public abstract class ReactContext extends ContextWrapper {
   }
 
   /**
+   * Returns the {@link RuntimeExecutor} for the underlying JavaScript runtime, or {@code null} if
+   * the runtime has not been initialized. Works in both bridged and bridgeless modes.
+   */
+  public abstract @Nullable RuntimeExecutor getRuntimeExecutor();
+
+  /**
    * This allows scroll views to notify NativeAnimatedModule when user-driven scrolling ends.
    *
    * @return The ScrollEndedListeners instance
