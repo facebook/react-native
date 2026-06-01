@@ -16,6 +16,7 @@ const {
   makeLogger,
   readPackageJson,
   resolveReactNativeRoot,
+  runCodegenAndInstallTemplate,
   toSwiftName,
 } = require('../spm-utils');
 const fs = require('fs');
@@ -215,5 +216,75 @@ describe('resolveReactNativeRoot', () => {
         path.join(workspaceRoot, 'packages', 'app'),
       ),
     ).toBe(rnRoot);
+  });
+});
+
+// ---------------------------------------------------------------------------
+// runCodegenAndInstallTemplate
+// ---------------------------------------------------------------------------
+
+describe('runCodegenAndInstallTemplate', () => {
+  let tempDir;
+  let reactNativeRoot;
+  let appRoot;
+  let codegenPkgSwift;
+
+  beforeEach(() => {
+    tempDir = fs.mkdtempSync(path.join(os.tmpdir(), 'spm-codegen-test-'));
+    reactNativeRoot = path.join(tempDir, 'react-native');
+    appRoot = path.join(tempDir, 'app');
+
+    // Minimal fake codegen script (no-op) so the execSync call exits cleanly.
+    fs.mkdirSync(path.join(reactNativeRoot, 'scripts'), {recursive: true});
+    fs.writeFileSync(
+      path.join(reactNativeRoot, 'scripts', 'generate-codegen-artifacts.js'),
+      '// no-op codegen for tests\n',
+    );
+    // Codegen template that installSpmCodegenTemplate renders + writes.
+    fs.mkdirSync(
+      path.join(reactNativeRoot, 'scripts', 'codegen', 'templates'),
+      {
+        recursive: true,
+      },
+    );
+    fs.writeFileSync(
+      path.join(
+        reactNativeRoot,
+        'scripts',
+        'codegen',
+        'templates',
+        'Package.swift.spm-template',
+      ),
+      '// template\n',
+    );
+    // build/generated/ios must exist for the template to be installed.
+    fs.mkdirSync(path.join(appRoot, 'build', 'generated', 'ios'), {
+      recursive: true,
+    });
+    codegenPkgSwift = path.join(
+      appRoot,
+      'build',
+      'generated',
+      'ios',
+      'Package.swift',
+    );
+  });
+
+  afterEach(() => {
+    fs.rmSync(tempDir, {recursive: true, force: true});
+  });
+
+  it('installs the codegen template by default', () => {
+    runCodegenAndInstallTemplate(appRoot, appRoot, reactNativeRoot);
+    expect(fs.existsSync(codegenPkgSwift)).toBe(true);
+  });
+
+  it('skips the template install when installTemplate is false', () => {
+    runCodegenAndInstallTemplate(appRoot, appRoot, reactNativeRoot, undefined, {
+      installTemplate: false,
+    });
+    // The SPM sync re-points the xcframework symlinks and installs the template
+    // itself afterwards, so this in-codegen install must be suppressed.
+    expect(fs.existsSync(codegenPkgSwift)).toBe(false);
   });
 });

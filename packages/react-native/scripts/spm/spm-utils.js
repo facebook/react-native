@@ -330,6 +330,7 @@ function runCodegenAndInstallTemplate(
   appRoot /*: string */,
   reactNativeRoot /*: string */,
   logger /*: {log: (msg: string) => void} */ = {log() {}},
+  opts /*: {installTemplate?: boolean} */ = {},
 ) /*: void */ {
   const codegenScript = path.join(
     reactNativeRoot,
@@ -345,7 +346,13 @@ function runCodegenAndInstallTemplate(
     `node "${codegenScript}" -p "${projectRoot}" -t ios` +
     (projectRoot !== appRoot ? ` -o "${appRoot}"` : '');
   execSync(codegenArgs, {stdio: 'inherit', cwd: projectRoot});
-  installSpmCodegenTemplate(appRoot, reactNativeRoot, logger);
+  // Callers that re-point the xcframework symlinks after codegen (e.g. the SPM
+  // sync, which runs generate-spm-package afterwards) install the template
+  // themselves once the symlinks are final; they pass installTemplate: false to
+  // avoid a wasted write that renderCodegenTemplate would immediately supersede.
+  if (opts.installTemplate !== false) {
+    installSpmCodegenTemplate(appRoot, reactNativeRoot, logger);
+  }
 }
 
 module.exports = {
