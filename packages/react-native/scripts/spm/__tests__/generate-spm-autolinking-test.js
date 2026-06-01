@@ -83,8 +83,10 @@ describe('generateAutolinkedPackageSwift (aggregator)', () => {
     expect(result).toMatch(
       /name: "ScreenshotManager",[\s\S]*?\.product\(name: "ReactNative", package: "ReactNative"\)/,
     );
-    // Inline target gets cFlags / linker frameworks
-    expect(result).toContain('-ivfsoverlay');
+    // Inline target gets the merged-header include + linker frameworks, and no
+    // legacy VFS overlay flag.
+    expect(result).toContain('"-I", rnHeaders');
+    expect(result).not.toContain('-ivfsoverlay');
     expect(result).toContain('.linkedFramework("CoreGraphics")');
   });
 
@@ -182,20 +184,25 @@ describe('generateSynthPackageSwift', () => {
     );
   });
 
-  it('embeds xcfwHeaders / vfsOverlay flags when hasXcfwHeaders is true', () => {
+  it('emits a single -I into the merged header tree when hasXcfwHeaders is true', () => {
     const result = generateSynthPackageSwift(baseSpec({hasXcfwHeaders: true}));
-    expect(result).toContain('let xcfwHeaders');
-    expect(result).toContain('let vfsOverlay');
-    expect(result).toContain('"-ivfsoverlay"');
-    expect(result).toContain('"-I", xcfwHeaders');
+    expect(result).toContain(
+      'let rnHeaders = appRoot + "/build/xcframeworks/ReactHeadersAll"',
+    );
+    expect(result).toContain('"-I", rnHeaders');
+    // The legacy VFS overlay + per-framework derivation is gone.
+    expect(result).not.toContain('-ivfsoverlay');
+    expect(result).not.toContain('let xcfwHeaders');
+    expect(result).not.toContain('let vfsOverlay');
   });
 
-  it('adds depsHeaders -I to cxxSettings only when hasDepsHeaders is true', () => {
+  it('covers deps/codegen via the single merged tree (no separate depsHeaders -I)', () => {
     const result = generateSynthPackageSwift(
       baseSpec({hasXcfwHeaders: true, hasDepsHeaders: true}),
     );
-    expect(result).toContain('let depsHeaders');
-    expect(result).toContain('"-I", depsHeaders');
+    expect(result).toContain('"-I", rnHeaders');
+    expect(result).not.toContain('let depsHeaders');
+    expect(result).not.toContain('"-I", depsHeaders');
   });
 
   it('emits exclude list when given', () => {
@@ -295,7 +302,7 @@ describe('generateSynthPackageSwift', () => {
     expect(result).toContain('path: "root"');
   });
 
-  it('wrapper-dir mode: autogenHeadersAbsolute adds -I to cSettings + cxxSettings (replaces publicHeadersPath)', () => {
+  it('wrapper-dir mode: routes all includes through the single merged tree (autolinking headers folded in)', () => {
     const result = generateSynthPackageSwift({
       swiftName: 'MyDep',
       hasReactDep: true,
@@ -304,14 +311,12 @@ describe('generateSynthPackageSwift', () => {
       appRootAbsolute: '/abs/app',
       autogenHeadersAbsolute: '/abs/app/build/generated/autolinking/headers',
     });
-    expect(result).toContain(
+    // The autolinking headers dir is folded into ReactHeadersAll, so it is no
+    // longer a separate -I; only the merged tree include remains.
+    expect(result).toContain('"-I", rnHeaders');
+    expect(result).not.toContain(
       '"-I", "/abs/app/build/generated/autolinking/headers"',
     );
-    // The -I appears in both cSettings (Obj-C .m) and cxxSettings (.mm/.cpp).
-    const matches = result.match(
-      /"-I", "\/abs\/app\/build\/generated\/autolinking\/headers"/g,
-    );
-    expect(matches && matches.length).toBeGreaterThanOrEqual(2);
   });
 
   it('wrapper-dir mode: omits publicHeadersPath (headers route through -I instead)', () => {

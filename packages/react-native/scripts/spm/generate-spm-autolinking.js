@@ -57,7 +57,13 @@ const {
   expandSpmDependencies,
 } = require('./expand-spm-dependencies');
 const {readPodspec} = require('./read-podspec');
-const {makeLogger, toSwiftName} = require('./spm-utils');
+const {
+  REACT_HEADERS_LET,
+  makeLogger,
+  reactHeaderCFlags,
+  reactHeaderCxxFlags,
+  toSwiftName,
+} = require('./spm-utils');
 const fs = require('fs');
 const path = require('path');
 const yargs = require('yargs');
@@ -582,16 +588,11 @@ function autolinkingDepToSpmTarget(
  *
  * xcframeworksRelPath – path to the xcframeworks sub-package relative to the
  *   autolinked/ directory (e.g. "../build/xcframeworks").  When non-null a
- *   React dependency is declared so Xcode propagates the xcframework's header
- *   search paths to every autolinked target (<React/...> imports resolve).
- * xcfwHeadersPath – absolute path to React.xcframework/Headers.  When non-null,
- *   each target gets -I xcfwHeaders so <ReactCommon/...> etc. resolve directly.
- * depsXcfwHeadersPath – absolute path to ReactNativeDependencies.xcframework/Headers.
- *   When non-null, C++ targets get -I depsHeaders for glog/folly/boost.
- * codegenHeadersPath – absolute path to build/generated/ios.
- *   When non-null, all C++ targets get -I <path> so <ReactCodegen/...> resolves.
- * codegenReactHeadersPath – absolute path to build/generated/ios/ReactCodegen.
- *   When non-null, all C++ targets get -I <path> so <react/renderer/...> resolves.
+ *   React dependency is declared and each target gets a single `-I rnHeaders`
+ *   into the merged header tree (build/xcframeworks/ReactHeadersAll) — which
+ *   covers React, deps, codegen, and autolinking headers — so <React/...>,
+ *   <ReactCommon/...>, <react/renderer/...>, folly/glog/boost, and
+ *   <ReactCodegen/...> all resolve through one include path.
  */
 /**
  * Top-level autolinked/Package.swift — a thin aggregator that references each
@@ -610,9 +611,6 @@ function generateAutolinkedPackageSwift(
     input.inlineTargets ?? [];
   const hasReactDep /*: boolean */ = input.hasReactDep !== false;
   const hasXcfwHeaders /*: boolean */ = input.hasXcfwHeaders === true;
-  const hasDepsHeaders /*: boolean */ = input.hasDepsHeaders === true;
-  const codegenHeadersIncluded /*: boolean */ =
-    input.codegenHeadersIncluded === true;
   // Relative path from autolinked/ to build/xcframeworks/, e.g. "../build/xcframeworks".
   const xcframeworksRelPath /*: ?string */ = input.xcframeworksRelPath;
 
@@ -641,26 +639,15 @@ function generateAutolinkedPackageSwift(
     ...inlineTargets.map(t => `.target(name: "${t.name}")`),
   ];
 
-  // Per-target c/cxx flag stacks (shared across inline targets).
+  // Per-target c/cxx flag stacks (shared across inline targets). A single
+  // `-I rnHeaders` into the merged tree covers React, deps, codegen, and
+  // autolinking headers (see buildMergedHeaderTree in spm-utils.js).
   const cFlagsCore /*: Array<string> */ = hasXcfwHeaders
-    ? [
-        '"-ivfsoverlay", vfsOverlay',
-        '"-I", xcfwHeaders',
-        '"-I", xcfwHeaders + "/React_RCTAppDelegate"',
-      ]
+    ? reactHeaderCFlags()
     : [];
   const cxxFlagsCore /*: Array<string> */ = hasXcfwHeaders
-    ? ['"-fno-implicit-module-maps"', ...cFlagsCore]
+    ? reactHeaderCxxFlags()
     : [];
-  if (hasDepsHeaders) {
-    cxxFlagsCore.push('"-I", depsHeaders');
-  }
-  if (codegenHeadersIncluded) {
-    cxxFlagsCore.push(
-      '"-I", appRoot + "/build/generated/ios"',
-      '"-I", appRoot + "/build/generated/ios/ReactCodegen"',
-    );
-  }
 
   const inlineDecls = inlineTargets.map(t => {
     const excludeLine =
@@ -700,24 +687,10 @@ function generateAutolinkedPackageSwift(
       ? `\n            dependencies: [${aggregateDeps.join(', ')}],`
       : '';
 
-  // See note in generateSynthPackageSwift on baking the resolved slot path
-  // into the manifest to bust SPM's manifest hash on every slot change.
-  const xcfwHeadersAbsolute /*: ?string */ = input.xcfwHeadersAbsolute;
-  const depsHeadersAbsolute /*: ?string */ = input.depsHeadersAbsolute;
-  const xcfwHeadersExpr =
-    xcfwHeadersAbsolute != null
-      ? `"${xcfwHeadersAbsolute}"`
-      : 'URL(fileURLWithPath: appRoot + "/build/xcframeworks/React.xcframework").resolvingSymlinksInPath().path + "/Headers"';
-  const depsHeadersExpr =
-    depsHeadersAbsolute != null
-      ? `"${depsHeadersAbsolute}"`
-      : 'URL(fileURLWithPath: appRoot + "/build/xcframeworks/ReactNativeDependencies.xcframework").resolvingSymlinksInPath().path + "/Headers"';
-  const xcfwHeadersVar = hasXcfwHeaders
-    ? `\nlet vfsOverlay = appRoot + "/build/xcframeworks/React-VFS.yaml"\nlet xcfwHeaders = ${xcfwHeadersExpr}\n`
-    : '';
-  const depsHeadersVar = hasDepsHeaders
-    ? `let depsHeaders = ${depsHeadersExpr}\n`
-    : '';
+  // Single `let rnHeaders = appRoot + "..."` pointing at the merged header tree.
+  // The path is stable across cache slots (only the symlink contents change), so
+  // there is nothing to bake into the manifest.
+  const rnHeadersVar = hasXcfwHeaders ? `\n${REACT_HEADERS_LET}\n` : '';
 
   const inlineDeclsBlock =
     inlineDecls.length > 0 ? `,\n${inlineDecls.join(',\n')}` : '';
@@ -734,7 +707,7 @@ import Foundation
 
 let packageDir = URL(fileURLWithPath: #filePath).deletingLastPathComponent().path
 let appRoot = packageDir + "/.."
-${xcfwHeadersVar}${depsHeadersVar}
+${rnHeadersVar}
 let package = Package(
     name: "Autolinked",
     platforms: [.iOS(.v15)],
@@ -756,13 +729,13 @@ ${packageDepsBlock}    targets: [
  * Per-dep synthesized Package.swift.
  *
  * Two emission modes, selected by which spec fields are set:
- *   - Wrapper-dir (production): set `appRootAbsolute`,
- *     `siblingSynthAbsolutePaths`, and `autogenHeadersAbsolute`. The synth
- *     file lives at <outputDir>/packages/<SwiftName>/Package.swift with
+ *   - Wrapper-dir (production): set `appRootAbsolute` and
+ *     `siblingSynthAbsolutePaths`. The synth file lives at
+ *     <outputDir>/packages/<SwiftName>/Package.swift with
  *     `targetPath: "root"` — `root` is a directory symlink to the real
  *     source dir, so source files stay real (Xcode atomic-save works).
- *     Cross-package angle includes resolve via `-I <autogenHeadersAbsolute>`
- *     instead of SPM's `publicHeadersPath` (keeps source dirs untouched).
+ *     React/deps/codegen/autolinking angle includes all resolve via the single
+ *     `-I rnHeaders` into the merged header tree (no SPM `publicHeadersPath`).
  *   - Sub-package (legacy): set `appRootRelativeToPackage` +
  *     `siblingPackageBaseRelative`. Kept only for backwards-compat tests.
  */
@@ -781,14 +754,10 @@ function generateSynthPackageSwift(spec /*: SynthPackageSpec */) /*: string */ {
     spec.spmDependencies ?? [];
   const hasReactDep /*: boolean */ = spec.hasReactDep !== false;
   const hasXcfwHeaders /*: boolean */ = spec.hasXcfwHeaders === true;
-  const hasDepsHeaders /*: boolean */ = spec.hasDepsHeaders === true;
-  const codegenHeadersIncluded /*: boolean */ =
-    spec.codegenHeadersIncluded === true;
   const resources /*: ?Array<string> */ = spec.resources;
   const isDynamic /*: boolean */ = spec.isDynamic !== false;
   const targetPath /*: string */ = spec.targetPath ?? `Sources/${swiftName}`;
   const appRootAbsolute /*: ?string */ = spec.appRootAbsolute;
-  const autogenHeadersAbsolute /*: ?string */ = spec.autogenHeadersAbsolute;
   const siblingSynthAbsolutePaths /*: {[string]: string} */ =
     spec.siblingSynthAbsolutePaths ?? {};
 
@@ -842,60 +811,15 @@ function generateSynthPackageSwift(spec /*: SynthPackageSpec */) /*: string */ {
     );
   }
 
-  // C / C++ settings — same shape as the old inline emitter.
-  const cFlags /*: Array<string> */ = hasXcfwHeaders
-    ? [
-        '"-ivfsoverlay", vfsOverlay',
-        '"-I", xcfwHeaders',
-        '"-I", xcfwHeaders + "/React_RCTAppDelegate"',
-      ]
-    : [];
+  // C / C++ settings: a single `-I rnHeaders` into the merged tree covers
+  // React, deps, codegen, and autolinking headers (see buildMergedHeaderTree).
+  const cFlags /*: Array<string> */ = hasXcfwHeaders ? reactHeaderCFlags() : [];
   const cxxFlags /*: Array<string> */ = hasXcfwHeaders
-    ? ['"-fno-implicit-module-maps"', ...cFlags]
+    ? reactHeaderCxxFlags()
     : [];
-  if (hasDepsHeaders) {
-    cxxFlags.push('"-I", depsHeaders');
-  }
-  if (codegenHeadersIncluded) {
-    cxxFlags.push(
-      '"-I", appRoot + "/build/generated/ios"',
-      '"-I", appRoot + "/build/generated/ios/ReactCodegen"',
-    );
-  }
-  // Centralized cross-package headers: each consumer gets -I <autogenHeaders>
-  // so `#import <Foo/Header.h>` resolves via <autogenHeaders>/Foo/Header.h
-  // (file symlink to the real header in Foo's source dir). Replaces the
-  // legacy per-package `publicHeadersPath` mechanism — keeps user source
-  // dirs free of generated `include/<Name>/` subdirs.
-  if (autogenHeadersAbsolute != null) {
-    cFlags.push(`"-I", "${autogenHeadersAbsolute}"`);
-    cxxFlags.push(`"-I", "${autogenHeadersAbsolute}"`);
-  }
 
-  // Helper Swift vars (only emitted when needed). When the caller resolves
-  // the symlink at generation time (xcfwHeadersAbsolute / depsHeadersAbsolute),
-  // we bake the absolute cache-slot path into the manifest as a string
-  // literal. SPM caches manifest evaluations by content hash — `.resolvingSymlinksInPath()`
-  // evaluated only at manifest parse time would otherwise leave the cached
-  // value pointing at the previous slot even after the symlinks are
-  // re-pointed by `spm update`. Embedding the resolved path directly forces
-  // a manifest-hash bump on every slot change.
-  const xcfwHeadersAbsolute /*: ?string */ = spec.xcfwHeadersAbsolute;
-  const depsHeadersAbsolute /*: ?string */ = spec.depsHeadersAbsolute;
-  const xcfwHeadersExpr =
-    xcfwHeadersAbsolute != null
-      ? `"${xcfwHeadersAbsolute}"`
-      : 'URL(fileURLWithPath: appRoot + "/build/xcframeworks/React.xcframework").resolvingSymlinksInPath().path + "/Headers"';
-  const depsHeadersExpr =
-    depsHeadersAbsolute != null
-      ? `"${depsHeadersAbsolute}"`
-      : 'URL(fileURLWithPath: appRoot + "/build/xcframeworks/ReactNativeDependencies.xcframework").resolvingSymlinksInPath().path + "/Headers"';
-  const xcfwHeadersVar = hasXcfwHeaders
-    ? `\nlet vfsOverlay = appRoot + "/build/xcframeworks/React-VFS.yaml"\nlet xcfwHeaders = ${xcfwHeadersExpr}\n`
-    : '';
-  const depsHeadersVar = hasDepsHeaders
-    ? `let depsHeaders = ${depsHeadersExpr}\n`
-    : '';
+  // Single `let rnHeaders = appRoot + "..."` — stable path, so nothing to bake.
+  const rnHeadersVar = hasXcfwHeaders ? `\n${REACT_HEADERS_LET}\n` : '';
 
   const excludeLine =
     exclude.length > 0
@@ -956,7 +880,7 @@ import PackageDescription
 import Foundation
 
 ${appRootDecl}
-${xcfwHeadersVar}${depsHeadersVar}
+${rnHeadersVar}
 let package = Package(
     name: "${swiftName}",
     platforms: [.iOS(.v15)],
@@ -979,7 +903,7 @@ ${packageDepsBlock}    targets: [
 function main(argv /*:: ?: Array<string> */) /*: void */ {
   const args = parseArgs(argv ?? process.argv.slice(2));
   // Resolve to absolute so path.join() produces absolute paths everywhere —
-  // entryAbsDirs, autogenHeadersAbsolute, etc. all assume absolute appRoot.
+  // entryAbsDirs, the headers farm, etc. all assume an absolute appRoot.
   const appRoot = path.resolve(args.appRoot);
 
   let rnRoot = args.reactNativeRoot;
@@ -1124,43 +1048,12 @@ function main(argv /*:: ?: Array<string> */) /*: void */ {
     );
   }
 
-  // Codegen output header paths – needed by C++ autolinked targets that
-  // include codegen-generated headers (<ReactCodegen/...> or <react/renderer/...>).
-  const codegenHeadersPath = path.join(appRoot, 'build', 'generated', 'ios');
-  const codegenReactHeadersPath = path.join(codegenHeadersPath, 'ReactCodegen');
-  const hasCodgenHeaders =
-    fs.existsSync(codegenHeadersPath) && fs.existsSync(codegenReactHeadersPath);
-  if (hasCodgenHeaders) {
-    log(`codegenHeaders: ${path.relative(appRoot, codegenHeadersPath)}`);
-    log(
-      `codegenReactHeaders: ${path.relative(appRoot, codegenReactHeadersPath)}`,
-    );
-  }
-
-  // Resolve the symlinks at script run time so the slot's absolute path can
-  // be baked into the generated manifests. Falls back to null when the
-  // symlinks don't exist yet (first run before download); the emitter then
-  // keeps the legacy `.resolvingSymlinksInPath()` expression so SPM evaluates
-  // it at Xcode build time. After symlinks exist, baking the path forces
-  // SPM's manifest-cache hash to bump whenever the slot moves — otherwise
-  // the cached evaluation sticks on the prior slot and the autolinked
-  // targets compile against stale headers.
-  function resolveXcfwHeaders(name /*: string */) /*: string | null */ {
-    const symlinkPath = path.join(appRoot, 'build', 'xcframeworks', name);
-    try {
-      return fs.realpathSync(symlinkPath) + '/Headers';
-    } catch {
-      return null;
-    }
-  }
-  const xcfwHeadersAbsolute = resolveXcfwHeaders('React.xcframework');
-  const depsHeadersAbsolute = resolveXcfwHeaders(
-    'ReactNativeDependencies.xcframework',
-  );
-
+  // Autolinked targets reference React/deps/codegen headers through the single
+  // merged header tree (build/xcframeworks/ReactHeadersAll, materialized by
+  // buildMergedHeaderTree). hasXcfwHeaders gates whether a target emits the
+  // `-I rnHeaders` flag at all.
   const hasReactDep = xcframeworksRelPath != null;
   const hasXcfwHeaders = xcframeworksRelPath != null;
-  const hasDepsHeaders = xcframeworksRelPath != null;
 
   // Each entry gets a wrapper dir at <outputDir>/packages/<SwiftName>/ that
   // contains the synth Package.swift and a `root` directory symlink pointing
@@ -1332,8 +1225,8 @@ function main(argv /*:: ?: Array<string> */) /*: void */ {
       sources: prefixedSources,
       // Stub include/ subdir lives in the wrapper dir; satisfies SPM's
       // publicHeadersPath requirement without exposing anything. Cross-pkg
-      // angle includes resolve via -I <outputDir>/headers
-      // (autogenHeadersAbsolute below) instead.
+      // angle includes resolve through the merged header tree (the autolinking
+      // header farm at <outputDir>/headers is folded into it).
       publicHeadersPath: 'include',
       resources: prefixedResources,
       headerSearchPaths: prefixedHeaderSearchPaths,
@@ -1342,14 +1235,9 @@ function main(argv /*:: ?: Array<string> */) /*: void */ {
       })),
       hasReactDep,
       hasXcfwHeaders,
-      hasDepsHeaders,
-      xcfwHeadersAbsolute,
-      depsHeadersAbsolute,
-      codegenHeadersIncluded: hasCodgenHeaders,
       isDynamic: false,
       targetPath: '.',
       appRootAbsolute: appRoot,
-      autogenHeadersAbsolute: headersDir,
       siblingSynthAbsolutePaths,
     });
 
@@ -1425,10 +1313,6 @@ function main(argv /*:: ?: Array<string> */) /*: void */ {
     npmDeps: aggregatorPackageDeps,
     hasReactDep,
     hasXcfwHeaders,
-    hasDepsHeaders,
-    xcfwHeadersAbsolute,
-    depsHeadersAbsolute,
-    codegenHeadersIncluded: hasCodgenHeaders,
     xcframeworksRelPath,
   });
   fs.mkdirSync(outputDir, {recursive: true});

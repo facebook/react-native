@@ -110,11 +110,12 @@ describe('generatePbxproj', () => {
     expect(result).toContain('Sync SPM Autolinking');
     expect(result).toContain('npx react-native spm sync');
     expect(result).toContain('Build JS Bundle');
-    expect(result).toContain('Prepare VFS Overlay');
-    // Sync must run before VFS overlay
+    // No VFS overlay phase anymore — headers come from the merged tree.
+    expect(result).not.toContain('Prepare VFS Overlay');
+    // Sync must run before the JS bundle phase.
     const syncIdx = result.indexOf('Sync SPM Autolinking');
-    const vfsIdx = result.indexOf('Prepare VFS Overlay');
-    expect(syncIdx).toBeLessThan(vfsIdx);
+    const bundleIdx = result.indexOf('Build JS Bundle');
+    expect(syncIdx).toBeLessThan(bundleIdx);
   });
 
   it('sync script checks workspace lockfiles and hoisted node_modules', () => {

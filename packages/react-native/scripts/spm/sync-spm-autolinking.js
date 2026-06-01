@@ -39,13 +39,13 @@ const {
 const {main: generateAutolinking} = require('./generate-spm-autolinking');
 const {main: generatePackage} = require('./generate-spm-package');
 const {
+  buildMergedHeaderTree,
   defaultCacheDir,
   displayPath,
   findProjectRoot,
   installSpmCodegenTemplate,
   makeLogger,
   readPackageJson,
-  resolveAndWriteVFSOverlay,
   runCodegenAndInstallTemplate,
 } = require('./spm-utils');
 const fs = require('fs');
@@ -146,14 +146,12 @@ async function main(argv /*:: ?: Array<string> */) /*: Promise<void> */ {
     artifactsDir,
   ]);
 
-  // Re-install the codegen template now that the xcframework symlinks have
-  // been (re-)pointed at the current slot. Without this, the template keeps
-  // the runtime URL expression from the first install and SPM's cached
-  // manifest eval pins the slot path — Xcode then compiles against headers
-  // from whichever slot was active when the cache was warmed.
+  // (Re)install the static codegen template now that build/generated/ios is finalized.
   installSpmCodegenTemplate(appRoot, reactNativeRoot, {log});
 
-  resolveAndWriteVFSOverlay(appRoot, reactNativeRoot, {log});
+  // Rebuild the merged header tree for the current slot (stable path; only its
+  // symlink contents change, so manifests stay unchanged).
+  buildMergedHeaderTree(appRoot, {log});
 
   const stampPath = path.join(
     appRoot,

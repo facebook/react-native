@@ -486,10 +486,8 @@ REACT_NATIVE_XCODE="${reactNativePath}/scripts/react-native-xcode.sh"
     'PBXShellScriptBuildPhase',
     'SyncAutolinking',
   );
-  const vfsScriptUUID = uuid(appName, 'PBXShellScriptBuildPhase', 'PrepareVFS');
   const buildPhasesList = [
     `${syncAutolinkingScriptUUID} /* Sync SPM Autolinking */`,
-    `${vfsScriptUUID} /* Prepare VFS Overlay */`,
     `${sourcesBuildPhaseUUID} /* Sources */`,
     `${frameworksBuildPhaseUUID} /* Frameworks */`,
     `${resourcesBuildPhaseUUID} /* Resources */`,
@@ -545,24 +543,6 @@ REACT_NATIVE_XCODE="${reactNativePath}/scripts/react-native-xcode.sh"
     },
   ];
 
-  // Prepare VFS overlay: rewrite the root to use the SRCROOT-relative path.
-  // The VFS template resolves symlinks to the xcframework cache path, but the xcodeproj
-  // HEADER_SEARCH_PATHS use $(SRCROOT)/build/xcframeworks/React.xcframework/Headers (symlink).
-  // When clang searches for headers via -I paths during module compilation, the VFS must
-  // match those paths. We rewrite the root name (line 4) to the local symlink path.
-  const prepareVfsScript = `set -euo pipefail
-SRC_VFS="$SRCROOT/build/xcframeworks/React-VFS.yaml"
-DST_VFS="$DERIVED_FILE_DIR/React-VFS.yaml"
-
-if [ ! -f "$SRC_VFS" ]; then
-  echo "warning: VFS overlay not found at $SRC_VFS"
-  exit 0
-fi
-
-LOCAL_HEADERS="$SRCROOT/build/xcframeworks/React.xcframework/Headers"
-sed "4s|.*|  - name: '$LOCAL_HEADERS'|" "$SRC_VFS" > "$DST_VFS"
-`;
-
   // Sync SPM Autolinking: timestamp check + conditional node re-run.
   // Built once at top-level so the same string flows into both the build
   // phase (safety net) and the scheme pre-action (the one that actually
@@ -602,10 +582,6 @@ sed "4s|.*|  - name: '$LOCAL_HEADERS'|" "$SRC_VFS" > "$DST_VFS"
       'Sync SPM Autolinking',
       syncAutolinkingScript,
     ),
-    shellScriptPhase(vfsScriptUUID, 'Prepare VFS Overlay', prepareVfsScript, {
-      inputPaths: `(\n\t\t\t\t"$(SRCROOT)/build/xcframeworks/React-VFS.yaml",\n\t\t\t)`,
-      outputPaths: `(\n\t\t\t\t"$(DERIVED_FILE_DIR)/React-VFS.yaml",\n\t\t\t)`,
-    }),
     shellScriptPhase(bundleScriptUUID, 'Build JS Bundle', bundleJSScript),
   ];
 
@@ -636,28 +612,27 @@ sed "4s|.*|  - name: '$LOCAL_HEADERS'|" "$SRC_VFS" > "$DST_VFS"
       : `"$(SRCROOT)/${sourcePath}/Info.plist"`;
 
   const targetBuildSettings = (isDebug /*: boolean */) => {
-    const vfsOverlay = '$(DERIVED_FILE_DIR)/React-VFS.yaml';
+    // Single merged header tree (built by buildMergedHeaderTree) — replaces the
+    // VFS overlay + the namespaced xcframework/deps/autolinking include dirs.
+    const rnHeaders = '$(SRCROOT)/build/xcframeworks/ReactHeadersAll';
     const lines = [
       `ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon`,
       `CLANG_CXX_LANGUAGE_STANDARD = "c++20"`,
       `DEVELOPMENT_TEAM = ""`,
-      // `build/generated/autolinking/headers/` is the centralized cross-package
-      // headers tree the autolinker writes (one subdir per dep, named after
-      // its SwiftName). With it on the search path, host-app sources can
-      // `#import <SwiftName/Header.h>` — the CocoaPods convention — even when
-      // per-package publicHeadersPath only exposes source-relative layouts.
-      `HEADER_SEARCH_PATHS = (\n\t\t\t\t\t"$(inherited)",\n\t\t\t\t\t"$(SRCROOT)/build/generated/autolinking/headers",\n\t\t\t\t\t"$(SRCROOT)/build/xcframeworks/React.xcframework/Headers",\n\t\t\t\t\t"$(SRCROOT)/build/xcframeworks/React.xcframework/Headers/React_RCTAppDelegate",\n\t\t\t\t\t"$(SRCROOT)/build/xcframeworks/ReactNativeDependencies.xcframework/Headers",\n\t\t\t\t)`,
+      `HEADER_SEARCH_PATHS = (\n\t\t\t\t\t"$(inherited)",\n\t\t\t\t\t"${rnHeaders}",\n\t\t\t\t)`,
       `INFOPLIST_FILE = ${infoPlistSetting}`,
       `IPHONEOS_DEPLOYMENT_TARGET = ${iosVersion}`,
       `LD_RUNPATH_SEARCH_PATHS = (\n\t\t\t\t\t/usr/lib/swift,\n\t\t\t\t\t"$(inherited)",\n\t\t\t\t\t"@executable_path/Frameworks",\n\t\t\t\t)`,
-      // VFS overlay for stable header identity across all compilation (including clang modules)
-      `OTHER_CFLAGS = (\n\t\t\t\t\t"$(inherited)",\n\t\t\t\t\t"-ivfsoverlay",\n\t\t\t\t\t"${vfsOverlay}",\n\t\t\t\t)`,
+      // NB: do NOT add -fno-implicit-module-maps to the app target — it compiles
+      // Swift/ObjC that need implicit SDK module maps (Foundation/UIKit/SwiftShims);
+      // disabling them breaks system-module resolution. The merged tree already
+      // gives a single header identity, so the flag isn't needed here.
+      `OTHER_CFLAGS = (\n\t\t\t\t\t"$(inherited)",\n\t\t\t\t\t"-I",\n\t\t\t\t\t"${rnHeaders}",\n\t\t\t\t)`,
       `OTHER_LDFLAGS = (\n\t\t\t\t\t"$(inherited)",\n\t\t\t\t\t"-ObjC",\n\t\t\t\t)`,
-      // Pass VFS overlay to Swift's embedded clang for module compilation.
-      // Also pass the React framework module map from the resolved build products
-      // so Swift can find the React_RCTAppDelegate secondary module (SPM binary
-      // targets only auto-expose the primary module matching the framework name).
-      `OTHER_SWIFT_FLAGS = (\n\t\t\t\t\t"$(inherited)",\n\t\t\t\t\t"-Xcc",\n\t\t\t\t\t"-ivfsoverlay",\n\t\t\t\t\t"-Xcc",\n\t\t\t\t\t"${vfsOverlay}",\n\t\t\t\t\t"-Xcc",\n\t\t\t\t\t"-fmodule-map-file=$(BUILT_PRODUCTS_DIR)/React.framework/Modules/module.modulemap",\n\t\t\t\t)`,
+      // Pass the merged tree to Swift's clang importer so the React framework
+      // umbrella's <React/...> includes resolve when building the `import React`
+      // module; -fmodule-map-file exposes the secondary React_RCTAppDelegate module.
+      `OTHER_SWIFT_FLAGS = (\n\t\t\t\t\t"$(inherited)",\n\t\t\t\t\t"-Xcc",\n\t\t\t\t\t"-I",\n\t\t\t\t\t"-Xcc",\n\t\t\t\t\t"${rnHeaders}",\n\t\t\t\t\t"-Xcc",\n\t\t\t\t\t"-fmodule-map-file=$(BUILT_PRODUCTS_DIR)/React.framework/Modules/module.modulemap",\n\t\t\t\t)`,
       `PRODUCT_BUNDLE_IDENTIFIER = ${quoteIfNeeded(bundleIdentifier)}`,
       `PRODUCT_NAME = ${quoteIfNeeded(appName)}`,
       `REACT_NATIVE_PATH = ${quoteIfNeeded(reactNativePath)}`,

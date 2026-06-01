@@ -38,7 +38,13 @@ import type {
 const {defaultReadConfig} = require('./expand-spm-dependencies');
 const {expandSpmSourceGlobs} = require('./generate-spm-autolinking');
 const {readPodspec} = require('./read-podspec');
-const {makeLogger, toSwiftName} = require('./spm-utils');
+const {
+  REACT_HEADERS_LET,
+  makeLogger,
+  reactHeaderCFlags,
+  reactHeaderCxxFlags,
+  toSwiftName,
+} = require('./spm-utils');
 const fs = require('fs');
 const path = require('path');
 
@@ -62,7 +68,7 @@ const SCAFFOLDER_MARKER =
 // the scaffolder regenerates regardless of --force (the bump implies the
 // existing file is broken under current tooling). A file with the marker
 // but no version line is treated as v1.
-const SCAFFOLDER_VERSION = 2;
+const SCAFFOLDER_VERSION = 3;
 const SCAFFOLDER_VERSION_LINE_RE = /^\/\/ AUTO-SCAFFOLDED-VERSION: (\d+)$/m;
 
 const AUTOGEN_MARKER =
@@ -280,24 +286,13 @@ function emitScaffoldedPackageSwift(
   const slotComment =
     ctx.cacheSlotLabel != null ? `\n// Cache slot: ${ctx.cacheSlotLabel}` : '';
 
-  // cFlags / cxxFlags. Centralized headers tree + xcframework headers come
-  // from the app's build/generated/autolinking/headers + build/xcframeworks/
-  // dirs, derived from appRoot at SPM eval time. Per-dep HEADER_SEARCH_PATHS
-  // from the podspec are emitted as `.headerSearchPath("<rel>")` so they
-  // resolve relative to the target's `path:` (set to "." below).
-  const cFlagsBase = [
-    '"-ivfsoverlay", vfsOverlay',
-    '"-I", xcfwHeaders',
-    '"-I", xcfwHeaders + "/React_RCTAppDelegate"',
-    '"-I", appRoot + "/build/generated/autolinking/headers"',
-  ];
-  const cxxFlagsBase = [
-    '"-fno-implicit-module-maps"',
-    ...cFlagsBase,
-    '"-I", depsHeaders',
-    '"-I", appRoot + "/build/generated/ios"',
-    '"-I", appRoot + "/build/generated/ios/ReactCodegen"',
-  ];
+  // cFlags / cxxFlags. A single `-I rnHeaders` into the merged header tree
+  // (build/xcframeworks/ReactHeadersAll, materialized by buildMergedHeaderTree)
+  // covers React, deps, codegen, and autolinking headers. Per-dep
+  // HEADER_SEARCH_PATHS from the podspec are emitted as `.headerSearchPath("<rel>")`
+  // so they resolve relative to the target's `path:` (set to "." below).
+  const cFlagsBase = reactHeaderCFlags();
+  const cxxFlagsBase = reactHeaderCxxFlags();
   const customFlagsCxx = spec.compilerFlags.map(f => `"${f}"`);
 
   const headerSearchPathDirectives = spec.headerSearchPaths
@@ -415,9 +410,7 @@ let appRoot: String = {
     }
 }()
 
-let vfsOverlay = appRoot + "/build/xcframeworks/React-VFS.yaml"
-let xcfwHeaders = URL(fileURLWithPath: appRoot + "/build/xcframeworks/React.xcframework").resolvingSymlinksInPath().path + "/Headers"
-let depsHeaders = URL(fileURLWithPath: appRoot + "/build/xcframeworks/ReactNativeDependencies.xcframework").resolvingSymlinksInPath().path + "/Headers"
+${REACT_HEADERS_LET}
 
 // Compute the on-disk path to a sibling autolinked dep (same node_modules
 // root as this package). Used by .package(path:) below.

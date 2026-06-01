@@ -11,6 +11,7 @@
 'use strict';
 
 const {
+  buildMergedHeaderTree,
   defaultCacheDir,
   displayPath,
   makeLogger,
@@ -286,5 +287,166 @@ describe('runCodegenAndInstallTemplate', () => {
     // The SPM sync re-points the xcframework symlinks and installs the template
     // itself afterwards, so this in-codegen install must be suppressed.
     expect(fs.existsSync(codegenPkgSwift)).toBe(false);
+  });
+});
+
+// ---------------------------------------------------------------------------
+// buildMergedHeaderTree
+// ---------------------------------------------------------------------------
+describe('buildMergedHeaderTree', () => {
+  let tempDir;
+  let appRoot;
+  let xcfwDir;
+  let outDir;
+
+  function writeFile(p, contents) {
+    fs.mkdirSync(path.dirname(p), {recursive: true});
+    fs.writeFileSync(p, contents);
+  }
+
+  beforeEach(() => {
+    tempDir = fs.mkdtempSync(path.join(os.tmpdir(), 'spm-merged-test-'));
+    appRoot = path.join(tempDir, 'app');
+    xcfwDir = path.join(appRoot, 'build', 'xcframeworks');
+    outDir = path.join(xcfwDir, 'ReactHeadersAll');
+
+    const reactXcfw = path.join(xcfwDir, 'React.xcframework');
+    // Namespaced physical React headers (as shipped in the xcframework).
+    writeFile(
+      path.join(reactXcfw, 'Headers', 'React_Fabric', 'react', 'foo', 'Bar.h'),
+      '#pragma once\n// react Bar\n',
+    );
+    // React_RCTAppDelegate headers — host apps import these BARE, so they must
+    // also surface at the merged-tree root.
+    writeFile(
+      path.join(
+        reactXcfw,
+        'Headers',
+        'React_RCTAppDelegate',
+        'RCTDefaultReactNativeFactoryDelegate.h',
+      ),
+      '#pragma once\n// app delegate\n',
+    );
+    // VFS template mapping the virtual <react/foo/Bar.h> to that physical file.
+    writeFile(
+      path.join(reactXcfw, 'React-VFS-template.yaml'),
+      [
+        'version: 0',
+        "case-sensitive: false",
+        'roots:',
+        "  - name: '${ROOT_PATH}/Headers'",
+        "    type: 'directory'",
+        "    contents:",
+        "      - name: 'react'",
+        "        type: 'directory'",
+        "        contents:",
+        "          - name: 'foo'",
+        "            type: 'directory'",
+        "            contents:",
+        "              - name: 'Bar.h'",
+        "                type: 'file'",
+        "                external-contents: '${ROOT_PATH}/Headers/React_Fabric/react/foo/Bar.h'",
+        '',
+      ].join('\n'),
+    );
+    // Deps headers (natural layout, folded in).
+    writeFile(
+      path.join(
+        xcfwDir,
+        'ReactNativeDependencies.xcframework',
+        'Headers',
+        'folly',
+        'dynamic.h',
+      ),
+      '#pragma once\n// folly\n',
+    );
+    // Autolinking header farm — a SYMLINK farm (leaf headers are symlinks to
+    // the dep's real source). foldDir must follow symlinks, not skip them.
+    const realProviderHeader = path.join(tempDir, 'src', 'Provider.h');
+    writeFile(realProviderHeader, '#pragma once\n// provider\n');
+    const farmHeader = path.join(
+      appRoot,
+      'build',
+      'generated',
+      'autolinking',
+      'headers',
+      'MyLib',
+      'Provider.h',
+    );
+    fs.mkdirSync(path.dirname(farmHeader), {recursive: true});
+    fs.symlinkSync(realProviderHeader, farmHeader);
+    // Codegen header (folded in) + a duplicate of the React virtual path with
+    // DIFFERENT content, to prove React (folded first) wins.
+    writeFile(
+      path.join(
+        appRoot,
+        'build',
+        'generated',
+        'ios',
+        'ReactCodegen',
+        'react',
+        'renderer',
+        'EventEmitters.h',
+      ),
+      '#pragma once\n// codegen\n',
+    );
+    writeFile(
+      path.join(appRoot, 'build', 'generated', 'ios', 'react', 'foo', 'Bar.h'),
+      '#pragma once\n// codegen Bar (should NOT win)\n',
+    );
+  });
+
+  afterEach(() => {
+    fs.rmSync(tempDir, {recursive: true, force: true});
+  });
+
+  it('materializes a merged tree of symlinks from the VFS template + folded dirs', () => {
+    const result = buildMergedHeaderTree(appRoot);
+    expect(result).toBe(outDir);
+
+    const reactHeader = path.join(outDir, 'react', 'foo', 'Bar.h');
+    const follyHeader = path.join(outDir, 'folly', 'dynamic.h');
+    const codegenHeader = path.join(
+      outDir,
+      'react',
+      'renderer',
+      'EventEmitters.h',
+    );
+    // React header resolves via its natural import path...
+    expect(fs.existsSync(reactHeader)).toBe(true);
+    expect(fs.lstatSync(reactHeader).isSymbolicLink()).toBe(true);
+    // ...and deps + codegen headers are folded into the same tree.
+    expect(fs.existsSync(follyHeader)).toBe(true);
+    expect(fs.existsSync(codegenHeader)).toBe(true);
+    // ...including the symlinked autolinking-farm header (foldDir follows symlinks).
+    expect(fs.existsSync(path.join(outDir, 'MyLib', 'Provider.h'))).toBe(true);
+  });
+
+  it('exposes React_RCTAppDelegate headers BARE at the root (host apps import them unprefixed)', () => {
+    buildMergedHeaderTree(appRoot);
+    // bare — what `#import <RCTDefaultReactNativeFactoryDelegate.h>` needs.
+    expect(
+      fs.existsSync(path.join(outDir, 'RCTDefaultReactNativeFactoryDelegate.h')),
+    ).toBe(true);
+  });
+
+  it('collapses a duplicate virtual path to the first (React) source', () => {
+    buildMergedHeaderTree(appRoot);
+    // build/generated/ios also has react/foo/Bar.h, but React is folded first,
+    // so the merged entry must resolve to the React copy.
+    const merged = fs.readFileSync(
+      path.join(outDir, 'react', 'foo', 'Bar.h'),
+      'utf8',
+    );
+    expect(merged).toContain('react Bar');
+    expect(merged).not.toContain('should NOT win');
+  });
+
+  it('returns null when the xcframework is absent', () => {
+    fs.rmSync(path.join(xcfwDir, 'React.xcframework'), {
+      recursive: true,
+      force: true,
+    });
+    expect(buildMergedHeaderTree(appRoot)).toBe(null);
   });
 });

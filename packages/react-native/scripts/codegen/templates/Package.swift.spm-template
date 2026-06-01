@@ -16,14 +16,11 @@ import Foundation
 // Derive all paths from this file's location.
 let packageDir = URL(fileURLWithPath: #filePath).deletingLastPathComponent().path
 let appRoot = URL(fileURLWithPath: packageDir + "/../../..").standardized.path
-// xcfwHeaders / depsHeaders: when the install step resolves the current
-// cache-slot symlinks, the placeholders below are replaced with absolute
-// string literals so SPM's manifest hash bumps on every slot change
-// (otherwise the cached `.resolvingSymlinksInPath()` value would stick on
-// the prior slot). Unsubstituted, falls back to the runtime expression.
-let xcfwHeaders = __SPM_XCFW_HEADERS_EXPR__
-let depsHeaders = __SPM_DEPS_HEADERS_EXPR__
-let vfsOverlay = appRoot + "/build/xcframeworks/React-VFS.yaml"
+// Single natural-layout merged header tree (React + deps + codegen +
+// autolinking), materialized at setup/sync time by buildMergedHeaderTree. The
+// path is stable across cache slots — only the symlink contents change — so the
+// manifest hash never churns.
+let rnHeaders = appRoot + "/build/xcframeworks/ReactHeadersAll"
 
 let package = Package(
     name: "React-GeneratedCode",
@@ -51,15 +48,15 @@ let package = Package(
             publicHeadersPath: ".",
             cSettings: [
                 .headerSearchPath("headers"),
-                .unsafeFlags(["-ivfsoverlay", vfsOverlay, "-I", xcfwHeaders]),
+                .unsafeFlags(["-I", rnHeaders]),
             ],
             cxxSettings: [
                 .headerSearchPath("headers"),
                 .unsafeFlags(["-std=c++20"]),
                 // -fno-implicit-module-maps prevents clang from matching <react/...> to
                 // React.framework (case-insensitive) in the build products dir, allowing
-                // -I and VFS overlay to resolve C++ headers correctly.
-                .unsafeFlags(["-fno-implicit-module-maps", "-ivfsoverlay", vfsOverlay, "-I", xcfwHeaders, "-I", depsHeaders]),
+                // -I to resolve the C++ headers from the merged tree correctly.
+                .unsafeFlags(["-fno-implicit-module-maps", "-I", rnHeaders]),
             ],
             linkerSettings: [
                 .linkedFramework("Foundation")
@@ -74,13 +71,13 @@ let package = Package(
             cSettings: [
                 .headerSearchPath(".."),
                 .headerSearchPath("headers"),
-                .unsafeFlags(["-ivfsoverlay", vfsOverlay, "-I", xcfwHeaders]),
+                .unsafeFlags(["-I", rnHeaders]),
             ],
             cxxSettings: [
                 .headerSearchPath(".."),
                 .headerSearchPath("headers"),
                 .unsafeFlags(["-std=c++20"]),
-                .unsafeFlags(["-fno-implicit-module-maps", "-ivfsoverlay", vfsOverlay, "-I", xcfwHeaders, "-I", depsHeaders]),
+                .unsafeFlags(["-fno-implicit-module-maps", "-I", rnHeaders]),
             ],
             linkerSettings: [
                 .linkedFramework("Foundation")

@@ -94,6 +94,7 @@ const {
 } = require('./spm/generate-spm-xcodeproj');
 const {scaffoldAll} = require('./spm/scaffold-package-swift');
 const {
+  buildMergedHeaderTree,
   defaultCacheDir,
   deriveAppName,
   displayPath,
@@ -101,7 +102,6 @@ const {
   installSpmCodegenTemplate,
   makeLogger,
   readPackageJson,
-  resolveAndWriteVFSOverlay,
   runCodegenAndInstallTemplate,
 } = require('./spm/spm-utils');
 const fs = require('fs');
@@ -1510,16 +1510,12 @@ async function main(argv /*:: ?: Array<string> */) /*: Promise<void> */ {
     return;
   }
 
-  // Re-install the codegen Package.swift template AFTER the xcframework
-  // symlinks have been created. The earlier install (during runCodegenStep)
-  // hits resolveHeadersAbsolute's catch block because the symlinks don't
-  // exist yet — the template falls back to a runtime URL expression. SPM
-  // caches that manifest evaluation and never re-resolves on slot changes,
-  // so a stale slot path leaks into compile args. Re-installing now bakes
-  // the absolute path in, changing the manifest content and the SPM hash.
+  // (Re)install the static codegen Package.swift template once build/generated/ios exists.
   installSpmCodegenTemplate(appRoot, reactNativeRoot, {log});
 
-  resolveAndWriteVFSOverlay(appRoot, reactNativeRoot, {log});
+  // Materialize the merged header tree (replaces the VFS overlay). Runs last:
+  // it folds in the xcframework, codegen, and autolinking headers.
+  buildMergedHeaderTree(appRoot, {log});
 
   let migrationRename /*: {from: string, to: string} | null */ = null;
   if (action === 'init') {
