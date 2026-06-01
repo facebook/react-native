@@ -278,13 +278,6 @@ export {findNodeHandle} from './Libraries/ReactNative/RendererProxy';
 export {default as I18nManager} from './Libraries/ReactNative/I18nManager';
 
 export type {
-  Handle,
-  PromiseTask,
-  SimpleTask,
-} from './Libraries/Interaction/InteractionManager';
-export {default as InteractionManager} from './Libraries/Interaction/InteractionManager';
-
-export type {
   AndroidKeyboardEvent,
   IOSKeyboardEvent,
   KeyboardEvent,

@@ -27,6 +27,7 @@
 import typeof * as ReactNativePublicAPI from './index.js.flow';
 
 const warnOnce = require('./Libraries/Utilities/warnOnce').default;
+const invariant = require('invariant');
 
 module.exports = {
   // #region Components
@@ -256,18 +257,6 @@ module.exports = {
   get I18nManager() {
     return require('./Libraries/ReactNative/I18nManager').default;
   },
-  /**
-   * @deprecated
-   */
-  get InteractionManager() {
-    warnOnce(
-      'interaction-manager-deprecated',
-      'InteractionManager has been deprecated and will be removed in a ' +
-        'future release. Please refactor long tasks into smaller ones, and ' +
-        " use 'requestIdleCallback' instead.",
-    );
-    return require('./Libraries/Interaction/InteractionManager').default;
-  },
   get Keyboard() {
     return require('./Libraries/Components/Keyboard/Keyboard').default;
   },
@@ -394,3 +383,21 @@ module.exports = {
   },
   // #endregion
 } as ReactNativePublicAPI;
+
+if (__DEV__) {
+  /* $FlowFixMe[prop-missing] This is intentional: Flow will error when
+   * attempting to access InteractionManager. */
+  /* $FlowFixMe[invalid-export] This is intentional: Flow will error when
+   * attempting to access InteractionManager. */
+  Object.defineProperty(module.exports, 'InteractionManager', {
+    configurable: true,
+    get() {
+      invariant(
+        false,
+        'InteractionManager has been removed from react-native core. ' +
+          'Please refactor long tasks into smaller ones, and use ' +
+          "'requestIdleCallback' instead.",
+      );
+    },
+  });
+}

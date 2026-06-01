@@ -57,7 +57,6 @@ import {
   ImageResolvedAssetSource,
   ImageStyle,
   InputAccessoryView,
-  InteractionManager,
   Keyboard,
   KeyboardAvoidingView,
   LayoutChangeEvent,
@@ -781,10 +780,6 @@ if (Systrace.isEnabled()) {
 
   Systrace.counterEvent('counter', 123);
 }
-
-InteractionManager.runAfterInteractions(() => {
-  // ...
-}).then(() => 'done');
 
 export class FlatListTest extends React.Component<FlatListProps<number>, {}> {
   list: FlatList<any> | null = null;
