@@ -22,6 +22,11 @@
 namespace facebook::react {
 
 class YogaLayoutableShadowNode : public LayoutableShadowNode {
+  // Allow YogaCloneTest to read yogaNode_ for ownership assertions in unit
+  // tests. The class is only defined in the tests target; production code
+  // sees the friend as a forward declaration with no effect.
+  friend class YogaCloneTest;
+
  public:
   using Shared = std::shared_ptr<const YogaLayoutableShadowNode>;
   using ListOfShared = std::vector<Shared>;
