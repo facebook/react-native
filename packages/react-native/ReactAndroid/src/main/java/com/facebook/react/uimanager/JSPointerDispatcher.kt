@@ -28,7 +28,7 @@ import com.facebook.react.uimanager.events.PointerEventHelper.EVENT
  * onHoverEvent, onInterceptHoverEvent. It will correctly find the right view to handle the touch
  * and also dispatch the appropriate event to JS
  */
-public class JSPointerDispatcher(private val rootViewGroup: ViewGroup) {
+public open class JSPointerDispatcher(private val rootViewGroup: ViewGroup) {
 
   private var lastHitPathByPointerId: MutableMap<Int, List<ViewTarget>>? = null
   private var lastEventCoordinatesByPointerId: MutableMap<Int, FloatArray>? = null

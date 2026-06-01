@@ -25,7 +25,7 @@ import com.facebook.react.uimanager.events.TouchEventType
  * need to call handleTouchEvent from onTouchEvent and onInterceptTouchEvent. It will correctly find
  * the right view to handle the touch and also dispatch the appropriate event to JS
  */
-public class JSTouchDispatcher(private val viewGroup: ViewGroup) {
+public open class JSTouchDispatcher(private val viewGroup: ViewGroup) {
   private var targetTag = -1
   private val targetCoordinates = FloatArray(2)
   private var childIsHandlingNativeGesture = false
