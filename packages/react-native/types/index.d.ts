@@ -113,7 +113,6 @@ export * from '../Libraries/EventEmitter/RCTNativeAppEventEmitter';
 export * from '../Libraries/Image/Image';
 export * from '../Libraries/Image/ImageResizeMode';
 export * from '../Libraries/Image/ImageSource';
-export * from '../Libraries/Interaction/InteractionManager';
 export * from '../Libraries/Interaction/PanResponder';
 export * from '../Libraries/LayoutAnimation/LayoutAnimation';
 export * from '../Libraries/Linking/Linking';

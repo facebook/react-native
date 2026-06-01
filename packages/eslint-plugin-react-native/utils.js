@@ -297,10 +297,6 @@ const publicAPIMapping = {
     default: 'I18nManager',
     types: null,
   },
-  'Libraries/Interaction/InteractionManager': {
-    default: 'InteractionManager',
-    types: ['Handle', 'PromiseTask', 'SimpleTask'],
-  },
   'Libraries/Components/Keyboard/Keyboard': {
     default: 'Keyboard',
     types: [
