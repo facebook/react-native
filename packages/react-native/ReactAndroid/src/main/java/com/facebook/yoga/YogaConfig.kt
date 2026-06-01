@@ -19,6 +19,14 @@ public abstract class YogaConfig {
 
   public abstract fun setErrata(errata: YogaErrata)
 
+  /**
+   * Sets the errata bitmask directly from an [Int]. Use this when combining multiple [YogaErrata]
+   * values (e.g., `YogaErrata.CLASSIC.intValue() and
+   * YogaErrata.STRETCH_FLEX_BASIS.intValue().inv()`) — the [YogaErrata] enum cannot represent
+   * arbitrary bitmask combinations.
+   */
+  public abstract fun setErrata(errata: Int)
+
   public abstract fun getErrata(): YogaErrata
 
   public abstract fun setLogger(logger: YogaLogger?)
