@@ -274,12 +274,7 @@ using namespace facebook::react;
 
   configuration.sourceURLForBridge = ^NSURL *_Nullable(RCTBridge *_Nonnull bridge)
   {
-#ifndef RCT_REMOVE_LEGACY_ARCH
-    return [weakSelf.delegate sourceURLForBridge:bridge];
-#else
-    // When the Legacy Arch is removed, the Delegate does not have a sourceURLForBridge method
     return [weakSelf.delegate bundleURL];
-#endif
   };
 
   if ([self.delegate respondsToSelector:@selector(extraModulesForBridge:)]) {
@@ -288,52 +283,6 @@ using namespace facebook::react;
       return [weakSelf.delegate extraModulesForBridge:bridge];
     };
   }
-
-#ifndef RCT_REMOVE_LEGACY_ARCH
-  // When the Legacy Arch is removed, the Delegate does not have a extraLazyModuleClassesForBridge method
-  if ([self.delegate respondsToSelector:@selector(extraLazyModuleClassesForBridge:)]) {
-    configuration.extraLazyModuleClassesForBridge =
-        ^NSDictionary<NSString *, Class> *_Nonnull(RCTBridge *_Nonnull bridge)
-    {
-      return [weakSelf.delegate extraLazyModuleClassesForBridge:bridge];
-    };
-  }
-#endif
-
-#ifndef RCT_REMOVE_LEGACY_ARCH
-  // When the Legacy Arch is removed, the Delegate does not have a bridge:didNotFindModule method
-  // We return NO, because if we have invoked this method is unlikely that the module will be actually registered
-  if ([self.delegate respondsToSelector:@selector(bridge:didNotFindModule:)]) {
-    configuration.bridgeDidNotFindModule = ^BOOL(RCTBridge *_Nonnull bridge, NSString *_Nonnull moduleName) {
-      return [weakSelf.delegate bridge:bridge didNotFindModule:moduleName];
-    };
-  }
-#endif
-
-#ifndef RCT_REMOVE_LEGACY_ARCH
-  // When the Legacy Arch is removed, the Delegate does not have a
-  // loadSourceForBridge:onProgress:onComplete: method
-  // We then call the loadBundleAtURL:onProgress:onComplete: instead
-  if ([self.delegate respondsToSelector:@selector(loadSourceForBridge:onProgress:onComplete:)]) {
-    configuration.loadSourceForBridgeWithProgress =
-        ^(RCTBridge *_Nonnull bridge,
-          RCTSourceLoadProgressBlock _Nonnull onProgress,
-          RCTSourceLoadBlock _Nonnull loadCallback) {
-          [weakSelf.delegate loadSourceForBridge:bridge onProgress:onProgress onComplete:loadCallback];
-        };
-  }
-#endif
-
-#ifndef RCT_REMOVE_LEGACY_ARCH
-  // When the Legacy Arch is removed, the Delegate does not have a
-  // loadSourceForBridge:withBlock: method
-  // We then call the loadBundleAtURL:onProgress:onComplete: instead
-  if ([self.delegate respondsToSelector:@selector(loadSourceForBridge:withBlock:)]) {
-    configuration.loadSourceForBridge = ^(RCTBridge *_Nonnull bridge, RCTSourceLoadBlock _Nonnull loadCallback) {
-      [weakSelf.delegate loadSourceForBridge:bridge withBlock:loadCallback];
-    };
-  }
-#endif
 
   configuration.jsRuntimeConfiguratorDelegate = self;
 

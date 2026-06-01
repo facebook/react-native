@@ -6,23 +6,3 @@
  */
 
 #import <React/RCTRootView.h>
-
-#ifndef RCT_REMOVE_LEGACY_ARCH
-
-/**
- * The interface provides a set of functions that allow other internal framework
- * classes to change the RCTRootViews's internal state.
- */
-__deprecated_msg("This API will be removed along with the legacy architecture.") @interface RCTRootView()
-
-/**
- * This setter should be used only by RCTUIManager on react root view
- * intrinsic content size update.
- */
-@property (readwrite, nonatomic, assign) CGSize intrinsicContentSize;
-
-- (void)contentViewInvalidated;
-
-@end
-
-#endif // RCT_REMOVE_LEGACY_ARCH
