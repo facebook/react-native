@@ -992,6 +992,17 @@ const definitions: FeatureFlagDefinitions = {
       },
       ossReleaseStage: 'none',
     },
+    animatedShouldSyncValueBeforeStartCallback: {
+      defaultValue: true,
+      metadata: {
+        dateAdded: '2026-06-01',
+        description:
+          'When a useNativeDriver animation completes, syncs the JS-side AnimatedValue with the post-animation value BEFORE invoking the user-supplied start({finished}) callback. Without the flag, the callback observes the pre-animation value, which can cause downstream re-renders to read stale interpolation outputs.',
+        expectedReleaseValue: true,
+        purpose: 'experimentation',
+      },
+      ossReleaseStage: 'none',
+    },
     animatedShouldUseSingleOp: {
       defaultValue: false,
       metadata: {

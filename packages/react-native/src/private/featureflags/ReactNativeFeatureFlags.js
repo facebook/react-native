@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<7f48f734cd7a098d04cb147980ef364a>>
+ * @generated SignedSource<<1f78266600508274a623ff1032fa7124>>
  * @flow strict
  * @noformat
  */
@@ -30,6 +30,7 @@ import {
 export type ReactNativeFeatureFlagsJsOnly = $ReadOnly<{
   jsOnlyTestFlag: Getter<boolean>,
   animatedShouldDebounceQueueFlush: Getter<boolean>,
+  animatedShouldSyncValueBeforeStartCallback: Getter<boolean>,
   animatedShouldUseSingleOp: Getter<boolean>,
   deferFlatListFocusChangeRenderUpdate: Getter<boolean>,
   enableNativeEventTargetEventDispatching: Getter<boolean>,
@@ -144,6 +145,11 @@ export const jsOnlyTestFlag: Getter<boolean> = createJavaScriptFlagGetter('jsOnl
  * Enables an experimental flush-queue debouncing in Animated.js.
  */
 export const animatedShouldDebounceQueueFlush: Getter<boolean> = createJavaScriptFlagGetter('animatedShouldDebounceQueueFlush', false);
+
+/**
+ * When a useNativeDriver animation completes, syncs the JS-side AnimatedValue with the post-animation value BEFORE invoking the user-supplied start({finished}) callback. Without the flag, the callback observes the pre-animation value, which can cause downstream re-renders to read stale interpolation outputs.
+ */
+export const animatedShouldSyncValueBeforeStartCallback: Getter<boolean> = createJavaScriptFlagGetter('animatedShouldSyncValueBeforeStartCallback', true);
 
 /**
  * Enables an experimental mega-operation for Animated.js that replaces many calls to native with a single call into native, to reduce JSI/JNI traffic.

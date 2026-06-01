@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @fantom_flags useSharedAnimatedBackend:*
+ * @fantom_flags useSharedAnimatedBackend:* animatedShouldSyncValueBeforeStartCallback:*
  * @flow strict-local
  * @format
  */
@@ -734,4 +734,75 @@ test('Animated.sequence', () => {
   expect(element.getBoundingClientRect().y).toBe(0);
 
   expect(_isSequenceFinished).toBe(true);
+});
+
+// Regression test for native-driver completion-callback ordering.
+//
+// `Animation.__startAnimationIfNative` must sync the JS-side AnimatedValue
+// with the post-animation value BEFORE firing the user's `start({finished})`
+// callback. Otherwise, code that reads the AnimatedValue from inside the
+// callback — or from any React re-render the callback triggers — observes the
+// pre-animation value and renders stale style (e.g. a `scaleX` interpolation
+// that resolves to the starting `outputRange[0]` instead of the final
+// `outputRange[1]`).
+//
+// The fix is gated behind `animatedShouldSyncValueBeforeStartCallback`. This
+// test runs under both flag values (via `@fantom_flags ...:*`) and asserts:
+//   - flag OFF: bug is present (callback observes pre-animation value).
+//   - flag ON : bug is fixed   (callback observes post-animation value).
+test('useNativeDriver: JS-side _value is synced before the completion callback fires', () => {
+  let _value;
+  let _valueInCallback = null;
+  let _interpolationInCallback = null;
+
+  function MyApp() {
+    const value = useAnimatedValue(0);
+    _value = value;
+    const scaleX = value.interpolate({
+      inputRange: [0, 1],
+      outputRange: [0.5, 1],
+    });
+    return (
+      <Animated.View
+        style={[{width: 100, height: 100}, {transform: [{scaleX}]}]}
+      />
+    );
+  }
+
+  const root = Fantom.createRoot();
+
+  Fantom.runTask(() => {
+    root.render(<MyApp />);
+  });
+
+  Fantom.runTask(() => {
+    Animated.timing(_value, {
+      toValue: 1,
+      duration: 100,
+      useNativeDriver: true,
+    }).start(({finished}) => {
+      if (finished) {
+        // $FlowFixMe[prop-missing] _value is internal but stable for testing.
+        _valueInCallback = _value._value;
+        // $FlowFixMe[prop-missing]
+        _interpolationInCallback = _value
+          .interpolate({inputRange: [0, 1], outputRange: [0.5, 1]})
+          .__getValue();
+      }
+    });
+  });
+
+  Fantom.unstable_produceFramesForDuration(150);
+  Fantom.runWorkLoop();
+
+  if (ReactNativeFeatureFlags.animatedShouldSyncValueBeforeStartCallback()) {
+    // With the fix: the callback observes the post-animation value.
+    expect(_valueInCallback).toBe(1);
+    expect(_interpolationInCallback).toBe(1);
+  } else {
+    // Without the fix: the callback observes the pre-animation value.
+    // interp(0) = outputRange[0] = 0.5.
+    expect(_valueInCallback).toBe(0);
+    expect(_interpolationInCallback).toBe(0.5);
+  }
 });
