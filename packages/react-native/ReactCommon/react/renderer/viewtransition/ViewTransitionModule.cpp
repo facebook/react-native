@@ -7,6 +7,7 @@
 
 #include "ViewTransitionModule.h"
 
+#include <cxxreact/TraceSection.h>
 #include <glog/logging.h>
 #include <react/renderer/components/root/RootShadowNode.h>
 #include <react/renderer/core/LayoutableShadowNode.h>
@@ -72,6 +73,7 @@ void ViewTransitionModule::applyViewTransitionName(
     const ShadowNode& shadowNode,
     const std::string& name,
     const std::string& /*className*/) {
+  TraceSection s("ViewTransitionModule::applyViewTransitionName", "name", name);
   auto tag = shadowNode.getTag();
   auto surfaceId = shadowNode.getSurfaceId();
 
@@ -109,6 +111,10 @@ void ViewTransitionModule::applyViewTransitionName(
     if (uiManager_ != nullptr) {
       auto* delegate = uiManager_->getDelegate();
       if (delegate != nullptr) {
+        TraceSection snapshotSection(
+            "ViewTransitionModule::applyViewTransitionName - uiManagerDidCaptureViewSnapshot",
+            "name",
+            name);
         delegate->uiManagerDidCaptureViewSnapshot(tag, surfaceId);
       }
     }
@@ -118,6 +124,11 @@ void ViewTransitionModule::applyViewTransitionName(
       // Find the pseudo element created from this specific source tag
       auto& pseudoElementsBySourceTag = it->second;
       auto innerIt = pseudoElementsBySourceTag.find(tag);
+
+      TraceSection clonePseudoElementSection(
+          "ViewTransitionModule::applyViewTransitionName - maybeClonePseudoElement",
+          "name",
+          name);
 
       if (innerIt != pseudoElementsBySourceTag.end()) {
         // Only clone the pseudo-element if the layout metrics changed
@@ -166,6 +177,8 @@ void ViewTransitionModule::applyViewTransitionName(
 void ViewTransitionModule::createViewTransitionInstance(
     const std::string& name,
     Tag pseudoElementTag) {
+  TraceSection s(
+      "ViewTransitionModule::createViewTransitionInstance", "name", name);
   if (uiManager_ == nullptr) {
     return;
   }
@@ -220,6 +233,7 @@ RootShadowNode::Unshared ViewTransitionModule::shadowTreeWillCommit(
   if (oldPseudoElementNodes_.empty()) {
     return newRootShadowNode;
   }
+  TraceSection s("ViewTransitionModule::shadowTreeWillCommit");
 
   auto surfaceId = shadowTree.getSurfaceId();
 
@@ -333,6 +347,8 @@ void ViewTransitionModule::restoreViewTransitionName(
 }
 
 void ViewTransitionModule::applySnapshotsOnPseudoElementShadowNodes() {
+  TraceSection s(
+      "ViewTransitionModule::applySnapshotsOnPseudoElementShadowNodes");
   if (oldPseudoElementNodes_.empty() || uiManager_ == nullptr) {
     return;
   }
@@ -353,6 +369,7 @@ void ViewTransitionModule::applySnapshotsOnPseudoElementShadowNodes() {
 
 LayoutMetrics ViewTransitionModule::captureLayoutMetricsFromRoot(
     const ShadowNode& shadowNode) {
+  TraceSection s("ViewTransitionModule::captureLayoutMetricsFromRoot");
   if (uiManager_ == nullptr) {
     return EmptyLayoutMetrics;
   }
@@ -399,6 +416,12 @@ void ViewTransitionModule::startViewTransition(
   // Mark transition as started
   transitionStarted_ = true;
   activeTransitionId_ = ++transitionIdCounter_;
+
+  TraceSection s(
+      "ViewTransitionModule::startViewTransition",
+      "transitionId",
+      activeTransitionId_);
+
   pendingAnimationIds_.clear();
   onCompleteCallback_ = onCompleteCallback;
 
@@ -456,6 +479,10 @@ void ViewTransitionModule::suspendOnActiveViewTransition() {
 }
 
 void ViewTransitionModule::startViewTransitionEnd() {
+  TraceSection s(
+      "ViewTransitionModule::startViewTransitionEnd",
+      "transitionId",
+      activeTransitionId_);
   auto finishedId = activeTransitionId_;
 
   // Only clear layout and registry entries belonging to the finished
