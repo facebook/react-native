@@ -77,7 +77,7 @@ internal object ViewManagersPropertyCache {
 
     fun updateShadowNodeProp(nodeToUpdate: ReactShadowNode<*>, value: Any?) {
       try {
-        val resolved = getValueOrDefault(value, nodeToUpdate.themedContext)
+        val resolved = getValueOrDefault(value, nodeToUpdate.getThemedContext())
         if (index == null) {
           setter.invoke(nodeToUpdate, resolved)
         } else {
@@ -86,7 +86,7 @@ internal object ViewManagersPropertyCache {
       } catch (t: Throwable) {
         FLog.e(ViewManager::class.java, "Error while updating prop $propName", t)
         throw JSApplicationIllegalArgumentException(
-            "Error while updating property '$propName' in shadow node of type: ${nodeToUpdate.viewClass}",
+            "Error while updating property '$propName' in shadow node of type: ${nodeToUpdate.getViewClass()}",
             t,
         )
       }
