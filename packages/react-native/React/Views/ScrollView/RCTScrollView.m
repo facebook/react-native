@@ -281,6 +281,15 @@ static inline UIViewAnimationOptions animationOptionsWithCurve(UIViewAnimationCu
   return curve << 16;
 }
 
+static inline UIEdgeInsets RCTEffectiveContentInset(UIScrollView *scrollView)
+{
+  if (@available(iOS 11.0, *)) {
+    return scrollView.adjustedContentInset;
+  }
+
+  return scrollView.contentInset;
+}
+
 - (void)_keyboardWillChangeFrame:(NSNotification *)notification
 {
   if (![self automaticallyAdjustKeyboardInsets]) {
@@ -570,27 +579,28 @@ static inline void RCTApplyTransformationAccordingLayoutDirection(
     offset.x = _scrollView.contentSize.width - _scrollView.frame.size.width - offset.x;
   }
 
+  UIEdgeInsets contentInset = RCTEffectiveContentInset(_scrollView);
+  CGRect maxRect = CGRectMake(
+      fmin(-contentInset.left, 0),
+      fmin(-contentInset.top, 0),
+      fmax(
+          _scrollView.contentSize.width - _scrollView.bounds.size.width + contentInset.right + fmax(contentInset.left, 0),
+          0.01),
+      fmax(
+          _scrollView.contentSize.height - _scrollView.bounds.size.height + contentInset.bottom +
+              fmax(contentInset.top, 0),
+          0.01)); // Make width and height greater than 0
+  if (!CGRectContainsPoint(maxRect, offset) && !self.scrollToOverflowEnabled) {
+    CGFloat x = fmax(offset.x, CGRectGetMinX(maxRect));
+    x = fmin(x, CGRectGetMaxX(maxRect));
+    CGFloat y = fmax(offset.y, CGRectGetMinY(maxRect));
+    y = fmin(y, CGRectGetMaxY(maxRect));
+    offset = CGPointMake(x, y);
+  }
+
   if (!CGPointEqualToPoint(_scrollView.contentOffset, offset)) {
-    CGRect maxRect = CGRectMake(
-        fmin(-_scrollView.contentInset.left, 0),
-        fmin(-_scrollView.contentInset.top, 0),
-        fmax(
-            _scrollView.contentSize.width - _scrollView.bounds.size.width + _scrollView.contentInset.right +
-                fmax(_scrollView.contentInset.left, 0),
-            0.01),
-        fmax(
-            _scrollView.contentSize.height - _scrollView.bounds.size.height + _scrollView.contentInset.bottom +
-                fmax(_scrollView.contentInset.top, 0),
-            0.01)); // Make width and height greater than 0
     // Ensure at least one scroll event will fire
     _allowNextScrollNoMatterWhat = YES;
-    if (!CGRectContainsPoint(maxRect, offset) && !self.scrollToOverflowEnabled) {
-      CGFloat x = fmax(offset.x, CGRectGetMinX(maxRect));
-      x = fmin(x, CGRectGetMaxX(maxRect));
-      CGFloat y = fmax(offset.y, CGRectGetMinY(maxRect));
-      y = fmin(y, CGRectGetMaxY(maxRect));
-      offset = CGPointMake(x, y);
-    }
     [_scrollView setContentOffset:offset animated:animated];
   }
 }
