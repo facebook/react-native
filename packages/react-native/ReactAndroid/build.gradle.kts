@@ -750,7 +750,26 @@ kotlin {
   explicitApi()
 }
 
-tasks.withType<Test> { jvmArgs = listOf("-Xshare:off") }
+tasks.withType<Test> {
+  jvmArgs = listOf("-Xshare:off")
+
+  // Performance / memory tests are tagged with @Category(PerformanceTest::class) and excluded
+  // from the default test run because they take seconds and need extra heap. Opt in with
+  // `-PrunPerfTests=true`.
+  val runPerfTests =
+      (project.findProperty("runPerfTests") as? String)?.toBoolean() ?: false
+  useJUnit {
+    if (runPerfTests) {
+      includeCategories("com.facebook.react.devsupport.PerformanceTest")
+    } else {
+      excludeCategories("com.facebook.react.devsupport.PerformanceTest")
+    }
+  }
+  if (runPerfTests) {
+    maxHeapSize = "2g"
+    jvmArgs("-XX:+AlwaysPreTouch")
+  }
+}
 
 /* Publishing Configuration */
 apply(from = "./publish.gradle")
