@@ -14,7 +14,6 @@ public enum class YogaErrata(public val intValue: Int) {
   STRETCH_FLEX_BASIS(1),
   ABSOLUTE_POSITION_WITHOUT_INSETS_EXCLUDES_PADDING(2),
   ABSOLUTE_PERCENT_AGAINST_INNER_SIZE(4),
-  MIN_SIZE_UNDEFINED_INSTEAD_OF_AUTO(8),
   ALL(2147483647),
   CLASSIC(2147483646);
 
@@ -28,7 +27,6 @@ public enum class YogaErrata(public val intValue: Int) {
           1 -> STRETCH_FLEX_BASIS
           2 -> ABSOLUTE_POSITION_WITHOUT_INSETS_EXCLUDES_PADDING
           4 -> ABSOLUTE_PERCENT_AGAINST_INNER_SIZE
-          8 -> MIN_SIZE_UNDEFINED_INSTEAD_OF_AUTO
           2147483647 -> ALL
           2147483646 -> CLASSIC
           else -> throw IllegalArgumentException("Unknown enum value: $value")

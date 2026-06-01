@@ -125,28 +125,6 @@ public interface YogaProps {
 
   public fun setMeasureFunction(measureFunction: YogaMeasureFunction?)
 
-  public fun setMinContentMeasureFunction(measureFunction: YogaMeasureFunction?)
-
-  /**
-   * Sets the static min-content width used by the CSS Flexbox §4.5 automatic minimum sizing probe.
-   * Pass `YogaConstants.UNDEFINED` to clear. See `YGNodeSetMinContentWidth` in the Yoga C API for
-   * full precedence rules.
-   */
-  public fun setMinContentWidth(minContentWidth: Float)
-
-  /**
-   * Sets the static min-content height used by the CSS Flexbox §4.5 automatic minimum sizing probe.
-   * Pass `YogaConstants.UNDEFINED` to clear. See `YGNodeSetMinContentHeight` in the Yoga C API for
-   * full precedence rules.
-   */
-  public fun setMinContentHeight(minContentHeight: Float)
-
-  /** Returns the static min-content width, or `YogaConstants.UNDEFINED` if not set. */
-  public fun getMinContentWidth(): Float
-
-  /** Returns the static min-content height, or `YogaConstants.UNDEFINED` if not set. */
-  public fun getMinContentHeight(): Float
-
   public fun setBaselineFunction(yogaBaselineFunction: YogaBaselineFunction?)
 
   /* Mutable properties - getter and setter with matching types */

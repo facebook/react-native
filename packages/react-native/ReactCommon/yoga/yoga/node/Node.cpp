@@ -36,9 +36,6 @@ Node::Node(Node&& node) noexcept
       nodeType_(node.nodeType_),
       context_(node.context_),
       measureFunc_(node.measureFunc_),
-      minContentMeasureFunc_(node.minContentMeasureFunc_),
-      minContentWidth_(node.minContentWidth_),
-      minContentHeight_(node.minContentHeight_),
       baselineFunc_(node.baselineFunc_),
       dirtiedFunc_(node.dirtiedFunc_),
       style_(std::move(node.style_)),
@@ -75,35 +72,6 @@ YGSize Node::measure(
         size.width,
         size.height);
     return {
-        .width = maxOrDefined(0.0f, size.width),
-        .height = maxOrDefined(0.0f, size.height)};
-  }
-
-  return size;
-}
-
-YGSize Node::measureMinContent(
-    float availableWidth,
-    MeasureMode widthMode,
-    float availableHeight,
-    MeasureMode heightMode) {
-  auto size = minContentMeasureFunc_(
-      this,
-      availableWidth,
-      unscopedEnum(widthMode),
-      availableHeight,
-      unscopedEnum(heightMode));
-
-  if (yoga::isUndefined(size.height) || size.height < 0 ||
-      yoga::isUndefined(size.width) || size.width < 0) {
-    // NOLINTNEXTLINE(cppcoreguidelines-pro-type-vararg)
-    yoga::log(
-        this,
-        LogLevel::Warn,
-        "Min-content measure function returned an invalid dimension to Yoga: [width=%f, height=%f]",
-        size.width,
-        size.height);
-    size = {
         .width = maxOrDefined(0.0f, size.width),
         .height = maxOrDefined(0.0f, size.height)};
   }

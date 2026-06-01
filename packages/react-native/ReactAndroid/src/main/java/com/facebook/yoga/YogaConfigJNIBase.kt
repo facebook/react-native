@@ -50,10 +50,6 @@ private constructor(@JvmField protected var nativePointer: Long) : YogaConfig() 
     YogaNative.jni_YGConfigSetErrataJNI(nativePointer, errata.intValue())
   }
 
-  public override fun setErrata(errata: Int) {
-    YogaNative.jni_YGConfigSetErrataJNI(nativePointer, errata)
-  }
-
   public override fun getErrata(): YogaErrata =
       YogaErrata.fromInt(YogaNative.jni_YGConfigGetErrataJNI(nativePointer))
 

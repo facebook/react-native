@@ -228,16 +228,6 @@ public abstract class YogaNode : YogaProps {
 
   abstract override fun setMeasureFunction(measureFunction: YogaMeasureFunction?)
 
-  abstract override fun setMinContentMeasureFunction(measureFunction: YogaMeasureFunction?)
-
-  abstract override fun setMinContentWidth(minContentWidth: Float)
-
-  abstract override fun setMinContentHeight(minContentHeight: Float)
-
-  abstract override fun getMinContentWidth(): Float
-
-  abstract override fun getMinContentHeight(): Float
-
   abstract override fun setBaselineFunction(yogaBaselineFunction: YogaBaselineFunction?)
 
   public abstract val isMeasureDefined: Boolean
