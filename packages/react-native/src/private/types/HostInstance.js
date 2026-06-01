@@ -109,11 +109,3 @@ export interface LegacyHostInstanceMethods {
 }
 
 export type HostInstance = ReactNativeElement;
-
-/** @deprecated Use HostInstance instead */
-export type NativeMethods = LegacyHostInstanceMethods;
-
-/**
- * @deprecated Use HostInstance instead.
- */
-export type NativeMethodsMixin = LegacyHostInstanceMethods;

@@ -112,15 +112,6 @@ export interface NativeMethods {
 }
 
 /**
- * @deprecated Use NativeMethods instead.
- */
-export type NativeMethodsMixin = NativeMethods;
-/**
- * @deprecated Use NativeMethods instead.
- */
-export type NativeMethodsMixinType = NativeMethods;
-
-/**
  * Represents a native component, such as those returned from `requireNativeComponent`.
  *
  * @see https://github.com/facebook/react-native/blob/v0.62.0-rc.5/Libraries/Renderer/shims/ReactNativeTypes.js

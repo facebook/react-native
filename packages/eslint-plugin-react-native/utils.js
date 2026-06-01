@@ -505,8 +505,6 @@ const publicAPIMapping = {
     default: null,
     types: [
       'HostInstance',
-      'NativeMethods',
-      'NativeMethodsMixin',
       'MeasureInWindowOnSuccessCallback',
       'MeasureLayoutOnSuccessCallback',
       'MeasureOnSuccessCallback',

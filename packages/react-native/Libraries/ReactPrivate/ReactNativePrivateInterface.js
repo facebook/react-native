@@ -41,7 +41,6 @@ import typeof Platform from '../Utilities/Platform';
 export type {
   HostInstance as PublicInstance,
   // These types are only necessary for Paper
-  NativeMethods as LegacyPublicInstance,
   MeasureOnSuccessCallback,
   MeasureInWindowOnSuccessCallback,
   MeasureLayoutOnSuccessCallback,
