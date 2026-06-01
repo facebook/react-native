@@ -17,6 +17,7 @@ import android.text.InputFilter
 import android.text.InputFilter.AllCaps
 import android.text.InputType
 import android.text.Layout
+import android.text.SpannableStringBuilder
 import android.util.DisplayMetrics
 import android.view.Gravity
 import android.view.View
@@ -32,6 +33,7 @@ import com.facebook.react.uimanager.DisplayMetricsHolder
 import com.facebook.react.uimanager.ReactStylesDiffMap
 import com.facebook.react.uimanager.ThemedReactContext
 import com.facebook.react.views.text.DefaultStyleValuesUtil.getDefaultTextColorHint
+import com.facebook.react.views.text.ReactTextUpdate
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.Before
 import org.junit.Test
@@ -471,6 +473,35 @@ class ReactTextInputPropertyTest {
     manager.updateProperties(view, buildStyles("textAlign", null, "textAlignVertical", null))
     assertThat(view.gravity).isEqualTo(defaultGravity)
     // endregion
+  }
+
+  @Test
+  fun testClearingTextPreservesEditableBufferAndGravity() {
+    // Regression test for #55457. Clearing a centered TextInput must not recreate the
+    // underlying Editable buffer, otherwise the EditText loses its gravity-based caret
+    // positioning and the cursor jumps to the right edge.
+    manager.updateProperties(view, buildStyles("textAlign", "center"))
+    assertThat(view.gravity and Gravity.HORIZONTAL_GRAVITY_MASK)
+        .isEqualTo(Gravity.CENTER_HORIZONTAL)
+
+    manager.updateExtraData(
+        view,
+        ReactTextUpdate(SpannableStringBuilder("hello"), 0, Gravity.CENTER_HORIZONTAL, 0, 0))
+    val bufferBeforeClear = view.editableText
+    assertThat(view.text.toString()).isEqualTo("hello")
+    assertThat(bufferBeforeClear).isNotNull()
+
+    manager.updateExtraData(
+        view, ReactTextUpdate(SpannableStringBuilder(""), 0, Gravity.CENTER_HORIZONTAL, 0, 0))
+
+    // Behavioral guarantee of the fix: the Editable instance is reused via replace(),
+    // not swapped out via setText(null). This is what keeps the cursor centered.
+    assertThat(view.editableText).isSameAs(bufferBeforeClear)
+    assertThat(view.text.toString()).isEmpty()
+    assertThat(view.gravity and Gravity.HORIZONTAL_GRAVITY_MASK)
+        .isEqualTo(Gravity.CENTER_HORIZONTAL)
+    assertThat(view.selectionStart).isEqualTo(0)
+    assertThat(view.selectionEnd).isEqualTo(0)
   }
 
   @Test
