@@ -7,47 +7,8 @@
 
 #import "RCTRootShadowView.h"
 
-#ifndef RCT_REMOVE_LEGACY_ARCH
-
-#import "RCTI18nUtil.h"
-#import "RCTShadowView+Layout.h"
-
-@implementation RCTRootShadowView
-
-- (instancetype)init
-{
-  if (self = [super init]) {
-    _baseDirection = [[RCTI18nUtil sharedInstance] isRTL] ? YGDirectionRTL : YGDirectionLTR;
-    _minimumSize = CGSizeZero;
-    _availableSize = CGSizeMake(INFINITY, INFINITY);
-  }
-
-  return self;
-}
-
-- (void)layoutWithAffectedShadowViews:(NSPointerArray *)affectedShadowViews
-{
-  NSHashTable<NSString *> *other = [NSHashTable new];
-
-  RCTLayoutContext layoutContext = {};
-  layoutContext.absolutePosition = CGPointZero;
-  layoutContext.affectedShadowViews = affectedShadowViews;
-  layoutContext.other = other;
-
-  [self layoutWithMinimumSize:_minimumSize
-                  maximumSize:_availableSize
-              layoutDirection:RCTUIKitLayoutDirectionFromYogaLayoutDirection(_baseDirection)
-                layoutContext:layoutContext];
-}
-
-@end
-
-#else // RCT_REMOVE_LEGACY_ARCH
-
 @implementation RCTRootShadowView
 - (void)layoutWithAffectedShadowViews:(NSPointerArray *)affectedShadowViews
 {
 }
 @end
-
-#endif // RCT_REMOVE_LEGACY_ARCH

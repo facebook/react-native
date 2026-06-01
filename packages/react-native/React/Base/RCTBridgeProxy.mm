@@ -308,19 +308,6 @@ using namespace facebook;
            cmd:_cmd];
 }
 
-#ifndef RCT_REMOVE_LEGACY_ARCH
-- (void)registerModuleForFrameUpdates:(id<RCTBridgeModule>)module withModuleData:(RCTModuleData *)moduleData
-{
-  [self logError:@"This method is not supported. Nooping" cmd:_cmd];
-}
-
-- (RCTModuleData *)moduleDataForName:(NSString *)moduleName
-{
-  [self logError:@"This method is not supported. Returning nil." cmd:_cmd];
-  return nil;
-}
-#endif // RCT_REMOVE_LEGACY_ARCH
-
 - (void)registerAdditionalModuleClasses:(NSArray<Class> *)newModules
 {
   [self
@@ -387,11 +374,7 @@ using namespace facebook;
  */
 - (NSMethodSignature *)methodSignatureForSelector:(SEL)sel;
 {
-#ifndef RCT_REMOVE_LEGACY_ARCH
-  return [RCTCxxBridge instanceMethodSignatureForSelector:sel];
-#else
   return [RCTBridge instanceMethodSignatureForSelector:sel];
-#endif
 }
 
 - (void)forwardInvocation:(NSInvocation *)invocation
