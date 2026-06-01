@@ -12,9 +12,6 @@
 #import <React/RCTSurfaceHostingView.h>
 
 @implementation RCTLogBoxView {
-#ifndef RCT_REMOVE_LEGACY_ARCH
-  RCTSurface *_surface;
-#endif // RCT_REMOVE_LEGACY_ARCH
 }
 
 - (instancetype)initWithFrame:(CGRect)frame
@@ -37,28 +34,6 @@
   self.rootViewController = _rootViewController;
 }
 
-#ifndef RCT_REMOVE_LEGACY_ARCH
-- (instancetype)initWithWindow:(UIWindow *)window bridge:(RCTBridge *)bridge
-{
-  self = [super initWithWindowScene:window.windowScene];
-
-#if !TARGET_OS_TV
-  self.windowLevel = UIWindowLevelStatusBar - 1;
-#endif
-  self.backgroundColor = [UIColor clearColor];
-
-  _surface = [[RCTSurface alloc] initWithBridge:bridge moduleName:@"LogBox" initialProperties:@{}];
-  [_surface start];
-
-  if (![_surface synchronouslyWaitForStage:RCTSurfaceStageSurfaceDidInitialMounting timeout:1]) {
-    RCTLogInfo(@"Failed to mount LogBox within 1s");
-  }
-  [self createRootViewController:(UIView *)_surface.view];
-
-  return self;
-}
-#endif // RCT_REMOVE_LEGACY_ARCH
-
 - (instancetype)initWithWindow:(UIWindow *)window surfacePresenter:(id<RCTSurfacePresenterStub>)surfacePresenter
 {
   self = [super initWithWindowScene:window.windowScene];
@@ -76,9 +51,6 @@
 - (void)layoutSubviews
 {
   [super layoutSubviews];
-#ifndef RCT_REMOVE_LEGACY_ARCH
-  [_surface setSize:self.frame.size];
-#endif // RCT_REMOVE_LEGACY_ARCH
 }
 
 - (void)dealloc
