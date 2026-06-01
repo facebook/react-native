@@ -152,7 +152,6 @@
 #import <React/RCTMockDef.h>
 #import <React/RCTModalHostViewController.h>
 #import <React/RCTModalHostViewManager.h>
-#import <React/RCTModalManager.h>
 #import <React/RCTModuleData.h>
 #import <React/RCTModuleMethod.h>
 #import <React/RCTModuloAnimatedNode.h>
@@ -185,11 +184,9 @@
 #import <React/RCTRefreshableProtocol.h>
 #import <React/RCTReloadCommand.h>
 #import <React/RCTResizeMode.h>
-#import <React/RCTRootContentView.h>
 #import <React/RCTRootShadowView.h>
 #import <React/RCTRootView.h>
 #import <React/RCTRootViewDelegate.h>
-#import <React/RCTRootViewInternal.h>
 #import <React/RCTScrollEvent.h>
 #import <React/RCTScrollView.h>
 #import <React/RCTScrollableProtocol.h>
@@ -216,7 +213,6 @@
 #import <React/RCTSurfaceStage.h>
 #import <React/RCTSurfaceView+Internal.h>
 #import <React/RCTSurfaceView.h>
-#import <React/RCTTextAttributes.h>
 #import <React/RCTTextDecorationLineType.h>
 #import <React/RCTTextSelection.h>
 #import <React/RCTTextTransform.h>

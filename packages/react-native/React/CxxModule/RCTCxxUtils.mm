@@ -12,8 +12,6 @@
 #import <cxxreact/CxxNativeModule.h>
 #import <jsi/jsi.h>
 
-#import "RCTNativeModule.h"
-
 namespace facebook::react {
 
 using facebook::jsi::JSError;
