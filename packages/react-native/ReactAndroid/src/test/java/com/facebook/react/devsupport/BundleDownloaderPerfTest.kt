@@ -41,8 +41,6 @@ import org.junit.experimental.categories.Category
  *     -PrunPerfTests -Preact.internal.useHermesNightly=true \
  *     --tests "*BundleDownloaderPerfTest"
  * ```
- *
- * Captures today's baseline. After streaming refactor, tighten the allocation budget.
  */
 @Category(PerformanceTest::class)
 class BundleDownloaderPerfTest {
@@ -142,15 +140,19 @@ class BundleDownloaderPerfTest {
             "output-size=${AllocationProbe.fmt(outputFile.length())}"
     )
 
-    // Correctness: the file on disk equals the synthetic payload (post-multipart parsing).
+    // Correctness: the bundle was streamed straight to disk; the file size equals the
+    // synthetic payload (post multipart-parsing).
     assertThat(outputFile.length()).isEqualTo(payloadBytes)
 
-    // Baseline budgets — loose on purpose. Tighten after the streaming refactor.
-    assertThat(totalAllocated)
-        .`as`("Total bytes allocated across all threads should not exceed 4x the payload")
-        .isLessThan(payloadBytes * 4)
+    // Memory: peak heap is the property that proves the bundle is streamed to disk rather
+    // than retained in heap. For a 100 MB payload it should sit well under the payload size;
+    // the 80 MB ceiling leaves room for OkHttp dispatcher warmup and cross-machine variance.
+    //
+    // We deliberately do NOT assert on allocated bytes: okio's SegmentPool is capped at 64 KB
+    // so the OkHttp/okio pipeline always churns ~payloadBytes of segment allocations,
+    // regardless of whether BundleDownloader retains the body. Peak heap is the right metric.
     assertThat(peakHeap)
-        .`as`("Peak heap should not exceed 4x the payload (baseline)")
-        .isLessThan(payloadBytes * 4)
+        .`as`("Peak heap should be O(buffer size), not O(payload)")
+        .isLessThan(80L * 1024 * 1024)
   }
 }

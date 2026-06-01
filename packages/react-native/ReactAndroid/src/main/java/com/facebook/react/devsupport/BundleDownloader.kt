@@ -27,6 +27,7 @@ import okhttp3.OkHttpClient
 import okhttp3.Request
 import okhttp3.Response
 import okio.Buffer
+import okio.BufferedSink
 import okio.BufferedSource
 import okio.Okio
 import org.json.JSONException
@@ -183,82 +184,28 @@ public class BundleDownloader public constructor(private val client: OkHttpClien
     }
     val source = checkNotNull(response.body()?.source())
     val bodyReader = MultipartStreamReader(source, boundary)
-    val completed =
-        bodyReader.readAllParts(
-            object : ChunkListener {
-              @Throws(IOException::class)
-              override fun onChunkComplete(
-                  headers: Map<String, String>,
-                  body: Buffer,
-                  isLastChunk: Boolean,
-              ) {
-                // This will get executed for every chunk of the multipart response. The last chunk
-                // (isLastChunk = true) will be the JS bundle, the other ones will be progress
-                // events
-                // encoded as JSON.
-                if (isLastChunk) {
-                  // The http status code for each separate chunk is in the X-Http-Status header.
-                  var status = response.code()
-                  if (headers.containsKey("X-Http-Status")) {
-                    status = headers.getOrDefault("X-Http-Status", "0").toInt()
-                  }
-                  processBundleResult(
-                      url,
-                      status,
-                      Headers.of(headers),
-                      body,
-                      outputFile,
-                      bundleInfo,
-                      callback,
-                  )
-                } else {
-                  if (
-                      !headers.containsKey("Content-Type") ||
-                          headers["Content-Type"] != "application/json"
-                  ) {
-                    return
-                  }
-
-                  try {
-                    val progress = JSONObject(body.readUtf8())
-                    val status =
-                        if (progress.has("status")) progress.getString("status") else "Bundling"
-                    var done: Int? = null
-                    if (progress.has("done")) {
-                      done = progress.getInt("done")
-                    }
-                    var total: Int? = null
-                    if (progress.has("total")) {
-                      total = progress.getInt("total")
-                    }
-                    var percent: Int? = null
-                    if (progress.has("percent")) {
-                      percent = progress.getInt("percent")
-                    }
-                    callback.onProgress(status, done, total, percent)
-                  } catch (e: JSONException) {
-                    FLog.e(ReactConstants.TAG, "Error parsing progress JSON. $e")
-                  }
-                }
-              }
-
-              override fun onChunkProgress(
-                  headers: Map<String, String>,
-                  loaded: Long,
-                  total: Long,
-              ) {
-                if ("application/javascript" == headers["Content-Type"]) {
-                  callback.onProgress(
-                      "Downloading",
-                      (loaded / 1024).toInt(),
-                      (total / 1024).toInt(),
-                      null,
-                  )
-                }
-              }
-            }
+    val tmpFile = File(outputFile.path + ".tmp")
+    val streamingHandler =
+        StreamingBundleChunkListener(
+            url = url,
+            outerStatus = response.code(),
+            outputFile = outputFile,
+            tmpFile = tmpFile,
+            bundleInfo = bundleInfo,
+            callback = callback,
         )
+    val completed: Boolean =
+        try {
+          bodyReader.readAllParts(streamingHandler)
+        } finally {
+          streamingHandler.closeOpenSinkQuietly()
+        }
     if (!completed) {
+      // If we partially wrote a tmp file before the upstream died, scrap it so we don't leave
+      // half-baked bundles on disk.
+      if (tmpFile.exists()) {
+        tmpFile.delete()
+      }
       callback.onFailure(
           DebugServerException(
               ("""
@@ -274,6 +221,124 @@ public class BundleDownloader public constructor(private val client: OkHttpClien
           )
       )
     }
+  }
+
+  /**
+   * Routes multipart chunks for a bundle download. The JS bundle chunk (Content-Type
+   * `application/javascript` with an effective HTTP status of 200) is streamed directly into
+   * a temporary file via a [BufferedSink], so no copy of the body is held in heap. Progress
+   * JSON chunks and error responses are buffered in memory because they're either tiny or
+   * bounded, and the listener needs to parse them in full.
+   */
+  private inner class StreamingBundleChunkListener(
+      private val url: String,
+      private val outerStatus: Int,
+      private val outputFile: File,
+      private val tmpFile: File,
+      private val bundleInfo: BundleInfo?,
+      private val callback: DevBundleDownloadListener,
+  ) : ChunkListener {
+
+    private var bundleSink: BufferedSink? = null
+
+    @Throws(IOException::class)
+    override fun onChunkHeader(headers: Map<String, String>): BufferedSink? {
+      if (headers["Content-Type"] != "application/javascript") return null
+      val effectiveStatus = effectiveStatus(headers)
+      if (effectiveStatus != 200) return null
+      // Stream the JS bundle straight to disk — never materialize in heap.
+      val sink = Okio.buffer(Okio.sink(tmpFile))
+      bundleSink = sink
+      return sink
+    }
+
+    @Throws(IOException::class)
+    override fun onChunkComplete(
+        headers: Map<String, String>,
+        body: Buffer?,
+        isLastChunk: Boolean,
+    ) {
+      val sink = bundleSink
+      if (sink != null) {
+        bundleSink = null
+        sink.close()
+        finalizeStreamedBundle(headers)
+        return
+      }
+      when (headers["Content-Type"]) {
+        "application/javascript" -> {
+          // Bundle returned with an error status — it was buffered so we can surface a useful
+          // diagnostic to the developer.
+          val buffered = body ?: Buffer()
+          processBundleResult(
+              url,
+              effectiveStatus(headers),
+              Headers.of(headers),
+              buffered,
+              outputFile,
+              bundleInfo,
+              callback,
+          )
+        }
+        "application/json" -> dispatchProgressJson(body)
+        else -> Unit // Unknown chunk type; ignore as before.
+      }
+    }
+
+    override fun onChunkProgress(
+        headers: Map<String, String>,
+        loaded: Long,
+        total: Long,
+    ) {
+      if ("application/javascript" == headers["Content-Type"]) {
+        callback.onProgress(
+            "Downloading",
+            (loaded / 1024).toInt(),
+            (total / 1024).toInt(),
+            null,
+        )
+      }
+    }
+
+    /** Make sure we never leak the tmp-file sink if [readAllParts] throws mid-stream. */
+    fun closeOpenSinkQuietly() {
+      val sink = bundleSink ?: return
+      bundleSink = null
+      try {
+        sink.close()
+      } catch (e: IOException) {
+        FLog.w(TAG, "Failed to close partial bundle sink", e)
+      }
+    }
+
+    @Throws(IOException::class)
+    private fun finalizeStreamedBundle(headers: Map<String, String>) {
+      if (bundleInfo != null) {
+        populateBundleInfo(url, Headers.of(headers), bundleInfo)
+      }
+      if (!tmpFile.renameTo(outputFile)) {
+        throw IOException("Couldn't rename $tmpFile to $outputFile")
+      }
+      callback.onSuccess()
+    }
+
+    private fun dispatchProgressJson(body: Buffer?) {
+      val payload = body ?: return
+      try {
+        val progress = JSONObject(payload.readUtf8())
+        val status =
+            if (progress.has("status")) progress.getString("status") else "Bundling"
+        val done = if (progress.has("done")) progress.getInt("done") else null
+        val total = if (progress.has("total")) progress.getInt("total") else null
+        val percent = if (progress.has("percent")) progress.getInt("percent") else null
+        callback.onProgress(status, done, total, percent)
+      } catch (e: JSONException) {
+        FLog.e(ReactConstants.TAG, "Error parsing progress JSON. $e")
+      }
+    }
+
+    private fun effectiveStatus(headers: Map<String, String>): Int =
+        headers["X-Http-Status"]?.toIntOrNull() ?: outerStatus
   }
 
   @Throws(IOException::class)

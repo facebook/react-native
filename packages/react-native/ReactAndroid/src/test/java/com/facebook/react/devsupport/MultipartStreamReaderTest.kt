@@ -8,6 +8,7 @@
 package com.facebook.react.devsupport
 
 import okio.Buffer
+import okio.BufferedSink
 import okio.ByteString
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.Test
@@ -36,14 +37,14 @@ class MultipartStreamReaderTest {
         object : CallCountTrackingChunkCallback() {
           override fun onChunkComplete(
               headers: Map<String, String>,
-              body: Buffer,
+              body: Buffer?,
               isLastChunk: Boolean,
           ) {
             super.onChunkComplete(headers, body, isLastChunk)
 
             assertThat(isLastChunk).isTrue
             assertThat(headers["Content-Type"]).isEqualTo("application/json; charset=utf-8")
-            assertThat(body.readUtf8()).isEqualTo("{}")
+            assertThat(body?.readUtf8()).isEqualTo("{}")
           }
         }
     val success = reader.readAllParts(callback)
@@ -76,13 +77,13 @@ class MultipartStreamReaderTest {
         object : CallCountTrackingChunkCallback() {
           override fun onChunkComplete(
               headers: Map<String, String>,
-              body: Buffer,
+              body: Buffer?,
               isLastChunk: Boolean,
           ) {
             super.onChunkComplete(headers, body, isLastChunk)
 
             assertThat(isLastChunk).isEqualTo(callCount == 3)
-            assertThat(body.readUtf8()).isEqualTo("$callCount")
+            assertThat(body?.readUtf8()).isEqualTo("$callCount")
           }
         }
     val success = reader.readAllParts(callback)
@@ -136,7 +137,14 @@ class MultipartStreamReaderTest {
     var callCount = 0
       private set
 
-    override fun onChunkComplete(headers: Map<String, String>, body: Buffer, isLastChunk: Boolean) {
+    // Buffer body in-memory so individual tests can assert on it.
+    override fun onChunkHeader(headers: Map<String, String>): BufferedSink? = null
+
+    override fun onChunkComplete(
+        headers: Map<String, String>,
+        body: Buffer?,
+        isLastChunk: Boolean,
+    ) {
       callCount++
     }
 

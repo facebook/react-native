@@ -10,7 +10,10 @@
 package com.facebook.react.devsupport
 
 import okio.Buffer
+import okio.BufferedSink
 import okio.Okio
+import okio.Sink
+import okio.Timeout
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.Before
 import org.junit.Test
@@ -18,7 +21,9 @@ import org.junit.experimental.categories.Category
 
 /**
  * Performance & memory regression test for [MultipartStreamReader] against a 100 MB JavaScript
- * payload. Captures a baseline today so a future streaming refactor can tighten the budgets.
+ * payload. Exercises the streaming path: the listener returns a [BufferedSink] from
+ * [MultipartStreamReader.ChunkListener.onChunkHeader], so the body bytes should be transferred
+ * to the sink without accumulating in heap.
  *
  * Run with:
  * ```
@@ -26,11 +31,6 @@ import org.junit.experimental.categories.Category
  *     -PrunPerfTests -Preact.internal.useHermesNightly=true \
  *     --tests "*MultipartStreamReaderPerfTest"
  * ```
- *
- * Assertions are intentionally loose: they capture today's behaviour (where the reader buffers
- * the entire body in heap) and bound it to ~2.5× the payload. After refactoring to a true
- * streaming implementation, the asserts should be tightened to a small multiple of the read
- * buffer size (e.g. < 4 MB allocated, < 8 MB peak heap).
  */
 @Category(PerformanceTest::class)
 class MultipartStreamReaderPerfTest {
@@ -44,24 +44,30 @@ class MultipartStreamReaderPerfTest {
   }
 
   @Test
-  fun reads100MBBundleWithBoundedAllocation() {
+  fun streams100MBBundleWithBoundedAllocation() {
     val syntheticSource = LargeMultipartSource(boundary, payloadBytes)
     val bufferedSource = Okio.buffer(syntheticSource)
     val reader = MultipartStreamReader(bufferedSource, boundary)
 
-    var receivedBytes = 0L
-    var sawLastChunk = false
+    val discardingSink = CountingDiscardingSink()
+    val bufferedSink = Okio.buffer(discardingSink)
+    var receivedHeaders: Map<String, String> = emptyMap()
+    var bufferDeliveredViaComplete = false
+
     val listener =
         object : MultipartStreamReader.ChunkListener {
+          override fun onChunkHeader(headers: Map<String, String>): BufferedSink {
+            receivedHeaders = headers
+            return bufferedSink
+          }
+
           override fun onChunkComplete(
               headers: Map<String, String>,
-              body: Buffer,
+              body: Buffer?,
               isLastChunk: Boolean,
           ) {
-            receivedBytes = body.size()
-            sawLastChunk = isLastChunk
-            // Drain so we don't keep the body alive past this call.
-            body.clear()
+            // body must be null when we returned a sink from onChunkHeader.
+            if (body != null) bufferDeliveredViaComplete = true
           }
 
           override fun onChunkProgress(
@@ -78,6 +84,7 @@ class MultipartStreamReaderPerfTest {
     val nanosBefore = System.nanoTime()
 
     val success = reader.readAllParts(listener)
+    bufferedSink.flush()
 
     val elapsedMs = (System.nanoTime() - nanosBefore) / 1_000_000
     val allocated = AllocationProbe.allocatedBytes(threadId) - allocBefore
@@ -87,20 +94,50 @@ class MultipartStreamReaderPerfTest {
         "[MultipartStreamReaderPerfTest] payload=${AllocationProbe.fmt(payloadBytes)} " +
             "elapsed=${elapsedMs}ms " +
             "thread-allocated=${AllocationProbe.fmt(allocated)} " +
-            "peak-heap=${AllocationProbe.fmt(peakHeap)}"
+            "peak-heap=${AllocationProbe.fmt(peakHeap)} " +
+            "sink-bytes=${AllocationProbe.fmt(discardingSink.bytesWritten)}"
     )
 
-    // Correctness
+    // Correctness: every payload byte made it to the sink, none was buffered into a Buffer
+    // and surfaced via onChunkComplete.
     assertThat(success).isTrue
-    assertThat(sawLastChunk).isTrue
-    assertThat(receivedBytes).isEqualTo(payloadBytes)
+    assertThat(discardingSink.bytesWritten).isEqualTo(payloadBytes)
+    assertThat(receivedHeaders["Content-Type"]).isEqualTo("application/javascript")
+    assertThat(bufferDeliveredViaComplete)
+        .`as`("Body must be streamed to the sink, not delivered as a Buffer")
+        .isFalse
 
-    // Baseline budgets — loose on purpose. Tighten after the streaming refactor.
-    assertThat(allocated)
-        .`as`("Thread-allocated bytes should not exceed 3x the payload (baseline)")
-        .isLessThan(payloadBytes * 3)
+    // Memory: peak heap must be bounded by the reader's working buffer plus a small overhead
+    // (class loading, JIT scratch, JMX bookkeeping), not by the payload size. The 64 MB
+    // ceiling leaves room for cross-machine variance while still proving the reader doesn't
+    // retain the payload.
+    //
+    // We deliberately do NOT assert on `thread-allocated`: okio's SegmentPool is capped at
+    // 64 KB, so streaming 100 MB through any pipeline (production or test) churns roughly
+    // 100 MB of segment allocations regardless of whether the reader is well-behaved. Peak
+    // heap is the property that distinguishes streaming from buffering.
     assertThat(peakHeap)
-        .`as`("Peak heap should not exceed 4x the payload (baseline)")
-        .isLessThan(payloadBytes * 4)
+        .`as`("Peak heap should be O(buffer size), not O(payload)")
+        .isLessThan(64L * 1024 * 1024)
+  }
+
+  /**
+   * An [okio.Sink] that counts the bytes written to it and discards them. Used so the test's
+   * assertion budget reflects only the reader's allocations, not a sink buffer's.
+   */
+  private class CountingDiscardingSink : Sink {
+    var bytesWritten: Long = 0L
+      private set
+
+    override fun write(source: Buffer, byteCount: Long) {
+      bytesWritten += byteCount
+      source.skip(byteCount)
+    }
+
+    override fun flush() = Unit
+
+    override fun timeout(): Timeout = Timeout.NONE
+
+    override fun close() = Unit
   }
 }
