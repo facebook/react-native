@@ -3068,14 +3068,7 @@ babel-plugin-replace-ts-export-assignment@^0.0.2:
   resolved "https://registry.yarnpkg.com/babel-plugin-replace-ts-export-assignment/-/babel-plugin-replace-ts-export-assignment-0.0.2.tgz#927a30ba303fcf271108980a8d4f80a693e1d53f"
   integrity sha512-BiTEG2Ro+O1spuheL5nB289y37FFmz0ISE6GjpNCG2JuA/WNcuEHSYw01+vN8quGf208sID3FnZFDwVyqX18YQ==
 
-babel-plugin-syntax-hermes-parser@0.35.0:
-  version "0.35.0"
-  resolved "https://registry.yarnpkg.com/babel-plugin-syntax-hermes-parser/-/babel-plugin-syntax-hermes-parser-0.35.0.tgz#9daa5340b6a5b329985f4c5cda2c6b1a355daed5"
-  integrity sha512-9Hbqe8S8JWQ4EiHBFFkqLiFPXJL4bHhYooT536r78jVPfSUtgLtY9lCelY4QJzJORSy/9L3zXDhyN+QsPBMsTw==
-  dependencies:
-    hermes-parser "0.35.0"
-
-babel-plugin-syntax-hermes-parser@0.36.1:
+babel-plugin-syntax-hermes-parser@0.35.0, babel-plugin-syntax-hermes-parser@0.36.1:
   version "0.36.1"
   resolved "https://registry.yarnpkg.com/babel-plugin-syntax-hermes-parser/-/babel-plugin-syntax-hermes-parser-0.36.1.tgz#970277618fbec67b400bf8b01e4f61ba96ef5a40"
   integrity sha512-ycduwJbvdvIMmVvlAZqGggS+pm5Eu4Bk9pcV9Sm2Z4PJNRVsKkv0g7vHj+LeuC1gHTeF67sJXFOq61IlqCa2hA==
