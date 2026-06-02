@@ -18,7 +18,6 @@ plugins {
   id("com.facebook.react")
   alias(libs.plugins.android.library)
   alias(libs.plugins.download)
-  alias(libs.plugins.kotlin.android)
   alias(libs.plugins.ktfmt)
 }
 
@@ -611,19 +610,17 @@ android {
       ":packages:react-native:ReactAndroid:hermes-engine:preBuild"
   )
 
-  sourceSets.getByName("main") {
-    res.setSrcDirs(
-        listOf(
-            "src/main/res/devsupport",
-            "src/main/res/shell",
-            "src/main/res/views/alert",
-            "src/main/res/views/modal",
-            "src/main/res/views/uimanager",
-            "src/main/res/views/view",
-        )
-    )
-    java.exclude("com/facebook/react/processing")
-    java.exclude("com/facebook/react/module/processing")
+  sourceSets {
+    named("main") {
+      res.srcDirs(
+          "src/main/res/devsupport",
+          "src/main/res/shell",
+          "src/main/res/views/alert",
+          "src/main/res/views/modal",
+          "src/main/res/views/uimanager",
+          "src/main/res/views/view",
+      )
+    }
   }
 
   lint {
@@ -676,6 +673,11 @@ android {
   }
 }
 
+tasks.withType<JavaCompile>().configureEach {
+  exclude("com/facebook/react/processing/**")
+  exclude("com/facebook/react/module/processing/**")
+}
+
 tasks.withType<KotlinCompile>().configureEach {
   exclude("com/facebook/annotationprocessors/**")
   exclude("com/facebook/react/processing/**")
@@ -690,6 +692,7 @@ dependencies {
   api(libs.androidx.appcompat)
   api(libs.androidx.appcompat.resources)
   api(libs.androidx.autofill)
+  api(libs.androidx.collection)
   api(libs.androidx.swiperefreshlayout)
   api(libs.androidx.tracing)
   api(libs.androidx.window)

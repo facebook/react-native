@@ -10,7 +10,6 @@ import org.jetbrains.kotlin.gradle.tasks.KotlinCompile
 plugins {
   id("com.facebook.react")
   alias(libs.plugins.android.application)
-  alias(libs.plugins.kotlin.android)
 }
 
 val reactNativeDirPath = "$rootDir/packages/react-native"
@@ -135,7 +134,7 @@ android {
   }
   sourceSets.named("main") {
     // SampleTurboModule.
-    java.srcDirs(
+    kotlin.srcDirs(
         "$reactNativeDirPath/ReactCommon/react/nativemodule/samples/platform/android",
     )
     res.setSrcDirs(
