@@ -310,8 +310,6 @@ export {default as NativeAppEventEmitter} from './Libraries/EventEmitter/RCTNati
 
 export * as NativeComponentRegistry from './Libraries/NativeComponent/NativeComponentRegistry';
 
-export {default as NativeDialogManagerAndroid} from './Libraries/NativeModules/specs/NativeDialogManagerAndroid';
-
 export type {
   EmitterSubscription,
   NativeEventSubscription,
