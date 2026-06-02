@@ -100,16 +100,16 @@ internal class ReactProgressBarViewManager :
 
   override fun measure(
       context: Context,
-      localData: ReadableMap,
-      props: ReadableMap,
-      state: ReadableMap,
+      localData: ReadableMap?,
+      props: ReadableMap?,
+      state: ReadableMap?,
       width: Float,
       widthMode: YogaMeasureMode,
       height: Float,
       heightMode: YogaMeasureMode,
       attachmentsPositions: FloatArray?,
   ): Long {
-    val style = getStyleFromString(props.getString(PROP_STYLE))
+    val style = getStyleFromString(props?.getString(PROP_STYLE))
     val value =
         measuredStyles.getOrPut(style) {
           val progressBar = createProgressBar(context, style)
