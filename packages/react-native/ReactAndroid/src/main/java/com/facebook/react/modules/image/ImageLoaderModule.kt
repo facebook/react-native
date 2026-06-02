@@ -35,6 +35,7 @@ import com.facebook.react.module.annotations.ReactModule
 import com.facebook.react.modules.fresco.ReactNetworkImageRequest
 import com.facebook.react.views.image.ReactCallerContextFactory
 import com.facebook.react.views.imagehelper.ImageSource
+import com.facebook.react.views.imagehelper.ResourceDrawableIdHelper
 
 @ReactModule(name = NativeImageLoaderAndroidSpec.NAME)
 internal class ImageLoaderModule : NativeImageLoaderAndroidSpec, LifecycleEventListener {
@@ -85,6 +86,13 @@ internal class ImageLoaderModule : NativeImageLoaderAndroidSpec, LifecycleEventL
       return
     }
     val source = ImageSource(reactApplicationContext, uriString)
+    // Fast path: resolve resource drawables (including VectorDrawables) via the
+    // Android resource system instead of Fresco's encoded-image pipeline, which
+    // does not support res:// URIs.
+    if (source.isResource) {
+      resolveResourceSize(uriString, promise)
+      return
+    }
     val request: ImageRequest =
         ImageRequestBuilder.newBuilderWithSource(source.uri)
             .setRotationOptions(RotationOptions.disableRotation())
@@ -109,6 +117,11 @@ internal class ImageLoaderModule : NativeImageLoaderAndroidSpec, LifecycleEventL
       return
     }
     val source = ImageSource(reactApplicationContext, uriString)
+    // Fast path: resource drawables are resolved locally; headers are not applicable.
+    if (source.isResource) {
+      resolveResourceSize(uriString, promise)
+      return
+    }
     val imageRequestBuilder: ImageRequestBuilder =
         ImageRequestBuilder.newBuilderWithSource(source.uri)
             .setRotationOptions(RotationOptions.disableRotation())
@@ -166,6 +179,43 @@ internal class ImageLoaderModule : NativeImageLoaderAndroidSpec, LifecycleEventL
           promise.reject(ERROR_GET_SIZE_FAILURE, dataSource.failureCause)
         }
       }
+
+  /**
+   * Resolve the intrinsic size of a drawable resource by name. Works for all drawable types
+   * including VectorDrawable, which cannot be decoded by Fresco's encoded-image pipeline.
+   *
+   * Drawables without intrinsic dimensions (e.g. ColorDrawable) will cause the promise to be
+   * rejected since there is no meaningful size to return.
+   */
+  private fun resolveResourceSize(name: String, promise: Promise) {
+    val context = reactApplicationContext
+    val drawable =
+        try {
+          ResourceDrawableIdHelper.getResourceDrawable(context, name)
+        } catch (e: Exception) {
+          promise.reject(ERROR_GET_SIZE_FAILURE, e)
+          return
+        }
+    if (drawable == null) {
+      promise.reject(ERROR_GET_SIZE_FAILURE, "Could not resolve drawable resource: $name")
+      return
+    }
+    val width = drawable.intrinsicWidth
+    val height = drawable.intrinsicHeight
+    if (width < 0 || height < 0) {
+      promise.reject(
+          ERROR_GET_SIZE_FAILURE,
+          "Drawable resource has no intrinsic size: $name",
+      )
+      return
+    }
+    promise.resolve(
+        buildReadableMap {
+          put("width", width)
+          put("height", height)
+        }
+    )
+  }
 
   /**
    * Prefetches the given image to the Fresco image disk cache.
