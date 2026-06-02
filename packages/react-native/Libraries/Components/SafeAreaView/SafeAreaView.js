@@ -28,7 +28,7 @@ export type SafeAreaViewInstance = HostInstance;
  * @deprecated Use `react-native-safe-area-context` instead. This component will be removed in a future release.
  */
 const SafeAreaView: component(
-  ref?: React.RefSetter<React.ElementRef<typeof View>>,
+  ref?: React.RefSetter<SafeAreaViewInstance>,
   ...props: ViewProps
 ) = Platform.select({
   ios: require('./RCTSafeAreaViewNativeComponent').default,

@@ -122,10 +122,6 @@ export type SwitchProps = Readonly<{
 const returnsFalse = () => false;
 const returnsTrue = () => true;
 
-type SwitchRef = React.ElementRef<
-  typeof SwitchNativeComponent | typeof AndroidSwitchNativeComponent,
->;
-
 /**
   Renders a boolean input.
 
@@ -168,13 +164,13 @@ type SwitchRef = React.ElementRef<
   ```
  */
 const Switch: component(
-  ref?: React.RefSetter<SwitchRef>,
+  ref?: React.RefSetter<SwitchInstance>,
   ...props: SwitchProps
 ) = function Switch({
   ref: forwardedRef,
   ...props
 }: {
-  ref?: React.RefSetter<SwitchRef>,
+  ref?: React.RefSetter<SwitchInstance>,
   ...SwitchProps,
 }): React.Node {
   const {
@@ -191,9 +187,7 @@ const Switch: component(
   const trackColorForFalse = trackColor?.false;
   const trackColorForTrue = trackColor?.true;
 
-  const nativeSwitchRef = useRef<React.ElementRef<
-    typeof SwitchNativeComponent | typeof AndroidSwitchNativeComponent,
-  > | null>(null);
+  const nativeSwitchRef = useRef<SwitchInstance | null>(null);
 
   const ref = useMergeRefs(nativeSwitchRef, forwardedRef);
 

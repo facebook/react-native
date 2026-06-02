@@ -25,10 +25,7 @@ export type ViewInstance = HostInstance;
  *
  * @see https://reactnative.dev/docs/view
  */
-component View(
-  ref?: React.RefSetter<React.ElementRef<typeof ViewNativeComponent>>,
-  ...props: ViewProps
-) {
+component View(ref?: React.RefSetter<ViewInstance>, ...props: ViewProps) {
   const hasTextAncestor = use(TextAncestorContext);
 
   const {

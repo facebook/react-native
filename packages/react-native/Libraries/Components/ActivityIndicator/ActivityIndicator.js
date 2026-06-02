@@ -9,7 +9,6 @@
  */
 
 'use strict';
-import type {HostComponent} from '../../../src/private/types/HostComponent';
 import type {HostInstance} from '../../../src/private/types/HostInstance';
 import type {ViewProps} from '../View/ViewPropTypes';
 
@@ -65,7 +64,7 @@ export type ActivityIndicatorProps = Readonly<{
 }>;
 
 const ActivityIndicator: component(
-  ref?: React.RefSetter<HostComponent<empty>>,
+  ref?: React.RefSetter<ActivityIndicatorInstance>,
   ...props: ActivityIndicatorProps
 ) = ({
   ref: forwardedRef,

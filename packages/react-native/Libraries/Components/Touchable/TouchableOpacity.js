@@ -77,7 +77,7 @@ type TouchableOpacityBaseProps = Readonly<{
   activeOpacity?: ?number,
   style?: ?Animated.WithAnimatedValue<ViewStyleProp>,
 
-  hostRef?: ?React.RefSetter<React.ElementRef<typeof Animated.View>>,
+  hostRef?: ?React.RefSetter<TouchableOpacityInstance>,
 }>;
 
 export type TouchableOpacityProps = Readonly<{
@@ -381,13 +381,13 @@ class TouchableOpacity extends React.Component<
 }
 
 const Touchable: component(
-  ref?: React.RefSetter<React.ElementRef<typeof Animated.View>>,
+  ref?: React.RefSetter<TouchableOpacityInstance>,
   ...props: TouchableOpacityProps
 ) = ({
   ref,
   ...props
 }: {
-  ref?: React.RefSetter<React.ElementRef<typeof Animated.View>>,
+  ref?: React.RefSetter<TouchableOpacityInstance>,
   ...TouchableOpacityProps,
 }) => <TouchableOpacity {...props} hostRef={ref} />;
 

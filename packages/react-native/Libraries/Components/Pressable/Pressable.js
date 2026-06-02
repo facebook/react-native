@@ -168,8 +168,6 @@ export type PressableProps = Readonly<{
   ...PressableBaseProps,
 }>;
 
-type Instance = React.ElementRef<typeof View>;
-
 /**
  * Component used to build display components that should respond to whether the
  * component is currently pressed or not.
@@ -178,7 +176,7 @@ function Pressable({
   ref: forwardedRef,
   ...props
 }: {
-  ref?: React.RefSetter<Instance>,
+  ref?: React.RefSetter<PressableInstance>,
   ...PressableProps,
 }): React.Node {
   const {
@@ -218,7 +216,7 @@ function Pressable({
     ...restProps
   } = props;
 
-  const viewRef = useRef<Instance | null>(null);
+  const viewRef = useRef<PressableInstance | null>(null);
   const mergedRef = useMergeRefs(forwardedRef, viewRef);
 
   const android_rippleConfig = useAndroidRippleForView(android_ripple, viewRef);
@@ -357,6 +355,6 @@ const MemoedPressable = memo(Pressable);
 MemoedPressable.displayName = 'Pressable';
 
 export default MemoedPressable as component(
-  ref?: React.RefSetter<React.ElementRef<typeof View>>,
+  ref?: React.RefSetter<PressableInstance>,
   ...props: PressableProps
 );
