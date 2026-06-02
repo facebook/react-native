@@ -116,8 +116,8 @@ class ReactPlugin : Plugin<Project> {
     }
 
     // Library Only Configuration
-    configureBuildConfigFieldsForLibraries(project)
-    configureNamespaceForLibraries(project)
+    // configureBuildConfigFieldsForLibraries(project)
+    // configureNamespaceForLibraries(project)
     project.pluginManager.withPlugin("com.android.library") {
       configureCodegen(project, extension, rootExtension, isLibrary = true)
     }
