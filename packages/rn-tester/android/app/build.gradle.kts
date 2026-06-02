@@ -134,15 +134,18 @@ android {
   }
   sourceSets.named("main") {
     // SampleTurboModule.
-    kotlin.srcDirs(
-        "$reactNativeDirPath/ReactCommon/react/nativemodule/samples/platform/android",
+    kotlin.directories.add(
+        "$reactNativeDirPath/ReactCommon/react/nativemodule/samples/platform/android"
     )
-    res.setSrcDirs(
-        listOf(
-            "src/main/res",
-            "src/main/public_res",
-        )
-    )
+    res.directories.apply {
+      clear() // Mimics setSrcDirs by wiping out the defaults
+      addAll(
+          listOf(
+              "src/main/res",
+              "src/main/public_res"
+          )
+      )
+    }
   }
 }
 
