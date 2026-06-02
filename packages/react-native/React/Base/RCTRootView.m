@@ -7,7 +7,6 @@
 
 #import "RCTRootView.h"
 #import "RCTRootViewDelegate.h"
-#import "RCTRootViewInternal.h"
 
 #import <objc/runtime.h>
 
@@ -19,7 +18,6 @@
 #import "RCTLog.h"
 #import "RCTPerformanceLogger.h"
 #import "RCTProfile.h"
-#import "RCTRootContentView.h"
 #import "RCTRootShadowView.h"
 #import "RCTTouchHandler.h"
 #import "RCTUIManager.h"
