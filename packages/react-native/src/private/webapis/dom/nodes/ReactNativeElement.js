@@ -67,6 +67,7 @@ const noop = () => {};
 // was slower than this method because the engine has to create an object than
 // we then discard to create a new one.
 
+/** @build-types protected-constructor */
 class ReactNativeElement extends ReadOnlyElement implements NativeMethods {
   // These need to be accessible from `ReactFabricPublicInstanceUtils`.
   __nativeTag: number;

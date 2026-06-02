@@ -50,6 +50,7 @@ const ReadOnlyNodeBase: typeof Object =
 // extend this class so it inherits all the methods and it sets the class
 // hierarchy correctly.
 
+/** @build-types protected-constructor */
 class ReadOnlyNode extends ReadOnlyNodeBase {
   constructor(
     instanceHandle: InstanceHandle,
