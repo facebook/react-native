@@ -248,6 +248,12 @@ void ReactInstance::loadScript(
       beforeLoad(runtime);
     }
     TraceSection s("ReactInstance::loadScript");
+    // Reset the StartupLogger so that JS reloads re-record all START/STOP
+    // timings. Without this, the APP_STARTUP_START handler resets the logger
+    // mid-sequence (after RUN_JS_BUNDLE_START / INIT_REACT_RUNTIME_START have
+    // already been rejected as duplicates), leaving NaN start times paired
+    // with valid end times. See issue #56339.
+    ReactMarker::StartupLogger::getInstance().reset();
     bool hasLogger(ReactMarker::logTaggedMarkerBridgelessImpl != nullptr);
     if (hasLogger) {
       ReactMarker::logTaggedMarkerBridgeless(
