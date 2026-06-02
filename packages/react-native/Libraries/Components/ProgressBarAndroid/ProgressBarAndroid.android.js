@@ -43,9 +43,7 @@ export type {ProgressBarAndroidProps};
  * ```
  */
 const ProgressBarAndroid: component(
-  ref?: React.RefSetter<
-    React.ElementRef<typeof ProgressBarAndroidNativeComponent>,
-  >,
+  ref?: React.RefSetter<ProgressBarAndroidInstance>,
   ...props: ProgressBarAndroidProps
 ) = function ProgressBarAndroid({
   ref: forwardedRef,
@@ -55,9 +53,7 @@ const ProgressBarAndroid: component(
   animating = true,
   ...restProps
 }: {
-  ref?: React.RefSetter<
-    React.ElementRef<typeof ProgressBarAndroidNativeComponent>,
-  >,
+  ref?: React.RefSetter<ProgressBarAndroidInstance>,
   ...ProgressBarAndroidProps,
 }) {
   return (

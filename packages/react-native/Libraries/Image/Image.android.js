@@ -169,7 +169,7 @@ let BaseImage: AbstractImageAndroid = ({
   resizeMode,
   ...restProps
 }: {
-  ref?: React.RefSetter<HostInstance>,
+  ref?: React.RefSetter<ImageInstance>,
   ...ImageProps,
 }) => {
   let source_ =

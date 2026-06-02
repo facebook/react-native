@@ -11,7 +11,6 @@
 'use strict';
 
 import type {HostInstance} from '../../../src/private/types/HostInstance';
-import typeof ProgressBarAndroidNativeComponentType from './ProgressBarAndroidNativeComponent';
 import type {ProgressBarAndroidProps} from './ProgressBarAndroidTypes';
 
 import Platform from '../../Utilities/Platform';
@@ -33,9 +32,7 @@ type Omit<T, K> = T extends any ? Pick<T, Exclude<keyof T, K>> : T;
  * @deprecated
  */
 let ProgressBarAndroid: component(
-  ref?: React.RefSetter<
-    React.ElementRef<ProgressBarAndroidNativeComponentType>,
-  >,
+  ref?: React.RefSetter<ProgressBarAndroidInstance>,
   ...props: Omit<ProgressBarAndroidProps, empty>
 );
 
