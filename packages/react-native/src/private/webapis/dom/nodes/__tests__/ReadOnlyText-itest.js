@@ -331,4 +331,69 @@ describe('ReadOnlyText', () => {
       });
     });
   });
+
+  describe('global constructors', () => {
+    it('throws when constructing Text', () => {
+      expect(() => new Text()).toThrow(
+        "Failed to construct 'Text': Nodes cannot be imperatively created in React Native",
+      );
+    });
+
+    it('throws when constructing CharacterData', () => {
+      expect(() => new CharacterData()).toThrow(
+        "Failed to construct 'CharacterData': Illegal constructor",
+      );
+    });
+
+    it('throws when constructing Node', () => {
+      expect(() => new Node()).toThrow(
+        "Failed to construct 'Node': Illegal constructor",
+      );
+    });
+
+    it('public stubs preserve `instanceof` against real instances', () => {
+      // The public stubs alias their prototype to the real class so that
+      // `instanceof` against the global still works for instances obtained
+      // from refs/observer callbacks.
+      const parentNodeRef = createRef<HostInstance>();
+
+      const root = Fantom.createRoot();
+
+      Fantom.runTask(() => {
+        root.render(<NativeText ref={parentNodeRef}>Some text</NativeText>);
+      });
+
+      const parentNode = ensureReadOnlyNode(parentNodeRef.current);
+      const textNode = parentNode.childNodes[0];
+
+      expect(textNode instanceof Node).toBe(true);
+      expect(textNode instanceof CharacterData).toBe(true);
+      expect(textNode instanceof Text).toBe(true);
+    });
+  });
+
+  describe('Node static constants on the global', () => {
+    // The public `Node` stub also exposes the node-type and document-position
+    // constants from the spec so callers can read them off the global.
+    it('exposes node-type constants', () => {
+      expect(Node.ELEMENT_NODE).toBe(1);
+      expect(Node.ATTRIBUTE_NODE).toBe(2);
+      expect(Node.TEXT_NODE).toBe(3);
+      expect(Node.CDATA_SECTION_NODE).toBe(4);
+      expect(Node.PROCESSING_INSTRUCTION_NODE).toBe(7);
+      expect(Node.COMMENT_NODE).toBe(8);
+      expect(Node.DOCUMENT_NODE).toBe(9);
+      expect(Node.DOCUMENT_TYPE_NODE).toBe(10);
+      expect(Node.DOCUMENT_FRAGMENT_NODE).toBe(11);
+    });
+
+    it('exposes document-position constants', () => {
+      expect(Node.DOCUMENT_POSITION_DISCONNECTED).toBe(1);
+      expect(Node.DOCUMENT_POSITION_PRECEDING).toBe(2);
+      expect(Node.DOCUMENT_POSITION_FOLLOWING).toBe(4);
+      expect(Node.DOCUMENT_POSITION_CONTAINS).toBe(8);
+      expect(Node.DOCUMENT_POSITION_CONTAINED_BY).toBe(16);
+      expect(Node.DOCUMENT_POSITION_IMPLEMENTATION_SPECIFIC).toBe(32);
+    });
+  });
 });

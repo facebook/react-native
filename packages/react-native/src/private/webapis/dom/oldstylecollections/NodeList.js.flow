@@ -32,3 +32,5 @@ declare export default class NodeList<+T> implements Iterable<T>, ArrayLike<T> {
 declare export function createNodeList<T>(
   elements: ReadonlyArray<T>,
 ): NodeList<T>;
+
+declare export var NodeList_public: typeof NodeList;

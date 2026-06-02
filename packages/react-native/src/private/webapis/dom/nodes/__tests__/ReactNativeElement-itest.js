@@ -1631,4 +1631,18 @@ describe('ReactNativeElement', () => {
       });
     });
   });
+
+  describe('global constructors', () => {
+    it('throws when constructing HTMLElement', () => {
+      expect(() => new HTMLElement()).toThrow(
+        "Failed to construct 'HTMLElement': Nodes cannot be imperatively created in React Native",
+      );
+    });
+
+    it('throws when constructing Element', () => {
+      expect(() => new Element()).toThrow(
+        "Failed to construct 'Element': Illegal constructor",
+      );
+    });
+  });
 });
