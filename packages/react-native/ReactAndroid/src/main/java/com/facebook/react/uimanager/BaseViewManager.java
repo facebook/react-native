@@ -309,7 +309,8 @@ public abstract class BaseViewManager<T extends View, C extends LayoutShadowNode
 
   @ReactProp(name = ViewProps.ACCESSIBILITY_LABELLED_BY)
   public void setAccessibilityLabelledBy(@NonNull T view, @Nullable Dynamic nativeId) {
-    if (nativeId.isNull()) {
+    if (nativeId == null || nativeId.isNull()) {
+      view.setTag(R.id.labelled_by, null);
       return;
     }
     if (nativeId.getType() == ReadableType.String) {
@@ -317,7 +318,8 @@ public abstract class BaseViewManager<T extends View, C extends LayoutShadowNode
     } else if (nativeId.getType() == ReadableType.Array) {
       // On Android, this takes a single View as labeledBy. If an array is specified, set the first
       // element in the tag.
-      view.setTag(R.id.labelled_by, nativeId.asArray().getString(0));
+      ReadableArray array = nativeId.asArray();
+      view.setTag(R.id.labelled_by, array.size() > 0 ? array.getString(0) : null);
     }
   }
 
