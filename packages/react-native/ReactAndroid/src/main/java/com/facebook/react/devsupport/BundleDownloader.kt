@@ -243,7 +243,7 @@ public class BundleDownloader public constructor(private val client: OkHttpClien
 
     @Throws(IOException::class)
     override fun onChunkHeader(headers: Map<String, String>): BufferedSink? {
-      if (headers["Content-Type"] != "application/javascript") return null
+      if (!isJsBundleChunk(headers)) return null
       val effectiveStatus = effectiveStatus(headers)
       if (effectiveStatus != 200) return null
       // Stream the JS bundle straight to disk — never materialize in heap.
@@ -265,8 +265,8 @@ public class BundleDownloader public constructor(private val client: OkHttpClien
         finalizeStreamedBundle(headers)
         return
       }
-      when (headers["Content-Type"]) {
-        "application/javascript" -> {
+      when {
+        isJsBundleChunk(headers) -> {
           // Bundle returned with an error status — it was buffered so we can surface a useful
           // diagnostic to the developer.
           val buffered = body ?: Buffer()
@@ -280,8 +280,12 @@ public class BundleDownloader public constructor(private val client: OkHttpClien
               callback,
           )
         }
-        "application/json" -> dispatchProgressJson(body)
-        else -> Unit // Unknown chunk type; ignore as before.
+        isProgressChunk(headers) -> dispatchProgressJson(body)
+        else -> {
+          // Unknown chunk type. Log so a future Metro change is visible in logcat instead of
+          // silently stranding the dev loading view at 99%.
+          FLog.w(TAG, "Ignoring multipart chunk with unrecognized Content-Type: ${headers["Content-Type"]}")
+        }
       }
     }
 
@@ -339,6 +343,20 @@ public class BundleDownloader public constructor(private val client: OkHttpClien
 
     private fun effectiveStatus(headers: Map<String, String>): Int =
         headers["X-Http-Status"]?.toIntOrNull() ?: outerStatus
+
+    /**
+     * Extract the media type (the part before `;`) from a Content-Type header, lower-cased.
+     * Metro sends e.g. `application/javascript; charset=UTF-8`, so a bare-string equality
+     * check would miss the bundle chunk and leave the dev loading view stranded.
+     */
+    private fun mediaType(headers: Map<String, String>): String? =
+        headers["Content-Type"]?.substringBefore(';')?.trim()?.lowercase()
+
+    private fun isJsBundleChunk(headers: Map<String, String>): Boolean =
+        mediaType(headers) == "application/javascript"
+
+    private fun isProgressChunk(headers: Map<String, String>): Boolean =
+        mediaType(headers) == "application/json"
   }
 
   @Throws(IOException::class)

@@ -42,9 +42,11 @@ internal class LargeMultipartSource(
   // NB: the reader's delimiter is "\r\n--<boundary>\r\n", so the preamble must end with CRLF.
   // A bare CRLF is the minimal valid preamble.
   private val preamble: ByteArray = "\r\n".toByteArray(Charsets.UTF_8)
+  // Note: matches what Metro actually sends. The `charset=UTF-8` parameter exists to catch
+  // any future regression to bare-string Content-Type matching in BundleDownloader.
   private val headers: ByteArray =
       ("--$boundary\r\n" +
-              "Content-Type: application/javascript\r\n" +
+              "Content-Type: application/javascript; charset=UTF-8\r\n" +
               "Content-Length: $payloadBytes\r\n" +
               "\r\n")
           .toByteArray(Charsets.UTF_8)

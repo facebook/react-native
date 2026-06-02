@@ -102,7 +102,8 @@ class MultipartStreamReaderPerfTest {
     // and surfaced via onChunkComplete.
     assertThat(success).isTrue
     assertThat(discardingSink.bytesWritten).isEqualTo(payloadBytes)
-    assertThat(receivedHeaders["Content-Type"]).isEqualTo("application/javascript")
+    assertThat(receivedHeaders["Content-Type"])
+        .isEqualTo("application/javascript; charset=UTF-8")
     assertThat(bufferDeliveredViaComplete)
         .`as`("Body must be streamed to the sink, not delivered as a Buffer")
         .isFalse
