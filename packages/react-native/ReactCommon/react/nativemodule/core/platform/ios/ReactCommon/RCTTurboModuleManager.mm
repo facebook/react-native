@@ -161,10 +161,12 @@ bool isTurboModuleClass(Class cls)
   return [cls conformsToProtocol:@protocol(RCTTurboModule)];
 }
 
+#ifndef RCT_REMOVE_LEGACY_MODULE_INTEROP
 bool isTurboModuleInstance(id module)
 {
   return isTurboModuleClass([module class]);
 }
+#endif // RCT_REMOVE_LEGACY_MODULE_INTEROP
 
 struct ModuleQueuePair {
   id<RCTBridgeModule> module;
@@ -236,6 +238,7 @@ Class getFallbackClassFromName(const char *name)
     _sharedModuleQueue = dispatch_queue_create("com.meta.react.turbomodulemanager.queue", DISPATCH_QUEUE_SERIAL);
     _devMenuConfigurationDecorator = devMenuConfigurationDecorator;
 
+#ifndef RCT_REMOVE_LEGACY_MODULE_INTEROP
     if (RCTTurboModuleInteropEnabled()) {
       // TODO(T174674274): Implement lazy loading of legacy modules in the new architecture.
       NSMutableDictionary<NSString *, id<RCTBridgeModule>> *legacyInitializedModules = [NSMutableDictionary new];
@@ -257,6 +260,7 @@ Class getFallbackClassFromName(const char *name)
       }
       _legacyEagerlyRegisteredModuleClasses = legacyEagerlyRegisteredModuleClasses;
     }
+#endif // RCT_REMOVE_LEGACY_MODULE_INTEROP
 
     [[NSNotificationCenter defaultCenter] addObserver:self
                                              selector:@selector(bridgeWillInvalidateModules:)
@@ -418,6 +422,7 @@ Class getFallbackClassFromName(const char *name)
   return nullptr;
 }
 
+#ifndef RCT_REMOVE_LEGACY_MODULE_INTEROP
 - (std::shared_ptr<TurboModule>)provideLegacyModule:(const char *)moduleName
 {
   auto legacyModuleLookup = _legacyModuleCache.find(moduleName);
@@ -465,6 +470,7 @@ Class getFallbackClassFromName(const char *name)
   _legacyModuleCache.insert({moduleName, turboModule});
   return turboModule;
 }
+#endif // RCT_REMOVE_LEGACY_MODULE_INTEROP
 
 #pragma mark - Private Methods
 
@@ -492,9 +498,11 @@ Class getFallbackClassFromName(const char *name)
     moduleProvider = [_delegate getModuleProvider:moduleName];
   }
 
+#ifndef RCT_REMOVE_LEGACY_MODULE_INTEROP
   if (RCTTurboModuleInteropEnabled() && ![self _isTurboModule:moduleName] && !moduleProvider) {
     return nil;
   }
+#endif // RCT_REMOVE_LEGACY_MODULE_INTEROP
 
   if (moduleProvider) {
     if ([moduleProvider conformsToProtocol:@protocol(RCTTurboModule)]) {
@@ -631,9 +639,11 @@ Class getFallbackClassFromName(const char *name)
 
 - (BOOL)_shouldCreateObjCModule:(Class)moduleClass
 {
+#ifndef RCT_REMOVE_LEGACY_MODULE_INTEROP
   if (RCTTurboModuleInteropEnabled()) {
     return [moduleClass conformsToProtocol:@protocol(RCTBridgeModule)];
   }
+#endif // RCT_REMOVE_LEGACY_MODULE_INTEROP
 
   return [moduleClass conformsToProtocol:@protocol(RCTTurboModule)];
 }
@@ -946,6 +956,7 @@ Class getFallbackClassFromName(const char *name)
     return turboModule;
   };
 
+#ifndef RCT_REMOVE_LEGACY_MODULE_INTEROP
   if (RCTTurboModuleInteropEnabled()) {
     auto legacyModuleProvider =
         [self](jsi::Runtime & /*runtime*/, const std::string &name) -> std::shared_ptr<react::TurboModule> {
@@ -972,6 +983,9 @@ Class getFallbackClassFromName(const char *name)
   } else {
     TurboModuleBinding::install(runtime, std::move(turboModuleProvider));
   }
+#else
+  TurboModuleBinding::install(runtime, std::move(turboModuleProvider));
+#endif // RCT_REMOVE_LEGACY_MODULE_INTEROP
 }
 
 #pragma mark RCTTurboModuleRegistry

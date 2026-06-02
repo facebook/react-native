@@ -199,6 +199,7 @@ void RCTEnableTurboModule(BOOL enabled)
   // The new Architecture is enabled by default and we are ignoring changes to the TurboModule system.
 }
 
+#ifndef RCT_REMOVE_LEGACY_MODULE_INTEROP
 static BOOL turboModuleInteropEnabled = NO;
 BOOL RCTTurboModuleInteropEnabled(void)
 {
@@ -208,6 +209,7 @@ void RCTEnableTurboModuleInterop(BOOL enabled)
 {
   turboModuleInteropEnabled = enabled;
 }
+#endif // RCT_REMOVE_LEGACY_MODULE_INTEROP
 
 static BOOL fabricInteropLayerEnabled = YES;
 BOOL RCTFabricInteropLayerEnabled()

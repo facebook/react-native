@@ -7,6 +7,8 @@
 
 #pragma once
 
+#ifndef RCT_REMOVE_LEGACY_MODULE_INTEROP
+
 #import <string>
 #import <vector>
 
@@ -88,3 +90,5 @@ class JSI_EXPORT ObjCInteropTurboModule : public ObjCTurboModule {
 };
 
 } // namespace facebook::react
+
+#endif // RCT_REMOVE_LEGACY_MODULE_INTEROP

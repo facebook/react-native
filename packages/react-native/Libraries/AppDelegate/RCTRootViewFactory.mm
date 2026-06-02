@@ -152,7 +152,9 @@
                         devMenuConfiguration:(RCTDevMenuConfiguration *)devMenuConfiguration
 {
   // Enable TurboModule interop by default in Bridgeless mode
+#ifndef RCT_REMOVE_LEGACY_MODULE_INTEROP
   RCTEnableTurboModuleInterop(YES);
+#endif // RCT_REMOVE_LEGACY_MODULE_INTEROP
 
   [self createReactHostIfNeeded:launchOptions
             bundleConfiguration:bundleConfiguration
