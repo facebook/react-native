@@ -8,6 +8,7 @@
  * @format
  */
 
+import type {HostInstance} from '../../../src/private/types/HostInstance';
 import type {ViewStyleProp} from '../../StyleSheet/StyleSheet';
 import type {
   GestureResponderEvent,
@@ -26,6 +27,8 @@ import useAndroidRippleForView, {
 } from './useAndroidRippleForView';
 import * as React from 'react';
 import {memo, useMemo, useRef, useState} from 'react';
+
+export type PressableInstance = HostInstance;
 
 export type {PressableAndroidRippleConfig};
 

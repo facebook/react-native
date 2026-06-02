@@ -136,3 +136,5 @@ export interface DrawerLayoutAndroidMethods {
   ): void;
   setNativeProps(nativeProps: Object): void;
 }
+
+export type DrawerLayoutAndroidInstance = DrawerLayoutAndroidMethods;

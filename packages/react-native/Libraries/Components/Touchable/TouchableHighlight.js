@@ -8,6 +8,7 @@
  * @format
  */
 
+import type {HostInstance} from '../../../src/private/types/HostInstance';
 import type {ColorValue} from '../../StyleSheet/StyleSheet';
 import type {AccessibilityState} from '../View/ViewAccessibility';
 import type {TouchableWithoutFeedbackProps} from './TouchableWithoutFeedback';
@@ -22,6 +23,8 @@ import Platform from '../../Utilities/Platform';
 import warnOnce from '../../Utilities/warnOnce';
 import * as React from 'react';
 import {cloneElement} from 'react';
+
+export type TouchableHighlightInstance = HostInstance;
 
 type AndroidProps = Readonly<{
   nextFocusDown?: ?number,

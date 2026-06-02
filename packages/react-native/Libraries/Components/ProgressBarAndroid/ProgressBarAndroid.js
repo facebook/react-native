@@ -10,10 +10,13 @@
 
 'use strict';
 
+import type {HostInstance} from '../../../src/private/types/HostInstance';
 import typeof ProgressBarAndroidNativeComponentType from './ProgressBarAndroidNativeComponent';
 import type {ProgressBarAndroidProps} from './ProgressBarAndroidTypes';
 
 import Platform from '../../Utilities/Platform';
+
+export type ProgressBarAndroidInstance = HostInstance;
 
 export type {ProgressBarAndroidProps};
 
