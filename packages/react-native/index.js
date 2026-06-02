@@ -275,10 +275,6 @@ module.exports = {
   get NativeComponentRegistry() {
     return require('./Libraries/NativeComponent/NativeComponentRegistry');
   },
-  get NativeDialogManagerAndroid() {
-    return require('./Libraries/NativeModules/specs/NativeDialogManagerAndroid')
-      .default;
-  },
   get NativeEventEmitter() {
     return require('./Libraries/EventEmitter/NativeEventEmitter').default;
   },
