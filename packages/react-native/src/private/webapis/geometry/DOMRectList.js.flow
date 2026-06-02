@@ -25,3 +25,5 @@ declare export default class DOMRectList
 declare export function createDOMRectList(
   domRects: ReadonlyArray<DOMRectReadOnly>,
 ): DOMRectList;
+
+declare export var DOMRectList_public: typeof DOMRectList;

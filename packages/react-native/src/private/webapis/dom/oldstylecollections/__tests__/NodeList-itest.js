@@ -8,6 +8,8 @@
  * @format
  */
 
+import '@react-native/fantom/src/setUpDefaultReactNativeEnvironment';
+
 import {createNodeList} from '../NodeList';
 
 describe('NodeList', () => {
@@ -46,15 +48,23 @@ describe('NodeList', () => {
 
     const collection = createNodeList(['a', 'b', 'c']);
 
-    expect(() => {
+    let writeIndexError;
+    try {
       collection[0] = 'replacement';
-    }).toThrow(TypeError);
+    } catch (e) {
+      writeIndexError = e;
+    }
+    expect(writeIndexError).toBeInstanceOf(TypeError);
     expect(collection[0]).toBe('a');
 
-    expect(() => {
+    let writeLengthError;
+    try {
       // $FlowExpectedError[cannot-write]
       collection.length = 100;
-    }).toThrow(TypeError);
+    } catch (e) {
+      writeLengthError = e;
+    }
+    expect(writeLengthError).toBeInstanceOf(TypeError);
     expect(collection.length).toBe(3);
   });
 
@@ -83,7 +93,7 @@ describe('NodeList', () => {
       expect(keys.next()).toEqual({value: 0, done: false});
       expect(keys.next()).toEqual({value: 1, done: false});
       expect(keys.next()).toEqual({value: 2, done: false});
-      expect(keys.next()).toEqual({done: true});
+      expect(keys.next()).toEqual({value: undefined, done: true});
 
       let i = 0;
       for (const key of collection.keys()) {
@@ -101,7 +111,7 @@ describe('NodeList', () => {
       expect(values.next()).toEqual({value: 'a', done: false});
       expect(values.next()).toEqual({value: 'b', done: false});
       expect(values.next()).toEqual({value: 'c', done: false});
-      expect(values.next()).toEqual({done: true});
+      expect(values.next()).toEqual({value: undefined, done: true});
 
       let i = 0;
       for (const value of collection.values()) {
@@ -119,7 +129,7 @@ describe('NodeList', () => {
       expect(entries.next()).toEqual({value: [0, 'a'], done: false});
       expect(entries.next()).toEqual({value: [1, 'b'], done: false});
       expect(entries.next()).toEqual({value: [2, 'c'], done: false});
-      expect(entries.next()).toEqual({done: true});
+      expect(entries.next()).toEqual({value: undefined, done: true});
 
       let i = 0;
       for (const entry of collection.entries()) {
@@ -155,6 +165,14 @@ describe('NodeList', () => {
         expect(this).toBe(explicitThis);
         i++;
       }, explicitThis);
+    });
+  });
+
+  describe('global constructor', () => {
+    it('throws when called', () => {
+      expect(() => new NodeList()).toThrow(
+        "Failed to construct 'NodeList': Illegal constructor",
+      );
     });
   });
 });

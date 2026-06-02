@@ -108,3 +108,13 @@ setPlatformObject(NodeList);
 export function createNodeList<T>(elements: ReadonlyArray<T>): NodeList<T> {
   return new NodeList(elements);
 }
+
+export const NodeList_public: typeof NodeList =
+  /* eslint-disable no-shadow */
+  // $FlowExpectedError[incompatible-type]
+  function NodeList() {
+    throw new TypeError("Failed to construct 'NodeList': Illegal constructor");
+  };
+
+// $FlowExpectedError[prop-missing]
+NodeList_public.prototype = NodeList.prototype;

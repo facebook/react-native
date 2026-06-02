@@ -8,6 +8,8 @@
  * @format
  */
 
+import '@react-native/fantom/src/setUpDefaultReactNativeEnvironment';
+
 import {createHTMLCollection} from '../HTMLCollection';
 
 describe('HTMLCollection', () => {
@@ -37,15 +39,23 @@ describe('HTMLCollection', () => {
 
     const collection = createHTMLCollection(['a', 'b', 'c']);
 
-    expect(() => {
+    let writeIndexError;
+    try {
       collection[0] = 'replacement';
-    }).toThrow(TypeError);
+    } catch (e) {
+      writeIndexError = e;
+    }
+    expect(writeIndexError).toBeInstanceOf(TypeError);
     expect(collection[0]).toBe('a');
 
-    expect(() => {
+    let writeLengthError;
+    try {
       // $FlowExpectedError[cannot-write]
       collection.length = 100;
-    }).toThrow(TypeError);
+    } catch (e) {
+      writeLengthError = e;
+    }
+    expect(writeLengthError).toBeInstanceOf(TypeError);
     expect(collection.length).toBe(3);
   });
 
@@ -74,6 +84,14 @@ describe('HTMLCollection', () => {
       expect(collection.item(1)).toBe('b');
       expect(collection.item(2)).toBe('c');
       expect(collection.item(3)).toBe(null);
+    });
+  });
+
+  describe('global constructor', () => {
+    it('throws when called', () => {
+      expect(() => new HTMLCollection()).toThrow(
+        "Failed to construct 'HTMLCollection': Illegal constructor",
+      );
     });
   });
 });

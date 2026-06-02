@@ -8,6 +8,8 @@
  * @format
  */
 
+import '@react-native/fantom/src/setUpDefaultReactNativeEnvironment';
+
 import {createDOMRectList} from '../DOMRectList';
 import DOMRectReadOnly from '../DOMRectReadOnly';
 
@@ -42,15 +44,23 @@ describe('DOMRectList', () => {
 
     const collection = createDOMRectList([domRectA, domRectB, domRectC]);
 
-    expect(() => {
+    let writeIndexError;
+    try {
       collection[0] = new DOMRectReadOnly();
-    }).toThrow(TypeError);
+    } catch (e) {
+      writeIndexError = e;
+    }
+    expect(writeIndexError).toBeInstanceOf(TypeError);
     expect(collection[0]).toBe(domRectA);
 
-    expect(() => {
+    let writeLengthError;
+    try {
       // $FlowExpectedError[cannot-write]
       collection.length = 100;
-    }).toThrow(TypeError);
+    } catch (e) {
+      writeLengthError = e;
+    }
+    expect(writeLengthError).toBeInstanceOf(TypeError);
     expect(collection.length).toBe(3);
   });
 
@@ -79,6 +89,14 @@ describe('DOMRectList', () => {
       expect(collection.item(1)).toBe(domRectB);
       expect(collection.item(2)).toBe(domRectC);
       expect(collection.item(3)).toBe(null);
+    });
+  });
+
+  describe('global constructor', () => {
+    it('throws when called', () => {
+      expect(() => new DOMRectList()).toThrow(
+        "Failed to construct 'DOMRectList': Illegal constructor",
+      );
     });
   });
 });

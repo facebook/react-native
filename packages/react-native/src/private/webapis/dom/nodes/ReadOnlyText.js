@@ -28,3 +28,14 @@ export default class ReadOnlyText extends ReadOnlyCharacterData {
     return ReadOnlyNode.TEXT_NODE;
   }
 }
+
+export const ReadOnlyText_public: typeof ReadOnlyText =
+  // $FlowExpectedError[incompatible-type]
+  function Text() {
+    throw new TypeError(
+      "Failed to construct 'Text': Nodes cannot be imperatively created in React Native",
+    );
+  };
+
+// $FlowExpectedError[prop-missing]
+ReadOnlyText_public.prototype = ReadOnlyText.prototype;

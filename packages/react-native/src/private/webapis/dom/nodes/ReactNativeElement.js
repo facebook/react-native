@@ -293,3 +293,14 @@ function replaceConstructorWithoutSuper(
 export default replaceConstructorWithoutSuper(
   ReactNativeElement,
 ) as typeof ReactNativeElement;
+
+export const ReactNativeElement_public: typeof ReactNativeElement =
+  // $FlowExpectedError[incompatible-type]
+  function HTMLElement() {
+    throw new TypeError(
+      "Failed to construct 'HTMLElement': Nodes cannot be imperatively created in React Native",
+    );
+  };
+
+// $FlowExpectedError[prop-missing]
+ReactNativeElement_public.prototype = ReactNativeElement.prototype;
