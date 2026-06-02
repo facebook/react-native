@@ -561,4 +561,6 @@ class StatusBar extends React.Component<StatusBarProps> {
   }
 }
 
+export type StatusBarInstance = StatusBar;
+
 export default StatusBar;

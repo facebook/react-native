@@ -31,6 +31,8 @@ import resolveAssetSource from './resolveAssetSource';
 import * as React from 'react';
 import {use} from 'react';
 
+export type ImageInstance = HostInstance;
+
 let _requestId = 1;
 function generateRequestId() {
   return _requestId++;

@@ -8,11 +8,14 @@
  * @format
  */
 
+import type {HostInstance} from '../../../src/private/types/HostInstance';
 import type {ProgressBarAndroidProps} from './ProgressBarAndroidTypes';
 
 import ProgressBarAndroidNativeComponent from './ProgressBarAndroidNativeComponent';
 
 const React = require('react');
+
+export type ProgressBarAndroidInstance = HostInstance;
 
 export type {ProgressBarAndroidProps};
 

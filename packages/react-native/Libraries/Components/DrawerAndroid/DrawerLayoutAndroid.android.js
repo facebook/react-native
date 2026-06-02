@@ -302,4 +302,6 @@ const styles = StyleSheet.create({
   },
 });
 
+export type DrawerLayoutAndroidInstance = DrawerLayoutAndroid;
+
 export default DrawerLayoutAndroid as $FlowFixMe;

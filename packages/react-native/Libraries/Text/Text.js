@@ -8,6 +8,7 @@
  * @format
  */
 
+import type {HostInstance} from '../../src/private/types/HostInstance';
 import type {TextStyleProp} from '../StyleSheet/StyleSheet';
 import type {____TextStyle_Internal as TextStyleInternal} from '../StyleSheet/StyleSheetTypes';
 import type {GestureResponderEvent} from '../Types/CoreEventTypes';
@@ -29,6 +30,8 @@ import {
 } from './TextNativeComponent';
 import * as React from 'react';
 import {useContext, useMemo, useState} from 'react';
+
+export type TextInstance = HostInstance;
 
 export type {TextProps} from './TextProps';
 

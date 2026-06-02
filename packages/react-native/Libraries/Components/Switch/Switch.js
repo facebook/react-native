@@ -8,6 +8,7 @@
  * @format
  */
 
+import type {HostInstance} from '../../../src/private/types/HostInstance';
 import type {ColorValue} from '../../StyleSheet/StyleSheet';
 import type {NativeSyntheticEvent} from '../../Types/CoreEventTypes';
 import type {AccessibilityState} from '../View/ViewAccessibility';
@@ -24,6 +25,8 @@ import SwitchNativeComponent, {
 } from './SwitchNativeComponent';
 import * as React from 'react';
 import {useLayoutEffect, useRef, useState} from 'react';
+
+export type SwitchInstance = HostInstance;
 
 export type SwitchPropsIOS = {
   /**

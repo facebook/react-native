@@ -30,6 +30,8 @@ import NativeImageLoaderIOS from './NativeImageLoaderIOS';
 import resolveAssetSource from './resolveAssetSource';
 import * as React from 'react';
 
+export type ImageInstance = HostInstance;
+
 function getSize(
   uri: string,
   success?: (width: number, height: number) => void,
