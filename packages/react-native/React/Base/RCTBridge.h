@@ -50,9 +50,11 @@ NSMutableArray<NSString *> *getModulesLoadedWithOldArch(void);
 BOOL RCTTurboModuleEnabled(void);
 void RCTEnableTurboModule(BOOL enabled);
 
+#ifndef RCT_REMOVE_LEGACY_MODULE_INTEROP
 // Turn on TurboModule interop
 BOOL RCTTurboModuleInteropEnabled(void);
 void RCTEnableTurboModuleInterop(BOOL enabled);
+#endif // RCT_REMOVE_LEGACY_MODULE_INTEROP
 
 // Turn on the fabric interop layer
 BOOL RCTFabricInteropLayerEnabled(void);
