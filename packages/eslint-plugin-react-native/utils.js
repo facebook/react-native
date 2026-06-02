@@ -327,10 +327,6 @@ const publicAPIMapping = {
     default: 'LogBox',
     types: ['ExtendedExceptionData', 'IgnorePattern', 'LogData'],
   },
-  'Libraries/NativeModules/specs/NativeDialogManagerAndroid': {
-    default: 'NativeDialogManagerAndroid',
-    types: null,
-  },
   'Libraries/EventEmitter/NativeEventEmitter': {
     default: 'NativeEventEmitter',
     types: [
