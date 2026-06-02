@@ -4227,6 +4227,7 @@ public final class com/facebook/react/uimanager/UIManagerHelper {
 }
 
 public class com/facebook/react/uimanager/UIManagerModule : com/facebook/react/bridge/ReactContextBaseJavaModule, com/facebook/react/bridge/LifecycleEventListener, com/facebook/react/bridge/UIManager {
+	public static final field Companion Lcom/facebook/react/uimanager/UIManagerModule$Companion;
 	public static final field NAME Ljava/lang/String;
 	public static final field TAG Ljava/lang/String;
 	public fun <init> (Lcom/facebook/react/bridge/ReactApplicationContext;Lcom/facebook/react/uimanager/ViewManagerResolver;I)V
@@ -4237,14 +4238,14 @@ public class com/facebook/react/uimanager/UIManagerModule : com/facebook/react/b
 	public fun addUIManagerEventListener (Lcom/facebook/react/bridge/UIManagerListener;)V
 	public fun clearJSResponder ()V
 	public fun configureNextLayoutAnimation (Lcom/facebook/react/bridge/ReadableMap;Lcom/facebook/react/bridge/Callback;Lcom/facebook/react/bridge/Callback;)V
-	public static fun createConstants (Ljava/util/List;Ljava/util/Map;Ljava/util/Map;)Ljava/util/Map;
+	public static final fun createConstants (Ljava/util/List;Ljava/util/Map;Ljava/util/Map;)Ljava/util/Map;
 	public fun createView (ILjava/lang/String;ILcom/facebook/react/bridge/ReadableMap;)V
 	public fun dispatchCommand (IILcom/facebook/react/bridge/ReadableArray;)V
 	public fun dispatchCommand (ILjava/lang/String;Lcom/facebook/react/bridge/ReadableArray;)V
 	public fun dispatchViewManagerCommand (ILcom/facebook/react/bridge/Dynamic;Lcom/facebook/react/bridge/ReadableArray;)V
 	public fun findSubviewIn (ILcom/facebook/react/bridge/ReadableArray;Lcom/facebook/react/bridge/Callback;)V
 	public fun getConstants ()Ljava/util/Map;
-	public static fun getConstantsForViewManager (Lcom/facebook/react/uimanager/ViewManager;Ljava/util/Map;)Lcom/facebook/react/bridge/WritableMap;
+	public static final fun getConstantsForViewManager (Lcom/facebook/react/uimanager/ViewManager;Ljava/util/Map;)Lcom/facebook/react/bridge/WritableMap;
 	public fun getConstantsForViewManager (Ljava/lang/String;)Lcom/facebook/react/bridge/WritableMap;
 	public fun getDefaultEventTypes ()Lcom/facebook/react/bridge/WritableMap;
 	public fun getDirectEventNamesResolver ()Lcom/facebook/react/uimanager/UIManagerModule$CustomEventNamesResolver;
@@ -4286,6 +4287,11 @@ public class com/facebook/react/uimanager/UIManagerModule : com/facebook/react/b
 	public fun updateRootLayoutSpecs (IIIII)V
 	public fun updateView (ILjava/lang/String;Lcom/facebook/react/bridge/ReadableMap;)V
 	public fun viewIsDescendantOf (IILcom/facebook/react/bridge/Callback;)V
+}
+
+public final class com/facebook/react/uimanager/UIManagerModule$Companion {
+	public final fun createConstants (Ljava/util/List;Ljava/util/Map;Ljava/util/Map;)Ljava/util/Map;
+	public final fun getConstantsForViewManager (Lcom/facebook/react/uimanager/ViewManager;Ljava/util/Map;)Lcom/facebook/react/bridge/WritableMap;
 }
 
 public abstract interface class com/facebook/react/uimanager/UIManagerModule$CustomEventNamesResolver {
