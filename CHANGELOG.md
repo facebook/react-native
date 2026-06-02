@@ -1,5 +1,111 @@
 # Changelog
 
+## v0.86.0-rc.3
+
+### Breaking
+
+
+
+#### Android specific
+
+
+
+#### iOS specific
+
+
+
+### Added
+
+
+
+#### Android specific
+
+
+
+#### iOS specific
+
+
+
+### Changed
+
+
+
+#### Android specific
+
+
+
+#### iOS specific
+
+
+
+### Deprecated
+
+
+
+#### Android specific
+
+
+
+#### iOS specific
+
+
+
+### Removed
+
+
+
+#### Android specific
+
+
+
+#### iOS specific
+
+
+
+### Fixed
+
+
+
+#### Android specific
+
+
+
+#### iOS specific
+
+
+
+### Security
+
+
+
+#### Android specific
+
+
+
+#### iOS specific
+
+
+
+### Unknown
+
+- Release 0.86.0-rc.3 ([012be3bbbc](https://github.com/facebook/react-native/commit/012be3bbbca8fac385235979eda690075447ccc8) by [@react-native-bot](https://github.com/react-native-bot))
+- Bump Hermes V1 version to 250829098.0.14 ([cd5b3b5fa5](https://github.com/facebook/react-native/commit/cd5b3b5fa576366723c4f73b98736c033856ac03) by [@fabriziocucci](https://github.com/fabriziocucci))
+- Bump Podfile.lock ([72cbd40e1b](https://github.com/facebook/react-native/commit/72cbd40e1bd4e61f31926096fe6119fbc940b27b) by [@react-native-bot](https://github.com/react-native-bot))
+- Release 0.86.0-rc.2 ([19da7bb3b0](https://github.com/facebook/react-native/commit/19da7bb3b0baba8ef49568ec4841c21e9ad8d093) by [@react-native-bot](https://github.com/react-native-bot))
+
+#### Android Unknown
+
+
+
+#### iOS Unknown
+
+
+
+#### Failed to parse
+
+
+
+
 ## v0.86.0-rc.2
 
 ### Added
