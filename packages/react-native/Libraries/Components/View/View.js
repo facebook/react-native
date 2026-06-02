@@ -8,12 +8,15 @@
  * @format
  */
 
+import type {HostInstance} from '../../../src/private/types/HostInstance';
 import type {ViewProps} from './ViewPropTypes';
 
 import TextAncestorContext from '../../Text/TextAncestorContext';
 import ViewNativeComponent from './ViewNativeComponent';
 import * as React from 'react';
 import {use} from 'react';
+
+export type ViewInstance = HostInstance;
 
 /**
  * The most fundamental component for building a UI, View is a container that

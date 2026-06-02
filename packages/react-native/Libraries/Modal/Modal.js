@@ -36,7 +36,10 @@ type ModalEventDefinitions = {
   modalDismissed: [{modalID: number}],
 };
 
-export type PublicModalInstance = HostInstance;
+export type ModalInstance = HostInstance;
+
+/** @deprecated Use ModalInstance instead */
+export type PublicModalInstance = ModalInstance;
 
 const ModalEventEmitter =
   Platform.OS === 'ios' && NativeModalManager != null

@@ -286,6 +286,8 @@ const NativeTouchable:
 
 type ButtonRef = React.ElementRef<typeof NativeTouchable>;
 
+export type ButtonInstance = ButtonRef;
+
 const Button: component(
   ref?: React.RefSetter<ButtonRef>,
   ...props: ButtonProps

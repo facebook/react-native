@@ -43,32 +43,34 @@ export type MeasureLayoutOnSuccessCallback = (
  * approach of surfacing W3C-compatible APIs for direct manipulation of native
  * views.
  *
- * Obtain a `HostInstance` via a ref attached to a host component:
+ * @remarks
+ * **Prefer component-specific `*Instance` types for refs.**
+ * For most use cases, import the dedicated instance type for the component
+ * you're working with rather than using `HostInstance` directly:
  *
  * ```tsx
- * const ref = useRef<HostInstance>(null);
- * <View ref={ref} />
+ * import type { ViewInstance, TextInputInstance } from 'react-native';
+ *
+ * const viewRef = useRef<ViewInstance>(null);
+ * const inputRef = useRef<TextInputInstance>(null);
  * ```
  *
- * You can then call DOM-like methods on the instance — for example, to measure
- * layout or imperatively focus a view:
+ * `HostInstance` is the correct choice for **library authors** writing
+ * component-agnostic utilities that accept any native element ref. For
+ * application code targeting a specific component, `HostInstance` silently
+ * loses access to component-specific imperative methods (e.g.
+ * `TextInputInstance.clear()`, `ScrollViewInstance.scrollTo()`).
  *
- * ```ts
- * ref.current?.measure((x, y, width, height) => { ... });
- * ref.current?.focus();
- * ```
+ * **Only available on host components.** Composite components — including most
+ * app-defined components — do not expose a `HostInstance` unless they forward
+ * a ref to an underlying host component via `React.forwardRef`.
  *
- * @remarks
- * - Only available on **host components** (components backed by a native view).
- *   Composite components — including most app-defined components — do not
- *   expose a `HostInstance` unless they forward a ref to an underlying host
- *   component via `forwardRef`.
- * - Prefer `setState` and controlled props over direct manipulation where
- *   possible. Direct manipulation bypasses React's reconciliation and can cause
- *   subtle conflicts if the same property is also managed via props.
- * - `setNativeProps` is the primary escape hatch for performance-sensitive
- *   cases, such as continuous animations, where triggering a full re-render
- *   would introduce unacceptable overhead.
+ * **Avoid direct manipulation where possible.** Prefer `setState` and
+ * controlled props. Direct manipulation bypasses React's reconciliation and
+ * can cause subtle conflicts if the same property is also managed via props.
+ * The primary valid use case is performance-sensitive scenarios such as
+ * continuous animations, where triggering a full re-render on every frame
+ * would introduce unacceptable overhead.
  *
  * @see {@link https://reactnative.dev/docs/the-new-architecture/direct-manipulation-new-architecture | Direct Manipulation}
  */
