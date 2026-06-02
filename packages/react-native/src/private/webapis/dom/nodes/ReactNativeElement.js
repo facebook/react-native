@@ -19,7 +19,6 @@ import type {
   MeasureInWindowOnSuccessCallback,
   MeasureLayoutOnSuccessCallback,
   MeasureOnSuccessCallback,
-  NativeMethods,
 } from '../../../types/HostInstance';
 import type Event from '../events/Event';
 import type {InstanceHandle} from './internals/NodeInternals';
@@ -68,7 +67,7 @@ const noop = () => {};
 // we then discard to create a new one.
 
 /** @build-types protected-constructor */
-class ReactNativeElement extends ReadOnlyElement implements NativeMethods {
+class ReactNativeElement extends ReadOnlyElement {
   // These need to be accessible from `ReactFabricPublicInstanceUtils`.
   __nativeTag: number;
   __internalInstanceHandle: InstanceHandle;
@@ -150,6 +149,9 @@ class ReactNativeElement extends ReadOnlyElement implements NativeMethods {
    * React Native compatibility methods
    */
 
+  /**
+   * Removes focus from an input or view. This is the opposite of `focus()`.
+   */
   blur(): void {
     if (TextInputState.isTextInput(this)) {
       TextInputState.blurTextInput(this);
@@ -158,6 +160,10 @@ class ReactNativeElement extends ReadOnlyElement implements NativeMethods {
     }
   }
 
+  /**
+   * Requests focus for the given input or view. The exact behavior triggered
+   * will depend on the platform and type of view.
+   */
   focus() {
     if (TextInputState.isTextInput(this)) {
       TextInputState.focusTextInput(this);
@@ -166,6 +172,23 @@ class ReactNativeElement extends ReadOnlyElement implements NativeMethods {
     }
   }
 
+  /**
+   * Determines the location on screen, width, and height of the given view and
+   * returns the values via an async callback. If successful, the callback will
+   * be called with the following arguments:
+   *
+   *  - x
+   *  - y
+   *  - width
+   *  - height
+   *  - pageX
+   *  - pageY
+   *
+   * Note that these measurements are not available until after the rendering
+   * has been completed in native. If you need the measurements as soon as
+   * possible, consider using the [`onLayout`
+   * prop](docs/view.html#onlayout) instead.
+   */
   measure(callback: MeasureOnSuccessCallback) {
     const node = getNativeElementReference(this);
     if (node != null) {
@@ -173,6 +196,21 @@ class ReactNativeElement extends ReadOnlyElement implements NativeMethods {
     }
   }
 
+  /**
+   * Determines the location of the given view in the window and returns the
+   * values via an async callback. If the React root view is embedded in
+   * another native view, this will give you the absolute coordinates. If
+   * successful, the callback will be called with the following
+   * arguments:
+   *
+   *  - x
+   *  - y
+   *  - width
+   *  - height
+   *
+   * Note that these measurements are not available until after the rendering
+   * has been completed in native.
+   */
   measureInWindow(callback: MeasureInWindowOnSuccessCallback) {
     const node = getNativeElementReference(this);
     if (node != null) {
@@ -180,6 +218,12 @@ class ReactNativeElement extends ReadOnlyElement implements NativeMethods {
     }
   }
 
+  /**
+   * Like [`measure()`](#measure), but measures the view relative an ancestor,
+   * specified as `relativeToNativeComponentRef`. This means that the returned x, y
+   * are relative to the origin x, y of the ancestor view.
+   * _Can also be called with a relativeNativeNodeHandle but is deprecated._
+   */
   measureLayout(
     relativeToNativeNode: number | HostInstance,
     onSuccess: MeasureLayoutOnSuccessCallback,
@@ -208,6 +252,12 @@ class ReactNativeElement extends ReadOnlyElement implements NativeMethods {
     }
   }
 
+  /**
+   * This function sends props straight to native. They will not participate in
+   * future diff process - this means that if you do not include them in the
+   * next render, they will remain active (see [Direct
+   * Manipulation](https://reactnative.dev/docs/the-new-architecture/direct-manipulation-new-architecture)).
+   */
   setNativeProps(nativeProps: {...}): void {
     if (__DEV__) {
       warnForStyleProps(nativeProps, this.__viewConfig.validAttributes);
