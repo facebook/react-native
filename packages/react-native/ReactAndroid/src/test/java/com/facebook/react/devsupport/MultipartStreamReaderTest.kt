@@ -200,9 +200,9 @@ class MultipartStreamReaderTest {
           override fun onChunkComplete(
               headers: Map<String, String>,
               body: BufferedSource,
-              done: Boolean,
+              isLastChunk: Boolean,
           ) {
-            super.onChunkComplete(headers, body, done)
+            super.onChunkComplete(headers, body, isLastChunk)
 
             // Lookup using canonical case should still work.
             assertThat(headers["Content-Type"]).isEqualTo("application/json")
