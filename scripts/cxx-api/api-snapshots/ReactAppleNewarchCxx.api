@@ -2596,13 +2596,6 @@ protocol RCTAnimationDriver : public NSObject {
   public virtual void stopAnimation();
 }
 
-protocol RCTArchConfiguratorProtocol {
-  public virtual BOOL bridgelessEnabled();
-  public virtual BOOL fabricEnabled();
-  public virtual BOOL newArchEnabled();
-  public virtual BOOL turboModuleEnabled();
-}
-
 protocol RCTAutoInsetsProtocol {
   public @property (assign) BOOL automaticallyAdjustContentInsets;
   public @property (assign) UIEdgeInsets contentInset;
@@ -2972,7 +2965,7 @@ protocol RCTPullToRefreshViewViewProtocol : public NSObject {
   public virtual void setNativeRefreshing:(BOOL refreshing);
 }
 
-protocol RCTReactNativeFactoryDelegate : public RCTBridgeDelegate, public RCTUIConfiguratorProtocol, public RCTHostDelegate, public RCTTurboModuleManagerDelegate, public RCTComponentViewFactoryComponentProvider, public RCTJSRuntimeConfiguratorProtocol, public RCTArchConfiguratorProtocol {
+protocol RCTReactNativeFactoryDelegate : public RCTBridgeDelegate, public RCTUIConfiguratorProtocol, public RCTHostDelegate, public RCTTurboModuleManagerDelegate, public RCTComponentViewFactoryComponentProvider, public RCTJSRuntimeConfiguratorProtocol {
   public @property (strong) id<RCTDependencyProvider> dependencyProvider;
   public virtual NSDictionary<NSString*, Class<RCTComponentViewProtocol>>* thirdPartyFabricComponents();
   public virtual NSURL* _Nullable bundleURL();

@@ -132,28 +132,6 @@ using namespace facebook::react;
   return [_delegate createJSRuntimeFactory];
 }
 
-#pragma mark - RCTArchConfiguratorProtocol
-
-- (BOOL)newArchEnabled
-{
-  return YES;
-}
-
-- (BOOL)fabricEnabled
-{
-  return YES;
-}
-
-- (BOOL)turboModuleEnabled
-{
-  return YES;
-}
-
-- (BOOL)bridgelessEnabled
-{
-  return YES;
-}
-
 #pragma mark - RCTTurboModuleManagerDelegate
 
 - (Class)getModuleClassFromName:(const char *)name

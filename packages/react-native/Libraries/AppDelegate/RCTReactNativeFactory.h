@@ -8,7 +8,6 @@
 #import <React/RCTBridgeDelegate.h>
 #import <React/RCTConvert.h>
 #import <UIKit/UIKit.h>
-#import "RCTArchConfiguratorProtocol.h"
 #import "RCTDependencyProvider.h"
 #import "RCTJSRuntimeConfiguratorProtocol.h"
 #import "RCTRootViewFactory.h"
@@ -39,8 +38,7 @@ typedef NS_ENUM(NSInteger, RCTReleaseLevel) { Canary, Experimental, Stable };
     RCTTurboModuleManagerDelegate,
     RCTComponentViewFactoryComponentProvider,
 #endif
-    RCTJSRuntimeConfiguratorProtocol,
-    RCTArchConfiguratorProtocol>
+    RCTJSRuntimeConfiguratorProtocol>
 
 /// Return the bundle URL for the main bundle.
 - (NSURL *__nullable)bundleURL;
