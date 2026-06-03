@@ -143,17 +143,7 @@ void NativeMutationObserver::notifyMutationObserversIfNecessary() {
 
   if (dispatchNotification) {
     TraceSection s("NativeMutationObserver::notifyObservers");
-    if (ReactNativeFeatureFlags::enableBridgelessArchitecture()) {
-      runtime_->queueMicrotask(notifyMutationObservers_.value());
-    } else {
-      jsInvoker_->invokeAsync([&](jsi::Runtime& runtime) {
-        // It's possible that the last observer was disconnected before we could
-        // dispatch this notification.
-        if (notifyMutationObservers_) {
-          notifyMutationObservers_.value().call(runtime);
-        }
-      });
-    }
+    runtime_->queueMicrotask(notifyMutationObservers_.value());
   }
 }
 

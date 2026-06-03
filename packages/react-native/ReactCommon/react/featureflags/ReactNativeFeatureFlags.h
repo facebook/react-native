@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<dcb1e3ba662f28194124dc63879f4fde>>
+ * @generated SignedSource<<4244b2b4e3e8f1c958811809c603ff0e>>
  */
 
 /**
@@ -45,7 +45,7 @@ class ReactNativeFeatureFlags {
   RN_EXPORT static bool commonTestFlag();
 
   /**
-   * Enable emitting of InteractionEntry live metrics to the debugger. Requires `enableBridgelessArchitecture`.
+   * Enable emitting of InteractionEntry live metrics to the debugger.
    */
   RN_EXPORT static bool cdpInteractionMetricsEnabled();
 
@@ -103,11 +103,6 @@ class ReactNativeFeatureFlags {
    * Enables various optimizations throughout the path of measuring text on Android.
    */
   RN_EXPORT static bool enableAndroidTextMeasurementOptimizations();
-
-  /**
-   * Feature flag to enable the new bridgeless architecture.
-   */
-  RN_EXPORT static bool enableBridgelessArchitecture();
 
   /**
    * Enable prop iterator setter-style construction of Props in C++ (this flag is not used in Java).
@@ -325,7 +320,7 @@ class ReactNativeFeatureFlags {
   RN_EXPORT static bool fuseboxFrameRecordingEnabled();
 
   /**
-   * Enable network inspection support in the React Native DevTools CDP backend. Requires `enableBridgelessArchitecture`. This flag is global and should not be changed across React Host lifetimes.
+   * Enable network inspection support in the React Native DevTools CDP backend. This flag is global and should not be changed across React Host lifetimes.
    */
   RN_EXPORT static bool fuseboxNetworkInspectionEnabled();
 

@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<72ef3ea85f4833a96fe222950d16278b>>
+ * @generated SignedSource<<338e07b867ae9c544764a3952e19e961>>
  */
 
 /**
@@ -28,10 +28,6 @@ class ReactNativeFeatureFlagsOverridesOSSCanary : public ReactNativeFeatureFlags
     ReactNativeFeatureFlagsOverridesOSSCanary() = default;
 
   bool enableAccessibilityOrder() override {
-    return true;
-  }
-
-  bool enableBridgelessArchitecture() override {
     return true;
   }
 

@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<6126d94aaf219c0d4a3ffe84c05b0fb2>>
+ * @generated SignedSource<<167c3eaa1075f0586c59b292f0c4f285>>
  */
 
 /**
@@ -45,7 +45,6 @@ class ReactNativeFeatureFlagsAccessor {
   bool enableAccessibilityOrder();
   bool enableAccumulatedUpdatesInRawPropsAndroid();
   bool enableAndroidTextMeasurementOptimizations();
-  bool enableBridgelessArchitecture();
   bool enableCppPropsIteratorSetter();
   bool enableCustomFocusSearchOnClippedElementsAndroid();
   bool enableDestroyShadowTreeRevisionAsync();
@@ -130,7 +129,7 @@ class ReactNativeFeatureFlagsAccessor {
   std::unique_ptr<ReactNativeFeatureFlagsProvider> currentProvider_;
   bool wasOverridden_;
 
-  std::array<std::atomic<const char*>, 87> accessedFeatureFlags_;
+  std::array<std::atomic<const char*>, 86> accessedFeatureFlags_;
 
   std::atomic<std::optional<bool>> commonTestFlag_;
   std::atomic<std::optional<bool>> cdpInteractionMetricsEnabled_;
@@ -145,7 +144,6 @@ class ReactNativeFeatureFlagsAccessor {
   std::atomic<std::optional<bool>> enableAccessibilityOrder_;
   std::atomic<std::optional<bool>> enableAccumulatedUpdatesInRawPropsAndroid_;
   std::atomic<std::optional<bool>> enableAndroidTextMeasurementOptimizations_;
-  std::atomic<std::optional<bool>> enableBridgelessArchitecture_;
   std::atomic<std::optional<bool>> enableCppPropsIteratorSetter_;
   std::atomic<std::optional<bool>> enableCustomFocusSearchOnClippedElementsAndroid_;
   std::atomic<std::optional<bool>> enableDestroyShadowTreeRevisionAsync_;

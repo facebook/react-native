@@ -54,7 +54,7 @@ export function get<Config extends {...}>(
 ): HostComponent<Config> {
   ReactNativeViewConfigRegistry.register(name, () => {
     const {native, verify} = getRuntimeConfig?.(name) ?? {
-      native: !global.RN$Bridgeless,
+      native: false,
       verify: false,
     };
 

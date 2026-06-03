@@ -40,8 +40,7 @@ Scheduler::Scheduler(
   auto performanceEntryReporter = PerformanceEntryReporter::getInstance();
   performanceEntryReporter_ = performanceEntryReporter;
 
-  if (ReactNativeFeatureFlags::enableBridgelessArchitecture() &&
-      ReactNativeFeatureFlags::cdpInteractionMetricsEnabled()) {
+  if (ReactNativeFeatureFlags::cdpInteractionMetricsEnabled()) {
     cdpMetricsReporter_.emplace(CdpMetricsReporter{runtimeExecutor_});
     performanceEntryReporter_->addEventListener(&*cdpMetricsReporter_);
   }

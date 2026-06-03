@@ -13,15 +13,13 @@ import type {UIManagerJSInterface} from '../Types/UIManagerJSInterface';
 import {getFabricUIManager} from './FabricUIManager';
 import nullthrows from 'nullthrows';
 
+const UIManagerImpl: UIManagerJSInterface =
+  require('./BridgelessUIManager').default;
+
 function isFabricReactTag(reactTag: number): boolean {
   // React reserves even numbers for Fabric.
   return reactTag % 2 === 0;
 }
-
-const UIManagerImpl: UIManagerJSInterface =
-  global.RN$Bridgeless === true
-    ? require('./BridgelessUIManager').default
-    : require('./PaperUIManager').default;
 
 // $FlowFixMe[cannot-spread-interface]
 const UIManager: UIManagerJSInterface = {

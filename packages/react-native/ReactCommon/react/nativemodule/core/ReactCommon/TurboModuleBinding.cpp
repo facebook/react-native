@@ -119,35 +119,6 @@ void TurboModuleBinding::install(
     TurboModuleProviderFunctionTypeWithRuntime&& moduleProvider,
     TurboModuleProviderFunctionTypeWithRuntime&& legacyModuleProvider,
     std::shared_ptr<LongLivedObjectCollection> longLivedObjectCollection) {
-  // TODO(T208105802): We can get this information from the native side!
-  auto isBridgeless = runtime.global().hasProperty(runtime, "RN$Bridgeless");
-
-  if (!isBridgeless) {
-    runtime.global().setProperty(
-        runtime,
-        "__turboModuleProxy",
-        jsi::Function::createFromHostFunction(
-            runtime,
-            jsi::PropNameID::forAscii(runtime, "__turboModuleProxy"),
-            1,
-            [binding = TurboModuleBinding(
-                 runtime,
-                 std::move(moduleProvider),
-                 longLivedObjectCollection)](
-                jsi::Runtime& rt,
-                const jsi::Value& /*thisVal*/,
-                const jsi::Value* args,
-                size_t count) {
-              if (count < 1) {
-                throw std::invalid_argument(
-                    "__turboModuleProxy must be called with at least 1 argument");
-              }
-              std::string moduleName = args[0].getString(rt).utf8(rt);
-              return binding.getModule(rt, moduleName);
-            }));
-    return;
-  }
-
   defineReadOnlyGlobal(
       runtime,
       "nativeModuleProxy",

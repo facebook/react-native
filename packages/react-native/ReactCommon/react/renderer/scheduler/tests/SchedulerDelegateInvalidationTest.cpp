@@ -201,11 +201,6 @@ class TestExecutorQueue {
 //   - enableRuntimeSchedulerQueueClearingOnError: a RuntimeScheduler_Modern
 //     fallback that drops queued work before host error handling tears down the
 //     delegate.
-//   - enableBridgelessArchitecture: forced ON so the Scheduler picks
-//     RuntimeScheduler_Modern. Modern queues rendering updates in
-//     pendingRenderingUpdates_ and drains them at end-of-tick, which is the
-//     ordering required to expose the race. RuntimeScheduler_Legacy runs
-//     scheduleRenderingUpdate inline, collapsing the window we want to test.
 class TestFeatureFlags : public ReactNativeFeatureFlagsDefaults {
  public:
   explicit TestFeatureFlags(
@@ -214,9 +209,6 @@ class TestFeatureFlags : public ReactNativeFeatureFlagsDefaults {
       : guardEnabled_(guardEnabled),
         queueClearingOnErrorEnabled_(queueClearingOnErrorEnabled) {}
 
-  bool enableBridgelessArchitecture() override {
-    return true;
-  }
   bool enableRuntimeSchedulerQueueClearingOnError() override {
     return queueClearingOnErrorEnabled_;
   }

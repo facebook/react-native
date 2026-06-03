@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<9a21979a5eeb2f9daf8c061610199596>>
+ * @generated SignedSource<<c477e09c11f7de32b66b057fc3d31b18>>
  */
 
 /**
@@ -61,8 +61,6 @@ class NativeReactNativeFeatureFlags
   bool enableAccumulatedUpdatesInRawPropsAndroid(jsi::Runtime& runtime);
 
   bool enableAndroidTextMeasurementOptimizations(jsi::Runtime& runtime);
-
-  bool enableBridgelessArchitecture(jsi::Runtime& runtime);
 
   bool enableCppPropsIteratorSetter(jsi::Runtime& runtime);
 

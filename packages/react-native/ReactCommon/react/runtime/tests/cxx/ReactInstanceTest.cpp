@@ -223,14 +223,6 @@ class ReactInstanceTest : public ::testing::Test {
   std::shared_ptr<ErrorUtils> errorHandler_;
 };
 
-TEST_F(ReactInstanceTest, testBridgelessFlagIsSet) {
-  auto valBefore = tryEval("RN$Bridgeless === true", "false");
-  EXPECT_EQ(valBefore.getBool(), false);
-  initializeRuntimeWithScript("");
-  auto val = eval("RN$Bridgeless === true");
-  EXPECT_EQ(val.getBool(), true);
-}
-
 TEST_F(ReactInstanceTest, testProfilingFlag) {
   auto valBefore = tryEval("__RCTProfileIsProfiling === true", "false");
   EXPECT_EQ(valBefore.getBool(), false);

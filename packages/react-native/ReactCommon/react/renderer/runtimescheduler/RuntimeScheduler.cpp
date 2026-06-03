@@ -23,13 +23,8 @@ std::unique_ptr<RuntimeSchedulerBase> getRuntimeSchedulerImplementation(
     RuntimeExecutor runtimeExecutor,
     std::function<HighResTimeStamp()> now,
     RuntimeSchedulerTaskErrorHandler onTaskError) {
-  if (ReactNativeFeatureFlags::enableBridgelessArchitecture()) {
-    return std::make_unique<RuntimeScheduler_Modern>(
-        std::move(runtimeExecutor), std::move(now), std::move(onTaskError));
-  } else {
-    return std::make_unique<RuntimeScheduler_Legacy>(
-        std::move(runtimeExecutor), std::move(now), std::move(onTaskError));
-  }
+  return std::make_unique<RuntimeScheduler_Modern>(
+      std::move(runtimeExecutor), std::move(now), std::move(onTaskError));
 }
 
 } // namespace

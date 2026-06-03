@@ -65,7 +65,7 @@ const definitions: FeatureFlagDefinitions = {
       metadata: {
         dateAdded: '2025-07-16',
         description:
-          'Enable emitting of InteractionEntry live metrics to the debugger. Requires `enableBridgelessArchitecture`.',
+          'Enable emitting of InteractionEntry live metrics to the debugger.',
         expectedReleaseValue: true,
         purpose: 'experimentation',
       },
@@ -190,15 +190,6 @@ const definitions: FeatureFlagDefinitions = {
         purpose: 'experimentation',
       },
       ossReleaseStage: 'none',
-    },
-    enableBridgelessArchitecture: {
-      defaultValue: false,
-      metadata: {
-        description: 'Feature flag to enable the new bridgeless architecture.',
-        expectedReleaseValue: true,
-        purpose: 'release',
-      },
-      ossReleaseStage: 'canary',
     },
     enableCppPropsIteratorSetter: {
       defaultValue: false,
@@ -662,7 +653,7 @@ const definitions: FeatureFlagDefinitions = {
       metadata: {
         dateAdded: '2024-01-31',
         description:
-          'Enable network inspection support in the React Native DevTools CDP backend. Requires `enableBridgelessArchitecture`. This flag is global and should not be changed across React Host lifetimes.',
+          'Enable network inspection support in the React Native DevTools CDP backend. This flag is global and should not be changed across React Host lifetimes.',
         expectedReleaseValue: true,
         purpose: 'experimentation',
       },

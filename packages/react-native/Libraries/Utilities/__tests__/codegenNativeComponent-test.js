@@ -31,8 +31,6 @@ jest
 describe('codegenNativeComponent', () => {
   beforeEach(() => {
     jest.restoreAllMocks();
-    // $FlowExpectedError[cannot-write]
-    global.RN$Bridgeless = false;
     jest.spyOn(console, 'warn').mockImplementation(() => {});
   });
 
@@ -75,16 +73,7 @@ describe('codegenNativeComponent', () => {
     );
   });
 
-  it('should NOT warn if called directly in BRIDGE mode', () => {
-    // $FlowExpectedError[cannot-write]
-    global.RN$Bridgeless = false;
-    codegenNativeComponent<$FlowFixMe>('ComponentName');
-    expect(console.warn).not.toHaveBeenCalled();
-  });
-
-  it('should warn if called directly in BRIDGELESS mode', () => {
-    // $FlowExpectedError[cannot-write]
-    global.RN$Bridgeless = true;
+  it('should warn if called directly', () => {
     codegenNativeComponent<$FlowFixMe>('ComponentName');
     expect(console.warn).toHaveBeenCalledWith(
       `Codegen didn't run for ComponentName. This will be an error in the future. Make sure you are using @react-native/babel-preset when building your JavaScript code.`,
