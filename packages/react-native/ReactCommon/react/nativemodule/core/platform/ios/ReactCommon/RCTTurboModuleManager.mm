@@ -25,8 +25,6 @@
 #import <React/RCTDevMenuConfigurationDecorator.h>
 #import <React/RCTInitializing.h>
 #import <React/RCTLog.h>
-#import <React/RCTModuleData.h>
-#import <React/RCTPerformanceLogger.h>
 #import <React/RCTUtils.h>
 #import <ReactCommon/CxxTurboModuleUtils.h>
 #import <ReactCommon/RCTTurboModuleWithJSIBindings.h>
@@ -189,7 +187,6 @@ Class getFallbackClassFromName(const char *name)
 @implementation RCTTurboModuleManager {
   std::shared_ptr<CallInvoker> _jsInvoker;
   __weak id<RCTTurboModuleManagerDelegate> _delegate;
-  __weak RCTBridge *_bridge;
 
   /**
    * TODO(T48018690):
@@ -221,17 +218,15 @@ Class getFallbackClassFromName(const char *name)
   dispatch_queue_t _sharedModuleQueue;
 }
 
-- (instancetype)initWithBridge:(RCTBridge *)bridge
-                      bridgeProxy:(RCTBridgeProxy *)bridgeProxy
-            bridgeModuleDecorator:(RCTBridgeModuleDecorator *)bridgeModuleDecorator
-                         delegate:(id<RCTTurboModuleManagerDelegate>)delegate
-                        jsInvoker:(std::shared_ptr<CallInvoker>)jsInvoker
-    devMenuConfigurationDecorator:(RCTDevMenuConfigurationDecorator *)devMenuConfigurationDecorator
+- (instancetype)initWithBridgeProxy:(RCTBridgeProxy *)bridgeProxy
+              bridgeModuleDecorator:(RCTBridgeModuleDecorator *)bridgeModuleDecorator
+                           delegate:(id<RCTTurboModuleManagerDelegate>)delegate
+                          jsInvoker:(std::shared_ptr<CallInvoker>)jsInvoker
+      devMenuConfigurationDecorator:(RCTDevMenuConfigurationDecorator *)devMenuConfigurationDecorator
 {
   if (self = [super init]) {
     _jsInvoker = std::move(jsInvoker);
     _delegate = delegate;
-    _bridge = bridge;
     _bridgeProxy = bridgeProxy;
     _bridgeModuleDecorator = bridgeModuleDecorator;
     _invalidating = false;
@@ -261,56 +256,8 @@ Class getFallbackClassFromName(const char *name)
       _legacyEagerlyRegisteredModuleClasses = legacyEagerlyRegisteredModuleClasses;
     }
 #endif // RCT_REMOVE_LEGACY_MODULE_INTEROP
-
-    [[NSNotificationCenter defaultCenter] addObserver:self
-                                             selector:@selector(bridgeWillInvalidateModules:)
-                                                 name:RCTBridgeWillInvalidateModulesNotification
-                                               object:nil];
-    [[NSNotificationCenter defaultCenter] addObserver:self
-                                             selector:@selector(bridgeDidInvalidateModules:)
-                                                 name:RCTBridgeDidInvalidateModulesNotification
-                                               object:nil];
   }
   return self;
-}
-
-- (instancetype)initWithBridge:(RCTBridge *)bridge
-                      delegate:(id<RCTTurboModuleManagerDelegate>)delegate
-                     jsInvoker:(std::shared_ptr<CallInvoker>)jsInvoker
-{
-  return [self initWithBridge:bridge
-                        bridgeProxy:nil
-              bridgeModuleDecorator:[bridge bridgeModuleDecorator]
-                           delegate:delegate
-                          jsInvoker:jsInvoker
-      devMenuConfigurationDecorator:nil];
-}
-
-- (instancetype)initWithBridgeProxy:(RCTBridgeProxy *)bridgeProxy
-              bridgeModuleDecorator:(RCTBridgeModuleDecorator *)bridgeModuleDecorator
-                           delegate:(id<RCTTurboModuleManagerDelegate>)delegate
-                          jsInvoker:(std::shared_ptr<CallInvoker>)jsInvoker
-{
-  return [self initWithBridge:nil
-                        bridgeProxy:bridgeProxy
-              bridgeModuleDecorator:bridgeModuleDecorator
-                           delegate:delegate
-                          jsInvoker:jsInvoker
-      devMenuConfigurationDecorator:nil];
-}
-
-- (instancetype)initWithBridgeProxy:(RCTBridgeProxy *)bridgeProxy
-              bridgeModuleDecorator:(RCTBridgeModuleDecorator *)bridgeModuleDecorator
-                           delegate:(id<RCTTurboModuleManagerDelegate>)delegate
-                          jsInvoker:(std::shared_ptr<CallInvoker>)jsInvoker
-      devMenuConfigurationDecorator:(RCTDevMenuConfigurationDecorator *)devMenuConfigurationDecorator
-{
-  return [self initWithBridge:nil
-                        bridgeProxy:bridgeProxy
-              bridgeModuleDecorator:bridgeModuleDecorator
-                           delegate:delegate
-                          jsInvoker:jsInvoker
-      devMenuConfigurationDecorator:devMenuConfigurationDecorator];
 }
 
 /**
@@ -378,14 +325,6 @@ Class getFallbackClassFromName(const char *name)
      * Step 2c: Create and native CallInvoker from the TurboModule's method queue.
      */
     nativeMethodCallInvoker = std::make_shared<ModuleNativeMethodCallInvoker>(methodQueue);
-
-    /**
-     * Have RCTCxxBridge decorate native CallInvoker, so that it's aware of TurboModule async method calls.
-     * This helps the bridge fire onBatchComplete as readily as it should.
-     */
-    if ([_bridge respondsToSelector:@selector(decorateNativeMethodCallInvoker:)]) {
-      nativeMethodCallInvoker = [_bridge decorateNativeMethodCallInvoker:nativeMethodCallInvoker];
-    }
   }
 
   /**
@@ -681,7 +620,7 @@ Class getFallbackClassFromName(const char *name)
    * this method exists to know if we can safely set the bridge to the
    * NativeModule.
    */
-  if ([module respondsToSelector:@selector(bridge)] && (_bridge || _bridgeProxy)) {
+  if ([module respondsToSelector:@selector(bridge)] && _bridgeProxy) {
     /**
      * Just because a NativeModule has the `bridge` method, it doesn't mean
      * that it has synthesized the bridge in its implementation. Therefore,
@@ -698,11 +637,7 @@ Class getFallbackClassFromName(const char *name)
        * generated, so we have have to rely on the KVC API of ObjC to set
        * the bridge property of these NativeModules.
        */
-      if (_bridge) {
-        [(id)module setValue:_bridge forKey:@"bridge"];
-      } else if (_bridgeProxy) {
-        [(id)module setValue:_bridgeProxy forKey:@"bridge"];
-      }
+      [(id)module setValue:_bridgeProxy forKey:@"bridge"];
     } @catch (NSException *) {
       RCTLogError(
           @"%@ has no setter or ivar for its bridge, which is not "
@@ -790,32 +725,14 @@ Class getFallbackClassFromName(const char *name)
   objc_setAssociatedObject(module, &kAssociatedMethodQueueKey, methodQueue, OBJC_ASSOCIATION_RETAIN);
 
   /**
-   * NativeModules that implement the RCTFrameUpdateObserver protocol
-   * require registration with RCTDisplayLink.
-   *
-   * TODO(T55504345): Investigate whether we can improve this after TM
-   * rollout.
-   */
-  if (_bridge) {
-    RCTModuleData *data = [[RCTModuleData alloc] initWithModuleInstance:(id<RCTBridgeModule>)module
-                                                                 bridge:_bridge
-                                                         moduleRegistry:_bridge.moduleRegistry
-                                                viewRegistry_DEPRECATED:nil
-                                                          bundleManager:nil
-                                                      callableJSModules:nil];
-    [_bridge registerModuleForFrameUpdates:(id<RCTBridgeModule>)module withModuleData:data];
-  }
-
-  /**
    * Broadcast that this NativeModule was created.
    *
    * TODO(T41180176): Investigate whether we can delete this after TM
    * rollout.
    */
-  [[NSNotificationCenter defaultCenter]
-      postNotificationName:RCTDidInitializeModuleNotification
-                    object:_bridge
-                  userInfo:@{@"module" : module, @"bridge" : RCTNullIfNil([_bridge parentBridge])}];
+  [[NSNotificationCenter defaultCenter] postNotificationName:RCTDidInitializeModuleNotification
+                                                      object:nil
+                                                    userInfo:@{@"module" : module, @"bridge" : [NSNull null]}];
 
   TurboModulePerfLogger::moduleCreateSetUpEnd(moduleName, moduleId);
 
@@ -932,10 +849,6 @@ Class getFallbackClassFromName(const char *name)
     auto moduleName = name.c_str();
 
     TurboModulePerfLogger::moduleJSRequireBeginningStart(moduleName);
-    auto moduleWasNotInitialized = ![self moduleIsInitialized:moduleName];
-    if (moduleWasNotInitialized) {
-      [self->_bridge.performanceLogger markStartForTag:RCTPLTurboModuleSetup];
-    }
 
     /**
      * By default, all TurboModules are long-lived.
@@ -943,10 +856,6 @@ Class getFallbackClassFromName(const char *name)
      * trigger an assertion failure.
      */
     auto turboModule = [self provideTurboModule:moduleName runtime:&runtime];
-
-    if (moduleWasNotInitialized && [self moduleIsInitialized:moduleName]) {
-      [self->_bridge.performanceLogger markStopForTag:RCTPLTurboModuleSetup];
-    }
 
     if (turboModule) {
       TurboModulePerfLogger::moduleJSRequireEndingEnd(moduleName);
@@ -1020,26 +929,6 @@ Class getFallbackClassFromName(const char *name)
 
 #pragma mark Invalidation logic
 
-- (void)bridgeWillInvalidateModules:(NSNotification *)notification
-{
-  RCTBridge *bridge = notification.userInfo[@"bridge"];
-  if (bridge != _bridge) {
-    return;
-  }
-
-  [self _enterInvalidatingState];
-}
-
-- (void)bridgeDidInvalidateModules:(NSNotification *)notification
-{
-  RCTBridge *bridge = notification.userInfo[@"bridge"];
-  if (bridge != _bridge) {
-    return;
-  }
-
-  [self _invalidateModules];
-}
-
 - (void)invalidate
 {
   [self _enterInvalidatingState];
@@ -1098,15 +987,10 @@ Class getFallbackClassFromName(const char *name)
       dispatch_group_leave(moduleInvalidationGroup);
     };
 
-    if (_bridge) {
-      [_bridge dispatchBlock:invalidateModule queue:methodQueue];
+    if (methodQueue == RCTJSThread) {
+      invalidateModule();
     } else {
-      // Bridgeless mode
-      if (methodQueue == RCTJSThread) {
-        invalidateModule();
-      } else {
-        dispatch_async(methodQueue, invalidateModule);
-      }
+      dispatch_async(methodQueue, invalidateModule);
     }
   }
 
