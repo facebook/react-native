@@ -35,7 +35,8 @@ type JSReturnType =
   | 'NumberKind'
   | 'PromiseKind'
   | 'ObjectKind'
-  | 'ArrayKind';
+  | 'ArrayKind'
+  | 'ArrayBufferKind';
 
 const HostFunctionTemplate = ({
   hasteModuleName,
