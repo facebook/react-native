@@ -326,8 +326,9 @@ exports.examples = [
   },
   {
     title: 'Keyboard Avoiding View with multiline TextInput in ScrollView',
+    // Regression coverage for https://github.com/facebook/react-native/issues/16826.
     description:
-      'Reproduces the nested ScrollView and multiline TextInput layout from issue #16826.',
+      'Keeps a multiline TextInput visible when it grows inside a nested ScrollView.',
     render(): React.Node {
       return <KeyboardAvoidingMultilineTextInput />;
     },
