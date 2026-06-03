@@ -10,10 +10,8 @@
 
 import type {EventSubscription, RootTag} from 'react-native';
 
-import NativeCxxModuleExample, {
-  EnumInt,
-  EnumNone,
-} from '../../../NativeCxxModuleExample/NativeCxxModuleExample';
+import NativeCxxModuleExample from '../../../NativeCxxModuleExample/NativeCxxModuleExample';
+import {EnumInt, EnumNone} from '../../../NativeCxxModuleExample/SharedType';
 import RNTesterText from '../../components/RNTesterText';
 import styles from './TurboModuleExampleCommon';
 import * as React from 'react';

@@ -8,19 +8,10 @@
  * @format
  */
 
+import type {ConstantsStruct, EnumInt, EnumNone} from './SharedType';
 import type {CodegenTypes, TurboModule} from 'react-native';
 
 import {TurboModuleRegistry} from 'react-native';
-
-export enum EnumInt {
-  IA = 23,
-  IB = 42,
-}
-
-export enum EnumNone {
-  NA,
-  NB,
-}
 
 export enum EnumStr {
   SA = 's---a',
@@ -30,12 +21,6 @@ export enum EnumStr {
 export type UnionFloat = 1.44 | 2.88 | 5.76;
 export type UnionString = 'One' | 'Two' | 'Three';
 export type UnionObject = {value: number} | {low: string};
-
-export type ConstantsStruct = Readonly<{
-  const1: boolean,
-  const2: number,
-  const3: string,
-}>;
 
 export type ObjectStruct = {
   a: number,
