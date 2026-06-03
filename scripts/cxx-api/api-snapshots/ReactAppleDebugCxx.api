@@ -3380,6 +3380,20 @@ class facebook::hermes::IHermesSHUnit : public facebook::jsi::ICast {
   public virtual SHUnitCreator getSHUnitCreator() const = 0;
 }
 
+struct facebook::hermes::IEventLoopControl {
+  protected ~IEventLoopControl() = default;
+  public virtual uint64_t registerTaskQueueSource() = 0;
+  public virtual void scheduleTask(const std::function<void()>& task) = 0;
+  public virtual void unregisterTaskQueueSource(uint64_t sourceId) = 0;
+}
+
+struct facebook::hermes::ISetEventLoopControl : public facebook::jsi::ICast {
+  protected ~ISetEventLoopControl() = default;
+  public static constexpr facebook::jsi::UUID uuid;
+  public virtual facebook::hermes::IEventLoopControl* getEventLoopControl() = 0;
+  public virtual void setEventLoopControl(facebook::hermes::IEventLoopControl* eventLoopControl) = 0;
+}
+
 
 const char facebook::react::AppleSwitchComponentName[];
 const char facebook::react::ImageComponentName[];
