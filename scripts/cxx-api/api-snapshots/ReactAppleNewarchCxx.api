@@ -1987,8 +1987,6 @@ interface RCTTransformAnimatedNode : public RCTAnimatedNode {
 }
 
 interface RCTTurboModuleManager : public NSObject <RCTTurboModuleRegistry> {
-  public virtual instancetype initWithBridge:delegate:jsInvoker:(RCTBridge* bridge, id<RCTTurboModuleManagerDelegate> delegate, std::shared_ptr<facebook::react::CallInvoker> jsInvoker);
-  public virtual instancetype initWithBridgeProxy:bridgeModuleDecorator:delegate:jsInvoker:(RCTBridgeProxy* bridgeProxy, RCTBridgeModuleDecorator* bridgeModuleDecorator, id<RCTTurboModuleManagerDelegate> delegate, std::shared_ptr<facebook::react::CallInvoker> jsInvoker);
   public virtual instancetype initWithBridgeProxy:bridgeModuleDecorator:delegate:jsInvoker:devMenuConfigurationDecorator:(RCTBridgeProxy* bridgeProxy, RCTBridgeModuleDecorator* bridgeModuleDecorator, id<RCTTurboModuleManagerDelegate> delegate, std::shared_ptr<facebook::react::CallInvoker> jsInvoker, RCTDevMenuConfigurationDecorator* devMenuConfigurationDecorator);
   public virtual void installJSBindings:(facebook::jsi::Runtime& runtime);
   public virtual void invalidate();
