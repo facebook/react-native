@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<dcb1e3ba662f28194124dc63879f4fde>>
+ * @generated SignedSource<<6958847f0d788c06cf64478ee2c36386>>
  */
 
 /**
@@ -153,6 +153,11 @@ class ReactNativeFeatureFlags {
    * This feature flag enables logs for Fabric.
    */
   RN_EXPORT static bool enableFabricLogs();
+
+  /**
+   * Enables CSS Flexbox §4.5 automatic minimum sizing under strict layout conformance. When enabled, a flex item with an undefined main-axis `min-width`/`min-height` under strict conformance receives a content-derived minimum size (per spec) instead of an undefined (0) minimum. Defaults off so the behaviour can be ramped independently of strict conformance.
+   */
+  RN_EXPORT static bool enableFlexboxAutoMinSizeInStrictMode();
 
   /**
    * Enables font scale changes updating layout for measurable nodes.

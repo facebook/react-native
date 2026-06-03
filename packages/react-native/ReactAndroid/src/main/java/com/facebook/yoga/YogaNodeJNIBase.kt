@@ -16,6 +16,7 @@ public abstract class YogaNodeJNIBase : YogaNode, Cloneable {
   private var config: YogaConfig? = null
   private var children: MutableList<YogaNodeJNIBase>? = null
   private var measureFunction: YogaMeasureFunction? = null
+  private var minContentMeasureFunction: YogaMeasureFunction? = null
   private var baselineFunction: YogaBaselineFunction? = null
   protected var nativePointer: Long = 0
 
@@ -46,6 +47,7 @@ public abstract class YogaNodeJNIBase : YogaNode, Cloneable {
 
   override fun reset() {
     measureFunction = null
+    minContentMeasureFunction = null
     baselineFunction = null
     data = null
     arr = null
@@ -524,6 +526,25 @@ public abstract class YogaNodeJNIBase : YogaNode, Cloneable {
     YogaNative.jni_YGNodeSetHasMeasureFuncJNI(nativePointer, measureFunction != null)
   }
 
+  override fun setMinContentMeasureFunction(measureFunction: YogaMeasureFunction?) {
+    this.minContentMeasureFunction = measureFunction
+    YogaNative.jni_YGNodeSetHasMinContentMeasureFuncJNI(nativePointer, measureFunction != null)
+  }
+
+  override fun setMinContentWidth(minContentWidth: Float) {
+    YogaNative.jni_YGNodeSetMinContentWidthJNI(nativePointer, minContentWidth)
+  }
+
+  override fun setMinContentHeight(minContentHeight: Float) {
+    YogaNative.jni_YGNodeSetMinContentHeightJNI(nativePointer, minContentHeight)
+  }
+
+  override fun getMinContentWidth(): Float =
+      YogaNative.jni_YGNodeGetMinContentWidthJNI(nativePointer)
+
+  override fun getMinContentHeight(): Float =
+      YogaNative.jni_YGNodeGetMinContentHeightJNI(nativePointer)
+
   override fun setAlwaysFormsContainingBlock(alwaysFormsContainingBlock: Boolean) {
     YogaNative.jni_YGNodeSetAlwaysFormsContainingBlockJNI(
         nativePointer,
@@ -538,6 +559,27 @@ public abstract class YogaNodeJNIBase : YogaNode, Cloneable {
   @DoNotStrip
   public fun measure(width: Float, widthMode: Int, height: Float, heightMode: Int): Long {
     val mf = checkNotNull(measureFunction) { "Measure function isn't defined!" }
+    return mf.measure(
+        this,
+        width,
+        YogaMeasureMode.fromInt(widthMode),
+        height,
+        YogaMeasureMode.fromInt(heightMode),
+    )
+  }
+
+  // Native callback invoked by Yoga during the CSS Flexbox §4.5 auto-min
+  // probe when a min-content measure function is registered. Mirrors
+  // [measure]; see that method's note on non-overridability.
+  @DoNotStrip
+  public fun measureMinContent(
+      width: Float,
+      widthMode: Int,
+      height: Float,
+      heightMode: Int,
+  ): Long {
+    val mf =
+        checkNotNull(minContentMeasureFunction) { "Min-content measure function isn't defined!" }
     return mf.measure(
         this,
         width,
