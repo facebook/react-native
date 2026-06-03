@@ -114,12 +114,12 @@ declare class PerformanceEntry {
 // https://w3c.github.io/user-timing/#performancemark
 declare class PerformanceMark extends PerformanceEntry {
   constructor(name: string, markOptions?: PerformanceMarkOptions): void;
-  +detail: unknown;
+  readonly detail: unknown;
 }
 
 // https://w3c.github.io/user-timing/#performancemeasure
 declare class PerformanceMeasure extends PerformanceEntry {
-  +detail: unknown;
+  readonly detail: unknown;
 }
 
 // https://w3c.github.io/server-timing/#the-performanceservertiming-interface
@@ -207,8 +207,8 @@ declare interface EventCounts {
 }
 
 declare class Performance {
-  +eventCounts: EventCounts;
-  +timeOrigin: DOMHighResTimeStamp;
+  readonly eventCounts: EventCounts;
+  readonly timeOrigin: DOMHighResTimeStamp;
 
   clearMarks(name?: string): void;
   clearMeasures(name?: string): void;
@@ -284,7 +284,7 @@ declare class FormData {
 }
 
 declare class DOMRectReadOnly {
-  +bottom: number;
+  readonly bottom: number;
   constructor(x: number, y: number, width: number, height: number): void;
   static fromRect(rectangle?: {
     height: number,
@@ -293,13 +293,13 @@ declare class DOMRectReadOnly {
     y: number,
     ...
   }): DOMRectReadOnly;
-  +height: number;
-  +left: number;
-  +right: number;
-  +top: number;
-  +width: number;
-  +x: number;
-  +y: number;
+  readonly height: number;
+  readonly left: number;
+  readonly right: number;
+  readonly top: number;
+  readonly width: number;
+  readonly x: number;
+  readonly y: number;
 }
 
 declare class DOMRect extends DOMRectReadOnly {
@@ -331,23 +331,23 @@ declare class MutationRecord {
   // Always an empty NodeList for `attributes` and `characterData` mutations.
   // React Native currently only supports `childList`, so this contains the
   // added nodes for that mutation type.
-  +addedNodes: NodeList<Node>;
+  readonly addedNodes: NodeList<Node>;
   // Always `null` in React Native (only `childList` mutations are supported).
-  +attributeName: null;
+  readonly attributeName: null;
   // Always `null` in React Native (only `childList` mutations are supported).
-  +nextSibling: null;
+  readonly nextSibling: null;
   // Always `null` in React Native (only `childList` mutations are supported,
   // and `attributeOldValue`/`characterDataOldValue` are not supported).
-  +oldValue: null;
+  readonly oldValue: null;
   // Always `null` in React Native (only `childList` mutations are supported).
-  +previousSibling: null;
+  readonly previousSibling: null;
   // Always an empty NodeList for `attributes` and `characterData` mutations.
   // React Native currently only supports `childList`, so this contains the
   // removed nodes for that mutation type.
-  +removedNodes: NodeList<Node>;
-  +target: Node;
+  readonly removedNodes: NodeList<Node>;
+  readonly target: Node;
   // React Native currently only supports `childList` mutations.
-  +type: 'childList';
+  readonly type: 'childList';
 }
 
 // React Native currently only supports `childList` mutations, so `childList`
@@ -355,8 +355,8 @@ declare class MutationRecord {
 // `attributeOldValue`/`characterData`/`characterDataOldValue` options are not
 // supported and will throw if provided.
 declare type MutationObserverInit = {
-  +childList: true,
-  +subtree?: boolean,
+  readonly childList: true,
+  readonly subtree?: boolean,
   ...
 };
 
@@ -372,17 +372,17 @@ declare class MutationObserver {
 }
 
 declare type IntersectionObserverEntry = {
-  +boundingClientRect: DOMRectReadOnly,
-  +intersectionRatio: number,
-  +intersectionRect: DOMRectReadOnly,
-  +isIntersecting: boolean,
+  readonly boundingClientRect: DOMRectReadOnly,
+  readonly intersectionRatio: number,
+  readonly intersectionRect: DOMRectReadOnly,
+  readonly isIntersecting: boolean,
   // Always non-null in React Native.
-  +rootBounds: DOMRectReadOnly,
+  readonly rootBounds: DOMRectReadOnly,
   // React Native-specific extension. Equivalent to `intersectionRatio` but
   // computed against the `rnRootThreshold` root-relative thresholds.
-  +rnRootIntersectionRatio: number,
-  +target: Element,
-  +time: DOMHighResTimeStamp,
+  readonly rnRootIntersectionRatio: number,
+  readonly target: Element,
+  readonly time: DOMHighResTimeStamp,
   ...
 };
 
@@ -410,12 +410,12 @@ declare class IntersectionObserver {
   ): void;
   disconnect(): void;
   observe(target: Element): void;
-  +root: Element | null;
-  +rootMargin: string;
+  readonly root: Element | null;
+  readonly rootMargin: string;
   // React Native-specific extension. The thresholds expressed as a fraction of
   // the root's size (set via the `rnRootThreshold` option).
-  +rnRootThresholds: ReadonlyArray<number> | null;
-  +thresholds: ReadonlyArray<number>;
+  readonly rnRootThresholds: ReadonlyArray<number> | null;
+  readonly thresholds: ReadonlyArray<number>;
   unobserve(target: Element): void;
 }
 
@@ -689,7 +689,7 @@ declare class Request {
 
   referrer: string;
   referrerPolicy: ReferrerPolicyType;
-  +signal: AbortSignal;
+  readonly signal: AbortSignal;
   text(): Promise<string>;
   url: string;
 }
@@ -697,15 +697,15 @@ declare class Request {
 declare class AbortController {
   abort(reason?: $FlowFixMe): void;
   constructor(): void;
-  +signal: AbortSignal;
+  readonly signal: AbortSignal;
 }
 
 declare class AbortSignal extends EventTarget {
   static abort(reason?: $FlowFixMe): AbortSignal;
   static any(signals: Iterable<AbortSignal>): AbortSignal;
-  +aborted: boolean;
+  readonly aborted: boolean;
   onabort: (event: Event) => unknown;
-  +reason: $FlowFixMe;
+  readonly reason: $FlowFixMe;
   throwIfAborted(): void;
   static timeout(time: number): AbortSignal;
 }
@@ -741,8 +741,8 @@ declare type FileSystemHandleKind = 'file' | 'directory';
 
 // https://wicg.github.io/file-system-access/#api-filesystemhandle
 declare class FileSystemHandle {
-  +kind: FileSystemHandleKind;
-  +name: string;
+  readonly kind: FileSystemHandleKind;
+  readonly name: string;
 
   isSameEntry: (other: FileSystemHandle) => Promise<boolean>;
   queryPermission?: (
@@ -755,7 +755,7 @@ declare class FileSystemHandle {
 
 // https://fs.spec.whatwg.org/#api-filesystemfilehandle
 declare class FileSystemFileHandle extends FileSystemHandle {
-  +kind: 'file';
+  readonly kind: 'file';
 
   constructor(name: string): void;
 
@@ -768,7 +768,7 @@ declare class FileSystemFileHandle extends FileSystemHandle {
 
 // https://fs.spec.whatwg.org/#api-filesystemdirectoryhandle
 declare class FileSystemDirectoryHandle extends FileSystemHandle {
-  +kind: 'directory';
+  readonly kind: 'directory';
 
   constructor(name: string): void;
 

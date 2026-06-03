@@ -91,53 +91,83 @@ type CustomObj = {foo: string, bar: number};
 type CustomObj2 = {a: Int32, b: string};
 
 interface NativeCommands {
-  +methodInt: (viewRef: React.ElementRef<NativeType>, a: Int32) => void;
-  +methodIntString: (
+  readonly methodInt: (viewRef: React.ElementRef<NativeType>, a: Int32) => void;
+  readonly methodIntString: (
     viewRef: React.ElementRef<NativeType>,
     a: Int32,
     b: string,
   ) => void;
-  +methodString: (viewRef: React.ElementRef<NativeType>, a: string) => void;
-  +methodBool: (viewRef: React.ElementRef<NativeType>, a: boolean) => void;
-  +methodFloat: (viewRef: React.ElementRef<NativeType>, a: Float) => void;
-  +methodDouble: (viewRef: React.ElementRef<NativeType>, a: Double) => void;
+  readonly methodString: (
+    viewRef: React.ElementRef<NativeType>,
+    a: string,
+  ) => void;
+  readonly methodBool: (
+    viewRef: React.ElementRef<NativeType>,
+    a: boolean,
+  ) => void;
+  readonly methodFloat: (
+    viewRef: React.ElementRef<NativeType>,
+    a: Float,
+  ) => void;
+  readonly methodDouble: (
+    viewRef: React.ElementRef<NativeType>,
+    a: Double,
+  ) => void;
 
-  +methodIntAlias: (viewRef: React.ElementRef<NativeType>, a: Int) => void;
-  +methodStringAlias: (viewRef: React.ElementRef<NativeType>, a: Str) => void;
-  +methodBoolAlias: (viewRef: React.ElementRef<NativeType>, a: Bool) => void;
-  +methodFloatAlias: (viewRef: React.ElementRef<NativeType>, a: Fl) => void;
-  +methodDoubleAlias: (viewRef: React.ElementRef<NativeType>, a: Dbl) => void;
+  readonly methodIntAlias: (
+    viewRef: React.ElementRef<NativeType>,
+    a: Int,
+  ) => void;
+  readonly methodStringAlias: (
+    viewRef: React.ElementRef<NativeType>,
+    a: Str,
+  ) => void;
+  readonly methodBoolAlias: (
+    viewRef: React.ElementRef<NativeType>,
+    a: Bool,
+  ) => void;
+  readonly methodFloatAlias: (
+    viewRef: React.ElementRef<NativeType>,
+    a: Fl,
+  ) => void;
+  readonly methodDoubleAlias: (
+    viewRef: React.ElementRef<NativeType>,
+    a: Dbl,
+  ) => void;
 
-  +methodIntArray: (
+  readonly methodIntArray: (
     viewRef: React.ElementRef<NativeType>,
     a: Array<Int32>,
   ) => void;
-  +methodStringArray: (
+  readonly methodStringArray: (
     viewRef: React.ElementRef<NativeType>,
     a: Array<string>,
   ) => void;
-  +methodBoolArray: (
+  readonly methodBoolArray: (
     viewRef: React.ElementRef<NativeType>,
     a: Array<boolean>,
   ) => void;
-  +methodFloatArray: (
+  readonly methodFloatArray: (
     viewRef: React.ElementRef<NativeType>,
     a: Array<Float>,
   ) => void;
-  +methodDoubleArray: (
+  readonly methodDoubleArray: (
     viewRef: React.ElementRef<NativeType>,
     a: Array<Double>,
   ) => void;
-  +methodCustomObjArray: (
+  readonly methodCustomObjArray: (
     viewRef: React.ElementRef<NativeType>,
     a: Array<CustomObj>,
   ) => void;
-  +methodCustomObj2Array: (
+  readonly methodCustomObj2Array: (
     viewRef: React.ElementRef<NativeType>,
     a: Array<CustomObj2>,
   ) => void;
 
-  +methodRootTag: (viewRef: React.ElementRef<NativeType>, a: RootTag) => void;
+  readonly methodRootTag: (
+    viewRef: React.ElementRef<NativeType>,
+    a: RootTag,
+  ) => void;
 }
 
 export const Commands: NativeCommands = codegenNativeCommands<NativeCommands>({

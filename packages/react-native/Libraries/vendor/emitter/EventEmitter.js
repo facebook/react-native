@@ -41,9 +41,9 @@ export interface IEventEmitter<
 }
 
 interface Registration<TArgs> {
-  +context: unknown;
-  +listener: (...args: TArgs) => unknown;
-  +remove: () => void;
+  readonly context: unknown;
+  readonly listener: (...args: TArgs) => unknown;
+  readonly remove: () => void;
 }
 
 type Registry<

@@ -59,7 +59,7 @@ type AndroidSwipeRefreshLayoutNativeProps = Readonly<{
 type NativeType = HostComponent<AndroidSwipeRefreshLayoutNativeProps>;
 
 interface NativeCommands {
-  +setNativeRefreshing: (
+  readonly setNativeRefreshing: (
     viewRef: React.ElementRef<NativeType>,
     value: boolean,
   ) => void;

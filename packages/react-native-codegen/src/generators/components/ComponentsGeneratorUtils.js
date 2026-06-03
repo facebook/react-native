@@ -49,13 +49,13 @@ function getNativeTypeFromAnnotation(
           | ObjectTypeAnnotation<PropTypeAnnotation>
           | ReservedPropTypeAnnotation
           | {
-              +default: string,
-              +options: ReadonlyArray<string>,
-              +type: 'StringEnumTypeAnnotation',
+              readonly default: string,
+              readonly options: ReadonlyArray<string>,
+              readonly type: 'StringEnumTypeAnnotation',
             }
           | {
-              +elementType: ObjectTypeAnnotation<PropTypeAnnotation>,
-              +type: 'ArrayTypeAnnotation',
+              readonly elementType: ObjectTypeAnnotation<PropTypeAnnotation>,
+              readonly type: 'ArrayTypeAnnotation',
             },
       },
   nameParts: ReadonlyArray<string>,

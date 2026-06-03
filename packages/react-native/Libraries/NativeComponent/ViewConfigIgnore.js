@@ -37,7 +37,7 @@ export function DynamicallyInjectedByGestureHandler<T extends {...}>(
  * TODO(T110872225): Remove this logic, after achieving platform-consistency
  */
 export function ConditionallyIgnoredEventHandlers<
-  const T extends {+[name: string]: true},
+  const T extends {readonly [name: string]: true},
 >(value: T): T | void {
   if (Platform.OS === 'ios') {
     return value;

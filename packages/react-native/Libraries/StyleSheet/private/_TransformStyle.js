@@ -51,29 +51,31 @@ export type ____TransformStyle_Internal = Readonly<{
         Readonly<
           MaximumOneOf<
             MergeUnion<
-              | {+perspective: number | AnimatedNode}
-              | {+rotate: string | AnimatedNode}
-              | {+rotateX: string | AnimatedNode}
-              | {+rotateY: string | AnimatedNode}
-              | {+rotateZ: string | AnimatedNode}
-              | {+scale: number | AnimatedNode}
-              | {+scaleX: number | AnimatedNode}
-              | {+scaleY: number | AnimatedNode}
-              | {+translateX: number | string | AnimatedNode}
-              | {+translateY: number | string | AnimatedNode}
+              | {readonly perspective: number | AnimatedNode}
+              | {readonly rotate: string | AnimatedNode}
+              | {readonly rotateX: string | AnimatedNode}
+              | {readonly rotateY: string | AnimatedNode}
+              | {readonly rotateZ: string | AnimatedNode}
+              | {readonly scale: number | AnimatedNode}
+              | {readonly scaleX: number | AnimatedNode}
+              | {readonly scaleY: number | AnimatedNode}
+              | {readonly translateX: number | string | AnimatedNode}
+              | {readonly translateY: number | string | AnimatedNode}
               | {
-                  +translate:
+                  readonly translate:
                     | [
                         number | string | AnimatedNode,
                         number | string | AnimatedNode,
                       ]
                     | AnimatedNode,
                 }
-              | {+skewX: string | AnimatedNode}
-              | {+skewY: string | AnimatedNode}
+              | {readonly skewX: string | AnimatedNode}
+              | {readonly skewY: string | AnimatedNode}
               // TODO: what is the actual type it expects?
               | {
-                  +matrix: ReadonlyArray<number | AnimatedNode> | AnimatedNode,
+                  readonly matrix:
+                    | ReadonlyArray<number | AnimatedNode>
+                    | AnimatedNode,
                 },
             >,
           >,

@@ -20,7 +20,7 @@ import type {EventInit} from './Event';
 import Event from './Event';
 
 export interface CustomEventInit extends EventInit {
-  +detail?: unknown;
+  readonly detail?: unknown;
 }
 
 export default class CustomEvent extends Event {

@@ -55,9 +55,9 @@ export type AddEventListenerOptions = Readonly<{
 }>;
 
 type EventListenerRegistration = {
-  +callback: EventListener,
-  +passive: boolean,
-  +once: boolean,
+  readonly callback: EventListener,
+  readonly passive: boolean,
+  readonly once: boolean,
   removed: boolean,
 };
 

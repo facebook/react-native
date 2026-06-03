@@ -25,7 +25,7 @@ const PAGES_POLLING_DELAY = 2100;
 jest.useFakeTimers();
 
 async function setupDevice(
-  serverRef: {+serverBaseWsUrl: string, ...},
+  serverRef: {readonly serverBaseWsUrl: string, ...},
   signal: AbortSignal,
 ) {
   const device = await createDeviceMock(

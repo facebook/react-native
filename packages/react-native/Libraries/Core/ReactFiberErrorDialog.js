@@ -13,9 +13,9 @@ import type {ExtendedError} from './ExtendedError';
 import ExceptionsManager, {SyntheticError} from './ExceptionsManager';
 
 export type CapturedError = {
-  +componentStack: string,
-  +error: unknown,
-  +errorBoundary: ?{...},
+  readonly componentStack: string,
+  readonly error: unknown,
+  readonly errorBoundary: ?{...},
   ...
 };
 
