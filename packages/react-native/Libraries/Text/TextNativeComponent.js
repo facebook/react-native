@@ -15,7 +15,6 @@ import type {TextProps} from './TextProps';
 
 import {enablePreparedTextLayout} from '../../src/private/featureflags/ReactNativeFeatureFlags';
 import {createViewConfig} from '../NativeComponent/ViewConfig';
-import UIManager from '../ReactNative/UIManager';
 import createReactNativeComponentClass from '../Renderer/shims/createReactNativeComponentClass';
 
 export type NativeTextProps = Readonly<{
@@ -82,11 +81,9 @@ export const NativeText: HostComponent<NativeTextProps> =
   ) as any;
 
 export const NativeVirtualText: HostComponent<NativeTextProps> =
-  !global.RN$Bridgeless && !UIManager.hasViewManagerConfig('RCTVirtualText')
-    ? NativeText
-    : (createReactNativeComponentClass('RCTVirtualText', () =>
-        createViewConfig(virtualTextViewConfig),
-      ) as any);
+  createReactNativeComponentClass('RCTVirtualText', () =>
+    createViewConfig(virtualTextViewConfig),
+  ) as any;
 
 export const NativeSelectableText: HostComponent<NativeTextProps> =
   enablePreparedTextLayout()

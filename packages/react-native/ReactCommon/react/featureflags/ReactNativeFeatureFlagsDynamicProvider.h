@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<b653dee4b92adb7177a7cd354b5e3573>>
+ * @generated SignedSource<<d3a82b0fe9f6165300b85171f928095c>>
  */
 
 /**
@@ -160,15 +160,6 @@ class ReactNativeFeatureFlagsDynamicProvider : public ReactNativeFeatureFlagsDef
     }
 
     return ReactNativeFeatureFlagsDefaults::enableAndroidTextMeasurementOptimizations();
-  }
-
-  bool enableBridgelessArchitecture() override {
-    auto value = values_["enableBridgelessArchitecture"];
-    if (!value.isNull()) {
-      return value.getBool();
-    }
-
-    return ReactNativeFeatureFlagsDefaults::enableBridgelessArchitecture();
   }
 
   bool enableCppPropsIteratorSetter() override {

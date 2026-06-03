@@ -23,7 +23,6 @@ import com.facebook.react.bridge.Callback;
 import com.facebook.react.bridge.ReactContext;
 import com.facebook.react.common.LifecycleState;
 import com.facebook.react.interfaces.fabric.ReactSurface;
-import com.facebook.react.internal.featureflags.ReactNativeNewArchitectureFeatureFlags;
 import com.facebook.react.modules.core.PermissionListener;
 import com.facebook.react.views.view.WindowUtilKt;
 import com.facebook.systrace.Systrace;
@@ -144,29 +143,9 @@ public class ReactActivityDelegate {
               }
             }
           }
-          if (ReactNativeNewArchitectureFeatureFlags.enableBridgelessArchitecture()) {
-            mReactDelegate =
-                new ReactDelegate(
-                    getPlainActivity(), getReactHost(), mainComponentName, launchOptions);
-          } else {
-            mReactDelegate =
-                new ReactDelegate(
-                    getPlainActivity(),
-                    getReactNativeHost(),
-                    mainComponentName,
-                    launchOptions,
-                    isFabricEnabled()) {
-                  @Override
-                  @Nullable
-                  protected ReactRootView createRootView() {
-                    ReactRootView rootView = ReactActivityDelegate.this.createRootView();
-                    if (rootView == null) {
-                      rootView = super.createRootView();
-                    }
-                    return rootView;
-                  }
-                };
-          }
+          mReactDelegate =
+              new ReactDelegate(
+                  getPlainActivity(), getReactHost(), mainComponentName, launchOptions);
           if (mainComponentName != null) {
             loadApp(mainComponentName);
           }

@@ -16,27 +16,16 @@ type RegisterCallableModule = (
   moduleOrFactory: Module | (void => Module),
 ) => void;
 
-const registerCallableModule: RegisterCallableModule = (function () {
-  if (global.RN$Bridgeless === true) {
-    return (name, moduleOrFactory) => {
-      if (typeof moduleOrFactory === 'function') {
-        global.RN$registerCallableModule(name, moduleOrFactory);
-        return;
-      }
-
-      global.RN$registerCallableModule(name, () => moduleOrFactory);
-    };
+const registerCallableModule: RegisterCallableModule = (
+  name,
+  moduleOrFactory,
+) => {
+  if (typeof moduleOrFactory === 'function') {
+    global.RN$registerCallableModule(name, moduleOrFactory);
+    return;
   }
 
-  const BatchedBridge = require('../BatchedBridge/BatchedBridge').default;
-  return (name, moduleOrFactory) => {
-    if (typeof moduleOrFactory === 'function') {
-      BatchedBridge.registerLazyCallableModule(name, moduleOrFactory);
-      return;
-    }
-
-    BatchedBridge.registerCallableModule(name, moduleOrFactory);
-  };
-})();
+  global.RN$registerCallableModule(name, () => moduleOrFactory);
+};
 
 export default registerCallableModule;

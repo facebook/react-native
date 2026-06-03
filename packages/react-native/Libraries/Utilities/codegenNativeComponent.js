@@ -35,7 +35,7 @@ function codegenNativeComponent<Props extends {...}>(
   componentName: string,
   options?: NativeComponentOptions,
 ): NativeComponentType<Props> {
-  if (global.RN$Bridgeless === true && __DEV__) {
+  if (__DEV__) {
     console.warn(
       `Codegen didn't run for ${componentName}. This will be an error in the future. Make sure you are using @react-native/babel-preset when building your JavaScript code.`,
     );

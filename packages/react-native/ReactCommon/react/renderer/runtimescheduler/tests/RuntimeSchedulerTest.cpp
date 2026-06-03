@@ -30,22 +30,16 @@ class RuntimeSchedulerTestFeatureFlags
     : public ReactNativeFeatureFlagsDefaults {
  public:
   explicit RuntimeSchedulerTestFeatureFlags(
-      bool enableEventLoop,
+      bool /*enableEventLoop*/,
       bool enableRuntimeSchedulerQueueClearingOnError = false)
-      : enableEventLoop_(enableEventLoop),
-        enableRuntimeSchedulerQueueClearingOnError_(
+      : enableRuntimeSchedulerQueueClearingOnError_(
             enableRuntimeSchedulerQueueClearingOnError) {}
-
-  bool enableBridgelessArchitecture() override {
-    return enableEventLoop_;
-  }
 
   bool enableRuntimeSchedulerQueueClearingOnError() override {
     return enableRuntimeSchedulerQueueClearingOnError_;
   }
 
  private:
-  bool enableEventLoop_;
   bool enableRuntimeSchedulerQueueClearingOnError_;
 };
 

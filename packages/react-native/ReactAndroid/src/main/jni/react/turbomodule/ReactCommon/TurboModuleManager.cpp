@@ -228,11 +228,7 @@ std::shared_ptr<TurboModule> TurboModuleManager::getTurboModule(
 TurboModuleProviderFunctionTypeWithRuntime
 TurboModuleManager::createLegacyModuleProvider(
     jni::alias_ref<jhybridobject> javaPart) {
-  bool shouldCreateLegacyModules =
-      ReactNativeFeatureFlags::enableBridgelessArchitecture() &&
-      ReactNativeFeatureFlags::useTurboModuleInterop();
-
-  if (!shouldCreateLegacyModules) {
+  if (!ReactNativeFeatureFlags::useTurboModuleInterop()) {
     return nullptr;
   }
 

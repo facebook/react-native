@@ -42,8 +42,8 @@ import {
   useWindowDimensions,
 } from 'react-native';
 
-// In Bridgeless mode, in dev, enable static view config validator
-if (global.RN$Bridgeless === true && __DEV__) {
+// In dev, enable static view config validator
+if (__DEV__) {
   NativeComponentRegistry.setRuntimeConfigProvider(() => {
     return {
       native: false,

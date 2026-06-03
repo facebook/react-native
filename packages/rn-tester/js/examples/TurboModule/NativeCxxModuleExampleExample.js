@@ -295,11 +295,6 @@ class NativeCxxModuleExampleExample extends React.Component<{}, State> {
   }
 
   componentDidMount(): void {
-    if (global.__turboModuleProxy == null && global.RN$Bridgeless == null) {
-      throw new Error(
-        'Cannot load this example because TurboModule is not configured.',
-      );
-    }
     if (NativeCxxModuleExample) {
       this.eventSubscriptions.push(
         NativeCxxModuleExample.onPress(value => console.log('onPress: ()')),

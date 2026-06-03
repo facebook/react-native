@@ -49,8 +49,6 @@ import com.facebook.react.bridge.ReadableArray
 import com.facebook.react.bridge.ReadableMap
 import com.facebook.react.common.annotations.UnstableReactNativeAPI
 import com.facebook.react.common.annotations.VisibleForTesting
-import com.facebook.react.common.build.ReactBuildConfig
-import com.facebook.react.internal.featureflags.ReactNativeNewArchitectureFeatureFlags
 import com.facebook.react.modules.fresco.ImageCacheControl
 import com.facebook.react.modules.fresco.ReactNetworkImageRequest
 import com.facebook.react.uimanager.BackgroundStyleApplicator
@@ -61,7 +59,6 @@ import com.facebook.react.uimanager.PixelUtil.pxToDp
 import com.facebook.react.uimanager.UIManagerHelper
 import com.facebook.react.uimanager.style.BorderRadiusProp
 import com.facebook.react.uimanager.style.LogicalEdge
-import com.facebook.react.util.RNLog
 import com.facebook.react.views.image.ImageLoadEvent.Companion.createErrorEvent
 import com.facebook.react.views.image.ImageLoadEvent.Companion.createLoadEndEvent
 import com.facebook.react.views.image.ImageLoadEvent.Companion.createLoadEvent
@@ -598,12 +595,7 @@ public class ReactImageView(
     // 3. ReactImageView detects the null src; displays a warning in LogBox (via this code).
     // 3. LogBox renders an <Image/>, which fabric preallocates.
     // 4. Rinse and repeat.
-    if (
-        ReactBuildConfig.DEBUG &&
-            !ReactNativeNewArchitectureFeatureFlags.enableBridgelessArchitecture()
-    ) {
-      RNLog.w(context as ReactContext, "ReactImageView: Image source \"$uri\" doesn't exist")
-    }
+    // With bridgeless always on, this warning is suppressed; see comment above.
   }
 
   private inner class TilePostprocessor : BasePostprocessor() {

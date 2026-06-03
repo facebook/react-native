@@ -106,8 +106,7 @@ export function setOverrides(
 }
 
 const reportedConfigNames: Set<string> = new Set();
-const hasTurboModules =
-  global.RN$Bridgeless === true || global.__turboModuleProxy != null;
+const hasTurboModules = true;
 
 function maybeLogUnavailableNativeModuleError(configName: string): void {
   if (

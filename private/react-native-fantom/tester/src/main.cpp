@@ -26,7 +26,6 @@ static void setUpLogging() {
 static void setUpFeatureFlags() {
   folly::dynamic dynamicFeatureFlags = folly::dynamic::object();
 
-  dynamicFeatureFlags["enableBridgelessArchitecture"] = true;
   dynamicFeatureFlags["cxxNativeAnimatedEnabled"] = true;
 
   if (AppSettings::dynamicFeatureFlags.has_value()) {

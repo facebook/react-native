@@ -15,7 +15,6 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.fragment.app.Fragment
-import com.facebook.react.internal.featureflags.ReactNativeNewArchitectureFeatureFlags
 import com.facebook.react.modules.core.PermissionAwareActivity
 import com.facebook.react.modules.core.PermissionListener
 
@@ -42,19 +41,7 @@ public open class ReactFragment : Fragment(), PermissionAwareActivity {
     }
     checkNotNull(mainComponentName) { "Cannot loadApp if component name is null" }
 
-    reactDelegate =
-        if (ReactNativeNewArchitectureFeatureFlags.enableBridgelessArchitecture()) {
-          ReactDelegate(requireActivity(), reactHost, mainComponentName, launchOptions)
-        } else {
-          @Suppress("DEPRECATION")
-          ReactDelegate(
-              requireActivity(),
-              reactNativeHost,
-              mainComponentName,
-              launchOptions,
-              fabricEnabled,
-          )
-        }
+    reactDelegate = ReactDelegate(requireActivity(), reactHost, mainComponentName, launchOptions)
   }
 
   /**
