@@ -9,10 +9,10 @@ package com.facebook.react.fabric
 
 import com.facebook.proguard.annotations.DoNotStripAny
 import com.facebook.react.bridge.ReactApplicationContext
+import com.facebook.react.bridge.UiThreadUtil
 import com.facebook.react.modules.core.ReactChoreographer
 import com.facebook.react.uimanager.GuardedFrameCallback
 import java.util.concurrent.atomic.AtomicBoolean
-import kotlin.synchronized
 
 internal fun interface AnimationFrameCallback {
   fun onAnimationFrame(frameTimeMs: Double)
@@ -32,54 +32,49 @@ internal class AnimationBackendChoreographer(
           executeFrameCallback(frameTimeNanos)
         }
       }
-  private val callbackPosted: AtomicBoolean = AtomicBoolean()
+
+  // When true, the always-registered frame callback runs as a no-op.
+  //
+  // The callback is registered with ReactChoreographer once (on the UI thread)
+  // and re-posts itself every frame regardless of this flag, so it stays
+  // registered for the lifetime of the choreographer.
   private val paused: AtomicBoolean = AtomicBoolean(true)
 
-  /*
-   * resume() and pause() should be called with the same lock to avoid race conditions.
-   */
+  init {
+    // Register the self-reposting callback once, on the UI thread, so the
+    // callback queues are only ever mutated from the UI thread.
+    UiThreadUtil.runOnUiThread { postCallback() }
+  }
 
   fun resume() {
-    if (paused.getAndSet(false)) {
-      scheduleCallback()
-    }
+    paused.set(false)
   }
 
   fun pause() {
-    val shouldRemove: Boolean
-    synchronized(paused) {
-      shouldRemove = !paused.getAndSet(true) && callbackPosted.getAndSet(false)
-    }
-    if (shouldRemove) {
-      reactChoreographer.removeFrameCallback(
-          ReactChoreographer.CallbackType.NATIVE_ANIMATED_MODULE,
-          choreographerCallback,
-      )
-    }
+    paused.set(true)
   }
 
-  private fun scheduleCallback() {
-    val shouldPost: Boolean
-    synchronized(paused) { shouldPost = !paused.get() && !callbackPosted.getAndSet(true) }
-    if (shouldPost) {
-      reactChoreographer.postFrameCallback(
-          ReactChoreographer.CallbackType.NATIVE_ANIMATED_MODULE,
-          choreographerCallback,
-      )
-    }
+  private fun postCallback() {
+    reactChoreographer.postFrameCallback(
+        ReactChoreographer.CallbackType.NATIVE_ANIMATED_MODULE,
+        choreographerCallback,
+    )
   }
 
   private fun executeFrameCallback(frameTimeNanos: Long) {
-    callbackPosted.set(false)
     val currentFrameTimeMs = calculateTimestamp(frameTimeNanos)
-    // It is possible for ChoreographerCallback to be executed twice within the same frame
-    // due to frame drops. If this occurs, the additional callback execution should be ignored.
-    if (currentFrameTimeMs > lastFrameTimeMs) {
+    // Only drive the animation backend while enabled. It is possible for the
+    // ChoreographerCallback to be executed twice within the same frame due to
+    // frame drops; if this occurs, the additional callback execution should be
+    // ignored.
+    if (!paused.get() && currentFrameTimeMs > lastFrameTimeMs) {
       frameCallback?.onAnimationFrame(currentFrameTimeMs)
     }
 
     lastFrameTimeMs = currentFrameTimeMs
-    scheduleCallback()
+    // Always re-post (on the UI thread) so the callback stays registered for the
+    // next frame, whether or not we are currently paused.
+    postCallback()
   }
 
   private fun calculateTimestamp(frameTimeNanos: Long): Double {
