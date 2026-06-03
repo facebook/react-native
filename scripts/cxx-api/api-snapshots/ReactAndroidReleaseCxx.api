@@ -833,7 +833,10 @@ double facebook::react::floor(double value) noexcept;
 double facebook::react::getCPUTimeNanos();
 double facebook::react::interpolate(double inputValue, double inputMin, double inputMax, double outputMin, double outputMax, std::string_view extrapolateLeft, std::string_view extrapolateRight);
 double facebook::react::round(double value) noexcept;
+facebook::jsi::Value facebook::react::createJSRuntimeError(facebook::jsi::Runtime& runtime, const std::string& message);
+facebook::jsi::Value facebook::react::createJSRuntimeError(facebook::jsi::Runtime& runtime, facebook::jsi::Value&& message);
 facebook::jsi::Value facebook::react::createPromiseAsJSIValue(facebook::jsi::Runtime& rt, facebook::react::PromiseSetupFunctionType&& func);
+facebook::jsi::Value facebook::react::createRejectionError(facebook::jsi::Runtime& rt, const folly::dynamic& args);
 facebook::react::Color facebook::react::hostPlatformColorFromComponents(facebook::react::ColorComponents components);
 facebook::react::Color facebook::react::hostPlatformColorFromRGBA(uint8_t r, uint8_t g, uint8_t b, uint8_t a);
 facebook::react::ColorComponents facebook::react::colorComponentsFromColor(facebook::react::SharedColor color);
@@ -2825,6 +2828,14 @@ class facebook::react::JMessageQueueThread : public facebook::react::MessageQueu
   public virtual void runOnQueueSync(std::function<void()>&& runnable) override;
 }
 
+class facebook::react::JMutableDataBuffer : public facebook::jsi::MutableBuffer {
+  public JMutableDataBuffer(jni::global_ref<jni::JByteBuffer> byteBuffer) noexcept;
+  public jni::local_ref<jni::JByteBuffer> getJavaByteBuffer() const;
+  public virtual size_t size() const override;
+  public virtual uint8_t* data() override;
+  public ~JMutableDataBuffer();
+}
+
 class facebook::react::JNativeModulePerfLogger : public jni::HybridClass<facebook::react::JNativeModulePerfLogger> {
   public static constexpr auto kJavaDescriptor;
   public virtual std::unique_ptr<facebook::react::NativeModulePerfLogger> get() = 0;
@@ -3018,6 +3029,17 @@ struct facebook::react::JSModulesUnbundle::Module {
 class facebook::react::JWritableMapBuffer : public facebook::jni::JavaClass<facebook::react::JWritableMapBuffer> {
   public facebook::react::MapBuffer getMapBuffer();
   public static constexpr auto kJavaDescriptor;
+}
+
+class facebook::react::JZeroCopyByteBufferHolder : public jni::HybridClass<facebook::react::JZeroCopyByteBufferHolder> {
+  public static constexpr auto kJavaDescriptor;
+  public static facebook::react::JZeroCopyByteBufferHolder::Wrapped wrapMutableBuffer(std::shared_ptr<facebook::jsi::MutableBuffer> buffer);
+  public static void registerNatives();
+}
+
+struct facebook::react::JZeroCopyByteBufferHolder::Wrapped {
+  public jni::local_ref<jhybridobject> holder;
+  public jni::local_ref<jni::JByteBuffer> byteBuffer;
 }
 
 class facebook::react::JavaInteropTurboModule : public facebook::react::JavaTurboModule {
@@ -6582,6 +6604,7 @@ enum facebook::react::TransformOperationType : uint8_t {
 }
 
 enum facebook::react::TurboModuleMethodValueKind {
+  ArrayBufferKind,
   ArrayKind,
   BooleanKind,
   FunctionKind,
