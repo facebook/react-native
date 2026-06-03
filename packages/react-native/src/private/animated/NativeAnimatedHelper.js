@@ -32,7 +32,7 @@ import nullthrows from 'nullthrows';
 
 interface NativeAnimatedModuleSpec extends NativeAnimatedTurboModuleSpec {
   // connectAnimatedNodeToShadowNodeFamily is available only in NativeAnimatedNonTurboModule
-  +connectAnimatedNodeToShadowNodeFamily?: (
+  readonly connectAnimatedNodeToShadowNodeFamily?: (
     nodeTag: number,
     // $FlowExpectedError[unclear-type].
     shadowNode: Object,

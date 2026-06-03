@@ -36,15 +36,15 @@ export type ElementRectangle = {
 };
 
 interface NativeCommands {
-  +highlightTraceUpdates: (
+  readonly highlightTraceUpdates: (
     viewRef: React.ElementRef<DebuggingOverlayNativeComponentType>,
     updates: ReadonlyArray<TraceUpdate>,
   ) => void;
-  +highlightElements: (
+  readonly highlightElements: (
     viewRef: React.ElementRef<DebuggingOverlayNativeComponentType>,
     elements: ReadonlyArray<ElementRectangle>,
   ) => void;
-  +clearElementsHighlights: (
+  readonly clearElementsHighlights: (
     viewRef: React.ElementRef<DebuggingOverlayNativeComponentType>,
   ) => void;
 }

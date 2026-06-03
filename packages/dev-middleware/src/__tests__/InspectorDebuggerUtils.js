@@ -84,7 +84,7 @@ export class DebuggerAgent {
 
 export class DebuggerMock extends DebuggerAgent {
   // Empty handlers
-  +handle: JestMockFn<[message: JSONSerializable], void> = jest.fn();
+  readonly handle: JestMockFn<[message: JSONSerializable], void> = jest.fn();
 
   __handle(message: JSONSerializable): void {
     this.handle(message);

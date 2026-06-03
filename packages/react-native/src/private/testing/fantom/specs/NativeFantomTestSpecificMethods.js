@@ -23,9 +23,13 @@ import * as TurboModuleRegistry from '../../../../../Libraries/TurboModule/Turbo
  * that this is the only way to test the behavior.
  */
 export interface Spec extends TurboModule {
-  +registerForcedCloneCommitHook: () => void;
-  +takeFunctionAndNoop: (fn: () => void) => void;
-  +setRootNodeSize: (surfaceId: Int32, width: Float, height: Float) => void;
+  readonly registerForcedCloneCommitHook: () => void;
+  readonly takeFunctionAndNoop: (fn: () => void) => void;
+  readonly setRootNodeSize: (
+    surfaceId: Int32,
+    width: Float,
+    height: Float,
+  ) => void;
 }
 
 export default TurboModuleRegistry.getEnforcing<Spec>(

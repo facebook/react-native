@@ -38,7 +38,7 @@ type NativeProps = Readonly<{
 type ComponentType = HostComponent<NativeProps>;
 
 interface NativeCommands {
-  +show: (viewRef: React.ElementRef<ComponentType>) => void;
+  readonly show: (viewRef: React.ElementRef<ComponentType>) => void;
 }
 
 export const Commands: NativeCommands = codegenNativeCommands<NativeCommands>({

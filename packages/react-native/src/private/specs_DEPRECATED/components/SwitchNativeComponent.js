@@ -48,7 +48,10 @@ type SwitchNativeProps = Readonly<{
 type ComponentType = HostComponent<SwitchNativeProps>;
 
 interface NativeCommands {
-  +setValue: (viewRef: React.ElementRef<ComponentType>, value: boolean) => void;
+  readonly setValue: (
+    viewRef: React.ElementRef<ComponentType>,
+    value: boolean,
+  ) => void;
 }
 
 export const Commands: NativeCommands = codegenNativeCommands<NativeCommands>({
