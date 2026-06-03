@@ -514,7 +514,19 @@ YGErrata YogaLayoutableShadowNode::resolveErrata(YGErrata defaultErrata) const {
           dynamic_cast<const LayoutConformanceShadowNode*>(this)) {
     switch (layoutConformanceNode->getConcreteProps().mode) {
       case LayoutConformance::Strict:
-        return YGErrataNone;
+        // CSS Flexbox §4.5 automatic minimum sizing is the spec-compliant
+        // behaviour, so strict conformance should adopt it — but its probe
+        // walks measure callbacks with `AtMost 0`, which can surface latent
+        // bugs in platform measure overrides. Gate the rollout behind a
+        // feature flag so the behaviour can be ramped independently of strict
+        // conformance: when enabled, clear every errata bit (fully
+        // spec-compliant); when disabled (default), keep
+        // `MinSizeUndefinedInsteadOfAuto` set so strict subtrees preserve
+        // today's behaviour and the auto-min probe stays explicitly opt-in
+        // via `YogaConfig` setup.
+        return ReactNativeFeatureFlags::enableFlexboxAutoMinSizeInStrictMode()
+            ? YGErrataNone
+            : YGErrataMinSizeUndefinedInsteadOfAuto;
       case LayoutConformance::Compatibility:
         return YGErrataAll;
     }

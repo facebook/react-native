@@ -294,6 +294,17 @@ const definitions: FeatureFlagDefinitions = {
       },
       ossReleaseStage: 'none',
     },
+    enableFlexboxAutoMinSizeInStrictMode: {
+      defaultValue: false,
+      metadata: {
+        dateAdded: '2026-06-02',
+        description:
+          'Enables CSS Flexbox §4.5 automatic minimum sizing under strict layout conformance. When enabled, a flex item with an undefined main-axis `min-width`/`min-height` under strict conformance receives a content-derived minimum size (per spec) instead of an undefined (0) minimum. Defaults off so the behaviour can be ramped independently of strict conformance.',
+        expectedReleaseValue: true,
+        purpose: 'experimentation',
+      },
+      ossReleaseStage: 'experimental',
+    },
     enableFontScaleChangesUpdatingLayout: {
       defaultValue: true,
       metadata: {

@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<99f843dd0784f9fe372f943767e2033c>>
+ * @generated SignedSource<<ea8284ad906ae89281a3fbd849e88c19>>
  */
 
 /**
@@ -174,6 +174,12 @@ class ReactNativeFeatureFlagsJavaProvider
   bool enableFabricLogs() override {
     static const auto method =
         getReactNativeFeatureFlagsProviderJavaClass()->getMethod<jboolean()>("enableFabricLogs");
+    return method(javaProvider_);
+  }
+
+  bool enableFlexboxAutoMinSizeInStrictMode() override {
+    static const auto method =
+        getReactNativeFeatureFlagsProviderJavaClass()->getMethod<jboolean()>("enableFlexboxAutoMinSizeInStrictMode");
     return method(javaProvider_);
   }
 
@@ -680,6 +686,11 @@ bool JReactNativeFeatureFlagsCxxInterop::enableFabricLogs(
   return ReactNativeFeatureFlags::enableFabricLogs();
 }
 
+bool JReactNativeFeatureFlagsCxxInterop::enableFlexboxAutoMinSizeInStrictMode(
+    facebook::jni::alias_ref<JReactNativeFeatureFlagsCxxInterop> /*unused*/) {
+  return ReactNativeFeatureFlags::enableFlexboxAutoMinSizeInStrictMode();
+}
+
 bool JReactNativeFeatureFlagsCxxInterop::enableFontScaleChangesUpdatingLayout(
     facebook::jni::alias_ref<JReactNativeFeatureFlagsCxxInterop> /*unused*/) {
   return ReactNativeFeatureFlags::enableFontScaleChangesUpdatingLayout();
@@ -1100,6 +1111,9 @@ void JReactNativeFeatureFlagsCxxInterop::registerNatives() {
       makeNativeMethod(
         "enableFabricLogs",
         JReactNativeFeatureFlagsCxxInterop::enableFabricLogs),
+      makeNativeMethod(
+        "enableFlexboxAutoMinSizeInStrictMode",
+        JReactNativeFeatureFlagsCxxInterop::enableFlexboxAutoMinSizeInStrictMode),
       makeNativeMethod(
         "enableFontScaleChangesUpdatingLayout",
         JReactNativeFeatureFlagsCxxInterop::enableFontScaleChangesUpdatingLayout),

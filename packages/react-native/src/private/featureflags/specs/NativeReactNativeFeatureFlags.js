@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<869507719729d76403ed47be393cc120>>
+ * @generated SignedSource<<98e126bdc863ff4848174f4bd55a5c5b>>
  * @flow strict
  * @noformat
  */
@@ -48,6 +48,7 @@ export interface Spec extends TurboModule {
   +enableExclusivePropsUpdateAndroid?: () => boolean;
   +enableFabricCommitBranching?: () => boolean;
   +enableFabricLogs?: () => boolean;
+  +enableFlexboxAutoMinSizeInStrictMode?: () => boolean;
   +enableFontScaleChangesUpdatingLayout?: () => boolean;
   +enableIOSTextBaselineOffsetPerLine?: () => boolean;
   +enableIOSViewClipToPaddingBox?: () => boolean;

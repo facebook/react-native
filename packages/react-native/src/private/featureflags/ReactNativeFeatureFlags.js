@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<1f78266600508274a623ff1032fa7124>>
+ * @generated SignedSource<<77b178e216aa86a309f46cbf661d9122>>
  * @flow strict
  * @noformat
  */
@@ -70,6 +70,7 @@ export type ReactNativeFeatureFlags = $ReadOnly<{
   enableExclusivePropsUpdateAndroid: Getter<boolean>,
   enableFabricCommitBranching: Getter<boolean>,
   enableFabricLogs: Getter<boolean>,
+  enableFlexboxAutoMinSizeInStrictMode: Getter<boolean>,
   enableFontScaleChangesUpdatingLayout: Getter<boolean>,
   enableIOSTextBaselineOffsetPerLine: Getter<boolean>,
   enableIOSViewClipToPaddingBox: Getter<boolean>,
@@ -292,6 +293,10 @@ export const enableFabricCommitBranching: Getter<boolean> = createNativeFlagGett
  * This feature flag enables logs for Fabric.
  */
 export const enableFabricLogs: Getter<boolean> = createNativeFlagGetter('enableFabricLogs', false);
+/**
+ * Enables CSS Flexbox §4.5 automatic minimum sizing under strict layout conformance. When enabled, a flex item with an undefined main-axis `min-width`/`min-height` under strict conformance receives a content-derived minimum size (per spec) instead of an undefined (0) minimum. Defaults off so the behaviour can be ramped independently of strict conformance.
+ */
+export const enableFlexboxAutoMinSizeInStrictMode: Getter<boolean> = createNativeFlagGetter('enableFlexboxAutoMinSizeInStrictMode', false);
 /**
  * Enables font scale changes updating layout for measurable nodes.
  */
