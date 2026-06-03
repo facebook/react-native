@@ -2784,6 +2784,11 @@ class facebook::react::JCxxCallbackImpl : public jni::HybridClass<facebook::reac
   public static void registerNatives();
 }
 
+class facebook::react::JCxxCallbackRejectImpl : public jni::HybridClass<facebook::react::JCxxCallbackRejectImpl, facebook::react::JCallback> {
+  public static constexpr auto kJavaDescriptor;
+  public static void registerNatives();
+}
+
 class facebook::react::JDynamicNative : public jni::HybridClass<facebook::react::JDynamicNative, facebook::react::JDynamic> {
   public JDynamicNative(folly::dynamic payload);
   public static constexpr auto kJavaDescriptor;

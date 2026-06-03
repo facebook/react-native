@@ -26,7 +26,11 @@ constructor(private var resolve: Callback?, private var reject: Callback?) : Pro
    */
   override fun resolve(value: Any?) {
     resolve?.let { callback ->
-      callback.invoke(value)
+      try {
+        callback.invoke(value)
+      } catch (e: Exception) {
+        reject(e)
+      }
       resolve = null
       reject = null
     }

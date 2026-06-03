@@ -86,6 +86,13 @@ Map {
 
 namespace facebook::react {
 
+/**
+ * JNI C++ class for module 'NativeSampleTurboModule'
+ */
+class JSI_EXPORT NativeSampleTurboModuleSpecJSI : public JavaTurboModule {
+public:
+  NativeSampleTurboModuleSpecJSI(const JavaTurboModule::InitParams &params);
+};
 
 
 JSI_EXPORT

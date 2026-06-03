@@ -8,6 +8,7 @@
 #include <fbjni/fbjni.h>
 #include "JCallback.h"
 #include "JDynamicNative.h"
+#include "JZeroCopyByteBuffer.h"
 #include "JReactMarker.h"
 #include "NativeArray.h"
 #include "NativeMap.h"
@@ -19,7 +20,9 @@ namespace facebook::react {
 extern "C" JNIEXPORT jint JNI_OnLoad(JavaVM* vm, void* reserved) {
   return facebook::jni::initialize(vm, [] {
     JCxxCallbackImpl::registerNatives();
+    JCxxCallbackRejectImpl::registerNatives();
     JDynamicNative::registerNatives();
+    JZeroCopyByteBufferHolder::registerNatives();
     JReactMarker::registerNatives();
     NativeArray::registerNatives();
     NativeMap::registerNatives();

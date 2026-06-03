@@ -5,11 +5,13 @@
  * LICENSE file in the root directory of this source tree.
  */
 
+#include <cstring>
 #include <memory>
 #include <string>
 
 #include <cxxreact/MoveWrapper.h>
 #include <cxxreact/TraceSection.h>
+#include <fbjni/ByteBuffer.h>
 #include <fbjni/fbjni.h>
 #include <glog/logging.h>
 #include <jsi/jsi.h>
@@ -20,9 +22,13 @@
 #include <react/bridging/Bridging.h>
 #include <react/debug/react_native_assert.h>
 #include <react/featureflags/ReactNativeFeatureFlags.h>
+#include <react/jni/JCallback.h>
 #include <react/jni/JDynamicNative.h>
+#include <react/jni/JMutableDataBuffer.h>
+#include <react/jni/JZeroCopyByteBuffer.h>
 #include <react/jni/NativeMap.h>
 #include <react/jni/ReadableNativeMap.h>
+#include <react/jni/TurboModuleJSError.h>
 #include <react/jni/WritableNativeMap.h>
 
 #include "JavaTurboModule.h"
@@ -78,84 +84,20 @@ struct JNIArgs {
   }
 };
 
-jsi::Value createJSRuntimeError(jsi::Runtime& runtime, jsi::Value&& message) {
-  return runtime.global()
-      .getPropertyAsFunction(runtime, "Error")
-      .call(runtime, std::move(message));
-}
-
-jsi::Value createJSRuntimeError(
-    jsi::Runtime& runtime,
-    const std::string& message) {
-  return createJSRuntimeError(
-      runtime, jsi::String::createFromUtf8(runtime, message));
-}
-
-jsi::Value createRejectionError(jsi::Runtime& rt, const folly::dynamic& args) {
-  react_native_assert(
-      args.size() == 1 && "promise reject should has only one argument");
-
-  auto value = jsi::valueFromDynamic(rt, args[0]);
-  react_native_assert(value.isObject() && "promise reject should return a map");
-
-  const jsi::Object& valueAsObject = value.asObject(rt);
-  auto jsError =
-      createJSRuntimeError(rt, valueAsObject.getProperty(rt, "message"));
-
-  auto jsErrorAsObject = jsError.asObject(rt);
-  auto propertyNames = valueAsObject.getPropertyNames(rt);
-  for (size_t i = 0; i < propertyNames.size(rt); ++i) {
-    auto propertyName = jsi::PropNameID::forString(
-        rt, propertyNames.getValueAtIndex(rt, i).asString(rt));
-    jsErrorAsObject.setProperty(
-        rt, propertyName, valueAsObject.getProperty(rt, propertyName));
-  }
-  return jsError;
-}
-
 auto createJavaCallback(
     jsi::Runtime& rt,
     jsi::Function&& function,
     std::shared_ptr<CallInvoker> jsInvoker) {
-  std::optional<AsyncCallback<>> callback(
-      {rt, std::move(function), std::move(jsInvoker)});
   return JCxxCallbackImpl::newObjectCxxArgs(
-      [callback = std::move(callback)](folly::dynamic args) mutable {
-        if (!callback) {
-          LOG(FATAL) << "Callback arg cannot be called more than once";
-          return;
-        }
-        callback->call([args = std::move(args)](
-                           jsi::Runtime& rt, jsi::Function& jsFunction) {
-          std::vector<jsi::Value> jsArgs;
-          jsArgs.reserve(args.size());
-          for (const auto& val : args) {
-            jsArgs.emplace_back(jsi::valueFromDynamic(rt, val));
-          }
-          jsFunction.call(rt, (const jsi::Value*)jsArgs.data(), jsArgs.size());
-        });
-        callback = std::nullopt;
-      });
+      AsyncCallback<>(rt, std::move(function), std::move(jsInvoker)));
 }
 
 auto createJavaRejectCallback(
     jsi::Runtime& rt,
     jsi::Function&& function,
     std::shared_ptr<CallInvoker> jsInvoker) {
-  std::optional<AsyncCallback<>> callback(
-      {rt, std::move(function), std::move(jsInvoker)});
-  return JCxxCallbackImpl::newObjectCxxArgs(
-      [callback = std::move(callback)](folly::dynamic args) mutable {
-        if (!callback) {
-          LOG(FATAL) << "Callback arg cannot be called more than once";
-          return;
-        }
-        callback->call([args = std::move(args)](
-                           jsi::Runtime& rt, jsi::Function& jsFunction) {
-          jsFunction.call(rt, createRejectionError(rt, args));
-        });
-        callback = std::nullopt;
-      });
+  return JCxxCallbackRejectImpl::newObjectCxxArgs(
+      AsyncCallback<>(rt, std::move(function), std::move(jsInvoker)));
 }
 
 struct JPromiseImpl : public jni::JavaClass<JPromiseImpl> {
@@ -311,12 +253,16 @@ JNIArgs convertJSIArgsToJNIArgs(
   auto& jargs = jniArgs.args;
   auto& globalRefs = jniArgs.globalRefs;
 
+  auto makeGlobal = [&](jobject obj) {
+    jobject globalObj = env->NewGlobalRef(obj);
+    globalRefs.push_back(globalObj);
+    env->DeleteLocalRef(obj);
+    return globalObj;
+  };
+
   auto makeGlobalIfNecessary = [&](jobject obj) {
     if (valueKind == VoidKind || valueKind == PromiseKind) {
-      jobject globalObj = env->NewGlobalRef(obj);
-      globalRefs.push_back(globalObj);
-      env->DeleteLocalRef(obj);
-      return globalObj;
+      return makeGlobal(obj);
     }
 
     return obj;
@@ -434,6 +380,46 @@ JNIArgs convertJSIArgsToJNIArgs(
       auto dynamicFromValue = jsi::dynamicFromValue(rt, *arg);
       auto jParams = JDynamicNative::newObjectCxxArgs(dynamicFromValue);
       jarg->l = makeGlobalIfNecessary(jParams.release());
+    } else if (type == "Ljava/nio/ByteBuffer;") {
+      if (!(arg->isObject() && arg->getObject(rt).isArrayBuffer(rt))) {
+        throw JavaTurboModuleArgumentConversionException(
+            "ArrayBuffer", argIndex, methodName, arg, &rt);
+      }
+
+      auto isSync = valueKind != VoidKind && valueKind != PromiseKind;
+      auto arrayBuffer = arg->getObject(rt).getArrayBuffer(rt);
+
+      if (arrayBuffer.detached(rt)) {
+        throw jsi::JSError(
+            rt,
+            "JavaTurboModule::convertJSIArgsToJNIArgs: ArrayBuffer is detached.");
+      }
+
+      auto size = arrayBuffer.size(rt);
+      auto data = arrayBuffer.data(rt);
+      auto buffer = [&]() {
+        // Native-backed buffers keep zero-copy semantics by wrapping the
+        // MutableBuffer in a holder and pinning that holder as a global JNI
+        // ref.
+        if (auto mutableBuffer = arrayBuffer.tryGetMutableBuffer(rt)) {
+          auto wrapped = JZeroCopyByteBufferHolder::wrapMutableBuffer(
+              std::move(mutableBuffer));
+          makeGlobal(wrapped.holder.release());
+          return wrapped.byteBuffer;
+        }
+        // Synchronous invocations can borrow JS-backed bytes for the duration
+        // of the call.
+        if (isSync) {
+          return jni::JByteBuffer::wrapBytes(
+              arrayBuffer.data(rt), arrayBuffer.size(rt));
+        }
+        // Asynchronous JS-backed buffers need an owned copy before they can
+        // escape the JS thread.
+        auto copy = jni::JByteBuffer::allocateDirect(size);
+        std::memcpy(copy->getDirectAddress(), data, size);
+        return copy;
+      }();
+      jarg->l = makeGlobalIfNecessary(buffer.release());
     } else {
       throw JavaTurboModuleInvalidArgumentTypeException(
           type, argIndex, methodName);
@@ -874,15 +860,16 @@ jsi::Value JavaTurboModule::invokeJavaMethod(
                   throw jsi::JSError(runtime, "Incorrect number of arguments");
                 }
 
-                nativeRejectCallback = AsyncCallback(
+                nativeRejectCallback = AsyncCallback<>(
                     runtime,
                     args[1].getObject(runtime).getFunction(runtime),
                     jsInvoker_);
 
-                auto resolve = createJavaCallback(
-                    runtime,
-                    args[0].getObject(runtime).getFunction(runtime),
-                    jsInvoker_);
+                auto resolve = JCxxCallbackImpl::newObjectCxxArgs(
+                    AsyncCallback<>(
+                        runtime,
+                        args[0].getObject(runtime).getFunction(runtime),
+                        jsInvoker_));
                 auto reject = createJavaRejectCallback(
                     runtime,
                     args[1].getObject(runtime).getFunction(runtime),
@@ -962,6 +949,34 @@ jsi::Value JavaTurboModule::invokeJavaMethod(
           });
       TMPL::asyncMethodCallEnd(moduleName, methodName);
       return jsPromise;
+    }
+    case ArrayBufferKind: {
+      auto returnObject =
+          (jobject)env->CallObjectMethodA(instance, methodID, jargs.data());
+      checkJNIErrorForMethodCall();
+
+      TMPL::syncMethodCallExecutionEnd(moduleName, methodName);
+      TMPL::syncMethodCallReturnConversionStart(moduleName, methodName);
+
+      jsi::Value returnValue = jsi::Value::null();
+      if (returnObject != nullptr) {
+        auto jByteBuffer = jni::adopt_local(
+            static_cast<jni::JByteBuffer::javaobject>(returnObject));
+
+        if (!jByteBuffer->isDirect()) {
+          throw jsi::JSError(
+              runtime,
+              "Only direct ByteBuffers (ByteBuffer.allocateDirect) can be returned from a TurboModule.");
+        }
+        auto nativeBuffer =
+            std::make_shared<JMutableDataBuffer>(jni::make_global(jByteBuffer));
+        returnValue = jsi::Value(
+            runtime, jsi::ArrayBuffer(runtime, std::move(nativeBuffer)));
+      }
+
+      TMPL::syncMethodCallReturnConversionEnd(moduleName, methodName);
+      TMPL::syncMethodCallEnd(moduleName, methodName);
+      return returnValue;
     }
     default:
       throw std::runtime_error(
