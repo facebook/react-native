@@ -114,11 +114,19 @@ YogaLayoutableShadowNode::YogaLayoutableShadowNode(
       "Yoga node must inherit dirty flag.");
 #endif
   if (!getTraits().check(ShadowNodeTraits::Trait::LeafYogaNode)) {
-    for (auto& child : getChildren()) {
-      if (auto layoutableChild =
-              std::dynamic_pointer_cast<const YogaLayoutableShadowNode>(
-                  child)) {
-        yogaLayoutableChildren_.push_back(std::move(layoutableChild));
+    if (!fragment.children) {
+      // Children unchanged - copy the filtered list directly from the source
+      // node, avoiding expensive dynamic_pointer_cast on every child.
+      yogaLayoutableChildren_ =
+          static_cast<const YogaLayoutableShadowNode&>(sourceShadowNode)
+              .yogaLayoutableChildren_;
+    } else {
+      for (auto& child : getChildren()) {
+        if (auto layoutableChild =
+                std::dynamic_pointer_cast<const YogaLayoutableShadowNode>(
+                    child)) {
+          yogaLayoutableChildren_.push_back(std::move(layoutableChild));
+        }
       }
     }
   }
@@ -349,6 +357,7 @@ void YogaLayoutableShadowNode::updateYogaChildren() {
 
   yogaNode_.setChildren({});
   yogaLayoutableChildren_.clear();
+  yogaLayoutableChildren_.reserve(getChildren().size());
 
   for (size_t i = 0; i < getChildren().size(); i++) {
     if (auto yogaLayoutableChild =
