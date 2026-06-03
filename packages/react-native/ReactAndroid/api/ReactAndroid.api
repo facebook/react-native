@@ -5429,6 +5429,30 @@ public abstract interface class com/facebook/react/views/scroll/FpsListener {
 	public abstract fun isEnabled ()Z
 }
 
+public final class com/facebook/react/views/scroll/MaintainVisibleScrollPositionHelper : com/facebook/react/bridge/UIManagerListener {
+	public fun <init> (Landroid/view/ViewGroup;Z)V
+	public fun didDispatchMountItems (Lcom/facebook/react/bridge/UIManager;)V
+	public fun didMountItems (Lcom/facebook/react/bridge/UIManager;)V
+	public fun didScheduleMountItems (Lcom/facebook/react/bridge/UIManager;)V
+	public final fun getConfig ()Lcom/facebook/react/views/scroll/MaintainVisibleScrollPositionHelper$Config;
+	public final fun setConfig (Lcom/facebook/react/views/scroll/MaintainVisibleScrollPositionHelper$Config;)V
+	public final fun start ()V
+	public final fun stop ()V
+	public fun willDispatchViewUpdates (Lcom/facebook/react/bridge/UIManager;)V
+	public fun willMountItems (Lcom/facebook/react/bridge/UIManager;)V
+}
+
+public final class com/facebook/react/views/scroll/MaintainVisibleScrollPositionHelper$Config {
+	public static final field Companion Lcom/facebook/react/views/scroll/MaintainVisibleScrollPositionHelper$Config$Companion;
+	public static final fun fromReadableMap (Lcom/facebook/react/bridge/ReadableMap;)Lcom/facebook/react/views/scroll/MaintainVisibleScrollPositionHelper$Config;
+	public final fun getAutoScrollToTopThreshold ()Ljava/lang/Integer;
+	public final fun getMinIndexForVisible ()I
+}
+
+public final class com/facebook/react/views/scroll/MaintainVisibleScrollPositionHelper$Config$Companion {
+	public final fun fromReadableMap (Lcom/facebook/react/bridge/ReadableMap;)Lcom/facebook/react/views/scroll/MaintainVisibleScrollPositionHelper$Config;
+}
+
 public final class com/facebook/react/views/scroll/OnScrollDispatchHelper {
 	public fun <init> ()V
 	public final fun getXFlingVelocity ()F
@@ -5598,6 +5622,7 @@ public final class com/facebook/react/views/scroll/ReactHorizontalScrollViewMana
 public class com/facebook/react/views/scroll/ReactScrollView : android/widget/ScrollView, android/view/View$OnLayoutChangeListener, android/view/ViewGroup$OnHierarchyChangeListener, com/facebook/react/uimanager/ReactClippingViewGroup, com/facebook/react/uimanager/ReactOverflowViewWithInset, com/facebook/react/views/scroll/ReactAccessibleScrollView, com/facebook/react/views/scroll/ReactScrollViewHelper$HasFlingAnimator, com/facebook/react/views/scroll/ReactScrollViewHelper$HasScrollEventThrottle, com/facebook/react/views/scroll/ReactScrollViewHelper$HasScrollState, com/facebook/react/views/scroll/ReactScrollViewHelper$HasSmoothScroll, com/facebook/react/views/scroll/ReactScrollViewHelper$HasStateWrapper, com/facebook/react/views/scroll/VirtualViewContainer {
 	public fun <init> (Landroid/content/Context;)V
 	public fun <init> (Landroid/content/Context;Lcom/facebook/react/views/scroll/FpsListener;)V
+	public synthetic fun <init> (Landroid/content/Context;Lcom/facebook/react/views/scroll/FpsListener;ILkotlin/jvm/internal/DefaultConstructorMarker;)V
 	public fun abortAnimation ()V
 	public fun dispatchGenericMotionEvent (Landroid/view/MotionEvent;)Z
 	public fun draw (Landroid/graphics/Canvas;)V
@@ -5923,6 +5948,28 @@ public abstract interface class com/facebook/react/views/scroll/VirtualView {
 	public abstract fun getContainerRelativeRect ()Landroid/graphics/Rect;
 	public abstract fun getVirtualViewID ()Ljava/lang/String;
 	public abstract fun onModeChange (Lcom/facebook/react/views/virtual/VirtualViewMode;Landroid/graphics/Rect;)V
+}
+
+public abstract class com/facebook/react/views/scroll/VirtualViewContainerState {
+	public static final field Companion Lcom/facebook/react/views/scroll/VirtualViewContainerState$Companion;
+	public fun <init> (Landroid/view/ViewGroup;)V
+	public static final fun create (Landroid/view/ViewGroup;)Lcom/facebook/react/views/scroll/VirtualViewContainerState;
+	protected final fun getEmptyRect ()Landroid/graphics/Rect;
+	protected final fun getPrerenderRatio ()D
+	protected final fun getPrerenderRect ()Landroid/graphics/Rect;
+	protected final fun getScrollView ()Landroid/view/ViewGroup;
+	protected abstract fun getVirtualViews ()Ljava/util/Collection;
+	protected final fun getVisibleRect ()Landroid/graphics/Rect;
+	public fun onChange (Lcom/facebook/react/views/scroll/VirtualView;)V
+	public fun remove (Lcom/facebook/react/views/scroll/VirtualView;)V
+	protected abstract fun updateModes (Lcom/facebook/react/views/scroll/VirtualView;)V
+	public static synthetic fun updateModes$default (Lcom/facebook/react/views/scroll/VirtualViewContainerState;Lcom/facebook/react/views/scroll/VirtualView;ILjava/lang/Object;)V
+	protected final fun updateRects ()V
+	public final fun updateState ()V
+}
+
+public final class com/facebook/react/views/scroll/VirtualViewContainerState$Companion {
+	public final fun create (Landroid/view/ViewGroup;)Lcom/facebook/react/views/scroll/VirtualViewContainerState;
 }
 
 public class com/facebook/react/views/swiperefresh/ReactSwipeRefreshLayout : androidx/swiperefreshlayout/widget/SwipeRefreshLayout {
