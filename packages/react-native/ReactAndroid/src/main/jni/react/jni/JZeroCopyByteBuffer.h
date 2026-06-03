@@ -34,14 +34,10 @@ class JZeroCopyByteBufferHolder
   }
 
   static Wrapped wrapMutableBuffer(std::shared_ptr<jsi::MutableBuffer> buffer) {
-    auto byteBuffer = [&]() {
-      if (auto* javaBacked = dynamic_cast<JMutableDataBuffer*>(buffer.get())) {
-        return javaBacked->getJavaByteBuffer();
-      }
-      auto* mutableBuffer = holder->cthis()->buffer_.get();
-      return jni::JByteBuffer::wrapBytes(
-          mutableBuffer->data(), mutableBuffer->size());
-    }();
+    auto* javaBacked = dynamic_cast<JMutableDataBuffer*>(buffer.get());
+    auto byteBuffer = javaBacked
+        ? javaBacked->getJavaByteBuffer()
+        : jni::JByteBuffer::wrapBytes(buffer->data(), buffer->size());
     auto holder = newObjectCxxArgs(std::move(buffer));
     return {
         std::move(holder),
