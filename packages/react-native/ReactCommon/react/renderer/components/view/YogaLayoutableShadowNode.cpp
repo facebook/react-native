@@ -113,22 +113,15 @@ YogaLayoutableShadowNode::YogaLayoutableShadowNode(
               .yogaNode_) == YGNodeIsDirty(&yogaNode_) &&
       "Yoga node must inherit dirty flag.");
 #endif
-  if (!getTraits().check(ShadowNodeTraits::Trait::LeafYogaNode)) {
-    if (!fragment.children) {
-      // Children unchanged - copy the filtered list directly from the source
-      // node, avoiding expensive dynamic_pointer_cast on every child.
-      yogaLayoutableChildren_ =
-          static_cast<const YogaLayoutableShadowNode&>(sourceShadowNode)
-              .yogaLayoutableChildren_;
-    } else {
-      for (auto& child : getChildren()) {
-        if (auto layoutableChild =
-                std::dynamic_pointer_cast<const YogaLayoutableShadowNode>(
-                    child)) {
-          yogaLayoutableChildren_.push_back(std::move(layoutableChild));
-        }
-      }
-    }
+  if (!getTraits().check(ShadowNodeTraits::Trait::LeafYogaNode) &&
+      !fragment.children) {
+    // Children unchanged: copy the filtered list directly from the source,
+    // skipping per-child dynamic_pointer_cast. When fragment.children is set,
+    // updateYogaChildren() below rebuilds the vector from the new children
+    // list — populating it here would be immediately discarded.
+    yogaLayoutableChildren_ =
+        static_cast<const YogaLayoutableShadowNode&>(sourceShadowNode)
+            .yogaLayoutableChildren_;
   }
 
   YGConfigConstRef previousConfig =
