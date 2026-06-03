@@ -116,9 +116,9 @@ class ReactPlugin : Plugin<Project> {
     }
 
     // Library Only Configuration
-    // configureBuildConfigFieldsForLibraries(project)
-    // configureNamespaceForLibraries(project)
     project.pluginManager.withPlugin("com.android.library") {
+      configureBuildConfigFieldsForLibraries(project)
+      configureNamespaceForLibraries(project)
       configureCodegen(project, extension, rootExtension, isLibrary = true)
     }
   }
@@ -222,12 +222,12 @@ class ReactPlugin : Plugin<Project> {
     if (isLibrary) {
       project.extensions.getByType(LibraryAndroidComponentsExtension::class.java).finalizeDsl { ext
         ->
-        ext.sourceSets.getByName("main").java.srcDir(generatedSrcDir.get().dir("java").asFile)
+        ext.sourceSets.getByName("main").java.directories.add(generatedSrcDir.get().dir("java").asFile.path)
       }
     } else {
       project.extensions.getByType(ApplicationAndroidComponentsExtension::class.java).finalizeDsl {
           ext ->
-        ext.sourceSets.getByName("main").java.srcDir(generatedSrcDir.get().dir("java").asFile)
+        ext.sourceSets.getByName("main").java.directories.add(generatedSrcDir.get().dir("java").asFile.path)
       }
     }
 
