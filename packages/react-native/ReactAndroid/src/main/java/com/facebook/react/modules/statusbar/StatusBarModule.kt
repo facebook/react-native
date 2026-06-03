@@ -151,6 +151,7 @@ internal class StatusBarModule(reactContext: ReactApplicationContext?) :
       return
     }
     UiThreadUtil.runOnUiThread {
+      if (activity.isFinishing || activity.isDestroyed) return@runOnUiThread
       activity.window?.setStatusBarVisibility(hidden)
       extraWindows.forEach { it.setStatusBarVisibility(hidden) }
     }
@@ -166,6 +167,7 @@ internal class StatusBarModule(reactContext: ReactApplicationContext?) :
       return
     }
     UiThreadUtil.runOnUiThread {
+      if (activity.isFinishing || activity.isDestroyed) return@runOnUiThread
       activity.window?.setStatusBarStyle(style)
       extraWindows.forEach { it.setStatusBarStyle(style) }
     }
