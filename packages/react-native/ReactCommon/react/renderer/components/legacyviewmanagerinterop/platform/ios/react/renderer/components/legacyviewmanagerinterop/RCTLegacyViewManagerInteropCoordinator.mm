@@ -6,6 +6,9 @@
  */
 
 #include "RCTLegacyViewManagerInteropCoordinator.h"
+
+#ifndef RCT_REMOVE_LEGACY_COMPONENT_INTEROP
+
 #include <React/RCTBridge+Private.h>
 #include <React/RCTBridgeMethod.h>
 #include <React/RCTBridgeProxy.h>
@@ -220,3 +223,5 @@ using namespace facebook::react;
 }
 
 @end
+
+#endif // RCT_REMOVE_LEGACY_COMPONENT_INTEROP

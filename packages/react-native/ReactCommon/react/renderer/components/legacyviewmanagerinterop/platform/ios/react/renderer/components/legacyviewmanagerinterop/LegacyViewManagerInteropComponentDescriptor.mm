@@ -6,6 +6,9 @@
  */
 
 #include "LegacyViewManagerInteropComponentDescriptor.h"
+
+#ifndef RCT_REMOVE_LEGACY_COMPONENT_INTEROP
+
 #include <React/RCTBridge+Private.h>
 #include <React/RCTBridge.h>
 #include <React/RCTBridgeModuleDecorator.h>
@@ -175,3 +178,5 @@ void LegacyViewManagerInteropComponentDescriptor::adopt(ShadowNode &shadowNode) 
   legacyViewManagerInteropShadowNode.setStateData(std::move(state));
 }
 } // namespace facebook::react
+
+#endif // RCT_REMOVE_LEGACY_COMPONENT_INTEROP

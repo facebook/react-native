@@ -5,6 +5,8 @@
  * LICENSE file in the root directory of this source tree.
  */
 
+#ifndef RCT_REMOVE_LEGACY_COMPONENT_INTEROP
+
 #import <Foundation/Foundation.h>
 #import <React/RCTBridgeModuleDecorator.h>
 #import <UIKit/UIKit.h>
@@ -42,3 +44,5 @@ typedef void (^InterceptorBlock)(std::string eventName, folly::dynamic &&event);
 @end
 
 NS_ASSUME_NONNULL_END
+
+#endif // RCT_REMOVE_LEGACY_COMPONENT_INTEROP

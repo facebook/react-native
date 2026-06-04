@@ -56,9 +56,11 @@ BOOL RCTTurboModuleInteropEnabled(void);
 void RCTEnableTurboModuleInterop(BOOL enabled);
 #endif // RCT_REMOVE_LEGACY_MODULE_INTEROP
 
+#ifndef RCT_REMOVE_LEGACY_COMPONENT_INTEROP
 // Turn on the fabric interop layer
 BOOL RCTFabricInteropLayerEnabled(void);
 void RCTEnableFabricInteropLayer(BOOL enabled);
+#endif // RCT_REMOVE_LEGACY_COMPONENT_INTEROP
 
 BOOL RCTUIManagerDispatchAccessibilityManagerInitOntoMain(void);
 void RCTUIManagerSetDispatchAccessibilityManagerInitOntoMain(BOOL enabled);

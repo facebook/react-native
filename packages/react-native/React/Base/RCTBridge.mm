@@ -211,6 +211,7 @@ void RCTEnableTurboModuleInterop(BOOL enabled)
 }
 #endif // RCT_REMOVE_LEGACY_MODULE_INTEROP
 
+#ifndef RCT_REMOVE_LEGACY_COMPONENT_INTEROP
 static BOOL fabricInteropLayerEnabled = YES;
 BOOL RCTFabricInteropLayerEnabled()
 {
@@ -221,6 +222,7 @@ void RCTEnableFabricInteropLayer(BOOL enabled)
 {
   fabricInteropLayerEnabled = enabled;
 }
+#endif // RCT_REMOVE_LEGACY_COMPONENT_INTEROP
 
 static RCTBridgeProxyLoggingLevel bridgeProxyLoggingLevel = kRCTBridgeProxyLoggingLevelNone;
 RCTBridgeProxyLoggingLevel RCTTurboModuleInteropBridgeProxyLogLevel(void)

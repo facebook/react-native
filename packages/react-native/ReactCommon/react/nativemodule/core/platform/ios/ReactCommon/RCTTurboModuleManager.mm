@@ -758,6 +758,7 @@ Class getFallbackClassFromName(const char *name)
     return moduleClass;
   }
 
+#ifndef RCT_REMOVE_LEGACY_MODULE_INTEROP
   // fallback on modules registered throught RCT_EXPORT_MODULE with custom names
   NSString *objcModuleName = [NSString stringWithUTF8String:moduleName];
   NSArray<Class> *modules = RCTGetModuleClasses();
@@ -767,6 +768,7 @@ Class getFallbackClassFromName(const char *name)
       return current;
     }
   }
+#endif
 
   return moduleClass;
 }
