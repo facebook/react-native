@@ -15,6 +15,7 @@ import static com.facebook.react.views.scroll.ReactScrollViewHelper.findNextFocu
 
 import android.animation.ObjectAnimator;
 import android.animation.ValueAnimator;
+import android.annotation.SuppressLint;
 import android.content.Context;
 import android.graphics.Canvas;
 import android.graphics.Color;
@@ -799,7 +800,8 @@ public class ReactScrollView extends ScrollView
   }
 
   @Override
-  public boolean getChildVisibleRect(View child, Rect r, android.graphics.Point offset) {
+  @SuppressLint("NullsafeMismatch")
+  public boolean getChildVisibleRect(View child, Rect r, @Nullable android.graphics.Point offset) {
     return super.getChildVisibleRect(child, r, offset);
   }
 

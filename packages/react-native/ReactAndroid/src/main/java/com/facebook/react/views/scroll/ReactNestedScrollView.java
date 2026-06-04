@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<ee631e2aaec71e0722c894a07f4f7022>>
+ * @generated SignedSource<<73693667f092b5c8a9f5b10c479e8174>>
  */
 
 /**
@@ -23,6 +23,7 @@ import static com.facebook.react.views.scroll.ReactScrollViewHelper.findNextFocu
 
 import android.animation.ObjectAnimator;
 import android.animation.ValueAnimator;
+import android.annotation.SuppressLint;
 import android.content.Context;
 import android.graphics.Canvas;
 import android.graphics.Color;
@@ -807,7 +808,8 @@ class ReactNestedScrollView extends NestedScrollView
   }
 
   @Override
-  public boolean getChildVisibleRect(View child, Rect r, android.graphics.Point offset) {
+  @SuppressLint("NullsafeMismatch")
+  public boolean getChildVisibleRect(View child, Rect r, @Nullable android.graphics.Point offset) {
     return super.getChildVisibleRect(child, r, offset);
   }
 
