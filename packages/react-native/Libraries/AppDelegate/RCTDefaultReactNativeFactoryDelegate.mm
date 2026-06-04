@@ -31,11 +31,6 @@
   return [UIViewController new];
 }
 
-- (RCTBridge *)createBridgeWithDelegate:(id<RCTBridgeDelegate>)delegate launchOptions:(NSDictionary *)launchOptions
-{
-  return [[RCTBridge alloc] initWithDelegate:delegate launchOptions:launchOptions];
-}
-
 - (void)setRootView:(UIView *)rootView toRootViewController:(UIViewController *)rootViewController
 {
   rootViewController.view = rootView;
@@ -55,21 +50,6 @@
 - (void)customizeRootView:(RCTRootView *)rootView
 {
   // Override point for customization after application launch.
-}
-
-- (UIView *)createRootViewWithBridge:(RCTBridge *)bridge
-                          moduleName:(NSString *)moduleName
-                           initProps:(NSDictionary *)initProps
-{
-  UIView *rootView = RCTAppSetupDefaultRootView(bridge, moduleName, initProps, YES);
-
-#if TARGET_OS_TV
-  rootView.backgroundColor = [UIColor clearColor];
-#else
-  rootView.backgroundColor = [UIColor systemBackgroundColor];
-#endif
-
-  return rootView;
 }
 
 - (RCTColorSpace)defaultColorSpace
