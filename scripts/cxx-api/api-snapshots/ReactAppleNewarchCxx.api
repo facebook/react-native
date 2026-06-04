@@ -2967,8 +2967,6 @@ protocol RCTReactNativeFactoryDelegate : public RCTBridgeDelegate, public RCTUIC
   public @property (strong) id<RCTDependencyProvider> dependencyProvider;
   public virtual NSDictionary<NSString*, Class<RCTComponentViewProtocol>>* thirdPartyFabricComponents();
   public virtual NSURL* _Nullable bundleURL();
-  public virtual RCTBridge* createBridgeWithDelegate:launchOptions:(id<RCTBridgeDelegate> delegate, NSDictionary* launchOptions);
-  public virtual UIView* createRootViewWithBridge:moduleName:initProps:(RCTBridge* bridge, NSString* moduleName, NSDictionary* initProps);
 }
 
 protocol RCTRedBoxExtraDataActionDelegate : public NSObject {

@@ -238,14 +238,6 @@ using namespace facebook::react;
                                                    turboModuleEnabled:YES
                                                     bridgelessEnabled:YES];
 
-  configuration.createRootViewWithBridge = ^UIView *(RCTBridge *bridge, NSString *moduleName, NSDictionary *initProps) {
-    return [weakSelf.delegate createRootViewWithBridge:bridge moduleName:moduleName initProps:initProps];
-  };
-
-  configuration.createBridgeWithDelegate = ^RCTBridge *(id<RCTBridgeDelegate> delegate, NSDictionary *launchOptions) {
-    return [weakSelf.delegate createBridgeWithDelegate:delegate launchOptions:launchOptions];
-  };
-
   configuration.customizeRootView = ^(UIView *_Nonnull rootView) {
     [weakSelf.delegate customizeRootView:(RCTRootView *)rootView];
   };
