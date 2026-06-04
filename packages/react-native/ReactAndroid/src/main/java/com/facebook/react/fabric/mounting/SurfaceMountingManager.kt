@@ -1204,6 +1204,7 @@ internal constructor(
       params: WritableMap?,
       @EventCategoryDef eventCategory: Int,
       eventTimestamp: Long,
+      customCoalesceKey: Int = 0,
   ) {
     val viewState = registryGet(reactTag)
     if (viewState == null) {
@@ -1225,7 +1226,14 @@ internal constructor(
               viewState.pendingEventQueue
                   ?: LinkedList<PendingViewEvent>().also { viewState.pendingEventQueue = it }
           queue.add(
-              PendingViewEvent(eventName, params, eventCategory, canCoalesceEvent, eventTimestamp)
+              PendingViewEvent(
+                  eventName,
+                  params,
+                  eventCategory,
+                  canCoalesceEvent,
+                  eventTimestamp,
+                  customCoalesceKey,
+              )
           )
           return
         }
@@ -1241,7 +1249,7 @@ internal constructor(
 
     checkNotNull(emitter)
     if (canCoalesceEvent) {
-      emitter.dispatchUnique(eventName, params, eventTimestamp)
+      emitter.dispatchUnique(eventName, params, eventTimestamp, customCoalesceKey)
     } else {
       emitter.dispatch(eventName, params, eventCategory, eventTimestamp)
     }
@@ -1286,10 +1294,11 @@ internal constructor(
       @field:EventCategoryDef private val eventCategory: Int,
       private val canCoalesceEvent: Boolean,
       private val eventTimestamp: Long,
+      private val customCoalesceKey: Int,
   ) {
     fun dispatch(eventEmitter: EventEmitterWrapper) {
       if (canCoalesceEvent) {
-        eventEmitter.dispatchUnique(eventName, params, eventTimestamp)
+        eventEmitter.dispatchUnique(eventName, params, eventTimestamp, customCoalesceKey)
       } else {
         eventEmitter.dispatch(eventName, params, eventCategory, eventTimestamp)
       }
