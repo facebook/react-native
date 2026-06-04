@@ -16,9 +16,6 @@ NS_ASSUME_NONNULL_BEGIN
 
 // Whether the New Architecture is enabled or not
 RCT_EXTERN BOOL RCTIsNewArchEnabled(void);
-RCT_EXTERN void RCTSetNewArchEnabled(BOOL enabled) __attribute__((deprecated(
-    "This function is now no-op. You need to modify the Info.plist adding a RCTNewArchEnabled bool property to control whether the New Arch is enabled or not")));
-;
 
 // Whether React native should output logs for modules and components used
 // through the interop layers

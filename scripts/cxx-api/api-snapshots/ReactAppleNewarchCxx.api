@@ -1632,13 +1632,6 @@ interface RCTRedBoxExtraDataViewController : public UIViewController <UITableVie
 interface RCTRootComponentView : public RCTViewComponentView {
 }
 
-interface RCTRootShadowView : public RCTShadowView {
-  public @property (assign) CGSize availableSize;
-  public @property (assign) CGSize minimumSize;
-  public @property (assign) YGDirection baseDirection;
-  public virtual void layoutWithAffectedShadowViews:(NSPointerArray* affectedShadowViews);
-}
-
 interface RCTRootView : public UIView {
   public @property (assign) BOOL passThroughTouches;
   public @property (assign) CGSize minimumSize;
@@ -1792,7 +1785,6 @@ interface RCTShadowView : public NSObject <RCTComponent> {
   public @property (assign, readonly) YGNodeRef yogaNode;
   public @property (copy) NSString* viewName;
   public @property (copy) RCTDirectEventBlock onLayout;
-  public @property (weak, readonly) RCTRootShadowView* rootView;
   public @property (weak, readonly) RCTShadowView* superview;
   public virtual BOOL canHaveSubviews();
   public virtual BOOL isYogaLeafNode();
@@ -2713,9 +2705,6 @@ protocol RCTContextContainerHandling : public NSObject {
 protocol RCTCustomPullToRefreshViewProtocol {
 }
 
-protocol RCTCustomRefreshContolProtocol : public RCTCustomRefreshControlProtocol {
-}
-
 protocol RCTCustomRefreshControlProtocol {
   public @property (assign, readonly) BOOL refreshing;
   public @property (copy) RCTDirectEventBlock onRefresh;
@@ -3097,7 +3086,6 @@ protocol RCTTurboModuleRegistry : public NSObject {
 }
 
 protocol RCTTurboModuleWithJSIBindings : public NSObject {
-  public virtual void installJSIBindingsWithRuntime:(facebook::jsi::Runtime& runtime);
   public virtual void installJSIBindingsWithRuntime:callInvoker:(facebook::jsi::Runtime& runtime, const std::shared_ptr<facebook::react::CallInvoker>& callinvoker);
 }
 

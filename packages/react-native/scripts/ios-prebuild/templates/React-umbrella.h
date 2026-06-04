@@ -184,7 +184,6 @@
 #import <React/RCTRefreshableProtocol.h>
 #import <React/RCTReloadCommand.h>
 #import <React/RCTResizeMode.h>
-#import <React/RCTRootShadowView.h>
 #import <React/RCTRootView.h>
 #import <React/RCTRootViewDelegate.h>
 #import <React/RCTScrollEvent.h>
@@ -192,7 +191,6 @@
 #import <React/RCTScrollableProtocol.h>
 #import <React/RCTSettingsManager.h>
 #import <React/RCTSettingsPlugins.h>
-#import <React/RCTShadowView+Internal.h>
 #import <React/RCTShadowView+Layout.h>
 #import <React/RCTShadowView.h>
 #import <React/RCTSourceCode.h>
