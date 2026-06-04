@@ -1583,7 +1583,6 @@ interface RCTRadialGradient : public NSObject {
 }
 
 interface RCTReactNativeFactory : public NSObject {
-  public @property (assign) RCTBridge* bridge;
   public @property (assign) RCTDevMenuConfiguration* devMenuConfiguration;
   public @property (assign) RCTSurfacePresenterBridgeAdapter* bridgeAdapter;
   public @property (strong) RCTBundleConfiguration* bundleConfiguration;
@@ -2980,8 +2979,6 @@ protocol RCTReactNativeFactoryDelegate : public RCTBridgeDelegate, public RCTUIC
   public @property (strong) id<RCTDependencyProvider> dependencyProvider;
   public virtual NSDictionary<NSString*, Class<RCTComponentViewProtocol>>* thirdPartyFabricComponents();
   public virtual NSURL* _Nullable bundleURL();
-  public virtual RCTBridge* createBridgeWithDelegate:launchOptions:(id<RCTBridgeDelegate> delegate, NSDictionary* launchOptions);
-  public virtual UIView* createRootViewWithBridge:moduleName:initProps:(RCTBridge* bridge, NSString* moduleName, NSDictionary* initProps);
 }
 
 protocol RCTRedBoxExtraDataActionDelegate : public NSObject {
