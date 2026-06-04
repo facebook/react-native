@@ -5429,30 +5429,6 @@ public abstract interface class com/facebook/react/views/scroll/FpsListener {
 	public abstract fun isEnabled ()Z
 }
 
-public final class com/facebook/react/views/scroll/MaintainVisibleScrollPositionHelper : com/facebook/react/bridge/UIManagerListener {
-	public fun <init> (Landroid/view/ViewGroup;Z)V
-	public fun didDispatchMountItems (Lcom/facebook/react/bridge/UIManager;)V
-	public fun didMountItems (Lcom/facebook/react/bridge/UIManager;)V
-	public fun didScheduleMountItems (Lcom/facebook/react/bridge/UIManager;)V
-	public final fun getConfig ()Lcom/facebook/react/views/scroll/MaintainVisibleScrollPositionHelper$Config;
-	public final fun setConfig (Lcom/facebook/react/views/scroll/MaintainVisibleScrollPositionHelper$Config;)V
-	public final fun start ()V
-	public final fun stop ()V
-	public fun willDispatchViewUpdates (Lcom/facebook/react/bridge/UIManager;)V
-	public fun willMountItems (Lcom/facebook/react/bridge/UIManager;)V
-}
-
-public final class com/facebook/react/views/scroll/MaintainVisibleScrollPositionHelper$Config {
-	public static final field Companion Lcom/facebook/react/views/scroll/MaintainVisibleScrollPositionHelper$Config$Companion;
-	public static final fun fromReadableMap (Lcom/facebook/react/bridge/ReadableMap;)Lcom/facebook/react/views/scroll/MaintainVisibleScrollPositionHelper$Config;
-	public final fun getAutoScrollToTopThreshold ()Ljava/lang/Integer;
-	public final fun getMinIndexForVisible ()I
-}
-
-public final class com/facebook/react/views/scroll/MaintainVisibleScrollPositionHelper$Config$Companion {
-	public final fun fromReadableMap (Lcom/facebook/react/bridge/ReadableMap;)Lcom/facebook/react/views/scroll/MaintainVisibleScrollPositionHelper$Config;
-}
-
 public final class com/facebook/react/views/scroll/OnScrollDispatchHelper {
 	public fun <init> ()V
 	public final fun getXFlingVelocity ()F
@@ -5540,7 +5516,6 @@ public class com/facebook/react/views/scroll/ReactHorizontalScrollView : android
 	public fun setFadingEdgeLengthEnd (I)V
 	public fun setFadingEdgeLengthStart (I)V
 	public fun setLastScrollDispatchTime (J)V
-	public fun setMaintainVisibleContentPosition (Lcom/facebook/react/views/scroll/MaintainVisibleScrollPositionHelper$Config;)V
 	public fun setOverflow (Ljava/lang/String;)V
 	public fun setOverflowInset (IIII)V
 	public fun setPagingEnabled (Z)V
@@ -5685,7 +5660,6 @@ public class com/facebook/react/views/scroll/ReactScrollView : android/widget/Sc
 	public fun setFadingEdgeLengthEnd (I)V
 	public fun setFadingEdgeLengthStart (I)V
 	public fun setLastScrollDispatchTime (J)V
-	public fun setMaintainVisibleContentPosition (Lcom/facebook/react/views/scroll/MaintainVisibleScrollPositionHelper$Config;)V
 	public fun setOverflow (Ljava/lang/String;)V
 	public fun setOverflowInset (IIII)V
 	public fun setPagingEnabled (Z)V

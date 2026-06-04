@@ -28,12 +28,12 @@ import java.lang.ref.WeakReference
  * This uses UIManager to listen to updates and capture position of items before and after layout.
  */
 @OptIn(UnstableReactNativeAPI::class)
-public class MaintainVisibleScrollPositionHelper<ScrollViewT>(
+internal class MaintainVisibleScrollPositionHelper<ScrollViewT>(
     private val scrollView: ScrollViewT,
     private val horizontal: Boolean,
 ) : UIManagerListener where ScrollViewT : HasSmoothScroll?, ScrollViewT : ViewGroup? {
 
-  public var config: Config? = null
+  var config: Config? = null
   private var firstVisibleViewRef: WeakReference<View>? = null
   private var prevFirstVisibleFrame: Rect? = null
   private var isListening = false
@@ -50,14 +50,11 @@ public class MaintainVisibleScrollPositionHelper<ScrollViewT>(
             )
         )
 
-  public class Config
-  internal constructor(
-      public val minIndexForVisible: Int,
-      public val autoScrollToTopThreshold: Int?,
-  ) {
-    public companion object {
+  class Config
+  internal constructor(val minIndexForVisible: Int, val autoScrollToTopThreshold: Int?) {
+    companion object {
       @JvmStatic
-      public fun fromReadableMap(value: ReadableMap): Config {
+      fun fromReadableMap(value: ReadableMap): Config {
         val minIndexForVisible = value.getInt("minIndexForVisible")
         val autoScrollToTopThreshold =
             if (value.hasKey("autoscrollToTopThreshold")) value.getInt("autoscrollToTopThreshold")
@@ -68,7 +65,7 @@ public class MaintainVisibleScrollPositionHelper<ScrollViewT>(
   }
 
   /** Start listening to view hierarchy updates. Should be called when this is created. */
-  public fun start() {
+  fun start() {
     if (isListening) {
       return
     }
@@ -77,7 +74,7 @@ public class MaintainVisibleScrollPositionHelper<ScrollViewT>(
   }
 
   /** Stop listening to view hierarchy updates. Should be called before this is destroyed. */
-  public fun stop() {
+  fun stop() {
     if (!isListening) {
       return
     }
