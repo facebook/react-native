@@ -46,14 +46,3 @@ std::unique_ptr<facebook::react::JSExecutorFactory> RCTAppSetupJsExecutorFactory
 ;
 
 #endif // __cplusplus
-
-RCT_EXTERN_C_BEGIN
-
-void RCTAppSetupPrepareApp(UIApplication *application, BOOL turboModuleEnabled) __attribute__((deprecated(
-    "RCTAppSetupPrepareApp(UIApplication, BOOL) is deprecated and it's signature will change when we remove the legacy arch")));
-UIView *
-RCTAppSetupDefaultRootView(RCTBridge *bridge, NSString *moduleName, NSDictionary *initialProperties, BOOL fabricEnabled)
-    __attribute__((deprecated(
-        "RCTAppSetupDefaultRootView(RCTBridge *, NSString *, NSDictionary *, BOOL) is deprecated and it's signature will change when we remove the legacy arch")));
-
-RCT_EXTERN_C_END

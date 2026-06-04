@@ -28,28 +28,6 @@
 
 #import "RCTDependencyProvider.h"
 
-void RCTAppSetupPrepareApp(UIApplication *application, BOOL turboModuleEnabled)
-{
-  RCTEnableTurboModule(YES);
-
-#if DEBUG
-  // Disable idle timer in dev builds to avoid putting application in background and complicating
-  // Metro reconnection logic. Users only need this when running the application using our CLI tooling.
-  application.idleTimerDisabled = YES;
-#endif
-}
-
-UIView *
-RCTAppSetupDefaultRootView(RCTBridge *bridge, NSString *moduleName, NSDictionary *initialProperties, BOOL fabricEnabled)
-{
-  id<RCTSurfaceProtocol> surface = [[RCTFabricSurface alloc] initWithBridge:bridge
-                                                                 moduleName:moduleName
-                                                          initialProperties:initialProperties];
-  UIView *rootView = [[RCTSurfaceHostingProxyRootView alloc] initWithSurface:surface];
-  [surface start];
-  return rootView;
-}
-
 NSArray<NSString *> *RCTAppSetupUnstableModulesRequiringMainQueueSetup(id<RCTDependencyProvider> dependencyProvider)
 {
   // For oss, insert core main queue setup modules here
