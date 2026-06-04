@@ -41,6 +41,8 @@ using namespace facebook;
   void *_runtime;
 }
 
+@synthesize performanceLogger = _performanceLogger;
+
 #pragma clang diagnostic push
 #pragma clang diagnostic ignored "-Wobjc-designated-initializers"
 - (instancetype)initWithViewRegistry:(RCTViewRegistry *)viewRegistry
@@ -211,12 +213,6 @@ using namespace facebook;
 {
   [self logWarning:@"This method is not implemented. Returning NO." cmd:_cmd];
   return NO;
-}
-
-- (RCTPerformanceLogger *)performanceLogger
-{
-  [self logWarning:@"This method is not supported. Returning nil." cmd:_cmd];
-  return nil;
 }
 
 - (void)reload
