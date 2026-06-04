@@ -328,10 +328,28 @@ internal object TextLayoutManager {
           )
         }
         if (textAttributes.isUnderlineTextDecorationSet) {
-          ops.add(SetSpanOperation(start, end, ReactUnderlineSpan()))
+          ops.add(
+              SetSpanOperation(
+                  start,
+                  end,
+                  ReactUnderlineSpan(
+                      textAttributes.textDecorationColor,
+                      textAttributes.textDecorationStyle,
+                  ),
+              )
+          )
         }
         if (textAttributes.isLineThroughTextDecorationSet) {
-          ops.add(SetSpanOperation(start, end, ReactStrikethroughSpan()))
+          ops.add(
+              SetSpanOperation(
+                  start,
+                  end,
+                  ReactStrikethroughSpan(
+                      textAttributes.textDecorationColor,
+                      textAttributes.textDecorationStyle,
+                  ),
+              )
+          )
         }
         if (
             (textAttributes.textShadowOffsetDx != 0f ||
@@ -542,11 +560,27 @@ internal object TextLayoutManager {
         }
 
         if (fragment.props.isUnderlineTextDecorationSet) {
-          spannable.setSpan(ReactUnderlineSpan(), start, end, spanFlags)
+          spannable.setSpan(
+              ReactUnderlineSpan(
+                  fragment.props.textDecorationColor,
+                  fragment.props.textDecorationStyle,
+              ),
+              start,
+              end,
+              spanFlags,
+          )
         }
 
         if (fragment.props.isLineThroughTextDecorationSet) {
-          spannable.setSpan(ReactStrikethroughSpan(), start, end, spanFlags)
+          spannable.setSpan(
+              ReactStrikethroughSpan(
+                  fragment.props.textDecorationColor,
+                  fragment.props.textDecorationStyle,
+              ),
+              start,
+              end,
+              spanFlags,
+          )
         }
 
         if (

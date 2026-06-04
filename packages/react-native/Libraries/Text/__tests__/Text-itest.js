@@ -311,6 +311,204 @@ describe('<Text>', () => {
     });
 
     describe('style', () => {
+      describe('textDecorationStyle', () => {
+        it('propagates each style to mounting layer', () => {
+          const root = Fantom.createRoot();
+
+          Fantom.runTask(() => {
+            root.render(
+              <Text
+                style={{
+                  textDecorationLine: 'underline',
+                  textDecorationStyle: 'solid',
+                }}>
+                {TEST_TEXT}
+              </Text>,
+            );
+          });
+
+          expect(
+            root
+              .getRenderedOutput({
+                props: ['textDecorationLineType', 'textDecorationStyle'],
+              })
+              .toJSX(),
+          ).toEqual(
+            <rn-paragraph
+              textDecorationLineType="underline"
+              textDecorationStyle="solid">
+              {TEST_TEXT}
+            </rn-paragraph>,
+          );
+
+          Fantom.runTask(() => {
+            root.render(
+              <Text
+                style={{
+                  textDecorationLine: 'underline',
+                  textDecorationStyle: 'double',
+                }}>
+                {TEST_TEXT}
+              </Text>,
+            );
+          });
+
+          expect(
+            root
+              .getRenderedOutput({
+                props: ['textDecorationLineType', 'textDecorationStyle'],
+              })
+              .toJSX(),
+          ).toEqual(
+            <rn-paragraph
+              textDecorationLineType="underline"
+              textDecorationStyle="double">
+              {TEST_TEXT}
+            </rn-paragraph>,
+          );
+
+          Fantom.runTask(() => {
+            root.render(
+              <Text
+                style={{
+                  textDecorationLine: 'underline',
+                  textDecorationStyle: 'dotted',
+                }}>
+                {TEST_TEXT}
+              </Text>,
+            );
+          });
+
+          expect(
+            root
+              .getRenderedOutput({
+                props: ['textDecorationLineType', 'textDecorationStyle'],
+              })
+              .toJSX(),
+          ).toEqual(
+            <rn-paragraph
+              textDecorationLineType="underline"
+              textDecorationStyle="dotted">
+              {TEST_TEXT}
+            </rn-paragraph>,
+          );
+
+          Fantom.runTask(() => {
+            root.render(
+              <Text
+                style={{
+                  textDecorationLine: 'underline',
+                  textDecorationStyle: 'dashed',
+                }}>
+                {TEST_TEXT}
+              </Text>,
+            );
+          });
+
+          expect(
+            root
+              .getRenderedOutput({
+                props: ['textDecorationLineType', 'textDecorationStyle'],
+              })
+              .toJSX(),
+          ).toEqual(
+            <rn-paragraph
+              textDecorationLineType="underline"
+              textDecorationStyle="dashed">
+              {TEST_TEXT}
+            </rn-paragraph>,
+          );
+
+          Fantom.runTask(() => {
+            root.render(
+              <Text
+                style={{
+                  textDecorationLine: 'underline',
+                  textDecorationStyle: 'wavy',
+                }}>
+                {TEST_TEXT}
+              </Text>,
+            );
+          });
+
+          expect(
+            root
+              .getRenderedOutput({
+                props: ['textDecorationLineType', 'textDecorationStyle'],
+              })
+              .toJSX(),
+          ).toEqual(
+            <rn-paragraph
+              textDecorationLineType="underline"
+              textDecorationStyle="wavy">
+              {TEST_TEXT}
+            </rn-paragraph>,
+          );
+        });
+
+        it('works with multi-line wrapped text', () => {
+          const root = Fantom.createRoot({viewportWidth: 100});
+
+          Fantom.runTask(() => {
+            root.render(
+              <Text
+                style={{
+                  textDecorationLine: 'underline',
+                  textDecorationStyle: 'wavy',
+                }}>
+                This is a long text that should wrap across multiple lines to
+                verify decoration continuity
+              </Text>,
+            );
+          });
+
+          expect(
+            root
+              .getRenderedOutput({
+                props: ['textDecorationLineType', 'textDecorationStyle'],
+              })
+              .toJSX(),
+          ).toEqual(
+            <rn-paragraph
+              textDecorationLineType="underline"
+              textDecorationStyle="wavy">
+              This is a long text that should wrap across multiple lines to
+              verify decoration continuity
+            </rn-paragraph>,
+          );
+        });
+
+        it('works with line-through', () => {
+          const root = Fantom.createRoot();
+
+          Fantom.runTask(() => {
+            root.render(
+              <Text
+                style={{
+                  textDecorationLine: 'line-through',
+                  textDecorationStyle: 'wavy',
+                }}>
+                {TEST_TEXT}
+              </Text>,
+            );
+          });
+
+          expect(
+            root
+              .getRenderedOutput({
+                props: ['textDecorationLineType', 'textDecorationStyle'],
+              })
+              .toJSX(),
+          ).toEqual(
+            <rn-paragraph
+              textDecorationLineType="strikethrough"
+              textDecorationStyle="wavy">
+              {TEST_TEXT}
+            </rn-paragraph>,
+          );
+        });
+      });
+
       describe('writingDirection', () => {
         it('propagates to mounting layer', () => {
           const root = Fantom.createRoot();
