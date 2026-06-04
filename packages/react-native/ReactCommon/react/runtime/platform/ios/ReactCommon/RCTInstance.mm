@@ -48,7 +48,9 @@
 
 #import "ObjCTimerRegistry.h"
 #import "RCTJSThreadManager.h"
+#ifndef RCT_REMOVE_LEGACY_COMPONENT_INTEROP
 #import "RCTLegacyUIManagerConstantsProvider.h"
+#endif
 #import "RCTPerformanceLoggerUtils.h"
 
 #if RCT_DEV_MENU && __has_include(<React/RCTDevLoadingViewProtocol.h>)
@@ -447,9 +449,11 @@ void RCTInstanceSetRuntimeDiagnosticFlags(NSString *flags)
     });
     RCTInstallNativeComponentRegistryBinding(runtime);
 
+#ifndef RCT_REMOVE_LEGACY_COMPONENT_INTEROP
     if (ReactNativeFeatureFlags::useNativeViewConfigsInBridgelessMode()) {
       installLegacyUIManagerConstantsProviderBinding(runtime);
     }
+#endif
 
     [strongSelf->_delegate instance:strongSelf didInitializeRuntime:runtime];
 
