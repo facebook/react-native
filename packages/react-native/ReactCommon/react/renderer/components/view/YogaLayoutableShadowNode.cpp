@@ -100,19 +100,14 @@ YogaLayoutableShadowNode::YogaLayoutableShadowNode(
       yogaNode_(
           static_cast<const YogaLayoutableShadowNode&>(sourceShadowNode)
               .yogaNode_) {
-// Note, cloned `yoga::Node` instance (copied using copy-constructor) inherits
-// dirty flag, measure function, and other properties being set originally in
-// the `YogaLayoutableShadowNode` constructor above.
-
-// There is a known race condition when background executor is enabled, where
-// a tree may be laid out on the Fabric background thread concurrently with
-// the ShadowTree being created on the JS thread. This assert can be
-// re-enabled after disabling background executor everywhere.
-#if 0
-  react_native_assert(YGNodeIsDirty(&static_cast<const YogaLayoutableShadowNode&>(sourceShadowNode)
-              .yogaNode_) == YGNodeIsDirty(&yogaNode_) &&
+  // Note, cloned `yoga::Node` instance (copied using copy-constructor)
+  // inherits dirty flag, measure function, and other properties being set
+  // originally in the `YogaLayoutableShadowNode` constructor above.
+  react_native_assert(
+      YGNodeIsDirty(
+          &static_cast<const YogaLayoutableShadowNode&>(sourceShadowNode)
+               .yogaNode_) == YGNodeIsDirty(&yogaNode_) &&
       "Yoga node must inherit dirty flag.");
-#endif
   if (!getTraits().check(ShadowNodeTraits::Trait::LeafYogaNode) &&
       !fragment.children) {
     // Children unchanged: copy the filtered list directly from the source,
@@ -326,11 +321,28 @@ bool YogaLayoutableShadowNode::shouldNewRevisionDirtyMeasurement(
   return true;
 }
 
+// Detects the ABA scenario where a freshly-allocated `yogaNode_` happens
+// to land at the same address a previous parent occupied. After such a
+// realloc, any Yoga child whose owner pointer still equals `&yogaNode_`
+// is a stale match — yoga would mistake it for "owned by us" and skip the
+// clone-on-write check. We rewrite those spurious owner pointers to a
+// recognisable sentinel so the next `YGNodeGetOwner(child) == this` check
+// correctly returns false and yoga clones the child as it would for any
+// foreign tree.
+//
+// No-op in the common case: right after a clone, children's owner
+// pointers still reference the source node, not us.
 void YogaLayoutableShadowNode::updateYogaChildrenOwnersIfNeeded() {
+  // Magic constant intentionally recognisable in debuggers when the address
+  // pops up. `reinterpret_cast` is not constexpr, so this is a runtime-
+  // initialised function-local static.
+  // NOLINTBEGIN(cppcoreguidelines-pro-type-reinterpret-cast)
+  static auto* const kDetachedYogaNodeOwnerSentinel =
+      reinterpret_cast<yoga::Node*>(0xBADC0FFEE0DDF00DULL);
+  // NOLINTEND(cppcoreguidelines-pro-type-reinterpret-cast)
   for (auto& childYogaNode : yogaNode_.getChildren()) {
     if (YGNodeGetOwner(childYogaNode) == &yogaNode_) {
-      childYogaNode->setOwner(
-          reinterpret_cast<yoga::Node*>(0xBADC0FFEE0DDF00D));
+      childYogaNode->setOwner(kDetachedYogaNodeOwnerSentinel);
     }
   }
 }
