@@ -723,6 +723,7 @@ interface RCTBridgeModuleDecorator : public NSObject {
 }
 
 interface RCTBridgeProxy : public NSProxy {
+  public @property (strong) RCTPerformanceLogger* performanceLogger;
   public virtual NSMethodSignature* methodSignatureForSelector:(SEL sel);
   public virtual id moduleForClass:(Class moduleClass);
   public virtual id moduleForName:lazilyLoadIfNecessary:(NSString* moduleName, BOOL lazilyLoad);
