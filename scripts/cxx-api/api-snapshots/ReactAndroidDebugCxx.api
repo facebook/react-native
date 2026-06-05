@@ -11709,16 +11709,18 @@ struct facebook::react::map_detail::Bridging {
 }
 
 
-typedef void(*facebook::react::ReactMarker::LogTaggedMarker)(const facebook::react::ReactMarker::ReactMarkerId, const char *tag);
-typedef void(*facebook::react::ReactMarker::LogTaggedMarkerBridgeless)(const facebook::react::ReactMarker::ReactMarkerId, const char *tag);
+uint64_t facebook::react::oscompat::getCurrentProcessId();
+uint64_t facebook::react::oscompat::getCurrentThreadId();
+
+
+using facebook::react::ReactMarker::LogTaggedMarker = std::function<void(facebook::react::ReactMarker::ReactMarkerId, const char* tag)>;
+using facebook::react::ReactMarker::LogTaggedMarkerBridgeless = facebook::react::ReactMarker::LogTaggedMarker;
 void facebook::react::ReactMarker::logMarker(facebook::react::ReactMarker::ReactMarkerId markerId);
 void facebook::react::ReactMarker::logMarkerBridgeless(facebook::react::ReactMarker::ReactMarkerId markerId);
 void facebook::react::ReactMarker::logMarkerDone(facebook::react::ReactMarker::ReactMarkerId markerId, double markerTime);
 void facebook::react::ReactMarker::logTaggedMarker(facebook::react::ReactMarker::ReactMarkerId markerId, const char* tag);
 void facebook::react::ReactMarker::logTaggedMarkerBridgeless(facebook::react::ReactMarker::ReactMarkerId markerId, const char* tag);
-facebook::react::ReactMarker::LogTaggedMarker facebook::react::ReactMarker::logTaggedMarkerBridgelessImpl;
-facebook::react::ReactMarker::LogTaggedMarker facebook::react::ReactMarker::logTaggedMarkerImpl;
-std::shared_mutex facebook::react::ReactMarker::logTaggedMarkerImplMutex;
+facebook::react::ReactMarker::AtomicLogTaggedMarker facebook::react::ReactMarker::logTaggedMarkerImpl;
 
 class facebook::react::ReactMarker::StartupLogger {
   public double getAppStartupEndTime();
@@ -11752,15 +11754,17 @@ enum facebook::react::ReactMarker::ReactMarkerId {
   RUN_JS_BUNDLE_STOP,
 }
 
+struct facebook::react::ReactMarker::AtomicLogTaggedMarker {
+  public facebook::react::ReactMarker::AtomicLogTaggedMarker& operator=(facebook::react::ReactMarker::LogTaggedMarker marker);
+  public operator bool() const noexcept;
+  public void operator()(facebook::react::ReactMarker::ReactMarkerId markerId, const char* tag) const;
+}
+
 struct facebook::react::ReactMarker::ReactMarkerEvent {
   public const char* tag;
   public const facebook::react::ReactMarker::ReactMarkerId markerId;
   public double time;
 }
-
-
-uint64_t facebook::react::oscompat::getCurrentProcessId();
-uint64_t facebook::react::oscompat::getCurrentThreadId();
 
 
 void facebook::react::BridgeNativeModulePerfLogger::asyncMethodCallArgConversionEnd(const char* moduleName, const char* methodName);
