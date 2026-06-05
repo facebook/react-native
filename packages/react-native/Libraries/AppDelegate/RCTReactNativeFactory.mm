@@ -58,7 +58,6 @@ using namespace facebook::react;
     [self _setUpFeatureFlags:releaseLevel];
 
     [RCTColorSpaceUtils applyDefaultColorSpace:[self defaultColorSpace]];
-    RCTEnableTurboModule(YES);
 
     self.rootViewFactory = [self createRCTRootViewFactory];
 
