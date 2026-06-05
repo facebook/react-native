@@ -384,7 +384,7 @@ constructor(context: Context, private val fpsListener: FpsListener? = null) :
     invalidate()
   }
 
-  public open fun setMaintainVisibleContentPosition(
+  internal open fun setMaintainVisibleContentPosition(
       config: MaintainVisibleScrollPositionHelper.Config?
   ) {
     if (config != null && maintainVisibleContentPositionHelper == null) {

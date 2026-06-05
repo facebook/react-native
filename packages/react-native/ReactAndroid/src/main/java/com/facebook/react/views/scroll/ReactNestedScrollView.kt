@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<ef65f89c556fb0b391aace166349cebc>>
+ * @generated SignedSource<<2b0cbc5249ac34ae7f030a9c0fffd1f3>>
  */
 
 /**
@@ -392,7 +392,7 @@ constructor(context: Context, private val fpsListener: FpsListener? = null) :
     invalidate()
   }
 
-  public open fun setMaintainVisibleContentPosition(
+  internal open fun setMaintainVisibleContentPosition(
       config: MaintainVisibleScrollPositionHelper.Config?
   ) {
     if (config != null && maintainVisibleContentPositionHelper == null) {
