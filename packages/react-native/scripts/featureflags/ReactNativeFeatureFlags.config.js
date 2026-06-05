@@ -1036,6 +1036,16 @@ const definitions: FeatureFlagDefinitions = {
       },
       ossReleaseStage: 'none',
     },
+    enableImperativeEvents: {
+      defaultValue: false,
+      metadata: {
+        description:
+          'When enabled, ReactNativeElement and ReadOnlyText expose the public EventTarget API (addEventListener, removeEventListener, dispatchEvent). When disabled, those methods are removed from those final classes.',
+        expectedReleaseValue: true,
+        purpose: 'release',
+      },
+      ossReleaseStage: 'none',
+    },
     enableNativeEventTargetEventDispatching: {
       defaultValue: false,
       metadata: {
