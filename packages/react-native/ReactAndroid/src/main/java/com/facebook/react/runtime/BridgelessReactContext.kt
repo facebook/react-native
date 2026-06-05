@@ -56,7 +56,10 @@ internal class BridgelessReactContext(context: Context, private val reactHost: R
     get() = reactHost.defaultBackButtonHandler
 
   init {
-    if (ReactNativeNewArchitectureFeatureFlags.useFabricInterop()) {
+    if (
+        !ReactBuildConfig.UNSTABLE_REMOVE_LEGACY_COMPONENT_INTEROP &&
+            ReactNativeNewArchitectureFeatureFlags.useFabricInterop()
+    ) {
       initializeInteropModules()
     }
   }

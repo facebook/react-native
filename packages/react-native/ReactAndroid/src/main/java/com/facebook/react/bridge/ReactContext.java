@@ -26,6 +26,7 @@ import com.facebook.react.bridge.interop.InteropModuleRegistry;
 import com.facebook.react.bridge.queue.MessageQueueThread;
 import com.facebook.react.bridge.queue.ReactQueueConfiguration;
 import com.facebook.react.common.LifecycleState;
+import com.facebook.react.common.build.ReactBuildConfig;
 import com.facebook.react.interfaces.ExtraWindowEventListener;
 import com.facebook.react.turbomodule.core.interfaces.CallInvokerHolder;
 import java.lang.ref.WeakReference;
@@ -110,6 +111,9 @@ public abstract class ReactContext extends ContextWrapper {
   }
 
   protected void initializeInteropModules() {
+    if (ReactBuildConfig.UNSTABLE_REMOVE_LEGACY_COMPONENT_INTEROP) {
+      return;
+    }
     mInteropModuleRegistry = new InteropModuleRegistry();
   }
 
@@ -579,6 +583,9 @@ public abstract class ReactContext extends ContextWrapper {
    */
   public <T extends JavaScriptModule> void internal_registerInteropModule(
       Class<T> interopModuleInterface, Object interopModule) {
+    if (ReactBuildConfig.UNSTABLE_REMOVE_LEGACY_COMPONENT_INTEROP) {
+      return;
+    }
     if (mInteropModuleRegistry != null) {
       mInteropModuleRegistry.registerInteropModule(interopModuleInterface, interopModule);
     }
