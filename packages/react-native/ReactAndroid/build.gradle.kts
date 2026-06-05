@@ -694,7 +694,6 @@ dependencies {
   api(libs.androidx.appcompat)
   api(libs.androidx.appcompat.resources)
   api(libs.androidx.autofill)
-  api(libs.androidx.collection)
   api(libs.androidx.swiperefreshlayout)
   api(libs.androidx.tracing)
   api(libs.androidx.window)
@@ -718,6 +717,8 @@ dependencies {
   // It's up to the consumer to decide if hermes or other engines should be included or not.
   // Therefore hermes-engine is a compileOnly dependencies.
   compileOnly(project(":packages:react-native:ReactAndroid:hermes-engine"))
+
+  implementation(libs.androidx.collection)
 
   testImplementation(libs.junit)
   testImplementation(libs.assertj)
