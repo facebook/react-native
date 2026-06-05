@@ -5,6 +5,7 @@
  * LICENSE file in the root directory of this source tree.
  *
  * @fantom_flags enableNativeEventTargetEventDispatching:*
+ * @fantom_flags enableImperativeEvents:*
  * @flow strict-local
  * @format
  */
@@ -465,10 +466,13 @@ const {isOSS} = Fantom.getConstants();
     });
 
     // --- addEventListener / removeEventListener on refs ---
-    // These tests require EventTarget-based dispatching to be enabled,
-    // since addEventListener is only available when the flag is on.
+    // These tests require both `enableNativeEventTargetEventDispatching` and
+    // `enableImperativeEvents` to be enabled, since the public `addEventListener`
+    // API on element refs is only available when both flags are on. They are
+    // skipped for the other flag combinations.
 
-    (ReactNativeFeatureFlags.enableNativeEventTargetEventDispatching()
+    (ReactNativeFeatureFlags.enableNativeEventTargetEventDispatching() &&
+      ReactNativeFeatureFlags.enableImperativeEvents()
       ? describe
       : describe.skip)('addEventListener / removeEventListener', () => {
       it('addEventListener on a ref receives dispatched events', () => {
@@ -915,7 +919,8 @@ const {isOSS} = Fantom.getConstants();
       },
     );
 
-    (ReactNativeFeatureFlags.enableNativeEventTargetEventDispatching()
+    (ReactNativeFeatureFlags.enableNativeEventTargetEventDispatching() &&
+      ReactNativeFeatureFlags.enableImperativeEvents()
       ? it
       : it.skip)(
       'direct (non-bubbling) events do not propagate via addEventListener',
@@ -964,7 +969,8 @@ const {isOSS} = Fantom.getConstants();
       },
     );
 
-    (ReactNativeFeatureFlags.enableNativeEventTargetEventDispatching()
+    (ReactNativeFeatureFlags.enableNativeEventTargetEventDispatching() &&
+      ReactNativeFeatureFlags.enableImperativeEvents()
       ? describe
       : describe.skip)('bubbling to document element and document', () => {
       it('event bubbles from child up to the document element', () => {
