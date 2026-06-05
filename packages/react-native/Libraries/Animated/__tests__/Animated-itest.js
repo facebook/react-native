@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @fantom_flags useSharedAnimatedBackend:* animatedShouldSyncValueBeforeStartCallback:*
+ * @fantom_flags useSharedAnimatedBackend:* animatedShouldSyncValueBeforeStartCallback:* animatedDeferStartOfTimingAnimations:*
  * @flow strict-local
  * @format
  */
@@ -20,6 +20,12 @@ import {createRef} from 'react';
 import {Animated, View, useAnimatedValue} from 'react-native';
 import {allowStyleProp} from 'react-native/Libraries/Animated/NativeAnimatedAllowlist';
 import ReactNativeElement from 'react-native/src/private/webapis/dom/nodes/ReactNativeElement';
+
+// Deferred start outputs the initial value on the first animation frame and
+// re-anchors timing on the second. This delays animation progress by one
+// frame interval (~16ms at 60 fps).
+const DEFERRED_START_MS =
+  ReactNativeFeatureFlags.animatedDeferStartOfTimingAnimations() ? 16 : 0;
 
 test('moving box by 100 points', () => {
   let _translateX;
@@ -60,7 +66,7 @@ test('moving box by 100 points', () => {
     }).start();
   });
 
-  Fantom.unstable_produceFramesForDuration(500);
+  Fantom.unstable_produceFramesForDuration(500 + DEFERRED_START_MS);
 
   // shadow tree is not synchronised yet, position X is still 0.
   expect(viewElement.getBoundingClientRect().x).toBe(0);
@@ -80,6 +86,85 @@ test('moving box by 100 points', () => {
   Fantom.runWorkLoop();
   expect(viewElement.getBoundingClientRect().x).toBe(100);
 });
+
+// Validate that a `useNativeDriver` timing animation does not begin progressing
+// until the end of the event loop tick it was started in.
+//
+// Tested different behavior introduced by `animatedDeferStartOfTimingAnimations`,
+// the behavioral difference is animated prop value on the first frame after the tick:
+// flag ON -> deferred, not progressed yet, flag OFF -> already progressing.
+function startTimingAnimationAndGetTranslateXAfterFirstFrame(): number {
+  let _translateX;
+  const viewRef = createRef<HostInstance>();
+
+  function MyApp() {
+    const translateX = useAnimatedValue(0);
+    _translateX = translateX;
+    return (
+      <Animated.View
+        ref={viewRef}
+        style={[{width: 100, height: 100}, {transform: [{translateX}]}]}
+      />
+    );
+  }
+
+  const root = Fantom.createRoot();
+
+  Fantom.runTask(() => {
+    root.render(<MyApp />);
+  });
+
+  const viewElement = ensureInstance(viewRef.current, ReactNativeElement);
+
+  Fantom.runTask(() => {
+    Animated.timing(_translateX, {
+      toValue: 100,
+      duration: 1000,
+      useNativeDriver: true,
+    }).start();
+
+    Fantom.unstable_produceFramesForDuration(500);
+
+    // The UI thread advances while we are still inside the js tick. The animation
+    // must not produce any direct manipulation yet, because its mount
+    // operations have not been flushed. This holds regardless of the flag.
+    expect(() =>
+      Fantom.unstable_getDirectManipulationProps(viewElement),
+    ).toThrow();
+  });
+
+  // Produce the first frame after the tick (~16ms rounds to frame 1).
+  Fantom.unstable_produceFramesForDuration(16);
+  const translateXAfterFirstFrame =
+    // $FlowFixMe[incompatible-use]
+    Fantom.unstable_getDirectManipulationProps(viewElement).transform[0]
+      .translateX;
+
+  // Drain the animation so it completes and the message queue is empty for the
+  // next test.
+  Fantom.unstable_produceFramesForDuration(1000);
+  Fantom.runWorkLoop();
+  expect(viewElement.getBoundingClientRect().x).toBe(100);
+
+  return translateXAfterFirstFrame;
+}
+
+if (ReactNativeFeatureFlags.animatedDeferStartOfTimingAnimations()) {
+  test('animation does not start before the end of the current event loop tick', () => {
+    // With deferred start, the first frame after the tick outputs the initial
+    // value and re-anchors timing, so the animation has not progressed yet —
+    // no frames were skipped despite the UI thread advancing inside the tick.
+    expect(startTimingAnimationAndGetTranslateXAfterFirstFrame()).toBe(0);
+  });
+} else {
+  test('animation might start before the end of the current event loop tick', () => {
+    // Without deferred start, the animation begins progressing immediately — it
+    // has effectively started before the end of the tick.
+    expect(
+      startTimingAnimationAndGetTranslateXAfterFirstFrame(),
+    ).toBeGreaterThan(0);
+  });
+}
 
 test('animation driven by onScroll event', () => {
   const scrollViewRef = createRef<HostInstance>();
@@ -248,7 +333,7 @@ test('animated opacity', () => {
     }).start();
   });
 
-  Fantom.unstable_produceFramesForDuration(30);
+  Fantom.unstable_produceFramesForDuration(30 + DEFERRED_START_MS);
   expect(Fantom.unstable_getDirectManipulationProps(viewElement).opacity).toBe(
     0,
   );
@@ -559,7 +644,7 @@ test('animate layout props', () => {
     }).start();
   });
 
-  Fantom.unstable_produceFramesForDuration(10);
+  Fantom.unstable_produceFramesForDuration(10 + DEFERRED_START_MS);
 
   // TODO: this shouldn't be necessary since animation should be stopped after duration
   Fantom.runTask(() => {
@@ -712,7 +797,7 @@ test('Animated.sequence', () => {
     });
   });
 
-  Fantom.unstable_produceFramesForDuration(500);
+  Fantom.unstable_produceFramesForDuration(500 + DEFERRED_START_MS);
 
   expect(
     // $FlowFixMe[incompatible-use]
