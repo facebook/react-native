@@ -35,6 +35,6 @@
     "regenerator-runtime": "^0.13.2"
   },
   "peerDependencies": {
-    "react": "^19.2.3"
+    "react": "^19.2.7"
   }
 }

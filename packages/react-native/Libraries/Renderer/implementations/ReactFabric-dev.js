@@ -7,7 +7,7 @@
  * @noflow
  * @nolint
  * @preventMunge
- * @generated SignedSource<<e7f6759bcc8955193867c6ab42bd07ad>>
+ * @generated SignedSource<<49a1a924bb8b9fa0ef032e4799b38449>>
  *
  * This file was sync'd from the facebook/react repository.
  */
@@ -18901,10 +18901,10 @@ __DEV__ &&
     (function () {
       var internals = {
         bundleType: 1,
-        version: "19.2.3",
+        version: "19.2.7",
         rendererPackageName: "react-native-renderer",
         currentDispatcherRef: ReactSharedInternals,
-        reconcilerVersion: "19.2.3"
+        reconcilerVersion: "19.2.7"
       };
       null !== extraDevToolsConfig &&
         (internals.rendererConfig = extraDevToolsConfig);
