@@ -182,7 +182,6 @@ NSString *RCTBridgeModuleNameForClass(Class cls)
   return RCTDropReactPrefixes(name);
 }
 
-static const BOOL turboModuleEnabled = YES;
 BOOL RCTTurboModuleEnabled(void)
 {
 #if RCT_DEBUG
@@ -191,7 +190,7 @@ BOOL RCTTurboModuleEnabled(void)
     return NO;
   }
 #endif
-  return turboModuleEnabled;
+  return YES;
 }
 
 void RCTEnableTurboModule(BOOL enabled)
