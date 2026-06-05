@@ -561,6 +561,7 @@ android {
     buildConfigField("boolean", "UNSTABLE_ENABLE_FUSEBOX_RELEASE", "false")
     buildConfigField("boolean", "ENABLE_PERFETTO", "false")
     buildConfigField("boolean", "UNSTABLE_ENABLE_MINIFY_LEGACY_ARCHITECTURE", "false")
+    buildConfigField("boolean", "UNSTABLE_REMOVE_LEGACY_COMPONENT_INTEROP", "false")
 
     resValue("integer", "react_native_dev_server_port", reactNativeDevServerPort())
     resValue("string", "react_native_dev_server_ip", "localhost")
