@@ -4,6 +4,8 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
+ * @fantom_flags enableNativeEventTargetEventDispatching:true
+ * @fantom_flags enableImperativeEvents:*
  * @flow strict-local
  * @format
  */
@@ -18,6 +20,7 @@ import invariant from 'invariant';
 import * as React from 'react';
 import {createRef} from 'react';
 import {NativeText} from 'react-native/Libraries/Text/TextNativeComponent';
+import * as ReactNativeFeatureFlags from 'react-native/src/private/featureflags/ReactNativeFeatureFlags';
 import ReactNativeElement from 'react-native/src/private/webapis/dom/nodes/ReactNativeElement';
 import ReadOnlyNode from 'react-native/src/private/webapis/dom/nodes/ReadOnlyNode';
 import ReadOnlyText from 'react-native/src/private/webapis/dom/nodes/ReadOnlyText';
@@ -33,6 +36,17 @@ function ensureReadOnlyNode(value: unknown): ReadOnlyNode {
 function ensureReactNativeElement(value: unknown): ReactNativeElement {
   return ensureInstance(value, ReactNativeElement);
 }
+
+// The public imperative EventTarget API is not part of the static type of this
+// final class (it is only present at runtime, gated by feature flags), so we
+// cast to an interface with optional members to inspect it without Flow errors.
+// Optional members make this a valid upcast and let us assert both presence
+// (`'function'`) and absence (`'undefined'`).
+type MaybeEventTarget = interface {
+  addEventListener?: unknown,
+  removeEventListener?: unknown,
+  dispatchEvent?: unknown,
+};
 
 describe('ReadOnlyText', () => {
   it('should be used to create public text instances', () => {
@@ -330,6 +344,55 @@ describe('ReadOnlyText', () => {
         }).toThrow();
       });
     });
+  });
+
+  describe('imperative EventTarget API', () => {
+    // These tests run with `enableNativeEventTargetEventDispatching:true` and
+    // `enableImperativeEvents:*` (see the `@fantom_flags` pragmas). The public
+    // EventTarget API is gated behind `enableImperativeEvents`: when it is off
+    // the methods are removed from this final class, when it is on they are
+    // available.
+    if (!ReactNativeFeatureFlags.enableImperativeEvents()) {
+      it('removes the public EventTarget methods when `enableImperativeEvents` is off (default)', () => {
+        const parentNodeRef = createRef<HostInstance>();
+
+        const root = Fantom.createRoot();
+
+        Fantom.runTask(() => {
+          root.render(<NativeText ref={parentNodeRef}>Some text</NativeText>);
+        });
+
+        const parentNode = ensureReadOnlyNode(parentNodeRef.current);
+        const textNode = ensureReadOnlyText(
+          parentNode.childNodes[0],
+        ) as MaybeEventTarget;
+
+        expect(typeof textNode.addEventListener).toBe('undefined');
+        expect(typeof textNode.removeEventListener).toBe('undefined');
+        expect(typeof textNode.dispatchEvent).toBe('undefined');
+      });
+    }
+
+    if (ReactNativeFeatureFlags.enableImperativeEvents()) {
+      it('exposes the public EventTarget methods when `enableImperativeEvents` is on', () => {
+        const parentNodeRef = createRef<HostInstance>();
+
+        const root = Fantom.createRoot();
+
+        Fantom.runTask(() => {
+          root.render(<NativeText ref={parentNodeRef}>Some text</NativeText>);
+        });
+
+        const parentNode = ensureReadOnlyNode(parentNodeRef.current);
+        const textNode = ensureReadOnlyText(
+          parentNode.childNodes[0],
+        ) as MaybeEventTarget;
+
+        expect(typeof textNode.addEventListener).toBe('function');
+        expect(typeof textNode.removeEventListener).toBe('function');
+        expect(typeof textNode.dispatchEvent).toBe('function');
+      });
+    }
   });
 
   describe('global constructors', () => {
