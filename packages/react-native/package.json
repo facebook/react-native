@@ -150,7 +150,7 @@
   "peerDependencies": {
     "@react-native/jest-preset": "0.87.0-main",
     "@types/react": "^19.1.1",
-    "react": "^19.2.3"
+    "react": "^19.2.7"
   },
   "peerDependenciesMeta": {
     "@types/react": {
