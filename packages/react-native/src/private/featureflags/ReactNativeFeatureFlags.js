@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<77b178e216aa86a309f46cbf661d9122>>
+ * @generated SignedSource<<4cc0d1231e555cb7f8ca416d5439c2fd>>
  * @flow strict
  * @noformat
  */
@@ -29,6 +29,7 @@ import {
 
 export type ReactNativeFeatureFlagsJsOnly = $ReadOnly<{
   jsOnlyTestFlag: Getter<boolean>,
+  animatedDeferStartOfTimingAnimations: Getter<boolean>,
   animatedShouldDebounceQueueFlush: Getter<boolean>,
   animatedShouldSyncValueBeforeStartCallback: Getter<boolean>,
   animatedShouldUseSingleOp: Getter<boolean>,
@@ -141,6 +142,11 @@ export type ReactNativeFeatureFlags = $ReadOnly<{
  * JS-only flag for testing. Do NOT modify.
  */
 export const jsOnlyTestFlag: Getter<boolean> = createJavaScriptFlagGetter('jsOnlyTestFlag', false);
+
+/**
+ * When enabled, the JS Animated layer defers the start of native-driven timing animations to the first rendered frame and re-anchors timing to prevent skipping initial frames when the UI thread is busy with layout work.
+ */
+export const animatedDeferStartOfTimingAnimations: Getter<boolean> = createJavaScriptFlagGetter('animatedDeferStartOfTimingAnimations', false);
 
 /**
  * Enables an experimental flush-queue debouncing in Animated.js.
