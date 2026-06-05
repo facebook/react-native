@@ -675,11 +675,6 @@ android {
   }
 }
 
-tasks.withType<JavaCompile>().configureEach {
-  exclude("com/facebook/react/processing/**")
-  exclude("com/facebook/react/module/processing/**")
-}
-
 tasks.withType<KotlinCompile>().configureEach {
   exclude("com/facebook/annotationprocessors/**")
   exclude("com/facebook/react/processing/**")
