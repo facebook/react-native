@@ -43,7 +43,8 @@ TextMeasurement TextLayoutManager::measure(
       measurement = textMeasureCache_.get(
           {.attributedString = attributedString,
            .paragraphAttributes = paragraphAttributes,
-           .layoutConstraints = layoutConstraints},
+           .layoutConstraints = layoutConstraints,
+           .pointScaleFactor = layoutContext.pointScaleFactor},
           [&]() {
             auto telemetry = TransactionTelemetry::threadLocalTelemetry();
             if (telemetry) {

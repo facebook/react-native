@@ -2729,6 +2729,7 @@ class facebook::react::PointerHoverTracker {
 }
 
 class facebook::react::PreparedTextCacheKey {
+  public Float pointScaleFactor;
   public facebook::react::AttributedString attributedString;
   public facebook::react::LayoutConstraints layoutConstraints;
   public facebook::react::ParagraphAttributes paragraphAttributes;
@@ -3545,6 +3546,7 @@ class facebook::react::TextInputState {
 }
 
 class facebook::react::TextMeasureCacheKey {
+  public Float pointScaleFactor;
   public facebook::react::AttributedString attributedString;
   public facebook::react::LayoutConstraints layoutConstraints;
   public facebook::react::ParagraphAttributes paragraphAttributes;

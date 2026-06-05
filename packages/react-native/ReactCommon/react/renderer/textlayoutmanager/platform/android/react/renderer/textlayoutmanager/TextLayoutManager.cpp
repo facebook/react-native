@@ -193,7 +193,8 @@ TextMeasurement TextLayoutManager::measure(
       : textMeasureCache_.get(
             {.attributedString = attributedString,
              .paragraphAttributes = paragraphAttributes,
-             .layoutConstraints = layoutConstraints},
+             .layoutConstraints = layoutConstraints,
+             .pointScaleFactor = layoutContext.pointScaleFactor},
             std::move(measureText));
 
   measurement.size = layoutConstraints.clamp(measurement.size);
@@ -315,7 +316,8 @@ TextLayoutManager::PreparedTextLayout TextLayoutManager::prepareLayout(
   const auto [key, preparedText] = preparedTextCache_.getWithKey(
       {.attributedString = attributedString,
        .paragraphAttributes = paragraphAttributes,
-       .layoutConstraints = layoutConstraints},
+       .layoutConstraints = layoutConstraints,
+       .pointScaleFactor = layoutContext.pointScaleFactor},
       [&]() {
         const auto& fabricUIManager =
             contextContainer_->at<jni::global_ref<jobject>>("FabricUIManager");
