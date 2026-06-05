@@ -992,6 +992,17 @@ const definitions: FeatureFlagDefinitions = {
 
   jsOnly: {
     ...testDefinitions.jsOnly,
+    animatedDeferStartOfTimingAnimations: {
+      defaultValue: false,
+      metadata: {
+        dateAdded: '2026-05-26',
+        description:
+          'When enabled, the JS Animated layer defers the start of native-driven timing animations to the first rendered frame and re-anchors timing to prevent skipping initial frames when the UI thread is busy with layout work.',
+        expectedReleaseValue: true,
+        purpose: 'experimentation',
+      },
+      ossReleaseStage: 'none',
+    },
     animatedShouldDebounceQueueFlush: {
       defaultValue: false,
       metadata: {
