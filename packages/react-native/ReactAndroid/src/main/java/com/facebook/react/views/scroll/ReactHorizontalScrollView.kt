@@ -14,7 +14,6 @@ import android.graphics.Canvas
 import android.graphics.Color
 import android.graphics.Point
 import android.graphics.Rect
-import android.graphics.drawable.ColorDrawable
 import android.graphics.drawable.Drawable
 import android.os.Build
 import android.view.FocusFinder
@@ -26,8 +25,11 @@ import android.view.ViewParent
 import android.view.accessibility.AccessibilityNodeInfo
 import android.widget.HorizontalScrollView
 import android.widget.OverScroller
+import androidx.core.graphics.drawable.toDrawable
 import androidx.core.view.ViewCompat
 import androidx.core.view.ViewCompat.FocusDirection
+import androidx.core.view.isEmpty
+import androidx.core.view.isNotEmpty
 import com.facebook.common.logging.FLog
 import com.facebook.react.R
 import com.facebook.react.common.ReactConstants
@@ -426,10 +428,11 @@ constructor(context: Context, private val fpsListener: FpsListener? = null) :
       config: MaintainVisibleScrollPositionHelper.Config?
   ) {
     if (config != null && maintainVisibleContentPositionHelper == null) {
-      maintainVisibleContentPositionHelper = MaintainVisibleScrollPositionHelper(this, true)
-      maintainVisibleContentPositionHelper!!.start()
-    } else if (config == null && maintainVisibleContentPositionHelper != null) {
-      maintainVisibleContentPositionHelper!!.stop()
+      val helper = MaintainVisibleScrollPositionHelper(this, true)
+      maintainVisibleContentPositionHelper = helper
+      helper.start()
+    } else if (config == null) {
+      maintainVisibleContentPositionHelper?.stop()
       maintainVisibleContentPositionHelper = null
     }
     maintainVisibleContentPositionHelper?.let { it.config = config }
@@ -691,7 +694,7 @@ constructor(context: Context, private val fpsListener: FpsListener? = null) :
     if (pagingEnabled) {
       pagedArrowScrolling = true
 
-      if (childCount > 0) {
+      if (isNotEmpty()) {
         val currentFocused = findFocus()
         val nextFocused = FocusFinder.getInstance().findNextFocus(this, currentFocused, direction)
         val rootChild = getContentView()
@@ -916,7 +919,7 @@ constructor(context: Context, private val fpsListener: FpsListener? = null) :
 
     Systrace.beginSection(Systrace.TRACE_TAG_REACT, "ReactHorizontalScrollView.updateClippingRect")
     try {
-      val rect = clippingRect!!
+      val rect = checkNotNull(clippingRect)
       ReactClippingViewGroupHelper.calculateClippingRect(this, rect)
       val cv = getContentView()
       if (cv is ReactClippingViewGroup) {
@@ -928,7 +931,7 @@ constructor(context: Context, private val fpsListener: FpsListener? = null) :
   }
 
   override fun getClippingRect(outClippingRect: Rect) {
-    outClippingRect.set(clippingRect!!)
+    outClippingRect.set(checkNotNull(clippingRect))
   }
 
   override fun getChildVisibleRect(child: View, r: Rect, offset: android.graphics.Point?): Boolean {
@@ -942,7 +945,7 @@ constructor(context: Context, private val fpsListener: FpsListener? = null) :
   public open fun setEndFillColor(color: Int) {
     if (color != endFillColor) {
       endFillColor = color
-      endBackground = ColorDrawable(endFillColor)
+      endBackground = endFillColor.toDrawable()
     }
   }
 
@@ -1002,26 +1005,31 @@ constructor(context: Context, private val fpsListener: FpsListener? = null) :
 
   private fun enableFpsListener() {
     if (isScrollPerfLoggingEnabled()) {
-      fpsListener!!.enable(scrollPerfTag!!)
+      val listener = fpsListener ?: return
+      val perfTag = scrollPerfTag.takeUnless { it.isNullOrEmpty() } ?: return
+      listener.enable(perfTag)
     }
   }
 
   private fun disableFpsListener() {
     if (isScrollPerfLoggingEnabled()) {
-      fpsListener!!.disable(scrollPerfTag!!)
+      val listener = fpsListener ?: return
+      val perfTag = scrollPerfTag.takeUnless { it.isNullOrEmpty() } ?: return
+      listener.disable(perfTag)
     }
   }
 
   private fun isScrollPerfLoggingEnabled(): Boolean {
-    return fpsListener != null && scrollPerfTag != null && scrollPerfTag!!.isNotEmpty()
+    return fpsListener != null && !scrollPerfTag.isNullOrEmpty()
   }
 
   override fun draw(canvas: Canvas) {
     if (endFillColor != Color.TRANSPARENT) {
       val content = getContentView()
-      if (endBackground != null && content != null && content.right < width) {
-        endBackground!!.setBounds(content.right, 0, width, height)
-        endBackground!!.draw(canvas)
+      val bg = endBackground
+      if (bg != null && content != null && content.right < width) {
+        bg.setBounds(content.right, 0, width, height)
+        bg.draw(canvas)
       }
     }
     super.draw(canvas)
@@ -1183,7 +1191,7 @@ constructor(context: Context, private val fpsListener: FpsListener? = null) :
       FLog.i(TAG, "smoothScrollAndSnap[%d] velocityX %d", id, velocityX)
     }
 
-    if (childCount <= 0) return
+    if (isEmpty()) return
 
     // pagingEnabled only allows snapping one interval at a time
     if (snapInterval == 0 && snapOffsets == null && snapToAlignment == SNAP_ALIGNMENT_DISABLED) {
@@ -1212,12 +1220,13 @@ constructor(context: Context, private val fpsListener: FpsListener? = null) :
     }
 
     // get the nearest snap points to the target offset
-    if (snapOffsets != null && snapOffsets!!.isNotEmpty()) {
-      firstOffset = snapOffsets!![0]
-      lastOffset = snapOffsets!![snapOffsets!!.size - 1]
+    val offsets = snapOffsets
+    if (!offsets.isNullOrEmpty()) {
+      firstOffset = offsets[0]
+      lastOffset = offsets[offsets.size - 1]
 
-      for (i in snapOffsets!!.indices) {
-        val offset = snapOffsets!![i]
+      for (i in offsets.indices) {
+        val offset = offsets[i]
         if (offset <= targetOffset) {
           if (targetOffset - offset < targetOffset - smallerOffset) {
             smallerOffset = offset
@@ -1253,7 +1262,7 @@ constructor(context: Context, private val fpsListener: FpsListener? = null) :
                 maximumOffset,
             )
       } else {
-        val cv = getContentView() as ViewGroup
+        val cv = getContentView() as? ViewGroup ?: return
         var smallerChildOffset = largerOffset
         var largerChildOffset = smallerOffset
         for (i in 0 until cv.childCount) {
