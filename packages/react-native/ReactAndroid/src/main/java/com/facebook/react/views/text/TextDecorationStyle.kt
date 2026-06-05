@@ -14,6 +14,8 @@ import android.graphics.Paint
 import android.graphics.Path
 import android.os.Build
 import android.text.Layout
+import android.text.Spanned
+import android.text.style.ForegroundColorSpan
 import kotlin.math.max
 import kotlin.math.min
 import kotlin.math.roundToInt
@@ -126,7 +128,18 @@ internal fun drawSpannedDecoration(
     yOffsetForLine: (paint: Paint, baseline: Float, thickness: Float) -> Float,
 ) {
   val textPaint = layout.paint
-  val effectiveColor = if (color != Color.TRANSPARENT) color else textPaint.color
+  val effectiveColor =
+      if (color != Color.TRANSPARENT) {
+        color
+      } else {
+        // Look up the actual foreground color at the span position. layout.paint
+        // is the base paint whose color may differ from per-span foreground colors
+        // applied via ForegroundColorSpan (e.g., link text, colored text).
+        val spanned = layout.text as? Spanned
+        val fgSpans = spanned?.getSpans(start, start + 1, ForegroundColorSpan::class.java)
+        if (fgSpans != null && fgSpans.isNotEmpty()) fgSpans.last().foregroundColor
+        else textPaint.color
+      }
   val minThickness = 1.5f * textPaint.density
   val thickness =
       if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
