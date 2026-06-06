@@ -10,7 +10,12 @@
 #include "ReactPerfetto.h"
 
 #include <perfetto.h>
+#include <chrono>
 #include <unordered_map>
+
+#if defined(__APPLE__)
+#include <ctime>
+#endif
 
 #include "FuseboxPerfettoDataSource.h"
 #include "HermesPerfettoDataSource.h"
@@ -79,16 +84,43 @@ perfetto::Track getPerfettoWebPerfTrackAsync(const std::string& trackName) {
   return createTrack(trackName);
 }
 
-// Perfetto's monotonic clock seems to match the std::chrono::steady_clock we
-// use in HighResTimeStamp on Android platforms, but if that
-// assumption is incorrect we may need to manually offset perfetto timestamps.
+// Perfetto's monotonic clock matches the std::chrono::steady_clock we use in
+// HighResTimeStamp on Android platforms, so no adjustment is needed there. On
+// Apple platforms that assumption is false: HighResTimeStamp is backed by
+// mach_absolute_time (CLOCK_UPTIME_RAW, which excludes time the device spent
+// asleep) while Perfetto stamps native events with CLOCK_MONOTONIC (which
+// includes time asleep). The two clocks have different epochs, so without
+// adjustment JS web-performance events land far off the native timeline. Apply
+// the offset between the clocks to bring JS events into Perfetto's trace clock
+// domain.
 uint64_t highResTimeStampToPerfettoTraceTime(HighResTimeStamp timestamp) {
   auto chronoDurationSinceSteadyClockEpoch =
       timestamp.toChronoSteadyClockTimePoint().time_since_epoch();
   auto nanoseconds = std::chrono::duration_cast<std::chrono::nanoseconds>(
       chronoDurationSinceSteadyClockEpoch);
 
+#if defined(__APPLE__)
+  // Capture the offset between CLOCK_MONOTONIC and the steady_clock
+  // (CLOCK_UPTIME_RAW) backing HighResTimeStamp once. This is exact while the
+  // device stays awake; it can drift across sleep because CLOCK_MONOTONIC keeps
+  // advancing while mach time does not. For short cold-start traces that drift
+  // is negligible.
+  static const int64_t offsetNanos = []() {
+    timespec ts{};
+    clock_gettime(CLOCK_MONOTONIC, &ts);
+    int64_t monotonicNanos =
+        static_cast<int64_t>(ts.tv_sec) * 1'000'000'000LL + ts.tv_nsec;
+    int64_t steadyNanos =
+        std::chrono::duration_cast<std::chrono::nanoseconds>(
+            std::chrono::steady_clock::now().time_since_epoch())
+            .count();
+    return monotonicNanos - steadyNanos;
+  }();
+
+  return static_cast<uint64_t>(nanoseconds.count() + offsetNanos);
+#else
   return static_cast<uint64_t>(nanoseconds.count());
+#endif
 }
 
 } // namespace facebook::react
