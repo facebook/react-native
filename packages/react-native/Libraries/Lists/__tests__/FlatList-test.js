@@ -11,6 +11,7 @@
 'use strict';
 
 const FlatList = require('../FlatList').default;
+const Platform = require('../../Utilities/Platform').default;
 const {create} = require('@react-native/jest-preset/jest/renderer');
 const React = require('react');
 const {createRef} = require('react');
@@ -34,6 +35,141 @@ describe('FlatList', () => {
       />,
     );
     expect(component).toMatchSnapshot();
+  });
+  it('adds Android accessibility collection metadata to list items', async () => {
+    const originalOS = Platform.OS;
+    // $FlowFixMe[incompatible-type] Platform.OS is read-only in production.
+    Platform.OS = 'android';
+
+    try {
+      const component = await create(
+        <FlatList
+          data={[{key: 'i1'}, {key: 'i2'}, {key: 'i3'}]}
+          renderItem={({item}) => <item value={item.key} />}
+        />,
+      );
+
+      const root = component.toJSON();
+      expect(root?.props.accessibilityRole).toBe('list');
+      expect(root?.props.accessibilityCollection).toEqual({
+        itemCount: 3,
+        rowCount: 3,
+        columnCount: 1,
+        hierarchical: false,
+      });
+      expect(
+        component.root
+          .findAllByType('item')
+          .map(item => item.props.accessibilityCollectionItem),
+      ).toEqual([
+        {
+          itemIndex: 0,
+          rowIndex: 0,
+          rowSpan: 1,
+          columnIndex: 0,
+          columnSpan: 1,
+          heading: false,
+        },
+        {
+          itemIndex: 1,
+          rowIndex: 1,
+          rowSpan: 1,
+          columnIndex: 0,
+          columnSpan: 1,
+          heading: false,
+        },
+        {
+          itemIndex: 2,
+          rowIndex: 2,
+          rowSpan: 1,
+          columnIndex: 0,
+          columnSpan: 1,
+          heading: false,
+        },
+      ]);
+    } finally {
+      // $FlowFixMe[incompatible-type] Platform.OS is read-only in production.
+      Platform.OS = originalOS;
+    }
+  });
+  it('adds Android accessibility collection metadata to multi-column list items', async () => {
+    const originalOS = Platform.OS;
+    // $FlowFixMe[incompatible-type] Platform.OS is read-only in production.
+    Platform.OS = 'android';
+
+    try {
+      const component = await create(
+        <FlatList
+          data={[
+            {key: 'i1'},
+            {key: 'i2'},
+            {key: 'i3'},
+            {key: 'i4'},
+            {key: 'i5'},
+          ]}
+          renderItem={({item}) => <item value={item.key} />}
+          numColumns={2}
+        />,
+      );
+
+      const root = component.toJSON();
+      expect(root?.props.accessibilityRole).toBe('grid');
+      expect(root?.props.accessibilityCollection).toEqual({
+        itemCount: 5,
+        rowCount: 3,
+        columnCount: 2,
+        hierarchical: false,
+      });
+      expect(
+        component.root
+          .findAllByType('item')
+          .map(item => item.props.accessibilityCollectionItem),
+      ).toEqual([
+        {
+          itemIndex: 0,
+          rowIndex: 0,
+          rowSpan: 1,
+          columnIndex: 0,
+          columnSpan: 1,
+          heading: false,
+        },
+        {
+          itemIndex: 1,
+          rowIndex: 0,
+          rowSpan: 1,
+          columnIndex: 1,
+          columnSpan: 1,
+          heading: false,
+        },
+        {
+          itemIndex: 2,
+          rowIndex: 1,
+          rowSpan: 1,
+          columnIndex: 0,
+          columnSpan: 1,
+          heading: false,
+        },
+        {
+          itemIndex: 3,
+          rowIndex: 1,
+          rowSpan: 1,
+          columnIndex: 1,
+          columnSpan: 1,
+          heading: false,
+        },
+        {
+          itemIndex: 4,
+          rowIndex: 2,
+          rowSpan: 1,
+          columnIndex: 0,
+          columnSpan: 1,
+          heading: false,
+        },
+      ]);
+    } finally {
+      // $FlowFixMe[incompatible-type] Platform.OS is read-only in production.
+      Platform.OS = originalOS;
+    }
   });
   it('renders simple list using ListItemComponent', async () => {
     function ListItemComponent({item}: Readonly<{item: {key: string}}>) {

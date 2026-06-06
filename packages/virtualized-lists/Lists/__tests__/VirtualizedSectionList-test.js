@@ -15,6 +15,7 @@ import type {SectionBase} from 'react-native';
 import nullthrows from 'nullthrows';
 
 const VirtualizedSectionList = require('../VirtualizedSectionList').default;
+const Platform = require('react-native/Libraries/Utilities/Platform').default;
 const React = require('react');
 const ReactTestRenderer = require('react-test-renderer');
 
@@ -36,6 +37,75 @@ describe('VirtualizedSectionList', () => {
       );
     });
     expect(component).toMatchSnapshot();
+  });
+
+  it('adds Android accessibility collection metadata to section list items', async () => {
+    const originalOS = Platform.OS;
+    // $FlowFixMe[incompatible-type] Platform.OS is read-only in production.
+    Platform.OS = 'android';
+
+    try {
+      let component;
+      await ReactTestRenderer.act(() => {
+        component = ReactTestRenderer.create(
+          <VirtualizedSectionList
+            sections={[
+              // $FlowFixMe[incompatible-type]
+              {title: 's1', data: [{key: 'i1'}, {key: 'i2'}]},
+              // $FlowFixMe[incompatible-type]
+              {title: 's2', data: [{key: 'i3'}]},
+            ]}
+            // $FlowFixMe[missing-local-annot]
+            renderItem={({item}) => <item value={item.key} />}
+            getItem={(data, key) => data[key]}
+            getItemCount={data => data.length}
+          />,
+        );
+      });
+
+      const instance = nullthrows(component);
+      const root = instance.toJSON();
+      expect(root?.props.accessibilityRole).toBe('list');
+      expect(root?.props.accessibilityCollection).toEqual({
+        itemCount: 3,
+        rowCount: 3,
+        columnCount: 1,
+        hierarchical: false,
+      });
+      expect(
+        instance.root
+          .findAllByType('item')
+          .map(item => item.props.accessibilityCollectionItem),
+      ).toEqual([
+        {
+          itemIndex: 0,
+          rowIndex: 0,
+          rowSpan: 1,
+          columnIndex: 0,
+          columnSpan: 1,
+          heading: false,
+        },
+        {
+          itemIndex: 1,
+          rowIndex: 1,
+          rowSpan: 1,
+          columnIndex: 0,
+          columnSpan: 1,
+          heading: false,
+        },
+        {
+          itemIndex: 2,
+          rowIndex: 2,
+          rowSpan: 1,
+          columnIndex: 0,
+          columnSpan: 1,
+          heading: false,
+        },
+      ]);
+    } finally {
+      // $FlowFixMe[incompatible-type] Platform.OS is read-only in production.
+      Platform.OS = originalOS;
+    }
   });
 
   it('renders empty list', async () => {

@@ -16,6 +16,70 @@ import {keyExtractor as defaultKeyExtractor} from './VirtualizeUtils';
 import invariant from 'invariant';
 import * as React from 'react';
 import {useEffect, useState} from 'react';
+import {Platform} from 'react-native';
+
+type AccessibilityCollectionItem = Readonly<{
+  itemIndex: number,
+  rowIndex: number,
+  rowSpan: number,
+  columnIndex: number,
+  columnSpan: number,
+  heading: boolean,
+  ...
+}>;
+
+function createAccessibilityCollection(
+  itemCount: number,
+  horizontal: boolean,
+): {
+  itemCount: number,
+  rowCount: number,
+  columnCount: number,
+  hierarchical: boolean,
+} {
+  return {
+    itemCount,
+    rowCount: horizontal ? (itemCount > 0 ? 1 : 0) : itemCount,
+    columnCount: horizontal ? itemCount : 1,
+    hierarchical: false,
+  };
+}
+
+function createAccessibilityCollectionItem(
+  index: number,
+  horizontal: ?boolean,
+): AccessibilityCollectionItem {
+  return {
+    itemIndex: index,
+    rowIndex: horizontal === true ? 0 : index,
+    rowSpan: 1,
+    columnIndex: horizontal === true ? index : 0,
+    columnSpan: 1,
+    heading: false,
+  };
+}
+
+function addAccessibilityCollectionItem(
+  element: React.Node,
+  accessibilityCollectionItem: ?AccessibilityCollectionItem,
+): React.Node {
+  const elementForAccessibility: any = element;
+  if (
+    accessibilityCollectionItem == null ||
+    !React.isValidElement(elementForAccessibility) ||
+    elementForAccessibility.type === React.Fragment
+  ) {
+    return element;
+  }
+
+  if (elementForAccessibility.props.accessibilityCollectionItem !== undefined) {
+    return element;
+  }
+
+  return React.cloneElement(elementForAccessibility, {
+    accessibilityCollectionItem,
+  });
+}
 
 type DefaultVirtualizedSectionT = {
   data: any,
@@ -193,21 +257,38 @@ class VirtualizedSectionList<
       : undefined;
 
     let itemCount = 0;
+    let dataItemCount = 0;
     for (const section of this.props.sections) {
       // Track the section header indices
       if (stickyHeaderIndices != null) {
         stickyHeaderIndices.push(itemCount + listHeaderOffset);
       }
 
+      const sectionItemCount = this.props.getItemCount(section.data);
+
       // Add two for the section header and footer.
       itemCount += 2;
-      itemCount += this.props.getItemCount(section.data);
+      itemCount += sectionItemCount;
+      dataItemCount += sectionItemCount;
     }
     const renderItem = this._renderItem(itemCount);
+    const androidAccessibilityProps =
+      Platform.OS === 'android' &&
+      // $FlowFixMe[prop-missing] Internal native prop.
+      passThroughProps.accessibilityCollection == null
+        ? {
+            accessibilityCollection: createAccessibilityCollection(
+              dataItemCount,
+              this.props.horizontal === true,
+            ),
+          }
+        : {};
 
     return (
+      // $FlowFixMe[incompatible-type] Internal native prop.
       <VirtualizedList
         {...passThroughProps}
+        {...androidAccessibilityProps}
         keyExtractor={this._keyExtractor}
         stickyHeaderIndices={stickyHeaderIndices}
         renderItem={renderItem}
@@ -269,6 +350,7 @@ class VirtualizedSectionList<
     index: ?number,
     // True if this is the section header
     header?: ?boolean,
+    accessibilityItemIndex?: number,
     leadingItem?: ?ItemT,
     leadingSection?: ?SectionData<ItemT, SectionT>,
     trailingItem?: ?ItemT,
@@ -276,14 +358,17 @@ class VirtualizedSectionList<
     ...
   } {
     let itemIndex = index;
+    let accessibilityItemIndex = 0;
     const {getItem, getItemCount, keyExtractor, sections} = this.props;
     for (let i = 0; i < sections.length; i++) {
       const section = sections[i];
       const sectionData = section.data;
       const key = section.key || String(i);
+      const sectionItemCount = getItemCount(sectionData);
       itemIndex -= 1; // The section adds an item for the header
-      if (itemIndex >= getItemCount(sectionData) + 1) {
-        itemIndex -= getItemCount(sectionData) + 1; // The section adds an item for the footer.
+      if (itemIndex >= sectionItemCount + 1) {
+        itemIndex -= sectionItemCount + 1; // The section adds an item for the footer.
+        accessibilityItemIndex += sectionItemCount;
       } else if (itemIndex === -1) {
         return {
           section,
@@ -292,7 +377,7 @@ class VirtualizedSectionList<
           header: true,
           trailingSection: sections[i + 1],
         };
-      } else if (itemIndex === getItemCount(sectionData)) {
+      } else if (itemIndex === sectionItemCount) {
         return {
           section,
           key: key + ':footer',
@@ -308,6 +393,7 @@ class VirtualizedSectionList<
           key:
             key + ':' + extractor(getItem(sectionData, itemIndex), itemIndex),
           index: itemIndex,
+          accessibilityItemIndex: accessibilityItemIndex + itemIndex,
           leadingItem: getItem(sectionData, itemIndex - 1),
           leadingSection: sections[i - 1],
           trailingItem: getItem(sectionData, itemIndex + 1),
@@ -383,6 +469,13 @@ class VirtualizedSectionList<
           info,
           listItemCount,
         );
+        const accessibilityCollectionItem =
+          Platform.OS === 'android' && info.accessibilityItemIndex != null
+            ? createAccessibilityCollectionItem(
+                info.accessibilityItemIndex,
+                this.props.horizontal,
+              )
+            : undefined;
         invariant(renderItem, 'no renderItem!');
         return (
           <ItemWithSeparator
@@ -390,6 +483,7 @@ class VirtualizedSectionList<
             LeadingSeparatorComponent={
               infoIndex === 0 ? this.props.SectionSeparatorComponent : undefined
             }
+            accessibilityCollectionItem={accessibilityCollectionItem}
             cellKey={info.key}
             index={infoIndex}
             item={item}
@@ -490,6 +584,7 @@ type ItemWithSeparatorProps<ItemT> = Readonly<{
   ...ItemWithSeparatorCommonProps<ItemT>,
   LeadingSeparatorComponent: ?(React.ComponentType<any> | React.MixedElement),
   SeparatorComponent: ?(React.ComponentType<any> | React.MixedElement),
+  accessibilityCollectionItem?: ?AccessibilityCollectionItem,
   cellKey: string,
   index: number,
   item: ItemT,
@@ -604,6 +699,10 @@ function ItemWithSeparator<ItemT>(
     section,
     separators,
   });
+  const itemElement = addAccessibilityCollectionItem(
+    element,
+    props.accessibilityCollectionItem,
+  );
   const leadingSeparator =
     LeadingSeparatorComponent != null &&
     ((React.isValidElement(LeadingSeparatorComponent) ? (
@@ -635,7 +734,7 @@ function ItemWithSeparator<ItemT>(
   return (
     <>
       {RenderSeparator ? firstSeparator : null}
-      {element}
+      {itemElement}
       {RenderSeparator ? secondSeparator : null}
     </>
   );
