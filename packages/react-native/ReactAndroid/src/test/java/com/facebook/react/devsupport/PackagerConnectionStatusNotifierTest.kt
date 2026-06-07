@@ -14,7 +14,11 @@ import org.junit.Test
 class PackagerConnectionStatusNotifierTest {
 
   private val devLoadingViewManager = RecordingDevLoadingViewManager()
-  private val notifier = PackagerConnectionStatusNotifier(devLoadingViewManager)
+  private val delayedActions = mutableListOf<Runnable>()
+  private val notifier =
+      PackagerConnectionStatusNotifier({ devLoadingViewManager }) { runnable, _ ->
+        delayedActions.add(runnable)
+      }
 
   @Test
   fun testInitialConnectionDoesNotShowReconnectedMessage() {
@@ -45,8 +49,58 @@ class PackagerConnectionStatusNotifierTest {
         .containsExactly("Connection to Metro lost. Retrying...", "Reconnected to Metro.")
   }
 
+  @Test
+  fun testReconnectMessageIsHiddenAfterDelay() {
+    notifier.onPackagerConnected()
+    notifier.onPackagerDisconnected()
+
+    notifier.onPackagerConnected()
+    delayedActions.single().run()
+
+    assertThat(devLoadingViewManager.hideCount).isEqualTo(1)
+  }
+
+  @Test
+  fun testReconnectMessageDelayDoesNotHideNewLostConnectionMessage() {
+    notifier.onPackagerConnected()
+    notifier.onPackagerDisconnected()
+    notifier.onPackagerConnected()
+
+    notifier.onPackagerDisconnected()
+    delayedActions.single().run()
+
+    assertThat(devLoadingViewManager.hideCount).isEqualTo(0)
+  }
+
+  @Test
+  fun testIntentionalCloseDoesNotShowConnectionLostMessage() {
+    notifier.onPackagerConnected()
+
+    notifier.onPackagerConnectionClosed()
+    notifier.onPackagerDisconnected()
+
+    assertThat(devLoadingViewManager.messages).isEmpty()
+  }
+
+  @Test
+  fun testUsesCurrentDevLoadingViewManager() {
+    var currentDevLoadingViewManager: RecordingDevLoadingViewManager? = null
+    val notifier =
+        PackagerConnectionStatusNotifier({ currentDevLoadingViewManager }) { runnable, _ ->
+          delayedActions.add(runnable)
+        }
+    currentDevLoadingViewManager = RecordingDevLoadingViewManager()
+
+    notifier.onPackagerConnected()
+    notifier.onPackagerDisconnected()
+
+    assertThat(currentDevLoadingViewManager.messages)
+        .containsExactly("Connection to Metro lost. Retrying...")
+  }
+
   private class RecordingDevLoadingViewManager : DevLoadingViewManager {
     val messages = mutableListOf<String>()
+    var hideCount = 0
 
     override fun showMessage(message: String) {
       messages.add(message)
@@ -63,6 +117,8 @@ class PackagerConnectionStatusNotifierTest {
 
     override fun updateProgress(status: String?, done: Int?, total: Int?, percent: Int?) = Unit
 
-    override fun hide() = Unit
+    override fun hide() {
+      hideCount++
+    }
   }
 }

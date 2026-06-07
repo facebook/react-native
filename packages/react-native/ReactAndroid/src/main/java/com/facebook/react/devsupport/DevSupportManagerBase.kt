@@ -199,7 +199,7 @@ public abstract class DevSupportManagerBase(
   private var isDevSupportEnabled = false
   private var isPackagerConnected = false
   private val packagerConnectionStatusNotifier =
-      PackagerConnectionStatusNotifier(devLoadingViewManager)
+      PackagerConnectionStatusNotifier(devLoadingViewManagerProvider = { devLoadingViewManager })
   private val errorCustomizers: MutableList<ErrorCustomizer> = mutableListOf()
   private var packagerLocationCustomizer: PackagerLocationCustomizer? = null
   private val jSExecutorDescription: String?
@@ -1018,6 +1018,7 @@ public abstract class DevSupportManagerBase(
       devLoadingViewManager?.hide()
       perfMonitorOverlayManager?.disable()
 
+      packagerConnectionStatusNotifier.onPackagerConnectionClosed()
       devServerHelper.closePackagerConnection()
     }
   }
