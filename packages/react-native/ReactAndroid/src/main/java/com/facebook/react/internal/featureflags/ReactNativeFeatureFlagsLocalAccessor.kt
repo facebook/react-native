@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<3f94382901a0c91aa88ca3cdb20bd29a>>
+ * @generated SignedSource<<c3cb6a890e22fe2ac279c3a9aa65b096>>
  */
 
 /**
@@ -58,7 +58,6 @@ internal class ReactNativeFeatureFlagsLocalAccessor : ReactNativeFeatureFlagsAcc
   private var enableKeyEventsCache: Boolean? = null
   private var enableLayoutAnimationsOnAndroidCache: Boolean? = null
   private var enableLayoutAnimationsOnIOSCache: Boolean? = null
-  private var enableLineHeightCenteringOnIOSCache: Boolean? = null
   private var enableMainQueueCoordinatorOnIOSCache: Boolean? = null
   private var enableModuleArgumentNSNullConversionIOSCache: Boolean? = null
   private var enableMutationObserverByDefaultCache: Boolean? = null
@@ -450,16 +449,6 @@ internal class ReactNativeFeatureFlagsLocalAccessor : ReactNativeFeatureFlagsAcc
       cached = currentProvider.enableLayoutAnimationsOnIOS()
       accessedFeatureFlags.add("enableLayoutAnimationsOnIOS")
       enableLayoutAnimationsOnIOSCache = cached
-    }
-    return cached
-  }
-
-  override fun enableLineHeightCenteringOnIOS(): Boolean {
-    var cached = enableLineHeightCenteringOnIOSCache
-    if (cached == null) {
-      cached = currentProvider.enableLineHeightCenteringOnIOS()
-      accessedFeatureFlags.add("enableLineHeightCenteringOnIOS")
-      enableLineHeightCenteringOnIOSCache = cached
     }
     return cached
   }
