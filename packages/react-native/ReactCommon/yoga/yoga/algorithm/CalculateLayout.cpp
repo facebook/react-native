@@ -516,7 +516,9 @@ void zeroOutLayoutRecursively(yoga::Node* const node) {
   }
 }
 
-void cleanupContentsNodesRecursively(yoga::Node* const node) {
+void cleanupContentsNodesRecursively(
+    yoga::Node* const node,
+    bool didPerformLayout) {
   if (node->hasContentsChildren()) [[unlikely]] {
     node->cloneContentsChildrenIfNeeded();
     for (auto child : node->getChildren()) {
@@ -524,11 +526,13 @@ void cleanupContentsNodesRecursively(yoga::Node* const node) {
         child->getLayout() = {};
         child->setLayoutDimension(0, Dimension::Width);
         child->setLayoutDimension(0, Dimension::Height);
-        child->setHasNewLayout(true);
+        if (didPerformLayout) {
+          child->setHasNewLayout(true);
+        }
         child->setDirty(false);
         child->cloneChildrenIfNeeded();
 
-        cleanupContentsNodesRecursively(child);
+        cleanupContentsNodesRecursively(child, didPerformLayout);
       }
     }
   }
@@ -1617,7 +1621,7 @@ static void calculateLayoutImpl(
 
     // Clean and update all display: contents nodes with a direct path to the
     // current node as they will not be traversed
-    cleanupContentsNodesRecursively(node);
+    cleanupContentsNodesRecursively(node, performLayout);
     return;
   }
 
@@ -1635,7 +1639,7 @@ static void calculateLayoutImpl(
 
     // Clean and update all display: contents nodes with a direct path to the
     // current node as they will not be traversed
-    cleanupContentsNodesRecursively(node);
+    cleanupContentsNodesRecursively(node, performLayout);
     return;
   }
 
@@ -1653,7 +1657,7 @@ static void calculateLayoutImpl(
           ownerHeight)) {
     // Clean and update all display: contents nodes with a direct path to the
     // current node as they will not be traversed
-    cleanupContentsNodesRecursively(node);
+    cleanupContentsNodesRecursively(node, /* didPerformLayout */ false);
     return;
   }
 
@@ -1665,7 +1669,7 @@ static void calculateLayoutImpl(
 
   // Clean and update all display: contents nodes with a direct path to the
   // current node as they will not be traversed
-  cleanupContentsNodesRecursively(node);
+  cleanupContentsNodesRecursively(node, performLayout);
 
   // STEP 1: CALCULATE VALUES FOR REMAINDER OF ALGORITHM
   const FlexDirection mainAxis =
