@@ -48,7 +48,7 @@ class ReactScrollViewAccessibilityDelegateTest {
     )
     contentView.addView(View(context))
 
-    val event = AccessibilityEvent.obtain()
+    val event = AccessibilityEvent()
     delegate.onInitializeAccessibilityEvent(scrollView, event)
 
     assertThat(event.itemCount).isEqualTo(-1)
@@ -82,7 +82,7 @@ class ReactScrollViewAccessibilityDelegateTest {
     wrapper.addView(item)
     contentView.addView(wrapper)
 
-    val event = AccessibilityEvent.obtain()
+    val event = AccessibilityEvent()
     delegate.onInitializeAccessibilityEvent(scrollView, event)
 
     assertThat(event.itemCount).isEqualTo(5)
