@@ -13,6 +13,18 @@ add_library(react_renderer_runtimescheduler STATIC ${react_renderer_runtimesched
 
 target_include_directories(react_renderer_runtimescheduler PUBLIC ${REACT_COMMON_DIR})
 
+# POC: vend the umbrella as <React/RuntimeScheduler.h>. The umbrella physically
+# lives at this module's `React/` subdir, so adding the module dir as a public
+# include dir makes `<React/RuntimeScheduler.h>` resolve for dependents.
+# NOTE (macOS, case-insensitive FS): the `React/` prefix differs from the
+# existing lowercase `react/` tree only by case. They do not collide here (the
+# two RuntimeScheduler.h files sit at different depths), but this is a known
+# case-insensitive-FS fragility tracked in
+# __docs__/RuntimeSchedulerUmbrellaPOC.fb.md.
+# NOTE: adding the module dir also exposes the other headers as bare includes; a
+# real rollout would scope this to a dedicated public-include subdir.
+target_include_directories(react_renderer_runtimescheduler PUBLIC ${CMAKE_CURRENT_SOURCE_DIR})
+
 target_link_libraries(react_renderer_runtimescheduler
         callinvoker
         jsi
@@ -29,7 +41,7 @@ target_compile_reactnative_options(react_renderer_runtimescheduler PRIVATE)
 target_compile_options(react_renderer_runtimescheduler PRIVATE -Wpedantic)
 
 # POC (public C++ API surface reduction): this module exposes a single public
-# umbrella header, react/renderer/runtimescheduler/RuntimeScheduler.umbrella.h.
+# umbrella header, vended top-level as <React/RuntimeScheduler.h>.
 # Including any other module header directly is gated by an opt-in guard
 # (RuntimeSchedulerUmbrellaGuard.h) that is inert unless
 # REACT_RUNTIMESCHEDULER_ENFORCE_UMBRELLA is defined.

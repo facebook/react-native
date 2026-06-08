@@ -5,8 +5,8 @@
  * LICENSE file in the root directory of this source tree.
  */
 
+#include <React/RuntimeScheduler.h>
 #include <gtest/gtest.h>
-#include <react/renderer/runtimescheduler/RuntimeScheduler.umbrella.h>
 #include <chrono>
 
 using namespace facebook::react;
