@@ -11,7 +11,7 @@
 #include <react/featureflags/ReactNativeFeatureFlags.h>
 #include <react/featureflags/ReactNativeFeatureFlagsDefaults.h>
 #include <react/performance/timeline/PerformanceEntryReporter.h>
-#include <react/renderer/runtimescheduler/RuntimeScheduler.h>
+#include <react/renderer/runtimescheduler/RuntimeScheduler.umbrella.h>
 #include <chrono>
 #include <memory>
 #include <semaphore>

@@ -6,8 +6,7 @@
  */
 
 #include <gtest/gtest.h>
-#include <react/renderer/runtimescheduler/SchedulerPriorityUtils.h>
-#include <react/renderer/runtimescheduler/Task.h>
+#include <react/renderer/runtimescheduler/RuntimeScheduler.umbrella.h>
 #include <chrono>
 
 using namespace facebook::react;
