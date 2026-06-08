@@ -66,7 +66,7 @@ jobs:
 
           echo "Feed maven local to gradle.properties"
           cd /tmp/RNTestProject
-          echo "react.internal.mavenLocalRepo=$MAVEN_LOCAL" >> android/gradle.properties
+          echo "\nreact.internal.mavenLocalRepo=$MAVEN_LOCAL" >> android/gradle.properties
 
           # Build
           cd android
