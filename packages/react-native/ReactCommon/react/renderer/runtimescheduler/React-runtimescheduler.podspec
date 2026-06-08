@@ -34,8 +34,21 @@ Pod::Spec.new do |s|
   s.source_files           = podspec_sources("**/*.{cpp,h}", "**/*.h")
   s.header_dir             = "react/renderer/runtimescheduler"
   s.exclude_files          = "tests"
+  # POC (public C++ API surface reduction): RuntimeScheduler exposes a single
+  # public umbrella header (RuntimeScheduler.umbrella.h). Including any other
+  # module header directly is gated by an opt-in guard that is inert unless
+  # REACT_RUNTIMESCHEDULER_ENFORCE_UMBRELLA is defined. CocoaPods exposes the
+  # whole header_dir, so the individual headers remain includable here; the guard
+  # macro is the only way to enforce "umbrella only" in the pods build.
+  #
+  # To enable enforcement: add REACT_RUNTIMESCHEDULER_BUILDING=1 to this pod's own
+  # compilation via the GCC_PREPROCESSOR_DEFINITIONS line below, and propagate
+  # REACT_RUNTIMESCHEDULER_ENFORCE_UMBRELLA to consumers. NOTE: enforcing on
+  # consumers needs `user_target_xcconfig`, which CocoaPods discourages (xcconfig
+  # collisions), and it breaks consumers that still include the headers directly.
   s.pod_target_xcconfig    = {
     "CLANG_CXX_LANGUAGE_STANDARD" => rct_cxx_language_standard(),
+    # "GCC_PREPROCESSOR_DEFINITIONS" => "$(inherited) REACT_RUNTIMESCHEDULER_BUILDING=1",
     "HEADER_SEARCH_PATHS" => header_search_paths.join(' ')}
 
   resolve_use_frameworks(s, header_mappings_dir: "../../..", module_name: "React_runtimescheduler")
