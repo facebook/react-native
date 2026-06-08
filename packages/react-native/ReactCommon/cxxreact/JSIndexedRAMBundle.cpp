@@ -9,15 +9,25 @@
 
 #ifndef RCT_REMOVE_LEGACY_ARCH
 
-#include <glog/logging.h>
+#include <bit>
+#include <cstdint>
 #include <fstream>
 #include <memory>
 #include <sstream>
 
-#include <folly/lang/Bits.h>
 #include <glog/logging.h>
 
 namespace facebook::react {
+
+namespace {
+uint32_t littleEndianToHost(uint32_t value) {
+  if constexpr (std::endian::native == std::endian::big) {
+    return (value << 24) | ((value & 0x0000FF00U) << 8) |
+        ((value & 0x00FF0000U) >> 8) | (value >> 24);
+  }
+  return value;
+}
+} // namespace
 
 std::function<std::unique_ptr<JSModulesUnbundle>(std::string)>
 JSIndexedRAMBundle::buildFactory() {
@@ -60,8 +70,8 @@ void JSIndexedRAMBundle::init() {
       "header size must exactly match the input file format");
 
   readBundle(reinterpret_cast<char*>(header), sizeof(header));
-  size_t numTableEntries = folly::Endian::little(header[1]);
-  std::streamsize startupCodeSize = folly::Endian::little(header[2]);
+  size_t numTableEntries = littleEndianToHost(header[1]);
+  std::streamsize startupCodeSize = littleEndianToHost(header[2]);
 
   // allocate memory for meta data and lookup table.
   m_table = ModuleTable(numTableEntries);
@@ -95,7 +105,7 @@ std::string JSIndexedRAMBundle::getModuleCode(const uint32_t id) const {
 
   // entries without associated code have offset = 0 and length = 0
   const uint32_t length =
-      moduleData != nullptr ? folly::Endian::little(moduleData->length) : 0;
+      moduleData != nullptr ? littleEndianToHost(moduleData->length) : 0;
   if (length == 0) {
     throw std::ios_base::failure(
         "Error loading module" + std::to_string(id) + "from RAM Bundle");
@@ -105,7 +115,7 @@ std::string JSIndexedRAMBundle::getModuleCode(const uint32_t id) const {
   readBundle(
       &ret.front(),
       length - 1,
-      m_baseOffset + folly::Endian::little(moduleData->offset));
+      m_baseOffset + littleEndianToHost(moduleData->offset));
   return ret;
 }
 
