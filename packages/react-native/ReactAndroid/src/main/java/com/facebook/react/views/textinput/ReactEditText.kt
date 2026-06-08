@@ -71,6 +71,7 @@ import com.facebook.react.uimanager.style.LogicalEdge
 import com.facebook.react.uimanager.style.Overflow
 import com.facebook.react.views.text.ReactTextUpdate
 import com.facebook.react.views.text.ReactTypefaceUtils.applyStyles
+import com.facebook.react.views.text.ReactTypefaceUtils.getFontWeightAdjustment
 import com.facebook.react.views.text.ReactTypefaceUtils.parseFontStyle
 import com.facebook.react.views.text.ReactTypefaceUtils.parseFontWeight
 import com.facebook.react.views.text.TextAttributes
@@ -849,7 +850,14 @@ public open class ReactEditText public constructor(context: Context) : AppCompat
             fontFeatureSettings != null
     ) {
       workingText.setSpan(
-          CustomStyleSpan(fontStyle, fontWeight, fontFeatureSettings, fontFamily, context.assets),
+          CustomStyleSpan(
+              fontStyle,
+              fontWeight,
+              fontFeatureSettings,
+              fontFamily,
+              context.assets,
+              getFontWeightAdjustment(context),
+          ),
           0,
           workingText.length,
           spanFlags,

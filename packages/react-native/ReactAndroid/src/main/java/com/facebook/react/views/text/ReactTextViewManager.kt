@@ -158,6 +158,7 @@ public constructor(
     val spanned: Spannable =
         TextLayoutManager.getOrCreateSpannableForText(
             view.context.assets,
+            ReactTypefaceUtils.getFontWeightAdjustment(view.context),
             attributedString,
             reactTextViewManagerCallback,
             TextEffectRegistry.current,

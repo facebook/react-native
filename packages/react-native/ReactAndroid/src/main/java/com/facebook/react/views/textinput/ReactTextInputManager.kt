@@ -69,6 +69,7 @@ import com.facebook.react.views.text.DefaultStyleValuesUtil.getDefaultTextColorH
 import com.facebook.react.views.text.ReactTextUpdate
 import com.facebook.react.views.text.ReactTextUpdate.Companion.buildReactTextUpdateFromState
 import com.facebook.react.views.text.ReactTextViewManagerCallback
+import com.facebook.react.views.text.ReactTypefaceUtils.getFontWeightAdjustment
 import com.facebook.react.views.text.ReactTypefaceUtils.parseFontVariant
 import com.facebook.react.views.text.TextAttributeProps
 import com.facebook.react.views.text.TextLayoutManager
@@ -1016,6 +1017,7 @@ public open class ReactTextInputManager public constructor() :
     val spanned =
         TextLayoutManager.getOrCreateSpannableForText(
             view.context.assets,
+            getFontWeightAdjustment(view.context),
             attributedString,
             reactTextViewManagerCallback,
         )
