@@ -85,7 +85,7 @@ import java.util.concurrent.CopyOnWriteArrayList
 public open class UIManagerModule : ReactContextBaseJavaModule, LifecycleEventListener, UIManager {
 
   /** Resolves a name coming from native side to a name of the event that is exposed to JS. */
-  public interface CustomEventNamesResolver {
+  public fun interface CustomEventNamesResolver {
     /** Returns custom event name by the provided event name. */
     public fun resolveCustomEventName(eventName: String): String?
   }
