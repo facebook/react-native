@@ -9,7 +9,6 @@ package com.facebook.react.utils
 
 import com.android.build.api.variant.ApplicationAndroidComponentsExtension
 import com.android.build.api.variant.LibraryAndroidComponentsExtension
-import com.android.build.gradle.LibraryExtension
 import com.facebook.react.ReactExtension
 import com.facebook.react.utils.ProjectUtils.isEdgeToEdgeEnabled
 import com.facebook.react.utils.ProjectUtils.isHermesEnabled
@@ -18,7 +17,6 @@ import java.net.Inet4Address
 import java.net.NetworkInterface
 import javax.xml.parsers.DocumentBuilder
 import javax.xml.parsers.DocumentBuilderFactory
-import kotlin.plus
 import org.gradle.api.Action
 import org.gradle.api.Project
 import org.gradle.api.plugins.AppliedPlugin
@@ -77,13 +75,9 @@ internal object AgpConfiguratorUtils {
     project.pluginManager.withPlugin("com.android.library", action)
   }
 
-  fun configureBuildConfigFieldsForLibraries(appProject: Project) {
-    appProject.rootProject.allprojects { subproject ->
-      subproject.pluginManager.withPlugin("com.android.library") {
-        subproject.extensions
-            .getByType(LibraryAndroidComponentsExtension::class.java)
-            .finalizeDsl { ext -> ext.buildFeatures.buildConfig = true }
-      }
+  fun configureBuildConfigFieldsForLibraries(project: Project) {
+    project.extensions.getByType(LibraryAndroidComponentsExtension::class.java).finalizeDsl { ext ->
+      ext.buildFeatures.buildConfig = true
     }
   }
 
@@ -111,23 +105,16 @@ internal object AgpConfiguratorUtils {
     project.pluginManager.withPlugin("com.android.library", action)
   }
 
-  fun configureNamespaceForLibraries(appProject: Project) {
-    appProject.rootProject.allprojects { subproject ->
-      subproject.pluginManager.withPlugin("com.android.library") {
-        subproject.extensions
-            .getByType(LibraryAndroidComponentsExtension::class.java)
-            .finalizeDsl { ext ->
-              if (ext.namespace == null) {
-                val android = subproject.extensions.getByType(LibraryExtension::class.java)
-                val manifestFile = android.sourceSets.getByName("main").manifest.srcFile
-
-                manifestFile
-                    .takeIf { it.exists() }
-                    ?.let { file ->
-                      getPackageNameFromManifest(file)?.let { packageName ->
-                        ext.namespace = packageName
-                      }
-                    }
+  fun configureNamespaceForLibraries(project: Project) {
+    project.extensions.getByType(LibraryAndroidComponentsExtension::class.java).finalizeDsl { ext ->
+      if (ext.namespace == null) {
+        val manifestFile =
+            project.layout.projectDirectory.file("src/main/AndroidManifest.xml").asFile
+        manifestFile
+            .takeIf { it.exists() }
+            ?.let { file ->
+              getPackageNameFromManifest(file)?.let { packageName ->
+                ext.namespace = packageName
               }
             }
       }

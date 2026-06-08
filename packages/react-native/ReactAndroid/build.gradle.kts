@@ -18,7 +18,6 @@ plugins {
   id("com.facebook.react")
   alias(libs.plugins.android.library)
   alias(libs.plugins.download)
-  alias(libs.plugins.kotlin.android)
   alias(libs.plugins.ktfmt)
 }
 
@@ -612,19 +611,19 @@ android {
       ":packages:react-native:ReactAndroid:hermes-engine:preBuild"
   )
 
-  sourceSets.getByName("main") {
-    res.setSrcDirs(
-        listOf(
-            "src/main/res/devsupport",
-            "src/main/res/shell",
-            "src/main/res/views/alert",
-            "src/main/res/views/modal",
-            "src/main/res/views/uimanager",
-            "src/main/res/views/view",
-        )
-    )
-    java.exclude("com/facebook/react/processing")
-    java.exclude("com/facebook/react/module/processing")
+  sourceSets {
+    named("main") {
+      res.directories.addAll(
+          listOf(
+              "src/main/res/devsupport",
+              "src/main/res/shell",
+              "src/main/res/views/alert",
+              "src/main/res/views/modal",
+              "src/main/res/views/uimanager",
+              "src/main/res/views/view",
+          )
+      )
+    }
   }
 
   lint {
@@ -714,6 +713,8 @@ dependencies {
   // It's up to the consumer to decide if hermes or other engines should be included or not.
   // Therefore hermes-engine is a compileOnly dependencies.
   compileOnly(project(":packages:react-native:ReactAndroid:hermes-engine"))
+
+  implementation(libs.androidx.collection)
 
   testImplementation(libs.junit)
   testImplementation(libs.assertj)
