@@ -65,8 +65,8 @@ private val dashedEffects =
  * allocations.
  *
  * WAVY wavelength and control-point distance follow Chromium/Blink's `decoration_line_painter.cc`.
- * DOUBLE uses a wider gap than Blink (`thickness + 2` vs `thickness + 1`) to keep both strokes
- * visually distinct with antialiasing on mobile displays.
+ * DOUBLE uses a density-scaled gap (`thickness + 2dp`) to keep both strokes visually distinct with
+ * antialiasing on mobile displays.
  */
 private fun drawDecorationLine(
     canvas: Canvas,
@@ -75,13 +75,14 @@ private fun drawDecorationLine(
     x2: Float,
     y: Float,
     thickness: Float,
+    density: Float,
     style: TextDecorationStyle,
     reusablePath: Path,
 ) {
   when (style) {
     TextDecorationStyle.SOLID -> canvas.drawLine(x1, y, x2, y, paint)
     TextDecorationStyle.DOUBLE -> {
-      val gap = thickness + 2f
+      val gap = thickness + 2f * density
       canvas.drawLine(x1, y, x2, y, paint)
       canvas.drawLine(x1, y + gap, x2, y + gap, paint)
     }
@@ -140,12 +141,20 @@ internal fun drawSpannedDecoration(
         if (fgSpans != null && fgSpans.isNotEmpty()) fgSpans.last().foregroundColor
         else textPaint.color
       }
-  val minThickness = 1.5f * textPaint.density
   val thickness =
-      if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
-        max(textPaint.underlineThickness, minThickness)
+      if (style == TextDecorationStyle.SOLID || style == TextDecorationStyle.DOUBLE) {
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
+          textPaint.underlineThickness
+        } else {
+          textPaint.fontMetrics.descent * 0.1f
+        }
       } else {
-        max(textPaint.fontMetrics.descent * 0.1f, minThickness)
+        val minThickness = 1.5f * textPaint.density
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
+          max(textPaint.underlineThickness, minThickness)
+        } else {
+          max(textPaint.fontMetrics.descent * 0.1f, minThickness)
+        }
       }
 
   decorationPaint.set(textPaint)
@@ -176,6 +185,16 @@ internal fun drawSpannedDecoration(
     val x1 = min(rawX1, rawX2)
     val x2 = max(rawX1, rawX2)
     val y = yOffsetForLine(decorationPaint, baseline, thickness)
-    drawDecorationLine(canvas, decorationPaint, x1, x2, y, thickness, style, scratchPath)
+    drawDecorationLine(
+        canvas,
+        decorationPaint,
+        x1,
+        x2,
+        y,
+        thickness,
+        textPaint.density,
+        style,
+        scratchPath,
+    )
   }
 }
