@@ -13,11 +13,12 @@ import type {AnimatedNodeConfig} from './AnimatedNode';
 
 import {validateStyles} from '../../../src/private/animated/NativeAnimatedValidation';
 import * as ReactNativeFeatureFlags from '../../../src/private/featureflags/ReactNativeFeatureFlags';
-import Platform from '../../Utilities/Platform';
 import AnimatedNode from './AnimatedNode';
 import AnimatedObject from './AnimatedObject';
 import AnimatedTransform from './AnimatedTransform';
 import AnimatedWithChildren from './AnimatedWithChildren';
+
+const Platform = require('../../Utilities/Platform').default;
 
 export type AnimatedStyleAllowlist = Readonly<{[string]: true}>;
 

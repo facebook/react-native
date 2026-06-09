@@ -14,10 +14,11 @@ import type {GestureResponderEvent} from '../../Types/CoreEventTypes';
 import View from '../../Components/View/View';
 import StyleSheet from '../../StyleSheet/StyleSheet';
 import Text from '../../Text/Text';
-import Platform from '../../Utilities/Platform';
 import LogBoxButton from './LogBoxButton';
 import * as LogBoxStyle from './LogBoxStyle';
 import * as React from 'react';
+
+const Platform = require('../../Utilities/Platform').default;
 
 const noop = () => {};
 

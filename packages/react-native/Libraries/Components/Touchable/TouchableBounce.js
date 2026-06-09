@@ -16,8 +16,9 @@ import Pressability, {
   type PressabilityConfig,
 } from '../../Pressability/Pressability';
 import {PressabilityDebugView} from '../../Pressability/PressabilityDebug';
-import Platform from '../../Utilities/Platform';
 import * as React from 'react';
+
+const Platform = require('../../Utilities/Platform').default;
 
 type TouchableBounceProps = Readonly<{
   ...React.ElementConfig<TouchableWithoutFeedback>,

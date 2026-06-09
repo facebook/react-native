@@ -8,7 +8,7 @@
  * @format
  */
 
-import Platform from '../../Utilities/Platform';
+const Platform = require('../../Utilities/Platform').default;
 
 function processDecelerationRate(
   decelerationRate: number | 'normal' | 'fast',

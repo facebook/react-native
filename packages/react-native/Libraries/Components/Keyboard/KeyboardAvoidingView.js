@@ -18,13 +18,14 @@ import type {KeyboardEvent, KeyboardMetrics} from './Keyboard';
 
 import LayoutAnimation from '../../LayoutAnimation/LayoutAnimation';
 import StyleSheet from '../../StyleSheet/StyleSheet';
-import Platform from '../../Utilities/Platform';
 import {type EventSubscription} from '../../vendor/emitter/EventEmitter';
 import AccessibilityInfo from '../AccessibilityInfo/AccessibilityInfo';
 import View from '../View/View';
 import Keyboard from './Keyboard';
 import * as React from 'react';
 import {createRef} from 'react';
+
+const Platform = require('../../Utilities/Platform').default;
 
 /** @build-types emit-as-interface Uniwind compatibility */
 export type KeyboardAvoidingViewProps = Readonly<{

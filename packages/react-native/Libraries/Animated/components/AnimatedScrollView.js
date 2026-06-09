@@ -21,12 +21,13 @@ import ScrollView, {
 import flattenStyle from '../../StyleSheet/flattenStyle';
 import splitLayoutProps from '../../StyleSheet/splitLayoutProps';
 import StyleSheet from '../../StyleSheet/StyleSheet';
-import Platform from '../../Utilities/Platform';
 import useMergeRefs from '../../Utilities/useMergeRefs';
 import createAnimatedComponent from '../createAnimatedComponent';
 import useAnimatedProps from '../useAnimatedProps';
 import * as React from 'react';
 import {cloneElement, useMemo} from 'react';
+
+const Platform = require('../../Utilities/Platform').default;
 
 type AnimatedScrollViewInstance = React.ElementRef<typeof ScrollView>;
 

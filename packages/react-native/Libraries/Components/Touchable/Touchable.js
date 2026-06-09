@@ -18,11 +18,12 @@ import type {
 
 import {PressabilityDebugView} from '../../Pressability/PressabilityDebug';
 import UIManager from '../../ReactNative/UIManager';
-import Platform from '../../Utilities/Platform';
 import SoundManager from '../Sound/SoundManager';
 import BoundingDimensions from './BoundingDimensions';
 import Position from './Position';
 import * as React from 'react';
+
+const Platform = require('../../Utilities/Platform').default;
 
 const extractSingleTouch = (nativeEvent: {
   readonly changedTouches: ReadonlyArray<GestureResponderEvent['nativeEvent']>,

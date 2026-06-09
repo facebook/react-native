@@ -13,9 +13,10 @@ import type {Stack} from './Data/LogBoxSymbolication';
 import type {ExtendedExceptionData} from './Data/parseLogBoxLog';
 
 import toExtendedError from '../../src/private/utilities/toExtendedError';
-import Platform from '../Utilities/Platform';
 import RCTLog from '../Utilities/RCTLog';
 import * as React from 'react';
+
+const Platform = require('../Utilities/Platform').default;
 
 // TODO: Remove support for LegacyComponentStackFrame in a future version.
 // This is kept for backward compatibility with external callers of LogBox.addLog.

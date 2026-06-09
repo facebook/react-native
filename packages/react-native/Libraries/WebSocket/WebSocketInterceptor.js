@@ -9,9 +9,10 @@
  */
 
 import NativeEventEmitter from '../EventEmitter/NativeEventEmitter';
-import Platform from '../Utilities/Platform';
 import NativeWebSocketModule from './NativeWebSocketModule';
 import base64 from 'base64-js';
+
+const Platform = require('../Utilities/Platform').default;
 
 const originalRCTWebSocketConnect = NativeWebSocketModule.connect;
 const originalRCTWebSocketSend = NativeWebSocketModule.send;

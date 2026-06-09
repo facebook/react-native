@@ -13,7 +13,6 @@ import type {LayoutChangeEvent} from '../../Types/CoreEventTypes';
 import Animated from '../../Animated/Animated';
 import {isPublicInstance as isFabricPublicInstance} from '../../ReactNative/ReactFabricPublicInstance/ReactFabricPublicInstanceUtils';
 import StyleSheet from '../../StyleSheet/StyleSheet';
-import Platform from '../../Utilities/Platform';
 import useMergeRefs from '../../Utilities/useMergeRefs';
 import * as React from 'react';
 import {
@@ -24,6 +23,8 @@ import {
   useRef,
   useState,
 } from 'react';
+
+const Platform = require('../../Utilities/Platform').default;
 
 export type ScrollViewStickyHeaderProps = Readonly<{
   children?: React.Node,

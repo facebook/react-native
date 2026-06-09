@@ -12,7 +12,8 @@ import type {EventSubscription} from '../vendor/emitter/EventEmitter';
 
 import NativeEventEmitter from '../EventEmitter/NativeEventEmitter';
 import NativeDevSettings from '../NativeModules/specs/NativeDevSettings';
-import Platform from '../Utilities/Platform';
+
+const Platform = require('../Utilities/Platform').default;
 
 /**
  * The DevSettings module exposes methods for customizing settings for developers in development.

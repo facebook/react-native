@@ -11,9 +11,10 @@
 import type {EventSubscription} from '../vendor/emitter/EventEmitter';
 
 import NativeEventEmitter from '../EventEmitter/NativeEventEmitter';
-import Platform from '../Utilities/Platform';
 import NativePushNotificationManagerIOS from './NativePushNotificationManagerIOS';
 import invariant from 'invariant';
+
+const Platform = require('../Utilities/Platform').default;
 
 export type PushNotificationPermissions = {
   alert: boolean,

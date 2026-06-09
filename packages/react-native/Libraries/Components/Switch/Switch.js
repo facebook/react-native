@@ -15,7 +15,6 @@ import type {AccessibilityState} from '../View/ViewAccessibility';
 import type {ViewProps} from '../View/ViewPropTypes';
 
 import StyleSheet from '../../StyleSheet/StyleSheet';
-import Platform from '../../Utilities/Platform';
 import useMergeRefs from '../../Utilities/useMergeRefs';
 import AndroidSwitchNativeComponent, {
   Commands as AndroidSwitchCommands,
@@ -25,6 +24,8 @@ import SwitchNativeComponent, {
 } from './SwitchNativeComponent';
 import * as React from 'react';
 import {useLayoutEffect, useRef, useState} from 'react';
+
+const Platform = require('../../Utilities/Platform').default;
 
 export type SwitchInstance = HostInstance;
 

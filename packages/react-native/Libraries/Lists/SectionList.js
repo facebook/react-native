@@ -19,9 +19,10 @@ import type {
   VirtualizedSectionListProps,
 } from '@react-native/virtualized-lists';
 
-import Platform from '../Utilities/Platform';
 import VirtualizedLists from '@react-native/virtualized-lists';
 import * as React from 'react';
+
+const Platform = require('../Utilities/Platform').default;
 
 const VirtualizedSectionList = VirtualizedLists.VirtualizedSectionList;
 

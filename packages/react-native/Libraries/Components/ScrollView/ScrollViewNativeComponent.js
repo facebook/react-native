@@ -14,8 +14,9 @@ import type {ScrollViewNativeProps as Props} from './ScrollViewNativeComponentTy
 
 import * as NativeComponentRegistry from '../../NativeComponent/NativeComponentRegistry';
 import {ConditionallyIgnoredEventHandlers} from '../../NativeComponent/ViewConfigIgnore';
-import Platform from '../../Utilities/Platform';
 import {colorAttribute} from '../View/ReactNativeStyleAttributes';
+
+const Platform = require('../../Utilities/Platform').default;
 
 export const __INTERNAL_VIEW_CONFIG: PartialViewConfig =
   Platform.OS === 'android'

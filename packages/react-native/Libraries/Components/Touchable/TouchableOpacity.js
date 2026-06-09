@@ -19,8 +19,9 @@ import Pressability, {
 } from '../../Pressability/Pressability';
 import {PressabilityDebugView} from '../../Pressability/PressabilityDebug';
 import flattenStyle from '../../StyleSheet/flattenStyle';
-import Platform from '../../Utilities/Platform';
 import * as React from 'react';
+
+const Platform = require('../../Utilities/Platform').default;
 
 export type TouchableOpacityInstance = HostInstance;
 

@@ -9,11 +9,12 @@
  */
 
 import {PlatformColor} from '../../../StyleSheet/PlatformColorValueTypes';
-import Platform from '../../../Utilities/Platform';
 import {expectRendersMatchingSnapshot} from '../../../Utilities/ReactNativeTestTools';
 import View from '../../View/View';
 import Pressable from '../Pressable';
 import * as React from 'react';
+
+const Platform = require('../../../Utilities/Platform').default;
 
 describe('<Pressable />', () => {
   it('should render as expected', async () => {

@@ -8,8 +8,7 @@
  * @format
  */
 
-import Platform from '../Utilities/Platform';
-
+const Platform = require('../Utilities/Platform').default;
 const ReactNativeVersion = require('./ReactNativeVersion');
 
 /**

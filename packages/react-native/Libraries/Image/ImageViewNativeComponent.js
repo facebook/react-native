@@ -25,7 +25,8 @@ import {colorAttribute} from '../Components/View/ReactNativeStyleAttributes';
 import * as NativeComponentRegistry from '../NativeComponent/NativeComponentRegistry';
 import {ConditionallyIgnoredEventHandlers} from '../NativeComponent/ViewConfigIgnore';
 import codegenNativeCommands from '../Utilities/codegenNativeCommands';
-import Platform from '../Utilities/Platform';
+
+const Platform = require('../Utilities/Platform').default;
 
 type ImageHostComponentProps = Readonly<{
   ...ImageProps,

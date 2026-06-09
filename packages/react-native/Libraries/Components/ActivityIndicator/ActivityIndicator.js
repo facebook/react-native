@@ -13,9 +13,10 @@ import type {HostInstance} from '../../../src/private/types/HostInstance';
 import type {ViewProps} from '../View/ViewPropTypes';
 
 import StyleSheet, {type ColorValue} from '../../StyleSheet/StyleSheet';
-import Platform from '../../Utilities/Platform';
 import View from '../View/View';
 import * as React from 'react';
+
+const Platform = require('../../Utilities/Platform').default;
 
 export type ActivityIndicatorInstance = HostInstance;
 

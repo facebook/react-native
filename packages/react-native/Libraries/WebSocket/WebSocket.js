@@ -24,10 +24,11 @@ import Blob from '../Blob/Blob';
 import BlobManager from '../Blob/BlobManager';
 import NativeEventEmitter from '../EventEmitter/NativeEventEmitter';
 import binaryToBase64 from '../Utilities/binaryToBase64';
-import Platform from '../Utilities/Platform';
 import NativeWebSocketModule from './NativeWebSocketModule';
 import base64 from 'base64-js';
 import invariant from 'invariant';
+
+const Platform = require('../Utilities/Platform').default;
 
 type ArrayBufferView =
   | Int8Array

@@ -9,7 +9,8 @@
  */
 
 import * as ReactNativeFeatureFlags from '../../src/private/featureflags/ReactNativeFeatureFlags';
-import Platform from '../Utilities/Platform';
+
+const Platform = require('../Utilities/Platform').default;
 
 function shouldUseTurboAnimatedModule(): boolean {
   if (ReactNativeFeatureFlags.cxxNativeAnimatedEnabled()) {

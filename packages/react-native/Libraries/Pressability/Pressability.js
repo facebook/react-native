@@ -21,11 +21,12 @@ import SoundManager from '../Components/Sound/SoundManager';
 import UIManager from '../ReactNative/UIManager';
 import {type RectOrSize, normalizeRect} from '../StyleSheet/Rect';
 import {type PointerEvent} from '../Types/CoreEventTypes';
-import Platform from '../Utilities/Platform';
 import {isHoverEnabled} from './HoverState';
 import PressabilityPerformanceEventEmitter from './PressabilityPerformanceEventEmitter.js';
 import {type PressabilityTouchSignal as TouchSignal} from './PressabilityTypes.js';
 import invariant from 'invariant';
+
+const Platform = require('../Utilities/Platform').default;
 
 export type PressabilityConfig = Readonly<{
   /**

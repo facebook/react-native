@@ -11,11 +11,12 @@
 import type {EventSubscription} from '../vendor/emitter/EventEmitter';
 
 import NativeEventEmitter from '../EventEmitter/NativeEventEmitter';
-import Platform from '../Utilities/Platform';
 import NativeIntentAndroid from './NativeIntentAndroid';
 import NativeLinkingManager from './NativeLinkingManager';
 import invariant from 'invariant';
 import nullthrows from 'nullthrows';
+
+const Platform = require('../Utilities/Platform').default;
 
 type LinkingEventDefinitions = {
   url: [{url: string}],

@@ -20,10 +20,11 @@ import Pressability, {
 import {PressabilityDebugView} from '../../Pressability/PressabilityDebug';
 import {findHostInstance_DEPRECATED} from '../../ReactNative/RendererProxy';
 import processColor from '../../StyleSheet/processColor';
-import Platform from '../../Utilities/Platform';
 import {Commands} from '../View/ViewNativeComponent';
 import * as React from 'react';
 import {cloneElement} from 'react';
+
+const Platform = require('../../Utilities/Platform').default;
 
 type TouchableNativeFeedbackTVProps = {
   /**

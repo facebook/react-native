@@ -10,9 +10,10 @@
 
 import NativeEventEmitter from '../EventEmitter/NativeEventEmitter';
 import logError from '../Utilities/logError';
-import Platform from '../Utilities/Platform';
 import {type EventSubscription} from '../vendor/emitter/EventEmitter';
 import NativeAppState from './NativeAppState';
+
+const Platform = require('../Utilities/Platform').default;
 
 /**
  * active - The app is running in the foreground

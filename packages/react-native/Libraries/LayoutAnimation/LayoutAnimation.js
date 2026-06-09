@@ -18,9 +18,9 @@ import type {
 
 import * as ReactNativeFeatureFlags from '../../src/private/featureflags/ReactNativeFeatureFlags';
 import {getFabricUIManager} from '../ReactNative/FabricUIManager';
-import Platform from '../Utilities/Platform';
 
 const UIManager = require('../ReactNative/UIManager').default;
+const Platform = require('../Utilities/Platform').default;
 
 export type {
   LayoutAnimationType,

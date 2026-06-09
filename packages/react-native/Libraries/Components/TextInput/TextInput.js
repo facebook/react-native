@@ -56,13 +56,14 @@ import flattenStyle from '../../StyleSheet/flattenStyle';
 import StyleSheet, {type TextStyleProp} from '../../StyleSheet/StyleSheet';
 import Text from '../../Text/Text';
 import TextAncestorContext from '../../Text/TextAncestorContext';
-import Platform from '../../Utilities/Platform';
 import useMergeRefs from '../../Utilities/useMergeRefs';
 import TextInputState from './TextInputState';
 import invariant from 'invariant';
 import nullthrows from 'nullthrows';
 import * as React from 'react';
 import {useCallback, useLayoutEffect, useMemo, useRef, useState} from 'react';
+
+const Platform = require('../../Utilities/Platform').default;
 
 let AndroidTextInput;
 let AndroidTextInputCommands;

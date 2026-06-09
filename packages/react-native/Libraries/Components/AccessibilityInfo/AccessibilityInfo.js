@@ -13,10 +13,11 @@ import type {EventSubscription} from '../../vendor/emitter/EventEmitter';
 
 import RCTDeviceEventEmitter from '../../EventEmitter/RCTDeviceEventEmitter';
 import {sendAccessibilityEvent} from '../../ReactNative/RendererProxy';
-import Platform from '../../Utilities/Platform';
 import legacySendAccessibilityEvent from './legacySendAccessibilityEvent';
 import NativeAccessibilityInfoAndroid from './NativeAccessibilityInfo';
 import NativeAccessibilityManagerIOS from './NativeAccessibilityManager';
+
+const Platform = require('../../Utilities/Platform').default;
 
 // Events that are only supported on Android.
 type AccessibilityEventDefinitionsAndroid = {

@@ -10,7 +10,7 @@
 
 import type {ImageURISource} from './ImageSource';
 
-import Platform from '../Utilities/Platform';
+const Platform = require('../Utilities/Platform').default;
 
 type NativeImageSourceSpec = Readonly<{
   android?: string,

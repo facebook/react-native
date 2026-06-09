@@ -15,9 +15,10 @@ import type {UIManagerJSInterface} from '../Types/UIManagerJSInterface';
 
 import {unstable_hasComponent} from '../NativeComponent/NativeComponentRegistryUnstable';
 import defineLazyObjectProperty from '../Utilities/defineLazyObjectProperty';
-import Platform from '../Utilities/Platform';
 import {getFabricUIManager} from './FabricUIManager';
 import nullthrows from 'nullthrows';
+
+const Platform = require('../Utilities/Platform').default;
 
 function raiseSoftError(methodName: string, details?: string): void {
   console.error(

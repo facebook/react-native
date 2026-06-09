@@ -25,10 +25,11 @@ import NativeAnimatedNonTurboModule from '../../../Libraries/Animated/NativeAnim
 import NativeAnimatedTurboModule from '../../../Libraries/Animated/NativeAnimatedTurboModule';
 import NativeEventEmitter from '../../../Libraries/EventEmitter/NativeEventEmitter';
 import RCTDeviceEventEmitter from '../../../Libraries/EventEmitter/RCTDeviceEventEmitter';
-import Platform from '../../../Libraries/Utilities/Platform';
 import * as ReactNativeFeatureFlags from '../featureflags/ReactNativeFeatureFlags';
 import invariant from 'invariant';
 import nullthrows from 'nullthrows';
+
+const Platform = require('../../../Libraries/Utilities/Platform').default;
 
 interface NativeAnimatedModuleSpec extends NativeAnimatedTurboModuleSpec {
   // connectAnimatedNodeToShadowNodeFamily is available only in NativeAnimatedNonTurboModule

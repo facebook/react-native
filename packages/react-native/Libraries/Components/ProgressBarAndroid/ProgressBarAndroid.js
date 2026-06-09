@@ -13,7 +13,7 @@
 import type {HostInstance} from '../../../src/private/types/HostInstance';
 import type {ProgressBarAndroidProps} from './ProgressBarAndroidTypes';
 
-import Platform from '../../Utilities/Platform';
+const Platform = require('../../Utilities/Platform').default;
 
 export type ProgressBarAndroidInstance = HostInstance;
 

@@ -15,9 +15,10 @@ import type {
   IEventEmitter,
 } from '../vendor/emitter/EventEmitter';
 
-import Platform from '../Utilities/Platform';
 import RCTDeviceEventEmitter from './RCTDeviceEventEmitter';
 import invariant from 'invariant';
+
+const Platform = require('../Utilities/Platform').default;
 
 interface NativeModule {
   addListener(eventType: string): void;

@@ -13,11 +13,12 @@ import type {EventSubscription} from '../../vendor/emitter/EventEmitter';
 
 import processColor from '../../StyleSheet/processColor';
 import * as Appearance from '../../Utilities/Appearance';
-import Platform from '../../Utilities/Platform';
 import NativeStatusBarManagerAndroid from './NativeStatusBarManagerAndroid';
 import NativeStatusBarManagerIOS from './NativeStatusBarManagerIOS';
 import invariant from 'invariant';
 import * as React from 'react';
+
+const Platform = require('../../Utilities/Platform').default;
 
 /**
  * Status bar style

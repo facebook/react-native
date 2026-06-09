@@ -8,7 +8,7 @@
  * @format
  */
 
-import Platform from '../Utilities/Platform';
+const Platform = require('../Utilities/Platform').default;
 
 declare var console: {[string]: $FlowFixMe};
 

@@ -21,7 +21,6 @@ import usePressability from '../Pressability/usePressability';
 import flattenStyle from '../StyleSheet/flattenStyle';
 import processColor from '../StyleSheet/processColor';
 import StyleSheet from '../StyleSheet/StyleSheet';
-import Platform from '../Utilities/Platform';
 import TextAncestorContext from './TextAncestorContext';
 import {
   NativeSelectableText,
@@ -30,6 +29,8 @@ import {
 } from './TextNativeComponent';
 import * as React from 'react';
 import {useContext, useMemo, useState} from 'react';
+
+const Platform = require('../Utilities/Platform').default;
 
 export type TextInstance = HostInstance;
 

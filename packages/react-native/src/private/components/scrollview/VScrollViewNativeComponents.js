@@ -15,7 +15,8 @@ import type {HostComponent} from '../../types/HostComponent';
 import ScrollContentViewNativeComponent from '../../../../Libraries/Components/ScrollView/ScrollContentViewNativeComponent';
 import ScrollViewNativeComponent from '../../../../Libraries/Components/ScrollView/ScrollViewNativeComponent';
 import View from '../../../../Libraries/Components/View/View';
-import Platform from '../../../../Libraries/Utilities/Platform';
+
+const Platform = require('../../../../Libraries/Utilities/Platform').default;
 
 export const VScrollViewNativeComponent: HostComponent<ScrollViewNativeProps> =
   ScrollViewNativeComponent;

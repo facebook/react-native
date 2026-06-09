@@ -13,10 +13,11 @@ import StyleSheet, {
   type ColorValue,
   type ViewStyleProp,
 } from '../../StyleSheet/StyleSheet';
-import Platform from '../../Utilities/Platform';
 import useWindowDimensions from '../../Utilities/useWindowDimensions';
 import RCTInputAccessoryViewNativeComponent from './RCTInputAccessoryViewNativeComponent';
 import * as React from 'react';
+
+const Platform = require('../../Utilities/Platform').default;
 
 /**
  * Note: iOS only

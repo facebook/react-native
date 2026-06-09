@@ -16,9 +16,10 @@ import type {NativeResponseType} from './XMLHttpRequest';
 // Do not require the native RCTNetworking module directly! Use this wrapper module instead.
 // It will add the necessary requestId, so that you don't have to generate it yourself.
 import NativeEventEmitter from '../EventEmitter/NativeEventEmitter';
-import Platform from '../Utilities/Platform';
 import convertRequestBody from './convertRequestBody';
 import NativeNetworkingAndroid from './NativeNetworkingAndroid';
+
+const Platform = require('../Utilities/Platform').default;
 
 type Header = [string, string];
 

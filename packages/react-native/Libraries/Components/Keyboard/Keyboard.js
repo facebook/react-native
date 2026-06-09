@@ -13,8 +13,9 @@ import type {EventSubscription} from '../../vendor/emitter/EventEmitter';
 import NativeEventEmitter from '../../EventEmitter/NativeEventEmitter';
 import LayoutAnimation from '../../LayoutAnimation/LayoutAnimation';
 import dismissKeyboard from '../../Utilities/dismissKeyboard';
-import Platform from '../../Utilities/Platform';
 import NativeKeyboardObserver from './NativeKeyboardObserver';
+
+const Platform = require('../../Utilities/Platform').default;
 
 export type KeyboardEventName = keyof KeyboardEventDefinitions;
 

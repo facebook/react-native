@@ -10,8 +10,9 @@
 
 import type {DialogOptions} from '../NativeModules/specs/NativeDialogManagerAndroid';
 
-import Platform from '../Utilities/Platform';
 import {alertWithArgs} from './RCTAlertManager';
+
+const Platform = require('../Utilities/Platform').default;
 
 /**
  * @platform ios

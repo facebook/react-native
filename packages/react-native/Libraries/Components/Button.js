@@ -20,12 +20,13 @@ import type {
 
 import StyleSheet, {type ColorValue} from '../StyleSheet/StyleSheet';
 import Text from '../Text/Text';
-import Platform from '../Utilities/Platform';
 import TouchableNativeFeedback from './Touchable/TouchableNativeFeedback';
 import TouchableOpacity from './Touchable/TouchableOpacity';
 import View from './View/View';
 import invariant from 'invariant';
 import * as React from 'react';
+
+const Platform = require('../Utilities/Platform').default;
 
 /** @build-types emit-as-interface Uniwind compatibility */
 export type ButtonProps = Readonly<{

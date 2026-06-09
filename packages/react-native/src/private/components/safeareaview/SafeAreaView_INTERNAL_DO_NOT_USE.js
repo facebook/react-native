@@ -12,8 +12,9 @@ import type {ViewProps} from '../../../../Libraries/Components/View/ViewPropType
 
 import View from '../../../../Libraries/Components/View/View';
 import UIManager from '../../../../Libraries/ReactNative/UIManager';
-import Platform from '../../../../Libraries/Utilities/Platform';
 import * as React from 'react';
+
+const Platform = require('../../../../Libraries/Utilities/Platform').default;
 
 const exported: component(
   ref?: React.RefSetter<React.ElementRef<typeof View>>,

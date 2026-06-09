@@ -19,10 +19,11 @@ import Pressability, {
 } from '../../Pressability/Pressability';
 import {PressabilityDebugView} from '../../Pressability/PressabilityDebug';
 import StyleSheet, {type ViewStyleProp} from '../../StyleSheet/StyleSheet';
-import Platform from '../../Utilities/Platform';
 import warnOnce from '../../Utilities/warnOnce';
 import * as React from 'react';
 import {cloneElement} from 'react';
+
+const Platform = require('../../Utilities/Platform').default;
 
 export type TouchableHighlightInstance = HostInstance;
 

@@ -40,7 +40,6 @@ import splitLayoutProps from '../../StyleSheet/splitLayoutProps';
 import StyleSheet from '../../StyleSheet/StyleSheet';
 import Dimensions from '../../Utilities/Dimensions';
 import dismissKeyboard from '../../Utilities/dismissKeyboard';
-import Platform from '../../Utilities/Platform';
 import Keyboard from '../Keyboard/Keyboard';
 import TextInputState from '../TextInput/TextInputState';
 import View from '../View/View';
@@ -53,6 +52,8 @@ import memoize from 'memoize-one';
 import nullthrows from 'nullthrows';
 import * as React from 'react';
 import {cloneElement} from 'react';
+
+const Platform = require('../../Utilities/Platform').default;
 
 /*
  * iOS scroll event timing nuances:

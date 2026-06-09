@@ -15,13 +15,14 @@ import View from '../../Components/View/View';
 import openFileInEditor from '../../Core/Devtools/openFileInEditor';
 import StyleSheet from '../../StyleSheet/StyleSheet';
 import Text from '../../Text/Text';
-import Platform from '../../Utilities/Platform';
 import * as LogBoxData from '../Data/LogBoxData';
 import AnsiHighlight from './AnsiHighlight';
 import LogBoxButton from './LogBoxButton';
 import LogBoxInspectorSection from './LogBoxInspectorSection';
 import * as LogBoxStyle from './LogBoxStyle';
 import * as React from 'react';
+
+const Platform = require('../../Utilities/Platform').default;
 
 component CodeFrameDisplay(codeFrame: CodeFrame) {
   function getFileName() {

@@ -15,10 +15,11 @@ import SafeAreaView from '../../Components/SafeAreaView/SafeAreaView';
 import View from '../../Components/View/View';
 import StyleSheet from '../../StyleSheet/StyleSheet';
 import Text from '../../Text/Text';
-import Platform from '../../Utilities/Platform';
 import LogBoxInspectorHeaderButton from './LogBoxInspectorHeaderButton';
 import * as LogBoxStyle from './LogBoxStyle';
 import * as React from 'react';
+
+const Platform = require('../../Utilities/Platform').default;
 
 type Props = Readonly<{
   onSelectIndex: (selectedIndex: number) => void,
