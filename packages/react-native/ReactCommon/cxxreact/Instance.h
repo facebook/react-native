@@ -52,8 +52,6 @@ class RN_EXPORT [[deprecated("This API will be removed along with the legacy arc
       std::shared_ptr<ModuleRegistry> moduleRegistry,
       jsinspector_modern::HostTarget *inspectorTarget = nullptr);
 
-  void initializeRuntime();
-
   void setSourceURL(std::string sourceURL);
 
   void loadScriptFromString(std::unique_ptr<const JSBigString> string, std::string sourceURL, bool loadSynchronously);
