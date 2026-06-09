@@ -696,4 +696,97 @@ declare global {
   };
 
   // #endregion
+  // #region TextEncoder / TextDecoder
+  // Available natively in Hermes.
+  // TextEncoder: since React Native 0.74
+  // TextDecoder: since React Native 0.85
+
+  /**
+   * Result of {@link TextEncoder.encodeInto}.
+   *
+   * [MDN Reference](https://developer.mozilla.org/docs/Web/API/TextEncoder/encodeInto#return_value)
+   */
+  interface TextEncoderEncodeIntoResult {
+    /** The number of UTF-16 units of code read from the input string. */
+    read: number;
+    /** The number of bytes written to the destination `Uint8Array`. */
+    written: number;
+  }
+
+  /**
+   * TextEncoder takes a stream of code points as input and emits a stream of
+   * UTF-8 bytes. Hermes only supports UTF-8 encoding.
+   *
+   * [MDN Reference](https://developer.mozilla.org/docs/Web/API/TextEncoder)
+   */
+  interface TextEncoder {
+    /** Always `"utf-8"`. [MDN Reference](https://developer.mozilla.org/docs/Web/API/TextEncoder/encoding) */
+    readonly encoding: 'utf-8';
+    /** [MDN Reference](https://developer.mozilla.org/docs/Web/API/TextEncoder/encode) */
+    encode(input?: string): Uint8Array;
+    /** [MDN Reference](https://developer.mozilla.org/docs/Web/API/TextEncoder/encodeInto) */
+    encodeInto(
+      input: string,
+      destination: Uint8Array,
+    ): TextEncoderEncodeIntoResult;
+  }
+
+  var TextEncoder: {
+    prototype: TextEncoder;
+    new (): TextEncoder;
+  };
+
+  /**
+   * Options for the {@link TextDecoder} constructor.
+   *
+   * [MDN Reference](https://developer.mozilla.org/docs/Web/API/TextDecoder/TextDecoder#options)
+   */
+  interface TextDecoderOptions {
+    /** If `true`, a `TypeError` is thrown on invalid byte sequences. Defaults to `false`. */
+    fatal?: boolean | undefined;
+    /** If `true`, the byte order mark is included in the output. Defaults to `false`. */
+    ignoreBOM?: boolean | undefined;
+  }
+
+  /**
+   * Options for {@link TextDecoder.decode}.
+   *
+   * [MDN Reference](https://developer.mozilla.org/docs/Web/API/TextDecoder/decode#options)
+   */
+  interface TextDecodeOptions {
+    /**
+     * If `true`, indicates that additional data will follow in subsequent calls
+     * to `decode()`. Defaults to `false`.
+     */
+    stream?: boolean | undefined;
+  }
+
+  /**
+   * TextDecoder takes a stream of bytes as input and emits a stream of code
+   * points.
+   *
+   * Hermes supports the following encodings:
+   * UTF-8, UTF-16LE, UTF-16BE, and single-byte encodings (ISO-8859-2 through
+   * ISO-8859-16, Windows-874, Windows-1250 through Windows-1258, KOI8-R,
+   * KOI8-U, IBM866, Macintosh, x-mac-cyrillic).
+   *
+   * [MDN Reference](https://developer.mozilla.org/docs/Web/API/TextDecoder)
+   */
+  interface TextDecoder {
+    /** [MDN Reference](https://developer.mozilla.org/docs/Web/API/TextDecoder/encoding) */
+    readonly encoding: string;
+    /** [MDN Reference](https://developer.mozilla.org/docs/Web/API/TextDecoder/fatal) */
+    readonly fatal: boolean;
+    /** [MDN Reference](https://developer.mozilla.org/docs/Web/API/TextDecoder/ignoreBOM) */
+    readonly ignoreBOM: boolean;
+    /** [MDN Reference](https://developer.mozilla.org/docs/Web/API/TextDecoder/decode) */
+    decode(input?: ArrayBufferView | ArrayBuffer, options?: TextDecodeOptions): string;
+  }
+
+  var TextDecoder: {
+    prototype: TextDecoder;
+    new (label?: string, options?: TextDecoderOptions): TextDecoder;
+  };
+
+  // #endregion
 }
