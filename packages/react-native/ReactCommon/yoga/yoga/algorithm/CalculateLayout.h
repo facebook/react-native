@@ -35,4 +35,6 @@ bool calculateLayoutInternal(
     uint32_t depth,
     uint32_t generationCount);
 
+void cleanupContentsNodesRecursively(yoga::Node* const node);
+
 } // namespace facebook::yoga
