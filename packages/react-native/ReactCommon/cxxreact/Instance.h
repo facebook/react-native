@@ -57,7 +57,6 @@ class RN_EXPORT [[deprecated("This API will be removed along with the legacy arc
   void setSourceURL(std::string sourceURL);
 
   void loadScriptFromString(std::unique_ptr<const JSBigString> string, std::string sourceURL, bool loadSynchronously);
-  bool supportsProfiling();
   void setGlobalVariable(std::string propName, std::unique_ptr<const JSBigString> jsonValue);
   void *getJavaScriptContext();
   bool isInspectable();
