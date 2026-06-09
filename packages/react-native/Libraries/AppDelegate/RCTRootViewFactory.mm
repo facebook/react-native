@@ -152,8 +152,9 @@
                         devMenuConfiguration:(RCTDevMenuConfiguration *)devMenuConfiguration
 {
   // Enable TurboModule interop by default in Bridgeless mode
+#ifndef RCT_REMOVE_LEGACY_MODULE_INTEROP
   RCTEnableTurboModuleInterop(YES);
-  RCTEnableTurboModuleInteropBridgeProxy(YES);
+#endif // RCT_REMOVE_LEGACY_MODULE_INTEROP
 
   [self createReactHostIfNeeded:launchOptions
             bundleConfiguration:bundleConfiguration
@@ -264,48 +265,6 @@
   }
   return nil;
 }
-
-#ifndef RCT_REMOVE_LEGACY_ARCH
-- (NSDictionary<NSString *, Class> *)extraLazyModuleClassesForBridge:(RCTBridge *)bridge
-{
-  if (_configuration.extraLazyModuleClassesForBridge != nil) {
-    return _configuration.extraLazyModuleClassesForBridge(bridge);
-  }
-  return nil;
-}
-
-- (NSURL *)sourceURLForBridge:(RCTBridge *)bridge
-{
-  if (_configuration.sourceURLForBridge != nil) {
-    return _configuration.sourceURLForBridge(bridge);
-  }
-  return [self bundleURL];
-}
-
-- (BOOL)bridge:(RCTBridge *)bridge didNotFindModule:(NSString *)moduleName
-{
-  if (_configuration.bridgeDidNotFindModule != nil) {
-    return _configuration.bridgeDidNotFindModule(bridge, moduleName);
-  }
-  return NO;
-}
-
-- (void)loadSourceForBridge:(RCTBridge *)bridge withBlock:(RCTSourceLoadBlock)loadCallback
-{
-  if (_configuration.loadSourceForBridge != nil) {
-    _configuration.loadSourceForBridge(bridge, loadCallback);
-  }
-}
-
-- (void)loadSourceForBridge:(RCTBridge *)bridge
-                 onProgress:(RCTSourceLoadProgressBlock)onProgress
-                 onComplete:(RCTSourceLoadBlock)loadCallback
-{
-  if (_configuration.loadSourceForBridgeWithProgress != nil) {
-    _configuration.loadSourceForBridgeWithProgress(bridge, onProgress, loadCallback);
-  }
-}
-#endif
 
 - (NSURL *)bundleURL
 {

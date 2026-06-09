@@ -284,12 +284,18 @@ const NativeTouchable:
   | typeof TouchableOpacity =
   Platform.OS === 'android' ? TouchableNativeFeedback : TouchableOpacity;
 
-type ButtonRef = React.ElementRef<typeof NativeTouchable>;
+export type ButtonInstance = React.ElementRef<typeof NativeTouchable>;
 
 const Button: component(
-  ref?: React.RefSetter<ButtonRef>,
+  ref?: React.RefSetter<ButtonInstance>,
   ...props: ButtonProps
-) = ({ref, ...props}: {ref?: React.RefSetter<ButtonRef>, ...ButtonProps}) => {
+) = ({
+  ref,
+  ...props
+}: {
+  ref?: React.RefSetter<ButtonInstance>,
+  ...ButtonProps,
+}) => {
   const {
     accessibilityLabel,
     accessibilityState,

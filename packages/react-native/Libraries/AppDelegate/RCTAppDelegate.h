@@ -10,7 +10,6 @@
 #import "RCTReactNativeFactory.h"
 #import "RCTRootViewFactory.h"
 
-@class RCTBridge;
 @protocol RCTBridgeDelegate;
 @protocol RCTComponentViewProtocol;
 @class RCTRootView;
@@ -41,10 +40,6 @@ NS_ASSUME_NONNULL_BEGIN
  *
  * Overridable methods
  * Shared:
- *   - (RCTBridge *)createBridgeWithDelegate:(id<RCTBridgeDelegate>)delegate launchOptions:(NSDictionary
- *)launchOptions;
- *   - (UIView *)createRootViewWithBridge:(RCTBridge *)bridge moduleName:(NSString*)moduleName initProps:(NSDictionary
- *)initProps;
  *   - (UIViewController *)createRootViewController;
  *   - (void)setRootView:(UIView *)rootView toRootViewController:(UIViewController *)rootViewController;
  * New Architecture:

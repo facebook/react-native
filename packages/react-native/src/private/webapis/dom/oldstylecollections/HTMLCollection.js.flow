@@ -27,3 +27,5 @@ declare export default class HTMLCollection<out T>
 declare export function createHTMLCollection<T>(
   elements: ReadonlyArray<T>,
 ): HTMLCollection<T>;
+
+declare export var HTMLCollection_public: typeof HTMLCollection;

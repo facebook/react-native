@@ -13,6 +13,7 @@ import android.graphics.PointF
 import android.view.View
 import android.view.ViewGroup
 import com.facebook.common.logging.FLog
+import com.facebook.react.R
 import com.facebook.react.bridge.UiThreadUtil
 import com.facebook.react.common.ReactConstants
 import com.facebook.react.touch.ReactHitSlopView
@@ -298,7 +299,11 @@ public object TouchTargetHelper {
   ): Boolean {
     var localX = x + parent.scrollX - child.left
     var localY = y + parent.scrollY - child.top
-    val matrix = child.matrix
+    // BaseViewManager applies skewX / skewY through View.setAnimationMatrix, which is composed
+    // for drawing but not exposed via View.getMatrix(); fall back to the stashed matrix so hit
+    // testing follows the rendered parallelogram and not the original rectangle.
+    val skewMatrix = child.getTag(R.id.skew_animation_matrix) as? Matrix
+    val matrix = skewMatrix ?: child.matrix
     if (!matrix.isIdentity) {
       val inverseMatrix = inverseMatrix
       if (!matrix.invert(inverseMatrix)) {

@@ -8,6 +8,7 @@
  * @format
  */
 
+import type {HostInstance} from '../../../src/private/types/HostInstance';
 import type {ViewStyleProp} from '../../StyleSheet/StyleSheet';
 import type {TouchableWithoutFeedbackProps} from './TouchableWithoutFeedback';
 
@@ -20,6 +21,8 @@ import {PressabilityDebugView} from '../../Pressability/PressabilityDebug';
 import flattenStyle from '../../StyleSheet/flattenStyle';
 import Platform from '../../Utilities/Platform';
 import * as React from 'react';
+
+export type TouchableOpacityInstance = HostInstance;
 
 export type TouchableOpacityTVProps = Readonly<{
   /**
@@ -74,7 +77,7 @@ type TouchableOpacityBaseProps = Readonly<{
   activeOpacity?: ?number,
   style?: ?Animated.WithAnimatedValue<ViewStyleProp>,
 
-  hostRef?: ?React.RefSetter<React.ElementRef<typeof Animated.View>>,
+  hostRef?: ?React.RefSetter<TouchableOpacityInstance>,
 }>;
 
 export type TouchableOpacityProps = Readonly<{
@@ -378,13 +381,13 @@ class TouchableOpacity extends React.Component<
 }
 
 const Touchable: component(
-  ref?: React.RefSetter<React.ElementRef<typeof Animated.View>>,
+  ref?: React.RefSetter<TouchableOpacityInstance>,
   ...props: TouchableOpacityProps
 ) = ({
   ref,
   ...props
 }: {
-  ref?: React.RefSetter<React.ElementRef<typeof Animated.View>>,
+  ref?: React.RefSetter<TouchableOpacityInstance>,
   ...TouchableOpacityProps,
 }) => <TouchableOpacity {...props} hostRef={ref} />;
 

@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<7f48f734cd7a098d04cb147980ef364a>>
+ * @generated SignedSource<<d9146c8c9b0c602e4cedb99e6d91558e>>
  * @flow strict
  * @noformat
  */
@@ -29,9 +29,12 @@ import {
 
 export type ReactNativeFeatureFlagsJsOnly = $ReadOnly<{
   jsOnlyTestFlag: Getter<boolean>,
+  animatedDeferStartOfTimingAnimations: Getter<boolean>,
   animatedShouldDebounceQueueFlush: Getter<boolean>,
+  animatedShouldSyncValueBeforeStartCallback: Getter<boolean>,
   animatedShouldUseSingleOp: Getter<boolean>,
   deferFlatListFocusChangeRenderUpdate: Getter<boolean>,
+  enableImperativeEvents: Getter<boolean>,
   enableNativeEventTargetEventDispatching: Getter<boolean>,
   externalElementInspectionEnabled: Getter<boolean>,
   fixVirtualizeListCollapseWindowSize: Getter<boolean>,
@@ -69,6 +72,7 @@ export type ReactNativeFeatureFlags = $ReadOnly<{
   enableExclusivePropsUpdateAndroid: Getter<boolean>,
   enableFabricCommitBranching: Getter<boolean>,
   enableFabricLogs: Getter<boolean>,
+  enableFlexboxAutoMinSizeInStrictMode: Getter<boolean>,
   enableFontScaleChangesUpdatingLayout: Getter<boolean>,
   enableIOSTextBaselineOffsetPerLine: Getter<boolean>,
   enableIOSViewClipToPaddingBox: Getter<boolean>,
@@ -141,9 +145,19 @@ export type ReactNativeFeatureFlags = $ReadOnly<{
 export const jsOnlyTestFlag: Getter<boolean> = createJavaScriptFlagGetter('jsOnlyTestFlag', false);
 
 /**
+ * When enabled, the JS Animated layer defers the start of native-driven timing animations to the first rendered frame and re-anchors timing to prevent skipping initial frames when the UI thread is busy with layout work.
+ */
+export const animatedDeferStartOfTimingAnimations: Getter<boolean> = createJavaScriptFlagGetter('animatedDeferStartOfTimingAnimations', false);
+
+/**
  * Enables an experimental flush-queue debouncing in Animated.js.
  */
 export const animatedShouldDebounceQueueFlush: Getter<boolean> = createJavaScriptFlagGetter('animatedShouldDebounceQueueFlush', false);
+
+/**
+ * When a useNativeDriver animation completes, syncs the JS-side AnimatedValue with the post-animation value BEFORE invoking the user-supplied start({finished}) callback. Without the flag, the callback observes the pre-animation value, which can cause downstream re-renders to read stale interpolation outputs.
+ */
+export const animatedShouldSyncValueBeforeStartCallback: Getter<boolean> = createJavaScriptFlagGetter('animatedShouldSyncValueBeforeStartCallback', true);
 
 /**
  * Enables an experimental mega-operation for Animated.js that replaces many calls to native with a single call into native, to reduce JSI/JNI traffic.
@@ -154,6 +168,11 @@ export const animatedShouldUseSingleOp: Getter<boolean> = createJavaScriptFlagGe
  * Use the deferred cell render update mechanism for focus change in FlatList.
  */
 export const deferFlatListFocusChangeRenderUpdate: Getter<boolean> = createJavaScriptFlagGetter('deferFlatListFocusChangeRenderUpdate', false);
+
+/**
+ * When enabled, ReactNativeElement and ReadOnlyText expose the public EventTarget API (addEventListener, removeEventListener, dispatchEvent). When disabled, those methods are removed from those final classes.
+ */
+export const enableImperativeEvents: Getter<boolean> = createJavaScriptFlagGetter('enableImperativeEvents', false);
 
 /**
  * When enabled, the React Native renderer dispatches events through the W3C EventTarget API (addEventListener/dispatchEvent) instead of the legacy plugin-based system.
@@ -286,6 +305,10 @@ export const enableFabricCommitBranching: Getter<boolean> = createNativeFlagGett
  * This feature flag enables logs for Fabric.
  */
 export const enableFabricLogs: Getter<boolean> = createNativeFlagGetter('enableFabricLogs', false);
+/**
+ * Enables CSS Flexbox §4.5 automatic minimum sizing under strict layout conformance. When enabled, a flex item with an undefined main-axis `min-width`/`min-height` under strict conformance receives a content-derived minimum size (per spec) instead of an undefined (0) minimum. Defaults off so the behaviour can be ramped independently of strict conformance.
+ */
+export const enableFlexboxAutoMinSizeInStrictMode: Getter<boolean> = createNativeFlagGetter('enableFlexboxAutoMinSizeInStrictMode', false);
 /**
  * Enables font scale changes updating layout for measurable nodes.
  */

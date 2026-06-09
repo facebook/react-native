@@ -5,6 +5,8 @@
  * LICENSE file in the root directory of this source tree.
  *
  * @fantom_flags enableFabricCommitBranching:*
+ * @fantom_flags enableNativeEventTargetEventDispatching:true
+ * @fantom_flags enableImperativeEvents:*
  * @flow strict-local
  * @format
  */
@@ -23,6 +25,8 @@ import {
   NativeText,
   NativeVirtualText,
 } from 'react-native/Libraries/Text/TextNativeComponent';
+import * as ReactNativeFeatureFlags from 'react-native/src/private/featureflags/ReactNativeFeatureFlags';
+import Event from 'react-native/src/private/webapis/dom/events/Event';
 import ReactNativeElement from 'react-native/src/private/webapis/dom/nodes/ReactNativeElement';
 import ReadOnlyElement from 'react-native/src/private/webapis/dom/nodes/ReadOnlyElement';
 import ReadOnlyNode from 'react-native/src/private/webapis/dom/nodes/ReadOnlyNode';
@@ -32,6 +36,20 @@ import NodeList from 'react-native/src/private/webapis/dom/oldstylecollections/N
 function ensureReactNativeElement(value: unknown): ReactNativeElement {
   return ensureInstance(value, ReactNativeElement);
 }
+
+// The public imperative EventTarget API is not part of the static type of this
+// final class (it is only present at runtime, gated by feature flags), so we
+// cast to an interface with optional members to inspect/use it without Flow
+// errors. Optional members make this a valid upcast and let us assert both
+// presence (`'function'`) and absence (`'undefined'`).
+type MaybeEventTarget = interface {
+  addEventListener?: (type: string, callback: (event: Event) => void) => void,
+  removeEventListener?: (
+    type: string,
+    callback: (event: Event) => void,
+  ) => void,
+  dispatchEvent?: (event: Event) => boolean,
+};
 
 /* eslint-disable no-bitwise */
 
@@ -1629,6 +1647,122 @@ describe('ReactNativeElement', () => {
             .toJSX(),
         ).toEqual(<rn-view testID={'second test id'} />);
       });
+    });
+  });
+
+  describe('imperative EventTarget API', () => {
+    // These tests run with `enableNativeEventTargetEventDispatching:true` and
+    // `enableImperativeEvents:*` (see the `@fantom_flags` pragmas). The public
+    // EventTarget API is gated behind `enableImperativeEvents`: when it is off
+    // the methods are removed from this final class, when it is on they are
+    // available.
+    const {isOSS} = Fantom.getConstants();
+
+    if (!ReactNativeFeatureFlags.enableImperativeEvents()) {
+      describe('when `enableImperativeEvents` is off (default)', () => {
+        it('removes the public EventTarget methods', () => {
+          const ref = createRef<HostInstance>();
+          const root = Fantom.createRoot();
+
+          Fantom.runTask(() => {
+            root.render(<View ref={ref} />);
+          });
+
+          const element = ensureReactNativeElement(
+            ref.current,
+          ) as MaybeEventTarget;
+          expect(typeof element.addEventListener).toBe('undefined');
+          expect(typeof element.removeEventListener).toBe('undefined');
+          expect(typeof element.dispatchEvent).toBe('undefined');
+        });
+
+        // Removing the public API must not affect native/prop event delivery,
+        // which goes through the internal (symbol-keyed) dispatch path.
+        (isOSS ? it.skip : it)(
+          'still delivers native events to prop handlers',
+          () => {
+            const ref = createRef<HostInstance>();
+            const onPointerUp = jest.fn();
+            const root = Fantom.createRoot();
+
+            Fantom.runTask(() => {
+              root.render(<View ref={ref} onPointerUp={onPointerUp} />);
+            });
+
+            expect(onPointerUp).toHaveBeenCalledTimes(0);
+
+            Fantom.dispatchNativeEvent(
+              ref,
+              'onPointerUp',
+              {x: 0, y: 0},
+              {
+                category: Fantom.NativeEventCategory.Discrete,
+              },
+            );
+
+            expect(onPointerUp).toHaveBeenCalledTimes(1);
+          },
+        );
+      });
+    }
+
+    if (ReactNativeFeatureFlags.enableImperativeEvents()) {
+      describe('when `enableImperativeEvents` is on', () => {
+        it('exposes the public EventTarget methods', () => {
+          const ref = createRef<HostInstance>();
+          const root = Fantom.createRoot();
+
+          Fantom.runTask(() => {
+            root.render(<View ref={ref} />);
+          });
+
+          const element = ensureReactNativeElement(
+            ref.current,
+          ) as MaybeEventTarget;
+          expect(typeof element.addEventListener).toBe('function');
+          expect(typeof element.removeEventListener).toBe('function');
+          expect(typeof element.dispatchEvent).toBe('function');
+        });
+
+        it('round-trips a listener via `addEventListener` + `dispatchEvent`', () => {
+          const ref = createRef<HostInstance>();
+          const root = Fantom.createRoot();
+
+          Fantom.runTask(() => {
+            root.render(<View ref={ref} />);
+          });
+
+          const element = ensureReactNativeElement(
+            ref.current,
+          ) as MaybeEventTarget;
+          const listener = jest.fn();
+
+          element.addEventListener?.('custom', listener);
+          const result = element.dispatchEvent?.(new Event('custom'));
+
+          expect(listener).toHaveBeenCalledTimes(1);
+          expect(result).toBe(true);
+
+          element.removeEventListener?.('custom', listener);
+          element.dispatchEvent?.(new Event('custom'));
+
+          expect(listener).toHaveBeenCalledTimes(1);
+        });
+      });
+    }
+  });
+
+  describe('global constructors', () => {
+    it('throws when constructing HTMLElement', () => {
+      expect(() => new HTMLElement()).toThrow(
+        "Failed to construct 'HTMLElement': Nodes cannot be imperatively created in React Native",
+      );
+    });
+
+    it('throws when constructing Element', () => {
+      expect(() => new Element()).toThrow(
+        "Failed to construct 'Element': Illegal constructor",
+      );
     });
   });
 });

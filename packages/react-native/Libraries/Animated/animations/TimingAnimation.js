@@ -15,6 +15,7 @@ import type AnimatedValue from '../nodes/AnimatedValue';
 import type AnimatedValueXY from '../nodes/AnimatedValueXY';
 import type {AnimationConfig, EndCallback} from './Animation';
 
+import * as ReactNativeFeatureFlags from '../../../src/private/featureflags/ReactNativeFeatureFlags';
 import AnimatedColor from '../nodes/AnimatedColor';
 import Animation from './Animation';
 
@@ -69,6 +70,7 @@ export default class TimingAnimation extends Animation {
   _animationFrame: ?AnimationFrameID;
   _timeout: ?TimeoutID;
   _platformConfig: ?PlatformConfig;
+  _deferredStart: boolean;
 
   constructor(config: TimingAnimationConfigSingle) {
     super(config);
@@ -78,6 +80,7 @@ export default class TimingAnimation extends Animation {
     this._duration = config.duration ?? 500;
     this._delay = config.delay ?? 0;
     this._platformConfig = config.platformConfig;
+    this._deferredStart = false;
   }
 
   __getNativeAnimationConfig(): Readonly<{
@@ -102,6 +105,7 @@ export default class TimingAnimation extends Animation {
       iterations: this.__iterations,
       platformConfig: this._platformConfig,
       debugID: this.__getDebugID(),
+      deferredStart: this._deferredStart,
     };
   }
 
@@ -116,6 +120,10 @@ export default class TimingAnimation extends Animation {
 
     this._fromValue = fromValue;
     this._onUpdate = onUpdate;
+    if (ReactNativeFeatureFlags.animatedDeferStartOfTimingAnimations()) {
+      this._deferredStart = animatedValue.__deferAnimationStart;
+      animatedValue.__deferAnimationStart = false;
+    }
 
     const start = () => {
       this._startTime = Date.now();

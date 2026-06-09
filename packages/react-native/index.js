@@ -257,18 +257,6 @@ module.exports = {
   get I18nManager() {
     return require('./Libraries/ReactNative/I18nManager').default;
   },
-  /**
-   * @deprecated
-   */
-  get InteractionManager() {
-    warnOnce(
-      'interaction-manager-deprecated',
-      'InteractionManager has been deprecated and will be removed in a ' +
-        'future release. Please refactor long tasks into smaller ones, and ' +
-        " use 'requestIdleCallback' instead.",
-    );
-    return require('./Libraries/Interaction/InteractionManager').default;
-  },
   get Keyboard() {
     return require('./Libraries/Components/Keyboard/Keyboard').default;
   },
@@ -286,10 +274,6 @@ module.exports = {
   },
   get NativeComponentRegistry() {
     return require('./Libraries/NativeComponent/NativeComponentRegistry');
-  },
-  get NativeDialogManagerAndroid() {
-    return require('./Libraries/NativeModules/specs/NativeDialogManagerAndroid')
-      .default;
   },
   get NativeEventEmitter() {
     return require('./Libraries/EventEmitter/NativeEventEmitter').default;
@@ -398,78 +382,17 @@ module.exports = {
 
 if (__DEV__) {
   /* $FlowFixMe[prop-missing] This is intentional: Flow will error when
-   * attempting to access AsyncStorage. */
+   * attempting to access InteractionManager. */
   /* $FlowFixMe[invalid-export] This is intentional: Flow will error when
-   * attempting to access AsyncStorage. */
-  Object.defineProperty(module.exports, 'AsyncStorage', {
+   * attempting to access InteractionManager. */
+  Object.defineProperty(module.exports, 'InteractionManager', {
     configurable: true,
     get() {
       invariant(
         false,
-        'AsyncStorage has been removed from react-native core. ' +
-          "It can now be installed and imported from '@react-native-async-storage/async-storage' instead of 'react-native'. " +
-          'See https://github.com/react-native-async-storage/async-storage',
-      );
-    },
-  });
-  /* $FlowFixMe[prop-missing] This is intentional: Flow will error when
-   * attempting to access ImagePickerIOS. */
-  /* $FlowFixMe[invalid-export] This is intentional: Flow will error when
-   * attempting to access ImagePickerIOS. */
-  Object.defineProperty(module.exports, 'ImagePickerIOS', {
-    configurable: true,
-    get() {
-      invariant(
-        false,
-        'ImagePickerIOS has been removed from React Native. ' +
-          "Please upgrade to use either 'react-native-image-picker' or 'expo-image-picker'. " +
-          "If you cannot upgrade to a different library, please install the deprecated '@react-native-community/image-picker-ios' package. " +
-          'See https://github.com/rnc-archive/react-native-image-picker-ios',
-      );
-    },
-  });
-  /* $FlowFixMe[prop-missing] This is intentional: Flow will error when
-   * attempting to access ProgressViewIOS. */
-  /* $FlowFixMe[invalid-export] This is intentional: Flow will error when
-   * attempting to access ProgressViewIOS. */
-  Object.defineProperty(module.exports, 'ProgressViewIOS', {
-    configurable: true,
-    get() {
-      invariant(
-        false,
-        'ProgressViewIOS has been removed from react-native core. ' +
-          "It can now be installed and imported from '@react-native-community/progress-view' instead of 'react-native'. " +
-          'See https://github.com/react-native-progress-view/progress-view',
-      );
-    },
-  });
-  /* $FlowFixMe[prop-missing] This is intentional: Flow will error when
-   * attempting to access DatePickerIOS. */
-  /* $FlowFixMe[invalid-export] This is intentional: Flow will error when
-   * attempting to access DatePickerIOS. */
-  Object.defineProperty(module.exports, 'DatePickerIOS', {
-    configurable: true,
-    get() {
-      invariant(
-        false,
-        'DatePickerIOS has been removed from react-native core. ' +
-          "It can now be installed and imported from '@react-native-community/datetimepicker' instead of 'react-native'. " +
-          'See https://github.com/react-native-datetimepicker/datetimepicker',
-      );
-    },
-  });
-  /* $FlowFixMe[prop-missing] This is intentional: Flow will error when
-   * attempting to access Slider. */
-  /* $FlowFixMe[invalid-export] This is intentional: Flow will error when
-   * attempting to access Slider. */
-  Object.defineProperty(module.exports, 'Slider', {
-    configurable: true,
-    get() {
-      invariant(
-        false,
-        'Slider has been removed from react-native core. ' +
-          "It can now be installed and imported from '@react-native-community/slider' instead of 'react-native'. " +
-          'See https://github.com/callstack/react-native-slider',
+        'InteractionManager has been removed from react-native core. ' +
+          'Please refactor long tasks into smaller ones, and use ' +
+          "'requestIdleCallback' instead.",
       );
     },
   });

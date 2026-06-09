@@ -1077,13 +1077,13 @@ public class ReactShadowNodeImpl implements ReactShadowNode<ReactShadowNodeImpl>
   }
 
   @Override
-  public @Nullable Iterable<? extends ReactShadowNode> calculateLayoutOnChildren() {
-    return isVirtualAnchor()
-        ?
-        // All of the descendants are virtual so none of them are involved in layout.
-        null
-        :
-        // Just return the children. Flexbox calculations have already been run on them.
-        mChildren;
+  @SuppressWarnings("unchecked")
+  public @Nullable Iterable<ReactShadowNode<?>> calculateLayoutOnChildren() {
+    if (isVirtualAnchor()) {
+      // All of the descendants are virtual so none of them are involved in layout.
+      return null;
+    }
+    // Just return the children. Flexbox calculations have already been run on them.
+    return (Iterable) mChildren;
   }
 }

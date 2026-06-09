@@ -46,6 +46,7 @@ import com.facebook.react.uimanager.style.BorderRadiusProp;
 import com.facebook.react.uimanager.style.BorderStyle;
 import com.facebook.react.uimanager.style.LogicalEdge;
 import com.facebook.react.uimanager.style.Overflow;
+import com.facebook.react.views.text.internal.span.CanvasEffectSpan;
 import com.facebook.react.views.text.internal.span.ReactFragmentIndexSpan;
 import com.facebook.react.views.text.internal.span.ReactTagSpan;
 import com.facebook.yoga.YogaMeasureMode;
@@ -212,7 +213,40 @@ public class ReactTextView extends AppCompatTextView implements ReactCompoundVie
         BackgroundStyleApplicator.clipToPaddingBox(this, canvas);
       }
 
-      super.onDraw(canvas);
+      if (spanned != null) {
+        Layout layout = getLayout();
+        if (layout != null) {
+          CanvasEffectSpan[] drawSpans =
+              spanned.getSpans(0, spanned.length(), CanvasEffectSpan.class);
+          if (drawSpans.length > 0) {
+            canvas.save();
+            canvas.translate(getCompoundPaddingLeft(), getExtendedPaddingTop());
+            for (CanvasEffectSpan span : drawSpans) {
+              int start = spanned.getSpanStart(span);
+              int end = spanned.getSpanEnd(span);
+              span.onPreDraw(start, end, canvas, layout);
+            }
+            canvas.restore();
+
+            super.onDraw(canvas);
+
+            canvas.save();
+            canvas.translate(getCompoundPaddingLeft(), getExtendedPaddingTop());
+            for (CanvasEffectSpan span : drawSpans) {
+              int start = spanned.getSpanStart(span);
+              int end = spanned.getSpanEnd(span);
+              span.onDraw(start, end, canvas, layout);
+            }
+            canvas.restore();
+          } else {
+            super.onDraw(canvas);
+          }
+        } else {
+          super.onDraw(canvas);
+        }
+      } else {
+        super.onDraw(canvas);
+      }
     }
   }
 

@@ -139,7 +139,7 @@ export interface ScrollViewImperativeMethods {
   readonly getScrollableNode: () => ?number;
   readonly getInnerViewNode: () => ?number;
   readonly getInnerViewRef: () => InnerViewInstance | null;
-  readonly getNativeScrollRef: () => PublicScrollViewInstance | null;
+  readonly getNativeScrollRef: () => ScrollViewInstance | null;
   readonly scrollTo: (
     options?: ScrollViewScrollToOptions | number,
     deprecatedX?: number,
@@ -167,9 +167,12 @@ export interface ScrollViewImperativeMethods {
 export type DecelerationRateType = 'fast' | 'normal' | number;
 export type ScrollResponderType = ScrollViewImperativeMethods;
 
-export interface PublicScrollViewInstance
+export interface ScrollViewInstance
   extends HostInstance,
     ScrollViewImperativeMethods {}
+
+/** @deprecated Use ScrollViewInstance instead */
+export type PublicScrollViewInstance = ScrollViewInstance;
 
 type InnerViewInstance = React.ElementRef<typeof View>;
 
@@ -677,7 +680,7 @@ type ScrollViewBaseProps = Readonly<{
    * all of ScrollView's public methods, in addition to native methods like
    * measure, measureLayout, etc.
    */
-  scrollViewRef?: React.RefSetter<PublicScrollViewInstance>,
+  scrollViewRef?: React.RefSetter<ScrollViewInstance>,
 }>;
 
 /** @build-types emit-as-interface Nativewind compatibility */
@@ -874,7 +877,7 @@ class ScrollView extends React.Component<ScrollViewProps, ScrollViewState> {
   getNativeScrollRef: ScrollViewImperativeMethods['getNativeScrollRef'] =
     () => {
       // Object.assign in _scrollView's mutator augments nativeInstance in place,
-      // so it is already a PublicScrollViewInstance at runtime.
+      // so it is already a ScrollViewInstance at runtime.
       // $FlowFixMe[incompatible-type]
       return this._scrollView.nativeInstance;
     };
@@ -1170,7 +1173,7 @@ class ScrollView extends React.Component<ScrollViewProps, ScrollViewState> {
       (instance: InnerViewInstance): InnerViewInstance => instance,
     );
 
-  _scrollView: RefForwarder<HostInstance, PublicScrollViewInstance | null> =
+  _scrollView: RefForwarder<HostInstance, ScrollViewInstance | null> =
     createRefForwarder(nativeInstance => {
       // This is a hack. Ideally we would forwardRef  to the underlying
       // host component. However, since ScrollView has it's own methods that can be
@@ -1183,22 +1186,19 @@ class ScrollView extends React.Component<ScrollViewProps, ScrollViewState> {
       // $FlowFixMe[prop-missing] - Known issue with appending custom methods.
       // $FlowFixMe[incompatible-type]
       // $FlowFixMe[unsafe-object-assign]
-      const publicInstance: PublicScrollViewInstance = Object.assign(
-        nativeInstance,
-        {
-          getScrollResponder: this.getScrollResponder,
-          getScrollableNode: this.getScrollableNode,
-          getInnerViewNode: this.getInnerViewNode,
-          getInnerViewRef: this.getInnerViewRef,
-          getNativeScrollRef: this.getNativeScrollRef,
-          scrollTo: this.scrollTo,
-          scrollToEnd: this.scrollToEnd,
-          flashScrollIndicators: this.flashScrollIndicators,
-          scrollResponderZoomTo: this.scrollResponderZoomTo,
-          scrollResponderScrollNativeHandleToKeyboard:
-            this.scrollResponderScrollNativeHandleToKeyboard,
-        },
-      );
+      const publicInstance: ScrollViewInstance = Object.assign(nativeInstance, {
+        getScrollResponder: this.getScrollResponder,
+        getScrollableNode: this.getScrollableNode,
+        getInnerViewNode: this.getInnerViewNode,
+        getInnerViewRef: this.getInnerViewRef,
+        getNativeScrollRef: this.getNativeScrollRef,
+        scrollTo: this.scrollTo,
+        scrollToEnd: this.scrollToEnd,
+        flashScrollIndicators: this.flashScrollIndicators,
+        scrollResponderZoomTo: this.scrollResponderZoomTo,
+        scrollResponderScrollNativeHandleToKeyboard:
+          this.scrollResponderScrollNativeHandleToKeyboard,
+      });
 
       return publicInstance;
     });
@@ -1935,13 +1935,13 @@ function createRefForwarder<TNativeInstance, TPublicInstance>(
 // component and we need to map `ref` to a differently named prop. This can be
 // removed when `ScrollView` is a functional component.
 const ScrollViewWrapper: component(
-  ref?: React.RefSetter<PublicScrollViewInstance>,
+  ref?: React.RefSetter<ScrollViewInstance>,
   ...props: ScrollViewProps
 ) = function Wrapper({
   ref,
   ...props
 }: {
-  ref?: React.RefSetter<PublicScrollViewInstance>,
+  ref?: React.RefSetter<ScrollViewInstance>,
   ...ScrollViewProps,
 }): React.Node {
   return ref == null ? (

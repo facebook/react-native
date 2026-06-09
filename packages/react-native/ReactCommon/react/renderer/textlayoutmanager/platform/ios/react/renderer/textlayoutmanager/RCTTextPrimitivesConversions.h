@@ -110,6 +110,9 @@ inline static NSUnderlineStyle RCTNSUnderlineStyleFromTextDecorationStyle(
       return NSUnderlineStylePatternDash | NSUnderlineStyleSingle;
     case facebook::react::TextDecorationStyle::Dotted:
       return NSUnderlineStylePatternDot | NSUnderlineStyleSingle;
+    case facebook::react::TextDecorationStyle::Wavy:
+      // No native NSUnderlineStyle for wavy; fall back to solid.
+      return NSUnderlineStyleSingle;
   }
 }
 

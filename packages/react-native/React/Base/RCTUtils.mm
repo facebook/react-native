@@ -46,12 +46,6 @@ BOOL RCTIsNewArchEnabled(void)
 {
   return YES;
 }
-void RCTSetNewArchEnabled(BOOL enabled)
-{
-  // This function is now deprecated and will be removed in the future.
-  // This function is now no-op. You need to modify the Info.plist adding a `RCTNewArchEnabled` bool property to control
-  // whether the New Arch is enabled or not.
-}
 
 BOOL RCTAreLegacyLogsEnabled(void)
 {

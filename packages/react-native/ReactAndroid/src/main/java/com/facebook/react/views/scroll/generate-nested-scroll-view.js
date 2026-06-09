@@ -11,8 +11,8 @@
  */
 
 /**
- * Generates ReactNestedScrollView.java and ReactNestedScrollViewManager.kt from
- * ReactScrollView.java and ReactScrollViewManager.kt respectively.
+ * Generates ReactNestedScrollView.kt and ReactNestedScrollViewManager.kt from
+ * ReactScrollView.kt and ReactScrollViewManager.kt respectively.
  *
  * This script creates variants that use NestedScrollView instead of ScrollView
  * for experimentation purposes.
@@ -101,17 +101,17 @@ function replaceCopyrightHeader(content, sourceFile) {
 }
 
 /**
- * Transform ReactScrollView.java to ReactNestedScrollView.java
+ * Transform ReactScrollView.kt to ReactNestedScrollView.kt
  */
 function transformScrollView(content) {
-  // Replace import
+  // Replace import (Kotlin imports have no semicolons)
   content = content.replace(
-    'import android.widget.ScrollView;',
-    'import androidx.core.widget.NestedScrollView;',
+    'import android.widget.ScrollView',
+    'import androidx.core.widget.NestedScrollView',
   );
 
   // Replace standalone ScrollView with NestedScrollView (not when part of another word)
-  // This handles: "extends ScrollView", "ScrollView.class", etc.
+  // This handles: ": ScrollView(context)", "ScrollView::class.java", etc.
   // But NOT: ReactScrollView, NestedScrollView, ScrollViewHelper, etc.
   content = content.replace(
     /(?<![A-Za-z])ScrollView(?!Helper|Manager|CommandHelper|Interface|Accessible|Accessibility)/g,
@@ -121,21 +121,14 @@ function transformScrollView(content) {
   // Replace ReactScrollView with ReactNestedScrollView
   content = replaceClassNames(content);
 
-  // Fix visibility differences between ScrollView and NestedScrollView:
-  // NestedScrollView.onAttachedToWindow() is public, not protected
+  // Make the class internal to keep it out of the public API
   content = content.replace(
-    'protected void onAttachedToWindow()',
-    'public void onAttachedToWindow()',
-  );
-
-  // Make the class package-private (remove public) to keep it internal
-  content = content.replace(
-    'public class ReactNestedScrollView',
-    'class ReactNestedScrollView',
+    'public open class ReactNestedScrollView',
+    'internal open class ReactNestedScrollView',
   );
 
   // Remove original copyright header and add generated header
-  content = replaceCopyrightHeader(content, 'ReactScrollView.java');
+  content = replaceCopyrightHeader(content, 'ReactScrollView.kt');
 
   return content;
 }
@@ -246,8 +239,8 @@ function main() {
 
   const filesToGenerate = [
     {
-      source: path.join(sourceDir, 'ReactScrollView.java'),
-      output: path.join(sourceDir, 'ReactNestedScrollView.java'),
+      source: path.join(sourceDir, 'ReactScrollView.kt'),
+      output: path.join(sourceDir, 'ReactNestedScrollView.kt'),
       transform: transformScrollView,
     },
     {

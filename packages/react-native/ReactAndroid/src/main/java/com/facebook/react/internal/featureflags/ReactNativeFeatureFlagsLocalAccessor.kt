@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<d5b84c7e0c58f61d891e0dd63f61b4c0>>
+ * @generated SignedSource<<fa85d53197cbdce6b1373fbadf3cf2b9>>
  */
 
 /**
@@ -47,6 +47,7 @@ internal class ReactNativeFeatureFlagsLocalAccessor : ReactNativeFeatureFlagsAcc
   private var enableExclusivePropsUpdateAndroidCache: Boolean? = null
   private var enableFabricCommitBranchingCache: Boolean? = null
   private var enableFabricLogsCache: Boolean? = null
+  private var enableFlexboxAutoMinSizeInStrictModeCache: Boolean? = null
   private var enableFontScaleChangesUpdatingLayoutCache: Boolean? = null
   private var enableIOSTextBaselineOffsetPerLineCache: Boolean? = null
   private var enableIOSViewClipToPaddingBoxCache: Boolean? = null
@@ -338,6 +339,16 @@ internal class ReactNativeFeatureFlagsLocalAccessor : ReactNativeFeatureFlagsAcc
       cached = currentProvider.enableFabricLogs()
       accessedFeatureFlags.add("enableFabricLogs")
       enableFabricLogsCache = cached
+    }
+    return cached
+  }
+
+  override fun enableFlexboxAutoMinSizeInStrictMode(): Boolean {
+    var cached = enableFlexboxAutoMinSizeInStrictModeCache
+    if (cached == null) {
+      cached = currentProvider.enableFlexboxAutoMinSizeInStrictMode()
+      accessedFeatureFlags.add("enableFlexboxAutoMinSizeInStrictMode")
+      enableFlexboxAutoMinSizeInStrictModeCache = cached
     }
     return cached
   }

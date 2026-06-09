@@ -16,6 +16,8 @@ import type {ImageSource} from './ImageSource';
 
 import * as React from 'react';
 
+export type ImageInstance = HostInstance;
+
 export type ImageSize = {
   width: number,
   height: number,

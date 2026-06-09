@@ -265,3 +265,5 @@ export default class SectionList<
     this._wrapperListRef = ref;
   };
 }
+
+export type SectionListInstance = SectionList<>;

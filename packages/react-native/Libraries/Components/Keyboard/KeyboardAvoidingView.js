@@ -298,4 +298,6 @@ class KeyboardAvoidingView extends React.Component<
   }
 }
 
+export type KeyboardAvoidingViewInstance = KeyboardAvoidingView;
+
 export default KeyboardAvoidingView;

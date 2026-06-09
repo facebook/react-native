@@ -917,6 +917,8 @@ inline void fromRawValue(const PropsParserContext &context, const RawValue &valu
       result = TextDecorationStyle::Dotted;
     } else if (string == "dashed") {
       result = TextDecorationStyle::Dashed;
+    } else if (string == "wavy") {
+      result = TextDecorationStyle::Wavy;
     } else {
       LOG(ERROR) << "Unsupported TextDecorationStyle value: " << string;
       react_native_expect(false);
@@ -942,6 +944,8 @@ inline std::string toString(const TextDecorationStyle &textDecorationStyle)
       return "dotted";
     case TextDecorationStyle::Dashed:
       return "dashed";
+    case TextDecorationStyle::Wavy:
+      return "wavy";
   }
 
   LOG(ERROR) << "Unsupported TextDecorationStyle value";

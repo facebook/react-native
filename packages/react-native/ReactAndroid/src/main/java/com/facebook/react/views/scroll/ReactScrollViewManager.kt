@@ -82,7 +82,7 @@ constructor(private val fpsListener: FpsListener? = null) :
 
   @ReactProp(name = "scrollEnabled", defaultBoolean = true)
   public fun setScrollEnabled(view: ReactScrollView, value: Boolean) {
-    view.setScrollEnabled(value)
+    view.scrollEnabled = value
 
     // Set focusable to match whether scroll is enabled. This improves keyboarding
     // experience by not making scrollview a tab stop when you cannot interact with it.
@@ -335,8 +335,8 @@ constructor(private val fpsListener: FpsListener? = null) :
   public fun setFadingEdgeLength(view: ReactScrollView, value: Dynamic) {
     when (value.type) {
       ReadableType.Number -> {
-        view.setFadingEdgeLengthStart(value.asInt())
-        view.setFadingEdgeLengthEnd(value.asInt())
+        view.fadingEdgeLengthStart = value.asInt()
+        view.fadingEdgeLengthEnd = value.asInt()
       }
       ReadableType.Map -> {
         value.asMap()?.let { map ->
@@ -348,8 +348,8 @@ constructor(private val fpsListener: FpsListener? = null) :
           if (map.hasKey("end") && map.getInt("end") > 0) {
             end = map.getInt("end")
           }
-          view.setFadingEdgeLengthStart(start)
-          view.setFadingEdgeLengthEnd(end)
+          view.fadingEdgeLengthStart = start
+          view.fadingEdgeLengthEnd = end
         }
       }
       else -> {
@@ -388,7 +388,7 @@ constructor(private val fpsListener: FpsListener? = null) :
       props: ReactStylesDiffMap,
       stateWrapper: StateWrapper,
   ): Any? {
-    view.setStateWrapper(stateWrapper)
+    view.stateWrapper = stateWrapper
     if (
         ReactNativeFeatureFlags.enableViewCulling() ||
             ReactNativeFeatureFlags.useTraitHiddenOnAndroid()
