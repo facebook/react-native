@@ -204,15 +204,22 @@ const getPreset = (src, options, babel) => {
   }
 
   if (!options || options.enableBabelRuntime !== false) {
-    // Allows configuring a specific runtime version to optimize output
-    const isVersion = typeof options?.enableBabelRuntime === 'string';
+    // Allows configuring a specific runtime version to optimize output. When a
+    // version isn't provided we default to a recent one so that helpers added to
+    // `@babel/runtime` after 7.0.0 (such as the modern `interopRequireWildcard`)
+    // are imported from `@babel/runtime` instead of being inlined into every
+    // module that uses them, which needlessly bloats the bundle.
+    const runtimeVersion =
+      typeof options?.enableBabelRuntime === 'string'
+        ? options.enableBabelRuntime
+        : '7.14.0';
 
     extraPlugins.push([
       require('@babel/plugin-transform-runtime'),
       {
         helpers: true,
         regenerator: enableRegenerator,
-        ...(isVersion && {version: options.enableBabelRuntime}),
+        version: runtimeVersion,
       },
     ]);
   } else if (enableRegenerator) {
