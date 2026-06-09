@@ -174,24 +174,6 @@ void Instance::loadScriptFromString(
   }
 }
 
-void Instance::loadRAMBundle(
-    std::unique_ptr<RAMBundleRegistry> bundleRegistry,
-    std::unique_ptr<const JSBigString> startupScript,
-    std::string startupScriptSourceURL,
-    bool loadSynchronously) {
-  if (loadSynchronously) {
-    loadBundleSync(
-        std::move(bundleRegistry),
-        std::move(startupScript),
-        std::move(startupScriptSourceURL));
-  } else {
-    loadBundle(
-        std::move(bundleRegistry),
-        std::move(startupScript),
-        std::move(startupScriptSourceURL));
-  }
-}
-
 void Instance::setGlobalVariable(
     std::string propName,
     std::unique_ptr<const JSBigString> jsonValue) {
