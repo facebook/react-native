@@ -27,7 +27,6 @@ class RN_EXPORT [[deprecated("This API will be removed along with the legacy arc
  public:
   constexpr static uint32_t MAIN_BUNDLE_ID = 0;
 
-  static std::unique_ptr<RAMBundleRegistry> singleBundleRegistry(std::unique_ptr<JSModulesUnbundle> mainBundle);
   static std::unique_ptr<RAMBundleRegistry> multipleBundlesRegistry(
       std::unique_ptr<JSModulesUnbundle> mainBundle,
       std::function<std::unique_ptr<JSModulesUnbundle>(std::string)> factory);
