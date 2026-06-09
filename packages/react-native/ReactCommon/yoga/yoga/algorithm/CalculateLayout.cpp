@@ -480,7 +480,7 @@ static void zeroOutLayoutRecursively(yoga::Node* const node) {
   }
 }
 
-static void cleanupContentsNodesRecursively(yoga::Node* const node) {
+void cleanupContentsNodesRecursively(yoga::Node* const node) {
   if (node->hasContentsChildren()) [[unlikely]] {
     node->cloneContentsChildrenIfNeeded();
     for (auto child : node->getChildren()) {
