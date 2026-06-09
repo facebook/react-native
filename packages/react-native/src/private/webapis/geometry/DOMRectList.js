@@ -77,3 +77,15 @@ export function createDOMRectList(
 ): DOMRectList {
   return new DOMRectList(elements);
 }
+
+export const DOMRectList_public: typeof DOMRectList =
+  /* eslint-disable no-shadow */
+  // $FlowExpectedError[incompatible-type]
+  function DOMRectList() {
+    throw new TypeError(
+      "Failed to construct 'DOMRectList': Illegal constructor",
+    );
+  };
+
+// $FlowExpectedError[prop-missing]
+DOMRectList_public.prototype = DOMRectList.prototype;

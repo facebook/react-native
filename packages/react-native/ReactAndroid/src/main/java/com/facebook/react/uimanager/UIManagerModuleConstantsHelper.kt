@@ -143,7 +143,7 @@ internal object UIManagerModuleConstantsHelper {
     var viewManagerBubblingEvents: MutableMap<String, Any>? =
         viewManager.exportedCustomBubblingEventTypeConstants
     if (viewManagerBubblingEvents != null) {
-      if (useFabricInterop()) {
+      if (!ReactBuildConfig.UNSTABLE_REMOVE_LEGACY_COMPONENT_INTEROP && useFabricInterop()) {
         // For Fabric, events needs to be fired with a "top" prefix.
         // For the sake of Fabric Interop, here we normalize events adding "top" in their
         // name if the user hasn't provided it.
@@ -160,7 +160,7 @@ internal object UIManagerModuleConstantsHelper {
         viewManager.exportedCustomDirectEventTypeConstants
     validateDirectEventNames(viewManager.getName(), viewManagerDirectEvents)
     if (viewManagerDirectEvents != null) {
-      if (useFabricInterop()) {
+      if (!ReactBuildConfig.UNSTABLE_REMOVE_LEGACY_COMPONENT_INTEROP && useFabricInterop()) {
         // For Fabric, events needs to be fired with a "top" prefix.
         // For the sake of Fabric Interop, here we normalize events adding "top" in their
         // name if the user hasn't provided it.

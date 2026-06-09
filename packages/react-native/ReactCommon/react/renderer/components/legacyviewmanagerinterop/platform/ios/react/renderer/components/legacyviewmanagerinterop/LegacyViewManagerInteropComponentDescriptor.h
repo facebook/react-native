@@ -7,6 +7,8 @@
 
 #pragma once
 
+#ifndef RCT_REMOVE_LEGACY_COMPONENT_INTEROP
+
 #include <react/renderer/components/legacyviewmanagerinterop/LegacyViewManagerInteropShadowNode.h>
 #include <react/renderer/core/ConcreteComponentDescriptor.h>
 
@@ -33,3 +35,5 @@ class LegacyViewManagerInteropComponentDescriptor final
 };
 
 } // namespace facebook::react
+
+#endif // RCT_REMOVE_LEGACY_COMPONENT_INTEROP

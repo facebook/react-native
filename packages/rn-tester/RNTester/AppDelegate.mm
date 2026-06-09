@@ -159,13 +159,6 @@ static NSString *kBundlePath = @"js/RNTesterApp.ios";
 }
 #endif
 
-#pragma mark - New Arch Enabled settings
-
-- (BOOL)bridgelessEnabled
-{
-  return YES;
-}
-
 #pragma mark - RCTComponentViewFactoryComponentProvider
 
 #ifndef RN_DISABLE_OSS_PLUGIN_HEADER

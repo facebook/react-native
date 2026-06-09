@@ -22,6 +22,7 @@ import android.text.Spannable
 import android.text.SpannableStringBuilder
 import android.text.Spanned
 import android.text.TextPaint
+import android.text.TextUtils
 import android.text.TextWatcher
 import android.text.method.KeyListener
 import android.text.method.QwertyKeyListener
@@ -40,6 +41,7 @@ import android.view.inputmethod.EditorInfo
 import android.view.inputmethod.InputConnection
 import android.view.inputmethod.InputMethodManager
 import androidx.appcompat.widget.AppCompatEditText
+import androidx.core.graphics.withTranslation
 import androidx.core.util.Predicate
 import androidx.core.view.ViewCompat
 import com.facebook.common.logging.FLog
@@ -73,6 +75,7 @@ import com.facebook.react.views.text.ReactTypefaceUtils.parseFontStyle
 import com.facebook.react.views.text.ReactTypefaceUtils.parseFontWeight
 import com.facebook.react.views.text.TextAttributes
 import com.facebook.react.views.text.TextLayoutManager
+import com.facebook.react.views.text.internal.span.CanvasEffectSpan
 import com.facebook.react.views.text.internal.span.CustomLetterSpacingSpan
 import com.facebook.react.views.text.internal.span.CustomLineHeightSpan
 import com.facebook.react.views.text.internal.span.CustomStyleSpan
@@ -648,7 +651,7 @@ public open class ReactEditText public constructor(context: Context) : AppCompat
   public fun canUpdateWithEventCount(eventCounter: Int): Boolean = eventCounter >= nativeEventCount
 
   private fun maybeSetText(reactTextUpdate: ReactTextUpdate) {
-    if (isSecureText && (text == reactTextUpdate.text)) {
+    if (isSecureText && TextUtils.equals(text, reactTextUpdate.text)) {
       return
     }
 
@@ -1127,6 +1130,30 @@ public open class ReactEditText public constructor(context: Context) : AppCompat
   public override fun onDraw(canvas: Canvas) {
     if (overflow != Overflow.VISIBLE) {
       clipToPaddingBox(this, canvas)
+    }
+
+    val spanned = text as? Spanned
+    if (spanned != null) {
+      val layout = layout
+      if (layout != null) {
+        val drawSpans = spanned.getSpans(0, spanned.length, CanvasEffectSpan::class.java)
+        if (drawSpans.isNotEmpty()) {
+          canvas.withTranslation(compoundPaddingLeft.toFloat(), extendedPaddingTop.toFloat()) {
+            for (span in drawSpans) {
+              span.onPreDraw(spanned.getSpanStart(span), spanned.getSpanEnd(span), this, layout)
+            }
+          }
+
+          super.onDraw(canvas)
+
+          canvas.withTranslation(compoundPaddingLeft.toFloat(), extendedPaddingTop.toFloat()) {
+            for (span in drawSpans) {
+              span.onDraw(spanned.getSpanStart(span), spanned.getSpanEnd(span), this, layout)
+            }
+          }
+          return
+        }
+      }
     }
 
     super.onDraw(canvas)

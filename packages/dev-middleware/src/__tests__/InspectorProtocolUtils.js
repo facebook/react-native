@@ -39,7 +39,7 @@ export type CdpMessageToTarget = Readonly<{
 }>;
 
 /**
- * Send a CDP message from from the target with the given pageId to the debugger.
+ * Send a CDP message from the target with the given pageId to the debugger.
  * Returns the message as received by the debugger.
  */
 export async function sendFromTargetToDebugger<

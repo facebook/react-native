@@ -98,17 +98,25 @@ class ViewTransitionModule : public UIManagerViewTransitionDelegate,
     AnimationKeyFrameViewLayoutMetrics layoutMetrics;
     Tag tag{0};
     SurfaceId surfaceId{0};
+    uint32_t transitionId{0};
   };
 
  private:
+  uint32_t transitionIdCounter_{0};
+  uint32_t activeTransitionId_{0};
+
   // registry of layout of old/new views
   std::unordered_map<std::string, AnimationKeyFrameView> oldLayout_{};
   std::unordered_map<std::string, AnimationKeyFrameView> newLayout_{};
-  // tag -> names registry, populated during applyViewTransitionName
+  // tag -> (names, transitionId) registry, populated during applyViewTransitionName
   // Note that tag and name are not 1:1 mapping
   // - In some nested composition 2 names are mappped to the same tag
   // - tags of old and new views are mapped to the same name(s)
-  std::unordered_map<Tag, std::unordered_set<std::string>> nameRegistry_{};
+  struct NameRegistryEntry {
+    std::unordered_set<std::string> names;
+    uint32_t transitionId{0};
+  };
+  std::unordered_map<Tag, NameRegistryEntry> nameRegistry_{};
 
   // used for cancel/restore viewTransitionName
   std::unordered_map<Tag, std::unordered_set<std::string>> cancelledNameRegistry_{};
@@ -137,6 +145,8 @@ class ViewTransitionModule : public UIManagerViewTransitionDelegate,
   UIManager *uiManager_{nullptr};
 
   bool transitionStarted_{false};
+
+  bool insideMutationCallback_{false};
 
   bool transitionReadyFinished_{false};
 

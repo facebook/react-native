@@ -50,6 +50,7 @@ const ReadOnlyNodeBase: typeof Object =
 // extend this class so it inherits all the methods and it sets the class
 // hierarchy correctly.
 
+/** @build-types protected-constructor */
 class ReadOnlyNode extends ReadOnlyNodeBase {
   constructor(
     instanceHandle: InstanceHandle,
@@ -370,6 +371,21 @@ function replaceConstructorWithoutSuper(
 export default replaceConstructorWithoutSuper(
   ReadOnlyNode,
 ) as typeof ReadOnlyNode;
+
+export const ReadOnlyNode_public: typeof ReadOnlyNode =
+  // $FlowExpectedError[incompatible-type]
+  function Node() {
+    throw new TypeError("Failed to construct 'Node': Illegal constructor");
+  };
+
+// $FlowExpectedError[prop-missing]
+ReadOnlyNode_public.prototype = ReadOnlyNode.prototype;
+// Copy static properties (ELEMENT_NODE, DOCUMENT_NODE, TEXT_NODE,
+// DOCUMENT_POSITION_*, etc.) so that callers accessing them via the public
+// constructor (e.g. `Node.ELEMENT_NODE`) still work.
+// $FlowFixMe[unsafe-object-assign]
+// $FlowFixMe[not-an-object]
+Object.assign(ReadOnlyNode_public, ReadOnlyNode);
 
 // Temporary type until we ship ReadOnlyNode extending EventTarget ungated.
 export type ReadOnlyNodeWithEventTarget = ReadOnlyNode & EventTarget;

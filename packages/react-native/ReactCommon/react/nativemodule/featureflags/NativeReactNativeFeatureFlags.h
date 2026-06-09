@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<9a21979a5eeb2f9daf8c061610199596>>
+ * @generated SignedSource<<32404575231774f230ece7a097ae08c5>>
  */
 
 /**
@@ -81,6 +81,8 @@ class NativeReactNativeFeatureFlags
   bool enableFabricCommitBranching(jsi::Runtime& runtime);
 
   bool enableFabricLogs(jsi::Runtime& runtime);
+
+  bool enableFlexboxAutoMinSizeInStrictMode(jsi::Runtime& runtime);
 
   bool enableFontScaleChangesUpdatingLayout(jsi::Runtime& runtime);
 

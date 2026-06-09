@@ -8,6 +8,7 @@
  * @format
  */
 
+import type {HostInstance} from '../../src/private/types/HostInstance';
 import type {TextStyleProp} from '../StyleSheet/StyleSheet';
 import type {____TextStyle_Internal as TextStyleInternal} from '../StyleSheet/StyleSheetTypes';
 import type {GestureResponderEvent} from '../Types/CoreEventTypes';
@@ -30,11 +31,9 @@ import {
 import * as React from 'react';
 import {useContext, useMemo, useState} from 'react';
 
-export type {TextProps} from './TextProps';
+export type TextInstance = HostInstance;
 
-type TextForwardRef = React.ElementRef<
-  typeof NativeText | typeof NativeVirtualText | typeof NativeSelectableText,
->;
+export type {TextProps} from './TextProps';
 
 /**
  * Text is the fundamental component for displaying text.
@@ -42,7 +41,7 @@ type TextForwardRef = React.ElementRef<
  * @see https://reactnative.dev/docs/text
  */
 const TextImpl: component(
-  ref?: React.RefSetter<TextForwardRef>,
+  ref?: React.RefSetter<TextInstance>,
   ...props: TextProps
 ) = ({
   ref: forwardedRef,
@@ -82,7 +81,7 @@ const TextImpl: component(
   style,
   ...restProps
 }: {
-  ref?: React.RefSetter<TextForwardRef>,
+  ref?: React.RefSetter<TextInstance>,
   ...TextProps,
 }) => {
   const processedProps = restProps as {
@@ -480,7 +479,7 @@ function useTextPressability({
  * expensive pressability logic to be only initialized when needed.
  */
 component PressableVirtualText(
-  ref?: React.RefSetter<TextForwardRef>,
+  ref?: React.RefSetter<TextInstance>,
   textProps: NativeTextProps,
   textPressabilityProps: TextPressabilityProps,
 ) {
@@ -506,7 +505,7 @@ component PressableVirtualText(
  * expensive pressability logic to be only initialized when needed.
  */
 component PressableText(
-  ref?: React.RefSetter<TextForwardRef>,
+  ref?: React.RefSetter<TextInstance>,
   selectable?: ?boolean,
   textProps: NativeTextProps,
   textPressabilityProps: TextPressabilityProps,

@@ -8,6 +8,8 @@
  * @format
  */
 
+export type HostPlatform = 'android' | 'windows' | 'macos' | 'linux';
+
 export type FantomRuntimeConstants = Readonly<{
   isOSS: boolean,
   isRunningFromCI: boolean,
@@ -16,6 +18,7 @@ export type FantomRuntimeConstants = Readonly<{
   jsHeapSnapshotOutputPathTemplate: string,
   jsHeapSnapshotOutputPathTemplateToken: string,
   jsTraceOutputPath: ?string,
+  hostPlatform: HostPlatform,
 }>;
 
 let constants: FantomRuntimeConstants = {
@@ -26,6 +29,7 @@ let constants: FantomRuntimeConstants = {
   jsHeapSnapshotOutputPathTemplate: '',
   jsHeapSnapshotOutputPathTemplateToken: '',
   jsTraceOutputPath: null,
+  hostPlatform: 'linux',
 };
 
 export function getConstants(): FantomRuntimeConstants {

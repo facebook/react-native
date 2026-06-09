@@ -8,12 +8,15 @@
  * @format
  */
 
+import type {HostInstance} from '../../../src/private/types/HostInstance';
 import type {ViewProps} from './ViewPropTypes';
 
 import TextAncestorContext from '../../Text/TextAncestorContext';
 import ViewNativeComponent from './ViewNativeComponent';
 import * as React from 'react';
 import {use} from 'react';
+
+export type ViewInstance = HostInstance;
 
 /**
  * The most fundamental component for building a UI, View is a container that
@@ -22,10 +25,7 @@ import {use} from 'react';
  *
  * @see https://reactnative.dev/docs/view
  */
-component View(
-  ref?: React.RefSetter<React.ElementRef<typeof ViewNativeComponent>>,
-  ...props: ViewProps
-) {
+component View(ref?: React.RefSetter<ViewInstance>, ...props: ViewProps) {
   const hasTextAncestor = use(TextAncestorContext);
 
   const {

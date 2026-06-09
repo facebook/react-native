@@ -136,6 +136,20 @@ class facebook::hermes::IHermesSHUnit : public facebook::jsi::ICast {
   public virtual SHUnitCreator getSHUnitCreator() const = 0;
 }
 
+struct facebook::hermes::IEventLoopControl {
+  protected ~IEventLoopControl() = default;
+  public virtual uint64_t registerTaskQueueSource() = 0;
+  public virtual void scheduleTask(const std::function<void()>& task) = 0;
+  public virtual void unregisterTaskQueueSource(uint64_t sourceId) = 0;
+}
+
+struct facebook::hermes::ISetEventLoopControl : public facebook::jsi::ICast {
+  protected ~ISetEventLoopControl() = default;
+  public static constexpr facebook::jsi::UUID uuid;
+  public virtual facebook::hermes::IEventLoopControl* getEventLoopControl() = 0;
+  public virtual void setEventLoopControl(facebook::hermes::IEventLoopControl* eventLoopControl) = 0;
+}
+
 
 const char facebook::react::AndroidProgressBarComponentName[];
 const char facebook::react::AndroidSwitchComponentName[];
@@ -2718,6 +2732,7 @@ class facebook::react::PointerHoverTracker {
 }
 
 class facebook::react::PreparedTextCacheKey {
+  public Float pointScaleFactor;
   public facebook::react::AttributedString attributedString;
   public facebook::react::LayoutConstraints layoutConstraints;
   public facebook::react::ParagraphAttributes paragraphAttributes;
@@ -3540,6 +3555,7 @@ class facebook::react::TextInputState {
 }
 
 class facebook::react::TextMeasureCacheKey {
+  public Float pointScaleFactor;
   public facebook::react::AttributedString attributedString;
   public facebook::react::LayoutConstraints layoutConstraints;
   public facebook::react::ParagraphAttributes paragraphAttributes;
@@ -3892,6 +3908,7 @@ struct facebook::react::ViewTransitionModule::AnimationKeyFrameView {
   public facebook::react::SurfaceId surfaceId;
   public facebook::react::Tag tag;
   public facebook::react::ViewTransitionModule::AnimationKeyFrameViewLayoutMetrics layoutMetrics;
+  public uint32_t transitionId;
 }
 
 struct facebook::react::ViewTransitionModule::AnimationKeyFrameViewLayoutMetrics {
@@ -4893,6 +4910,7 @@ enum facebook::react::TextDecorationStyle {
   Dotted,
   Double,
   Solid,
+  Wavy,
 }
 
 enum facebook::react::TextTransform {
@@ -8678,16 +8696,18 @@ struct facebook::react::map_detail::Bridging {
 }
 
 
-typedef void(*facebook::react::ReactMarker::LogTaggedMarker)(const facebook::react::ReactMarker::ReactMarkerId, const char *tag);
-typedef void(*facebook::react::ReactMarker::LogTaggedMarkerBridgeless)(const facebook::react::ReactMarker::ReactMarkerId, const char *tag);
+uint64_t facebook::react::oscompat::getCurrentProcessId();
+uint64_t facebook::react::oscompat::getCurrentThreadId();
+
+
+using facebook::react::ReactMarker::LogTaggedMarker = std::function<void(facebook::react::ReactMarker::ReactMarkerId, const char* tag)>;
+using facebook::react::ReactMarker::LogTaggedMarkerBridgeless = facebook::react::ReactMarker::LogTaggedMarker;
 void facebook::react::ReactMarker::logMarker(facebook::react::ReactMarker::ReactMarkerId markerId);
 void facebook::react::ReactMarker::logMarkerBridgeless(facebook::react::ReactMarker::ReactMarkerId markerId);
 void facebook::react::ReactMarker::logMarkerDone(facebook::react::ReactMarker::ReactMarkerId markerId, double markerTime);
 void facebook::react::ReactMarker::logTaggedMarker(facebook::react::ReactMarker::ReactMarkerId markerId, const char* tag);
 void facebook::react::ReactMarker::logTaggedMarkerBridgeless(facebook::react::ReactMarker::ReactMarkerId markerId, const char* tag);
-facebook::react::ReactMarker::LogTaggedMarker facebook::react::ReactMarker::logTaggedMarkerBridgelessImpl;
-facebook::react::ReactMarker::LogTaggedMarker facebook::react::ReactMarker::logTaggedMarkerImpl;
-std::shared_mutex facebook::react::ReactMarker::logTaggedMarkerImplMutex;
+facebook::react::ReactMarker::AtomicLogTaggedMarker facebook::react::ReactMarker::logTaggedMarkerImpl;
 
 class facebook::react::ReactMarker::StartupLogger {
   public double getAppStartupEndTime();
@@ -8721,15 +8741,17 @@ enum facebook::react::ReactMarker::ReactMarkerId {
   RUN_JS_BUNDLE_STOP,
 }
 
+struct facebook::react::ReactMarker::AtomicLogTaggedMarker {
+  public facebook::react::ReactMarker::AtomicLogTaggedMarker& operator=(facebook::react::ReactMarker::LogTaggedMarker marker);
+  public operator bool() const noexcept;
+  public void operator()(facebook::react::ReactMarker::ReactMarkerId markerId, const char* tag) const;
+}
+
 struct facebook::react::ReactMarker::ReactMarkerEvent {
   public const char* tag;
   public const facebook::react::ReactMarker::ReactMarkerId markerId;
   public double time;
 }
-
-
-uint64_t facebook::react::oscompat::getCurrentProcessId();
-uint64_t facebook::react::oscompat::getCurrentThreadId();
 
 
 void facebook::react::BridgeNativeModulePerfLogger::asyncMethodCallArgConversionEnd(const char* moduleName, const char* methodName);
@@ -9877,7 +9899,7 @@ void facebook::yoga::assertFatal(bool condition, const char* message);
 void facebook::yoga::assertFatalWithConfig(const facebook::yoga::Config* config, bool condition, const char* message);
 void facebook::yoga::assertFatalWithNode(const facebook::yoga::Node* node, bool condition, const char* message);
 void facebook::yoga::calculateLayout(facebook::yoga::Node* node, float ownerWidth, float ownerHeight, facebook::yoga::Direction ownerDirection);
-void facebook::yoga::cleanupContentsNodesRecursively(facebook::yoga::Node *const node);
+void facebook::yoga::cleanupContentsNodesRecursively(facebook::yoga::Node* node, bool didPerformLayout);
 void facebook::yoga::constrainMaxSizeForMode(const facebook::yoga::Node* node, facebook::yoga::Direction direction, facebook::yoga::FlexDirection axis, float ownerAxisSize, float ownerWidth, facebook::yoga::SizingMode* mode, float* size);
 void facebook::yoga::fatalWithMessage(const char* message);
 void facebook::yoga::layoutAbsoluteChild(const facebook::yoga::Node* containingNode, const facebook::yoga::Node* node, facebook::yoga::Node* child, float containingBlockWidth, float containingBlockHeight, facebook::yoga::SizingMode widthMode, facebook::yoga::Direction direction, facebook::yoga::LayoutData& layoutMarkerData, uint32_t depth, uint32_t generationCount);
@@ -9924,6 +9946,7 @@ class facebook::yoga::Node : public YGNode {
   public Node(facebook::yoga::Node&& node) noexcept;
   public YGDirtiedFunc getDirtiedFunc() const;
   public YGSize measure(float availableWidth, facebook::yoga::MeasureMode widthMode, float availableHeight, facebook::yoga::MeasureMode heightMode);
+  public YGSize measureMinContent(float availableWidth, facebook::yoga::MeasureMode widthMode, float availableHeight, facebook::yoga::MeasureMode heightMode);
   public bool alwaysFormsContainingBlock() const;
   public bool getHasNewLayout() const;
   public bool hasBaselineFunc() const noexcept;
@@ -9931,6 +9954,7 @@ class facebook::yoga::Node : public YGNode {
   public bool hasDefiniteLength(facebook::yoga::Dimension dimension, float ownerSize);
   public bool hasErrata(facebook::yoga::Errata errata) const;
   public bool hasMeasureFunc() const noexcept;
+  public bool hasMinContentMeasureFunc() const noexcept;
   public bool isDirty() const;
   public bool isLayoutDimensionDefined(facebook::yoga::FlexDirection axis);
   public bool isNodeFlexible();
@@ -9941,6 +9965,8 @@ class facebook::yoga::Node : public YGNode {
   public const facebook::yoga::Style& style() const;
   public const std::vector<facebook::yoga::Node*>& getChildren() const;
   public facebook::yoga::Direction resolveDirection(facebook::yoga::Direction ownerDirection);
+  public facebook::yoga::FloatOptional getMinContentHeight() const noexcept;
+  public facebook::yoga::FloatOptional getMinContentWidth() const noexcept;
   public facebook::yoga::FloatOptional getResolvedDimension(facebook::yoga::Direction direction, facebook::yoga::Dimension dimension, float referenceLength, float ownerWidth) const;
   public facebook::yoga::FloatOptional resolveFlexBasis(facebook::yoga::Direction direction, facebook::yoga::FlexDirection flexDirection, float referenceLength, float ownerWidth) const;
   public facebook::yoga::LayoutResults& getLayout();
@@ -9994,6 +10020,9 @@ class facebook::yoga::Node : public YGNode {
   public void setLayoutPosition(float position, facebook::yoga::PhysicalEdge edge);
   public void setLineIndex(size_t lineIndex);
   public void setMeasureFunc(YGMeasureFunc measureFunc);
+  public void setMinContentHeight(facebook::yoga::FloatOptional minContentHeight) noexcept;
+  public void setMinContentMeasureFunc(YGMinContentMeasureFunc minContentMeasureFunc);
+  public void setMinContentWidth(facebook::yoga::FloatOptional minContentWidth) noexcept;
   public void setNodeType(facebook::yoga::NodeType nodeType);
   public void setOwner(facebook::yoga::Node* owner);
   public void setPosition(facebook::yoga::Direction direction, float ownerWidth, float ownerHeight);
@@ -10243,6 +10272,7 @@ enum facebook::yoga::Errata : uint32_t {
   AbsolutePositionWithoutInsetsExcludesPadding,
   All,
   Classic,
+  MinSizeUndefinedInsteadOfAuto,
   None,
   StretchFlexBasis,
 }
@@ -10502,6 +10532,7 @@ struct facebook::yoga::LayoutResults {
   public facebook::yoga::CachedMeasurement cachedLayout;
   public facebook::yoga::Direction direction() const;
   public facebook::yoga::Direction lastOwnerDirection;
+  public facebook::yoga::FloatOptional computedAutoMinMainSize;
   public facebook::yoga::FloatOptional computedFlexBasis;
   public float border(facebook::yoga::PhysicalEdge physicalEdge) const;
   public float dimension(facebook::yoga::Dimension axis) const;

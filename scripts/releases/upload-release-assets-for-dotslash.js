@@ -180,7 +180,7 @@ async function uploadReleaseAssetsForDotSlashFile(
  * Given a description of a DotSlash artifact for a particular platform,
  * infers the upstream URL ( = where the binary is currently available) and
  * release asset URL ( = where the binary will be hosted after the release),
- * then downloads the asset from the the upstream URL and uploads it to GitHub
+ * then downloads the asset from the upstream URL and uploads it to GitHub
  * at the desired URL.
  */
 async function fetchUpstreamAssetAndUploadToRelease(

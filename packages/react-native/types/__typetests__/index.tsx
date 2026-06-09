@@ -46,6 +46,7 @@ import {
   FocusEvent,
   GestureResponderEvent,
   HostComponent,
+  HostInstance,
   I18nManager,
   Image,
   ImageBackground,
@@ -56,7 +57,6 @@ import {
   ImageResolvedAssetSource,
   ImageStyle,
   InputAccessoryView,
-  InteractionManager,
   Keyboard,
   KeyboardAvoidingView,
   LayoutChangeEvent,
@@ -780,10 +780,6 @@ if (Systrace.isEnabled()) {
 
   Systrace.counterEvent('counter', 123);
 }
-
-InteractionManager.runAfterInteractions(() => {
-  // ...
-}).then(() => 'done');
 
 export class FlatListTest extends React.Component<FlatListProps<number>, {}> {
   list: FlatList<any> | null = null;
@@ -1540,6 +1536,10 @@ const KeyboardAvoidingViewTest = () => <KeyboardAvoidingView enabled />;
 
 const ModalTest = () => <Modal hardwareAccelerated />;
 const ModalTest2 = () => <Modal hardwareAccelerated testID="modal-test-2" />;
+const ModalRefTest = () => {
+  const modalRef = React.useRef<Modal & HostInstance>(null);
+  return <Modal modalRef={modalRef} />;
+};
 
 // $ExpectType HostComponent<{ nativeProp: string; }>
 const NativeBridgedComponent = requireNativeComponent<{nativeProp: string}>(

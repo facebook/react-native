@@ -245,3 +245,12 @@ export function getBoundingClientRect(
   // Empty rect if any of the above failed
   return new DOMRect(0, 0, 0, 0);
 }
+
+export const ReadOnlyElement_public: typeof ReadOnlyElement =
+  // $FlowExpectedError[incompatible-type]
+  function Element() {
+    throw new TypeError("Failed to construct 'Element': Illegal constructor");
+  };
+
+// $FlowExpectedError[prop-missing]
+ReadOnlyElement_public.prototype = ReadOnlyElement.prototype;

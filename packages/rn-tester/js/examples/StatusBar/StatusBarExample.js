@@ -24,7 +24,7 @@ import {
 
 const colors = ['#ff0000', '#00ff00', '#0000ff', 'rgba(0, 0, 0, 0.4)'];
 
-const barStyles = ['default', 'light-content', 'dark-content'];
+const barStyles = ['default', 'auto', 'light-content', 'dark-content'];
 
 const showHideTransitions = ['fade', 'slide'];
 

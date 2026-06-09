@@ -17,6 +17,8 @@ import android.text.InputFilter
 import android.text.InputFilter.AllCaps
 import android.text.InputType
 import android.text.Layout
+import android.text.SpannableString
+import android.text.Spanned
 import android.util.DisplayMetrics
 import android.view.Gravity
 import android.view.View
@@ -32,6 +34,7 @@ import com.facebook.react.uimanager.DisplayMetricsHolder
 import com.facebook.react.uimanager.ReactStylesDiffMap
 import com.facebook.react.uimanager.ThemedReactContext
 import com.facebook.react.views.text.DefaultStyleValuesUtil.getDefaultTextColorHint
+import com.facebook.react.views.text.ReactTextUpdate
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.Before
 import org.junit.Test
@@ -481,7 +484,33 @@ class ReactTextInputPropertyTest {
     assertThat(view.filters).isEqualTo(filters)
   }
 
+  @Test
+  fun testSecureTextDoesNotReplaceSameTextFromJS() {
+    val markerSpan = MarkerSpan()
+    val textUpdate =
+        SpannableString("secret").apply {
+          setSpan(markerSpan, 0, length, Spanned.SPAN_INCLUSIVE_INCLUSIVE)
+        }
+
+    manager.updateProperties(view, buildStyles("secureTextEntry", true))
+    view.setText("secret")
+
+    view.maybeSetTextFromJS(
+        ReactTextUpdate(
+            textUpdate,
+            0,
+            view.gravity and Gravity.HORIZONTAL_GRAVITY_MASK,
+            Layout.BREAK_STRATEGY_HIGH_QUALITY,
+            0,
+        )
+    )
+
+    assertThat(checkNotNull(view.text).getSpans(0, view.length(), MarkerSpan::class.java)).isEmpty()
+  }
+
   private fun buildStyles(vararg keysAndValues: Any?): ReactStylesDiffMap {
     return ReactStylesDiffMap(JavaOnlyMap.of(*keysAndValues))
   }
+
+  private class MarkerSpan
 }

@@ -11,7 +11,6 @@
 #import <React/UIView+React.h>
 
 #import <React/RCTBackedTextInputDelegateAdapter.h>
-#import <React/RCTTextAttributes.h>
 
 @implementation RCTUITextView {
   UILabel *_placeholderView;

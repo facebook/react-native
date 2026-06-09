@@ -92,6 +92,21 @@ public class TextAttributeProps private constructor() {
   public var isLineThroughTextDecorationSet: Boolean = false
     private set
 
+  /**
+   * Decoration color for underlines and strikethroughs. `Color.TRANSPARENT` (the default) means
+   * "fall back to the text color" so existing call sites that don't pass a value retain the prior
+   * behavior. Honored by `ReactUnderlineSpan` and `ReactStrikethroughSpan`.
+   */
+  internal var textDecorationColor: Int = android.graphics.Color.TRANSPARENT
+    private set
+
+  /**
+   * CSS `text-decoration-style`. Defaults to `SOLID` so existing call sites retain the prior visual
+   * behavior. Honored by `ReactUnderlineSpan` and `ReactStrikethroughSpan`.
+   */
+  internal var textDecorationStyle: TextDecorationStyle = TextDecorationStyle.SOLID
+    private set
+
   private var includeFontPadding: Boolean = true
 
   public var accessibilityRole: AccessibilityRole? = null
@@ -423,9 +438,10 @@ public class TextAttributeProps private constructor() {
           TA_KEY_LINE_HEIGHT -> result.lineHeight = entry.doubleValue.toFloat()
           TA_KEY_ALIGNMENT -> {}
           TA_KEY_BEST_WRITING_DIRECTION -> {}
-          TA_KEY_TEXT_DECORATION_COLOR -> {}
+          TA_KEY_TEXT_DECORATION_COLOR -> result.textDecorationColor = entry.intValue
           TA_KEY_TEXT_DECORATION_LINE -> result.setTextDecorationLine(entry.stringValue)
-          TA_KEY_TEXT_DECORATION_STYLE -> {}
+          TA_KEY_TEXT_DECORATION_STYLE ->
+              result.textDecorationStyle = TextDecorationStyle.fromString(entry.stringValue)
           TA_KEY_TEXT_SHADOW_RADIUS -> result.textShadowRadius = entry.doubleValue.toFloat()
           TA_KEY_TEXT_SHADOW_COLOR -> result.textShadowColor = entry.intValue
           TA_KEY_TEXT_SHADOW_OFFSET_DX -> result.textShadowOffsetDx = entry.doubleValue.toFloat()
@@ -486,6 +502,10 @@ public class TextAttributeProps private constructor() {
       result.setFontVariant(getArrayProp(props, ViewProps.FONT_VARIANT))
       result.includeFontPadding = getBooleanProp(props, ViewProps.INCLUDE_FONT_PADDING, true)
       result.setTextDecorationLine(getStringProp(props, ViewProps.TEXT_DECORATION_LINE))
+      result.textDecorationColor =
+          getIntProp(props, "textDecorationColor", android.graphics.Color.TRANSPARENT)
+      result.textDecorationStyle =
+          TextDecorationStyle.fromString(getStringProp(props, "textDecorationStyle"))
       result.setTextShadowOffset(
           if (props.hasKey(PROP_SHADOW_OFFSET)) props.getMap(PROP_SHADOW_OFFSET) else null
       )

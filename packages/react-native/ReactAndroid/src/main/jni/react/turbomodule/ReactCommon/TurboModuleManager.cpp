@@ -24,6 +24,7 @@
 
 namespace facebook::react {
 
+#ifndef RCT_REMOVE_LEGACY_MODULE_INTEROP
 namespace {
 
 class JMethodDescriptor : public jni::JavaClass<JMethodDescriptor> {
@@ -93,6 +94,7 @@ class JMethodDescriptor : public jni::JavaClass<JMethodDescriptor> {
   }
 };
 } // namespace
+#endif // RCT_REMOVE_LEGACY_MODULE_INTEROP
 
 TurboModuleManager::TurboModuleManager(
     std::shared_ptr<CallInvoker> jsCallInvoker,
@@ -222,6 +224,7 @@ std::shared_ptr<TurboModule> TurboModuleManager::getTurboModule(
   return nullptr;
 }
 
+#ifndef RCT_REMOVE_LEGACY_MODULE_INTEROP
 TurboModuleProviderFunctionTypeWithRuntime
 TurboModuleManager::createLegacyModuleProvider(
     jni::alias_ref<jhybridobject> javaPart) {
@@ -318,14 +321,19 @@ std::shared_ptr<TurboModule> TurboModuleManager::getLegacyModule(
 
   return nullptr;
 }
+#endif // RCT_REMOVE_LEGACY_MODULE_INTEROP
 
 void TurboModuleManager::installJSBindings(
     jsi::Runtime& runtime,
     jni::alias_ref<jhybridobject> javaPart) {
+#ifndef RCT_REMOVE_LEGACY_MODULE_INTEROP
   TurboModuleBinding::install(
       runtime,
       createTurboModuleProvider(javaPart),
       createLegacyModuleProvider(javaPart));
+#else
+  TurboModuleBinding::install(runtime, createTurboModuleProvider(javaPart));
+#endif // RCT_REMOVE_LEGACY_MODULE_INTEROP
 }
 
 void TurboModuleManager::dispatchJSBindingInstall(

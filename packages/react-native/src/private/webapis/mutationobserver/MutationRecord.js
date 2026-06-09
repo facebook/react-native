@@ -83,3 +83,15 @@ export function createMutationRecord(
 ): MutationRecord {
   return new MutationRecord(entry);
 }
+
+export const MutationRecord_public: typeof MutationRecord =
+  /* eslint-disable no-shadow */
+  // $FlowExpectedError[incompatible-type]
+  function MutationRecord() {
+    throw new TypeError(
+      "Failed to construct 'MutationRecord': Illegal constructor",
+    );
+  };
+
+// $FlowExpectedError[prop-missing]
+MutationRecord_public.prototype = MutationRecord.prototype;

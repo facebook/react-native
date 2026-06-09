@@ -8,7 +8,7 @@
  * @format
  */
 
-import type {PublicScrollViewInstance} from '../Components/ScrollView/ScrollView';
+import type {ScrollViewInstance} from '../Components/ScrollView/ScrollView';
 import type {ViewStyleProp} from '../StyleSheet/StyleSheet';
 import type {
   ListRenderItem,
@@ -398,7 +398,7 @@ class FlatList<ItemT = any> extends React.PureComponent<FlatListProps<ItemT>> {
   /**
    * Provides a reference to the underlying host component
    */
-  getNativeScrollRef(): ?PublicScrollViewInstance {
+  getNativeScrollRef(): ?ScrollViewInstance {
     if (this._listRef) {
       return this._listRef.getScrollRef();
     }
@@ -705,5 +705,7 @@ class FlatList<ItemT = any> extends React.PureComponent<FlatListProps<ItemT>> {
 const styles = StyleSheet.create({
   row: {flexDirection: 'row'},
 });
+
+export type FlatListInstance = FlatList<>;
 
 export default FlatList;

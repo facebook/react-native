@@ -15,7 +15,6 @@
 #import "RCTLog.h"
 #import "RCTPerformanceLogger.h"
 #import "RCTProfile.h"
-#import "RCTRootContentView.h"
 #import "RCTRootViewDelegate.h"
 #import "RCTSurface.h"
 #import "UIView+React.h"

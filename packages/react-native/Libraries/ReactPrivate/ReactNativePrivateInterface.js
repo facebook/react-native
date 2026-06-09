@@ -37,16 +37,6 @@ import typeof deepFreezeAndThrowOnMutationInDev from '../Utilities/deepFreezeAnd
 import typeof deepDiffer from '../Utilities/differ/deepDiffer';
 import typeof Platform from '../Utilities/Platform';
 
-// Expose these types to the React renderer
-export type {
-  HostInstance as PublicInstance,
-  // These types are only necessary for Paper
-  NativeMethods as LegacyPublicInstance,
-  MeasureOnSuccessCallback,
-  MeasureInWindowOnSuccessCallback,
-  MeasureLayoutOnSuccessCallback,
-} from '../../src/private/types/HostInstance';
-
 export type {PublicRootInstance} from '../ReactNative/ReactFabricPublicInstance/ReactFabricPublicInstance';
 export type PublicTextInstance = ReturnType<createPublicTextInstance>;
 

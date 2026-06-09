@@ -25,7 +25,7 @@ public object TransformHelper {
         override fun initialValue(): DoubleArray = DoubleArray(16)
       }
 
-  private fun convertToRadians(transformMap: ReadableMap, key: String): Double {
+  internal fun convertToRadians(transformMap: ReadableMap, key: String): Double {
     var value: Double
     var inRadians = true
     if (transformMap.getType(key) == ReadableType.String) {
@@ -189,7 +189,7 @@ public object TransformHelper {
     }
   }
 
-  private fun parseTranslateValue(stringValue: String, dimension: Double): Double {
+  internal fun parseTranslateValue(stringValue: String, dimension: Double): Double {
     return try {
       if (stringValue.endsWith("%")) {
         val percentage = stringValue.dropLast(1).toDouble()

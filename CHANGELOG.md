@@ -1,5 +1,11 @@
 # Changelog
 
+## v0.86.0-rc.3
+
+### Fixed
+
+- **React Native DevTools**: Bump Hermes V1 to 250829098.0.14 to fix missing JavaScript samples in the Performance panel timeline on Apple platforms ([cd5b3b5fa5](https://github.com/facebook/react-native/commit/cd5b3b5fa576366723c4f73b98736c033856ac03) by [@fabriziocucci](https://github.com/fabriziocucci))
+
 ## v0.86.0-rc.2
 
 ### Added

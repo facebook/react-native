@@ -928,4 +928,16 @@ describe('MutationObserver', () => {
       }).not.toThrow();
     });
   });
+
+  describe('MutationRecord global constructor', () => {
+    it('throws when called', () => {
+      expect(
+        () =>
+          // The public stub throws regardless of arguments; the real class
+          // requires one so Flow needs a suppression here.
+          // $FlowExpectedError[incompatible-type]
+          new MutationRecord(),
+      ).toThrow("Failed to construct 'MutationRecord': Illegal constructor");
+    });
+  });
 });

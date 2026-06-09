@@ -48,7 +48,9 @@
 
 #import "ObjCTimerRegistry.h"
 #import "RCTJSThreadManager.h"
+#ifndef RCT_REMOVE_LEGACY_COMPONENT_INTEROP
 #import "RCTLegacyUIManagerConstantsProvider.h"
+#endif
 #import "RCTPerformanceLoggerUtils.h"
 
 #if RCT_DEV_MENU && __has_include(<React/RCTDevLoadingViewProtocol.h>)
@@ -72,7 +74,9 @@ void RCTInstanceSetRuntimeDiagnosticFlags(NSString *flags)
   sRuntimeDiagnosticFlags = [flags copy];
 }
 
-@interface RCTBridgelessDisplayLinkModuleHolder : NSObject <RCTDisplayLinkModuleHolder>
+__attribute__((deprecated(
+    "RCTBridgelessDisplayLinkModuleHolder is part of the legacy architecture and will be removed in a future React Native release.")))
+@interface RCTBridgelessDisplayLinkModuleHolder : NSObject<RCTDisplayLinkModuleHolder>
 - (instancetype)initWithModule:(id<RCTBridgeModule>)module;
 @end
 
@@ -113,6 +117,7 @@ void RCTInstanceSetRuntimeDiagnosticFlags(NSString *flags)
   RCTPerformanceLogger *_performanceLogger;
   RCTDisplayLink *_displayLink;
   RCTTurboModuleManager *_turboModuleManager;
+  RCTBridgeProxy *_bridgeProxy;
   std::mutex _invalidationMutex;
   std::atomic<bool> _valid;
   RCTJSThreadManager *_jsThreadManager;
@@ -349,6 +354,8 @@ void RCTInstanceSetRuntimeDiagnosticFlags(NSString *flags)
           runtime:_reactInstance->getJavaScriptContext()
           launchOptions:_launchOptions];
   bridgeProxy.jsCallInvoker = jsCallInvoker;
+  bridgeProxy.performanceLogger = _performanceLogger;
+  _bridgeProxy = bridgeProxy;
   [RCTBridge setCurrentBridge:(RCTBridge *)bridgeProxy];
 
   // Set up TurboModules
@@ -447,15 +454,20 @@ void RCTInstanceSetRuntimeDiagnosticFlags(NSString *flags)
     });
     RCTInstallNativeComponentRegistryBinding(runtime);
 
+#ifndef RCT_REMOVE_LEGACY_COMPONENT_INTEROP
     if (ReactNativeFeatureFlags::useNativeViewConfigsInBridgelessMode()) {
       installLegacyUIManagerConstantsProviderBinding(runtime);
     }
+#endif
 
     [strongSelf->_delegate instance:strongSelf didInitializeRuntime:runtime];
 
-    // Set up Display Link
+// Set up Display Link
+#pragma clang diagnostic push
+#pragma clang diagnostic ignored "-Wdeprecated-declarations"
     id<RCTDisplayLinkModuleHolder> moduleHolder = [[RCTBridgelessDisplayLinkModuleHolder alloc] initWithModule:timing];
     [strongSelf->_displayLink registerModuleForFrameUpdates:timing withModuleHolder:moduleHolder];
+#pragma clang diagnostic pop
     [strongSelf->_displayLink addToRunLoop:[NSRunLoop currentRunLoop]];
 
     // Attempt to load bundle synchronously, fallback to asynchronously.
@@ -602,8 +614,20 @@ void RCTInstanceSetRuntimeDiagnosticFlags(NSString *flags)
       waitUntilModuleSetupComplete();
     }
   };
-  auto afterLoad = [](jsi::Runtime &_) {
+  __weak __typeof(self) weakSelf = self;
+  auto afterLoad = [weakSelf](jsi::Runtime &) {
     [[NSNotificationCenter defaultCenter] postNotificationName:@"RCTInstanceDidLoadBundle" object:nil];
+    __strong __typeof(weakSelf) strongSelf = weakSelf;
+    if (strongSelf) {
+      RCTBridgeProxy *bridgeProxy = strongSelf->_bridgeProxy;
+      // afterLoad runs on the JS thread; post on main like the legacy bridge so
+      // RCTJavaScriptDidLoadNotification observers aren't invoked off-main.
+      RCTExecuteOnMainQueue(^{
+        [[NSNotificationCenter defaultCenter] postNotificationName:RCTJavaScriptDidLoadNotification
+                                                            object:strongSelf
+                                                          userInfo:bridgeProxy ? @{@"bridge" : bridgeProxy} : @{}];
+      });
+    }
   };
   _reactInstance->loadScript(std::move(script), url, beforeLoad, afterLoad);
 }

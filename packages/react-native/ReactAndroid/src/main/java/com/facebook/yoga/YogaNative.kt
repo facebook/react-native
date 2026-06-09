@@ -312,6 +312,22 @@ public object YogaNative {
   public external fun jni_YGNodeSetHasMeasureFuncJNI(nativePointer: Long, hasMeasureFunc: Boolean)
 
   @JvmStatic
+  public external fun jni_YGNodeSetHasMinContentMeasureFuncJNI(
+      nativePointer: Long,
+      hasMinContentMeasureFunc: Boolean,
+  )
+
+  @JvmStatic
+  public external fun jni_YGNodeSetMinContentWidthJNI(nativePointer: Long, minContentWidth: Float)
+
+  @JvmStatic
+  public external fun jni_YGNodeSetMinContentHeightJNI(nativePointer: Long, minContentHeight: Float)
+
+  @JvmStatic public external fun jni_YGNodeGetMinContentWidthJNI(nativePointer: Long): Float
+
+  @JvmStatic public external fun jni_YGNodeGetMinContentHeightJNI(nativePointer: Long): Float
+
+  @JvmStatic
   public external fun jni_YGNodeSetHasBaselineFuncJNI(nativePointer: Long, hasMeasureFunc: Boolean)
 
   @JvmStatic
