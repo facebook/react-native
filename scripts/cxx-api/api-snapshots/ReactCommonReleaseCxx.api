@@ -1831,7 +1831,6 @@ class facebook::react::InputAccessoryState {
 class facebook::react::Instance {
   public bool isBatchActive();
   public bool isInspectable();
-  public bool supportsProfiling();
   public const facebook::react::ModuleRegistry& getModuleRegistry() const;
   public facebook::react::ModuleRegistry& getModuleRegistry();
   public facebook::react::RuntimeExecutor getRuntimeExecutor();
