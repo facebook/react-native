@@ -12268,7 +12268,6 @@ class facebook::react::jsinspector_modern::HostTargetController {
   public facebook::react::jsinspector_modern::HostTargetDelegate& getDelegate();
   public facebook::react::jsinspector_modern::tracing::HostTracingProfile stopTracing();
   public void incrementPauseOverlayCounter();
-  public void installPerfIssuesBinding();
 }
 
 class facebook::react::jsinspector_modern::HostTargetDelegate : public facebook::react::jsinspector_modern::LoadNetworkResourceDelegate {
