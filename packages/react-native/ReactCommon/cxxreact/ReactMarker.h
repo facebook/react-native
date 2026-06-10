@@ -93,7 +93,6 @@ class RN_EXPORT StartupLogger {
   void reset();
   double getAppStartupStartTime();
   double getInitReactRuntimeStartTime();
-  double getInitReactRuntimeEndTime();
   double getRunJSBundleStartTime();
   double getAppStartupEndTime();
 

@@ -11340,7 +11340,6 @@ facebook::react::ReactMarker::AtomicLogTaggedMarker facebook::react::ReactMarker
 class facebook::react::ReactMarker::StartupLogger {
   public double getAppStartupEndTime();
   public double getAppStartupStartTime();
-  public double getInitReactRuntimeEndTime();
   public double getInitReactRuntimeStartTime();
   public double getRunJSBundleStartTime();
   public static facebook::react::ReactMarker::StartupLogger& getInstance();
