@@ -247,7 +247,11 @@ folly::dynamic ImageProps::getDiffProps(const Props* prevProps) const {
   }
 
   if (tintColor != oldProps->tintColor) {
-    result["tintColor"] = *tintColor;
+      if (tintColor.has_value()) {
+        result["tintColor"] = *tintColor.value();
+      } else {
+        result["tintColor"] = folly::dynamic(nullptr);
+      }
   }
 
   if (internal_analyticTag != oldProps->internal_analyticTag) {
