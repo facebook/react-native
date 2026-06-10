@@ -5122,7 +5122,6 @@ class facebook::react::InputAccessoryState {
 class facebook::react::Instance {
   public bool isBatchActive();
   public bool isInspectable();
-  public bool supportsProfiling();
   public const facebook::react::ModuleRegistry& getModuleRegistry() const;
   public facebook::react::ModuleRegistry& getModuleRegistry();
   public facebook::react::RuntimeExecutor getRuntimeExecutor();
@@ -5132,10 +5131,6 @@ class facebook::react::Instance {
   public void callJSFunction(std::string&& module, std::string&& method, folly::dynamic&& params);
   public void handleMemoryPressure(int pressureLevel);
   public void initializeBridge(std::unique_ptr<facebook::react::InstanceCallback> callback, std::shared_ptr<facebook::react::JSExecutorFactory> jsef, std::shared_ptr<facebook::react::MessageQueueThread> jsQueue, std::shared_ptr<facebook::react::ModuleRegistry> moduleRegistry, facebook::react::jsinspector_modern::HostTarget* inspectorTarget = nullptr);
-  public void initializeRuntime();
-  public void loadRAMBundle(std::unique_ptr<facebook::react::RAMBundleRegistry> bundleRegistry, std::unique_ptr<const facebook::react::JSBigString> startupScript, std::string startupScriptSourceURL, bool loadSynchronously);
-  public void loadRAMBundleFromFile(const std::string& sourcePath, const std::string& sourceURL, bool loadSynchronously);
-  public void loadRAMBundleFromString(std::unique_ptr<const facebook::react::JSBigString> script, const std::string& sourceURL);
   public void loadScriptFromString(std::unique_ptr<const facebook::react::JSBigString> string, std::string sourceURL, bool loadSynchronously);
   public void registerBundle(uint32_t bundleId, const std::string& bundlePath);
   public void setGlobalVariable(std::string propName, std::unique_ptr<const facebook::react::JSBigString> jsonValue);
@@ -5279,14 +5274,6 @@ class facebook::react::JSINativeModules {
 class facebook::react::JSIRuntimeHolder : public facebook::react::JSRuntime {
   public JSIRuntimeHolder(std::unique_ptr<facebook::jsi::Runtime> runtime);
   public virtual facebook::jsi::Runtime& getRuntime() noexcept override;
-}
-
-class facebook::react::JSIndexedRAMBundle : public facebook::react::JSModulesUnbundle {
-  public JSIndexedRAMBundle(const char* sourcePath);
-  public JSIndexedRAMBundle(std::unique_ptr<const facebook::react::JSBigString> script);
-  public static std::function<std::unique_ptr<facebook::react::JSModulesUnbundle>(std::string)> buildFactory();
-  public std::unique_ptr<const facebook::react::JSBigString> getStartupCode();
-  public virtual facebook::react::JSModulesUnbundle::Module getModule(uint32_t moduleId) const override;
 }
 
 class facebook::react::JSModulesUnbundle {
@@ -6370,8 +6357,6 @@ class facebook::react::RAMBundleRegistry {
   public facebook::react::JSModulesUnbundle::Module getModule(uint32_t bundleId, uint32_t moduleId);
   public facebook::react::RAMBundleRegistry& operator=(facebook::react::RAMBundleRegistry&&) = default;
   public static constexpr uint32_t MAIN_BUNDLE_ID;
-  public static std::unique_ptr<facebook::react::RAMBundleRegistry> multipleBundlesRegistry(std::unique_ptr<facebook::react::JSModulesUnbundle> mainBundle, std::function<std::unique_ptr<facebook::react::JSModulesUnbundle>(std::string)> factory);
-  public static std::unique_ptr<facebook::react::RAMBundleRegistry> singleBundleRegistry(std::unique_ptr<facebook::react::JSModulesUnbundle> mainBundle);
   public virtual ~RAMBundleRegistry() = default;
   public void registerBundle(uint32_t bundleId, std::string bundlePath);
 }
@@ -12418,7 +12403,6 @@ class facebook::react::jsinspector_modern::HostTargetController {
   public facebook::react::jsinspector_modern::HostTargetDelegate& getDelegate();
   public facebook::react::jsinspector_modern::tracing::HostTracingProfile stopTracing();
   public void incrementPauseOverlayCounter();
-  public void installPerfIssuesBinding();
 }
 
 class facebook::react::jsinspector_modern::HostTargetDelegate : public facebook::react::jsinspector_modern::LoadNetworkResourceDelegate {
@@ -13560,7 +13544,6 @@ class facebook::react::ReactMarker::StartupLogger {
   public double getAppStartupStartTime();
   public double getInitReactRuntimeEndTime();
   public double getInitReactRuntimeStartTime();
-  public double getRunJSBundleEndTime();
   public double getRunJSBundleStartTime();
   public static facebook::react::ReactMarker::StartupLogger& getInstance();
   public void logStartupEvent(facebook::react::ReactMarker::ReactMarkerId markerId, double markerTime);
