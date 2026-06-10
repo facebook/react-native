@@ -91,7 +91,7 @@ class ComponentDescriptor {
    * Appends (by mutating) a given `childShadowNode` to `parentShadowNode`.
    */
   virtual void appendChild(
-      const std::shared_ptr<const ShadowNode> &parentShadowNode,
+      const std::shared_ptr<ShadowNode> &parentShadowNode,
       const std::shared_ptr<const ShadowNode> &childShadowNode) const = 0;
 
   /*
