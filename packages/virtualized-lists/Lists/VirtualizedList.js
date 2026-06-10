@@ -924,11 +924,13 @@ class VirtualizedList extends StateSafePureComponent<
     const {ListEmptyComponent, ListFooterComponent, ListHeaderComponent} =
       this.props;
     const {data, horizontal} = this.props;
+    const isRTL = this._orientation().rtl
     const inversionStyle = this.props.inverted
       ? horizontalOrDefault(this.props.horizontal)
-        ? styles.horizontallyInverted
+        ? [styles.horizontallyInverted]
         : styles.verticallyInverted
       : null;
+    const orientationStyle =  {direction: isRTL ? 'rtl' : 'ltr'}
     const cells: Array<any | React.Node> = [];
     const stickyIndicesFromProps = new Set(this.props.stickyHeaderIndices);
     const stickyHeaderIndices = [];
@@ -1106,8 +1108,8 @@ class VirtualizedList extends StateSafePureComponent<
           : this.props.inverted,
       stickyHeaderIndices,
       style: inversionStyle
-        ? [inversionStyle, this.props.style]
-        : this.props.style,
+        ? [inversionStyle, this.props.style, orientationStyle]
+        : [this.props.style, orientationStyle],
       isInvertedVirtualizedList: this.props.inverted,
       maintainVisibleContentPosition:
         this.props.maintainVisibleContentPosition != null
@@ -1502,7 +1504,7 @@ class VirtualizedList extends StateSafePureComponent<
   }
 
   _selectLength(
-    metrics: Readonly<{
+    metrics: $ReadOnly<{
       height: number,
       width: number,
       ...
@@ -1517,12 +1519,23 @@ class VirtualizedList extends StateSafePureComponent<
     return this._orientation().horizontal ? x : y;
   }
 
-  _orientation(): ListOrientation {
-    return {
-      horizontal: horizontalOrDefault(this.props.horizontal),
-      rtl: I18nManager.isRTL,
-    };
+ _orientation(): ListOrientation {
+  const horizontal = horizontalOrDefault(this.props.horizontal);
+  const flatStyle = StyleSheet.flatten(this.props.style);
+  const localDirection = flatStyle?.direction;
+
+  let isRTL = I18nManager.isRTL;
+  if (localDirection === 'rtl') {
+    isRTL = true;
+  } else if (localDirection === 'ltr') {
+    isRTL = false;
   }
+
+  return {
+    horizontal,
+    rtl: isRTL,
+  };
+}
 
   _maybeCallOnEdgeReached() {
     const {
