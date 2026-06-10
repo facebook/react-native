@@ -368,6 +368,10 @@ module.exports = {
     return require('./Libraries/Utilities/useWindowDimensions').default;
   },
   get UTFSequence() {
+    warnOnce(
+      'utfsequence-will-be-remove',
+      'UTFSequence will be removed in a future release.',
+    );
     return require('./Libraries/UTFSequence').default;
   },
   get Vibration() {
