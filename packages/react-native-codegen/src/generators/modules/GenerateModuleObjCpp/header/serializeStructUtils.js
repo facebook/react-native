@@ -56,6 +56,8 @@ function toObjCType(
       return wrapCxxOptional('double', isRequired);
     case 'DoubleTypeAnnotation':
       return wrapCxxOptional('double', isRequired);
+    case 'BigIntTypeAnnotation':
+      return wrapObjCOptional('NSNumber *', isRequired);
     case 'BooleanTypeAnnotation':
       return wrapCxxOptional('bool', isRequired);
     case 'BooleanLiteralTypeAnnotation':
