@@ -112,6 +112,18 @@ const bubblingEventTypes = {
       bubbled: 'onPointerOver',
     },
   },
+  topGotPointerCapture: {
+    phasedRegistrationNames: {
+      captured: 'onGotPointerCaptureCapture',
+      bubbled: 'onGotPointerCapture',
+    },
+  },
+  topLostPointerCapture: {
+    phasedRegistrationNames: {
+      captured: 'onLostPointerCaptureCapture',
+      bubbled: 'onLostPointerCapture',
+    },
+  },
   topClick: {
     phasedRegistrationNames: {
       captured: 'onClickCapture',
@@ -424,6 +436,10 @@ const validAttributesForEventProps = {
   onPointerOutCapture: true,
   onPointerOver: true,
   onPointerOverCapture: true,
+  onGotPointerCapture: true,
+  onGotPointerCaptureCapture: true,
+  onLostPointerCapture: true,
+  onLostPointerCaptureCapture: true,
 } as const;
 
 /**
