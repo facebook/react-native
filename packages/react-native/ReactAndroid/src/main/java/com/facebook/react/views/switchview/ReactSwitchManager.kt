@@ -10,6 +10,8 @@
 package com.facebook.react.views.switchview
 
 import android.content.Context
+import android.content.ContextWrapper
+import android.content.res.ColorStateList
 import android.view.View
 import android.widget.CompoundButton
 import androidx.annotation.ColorInt
@@ -25,6 +27,7 @@ import com.facebook.react.uimanager.ViewProps
 import com.facebook.react.uimanager.annotations.ReactProp
 import com.facebook.react.viewmanagers.AndroidSwitchManagerDelegate
 import com.facebook.react.viewmanagers.AndroidSwitchManagerInterface
+import com.facebook.react.views.imagehelper.ResourceDrawableIdHelper
 import com.facebook.yoga.YogaMeasureMode
 import com.facebook.yoga.YogaMeasureOutput
 
@@ -76,6 +79,16 @@ internal class ReactSwitchManager :
     view.setThumbColor(value)
   }
 
+  @ReactProp(name = "thumbColorForFalse", customType = "Color")
+  override fun setThumbColorForFalse(view: ReactSwitch, value: Int?) {
+    view.setThumbColorForFalse(value)
+  }
+
+  @ReactProp(name = "thumbColorForTrue", customType = "Color")
+  override fun setThumbColorForTrue(view: ReactSwitch, value: Int?) {
+    view.setThumbColorForTrue(value)
+  }
+
   @ReactProp(name = "trackColorForFalse", customType = "Color")
   override fun setTrackColorForFalse(view: ReactSwitch, value: Int?) {
     view.setTrackColorForFalse(value)
@@ -87,8 +100,21 @@ internal class ReactSwitchManager :
   }
 
   @ReactProp(name = "trackTintColor", customType = "Color")
-  override fun setTrackTintColor(view: ReactSwitch, value: Int?) {
-    view.setTrackColor(value)
+  override fun setTrackTintColor(view: ReactSwitch, value: Int?) = setTrackColorForTrue(view, value)
+
+  @ReactProp(name = "thumbIconForFalse")
+  override fun setThumbIconForFalse(view: ReactSwitch, value: String?) {
+    view.setThumbIconForFalse(ResourceDrawableIdHelper.getResourceDrawable(view.context, value))
+  }
+
+  @ReactProp(name = "thumbIconForTrue")
+  override fun setThumbIconForTrue(view: ReactSwitch, value: String?) {
+    view.setThumbIconForTrue(ResourceDrawableIdHelper.getResourceDrawable(view.context, value))
+  }
+
+  @ReactProp(name = "thumbIconTint", customType = "Color")
+  override fun setThumbIconTint(view: ReactSwitch, value: Int?) {
+    view.setThumbIconTintList(if (value != null) ColorStateList.valueOf(value) else null)
   }
 
   override fun setNativeValue(view: ReactSwitch, value: Boolean) {
@@ -137,7 +163,13 @@ internal class ReactSwitchManager :
 
     private val ON_CHECKED_CHANGE_LISTENER =
         CompoundButton.OnCheckedChangeListener { buttonView, isChecked ->
-          val reactContext = buttonView.context as ReactContext
+          // The view's context is wrapped in a ContextThemeWrapper (for Material3 theming),
+          // so walk up the chain to find the underlying ReactContext.
+          var ctx: android.content.Context = buttonView.context
+          while (ctx !is ReactContext && ctx is ContextWrapper) {
+            ctx = ctx.baseContext
+          }
+          val reactContext = ctx as ReactContext
           val reactTag = buttonView.id
           UIManagerHelper.getEventDispatcher(reactContext)
               ?.dispatchEvent(

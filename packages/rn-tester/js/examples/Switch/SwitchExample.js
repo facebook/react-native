@@ -267,6 +267,54 @@ class ContainerBackgroundColorStyleExample extends React.Component<
   }
 }
 
+class MD3ThumbIconExample extends React.Component<
+  {},
+  {isOn: boolean, dualIsOn: boolean},
+> {
+  state: {isOn: boolean, dualIsOn: boolean} = {isOn: true, dualIsOn: false};
+
+  render(): React.Node {
+    return (
+      <View>
+        <RNTesterText style={{marginBottom: 6}}>
+          Single-state icon (checkmark only when ON):
+        </RNTesterText>
+        <ExampleRow>
+          <Switch
+            testID="md3-thumb-icon-switch"
+            value={this.state.isOn}
+            onValueChange={value => this.setState({isOn: value})}
+            thumbIcon={{true: 'ic_check'}}
+            thumbIconTint={this.state.isOn ? '#ffffff' : '#666666'}
+            thumbColor={this.state.isOn ? '#6200ee' : '#f4f3f4'}
+          />
+          <OnOffIndicator
+            on={this.state.isOn}
+            testID="md3-thumb-icon-indicator"
+          />
+        </ExampleRow>
+        <RNTesterText style={{marginBottom: 6}}>
+          Dual-state icons (close when OFF, check when ON):
+        </RNTesterText>
+        <ExampleRow>
+          <Switch
+            testID="md3-thumb-icon-dual-switch"
+            value={this.state.dualIsOn}
+            onValueChange={value => this.setState({dualIsOn: value})}
+            thumbIcon={{false: 'ic_close', true: 'ic_check'}}
+            thumbIconTint={this.state.dualIsOn ? '#ffffff' : '#666666'}
+            thumbColor={this.state.dualIsOn ? '#6200ee' : '#f4f3f4'}
+          />
+          <OnOffIndicator
+            on={this.state.dualIsOn}
+            testID="md3-thumb-icon-dual-indicator"
+          />
+        </ExampleRow>
+      </View>
+    );
+  }
+}
+
 exports.title = 'Switch';
 exports.documentationURL = 'https://reactnative.dev/docs/switch';
 exports.category = 'UI';
@@ -321,6 +369,16 @@ exports.examples = [
     },
   },
 ] as Array<RNTesterModuleExample>;
+
+if (Platform.OS === 'android') {
+  exports.examples.push({
+    title: '[Android Only] MD3 thumb icon (MaterialSwitch)',
+    name: 'md3-thumb-icon',
+    render(): React.MixedElement {
+      return <MD3ThumbIconExample />;
+    },
+  });
+}
 
 if (Platform.OS === 'ios') {
   exports.examples.push({
