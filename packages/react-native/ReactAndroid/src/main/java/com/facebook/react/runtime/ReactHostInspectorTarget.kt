@@ -18,6 +18,7 @@ import com.facebook.react.devsupport.inspector.TracingStateListener
 import com.facebook.react.devsupport.perfmonitor.PerfMonitorInspectorTarget
 import com.facebook.react.devsupport.perfmonitor.PerfMonitorUpdateListener
 import com.facebook.soloader.SoLoader
+import com.facebook.soloader.annotation.SoLoaderLibrary
 import java.io.Closeable
 import java.util.concurrent.Executor
 
@@ -82,6 +83,7 @@ internal class ReactHostInspectorTarget(reactHostImpl: ReactHostImpl) :
     return mHybridData.isValid()
   }
 
+  @SoLoaderLibrary("rninstance")
   private companion object {
     init {
       SoLoader.loadLibrary("rninstance")
