@@ -267,6 +267,8 @@ export interface NativeModuleSchema {
   // TODO: It's clearer to define `restrictedToPlatforms` instead, but
   // `excludedPlatforms` is used here to be consistent with ComponentSchema.
   readonly excludedPlatforms?: readonly PlatformType[] | undefined;
+  readonly importedAliasNames?: Readonly<{[aliasName: string]: string}> | undefined;
+  readonly importedEnumNames?: Readonly<{[enumName: string]: string}> | undefined;
 }
 
 export interface NativeModuleSpec {

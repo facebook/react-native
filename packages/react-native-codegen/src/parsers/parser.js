@@ -157,9 +157,14 @@ export interface Parser {
    * Given the content of a file, it returns a Schema.
    * @parameter contents: the content of the file.
    * @parameter filename: the name of the file.
+   * @parameter importedTypes: optional map of type declarations imported from other files.
    * @returns: the Schema of the file.
    */
-  parseString(contents: string, filename: ?string): SchemaType;
+  parseString(
+    contents: string,
+    filename: ?string,
+    importedTypes?: TypeDeclarationMap,
+  ): SchemaType;
   /**
    * Given the name of a file, it returns a Schema.
    * @parameter filename: the name of the file.
