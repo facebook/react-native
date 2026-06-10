@@ -281,8 +281,7 @@ export function startHeadlessTask(
         NativeHeadlessJsTaskSupport &&
         reason instanceof HeadlessJsTaskError
       ) {
-        // $FlowFixMe[unused-promise]
-        NativeHeadlessJsTaskSupport.notifyTaskRetry(taskId).then(
+        void NativeHeadlessJsTaskSupport.notifyTaskRetry(taskId).then(
           retryPosted => {
             if (!retryPosted) {
               NativeHeadlessJsTaskSupport.notifyTaskFinished(taskId);

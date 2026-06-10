@@ -62,8 +62,7 @@ component TappableLinks(content: string, style: void | TextStyleProp) {
     fragments.push(
       <Text
         onPress={() => {
-          // $FlowFixMe[unused-promise]
-          Linking.openURL(link);
+          void Linking.openURL(link);
         }}
         key={++indexCounter}
         style={styles.linkText}>

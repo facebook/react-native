@@ -113,14 +113,12 @@ class KeyboardAvoidingView extends React.Component<
 
   _onKeyboardChange = (event: ?KeyboardEvent) => {
     this._keyboardEvent = event;
-    // $FlowFixMe[unused-promise]
-    this._updateBottomIfNecessary();
+    void this._updateBottomIfNecessary();
   };
 
   _onKeyboardHide = (event: ?KeyboardEvent) => {
     this._keyboardEvent = null;
-    // $FlowFixMe[unused-promise]
-    this._updateBottomIfNecessary();
+    void this._updateBottomIfNecessary();
   };
 
   _onLayout = async (event: ViewLayoutEvent) => {
