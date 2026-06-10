@@ -2761,7 +2761,6 @@ class facebook::react::RAMBundleRegistry {
   public facebook::react::RAMBundleRegistry& operator=(facebook::react::RAMBundleRegistry&&) = default;
   public static constexpr uint32_t MAIN_BUNDLE_ID;
   public static std::unique_ptr<facebook::react::RAMBundleRegistry> multipleBundlesRegistry(std::unique_ptr<facebook::react::JSModulesUnbundle> mainBundle, std::function<std::unique_ptr<facebook::react::JSModulesUnbundle>(std::string)> factory);
-  public static std::unique_ptr<facebook::react::RAMBundleRegistry> singleBundleRegistry(std::unique_ptr<facebook::react::JSModulesUnbundle> mainBundle);
   public virtual ~RAMBundleRegistry() = default;
   public void registerBundle(uint32_t bundleId, std::string bundlePath);
 }
