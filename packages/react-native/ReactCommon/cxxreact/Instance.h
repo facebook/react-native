@@ -52,19 +52,9 @@ class RN_EXPORT [[deprecated("This API will be removed along with the legacy arc
       std::shared_ptr<ModuleRegistry> moduleRegistry,
       jsinspector_modern::HostTarget *inspectorTarget = nullptr);
 
-  void initializeRuntime();
-
   void setSourceURL(std::string sourceURL);
 
   void loadScriptFromString(std::unique_ptr<const JSBigString> string, std::string sourceURL, bool loadSynchronously);
-  void loadRAMBundleFromString(std::unique_ptr<const JSBigString> script, const std::string &sourceURL);
-  void loadRAMBundleFromFile(const std::string &sourcePath, const std::string &sourceURL, bool loadSynchronously);
-  void loadRAMBundle(
-      std::unique_ptr<RAMBundleRegistry> bundleRegistry,
-      std::unique_ptr<const JSBigString> startupScript,
-      std::string startupScriptSourceURL,
-      bool loadSynchronously);
-  bool supportsProfiling();
   void setGlobalVariable(std::string propName, std::unique_ptr<const JSBigString> jsonValue);
   void *getJavaScriptContext();
   bool isInspectable();

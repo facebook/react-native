@@ -1834,7 +1834,6 @@ class facebook::react::InputAccessoryState {
 class facebook::react::Instance {
   public bool isBatchActive();
   public bool isInspectable();
-  public bool supportsProfiling();
   public const facebook::react::ModuleRegistry& getModuleRegistry() const;
   public facebook::react::ModuleRegistry& getModuleRegistry();
   public facebook::react::RuntimeExecutor getRuntimeExecutor();
@@ -1844,10 +1843,6 @@ class facebook::react::Instance {
   public void callJSFunction(std::string&& module, std::string&& method, folly::dynamic&& params);
   public void handleMemoryPressure(int pressureLevel);
   public void initializeBridge(std::unique_ptr<facebook::react::InstanceCallback> callback, std::shared_ptr<facebook::react::JSExecutorFactory> jsef, std::shared_ptr<facebook::react::MessageQueueThread> jsQueue, std::shared_ptr<facebook::react::ModuleRegistry> moduleRegistry, facebook::react::jsinspector_modern::HostTarget* inspectorTarget = nullptr);
-  public void initializeRuntime();
-  public void loadRAMBundle(std::unique_ptr<facebook::react::RAMBundleRegistry> bundleRegistry, std::unique_ptr<const facebook::react::JSBigString> startupScript, std::string startupScriptSourceURL, bool loadSynchronously);
-  public void loadRAMBundleFromFile(const std::string& sourcePath, const std::string& sourceURL, bool loadSynchronously);
-  public void loadRAMBundleFromString(std::unique_ptr<const facebook::react::JSBigString> script, const std::string& sourceURL);
   public void loadScriptFromString(std::unique_ptr<const facebook::react::JSBigString> string, std::string sourceURL, bool loadSynchronously);
   public void registerBundle(uint32_t bundleId, const std::string& bundlePath);
   public void setGlobalVariable(std::string propName, std::unique_ptr<const facebook::react::JSBigString> jsonValue);
@@ -1986,14 +1981,6 @@ class facebook::react::JSINativeModules {
   public JSINativeModules(std::shared_ptr<facebook::react::ModuleRegistry> moduleRegistry);
   public facebook::jsi::Value getModule(facebook::jsi::Runtime& rt, const facebook::jsi::PropNameID& name);
   public void reset();
-}
-
-class facebook::react::JSIndexedRAMBundle : public facebook::react::JSModulesUnbundle {
-  public JSIndexedRAMBundle(const char* sourcePath);
-  public JSIndexedRAMBundle(std::unique_ptr<const facebook::react::JSBigString> script);
-  public static std::function<std::unique_ptr<facebook::react::JSModulesUnbundle>(std::string)> buildFactory();
-  public std::unique_ptr<const facebook::react::JSBigString> getStartupCode();
-  public virtual facebook::react::JSModulesUnbundle::Module getModule(uint32_t moduleId) const override;
 }
 
 class facebook::react::JSModulesUnbundle {
