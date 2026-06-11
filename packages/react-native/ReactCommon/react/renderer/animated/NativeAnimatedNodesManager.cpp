@@ -1039,6 +1039,9 @@ AnimationMutations NativeAnimatedNodesManager::pullAnimationMutations(
 
   isOnRenderThread_ = true;
 
+  // Apply nodes created via the unbatched `createAnimatedNodeAsync` path.
+  flushAnimatedNodesCreatedAsync();
+
   // Run operations scheduled from AnimatedModule
   std::vector<UiTask> operations;
   {
@@ -1097,6 +1100,24 @@ AnimationMutations NativeAnimatedNodesManager::pullAnimationMutations(
   return mutations;
 }
 
+void NativeAnimatedNodesManager::flushAnimatedNodesCreatedAsync() noexcept {
+  // Flush async created animated nodes
+  std::unordered_map<Tag, std::unique_ptr<AnimatedNode>>
+      animatedNodesCreatedAsync;
+  {
+    std::lock_guard<std::mutex> lock(animatedNodesCreatedAsyncMutex_);
+    std::swap(animatedNodesCreatedAsync, animatedNodesCreatedAsync_);
+  }
+
+  if (!animatedNodesCreatedAsync.empty()) {
+    std::lock_guard<std::mutex> lock(connectedAnimatedNodesMutex_);
+    for (auto& [tag, node] : animatedNodesCreatedAsync) {
+      animatedNodes_.insert({tag, std::move(node)});
+      updatedNodeTags_.insert(tag);
+    }
+  }
+}
+
 void NativeAnimatedNodesManager::onRender() {
   if (ReactNativeFeatureFlags::useSharedAnimatedBackend()) {
     return;
@@ -1112,23 +1133,7 @@ void NativeAnimatedNodesManager::onRender() {
 
   isOnRenderThread_ = true;
 
-  {
-    // Flush async created animated nodes
-    std::unordered_map<Tag, std::unique_ptr<AnimatedNode>>
-        animatedNodesCreatedAsync;
-    {
-      std::lock_guard<std::mutex> lock(animatedNodesCreatedAsyncMutex_);
-      std::swap(animatedNodesCreatedAsync, animatedNodesCreatedAsync_);
-    }
-
-    if (!animatedNodesCreatedAsync.empty()) {
-      std::lock_guard<std::mutex> lock(connectedAnimatedNodesMutex_);
-      for (auto& [tag, node] : animatedNodesCreatedAsync) {
-        animatedNodes_.insert({tag, std::move(node)});
-        updatedNodeTags_.insert(tag);
-      }
-    }
-  }
+  flushAnimatedNodesCreatedAsync();
 
   // Run operations scheduled from AnimatedModule
   std::vector<UiTask> operations;
