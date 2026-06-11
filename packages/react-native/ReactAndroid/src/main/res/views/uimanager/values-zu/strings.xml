@@ -3,4 +3,5 @@
 <!-- @generated -->
 <!-- FB Locale: zu_ZA -->
 <resources exclude-from-buck-resource-map="true">
+    <string name="state_off_description" gender="unknown">kuvaliwe</string>
 </resources>
