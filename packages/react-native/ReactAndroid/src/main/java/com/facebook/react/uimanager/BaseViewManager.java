@@ -8,6 +8,7 @@
 package com.facebook.react.uimanager;
 
 import android.graphics.Color;
+import android.graphics.Matrix;
 import android.graphics.Paint;
 import android.os.Build;
 import android.text.TextUtils;
@@ -309,7 +310,8 @@ public abstract class BaseViewManager<T extends View, C extends LayoutShadowNode
 
   @ReactProp(name = ViewProps.ACCESSIBILITY_LABELLED_BY)
   public void setAccessibilityLabelledBy(@NonNull T view, @Nullable Dynamic nativeId) {
-    if (nativeId.isNull()) {
+    if (nativeId == null || nativeId.isNull()) {
+      view.setTag(R.id.labelled_by, null);
       return;
     }
     if (nativeId.getType() == ReadableType.String) {
@@ -317,7 +319,8 @@ public abstract class BaseViewManager<T extends View, C extends LayoutShadowNode
     } else if (nativeId.getType() == ReadableType.Array) {
       // On Android, this takes a single View as labeledBy. If an array is specified, set the first
       // element in the tag.
-      view.setTag(R.id.labelled_by, nativeId.asArray().getString(0));
+      ReadableArray array = nativeId.asArray();
+      view.setTag(R.id.labelled_by, array.size() > 0 ? array.getString(0) : null);
     }
   }
 
@@ -577,6 +580,31 @@ public abstract class BaseViewManager<T extends View, C extends LayoutShadowNode
       view.setScaleX(1);
       view.setScaleY(1);
       view.setCameraDistance(0);
+      clearSkewAnimationMatrixIfActive(view);
+      return;
+    }
+
+    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q
+        && SkewMatrixHelper.isAffine2DTransformWithSkew(transforms)) {
+      Matrix affine =
+          SkewMatrixHelper.buildAffine2DMatrix(
+              transforms,
+              PixelUtil.toDIPFromPixel(view.getWidth()),
+              PixelUtil.toDIPFromPixel(view.getHeight()),
+              transformOrigin);
+      view.setTranslationX(0);
+      view.setTranslationY(0);
+      view.setRotation(0);
+      view.setRotationX(0);
+      view.setRotationY(0);
+      view.setScaleX(1);
+      view.setScaleY(1);
+      view.setCameraDistance(0);
+      view.setAnimationMatrix(affine);
+      // Tag value is the matrix itself so TouchTargetHelper can use it for hit testing -- View's
+      // own getMatrix() does not compose mAnimationMatrix, so without this fallback the React
+      // hit-test path would still see the original rectangular bounds.
+      view.setTag(R.id.skew_animation_matrix, affine);
       return;
     }
 
@@ -626,6 +654,21 @@ public abstract class BaseViewManager<T extends View, C extends LayoutShadowNode
               scale * scale * cameraDistance * CAMERA_DISTANCE_NORMALIZATION_MULTIPLIER);
       view.setCameraDistance(normalizedCameraDistance);
     }
+
+    clearSkewAnimationMatrixIfActive(view);
+  }
+
+  // setAnimationMatrix is called only on the transition out of a skew matrix; calling it
+  // unconditionally would invalidate the View's RenderNode every frame for any non-skew animation.
+  private static <T extends View> void clearSkewAnimationMatrixIfActive(@NonNull T view) {
+    if (Build.VERSION.SDK_INT < Build.VERSION_CODES.Q) {
+      return;
+    }
+    if (view.getTag(R.id.skew_animation_matrix) == null) {
+      return;
+    }
+    view.setAnimationMatrix(null);
+    view.setTag(R.id.skew_animation_matrix, null);
   }
 
   /**

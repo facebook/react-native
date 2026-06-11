@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<c8e71de4517634933754c6e7a6e8ac92>>
+ * @generated SignedSource<<3c0e10dee93b76f3e66ca79d26f2b4f2>>
  */
 
 /**
@@ -43,6 +43,7 @@ internal class ReactNativeFeatureFlagsCxxAccessor : ReactNativeFeatureFlagsAcces
   private var enableExclusivePropsUpdateAndroidCache: Boolean? = null
   private var enableFabricCommitBranchingCache: Boolean? = null
   private var enableFabricLogsCache: Boolean? = null
+  private var enableFlexboxAutoMinSizeInStrictModeCache: Boolean? = null
   private var enableFontScaleChangesUpdatingLayoutCache: Boolean? = null
   private var enableIOSTextBaselineOffsetPerLineCache: Boolean? = null
   private var enableIOSViewClipToPaddingBoxCache: Boolean? = null
@@ -55,7 +56,6 @@ internal class ReactNativeFeatureFlagsCxxAccessor : ReactNativeFeatureFlagsAcces
   private var enableKeyEventsCache: Boolean? = null
   private var enableLayoutAnimationsOnAndroidCache: Boolean? = null
   private var enableLayoutAnimationsOnIOSCache: Boolean? = null
-  private var enableMainQueueCoordinatorOnIOSCache: Boolean? = null
   private var enableModuleArgumentNSNullConversionIOSCache: Boolean? = null
   private var enableMutationObserverByDefaultCache: Boolean? = null
   private var enableNativeCSSParsingCache: Boolean? = null
@@ -316,6 +316,15 @@ internal class ReactNativeFeatureFlagsCxxAccessor : ReactNativeFeatureFlagsAcces
     return cached
   }
 
+  override fun enableFlexboxAutoMinSizeInStrictMode(): Boolean {
+    var cached = enableFlexboxAutoMinSizeInStrictModeCache
+    if (cached == null) {
+      cached = ReactNativeFeatureFlagsCxxInterop.enableFlexboxAutoMinSizeInStrictMode()
+      enableFlexboxAutoMinSizeInStrictModeCache = cached
+    }
+    return cached
+  }
+
   override fun enableFontScaleChangesUpdatingLayout(): Boolean {
     var cached = enableFontScaleChangesUpdatingLayoutCache
     if (cached == null) {
@@ -420,15 +429,6 @@ internal class ReactNativeFeatureFlagsCxxAccessor : ReactNativeFeatureFlagsAcces
     if (cached == null) {
       cached = ReactNativeFeatureFlagsCxxInterop.enableLayoutAnimationsOnIOS()
       enableLayoutAnimationsOnIOSCache = cached
-    }
-    return cached
-  }
-
-  override fun enableMainQueueCoordinatorOnIOS(): Boolean {
-    var cached = enableMainQueueCoordinatorOnIOSCache
-    if (cached == null) {
-      cached = ReactNativeFeatureFlagsCxxInterop.enableMainQueueCoordinatorOnIOS()
-      enableMainQueueCoordinatorOnIOSCache = cached
     }
     return cached
   }

@@ -70,15 +70,8 @@ void JSINativeModules::reset() {
 std::optional<Object> JSINativeModules::createModule(
     Runtime& rt,
     const std::string& name) {
-  bool hasLogger = false;
-  {
-    std::shared_lock lock(ReactMarker::logTaggedMarkerImplMutex);
-    hasLogger = ReactMarker::logTaggedMarkerImpl != nullptr;
-  }
-  if (hasLogger) {
-    ReactMarker::logTaggedMarker(
-        ReactMarker::NATIVE_MODULE_SETUP_START, name.c_str());
-  }
+  ReactMarker::logTaggedMarker(
+      ReactMarker::NATIVE_MODULE_SETUP_START, name.c_str());
 
   auto result = m_moduleRegistry->getConfig(name);
   if (!result.has_value()) {
@@ -101,10 +94,8 @@ std::optional<Object> JSINativeModules::createModule(
   std::optional<Object> module(
       moduleInfo.asObject(rt).getPropertyAsObject(rt, "module"));
 
-  if (hasLogger) {
-    ReactMarker::logTaggedMarker(
-        ReactMarker::NATIVE_MODULE_SETUP_STOP, name.c_str());
-  }
+  ReactMarker::logTaggedMarker(
+      ReactMarker::NATIVE_MODULE_SETUP_STOP, name.c_str());
 
   return module;
 }

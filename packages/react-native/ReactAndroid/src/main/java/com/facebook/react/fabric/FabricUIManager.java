@@ -447,7 +447,8 @@ public class FabricUIManager
 
       ReactMarker.addFabricListener(mDevToolsReactPerfLogger);
     }
-    if (ReactNativeNewArchitectureFeatureFlags.useFabricInterop()) {
+    if (!ReactBuildConfig.UNSTABLE_REMOVE_LEGACY_COMPONENT_INTEROP
+        && ReactNativeNewArchitectureFeatureFlags.useFabricInterop()) {
       InteropEventEmitter interopEventEmitter = new InteropEventEmitter(mReactApplicationContext);
       mReactApplicationContext.internal_registerInteropModule(
           RCTEventEmitter.class, interopEventEmitter);
@@ -514,7 +515,8 @@ public class FabricUIManager
    * [addUiBlock] and [prependUiBlock] on UIManagerModule.
    */
   public void addUIBlock(UIBlock block) {
-    if (ReactNativeNewArchitectureFeatureFlags.useFabricInterop()) {
+    if (!ReactBuildConfig.UNSTABLE_REMOVE_LEGACY_COMPONENT_INTEROP
+        && ReactNativeNewArchitectureFeatureFlags.useFabricInterop()) {
       InteropUIBlockListener listener = getInteropUIBlockListener();
       listener.addUIBlock(block);
     }
@@ -525,7 +527,8 @@ public class FabricUIManager
    * [addUiBlock] and [prependUiBlock] on UIManagerModule.
    */
   public void prependUIBlock(UIBlock block) {
-    if (ReactNativeNewArchitectureFeatureFlags.useFabricInterop()) {
+    if (!ReactBuildConfig.UNSTABLE_REMOVE_LEGACY_COMPONENT_INTEROP
+        && ReactNativeNewArchitectureFeatureFlags.useFabricInterop()) {
       InteropUIBlockListener listener = getInteropUIBlockListener();
       listener.prependUIBlock(block);
     }

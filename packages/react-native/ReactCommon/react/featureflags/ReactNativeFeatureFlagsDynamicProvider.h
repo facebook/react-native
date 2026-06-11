@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<50d5c4ac14b1abc6065af8dc82945f93>>
+ * @generated SignedSource<<15bb8c904ef3116d0f6042623a150d8c>>
  */
 
 /**
@@ -252,6 +252,15 @@ class ReactNativeFeatureFlagsDynamicProvider : public ReactNativeFeatureFlagsDef
     return ReactNativeFeatureFlagsDefaults::enableFabricLogs();
   }
 
+  bool enableFlexboxAutoMinSizeInStrictMode() override {
+    auto value = values_["enableFlexboxAutoMinSizeInStrictMode"];
+    if (!value.isNull()) {
+      return value.getBool();
+    }
+
+    return ReactNativeFeatureFlagsDefaults::enableFlexboxAutoMinSizeInStrictMode();
+  }
+
   bool enableFontScaleChangesUpdatingLayout() override {
     auto value = values_["enableFontScaleChangesUpdatingLayout"];
     if (!value.isNull()) {
@@ -358,15 +367,6 @@ class ReactNativeFeatureFlagsDynamicProvider : public ReactNativeFeatureFlagsDef
     }
 
     return ReactNativeFeatureFlagsDefaults::enableLayoutAnimationsOnIOS();
-  }
-
-  bool enableMainQueueCoordinatorOnIOS() override {
-    auto value = values_["enableMainQueueCoordinatorOnIOS"];
-    if (!value.isNull()) {
-      return value.getBool();
-    }
-
-    return ReactNativeFeatureFlagsDefaults::enableMainQueueCoordinatorOnIOS();
   }
 
   bool enableModuleArgumentNSNullConversionIOS() override {

@@ -10,10 +10,7 @@
 
 import type {ArrayLike} from '../../utils/ArrayLikeUtils';
 
-declare export default class NodeList<out T>
-  // $FlowFixMe[incompatible-variance]
-  implements Iterable<T>, ArrayLike<T>
-{
+declare export default class NodeList<T> implements Iterable<T>, ArrayLike<T> {
   // This property should've been read-only as well, but Flow doesn't handle
   // read-only indexers correctly (thinks reads are writes and fails).
   // $FlowFixMe[incompatible-variance]
@@ -34,3 +31,5 @@ declare export default class NodeList<out T>
 declare export function createNodeList<T>(
   elements: ReadonlyArray<T>,
 ): NodeList<T>;
+
+declare export var NodeList_public: typeof NodeList;

@@ -36,6 +36,7 @@ type SimpleUnion4 = BooleanType | StringType | SimpleObject;
 type SimpleArray = Array<string>;
 type SimpleArrayChange = Array<number>;
 
+
 export interface Spec extends TurboModule {
   readonly exampleFunction: (a: SimpleObject) => void;
   readonly simpleObject: (a: SimpleObject) => void;
@@ -66,4 +67,6 @@ export interface Spec extends TurboModule {
   readonly simpleArrayChange: (a: SimpleArrayChange) => void;
 }
 
-TurboModuleRegistry.getEnforcing<Spec>('NativeModuleTest') as Spec;
+TurboModuleRegistry.getEnforcing<Spec>(
+  'NativeModuleTest',
+) as Spec;

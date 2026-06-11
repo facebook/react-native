@@ -294,6 +294,17 @@ const definitions: FeatureFlagDefinitions = {
       },
       ossReleaseStage: 'none',
     },
+    enableFlexboxAutoMinSizeInStrictMode: {
+      defaultValue: false,
+      metadata: {
+        dateAdded: '2026-06-02',
+        description:
+          'Enables CSS Flexbox §4.5 automatic minimum sizing under strict layout conformance. When enabled, a flex item with an undefined main-axis `min-width`/`min-height` under strict conformance receives a content-derived minimum size (per spec) instead of an undefined (0) minimum. Defaults off so the behaviour can be ramped independently of strict conformance.',
+        expectedReleaseValue: true,
+        purpose: 'experimentation',
+      },
+      ossReleaseStage: 'experimental',
+    },
     enableFontScaleChangesUpdatingLayout: {
       defaultValue: true,
       metadata: {
@@ -419,17 +430,6 @@ const definitions: FeatureFlagDefinitions = {
           'When enabled, LayoutAnimations API will animate state changes on iOS.',
         expectedReleaseValue: true,
         purpose: 'release',
-      },
-      ossReleaseStage: 'none',
-    },
-    enableMainQueueCoordinatorOnIOS: {
-      defaultValue: false,
-      metadata: {
-        dateAdded: '2025-05-17',
-        description:
-          'Make RCTUnsafeExecuteOnMainQueueSync less likely to deadlock, when used in conjuction with sync rendering/events.',
-        expectedReleaseValue: true,
-        purpose: 'experimentation',
       },
       ossReleaseStage: 'none',
     },
@@ -992,12 +992,34 @@ const definitions: FeatureFlagDefinitions = {
 
   jsOnly: {
     ...testDefinitions.jsOnly,
+    animatedDeferStartOfTimingAnimations: {
+      defaultValue: false,
+      metadata: {
+        dateAdded: '2026-05-26',
+        description:
+          'When enabled, the JS Animated layer defers the start of native-driven timing animations to the first rendered frame and re-anchors timing to prevent skipping initial frames when the UI thread is busy with layout work.',
+        expectedReleaseValue: true,
+        purpose: 'experimentation',
+      },
+      ossReleaseStage: 'none',
+    },
     animatedShouldDebounceQueueFlush: {
       defaultValue: false,
       metadata: {
         dateAdded: '2024-02-05',
         description:
           'Enables an experimental flush-queue debouncing in Animated.js.',
+        expectedReleaseValue: true,
+        purpose: 'experimentation',
+      },
+      ossReleaseStage: 'none',
+    },
+    animatedShouldSyncValueBeforeStartCallback: {
+      defaultValue: true,
+      metadata: {
+        dateAdded: '2026-06-01',
+        description:
+          'When a useNativeDriver animation completes, syncs the JS-side AnimatedValue with the post-animation value BEFORE invoking the user-supplied start({finished}) callback. Without the flag, the callback observes the pre-animation value, which can cause downstream re-renders to read stale interpolation outputs.',
         expectedReleaseValue: true,
         purpose: 'experimentation',
       },
@@ -1022,6 +1044,16 @@ const definitions: FeatureFlagDefinitions = {
           'Use the deferred cell render update mechanism for focus change in FlatList.',
         expectedReleaseValue: true,
         purpose: 'experimentation',
+      },
+      ossReleaseStage: 'none',
+    },
+    enableImperativeEvents: {
+      defaultValue: false,
+      metadata: {
+        description:
+          'When enabled, ReactNativeElement and ReadOnlyText expose the public EventTarget API (addEventListener, removeEventListener, dispatchEvent). When disabled, those methods are removed from those final classes.',
+        expectedReleaseValue: true,
+        purpose: 'release',
       },
       ossReleaseStage: 'none',
     },

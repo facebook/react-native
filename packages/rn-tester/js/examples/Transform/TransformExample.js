@@ -9,7 +9,12 @@
  */
 
 import type {RNTesterModuleExample} from '../../types/RNTesterTypes';
+import type {
+  PressableAndroidRippleConfig,
+  PressableStateCallbackType,
+} from 'react-native';
 import type {AnimatedNode} from 'react-native/Libraries/Animated/AnimatedExports';
+import type {ViewStyleProp} from 'react-native/Libraries/StyleSheet/StyleSheet';
 
 import * as React from 'react';
 import {useEffect, useState} from 'react';
@@ -207,6 +212,110 @@ function ScaleZeroHitTestExample(): React.Node {
         />
       </View>
       <Text testID="scale-zero-last-tapped">Last tapped: {lastTapped}</Text>
+    </View>
+  );
+}
+
+function SkewExample(): React.Node {
+  const [tapped, setTapped] = useState<string>('(none)');
+  const skewAnim = useAnimatedValue(0);
+
+  useEffect(() => {
+    const loop = Animated.loop(
+      Animated.sequence([
+        Animated.timing(skewAnim, {
+          toValue: 1,
+          duration: 1500,
+          easing: Easing.linear,
+          useNativeDriver: true,
+        }),
+        Animated.timing(skewAnim, {
+          toValue: 0,
+          duration: 1500,
+          easing: Easing.linear,
+          useNativeDriver: true,
+        }),
+      ]),
+    );
+    loop.start();
+    return () => loop.stop();
+  }, [skewAnim]);
+
+  const animatedSkewX = skewAnim.interpolate({
+    inputRange: [0, 1],
+    outputRange: ['0deg', '20deg'],
+  });
+
+  const ripple: PressableAndroidRippleConfig = {
+    color: 'rgba(255,255,255,0.4)',
+  };
+  const tapStyle =
+    (extra: ViewStyleProp) =>
+    ({pressed}: PressableStateCallbackType): ViewStyleProp => [
+      styles.skewBox,
+      extra,
+      pressed && styles.skewBoxPressed,
+    ];
+
+  return (
+    <View testID="transform-skew-27649" style={styles.skewContainer}>
+      <Text style={styles.skewLabel}>Last tapped: {tapped}</Text>
+      <Text style={styles.skewNote}>
+        Tap any box to confirm hit testing follows the rendered parallelogram on
+        both platforms.
+      </Text>
+      <View style={styles.skewRow}>
+        <Pressable
+          testID="skew-27649-x"
+          android_ripple={ripple}
+          onPress={() => setTapped('skewX 20deg')}
+          style={tapStyle(styles.skewBoxX)}>
+          <Text style={styles.skewBoxText}>skewX</Text>
+        </Pressable>
+        <Pressable
+          testID="skew-27649-y"
+          android_ripple={ripple}
+          onPress={() => setTapped('skewY 20deg')}
+          style={tapStyle(styles.skewBoxY)}>
+          <Text style={styles.skewBoxText}>skewY</Text>
+        </Pressable>
+        <Pressable
+          testID="skew-27649-xy"
+          android_ripple={ripple}
+          onPress={() => setTapped('skewX+Y')}
+          style={tapStyle(styles.skewBoxXY)}>
+          <Text style={styles.skewBoxText}>skewX+Y</Text>
+        </Pressable>
+      </View>
+      <View style={styles.skewRow}>
+        <Pressable
+          testID="skew-27649-xr"
+          android_ripple={ripple}
+          onPress={() => setTapped('skewX + rotate')}
+          style={tapStyle(styles.skewBoxXR)}>
+          <Text style={styles.skewBoxText}>+rotate</Text>
+        </Pressable>
+        <Pressable
+          testID="skew-27649-xs"
+          android_ripple={ripple}
+          onPress={() => setTapped('skewX + scale')}
+          style={tapStyle(styles.skewBoxXS)}>
+          <Text style={styles.skewBoxText}>+scale</Text>
+        </Pressable>
+        <Pressable
+          testID="skew-27649-xt"
+          android_ripple={ripple}
+          onPress={() => setTapped('skewX + translate')}
+          style={tapStyle(styles.skewBoxXT)}>
+          <Text style={styles.skewBoxText}>+translate</Text>
+        </Pressable>
+      </View>
+      <Text style={styles.skewLabel}>Animated (useNativeDriver: true)</Text>
+      <Animated.View
+        testID="skew-27649-animated"
+        style={[styles.skewBox, {transform: [{skewX: animatedSkewX}]}]}>
+        <Text style={styles.skewBoxText}>0deg to 20deg</Text>
+      </Animated.View>
     </View>
   );
 }
@@ -409,6 +518,35 @@ const styles = StyleSheet.create({
     paddingHorizontal: 8,
     paddingVertical: 4,
   },
+  skewContainer: {paddingHorizontal: 16, paddingVertical: 12},
+  skewRow: {
+    flexDirection: 'row',
+    justifyContent: 'space-around',
+    marginVertical: 10,
+  },
+  skewLabel: {
+    fontSize: 12,
+    fontWeight: 'bold',
+    marginTop: 12,
+    marginBottom: 4,
+    color: 'black',
+  },
+  skewNote: {fontSize: 11, color: 'gray', marginTop: 6},
+  skewBox: {
+    width: 70,
+    height: 70,
+    alignItems: 'center',
+    justifyContent: 'center',
+    backgroundColor: 'tomato',
+  },
+  skewBoxText: {color: 'white', fontWeight: 'bold', fontSize: 11},
+  skewBoxPressed: {opacity: 0.5},
+  skewBoxX: {transform: [{skewX: '20deg'}]},
+  skewBoxY: {transform: [{skewY: '20deg'}]},
+  skewBoxXY: {transform: [{skewX: '20deg'}, {skewY: '10deg'}]},
+  skewBoxXR: {transform: [{skewX: '20deg'}, {rotate: '15deg'}]},
+  skewBoxXS: {transform: [{skewX: '20deg'}, {scale: 1.1}]},
+  skewBoxXT: {transform: [{skewX: '20deg'}, {translateX: 8}]},
 });
 
 exports.title = 'Transforms';
@@ -585,6 +723,15 @@ exports.examples = [
       'A view with scaleY: 0 must not receive touches and must not inherit a sibling view’s hit region',
     render(): React.Node {
       return <ScaleZeroHitTestExample />;
+    },
+  },
+  {
+    title: 'Skew (#27649)',
+    name: 'skew-27649',
+    description:
+      'skewX/skewY rendering, hit testing, and native-driven animation on Android Q+ and iOS',
+    render(): React.Node {
+      return <SkewExample />;
     },
   },
 ] as Array<RNTesterModuleExample>;

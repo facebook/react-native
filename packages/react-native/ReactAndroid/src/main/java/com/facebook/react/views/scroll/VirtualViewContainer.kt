@@ -14,7 +14,7 @@ import com.facebook.react.views.virtual.VirtualViewMode
 import java.util.*
 
 internal interface VirtualViewContainer {
-  public val virtualViewContainerState: VirtualViewContainerState
+  val virtualViewContainerState: VirtualViewContainerState
 }
 
 public interface VirtualView {
@@ -43,7 +43,17 @@ internal fun rectsOverlap(rect1: Rect, rect2: Rect): Boolean {
   return true
 }
 
-internal abstract class VirtualViewContainerState {
+/**
+ * Manages the state and visibility tracking of virtual views within a scroll container.
+ *
+ * Virtual views are lightweight representations of off-screen content that can transition between
+ * rendering modes (e.g., visible, prerendered, hidden) based on their position relative to the
+ * scroll viewport. Subclasses implement the specific strategy for tracking and updating these
+ * views.
+ *
+ * Use [create] to obtain an instance appropriate for the current feature flag configuration.
+ */
+public abstract class VirtualViewContainerState {
   protected val prerenderRatio: Double = ReactNativeFeatureFlags.virtualViewPrerenderRatio()
   protected abstract val virtualViews: MutableCollection<VirtualView>
   protected val emptyRect: Rect = Rect()
@@ -51,9 +61,9 @@ internal abstract class VirtualViewContainerState {
   protected val prerenderRect: Rect = Rect()
   protected val scrollView: ViewGroup
 
-  companion object {
+  public companion object {
     @JvmStatic
-    fun create(scrollView: ViewGroup): VirtualViewContainerState {
+    public fun create(scrollView: ViewGroup): VirtualViewContainerState {
       return if (ReactNativeFeatureFlags.enableVirtualViewContainerStateExperimental()) {
         VirtualViewContainerStateExperimental(scrollView)
       } else {
@@ -62,23 +72,23 @@ internal abstract class VirtualViewContainerState {
     }
   }
 
-  constructor(scrollView: ViewGroup) {
+  public constructor(scrollView: ViewGroup) {
     this.scrollView = scrollView
   }
 
-  open fun onChange(virtualView: VirtualView) {
+  public open fun onChange(virtualView: VirtualView) {
     virtualViews.add(virtualView)
     updateModes(virtualView)
   }
 
-  open fun remove(virtualView: VirtualView) {
+  public open fun remove(virtualView: VirtualView) {
     assert(virtualViews.remove(virtualView)) {
       "Attempting to remove non-existent VirtualView: ${virtualView.virtualViewID}"
     }
   }
 
   // Called on ScrollView onLayout or onScroll
-  fun updateState() {
+  public fun updateState() {
     updateModes()
   }
 

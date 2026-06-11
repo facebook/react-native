@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<e7e8b2bcaffdb7504a92afd0e61f07c4>>
+ * @generated SignedSource<<8dfc52502bd539e5e43d547f895a6d33>>
  */
 
 /**
@@ -119,6 +119,10 @@ class ReactNativeFeatureFlagsDefaults : public ReactNativeFeatureFlagsProvider {
     return false;
   }
 
+  bool enableFlexboxAutoMinSizeInStrictMode() override {
+    return false;
+  }
+
   bool enableFontScaleChangesUpdatingLayout() override {
     return true;
   }
@@ -165,10 +169,6 @@ class ReactNativeFeatureFlagsDefaults : public ReactNativeFeatureFlagsProvider {
 
   bool enableLayoutAnimationsOnIOS() override {
     return true;
-  }
-
-  bool enableMainQueueCoordinatorOnIOS() override {
-    return false;
   }
 
   bool enableModuleArgumentNSNullConversionIOS() override {

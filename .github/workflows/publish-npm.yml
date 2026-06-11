@@ -1,0 +1,136 @@
+# Reusable workflow that performs every `npm publish` in this repo.
+#
+# Why this exists: npmjs.com Trusted Publishing accepts only ONE
+# (org, repo, workflow_filename, environment) tuple per package. If
+# `react-native` were published from `publish-release.yml` AND
+# `nightly.yml` directly, we'd need two Trusted Publisher entries per
+# package — npm rejects that. By moving every `npm publish` into this
+# single reusable workflow file, the OIDC `job_workflow_ref` claim
+# always resolves to `publish-npm.yml` regardless of which top-level
+# workflow triggered the run, so each package needs exactly one
+# Trusted Publisher entry pointing here.
+#
+# See https://docs.npmjs.com/trusted-publishers and
+# https://docs.github.com/en/actions/sharing-automations/reusing-workflows .
+name: Publish to npm (reusable)
+
+on:
+  workflow_call:
+    inputs:
+      mode:
+        description: |
+          'react-native' runs the full Android/iOS-prebuilt + JS build
+          and publishes via scripts/releases-ci/publish-npm.js (which
+          publishes `react-native` and, in nightly mode, every
+          @react-native/* package). 'monorepo-packages' runs only the
+          JS build and publishes via
+          scripts/releases-ci/publish-updated-packages.js (delta-based,
+          gated on a #publish-packages-to-npm commit message).
+        type: string
+        required: true
+      release-type:
+        description: "For mode=react-native: release | nightly | dry-run."
+        type: string
+        required: false
+        default: "dry-run"
+      skip-apple-prebuilts:
+        description: "For mode=react-native: skip downloading prebuilt Apple artifacts."
+        type: boolean
+        required: false
+        default: false
+
+jobs:
+  publish-react-native:
+    if: inputs.mode == 'react-native'
+    runs-on: 8-core-ubuntu
+    environment: npm-publish
+    # `id-token: write` is required so the npm CLI can mint the OIDC
+    # token that npm Trusted Publishing exchanges for a publish token.
+    permissions:
+      contents: read
+      id-token: write
+    container:
+      image: reactnativecommunity/react-native-android:latest
+      env:
+        TERM: "dumb"
+        # Set the encoding to resolve a known character encoding issue with decompressing tar.gz files in containers
+        # via Gradle: https://github.com/gradle/gradle/issues/23391#issuecomment-1878979127
+        LC_ALL: C.UTF8
+        GRADLE_OPTS: "-Dorg.gradle.daemon=false"
+        # By default we only build ARM64 to save time/resources. For release/nightlies, we override this value to build all archs.
+        ORG_GRADLE_PROJECT_reactNativeArchitectures: "arm64-v8a"
+        REACT_NATIVE_DOWNLOADS_DIR: /opt/react-native-downloads
+    env:
+      ORG_GRADLE_PROJECT_SIGNING_PWD: ${{ secrets.ORG_GRADLE_PROJECT_SIGNING_PWD }}
+      ORG_GRADLE_PROJECT_SIGNING_KEY: ${{ secrets.ORG_GRADLE_PROJECT_SIGNING_KEY }}
+      ORG_GRADLE_PROJECT_SONATYPE_USERNAME: ${{ secrets.ORG_GRADLE_PROJECT_SONATYPE_USERNAME }}
+      ORG_GRADLE_PROJECT_SONATYPE_PASSWORD: ${{ secrets.ORG_GRADLE_PROJECT_SONATYPE_PASSWORD }}
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v6
+        with:
+          fetch-depth: 0
+          fetch-tags: true
+      # TEMPORARY DEBUG: print the OIDC token claims npm Trusted Publishing
+      # matches against. A 404 from the OIDC exchange means these claims don't
+      # match the Trusted Publisher entry configured on npmjs.com (org/repo/
+      # workflow filename / environment). Prints only the decoded claims, never
+      # the raw token. Remove once the 404 is resolved.
+      - name: Debug OIDC token claims
+        shell: bash
+        run: |
+          # ACTIONS_ID_TOKEN_REQUEST_TOKEN/_URL are auto-injected when the job
+          # has `id-token: write` - they are NOT secrets, don't map them in env.
+          OIDC_TOKEN=$(curl -sS -H "Authorization: bearer $ACTIONS_ID_TOKEN_REQUEST_TOKEN" \
+            "$ACTIONS_ID_TOKEN_REQUEST_URL&audience=npm:registry.npmjs.org" | jq -r '.value')
+          # Decode the JWT payload (middle segment); convert base64url -> base64
+          # and pad so `base64 -d` accepts it. Prints claims only, not the token.
+          payload=$(echo "$OIDC_TOKEN" | cut -d'.' -f2 | tr '_-' '/+')
+          case $(( ${#payload} % 4 )) in 2) payload+='==';; 3) payload+='=';; esac
+          echo "$payload" | base64 -d 2>/dev/null | jq .
+      - name: Build and Publish NPM Package
+        uses: ./.github/actions/build-npm-package
+        with:
+          release-type: ${{ inputs.release-type }}
+          gradle-cache-encryption-key: ${{ secrets.GRADLE_CACHE_ENCRYPTION_KEY }}
+          skip-apple-prebuilts: ${{ inputs.skip-apple-prebuilts && 'true' || 'false' }}
+
+  publish-monorepo-packages:
+    if: inputs.mode == 'monorepo-packages'
+    runs-on: ubuntu-latest
+    environment: npm-publish
+    permissions:
+      contents: read
+      id-token: write
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v6
+      - name: Setup node.js
+        uses: ./.github/actions/setup-node
+        with:
+          registry-url: "https://registry.npmjs.org"
+      # TEMPORARY DEBUG: print the OIDC token claims npm Trusted Publishing
+      # matches against. A 404 from the OIDC exchange means these claims don't
+      # match the Trusted Publisher entry configured on npmjs.com (org/repo/
+      # workflow filename / environment). Prints only the decoded claims, never
+      # the raw token. Remove once the 404 is resolved.
+      - name: Debug OIDC token claims
+        shell: bash
+        run: |
+          # ACTIONS_ID_TOKEN_REQUEST_TOKEN/_URL are auto-injected when the job
+          # has `id-token: write` - they are NOT secrets, don't map them in env.
+          OIDC_TOKEN=$(curl -sS -H "Authorization: bearer $ACTIONS_ID_TOKEN_REQUEST_TOKEN" \
+            "$ACTIONS_ID_TOKEN_REQUEST_URL&audience=npm:registry.npmjs.org" | jq -r '.value')
+          # Decode the JWT payload (middle segment); convert base64url -> base64
+          # and pad so `base64 -d` accepts it. Prints claims only, not the token.
+          payload=$(echo "$OIDC_TOKEN" | cut -d'.' -f2 | tr '_-' '/+')
+          case $(( ${#payload} % 4 )) in 2) payload+='==';; 3) payload+='=';; esac
+          echo "$payload" | base64 -d 2>/dev/null | jq .
+      - name: Run Yarn Install
+        uses: ./.github/actions/yarn-install
+      - name: Build packages
+        run: yarn build
+      - name: Build types
+        run: yarn build-types --skip-snapshot
+      - name: Find and publish all bumped packages
+        run: node ./scripts/releases-ci/publish-updated-packages.js

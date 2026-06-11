@@ -11,7 +11,6 @@
 #import <mach/mach_time.h>
 #import <objc/message.h>
 #import <objc/runtime.h>
-#import <react/featureflags/ReactNativeFeatureFlags.h>
 #import <zlib.h>
 
 #import <UIKit/UIKit.h>
@@ -46,12 +45,6 @@ UIDeviceOrientation RCTDeviceOrientation(void);
 BOOL RCTIsNewArchEnabled(void)
 {
   return YES;
-}
-void RCTSetNewArchEnabled(BOOL enabled)
-{
-  // This function is now deprecated and will be removed in the future.
-  // This function is now no-op. You need to modify the Info.plist adding a `RCTNewArchEnabled` bool property to control
-  // whether the New Arch is enabled or not.
 }
 
 BOOL RCTAreLegacyLogsEnabled(void)
@@ -312,15 +305,12 @@ void RCTUnsafeExecuteOnMainQueueSync(dispatch_block_t block)
   }
 
 #if !TARGET_OS_TV
-  if (ReactNativeFeatureFlags::enableMainQueueCoordinatorOnIOS()) {
-    unsafeExecuteOnMainThreadSync(block);
-    return;
-  }
-#endif
-
+  unsafeExecuteOnMainThreadSync(block);
+#else
   dispatch_sync(dispatch_get_main_queue(), ^{
     block();
   });
+#endif
 }
 
 static void RCTUnsafeExecuteOnMainQueueOnceSync(dispatch_once_t *onceToken, dispatch_block_t block)
@@ -342,13 +332,10 @@ static void RCTUnsafeExecuteOnMainQueueOnceSync(dispatch_once_t *onceToken, disp
   }
 
 #if !TARGET_OS_TV
-  if (ReactNativeFeatureFlags::enableMainQueueCoordinatorOnIOS()) {
-    unsafeExecuteOnMainThreadSync(block);
-    return;
-  }
-#endif
-
+  unsafeExecuteOnMainThreadSync(block);
+#else
   dispatch_sync(dispatch_get_main_queue(), executeOnce);
+#endif
 }
 
 CGFloat RCTScreenScale(void)

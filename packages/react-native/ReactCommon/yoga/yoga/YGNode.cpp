@@ -44,6 +44,7 @@ void YGNodeFree(const YGNodeRef nodeRef) {
   if (auto owner = node->getOwner()) {
     owner->removeChild(node);
     node->setOwner(nullptr);
+    owner->markDirtyAndPropagate();
   }
 
   const size_t childCount = node->getChildCount();
@@ -307,6 +308,32 @@ void YGNodeSetMeasureFunc(YGNodeRef node, YGMeasureFunc measureFunc) {
 
 bool YGNodeHasMeasureFunc(YGNodeConstRef node) {
   return resolveRef(node)->hasMeasureFunc();
+}
+
+void YGNodeSetMinContentMeasureFunc(
+    YGNodeRef node,
+    YGMinContentMeasureFunc minContentMeasureFunc) {
+  resolveRef(node)->setMinContentMeasureFunc(minContentMeasureFunc);
+}
+
+bool YGNodeHasMinContentMeasureFunc(YGNodeConstRef node) {
+  return resolveRef(node)->hasMinContentMeasureFunc();
+}
+
+void YGNodeSetMinContentWidth(YGNodeRef node, float minContentWidth) {
+  resolveRef(node)->setMinContentWidth(FloatOptional{minContentWidth});
+}
+
+void YGNodeSetMinContentHeight(YGNodeRef node, float minContentHeight) {
+  resolveRef(node)->setMinContentHeight(FloatOptional{minContentHeight});
+}
+
+float YGNodeGetMinContentWidth(YGNodeConstRef node) {
+  return resolveRef(node)->getMinContentWidth().unwrapOrDefault(YGUndefined);
+}
+
+float YGNodeGetMinContentHeight(YGNodeConstRef node) {
+  return resolveRef(node)->getMinContentHeight().unwrapOrDefault(YGUndefined);
 }
 
 void YGNodeSetBaselineFunc(YGNodeRef node, YGBaselineFunc baselineFunc) {

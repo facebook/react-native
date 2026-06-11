@@ -957,17 +957,6 @@ TEST_P(RuntimeSchedulerTest, basicSameThreadExecution) {
 // in `executeSynchronouslyOnSameThread_CAN_DEADLOCK`. The off-main `driver`
 // thread drives the stub queue ("JS thread") so the main thread can wake up.
 TEST_P(RuntimeSchedulerTest, basicUIThreadExecution) {
-  class CoordinatorFeatureFlags : public RuntimeSchedulerTestFeatureFlags {
-   public:
-    using RuntimeSchedulerTestFeatureFlags::RuntimeSchedulerTestFeatureFlags;
-    bool enableMainQueueCoordinatorOnIOS() override {
-      return true;
-    }
-  };
-  ReactNativeFeatureFlags::dangerouslyReset();
-  ReactNativeFeatureFlags::override(
-      std::make_unique<CoordinatorFeatureFlags>(GetParam()));
-
   bool didRunSynchronousTask = false;
 
   std::thread driver([this]() {
@@ -1442,6 +1431,10 @@ TEST_P(RuntimeSchedulerTest, reportsLongTasksWithYielding) {
 INSTANTIATE_TEST_SUITE_P(
     UseModernRuntimeScheduler,
     RuntimeSchedulerTest,
+#ifdef RCT_REMOVE_LEGACY_ARCH
+    testing::Values(true));
+#else
     testing::Values(false, true));
+#endif
 
 } // namespace facebook::react

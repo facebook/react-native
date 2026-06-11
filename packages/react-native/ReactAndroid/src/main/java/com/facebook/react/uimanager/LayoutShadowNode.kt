@@ -95,7 +95,7 @@ public open class LayoutShadowNode : ReactShadowNodeImpl() {
 
   @ReactProp(name = ViewProps.WIDTH)
   public open fun setWidth(width: Dynamic) {
-    if (isVirtual) {
+    if (isVirtual()) {
       return
     }
 
@@ -113,7 +113,7 @@ public open class LayoutShadowNode : ReactShadowNodeImpl() {
 
   @ReactProp(name = ViewProps.MIN_WIDTH)
   public open fun setMinWidth(minWidth: Dynamic) {
-    if (isVirtual) {
+    if (isVirtual()) {
       return
     }
 
@@ -142,7 +142,7 @@ public open class LayoutShadowNode : ReactShadowNodeImpl() {
 
   @ReactProp(name = ViewProps.MAX_WIDTH)
   public open fun setMaxWidth(maxWidth: Dynamic) {
-    if (isVirtual) {
+    if (isVirtual()) {
       return
     }
 
@@ -159,7 +159,7 @@ public open class LayoutShadowNode : ReactShadowNodeImpl() {
 
   @ReactProp(name = ViewProps.HEIGHT)
   public open fun setHeight(height: Dynamic) {
-    if (isVirtual) {
+    if (isVirtual()) {
       return
     }
 
@@ -177,7 +177,7 @@ public open class LayoutShadowNode : ReactShadowNodeImpl() {
 
   @ReactProp(name = ViewProps.MIN_HEIGHT)
   public open fun setMinHeight(minHeight: Dynamic) {
-    if (isVirtual) {
+    if (isVirtual()) {
       return
     }
 
@@ -194,7 +194,7 @@ public open class LayoutShadowNode : ReactShadowNodeImpl() {
 
   @ReactProp(name = ViewProps.MAX_HEIGHT)
   public open fun setMaxHeight(maxHeight: Dynamic) {
-    if (isVirtual) {
+    if (isVirtual()) {
       return
     }
 
@@ -212,7 +212,7 @@ public open class LayoutShadowNode : ReactShadowNodeImpl() {
   @Override
   @ReactProp(name = ViewProps.FLEX, defaultFloat = 0f)
   public override fun setFlex(flex: Float) {
-    if (isVirtual) {
+    if (isVirtual()) {
       return
     }
     super.setFlex(flex)
@@ -221,7 +221,7 @@ public open class LayoutShadowNode : ReactShadowNodeImpl() {
   @Override
   @ReactProp(name = ViewProps.FLEX_GROW, defaultFloat = 0f)
   public override fun setFlexGrow(flexGrow: Float) {
-    if (isVirtual) {
+    if (isVirtual()) {
       return
     }
     super.setFlexGrow(flexGrow)
@@ -229,7 +229,7 @@ public open class LayoutShadowNode : ReactShadowNodeImpl() {
 
   @ReactProp(name = ViewProps.ROW_GAP)
   public open fun setRowGap(rowGap: Dynamic) {
-    if (isVirtual) {
+    if (isVirtual()) {
       return
     }
 
@@ -247,7 +247,7 @@ public open class LayoutShadowNode : ReactShadowNodeImpl() {
 
   @ReactProp(name = ViewProps.COLUMN_GAP)
   public open fun setColumnGap(columnGap: Dynamic) {
-    if (isVirtual) {
+    if (isVirtual()) {
       return
     }
 
@@ -265,7 +265,7 @@ public open class LayoutShadowNode : ReactShadowNodeImpl() {
 
   @ReactProp(name = ViewProps.GAP)
   public open fun setGap(gap: Dynamic) {
-    if (isVirtual) {
+    if (isVirtual()) {
       return
     }
 
@@ -284,7 +284,7 @@ public open class LayoutShadowNode : ReactShadowNodeImpl() {
   @Override
   @ReactProp(name = ViewProps.FLEX_SHRINK, defaultFloat = 0f)
   public override fun setFlexShrink(flexShrink: Float) {
-    if (isVirtual) {
+    if (isVirtual()) {
       return
     }
     super.setFlexShrink(flexShrink)
@@ -292,7 +292,7 @@ public open class LayoutShadowNode : ReactShadowNodeImpl() {
 
   @ReactProp(name = ViewProps.FLEX_BASIS)
   public open fun setFlexBasis(flexBasis: Dynamic) {
-    if (isVirtual) {
+    if (isVirtual()) {
       return
     }
 
@@ -315,7 +315,7 @@ public open class LayoutShadowNode : ReactShadowNodeImpl() {
 
   @ReactProp(name = ViewProps.FLEX_DIRECTION)
   public open fun setFlexDirection(flexDirection: String?) {
-    if (isVirtual) {
+    if (isVirtual()) {
       return
     }
 
@@ -338,7 +338,7 @@ public open class LayoutShadowNode : ReactShadowNodeImpl() {
 
   @ReactProp(name = ViewProps.FLEX_WRAP)
   public open fun setFlexWrap(flexWrap: String?) {
-    if (isVirtual) {
+    if (isVirtual()) {
       return
     }
 
@@ -360,7 +360,7 @@ public open class LayoutShadowNode : ReactShadowNodeImpl() {
 
   @ReactProp(name = ViewProps.ALIGN_SELF)
   public open fun setAlignSelf(alignSelf: String?) {
-    if (isVirtual) {
+    if (isVirtual()) {
       return
     }
 
@@ -387,7 +387,7 @@ public open class LayoutShadowNode : ReactShadowNodeImpl() {
 
   @ReactProp(name = ViewProps.ALIGN_ITEMS)
   public open fun setAlignItems(alignItems: String?) {
-    if (isVirtual) {
+    if (isVirtual()) {
       return
     }
 
@@ -414,7 +414,7 @@ public open class LayoutShadowNode : ReactShadowNodeImpl() {
 
   @ReactProp(name = ViewProps.ALIGN_CONTENT)
   public open fun setAlignContent(alignContent: String?) {
-    if (isVirtual) {
+    if (isVirtual()) {
       return
     }
 
@@ -442,7 +442,7 @@ public open class LayoutShadowNode : ReactShadowNodeImpl() {
 
   @ReactProp(name = ViewProps.JUSTIFY_CONTENT)
   public open fun setJustifyContent(justifyContent: String?) {
-    if (isVirtual) {
+    if (isVirtual()) {
       return
     }
 
@@ -467,7 +467,7 @@ public open class LayoutShadowNode : ReactShadowNodeImpl() {
 
   @ReactProp(name = ViewProps.OVERFLOW)
   public open fun setOverflow(overflow: String?) {
-    if (isVirtual) {
+    if (isVirtual()) {
       return
     }
     if (overflow == null) {
@@ -488,7 +488,7 @@ public open class LayoutShadowNode : ReactShadowNodeImpl() {
 
   @ReactProp(name = ViewProps.DISPLAY)
   public open fun setDisplay(display: String?) {
-    if (isVirtual) {
+    if (isVirtual()) {
       return
     }
 
@@ -575,7 +575,7 @@ public open class LayoutShadowNode : ReactShadowNodeImpl() {
           ]
   )
   public open fun setMargins(index: Int, margin: Dynamic) {
-    if (isVirtual) {
+    if (isVirtual()) {
       return
     }
 
@@ -609,7 +609,7 @@ public open class LayoutShadowNode : ReactShadowNodeImpl() {
           ]
   )
   public open fun setPaddings(index: Int, padding: Dynamic) {
-    if (isVirtual) {
+    if (isVirtual()) {
       return
     }
 
@@ -641,7 +641,7 @@ public open class LayoutShadowNode : ReactShadowNodeImpl() {
       defaultFloat = Float.NaN,
   )
   public open fun setBorderWidths(index: Int, borderWidth: Float) {
-    if (isVirtual) {
+    if (isVirtual()) {
       return
     }
     val spacingType = maybeTransformLeftRightToStartEnd(ViewProps.BORDER_SPACING_TYPES[index])
@@ -660,7 +660,7 @@ public open class LayoutShadowNode : ReactShadowNodeImpl() {
           ]
   )
   public open fun setPositionValues(index: Int, position: Dynamic) {
-    if (isVirtual) {
+    if (isVirtual()) {
       return
     }
 
@@ -688,7 +688,7 @@ public open class LayoutShadowNode : ReactShadowNodeImpl() {
   }
 
   private fun maybeTransformLeftRightToStartEnd(spacingType: Int): Int {
-    if (!I18nUtil.getInstance().doLeftAndRightSwapInRTL(themedContext)) {
+    if (!I18nUtil.instance.doLeftAndRightSwapInRTL(getThemedContext())) {
       return spacingType
     }
 
@@ -701,7 +701,7 @@ public open class LayoutShadowNode : ReactShadowNodeImpl() {
 
   @ReactProp(name = ViewProps.POSITION)
   public open fun setPosition(position: String?) {
-    if (isVirtual) {
+    if (isVirtual()) {
       return
     }
 

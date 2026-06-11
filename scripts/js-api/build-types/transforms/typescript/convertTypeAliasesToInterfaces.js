@@ -13,6 +13,11 @@ import type {PluginObj} from '@babel/core';
 
 import * as t from '@babel/types';
 
+const {
+  hasAnnotation,
+  stripAnnotationComments,
+} = require('./utils/buildDirectives');
+
 const ANNOTATION_PATTERN = /@build-types\s+emit-as-interface\b/;
 
 /**
@@ -24,7 +29,7 @@ const ANNOTATION_PATTERN = /@build-types\s+emit-as-interface\b/;
  * only possible on `interface` declarations (open), not `type` (closed).
  */
 function convertToInterface(path: $FlowFixMe): void {
-  stripAnnotationComments(path);
+  stripAnnotationComments(path, ANNOTATION_PATTERN);
 
   const {typeAnnotation} = path.node;
   let innerType = typeAnnotation;
@@ -98,32 +103,6 @@ function convertToInterface(path: $FlowFixMe): void {
   path.replaceWith(interfaceNode);
 }
 
-function hasAnnotationInComments(
-  comments: ?ReadonlyArray<{type: string, value: string}>,
-): boolean {
-  return (
-    Array.isArray(comments) &&
-    comments.some(
-      comment =>
-        comment.type === 'CommentBlock' &&
-        ANNOTATION_PATTERN.test(comment.value),
-    )
-  );
-}
-
-function hasEmitAsInterfaceAnnotation(path: $FlowFixMe): boolean {
-  if (hasAnnotationInComments(path.node.leadingComments)) {
-    return true;
-  }
-  if (
-    path.parentPath?.isExportNamedDeclaration() &&
-    hasAnnotationInComments(path.parentPath.node.leadingComments)
-  ) {
-    return true;
-  }
-  return false;
-}
-
 function typeToExtendsClause(
   tsType: t.TSType,
   wrapInReadonly: boolean,
@@ -156,33 +135,10 @@ function makePropertiesReadonly(members: Array<t.TSTypeElement>): void {
   }
 }
 
-function stripAnnotationComments(path: $FlowFixMe): void {
-  const filter = (comments: $FlowFixMe) =>
-    comments?.filter(
-      (c: $FlowFixMe) =>
-        !(c.type === 'CommentBlock' && ANNOTATION_PATTERN.test(c.value)),
-    ) ?? [];
-  path.node.leadingComments = filter(path.node.leadingComments);
-  if (path.parentPath?.isExportNamedDeclaration()) {
-    path.parentPath.node.leadingComments = filter(
-      path.parentPath.node.leadingComments,
-    );
-  }
-  const target = path.parentPath?.isExportNamedDeclaration()
-    ? path.parentPath
-    : path;
-  const prevSibling = target.getPrevSibling();
-  if (prevSibling?.node) {
-    prevSibling.node.trailingComments = filter(
-      prevSibling.node.trailingComments,
-    );
-  }
-}
-
 const visitor: PluginObj<unknown> = {
   visitor: {
     TSTypeAliasDeclaration(path) {
-      if (!hasEmitAsInterfaceAnnotation(path)) {
+      if (!hasAnnotation(path, ANNOTATION_PATTERN)) {
         return;
       }
       convertToInterface(path);

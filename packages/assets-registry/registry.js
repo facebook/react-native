@@ -14,16 +14,16 @@
 export type AssetDestPathResolver = 'android' | 'generic';
 
 export type PackagerAsset = {
-  +__packager_asset: boolean,
-  +fileSystemLocation: string,
-  +httpServerLocation: string,
-  +width: ?number,
-  +height: ?number,
-  +scales: Array<number>,
-  +hash: string,
-  +name: string,
-  +type: string,
-  +resolver?: AssetDestPathResolver,
+  readonly __packager_asset: boolean,
+  readonly fileSystemLocation: string,
+  readonly httpServerLocation: string,
+  readonly width: ?number,
+  readonly height: ?number,
+  readonly scales: Array<number>,
+  readonly hash: string,
+  readonly name: string,
+  readonly type: string,
+  readonly resolver?: AssetDestPathResolver,
   ...
 };
 */

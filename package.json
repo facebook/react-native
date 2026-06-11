@@ -86,7 +86,7 @@
     "eslint-plugin-relay": "^1.8.3",
     "fb-dotslash": "0.5.8",
     "flow-api-translator": "0.36.1",
-    "flow-bin": "^0.314.0",
+    "flow-bin": "^0.318.0",
     "hermes-eslint": "0.36.1",
     "hermes-transform": "0.36.1",
     "ini": "^5.0.0",
@@ -124,6 +124,11 @@
     "on-headers": "1.1.0",
     "compression": "1.8.1",
     "@microsoft/api-extractor/minimatch": "3.1.4",
-    "lodash": "4.18.1"
+    "metro-babel-register/babel-plugin-syntax-hermes-parser": "0.36.1",
+    "lodash": "4.18.1",
+    "@xmldom/xmldom": "^0.8.13",
+    "fast-xml-parser": "^4.5.6",
+    "yaml": "^2.8.3",
+    "fast-uri": "^3.1.2"
   }
 }

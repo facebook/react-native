@@ -19,7 +19,6 @@
 
 #import "RCTAppDelegate.h"
 #import "RCTAppSetupUtils.h"
-#import "RCTArchConfiguratorProtocol.h"
 #import "RCTDefaultReactNativeFactoryDelegate.h"
 #import "RCTDependencyProvider.h"
 #import "RCTJSRuntimeConfiguratorProtocol.h"

@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<177c370caf828494ce42486af0d8c698>>
+ * @generated SignedSource<<38e26847bb30888adaf6a965dae07cfb>>
  */
 
 /**
@@ -118,6 +118,10 @@ bool ReactNativeFeatureFlags::enableFabricLogs() {
   return getAccessor().enableFabricLogs();
 }
 
+bool ReactNativeFeatureFlags::enableFlexboxAutoMinSizeInStrictMode() {
+  return getAccessor().enableFlexboxAutoMinSizeInStrictMode();
+}
+
 bool ReactNativeFeatureFlags::enableFontScaleChangesUpdatingLayout() {
   return getAccessor().enableFontScaleChangesUpdatingLayout();
 }
@@ -164,10 +168,6 @@ bool ReactNativeFeatureFlags::enableLayoutAnimationsOnAndroid() {
 
 bool ReactNativeFeatureFlags::enableLayoutAnimationsOnIOS() {
   return getAccessor().enableLayoutAnimationsOnIOS();
-}
-
-bool ReactNativeFeatureFlags::enableMainQueueCoordinatorOnIOS() {
-  return getAccessor().enableMainQueueCoordinatorOnIOS();
 }
 
 bool ReactNativeFeatureFlags::enableModuleArgumentNSNullConversionIOS() {

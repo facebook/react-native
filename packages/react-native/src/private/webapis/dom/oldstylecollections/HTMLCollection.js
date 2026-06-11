@@ -86,3 +86,15 @@ export function createHTMLCollection<T>(
 ): HTMLCollection<T> {
   return new HTMLCollection(elements);
 }
+
+export const HTMLCollection_public: typeof HTMLCollection =
+  /* eslint-disable no-shadow */
+  // $FlowExpectedError[incompatible-type]
+  function HTMLCollection() {
+    throw new TypeError(
+      "Failed to construct 'HTMLCollection': Illegal constructor",
+    );
+  };
+
+// $FlowExpectedError[prop-missing]
+HTMLCollection_public.prototype = HTMLCollection.prototype;

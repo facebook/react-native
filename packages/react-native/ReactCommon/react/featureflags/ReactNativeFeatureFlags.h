@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<5ff6ec567d516d966cb2fadfc5cc93b3>>
+ * @generated SignedSource<<6958847f0d788c06cf64478ee2c36386>>
  */
 
 /**
@@ -155,6 +155,11 @@ class ReactNativeFeatureFlags {
   RN_EXPORT static bool enableFabricLogs();
 
   /**
+   * Enables CSS Flexbox §4.5 automatic minimum sizing under strict layout conformance. When enabled, a flex item with an undefined main-axis `min-width`/`min-height` under strict conformance receives a content-derived minimum size (per spec) instead of an undefined (0) minimum. Defaults off so the behaviour can be ramped independently of strict conformance.
+   */
+  RN_EXPORT static bool enableFlexboxAutoMinSizeInStrictMode();
+
+  /**
    * Enables font scale changes updating layout for measurable nodes.
    */
   RN_EXPORT static bool enableFontScaleChangesUpdatingLayout();
@@ -213,11 +218,6 @@ class ReactNativeFeatureFlags {
    * When enabled, LayoutAnimations API will animate state changes on iOS.
    */
   RN_EXPORT static bool enableLayoutAnimationsOnIOS();
-
-  /**
-   * Make RCTUnsafeExecuteOnMainQueueSync less likely to deadlock, when used in conjuction with sync rendering/events.
-   */
-  RN_EXPORT static bool enableMainQueueCoordinatorOnIOS();
 
   /**
    * Enable NSNull conversion when handling module arguments on iOS

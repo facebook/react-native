@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<4b9621fa4f180c100cece906c0d4db34>>
+ * @generated SignedSource<<1974d5797f43e8f73b521ebfd46ce492>>
  */
 
 /**
@@ -55,6 +55,7 @@ class ReactNativeFeatureFlagsAccessor {
   bool enableExclusivePropsUpdateAndroid();
   bool enableFabricCommitBranching();
   bool enableFabricLogs();
+  bool enableFlexboxAutoMinSizeInStrictMode();
   bool enableFontScaleChangesUpdatingLayout();
   bool enableIOSTextBaselineOffsetPerLine();
   bool enableIOSViewClipToPaddingBox();
@@ -67,7 +68,6 @@ class ReactNativeFeatureFlagsAccessor {
   bool enableKeyEvents();
   bool enableLayoutAnimationsOnAndroid();
   bool enableLayoutAnimationsOnIOS();
-  bool enableMainQueueCoordinatorOnIOS();
   bool enableModuleArgumentNSNullConversionIOS();
   bool enableMutationObserverByDefault();
   bool enableNativeCSSParsing();
@@ -156,6 +156,7 @@ class ReactNativeFeatureFlagsAccessor {
   std::atomic<std::optional<bool>> enableExclusivePropsUpdateAndroid_;
   std::atomic<std::optional<bool>> enableFabricCommitBranching_;
   std::atomic<std::optional<bool>> enableFabricLogs_;
+  std::atomic<std::optional<bool>> enableFlexboxAutoMinSizeInStrictMode_;
   std::atomic<std::optional<bool>> enableFontScaleChangesUpdatingLayout_;
   std::atomic<std::optional<bool>> enableIOSTextBaselineOffsetPerLine_;
   std::atomic<std::optional<bool>> enableIOSViewClipToPaddingBox_;
@@ -168,7 +169,6 @@ class ReactNativeFeatureFlagsAccessor {
   std::atomic<std::optional<bool>> enableKeyEvents_;
   std::atomic<std::optional<bool>> enableLayoutAnimationsOnAndroid_;
   std::atomic<std::optional<bool>> enableLayoutAnimationsOnIOS_;
-  std::atomic<std::optional<bool>> enableMainQueueCoordinatorOnIOS_;
   std::atomic<std::optional<bool>> enableModuleArgumentNSNullConversionIOS_;
   std::atomic<std::optional<bool>> enableMutationObserverByDefault_;
   std::atomic<std::optional<bool>> enableNativeCSSParsing_;

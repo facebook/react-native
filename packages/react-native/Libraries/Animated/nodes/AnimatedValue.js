@@ -21,6 +21,7 @@ import type {AnimatedNodeConfig} from './AnimatedNode';
 import type AnimatedTracking from './AnimatedTracking';
 
 import NativeAnimatedHelper from '../../../src/private/animated/NativeAnimatedHelper';
+import * as ReactNativeFeatureFlags from '../../../src/private/featureflags/ReactNativeFeatureFlags';
 import AnimatedInterpolation from './AnimatedInterpolation';
 import AnimatedWithChildren from './AnimatedWithChildren';
 
@@ -95,6 +96,7 @@ export default class AnimatedValue extends AnimatedWithChildren {
   _offset: number;
   _animation: ?Animation;
   _tracking: ?AnimatedTracking;
+  __deferAnimationStart: boolean;
 
   constructor(value: number, config?: ?AnimatedValueConfig) {
     super(config);
@@ -107,6 +109,8 @@ export default class AnimatedValue extends AnimatedWithChildren {
 
     this._startingValue = this._value = value;
     this._offset = 0;
+    this.__deferAnimationStart =
+      ReactNativeFeatureFlags.animatedDeferStartOfTimingAnimations();
     this._animation = null;
     if (config && config.useNativeDriver) {
       this.__makeNative();
@@ -327,6 +331,10 @@ export default class AnimatedValue extends AnimatedWithChildren {
       result => {
         this._animation = null;
         callback && callback(result);
+        if (this._animation == null) {
+          this.__deferAnimationStart =
+            ReactNativeFeatureFlags.animatedDeferStartOfTimingAnimations();
+        }
       },
       previousAnimation,
       this,

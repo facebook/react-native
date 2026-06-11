@@ -100,27 +100,23 @@ YogaLayoutableShadowNode::YogaLayoutableShadowNode(
       yogaNode_(
           static_cast<const YogaLayoutableShadowNode&>(sourceShadowNode)
               .yogaNode_) {
-// Note, cloned `yoga::Node` instance (copied using copy-constructor) inherits
-// dirty flag, measure function, and other properties being set originally in
-// the `YogaLayoutableShadowNode` constructor above.
-
-// There is a known race condition when background executor is enabled, where
-// a tree may be laid out on the Fabric background thread concurrently with
-// the ShadowTree being created on the JS thread. This assert can be
-// re-enabled after disabling background executor everywhere.
-#if 0
-  react_native_assert(YGNodeIsDirty(&static_cast<const YogaLayoutableShadowNode&>(sourceShadowNode)
-              .yogaNode_) == YGNodeIsDirty(&yogaNode_) &&
+  // Note, cloned `yoga::Node` instance (copied using copy-constructor)
+  // inherits dirty flag, measure function, and other properties being set
+  // originally in the `YogaLayoutableShadowNode` constructor above.
+  react_native_assert(
+      YGNodeIsDirty(
+          &static_cast<const YogaLayoutableShadowNode&>(sourceShadowNode)
+               .yogaNode_) == YGNodeIsDirty(&yogaNode_) &&
       "Yoga node must inherit dirty flag.");
-#endif
-  if (!getTraits().check(ShadowNodeTraits::Trait::LeafYogaNode)) {
-    for (auto& child : getChildren()) {
-      if (auto layoutableChild =
-              std::dynamic_pointer_cast<const YogaLayoutableShadowNode>(
-                  child)) {
-        yogaLayoutableChildren_.push_back(std::move(layoutableChild));
-      }
-    }
+  if (!getTraits().check(ShadowNodeTraits::Trait::LeafYogaNode) &&
+      !fragment.children) {
+    // Children unchanged: copy the filtered list directly from the source,
+    // skipping per-child dynamic_pointer_cast. When fragment.children is set,
+    // updateYogaChildren() below rebuilds the vector from the new children
+    // list — populating it here would be immediately discarded.
+    yogaLayoutableChildren_ =
+        static_cast<const YogaLayoutableShadowNode&>(sourceShadowNode)
+            .yogaLayoutableChildren_;
   }
 
   YGConfigConstRef previousConfig =
@@ -325,11 +321,28 @@ bool YogaLayoutableShadowNode::shouldNewRevisionDirtyMeasurement(
   return true;
 }
 
+// Detects the ABA scenario where a freshly-allocated `yogaNode_` happens
+// to land at the same address a previous parent occupied. After such a
+// realloc, any Yoga child whose owner pointer still equals `&yogaNode_`
+// is a stale match — yoga would mistake it for "owned by us" and skip the
+// clone-on-write check. We rewrite those spurious owner pointers to a
+// recognisable sentinel so the next `YGNodeGetOwner(child) == this` check
+// correctly returns false and yoga clones the child as it would for any
+// foreign tree.
+//
+// No-op in the common case: right after a clone, children's owner
+// pointers still reference the source node, not us.
 void YogaLayoutableShadowNode::updateYogaChildrenOwnersIfNeeded() {
+  // Magic constant intentionally recognisable in debuggers when the address
+  // pops up. `reinterpret_cast` is not constexpr, so this is a runtime-
+  // initialised function-local static.
+  // NOLINTBEGIN(cppcoreguidelines-pro-type-reinterpret-cast)
+  static auto* const kDetachedYogaNodeOwnerSentinel =
+      reinterpret_cast<yoga::Node*>(0xBADC0FFEE0DDF00DULL);
+  // NOLINTEND(cppcoreguidelines-pro-type-reinterpret-cast)
   for (auto& childYogaNode : yogaNode_.getChildren()) {
     if (YGNodeGetOwner(childYogaNode) == &yogaNode_) {
-      childYogaNode->setOwner(
-          reinterpret_cast<yoga::Node*>(0xBADC0FFEE0DDF00D));
+      childYogaNode->setOwner(kDetachedYogaNodeOwnerSentinel);
     }
   }
 }
@@ -349,6 +362,7 @@ void YogaLayoutableShadowNode::updateYogaChildren() {
 
   yogaNode_.setChildren({});
   yogaLayoutableChildren_.clear();
+  yogaLayoutableChildren_.reserve(getChildren().size());
 
   for (size_t i = 0; i < getChildren().size(); i++) {
     if (auto yogaLayoutableChild =
@@ -514,7 +528,19 @@ YGErrata YogaLayoutableShadowNode::resolveErrata(YGErrata defaultErrata) const {
           dynamic_cast<const LayoutConformanceShadowNode*>(this)) {
     switch (layoutConformanceNode->getConcreteProps().mode) {
       case LayoutConformance::Strict:
-        return YGErrataNone;
+        // CSS Flexbox §4.5 automatic minimum sizing is the spec-compliant
+        // behaviour, so strict conformance should adopt it — but its probe
+        // walks measure callbacks with `AtMost 0`, which can surface latent
+        // bugs in platform measure overrides. Gate the rollout behind a
+        // feature flag so the behaviour can be ramped independently of strict
+        // conformance: when enabled, clear every errata bit (fully
+        // spec-compliant); when disabled (default), keep
+        // `MinSizeUndefinedInsteadOfAuto` set so strict subtrees preserve
+        // today's behaviour and the auto-min probe stays explicitly opt-in
+        // via `YogaConfig` setup.
+        return ReactNativeFeatureFlags::enableFlexboxAutoMinSizeInStrictMode()
+            ? YGErrataNone
+            : YGErrataMinSizeUndefinedInsteadOfAuto;
       case LayoutConformance::Compatibility:
         return YGErrataAll;
     }

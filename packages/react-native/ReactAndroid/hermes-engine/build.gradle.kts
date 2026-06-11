@@ -408,9 +408,16 @@ android {
     }
   }
 
-  sourceSets.getByName("main") {
-    manifest.srcFile("$hermesDir/android/hermes/src/main/AndroidManifest.xml")
-    java.srcDirs("$hermesDir/lib/Platform/Intl/java", "$hermesDir/lib/Platform/Unicode/java")
+  sourceSets {
+    named("main") {
+      manifest.srcFile("$hermesDir/android/hermes/src/main/AndroidManifest.xml")
+      java.directories.addAll(
+          listOf(
+              "$hermesDir/lib/Platform/Intl/java",
+              "$hermesDir/lib/Platform/Unicode/java",
+          )
+      )
+    }
   }
 
   buildFeatures {

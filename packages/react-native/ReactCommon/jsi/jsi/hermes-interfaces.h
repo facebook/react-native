@@ -26,7 +26,6 @@ namespace debugger {
 class Debugger;
 }
 
-#ifdef JSI_UNSTABLE
 /// IEventLoopControl is defined by the integrator to allow the Runtime to
 /// schedule some task to be run when convenient, and to keep track of "Task
 /// sources". After it is set to a Runtime, the integrator must ensure that the
@@ -79,7 +78,6 @@ struct JSI_EXPORT ISetEventLoopControl : public jsi::ICast {
  protected:
   ~ISetEventLoopControl() = default;
 };
-#endif
 
 /// Interface for Hermes-specific runtime methods.The actual implementations of
 /// the pure virtual methods are provided by Hermes API.

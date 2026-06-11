@@ -406,6 +406,7 @@ describe('Native Animated', () => {
           frames: expect.any(Array),
           toValue: expect.any(Number),
           iterations: 1,
+          deferredStart: false,
         },
         expect.any(Function),
       );
@@ -1219,6 +1220,7 @@ describe('Native Animated', () => {
           frames: expect.any(Array),
           toValue: expect.any(Number),
           iterations: 1,
+          deferredStart: false,
         },
         expect.any(Function),
       );
@@ -1360,6 +1362,7 @@ describe('Native Animated', () => {
           frames: expect.any(Array),
           toValue: expect.any(Number),
           iterations: 1,
+          deferredStart: false,
         },
         expect.any(Function),
       );

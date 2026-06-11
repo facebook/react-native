@@ -48,7 +48,9 @@ class TurboModuleManager : public jni::HybridClass<TurboModuleManager> {
    * they want to be long-lived or short-lived.
    */
   ModuleCache turboModuleCache_;
+#ifndef RCT_REMOVE_LEGACY_MODULE_INTEROP
   ModuleCache legacyModuleCache_;
+#endif // RCT_REMOVE_LEGACY_MODULE_INTEROP
 
   explicit TurboModuleManager(
       std::shared_ptr<CallInvoker> jsCallInvoker,
@@ -64,8 +66,10 @@ class TurboModuleManager : public jni::HybridClass<TurboModuleManager> {
   std::shared_ptr<TurboModule>
   getTurboModule(jni::alias_ref<jhybridobject> javaPart, const std::string &name, jsi::Runtime &runtime);
 
+#ifndef RCT_REMOVE_LEGACY_MODULE_INTEROP
   static TurboModuleProviderFunctionTypeWithRuntime createLegacyModuleProvider(jni::alias_ref<jhybridobject> javaPart);
   std::shared_ptr<TurboModule> getLegacyModule(jni::alias_ref<jhybridobject> javaPart, const std::string &name);
+#endif // RCT_REMOVE_LEGACY_MODULE_INTEROP
 };
 
 } // namespace facebook::react

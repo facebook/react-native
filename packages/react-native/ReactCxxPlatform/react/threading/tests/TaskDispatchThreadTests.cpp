@@ -9,6 +9,7 @@
 #include <react/threading/TaskDispatchThread.h>
 #include <atomic>
 #include <chrono>
+#include <future>
 #include <thread>
 
 namespace facebook::react {
@@ -52,11 +53,19 @@ TEST_F(TaskDispatchThreadTest, RunSyncExecutesTask) {
 // Test: runAsync with delay
 TEST_F(TaskDispatchThreadTest, RunAsyncWithDelay) {
   std::atomic<int> counter{0};
-  dispatcher->runAsync([&] { counter++; }, std::chrono::milliseconds(100));
-  std::this_thread::sleep_for(std::chrono::milliseconds(50));
-  EXPECT_EQ(counter.load(), 0); // Not yet executed
-  std::this_thread::sleep_for(std::chrono::milliseconds(70));
-  EXPECT_EQ(counter.load(), 1); // Should be executed now
+  std::promise<void> taskDone;
+  auto future = taskDone.get_future();
+  dispatcher->runAsync(
+      [&] {
+        counter++;
+        taskDone.set_value();
+      },
+      std::chrono::milliseconds(200));
+  std::this_thread::sleep_for(std::chrono::milliseconds(20));
+  EXPECT_EQ(counter.load(), 0); // 20ms << 200ms, not yet executed
+  ASSERT_EQ(
+      future.wait_for(std::chrono::seconds(5)), std::future_status::ready);
+  EXPECT_EQ(counter.load(), 1); // Task completed
 }
 
 // Test: Multiple delayed tasks execute in order

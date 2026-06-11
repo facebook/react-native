@@ -723,6 +723,7 @@ interface RCTBridgeModuleDecorator : public NSObject {
 }
 
 interface RCTBridgeProxy : public NSProxy {
+  public @property (strong) RCTPerformanceLogger* performanceLogger;
   public virtual NSMethodSignature* methodSignatureForSelector:(SEL sel);
   public virtual id moduleForClass:(Class moduleClass);
   public virtual id moduleForName:lazilyLoadIfNecessary:(NSString* moduleName, BOOL lazilyLoad);
@@ -1632,13 +1633,6 @@ interface RCTRedBoxExtraDataViewController : public UIViewController <UITableVie
 interface RCTRootComponentView : public RCTViewComponentView {
 }
 
-interface RCTRootShadowView : public RCTShadowView {
-  public @property (assign) CGSize availableSize;
-  public @property (assign) CGSize minimumSize;
-  public @property (assign) YGDirection baseDirection;
-  public virtual void layoutWithAffectedShadowViews:(NSPointerArray* affectedShadowViews);
-}
-
 interface RCTRootView : public UIView {
   public @property (assign) BOOL passThroughTouches;
   public @property (assign) CGSize minimumSize;
@@ -1792,7 +1786,6 @@ interface RCTShadowView : public NSObject <RCTComponent> {
   public @property (assign, readonly) YGNodeRef yogaNode;
   public @property (copy) NSString* viewName;
   public @property (copy) RCTDirectEventBlock onLayout;
-  public @property (weak, readonly) RCTRootShadowView* rootView;
   public @property (weak, readonly) RCTShadowView* superview;
   public virtual BOOL canHaveSubviews();
   public virtual BOOL isYogaLeafNode();
@@ -1987,8 +1980,6 @@ interface RCTTransformAnimatedNode : public RCTAnimatedNode {
 }
 
 interface RCTTurboModuleManager : public NSObject <RCTTurboModuleRegistry> {
-  public virtual instancetype initWithBridge:delegate:jsInvoker:(RCTBridge* bridge, id<RCTTurboModuleManagerDelegate> delegate, std::shared_ptr<facebook::react::CallInvoker> jsInvoker);
-  public virtual instancetype initWithBridgeProxy:bridgeModuleDecorator:delegate:jsInvoker:(RCTBridgeProxy* bridgeProxy, RCTBridgeModuleDecorator* bridgeModuleDecorator, id<RCTTurboModuleManagerDelegate> delegate, std::shared_ptr<facebook::react::CallInvoker> jsInvoker);
   public virtual instancetype initWithBridgeProxy:bridgeModuleDecorator:delegate:jsInvoker:devMenuConfigurationDecorator:(RCTBridgeProxy* bridgeProxy, RCTBridgeModuleDecorator* bridgeModuleDecorator, id<RCTTurboModuleManagerDelegate> delegate, std::shared_ptr<facebook::react::CallInvoker> jsInvoker, RCTDevMenuConfigurationDecorator* devMenuConfigurationDecorator);
   public virtual void installJSBindings:(facebook::jsi::Runtime& runtime);
   public virtual void invalidate();
@@ -2596,13 +2587,6 @@ protocol RCTAnimationDriver : public NSObject {
   public virtual void stopAnimation();
 }
 
-protocol RCTArchConfiguratorProtocol {
-  public virtual BOOL bridgelessEnabled();
-  public virtual BOOL fabricEnabled();
-  public virtual BOOL newArchEnabled();
-  public virtual BOOL turboModuleEnabled();
-}
-
 protocol RCTAutoInsetsProtocol {
   public @property (assign) BOOL automaticallyAdjustContentInsets;
   public @property (assign) UIEdgeInsets contentInset;
@@ -2720,9 +2704,6 @@ protocol RCTContextContainerHandling : public NSObject {
 }
 
 protocol RCTCustomPullToRefreshViewProtocol {
-}
-
-protocol RCTCustomRefreshContolProtocol : public RCTCustomRefreshControlProtocol {
 }
 
 protocol RCTCustomRefreshControlProtocol {
@@ -2972,12 +2953,10 @@ protocol RCTPullToRefreshViewViewProtocol : public NSObject {
   public virtual void setNativeRefreshing:(BOOL refreshing);
 }
 
-protocol RCTReactNativeFactoryDelegate : public RCTBridgeDelegate, public RCTUIConfiguratorProtocol, public RCTHostDelegate, public RCTTurboModuleManagerDelegate, public RCTComponentViewFactoryComponentProvider, public RCTJSRuntimeConfiguratorProtocol, public RCTArchConfiguratorProtocol {
+protocol RCTReactNativeFactoryDelegate : public RCTBridgeDelegate, public RCTUIConfiguratorProtocol, public RCTHostDelegate, public RCTTurboModuleManagerDelegate, public RCTComponentViewFactoryComponentProvider, public RCTJSRuntimeConfiguratorProtocol {
   public @property (strong) id<RCTDependencyProvider> dependencyProvider;
   public virtual NSDictionary<NSString*, Class<RCTComponentViewProtocol>>* thirdPartyFabricComponents();
   public virtual NSURL* _Nullable bundleURL();
-  public virtual RCTBridge* createBridgeWithDelegate:launchOptions:(id<RCTBridgeDelegate> delegate, NSDictionary* launchOptions);
-  public virtual UIView* createRootViewWithBridge:moduleName:initProps:(RCTBridge* bridge, NSString* moduleName, NSDictionary* initProps);
 }
 
 protocol RCTRedBoxExtraDataActionDelegate : public NSObject {
@@ -3108,7 +3087,6 @@ protocol RCTTurboModuleRegistry : public NSObject {
 }
 
 protocol RCTTurboModuleWithJSIBindings : public NSObject {
-  public virtual void installJSIBindingsWithRuntime:(facebook::jsi::Runtime& runtime);
   public virtual void installJSIBindingsWithRuntime:callInvoker:(facebook::jsi::Runtime& runtime, const std::shared_ptr<facebook::react::CallInvoker>& callinvoker);
 }
 
@@ -3374,6 +3352,20 @@ class facebook::hermes::IHermesSHUnit : public facebook::jsi::ICast {
   protected ~IHermesSHUnit() = default;
   public static constexpr facebook::jsi::UUID uuid;
   public virtual SHUnitCreator getSHUnitCreator() const = 0;
+}
+
+struct facebook::hermes::IEventLoopControl {
+  protected ~IEventLoopControl() = default;
+  public virtual uint64_t registerTaskQueueSource() = 0;
+  public virtual void scheduleTask(const std::function<void()>& task) = 0;
+  public virtual void unregisterTaskQueueSource(uint64_t sourceId) = 0;
+}
+
+struct facebook::hermes::ISetEventLoopControl : public facebook::jsi::ICast {
+  protected ~ISetEventLoopControl() = default;
+  public static constexpr facebook::jsi::UUID uuid;
+  public virtual facebook::hermes::IEventLoopControl* getEventLoopControl() = 0;
+  public virtual void setEventLoopControl(facebook::hermes::IEventLoopControl* eventLoopControl) = 0;
 }
 
 
@@ -3872,7 +3864,6 @@ uint8_t facebook::react::blueFromColor(facebook::react::SharedColor color) noexc
 uint8_t facebook::react::greenFromColor(facebook::react::SharedColor color) noexcept;
 uint8_t facebook::react::redFromColor(facebook::react::SharedColor color) noexcept;
 void facebook::react::FBReactNativeSpec_registerComponentDescriptorsFromCodegen(std::shared_ptr<const facebook::react::ComponentDescriptorProviderRegistry> registry);
-void facebook::react::RCTDefaultCxxLogFunction(ReactNativeLogLevel level, const char* message);
 void facebook::react::bindHasComponentProvider(facebook::jsi::Runtime& runtime, facebook::react::HasComponentProviderFunctionType&& provider);
 void facebook::react::bindNativeLogger(facebook::jsi::Runtime& runtime, facebook::react::Logger logger);
 void facebook::react::bindNativePerformanceNow(facebook::jsi::Runtime& runtime);
@@ -6197,6 +6188,7 @@ class facebook::react::PointerHoverTracker {
 
 class facebook::react::PreparedTextCacheKey {
   public facebook::react::AttributedString attributedString;
+  public facebook::react::Float pointScaleFactor;
   public facebook::react::LayoutConstraints layoutConstraints;
   public facebook::react::ParagraphAttributes paragraphAttributes;
 }
@@ -6501,30 +6493,6 @@ class facebook::react::RuntimeSchedulerEventTimingDelegate {
 class facebook::react::RuntimeSchedulerIntersectionObserverDelegate {
   public virtual void updateIntersectionObservations(const std::unordered_set<facebook::react::SurfaceId>& surfaceIdsWithPendingRenderingUpdates) = 0;
   public virtual ~RuntimeSchedulerIntersectionObserverDelegate() = default;
-}
-
-class facebook::react::RuntimeScheduler_Legacy : public facebook::react::RuntimeSchedulerBase {
-  public RuntimeScheduler_Legacy(const facebook::react::RuntimeScheduler_Legacy&) = delete;
-  public RuntimeScheduler_Legacy(facebook::react::RuntimeExecutor runtimeExecutor, std::function<facebook::react::HighResTimeStamp()> now, facebook::react::RuntimeSchedulerTaskErrorHandler onTaskError);
-  public RuntimeScheduler_Legacy(facebook::react::RuntimeScheduler_Legacy&&) = delete;
-  public facebook::react::RuntimeScheduler_Legacy& operator=(const facebook::react::RuntimeScheduler_Legacy&) = delete;
-  public facebook::react::RuntimeScheduler_Legacy& operator=(facebook::react::RuntimeScheduler_Legacy&&) = delete;
-  public virtual bool getShouldYield() noexcept override;
-  public virtual facebook::react::HighResTimeStamp now() const noexcept override;
-  public virtual facebook::react::SchedulerPriority getCurrentPriorityLevel() const noexcept override;
-  public virtual std::shared_ptr<facebook::react::Task> scheduleIdleTask(facebook::jsi::Function&& callback, facebook::react::HighResDuration timeout = timeoutForSchedulerPriority(facebook::react::SchedulerPriority::IdlePriority)) noexcept override;
-  public virtual std::shared_ptr<facebook::react::Task> scheduleIdleTask(facebook::react::RawCallback&& callback, facebook::react::HighResDuration timeout = timeoutForSchedulerPriority(facebook::react::SchedulerPriority::IdlePriority)) noexcept override;
-  public virtual std::shared_ptr<facebook::react::Task> scheduleTask(facebook::react::SchedulerPriority priority, facebook::jsi::Function&& callback) noexcept override;
-  public virtual std::shared_ptr<facebook::react::Task> scheduleTask(facebook::react::SchedulerPriority priority, facebook::react::RawCallback&& callback) noexcept override;
-  public virtual void callExpiredTasks(facebook::jsi::Runtime& runtime) override;
-  public virtual void cancelTask(facebook::react::Task& task) noexcept override;
-  public virtual void executeNowOnTheSameThread(facebook::react::RawCallback&& callback) override;
-  public virtual void scheduleRenderingUpdate(facebook::react::SurfaceId surfaceId, facebook::react::RuntimeSchedulerRenderingUpdate&& renderingUpdate) override;
-  public virtual void scheduleWork(facebook::react::RawCallback&& callback) noexcept override;
-  public virtual void setEventTimingDelegate(facebook::react::RuntimeSchedulerEventTimingDelegate* eventTimingDelegate) override;
-  public virtual void setIntersectionObserverDelegate(facebook::react::RuntimeSchedulerIntersectionObserverDelegate* intersectionObserverDelegate) override;
-  public virtual void setPerformanceEntryReporter(facebook::react::PerformanceEntryReporter* performanceEntryReporter) override;
-  public virtual void setShadowTreeRevisionConsistencyManager(facebook::react::ShadowTreeRevisionConsistencyManager* shadowTreeRevisionConsistencyManager) override;
 }
 
 class facebook::react::RuntimeScheduler_Modern : public facebook::react::RuntimeSchedulerBase {
@@ -7146,6 +7114,7 @@ class facebook::react::TextLayoutManager {
 
 class facebook::react::TextMeasureCacheKey {
   public facebook::react::AttributedString attributedString;
+  public facebook::react::Float pointScaleFactor;
   public facebook::react::LayoutConstraints layoutConstraints;
   public facebook::react::ParagraphAttributes paragraphAttributes;
 }
@@ -7506,6 +7475,7 @@ struct facebook::react::ViewTransitionModule::AnimationKeyFrameView {
   public facebook::react::SurfaceId surfaceId;
   public facebook::react::Tag tag;
   public facebook::react::ViewTransitionModule::AnimationKeyFrameViewLayoutMetrics layoutMetrics;
+  public uint32_t transitionId;
 }
 
 struct facebook::react::ViewTransitionModule::AnimationKeyFrameViewLayoutMetrics {
@@ -8617,6 +8587,7 @@ enum facebook::react::TextDecorationStyle {
   Dotted,
   Double,
   Solid,
+  Wavy,
 }
 
 enum facebook::react::TextInputAccessoryVisibilityMode {
@@ -12123,7 +12094,6 @@ class facebook::react::jsinspector_modern::HostTargetController {
   public facebook::react::jsinspector_modern::HostTargetDelegate& getDelegate();
   public facebook::react::jsinspector_modern::tracing::HostTracingProfile stopTracing();
   public void incrementPauseOverlayCounter();
-  public void installPerfIssuesBinding();
 }
 
 class facebook::react::jsinspector_modern::HostTargetDelegate : public facebook::react::jsinspector_modern::LoadNetworkResourceDelegate {
@@ -13247,23 +13217,23 @@ struct facebook::react::map_detail::Bridging {
 }
 
 
-typedef void(*facebook::react::ReactMarker::LogTaggedMarker)(const facebook::react::ReactMarker::ReactMarkerId, const char *tag);
-typedef void(*facebook::react::ReactMarker::LogTaggedMarkerBridgeless)(const facebook::react::ReactMarker::ReactMarkerId, const char *tag);
+uint64_t facebook::react::oscompat::getCurrentProcessId();
+uint64_t facebook::react::oscompat::getCurrentThreadId();
+
+
+using facebook::react::ReactMarker::LogTaggedMarker = std::function<void(facebook::react::ReactMarker::ReactMarkerId, const char* tag)>;
+using facebook::react::ReactMarker::LogTaggedMarkerBridgeless = facebook::react::ReactMarker::LogTaggedMarker;
 void facebook::react::ReactMarker::logMarker(facebook::react::ReactMarker::ReactMarkerId markerId);
 void facebook::react::ReactMarker::logMarkerBridgeless(facebook::react::ReactMarker::ReactMarkerId markerId);
 void facebook::react::ReactMarker::logMarkerDone(facebook::react::ReactMarker::ReactMarkerId markerId, double markerTime);
 void facebook::react::ReactMarker::logTaggedMarker(facebook::react::ReactMarker::ReactMarkerId markerId, const char* tag);
 void facebook::react::ReactMarker::logTaggedMarkerBridgeless(facebook::react::ReactMarker::ReactMarkerId markerId, const char* tag);
-facebook::react::ReactMarker::LogTaggedMarker facebook::react::ReactMarker::logTaggedMarkerBridgelessImpl;
-facebook::react::ReactMarker::LogTaggedMarker facebook::react::ReactMarker::logTaggedMarkerImpl;
-std::shared_mutex facebook::react::ReactMarker::logTaggedMarkerImplMutex;
+facebook::react::ReactMarker::AtomicLogTaggedMarker facebook::react::ReactMarker::logTaggedMarkerImpl;
 
 class facebook::react::ReactMarker::StartupLogger {
   public double getAppStartupEndTime();
   public double getAppStartupStartTime();
-  public double getInitReactRuntimeEndTime();
   public double getInitReactRuntimeStartTime();
-  public double getRunJSBundleEndTime();
   public double getRunJSBundleStartTime();
   public static facebook::react::ReactMarker::StartupLogger& getInstance();
   public void logStartupEvent(facebook::react::ReactMarker::ReactMarkerId markerId, double markerTime);
@@ -13290,15 +13260,17 @@ enum facebook::react::ReactMarker::ReactMarkerId {
   RUN_JS_BUNDLE_STOP,
 }
 
+struct facebook::react::ReactMarker::AtomicLogTaggedMarker {
+  public facebook::react::ReactMarker::AtomicLogTaggedMarker& operator=(facebook::react::ReactMarker::LogTaggedMarker marker);
+  public operator bool() const noexcept;
+  public void operator()(facebook::react::ReactMarker::ReactMarkerId markerId, const char* tag) const;
+}
+
 struct facebook::react::ReactMarker::ReactMarkerEvent {
   public const char* tag;
   public const facebook::react::ReactMarker::ReactMarkerId markerId;
   public double time;
 }
-
-
-uint64_t facebook::react::oscompat::getCurrentProcessId();
-uint64_t facebook::react::oscompat::getCurrentThreadId();
 
 
 void facebook::react::BridgeNativeModulePerfLogger::asyncMethodCallArgConversionEnd(const char* moduleName, const char* methodName);
@@ -14449,7 +14421,7 @@ void facebook::yoga::assertFatal(bool condition, const char* message);
 void facebook::yoga::assertFatalWithConfig(const facebook::yoga::Config* config, bool condition, const char* message);
 void facebook::yoga::assertFatalWithNode(const facebook::yoga::Node* node, bool condition, const char* message);
 void facebook::yoga::calculateLayout(facebook::yoga::Node* node, float ownerWidth, float ownerHeight, facebook::yoga::Direction ownerDirection);
-void facebook::yoga::cleanupContentsNodesRecursively(facebook::yoga::Node *const node);
+void facebook::yoga::cleanupContentsNodesRecursively(facebook::yoga::Node* node, bool didPerformLayout);
 void facebook::yoga::constrainMaxSizeForMode(const facebook::yoga::Node* node, facebook::yoga::Direction direction, facebook::yoga::FlexDirection axis, float ownerAxisSize, float ownerWidth, facebook::yoga::SizingMode* mode, float* size);
 void facebook::yoga::fatalWithMessage(const char* message);
 void facebook::yoga::layoutAbsoluteChild(const facebook::yoga::Node* containingNode, const facebook::yoga::Node* node, facebook::yoga::Node* child, float containingBlockWidth, float containingBlockHeight, facebook::yoga::SizingMode widthMode, facebook::yoga::Direction direction, facebook::yoga::LayoutData& layoutMarkerData, uint32_t depth, uint32_t generationCount);
@@ -14496,6 +14468,7 @@ class facebook::yoga::Node : public YGNode {
   public Node(facebook::yoga::Node&& node) noexcept;
   public YGDirtiedFunc getDirtiedFunc() const;
   public YGSize measure(float availableWidth, facebook::yoga::MeasureMode widthMode, float availableHeight, facebook::yoga::MeasureMode heightMode);
+  public YGSize measureMinContent(float availableWidth, facebook::yoga::MeasureMode widthMode, float availableHeight, facebook::yoga::MeasureMode heightMode);
   public bool alwaysFormsContainingBlock() const;
   public bool getHasNewLayout() const;
   public bool hasBaselineFunc() const noexcept;
@@ -14503,6 +14476,7 @@ class facebook::yoga::Node : public YGNode {
   public bool hasDefiniteLength(facebook::yoga::Dimension dimension, float ownerSize);
   public bool hasErrata(facebook::yoga::Errata errata) const;
   public bool hasMeasureFunc() const noexcept;
+  public bool hasMinContentMeasureFunc() const noexcept;
   public bool isDirty() const;
   public bool isLayoutDimensionDefined(facebook::yoga::FlexDirection axis);
   public bool isNodeFlexible();
@@ -14513,6 +14487,8 @@ class facebook::yoga::Node : public YGNode {
   public const facebook::yoga::Style& style() const;
   public const std::vector<facebook::yoga::Node*>& getChildren() const;
   public facebook::yoga::Direction resolveDirection(facebook::yoga::Direction ownerDirection);
+  public facebook::yoga::FloatOptional getMinContentHeight() const noexcept;
+  public facebook::yoga::FloatOptional getMinContentWidth() const noexcept;
   public facebook::yoga::FloatOptional getResolvedDimension(facebook::yoga::Direction direction, facebook::yoga::Dimension dimension, float referenceLength, float ownerWidth) const;
   public facebook::yoga::FloatOptional resolveFlexBasis(facebook::yoga::Direction direction, facebook::yoga::FlexDirection flexDirection, float referenceLength, float ownerWidth) const;
   public facebook::yoga::LayoutResults& getLayout();
@@ -14566,6 +14542,9 @@ class facebook::yoga::Node : public YGNode {
   public void setLayoutPosition(float position, facebook::yoga::PhysicalEdge edge);
   public void setLineIndex(size_t lineIndex);
   public void setMeasureFunc(YGMeasureFunc measureFunc);
+  public void setMinContentHeight(facebook::yoga::FloatOptional minContentHeight) noexcept;
+  public void setMinContentMeasureFunc(YGMinContentMeasureFunc minContentMeasureFunc);
+  public void setMinContentWidth(facebook::yoga::FloatOptional minContentWidth) noexcept;
   public void setNodeType(facebook::yoga::NodeType nodeType);
   public void setOwner(facebook::yoga::Node* owner);
   public void setPosition(facebook::yoga::Direction direction, float ownerWidth, float ownerHeight);
@@ -14815,6 +14794,7 @@ enum facebook::yoga::Errata : uint32_t {
   AbsolutePositionWithoutInsetsExcludesPadding,
   All,
   Classic,
+  MinSizeUndefinedInsteadOfAuto,
   None,
   StretchFlexBasis,
 }
@@ -15074,6 +15054,7 @@ struct facebook::yoga::LayoutResults {
   public facebook::yoga::CachedMeasurement cachedLayout;
   public facebook::yoga::Direction direction() const;
   public facebook::yoga::Direction lastOwnerDirection;
+  public facebook::yoga::FloatOptional computedAutoMinMainSize;
   public facebook::yoga::FloatOptional computedFlexBasis;
   public float border(facebook::yoga::PhysicalEdge physicalEdge) const;
   public float dimension(facebook::yoga::Dimension axis) const;

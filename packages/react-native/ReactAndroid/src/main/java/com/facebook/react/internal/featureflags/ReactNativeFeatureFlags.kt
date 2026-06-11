@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<fa3d35be13801d5991e6bfb2cef2ef43>>
+ * @generated SignedSource<<7e91da9df64ce42424101d7d72356c4a>>
  */
 
 /**
@@ -169,6 +169,12 @@ public object ReactNativeFeatureFlags {
   public fun enableFabricLogs(): Boolean = accessor.enableFabricLogs()
 
   /**
+   * Enables CSS Flexbox §4.5 automatic minimum sizing under strict layout conformance. When enabled, a flex item with an undefined main-axis `min-width`/`min-height` under strict conformance receives a content-derived minimum size (per spec) instead of an undefined (0) minimum. Defaults off so the behaviour can be ramped independently of strict conformance.
+   */
+  @JvmStatic
+  public fun enableFlexboxAutoMinSizeInStrictMode(): Boolean = accessor.enableFlexboxAutoMinSizeInStrictMode()
+
+  /**
    * Enables font scale changes updating layout for measurable nodes.
    */
   @JvmStatic
@@ -239,12 +245,6 @@ public object ReactNativeFeatureFlags {
    */
   @JvmStatic
   public fun enableLayoutAnimationsOnIOS(): Boolean = accessor.enableLayoutAnimationsOnIOS()
-
-  /**
-   * Make RCTUnsafeExecuteOnMainQueueSync less likely to deadlock, when used in conjuction with sync rendering/events.
-   */
-  @JvmStatic
-  public fun enableMainQueueCoordinatorOnIOS(): Boolean = accessor.enableMainQueueCoordinatorOnIOS()
 
   /**
    * Enable NSNull conversion when handling module arguments on iOS

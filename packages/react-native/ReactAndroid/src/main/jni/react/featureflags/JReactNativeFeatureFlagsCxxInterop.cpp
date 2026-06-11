@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<f667d1281347eeacfca65411acdf6dc7>>
+ * @generated SignedSource<<ea8284ad906ae89281a3fbd849e88c19>>
  */
 
 /**
@@ -177,6 +177,12 @@ class ReactNativeFeatureFlagsJavaProvider
     return method(javaProvider_);
   }
 
+  bool enableFlexboxAutoMinSizeInStrictMode() override {
+    static const auto method =
+        getReactNativeFeatureFlagsProviderJavaClass()->getMethod<jboolean()>("enableFlexboxAutoMinSizeInStrictMode");
+    return method(javaProvider_);
+  }
+
   bool enableFontScaleChangesUpdatingLayout() override {
     static const auto method =
         getReactNativeFeatureFlagsProviderJavaClass()->getMethod<jboolean()>("enableFontScaleChangesUpdatingLayout");
@@ -246,12 +252,6 @@ class ReactNativeFeatureFlagsJavaProvider
   bool enableLayoutAnimationsOnIOS() override {
     static const auto method =
         getReactNativeFeatureFlagsProviderJavaClass()->getMethod<jboolean()>("enableLayoutAnimationsOnIOS");
-    return method(javaProvider_);
-  }
-
-  bool enableMainQueueCoordinatorOnIOS() override {
-    static const auto method =
-        getReactNativeFeatureFlagsProviderJavaClass()->getMethod<jboolean()>("enableMainQueueCoordinatorOnIOS");
     return method(javaProvider_);
   }
 
@@ -686,6 +686,11 @@ bool JReactNativeFeatureFlagsCxxInterop::enableFabricLogs(
   return ReactNativeFeatureFlags::enableFabricLogs();
 }
 
+bool JReactNativeFeatureFlagsCxxInterop::enableFlexboxAutoMinSizeInStrictMode(
+    facebook::jni::alias_ref<JReactNativeFeatureFlagsCxxInterop> /*unused*/) {
+  return ReactNativeFeatureFlags::enableFlexboxAutoMinSizeInStrictMode();
+}
+
 bool JReactNativeFeatureFlagsCxxInterop::enableFontScaleChangesUpdatingLayout(
     facebook::jni::alias_ref<JReactNativeFeatureFlagsCxxInterop> /*unused*/) {
   return ReactNativeFeatureFlags::enableFontScaleChangesUpdatingLayout();
@@ -744,11 +749,6 @@ bool JReactNativeFeatureFlagsCxxInterop::enableLayoutAnimationsOnAndroid(
 bool JReactNativeFeatureFlagsCxxInterop::enableLayoutAnimationsOnIOS(
     facebook::jni::alias_ref<JReactNativeFeatureFlagsCxxInterop> /*unused*/) {
   return ReactNativeFeatureFlags::enableLayoutAnimationsOnIOS();
-}
-
-bool JReactNativeFeatureFlagsCxxInterop::enableMainQueueCoordinatorOnIOS(
-    facebook::jni::alias_ref<JReactNativeFeatureFlagsCxxInterop> /*unused*/) {
-  return ReactNativeFeatureFlags::enableMainQueueCoordinatorOnIOS();
 }
 
 bool JReactNativeFeatureFlagsCxxInterop::enableModuleArgumentNSNullConversionIOS(
@@ -1112,6 +1112,9 @@ void JReactNativeFeatureFlagsCxxInterop::registerNatives() {
         "enableFabricLogs",
         JReactNativeFeatureFlagsCxxInterop::enableFabricLogs),
       makeNativeMethod(
+        "enableFlexboxAutoMinSizeInStrictMode",
+        JReactNativeFeatureFlagsCxxInterop::enableFlexboxAutoMinSizeInStrictMode),
+      makeNativeMethod(
         "enableFontScaleChangesUpdatingLayout",
         JReactNativeFeatureFlagsCxxInterop::enableFontScaleChangesUpdatingLayout),
       makeNativeMethod(
@@ -1147,9 +1150,6 @@ void JReactNativeFeatureFlagsCxxInterop::registerNatives() {
       makeNativeMethod(
         "enableLayoutAnimationsOnIOS",
         JReactNativeFeatureFlagsCxxInterop::enableLayoutAnimationsOnIOS),
-      makeNativeMethod(
-        "enableMainQueueCoordinatorOnIOS",
-        JReactNativeFeatureFlagsCxxInterop::enableMainQueueCoordinatorOnIOS),
       makeNativeMethod(
         "enableModuleArgumentNSNullConversionIOS",
         JReactNativeFeatureFlagsCxxInterop::enableModuleArgumentNSNullConversionIOS),

@@ -1018,7 +1018,7 @@ type ____TextStyle_InternalBase = Readonly<{
     | 'underline'
     | 'line-through'
     | 'underline line-through',
-  textDecorationStyle?: 'solid' | 'double' | 'dotted' | 'dashed',
+  textDecorationStyle?: 'solid' | 'double' | 'dotted' | 'dashed' | 'wavy',
   textDecorationColor?: ____ColorValue_Internal,
   textTransform?: 'none' | 'capitalize' | 'uppercase' | 'lowercase',
   userSelect?: 'auto' | 'text' | 'none' | 'contain' | 'all',

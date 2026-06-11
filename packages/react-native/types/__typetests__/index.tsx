@@ -46,6 +46,7 @@ import {
   FocusEvent,
   GestureResponderEvent,
   HostComponent,
+  HostInstance,
   I18nManager,
   Image,
   ImageBackground,
@@ -56,7 +57,6 @@ import {
   ImageResolvedAssetSource,
   ImageStyle,
   InputAccessoryView,
-  InteractionManager,
   Keyboard,
   KeyboardAvoidingView,
   LayoutChangeEvent,
@@ -338,6 +338,18 @@ const lists = StyleSheet.create({
 
 const container = StyleSheet.compose(page.container, lists.listContainer);
 <View style={container} />;
+
+// Pointer events (W3C): all variants should be accepted on View.
+<View
+  onPointerOver={e => e.nativeEvent.pointerId}
+  onPointerOverCapture={e => e.nativeEvent.pointerId}
+  onPointerOut={e => e.nativeEvent.pointerId}
+  onPointerOutCapture={e => e.nativeEvent.pointerId}
+  onGotPointerCapture={e => e.nativeEvent.pointerId}
+  onGotPointerCaptureCapture={e => e.nativeEvent.pointerId}
+  onLostPointerCapture={e => e.nativeEvent.pointerId}
+  onLostPointerCaptureCapture={e => e.nativeEvent.pointerId}
+/>;
 const text = StyleSheet.compose(page.text, lists.listItem) as TextStyle;
 <Text style={text} />;
 
@@ -780,10 +792,6 @@ if (Systrace.isEnabled()) {
 
   Systrace.counterEvent('counter', 123);
 }
-
-InteractionManager.runAfterInteractions(() => {
-  // ...
-}).then(() => 'done');
 
 export class FlatListTest extends React.Component<FlatListProps<number>, {}> {
   list: FlatList<any> | null = null;
@@ -1540,6 +1548,10 @@ const KeyboardAvoidingViewTest = () => <KeyboardAvoidingView enabled />;
 
 const ModalTest = () => <Modal hardwareAccelerated />;
 const ModalTest2 = () => <Modal hardwareAccelerated testID="modal-test-2" />;
+const ModalRefTest = () => {
+  const modalRef = React.useRef<Modal & HostInstance>(null);
+  return <Modal modalRef={modalRef} />;
+};
 
 // $ExpectType HostComponent<{ nativeProp: string; }>
 const NativeBridgedComponent = requireNativeComponent<{nativeProp: string}>(
