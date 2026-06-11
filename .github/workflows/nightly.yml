@@ -12,7 +12,7 @@ permissions:
 jobs:
   set_release_type:
     runs-on: ubuntu-latest
-    if: github.repository == 'facebook/react-native'
+    if: github.repository == 'react/react-native'
     outputs:
       RELEASE_TYPE: ${{ steps.set_release_type.outputs.RELEASE_TYPE }}
     env:
@@ -25,7 +25,7 @@ jobs:
           echo "RELEASE_TYPE=nightly" >> $GITHUB_OUTPUT
 
   prebuild_apple_dependencies:
-    if: github.repository == 'facebook/react-native'
+    if: github.repository == 'react/react-native'
     uses: ./.github/workflows/prebuild-ios-dependencies.yml
     secrets: inherit
 
@@ -39,7 +39,7 @@ jobs:
 
   build_android:
     runs-on: 8-core-ubuntu
-    if: github.repository == 'facebook/react-native'
+    if: github.repository == 'react/react-native'
     needs: [set_release_type]
     container:
       image: reactnativecommunity/react-native-android:latest

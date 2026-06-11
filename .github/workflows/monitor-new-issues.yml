@@ -12,7 +12,7 @@ on:
 jobs:
   monitor-issues:
     runs-on: ubuntu-latest
-    if: github.repository == 'facebook/react-native'
+    if: github.repository == 'react/react-native'
     steps:
       - name: Checkout
         uses: actions/checkout@v6
@@ -34,7 +34,7 @@ jobs:
           git_secret: ${{ secrets.GITHUB_TOKEN }}
           notifier: "discord"
           fetch_data_interval: 6
-          repo_owner: "facebook"
+          repo_owner: "react"
           repo_name: "react-native"
           discord_webhook_url: "${{ secrets.DISCORD_WEBHOOK_URL }}"
           discord_id_type: "user"

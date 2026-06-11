@@ -7,7 +7,7 @@ on:
 jobs:
   set_release_type:
     runs-on: ubuntu-latest
-    if: github.repository == 'facebook/react-native'
+    if: github.repository == 'react/react-native'
     outputs:
       RELEASE_TYPE: ${{ steps.set_release_type.outputs.RELEASE_TYPE }}
     env:
@@ -21,7 +21,7 @@ jobs:
 
   set_hermes_version:
     runs-on: ubuntu-latest
-    if: github.repository == 'facebook/react-native'
+    if: github.repository == 'react/react-native'
     outputs:
       HERMES_VERSION: ${{ steps.set_hermes_version.outputs.HERMES_VERSION }}
     steps:
@@ -34,7 +34,7 @@ jobs:
           echo "HERMES_VERSION=$hermes_version"
 
   prebuild_apple_dependencies:
-    if: github.repository == 'facebook/react-native'
+    if: github.repository == 'react/react-native'
     uses: ./.github/workflows/prebuild-ios-dependencies.yml
     secrets: inherit
 
