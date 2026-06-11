@@ -109,7 +109,12 @@ internal object TextLayoutManager {
 
   private const val DEFAULT_ADJUST_FONT_SIZE_TO_FIT = false
 
-  private val tagToSpannableCache = ConcurrentHashMap<Int, Spannable>()
+  private data class CachedSpannable(
+      val spannable: Spannable,
+      val fontWeightAdjustment: Int,
+  )
+
+  private val tagToSpannableCache = ConcurrentHashMap<Int, CachedSpannable>()
 
   // Lazily cached Method for StaticLayout.Builder.setUseBoundsForWidth (API 35+).
   // Reflection is needed because some internal targets compile against an SDK older than 35.
@@ -123,8 +128,15 @@ internal object TextLayoutManager {
     }
   }
 
-  fun setCachedSpannableForTag(reactTag: Int, sp: Spannable): Unit {
-    tagToSpannableCache[reactTag] = sp
+  fun setCachedSpannableForTag(reactTag: Int, sp: Spannable): Unit =
+      setCachedSpannableForTag(reactTag, 0, sp)
+
+  fun setCachedSpannableForTag(
+      reactTag: Int,
+      fontWeightAdjustment: Int,
+      sp: Spannable,
+  ): Unit {
+    tagToSpannableCache[reactTag] = CachedSpannable(sp, fontWeightAdjustment)
   }
 
   fun deleteCachedSpannableForTag(reactTag: Int): Unit {
@@ -702,7 +714,20 @@ internal object TextLayoutManager {
     var text: Spannable?
     if (attributedString.contains(AS_KEY_CACHE_ID)) {
       val cacheId = attributedString.getInt(AS_KEY_CACHE_ID)
-      text = checkNotNull(tagToSpannableCache[cacheId])
+      val cachedSpannable = checkNotNull(tagToSpannableCache[cacheId])
+      text =
+          if (cachedSpannable.fontWeightAdjustment == fontWeightAdjustment) {
+            cachedSpannable.spannable
+          } else {
+            createSpannableFromAttributedString(
+                assets,
+                fontWeightAdjustment,
+                attributedString.getMapBuffer(AS_KEY_FRAGMENTS),
+                reactTextViewManagerCallback,
+                null,
+                textEffectRegistry,
+            )
+          }
     } else {
       text =
           createSpannableFromAttributedString(
@@ -962,7 +987,15 @@ internal object TextLayoutManager {
 
     val paint: TextPaint
     if (attributedString.contains(AS_KEY_CACHE_ID)) {
-      paint = text.getSpans(0, 0, ReactTextPaintHolderSpan::class.java)[0].textPaint
+      val textPaintHolderSpans = text.getSpans(0, 0, ReactTextPaintHolderSpan::class.java)
+      paint =
+          if (textPaintHolderSpans.isNotEmpty()) {
+            textPaintHolderSpans[0].textPaint
+          } else {
+            val baseTextAttributes =
+                TextAttributeProps.fromMapBuffer(attributedString.getMapBuffer(AS_KEY_BASE_ATTRIBUTES))
+            scratchPaintWithAttributes(baseTextAttributes, assets, fontWeightAdjustment)
+          }
     } else {
       val baseTextAttributes =
           TextAttributeProps.fromMapBuffer(attributedString.getMapBuffer(AS_KEY_BASE_ATTRIBUTES))

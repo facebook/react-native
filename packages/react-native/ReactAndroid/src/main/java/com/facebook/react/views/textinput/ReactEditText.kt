@@ -1117,7 +1117,7 @@ public open class ReactEditText public constructor(context: Context) : AppCompat
         sb.length,
         Spannable.SPAN_INCLUSIVE_INCLUSIVE,
     )
-    TextLayoutManager.setCachedSpannableForTag(id, sb)
+    TextLayoutManager.setCachedSpannableForTag(id, getFontWeightAdjustment(context), sb)
   }
 
   public fun setEventDispatcher(eventDispatcher: EventDispatcher?) {
