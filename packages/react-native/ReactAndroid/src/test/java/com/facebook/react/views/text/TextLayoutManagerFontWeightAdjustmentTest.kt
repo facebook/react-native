@@ -57,6 +57,7 @@ class TextLayoutManagerFontWeightAdjustmentTest {
     )
 
     assertThat(paint.typeface).isNotNull
+    assertThat(paint.typeface).isNotSameAs(Typeface.DEFAULT)
   }
 
   @Test
