@@ -39,14 +39,18 @@ const {
 const {main: generateAutolinking} = require('./generate-spm-autolinking');
 const {main: generatePackage} = require('./generate-spm-package');
 const {
-  buildMergedHeaderTree,
+  buildPerAppHeaderTree,
+  buildSharedReactCoreHeaderTree,
   defaultCacheDir,
   displayPath,
   findProjectRoot,
   installSpmCodegenTemplate,
+  logCrossTreeShadows,
   makeLogger,
   readPackageJson,
   runCodegenAndInstallTemplate,
+  writeAppPathsJson,
+  writeSharedPathsJson,
 } = require('./spm-utils');
 const fs = require('fs');
 const path = require('path');
@@ -149,9 +153,19 @@ async function main(argv /*:: ?: Array<string> */) /*: Promise<void> */ {
   // (Re)install the static codegen template now that build/generated/ios is finalized.
   installSpmCodegenTemplate(appRoot, reactNativeRoot, {log});
 
-  // Rebuild the merged header tree for the current slot (stable path; only its
-  // symlink contents change, so manifests stay unchanged).
-  buildMergedHeaderTree(appRoot, {log});
+  // Rebuild the split header trees for the current slot, then write the
+  // single-source-of-truth path files the generated manifests read at SPM-eval
+  // time. Manifest text stays constant; only the JSON + symlink contents change.
+  const sharedHeaders = buildSharedReactCoreHeaderTree(
+    projectRoot,
+    slotVersion,
+    path.join(appRoot, 'build', 'xcframeworks'),
+    {log},
+  );
+  const perAppHeaders = buildPerAppHeaderTree(appRoot, {log});
+  logCrossTreeShadows(sharedHeaders, perAppHeaders, {log});
+  writeSharedPathsJson(projectRoot, slotVersion, rawVersion, {log});
+  writeAppPathsJson(appRoot, projectRoot, slotVersion, {log});
 
   const stampPath = path.join(
     appRoot,

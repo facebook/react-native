@@ -612,14 +612,17 @@ REACT_NATIVE_XCODE="${reactNativePath}/scripts/react-native-xcode.sh"
       : `"$(SRCROOT)/${sourcePath}/Info.plist"`;
 
   const targetBuildSettings = (isDebug /*: boolean */) => {
-    // Single merged header tree (built by buildMergedHeaderTree) — replaces the
-    // VFS overlay + the namespaced xcframework/deps/autolinking include dirs.
-    const rnHeaders = '$(SRCROOT)/build/xcframeworks/ReactHeadersAll';
+    // Split header trees (built by the spm-utils header builders): the shared
+    // RN-core/deps tree (a per-app symlink into the repo-root shared tree) plus
+    // the per-app codegen/autolinking tree. Both relocatable via $(SRCROOT) so
+    // the generated project file holds no machine-absolute paths.
+    const rnCoreHeaders = '$(SRCROOT)/build/xcframeworks/ReactCoreHeaders';
+    const appHeaders = '$(SRCROOT)/build/xcframeworks/ReactAppHeaders';
     const lines = [
       `ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon`,
       `CLANG_CXX_LANGUAGE_STANDARD = "c++20"`,
       `DEVELOPMENT_TEAM = ""`,
-      `HEADER_SEARCH_PATHS = (\n\t\t\t\t\t"$(inherited)",\n\t\t\t\t\t"${rnHeaders}",\n\t\t\t\t)`,
+      `HEADER_SEARCH_PATHS = (\n\t\t\t\t\t"$(inherited)",\n\t\t\t\t\t"${rnCoreHeaders}",\n\t\t\t\t\t"${appHeaders}",\n\t\t\t\t)`,
       `INFOPLIST_FILE = ${infoPlistSetting}`,
       `IPHONEOS_DEPLOYMENT_TARGET = ${iosVersion}`,
       `LD_RUNPATH_SEARCH_PATHS = (\n\t\t\t\t\t/usr/lib/swift,\n\t\t\t\t\t"$(inherited)",\n\t\t\t\t\t"@executable_path/Frameworks",\n\t\t\t\t)`,
@@ -627,12 +630,12 @@ REACT_NATIVE_XCODE="${reactNativePath}/scripts/react-native-xcode.sh"
       // Swift/ObjC that need implicit SDK module maps (Foundation/UIKit/SwiftShims);
       // disabling them breaks system-module resolution. The merged tree already
       // gives a single header identity, so the flag isn't needed here.
-      `OTHER_CFLAGS = (\n\t\t\t\t\t"$(inherited)",\n\t\t\t\t\t"-I",\n\t\t\t\t\t"${rnHeaders}",\n\t\t\t\t)`,
+      `OTHER_CFLAGS = (\n\t\t\t\t\t"$(inherited)",\n\t\t\t\t\t"-I",\n\t\t\t\t\t"${rnCoreHeaders}",\n\t\t\t\t\t"-I",\n\t\t\t\t\t"${appHeaders}",\n\t\t\t\t)`,
       `OTHER_LDFLAGS = (\n\t\t\t\t\t"$(inherited)",\n\t\t\t\t\t"-ObjC",\n\t\t\t\t)`,
       // Pass the merged tree to Swift's clang importer so the React framework
       // umbrella's <React/...> includes resolve when building the `import React`
       // module; -fmodule-map-file exposes the secondary React_RCTAppDelegate module.
-      `OTHER_SWIFT_FLAGS = (\n\t\t\t\t\t"$(inherited)",\n\t\t\t\t\t"-Xcc",\n\t\t\t\t\t"-I",\n\t\t\t\t\t"-Xcc",\n\t\t\t\t\t"${rnHeaders}",\n\t\t\t\t\t"-Xcc",\n\t\t\t\t\t"-fmodule-map-file=$(BUILT_PRODUCTS_DIR)/React.framework/Modules/module.modulemap",\n\t\t\t\t)`,
+      `OTHER_SWIFT_FLAGS = (\n\t\t\t\t\t"$(inherited)",\n\t\t\t\t\t"-Xcc",\n\t\t\t\t\t"-I",\n\t\t\t\t\t"-Xcc",\n\t\t\t\t\t"${rnCoreHeaders}",\n\t\t\t\t\t"-Xcc",\n\t\t\t\t\t"-I",\n\t\t\t\t\t"-Xcc",\n\t\t\t\t\t"${appHeaders}",\n\t\t\t\t\t"-Xcc",\n\t\t\t\t\t"-fmodule-map-file=$(BUILT_PRODUCTS_DIR)/React.framework/Modules/module.modulemap",\n\t\t\t\t)`,
       `PRODUCT_BUNDLE_IDENTIFIER = ${quoteIfNeeded(bundleIdentifier)}`,
       `PRODUCT_NAME = ${quoteIfNeeded(appName)}`,
       `REACT_NATIVE_PATH = ${quoteIfNeeded(reactNativePath)}`,

@@ -36,7 +36,9 @@
  *                      Use "nightly" to resolve the latest nightly.
  *   --flavor  <f>      debug (default) or release.
  *   --output  <dir>    Where to write xcframeworks.
- *                      Default: ~/Library/Caches/com.facebook.ReactNative/spm-artifacts/{version}/{flavor}/
+ *                      Default: ~/Library/Caches/ReactNative/spm-artifacts/{version}/{flavor}/
+ *                      (downloaded tarballs are shared with CocoaPods in
+ *                      ~/Library/Caches/ReactNative/; RCT_SKIP_CACHES=1 bypasses.)
  *
  * Per-artifact version overrides (mirrors existing env vars):
  *   HERMES_VERSION=<ver|nightly|latest-v1>
@@ -50,7 +52,12 @@
  *   <output>/artifacts.json        ← maps target names to xcframework paths
  */
 
-const {defaultCacheDir, displayPath, makeLogger} = require('./spm-utils');
+const {
+  defaultCacheDir,
+  displayPath,
+  makeLogger,
+  sharedCacheDir,
+} = require('./spm-utils');
 const {execSync} = require('child_process');
 const fs = require('fs');
 const path = require('path');
@@ -77,7 +84,7 @@ function parseArgs(argv /*: Array<string> */) /*: DownloadArgs */ {
       alias: 'o',
       type: 'string',
       describe:
-        'Where to write xcframeworks. Default: ~/Library/Caches/com.facebook.ReactNative/spm-artifacts/{version}/{flavor}/',
+        'Where to write xcframeworks. Default: ~/Library/Caches/ReactNative/spm-artifacts/{version}/{flavor}/',
     })
     .usage(
       'Usage: $0 [options]\n\nDownloads React Native iOS xcframeworks from Maven.',
@@ -597,6 +604,8 @@ function findFirst(
  * @param resolvedArtifact         {url, version} from resolve*Artifact()
  * @param {string} downloadDir     Where to cache downloaded tarballs
  * @param {string} outputDir       Where to place the final <name>.xcframework directory
+ * @param sharedTarballName        Filename in the flat shared cache to reuse/populate
+ *                                 (matches CocoaPods' convention), or null to not share.
  */
 async function processArtifact(
   label /*: string */,
@@ -605,6 +614,7 @@ async function processArtifact(
   downloadDir /*: string */,
   outputDir /*: string */,
   onProgress /*:: ?: ProgressCallback */,
+  sharedTarballName /*:: ?: ?string */,
 ) /*: Promise<ProcessResult> */ {
   const {url, version} = resolvedArtifact;
 
@@ -618,24 +628,74 @@ async function processArtifact(
     return {label, version, xcframeworkPath: destXcfwPath, url};
   }
 
-  const tarName = url.split('/').pop() ?? '';
-  const tarPath = path.join(downloadDir, tarName);
+  // Tarball acquisition: prefer the flat shared cache (~/Library/Caches/
+  // ReactNative/<name>) that CocoaPods also populates, so SPM and `pod install`
+  // reuse the same download. RCT_SKIP_CACHES=1 bypasses it (mirrors CocoaPods).
+  const skipCaches = process.env.RCT_SKIP_CACHES === '1';
+  const sharedPath =
+    !skipCaches && sharedTarballName != null
+      ? path.join(sharedCacheDir(), sharedTarballName)
+      : null;
 
-  await download(
-    url,
-    tarPath,
-    onProgress
-      ? (name, downloaded, total, speed, done, elapsed) =>
-          onProgress(xcframeworkName, downloaded, total, speed, done, elapsed)
-      : undefined,
-  );
+  const downloadAndCache = async () /*: Promise<string> */ => {
+    const tarName = url.split('/').pop() ?? '';
+    const localPath = path.join(downloadDir, tarName);
+    await download(
+      url,
+      localPath,
+      onProgress
+        ? (name, downloaded, total, speed, done, elapsed) =>
+            onProgress(xcframeworkName, downloaded, total, speed, done, elapsed)
+        : undefined,
+    );
+    // Best-effort: save into the flat shared cache for future SPM/CocoaPods runs.
+    if (sharedPath != null) {
+      try {
+        fs.mkdirSync(sharedCacheDir(), {recursive: true});
+        fs.copyFileSync(localPath, sharedPath);
+      } catch {
+        // ignore shared-cache write failures
+      }
+    }
+    return localPath;
+  };
+
+  let tarPath /*: string */;
+  let fromShared = false;
+  if (sharedPath != null && fs.existsSync(sharedPath)) {
+    // Shared cache hit — skip the download entirely.
+    tarPath = sharedPath;
+    fromShared = true;
+    if (onProgress) {
+      onProgress(xcframeworkName, 0, 0, 0, true, 0);
+    } else {
+      log(`  Shared cache hit: ${path.basename(sharedPath)}`);
+    }
+  } else {
+    tarPath = await downloadAndCache();
+  }
 
   // Extract to a temp dir, rename to the expected name, then move into outputDir
   if (onProgress) {
     onProgress(xcframeworkName, 0, 0, 0, false, 0);
   }
   const tmpExtractDir = path.join(outputDir, '.extract-tmp', label);
-  const xcfwPath = extractXCFramework(tarPath, tmpExtractDir);
+  let xcfwPath /*: string */;
+  try {
+    xcfwPath = extractXCFramework(tarPath, tmpExtractDir);
+  } catch (e) {
+    // A poisoned shared tarball must not permanently break SPM: drop it and
+    // re-download to the local dir once.
+    if (fromShared) {
+      try {
+        fs.rmSync(tarPath, {force: true});
+      } catch {}
+      tarPath = await downloadAndCache();
+      xcfwPath = extractXCFramework(tarPath, tmpExtractDir);
+    } else {
+      throw e;
+    }
+  }
 
   const actualBasename = path.basename(xcfwPath);
   const expectedBasename = `${xcframeworkName}.xcframework`;
@@ -710,22 +770,32 @@ async function main(argv /*:: ?: Array<string> */) /*: Promise<void> */ {
   // Download all three artifacts in parallel for faster setup
   log('Downloading artifacts in parallel...');
 
+  // `sharedName` builds the flat shared-cache filename in the canonical
+  // ~/Library/Caches/ReactNative/ dir, matching the names other RN tooling uses
+  // (CocoaPods' rncore.rb / rndependencies.rb for core+deps, and the hermes
+  // prebuilt tarball name) so SPM and `pod install` reuse the same downloads.
+  // `v` is each artifact's resolved version (RN version for core/deps, the
+  // hermes-ios version for hermes).
   const artifactSpecs = [
     {
       label: 'react-core',
       name: 'React',
       resolve: () => resolveRNCoreArtifact(resolvedRnVersion, flavor),
+      sharedName: (v /*: string */) => `reactnative-core-${v}-${flavor}.tar.gz`,
     },
     {
       label: 'rndeps',
       name: 'ReactNativeDependencies',
       resolve: () => resolveRNDepsArtifact(resolvedRnVersion, flavor),
+      sharedName: (v /*: string */) =>
+        `reactnative-dependencies-${v}-${flavor}.tar.gz`,
     },
     {
       label: 'hermes',
       name: 'hermes-engine',
       resolve: () =>
         resolveHermesArtifact(resolvedRnVersion, flavor, rawVersion),
+      sharedName: (v /*: string */) => `hermes-ios-${v}-${flavor}.tar.gz`,
     },
   ];
 
@@ -760,6 +830,8 @@ async function main(argv /*:: ?: Array<string> */) /*: Promise<void> */ {
       try {
         const artifact = await spec.resolve();
         progress.update(index, `  ${spec.name}: resolving...`);
+        const sharedTarballName =
+          spec.sharedName != null ? spec.sharedName(artifact.version) : null;
         const r = await processArtifact(
           spec.label,
           spec.name,
@@ -767,6 +839,7 @@ async function main(argv /*:: ?: Array<string> */) /*: Promise<void> */ {
           downloadDir,
           outputDir,
           makeCallback(index),
+          sharedTarballName,
         );
         const ok /*: ArtifactResultEntry */ = {
           name: spec.name,

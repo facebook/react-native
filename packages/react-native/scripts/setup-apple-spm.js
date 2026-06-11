@@ -41,7 +41,7 @@
  *                               the version in node_modules/react-native/package.json
  *   --local-xcframework <path>  Use a local xcframework instead of downloading
  *   --artifacts-dir <path>      Override the artifact cache directory. Defaults to
- *                               ~/Library/Caches/com.facebook.ReactNative/spm-artifacts/{version}/{flavor}/
+ *                               ~/Library/Caches/ReactNative/spm-artifacts/{version}/{flavor}/
  *                               If checksums.json is missing, download-spm-artifacts.js runs automatically.
  *   --flavor <debug|release>    Artifact flavor (default: debug)
  *   --skip-codegen              Skip react-native codegen step
@@ -94,15 +94,19 @@ const {
 } = require('./spm/generate-spm-xcodeproj');
 const {scaffoldAll} = require('./spm/scaffold-package-swift');
 const {
-  buildMergedHeaderTree,
+  buildPerAppHeaderTree,
+  buildSharedReactCoreHeaderTree,
   defaultCacheDir,
   deriveAppName,
   displayPath,
   findProjectRoot,
   installSpmCodegenTemplate,
+  logCrossTreeShadows,
   makeLogger,
   readPackageJson,
   runCodegenAndInstallTemplate,
+  writeAppPathsJson,
+  writeSharedPathsJson,
 } = require('./spm/spm-utils');
 const fs = require('fs');
 const os = require('os');
@@ -277,6 +281,12 @@ const SPM_GITIGNORE_ENTRIES = [
   'build/generated/',
   'build/xcframeworks/',
   '.build/',
+  // The SoT contract + shared header tree (machine-absolute paths — never
+  // commit). This appRoot entry covers the common single-app case; the
+  // authoritative exclusion is a self-ignoring `.react-native/.gitignore`
+  // written by writeSharedPathsJson, which works even when `.react-native/`
+  // sits at a project root above the app's own .gitignore (monorepo).
+  '.react-native/',
 ];
 
 /**
@@ -1513,9 +1523,28 @@ async function main(argv /*:: ?: Array<string> */) /*: Promise<void> */ {
   // (Re)install the static codegen Package.swift template once build/generated/ios exists.
   installSpmCodegenTemplate(appRoot, reactNativeRoot, {log});
 
-  // Materialize the merged header tree (replaces the VFS overlay). Runs last:
-  // it folds in the xcframework, codegen, and autolinking headers.
-  buildMergedHeaderTree(appRoot, {log});
+  // Materialize the split header trees (shared RN-core/deps + per-app codegen/
+  // autolinking) and write the single-source-of-truth path files the generated
+  // manifests read at SPM-eval time. Runs last: folds in the xcframework,
+  // codegen, and autolinking headers.
+  const headerSlotVersion = await resolveCacheSlotVersion(
+    args.version ?? version,
+  );
+  const sharedHeaders = buildSharedReactCoreHeaderTree(
+    projectRoot,
+    headerSlotVersion,
+    path.join(appRoot, 'build', 'xcframeworks'),
+    {log},
+  );
+  const perAppHeaders = buildPerAppHeaderTree(appRoot, {log});
+  logCrossTreeShadows(sharedHeaders, perAppHeaders, {log});
+  writeSharedPathsJson(
+    projectRoot,
+    headerSlotVersion,
+    args.version ?? version,
+    {log},
+  );
+  writeAppPathsJson(appRoot, projectRoot, headerSlotVersion, {log});
 
   let migrationRename /*: {from: string, to: string} | null */ = null;
   if (action === 'init') {

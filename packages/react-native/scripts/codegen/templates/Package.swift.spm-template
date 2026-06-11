@@ -13,14 +13,32 @@
 import PackageDescription
 import Foundation
 
-// Derive all paths from this file's location.
 let packageDir = URL(fileURLWithPath: #filePath).deletingLastPathComponent().path
-let appRoot = URL(fileURLWithPath: packageDir + "/../../..").standardized.path
-// Single natural-layout merged header tree (React + deps + codegen +
-// autolinking), materialized at setup/sync time by buildMergedHeaderTree. The
-// path is stable across cache slots — only the symlink contents change — so the
-// manifest hash never churns.
-let rnHeaders = appRoot + "/build/xcframeworks/ReactHeadersAll"
+
+// Single source of truth for React Native header search paths (spm-paths.json,
+// written by `npx react-native spm`). Read here so this manifest's text holds
+// no absolute paths.
+struct RNSpmPaths: Decodable {
+    let formatVersion: Int
+    let appRoot: String
+    let rnCoreHeaders: String
+    let appHeaders: String
+}
+let rnSpmPaths: RNSpmPaths = {
+    let url = URL(fileURLWithPath: packageDir + "/../autolinking/spm-paths.json").standardized
+    guard let data = try? Data(contentsOf: url),
+          let decoded = try? JSONDecoder().decode(RNSpmPaths.self, from: data) else {
+        fatalError("React Native SPM: cannot read \(url.path). Run 'npx react-native spm' to (re)generate it.")
+    }
+    precondition(
+        decoded.formatVersion == 1,
+        "React Native SPM: spm-paths.json formatVersion \(decoded.formatVersion) is unsupported (expected 1). Upgrade react-native or re-run 'npx react-native spm'."
+    )
+    return decoded
+}()
+let appRoot = rnSpmPaths.appRoot
+let rnCoreHeaders = rnSpmPaths.rnCoreHeaders
+let appHeaders = rnSpmPaths.appHeaders
 
 let package = Package(
     name: "React-GeneratedCode",
@@ -48,7 +66,7 @@ let package = Package(
             publicHeadersPath: ".",
             cSettings: [
                 .headerSearchPath("headers"),
-                .unsafeFlags(["-I", rnHeaders]),
+                .unsafeFlags(["-I", rnCoreHeaders, "-I", appHeaders]),
             ],
             cxxSettings: [
                 .headerSearchPath("headers"),
@@ -56,7 +74,7 @@ let package = Package(
                 // -fno-implicit-module-maps prevents clang from matching <react/...> to
                 // React.framework (case-insensitive) in the build products dir, allowing
                 // -I to resolve the C++ headers from the merged tree correctly.
-                .unsafeFlags(["-fno-implicit-module-maps", "-I", rnHeaders]),
+                .unsafeFlags(["-fno-implicit-module-maps", "-I", rnCoreHeaders, "-I", appHeaders]),
             ],
             linkerSettings: [
                 .linkedFramework("Foundation")
@@ -71,13 +89,13 @@ let package = Package(
             cSettings: [
                 .headerSearchPath(".."),
                 .headerSearchPath("headers"),
-                .unsafeFlags(["-I", rnHeaders]),
+                .unsafeFlags(["-I", rnCoreHeaders, "-I", appHeaders]),
             ],
             cxxSettings: [
                 .headerSearchPath(".."),
                 .headerSearchPath("headers"),
                 .unsafeFlags(["-std=c++20"]),
-                .unsafeFlags(["-fno-implicit-module-maps", "-I", rnHeaders]),
+                .unsafeFlags(["-fno-implicit-module-maps", "-I", rnCoreHeaders, "-I", appHeaders]),
             ],
             linkerSettings: [
                 .linkedFramework("Foundation")
