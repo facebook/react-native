@@ -6,6 +6,7 @@
  */
 
 #import "RCTReactNativeFactory.h"
+#import "RCTReactNativeCoreModulesProvider.h"
 #import <React/RCTBundleManager.h>
 #import <React/RCTColorSpaceUtils.h>
 #import <React/RCTDevMenu.h>
@@ -144,7 +145,7 @@ using namespace facebook::react;
       return moduleClass;
     }
   }
-  return RCTCoreModulesClassProvider(name);
+  return [RCTReactNativeCoreModulesProvider reactNativeCoreModuleForName:name];
 #endif
 }
 
