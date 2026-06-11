@@ -60,17 +60,6 @@ struct Color {
   std::size_t uiColorHashValue_;
 };
 
-namespace HostPlatformColor {
-
-#if defined(__clang__)
-#define NO_DESTROY [[clang::no_destroy]]
-#else
-#define NO_DESTROY
-#endif
-
-NO_DESTROY static const facebook::react::Color UndefinedColor = Color();
-} // namespace HostPlatformColor
-
 inline Color hostPlatformColorFromRGBA(uint8_t r, uint8_t g, uint8_t b, uint8_t a)
 {
   float ratio = 255;
