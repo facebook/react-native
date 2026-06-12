@@ -18,9 +18,10 @@ const {globSync} = require('tinyglobby');
 
 function generateSchemaInfos(
   libraries /*: ReadonlyArray<$FlowFixMe> */,
+  platform /*: string */,
 ) /*: Array<$FlowFixMe> */ {
   // $FlowFixMe[incompatible-type]
-  return libraries.map(generateSchemaInfo);
+  return libraries.map(library => generateSchemaInfo(library, platform));
 }
 
 function generateSchemaInfo(
