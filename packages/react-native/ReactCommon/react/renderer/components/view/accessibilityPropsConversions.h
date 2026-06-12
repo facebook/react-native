@@ -21,88 +21,37 @@ namespace facebook::react {
 
 inline void fromString(const std::string &string, AccessibilityTraits &result)
 {
-  if (string == "none") {
-    result = AccessibilityTraits::None;
-    return;
-  }
-  if (string == "button" || string == "togglebutton") {
-    result = AccessibilityTraits::Button;
-    return;
-  }
-  if (string == "link") {
-    result = AccessibilityTraits::Link;
-    return;
-  }
-  if (string == "image" || string == "img") {
-    result = AccessibilityTraits::Image;
-    return;
-  }
-  if (string == "selected") {
-    result = AccessibilityTraits::Selected;
-    return;
-  }
-  if (string == "plays") {
-    result = AccessibilityTraits::PlaysSound;
-    return;
-  }
-  if (string == "keyboardkey" || string == "key") {
-    result = AccessibilityTraits::KeyboardKey;
-    return;
-  }
-  if (string == "text") {
-    result = AccessibilityTraits::StaticText;
-    return;
-  }
-  if (string == "disabled") {
-    result = AccessibilityTraits::NotEnabled;
-    return;
-  }
-  if (string == "frequentUpdates") {
-    result = AccessibilityTraits::UpdatesFrequently;
-    return;
-  }
-  if (string == "search") {
-    result = AccessibilityTraits::SearchField;
-    return;
-  }
-  if (string == "startsMedia") {
-    result = AccessibilityTraits::StartsMediaSession;
-    return;
-  }
-  if (string == "adjustable") {
-    result = AccessibilityTraits::Adjustable;
-    return;
-  }
-  if (string == "allowsDirectInteraction") {
-    result = AccessibilityTraits::AllowsDirectInteraction;
-    return;
-  }
-  if (string == "pageTurn") {
-    result = AccessibilityTraits::CausesPageTurn;
-    return;
-  }
-  if (string == "header" || string == "heading") {
-    result = AccessibilityTraits::Header;
-    return;
-  }
-  if (string == "imagebutton") {
-    result = AccessibilityTraits::Image | AccessibilityTraits::Button;
-    return;
-  }
-  if (string == "summary") {
-    result = AccessibilityTraits::SummaryElement;
-    return;
-  }
-  if (string == "switch") {
-    result = AccessibilityTraits::Switch;
-    return;
-  }
-  if (string == "tabbar") {
-    result = AccessibilityTraits::TabBar;
-    return;
-  }
-  if (string == "progressbar") {
-    result = AccessibilityTraits::UpdatesFrequently;
+  static const std::unordered_map<std::string, AccessibilityTraits> traitsMap = {
+      {"none", AccessibilityTraits::None},
+      {"button", AccessibilityTraits::Button},
+      {"togglebutton", AccessibilityTraits::Button},
+      {"link", AccessibilityTraits::Link},
+      {"image", AccessibilityTraits::Image},
+      {"img", AccessibilityTraits::Image},
+      {"selected", AccessibilityTraits::Selected},
+      {"plays", AccessibilityTraits::PlaysSound},
+      {"keyboardkey", AccessibilityTraits::KeyboardKey},
+      {"key", AccessibilityTraits::KeyboardKey},
+      {"text", AccessibilityTraits::StaticText},
+      {"disabled", AccessibilityTraits::NotEnabled},
+      {"frequentUpdates", AccessibilityTraits::UpdatesFrequently},
+      {"search", AccessibilityTraits::SearchField},
+      {"startsMedia", AccessibilityTraits::StartsMediaSession},
+      {"adjustable", AccessibilityTraits::Adjustable},
+      {"allowsDirectInteraction", AccessibilityTraits::AllowsDirectInteraction},
+      {"pageTurn", AccessibilityTraits::CausesPageTurn},
+      {"header", AccessibilityTraits::Header},
+      {"heading", AccessibilityTraits::Header},
+      {"imagebutton", AccessibilityTraits::Image | AccessibilityTraits::Button},
+      {"summary", AccessibilityTraits::SummaryElement},
+      {"switch", AccessibilityTraits::Switch},
+      {"tabbar", AccessibilityTraits::TabBar},
+      {"progressbar", AccessibilityTraits::UpdatesFrequently},
+  };
+
+  auto it = traitsMap.find(string);
+  if (it != traitsMap.end()) {
+    result = it->second;
     return;
   }
   result = AccessibilityTraits::None;
@@ -380,87 +329,54 @@ inline std::string toString(const AccessibilityRole &accessibilityRole)
 
 inline void fromRawValue(const PropsParserContext &context, const RawValue &value, AccessibilityRole &result)
 {
+  static const std::unordered_map<std::string, AccessibilityRole> accessibilityRoleMap = {
+      {"none", AccessibilityRole::None},
+      {"button", AccessibilityRole::Button},
+      {"dropdownlist", AccessibilityRole::Dropdownlist},
+      {"togglebutton", AccessibilityRole::Togglebutton},
+      {"link", AccessibilityRole::Link},
+      {"search", AccessibilityRole::Search},
+      {"image", AccessibilityRole::Image},
+      {"keyboardkey", AccessibilityRole::Keyboardkey},
+      {"text", AccessibilityRole::Text},
+      {"adjustable", AccessibilityRole::Adjustable},
+      {"imagebutton", AccessibilityRole::Imagebutton},
+      {"header", AccessibilityRole::Header},
+      {"summary", AccessibilityRole::Summary},
+      {"alert", AccessibilityRole::Alert},
+      {"checkbox", AccessibilityRole::Checkbox},
+      {"combobox", AccessibilityRole::Combobox},
+      {"menu", AccessibilityRole::Menu},
+      {"menubar", AccessibilityRole::Menubar},
+      {"menuitem", AccessibilityRole::Menuitem},
+      {"progressbar", AccessibilityRole::Progressbar},
+      {"radio", AccessibilityRole::Radio},
+      {"radiogroup", AccessibilityRole::Radiogroup},
+      {"scrollbar", AccessibilityRole::Scrollbar},
+      {"spinbutton", AccessibilityRole::Spinbutton},
+      {"switch", AccessibilityRole::Switch},
+      {"tab", AccessibilityRole::Tab},
+      {"tabbar", AccessibilityRole::Tabbar},
+      {"tablist", AccessibilityRole::Tablist},
+      {"timer", AccessibilityRole::Timer},
+      {"toolbar", AccessibilityRole::Toolbar},
+      {"grid", AccessibilityRole::Grid},
+      {"pager", AccessibilityRole::Pager},
+      {"scrollview", AccessibilityRole::Scrollview},
+      {"horizontalscrollview", AccessibilityRole::Horizontalscrollview},
+      {"viewgroup", AccessibilityRole::Viewgroup},
+      {"webview", AccessibilityRole::Webview},
+      {"drawerlayout", AccessibilityRole::Drawerlayout},
+      {"slidingdrawer", AccessibilityRole::Slidingdrawer},
+      {"iconmenu", AccessibilityRole::Iconmenu},
+  };
+
   react_native_expect(value.hasType<std::string>());
   if (value.hasType<std::string>()) {
     auto string = (std::string)value;
-    if (string == "none") {
-      result = AccessibilityRole::None;
-    } else if (string == "button") {
-      result = AccessibilityRole::Button;
-    } else if (string == "dropdownlist") {
-      result = AccessibilityRole::Dropdownlist;
-    } else if (string == "togglebutton") {
-      result = AccessibilityRole::Togglebutton;
-    } else if (string == "link") {
-      result = AccessibilityRole::Link;
-    } else if (string == "search") {
-      result = AccessibilityRole::Search;
-    } else if (string == "image") {
-      result = AccessibilityRole::Image;
-    } else if (string == "keyboardkey") {
-      result = AccessibilityRole::Keyboardkey;
-    } else if (string == "text") {
-      result = AccessibilityRole::Text;
-    } else if (string == "adjustable") {
-      result = AccessibilityRole::Adjustable;
-    } else if (string == "imagebutton") {
-      result = AccessibilityRole::Imagebutton;
-    } else if (string == "header") {
-      result = AccessibilityRole::Header;
-    } else if (string == "summary") {
-      result = AccessibilityRole::Summary;
-    } else if (string == "alert") {
-      result = AccessibilityRole::Alert;
-    } else if (string == "checkbox") {
-      result = AccessibilityRole::Checkbox;
-    } else if (string == "combobox") {
-      result = AccessibilityRole::Combobox;
-    } else if (string == "menu") {
-      result = AccessibilityRole::Menu;
-    } else if (string == "menubar") {
-      result = AccessibilityRole::Menubar;
-    } else if (string == "menuitem") {
-      result = AccessibilityRole::Menuitem;
-    } else if (string == "progressbar") {
-      result = AccessibilityRole::Progressbar;
-    } else if (string == "radio") {
-      result = AccessibilityRole::Radio;
-    } else if (string == "radiogroup") {
-      result = AccessibilityRole::Radiogroup;
-    } else if (string == "scrollbar") {
-      result = AccessibilityRole::Scrollbar;
-    } else if (string == "spinbutton") {
-      result = AccessibilityRole::Spinbutton;
-    } else if (string == "switch") {
-      result = AccessibilityRole::Switch;
-    } else if (string == "tab") {
-      result = AccessibilityRole::Tab;
-    } else if (string == "tabbar") {
-      result = AccessibilityRole::Tabbar;
-    } else if (string == "tablist") {
-      result = AccessibilityRole::Tablist;
-    } else if (string == "timer") {
-      result = AccessibilityRole::Timer;
-    } else if (string == "toolbar") {
-      result = AccessibilityRole::Toolbar;
-    } else if (string == "grid") {
-      result = AccessibilityRole::Grid;
-    } else if (string == "pager") {
-      result = AccessibilityRole::Pager;
-    } else if (string == "scrollview") {
-      result = AccessibilityRole::Scrollview;
-    } else if (string == "horizontalscrollview") {
-      result = AccessibilityRole::Horizontalscrollview;
-    } else if (string == "viewgroup") {
-      result = AccessibilityRole::Viewgroup;
-    } else if (string == "webview") {
-      result = AccessibilityRole::Webview;
-    } else if (string == "drawerlayout") {
-      result = AccessibilityRole::Drawerlayout;
-    } else if (string == "slidingdrawer") {
-      result = AccessibilityRole::Slidingdrawer;
-    } else if (string == "iconmenu") {
-      result = AccessibilityRole::Iconmenu;
+    auto it = accessibilityRoleMap.find(string);
+    if (it != accessibilityRoleMap.end()) {
+      result = it->second;
     } else {
       LOG(ERROR) << "Unsupported AccessibilityRole value: " << string;
       react_native_expect(false);
@@ -619,139 +535,80 @@ inline std::string toString(const Role &role)
 
 inline void fromRawValue(const PropsParserContext &context, const RawValue &value, Role &result)
 {
+  static const std::unordered_map<std::string, Role> roleMap = {
+      {"alert", Role::Alert},
+      {"alertdialog", Role::Alertdialog},
+      {"application", Role::Application},
+      {"article", Role::Article},
+      {"banner", Role::Banner},
+      {"button", Role::Button},
+      {"cell", Role::Cell},
+      {"checkbox", Role::Checkbox},
+      {"columnheader", Role::Columnheader},
+      {"combobox", Role::Combobox},
+      {"complementary", Role::Complementary},
+      {"contentinfo", Role::Contentinfo},
+      {"definition", Role::Definition},
+      {"dialog", Role::Dialog},
+      {"directory", Role::Directory},
+      {"document", Role::Document},
+      {"feed", Role::Feed},
+      {"figure", Role::Figure},
+      {"form", Role::Form},
+      {"grid", Role::Grid},
+      {"group", Role::Group},
+      {"heading", Role::Heading},
+      {"img", Role::Img},
+      {"link", Role::Link},
+      {"list", Role::List},
+      {"listitem", Role::Listitem},
+      {"log", Role::Log},
+      {"main", Role::Main},
+      {"marquee", Role::Marquee},
+      {"math", Role::Math},
+      {"menu", Role::Menu},
+      {"menubar", Role::Menubar},
+      {"menuitem", Role::Menuitem},
+      {"meter", Role::Meter},
+      {"navigation", Role::Navigation},
+      {"none", Role::None},
+      {"note", Role::Note},
+      {"option", Role::Option},
+      {"presentation", Role::Presentation},
+      {"progressbar", Role::Progressbar},
+      {"radio", Role::Radio},
+      {"radiogroup", Role::Radiogroup},
+      {"region", Role::Region},
+      {"row", Role::Row},
+      {"rowgroup", Role::Rowgroup},
+      {"rowheader", Role::Rowheader},
+      {"scrollbar", Role::Scrollbar},
+      {"searchbox", Role::Searchbox},
+      {"separator", Role::Separator},
+      {"slider", Role::Slider},
+      {"spinbutton", Role::Spinbutton},
+      {"status", Role::Status},
+      {"summary", Role::Summary},
+      {"switch", Role::Switch},
+      {"tab", Role::Tab},
+      {"table", Role::Table},
+      {"tablist", Role::Tablist},
+      {"tabpanel", Role::Tabpanel},
+      {"term", Role::Term},
+      {"timer", Role::Timer},
+      {"toolbar", Role::Toolbar},
+      {"tooltip", Role::Tooltip},
+      {"tree", Role::Tree},
+      {"treegrid", Role::Treegrid},
+      {"treeitem", Role::Treeitem},
+  };
+
   react_native_expect(value.hasType<std::string>());
   if (value.hasType<std::string>()) {
     auto string = (std::string)value;
-    if (string == "alert") {
-      result = Role::Alert;
-    } else if (string == "alertdialog") {
-      result = Role::Alertdialog;
-    } else if (string == "application") {
-      result = Role::Application;
-    } else if (string == "article") {
-      result = Role::Article;
-    } else if (string == "banner") {
-      result = Role::Banner;
-    } else if (string == "button") {
-      result = Role::Button;
-    } else if (string == "cell") {
-      result = Role::Cell;
-    } else if (string == "checkbox") {
-      result = Role::Checkbox;
-    } else if (string == "columnheader") {
-      result = Role::Columnheader;
-    } else if (string == "combobox") {
-      result = Role::Combobox;
-    } else if (string == "complementary") {
-      result = Role::Complementary;
-    } else if (string == "contentinfo") {
-      result = Role::Contentinfo;
-    } else if (string == "definition") {
-      result = Role::Definition;
-    } else if (string == "dialog") {
-      result = Role::Dialog;
-    } else if (string == "directory") {
-      result = Role::Directory;
-    } else if (string == "document") {
-      result = Role::Document;
-    } else if (string == "feed") {
-      result = Role::Feed;
-    } else if (string == "figure") {
-      result = Role::Figure;
-    } else if (string == "form") {
-      result = Role::Form;
-    } else if (string == "grid") {
-      result = Role::Grid;
-    } else if (string == "group") {
-      result = Role::Group;
-    } else if (string == "heading") {
-      result = Role::Heading;
-    } else if (string == "img") {
-      result = Role::Img;
-    } else if (string == "link") {
-      result = Role::Link;
-    } else if (string == "list") {
-      result = Role::List;
-    } else if (string == "listitem") {
-      result = Role::Listitem;
-    } else if (string == "log") {
-      result = Role::Log;
-    } else if (string == "main") {
-      result = Role::Main;
-    } else if (string == "marquee") {
-      result = Role::Marquee;
-    } else if (string == "math") {
-      result = Role::Math;
-    } else if (string == "menu") {
-      result = Role::Menu;
-    } else if (string == "menubar") {
-      result = Role::Menubar;
-    } else if (string == "menuitem") {
-      result = Role::Menuitem;
-    } else if (string == "meter") {
-      result = Role::Meter;
-    } else if (string == "navigation") {
-      result = Role::Navigation;
-    } else if (string == "none") {
-      result = Role::None;
-    } else if (string == "note") {
-      result = Role::Note;
-    } else if (string == "option") {
-      result = Role::Option;
-    } else if (string == "presentation") {
-      result = Role::Presentation;
-    } else if (string == "progressbar") {
-      result = Role::Progressbar;
-    } else if (string == "radio") {
-      result = Role::Radio;
-    } else if (string == "radiogroup") {
-      result = Role::Radiogroup;
-    } else if (string == "region") {
-      result = Role::Region;
-    } else if (string == "row") {
-      result = Role::Row;
-    } else if (string == "rowgroup") {
-      result = Role::Rowgroup;
-    } else if (string == "rowheader") {
-      result = Role::Rowheader;
-    } else if (string == "scrollbar") {
-      result = Role::Scrollbar;
-    } else if (string == "searchbox") {
-      result = Role::Searchbox;
-    } else if (string == "separator") {
-      result = Role::Separator;
-    } else if (string == "slider") {
-      result = Role::Slider;
-    } else if (string == "spinbutton") {
-      result = Role::Spinbutton;
-    } else if (string == "status") {
-      result = Role::Status;
-    } else if (string == "summary") {
-      result = Role::Summary;
-    } else if (string == "switch") {
-      result = Role::Switch;
-    } else if (string == "tab") {
-      result = Role::Tab;
-    } else if (string == "table") {
-      result = Role::Table;
-    } else if (string == "tablist") {
-      result = Role::Tablist;
-    } else if (string == "tabpanel") {
-      result = Role::Tabpanel;
-    } else if (string == "term") {
-      result = Role::Term;
-    } else if (string == "timer") {
-      result = Role::Timer;
-    } else if (string == "toolbar") {
-      result = Role::Toolbar;
-    } else if (string == "tooltip") {
-      result = Role::Tooltip;
-    } else if (string == "tree") {
-      result = Role::Tree;
-    } else if (string == "treegrid") {
-      result = Role::Treegrid;
-    } else if (string == "treeitem") {
-      result = Role::Treeitem;
+    auto it = roleMap.find(string);
+    if (it != roleMap.end()) {
+      result = it->second;
     } else {
       LOG(ERROR) << "Unsupported Role value: " << string;
       react_native_expect(false);

@@ -70,6 +70,69 @@ struct CSSLinearGradientDirection {
   bool operator==(const CSSLinearGradientDirection &rhs) const = default;
 };
 
+namespace detail {
+
+// Whether a secondary "to" direction keyword combines with the primary one
+// (e.g. "to top left" is valid, "to top bottom" is not).
+constexpr bool isCompatibleGradientDirection(CSSGradientDirectionKeyword primaryDir, CSSGradientDirectionKeyword kw)
+{
+  if (primaryDir == CSSGradientDirectionKeyword::Top || primaryDir == CSSGradientDirectionKeyword::Bottom) {
+    return (kw == CSSGradientDirectionKeyword::Left || kw == CSSGradientDirectionKeyword::Right);
+  } else if (primaryDir == CSSGradientDirectionKeyword::Left || primaryDir == CSSGradientDirectionKeyword::Right) {
+    return (kw == CSSGradientDirectionKeyword::Top || kw == CSSGradientDirectionKeyword::Bottom);
+  }
+  return false;
+}
+
+// Resolves a parsed primary/secondary "to" direction pair into a
+// CSSLinearGradientDirection.
+constexpr std::optional<CSSLinearGradientDirection> resolveLinearGradientDirection(
+    CSSGradientDirectionKeyword primaryDir,
+    std::optional<CSSGradientDirectionKeyword> secondaryDir)
+{
+  if (primaryDir == CSSGradientDirectionKeyword::Top) {
+    if (secondaryDir == CSSGradientDirectionKeyword::Left) {
+      return CSSLinearGradientDirection{CSSLinearGradientDirectionKeyword::ToTopLeft};
+    } else if (secondaryDir == CSSGradientDirectionKeyword::Right) {
+      return CSSLinearGradientDirection{CSSLinearGradientDirectionKeyword::ToTopRight};
+    } else {
+      // "to top" = 0 degrees
+      return CSSLinearGradientDirection{CSSAngle{0.0f}};
+    }
+  } else if (primaryDir == CSSGradientDirectionKeyword::Bottom) {
+    if (secondaryDir == CSSGradientDirectionKeyword::Left) {
+      return CSSLinearGradientDirection{CSSLinearGradientDirectionKeyword::ToBottomLeft};
+    } else if (secondaryDir == CSSGradientDirectionKeyword::Right) {
+      return CSSLinearGradientDirection{CSSLinearGradientDirectionKeyword::ToBottomRight};
+    } else {
+      // "to bottom" = 180 degrees
+      return CSSLinearGradientDirection{CSSAngle{180.0f}};
+    }
+  } else if (primaryDir == CSSGradientDirectionKeyword::Left) {
+    if (secondaryDir == CSSGradientDirectionKeyword::Top) {
+      return CSSLinearGradientDirection{CSSLinearGradientDirectionKeyword::ToTopLeft};
+    } else if (secondaryDir == CSSGradientDirectionKeyword::Bottom) {
+      return CSSLinearGradientDirection{CSSLinearGradientDirectionKeyword::ToBottomLeft};
+    } else {
+      // "to left" = 270 degrees
+      return CSSLinearGradientDirection{CSSAngle{270.0f}};
+    }
+  } else if (primaryDir == CSSGradientDirectionKeyword::Right) {
+    if (secondaryDir == CSSGradientDirectionKeyword::Top) {
+      return CSSLinearGradientDirection{CSSLinearGradientDirectionKeyword::ToTopRight};
+    } else if (secondaryDir == CSSGradientDirectionKeyword::Bottom) {
+      return CSSLinearGradientDirection{CSSLinearGradientDirectionKeyword::ToBottomRight};
+    } else {
+      // "to right" = 90 degrees
+      return CSSLinearGradientDirection{CSSAngle{90.0f}};
+    }
+  }
+
+  return {};
+}
+
+} // namespace detail
+
 template <>
 struct CSSDataTypeParser<CSSLinearGradientDirection> {
   static constexpr auto consume(CSSValueParser &parser) -> std::optional<CSSLinearGradientDirection>
@@ -104,57 +167,13 @@ struct CSSDataTypeParser<CSSLinearGradientDirection> {
     std::optional<CSSGradientDirectionKeyword> secondaryDir;
     if (std::holds_alternative<CSSGradientDirectionKeyword>(secondaryPeek)) {
       auto kw = std::get<CSSGradientDirectionKeyword>(secondaryPeek);
-      bool isCompatible = false;
-      if (primaryDir == CSSGradientDirectionKeyword::Top || primaryDir == CSSGradientDirectionKeyword::Bottom) {
-        isCompatible = (kw == CSSGradientDirectionKeyword::Left || kw == CSSGradientDirectionKeyword::Right);
-      } else if (primaryDir == CSSGradientDirectionKeyword::Left || primaryDir == CSSGradientDirectionKeyword::Right) {
-        isCompatible = (kw == CSSGradientDirectionKeyword::Top || kw == CSSGradientDirectionKeyword::Bottom);
-      }
-      if (isCompatible) {
+      if (detail::isCompatibleGradientDirection(primaryDir, kw)) {
         parser.parseNextValue<CSSGradientDirectionKeyword>();
         secondaryDir = kw;
       }
     }
 
-    if (primaryDir == CSSGradientDirectionKeyword::Top) {
-      if (secondaryDir == CSSGradientDirectionKeyword::Left) {
-        return CSSLinearGradientDirection{CSSLinearGradientDirectionKeyword::ToTopLeft};
-      } else if (secondaryDir == CSSGradientDirectionKeyword::Right) {
-        return CSSLinearGradientDirection{CSSLinearGradientDirectionKeyword::ToTopRight};
-      } else {
-        // "to top" = 0 degrees
-        return CSSLinearGradientDirection{CSSAngle{0.0f}};
-      }
-    } else if (primaryDir == CSSGradientDirectionKeyword::Bottom) {
-      if (secondaryDir == CSSGradientDirectionKeyword::Left) {
-        return CSSLinearGradientDirection{CSSLinearGradientDirectionKeyword::ToBottomLeft};
-      } else if (secondaryDir == CSSGradientDirectionKeyword::Right) {
-        return CSSLinearGradientDirection{CSSLinearGradientDirectionKeyword::ToBottomRight};
-      } else {
-        // "to bottom" = 180 degrees
-        return CSSLinearGradientDirection{CSSAngle{180.0f}};
-      }
-    } else if (primaryDir == CSSGradientDirectionKeyword::Left) {
-      if (secondaryDir == CSSGradientDirectionKeyword::Top) {
-        return CSSLinearGradientDirection{CSSLinearGradientDirectionKeyword::ToTopLeft};
-      } else if (secondaryDir == CSSGradientDirectionKeyword::Bottom) {
-        return CSSLinearGradientDirection{CSSLinearGradientDirectionKeyword::ToBottomLeft};
-      } else {
-        // "to left" = 270 degrees
-        return CSSLinearGradientDirection{CSSAngle{270.0f}};
-      }
-    } else if (primaryDir == CSSGradientDirectionKeyword::Right) {
-      if (secondaryDir == CSSGradientDirectionKeyword::Top) {
-        return CSSLinearGradientDirection{CSSLinearGradientDirectionKeyword::ToTopRight};
-      } else if (secondaryDir == CSSGradientDirectionKeyword::Bottom) {
-        return CSSLinearGradientDirection{CSSLinearGradientDirectionKeyword::ToBottomRight};
-      } else {
-        // "to right" = 90 degrees
-        return CSSLinearGradientDirection{CSSAngle{90.0f}};
-      }
-    }
-
-    return {};
+    return detail::resolveLinearGradientDirection(primaryDir, secondaryDir);
   }
 };
 
@@ -429,6 +448,411 @@ struct CSSRadialGradientFunction {
   bool operator==(const CSSRadialGradientFunction &rhs) const = default;
 };
 
+namespace detail {
+
+// Element type collected while parsing a radial-gradient "at <position>" list.
+using CSSRadialGradientPositionValue = std::variant<CSSLength, CSSPercentage, CSSKeyword>;
+
+// Returns true if either axis of an explicit size is negative (invalid).
+inline bool hasNegativeExplicitSize(const CSSRadialGradientExplicitSize &explicitSize)
+{
+  if (std::holds_alternative<CSSLength>(explicitSize.sizeX)) {
+    const auto &lengthX = std::get<CSSLength>(explicitSize.sizeX);
+    if (lengthX.value < 0) {
+      return true;
+    }
+  } else if (std::holds_alternative<CSSPercentage>(explicitSize.sizeX)) {
+    const auto &percentageX = std::get<CSSPercentage>(explicitSize.sizeX);
+    if (percentageX.value < 0) {
+      return true;
+    }
+  }
+  if (std::holds_alternative<CSSLength>(explicitSize.sizeY)) {
+    const auto &lengthY = std::get<CSSLength>(explicitSize.sizeY);
+    if (lengthY.value < 0) {
+      return true;
+    }
+  } else if (std::holds_alternative<CSSPercentage>(explicitSize.sizeY)) {
+    const auto &percentageY = std::get<CSSPercentage>(explicitSize.sizeY);
+    if (percentageY.value < 0) {
+      return true;
+    }
+  }
+  return false;
+}
+
+// 1. [ left | center | right | top | bottom | <length-percentage> ]
+inline std::optional<CSSRadialGradientPosition> resolveSingleRadialGradientPosition(
+    const CSSRadialGradientPositionValue &value)
+{
+  CSSRadialGradientPosition position;
+  if (std::holds_alternative<CSSKeyword>(value)) {
+    auto keyword = std::get<CSSKeyword>(value);
+    if (keyword == CSSKeyword::Left) {
+      position.top = CSSPercentage{50.0f};
+      position.left = CSSPercentage{0.0f};
+    } else if (keyword == CSSKeyword::Right) {
+      position.top = CSSPercentage{50.0f};
+      position.left = CSSPercentage{100.0f};
+    } else if (keyword == CSSKeyword::Top) {
+      position.top = CSSPercentage{0.0f};
+      position.left = CSSPercentage{50.0f};
+    } else if (keyword == CSSKeyword::Bottom) {
+      position.top = CSSPercentage{100.0f};
+      position.left = CSSPercentage{50.0f};
+    } else if (keyword == CSSKeyword::Center) {
+      position.left = CSSPercentage{50.0f};
+      position.top = CSSPercentage{50.0f};
+    } else {
+      return {};
+    }
+  } else if ((std::holds_alternative<CSSLength>(value) || std::holds_alternative<CSSPercentage>(value))) {
+    if (std::holds_alternative<CSSLength>(value)) {
+      position.left = std::get<CSSLength>(value);
+    } else {
+      position.left = std::get<CSSPercentage>(value);
+    }
+    position.top = CSSPercentage{50.0f};
+  } else {
+    return {};
+  }
+  return position;
+}
+
+inline bool isHorizontalPositionKeyword(CSSKeyword kw)
+{
+  return kw == CSSKeyword::Left || kw == CSSKeyword::Center || kw == CSSKeyword::Right;
+}
+
+inline bool isVerticalPositionKeyword(CSSKeyword kw)
+{
+  return kw == CSSKeyword::Top || kw == CSSKeyword::Center || kw == CSSKeyword::Bottom;
+}
+
+// First horizontal, second vertical
+inline CSSRadialGradientPosition resolveHorizontalThenVerticalKeyword(CSSKeyword keyword1, CSSKeyword keyword2)
+{
+  CSSRadialGradientPosition position;
+  if (keyword1 == CSSKeyword::Left) {
+    position.left = CSSPercentage{0.0f};
+  } else if (keyword1 == CSSKeyword::Right) {
+    position.right = CSSPercentage{0.0f};
+  } else if (keyword1 == CSSKeyword::Center) {
+    position.left = CSSPercentage{50.0f};
+  }
+
+  if (keyword2 == CSSKeyword::Top) {
+    position.top = CSSPercentage{0.0f};
+  } else if (keyword2 == CSSKeyword::Bottom) {
+    position.bottom = CSSPercentage{0.0f};
+  } else if (keyword2 == CSSKeyword::Center) {
+    position.top = CSSPercentage{50.0f};
+  }
+  return position;
+}
+
+// First vertical, second horizontal
+inline CSSRadialGradientPosition resolveVerticalThenHorizontalKeyword(CSSKeyword keyword1, CSSKeyword keyword2)
+{
+  CSSRadialGradientPosition position;
+  if (keyword1 == CSSKeyword::Top) {
+    position.top = CSSPercentage{0.0f};
+  } else if (keyword1 == CSSKeyword::Bottom) {
+    position.bottom = CSSPercentage{0.0f};
+  } else if (keyword1 == CSSKeyword::Center) {
+    position.top = CSSPercentage{50.0f};
+  }
+
+  if (keyword2 == CSSKeyword::Left) {
+    position.left = CSSPercentage{0.0f};
+  } else if (keyword2 == CSSKeyword::Right) {
+    position.left = CSSPercentage{100.0f};
+  } else if (keyword2 == CSSKeyword::Center) {
+    position.left = CSSPercentage{50.0f};
+  }
+  return position;
+}
+
+// 2. [ left | center | right ] && [ top | center | bottom ]
+inline std::optional<CSSRadialGradientPosition> resolveDoubleKeywordPosition(CSSKeyword keyword1, CSSKeyword keyword2)
+{
+  if (isHorizontalPositionKeyword(keyword1) && isVerticalPositionKeyword(keyword2)) {
+    return resolveHorizontalThenVerticalKeyword(keyword1, keyword2);
+  } else if (isVerticalPositionKeyword(keyword1) && isHorizontalPositionKeyword(keyword2)) {
+    return resolveVerticalThenHorizontalKeyword(keyword1, keyword2);
+  } else {
+    return {};
+  }
+}
+
+// 3. [ left | center | right | <length-percentage> ] [ top | center |
+// bottom | <length-percentage> ]
+inline std::optional<CSSRadialGradientPosition> resolveMixedDoublePosition(
+    const CSSRadialGradientPositionValue &value1,
+    const CSSRadialGradientPositionValue &value2)
+{
+  CSSRadialGradientPosition position;
+  if (std::holds_alternative<CSSKeyword>(value1)) {
+    auto keyword1 = std::get<CSSKeyword>(value1);
+    if (keyword1 == CSSKeyword::Left) {
+      position.left = CSSPercentage{0.0f};
+    } else if (keyword1 == CSSKeyword::Right) {
+      position.right = CSSPercentage{0.0f};
+    } else if (keyword1 == CSSKeyword::Center) {
+      position.left = CSSPercentage{50.0f};
+    } else {
+      return {};
+    }
+  } else if ((std::holds_alternative<CSSLength>(value1) || std::holds_alternative<CSSPercentage>(value1))) {
+    if (std::holds_alternative<CSSLength>(value1)) {
+      position.left = std::get<CSSLength>(value1);
+    } else {
+      position.left = std::get<CSSPercentage>(value1);
+    }
+  } else {
+    return {};
+  }
+
+  if (std::holds_alternative<CSSKeyword>(value2)) {
+    auto keyword2 = std::get<CSSKeyword>(value2);
+    if (keyword2 == CSSKeyword::Top) {
+      position.top = CSSPercentage{0.0f};
+    } else if (keyword2 == CSSKeyword::Bottom) {
+      position.bottom = CSSPercentage{0.f};
+    } else if (keyword2 == CSSKeyword::Center) {
+      position.top = CSSPercentage{50.0f};
+    } else {
+      return {};
+    }
+  } else if ((std::holds_alternative<CSSLength>(value2) || std::holds_alternative<CSSPercentage>(value2))) {
+    if (std::holds_alternative<CSSLength>(value2)) {
+      position.top = std::get<CSSLength>(value2);
+    } else {
+      position.top = std::get<CSSPercentage>(value2);
+    }
+  } else {
+    return {};
+  }
+  return position;
+}
+
+inline std::optional<CSSRadialGradientPosition> resolveDoubleRadialGradientPosition(
+    const CSSRadialGradientPositionValue &value1,
+    const CSSRadialGradientPositionValue &value2)
+{
+  // 2. [ left | center | right ] && [ top | center | bottom ]
+  if (std::holds_alternative<CSSKeyword>(value1) && std::holds_alternative<CSSKeyword>(value2)) {
+    return resolveDoubleKeywordPosition(std::get<CSSKeyword>(value1), std::get<CSSKeyword>(value2));
+  }
+  // 3. [ left | center | right | <length-percentage> ] [ top | center |
+  // bottom | <length-percentage> ]
+  return resolveMixedDoublePosition(value1, value2);
+}
+
+// 4. [ [ left | right ] <length-percentage> ] && [ [ top | bottom ]
+// <length-percentage> ]
+inline std::optional<CSSRadialGradientPosition> resolveQuadRadialGradientPosition(
+    const CSSRadialGradientPositionValue &value1,
+    const CSSRadialGradientPositionValue &value2,
+    const CSSRadialGradientPositionValue &value3,
+    const CSSRadialGradientPositionValue &value4)
+{
+  CSSRadialGradientPosition position;
+
+  if (!std::holds_alternative<CSSKeyword>(value1)) {
+    return {};
+  }
+  if (!std::holds_alternative<CSSKeyword>(value3)) {
+    return {};
+  }
+  if ((!std::holds_alternative<CSSLength>(value2) && !std::holds_alternative<CSSPercentage>(value2))) {
+    return {};
+  }
+  if ((!std::holds_alternative<CSSLength>(value4) && !std::holds_alternative<CSSPercentage>(value4))) {
+    return {};
+  }
+
+  auto parsedValue2 = std::holds_alternative<CSSLength>(value2)
+      ? std::variant<CSSLength, CSSPercentage>{std::get<CSSLength>(value2)}
+      : std::variant<CSSLength, CSSPercentage>{std::get<CSSPercentage>(value2)};
+  auto parsedValue4 = std::holds_alternative<CSSLength>(value4)
+      ? std::variant<CSSLength, CSSPercentage>{std::get<CSSLength>(value4)}
+      : std::variant<CSSLength, CSSPercentage>{std::get<CSSPercentage>(value4)};
+  auto keyword1 = std::get<CSSKeyword>(value1);
+  auto keyword3 = std::get<CSSKeyword>(value3);
+
+  if (keyword1 == CSSKeyword::Left) {
+    position.left = parsedValue2;
+  } else if (keyword1 == CSSKeyword::Right) {
+    position.right = parsedValue2;
+  } else if (keyword1 == CSSKeyword::Top) {
+    position.top = parsedValue2;
+  } else if (keyword1 == CSSKeyword::Bottom) {
+    position.bottom = parsedValue2;
+  } else {
+    return {};
+  }
+
+  if (keyword3 == CSSKeyword::Left) {
+    position.left = parsedValue4;
+  } else if (keyword3 == CSSKeyword::Right) {
+    position.right = parsedValue4;
+  } else if (keyword3 == CSSKeyword::Top) {
+    position.top = parsedValue4;
+  } else if (keyword3 == CSSKeyword::Bottom) {
+    position.bottom = parsedValue4;
+  } else {
+    return {};
+  }
+  return position;
+}
+
+// Parses the shape and size portion of a radial-gradient, applying defaults and
+// validation. Returns false if the declaration is invalid (caller should bail).
+inline bool consumeRadialGradientShapeAndSize(CSSValueParser &parser, CSSRadialGradientFunction &gradient)
+{
+  auto hasExplicitShape = false;
+  auto hasExplicitSingleSize = false;
+  auto shapeResult = parser.parseNextValue<CSSRadialGradientShape>();
+  if (std::holds_alternative<CSSRadialGradientShape>(shapeResult)) {
+    parser.syntaxParser().consumeWhitespace();
+  }
+
+  std::optional<CSSRadialGradientSize> sizeResult;
+
+  auto sizeKeywordResult = parser.parseNextValue<CSSRadialGradientSizeKeyword>();
+
+  if (std::holds_alternative<CSSRadialGradientSizeKeyword>(sizeKeywordResult)) {
+    sizeResult = CSSRadialGradientSize{std::get<CSSRadialGradientSizeKeyword>(sizeKeywordResult)};
+    parser.syntaxParser().consumeWhitespace();
+  } else {
+    auto explicitSizeResult = parser.parseNextValue<CSSRadialGradientExplicitSize>();
+    if (std::holds_alternative<CSSRadialGradientExplicitSize>(explicitSizeResult)) {
+      auto explicitSize = std::get<CSSRadialGradientExplicitSize>(explicitSizeResult);
+      // negative value validation
+      if (hasNegativeExplicitSize(explicitSize)) {
+        return false;
+      }
+
+      // check if it's a single size (both X and Y are the same), we use it
+      // to set shape to circle
+      if (explicitSize.sizeX == explicitSize.sizeY) {
+        hasExplicitSingleSize = true;
+      }
+
+      sizeResult = CSSRadialGradientSize{explicitSize};
+      parser.syntaxParser().consumeWhitespace();
+    }
+  }
+
+  if (std::holds_alternative<CSSRadialGradientShape>(shapeResult)) {
+    gradient.shape = std::get<CSSRadialGradientShape>(shapeResult);
+    hasExplicitShape = true;
+  } else {
+    // default to ellipse
+    gradient.shape = CSSRadialGradientShape::Ellipse;
+  }
+
+  if (sizeResult.has_value()) {
+    gradient.size = *sizeResult;
+  } else {
+    // default to farthest corner
+    gradient.size = CSSRadialGradientSize{CSSRadialGradientSizeKeyword::FarthestCorner};
+  }
+
+  if (!hasExplicitShape && hasExplicitSingleSize) {
+    gradient.shape = CSSRadialGradientShape::Circle;
+  }
+
+  if (hasExplicitSingleSize && hasExplicitShape && gradient.shape.value() == CSSRadialGradientShape::Ellipse) {
+    // if a single size is explicitly set and the shape is an ellipse do not
+    // apply any gradient. Same as web.
+    return false;
+  }
+
+  return true;
+}
+
+// Collects the up-to-two position tokens following an "at" keyword. Returns
+// nullopt if an invalid (duplicate keyword) declaration is encountered.
+inline std::optional<std::vector<CSSRadialGradientPositionValue>> consumeRadialGradientPositionValues(
+    CSSValueParser &parser)
+{
+  std::vector<CSSRadialGradientPositionValue> positionKeywordValues;
+  for (int i = 0; i < 2; i++) {
+    auto keywordFound = false;
+    auto valueFound = false;
+
+    auto positionKeywordResult = parser.parseNextValue<CSSGradientPositionKeyword>();
+    std::optional<CSSKeyword> positionKeyword;
+    if (std::holds_alternative<CSSGradientPositionKeyword>(positionKeywordResult)) {
+      positionKeyword =
+          static_cast<CSSKeyword>(to_underlying(std::get<CSSGradientPositionKeyword>(positionKeywordResult)));
+    }
+
+    if (positionKeyword) {
+      // invalid position declaration of same keyword "at top 10% top 20%"
+      for (const auto &existingValue : positionKeywordValues) {
+        if (std::holds_alternative<CSSKeyword>(existingValue)) {
+          if (std::get<CSSKeyword>(existingValue) == positionKeyword) {
+            return {};
+          }
+        }
+      }
+      positionKeywordValues.emplace_back(*positionKeyword);
+      keywordFound = true;
+    }
+
+    parser.syntaxParser().consumeWhitespace();
+
+    auto lengthPercentageValue = parser.parseNextValue<CSSLengthPercentage>();
+
+    std::optional<decltype(positionKeywordValues)::value_type> value;
+    if (std::holds_alternative<CSSLength>(lengthPercentageValue)) {
+      value = std::get<CSSLength>(lengthPercentageValue);
+    } else if (std::holds_alternative<CSSPercentage>(lengthPercentageValue)) {
+      value = std::get<CSSPercentage>(lengthPercentageValue);
+    }
+    if (value.has_value()) {
+      positionKeywordValues.emplace_back(*value);
+      valueFound = true;
+    }
+
+    parser.syntaxParser().consumeWhitespace();
+
+    if (!keywordFound && !valueFound) {
+      break;
+    }
+  }
+  return positionKeywordValues;
+}
+
+// Resolves the collected "at <position>" values (1, 2, or 4 entries) into a
+// CSSRadialGradientPosition, or nullopt if the combination is invalid.
+inline std::optional<CSSRadialGradientPosition> resolveRadialGradientPosition(
+    const std::vector<CSSRadialGradientPositionValue> &positionKeywordValues)
+{
+  // 1. [ left | center | right | top | bottom | <length-percentage> ]
+  if (positionKeywordValues.size() == 1) {
+    return resolveSingleRadialGradientPosition(positionKeywordValues[0]);
+  }
+
+  else if (positionKeywordValues.size() == 2) {
+    return resolveDoubleRadialGradientPosition(positionKeywordValues[0], positionKeywordValues[1]);
+  }
+
+  // 4. [ [ left | right ] <length-percentage> ] && [ [ top | bottom ]
+  // <length-percentage> ]
+  else if (positionKeywordValues.size() == 4) {
+    return resolveQuadRadialGradientPosition(
+        positionKeywordValues[0], positionKeywordValues[1], positionKeywordValues[2], positionKeywordValues[3]);
+  } else {
+    return {};
+  }
+}
+
+} // namespace detail
+
 template <>
 struct CSSDataTypeParser<CSSRadialGradientFunction> {
   static auto consumeFunctionBlock(const CSSFunctionBlock &func, CSSValueParser &parser)
@@ -440,335 +864,33 @@ struct CSSDataTypeParser<CSSRadialGradientFunction> {
 
     CSSRadialGradientFunction gradient;
 
-    auto hasExplicitShape = false;
-    auto hasExplicitSingleSize = false;
-    auto shapeResult = parser.parseNextValue<CSSRadialGradientShape>();
-    if (std::holds_alternative<CSSRadialGradientShape>(shapeResult)) {
-      parser.syntaxParser().consumeWhitespace();
-    }
-
-    std::optional<CSSRadialGradientSize> sizeResult;
-
-    auto sizeKeywordResult = parser.parseNextValue<CSSRadialGradientSizeKeyword>();
-
-    if (std::holds_alternative<CSSRadialGradientSizeKeyword>(sizeKeywordResult)) {
-      sizeResult = CSSRadialGradientSize{std::get<CSSRadialGradientSizeKeyword>(sizeKeywordResult)};
-      parser.syntaxParser().consumeWhitespace();
-    } else {
-      auto explicitSizeResult = parser.parseNextValue<CSSRadialGradientExplicitSize>();
-      if (std::holds_alternative<CSSRadialGradientExplicitSize>(explicitSizeResult)) {
-        auto explicitSize = std::get<CSSRadialGradientExplicitSize>(explicitSizeResult);
-        // negative value validation
-        if (std::holds_alternative<CSSLength>(explicitSize.sizeX)) {
-          const auto &lengthX = std::get<CSSLength>(explicitSize.sizeX);
-          if (lengthX.value < 0) {
-            return {};
-          }
-        } else if (std::holds_alternative<CSSPercentage>(explicitSize.sizeX)) {
-          const auto &percentageX = std::get<CSSPercentage>(explicitSize.sizeX);
-          if (percentageX.value < 0) {
-            return {};
-          }
-        }
-        if (std::holds_alternative<CSSLength>(explicitSize.sizeY)) {
-          const auto &lengthY = std::get<CSSLength>(explicitSize.sizeY);
-          if (lengthY.value < 0) {
-            return {};
-          }
-        } else if (std::holds_alternative<CSSPercentage>(explicitSize.sizeY)) {
-          const auto &percentageY = std::get<CSSPercentage>(explicitSize.sizeY);
-          if (percentageY.value < 0) {
-            return {};
-          }
-        }
-
-        // check if it's a single size (both X and Y are the same), we use it
-        // to set shape to circle
-        if (explicitSize.sizeX == explicitSize.sizeY) {
-          hasExplicitSingleSize = true;
-        }
-
-        sizeResult = CSSRadialGradientSize{explicitSize};
-        parser.syntaxParser().consumeWhitespace();
-      }
-    }
-
-    if (std::holds_alternative<CSSRadialGradientShape>(shapeResult)) {
-      gradient.shape = std::get<CSSRadialGradientShape>(shapeResult);
-      hasExplicitShape = true;
-    } else {
-      // default to ellipse
-      gradient.shape = CSSRadialGradientShape::Ellipse;
-    }
-
-    if (sizeResult.has_value()) {
-      gradient.size = *sizeResult;
-    } else {
-      // default to farthest corner
-      gradient.size = CSSRadialGradientSize{CSSRadialGradientSizeKeyword::FarthestCorner};
-    }
-
-    if (!hasExplicitShape && hasExplicitSingleSize) {
-      gradient.shape = CSSRadialGradientShape::Circle;
-    }
-
-    if (hasExplicitSingleSize && hasExplicitShape && gradient.shape.value() == CSSRadialGradientShape::Ellipse) {
-      // if a single size is explicitly set and the shape is an ellipse do not
-      // apply any gradient. Same as web.
+    if (!detail::consumeRadialGradientShapeAndSize(parser, gradient)) {
       return {};
     }
 
     auto atResult = parser.parseNextValue<CSSGradientAtKeyword>();
     bool hasAtKeyword = std::holds_alternative<CSSGradientAtKeyword>(atResult);
 
-    CSSRadialGradientPosition position;
-
     if (hasAtKeyword) {
       parser.syntaxParser().consumeWhitespace();
-      std::vector<std::variant<CSSLength, CSSPercentage, CSSKeyword>> positionKeywordValues;
-      for (int i = 0; i < 2; i++) {
-        auto keywordFound = false;
-        auto valueFound = false;
-
-        auto positionKeywordResult = parser.parseNextValue<CSSGradientPositionKeyword>();
-        std::optional<CSSKeyword> positionKeyword;
-        if (std::holds_alternative<CSSGradientPositionKeyword>(positionKeywordResult)) {
-          positionKeyword =
-              static_cast<CSSKeyword>(to_underlying(std::get<CSSGradientPositionKeyword>(positionKeywordResult)));
-        }
-
-        if (positionKeyword) {
-          // invalid position declaration of same keyword "at top 10% top 20%"
-          for (const auto &existingValue : positionKeywordValues) {
-            if (std::holds_alternative<CSSKeyword>(existingValue)) {
-              if (std::get<CSSKeyword>(existingValue) == positionKeyword) {
-                return {};
-              }
-            }
-          }
-          positionKeywordValues.emplace_back(*positionKeyword);
-          keywordFound = true;
-        }
-
-        parser.syntaxParser().consumeWhitespace();
-
-        auto lengthPercentageValue = parser.parseNextValue<CSSLengthPercentage>();
-
-        std::optional<decltype(positionKeywordValues)::value_type> value;
-        if (std::holds_alternative<CSSLength>(lengthPercentageValue)) {
-          value = std::get<CSSLength>(lengthPercentageValue);
-        } else if (std::holds_alternative<CSSPercentage>(lengthPercentageValue)) {
-          value = std::get<CSSPercentage>(lengthPercentageValue);
-        }
-        if (value.has_value()) {
-          positionKeywordValues.emplace_back(*value);
-          valueFound = true;
-        }
-
-        parser.syntaxParser().consumeWhitespace();
-
-        if (!keywordFound && !valueFound) {
-          break;
-        }
-      }
-
-      if (positionKeywordValues.empty()) {
+      auto positionKeywordValues = detail::consumeRadialGradientPositionValues(parser);
+      if (!positionKeywordValues.has_value()) {
         return {};
       }
 
-      // 1. [ left | center | right | top | bottom | <length-percentage> ]
-      if (positionKeywordValues.size() == 1) {
-        auto value = positionKeywordValues[0];
-        if (std::holds_alternative<CSSKeyword>(value)) {
-          auto keyword = std::get<CSSKeyword>(value);
-          if (keyword == CSSKeyword::Left) {
-            position.top = CSSPercentage{50.0f};
-            position.left = CSSPercentage{0.0f};
-          } else if (keyword == CSSKeyword::Right) {
-            position.top = CSSPercentage{50.0f};
-            position.left = CSSPercentage{100.0f};
-          } else if (keyword == CSSKeyword::Top) {
-            position.top = CSSPercentage{0.0f};
-            position.left = CSSPercentage{50.0f};
-          } else if (keyword == CSSKeyword::Bottom) {
-            position.top = CSSPercentage{100.0f};
-            position.left = CSSPercentage{50.0f};
-          } else if (keyword == CSSKeyword::Center) {
-            position.left = CSSPercentage{50.0f};
-            position.top = CSSPercentage{50.0f};
-          } else {
-            return {};
-          }
-        } else if ((std::holds_alternative<CSSLength>(value) || std::holds_alternative<CSSPercentage>(value))) {
-          if (std::holds_alternative<CSSLength>(value)) {
-            position.left = std::get<CSSLength>(value);
-          } else {
-            position.left = std::get<CSSPercentage>(value);
-          }
-          position.top = CSSPercentage{50.0f};
-        } else {
-          return {};
-        }
-      }
-
-      else if (positionKeywordValues.size() == 2) {
-        auto value1 = positionKeywordValues[0];
-        auto value2 = positionKeywordValues[1];
-        // 2. [ left | center | right ] && [ top | center | bottom ]
-        if (std::holds_alternative<CSSKeyword>(value1) && std::holds_alternative<CSSKeyword>(value2)) {
-          auto keyword1 = std::get<CSSKeyword>(value1);
-          auto keyword2 = std::get<CSSKeyword>(value2);
-          auto isHorizontal = [](CSSKeyword kw) {
-            return kw == CSSKeyword::Left || kw == CSSKeyword::Center || kw == CSSKeyword::Right;
-          };
-          auto isVertical = [](CSSKeyword kw) {
-            return kw == CSSKeyword::Top || kw == CSSKeyword::Center || kw == CSSKeyword::Bottom;
-          };
-          if (isHorizontal(keyword1) && isVertical(keyword2)) {
-            // First horizontal, second vertical
-            if (keyword1 == CSSKeyword::Left) {
-              position.left = CSSPercentage{0.0f};
-            } else if (keyword1 == CSSKeyword::Right) {
-              position.right = CSSPercentage{0.0f};
-            } else if (keyword1 == CSSKeyword::Center) {
-              position.left = CSSPercentage{50.0f};
-            }
-
-            if (keyword2 == CSSKeyword::Top) {
-              position.top = CSSPercentage{0.0f};
-            } else if (keyword2 == CSSKeyword::Bottom) {
-              position.bottom = CSSPercentage{0.0f};
-            } else if (keyword2 == CSSKeyword::Center) {
-              position.top = CSSPercentage{50.0f};
-            }
-          } else if (isVertical(keyword1) && isHorizontal(keyword2)) {
-            // First vertical, second horizontal
-            if (keyword1 == CSSKeyword::Top) {
-              position.top = CSSPercentage{0.0f};
-            } else if (keyword1 == CSSKeyword::Bottom) {
-              position.bottom = CSSPercentage{0.0f};
-            } else if (keyword1 == CSSKeyword::Center) {
-              position.top = CSSPercentage{50.0f};
-            }
-
-            if (keyword2 == CSSKeyword::Left) {
-              position.left = CSSPercentage{0.0f};
-            } else if (keyword2 == CSSKeyword::Right) {
-              position.left = CSSPercentage{100.0f};
-            } else if (keyword2 == CSSKeyword::Center) {
-              position.left = CSSPercentage{50.0f};
-            }
-          } else {
-            return {};
-          }
-        }
-        // 3. [ left | center | right | <length-percentage> ] [ top | center |
-        // bottom | <length-percentage> ]
-        else {
-          if (std::holds_alternative<CSSKeyword>(value1)) {
-            auto keyword1 = std::get<CSSKeyword>(value1);
-            if (keyword1 == CSSKeyword::Left) {
-              position.left = CSSPercentage{0.0f};
-            } else if (keyword1 == CSSKeyword::Right) {
-              position.right = CSSPercentage{0.0f};
-            } else if (keyword1 == CSSKeyword::Center) {
-              position.left = CSSPercentage{50.0f};
-            } else {
-              return {};
-            }
-          } else if ((std::holds_alternative<CSSLength>(value1) || std::holds_alternative<CSSPercentage>(value1))) {
-            if (std::holds_alternative<CSSLength>(value1)) {
-              position.left = std::get<CSSLength>(value1);
-            } else {
-              position.left = std::get<CSSPercentage>(value1);
-            }
-          } else {
-            return {};
-          }
-
-          if (std::holds_alternative<CSSKeyword>(value2)) {
-            auto keyword2 = std::get<CSSKeyword>(value2);
-            if (keyword2 == CSSKeyword::Top) {
-              position.top = CSSPercentage{0.0f};
-            } else if (keyword2 == CSSKeyword::Bottom) {
-              position.bottom = CSSPercentage{0.f};
-            } else if (keyword2 == CSSKeyword::Center) {
-              position.top = CSSPercentage{50.0f};
-            } else {
-              return {};
-            }
-          } else if ((std::holds_alternative<CSSLength>(value2) || std::holds_alternative<CSSPercentage>(value2))) {
-            if (std::holds_alternative<CSSLength>(value2)) {
-              position.top = std::get<CSSLength>(value2);
-            } else {
-              position.top = std::get<CSSPercentage>(value2);
-            }
-          } else {
-            return {};
-          }
-        }
-      }
-
-      // 4. [ [ left | right ] <length-percentage> ] && [ [ top | bottom ]
-      // <length-percentage> ]
-      else if (positionKeywordValues.size() == 4) {
-        auto value1 = positionKeywordValues[0];
-        auto value2 = positionKeywordValues[1];
-        auto value3 = positionKeywordValues[2];
-        auto value4 = positionKeywordValues[3];
-
-        if (!std::holds_alternative<CSSKeyword>(value1)) {
-          return {};
-        }
-        if (!std::holds_alternative<CSSKeyword>(value3)) {
-          return {};
-        }
-        if ((!std::holds_alternative<CSSLength>(value2) && !std::holds_alternative<CSSPercentage>(value2))) {
-          return {};
-        }
-        if ((!std::holds_alternative<CSSLength>(value4) && !std::holds_alternative<CSSPercentage>(value4))) {
-          return {};
-        }
-
-        auto parsedValue2 = std::holds_alternative<CSSLength>(value2)
-            ? std::variant<CSSLength, CSSPercentage>{std::get<CSSLength>(value2)}
-            : std::variant<CSSLength, CSSPercentage>{std::get<CSSPercentage>(value2)};
-        auto parsedValue4 = std::holds_alternative<CSSLength>(value4)
-            ? std::variant<CSSLength, CSSPercentage>{std::get<CSSLength>(value4)}
-            : std::variant<CSSLength, CSSPercentage>{std::get<CSSPercentage>(value4)};
-        auto keyword1 = std::get<CSSKeyword>(value1);
-        auto keyword3 = std::get<CSSKeyword>(value3);
-
-        if (keyword1 == CSSKeyword::Left) {
-          position.left = parsedValue2;
-        } else if (keyword1 == CSSKeyword::Right) {
-          position.right = parsedValue2;
-        } else if (keyword1 == CSSKeyword::Top) {
-          position.top = parsedValue2;
-        } else if (keyword1 == CSSKeyword::Bottom) {
-          position.bottom = parsedValue2;
-        } else {
-          return {};
-        }
-
-        if (keyword3 == CSSKeyword::Left) {
-          position.left = parsedValue4;
-        } else if (keyword3 == CSSKeyword::Right) {
-          position.right = parsedValue4;
-        } else if (keyword3 == CSSKeyword::Top) {
-          position.top = parsedValue4;
-        } else if (keyword3 == CSSKeyword::Bottom) {
-          position.bottom = parsedValue4;
-        } else {
-          return {};
-        }
-      } else {
+      if (positionKeywordValues->empty()) {
         return {};
       }
 
-      gradient.position = position;
+      auto resolvedPosition = detail::resolveRadialGradientPosition(*positionKeywordValues);
+      if (!resolvedPosition.has_value()) {
+        return {};
+      }
+
+      gradient.position = *resolvedPosition;
     } else {
       // Default position
+      CSSRadialGradientPosition position;
       position.top = CSSPercentage{50.0f};
       position.left = CSSPercentage{50.0f};
       gradient.position = position;

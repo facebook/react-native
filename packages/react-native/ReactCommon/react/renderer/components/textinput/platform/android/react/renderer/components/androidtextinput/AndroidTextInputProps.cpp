@@ -361,6 +361,69 @@ ComponentName AndroidTextInputProps::getDiffPropsImplementationTarget() const {
   return "TextInput";
 }
 
+// Behavior-preserving helpers extracted from getDiffProps below to keep its
+// cyclomatic complexity low. Each mirrors one of the recurring
+// compare-and-assign shapes used per prop, so the serialized output (keys,
+// values, conversions, and insertion order) is identical to the open-coded
+// version.
+template <typename T>
+static void appendIfChanged(
+    folly::dynamic& result,
+    const char* propName,
+    const T& newValue,
+    const T& oldValue) {
+  if (newValue != oldValue) {
+    result[propName] = newValue;
+  }
+}
+
+template <typename T>
+static void appendDerefIfChanged(
+    folly::dynamic& result,
+    const char* propName,
+    const T& newValue,
+    const T& oldValue) {
+  if (newValue != oldValue) {
+    result[propName] = *newValue;
+  }
+}
+
+static void appendFloatIfChanged(
+    folly::dynamic& result,
+    const char* propName,
+    Float newValue,
+    Float oldValue) {
+  if (!floatEquality(newValue, oldValue)) {
+    result[propName] = newValue;
+  }
+}
+
+template <typename T, typename Convert>
+static void appendConvertedIfChanged(
+    folly::dynamic& result,
+    const char* propName,
+    const T& newValue,
+    const T& oldValue,
+    Convert&& convert) {
+  if (newValue != oldValue) {
+    result[propName] = convert(newValue);
+  }
+}
+
+template <typename T, typename Convert>
+static void appendOptionalIfChanged(
+    folly::dynamic& result,
+    const char* propName,
+    const std::optional<T>& newValue,
+    const std::optional<T>& oldValue,
+    Convert&& convert) {
+  if (newValue != oldValue) {
+    result[propName] = newValue.has_value()
+        ? folly::dynamic(convert(newValue.value()))
+        : folly::dynamic(nullptr);
+  }
+}
+
 folly::dynamic AndroidTextInputProps::getDiffProps(
     const Props* prevProps) const {
   static const auto defaultProps = AndroidTextInputProps();
@@ -371,264 +434,201 @@ folly::dynamic AndroidTextInputProps::getDiffProps(
 
   folly::dynamic result = ViewProps::getDiffProps(oldProps);
 
+  auto asString = [](const auto& value) { return toString(value); };
+  auto asDynamic = [](const auto& value) { return toDynamic(value); };
+
   // Base text input paragraph props
-  if (paragraphAttributes.maximumNumberOfLines !=
-      oldProps->paragraphAttributes.maximumNumberOfLines) {
-    result["numberOfLines"] = paragraphAttributes.maximumNumberOfLines;
-  }
-
-  if (paragraphAttributes.ellipsizeMode !=
-      oldProps->paragraphAttributes.ellipsizeMode) {
-    result["ellipsizeMode"] = toString(paragraphAttributes.ellipsizeMode);
-  }
-
-  if (paragraphAttributes.textBreakStrategy !=
-      oldProps->paragraphAttributes.textBreakStrategy) {
-    result["textBreakStrategy"] =
-        toString(paragraphAttributes.textBreakStrategy);
-  }
-
-  if (paragraphAttributes.adjustsFontSizeToFit !=
-      oldProps->paragraphAttributes.adjustsFontSizeToFit) {
-    result["adjustsFontSizeToFit"] = paragraphAttributes.adjustsFontSizeToFit;
-  }
-
-  if (!floatEquality(
-          paragraphAttributes.minimumFontSize,
-          oldProps->paragraphAttributes.minimumFontSize)) {
-    result["minimumFontSize"] = paragraphAttributes.minimumFontSize;
-  }
-
-  if (!floatEquality(
-          paragraphAttributes.maximumFontSize,
-          oldProps->paragraphAttributes.maximumFontSize)) {
-    result["maximumFontSize"] = paragraphAttributes.maximumFontSize;
-  }
-
-  if (paragraphAttributes.includeFontPadding !=
-      oldProps->paragraphAttributes.includeFontPadding) {
-    result["includeFontPadding"] = paragraphAttributes.includeFontPadding;
-  }
-
-  if (paragraphAttributes.android_hyphenationFrequency !=
-      oldProps->paragraphAttributes.android_hyphenationFrequency) {
-    result["android_hyphenationFrequency"] =
-        toString(paragraphAttributes.android_hyphenationFrequency);
-  }
-
-  if (paragraphAttributes.textAlignVertical !=
-      oldProps->paragraphAttributes.textAlignVertical) {
-    if (!paragraphAttributes.textAlignVertical.has_value()) {
-      result["textAlignVertical"] = nullptr;
-    } else {
-      result["textAlignVertical"] =
-          toString(*paragraphAttributes.textAlignVertical);
-    }
-  }
+  appendIfChanged(
+      result,
+      "numberOfLines",
+      paragraphAttributes.maximumNumberOfLines,
+      oldProps->paragraphAttributes.maximumNumberOfLines);
+  appendConvertedIfChanged(
+      result,
+      "ellipsizeMode",
+      paragraphAttributes.ellipsizeMode,
+      oldProps->paragraphAttributes.ellipsizeMode,
+      asString);
+  appendConvertedIfChanged(
+      result,
+      "textBreakStrategy",
+      paragraphAttributes.textBreakStrategy,
+      oldProps->paragraphAttributes.textBreakStrategy,
+      asString);
+  appendIfChanged(
+      result,
+      "adjustsFontSizeToFit",
+      paragraphAttributes.adjustsFontSizeToFit,
+      oldProps->paragraphAttributes.adjustsFontSizeToFit);
+  appendFloatIfChanged(
+      result,
+      "minimumFontSize",
+      paragraphAttributes.minimumFontSize,
+      oldProps->paragraphAttributes.minimumFontSize);
+  appendFloatIfChanged(
+      result,
+      "maximumFontSize",
+      paragraphAttributes.maximumFontSize,
+      oldProps->paragraphAttributes.maximumFontSize);
+  appendIfChanged(
+      result,
+      "includeFontPadding",
+      paragraphAttributes.includeFontPadding,
+      oldProps->paragraphAttributes.includeFontPadding);
+  appendConvertedIfChanged(
+      result,
+      "android_hyphenationFrequency",
+      paragraphAttributes.android_hyphenationFrequency,
+      oldProps->paragraphAttributes.android_hyphenationFrequency,
+      asString);
+  appendOptionalIfChanged(
+      result,
+      "textAlignVertical",
+      paragraphAttributes.textAlignVertical,
+      oldProps->paragraphAttributes.textAlignVertical,
+      asString);
 
   // Base text input props
-  if (defaultValue != oldProps->defaultValue) {
-    result["defaultValue"] = defaultValue;
-  }
-
-  if (placeholder != oldProps->placeholder) {
-    result["placeholder"] = placeholder;
-  }
-
-  if (placeholderTextColor != oldProps->placeholderTextColor) {
-    result["placeholderTextColor"] = *placeholderTextColor;
-  }
-
-  if (cursorColor != oldProps->cursorColor) {
-    result["cursorColor"] = *cursorColor;
-  }
-
-  if (selectionColor != oldProps->selectionColor) {
-    result["selectionColor"] = *selectionColor;
-  }
-
-  if (selectionHandleColor != oldProps->selectionHandleColor) {
-    result["selectionHandleColor"] = *selectionHandleColor;
-  }
-
-  if (underlineColorAndroid != oldProps->underlineColorAndroid) {
-    result["underlineColorAndroid"] = *underlineColorAndroid;
-  }
-
-  if (maxLength != oldProps->maxLength) {
-    result["maxLength"] = maxLength;
-  }
-
-  if (text != oldProps->text) {
-    result["text"] = text;
-  }
-
-  if (mostRecentEventCount != oldProps->mostRecentEventCount) {
-    result["mostRecentEventCount"] = mostRecentEventCount;
-  }
-
-  if (autoFocus != oldProps->autoFocus) {
-    result["autoFocus"] = autoFocus;
-  }
-
-  if (autoCapitalize != oldProps->autoCapitalize) {
-    result["autoCapitalize"] = autoCapitalize;
-  }
-
-  if (editable != oldProps->editable) {
-    result["editable"] = editable;
-  }
-
-  if (readOnly != oldProps->readOnly) {
-    result["readOnly"] = readOnly;
-  }
-
-  if (submitBehavior != oldProps->submitBehavior) {
-    result["submitBehavior"] = toDynamic(submitBehavior);
-  }
-
-  if (multiline != oldProps->multiline) {
-    result["multiline"] = multiline;
-  }
-
-  if (disableKeyboardShortcuts != oldProps->disableKeyboardShortcuts) {
-    result["disableKeyboardShortcuts"] = disableKeyboardShortcuts;
-  }
-
-  if (acceptDragAndDropTypes != oldProps->acceptDragAndDropTypes) {
-    result["acceptDragAndDropTypes"] = acceptDragAndDropTypes.has_value()
-        ? toDynamic(acceptDragAndDropTypes.value())
-        : nullptr;
-  }
+  appendIfChanged(result, "defaultValue", defaultValue, oldProps->defaultValue);
+  appendIfChanged(result, "placeholder", placeholder, oldProps->placeholder);
+  appendDerefIfChanged(
+      result,
+      "placeholderTextColor",
+      placeholderTextColor,
+      oldProps->placeholderTextColor);
+  appendDerefIfChanged(
+      result, "cursorColor", cursorColor, oldProps->cursorColor);
+  appendDerefIfChanged(
+      result, "selectionColor", selectionColor, oldProps->selectionColor);
+  appendDerefIfChanged(
+      result,
+      "selectionHandleColor",
+      selectionHandleColor,
+      oldProps->selectionHandleColor);
+  appendDerefIfChanged(
+      result,
+      "underlineColorAndroid",
+      underlineColorAndroid,
+      oldProps->underlineColorAndroid);
+  appendIfChanged(result, "maxLength", maxLength, oldProps->maxLength);
+  appendIfChanged(result, "text", text, oldProps->text);
+  appendIfChanged(
+      result,
+      "mostRecentEventCount",
+      mostRecentEventCount,
+      oldProps->mostRecentEventCount);
+  appendIfChanged(result, "autoFocus", autoFocus, oldProps->autoFocus);
+  appendIfChanged(
+      result, "autoCapitalize", autoCapitalize, oldProps->autoCapitalize);
+  appendIfChanged(result, "editable", editable, oldProps->editable);
+  appendIfChanged(result, "readOnly", readOnly, oldProps->readOnly);
+  appendConvertedIfChanged(
+      result,
+      "submitBehavior",
+      submitBehavior,
+      oldProps->submitBehavior,
+      asDynamic);
+  appendIfChanged(result, "multiline", multiline, oldProps->multiline);
+  appendIfChanged(
+      result,
+      "disableKeyboardShortcuts",
+      disableKeyboardShortcuts,
+      oldProps->disableKeyboardShortcuts);
+  appendOptionalIfChanged(
+      result,
+      "acceptDragAndDropTypes",
+      acceptDragAndDropTypes,
+      oldProps->acceptDragAndDropTypes,
+      asDynamic);
 
   // Android text input props
-  if (autoComplete != oldProps->autoComplete) {
-    result["autoComplete"] = autoComplete;
-  }
-
-  if (returnKeyLabel != oldProps->returnKeyLabel) {
-    result["returnKeyLabel"] = returnKeyLabel;
-  }
-
-  if (numberOfLines != oldProps->numberOfLines) {
-    result["numberOfLines"] = numberOfLines;
-  }
-
-  if (disableFullscreenUI != oldProps->disableFullscreenUI) {
-    result["disableFullscreenUI"] = disableFullscreenUI;
-  }
-
-  if (textBreakStrategy != oldProps->textBreakStrategy) {
-    result["textBreakStrategy"] = textBreakStrategy;
-  }
-
-  if (inlineImageLeft != oldProps->inlineImageLeft) {
-    result["inlineImageLeft"] = inlineImageLeft;
-  }
-
-  if (inlineImagePadding != oldProps->inlineImagePadding) {
-    result["inlineImagePadding"] = inlineImagePadding;
-  }
-
-  if (importantForAutofill != oldProps->importantForAutofill) {
-    result["importantForAutofill"] = importantForAutofill;
-  }
-
-  if (showSoftInputOnFocus != oldProps->showSoftInputOnFocus) {
-    result["showSoftInputOnFocus"] = showSoftInputOnFocus;
-  }
-
-  if (autoCorrect != oldProps->autoCorrect) {
-    result["autoCorrect"] = autoCorrect;
-  }
-
-  if (allowFontScaling != oldProps->allowFontScaling) {
-    result["allowFontScaling"] = allowFontScaling;
-  }
-
-  if (maxFontSizeMultiplier != oldProps->maxFontSizeMultiplier) {
-    result["maxFontSizeMultiplier"] = maxFontSizeMultiplier;
-  }
-
-  if (keyboardType != oldProps->keyboardType) {
-    result["keyboardType"] = keyboardType;
-  }
-
-  if (returnKeyType != oldProps->returnKeyType) {
-    result["returnKeyType"] = returnKeyType;
-  }
-
-  if (secureTextEntry != oldProps->secureTextEntry) {
-    result["secureTextEntry"] = secureTextEntry;
-  }
-
-  if (value != oldProps->value) {
-    result["value"] = value;
-  }
-
-  if (selectTextOnFocus != oldProps->selectTextOnFocus) {
-    result["selectTextOnFocus"] = selectTextOnFocus;
-  }
-
-  if (caretHidden != oldProps->caretHidden) {
-    result["caretHidden"] = caretHidden;
-  }
-
-  if (contextMenuHidden != oldProps->contextMenuHidden) {
-    result["contextMenuHidden"] = contextMenuHidden;
-  }
-
-  if (textShadowColor != oldProps->textShadowColor) {
-    result["textShadowColor"] = *textShadowColor;
-  }
-
-  if (textShadowRadius != oldProps->textShadowRadius) {
-    result["textShadowRadius"] = textShadowRadius;
-  }
-
-  if (textDecorationLine != oldProps->textDecorationLine) {
-    result["textDecorationLine"] = textDecorationLine;
-  }
-
-  if (fontStyle != oldProps->fontStyle) {
-    result["fontStyle"] = fontStyle;
-  }
-
-  if (textShadowOffset != oldProps->textShadowOffset) {
-    result["textShadowOffset"] = toDynamic(textShadowOffset);
-  }
-
-  if (lineHeight != oldProps->lineHeight) {
-    result["lineHeight"] = lineHeight;
-  }
-
-  if (textTransform != oldProps->textTransform) {
-    result["textTransform"] = textTransform;
-  }
-
-  if (letterSpacing != oldProps->letterSpacing) {
-    result["letterSpacing"] = letterSpacing;
-  }
-
-  if (fontSize != oldProps->fontSize) {
-    result["fontSize"] = fontSize;
-  }
-
-  if (textAlign != oldProps->textAlign) {
-    result["textAlign"] = textAlign;
-  }
-
-  if (includeFontPadding != oldProps->includeFontPadding) {
-    result["includeFontPadding"] = includeFontPadding;
-  }
-
-  if (fontWeight != oldProps->fontWeight) {
-    result["fontWeight"] = fontWeight;
-  }
-
-  if (fontFamily != oldProps->fontFamily) {
-    result["fontFamily"] = fontFamily;
-  }
+  appendIfChanged(result, "autoComplete", autoComplete, oldProps->autoComplete);
+  appendIfChanged(
+      result, "returnKeyLabel", returnKeyLabel, oldProps->returnKeyLabel);
+  appendIfChanged(
+      result, "numberOfLines", numberOfLines, oldProps->numberOfLines);
+  appendIfChanged(
+      result,
+      "disableFullscreenUI",
+      disableFullscreenUI,
+      oldProps->disableFullscreenUI);
+  appendIfChanged(
+      result,
+      "textBreakStrategy",
+      textBreakStrategy,
+      oldProps->textBreakStrategy);
+  appendIfChanged(
+      result, "inlineImageLeft", inlineImageLeft, oldProps->inlineImageLeft);
+  appendIfChanged(
+      result,
+      "inlineImagePadding",
+      inlineImagePadding,
+      oldProps->inlineImagePadding);
+  appendIfChanged(
+      result,
+      "importantForAutofill",
+      importantForAutofill,
+      oldProps->importantForAutofill);
+  appendIfChanged(
+      result,
+      "showSoftInputOnFocus",
+      showSoftInputOnFocus,
+      oldProps->showSoftInputOnFocus);
+  appendIfChanged(result, "autoCorrect", autoCorrect, oldProps->autoCorrect);
+  appendIfChanged(
+      result, "allowFontScaling", allowFontScaling, oldProps->allowFontScaling);
+  appendIfChanged(
+      result,
+      "maxFontSizeMultiplier",
+      maxFontSizeMultiplier,
+      oldProps->maxFontSizeMultiplier);
+  appendIfChanged(result, "keyboardType", keyboardType, oldProps->keyboardType);
+  appendIfChanged(
+      result, "returnKeyType", returnKeyType, oldProps->returnKeyType);
+  appendIfChanged(
+      result, "secureTextEntry", secureTextEntry, oldProps->secureTextEntry);
+  appendIfChanged(result, "value", value, oldProps->value);
+  appendIfChanged(
+      result,
+      "selectTextOnFocus",
+      selectTextOnFocus,
+      oldProps->selectTextOnFocus);
+  appendIfChanged(result, "caretHidden", caretHidden, oldProps->caretHidden);
+  appendIfChanged(
+      result,
+      "contextMenuHidden",
+      contextMenuHidden,
+      oldProps->contextMenuHidden);
+  appendDerefIfChanged(
+      result, "textShadowColor", textShadowColor, oldProps->textShadowColor);
+  appendIfChanged(
+      result, "textShadowRadius", textShadowRadius, oldProps->textShadowRadius);
+  appendIfChanged(
+      result,
+      "textDecorationLine",
+      textDecorationLine,
+      oldProps->textDecorationLine);
+  appendIfChanged(result, "fontStyle", fontStyle, oldProps->fontStyle);
+  appendConvertedIfChanged(
+      result,
+      "textShadowOffset",
+      textShadowOffset,
+      oldProps->textShadowOffset,
+      asDynamic);
+  appendIfChanged(result, "lineHeight", lineHeight, oldProps->lineHeight);
+  appendIfChanged(
+      result, "textTransform", textTransform, oldProps->textTransform);
+  appendIfChanged(
+      result, "letterSpacing", letterSpacing, oldProps->letterSpacing);
+  appendIfChanged(result, "fontSize", fontSize, oldProps->fontSize);
+  appendIfChanged(result, "textAlign", textAlign, oldProps->textAlign);
+  appendIfChanged(
+      result,
+      "includeFontPadding",
+      includeFontPadding,
+      oldProps->includeFontPadding);
+  appendIfChanged(result, "fontWeight", fontWeight, oldProps->fontWeight);
+  appendIfChanged(result, "fontFamily", fontFamily, oldProps->fontFamily);
 
   return result;
 }
