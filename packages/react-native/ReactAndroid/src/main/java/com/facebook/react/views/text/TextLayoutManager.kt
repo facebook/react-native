@@ -666,50 +666,12 @@ internal object TextLayoutManager {
   }
 
   @OptIn(UnstableReactNativeAPI::class)
-  fun getOrCreateSpannableForText(
-      assets: AssetManager,
-      attributedString: MapBuffer,
-      reactTextViewManagerCallback: ReactTextViewManagerCallback?,
-  ): Spannable =
-      getOrCreateSpannableForText(assets, attributedString, reactTextViewManagerCallback, null)
-
-  @OptIn(UnstableReactNativeAPI::class)
-  fun getOrCreateSpannableForText(
-      assets: AssetManager,
-      fontWeightAdjustment: Int,
-      attributedString: MapBuffer,
-      reactTextViewManagerCallback: ReactTextViewManagerCallback?,
-  ): Spannable =
-      getOrCreateSpannableForText(
-          assets,
-          fontWeightAdjustment,
-          attributedString,
-          reactTextViewManagerCallback,
-          null,
-      )
-
-  @OptIn(UnstableReactNativeAPI::class)
-  internal fun getOrCreateSpannableForText(
-      assets: AssetManager,
-      attributedString: MapBuffer,
-      reactTextViewManagerCallback: ReactTextViewManagerCallback?,
-      textEffectRegistry: TextEffectRegistry?,
-  ): Spannable =
-      getOrCreateSpannableForText(
-          assets,
-          0,
-          attributedString,
-          reactTextViewManagerCallback,
-          textEffectRegistry,
-      )
-
-  @OptIn(UnstableReactNativeAPI::class)
   internal fun getOrCreateSpannableForText(
       assets: AssetManager,
       fontWeightAdjustment: Int,
       attributedString: MapBuffer,
       reactTextViewManagerCallback: ReactTextViewManagerCallback?,
-      textEffectRegistry: TextEffectRegistry?,
+      textEffectRegistry: TextEffectRegistry? = null,
   ): Spannable {
     var text: Spannable?
     if (attributedString.contains(AS_KEY_CACHE_ID)) {
