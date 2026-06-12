@@ -12,7 +12,7 @@ jobs:
   # Trusted Publishing only accepts one (org, repo, workflow_filename)
   # per package.
   publish_bumped_packages:
-    if: github.repository == 'facebook/react-native'
+    if: github.repository == 'react/react-native'
     uses: ./.github/workflows/publish-npm.yml
     secrets: inherit
     with:

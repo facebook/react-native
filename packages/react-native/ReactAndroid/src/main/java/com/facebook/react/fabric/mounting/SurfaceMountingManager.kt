@@ -873,7 +873,14 @@ internal constructor(
       return
     }
 
-    val viewState = getViewState(reactTag)
+    val viewState = getNullableViewState(reactTag)
+    if (viewState == null) {
+      ReactSoftExceptionLogger.logSoftException(
+          ReactSoftExceptionLogger.Categories.SURFACE_MOUNTING_MANAGER_MISSING_VIEWSTATE,
+          ReactNoCrashSoftException("Unable to find viewState for tag $reactTag for updatePadding"),
+      )
+      return
+    }
     // Do not layout Root Views
     if (viewState.isRoot) {
       return
@@ -934,7 +941,14 @@ internal constructor(
       return
     }
 
-    val viewState = getViewState(reactTag)
+    val viewState = getNullableViewState(reactTag)
+    if (viewState == null) {
+      ReactSoftExceptionLogger.logSoftException(
+          ReactSoftExceptionLogger.Categories.SURFACE_MOUNTING_MANAGER_MISSING_VIEWSTATE,
+          ReactNoCrashSoftException("Unable to find viewState for tag $reactTag for updateState"),
+      )
+      return
+    }
 
     val prevStateWrapper = viewState.stateWrapper
     viewState.stateWrapper = stateWrapper
