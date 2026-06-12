@@ -40,6 +40,7 @@ import com.facebook.react.uimanager.PixelUtil
 import com.facebook.react.uimanager.PixelUtil.dpToPx
 import com.facebook.react.uimanager.PixelUtil.pxToDp
 import com.facebook.react.uimanager.ReactAccessibilityDelegate
+import com.facebook.react.util.AndroidVersion.VERSION_CODE_VANILLA_ICE_CREAM
 import com.facebook.react.views.text.internal.span.CustomLetterSpacingSpan
 import com.facebook.react.views.text.internal.span.CustomLineHeightSpan
 import com.facebook.react.views.text.internal.span.CustomStyleSpan
@@ -764,13 +765,32 @@ internal object TextLayoutManager {
       )
     }
 
-    val desiredWidth = ceil(Layout.getDesiredWidth(text, paint)).toInt()
-
     val layoutWidth =
         when (widthYogaMeasureMode) {
           YogaMeasureMode.EXACTLY -> ceil(width).toInt()
-          YogaMeasureMode.AT_MOST -> min(desiredWidth, floor(width).toInt())
-          else -> desiredWidth
+          YogaMeasureMode.AT_MOST ->
+              min(
+                  getDesiredWidth(
+                      text,
+                      includeFontPadding,
+                      textBreakStrategy,
+                      hyphenationFrequency,
+                      alignment,
+                      justificationMode,
+                      paint,
+                  ),
+                  floor(width).toInt(),
+              )
+          else ->
+              getDesiredWidth(
+                  text,
+                  includeFontPadding,
+                  textBreakStrategy,
+                  hyphenationFrequency,
+                  alignment,
+                  justificationMode,
+                  paint,
+              )
         }
     return buildLayout(
         text,
@@ -786,6 +806,47 @@ internal object TextLayoutManager {
     )
   }
 
+  private fun getDesiredWidth(
+      text: Spannable,
+      includeFontPadding: Boolean,
+      textBreakStrategy: Int,
+      hyphenationFrequency: Int,
+      alignment: Layout.Alignment,
+      justificationMode: Int,
+      paint: TextPaint,
+  ): Int {
+    val advanceWidth = ceil(Layout.getDesiredWidth(text, paint)).toInt()
+
+    if (
+        Build.VERSION.SDK_INT < VERSION_CODE_VANILLA_ICE_CREAM ||
+            setUseBoundsForWidthMethod == null
+    ) {
+      return advanceWidth
+    }
+
+    val visualBoundsLayout =
+        buildLayout(
+            text,
+            Int.MAX_VALUE / 2,
+            includeFontPadding,
+            textBreakStrategy,
+            hyphenationFrequency,
+            alignment,
+            justificationMode,
+            null,
+            ReactConstants.UNSET,
+            paint,
+            useBoundsForWidth = true,
+        )
+
+    var visualBoundsWidth = 0f
+    for (i in 0 until visualBoundsLayout.lineCount) {
+      visualBoundsWidth = max(visualBoundsWidth, visualBoundsLayout.getLineMax(i))
+    }
+
+    return max(advanceWidth, ceil(visualBoundsWidth).toInt())
+  }
+
   private fun buildLayout(
       text: Spannable,
       layoutWidth: Int,
@@ -797,6 +858,7 @@ internal object TextLayoutManager {
       ellipsizeMode: TextUtils.TruncateAt?,
       maxNumberOfLines: Int,
       paint: TextPaint,
+      useBoundsForWidth: Boolean = false,
   ): Layout {
     val builder =
         StaticLayout.Builder.obtain(text, 0, text.length, paint, layoutWidth)
@@ -816,6 +878,10 @@ internal object TextLayoutManager {
 
     if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.P) {
       builder.setUseLineSpacingFromFallbacks(true)
+    }
+
+    if (useBoundsForWidth) {
+      setUseBoundsForWidthMethod?.invoke(builder, true)
     }
 
     return builder.build()
