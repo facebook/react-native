@@ -76,29 +76,34 @@ internal class InterpolationAnimatedNode(config: ReadableMap) : ValueAnimatedNod
     val parentValue = parent?.getValue() ?: return
     when (outputType) {
       OutputType.Number ->
-          nodeValue =
-              interpolate(
-                  parentValue,
-                  inputRange,
-                  outputRange as DoubleArray,
-                  extrapolateLeft,
-                  extrapolateRight,
-              )
-      OutputType.Color ->
-          objectValue =
-              Integer.valueOf(interpolateColor(parentValue, inputRange, outputRange as IntArray))
-      OutputType.String ->
-          pattern?.let {
-            @Suppress("UNCHECKED_CAST")
-            objectValue =
-                interpolateString(
-                    it,
+          (outputRange as? DoubleArray)?.let { range ->
+            nodeValue =
+                interpolate(
                     parentValue,
                     inputRange,
-                    outputRange as Array<DoubleArray>,
+                    range,
                     extrapolateLeft,
                     extrapolateRight,
                 )
+          }
+      OutputType.Color ->
+          (outputRange as? IntArray)?.let { range ->
+            objectValue = Integer.valueOf(interpolateColor(parentValue, inputRange, range))
+          }
+      OutputType.String ->
+          pattern?.let { pat ->
+            @Suppress("UNCHECKED_CAST")
+            (outputRange as? Array<DoubleArray>)?.let { range ->
+              objectValue =
+                  interpolateString(
+                      pat,
+                      parentValue,
+                      inputRange,
+                      range,
+                      extrapolateLeft,
+                      extrapolateRight,
+                  )
+            }
           }
 
       else -> {}
