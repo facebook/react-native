@@ -31,7 +31,7 @@ permissions:
 jobs:
   validate_cxx_api_snapshots:
     runs-on: ubuntu-latest
-    if: github.repository == 'facebook/react-native'
+    if: github.repository == 'react/react-native'
     steps:
       - name: Checkout
         uses: actions/checkout@v6
