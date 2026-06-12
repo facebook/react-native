@@ -673,36 +673,31 @@ internal object TextLayoutManager {
       reactTextViewManagerCallback: ReactTextViewManagerCallback?,
       textEffectRegistry: TextEffectRegistry? = null,
   ): Spannable {
-    var text: Spannable?
     if (attributedString.contains(AS_KEY_CACHE_ID)) {
       val cacheId = attributedString.getInt(AS_KEY_CACHE_ID)
       val cachedSpannable = checkNotNull(tagToSpannableCache[cacheId])
-      text =
-          if (cachedSpannable.fontWeightAdjustment == fontWeightAdjustment) {
-            cachedSpannable.spannable
-          } else {
-            createSpannableFromAttributedString(
-                assets,
-                fontWeightAdjustment,
-                attributedString.getMapBuffer(AS_KEY_FRAGMENTS),
-                reactTextViewManagerCallback,
-                null,
-                textEffectRegistry,
-            )
-          }
-    } else {
-      text =
-          createSpannableFromAttributedString(
-              assets,
-              fontWeightAdjustment,
-              attributedString.getMapBuffer(AS_KEY_FRAGMENTS),
-              reactTextViewManagerCallback,
-              null,
-              textEffectRegistry,
-          )
+      if (cachedSpannable.fontWeightAdjustment == fontWeightAdjustment) {
+        return cachedSpannable.spannable
+      }
+
+      return createSpannableFromAttributedString(
+          assets,
+          fontWeightAdjustment,
+          attributedString.getMapBuffer(AS_KEY_FRAGMENTS),
+          reactTextViewManagerCallback,
+          null,
+          textEffectRegistry,
+      )
     }
 
-    return text
+    return createSpannableFromAttributedString(
+        assets,
+        fontWeightAdjustment,
+        attributedString.getMapBuffer(AS_KEY_FRAGMENTS),
+        reactTextViewManagerCallback,
+        null,
+        textEffectRegistry,
+    )
   }
 
   @OptIn(UnstableReactNativeAPI::class)
