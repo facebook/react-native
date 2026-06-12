@@ -36,6 +36,7 @@ import com.facebook.react.bridge.ReactSoftExceptionLogger.logSoftException
 import com.facebook.react.bridge.ReadableArray
 import com.facebook.react.bridge.ReadableType
 import com.facebook.react.common.ReactConstants
+import com.facebook.react.common.annotations.UnstableReactNativeAPI
 import com.facebook.react.common.mapbuffer.MapBuffer
 import com.facebook.react.module.annotations.ReactModule
 import com.facebook.react.uimanager.BackgroundStyleApplicator.setBorderColor
@@ -1000,6 +1001,7 @@ public open class ReactTextInputManager public constructor() :
     return null
   }
 
+  @OptIn(UnstableReactNativeAPI::class)
   public fun getReactTextUpdate(
       view: ReactEditText,
       props: ReactStylesDiffMap,

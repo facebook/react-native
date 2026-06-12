@@ -128,9 +128,6 @@ internal object TextLayoutManager {
     }
   }
 
-  fun setCachedSpannableForTag(reactTag: Int, sp: Spannable): Unit =
-      setCachedSpannableForTag(reactTag, 0, sp)
-
   fun setCachedSpannableForTag(
       reactTag: Int,
       fontWeightAdjustment: Int,
@@ -1077,32 +1074,6 @@ internal object TextLayoutManager {
   @OptIn(UnstableReactNativeAPI::class)
   fun createPreparedLayout(
       assets: AssetManager,
-      attributedString: ReadableMapBuffer,
-      paragraphAttributes: ReadableMapBuffer,
-      width: Float,
-      widthYogaMeasureMode: YogaMeasureMode,
-      height: Float,
-      heightYogaMeasureMode: YogaMeasureMode,
-      reactTextViewManagerCallback: ReactTextViewManagerCallback?,
-      textEffectRegistry: TextEffectRegistry? = null,
-  ): PreparedLayout =
-      createPreparedLayout(
-          assets,
-          0,
-          attributedString,
-          paragraphAttributes,
-          width,
-          widthYogaMeasureMode,
-          height,
-          heightYogaMeasureMode,
-          reactTextViewManagerCallback,
-          textEffectRegistry,
-      )
-
-  @JvmStatic
-  @OptIn(UnstableReactNativeAPI::class)
-  fun createPreparedLayout(
-      assets: AssetManager,
       fontWeightAdjustment: Int,
       attributedString: ReadableMapBuffer,
       paragraphAttributes: ReadableMapBuffer,
@@ -1266,34 +1237,6 @@ internal object TextLayoutManager {
       previousFontSize = currentFontSize
     }
   }
-
-  @JvmStatic
-  @OptIn(UnstableReactNativeAPI::class)
-  fun measureText(
-      assets: AssetManager,
-      attributedString: MapBuffer,
-      paragraphAttributes: MapBuffer,
-      width: Float,
-      widthYogaMeasureMode: YogaMeasureMode,
-      height: Float,
-      heightYogaMeasureMode: YogaMeasureMode,
-      reactTextViewManagerCallback: ReactTextViewManagerCallback?,
-      attachmentsPositions: FloatArray?,
-      textEffectRegistry: TextEffectRegistry? = null,
-  ): Long =
-      measureText(
-          assets,
-          0,
-          attributedString,
-          paragraphAttributes,
-          width,
-          widthYogaMeasureMode,
-          height,
-          heightYogaMeasureMode,
-          reactTextViewManagerCallback,
-          attachmentsPositions,
-          textEffectRegistry,
-      )
 
   @JvmStatic
   @OptIn(UnstableReactNativeAPI::class)
@@ -1569,28 +1512,6 @@ internal object TextLayoutManager {
     metrics.height = placeholder.height.toFloat()
     return lastAttachmentFoundInSpan
   }
-
-  @JvmStatic
-  @OptIn(UnstableReactNativeAPI::class)
-  fun measureLines(
-      assetManager: AssetManager,
-      attributedString: MapBuffer,
-      paragraphAttributes: MapBuffer,
-      width: Float,
-      height: Float,
-      reactTextViewManagerCallback: ReactTextViewManagerCallback?,
-      textEffectRegistry: TextEffectRegistry? = null,
-  ): WritableArray =
-      measureLines(
-          assetManager,
-          0,
-          attributedString,
-          paragraphAttributes,
-          width,
-          height,
-          reactTextViewManagerCallback,
-          textEffectRegistry,
-      )
 
   @JvmStatic
   @OptIn(UnstableReactNativeAPI::class)
