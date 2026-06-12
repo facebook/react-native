@@ -3303,6 +3303,11 @@ public abstract class com/facebook/react/uimanager/GuardedFrameCallback : androi
 	protected abstract fun doFrameGuarded (J)V
 }
 
+public abstract interface class com/facebook/react/uimanager/HasChildPressedStateDelay {
+	public abstract fun getHasChildPressedStateDelay ()Ljava/lang/Boolean;
+	public abstract fun setHasChildPressedStateDelay (Ljava/lang/Boolean;)V
+}
+
 public abstract interface class com/facebook/react/uimanager/IViewGroupManager : com/facebook/react/uimanager/IViewManagerWithChildren {
 	public abstract fun addView (Landroid/view/View;Landroid/view/View;I)V
 	public abstract fun getChildAt (Landroid/view/View;I)Landroid/view/View;
@@ -5146,10 +5151,13 @@ public abstract interface class com/facebook/react/viewmanagers/VirtualViewManag
 	public abstract fun setRenderState (Landroid/view/View;I)V
 }
 
-public final class com/facebook/react/views/drawer/ReactDrawerLayout : androidx/drawerlayout/widget/DrawerLayout {
+public final class com/facebook/react/views/drawer/ReactDrawerLayout : androidx/drawerlayout/widget/DrawerLayout, com/facebook/react/uimanager/HasChildPressedStateDelay {
 	public fun <init> (Lcom/facebook/react/bridge/ReactContext;)V
+	public fun getHasChildPressedStateDelay ()Ljava/lang/Boolean;
 	public fun onInterceptTouchEvent (Landroid/view/MotionEvent;)Z
 	public fun onTouchEvent (Landroid/view/MotionEvent;)Z
+	public fun setHasChildPressedStateDelay (Ljava/lang/Boolean;)V
+	public fun shouldDelayChildPressedState ()Z
 }
 
 public final class com/facebook/react/views/drawer/ReactDrawerLayoutManager : com/facebook/react/uimanager/ViewGroupManager, com/facebook/react/viewmanagers/AndroidDrawerLayoutManagerInterface {
@@ -5403,6 +5411,7 @@ public final class com/facebook/react/views/modal/ReactModalHostView : android/v
 	public final fun setStateWrapper (Lcom/facebook/react/uimanager/StateWrapper;)V
 	public final fun setStatusBarTranslucent (Z)V
 	public final fun setTransparent (Z)V
+	public fun shouldDelayChildPressedState ()Z
 	public final fun showOrUpdate ()V
 }
 
@@ -5449,7 +5458,7 @@ public final class com/facebook/react/views/scroll/ReactHorizontalScrollContaine
 public final class com/facebook/react/views/scroll/ReactHorizontalScrollContainerViewManager$Companion {
 }
 
-public class com/facebook/react/views/scroll/ReactHorizontalScrollView : android/widget/HorizontalScrollView, android/view/View$OnLayoutChangeListener, android/view/ViewGroup$OnHierarchyChangeListener, com/facebook/react/uimanager/ReactClippingViewGroup, com/facebook/react/uimanager/ReactOverflowViewWithInset, com/facebook/react/views/scroll/ReactAccessibleScrollView, com/facebook/react/views/scroll/ReactScrollViewHelper$HasFlingAnimator, com/facebook/react/views/scroll/ReactScrollViewHelper$HasScrollEventThrottle, com/facebook/react/views/scroll/ReactScrollViewHelper$HasScrollState, com/facebook/react/views/scroll/ReactScrollViewHelper$HasSmoothScroll, com/facebook/react/views/scroll/ReactScrollViewHelper$HasStateWrapper, com/facebook/react/views/scroll/VirtualViewContainer {
+public class com/facebook/react/views/scroll/ReactHorizontalScrollView : android/widget/HorizontalScrollView, android/view/View$OnLayoutChangeListener, android/view/ViewGroup$OnHierarchyChangeListener, com/facebook/react/uimanager/HasChildPressedStateDelay, com/facebook/react/uimanager/ReactClippingViewGroup, com/facebook/react/uimanager/ReactOverflowViewWithInset, com/facebook/react/views/scroll/ReactAccessibleScrollView, com/facebook/react/views/scroll/ReactScrollViewHelper$HasFlingAnimator, com/facebook/react/views/scroll/ReactScrollViewHelper$HasScrollEventThrottle, com/facebook/react/views/scroll/ReactScrollViewHelper$HasScrollState, com/facebook/react/views/scroll/ReactScrollViewHelper$HasSmoothScroll, com/facebook/react/views/scroll/ReactScrollViewHelper$HasStateWrapper, com/facebook/react/views/scroll/VirtualViewContainer {
 	public fun <init> (Landroid/content/Context;)V
 	public fun <init> (Landroid/content/Context;Lcom/facebook/react/views/scroll/FpsListener;)V
 	public synthetic fun <init> (Landroid/content/Context;Lcom/facebook/react/views/scroll/FpsListener;ILkotlin/jvm/internal/DefaultConstructorMarker;)V
@@ -5469,6 +5478,7 @@ public class com/facebook/react/views/scroll/ReactHorizontalScrollView : android
 	public fun getFadingEdgeLengthStart ()I
 	public fun getFlingAnimator ()Landroid/animation/ValueAnimator;
 	public fun getFlingExtrapolatedDistance (I)I
+	public fun getHasChildPressedStateDelay ()Ljava/lang/Boolean;
 	public fun getLastScrollDispatchTime ()J
 	protected fun getLeftFadingEdgeStrength ()F
 	public fun getOverflow ()Ljava/lang/String;
@@ -5516,6 +5526,7 @@ public class com/facebook/react/views/scroll/ReactHorizontalScrollView : android
 	public fun setEndFillColor (I)V
 	public fun setFadingEdgeLengthEnd (I)V
 	public fun setFadingEdgeLengthStart (I)V
+	public fun setHasChildPressedStateDelay (Ljava/lang/Boolean;)V
 	public fun setLastScrollDispatchTime (J)V
 	public fun setOverflow (Ljava/lang/String;)V
 	public fun setOverflowInset (IIII)V
@@ -5534,6 +5545,7 @@ public class com/facebook/react/views/scroll/ReactHorizontalScrollView : android
 	public fun setSnapToEnd (Z)V
 	public fun setSnapToStart (Z)V
 	public fun setStateWrapper (Lcom/facebook/react/uimanager/StateWrapper;)V
+	public fun shouldDelayChildPressedState ()Z
 	public fun startFlingAnimator (II)V
 	public fun updateClippingRect ()V
 	public fun updateClippingRect (Ljava/util/Set;)V
@@ -5596,7 +5608,7 @@ public class com/facebook/react/views/scroll/ReactHorizontalScrollViewManager : 
 public final class com/facebook/react/views/scroll/ReactHorizontalScrollViewManager$Companion {
 }
 
-public class com/facebook/react/views/scroll/ReactScrollView : android/widget/ScrollView, android/view/View$OnLayoutChangeListener, android/view/ViewGroup$OnHierarchyChangeListener, com/facebook/react/uimanager/ReactClippingViewGroup, com/facebook/react/uimanager/ReactOverflowViewWithInset, com/facebook/react/views/scroll/ReactAccessibleScrollView, com/facebook/react/views/scroll/ReactScrollViewHelper$HasFlingAnimator, com/facebook/react/views/scroll/ReactScrollViewHelper$HasScrollEventThrottle, com/facebook/react/views/scroll/ReactScrollViewHelper$HasScrollState, com/facebook/react/views/scroll/ReactScrollViewHelper$HasSmoothScroll, com/facebook/react/views/scroll/ReactScrollViewHelper$HasStateWrapper, com/facebook/react/views/scroll/VirtualViewContainer {
+public class com/facebook/react/views/scroll/ReactScrollView : android/widget/ScrollView, android/view/View$OnLayoutChangeListener, android/view/ViewGroup$OnHierarchyChangeListener, com/facebook/react/uimanager/HasChildPressedStateDelay, com/facebook/react/uimanager/ReactClippingViewGroup, com/facebook/react/uimanager/ReactOverflowViewWithInset, com/facebook/react/views/scroll/ReactAccessibleScrollView, com/facebook/react/views/scroll/ReactScrollViewHelper$HasFlingAnimator, com/facebook/react/views/scroll/ReactScrollViewHelper$HasScrollEventThrottle, com/facebook/react/views/scroll/ReactScrollViewHelper$HasScrollState, com/facebook/react/views/scroll/ReactScrollViewHelper$HasSmoothScroll, com/facebook/react/views/scroll/ReactScrollViewHelper$HasStateWrapper, com/facebook/react/views/scroll/VirtualViewContainer {
 	public fun <init> (Landroid/content/Context;)V
 	public fun <init> (Landroid/content/Context;Lcom/facebook/react/views/scroll/FpsListener;)V
 	public synthetic fun <init> (Landroid/content/Context;Lcom/facebook/react/views/scroll/FpsListener;ILkotlin/jvm/internal/DefaultConstructorMarker;)V
@@ -5614,6 +5626,7 @@ public class com/facebook/react/views/scroll/ReactScrollView : android/widget/Sc
 	public fun getFadingEdgeLengthStart ()I
 	public fun getFlingAnimator ()Landroid/animation/ValueAnimator;
 	public fun getFlingExtrapolatedDistance (I)I
+	public fun getHasChildPressedStateDelay ()Ljava/lang/Boolean;
 	public fun getLastScrollDispatchTime ()J
 	protected fun getOverScrollerFromParent ()Landroid/widget/OverScroller;
 	public fun getOverflow ()Ljava/lang/String;
@@ -5660,6 +5673,7 @@ public class com/facebook/react/views/scroll/ReactScrollView : android/widget/Sc
 	public fun setEndFillColor (I)V
 	public fun setFadingEdgeLengthEnd (I)V
 	public fun setFadingEdgeLengthStart (I)V
+	public fun setHasChildPressedStateDelay (Ljava/lang/Boolean;)V
 	public fun setLastScrollDispatchTime (J)V
 	public fun setOverflow (Ljava/lang/String;)V
 	public fun setOverflowInset (IIII)V
@@ -5680,6 +5694,7 @@ public class com/facebook/react/views/scroll/ReactScrollView : android/widget/Sc
 	public fun setSnapToEnd (Z)V
 	public fun setSnapToStart (Z)V
 	public fun setStateWrapper (Lcom/facebook/react/uimanager/StateWrapper;)V
+	public fun shouldDelayChildPressedState ()Z
 	public fun startFlingAnimator (II)V
 	public fun updateClippingRect ()V
 	public fun updateClippingRect (Ljava/util/Set;)V
@@ -5948,15 +5963,18 @@ public final class com/facebook/react/views/scroll/VirtualViewContainerState$Com
 	public final fun create (Landroid/view/ViewGroup;)Lcom/facebook/react/views/scroll/VirtualViewContainerState;
 }
 
-public class com/facebook/react/views/swiperefresh/ReactSwipeRefreshLayout : androidx/swiperefreshlayout/widget/SwipeRefreshLayout {
+public class com/facebook/react/views/swiperefresh/ReactSwipeRefreshLayout : androidx/swiperefreshlayout/widget/SwipeRefreshLayout, com/facebook/react/uimanager/HasChildPressedStateDelay {
 	public fun <init> (Lcom/facebook/react/bridge/ReactContext;)V
 	public fun canChildScrollUp ()Z
+	public fun getHasChildPressedStateDelay ()Ljava/lang/Boolean;
 	public fun onInterceptTouchEvent (Landroid/view/MotionEvent;)Z
 	public fun onLayout (ZIIII)V
 	public fun onTouchEvent (Landroid/view/MotionEvent;)Z
 	public fun requestDisallowInterceptTouchEvent (Z)V
+	public fun setHasChildPressedStateDelay (Ljava/lang/Boolean;)V
 	public final fun setProgressViewOffset (F)V
 	public fun setRefreshing (Z)V
+	public fun shouldDelayChildPressedState ()Z
 }
 
 public final class com/facebook/react/views/text/DefaultStyleValuesUtil {
@@ -6445,6 +6463,7 @@ public class com/facebook/react/views/view/ReactViewGroup : android/view/ViewGro
 	public fun setPointerEvents (Lcom/facebook/react/uimanager/PointerEvents;)V
 	public fun setRemoveClippedSubviews (Z)V
 	public final fun setTranslucentBackgroundDrawable (Landroid/graphics/drawable/Drawable;)V
+	public fun shouldDelayChildPressedState ()Z
 	public fun updateClippingRect ()V
 	public fun updateClippingRect (Ljava/util/Set;)V
 }
