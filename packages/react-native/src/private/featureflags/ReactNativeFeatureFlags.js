@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<d9146c8c9b0c602e4cedb99e6d91558e>>
+ * @generated SignedSource<<609451fd0a38e0f8eaf685e7cf534e27>>
  * @flow strict
  * @noformat
  */
@@ -27,7 +27,7 @@ import {
   setOverrides,
 } from './ReactNativeFeatureFlagsBase';
 
-export type ReactNativeFeatureFlagsJsOnly = $ReadOnly<{
+export type ReactNativeFeatureFlagsJsOnly = Readonly<{
   jsOnlyTestFlag: Getter<boolean>,
   animatedDeferStartOfTimingAnimations: Getter<boolean>,
   animatedShouldDebounceQueueFlush: Getter<boolean>,
@@ -46,7 +46,7 @@ export type ReactNativeFeatureFlagsJsOnly = $ReadOnly<{
 
 export type ReactNativeFeatureFlagsJsOnlyOverrides = OverridesFor<ReactNativeFeatureFlagsJsOnly>;
 
-export type ReactNativeFeatureFlags = $ReadOnly<{
+export type ReactNativeFeatureFlags = Readonly<{
   ...ReactNativeFeatureFlagsJsOnly,
   commonTestFlag: Getter<boolean>,
   commonTestFlagWithoutNativeImplementation: Getter<boolean>,
