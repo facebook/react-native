@@ -859,7 +859,7 @@ internal object TextLayoutManager {
    * Sets attributes on the TextPaint, used for content outside the Spannable text, like for empty
    * strings, or newlines after the last trailing character
    */
-  private fun updateTextPaint(
+  internal fun updateTextPaint(
       paint: TextPaint,
       baseTextAttributes: TextAttributeProps,
       assets: AssetManager,

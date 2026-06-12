@@ -7,11 +7,11 @@
 
 package com.facebook.react.views.text
 
-import android.content.res.AssetManager
 import android.graphics.Typeface
 import android.text.SpannableString
 import android.text.TextPaint
 import com.facebook.react.bridge.JavaOnlyMap
+import com.facebook.react.common.annotations.UnstableReactNativeAPI
 import com.facebook.react.common.mapbuffer.WritableMapBuffer
 import com.facebook.react.internal.featureflags.ReactNativeFeatureFlags
 import com.facebook.react.internal.featureflags.ReactNativeFeatureFlagsForTests
@@ -30,6 +30,7 @@ import org.robolectric.annotation.Config
 
 @RunWith(RobolectricTestRunner::class)
 @Config(sdk = [34])
+@OptIn(UnstableReactNativeAPI::class)
 class TextLayoutManagerFontWeightAdjustmentTest {
 
   @Before
@@ -50,7 +51,7 @@ class TextLayoutManagerFontWeightAdjustmentTest {
     val paint = TextPaint(TextPaint.ANTI_ALIAS_FLAG)
     val textAttributes = TextAttributeProps.fromReadableMap(ReactStylesDiffMap(JavaOnlyMap()))
 
-    invokeUpdateTextPaint(
+    TextLayoutManager.updateTextPaint(
         paint,
         textAttributes,
         RuntimeEnvironment.getApplication().assets,
@@ -66,7 +67,7 @@ class TextLayoutManagerFontWeightAdjustmentTest {
     val paint = TextPaint(TextPaint.ANTI_ALIAS_FLAG)
     val textAttributes = TextAttributeProps.fromReadableMap(ReactStylesDiffMap(JavaOnlyMap()))
 
-    invokeUpdateTextPaint(
+    TextLayoutManager.updateTextPaint(
         paint,
         textAttributes,
         RuntimeEnvironment.getApplication().assets,
@@ -118,27 +119,6 @@ class TextLayoutManagerFontWeightAdjustmentTest {
         )
 
     assertThat(recachedSpannable).isSameAs(adjustedSpannable)
-  }
-
-  private fun invokeUpdateTextPaint(
-      paint: TextPaint,
-      textAttributes: TextAttributeProps,
-      assets: AssetManager,
-      fontWeightAdjustment: Int,
-  ) {
-    val method =
-        TextLayoutManager::class
-            .java
-            .getDeclaredMethod(
-                "updateTextPaint",
-                TextPaint::class.java,
-                TextAttributeProps::class.java,
-                AssetManager::class.java,
-                java.lang.Integer.TYPE,
-            )
-            .apply { isAccessible = true }
-
-    method.invoke(TextLayoutManager, paint, textAttributes, assets, fontWeightAdjustment)
   }
 
   private companion object {
