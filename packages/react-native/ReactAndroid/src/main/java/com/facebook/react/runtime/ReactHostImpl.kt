@@ -150,6 +150,7 @@ public class ReactHostImpl(
   private val reactInstanceEventListeners: MutableList<ReactInstanceEventListener> =
       CopyOnWriteArrayList()
   private val beforeDestroyListeners: MutableList<() -> Unit> = CopyOnWriteArrayList()
+  private val pendingActivityResults: MutableList<PendingActivityResult> = CopyOnWriteArrayList()
 
   internal var reactHostInspectorTarget: ReactHostInspectorTarget? = null
   private var frameTimingsObserver: FrameTimingsObserver? = null
@@ -667,7 +668,9 @@ public class ReactHostImpl(
     if (currentContext != null) {
       currentContext.onActivityResult(activity, requestCode, resultCode, data)
     } else {
-      raiseSoftException(method, "Tried to access onActivityResult while context is not ready")
+      stateTracker.enterState(method, "Queuing activity result until context is ready")
+      pendingActivityResults.add(
+          PendingActivityResult(WeakReference(activity), requestCode, resultCode, data))
     }
   }
 
@@ -893,8 +896,31 @@ public class ReactHostImpl(
   @ThreadConfined(ThreadConfined.UI)
   private fun moveToHostDestroy(currentContext: ReactContext?) {
     reactLifecycleStateManager.moveToOnHostDestroy(currentContext)
+    pendingActivityResults.clear()
     currentActivity = null
     frameTimingsObserver?.setCurrentWindow(null)
+  }
+
+  private fun replayPendingActivityResults(reactContext: ReactContext) {
+    val activityResults = pendingActivityResults.toList()
+    pendingActivityResults.clear()
+
+    for (activityResult in activityResults) {
+      val activity = activityResult.activity.get()
+      if (activity != null) {
+        reactContext.onActivityResult(
+            activity,
+            activityResult.requestCode,
+            activityResult.resultCode,
+            activityResult.data,
+        )
+      } else {
+        raiseSoftException(
+            "replayPendingActivityResults()",
+            "Dropping queued activity result because activity was garbage collected",
+        )
+      }
+    }
   }
 
   private fun raiseSoftException(
@@ -1010,6 +1036,13 @@ public class ReactHostImpl(
       val isReloading: Boolean,
   )
 
+  private class PendingActivityResult(
+      val activity: WeakReference<Activity>,
+      val requestCode: Int,
+      val resultCode: Int,
+      val data: Intent?,
+  )
+
   @ThreadConfined("ReactHost")
   private fun getOrCreateReactInstanceTask(): Task<ReactInstance> {
     val method = "getOrCreateReactInstanceTask()"
@@ -1120,6 +1153,8 @@ public class ReactHostImpl(
            */
           reactLifecycleStateManager.resumeReactContextIfHostResumed(reactContext, currentActivity)
         }
+
+        replayPendingActivityResults(reactContext)
 
         stateTracker.enterState(method, "Executing ReactInstanceEventListeners")
         for (listener in reactInstanceEventListeners) {
