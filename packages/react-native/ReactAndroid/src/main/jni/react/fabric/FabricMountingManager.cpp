@@ -565,6 +565,258 @@ inline void writeUpdateOverflowInsetMountItem(
           overflowInsetBottom});
 }
 
+// Bundles together the per-mutation-type output vectors so the mutation
+// handlers below can take a single reference. `maintainMutationOrder`
+// determines whether mount items are appended to `common` (preserving the
+// exact order produced by the differ) or to their type-specific bucket.
+struct MountItemBuffers {
+  bool maintainMutationOrder;
+  std::vector<CppMountItem>& common;
+  std::vector<CppMountItem>& deletes;
+  std::vector<CppMountItem>& updateProps;
+  std::vector<CppMountItem>& updateState;
+  std::vector<CppMountItem>& updatePadding;
+  std::vector<CppMountItem>& updateLayout;
+  std::vector<CppMountItem>& updateOverflowInset;
+  std::vector<CppMountItem>& updateEventEmitter;
+
+  std::vector<CppMountItem>& orderedOr(std::vector<CppMountItem>& bucket) {
+    return maintainMutationOrder ? common : bucket;
+  }
+};
+
+inline void handleCreateMutation(
+    const ShadowViewMutation& mutation,
+    MountItemBuffers& buffers,
+    std::unordered_set<Tag>& allocatedViewTags) {
+  const auto& newChildShadowView = mutation.newChildShadowView;
+  bool shouldCreateView = !allocatedViewTags.contains(newChildShadowView.tag);
+
+  if (shouldCreateView) {
+    buffers.common.push_back(CppMountItem::CreateMountItem(newChildShadowView));
+    allocatedViewTags.insert(newChildShadowView.tag);
+  }
+}
+
+inline void handleRemoveMutation(
+    const ShadowViewMutation& mutation,
+    bool isVirtual,
+    MountItemBuffers& buffers) {
+  if (!isVirtual) {
+    buffers.common.push_back(
+        CppMountItem::RemoveMountItem(
+            mutation.parentTag, mutation.oldChildShadowView, mutation.index));
+  }
+}
+
+inline void handleDeleteMutation(
+    const ShadowViewMutation& mutation,
+    MountItemBuffers& buffers,
+    std::unordered_set<Tag>& allocatedViewTags) {
+  const auto& oldChildShadowView = mutation.oldChildShadowView;
+  buffers.orderedOr(buffers.deletes)
+      .push_back(CppMountItem::DeleteMountItem(oldChildShadowView));
+  if (allocatedViewTags.erase(oldChildShadowView.tag) != 1) {
+    LOG(ERROR) << "Emitting delete for unallocated view "
+               << oldChildShadowView.tag;
+  }
+}
+
+inline void handleUpdateMutation(
+    const ShadowViewMutation& mutation,
+    bool isVirtual,
+    MountItemBuffers& buffers,
+    std::unordered_set<Tag>& allocatedViewTags) {
+  const auto& oldChildShadowView = mutation.oldChildShadowView;
+  const auto& newChildShadowView = mutation.newChildShadowView;
+  auto parentTag = mutation.parentTag;
+
+  if (!isVirtual) {
+    if (!allocatedViewTags.contains(newChildShadowView.tag)) {
+      LOG(ERROR) << "Emitting update for unallocated view "
+                 << newChildShadowView.tag;
+    }
+
+    if (oldChildShadowView.props != newChildShadowView.props) {
+      buffers.orderedOr(buffers.updateProps)
+          .push_back(
+              CppMountItem::UpdatePropsMountItem(
+                  oldChildShadowView, newChildShadowView));
+    }
+    if (oldChildShadowView.state != newChildShadowView.state) {
+      buffers.orderedOr(buffers.updateState)
+          .push_back(CppMountItem::UpdateStateMountItem(newChildShadowView));
+    }
+
+    // Padding: padding mountItems must be executed before layout props
+    // are updated in the view. This is necessary to ensure that events
+    // (resulting from layout changes) are dispatched with the correct
+    // padding information.
+    if (oldChildShadowView.layoutMetrics.contentInsets !=
+        newChildShadowView.layoutMetrics.contentInsets) {
+      buffers.orderedOr(buffers.updatePadding)
+          .push_back(CppMountItem::UpdatePaddingMountItem(newChildShadowView));
+    }
+
+    if (oldChildShadowView.layoutMetrics != newChildShadowView.layoutMetrics) {
+      buffers.orderedOr(buffers.updateLayout)
+          .push_back(
+              CppMountItem::UpdateLayoutMountItem(
+                  mutation.newChildShadowView, parentTag));
+    }
+
+    // OverflowInset: This is the values indicating boundaries including
+    // children of the current view. The layout of current view may not
+    // change, and we separate this part from layout mount items to not
+    // pack too much data there.
+    if ((oldChildShadowView.layoutMetrics.overflowInset !=
+         newChildShadowView.layoutMetrics.overflowInset)) {
+      buffers.orderedOr(buffers.updateOverflowInset)
+          .push_back(
+              CppMountItem::UpdateOverflowInsetMountItem(newChildShadowView));
+    }
+  }
+
+  if (oldChildShadowView.eventEmitter != newChildShadowView.eventEmitter) {
+    buffers.orderedOr(buffers.updateProps)
+        .push_back(
+            CppMountItem::UpdateEventEmitterMountItem(
+                mutation.newChildShadowView));
+  }
+}
+
+inline void handleInsertMutation(
+    const ShadowViewMutation& mutation,
+    bool isVirtual,
+    MountItemBuffers& buffers,
+    std::unordered_set<Tag>& allocatedViewTags) {
+  const auto& newChildShadowView = mutation.newChildShadowView;
+  auto parentTag = mutation.parentTag;
+  auto& index = mutation.index;
+
+  if (!isVirtual) {
+    // Insert item
+    buffers.common.push_back(
+        CppMountItem::InsertMountItem(parentTag, newChildShadowView, index));
+
+    bool shouldCreateView = !allocatedViewTags.contains(newChildShadowView.tag);
+    if (ReactNativeFeatureFlags::enableAccumulatedUpdatesInRawPropsAndroid()) {
+      if (shouldCreateView) {
+        LOG(ERROR) << "Emitting insert for unallocated view "
+                   << newChildShadowView.tag;
+      }
+      buffers.orderedOr(buffers.updateProps)
+          .push_back(
+              CppMountItem::UpdatePropsMountItem({}, newChildShadowView));
+    } else {
+      if (shouldCreateView) {
+        LOG(ERROR) << "Emitting insert for unallocated view "
+                   << newChildShadowView.tag;
+        buffers.orderedOr(buffers.updateProps)
+            .push_back(
+                CppMountItem::UpdatePropsMountItem({}, newChildShadowView));
+      }
+    }
+
+    // State
+    if (newChildShadowView.state) {
+      buffers.orderedOr(buffers.updateState)
+          .push_back(CppMountItem::UpdateStateMountItem(newChildShadowView));
+    }
+
+    // Padding: padding mountItems must be executed before layout props
+    // are updated in the view. This is necessary to ensure that events
+    // (resulting from layout changes) are dispatched with the correct
+    // padding information.
+    if (newChildShadowView.layoutMetrics.contentInsets != EdgeInsets::ZERO) {
+      buffers.orderedOr(buffers.updatePadding)
+          .push_back(CppMountItem::UpdatePaddingMountItem(newChildShadowView));
+    }
+
+    // Layout
+    buffers.orderedOr(buffers.updateLayout)
+        .push_back(
+            CppMountItem::UpdateLayoutMountItem(newChildShadowView, parentTag));
+
+    // OverflowInset: This is the values indicating boundaries including
+    // children of the current view. The layout of current view may not
+    // change, and we separate this part from layout mount items to not
+    // pack too much data there.
+    if (newChildShadowView.layoutMetrics.overflowInset != EdgeInsets::ZERO) {
+      buffers.orderedOr(buffers.updateOverflowInset)
+          .push_back(
+              CppMountItem::UpdateOverflowInsetMountItem(newChildShadowView));
+    }
+  }
+
+  // EventEmitter
+  // On insert we always update the event emitter, as we do not pass
+  // it in when preallocating views
+  buffers.orderedOr(buffers.updateEventEmitter)
+      .push_back(
+          CppMountItem::UpdateEventEmitterMountItem(
+              mutation.newChildShadowView));
+}
+
+// Dispatches a single mount item from the `common` vector to the matching
+// writer. Preserves the exact switch behavior, including the FATAL default.
+inline void writeCommonMountItem(
+    InstructionBuffer& buffer,
+    const CppMountItem& mountItem) {
+  const auto& mountItemType = mountItem.type;
+  switch (mountItemType) {
+    case CppMountItem::Type::Create:
+      writeCreateMountItem(buffer, mountItem);
+      break;
+    case CppMountItem::Type::Delete:
+      writeDeleteMountItem(buffer, mountItem);
+      break;
+    case CppMountItem::Type::Insert:
+      writeInsertMountItem(buffer, mountItem);
+      break;
+    case CppMountItem::Type::Remove:
+      writeRemoveMountItem(buffer, mountItem);
+      break;
+    case CppMountItem::Type::UpdateProps:
+      writeUpdatePropsMountItem(buffer, mountItem);
+      break;
+    case CppMountItem::Type::UpdateState:
+      writeUpdateStateMountItem(buffer, mountItem);
+      break;
+    case CppMountItem::Type::UpdateLayout:
+      writeUpdateLayoutMountItem(buffer, mountItem);
+      break;
+    case CppMountItem::Type::UpdateEventEmitter:
+      writeUpdateEventEmitterMountItem(buffer, mountItem);
+      break;
+    case CppMountItem::Type::UpdatePadding:
+      writeUpdatePaddingMountItem(buffer, mountItem);
+      break;
+    case CppMountItem::Type::UpdateOverflowInset:
+      writeUpdateOverflowInsetMountItem(buffer, mountItem);
+      break;
+    default:
+      LOG(FATAL) << "Unexpected CppMountItem type: " << mountItemType;
+  }
+}
+
+// Writes a homogeneous batch of mount items (preamble + each item via
+// `writeItem`). No-op for an empty batch, matching the original guards.
+template <typename WriteFn>
+inline void writeMountItemBatch(
+    InstructionBuffer& buffer,
+    CppMountItem::Type mountItemType,
+    const std::vector<CppMountItem>& mountItems,
+    WriteFn&& writeItem) {
+  if (mountItems.empty()) {
+    return;
+  }
+  writeMountItemPreamble(buffer, mountItemType, mountItems.size());
+  for (const auto& mountItem : mountItems) {
+    writeItem(buffer, mountItem);
+  }
+}
+
 } // namespace
 
 void FabricMountingManager::executeMount(
@@ -613,191 +865,38 @@ void FabricMountingManager::executeMount(
                  << " was stopped!";
     }
 
+    MountItemBuffers buffers{
+        maintainMutationOrder,
+        cppCommonMountItems,
+        cppDeleteMountItems,
+        cppUpdatePropsMountItems,
+        cppUpdateStateMountItems,
+        cppUpdatePaddingMountItems,
+        cppUpdateLayoutMountItems,
+        cppUpdateOverflowInsetMountItems,
+        cppUpdateEventEmitterMountItems};
+
     for (const auto& mutation : mutations) {
-      auto parentTag = mutation.parentTag;
-      const auto& oldChildShadowView = mutation.oldChildShadowView;
-      const auto& newChildShadowView = mutation.newChildShadowView;
-      auto& mutationType = mutation.type;
-      auto& index = mutation.index;
-
       bool isVirtual = mutation.mutatedViewIsVirtual();
-      switch (mutationType) {
+      switch (mutation.type) {
         case ShadowViewMutation::Create: {
-          bool shouldCreateView =
-              !allocatedViewTags.contains(newChildShadowView.tag);
-
-          if (shouldCreateView) {
-            cppCommonMountItems.push_back(
-                CppMountItem::CreateMountItem(newChildShadowView));
-            allocatedViewTags.insert(newChildShadowView.tag);
-          }
+          handleCreateMutation(mutation, buffers, allocatedViewTags);
           break;
         }
         case ShadowViewMutation::Remove: {
-          if (!isVirtual) {
-            cppCommonMountItems.push_back(
-                CppMountItem::RemoveMountItem(
-                    parentTag, oldChildShadowView, index));
-          }
+          handleRemoveMutation(mutation, isVirtual, buffers);
           break;
         }
         case ShadowViewMutation::Delete: {
-          (maintainMutationOrder ? cppCommonMountItems : cppDeleteMountItems)
-              .push_back(CppMountItem::DeleteMountItem(oldChildShadowView));
-          if (allocatedViewTags.erase(oldChildShadowView.tag) != 1) {
-            LOG(ERROR) << "Emitting delete for unallocated view "
-                       << oldChildShadowView.tag;
-          }
+          handleDeleteMutation(mutation, buffers, allocatedViewTags);
           break;
         }
         case ShadowViewMutation::Update: {
-          if (!isVirtual) {
-            if (!allocatedViewTags.contains(newChildShadowView.tag)) {
-              LOG(ERROR) << "Emitting update for unallocated view "
-                         << newChildShadowView.tag;
-            }
-
-            if (oldChildShadowView.props != newChildShadowView.props) {
-              (maintainMutationOrder ? cppCommonMountItems
-                                     : cppUpdatePropsMountItems)
-                  .push_back(
-                      CppMountItem::UpdatePropsMountItem(
-                          oldChildShadowView, newChildShadowView));
-            }
-            if (oldChildShadowView.state != newChildShadowView.state) {
-              (maintainMutationOrder ? cppCommonMountItems
-                                     : cppUpdateStateMountItems)
-                  .push_back(
-                      CppMountItem::UpdateStateMountItem(newChildShadowView));
-            }
-
-            // Padding: padding mountItems must be executed before layout props
-            // are updated in the view. This is necessary to ensure that events
-            // (resulting from layout changes) are dispatched with the correct
-            // padding information.
-            if (oldChildShadowView.layoutMetrics.contentInsets !=
-                newChildShadowView.layoutMetrics.contentInsets) {
-              (maintainMutationOrder ? cppCommonMountItems
-                                     : cppUpdatePaddingMountItems)
-                  .push_back(
-                      CppMountItem::UpdatePaddingMountItem(newChildShadowView));
-            }
-
-            if (oldChildShadowView.layoutMetrics !=
-                newChildShadowView.layoutMetrics) {
-              (maintainMutationOrder ? cppCommonMountItems
-                                     : cppUpdateLayoutMountItems)
-                  .push_back(
-                      CppMountItem::UpdateLayoutMountItem(
-                          mutation.newChildShadowView, parentTag));
-            }
-
-            // OverflowInset: This is the values indicating boundaries including
-            // children of the current view. The layout of current view may not
-            // change, and we separate this part from layout mount items to not
-            // pack too much data there.
-            if ((oldChildShadowView.layoutMetrics.overflowInset !=
-                 newChildShadowView.layoutMetrics.overflowInset)) {
-              (maintainMutationOrder ? cppCommonMountItems
-                                     : cppUpdateOverflowInsetMountItems)
-                  .push_back(
-                      CppMountItem::UpdateOverflowInsetMountItem(
-                          newChildShadowView));
-            }
-          }
-
-          if (oldChildShadowView.eventEmitter !=
-              newChildShadowView.eventEmitter) {
-            (maintainMutationOrder ? cppCommonMountItems
-                                   : cppUpdatePropsMountItems)
-                .push_back(
-                    CppMountItem::UpdateEventEmitterMountItem(
-                        mutation.newChildShadowView));
-          }
+          handleUpdateMutation(mutation, isVirtual, buffers, allocatedViewTags);
           break;
         }
         case ShadowViewMutation::Insert: {
-          if (!isVirtual) {
-            // Insert item
-            cppCommonMountItems.push_back(
-                CppMountItem::InsertMountItem(
-                    parentTag, newChildShadowView, index));
-
-            bool shouldCreateView =
-                !allocatedViewTags.contains(newChildShadowView.tag);
-            if (ReactNativeFeatureFlags::
-                    enableAccumulatedUpdatesInRawPropsAndroid()) {
-              if (shouldCreateView) {
-                LOG(ERROR) << "Emitting insert for unallocated view "
-                           << newChildShadowView.tag;
-              }
-              (maintainMutationOrder ? cppCommonMountItems
-                                     : cppUpdatePropsMountItems)
-                  .push_back(
-                      CppMountItem::UpdatePropsMountItem(
-                          {}, newChildShadowView));
-            } else {
-              if (shouldCreateView) {
-                LOG(ERROR) << "Emitting insert for unallocated view "
-                           << newChildShadowView.tag;
-                (maintainMutationOrder ? cppCommonMountItems
-                                       : cppUpdatePropsMountItems)
-                    .push_back(
-                        CppMountItem::UpdatePropsMountItem(
-                            {}, newChildShadowView));
-              }
-            }
-
-            // State
-            if (newChildShadowView.state) {
-              (maintainMutationOrder ? cppCommonMountItems
-                                     : cppUpdateStateMountItems)
-                  .push_back(
-                      CppMountItem::UpdateStateMountItem(newChildShadowView));
-            }
-
-            // Padding: padding mountItems must be executed before layout props
-            // are updated in the view. This is necessary to ensure that events
-            // (resulting from layout changes) are dispatched with the correct
-            // padding information.
-            if (newChildShadowView.layoutMetrics.contentInsets !=
-                EdgeInsets::ZERO) {
-              (maintainMutationOrder ? cppCommonMountItems
-                                     : cppUpdatePaddingMountItems)
-                  .push_back(
-                      CppMountItem::UpdatePaddingMountItem(newChildShadowView));
-            }
-
-            // Layout
-            (maintainMutationOrder ? cppCommonMountItems
-                                   : cppUpdateLayoutMountItems)
-                .push_back(
-                    CppMountItem::UpdateLayoutMountItem(
-                        newChildShadowView, parentTag));
-
-            // OverflowInset: This is the values indicating boundaries including
-            // children of the current view. The layout of current view may not
-            // change, and we separate this part from layout mount items to not
-            // pack too much data there.
-            if (newChildShadowView.layoutMetrics.overflowInset !=
-                EdgeInsets::ZERO) {
-              (maintainMutationOrder ? cppCommonMountItems
-                                     : cppUpdateOverflowInsetMountItems)
-                  .push_back(
-                      CppMountItem::UpdateOverflowInsetMountItem(
-                          newChildShadowView));
-            }
-          }
-
-          // EventEmitter
-          // On insert we always update the event emitter, as we do not pass
-          // it in when preallocating views
-          (maintainMutationOrder ? cppCommonMountItems
-                                 : cppUpdateEventEmitterMountItems)
-              .push_back(
-                  CppMountItem::UpdateEventEmitterMountItem(
-                      mutation.newChildShadowView));
-
+          handleInsertMutation(mutation, isVirtual, buffers, allocatedViewTags);
           break;
         }
         default: {
@@ -879,96 +978,39 @@ void FabricMountingManager::executeMount(
       prevMountItemType = mountItemType;
     }
 
-    switch (mountItemType) {
-      case CppMountItem::Type::Create:
-        writeCreateMountItem(buffer, mountItem);
-        break;
-      case CppMountItem::Type::Delete:
-        writeDeleteMountItem(buffer, mountItem);
-        break;
-      case CppMountItem::Type::Insert:
-        writeInsertMountItem(buffer, mountItem);
-        break;
-      case CppMountItem::Type::Remove:
-        writeRemoveMountItem(buffer, mountItem);
-        break;
-      case CppMountItem::Type::UpdateProps:
-        writeUpdatePropsMountItem(buffer, mountItem);
-        break;
-      case CppMountItem::Type::UpdateState:
-        writeUpdateStateMountItem(buffer, mountItem);
-        break;
-      case CppMountItem::Type::UpdateLayout:
-        writeUpdateLayoutMountItem(buffer, mountItem);
-        break;
-      case CppMountItem::Type::UpdateEventEmitter:
-        writeUpdateEventEmitterMountItem(buffer, mountItem);
-        break;
-      case CppMountItem::Type::UpdatePadding:
-        writeUpdatePaddingMountItem(buffer, mountItem);
-        break;
-      case CppMountItem::Type::UpdateOverflowInset:
-        writeUpdateOverflowInsetMountItem(buffer, mountItem);
-        break;
-      default:
-        LOG(FATAL) << "Unexpected CppMountItem type: " << mountItemType;
-    }
+    writeCommonMountItem(buffer, mountItem);
   }
 
-  if (!cppUpdatePropsMountItems.empty()) {
-    writeMountItemPreamble(
-        buffer,
-        CppMountItem::Type::UpdateProps,
-        cppUpdatePropsMountItems.size());
-    for (const auto& mountItem : cppUpdatePropsMountItems) {
-      writeUpdatePropsMountItem(buffer, mountItem);
-    }
-  }
-  if (!cppUpdateStateMountItems.empty()) {
-    writeMountItemPreamble(
-        buffer,
-        CppMountItem::Type::UpdateState,
-        cppUpdateStateMountItems.size());
-    for (const auto& mountItem : cppUpdateStateMountItems) {
-      writeUpdateStateMountItem(buffer, mountItem);
-    }
-  }
-  if (!cppUpdatePaddingMountItems.empty()) {
-    writeMountItemPreamble(
-        buffer,
-        CppMountItem::Type::UpdatePadding,
-        cppUpdatePaddingMountItems.size());
-    for (const auto& mountItem : cppUpdatePaddingMountItems) {
-      writeUpdatePaddingMountItem(buffer, mountItem);
-    }
-  }
-  if (!cppUpdateLayoutMountItems.empty()) {
-    writeMountItemPreamble(
-        buffer,
-        CppMountItem::Type::UpdateLayout,
-        cppUpdateLayoutMountItems.size());
-    for (const auto& mountItem : cppUpdateLayoutMountItems) {
-      writeUpdateLayoutMountItem(buffer, mountItem);
-    }
-  }
-  if (!cppUpdateOverflowInsetMountItems.empty()) {
-    writeMountItemPreamble(
-        buffer,
-        CppMountItem::Type::UpdateOverflowInset,
-        cppUpdateOverflowInsetMountItems.size());
-    for (const auto& mountItem : cppUpdateOverflowInsetMountItems) {
-      writeUpdateOverflowInsetMountItem(buffer, mountItem);
-    }
-  }
-  if (!cppUpdateEventEmitterMountItems.empty()) {
-    writeMountItemPreamble(
-        buffer,
-        CppMountItem::Type::UpdateEventEmitter,
-        cppUpdateEventEmitterMountItems.size());
-    for (const auto& mountItem : cppUpdateEventEmitterMountItems) {
-      writeUpdateEventEmitterMountItem(buffer, mountItem);
-    }
-  }
+  writeMountItemBatch(
+      buffer,
+      CppMountItem::Type::UpdateProps,
+      cppUpdatePropsMountItems,
+      writeUpdatePropsMountItem);
+  writeMountItemBatch(
+      buffer,
+      CppMountItem::Type::UpdateState,
+      cppUpdateStateMountItems,
+      writeUpdateStateMountItem);
+  writeMountItemBatch(
+      buffer,
+      CppMountItem::Type::UpdatePadding,
+      cppUpdatePaddingMountItems,
+      writeUpdatePaddingMountItem);
+  writeMountItemBatch(
+      buffer,
+      CppMountItem::Type::UpdateLayout,
+      cppUpdateLayoutMountItems,
+      writeUpdateLayoutMountItem);
+  writeMountItemBatch(
+      buffer,
+      CppMountItem::Type::UpdateOverflowInset,
+      cppUpdateOverflowInsetMountItems,
+      writeUpdateOverflowInsetMountItem);
+  writeMountItemBatch(
+      buffer,
+      CppMountItem::Type::UpdateEventEmitter,
+      cppUpdateEventEmitterMountItems,
+      writeUpdateEventEmitterMountItem);
 
   // Write deletes last - so that all prop updates, etc, for the tag in the same
   // batch don't fail. Without additional machinery, moving deletes here
@@ -977,13 +1019,11 @@ void FabricMountingManager::executeMount(
   // for space efficiency.
   // FIXME: this optimization is incorrect when multiple transactions are
   // merged together
-  if (!cppDeleteMountItems.empty()) {
-    writeMountItemPreamble(
-        buffer, CppMountItem::Type::Delete, cppDeleteMountItems.size());
-    for (const auto& mountItem : cppDeleteMountItems) {
-      writeDeleteMountItem(buffer, mountItem);
-    }
-  }
+  writeMountItemBatch(
+      buffer,
+      CppMountItem::Type::Delete,
+      cppDeleteMountItems,
+      writeDeleteMountItem);
 
   static auto createMountItemsIntBufferBatchContainer =
       JFabricUIManager::javaClassStatic()

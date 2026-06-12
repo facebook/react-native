@@ -77,6 +77,250 @@ interpolateFloats(Float coefficient, Float oldValue, Float newValue) {
   return oldValue + (newValue - oldValue) * coefficient;
 }
 
+// Sets up the "opacity 0" starting/ending props for a Create/Delete opacity
+// animation. Mutates `view.props` in place. This is the same logic for the
+// INSERT (Create animation) and REMOVE (Delete animation) cases; only the view
+// being mutated differs. `componentDescriptor` is null when there is no
+// component descriptor for the view, in which case nothing is done.
+static void setupOpacityAnimationProps(
+    const ComponentDescriptor* componentDescriptor,
+    const PropsParserContext& propsParserContext,
+    const AnimationConfig& mutationConfig,
+    const ShadowView& baselineShadowView,
+    ShadowView& view) {
+  if (mutationConfig.animationProperty == AnimationProperty::Opacity &&
+      componentDescriptor != nullptr) {
+    auto props =
+        componentDescriptor->cloneProps(propsParserContext, view.props, {});
+
+    if (baselineShadowView.traits.check(ShadowNodeTraits::Trait::ViewKind)) {
+      const auto& viewProps = static_cast<const ViewProps&>(*props);
+      const_cast<ViewProps&>(viewProps).opacity = 0;
+    }
+
+    react_native_assert(props != nullptr);
+    if (props != nullptr) {
+      view.props = props;
+    }
+  }
+}
+
+// Sets up the "scale 0" starting/ending props for a Create/Delete scale
+// animation. Mutates `view.props` in place. This is the same logic for the
+// INSERT (Create animation) and REMOVE (Delete animation) cases; only the view
+// being mutated differs. `componentDescriptor` is null when there is no
+// component descriptor for the view, in which case nothing is done.
+static void setupScaleAnimationProps(
+    const ComponentDescriptor* componentDescriptor,
+    const PropsParserContext& propsParserContext,
+    const AnimationConfig& mutationConfig,
+    const ShadowView& baselineShadowView,
+    ShadowView& view) {
+  bool isScaleX =
+      mutationConfig.animationProperty == AnimationProperty::ScaleX ||
+      mutationConfig.animationProperty == AnimationProperty::ScaleXY;
+  bool isScaleY =
+      mutationConfig.animationProperty == AnimationProperty::ScaleY ||
+      mutationConfig.animationProperty == AnimationProperty::ScaleXY;
+  if ((isScaleX || isScaleY) && componentDescriptor != nullptr) {
+    auto props =
+        componentDescriptor->cloneProps(propsParserContext, view.props, {});
+    if (baselineShadowView.traits.check(ShadowNodeTraits::Trait::ViewKind)) {
+      const auto& viewProps = static_cast<const ViewProps&>(*props);
+      const_cast<ViewProps&>(viewProps).transform =
+          Transform::Scale(isScaleX ? 0 : 1, isScaleY ? 0 : 1, 1);
+    }
+
+    react_native_assert(props != nullptr);
+    if (props != nullptr) {
+      view.props = props;
+    }
+  }
+}
+
+// Pre-process the mutation list to catch:
+//   - remove+reinsert (reorders): collected into `insertedTags`
+//   - delete+create (reparenting): collected into `reparentedTags`
+// Also collects deleted tags into `deletedTags` (used to detect reparenting).
+static void collectReorderAndReparentTags(
+    const ShadowViewMutationList& mutations,
+    std::unordered_set<Tag>& insertedTags,
+    std::unordered_set<Tag>& deletedTags,
+    std::unordered_set<Tag>& reparentedTags) {
+  for (const auto& mutation : mutations) {
+    if (mutation.type == ShadowViewMutation::Type::Insert) {
+      insertedTags.insert(mutation.newChildShadowView.tag);
+    }
+    if (mutation.type == ShadowViewMutation::Type::Delete) {
+      deletedTags.insert(mutation.oldChildShadowView.tag);
+    }
+    if (mutation.type == ShadowViewMutation::Type::Create) {
+      if (deletedTags.find(mutation.newChildShadowView.tag) !=
+          deletedTags.end()) {
+        reparentedTags.insert(mutation.newChildShadowView.tag);
+      }
+    }
+  }
+}
+
+// Special-case: if we have some (1) ongoing UPDATE animation, (2) it conflicted
+// with a new MOVE operation (REMOVE+INSERT) without another corresponding
+// UPDATE, re-queue the keyframe so its position/props don't suddenly "jump".
+// Returns true if the keyframe was re-queued (and the caller should skip
+// generating final mutations for it).
+static bool maybeRequeueConflictingUpdateKeyframe(
+    AnimationKeyFrame& keyFrame,
+    const std::unordered_map<Tag, ShadowViewMutation>& movedTags,
+    std::vector<AnimationKeyFrame>& keyFramesToAnimate,
+    ShadowViewMutation::List& immediateMutations) {
+  if (keyFrame.type != AnimationConfigurationType::Update) {
+    return false;
+  }
+  auto movedIt = movedTags.find(keyFrame.tag);
+  if (movedIt == movedTags.end()) {
+    return false;
+  }
+  auto newKeyFrameForUpdate = std::find_if(
+      keyFramesToAnimate.begin(),
+      keyFramesToAnimate.end(),
+      [&](const auto& newKeyFrame) {
+        return newKeyFrame.type == AnimationConfigurationType::Update &&
+            newKeyFrame.tag == keyFrame.tag;
+      });
+  if (newKeyFrameForUpdate != keyFramesToAnimate.end()) {
+    return false;
+  }
+  keyFrame.invalidated = false;
+
+  // The animation will continue from the current position - we
+  // restart viewStart to make sure there are no sudden jumps
+  keyFrame.viewStart = keyFrame.viewPrev;
+
+  // Find the insert mutation that conflicted with this update
+  for (auto& mutation : immediateMutations) {
+    if (mutation.newChildShadowView.tag == keyFrame.tag &&
+        (mutation.type == ShadowViewMutation::Insert ||
+         mutation.type == ShadowViewMutation::Create)) {
+      keyFrame.viewPrev = mutation.newChildShadowView;
+      keyFrame.viewEnd = mutation.newChildShadowView;
+    }
+  }
+  keyFramesToAnimate.push_back(keyFrame);
+  return true;
+}
+
+// If the freshly-built `keyFrame` conflicts with an existing in-flight
+// animation for the same tag, start the new animation from the conflicting
+// animation's current position so there are no sudden jumps.
+static void handleConflictingAnimationsForKeyFrame(
+    AnimationKeyFrame& keyFrame,
+    std::vector<AnimationKeyFrame>& conflictingAnimations,
+    Tag tag) {
+  for (auto& conflictingKeyFrame : conflictingAnimations) {
+    const auto& conflictingMutationBaselineShadowView =
+        conflictingKeyFrame.viewStart;
+
+    // We've found a conflict.
+    if (conflictingMutationBaselineShadowView.tag == tag) {
+      conflictingKeyFrame.generateFinalSyntheticMutations = false;
+
+      // Do NOT update viewStart for a CREATE animation.
+      if (keyFrame.type == AnimationConfigurationType::Create) {
+        break;
+      }
+
+#ifdef LAYOUT_ANIMATION_VERBOSE_LOGGING
+      LOG(ERROR)
+          << "Due to conflict, replacing 'viewStart' of animated keyframe: ["
+          << conflictingKeyFrame.viewPrev.tag << "] with ##"
+          << std::hash<ShadowView>{}(conflictingKeyFrame.viewPrev);
+#endif
+      // Pick a Prop or layout property, depending on the current
+      // animation configuration. Figure out how much progress we've
+      // already made in the current animation, and start the animation
+      // from this point.
+      keyFrame.viewPrev = conflictingKeyFrame.viewPrev;
+      keyFrame.viewStart = conflictingKeyFrame.viewPrev;
+      react_native_assert(keyFrame.viewStart.tag > 0);
+      keyFrame.initialProgress = 0;
+
+      // We're guaranteed that a tag only has one animation associated
+      // with it, so we can break here. If we support multiple
+      // animations and animation curves over the same tag in the
+      // future, this will need to be modified to support that.
+      break;
+    }
+  }
+}
+
+// When an Insert immediately follows an already-queued Update animation for the
+// same tag, adjust the queued keyframe's "previous" ShadowView (and parent tag)
+// so the Update animates to/from views consistent with the mounting layer.
+static void adjustQueuedUpdateKeyframesForInsert(
+    std::vector<AnimationKeyFrame>& keyFramesToAnimate,
+    const ShadowViewMutation& mutation,
+    const ShadowView& baselineShadowView) {
+  for (auto& keyframe : keyFramesToAnimate) {
+    if (keyframe.tag == baselineShadowView.tag) {
+      // If there's already an animation queued up, followed by this
+      // Insert, it *must* be an Update mutation animation. Other
+      // sequences should not be possible.
+      react_native_assert(keyframe.type == AnimationConfigurationType::Update);
+
+      // The mutation is an "insert", so it must have a
+      // "newChildShadowView"
+      react_native_assert(mutation.newChildShadowView.tag > 0);
+
+      // Those asserts don't run in prod. If there's some edge-case
+      // that we haven't caught yet, we'd crash in debug; make sure we
+      // don't mutate the prevView in prod.
+      if (keyframe.type == AnimationConfigurationType::Update &&
+          mutation.newChildShadowView.tag > 0) {
+        keyframe.viewPrev = mutation.newChildShadowView;
+        keyframe.parentTag = mutation.parentTag;
+        react_native_assert(keyframe.finalMutationsForKeyFrame.size() == 1);
+        keyframe.finalMutationsForKeyFrame[0].parentTag = mutation.parentTag;
+      }
+    }
+  }
+}
+
+// When a Remove immediately follows an already-queued Update animation for the
+// same tag, the deferred Update means the REMOVE must reference the keyframe's
+// "previous" ShadowView. Returns the adjusted Remove mutation to execute
+// immediately if a matching keyframe is found.
+static std::optional<ShadowViewMutation> adjustQueuedUpdateKeyframesForRemove(
+    std::vector<AnimationKeyFrame>& keyFramesToAnimate,
+    const ShadowViewMutation& mutation,
+    const ShadowView& baselineShadowView,
+    std::optional<ShadowViewMutation> executeMutationImmediately) {
+  for (auto& keyframe : keyFramesToAnimate) {
+    if (keyframe.tag == baselineShadowView.tag) {
+      // If there's already an animation queued up, followed by this
+      // Insert, it *must* be an Update mutation animation. Other
+      // sequences should not be possible.
+      react_native_assert(keyframe.type == AnimationConfigurationType::Update);
+
+      // The mutation is a "remove", so it must have a
+      // "oldChildShadowView"
+      react_native_assert(mutation.oldChildShadowView.tag > 0);
+
+      // Those asserts don't run in prod. If there's some edge-case
+      // that we haven't caught yet, we'd crash in debug; make sure we
+      // don't mutate the prevView in prod.
+      // Since normally the UPDATE would have been executed first and
+      // now it's deferred, we need to change the `oldChildShadowView`
+      // that is being referenced by the REMOVE mutation.
+      if (keyframe.type == AnimationConfigurationType::Update &&
+          mutation.oldChildShadowView.tag > 0) {
+        executeMutationImmediately = ShadowViewMutation::RemoveMutation(
+            mutation.parentTag, keyframe.viewPrev, mutation.index);
+      }
+    }
+  }
+  return executeMutationImmediately;
+}
+
 #pragma mark -
 
 LayoutAnimationKeyFrameManager::LayoutAnimationKeyFrameManager(
@@ -262,20 +506,8 @@ LayoutAnimationKeyFrameManager::pullTransaction(
       std::unordered_set<Tag>
           reparentedTags; // tags that are deleted and recreated
       std::unordered_map<Tag, ShadowViewMutation> movedTags;
-      for (const auto& mutation : mutations) {
-        if (mutation.type == ShadowViewMutation::Type::Insert) {
-          insertedTags.insert(mutation.newChildShadowView.tag);
-        }
-        if (mutation.type == ShadowViewMutation::Type::Delete) {
-          deletedTags.insert(mutation.oldChildShadowView.tag);
-        }
-        if (mutation.type == ShadowViewMutation::Type::Create) {
-          if (deletedTags.find(mutation.newChildShadowView.tag) !=
-              deletedTags.end()) {
-            reparentedTags.insert(mutation.newChildShadowView.tag);
-          }
-        }
-      }
+      collectReorderAndReparentTags(
+          mutations, insertedTags, deletedTags, reparentedTags);
 
       // Process mutations list into operations that can be sent to platform
       // immediately, and those that need to be animated Deletions, removals,
@@ -373,61 +605,14 @@ LayoutAnimationKeyFrameManager::pullTransaction(
           // any UPDATE animations already queued up for this tag, we adjust the
           // "previous" ShadowView.
           if (mutation.type == ShadowViewMutation::Type::Insert) {
-            for (auto& keyframe : keyFramesToAnimate) {
-              if (keyframe.tag == baselineShadowView.tag) {
-                // If there's already an animation queued up, followed by this
-                // Insert, it *must* be an Update mutation animation. Other
-                // sequences should not be possible.
-                react_native_assert(
-                    keyframe.type == AnimationConfigurationType::Update);
-
-                // The mutation is an "insert", so it must have a
-                // "newChildShadowView"
-                react_native_assert(mutation.newChildShadowView.tag > 0);
-
-                // Those asserts don't run in prod. If there's some edge-case
-                // that we haven't caught yet, we'd crash in debug; make sure we
-                // don't mutate the prevView in prod.
-                if (keyframe.type == AnimationConfigurationType::Update &&
-                    mutation.newChildShadowView.tag > 0) {
-                  keyframe.viewPrev = mutation.newChildShadowView;
-                  keyframe.parentTag = mutation.parentTag;
-                  react_native_assert(
-                      keyframe.finalMutationsForKeyFrame.size() == 1);
-                  keyframe.finalMutationsForKeyFrame[0].parentTag =
-                      mutation.parentTag;
-                }
-              }
-            }
+            adjustQueuedUpdateKeyframesForInsert(
+                keyFramesToAnimate, mutation, baselineShadowView);
           } else if (mutation.type == ShadowViewMutation::Type::Remove) {
-            for (auto& keyframe : keyFramesToAnimate) {
-              if (keyframe.tag == baselineShadowView.tag) {
-                // If there's already an animation queued up, followed by this
-                // Insert, it *must* be an Update mutation animation. Other
-                // sequences should not be possible.
-                react_native_assert(
-                    keyframe.type == AnimationConfigurationType::Update);
-
-                // The mutation is a "remove", so it must have a
-                // "oldChildShadowView"
-                react_native_assert(mutation.oldChildShadowView.tag > 0);
-
-                // Those asserts don't run in prod. If there's some edge-case
-                // that we haven't caught yet, we'd crash in debug; make sure we
-                // don't mutate the prevView in prod.
-                // Since normally the UPDATE would have been executed first and
-                // now it's deferred, we need to change the `oldChildShadowView`
-                // that is being referenced by the REMOVE mutation.
-                if (keyframe.type == AnimationConfigurationType::Update &&
-                    mutation.oldChildShadowView.tag > 0) {
-                  executeMutationImmediately =
-                      ShadowViewMutation::RemoveMutation(
-                          mutation.parentTag,
-                          keyframe.viewPrev,
-                          mutation.index);
-                }
-              }
-            }
+            executeMutationImmediately = adjustQueuedUpdateKeyframesForRemove(
+                keyFramesToAnimate,
+                mutation,
+                baselineShadowView,
+                executeMutationImmediately);
           }
         }
 
@@ -452,48 +637,25 @@ LayoutAnimationKeyFrameManager::pullTransaction(
               mutation.type == ShadowViewMutation::Type::Delete);
           Tag tag = viewStart.tag;
 
+          const ComponentDescriptor* componentDescriptor =
+              haveComponentDescriptor
+              ? &getComponentDescriptorForShadowView(baselineShadowView)
+              : nullptr;
+
           AnimationKeyFrame keyFrame{};
           if (mutation.type == ShadowViewMutation::Type::Insert) {
-            if (mutationConfig.animationProperty ==
-                    AnimationProperty::Opacity &&
-                haveComponentDescriptor) {
-              auto props =
-                  getComponentDescriptorForShadowView(baselineShadowView)
-                      .cloneProps(propsParserContext, viewStart.props, {});
-
-              if (baselineShadowView.traits.check(
-                      ShadowNodeTraits::Trait::ViewKind)) {
-                const auto& viewProps = static_cast<const ViewProps&>(*props);
-                const_cast<ViewProps&>(viewProps).opacity = 0;
-              }
-
-              react_native_assert(props != nullptr);
-              if (props != nullptr) {
-                viewStart.props = props;
-              }
-            }
-            bool isScaleX =
-                mutationConfig.animationProperty == AnimationProperty::ScaleX ||
-                mutationConfig.animationProperty == AnimationProperty::ScaleXY;
-            bool isScaleY =
-                mutationConfig.animationProperty == AnimationProperty::ScaleY ||
-                mutationConfig.animationProperty == AnimationProperty::ScaleXY;
-            if ((isScaleX || isScaleY) && haveComponentDescriptor) {
-              auto props =
-                  getComponentDescriptorForShadowView(baselineShadowView)
-                      .cloneProps(propsParserContext, viewStart.props, {});
-              if (baselineShadowView.traits.check(
-                      ShadowNodeTraits::Trait::ViewKind)) {
-                const auto& viewProps = static_cast<const ViewProps&>(*props);
-                const_cast<ViewProps&>(viewProps).transform =
-                    Transform::Scale(isScaleX ? 0 : 1, isScaleY ? 0 : 1, 1);
-              }
-
-              react_native_assert(props != nullptr);
-              if (props != nullptr) {
-                viewStart.props = props;
-              }
-            }
+            setupOpacityAnimationProps(
+                componentDescriptor,
+                propsParserContext,
+                mutationConfig,
+                baselineShadowView,
+                viewStart);
+            setupScaleAnimationProps(
+                componentDescriptor,
+                propsParserContext,
+                mutationConfig,
+                baselineShadowView,
+                viewStart);
 
             PrintMutationInstruction(
                 "Setting up animation KeyFrame for INSERT mutation (Create animation)",
@@ -577,49 +739,18 @@ LayoutAnimationKeyFrameManager::pullTransaction(
 
               auto deleteMutation = *correspondingDeleteIt;
 
-              if (mutationConfig.animationProperty ==
-                      AnimationProperty::Opacity &&
-                  haveComponentDescriptor) {
-                auto props =
-                    getComponentDescriptorForShadowView(baselineShadowView)
-                        .cloneProps(propsParserContext, viewFinal.props, {});
-
-                if (baselineShadowView.traits.check(
-                        ShadowNodeTraits::Trait::ViewKind)) {
-                  const auto& viewProps = static_cast<const ViewProps&>(*props);
-                  const_cast<ViewProps&>(viewProps).opacity = 0;
-                }
-
-                react_native_assert(props != nullptr);
-                if (props != nullptr) {
-                  viewFinal.props = props;
-                }
-              }
-              bool isScaleX = mutationConfig.animationProperty ==
-                      AnimationProperty::ScaleX ||
-                  mutationConfig.animationProperty ==
-                      AnimationProperty::ScaleXY;
-              bool isScaleY = mutationConfig.animationProperty ==
-                      AnimationProperty::ScaleY ||
-                  mutationConfig.animationProperty ==
-                      AnimationProperty::ScaleXY;
-              if ((isScaleX || isScaleY) && haveComponentDescriptor) {
-                auto props =
-                    getComponentDescriptorForShadowView(baselineShadowView)
-                        .cloneProps(propsParserContext, viewFinal.props, {});
-
-                if (baselineShadowView.traits.check(
-                        ShadowNodeTraits::Trait::ViewKind)) {
-                  const auto& viewProps = static_cast<const ViewProps&>(*props);
-                  const_cast<ViewProps&>(viewProps).transform =
-                      Transform::Scale(isScaleX ? 0 : 1, isScaleY ? 0 : 1, 1);
-                }
-
-                react_native_assert(props != nullptr);
-                if (props != nullptr) {
-                  viewFinal.props = props;
-                }
-              }
+              setupOpacityAnimationProps(
+                  componentDescriptor,
+                  propsParserContext,
+                  mutationConfig,
+                  baselineShadowView,
+                  viewFinal);
+              setupScaleAnimationProps(
+                  componentDescriptor,
+                  propsParserContext,
+                  mutationConfig,
+                  baselineShadowView,
+                  viewFinal);
 
               PrintMutationInstruction(
                   "Setting up animation KeyFrame for REMOVE mutation (Delete animation)",
@@ -645,41 +776,8 @@ LayoutAnimationKeyFrameManager::pullTransaction(
           }
 
           // Handle conflicting animations
-          for (auto& conflictingKeyFrame : conflictingAnimations) {
-            const auto& conflictingMutationBaselineShadowView =
-                conflictingKeyFrame.viewStart;
-
-            // We've found a conflict.
-            if (conflictingMutationBaselineShadowView.tag == tag) {
-              conflictingKeyFrame.generateFinalSyntheticMutations = false;
-
-              // Do NOT update viewStart for a CREATE animation.
-              if (keyFrame.type == AnimationConfigurationType::Create) {
-                break;
-              }
-
-#ifdef LAYOUT_ANIMATION_VERBOSE_LOGGING
-              LOG(ERROR)
-                  << "Due to conflict, replacing 'viewStart' of animated keyframe: ["
-                  << conflictingKeyFrame.viewPrev.tag << "] with ##"
-                  << std::hash<ShadowView>{}(conflictingKeyFrame.viewPrev);
-#endif
-              // Pick a Prop or layout property, depending on the current
-              // animation configuration. Figure out how much progress we've
-              // already made in the current animation, and start the animation
-              // from this point.
-              keyFrame.viewPrev = conflictingKeyFrame.viewPrev;
-              keyFrame.viewStart = conflictingKeyFrame.viewPrev;
-              react_native_assert(keyFrame.viewStart.tag > 0);
-              keyFrame.initialProgress = 0;
-
-              // We're guaranteed that a tag only has one animation associated
-              // with it, so we can break here. If we support multiple
-              // animations and animation curves over the same tag in the
-              // future, this will need to be modified to support that.
-              break;
-            }
-          }
+          handleConflictingAnimationsForKeyFrame(
+              keyFrame, conflictingAnimations, tag);
 
 #ifdef LAYOUT_ANIMATION_VERBOSE_LOGGING
           LOG(ERROR) << "Checking validity of keyframe: ["
@@ -735,37 +833,9 @@ LayoutAnimationKeyFrameManager::pullTransaction(
         // (2) it conflicted with a new MOVE operation (REMOVE+INSERT)
         // without another corresponding UPDATE, we should re-queue the
         // keyframe so that its position/props don't suddenly "jump".
-        if (keyFrame.type == AnimationConfigurationType::Update) {
-          auto movedIt = movedTags.find(keyFrame.tag);
-          if (movedIt != movedTags.end()) {
-            auto newKeyFrameForUpdate = std::find_if(
-                keyFramesToAnimate.begin(),
-                keyFramesToAnimate.end(),
-                [&](const auto& newKeyFrame) {
-                  return newKeyFrame.type ==
-                      AnimationConfigurationType::Update &&
-                      newKeyFrame.tag == keyFrame.tag;
-                });
-            if (newKeyFrameForUpdate == keyFramesToAnimate.end()) {
-              keyFrame.invalidated = false;
-
-              // The animation will continue from the current position - we
-              // restart viewStart to make sure there are no sudden jumps
-              keyFrame.viewStart = keyFrame.viewPrev;
-
-              // Find the insert mutation that conflicted with this update
-              for (auto& mutation : immediateMutations) {
-                if (mutation.newChildShadowView.tag == keyFrame.tag &&
-                    (mutation.type == ShadowViewMutation::Insert ||
-                     mutation.type == ShadowViewMutation::Create)) {
-                  keyFrame.viewPrev = mutation.newChildShadowView;
-                  keyFrame.viewEnd = mutation.newChildShadowView;
-                }
-              }
-              keyFramesToAnimate.push_back(keyFrame);
-              continue;
-            }
-          }
+        if (maybeRequeueConflictingUpdateKeyframe(
+                keyFrame, movedTags, keyFramesToAnimate, immediateMutations)) {
+          continue;
         }
 
         // If the "final" mutation is already accounted for, by previously
