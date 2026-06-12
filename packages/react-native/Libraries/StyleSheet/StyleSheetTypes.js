@@ -1010,7 +1010,14 @@ type ____TextStyle_InternalBase = Readonly<{
   textShadowColor?: ____ColorValue_Internal,
   letterSpacing?: number,
   lineHeight?: number,
-  textAlign?: 'auto' | 'left' | 'right' | 'center' | 'justify',
+  textAlign?:
+    | 'auto'
+    | 'left'
+    | 'right'
+    | 'center'
+    | 'justify'
+    | 'start'
+    | 'end',
   textAlignVertical?: 'auto' | 'top' | 'bottom' | 'center',
   includeFontPadding?: boolean,
   textDecorationLine?:
