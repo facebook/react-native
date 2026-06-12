@@ -59,7 +59,8 @@ function getCommunityCliDefaultConfig(
     serializer: {
       // We can include multiple copies of InitializeCore here because metro will
       // only add ones that are already part of the bundle
-      getModulesRunBeforeMainModule: () => [
+      getModulesRunBeforeMainModule: (entryFile: string) => [
+        ...(config.serializer?.getModulesRunBeforeMainModule(entryFile) ?? []),
         require.resolve(
           path.join(ctx.reactNativePath, 'Libraries/Core/InitializeCore'),
           {paths: [ctx.root]},
