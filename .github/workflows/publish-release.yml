@@ -7,7 +7,7 @@ on:
 jobs:
   set_release_type:
     runs-on: ubuntu-latest
-    if: github.repository == 'facebook/react-native'
+    if: github.repository == 'react/react-native'
     outputs:
       RELEASE_TYPE: ${{ steps.set_release_type.outputs.RELEASE_TYPE }}
     env:
@@ -21,7 +21,7 @@ jobs:
 
   set_hermes_version:
     runs-on: ubuntu-latest
-    if: github.repository == 'facebook/react-native'
+    if: github.repository == 'react/react-native'
     outputs:
       HERMES_VERSION: ${{ steps.set_hermes_version.outputs.HERMES_VERSION }}
     steps:
@@ -34,7 +34,7 @@ jobs:
           echo "HERMES_VERSION=$hermes_version"
 
   prebuild_apple_dependencies:
-    if: github.repository == 'facebook/react-native'
+    if: github.repository == 'react/react-native'
     uses: ./.github/workflows/prebuild-ios-dependencies.yml
     secrets: inherit
 
@@ -43,31 +43,27 @@ jobs:
     secrets: inherit
     needs: [prebuild_apple_dependencies]
 
+  # Delegate the actual npm publish to the shared reusable workflow so
+  # every `npm publish` in this repo originates from one workflow file —
+  # required because npm Trusted Publishing only accepts one
+  # (org, repo, workflow_filename) per package.
   build_npm_package:
-    runs-on: 8-core-ubuntu
     needs:
       [
         set_release_type,
         prebuild_apple_dependencies,
         prebuild_react_native_core,
       ]
-    container:
-      image: reactnativecommunity/react-native-android:latest
-      env:
-        TERM: "dumb"
-        # Set the encoding to resolve a known character encoding issue with decompressing tar.gz files in containers
-        # via Gradle: https://github.com/gradle/gradle/issues/23391#issuecomment-1878979127
-        LC_ALL: C.UTF8
-        GRADLE_OPTS: "-Dorg.gradle.daemon=false"
-        # By default we only build ARM64 to save time/resources. For release/nightlies, we override this value to build all archs.
-        ORG_GRADLE_PROJECT_reactNativeArchitectures: "arm64-v8a"
-        REACT_NATIVE_DOWNLOADS_DIR: /opt/react-native-downloads
+    uses: ./.github/workflows/publish-npm.yml
+    secrets: inherit
+    with:
+      mode: react-native
+      release-type: ${{ needs.set_release_type.outputs.RELEASE_TYPE }}
+
+  post_publish:
+    runs-on: ubuntu-latest
+    needs: [build_npm_package]
     env:
-      GHA_NPM_TOKEN: ${{ secrets.GHA_NPM_TOKEN }}
-      ORG_GRADLE_PROJECT_SIGNING_PWD: ${{ secrets.ORG_GRADLE_PROJECT_SIGNING_PWD }}
-      ORG_GRADLE_PROJECT_SIGNING_KEY: ${{ secrets.ORG_GRADLE_PROJECT_SIGNING_KEY }}
-      ORG_GRADLE_PROJECT_SONATYPE_USERNAME: ${{ secrets.ORG_GRADLE_PROJECT_SONATYPE_USERNAME }}
-      ORG_GRADLE_PROJECT_SONATYPE_PASSWORD: ${{ secrets.ORG_GRADLE_PROJECT_SONATYPE_PASSWORD }}
       REACT_NATIVE_BOT_GITHUB_TOKEN: ${{ secrets.REACT_NATIVE_BOT_GITHUB_TOKEN }}
     steps:
       - name: Checkout
@@ -75,12 +71,6 @@ jobs:
         with:
           fetch-depth: 0
           fetch-tags: true
-      - name: Build and Publish NPM Package
-        uses: ./.github/actions/build-npm-package
-        with:
-          release-type: ${{ needs.set_release_type.outputs.RELEASE_TYPE }}
-          gha-npm-token: ${{ env.GHA_NPM_TOKEN }}
-          gradle-cache-encryption-key: ${{ secrets.GRADLE_CACHE_ENCRYPTION_KEY }}
       - name: Publish @react-native-community/template
         id: publish-template-to-npm
         uses: actions/github-script@v8
