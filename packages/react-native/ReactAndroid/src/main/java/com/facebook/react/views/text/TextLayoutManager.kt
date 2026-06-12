@@ -689,6 +689,9 @@ internal object TextLayoutManager {
               null,
               textEffectRegistry,
           )
+      val baseTextAttributes =
+          TextAttributeProps.fromMapBuffer(attributedString.getMapBuffer(AS_KEY_BASE_ATTRIBUTES))
+      setTextPaintHolderSpan(text, baseTextAttributes, assets, fontWeightAdjustment)
       tagToSpannableCache[cacheId] = CachedSpannable(text, fontWeightAdjustment)
       return text
     }
@@ -923,6 +926,22 @@ internal object TextLayoutManager {
     return paint
   }
 
+  private fun setTextPaintHolderSpan(
+      text: Spannable,
+      baseTextAttributes: TextAttributeProps,
+      assets: AssetManager,
+      fontWeightAdjustment: Int,
+  ) {
+    text.setSpan(
+        ReactTextPaintHolderSpan(
+            newPaintWithAttributes(baseTextAttributes, assets, fontWeightAdjustment)
+        ),
+        0,
+        text.length,
+        Spannable.SPAN_INCLUSIVE_INCLUSIVE,
+    )
+  }
+
   @OptIn(UnstableReactNativeAPI::class)
   private fun createLayoutForMeasurement(
       assets: AssetManager,
@@ -947,15 +966,7 @@ internal object TextLayoutManager {
 
     val paint: TextPaint
     if (attributedString.contains(AS_KEY_CACHE_ID)) {
-      val textPaintHolderSpans = text.getSpans(0, 0, ReactTextPaintHolderSpan::class.java)
-      paint =
-          if (textPaintHolderSpans.isNotEmpty()) {
-            textPaintHolderSpans[0].textPaint
-          } else {
-            val baseTextAttributes =
-                TextAttributeProps.fromMapBuffer(attributedString.getMapBuffer(AS_KEY_BASE_ATTRIBUTES))
-            scratchPaintWithAttributes(baseTextAttributes, assets, fontWeightAdjustment)
-          }
+      paint = text.getSpans(0, 0, ReactTextPaintHolderSpan::class.java)[0].textPaint
     } else {
       val baseTextAttributes =
           TextAttributeProps.fromMapBuffer(attributedString.getMapBuffer(AS_KEY_BASE_ATTRIBUTES))
