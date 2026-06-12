@@ -71,6 +71,23 @@ jobs:
         with:
           fetch-depth: 0
           fetch-tags: true
+      # TEMPORARY DEBUG: print the OIDC token claims npm Trusted Publishing
+      # matches against. A 404 from the OIDC exchange means these claims don't
+      # match the Trusted Publisher entry configured on npmjs.com (org/repo/
+      # workflow filename / environment). Prints only the decoded claims, never
+      # the raw token. Remove once the 404 is resolved.
+      - name: Debug OIDC token claims
+        shell: bash
+        run: |
+          # ACTIONS_ID_TOKEN_REQUEST_TOKEN/_URL are auto-injected when the job
+          # has `id-token: write` - they are NOT secrets, don't map them in env.
+          OIDC_TOKEN=$(curl -sS -H "Authorization: bearer $ACTIONS_ID_TOKEN_REQUEST_TOKEN" \
+            "$ACTIONS_ID_TOKEN_REQUEST_URL&audience=npm:registry.npmjs.org" | jq -r '.value')
+          # Decode the JWT payload (middle segment); convert base64url -> base64
+          # and pad so `base64 -d` accepts it. Prints claims only, not the token.
+          payload=$(echo "$OIDC_TOKEN" | cut -d'.' -f2 | tr '_-' '/+')
+          case $(( ${#payload} % 4 )) in 2) payload+='==';; 3) payload+='=';; esac
+          echo "$payload" | base64 -d 2>/dev/null | jq .
       - name: Build and Publish NPM Package
         uses: ./.github/actions/build-npm-package
         with:
@@ -92,6 +109,23 @@ jobs:
         uses: ./.github/actions/setup-node
         with:
           registry-url: "https://registry.npmjs.org"
+      # TEMPORARY DEBUG: print the OIDC token claims npm Trusted Publishing
+      # matches against. A 404 from the OIDC exchange means these claims don't
+      # match the Trusted Publisher entry configured on npmjs.com (org/repo/
+      # workflow filename / environment). Prints only the decoded claims, never
+      # the raw token. Remove once the 404 is resolved.
+      - name: Debug OIDC token claims
+        shell: bash
+        run: |
+          # ACTIONS_ID_TOKEN_REQUEST_TOKEN/_URL are auto-injected when the job
+          # has `id-token: write` - they are NOT secrets, don't map them in env.
+          OIDC_TOKEN=$(curl -sS -H "Authorization: bearer $ACTIONS_ID_TOKEN_REQUEST_TOKEN" \
+            "$ACTIONS_ID_TOKEN_REQUEST_URL&audience=npm:registry.npmjs.org" | jq -r '.value')
+          # Decode the JWT payload (middle segment); convert base64url -> base64
+          # and pad so `base64 -d` accepts it. Prints claims only, not the token.
+          payload=$(echo "$OIDC_TOKEN" | cut -d'.' -f2 | tr '_-' '/+')
+          case $(( ${#payload} % 4 )) in 2) payload+='==';; 3) payload+='=';; esac
+          echo "$payload" | base64 -d 2>/dev/null | jq .
       - name: Run Yarn Install
         uses: ./.github/actions/yarn-install
       - name: Build packages

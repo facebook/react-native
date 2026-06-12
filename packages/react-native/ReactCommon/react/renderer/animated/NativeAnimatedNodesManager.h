@@ -207,6 +207,8 @@ class NativeAnimatedNodesManager : public std::enable_shared_from_this<NativeAni
 
   bool onAnimationFrame(double timestamp);
 
+  void flushAnimatedNodesCreatedAsync() noexcept;
+
   bool isAnimationUpdateNeeded() const noexcept;
 
   void stopAnimationsForNode(Tag nodeTag);
