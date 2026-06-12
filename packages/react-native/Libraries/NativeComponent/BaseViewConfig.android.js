@@ -211,6 +211,7 @@ const validAttributesForNonEventProps = {
   backgroundColor: colorAttribute,
   transform: true,
   transformOrigin: true,
+  backgroundImage: backgroundImageAttribute,
   experimental_backgroundImage: backgroundImageAttribute,
   experimental_backgroundSize: backgroundSizeAttribute,
   experimental_backgroundPosition: backgroundPositionAttribute,

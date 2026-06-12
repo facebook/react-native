@@ -335,13 +335,12 @@ describe('<View>', () => {
               <>
                 <View
                   style={{
-                    experimental_backgroundImage:
-                      'radial-gradient(#e66465, #9198e5)',
+                    backgroundImage: 'radial-gradient(#e66465, #9198e5)',
                   }}
                 />
                 <View
                   style={{
-                    experimental_backgroundImage: [
+                    backgroundImage: [
                       {
                         type: 'radial-gradient',
                         shape: 'ellipse',
