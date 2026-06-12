@@ -680,14 +680,17 @@ internal object TextLayoutManager {
         return cachedSpannable.spannable
       }
 
-      return createSpannableFromAttributedString(
-          assets,
-          fontWeightAdjustment,
-          attributedString.getMapBuffer(AS_KEY_FRAGMENTS),
-          reactTextViewManagerCallback,
-          null,
-          textEffectRegistry,
-      )
+      val text =
+          createSpannableFromAttributedString(
+              assets,
+              fontWeightAdjustment,
+              attributedString.getMapBuffer(AS_KEY_FRAGMENTS),
+              reactTextViewManagerCallback,
+              null,
+              textEffectRegistry,
+          )
+      tagToSpannableCache[cacheId] = CachedSpannable(text, fontWeightAdjustment)
+      return text
     }
 
     return createSpannableFromAttributedString(

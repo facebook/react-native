@@ -40,6 +40,7 @@ class TextLayoutManagerFontWeightAdjustmentTest {
 
   @After
   fun tearDown() {
+    TextLayoutManager.deleteCachedSpannableForTag(CACHE_ID)
     DisplayMetricsHolder.setScreenDisplayMetrics(null)
     ReactNativeFeatureFlags.dangerouslyReset()
   }
@@ -102,6 +103,21 @@ class TextLayoutManagerFontWeightAdjustmentTest {
     customStyleSpan.updateDrawState(paint)
 
     assertThat(paint.typeface).isNotSameAs(Typeface.DEFAULT)
+
+    val holderSpan =
+        adjustedSpannable
+            .getSpans(0, adjustedSpannable.length, ReactTextPaintHolderSpan::class.java)[0]
+    assertThat(holderSpan.textPaint.typeface).isNotSameAs(Typeface.DEFAULT)
+
+    val recachedSpannable =
+        TextLayoutManager.getOrCreateSpannableForText(
+            RuntimeEnvironment.getApplication().assets,
+            FONT_WEIGHT_ADJUSTMENT_BOLD_TEXT,
+            cachedAttributedString(),
+            null,
+        )
+
+    assertThat(recachedSpannable).isSameAs(adjustedSpannable)
   }
 
   private fun invokeUpdateTextPaint(
