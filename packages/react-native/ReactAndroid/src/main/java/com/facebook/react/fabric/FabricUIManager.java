@@ -1111,8 +1111,6 @@ public class FabricUIManager
    * that C++ may coalesce the event optionally. Otherwise, coalescing can happen in Java before
    * emitting.
    *
-   * <p>{@code customCoalesceKey} is currently unused.
-   *
    * @param surfaceId
    * @param reactTag
    * @param eventName
@@ -1144,8 +1142,6 @@ public class FabricUIManager
    * receiveEvent API that emits an event to C++. If {@code canCoalesceEvent} is true, that signals
    * that C++ may coalesce the event optionally. Otherwise, coalescing can happen in Java before
    * emitting.
-   *
-   * <p>{@code customCoalesceKey} is currently unused.
    *
    * @param surfaceId
    * @param reactTag
@@ -1182,8 +1178,6 @@ public class FabricUIManager
    * that C++ may coalesce the event optionally. Otherwise, coalescing can happen in Java before
    * emitting.
    *
-   * <p>{@code customCoalesceKey} is currently unused.
-   *
    * @param surfaceId
    * @param reactTag
    * @param eventName
@@ -1203,6 +1197,28 @@ public class FabricUIManager
       @EventCategoryDef int eventCategory,
       boolean experimentalIsSynchronous,
       long eventTimestamp) {
+    receiveEvent(
+        surfaceId,
+        reactTag,
+        eventName,
+        canCoalesceEvent,
+        params,
+        eventCategory,
+        experimentalIsSynchronous,
+        eventTimestamp,
+        0);
+  }
+
+  public void receiveEvent(
+      int surfaceId,
+      int reactTag,
+      String eventName,
+      boolean canCoalesceEvent,
+      @Nullable WritableMap params,
+      @EventCategoryDef int eventCategory,
+      boolean experimentalIsSynchronous,
+      long eventTimestamp,
+      int customCoalesceKey) {
 
     if (ReactBuildConfig.DEBUG && surfaceId == View.NO_ID) {
       FLog.d(TAG, "Emitted event without surfaceId: [%d] %s", reactTag, eventName);
@@ -1228,7 +1244,14 @@ public class FabricUIManager
     }
 
     mMountingManager.dispatchEvent(
-        surfaceId, reactTag, eventName, canCoalesceEvent, params, eventCategory, eventTimestamp);
+        surfaceId,
+        reactTag,
+        eventName,
+        canCoalesceEvent,
+        params,
+        eventCategory,
+        eventTimestamp,
+        customCoalesceKey);
   }
 
   @Override
