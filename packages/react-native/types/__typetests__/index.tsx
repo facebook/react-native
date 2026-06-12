@@ -168,6 +168,11 @@ function testDimensions() {
 
 function TextUseWindowDimensions() {
   const {width, height, scale, fontScale} = useWindowDimensions();
+  const fontScale1: number = useWindowDimensions(state => state.fontScale);
+  // @ts-expect-error: Type number is not assignable to type string
+  const aspectRatio: string = useWindowDimensions(
+    state => state.width / state.height,
+  );
 }
 
 BackHandler.addEventListener('hardwareBackPress', () => true).remove();
