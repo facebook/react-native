@@ -139,7 +139,7 @@ function execute(
           : path.join(outputPath, 'ReactCodegen');
 
       if (runReactNativeCodegen) {
-        const schemaInfos = generateSchemaInfos(libraries);
+        const schemaInfos = generateSchemaInfos(libraries, platform);
         generateNativeCode(
           reactCodegenOutputPath,
           schemaInfos.filter(schemaInfo =>
