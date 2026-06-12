@@ -27,6 +27,7 @@ import com.facebook.react.bridge.WritableNativeMap
 import com.facebook.react.module.annotations.ReactModule
 import com.facebook.react.turbomodule.core.interfaces.BindingsInstallerHolder
 import com.facebook.react.turbomodule.core.interfaces.TurboModuleWithJSIBindings
+import java.nio.ByteBuffer
 import java.util.UUID
 
 @DoNotStrip
@@ -263,6 +264,53 @@ public class SampleTurboModule(private val context: ReactApplicationContext) :
   }
 
   override fun invalidate(): Unit = Unit
+
+  @DoNotStrip
+  @Suppress("unused")
+  override fun getArrayBuffer(buffer: ByteBuffer) : ByteBuffer {
+    val size = buffer.capacity()
+    for (i in 0 until size) {
+      buffer.put(i, (10 * i).toByte())
+    }
+    return buffer
+  }
+
+  @DoNotStrip
+  @Suppress("unused")
+  override fun createNativeBuffer(size: Double) : ByteBuffer {
+    val capacity = size.toInt()
+    val buffer = ByteBuffer.allocateDirect(capacity)
+    for (i in 0 until capacity) {
+      buffer.put(i, (i + 1).toByte())
+    }
+    return buffer
+  }
+
+  @DoNotStrip
+  @Suppress("unused")
+  override fun processAsyncBuffer(payload: ByteBuffer, promise: Promise) {
+    Thread {
+      var sum = 0.0
+      val size = payload.capacity()
+      for (i in 0 until size) {
+        sum += payload.get(i).toInt()
+      }
+      promise.resolve(sum)
+    }.start()
+  }
+
+  @DoNotStrip
+  @Suppress("unused")
+  override fun getAsyncBuffer(size: Double, promise: Promise) {
+    Thread {
+      val capacity = size.toInt()
+      val buffer = ByteBuffer.allocateDirect(capacity)
+      for (i in 0 until capacity) {
+        buffer.put(i, (i + 1).toByte())
+      }
+      promise.resolve(buffer)
+    }.start()
+  }
 
   override fun getName(): String {
     return NAME

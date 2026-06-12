@@ -23,6 +23,7 @@ include(${REACT_ANDROID_DIR}/src/main/jni/first-party/jni-lib-merge/SoMerging-ut
 add_library(
         reactnativejni_common
         OBJECT
+          JCallback.cpp
           JDynamicNative.cpp
           JReactMarker.cpp
           NativeArray.cpp
