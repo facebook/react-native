@@ -109,7 +109,12 @@ internal object TextLayoutManager {
 
   private const val DEFAULT_ADJUST_FONT_SIZE_TO_FIT = false
 
-  private val tagToSpannableCache = ConcurrentHashMap<Int, Spannable>()
+  private data class CachedSpannable(
+      val spannable: Spannable,
+      val fontWeightAdjustment: Int,
+  )
+
+  private val tagToSpannableCache = ConcurrentHashMap<Int, CachedSpannable>()
 
   // Lazily cached Method for StaticLayout.Builder.setUseBoundsForWidth (API 35+).
   // Reflection is needed because some internal targets compile against an SDK older than 35.
@@ -123,8 +128,12 @@ internal object TextLayoutManager {
     }
   }
 
-  fun setCachedSpannableForTag(reactTag: Int, sp: Spannable): Unit {
-    tagToSpannableCache[reactTag] = sp
+  fun setCachedSpannableForTag(
+      reactTag: Int,
+      fontWeightAdjustment: Int,
+      sp: Spannable,
+  ): Unit {
+    tagToSpannableCache[reactTag] = CachedSpannable(sp, fontWeightAdjustment)
   }
 
   fun deleteCachedSpannableForTag(reactTag: Int): Unit {
@@ -238,6 +247,7 @@ internal object TextLayoutManager {
   @OptIn(UnstableReactNativeAPI::class)
   private fun buildSpannableFromFragments(
       assets: AssetManager,
+      fontWeightAdjustment: Int,
       fragments: MapBuffer,
       sb: SpannableStringBuilder,
       ops: MutableList<SetSpanOperation>,
@@ -323,6 +333,7 @@ internal object TextLayoutManager {
                       textAttributes.fontFeatureSettings,
                       textAttributes.fontFamily,
                       assets,
+                      fontWeightAdjustment,
                   ),
               )
           )
@@ -426,6 +437,7 @@ internal object TextLayoutManager {
   @OptIn(UnstableReactNativeAPI::class)
   private fun buildSpannableFromFragmentsOptimized(
       assets: AssetManager,
+      fontWeightAdjustment: Int,
       fragments: MapBuffer,
       outputReactTags: IntArray?,
       textEffectRegistry: TextEffectRegistry?,
@@ -552,6 +564,7 @@ internal object TextLayoutManager {
                   fragment.props.fontFeatureSettings,
                   fragment.props.fontFamily,
                   assets,
+                  fontWeightAdjustment,
               ),
               start,
               end,
@@ -650,41 +663,50 @@ internal object TextLayoutManager {
   }
 
   @OptIn(UnstableReactNativeAPI::class)
-  fun getOrCreateSpannableForText(
-      assets: AssetManager,
-      attributedString: MapBuffer,
-      reactTextViewManagerCallback: ReactTextViewManagerCallback?,
-  ): Spannable =
-      getOrCreateSpannableForText(assets, attributedString, reactTextViewManagerCallback, null)
-
-  @OptIn(UnstableReactNativeAPI::class)
   internal fun getOrCreateSpannableForText(
       assets: AssetManager,
+      fontWeightAdjustment: Int,
       attributedString: MapBuffer,
       reactTextViewManagerCallback: ReactTextViewManagerCallback?,
-      textEffectRegistry: TextEffectRegistry?,
+      textEffectRegistry: TextEffectRegistry? = null,
   ): Spannable {
-    var text: Spannable?
     if (attributedString.contains(AS_KEY_CACHE_ID)) {
       val cacheId = attributedString.getInt(AS_KEY_CACHE_ID)
-      text = checkNotNull(tagToSpannableCache[cacheId])
-    } else {
-      text =
+      val cachedSpannable = checkNotNull(tagToSpannableCache[cacheId])
+      if (cachedSpannable.fontWeightAdjustment == fontWeightAdjustment) {
+        return cachedSpannable.spannable
+      }
+
+      val text =
           createSpannableFromAttributedString(
               assets,
+              fontWeightAdjustment,
               attributedString.getMapBuffer(AS_KEY_FRAGMENTS),
               reactTextViewManagerCallback,
               null,
               textEffectRegistry,
           )
+      val baseTextAttributes =
+          TextAttributeProps.fromMapBuffer(attributedString.getMapBuffer(AS_KEY_BASE_ATTRIBUTES))
+      setTextPaintHolderSpan(text, baseTextAttributes, assets, fontWeightAdjustment)
+      tagToSpannableCache[cacheId] = CachedSpannable(text, fontWeightAdjustment)
+      return text
     }
 
-    return text
+    return createSpannableFromAttributedString(
+        assets,
+        fontWeightAdjustment,
+        attributedString.getMapBuffer(AS_KEY_FRAGMENTS),
+        reactTextViewManagerCallback,
+        null,
+        textEffectRegistry,
+    )
   }
 
   @OptIn(UnstableReactNativeAPI::class)
   private fun createSpannableFromAttributedString(
       assets: AssetManager,
+      fontWeightAdjustment: Int,
       fragments: MapBuffer,
       reactTextViewManagerCallback: ReactTextViewManagerCallback?,
       outputReactTags: IntArray?,
@@ -694,6 +716,7 @@ internal object TextLayoutManager {
       val spannable =
           buildSpannableFromFragmentsOptimized(
               assets,
+              fontWeightAdjustment,
               fragments,
               outputReactTags,
               textEffectRegistry,
@@ -709,7 +732,15 @@ internal object TextLayoutManager {
       // a new spannable will be wiped out
       val ops: MutableList<SetSpanOperation> = ArrayList()
 
-      buildSpannableFromFragments(assets, fragments, sb, ops, outputReactTags, textEffectRegistry)
+      buildSpannableFromFragments(
+          assets,
+          fontWeightAdjustment,
+          fragments,
+          sb,
+          ops,
+          outputReactTags,
+          textEffectRegistry,
+      )
 
       // TODO T31905686: add support for inline Images
       // While setting the Spans on the final text, we also check whether any of them are images.
@@ -825,10 +856,11 @@ internal object TextLayoutManager {
    * Sets attributes on the TextPaint, used for content outside the Spannable text, like for empty
    * strings, or newlines after the last trailing character
    */
-  private fun updateTextPaint(
+  internal fun updateTextPaint(
       paint: TextPaint,
       baseTextAttributes: TextAttributeProps,
       assets: AssetManager,
+      fontWeightAdjustment: Int,
   ) {
     if (baseTextAttributes.fontSize != ReactConstants.UNSET) {
       paint.textSize = baseTextAttributes.fontSize.toFloat()
@@ -847,7 +879,7 @@ internal object TextLayoutManager {
               baseTextAttributes.fontFamily,
               assets,
           )
-      paint.setTypeface(typeface)
+      paint.setTypeface(ReactTypefaceUtils.applyFontWeightAdjustment(typeface, fontWeightAdjustment))
 
       if (
           baseTextAttributes.fontStyle != ReactConstants.UNSET &&
@@ -858,6 +890,8 @@ internal object TextLayoutManager {
         paint.isFakeBoldText = missingStyle and Typeface.BOLD != 0
         paint.textSkewX = if ((missingStyle and Typeface.ITALIC) != 0) -0.25f else 0f
       }
+    } else {
+      paint.setTypeface(ReactTypefaceUtils.applyFontWeightAdjustment(null, fontWeightAdjustment))
     }
   }
 
@@ -868,28 +902,47 @@ internal object TextLayoutManager {
   private fun scratchPaintWithAttributes(
       baseTextAttributes: TextAttributeProps,
       assets: AssetManager,
+      fontWeightAdjustment: Int,
   ): TextPaint {
     val paint = checkNotNull(textPaintInstance.get())
     paint.setTypeface(null)
     paint.textSize = 12f
     paint.isFakeBoldText = false
     paint.textSkewX = 0f
-    updateTextPaint(paint, baseTextAttributes, assets)
+    updateTextPaint(paint, baseTextAttributes, assets, fontWeightAdjustment)
     return paint
   }
 
   private fun newPaintWithAttributes(
       baseTextAttributes: TextAttributeProps,
       assets: AssetManager,
+      fontWeightAdjustment: Int,
   ): TextPaint {
     val paint = TextPaint(TextPaint.ANTI_ALIAS_FLAG)
-    updateTextPaint(paint, baseTextAttributes, assets)
+    updateTextPaint(paint, baseTextAttributes, assets, fontWeightAdjustment)
     return paint
+  }
+
+  private fun setTextPaintHolderSpan(
+      text: Spannable,
+      baseTextAttributes: TextAttributeProps,
+      assets: AssetManager,
+      fontWeightAdjustment: Int,
+  ) {
+    text.setSpan(
+        ReactTextPaintHolderSpan(
+            newPaintWithAttributes(baseTextAttributes, assets, fontWeightAdjustment)
+        ),
+        0,
+        text.length,
+        Spannable.SPAN_INCLUSIVE_INCLUSIVE,
+    )
   }
 
   @OptIn(UnstableReactNativeAPI::class)
   private fun createLayoutForMeasurement(
       assets: AssetManager,
+      fontWeightAdjustment: Int,
       attributedString: MapBuffer,
       paragraphAttributes: MapBuffer,
       width: Float,
@@ -902,6 +955,7 @@ internal object TextLayoutManager {
     val text =
         getOrCreateSpannableForText(
             assets,
+            fontWeightAdjustment,
             attributedString,
             reactTextViewManagerCallback,
             textEffectRegistry,
@@ -913,7 +967,7 @@ internal object TextLayoutManager {
     } else {
       val baseTextAttributes =
           TextAttributeProps.fromMapBuffer(attributedString.getMapBuffer(AS_KEY_BASE_ATTRIBUTES))
-      paint = scratchPaintWithAttributes(baseTextAttributes, assets)
+      paint = scratchPaintWithAttributes(baseTextAttributes, assets, fontWeightAdjustment)
     }
 
     return createLayout(
@@ -1020,6 +1074,7 @@ internal object TextLayoutManager {
   @OptIn(UnstableReactNativeAPI::class)
   fun createPreparedLayout(
       assets: AssetManager,
+      fontWeightAdjustment: Int,
       attributedString: ReadableMapBuffer,
       paragraphAttributes: ReadableMapBuffer,
       width: Float,
@@ -1034,6 +1089,7 @@ internal object TextLayoutManager {
     val text =
         createSpannableFromAttributedString(
             assets,
+            fontWeightAdjustment,
             fragments,
             reactTextViewManagerCallback,
             reactTags,
@@ -1044,7 +1100,7 @@ internal object TextLayoutManager {
     val result =
         createLayout(
             text,
-            newPaintWithAttributes(baseTextAttributes, assets),
+            newPaintWithAttributes(baseTextAttributes, assets, fontWeightAdjustment),
             attributedString,
             paragraphAttributes,
             width,
@@ -1186,6 +1242,7 @@ internal object TextLayoutManager {
   @OptIn(UnstableReactNativeAPI::class)
   fun measureText(
       assets: AssetManager,
+      fontWeightAdjustment: Int,
       attributedString: MapBuffer,
       paragraphAttributes: MapBuffer,
       width: Float,
@@ -1200,6 +1257,7 @@ internal object TextLayoutManager {
     val layout =
         createLayoutForMeasurement(
             assets,
+            fontWeightAdjustment,
             attributedString,
             paragraphAttributes,
             width,
@@ -1459,6 +1517,7 @@ internal object TextLayoutManager {
   @OptIn(UnstableReactNativeAPI::class)
   fun measureLines(
       assetManager: AssetManager,
+      fontWeightAdjustment: Int,
       attributedString: MapBuffer,
       paragraphAttributes: MapBuffer,
       width: Float,
@@ -1469,6 +1528,7 @@ internal object TextLayoutManager {
     val layout =
         createLayoutForMeasurement(
             assetManager,
+            fontWeightAdjustment,
             attributedString,
             paragraphAttributes,
             width,

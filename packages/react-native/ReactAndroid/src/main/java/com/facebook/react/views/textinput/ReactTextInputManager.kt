@@ -36,6 +36,7 @@ import com.facebook.react.bridge.ReactSoftExceptionLogger.logSoftException
 import com.facebook.react.bridge.ReadableArray
 import com.facebook.react.bridge.ReadableType
 import com.facebook.react.common.ReactConstants
+import com.facebook.react.common.annotations.UnstableReactNativeAPI
 import com.facebook.react.common.mapbuffer.MapBuffer
 import com.facebook.react.module.annotations.ReactModule
 import com.facebook.react.uimanager.BackgroundStyleApplicator.setBorderColor
@@ -69,6 +70,7 @@ import com.facebook.react.views.text.DefaultStyleValuesUtil.getDefaultTextColorH
 import com.facebook.react.views.text.ReactTextUpdate
 import com.facebook.react.views.text.ReactTextUpdate.Companion.buildReactTextUpdateFromState
 import com.facebook.react.views.text.ReactTextViewManagerCallback
+import com.facebook.react.views.text.ReactTypefaceUtils.getFontWeightAdjustment
 import com.facebook.react.views.text.ReactTypefaceUtils.parseFontVariant
 import com.facebook.react.views.text.TextAttributeProps
 import com.facebook.react.views.text.TextLayoutManager
@@ -999,6 +1001,7 @@ public open class ReactTextInputManager public constructor() :
     return null
   }
 
+  @OptIn(UnstableReactNativeAPI::class)
   public fun getReactTextUpdate(
       view: ReactEditText,
       props: ReactStylesDiffMap,
@@ -1016,6 +1019,7 @@ public open class ReactTextInputManager public constructor() :
     val spanned =
         TextLayoutManager.getOrCreateSpannableForText(
             view.context.assets,
+            getFontWeightAdjustment(view.context),
             attributedString,
             reactTextViewManagerCallback,
         )

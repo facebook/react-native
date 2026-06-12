@@ -70,7 +70,9 @@ import com.facebook.react.uimanager.style.BorderStyle
 import com.facebook.react.uimanager.style.LogicalEdge
 import com.facebook.react.uimanager.style.Overflow
 import com.facebook.react.views.text.ReactTextUpdate
+import com.facebook.react.views.text.ReactTypefaceUtils.applyFontWeightAdjustment
 import com.facebook.react.views.text.ReactTypefaceUtils.applyStyles
+import com.facebook.react.views.text.ReactTypefaceUtils.getFontWeightAdjustment
 import com.facebook.react.views.text.ReactTypefaceUtils.parseFontStyle
 import com.facebook.react.views.text.ReactTypefaceUtils.parseFontWeight
 import com.facebook.react.views.text.TextAttributes
@@ -849,7 +851,14 @@ public open class ReactEditText public constructor(context: Context) : AppCompat
             fontFeatureSettings != null
     ) {
       workingText.setSpan(
-          CustomStyleSpan(fontStyle, fontWeight, fontFeatureSettings, fontFamily, context.assets),
+          CustomStyleSpan(
+              fontStyle,
+              fontWeight,
+              fontFeatureSettings,
+              fontFamily,
+              context.assets,
+              getFontWeightAdjustment(context),
+          ),
           0,
           workingText.length,
           spanFlags,
@@ -1103,13 +1112,16 @@ public open class ReactEditText public constructor(context: Context) : AppCompat
     }
 
     addSpansFromStyleAttributes(sb)
+    val fontWeightAdjustment = getFontWeightAdjustment(context)
+    val textPaint = TextPaint(paint)
+    textPaint.setTypeface(applyFontWeightAdjustment(textPaint.typeface, fontWeightAdjustment))
     sb.setSpan(
-        ReactTextPaintHolderSpan(TextPaint(paint)),
+        ReactTextPaintHolderSpan(textPaint),
         0,
         sb.length,
         Spannable.SPAN_INCLUSIVE_INCLUSIVE,
     )
-    TextLayoutManager.setCachedSpannableForTag(id, sb)
+    TextLayoutManager.setCachedSpannableForTag(id, fontWeightAdjustment, sb)
   }
 
   public fun setEventDispatcher(eventDispatcher: EventDispatcher?) {
