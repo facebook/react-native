@@ -501,6 +501,389 @@ ComponentName HostPlatformViewProps::getDiffPropsImplementationTarget() const {
   return "View";
 }
 
+// Behavior-preserving helpers extracted from getDiffProps below to keep its
+// cyclomatic complexity low. Each mirrors one of the recurring
+// compare-and-assign shapes used per prop, so the serialized output (keys,
+// values, conversions, and insertion order) is identical to the open-coded
+// version.
+template <typename T>
+static void appendIfChanged(
+    folly::dynamic& result,
+    const char* propName,
+    const T& newValue,
+    const T& oldValue) {
+  if (newValue != oldValue) {
+    result[propName] = newValue;
+  }
+}
+
+template <typename T>
+static void appendDerefIfChanged(
+    folly::dynamic& result,
+    const char* propName,
+    const T& newValue,
+    const T& oldValue) {
+  if (newValue != oldValue) {
+    result[propName] = *newValue;
+  }
+}
+
+template <typename T, typename Convert>
+static void appendConvertedIfChanged(
+    folly::dynamic& result,
+    const char* propName,
+    const T& newValue,
+    const T& oldValue,
+    Convert&& convert) {
+  if (newValue != oldValue) {
+    result[propName] = convert(newValue);
+  }
+}
+
+template <typename T, typename Convert>
+static void appendOptionalIfChanged(
+    folly::dynamic& result,
+    const char* propName,
+    const std::optional<T>& newValue,
+    const std::optional<T>& oldValue,
+    Convert&& convert) {
+  if (newValue != oldValue) {
+    result[propName] = newValue.has_value()
+        ? folly::dynamic(convert(newValue.value()))
+        : folly::dynamic(nullptr);
+  }
+}
+
+static void appendOutlineStyleIfChanged(
+    folly::dynamic& result,
+    OutlineStyle outlineStyle,
+    OutlineStyle oldOutlineStyle) {
+  if (outlineStyle != oldOutlineStyle) {
+    switch (outlineStyle) {
+      case OutlineStyle::Solid:
+        result["outlineStyle"] = "solid";
+        break;
+      case OutlineStyle::Dotted:
+        result["outlineStyle"] = "dotted";
+        break;
+      case OutlineStyle::Dashed:
+        result["outlineStyle"] = "dashed";
+        break;
+    }
+  }
+}
+
+static void appendBackfaceVisibilityIfChanged(
+    folly::dynamic& result,
+    BackfaceVisibility backfaceVisibility,
+    BackfaceVisibility oldBackfaceVisibility) {
+  if (backfaceVisibility != oldBackfaceVisibility) {
+    switch (backfaceVisibility) {
+      case BackfaceVisibility::Auto:
+        result["backfaceVisibility"] = "auto";
+        break;
+      case BackfaceVisibility::Visible:
+        result["backfaceVisibility"] = "visible";
+        break;
+      case BackfaceVisibility::Hidden:
+        result["backfaceVisibility"] = "hidden";
+        break;
+    }
+  }
+}
+
+static void appendOverflowIfChanged(
+    folly::dynamic& result,
+    bool clipsContentToBounds,
+    bool oldClipsContentToBounds) {
+  if (clipsContentToBounds != oldClipsContentToBounds) {
+    result["overflow"] = clipsContentToBounds ? "hidden" : "visible";
+    result["scroll"] = result["overflow"];
+  }
+}
+
+template <typename T>
+static void appendNativeDrawableIfChanged(
+    folly::dynamic& result,
+    const char* propName,
+    const T& newValue,
+    const T& oldValue) {
+  if (newValue != oldValue) {
+    updateNativeDrawableProp(result, propName, newValue);
+  }
+}
+
+template <typename T>
+static void
+appendEventProps(folly::dynamic& result, const T& events, const T& oldEvents) {
+  if (events != oldEvents) {
+    updateEventProp(
+        result,
+        events,
+        oldEvents,
+        ViewEvents::Offset::PointerEnter,
+        "onPointerEnter");
+    updateEventProp(
+        result,
+        events,
+        oldEvents,
+        ViewEvents::Offset::PointerEnterCapture,
+        "onPointerEnterCapture");
+    updateEventProp(
+        result,
+        events,
+        oldEvents,
+        ViewEvents::Offset::PointerMove,
+        "onPointerMove");
+    updateEventProp(
+        result,
+        events,
+        oldEvents,
+        ViewEvents::Offset::PointerMoveCapture,
+        "onPointerMoveCapture");
+    updateEventProp(
+        result,
+        events,
+        oldEvents,
+        ViewEvents::Offset::PointerLeave,
+        "onPointerLeave");
+    updateEventProp(
+        result,
+        events,
+        oldEvents,
+        ViewEvents::Offset::PointerLeaveCapture,
+        "onPointerLeaveCapture");
+    updateEventProp(
+        result,
+        events,
+        oldEvents,
+        ViewEvents::Offset::PointerOver,
+        "onPointerOver");
+    updateEventProp(
+        result,
+        events,
+        oldEvents,
+        ViewEvents::Offset::PointerOverCapture,
+        "onPointerOverCapture");
+    updateEventProp(
+        result,
+        events,
+        oldEvents,
+        ViewEvents::Offset::PointerOut,
+        "onPointerOut");
+    updateEventProp(
+        result,
+        events,
+        oldEvents,
+        ViewEvents::Offset::PointerOutCapture,
+        "onPointerOutCapture");
+    updateEventProp(
+        result, events, oldEvents, ViewEvents::Offset::Click, "onClick");
+    updateEventProp(
+        result,
+        events,
+        oldEvents,
+        ViewEvents::Offset::ClickCapture,
+        "onClickCapture");
+    updateEventProp(
+        result,
+        events,
+        oldEvents,
+        ViewEvents::Offset::MoveShouldSetResponder,
+        "onMoveShouldSetResponder");
+    updateEventProp(
+        result,
+        events,
+        oldEvents,
+        ViewEvents::Offset::MoveShouldSetResponderCapture,
+        "onMoveShouldSetResponderCapture");
+    updateEventProp(
+        result,
+        events,
+        oldEvents,
+        ViewEvents::Offset::StartShouldSetResponder,
+        "onStartShouldSetResponder");
+    updateEventProp(
+        result,
+        events,
+        oldEvents,
+        ViewEvents::Offset::StartShouldSetResponderCapture,
+        "onStartShouldSetResponderCapture");
+    updateEventProp(
+        result,
+        events,
+        oldEvents,
+        ViewEvents::Offset::ResponderGrant,
+        "onResponderGrant");
+    updateEventProp(
+        result,
+        events,
+        oldEvents,
+        ViewEvents::Offset::ResponderReject,
+        "onResponderReject");
+    updateEventProp(
+        result,
+        events,
+        oldEvents,
+        ViewEvents::Offset::ResponderStart,
+        "onResponderStart");
+    updateEventProp(
+        result,
+        events,
+        oldEvents,
+        ViewEvents::Offset::ResponderEnd,
+        "onResponderEnd");
+    updateEventProp(
+        result,
+        events,
+        oldEvents,
+        ViewEvents::Offset::ResponderRelease,
+        "onResponderRelease");
+    updateEventProp(
+        result,
+        events,
+        oldEvents,
+        ViewEvents::Offset::ResponderMove,
+        "onResponderMove");
+    updateEventProp(
+        result,
+        events,
+        oldEvents,
+        ViewEvents::Offset::ResponderTerminate,
+        "onResponderTerminate");
+    updateEventProp(
+        result,
+        events,
+        oldEvents,
+        ViewEvents::Offset::ResponderTerminationRequest,
+        "onResponderTerminationRequest");
+    updateEventProp(
+        result,
+        events,
+        oldEvents,
+        ViewEvents::Offset::ShouldBlockNativeResponder,
+        "onShouldBlockNativeResponder");
+    updateEventProp(
+        result,
+        events,
+        oldEvents,
+        ViewEvents::Offset::TouchStart,
+        "onTouchStart");
+    updateEventProp(
+        result,
+        events,
+        oldEvents,
+        ViewEvents::Offset::TouchMove,
+        "onTouchMove");
+    updateEventProp(
+        result, events, oldEvents, ViewEvents::Offset::TouchEnd, "onTouchEnd");
+    updateEventProp(
+        result,
+        events,
+        oldEvents,
+        ViewEvents::Offset::TouchCancel,
+        "onTouchCancel");
+  }
+}
+
+template <typename TTransform, typename TOrigin>
+static void appendTransformIfChanged(
+    folly::dynamic& result,
+    const TTransform& transform,
+    const TTransform& oldTransform,
+    const TOrigin& transformOrigin,
+    const TOrigin& oldTransformOrigin) {
+  if (transform != oldTransform || transformOrigin != oldTransformOrigin) {
+    folly::dynamic resultTranslateArray = folly::dynamic::array();
+    for (const auto& operation : transform.operations) {
+      updateTransformProps(transform, operation, resultTranslateArray);
+    }
+    result["transform"] = std::move(resultTranslateArray);
+  }
+}
+
+template <typename T>
+static void appendAccessibilityStateIfChanged(
+    folly::dynamic& result,
+    const T& accessibilityState,
+    const T& oldAccessibilityState) {
+  if (accessibilityState != oldAccessibilityState) {
+    updateAccessibilityStateProp(
+        result, accessibilityState, oldAccessibilityState);
+  }
+}
+
+template <typename T>
+static void appendAccessibilityLabelledByIfChanged(
+    folly::dynamic& result,
+    const T& accessibilityLabelledBy,
+    const T& oldAccessibilityLabelledBy) {
+  if (accessibilityLabelledBy != oldAccessibilityLabelledBy) {
+    auto accessibilityLabelledByValues = folly::dynamic::array();
+    for (const auto& accessibilityLabelledByValue :
+         accessibilityLabelledBy.value) {
+      accessibilityLabelledByValues.push_back(accessibilityLabelledByValue);
+    }
+    result["accessibilityLabelledBy"] = accessibilityLabelledByValues;
+  }
+}
+
+template <typename T>
+static void appendAccessibilityOrderIfChanged(
+    folly::dynamic& result,
+    const T& accessibilityOrder,
+    const T& oldAccessibilityOrder) {
+  if (accessibilityOrder != oldAccessibilityOrder) {
+    auto accessibilityChildrenIds = folly::dynamic::array();
+    for (const auto& accessibilityChildId : accessibilityOrder) {
+      accessibilityChildrenIds.push_back(accessibilityChildId);
+    }
+    result["experimental_accessibilityOrder"] = accessibilityChildrenIds;
+  }
+}
+
+template <typename T>
+static void appendAccessibilityValueIfChanged(
+    folly::dynamic& result,
+    const T& accessibilityValue,
+    const T& oldAccessibilityValue) {
+  if (accessibilityValue != oldAccessibilityValue) {
+    folly::dynamic accessibilityValueObject = folly::dynamic::object();
+    if (accessibilityValue.min.has_value()) {
+      accessibilityValueObject["min"] = accessibilityValue.min.value();
+    }
+    if (accessibilityValue.max.has_value()) {
+      accessibilityValueObject["max"] = accessibilityValue.max.value();
+    }
+    if (accessibilityValue.now.has_value()) {
+      accessibilityValueObject["now"] = accessibilityValue.now.value();
+    }
+    if (accessibilityValue.text.has_value()) {
+      accessibilityValueObject["text"] = accessibilityValue.text.value();
+    }
+    result["accessibilityValue"] = accessibilityValueObject;
+  }
+}
+
+template <typename T>
+static void appendAccessibilityActionsIfChanged(
+    folly::dynamic& result,
+    const T& accessibilityActions,
+    const T& oldAccessibilityActions) {
+  if (accessibilityActions != oldAccessibilityActions) {
+    auto accessibilityActionsArray = folly::dynamic::array();
+    for (const auto& accessibilityAction : accessibilityActions) {
+      folly::dynamic accessibilityActionObject = folly::dynamic::object();
+      accessibilityActionObject["name"] = accessibilityAction.name;
+      if (accessibilityAction.label.has_value()) {
+        accessibilityActionObject["label"] = accessibilityAction.label.value();
+      }
+      accessibilityActionsArray.push_back(accessibilityActionObject);
+    }
+    result["accessibilityActions"] = accessibilityActionsArray;
+  }
+}
+
 folly::dynamic HostPlatformViewProps::getDiffProps(
     const Props* prevProps) const {
   folly::dynamic result = folly::dynamic::object();
@@ -515,346 +898,103 @@ folly::dynamic HostPlatformViewProps::getDiffProps(
     return result;
   }
 
-  if (elevation != oldProps->elevation) {
-    result["elevation"] = elevation;
-  }
+  auto asString = [](const auto& value) { return toString(value); };
+  auto asDynamic = [](const auto& value) { return toDynamic(value); };
+  auto asIs = [](const auto& value) { return value; };
 
-  if (focusable != oldProps->focusable) {
-    result["focusable"] = focusable;
-  }
-
-  if (hasTVPreferredFocus != oldProps->hasTVPreferredFocus) {
-    result["hasTVPreferredFocus"] = hasTVPreferredFocus;
-  }
-
-  if (needsOffscreenAlphaCompositing !=
-      oldProps->needsOffscreenAlphaCompositing) {
-    result["needsOffscreenAlphaCompositing"] = needsOffscreenAlphaCompositing;
-  }
-
-  if (renderToHardwareTextureAndroid !=
-      oldProps->renderToHardwareTextureAndroid) {
-    result["renderToHardwareTextureAndroid"] = renderToHardwareTextureAndroid;
-  }
-
-  if (screenReaderFocusable != oldProps->screenReaderFocusable) {
-    result["screenReaderFocusable"] = screenReaderFocusable;
-  }
-
-  if (role != oldProps->role) {
-    result["role"] = toString(role);
-  }
-
-  if (opacity != oldProps->opacity) {
-    result["opacity"] = opacity;
-  }
-
-  if (backgroundColor != oldProps->backgroundColor) {
-    result["backgroundColor"] = *backgroundColor;
-  }
-
-  if (outlineColor != oldProps->outlineColor) {
-    result["outlineColor"] = *outlineColor;
-  }
-
-  if (outlineOffset != oldProps->outlineOffset) {
-    result["outlineOffset"] = outlineOffset;
-  }
-
-  if (outlineStyle != oldProps->outlineStyle) {
-    switch (outlineStyle) {
-      case OutlineStyle::Solid:
-        result["outlineStyle"] = "solid";
-        break;
-      case OutlineStyle::Dotted:
-        result["outlineStyle"] = "dotted";
-        break;
-      case OutlineStyle::Dashed:
-        result["outlineStyle"] = "dashed";
-        break;
-    }
-  }
-
-  if (outlineWidth != oldProps->outlineWidth) {
-    result["outlineWidth"] = outlineWidth;
-  }
-
-  if (shadowColor != oldProps->shadowColor) {
-    result["shadowColor"] = *shadowColor;
-  }
-
-  if (shadowOpacity != oldProps->shadowOpacity) {
-    result["shadowOpacity"] = shadowOpacity;
-  }
-
-  if (shadowRadius != oldProps->shadowRadius) {
-    result["shadowRadius"] = shadowRadius;
-  }
-
-  if (shouldRasterize != oldProps->shouldRasterize) {
-    result["shouldRasterize"] = shouldRasterize;
-  }
-
-  if (collapsable != oldProps->collapsable) {
-    result["collapsable"] = collapsable;
-  }
-
-  if (removeClippedSubviews != oldProps->removeClippedSubviews) {
-    result["removeClippedSubviews"] = removeClippedSubviews;
-  }
-
-  if (collapsableChildren != oldProps->collapsableChildren) {
-    result["collapsableChildren"] = collapsableChildren;
-  }
-
-  if (onLayout != oldProps->onLayout) {
-    result["onLayout"] = onLayout;
-  }
-
-  if (zIndex != oldProps->zIndex) {
-    result["zIndex"] =
-        zIndex.has_value() ? zIndex.value() : folly::dynamic(nullptr);
-  }
-
-  if (boxShadow != oldProps->boxShadow) {
-    result["boxShadow"] = toDynamic(boxShadow);
-  }
-
-  if (filter != oldProps->filter) {
-    result["filter"] = toDynamic(filter);
-  }
-
-  if (backgroundImage != oldProps->backgroundImage) {
-    result["experimental_backgroundImage"] = toDynamic(backgroundImage);
-  }
-
-  if (mixBlendMode != oldProps->mixBlendMode) {
-    result["mixBlendMode"] = toString(mixBlendMode);
-  }
-
-  if (pointerEvents != oldProps->pointerEvents) {
-    result["pointerEvents"] = toString(pointerEvents);
-  }
-
-  if (hitSlop != oldProps->hitSlop) {
-    result["hitSlop"] = toDynamic(hitSlop);
-  }
-
-  if (nativeId != oldProps->nativeId) {
-    result["nativeID"] = nativeId;
-  }
-
-  if (testId != oldProps->testId) {
-    result["testID"] = testId;
-  }
-
-  if (accessible != oldProps->accessible) {
-    result["accessible"] = accessible;
-  }
-
-  if (getClipsContentToBounds() != oldProps->getClipsContentToBounds()) {
-    result["overflow"] = getClipsContentToBounds() ? "hidden" : "visible";
-    result["scroll"] = result["overflow"];
-  }
-
-  if (backfaceVisibility != oldProps->backfaceVisibility) {
-    switch (backfaceVisibility) {
-      case BackfaceVisibility::Auto:
-        result["backfaceVisibility"] = "auto";
-        break;
-      case BackfaceVisibility::Visible:
-        result["backfaceVisibility"] = "visible";
-        break;
-      case BackfaceVisibility::Hidden:
-        result["backfaceVisibility"] = "hidden";
-        break;
-    }
-  }
-
-  if (nativeBackground != oldProps->nativeBackground) {
-    updateNativeDrawableProp(
-        result, "nativeBackgroundAndroid", nativeBackground);
-  }
-
-  if (nativeForeground != oldProps->nativeForeground) {
-    updateNativeDrawableProp(
-        result, "nativeForegroundAndroid", nativeForeground);
-  }
+  appendIfChanged(result, "elevation", elevation, oldProps->elevation);
+  appendIfChanged(result, "focusable", focusable, oldProps->focusable);
+  appendIfChanged(
+      result,
+      "hasTVPreferredFocus",
+      hasTVPreferredFocus,
+      oldProps->hasTVPreferredFocus);
+  appendIfChanged(
+      result,
+      "needsOffscreenAlphaCompositing",
+      needsOffscreenAlphaCompositing,
+      oldProps->needsOffscreenAlphaCompositing);
+  appendIfChanged(
+      result,
+      "renderToHardwareTextureAndroid",
+      renderToHardwareTextureAndroid,
+      oldProps->renderToHardwareTextureAndroid);
+  appendIfChanged(
+      result,
+      "screenReaderFocusable",
+      screenReaderFocusable,
+      oldProps->screenReaderFocusable);
+  appendConvertedIfChanged(result, "role", role, oldProps->role, asString);
+  appendIfChanged(result, "opacity", opacity, oldProps->opacity);
+  appendDerefIfChanged(
+      result, "backgroundColor", backgroundColor, oldProps->backgroundColor);
+  appendDerefIfChanged(
+      result, "outlineColor", outlineColor, oldProps->outlineColor);
+  appendIfChanged(
+      result, "outlineOffset", outlineOffset, oldProps->outlineOffset);
+  appendOutlineStyleIfChanged(result, outlineStyle, oldProps->outlineStyle);
+  appendIfChanged(result, "outlineWidth", outlineWidth, oldProps->outlineWidth);
+  appendDerefIfChanged(
+      result, "shadowColor", shadowColor, oldProps->shadowColor);
+  appendIfChanged(
+      result, "shadowOpacity", shadowOpacity, oldProps->shadowOpacity);
+  appendIfChanged(result, "shadowRadius", shadowRadius, oldProps->shadowRadius);
+  appendIfChanged(
+      result, "shouldRasterize", shouldRasterize, oldProps->shouldRasterize);
+  appendIfChanged(result, "collapsable", collapsable, oldProps->collapsable);
+  appendIfChanged(
+      result,
+      "removeClippedSubviews",
+      removeClippedSubviews,
+      oldProps->removeClippedSubviews);
+  appendIfChanged(
+      result,
+      "collapsableChildren",
+      collapsableChildren,
+      oldProps->collapsableChildren);
+  appendIfChanged(result, "onLayout", onLayout, oldProps->onLayout);
+  appendOptionalIfChanged(result, "zIndex", zIndex, oldProps->zIndex, asIs);
+  appendConvertedIfChanged(
+      result, "boxShadow", boxShadow, oldProps->boxShadow, asDynamic);
+  appendConvertedIfChanged(
+      result, "filter", filter, oldProps->filter, asDynamic);
+  appendConvertedIfChanged(
+      result,
+      "experimental_backgroundImage",
+      backgroundImage,
+      oldProps->backgroundImage,
+      asDynamic);
+  appendConvertedIfChanged(
+      result, "mixBlendMode", mixBlendMode, oldProps->mixBlendMode, asString);
+  appendConvertedIfChanged(
+      result,
+      "pointerEvents",
+      pointerEvents,
+      oldProps->pointerEvents,
+      asString);
+  appendConvertedIfChanged(
+      result, "hitSlop", hitSlop, oldProps->hitSlop, asDynamic);
+  appendIfChanged(result, "nativeID", nativeId, oldProps->nativeId);
+  appendIfChanged(result, "testID", testId, oldProps->testId);
+  appendIfChanged(result, "accessible", accessible, oldProps->accessible);
+  appendOverflowIfChanged(
+      result, getClipsContentToBounds(), oldProps->getClipsContentToBounds());
+  appendBackfaceVisibilityIfChanged(
+      result, backfaceVisibility, oldProps->backfaceVisibility);
+  appendNativeDrawableIfChanged(
+      result,
+      "nativeBackgroundAndroid",
+      nativeBackground,
+      oldProps->nativeBackground);
+  appendNativeDrawableIfChanged(
+      result,
+      "nativeForegroundAndroid",
+      nativeForeground,
+      oldProps->nativeForeground);
 
   // Events
   // TODO T212662692: pass events as std::bitset<64> to java
-  if (events != oldProps->events) {
-    updateEventProp(
-        result,
-        events,
-        oldProps->events,
-        ViewEvents::Offset::PointerEnter,
-        "onPointerEnter");
-    updateEventProp(
-        result,
-        events,
-        oldProps->events,
-        ViewEvents::Offset::PointerEnterCapture,
-        "onPointerEnterCapture");
-    updateEventProp(
-        result,
-        events,
-        oldProps->events,
-        ViewEvents::Offset::PointerMove,
-        "onPointerMove");
-    updateEventProp(
-        result,
-        events,
-        oldProps->events,
-        ViewEvents::Offset::PointerMoveCapture,
-        "onPointerMoveCapture");
-    updateEventProp(
-        result,
-        events,
-        oldProps->events,
-        ViewEvents::Offset::PointerLeave,
-        "onPointerLeave");
-    updateEventProp(
-        result,
-        events,
-        oldProps->events,
-        ViewEvents::Offset::PointerLeaveCapture,
-        "onPointerLeaveCapture");
-    updateEventProp(
-        result,
-        events,
-        oldProps->events,
-        ViewEvents::Offset::PointerOver,
-        "onPointerOver");
-    updateEventProp(
-        result,
-        events,
-        oldProps->events,
-        ViewEvents::Offset::PointerOverCapture,
-        "onPointerOverCapture");
-    updateEventProp(
-        result,
-        events,
-        oldProps->events,
-        ViewEvents::Offset::PointerOut,
-        "onPointerOut");
-    updateEventProp(
-        result,
-        events,
-        oldProps->events,
-        ViewEvents::Offset::PointerOutCapture,
-        "onPointerOutCapture");
-    updateEventProp(
-        result, events, oldProps->events, ViewEvents::Offset::Click, "onClick");
-    updateEventProp(
-        result,
-        events,
-        oldProps->events,
-        ViewEvents::Offset::ClickCapture,
-        "onClickCapture");
-    updateEventProp(
-        result,
-        events,
-        oldProps->events,
-        ViewEvents::Offset::MoveShouldSetResponder,
-        "onMoveShouldSetResponder");
-    updateEventProp(
-        result,
-        events,
-        oldProps->events,
-        ViewEvents::Offset::MoveShouldSetResponderCapture,
-        "onMoveShouldSetResponderCapture");
-    updateEventProp(
-        result,
-        events,
-        oldProps->events,
-        ViewEvents::Offset::StartShouldSetResponder,
-        "onStartShouldSetResponder");
-    updateEventProp(
-        result,
-        events,
-        oldProps->events,
-        ViewEvents::Offset::StartShouldSetResponderCapture,
-        "onStartShouldSetResponderCapture");
-    updateEventProp(
-        result,
-        events,
-        oldProps->events,
-        ViewEvents::Offset::ResponderGrant,
-        "onResponderGrant");
-    updateEventProp(
-        result,
-        events,
-        oldProps->events,
-        ViewEvents::Offset::ResponderReject,
-        "onResponderReject");
-    updateEventProp(
-        result,
-        events,
-        oldProps->events,
-        ViewEvents::Offset::ResponderStart,
-        "onResponderStart");
-    updateEventProp(
-        result,
-        events,
-        oldProps->events,
-        ViewEvents::Offset::ResponderEnd,
-        "onResponderEnd");
-    updateEventProp(
-        result,
-        events,
-        oldProps->events,
-        ViewEvents::Offset::ResponderRelease,
-        "onResponderRelease");
-    updateEventProp(
-        result,
-        events,
-        oldProps->events,
-        ViewEvents::Offset::ResponderMove,
-        "onResponderMove");
-    updateEventProp(
-        result,
-        events,
-        oldProps->events,
-        ViewEvents::Offset::ResponderTerminate,
-        "onResponderTerminate");
-    updateEventProp(
-        result,
-        events,
-        oldProps->events,
-        ViewEvents::Offset::ResponderTerminationRequest,
-        "onResponderTerminationRequest");
-    updateEventProp(
-        result,
-        events,
-        oldProps->events,
-        ViewEvents::Offset::ShouldBlockNativeResponder,
-        "onShouldBlockNativeResponder");
-    updateEventProp(
-        result,
-        events,
-        oldProps->events,
-        ViewEvents::Offset::TouchStart,
-        "onTouchStart");
-    updateEventProp(
-        result,
-        events,
-        oldProps->events,
-        ViewEvents::Offset::TouchMove,
-        "onTouchMove");
-    updateEventProp(
-        result,
-        events,
-        oldProps->events,
-        ViewEvents::Offset::TouchEnd,
-        "onTouchEnd");
-    updateEventProp(
-        result,
-        events,
-        oldProps->events,
-        ViewEvents::Offset::TouchCancel,
-        "onTouchCancel");
-  }
+  appendEventProps(result, events, oldProps->events);
 
   // Borders
   auto borderWidths = getBorderWidths();
@@ -876,166 +1016,108 @@ folly::dynamic HostPlatformViewProps::getDiffProps(
   }
 
   // Transforms
-  if (transform != oldProps->transform ||
-      transformOrigin != oldProps->transformOrigin) {
-    folly::dynamic resultTranslateArray = folly::dynamic::array();
-    for (const auto& operation : transform.operations) {
-      updateTransformProps(transform, operation, resultTranslateArray);
-    }
-    result["transform"] = std::move(resultTranslateArray);
-  }
-
-  if (transformOrigin != oldProps->transformOrigin) {
-    result["transformOrigin"] = transformOrigin;
-  }
+  appendTransformIfChanged(
+      result,
+      transform,
+      oldProps->transform,
+      transformOrigin,
+      oldProps->transformOrigin);
+  appendIfChanged(
+      result, "transformOrigin", transformOrigin, oldProps->transformOrigin);
 
   // Accessibility
 
-  if (accessibilityState != oldProps->accessibilityState) {
-    updateAccessibilityStateProp(
-        result, accessibilityState, oldProps->accessibilityState);
-  }
-
-  if (accessibilityLabel != oldProps->accessibilityLabel) {
-    result["accessibilityLabel"] = accessibilityLabel;
-  }
-
-  if (accessibilityLabelledBy != oldProps->accessibilityLabelledBy) {
-    auto accessibilityLabelledByValues = folly::dynamic::array();
-    for (const auto& accessibilityLabelledByValue :
-         accessibilityLabelledBy.value) {
-      accessibilityLabelledByValues.push_back(accessibilityLabelledByValue);
-    }
-    result["accessibilityLabelledBy"] = accessibilityLabelledByValues;
-  }
-
-  if (accessibilityOrder != oldProps->accessibilityOrder) {
-    auto accessibilityChildrenIds = folly::dynamic::array();
-    for (const auto& accessibilityChildId : accessibilityOrder) {
-      accessibilityChildrenIds.push_back(accessibilityChildId);
-    }
-    result["experimental_accessibilityOrder"] = accessibilityChildrenIds;
-  }
-
-  if (accessibilityLiveRegion != oldProps->accessibilityLiveRegion) {
-    result["accessibilityLiveRegion"] = toString(accessibilityLiveRegion);
-  }
-
-  if (accessibilityHint != oldProps->accessibilityHint) {
-    result["accessibilityHint"] = accessibilityHint;
-  }
-
-  if (accessibilityRole != oldProps->accessibilityRole) {
-    result["accessibilityRole"] = accessibilityRole;
-  }
-
-  if (accessibilityLanguage != oldProps->accessibilityLanguage) {
-    result["accessibilityLanguage"] = accessibilityLanguage;
-  }
-
-  if (accessibilityValue != oldProps->accessibilityValue) {
-    folly::dynamic accessibilityValueObject = folly::dynamic::object();
-    if (accessibilityValue.min.has_value()) {
-      accessibilityValueObject["min"] = accessibilityValue.min.value();
-    }
-    if (accessibilityValue.max.has_value()) {
-      accessibilityValueObject["max"] = accessibilityValue.max.value();
-    }
-    if (accessibilityValue.now.has_value()) {
-      accessibilityValueObject["now"] = accessibilityValue.now.value();
-    }
-    if (accessibilityValue.text.has_value()) {
-      accessibilityValueObject["text"] = accessibilityValue.text.value();
-    }
-    result["accessibilityValue"] = accessibilityValueObject;
-  }
-
-  if (accessibilityActions != oldProps->accessibilityActions) {
-    auto accessibilityActionsArray = folly::dynamic::array();
-    for (const auto& accessibilityAction : accessibilityActions) {
-      folly::dynamic accessibilityActionObject = folly::dynamic::object();
-      accessibilityActionObject["name"] = accessibilityAction.name;
-      if (accessibilityAction.label.has_value()) {
-        accessibilityActionObject["label"] = accessibilityAction.label.value();
-      }
-      accessibilityActionsArray.push_back(accessibilityActionObject);
-    }
-    result["accessibilityActions"] = accessibilityActionsArray;
-  }
-
-  if (accessibilityViewIsModal != oldProps->accessibilityViewIsModal) {
-    result["accessibilityViewIsModal"] = accessibilityViewIsModal;
-  }
-
-  if (accessibilityElementsHidden != oldProps->accessibilityElementsHidden) {
-    result["accessibilityElementsHidden"] = accessibilityElementsHidden;
-  }
-
-  if (accessibilityIgnoresInvertColors !=
-      oldProps->accessibilityIgnoresInvertColors) {
-    result["accessibilityIgnoresInvertColors"] =
-        accessibilityIgnoresInvertColors;
-  }
-
-  if (onAccessibilityTap != oldProps->onAccessibilityTap) {
-    result["onAccessibilityTap"] = onAccessibilityTap;
-  }
-
-  if (onAccessibilityMagicTap != oldProps->onAccessibilityMagicTap) {
-    result["onAccessibilityMagicTap"] = onAccessibilityMagicTap;
-  }
-
-  if (onAccessibilityEscape != oldProps->onAccessibilityEscape) {
-    result["onAccessibilityEscape"] = onAccessibilityEscape;
-  }
-
-  if (onAccessibilityAction != oldProps->onAccessibilityAction) {
-    result["onAccessibilityAction"] = onAccessibilityAction;
-  }
-
-  if (importantForAccessibility != oldProps->importantForAccessibility) {
-    result["importantForAccessibility"] = toString(importantForAccessibility);
-  }
-
-  if (nextFocusDown != oldProps->nextFocusDown) {
-    if (nextFocusDown.has_value()) {
-      result["nextFocusDown"] = nextFocusDown.value();
-    } else {
-      result["nextFocusDown"] = folly::dynamic(nullptr);
-    }
-  }
-
-  if (nextFocusForward != oldProps->nextFocusForward) {
-    if (nextFocusForward.has_value()) {
-      result["nextFocusForward"] = nextFocusForward.value();
-    } else {
-      result["nextFocusForward"] = folly::dynamic(nullptr);
-    }
-  }
-
-  if (nextFocusLeft != oldProps->nextFocusLeft) {
-    if (nextFocusLeft.has_value()) {
-      result["nextFocusLeft"] = nextFocusLeft.value();
-    } else {
-      result["nextFocusLeft"] = folly::dynamic(nullptr);
-    }
-  }
-
-  if (nextFocusRight != oldProps->nextFocusRight) {
-    if (nextFocusRight.has_value()) {
-      result["nextFocusRight"] = nextFocusRight.value();
-    } else {
-      result["nextFocusRight"] = folly::dynamic(nullptr);
-    }
-  }
-
-  if (nextFocusUp != oldProps->nextFocusUp) {
-    if (nextFocusUp.has_value()) {
-      result["nextFocusUp"] = nextFocusUp.value();
-    } else {
-      result["nextFocusUp"] = folly::dynamic(nullptr);
-    }
-  }
+  appendAccessibilityStateIfChanged(
+      result, accessibilityState, oldProps->accessibilityState);
+  appendIfChanged(
+      result,
+      "accessibilityLabel",
+      accessibilityLabel,
+      oldProps->accessibilityLabel);
+  appendAccessibilityLabelledByIfChanged(
+      result, accessibilityLabelledBy, oldProps->accessibilityLabelledBy);
+  appendAccessibilityOrderIfChanged(
+      result, accessibilityOrder, oldProps->accessibilityOrder);
+  appendConvertedIfChanged(
+      result,
+      "accessibilityLiveRegion",
+      accessibilityLiveRegion,
+      oldProps->accessibilityLiveRegion,
+      asString);
+  appendIfChanged(
+      result,
+      "accessibilityHint",
+      accessibilityHint,
+      oldProps->accessibilityHint);
+  appendIfChanged(
+      result,
+      "accessibilityRole",
+      accessibilityRole,
+      oldProps->accessibilityRole);
+  appendIfChanged(
+      result,
+      "accessibilityLanguage",
+      accessibilityLanguage,
+      oldProps->accessibilityLanguage);
+  appendAccessibilityValueIfChanged(
+      result, accessibilityValue, oldProps->accessibilityValue);
+  appendAccessibilityActionsIfChanged(
+      result, accessibilityActions, oldProps->accessibilityActions);
+  appendIfChanged(
+      result,
+      "accessibilityViewIsModal",
+      accessibilityViewIsModal,
+      oldProps->accessibilityViewIsModal);
+  appendIfChanged(
+      result,
+      "accessibilityElementsHidden",
+      accessibilityElementsHidden,
+      oldProps->accessibilityElementsHidden);
+  appendIfChanged(
+      result,
+      "accessibilityIgnoresInvertColors",
+      accessibilityIgnoresInvertColors,
+      oldProps->accessibilityIgnoresInvertColors);
+  appendIfChanged(
+      result,
+      "onAccessibilityTap",
+      onAccessibilityTap,
+      oldProps->onAccessibilityTap);
+  appendIfChanged(
+      result,
+      "onAccessibilityMagicTap",
+      onAccessibilityMagicTap,
+      oldProps->onAccessibilityMagicTap);
+  appendIfChanged(
+      result,
+      "onAccessibilityEscape",
+      onAccessibilityEscape,
+      oldProps->onAccessibilityEscape);
+  appendIfChanged(
+      result,
+      "onAccessibilityAction",
+      onAccessibilityAction,
+      oldProps->onAccessibilityAction);
+  appendConvertedIfChanged(
+      result,
+      "importantForAccessibility",
+      importantForAccessibility,
+      oldProps->importantForAccessibility,
+      asString);
+  appendOptionalIfChanged(
+      result, "nextFocusDown", nextFocusDown, oldProps->nextFocusDown, asIs);
+  appendOptionalIfChanged(
+      result,
+      "nextFocusForward",
+      nextFocusForward,
+      oldProps->nextFocusForward,
+      asIs);
+  appendOptionalIfChanged(
+      result, "nextFocusLeft", nextFocusLeft, oldProps->nextFocusLeft, asIs);
+  appendOptionalIfChanged(
+      result, "nextFocusRight", nextFocusRight, oldProps->nextFocusRight, asIs);
+  appendOptionalIfChanged(
+      result, "nextFocusUp", nextFocusUp, oldProps->nextFocusUp, asIs);
 
   return result;
 }

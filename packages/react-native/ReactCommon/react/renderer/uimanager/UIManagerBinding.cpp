@@ -17,6 +17,7 @@
 #include <react/renderer/runtimescheduler/RuntimeSchedulerBinding.h>
 #include <react/renderer/uimanager/primitives.h>
 
+#include <optional>
 #include <utility>
 
 namespace facebook::react {
@@ -181,40 +182,18 @@ static void validateArgumentCount(
   }
 }
 
-jsi::Value UIManagerBinding::get(
+// The following `get*Methods` free functions each handle a contiguous group of
+// the JSI host-function methods exposed by `UIManagerBinding::get`. They return
+// `std::nullopt` when `methodName` is not one they handle, allowing `get` to be
+// a flat dispatch sequence. Splitting the original monolithic function this way
+// keeps behavior identical (same method names, arity, captures and bodies)
+// while lowering its cyclomatic complexity.
+
+static std::optional<jsi::Value> getNodeManagementMethods(
+    UIManager* uiManager,
     jsi::Runtime& runtime,
-    const jsi::PropNameID& name) {
-  auto methodName = name.utf8(runtime);
-
-  // Convert shared_ptr<UIManager> to a raw ptr
-  // Why? Because:
-  // 1) UIManagerBinding strongly retains UIManager. The JS VM
-  //    strongly retains UIManagerBinding (through the JSI).
-  //    These functions are JSI functions and are only called via
-  //    the JS VM; if the JS VM is torn down, those functions can't
-  //    execute and these lambdas won't execute.
-  // 2) The UIManager is only deallocated when all references to it
-  //    are deallocated, including the UIManagerBinding. That only
-  //    happens when the JS VM is deallocated. So, the raw pointer
-  //    is safe.
-  //
-  // Even if it's safe, why not just use shared_ptr anyway as
-  //  extra insurance?
-  // 1) Using shared_ptr or weak_ptr when they're not needed is
-  //    a pessimisation. It's more instructions executed without
-  //    any additional value in this case.
-  // 2) How and when exactly these lambdas is deallocated is
-  //    complex. Adding shared_ptr to them which causes the UIManager
-  //    to potentially live longer is unnecessary, complicated cognitive
-  //    overhead.
-  // 3) There is a strong suspicion that retaining UIManager from
-  //    these C++ lambdas, which are retained by an object that is held onto
-  //    by the JSI, caused some crashes upon deallocation of the
-  //    Scheduler and JS VM. This could happen if, for instance, C++
-  //    semantics cause these lambda to not be deallocated until
-  //    a CPU tick (or more) after the JS VM is deallocated.
-  UIManager* uiManager = uiManager_.get();
-
+    const jsi::PropNameID& name,
+    const std::string& methodName) {
   // Semantic: Creates a new node with given pieces.
   if (methodName == "createNode") {
     auto paramCount = 5;
@@ -271,46 +250,6 @@ jsi::Value UIManagerBinding::get(
               arguments[1].getBool(),
               arguments[2].getBool());
 
-          return jsi::Value::undefined();
-        });
-  }
-
-  if (methodName == "findNodeAtPoint") {
-    auto paramCount = 4;
-    return jsi::Function::createFromHostFunction(
-        runtime,
-        name,
-        paramCount,
-        [uiManager, methodName, paramCount](
-            jsi::Runtime& runtime,
-            const jsi::Value& /*thisValue*/,
-            const jsi::Value* arguments,
-            size_t count) {
-          validateArgumentCount(runtime, methodName, paramCount, count);
-
-          auto node = Bridging<std::shared_ptr<const ShadowNode>>::fromJs(
-              runtime, arguments[0]);
-          auto locationX = (Float)arguments[1].getNumber();
-          auto locationY = (Float)arguments[2].getNumber();
-          auto onSuccessFunction =
-              arguments[3].getObject(runtime).getFunction(runtime);
-          auto targetNode = uiManager->findNodeAtPoint(
-              node, Point{.x = locationX, .y = locationY});
-
-          if (!targetNode) {
-            onSuccessFunction.call(runtime, jsi::Value::null());
-            return jsi::Value::undefined();
-          }
-
-          auto& eventTarget = targetNode->getEventEmitter()->eventTarget_;
-
-          EventEmitter::DispatchMutex().lock();
-          eventTarget->retain(runtime);
-          auto instanceHandle = eventTarget->getInstanceHandle(runtime);
-          eventTarget->release(runtime);
-          EventEmitter::DispatchMutex().unlock();
-
-          onSuccessFunction.call(runtime, std::move(instanceHandle));
           return jsi::Value::undefined();
         });
   }
@@ -398,6 +337,14 @@ jsi::Value UIManagerBinding::get(
         });
   }
 
+  return std::nullopt;
+}
+
+static std::optional<jsi::Value> getChildSetMethods(
+    UIManager* uiManager,
+    jsi::Runtime& runtime,
+    const jsi::PropNameID& name,
+    const std::string& methodName) {
   if (methodName == "appendChild") {
     auto paramCount = 2;
     return jsi::Function::createFromHostFunction(
@@ -488,27 +435,14 @@ jsi::Value UIManagerBinding::get(
         });
   }
 
-  if (methodName == "registerEventHandler") {
-    auto paramCount = 1;
-    return jsi::Function::createFromHostFunction(
-        runtime,
-        name,
-        paramCount,
-        [this, methodName, paramCount](
-            jsi::Runtime& runtime,
-            const jsi::Value& /*thisValue*/,
-            const jsi::Value* arguments,
-            size_t count) -> jsi::Value {
-          validateArgumentCount(runtime, methodName, paramCount, count);
+  return std::nullopt;
+}
 
-          auto eventHandler =
-              arguments[0].getObject(runtime).getFunction(runtime);
-          eventHandler_ =
-              std::make_unique<jsi::Function>(std::move(eventHandler));
-          return jsi::Value::undefined();
-        });
-  }
-
+static std::optional<jsi::Value> getLayoutAndCommandMethods(
+    UIManager* uiManager,
+    jsi::Runtime& runtime,
+    const jsi::PropNameID& name,
+    const std::string& methodName) {
   if (methodName == "getRelativeLayoutMetrics") {
     auto paramCount = 2;
     return jsi::Function::createFromHostFunction(
@@ -639,6 +573,14 @@ jsi::Value UIManagerBinding::get(
         });
   }
 
+  return std::nullopt;
+}
+
+static std::optional<jsi::Value> getMeasurementMethods(
+    UIManager* uiManager,
+    jsi::Runtime& runtime,
+    const jsi::PropNameID& name,
+    const std::string& methodName) {
   if (methodName == "measure") {
     auto paramCount = 2;
     return jsi::Function::createFromHostFunction(
@@ -739,43 +681,11 @@ jsi::Value UIManagerBinding::get(
         });
   }
 
-  if (methodName == "configureNextLayoutAnimation") {
-    auto paramCount = 3;
-    return jsi::Function::createFromHostFunction(
-        runtime,
-        name,
-        paramCount,
-        [uiManager, methodName, paramCount](
-            jsi::Runtime& runtime,
-            const jsi::Value& /*thisValue*/,
-            const jsi::Value* arguments,
-            size_t count) -> jsi::Value {
-          validateArgumentCount(runtime, methodName, paramCount, count);
+  return std::nullopt;
+}
 
-          uiManager->configureNextLayoutAnimation(
-              runtime,
-              // TODO: pass in JSI value instead of folly::dynamic to RawValue
-              RawValue(commandArgsFromValue(runtime, arguments[0])),
-              arguments[1],
-              arguments[2]);
-          return jsi::Value::undefined();
-        });
-  }
-
-  if (methodName == "unstable_getCurrentEventPriority") {
-    return jsi::Function::createFromHostFunction(
-        runtime,
-        name,
-        0,
-        [this](
-            jsi::Runtime& /*runtime*/,
-            const jsi::Value& /*thisValue*/,
-            const jsi::Value* /*arguments*/,
-            size_t /*count*/) -> jsi::Value {
-          return {serialize(currentEventPriority_)};
-        });
-  }
-
+static std::optional<jsi::Value> getEventPriorityConstants(
+    const std::string& methodName) {
   if (methodName == "unstable_DefaultEventPriority") {
     return {serialize(ReactEventPriority::Default)};
   }
@@ -792,6 +702,14 @@ jsi::Value UIManagerBinding::get(
     return {serialize(ReactEventPriority::Idle)};
   }
 
+  return std::nullopt;
+}
+
+static std::optional<jsi::Value> getDomCompatMethods(
+    UIManager* uiManager,
+    jsi::Runtime& runtime,
+    const jsi::PropNameID& name,
+    const std::string& methodName) {
   if (methodName == "findShadowNodeByTag_DEPRECATED") {
     auto paramCount = 1;
     return jsi::Function::createFromHostFunction(
@@ -944,6 +862,14 @@ jsi::Value UIManagerBinding::get(
         });
   }
 
+  return std::nullopt;
+}
+
+static std::optional<jsi::Value> getViewTransitionMethods(
+    UIManager* uiManager,
+    jsi::Runtime& runtime,
+    const jsi::PropNameID& name,
+    const std::string& methodName) {
   if (methodName == "applyViewTransitionName") {
     auto paramCount = 3;
     return jsi::Function::createFromHostFunction(
@@ -1046,6 +972,14 @@ jsi::Value UIManagerBinding::get(
         });
   }
 
+  return std::nullopt;
+}
+
+static std::optional<jsi::Value> getViewTransitionLifecycleMethods(
+    UIManager* uiManager,
+    jsi::Runtime& runtime,
+    const jsi::PropNameID& name,
+    const std::string& methodName) {
   if (methodName == "restoreViewTransitionName") {
     auto paramCount = 1;
     return jsi::Function::createFromHostFunction(
@@ -1110,6 +1044,186 @@ jsi::Value UIManagerBinding::get(
         });
   }
 
+  return std::nullopt;
+}
+
+jsi::Value UIManagerBinding::get(
+    jsi::Runtime& runtime,
+    const jsi::PropNameID& name) {
+  auto methodName = name.utf8(runtime);
+
+  // Convert shared_ptr<UIManager> to a raw ptr
+  // Why? Because:
+  // 1) UIManagerBinding strongly retains UIManager. The JS VM
+  //    strongly retains UIManagerBinding (through the JSI).
+  //    These functions are JSI functions and are only called via
+  //    the JS VM; if the JS VM is torn down, those functions can't
+  //    execute and these lambdas won't execute.
+  // 2) The UIManager is only deallocated when all references to it
+  //    are deallocated, including the UIManagerBinding. That only
+  //    happens when the JS VM is deallocated. So, the raw pointer
+  //    is safe.
+  //
+  // Even if it's safe, why not just use shared_ptr anyway as
+  //  extra insurance?
+  // 1) Using shared_ptr or weak_ptr when they're not needed is
+  //    a pessimisation. It's more instructions executed without
+  //    any additional value in this case.
+  // 2) How and when exactly these lambdas is deallocated is
+  //    complex. Adding shared_ptr to them which causes the UIManager
+  //    to potentially live longer is unnecessary, complicated cognitive
+  //    overhead.
+  // 3) There is a strong suspicion that retaining UIManager from
+  //    these C++ lambdas, which are retained by an object that is held onto
+  //    by the JSI, caused some crashes upon deallocation of the
+  //    Scheduler and JS VM. This could happen if, for instance, C++
+  //    semantics cause these lambda to not be deallocated until
+  //    a CPU tick (or more) after the JS VM is deallocated.
+  UIManager* uiManager = uiManager_.get();
+
+  if (auto result =
+          getNodeManagementMethods(uiManager, runtime, name, methodName)) {
+    return std::move(*result);
+  }
+
+  // Kept inline because the lambda accesses `EventEmitter::eventTarget_`, which
+  // is only reachable through `UIManagerBinding`'s `friend` access.
+  if (methodName == "findNodeAtPoint") {
+    auto paramCount = 4;
+    return jsi::Function::createFromHostFunction(
+        runtime,
+        name,
+        paramCount,
+        [uiManager, methodName, paramCount](
+            jsi::Runtime& runtime,
+            const jsi::Value& /*thisValue*/,
+            const jsi::Value* arguments,
+            size_t count) {
+          validateArgumentCount(runtime, methodName, paramCount, count);
+
+          auto node = Bridging<std::shared_ptr<const ShadowNode>>::fromJs(
+              runtime, arguments[0]);
+          auto locationX = (Float)arguments[1].getNumber();
+          auto locationY = (Float)arguments[2].getNumber();
+          auto onSuccessFunction =
+              arguments[3].getObject(runtime).getFunction(runtime);
+          auto targetNode = uiManager->findNodeAtPoint(
+              node, Point{.x = locationX, .y = locationY});
+
+          if (!targetNode) {
+            onSuccessFunction.call(runtime, jsi::Value::null());
+            return jsi::Value::undefined();
+          }
+
+          auto& eventTarget = targetNode->getEventEmitter()->eventTarget_;
+
+          EventEmitter::DispatchMutex().lock();
+          eventTarget->retain(runtime);
+          auto instanceHandle = eventTarget->getInstanceHandle(runtime);
+          eventTarget->release(runtime);
+          EventEmitter::DispatchMutex().unlock();
+
+          onSuccessFunction.call(runtime, std::move(instanceHandle));
+          return jsi::Value::undefined();
+        });
+  }
+
+  if (auto result = getChildSetMethods(uiManager, runtime, name, methodName)) {
+    return std::move(*result);
+  }
+
+  if (methodName == "registerEventHandler") {
+    auto paramCount = 1;
+    return jsi::Function::createFromHostFunction(
+        runtime,
+        name,
+        paramCount,
+        [this, methodName, paramCount](
+            jsi::Runtime& runtime,
+            const jsi::Value& /*thisValue*/,
+            const jsi::Value* arguments,
+            size_t count) -> jsi::Value {
+          validateArgumentCount(runtime, methodName, paramCount, count);
+
+          auto eventHandler =
+              arguments[0].getObject(runtime).getFunction(runtime);
+          eventHandler_ =
+              std::make_unique<jsi::Function>(std::move(eventHandler));
+          return jsi::Value::undefined();
+        });
+  }
+
+  if (auto result =
+          getLayoutAndCommandMethods(uiManager, runtime, name, methodName)) {
+    return std::move(*result);
+  }
+
+  if (auto result =
+          getMeasurementMethods(uiManager, runtime, name, methodName)) {
+    return std::move(*result);
+  }
+
+  // Kept inline because the lambda calls the private
+  // `UIManager::configureNextLayoutAnimation` and constructs a `RawValue`, both
+  // of which are only reachable through `UIManagerBinding`'s `friend` access.
+  if (methodName == "configureNextLayoutAnimation") {
+    auto paramCount = 3;
+    return jsi::Function::createFromHostFunction(
+        runtime,
+        name,
+        paramCount,
+        [uiManager, methodName, paramCount](
+            jsi::Runtime& runtime,
+            const jsi::Value& /*thisValue*/,
+            const jsi::Value* arguments,
+            size_t count) -> jsi::Value {
+          validateArgumentCount(runtime, methodName, paramCount, count);
+
+          uiManager->configureNextLayoutAnimation(
+              runtime,
+              // TODO: pass in JSI value instead of folly::dynamic to RawValue
+              RawValue(commandArgsFromValue(runtime, arguments[0])),
+              arguments[1],
+              arguments[2]);
+          return jsi::Value::undefined();
+        });
+  }
+
+  if (methodName == "unstable_getCurrentEventPriority") {
+    return jsi::Function::createFromHostFunction(
+        runtime,
+        name,
+        0,
+        [this](
+            jsi::Runtime& /*runtime*/,
+            const jsi::Value& /*thisValue*/,
+            const jsi::Value* /*arguments*/,
+            size_t /*count*/) -> jsi::Value {
+          return {serialize(currentEventPriority_)};
+        });
+  }
+
+  if (auto result = getEventPriorityConstants(methodName)) {
+    return std::move(*result);
+  }
+
+  if (auto result = getDomCompatMethods(uiManager, runtime, name, methodName)) {
+    return std::move(*result);
+  }
+
+  if (auto result =
+          getViewTransitionMethods(uiManager, runtime, name, methodName)) {
+    return std::move(*result);
+  }
+
+  if (auto result = getViewTransitionLifecycleMethods(
+          uiManager, runtime, name, methodName)) {
+    return std::move(*result);
+  }
+
+  // Kept inline because the lambda captures the private
+  // `UIManager::runtimeExecutor_`, which is only reachable through
+  // `UIManagerBinding`'s `friend` access.
   if (methodName == "startViewTransition") {
     auto paramCount = 1;
     return jsi::Function::createFromHostFunction(
