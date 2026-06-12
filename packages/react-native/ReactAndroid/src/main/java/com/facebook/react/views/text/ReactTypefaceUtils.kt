@@ -8,9 +8,10 @@
 package com.facebook.react.views.text
 
 import android.content.Context
-import android.content.res.Configuration
 import android.content.res.AssetManager
+import android.content.res.Configuration
 import android.graphics.Typeface
+import android.graphics.fonts.FontStyle
 import android.os.Build
 import com.facebook.react.bridge.ReadableArray
 import com.facebook.react.common.ReactConstants
@@ -19,9 +20,6 @@ import kotlin.math.max
 import kotlin.math.min
 
 public object ReactTypefaceUtils {
-
-  private const val FONT_WEIGHT_MIN = 1
-  private const val FONT_WEIGHT_MAX = 1000
 
   @JvmStatic
   public fun parseFontWeight(fontWeightString: String?): Int =
@@ -142,7 +140,10 @@ public object ReactTypefaceUtils {
 
     val baseTypeface = typeface ?: Typeface.DEFAULT
     val adjustedWeight =
-        min(max(baseTypeface.weight + fontWeightAdjustment, FONT_WEIGHT_MIN), FONT_WEIGHT_MAX)
+        min(
+            max(baseTypeface.weight + fontWeightAdjustment, FontStyle.FONT_WEIGHT_MIN),
+            FontStyle.FONT_WEIGHT_MAX,
+        )
     val italic = baseTypeface.style and Typeface.ITALIC != 0
 
     return Typeface.create(baseTypeface, adjustedWeight, italic)
