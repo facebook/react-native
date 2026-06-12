@@ -2223,39 +2223,39 @@ public final class com/facebook/react/fabric/DevToolsReactPerfLogger$FabricCommi
 }
 
 public class com/facebook/react/fabric/FabricUIManager : com/facebook/react/bridge/LifecycleEventListener, com/facebook/react/bridge/UIManager, com/facebook/react/fabric/interop/UIBlockViewResolver, com/facebook/react/uimanager/events/SynchronousEventReceiver {
+	public static final field Companion Lcom/facebook/react/fabric/FabricUIManager$Companion;
 	public static final field IS_DEVELOPMENT_ENVIRONMENT Z
 	public static final field TAG Ljava/lang/String;
-	public field mDevToolsReactPerfLogger Lcom/facebook/react/fabric/DevToolsReactPerfLogger;
+	public field devToolsReactPerfLogger Lcom/facebook/react/fabric/DevToolsReactPerfLogger;
 	public fun <init> (Lcom/facebook/react/bridge/ReactApplicationContext;Lcom/facebook/react/uimanager/ViewManagerRegistry;Lcom/facebook/react/uimanager/events/BatchEventDispatchedListener;)V
 	public fun addRootView (Landroid/view/View;Lcom/facebook/react/bridge/WritableMap;)I
-	public fun addUIBlock (Lcom/facebook/react/fabric/interop/UIBlock;)V
+	public final fun addUIBlock (Lcom/facebook/react/fabric/interop/UIBlock;)V
 	public fun addUIManagerEventListener (Lcom/facebook/react/bridge/UIManagerListener;)V
-	public fun attachRootView (Lcom/facebook/react/fabric/SurfaceHandlerBinding;Landroid/view/View;)V
-	public fun clearJSResponder ()V
-	public fun dispatchCommand (IIILcom/facebook/react/bridge/ReadableArray;)V
+	public final fun clearJSResponder ()V
+	public final fun dispatchCommand (IIILcom/facebook/react/bridge/ReadableArray;)V
 	public fun dispatchCommand (IILcom/facebook/react/bridge/ReadableArray;)V
-	public fun dispatchCommand (IILjava/lang/String;Lcom/facebook/react/bridge/ReadableArray;)V
+	public final fun dispatchCommand (IILjava/lang/String;Lcom/facebook/react/bridge/ReadableArray;)V
 	public fun dispatchCommand (ILjava/lang/String;Lcom/facebook/react/bridge/ReadableArray;)V
-	public fun findNextFocusableElement (III)Ljava/lang/Integer;
-	public fun getColor (I[Ljava/lang/String;)I
+	public final fun findNextFocusableElement (III)Ljava/lang/Integer;
+	public final fun getColor (I[Ljava/lang/String;)I
 	public fun getEventDispatcher ()Lcom/facebook/react/uimanager/events/EventDispatcher;
 	public fun getPerformanceCounters ()Ljava/util/Map;
-	public fun getRelativeAncestorList (II)[I
-	public fun getThemeData (I[F)Z
+	public final fun getRelativeAncestorList (II)[I
+	public final fun getThemeData (I[F)Z
 	public fun initialize ()V
 	public fun invalidate ()V
 	public fun markActiveTouchForTag (II)V
-	public fun measure (ILjava/lang/String;Lcom/facebook/react/bridge/ReadableMap;Lcom/facebook/react/bridge/ReadableMap;Lcom/facebook/react/bridge/ReadableMap;FFFF)J
-	public fun onAllAnimationsComplete ()V
-	public fun onAnimationStarted ()V
+	public final fun measure (ILjava/lang/String;Lcom/facebook/react/bridge/ReadableMap;Lcom/facebook/react/bridge/ReadableMap;Lcom/facebook/react/bridge/ReadableMap;FFFF)J
+	public final fun onAllAnimationsComplete ()V
+	public final fun onAnimationStarted ()V
 	public fun onHostDestroy ()V
 	public fun onHostPause ()V
 	public fun onHostResume ()V
-	public fun onRequestEventBeat ()V
-	public fun prependUIBlock (Lcom/facebook/react/fabric/interop/UIBlock;)V
+	public final fun onRequestEventBeat ()V
+	public final fun prependUIBlock (Lcom/facebook/react/fabric/interop/UIBlock;)V
 	public fun profileNextBatch ()V
 	public fun receiveEvent (IILjava/lang/String;Lcom/facebook/react/bridge/WritableMap;)V
-	public fun receiveEvent (IILjava/lang/String;ZLcom/facebook/react/bridge/WritableMap;I)V
+	public final fun receiveEvent (IILjava/lang/String;ZLcom/facebook/react/bridge/WritableMap;I)V
 	public fun receiveEvent (IILjava/lang/String;ZLcom/facebook/react/bridge/WritableMap;IZ)V
 	public fun receiveEvent (IILjava/lang/String;ZLcom/facebook/react/bridge/WritableMap;IZJ)V
 	public fun receiveEvent (ILjava/lang/String;Lcom/facebook/react/bridge/WritableMap;)V
@@ -2263,15 +2263,16 @@ public class com/facebook/react/fabric/FabricUIManager : com/facebook/react/brid
 	public fun resolveCustomDirectEventName (Ljava/lang/String;)Ljava/lang/String;
 	public fun resolveView (I)Landroid/view/View;
 	public fun sendAccessibilityEvent (II)V
-	public fun sendAccessibilityEventFromJS (IILjava/lang/String;)V
-	public fun setJSResponder (IIIZ)V
+	public final fun sendAccessibilityEventFromJS (IILjava/lang/String;)V
+	public final fun setJSResponder (IIIZ)V
 	public fun startSurface (Landroid/view/View;Ljava/lang/String;Lcom/facebook/react/bridge/WritableMap;II)I
-	public fun startSurface (Lcom/facebook/react/fabric/SurfaceHandlerBinding;Landroid/content/Context;Landroid/view/View;)V
 	public fun stopSurface (I)V
-	public fun stopSurface (Lcom/facebook/react/fabric/SurfaceHandlerBinding;)V
 	public fun sweepActiveTouchForTag (II)V
 	public fun synchronouslyUpdateViewOnUIThread (ILcom/facebook/react/bridge/ReadableMap;)V
 	public fun updateRootLayoutSpecs (IIIII)V
+}
+
+public final class com/facebook/react/fabric/FabricUIManager$Companion {
 }
 
 public final class com/facebook/react/fabric/FabricUIManagerProviderImpl : com/facebook/react/bridge/UIManagerProvider {

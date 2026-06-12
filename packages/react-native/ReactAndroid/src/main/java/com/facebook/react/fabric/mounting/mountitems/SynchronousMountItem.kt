@@ -9,7 +9,7 @@ package com.facebook.react.fabric.mounting.mountitems
 
 import android.view.View
 import com.facebook.react.bridge.ReadableMap
-import com.facebook.react.fabric.FabricUIManager.IS_DEVELOPMENT_ENVIRONMENT
+import com.facebook.react.fabric.FabricUIManager.Companion.IS_DEVELOPMENT_ENVIRONMENT
 import com.facebook.react.fabric.mounting.MountingManager
 
 internal class SynchronousMountItem(private val reactTag: Int, private val props: ReadableMap) :

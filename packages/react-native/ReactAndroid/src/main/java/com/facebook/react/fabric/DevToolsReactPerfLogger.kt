@@ -150,7 +150,7 @@ public class DevToolsReactPerfLogger : FabricMarkerListener {
     }
   }
 
-  private companion object {
+  internal companion object {
     @JvmField internal val streamingCommitStats: LongStreamingStats = LongStreamingStats()
 
     @JvmField internal val streamingLayoutStats: LongStreamingStats = LongStreamingStats()
