@@ -10,6 +10,7 @@
 #include <ReactCommon/TurboModuleWithJSIBindings.h>
 #include <cxxreact/TraceSection.h>
 #include <react/utils/jsi-utils.h>
+#include <cstdint>
 #include <stdexcept>
 #include <string>
 
@@ -197,6 +198,8 @@ jsi::Value TurboModuleBinding::getModule(
     jsi::Object jsRepresentation(runtime);
     weakJsRepresentation =
         std::make_unique<jsi::WeakObject>(runtime, jsRepresentation);
+    module->representationRuntimeAddress_ =
+        reinterpret_cast<std::uintptr_t>(&runtime);
 
     // Lazily populate the jsRepresentation, on property access.
     //
