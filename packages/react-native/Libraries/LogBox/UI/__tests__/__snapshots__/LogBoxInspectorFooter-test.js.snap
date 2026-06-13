@@ -25,6 +25,7 @@ exports[`LogBoxInspectorFooter should render no buttons and a message for syntax
   >
     <Text
       id="logbox_dismissable_text"
+      maxFontSizeMultiplier={1.5}
       style={
         Object {
           "color": "rgba(255, 255, 255, 0.6)",

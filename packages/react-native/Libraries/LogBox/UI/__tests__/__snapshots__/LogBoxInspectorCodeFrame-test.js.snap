@@ -69,6 +69,7 @@ exports[`LogBoxInspectorCodeFrame should dedupe if code frames are the same 1`] 
       }
     >
       <Text
+        maxFontSizeMultiplier={1.5}
         style={
           Object {
             "color": "rgba(255, 255, 255, 0.5)",
@@ -156,6 +157,7 @@ exports[`LogBoxInspectorCodeFrame should render a code frame 1`] = `
       }
     >
       <Text
+        maxFontSizeMultiplier={1.5}
         style={
           Object {
             "color": "rgba(255, 255, 255, 0.5)",
@@ -243,6 +245,7 @@ exports[`LogBoxInspectorCodeFrame should render a code frame without a location 
       }
     >
       <Text
+        maxFontSizeMultiplier={1.5}
         style={
           Object {
             "color": "rgba(255, 255, 255, 0.5)",
@@ -331,6 +334,7 @@ exports[`LogBoxInspectorCodeFrame should render both a code frame and a componen
       }
     >
       <Text
+        maxFontSizeMultiplier={1.5}
         style={
           Object {
             "color": "rgba(255, 255, 255, 0.5)",
@@ -412,6 +416,7 @@ exports[`LogBoxInspectorCodeFrame should render both a code frame and a componen
       }
     >
       <Text
+        maxFontSizeMultiplier={1.5}
         style={
           Object {
             "color": "rgba(255, 255, 255, 0.5)",

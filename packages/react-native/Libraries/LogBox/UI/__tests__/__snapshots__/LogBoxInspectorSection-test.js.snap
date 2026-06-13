@@ -19,6 +19,7 @@ exports[`LogBoxInspectorSection should render with action on the right 1`] = `
     }
   >
     <Text
+      maxFontSizeMultiplier={1.5}
       style={
         Object {
           "color": "rgba(255, 255, 255, 1)",
@@ -69,6 +70,7 @@ exports[`LogBoxInspectorSection should render with only heading 1`] = `
     }
   >
     <Text
+      maxFontSizeMultiplier={1.5}
       style={
         Object {
           "color": "rgba(255, 255, 255, 1)",
