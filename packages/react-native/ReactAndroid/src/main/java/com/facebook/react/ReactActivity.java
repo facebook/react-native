@@ -7,12 +7,16 @@
 
 package com.facebook.react;
 
+import android.annotation.SuppressLint;
 import android.content.Intent;
 import android.content.res.Configuration;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.KeyEvent;
+import android.window.OnBackInvokedCallback;
 import androidx.activity.OnBackPressedCallback;
 import androidx.annotation.Nullable;
+import androidx.annotation.RequiresApi;
 import androidx.appcompat.app.AppCompatActivity;
 import com.facebook.react.modules.core.DefaultHardwareBackBtnHandler;
 import com.facebook.react.modules.core.PermissionAwareActivity;
@@ -24,10 +28,15 @@ import org.jetbrains.annotations.NotNull;
 public abstract class ReactActivity extends AppCompatActivity
     implements DefaultHardwareBackBtnHandler, PermissionAwareActivity {
 
+  private static final String PREDICTIVE_BACK_TAG = "PredictiveBack";
+
   private final ReactActivityDelegate mDelegate;
 
-  // Due to enforced predictive back on targetSdk 36, 'onBackPressed()' is disabled by default.
-  // Using a workaround to trigger it manually.
+  // On targetSdk 36, Activity.onBackPressed() is no longer invoked by the system. This callback
+  // keeps JS BackHandler working by consuming back and forwarding it to JS.
+  // An enabled callback suppresses the system predictive-back animation (back-to-home,
+  // cross-activity, cross-task) and FragmentManager predictive-back transitions. Navigation
+  // libraries that implement predictive back should disable it via getBackPressedCallback().
   private final OnBackPressedCallback mBackPressedCallback =
       new OnBackPressedCallback(true) {
         @Override
@@ -37,6 +46,10 @@ public abstract class ReactActivity extends AppCompatActivity
           setEnabled(true);
         }
       };
+
+  // Registered only on API 36+. Typed as Object so ReactActivity can load on older devices
+  // that do not have android.window.OnBackInvokedCallback.
+  private @Nullable Object mSystemNavigationObserver;
 
   @SuppressWarnings("this-escape")
   protected ReactActivity() {
@@ -62,6 +75,7 @@ public abstract class ReactActivity extends AppCompatActivity
     mDelegate.onCreate(savedInstanceState);
     if (AndroidVersion.isAtLeastTargetSdk36(this)) {
       getOnBackPressedDispatcher().addCallback(this, mBackPressedCallback);
+      mSystemNavigationObserver = SystemNavigationBackObserver.register(this);
     }
   }
 
@@ -79,6 +93,10 @@ public abstract class ReactActivity extends AppCompatActivity
 
   @Override
   protected void onDestroy() {
+    if (mSystemNavigationObserver != null && AndroidVersion.isAtLeastTargetSdk36(this)) {
+      SystemNavigationBackObserver.unregister(this, mSystemNavigationObserver);
+      mSystemNavigationObserver = null;
+    }
     super.onDestroy();
     mDelegate.onDestroy();
   }
@@ -89,6 +107,41 @@ public abstract class ReactActivity extends AppCompatActivity
 
   public ReactActivityDelegate getReactActivityDelegate() {
     return mDelegate;
+  }
+
+  /**
+   * Returns the {@link OnBackPressedCallback} React Native registers on Android 16+ (targetSdk 36)
+   * to keep JS {@code BackHandler} working after {@code Activity.onBackPressed()} stopped being
+   * called.
+   *
+   * <p>While this callback is enabled, Android will not play the system predictive-back animation,
+   * and FragmentManager will not receive the gesture. Navigation libraries that implement
+   * predictive back should disable it:
+   *
+   * <pre>{@code
+   * getBackPressedCallback().setEnabled(false);
+   * }</pre>
+   *
+   * <p>Disabling the callback means JS {@code BackHandler} can no longer prevent back. The system
+   * or the next enabled callback (for example FragmentManager) handles the gesture instead. On
+   * Android 16+, a {@code PRIORITY_SYSTEM_NAVIGATION_OBSERVER} still delivers the committed
+   * app-exit event to {@code BackHandler} without suppressing the predictive-back animation.
+   * Returning {@code true} from a listener cannot cancel an exit that is already in progress.
+   */
+  public OnBackPressedCallback getBackPressedCallback() {
+    return mBackPressedCallback;
+  }
+
+  /**
+   * Called when the system is handling back (app exit) and this activity's consuming callback is
+   * disabled. Notifies JS without consuming the gesture, so the predictive-back animation can run.
+   */
+  void onSystemNavigationBackInvoked() {
+    if (mBackPressedCallback.isEnabled()) {
+      return;
+    }
+    Log.i(PREDICTIVE_BACK_TAG, "observer: system back committed, notifying JS");
+    mDelegate.onBackPressed();
   }
 
   @Override
@@ -121,13 +174,18 @@ public abstract class ReactActivity extends AppCompatActivity
 
   @Override
   public void invokeDefaultOnBackPressed() {
-    // Disabling callback so the fallback logic (finish activity) can run
-    // as super.onBackPressed() will call all enabled callbacks in the dispatcher.
+    // System predictive back may already be finishing the activity. Calling super again would
+    // re-enter the dispatcher after JS BackHandler.exitApp().
+    if (isFinishing()) {
+      return;
+    }
+    // Temporarily disable so super.onBackPressed() can run the fallback (finish the activity)
+    // instead of re-entering this callback. Restore the previous enabled state so that
+    // libraries which disabled the callback for predictive back stay disabled after resume.
+    boolean enabled = mBackPressedCallback.isEnabled();
     mBackPressedCallback.setEnabled(false);
     super.onBackPressed();
-    // Re-enable callback to ensure custom back handling works after activity resume
-    // Without this, the callback remains disabled when the app returns from background
-    mBackPressedCallback.setEnabled(true);
+    mBackPressedCallback.setEnabled(enabled);
   }
 
   @Override
@@ -182,5 +240,39 @@ public abstract class ReactActivity extends AppCompatActivity
 
   protected final void loadApp(String appKey) {
     mDelegate.loadApp(appKey);
+  }
+
+  /**
+   * Isolated so that {@link OnBackInvokedCallback} (API 33) is only loaded when predictive back is
+   * active, and not from {@link ReactActivity} fields or method signatures.
+   */
+  @RequiresApi(36)
+  private static final class SystemNavigationBackObserver {
+
+    // android.window.OnBackInvokedDispatcher.PRIORITY_SYSTEM_NAVIGATION_OBSERVER (API 36).
+    // Inlined because this codebase is also compiled against older SDKs that lack the constant.
+    private static final int PRIORITY_SYSTEM_NAVIGATION_OBSERVER = -2;
+
+    @SuppressLint("WrongConstant")
+    static @Nullable Object register(ReactActivity activity) {
+      OnBackInvokedCallback callback = activity::onSystemNavigationBackInvoked;
+      try {
+        activity
+            .getOnBackInvokedDispatcher()
+            .registerOnBackInvokedCallback(PRIORITY_SYSTEM_NAVIGATION_OBSERVER, callback);
+        return callback;
+      } catch (IllegalArgumentException e) {
+        // Observer priority is a flagged API and may be rejected on some devices.
+        return null;
+      }
+    }
+
+    static void unregister(ReactActivity activity, Object observer) {
+      if (observer instanceof OnBackInvokedCallback) {
+        activity
+            .getOnBackInvokedDispatcher()
+            .unregisterOnBackInvokedCallback((OnBackInvokedCallback) observer);
+      }
+    }
   }
 }

@@ -61,6 +61,7 @@ public final class com/facebook/react/NativeModuleRegistryBuilder {
 public abstract class com/facebook/react/ReactActivity : androidx/appcompat/app/AppCompatActivity, com/facebook/react/modules/core/DefaultHardwareBackBtnHandler, com/facebook/react/modules/core/PermissionAwareActivity {
 	protected fun <init> ()V
 	protected fun createReactActivityDelegate ()Lcom/facebook/react/ReactActivityDelegate;
+	public fun getBackPressedCallback ()Landroidx/activity/OnBackPressedCallback;
 	protected fun getMainComponentName ()Ljava/lang/String;
 	public fun getReactActivityDelegate ()Lcom/facebook/react/ReactActivityDelegate;
 	public fun getReactDelegate ()Lcom/facebook/react/ReactDelegate;

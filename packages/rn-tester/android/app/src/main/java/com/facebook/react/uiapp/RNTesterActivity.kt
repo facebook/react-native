@@ -63,6 +63,11 @@ internal open class RNTesterActivity : ReactActivity() {
   override fun onCreate(savedInstanceState: Bundle?) {
     super.onCreate(savedInstanceState)
 
+    // Lets the system predictive-back animation run. JS BackHandler still
+    // receives app-exit via PRIORITY_SYSTEM_NAVIGATION_OBSERVER; it cannot prevent it.
+    // Remove this line to restore RNTester's in-example back navigation.
+    backPressedCallback.isEnabled = false
+
     fullyDrawnReporter.addReporter()
     maybeUpdateBackgroundColor()
 
