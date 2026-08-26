@@ -4861,6 +4861,7 @@ declare type TBackHandler = {
     remove: () => void
   }
   exitApp(): void
+  setInterceptEnabled(enabled: boolean): void
 }
 declare type Text = typeof Text
 declare type TextBaseProps = {

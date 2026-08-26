@@ -61,6 +61,25 @@ class ReactActivityBackPressedCallbackTest {
     assertThat(activity.delegatedBackPressCount).isEqualTo(0)
   }
 
+  @Test
+  fun setInterceptEnabled_true_enablesCallbackBelowApi36() {
+    val activity = Robolectric.buildActivity(TestReactActivity::class.java).get()
+    activity.backPressedCallback.isEnabled = false
+
+    activity.setInterceptEnabled(true)
+
+    assertThat(activity.backPressedCallback.isEnabled).isTrue()
+  }
+
+  @Test
+  fun setInterceptEnabled_false_disablesCallbackBelowApi36() {
+    val activity = Robolectric.buildActivity(TestReactActivity::class.java).get()
+
+    activity.setInterceptEnabled(false)
+
+    assertThat(activity.backPressedCallback.isEnabled).isFalse()
+  }
+
   class TestReactActivity : ReactActivity() {
     var delegatedBackPressCount: Int = 0
 

@@ -10,10 +10,21 @@ package com.facebook.react;
 import android.annotation.SuppressLint;
 import android.content.Intent;
 import android.content.res.Configuration;
+import android.graphics.Outline;
 import android.os.Bundle;
+import android.os.SystemClock;
 import android.util.Log;
 import android.view.KeyEvent;
+import android.view.View;
+import android.view.ViewConfiguration;
+import android.view.ViewGroup;
+import android.view.ViewOutlineProvider;
+import android.view.animation.DecelerateInterpolator;
+import android.view.animation.PathInterpolator;
+import android.window.BackEvent;
+import android.window.OnBackAnimationCallback;
 import android.window.OnBackInvokedCallback;
+import android.window.OnBackInvokedDispatcher;
 import androidx.activity.OnBackPressedCallback;
 import androidx.annotation.Nullable;
 import androidx.annotation.RequiresApi;
@@ -27,6 +38,12 @@ import org.jetbrains.annotations.NotNull;
 /** Base Activity for React Native applications. */
 public abstract class ReactActivity extends AppCompatActivity
     implements DefaultHardwareBackBtnHandler, PermissionAwareActivity {
+
+  /**
+   * {@code nativeID} of the view that in-app predictive back should scrub. Keep the previous
+   * screen mounted underneath this view so it can peek through during the gesture.
+   */
+  public static final String PREDICTIVE_BACK_FRONT_PANE_NATIVE_ID = "predictiveBackFrontPane";
 
   private static final String PREDICTIVE_BACK_TAG = "PredictiveBack";
 
@@ -50,6 +67,9 @@ public abstract class ReactActivity extends AppCompatActivity
   // Registered only on API 36+. Typed as Object so ReactActivity can load on older devices
   // that do not have android.window.OnBackInvokedCallback.
   private @Nullable Object mSystemNavigationObserver;
+
+  // In-app OnBackAnimationCallback. Typed as Object for the same older-device class loading.
+  private @Nullable Object mInAppPredictiveBack;
 
   @SuppressWarnings("this-escape")
   protected ReactActivity() {
@@ -93,9 +113,15 @@ public abstract class ReactActivity extends AppCompatActivity
 
   @Override
   protected void onDestroy() {
-    if (mSystemNavigationObserver != null && AndroidVersion.isAtLeastTargetSdk36(this)) {
-      SystemNavigationBackObserver.unregister(this, mSystemNavigationObserver);
-      mSystemNavigationObserver = null;
+    if (AndroidVersion.isAtLeastTargetSdk36(this)) {
+      if (mSystemNavigationObserver != null) {
+        SystemNavigationBackObserver.unregister(this, mSystemNavigationObserver);
+        mSystemNavigationObserver = null;
+      }
+      if (mInAppPredictiveBack != null) {
+        InAppPredictiveBack.unregister(this, mInAppPredictiveBack);
+        mInAppPredictiveBack = null;
+      }
     }
     super.onDestroy();
     mDelegate.onDestroy();
@@ -137,10 +163,38 @@ public abstract class ReactActivity extends AppCompatActivity
    * disabled. Notifies JS without consuming the gesture, so the predictive-back animation can run.
    */
   void onSystemNavigationBackInvoked() {
-    if (mBackPressedCallback.isEnabled()) {
+    if (mBackPressedCallback.isEnabled() || mInAppPredictiveBack != null) {
       return;
     }
     Log.i(PREDICTIVE_BACK_TAG, "observer: system back committed, notifying JS");
+    mDelegate.onBackPressed();
+  }
+
+  /**
+   * When {@code true}, React Native consumes the back gesture so JS {@code BackHandler} can pop an
+   * in-app screen. On Android 16+ (targetSdk 36) this registers a platform {@link
+   * OnBackAnimationCallback} that scrubs the view tagged with {@link
+   * #PREDICTIVE_BACK_FRONT_PANE_NATIVE_ID} during the swipe, revealing whatever is drawn behind it.
+   * When {@code false}, the system predictive-back animation can run.
+   */
+  public void setInterceptEnabled(boolean enabled) {
+    if (!AndroidVersion.isAtLeastTargetSdk36(this)) {
+      mBackPressedCallback.setEnabled(enabled);
+      return;
+    }
+    // Keep the commit-only callback off so it does not steal the gesture without progress.
+    mBackPressedCallback.setEnabled(false);
+    if (enabled) {
+      if (mInAppPredictiveBack == null) {
+        mInAppPredictiveBack = InAppPredictiveBack.register(this);
+      }
+    } else if (mInAppPredictiveBack != null) {
+      InAppPredictiveBack.unregister(this, mInAppPredictiveBack);
+      mInAppPredictiveBack = null;
+    }
+  }
+
+  void notifyJsHardwareBackPressed() {
     mDelegate.onBackPressed();
   }
 
@@ -240,6 +294,317 @@ public abstract class ReactActivity extends AppCompatActivity
 
   protected final void loadApp(String appKey) {
     mDelegate.loadApp(appKey);
+  }
+
+  /**
+   * Isolated so that {@link OnBackAnimationCallback} (API 34) is only loaded when in-app predictive
+   * back is enabled, and not from {@link ReactActivity} fields or method signatures.
+   */
+  @RequiresApi(34)
+  private static final class InAppPredictiveBack {
+
+    static Object register(ReactActivity activity) {
+      Callback callback = new Callback(activity);
+      activity
+          .getOnBackInvokedDispatcher()
+          .registerOnBackInvokedCallback(OnBackInvokedDispatcher.PRIORITY_DEFAULT, callback);
+      return callback;
+    }
+
+    static void unregister(ReactActivity activity, Object callback) {
+      if (callback instanceof OnBackInvokedCallback) {
+        activity
+            .getOnBackInvokedDispatcher()
+            .unregisterOnBackInvokedCallback((OnBackInvokedCallback) callback);
+      }
+    }
+
+    private static final class Callback implements OnBackAnimationCallback {
+      private static final float MAX_SCALE_DELTA = 0.1f;
+      private static final float MAX_CORNER_RADIUS_DP = 32f;
+      private static final float MAX_SHADOW_Z_DP = 24f;
+      private static final long CANCEL_DURATION_MS = 250;
+      private static final long COMMIT_DURATION_MS = 220;
+      private static final float COMMIT_SCALE = 0.8f;
+      private static final float COMMIT_TRANSLATION_FRACTION = 0.12f;
+      // System progress hits 1.0 well before a full-screen swipe. Decide commit
+      // from actual travel so a short drag snaps back instead of popping.
+      private static final float COMMIT_DISTANCE_FRACTION = 0.25f;
+      private static final float COMMIT_VELOCITY_DP_PER_S = 900f;
+
+      private final ReactActivity activity;
+      private @Nullable View frontPane;
+      private @Nullable ViewGroup paneParent;
+      private boolean parentClippedChildren;
+      private boolean parentClippedToPadding;
+      private float originalElevation;
+      private float cornerRadiusPx;
+      private boolean gestureCancelled;
+      private int swipeEdge;
+      private float startTouchX;
+      private float lastTouchX;
+      private long lastEventTimeMs;
+      private float velocityPxPerS;
+      private float lastProgress;
+
+      Callback(ReactActivity activity) {
+        this.activity = activity;
+      }
+
+      @Override
+      public void onBackStarted(BackEvent backEvent) {
+        gestureCancelled = false;
+        swipeEdge = backEvent.getSwipeEdge();
+        startTouchX = backEvent.getTouchX();
+        lastTouchX = startTouchX;
+        lastEventTimeMs = SystemClock.uptimeMillis();
+        velocityPxPerS = 0f;
+        lastProgress = 0f;
+        frontPane = findFrontPane();
+        if (frontPane == null) {
+          Log.i(PREDICTIVE_BACK_TAG, "in-app: back started, no front pane");
+          return;
+        }
+        Log.i(
+            PREDICTIVE_BACK_TAG,
+            "in-app: back started pane="
+                + frontPane.getClass().getSimpleName()
+                + " "
+                + frontPane.getWidth()
+                + "x"
+                + frontPane.getHeight());
+        originalElevation = frontPane.getElevation();
+        prepareParentForShadow(frontPane);
+        frontPane.setAlpha(1f);
+        frontPane.animate().cancel();
+        frontPane.setClipToOutline(true);
+        frontPane.setOutlineProvider(
+            new ViewOutlineProvider() {
+              @Override
+              public void getOutline(View view, Outline outline) {
+                outline.setRoundRect(0, 0, view.getWidth(), view.getHeight(), cornerRadiusPx);
+              }
+            });
+        applyProgress(backEvent);
+      }
+
+      @Override
+      public void onBackProgressed(BackEvent backEvent) {
+        if (frontPane == null) {
+          frontPane = findFrontPane();
+          if (frontPane == null) {
+            return;
+          }
+        }
+        applyProgress(backEvent);
+      }
+
+      @Override
+      public void onBackCancelled() {
+        Log.i(PREDICTIVE_BACK_TAG, "in-app: back cancelled");
+        cancelGesture();
+      }
+
+      @Override
+      public void onBackInvoked() {
+        if (gestureCancelled) {
+          return;
+        }
+        if (!shouldCommit()) {
+          Log.i(
+              PREDICTIVE_BACK_TAG,
+              "in-app: swipe too short, snapping back distance="
+                  + Math.abs(lastTouchX - startTouchX)
+                  + " progress="
+                  + lastProgress);
+          cancelGesture();
+          return;
+        }
+        commitGesture();
+      }
+
+      private void commitGesture() {
+        Log.i(PREDICTIVE_BACK_TAG, "in-app: back committed, finishing animation");
+        if (frontPane == null) {
+          activity.notifyJsHardwareBackPressed();
+          return;
+        }
+        final View pane = frontPane;
+        float width = pane.getWidth();
+        float translationX =
+            swipeEdge == BackEvent.EDGE_LEFT
+                ? width * COMMIT_TRANSLATION_FRACTION
+                : -width * COMMIT_TRANSLATION_FRACTION;
+        cornerRadiusPx =
+            MAX_CORNER_RADIUS_DP * activity.getResources().getDisplayMetrics().density;
+        pane.invalidateOutline();
+        float shadowZ =
+            MAX_SHADOW_Z_DP * activity.getResources().getDisplayMetrics().density;
+        pane.setElevation(originalElevation + shadowZ);
+        pane.animate().cancel();
+        pane.animate()
+            .scaleX(COMMIT_SCALE)
+            .scaleY(COMMIT_SCALE)
+            .translationX(translationX)
+            .translationZ(shadowZ)
+            .alpha(0f)
+            .setDuration(COMMIT_DURATION_MS)
+            .setInterpolator(new PathInterpolator(0.4f, 0f, 1f, 1f))
+            .withEndAction(
+                () -> {
+                  restoreParentClip();
+                  if (activity.isFinishing() || activity.isDestroyed()) {
+                    return;
+                  }
+                  if (frontPane == pane) {
+                    frontPane = null;
+                  }
+                  activity.notifyJsHardwareBackPressed();
+                })
+            .start();
+      }
+
+      private boolean shouldCommit() {
+        float width = frontPane != null ? frontPane.getWidth() : 0f;
+        float distancePx = Math.abs(lastTouchX - startTouchX);
+        int touchSlop = ViewConfiguration.get(activity).getScaledTouchSlop();
+        if (distancePx <= touchSlop) {
+          // No drag reported. Either a 3-button press, or touch coords were
+          // missing; fall back to progress so a short gesture can still cancel.
+          return lastProgress < 0.05f || lastProgress >= 0.5f;
+        }
+        boolean farEnough = width > 0 && distancePx >= width * COMMIT_DISTANCE_FRACTION;
+        float density = activity.getResources().getDisplayMetrics().density;
+        float commitVelocityPx = COMMIT_VELOCITY_DP_PER_S * density;
+        float commitVelocity =
+            swipeEdge == BackEvent.EDGE_LEFT ? velocityPxPerS : -velocityPxPerS;
+        boolean flung = commitVelocity >= commitVelocityPx;
+        return farEnough || flung;
+      }
+
+      private void cancelGesture() {
+        gestureCancelled = true;
+        resetFrontPane(true);
+      }
+
+      private @Nullable View findFrontPane() {
+        View root = activity.getWindow().getDecorView();
+        View tagged = findLastViewWithNativeId(root, PREDICTIVE_BACK_FRONT_PANE_NATIVE_ID);
+        if (tagged == null) {
+          return null;
+        }
+        // Never scrub the activity/root wrapper: that scales the whole tree,
+        // including the destination screen, which is what we want to reveal.
+        if (tagged == root || tagged == activity.findViewById(android.R.id.content)) {
+          return null;
+        }
+        return tagged;
+      }
+
+      private static @Nullable View findLastViewWithNativeId(View root, String nativeId) {
+        View match = null;
+        if (nativeId.equals(root.getTag(com.facebook.react.R.id.view_tag_native_id))) {
+          match = root;
+        }
+        if (root instanceof ViewGroup) {
+          ViewGroup group = (ViewGroup) root;
+          for (int i = 0; i < group.getChildCount(); i++) {
+            View childMatch = findLastViewWithNativeId(group.getChildAt(i), nativeId);
+            if (childMatch != null) {
+              match = childMatch;
+            }
+          }
+        }
+        return match;
+      }
+
+      private void applyProgress(BackEvent backEvent) {
+        if (frontPane == null) {
+          return;
+        }
+        long now = SystemClock.uptimeMillis();
+        float touchX = backEvent.getTouchX();
+        if (lastEventTimeMs > 0 && now > lastEventTimeMs) {
+          velocityPxPerS = (touchX - lastTouchX) * 1000f / (now - lastEventTimeMs);
+        }
+        lastTouchX = touchX;
+        lastEventTimeMs = now;
+        lastProgress = backEvent.getProgress();
+        float progress = lastProgress;
+        float density = activity.getResources().getDisplayMetrics().density;
+        float scale = 1f - (MAX_SCALE_DELTA * progress);
+        frontPane.setScaleX(scale);
+        frontPane.setScaleY(scale);
+        float maxTranslation = frontPane.getWidth() / 20f;
+        float translationX =
+            backEvent.getSwipeEdge() == BackEvent.EDGE_LEFT
+                ? maxTranslation * progress
+                : -maxTranslation * progress;
+        frontPane.setTranslationX(translationX);
+        frontPane.setElevation(originalElevation + MAX_SHADOW_Z_DP * progress * density);
+        frontPane.setTranslationZ(MAX_SHADOW_Z_DP * progress * density);
+        cornerRadiusPx = MAX_CORNER_RADIUS_DP * progress * density;
+        frontPane.invalidateOutline();
+      }
+
+      private void prepareParentForShadow(View pane) {
+        if (!(pane.getParent() instanceof ViewGroup)) {
+          paneParent = null;
+          return;
+        }
+        paneParent = (ViewGroup) pane.getParent();
+        parentClippedChildren = paneParent.getClipChildren();
+        parentClippedToPadding = paneParent.getClipToPadding();
+        paneParent.setClipChildren(false);
+        paneParent.setClipToPadding(false);
+      }
+
+      private void restoreParentClip() {
+        if (paneParent == null) {
+          return;
+        }
+        paneParent.setClipChildren(parentClippedChildren);
+        paneParent.setClipToPadding(parentClippedToPadding);
+        paneParent = null;
+      }
+
+      private void resetFrontPane(boolean animate) {
+        if (frontPane == null) {
+          return;
+        }
+        cornerRadiusPx = 0f;
+        if (animate) {
+          frontPane
+              .animate()
+              .scaleX(1f)
+              .scaleY(1f)
+              .translationX(0f)
+              .translationZ(0f)
+              .alpha(1f)
+              .setDuration(CANCEL_DURATION_MS)
+              .setInterpolator(new DecelerateInterpolator())
+              .withEndAction(
+                  () -> {
+                    if (frontPane != null) {
+                      frontPane.setElevation(originalElevation);
+                      frontPane.invalidateOutline();
+                    }
+                    restoreParentClip();
+                  })
+              .start();
+        } else {
+          frontPane.animate().cancel();
+          frontPane.setScaleX(1f);
+          frontPane.setScaleY(1f);
+          frontPane.setTranslationX(0f);
+          frontPane.setTranslationZ(0f);
+          frontPane.setAlpha(1f);
+          frontPane.setElevation(originalElevation);
+          frontPane.invalidateOutline();
+          restoreParentClip();
+        }
+      }
+    }
   }
 
   /**

@@ -29,9 +29,9 @@ function Playground() {
         const line = `${new Date().toISOString()} hardwareBackPress`;
         console.log('[PredictiveBack]', line);
         setEvents(current => [line, ...current].slice(0, 8));
-        // Returning true cannot cancel a system-handled exit. If the observer
-        // is working, the app still closes after this log.
-        return true;
+        // Let RNTester's root handler pop this example. Return true only
+        // if you want to consume and stay here.
+        return false;
       },
     );
 
@@ -40,28 +40,31 @@ function Playground() {
 
   return (
     <View style={styles.container}>
-      <RNTesterText style={styles.title}>
-        Predictive back observer
-      </RNTesterText>
+      <RNTesterText style={styles.title}>Predictive back</RNTesterText>
       <RNTesterText>
-        RNTesterActivity disables React Native's consuming back callback so
-        Android can play the system predictive-back animation. A
-        PRIORITY_SYSTEM_NAVIGATION_OBSERVER still delivers hardwareBackPress
-        to JS on commit.
+        Nested screens keep the list mounted underneath. Swipe from the edge
+        and hold: the example pane should shrink and the list should peek
+        through. The root list leaves intercept off so Android can play
+        back-to-home.
       </RNTesterText>
       <RNTesterText style={styles.step}>
         1. API 36 device/AVD, gesture navigation, animations on.
       </RNTesterText>
       <RNTesterText style={styles.step}>
-        2. Drag slowly inward from the left or right edge and hold. The
-        activity should shrink and home should peek through.
+        2. From this Playground screen, swipe from the edge and hold: the
+        Components list should peek behind this pane. Swipe far (or flick)
+        and release: this pane should keep shrinking and fade out, then pop.
+        Release early to cancel: this pane should spring back to full screen.
+        The app must not close.
       </RNTesterText>
       <RNTesterText style={styles.step}>
-        3. Release to commit: Metro should log [PredictiveBack] and the app
-        should still close. Returning true cannot prevent that exit.
+        3. From the root list, swipe from the edge and hold: the activity
+        should shrink and home should peek through. Release to exit; Metro
+        logs [PredictiveBack]. Returning true cannot prevent that exit.
       </RNTesterText>
       <RNTesterText style={styles.step}>
-        4. Release early to cancel: no JS event, activity springs back.
+        4. From the root list, release early to cancel: no JS event, activity
+        springs back.
       </RNTesterText>
       <RNTesterText style={styles.logTitle}>JS events</RNTesterText>
       {events.length === 0 ? (
