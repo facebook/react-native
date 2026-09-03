@@ -80,6 +80,97 @@ class ReactActivityBackPressedCallbackTest {
     assertThat(activity.backPressedCallback.isEnabled).isFalse()
   }
 
+  @Test
+  fun addPredictiveBackHandler_enablesCallbackWhenInterceptDisabled() {
+    val activity = Robolectric.buildActivity(TestReactActivity::class.java).get()
+    activity.setInterceptEnabled(false)
+
+    activity.addPredictiveBackHandler(NoOpPredictiveBackHandler())
+
+    assertThat(activity.backPressedCallback.isEnabled).isTrue()
+  }
+
+  @Test
+  fun removePredictiveBackHandler_disablesCallbackWhenInterceptDisabled() {
+    val activity = Robolectric.buildActivity(TestReactActivity::class.java).get()
+    activity.setInterceptEnabled(false)
+    val handler = NoOpPredictiveBackHandler()
+    activity.addPredictiveBackHandler(handler)
+
+    activity.removePredictiveBackHandler(handler)
+
+    assertThat(activity.backPressedCallback.isEnabled).isFalse()
+  }
+
+  @Test
+  fun nativeHandler_receivesStartAndProgress() {
+    val activity = Robolectric.buildActivity(TestReactActivity::class.java).get()
+    val handler = RecordingPredictiveBackHandler()
+    activity.addPredictiveBackHandler(handler)
+    val event = PredictiveBackEvent(0.4f, PredictiveBackEvent.EDGE_LEFT, 12f, 40f)
+
+    activity.dispatchPredictiveBackStarted(event)
+    activity.dispatchPredictiveBackProgressed(event)
+
+    assertThat(handler.started).containsExactly(event)
+    assertThat(handler.progressed).containsExactly(event)
+  }
+
+  @Test
+  fun finishPredictiveBackCommit_skipsJsWhenNativeHandlerConsumes() {
+    val activity = Robolectric.buildActivity(TestReactActivity::class.java).get()
+    activity.addPredictiveBackHandler(NoOpPredictiveBackHandler(consumeCommit = true))
+
+    activity.finishPredictiveBackCommit()
+
+    assertThat(activity.delegatedBackPressCount).isEqualTo(0)
+  }
+
+  @Test
+  fun finishPredictiveBackCommit_notifiesJsWhenNoHandlerConsumes() {
+    val activity = Robolectric.buildActivity(TestReactActivity::class.java).get()
+
+    activity.finishPredictiveBackCommit()
+
+    assertThat(activity.delegatedBackPressCount).isEqualTo(1)
+  }
+
+  @Test
+  fun shouldScrubDefaultFrontPane_falseWhenNativeHandlerRegistered() {
+    val activity = Robolectric.buildActivity(TestReactActivity::class.java).get()
+    activity.setInterceptEnabled(true)
+    assertThat(activity.shouldScrubDefaultFrontPane()).isTrue()
+
+    activity.addPredictiveBackHandler(NoOpPredictiveBackHandler())
+
+    assertThat(activity.shouldScrubDefaultFrontPane()).isFalse()
+  }
+
+  private open class NoOpPredictiveBackHandler(
+      private val consumeCommit: Boolean = false,
+  ) : PredictiveBackHandler {
+    override fun onPredictiveBackStarted(event: PredictiveBackEvent) = Unit
+
+    override fun onPredictiveBackProgressed(event: PredictiveBackEvent) = Unit
+
+    override fun onPredictiveBackCancelled() = Unit
+
+    override fun onPredictiveBackCommitted(): Boolean = consumeCommit
+  }
+
+  private class RecordingPredictiveBackHandler : NoOpPredictiveBackHandler() {
+    val started = mutableListOf<PredictiveBackEvent>()
+    val progressed = mutableListOf<PredictiveBackEvent>()
+
+    override fun onPredictiveBackStarted(event: PredictiveBackEvent) {
+      started.add(event)
+    }
+
+    override fun onPredictiveBackProgressed(event: PredictiveBackEvent) {
+      progressed.add(event)
+    }
+  }
+
   class TestReactActivity : ReactActivity() {
     var delegatedBackPressCount: Int = 0
 

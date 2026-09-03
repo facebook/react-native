@@ -3583,6 +3583,14 @@ declare type PointValue = {
   x: number
   y: number
 }
+declare type PredictiveBackEvent = {
+  phase: PredictiveBackPhase
+  progress: number
+  swipeEdge: number
+  touchX: number
+  touchY: number
+}
+declare type PredictiveBackPhase = "cancel" | "commit" | "progress" | "start"
 declare type PresentLocalNotificationDetails = {
   alertAction?: string
   alertBody: string
@@ -4860,6 +4868,9 @@ declare type TBackHandler = {
   ): {
     remove: () => void
   }
+  addPredictiveBackListener(handler: (event: PredictiveBackEvent) => void): {
+    remove: () => void
+  }
   exitApp(): void
   setInterceptEnabled(enabled: boolean): void
 }
@@ -5802,7 +5813,7 @@ export {
   AssetDestPathResolver, // 59047424
   AssetRegistry, // 6070bb45
   AutoCapitalize, // c0e857a0
-  BackHandler, // f139fc69
+  BackHandler, // c0042375
   BackPressEventName, // 4620fb76
   BlurEvent, // d5e68e96
   BoxShadowValue, // b679703f
@@ -5949,6 +5960,8 @@ export {
   PlatformSelectSpec, // 09ed7758
   PointValue, // 69db075f
   PointerEvent, // a506d9d7
+  PredictiveBackEvent, // e2919d69
+  PredictiveBackPhase, // dcc1122c
   PressabilityConfig, // 0fd655fe
   PressabilityEventHandlers, // be359ba3
   Pressable, // 56235a5f

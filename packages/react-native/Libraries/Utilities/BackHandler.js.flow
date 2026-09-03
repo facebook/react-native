@@ -22,6 +22,20 @@ export interface HardwareBackPressEvent {
   readonly timeStamp: number;
 }
 
+export type PredictiveBackPhase = 'start' | 'progress' | 'cancel' | 'commit';
+
+/**
+ * Observational copy of an in-app predictive-back gesture. Progress is
+ * throttled and is not suitable for 60fps animation.
+ */
+export type PredictiveBackEvent = {
+  phase: PredictiveBackPhase,
+  progress: number,
+  swipeEdge: number,
+  touchX: number,
+  touchY: number,
+};
+
 type TBackHandler = {
   exitApp(): void,
   addEventListener(
@@ -29,6 +43,10 @@ type TBackHandler = {
     handler: (event: HardwareBackPressEvent) => ?boolean,
   ): {remove: () => void, ...},
   setInterceptEnabled(enabled: boolean): void,
+  addPredictiveBackListener(handler: (event: PredictiveBackEvent) => void): {
+    remove: () => void,
+    ...
+  },
 };
 
 /**

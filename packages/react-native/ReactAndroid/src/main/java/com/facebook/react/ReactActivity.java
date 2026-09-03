@@ -29,10 +29,15 @@ import androidx.activity.OnBackPressedCallback;
 import androidx.annotation.Nullable;
 import androidx.annotation.RequiresApi;
 import androidx.appcompat.app.AppCompatActivity;
+import com.facebook.react.bridge.Arguments;
+import com.facebook.react.bridge.ReactContext;
+import com.facebook.react.bridge.WritableMap;
 import com.facebook.react.modules.core.DefaultHardwareBackBtnHandler;
 import com.facebook.react.modules.core.PermissionAwareActivity;
 import com.facebook.react.modules.core.PermissionListener;
 import com.facebook.react.util.AndroidVersion;
+import java.util.List;
+import java.util.concurrent.CopyOnWriteArrayList;
 import org.jetbrains.annotations.NotNull;
 
 /** Base Activity for React Native applications. */
@@ -46,6 +51,10 @@ public abstract class ReactActivity extends AppCompatActivity
   public static final String PREDICTIVE_BACK_FRONT_PANE_NATIVE_ID = "predictiveBackFrontPane";
 
   private static final String PREDICTIVE_BACK_TAG = "PredictiveBack";
+  private static final String PREDICTIVE_BACK_JS_EVENT = "predictiveBack";
+  private static final long JS_PROGRESS_THROTTLE_MS = 32;
+  private static final PredictiveBackEvent EMPTY_PREDICTIVE_BACK_EVENT =
+      new PredictiveBackEvent(0f, PredictiveBackEvent.EDGE_NONE, 0f, 0f);
 
   private final ReactActivityDelegate mDelegate;
 
@@ -59,7 +68,7 @@ public abstract class ReactActivity extends AppCompatActivity
         @Override
         public void handleOnBackPressed() {
           setEnabled(false);
-          onBackPressed();
+          finishPredictiveBackCommit();
           setEnabled(true);
         }
       };
@@ -70,6 +79,11 @@ public abstract class ReactActivity extends AppCompatActivity
 
   // In-app OnBackAnimationCallback. Typed as Object for the same older-device class loading.
   private @Nullable Object mInAppPredictiveBack;
+
+  private boolean mJsInterceptEnabled;
+  private final List<PredictiveBackHandler> mPredictiveBackHandlers = new CopyOnWriteArrayList<>();
+  private PredictiveBackEvent mLastPredictiveBackEvent = EMPTY_PREDICTIVE_BACK_EVENT;
+  private long mLastJsProgressEmitMs;
 
   @SuppressWarnings("this-escape")
   protected ReactActivity() {
@@ -174,17 +188,43 @@ public abstract class ReactActivity extends AppCompatActivity
    * When {@code true}, React Native consumes the back gesture so JS {@code BackHandler} can pop an
    * in-app screen. On Android 16+ (targetSdk 36) this registers a platform {@link
    * OnBackAnimationCallback} that scrubs the view tagged with {@link
-   * #PREDICTIVE_BACK_FRONT_PANE_NATIVE_ID} during the swipe, revealing whatever is drawn behind it.
-   * When {@code false}, the system predictive-back animation can run.
+   * #PREDICTIVE_BACK_FRONT_PANE_NATIVE_ID} during the swipe, revealing whatever is drawn behind it
+   * — unless a {@link PredictiveBackHandler} is registered, in which case that handler owns the
+   * animation. When {@code false} and no native handler is registered, the system predictive-back
+   * animation can run.
    */
   public void setInterceptEnabled(boolean enabled) {
+    mJsInterceptEnabled = enabled;
+    updateConsumeCallback();
+  }
+
+  /**
+   * Registers a native plugin (for example react-native-screens) as an owner of the back gesture.
+   * While any handler is registered, React Native consumes the gesture. If a handler returns {@code
+   * true} from {@link PredictiveBackHandler#onPredictiveBackCommitted()}, JS {@code
+   * hardwareBackPress} is not emitted.
+   */
+  public void addPredictiveBackHandler(PredictiveBackHandler handler) {
+    if (!mPredictiveBackHandlers.contains(handler)) {
+      mPredictiveBackHandlers.add(handler);
+    }
+    updateConsumeCallback();
+  }
+
+  public void removePredictiveBackHandler(PredictiveBackHandler handler) {
+    mPredictiveBackHandlers.remove(handler);
+    updateConsumeCallback();
+  }
+
+  private void updateConsumeCallback() {
+    boolean consume = mJsInterceptEnabled || !mPredictiveBackHandlers.isEmpty();
     if (!AndroidVersion.isAtLeastTargetSdk36(this)) {
-      mBackPressedCallback.setEnabled(enabled);
+      mBackPressedCallback.setEnabled(consume);
       return;
     }
     // Keep the commit-only callback off so it does not steal the gesture without progress.
     mBackPressedCallback.setEnabled(false);
-    if (enabled) {
+    if (consume) {
       if (mInAppPredictiveBack == null) {
         mInAppPredictiveBack = InAppPredictiveBack.register(this);
       }
@@ -192,6 +232,74 @@ public abstract class ReactActivity extends AppCompatActivity
       InAppPredictiveBack.unregister(this, mInAppPredictiveBack);
       mInAppPredictiveBack = null;
     }
+  }
+
+  boolean shouldScrubDefaultFrontPane() {
+    return mJsInterceptEnabled && mPredictiveBackHandlers.isEmpty();
+  }
+
+  void dispatchPredictiveBackStarted(PredictiveBackEvent event) {
+    mLastPredictiveBackEvent = event;
+    mLastJsProgressEmitMs = 0;
+    for (int i = mPredictiveBackHandlers.size() - 1; i >= 0; i--) {
+      mPredictiveBackHandlers.get(i).onPredictiveBackStarted(event);
+    }
+    emitPredictiveBackToJs("start", event, false);
+  }
+
+  void dispatchPredictiveBackProgressed(PredictiveBackEvent event) {
+    mLastPredictiveBackEvent = event;
+    for (int i = mPredictiveBackHandlers.size() - 1; i >= 0; i--) {
+      mPredictiveBackHandlers.get(i).onPredictiveBackProgressed(event);
+    }
+    emitPredictiveBackToJs("progress", event, true);
+  }
+
+  void dispatchPredictiveBackCancelled() {
+    for (int i = mPredictiveBackHandlers.size() - 1; i >= 0; i--) {
+      mPredictiveBackHandlers.get(i).onPredictiveBackCancelled();
+    }
+    emitPredictiveBackToJs("cancel", mLastPredictiveBackEvent, false);
+  }
+
+  void finishPredictiveBackCommit() {
+    boolean consumed = false;
+    for (int i = mPredictiveBackHandlers.size() - 1; i >= 0; i--) {
+      if (mPredictiveBackHandlers.get(i).onPredictiveBackCommitted()) {
+        consumed = true;
+        break;
+      }
+    }
+    emitPredictiveBackToJs("commit", mLastPredictiveBackEvent, false);
+    if (!consumed) {
+      notifyJsHardwareBackPressed();
+    }
+  }
+
+  private void emitPredictiveBackToJs(
+      String phase, PredictiveBackEvent event, boolean throttleProgress) {
+    if (throttleProgress) {
+      long now = SystemClock.uptimeMillis();
+      if (mLastJsProgressEmitMs != 0 && now - mLastJsProgressEmitMs < JS_PROGRESS_THROTTLE_MS) {
+        return;
+      }
+      mLastJsProgressEmitMs = now;
+    }
+    ReactDelegate reactDelegate = getReactDelegate();
+    if (reactDelegate == null) {
+      return;
+    }
+    ReactContext context = reactDelegate.getCurrentReactContext();
+    if (context == null) {
+      return;
+    }
+    WritableMap map = Arguments.createMap();
+    map.putString("phase", phase);
+    map.putDouble("progress", event.progress);
+    map.putInt("swipeEdge", event.swipeEdge);
+    map.putDouble("touchX", event.touchX);
+    map.putDouble("touchY", event.touchY);
+    context.emitDeviceEvent(PREDICTIVE_BACK_JS_EVENT, map);
   }
 
   void notifyJsHardwareBackPressed() {
@@ -360,6 +468,11 @@ public abstract class ReactActivity extends AppCompatActivity
         lastEventTimeMs = SystemClock.uptimeMillis();
         velocityPxPerS = 0f;
         lastProgress = 0f;
+        activity.dispatchPredictiveBackStarted(toPredictiveBackEvent(backEvent));
+        if (!activity.shouldScrubDefaultFrontPane()) {
+          Log.i(PREDICTIVE_BACK_TAG, "in-app: back started, native handler owns animation");
+          return;
+        }
         frontPane = findFrontPane();
         if (frontPane == null) {
           Log.i(PREDICTIVE_BACK_TAG, "in-app: back started, no front pane");
@@ -390,9 +503,15 @@ public abstract class ReactActivity extends AppCompatActivity
 
       @Override
       public void onBackProgressed(BackEvent backEvent) {
+        activity.dispatchPredictiveBackProgressed(toPredictiveBackEvent(backEvent));
+        if (!activity.shouldScrubDefaultFrontPane()) {
+          updateGestureMetrics(backEvent);
+          return;
+        }
         if (frontPane == null) {
           frontPane = findFrontPane();
           if (frontPane == null) {
+            updateGestureMetrics(backEvent);
             return;
           }
         }
@@ -402,6 +521,7 @@ public abstract class ReactActivity extends AppCompatActivity
       @Override
       public void onBackCancelled() {
         Log.i(PREDICTIVE_BACK_TAG, "in-app: back cancelled");
+        activity.dispatchPredictiveBackCancelled();
         cancelGesture();
       }
 
@@ -417,7 +537,7 @@ public abstract class ReactActivity extends AppCompatActivity
                   + Math.abs(lastTouchX - startTouchX)
                   + " progress="
                   + lastProgress);
-          cancelGesture();
+          onBackCancelled();
           return;
         }
         commitGesture();
@@ -425,8 +545,8 @@ public abstract class ReactActivity extends AppCompatActivity
 
       private void commitGesture() {
         Log.i(PREDICTIVE_BACK_TAG, "in-app: back committed, finishing animation");
-        if (frontPane == null) {
-          activity.notifyJsHardwareBackPressed();
+        if (!activity.shouldScrubDefaultFrontPane() || frontPane == null) {
+          activity.finishPredictiveBackCommit();
           return;
         }
         final View pane = frontPane;
@@ -459,13 +579,16 @@ public abstract class ReactActivity extends AppCompatActivity
                   if (frontPane == pane) {
                     frontPane = null;
                   }
-                  activity.notifyJsHardwareBackPressed();
+                  activity.finishPredictiveBackCommit();
                 })
             .start();
       }
 
       private boolean shouldCommit() {
-        float width = frontPane != null ? frontPane.getWidth() : 0f;
+        float width =
+            frontPane != null
+                ? frontPane.getWidth()
+                : activity.getWindow().getDecorView().getWidth();
         float distancePx = Math.abs(lastTouchX - startTouchX);
         int touchSlop = ViewConfiguration.get(activity).getScaledTouchSlop();
         if (distancePx <= touchSlop) {
@@ -519,17 +642,10 @@ public abstract class ReactActivity extends AppCompatActivity
       }
 
       private void applyProgress(BackEvent backEvent) {
+        updateGestureMetrics(backEvent);
         if (frontPane == null) {
           return;
         }
-        long now = SystemClock.uptimeMillis();
-        float touchX = backEvent.getTouchX();
-        if (lastEventTimeMs > 0 && now > lastEventTimeMs) {
-          velocityPxPerS = (touchX - lastTouchX) * 1000f / (now - lastEventTimeMs);
-        }
-        lastTouchX = touchX;
-        lastEventTimeMs = now;
-        lastProgress = backEvent.getProgress();
         float progress = lastProgress;
         float density = activity.getResources().getDisplayMetrics().density;
         float scale = 1f - (MAX_SCALE_DELTA * progress);
@@ -545,6 +661,26 @@ public abstract class ReactActivity extends AppCompatActivity
         frontPane.setTranslationZ(MAX_SHADOW_Z_DP * progress * density);
         cornerRadiusPx = MAX_CORNER_RADIUS_DP * progress * density;
         frontPane.invalidateOutline();
+      }
+
+      private void updateGestureMetrics(BackEvent backEvent) {
+        long now = SystemClock.uptimeMillis();
+        float touchX = backEvent.getTouchX();
+        if (lastEventTimeMs > 0 && now > lastEventTimeMs) {
+          velocityPxPerS = (touchX - lastTouchX) * 1000f / (now - lastEventTimeMs);
+        }
+        lastTouchX = touchX;
+        lastEventTimeMs = now;
+        lastProgress = backEvent.getProgress();
+        swipeEdge = backEvent.getSwipeEdge();
+      }
+
+      private static PredictiveBackEvent toPredictiveBackEvent(BackEvent backEvent) {
+        return new PredictiveBackEvent(
+            backEvent.getProgress(),
+            backEvent.getSwipeEdge(),
+            backEvent.getTouchX(),
+            backEvent.getTouchY());
       }
 
       private void prepareParentForShadow(View pane) {

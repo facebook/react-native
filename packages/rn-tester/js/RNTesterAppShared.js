@@ -141,7 +141,6 @@ const RNTesterApp = ({
       // through during in-app predictive back. On the root list, leave
       // intercept off so the system back-to-home animation can run.
       BackHandler.setInterceptEnabled(activeModuleKey != null);
-      BackHandler.setInterceptEnabled(activeModuleKey != null);
     }
     return () => {
       subscription.remove();
@@ -294,8 +293,7 @@ const RNTesterApp = ({
       ? activeModule?.examples.find(e => e.name === activeModuleExampleKey)
       : null;
   const listTitle = screen === Screens.COMPONENTS ? 'Components' : 'APIs';
-  const title =
-    activeModuleTitle != null ? activeModuleTitle : listTitle;
+  const title = activeModuleTitle != null ? activeModuleTitle : listTitle;
 
   const BackButtonComponent: ?BackButton = customBackButton
     ? customBackButton

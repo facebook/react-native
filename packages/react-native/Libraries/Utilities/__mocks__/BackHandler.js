@@ -8,7 +8,7 @@
  * @format
  */
 
-import type {BackPressEventName} from '../BackHandler';
+import type {BackPressEventName, PredictiveBackEvent} from '../BackHandler';
 import type {HardwareBackPressEvent} from '../HardwareBackPressEvent';
 
 import {HardwareBackPressEvent as HardwareBackPressEventClass} from '../HardwareBackPressEvent';
@@ -16,10 +16,24 @@ import {HardwareBackPressEvent as HardwareBackPressEventClass} from '../Hardware
 const _backPressSubscriptions = new Set<
   (event: HardwareBackPressEvent) => ?boolean,
 >();
+const _predictiveBackSubscriptions = new Set<
+  (event: PredictiveBackEvent) => void,
+>();
 
 const BackHandler = {
   exitApp: jest.fn() as () => void,
   setInterceptEnabled: jest.fn() as (enabled: boolean) => void,
+
+  addPredictiveBackListener: function (
+    handler: (event: PredictiveBackEvent) => void,
+  ): {remove: () => void, ...} {
+    _predictiveBackSubscriptions.add(handler);
+    return {
+      remove: () => {
+        _predictiveBackSubscriptions.delete(handler);
+      },
+    };
+  },
 
   addEventListener: function (
     eventName: BackPressEventName,

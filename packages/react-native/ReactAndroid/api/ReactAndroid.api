@@ -58,9 +58,28 @@ public final class com/facebook/react/NativeModuleRegistryBuilder {
 	public final fun processPackage (Lcom/facebook/react/ReactPackage;)V
 }
 
+public final class com/facebook/react/PredictiveBackEvent {
+	public static final field EDGE_LEFT I
+	public static final field EDGE_NONE I
+	public static final field EDGE_RIGHT I
+	public final field progress F
+	public final field swipeEdge I
+	public final field touchX F
+	public final field touchY F
+	public fun <init> (FIFF)V
+}
+
+public abstract interface class com/facebook/react/PredictiveBackHandler {
+	public abstract fun onPredictiveBackCancelled ()V
+	public abstract fun onPredictiveBackCommitted ()Z
+	public abstract fun onPredictiveBackProgressed (Lcom/facebook/react/PredictiveBackEvent;)V
+	public abstract fun onPredictiveBackStarted (Lcom/facebook/react/PredictiveBackEvent;)V
+}
+
 public abstract class com/facebook/react/ReactActivity : androidx/appcompat/app/AppCompatActivity, com/facebook/react/modules/core/DefaultHardwareBackBtnHandler, com/facebook/react/modules/core/PermissionAwareActivity {
 	public static final field PREDICTIVE_BACK_FRONT_PANE_NATIVE_ID Ljava/lang/String;
 	protected fun <init> ()V
+	public fun addPredictiveBackHandler (Lcom/facebook/react/PredictiveBackHandler;)V
 	protected fun createReactActivityDelegate ()Lcom/facebook/react/ReactActivityDelegate;
 	public fun getBackPressedCallback ()Landroidx/activity/OnBackPressedCallback;
 	protected fun getMainComponentName ()Ljava/lang/String;
@@ -85,6 +104,7 @@ public abstract class com/facebook/react/ReactActivity : androidx/appcompat/app/
 	protected fun onResume ()V
 	public fun onUserLeaveHint ()V
 	public fun onWindowFocusChanged (Z)V
+	public fun removePredictiveBackHandler (Lcom/facebook/react/PredictiveBackHandler;)V
 	public fun requestPermissions ([Ljava/lang/String;ILcom/facebook/react/modules/core/PermissionListener;)V
 	public fun setInterceptEnabled (Z)V
 }

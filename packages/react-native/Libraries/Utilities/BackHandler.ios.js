@@ -13,6 +13,15 @@ import type {HardwareBackPressEvent} from './HardwareBackPressEvent';
 type BackPressEventName = 'backPress' | 'hardwareBackPress';
 type BackPressHandler = (event: HardwareBackPressEvent) => ?boolean;
 
+export type PredictiveBackPhase = 'start' | 'progress' | 'cancel' | 'commit';
+export type PredictiveBackEvent = {
+  phase: PredictiveBackPhase,
+  progress: number,
+  swipeEdge: number,
+  touchX: number,
+  touchY: number,
+};
+
 function emptyFunction(): void {}
 
 type TBackHandler = {
@@ -22,6 +31,10 @@ type TBackHandler = {
     handler: BackPressHandler,
   ): {remove: () => void, ...},
   setInterceptEnabled(enabled: boolean): void,
+  addPredictiveBackListener(handler: (event: PredictiveBackEvent) => void): {
+    remove: () => void,
+    ...
+  },
 };
 
 const BackHandler: TBackHandler = {
@@ -32,6 +45,11 @@ const BackHandler: TBackHandler = {
     };
   },
   setInterceptEnabled(_enabled: boolean): void {},
+  addPredictiveBackListener(_handler: (event: PredictiveBackEvent) => void) {
+    return {
+      remove: emptyFunction,
+    };
+  },
 };
 
 export default BackHandler;

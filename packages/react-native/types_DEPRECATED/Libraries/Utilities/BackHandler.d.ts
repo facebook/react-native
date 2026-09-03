@@ -21,6 +21,16 @@ export interface HardwareBackPressEvent {
   readonly timeStamp: number;
 }
 
+export type PredictiveBackPhase = 'start' | 'progress' | 'cancel' | 'commit';
+
+export interface PredictiveBackEvent {
+  readonly phase: PredictiveBackPhase;
+  readonly progress: number;
+  readonly swipeEdge: number;
+  readonly touchX: number;
+  readonly touchY: number;
+}
+
 /**
  * Detect hardware back button presses, and programmatically invoke the
  * default back button functionality to exit the app if there are no
@@ -41,11 +51,19 @@ export interface BackHandlerStatic {
   /**
    * Android only. When true, React Native consumes the back gesture so
    * BackHandler can pop an in-app screen. On Android 16+, a view tagged
-   * with nativeID "predictiveBackFrontPane" is scrubbed during the swipe.
-   * When false, the system predictive-back animation can run; BackHandler
-   * still observes app-exit commit.
+   * with nativeID "predictiveBackFrontPane" is scrubbed during the swipe
+   * unless a native PredictiveBackHandler is registered. When false, the
+   * system predictive-back animation can run; BackHandler still observes
+   * app-exit commit.
    */
   setInterceptEnabled(enabled: boolean): void;
+  /**
+   * Android only. Observes in-app predictive-back phases. Progress is
+   * throttled and is not suitable for 60fps animation.
+   */
+  addPredictiveBackListener(
+    handler: (event: PredictiveBackEvent) => void,
+  ): NativeEventSubscription;
 }
 
 export const BackHandler: BackHandlerStatic;

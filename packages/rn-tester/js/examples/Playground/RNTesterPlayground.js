@@ -34,33 +34,40 @@ function Playground() {
         return false;
       },
     );
+    const predictive = BackHandler.addPredictiveBackListener(event => {
+      const line = `${new Date().toISOString()} ${event.phase} progress=${event.progress.toFixed(2)}`;
+      console.log('[PredictiveBack]', line);
+      setEvents(current => [line, ...current].slice(0, 8));
+    });
 
-    return () => subscription.remove();
+    return () => {
+      subscription.remove();
+      predictive.remove();
+    };
   }, []);
 
   return (
     <View style={styles.container}>
       <RNTesterText style={styles.title}>Predictive back</RNTesterText>
       <RNTesterText>
-        Nested screens keep the list mounted underneath. Swipe from the edge
-        and hold: the example pane should shrink and the list should peek
-        through. The root list leaves intercept off so Android can play
-        back-to-home.
+        Nested screens keep the list mounted underneath. Swipe from the edge and
+        hold: the example pane should shrink and the list should peek through.
+        The root list leaves intercept off so Android can play back-to-home.
       </RNTesterText>
       <RNTesterText style={styles.step}>
         1. API 36 device/AVD, gesture navigation, animations on.
       </RNTesterText>
       <RNTesterText style={styles.step}>
         2. From this Playground screen, swipe from the edge and hold: the
-        Components list should peek behind this pane. Swipe far (or flick)
-        and release: this pane should keep shrinking and fade out, then pop.
-        Release early to cancel: this pane should spring back to full screen.
-        The app must not close.
+        Components list should peek behind this pane. Swipe far (or flick) and
+        release: this pane should keep shrinking and fade out, then pop. Release
+        early to cancel: this pane should spring back to full screen. The app
+        must not close.
       </RNTesterText>
       <RNTesterText style={styles.step}>
-        3. From the root list, swipe from the edge and hold: the activity
-        should shrink and home should peek through. Release to exit; Metro
-        logs [PredictiveBack]. Returning true cannot prevent that exit.
+        3. From the root list, swipe from the edge and hold: the activity should
+        shrink and home should peek through. Release to exit; Metro logs
+        [PredictiveBack]. Returning true cannot prevent that exit.
       </RNTesterText>
       <RNTesterText style={styles.step}>
         4. From the root list, release early to cancel: no JS event, activity

@@ -141,4 +141,44 @@ describe('BackHandler', () => {
 
     expect(called).toBe(false);
   });
+
+  it('notifies predictiveBack listeners in reverse order', () => {
+    const callOrder: Array<string> = [];
+    subscriptions.push(
+      BackHandler.addPredictiveBackListener(event => {
+        callOrder.push(`first:${event.phase}`);
+      }),
+    );
+    subscriptions.push(
+      BackHandler.addPredictiveBackListener(event => {
+        callOrder.push(`second:${event.phase}`);
+      }),
+    );
+
+    RCTDeviceEventEmitter.emit('predictiveBack', {
+      phase: 'start',
+      progress: 0,
+      swipeEdge: 0,
+      touchX: 1,
+      touchY: 2,
+    });
+
+    expect(callOrder).toEqual(['second:start', 'first:start']);
+  });
+
+  it('does not call exitApp for predictiveBack', () => {
+    const exitApp = jest.spyOn(BackHandler, 'exitApp');
+    subscriptions.push(BackHandler.addPredictiveBackListener(() => {}));
+
+    RCTDeviceEventEmitter.emit('predictiveBack', {
+      phase: 'commit',
+      progress: 1,
+      swipeEdge: 0,
+      touchX: 0,
+      touchY: 0,
+    });
+
+    expect(exitApp).not.toHaveBeenCalled();
+    exitApp.mockRestore();
+  });
 });
