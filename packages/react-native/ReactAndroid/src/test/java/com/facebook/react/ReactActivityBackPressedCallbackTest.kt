@@ -136,6 +136,41 @@ class ReactActivityBackPressedCallbackTest {
   }
 
   @Test
+  fun progressListener_doesNotEnableCallbackWhenInterceptDisabled() {
+    val activity = Robolectric.buildActivity(TestReactActivity::class.java).get()
+    activity.setInterceptEnabled(false)
+
+    activity.addPredictiveBackProgressListener { _, _ -> }
+
+    assertThat(activity.backPressedCallback.isEnabled).isFalse()
+    assertThat(activity.shouldScrubDefaultFrontPane()).isFalse()
+  }
+
+  @Test
+  fun progressListener_doesNotStealFrontPaneOwnership() {
+    val activity = Robolectric.buildActivity(TestReactActivity::class.java).get()
+    activity.setInterceptEnabled(true)
+
+    activity.addPredictiveBackProgressListener { _, _ -> }
+
+    assertThat(activity.shouldScrubDefaultFrontPane()).isTrue()
+  }
+
+  @Test
+  fun progressListener_receivesStartAndProgress() {
+    val activity = Robolectric.buildActivity(TestReactActivity::class.java).get()
+    val phases = mutableListOf<Int>()
+    activity.addPredictiveBackProgressListener { _, phase -> phases.add(phase) }
+    val event = PredictiveBackEvent(0.4f, PredictiveBackEvent.EDGE_LEFT, 12f, 40f)
+
+    activity.dispatchPredictiveBackStarted(event)
+    activity.dispatchPredictiveBackProgressed(event)
+
+    assertThat(phases)
+        .containsExactly(PredictiveBackEvent.PHASE_START, PredictiveBackEvent.PHASE_PROGRESS)
+  }
+
+  @Test
   fun shouldScrubDefaultFrontPane_falseWhenNativeHandlerRegistered() {
     val activity = Robolectric.buildActivity(TestReactActivity::class.java).get()
     activity.setInterceptEnabled(true)

@@ -18,6 +18,11 @@ public final class PredictiveBackEvent {
   public static final int EDGE_RIGHT = 1;
   public static final int EDGE_NONE = 2;
 
+  public static final int PHASE_START = 0;
+  public static final int PHASE_PROGRESS = 1;
+  public static final int PHASE_CANCEL = 2;
+  public static final int PHASE_COMMIT = 3;
+
   public final float progress;
   public final int swipeEdge;
   public final float touchX;

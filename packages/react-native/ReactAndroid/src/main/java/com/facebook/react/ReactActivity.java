@@ -82,6 +82,8 @@ public abstract class ReactActivity extends AppCompatActivity
 
   private boolean mJsInterceptEnabled;
   private final List<PredictiveBackHandler> mPredictiveBackHandlers = new CopyOnWriteArrayList<>();
+  private final List<PredictiveBackProgressListener> mPredictiveBackProgressListeners =
+      new CopyOnWriteArrayList<>();
   private PredictiveBackEvent mLastPredictiveBackEvent = EMPTY_PREDICTIVE_BACK_EVENT;
   private long mLastJsProgressEmitMs;
 
@@ -216,6 +218,20 @@ public abstract class ReactActivity extends AppCompatActivity
     updateConsumeCallback();
   }
 
+  /**
+   * Observes gesture progress without consuming the swipe. Used by {@code
+   * PredictiveBackAnimatedView} so Animated / Reanimated can drive UI-thread animations.
+   */
+  public void addPredictiveBackProgressListener(PredictiveBackProgressListener listener) {
+    if (!mPredictiveBackProgressListeners.contains(listener)) {
+      mPredictiveBackProgressListeners.add(listener);
+    }
+  }
+
+  public void removePredictiveBackProgressListener(PredictiveBackProgressListener listener) {
+    mPredictiveBackProgressListeners.remove(listener);
+  }
+
   private void updateConsumeCallback() {
     boolean consume = mJsInterceptEnabled || !mPredictiveBackHandlers.isEmpty();
     if (!AndroidVersion.isAtLeastTargetSdk36(this)) {
@@ -244,6 +260,7 @@ public abstract class ReactActivity extends AppCompatActivity
     for (int i = mPredictiveBackHandlers.size() - 1; i >= 0; i--) {
       mPredictiveBackHandlers.get(i).onPredictiveBackStarted(event);
     }
+    notifyPredictiveBackProgressListeners(event, PredictiveBackEvent.PHASE_START);
     emitPredictiveBackToJs("start", event, false);
   }
 
@@ -252,6 +269,7 @@ public abstract class ReactActivity extends AppCompatActivity
     for (int i = mPredictiveBackHandlers.size() - 1; i >= 0; i--) {
       mPredictiveBackHandlers.get(i).onPredictiveBackProgressed(event);
     }
+    notifyPredictiveBackProgressListeners(event, PredictiveBackEvent.PHASE_PROGRESS);
     emitPredictiveBackToJs("progress", event, true);
   }
 
@@ -259,6 +277,13 @@ public abstract class ReactActivity extends AppCompatActivity
     for (int i = mPredictiveBackHandlers.size() - 1; i >= 0; i--) {
       mPredictiveBackHandlers.get(i).onPredictiveBackCancelled();
     }
+    PredictiveBackEvent reset =
+        new PredictiveBackEvent(
+            0f,
+            mLastPredictiveBackEvent.swipeEdge,
+            mLastPredictiveBackEvent.touchX,
+            mLastPredictiveBackEvent.touchY);
+    notifyPredictiveBackProgressListeners(reset, PredictiveBackEvent.PHASE_CANCEL);
     emitPredictiveBackToJs("cancel", mLastPredictiveBackEvent, false);
   }
 
@@ -270,9 +295,22 @@ public abstract class ReactActivity extends AppCompatActivity
         break;
       }
     }
+    PredictiveBackEvent done =
+        new PredictiveBackEvent(
+            1f,
+            mLastPredictiveBackEvent.swipeEdge,
+            mLastPredictiveBackEvent.touchX,
+            mLastPredictiveBackEvent.touchY);
+    notifyPredictiveBackProgressListeners(done, PredictiveBackEvent.PHASE_COMMIT);
     emitPredictiveBackToJs("commit", mLastPredictiveBackEvent, false);
     if (!consumed) {
       notifyJsHardwareBackPressed();
+    }
+  }
+
+  private void notifyPredictiveBackProgressListeners(PredictiveBackEvent event, int phase) {
+    for (int i = mPredictiveBackProgressListeners.size() - 1; i >= 0; i--) {
+      mPredictiveBackProgressListeners.get(i).onPredictiveBackProgress(event, phase);
     }
   }
 

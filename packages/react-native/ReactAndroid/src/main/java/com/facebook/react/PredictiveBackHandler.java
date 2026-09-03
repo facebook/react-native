@@ -12,6 +12,9 @@ package com.facebook.react;
  * ReactActivity#addPredictiveBackHandler}. While at least one handler is registered, React Native
  * consumes the Android back gesture and delivers progress here instead of (or in addition to) JS.
  *
+ * <p>To observe progress without owning the gesture (for Animated / Reanimated), use {@link
+ * PredictiveBackProgressListener} or the JS {@code PredictiveBackAnimatedView} instead.
+ *
  * <p>If {@link #onPredictiveBackCommitted()} returns {@code true}, JS {@code hardwareBackPress} is
  * not emitted, so JS and this handler cannot both pop.
  */

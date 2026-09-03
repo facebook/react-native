@@ -95,6 +95,15 @@ export type {
 export {default as Pressable} from './Libraries/Components/Pressable/Pressable';
 
 export type {
+  PredictiveBackAnimatedViewProps,
+  PredictiveBackNativeEvent,
+} from './Libraries/Components/PredictiveBack/PredictiveBackAnimatedView';
+export {
+  default as PredictiveBackAnimatedView,
+  usePredictiveBackAnimatedValue,
+} from './Libraries/Components/PredictiveBack/PredictiveBackAnimatedView';
+
+export type {
   ProgressBarAndroidInstance,
   ProgressBarAndroidProps,
 } from './Libraries/Components/ProgressBarAndroid/ProgressBarAndroid';
