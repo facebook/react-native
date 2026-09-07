@@ -12,11 +12,46 @@ import type {RNTesterModuleExample} from '../../types/RNTesterTypes';
 
 import RNTesterText from '../../components/RNTesterText';
 import * as React from 'react';
-import {useEffect, useState} from 'react';
-import {BackHandler, Platform, StyleSheet, View} from 'react-native';
+import {useEffect, useMemo, useState} from 'react';
+import {
+  Animated,
+  BackHandler,
+  Platform,
+  PredictiveBackAnimatedView,
+  StyleSheet,
+  View,
+  useAnimatedValue,
+} from 'react-native';
 
 function Playground() {
   const [events, setEvents] = useState<$ReadOnlyArray<string>>([]);
+  const progress = useAnimatedValue(0);
+  const onProgress = useMemo(
+    () => Animated.event([{nativeEvent: {progress}}], {useNativeDriver: true}),
+    [progress],
+  );
+  const boxStyle = useMemo(
+    () => [
+      styles.box,
+      {
+        transform: [
+          {
+            scale: progress.interpolate({
+              inputRange: [0, 1],
+              outputRange: [1, 0.82],
+            }),
+          },
+          {
+            translateX: progress.interpolate({
+              inputRange: [0, 1],
+              outputRange: [0, 28],
+            }),
+          },
+        ],
+      },
+    ],
+    [progress],
+  );
 
   useEffect(() => {
     if (Platform.OS !== 'android') {
@@ -50,29 +85,14 @@ function Playground() {
     <View style={styles.container}>
       <RNTesterText style={styles.title}>Predictive back</RNTesterText>
       <RNTesterText>
-        Nested screens keep the list mounted underneath. Swipe from the edge and
-        hold: the example pane should shrink and the list should peek through.
-        The root list leaves intercept off so Android can play back-to-home.
+        The blue box is driven by PredictiveBackAnimatedView + Animated.event
+        (native driver). Swipe from the edge: the box should shrink. Prefer the
+        APIs → PredictiveBack example for the hook helper.
       </RNTesterText>
-      <RNTesterText style={styles.step}>
-        1. API 36 device/AVD, gesture navigation, animations on.
-      </RNTesterText>
-      <RNTesterText style={styles.step}>
-        2. From this Playground screen, swipe from the edge and hold: the
-        Components list should peek behind this pane. Swipe far (or flick) and
-        release: this pane should keep shrinking and fade out, then pop. Release
-        early to cancel: this pane should spring back to full screen. The app
-        must not close.
-      </RNTesterText>
-      <RNTesterText style={styles.step}>
-        3. From the root list, swipe from the edge and hold: the activity should
-        shrink and home should peek through. Release to exit; Metro logs
-        [PredictiveBack]. Returning true cannot prevent that exit.
-      </RNTesterText>
-      <RNTesterText style={styles.step}>
-        4. From the root list, release early to cancel: no JS event, activity
-        springs back.
-      </RNTesterText>
+      {Platform.OS === 'android' ? (
+        <PredictiveBackAnimatedView onProgress={onProgress} />
+      ) : null}
+      <Animated.View style={boxStyle} />
       <RNTesterText style={styles.logTitle}>JS events</RNTesterText>
       {events.length === 0 ? (
         <RNTesterText variant="caption">
@@ -98,12 +118,16 @@ const styles = StyleSheet.create({
     fontWeight: '700',
     marginBottom: 4,
   },
-  step: {
-    marginTop: 4,
-  },
   logTitle: {
     fontWeight: '700',
     marginTop: 12,
+  },
+  box: {
+    marginTop: 16,
+    width: 120,
+    height: 80,
+    borderRadius: 12,
+    backgroundColor: '#3b82f6',
   },
 });
 

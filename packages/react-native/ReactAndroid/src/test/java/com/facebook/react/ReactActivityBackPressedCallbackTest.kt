@@ -143,17 +143,6 @@ class ReactActivityBackPressedCallbackTest {
     activity.addPredictiveBackProgressListener { _, _ -> }
 
     assertThat(activity.backPressedCallback.isEnabled).isFalse()
-    assertThat(activity.shouldScrubDefaultFrontPane()).isFalse()
-  }
-
-  @Test
-  fun progressListener_doesNotStealFrontPaneOwnership() {
-    val activity = Robolectric.buildActivity(TestReactActivity::class.java).get()
-    activity.setInterceptEnabled(true)
-
-    activity.addPredictiveBackProgressListener { _, _ -> }
-
-    assertThat(activity.shouldScrubDefaultFrontPane()).isTrue()
   }
 
   @Test
@@ -168,17 +157,6 @@ class ReactActivityBackPressedCallbackTest {
 
     assertThat(phases)
         .containsExactly(PredictiveBackEvent.PHASE_START, PredictiveBackEvent.PHASE_PROGRESS)
-  }
-
-  @Test
-  fun shouldScrubDefaultFrontPane_falseWhenNativeHandlerRegistered() {
-    val activity = Robolectric.buildActivity(TestReactActivity::class.java).get()
-    activity.setInterceptEnabled(true)
-    assertThat(activity.shouldScrubDefaultFrontPane()).isTrue()
-
-    activity.addPredictiveBackHandler(NoOpPredictiveBackHandler())
-
-    assertThat(activity.shouldScrubDefaultFrontPane()).isFalse()
   }
 
   private open class NoOpPredictiveBackHandler(

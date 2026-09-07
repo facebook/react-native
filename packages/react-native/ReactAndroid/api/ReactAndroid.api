@@ -85,7 +85,6 @@ public abstract interface class com/facebook/react/PredictiveBackProgressListene
 }
 
 public abstract class com/facebook/react/ReactActivity : androidx/appcompat/app/AppCompatActivity, com/facebook/react/modules/core/DefaultHardwareBackBtnHandler, com/facebook/react/modules/core/PermissionAwareActivity {
-	public static final field PREDICTIVE_BACK_FRONT_PANE_NATIVE_ID Ljava/lang/String;
 	protected fun <init> ()V
 	public fun addPredictiveBackHandler (Lcom/facebook/react/PredictiveBackHandler;)V
 	public fun addPredictiveBackProgressListener (Lcom/facebook/react/PredictiveBackProgressListener;)V

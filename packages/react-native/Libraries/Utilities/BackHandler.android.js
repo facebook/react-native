@@ -81,11 +81,10 @@ type TBackHandler = {
   ) => {remove: () => void, ...},
   /**
    * Android only. When true, React Native consumes the back gesture so
-   * BackHandler can pop an in-app screen. On Android 16+, a view tagged
-   * with nativeID "predictiveBackFrontPane" is scrubbed during the swipe
-   * unless a native PredictiveBackHandler is registered. When false, the
-   * system predictive-back animation can run; BackHandler still observes
-   * app-exit commit.
+   * BackHandler can pop an in-app screen. On Android 16+, progress is
+   * delivered to PredictiveBackAnimatedView and native PredictiveBackHandler
+   * plugins. When false, the system predictive-back animation can run;
+   * BackHandler still observes app-exit commit.
    */
   readonly setInterceptEnabled: (enabled: boolean) => void,
   /**

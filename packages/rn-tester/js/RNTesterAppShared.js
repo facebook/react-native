@@ -137,9 +137,9 @@ const RNTesterApp = ({
       handleHardwareBackPress,
     );
     if (Platform.OS === 'android') {
-      // Consume back only when an example is open so the list can peek
-      // through during in-app predictive back. On the root list, leave
-      // intercept off so the system back-to-home animation can run.
+      // Consume back only when an example is open so hardware back pops it.
+      // On the root list, leave intercept off so the system back-to-home
+      // animation can run.
       BackHandler.setInterceptEnabled(activeModuleKey != null);
     }
     return () => {
@@ -439,37 +439,8 @@ const RNTesterApp = ({
   return (
     <RNTesterThemeContext.Provider value={theme}>
       {Platform.OS === 'android' ? <StatusBar barStyle="dark-content" /> : null}
-      <View style={styles.stack} collapsable={false}>
-        <View
-          collapsable={false}
-          pointerEvents={activeModule != null ? 'none' : 'auto'}
-          accessibilityElementsHidden={activeModule != null}
-          importantForAccessibility={
-            activeModule != null ? 'no-hide-descendants' : 'auto'
-          }
-          style={
-            activeModule != null
-              ? [
-                  styles.backPane,
-                  {backgroundColor: theme.GroupedBackgroundColor},
-                ]
-              : styles.stack
-          }>
-          {listPane}
-        </View>
-        {modulePane != null ? (
-          // In-flow so it fills the screen and paints on top. nativeID must
-          // match ReactActivity.PREDICTIVE_BACK_FRONT_PANE_NATIVE_ID.
-          <View
-            nativeID="predictiveBackFrontPane"
-            collapsable={false}
-            style={[
-              styles.frontPane,
-              {backgroundColor: theme.GroupedBackgroundColor},
-            ]}>
-            {modulePane}
-          </View>
-        ) : null}
+      <View style={styles.container}>
+        {modulePane != null ? modulePane : listPane}
       </View>
       <ReportFullyDrawnView />
     </RNTesterThemeContext.Provider>
@@ -479,23 +450,6 @@ const RNTesterApp = ({
 export default RNTesterApp;
 
 const styles = StyleSheet.create({
-  stack: {
-    flex: 1,
-  },
-  // Previous screen: taken out of flow so it stays mounted behind the example.
-  backPane: {
-    position: 'absolute',
-    top: 0,
-    left: 0,
-    right: 0,
-    bottom: 0,
-    zIndex: 0,
-  },
-  // Current screen: in-flow, fills the parent, drawn last (on top).
-  frontPane: {
-    flex: 1,
-    zIndex: 1,
-  },
   container: {
     flex: 1,
   },

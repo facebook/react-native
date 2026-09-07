@@ -63,10 +63,10 @@ public open class DeviceEventManagerModule(
   /**
    * Enables or disables in-app back interception.
    *
-   * When enabled on Android 16+, RN registers a predictive-back animation callback that scrubs
-   * the view tagged with [ReactActivity.PREDICTIVE_BACK_FRONT_PANE_NATIVE_ID], unless a native
-   * [com.facebook.react.PredictiveBackHandler] is registered. When disabled, the system handles
-   * the gesture and the navigation-observer still notifies JS on app-exit commit.
+   * When enabled on Android 16+, RN registers a predictive-back animation callback that delivers
+   * progress to native handlers and [com.facebook.react.PredictiveBackProgressListener]. When
+   * disabled, the system handles the gesture and the navigation-observer still notifies JS on
+   * app-exit commit.
    */
   override fun setInterceptEnabled(enabled: Boolean) {
     reactApplicationContext.runOnUiQueueThread {

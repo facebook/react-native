@@ -9,8 +9,7 @@ package com.facebook.react;
 
 /**
  * Observes in-app predictive-back progress without owning the gesture. Unlike {@link
- * PredictiveBackHandler}, registering this does not consume the swipe or suppress the default
- * front-pane animation.
+ * PredictiveBackHandler}, registering this does not consume the swipe.
  *
  * <p>Used by {@code PredictiveBackAnimatedView} to emit Fabric events that {@code Animated.event}
  * (native driver) and Reanimated {@code useEvent} can consume on the UI thread.
