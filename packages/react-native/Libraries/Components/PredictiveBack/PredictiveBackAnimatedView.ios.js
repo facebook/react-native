@@ -10,22 +10,12 @@
 
 import type {PredictiveBackNativeEvent} from './PredictiveBackAnimatedViewNativeComponent';
 
-import Animated from '../../Animated/Animated';
-import useAnimatedValue from '../../Animated/useAnimatedValue';
 import * as React from 'react';
 
 export type {PredictiveBackNativeEvent};
 
 function PredictiveBackAnimatedView(_props: {...}): React.Node {
   return null;
-}
-
-export function usePredictiveBackAnimatedValue(): {
-  progress: Animated.Value,
-  onProgress: $FlowFixMe,
-} {
-  const progress = useAnimatedValue(0);
-  return {progress, onProgress: () => {}};
 }
 
 export default PredictiveBackAnimatedView;

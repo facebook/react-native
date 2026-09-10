@@ -12,7 +12,6 @@
 
 import type {ViewProps} from '../View/ViewPropTypes';
 
-import Animated from '../../Animated/Animated';
 import * as React from 'react';
 
 export type PredictiveBackNativeEvent = {
@@ -26,11 +25,6 @@ export type PredictiveBackNativeEvent = {
 export type PredictiveBackAnimatedViewProps = {
   ...ViewProps,
   onProgress?: (event: {nativeEvent: PredictiveBackNativeEvent}) => mixed,
-};
-
-declare export function usePredictiveBackAnimatedValue(): {
-  progress: Animated.Value,
-  onProgress: $FlowFixMe,
 };
 
 declare const PredictiveBackAnimatedView: React.AbstractComponent<PredictiveBackAnimatedViewProps>;

@@ -21,11 +21,15 @@ import {
   PredictiveBackAnimatedView,
   StyleSheet,
   View,
-  usePredictiveBackAnimatedValue,
+  useAnimatedValue,
 } from 'react-native';
 
-function UsePredictiveBackAnimatedValueExample(): React.Node {
-  const {progress, onProgress} = usePredictiveBackAnimatedValue();
+function PredictiveBackAnimatedExample(): React.Node {
+  const progress = useAnimatedValue(0);
+  const onProgress = useMemo(
+    () => Animated.event([{nativeEvent: {progress}}], {useNativeDriver: true}),
+    [progress],
+  );
   const boxStyle = useMemo(
     () => [
       styles.box,
@@ -53,7 +57,8 @@ function UsePredictiveBackAnimatedValueExample(): React.Node {
     <View style={styles.container}>
       <RNTesterText>
         Swipe from the edge and hold. The box is driven by
-        usePredictiveBackAnimatedValue through the native Animated driver.
+        PredictiveBackAnimatedView through Animated.event and the native
+        driver.
       </RNTesterText>
       {Platform.OS === 'android' ? (
         <PredictiveBackAnimatedView onProgress={onProgress} />
@@ -80,15 +85,15 @@ const styles = StyleSheet.create({
 exports.title = 'PredictiveBack';
 exports.category = 'Android';
 exports.description =
-  'Drive RN Animated from Android predictive-back progress with usePredictiveBackAnimatedValue.';
+  'Drive RN Animated from Android predictive-back progress with PredictiveBackAnimatedView and Animated.event.';
 exports.examples = [
   {
-    title: 'usePredictiveBackAnimatedValue',
+    title: 'PredictiveBackAnimatedView',
     description:
       'Native-driver progress from the system back gesture. Requires API 34+ gesture navigation.',
     platform: 'android',
     render(): React.Node {
-      return <UsePredictiveBackAnimatedValueExample />;
+      return <PredictiveBackAnimatedExample />;
     },
   },
 ] as Array<RNTesterModuleExample>;

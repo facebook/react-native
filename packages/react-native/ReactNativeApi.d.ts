@@ -3589,13 +3589,6 @@ declare type PredictiveBackAnimatedView = typeof PredictiveBackAnimatedView
 declare type PredictiveBackAnimatedViewProps = ViewProps & {
   onProgress?: (event: { nativeEvent: PredictiveBackNativeEvent }) => unknown
 }
-declare type PredictiveBackEvent = {
-  phase: PredictiveBackPhase
-  progress: number
-  swipeEdge: number
-  touchX: number
-  touchY: number
-}
 declare type PredictiveBackNativeEvent = {
   phase: number
   progress: number
@@ -3603,7 +3596,6 @@ declare type PredictiveBackNativeEvent = {
   touchX: number
   touchY: number
 }
-declare type PredictiveBackPhase = "cancel" | "commit" | "progress" | "start"
 declare type PresentLocalNotificationDetails = {
   alertAction?: string
   alertBody: string
@@ -4881,9 +4873,6 @@ declare type TBackHandler = {
   ): {
     remove: () => void
   }
-  addPredictiveBackListener(handler: (event: PredictiveBackEvent) => void): {
-    remove: () => void
-  }
   exitApp(): void
   setInterceptEnabled(enabled: boolean): void
 }
@@ -5478,10 +5467,6 @@ declare function useAnimatedValueXY(
 ): Animated.ValueXY
 declare function useAppState(): AppStateStatus
 declare function useColorScheme(): ColorSchemeName | null
-declare function usePredictiveBackAnimatedValue(): {
-  onProgress: any
-  progress: Animated.Value
-}
 declare function usePressability(
   config: null | PressabilityConfig | undefined,
 ): null | PressabilityEventHandlers
@@ -5830,7 +5815,7 @@ export {
   AssetDestPathResolver, // 59047424
   AssetRegistry, // 6070bb45
   AutoCapitalize, // c0e857a0
-  BackHandler, // c0042375
+  BackHandler, // 51d37a56
   BackPressEventName, // 4620fb76
   BlurEvent, // d5e68e96
   BoxShadowValue, // b679703f
@@ -5979,9 +5964,7 @@ export {
   PointerEvent, // a506d9d7
   PredictiveBackAnimatedView, // b7897c30
   PredictiveBackAnimatedViewProps, // 9d8f7fe6
-  PredictiveBackEvent, // e2919d69
   PredictiveBackNativeEvent, // a7e9dafb
-  PredictiveBackPhase, // dcc1122c
   PressabilityConfig, // 0fd655fe
   PressabilityEventHandlers, // be359ba3
   Pressable, // 56235a5f
@@ -6123,7 +6106,6 @@ export {
   useAnimatedValueXY, // dc9057ea
   useAppState, // 9338748a
   useColorScheme, // d585efdb
-  usePredictiveBackAnimatedValue, // 99a81437
   usePressability, // af291ad3
   useWindowDimensions, // bb4b683f
 }

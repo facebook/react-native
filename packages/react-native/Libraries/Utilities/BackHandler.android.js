@@ -14,23 +14,11 @@ import RCTDeviceEventEmitter from '../EventEmitter/RCTDeviceEventEmitter';
 import {HardwareBackPressEvent} from './HardwareBackPressEvent';
 
 const DEVICE_BACK_EVENT = 'hardwareBackPress';
-const PREDICTIVE_BACK_EVENT = 'predictiveBack';
 
 type BackPressEventName = 'backPress' | 'hardwareBackPress';
 type BackPressHandler = (event: HardwareBackPressEvent) => ?boolean;
 
-export type PredictiveBackPhase = 'start' | 'progress' | 'cancel' | 'commit';
-export type PredictiveBackEvent = {
-  phase: PredictiveBackPhase,
-  progress: number,
-  swipeEdge: number,
-  touchX: number,
-  touchY: number,
-};
-type PredictiveBackListener = (event: PredictiveBackEvent) => void;
-
 const _backPressSubscriptions: Array<BackPressHandler> = [];
-const _predictiveBackSubscriptions: Array<PredictiveBackListener> = [];
 
 RCTDeviceEventEmitter.addListener(DEVICE_BACK_EVENT, function (nativeEvent) {
   const options = {};
@@ -47,22 +35,6 @@ RCTDeviceEventEmitter.addListener(DEVICE_BACK_EVENT, function (nativeEvent) {
 
   BackHandler.exitApp();
 });
-
-RCTDeviceEventEmitter.addListener(
-  PREDICTIVE_BACK_EVENT,
-  function (nativeEvent) {
-    const event: PredictiveBackEvent = {
-      phase: nativeEvent?.phase ?? 'progress',
-      progress: nativeEvent?.progress ?? 0,
-      swipeEdge: nativeEvent?.swipeEdge ?? 2,
-      touchX: nativeEvent?.touchX ?? 0,
-      touchY: nativeEvent?.touchY ?? 0,
-    };
-    for (let i = _predictiveBackSubscriptions.length - 1; i >= 0; i--) {
-      _predictiveBackSubscriptions[i]?.(event);
-    }
-  },
-);
 
 /**
  * Detects hardware button presses for back navigation and lets you register
@@ -87,15 +59,6 @@ type TBackHandler = {
    * BackHandler still observes app-exit commit.
    */
   readonly setInterceptEnabled: (enabled: boolean) => void,
-  /**
-   * Android only. Observes in-app predictive-back phases. Progress is
-   * throttled and is not suitable for 60fps animation; native libraries
-   * should use PredictiveBackHandler on ReactActivity instead.
-   */
-  readonly addPredictiveBackListener: (handler: PredictiveBackListener) => {
-    remove: () => void,
-    ...
-  },
 };
 const BackHandler: TBackHandler = {
   /**
@@ -133,28 +96,6 @@ const BackHandler: TBackHandler = {
         const index = _backPressSubscriptions.indexOf(handler);
         if (index !== -1) {
           _backPressSubscriptions.splice(index, 1);
-        }
-      },
-    };
-  },
-
-  /**
-   * Listen for in-app predictive-back phases (`start`, `progress`,
-   * `cancel`, `commit`). Returning a value does not consume the gesture;
-   * use `setInterceptEnabled` or a native `PredictiveBackHandler` for that.
-   */
-  addPredictiveBackListener: function (handler: PredictiveBackListener): {
-    remove: () => void,
-    ...
-  } {
-    if (_predictiveBackSubscriptions.indexOf(handler) === -1) {
-      _predictiveBackSubscriptions.push(handler);
-    }
-    return {
-      remove: (): void => {
-        const index = _predictiveBackSubscriptions.indexOf(handler);
-        if (index !== -1) {
-          _predictiveBackSubscriptions.splice(index, 1);
         }
       },
     };

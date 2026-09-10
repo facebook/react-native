@@ -8,7 +8,6 @@
  */
 
 import type * as React from 'react';
-import type {Animated} from '../../Animated/Animated';
 import {ViewProps} from '../View/ViewPropTypes';
 
 export interface PredictiveBackNativeEvent {
@@ -22,11 +21,6 @@ export interface PredictiveBackNativeEvent {
 export interface PredictiveBackAnimatedViewProps extends ViewProps {
   onProgress?: (event: {nativeEvent: PredictiveBackNativeEvent}) => void;
 }
-
-export function usePredictiveBackAnimatedValue(): {
-  progress: Animated.Value;
-  onProgress: (...args: any[]) => void;
-};
 
 export const PredictiveBackAnimatedView: React.ComponentType<PredictiveBackAnimatedViewProps>;
 export default PredictiveBackAnimatedView;

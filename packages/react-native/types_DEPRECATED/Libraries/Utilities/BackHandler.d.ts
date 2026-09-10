@@ -21,16 +21,6 @@ export interface HardwareBackPressEvent {
   readonly timeStamp: number;
 }
 
-export type PredictiveBackPhase = 'start' | 'progress' | 'cancel' | 'commit';
-
-export interface PredictiveBackEvent {
-  readonly phase: PredictiveBackPhase;
-  readonly progress: number;
-  readonly swipeEdge: number;
-  readonly touchX: number;
-  readonly touchY: number;
-}
-
 /**
  * Detect hardware back button presses, and programmatically invoke the
  * default back button functionality to exit the app if there are no
@@ -56,13 +46,6 @@ export interface BackHandlerStatic {
    * BackHandler still observes app-exit commit.
    */
   setInterceptEnabled(enabled: boolean): void;
-  /**
-   * Android only. Observes in-app predictive-back phases. Progress is
-   * throttled and is not suitable for 60fps animation.
-   */
-  addPredictiveBackListener(
-    handler: (event: PredictiveBackEvent) => void,
-  ): NativeEventSubscription;
 }
 
 export const BackHandler: BackHandlerStatic;

@@ -23,9 +23,6 @@ import androidx.activity.OnBackPressedCallback;
 import androidx.annotation.Nullable;
 import androidx.annotation.RequiresApi;
 import androidx.appcompat.app.AppCompatActivity;
-import com.facebook.react.bridge.Arguments;
-import com.facebook.react.bridge.ReactContext;
-import com.facebook.react.bridge.WritableMap;
 import com.facebook.react.modules.core.DefaultHardwareBackBtnHandler;
 import com.facebook.react.modules.core.PermissionAwareActivity;
 import com.facebook.react.modules.core.PermissionListener;
@@ -39,8 +36,6 @@ public abstract class ReactActivity extends AppCompatActivity
     implements DefaultHardwareBackBtnHandler, PermissionAwareActivity {
 
   private static final String PREDICTIVE_BACK_TAG = "PredictiveBack";
-  private static final String PREDICTIVE_BACK_JS_EVENT = "predictiveBack";
-  private static final long JS_PROGRESS_THROTTLE_MS = 32;
   private static final PredictiveBackEvent EMPTY_PREDICTIVE_BACK_EVENT =
       new PredictiveBackEvent(0f, PredictiveBackEvent.EDGE_NONE, 0f, 0f);
 
@@ -73,7 +68,6 @@ public abstract class ReactActivity extends AppCompatActivity
   private final List<PredictiveBackProgressListener> mPredictiveBackProgressListeners =
       new CopyOnWriteArrayList<>();
   private PredictiveBackEvent mLastPredictiveBackEvent = EMPTY_PREDICTIVE_BACK_EVENT;
-  private long mLastJsProgressEmitMs;
 
   @SuppressWarnings("this-escape")
   protected ReactActivity() {
@@ -238,12 +232,10 @@ public abstract class ReactActivity extends AppCompatActivity
 
   void dispatchPredictiveBackStarted(PredictiveBackEvent event) {
     mLastPredictiveBackEvent = event;
-    mLastJsProgressEmitMs = 0;
     for (int i = mPredictiveBackHandlers.size() - 1; i >= 0; i--) {
       mPredictiveBackHandlers.get(i).onPredictiveBackStarted(event);
     }
     notifyPredictiveBackProgressListeners(event, PredictiveBackEvent.PHASE_START);
-    emitPredictiveBackToJs("start", event, false);
   }
 
   void dispatchPredictiveBackProgressed(PredictiveBackEvent event) {
@@ -252,7 +244,6 @@ public abstract class ReactActivity extends AppCompatActivity
       mPredictiveBackHandlers.get(i).onPredictiveBackProgressed(event);
     }
     notifyPredictiveBackProgressListeners(event, PredictiveBackEvent.PHASE_PROGRESS);
-    emitPredictiveBackToJs("progress", event, true);
   }
 
   void dispatchPredictiveBackCancelled() {
@@ -266,7 +257,6 @@ public abstract class ReactActivity extends AppCompatActivity
             mLastPredictiveBackEvent.touchX,
             mLastPredictiveBackEvent.touchY);
     notifyPredictiveBackProgressListeners(reset, PredictiveBackEvent.PHASE_CANCEL);
-    emitPredictiveBackToJs("cancel", mLastPredictiveBackEvent, false);
   }
 
   void finishPredictiveBackCommit() {
@@ -284,7 +274,6 @@ public abstract class ReactActivity extends AppCompatActivity
             mLastPredictiveBackEvent.touchX,
             mLastPredictiveBackEvent.touchY);
     notifyPredictiveBackProgressListeners(done, PredictiveBackEvent.PHASE_COMMIT);
-    emitPredictiveBackToJs("commit", mLastPredictiveBackEvent, false);
     if (!consumed) {
       notifyJsHardwareBackPressed();
     }
@@ -294,32 +283,6 @@ public abstract class ReactActivity extends AppCompatActivity
     for (int i = mPredictiveBackProgressListeners.size() - 1; i >= 0; i--) {
       mPredictiveBackProgressListeners.get(i).onPredictiveBackProgress(event, phase);
     }
-  }
-
-  private void emitPredictiveBackToJs(
-      String phase, PredictiveBackEvent event, boolean throttleProgress) {
-    if (throttleProgress) {
-      long now = SystemClock.uptimeMillis();
-      if (mLastJsProgressEmitMs != 0 && now - mLastJsProgressEmitMs < JS_PROGRESS_THROTTLE_MS) {
-        return;
-      }
-      mLastJsProgressEmitMs = now;
-    }
-    ReactDelegate reactDelegate = getReactDelegate();
-    if (reactDelegate == null) {
-      return;
-    }
-    ReactContext context = reactDelegate.getCurrentReactContext();
-    if (context == null) {
-      return;
-    }
-    WritableMap map = Arguments.createMap();
-    map.putString("phase", phase);
-    map.putDouble("progress", event.progress);
-    map.putInt("swipeEdge", event.swipeEdge);
-    map.putDouble("touchX", event.touchX);
-    map.putDouble("touchY", event.touchY);
-    context.emitDeviceEvent(PREDICTIVE_BACK_JS_EVENT, map);
   }
 
   void notifyJsHardwareBackPressed() {

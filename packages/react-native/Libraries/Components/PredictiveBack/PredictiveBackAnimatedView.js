@@ -12,5 +12,4 @@
 // from 'react-native' with platform-specific extensions. It can be deleted
 // once we remove the "./*" mapping from package.json "exports".
 
-export {usePredictiveBackAnimatedValue} from './PredictiveBackAnimatedView';
 export {default} from './PredictiveBackAnimatedView';

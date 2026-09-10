@@ -69,15 +69,9 @@ function Playground() {
         return false;
       },
     );
-    const predictive = BackHandler.addPredictiveBackListener(event => {
-      const line = `${new Date().toISOString()} ${event.phase} progress=${event.progress.toFixed(2)}`;
-      console.log('[PredictiveBack]', line);
-      setEvents(current => [line, ...current].slice(0, 8));
-    });
 
     return () => {
       subscription.remove();
-      predictive.remove();
     };
   }, []);
 
@@ -86,8 +80,7 @@ function Playground() {
       <RNTesterText style={styles.title}>Predictive back</RNTesterText>
       <RNTesterText>
         The blue box is driven by PredictiveBackAnimatedView + Animated.event
-        (native driver). Swipe from the edge: the box should shrink. Prefer the
-        APIs → PredictiveBack example for the hook helper.
+        (native driver). Swipe from the edge: the box should shrink.
       </RNTesterText>
       {Platform.OS === 'android' ? (
         <PredictiveBackAnimatedView onProgress={onProgress} />

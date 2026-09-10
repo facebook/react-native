@@ -11,10 +11,8 @@
 import type {PredictiveBackNativeEvent} from './PredictiveBackAnimatedViewNativeComponent';
 
 import Animated from '../../Animated/Animated';
-import useAnimatedValue from '../../Animated/useAnimatedValue';
 import PredictiveBackAnimatedViewNativeComponent from './PredictiveBackAnimatedViewNativeComponent';
 import * as React from 'react';
-import {useMemo} from 'react';
 
 /**
  * Hidden host view that emits predictive-back progress as a native event.
@@ -46,18 +44,6 @@ const NativeAnimatedView = Animated.createAnimatedComponent(
 );
 
 export type {PredictiveBackNativeEvent};
-
-export function usePredictiveBackAnimatedValue(): {
-  progress: Animated.Value,
-  onProgress: $FlowFixMe,
-} {
-  const progress = useAnimatedValue(0);
-  const onProgress = useMemo(
-    () => Animated.event([{nativeEvent: {progress}}], {useNativeDriver: true}),
-    [progress],
-  );
-  return {progress, onProgress};
-}
 
 function PredictiveBackAnimatedView(
   props: React.ElementConfig<typeof PredictiveBackAnimatedViewNativeComponent>,

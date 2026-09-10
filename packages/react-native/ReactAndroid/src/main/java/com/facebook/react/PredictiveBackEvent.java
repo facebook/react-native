@@ -9,8 +9,8 @@ package com.facebook.react;
 
 /**
  * Progress of an in-app predictive-back gesture. Native libraries (for example
- * react-native-screens) receive this on the UI thread. JavaScript receives a copy via {@code
- * BackHandler.addPredictiveBackListener}; that path is not suitable for 60fps animation.
+ * react-native-screens) receive this on the UI thread. JavaScript animates via {@code
+ * PredictiveBackAnimatedView} and {@code Animated.event}.
  */
 public final class PredictiveBackEvent {
 
