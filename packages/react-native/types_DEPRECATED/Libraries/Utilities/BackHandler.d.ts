@@ -39,11 +39,21 @@ export interface BackHandlerStatic {
     handler: (event: HardwareBackPressEvent) => boolean | null | undefined,
   ): NativeEventSubscription;
   /**
-   * Android only. When true, React Native consumes the back gesture so
-   * BackHandler can pop an in-app screen. On Android 16+, progress is
-   * delivered to PredictiveBackAnimatedView and native PredictiveBackHandler
-   * plugins. When false, the system predictive-back animation can run;
-   * BackHandler still observes app-exit commit.
+   * Takes the Android back gesture until `remove()` is called. Use this for a
+   * modal, sheet, or other overlay so the swipe is yours until dismiss.
+   * Releasing the last claim returns the gesture to screens / the system.
+   *
+   * @platform android
+   */
+  claimPredictiveBack(): NativeEventSubscription;
+  /**
+   * Android only. Process-wide consume bit. Prefer `claimPredictiveBack` for
+   * something with a lifetime. When true, React Native consumes the back
+   * gesture so BackHandler can pop an in-app screen. On Android 16+, progress
+   * is delivered to PredictiveBackAnimatedView and native PredictiveBackHandler
+   * plugins. When false and nothing else owns the swipe, the system
+   * predictive-back animation can run; BackHandler still observes app-exit
+   * commit.
    */
   setInterceptEnabled(enabled: boolean): void;
 }

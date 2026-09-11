@@ -81,6 +81,71 @@ class ReactActivityBackPressedCallbackTest {
   }
 
   @Test
+  fun claimPredictiveBack_enablesCallbackWhenInterceptDisabled() {
+    val activity = Robolectric.buildActivity(TestReactActivity::class.java).get()
+    activity.setInterceptEnabled(false)
+
+    val claim = activity.claimPredictiveBack()
+
+    assertThat(activity.backPressedCallback.isEnabled).isTrue()
+    assertThat(activity.hasPredictiveBackOwner()).isTrue()
+    assertThat(claim.isReleased).isFalse()
+  }
+
+  @Test
+  fun releasePredictiveBack_disablesCallbackWhenNoOtherOwner() {
+    val activity = Robolectric.buildActivity(TestReactActivity::class.java).get()
+    activity.setInterceptEnabled(false)
+    val claim = activity.claimPredictiveBack()
+
+    claim.release()
+
+    assertThat(activity.backPressedCallback.isEnabled).isFalse()
+    assertThat(activity.hasPredictiveBackOwner()).isFalse()
+    assertThat(claim.isReleased).isTrue()
+  }
+
+  @Test
+  fun releasePredictiveBack_isIdempotent() {
+    val activity = Robolectric.buildActivity(TestReactActivity::class.java).get()
+    activity.setInterceptEnabled(false)
+    val claim = activity.claimPredictiveBack()
+
+    claim.release()
+    claim.release()
+
+    assertThat(activity.backPressedCallback.isEnabled).isFalse()
+  }
+
+  @Test
+  fun claimPredictiveBack_keepsEnabledUntilLastClaimReleased() {
+    val activity = Robolectric.buildActivity(TestReactActivity::class.java).get()
+    activity.setInterceptEnabled(false)
+    val first = activity.claimPredictiveBack()
+    val second = activity.claimPredictiveBack()
+
+    first.release()
+
+    assertThat(activity.backPressedCallback.isEnabled).isTrue()
+    assertThat(activity.hasPredictiveBackOwner()).isTrue()
+
+    second.release()
+
+    assertThat(activity.backPressedCallback.isEnabled).isFalse()
+  }
+
+  @Test
+  fun setInterceptEnabled_false_keepsEnabledWhileClaimHeld() {
+    val activity = Robolectric.buildActivity(TestReactActivity::class.java).get()
+    activity.setInterceptEnabled(false)
+    activity.claimPredictiveBack()
+
+    activity.setInterceptEnabled(false)
+
+    assertThat(activity.backPressedCallback.isEnabled).isTrue()
+  }
+
+  @Test
   fun addPredictiveBackHandler_enablesCallbackWhenInterceptDisabled() {
     val activity = Robolectric.buildActivity(TestReactActivity::class.java).get()
     activity.setInterceptEnabled(false)

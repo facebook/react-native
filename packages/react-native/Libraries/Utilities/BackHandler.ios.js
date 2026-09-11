@@ -21,12 +21,18 @@ type TBackHandler = {
     eventName: BackPressEventName,
     handler: BackPressHandler,
   ): {remove: () => void, ...},
+  claimPredictiveBack(): {remove: () => void, ...},
   setInterceptEnabled(enabled: boolean): void,
 };
 
 const BackHandler: TBackHandler = {
   exitApp: emptyFunction,
   addEventListener(_eventName: BackPressEventName, _handler: BackPressHandler) {
+    return {
+      remove: emptyFunction,
+    };
+  },
+  claimPredictiveBack() {
     return {
       remove: emptyFunction,
     };
