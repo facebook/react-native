@@ -53,6 +53,7 @@ import com.facebook.react.uimanager.style.OutlineStyle
 import androidx.core.graphics.withSave
 import com.facebook.react.bridge.ReactContext
 import com.facebook.react.fabric.FabricUIManager
+import com.facebook.react.uimanager.common.UIManagerType
 
 /**
  * Utility object responsible for applying backgrounds, borders, and related visual effects to
@@ -451,10 +452,6 @@ public object BackgroundStyleApplicator {
 
   @JvmStatic
   public fun setClipPath(view: View, clipPathMap: ReadableMap?) {
-    if (ViewUtil.getUIManagerType(view) != UIManagerType.FABRIC) {
-      return
-    }
-
     val clipPath = ClipPath.parse(clipPathMap)
     view.setTag(R.id.clip_path, clipPath)
     view.invalidate()

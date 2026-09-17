@@ -42,13 +42,6 @@ class FabricMountingManager final {
   void drainPreallocateViewsQueue();
 
   /*
-   * Preallocates a view on the Java side and registers the tag in
-   * allocatedViewRegistry_ so that executeMount skips the redundant Create
-   * mount item for this tag.
-   */
-  void preallocateShadowView(const ShadowView &shadowView);
-
-  /*
    * Returns true if the given tag is registered in allocatedViewRegistry_
    * for the given surface. A registered tag means executeMount will skip
    * the Create mount item (the view was already preallocated).
