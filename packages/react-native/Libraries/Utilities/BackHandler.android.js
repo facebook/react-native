@@ -17,21 +17,8 @@ const DEVICE_BACK_EVENT = 'hardwareBackPress';
 
 type BackPressEventName = 'backPress' | 'hardwareBackPress';
 type BackPressHandler = (event: HardwareBackPressEvent) => ?boolean;
-type BackHandlerSubscription = {remove: () => void, ...};
 
 const _backPressSubscriptions: Array<BackPressHandler> = [];
-let _interceptEnabled = false;
-let _nextClaimId = 1;
-const _activeClaims: Set<number> = new Set();
-
-function syncNativeConsume(): void {
-  if (!NativeDeviceEventManager) {
-    return;
-  }
-  NativeDeviceEventManager.setInterceptEnabled(
-    _interceptEnabled || _activeClaims.size > 0,
-  );
-}
 
 RCTDeviceEventEmitter.addListener(DEVICE_BACK_EVENT, function (nativeEvent) {
   const options = {};
@@ -63,26 +50,19 @@ type TBackHandler = {
   readonly addEventListener: (
     eventName: BackPressEventName,
     handler: BackPressHandler,
-  ) => BackHandlerSubscription,
+  ) => {remove: () => void, ...},
   /**
-   * Takes the Android back gesture until `remove()` is called. Stack claims
-   * for overlays (modal, sheet, JS chrome): the last remaining owner keeps
-   * the swipe. Releasing the last claim returns it to screens / the system.
+   * Android only. When true, React Native consumes the back gesture so
+   * BackHandler can pop an in-app screen. On Android 16+, progress is
+   * delivered to PredictiveBackAnimatedView and native PredictiveBackHandler
+   * plugins. When false, the system predictive-back animation can run;
+   * BackHandler still observes app-exit commit.
    *
-   * `PredictiveBackAnimatedView` only receives progress while some owner
-   * (a claim, setInterceptEnabled, or a native handler) is consuming.
-   *
-   * @platform android
-   */
-  readonly claimPredictiveBack: () => BackHandlerSubscription,
-  /**
-   * Android only. Process-wide consume bit. Prefer `claimPredictiveBack` for
-   * something with a lifetime. When true, React Native consumes the back
-   * gesture so BackHandler can pop an in-app screen. On Android 16+, progress
-   * is delivered to PredictiveBackAnimatedView and native PredictiveBackHandler
-   * plugins. When false and nothing else owns the swipe, the system
-   * predictive-back animation can run; BackHandler still observes app-exit
-   * commit.
+   * Consuming is not reserving: React Native registers at the platform
+   * default priority, the same one AndroidX' FragmentManager uses, so the
+   * gesture goes to whichever enabled callback registered last. A library
+   * that needs the gesture for itself takes it by disabling React Native's
+   * consuming callback.
    */
   readonly setInterceptEnabled: (enabled: boolean) => void,
 };
@@ -99,26 +79,11 @@ const BackHandler: TBackHandler = {
   },
 
   setInterceptEnabled: function (enabled: boolean): void {
-    _interceptEnabled = enabled;
-    syncNativeConsume();
-  },
+    if (!NativeDeviceEventManager) {
+      return;
+    }
 
-  claimPredictiveBack: function (): BackHandlerSubscription {
-    const id = _nextClaimId++;
-    _activeClaims.add(id);
-    syncNativeConsume();
-    let removed = false;
-    return {
-      remove: (): void => {
-        if (removed) {
-          return;
-        }
-        removed = true;
-        if (_activeClaims.delete(id)) {
-          syncNativeConsume();
-        }
-      },
-    };
+    NativeDeviceEventManager.setInterceptEnabled(enabled);
   },
 
   /**

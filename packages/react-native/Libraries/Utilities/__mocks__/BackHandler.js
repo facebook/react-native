@@ -20,10 +20,6 @@ const _backPressSubscriptions = new Set<
 const BackHandler = {
   exitApp: jest.fn() as () => void,
   setInterceptEnabled: jest.fn() as (enabled: boolean) => void,
-  claimPredictiveBack: jest.fn(() => ({remove: jest.fn()})) as () => {
-    remove: () => void,
-    ...
-  },
 
   addEventListener: function (
     eventName: BackPressEventName,

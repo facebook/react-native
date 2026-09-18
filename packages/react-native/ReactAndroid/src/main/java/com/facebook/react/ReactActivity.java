@@ -28,9 +28,7 @@ import com.facebook.react.modules.core.PermissionAwareActivity;
 import com.facebook.react.modules.core.PermissionListener;
 import com.facebook.react.util.AndroidVersion;
 import java.util.List;
-import java.util.Set;
 import java.util.concurrent.CopyOnWriteArrayList;
-import java.util.concurrent.CopyOnWriteArraySet;
 import org.jetbrains.annotations.NotNull;
 
 /** Base Activity for React Native applications. */
@@ -52,10 +50,11 @@ public abstract class ReactActivity extends AppCompatActivity
   // goes through InAppPredictiveBack instead (see updateConsumeCallback), which keeps this
   // callback disabled while it is active.
   //
-  // A navigation library that wants to own the swipe (react-native-screens, so that
-  // FragmentManager can animate it) takes it either through claimPredictiveBack /
-  // addPredictiveBackHandler / setInterceptEnabled, or by disabling this callback via
-  // getBackPressedCallback().
+  // Claiming is not reserved: React Native registers at the platform default priority, the same
+  // one FragmentManager uses, so the gesture goes to whichever enabled callback registered last.
+  // A navigation library that wants it for itself (react-native-screens, so that FragmentManager
+  // can animate a transition) takes it through setInterceptEnabled / addPredictiveBackHandler, or
+  // by disabling this callback via getBackPressedCallback().
   private final OnBackPressedCallback mBackPressedCallback =
       new OnBackPressedCallback(true) {
         @Override
@@ -74,7 +73,6 @@ public abstract class ReactActivity extends AppCompatActivity
   private @Nullable Object mInAppPredictiveBack;
 
   private boolean mJsInterceptEnabled;
-  private final Set<PredictiveBackClaim> mPredictiveBackClaims = new CopyOnWriteArraySet<>();
   private final List<PredictiveBackHandler> mPredictiveBackHandlers = new CopyOnWriteArrayList<>();
   private final List<PredictiveBackProgressListener> mPredictiveBackProgressListeners =
       new CopyOnWriteArrayList<>();
@@ -180,47 +178,21 @@ public abstract class ReactActivity extends AppCompatActivity
   }
 
   /**
-   * Process-wide consume bit. Prefer {@link #claimPredictiveBack()} for something with a lifetime
-   * (modal, sheet, JS chrome): a claim releases itself, this flag does not.
-   *
-   * <p>When {@code true}, React Native consumes the back gesture so JS {@code BackHandler} can pop
-   * an in-app screen. On Android 16+ (targetSdk 36) this registers a platform {@link
+   * When {@code true}, React Native consumes the back gesture so JS {@code BackHandler} can pop an
+   * in-app screen. On Android 16+ (targetSdk 36) this registers a platform {@link
    * OnBackAnimationCallback} that delivers progress to {@link PredictiveBackHandler} and {@link
    * PredictiveBackProgressListener} (used by {@code PredictiveBackAnimatedView}). When {@code
-   * false} and nothing else owns the swipe, the system or FragmentManager can run predictive back.
+   * false} and no native handler is registered, the system predictive-back animation can run.
+   *
+   * <p>Consuming does not reserve the gesture. The in-app callback is registered at {@code
+   * PRIORITY_DEFAULT}, the same priority AndroidX' FragmentManager uses, so whichever was
+   * registered last enabled receives the swipe. A library that needs the gesture for itself (for
+   * example react-native-screens, so FragmentManager can seek a transition) takes it by disabling
+   * this activity's consuming callback -- see {@link #getBackPressedCallback()}.
    */
   public void setInterceptEnabled(boolean enabled) {
     mJsInterceptEnabled = enabled;
     updateConsumeCallback();
-  }
-
-  /**
-   * Takes the back gesture until the returned token is released. Stack this for overlays: the last
-   * remaining owner keeps the swipe, and releasing the last claim returns it to screens / the
-   * system.
-   *
-   * <p>On Android 16+ the in-app callback is registered at {@code PRIORITY_OVERLAY} so it stays
-   * above FragmentManager after a later fragment transaction.
-   */
-  public PredictiveBackClaim claimPredictiveBack() {
-    PredictiveBackClaim claim = new PredictiveBackClaim(this);
-    mPredictiveBackClaims.add(claim);
-    updateConsumeCallback();
-    return claim;
-  }
-
-  /**
-   * {@code true} while JS intercept, a {@link PredictiveBackClaim}, or a {@link
-   * PredictiveBackHandler} wants the swipe.
-   */
-  public boolean hasPredictiveBackOwner() {
-    return shouldConsumeBack();
-  }
-
-  void releasePredictiveBackClaim(PredictiveBackClaim claim) {
-    if (mPredictiveBackClaims.remove(claim)) {
-      updateConsumeCallback();
-    }
   }
 
   /**
@@ -255,14 +227,8 @@ public abstract class ReactActivity extends AppCompatActivity
     mPredictiveBackProgressListeners.remove(listener);
   }
 
-  private boolean shouldConsumeBack() {
-    return mJsInterceptEnabled
-        || !mPredictiveBackClaims.isEmpty()
-        || !mPredictiveBackHandlers.isEmpty();
-  }
-
   private void updateConsumeCallback() {
-    boolean consume = shouldConsumeBack();
+    boolean consume = mJsInterceptEnabled || !mPredictiveBackHandlers.isEmpty();
     if (!AndroidVersion.isAtLeastTargetSdk36(this)) {
       mBackPressedCallback.setEnabled(consume);
       return;
@@ -443,19 +409,11 @@ public abstract class ReactActivity extends AppCompatActivity
   @RequiresApi(34)
   private static final class InAppPredictiveBack {
 
-    // android.window.OnBackInvokedDispatcher.PRIORITY_OVERLAY (API 33).
-    // Inlined because this codebase is also compiled against older SDKs.
-    private static final int PRIORITY_OVERLAY = 1000000;
-
-    @SuppressLint("WrongConstant")
     static Object register(ReactActivity activity) {
       Callback callback = new Callback(activity);
-      // OVERLAY, not DEFAULT: FragmentManager registers its seek callback lazily on a
-      // later transaction. Same-priority last-registered-wins would hand the swipe back
-      // to the stack after the next Push, even while a modal / JS claim is still held.
       activity
           .getOnBackInvokedDispatcher()
-          .registerOnBackInvokedCallback(PRIORITY_OVERLAY, callback);
+          .registerOnBackInvokedCallback(OnBackInvokedDispatcher.PRIORITY_DEFAULT, callback);
       return callback;
     }
 

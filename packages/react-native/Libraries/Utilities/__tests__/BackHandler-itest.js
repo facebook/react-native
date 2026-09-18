@@ -127,13 +127,6 @@ describe('BackHandler', () => {
     }
   });
 
-  it('claimPredictiveBack returns an idempotent subscription', () => {
-    const sub = BackHandler.claimPredictiveBack();
-    expect(typeof sub.remove).toBe('function');
-    sub.remove();
-    sub.remove();
-  });
-
   it('removes handler on subscription.remove()', () => {
     let called = false;
     const handler = (_event: HardwareBackPressEventType) => {
