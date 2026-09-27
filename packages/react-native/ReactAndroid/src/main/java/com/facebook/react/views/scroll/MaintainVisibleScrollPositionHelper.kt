@@ -41,6 +41,7 @@ internal class MaintainVisibleScrollPositionHelper<ScrollViewT>(
   var config: Config? = null
   private var firstVisibleViewRef: WeakReference<View>? = null
   private var prevFirstVisibleFrame: Rect? = null
+  private var prevScrollOffset: Int? = null
   private var isListening = false
 
   private val contentView: ReactViewGroup?
@@ -91,6 +92,7 @@ internal class MaintainVisibleScrollPositionHelper<ScrollViewT>(
     val config = config ?: return
     val firstVisibleViewRef = firstVisibleViewRef ?: return
     val prevFirstVisibleFrame = prevFirstVisibleFrame ?: return
+    val prevScrollOffset = prevScrollOffset ?: return
     val firstVisibleView = firstVisibleViewRef.get() ?: return
     val scrollView = scrollView ?: return
 
@@ -100,7 +102,7 @@ internal class MaintainVisibleScrollPositionHelper<ScrollViewT>(
     if (horizontal) {
       val deltaX = newFrame.left - prevFirstVisibleFrame.left
       if (deltaX != 0) {
-        val scrollX = scrollView.scrollX
+        val scrollX = prevScrollOffset
         scrollView.scrollToPreservingMomentum(scrollX + deltaX, scrollView.scrollY)
         this.prevFirstVisibleFrame = newFrame
         if (config.autoScrollToTopThreshold != null && scrollX <= config.autoScrollToTopThreshold) {
@@ -110,7 +112,7 @@ internal class MaintainVisibleScrollPositionHelper<ScrollViewT>(
     } else {
       val deltaY = newFrame.top - prevFirstVisibleFrame.top
       if (deltaY != 0) {
-        val scrollY = scrollView.scrollY
+        val scrollY = prevScrollOffset
         scrollView.scrollToPreservingMomentum(scrollView.scrollX, scrollY + deltaY)
         this.prevFirstVisibleFrame = newFrame
         if (config.autoScrollToTopThreshold != null && scrollY <= config.autoScrollToTopThreshold) {
@@ -138,6 +140,8 @@ internal class MaintainVisibleScrollPositionHelper<ScrollViewT>(
         val frame = Rect()
         child.getHitRect(frame)
         prevFirstVisibleFrame = frame
+        // A smaller content size can clamp the live offset before didMountItems.
+        prevScrollOffset = currentScroll
         break
       }
     }
