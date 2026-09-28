@@ -84,6 +84,21 @@ RCTSendScrollEventForNativeAnimations_DEPRECATED(UIScrollView *scrollView, NSInt
                                                     userInfo:userInfo];
 }
 
+// Clamps a maintainVisibleContentPosition target offset to the scrollable range so that
+// restoring a pre-mount offset after content shrinks does not overscroll.
+static CGPoint RCTClampMaintainVisibleContentOffset(UIScrollView *scrollView, CGPoint offset)
+{
+  UIEdgeInsets insets = scrollView.adjustedContentInset;
+
+  CGFloat minX = -insets.left;
+  CGFloat maxX = fmax(minX, scrollView.contentSize.width - scrollView.bounds.size.width + insets.right);
+
+  CGFloat minY = -insets.top;
+  CGFloat maxY = fmax(minY, scrollView.contentSize.height - scrollView.bounds.size.height + insets.bottom);
+
+  return CGPointMake(fmin(fmax(offset.x, minX), maxX), fmin(fmax(offset.y, minY), maxY));
+}
+
 @interface RCTScrollViewComponentView () <
     UIScrollViewDelegate,
     RCTScrollViewProtocol,
@@ -1129,7 +1144,8 @@ static inline UIViewAnimationOptions animationOptionsWithCurve(UIViewAnimationCu
     if (ABS(deltaX) > 0.5) {
       CGFloat x = _prevContentOffset.x;
       [self _forceDispatchNextScrollEvent];
-      _scrollView.contentOffset = CGPointMake(x + deltaX, _scrollView.contentOffset.y);
+      CGPoint targetOffset = CGPointMake(x + deltaX, _scrollView.contentOffset.y);
+      _scrollView.contentOffset = RCTClampMaintainVisibleContentOffset(_scrollView, targetOffset);
       if (autoscrollThreshold) {
         // If the offset WAS within the threshold of the start, animate to the start.
         if (x <= autoscrollThreshold.value()) {
@@ -1143,7 +1159,8 @@ static inline UIViewAnimationOptions animationOptionsWithCurve(UIViewAnimationCu
     if (ABS(deltaY) > 0.5) {
       CGFloat y = _prevContentOffset.y;
       [self _forceDispatchNextScrollEvent];
-      _scrollView.contentOffset = CGPointMake(_scrollView.contentOffset.x, y + deltaY);
+      CGPoint targetOffset = CGPointMake(_scrollView.contentOffset.x, y + deltaY);
+      _scrollView.contentOffset = RCTClampMaintainVisibleContentOffset(_scrollView, targetOffset);
       if (autoscrollThreshold) {
         // If the offset WAS within the threshold of the start, animate to the start.
         if (y <= autoscrollThreshold.value()) {

@@ -41,7 +41,7 @@ internal class MaintainVisibleScrollPositionHelper<ScrollViewT>(
   var config: Config? = null
   private var firstVisibleViewRef: WeakReference<View>? = null
   private var prevFirstVisibleFrame: Rect? = null
-  private var prevScrollOffset: Int? = null
+  private var prevScrollY: Int? = null
   private var isListening = false
 
   private val contentView: ReactViewGroup?
@@ -92,7 +92,6 @@ internal class MaintainVisibleScrollPositionHelper<ScrollViewT>(
     val config = config ?: return
     val firstVisibleViewRef = firstVisibleViewRef ?: return
     val prevFirstVisibleFrame = prevFirstVisibleFrame ?: return
-    val prevScrollOffset = prevScrollOffset ?: return
     val firstVisibleView = firstVisibleViewRef.get() ?: return
     val scrollView = scrollView ?: return
 
@@ -102,7 +101,7 @@ internal class MaintainVisibleScrollPositionHelper<ScrollViewT>(
     if (horizontal) {
       val deltaX = newFrame.left - prevFirstVisibleFrame.left
       if (deltaX != 0) {
-        val scrollX = prevScrollOffset
+        val scrollX = scrollView.scrollX
         scrollView.scrollToPreservingMomentum(scrollX + deltaX, scrollView.scrollY)
         this.prevFirstVisibleFrame = newFrame
         if (config.autoScrollToTopThreshold != null && scrollX <= config.autoScrollToTopThreshold) {
@@ -112,7 +111,9 @@ internal class MaintainVisibleScrollPositionHelper<ScrollViewT>(
     } else {
       val deltaY = newFrame.top - prevFirstVisibleFrame.top
       if (deltaY != 0) {
-        val scrollY = prevScrollOffset
+        // ReactScrollView.onLayoutChange clamps scrollY when content shrinks, which runs before
+        // didMountItems, so apply the delta to the offset from before the mount.
+        val scrollY = prevScrollY ?: scrollView.scrollY
         scrollView.scrollToPreservingMomentum(scrollView.scrollX, scrollY + deltaY)
         this.prevFirstVisibleFrame = newFrame
         if (config.autoScrollToTopThreshold != null && scrollY <= config.autoScrollToTopThreshold) {
@@ -140,8 +141,9 @@ internal class MaintainVisibleScrollPositionHelper<ScrollViewT>(
         val frame = Rect()
         child.getHitRect(frame)
         prevFirstVisibleFrame = frame
-        // A smaller content size can clamp the live offset before didMountItems.
-        prevScrollOffset = currentScroll
+        if (!horizontal) {
+          prevScrollY = currentScroll
+        }
         break
       }
     }
