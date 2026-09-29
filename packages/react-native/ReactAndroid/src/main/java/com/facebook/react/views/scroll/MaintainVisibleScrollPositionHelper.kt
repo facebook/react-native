@@ -41,7 +41,7 @@ internal class MaintainVisibleScrollPositionHelper<ScrollViewT>(
   var config: Config? = null
   private var firstVisibleViewRef: WeakReference<View>? = null
   private var prevFirstVisibleFrame: Rect? = null
-  private var prevScrollY: Int? = null
+  private var scrollYBeforeLayoutClamp: Int? = null
   private var isListening = false
 
   private val contentView: ReactViewGroup?
@@ -88,6 +88,17 @@ internal class MaintainVisibleScrollPositionHelper<ScrollViewT>(
     uIManager.removeUIManagerEventListener(this)
   }
 
+  /**
+   * Called by ReactScrollView just before it clamps scrollY because the content got smaller. This
+   * happens during mounting, after any queued view commands have run, so it is the offset the
+   * anchor delta should be applied to in didMountItems.
+   */
+  fun onWillClampScrollY(scrollY: Int) {
+    if (scrollYBeforeLayoutClamp == null) {
+      scrollYBeforeLayoutClamp = scrollY
+    }
+  }
+
   private fun updateScrollPositionInternal() {
     val config = config ?: return
     val firstVisibleViewRef = firstVisibleViewRef ?: return
@@ -111,9 +122,7 @@ internal class MaintainVisibleScrollPositionHelper<ScrollViewT>(
     } else {
       val deltaY = newFrame.top - prevFirstVisibleFrame.top
       if (deltaY != 0) {
-        // ReactScrollView.onLayoutChange clamps scrollY when content shrinks, which runs before
-        // didMountItems, so apply the delta to the offset from before the mount.
-        val scrollY = prevScrollY ?: scrollView.scrollY
+        val scrollY = scrollYBeforeLayoutClamp ?: scrollView.scrollY
         scrollView.scrollToPreservingMomentum(scrollView.scrollX, scrollY + deltaY)
         this.prevFirstVisibleFrame = newFrame
         if (config.autoScrollToTopThreshold != null && scrollY <= config.autoScrollToTopThreshold) {
@@ -141,9 +150,6 @@ internal class MaintainVisibleScrollPositionHelper<ScrollViewT>(
         val frame = Rect()
         child.getHitRect(frame)
         prevFirstVisibleFrame = frame
-        if (!horizontal) {
-          prevScrollY = currentScroll
-        }
         break
       }
     }
@@ -155,11 +161,13 @@ internal class MaintainVisibleScrollPositionHelper<ScrollViewT>(
   }
 
   override fun willMountItems(uiManager: UIManager) {
+    scrollYBeforeLayoutClamp = null
     computeTargetView()
   }
 
   override fun didMountItems(uiManager: UIManager) {
     updateScrollPositionInternal()
+    scrollYBeforeLayoutClamp = null
   }
 
   override fun didDispatchMountItems(uiManager: UIManager) {

@@ -14,6 +14,8 @@ import android.view.View.MeasureSpec
 import com.facebook.react.bridge.BridgeReactContext
 import com.facebook.react.bridge.ReactTestHelper
 import com.facebook.react.bridge.UIManager
+import com.facebook.react.bridge.UIManagerListener
+import com.facebook.react.common.annotations.UnstableReactNativeAPI
 import com.facebook.react.internal.featureflags.ReactNativeFeatureFlagsForTests
 import com.facebook.react.uimanager.events.BlackHoleEventDispatcher
 import com.facebook.react.uimanager.events.EventDispatcher
@@ -23,10 +25,13 @@ import org.assertj.core.api.Assertions.assertThat
 import org.junit.Before
 import org.junit.Test
 import org.junit.runner.RunWith
+import org.mockito.kotlin.argumentCaptor
 import org.mockito.kotlin.mock
+import org.mockito.kotlin.verify
 import org.robolectric.Robolectric
 import org.robolectric.RobolectricTestRunner
 
+@OptIn(UnstableReactNativeAPI::class)
 @RunWith(RobolectricTestRunner::class)
 class MaintainVisibleScrollPositionHelperTest {
   private lateinit var activity: Activity
@@ -44,7 +49,7 @@ class MaintainVisibleScrollPositionHelperTest {
     activity = Robolectric.buildActivity(Activity::class.java).setup().get()
     // ReactScrollView dispatches scroll events through its ReactContext.
     val reactContext =
-        TestReactContext(activity).apply {
+        TestReactContext(activity, uiManager).apply {
           initializeWithInstance(ReactTestHelper.createMockCatalystInstance())
         }
 
@@ -91,6 +96,21 @@ class MaintainVisibleScrollPositionHelperTest {
   }
 
   @Test
+  fun scrollToTopDispatchedWithShrinkIsNotOverwritten() {
+    layoutRows(headerHeight = 700, footerHeight = 200)
+    scrollView.scrollTo(0, 750)
+    val helper = createHelper()
+
+    helper.willMountItems(uiManager)
+    // Fabric runs queued view commands after willMountItems and before layout mount items.
+    scrollView.scrollTo(0, 0)
+    layoutRows(headerHeight = 100, footerHeight = 100)
+    helper.didMountItems(uiManager)
+
+    assertThat(scrollView.scrollY).isEqualTo(0)
+  }
+
+  @Test
   fun growingContentAboveAnchorKeepsAnchorInPlace() {
     layoutRows(headerHeight = 700, footerHeight = 200)
     scrollView.scrollTo(0, 750)
@@ -103,10 +123,15 @@ class MaintainVisibleScrollPositionHelperTest {
     assertThat(scrollView.scrollY).isEqualTo(950)
   }
 
-  private fun createHelper(): MaintainVisibleScrollPositionHelper<ReactScrollView> =
-      MaintainVisibleScrollPositionHelper(scrollView, horizontal = false).apply {
-        config = MaintainVisibleScrollPositionHelper.Config(0, null)
-      }
+  /** Enables MVCP on the scroll view and returns the helper it registered with the UIManager. */
+  private fun createHelper(): MaintainVisibleScrollPositionHelper<*> {
+    scrollView.setMaintainVisibleContentPosition(
+        MaintainVisibleScrollPositionHelper.Config(0, null),
+    )
+    val listener = argumentCaptor<UIManagerListener>()
+    verify(uiManager).addUIManagerEventListener(listener.capture())
+    return listener.firstValue as MaintainVisibleScrollPositionHelper<*>
+  }
 
   /** Lays out header, a 100px anchor and footer, as the Fabric updateLayout mount items would. */
   private fun layoutRows(headerHeight: Int, footerHeight: Int) {
@@ -122,9 +147,13 @@ class MaintainVisibleScrollPositionHelperTest {
 
   private fun exactly(size: Int) = MeasureSpec.makeMeasureSpec(size, MeasureSpec.EXACTLY)
 
-  private class TestReactContext(base: Context) :
+  private class TestReactContext(base: Context, private val uiManager: UIManager) :
       BridgeReactContext(base), EventDispatcherProvider {
     override fun getEventDispatcher(): EventDispatcher = BlackHoleEventDispatcher
+
+    override fun hasActiveReactInstance(): Boolean = true
+
+    override fun getFabricUIManager(): UIManager = uiManager
   }
 
   private companion object {
