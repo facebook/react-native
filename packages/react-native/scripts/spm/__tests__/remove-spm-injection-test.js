@@ -260,13 +260,6 @@ function scaffoldPnpmApp() {
   return {appRoot, xcodeprojPath, rnRoot: fs.realpathSync(store)};
 }
 
-function bakedFilesOf(appRoot, xcodeprojPath) {
-  return [
-    ...generatedFileContents(appRoot),
-    fs.readFileSync(schemePathOf(xcodeprojPath), 'utf8'),
-  ];
-}
-
 // The xcconfig, scripts and scheme are committed, so they must name
 // react-native the way the app resolves it, not by its store location.
 describe('injectSpmIntoExistingXcodeproj — REACT_NATIVE_PATH', () => {
@@ -282,15 +275,18 @@ describe('injectSpmIntoExistingXcodeproj — REACT_NATIVE_PATH', () => {
       }).status,
     ).toBe('injected');
 
-    expect(fs.readFileSync(path.join(appRoot, XCCONFIG_REL), 'utf8')).toContain(
+    const generated = generatedFileContents(appRoot);
+    const [xcconfig, syncScript] = generated;
+    expect(xcconfig).toContain(
       '\nREACT_NATIVE_PATH = $(SRCROOT)/../node_modules/react-native\n',
     );
-    for (const content of bakedFilesOf(appRoot, xcodeprojPath)) {
+    expect(syncScript).toContain('RN_DIR="../node_modules/react-native"');
+    for (const content of [
+      ...generated,
+      fs.readFileSync(schemePathOf(xcodeprojPath), 'utf8'),
+    ]) {
       expect(content).not.toContain('.pnpm');
     }
-    expect(
-      fs.readFileSync(path.join(appRoot, GENERATED_FILES[1]), 'utf8'),
-    ).toContain('RN_DIR="../node_modules/react-native"');
   });
 
   it('prefers the nearest node_modules link to react-native', () => {
@@ -337,12 +333,11 @@ describe('injectSpmIntoExistingXcodeproj — REACT_NATIVE_PATH', () => {
       xcodeprojPath,
     });
 
-    expect(fs.readFileSync(path.join(appRoot, XCCONFIG_REL), 'utf8')).toContain(
+    const [xcconfig, syncScript] = generatedFileContents(appRoot);
+    expect(xcconfig).toContain(
       '\nREACT_NATIVE_PATH = $(SRCROOT)/vendor/react-native\n',
     );
-    expect(
-      fs.readFileSync(path.join(appRoot, GENERATED_FILES[1]), 'utf8'),
-    ).toContain('RN_DIR="vendor/react-native"');
+    expect(syncScript).toContain('RN_DIR="vendor/react-native"');
   });
 });
 
@@ -1686,27 +1681,24 @@ describe.each(Object.entries(PRE_EXISTING_HEADER_SEARCH_PATHS))(
 // findField's token for a BARE scalar ends AT the `;`, so it includes any
 // whitespace before it. Deinit must put those bytes back exactly, not a
 // tidied-up version of them.
-describe.each(['HEADER_SEARCH_PATHS = $(inherited)   ; /* note */'])(
-  'removeSpmInjection with the untrimmed scalar `%s`',
-  field => {
-    it('restores it byte-for-byte', () => {
-      const {appRoot, xcodeprojPath, rnRoot} = scaffoldApp(withSetting(field));
-      const before = pbxprojOf(xcodeprojPath);
+describe('removeSpmInjection with an untrimmed scalar', () => {
+  const field = 'HEADER_SEARCH_PATHS = $(inherited)   ; /* note */';
 
-      injectSpmIntoExistingXcodeproj({
-        appRoot,
-        reactNativeRoot: rnRoot,
-        xcodeprojPath,
-      });
-      expect(pbxprojOf(xcodeprojPath)).not.toBe(before);
+  it('restores it byte-for-byte', () => {
+    const {appRoot, xcodeprojPath, rnRoot} = scaffoldApp(withSetting(field));
+    const before = pbxprojOf(xcodeprojPath);
 
-      expect(removeSpmInjection({appRoot, xcodeprojPath}).status).toBe(
-        'removed',
-      );
-      expect(pbxprojOf(xcodeprojPath)).toBe(before);
+    injectSpmIntoExistingXcodeproj({
+      appRoot,
+      reactNativeRoot: rnRoot,
+      xcodeprojPath,
     });
-  },
-);
+    expect(pbxprojOf(xcodeprojPath)).not.toBe(before);
+
+    expect(removeSpmInjection({appRoot, xcodeprojPath}).status).toBe('removed');
+    expect(pbxprojOf(xcodeprojPath)).toBe(before);
+  });
+});
 
 describe("a list setting of the project's own that keeps $(inherited)", () => {
   const SCALAR = 'FRAMEWORK_SEARCH_PATHS = "$(inherited)";';

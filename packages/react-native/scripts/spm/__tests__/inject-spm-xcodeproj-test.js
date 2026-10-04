@@ -347,10 +347,31 @@ describe('injectSpmIntoPbxproj — Tier 2 (build settings + phase)', () => {
     APP_DEBUG_CONFIG,
     APP_RELEASE_CONFIG,
   ];
-  const xcconfigRefOf = text =>
-    /baseConfigurationReference = ([0-9A-F]{24}) \/\* ReactNativeSPM\.xcconfig \*\/;/.exec(
-      text,
-    )[1];
+  const appSettingsOf = text =>
+    [APP_DEBUG_CONFIG, APP_RELEASE_CONFIG].map(config =>
+      buildSettingsOf(text, config),
+    );
+  // React Native installed elsewhere, with `frameworks` in place of the
+  // default ones — what a later `spm update` sees.
+  const injectRelocated = frameworks => {
+    const plan = planInjection(PLAIN, {});
+    const relocated = '../../elsewhere/react-native';
+    return injectSpmIntoPbxproj(
+      PLAIN,
+      {
+        rootUuid: plan.rootUuid,
+        targetUuid: plan.target.uuid,
+        configUuids: plan.configUuids,
+        frameworksPhaseUuid: plan.frameworksPhaseUuid,
+        sourcesPhaseUuid: plan.sourcesPhaseUuid,
+      },
+      {fromAppRoot: relocated, fromSrcRoot: relocated},
+      null,
+      [],
+      frameworks,
+      [],
+    );
+  };
 
   // A routine `spm update` must not touch project.pbxproj, so none of these may
   // live in it — they are the ones whose values follow the installed frameworks.
@@ -367,7 +388,10 @@ describe('injectSpmIntoPbxproj — Tier 2 (build settings + phase)', () => {
 
   it('bases every app configuration on the generated xcconfig, next to isa', () => {
     const {text, injectedUuids, xcconfig} = inject(PLAIN);
-    const ref = xcconfigRefOf(text);
+    const ref =
+      /baseConfigurationReference = ([0-9A-F]{24}) \/\* ReactNativeSPM\.xcconfig \*\/;/.exec(
+        text,
+      )[1];
     for (const [config, name] of [
       [APP_DEBUG_CONFIG, 'Debug'],
       [APP_RELEASE_CONFIG, 'Release'],
@@ -403,10 +427,7 @@ describe('injectSpmIntoPbxproj — Tier 2 (build settings + phase)', () => {
     const {generatedFiles} = inject(PLAIN);
     expect(generatedFiles[XCCONFIG_PATH]).toBe(
       generateReactNativeXcconfig(
-        [
-          {uuid: APP_DEBUG_CONFIG, name: 'Debug'},
-          {uuid: APP_RELEASE_CONFIG, name: 'Release'},
-        ],
+        ['Debug', 'Release'],
         RN_PATH,
         TEST_FRAMEWORKS,
         [],
@@ -436,12 +457,7 @@ describe('injectSpmIntoPbxproj — Tier 2 (build settings + phase)', () => {
       withDebugCondition(PLAIN, '"$(inherited) MY_DEBUG_UI"'),
     ],
   ])("leaves the configuration's own %s untouched", (_key, before) => {
-    const {text} = inject(before);
-    for (const config of [APP_DEBUG_CONFIG, APP_RELEASE_CONFIG]) {
-      expect(buildSettingsOf(text, config)).toBe(
-        buildSettingsOf(before, config),
-      );
-    }
+    expect(appSettingsOf(inject(before).text)).toEqual(appSettingsOf(before));
   });
 
   // The CocoaPods template anchors REACT_NATIVE_PATH on ${PODS_ROOT}, which
@@ -452,11 +468,7 @@ describe('injectSpmIntoPbxproj — Tier 2 (build settings + phase)', () => {
       'REACT_NATIVE_PATH = "${PODS_ROOT}/../../node_modules/react-native";',
     );
     const {text, xcconfig, generatedFiles} = inject(before);
-    for (const config of [APP_DEBUG_CONFIG, APP_RELEASE_CONFIG]) {
-      expect(buildSettingsOf(text, config)).toBe(
-        buildSettingsOf(PLAIN, config),
-      );
-    }
+    expect(appSettingsOf(text)).toEqual(appSettingsOf(PLAIN));
     expect(xcconfig.removedPodsRootReactNativePath).toBe(true);
     expect(generatedFiles[XCCONFIG_PATH]).toContain(
       `\nREACT_NATIVE_PATH = $(SRCROOT)/${RN_PATH}\n`,
@@ -468,11 +480,7 @@ describe('injectSpmIntoPbxproj — Tier 2 (build settings + phase)', () => {
       'REACT_NATIVE_PATH = ../../node_modules/react-native;',
     );
     const {text, xcconfig} = inject(before);
-    for (const config of [APP_DEBUG_CONFIG, APP_RELEASE_CONFIG]) {
-      expect(buildSettingsOf(text, config)).toBe(
-        buildSettingsOf(before, config),
-      );
-    }
+    expect(appSettingsOf(text)).toEqual(appSettingsOf(before));
     expect(xcconfig.removedPodsRootReactNativePath).toBe(false);
   });
 
@@ -507,24 +515,7 @@ describe('injectSpmIntoPbxproj — Tier 2 (build settings + phase)', () => {
 
   it('keeps the script wrappers identical across React Native versions and frameworks', () => {
     const {text} = inject(PLAIN);
-    const plan = planInjection(PLAIN, {});
-    const {text: other} = injectSpmIntoPbxproj(
-      PLAIN,
-      {
-        rootUuid: plan.rootUuid,
-        targetUuid: plan.target.uuid,
-        configUuids: plan.configUuids,
-        frameworksPhaseUuid: plan.frameworksPhaseUuid,
-        sourcesPhaseUuid: plan.sourcesPhaseUuid,
-      },
-      {
-        fromAppRoot: '../../elsewhere/react-native',
-        fromSrcRoot: '../../elsewhere/react-native',
-      },
-      null,
-      [],
-      [],
-    );
+    const other = injectRelocated([]).text;
     for (const label of [
       'Sync SPM Autolinking',
       'Embed React Native Flavored Frameworks',
@@ -533,60 +524,25 @@ describe('injectSpmIntoPbxproj — Tier 2 (build settings + phase)', () => {
     }
   });
 
-  // The actual goal of moving settings into the generated xcconfig: a routine
-  // `spm update` (a new React Native version, new framework artifact slices)
-  // must not touch project.pbxproj AT ALL when the set of frameworks (their
-  // ids/names) doesn't change shape — not just the two script phases checked
-  // above. Only the id/frameworkName/artifactRelativePath drive anything that
-  // lands in the pbxproj (variable names in the script bodies); slice paths
-  // and architectures land only in the generated xcconfig.
+  // A routine `spm update` must leave project.pbxproj alone while the
+  // frameworks keep their ids and names: slice paths and architectures land
+  // only in the generated xcconfig.
   it('produces a byte-identical project.pbxproj across a version bump (path + slice content change)', () => {
-    const {text} = inject(PLAIN);
-    const plan = planInjection(PLAIN, {});
-    const BUMPED_FRAMEWORKS = [
-      {
-        ...TEST_FRAMEWORKS[0],
-        slices: [
-          {
-            sdk: 'iphoneos*',
-            platform: 'ios',
-            variant: null,
-            architectures: ['arm64', 'arm64e'],
-            libraryIdentifier: 'ios-arm64_arm64e',
-            libraryPath: 'React.framework',
-            binaryPath: 'React.framework/Versions/Current/React',
-          },
-          {
-            sdk: 'iphonesimulator*',
-            platform: 'ios',
-            variant: 'simulator',
-            architectures: ['arm64'],
-            libraryIdentifier: 'ios-arm64-simulator',
-            libraryPath: 'React.framework',
-            binaryPath: 'React.framework/Versions/Current/React',
-          },
-        ],
-      },
-    ];
-    const {text: other} = injectSpmIntoPbxproj(
-      PLAIN,
-      {
-        rootUuid: plan.rootUuid,
-        targetUuid: plan.target.uuid,
-        configUuids: plan.configUuids,
-        frameworksPhaseUuid: plan.frameworksPhaseUuid,
-        sourcesPhaseUuid: plan.sourcesPhaseUuid,
-      },
-      {
-        fromAppRoot: '../../elsewhere/react-native',
-        fromSrcRoot: '../../elsewhere/react-native',
-      },
-      null,
-      [],
-      BUMPED_FRAMEWORKS,
-      [],
+    const bumped = TEST_FRAMEWORKS.map(framework => ({
+      ...framework,
+      slices: framework.slices.map(slice => ({
+        ...slice,
+        architectures: [...slice.architectures, 'arm64e'],
+        libraryIdentifier: `${slice.libraryIdentifier}_arm64e`,
+        binaryPath: 'React.framework/Versions/Current/React',
+      })),
+    }));
+    const before = inject(PLAIN);
+    const after = injectRelocated(bumped);
+    expect(after.generatedFiles[XCCONFIG_PATH]).not.toBe(
+      before.generatedFiles[XCCONFIG_PATH],
     );
-    expect(other).toBe(text);
+    expect(after.text).toBe(before.text);
   });
 
   it('runs every injected shell-script build phase under bash, not /bin/sh', () => {
