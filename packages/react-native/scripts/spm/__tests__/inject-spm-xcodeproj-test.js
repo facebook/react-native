@@ -500,7 +500,7 @@ describe('injectSpmIntoPbxproj — Tier 2 (build settings + phase)', () => {
     const wrapper = shellScriptOf(text, label);
     expect(wrapper).toContain(`$SRCROOT/${scriptPath}`);
     expect(wrapper).toContain('spm update');
-    expect(text).not.toContain(bodyLine.replace(/"/g, '\\"'));
+    expect(text).not.toContain(quoteIfNeeded(bodyLine).slice(1, -1));
     expect(text).not.toContain('set -euo pipefail');
     expect(generatedFiles[scriptPath]).toContain(bodyLine);
   });
