@@ -12,9 +12,12 @@
 
 const {
   buildPhaseOrder,
+  buildSyncAutolinkingScript,
+  generateReactNativeXcconfig,
   injectSpmIntoPbxproj,
   planInjection,
 } = require('../generate-spm-xcodeproj');
+const {findField, findObjectByUuid, quoteIfNeeded} = require('../spm-pbxproj');
 const {isBalanced} = require('./pbxproj-oracles');
 const fs = require('node:fs');
 const path = require('node:path');
@@ -56,17 +59,41 @@ function buildSettingsOf(text, configUuid) {
   );
   return text.slice(open, text.indexOf('};', open));
 }
-// Derive a variant whose app-target configs already carry HEADER_SEARCH_PATHS,
-// set to any valid pbxproj value: a plain scalar (which injection promotes to an
-// array) or an array injection appends to.
-function withHeaderSearchPaths(value) {
+// Seed a whole `KEY = value;` field into both app-target configs.
+function withAppSetting(field) {
   return PLAIN.replaceAll(
     'PRODUCT_BUNDLE_IDENTIFIER = com.example.MyApp;',
-    `HEADER_SEARCH_PATHS = ${value};\n\t\t\t\tPRODUCT_BUNDLE_IDENTIFIER = com.example.MyApp;`,
+    `${field}\n\t\t\t\tPRODUCT_BUNDLE_IDENTIFIER = com.example.MyApp;`,
   );
 }
 
+function withHeaderSearchPaths(value) {
+  return withAppSetting(`HEADER_SEARCH_PATHS = ${value};`);
+}
+
+// The app target's Debug config already based on an xcconfig of the user's own.
+const FOREIGN_XCCONFIG = PLAIN.replace(
+  DEBUG_CONFIG_HEAD,
+  'AA0000000000000000000901 /* Debug */ = {\n\t\t\tisa = XCBuildConfiguration;\n\t\t\tbaseConfigurationReference = CC0000000000000000000001 /* App.xcconfig */;\n\t\t\tbuildSettings = {',
+).replace(
+  '/* End PBXFileReference section */',
+  '\t\tCC0000000000000000000001 /* App.xcconfig */ = {isa = PBXFileReference; lastKnownFileType = text.xcconfig; path = Config/App.xcconfig; sourceTree = "<group>"; };\n/* End PBXFileReference section */',
+);
+
+const XCCONFIG_PATH = 'ReactNativeSPM/ReactNativeSPM.xcconfig';
+const SYNC_SCRIPT_PATH = 'ReactNativeSPM/Scripts/sync-autolinking.sh';
+const EMBED_SCRIPT_PATH = 'ReactNativeSPM/Scripts/embed-flavored-frameworks.sh';
+
+// The raw (still plist-quoted) shellScript value of the phase labelled `label`.
+function shellScriptOf(text, label) {
+  const uuid = new RegExp(`([0-9A-F]{24}) /\\* ${label} \\*/ = \\{`).exec(
+    text,
+  )[1];
+  return findField(text, findObjectByUuid(text, uuid), 'shellScript').value;
+}
+
 const RN_PATH = '../node_modules/react-native';
+const RN_PATHS = {fromAppRoot: RN_PATH, fromSrcRoot: RN_PATH};
 const TEST_FRAMEWORKS = [
   {
     id: 'react',
@@ -117,7 +144,7 @@ function inject(
       frameworksPhaseUuid: plan.frameworksPhaseUuid,
       sourcesPhaseUuid: plan.sourcesPhaseUuid,
     },
-    RN_PATH,
+    RN_PATHS,
     remote,
     generatedSources,
     TEST_FRAMEWORKS,
@@ -179,6 +206,93 @@ describe('planInjection', () => {
     expect(plan.ok).toBe(false);
     expect(plan.reason).toMatch(/no application target/);
   });
+
+  // The generated xcconfig sits below the target's own settings, so a list
+  // setting the target sets without $(inherited) hides React Native's.
+  it.each([
+    ['HEADER_SEARCH_PATHS', '"$(SRCROOT)/Vendor"'],
+    ['OTHER_LDFLAGS', '(\n\t\t\t\t\t"-lc++",\n\t\t\t\t)'],
+    ['FRAMEWORK_SEARCH_PATHS', '""'],
+    ['LD_RUNPATH_SEARCH_PATHS', '"@executable_path/Frameworks"'],
+  ])('refuses %s set without $(inherited), naming it', (key, value) => {
+    const plan = planInjection(withAppSetting(`${key} = ${value};`), {});
+    expect(plan.ok).toBe(false);
+    expect(plan.reason).toContain(`${key} (Debug, Release)`);
+    expect(plan.reason).toContain('$(inherited)');
+  });
+
+  it('refuses SWIFT_ACTIVE_COMPILATION_CONDITIONS without $(inherited) on a debug configuration', () => {
+    const plan = planInjection(withDebugCondition(PLAIN, 'MY_FLAG'), {});
+    expect(plan.ok).toBe(false);
+    expect(plan.reason).toContain(
+      'SWIFT_ACTIVE_COMPILATION_CONDITIONS (Debug)',
+    );
+  });
+
+  it('accepts SWIFT_ACTIVE_COMPILATION_CONDITIONS without $(inherited) on a release configuration, which gets none', () => {
+    const releaseHead = DEBUG_CONFIG_HEAD.replace(
+      'AA0000000000000000000901 /* Debug */',
+      'AA00000000000000000000A2 /* Release */',
+    );
+    const text = PLAIN.replace(
+      releaseHead,
+      `${releaseHead}\n\t\t\t\tSWIFT_ACTIVE_COMPILATION_CONDITIONS = MY_FLAG;`,
+    );
+    expect(text).not.toBe(PLAIN);
+    expect(planInjection(text, {}).ok).toBe(true);
+  });
+
+  it('refuses GCC_PREPROCESSOR_DEFINITIONS without $(inherited) when C++ stable API macros are opted in', () => {
+    const plan = planInjection(
+      withAppSetting('GCC_PREPROCESSOR_DEFINITIONS = "MY_FLAG=1";'),
+      {cxxApiDefines: ['RN_STRICT_API']},
+    );
+    expect(plan.ok).toBe(false);
+    expect(plan.reason).toContain(
+      'GCC_PREPROCESSOR_DEFINITIONS (Debug, Release)',
+    );
+  });
+
+  it('accepts GCC_PREPROCESSOR_DEFINITIONS without $(inherited) when no C++ stable API macro is opted in, as the xcconfig sets none', () => {
+    const text = withAppSetting('GCC_PREPROCESSOR_DEFINITIONS = "MY_FLAG=1";');
+    expect(planInjection(text, {}).ok).toBe(true);
+    expect(planInjection(text, {cxxApiDefines: []}).ok).toBe(true);
+  });
+
+  it('accepts GCC_PREPROCESSOR_DEFINITIONS that keeps $(inherited) when C++ stable API macros are opted in', () => {
+    const plan = planInjection(
+      withAppSetting('GCC_PREPROCESSOR_DEFINITIONS = "DEBUG=1 $(inherited)";'),
+      {cxxApiDefines: ['RN_STRICT_API']},
+    );
+    expect(plan.ok).toBe(true);
+  });
+
+  it.each([
+    ['a scalar', '"$(inherited) $(SRCROOT)/Vendor"'],
+    [
+      'an array',
+      '(\n\t\t\t\t\t"$(inherited)",\n\t\t\t\t\t"$(SRCROOT)/Vendor",\n\t\t\t\t)',
+    ],
+    ['the brace form', '"${inherited} $(SRCROOT)/Vendor"'],
+  ])(
+    'accepts a list setting that keeps $(inherited) in %s',
+    (_label, value) => {
+      expect(planInjection(withHeaderSearchPaths(value), {}).ok).toBe(true);
+    },
+  );
+
+  it("refuses a configuration already based on the user's own xcconfig", () => {
+    const plan = planInjection(FOREIGN_XCCONFIG, {});
+    expect(plan.ok).toBe(false);
+    expect(plan.reason).toContain('Debug');
+    expect(plan.reason).toContain('Config/App.xcconfig');
+    expect(plan.reason).toContain('#include');
+    expect(plan.reason).toContain(XCCONFIG_PATH);
+  });
+
+  it('accepts a project it already based on the generated xcconfig', () => {
+    expect(planInjection(inject(PLAIN).text, {}).ok).toBe(true);
+  });
 });
 
 describe('injectSpmIntoPbxproj — Tier 1 (SPM graph)', () => {
@@ -225,76 +339,254 @@ describe('injectSpmIntoPbxproj — Tier 1 (SPM graph)', () => {
 });
 
 describe('injectSpmIntoPbxproj — Tier 2 (build settings + phase)', () => {
-  it('merges React build settings into BOTH build configurations', () => {
+  const PROJECT_DEBUG_CONFIG = 'AA0000000000000000000701';
+  const PROJECT_RELEASE_CONFIG = 'AA0000000000000000000801';
+  const ALL_CONFIGS = [
+    PROJECT_DEBUG_CONFIG,
+    PROJECT_RELEASE_CONFIG,
+    APP_DEBUG_CONFIG,
+    APP_RELEASE_CONFIG,
+  ];
+  const xcconfigRefOf = text =>
+    /baseConfigurationReference = ([0-9A-F]{24}) \/\* ReactNativeSPM\.xcconfig \*\/;/.exec(
+      text,
+    )[1];
+
+  // A routine `spm update` must not touch project.pbxproj, so none of these may
+  // live in it — they are the ones whose values follow the installed frameworks.
+  it('writes no React build setting into any configuration', () => {
     const {text} = inject(PLAIN);
-    expect(text.match(/-ObjC/g)).toHaveLength(2);
-    expect(text.match(/REACT_NATIVE_PATH = /g)).toHaveLength(2);
-    expect(text).not.toContain('fmodule-map-file=');
-    expect(text).toContain('build/generated/autolinking/headers');
-    expect(text.match(/CLANG_CXX_LANGUAGE_STANDARD = "c\+\+20"/g)).toHaveLength(
-      2,
+    for (const config of ALL_CONFIGS) {
+      const settings = buildSettingsOf(text, config);
+      expect(settings).toBe(buildSettingsOf(PLAIN, config));
+      expect(settings).not.toMatch(
+        /RN_SPM_|OTHER_LDFLAGS|FRAMEWORK_SEARCH_PATHS|HEADER_SEARCH_PATHS|LD_RUNPATH_SEARCH_PATHS|SWIFT_ACTIVE_COMPILATION_CONDITIONS|CLANG_CXX_LANGUAGE_STANDARD|REACT_NATIVE_PATH/,
+      );
+    }
+  });
+
+  it('bases every app configuration on the generated xcconfig, next to isa', () => {
+    const {text, injectedUuids, xcconfig} = inject(PLAIN);
+    const ref = xcconfigRefOf(text);
+    for (const [config, name] of [
+      [APP_DEBUG_CONFIG, 'Debug'],
+      [APP_RELEASE_CONFIG, 'Release'],
+    ]) {
+      expect(text).toContain(
+        `${config} /* ${name} */ = {\n\t\t\tisa = XCBuildConfiguration;\n` +
+          `\t\t\tbaseConfigurationReference = ${ref} /* ReactNativeSPM.xcconfig */;\n` +
+          '\t\t\tbuildSettings = {',
+      );
+    }
+    expect(text.match(/baseConfigurationReference = /g)).toHaveLength(2);
+    expect(xcconfig.configUuids).toEqual([
+      APP_DEBUG_CONFIG,
+      APP_RELEASE_CONFIG,
+    ]);
+
+    const fileRef = findObjectByUuid(text, ref);
+    const field = key => findField(text, fileRef, key)?.value;
+    expect(field('isa')).toBe('PBXFileReference');
+    expect(field('lastKnownFileType')).toBe('text.xcconfig');
+    expect(field('name')).toBe('ReactNativeSPM.xcconfig');
+    expect(field('path')).toBe(XCCONFIG_PATH);
+    expect(field('sourceTree')).toBe('SOURCE_ROOT');
+    expect(injectedUuids).toContain(ref);
+    // Visible in the navigator, at the top of the project.
+    const mainGroup = findObjectByUuid(text, 'AA00000000000000000000E1');
+    expect(findField(text, mainGroup, 'children').value).toContain(
+      `${ref} /* ReactNativeSPM.xcconfig */,`,
     );
-    expect(text).toContain('RN_SPM_FLAVOR = debug');
-    expect(text).toContain('RN_SPM_FLAVOR = release');
-    expect(text).toContain('RN_SPM_REACT_BINARY[sdk=iphoneos*]');
-    expect(text).toContain('RN_SPM_REACT_BINARY[sdk=iphonesimulator*]');
-    expect(text).toContain('$(RN_SPM_REACT_BINARY)');
+  });
+
+  it('returns the xcconfig generated for the configurations based on it', () => {
+    const {generatedFiles} = inject(PLAIN);
+    expect(generatedFiles[XCCONFIG_PATH]).toBe(
+      generateReactNativeXcconfig(
+        [
+          {uuid: APP_DEBUG_CONFIG, name: 'Debug'},
+          {uuid: APP_RELEASE_CONFIG, name: 'Release'},
+        ],
+        RN_PATH,
+        TEST_FRAMEWORKS,
+        [],
+      ),
+    );
   });
 
   // An absolute hermesc path is machine-specific, and the app commits its
   // project.pbxproj. react-native-xcode.sh resolves hermesc through
   // react-native's own dependency graph at build time instead.
-  it('never writes HERMES_CLI_PATH into either configuration', () => {
-    const {text, buildSettingChanges} = inject(PLAIN);
+  it('never writes HERMES_CLI_PATH, into the project or a generated file', () => {
+    const {text, generatedFiles} = inject(PLAIN);
     expect(text).not.toContain('HERMES_CLI_PATH');
-    expect(
-      buildSettingChanges.flatMap(change => change.createdScalars ?? []),
-    ).not.toContain('HERMES_CLI_PATH');
+    for (const content of Object.values(generatedFiles)) {
+      expect(content).not.toContain('HERMES_CLI_PATH');
+    }
   });
 
-  // Swift's `#if DEBUG` — which AppDelegate.swift's bundleURL() uses to pick the
-  // Metro URL — is gated by this setting alone. CocoaPods injects it at `pod
-  // install`; an SPM app has to get it here or a Debug build looks for a
-  // main.jsbundle it never built.
-  it('sets SWIFT_ACTIVE_COMPILATION_CONDITIONS = DEBUG on the debug config only', () => {
-    const {text} = inject(PLAIN);
-    const debugSettings = buildSettingsOf(text, APP_DEBUG_CONFIG);
-    expect(debugSettings).toMatch(
-      /SWIFT_ACTIVE_COMPILATION_CONDITIONS = \(\s*"\$\(inherited\)",\s*DEBUG,\s*\)/,
-    );
-    expect(buildSettingsOf(text, APP_RELEASE_CONFIG)).not.toContain(
+  it.each([
+    ['HEADER_SEARCH_PATHS', withHeaderSearchPaths('"$(inherited)"')],
+    [
+      'HEADER_SEARCH_PATHS',
+      withHeaderSearchPaths('(\n\t\t\t\t\t"$(inherited)",\n\t\t\t\t)'),
+    ],
+    [
       'SWIFT_ACTIVE_COMPILATION_CONDITIONS',
-    );
-  });
-
-  it('leaves a config that already sets DEBUG (scalar form) untouched', () => {
-    const {text} = inject(withDebugCondition(PLAIN, '"$(inherited) DEBUG"'));
-    // Not promoted to an array, not re-appended — DEBUG is already there.
-    expect(buildSettingsOf(text, APP_DEBUG_CONFIG)).toContain(
-      'SWIFT_ACTIVE_COMPILATION_CONDITIONS = "$(inherited) DEBUG";',
-    );
-    expect(text.match(/\bDEBUG\b/g)).toHaveLength(1);
-  });
-
-  it("adds DEBUG alongside the user's own compilation conditions", () => {
-    const {text} = inject(
       withDebugCondition(PLAIN, '"$(inherited) MY_DEBUG_UI"'),
+    ],
+  ])("leaves the configuration's own %s untouched", (_key, before) => {
+    const {text} = inject(before);
+    for (const config of [APP_DEBUG_CONFIG, APP_RELEASE_CONFIG]) {
+      expect(buildSettingsOf(text, config)).toBe(
+        buildSettingsOf(before, config),
+      );
+    }
+  });
+
+  // The CocoaPods template anchors REACT_NATIVE_PATH on ${PODS_ROOT}, which
+  // resolves empty once CocoaPods is gone, and a target's own value outranks
+  // any xcconfig — so it has to leave the project for the xcconfig's to apply.
+  it('removes a ${PODS_ROOT}-anchored REACT_NATIVE_PATH so the xcconfig value applies', () => {
+    const before = withAppSetting(
+      'REACT_NATIVE_PATH = "${PODS_ROOT}/../../node_modules/react-native";',
     );
-    // MY_DEBUG_UI must not be mistaken for DEBUG by a substring check.
-    const debugSettings = buildSettingsOf(text, APP_DEBUG_CONFIG);
-    expect(debugSettings).toContain('"$(inherited) MY_DEBUG_UI"');
-    expect(debugSettings).toMatch(/^\s*DEBUG,$/m);
+    const {text, xcconfig, generatedFiles} = inject(before);
+    for (const config of [APP_DEBUG_CONFIG, APP_RELEASE_CONFIG]) {
+      expect(buildSettingsOf(text, config)).toBe(
+        buildSettingsOf(PLAIN, config),
+      );
+    }
+    expect(xcconfig.removedPodsRootReactNativePath).toBe(true);
+    expect(generatedFiles[XCCONFIG_PATH]).toContain(
+      `\nREACT_NATIVE_PATH = $(SRCROOT)/${RN_PATH}\n`,
+    );
+  });
+
+  it("keeps a REACT_NATIVE_PATH of the project's own", () => {
+    const before = withAppSetting(
+      'REACT_NATIVE_PATH = ../../node_modules/react-native;',
+    );
+    const {text, xcconfig} = inject(before);
+    for (const config of [APP_DEBUG_CONFIG, APP_RELEASE_CONFIG]) {
+      expect(buildSettingsOf(text, config)).toBe(
+        buildSettingsOf(before, config),
+      );
+    }
+    expect(xcconfig.removedPodsRootReactNativePath).toBe(false);
   });
 
   it('prepends the Sync SPM Autolinking build phase', () => {
     const {text} = inject(PLAIN);
     expect(text).toContain('Sync SPM Autolinking');
-    expect(text).toContain('npx react-native spm sync');
     // It runs before Sources.
     const syncIdx = text.indexOf('Sync SPM Autolinking */,');
     const sourcesIdx = text.indexOf('Sources */,');
     expect(syncIdx).toBeGreaterThan(-1);
     expect(syncIdx).toBeLessThan(sourcesIdx);
+  });
+
+  // The script bodies change whenever React Native's do, so they live in
+  // generated files; the phase only carries a wrapper that never changes.
+  it.each([
+    ['Sync SPM Autolinking', SYNC_SCRIPT_PATH, 'npx react-native spm sync'],
+    [
+      'Embed React Native Flavored Frameworks',
+      EMBED_SCRIPT_PATH,
+      'copy_and_sign "${RN_SPM_REACT_FRAMEWORK:-}" "React.framework"',
+    ],
+  ])('runs the %s script from %s', (label, scriptPath, bodyLine) => {
+    const {text, generatedFiles} = inject(PLAIN);
+    const wrapper = shellScriptOf(text, label);
+    expect(wrapper).toContain(`$SRCROOT/${scriptPath}`);
+    expect(wrapper).toContain('spm update');
+    expect(text).not.toContain(bodyLine.replace(/"/g, '\\"'));
+    expect(text).not.toContain('set -euo pipefail');
+    expect(generatedFiles[scriptPath]).toContain(bodyLine);
+  });
+
+  it('keeps the script wrappers identical across React Native versions and frameworks', () => {
+    const {text} = inject(PLAIN);
+    const plan = planInjection(PLAIN, {});
+    const {text: other} = injectSpmIntoPbxproj(
+      PLAIN,
+      {
+        rootUuid: plan.rootUuid,
+        targetUuid: plan.target.uuid,
+        configUuids: plan.configUuids,
+        frameworksPhaseUuid: plan.frameworksPhaseUuid,
+        sourcesPhaseUuid: plan.sourcesPhaseUuid,
+      },
+      {
+        fromAppRoot: '../../elsewhere/react-native',
+        fromSrcRoot: '../../elsewhere/react-native',
+      },
+      null,
+      [],
+      [],
+    );
+    for (const label of [
+      'Sync SPM Autolinking',
+      'Embed React Native Flavored Frameworks',
+    ]) {
+      expect(shellScriptOf(other, label)).toBe(shellScriptOf(text, label));
+    }
+  });
+
+  // The actual goal of moving settings into the generated xcconfig: a routine
+  // `spm update` (a new React Native version, new framework artifact slices)
+  // must not touch project.pbxproj AT ALL when the set of frameworks (their
+  // ids/names) doesn't change shape — not just the two script phases checked
+  // above. Only the id/frameworkName/artifactRelativePath drive anything that
+  // lands in the pbxproj (variable names in the script bodies); slice paths
+  // and architectures land only in the generated xcconfig.
+  it('produces a byte-identical project.pbxproj across a version bump (path + slice content change)', () => {
+    const {text} = inject(PLAIN);
+    const plan = planInjection(PLAIN, {});
+    const BUMPED_FRAMEWORKS = [
+      {
+        ...TEST_FRAMEWORKS[0],
+        slices: [
+          {
+            sdk: 'iphoneos*',
+            platform: 'ios',
+            variant: null,
+            architectures: ['arm64', 'arm64e'],
+            libraryIdentifier: 'ios-arm64_arm64e',
+            libraryPath: 'React.framework',
+            binaryPath: 'React.framework/Versions/Current/React',
+          },
+          {
+            sdk: 'iphonesimulator*',
+            platform: 'ios',
+            variant: 'simulator',
+            architectures: ['arm64'],
+            libraryIdentifier: 'ios-arm64-simulator',
+            libraryPath: 'React.framework',
+            binaryPath: 'React.framework/Versions/Current/React',
+          },
+        ],
+      },
+    ];
+    const {text: other} = injectSpmIntoPbxproj(
+      PLAIN,
+      {
+        rootUuid: plan.rootUuid,
+        targetUuid: plan.target.uuid,
+        configUuids: plan.configUuids,
+        frameworksPhaseUuid: plan.frameworksPhaseUuid,
+        sourcesPhaseUuid: plan.sourcesPhaseUuid,
+      },
+      {
+        fromAppRoot: '../../elsewhere/react-native',
+        fromSrcRoot: '../../elsewhere/react-native',
+      },
+      null,
+      [],
+      BUMPED_FRAMEWORKS,
+      [],
+    );
+    expect(other).toBe(text);
   });
 
   it('runs every injected shell-script build phase under bash, not /bin/sh', () => {
@@ -323,50 +615,6 @@ describe('injectSpmIntoPbxproj — Tier 2 (build settings + phase)', () => {
     )?.length;
     expect(secondText.match(/shellPath = \/bin\/bash;/g)?.length).toBe(
       phaseCount,
-    );
-  });
-
-  it.each([
-    [
-      '"$(inherited)"',
-      ['"$(inherited)"', '"$(SRCROOT)/build/generated/autolinking/headers"'],
-    ],
-    [
-      '"$(inherited) $(SRCROOT)/vendor/include"',
-      [
-        '"$(inherited)"',
-        '"$(inherited) $(SRCROOT)/vendor/include"',
-        '"$(SRCROOT)/build/generated/autolinking/headers"',
-      ],
-    ],
-  ])(
-    'promotes a pre-existing HEADER_SEARCH_PATHS scalar (%s) to an array, keeping its value and one $(inherited)',
-    (scalar, expectedMembers) => {
-      const {text} = inject(withHeaderSearchPaths(scalar));
-      const arrays = [
-        ...text.matchAll(/HEADER_SEARCH_PATHS = \(\n([\s\S]*?)\t+\);/g),
-      ].map(m =>
-        m[1]
-          .split('\n')
-          .map(line => line.trim().replace(/,$/, ''))
-          .filter(member => member.length > 0),
-      );
-      // Both app-target configs (Debug + Release).
-      expect(arrays).toEqual([expectedMembers, expectedMembers]);
-    },
-  );
-
-  it('appends to a pre-existing ONE-LINE HEADER_SEARCH_PATHS array in place', () => {
-    const {text} = inject(withHeaderSearchPaths('("$(inherited)", )'));
-    expect(isBalanced(text)).toBe(true);
-    const arrays = [
-      ...text.matchAll(/HEADER_SEARCH_PATHS = \(([^\n]*)\);/g),
-    ].map(m => m[1]);
-    // Both app-target configs, each keeping the one-line shape it was written in.
-    expect(arrays).toEqual(
-      Array(2).fill(
-        '"$(inherited)", "$(SRCROOT)/build/generated/autolinking/headers", ',
-      ),
     );
   });
 
@@ -445,7 +693,7 @@ describe('injectSpmIntoPbxproj — Tier 3 (plugin generated sources)', () => {
         frameworksPhaseUuid: plan.frameworksPhaseUuid,
         sourcesPhaseUuid: plan.sourcesPhaseUuid,
       },
-      RN_PATH,
+      RN_PATHS,
       null,
       [PROVIDER_SOURCE],
       TEST_FRAMEWORKS,
@@ -484,7 +732,7 @@ describe('injectSpmIntoPbxproj — Tier 3 (plugin generated sources)', () => {
         frameworksPhaseUuid: plan.frameworksPhaseUuid,
         sourcesPhaseUuid: plan.sourcesPhaseUuid,
       },
-      RN_PATH,
+      RN_PATHS,
       null,
       [PROVIDER_SOURCE],
       TEST_FRAMEWORKS,
@@ -1118,22 +1366,24 @@ describe('injectSpmIntoPbxproj — invariants', () => {
   });
 
   it('is idempotent — a second injection is a byte-for-byte no-op', () => {
-    const first = inject(PLAIN).text;
-    const plan = planInjection(first, {});
+    const first = inject(PLAIN);
+    const plan = planInjection(first.text, {});
     const second = injectSpmIntoPbxproj(
-      first,
+      first.text,
       {
         rootUuid: plan.rootUuid,
         targetUuid: plan.target.uuid,
         configUuids: plan.configUuids,
         frameworksPhaseUuid: plan.frameworksPhaseUuid,
       },
-      RN_PATH,
+      RN_PATHS,
       null,
       [],
       TEST_FRAMEWORKS,
-    ).text;
-    expect(second).toBe(first);
+    );
+    expect(second.text).toBe(first.text);
+    expect(second.generatedFiles).toEqual(first.generatedFiles);
+    expect(second.xcconfig).toEqual(first.xcconfig);
   });
 
   it('keeps the diff small — only adds lines, never removes original ones', () => {
@@ -1150,15 +1400,13 @@ describe('injectSpmIntoPbxproj — invariants', () => {
     expect(added).toBeLessThan(220);
   });
 
-  it('refreshes a stale shellScript on re-injection', () => {
+  it('replaces an inline script body from an earlier version with the wrapper', () => {
     const first = inject(PLAIN).text;
-    // Simulate an earlier run whose generated script has since changed (e.g.
-    // fixed dispatch logic) by corrupting a substring of the baked-in script.
     const stale = first.replace(
-      'npx react-native spm sync',
-      'STALE_OLD_SYNC_COMMAND',
+      shellScriptOf(first, 'Sync SPM Autolinking'),
+      quoteIfNeeded(buildSyncAutolinkingScript(RN_PATH)),
     );
-    expect(stale).not.toBe(first);
+    expect(stale).toContain('npx react-native spm sync');
     const plan = planInjection(stale, {});
     const second = injectSpmIntoPbxproj(
       stale,
@@ -1168,14 +1416,11 @@ describe('injectSpmIntoPbxproj — invariants', () => {
         configUuids: plan.configUuids,
         frameworksPhaseUuid: plan.frameworksPhaseUuid,
       },
-      RN_PATH,
+      RN_PATHS,
       null,
       [],
       TEST_FRAMEWORKS,
     ).text;
-    // The stale marker is gone and the current script is restored.
-    expect(second).not.toContain('STALE_OLD_SYNC_COMMAND');
-    expect(second).toContain('npx react-native spm sync');
     expect(second).toBe(first);
   });
 
