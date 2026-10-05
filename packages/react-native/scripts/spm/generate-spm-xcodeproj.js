@@ -62,6 +62,11 @@ const {
   makeLogger,
   remotePackageConfig,
 } = require('./spm-utils');
+const {
+  readXcconfig,
+  xcconfigIncludes,
+  xcconfigReferencePaths,
+} = require('./xcconfig-files');
 const fs = require('node:fs');
 const path = require('node:path');
 
@@ -182,12 +187,15 @@ type BuildSettingChange = {
 type CreatedArrayField = {container: 'project' | 'target', key: string};
 // How the app configurations were based on the generated xcconfig. Deinit
 // clears `baseConfigurationReference` only on these, and only while it still
-// points at `fileRefUuid`. `removedPodsRootReactNativePath` is sticky and
-// informational: deinit does not put that value back, because it resolves
-// empty without CocoaPods.
+// points at `fileRefUuid`. `includedByConfigUuids` keep a base of the user's
+// own whose xcconfig #includes the generated one, so deinit keeps that file;
+// markers written before it existed lack it. `removedPodsRootReactNativePath`
+// is sticky and informational: deinit does not put that value back, because it
+// resolves empty without CocoaPods.
 type XcconfigRecord = {
   fileRefUuid: string,
   configUuids: Array<string>,
+  includedByConfigUuids?: Array<string>,
   removedPodsRootReactNativePath: boolean,
 };
 // A plugin-contributed source, normalized for pbxproj emission. `path` is
@@ -1238,15 +1246,22 @@ function generateReactNativeXcconfig(
     ]
       .filter(({values}) => values.length > 0)
       .map(({key, values}) => listLine(key, values)),
-    configNames.flatMap(name => {
-      const flavor = flavorForBuildConfiguration(name);
-      return [
-        `RN_SPM_FLAVOR[config=${name}] = ${flavor}`,
-        ...(flavor === 'debug' ? DEBUG_LIST_SETTINGS : []).map(
-          ({key, values}) => listLine(`${key}[config=${name}]`, values),
-        ),
-      ];
-    }),
+    [
+      // For a configuration added since the last sync (duplicated in Xcode,
+      // which copies the base reference): flavorForBuildConfiguration's own
+      // fallback, rather than an unset flavor that empties every framework
+      // path.
+      'RN_SPM_FLAVOR = release',
+      ...configNames.flatMap(name => {
+        const flavor = flavorForBuildConfiguration(name);
+        return [
+          `RN_SPM_FLAVOR[config=${name}] = ${flavor}`,
+          ...(flavor === 'debug' ? DEBUG_LIST_SETTINGS : []).map(
+            ({key, values}) => listLine(`${key}[config=${name}]`, values),
+          ),
+        ];
+      }),
+    ],
     frameworkConditionalSettings(flavoredFrameworks).map(
       ({key, value}) => `${key} = ${value}`,
     ),
@@ -1312,16 +1327,31 @@ function listSettingsHidingXcconfig(
   return hiding;
 }
 
+// Xcode writes a PBXFileReference on one line, which findField can't read.
+function fileReferenceField(
+  text /*: string */,
+  ref /*: {bodyOpen: number, bodyClose: number, ...} */,
+  key /*: string */,
+) /*: ?string */ {
+  const value = new RegExp(
+    `[\\s{;]${key} = ("(?:[^"\\\\]|\\\\.)*"|[^;]*);`,
+  ).exec(text.slice(ref.bodyOpen, ref.bodyClose))?.[1];
+  return value != null ? unquotePlist(value) : null;
+}
+
 /**
- * The first app configuration based on an xcconfig other than the generated
- * one, with that file's path — React Native never edits an xcconfig it does not
- * own, so it cannot base that configuration on its own.
+ * The app configurations based on an xcconfig other than the generated one —
+ * React Native never edits an xcconfig it does not own, so it cannot base
+ * those configurations on its own. `file` is the reference's path, and
+ * `absPath`/`content` the file on disk when it can be read.
  */
-function foreignBaseConfiguration(
+function foreignBaseConfigurations(
   text /*: string */,
   configUuids /*: ReadonlyArray<string> */,
   ownFileRefUuid /*: string */,
-) /*: ?{config: string, file: string} */ {
+  srcRoot /*: ?string */,
+) /*: Array<{configUuid: string, config: string, file: string, onDisk: ?{absPath: string, content: string}}> */ {
+  const foreign = [];
   for (const configUuid of configUuids) {
     const config = findObjectByUuid(text, configUuid);
     const base =
@@ -1332,20 +1362,35 @@ function foreignBaseConfiguration(
     if (refUuid == null || refUuid === ownFileRefUuid) {
       continue;
     }
-    // Xcode writes a PBXFileReference on one line, which findField can't read.
     const ref = findObjectByUuid(text, refUuid);
-    const refPath =
-      ref != null
-        ? /[\s{;]path = ("(?:[^"\\]|\\.)*"|[^;]*);/.exec(
-            text.slice(ref.bodyOpen, ref.bodyClose),
-          )?.[1]
-        : null;
-    return {
+    const refPath = ref != null ? fileReferenceField(text, ref, 'path') : null;
+    let onDisk /*: ?{absPath: string, content: string} */ = null;
+    if (ref != null && refPath != null && srcRoot != null) {
+      const candidates = xcconfigReferencePaths(
+        text,
+        {
+          uuid: refUuid,
+          path: refPath,
+          sourceTree: fileReferenceField(text, ref, 'sourceTree') ?? '',
+        },
+        srcRoot,
+      );
+      for (const absPath of candidates) {
+        const content = readXcconfig(absPath);
+        if (content != null) {
+          onDisk = {absPath, content};
+          break;
+        }
+      }
+    }
+    foreign.push({
+      configUuid,
       config: buildConfigurationName(text, configUuid),
-      file: refPath != null ? unquotePlist(refPath) : refUuid,
-    };
+      file: refPath ?? refUuid,
+      onDisk,
+    });
   }
-  return null;
+  return foreign;
 }
 
 /** The XCBuildConfiguration UUIDs of a target (via its buildConfigurationList). */
@@ -1393,9 +1438,9 @@ function configUsesPods(
  */
 function planInjection(
   text /*: string */,
-  opts /*: {appName?: ?string, cxxApiDefines?: ReadonlyArray<string>} */,
+  opts /*: {appName?: ?string, appRoot?: ?string, srcRoot?: ?string, cxxApiDefines?: ReadonlyArray<string>} */,
 ) /*:
-  | {ok: true, rootUuid: string, target: {uuid: string, name: string, bodyOpen: number, bodyClose: number}, configUuids: Array<string>, frameworksPhaseUuid: string, sourcesPhaseUuid: ?string}
+  | {ok: true, rootUuid: string, target: {uuid: string, name: string, bodyOpen: number, bodyClose: number}, configUuids: Array<string>, includedByConfigUuids: Array<string>, frameworksPhaseUuid: string, sourcesPhaseUuid: ?string}
   | {ok: false, reason: string} */ {
   const project = findProjectObject(text);
   if (project == null) {
@@ -1438,19 +1483,40 @@ function planInjection(
         'supports SPM-only targets',
     };
   }
-  const foreign = foreignBaseConfiguration(
+  const generatedXcconfig =
+    opts.appRoot != null
+      ? path.resolve(opts.appRoot, GENERATED_XCCONFIG_PATH)
+      : null;
+  const includedByConfigUuids /*: Array<string> */ = [];
+  for (const foreign of foreignBaseConfigurations(
     text,
     configUuids,
     xcconfigFileRefUuid(project.uuid),
-  );
-  if (foreign != null) {
+    opts.srcRoot,
+  )) {
+    const {onDisk} = foreign;
+    if (
+      onDisk != null &&
+      generatedXcconfig != null &&
+      xcconfigIncludes(onDisk.absPath, onDisk.content, generatedXcconfig)
+    ) {
+      includedByConfigUuids.push(foreign.configUuid);
+      continue;
+    }
+    const fix =
+      onDisk != null && generatedXcconfig != null
+        ? `add #include "${path
+            .relative(path.dirname(onDisk.absPath), generatedXcconfig)
+            .split(path.sep)
+            .join('/')}" to ${foreign.file} instead`
+        : `#include ${GENERATED_XCCONFIG_PATH} from ${foreign.file} instead, ` +
+          `with the path relative to the folder that holds ${foreign.file}`;
     return {
       ok: false,
       reason:
         `the ${foreign.config} configuration is already based on ` +
         `${foreign.file}, and React Native does not edit xcconfig files it ` +
-        `does not own — #include ${GENERATED_XCCONFIG_PATH} (relative to the ` +
-        `project directory) from ${foreign.file} instead`,
+        `does not own — ${fix}`,
     };
   }
   const hiding = listSettingsHidingXcconfig(
@@ -1510,6 +1576,7 @@ function planInjection(
     rootUuid: project.uuid,
     target,
     configUuids,
+    includedByConfigUuids,
     frameworksPhaseUuid,
     sourcesPhaseUuid,
   };
@@ -1525,7 +1592,7 @@ function planInjection(
  */
 function injectSpmIntoPbxproj(
   input /*: string */,
-  plan /*: {rootUuid: string, targetUuid: string, configUuids: Array<string>, frameworksPhaseUuid: string, sourcesPhaseUuid?: ?string} */,
+  plan /*: {rootUuid: string, targetUuid: string, configUuids: Array<string>, includedByConfigUuids?: ?ReadonlyArray<string>, frameworksPhaseUuid: string, sourcesPhaseUuid?: ?string} */,
   reactNativePaths /*: {fromAppRoot: string, fromSrcRoot: string} */,
   remote /*: ?RemoteCfg */,
   generatedSources /*: ReadonlyArray<GeneratedSource> */ = [],
@@ -1621,8 +1688,9 @@ function injectSpmIntoPbxproj(
   }
 
   // 5. Every app configuration is based on the generated xcconfig, which
-  //    carries all React build settings. planInjection refused any other
-  //    base configuration, so an existing one here is already ours.
+  //    carries all React build settings — except one whose own xcconfig
+  //    already #includes it. planInjection refused any other base
+  //    configuration, so an existing one here is already ours.
   const xcconfigName = path.basename(GENERATED_XCCONFIG_PATH);
   const xcconfigRefUuid = xcconfigFileRefUuid(plan.rootUuid);
   insertObjects('PBXFileReference', [
@@ -1644,10 +1712,11 @@ function injectSpmIntoPbxproj(
       {uuid: xcconfigRefUuid, comment: xcconfigName},
     ]);
   }
+  const includedBy = new Set(plan.includedByConfigUuids ?? []);
   let removedPodsRootReactNativePath = false;
   for (const configUuid of plan.configUuids) {
     const config = findObjectByUuid(text, configUuid);
-    if (config != null) {
+    if (config != null && !includedBy.has(configUuid)) {
       text = ensureScalarField(
         text,
         config,
@@ -1733,6 +1802,7 @@ function injectSpmIntoPbxproj(
   );
   const embedInputs = [
     '$(SRCROOT)/build/xcframeworks/.artifact-stamp',
+    `$(SRCROOT)/${EMBED_FRAMEWORKS_SCRIPT_PATH}`,
     ...flavoredFrameworks.map(
       framework => `$(${frameworkSettingPrefix(framework.id)}_FRAMEWORK)`,
     ),
@@ -1967,7 +2037,8 @@ function injectSpmIntoPbxproj(
     createdArrayFields,
     xcconfig: {
       fileRefUuid: xcconfigRefUuid,
-      configUuids: [...plan.configUuids],
+      configUuids: plan.configUuids.filter(uuid => !includedBy.has(uuid)),
+      includedByConfigUuids: [...includedBy],
       removedPodsRootReactNativePath,
     },
     generatedFiles,
@@ -2741,6 +2812,8 @@ function injectSpmIntoExistingXcodeproj(
   );
   const plan = planInjection(withoutRecordedSettings, {
     appName: opts.appName,
+    appRoot,
+    srcRoot: path.dirname(xcodeprojPath),
     cxxApiDefines: opts.cxxApiDefines,
   });
   if (!plan.ok) {
@@ -2812,6 +2885,7 @@ function injectSpmIntoExistingXcodeproj(
       rootUuid: plan.rootUuid,
       targetUuid: plan.target.uuid,
       configUuids: plan.configUuids,
+      includedByConfigUuids: plan.includedByConfigUuids,
       frameworksPhaseUuid: plan.frameworksPhaseUuid,
       sourcesPhaseUuid: plan.sourcesPhaseUuid,
     },
@@ -3067,6 +3141,36 @@ function removeRecordedBuildSettings(
 }
 
 /**
+ * The configurations, by name, that may #include the generated xcconfig once
+ * deinit has un-based its own: those based on any other xcconfig, and those
+ * recorded as including it.
+ */
+function configsThatMayInclude(
+  text /*: string */,
+  targetUuid /*: string */,
+  xcconfig /*: XcconfigRecord */,
+) /*: Array<string> */ {
+  const target = findObjectByUuid(text, targetUuid);
+  const rebased = (
+    target != null ? targetBuildConfigUuids(text, target) : []
+  ).filter(uuid => {
+    const config = findObjectByUuid(text, uuid);
+    const base =
+      config != null
+        ? findField(text, config, 'baseConfigurationReference')
+        : null;
+    return base != null && !base.value.includes(xcconfig.fileRefUuid);
+  });
+  return [
+    ...new Set([...rebased, ...(xcconfig.includedByConfigUuids ?? [])]),
+  ].map(uuid =>
+    findObjectByUuid(text, uuid) != null
+      ? buildConfigurationName(text, uuid)
+      : uuid,
+  );
+}
+
+/**
  * The exact inverse of `add` (injectSpmIntoExistingXcodeproj): using the
  * `.spm-injected.json` marker's precise record of every edit, remove only what
  * injection added — leaving any other (user) edits made afterwards intact. No
@@ -3120,8 +3224,9 @@ function removeSpmInjection(
   );
 
   // 2. Un-base the configurations still based on the generated xcconfig, and
-  //    delete it only then — a configuration the user has since based on an
-  //    xcconfig of their own may #include it. A ${PODS_ROOT}-anchored
+  //    delete it only then, and only while no configuration is based on an
+  //    xcconfig of the user's own — that file may #include it, as the ones
+  //    recorded in `includedByConfigUuids` do. A ${PODS_ROOT}-anchored
   //    REACT_NATIVE_PATH injection removed is deliberately not put back: it
   //    resolves empty without CocoaPods.
   const xcconfig /*: ?XcconfigRecord */ = marker.xcconfig;
@@ -3140,13 +3245,25 @@ function removeSpmInjection(
       }
     }
   }
+  const includingConfigs =
+    xcconfig != null
+      ? configsThatMayInclude(text, marker.targetUuid, xcconfig)
+      : [];
+  if (includingConfigs.length > 0) {
+    log(
+      `Kept ${GENERATED_XCCONFIG_PATH}: an xcconfig of your own may still ` +
+        `#include it (configurations: ${includingConfigs.join(', ')})`,
+    );
+  }
   // Settings a project injected before the generated xcconfig still carries
   // in project.pbxproj (only what we added).
   text = removeRecordedBuildSettings(text, marker.buildSettingChanges ?? []);
   writeIfChanged(pbxprojPath, text);
   log(`Removed SPM injection from ${path.relative(appRoot, pbxprojPath)}`);
   for (const relPath of [
-    ...(ownsXcconfig ? [GENERATED_XCCONFIG_PATH] : []),
+    ...(ownsXcconfig && includingConfigs.length === 0
+      ? [GENERATED_XCCONFIG_PATH]
+      : []),
     SYNC_AUTOLINKING_SCRIPT_PATH,
     EMBED_FRAMEWORKS_SCRIPT_PATH,
   ]) {

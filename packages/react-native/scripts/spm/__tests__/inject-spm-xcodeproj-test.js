@@ -20,6 +20,7 @@ const {
 const {findField, findObjectByUuid, quoteIfNeeded} = require('../spm-pbxproj');
 const {isBalanced} = require('./pbxproj-oracles');
 const fs = require('node:fs');
+const os = require('node:os');
 const path = require('node:path');
 
 const PLAIN = fs.readFileSync(
@@ -292,6 +293,171 @@ describe('planInjection', () => {
 
   it('accepts a project it already based on the generated xcconfig', () => {
     expect(planInjection(inject(PLAIN).text, {}).ok).toBe(true);
+  });
+});
+
+// FOREIGN_XCCONFIG with the reference inside a `Config` group, the way Xcode
+// files an xcconfig dragged into a folder of the navigator.
+const FOREIGN_XCCONFIG_IN_GROUP = FOREIGN_XCCONFIG.replace(
+  'path = Config/App.xcconfig;',
+  'path = App.xcconfig;',
+)
+  .replace(
+    '\t\t\t\tAA00000000000000000000F1 /* Products */,\n',
+    '\t\t\t\tAA00000000000000000000F1 /* Products */,\n\t\t\t\tCC0000000000000000000002 /* Config */,\n',
+  )
+  .replace(
+    '/* End PBXGroup section */',
+    '\t\tCC0000000000000000000002 /* Config */ = {\n\t\t\tisa = PBXGroup;\n\t\t\tchildren = (\n\t\t\t\tCC0000000000000000000001 /* App.xcconfig */,\n\t\t\t);\n\t\t\tpath = Config;\n\t\t\tsourceTree = "<group>";\n\t\t};\n/* End PBXGroup section */',
+  );
+
+describe("planInjection — a configuration based on the user's own xcconfig", () => {
+  let roots = [];
+  afterEach(() => {
+    for (const root of roots) {
+      fs.rmSync(root, {recursive: true, force: true});
+    }
+    roots = [];
+  });
+
+  // An app root (== SRCROOT) holding `files`, app-root-relative path → content.
+  function appRootWith(files) {
+    const root = fs.mkdtempSync(path.join(os.tmpdir(), 'spm-include-'));
+    roots.push(root);
+    for (const [relPath, content] of Object.entries(files)) {
+      fs.mkdirSync(path.dirname(path.join(root, relPath)), {recursive: true});
+      fs.writeFileSync(path.join(root, relPath), content, 'utf8');
+    }
+    return root;
+  }
+
+  function plan(files, text = FOREIGN_XCCONFIG) {
+    const root = appRootWith(files);
+    return planInjection(text, {appRoot: root, srcRoot: root});
+  }
+
+  const INCLUDES_GENERATED = `#include "../${XCCONFIG_PATH}"\n`;
+
+  it('accepts it when the xcconfig #includes the generated one', () => {
+    const result = plan({'Config/App.xcconfig': INCLUDES_GENERATED});
+    expect(result.ok).toBe(true);
+    expect(result.includedByConfigUuids).toEqual([APP_DEBUG_CONFIG]);
+  });
+
+  it('includes no configuration it bases on the generated xcconfig itself', () => {
+    expect(planInjection(PLAIN, {}).includedByConfigUuids).toEqual([]);
+  });
+
+  it('finds an xcconfig filed under a navigator group', () => {
+    expect(
+      plan(
+        {'Config/App.xcconfig': INCLUDES_GENERATED},
+        FOREIGN_XCCONFIG_IN_GROUP,
+      ).ok,
+    ).toBe(true);
+  });
+
+  it('follows #include? chains, each path relative to the file that holds it', () => {
+    expect(
+      plan({
+        'Config/App.xcconfig':
+          '// Shared settings\n#include? "Shared/Base.xcconfig"\n',
+        'Config/Shared/Base.xcconfig': `#include "../../${XCCONFIG_PATH}"\n`,
+      }).ok,
+    ).toBe(true);
+  });
+
+  it.each([
+    [
+      'a path relative to the project directory',
+      `#include "${XCCONFIG_PATH}"\n`,
+    ],
+    ['a commented-out include', `// ${INCLUDES_GENERATED}`],
+    ['an include of a file that is missing', '#include? "Missing.xcconfig"\n'],
+  ])('refuses %s', (_label, content) => {
+    expect(plan({'Config/App.xcconfig': content}).ok).toBe(false);
+  });
+
+  it('refuses an include cycle that never reaches the generated xcconfig', () => {
+    const result = plan({
+      'Config/App.xcconfig': '#include "Base.xcconfig"\n',
+      'Config/Base.xcconfig': '#include "App.xcconfig"\n',
+    });
+    expect(result.ok).toBe(false);
+  });
+
+  it('still refuses a list setting without $(inherited) on it', () => {
+    const result = plan(
+      {'Config/App.xcconfig': INCLUDES_GENERATED},
+      FOREIGN_XCCONFIG.replaceAll(
+        'PRODUCT_BUNDLE_IDENTIFIER = com.example.MyApp;',
+        'HEADER_SEARCH_PATHS = /vendor;\n\t\t\t\tPRODUCT_BUNDLE_IDENTIFIER = com.example.MyApp;',
+      ),
+    );
+    expect(result.ok).toBe(false);
+    expect(result.reason).toContain('HEADER_SEARCH_PATHS (Debug, Release)');
+  });
+
+  it('names the exact line to add, relative to the xcconfig that needs it', () => {
+    const result = plan({'Config/App.xcconfig': 'MY_SETTING = 1\n'});
+    expect(result.ok).toBe(false);
+    expect(result.reason).toContain(
+      `#include "../${XCCONFIG_PATH}" to Config/App.xcconfig`,
+    );
+    expect(result.reason).not.toContain('project directory');
+  });
+
+  it('says the path is relative to the xcconfig when it cannot find the file', () => {
+    const result = plan({});
+    expect(result.ok).toBe(false);
+    expect(result.reason).toContain(
+      `#include ${XCCONFIG_PATH} from Config/App.xcconfig`,
+    );
+    expect(result.reason).toContain(
+      'relative to the folder that holds Config/App.xcconfig',
+    );
+    expect(result.reason).not.toContain('project directory');
+  });
+
+  it("keeps the user's base and records the configuration as including the generated xcconfig", () => {
+    const root = appRootWith({'Config/App.xcconfig': INCLUDES_GENERATED});
+    const accepted = planInjection(FOREIGN_XCCONFIG, {
+      appRoot: root,
+      srcRoot: root,
+    });
+    const {text, xcconfig, generatedFiles} = injectSpmIntoPbxproj(
+      FOREIGN_XCCONFIG,
+      {
+        rootUuid: accepted.rootUuid,
+        targetUuid: accepted.target.uuid,
+        configUuids: accepted.configUuids,
+        includedByConfigUuids: accepted.includedByConfigUuids,
+        frameworksPhaseUuid: accepted.frameworksPhaseUuid,
+        sourcesPhaseUuid: accepted.sourcesPhaseUuid,
+      },
+      RN_PATHS,
+      null,
+      [],
+      TEST_FRAMEWORKS,
+    );
+    const baseOf = configUuid =>
+      findField(
+        text,
+        findObjectByUuid(text, configUuid),
+        'baseConfigurationReference',
+      )?.value;
+    expect(baseOf(APP_DEBUG_CONFIG)).toBe(
+      'CC0000000000000000000001 /* App.xcconfig */',
+    );
+    expect(baseOf(APP_RELEASE_CONFIG)).toBe(
+      `${xcconfig.fileRefUuid} /* ReactNativeSPM.xcconfig */`,
+    );
+    expect(xcconfig.configUuids).toEqual([APP_RELEASE_CONFIG]);
+    expect(xcconfig.includedByConfigUuids).toEqual([APP_DEBUG_CONFIG]);
+    expect(text).toContain(`path = ${XCCONFIG_PATH};`);
+    expect(generatedFiles[XCCONFIG_PATH]).toContain(
+      'RN_SPM_FLAVOR[config=Debug] = debug\n',
+    );
   });
 });
 
@@ -589,6 +755,19 @@ describe('injectSpmIntoPbxproj — Tier 2 (build settings + phase)', () => {
     expect(text).toContain(
       '$(TARGET_BUILD_DIR)/$(FRAMEWORKS_FOLDER_PATH)/React.framework',
     );
+  });
+
+  // The phase only runs the script file, so the file has to be an input for
+  // Xcode to re-run the phase when the file alone changes.
+  it('lists its script file among the embed phase inputs', () => {
+    const {text} = inject(PLAIN);
+    const uuid =
+      /([0-9A-F]{24}) \/\* Embed React Native Flavored Frameworks \*\/ = \{/.exec(
+        text,
+      )[1];
+    expect(
+      findField(text, findObjectByUuid(text, uuid), 'inputPaths').value,
+    ).toContain(`${quoteIfNeeded(`$(SRCROOT)/${EMBED_SCRIPT_PATH}`)},`);
   });
 });
 

@@ -628,6 +628,7 @@ OTHER_LDFLAGS = $(inherited) -ObjC "$(RN_SPM_REACT_BINARY)"
 FRAMEWORK_SEARCH_PATHS = $(inherited) "$(RN_SPM_REACT_SEARCH_PATH)"
 LD_RUNPATH_SEARCH_PATHS = $(inherited) @executable_path/Frameworks
 
+RN_SPM_FLAVOR = release
 RN_SPM_FLAVOR[config=Debug] = debug
 SWIFT_ACTIVE_COMPILATION_CONDITIONS[config=Debug] = $(inherited) DEBUG
 RN_SPM_FLAVOR[config=Release] = release
@@ -661,6 +662,28 @@ RN_SPM_REACT_SEARCH_PATH[sdk=iphoneos*] = $(SRCROOT)/build/xcframeworks/$(RN_SPM
       'SWIFT_ACTIVE_COMPILATION_CONDITIONS[config=Staging]',
     );
     expect(xcconfig).not.toMatch(/\[config=(Debug|Release)\]/);
+  });
+
+  // A configuration duplicated in Xcode keeps the base reference but has no
+  // line of its own until the next sync, and an unset flavor would resolve
+  // every framework path to nothing.
+  it('falls back to the release flavor for a configuration it does not list', () => {
+    const lines = generateReactNativeXcconfig(
+      ['Debug', 'Release'],
+      '../node_modules/react-native',
+      [FRAMEWORK],
+      [],
+    ).split('\n');
+    const fallback = lines.indexOf('RN_SPM_FLAVOR = release');
+    expect(fallback).toBeGreaterThan(-1);
+    expect(fallback).toBeLessThan(
+      lines.findIndex(line => line.startsWith('RN_SPM_FLAVOR[config=')),
+    );
+    expect(
+      lines.some(line =>
+        line.startsWith('SWIFT_ACTIVE_COMPILATION_CONDITIONS ='),
+      ),
+    ).toBe(false);
   });
 
   it('writes no plist quoting around conditional keys or path values', () => {

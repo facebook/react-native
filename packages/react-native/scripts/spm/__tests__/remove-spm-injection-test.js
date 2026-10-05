@@ -187,6 +187,42 @@ function generatedFileContents(appRoot) {
   );
 }
 
+const APP_DEBUG_CONFIG = 'AA0000000000000000000901';
+
+// The app target's Debug configuration based on Config/App.xcconfig, an
+// xcconfig of the user's own.
+const FOREIGN_XCCONFIG = PLAIN.replace(
+  `${APP_DEBUG_CONFIG} /* Debug */ = {\n\t\t\tisa = XCBuildConfiguration;\n`,
+  `${APP_DEBUG_CONFIG} /* Debug */ = {\n\t\t\tisa = XCBuildConfiguration;\n\t\t\tbaseConfigurationReference = CC0000000000000000000001 /* App.xcconfig */;\n`,
+).replace(
+  '/* End PBXFileReference section */',
+  '\t\tCC0000000000000000000001 /* App.xcconfig */ = {isa = PBXFileReference; lastKnownFileType = text.xcconfig; path = Config/App.xcconfig; sourceTree = "<group>"; };\n/* End PBXFileReference section */',
+);
+
+function writeUserXcconfig(appRoot, content) {
+  fs.mkdirSync(path.join(appRoot, 'Config'), {recursive: true});
+  fs.writeFileSync(path.join(appRoot, 'Config', 'App.xcconfig'), content);
+}
+
+// What re-basing Debug on the user's own xcconfig in Xcode does after `add`.
+function rebaseDebugOnUserXcconfig(xcodeprojPath) {
+  const text = pbxprojOf(xcodeprojPath);
+  const start = text.indexOf(`${APP_DEBUG_CONFIG} /* Debug */ = {`);
+  const end = text.indexOf('buildSettings', start);
+  fs.writeFileSync(
+    path.join(xcodeprojPath, 'project.pbxproj'),
+    text.slice(0, start) +
+      text
+        .slice(start, end)
+        .replace(
+          /baseConfigurationReference = [0-9A-F]{24} \/\* ReactNativeSPM\.xcconfig \*\//,
+          'baseConfigurationReference = CC0000000000000000000001 /* App.xcconfig */',
+        ) +
+      text.slice(end),
+    'utf8',
+  );
+}
+
 function schemePathOf(xcodeprojPath) {
   return path.join(
     xcodeprojPath,
@@ -583,6 +619,95 @@ describe('removeSpmInjection — the surgical inverse of add', () => {
       ),
     ).toHaveLength(2);
     expect(fs.existsSync(path.join(appRoot, XCCONFIG_REL))).toBe(true);
+  });
+
+  it('keeps the xcconfig while one configuration is re-based on a user xcconfig, removing the scripts', () => {
+    const {appRoot, xcodeprojPath, rnRoot} = scaffoldApp();
+    injectSpmIntoExistingXcodeproj({
+      appRoot,
+      reactNativeRoot: rnRoot,
+      xcodeprojPath,
+    });
+    rebaseDebugOnUserXcconfig(xcodeprojPath);
+    const logSpy = jest.spyOn(console, 'log').mockImplementation(() => {});
+
+    removeSpmInjection({appRoot, xcodeprojPath});
+
+    const logged = logSpy.mock.calls.map(([line]) => line).join('\n');
+    logSpy.mockRestore();
+    expect(pbxprojOf(xcodeprojPath)).toContain(
+      'baseConfigurationReference = CC0000000000000000000001 /* App.xcconfig */;',
+    );
+    expect(pbxprojOf(xcodeprojPath)).not.toContain('ReactNativeSPM.xcconfig');
+    expect(
+      generatedFileContents(appRoot).map(content => content != null),
+    ).toEqual([true, false, false]);
+    expect(logged).toContain(`Kept ${XCCONFIG_REL}`);
+  });
+
+  it('accepts a user xcconfig that #includes the generated one, across syncs and deinit', () => {
+    const {appRoot, xcodeprojPath, rnRoot} = scaffoldApp(FOREIGN_XCCONFIG);
+    writeUserXcconfig(appRoot, `#include "../${XCCONFIG_REL}"\n`);
+    const sync = () =>
+      injectSpmIntoExistingXcodeproj({
+        appRoot,
+        reactNativeRoot: rnRoot,
+        xcodeprojPath,
+      });
+
+    expect(sync().status).toBe('injected');
+    const injected = pbxprojOf(xcodeprojPath);
+    expect(readMarker(xcodeprojPath).xcconfig.includedByConfigUuids).toEqual([
+      APP_DEBUG_CONFIG,
+    ]);
+    expect(sync().status).toBe('injected');
+    expect(pbxprojOf(xcodeprojPath)).toBe(injected);
+
+    removeSpmInjection({appRoot, xcodeprojPath});
+    expect(pbxprojOf(xcodeprojPath)).toBe(FOREIGN_XCCONFIG);
+    expect(fs.existsSync(path.join(appRoot, XCCONFIG_REL))).toBe(true);
+  });
+
+  it('keeps the xcconfig a recorded configuration included, even once its base is gone', () => {
+    const {appRoot, xcodeprojPath, rnRoot} = scaffoldApp(FOREIGN_XCCONFIG);
+    writeUserXcconfig(appRoot, `#include "../${XCCONFIG_REL}"\n`);
+    injectSpmIntoExistingXcodeproj({
+      appRoot,
+      reactNativeRoot: rnRoot,
+      xcodeprojPath,
+    });
+    fs.writeFileSync(
+      path.join(xcodeprojPath, 'project.pbxproj'),
+      pbxprojOf(xcodeprojPath).replace(
+        '\t\t\tbaseConfigurationReference = CC0000000000000000000001 /* App.xcconfig */;\n',
+        '',
+      ),
+      'utf8',
+    );
+
+    removeSpmInjection({appRoot, xcodeprojPath});
+    expect(fs.existsSync(path.join(appRoot, XCCONFIG_REL))).toBe(true);
+  });
+
+  it('deletes the xcconfig for a marker written before includes were recorded', () => {
+    const {appRoot, xcodeprojPath, rnRoot} = scaffoldApp();
+    injectSpmIntoExistingXcodeproj({
+      appRoot,
+      reactNativeRoot: rnRoot,
+      xcodeprojPath,
+    });
+    const marker = readMarker(xcodeprojPath);
+    delete marker.xcconfig.includedByConfigUuids;
+    fs.writeFileSync(
+      path.join(xcodeprojPath, SPM_INJECTED_MARKER),
+      JSON.stringify(marker, null, 2) + '\n',
+    );
+
+    removeSpmInjection({appRoot, xcodeprojPath});
+    expect(pbxprojOf(xcodeprojPath)).toBe(PLAIN);
+    expect(generatedFileContents(appRoot)).toEqual(
+      GENERATED_FILES.map(() => null),
+    );
   });
 
   // A ${PODS_ROOT}-anchored value resolves empty without CocoaPods, so putting
