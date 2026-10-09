@@ -6042,6 +6042,8 @@ public class com/facebook/react/views/text/ReactTextView : androidx/appcompat/wi
 	public fun setHyphenationFrequency (I)V
 	public fun setIncludeFontPadding (Z)V
 	public fun setLetterSpacing (F)V
+	public fun setLineBreakStyle (I)V
+	public fun setLineBreakWordStyle (I)V
 	public fun setLinkifyMask (I)V
 	public fun setMinimumFontScale (F)V
 	public fun setMinimumFontSize (F)V
@@ -6077,6 +6079,8 @@ public class com/facebook/react/views/text/ReactTextViewManager : com/facebook/r
 	public final fun setAccessible (Lcom/facebook/react/views/text/ReactTextView;Z)V
 	public final fun setAdjustFontSizeToFit (Lcom/facebook/react/views/text/ReactTextView;Z)V
 	public final fun setAndroidHyphenationFrequency (Lcom/facebook/react/views/text/ReactTextView;Ljava/lang/String;)V
+	public final fun setAndroidLineBreakStyle (Lcom/facebook/react/views/text/ReactTextView;Ljava/lang/String;)V
+	public final fun setAndroidLineBreakWordStyle (Lcom/facebook/react/views/text/ReactTextView;Ljava/lang/String;)V
 	public final fun setBorderColor (Lcom/facebook/react/views/text/ReactTextView;ILjava/lang/Integer;)V
 	public final fun setBorderRadius (Lcom/facebook/react/views/text/ReactTextView;IF)V
 	public final fun setBorderRadius (Lcom/facebook/react/views/text/ReactTextView;ILcom/facebook/react/bridge/Dynamic;)V

@@ -343,6 +343,20 @@ public constructor(
     }
   }
 
+  @ReactProp(name = "android_lineBreakStyle")
+  public fun setAndroidLineBreakStyle(view: ReactTextView, lineBreakStyle: String?) {
+    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
+      view.lineBreakStyle = TextAttributeProps.getLineBreakStyle(lineBreakStyle)
+    }
+  }
+
+  @ReactProp(name = "android_lineBreakWordStyle")
+  public fun setAndroidLineBreakWordStyle(view: ReactTextView, lineBreakWordStyle: String?) {
+    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
+      view.lineBreakWordStyle = TextAttributeProps.getLineBreakWordStyle(lineBreakWordStyle)
+    }
+  }
+
   @ReactPropGroup(
       names =
           [

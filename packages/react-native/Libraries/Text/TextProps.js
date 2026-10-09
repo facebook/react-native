@@ -149,6 +149,26 @@ type TextBaseProps = Readonly<{
    */
   android_hyphenationFrequency?: ?('normal' | 'none' | 'full'),
 
+  /**
+   * Sets the strictness of the line-breaking rules, such as which characters
+   * may start or end a line in Chinese and Japanese text (kinsoku). Matches CSS
+   * `line-break`. Ignored below Android 13 (API level 33).
+   *
+   * @default `'none'`
+   * @platform android
+   */
+  android_lineBreakStyle?: ?('none' | 'loose' | 'normal' | 'strict'),
+
+  /**
+   * Sets word-based line breaking. `'phrase'` breaks Japanese text at phrase
+   * boundaries instead of between any two characters. Matches CSS
+   * `word-break: auto-phrase`. Ignored below Android 13 (API level 33).
+   *
+   * @default `'none'`
+   * @platform android
+   */
+  android_lineBreakWordStyle?: ?('none' | 'phrase'),
+
   children?: ?React.Node,
 
   /**

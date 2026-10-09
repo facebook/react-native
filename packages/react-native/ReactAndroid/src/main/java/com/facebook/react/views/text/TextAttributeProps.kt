@@ -7,6 +7,8 @@
 
 package com.facebook.react.views.text
 
+import android.annotation.SuppressLint
+import android.graphics.text.LineBreakConfig
 import android.os.Build
 import android.text.Layout
 import android.text.TextUtils.TruncateAt
@@ -610,6 +612,34 @@ public class TextAttributeProps private constructor() {
           "none" -> Layout.HYPHENATION_FREQUENCY_NONE
           "normal" -> Layout.HYPHENATION_FREQUENCY_NORMAL
           else -> Layout.HYPHENATION_FREQUENCY_FULL
+        }
+
+    // The LineBreakConfig constants are inlined at compile time, so reading them is safe below API
+    // 33. Callers apply the result only on API 33+.
+    @SuppressLint("InlinedApi")
+    internal fun getLineBreakStyle(lineBreakStyle: String?): Int =
+        when (lineBreakStyle) {
+          null,
+          "none" -> LineBreakConfig.LINE_BREAK_STYLE_NONE
+          "loose" -> LineBreakConfig.LINE_BREAK_STYLE_LOOSE
+          "normal" -> LineBreakConfig.LINE_BREAK_STYLE_NORMAL
+          "strict" -> LineBreakConfig.LINE_BREAK_STYLE_STRICT
+          else -> {
+            FLog.w(ReactConstants.TAG, "Invalid android_lineBreakStyle: $lineBreakStyle")
+            LineBreakConfig.LINE_BREAK_STYLE_NONE
+          }
+        }
+
+    @SuppressLint("InlinedApi")
+    internal fun getLineBreakWordStyle(lineBreakWordStyle: String?): Int =
+        when (lineBreakWordStyle) {
+          null,
+          "none" -> LineBreakConfig.LINE_BREAK_WORD_STYLE_NONE
+          "phrase" -> LineBreakConfig.LINE_BREAK_WORD_STYLE_PHRASE
+          else -> {
+            FLog.w(ReactConstants.TAG, "Invalid android_lineBreakWordStyle: $lineBreakWordStyle")
+            LineBreakConfig.LINE_BREAK_WORD_STYLE_NONE
+          }
         }
 
     public fun getEllipsizeMode(ellipsizeMode: String?): TruncateAt? =

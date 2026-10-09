@@ -120,6 +120,18 @@ void BaseParagraphProps::setProp(
         paDefaults,
         value,
         paragraphAttributes,
+        android_lineBreakStyle,
+        "android_lineBreakStyle");
+    REBUILD_FIELD_SWITCH_CASE(
+        paDefaults,
+        value,
+        paragraphAttributes,
+        android_lineBreakWordStyle,
+        "android_lineBreakWordStyle");
+    REBUILD_FIELD_SWITCH_CASE(
+        paDefaults,
+        value,
+        paragraphAttributes,
         textAlignVertical,
         "textAlignVertical");
   }

@@ -93,4 +93,36 @@ TEST(ParagraphAttributesTest, testAutoTextWidthModeSerializesAsAuto) {
   EXPECT_EQ(toString(TextWidthMode::Auto), "auto");
 }
 
+TEST(ParagraphAttributesTest, testOperatorEqualsIncludesLineBreakStyles) {
+  ParagraphAttributes defaults{};
+  ParagraphAttributes strict{};
+  strict.android_lineBreakStyle = LineBreakStyle::Strict;
+  ParagraphAttributes phrase{};
+  phrase.android_lineBreakWordStyle = LineBreakWordStyle::Phrase;
+
+  EXPECT_FALSE(defaults == strict);
+  EXPECT_FALSE(defaults == phrase);
+  EXPECT_NE(
+      std::hash<ParagraphAttributes>{}(defaults),
+      std::hash<ParagraphAttributes>{}(strict));
+}
+
+TEST(ParagraphAttributesTest, testLineBreakStylesDefaultToNone) {
+  ParagraphAttributes defaults{};
+
+  EXPECT_EQ(defaults.android_lineBreakStyle, LineBreakStyle::None);
+  EXPECT_EQ(defaults.android_lineBreakWordStyle, LineBreakWordStyle::None);
+}
+
+// The Android TextLayoutManager parses these strings, so they must match the
+// values accepted from JavaScript.
+TEST(ParagraphAttributesTest, testLineBreakStylesSerializeToPropValues) {
+  EXPECT_EQ(toString(LineBreakStyle::None), "none");
+  EXPECT_EQ(toString(LineBreakStyle::Loose), "loose");
+  EXPECT_EQ(toString(LineBreakStyle::Normal), "normal");
+  EXPECT_EQ(toString(LineBreakStyle::Strict), "strict");
+  EXPECT_EQ(toString(LineBreakWordStyle::None), "none");
+  EXPECT_EQ(toString(LineBreakWordStyle::Phrase), "phrase");
+}
+
 } // namespace facebook::react

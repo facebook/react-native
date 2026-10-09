@@ -88,6 +88,18 @@ export interface TextPropsAndroid {
    * Hyphenation strategy
    */
   android_hyphenationFrequency?: 'normal' | 'none' | 'full' | undefined;
+
+  /**
+   * Strictness of the line-breaking rules (CSS `line-break`).
+   * Ignored below Android 13 (API level 33).
+   */
+  android_lineBreakStyle?: 'none' | 'loose' | 'normal' | 'strict' | undefined;
+
+  /**
+   * Word-based line breaking (CSS `word-break: auto-phrase`).
+   * Ignored below Android 13 (API level 33).
+   */
+  android_lineBreakWordStyle?: 'none' | 'phrase' | undefined;
 }
 
 // https://reactnative.dev/docs/text#props
