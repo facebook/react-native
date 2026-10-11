@@ -51,7 +51,6 @@
 #include <react/renderer/components/view/ViewComponentDescriptor.h>
 #include <react/renderer/components/view/ViewEventEmitter.h>
 #include <react/renderer/components/view/ViewProps.h>
-#include <react/renderer/components/view/ViewPropsInterpolation.h>
 #include <react/renderer/components/view/ViewShadowNode.h>
 #include <react/renderer/components/view/YogaLayoutableShadowNode.h>
 #include <react/renderer/components/view/YogaStylableProps.h>

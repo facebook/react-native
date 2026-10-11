@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<81b1343c027b377be3bdea9167e16a5d>>
+ * @generated SignedSource<<72ad53973a7de132705b9ec1a72aac08>>
  */
 
 /**
@@ -121,16 +121,16 @@ public object ReactNativeFeatureFlags {
   public fun enableAndroidTextMeasurementOptimizations(): Boolean = accessor.enableAndroidTextMeasurementOptimizations()
 
   /**
+   * Runs multi-source image disk-cache checks asynchronously on Android.
+   */
+  @JvmStatic
+  public fun enableAsyncDiskCacheCheckInMultiSourceImageAndroid(): Boolean = accessor.enableAsyncDiskCacheCheckInMultiSourceImageAndroid()
+
+  /**
    * Feature flag to enable the new bridgeless architecture.
    */
   @JvmStatic
   public fun enableBridgelessArchitecture(): Boolean = accessor.enableBridgelessArchitecture()
-
-  /**
-   * Route async CallInvoker work through the ReactInstance buffered runtime executor, so it is ordered against callable module calls and cannot run before the JS bundle has finished evaluating. invokeSync is unaffected.
-   */
-  @JvmStatic
-  public fun enableBufferedCallInvoker(): Boolean = accessor.enableBufferedCallInvoker()
 
   /**
    * Enable prop iterator setter-style construction of Props in C++ (this flag is not used in Java).
@@ -371,6 +371,12 @@ public object ReactNativeFeatureFlags {
    */
   @JvmStatic
   public fun enableVirtualViewContainerStateExperimental(): Boolean = accessor.enableVirtualViewContainerStateExperimental()
+
+  /**
+   * Prevents a borderless ripple feedback underlay from projecting the entire view background on Android, which could hide the background and ripple.
+   */
+  @JvmStatic
+  public fun fixBorderlessRippleAndroid(): Boolean = accessor.fixBorderlessRippleAndroid()
 
   /**
    * Uses the default event priority instead of the discreet event priority by default when dispatching events from Fabric to React.

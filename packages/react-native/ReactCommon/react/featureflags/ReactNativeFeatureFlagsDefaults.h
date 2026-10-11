@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<6abef654d3dd784b7211ac8874069020>>
+ * @generated SignedSource<<9218c0c441b0b937737d2fae33fd1e35>>
  */
 
 /**
@@ -89,11 +89,11 @@ class ReactNativeFeatureFlagsDefaults : public ReactNativeFeatureFlagsProvider {
     return false;
   }
 
-  bool enableBridgelessArchitecture() override {
-    return true;
+  bool enableAsyncDiskCacheCheckInMultiSourceImageAndroid() override {
+    return false;
   }
 
-  bool enableBufferedCallInvoker() override {
+  bool enableBridgelessArchitecture() override {
     return true;
   }
 
@@ -254,6 +254,10 @@ class ReactNativeFeatureFlagsDefaults : public ReactNativeFeatureFlagsProvider {
   }
 
   bool enableVirtualViewContainerStateExperimental() override {
+    return false;
+  }
+
+  bool fixBorderlessRippleAndroid() override {
     return false;
   }
 

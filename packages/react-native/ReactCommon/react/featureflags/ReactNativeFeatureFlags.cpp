@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<8b23b6ea5f2d377f8126adffd753dae7>>
+ * @generated SignedSource<<2c4c3259015438d07cc137e9288db04a>>
  */
 
 /**
@@ -86,12 +86,12 @@ bool ReactNativeFeatureFlags::enableAndroidTextMeasurementOptimizations() {
   return getAccessor().enableAndroidTextMeasurementOptimizations();
 }
 
-bool ReactNativeFeatureFlags::enableBridgelessArchitecture() {
-  return getAccessor().enableBridgelessArchitecture();
+bool ReactNativeFeatureFlags::enableAsyncDiskCacheCheckInMultiSourceImageAndroid() {
+  return getAccessor().enableAsyncDiskCacheCheckInMultiSourceImageAndroid();
 }
 
-bool ReactNativeFeatureFlags::enableBufferedCallInvoker() {
-  return getAccessor().enableBufferedCallInvoker();
+bool ReactNativeFeatureFlags::enableBridgelessArchitecture() {
+  return getAccessor().enableBridgelessArchitecture();
 }
 
 bool ReactNativeFeatureFlags::enableCppPropsIteratorSetter() {
@@ -252,6 +252,10 @@ bool ReactNativeFeatureFlags::enableViewRecyclingForView() {
 
 bool ReactNativeFeatureFlags::enableVirtualViewContainerStateExperimental() {
   return getAccessor().enableVirtualViewContainerStateExperimental();
+}
+
+bool ReactNativeFeatureFlags::fixBorderlessRippleAndroid() {
+  return getAccessor().fixBorderlessRippleAndroid();
 }
 
 bool ReactNativeFeatureFlags::fixMappingOfEventPrioritiesBetweenFabricAndReact() {

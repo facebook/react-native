@@ -9,13 +9,13 @@
 
 #include <react/cxxstableapi/FrameworksGuard.h>
 
+#include <React/Graphics.h>
 #include <React/ImageManager.h>
 #include <React/RendererCore.h>
 #include <react/renderer/attributedstring/TextAttributes.h>
 #include <react/renderer/attributedstring/conversions.h>
 #include <react/renderer/components/textinput/BaseTextInputProps.h>
 #include <react/renderer/components/textinput/basePrimitives.h>
-#include <react/renderer/graphics/Color.h>
 #include <unordered_map>
 
 namespace facebook::react {

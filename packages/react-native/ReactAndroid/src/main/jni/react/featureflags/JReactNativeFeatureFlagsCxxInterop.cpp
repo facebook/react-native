@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<dad8d48d93f01fc5ec68f70dbd9a9e73>>
+ * @generated SignedSource<<2b4f896552dd54c3ec858ca788ab4254>>
  */
 
 /**
@@ -129,15 +129,15 @@ class ReactNativeFeatureFlagsJavaProvider
     return method(javaProvider_);
   }
 
-  bool enableBridgelessArchitecture() override {
+  bool enableAsyncDiskCacheCheckInMultiSourceImageAndroid() override {
     static const auto method =
-        getReactNativeFeatureFlagsProviderJavaClass()->getMethod<jboolean()>("enableBridgelessArchitecture");
+        getReactNativeFeatureFlagsProviderJavaClass()->getMethod<jboolean()>("enableAsyncDiskCacheCheckInMultiSourceImageAndroid");
     return method(javaProvider_);
   }
 
-  bool enableBufferedCallInvoker() override {
+  bool enableBridgelessArchitecture() override {
     static const auto method =
-        getReactNativeFeatureFlagsProviderJavaClass()->getMethod<jboolean()>("enableBufferedCallInvoker");
+        getReactNativeFeatureFlagsProviderJavaClass()->getMethod<jboolean()>("enableBridgelessArchitecture");
     return method(javaProvider_);
   }
 
@@ -378,6 +378,12 @@ class ReactNativeFeatureFlagsJavaProvider
   bool enableVirtualViewContainerStateExperimental() override {
     static const auto method =
         getReactNativeFeatureFlagsProviderJavaClass()->getMethod<jboolean()>("enableVirtualViewContainerStateExperimental");
+    return method(javaProvider_);
+  }
+
+  bool fixBorderlessRippleAndroid() override {
+    static const auto method =
+        getReactNativeFeatureFlagsProviderJavaClass()->getMethod<jboolean()>("fixBorderlessRippleAndroid");
     return method(javaProvider_);
   }
 
@@ -658,14 +664,14 @@ bool JReactNativeFeatureFlagsCxxInterop::enableAndroidTextMeasurementOptimizatio
   return ReactNativeFeatureFlags::enableAndroidTextMeasurementOptimizations();
 }
 
+bool JReactNativeFeatureFlagsCxxInterop::enableAsyncDiskCacheCheckInMultiSourceImageAndroid(
+    facebook::jni::alias_ref<JReactNativeFeatureFlagsCxxInterop> /*unused*/) {
+  return ReactNativeFeatureFlags::enableAsyncDiskCacheCheckInMultiSourceImageAndroid();
+}
+
 bool JReactNativeFeatureFlagsCxxInterop::enableBridgelessArchitecture(
     facebook::jni::alias_ref<JReactNativeFeatureFlagsCxxInterop> /*unused*/) {
   return ReactNativeFeatureFlags::enableBridgelessArchitecture();
-}
-
-bool JReactNativeFeatureFlagsCxxInterop::enableBufferedCallInvoker(
-    facebook::jni::alias_ref<JReactNativeFeatureFlagsCxxInterop> /*unused*/) {
-  return ReactNativeFeatureFlags::enableBufferedCallInvoker();
 }
 
 bool JReactNativeFeatureFlagsCxxInterop::enableCppPropsIteratorSetter(
@@ -866,6 +872,11 @@ bool JReactNativeFeatureFlagsCxxInterop::enableViewRecyclingForView(
 bool JReactNativeFeatureFlagsCxxInterop::enableVirtualViewContainerStateExperimental(
     facebook::jni::alias_ref<JReactNativeFeatureFlagsCxxInterop> /*unused*/) {
   return ReactNativeFeatureFlags::enableVirtualViewContainerStateExperimental();
+}
+
+bool JReactNativeFeatureFlagsCxxInterop::fixBorderlessRippleAndroid(
+    facebook::jni::alias_ref<JReactNativeFeatureFlagsCxxInterop> /*unused*/) {
+  return ReactNativeFeatureFlags::fixBorderlessRippleAndroid();
 }
 
 bool JReactNativeFeatureFlagsCxxInterop::fixMappingOfEventPrioritiesBetweenFabricAndReact(
@@ -1110,11 +1121,11 @@ void JReactNativeFeatureFlagsCxxInterop::registerNatives() {
         "enableAndroidTextMeasurementOptimizations",
         JReactNativeFeatureFlagsCxxInterop::enableAndroidTextMeasurementOptimizations),
       makeNativeMethod(
+        "enableAsyncDiskCacheCheckInMultiSourceImageAndroid",
+        JReactNativeFeatureFlagsCxxInterop::enableAsyncDiskCacheCheckInMultiSourceImageAndroid),
+      makeNativeMethod(
         "enableBridgelessArchitecture",
         JReactNativeFeatureFlagsCxxInterop::enableBridgelessArchitecture),
-      makeNativeMethod(
-        "enableBufferedCallInvoker",
-        JReactNativeFeatureFlagsCxxInterop::enableBufferedCallInvoker),
       makeNativeMethod(
         "enableCppPropsIteratorSetter",
         JReactNativeFeatureFlagsCxxInterop::enableCppPropsIteratorSetter),
@@ -1235,6 +1246,9 @@ void JReactNativeFeatureFlagsCxxInterop::registerNatives() {
       makeNativeMethod(
         "enableVirtualViewContainerStateExperimental",
         JReactNativeFeatureFlagsCxxInterop::enableVirtualViewContainerStateExperimental),
+      makeNativeMethod(
+        "fixBorderlessRippleAndroid",
+        JReactNativeFeatureFlagsCxxInterop::fixBorderlessRippleAndroid),
       makeNativeMethod(
         "fixMappingOfEventPrioritiesBetweenFabricAndReact",
         JReactNativeFeatureFlagsCxxInterop::fixMappingOfEventPrioritiesBetweenFabricAndReact),

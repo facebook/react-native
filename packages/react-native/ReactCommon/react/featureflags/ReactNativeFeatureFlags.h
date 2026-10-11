@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<dae6ad344267433b319e0928830e0e11>>
+ * @generated SignedSource<<73ae8b45c0961bc60eeb804d4d40bd07>>
  */
 
 /**
@@ -117,14 +117,14 @@ class ReactNativeFeatureFlags {
   RN_EXPORT static bool enableAndroidTextMeasurementOptimizations();
 
   /**
+   * Runs multi-source image disk-cache checks asynchronously on Android.
+   */
+  RN_EXPORT static bool enableAsyncDiskCacheCheckInMultiSourceImageAndroid();
+
+  /**
    * Feature flag to enable the new bridgeless architecture.
    */
   RN_EXPORT static bool enableBridgelessArchitecture();
-
-  /**
-   * Route async CallInvoker work through the ReactInstance buffered runtime executor, so it is ordered against callable module calls and cannot run before the JS bundle has finished evaluating. invokeSync is unaffected.
-   */
-  RN_EXPORT static bool enableBufferedCallInvoker();
 
   /**
    * Enable prop iterator setter-style construction of Props in C++ (this flag is not used in Java).
@@ -325,6 +325,11 @@ class ReactNativeFeatureFlags {
    * Enables the experimental version of `VirtualViewContainerState`.
    */
   RN_EXPORT static bool enableVirtualViewContainerStateExperimental();
+
+  /**
+   * Prevents a borderless ripple feedback underlay from projecting the entire view background on Android, which could hide the background and ripple.
+   */
+  RN_EXPORT static bool fixBorderlessRippleAndroid();
 
   /**
    * Uses the default event priority instead of the discreet event priority by default when dispatching events from Fabric to React.

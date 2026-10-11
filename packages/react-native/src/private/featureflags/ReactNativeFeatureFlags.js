@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<f3e14fe69dcc6c0bb6373d5661d47174>>
+ * @generated SignedSource<<af6139096ee6674041dc18f92a7d1f91>>
  * @flow strict
  * @noformat
  */
@@ -65,8 +65,8 @@ export type ReactNativeFeatureFlags = Readonly<{
   enableAccumulatedUpdatesInRawPropsAndroid: Getter<boolean>,
   enableAndroidAutoOffscreenCompositingForElevation: Getter<boolean>,
   enableAndroidTextMeasurementOptimizations: Getter<boolean>,
+  enableAsyncDiskCacheCheckInMultiSourceImageAndroid: Getter<boolean>,
   enableBridgelessArchitecture: Getter<boolean>,
-  enableBufferedCallInvoker: Getter<boolean>,
   enableCppPropsIteratorSetter: Getter<boolean>,
   enableCustomFocusSearchOnClippedElementsAndroid: Getter<boolean>,
   enableDestroyShadowTreeRevisionAsync: Getter<boolean>,
@@ -107,6 +107,7 @@ export type ReactNativeFeatureFlags = Readonly<{
   enableViewRecyclingForText: Getter<boolean>,
   enableViewRecyclingForView: Getter<boolean>,
   enableVirtualViewContainerStateExperimental: Getter<boolean>,
+  fixBorderlessRippleAndroid: Getter<boolean>,
   fixMappingOfEventPrioritiesBetweenFabricAndReact: Getter<boolean>,
   fixYogaFlexBasisFitContentInMainAxis: Getter<boolean>,
   fuseboxAssertSingleHostState: Getter<boolean>,
@@ -282,13 +283,13 @@ export const enableAndroidAutoOffscreenCompositingForElevation: Getter<boolean> 
  */
 export const enableAndroidTextMeasurementOptimizations: Getter<boolean> = createNativeFlagGetter('enableAndroidTextMeasurementOptimizations', false);
 /**
+ * Runs multi-source image disk-cache checks asynchronously on Android.
+ */
+export const enableAsyncDiskCacheCheckInMultiSourceImageAndroid: Getter<boolean> = createNativeFlagGetter('enableAsyncDiskCacheCheckInMultiSourceImageAndroid', false);
+/**
  * Feature flag to enable the new bridgeless architecture.
  */
 export const enableBridgelessArchitecture: Getter<boolean> = createNativeFlagGetter('enableBridgelessArchitecture', true);
-/**
- * Route async CallInvoker work through the ReactInstance buffered runtime executor, so it is ordered against callable module calls and cannot run before the JS bundle has finished evaluating. invokeSync is unaffected.
- */
-export const enableBufferedCallInvoker: Getter<boolean> = createNativeFlagGetter('enableBufferedCallInvoker', true);
 /**
  * Enable prop iterator setter-style construction of Props in C++ (this flag is not used in Java).
  */
@@ -449,6 +450,10 @@ export const enableViewRecyclingForView: Getter<boolean> = createNativeFlagGette
  * Enables the experimental version of `VirtualViewContainerState`.
  */
 export const enableVirtualViewContainerStateExperimental: Getter<boolean> = createNativeFlagGetter('enableVirtualViewContainerStateExperimental', false);
+/**
+ * Prevents a borderless ripple feedback underlay from projecting the entire view background on Android, which could hide the background and ripple.
+ */
+export const fixBorderlessRippleAndroid: Getter<boolean> = createNativeFlagGetter('fixBorderlessRippleAndroid', false);
 /**
  * Uses the default event priority instead of the discreet event priority by default when dispatching events from Fabric to React.
  */

@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<6607c8678df2693c361f6d8091483662>>
+ * @generated SignedSource<<256b97731c59551616a8e0cbc777f3fa>>
  */
 
 /**
@@ -53,9 +53,9 @@ public interface ReactNativeFeatureFlagsProvider {
 
   @DoNotStrip public fun enableAndroidTextMeasurementOptimizations(): Boolean
 
-  @DoNotStrip public fun enableBridgelessArchitecture(): Boolean
+  @DoNotStrip public fun enableAsyncDiskCacheCheckInMultiSourceImageAndroid(): Boolean
 
-  @DoNotStrip public fun enableBufferedCallInvoker(): Boolean
+  @DoNotStrip public fun enableBridgelessArchitecture(): Boolean
 
   @DoNotStrip public fun enableCppPropsIteratorSetter(): Boolean
 
@@ -136,6 +136,8 @@ public interface ReactNativeFeatureFlagsProvider {
   @DoNotStrip public fun enableViewRecyclingForView(): Boolean
 
   @DoNotStrip public fun enableVirtualViewContainerStateExperimental(): Boolean
+
+  @DoNotStrip public fun fixBorderlessRippleAndroid(): Boolean
 
   @DoNotStrip public fun fixMappingOfEventPrioritiesBetweenFabricAndReact(): Boolean
 

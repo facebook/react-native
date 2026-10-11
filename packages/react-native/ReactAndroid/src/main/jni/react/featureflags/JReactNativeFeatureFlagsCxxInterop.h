@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<7a9a9c1938c3e01f589e05fffe349ad3>>
+ * @generated SignedSource<<228fff4f0ef0e530bf50203050adb9b0>>
  */
 
 /**
@@ -75,10 +75,10 @@ class JReactNativeFeatureFlagsCxxInterop
   static bool enableAndroidTextMeasurementOptimizations(
     facebook::jni::alias_ref<JReactNativeFeatureFlagsCxxInterop>);
 
-  static bool enableBridgelessArchitecture(
+  static bool enableAsyncDiskCacheCheckInMultiSourceImageAndroid(
     facebook::jni::alias_ref<JReactNativeFeatureFlagsCxxInterop>);
 
-  static bool enableBufferedCallInvoker(
+  static bool enableBridgelessArchitecture(
     facebook::jni::alias_ref<JReactNativeFeatureFlagsCxxInterop>);
 
   static bool enableCppPropsIteratorSetter(
@@ -199,6 +199,9 @@ class JReactNativeFeatureFlagsCxxInterop
     facebook::jni::alias_ref<JReactNativeFeatureFlagsCxxInterop>);
 
   static bool enableVirtualViewContainerStateExperimental(
+    facebook::jni::alias_ref<JReactNativeFeatureFlagsCxxInterop>);
+
+  static bool fixBorderlessRippleAndroid(
     facebook::jni::alias_ref<JReactNativeFeatureFlagsCxxInterop>);
 
   static bool fixMappingOfEventPrioritiesBetweenFabricAndReact(

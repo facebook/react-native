@@ -9,8 +9,8 @@
 
 #include <react/cxxstableapi/FrameworksGuard.h>
 
+#include <React/Graphics.h>
 #include <React/RendererCore.h>
-#include <react/renderer/graphics/Float.h>
 #include "ModalHostViewUtils.h"
 
 #ifdef RN_SERIALIZABLE_STATE

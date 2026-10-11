@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<428c475acbb4baed380207f0b08b4e26>>
+ * @generated SignedSource<<a913044f2667f75281e079cdd7fb6c14>>
  */
 
 /**
@@ -42,8 +42,8 @@ class ReactNativeFeatureFlagsProvider {
   virtual bool enableAccumulatedUpdatesInRawPropsAndroid() = 0;
   virtual bool enableAndroidAutoOffscreenCompositingForElevation() = 0;
   virtual bool enableAndroidTextMeasurementOptimizations() = 0;
+  virtual bool enableAsyncDiskCacheCheckInMultiSourceImageAndroid() = 0;
   virtual bool enableBridgelessArchitecture() = 0;
-  virtual bool enableBufferedCallInvoker() = 0;
   virtual bool enableCppPropsIteratorSetter() = 0;
   virtual bool enableCustomFocusSearchOnClippedElementsAndroid() = 0;
   virtual bool enableDestroyShadowTreeRevisionAsync() = 0;
@@ -84,6 +84,7 @@ class ReactNativeFeatureFlagsProvider {
   virtual bool enableViewRecyclingForText() = 0;
   virtual bool enableViewRecyclingForView() = 0;
   virtual bool enableVirtualViewContainerStateExperimental() = 0;
+  virtual bool fixBorderlessRippleAndroid() = 0;
   virtual bool fixMappingOfEventPrioritiesBetweenFabricAndReact() = 0;
   virtual bool fixYogaFlexBasisFitContentInMainAxis() = 0;
   virtual bool fuseboxAssertSingleHostState() = 0;

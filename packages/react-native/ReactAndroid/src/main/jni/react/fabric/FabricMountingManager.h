@@ -10,10 +10,9 @@
 #include <mutex>
 #include <unordered_map>
 
+#include <React/RendererCore.h>
 #include <fbjni/fbjni.h>
 #include <react/fabric/JFabricUIManager.h>
-#include <react/renderer/core/Props.h>
-#include <react/renderer/uimanager/primitives.h>
 
 namespace facebook::react {
 

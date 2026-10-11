@@ -214,6 +214,17 @@ const definitions: FeatureFlagDefinitions = {
       },
       ossReleaseStage: 'none',
     },
+    enableAsyncDiskCacheCheckInMultiSourceImageAndroid: {
+      defaultValue: false,
+      metadata: {
+        dateAdded: '2026-09-27',
+        description:
+          'Runs multi-source image disk-cache checks asynchronously on Android.',
+        expectedReleaseValue: true,
+        purpose: 'experimentation',
+      },
+      ossReleaseStage: 'none',
+    },
     enableBridgelessArchitecture: {
       defaultValue: true,
       metadata: {
@@ -222,16 +233,6 @@ const definitions: FeatureFlagDefinitions = {
         purpose: 'release',
       },
       ossReleaseStage: 'stable',
-    },
-    enableBufferedCallInvoker: {
-      defaultValue: true,
-      metadata: {
-        description:
-          'Route async CallInvoker work through the ReactInstance buffered runtime executor, so it is ordered against callable module calls and cannot run before the JS bundle has finished evaluating. invokeSync is unaffected.',
-        expectedReleaseValue: true,
-        purpose: 'release',
-      },
-      ossReleaseStage: 'none',
     },
     enableCppPropsIteratorSetter: {
       dangerouslyExposeInPublicCppHeaders: true,
@@ -660,6 +661,17 @@ const definitions: FeatureFlagDefinitions = {
         purpose: 'experimentation',
       },
       ossReleaseStage: 'none',
+    },
+    fixBorderlessRippleAndroid: {
+      defaultValue: false,
+      metadata: {
+        dateAdded: '2026-10-06',
+        description:
+          'Prevents a borderless ripple feedback underlay from projecting the entire view background on Android, which could hide the background and ripple.',
+        expectedReleaseValue: true,
+        purpose: 'experimentation',
+      },
+      ossReleaseStage: 'canary',
     },
     fixMappingOfEventPrioritiesBetweenFabricAndReact: {
       defaultValue: false,
