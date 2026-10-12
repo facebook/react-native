@@ -97,7 +97,8 @@ export interface TextPropsAndroid {
 
   /**
    * Word-based line breaking (CSS `word-break: auto-phrase`).
-   * Ignored below Android 13 (API level 33).
+   * Ignored below Android 13 (API level 33). Has no effect where the device
+   * locale has no phrase-based breaking.
    */
   android_lineBreakWordStyle?: 'none' | 'phrase' | undefined;
 }

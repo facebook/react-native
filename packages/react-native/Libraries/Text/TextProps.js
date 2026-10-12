@@ -164,6 +164,9 @@ type TextBaseProps = Readonly<{
    * boundaries instead of between any two characters. Matches CSS
    * `word-break: auto-phrase`. Ignored below Android 13 (API level 33).
    *
+   * Support depends on the locale, and text is laid out in the device locale:
+   * where that locale has no phrase-based breaking, `'phrase'` has no effect.
+   *
    * @default `'none'`
    * @platform android
    */

@@ -378,6 +378,8 @@ std::string facebook::react::toString(const facebook::react::ImportantForAccessi
 std::string facebook::react::toString(const facebook::react::LayoutDirection& layoutDirection);
 std::string facebook::react::toString(const facebook::react::LineBreakMode& lineBreakMode);
 std::string facebook::react::toString(const facebook::react::LineBreakStrategy& lineBreakStrategy);
+std::string facebook::react::toString(const facebook::react::LineBreakStyle& lineBreakStyle);
+std::string facebook::react::toString(const facebook::react::LineBreakWordStyle& lineBreakWordStyle);
 std::string facebook::react::toString(const facebook::react::Role& role);
 std::string facebook::react::toString(const facebook::react::ScrollViewSnapToAlignment& value);
 std::string facebook::react::toString(const facebook::react::SharedColor& value);
@@ -465,6 +467,8 @@ void facebook::react::fromRawValue(const facebook::react::PropsParserContext& co
 void facebook::react::fromRawValue(const facebook::react::PropsParserContext& context, const facebook::react::RawValue& value, facebook::react::HyphenationFrequency& result);
 void facebook::react::fromRawValue(const facebook::react::PropsParserContext& context, const facebook::react::RawValue& value, facebook::react::ImportantForAccessibility& result);
 void facebook::react::fromRawValue(const facebook::react::PropsParserContext& context, const facebook::react::RawValue& value, facebook::react::LineBreakStrategy& result);
+void facebook::react::fromRawValue(const facebook::react::PropsParserContext& context, const facebook::react::RawValue& value, facebook::react::LineBreakStyle& result);
+void facebook::react::fromRawValue(const facebook::react::PropsParserContext& context, const facebook::react::RawValue& value, facebook::react::LineBreakWordStyle& result);
 void facebook::react::fromRawValue(const facebook::react::PropsParserContext& context, const facebook::react::RawValue& value, facebook::react::OutlineStyle& result);
 void facebook::react::fromRawValue(const facebook::react::PropsParserContext& context, const facebook::react::RawValue& value, facebook::react::PointerEventsMode& result);
 void facebook::react::fromRawValue(const facebook::react::PropsParserContext& context, const facebook::react::RawValue& value, facebook::react::Role& result);
@@ -1812,6 +1816,8 @@ class facebook::react::ParagraphAttributes : public facebook::react::DebugString
   public bool operator==(const facebook::react::ParagraphAttributes& rhs) const;
   public facebook::react::EllipsizeMode ellipsizeMode;
   public facebook::react::HyphenationFrequency android_hyphenationFrequency;
+  public facebook::react::LineBreakStyle android_lineBreakStyle;
+  public facebook::react::LineBreakWordStyle android_lineBreakWordStyle;
   public facebook::react::TextBreakStrategy textBreakStrategy;
   public facebook::react::TextWidthMode textWidthMode;
   public int maximumNumberOfLines;
@@ -3534,6 +3540,18 @@ enum facebook::react::LineBreakStrategy : uint8_t {
   None,
   PushOut,
   Standard,
+}
+
+enum facebook::react::LineBreakStyle {
+  Loose,
+  None,
+  Normal,
+  Strict,
+}
+
+enum facebook::react::LineBreakWordStyle {
+  None,
+  Phrase,
 }
 
 enum facebook::react::NullValueStrategy {
