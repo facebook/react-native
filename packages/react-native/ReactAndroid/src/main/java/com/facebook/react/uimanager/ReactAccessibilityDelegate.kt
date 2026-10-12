@@ -99,7 +99,7 @@ public open class ReactAccessibilityDelegate( // The View this delegate is attac
     // state is changeable.
     val accessibilityState = host.getTag(R.id.accessibility_state) as ReadableMap?
     if (accessibilityState != null) {
-      setState(info, accessibilityState)
+      setState(info, accessibilityState, accessibilityRole, host.context)
     }
     val accessibilityActions = host.getTag(R.id.accessibility_actions) as ReadableArray?
 
@@ -626,6 +626,8 @@ public open class ReactAccessibilityDelegate( // The View this delegate is attac
     private fun setState(
         info: AccessibilityNodeInfoCompat,
         accessibilityState: ReadableMap,
+        role: AccessibilityRole?,
+        context: Context,
     ) {
       val i = accessibilityState.keySetIterator()
       while (i.hasNextKey()) {
@@ -639,9 +641,29 @@ public open class ReactAccessibilityDelegate( // The View this delegate is attac
           val boolValue = value.asBoolean()
           info.isCheckable = true
           info.isChecked = boolValue
+          // TalkBack only speaks the unchecked state of a checkable node, and only avoids
+          // announcing "checked" and "on" together for a switch, when the node carries a
+          // stateDescription (API 30+). Native CompoundButton always sets it, so do the same.
+          info.stateDescription = getCheckedStateDescription(boolValue, role, context)
         }
       }
     }
+
+    private fun getCheckedStateDescription(
+        checked: Boolean,
+        role: AccessibilityRole?,
+        context: Context,
+    ): String =
+        if (role == AccessibilityRole.SWITCH) {
+          context.getString(
+              if (checked) R.string.state_on_description else R.string.state_off_description
+          )
+        } else {
+          context.getString(
+              if (checked) R.string.state_checked_description
+              else R.string.state_unchecked_description
+          )
+        }
 
     // TODO: Eventually support for other languages on talkback
     @JvmStatic
