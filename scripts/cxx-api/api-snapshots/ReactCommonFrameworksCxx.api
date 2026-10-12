@@ -709,6 +709,7 @@ class facebook::react::AttributedStringBox {
   public AttributedStringBox();
   public AttributedStringBox(const facebook::react::AttributedString& value);
   public AttributedStringBox(const facebook::react::AttributedStringBox& other) = default;
+  public AttributedStringBox(facebook::react::AttributedString&& value);
   public AttributedStringBox(facebook::react::AttributedStringBox&& other) noexcept;
   public AttributedStringBox(std::shared_ptr<void> opaquePointer);
   public const facebook::react::AttributedString& getValue() const;

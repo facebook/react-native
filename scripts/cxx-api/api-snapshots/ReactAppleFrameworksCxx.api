@@ -1939,12 +1939,12 @@ interface RCTTextInputComponentView : public RCTViewComponentView {
 }
 
 interface RCTTextLayoutManager : public NSObject {
-  public virtual facebook::react::LinesMeasurements getLinesForAttributedString:paragraphAttributes:size:(facebook::react::AttributedString attributedString, facebook::react::ParagraphAttributes paragraphAttributes, CGSize size);
-  public virtual facebook::react::TextMeasurement measureAttributedString:paragraphAttributes:layoutContext:layoutConstraints:(facebook::react::AttributedString attributedString, facebook::react::ParagraphAttributes paragraphAttributes, facebook::react::TextLayoutContext layoutContext, facebook::react::LayoutConstraints layoutConstraints);
+  public virtual facebook::react::LinesMeasurements getLinesForAttributedString:paragraphAttributes:size:(const facebook::react::AttributedString& attributedString, facebook::react::ParagraphAttributes paragraphAttributes, CGSize size);
+  public virtual facebook::react::TextMeasurement measureAttributedString:paragraphAttributes:layoutContext:layoutConstraints:(const facebook::react::AttributedString& attributedString, facebook::react::ParagraphAttributes paragraphAttributes, facebook::react::TextLayoutContext layoutContext, facebook::react::LayoutConstraints layoutConstraints);
   public virtual facebook::react::TextMeasurement measureNSAttributedString:paragraphAttributes:layoutContext:layoutConstraints:(NSAttributedString* attributedString, facebook::react::ParagraphAttributes paragraphAttributes, facebook::react::TextLayoutContext layoutContext, facebook::react::LayoutConstraints layoutConstraints);
-  public virtual std::shared_ptr<const facebook::react::EventEmitter> getEventEmitterWithAttributeString:paragraphAttributes:frame:atPoint:(facebook::react::AttributedString attributedString, facebook::react::ParagraphAttributes paragraphAttributes, CGRect frame, CGPoint point);
-  public virtual void drawAttributedString:paragraphAttributes:frame:drawHighlightPath:(facebook::react::AttributedString attributedString, facebook::react::ParagraphAttributes paragraphAttributes, CGRect frame, void(^)(UIBezierPath* highlightPath) block);
-  public virtual void getRectWithAttributedString:paragraphAttributes:enumerateAttribute:frame:usingBlock:(facebook::react::AttributedString attributedString, facebook::react::ParagraphAttributes paragraphAttributes, NSString* enumerateAttribute, CGRect frame, RCTTextLayoutFragmentEnumerationBlock block);
+  public virtual std::shared_ptr<const facebook::react::EventEmitter> getEventEmitterWithAttributeString:paragraphAttributes:frame:atPoint:(const facebook::react::AttributedString& attributedString, facebook::react::ParagraphAttributes paragraphAttributes, CGRect frame, CGPoint point);
+  public virtual void drawAttributedString:paragraphAttributes:frame:drawHighlightPath:(const facebook::react::AttributedString& attributedString, facebook::react::ParagraphAttributes paragraphAttributes, CGRect frame, void(^)(UIBezierPath* highlightPath) block);
+  public virtual void getRectWithAttributedString:paragraphAttributes:enumerateAttribute:frame:usingBlock:(const facebook::react::AttributedString& attributedString, facebook::react::ParagraphAttributes paragraphAttributes, NSString* enumerateAttribute, CGRect frame, RCTTextLayoutFragmentEnumerationBlock block);
 }
 
 interface RCTTextSelection : public NSObject {
@@ -3963,6 +3963,7 @@ class facebook::react::AttributedStringBox {
   public AttributedStringBox();
   public AttributedStringBox(const facebook::react::AttributedString& value);
   public AttributedStringBox(const facebook::react::AttributedStringBox& other) = default;
+  public AttributedStringBox(facebook::react::AttributedString&& value);
   public AttributedStringBox(facebook::react::AttributedStringBox&& other) noexcept;
   public AttributedStringBox(std::shared_ptr<void> opaquePointer);
   public const facebook::react::AttributedString& getValue() const;
