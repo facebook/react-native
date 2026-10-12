@@ -8,7 +8,9 @@
 #pragma once
 
 #include <react/http/IWebSocketClient.h>
+#include <functional>
 #include <memory>
+#include <mutex>
 #include <string>
 #include <thread>
 
@@ -29,6 +31,7 @@ class WebSocketClient : public IWebSocketClient {
 
   void connect(const std::string &url, OnConnectCallback &&onConnectCallback = nullptr) override;
 
+  // Close may run in IO callbacks; destroy only from an external owner thread.
   void close(const std::string &reason) override;
 
   void send(const std::string &message) override;
@@ -36,10 +39,14 @@ class WebSocketClient : public IWebSocketClient {
   void ping() override;
 
  private:
+  friend class WebSocketClientTestPeer;
   struct Impl;
+
+  void closeImpl(const std::string &reason, const std::function<bool()> &join);
 
   // Instance data and IO thread
   const std::shared_ptr<Impl> impl_;
+  std::mutex threadMutex_;
   std::unique_ptr<std::thread> thread_;
 };
 

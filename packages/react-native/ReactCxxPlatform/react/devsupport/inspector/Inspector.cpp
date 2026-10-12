@@ -135,16 +135,34 @@ Inspector::Inspector(
       httpClientFactory_(std::move(httpClientFactory)) {}
 
 Inspector::~Inspector() noexcept {
-  if (pageId_) {
-    jsinspector_modern::getInspectorInstance().removePage(*pageId_);
-    taskDispatchThread_.runSync([weakThis = weak_from_this()]() {
-      if (auto strongThis = weakThis.lock()) {
-        strongThis->pageId_.reset();
-        strongThis->target_.reset();
-      }
-    });
+  shutdown();
+}
+
+void Inspector::shutdown() noexcept {
+  CHECK(!taskDispatchThread_.isOnThread());
+  if (shuttingDown_.exchange(true)) {
+    return;
   }
+  taskDispatchThread_.runSync([this]() {
+    taskDispatchThread_.cancelPendingTasks();
+    if (pageId_) {
+      jsinspector_modern::getInspectorInstance().removePage(*pageId_);
+      pageId_.reset();
+    }
+    if (packagerConnection_) {
+      packagerConnection_->closeQuietly();
+      packagerConnection_.reset();
+    }
+    target_.reset();
+    hostDelegate_.reset();
+  });
   taskDispatchThread_.quit();
+}
+
+void Inspector::runOnInspectorThreadSync(
+    TaskDispatchThread::TaskFn&& callback) {
+  CHECK(!shuttingDown_);
+  taskDispatchThread_.runSync(std::move(callback));
 }
 
 void Inspector::connectDebugger(const std::string& inspectorUrl) noexcept {
@@ -205,11 +223,20 @@ void Inspector::ensureHostTarget(
 void Inspector::invokeElsePost(
     TaskDispatchThread::TaskFn&& callback,
     std::chrono::milliseconds delayMs) {
+  if (shuttingDown_) {
+    return;
+  }
   if (taskDispatchThread_.isOnThread() &&
       delayMs == std::chrono::milliseconds::zero()) {
     callback();
   } else {
-    taskDispatchThread_.runAsync(std::move(callback), delayMs);
+    taskDispatchThread_.runAsync(
+        [weakThis = weak_from_this(), callback = std::move(callback)]() {
+          if (auto self = weakThis.lock(); self && !self->shuttingDown_) {
+            callback();
+          }
+        },
+        delayMs);
   }
 }
 

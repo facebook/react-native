@@ -5,63 +5,39 @@
  * LICENSE file in the root directory of this source tree.
  */
 
-#include "WebSocketClient.h"
+#include "WebSocketClientImpl.h"
 
-#include <boost/beast/core.hpp>
-#include <boost/beast/websocket.hpp>
-#include <folly/Synchronized.h>
-#include <folly/Uri.h>
+#include <boost/asio/post.hpp>
+#include <folly/ScopeGuard.h>
 #include <folly/system/ThreadName.h>
 #include <react/debug/react_native_assert.h>
-#include <atomic>
-#include <mutex>
-#include <queue>
+#include <exception>
 
 namespace facebook::react {
-
-struct WebSocketClient::Impl final : public std::enable_shared_from_this<Impl> {
-  void onResolveCompleted(
-      boost::system::error_code ec,
-      const boost::asio::ip::tcp::resolver::results_type& results);
-
-  void onConnectionCompleted(boost::system::error_code ec);
-
-  void onHandshakeCompleted(boost::system::error_code ec);
-
-  void listen();
-
-  void write();
-
-  void onConnectCallback(bool connected, const std::string& error);
-
-  // Callbacks and Uri
-  OnConnectCallback onConnectCallback_;
-  OnClosedCallback onClosedCallback_;
-  OnMessageCallback onMessageCallback_;
-  std::optional<folly::Uri> uri_;
-
-  // Boost Beast WebSocket Client
-  boost::asio::io_context ioContext_;
-  boost::asio::ip::tcp::resolver resolver_{ioContext_};
-  boost::beast::multi_buffer buffer_;
-  folly::Synchronized<
-      boost::beast::websocket::stream<boost::asio::ip::tcp::socket>>
-      ws_{boost::beast::websocket::stream<boost::asio::ip::tcp::socket>{
-          ioContext_}};
-
-  // Input and Output handling
-  std::mutex mutexOut_;
-  std::queue<std::string> messagesOut_;
-  std::atomic<bool> isWriting_{false};
-  std::atomic<bool> isConnected_{false};
-  std::atomic<bool> isClosing_{false};
-};
 
 WebSocketClient::WebSocketClient() noexcept
     : impl_(std::make_shared<WebSocketClient::Impl>()) {}
 
 WebSocketClient::~WebSocketClient() {
-  WebSocketClient::close("Force close as WebSocketClient being destroyed");
+  react_native_assert(
+      !impl_->isOnIOThread() &&
+      "WebSocketClient must be destroyed on its external owner thread");
+  try {
+    WebSocketClient::close("Force close as WebSocketClient being destroyed");
+  } catch (...) {
+    try {
+      impl_->isClosing_ = true;
+      impl_->ioContext_.stop();
+      std::lock_guard<std::mutex> lock(threadMutex_);
+      if (thread_) {
+        thread_->join();
+        thread_.reset();
+      }
+      impl_->closeSocket();
+    } catch (...) {
+      std::terminate();
+    }
+  }
 }
 
 void WebSocketClient::setOnClosedCallback(
@@ -77,6 +53,7 @@ void WebSocketClient::setOnMessageCallback(
 void WebSocketClient::connect(
     const std::string& url,
     OnConnectCallback&& callback) {
+  std::lock_guard<std::mutex> lock(threadMutex_);
   if (thread_) {
     react_native_assert(false && "WebSocketClient::connect() called twice");
     return;
@@ -98,33 +75,78 @@ void WebSocketClient::connect(
       });
 
   // Start the I/O thread
-  static int32_t s_threadId = 0;
+  static std::atomic<int32_t> s_threadId{0};
   thread_ = std::make_unique<std::thread>(
-      [weakImpl = std::weak_ptr(impl_), tid = s_threadId++]() {
+      [weakImpl = std::weak_ptr(impl_), tid = s_threadId.fetch_add(1)]() {
         folly::setThreadName("WebSocket" + std::to_string(tid));
         if (auto impl = weakImpl.lock()) {
-          impl->ioContext_.run();
+          impl->run();
         }
       });
 }
 
+void WebSocketClient::Impl::run() {
+  auto restoreMarker =
+      folly::makeGuard([previous = activeIO_]() { activeIO_ = previous; });
+  activeIO_ = this;
+  ioContext_.run();
+}
+
 void WebSocketClient::close(const std::string& reason) {
+  std::unique_lock<std::mutex> lock(threadMutex_, std::defer_lock);
+  closeImpl(reason, [this, &lock]() {
+    if (impl_->isOnIOThread()) {
+      return false;
+    }
+    lock.lock();
+    if (thread_) {
+      thread_->join();
+      thread_.reset();
+    }
+    return true;
+  });
+}
+
+void WebSocketClient::closeImpl(
+    const std::string& reason,
+    const std::function<bool()>& join) {
   if (!impl_->isClosing_.exchange(true)) {
+    boost::asio::post(
+        impl_->ioContext_, [weakImpl = std::weak_ptr(impl_), reason]() {
+          if (auto impl = weakImpl.lock()) {
+            impl->closeOnIOThread(reason);
+          }
+        });
     if (impl_->onClosedCallback_) {
       impl_->onClosedCallback_(reason);
     }
-    auto ws = impl_->ws_.wlock();
-    if (ws->is_open()) {
-      ws->async_close(
-          boost::beast::websocket::close_reason(reason), [](auto&&) {});
-    } else {
-      ws->next_layer().close();
-    }
-    if (thread_) {
-      thread_->join();
-    }
   }
-  thread_ = nullptr;
+  if (join()) {
+    // The loop may have exited before the posted close could execute.
+    impl_->closeSocket();
+  }
+}
+
+void WebSocketClient::Impl::closeOnIOThread(const std::string& reason) {
+  pendingPings_ = 0;
+  resolver_.cancel();
+  auto ws = ws_.wlock();
+  if (ws->is_open()) {
+    ws->async_close(
+        boost::beast::websocket::close_reason(reason), [](auto&&) {});
+  } else {
+    boost::system::error_code ec;
+    // NOLINTNEXTLINE(bugprone-unused-return-value): Boost may return void.
+    (void)ws->next_layer().close(ec);
+  }
+}
+
+void WebSocketClient::Impl::closeSocket() {
+  resolver_.cancel();
+  auto ws = ws_.wlock();
+  boost::system::error_code ec;
+  // NOLINTNEXTLINE(bugprone-unused-return-value): Boost may return void.
+  (void)ws->next_layer().close(ec);
 }
 
 void WebSocketClient::send(const std::string& message) {
@@ -132,28 +154,60 @@ void WebSocketClient::send(const std::string& message) {
     std::lock_guard<std::mutex> lock(impl_->mutexOut_);
     impl_->messagesOut_.emplace(message);
   }
-  impl_->write();
+  boost::asio::post(impl_->ioContext_, [weakImpl = std::weak_ptr(impl_)]() {
+    if (auto impl = weakImpl.lock()) {
+      impl->write();
+    }
+  });
 }
 
 void WebSocketClient::ping() {
-  auto ws = impl_->ws_.wlock();
-  // Send a ping message
+  boost::asio::post(impl_->ioContext_, [weakImpl = std::weak_ptr(impl_)]() {
+    if (auto impl = weakImpl.lock()) {
+      impl->requestPing();
+    }
+  });
+}
+
+void WebSocketClient::Impl::requestPing() {
+  if (isClosing_) {
+    return;
+  }
+  ++pendingPings_;
+  ping();
+}
+
+void WebSocketClient::Impl::ping() {
+  if (isClosing_ || isPinging_ || pendingPings_ == 0) {
+    return;
+  }
+  isPinging_ = true;
+  --pendingPings_;
+  auto ws = ws_.wlock();
   ws->async_ping(
-      {}, [weakImpl = std::weak_ptr(impl_)](boost::beast::error_code ec) {
+      {}, [weakImpl = weak_from_this()](boost::beast::error_code ec) {
         auto impl = weakImpl.lock();
-        if (!impl || impl->isClosing_) {
+        if (!impl) {
+          return;
+        }
+        impl->isPinging_ = false;
+        if (impl->isClosing_) {
+          impl->pendingPings_ = 0;
           return;
         }
         if (ec) {
           LOG(ERROR) << "Error pinging websocket: " << ec.message();
-          return;
         }
+        impl->ping();
       });
 }
 
 void WebSocketClient::Impl::onResolveCompleted(
     boost::system::error_code ec,
     const boost::asio::ip::tcp::resolver::results_type& results) {
+  if (isClosing_) {
+    return;
+  }
   if (ec) {
     // TODO: Handle retry logic here
     onConnectCallback(false, "Failed to resolve host");
@@ -176,6 +230,9 @@ void WebSocketClient::Impl::onResolveCompleted(
 
 void WebSocketClient::Impl::onConnectionCompleted(
     boost::system::error_code ec) {
+  if (isClosing_) {
+    return;
+  }
   if (ec) {
     // TODO: Handle retry logic here
     onConnectCallback(false, "Failed to connect");
@@ -210,6 +267,9 @@ void WebSocketClient::Impl::onConnectionCompleted(
 }
 
 void WebSocketClient::Impl::onHandshakeCompleted(boost::system::error_code ec) {
+  if (isClosing_) {
+    return;
+  }
   if (ec) {
     // TODO: Handle retry logic here
     onConnectCallback(false, "Failed to handshake");

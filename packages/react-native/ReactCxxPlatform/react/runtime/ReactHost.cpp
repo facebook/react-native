@@ -108,6 +108,9 @@ ReactHost::ReactHost(
 
 ReactHost::~ReactHost() noexcept {
   destroyReactInstance();
+  if (inspector_) {
+    inspector_->shutdown();
+  }
 }
 
 void ReactHost::createReactInstance() {
@@ -304,7 +307,8 @@ void ReactHost::createReactInstance() {
 
 void ReactHost::destroyReactInstance() {
   if (inspector_ != nullptr) {
-    reactInstance_->unregisterFromInspector();
+    inspector_->runOnInspectorThreadSync(
+        [this]() { reactInstance_->unregisterFromInspector(); });
   }
   if (surfaceManager_) {
     surfaceManager_->stopAllSurfaces();
