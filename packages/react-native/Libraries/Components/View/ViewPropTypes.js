@@ -65,20 +65,18 @@ type DirectEventProps = Readonly<{
   onLayout?: ?(event: LayoutChangeEvent) => unknown,
 
   /**
-   * Invoked when the part of this view that is covered by the system UI
-   * (status bar, navigation bar, home indicator, display cutouts, ...)
-   * changes, with:
+   * Invoked when this view's safe-area insets change, with:
    *
    * `{nativeEvent: {insets: {top, right, bottom, left}}}`
    *
-   * `insets` are relative to this view: an inset is only non-zero for the part
-   * of the view that actually overlaps the system UI.
+   * `insets` measure how far the view extends into the unsafe area, in points
+   * on iOS and dp on Android, not display pixels. Content padding does not
+   * affect them.
    *
-   * The event is dispatched synchronously, so the rendering it schedules is
-   * applied in the same frame the insets changed in.
+   * Android accounts for scaling and ignores ancestor clipping. Rotation,
+   * skew, and perspective are unsupported; fully clipped views emit no updates.
    *
-   * Setting this prop makes the view observe safe area changes; views without
-   * it are unaffected.
+   * Dispatched synchronously so rendering updates apply in the same frame.
    *
    * @experimental
    */
