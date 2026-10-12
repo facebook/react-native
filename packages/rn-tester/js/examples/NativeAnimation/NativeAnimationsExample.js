@@ -121,7 +121,7 @@ class ValueListenerExample extends React.Component<{...}, $FlowFixMe> {
   }
 }
 
-class LoopExample extends React.Component<{...}, $FlowFixMe> {
+class LoopExample extends React.Component<{...}, {value: Animated.Value}> {
   state: any | {value: Animated.Value} = {
     value: new Animated.Value(0),
   };
