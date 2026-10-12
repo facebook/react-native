@@ -158,9 +158,7 @@ Float facebook::react::floatFromYogaOptionalFloat(facebook::yoga::FloatOptional 
 YGDirection facebook::react::yogaDirectionFromLayoutDirection(facebook::react::LayoutDirection direction);
 bool facebook::react::areBorderRadiiCircular(const facebook::react::BorderRadii& borderRadii);
 bool facebook::react::isColorMeaningful(const facebook::react::SharedColor& color) noexcept;
-bool facebook::react::isHermesBytecodeBundle(const facebook::react::BundleHeader& header);
 bool facebook::react::isZero(Float n);
-const char* facebook::react::stringForScriptTag(const facebook::react::ScriptTag& tag);
 constexpr auto facebook::react::to_underlying(auto e) noexcept;
 constexpr char facebook::react::toLower(char c);
 constexpr uint32_t facebook::react::fnv1aLowercase(std::string_view string);
@@ -171,7 +169,6 @@ facebook::react::DisplayType facebook::react::displayTypeFromYGDisplay(YGDisplay
 facebook::react::LayoutMetrics facebook::react::layoutMetricsFromYogaNode(facebook::yoga::Node& yogaNode);
 facebook::react::Rect facebook::react::insetBy(const facebook::react::Rect& rect, const facebook::react::EdgeInsets& insets) noexcept;
 facebook::react::Rect facebook::react::outsetBy(const facebook::react::Rect& rect, const facebook::react::EdgeInsets& outsets) noexcept;
-facebook::react::ScriptTag facebook::react::parseTypeFromHeader(const facebook::react::BundleHeader& header);
 facebook::react::SharedColor facebook::react::blackColor();
 facebook::react::SharedColor facebook::react::clearColor();
 facebook::react::SharedColor facebook::react::colorFromComponents(facebook::react::ColorComponents components);
@@ -1616,11 +1613,6 @@ enum facebook::react::SchedulerPriority : int {
   UserBlockingPriority,
 }
 
-enum facebook::react::ScriptTag {
-  RAMBundle,
-  String,
-}
-
 enum facebook::react::TransformOperationType : uint8_t {
   Arbitrary,
   Identity,
@@ -1775,13 +1767,6 @@ struct facebook::react::Bridging<void> {
   public static void fromJs(facebook::jsi::Runtime&, const facebook::jsi::Value&);
 }
 
-struct facebook::react::BundleHeader {
-  public BundleHeader();
-  public facebook::react::Magic32 magic32;
-  public uint32_t version;
-  public uint64_t magic64;
-}
-
 struct facebook::react::ColorComponents {
   public facebook::react::ColorSpace colorSpace;
   public float alpha;
@@ -1868,11 +1853,6 @@ struct facebook::react::LinearGradient {
   public bool operator==(const facebook::react::LinearGradient& other) const = default;
   public facebook::react::GradientDirection direction;
   public std::vector<facebook::react::ColorStop> colorStops;
-}
-
-struct facebook::react::Magic32 {
-  public uint32_t reserved_;
-  public uint32_t value;
 }
 
 struct facebook::react::Point {
