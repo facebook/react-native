@@ -1682,19 +1682,6 @@ class facebook::react::JWritableMapBuffer : public facebook::jni::JavaClass<face
   public static constexpr auto kJavaDescriptor;
 }
 
-class facebook::react::JavaInteropTurboModule : public facebook::react::JavaTurboModule {
-  protected virtual facebook::jsi::Value create(facebook::jsi::Runtime& runtime, const facebook::jsi::PropNameID& propName) override;
-  public JavaInteropTurboModule(const facebook::react::JavaTurboModule::InitParams& params, const std::vector<facebook::react::JavaInteropTurboModule::MethodDescriptor>& methodDescriptors);
-  public virtual std::vector<facebook::jsi::PropNameID> getPropertyNames(facebook::jsi::Runtime& runtime) override;
-}
-
-struct facebook::react::JavaInteropTurboModule::MethodDescriptor {
-  public facebook::react::TurboModuleMethodValueKind jsiReturnKind;
-  public int jsArgCount;
-  public std::string jniSignature;
-  public std::string methodName;
-}
-
 class facebook::react::JavaMessageQueueThread : public facebook::jni::JavaClass<facebook::react::JavaMessageQueueThread> {
   public static constexpr auto kJavaDescriptor;
 }
@@ -2475,12 +2462,6 @@ class facebook::react::TurboModule : public facebook::jsi::HostObject {
 struct facebook::react::TurboModule::MethodMetadata {
   public facebook::jsi::Value(*invoker)(facebook::jsi::Runtime &rt, facebook::react::TurboModule &turboModule, const facebook::jsi::Value *args, size_t count);
   public size_t argCount;
-}
-
-class facebook::react::TurboModuleBinding {
-  public static void install(facebook::jsi::Runtime& runtime, TurboModuleProviderFunctionType&& moduleProvider, TurboModuleProviderFunctionType&& legacyModuleProvider = nullptr, std::shared_ptr<facebook::react::LongLivedObjectCollection> longLivedObjectCollection = nullptr);
-  public static void install(facebook::jsi::Runtime& runtime, facebook::react::TurboModuleProviderFunctionTypeWithRuntime&& moduleProvider, facebook::react::TurboModuleProviderFunctionTypeWithRuntime&& legacyModuleProvider = nullptr, std::shared_ptr<facebook::react::LongLivedObjectCollection> longLivedObjectCollection = nullptr);
-  public ~TurboModuleBinding();
 }
 
 class facebook::react::TurboModuleManager : public jni::HybridClass<facebook::react::TurboModuleManager> {
