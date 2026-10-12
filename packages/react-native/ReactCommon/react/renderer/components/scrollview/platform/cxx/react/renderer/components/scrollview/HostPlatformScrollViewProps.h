@@ -9,25 +9,8 @@
 
 #include <react/cxxstableapi/FrameworksGuard.h>
 
-#include <folly/dynamic.h>
 #include <react/renderer/components/scrollview/BaseScrollViewProps.h>
 
 namespace facebook::react {
-
-class HostPlatformScrollViewProps : public BaseScrollViewProps {
- public:
-  HostPlatformScrollViewProps() = default;
-  HostPlatformScrollViewProps(
-      const PropsParserContext &context,
-      const HostPlatformScrollViewProps &sourceProps,
-      const RawProps &rawProps);
-
-  void
-  setProp(const PropsParserContext &context, RawPropsPropNameHash hash, const char *propName, const RawValue &value);
-
-#pragma mark - Props
-
-  folly::dynamic fadingEdgeLength{};
-};
-
+using HostPlatformScrollViewProps = BaseScrollViewProps;
 } // namespace facebook::react

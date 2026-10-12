@@ -10,10 +10,18 @@
 #import <react/renderer/components/scrollview/ScrollViewProps.h>
 #import <react/renderer/components/scrollview/ScrollViewShadowNode.h>
 #import <react/renderer/core/LayoutMetrics.h>
+#import <react/renderer/core/PropsParserContext.h>
+#import <react/renderer/core/RawProps.h>
+#import <react/renderer/core/RawPropsParser.h>
+#import <react/utils/ContextContainer.h>
 
+using facebook::react::ContextContainer;
 using facebook::react::EmptyLayoutMetrics;
 using facebook::react::LayoutMetrics;
 using facebook::react::Props;
+using facebook::react::PropsParserContext;
+using facebook::react::RawProps;
+using facebook::react::RawPropsParser;
 using facebook::react::ScrollViewProps;
 using facebook::react::ScrollViewShadowNode;
 
@@ -32,6 +40,17 @@ static Props::Shared makeFadingEdgeProps(folly::dynamic fadingEdgeLength, bool h
   props->fadingEdgeLength = std::move(fadingEdgeLength);
   props->horizontal = horizontal;
   return props;
+}
+
+static Props::Shared parseScrollViewProps(const folly::dynamic &rawValue, const ScrollViewProps &sourceProps)
+{
+  ContextContainer contextContainer{};
+  PropsParserContext parserContext{-1, contextContainer};
+  auto rawProps = RawProps(rawValue);
+  auto parser = RawPropsParser();
+  parser.prepare<ScrollViewProps>();
+  rawProps.parse(parser);
+  return std::make_shared<const ScrollViewProps>(parserContext, sourceProps, rawProps);
 }
 
 @interface RCTScrollViewComponentView (Tests)
@@ -118,6 +137,24 @@ static Props::Shared makeFadingEdgeProps(folly::dynamic fadingEdgeLength, bool h
   XCTAssertTrue(CGPointEqualToPoint(mask.startPoint, CGPointMake(0, 0.5)));
   XCTAssertTrue(CGPointEqualToPoint(mask.endPoint, CGPointMake(1, 0.5)));
   [self assertLocations:mask.locations equal:@[ @0, @0.2, @1, @1 ]];
+}
+
+- (void)testParsedFadingEdgeFollowsTheAxisWhenHorizontalIsRemoved
+{
+  RCTScrollViewComponentView *view = [[RCTScrollViewComponentView alloc] initWithFrame:CGRectMake(0, 0, 100, 200)];
+  auto horizontalProps =
+      parseScrollViewProps(folly::dynamic::object("fadingEdgeLength", 20)("horizontal", true), ScrollViewProps{});
+  [view updateProps:horizontalProps oldProps:ScrollViewShadowNode::defaultSharedProps()];
+  XCTAssertTrue(CGPointEqualToPoint([self fadingEdgeMaskOf:view].startPoint, CGPointMake(0, 0.5)));
+
+  auto verticalProps = parseScrollViewProps(
+      folly::dynamic::object("horizontal", nullptr), static_cast<const ScrollViewProps &>(*horizontalProps));
+  [view updateProps:verticalProps oldProps:horizontalProps];
+
+  CAGradientLayer *mask = [self fadingEdgeMaskOf:view];
+  XCTAssertTrue(CGPointEqualToPoint(mask.startPoint, CGPointMake(0.5, 0)));
+  XCTAssertTrue(CGPointEqualToPoint(mask.endPoint, CGPointMake(0.5, 1)));
+  [self assertLocations:mask.locations equal:@[ @0, @0.1, @0.9, @1 ]];
 }
 
 - (void)testFadingEdgesNeverOverlap

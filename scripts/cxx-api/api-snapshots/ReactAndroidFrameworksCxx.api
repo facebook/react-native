@@ -1429,6 +1429,7 @@ class facebook::react::BaseScrollViewProps : public facebook::react::HostPlatfor
   public facebook::react::ScrollViewIndicatorStyle indicatorStyle;
   public facebook::react::ScrollViewKeyboardDismissMode keyboardDismissMode;
   public facebook::react::ScrollViewSnapToAlignment snapToAlignment;
+  public folly::dynamic fadingEdgeLength;
   public std::optional<facebook::react::ScrollViewMaintainVisibleContentPosition> maintainVisibleContentPosition;
   public std::vector<facebook::react::Float> snapToOffsets;
   public void setProp(const facebook::react::PropsParserContext& context, facebook::react::RawPropsPropNameHash hash, const char* propName, const facebook::react::RawValue& value);
@@ -2041,7 +2042,6 @@ class facebook::react::HostPlatformScrollViewProps : public facebook::react::Bas
   public bool nestedScrollEnabled;
   public bool sendMomentumEvents;
   public facebook::react::SharedColor endFillColor;
-  public folly::dynamic fadingEdgeLength;
   public std::string overScrollMode;
   public virtual facebook::react::ComponentName getDiffPropsImplementationTarget() const override;
   public virtual folly::dynamic getDiffProps(const facebook::react::Props* prevProps) const override;
