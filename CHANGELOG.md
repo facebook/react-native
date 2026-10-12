@@ -1,5 +1,110 @@
 # Changelog
 
+## v0.88.0-rc.5
+
+### Breaking
+
+
+
+#### Android specific
+
+
+
+#### iOS specific
+
+
+
+### Added
+
+
+
+#### Android specific
+
+
+
+#### iOS specific
+
+
+
+### Changed
+
+
+
+#### Android specific
+
+
+
+#### iOS specific
+
+
+
+### Deprecated
+
+
+
+#### Android specific
+
+
+
+#### iOS specific
+
+
+
+### Removed
+
+
+
+#### Android specific
+
+
+
+#### iOS specific
+
+
+
+### Fixed
+
+
+
+#### Android specific
+
+
+
+#### iOS specific
+
+
+
+### Security
+
+
+
+#### Android specific
+
+
+
+#### iOS specific
+
+
+
+### Unknown
+
+- Release 0.88.0-rc.5 ([a3249a2e43](https://github.com/react/react-native/commit/a3249a2e43fec91f2f270d0bf42687d6b0682ee7) by [@react-native-bot](https://github.com/react-native-bot))
+- Bump Podfile.lock ([aa78eebfec](https://github.com/react/react-native/commit/aa78eebfec809ac15c1f0dd54fb2d173dd0d156b) by [@react-native-bot](https://github.com/react-native-bot))
+- Release 0.88.0-rc.4 ([62e60c3521](https://github.com/react/react-native/commit/62e60c352147d2fcc08e3ee87d4b6c8f56d11d5e) by [@react-native-bot](https://github.com/react-native-bot))
+
+#### Android Unknown
+
+
+
+#### iOS Unknown
+
+
+
+#### Failed to parse
+
+
+
+
 ## v0.88.0-rc.4
 
 ### Changed
