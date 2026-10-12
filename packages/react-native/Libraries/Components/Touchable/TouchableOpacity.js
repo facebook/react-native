@@ -174,9 +174,9 @@ class TouchableOpacity extends React.Component<
   }
 
   _getChildStyleOpacityWithDefault(): number {
-    // $FlowFixMe[underconstrained-implicit-instantiation]
-    // $FlowFixMe[prop-missing]
-    const opacity = flattenStyle(this.props.style)?.opacity;
+    const opacity = flattenStyle<Animated.WithAnimatedValue<ViewStyleProp>>(
+      this.props.style,
+    )?.opacity;
     return typeof opacity === 'number' ? opacity : 1;
   }
 
