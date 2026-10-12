@@ -1202,12 +1202,6 @@ struct facebook::react::TurboModule::MethodMetadata {
   public size_t argCount;
 }
 
-class facebook::react::TurboModuleBinding {
-  public static void install(facebook::jsi::Runtime& runtime, TurboModuleProviderFunctionType&& moduleProvider, TurboModuleProviderFunctionType&& legacyModuleProvider = nullptr, std::shared_ptr<facebook::react::LongLivedObjectCollection> longLivedObjectCollection = nullptr);
-  public static void install(facebook::jsi::Runtime& runtime, facebook::react::TurboModuleProviderFunctionTypeWithRuntime&& moduleProvider, facebook::react::TurboModuleProviderFunctionTypeWithRuntime&& legacyModuleProvider = nullptr, std::shared_ptr<facebook::react::LongLivedObjectCollection> longLivedObjectCollection = nullptr);
-  public ~TurboModuleBinding();
-}
-
 class facebook::react::TurboModuleWithJSIBindings {
   public static void installJSIBindings(const std::shared_ptr<facebook::react::TurboModule>& cxxModule, facebook::jsi::Runtime& runtime);
   public virtual ~TurboModuleWithJSIBindings() = default;

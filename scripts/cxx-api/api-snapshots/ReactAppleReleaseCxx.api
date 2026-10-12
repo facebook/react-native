@@ -4358,22 +4358,6 @@ class facebook::react::NativeWebSocketModuleSpecJSI : public facebook::react::Ob
   public NativeWebSocketModuleSpecJSI(const facebook::react::ObjCTurboModule::InitParams& params);
 }
 
-class facebook::react::ObjCInteropTurboModule : public facebook::react::ObjCTurboModule {
-  protected virtual NSString* getArgumentTypeName(facebook::jsi::Runtime& runtime, NSString* methodName, int argIndex) override;
-  protected virtual facebook::jsi::Value convertReturnIdToJSIValue(facebook::jsi::Runtime& runtime, const char* methodName, facebook::react::TurboModuleMethodValueKind returnType, id result) override;
-  protected virtual facebook::jsi::Value create(facebook::jsi::Runtime& runtime, const facebook::jsi::PropNameID& propName) override;
-  protected virtual void setInvocationArg(facebook::jsi::Runtime& runtime, const char* methodName, const std::string& objCArgType, const facebook::jsi::Value& arg, size_t i, NSInvocation* inv, NSMutableArray* retainedObjectsForInvocation, bool mustCopyBytes) override;
-  public ObjCInteropTurboModule(const facebook::react::ObjCTurboModule::InitParams& params);
-  public virtual std::vector<facebook::jsi::PropNameID> getPropertyNames(facebook::jsi::Runtime& runtime) override;
-}
-
-struct facebook::react::ObjCInteropTurboModule::MethodDescriptor {
-  public SEL selector;
-  public facebook::react::TurboModuleMethodValueKind jsReturnKind;
-  public size_t jsArgCount;
-  public std::string methodName;
-}
-
 class facebook::react::ObjCTurboModule : public facebook::react::TurboModule {
   protected virtual NSString* getArgumentTypeName(facebook::jsi::Runtime& runtime, NSString* methodName, int argIndex);
   protected virtual facebook::jsi::Value convertReturnIdToJSIValue(facebook::jsi::Runtime& runtime, const char* methodName, facebook::react::TurboModuleMethodValueKind returnType, id result);
@@ -4709,12 +4693,6 @@ class facebook::react::TurboModule : public facebook::jsi::HostObject {
 struct facebook::react::TurboModule::MethodMetadata {
   public facebook::jsi::Value(*invoker)(facebook::jsi::Runtime &rt, facebook::react::TurboModule &turboModule, const facebook::jsi::Value *args, size_t count);
   public size_t argCount;
-}
-
-class facebook::react::TurboModuleBinding {
-  public static void install(facebook::jsi::Runtime& runtime, TurboModuleProviderFunctionType&& moduleProvider, TurboModuleProviderFunctionType&& legacyModuleProvider = nullptr, std::shared_ptr<facebook::react::LongLivedObjectCollection> longLivedObjectCollection = nullptr);
-  public static void install(facebook::jsi::Runtime& runtime, facebook::react::TurboModuleProviderFunctionTypeWithRuntime&& moduleProvider, facebook::react::TurboModuleProviderFunctionTypeWithRuntime&& legacyModuleProvider = nullptr, std::shared_ptr<facebook::react::LongLivedObjectCollection> longLivedObjectCollection = nullptr);
-  public ~TurboModuleBinding();
 }
 
 class facebook::react::TurboModuleWithJSIBindings {
