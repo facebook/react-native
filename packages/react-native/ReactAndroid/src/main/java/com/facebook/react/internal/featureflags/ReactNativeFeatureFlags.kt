@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<72ad53973a7de132705b9ec1a72aac08>>
+ * @generated SignedSource<<d824f6746b2cc7d4560164c04d123988>>
  */
 
 /**
@@ -59,6 +59,12 @@ public object ReactNativeFeatureFlags {
    */
   @JvmStatic
   public fun disableEarlyViewCommandExecution(): Boolean = accessor.disableEarlyViewCommandExecution()
+
+  /**
+   * Make the batched-event-dispatch Choreographer frame callback one-shot on Android instead of re-posting itself every frame
+   */
+  @JvmStatic
+  public fun disableIdleEventDispatchFrameCallbackRearmAndroid(): Boolean = accessor.disableIdleEventDispatchFrameCallbackRearmAndroid()
 
   /**
    * Stop re-arming the DISPATCH_UI Choreographer frame callback at vsync rate while no mount items are pending on Android; queueing new items re-arms it
