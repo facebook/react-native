@@ -19,6 +19,7 @@ import {useCallback, useState} from 'react';
 import {
   Button,
   Modal,
+  Platform,
   ScrollView,
   StyleSheet,
   TextInput,
@@ -198,6 +199,95 @@ function FeedbackLoopExample(): React.Node {
   );
 }
 
+component GeometryModal(onClose: () => void) {
+  const [layout, setLayout] = useState({width: 0, height: 0});
+  const [rootInsets, onRootInsetsChange] = useSafeAreaInsets();
+  const [observerInsets, onObserverInsetsChange] = useSafeAreaInsets();
+  const ready = rootInsets != null && layout.width > 0 && layout.height > 0;
+  const units = Platform.OS === 'ios' ? 'pt' : 'dp';
+
+  return (
+    <View
+      testID="safe-area-geometry-root"
+      style={{flex: 1, backgroundColor: 'white'}}
+      experimental_onSafeAreaInsetsChange={onRootInsetsChange}
+      onLayout={event => {
+        const {width, height} = event.nativeEvent.layout;
+        setLayout({width, height});
+      }}>
+      {ready ? (
+        <View
+          testID="safe-area-geometry-observer"
+          experimental_onSafeAreaInsetsChange={onObserverInsetsChange}
+          style={{
+            position: 'absolute',
+            backgroundColor: '#ff9999',
+            left: layout.width / 4,
+            top: layout.height / 4,
+            width: layout.width / 2,
+            height: layout.height / 2,
+            transform: [{scale: 2}],
+          }}
+        />
+      ) : null}
+      <View
+        style={{
+          position: 'absolute',
+          top: (rootInsets?.top ?? 0) + 20,
+          left: 20,
+          right: 20,
+          backgroundColor: 'white',
+          padding: 10,
+        }}>
+        <RNTesterText style={{color: 'black'}}>
+          Same rendered bounds, same safe-area insets.
+        </RNTesterText>
+        <RNTesterText style={{color: 'black'}}>
+          Neither observing view applies padding.
+        </RNTesterText>
+        <RNTesterText style={{color: 'black'}}>
+          Fractional layout can slightly shift the rendered bounds.
+        </RNTesterText>
+        <RNTesterText style={{color: 'black'}}>
+          {`Root layout: ${layout.width} × ${layout.height} ${units}; observer before scaling: ${layout.width / 2} × ${layout.height / 2} ${units}`}
+        </RNTesterText>
+        <RNTesterText testID="safe-area-root-insets" style={{color: 'black'}}>
+          {`Root (1×), ${units}: ${JSON.stringify(rootInsets) ?? 'null'}`}
+        </RNTesterText>
+        <RNTesterText
+          testID="safe-area-observer-insets"
+          style={{color: 'black'}}>
+          {`Observer (2×), ${units}: ${JSON.stringify(observerInsets) ?? 'null'}`}
+        </RNTesterText>
+      </View>
+      <View
+        style={{
+          position: 'absolute',
+          bottom: (rootInsets?.bottom ?? 0) + 12,
+          right: 12,
+        }}>
+        <Button title="Close" onPress={onClose} />
+      </View>
+    </View>
+  );
+}
+
+component GeometryExample() {
+  const [visible, setVisible] = useState(false);
+  return (
+    <View>
+      <Button title="Scale 2" onPress={() => setVisible(true)} />
+      <Modal
+        visible={visible}
+        statusBarTranslucent
+        navigationBarTranslucent
+        onRequestClose={() => setVisible(false)}>
+        {visible ? <GeometryModal onClose={() => setVisible(false)} /> : null}
+      </Modal>
+    </View>
+  );
+}
+
 let benchEventCount = 0;
 
 function BenchRow({
@@ -349,6 +439,13 @@ exports.examples = [
     description:
       'A view positioned by the insets it reports, which moves it out of the system UI and back. Development builds warn once when a view does this.',
     render: (): React.Node => <FeedbackLoopExample />,
+  },
+  {
+    title: 'Same bounds at different scales',
+    description:
+      'A 1× root and a 2× observer with the same rendered bounds should report the same safe-area insets.',
+    name: 'geometry',
+    render: (): React.Node => <GeometryExample />,
   },
   {
     title: 'Scroll benchmark',

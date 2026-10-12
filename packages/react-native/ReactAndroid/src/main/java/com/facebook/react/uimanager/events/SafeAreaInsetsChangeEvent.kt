@@ -20,10 +20,10 @@ import com.facebook.react.uimanager.PixelUtil.pxToDp
 internal class SafeAreaInsetsChangeEvent(
     surfaceId: Int,
     viewTag: Int,
-    private val insetTop: Int,
-    private val insetRight: Int,
-    private val insetBottom: Int,
-    private val insetLeft: Int,
+    private val insetTop: Float,
+    private val insetRight: Float,
+    private val insetBottom: Float,
+    private val insetLeft: Float,
 ) : Event<SafeAreaInsetsChangeEvent>(surfaceId, viewTag) {
 
   override fun getEventName(): String = EVENT_NAME
@@ -46,6 +46,6 @@ internal class SafeAreaInsetsChangeEvent(
   internal companion object {
     const val EVENT_NAME: String = "topSafeAreaInsetsChange"
 
-    private fun Int.toDp(): Double = toFloat().pxToDp().toDouble()
+    private fun Float.toDp(): Double = pxToDp().toDouble()
   }
 }
