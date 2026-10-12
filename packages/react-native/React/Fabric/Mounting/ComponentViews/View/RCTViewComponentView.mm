@@ -105,9 +105,6 @@ static BOOL RCTViewIsInteractiveAccessibilityElement(UIView *view, const ViewPro
 }
 #endif
 
-// Sentinel for insets that have not been set yet.
-static const UIEdgeInsets RCTNoSafeAreaInsetsSent = {-1, -1, -1, -1};
-
 @implementation RCTViewComponentView {
   UIColor *_backgroundColor;
   CALayer *_backgroundColorLayer;
@@ -126,7 +123,6 @@ static const UIEdgeInsets RCTNoSafeAreaInsetsSent = {-1, -1, -1, -1};
   NSMutableSet<NSString *> *_accessibilityOrderNativeIDs;
   RCTSwiftUIContainerViewWrapper *_swiftUIWrapper;
   BOOL _focusable;
-  UIEdgeInsets _lastSentSafeAreaInsets;
 }
 
 #ifdef RCT_DYNAMIC_FRAMEWORKS
@@ -146,7 +142,6 @@ static const UIEdgeInsets RCTNoSafeAreaInsetsSent = {-1, -1, -1, -1};
 #endif
     _useCustomContainerView = NO;
     _removeClippedSubviews = NO;
-    _lastSentSafeAreaInsets = RCTNoSafeAreaInsetsSent;
   }
   return self;
 }
@@ -452,7 +447,7 @@ static BOOL RCTLayerTransformCollapsesAxis(CALayer *layer)
   if (newViewProps.onSafeAreaInsetsChange) {
     [self setNeedsLayout];
   } else if (oldViewProps.onSafeAreaInsetsChange) {
-    _lastSentSafeAreaInsets = RCTNoSafeAreaInsetsSent;
+    [self _setLastSentSafeAreaInsets:nil];
   }
 
   // `overflow`
@@ -739,6 +734,17 @@ static BOOL RCTLayerTransformCollapsesAxis(CALayer *layer)
 
 #pragma mark - Safe area insets
 
+- (NSValue *_Nullable)_lastSentSafeAreaInsets
+{
+  return objc_getAssociatedObject(self, _cmd);
+}
+
+- (void)_setLastSentSafeAreaInsets:(NSValue *_Nullable)lastSentSafeAreaInsets
+{
+  objc_setAssociatedObject(
+      self, @selector(_lastSentSafeAreaInsets), lastSentSafeAreaInsets, OBJC_ASSOCIATION_RETAIN_NONATOMIC);
+}
+
 static BOOL RCTEdgeInsetsEqualWithThreshold(UIEdgeInsets lhs, UIEdgeInsets rhs, CGFloat threshold)
 {
   return ABS(lhs.left - rhs.left) <= threshold && ABS(lhs.top - rhs.top) <= threshold &&
@@ -762,12 +768,13 @@ static BOOL RCTEdgeInsetsEqualWithThreshold(UIEdgeInsets lhs, UIEdgeInsets rhs, 
   }
 
   UIEdgeInsets insets = self.safeAreaInsets;
-  if (_lastSentSafeAreaInsets.top >= 0 &&
-      RCTEdgeInsetsEqualWithThreshold(insets, _lastSentSafeAreaInsets, 1.0 / RCTScreenScale())) {
+  NSValue *lastSentSafeAreaInsets = [self _lastSentSafeAreaInsets];
+  if (lastSentSafeAreaInsets != nil &&
+      RCTEdgeInsetsEqualWithThreshold(insets, lastSentSafeAreaInsets.UIEdgeInsetsValue, 1.0 / RCTScreenScale())) {
     return;
   }
 
-  _lastSentSafeAreaInsets = insets;
+  [self _setLastSentSafeAreaInsets:[NSValue valueWithUIEdgeInsets:insets]];
 
   static_cast<const ViewEventEmitter &>(*_eventEmitter)
       .onSafeAreaInsetsChange(
@@ -864,7 +871,7 @@ static BOOL RCTEdgeInsetsEqualWithThreshold(UIEdgeInsets lhs, UIEdgeInsets rhs, 
   _filterLayer = nil;
   [self clearExistingBackgroundImageLayers];
 
-  _lastSentSafeAreaInsets = RCTNoSafeAreaInsetsSent;
+  [self _setLastSentSafeAreaInsets:nil];
   _propKeysManagedByAnimated_DO_NOT_USE_THIS_IS_BROKEN = nil;
   _eventEmitter.reset();
   _isJSResponder = NO;
