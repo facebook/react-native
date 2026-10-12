@@ -17,9 +17,15 @@ const {examples} = require('../SafeAreaInsetsExample');
 
 const geometry = examples.find(example => example.name === 'geometry');
 
-it.each(['android', 'ios'])(
-  'displays independent inset measurements without applying padding on %s',
-  async platform => {
+it.each([
+  ['android', 'Scale 2'],
+  ['ios', 'Scale 2'],
+  ['android', 'Cancel rotations'],
+  ['ios', 'Cancel rotations'],
+])(
+  'displays independent inset measurements without applying padding on %s with %s',
+  async (platform, title) => {
+    const cancellingRotations = title === 'Cancel rotations';
     if (geometry == null) {
       throw new Error('The scaled safe-area example is missing.');
     }
@@ -29,13 +35,15 @@ it.each(['android', 'ios'])(
       throw new Error('The platform mock is missing.');
     }
     const Example = geometry.render;
-    const renderer = await create(<Example />);
+    let mountedRenderer;
     Object.defineProperty(Platform, 'OS', {
       value: platform,
       configurable: true,
     });
     try {
-      const button = renderer.root.findByProps({title: 'Scale 2'});
+      const renderer = await create(<Example />);
+      mountedRenderer = renderer;
+      const button = renderer.root.findByProps({title});
       await TestRenderer.act(() => button.props.onPress());
       const root = renderer.root.findByProps({
         testID: 'safe-area-geometry-root',
@@ -50,18 +58,52 @@ it.each(['android', 'ios'])(
       const observer = renderer.root.findByProps({
         testID: 'safe-area-geometry-observer',
       });
-      const expectedObserverStyle = {
-        position: 'absolute',
-        backgroundColor: '#ff9999',
-        left: 90,
-        top: 200,
-        width: 180,
-        height: 400,
-        transform: [{scale: 2}],
-      };
+      const expectedObserverStyle = cancellingRotations
+        ? {
+            flex: 1,
+            backgroundColor: '#ff9999',
+            transform: [{rotate: '-30deg'}],
+            transformOrigin: [0, 0, 0],
+          }
+        : {
+            position: 'absolute',
+            backgroundColor: '#ff9999',
+            left: 90,
+            top: 200,
+            width: 180,
+            height: 400,
+            transform: [{scale: 2}],
+          };
       expect(StyleSheet.flatten(observer.props.style)).toEqual(
         expectedObserverStyle,
       );
+      if (cancellingRotations) {
+        const outer = renderer.root.findByProps({
+          testID: 'safe-area-geometry-rotation-outer',
+        });
+        const inner = outer.findByProps({
+          testID: 'safe-area-geometry-rotation-inner',
+        });
+        expect(outer.props.collapsable).toBe(false);
+        expect(inner.props.collapsable).toBe(false);
+        expect(StyleSheet.flatten(outer.props.style)).toEqual({
+          position: 'absolute',
+          left: 0,
+          right: 0,
+          top: 0,
+          bottom: 0,
+          transform: [{rotate: '10deg'}],
+          transformOrigin: [0, 0, 0],
+        });
+        expect(StyleSheet.flatten(inner.props.style)).toEqual({
+          flex: 1,
+          transform: [{rotate: '20deg'}],
+          transformOrigin: [0, 0, 0],
+        });
+        expect(inner.findByProps({testID: 'safe-area-geometry-observer'})).toBe(
+          observer,
+        );
+      }
       const readInsets = (testID: string): unknown => {
         const text: unknown = renderer.root.findByProps({testID}).props
           .children;
@@ -93,7 +135,9 @@ it.each(['android', 'ios'])(
       expect(
         renderer.root.findByProps({testID: 'safe-area-observer-insets'}).props
           .children,
-      ).toContain(`Observer (2×), ${units}:`);
+      ).toContain(
+        `Observer (${cancellingRotations ? 'net 0°' : '2×'}), ${units}:`,
+      );
       expect(StyleSheet.flatten(root.props.style)).toEqual({
         flex: 1,
         backgroundColor: 'white',
@@ -106,7 +150,9 @@ it.each(['android', 'ios'])(
       expect(renderer.root.findByType(Modal).props.visible).toBe(false);
     } finally {
       Reflect.defineProperty(Platform, 'OS', originalPlatform);
-      await unmount(renderer);
+      if (mountedRenderer != null) {
+        await unmount(mountedRenderer);
+      }
     }
   },
 );

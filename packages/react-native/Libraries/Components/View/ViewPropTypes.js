@@ -73,8 +73,9 @@ type DirectEventProps = Readonly<{
    * on iOS and dp on Android, not display pixels. Content padding does not
    * affect them.
    *
-   * Android accounts for scaling and ignores ancestor clipping. Rotation,
-   * skew, and perspective are unsupported; fully clipped views emit no updates.
+   * Android measures full rendered bounds when the combined transform is
+   * translation/scaling; partial clipping does not change them. Other transforms
+   * or unavailable geometry emit no update, not zeros.
    *
    * Dispatched synchronously so rendering updates apply in the same frame.
    *

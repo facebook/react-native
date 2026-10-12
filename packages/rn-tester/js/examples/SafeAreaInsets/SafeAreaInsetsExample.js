@@ -199,23 +199,50 @@ function FeedbackLoopExample(): React.Node {
   );
 }
 
-component GeometryModal(onClose: () => void) {
+component GeometryModal(
+  onClose: () => void,
+  cancellingRotations: boolean = false,
+) {
   const [layout, setLayout] = useState({width: 0, height: 0});
   const [rootInsets, onRootInsetsChange] = useSafeAreaInsets();
   const [observerInsets, onObserverInsetsChange] = useSafeAreaInsets();
   const ready = rootInsets != null && layout.width > 0 && layout.height > 0;
   const units = Platform.OS === 'ios' ? 'pt' : 'dp';
+  let observer: React.Node = null;
 
-  return (
-    <View
-      testID="safe-area-geometry-root"
-      style={{flex: 1, backgroundColor: 'white'}}
-      experimental_onSafeAreaInsetsChange={onRootInsetsChange}
-      onLayout={event => {
-        const {width, height} = event.nativeEvent.layout;
-        setLayout({width, height});
-      }}>
-      {ready ? (
+  if (ready) {
+    if (cancellingRotations) {
+      observer = (
+        <View
+          testID="safe-area-geometry-rotation-outer"
+          collapsable={false}
+          style={[
+            StyleSheet.absoluteFill,
+            {transform: [{rotate: '10deg'}], transformOrigin: [0, 0, 0]},
+          ]}>
+          <View
+            testID="safe-area-geometry-rotation-inner"
+            collapsable={false}
+            style={{
+              flex: 1,
+              transform: [{rotate: '20deg'}],
+              transformOrigin: [0, 0, 0],
+            }}>
+            <View
+              testID="safe-area-geometry-observer"
+              experimental_onSafeAreaInsetsChange={onObserverInsetsChange}
+              style={{
+                flex: 1,
+                backgroundColor: '#ff9999',
+                transform: [{rotate: '-30deg'}],
+                transformOrigin: [0, 0, 0],
+              }}
+            />
+          </View>
+        </View>
+      );
+    } else {
+      observer = (
         <View
           testID="safe-area-geometry-observer"
           experimental_onSafeAreaInsetsChange={onObserverInsetsChange}
@@ -229,7 +256,20 @@ component GeometryModal(onClose: () => void) {
             transform: [{scale: 2}],
           }}
         />
-      ) : null}
+      );
+    }
+  }
+
+  return (
+    <View
+      testID="safe-area-geometry-root"
+      style={{flex: 1, backgroundColor: 'white'}}
+      experimental_onSafeAreaInsetsChange={onRootInsetsChange}
+      onLayout={event => {
+        const {width, height} = event.nativeEvent.layout;
+        setLayout({width, height});
+      }}>
+      {observer}
       <View
         style={{
           position: 'absolute',
@@ -246,10 +286,14 @@ component GeometryModal(onClose: () => void) {
           Neither observing view applies padding.
         </RNTesterText>
         <RNTesterText style={{color: 'black'}}>
-          Fractional layout can slightly shift the rendered bounds.
+          {cancellingRotations
+            ? 'Nested rotations: +10°, +20°, −30° (net 0°). All three views share a top-left transform origin.'
+            : 'Fractional layout can slightly shift the rendered bounds.'}
         </RNTesterText>
         <RNTesterText style={{color: 'black'}}>
-          {`Root layout: ${layout.width} × ${layout.height} ${units}; observer before scaling: ${layout.width / 2} × ${layout.height / 2} ${units}`}
+          {cancellingRotations
+            ? `Root and observer layout: ${layout.width} × ${layout.height} ${units}`
+            : `Root layout: ${layout.width} × ${layout.height} ${units}; observer before scaling: ${layout.width / 2} × ${layout.height / 2} ${units}`}
         </RNTesterText>
         <RNTesterText testID="safe-area-root-insets" style={{color: 'black'}}>
           {`Root (1×), ${units}: ${JSON.stringify(rootInsets) ?? 'null'}`}
@@ -257,7 +301,7 @@ component GeometryModal(onClose: () => void) {
         <RNTesterText
           testID="safe-area-observer-insets"
           style={{color: 'black'}}>
-          {`Observer (2×), ${units}: ${JSON.stringify(observerInsets) ?? 'null'}`}
+          {`Observer (${cancellingRotations ? 'net 0°' : '2×'}), ${units}: ${JSON.stringify(observerInsets) ?? 'null'}`}
         </RNTesterText>
       </View>
       <View
@@ -274,15 +318,34 @@ component GeometryModal(onClose: () => void) {
 
 component GeometryExample() {
   const [visible, setVisible] = useState(false);
+  const [cancellingRotations, setCancellingRotations] = useState(false);
   return (
     <View>
-      <Button title="Scale 2" onPress={() => setVisible(true)} />
+      <Button
+        title="Scale 2"
+        onPress={() => {
+          setCancellingRotations(false);
+          setVisible(true);
+        }}
+      />
+      <Button
+        title="Cancel rotations"
+        onPress={() => {
+          setCancellingRotations(true);
+          setVisible(true);
+        }}
+      />
       <Modal
         visible={visible}
         statusBarTranslucent
         navigationBarTranslucent
         onRequestClose={() => setVisible(false)}>
-        {visible ? <GeometryModal onClose={() => setVisible(false)} /> : null}
+        {visible ? (
+          <GeometryModal
+            onClose={() => setVisible(false)}
+            cancellingRotations={cancellingRotations}
+          />
+        ) : null}
       </Modal>
     </View>
   );
@@ -441,9 +504,9 @@ exports.examples = [
     render: (): React.Node => <FeedbackLoopExample />,
   },
   {
-    title: 'Same bounds at different scales',
+    title: 'Same bounds after transforms',
     description:
-      'A 1× root and a 2× observer with the same rendered bounds should report the same safe-area insets.',
+      'An untransformed root and an observer with 2× scale or cancelling nested rotations independently report their safe-area insets.',
     name: 'geometry',
     render: (): React.Node => <GeometryExample />,
   },
