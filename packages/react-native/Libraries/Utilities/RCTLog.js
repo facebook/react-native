@@ -12,7 +12,7 @@
 
 const invariant = require('invariant');
 
-const levelsMap = {
+const levelsMap: Record<string, 'log' | 'info' | 'warn' | 'error'> = {
   log: 'log',
   info: 'info',
   warn: 'warn',
@@ -38,7 +38,6 @@ const RCTLog = {
 
   // Log to console regardless of nativeLoggingHook
   logToConsole(level: string, ...args: Array<unknown>): void {
-    // $FlowFixMe[invalid-computed-prop]
     const logFn = levelsMap[level];
     invariant(
       logFn,
