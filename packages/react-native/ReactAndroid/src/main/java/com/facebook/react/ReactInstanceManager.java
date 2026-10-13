@@ -8,8 +8,6 @@
 package com.facebook.react;
 
 import static com.facebook.infer.annotation.ThreadConfined.UI;
-import static com.facebook.react.bridge.ReactMarkerConstants.ATTACH_MEASURED_ROOT_VIEWS_END;
-import static com.facebook.react.bridge.ReactMarkerConstants.ATTACH_MEASURED_ROOT_VIEWS_START;
 import static com.facebook.react.bridge.ReactMarkerConstants.CHANGE_THREAD_PRIORITY;
 import static com.facebook.react.bridge.ReactMarkerConstants.CREATE_VIEW_MANAGERS_END;
 import static com.facebook.react.bridge.ReactMarkerConstants.CREATE_VIEW_MANAGERS_START;
@@ -20,7 +18,6 @@ import static com.facebook.react.bridge.ReactMarkerConstants.REACT_CONTEXT_THREA
 import static com.facebook.react.bridge.ReactMarkerConstants.SETUP_REACT_CONTEXT_END;
 import static com.facebook.react.bridge.ReactMarkerConstants.SETUP_REACT_CONTEXT_START;
 import static com.facebook.react.bridge.ReactMarkerConstants.VM_INIT;
-import static com.facebook.react.uimanager.common.UIManagerType.FABRIC;
 import static com.facebook.systrace.Systrace.TRACE_TAG_REACT;
 
 import android.annotation.SuppressLint;
@@ -42,7 +39,6 @@ import com.facebook.debug.tags.ReactDebugOverlayTags;
 import com.facebook.infer.annotation.Assertions;
 import com.facebook.infer.annotation.ThreadConfined;
 import com.facebook.infer.annotation.ThreadSafe;
-import com.facebook.react.bridge.Arguments;
 import com.facebook.react.bridge.CatalystInstance;
 import com.facebook.react.bridge.JSBundleLoader;
 import com.facebook.react.bridge.JSExceptionHandler;
@@ -54,10 +50,8 @@ import com.facebook.react.bridge.ReactMarker;
 import com.facebook.react.bridge.ReactMarkerConstants;
 import com.facebook.react.bridge.ReactNoCrashSoftException;
 import com.facebook.react.bridge.ReactSoftExceptionLogger;
-import com.facebook.react.bridge.UIManager;
 import com.facebook.react.bridge.UIManagerProvider;
 import com.facebook.react.bridge.UiThreadUtil;
-import com.facebook.react.bridge.WritableNativeMap;
 import com.facebook.react.common.LifecycleState;
 import com.facebook.react.common.ReactConstants;
 import com.facebook.react.common.SurfaceDelegateFactory;
@@ -82,8 +76,6 @@ import com.facebook.react.modules.core.ReactChoreographer;
 import com.facebook.react.packagerconnection.RequestHandler;
 import com.facebook.react.uimanager.DisplayMetricsHolder;
 import com.facebook.react.uimanager.ReactRoot;
-import com.facebook.react.uimanager.ReactStage;
-import com.facebook.react.uimanager.UIManagerHelper;
 import com.facebook.react.uimanager.ViewManager;
 import com.facebook.react.views.imagehelper.ResourceDrawableIdHelper;
 import com.facebook.soloader.SoLoader;
@@ -766,7 +758,7 @@ public class ReactInstanceManager {
       synchronized (mReactContextLock) {
         if (mCurrentReactContext != null) {
           for (ReactRoot reactRoot : mAttachedReactRoots) {
-            detachRootViewFromInstance(reactRoot, mCurrentReactContext);
+            detachRootViewFromInstance(reactRoot);
           }
 
           mCurrentReactContext.destroy();
@@ -910,14 +902,6 @@ public class ReactInstanceManager {
       } else {
         FLog.e(ReactConstants.TAG, "ReactRoot was attached multiple times");
       }
-
-      // If react context is being created in the background, JS application will be started
-      // automatically when creation completes, as reactRoot is part of the attached
-      // reactRoot list.
-      ReactContext currentContext = getCurrentReactContext();
-      if (mCreateReactContextThread == null && currentContext != null) {
-        attachRootViewToInstance(reactRoot);
-      }
     }
   }
 
@@ -935,11 +919,7 @@ public class ReactInstanceManager {
     if (!mAttachedReactRoots.remove(reactRoot)) {
       return;
     }
-
-    ReactContext reactContext = mCurrentReactContext;
-    if (reactContext != null && reactContext.hasActiveReactInstance()) {
-      detachRootViewFromInstance(reactRoot, reactContext);
-    }
+    clearReactRoot(reactRoot);
   }
 
   /** Uses configured {@link ReactPackage} instances to create all view managers. */
@@ -1217,12 +1197,6 @@ public class ReactInstanceManager {
 
       mDevSupportManager.onNewReactContextCreated(reactContext);
       mMemoryPressureRouter.addMemoryPressureListener(catalystInstance);
-
-      ReactMarker.logMarker(ATTACH_MEASURED_ROOT_VIEWS_START);
-      for (ReactRoot reactRoot : mAttachedReactRoots) {
-        attachRootViewToInstance(reactRoot);
-      }
-      ReactMarker.logMarker(ATTACH_MEASURED_ROOT_VIEWS_END);
     }
 
     // There is a race condition here - `finalListeners` can contain null entries
@@ -1260,75 +1234,13 @@ public class ReactInstanceManager {
     ReactMarker.logMarker(ReactMarkerConstants.REACT_BRIDGE_LOADING_END);
   }
 
-  private void attachRootViewToInstance(final ReactRoot reactRoot) {
-    FLog.d(ReactConstants.TAG, "ReactInstanceManager.attachRootViewToInstance()");
-    if (!reactRoot.getState().compareAndSet(ReactRoot.STATE_STOPPED, ReactRoot.STATE_STARTED)) {
-      // Already started
-      return;
-    }
-
-    Systrace.beginSection(TRACE_TAG_REACT, "attachRootViewToInstance");
-
-    @Nullable UIManager uiManager = UIManagerHelper.getUIManager(mCurrentReactContext, FABRIC);
-
-    // If we can't get a UIManager something has probably gone horribly wrong
-    if (uiManager == null) {
-      throw new IllegalStateException(
-          "Unable to attach a rootView to ReactInstance when UIManager is not properly"
-              + " initialized.");
-    }
-
-    @Nullable Bundle initialProperties = reactRoot.getAppProperties();
-
-    final int rootTag =
-        uiManager.startSurface(
-            reactRoot.getRootViewGroup(),
-            reactRoot.getJSModuleName(),
-            initialProperties == null
-                ? new WritableNativeMap()
-                : Arguments.fromBundle(initialProperties),
-            reactRoot.getWidthMeasureSpec(),
-            reactRoot.getHeightMeasureSpec());
-    reactRoot.setShouldLogContentAppeared(true);
-
-    Systrace.beginAsyncSection(TRACE_TAG_REACT, "pre_rootView.onAttachedToReactInstance", rootTag);
-    UiThreadUtil.runOnUiThread(
-        () -> {
-          Systrace.endAsyncSection(
-              TRACE_TAG_REACT, "pre_rootView.onAttachedToReactInstance", rootTag);
-          reactRoot.onStage(ReactStage.ON_ATTACH_TO_INSTANCE);
-        });
-    Systrace.endSection(TRACE_TAG_REACT);
-  }
-
-  private void detachRootViewFromInstance(ReactRoot reactRoot, ReactContext reactContext) {
+  private void detachRootViewFromInstance(ReactRoot reactRoot) {
     FLog.d(ReactConstants.TAG, "ReactInstanceManager.detachRootViewFromInstance()");
     UiThreadUtil.assertOnUiThread();
 
     if (!reactRoot.getState().compareAndSet(ReactRoot.STATE_STARTED, ReactRoot.STATE_STOPPED)) {
       // ReactRoot was already stopped
       return;
-    }
-
-    // Stop surface in Fabric.
-    // Calling FabricUIManager.stopSurface causes the C++ Binding.stopSurface
-    // to be called synchronously over the JNI, which causes an empty tree
-    // to be committed via the Scheduler, which will cause mounting instructions
-    // to be queued up and synchronously executed to delete and remove
-    // all the views in the hierarchy.
-    final int surfaceId = reactRoot.getRootViewTag();
-    if (surfaceId != View.NO_ID) {
-      UIManager uiManager = UIManagerHelper.getUIManager(reactContext, FABRIC);
-      if (uiManager != null) {
-        uiManager.stopSurface(surfaceId);
-      } else {
-        FLog.w(ReactConstants.TAG, "Failed to stop surface, UIManager has already gone away");
-      }
-    } else {
-      ReactSoftExceptionLogger.logSoftException(
-          TAG,
-          new RuntimeException(
-              "detachRootViewFromInstance called with ReactRootView with invalid id"));
     }
 
     clearReactRoot(reactRoot);
@@ -1344,7 +1256,7 @@ public class ReactInstanceManager {
 
     synchronized (mAttachedReactRoots) {
       for (ReactRoot reactRoot : mAttachedReactRoots) {
-        detachRootViewFromInstance(reactRoot, reactContext);
+        detachRootViewFromInstance(reactRoot);
       }
     }
 

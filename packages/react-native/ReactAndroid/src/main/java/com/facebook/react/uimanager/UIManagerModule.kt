@@ -204,9 +204,6 @@ public open class UIManagerModule : ReactContextBaseJavaModule, LifecycleEventLi
   override val performanceCounters: Map<String, Long>
     get() = HashMap()
 
-  /** Adds a root view with no initial properties. */
-  public open fun <T : View> addRootView(rootView: T): Int = addRootView(rootView, null)
-
   /**
    * Used by native animated module to bypass the process of updating the values through the shadow
    * view hierarchy. This method will directly update native views, which means that updates for
@@ -214,40 +211,6 @@ public open class UIManagerModule : ReactContextBaseJavaModule, LifecycleEventLi
    * before calling this method :)
    */
   override fun synchronouslyUpdateViewOnUIThread(reactTag: Int, props: ReadableMap): Unit = Unit
-
-  /**
-   * Registers a new root view. JS can use the returned tag with manageChildren to add/remove
-   * children to this view.
-   *
-   * Calling addRootView through UIManagerModule calls addRootView in the non-Fabric renderer,
-   * always. This is deprecated in favor of calling startSurface in Fabric, which must be done
-   * directly through the FabricUIManager.
-   *
-   * Note that this must be called after getWidth()/getHeight() actually return something. See
-   * CatalystApplicationFragment as an example.
-   *
-   * TODO(6242243): Make addRootView thread safe NB: this method is horribly not-thread-safe.
-   */
-  override fun <T : View> addRootView(rootView: T, initialProps: WritableMap?): Int {
-    Systrace.beginSection(Systrace.TRACE_TAG_REACT, "UIManagerModule.addRootView")
-    val tag = ReactRootViewTagGenerator.getNextRootViewTag()
-    Systrace.endSection(Systrace.TRACE_TAG_REACT)
-    return tag
-  }
-
-  override fun <T : View?> startSurface(
-      rootView: T,
-      moduleName: String,
-      initialProps: WritableMap?,
-      widthMeasureSpec: Int,
-      heightMeasureSpec: Int,
-  ): Int {
-    throw UnsupportedOperationException()
-  }
-
-  override fun stopSurface(surfaceId: Int) {
-    throw UnsupportedOperationException()
-  }
 
   /** Unregisters a new root view. */
   @ReactMethod public open fun removeRootView(rootViewTag: Int): Unit = Unit

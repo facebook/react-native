@@ -256,18 +256,6 @@ public class FabricUIManager
   }
 
   /**
-   * @deprecated Use {@code ReactHost.createSurface(...)} and {@code ReactSurface.start()} instead.
-   */
-  @Override
-  @UiThread
-  @ThreadConfined(UI)
-  @Deprecated
-  public <T extends View> int addRootView(
-      final T rootView, final @Nullable WritableMap initialProps) {
-    throw new UnsupportedOperationException("FabricUIManager.addRootView is unsupported.");
-  }
-
-  /**
    * Find the next focusable element's id and position relative to the parent from the shadow tree
    * based on the current focusable element and the direction.
    *
@@ -319,23 +307,6 @@ public class FabricUIManager
     return mBinding != null ? mBinding.getRelativeAncestorList(rootTag, childTag) : null;
   }
 
-  /**
-   * @deprecated Use {@code ReactHost.createSurface(...)} and {@code ReactSurface.start()} instead.
-   */
-  @Deprecated
-  @Override
-  @AnyThread
-  @ThreadConfined(ANY)
-  public <T extends View> int startSurface(
-      final T rootView,
-      final String moduleName,
-      final @Nullable WritableMap initialProps,
-      int widthMeasureSpec,
-      int heightMeasureSpec) {
-    throw new UnsupportedOperationException(
-        "FabricUIManager.startSurface(View, ...) is unsupported.");
-  }
-
   public void startSurface(
       final SurfaceHandlerBinding surfaceHandler,
       final Context context,
@@ -382,17 +353,6 @@ public class FabricUIManager
   @SuppressWarnings("unused")
   public void onRequestEventBeat() {
     mEventDispatcher.dispatchAllEvents();
-  }
-
-  /**
-   * @deprecated Use {@code ReactSurface.stop()} instead.
-   */
-  @Deprecated
-  @AnyThread
-  @ThreadConfined(ANY)
-  @Override
-  public void stopSurface(final int surfaceID) {
-    throw new UnsupportedOperationException("FabricUIManager.stopSurface(int) is unsupported.");
   }
 
   @Override
