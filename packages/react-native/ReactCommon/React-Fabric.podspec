@@ -120,6 +120,8 @@ Pod::Spec.new do |s|
         "\"$(PODS_TARGET_SRCROOT)/react/renderer/core\"",
         "\"$(PODS_TARGET_SRCROOT)/react/renderer/componentregistry\"",
         "\"$(PODS_TARGET_SRCROOT)/react/renderer/debug\"",
+        "\"$(PODS_TARGET_SRCROOT)/react/renderer/imagemanager\"",
+        "\"$(PODS_TARGET_SRCROOT)/react/renderer/imagemanager/platform/ios\"",
       ]
     end
 

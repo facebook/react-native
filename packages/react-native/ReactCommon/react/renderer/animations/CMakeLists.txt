@@ -26,6 +26,7 @@ target_link_libraries(react_renderer_animations
         react_renderer_graphics
         react_renderer_mounting
         react_renderer_uimanager
+        rrc_image
         rrc_view
         runtimeexecutor
         yoga

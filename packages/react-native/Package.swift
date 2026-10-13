@@ -465,6 +465,7 @@ let reactCore = RNTarget(
 let reactFabric = RNTarget(
   name: .reactFabric,
   path: "ReactCommon/react/renderer",
+  searchPaths: ["ReactCommon/react/renderer/imagemanager/platform/ios"], // ImageProps.h pulls in <React/ImageManager.h>; depending on reactImageManagerApple would be circular
   excludedPaths: [
     "animated/tests",
     "animationbackend/tests",

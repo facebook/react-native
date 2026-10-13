@@ -11,11 +11,9 @@
 
 #include <memory>
 
-#include <react/renderer/core/ComponentDescriptor.h>
-#include <react/renderer/core/EventDispatcher.h>
-#include <react/utils/ContextContainer.h>
-
-#include "ComponentDescriptorRegistry.h"
+#include <React/ComponentRegistry.h>
+#include <React/RendererCore.h>
+#include <React/Utils.h>
 
 namespace facebook::react {
 
