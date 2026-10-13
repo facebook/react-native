@@ -643,8 +643,11 @@ public open class ReactAccessibilityDelegate( // The View this delegate is attac
           info.isChecked = boolValue
           // TalkBack only speaks the unchecked state of a checkable node, and only avoids
           // announcing "checked" and "on" together for a switch, when the node carries a
-          // stateDescription (API 30+). Native CompoundButton always sets it, so do the same.
-          info.stateDescription = getCheckedStateDescription(boolValue, role, context)
+          // stateDescription (API 30+), as native CompoundButton sets.
+          val stateDescription = getCheckedStateDescription(boolValue, role, context)
+          if (stateDescription != null) {
+            info.stateDescription = stateDescription
+          }
         }
       }
     }
@@ -653,16 +656,17 @@ public open class ReactAccessibilityDelegate( // The View this delegate is attac
         checked: Boolean,
         role: AccessibilityRole?,
         context: Context,
-    ): String =
+    ): String? =
         if (role == AccessibilityRole.SWITCH) {
           context.getString(
               if (checked) R.string.state_on_description else R.string.state_off_description
           )
+        } else if (!checked) {
+          context.getString(R.string.state_unchecked_description)
         } else {
-          context.getString(
-              if (checked) R.string.state_checked_description
-              else R.string.state_unchecked_description
-          )
+          // Leave the checked state to TalkBack, which already announces it in the device
+          // language.
+          null
         }
 
     // TODO: Eventually support for other languages on talkback

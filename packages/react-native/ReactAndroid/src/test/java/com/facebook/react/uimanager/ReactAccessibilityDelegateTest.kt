@@ -395,13 +395,12 @@ class ReactAccessibilityDelegateTest {
   }
 
   @Test
-  fun testOnInitializeAccessibilityNodeInfo_checkedCheckbox_setsStateDescription() {
+  fun testOnInitializeAccessibilityNodeInfo_checkedCheckbox_leavesStateDescriptionUnset() {
     val info = initializeNodeInfoWithCheckedState(AccessibilityRole.CHECKBOX, checked = true)
 
     assertThat(info.isCheckable).isTrue()
     assertThat(info.isChecked).isTrue()
-    assertThat(info.stateDescription)
-        .isEqualTo(view.context.getString(R.string.state_checked_description))
+    assertThat(info.stateDescription).isNull()
   }
 
   @Test

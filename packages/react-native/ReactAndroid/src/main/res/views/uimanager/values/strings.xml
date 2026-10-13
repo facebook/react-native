@@ -97,10 +97,6 @@
     description="a switch in its disabled state"
     >off</string>
   <string
-    name="state_checked_description"
-    description="a checkbox, radio button, or other checkable widget which is checked"
-    >checked</string>
-  <string
     name="state_unchecked_description"
     description="a checkbox, radio button, or other checkable widget which is not checked"
     >not checked</string>
