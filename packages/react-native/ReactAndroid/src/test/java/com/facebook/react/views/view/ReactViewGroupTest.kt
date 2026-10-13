@@ -9,19 +9,24 @@ package com.facebook.react.views.view
 
 import android.app.Activity
 import android.content.Context
+import android.view.MotionEvent
 import android.view.View
 import android.view.ViewGroup
+import android.view.accessibility.AccessibilityEvent
 import android.widget.FrameLayout
 import com.facebook.react.internal.featureflags.ReactNativeFeatureFlags
 import com.facebook.react.internal.featureflags.ReactNativeFeatureFlagsDefaults
 import com.facebook.react.internal.featureflags.ReactNativeFeatureFlagsForTests
 import com.facebook.react.uimanager.HasElevatedDescendantCache
+import com.facebook.react.uimanager.PointerEvents
 import org.assertj.core.api.Assertions.assertThat
+import org.junit.After
 import org.junit.Before
 import org.junit.Test
 import org.junit.runner.RunWith
 import org.robolectric.Robolectric
 import org.robolectric.RobolectricTestRunner
+import org.robolectric.shadows.ShadowLooper
 
 @RunWith(RobolectricTestRunner::class)
 class ReactViewGroupTest {
@@ -32,6 +37,32 @@ class ReactViewGroupTest {
   fun setUp() {
     ReactNativeFeatureFlagsForTests.setUp()
     context = Robolectric.buildActivity(Activity::class.java).create().get()
+  }
+
+  @After
+  fun tearDown() {
+    setDispatchPointerEvents(false)
+  }
+
+  @Test
+  fun `hover with pointer events dispatched still sends the accessibility hover event`() {
+    setDispatchPointerEvents(true)
+    val rvg = attachForHover()
+    val sentEventTypes = recordSentAccessibilityEvents(rvg)
+
+    rvg.onHoverEvent(obtainHoverEvent(MotionEvent.ACTION_HOVER_ENTER))
+
+    assertThat(sentEventTypes).contains(AccessibilityEvent.TYPE_VIEW_HOVER_ENTER)
+  }
+
+  @Test
+  fun `hover with pointer events dispatched still answers whether the view is a touch target`() {
+    setDispatchPointerEvents(true)
+    val rvg = attachForHover()
+
+    assertThat(rvg.onHoverEvent(obtainHoverEvent(MotionEvent.ACTION_HOVER_MOVE))).isTrue()
+    rvg.pointerEvents = PointerEvents.NONE
+    assertThat(rvg.onHoverEvent(obtainHoverEvent(MotionEvent.ACTION_HOVER_MOVE))).isFalse()
   }
 
   @Test
@@ -280,6 +311,37 @@ class ReactViewGroupTest {
   }
 
   private fun elevatedChild(): View = View(context).apply { elevation = 10f }
+
+  @Suppress("DEPRECATION")
+  private fun setDispatchPointerEvents(enabled: Boolean) {
+    com.facebook.react.config.ReactFeatureFlags.dispatchPointerEvents = enabled
+  }
+
+  // An accessibility hover event is sent only from a view attached to a window.
+  private fun attachForHover(): ReactViewGroup {
+    val activity = Robolectric.buildActivity(Activity::class.java).setup().get()
+    val rvg = ReactViewGroup(activity)
+    rvg.importantForAccessibility = View.IMPORTANT_FOR_ACCESSIBILITY_YES
+    activity.setContentView(rvg)
+    ShadowLooper.idleMainLooper()
+    rvg.layout(0, 0, 100, 100)
+    assertThat(rvg.isAttachedToWindow).isTrue()
+    return rvg
+  }
+
+  private fun recordSentAccessibilityEvents(view: View): List<Int> {
+    val sentEventTypes = mutableListOf<Int>()
+    view.accessibilityDelegate =
+        object : View.AccessibilityDelegate() {
+          override fun sendAccessibilityEvent(host: View, eventType: Int) {
+            sentEventTypes.add(eventType)
+          }
+        }
+    return sentEventTypes
+  }
+
+  private fun obtainHoverEvent(action: Int): MotionEvent =
+      MotionEvent.obtain(0L, 0L, action, 50f, 50f, 0)
 }
 
 class TestView(context: Context, yPos: Int) : View(context) {

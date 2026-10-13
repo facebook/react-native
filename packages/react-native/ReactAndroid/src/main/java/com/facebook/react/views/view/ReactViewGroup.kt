@@ -310,6 +310,8 @@ public open class ReactViewGroup public constructor(context: Context?) :
   override fun onHoverEvent(event: MotionEvent): Boolean {
     @Suppress("DEPRECATION")
     if (ReactFeatureFlags.dispatchPointerEvents) {
+      // View's own handling sends the accessibility hover events explore-by-touch relies on
+      super.onHoverEvent(event)
       // Match the logic from onTouchEvent if pointer events are enabled
       return canBeTouchTarget(pointerEvents)
     }
