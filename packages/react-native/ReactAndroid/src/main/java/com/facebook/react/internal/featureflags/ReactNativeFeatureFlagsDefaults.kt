@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<2170527111c8b3c34c213c24a9948931>>
+ * @generated SignedSource<<e8540d339cda9300ee0eac6e2ce316d2>>
  */
 
 /**
@@ -32,6 +32,8 @@ public open class ReactNativeFeatureFlagsDefaults : ReactNativeFeatureFlagsProvi
   override fun defaultTextToOverflowHidden(): Boolean = true
 
   override fun disableEarlyViewCommandExecution(): Boolean = false
+
+  override fun disableIdleEventDispatchFrameCallbackRearmAndroid(): Boolean = false
 
   override fun disableIdleMountItemFrameCallbackRearmAndroid(): Boolean = false
 
