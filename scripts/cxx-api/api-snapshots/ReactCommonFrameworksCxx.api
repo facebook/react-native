@@ -490,6 +490,7 @@ void facebook::react::fromRawValue(const facebook::react::PropsParserContext& co
 void facebook::react::fromRawValue(const facebook::react::PropsParserContext& context, const facebook::react::RawValue& value, facebook::yoga::PositionType& result);
 void facebook::react::fromRawValue(const facebook::react::PropsParserContext& context, const facebook::react::RawValue& value, facebook::yoga::Style::Length& result);
 void facebook::react::fromRawValue(const facebook::react::PropsParserContext& context, const facebook::react::RawValue& value, facebook::yoga::Wrap& result);
+void facebook::react::fromRawValue(const facebook::react::PropsParserContext& context, const facebook::react::RawValue& value, std::vector<facebook::react::BackgroundImage>& result);
 void facebook::react::fromRawValue(const facebook::react::PropsParserContext&, const facebook::react::RawValue& value, facebook::react::AccessibilityValue& result);
 void facebook::react::fromRawValue(const facebook::react::PropsParserContext&, const facebook::react::RawValue& value, facebook::react::BlendMode& result);
 void facebook::react::fromRawValue(const facebook::react::PropsParserContext&, const facebook::react::RawValue& value, facebook::react::CornerInsets& result);
@@ -513,7 +514,10 @@ void facebook::react::fromRawValueShared(const facebook::react::ContextContainer
 void facebook::react::fromString(const std::string& string, facebook::react::AccessibilityTraits& result);
 void facebook::react::g_setNativeAnimatedNowTimestampFunction(facebook::react::TimePointFunction nowFunction);
 void facebook::react::handleJSError(facebook::jsi::Runtime& runtime, const facebook::jsi::JSError& error, bool isFatal);
+void facebook::react::parseProcessedBackgroundImage(const facebook::react::PropsParserContext& context, const facebook::react::RawValue& value, std::vector<facebook::react::BackgroundImage>& result);
 void facebook::react::parseProcessedFontVariant(const facebook::react::PropsParserContext&, const facebook::react::RawValue& value, facebook::react::FontVariant& result);
+void facebook::react::parseUnprocessedBackgroundImageList(const facebook::react::PropsParserContext& context, const std::vector<facebook::react::RawValue>& value, std::vector<facebook::react::BackgroundImage>& result);
+void facebook::react::parseUnprocessedBackgroundImageString(const std::string& value, std::vector<facebook::react::BackgroundImage>& result);
 void facebook::react::parseUnprocessedFontVariant(const facebook::react::PropsParserContext& context, const facebook::react::RawValue& value, facebook::react::FontVariant& result);
 void facebook::react::parseUnprocessedFontVariantString(const std::string& value, facebook::react::FontVariant& result);
 void facebook::react::parseUnprocessedTransformOriginString(const std::string& value, facebook::react::TransformOrigin& result);
