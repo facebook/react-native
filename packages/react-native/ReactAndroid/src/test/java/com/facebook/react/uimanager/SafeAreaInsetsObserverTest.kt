@@ -8,6 +8,7 @@
 package com.facebook.react.uimanager
 
 import android.annotation.SuppressLint
+import android.graphics.Matrix
 import android.graphics.Rect
 import android.util.DisplayMetrics
 import android.view.View
@@ -39,9 +40,11 @@ import org.mockito.kotlin.whenever
 import org.robolectric.RobolectricTestRunner
 import org.robolectric.RuntimeEnvironment
 import org.robolectric.annotation.Config
+import org.robolectric.annotation.GraphicsMode
 
 @RunWith(RobolectricTestRunner::class)
 @Config(shadows = [ShadowArguments::class])
+@GraphicsMode(GraphicsMode.Mode.NATIVE)
 class SafeAreaInsetsObserverTest {
   private lateinit var root: FrameLayout
   private val events = mutableListOf<SafeAreaInsetsChangeEvent>()
@@ -204,7 +207,7 @@ class SafeAreaInsetsObserverTest {
   }
 
   @Test
-  fun rootOffset_isNotMixedWithRootLocalInsets() {
+  fun rootLayoutOrigin_isNotAddedToRootLocalBounds() {
     root.layout(70, 120, 570, 1120)
     val view = addView(root, 0, 0, 500, 1000)
 
@@ -262,6 +265,97 @@ class SafeAreaInsetsObserverTest {
   fun arbitraryRotation_returnsNull() {
     val view = addView(root, 0, 0, 500, 1000)
     view.rotation = 45f
+
+    assertThat(SafeAreaInsetsObserver.getSafeAreaInsets(view)).isNull()
+  }
+
+  @Test
+  fun counterRotatedAncestorAndView_reportAxisAlignedInsets() {
+    val parent = addParent(0, 0, 500, 1000)
+    parent.clipChildren = false
+    parent.pivotX = 0f
+    parent.pivotY = 0f
+    parent.rotation = 30f
+    val view = addView(parent, 0, 0, 500, 1000)
+    view.pivotX = 0f
+    view.pivotY = 0f
+    view.rotation = -30f
+
+    assertThat(SafeAreaInsetsObserver.getSafeAreaInsets(view))
+        .isEqualTo(Insets.of(40, 100, 40, 100))
+  }
+
+  @Test
+  fun threeCancellingRotations_reportAxisAlignedInsets() {
+    val outer = addParent(0, 0, 500, 1000)
+    outer.clipChildren = false
+    outer.pivotX = 0f
+    outer.pivotY = 0f
+    outer.rotation = 10f
+    val inner = FrameLayout(root.context)
+    outer.addView(inner)
+    inner.layout(0, 0, 500, 1000)
+    inner.clipChildren = false
+    inner.pivotX = 0f
+    inner.pivotY = 0f
+    inner.rotation = 20f
+    val view = addView(inner, 0, 0, 500, 1000)
+    view.pivotX = 0f
+    view.pivotY = 0f
+    view.rotation = -30f
+
+    assertThat(SafeAreaInsetsObserver.getSafeAreaInsets(view))
+        .isEqualTo(Insets.of(40, 100, 40, 100))
+  }
+
+  @Test
+  fun rotatedAncestor_returnsNull() {
+    val parent = addParent(0, 0, 500, 1000)
+    val view = addView(parent, 0, 0, 500, 1000)
+    parent.rotation = 45f
+
+    assertThat(SafeAreaInsetsObserver.getSafeAreaInsets(view)).isNull()
+  }
+
+  @Test
+  fun skewedAncestor_returnsNull() {
+    val matrix = Matrix().apply { setSkew(0.25f, 0f) }
+    val parent =
+        object : FrameLayout(root.context) {
+          override fun getMatrix(): Matrix = matrix
+        }
+    root.addView(parent)
+    parent.layout(0, 0, 500, 1000)
+    val view = addView(parent, 0, 0, 500, 1000)
+
+    assertThat(SafeAreaInsetsObserver.getSafeAreaInsets(view)).isNull()
+  }
+
+  @Test
+  fun skewBeyondAxisAlignmentErrorBudget_returnsNull() {
+    for (matrix in
+        arrayOf(
+            Matrix().apply { setSkew(-0.000002f, 0f) },
+            Matrix().apply { setSkew(0.000002f, 0f) },
+            Matrix().apply { setSkew(0f, -0.000002f) },
+            Matrix().apply { setSkew(0f, 0.000002f) },
+        )) {
+      val view =
+          object : View(root.context) {
+            override fun getMatrix(): Matrix = matrix
+          }
+      root.addView(view)
+      view.layout(0, 0, 10000, 10000)
+
+      assertThat(SafeAreaInsetsObserver.getSafeAreaInsets(view)).isNull()
+      root.removeView(view)
+    }
+  }
+
+  @Test
+  fun perspectiveRotation_returnsNull() {
+    val view = addView(root, 0, 0, 500, 1000)
+    view.rotationX = 45f
 
     assertThat(SafeAreaInsetsObserver.getSafeAreaInsets(view)).isNull()
   }
@@ -402,6 +496,42 @@ class SafeAreaInsetsObserverTest {
   }
 
   @Test
+  @Suppress("DEPRECATION")
+  @SuppressLint("DeprecatedMethod")
+  fun subpixelChanges_emitOnlyBeyondOnePhysicalPixelWithoutRoundingPayload() {
+    DisplayMetricsHolder.setScreenDisplayMetrics(DisplayMetrics().apply { density = 2f })
+    val view = addView(root, 0, 0, 500, 1000)
+    val observer = observe(view)
+    observer.onPreDraw()
+    view.translationY = 0.5f
+    observer.onPreDraw()
+    view.translationY = 1f
+    observer.onPreDraw()
+    assertThat(events).hasSize(1)
+
+    view.translationY = 1.25f
+    observer.onPreDraw()
+    observer.onPreDraw()
+    assertThat(events).hasSize(2)
+    val emitter = mock<RCTModernEventEmitter>()
+    val payload = argumentCaptor<WritableMap>()
+    events.last().dispatchModern(emitter)
+    verify(emitter)
+        .receiveEvent(
+            eq(1),
+            eq(2),
+            eq("topSafeAreaInsetsChange"),
+            any(),
+            any(),
+            payload.capture(),
+            any(),
+        )
+    val insets = checkNotNull(payload.firstValue.getMap("insets"))
+    assertThat(insets.getDouble("top")).isEqualTo(49.375)
+    assertThat(insets.getDouble("bottom")).isEqualTo(50.625)
+  }
+
+  @Test
   fun supportedUnsupportedSupported_reEmitsAfterRecovery() {
     val view = addView(root, 0, 0, 500, 1000)
     val observer = observe(view)
@@ -433,6 +563,21 @@ class SafeAreaInsetsObserverTest {
     observer.onPreDraw()
     observer.onPreDraw()
 
+    assertThat(events).hasSize(2)
+  }
+
+  @Test
+  fun detachAndReattach_reEmitsUnchangedInsetsOnNextPreDraw() {
+    val view = addView(root, 0, 0, 500, 1000)
+    val observer = observe(view)
+    observer.onPreDraw()
+    observer.onViewDetachedFromWindow(view)
+    observer.onViewAttachedToWindow(view)
+
+    assertThat(view.getTag(R.id.safe_area_insets_observer)).isSameAs(observer)
+    assertThat(events).hasSize(1)
+    observer.onPreDraw()
+    observer.onPreDraw()
     assertThat(events).hasSize(2)
   }
 

@@ -12,7 +12,7 @@ import com.facebook.react.bridge.WritableMap
 import com.facebook.react.uimanager.PixelUtil.pxToDp
 
 /**
- * Emitted when the part of a view that is covered by the system UI changes.
+ * Emitted when the unsafe-area overlap of a view's rendered bounds changes.
  *
  * Dispatched synchronously so that the layout depending on the insets is mounted in the frame the
  * insets changed in, rather than the one after it.

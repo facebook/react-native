@@ -18,11 +18,11 @@ import androidx.core.view.WindowInsetsCompat
 import com.facebook.react.R
 import com.facebook.react.uimanager.UIManagerHelper
 import com.facebook.react.uimanager.events.SafeAreaInsetsChangeEvent
+import kotlin.math.abs
 import kotlin.math.roundToInt
 
 /**
- * Observes the part of a view covered by system UI, and emits [SafeAreaInsetsChangeEvent] whenever
- * it changes.
+ * Observes unsafe-area overlap of a view's rendered bounds and emits [SafeAreaInsetsChangeEvent].
  */
 internal class SafeAreaInsetsObserver private constructor(private val view: View) :
     ViewTreeObserver.OnPreDrawListener, View.OnAttachStateChangeListener {
@@ -89,7 +89,10 @@ internal class SafeAreaInsetsObserver private constructor(private val view: View
       hasLastInsets = false
       return
     }
-    if (hasLastInsets && insets.contentEquals(lastInsets)) {
+    if (
+        hasLastInsets &&
+            insets.indices.all { abs(insets[it] - lastInsets[it]) <= INSET_CHANGE_THRESHOLD_PX }
+    ) {
       return
     }
     val eventDispatcher =
@@ -122,6 +125,10 @@ internal class SafeAreaInsetsObserver private constructor(private val view: View
     private const val RIGHT = 1
     private const val BOTTOM = 2
     private const val LEFT = 3
+    // Match iOS notification precision without rounding the emitted measurement.
+    private const val INSET_CHANGE_THRESHOLD_PX = 1f
+    // Bound accumulated transform round-off to one thousandth of a physical pixel.
+    private const val MAX_AXIS_ALIGNMENT_ERROR_PX = 0.001f
 
     // One observer per view that sets the prop; views without it pay nothing.
     @JvmStatic
@@ -200,8 +207,10 @@ internal class SafeAreaInsetsObserver private constructor(private val view: View
       toRoot.getValues(geometry.matrixValues)
       if (
           geometry.matrixValues.any { !it.isFinite() } ||
-              geometry.matrixValues[Matrix.MSKEW_X] != 0f ||
-              geometry.matrixValues[Matrix.MSKEW_Y] != 0f ||
+              abs(geometry.matrixValues[Matrix.MSKEW_X]) * view.height >
+                  MAX_AXIS_ALIGNMENT_ERROR_PX ||
+              abs(geometry.matrixValues[Matrix.MSKEW_Y]) * view.width >
+                  MAX_AXIS_ALIGNMENT_ERROR_PX ||
               geometry.matrixValues[Matrix.MPERSP_0] != 0f ||
               geometry.matrixValues[Matrix.MPERSP_1] != 0f ||
               geometry.matrixValues[Matrix.MPERSP_2] != 1f ||
