@@ -9,6 +9,7 @@
 
 package com.facebook.react.fabric
 
+import android.view.View
 import com.facebook.react.bridge.BridgeReactContext
 import com.facebook.react.bridge.JavaOnlyArray
 import com.facebook.react.bridge.ReactApplicationContext
@@ -18,6 +19,7 @@ import com.facebook.react.uimanager.events.BatchEventDispatchedListener
 import com.facebook.testutils.fakes.FakeBatchEventDispatchedListener
 import com.facebook.testutils.shadows.ShadowSoLoader
 import org.assertj.core.api.Assertions.assertThat
+import org.assertj.core.api.Assertions.assertThatThrownBy
 import org.junit.Before
 import org.junit.Test
 import org.junit.runner.RunWith
@@ -41,6 +43,18 @@ class FabricUIManagerTest {
     viewManagerRegistry = ViewManagerRegistry(emptyList())
     batchEventDispatchedListener = FakeBatchEventDispatchedListener()
     underTest = FabricUIManager(reactContext, viewManagerRegistry, batchEventDispatchedListener)
+  }
+
+  @Test
+  fun legacySurfaceLifecycleMethods_areUnsupported() {
+    val rootView = View(reactContext)
+
+    assertThatThrownBy { underTest.addRootView(rootView, null) }
+        .isInstanceOf(UnsupportedOperationException::class.java)
+    assertThatThrownBy { underTest.startSurface(rootView, "module", null, 0, 0) }
+        .isInstanceOf(UnsupportedOperationException::class.java)
+    assertThatThrownBy { underTest.stopSurface(1) }
+        .isInstanceOf(UnsupportedOperationException::class.java)
   }
 
   @Test

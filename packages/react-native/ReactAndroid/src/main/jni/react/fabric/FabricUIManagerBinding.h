@@ -15,7 +15,6 @@
 #include <fbjni/fbjni.h>
 #include <react/jni/JRuntimeExecutor.h>
 #include <react/jni/JRuntimeScheduler.h>
-#include <react/jni/ReadableNativeMap.h>
 #include <react/renderer/scheduler/SchedulerDelegate.h>
 #include <react/renderer/scheduler/SurfaceHandler.h>
 #include <react/renderer/uimanager/LayoutAnimationStatusDelegate.h>
@@ -48,17 +47,6 @@ class FabricUIManagerBinding : public jni::HybridClass<FabricUIManagerBinding>,
   std::shared_ptr<Scheduler> getScheduler();
 
  private:
-  void setConstraints(
-      jint surfaceId,
-      jfloat minWidth,
-      jfloat maxWidth,
-      jfloat minHeight,
-      jfloat maxHeight,
-      jfloat offsetX,
-      jfloat offsetY,
-      jboolean isRTL,
-      jboolean doLeftAndRightSwapInRTL);
-
   static void initHybrid(jni::alias_ref<jhybridobject> jobj);
 
   void installFabricUIManager(
@@ -67,23 +55,6 @@ class FabricUIManagerBinding : public jni::HybridClass<FabricUIManagerBinding>,
       jni::alias_ref<JFabricUIManager::javaobject> javaUIManager,
       EventBeatManager *eventBeatManager,
       ComponentFactory *componentsRegistry);
-
-  void startSurface(jint surfaceId, jni::alias_ref<jstring> moduleName, NativeMap *initialProps);
-
-  void startSurfaceWithConstraints(
-      jint surfaceId,
-      jni::alias_ref<jstring> moduleName,
-      NativeMap *initialProps,
-      jfloat minWidth,
-      jfloat maxWidth,
-      jfloat minHeight,
-      jfloat maxHeight,
-      jfloat offsetX,
-      jfloat offsetY,
-      jboolean isRTL,
-      jboolean doLeftAndRightSwapInRTL);
-
-  void stopSurface(jint surfaceId);
 
   void startSurfaceWithSurfaceHandler(
       jint surfaceId,
@@ -125,8 +96,6 @@ class FabricUIManagerBinding : public jni::HybridClass<FabricUIManagerBinding>,
 
   void schedulerDidClearPendingSnapshots() override;
 
-  void setPixelDensity(float pointScaleFactor);
-
   void driveCxxAnimations();
 
   void driveAnimationBackend(jlong frameTimeNanos);
@@ -156,18 +125,12 @@ class FabricUIManagerBinding : public jni::HybridClass<FabricUIManagerBinding>,
 
   std::shared_ptr<LayoutAnimationDriver> animationDriver_;
 
-  // Roots not created through ReactSurface (non-bridgeless) will store their
-  // SurfaceHandler here, for other roots we keep a weak reference to the Java
-  // owner
-  std::unordered_map<SurfaceId, std::variant<SurfaceHandler, jni::weak_ref<SurfaceHandlerBinding::jhybridobject>>>
-      surfaceHandlerRegistry_{};
+  std::unordered_map<SurfaceId, jni::weak_ref<SurfaceHandlerBinding::jhybridobject>> surfaceHandlerRegistry_{};
   std::shared_mutex surfaceHandlerRegistryMutex_; // Protects `surfaceHandlerRegistry_`.
 
   // Track pending transactions, one per surfaceId
   std::mutex pendingTransactionsMutex_;
   std::vector<MountingTransaction> pendingTransactions_;
-
-  float pointScaleFactor_ = 1;
 
   bool enableFabricLogs_{false};
 

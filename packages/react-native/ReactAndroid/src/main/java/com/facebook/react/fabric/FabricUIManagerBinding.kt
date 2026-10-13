@@ -10,11 +10,9 @@ package com.facebook.react.fabric
 import android.annotation.SuppressLint
 import com.facebook.jni.HybridClassBase
 import com.facebook.proguard.annotations.DoNotStripAny
-import com.facebook.react.bridge.NativeMap
 import com.facebook.react.bridge.RuntimeExecutor
 import com.facebook.react.bridge.RuntimeScheduler
 import com.facebook.react.fabric.events.EventBeatManager
-import com.facebook.react.uimanager.PixelUtil.getDisplayMetricDensity
 
 @DoNotStripAny
 @SuppressLint("MissingNativeLoadLibrary")
@@ -33,22 +31,6 @@ internal class FabricUIManagerBinding : HybridClassBase() {
       componentsRegistry: ComponentFactory,
   )
 
-  external fun startSurface(surfaceId: Int, moduleName: String, initialProps: NativeMap?)
-
-  external fun startSurfaceWithConstraints(
-      surfaceId: Int,
-      moduleName: String,
-      initialProps: NativeMap?,
-      minWidth: Float,
-      maxWidth: Float,
-      minHeight: Float,
-      maxHeight: Float,
-      offsetX: Float,
-      offsetY: Float,
-      isRTL: Boolean,
-      doLeftAndRightSwapInRTL: Boolean,
-  )
-
   external fun startSurfaceWithSurfaceHandler(
       surfaceId: Int,
       surfaceHandler: SurfaceHandlerBinding,
@@ -59,23 +41,7 @@ internal class FabricUIManagerBinding : HybridClassBase() {
 
   external fun getRelativeAncestorList(rootTag: Int, childTag: Int): IntArray
 
-  external fun stopSurface(surfaceId: Int)
-
   external fun stopSurfaceWithSurfaceHandler(surfaceHandler: SurfaceHandlerBinding)
-
-  external fun setPixelDensity(pointScaleFactor: Float)
-
-  external fun setConstraints(
-      surfaceId: Int,
-      minWidth: Float,
-      maxWidth: Float,
-      minHeight: Float,
-      maxHeight: Float,
-      offsetX: Float,
-      offsetY: Float,
-      isRTL: Boolean,
-      doLeftAndRightSwapInRTL: Boolean,
-  )
 
   external fun driveCxxAnimations()
 
@@ -105,7 +71,6 @@ internal class FabricUIManagerBinding : HybridClassBase() {
         eventBeatManager,
         componentFactory,
     )
-    setPixelDensity(getDisplayMetricDensity())
   }
 
   private external fun uninstallFabricUIManager()

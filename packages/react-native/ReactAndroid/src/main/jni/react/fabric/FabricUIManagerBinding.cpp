@@ -47,10 +47,6 @@ std::shared_ptr<Scheduler> FabricUIManagerBinding::getScheduler() {
   return scheduler_;
 }
 
-void FabricUIManagerBinding::setPixelDensity(float pointScaleFactor) {
-  pointScaleFactor_ = pointScaleFactor;
-}
-
 void FabricUIManagerBinding::driveCxxAnimations() {
   auto scheduler = getScheduler();
   if (!scheduler) {
@@ -89,19 +85,11 @@ void FabricUIManagerBinding::reportMount(SurfaceId surfaceId) {
     std::shared_lock lock(surfaceHandlerRegistryMutex_);
     auto iterator = surfaceHandlerRegistry_.find(surfaceId);
     if (iterator != surfaceHandlerRegistry_.end()) {
-      const auto* surfaceHandler =
-          std::get_if<SurfaceHandler>(&iterator->second);
-      if (surfaceHandler == nullptr) {
-        auto javaSurfaceHandler =
-            std::get<jni::weak_ref<SurfaceHandlerBinding::jhybridobject>>(
-                iterator->second)
-                .lockLocal();
-        if (javaSurfaceHandler) {
-          surfaceHandler = &javaSurfaceHandler->cthis()->getSurfaceHandler();
-        }
-      }
-      if (surfaceHandler != nullptr) {
-        auto mountingCoordinator = surfaceHandler->getMountingCoordinator();
+      auto javaSurfaceHandler = iterator->second.lockLocal();
+      if (javaSurfaceHandler) {
+        const auto& surfaceHandler =
+            javaSurfaceHandler->cthis()->getSurfaceHandler();
+        auto mountingCoordinator = surfaceHandler.getMountingCoordinator();
         if (mountingCoordinator != nullptr) {
           mountingCoordinator->didPerformAsyncTransactions();
         }
@@ -130,19 +118,11 @@ void FabricUIManagerBinding::pullAndExecuteTransaction(SurfaceId surfaceId) {
     if (iterator == surfaceHandlerRegistry_.end()) {
       return;
     }
-    const auto* surfaceHandler = std::get_if<SurfaceHandler>(&iterator->second);
-    jni::local_ref<SurfaceHandlerBinding::jhybridobject> javaSurfaceHandler;
-    if (surfaceHandler == nullptr) {
-      javaSurfaceHandler =
-          std::get<jni::weak_ref<SurfaceHandlerBinding::jhybridobject>>(
-              iterator->second)
-              .lockLocal();
-      if (javaSurfaceHandler) {
-        surfaceHandler = &javaSurfaceHandler->cthis()->getSurfaceHandler();
-      }
-    }
-    if (surfaceHandler != nullptr) {
-      mountingCoordinator = surfaceHandler->getMountingCoordinator();
+    auto javaSurfaceHandler = iterator->second.lockLocal();
+    if (javaSurfaceHandler) {
+      mountingCoordinator = javaSurfaceHandler->cthis()
+                                ->getSurfaceHandler()
+                                .getMountingCoordinator();
     }
   }
 
@@ -213,60 +193,6 @@ void FabricUIManagerBinding::startSurfaceWithSurfaceHandler(
     std::unique_lock lock(surfaceHandlerRegistryMutex_);
     surfaceHandlerRegistry_.emplace(
         surfaceId, jni::make_weak(surfaceHandlerBinding));
-  }
-}
-
-// Used by non-bridgeless+Fabric
-void FabricUIManagerBinding::startSurface(
-    jint surfaceId,
-    jni::alias_ref<jstring> moduleName,
-    NativeMap* initialProps) {
-  TraceSection s("FabricUIManagerBinding::startSurface");
-
-  if (enableFabricLogs_) {
-    LOG(WARNING)
-        << "FabricUIManagerBinding::startSurface() was called (address: "
-        << this << ", surfaceId: " << surfaceId << ").";
-  }
-
-  auto scheduler = getScheduler();
-  if (!scheduler) {
-    LOG(ERROR) << "FabricUIManagerBinding::startSurface: scheduler disappeared";
-    return;
-  }
-
-  SurfaceHandler* surfaceHandler = nullptr;
-  {
-    std::unique_lock lock(surfaceHandlerRegistryMutex_);
-    auto [it, _] = surfaceHandlerRegistry_.try_emplace(
-        surfaceId,
-        std::in_place_index<0>,
-        moduleName->toStdString(),
-        surfaceId);
-    surfaceHandler = &std::get<SurfaceHandler>(it->second);
-  }
-
-  surfaceHandler->setContextContainer(scheduler->getContextContainer());
-  if (initialProps != nullptr) {
-    surfaceHandler->setProps(initialProps->consume());
-  }
-
-  auto layoutContext = LayoutContext{};
-  layoutContext.pointScaleFactor = pointScaleFactor_;
-  surfaceHandler->constraintLayout({}, layoutContext);
-
-  scheduler->registerSurface(*surfaceHandler);
-
-  auto mountingManager = getMountingManager("startSurface");
-  if (mountingManager != nullptr) {
-    mountingManager->onSurfaceStart(surfaceId);
-  }
-
-  surfaceHandler->start();
-
-  if (ReactNativeFeatureFlags::enableLayoutAnimationsOnAndroid()) {
-    surfaceHandler->getMountingCoordinator()->setMountingOverrideDelegate(
-        animationDriver_);
   }
 }
 
@@ -366,125 +292,6 @@ jintArray FabricUIManagerBinding::getRelativeAncestorList(
   return result;
 }
 
-// Used by non-bridgeless+Fabric
-void FabricUIManagerBinding::startSurfaceWithConstraints(
-    jint surfaceId,
-    jni::alias_ref<jstring> moduleName,
-    NativeMap* initialProps,
-    jfloat minWidth,
-    jfloat maxWidth,
-    jfloat minHeight,
-    jfloat maxHeight,
-    jfloat offsetX,
-    jfloat offsetY,
-    jboolean isRTL,
-    jboolean doLeftAndRightSwapInRTL) {
-  TraceSection s("FabricUIManagerBinding::startSurfaceWithConstraints");
-
-  if (enableFabricLogs_) {
-    LOG(WARNING)
-        << "FabricUIManagerBinding::startSurfaceWithConstraints() was called (address: "
-        << this << ", surfaceId: " << surfaceId << ").";
-  }
-
-  auto scheduler = getScheduler();
-  if (!scheduler) {
-    LOG(ERROR)
-        << "FabricUIManagerBinding::startSurfaceWithConstraints: scheduler disappeared";
-    return;
-  }
-
-  auto minimumSize = Size{
-      .width = minWidth / pointScaleFactor_,
-      .height = minHeight / pointScaleFactor_};
-  auto maximumSize = Size{
-      .width = maxWidth / pointScaleFactor_,
-      .height = maxHeight / pointScaleFactor_};
-
-  LayoutContext context;
-  context.viewportOffset =
-      Point{.x = offsetX / pointScaleFactor_, .y = offsetY / pointScaleFactor_};
-  context.pointScaleFactor = {pointScaleFactor_};
-  context.swapLeftAndRightInRTL = doLeftAndRightSwapInRTL != 0;
-  LayoutConstraints constraints = {};
-  constraints.minimumSize = minimumSize;
-  constraints.maximumSize = maximumSize;
-  constraints.layoutDirection =
-      isRTL != 0 ? LayoutDirection::RightToLeft : LayoutDirection::LeftToRight;
-
-  SurfaceHandler* surfaceHandler = nullptr;
-  {
-    std::unique_lock lock(surfaceHandlerRegistryMutex_);
-    auto [it, _] = surfaceHandlerRegistry_.try_emplace(
-        surfaceId,
-        std::in_place_index<0>,
-        moduleName->toStdString(),
-        surfaceId);
-    surfaceHandler = &std::get<SurfaceHandler>(it->second);
-  }
-
-  surfaceHandler->setContextContainer(scheduler->getContextContainer());
-  if (initialProps != nullptr) {
-    surfaceHandler->setProps(initialProps->consume());
-  }
-  surfaceHandler->constraintLayout(constraints, context);
-
-  scheduler->registerSurface(*surfaceHandler);
-
-  auto mountingManager = getMountingManager("startSurfaceWithConstraints");
-  if (mountingManager != nullptr) {
-    mountingManager->onSurfaceStart(surfaceId);
-  }
-
-  surfaceHandler->start();
-
-  if (ReactNativeFeatureFlags::enableLayoutAnimationsOnAndroid()) {
-    surfaceHandler->getMountingCoordinator()->setMountingOverrideDelegate(
-        animationDriver_);
-  }
-}
-
-// Used by non-bridgeless+Fabric
-void FabricUIManagerBinding::stopSurface(jint surfaceId) {
-  TraceSection s("FabricUIManagerBinding::stopSurface");
-  if (enableFabricLogs_) {
-    LOG(WARNING)
-        << "FabricUIManagerBinding::stopSurface() was called (address: " << this
-        << ", surfaceId: " << surfaceId << ").";
-  }
-
-  auto scheduler = getScheduler();
-  if (!scheduler) {
-    LOG(ERROR) << "FabricUIManagerBinding::stopSurface: scheduler disappeared";
-    return;
-  }
-
-  {
-    std::unique_lock lock(surfaceHandlerRegistryMutex_);
-    auto iterator = surfaceHandlerRegistry_.find(surfaceId);
-    if (iterator == surfaceHandlerRegistry_.end()) {
-      LOG(ERROR)
-          << "FabricUIManagerBinding::stopSurface: Surface with given id is not found";
-      return;
-    }
-
-    auto* surfaceHandler = std::get_if<SurfaceHandler>(&iterator->second);
-    if (surfaceHandler != nullptr) {
-      surfaceHandler->stop();
-      scheduler->unregisterSurface(*surfaceHandler);
-    } else {
-      LOG(ERROR) << "Java-owned SurfaceHandler found in stopSurface";
-    }
-    surfaceHandlerRegistry_.erase(iterator);
-  }
-
-  auto mountingManager = getMountingManager("stopSurface");
-  if (!mountingManager) {
-    return;
-  }
-  mountingManager->onSurfaceStop(surfaceId);
-}
-
 // Used by bridgeless
 void FabricUIManagerBinding::stopSurfaceWithSurfaceHandler(
     jni::alias_ref<SurfaceHandlerBinding::jhybridobject>
@@ -521,58 +328,6 @@ void FabricUIManagerBinding::stopSurfaceWithSurfaceHandler(
     return;
   }
   mountingManager->onSurfaceStop(surfaceHandler.getSurfaceId());
-}
-
-void FabricUIManagerBinding::setConstraints(
-    jint surfaceId,
-    jfloat minWidth,
-    jfloat maxWidth,
-    jfloat minHeight,
-    jfloat maxHeight,
-    jfloat offsetX,
-    jfloat offsetY,
-    jboolean isRTL,
-    jboolean doLeftAndRightSwapInRTL) {
-  TraceSection s("FabricUIManagerBinding::setConstraints");
-
-  auto scheduler = getScheduler();
-  if (!scheduler) {
-    LOG(ERROR)
-        << "FabricUIManagerBinding::setConstraints: scheduler disappeared";
-    return;
-  }
-
-  auto minimumSize = Size{
-      .width = minWidth / pointScaleFactor_,
-      .height = minHeight / pointScaleFactor_};
-  auto maximumSize = Size{
-      .width = maxWidth / pointScaleFactor_,
-      .height = maxHeight / pointScaleFactor_};
-
-  LayoutContext context;
-  context.viewportOffset =
-      Point{.x = offsetX / pointScaleFactor_, .y = offsetY / pointScaleFactor_};
-  context.pointScaleFactor = {pointScaleFactor_};
-  context.swapLeftAndRightInRTL = doLeftAndRightSwapInRTL != 0;
-  LayoutConstraints constraints = {};
-  constraints.minimumSize = minimumSize;
-  constraints.maximumSize = maximumSize;
-  constraints.layoutDirection = (isRTL != 0u) ? LayoutDirection::RightToLeft
-                                              : LayoutDirection::LeftToRight;
-
-  {
-    std::shared_lock lock(surfaceHandlerRegistryMutex_);
-    auto iterator = surfaceHandlerRegistry_.find(surfaceId);
-    if (iterator == surfaceHandlerRegistry_.end()) {
-      LOG(ERROR)
-          << "FabricUIManagerBinding::setConstraints: Surface with given id is not found";
-      return;
-    }
-    auto* surfaceHandler = std::get_if<SurfaceHandler>(&iterator->second);
-    if (surfaceHandler != nullptr) {
-      surfaceHandler->constraintLayout(constraints, context);
-    }
-  }
 }
 
 #pragma mark - Install/uninstall java binding
@@ -920,15 +675,6 @@ void FabricUIManagerBinding::registerNatives() {
       makeNativeMethod(
           "installFabricUIManager",
           FabricUIManagerBinding::installFabricUIManager),
-      makeNativeMethod("startSurface", FabricUIManagerBinding::startSurface),
-      makeNativeMethod(
-          "startSurfaceWithConstraints",
-          FabricUIManagerBinding::startSurfaceWithConstraints),
-      makeNativeMethod("stopSurface", FabricUIManagerBinding::stopSurface),
-      makeNativeMethod(
-          "setConstraints", FabricUIManagerBinding::setConstraints),
-      makeNativeMethod(
-          "setPixelDensity", FabricUIManagerBinding::setPixelDensity),
       makeNativeMethod(
           "driveCxxAnimations", FabricUIManagerBinding::driveCxxAnimations),
       makeNativeMethod(
