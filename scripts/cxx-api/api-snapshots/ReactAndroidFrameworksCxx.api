@@ -784,6 +784,7 @@ std::optional<facebook::react::FilterType> facebook::react::filterTypeFromString
 std::optional<facebook::react::Float> facebook::react::optionalFloatFromYogaValue(const facebook::yoga::Style::Length& length, std::optional<facebook::react::Float> base = {});
 std::optional<facebook::react::FontVariant> facebook::react::fontVariantFromCSSFontVariant(facebook::react::CSSFontVariant cssVariant);
 std::optional<facebook::react::Isolation> facebook::react::isolationFromString(std::string_view isolationSetting);
+std::string facebook::react::componentNameByReactViewName(std::string viewName);
 std::string facebook::react::toString(const double& value);
 std::string facebook::react::toString(const facebook::react::AccessibilityRole& accessibilityRole);
 std::string facebook::react::toString(const facebook::react::AttributedString::Range& range);
