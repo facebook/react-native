@@ -148,6 +148,9 @@ class RuntimeDecorator : public Base, private jsi::Instrumentation {
   Instrumentation& instrumentation() override {
     return *this;
   }
+  Value createValueFromJsonUtf8(const uint8_t* json, size_t length) override {
+    return plain_.createValueFromJsonUtf8(json, length);
+  }
 
   Value createError(const String& msg) override {
     return plain().createError(msg);
