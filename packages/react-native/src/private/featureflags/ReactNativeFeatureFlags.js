@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<7478060214a584642797faf2822c3540>>
+ * @generated SignedSource<<e053db28a2ba50dcf0dca77b5716d102>>
  * @flow strict
  * @noformat
  */
@@ -34,6 +34,7 @@ export type ReactNativeFeatureFlagsJsOnly = Readonly<{
   animatedKeepListenersOnDetach: Getter<boolean>,
   animatedShouldSyncValueBeforeStartCallback: Getter<boolean>,
   deferFlatListFocusChangeRenderUpdate: Getter<boolean>,
+  enableFlatListGridLayout: Getter<boolean>,
   enableImperativeEvents_DEPRECATED: Getter<boolean>,
   enableNativeEventTargetEventDispatching: Getter<boolean>,
   externalElementInspectionEnabled: Getter<boolean>,
@@ -173,6 +174,11 @@ export const animatedShouldSyncValueBeforeStartCallback: Getter<boolean> = creat
  * Use the deferred cell render update mechanism for focus change in FlatList.
  */
 export const deferFlatListFocusChangeRenderUpdate: Getter<boolean> = createJavaScriptFlagGetter('deferFlatListFocusChangeRenderUpdate', false);
+
+/**
+ * When enabled, FlatList with numColumns renders each item as its own VirtualizedList cell laid out in a grid, instead of grouping items into one cell per row, so items keep their state when they move to another row.
+ */
+export const enableFlatListGridLayout: Getter<boolean> = createJavaScriptFlagGetter('enableFlatListGridLayout', false);
 
 /**
  * Deprecated in favor of the common flag with the same name, which is the one that can be configured by OSS release stage. This is only kept so JS bundles delivered to older native builds, where the common flag is unavailable, can still enable the feature.

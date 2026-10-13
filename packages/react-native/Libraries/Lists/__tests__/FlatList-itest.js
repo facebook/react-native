@@ -6,6 +6,7 @@
  *
  * @flow strict-local
  * @format
+ * @fantom_flags enableFlatListGridLayout:*
  */
 
 import '@react-native/fantom/src/setUpDefaultReactNativeEnvironment';
@@ -16,6 +17,11 @@ import nullthrows from 'nullthrows';
 import * as React from 'react';
 import {createRef} from 'react';
 import {FlatList, Text, View} from 'react-native';
+import {ReactNativeFeatureFlags} from 'react-native/react-private-interface';
+
+const LONE_LAST_ITEM_WIDTH = ReactNativeFeatureFlags.enableFlatListGridLayout()
+  ? 200
+  : 400;
 
 function testPropPropagatedToMountingLayer<TValue>({
   propName,
@@ -298,8 +304,54 @@ describe('<FlatList>', () => {
         );
       });
 
-      // Items 1 and 2 share the first row (each 200px wide),
-      // item 3 is alone on the second row (full 400px width).
+      // Items 1 and 2 share the first row (each 200px wide). Item 3 is alone on
+      // the second row: its column is 200px wide in the grid layout, while a
+      // row cell stretches it to the full 400px.
+      expect(
+        root
+          .getRenderedOutput({
+            includeLayoutMetrics: true,
+            props: ['layoutMetrics-frame'],
+          })
+          .toJSX(),
+      ).toEqual(
+        <rn-scrollView layoutMetrics-frame="{x:0,y:0,width:400,height:600}">
+          <rn-view layoutMetrics-frame="{x:0,y:0,width:400,height:100}">
+            <rn-view
+              key="0"
+              layoutMetrics-frame="{x:0,y:0,width:200,height:50}"
+            />
+            <rn-view
+              key="1"
+              layoutMetrics-frame="{x:200,y:0,width:200,height:50}"
+            />
+            <rn-view
+              key="2"
+              layoutMetrics-frame={`{x:0,y:50,width:${LONE_LAST_ITEM_WIDTH},height:50}`}
+            />
+          </rn-view>
+        </rn-scrollView>,
+      );
+    });
+    it('keeps row cells when columnWrapperStyle is set', () => {
+      const root = Fantom.createRoot({
+        viewportWidth: 400,
+        viewportHeight: 600,
+      });
+      Fantom.runTask(() => {
+        root.render(
+          <FlatList
+            data={[{key: '1'}, {key: '2'}, {key: '3'}]}
+            numColumns={2}
+            columnWrapperStyle={{}}
+            renderItem={() => (
+              <View style={{height: 50, flex: 1}} collapsable={false} />
+            )}
+          />,
+        );
+      });
+
+      // Item 3 is stretched across its row cell in both layouts.
       expect(
         root
           .getRenderedOutput({
@@ -326,6 +378,196 @@ describe('<FlatList>', () => {
         </rn-scrollView>,
       );
     });
+
+    it('passes row indices to getItemLayout and scrollToIndex', () => {
+      const root = Fantom.createRoot();
+      const flatListRef = createRef<FlatList<{key: string}>>();
+      const getItemLayoutIndices: Array<number> = [];
+      Fantom.runTask(() => {
+        root.render(
+          <FlatList
+            ref={flatListRef}
+            nativeID="grid-list"
+            data={Array.from({length: 20}, (_, i) => ({key: String(i)}))}
+            numColumns={2}
+            renderItem={() => <View style={{height: 50, flex: 1}} />}
+            getItemLayout={(
+              _data: ?Readonly<$ArrayLike<{key: string}>>,
+              index: number,
+            ) => {
+              getItemLayoutIndices.push(index);
+              return {length: 50, offset: 50 * index, index};
+            }}
+          />,
+        );
+      });
+
+      // 20 items in 2 columns make 10 rows.
+      expect(Math.max(...getItemLayoutIndices)).toBeLessThan(10);
+
+      root.takeMountingManagerLogs();
+      Fantom.runTask(() => {
+        nullthrows(flatListRef.current).scrollToIndex({
+          index: 3,
+          animated: false,
+        });
+      });
+      expect(root.takeMountingManagerLogs()).toEqual([
+        'Command {type: "ScrollView", nativeID: "grid-list", name: "scrollTo, args: [0,150,false]"}',
+      ]);
+    });
+
+    it('reports items that move into view when an item is removed', () => {
+      const root = Fantom.createRoot({
+        viewportWidth: 400,
+        viewportHeight: 100,
+      });
+      const onViewableItemsChanged = jest.fn();
+      const flatListRef = createRef<FlatList<{key: string}>>();
+      const renderList = (keys: ReadonlyArray<string>) => (
+        <FlatList
+          ref={flatListRef}
+          data={keys.map(key => ({key}))}
+          numColumns={2}
+          renderItem={() => (
+            <View style={{height: 50, flex: 1}} collapsable={false} />
+          )}
+          getItemLayout={(
+            _data: ?Readonly<$ArrayLike<{key: string}>>,
+            index: number,
+          ) => ({length: 50, offset: 50 * index, index})}
+          viewabilityConfig={{itemVisiblePercentThreshold: 50}}
+          onViewableItemsChanged={onViewableItemsChanged}
+          initialNumToRender={20}
+        />
+      );
+      const viewableKeys = () =>
+        onViewableItemsChanged.mock.calls[
+          onViewableItemsChanged.mock.calls.length - 1
+        ][0].viewableItems.map((token: {key: string, ...}) => token.key);
+      const keys = Array.from({length: 20}, (_, i) => String(i));
+      const timers = Fantom.installTimerMock();
+      try {
+        Fantom.runTask(() => {
+          root.render(renderList(keys));
+        });
+        const scrollView = nullthrows(
+          nullthrows(flatListRef.current).getNativeScrollRef(),
+        );
+        // Rows 1 and 2 fill the viewport.
+        Fantom.scrollTo(scrollView, {x: 0, y: 50});
+        expect(viewableKeys()).toEqual(['2', '3', '4', '5']);
+
+        // Removing an item above the viewport shifts every later item back
+        // by one, so the same rows now show different items.
+        Fantom.runTask(() => {
+          root.render(renderList(keys.filter(key => key !== '1')));
+        });
+        timers.advanceTimersByTime(100);
+        expect(viewableKeys()).toEqual(['3', '4', '5', '6']);
+      } finally {
+        timers.uninstall();
+      }
+    });
+
+    if (ReactNativeFeatureFlags.enableFlatListGridLayout()) {
+      it('does not remount items when an item is removed, even if they change rows', () => {
+        const root = Fantom.createRoot({
+          viewportWidth: 400,
+          viewportHeight: 600,
+        });
+        const mountCounts: {[itemKey: string]: number} = {};
+        class Item extends React.PureComponent<{itemKey: string}> {
+          componentDidMount() {
+            const {itemKey} = this.props;
+            mountCounts[itemKey] = (mountCounts[itemKey] ?? 0) + 1;
+          }
+          render(): React.Node {
+            return (
+              <View
+                nativeID={this.props.itemKey}
+                style={{height: 50, flex: 1}}
+                collapsable={false}
+              />
+            );
+          }
+        }
+        const renderList = (keys: ReadonlyArray<string>) => (
+          <FlatList
+            data={keys.map(key => ({key}))}
+            numColumns={2}
+            renderItem={({item}) => <Item itemKey={item.key} />}
+          />
+        );
+        const keys = ['1', '2', '3', '4', '5', '6', '7', '8'];
+
+        Fantom.runTask(() => {
+          root.render(renderList(keys));
+        });
+        Fantom.runTask(() => {
+          root.render(renderList(keys.filter(key => key !== '6')));
+        });
+        Fantom.runTask(() => {
+          root.render(
+            renderList(keys.filter(key => key !== '6' && key !== '1')),
+          );
+        });
+
+        expect(mountCounts).toEqual({
+          '1': 1,
+          '2': 1,
+          '3': 1,
+          '4': 1,
+          '5': 1,
+          '6': 1,
+          '7': 1,
+          '8': 1,
+        });
+        expect(
+          root
+            .getRenderedOutput({
+              includeLayoutMetrics: true,
+              props: ['nativeID', 'layoutMetrics-frame'],
+            })
+            .toJSX(),
+        ).toEqual(
+          <rn-scrollView layoutMetrics-frame="{x:0,y:0,width:400,height:600}">
+            <rn-view layoutMetrics-frame="{x:0,y:0,width:400,height:150}">
+              <rn-view
+                key="0"
+                nativeID="2"
+                layoutMetrics-frame="{x:0,y:0,width:200,height:50}"
+              />
+              <rn-view
+                key="1"
+                nativeID="3"
+                layoutMetrics-frame="{x:200,y:0,width:200,height:50}"
+              />
+              <rn-view
+                key="2"
+                nativeID="4"
+                layoutMetrics-frame="{x:0,y:50,width:200,height:50}"
+              />
+              <rn-view
+                key="3"
+                nativeID="5"
+                layoutMetrics-frame="{x:200,y:50,width:200,height:50}"
+              />
+              <rn-view
+                key="4"
+                nativeID="7"
+                layoutMetrics-frame="{x:0,y:100,width:200,height:50}"
+              />
+              <rn-view
+                key="5"
+                nativeID="8"
+                layoutMetrics-frame="{x:200,y:100,width:200,height:50}"
+              />
+            </rn-view>
+          </rn-scrollView>,
+        );
+      });
+    }
   });
 
   describe('ItemSeparatorComponent', () => {
@@ -1234,8 +1476,9 @@ describe('<FlatList>', () => {
         );
       });
 
-      // Items 1 and 2 share the first row (each 200px wide),
-      // item 3 is alone on the second row (full 400px width).
+      // Items 1 and 2 share the first row (each 200px wide). Item 3 is alone on
+      // the second row: its column is 200px wide in the grid layout, while a
+      // row cell stretches it to the full 400px.
       expect(
         root
           .getRenderedOutput({
@@ -1256,7 +1499,7 @@ describe('<FlatList>', () => {
             />
             <rn-view
               key="2"
-              layoutMetrics-frame="{x:0,y:50,width:400,height:50}"
+              layoutMetrics-frame={`{x:0,y:50,width:${LONE_LAST_ITEM_WIDTH},height:50}`}
             />
           </rn-view>
         </rn-scrollView>,

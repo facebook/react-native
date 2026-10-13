@@ -1093,6 +1093,17 @@ const definitions: FeatureFlagDefinitions = {
       },
       ossReleaseStage: 'none',
     },
+    enableFlatListGridLayout: {
+      defaultValue: false,
+      metadata: {
+        dateAdded: '2026-10-13',
+        description:
+          'When enabled, FlatList with numColumns renders each item as its own VirtualizedList cell laid out in a grid, instead of grouping items into one cell per row, so items keep their state when they move to another row.',
+        expectedReleaseValue: true,
+        purpose: 'experimentation',
+      },
+      ossReleaseStage: 'none',
+    },
     enableImperativeEvents_DEPRECATED: {
       defaultValue: false,
       metadata: {

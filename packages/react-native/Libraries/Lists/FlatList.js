@@ -333,7 +333,14 @@ class FlatList<ItemT = any> extends React.PureComponent<FlatListProps<ItemT>> {
     ...
   }) {
     if (this._listRef) {
-      this._listRef.scrollToIndex(params);
+      this._listRef.scrollToIndex(
+        this._usesGridLayout()
+          ? {
+              ...params,
+              index: params.index * numColumnsOrDefault(this.props.numColumns),
+            }
+          : params,
+      );
     }
   }
 
@@ -518,15 +525,78 @@ class FlatList<ItemT = any> extends React.PureComponent<FlatListProps<ItemT>> {
     );
   }
 
+  // With the grid layout, VirtualizedList lays out one cell per item.
+  // Features that depend on one cell per row keep the row layout.
+  _usesGridLayout(): boolean {
+    const {
+      CellRendererComponent,
+      ItemSeparatorComponent,
+      columnWrapperStyle,
+      stickyHeaderIndices,
+    } = this.props;
+    return (
+      numColumnsOrDefault(this.props.numColumns) > 1 &&
+      ReactNativeFeatureFlags.enableFlatListGridLayout() &&
+      // The Windows fork of VirtualizedList does not support grids.
+      (Platform.OS as string) !== 'windows' &&
+      columnWrapperStyle == null &&
+      ItemSeparatorComponent == null &&
+      CellRendererComponent == null &&
+      (stickyHeaderIndices == null || stickyHeaderIndices.length === 0)
+    );
+  }
+
+  _itemsPerCell(): number {
+    return this._usesGridLayout()
+      ? 1
+      : numColumnsOrDefault(this.props.numColumns);
+  }
+
+  // Indices passed to `getItemLayout`, `initialScrollIndex` and
+  // `maintainVisibleContentPosition` refer to rows when `numColumns > 1`, so
+  // they are converted to and from the item indices used by the grid.
+  _getGridLayoutProps: (
+    numColumns: number,
+    getItemLayout: FlatListProps<ItemT>['getItemLayout'],
+    initialScrollIndex: FlatListProps<ItemT>['initialScrollIndex'],
+    maintainVisibleContentPosition: FlatListProps<ItemT>['maintainVisibleContentPosition'],
+  ) => Partial<VirtualizedListProps> = memoizeOne(
+    (
+      numColumns,
+      getItemLayout,
+      initialScrollIndex,
+      maintainVisibleContentPosition,
+    ) => ({
+      experimental_numColumns: numColumns,
+      getItemLayout:
+        getItemLayout == null
+          ? undefined
+          : (data, itemIndex) =>
+              getItemLayout(data, Math.floor(itemIndex / numColumns)),
+      initialScrollIndex:
+        initialScrollIndex == null
+          ? initialScrollIndex
+          : initialScrollIndex * numColumns,
+      maintainVisibleContentPosition:
+        maintainVisibleContentPosition == null
+          ? maintainVisibleContentPosition
+          : {
+              ...maintainVisibleContentPosition,
+              minIndexForVisible:
+                maintainVisibleContentPosition.minIndexForVisible * numColumns,
+            },
+    }),
+  );
+
   _getItem = (
     data: $ArrayLike<ItemT>,
     index: number,
   ): ?(ItemT | ReadonlyArray<ItemT>) => {
-    const numColumns = numColumnsOrDefault(this.props.numColumns);
-    if (numColumns > 1) {
+    const itemsPerCell = this._itemsPerCell();
+    if (itemsPerCell > 1) {
       const ret = [];
-      for (let kk = 0; kk < numColumns; kk++) {
-        const itemIndex = index * numColumns + kk;
+      for (let kk = 0; kk < itemsPerCell; kk++) {
+        const itemIndex = index * itemsPerCell + kk;
         if (itemIndex < data.length) {
           const item = data[itemIndex];
           ret.push(item);
@@ -546,27 +616,29 @@ class FlatList<ItemT = any> extends React.PureComponent<FlatListProps<ItemT>> {
     // available to prevent it from trying to read from the invalid data
     // (without propagating invalidly typed data).
     if (data != null && isArrayLike(data)) {
-      const numColumns = numColumnsOrDefault(this.props.numColumns);
-      return numColumns > 1 ? Math.ceil(data.length / numColumns) : data.length;
+      const itemsPerCell = this._itemsPerCell();
+      return itemsPerCell > 1
+        ? Math.ceil(data.length / itemsPerCell)
+        : data.length;
     } else {
       return 0;
     }
   };
 
   _keyExtractor = (items: ItemT | Array<ItemT>, index: number): string => {
-    const numColumns = numColumnsOrDefault(this.props.numColumns);
+    const itemsPerCell = this._itemsPerCell();
     const keyExtractor = this.props.keyExtractor ?? defaultKeyExtractor;
 
-    if (numColumns > 1) {
+    if (itemsPerCell > 1) {
       invariant(
         Array.isArray(items),
         'FlatList: Encountered internal consistency error, expected each item to consist of an ' +
           'array with 1-%s columns; instead, received a single item.',
-        numColumns,
+        itemsPerCell,
       );
       return items
         .map((item, kk) =>
-          keyExtractor(item as $FlowFixMe as ItemT, index * numColumns + kk),
+          keyExtractor(item as $FlowFixMe as ItemT, index * itemsPerCell + kk),
         )
         .join(':');
     }
@@ -576,11 +648,11 @@ class FlatList<ItemT = any> extends React.PureComponent<FlatListProps<ItemT>> {
   };
 
   _pushMultiColumnViewable(arr: Array<ListViewToken>, v: ListViewToken): void {
-    const numColumns = numColumnsOrDefault(this.props.numColumns);
+    const itemsPerCell = this._itemsPerCell();
     const keyExtractor = this.props.keyExtractor ?? defaultKeyExtractor;
     v.item.forEach((item, ii) => {
       invariant(v.index != null, 'Missing index!');
-      const index = v.index * numColumns + ii;
+      const index = v.index * itemsPerCell + ii;
       arr.push({...v, item, key: keyExtractor(item, index), index});
     });
   }
@@ -598,9 +670,8 @@ class FlatList<ItemT = any> extends React.PureComponent<FlatListProps<ItemT>> {
       changed: Array<ListViewToken>,
       ...
     }) => {
-      const numColumns = numColumnsOrDefault(this.props.numColumns);
       if (onViewableItemsChanged) {
-        if (numColumns > 1) {
+        if (this._itemsPerCell() > 1) {
           const changed: Array<ListViewToken> = [];
           const viewableItems: Array<ListViewToken> = [];
           info.viewableItems.forEach(v =>
@@ -684,11 +755,20 @@ class FlatList<ItemT = any> extends React.PureComponent<FlatListProps<ItemT>> {
     } = this.props;
 
     const renderer = strictMode ? this._memoizedRenderer : this._renderer;
+    const gridLayoutProps = this._usesGridLayout()
+      ? this._getGridLayoutProps(
+          numColumnsOrDefault(numColumns),
+          restProps.getItemLayout,
+          restProps.initialScrollIndex,
+          restProps.maintainVisibleContentPosition,
+        )
+      : null;
 
     return (
       // $FlowFixMe[incompatible-exact] - `restProps` (`Props`) is inexact.
       <VirtualizedList
         {...restProps}
+        {...gridLayoutProps}
         getItem={this._getItem}
         getItemCount={this._getItemCount}
         keyExtractor={this._keyExtractor}
@@ -701,7 +781,7 @@ class FlatList<ItemT = any> extends React.PureComponent<FlatListProps<ItemT>> {
           this.props.ListItemComponent,
           this.props.renderItem,
           columnWrapperStyle,
-          numColumns,
+          this._itemsPerCell(),
           this.props.extraData,
         )}
       />
