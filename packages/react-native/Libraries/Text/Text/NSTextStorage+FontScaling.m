@@ -90,9 +90,9 @@ typedef NS_OPTIONS(NSInteger, RCTTextSizeComparisonOptions) {
   CGSize measuredSize = [layoutManager usedRectForTextContainer:textContainer].size;
 
   // Does it fit the size? Yoga's pixel-grid rounding can leave the height a float ULP short of
-  // the line height (#52642), so a shortfall smaller than one physical pixel still counts as fitting.
-  CGFloat heightTolerance = 1.0 / RCTScreenScale();
-  BOOL fitsSize = size.width >= measuredSize.width && size.height + heightTolerance > measuredSize.height;
+  // the line height (#52642), so both heights are rounded to the pixel grid before comparing.
+  BOOL fitsSize = size.width >= measuredSize.width &&
+      RCTRoundPixelValue(size.height) >= RCTRoundPixelValue(measuredSize.height);
 
   CGSize thresholdSize = (CGSize){
       size.width * thresholdRatio,
