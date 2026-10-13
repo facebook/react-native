@@ -1047,4 +1047,59 @@ describe('ListMetricsAggregator', () => {
       }),
     ).toThrow();
   });
+
+  it('estimates metrics of unmeasured cells by row in a grid', () => {
+    const listMetrics = new ListMetricsAggregator();
+    const orientation = {horizontal: false, rtl: false};
+    const props: CellMetricProps = {
+      data: [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10],
+      getItemCount: () => nullthrows(props.data).length,
+      getItem: (i: number) => nullthrows(props.data)[i],
+      experimental_numColumns: 3,
+    };
+
+    // Row 0 (cells 0-2) is 10 tall at y=100. Cell 3 starts row 1 and is 20
+    // tall.
+    for (const cellIndex of [0, 1, 2]) {
+      listMetrics.notifyCellLayout({
+        cellIndex,
+        cellKey: String(cellIndex),
+        orientation,
+        layout: {height: 10, width: 5, x: 5 * cellIndex, y: 100},
+      });
+    }
+    listMetrics.notifyCellLayout({
+      cellIndex: 3,
+      cellKey: '3',
+      orientation,
+      layout: {height: 20, width: 5, x: 0, y: 110},
+    });
+
+    // Same row as the last measured cell, so same offset and length.
+    expect(listMetrics.getCellMetricsApprox(5, props)).toEqual({
+      index: 5,
+      length: 20,
+      offset: 110,
+      isMounted: false,
+    });
+    // Rows after it use the average cell length, (3 * 10 + 20) / 4.
+    expect(listMetrics.getCellMetricsApprox(6, props)).toEqual({
+      index: 6,
+      length: 12.5,
+      offset: 130,
+      isMounted: false,
+    });
+    expect(listMetrics.getCellMetricsApprox(8, props)).toEqual({
+      index: 8,
+      length: 12.5,
+      offset: 130,
+      isMounted: false,
+    });
+    expect(listMetrics.getCellMetricsApprox(10, props)).toEqual({
+      index: 10,
+      length: 12.5,
+      offset: 142.5,
+      isMounted: false,
+    });
+  });
 });
