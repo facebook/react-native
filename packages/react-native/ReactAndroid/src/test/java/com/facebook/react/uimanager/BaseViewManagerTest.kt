@@ -10,17 +10,22 @@
 package com.facebook.react.uimanager
 
 import android.view.View.OnFocusChangeListener
+import androidx.core.view.ViewCompat
 import com.facebook.react.R
 import com.facebook.react.bridge.BridgeReactContext
 import com.facebook.react.bridge.DynamicFromObject
 import com.facebook.react.bridge.JavaOnlyArray
 import com.facebook.react.bridge.JavaOnlyMap
+import com.facebook.react.internal.featureflags.ReactNativeFeatureFlags
+import com.facebook.react.internal.featureflags.ReactNativeFeatureFlagsDefaults
 import com.facebook.react.internal.featureflags.ReactNativeFeatureFlagsForTests
+import com.facebook.react.touch.JSResponderHandler
 import com.facebook.react.views.view.ReactViewGroup
 import com.facebook.react.views.view.ReactViewManager
 import com.facebook.testutils.shadows.ShadowArguments
 import java.util.Locale
 import org.assertj.core.api.Assertions
+import org.junit.After
 import org.junit.Before
 import org.junit.Test
 import org.junit.runner.RunWith
@@ -41,10 +46,22 @@ class BaseViewManagerTest {
   @Before
   fun setUp() {
     ReactNativeFeatureFlagsForTests.setUp()
+    ReactNativeFeatureFlags.override(
+        object : ReactNativeFeatureFlagsDefaults() {
+          override fun enableViewRecycling(): Boolean = true
+        },
+    )
+    DisplayMetricsHolder.initDisplayMetricsIfNotInitialized(RuntimeEnvironment.getApplication())
     viewManager = ReactViewManager()
     val context = BridgeReactContext(RuntimeEnvironment.getApplication())
     themedReactContext = ThemedReactContext(context, context, null, -1)
     view = ReactViewGroup(themedReactContext)
+  }
+
+  @After
+  fun tearDown() {
+    DisplayMetricsHolder.setScreenDisplayMetrics(null)
+    ReactNativeFeatureFlags.dangerouslyReset()
   }
 
   @Test
@@ -162,4 +179,85 @@ class BaseViewManagerTest {
     viewManager.setAccessibilityLabelledBy(view, DynamicFromObject(JavaOnlyArray()))
     Assertions.assertThat(view.getTag(R.id.labelled_by)).isNull()
   }
+
+  @Test
+  fun testRecycledViewHasTheAccessibilityStateOfANewView() {
+    val recycled =
+        recycleView(
+            JavaOnlyMap.of(
+                ViewProps.ACCESSIBILITY_LABEL,
+                "Dismiss sheet",
+                ViewProps.ACCESSIBILITY_STATE,
+                JavaOnlyMap.of("selected", true),
+                ViewProps.ACCESSIBILITY_LIVE_REGION,
+                "assertive",
+                ViewProps.IMPORTANT_FOR_ACCESSIBILITY,
+                "no-hide-descendants",
+                ViewProps.SCREEN_READER_FOCUSABLE,
+                true,
+            )
+        )
+
+    Assertions.assertThat(recycled.contentDescription).isEqualTo(view.contentDescription)
+    Assertions.assertThat(recycled.isSelected).isEqualTo(view.isSelected)
+    Assertions.assertThat(recycled.accessibilityLiveRegion).isEqualTo(view.accessibilityLiveRegion)
+    Assertions.assertThat(recycled.importantForAccessibility)
+        .isEqualTo(view.importantForAccessibility)
+    Assertions.assertThat(recycled.isScreenReaderFocusable).isEqualTo(view.isScreenReaderFocusable)
+  }
+
+  @Test
+  fun testRecycledViewDropsTheRoleAndCollectionOfItsPreviousProps() {
+    val recycled =
+        recycleView(
+            JavaOnlyMap.of(
+                ViewProps.ROLE,
+                "list",
+                ViewProps.ACCESSIBILITY_COLLECTION,
+                JavaOnlyMap.of("rowCount", 1, "columnCount", 1, "hierarchical", false),
+                ViewProps.ACCESSIBILITY_COLLECTION_ITEM,
+                JavaOnlyMap.of(
+                    "rowIndex",
+                    0,
+                    "rowSpan",
+                    1,
+                    "columnIndex",
+                    0,
+                    "columnSpan",
+                    1,
+                    "heading",
+                    false,
+                ),
+            )
+        )
+
+    Assertions.assertThat(recycled.getTag(R.id.role)).isNull()
+    Assertions.assertThat(recycled.getTag(R.id.accessibility_collection)).isNull()
+    Assertions.assertThat(recycled.getTag(R.id.accessibility_collection_item)).isNull()
+  }
+
+  @Test
+  fun testRecycledViewWithoutAccessibilityPropsHasNoAccessibilityDelegate() {
+    val recycled = recycleView(JavaOnlyMap.of(ViewProps.ROLE, "button"))
+
+    Assertions.assertThat(ViewCompat.hasAccessibilityDelegate(recycled))
+        .isEqualTo(ViewCompat.hasAccessibilityDelegate(view))
+  }
+
+  private fun recycleView(previousProps: JavaOnlyMap): ReactViewGroup {
+    val previous = createView(previousProps)
+    viewManager.onDropViewInstance(previous)
+    val recycled = createView(JavaOnlyMap())
+    Assertions.assertThat(recycled).isSameAs(previous)
+    return recycled
+  }
+
+  private fun createView(props: JavaOnlyMap): ReactViewGroup =
+      viewManager.createView(
+          1,
+          themedReactContext,
+          ReactStylesDiffMap(props),
+          null,
+          JSResponderHandler(),
+      )
 }
