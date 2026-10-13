@@ -50,6 +50,7 @@ export type CellMetricProps = {
   getItem: VirtualizedListProps['getItem'],
   getItemLayout?: VirtualizedListProps['getItemLayout'],
   keyExtractor?: VirtualizedListProps['keyExtractor'],
+  experimental_numColumns?: VirtualizedListProps['experimental_numColumns'],
   ...
 };
 
@@ -168,7 +169,8 @@ export default class ListMetricsAggregator {
   /**
    * Returns the exact metrics of a cell if it has already been laid out,
    * otherwise an estimate based on the average length of previously measured
-   * cells
+   * cells. In a grid, cells in the same row share their row's offset and
+   * length, so estimates count rows rather than cells.
    */
   getCellMetricsApprox(index: number, props: CellMetricProps): CellMetrics {
     const frame = this.getCellMetrics(index, props);
@@ -176,7 +178,10 @@ export default class ListMetricsAggregator {
       // check for invalid frames due to row re-ordering
       return frame;
     } else {
+      const numColumns = props.experimental_numColumns ?? 1;
+      const rowIndex = Math.floor(index / numColumns);
       let offset;
+      let length = this._averageCellLength;
 
       const highestMeasuredCellIndex = this.getHighestMeasuredCellIndex();
       if (highestMeasuredCellIndex < index) {
@@ -189,15 +194,24 @@ export default class ListMetricsAggregator {
           props,
         );
         if (highestMeasuredCellFrame) {
-          offset =
-            highestMeasuredCellFrame.offset +
-            highestMeasuredCellFrame.length +
-            this._averageCellLength * (index - highestMeasuredCellIndex - 1);
+          const highestMeasuredRowIndex = Math.floor(
+            highestMeasuredCellIndex / numColumns,
+          );
+          if (rowIndex === highestMeasuredRowIndex) {
+            offset = highestMeasuredCellFrame.offset;
+            length = highestMeasuredCellFrame.length;
+          } else {
+            offset =
+              highestMeasuredCellFrame.offset +
+              highestMeasuredCellFrame.length +
+              this._averageCellLength *
+                (rowIndex - highestMeasuredRowIndex - 1);
+          }
         }
       }
 
       if (offset == null) {
-        offset = this._averageCellLength * index;
+        offset = this._averageCellLength * rowIndex;
       }
 
       const {data, getItemCount} = props;
@@ -206,7 +220,7 @@ export default class ListMetricsAggregator {
         'Tried to get frame for out of range index ' + index,
       );
       return {
-        length: this._averageCellLength,
+        length,
         offset,
         index,
         isMounted: false,

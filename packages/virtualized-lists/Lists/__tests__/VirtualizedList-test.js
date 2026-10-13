@@ -12,6 +12,7 @@ import VirtualizedList from '../VirtualizedList';
 import {format} from 'node:util';
 import * as React from 'react';
 import {createElement, createRef} from 'react';
+import {StyleSheet} from 'react-native';
 import {act, create} from 'react-test-renderer';
 
 jest.useFakeTimers();
@@ -3046,6 +3047,270 @@ it('handles rapid prepends with coalesced scroll event (regression for #53542)',
   expect(
     component.getInstance().state.cellsAroundViewport.first,
   ).toBeGreaterThanOrEqual(0);
+});
+
+describe('experimental_numColumns', () => {
+  function gridItemLayoutProps(rowHeight, numColumns) {
+    return {
+      getItemLayout: (_, index) => ({
+        length: rowHeight,
+        offset: rowHeight * Math.floor(index / numColumns),
+        index,
+      }),
+    };
+  }
+
+  function renderedItemKeys(component) {
+    return component.root
+      .findAllByType('MockCellItem')
+      .map(cellItem => cellItem.props.value);
+  }
+
+  function expectWholeRows(itemKeys, numColumns, itemCount) {
+    const renderedKeys = new Set(itemKeys);
+    for (const key of itemKeys) {
+      const rowStart = key - (key % numColumns);
+      const rowEnd = Math.min(itemCount, rowStart + numColumns);
+      for (let rowKey = rowStart; rowKey < rowEnd; rowKey++) {
+        expect(renderedKeys.has(rowKey)).toBe(true);
+      }
+    }
+  }
+
+  it('lays cells out in a wrapping grid with full-width header and footer', async () => {
+    const items = generateItems(5);
+    let component;
+    await act(() => {
+      component = create(
+        <VirtualizedList
+          experimental_numColumns={2}
+          ListHeaderComponent={() => <header />}
+          ListFooterComponent={() => <footer />}
+          {...baseItemProps(items)}
+        />,
+      );
+    });
+
+    const scrollView = component.toJSON();
+    expect(StyleSheet.flatten(scrollView.props.contentContainerStyle)).toEqual({
+      flexDirection: 'row',
+      flexWrap: 'wrap',
+    });
+
+    const contentContainer = scrollView.children[0];
+    const [header, ...cellsAndFooter] = contentContainer.children;
+    const footer = cellsAndFooter.pop();
+    expect(StyleSheet.flatten(header.props.style)).toEqual({width: '100%'});
+    expect(StyleSheet.flatten(footer.props.style)).toEqual({width: '100%'});
+    expect(cellsAndFooter).toHaveLength(5);
+    for (const cell of cellsAndFooter) {
+      expect(StyleSheet.flatten(cell.props.style)).toEqual({
+        flexDirection: 'row',
+        width: '50%',
+      });
+    }
+  });
+
+  it('keeps cell widths from adding up to more than a full row', async () => {
+    let component;
+    await act(() => {
+      component = create(
+        <VirtualizedList
+          experimental_numColumns={3}
+          {...baseItemProps(generateItems(3))}
+        />,
+      );
+    });
+
+    const cell = component.toJSON().children[0].children[0];
+    expect(StyleSheet.flatten(cell.props.style).width).toBe('33.3333%');
+  });
+
+  it('keeps the content container style of the list', async () => {
+    let component;
+    await act(() => {
+      component = create(
+        <VirtualizedList
+          experimental_numColumns={2}
+          contentContainerStyle={{padding: 8}}
+          {...baseItemProps(generateItems(2))}
+        />,
+      );
+    });
+
+    const scrollView = component.toJSON();
+    expect(StyleSheet.flatten(scrollView.props.contentContainerStyle)).toEqual({
+      padding: 8,
+      flexDirection: 'row',
+      flexWrap: 'wrap',
+    });
+  });
+
+  it('renders initialNumToRender rounded up to whole rows', async () => {
+    const items = generateItems(20);
+    let component;
+    await act(() => {
+      component = create(
+        <VirtualizedList
+          experimental_numColumns={3}
+          initialNumToRender={4}
+          {...baseItemProps(items)}
+        />,
+      );
+    });
+
+    expect(renderedItemKeys(component)).toEqual([0, 1, 2, 3, 4, 5]);
+  });
+
+  it('renders a partial last row', async () => {
+    const items = generateItems(7);
+    let component;
+    await act(() => {
+      component = create(
+        <VirtualizedList
+          experimental_numColumns={3}
+          initialNumToRender={7}
+          {...baseItemProps(items)}
+        />,
+      );
+    });
+
+    expect(renderedItemKeys(component)).toEqual([0, 1, 2, 3, 4, 5, 6]);
+  });
+
+  it('keeps the render window and spacers in whole rows while scrolling', async () => {
+    const NUM_COLUMNS = 3;
+    const ROW_HEIGHT = 10;
+    const items = generateItems(60);
+    let component;
+    await act(() => {
+      component = create(
+        <VirtualizedList
+          experimental_numColumns={NUM_COLUMNS}
+          initialNumToRender={3}
+          maxToRenderPerBatch={4}
+          windowSize={1}
+          {...baseItemProps(items)}
+          {...gridItemLayoutProps(ROW_HEIGHT, NUM_COLUMNS)}
+        />,
+      );
+    });
+
+    await act(() => {
+      simulateLayout(component, {
+        viewport: {width: 30, height: 20},
+        content: {width: 30, height: 200},
+      });
+      performAllBatches();
+    });
+    await act(() => {
+      simulateScroll(component, {x: 0, y: 100});
+      performAllBatches();
+    });
+
+    const itemKeys = renderedItemKeys(component);
+    // Rows 10 and 11 fill the viewport.
+    expect(itemKeys).toEqual(expect.arrayContaining([30, 31, 32, 33, 34, 35]));
+    expectWholeRows(itemKeys, NUM_COLUMNS, items.length);
+
+    const spacers = component
+      .toJSON()
+      .children[0].children.filter(child => child.children == null);
+    expect(spacers.length).toBeGreaterThan(0);
+    for (const spacer of spacers) {
+      const spacerStyle = StyleSheet.flatten(spacer.props.style);
+      expect(spacerStyle.width).toBe('100%');
+      expect(spacerStyle.height % ROW_HEIGHT).toBe(0);
+    }
+  });
+
+  it('reports viewability for each item in a row', async () => {
+    const NUM_COLUMNS = 3;
+    const ROW_HEIGHT = 10;
+    const items = generateItems(30);
+    const onViewableItemsChanged = jest.fn();
+    let component;
+    await act(() => {
+      component = create(
+        <VirtualizedList
+          experimental_numColumns={NUM_COLUMNS}
+          initialNumToRender={30}
+          onViewableItemsChanged={onViewableItemsChanged}
+          viewabilityConfig={{viewAreaCoveragePercentThreshold: 50}}
+          {...baseItemProps(items)}
+          {...gridItemLayoutProps(ROW_HEIGHT, NUM_COLUMNS)}
+        />,
+      );
+    });
+
+    await act(() => {
+      simulateLayout(component, {
+        viewport: {width: 30, height: 20},
+        content: {width: 30, height: 100},
+      });
+      performAllBatches();
+    });
+
+    const {viewableItems} = onViewableItemsChanged.mock.lastCall[0];
+    expect(viewableItems.map(({index}) => index)).toEqual([0, 1, 2, 3, 4, 5]);
+    for (const {item, key} of viewableItems) {
+      expect(key).toBe(item.key);
+    }
+  });
+
+  it('throws for horizontal lists', async () => {
+    const consoleError = console.error;
+    jest.spyOn(console, 'error').mockImplementation((...args) => {
+      const message = format(...args);
+      if (message.includes('The above error occurred in the ')) {
+        return;
+      }
+      consoleError(...args);
+    });
+
+    await expect(async () => {
+      await act(() => {
+        create(
+          <VirtualizedList
+            experimental_numColumns={2}
+            horizontal={true}
+            {...baseItemProps(generateItems(4))}
+          />,
+        );
+      });
+    }).rejects.toThrow(
+      'VirtualizedList: experimental_numColumns does not support horizontal lists.',
+    );
+
+    console.error.mockRestore();
+  });
+
+  it('throws when given an ItemSeparatorComponent', async () => {
+    const consoleError = console.error;
+    jest.spyOn(console, 'error').mockImplementation((...args) => {
+      const message = format(...args);
+      if (message.includes('The above error occurred in the ')) {
+        return;
+      }
+      consoleError(...args);
+    });
+
+    await expect(async () => {
+      await act(() => {
+        create(
+          <VirtualizedList
+            experimental_numColumns={2}
+            ItemSeparatorComponent={() => <separator />}
+            {...baseItemProps(generateItems(4))}
+          />,
+        );
+      });
+    }).rejects.toThrow(
+      'VirtualizedList: experimental_numColumns does not support ItemSeparatorComponent.',
+    );
+
+    console.error.mockRestore();
+  });
 });
 
 function generateItems(count, startKey = 0) {

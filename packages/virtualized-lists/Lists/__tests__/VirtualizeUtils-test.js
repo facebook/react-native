@@ -16,6 +16,7 @@ import ListMetricsAggregator from '../ListMetricsAggregator';
 import {
   computeWindowedRenderLimits,
   elementsThatOverlapOffsets,
+  expandCellsToWholeRows,
   newRangeCount,
 } from '../VirtualizeUtils';
 import {ReactNativeFeatureFlags} from 'react-native/react-private-interface';
@@ -290,5 +291,39 @@ describe('computeWindowedRenderLimits', function () {
       scrollMetrics,
     );
     expect(result).toEqual({first: 0, last: 4});
+  });
+});
+
+describe('expandCellsToWholeRows', function () {
+  it('leaves ranges unchanged with a single column', function () {
+    expect(expandCellsToWholeRows({first: 4, last: 7}, 1, 20)).toEqual({
+      first: 4,
+      last: 7,
+    });
+  });
+
+  it('widens a range to whole rows', function () {
+    expect(expandCellsToWholeRows({first: 4, last: 7}, 3, 20)).toEqual({
+      first: 3,
+      last: 8,
+    });
+    expect(expandCellsToWholeRows({first: 3, last: 8}, 3, 20)).toEqual({
+      first: 3,
+      last: 8,
+    });
+  });
+
+  it('stops at the last item of a partial last row', function () {
+    expect(expandCellsToWholeRows({first: 7, last: 9}, 3, 10)).toEqual({
+      first: 6,
+      last: 9,
+    });
+  });
+
+  it('leaves empty ranges unchanged', function () {
+    expect(expandCellsToWholeRows({first: 0, last: -1}, 3, 0)).toEqual({
+      first: 0,
+      last: -1,
+    });
   });
 });

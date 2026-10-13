@@ -243,6 +243,28 @@ export function computeWindowedRenderLimits(
   return {first, last};
 }
 
+/**
+ * Widens a range of cells to whole rows of a grid with `numColumns` columns,
+ * so that rendered cells and the spacers between them always cover complete
+ * rows.
+ */
+export function expandCellsToWholeRows(
+  cells: {first: number, last: number},
+  numColumns: number,
+  itemCount: number,
+): {first: number, last: number} {
+  if (numColumns <= 1 || cells.last < cells.first) {
+    return cells;
+  }
+  return {
+    first: cells.first - (cells.first % numColumns),
+    last: Math.min(
+      itemCount - 1,
+      cells.last + numColumns - 1 - (cells.last % numColumns),
+    ),
+  };
+}
+
 export function keyExtractor(item: any, index: number): string {
   if (typeof item === 'object' && item?.key != null) {
     return item.key;

@@ -87,6 +87,14 @@ type OptionalVirtualizedListProps = {
    * `data` prop, stick it here and treat it immutably.
    */
   extraData?: any,
+  /**
+   * Lays items out in a grid with this many columns. Every item is its own
+   * cell keyed by `keyExtractor`, so an item keeps its identity when it moves
+   * to another row. `getItemLayout` receives item indices and should return
+   * the offset and length of the item's row. Only vertical lists are
+   * supported, without `ItemSeparatorComponent` or `stickyHeaderIndices`.
+   */
+  experimental_numColumns?: ?number,
   // e.g. height, y
   getItemLayout?: (
     data: any,
@@ -326,6 +334,11 @@ export function onEndReachedThresholdOrDefault(
   onEndReachedThreshold: ?number,
 ): number {
   return onEndReachedThreshold ?? 2;
+}
+
+// numColumnsOrDefault(this.props.experimental_numColumns)
+export function numColumnsOrDefault(numColumns: ?number): number {
+  return numColumns ?? 1;
 }
 
 // windowSizeOrDefault(this.props.windowSize)

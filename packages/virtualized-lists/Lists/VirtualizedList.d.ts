@@ -268,6 +268,15 @@ export interface VirtualizedListWithoutRenderItemProps<
   keyExtractor?: ((item: ItemT, index: number) => string) | undefined;
 
   /**
+   * Lays items out in a grid with this many columns. Every item is its own
+   * cell keyed by `keyExtractor`, so an item keeps its identity when it moves
+   * to another row. `getItemLayout` receives item indices and should return
+   * the offset and length of the item's row. Only vertical lists are
+   * supported, without `ItemSeparatorComponent` or `stickyHeaderIndices`.
+   */
+  experimental_numColumns?: number | null | undefined;
+
+  /**
    * The maximum number of items to render in each incremental render batch. The more rendered at
    * once, the better the fill rate, but responsiveness may suffer because rendering content may
    * interfere with responding to button taps or other interactions.
