@@ -8150,7 +8150,7 @@ struct facebook::react::CallbackWithId {
 }
 
 struct facebook::react::Color {
-  public Color();
+  public constexpr Color();
   public Color(const facebook::react::ColorComponents& components);
   public Color(const facebook::react::DynamicColor& dynamicColor);
   public Color(int32_t color);
