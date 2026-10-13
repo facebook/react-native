@@ -262,6 +262,9 @@ public class FabricUIManager
     mReactApplicationContext.registerComponentCallbacks(viewManagerRegistry);
   }
 
+  /**
+   * @deprecated Use {@code ReactHost.createSurface(...)} and {@code ReactSurface.start()} instead.
+   */
   @Override
   @UiThread
   @ThreadConfined(UI)
@@ -271,7 +274,8 @@ public class FabricUIManager
     ReactSoftExceptionLogger.logSoftException(
         TAG,
         new IllegalViewOperationException(
-            "Do not call addRootView in Fabric; it is unsupported. Call startSurface instead."));
+            "Do not call addRootView in Fabric; it is unsupported. Use ReactHost.createSurface(...)"
+                + " and ReactSurface.start() instead."));
 
     ReactRoot reactRootView = (ReactRoot) rootView;
     final int rootTag = reactRootView.getRootViewTag();
@@ -341,6 +345,10 @@ public class FabricUIManager
     return mBinding != null ? mBinding.getRelativeAncestorList(rootTag, childTag) : null;
   }
 
+  /**
+   * @deprecated Use {@code ReactHost.createSurface(...)} and {@code ReactSurface.start()} instead.
+   */
+  @Deprecated
   @Override
   @AnyThread
   @ThreadConfined(ANY)
@@ -430,6 +438,10 @@ public class FabricUIManager
     mEventDispatcher.dispatchAllEvents();
   }
 
+  /**
+   * @deprecated Use {@code ReactSurface.stop()} instead.
+   */
+  @Deprecated
   @AnyThread
   @ThreadConfined(ANY)
   @Override
