@@ -148,6 +148,12 @@ internal fun drawSpannedDecoration(
     style: TextDecorationStyle,
     yOffsetForLine: (paint: Paint, baseline: Float, thickness: Float) -> Float,
 ) {
+  if (layout.lineCount == 0) return
+  val visibleEnd = visibleTextEnd(layout)
+  val clampedStart = min(start, visibleEnd)
+  val clampedEnd = min(end, visibleEnd)
+  if (clampedStart >= clampedEnd) return
+
   val textPaint = layout.paint
   val effectiveColor =
       if (color != Color.TRANSPARENT) {
@@ -193,10 +199,6 @@ internal fun drawSpannedDecoration(
           DashPathEffect(intervals, 0f)
         }
   }
-
-  val visibleEnd = visibleTextEnd(layout)
-  val clampedStart = min(start, visibleEnd)
-  val clampedEnd = min(end, visibleEnd)
 
   val startLine = layout.getLineForOffset(clampedStart)
   val endLine = layout.getLineForOffset(clampedEnd)
