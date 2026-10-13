@@ -9,8 +9,6 @@ package com.facebook.react.fabric;
 
 import static com.facebook.infer.annotation.ThreadConfined.ANY;
 import static com.facebook.infer.annotation.ThreadConfined.UI;
-import static com.facebook.react.fabric.mounting.LayoutMetricsConversions.getMaxSize;
-import static com.facebook.react.fabric.mounting.LayoutMetricsConversions.getMinSize;
 import static com.facebook.react.fabric.mounting.LayoutMetricsConversions.getYogaMeasureMode;
 import static com.facebook.react.fabric.mounting.LayoutMetricsConversions.getYogaSize;
 import static com.facebook.react.uimanager.UIManagerHelper.PADDING_BOTTOM_INDEX;
@@ -20,7 +18,6 @@ import static com.facebook.react.uimanager.UIManagerHelper.PADDING_TOP_INDEX;
 
 import android.annotation.SuppressLint;
 import android.content.Context;
-import android.graphics.Point;
 import android.os.SystemClock;
 import android.view.View;
 import android.view.accessibility.AccessibilityEvent;
@@ -38,7 +35,6 @@ import com.facebook.react.bridge.ColorPropConverter;
 import com.facebook.react.bridge.GuardedRunnable;
 import com.facebook.react.bridge.LifecycleEventListener;
 import com.facebook.react.bridge.NativeArray;
-import com.facebook.react.bridge.NativeMap;
 import com.facebook.react.bridge.ReactApplicationContext;
 import com.facebook.react.bridge.ReactContext;
 import com.facebook.react.bridge.ReactMarker;
@@ -73,14 +69,11 @@ import com.facebook.react.internal.featureflags.ReactNativeFeatureFlags;
 import com.facebook.react.internal.featureflags.ReactNativeNewArchitectureFeatureFlags;
 import com.facebook.react.internal.interop.InteropEventEmitter;
 import com.facebook.react.modules.core.ReactChoreographer;
-import com.facebook.react.modules.i18nmanager.I18nUtil;
 import com.facebook.react.uimanager.DisplayMetricsHolder;
 import com.facebook.react.uimanager.GuardedFrameCallback;
-import com.facebook.react.uimanager.IllegalViewOperationException;
 import com.facebook.react.uimanager.PixelUtil;
 import com.facebook.react.uimanager.ReactRoot;
 import com.facebook.react.uimanager.ReactRootViewTagGenerator;
-import com.facebook.react.uimanager.RootViewUtil;
 import com.facebook.react.uimanager.StateWrapper;
 import com.facebook.react.uimanager.ThemedReactContext;
 import com.facebook.react.uimanager.UIManagerHelper;
@@ -271,26 +264,7 @@ public class FabricUIManager
   @Deprecated
   public <T extends View> int addRootView(
       final T rootView, final @Nullable WritableMap initialProps) {
-    ReactSoftExceptionLogger.logSoftException(
-        TAG,
-        new IllegalViewOperationException(
-            "Do not call addRootView in Fabric; it is unsupported. Use ReactHost.createSurface(...)"
-                + " and ReactSurface.start() instead."));
-
-    ReactRoot reactRootView = (ReactRoot) rootView;
-    final int rootTag = reactRootView.getRootViewTag();
-
-    ThemedReactContext reactContext =
-        new ThemedReactContext(
-            mReactApplicationContext, rootView.getContext(), reactRootView.getSurfaceID(), rootTag);
-    mMountingManager.startSurface(rootTag, reactContext, rootView);
-    String moduleName = reactRootView.getJSModuleName();
-    if (ReactNativeFeatureFlags.enableFabricLogs()) {
-      FLog.d(TAG, "Starting surface for module: %s and reactTag: %d", moduleName, rootTag);
-    }
-    Assertions.assertNotNull(mBinding, "Binding in FabricUIManager is null");
-    mBinding.startSurface(rootTag, moduleName, (NativeMap) initialProps);
-    return rootTag;
+    throw new UnsupportedOperationException("FabricUIManager.addRootView is unsupported.");
   }
 
   /**
@@ -358,36 +332,8 @@ public class FabricUIManager
       final @Nullable WritableMap initialProps,
       int widthMeasureSpec,
       int heightMeasureSpec) {
-    final int rootTag = ((ReactRoot) rootView).getRootViewTag();
-    Context context = rootView.getContext();
-    ThemedReactContext reactContext =
-        new ThemedReactContext(mReactApplicationContext, context, moduleName, rootTag);
-    if (ReactNativeFeatureFlags.enableFabricLogs()) {
-      FLog.d(TAG, "Starting surface for module: %s and reactTag: %d", moduleName, rootTag);
-    }
-    mMountingManager.startSurface(rootTag, reactContext, rootView);
-
-    // If startSurface is executed in the UIThread then, it uses the ViewportOffset from the View,
-    // Otherwise Fabric relies on calling {@link Binding#setConstraints} method to update the
-    // ViewportOffset during measurement or onLayout.
-    @SuppressLint("WrongThread")
-    Point viewportOffset =
-        UiThreadUtil.isOnUiThread() ? RootViewUtil.getViewportOffset(rootView) : new Point(0, 0);
-
-    Assertions.assertNotNull(mBinding, "Binding in FabricUIManager is null");
-    mBinding.startSurfaceWithConstraints(
-        rootTag,
-        moduleName,
-        (NativeMap) initialProps,
-        getMinSize(widthMeasureSpec),
-        getMaxSize(widthMeasureSpec),
-        getMinSize(heightMeasureSpec),
-        getMaxSize(heightMeasureSpec),
-        viewportOffset.x,
-        viewportOffset.y,
-        I18nUtil.getInstance().isRTL(context),
-        I18nUtil.getInstance().doLeftAndRightSwapInRTL(context));
-    return rootTag;
+    throw new UnsupportedOperationException(
+        "FabricUIManager.startSurface(View, ...) is unsupported.");
   }
 
   public void startSurface(
@@ -446,14 +392,7 @@ public class FabricUIManager
   @ThreadConfined(ANY)
   @Override
   public void stopSurface(final int surfaceID) {
-    // Mark surfaceId as dead, stop executing mounting instructions
-    mMountingManager.stopSurface(surfaceID);
-
-    // Communicate stopSurface to Cxx - causes an empty ShadowTree to be committed,
-    // but all mounting instructions will be ignored because stopSurface was called
-    // on the MountingManager
-    Assertions.assertNotNull(mBinding, "Binding in FabricUIManager is null");
-    mBinding.stopSurface(surfaceID);
+    throw new UnsupportedOperationException("FabricUIManager.stopSurface(int) is unsupported.");
   }
 
   @Override
@@ -1130,43 +1069,7 @@ public class FabricUIManager
       final int widthMeasureSpec,
       final int heightMeasureSpec,
       final int offsetX,
-      final int offsetY) {
-
-    if (ReactNativeFeatureFlags.enableFabricLogs()) {
-      FLog.d(TAG, "Updating Root Layout Specs for [%d]", surfaceId);
-    }
-
-    SurfaceMountingManager surfaceMountingManager = mMountingManager.getSurfaceManager(surfaceId);
-
-    // TODO T83615646: make this a hard-crash in the future.
-    if (surfaceMountingManager == null) {
-      ReactSoftExceptionLogger.logSoftException(
-          TAG,
-          new IllegalViewOperationException(
-              "Cannot updateRootLayoutSpecs on surfaceId that does not exist: " + surfaceId));
-      return;
-    }
-
-    Context context = surfaceMountingManager.getContext();
-    boolean isRTL = false;
-    boolean doLeftAndRightSwapInRTL = false;
-    if (context != null) {
-      isRTL = I18nUtil.getInstance().isRTL(context);
-      doLeftAndRightSwapInRTL = I18nUtil.getInstance().doLeftAndRightSwapInRTL(context);
-    }
-
-    Assertions.assertNotNull(mBinding, "Binding in FabricUIManager is null");
-    mBinding.setConstraints(
-        surfaceId,
-        getMinSize(widthMeasureSpec),
-        getMaxSize(widthMeasureSpec),
-        getMinSize(heightMeasureSpec),
-        getMaxSize(heightMeasureSpec),
-        offsetX,
-        offsetY,
-        isRTL,
-        doLeftAndRightSwapInRTL);
-  }
+      final int offsetY) {}
 
   @Override
   public @Nullable View resolveView(int reactTag) {
