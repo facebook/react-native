@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<583c65303e8d980070447b2833e33d89>>
+ * @generated SignedSource<<486b4aac1c83d8bced6a3f5393a03756>>
  */
 
 /**
@@ -94,6 +94,7 @@ class ReactNativeFeatureFlagsAccessor {
   bool enableVirtualViewContainerStateExperimental();
   bool fixBorderlessRippleAndroid();
   bool fixMappingOfEventPrioritiesBetweenFabricAndReact();
+  bool fixTextLayoutOnPixelDensityChange();
   bool fixYogaFlexBasisFitContentInMainAxis();
   bool fuseboxAssertSingleHostState();
   bool fuseboxEnabledRelease();
@@ -137,7 +138,7 @@ class ReactNativeFeatureFlagsAccessor {
   std::unique_ptr<ReactNativeFeatureFlagsProvider> currentProvider_;
   bool wasOverridden_;
 
-  std::array<std::atomic<const char*>, 92> accessedFeatureFlags_;
+  std::array<std::atomic<const char*>, 93> accessedFeatureFlags_;
 
   std::atomic<std::optional<bool>> commonTestFlag_;
   std::atomic<std::optional<bool>> cdpInteractionMetricsEnabled_;
@@ -199,6 +200,7 @@ class ReactNativeFeatureFlagsAccessor {
   std::atomic<std::optional<bool>> enableVirtualViewContainerStateExperimental_;
   std::atomic<std::optional<bool>> fixBorderlessRippleAndroid_;
   std::atomic<std::optional<bool>> fixMappingOfEventPrioritiesBetweenFabricAndReact_;
+  std::atomic<std::optional<bool>> fixTextLayoutOnPixelDensityChange_;
   std::atomic<std::optional<bool>> fixYogaFlexBasisFitContentInMainAxis_;
   std::atomic<std::optional<bool>> fuseboxAssertSingleHostState_;
   std::atomic<std::optional<bool>> fuseboxEnabledRelease_;

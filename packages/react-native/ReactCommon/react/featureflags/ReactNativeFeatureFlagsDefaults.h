@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<8a82a13c242d68512b2e87e723f93aa3>>
+ * @generated SignedSource<<af191519eab7fb22b70d11fd73afba4f>>
  */
 
 /**
@@ -266,6 +266,10 @@ class ReactNativeFeatureFlagsDefaults : public ReactNativeFeatureFlagsProvider {
   }
 
   bool fixMappingOfEventPrioritiesBetweenFabricAndReact() override {
+    return false;
+  }
+
+  bool fixTextLayoutOnPixelDensityChange() override {
     return false;
   }
 

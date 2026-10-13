@@ -118,6 +118,7 @@ using TextLayoutManagerExtended = detail::TextLayoutManagerExtended<TextLayoutMa
 
 struct MeasuredPreparedTextLayout {
   LayoutConstraints layoutConstraints;
+  Float pointScaleFactor{1.0};
   TextMeasurement measurement;
   TextLayoutManagerExtended::PreparedTextLayout preparedTextLayout{};
 };

@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<9272123d1a9171ac730313ebbd0c74f2>>
+ * @generated SignedSource<<2a5ad585617d77035a43b255d3e30eb3>>
  */
 
 /**
@@ -585,6 +585,15 @@ class ReactNativeFeatureFlagsDynamicProvider : public ReactNativeFeatureFlagsDef
     }
 
     return ReactNativeFeatureFlagsDefaults::fixMappingOfEventPrioritiesBetweenFabricAndReact();
+  }
+
+  bool fixTextLayoutOnPixelDensityChange() override {
+    auto value = values_["fixTextLayoutOnPixelDensityChange"];
+    if (!value.isNull()) {
+      return value.getBool();
+    }
+
+    return ReactNativeFeatureFlagsDefaults::fixTextLayoutOnPixelDensityChange();
   }
 
   bool fixYogaFlexBasisFitContentInMainAxis() override {

@@ -153,7 +153,12 @@ void ParagraphShadowNode::updateStateIfNeeded(
 
   react_native_assert(textLayoutManager_);
 
-  if (state.measuredLayout.measurement.size == layout.measurement.size &&
+  bool pointScaleFactorChanged =
+      ReactNativeFeatureFlags::fixTextLayoutOnPixelDensityChange() &&
+      state.measuredLayout.pointScaleFactor != layout.pointScaleFactor;
+
+  if (!pointScaleFactorChanged &&
+      state.measuredLayout.measurement.size == layout.measurement.size &&
       state.attributedString == content.attributedString &&
       state.paragraphAttributes == content.paragraphAttributes) {
     return;
@@ -255,6 +260,7 @@ Size ParagraphShadowNode::measureContent(
       measuredLayouts_.push_back(
           MeasuredPreparedTextLayout{
               .layoutConstraints = layoutConstraints,
+              .pointScaleFactor = layoutContext.pointScaleFactor,
               .measurement = measurement,
               // PreparedTextLayout is not trivially copyable on all platforms
               // NOLINTNEXTLINE(performance-move-const-arg)
@@ -337,6 +343,10 @@ void ParagraphShadowNode::layout(LayoutContext layoutContext) {
       react_native_assert(measuredLayout);
       updateStateIfNeeded<ParagraphState>(content, *measuredLayout);
 
+    } else if (ReactNativeFeatureFlags::fixTextLayoutOnPixelDensityChange()) {
+      MeasuredPreparedTextLayout unpreparedLayout;
+      unpreparedLayout.pointScaleFactor = layoutContext.pointScaleFactor;
+      updateStateIfNeeded<ParagraphState>(content, unpreparedLayout);
     } else {
       updateStateIfNeeded(content);
     }

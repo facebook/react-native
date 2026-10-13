@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<0c7d62679814835a3ef86a63174c7f7f>>
+ * @generated SignedSource<<c83fba10dc6f7d596e3bcd9725c64e6e>>
  */
 
 /**
@@ -142,6 +142,8 @@ public interface ReactNativeFeatureFlagsProvider {
   @DoNotStrip public fun fixBorderlessRippleAndroid(): Boolean
 
   @DoNotStrip public fun fixMappingOfEventPrioritiesBetweenFabricAndReact(): Boolean
+
+  @DoNotStrip public fun fixTextLayoutOnPixelDensityChange(): Boolean
 
   @DoNotStrip public fun fixYogaFlexBasisFitContentInMainAxis(): Boolean
 

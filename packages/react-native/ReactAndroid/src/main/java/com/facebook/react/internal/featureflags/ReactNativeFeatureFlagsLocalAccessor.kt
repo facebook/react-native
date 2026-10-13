@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<3e94c46a8a6fda2a4c0378e326291d73>>
+ * @generated SignedSource<<86ebc7307e7ebe2023e909a868ed3117>>
  */
 
 /**
@@ -84,6 +84,7 @@ internal class ReactNativeFeatureFlagsLocalAccessor : ReactNativeFeatureFlagsAcc
   private var enableVirtualViewContainerStateExperimentalCache: Boolean? = null
   private var fixBorderlessRippleAndroidCache: Boolean? = null
   private var fixMappingOfEventPrioritiesBetweenFabricAndReactCache: Boolean? = null
+  private var fixTextLayoutOnPixelDensityChangeCache: Boolean? = null
   private var fixYogaFlexBasisFitContentInMainAxisCache: Boolean? = null
   private var fuseboxAssertSingleHostStateCache: Boolean? = null
   private var fuseboxEnabledReleaseCache: Boolean? = null
@@ -713,6 +714,16 @@ internal class ReactNativeFeatureFlagsLocalAccessor : ReactNativeFeatureFlagsAcc
       cached = currentProvider.fixMappingOfEventPrioritiesBetweenFabricAndReact()
       accessedFeatureFlags.add("fixMappingOfEventPrioritiesBetweenFabricAndReact")
       fixMappingOfEventPrioritiesBetweenFabricAndReactCache = cached
+    }
+    return cached
+  }
+
+  override fun fixTextLayoutOnPixelDensityChange(): Boolean {
+    var cached = fixTextLayoutOnPixelDensityChangeCache
+    if (cached == null) {
+      cached = currentProvider.fixTextLayoutOnPixelDensityChange()
+      accessedFeatureFlags.add("fixTextLayoutOnPixelDensityChange")
+      fixTextLayoutOnPixelDensityChangeCache = cached
     }
     return cached
   }

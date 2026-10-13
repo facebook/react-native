@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<ed19cd37fe6ded9bdc807b0b6882b209>>
+ * @generated SignedSource<<00cccf7098052c51f5855949375ea0f9>>
  */
 
 /**
@@ -342,6 +342,11 @@ bool NativeReactNativeFeatureFlags::fixBorderlessRippleAndroid(
 bool NativeReactNativeFeatureFlags::fixMappingOfEventPrioritiesBetweenFabricAndReact(
     jsi::Runtime& /*runtime*/) {
   return ReactNativeFeatureFlags::fixMappingOfEventPrioritiesBetweenFabricAndReact();
+}
+
+bool NativeReactNativeFeatureFlags::fixTextLayoutOnPixelDensityChange(
+    jsi::Runtime& /*runtime*/) {
+  return ReactNativeFeatureFlags::fixTextLayoutOnPixelDensityChange();
 }
 
 bool NativeReactNativeFeatureFlags::fixYogaFlexBasisFitContentInMainAxis(
