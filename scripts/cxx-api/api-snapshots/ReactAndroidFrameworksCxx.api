@@ -8726,6 +8726,68 @@ concept facebook::react::detail::css::keywords::hasWrapReverse = (CSSKeywordSet<
 constexpr facebook::react::Color facebook::react::HostPlatformColor::UndefinedColor;
 
 
+constexpr uint_fast16_t facebook::react::dom::DOCUMENT_POSITION_CONTAINED_BY;
+constexpr uint_fast16_t facebook::react::dom::DOCUMENT_POSITION_CONTAINS;
+constexpr uint_fast16_t facebook::react::dom::DOCUMENT_POSITION_DISCONNECTED;
+constexpr uint_fast16_t facebook::react::dom::DOCUMENT_POSITION_FOLLOWING;
+constexpr uint_fast16_t facebook::react::dom::DOCUMENT_POSITION_PRECEDING;
+bool facebook::react::dom::isConnected(const facebook::react::RootShadowNode::Shared& currentRevision, const facebook::react::ShadowNode& shadowNode);
+facebook::react::dom::DOMBorderWidthRounded facebook::react::dom::getBorderWidth(const facebook::react::RootShadowNode::Shared& currentRevision, const facebook::react::ShadowNode& shadowNode);
+facebook::react::dom::DOMOffset facebook::react::dom::getOffset(const facebook::react::RootShadowNode::Shared& currentRevision, const facebook::react::ShadowNode& shadowNode);
+facebook::react::dom::DOMPoint facebook::react::dom::getScrollPosition(const facebook::react::RootShadowNode::Shared& currentRevision, const facebook::react::ShadowNode& shadowNode);
+facebook::react::dom::DOMRect facebook::react::dom::getBoundingClientRect(const facebook::react::RootShadowNode::Shared& currentRevision, const facebook::react::ShadowNode& shadowNode, bool includeTransform);
+facebook::react::dom::DOMRect facebook::react::dom::measureInWindow(const facebook::react::RootShadowNode::Shared& currentRevision, const facebook::react::ShadowNode& shadowNode);
+facebook::react::dom::DOMSizeRounded facebook::react::dom::getInnerSize(const facebook::react::RootShadowNode::Shared& currentRevision, const facebook::react::ShadowNode& shadowNode);
+facebook::react::dom::DOMSizeRounded facebook::react::dom::getScrollSize(const facebook::react::RootShadowNode::Shared& currentRevision, const facebook::react::ShadowNode& shadowNode);
+facebook::react::dom::RNMeasureRect facebook::react::dom::measure(const facebook::react::RootShadowNode::Shared& currentRevision, const facebook::react::ShadowNode& shadowNode);
+std::optional<facebook::react::dom::DOMRect> facebook::react::dom::measureLayout(const facebook::react::RootShadowNode::Shared& currentRevision, const facebook::react::ShadowNode& shadowNode, const facebook::react::ShadowNode& relativeToShadowNode);
+std::shared_ptr<const facebook::react::ShadowNode> facebook::react::dom::getElementById(const std::shared_ptr<const facebook::react::ShadowNode>& currentRevision, const std::string& id);
+std::shared_ptr<const facebook::react::ShadowNode> facebook::react::dom::getParentNode(const facebook::react::RootShadowNode::Shared& currentRevision, const facebook::react::ShadowNode& shadowNode);
+std::string facebook::react::dom::getTagName(const facebook::react::ShadowNode& shadowNode);
+std::string facebook::react::dom::getTextContent(const facebook::react::RootShadowNode::Shared& currentRevision, const facebook::react::ShadowNode& shadowNode);
+std::vector<std::shared_ptr<const facebook::react::ShadowNode>> facebook::react::dom::getChildNodes(const facebook::react::RootShadowNode::Shared& currentRevision, const facebook::react::ShadowNode& shadowNode);
+uint_fast16_t facebook::react::dom::compareDocumentPosition(const facebook::react::RootShadowNode::Shared& currentRevision, const facebook::react::ShadowNode& shadowNode, const facebook::react::ShadowNode& otherShadowNode);
+
+struct facebook::react::dom::DOMBorderWidthRounded {
+  public int bottom;
+  public int left;
+  public int right;
+  public int top;
+}
+
+struct facebook::react::dom::DOMOffset {
+  public double left;
+  public double top;
+  public std::shared_ptr<const facebook::react::ShadowNode> offsetParent;
+}
+
+struct facebook::react::dom::DOMPoint {
+  public double x;
+  public double y;
+}
+
+struct facebook::react::dom::DOMRect {
+  public double height;
+  public double width;
+  public double x;
+  public double y;
+}
+
+struct facebook::react::dom::DOMSizeRounded {
+  public int height;
+  public int width;
+}
+
+struct facebook::react::dom::RNMeasureRect {
+  public double height;
+  public double pageX;
+  public double pageY;
+  public double width;
+  public double x;
+  public double y;
+}
+
+
 std::shared_ptr<const facebook::react::ComponentDescriptorProviderRegistry> facebook::react::CoreComponentsRegistry::sharedProviderRegistry();
 void facebook::react::CoreComponentsRegistry::addCoreComponents(std::shared_ptr<const facebook::react::ComponentDescriptorProviderRegistry> registry);
 
