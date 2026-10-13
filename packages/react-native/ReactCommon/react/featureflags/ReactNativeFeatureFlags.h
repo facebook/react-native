@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<2bace47aeee75bd0e4d2602403a67490>>
+ * @generated SignedSource<<1a9a8a587b477b6aa0d3aa57e30272c2>>
  */
 
 /**
@@ -340,6 +340,11 @@ class ReactNativeFeatureFlags {
    * Uses the default event priority instead of the discreet event priority by default when dispatching events from Fabric to React.
    */
   RN_EXPORT static bool fixMappingOfEventPrioritiesBetweenFabricAndReact();
+
+  /**
+   * Re-measures text and re-sends padding and overflow insets to mounted views when the pixel density changes, so text and padded views do not keep sizes from the old density.
+   */
+  RN_EXPORT static bool fixTextLayoutOnPixelDensityChange();
 
   /**
    * Fix flex basis computation to not apply FitContent constraint in the main axis for non-measure container nodes, preventing unnecessary re-measurement in scroll containers.

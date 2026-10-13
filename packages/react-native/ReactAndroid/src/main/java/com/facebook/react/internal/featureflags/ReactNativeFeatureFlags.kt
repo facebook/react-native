@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<d824f6746b2cc7d4560164c04d123988>>
+ * @generated SignedSource<<eb0bafceba60cb439a4be3d68b890725>>
  */
 
 /**
@@ -389,6 +389,12 @@ public object ReactNativeFeatureFlags {
    */
   @JvmStatic
   public fun fixMappingOfEventPrioritiesBetweenFabricAndReact(): Boolean = accessor.fixMappingOfEventPrioritiesBetweenFabricAndReact()
+
+  /**
+   * Re-measures text and re-sends padding and overflow insets to mounted views when the pixel density changes, so text and padded views do not keep sizes from the old density.
+   */
+  @JvmStatic
+  public fun fixTextLayoutOnPixelDensityChange(): Boolean = accessor.fixTextLayoutOnPixelDensityChange()
 
   /**
    * Fix flex basis computation to not apply FitContent constraint in the main axis for non-measure container nodes, preventing unnecessary re-measurement in scroll containers.

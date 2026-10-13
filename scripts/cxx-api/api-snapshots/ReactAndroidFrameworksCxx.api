@@ -6251,6 +6251,7 @@ struct facebook::react::Magic32 {
 }
 
 struct facebook::react::MeasuredPreparedTextLayout {
+  public facebook::react::Float pointScaleFactor;
   public facebook::react::LayoutConstraints layoutConstraints;
   public facebook::react::TextMeasurement measurement;
   public facebook::react::detail::TextLayoutManagerExtended::PreparedTextLayout preparedTextLayout;

@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<b5f8c3c048123ddda3c712f289313b3f>>
+ * @generated SignedSource<<200266835197634d13de07182d80a2c1>>
  */
 
 /**
@@ -396,6 +396,12 @@ class ReactNativeFeatureFlagsJavaProvider
   bool fixMappingOfEventPrioritiesBetweenFabricAndReact() override {
     static const auto method =
         getReactNativeFeatureFlagsProviderJavaClass()->getMethod<jboolean()>("fixMappingOfEventPrioritiesBetweenFabricAndReact");
+    return method(javaProvider_);
+  }
+
+  bool fixTextLayoutOnPixelDensityChange() override {
+    static const auto method =
+        getReactNativeFeatureFlagsProviderJavaClass()->getMethod<jboolean()>("fixTextLayoutOnPixelDensityChange");
     return method(javaProvider_);
   }
 
@@ -895,6 +901,11 @@ bool JReactNativeFeatureFlagsCxxInterop::fixMappingOfEventPrioritiesBetweenFabri
   return ReactNativeFeatureFlags::fixMappingOfEventPrioritiesBetweenFabricAndReact();
 }
 
+bool JReactNativeFeatureFlagsCxxInterop::fixTextLayoutOnPixelDensityChange(
+    facebook::jni::alias_ref<JReactNativeFeatureFlagsCxxInterop> /*unused*/) {
+  return ReactNativeFeatureFlags::fixTextLayoutOnPixelDensityChange();
+}
+
 bool JReactNativeFeatureFlagsCxxInterop::fixYogaFlexBasisFitContentInMainAxis(
     facebook::jni::alias_ref<JReactNativeFeatureFlagsCxxInterop> /*unused*/) {
   return ReactNativeFeatureFlags::fixYogaFlexBasisFitContentInMainAxis();
@@ -1266,6 +1277,9 @@ void JReactNativeFeatureFlagsCxxInterop::registerNatives() {
       makeNativeMethod(
         "fixMappingOfEventPrioritiesBetweenFabricAndReact",
         JReactNativeFeatureFlagsCxxInterop::fixMappingOfEventPrioritiesBetweenFabricAndReact),
+      makeNativeMethod(
+        "fixTextLayoutOnPixelDensityChange",
+        JReactNativeFeatureFlagsCxxInterop::fixTextLayoutOnPixelDensityChange),
       makeNativeMethod(
         "fixYogaFlexBasisFitContentInMainAxis",
         JReactNativeFeatureFlagsCxxInterop::fixYogaFlexBasisFitContentInMainAxis),

@@ -695,6 +695,17 @@ const definitions: FeatureFlagDefinitions = {
       },
       ossReleaseStage: 'none',
     },
+    fixTextLayoutOnPixelDensityChange: {
+      defaultValue: false,
+      metadata: {
+        dateAdded: '2026-10-11',
+        description:
+          'Re-measures text and re-sends padding and overflow insets to mounted views when the pixel density changes, so text and padded views do not keep sizes from the old density.',
+        expectedReleaseValue: true,
+        purpose: 'experimentation',
+      },
+      ossReleaseStage: 'none',
+    },
     fixYogaFlexBasisFitContentInMainAxis: {
       defaultValue: false,
       metadata: {
