@@ -88,7 +88,9 @@ const Content& ParagraphShadowNode::getContent(
   attributedString.setBaseTextAttributes(textAttributes);
 
   content_ = Content{
-      attributedString, getConcreteProps().paragraphAttributes, attachments};
+      .attributedString = std::move(attributedString),
+      .paragraphAttributes = getConcreteProps().paragraphAttributes,
+      .attachments = std::move(attachments)};
 
   return content_.value();
 }
@@ -264,7 +266,7 @@ Size ParagraphShadowNode::measureContent(
 
   auto size = textLayoutManager_
                   ->measure(
-                      AttributedStringBox{content.attributedString},
+                      AttributedStringBox{std::move(content.attributedString)},
                       content.paragraphAttributes,
                       textLayoutContext,
                       layoutConstraints)
@@ -282,7 +284,7 @@ Float ParagraphShadowNode::baseline(
   auto content =
       getContentWithMeasuredAttachments(layoutContext, layoutConstraints);
 
-  AttributedStringBox attributedStringBox{content.attributedString};
+  AttributedStringBox attributedStringBox{std::move(content.attributedString)};
 
   if constexpr (TextLayoutManagerExtended::supportsLineMeasurement()) {
     auto lines =
@@ -346,7 +348,9 @@ void ParagraphShadowNode::layout(LayoutContext layoutContext) {
       .pointScaleFactor = layoutContext.pointScaleFactor,
       .surfaceId = getSurfaceId(),
   };
-  AttributedStringBox attributedStringBox{content.attributedString};
+  // The state update above already captured the attributed string and
+  // nothing below reads it, so the box can take it instead of copying it.
+  AttributedStringBox attributedStringBox{std::move(content.attributedString)};
 
   if (getConcreteProps().onTextLayout) {
     if constexpr (TextLayoutManagerExtended::supportsLineMeasurement()) {
