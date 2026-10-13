@@ -11,7 +11,7 @@ import android.app.Activity
 import android.content.Intent
 
 /** An empty implementation of [ActivityEventListener]. */
-public open class BaseActivityEventListener : ActivityEventListener {
+public open class BaseActivityEventListener() : ActivityEventListener {
   @Suppress("UNUSED_PARAMETER")
   @Deprecated(
       "Use onActivityResult(Activity, Int, Int, Intent) instead.",

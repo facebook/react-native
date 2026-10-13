@@ -20,7 +20,7 @@ package com.facebook.react.bridge
  *     }
  * ```
  */
-public inline fun buildReadableArray(builder: ReadableArrayBuilder.() -> Unit): ReadableArray {
+public fun buildReadableArray(builder: ReadableArrayBuilder.() -> Unit): ReadableArray {
   val array: WritableArray = Arguments.createArray()
   ReadableArrayBuilder(array).apply(builder)
   return array

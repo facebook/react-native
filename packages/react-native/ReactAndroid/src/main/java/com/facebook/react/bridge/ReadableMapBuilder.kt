@@ -26,7 +26,7 @@ package com.facebook.react.bridge
  * }
  * ```
  */
-public inline fun buildReadableMap(builder: ReadableMapBuilder.() -> Unit): ReadableMap {
+public fun buildReadableMap(builder: ReadableMapBuilder.() -> Unit): ReadableMap {
   val map: WritableMap = Arguments.createMap()
   ReadableMapBuilder(map).apply(builder)
   return map
