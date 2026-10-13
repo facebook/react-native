@@ -8,7 +8,6 @@
 package com.facebook.react.bridge
 
 import android.view.View
-import androidx.annotation.AnyThread
 import androidx.annotation.UiThread
 import com.facebook.infer.annotation.ThreadConfined
 import com.facebook.react.common.annotations.UnstableReactNativeAPI
@@ -16,28 +15,6 @@ import com.facebook.react.uimanager.events.EventDispatcher
 
 @OptIn(UnstableReactNativeAPI::class)
 public interface UIManager : PerformanceCounter {
-  /** Registers a new root view. @Deprecated call startSurface instead */
-  @UiThread
-  @ThreadConfined(ThreadConfined.UI)
-  @Deprecated("")
-  public fun <T : View> addRootView(rootView: T, initialProps: WritableMap?): Int
-
-  /** Registers a new root view with width and height. */
-  @AnyThread
-  public fun <T : View?> startSurface(
-      rootView: T,
-      moduleName: String,
-      initialProps: WritableMap?,
-      widthMeasureSpec: Int,
-      heightMeasureSpec: Int,
-  ): Int
-
-  /**
-   * Stop a surface from running in JS and clears up native memory usage. Assumes that the native
-   * View hierarchy has already been cleaned up. Fabric-only.
-   */
-  @AnyThread public fun stopSurface(surfaceId: Int)
-
   /**
    * Updates the layout specs of the RootShadowNode based on the Measure specs received by
    * parameters. offsetX and offsetY are the position of the RootView within the screen.

@@ -29,25 +29,6 @@ class FakeUIManager : UIManager, UIBlockViewResolver {
     error("Not yet implemented")
   }
 
-  @Deprecated("")
-  override fun <T : View> addRootView(rootView: T, initialProps: WritableMap?): Int {
-    error("Not yet implemented")
-  }
-
-  override fun <T : View?> startSurface(
-      rootView: T,
-      moduleName: String,
-      initialProps: WritableMap?,
-      widthMeasureSpec: Int,
-      heightMeasureSpec: Int,
-  ): Int {
-    error("Not yet implemented")
-  }
-
-  override fun stopSurface(surfaceId: Int) {
-    error("Not yet implemented")
-  }
-
   override fun updateRootLayoutSpecs(
       rootTag: Int,
       widthMeasureSpec: Int,

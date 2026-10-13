@@ -1364,7 +1364,6 @@ public final class com/facebook/react/bridge/ScrollEndedListeners {
 }
 
 public abstract interface class com/facebook/react/bridge/UIManager : com/facebook/react/bridge/PerformanceCounter {
-	public abstract fun addRootView (Landroid/view/View;Lcom/facebook/react/bridge/WritableMap;)I
 	public abstract fun addUIManagerEventListener (Lcom/facebook/react/bridge/UIManagerListener;)V
 	public abstract fun dispatchCommand (IILcom/facebook/react/bridge/ReadableArray;)V
 	public abstract fun dispatchCommand (ILjava/lang/String;Lcom/facebook/react/bridge/ReadableArray;)V
@@ -1378,8 +1377,6 @@ public abstract interface class com/facebook/react/bridge/UIManager : com/facebo
 	public abstract fun resolveCustomDirectEventName (Ljava/lang/String;)Ljava/lang/String;
 	public abstract fun resolveView (I)Landroid/view/View;
 	public abstract fun sendAccessibilityEvent (II)V
-	public abstract fun startSurface (Landroid/view/View;Ljava/lang/String;Lcom/facebook/react/bridge/WritableMap;II)I
-	public abstract fun stopSurface (I)V
 	public abstract fun sweepActiveTouchForTag (II)V
 	public abstract fun synchronouslyUpdateViewOnUIThread (ILcom/facebook/react/bridge/ReadableMap;)V
 	public abstract fun updateRootLayoutSpecs (IIIII)V
@@ -2248,7 +2245,6 @@ public class com/facebook/react/fabric/FabricUIManager : com/facebook/react/brid
 	public static final field TAG Ljava/lang/String;
 	public field mDevToolsReactPerfLogger Lcom/facebook/react/fabric/DevToolsReactPerfLogger;
 	public fun <init> (Lcom/facebook/react/bridge/ReactApplicationContext;Lcom/facebook/react/uimanager/ViewManagerRegistry;Lcom/facebook/react/uimanager/events/BatchEventDispatchedListener;)V
-	public fun addRootView (Landroid/view/View;Lcom/facebook/react/bridge/WritableMap;)I
 	public fun addUIBlock (Lcom/facebook/react/fabric/interop/UIBlock;)V
 	public fun addUIManagerEventListener (Lcom/facebook/react/bridge/UIManagerListener;)V
 	public fun attachRootView (Lcom/facebook/react/fabric/SurfaceHandlerBinding;Landroid/view/View;)V
@@ -2286,9 +2282,7 @@ public class com/facebook/react/fabric/FabricUIManager : com/facebook/react/brid
 	public fun sendAccessibilityEvent (II)V
 	public fun sendAccessibilityEventFromJS (IILjava/lang/String;)V
 	public fun setJSResponder (IIIZ)V
-	public fun startSurface (Landroid/view/View;Ljava/lang/String;Lcom/facebook/react/bridge/WritableMap;II)I
 	public fun startSurface (Lcom/facebook/react/fabric/SurfaceHandlerBinding;Landroid/content/Context;Landroid/view/View;)V
-	public fun stopSurface (I)V
 	public fun stopSurface (Lcom/facebook/react/fabric/SurfaceHandlerBinding;)V
 	public fun sweepActiveTouchForTag (II)V
 	public fun synchronouslyUpdateViewOnUIThread (ILcom/facebook/react/bridge/ReadableMap;)V
@@ -4241,8 +4235,6 @@ public class com/facebook/react/uimanager/UIManagerModule : com/facebook/react/b
 	public static final field TAG Ljava/lang/String;
 	public fun <init> (Lcom/facebook/react/bridge/ReactApplicationContext;Lcom/facebook/react/uimanager/ViewManagerResolver;I)V
 	public fun <init> (Lcom/facebook/react/bridge/ReactApplicationContext;Ljava/util/List;I)V
-	public fun addRootView (Landroid/view/View;)I
-	public fun addRootView (Landroid/view/View;Lcom/facebook/react/bridge/WritableMap;)I
 	public fun addUIBlock (Lcom/facebook/react/uimanager/UIBlock;)V
 	public fun addUIManagerEventListener (Lcom/facebook/react/bridge/UIManagerListener;)V
 	public fun clearJSResponder ()V
@@ -4287,8 +4279,6 @@ public class com/facebook/react/uimanager/UIManagerModule : com/facebook/react/b
 	public fun setJSResponder (IZ)V
 	public fun setLayoutAnimationEnabledExperimental (Z)V
 	public fun setViewLocalData (ILjava/lang/Object;)V
-	public fun startSurface (Landroid/view/View;Ljava/lang/String;Lcom/facebook/react/bridge/WritableMap;II)I
-	public fun stopSurface (I)V
 	public fun sweepActiveTouchForTag (II)V
 	public fun synchronouslyUpdateViewOnUIThread (ILcom/facebook/react/bridge/ReadableMap;)V
 	public fun updateInsetsPadding (IIIII)V
