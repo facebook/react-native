@@ -473,11 +473,7 @@ public abstract class BaseViewManager<T extends View, C extends LayoutShadowNode
   }
 
   @ReactProp(name = ViewProps.ACCESSIBILITY_ACTIONS)
-  public void setAccessibilityActions(T view, ReadableArray accessibilityActions) {
-    if (accessibilityActions == null) {
-      return;
-    }
-
+  public void setAccessibilityActions(T view, @Nullable ReadableArray accessibilityActions) {
     view.setTag(R.id.accessibility_actions, accessibilityActions);
   }
 

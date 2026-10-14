@@ -10,6 +10,7 @@
 package com.facebook.react.uimanager
 
 import android.view.View.OnFocusChangeListener
+import android.view.accessibility.AccessibilityNodeInfo
 import com.facebook.react.R
 import com.facebook.react.bridge.BridgeReactContext
 import com.facebook.react.bridge.DynamicFromObject
@@ -161,5 +162,58 @@ class BaseViewManagerTest {
     view.setTag(R.id.labelled_by, "stale_id")
     viewManager.setAccessibilityLabelledBy(view, DynamicFromObject(JavaOnlyArray()))
     Assertions.assertThat(view.getTag(R.id.labelled_by)).isNull()
+  }
+
+  @Test
+  fun testDeclaredActivateActionTakesTheAccessibilityClick() {
+    applyAccessibilityActions(JavaOnlyArray.of(JavaOnlyMap.of("name", "activate")))
+    view.createAccessibilityNodeInfo()
+
+    Assertions.assertThat(performAccessibilityClick()).isEqualTo(0)
+  }
+
+  @Test
+  fun testRemovedAccessibilityActionsNoLongerTakeTheAccessibilityClick() {
+    applyAccessibilityActions(JavaOnlyArray.of(JavaOnlyMap.of("name", "activate")))
+    view.createAccessibilityNodeInfo()
+    applyAccessibilityActions(null)
+
+    Assertions.assertThat(performAccessibilityClick()).isEqualTo(1)
+  }
+
+  @Test
+  fun testEmptiedAccessibilityActionsNoLongerTakeTheAccessibilityClick() {
+    applyAccessibilityActions(JavaOnlyArray.of(JavaOnlyMap.of("name", "activate")))
+    view.createAccessibilityNodeInfo()
+    applyAccessibilityActions(JavaOnlyArray())
+
+    Assertions.assertThat(performAccessibilityClick()).isEqualTo(1)
+  }
+
+  @Test
+  fun testRemovedAccessibilityActionsLeaveTheNodeInfo() {
+    applyAccessibilityActions(
+        JavaOnlyArray.of(JavaOnlyMap.of("name", "openMenu", "label", "Open menu"))
+    )
+    applyAccessibilityActions(null)
+
+    Assertions.assertThat(
+            view.createAccessibilityNodeInfo().actionList.map { it.label?.toString() }
+        )
+        .doesNotContain("Open menu")
+  }
+
+  private fun applyAccessibilityActions(accessibilityActions: JavaOnlyArray?) {
+    viewManager.updateProperties(
+        view,
+        ReactStylesDiffMap(JavaOnlyMap.of(ViewProps.ACCESSIBILITY_ACTIONS, accessibilityActions)),
+    )
+  }
+
+  private fun performAccessibilityClick(): Int {
+    var clicks = 0
+    view.setOnClickListener { clicks++ }
+    view.performAccessibilityAction(AccessibilityNodeInfo.ACTION_CLICK, null)
+    return clicks
   }
 }

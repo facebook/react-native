@@ -57,7 +57,6 @@ public open class ReactAccessibilityDelegate( // The View this delegate is attac
           host?.sendAccessibilityEvent(AccessibilityEvent.TYPE_VIEW_SELECTED)
         }
       }
-  private val accessibilityActionsMap = HashMap<Int, String?>()
   private var accessibilityLabelledBy: View? = null
 
   init {
@@ -130,7 +129,6 @@ public open class ReactAccessibilityDelegate( // The View this delegate is attac
         val actionId: Int =
             actionIdMap.get(actionName)
                 ?: customActionIdMap.getOrPut(actionName) { customActionCounter++ }
-        accessibilityActionsMap[actionId] = actionName
         val accessibilityAction = AccessibilityActionCompat(actionId, actionLabel)
         info.addAction(accessibilityAction)
       }
@@ -225,9 +223,10 @@ public open class ReactAccessibilityDelegate( // The View this delegate is attac
     if (action == AccessibilityNodeInfoCompat.ACTION_EXPAND) {
       host.setTag(R.id.accessibility_state_expanded, true)
     }
-    if (accessibilityActionsMap.containsKey(action)) {
+    val actionName = findDeclaredActionName(host, action)
+    if (actionName != null) {
       val eventData = createMap()
-      eventData.putString("actionName", accessibilityActionsMap[action])
+      eventData.putString("actionName", actionName)
       if (
           action == AccessibilityNodeInfo.AccessibilityAction.ACTION_SET_PROGRESS.id &&
               args?.containsKey(AccessibilityNodeInfo.ACTION_ARGUMENT_PROGRESS_VALUE) == true
@@ -271,6 +270,22 @@ public open class ReactAccessibilityDelegate( // The View this delegate is attac
       return true
     }
     return super.performAccessibilityAction(host, action, args)
+  }
+
+  private fun findDeclaredActionName(host: View, actionId: Int): String? {
+    val accessibilityActions =
+        host.getTag(R.id.accessibility_actions) as ReadableArray? ?: return null
+    for (i in 0..<accessibilityActions.size()) {
+      val action = accessibilityActions.getMap(i)
+      if (action == null || !action.hasKey("name")) {
+        continue
+      }
+      val actionName = action.getString("name")
+      if ((actionIdMap[actionName] ?: customActionIdMap[actionName]) == actionId) {
+        return actionName
+      }
+    }
+    return null
   }
 
   /**
