@@ -1292,16 +1292,6 @@ interface RCTLegacyViewManagerInteropComponentView : public RCTViewComponentView
   public virtual static void supportLegacyViewManagersWithPrefix:(NSString* prefix);
 }
 
-interface RCTLegacyViewManagerInteropCoordinator : public NSObject {
-  public virtual NSString* componentViewName();
-  public virtual UIView* createPaperViewWithTag:(NSInteger tag);
-  public virtual instancetype initWithComponentData:bridge:bridgeProxy:bridgelessInteropData:(RCTComponentData* componentData, _Nullable RCTBridge* bridge, _Nullable RCTBridgeProxy* bridgeProxy, RCTBridgeModuleDecorator* bridgelessInteropData);
-  public virtual void addObserveForTag:usingBlock:(NSInteger tag, InterceptorBlock block);
-  public virtual void handleCommand:args:reactTag:paperView:(NSString* commandName, NSArray* args, NSInteger tag, UIView* paperView);
-  public virtual void removeObserveForTag:(NSInteger tag);
-  public virtual void setProps:forView:(NSDictionary<NSString*, id>* props, UIView* view);
-}
-
 interface RCTLegacyViewManagerInteropCoordinatorAdapter : public NSObject {
   public @property (copy) void(^eventInterceptor)(std::string eventName, folly::dynamic&& event);
   public @property (strong) UIView* paperView;
