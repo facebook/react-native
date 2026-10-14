@@ -1,5 +1,110 @@
 # Changelog
 
+## v0.88.0-rc.6
+
+### Breaking
+
+
+
+#### Android specific
+
+
+
+#### iOS specific
+
+
+
+### Added
+
+
+
+#### Android specific
+
+
+
+#### iOS specific
+
+
+
+### Changed
+
+
+
+#### Android specific
+
+
+
+#### iOS specific
+
+
+
+### Deprecated
+
+
+
+#### Android specific
+
+
+
+#### iOS specific
+
+
+
+### Removed
+
+
+
+#### Android specific
+
+
+
+#### iOS specific
+
+
+
+### Fixed
+
+- Add missing TypeScript types for public `AssetRegistry` API ([b8ec87e457](https://github.com/react/react-native/commit/b8ec87e457c72377dab85599e1ae8c176eb242e7) by [@byCedric](https://github.com/byCedric))
+
+#### Android specific
+
+
+
+#### iOS specific
+
+
+
+### Security
+
+
+
+#### Android specific
+
+
+
+#### iOS specific
+
+
+
+### Unknown
+
+- Release 0.88.0-rc.6 ([1a72139b30](https://github.com/react/react-native/commit/1a72139b3006ac38c6ca3caeefe10a1320750106) by [@react-native-bot](https://github.com/react-native-bot))
+- Bump Podfile.lock ([749c6e7c6f](https://github.com/react/react-native/commit/749c6e7c6f0d668bbb35fc7759290fed2ff8488c) by [@react-native-bot](https://github.com/react-native-bot))
+- Release 0.88.0-rc.5 ([a3249a2e43](https://github.com/react/react-native/commit/a3249a2e43fec91f2f270d0bf42687d6b0682ee7) by [@react-native-bot](https://github.com/react-native-bot))
+
+#### Android Unknown
+
+
+
+#### iOS Unknown
+
+
+
+#### Failed to parse
+
+
+
+
 ## v0.88.0-rc.4
 
 ### Changed
