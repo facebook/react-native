@@ -9,6 +9,7 @@ package com.facebook.react.activityresult
 
 import android.app.Activity
 import android.os.Bundle
+import androidx.activity.result.ActivityResultCallback
 import androidx.activity.result.ActivityResultRegistry
 import androidx.activity.result.ActivityResultRegistryOwner
 import androidx.activity.result.contract.ActivityResultContract
@@ -72,21 +73,21 @@ class ReactActivityResultCallerImplTest {
   private val moduleBName = ModuleB::class.java.name
   private val getContentName = GetContent::class.java.name
 
+  private fun createCaller(context: ReactApplicationContext): ReactActivityResultCallerImpl =
+      ReactActivityResultCallerImpl(
+          ActivityResultRegistryProvider {
+            (context.currentActivity as? ActivityResultRegistryOwner)?.activityResultRegistry
+          },
+          ActivityResultCallback { exception -> context.handleException(exception) },
+      )
+
   @Before
   fun setUp() {
     val activity = Robolectric.buildActivity(TestActivity::class.java).create().get()
     registry = activity.activityResultRegistry as RecordingRegistry
     reactContext = mock<ReactApplicationContext>()
     whenever(reactContext.currentActivity).thenReturn(activity)
-    caller = ReactActivityResultCallerImpl(reactContext)
-  }
-
-  @Test
-  fun launcherExposesRegisteredContract() {
-    val contract = GetContent()
-    val launcher = caller.registerForActivityResult(moduleA, contract) {}
-
-    assertThat(launcher.contract).isSameAs(contract)
+    caller = createCaller(reactContext)
   }
 
   @Test

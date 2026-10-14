@@ -34,13 +34,6 @@ type AndroidProps = Readonly<{
   nextFocusUp?: ?number,
 }>;
 
-type IOSProps = Readonly<{
-  /**
-   * @deprecated Use `focusable` instead
-   */
-  hasTVPreferredFocus?: ?boolean,
-}>;
-
 type TouchableHighlightBaseProps = Readonly<{
   /**
    * Opacity of the wrapped view when touch is active. Requires `underlayColor` to be set.
@@ -75,7 +68,6 @@ type TouchableHighlightBaseProps = Readonly<{
 export type TouchableHighlightProps = Readonly<{
   ...TouchableWithoutFeedbackProps,
   ...AndroidProps,
-  ...IOSProps,
   ...TouchableHighlightBaseProps,
 }>;
 
@@ -281,7 +273,6 @@ class TouchableHighlightImpl extends React.Component<
         )}
         onLayout={this.props.onLayout}
         hitSlop={this.props.hitSlop}
-        hasTVPreferredFocus={this.props.hasTVPreferredFocus}
         nextFocusDown={this.props.nextFocusDown}
         nextFocusForward={this.props.nextFocusForward}
         nextFocusLeft={this.props.nextFocusLeft}

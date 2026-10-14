@@ -1,5 +1,42 @@
 # Changelog
 
+## v0.88.0-rc.6
+
+### Fixed
+
+- **TypeScript**: Add missing types for the public `AssetRegistry` API ([b8ec87e457](https://github.com/react/react-native/commit/b8ec87e457c72377dab85599e1ae8c176eb242e7) by [@byCedric](https://github.com/byCedric))
+
+## v0.88.0-rc.4
+
+### Changed
+
+- **TypeScript**: Allow module augmentation to extend generated props and style types ([447ccd1ddb](https://github.com/react/react-native/commit/447ccd1ddbf3b9d95ce5e54410d7a5a54ce9bade) by [@zoontek](https://github.com/zoontek))
+
+### Fixed
+
+#### Android specific
+
+- **Accessibility**: Properly re-enable a view after `accessibilityState.disabled` resets from `true`, which left `Pressable` partly untappable ([357b6998c4](https://github.com/react/react-native/commit/357b6998c4df940f2450448a20478b11deaf741b) by [@bigcupcoffee](https://github.com/bigcupcoffee))
+
+
+## v0.88.0-rc.3
+
+### Changed
+
+- **Hermes**: Bump Hermes to 260318099.0.4 ([993be7d6c6](https://github.com/react/react-native/commit/993be7d6c69c838bd6fb7acf6b979f8ea65ca03c) by [@fabriziocucci](https://github.com/fabriziocucci))
+
+### Fixed
+
+- **VirtualizedList**: Fix the Metro package-exports warning caused by `react-native/virtualized-lists` importing an unexported React Native subpath ([a506ed66cc](https://github.com/react/react-native/commit/a506ed66cc5744ec017556f49a2c296fb4bad318) by [@giaBaoJS](https://github.com/giaBaoJS))
+
+#### Android specific
+
+- **Renderer**: Bump androidx.collection to 1.4.4 to fix view registry entries getting lost in `SurfaceMountingManager` ([d6a5f159c6](https://github.com/react/react-native/commit/d6a5f159c6ef81651d38af2a33338b921700e044) by [@pawicao](https://github.com/pawicao))
+
+#### iOS specific
+
+- **SwiftPM**: Stop autolinking from recreating library package roots on every sync, which broke Xcode builds of apps using libraries that ship their own `Package.swift` ([97cc934dc7](https://github.com/react/react-native/commit/97cc934dc75184977363e06b1793277de82fed54) by [@chrfalch](https://github.com/chrfalch))
+
 ## v0.88.0-rc.2
 
 ### Changed

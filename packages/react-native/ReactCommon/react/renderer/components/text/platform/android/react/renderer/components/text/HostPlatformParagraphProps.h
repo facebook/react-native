@@ -11,10 +11,10 @@
 
 #include <optional>
 
+#include <React/Graphics.h>
 #include <React/RendererCore.h>
 #include <react/renderer/components/text/BaseParagraphProps.h>
 #include <react/renderer/components/text/primitives.h>
-#include <react/renderer/graphics/Color.h>
 
 namespace facebook::react {
 

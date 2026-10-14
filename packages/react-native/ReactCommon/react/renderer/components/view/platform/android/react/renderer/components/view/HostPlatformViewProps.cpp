@@ -48,12 +48,6 @@ HostPlatformViewProps::HostPlatformViewProps(
           "focusable",
           sourceProps.focusable,
           {})),
-      hasTVPreferredFocus(convertRawProp(
-          context,
-          rawProps,
-          "hasTVPreferredFocus",
-          sourceProps.hasTVPreferredFocus,
-          {})),
       needsOffscreenAlphaCompositing(convertRawProp(
           context,
           rawProps,
@@ -120,7 +114,6 @@ void HostPlatformViewProps::setProp(
     RAW_SET_PROP_SWITCH_CASE(nativeBackground, "nativeBackgroundAndroid");
     RAW_SET_PROP_SWITCH_CASE(nativeForeground, "nativeForegroundAndroid");
     RAW_SET_PROP_SWITCH_CASE_BASIC(focusable);
-    RAW_SET_PROP_SWITCH_CASE_BASIC(hasTVPreferredFocus);
     RAW_SET_PROP_SWITCH_CASE_BASIC(needsOffscreenAlphaCompositing);
     RAW_SET_PROP_SWITCH_CASE_BASIC(renderToHardwareTextureAndroid);
     RAW_SET_PROP_SWITCH_CASE_BASIC(screenReaderFocusable);
@@ -482,10 +475,6 @@ folly::dynamic HostPlatformViewProps::getDiffProps(
     result["focusable"] = focusable;
   }
 
-  if (hasTVPreferredFocus != oldProps->hasTVPreferredFocus) {
-    result["hasTVPreferredFocus"] = hasTVPreferredFocus;
-  }
-
   if (needsOffscreenAlphaCompositing !=
       oldProps->needsOffscreenAlphaCompositing) {
     result["needsOffscreenAlphaCompositing"] = needsOffscreenAlphaCompositing;
@@ -568,6 +557,10 @@ folly::dynamic HostPlatformViewProps::getDiffProps(
 
   if (onLayout != oldProps->onLayout) {
     result["onLayout"] = onLayout;
+  }
+
+  if (onSafeAreaInsetsChange != oldProps->onSafeAreaInsetsChange) {
+    result["experimental_onSafeAreaInsetsChange"] = onSafeAreaInsetsChange;
   }
 
   if (zIndex != oldProps->zIndex) {

@@ -166,11 +166,6 @@ const TextImpl: component(
     selectionColor != null ? processColor(selectionColor) : undefined;
 
   let _style = style;
-  if (__DEV__) {
-    if (PressabilityDebug.isEnabled() && onPress != null) {
-      _style = [style, {color: 'magenta'}];
-    }
-  }
 
   let _numberOfLines = numberOfLines;
   if (_numberOfLines != null && !(_numberOfLines >= 0)) {
@@ -471,6 +466,24 @@ function useTextPressability({
   );
 }
 
+function usePressabilityDebugStyleDev(
+  style: ?TextStyleProp,
+  onPress: ?(event: GestureResponderEvent) => unknown,
+): ?TextStyleProp {
+  const isDebugEnabled = PressabilityDebug.useIsEnabled();
+  return isDebugEnabled && onPress != null
+    ? [style, {color: 'magenta'}]
+    : style;
+}
+
+/**
+ * Colors pressable text when press targets are shown by the Inspector.
+ * Outside of `__DEV__` it returns the style unchanged and uses no hooks.
+ */
+const usePressabilityDebugStyle: typeof usePressabilityDebugStyleDev = __DEV__
+  ? usePressabilityDebugStyleDev
+  : style => style;
+
 /**
  * Wrap the NativeVirtualText component and initialize pressability.
  *
@@ -485,10 +498,15 @@ component PressableVirtualText(
   const [isHighlighted, eventHandlersForText] = useTextPressability(
     textPressabilityProps,
   );
+  const style = usePressabilityDebugStyle(
+    textProps.style,
+    textPressabilityProps.onPress,
+  );
 
   return (
     <NativeVirtualText
       {...textProps}
+      style={style}
       {...eventHandlersForText}
       isHighlighted={isHighlighted}
       isPressable={true}
@@ -513,12 +531,18 @@ component PressableText(
     textPressabilityProps,
   );
 
+  const style = usePressabilityDebugStyle(
+    textProps.style,
+    textPressabilityProps.onPress,
+  );
+
   const NativeComponent =
     selectable === true ? NativeSelectableText : NativeText;
 
   return (
     <NativeComponent
       {...textProps}
+      style={style}
       {...eventHandlersForText}
       isHighlighted={isHighlighted}
       isPressable={true}

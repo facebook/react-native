@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<427c98d364e8a0aec3a0834b6a8117c8>>
+ * @generated SignedSource<<312cec99bd429d22e25f4e82d7fc4ee7>>
  */
 
 /**
@@ -38,6 +38,10 @@ public object ReactNativeFeatureFlagsCxxInterop {
 
   @DoNotStrip @JvmStatic public external fun disableEarlyViewCommandExecution(): Boolean
 
+  @DoNotStrip @JvmStatic public external fun disableIdleEventDispatchFrameCallbackRearmAndroid(): Boolean
+
+  @DoNotStrip @JvmStatic public external fun disableIdleMountItemFrameCallbackRearmAndroid(): Boolean
+
   @DoNotStrip @JvmStatic public external fun disableImageViewPreallocationAndroid(): Boolean
 
   @DoNotStrip @JvmStatic public external fun disableMountItemReorderingAndroid(): Boolean
@@ -56,9 +60,9 @@ public object ReactNativeFeatureFlagsCxxInterop {
 
   @DoNotStrip @JvmStatic public external fun enableAndroidTextMeasurementOptimizations(): Boolean
 
-  @DoNotStrip @JvmStatic public external fun enableBridgelessArchitecture(): Boolean
+  @DoNotStrip @JvmStatic public external fun enableAsyncDiskCacheCheckInMultiSourceImageAndroid(): Boolean
 
-  @DoNotStrip @JvmStatic public external fun enableBufferedCallInvoker(): Boolean
+  @DoNotStrip @JvmStatic public external fun enableBridgelessArchitecture(): Boolean
 
   @DoNotStrip @JvmStatic public external fun enableCppPropsIteratorSetter(): Boolean
 
@@ -116,6 +120,8 @@ public object ReactNativeFeatureFlagsCxxInterop {
 
   @DoNotStrip @JvmStatic public external fun enableNativeCSSParsing(): Boolean
 
+  @DoNotStrip @JvmStatic public external fun enablePreallocatedPropsDiffOnInsertAndroid(): Boolean
+
   @DoNotStrip @JvmStatic public external fun enablePreparedTextLayout(): Boolean
 
   @DoNotStrip @JvmStatic public external fun enablePropsUpdateReconciliationAndroid(): Boolean
@@ -138,7 +144,11 @@ public object ReactNativeFeatureFlagsCxxInterop {
 
   @DoNotStrip @JvmStatic public external fun enableVirtualViewContainerStateExperimental(): Boolean
 
+  @DoNotStrip @JvmStatic public external fun fixBorderlessRippleAndroid(): Boolean
+
   @DoNotStrip @JvmStatic public external fun fixMappingOfEventPrioritiesBetweenFabricAndReact(): Boolean
+
+  @DoNotStrip @JvmStatic public external fun fixTextLayoutOnPixelDensityChange(): Boolean
 
   @DoNotStrip @JvmStatic public external fun fixYogaFlexBasisFitContentInMainAxis(): Boolean
 
@@ -195,6 +205,8 @@ public object ReactNativeFeatureFlagsCxxInterop {
   @DoNotStrip @JvmStatic public external fun useTraitHiddenOnAndroid(): Boolean
 
   @DoNotStrip @JvmStatic public external fun useTurboModuleInterop(): Boolean
+
+  @DoNotStrip @JvmStatic public external fun useWindowDensityForDisplayMetricsAndroid(): Boolean
 
   @DoNotStrip @JvmStatic public external fun viewCullingOutsetRatio(): Double
 

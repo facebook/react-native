@@ -49,19 +49,9 @@
 #include <react/renderer/graphics/RectangleEdges.h>
 #include <react/renderer/graphics/Size.h>
 #include <react/renderer/graphics/Transform.h>
-#include <react/renderer/graphics/TransformUtils.h>
 #include <react/renderer/graphics/ValueUnit.h>
 #include <react/renderer/graphics/Vector.h>
 #include <react/renderer/graphics/fromRawValueShared.h>
-#include <react/renderer/graphics/rounding.h>
-
-#ifdef ANDROID
-#include <react/renderer/graphics/configurePlatformColorCacheInvalidationHook.h>
-#endif
-
-#if defined(__APPLE__) && defined(__OBJC__)
-#include <react/renderer/graphics/RCTPlatformColorUtils.h>
-#endif
 
 #undef RN_UMBRELLA_CONTEXT
 #pragma pop_macro("RN_UMBRELLA_CONTEXT")

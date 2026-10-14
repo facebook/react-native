@@ -41,6 +41,27 @@ runs:
       uses: ruby/setup-ruby@v1
       with:
         ruby-version: ${{ inputs.ruby-version }}
+        bundler: none
+    - name: Install Bundler
+      shell: bash
+      run: |
+        BUNDLER_VERSION="$(awk '/BUNDLED WITH/{getline; print $1}' Gemfile.lock)"
+        if [ -z "$BUNDLER_VERSION" ]; then
+          echo "Could not determine Bundler version from Gemfile.lock." >&2
+          exit 1
+        fi
+        for attempt in 1 2 3; do
+          echo "Attempt $attempt of 3"
+          if gem install bundler --version "$BUNDLER_VERSION" --no-document; then
+            exit 0
+          fi
+          if [ "$attempt" -lt 3 ]; then
+            echo "Attempt $attempt failed. Retrying..."
+            sleep "$((attempt * 10))"
+          fi
+        done
+        echo "All 3 attempts failed."
+        exit 1
     - name: Set Hermes prebuilt version
       shell: bash
       run: |

@@ -123,8 +123,7 @@ export interface PushNotification {
   /**
    * An alias for `getAlert` to get the notification's main message string
    */
-  // $FlowFixMe[unclear-type]
-  getMessage(): ?string | ?Object;
+  getMessage(): ?string | ?LegacyObject;
 
   /**
    * Gets the sound string from the `aps` object
@@ -139,8 +138,7 @@ export interface PushNotification {
   /**
    * Gets the notification's main message from the `aps` object
    */
-  // $FlowFixMe[unclear-type]
-  getAlert(): ?string | ?Object;
+  getAlert(): ?string | ?LegacyObject;
 
   /**
    * Gets the content-available number from the `aps` object
@@ -155,8 +153,7 @@ export interface PushNotification {
   /**
    * Gets the data object on the notif
    */
-  // $FlowFixMe[unclear-type]
-  getData(): ?Object;
+  getData(): ?LegacyObject;
 
   /**
    * Gets the thread ID on the notif
@@ -550,8 +547,7 @@ class PushNotificationIOS {
    * `getInitialNotification` is sufficient.
    *
    */
-  // $FlowFixMe[unclear-type]
-  constructor(nativeNotif: Object) {
+  constructor(nativeNotif: LegacyObject) {
     this._data = {};
     this._remoteNotificationCompleteCallbackCalled = false;
     this._isRemote = nativeNotif.remote;
@@ -615,8 +611,7 @@ class PushNotificationIOS {
   /**
    * An alias for `getAlert` to get the notification's main message string.
    */
-  // $FlowFixMe[unclear-type]
-  getMessage(): ?string | ?Object {
+  getMessage(): ?string | ?LegacyObject {
     // alias because "alert" is an ambiguous name
     return this._alert;
   }
@@ -646,8 +641,7 @@ class PushNotificationIOS {
    *
    * See https://reactnative.dev/docs/pushnotificationios#getalert
    */
-  // $FlowFixMe[unclear-type]
-  getAlert(): ?string | ?Object {
+  getAlert(): ?string | ?LegacyObject {
     return this._alert;
   }
 
@@ -674,8 +668,7 @@ class PushNotificationIOS {
    *
    * See https://reactnative.dev/docs/pushnotificationios#getdata
    */
-  // $FlowFixMe[unclear-type]
-  getData(): ?Object {
+  getData(): ?LegacyObject {
     return this._data;
   }
 

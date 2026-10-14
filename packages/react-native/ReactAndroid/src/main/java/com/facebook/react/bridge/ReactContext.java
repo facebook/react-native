@@ -18,6 +18,8 @@ import android.view.LayoutInflater;
 import android.view.Window;
 import androidx.activity.result.ActivityResultCallback;
 import androidx.activity.result.ActivityResultLauncher;
+import androidx.activity.result.ActivityResultRegistry;
+import androidx.activity.result.ActivityResultRegistryOwner;
 import androidx.activity.result.contract.ActivityResultContract;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
@@ -537,9 +539,28 @@ public abstract class ReactContext extends ContextWrapper {
     return mCurrentActivity.get();
   }
 
+  private @Nullable ActivityResultRegistry getCurrentActivityResultRegistry() {
+    Activity activity = getCurrentActivity();
+    if (activity == null) {
+      return null;
+    }
+    if (!(activity instanceof ActivityResultRegistryOwner)) {
+      FLog.w(
+          TAG,
+          String.format(
+              "Activity %s lacks ActivityResultRegistryOwner; launchers remain unbound.",
+              activity.getClass().getName()));
+      return null;
+    }
+    return ((ActivityResultRegistryOwner) activity).getActivityResultRegistry();
+  }
+
   private synchronized ReactActivityResultCallerImpl getActivityResultCaller() {
     if (mActivityResultCaller == null) {
-      mActivityResultCaller = new ReactActivityResultCallerImpl(this);
+      mActivityResultCaller =
+          new ReactActivityResultCallerImpl(
+              this::getCurrentActivityResultRegistry, this::handleException);
+      addLifecycleEventListener(mActivityResultCaller);
     }
     return mActivityResultCaller;
   }

@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<e46a223ac0232b1fd67a03f3b83a36a7>>
+ * @generated SignedSource<<7e5839223cfce81a42708f876c4c77ee>>
  */
 
 /**
@@ -19,7 +19,7 @@
 
 #pragma once
 
-#include <react/cxxstableapi/UmbrellaGuard.h>
+#include <react/cxxstableapi/PrivateGuard.h>
 
 namespace facebook::react {
 
@@ -32,6 +32,8 @@ class ReactNativeFeatureFlagsProvider {
   virtual bool cxxNativeAnimatedEnabled() = 0;
   virtual bool defaultTextToOverflowHidden() = 0;
   virtual bool disableEarlyViewCommandExecution() = 0;
+  virtual bool disableIdleEventDispatchFrameCallbackRearmAndroid() = 0;
+  virtual bool disableIdleMountItemFrameCallbackRearmAndroid() = 0;
   virtual bool disableImageViewPreallocationAndroid() = 0;
   virtual bool disableMountItemReorderingAndroid() = 0;
   virtual bool disableSubviewClippingAndroid() = 0;
@@ -41,8 +43,8 @@ class ReactNativeFeatureFlagsProvider {
   virtual bool enableAccumulatedUpdatesInRawPropsAndroid() = 0;
   virtual bool enableAndroidAutoOffscreenCompositingForElevation() = 0;
   virtual bool enableAndroidTextMeasurementOptimizations() = 0;
+  virtual bool enableAsyncDiskCacheCheckInMultiSourceImageAndroid() = 0;
   virtual bool enableBridgelessArchitecture() = 0;
-  virtual bool enableBufferedCallInvoker() = 0;
   virtual bool enableCppPropsIteratorSetter() = 0;
   virtual bool enableCustomFocusSearchOnClippedElementsAndroid() = 0;
   virtual bool enableDestroyShadowTreeRevisionAsync() = 0;
@@ -71,6 +73,7 @@ class ReactNativeFeatureFlagsProvider {
   virtual bool enableMountingCoordinatorPullModelAndroid() = 0;
   virtual bool enableMutationObserverByDefault() = 0;
   virtual bool enableNativeCSSParsing() = 0;
+  virtual bool enablePreallocatedPropsDiffOnInsertAndroid() = 0;
   virtual bool enablePreparedTextLayout() = 0;
   virtual bool enablePropsUpdateReconciliationAndroid() = 0;
   virtual bool enableResizeObserverByDefault() = 0;
@@ -82,7 +85,9 @@ class ReactNativeFeatureFlagsProvider {
   virtual bool enableViewRecyclingForText() = 0;
   virtual bool enableViewRecyclingForView() = 0;
   virtual bool enableVirtualViewContainerStateExperimental() = 0;
+  virtual bool fixBorderlessRippleAndroid() = 0;
   virtual bool fixMappingOfEventPrioritiesBetweenFabricAndReact() = 0;
+  virtual bool fixTextLayoutOnPixelDensityChange() = 0;
   virtual bool fixYogaFlexBasisFitContentInMainAxis() = 0;
   virtual bool fuseboxAssertSingleHostState() = 0;
   virtual bool fuseboxEnabledRelease() = 0;
@@ -111,6 +116,7 @@ class ReactNativeFeatureFlagsProvider {
   virtual bool useSharedAnimatedBackend() = 0;
   virtual bool useTraitHiddenOnAndroid() = 0;
   virtual bool useTurboModuleInterop() = 0;
+  virtual bool useWindowDensityForDisplayMetricsAndroid() = 0;
   virtual double viewCullingOutsetRatio() = 0;
   virtual bool viewTransitionEnabled() = 0;
   virtual bool viewTransitionUseHardwareBitmapAndroid() = 0;

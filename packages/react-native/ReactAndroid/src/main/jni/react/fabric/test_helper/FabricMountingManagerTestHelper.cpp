@@ -7,23 +7,60 @@
 
 #include "FabricMountingManagerTestHelper.h"
 
+#include <react/featureflags/ReactNativeFeatureFlags.h>
+#include <react/featureflags/ReactNativeFeatureFlagsDefaults.h>
+#include <react/renderer/animationbackend/AnimatedProps.h>
 #include <react/renderer/components/view/ViewComponentDescriptor.h>
 #include <react/renderer/components/view/ViewProps.h>
 #include <react/renderer/core/ComponentDescriptor.h>
+#include <react/renderer/core/PropsParserContext.h>
+#include <react/renderer/core/RawProps.h>
 #include <react/renderer/mounting/ShadowView.h>
 
 namespace facebook::react {
+
+static LayoutConstraints makeLayoutConstraints(
+    jfloat widthDp,
+    jfloat heightDp) {
+  Size size{.width = widthDp, .height = heightDp};
+  return LayoutConstraints{
+      .minimumSize = size,
+      .maximumSize = size,
+      .layoutDirection = LayoutDirection::LeftToRight};
+}
 
 FabricMountingManagerTestHelper::FabricMountingManagerTestHelper(
     jni::alias_ref<JFabricUIManager::javaobject> jFabricUIManager)
     : javaUIManager_(jni::make_global(jFabricUIManager)) {
   mountingManager_ = std::make_shared<FabricMountingManager>(javaUIManager_);
 
+  contextContainer_ = std::make_shared<ContextContainer>();
   auto params = ComponentDescriptorParameters{
       .eventDispatcher = EventDispatcher::Shared{},
-      .contextContainer = std::make_shared<ContextContainer>(),
+      .contextContainer = contextContainer_,
       .flavor = nullptr};
   viewComponentDescriptor_ = std::make_unique<ViewComponentDescriptor>(params);
+
+  class TestShadowTreeDelegate : public ShadowTreeDelegate {
+   public:
+    RootShadowNode::Unshared shadowTreeWillCommit(
+        [[maybe_unused]] const ShadowTree& shadowTree,
+        [[maybe_unused]] const RootShadowNode::Shared& oldRootShadowNode,
+        const RootShadowNode::Unshared& newRootShadowNode,
+        [[maybe_unused]] const ShadowTreeCommitOptions& commitOptions)
+        const override {
+      return newRootShadowNode;
+    }
+
+    void shadowTreeDidFinishTransaction(
+        [[maybe_unused]] std::shared_ptr<const MountingCoordinator>
+            mountingCoordinator,
+        [[maybe_unused]] bool mountSynchronously) const override {}
+
+    void shadowTreeDidFinishReactCommit(
+        [[maybe_unused]] const ShadowTree& shadowTree) const override {}
+  };
+  shadowTreeDelegate_ = std::make_unique<TestShadowTreeDelegate>();
 }
 
 void FabricMountingManagerTestHelper::initHybrid(
@@ -64,6 +101,128 @@ bool FabricMountingManagerTestHelper::isTagAllocated(jint surfaceId, jint tag) {
   return mountingManager_->isViewAllocated(surfaceId, tag);
 }
 
+void FabricMountingManagerTestHelper::synchronouslyUpdateAnimatedProps(
+    jni::alias_ref<jni::JArrayInt> tags,
+    jni::alias_ref<jni::JArrayClass<NativeMap::javaobject>> props) {
+  auto tagValues = tags->getRegion(0, static_cast<jsize>(tags->size()));
+  std::unordered_map<Tag, AnimatedProps> updates;
+  for (size_t i = 0; i < tags->size(); i++) {
+    updates.emplace(
+        tagValues[i],
+        AnimatedProps{
+            .props = {},
+            .rawProps = std::make_unique<RawProps>(
+                props->getElement(i)->cthis()->consume())});
+  }
+  mountingManager_->synchronouslyUpdateAnimatedProps(updates);
+}
+
+void FabricMountingManagerTestHelper::startSurfaceWithConstraints(
+    jint surfaceId,
+    jfloat widthDp,
+    jfloat heightDp,
+    jfloat pointScaleFactor) {
+  shadowTree_ = std::make_unique<ShadowTree>(
+      surfaceId,
+      makeLayoutConstraints(widthDp, heightDp),
+      LayoutContext{.pointScaleFactor = pointScaleFactor},
+      *shadowTreeDelegate_,
+      *contextContainer_);
+  mountingManager_->onSurfaceStart(surfaceId);
+}
+
+void FabricMountingManagerTestHelper::mountViewWithPadding(
+    jint surfaceId,
+    jint tag,
+    jfloat padding) {
+  using ShadowNodeList = std::vector<std::shared_ptr<const ShadowNode>>;
+  PropsParserContext parserContext{surfaceId, *contextContainer_};
+  auto createView = [&](Tag viewTag,
+                        folly::dynamic style,
+                        ShadowNodeList children) {
+    auto family = viewComponentDescriptor_->createFamily(
+        {.tag = viewTag, .surfaceId = surfaceId, .instanceHandle = nullptr});
+    auto props = viewComponentDescriptor_->cloneProps(
+        parserContext, nullptr, RawProps(std::move(style)));
+    return viewComponentDescriptor_->createShadowNode(
+        {.props = props,
+         .children =
+             std::make_shared<const ShadowNodeList>(std::move(children)),
+         .state = viewComponentDescriptor_->createInitialState(props, family)},
+        family);
+  };
+
+  auto overflowingChild = createView(
+      tag + 1,
+      folly::dynamic::object("collapsable", false)("position", "absolute")(
+          "left", -padding)("top", -padding)("width", 100 + 2 * padding)(
+          "height", 100 + 2 * padding),
+      {});
+  auto paddedView = createView(
+      tag,
+      folly::dynamic::object("collapsable", false)("width", 100)("height", 100)(
+          "padding", padding),
+      {overflowingChild});
+
+  shadowTree_->commit(
+      [&](const RootShadowNode& oldRootShadowNode) {
+        return std::static_pointer_cast<RootShadowNode>(
+            oldRootShadowNode.ShadowNode::clone(
+                {.children = std::make_shared<const ShadowNodeList>(
+                     ShadowNodeList{paddedView})}));
+      },
+      {});
+  mountPendingTransaction();
+}
+
+void FabricMountingManagerTestHelper::updateSurfaceConstraints(
+    jint surfaceId,
+    jfloat widthDp,
+    jfloat heightDp,
+    jfloat pointScaleFactor) {
+  PropsParserContext parserContext{surfaceId, *contextContainer_};
+  shadowTree_->commit(
+      [&](const RootShadowNode& oldRootShadowNode) {
+        return oldRootShadowNode.clone(
+            parserContext,
+            makeLayoutConstraints(widthDp, heightDp),
+            LayoutContext{.pointScaleFactor = pointScaleFactor});
+      },
+      {});
+  mountPendingTransaction();
+}
+
+void FabricMountingManagerTestHelper::overrideFeatureFlags(
+    jboolean fixTextLayoutOnPixelDensityChange) {
+  class TestFeatureFlags : public ReactNativeFeatureFlagsDefaults {
+   public:
+    explicit TestFeatureFlags(bool fixTextLayoutOnPixelDensityChange)
+        : fixTextLayoutOnPixelDensityChange_(
+              fixTextLayoutOnPixelDensityChange) {}
+
+    bool fixTextLayoutOnPixelDensityChange() override {
+      return fixTextLayoutOnPixelDensityChange_;
+    }
+
+   private:
+    bool fixTextLayoutOnPixelDensityChange_;
+  };
+  ReactNativeFeatureFlags::dangerouslyForceOverride(
+      std::make_unique<TestFeatureFlags>(
+          fixTextLayoutOnPixelDensityChange != 0));
+}
+
+void FabricMountingManagerTestHelper::resetFeatureFlags() {
+  ReactNativeFeatureFlags::dangerouslyReset();
+}
+
+void FabricMountingManagerTestHelper::mountPendingTransaction() {
+  auto transaction = shadowTree_->getMountingCoordinator()->pullTransaction();
+  if (transaction.has_value()) {
+    mountingManager_->executeMount(*transaction);
+  }
+}
+
 void FabricMountingManagerTestHelper::registerNatives() {
   registerHybrid({
       makeNativeMethod(
@@ -79,6 +238,24 @@ void FabricMountingManagerTestHelper::registerNatives() {
           FabricMountingManagerTestHelper::destroyUnmountedView),
       makeNativeMethod(
           "isTagAllocated", FabricMountingManagerTestHelper::isTagAllocated),
+      makeNativeMethod(
+          "synchronouslyUpdateAnimatedProps",
+          FabricMountingManagerTestHelper::synchronouslyUpdateAnimatedProps),
+      makeNativeMethod(
+          "startSurfaceWithConstraints",
+          FabricMountingManagerTestHelper::startSurfaceWithConstraints),
+      makeNativeMethod(
+          "mountViewWithPadding",
+          FabricMountingManagerTestHelper::mountViewWithPadding),
+      makeNativeMethod(
+          "updateSurfaceConstraints",
+          FabricMountingManagerTestHelper::updateSurfaceConstraints),
+      makeNativeMethod(
+          "overrideFeatureFlags",
+          FabricMountingManagerTestHelper::overrideFeatureFlags),
+      makeNativeMethod(
+          "resetFeatureFlags",
+          FabricMountingManagerTestHelper::resetFeatureFlags),
   });
 }
 

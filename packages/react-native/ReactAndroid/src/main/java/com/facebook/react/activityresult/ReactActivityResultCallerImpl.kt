@@ -7,29 +7,19 @@
 
 package com.facebook.react.activityresult
 
+import android.os.Handler
+import android.os.Looper
 import androidx.activity.result.ActivityResultCallback
 import androidx.activity.result.ActivityResultLauncher
 import androidx.activity.result.ActivityResultRegistry
-import androidx.activity.result.ActivityResultRegistryOwner
 import androidx.activity.result.contract.ActivityResultContract
 import com.facebook.common.logging.FLog
 import com.facebook.react.bridge.LifecycleEventListener
-import com.facebook.react.bridge.ReactContext
-import com.facebook.react.bridge.UiThreadUtil
 import com.facebook.react.common.ReactConstants
 import java.util.concurrent.ConcurrentHashMap
 
 /**
- * Runs [block] on the UI thread, inline if already there. [ActivityResultRegistry] is `@MainThread`
- * but not enforced at runtime: an off-thread call corrupts it silently, and RN calls in from the JS
- * and native-modules threads.
- */
-internal fun onUiThread(block: () -> Unit) {
-  if (UiThreadUtil.isOnUiThread()) block() else UiThreadUtil.runOnUiThread(block)
-}
-
-/**
- * Default [ReactActivityResultCaller], owned by a [ReactContext].
+ * Default [ReactActivityResultCaller], owned by a React context.
  *
  * Registrations are accepted at any time and bound to the current Activity's
  * [ActivityResultRegistry] immediately or on the next `onHostResume`. They outlive any single
@@ -41,12 +31,24 @@ internal fun onUiThread(block: () -> Unit) {
  * would leave launchers attached to the previous Activity's dead registry.
  *
  * Threading: [entries] is concurrent and reachable from any thread; everything touching the
- * registry goes through [onUiThread]. Registration stays on the caller's thread so the launcher
- * returns immediately and a duplicate key throws at the causing frame. Only the registry call moves
- * to the UI thread.
+ * registry goes through [UiThread.onUiThread]. Registration stays on the caller's thread so the
+ * launcher returns immediately and a duplicate key throws at the causing frame. Only the registry
+ * call moves to the UI thread.
  */
-internal class ReactActivityResultCallerImpl(private val reactContext: ReactContext) :
-    ReactActivityResultCaller, LifecycleEventListener {
+internal class ReactActivityResultCallerImpl(
+    private val registryProvider: ActivityResultRegistryProvider,
+    private val exceptionHandler: ActivityResultCallback<RuntimeException>,
+) : ReactActivityResultCaller, LifecycleEventListener {
+
+  internal object UiThread {
+    private val uiHandler by lazy { Handler(Looper.getMainLooper()) }
+
+    /** Runs [block] on the UI thread, inline if already there. */
+    fun onUiThread(block: () -> Unit) {
+      if (Looper.getMainLooper().thread === Thread.currentThread()) block()
+      else uiHandler.post(Runnable(block))
+    }
+  }
 
   private class Entry<I, O>(
       val key: String,
@@ -69,10 +71,6 @@ internal class ReactActivityResultCallerImpl(private val reactContext: ReactCont
 
   private val entries = ConcurrentHashMap<String, Entry<*, *>>()
 
-  init {
-    reactContext.addLifecycleEventListener(this)
-  }
-
   override fun <I, O> registerForActivityResult(
       owner: Any,
       contract: ActivityResultContract<I, O>,
@@ -82,7 +80,7 @@ internal class ReactActivityResultCallerImpl(private val reactContext: ReactCont
           owner,
           contract,
           callback,
-          ActivityResultCallback { exception -> reactContext.handleException(exception) },
+          ActivityResultCallback { exception -> exceptionHandler.onActivityResult(exception) },
       )
 
   override fun <I, O> registerForActivityResult(
@@ -120,7 +118,7 @@ internal class ReactActivityResultCallerImpl(private val reactContext: ReactCont
           key,
           contract,
           callback,
-          ActivityResultCallback { exception -> reactContext.handleException(exception) },
+          ActivityResultCallback { exception -> exceptionHandler.onActivityResult(exception) },
       )
 
   override fun <I, O> registerForActivityResult(
@@ -164,19 +162,20 @@ internal class ReactActivityResultCallerImpl(private val reactContext: ReactCont
     if (entries.putIfAbsent(key, entry) != null) {
       throw IllegalStateException("A launcher is already registered for key '$key'. $collisionHint")
     }
-    onUiThread { currentRegistry()?.let { registry -> bindSafely(entry, registry) } }
+    UiThread.onUiThread { currentRegistry()?.let { registry -> bindSafely(entry, registry) } }
     return launcher
   }
 
-  override fun onHostResume() = onUiThread {
-    if (entries.isEmpty()) return@onUiThread
-    val registry = currentRegistry()
-    if (registry == null) {
-      entries.values.forEach(::unbindSafely)
-      return@onUiThread
-    }
-    entries.values.forEach { entry -> bindSafely(entry, registry) }
-  }
+  override fun onHostResume() =
+      UiThread.onUiThread {
+        if (entries.isEmpty()) return@onUiThread
+        val registry = currentRegistry()
+        if (registry == null) {
+          entries.values.forEach(::unbindSafely)
+          return@onUiThread
+        }
+        entries.values.forEach { entry -> bindSafely(entry, registry) }
+      }
 
   private fun bindSafely(entry: Entry<*, *>, registry: ActivityResultRegistry) {
     try {
@@ -204,22 +203,14 @@ internal class ReactActivityResultCallerImpl(private val reactContext: ReactCont
 
   override fun onHostPause(): Unit = Unit
 
-  override fun onHostDestroy() = onUiThread {
-    // Detach from the dying registry but keep the registrations: they rebind under the same keys
-    // on the next onHostResume, which is how AndroidX re-associates a surviving result.
-    entries.values.forEach(::unbindSafely)
-  }
+  override fun onHostDestroy() =
+      UiThread.onUiThread {
+        // Detach from the dying registry but keep the registrations: they rebind under the same
+        // keys
+        // on the next onHostResume, which is how AndroidX re-associates a surviving result.
+        entries.values.forEach(::unbindSafely)
+      }
 
-  private fun currentRegistry(): ActivityResultRegistry? {
-    val activity = reactContext.currentActivity ?: return null
-    if (activity !is ActivityResultRegistryOwner) {
-      FLog.w(
-          ReactConstants.TAG,
-          "Current Activity ${activity.javaClass.name} is not an ActivityResultRegistryOwner; " +
-              "ActivityResultContract launchers will remain unbound.",
-      )
-      return null
-    }
-    return activity.activityResultRegistry
-  }
+  private fun currentRegistry(): ActivityResultRegistry? =
+      registryProvider.getActivityResultRegistry()
 }

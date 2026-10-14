@@ -12,7 +12,6 @@ import androidx.activity.result.ActivityResultRegistry
 import androidx.activity.result.contract.ActivityResultContract
 import androidx.core.app.ActivityOptionsCompat
 import com.facebook.common.logging.FLog
-import com.facebook.react.bridge.UiThreadUtil
 import com.facebook.react.common.ReactConstants
 
 /**
@@ -21,15 +20,16 @@ import com.facebook.react.common.ReactConstants
  * unbound (fired on bind), and can be [unbind]-ed and rebound against a new host's registry.
  *
  * [delegate] and [pendingLaunch] are only touched on the UI thread; [launch] and [unregister] get
- * there via [onUiThread]. [launch] decides between delegating and queueing *on* the UI thread, so a
- * concurrent [unbind] cannot leave it pointed at a dead registry.
+ * there via [ReactActivityResultCallerImpl.UiThread.onUiThread]. [launch] decides between
+ * delegating and queueing *on* the UI thread, so a concurrent [unbind] cannot leave it pointed at a
+ * dead registry.
  */
 internal class DeferredActivityResultLauncher<I>(
     private val key: String,
-    contract: ActivityResultContract<I, *>,
+    override val contract: ActivityResultContract<I, *>,
     private val onUnregister: () -> Unit,
     private val onLaunchFailure: (RuntimeException) -> Unit = {},
-) : ActivityResultLauncherCompat<I>(contract) {
+) : ActivityResultLauncher<I>() {
 
   private class PendingLaunch<I>(val input: I, val options: ActivityOptionsCompat?)
 
@@ -38,7 +38,7 @@ internal class DeferredActivityResultLauncher<I>(
   private var pendingLaunch: PendingLaunch<I>? = null
 
   override fun launch(input: I, options: ActivityOptionsCompat?) {
-    onUiThread {
+    ReactActivityResultCallerImpl.UiThread.onUiThread {
       val boundDelegate = delegate
       if (boundDelegate != null) {
         launchSafely(boundDelegate, input, options)
@@ -58,7 +58,7 @@ internal class DeferredActivityResultLauncher<I>(
   override fun unregister() {
     // Drop the registration first so nothing rebinds this launcher in the meantime.
     onUnregister()
-    onUiThread {
+    ReactActivityResultCallerImpl.UiThread.onUiThread {
       try {
         delegate?.unregister()
       } catch (exception: RuntimeException) {
@@ -80,7 +80,6 @@ internal class DeferredActivityResultLauncher<I>(
    * queued launch.
    */
   fun bind(registry: ActivityResultRegistry, launcher: ActivityResultLauncher<I>) {
-    UiThreadUtil.assertOnUiThread()
     delegate = launcher
     boundRegistry = registry
     pendingLaunch?.let { pending ->
@@ -112,7 +111,6 @@ internal class DeferredActivityResultLauncher<I>(
 
   /** Detaches from the bound registry, keeping any queued launch for the next [bind]. */
   fun unbind() {
-    UiThreadUtil.assertOnUiThread()
     try {
       delegate?.unregister()
     } catch (exception: RuntimeException) {

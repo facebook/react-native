@@ -108,7 +108,6 @@ async function setup(
   link('ReactCommon/react/renderer/componentregistry/React', 'React');
   link('ReactCommon/react/renderer/core');
   link('ReactCommon/react/renderer/core/React', 'React');
-  link('ReactCommon/react/renderer/css/React', 'React');
   link('ReactCommon/react/renderer/components/image/React', 'React');
   link('ReactCommon/react/renderer/mapbuffer/React', 'React');
   link('ReactCommon/react/bridging');
@@ -122,7 +121,6 @@ async function setup(
   link('ReactCommon/react/renderer/debug');
   link('ReactCommon/react/renderer/debug/React', 'React');
   link('ReactCommon/react/featureflags');
-  link('ReactCommon/react/featureflags/React', 'React');
   link('ReactCommon/react/renderer/graphics');
   link(
     'ReactCommon/react/renderer/graphics/platform/ios',
