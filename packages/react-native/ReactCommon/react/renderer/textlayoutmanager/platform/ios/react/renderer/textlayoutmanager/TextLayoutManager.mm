@@ -8,11 +8,22 @@
 #import "TextLayoutManager.h"
 #import "RCTTextLayoutManager.h"
 
+#import <optional>
+
 #import <react/renderer/attributedstring/PlaceholderAttributedString.h>
 #import <react/renderer/telemetry/TransactionTelemetry.h>
 #import <react/utils/ManagedObjectWrapper.h>
 
 namespace facebook::react {
+
+// `ensurePlaceholderIfEmpty_DO_NOT_USE` returns a copy, so only call it for an empty string that needs one.
+static std::optional<AttributedString> placeholderIfEmpty(const AttributedString &attributedString)
+{
+  if (attributedString.isEmpty()) {
+    return ensurePlaceholderIfEmpty_DO_NOT_USE(attributedString);
+  }
+  return std::nullopt;
+}
 
 TextLayoutManager::TextLayoutManager(const std::shared_ptr<const ContextContainer> & /*contextContainer*/)
 {
@@ -37,8 +48,10 @@ TextMeasurement TextLayoutManager::measure(
 
   switch (attributedStringBox.getMode()) {
     case AttributedStringBox::Mode::Value: {
-      auto originalAtributedString = attributedStringBox.getValue();
-      auto attributedString = ensurePlaceholderIfEmpty_DO_NOT_USE(originalAtributedString);
+      const auto &originalAttributedString = attributedStringBox.getValue();
+      auto placeholderAttributedString = placeholderIfEmpty(originalAttributedString);
+      const auto &attributedString =
+          placeholderAttributedString ? *placeholderAttributedString : originalAttributedString;
 
       measurement = textMeasureCache_.get(
           {.attributedString = attributedString,
@@ -60,7 +73,7 @@ TextMeasurement TextLayoutManager::measure(
             // being used to represent empty string. iOS TextLayoutManager
             // should instead measure using `baseTextAttributes` of the
             // `AttributedString`.
-            if (originalAtributedString.isEmpty()) {
+            if (originalAttributedString.isEmpty()) {
               measurement.size.width = 0;
             }
 
@@ -106,7 +119,9 @@ LinesMeasurements TextLayoutManager::measureLines(
     const Size &size) const
 {
   react_native_assert(attributedStringBox.getMode() == AttributedStringBox::Mode::Value);
-  auto attributedString = ensurePlaceholderIfEmpty_DO_NOT_USE(attributedStringBox.getValue());
+  const auto &originalAttributedString = attributedStringBox.getValue();
+  auto placeholderAttributedString = placeholderIfEmpty(originalAttributedString);
+  const auto &attributedString = placeholderAttributedString ? *placeholderAttributedString : originalAttributedString;
 
   RCTTextLayoutManager *textLayoutManager = (RCTTextLayoutManager *)unwrapManagedObject(nativeTextLayoutManager_);
 
