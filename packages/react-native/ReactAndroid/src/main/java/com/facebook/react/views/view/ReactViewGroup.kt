@@ -189,6 +189,7 @@ public open class ReactViewGroup public constructor(context: Context?) :
     allChildrenCount = 0
     clippingRect = null
     hitSlopRect = null
+    axOrderList = null
     // pointerEvents setter reads _overflow, so _overflow must be assigned first.
     _overflow = Overflow.VISIBLE
     pointerEvents = PointerEvents.AUTO

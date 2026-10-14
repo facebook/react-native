@@ -244,8 +244,48 @@ class BaseViewManagerTest {
         .isEqualTo(ViewCompat.hasAccessibilityDelegate(view))
   }
 
-  private fun recycleView(previousProps: JavaOnlyMap): ReactViewGroup {
+  @Test
+  fun testRecycledViewDropsTheAccessibilityOrderOfItsPreviousProps() {
+    ReactNativeFeatureFlags.dangerouslyReset()
+    ReactNativeFeatureFlags.override(
+        object : ReactNativeFeatureFlagsDefaults() {
+          override fun enableViewRecycling(): Boolean = true
+
+          override fun enableAccessibilityOrder(): Boolean = true
+        },
+    )
+
+    val recycled =
+        recycleView(JavaOnlyMap.of(ViewProps.ACCESSIBILITY_ORDER, JavaOnlyArray.of("first")))
+
+    Assertions.assertThat(recycled.axOrderList).isNull()
+  }
+
+  @Test
+  fun testRecycledViewDropsTheAccessibilityOrderItsParentApplied() {
+    val parent = ReactViewGroup(themedReactContext)
+
+    val recycled =
+        recycleView(JavaOnlyMap()) { previous ->
+          ReactAxOrderHelper.buildAxOrderList(
+              previous,
+              parent,
+              mutableListOf<String>(),
+              arrayOfNulls(0),
+          )
+          ReactAxOrderHelper.disableFocusForSubtree(previous, mutableListOf<String>())
+        }
+
+    Assertions.assertThat(recycled.getTag(R.id.accessibility_order_parent)).isNull()
+    Assertions.assertThat(recycled.getTag(R.id.original_focusability)).isNull()
+  }
+
+  private fun recycleView(
+      previousProps: JavaOnlyMap,
+      beforeDrop: (ReactViewGroup) -> Unit = {},
+  ): ReactViewGroup {
     val previous = createView(previousProps)
+    beforeDrop(previous)
     viewManager.onDropViewInstance(previous)
     val recycled = createView(JavaOnlyMap())
     Assertions.assertThat(recycled).isSameAs(previous)

@@ -96,6 +96,8 @@ public abstract class BaseViewManager<T extends View, C extends LayoutShadowNode
     view.setTag(R.id.accessibility_collection, null);
     view.setTag(R.id.accessibility_collection_item, null);
     view.setTag(R.id.role, null);
+    view.setTag(R.id.accessibility_order_parent, null);
+    view.setTag(R.id.original_focusability, null);
     view.setTag(R.id.accessibility_state_disabled, null);
     view.setEnabled(true);
     view.setTag(R.id.view_clipped, null);
