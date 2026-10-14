@@ -17,6 +17,7 @@
 #include <react/renderer/textlayoutmanager/JPreparedLayout.h>
 #include <react/renderer/textlayoutmanager/TextLayoutContext.h>
 #include <react/renderer/textlayoutmanager/TextMeasureCache.h>
+#include <react/utils/SimpleThreadSafeCache.h>
 
 #include <fbjni/fbjni.h>
 #include <memory>

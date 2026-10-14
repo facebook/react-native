@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<94c1abd04adec2f81634da6786979552>>
+ * @generated SignedSource<<4b66991416806affd46aab79e36c4a45>>
  */
 
 /**
@@ -46,6 +46,10 @@ class ReactNativeFeatureFlagsOverridesOSSCanary : public ReactNativeFeatureFlags
   }
 
   bool enableSwiftUIBasedFilters() override {
+    return true;
+  }
+
+  bool fixBorderlessRippleAndroid() override {
     return true;
   }
 

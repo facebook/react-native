@@ -20,7 +20,6 @@
 #include <React/RuntimeExecutor.h>
 #include <React/Utils.h>
 #include <react/renderer/mounting/MountingOverrideDelegate.h>
-#include <react/renderer/scheduler/InspectorData.h>
 #include <react/renderer/scheduler/SchedulerDelegate.h>
 #include <react/renderer/scheduler/SchedulerToolbox.h>
 #include <react/renderer/scheduler/SurfaceHandler.h>
@@ -97,6 +96,7 @@ class Scheduler final : public UIManagerDelegate {
       bool isJSResponder,
       bool blockNativeResponder) override;
   void uiManagerShouldSynchronouslyUpdateViewOnUIThread(Tag tag, const folly::dynamic &props) override;
+  void uiManagerShouldSynchronouslyUpdateAnimatedProps(const std::unordered_map<Tag, AnimatedProps> &updates) override;
   void uiManagerDidUpdateShadowTree(const std::unordered_map<Tag, folly::dynamic> &tagToProps) override;
   void uiManagerDidCaptureViewSnapshot(Tag tag, SurfaceId surfaceId) override;
   void uiManagerDidSetViewSnapshot(Tag sourceTag, Tag targetTag, SurfaceId surfaceId) override;

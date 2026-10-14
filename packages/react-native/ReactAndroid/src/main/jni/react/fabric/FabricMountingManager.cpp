@@ -7,6 +7,7 @@
 
 #include "FabricMountingManager.h"
 
+#include "AnimatedPropBufferEncoder.h"
 #include "EventEmitterWrapper.h"
 #include "MountItem.h"
 #include "StateWrapperImpl.h"
@@ -598,6 +599,8 @@ void FabricMountingManager::executeMount(
 
   bool maintainMutationOrder =
       ReactNativeFeatureFlags::disableMountItemReorderingAndroid();
+  bool updateViewsOnDensityChange =
+      ReactNativeFeatureFlags::fixTextLayoutOnPixelDensityChange();
 
   auto revisionNumber = telemetry.getRevisionNumber();
 
@@ -687,12 +690,19 @@ void FabricMountingManager::executeMount(
                       CppMountItem::UpdateStateMountItem(newChildShadowView));
             }
 
+            bool pointScaleChanged = updateViewsOnDensityChange &&
+                oldChildShadowView.layoutMetrics.pointScaleFactor !=
+                    newChildShadowView.layoutMetrics.pointScaleFactor;
+
             // Padding: padding mountItems must be executed before layout props
             // are updated in the view. This is necessary to ensure that events
             // (resulting from layout changes) are dispatched with the correct
             // padding information.
             if (oldChildShadowView.layoutMetrics.contentInsets !=
-                newChildShadowView.layoutMetrics.contentInsets) {
+                    newChildShadowView.layoutMetrics.contentInsets ||
+                (pointScaleChanged &&
+                 newChildShadowView.layoutMetrics.contentInsets !=
+                     EdgeInsets::ZERO)) {
               (maintainMutationOrder ? cppCommonMountItems
                                      : cppUpdatePaddingMountItems)
                   .push_back(
@@ -712,8 +722,11 @@ void FabricMountingManager::executeMount(
             // children of the current view. The layout of current view may not
             // change, and we separate this part from layout mount items to not
             // pack too much data there.
-            if ((oldChildShadowView.layoutMetrics.overflowInset !=
-                 newChildShadowView.layoutMetrics.overflowInset)) {
+            if (oldChildShadowView.layoutMetrics.overflowInset !=
+                    newChildShadowView.layoutMetrics.overflowInset ||
+                (pointScaleChanged &&
+                 newChildShadowView.layoutMetrics.overflowInset !=
+                     EdgeInsets::ZERO)) {
               (maintainMutationOrder ? cppCommonMountItems
                                      : cppUpdateOverflowInsetMountItems)
                   .push_back(
@@ -1266,6 +1279,34 @@ void FabricMountingManager::synchronouslyUpdateViewOnUIThread(
   auto propsMap = reinterpret_cast<ReadableMap::javaobject>(
       ReadableNativeMap::newObjectCxxArgs(props).release());
   synchronouslyUpdateViewOnUIThreadJNI(javaUIManager_, viewTag, propsMap);
+}
+
+void FabricMountingManager::synchronouslyUpdateAnimatedProps(
+    const std::unordered_map<Tag, AnimatedProps>& updates) {
+  TraceSection s(
+      "FabricMountingManager::synchronouslyUpdateAnimatedProps",
+      "viewCount",
+      updates.size());
+  static auto synchronouslyUpdateViewBatchJNI =
+      JFabricUIManager::javaClassStatic()
+          ->getMethod<void(jintArray, jdoubleArray, jni::jtypeArray<jobject>)>(
+              "synchronouslyUpdateViewBatch");
+  auto buffer = encodeAnimatedProps(updates);
+  auto ints = jni::JArrayInt::newArray(buffer.ints.size());
+  ints->setRegion(
+      0, static_cast<jsize>(buffer.ints.size()), buffer.ints.data());
+  auto doubles = jni::JArrayDouble::newArray(buffer.doubles.size());
+  doubles->setRegion(
+      0, static_cast<jsize>(buffer.doubles.size()), buffer.doubles.data());
+  auto rawProps = jni::JArrayClass<jobject>::newArray(buffer.rawProps.size());
+  for (size_t i = 0; i < buffer.rawProps.size(); i++) {
+    rawProps->setElement(
+        i,
+        ReadableNativeMap::newObjectCxxArgs(std::move(buffer.rawProps[i]))
+            .get());
+  }
+  synchronouslyUpdateViewBatchJNI(
+      javaUIManager_, ints.get(), doubles.get(), rawProps.get());
 }
 
 void FabricMountingManager::captureViewSnapshot(Tag tag, SurfaceId surfaceId) {

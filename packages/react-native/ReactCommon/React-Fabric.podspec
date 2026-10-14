@@ -60,6 +60,8 @@ Pod::Spec.new do |s|
 
   s.subspec "animated" do |ss|
     ss.dependency             "React-Fabric/animationbackend"
+    ss.dependency             "React-Fabric/coreUmbrella"
+    ss.dependency             "ReactCommon/turbomodule/coreUmbrella"
     ss.source_files         = podspec_sources("react/renderer/animated/**/*.{m,mm,cpp,h}", "react/renderer/animated/**/*.{h}")
     ss.exclude_files        = "react/renderer/animated/tests"
     ss.header_dir           = "react/renderer/animated"
@@ -78,6 +80,7 @@ Pod::Spec.new do |s|
     ss.dependency             "React-callinvoker"
     ss.dependency             "React-timing"
     ss.source_files         = podspec_sources("react/renderer/animationbackend/**/*.{m,mm,cpp,h}", "react/renderer/animationbackend/**/*.{h}")
+    ss.exclude_files        = "react/renderer/animationbackend/tests"
     ss.header_dir           = "react/renderer/animationbackend"
   end
 

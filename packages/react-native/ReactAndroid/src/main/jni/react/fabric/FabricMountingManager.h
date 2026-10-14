@@ -10,12 +10,13 @@
 #include <mutex>
 #include <unordered_map>
 
+#include <React/RendererCore.h>
 #include <fbjni/fbjni.h>
 #include <react/fabric/JFabricUIManager.h>
-#include <react/renderer/core/Props.h>
-#include <react/renderer/uimanager/primitives.h>
 
 namespace facebook::react {
+
+struct AnimatedProps;
 
 class MountingTransaction;
 struct ShadowView;
@@ -83,6 +84,8 @@ class FabricMountingManager final {
   void onAllAnimationsComplete();
 
   void synchronouslyUpdateViewOnUIThread(Tag viewTag, const folly::dynamic &props);
+
+  void synchronouslyUpdateAnimatedProps(const std::unordered_map<Tag, AnimatedProps> &updates);
 
   void captureViewSnapshot(Tag tag, SurfaceId surfaceId);
 

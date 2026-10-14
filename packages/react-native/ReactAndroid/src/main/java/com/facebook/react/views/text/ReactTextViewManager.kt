@@ -178,6 +178,13 @@ public constructor(
         else Float.NaN
     view.setMinimumFontScale(minimumFontScale)
 
+    view.setEllipsizeLocation(
+        TextAttributeProps.getEllipsizeMode(
+            paragraphAttributes.getString(TextLayoutManager.PA_KEY_ELLIPSIZE_MODE),
+        ),
+    )
+    view.updateView()
+
     // Clear any stale PreparedLayout from a previous update
     view.setPreparedLayout(null)
 

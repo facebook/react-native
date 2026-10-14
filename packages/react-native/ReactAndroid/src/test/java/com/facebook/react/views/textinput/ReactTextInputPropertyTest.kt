@@ -398,12 +398,9 @@ class ReactTextInputPropertyTest {
 
   @Test
   fun testKeyboardTypeVisiblePassword() {
-    val passwordVisibilityFlag =
-        InputType.TYPE_TEXT_VARIATION_VISIBLE_PASSWORD and
-            InputType.TYPE_TEXT_VARIATION_PASSWORD.inv()
-
     manager.updateProperties(view, buildStyles("keyboardType", "visible-password"))
-    assertThat(view.inputType and generalKeyboardTypeFlags).isEqualTo(passwordVisibilityFlag)
+    assertThat(view.inputType and (InputType.TYPE_MASK_CLASS or InputType.TYPE_MASK_VARIATION))
+        .isEqualTo(InputType.TYPE_CLASS_TEXT or InputType.TYPE_TEXT_VARIATION_VISIBLE_PASSWORD)
   }
 
   @Test

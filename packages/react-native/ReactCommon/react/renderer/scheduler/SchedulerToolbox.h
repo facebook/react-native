@@ -16,6 +16,7 @@
 #include <React/RuntimeExecutor.h>
 #include <React/Utils.h>
 #include <react/renderer/animationbackend/AnimationChoreographer.h>
+#include <react/renderer/componentregistry/ComponentDescriptorFactory.h>
 #include <react/renderer/uimanager/UIManagerCommitHook.h>
 #include <react/renderer/uimanager/primitives.h>
 

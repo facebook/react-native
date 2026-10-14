@@ -205,6 +205,7 @@ function structuredCloneInternal(value: unknown): unknown {
     if (!Array.isArray(errors)) {
       throw new TypeError('AggregateError errors must be an array');
     }
+    // $FlowFixMe[incompatible-type]
     result.errors = errors;
 
     cloneErrorProperties(value, result);

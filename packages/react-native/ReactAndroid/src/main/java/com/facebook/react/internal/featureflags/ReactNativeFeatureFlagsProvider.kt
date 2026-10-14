@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<6607c8678df2693c361f6d8091483662>>
+ * @generated SignedSource<<c83fba10dc6f7d596e3bcd9725c64e6e>>
  */
 
 /**
@@ -33,6 +33,8 @@ public interface ReactNativeFeatureFlagsProvider {
 
   @DoNotStrip public fun disableEarlyViewCommandExecution(): Boolean
 
+  @DoNotStrip public fun disableIdleEventDispatchFrameCallbackRearmAndroid(): Boolean
+
   @DoNotStrip public fun disableIdleMountItemFrameCallbackRearmAndroid(): Boolean
 
   @DoNotStrip public fun disableImageViewPreallocationAndroid(): Boolean
@@ -53,9 +55,9 @@ public interface ReactNativeFeatureFlagsProvider {
 
   @DoNotStrip public fun enableAndroidTextMeasurementOptimizations(): Boolean
 
-  @DoNotStrip public fun enableBridgelessArchitecture(): Boolean
+  @DoNotStrip public fun enableAsyncDiskCacheCheckInMultiSourceImageAndroid(): Boolean
 
-  @DoNotStrip public fun enableBufferedCallInvoker(): Boolean
+  @DoNotStrip public fun enableBridgelessArchitecture(): Boolean
 
   @DoNotStrip public fun enableCppPropsIteratorSetter(): Boolean
 
@@ -137,7 +139,11 @@ public interface ReactNativeFeatureFlagsProvider {
 
   @DoNotStrip public fun enableVirtualViewContainerStateExperimental(): Boolean
 
+  @DoNotStrip public fun fixBorderlessRippleAndroid(): Boolean
+
   @DoNotStrip public fun fixMappingOfEventPrioritiesBetweenFabricAndReact(): Boolean
+
+  @DoNotStrip public fun fixTextLayoutOnPixelDensityChange(): Boolean
 
   @DoNotStrip public fun fixYogaFlexBasisFitContentInMainAxis(): Boolean
 
