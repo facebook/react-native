@@ -10,6 +10,7 @@
 package com.facebook.react.uimanager
 
 import android.view.View.OnFocusChangeListener
+import android.view.accessibility.AccessibilityNodeInfo
 import androidx.core.view.ViewCompat
 import com.facebook.react.R
 import com.facebook.react.bridge.BridgeReactContext
@@ -242,6 +243,25 @@ class BaseViewManagerTest {
 
     Assertions.assertThat(ViewCompat.hasAccessibilityDelegate(recycled))
         .isEqualTo(ViewCompat.hasAccessibilityDelegate(view))
+  }
+
+  @Test
+  fun testRecycledViewPerformsItsOwnAccessibilityClick() {
+    val recycled =
+        recycleView(
+            JavaOnlyMap.of(
+                ViewProps.ACCESSIBILITY_ACTIONS,
+                JavaOnlyArray.of(JavaOnlyMap.of("name", "activate")),
+            )
+        ) { previous ->
+          previous.createAccessibilityNodeInfo()
+        }
+    var clicks = 0
+    recycled.setOnClickListener { clicks++ }
+
+    recycled.performAccessibilityAction(AccessibilityNodeInfo.ACTION_CLICK, null)
+
+    Assertions.assertThat(clicks).isEqualTo(1)
   }
 
   @Test
