@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<95f86b3476aeff097f532b10cabf067e>>
+ * @generated SignedSource<<edb5f3ea1228c0bf6832969117b159da>>
  */
 
 /**
@@ -32,6 +32,10 @@ bool ReactNativeFeatureFlags_DO_NOT_USE::enableCppPropsIteratorSetter() {
 
 bool ReactNativeFeatureFlags_DO_NOT_USE::enableExclusivePropsUpdateAndroid() {
   return ReactNativeFeatureFlags::enableExclusivePropsUpdateAndroid();
+}
+
+bool ReactNativeFeatureFlags_DO_NOT_USE::enableMountingCoordinatorPullModelAndroid() {
+  return ReactNativeFeatureFlags::enableMountingCoordinatorPullModelAndroid();
 }
 
 bool ReactNativeFeatureFlags_DO_NOT_USE::enableNativeCSSParsing() {
