@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<af191519eab7fb22b70d11fd73afba4f>>
+ * @generated SignedSource<<52db1adfed5fd99e4ca145b50dc413a0>>
  */
 
 /**
@@ -382,6 +382,10 @@ class ReactNativeFeatureFlagsDefaults : public ReactNativeFeatureFlagsProvider {
   }
 
   bool useTurboModuleInterop() override {
+    return false;
+  }
+
+  bool useWindowDensityForDisplayMetricsAndroid() override {
     return false;
   }
 
