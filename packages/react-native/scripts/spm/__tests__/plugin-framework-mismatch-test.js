@@ -281,9 +281,75 @@ describe('assertPluginFrameworksLinked, linked frameworks from the marker', () =
 
     expect(check(app).lines).toEqual([EXPO_NOT_PROVIDED]);
   });
+
+  it('fails when plugins swap the ids of two linked frameworks', () => {
+    const app = scaffoldApp();
+    inject(app, [
+      REACT,
+      frameworkEntry('a', 'Foo', 'plugins/a.xcframework'),
+      frameworkEntry('b', 'Bar', 'plugins/b.xcframework'),
+    ]);
+    writeSidecar(app.appRoot, [
+      {id: 'a', frameworkName: 'Bar'},
+      {id: 'b', frameworkName: 'Foo'},
+    ]);
+
+    const {error, lines} = check(app);
+
+    expect(error).toBeInstanceOf(PluginFrameworkMismatchError);
+    expect(lines).toEqual([
+      'error: The Xcode project links Foo.framework (a), but the autolinking plugin that provides Foo gives it a different id. Run `npx react-native spm update` to relink Foo in the committed project for the whole team.',
+      'error: The Xcode project links Bar.framework (b), but the autolinking plugin that provides Bar gives it a different id. Run `npx react-native spm update` to relink Bar in the committed project for the whole team.',
+    ]);
+  });
+
+  it('fails once when a plugin changes the id of a linked framework', () => {
+    const app = scaffoldApp();
+    inject(app, [REACT, frameworkEntry('a', 'Foo', 'plugins/a.xcframework')]);
+    writeSidecar(app.appRoot, [{id: 'c', frameworkName: 'Foo'}]);
+
+    expect(check(app).lines).toEqual([
+      'error: The Xcode project links Foo.framework (a), but the autolinking plugin that provides Foo gives it a different id. Run `npx react-native spm update` to relink Foo in the committed project for the whole team.',
+    ]);
+  });
+
+  it('reports a new framework and swapped ids once each', () => {
+    const app = scaffoldApp();
+    inject(app, [
+      REACT,
+      frameworkEntry('a', 'Foo', 'plugins/a.xcframework'),
+      frameworkEntry('b', 'Bar', 'plugins/b.xcframework'),
+    ]);
+    writeSidecar(app.appRoot, [
+      {id: 'a', frameworkName: 'Bar'},
+      {id: 'b', frameworkName: 'Foo'},
+      {id: 'c', frameworkName: 'Baz'},
+    ]);
+
+    expect(check(app).lines).toEqual([
+      'error: Baz (c) is a precompiled framework from an autolinking plugin, but the Xcode project does not link it. Run `npx react-native spm update` to add Baz to the committed project for the whole team.',
+      'error: The Xcode project links Foo.framework (a), but the autolinking plugin that provides Foo gives it a different id. Run `npx react-native spm update` to relink Foo in the committed project for the whole team.',
+      'error: The Xcode project links Bar.framework (b), but the autolinking plugin that provides Bar gives it a different id. Run `npx react-native spm update` to relink Bar in the committed project for the whole team.',
+    ]);
+  });
 });
 
 describe('assertPluginFrameworksLinked, linked frameworks from the project, for an older marker', () => {
+  it('compares setting prefixes and names separately', () => {
+    const app = scaffoldApp();
+    injectWithOlderMarker(app, [
+      REACT,
+      frameworkEntry('a', 'Foo', 'plugins/a.xcframework'),
+      frameworkEntry('b', 'Bar', 'plugins/b.xcframework'),
+    ]);
+    writeSidecar(app.appRoot, [
+      {id: 'a', frameworkName: 'Bar'},
+      {id: 'b', frameworkName: 'Foo'},
+    ]);
+
+    expect(check(app)).toEqual({error: null, lines: []});
+  });
+
   it('compares only setting prefixes when the frameworks manifest is missing', () => {
     const app = scaffoldApp();
     injectWithOlderMarker(app, [REACT, HERMES, EXPO]);

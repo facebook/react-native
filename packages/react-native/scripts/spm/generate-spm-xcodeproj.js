@@ -2293,26 +2293,33 @@ class PluginFrameworkMismatchError extends Error {
 
 /**
  * The frameworks the project links: the setting prefix of every one, and the
- * names of the plugin ones. For an older marker they come from the embed
- * phase: null without one, and null names when the frameworks manifest that
- * tells plugin names from built-in ones is missing.
+ * names of the plugin ones. A marker that records them also pairs each plugin
+ * framework's id with its name. For an older marker they come from the embed
+ * phase, which cannot pair them: null without one, and null names when the
+ * frameworks manifest that tells plugin names from built-in ones is missing.
  */
 function readLinkedFrameworks(
   appRoot /*: string */,
   xcodeprojPath /*: string */,
-) /*: ?{settingPrefixes: Set<string>, pluginNames: ?Set<string>} */ {
+) /*: ?{
+  settingPrefixes: Set<string>,
+  pluginNames: ?Set<string>,
+  pluginFrameworks?: Array<{id: string, frameworkName: string}>,
+} */ {
   const builtinIds = new Set(BUILTIN_FRAMEWORKS.map(({id}) => id));
   const recorded = readMarker(xcodeprojPath)?.linkedFrameworks;
   if (recorded != null) {
+    const pluginFrameworks = recorded.filter(
+      framework => !builtinIds.has(framework.id),
+    );
     return {
       settingPrefixes: new Set(
         recorded.map(framework => frameworkSettingPrefix(framework.id)),
       ),
       pluginNames: new Set(
-        recorded
-          .filter(framework => !builtinIds.has(framework.id))
-          .map(framework => framework.frameworkName),
+        pluginFrameworks.map(framework => framework.frameworkName),
       ),
+      pluginFrameworks,
     };
   }
 
@@ -2393,12 +2400,19 @@ function assertPluginFrameworksLinked(
   const pairedNames = new Set(
     pluginFrameworks.map(framework => framework.frameworkName),
   );
+  const pairKey = (
+    {id, frameworkName} /*: {id: string, frameworkName: string, ...} */,
+  ) => JSON.stringify([id, frameworkName]);
+  const pairedPairs = new Set(pluginFrameworks.map(pairKey));
   const problems /*: Array<string> */ = [];
   for (const {id, frameworkName} of pluginFrameworks) {
-    if (
-      !linked.settingPrefixes.has(frameworkSettingPrefix(id)) ||
-      linked.pluginNames?.has(frameworkName) === false
-    ) {
+    // A name linked under another id is reported once, from the linked side.
+    const notLinked =
+      linked.pluginFrameworks != null
+        ? linked.pluginNames?.has(frameworkName) === false
+        : !linked.settingPrefixes.has(frameworkSettingPrefix(id)) ||
+          linked.pluginNames?.has(frameworkName) === false;
+    if (notLinked) {
       problems.push(
         `error: ${frameworkName} (${id}) is a precompiled framework from an autolinking plugin, but the Xcode project does not link it. Run \`npx react-native spm update\` to add ${frameworkName} to the committed project for the whole team.`,
       );
@@ -2415,6 +2429,17 @@ function assertPluginFrameworksLinked(
       // error stays until sync runs again.
       problems.push(
         `error: The Xcode project links ${frameworkName}.framework, but no autolinking plugin provides it on this machine. Running \`npx react-native spm update\` removes ${frameworkName} from the committed project for the whole team. Instead, precompile ${frameworkName}, then run \`npx react-native spm sync\`.`,
+      );
+    }
+  }
+  for (const framework of linked.pluginFrameworks ?? []) {
+    const {id, frameworkName} = framework;
+    if (
+      pairedNames.has(frameworkName) &&
+      !pairedPairs.has(pairKey(framework))
+    ) {
+      problems.push(
+        `error: The Xcode project links ${frameworkName}.framework (${id}), but the autolinking plugin that provides ${frameworkName} gives it a different id. Run \`npx react-native spm update\` to relink ${frameworkName} in the committed project for the whole team.`,
       );
     }
   }
