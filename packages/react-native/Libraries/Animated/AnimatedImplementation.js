@@ -128,9 +128,9 @@ const _combineCallbacks = function (
 const maybeVectorAnim = function (
   value: AnimatedValue | AnimatedValueXY | AnimatedColor,
   // $FlowFixMe[unclear-type]
-  config: Object,
+  config: any,
   // $FlowFixMe[unclear-type]
-  anim: (value: AnimatedValue, config: Object) => CompositeAnimation,
+  anim: (value: AnimatedValue, config: any) => CompositeAnimation,
 ): ?CompositeAnimation {
   if (value instanceof AnimatedValueXY) {
     const configX = {...config};
