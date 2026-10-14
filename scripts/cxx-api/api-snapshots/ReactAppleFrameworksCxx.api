@@ -8155,12 +8155,12 @@ struct facebook::react::CallbackWithId {
 }
 
 struct facebook::react::Color {
-  public Color();
   public Color(const facebook::react::ColorComponents& components);
   public Color(const facebook::react::DynamicColor& dynamicColor);
   public Color(int32_t color);
   public bool operator!=(const facebook::react::Color& other) const;
   public bool operator==(const facebook::react::Color& other) const;
+  public constexpr Color();
   public facebook::react::ColorComponents getColorComponents() const;
   public float getChannel(int channelId) const;
   public int32_t getColor() const;
