@@ -12,14 +12,16 @@ import android.text.SpannableString
 import android.text.Spanned
 import com.facebook.react.common.annotations.UnstableReactNativeAPI
 import com.facebook.react.views.text.internal.span.StatefulSpan
+import java.util.IdentityHashMap
 
 /**
- * A delegating [Layout] subclass that clones the spannable text from [delegate] and replaces all
- * [StatefulSpan] instances with fresh clones. This gives each [PreparedLayoutTextView] independent
- * mutable span state (e.g. particle animation, dismiss state) even when the underlying [Layout] is
- * shared from a cache.
+ * A delegating [Layout] subclass that clones both the display-shaped text from [delegate] and its
+ * full source text. Corresponding [StatefulSpan] instances in both copies are replaced with the
+ * same fresh clone, while spans present in only one copy are cloned on demand. This gives each
+ * [PreparedLayoutTextView] independent mutable span state (e.g. particle animation, dismiss state)
+ * even when the underlying [Layout] is shared from a cache.
  *
- * The mutable [Spannable] can be useful for spans which affect display, but do not alter existing
+ * The mutable display text can be useful for spans which affect display, but do not alter existing
  * layout calculations.
  *
  * Line metrics are delegated to [delegate] so no expensive [StaticLayout] rebuild is needed.
@@ -30,6 +32,7 @@ internal class MutableSpannableLayout
 private constructor(
     private val delegate: Layout,
     clonedText: SpannableString,
+    val sourceText: Spanned,
 ) :
     Layout(
         clonedText,
@@ -43,22 +46,39 @@ private constructor(
   companion object {
     /** Returns a [MutableSpannableLayout] if [layout] contains stateful spans, else null. */
     @OptIn(UnstableReactNativeAPI::class)
-    fun createIfNeeded(layout: Layout): MutableSpannableLayout? {
-      val spanned = layout.text as? Spanned ?: return null
-      val statefulSpans = spanned.getSpans(0, spanned.length, StatefulSpan::class.java)
+    fun createIfNeeded(layout: Layout, sourceText: Spanned): MutableSpannableLayout? {
+      val layoutText = layout.text as? Spanned ?: return null
+      val statefulSpans = layoutText.getSpans(0, layoutText.length, StatefulSpan::class.java)
       if (statefulSpans.isEmpty()) {
         return null
       }
 
-      val cloned = SpannableString(spanned)
-      for (oldSpan in statefulSpans) {
-        val start = cloned.getSpanStart(oldSpan)
-        val end = cloned.getSpanEnd(oldSpan)
-        val flags = cloned.getSpanFlags(oldSpan)
-        cloned.removeSpan(oldSpan)
-        cloned.setSpan(oldSpan.clone(), start, end, flags)
+      val spanClones = IdentityHashMap<StatefulSpan, StatefulSpan>()
+      val clonedSourceText = SpannableString(sourceText)
+      for (oldSpan in sourceText.getSpans(0, sourceText.length, StatefulSpan::class.java)) {
+        val newSpan = spanClones.getOrPut(oldSpan) { oldSpan.clone() }
+        replaceSpan(clonedSourceText, oldSpan, newSpan)
       }
-      return MutableSpannableLayout(layout, cloned)
+
+      val clonedLayoutText = SpannableString(layoutText)
+      for (oldSpan in statefulSpans) {
+        val newSpan = spanClones.getOrPut(oldSpan) { oldSpan.clone() }
+        replaceSpan(clonedLayoutText, oldSpan, newSpan)
+      }
+      return MutableSpannableLayout(layout, clonedLayoutText, clonedSourceText)
+    }
+
+    @OptIn(UnstableReactNativeAPI::class)
+    private fun replaceSpan(
+        text: SpannableString,
+        oldSpan: StatefulSpan,
+        newSpan: StatefulSpan,
+    ) {
+      val start = text.getSpanStart(oldSpan)
+      val end = text.getSpanEnd(oldSpan)
+      val flags = text.getSpanFlags(oldSpan)
+      text.removeSpan(oldSpan)
+      text.setSpan(newSpan, start, end, flags)
     }
   }
 

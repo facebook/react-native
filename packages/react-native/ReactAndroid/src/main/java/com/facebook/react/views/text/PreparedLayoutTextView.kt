@@ -93,7 +93,7 @@ internal class PreparedLayoutTextView(context: Context) : ViewGroup(context), Re
   val text: CharSequence?
     // Avoid mangling the getter name, to allow black box E2E tests to read text content via
     // reflection
-    @DoNotStrip get() = preparedLayout?.layout?.text
+    @DoNotStrip get() = preparedLayout?.sourceText
 
   init {
     // ViewGroup by default says only its children will draw
@@ -136,7 +136,7 @@ internal class PreparedLayoutTextView(context: Context) : ViewGroup(context), Re
             selectionColor ?: DefaultStyleValuesUtil.getDefaultTextColorHighlight(context)
       }
 
-      val spanned = text as? Spanned
+      val spanned = layout.text as? Spanned
       val canvasEffectSpans =
           spanned?.getSpans(0, spanned.length, CanvasEffectSpan::class.java) ?: emptyArray()
 
@@ -242,7 +242,7 @@ internal class PreparedLayoutTextView(context: Context) : ViewGroup(context), Re
     val action = event.actionMasked
     if (action == MotionEvent.ACTION_CANCEL) {
       // Forward ACTION_CANCEL to all TouchableSpans so they can reset pressed/animation state
-      val spanned = text as? Spanned
+      val spanned = preparedLayout?.layout?.text as? Spanned
       for (span in spanned?.getSpans(0, spanned.length, TouchableSpan::class.java).orEmpty()) {
         span.onTouchEvent(action, 0f, 0f)
       }
@@ -314,7 +314,7 @@ internal class PreparedLayoutTextView(context: Context) : ViewGroup(context), Re
       return null
     }
 
-    val spanned = text as? Spanned ?: return null
+    val spanned = preparedLayout?.layout?.text as? Spanned ?: return null
 
     val spans = spanned.getSpans(offset, offset, clazz)
     if (spans.isEmpty()) {
@@ -490,13 +490,15 @@ internal class PreparedLayoutTextView(context: Context) : ViewGroup(context), Re
     }
 
     /**
-     * If the layout contains [StatefulSpan]s, returns a new [PreparedLayout] whose spannable has
-     * independent clones of those spans. Otherwise returns the receiver unchanged.
+     * If the layout contains [StatefulSpan]s, returns a new [PreparedLayout] whose display and
+     * source text share independent clones of those spans. Otherwise returns the receiver
+     * unchanged.
      */
     private fun PreparedLayout.maybeProxyStatefulSpans(): PreparedLayout {
-      val proxyLayout = MutableSpannableLayout.createIfNeeded(layout) ?: return this
+      val proxyLayout = MutableSpannableLayout.createIfNeeded(layout, sourceText) ?: return this
       return PreparedLayout(
           proxyLayout,
+          proxyLayout.sourceText,
           maximumNumberOfLines,
           verticalOffset,
           reactTags,

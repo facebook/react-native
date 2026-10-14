@@ -1328,6 +1328,7 @@ internal object TextLayoutManager {
 
     return PreparedLayout(
         result.layout,
+        text,
         maximumNumberOfLines,
         verticalOffset,
         reactTags,

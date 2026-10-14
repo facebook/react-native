@@ -8,18 +8,31 @@
 package com.facebook.react.views.text
 
 import android.text.Layout
+import android.text.Spanned
 import com.facebook.proguard.annotations.DoNotStrip
 
 /**
- * Encapsulates an {android.text.Layout} along with any additional state needed to render or measure
- * it.
+ * Encapsulates an [android.text.Layout] along with the full source text and any additional state
+ * needed to render or measure it.
  */
 @DoNotStrip
 internal class PreparedLayout(
     val layout: Layout,
+    val sourceText: Spanned,
     val maximumNumberOfLines: Int,
     val verticalOffset: Float,
     val reactTags: IntArray,
     val textBreakStrategy: Int,
     val justificationMode: Int,
-)
+) {
+  fun copyWithReactTags(reactTags: IntArray): PreparedLayout =
+      PreparedLayout(
+          layout,
+          sourceText,
+          maximumNumberOfLines,
+          verticalOffset,
+          reactTags,
+          textBreakStrategy,
+          justificationMode,
+      )
+}

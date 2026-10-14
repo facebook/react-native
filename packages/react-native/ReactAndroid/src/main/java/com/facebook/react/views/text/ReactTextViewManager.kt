@@ -17,6 +17,7 @@ import android.text.Spanned
 import android.text.TextUtils
 import android.text.util.Linkify
 import android.view.Gravity
+import androidx.annotation.VisibleForTesting
 import com.facebook.common.logging.FLog
 import com.facebook.react.R
 import com.facebook.react.bridge.Dynamic
@@ -207,13 +208,13 @@ public constructor(
   /**
    * Constructs a [ReactTextUpdate] from a [PreparedLayout] received via [ReferenceStateWrapper].
    */
-  private fun getReactTextUpdateFromPreparedLayout(
+  @VisibleForTesting
+  internal fun getReactTextUpdateFromPreparedLayout(
       view: ReactTextView,
       preparedLayout: PreparedLayout,
   ): ReactTextUpdate {
     val layout = preparedLayout.layout
-    val text = layout.text
-    val spanned = if (text is Spannable) text else SpannableString(text)
+    val spanned = SpannableString(preparedLayout.sourceText)
     view.setSpanned(spanned)
     view.setPreparedLayout(preparedLayout)
 

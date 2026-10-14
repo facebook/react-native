@@ -706,13 +706,7 @@ public class FabricUIManager
   @UnstableReactNativeAPI
   public PreparedLayout reusePreparedLayoutWithNewReactTags(
       PreparedLayout preparedLayout, int[] reactTags) {
-    return new PreparedLayout(
-        preparedLayout.getLayout(),
-        preparedLayout.getMaximumNumberOfLines(),
-        preparedLayout.getVerticalOffset(),
-        reactTags,
-        preparedLayout.getTextBreakStrategy(),
-        preparedLayout.getJustificationMode());
+    return preparedLayout.copyWithReactTags(reactTags);
   }
 
   @AnyThread
