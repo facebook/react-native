@@ -339,6 +339,7 @@ so it stays correct across repackaging.
 | `generatedSources`    | Recorded for the codegen step to register (e.g. a module-registry `.swift`).                                                                           |
 | `flavoredFrameworks`  | Mandatory Debug/Release dynamic XCFramework pairs normalized outside SwiftPM. Malformed or incomplete entries are fatal.                               |
 | `scriptPhases`        | Recorded for `spm add` / `update` to emit one `PBXShellScriptBuildPhase` per entry on the app target. Malformed entries and duplicate `id`s are fatal. |
+| `watchPaths`          | The auto-sync staleness inputs (see [`watchPaths`](#watchpaths--plugin-staleness-inputs)). Invalid entries are dropped with a warning, not fatal.      |
 
 The plugin returns **data**. It never writes into React Native's generated tree.
 RN owns the merge, so a re-sync reproduces the same `Package.swift`
