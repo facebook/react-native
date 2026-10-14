@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<486b4aac1c83d8bced6a3f5393a03756>>
+ * @generated SignedSource<<f8b5aeb42ef6f4126922f9ded4e5aa37>>
  */
 
 /**
@@ -48,6 +48,7 @@ class ReactNativeFeatureFlagsAccessor {
   bool disableViewPreallocationAndroid();
   bool enableAccessibilityOrder();
   bool enableAccumulatedUpdatesInRawPropsAndroid();
+  bool enableAliasedTextRoleInheritance();
   bool enableAndroidAutoOffscreenCompositingForElevation();
   bool enableAndroidTextMeasurementOptimizations();
   bool enableAsyncDiskCacheCheckInMultiSourceImageAndroid();
@@ -138,7 +139,7 @@ class ReactNativeFeatureFlagsAccessor {
   std::unique_ptr<ReactNativeFeatureFlagsProvider> currentProvider_;
   bool wasOverridden_;
 
-  std::array<std::atomic<const char*>, 93> accessedFeatureFlags_;
+  std::array<std::atomic<const char*>, 94> accessedFeatureFlags_;
 
   std::atomic<std::optional<bool>> commonTestFlag_;
   std::atomic<std::optional<bool>> cdpInteractionMetricsEnabled_;
@@ -154,6 +155,7 @@ class ReactNativeFeatureFlagsAccessor {
   std::atomic<std::optional<bool>> disableViewPreallocationAndroid_;
   std::atomic<std::optional<bool>> enableAccessibilityOrder_;
   std::atomic<std::optional<bool>> enableAccumulatedUpdatesInRawPropsAndroid_;
+  std::atomic<std::optional<bool>> enableAliasedTextRoleInheritance_;
   std::atomic<std::optional<bool>> enableAndroidAutoOffscreenCompositingForElevation_;
   std::atomic<std::optional<bool>> enableAndroidTextMeasurementOptimizations_;
   std::atomic<std::optional<bool>> enableAsyncDiskCacheCheckInMultiSourceImageAndroid_;

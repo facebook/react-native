@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<8daa3cebd554caa27139d96604fcc368>>
+ * @generated SignedSource<<7021110e660b80b8271e8feb3616aeb6>>
  */
 
 /**
@@ -41,6 +41,7 @@ class ReactNativeFeatureFlagsProvider {
   virtual bool disableViewPreallocationAndroid() = 0;
   virtual bool enableAccessibilityOrder() = 0;
   virtual bool enableAccumulatedUpdatesInRawPropsAndroid() = 0;
+  virtual bool enableAliasedTextRoleInheritance() = 0;
   virtual bool enableAndroidAutoOffscreenCompositingForElevation() = 0;
   virtual bool enableAndroidTextMeasurementOptimizations() = 0;
   virtual bool enableAsyncDiskCacheCheckInMultiSourceImageAndroid() = 0;
