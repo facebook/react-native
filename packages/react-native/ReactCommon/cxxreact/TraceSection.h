@@ -34,6 +34,10 @@
 #include <reactperflogger/ReactPerfettoCategories.h>
 #endif
 
+#if defined(__ANDROID__) && !defined(WITH_PERFETTO) && !defined(WITH_FBSYSTRACE)
+#include <dlfcn.h>
+#endif
+
 #if defined(__APPLE__)
 // This is required so that OS_LOG_TARGET_HAS_10_15_FEATURES will be set.
 #include <os/trace_base.h>
@@ -95,6 +99,59 @@ struct ConcreteTraceSection {
   fbsystrace::FbSystraceSection m_section;
 };
 using TraceSectionUnwrapped = ConcreteTraceSection;
+#elif defined(__ANDROID__)
+// Route TraceSection to the platform ATrace API so
+// that C++ sections show up in Perfetto/systrace captures of OSS builds.
+// Resolved with dlsym to avoid adding a link dependency on libandroid to
+// every target that includes this header.
+namespace detail {
+struct ATraceApi {
+  bool (*isEnabled)() = nullptr;
+  void (*beginSection)(const char *) = nullptr;
+  void (*endSection)() = nullptr;
+};
+
+inline const ATraceApi &getATraceApi()
+{
+  static const ATraceApi api = [] {
+    ATraceApi result;
+    if (void *lib = dlopen("libandroid.so", RTLD_NOW | RTLD_LOCAL)) {
+      result.isEnabled = reinterpret_cast<bool (*)()>(dlsym(lib, "ATrace_isEnabled"));
+      result.beginSection = reinterpret_cast<void (*)(const char *)>(dlsym(lib, "ATrace_beginSection"));
+      result.endSection = reinterpret_cast<void (*)()>(dlsym(lib, "ATrace_endSection"));
+    }
+    return result;
+  }();
+  return api;
+}
+} // namespace detail
+
+struct ATraceSection {
+ public:
+  template <typename... ConvertsToStringPiece>
+  explicit ATraceSection(const char *name, [[maybe_unused]] ConvertsToStringPiece &&...args)
+  {
+    const auto &api = detail::getATraceApi();
+    if (api.isEnabled != nullptr && api.beginSection != nullptr && api.endSection != nullptr && api.isEnabled()) {
+      api.beginSection(name);
+      active_ = true;
+    }
+  }
+
+  ~ATraceSection()
+  {
+    if (active_) {
+      detail::getATraceApi().endSection();
+    }
+  }
+
+  ATraceSection(const ATraceSection &) = delete;
+  ATraceSection &operator=(const ATraceSection &) = delete;
+
+ private:
+  bool active_{false};
+};
+using TraceSectionUnwrapped = ATraceSection;
 #else
 struct DummyTraceSection {
  public:
