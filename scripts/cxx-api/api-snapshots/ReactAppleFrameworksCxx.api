@@ -8475,6 +8475,13 @@ struct facebook::react::ReactNativeVersionType {
   public std::string_view Prerelease;
 }
 
+struct facebook::react::RecoverableError : public std::exception {
+  public RecoverableError(const std::string& what_);
+  public virtual const char* what() const noexcept override;
+  template <typename E>
+  public static void runRethrowingAsRecoverable(std::function<void()> act);
+}
+
 struct facebook::react::Rect {
   public bool containsPoint(facebook::react::Point point) noexcept;
   public bool operator==(const facebook::react::Rect& rhs) const noexcept = default;

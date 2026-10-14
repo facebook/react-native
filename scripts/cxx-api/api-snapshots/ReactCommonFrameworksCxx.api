@@ -4621,6 +4621,13 @@ struct facebook::react::ReactNativeVersionType {
   public std::string_view Prerelease;
 }
 
+struct facebook::react::RecoverableError : public std::exception {
+  public RecoverableError(const std::string& what_);
+  public virtual const char* what() const noexcept override;
+  template <typename E>
+  public static void runRethrowingAsRecoverable(std::function<void()> act);
+}
+
 struct facebook::react::Rect {
   public Float getMaxX() const noexcept;
   public Float getMaxY() const noexcept;

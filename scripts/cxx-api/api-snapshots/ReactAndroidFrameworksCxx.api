@@ -6440,6 +6440,13 @@ struct facebook::react::ReadableType : public facebook::jni::JavaClass<facebook:
   public static jni::alias_ref<facebook::react::ReadableType> getType(folly::dynamic::Type type);
 }
 
+struct facebook::react::RecoverableError : public std::exception {
+  public RecoverableError(const std::string& what_);
+  public virtual const char* what() const noexcept override;
+  template <typename E>
+  public static void runRethrowingAsRecoverable(std::function<void()> act);
+}
+
 struct facebook::react::Rect {
   public bool containsPoint(facebook::react::Point point) noexcept;
   public bool operator==(const facebook::react::Rect& rhs) const noexcept = default;
