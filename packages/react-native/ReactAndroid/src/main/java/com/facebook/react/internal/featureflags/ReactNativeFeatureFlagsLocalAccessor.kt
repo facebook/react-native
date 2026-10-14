@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<86ebc7307e7ebe2023e909a868ed3117>>
+ * @generated SignedSource<<ee4c0f9c1e7c6af3b0d15948ebc519b3>>
  */
 
 /**
@@ -113,6 +113,7 @@ internal class ReactNativeFeatureFlagsLocalAccessor : ReactNativeFeatureFlagsAcc
   private var useSharedAnimatedBackendCache: Boolean? = null
   private var useTraitHiddenOnAndroidCache: Boolean? = null
   private var useTurboModuleInteropCache: Boolean? = null
+  private var useWindowDensityForDisplayMetricsAndroidCache: Boolean? = null
   private var viewCullingOutsetRatioCache: Double? = null
   private var viewTransitionEnabledCache: Boolean? = null
   private var viewTransitionUseHardwareBitmapAndroidCache: Boolean? = null
@@ -1004,6 +1005,16 @@ internal class ReactNativeFeatureFlagsLocalAccessor : ReactNativeFeatureFlagsAcc
       cached = currentProvider.useTurboModuleInterop()
       accessedFeatureFlags.add("useTurboModuleInterop")
       useTurboModuleInteropCache = cached
+    }
+    return cached
+  }
+
+  override fun useWindowDensityForDisplayMetricsAndroid(): Boolean {
+    var cached = useWindowDensityForDisplayMetricsAndroidCache
+    if (cached == null) {
+      cached = currentProvider.useWindowDensityForDisplayMetricsAndroid()
+      accessedFeatureFlags.add("useWindowDensityForDisplayMetricsAndroid")
+      useWindowDensityForDisplayMetricsAndroidCache = cached
     }
     return cached
   }

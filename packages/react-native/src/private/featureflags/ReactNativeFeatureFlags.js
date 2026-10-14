@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<c5edfa3b739746e892eb0d681c631016>>
+ * @generated SignedSource<<4eb26b4190d023d26a50f54b6e3ea5eb>>
  * @flow strict
  * @noformat
  */
@@ -139,6 +139,7 @@ export type ReactNativeFeatureFlags = Readonly<{
   useSharedAnimatedBackend: Getter<boolean>,
   useTraitHiddenOnAndroid: Getter<boolean>,
   useTurboModuleInterop: Getter<boolean>,
+  useWindowDensityForDisplayMetricsAndroid: Getter<boolean>,
   viewCullingOutsetRatio: Getter<number>,
   viewTransitionEnabled: Getter<boolean>,
   viewTransitionUseHardwareBitmapAndroid: Getter<boolean>,
@@ -580,6 +581,10 @@ export const useTraitHiddenOnAndroid: Getter<boolean> = createNativeFlagGetter('
  * In Bridgeless mode, should legacy NativeModules use the TurboModule system?
  */
 export const useTurboModuleInterop: Getter<boolean> = createNativeFlagGetter('useTurboModuleInterop', false);
+/**
+ * Keeps the window density in the screen display metrics instead of the physical display density, so text is measured at the density the window renders at.
+ */
+export const useWindowDensityForDisplayMetricsAndroid: Getter<boolean> = createNativeFlagGetter('useWindowDensityForDisplayMetricsAndroid', false);
 /**
  * Outset the culling context frame with the provided ratio. The culling context frame size will be outset by width * ratio on the left and right, and height * ratio on the top and bottom.
  */

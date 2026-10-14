@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<fe6f53b8f98378abeae064b70681ed39>>
+ * @generated SignedSource<<84b944e162fc53799326c584a5edd17d>>
  */
 
 /**
@@ -215,6 +215,8 @@ class NativeReactNativeFeatureFlags
   bool useTraitHiddenOnAndroid(jsi::Runtime& runtime);
 
   bool useTurboModuleInterop(jsi::Runtime& runtime);
+
+  bool useWindowDensityForDisplayMetricsAndroid(jsi::Runtime& runtime);
 
   double viewCullingOutsetRatio(jsi::Runtime& runtime);
 

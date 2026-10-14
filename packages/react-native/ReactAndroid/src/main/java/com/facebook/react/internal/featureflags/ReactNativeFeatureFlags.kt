@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<eb0bafceba60cb439a4be3d68b890725>>
+ * @generated SignedSource<<cfa7aa53731059247d858fd8fb6e914b>>
  */
 
 /**
@@ -563,6 +563,12 @@ public object ReactNativeFeatureFlags {
    */
   @JvmStatic
   public fun useTurboModuleInterop(): Boolean = accessor.useTurboModuleInterop()
+
+  /**
+   * Keeps the window density in the screen display metrics instead of the physical display density, so text is measured at the density the window renders at.
+   */
+  @JvmStatic
+  public fun useWindowDensityForDisplayMetricsAndroid(): Boolean = accessor.useWindowDensityForDisplayMetricsAndroid()
 
   /**
    * Outset the culling context frame with the provided ratio. The culling context frame size will be outset by width * ratio on the left and right, and height * ratio on the top and bottom.
