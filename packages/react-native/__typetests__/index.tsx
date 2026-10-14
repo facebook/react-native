@@ -76,7 +76,6 @@ import {
   PlatformColor,
   Pressable,
   ProgressBarAndroid,
-  PushNotificationIOS,
   RefreshControl,
   // @ts-ignore
   RegisteredStyle,
@@ -1999,30 +1998,6 @@ const ProgressBarAndroidTest = () => {
     progress={0.42}
     indeterminate={false}
   />;
-};
-
-// Push notification
-const PushNotificationTest = () => {
-  PushNotificationIOS.presentLocalNotification({
-    alertBody: 'notificatus',
-    userInfo: 'informius',
-    alertTitle: 'Titulus',
-    alertAction: 'view',
-  });
-
-  PushNotificationIOS.scheduleLocalNotification({
-    alertAction: 'view',
-    alertBody: 'Look at me!',
-    alertTitle: 'Hello!',
-    applicationIconBadgeNumber: 999,
-    category: 'engagement',
-    fireDate: +new Date(),
-    isSilent: false,
-    repeatInterval: 'minute',
-    userInfo: {
-      abc: 123,
-    },
-  });
 };
 
 // Appearance
