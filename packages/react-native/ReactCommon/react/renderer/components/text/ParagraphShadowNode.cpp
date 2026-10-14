@@ -59,6 +59,17 @@ ParagraphShadowNode::ParagraphShadowNode(
     const ShadowNodeFragment& fragment)
     : ConcreteViewShadowNode(sourceShadowNode, fragment) {
   initialize();
+  // A revision with neither new props nor new children (e.g. one Yoga cloned
+  // because a sibling changed) renders the same content, so keep the
+  // attributed string and the layouts measured for it instead of rebuilding
+  // and re-measuring them. `getContent` drops both if the layout context they
+  // were built for no longer matches.
+  if (fragment.props == nullptr && fragment.children == nullptr) {
+    const auto& source =
+        static_cast<const ParagraphShadowNode&>(sourceShadowNode);
+    content_ = source.content_;
+    measuredLayouts_ = source.measuredLayouts_;
+  }
 }
 
 bool ParagraphShadowNode::shouldNewRevisionDirtyMeasurement(
@@ -69,8 +80,20 @@ bool ParagraphShadowNode::shouldNewRevisionDirtyMeasurement(
 
 const Content& ParagraphShadowNode::getContent(
     const LayoutContext& layoutContext) const {
+  auto layoutDirection = YGNodeLayoutGetDirection(&yogaNode_) == YGDirectionRTL
+      ? LayoutDirection::RightToLeft
+      : LayoutDirection::LeftToRight;
   if (content_.has_value()) {
-    return content_.value();
+    const auto& baseTextAttributes =
+        content_->attributedString.getBaseTextAttributes();
+    if (baseTextAttributes.fontSizeMultiplier ==
+            layoutContext.fontSizeMultiplier &&
+        baseTextAttributes.layoutDirection == layoutDirection) {
+      return content_.value();
+    }
+    // Carried over from a previous revision, but built for another context.
+    content_.reset();
+    measuredLayouts_.clear();
   }
 
   ensureUnsealed();
@@ -78,10 +101,7 @@ const Content& ParagraphShadowNode::getContent(
   auto textAttributes = TextAttributes::defaultTextAttributes();
   textAttributes.fontSizeMultiplier = layoutContext.fontSizeMultiplier;
   textAttributes.apply(getConcreteProps().textAttributes);
-  textAttributes.layoutDirection =
-      YGNodeLayoutGetDirection(&yogaNode_) == YGDirectionRTL
-      ? LayoutDirection::RightToLeft
-      : LayoutDirection::LeftToRight;
+  textAttributes.layoutDirection = layoutDirection;
   auto attributedString = AttributedString{};
   auto attachments = Attachments{};
   buildAttributedString(textAttributes, *this, attributedString, attachments);
