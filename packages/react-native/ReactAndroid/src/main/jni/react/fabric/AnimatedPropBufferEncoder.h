@@ -7,8 +7,8 @@
 
 #pragma once
 
+#include <React/RendererCore.h>
 #include <react/renderer/animationbackend/AnimatedProps.h>
-#include <react/renderer/core/ReactPrimitives.h>
 #include <unordered_map>
 #include <vector>
 
