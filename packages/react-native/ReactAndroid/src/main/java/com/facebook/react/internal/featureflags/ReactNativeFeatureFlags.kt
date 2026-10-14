@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<eb0bafceba60cb439a4be3d68b890725>>
+ * @generated SignedSource<<c47196d81d6d7afd60456bf62a5a958c>>
  */
 
 /**
@@ -113,6 +113,12 @@ public object ReactNativeFeatureFlags {
    */
   @JvmStatic
   public fun enableAccumulatedUpdatesInRawPropsAndroid(): Boolean = accessor.enableAccumulatedUpdatesInRawPropsAndroid()
+
+  /**
+   * When enabled, a text fragment that sets either `role` or `accessibilityRole` (the two are aliases) inherits neither.
+   */
+  @JvmStatic
+  public fun enableAliasedTextRoleInheritance(): Boolean = accessor.enableAliasedTextRoleInheritance()
 
   /**
    * When enabled, a View with reduced opacity that contains an elevated descendant is composited offscreen so the elevation shadow fades uniformly instead of rendering as banded per-primitive alpha.

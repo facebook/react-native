@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<86ebc7307e7ebe2023e909a868ed3117>>
+ * @generated SignedSource<<c94e715560ce20c62811f420be80b716>>
  */
 
 /**
@@ -38,6 +38,7 @@ internal class ReactNativeFeatureFlagsLocalAccessor : ReactNativeFeatureFlagsAcc
   private var disableViewPreallocationAndroidCache: Boolean? = null
   private var enableAccessibilityOrderCache: Boolean? = null
   private var enableAccumulatedUpdatesInRawPropsAndroidCache: Boolean? = null
+  private var enableAliasedTextRoleInheritanceCache: Boolean? = null
   private var enableAndroidAutoOffscreenCompositingForElevationCache: Boolean? = null
   private var enableAndroidTextMeasurementOptimizationsCache: Boolean? = null
   private var enableAsyncDiskCacheCheckInMultiSourceImageAndroidCache: Boolean? = null
@@ -254,6 +255,16 @@ internal class ReactNativeFeatureFlagsLocalAccessor : ReactNativeFeatureFlagsAcc
       cached = currentProvider.enableAccumulatedUpdatesInRawPropsAndroid()
       accessedFeatureFlags.add("enableAccumulatedUpdatesInRawPropsAndroid")
       enableAccumulatedUpdatesInRawPropsAndroidCache = cached
+    }
+    return cached
+  }
+
+  override fun enableAliasedTextRoleInheritance(): Boolean {
+    var cached = enableAliasedTextRoleInheritanceCache
+    if (cached == null) {
+      cached = currentProvider.enableAliasedTextRoleInheritance()
+      accessedFeatureFlags.add("enableAliasedTextRoleInheritance")
+      enableAliasedTextRoleInheritanceCache = cached
     }
     return cached
   }

@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<0107593110db613063b6f4ceb50d8e58>>
+ * @generated SignedSource<<9d33cd35fc1fad82ec29eebf410cb999>>
  */
 
 /**
@@ -34,6 +34,7 @@ internal class ReactNativeFeatureFlagsCxxAccessor : ReactNativeFeatureFlagsAcces
   private var disableViewPreallocationAndroidCache: Boolean? = null
   private var enableAccessibilityOrderCache: Boolean? = null
   private var enableAccumulatedUpdatesInRawPropsAndroidCache: Boolean? = null
+  private var enableAliasedTextRoleInheritanceCache: Boolean? = null
   private var enableAndroidAutoOffscreenCompositingForElevationCache: Boolean? = null
   private var enableAndroidTextMeasurementOptimizationsCache: Boolean? = null
   private var enableAsyncDiskCacheCheckInMultiSourceImageAndroidCache: Boolean? = null
@@ -236,6 +237,15 @@ internal class ReactNativeFeatureFlagsCxxAccessor : ReactNativeFeatureFlagsAcces
     if (cached == null) {
       cached = ReactNativeFeatureFlagsCxxInterop.enableAccumulatedUpdatesInRawPropsAndroid()
       enableAccumulatedUpdatesInRawPropsAndroidCache = cached
+    }
+    return cached
+  }
+
+  override fun enableAliasedTextRoleInheritance(): Boolean {
+    var cached = enableAliasedTextRoleInheritanceCache
+    if (cached == null) {
+      cached = ReactNativeFeatureFlagsCxxInterop.enableAliasedTextRoleInheritance()
+      enableAliasedTextRoleInheritanceCache = cached
     }
     return cached
   }

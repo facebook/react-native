@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<2a5ad585617d77035a43b255d3e30eb3>>
+ * @generated SignedSource<<455f2de91f492d44790145c8699a6ff3>>
  */
 
 /**
@@ -171,6 +171,15 @@ class ReactNativeFeatureFlagsDynamicProvider : public ReactNativeFeatureFlagsDef
     }
 
     return ReactNativeFeatureFlagsDefaults::enableAccumulatedUpdatesInRawPropsAndroid();
+  }
+
+  bool enableAliasedTextRoleInheritance() override {
+    auto value = values_["enableAliasedTextRoleInheritance"];
+    if (!value.isNull()) {
+      return value.getBool();
+    }
+
+    return ReactNativeFeatureFlagsDefaults::enableAliasedTextRoleInheritance();
   }
 
   bool enableAndroidAutoOffscreenCompositingForElevation() override {

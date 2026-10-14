@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<200266835197634d13de07182d80a2c1>>
+ * @generated SignedSource<<eca2a21d7c3095d57896e1f690cd95ec>>
  */
 
 /**
@@ -120,6 +120,12 @@ class ReactNativeFeatureFlagsJavaProvider
   bool enableAccumulatedUpdatesInRawPropsAndroid() override {
     static const auto method =
         getReactNativeFeatureFlagsProviderJavaClass()->getMethod<jboolean()>("enableAccumulatedUpdatesInRawPropsAndroid");
+    return method(javaProvider_);
+  }
+
+  bool enableAliasedTextRoleInheritance() override {
+    static const auto method =
+        getReactNativeFeatureFlagsProviderJavaClass()->getMethod<jboolean()>("enableAliasedTextRoleInheritance");
     return method(javaProvider_);
   }
 
@@ -671,6 +677,11 @@ bool JReactNativeFeatureFlagsCxxInterop::enableAccumulatedUpdatesInRawPropsAndro
   return ReactNativeFeatureFlags::enableAccumulatedUpdatesInRawPropsAndroid();
 }
 
+bool JReactNativeFeatureFlagsCxxInterop::enableAliasedTextRoleInheritance(
+    facebook::jni::alias_ref<JReactNativeFeatureFlagsCxxInterop> /*unused*/) {
+  return ReactNativeFeatureFlags::enableAliasedTextRoleInheritance();
+}
+
 bool JReactNativeFeatureFlagsCxxInterop::enableAndroidAutoOffscreenCompositingForElevation(
     facebook::jni::alias_ref<JReactNativeFeatureFlagsCxxInterop> /*unused*/) {
   return ReactNativeFeatureFlags::enableAndroidAutoOffscreenCompositingForElevation();
@@ -1139,6 +1150,9 @@ void JReactNativeFeatureFlagsCxxInterop::registerNatives() {
       makeNativeMethod(
         "enableAccumulatedUpdatesInRawPropsAndroid",
         JReactNativeFeatureFlagsCxxInterop::enableAccumulatedUpdatesInRawPropsAndroid),
+      makeNativeMethod(
+        "enableAliasedTextRoleInheritance",
+        JReactNativeFeatureFlagsCxxInterop::enableAliasedTextRoleInheritance),
       makeNativeMethod(
         "enableAndroidAutoOffscreenCompositingForElevation",
         JReactNativeFeatureFlagsCxxInterop::enableAndroidAutoOffscreenCompositingForElevation),
