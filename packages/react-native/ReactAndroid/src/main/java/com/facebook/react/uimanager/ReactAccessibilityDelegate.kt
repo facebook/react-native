@@ -15,6 +15,7 @@ import android.os.Message
 import android.view.View
 import android.view.ViewGroup
 import android.view.accessibility.AccessibilityEvent
+import android.view.accessibility.AccessibilityNodeInfo
 import android.widget.EditText
 import androidx.core.view.ViewCompat
 import androidx.core.view.accessibility.AccessibilityNodeInfoCompat
@@ -227,6 +228,15 @@ public open class ReactAccessibilityDelegate( // The View this delegate is attac
     if (accessibilityActionsMap.containsKey(action)) {
       val eventData = createMap()
       eventData.putString("actionName", accessibilityActionsMap[action])
+      if (
+          action == AccessibilityNodeInfo.AccessibilityAction.ACTION_SET_PROGRESS.id &&
+              args?.containsKey(AccessibilityNodeInfo.ACTION_ARGUMENT_PROGRESS_VALUE) == true
+      ) {
+        eventData.putDouble(
+            "value",
+            args.getFloat(AccessibilityNodeInfo.ACTION_ARGUMENT_PROGRESS_VALUE).toDouble(),
+        )
+      }
       val reactContext = host.context as ReactContext
       if (reactContext.hasActiveReactInstance()) {
         val reactTag = host.id
@@ -576,6 +586,7 @@ public open class ReactAccessibilityDelegate( // The View this delegate is attac
             "longpress" to AccessibilityActionCompat.ACTION_LONG_CLICK.id,
             "increment" to AccessibilityActionCompat.ACTION_SCROLL_FORWARD.id,
             "decrement" to AccessibilityActionCompat.ACTION_SCROLL_BACKWARD.id,
+            "setProgress" to AccessibilityNodeInfo.AccessibilityAction.ACTION_SET_PROGRESS.id,
             "expand" to AccessibilityActionCompat.ACTION_EXPAND.id,
             "collapse" to AccessibilityActionCompat.ACTION_COLLAPSE.id,
         )
