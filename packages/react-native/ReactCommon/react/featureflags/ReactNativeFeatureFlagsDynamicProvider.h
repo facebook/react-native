@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<a73ffb03d57efd8b34f9292ab3cd1c1e>>
+ * @generated SignedSource<<fb5318d7fd0a01d90aeeb312312f9364>>
  */
 
 /**
@@ -90,6 +90,15 @@ class ReactNativeFeatureFlagsDynamicProvider : public ReactNativeFeatureFlagsDef
     }
 
     return ReactNativeFeatureFlagsDefaults::disableEarlyViewCommandExecution();
+  }
+
+  bool disableIdleEventDispatchFrameCallbackRearmAndroid() override {
+    auto value = values_["disableIdleEventDispatchFrameCallbackRearmAndroid"];
+    if (!value.isNull()) {
+      return value.getBool();
+    }
+
+    return ReactNativeFeatureFlagsDefaults::disableIdleEventDispatchFrameCallbackRearmAndroid();
   }
 
   bool disableIdleMountItemFrameCallbackRearmAndroid() override {
@@ -585,6 +594,15 @@ class ReactNativeFeatureFlagsDynamicProvider : public ReactNativeFeatureFlagsDef
     }
 
     return ReactNativeFeatureFlagsDefaults::fixMappingOfEventPrioritiesBetweenFabricAndReact();
+  }
+
+  bool fixTextLayoutOnPixelDensityChange() override {
+    auto value = values_["fixTextLayoutOnPixelDensityChange"];
+    if (!value.isNull()) {
+      return value.getBool();
+    }
+
+    return ReactNativeFeatureFlagsDefaults::fixTextLayoutOnPixelDensityChange();
   }
 
   bool fixYogaFlexBasisFitContentInMainAxis() override {

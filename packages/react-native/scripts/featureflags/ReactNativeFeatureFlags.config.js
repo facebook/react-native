@@ -103,6 +103,17 @@ const definitions: FeatureFlagDefinitions = {
       },
       ossReleaseStage: 'none',
     },
+    disableIdleEventDispatchFrameCallbackRearmAndroid: {
+      defaultValue: false,
+      metadata: {
+        dateAdded: '2026-09-07',
+        description:
+          'Make the batched-event-dispatch Choreographer frame callback one-shot on Android instead of re-posting itself every frame',
+        expectedReleaseValue: true,
+        purpose: 'experimentation',
+      },
+      ossReleaseStage: 'experimental',
+    },
     disableIdleMountItemFrameCallbackRearmAndroid: {
       defaultValue: false,
       metadata: {
@@ -512,6 +523,7 @@ const definitions: FeatureFlagDefinitions = {
       ossReleaseStage: 'none',
     },
     enableMountingCoordinatorPullModelAndroid: {
+      dangerouslyExposeInPublicCppHeaders: true,
       defaultValue: false,
       metadata: {
         dateAdded: '2026-07-14',
@@ -690,6 +702,17 @@ const definitions: FeatureFlagDefinitions = {
         dateAdded: '2024-06-18',
         description:
           'Uses the default event priority instead of the discreet event priority by default when dispatching events from Fabric to React.',
+        expectedReleaseValue: true,
+        purpose: 'experimentation',
+      },
+      ossReleaseStage: 'none',
+    },
+    fixTextLayoutOnPixelDensityChange: {
+      defaultValue: false,
+      metadata: {
+        dateAdded: '2026-10-11',
+        description:
+          'Re-measures text and re-sends padding and overflow insets to mounted views when the pixel density changes, so text and padded views do not keep sizes from the old density.',
         expectedReleaseValue: true,
         purpose: 'experimentation',
       },

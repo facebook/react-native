@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<b403c138c0564a3999f5deff1915faf6>>
+ * @generated SignedSource<<0677ecb426d0f47aa439c67304fade3d>>
  * @flow strict
  * @noformat
  */
@@ -30,6 +30,7 @@ export interface Spec extends TurboModule {
   readonly cxxNativeAnimatedEnabled?: () => boolean;
   readonly defaultTextToOverflowHidden?: () => boolean;
   readonly disableEarlyViewCommandExecution?: () => boolean;
+  readonly disableIdleEventDispatchFrameCallbackRearmAndroid?: () => boolean;
   readonly disableIdleMountItemFrameCallbackRearmAndroid?: () => boolean;
   readonly disableImageViewPreallocationAndroid?: () => boolean;
   readonly disableMountItemReorderingAndroid?: () => boolean;
@@ -85,6 +86,7 @@ export interface Spec extends TurboModule {
   readonly enableVirtualViewContainerStateExperimental?: () => boolean;
   readonly fixBorderlessRippleAndroid?: () => boolean;
   readonly fixMappingOfEventPrioritiesBetweenFabricAndReact?: () => boolean;
+  readonly fixTextLayoutOnPixelDensityChange?: () => boolean;
   readonly fixYogaFlexBasisFitContentInMainAxis?: () => boolean;
   readonly fuseboxAssertSingleHostState?: () => boolean;
   readonly fuseboxEnabledRelease?: () => boolean;

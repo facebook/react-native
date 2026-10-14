@@ -1271,6 +1271,18 @@ const examples = [
           </Text>
           <Text
             allowFontScaling={true}
+            maxFontSizeMultiplier={1}
+            style={{
+              marginTop: 10,
+              lineHeight: 20,
+              letterSpacing: 1,
+              backgroundColor: 'lightgray',
+            }}>
+            lineHeight and letterSpacing are capped too (max 1x): these lines
+            keep the same spacing at any system font size
+          </Text>
+          <Text
+            allowFontScaling={true}
             style={{fontSize: 22}}
             dynamicTypeRamp="title2">
             This text will scale with 'title2' dynamic type ramp (no max)

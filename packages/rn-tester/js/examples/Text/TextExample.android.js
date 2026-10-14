@@ -531,6 +531,18 @@ function MaxFontSizeMultiplierExample(props: {}): React.Node {
       <Text allowFontScaling={true} maxFontSizeMultiplier={1}>
         <Text maxFontSizeMultiplier={0}>Ignore inherited max (no max)</Text>
       </Text>
+      <Text
+        allowFontScaling={true}
+        maxFontSizeMultiplier={1}
+        style={{
+          marginTop: 10,
+          lineHeight: 20,
+          letterSpacing: 1,
+          backgroundColor: 'lightgray',
+        }}>
+        lineHeight and letterSpacing are capped too (max 1x): these lines keep
+        the same spacing at any system font size
+      </Text>
     </View>
   );
 }

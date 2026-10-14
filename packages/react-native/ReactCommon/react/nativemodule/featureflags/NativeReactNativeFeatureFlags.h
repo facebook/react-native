@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<73194e9fd319e55f509f4d7441d2c123>>
+ * @generated SignedSource<<8862c1f9e4b698304d699a09d5d67809>>
  */
 
 /**
@@ -47,6 +47,8 @@ class NativeReactNativeFeatureFlags
   bool defaultTextToOverflowHidden(jsi::Runtime& runtime);
 
   bool disableEarlyViewCommandExecution(jsi::Runtime& runtime);
+
+  bool disableIdleEventDispatchFrameCallbackRearmAndroid(jsi::Runtime& runtime);
 
   bool disableIdleMountItemFrameCallbackRearmAndroid(jsi::Runtime& runtime);
 
@@ -157,6 +159,8 @@ class NativeReactNativeFeatureFlags
   bool fixBorderlessRippleAndroid(jsi::Runtime& runtime);
 
   bool fixMappingOfEventPrioritiesBetweenFabricAndReact(jsi::Runtime& runtime);
+
+  bool fixTextLayoutOnPixelDensityChange(jsi::Runtime& runtime);
 
   bool fixYogaFlexBasisFitContentInMainAxis(jsi::Runtime& runtime);
 

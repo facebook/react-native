@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<9b10ad868b2158e959632ca2193654b0>>
+ * @generated SignedSource<<7d1c68f81a3671c93af0bd20c699d102>>
  */
 
 /**
@@ -46,6 +46,10 @@ class ReactNativeFeatureFlagsDefaults : public ReactNativeFeatureFlagsProvider {
   }
 
   bool disableEarlyViewCommandExecution() override {
+    return false;
+  }
+
+  bool disableIdleEventDispatchFrameCallbackRearmAndroid() override {
     return false;
   }
 
@@ -266,6 +270,10 @@ class ReactNativeFeatureFlagsDefaults : public ReactNativeFeatureFlagsProvider {
   }
 
   bool fixMappingOfEventPrioritiesBetweenFabricAndReact() override {
+    return false;
+  }
+
+  bool fixTextLayoutOnPixelDensityChange() override {
     return false;
   }
 

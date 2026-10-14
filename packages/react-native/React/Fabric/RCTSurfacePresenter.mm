@@ -429,11 +429,14 @@ class ReactRevisionMergeRunLoopObserverDelegate final : public RunLoopObserver::
   [_mountingManager setIsJSResponder:isJSResponder blockNativeResponder:blockNativeResponder forShadowView:shadowView];
 }
 
+#pragma clang diagnostic push
+#pragma clang diagnostic ignored "-Wdeprecated-implementations"
 - (void)addObserver:(id<RCTSurfacePresenterObserver>)observer
 {
   std::unique_lock lock(_observerListMutex);
   _observers.push_back(observer);
 }
+#pragma clang diagnostic pop
 
 - (void)removeObserver:(id<RCTSurfacePresenterObserver>)observer
 {

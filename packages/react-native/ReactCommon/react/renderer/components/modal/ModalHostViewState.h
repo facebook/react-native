@@ -11,7 +11,6 @@
 
 #include <React/Graphics.h>
 #include <React/RendererCore.h>
-#include "ModalHostViewUtils.h"
 
 #ifdef RN_SERIALIZABLE_STATE
 #include <folly/dynamic.h>
@@ -26,7 +25,7 @@ class ModalHostViewState final {
  public:
   using Shared = std::shared_ptr<const ModalHostViewState>;
 
-  ModalHostViewState() : screenSize(ModalHostViewScreenSize()) {}
+  ModalHostViewState();
   ModalHostViewState(Size screenSize_) : screenSize(screenSize_) {};
 
 #ifdef RN_SERIALIZABLE_STATE

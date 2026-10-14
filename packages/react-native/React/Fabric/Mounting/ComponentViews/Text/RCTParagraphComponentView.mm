@@ -28,7 +28,7 @@ using namespace facebook::react;
 
 @interface RCTTextLayoutManager (RCTParagraphComponentViewPrivate)
 
-- (CGRect)drawingFrameForAttributedString:(facebook::react::AttributedString)attributedString
+- (CGRect)drawingFrameForAttributedString:(const facebook::react::AttributedString &)attributedString
                       paragraphAttributes:(facebook::react::ParagraphAttributes)paragraphAttributes
                                     frame:(CGRect)frame
                            containerFrame:(CGRect *)containerFrame;

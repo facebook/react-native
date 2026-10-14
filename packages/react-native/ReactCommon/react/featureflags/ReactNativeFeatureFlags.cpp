@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<c85d57eec91a93260f2dad7f9819c6ef>>
+ * @generated SignedSource<<ee9fe969fb38740df6eb19831f35b941>>
  */
 
 /**
@@ -44,6 +44,10 @@ bool ReactNativeFeatureFlags::defaultTextToOverflowHidden() {
 
 bool ReactNativeFeatureFlags::disableEarlyViewCommandExecution() {
   return getAccessor().disableEarlyViewCommandExecution();
+}
+
+bool ReactNativeFeatureFlags::disableIdleEventDispatchFrameCallbackRearmAndroid() {
+  return getAccessor().disableIdleEventDispatchFrameCallbackRearmAndroid();
 }
 
 bool ReactNativeFeatureFlags::disableIdleMountItemFrameCallbackRearmAndroid() {
@@ -264,6 +268,10 @@ bool ReactNativeFeatureFlags::fixBorderlessRippleAndroid() {
 
 bool ReactNativeFeatureFlags::fixMappingOfEventPrioritiesBetweenFabricAndReact() {
   return getAccessor().fixMappingOfEventPrioritiesBetweenFabricAndReact();
+}
+
+bool ReactNativeFeatureFlags::fixTextLayoutOnPixelDensityChange() {
+  return getAccessor().fixTextLayoutOnPixelDensityChange();
 }
 
 bool ReactNativeFeatureFlags::fixYogaFlexBasisFitContentInMainAxis() {

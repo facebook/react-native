@@ -41,9 +41,6 @@
 #include <react/renderer/components/view/HostPlatformViewEventEmitter.h>
 #include <react/renderer/components/view/HostPlatformViewProps.h>
 #include <react/renderer/components/view/HostPlatformViewTraitsInitializer.h>
-#include <react/renderer/components/view/LayoutConformanceComponentDescriptor.h>
-#include <react/renderer/components/view/LayoutConformanceProps.h>
-#include <react/renderer/components/view/LayoutConformanceShadowNode.h>
 #include <react/renderer/components/view/PointerEvent.h>
 #include <react/renderer/components/view/Touch.h>
 #include <react/renderer/components/view/TouchEvent.h>
@@ -55,6 +52,7 @@
 #include <react/renderer/components/view/YogaLayoutableShadowNode.h>
 #include <react/renderer/components/view/YogaStylableProps.h>
 #include <react/renderer/components/view/accessibilityPropsConversions.h>
+#include <react/renderer/components/view/conversions.h>
 #include <react/renderer/components/view/primitives.h>
 
 #undef RN_UMBRELLA_CONTEXT

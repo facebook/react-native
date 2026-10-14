@@ -82,7 +82,7 @@ exports[`LogBoxNotification should render log 1`] = `
       accessible="true"
       alignItems="center"
       alignSelf="flex-end"
-      backgroundColor="rgba(255, 255, 255, 0.301961)"
+      backgroundColor="rgba(255, 255, 255, 0.14902)"
       height="20"
       justifyContent="center"
       nativeID="logbox_dismiss_button_warn"
@@ -95,7 +95,7 @@ exports[`LogBoxNotification should render log 1`] = `
         source-size="{28, 28}"
         source-type="local"
         source-uri="file://drawable-mdpi/packages_reactnative_libraries_logbox_ui_logboximages_close.png"
-        tintColor="rgba(51, 51, 51, 1)"
+        tintColor="rgba(255, 255, 255, 0.8)"
         width="8"
       />
     </rn-view>

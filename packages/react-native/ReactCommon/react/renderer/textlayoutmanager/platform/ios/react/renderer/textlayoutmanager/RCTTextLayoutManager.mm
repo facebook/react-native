@@ -59,7 +59,7 @@ static NSLineBreakMode RCTNSLineBreakModeFromEllipsizeMode(EllipsizeMode ellipsi
   return [self _measureTextStorage:textStorage paragraphAttributes:paragraphAttributes layoutContext:layoutContext];
 }
 
-- (TextMeasurement)measureAttributedString:(AttributedString)attributedString
+- (TextMeasurement)measureAttributedString:(const AttributedString &)attributedString
                        paragraphAttributes:(ParagraphAttributes)paragraphAttributes
                              layoutContext:(TextLayoutContext)layoutContext
                          layoutConstraints:(LayoutConstraints)layoutConstraints
@@ -70,7 +70,7 @@ static NSLineBreakMode RCTNSLineBreakModeFromEllipsizeMode(EllipsizeMode ellipsi
                        layoutConstraints:layoutConstraints];
 }
 
-- (CGRect)drawingFrameForAttributedString:(AttributedString)attributedString
+- (CGRect)drawingFrameForAttributedString:(const AttributedString &)attributedString
                       paragraphAttributes:(ParagraphAttributes)paragraphAttributes
                                     frame:(CGRect)frame
                            containerFrame:(CGRect *)containerFrame
@@ -128,7 +128,7 @@ static NSLineBreakMode RCTNSLineBreakModeFromEllipsizeMode(EllipsizeMode ellipsi
   return drawingFrame;
 }
 
-- (void)drawAttributedString:(AttributedString)attributedString
+- (void)drawAttributedString:(const AttributedString &)attributedString
          paragraphAttributes:(ParagraphAttributes)paragraphAttributes
                        frame:(CGRect)frame
            drawHighlightPath:(void (^_Nullable)(UIBezierPath *highlightPath))block
@@ -363,7 +363,7 @@ static NSLineBreakMode RCTNSLineBreakModeFromEllipsizeMode(EllipsizeMode ellipsi
   }
 }
 
-- (LinesMeasurements)getLinesForAttributedString:(facebook::react::AttributedString)attributedString
+- (LinesMeasurements)getLinesForAttributedString:(const facebook::react::AttributedString &)attributedString
                              paragraphAttributes:(facebook::react::ParagraphAttributes)paragraphAttributes
                                             size:(CGSize)size
 {
@@ -476,7 +476,7 @@ static NSLineBreakMode RCTNSLineBreakModeFromEllipsizeMode(EllipsizeMode ellipsi
   return textStorage;
 }
 
-- (std::shared_ptr<const EventEmitter>)getEventEmitterWithAttributeString:(AttributedString)attributedString
+- (std::shared_ptr<const EventEmitter>)getEventEmitterWithAttributeString:(const AttributedString &)attributedString
                                                       paragraphAttributes:(ParagraphAttributes)paragraphAttributes
                                                                     frame:(CGRect)frame
                                                                   atPoint:(CGPoint)point
@@ -506,7 +506,7 @@ static NSLineBreakMode RCTNSLineBreakModeFromEllipsizeMode(EllipsizeMode ellipsi
   return nil;
 }
 
-- (void)getRectWithAttributedString:(AttributedString)attributedString
+- (void)getRectWithAttributedString:(const AttributedString &)attributedString
                 paragraphAttributes:(ParagraphAttributes)paragraphAttributes
                  enumerateAttribute:(NSString *)enumerateAttribute
                               frame:(CGRect)frame
@@ -548,7 +548,7 @@ static NSLineBreakMode RCTNSLineBreakModeFromEllipsizeMode(EllipsizeMode ellipsi
 
 #pragma mark - Private
 
-- (NSAttributedString *)_nsAttributedStringFromAttributedString:(AttributedString)attributedString
+- (NSAttributedString *)_nsAttributedStringFromAttributedString:(const AttributedString &)attributedString
 {
   auto sharedNSAttributedString = _cache.get(attributedString, [&]() {
     return wrapManagedObject(RCTNSAttributedStringFromAttributedString(attributedString));

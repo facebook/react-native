@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<c1d0d3a4278ddbaa2c06fb739f6fc3cd>>
+ * @generated SignedSource<<b2c6084f34caae5b1b575578993554c8>>
  */
 
 /**
@@ -66,6 +66,12 @@ class ReactNativeFeatureFlagsJavaProvider
   bool disableEarlyViewCommandExecution() override {
     static const auto method =
         getReactNativeFeatureFlagsProviderJavaClass()->getMethod<jboolean()>("disableEarlyViewCommandExecution");
+    return method(javaProvider_);
+  }
+
+  bool disableIdleEventDispatchFrameCallbackRearmAndroid() override {
+    static const auto method =
+        getReactNativeFeatureFlagsProviderJavaClass()->getMethod<jboolean()>("disableIdleEventDispatchFrameCallbackRearmAndroid");
     return method(javaProvider_);
   }
 
@@ -399,6 +405,12 @@ class ReactNativeFeatureFlagsJavaProvider
     return method(javaProvider_);
   }
 
+  bool fixTextLayoutOnPixelDensityChange() override {
+    static const auto method =
+        getReactNativeFeatureFlagsProviderJavaClass()->getMethod<jboolean()>("fixTextLayoutOnPixelDensityChange");
+    return method(javaProvider_);
+  }
+
   bool fixYogaFlexBasisFitContentInMainAxis() override {
     static const auto method =
         getReactNativeFeatureFlagsProviderJavaClass()->getMethod<jboolean()>("fixYogaFlexBasisFitContentInMainAxis");
@@ -618,6 +630,11 @@ bool JReactNativeFeatureFlagsCxxInterop::defaultTextToOverflowHidden(
 bool JReactNativeFeatureFlagsCxxInterop::disableEarlyViewCommandExecution(
     facebook::jni::alias_ref<JReactNativeFeatureFlagsCxxInterop> /*unused*/) {
   return ReactNativeFeatureFlags::disableEarlyViewCommandExecution();
+}
+
+bool JReactNativeFeatureFlagsCxxInterop::disableIdleEventDispatchFrameCallbackRearmAndroid(
+    facebook::jni::alias_ref<JReactNativeFeatureFlagsCxxInterop> /*unused*/) {
+  return ReactNativeFeatureFlags::disableIdleEventDispatchFrameCallbackRearmAndroid();
 }
 
 bool JReactNativeFeatureFlagsCxxInterop::disableIdleMountItemFrameCallbackRearmAndroid(
@@ -895,6 +912,11 @@ bool JReactNativeFeatureFlagsCxxInterop::fixMappingOfEventPrioritiesBetweenFabri
   return ReactNativeFeatureFlags::fixMappingOfEventPrioritiesBetweenFabricAndReact();
 }
 
+bool JReactNativeFeatureFlagsCxxInterop::fixTextLayoutOnPixelDensityChange(
+    facebook::jni::alias_ref<JReactNativeFeatureFlagsCxxInterop> /*unused*/) {
+  return ReactNativeFeatureFlags::fixTextLayoutOnPixelDensityChange();
+}
+
 bool JReactNativeFeatureFlagsCxxInterop::fixYogaFlexBasisFitContentInMainAxis(
     facebook::jni::alias_ref<JReactNativeFeatureFlagsCxxInterop> /*unused*/) {
   return ReactNativeFeatureFlags::fixYogaFlexBasisFitContentInMainAxis();
@@ -1102,6 +1124,9 @@ void JReactNativeFeatureFlagsCxxInterop::registerNatives() {
         "disableEarlyViewCommandExecution",
         JReactNativeFeatureFlagsCxxInterop::disableEarlyViewCommandExecution),
       makeNativeMethod(
+        "disableIdleEventDispatchFrameCallbackRearmAndroid",
+        JReactNativeFeatureFlagsCxxInterop::disableIdleEventDispatchFrameCallbackRearmAndroid),
+      makeNativeMethod(
         "disableIdleMountItemFrameCallbackRearmAndroid",
         JReactNativeFeatureFlagsCxxInterop::disableIdleMountItemFrameCallbackRearmAndroid),
       makeNativeMethod(
@@ -1266,6 +1291,9 @@ void JReactNativeFeatureFlagsCxxInterop::registerNatives() {
       makeNativeMethod(
         "fixMappingOfEventPrioritiesBetweenFabricAndReact",
         JReactNativeFeatureFlagsCxxInterop::fixMappingOfEventPrioritiesBetweenFabricAndReact),
+      makeNativeMethod(
+        "fixTextLayoutOnPixelDensityChange",
+        JReactNativeFeatureFlagsCxxInterop::fixTextLayoutOnPixelDensityChange),
       makeNativeMethod(
         "fixYogaFlexBasisFitContentInMainAxis",
         JReactNativeFeatureFlagsCxxInterop::fixYogaFlexBasisFitContentInMainAxis),

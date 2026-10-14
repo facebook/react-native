@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<99236a6ac70d6efaf668a07185787560>>
+ * @generated SignedSource<<27ff3d989ab708f35726053e8ce235f8>>
  */
 
 /**
@@ -32,6 +32,8 @@ public interface ReactNativeFeatureFlagsProvider {
   @DoNotStrip public fun defaultTextToOverflowHidden(): Boolean
 
   @DoNotStrip public fun disableEarlyViewCommandExecution(): Boolean
+
+  @DoNotStrip public fun disableIdleEventDispatchFrameCallbackRearmAndroid(): Boolean
 
   @DoNotStrip public fun disableIdleMountItemFrameCallbackRearmAndroid(): Boolean
 
@@ -142,6 +144,8 @@ public interface ReactNativeFeatureFlagsProvider {
   @DoNotStrip public fun fixBorderlessRippleAndroid(): Boolean
 
   @DoNotStrip public fun fixMappingOfEventPrioritiesBetweenFabricAndReact(): Boolean
+
+  @DoNotStrip public fun fixTextLayoutOnPixelDensityChange(): Boolean
 
   @DoNotStrip public fun fixYogaFlexBasisFitContentInMainAxis(): Boolean
 

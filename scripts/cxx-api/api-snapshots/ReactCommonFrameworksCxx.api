@@ -337,7 +337,6 @@ facebook::react::SharedColor facebook::react::clearColor();
 facebook::react::SharedColor facebook::react::colorFromComponents(facebook::react::ColorComponents components);
 facebook::react::SharedColor facebook::react::colorFromRGBA(uint8_t r, uint8_t g, uint8_t b, uint8_t a);
 facebook::react::SharedColor facebook::react::whiteColor();
-facebook::react::Size facebook::react::ModalHostViewScreenSize(void);
 facebook::react::Size facebook::react::yogaMeassureToSize(int64_t value);
 facebook::react::SurfaceId facebook::react::getNextRootViewTag() noexcept;
 facebook::react::TurboModuleMethodValueKind facebook::react::getTurboModuleMethodValueKind(facebook::jsi::Runtime& rt, const facebook::jsi::Value* value);
@@ -359,6 +358,7 @@ std::optional<facebook::react::BlendMode> facebook::react::blendModeFromString(s
 std::optional<facebook::react::FilterType> facebook::react::filterTypeFromString(std::string_view filterName);
 std::optional<facebook::react::FontVariant> facebook::react::fontVariantFromCSSFontVariant(facebook::react::CSSFontVariant cssVariant);
 std::optional<facebook::react::Isolation> facebook::react::isolationFromString(std::string_view isolationSetting);
+std::string facebook::react::componentNameByReactViewName(std::string viewName);
 std::string facebook::react::toString(const double& value);
 std::string facebook::react::toString(const facebook::react::AccessibilityRole& accessibilityRole);
 std::string facebook::react::toString(const facebook::react::AttributedString::Range& range);
@@ -490,6 +490,7 @@ void facebook::react::fromRawValue(const facebook::react::PropsParserContext& co
 void facebook::react::fromRawValue(const facebook::react::PropsParserContext& context, const facebook::react::RawValue& value, facebook::yoga::PositionType& result);
 void facebook::react::fromRawValue(const facebook::react::PropsParserContext& context, const facebook::react::RawValue& value, facebook::yoga::Style::Length& result);
 void facebook::react::fromRawValue(const facebook::react::PropsParserContext& context, const facebook::react::RawValue& value, facebook::yoga::Wrap& result);
+void facebook::react::fromRawValue(const facebook::react::PropsParserContext& context, const facebook::react::RawValue& value, std::vector<facebook::react::BackgroundImage>& result);
 void facebook::react::fromRawValue(const facebook::react::PropsParserContext&, const facebook::react::RawValue& value, facebook::react::AccessibilityValue& result);
 void facebook::react::fromRawValue(const facebook::react::PropsParserContext&, const facebook::react::RawValue& value, facebook::react::BlendMode& result);
 void facebook::react::fromRawValue(const facebook::react::PropsParserContext&, const facebook::react::RawValue& value, facebook::react::CornerInsets& result);
@@ -513,7 +514,10 @@ void facebook::react::fromRawValueShared(const facebook::react::ContextContainer
 void facebook::react::fromString(const std::string& string, facebook::react::AccessibilityTraits& result);
 void facebook::react::g_setNativeAnimatedNowTimestampFunction(facebook::react::TimePointFunction nowFunction);
 void facebook::react::handleJSError(facebook::jsi::Runtime& runtime, const facebook::jsi::JSError& error, bool isFatal);
+void facebook::react::parseProcessedBackgroundImage(const facebook::react::PropsParserContext& context, const facebook::react::RawValue& value, std::vector<facebook::react::BackgroundImage>& result);
 void facebook::react::parseProcessedFontVariant(const facebook::react::PropsParserContext&, const facebook::react::RawValue& value, facebook::react::FontVariant& result);
+void facebook::react::parseUnprocessedBackgroundImageList(const facebook::react::PropsParserContext& context, const std::vector<facebook::react::RawValue>& value, std::vector<facebook::react::BackgroundImage>& result);
+void facebook::react::parseUnprocessedBackgroundImageString(const std::string& value, std::vector<facebook::react::BackgroundImage>& result);
 void facebook::react::parseUnprocessedFontVariant(const facebook::react::PropsParserContext& context, const facebook::react::RawValue& value, facebook::react::FontVariant& result);
 void facebook::react::parseUnprocessedFontVariantString(const std::string& value, facebook::react::FontVariant& result);
 void facebook::react::parseUnprocessedTransformOriginString(const std::string& value, facebook::react::TransformOrigin& result);
@@ -709,6 +713,7 @@ class facebook::react::AttributedStringBox {
   public AttributedStringBox();
   public AttributedStringBox(const facebook::react::AttributedString& value);
   public AttributedStringBox(const facebook::react::AttributedStringBox& other) = default;
+  public AttributedStringBox(facebook::react::AttributedString&& value);
   public AttributedStringBox(facebook::react::AttributedStringBox&& other) noexcept;
   public AttributedStringBox(std::shared_ptr<void> opaquePointer);
   public const facebook::react::AttributedString& getValue() const;
@@ -4407,15 +4412,6 @@ struct facebook::react::FilterFunction {
   public std::variant<Float, facebook::react::DropShadowParams> parameters;
 }
 
-struct facebook::react::InspectorData {
-  public folly::dynamic props;
-  public int columnNumber;
-  public int lineNumber;
-  public int selectedIndex;
-  public std::string fileName;
-  public std::vector<std::string> hierarchy;
-}
-
 struct facebook::react::LayoutAnimation {
   public bool completed;
   public facebook::react::LayoutAnimationCallbackWrapper failureCallback;
@@ -4497,6 +4493,7 @@ struct facebook::react::Magic32 {
 }
 
 struct facebook::react::MeasuredPreparedTextLayout {
+  public Float pointScaleFactor;
   public facebook::react::LayoutConstraints layoutConstraints;
   public facebook::react::TextMeasurement measurement;
   public facebook::react::detail::TextLayoutManagerExtended::PreparedTextLayout preparedTextLayout;
@@ -5972,6 +5969,68 @@ template <typename T>
 concept facebook::react::detail::css::keywords::hasWrap = (CSSKeywordSet<T> && requires() { T::Wrap; });
 template <typename T>
 concept facebook::react::detail::css::keywords::hasWrapReverse = (CSSKeywordSet<T> && requires() { T::WrapReverse; });
+
+
+constexpr uint_fast16_t facebook::react::dom::DOCUMENT_POSITION_CONTAINED_BY;
+constexpr uint_fast16_t facebook::react::dom::DOCUMENT_POSITION_CONTAINS;
+constexpr uint_fast16_t facebook::react::dom::DOCUMENT_POSITION_DISCONNECTED;
+constexpr uint_fast16_t facebook::react::dom::DOCUMENT_POSITION_FOLLOWING;
+constexpr uint_fast16_t facebook::react::dom::DOCUMENT_POSITION_PRECEDING;
+bool facebook::react::dom::isConnected(const facebook::react::RootShadowNode::Shared& currentRevision, const facebook::react::ShadowNode& shadowNode);
+facebook::react::dom::DOMBorderWidthRounded facebook::react::dom::getBorderWidth(const facebook::react::RootShadowNode::Shared& currentRevision, const facebook::react::ShadowNode& shadowNode);
+facebook::react::dom::DOMOffset facebook::react::dom::getOffset(const facebook::react::RootShadowNode::Shared& currentRevision, const facebook::react::ShadowNode& shadowNode);
+facebook::react::dom::DOMPoint facebook::react::dom::getScrollPosition(const facebook::react::RootShadowNode::Shared& currentRevision, const facebook::react::ShadowNode& shadowNode);
+facebook::react::dom::DOMRect facebook::react::dom::getBoundingClientRect(const facebook::react::RootShadowNode::Shared& currentRevision, const facebook::react::ShadowNode& shadowNode, bool includeTransform);
+facebook::react::dom::DOMRect facebook::react::dom::measureInWindow(const facebook::react::RootShadowNode::Shared& currentRevision, const facebook::react::ShadowNode& shadowNode);
+facebook::react::dom::DOMSizeRounded facebook::react::dom::getInnerSize(const facebook::react::RootShadowNode::Shared& currentRevision, const facebook::react::ShadowNode& shadowNode);
+facebook::react::dom::DOMSizeRounded facebook::react::dom::getScrollSize(const facebook::react::RootShadowNode::Shared& currentRevision, const facebook::react::ShadowNode& shadowNode);
+facebook::react::dom::RNMeasureRect facebook::react::dom::measure(const facebook::react::RootShadowNode::Shared& currentRevision, const facebook::react::ShadowNode& shadowNode);
+std::optional<facebook::react::dom::DOMRect> facebook::react::dom::measureLayout(const facebook::react::RootShadowNode::Shared& currentRevision, const facebook::react::ShadowNode& shadowNode, const facebook::react::ShadowNode& relativeToShadowNode);
+std::shared_ptr<const facebook::react::ShadowNode> facebook::react::dom::getElementById(const std::shared_ptr<const facebook::react::ShadowNode>& currentRevision, const std::string& id);
+std::shared_ptr<const facebook::react::ShadowNode> facebook::react::dom::getParentNode(const facebook::react::RootShadowNode::Shared& currentRevision, const facebook::react::ShadowNode& shadowNode);
+std::string facebook::react::dom::getTagName(const facebook::react::ShadowNode& shadowNode);
+std::string facebook::react::dom::getTextContent(const facebook::react::RootShadowNode::Shared& currentRevision, const facebook::react::ShadowNode& shadowNode);
+std::vector<std::shared_ptr<const facebook::react::ShadowNode>> facebook::react::dom::getChildNodes(const facebook::react::RootShadowNode::Shared& currentRevision, const facebook::react::ShadowNode& shadowNode);
+uint_fast16_t facebook::react::dom::compareDocumentPosition(const facebook::react::RootShadowNode::Shared& currentRevision, const facebook::react::ShadowNode& shadowNode, const facebook::react::ShadowNode& otherShadowNode);
+
+struct facebook::react::dom::DOMBorderWidthRounded {
+  public int bottom;
+  public int left;
+  public int right;
+  public int top;
+}
+
+struct facebook::react::dom::DOMOffset {
+  public double left;
+  public double top;
+  public std::shared_ptr<const facebook::react::ShadowNode> offsetParent;
+}
+
+struct facebook::react::dom::DOMPoint {
+  public double x;
+  public double y;
+}
+
+struct facebook::react::dom::DOMRect {
+  public double height;
+  public double width;
+  public double x;
+  public double y;
+}
+
+struct facebook::react::dom::DOMSizeRounded {
+  public int height;
+  public int width;
+}
+
+struct facebook::react::dom::RNMeasureRect {
+  public double height;
+  public double pageX;
+  public double pageY;
+  public double width;
+  public double x;
+  public double y;
+}
 
 
 template <typename JSReturnT, typename ReturnT>
@@ -7715,6 +7774,14 @@ class facebook::jsi::RuntimeDecorator : public facebook::jsi::Runtime {
   public virtual facebook::jsi::ICast* castInterface(const facebook::jsi::UUID& interfaceUUID) override;
   public virtual facebook::jsi::Instrumentation& instrumentation() override;
   public virtual facebook::jsi::Object global() override;
+  public virtual facebook::jsi::Value createError(const facebook::jsi::String& msg) override;
+  public virtual facebook::jsi::Value createEvalError(const facebook::jsi::String& msg) override;
+  public virtual facebook::jsi::Value createRangeError(const facebook::jsi::String& msg) override;
+  public virtual facebook::jsi::Value createReferenceError(const facebook::jsi::String& msg) override;
+  public virtual facebook::jsi::Value createSyntaxError(const facebook::jsi::String& msg) override;
+  public virtual facebook::jsi::Value createTypeError(const facebook::jsi::String& msg) override;
+  public virtual facebook::jsi::Value createURIError(const facebook::jsi::String& msg) override;
+  public virtual facebook::jsi::Value createValueFromJsonUtf8(const uint8_t* json, size_t length) override;
   public virtual facebook::jsi::Value evaluateJavaScript(const std::shared_ptr<const facebook::jsi::Buffer>& buffer, const std::string& sourceURL) override;
   public virtual facebook::jsi::Value evaluatePreparedJavaScript(const std::shared_ptr<const facebook::jsi::PreparedJavaScript>& js) override;
   public virtual std::shared_ptr<const facebook::jsi::PreparedJavaScript> prepareJavaScript(const std::shared_ptr<const facebook::jsi::Buffer>& buffer, std::string sourceURL) override;
@@ -7821,6 +7888,13 @@ class facebook::jsi::WithRuntimeDecorator : public facebook::jsi::RuntimeDecorat
   public virtual facebook::jsi::ICast* castInterface(const facebook::jsi::UUID& interfaceUUID) override;
   public virtual facebook::jsi::Instrumentation& instrumentation() override;
   public virtual facebook::jsi::Object global() override;
+  public virtual facebook::jsi::Value createError(const facebook::jsi::String& msg) override;
+  public virtual facebook::jsi::Value createEvalError(const facebook::jsi::String& msg) override;
+  public virtual facebook::jsi::Value createRangeError(const facebook::jsi::String& msg) override;
+  public virtual facebook::jsi::Value createReferenceError(const facebook::jsi::String& msg) override;
+  public virtual facebook::jsi::Value createSyntaxError(const facebook::jsi::String& msg) override;
+  public virtual facebook::jsi::Value createTypeError(const facebook::jsi::String& msg) override;
+  public virtual facebook::jsi::Value createURIError(const facebook::jsi::String& msg) override;
   public virtual facebook::jsi::Value evaluateJavaScript(const std::shared_ptr<const facebook::jsi::Buffer>& buffer, const std::string& sourceURL) override;
   public virtual facebook::jsi::Value evaluatePreparedJavaScript(const std::shared_ptr<const facebook::jsi::PreparedJavaScript>& js) override;
   public virtual std::shared_ptr<const facebook::jsi::PreparedJavaScript> prepareJavaScript(const std::shared_ptr<const facebook::jsi::Buffer>& buffer, std::string sourceURL) override;
