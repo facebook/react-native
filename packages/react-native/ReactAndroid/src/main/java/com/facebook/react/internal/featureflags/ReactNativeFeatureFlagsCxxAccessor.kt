@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<0107593110db613063b6f4ceb50d8e58>>
+ * @generated SignedSource<<407328ccc8d2611b10d7c39458b859f9>>
  */
 
 /**
@@ -69,6 +69,7 @@ internal class ReactNativeFeatureFlagsCxxAccessor : ReactNativeFeatureFlagsAcces
   private var enablePreallocatedPropsDiffOnInsertAndroidCache: Boolean? = null
   private var enablePreparedTextLayoutCache: Boolean? = null
   private var enablePropsUpdateReconciliationAndroidCache: Boolean? = null
+  private var enableRelaxedLinkRoleCache: Boolean? = null
   private var enableResizeObserverByDefaultCache: Boolean? = null
   private var enableSwiftUIBasedFiltersCache: Boolean? = null
   private var enableViewCullingCache: Boolean? = null
@@ -551,6 +552,15 @@ internal class ReactNativeFeatureFlagsCxxAccessor : ReactNativeFeatureFlagsAcces
     if (cached == null) {
       cached = ReactNativeFeatureFlagsCxxInterop.enablePropsUpdateReconciliationAndroid()
       enablePropsUpdateReconciliationAndroidCache = cached
+    }
+    return cached
+  }
+
+  override fun enableRelaxedLinkRole(): Boolean {
+    var cached = enableRelaxedLinkRoleCache
+    if (cached == null) {
+      cached = ReactNativeFeatureFlagsCxxInterop.enableRelaxedLinkRole()
+      enableRelaxedLinkRoleCache = cached
     }
     return cached
   }

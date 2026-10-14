@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<c5edfa3b739746e892eb0d681c631016>>
+ * @generated SignedSource<<0ff3200a250d0de0d044af35a04b7d60>>
  * @flow strict
  * @noformat
  */
@@ -99,6 +99,7 @@ export type ReactNativeFeatureFlags = Readonly<{
   enablePreallocatedPropsDiffOnInsertAndroid: Getter<boolean>,
   enablePreparedTextLayout: Getter<boolean>,
   enablePropsUpdateReconciliationAndroid: Getter<boolean>,
+  enableRelaxedLinkRole: Getter<boolean>,
   enableResizeObserverByDefault: Getter<boolean>,
   enableSwiftUIBasedFilters: Getter<boolean>,
   enableViewCulling: Getter<boolean>,
@@ -420,6 +421,10 @@ export const enablePreparedTextLayout: Getter<boolean> = createNativeFlagGetter(
  * When enabled, Android will receive prop updates based on the differences between the last rendered shadow node and the last committed shadow node.
  */
 export const enablePropsUpdateReconciliationAndroid: Getter<boolean> = createNativeFlagGetter('enablePropsUpdateReconciliationAndroid', false);
+/**
+ * When enabled, inline text with a link-like role produces a ClickableSpan and appears in the TalkBack links rotor.
+ */
+export const enableRelaxedLinkRole: Getter<boolean> = createNativeFlagGetter('enableRelaxedLinkRole', false);
 /**
  * Enables the ResizeObserver Web API in React Native.
  */

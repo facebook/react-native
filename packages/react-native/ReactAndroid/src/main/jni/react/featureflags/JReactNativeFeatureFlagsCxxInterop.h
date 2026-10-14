@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<13aa248dae556b06b31c25a28e448460>>
+ * @generated SignedSource<<70b5fc340fe72a4abc3b05e01c87b38b>>
  */
 
 /**
@@ -175,6 +175,9 @@ class JReactNativeFeatureFlagsCxxInterop
     facebook::jni::alias_ref<JReactNativeFeatureFlagsCxxInterop>);
 
   static bool enablePropsUpdateReconciliationAndroid(
+    facebook::jni::alias_ref<JReactNativeFeatureFlagsCxxInterop>);
+
+  static bool enableRelaxedLinkRole(
     facebook::jni::alias_ref<JReactNativeFeatureFlagsCxxInterop>);
 
   static bool enableResizeObserverByDefault(

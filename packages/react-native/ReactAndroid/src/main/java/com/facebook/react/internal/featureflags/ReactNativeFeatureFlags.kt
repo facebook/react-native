@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<eb0bafceba60cb439a4be3d68b890725>>
+ * @generated SignedSource<<35388e99bb5b778abade6d1d435eb797>>
  */
 
 /**
@@ -323,6 +323,12 @@ public object ReactNativeFeatureFlags {
    */
   @JvmStatic
   public fun enablePropsUpdateReconciliationAndroid(): Boolean = accessor.enablePropsUpdateReconciliationAndroid()
+
+  /**
+   * When enabled, inline text with a link-like role produces a ClickableSpan and appears in the TalkBack links rotor.
+   */
+  @JvmStatic
+  public fun enableRelaxedLinkRole(): Boolean = accessor.enableRelaxedLinkRole()
 
   /**
    * Enables the ResizeObserver Web API in React Native.

@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<486b4aac1c83d8bced6a3f5393a03756>>
+ * @generated SignedSource<<62461bf0df95e810fccf9e2f024256e6>>
  */
 
 /**
@@ -83,6 +83,7 @@ class ReactNativeFeatureFlagsAccessor {
   bool enablePreallocatedPropsDiffOnInsertAndroid();
   bool enablePreparedTextLayout();
   bool enablePropsUpdateReconciliationAndroid();
+  bool enableRelaxedLinkRole();
   bool enableResizeObserverByDefault();
   bool enableSwiftUIBasedFilters();
   bool enableViewCulling();
@@ -138,7 +139,7 @@ class ReactNativeFeatureFlagsAccessor {
   std::unique_ptr<ReactNativeFeatureFlagsProvider> currentProvider_;
   bool wasOverridden_;
 
-  std::array<std::atomic<const char*>, 93> accessedFeatureFlags_;
+  std::array<std::atomic<const char*>, 94> accessedFeatureFlags_;
 
   std::atomic<std::optional<bool>> commonTestFlag_;
   std::atomic<std::optional<bool>> cdpInteractionMetricsEnabled_;
@@ -189,6 +190,7 @@ class ReactNativeFeatureFlagsAccessor {
   std::atomic<std::optional<bool>> enablePreallocatedPropsDiffOnInsertAndroid_;
   std::atomic<std::optional<bool>> enablePreparedTextLayout_;
   std::atomic<std::optional<bool>> enablePropsUpdateReconciliationAndroid_;
+  std::atomic<std::optional<bool>> enableRelaxedLinkRole_;
   std::atomic<std::optional<bool>> enableResizeObserverByDefault_;
   std::atomic<std::optional<bool>> enableSwiftUIBasedFilters_;
   std::atomic<std::optional<bool>> enableViewCulling_;

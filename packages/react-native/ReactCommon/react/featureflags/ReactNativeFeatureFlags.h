@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<1a9a8a587b477b6aa0d3aa57e30272c2>>
+ * @generated SignedSource<<02b346fa31d7e946a8675771831b3d09>>
  */
 
 /**
@@ -285,6 +285,11 @@ class ReactNativeFeatureFlags {
    * When enabled, Android will receive prop updates based on the differences between the last rendered shadow node and the last committed shadow node.
    */
   RN_EXPORT static bool enablePropsUpdateReconciliationAndroid();
+
+  /**
+   * When enabled, inline text with a link-like role produces a ClickableSpan and appears in the TalkBack links rotor.
+   */
+  RN_EXPORT static bool enableRelaxedLinkRole();
 
   /**
    * Enables the ResizeObserver Web API in React Native.
