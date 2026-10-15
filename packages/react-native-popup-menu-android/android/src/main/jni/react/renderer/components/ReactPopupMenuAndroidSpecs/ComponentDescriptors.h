@@ -11,8 +11,8 @@
 #pragma once
 
 #include "ShadowNodes.h"
-#include <react/renderer/core/ConcreteComponentDescriptor.h>
-#include <react/renderer/componentregistry/ComponentDescriptorProviderRegistry.h>
+#include <React/ComponentRegistry.h>
+#include <React/RendererCore.h>
 
 namespace facebook::react {
 

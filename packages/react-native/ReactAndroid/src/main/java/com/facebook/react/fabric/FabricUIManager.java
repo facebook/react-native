@@ -63,6 +63,7 @@ import com.facebook.react.fabric.mounting.MountItemDispatcher;
 import com.facebook.react.fabric.mounting.MountingManager;
 import com.facebook.react.fabric.mounting.SurfaceMountingManager;
 import com.facebook.react.fabric.mounting.mountitems.BatchMountItem;
+import com.facebook.react.fabric.mounting.mountitems.BatchedAnimatedPropsMountItem;
 import com.facebook.react.fabric.mounting.mountitems.DispatchCommandMountItem;
 import com.facebook.react.fabric.mounting.mountitems.MountItem;
 import com.facebook.react.fabric.mounting.mountitems.MountItemFactory;
@@ -108,6 +109,7 @@ import java.util.Queue;
 import java.util.Set;
 import java.util.concurrent.ConcurrentLinkedQueue;
 import java.util.concurrent.CopyOnWriteArrayList;
+import java.util.concurrent.atomic.AtomicBoolean;
 
 /**
  * We instruct ProGuard not to strip out any fields or methods, because many of these methods are
@@ -213,7 +215,7 @@ public class FabricUIManager
    */
   private volatile boolean mDestroyed = false;
 
-  private boolean mDriveCxxAnimations = false;
+  private volatile boolean mDriveCxxAnimations = false;
 
   private @Nullable ViewTransitionSnapshotManager mViewTransitionSnapshotManager;
 
@@ -261,6 +263,9 @@ public class FabricUIManager
     mReactApplicationContext.registerComponentCallbacks(viewManagerRegistry);
   }
 
+  /**
+   * @deprecated Use {@code ReactHost.createSurface(...)} and {@code ReactSurface.start()} instead.
+   */
   @Override
   @UiThread
   @ThreadConfined(UI)
@@ -270,7 +275,8 @@ public class FabricUIManager
     ReactSoftExceptionLogger.logSoftException(
         TAG,
         new IllegalViewOperationException(
-            "Do not call addRootView in Fabric; it is unsupported. Call startSurface instead."));
+            "Do not call addRootView in Fabric; it is unsupported. Use ReactHost.createSurface(...)"
+                + " and ReactSurface.start() instead."));
 
     ReactRoot reactRootView = (ReactRoot) rootView;
     final int rootTag = reactRootView.getRootViewTag();
@@ -340,6 +346,10 @@ public class FabricUIManager
     return mBinding != null ? mBinding.getRelativeAncestorList(rootTag, childTag) : null;
   }
 
+  /**
+   * @deprecated Use {@code ReactHost.createSurface(...)} and {@code ReactSurface.start()} instead.
+   */
+  @Deprecated
   @Override
   @AnyThread
   @ThreadConfined(ANY)
@@ -429,6 +439,10 @@ public class FabricUIManager
     mEventDispatcher.dispatchAllEvents();
   }
 
+  /**
+   * @deprecated Use {@code ReactSurface.stop()} instead.
+   */
+  @Deprecated
   @AnyThread
   @ThreadConfined(ANY)
   @Override
@@ -699,7 +713,8 @@ public class FabricUIManager
         preparedLayout.getVerticalOffset(),
         reactTags,
         preparedLayout.getTextBreakStrategy(),
-        preparedLayout.getJustificationMode());
+        preparedLayout.getJustificationMode(),
+        preparedLayout.getBaseTextAttributes());
   }
 
   @AnyThread
@@ -832,6 +847,35 @@ public class FabricUIManager
     }
 
     synchronousMountItem.execute(mMountingManager);
+
+    ReactMarker.logFabricMarker(
+        ReactMarkerConstants.FABRIC_UPDATE_UI_MAIN_THREAD_END, null, commitNumber);
+  }
+
+  /** Called from C++ via JNI with a batch encoded by AnimatedPropBufferEncoder.cpp. */
+  @SuppressLint("NotInvokedPrivateMethod")
+  @SuppressWarnings("unused")
+  @UiThread
+  @ThreadConfined(UI)
+  private void synchronouslyUpdateViewBatch(
+      int[] intBuffer, double[] doubleBuffer, Object[] rawPropsBuffer) {
+    UiThreadUtil.assertOnUiThread();
+
+    int commitNumber = mCurrentSynchronousCommitNumber++;
+    ReactMarker.logFabricMarker(
+        ReactMarkerConstants.FABRIC_UPDATE_UI_MAIN_THREAD_START, null, commitNumber);
+
+    if (ReactNativeFeatureFlags.enableFabricLogs()) {
+      FLog.d(
+          TAG,
+          "SynchronouslyUpdateViewBatch: %d ints, %d doubles, %d raw props",
+          intBuffer.length,
+          doubleBuffer.length,
+          rawPropsBuffer.length);
+    }
+
+    new BatchedAnimatedPropsMountItem(intBuffer, doubleBuffer, rawPropsBuffer, mMountItemDispatcher)
+        .execute(mMountingManager);
 
     ReactMarker.logFabricMarker(
         ReactMarkerConstants.FABRIC_UPDATE_UI_MAIN_THREAD_END, null, commitNumber);
@@ -1464,6 +1508,11 @@ public class FabricUIManager
   @AnyThread
   public void onAnimationStarted() {
     mDriveCxxAnimations = true;
+    if (ReactNativeFeatureFlags.disableIdleMountItemFrameCallbackRearmAndroid()) {
+      // A C++ animation session may begin while the DISPATCH_UI frame callback is disarmed at
+      // idle and no mount items are pending yet; re-arm it for the first tick.
+      mDispatchUIFrameCallback.schedule();
+    }
   }
 
   // Called from Binding.cpp
@@ -1569,6 +1618,12 @@ public class FabricUIManager
         listener.didDispatchMountItems(FabricUIManager.this);
       }
     }
+
+    @Override
+    public void onItemsQueued() {
+      // Items may be queued from any thread while the DISPATCH_UI frame callback is idle.
+      mDispatchUIFrameCallback.schedule();
+    }
   }
 
   /**
@@ -1595,24 +1650,38 @@ public class FabricUIManager
 
     private volatile boolean mIsMountingEnabled = true;
 
-    @ThreadConfined(UI)
-    private boolean mShouldSchedule = false;
+    private volatile boolean mShouldSchedule = false;
 
-    @ThreadConfined(UI)
-    private boolean mIsScheduled = false;
+    private final AtomicBoolean mScheduleTaskPending = new AtomicBoolean(false);
+    private volatile boolean mIsScheduled = false;
 
     private DispatchUIFrameCallback(ReactContext reactContext) {
       super(reactContext);
     }
 
-    @UiThread
-    @ThreadConfined(UI)
-    private void schedule() {
-      if (!mIsScheduled && mShouldSchedule) {
-        mIsScheduled = true;
-        ReactChoreographer.getInstance()
-            .postFrameCallback(ReactChoreographer.CallbackType.DISPATCH_UI, this);
+    @AnyThread
+    void schedule() {
+      if (mIsScheduled || !mShouldSchedule) {
+        return;
       }
+
+      if (!UiThreadUtil.isOnUiThread()) {
+        if (mScheduleTaskPending.compareAndSet(false, true)) {
+          UiThreadUtil.runOnUiThread(
+              () -> {
+                try {
+                  schedule();
+                } finally {
+                  mScheduleTaskPending.set(false);
+                }
+              });
+        }
+        return;
+      }
+
+      mIsScheduled = true;
+      ReactChoreographer.getInstance()
+          .postFrameCallback(ReactChoreographer.CallbackType.DISPATCH_UI, this);
     }
 
     @UiThread
@@ -1649,7 +1718,7 @@ public class FabricUIManager
 
       // Drain pending React revision merges first so that animations,
       // preallocation, and mount items operate against the latest revision.
-      if (ReactNativeFeatureFlags.enableFabricCommitBranching()) {
+      if (ReactNativeFeatureFlags.enableFabricCommitBranchingMergeOnMainThread()) {
         FabricUIManagerBinding binding = mBinding;
         if (binding != null) {
           Integer mergeSurfaceId;
@@ -1660,9 +1729,6 @@ public class FabricUIManager
       }
 
       // Drive any animations from C++.
-      // There is a race condition here between getting/setting
-      // `mDriveCxxAnimations` which shouldn't matter; it's safe to call
-      // the mBinding method, unless mBinding has gone away.
       if ((mDriveCxxAnimations || ReactNativeFeatureFlags.cxxNativeAnimatedEnabled())
           && mBinding != null) {
         mBinding.driveCxxAnimations();
@@ -1685,7 +1751,19 @@ public class FabricUIManager
         mIsMountingEnabled = false;
         throw ex;
       } finally {
-        schedule();
+        // Keep the Choreographer armed while items remain pending or a C++ animation driver
+        // needs per-frame ticks from this callback (driveCxxAnimations and
+        // driveAnimationBackend run here). Queueing new items re-arms it via
+        // MountItemDispatcher.onItemsQueued, and onAnimationStarted re-arms it when the C++
+        // side begins an animation session. The two flags below drive animations from this
+        // callback unconditionally, so they disable the idle optimization entirely.
+        if (!ReactNativeFeatureFlags.disableIdleMountItemFrameCallbackRearmAndroid()
+            || mMountItemDispatcher.hasPendingItems()
+            || mDriveCxxAnimations
+            || ReactNativeFeatureFlags.cxxNativeAnimatedEnabled()
+            || ReactNativeFeatureFlags.useSharedAnimatedBackend()) {
+          schedule();
+        }
       }
 
       if (ReactNativeFeatureFlags.useSharedAnimatedBackend() && mBinding != null) {

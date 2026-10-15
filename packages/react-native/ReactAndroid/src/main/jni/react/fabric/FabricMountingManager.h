@@ -9,15 +9,17 @@
 
 #include <mutex>
 #include <unordered_map>
-#include <unordered_set>
 
+#include <React/RendererCore.h>
 #include <fbjni/fbjni.h>
 #include <react/fabric/JFabricUIManager.h>
-#include <react/renderer/uimanager/primitives.h>
 
 namespace facebook::react {
 
+struct AnimatedProps;
 class ComputedBoxModelRegistry;
+
+
 class MountingTransaction;
 struct ShadowView;
 
@@ -78,6 +80,8 @@ class FabricMountingManager final {
 
   void synchronouslyUpdateViewOnUIThread(Tag viewTag, const folly::dynamic &props);
 
+  void synchronouslyUpdateAnimatedProps(const std::unordered_map<Tag, AnimatedProps> &updates);
+
   void captureViewSnapshot(Tag tag, SurfaceId surfaceId);
 
   void setViewSnapshot(Tag sourceTag, Tag targetTag, SurfaceId surfaceId);
@@ -105,7 +109,12 @@ class FabricMountingManager final {
    */
   std::vector<ShadowView> preallocatedViewsQueue_{};
 
-  std::unordered_map<SurfaceId, std::unordered_set<Tag>> allocatedViewRegistry_{};
+  /*
+   * Allocated tags per surface. With enablePreallocatedPropsDiffOnInsertAndroid
+   * a preallocated tag maps to the props it was preallocated with until its
+   * first Insert; every other tag maps to nullptr.
+   */
+  std::unordered_map<SurfaceId, std::unordered_map<Tag, Props::Shared>> allocatedViewRegistry_{};
   std::recursive_mutex allocatedViewsMutex_;
 
   std::shared_ptr<ComputedBoxModelRegistry> computedBoxModelRegistry_;

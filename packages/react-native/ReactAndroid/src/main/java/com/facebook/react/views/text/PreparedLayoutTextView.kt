@@ -508,6 +508,7 @@ internal class PreparedLayoutTextView(context: Context) : ViewGroup(context), Re
           reactTags,
           textBreakStrategy,
           justificationMode,
+          baseTextAttributes,
       )
     }
   }

@@ -37,9 +37,12 @@ import com.facebook.react.uimanager.events.BlurEvent;
 import com.facebook.react.uimanager.events.EventDispatcher;
 import com.facebook.react.uimanager.events.FocusEvent;
 import com.facebook.react.uimanager.events.PointerEventHelper;
+import com.facebook.react.uimanager.events.SafeAreaInsetsChangeEvent;
+import com.facebook.react.uimanager.internal.SafeAreaInsetsObserver;
 import com.facebook.react.uimanager.style.OutlineStyle;
 import com.facebook.react.uimanager.util.ReactFindViewUtil;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -74,6 +77,8 @@ public abstract class BaseViewManager<T extends View, C extends LayoutShadowNode
 
   @Override
   protected @Nullable T prepareToRecycleView(@NonNull ThemedReactContext reactContext, T view) {
+    SafeAreaInsetsObserver.setEnabled(view, false);
+
     // Reset tags
     view.setTag(null);
     view.setTag(R.id.pointer_events, null);
@@ -88,6 +93,8 @@ public abstract class BaseViewManager<T extends View, C extends LayoutShadowNode
     view.setTag(R.id.accessibility_actions, null);
     view.setTag(R.id.accessibility_value, null);
     view.setTag(R.id.accessibility_state_expanded, null);
+    view.setTag(R.id.accessibility_state_disabled, null);
+    view.setEnabled(true);
     view.setTag(R.id.view_clipped, null);
 
     // This indirectly calls (and resets):
@@ -298,6 +305,11 @@ public abstract class BaseViewManager<T extends View, C extends LayoutShadowNode
     view.setTag(R.id.use_hardware_layer, useHWTexture);
   }
 
+  @ReactProp(name = ViewProps.ON_SAFE_AREA_INSETS_CHANGE, defaultBoolean = false)
+  public void setOnSafeAreaInsetsChange(@NonNull T view, boolean onSafeAreaInsetsChange) {
+    SafeAreaInsetsObserver.setEnabled(view, onSafeAreaInsetsChange);
+  }
+
   @ReactProp(name = ViewProps.TEST_ID)
   public void setTestId(@NonNull T view, @Nullable String testId) {
     view.setTag(R.id.react_test_id, testId);
@@ -365,6 +377,7 @@ public abstract class BaseViewManager<T extends View, C extends LayoutShadowNode
   @ReactProp(name = ViewProps.ACCESSIBILITY_STATE)
   public void setViewState(@NonNull T view, @Nullable ReadableMap accessibilityState) {
     if (accessibilityState == null) {
+      resetDisabledFromAccessibilityState(view);
       return;
     }
     if (accessibilityState.hasKey("expanded")) {
@@ -386,8 +399,12 @@ public abstract class BaseViewManager<T extends View, C extends LayoutShadowNode
       view.setSelected(false);
     }
     view.setTag(R.id.accessibility_state, accessibilityState);
-    if (accessibilityState.hasKey("disabled")) {
-      view.setEnabled(!accessibilityState.getBoolean("disabled"));
+    if (accessibilityState.hasKey("disabled") && !accessibilityState.isNull("disabled")) {
+      boolean disabled = accessibilityState.getBoolean("disabled");
+      view.setEnabled(!disabled);
+      view.setTag(R.id.accessibility_state_disabled, disabled);
+    } else {
+      resetDisabledFromAccessibilityState(view);
     }
 
     // For states which don't have corresponding methods in
@@ -412,6 +429,13 @@ public abstract class BaseViewManager<T extends View, C extends LayoutShadowNode
         view.sendAccessibilityEvent(AccessibilityEvent.TYPE_VIEW_CLICKED);
       }
     }
+  }
+
+  private static void resetDisabledFromAccessibilityState(@NonNull View view) {
+    if (Boolean.TRUE.equals(view.getTag(R.id.accessibility_state_disabled))) {
+      view.setEnabled(true);
+    }
+    view.setTag(R.id.accessibility_state_disabled, null);
   }
 
   private void updateViewContentDescription(@NonNull T view) {
@@ -819,12 +843,13 @@ public abstract class BaseViewManager<T extends View, C extends LayoutShadowNode
     Map<String, Object> baseEventTypeConstants = super.getExportedCustomDirectEventTypeConstants();
     Map<String, Object> eventTypeConstants =
         baseEventTypeConstants == null ? new HashMap<String, Object>() : baseEventTypeConstants;
-    eventTypeConstants.putAll(
-        MapBuilder.<String, Object>builder()
-            .put(
-                "topAccessibilityAction",
-                MapBuilder.of("registrationName", "onAccessibilityAction"))
-            .build());
+    eventTypeConstants.put(
+        "topAccessibilityAction",
+        Collections.<String, Object>singletonMap("registrationName", "onAccessibilityAction"));
+    eventTypeConstants.put(
+        SafeAreaInsetsChangeEvent.EVENT_NAME,
+        Collections.<String, Object>singletonMap(
+            "registrationName", ViewProps.ON_SAFE_AREA_INSETS_CHANGE));
     return eventTypeConstants;
   }
 
