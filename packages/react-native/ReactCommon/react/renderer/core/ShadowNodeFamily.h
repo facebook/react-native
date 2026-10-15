@@ -107,12 +107,13 @@ class ShadowNodeFamily final : public jsi::NativeState {
   void setMostRecentState(const std::shared_ptr<const State> &state);
 
   /**
-   * Mark this ShadowNodeFamily as mounted.
+   * Mark this ShadowNodeFamily as part of a committed shadow tree.
    */
   void setMounted();
 
   /**
-   * Whether this ShadowNodeFamily was ever mounted.
+   * Whether this ShadowNodeFamily was ever part of a committed shadow tree.
+   * Its view may not have been mounted on the platform yet.
    */
   bool hasBeenMounted() const;
 
@@ -206,7 +207,7 @@ class ShadowNodeFamily final : public jsi::NativeState {
   bool hasParent_{false};
 
   /*
-   * Determines if the ShadowNodeFamily was ever mounted on the screen.
+   * Determines if the ShadowNodeFamily was ever part of a committed shadow tree.
    */
   bool hasBeenMounted_{false};
 };

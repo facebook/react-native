@@ -31,7 +31,7 @@ class FabricMountingManagerTestHelper : public jni::HybridClass<FabricMountingMa
   void preallocateView(jint surfaceId, jint tag);
   void queuePreallocation(jint surfaceId, jint tag);
   void drainPreallocationQueue();
-  void mountCreate(jint surfaceId, jint tag);
+  void executeCreateMutation(jint surfaceId, jint tag);
   void dropFamily(jint tag);
   void destroyUnmountedView(jint surfaceId, jint tag);
   void destroyCommittedView(jint surfaceId, jint tag);

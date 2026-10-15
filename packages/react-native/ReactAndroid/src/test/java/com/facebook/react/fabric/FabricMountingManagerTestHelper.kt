@@ -35,7 +35,7 @@ class FabricMountingManagerTestHelper private constructor(fabricUIManager: Fabri
 
   external fun drainPreallocationQueue()
 
-  external fun mountCreate(surfaceId: Int, tag: Int)
+  external fun executeCreateMutation(surfaceId: Int, tag: Int)
 
   external fun dropFamily(tag: Int)
 

@@ -117,7 +117,9 @@ void FabricMountingManagerTestHelper::drainPreallocationQueue() {
   mountingManager_->drainPreallocateViewsQueue();
 }
 
-void FabricMountingManagerTestHelper::mountCreate(jint surfaceId, jint tag) {
+void FabricMountingManagerTestHelper::executeCreateMutation(
+    jint surfaceId,
+    jint tag) {
   auto telemetry = TransactionTelemetry{};
   telemetry.willCommit();
   telemetry.willDiff();
@@ -300,7 +302,8 @@ void FabricMountingManagerTestHelper::registerNatives() {
           "drainPreallocationQueue",
           FabricMountingManagerTestHelper::drainPreallocationQueue),
       makeNativeMethod(
-          "mountCreate", FabricMountingManagerTestHelper::mountCreate),
+          "executeCreateMutation",
+          FabricMountingManagerTestHelper::executeCreateMutation),
       makeNativeMethod(
           "dropFamily", FabricMountingManagerTestHelper::dropFamily),
       makeNativeMethod(
