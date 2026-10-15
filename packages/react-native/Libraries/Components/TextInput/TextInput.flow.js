@@ -850,6 +850,9 @@ type TextInputBaseProps = Readonly<{
    * This will be called with `{ nativeEvent: { key: keyValue } }`
    * where `keyValue` is `'Enter'` or `'Backspace'` for respective keys and
    * the typed-in character otherwise including `' '` for space.
+   * On Android, keys pressed on a hardware keyboard are reported as well, and a
+   * key that types no character by its `KeyboardEvent.key` value, such as
+   * `'ArrowLeft'` or `'Home'`.
    * Fires before `onChange` callbacks.
    */
   onKeyPress?: ?(e: TextInputKeyPressEvent) => unknown,

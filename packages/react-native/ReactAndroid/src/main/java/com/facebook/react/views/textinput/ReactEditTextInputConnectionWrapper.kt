@@ -42,8 +42,8 @@ import com.facebook.react.uimanager.events.EventDispatcher
  * <p>Another function of this class is to detect backspaces when the cursor is at the beginning of
  * the [android.widget.EditText], i.e no text is deleted.
  *
- * <p>N.B. this class is only applicable for soft keyboards behavior. For hardware keyboards
- * [android.view.View.onKeyDown] can be overridden to obtain the keycode of the key pressed.
+ * <p>N.B. this class is only applicable for soft keyboards behavior. A hardware keyboard's keys
+ * never pass through the [InputConnection]; [ReactEditText.onKeyDown] reports them.
  */
 internal class ReactEditTextInputConnectionWrapper(
     target: InputConnection,
@@ -116,6 +116,7 @@ internal class ReactEditTextInputConnectionWrapper(
   // [InputConnection.deleteSurroundingText] & [InputConnection.commitText]
   // in each case, respectively.
   override fun sendKeyEvent(event: KeyEvent): Boolean {
+    editText.noteKeyEventFromInputConnection(event)
     if (event.action == KeyEvent.ACTION_DOWN) {
       val isNumberKey = event.unicodeChar in 48..57
       when (event.keyCode) {

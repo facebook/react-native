@@ -874,7 +874,7 @@ export interface TextInputProps
    * where keyValue is 'Enter' or 'Backspace' for respective keys and the typed-in character otherwise including ' ' for space.
    *
    * Fires before onChange callbacks.
-   * Note: on Android only the inputs from soft keyboard are handled, not the hardware keyboard inputs.
+   * On Android, keys pressed on a hardware keyboard are reported as well, and a key that types no character by its KeyboardEvent.key value, such as 'ArrowLeft' or 'Home'.
    */
   onKeyPress?: ((e: TextInputKeyPressEvent) => void) | undefined;
 
