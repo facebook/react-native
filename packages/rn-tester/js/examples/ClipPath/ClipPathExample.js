@@ -108,7 +108,9 @@ function ExampleBox({
       <View style={[styles.outerBox, {clipPath}, style]}>
         {children != null ? children : <View style={styles.innerBox} />}
       </View>
-      {label != null && <RNTesterText style={styles.demoLabel}>{label}</RNTesterText>}
+      {label != null && (
+        <RNTesterText style={styles.demoLabel}>{label}</RNTesterText>
+      )}
     </View>
   );
 }
