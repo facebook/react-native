@@ -137,6 +137,41 @@ class ReactEditTextKeyPressTest {
     window.dispatchKeyEvent(keyEvent(KeyEvent.ACTION_UP, keyCode, downTime, metaState))
   }
 
+  // Robolectric's key character map has no dead keys and ignores Alt, so this event carries its
+  // own.
+  private class LayoutKeyEvent(
+      action: Int,
+      keyCode: Int,
+      downTime: Long,
+      metaState: Int,
+      private val layout: (metaState: Int) -> Int,
+  ) :
+      KeyEvent(
+          downTime,
+          downTime,
+          action,
+          keyCode,
+          0,
+          metaState,
+          KeyCharacterMap.VIRTUAL_KEYBOARD,
+          0,
+          0,
+          InputDevice.SOURCE_KEYBOARD,
+      ) {
+    override fun getUnicodeChar(metaState: Int): Int = layout(metaState)
+  }
+
+  private fun pressHardwareKeyOnLayout(keyCode: Int, metaState: Int, layout: (Int) -> Int) {
+    val downTime = nextDownTime++
+    val window = activity.window.decorView
+    window.dispatchKeyEvent(
+        LayoutKeyEvent(KeyEvent.ACTION_DOWN, keyCode, downTime, metaState, layout)
+    )
+    window.dispatchKeyEvent(
+        LayoutKeyEvent(KeyEvent.ACTION_UP, keyCode, downTime, metaState, layout)
+    )
+  }
+
   private fun openInputConnection(): InputConnection =
       checkNotNull(view.onCreateInputConnection(EditorInfo()))
 
@@ -172,6 +207,34 @@ class ReactEditTextKeyPressTest {
 
     assertThat(keyPresses.map { it.key to it.heldModifiers })
         .containsExactly("A" to setOf("shiftKey"), "z" to setOf("ctrlKey"))
+  }
+
+  @Test
+  fun characterTypedAfterADeadKeyIsReportedComposed() {
+    val acuteOnAltE = { metaState: Int ->
+      if ((metaState and KeyEvent.META_ALT_ON) != 0) KeyCharacterMap.COMBINING_ACCENT or '´'.code
+      else 'e'.code
+    }
+
+    pressHardwareKeyOnLayout(KeyEvent.KEYCODE_E, ALT_HELD, acuteOnAltE)
+    pressHardwareKeyOnLayout(KeyEvent.KEYCODE_E, 0, acuteOnAltE)
+
+    assertThat(keyPresses.map { it.key to it.heldModifiers })
+        .containsExactly("Dead" to setOf("altKey"), "é" to emptySet())
+    assertThat(view.text.toString()).isEqualTo("é")
+  }
+
+  @Test
+  fun altShortcutOnALayoutWhereAltTypesNothingIsReportedByItsKeysCharacter() {
+    val nothingOnAlt = { metaState: Int ->
+      if ((metaState and KeyEvent.META_ALT_ON) != 0) 0 else 'e'.code
+    }
+
+    pressHardwareKeyOnLayout(KeyEvent.KEYCODE_E, ALT_HELD, nothingOnAlt)
+
+    assertThat(keyPresses.map { it.key to it.heldModifiers })
+        .containsExactly("e" to setOf("altKey"))
+    assertThat(view.text.toString()).isEmpty()
   }
 
   @Test
@@ -282,5 +345,6 @@ class ReactEditTextKeyPressTest {
   private companion object {
     val MODIFIER_FIELDS = listOf("altKey", "ctrlKey", "metaKey", "shiftKey")
     const val SOFT_KEYBOARD_FLAGS = KeyEvent.FLAG_SOFT_KEYBOARD or KeyEvent.FLAG_KEEP_TOUCH_MODE
+    const val ALT_HELD = KeyEvent.META_ALT_ON or KeyEvent.META_ALT_LEFT_ON
   }
 }

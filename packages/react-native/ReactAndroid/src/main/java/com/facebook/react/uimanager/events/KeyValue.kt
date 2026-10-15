@@ -28,16 +28,24 @@ internal object KeyValue {
       }
 
   /**
-   * The character [event] types with Control and Meta released, because the key value of a shortcut
-   * such as Ctrl+Z is the character of its key.
+   * The character [event] types with Control and Meta released, and with Alt released too when Alt
+   * types nothing on the layout, because the key value of a shortcut such as Ctrl+Z or Alt+E is the
+   * character of its key.
    */
-  fun typedCharacter(event: AndroidKeyEvent): Int =
-      event.getUnicodeChar(event.metaState and SHORTCUT_MODIFIERS.inv())
+  fun typedCharacter(event: AndroidKeyEvent): Int {
+    val character = event.getUnicodeChar(event.metaState and SHORTCUT_MODIFIERS.inv())
+    return if (character != 0 || !event.isAltPressed) {
+      character
+    } else {
+      event.getUnicodeChar(event.metaState and (SHORTCUT_MODIFIERS or ALT_MODIFIERS).inv())
+    }
+  }
 
   fun isDeadKey(character: Int): Boolean = (character and KeyCharacterMap.COMBINING_ACCENT) != 0
 
   private const val SHORTCUT_MODIFIERS: Int =
       AndroidKeyEvent.META_CTRL_MASK or AndroidKeyEvent.META_META_MASK
+  private const val ALT_MODIFIERS: Int = AndroidKeyEvent.META_ALT_MASK
   private const val DEAD: String = "Dead"
   private const val UNIDENTIFIED: String = "Unidentified"
 
