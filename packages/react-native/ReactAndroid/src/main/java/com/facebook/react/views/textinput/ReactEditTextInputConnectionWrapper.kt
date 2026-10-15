@@ -37,11 +37,6 @@ import com.facebook.react.uimanager.events.EventDispatcher
  * composing text with [InputConnection.setComposingText] and commits a space character with a
  * separate call to [InputConnection.setComposingText]. Here we chose to emit the last input of a
  * batch edit as that tends to be the user input, but it's completely arbitrary.
- *
- * <p>N.B. this class reports only the keys an input method types as text. A key event, whether a
- * hardware keyboard sends it or an input method does through [InputConnection.sendKeyEvent] (a
- * backspace with nothing to delete, or a hardware keyboard's key it handles), is reported by
- * [ReactEditText.onKeyDown].
  */
 internal class ReactEditTextInputConnectionWrapper(
     target: InputConnection,
