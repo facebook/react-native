@@ -147,7 +147,8 @@ TEST_F(CSSClipPathTest, EllipseWithTwoRadii) {
 }
 
 TEST_F(CSSClipPathTest, EllipseWithPosition) {
-  auto result = parseCSSProperty<CSSClipPath>("ellipse(50px 25px at 100px 100px)");
+  auto result =
+      parseCSSProperty<CSSClipPath>("ellipse(50px 25px at 100px 100px)");
   decltype(result) expected = CSSClipPath{
       .shape = CSSEllipseShape{
           .rx = CSSLength{.value = 50.0f, .unit = CSSLengthUnit::Px},
@@ -309,7 +310,8 @@ TEST_F(CSSClipPathTest, RectBasic) {
 }
 
 TEST_F(CSSClipPathTest, RectWithBorderRadius) {
-  auto result = parseCSSProperty<CSSClipPath>("rect(10px 20px 30px 40px round 5px)");
+  auto result =
+      parseCSSProperty<CSSClipPath>("rect(10px 20px 30px 40px round 5px)");
   decltype(result) expected = CSSClipPath{
       .shape = CSSRectShape{
           .top = CSSLength{.value = 10.0f, .unit = CSSLengthUnit::Px},
@@ -343,7 +345,8 @@ TEST_F(CSSClipPathTest, XywhBasic) {
 }
 
 TEST_F(CSSClipPathTest, XywhWithBorderRadius) {
-  auto result = parseCSSProperty<CSSClipPath>("xywh(10px 20px 100px 50px round 5px)");
+  auto result =
+      parseCSSProperty<CSSClipPath>("xywh(10px 20px 100px 50px round 5px)");
   decltype(result) expected = CSSClipPath{
       .shape = CSSXywhShape{
           .x = CSSLength{.value = 10.0f, .unit = CSSLengthUnit::Px},

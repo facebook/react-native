@@ -7,9 +7,9 @@
 
 #import "RCTClipPathUtils.h"
 
-#import "RCTBasicShapeUtils.h"
 #import <React/RCTConversions.h>
 #import <react/renderer/components/view/conversions.h>
+#import "RCTBasicShapeUtils.h"
 
 using namespace facebook::react;
 
@@ -21,7 +21,7 @@ using namespace facebook::react;
                                 yogaStylableProps:(const YogaStylableProps &)yogaStylableProps
 {
   RCTCornerRadii adjustedRadii = cornerRadii;
-  
+
   switch (geometryBox) {
     case GeometryBox::MarginBox: {
       // Margin-box: extend border-radius by margin amount
@@ -41,7 +41,7 @@ using namespace facebook::react;
     case GeometryBox::ViewBox:
       // Border-box: use border-radius as-is (this is the reference)
       break;
-      
+
     case GeometryBox::PaddingBox: {
       // Padding-box: reduce border-radius by border width
       adjustedRadii.topLeftHorizontal = MAX(0.0f, cornerRadii.topLeftHorizontal - layoutMetrics.borderWidth.left);
@@ -50,7 +50,8 @@ using namespace facebook::react;
       adjustedRadii.topRightVertical = MAX(0.0f, cornerRadii.topRightVertical - layoutMetrics.borderWidth.top);
       adjustedRadii.bottomLeftHorizontal = MAX(0.0f, cornerRadii.bottomLeftHorizontal - layoutMetrics.borderWidth.left);
       adjustedRadii.bottomLeftVertical = MAX(0.0f, cornerRadii.bottomLeftVertical - layoutMetrics.borderWidth.bottom);
-      adjustedRadii.bottomRightHorizontal = MAX(0.0f, cornerRadii.bottomRightHorizontal - layoutMetrics.borderWidth.right);
+      adjustedRadii.bottomRightHorizontal =
+          MAX(0.0f, cornerRadii.bottomRightHorizontal - layoutMetrics.borderWidth.right);
       adjustedRadii.bottomRightVertical = MAX(0.0f, cornerRadii.bottomRightVertical - layoutMetrics.borderWidth.bottom);
       break;
     }
@@ -62,14 +63,17 @@ using namespace facebook::react;
       adjustedRadii.topLeftVertical = MAX(0.0f, cornerRadii.topLeftVertical - layoutMetrics.contentInsets.top);
       adjustedRadii.topRightHorizontal = MAX(0.0f, cornerRadii.topRightHorizontal - layoutMetrics.contentInsets.right);
       adjustedRadii.topRightVertical = MAX(0.0f, cornerRadii.topRightVertical - layoutMetrics.contentInsets.top);
-      adjustedRadii.bottomLeftHorizontal = MAX(0.0f, cornerRadii.bottomLeftHorizontal - layoutMetrics.contentInsets.left);
+      adjustedRadii.bottomLeftHorizontal =
+          MAX(0.0f, cornerRadii.bottomLeftHorizontal - layoutMetrics.contentInsets.left);
       adjustedRadii.bottomLeftVertical = MAX(0.0f, cornerRadii.bottomLeftVertical - layoutMetrics.contentInsets.bottom);
-      adjustedRadii.bottomRightHorizontal = MAX(0.0f, cornerRadii.bottomRightHorizontal - layoutMetrics.contentInsets.right);
-      adjustedRadii.bottomRightVertical = MAX(0.0f, cornerRadii.bottomRightVertical - layoutMetrics.contentInsets.bottom);
+      adjustedRadii.bottomRightHorizontal =
+          MAX(0.0f, cornerRadii.bottomRightHorizontal - layoutMetrics.contentInsets.right);
+      adjustedRadii.bottomRightVertical =
+          MAX(0.0f, cornerRadii.bottomRightVertical - layoutMetrics.contentInsets.bottom);
       break;
     }
   }
-  
+
   return adjustedRadii;
 }
 
@@ -91,13 +95,12 @@ using namespace facebook::react;
     case GeometryBox::MarginBox:
       auto marginInsets = marginInsetsFromYogaStylableProps(yogaStylableProps);
       return CGRectMake(
-        bounds.origin.x - marginInsets.left,
-        bounds.origin.y - marginInsets.top,
-        bounds.size.width + marginInsets.left + marginInsets.right,
-        bounds.size.height + marginInsets.top + marginInsets.bottom
-      );
+          bounds.origin.x - marginInsets.left,
+          bounds.origin.y - marginInsets.top,
+          bounds.size.width + marginInsets.left + marginInsets.right,
+          bounds.size.height + marginInsets.top + marginInsets.bottom);
   }
-  
+
   return bounds;
 }
 
@@ -114,7 +117,7 @@ using namespace facebook::react;
                  yogaStylableProps:yogaStylableProps
                             bounds:bounds];
   }
-  
+
   UIBezierPath *path = nil;
   if (clipPath.shape.has_value()) {
     path = [RCTBasicShapeUtils createPathFromBasicShape:clipPath.shape.value() bounds:box];

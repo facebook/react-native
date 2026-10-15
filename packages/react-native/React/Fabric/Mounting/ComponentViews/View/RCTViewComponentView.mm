@@ -1473,21 +1473,22 @@ static RCTBorderStyle RCTBorderStyleFromOutlineStyle(OutlineStyle outlineStyle)
 
   // Handle clip-path property
   if (_props->clipPath != nullptr) {
-		if (auto yogaStylableProps = std::static_pointer_cast<const YogaStylableProps>(_props)) {
-			CALayer *maskLayer = [RCTClipPathUtils createClipPathLayer:*_props->clipPath
-																									 layoutMetrics:_layoutMetrics
-																							 yogaStylableProps:*yogaStylableProps.get()
-																													bounds:layer.bounds
-																										 cornerRadii:RCTCornerRadiiFromBorderRadii(borderMetrics.borderRadii)];
-			if (maskLayer != nil) {
-				self.currentContainerView.layer.mask = maskLayer;
-				
-				for (UIView *subview in self.currentContainerView.subviews) {
-					if ([subview isKindOfClass:[UIImageView class]]) {
-						subview.layer.mask = maskLayer;
-					}
-				}
-			}
+    if (auto yogaStylableProps = std::static_pointer_cast<const YogaStylableProps>(_props)) {
+      CALayer *maskLayer =
+          [RCTClipPathUtils createClipPathLayer:*_props->clipPath
+                                  layoutMetrics:_layoutMetrics
+                              yogaStylableProps:*yogaStylableProps.get()
+                                         bounds:layer.bounds
+                                    cornerRadii:RCTCornerRadiiFromBorderRadii(borderMetrics.borderRadii)];
+      if (maskLayer != nil) {
+        self.currentContainerView.layer.mask = maskLayer;
+
+        for (UIView *subview in self.currentContainerView.subviews) {
+          if ([subview isKindOfClass:[UIImageView class]]) {
+            subview.layer.mask = maskLayer;
+          }
+        }
+      }
     }
   } else if (self.currentContainerView.clipsToBounds) {
     // Handle regular clipsToBounds clipping when no clip-path is specified

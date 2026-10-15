@@ -37,8 +37,7 @@ struct CSSInsetShape {
 
 template <>
 struct CSSDataTypeParser<CSSInsetShape> {
-  static auto consumeFunctionBlock(const CSSFunctionBlock &func, CSSValueParser &parser)
-      -> std::optional<CSSInsetShape>
+  static auto consumeFunctionBlock(const CSSFunctionBlock &func, CSSValueParser &parser) -> std::optional<CSSInsetShape>
   {
     if (!iequals(func.name, "inset")) {
       return {};

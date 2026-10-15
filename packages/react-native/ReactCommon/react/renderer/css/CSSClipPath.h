@@ -76,7 +76,6 @@ using CSSBasicShapeTypes =
  */
 using CSSBasicShape = CSSVariantWithTypes<CSSBasicShapeTypes>;
 
-
 /**
  * Representation of <clip-path>
  * https://www.w3.org/TR/css-masking-1/#the-clip-path
