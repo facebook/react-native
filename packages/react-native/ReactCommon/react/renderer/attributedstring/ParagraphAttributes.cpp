@@ -23,8 +23,8 @@ bool ParagraphAttributes::operator==(const ParagraphAttributes& rhs) const {
              adjustsFontSizeToFit,
              includeFontPadding,
              android_hyphenationFrequency,
-             android_lineBreakStyle,
-             android_lineBreakWordStyle,
+             lineBreak,
+             wordBreak,
              textAlignVertical) ==
       std::tie(
              rhs.maximumNumberOfLines,
@@ -34,8 +34,8 @@ bool ParagraphAttributes::operator==(const ParagraphAttributes& rhs) const {
              rhs.adjustsFontSizeToFit,
              rhs.includeFontPadding,
              rhs.android_hyphenationFrequency,
-             rhs.android_lineBreakStyle,
-             rhs.android_lineBreakWordStyle,
+             rhs.lineBreak,
+             rhs.wordBreak,
              rhs.textAlignVertical) &&
       floatEquality(minimumFontSize, rhs.minimumFontSize) &&
       floatEquality(minimumFontScale, rhs.minimumFontScale);
@@ -80,13 +80,9 @@ SharedDebugStringConvertibleList ParagraphAttributes::getDebugProps() const {
           android_hyphenationFrequency,
           paragraphAttributes.android_hyphenationFrequency),
       debugStringConvertibleItem(
-          "android_lineBreakStyle",
-          android_lineBreakStyle,
-          paragraphAttributes.android_lineBreakStyle),
+          "lineBreak", lineBreak, paragraphAttributes.lineBreak),
       debugStringConvertibleItem(
-          "android_lineBreakWordStyle",
-          android_lineBreakWordStyle,
-          paragraphAttributes.android_lineBreakWordStyle),
+          "wordBreak", wordBreak, paragraphAttributes.wordBreak),
       debugStringConvertibleItem(
           "textAlignVertical",
           textAlignVertical,

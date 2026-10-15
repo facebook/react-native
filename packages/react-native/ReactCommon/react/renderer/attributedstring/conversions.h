@@ -1034,86 +1034,86 @@ inline void fromRawValue(const PropsParserContext &context, const RawValue &valu
   result = HyphenationFrequency::None;
 }
 
-inline std::string toString(const LineBreakStyle &lineBreakStyle)
+inline std::string toString(const LineBreak &lineBreak)
 {
-  switch (lineBreakStyle) {
-    case LineBreakStyle::None:
-      return "none";
-    case LineBreakStyle::Loose:
+  switch (lineBreak) {
+    case LineBreak::Auto:
+      return "auto";
+    case LineBreak::Loose:
       return "loose";
-    case LineBreakStyle::Normal:
+    case LineBreak::Normal:
       return "normal";
-    case LineBreakStyle::Strict:
+    case LineBreak::Strict:
       return "strict";
   }
 
-  LOG(ERROR) << "Unsupported LineBreakStyle value";
+  LOG(ERROR) << "Unsupported LineBreak value";
   react_native_expect(false);
-  return "none";
+  return "auto";
 }
 
-inline void fromRawValue(const PropsParserContext &context, const RawValue &value, LineBreakStyle &result)
+inline void fromRawValue(const PropsParserContext &context, const RawValue &value, LineBreak &result)
 {
   react_native_expect(value.hasType<std::string>());
   if (value.hasType<std::string>()) {
     auto string = (std::string)value;
-    if (string == "none") {
-      result = LineBreakStyle::None;
+    if (string == "auto") {
+      result = LineBreak::Auto;
     } else if (string == "loose") {
-      result = LineBreakStyle::Loose;
+      result = LineBreak::Loose;
     } else if (string == "normal") {
-      result = LineBreakStyle::Normal;
+      result = LineBreak::Normal;
     } else if (string == "strict") {
-      result = LineBreakStyle::Strict;
+      result = LineBreak::Strict;
     } else {
       // sane default
-      LOG(ERROR) << "Unsupported LineBreakStyle value: " << string;
+      LOG(ERROR) << "Unsupported LineBreak value: " << string;
       react_native_expect(false);
-      result = LineBreakStyle::None;
+      result = LineBreak::Auto;
     }
     return;
   }
 
-  LOG(ERROR) << "Unsupported LineBreakStyle type";
+  LOG(ERROR) << "Unsupported LineBreak type";
   react_native_expect(false);
-  result = LineBreakStyle::None;
+  result = LineBreak::Auto;
 }
 
-inline std::string toString(const LineBreakWordStyle &lineBreakWordStyle)
+inline std::string toString(const WordBreak &wordBreak)
 {
-  switch (lineBreakWordStyle) {
-    case LineBreakWordStyle::None:
-      return "none";
-    case LineBreakWordStyle::Phrase:
-      return "phrase";
+  switch (wordBreak) {
+    case WordBreak::Normal:
+      return "normal";
+    case WordBreak::AutoPhrase:
+      return "auto-phrase";
   }
 
-  LOG(ERROR) << "Unsupported LineBreakWordStyle value";
+  LOG(ERROR) << "Unsupported WordBreak value";
   react_native_expect(false);
-  return "none";
+  return "normal";
 }
 
-inline void fromRawValue(const PropsParserContext &context, const RawValue &value, LineBreakWordStyle &result)
+inline void fromRawValue(const PropsParserContext &context, const RawValue &value, WordBreak &result)
 {
   react_native_expect(value.hasType<std::string>());
   if (value.hasType<std::string>()) {
     auto string = (std::string)value;
-    if (string == "none") {
-      result = LineBreakWordStyle::None;
-    } else if (string == "phrase") {
-      result = LineBreakWordStyle::Phrase;
+    if (string == "normal") {
+      result = WordBreak::Normal;
+    } else if (string == "auto-phrase") {
+      result = WordBreak::AutoPhrase;
     } else {
       // sane default
-      LOG(ERROR) << "Unsupported LineBreakWordStyle value: " << string;
+      LOG(ERROR) << "Unsupported WordBreak value: " << string;
       react_native_expect(false);
-      result = LineBreakWordStyle::None;
+      result = WordBreak::Normal;
     }
     return;
   }
 
-  LOG(ERROR) << "Unsupported LineBreakWordStyle type";
+  LOG(ERROR) << "Unsupported WordBreak type";
   react_native_expect(false);
-  result = LineBreakWordStyle::None;
+  result = WordBreak::Normal;
 }
 
 inline ParagraphAttributes convertRawProp(
@@ -1178,18 +1178,10 @@ inline ParagraphAttributes convertRawProp(
       "android_hyphenationFrequency",
       sourceParagraphAttributes.android_hyphenationFrequency,
       defaultParagraphAttributes.android_hyphenationFrequency);
-  paragraphAttributes.android_lineBreakStyle = convertRawProp(
-      context,
-      rawProps,
-      "android_lineBreakStyle",
-      sourceParagraphAttributes.android_lineBreakStyle,
-      defaultParagraphAttributes.android_lineBreakStyle);
-  paragraphAttributes.android_lineBreakWordStyle = convertRawProp(
-      context,
-      rawProps,
-      "android_lineBreakWordStyle",
-      sourceParagraphAttributes.android_lineBreakWordStyle,
-      defaultParagraphAttributes.android_lineBreakWordStyle);
+  paragraphAttributes.lineBreak = convertRawProp(
+      context, rawProps, "lineBreak", sourceParagraphAttributes.lineBreak, defaultParagraphAttributes.lineBreak);
+  paragraphAttributes.wordBreak = convertRawProp(
+      context, rawProps, "wordBreak", sourceParagraphAttributes.wordBreak, defaultParagraphAttributes.wordBreak);
   paragraphAttributes.textAlignVertical = convertRawProp(
       context,
       rawProps,
@@ -1284,8 +1276,8 @@ constexpr static MapBuffer::Key PA_KEY_MINIMUM_FONT_SIZE = 6;
 constexpr static MapBuffer::Key PA_KEY_TEXT_ALIGN_VERTICAL = 8;
 constexpr static MapBuffer::Key PA_KEY_TEXT_WIDTH_MODE = 9;
 constexpr static MapBuffer::Key PA_KEY_MINIMUM_FONT_SCALE = 10;
-constexpr static MapBuffer::Key PA_KEY_LINE_BREAK_STYLE = 11;
-constexpr static MapBuffer::Key PA_KEY_LINE_BREAK_WORD_STYLE = 12;
+constexpr static MapBuffer::Key PA_KEY_LINE_BREAK = 11;
+constexpr static MapBuffer::Key PA_KEY_WORD_BREAK = 12;
 
 inline MapBuffer toMapBuffer(const ParagraphAttributes &paragraphAttributes)
 {
@@ -1297,8 +1289,8 @@ inline MapBuffer toMapBuffer(const ParagraphAttributes &paragraphAttributes)
   builder.putBool(PA_KEY_ADJUST_FONT_SIZE_TO_FIT, paragraphAttributes.adjustsFontSizeToFit);
   builder.putBool(PA_KEY_INCLUDE_FONT_PADDING, paragraphAttributes.includeFontPadding);
   builder.putString(PA_KEY_HYPHENATION_FREQUENCY, toString(paragraphAttributes.android_hyphenationFrequency));
-  builder.putString(PA_KEY_LINE_BREAK_STYLE, toString(paragraphAttributes.android_lineBreakStyle));
-  builder.putString(PA_KEY_LINE_BREAK_WORD_STYLE, toString(paragraphAttributes.android_lineBreakWordStyle));
+  builder.putString(PA_KEY_LINE_BREAK, toString(paragraphAttributes.lineBreak));
+  builder.putString(PA_KEY_WORD_BREAK, toString(paragraphAttributes.wordBreak));
   if (paragraphAttributes.textAlignVertical.has_value()) {
     builder.putString(PA_KEY_TEXT_ALIGN_VERTICAL, toString(*paragraphAttributes.textAlignVertical));
   }

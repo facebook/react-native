@@ -91,16 +91,16 @@ export interface TextPropsAndroid {
 
   /**
    * Strictness of the line-breaking rules (CSS `line-break`).
-   * Ignored below Android 13 (API level 33).
+   * Currently Android only, and ignored below Android 13 (API level 33).
    */
-  android_lineBreakStyle?: 'none' | 'loose' | 'normal' | 'strict' | undefined;
+  lineBreak?: 'auto' | 'loose' | 'normal' | 'strict' | undefined;
 
   /**
-   * Word-based line breaking (CSS `word-break: auto-phrase`).
-   * Ignored below Android 13 (API level 33). Has no effect where the device
-   * locale has no phrase-based breaking.
+   * Word-based line breaking (CSS `word-break`). Currently Android only, and
+   * ignored below Android 13 (API level 33). `'auto-phrase'` has no effect
+   * where the device locale has no phrase-based breaking.
    */
-  android_lineBreakWordStyle?: 'none' | 'phrase' | undefined;
+  wordBreak?: 'normal' | 'auto-phrase' | undefined;
 }
 
 // https://reactnative.dev/docs/text#props

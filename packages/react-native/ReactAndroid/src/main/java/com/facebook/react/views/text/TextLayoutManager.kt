@@ -100,8 +100,8 @@ internal object TextLayoutManager {
   const val PA_KEY_TEXT_ALIGN_VERTICAL: Int = 8
   const val PA_KEY_TEXT_WIDTH_MODE: Int = 9
   const val PA_KEY_MINIMUM_FONT_SCALE: Int = 10
-  const val PA_KEY_LINE_BREAK_STYLE: Int = 11
-  const val PA_KEY_LINE_BREAK_WORD_STYLE: Int = 12
+  const val PA_KEY_LINE_BREAK: Int = 11
+  const val PA_KEY_WORD_BREAK: Int = 12
 
   private val TAG: String = TextLayoutManager::class.java.simpleName
 
@@ -1197,14 +1197,14 @@ internal object TextLayoutManager {
         )
     val lineBreakStyle =
         TextAttributeProps.getLineBreakStyle(
-            if (paragraphAttributes.contains(PA_KEY_LINE_BREAK_STYLE))
-                paragraphAttributes.getString(PA_KEY_LINE_BREAK_STYLE)
+            if (paragraphAttributes.contains(PA_KEY_LINE_BREAK))
+                paragraphAttributes.getString(PA_KEY_LINE_BREAK)
             else null,
         )
     val lineBreakWordStyle =
         TextAttributeProps.getLineBreakWordStyle(
-            if (paragraphAttributes.contains(PA_KEY_LINE_BREAK_WORD_STYLE))
-                paragraphAttributes.getString(PA_KEY_LINE_BREAK_WORD_STYLE)
+            if (paragraphAttributes.contains(PA_KEY_WORD_BREAK))
+                paragraphAttributes.getString(PA_KEY_WORD_BREAK)
             else null,
         )
     val adjustFontSizeToFit =

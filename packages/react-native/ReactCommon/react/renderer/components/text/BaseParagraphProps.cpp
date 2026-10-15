@@ -117,17 +117,9 @@ void BaseParagraphProps::setProp(
         android_hyphenationFrequency,
         "android_hyphenationFrequency");
     REBUILD_FIELD_SWITCH_CASE(
-        paDefaults,
-        value,
-        paragraphAttributes,
-        android_lineBreakStyle,
-        "android_lineBreakStyle");
+        paDefaults, value, paragraphAttributes, lineBreak, "lineBreak");
     REBUILD_FIELD_SWITCH_CASE(
-        paDefaults,
-        value,
-        paragraphAttributes,
-        android_lineBreakWordStyle,
-        "android_lineBreakWordStyle");
+        paDefaults, value, paragraphAttributes, wordBreak, "wordBreak");
     REBUILD_FIELD_SWITCH_CASE(
         paDefaults,
         value,

@@ -69,14 +69,16 @@ class ParagraphAttributes : public DebugStringConvertible {
   HyphenationFrequency android_hyphenationFrequency{};
 
   /*
-   * (Android only) Strictness of the line-breaking rules.
+   * Strictness of the line-breaking rules (CSS `line-break`).
+   * Currently applied on Android only.
    */
-  LineBreakStyle android_lineBreakStyle{};
+  LineBreak lineBreak{};
 
   /*
-   * (Android only) Word-based line breaking.
+   * Word-based line breaking (CSS `word-break`).
+   * Currently applied on Android only.
    */
-  LineBreakWordStyle android_lineBreakWordStyle{};
+  WordBreak wordBreak{};
 
   /*
    * In case of font size adjustment enabled, defines the minimum font size.
@@ -122,8 +124,8 @@ struct hash<facebook::react::ParagraphAttributes> {
         attributes.minimumFontSize,
         attributes.includeFontPadding,
         attributes.android_hyphenationFrequency,
-        attributes.android_lineBreakStyle,
-        attributes.android_lineBreakWordStyle,
+        attributes.lineBreak,
+        attributes.wordBreak,
         attributes.minimumFontScale,
         attributes.textAlignVertical);
   }

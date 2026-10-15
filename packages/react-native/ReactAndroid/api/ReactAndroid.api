@@ -6079,8 +6079,6 @@ public class com/facebook/react/views/text/ReactTextViewManager : com/facebook/r
 	public final fun setAccessible (Lcom/facebook/react/views/text/ReactTextView;Z)V
 	public final fun setAdjustFontSizeToFit (Lcom/facebook/react/views/text/ReactTextView;Z)V
 	public final fun setAndroidHyphenationFrequency (Lcom/facebook/react/views/text/ReactTextView;Ljava/lang/String;)V
-	public final fun setAndroidLineBreakStyle (Lcom/facebook/react/views/text/ReactTextView;Ljava/lang/String;)V
-	public final fun setAndroidLineBreakWordStyle (Lcom/facebook/react/views/text/ReactTextView;Ljava/lang/String;)V
 	public final fun setBorderColor (Lcom/facebook/react/views/text/ReactTextView;ILjava/lang/Integer;)V
 	public final fun setBorderRadius (Lcom/facebook/react/views/text/ReactTextView;IF)V
 	public final fun setBorderRadius (Lcom/facebook/react/views/text/ReactTextView;ILcom/facebook/react/bridge/Dynamic;)V
@@ -6092,6 +6090,7 @@ public class com/facebook/react/views/text/ReactTextViewManager : com/facebook/r
 	public final fun setFontSize (Lcom/facebook/react/views/text/ReactTextView;F)V
 	public final fun setIncludeFontPadding (Lcom/facebook/react/views/text/ReactTextView;Z)V
 	public final fun setLetterSpacing (Lcom/facebook/react/views/text/ReactTextView;F)V
+	public final fun setLineBreak (Lcom/facebook/react/views/text/ReactTextView;Ljava/lang/String;)V
 	public final fun setNumberOfLines (Lcom/facebook/react/views/text/ReactTextView;I)V
 	public final fun setOverflow (Lcom/facebook/react/views/text/ReactTextView;Ljava/lang/String;)V
 	public synthetic fun setPadding (Landroid/view/View;IIII)V
@@ -6100,6 +6099,7 @@ public class com/facebook/react/views/text/ReactTextViewManager : com/facebook/r
 	public final fun setSelectable (Lcom/facebook/react/views/text/ReactTextView;Z)V
 	public final fun setSelectionColor (Lcom/facebook/react/views/text/ReactTextView;Ljava/lang/Integer;)V
 	public final fun setTextAlignVertical (Lcom/facebook/react/views/text/ReactTextView;Ljava/lang/String;)V
+	public final fun setWordBreak (Lcom/facebook/react/views/text/ReactTextView;Ljava/lang/String;)V
 	public synthetic fun updateExtraData (Landroid/view/View;Ljava/lang/Object;)V
 	public fun updateExtraData (Lcom/facebook/react/views/text/ReactTextView;Ljava/lang/Object;)V
 	public synthetic fun updateState (Landroid/view/View;Lcom/facebook/react/uimanager/ReactStylesDiffMap;Lcom/facebook/react/uimanager/StateWrapper;)Ljava/lang/Object;

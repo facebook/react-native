@@ -93,12 +93,12 @@ TEST(ParagraphAttributesTest, testAutoTextWidthModeSerializesAsAuto) {
   EXPECT_EQ(toString(TextWidthMode::Auto), "auto");
 }
 
-TEST(ParagraphAttributesTest, testOperatorEqualsIncludesLineBreakStyles) {
+TEST(ParagraphAttributesTest, testOperatorEqualsIncludesLineBreakAndWordBreak) {
   ParagraphAttributes defaults{};
   ParagraphAttributes strict{};
-  strict.android_lineBreakStyle = LineBreakStyle::Strict;
+  strict.lineBreak = LineBreak::Strict;
   ParagraphAttributes phrase{};
-  phrase.android_lineBreakWordStyle = LineBreakWordStyle::Phrase;
+  phrase.wordBreak = WordBreak::AutoPhrase;
 
   EXPECT_FALSE(defaults == strict);
   EXPECT_FALSE(defaults == phrase);
@@ -107,22 +107,24 @@ TEST(ParagraphAttributesTest, testOperatorEqualsIncludesLineBreakStyles) {
       std::hash<ParagraphAttributes>{}(strict));
 }
 
-TEST(ParagraphAttributesTest, testLineBreakStylesDefaultToNone) {
+TEST(
+    ParagraphAttributesTest,
+    testLineBreakAndWordBreakDefaultToCssInitialValues) {
   ParagraphAttributes defaults{};
 
-  EXPECT_EQ(defaults.android_lineBreakStyle, LineBreakStyle::None);
-  EXPECT_EQ(defaults.android_lineBreakWordStyle, LineBreakWordStyle::None);
+  EXPECT_EQ(defaults.lineBreak, LineBreak::Auto);
+  EXPECT_EQ(defaults.wordBreak, WordBreak::Normal);
 }
 
 // The Android TextLayoutManager parses these strings, so they must match the
 // values accepted from JavaScript.
-TEST(ParagraphAttributesTest, testLineBreakStylesSerializeToPropValues) {
-  EXPECT_EQ(toString(LineBreakStyle::None), "none");
-  EXPECT_EQ(toString(LineBreakStyle::Loose), "loose");
-  EXPECT_EQ(toString(LineBreakStyle::Normal), "normal");
-  EXPECT_EQ(toString(LineBreakStyle::Strict), "strict");
-  EXPECT_EQ(toString(LineBreakWordStyle::None), "none");
-  EXPECT_EQ(toString(LineBreakWordStyle::Phrase), "phrase");
+TEST(ParagraphAttributesTest, testLineBreakAndWordBreakSerializeToPropValues) {
+  EXPECT_EQ(toString(LineBreak::Auto), "auto");
+  EXPECT_EQ(toString(LineBreak::Loose), "loose");
+  EXPECT_EQ(toString(LineBreak::Normal), "normal");
+  EXPECT_EQ(toString(LineBreak::Strict), "strict");
+  EXPECT_EQ(toString(WordBreak::Normal), "normal");
+  EXPECT_EQ(toString(WordBreak::AutoPhrase), "auto-phrase");
 }
 
 } // namespace facebook::react

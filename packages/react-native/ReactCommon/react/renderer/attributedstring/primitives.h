@@ -164,23 +164,23 @@ enum class HyphenationFrequency {
 };
 
 /*
- * (Android only) Strictness of the line-breaking rules, as CSS `line-break`.
- * Values match `android.graphics.text.LineBreakConfig.LINE_BREAK_STYLE_*`.
+ * Strictness of the line-breaking rules, as CSS `line-break`.
+ * Currently applied on Android only.
  */
-enum class LineBreakStyle {
-  None, // The platform's default rules.
+enum class LineBreak {
+  Auto, // The platform's default rules.
   Loose, // The least restrictive rules.
   Normal, // The most common rules.
   Strict // The most restrictive rules.
 };
 
 /*
- * (Android only) Word-based line breaking, as CSS `word-break: auto-phrase`.
- * Values match `android.graphics.text.LineBreakConfig.LINE_BREAK_WORD_STYLE_*`.
+ * Word-based line breaking, as CSS `word-break`.
+ * Currently applied on Android only.
  */
-enum class LineBreakWordStyle {
-  None, // No word-based line breaking.
-  Phrase // Break Japanese text at phrase boundaries.
+enum class WordBreak {
+  Normal, // No word-based line breaking.
+  AutoPhrase // Break Japanese text at phrase boundaries.
 };
 
 } // namespace facebook::react

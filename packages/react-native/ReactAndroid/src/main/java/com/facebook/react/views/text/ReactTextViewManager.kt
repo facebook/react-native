@@ -343,17 +343,17 @@ public constructor(
     }
   }
 
-  @ReactProp(name = "android_lineBreakStyle")
-  public fun setAndroidLineBreakStyle(view: ReactTextView, lineBreakStyle: String?) {
+  @ReactProp(name = "lineBreak")
+  public fun setLineBreak(view: ReactTextView, lineBreak: String?) {
     if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
-      view.lineBreakStyle = TextAttributeProps.getLineBreakStyle(lineBreakStyle)
+      view.lineBreakStyle = TextAttributeProps.getLineBreakStyle(lineBreak)
     }
   }
 
-  @ReactProp(name = "android_lineBreakWordStyle")
-  public fun setAndroidLineBreakWordStyle(view: ReactTextView, lineBreakWordStyle: String?) {
+  @ReactProp(name = "wordBreak")
+  public fun setWordBreak(view: ReactTextView, wordBreak: String?) {
     if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
-      view.lineBreakWordStyle = TextAttributeProps.getLineBreakWordStyle(lineBreakWordStyle)
+      view.lineBreakWordStyle = TextAttributeProps.getLineBreakWordStyle(wordBreak)
     }
   }
 

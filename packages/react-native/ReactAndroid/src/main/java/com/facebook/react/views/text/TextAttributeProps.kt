@@ -616,28 +616,30 @@ public class TextAttributeProps private constructor() {
 
     // The LineBreakConfig constants are inlined at compile time, so reading them is safe below API
     // 33. Callers apply the result only on API 33+.
+    // Maps CSS `line-break` values to LineBreakConfig.LINE_BREAK_STYLE_*.
     @SuppressLint("InlinedApi")
-    internal fun getLineBreakStyle(lineBreakStyle: String?): Int =
-        when (lineBreakStyle) {
+    internal fun getLineBreakStyle(lineBreak: String?): Int =
+        when (lineBreak) {
           null,
-          "none" -> LineBreakConfig.LINE_BREAK_STYLE_NONE
+          "auto" -> LineBreakConfig.LINE_BREAK_STYLE_NONE
           "loose" -> LineBreakConfig.LINE_BREAK_STYLE_LOOSE
           "normal" -> LineBreakConfig.LINE_BREAK_STYLE_NORMAL
           "strict" -> LineBreakConfig.LINE_BREAK_STYLE_STRICT
           else -> {
-            FLog.w(ReactConstants.TAG, "Invalid android_lineBreakStyle: $lineBreakStyle")
+            FLog.w(ReactConstants.TAG, "Invalid lineBreak: $lineBreak")
             LineBreakConfig.LINE_BREAK_STYLE_NONE
           }
         }
 
+    // Maps CSS `word-break` values to LineBreakConfig.LINE_BREAK_WORD_STYLE_*.
     @SuppressLint("InlinedApi")
-    internal fun getLineBreakWordStyle(lineBreakWordStyle: String?): Int =
-        when (lineBreakWordStyle) {
+    internal fun getLineBreakWordStyle(wordBreak: String?): Int =
+        when (wordBreak) {
           null,
-          "none" -> LineBreakConfig.LINE_BREAK_WORD_STYLE_NONE
-          "phrase" -> LineBreakConfig.LINE_BREAK_WORD_STYLE_PHRASE
+          "normal" -> LineBreakConfig.LINE_BREAK_WORD_STYLE_NONE
+          "auto-phrase" -> LineBreakConfig.LINE_BREAK_WORD_STYLE_PHRASE
           else -> {
-            FLog.w(ReactConstants.TAG, "Invalid android_lineBreakWordStyle: $lineBreakWordStyle")
+            FLog.w(ReactConstants.TAG, "Invalid wordBreak: $wordBreak")
             LineBreakConfig.LINE_BREAK_WORD_STYLE_NONE
           }
         }

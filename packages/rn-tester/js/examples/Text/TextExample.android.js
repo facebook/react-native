@@ -610,31 +610,27 @@ function HyphenationExample(props: {}): React.Node {
 const LINE_BREAK_SAMPLE =
   'キャッシュをチェックしてショートカットからコンピューターのメモリーをクリーンアップします。';
 
-function LineBreakStyleExample(props: {}): React.Node {
+function LineBreakExample(props: {}): React.Node {
   // Each paragraph has a background so that a mismatch between the measured
   // height and the drawn lines is visible. Requires Android 13 (API 33).
   return (
     <>
-      {(['none', 'loose', 'normal', 'strict'] as const).map(lineBreakStyle => (
-        <View key={lineBreakStyle} style={{marginBottom: 8}}>
+      {(['auto', 'loose', 'normal', 'strict'] as const).map(lineBreak => (
+        <View key={lineBreak} style={{marginBottom: 8}}>
           <RNTesterText style={{color: 'red'}}>
-            android_lineBreakStyle="{lineBreakStyle}"
+            lineBreak="{lineBreak}"
           </RNTesterText>
-          <RNTesterText
-            android_lineBreakStyle={lineBreakStyle}
-            style={styles.lineBreakSample}>
+          <RNTesterText lineBreak={lineBreak} style={styles.lineBreakSample}>
             {LINE_BREAK_SAMPLE}
           </RNTesterText>
         </View>
       ))}
-      {(['none', 'phrase'] as const).map(lineBreakWordStyle => (
-        <View key={lineBreakWordStyle} style={{marginBottom: 8}}>
+      {(['normal', 'auto-phrase'] as const).map(wordBreak => (
+        <View key={wordBreak} style={{marginBottom: 8}}>
           <RNTesterText style={{color: 'red'}}>
-            android_lineBreakWordStyle="{lineBreakWordStyle}"
+            wordBreak="{wordBreak}"
           </RNTesterText>
-          <RNTesterText
-            android_lineBreakWordStyle={lineBreakWordStyle}
-            style={styles.lineBreakSample}>
+          <RNTesterText wordBreak={wordBreak} style={styles.lineBreakSample}>
             {LINE_BREAK_SAMPLE}
           </RNTesterText>
         </View>
@@ -1496,10 +1492,10 @@ const examples = [
     },
   },
   {
-    title: 'Line break style',
-    name: 'lineBreakStyle',
+    title: 'Line break (lineBreak, wordBreak)',
+    name: 'lineBreak',
     render(): React.Node {
-      return <LineBreakStyleExample />;
+      return <LineBreakExample />;
     },
   },
   {
