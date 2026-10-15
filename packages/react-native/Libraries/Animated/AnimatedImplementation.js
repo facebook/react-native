@@ -559,12 +559,9 @@ const loopImpl = function (
 };
 
 function forkEventImpl(
-  // $FlowFixMe[unclear-type]
-  event: ?AnimatedEvent | ?Function,
-  // $FlowFixMe[unclear-type]
-  listener: Function,
-  // $FlowFixMe[unclear-type]
-): AnimatedEvent | Function {
+  event: ?AnimatedEvent | ?LegacyFunction,
+  listener: LegacyFunction,
+): AnimatedEvent | LegacyFunction {
   if (!event) {
     return listener;
   } else if (event instanceof AnimatedEvent) {
@@ -579,10 +576,8 @@ function forkEventImpl(
 }
 
 function unforkEventImpl(
-  // $FlowFixMe[unclear-type]
-  event: ?AnimatedEvent | ?Function,
-  // $FlowFixMe[unclear-type]
-  listener: Function,
+  event: ?AnimatedEvent | ?LegacyFunction,
+  listener: LegacyFunction,
 ): void {
   if (event && event instanceof AnimatedEvent) {
     event.__removeListener(listener);

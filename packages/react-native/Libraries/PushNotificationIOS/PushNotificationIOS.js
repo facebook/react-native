@@ -319,8 +319,7 @@ class PushNotificationIOS {
    *
    * See https://reactnative.dev/docs/pushnotificationios#getapplicationiconbadgenumber
    */
-  // $FlowFixMe[unclear-type]
-  static getApplicationIconBadgeNumber(callback: Function): void {
+  static getApplicationIconBadgeNumber(callback: LegacyFunction): void {
     invariant(
       NativePushNotificationManagerIOS,
       'PushNotificationManager is not available.',
@@ -348,8 +347,7 @@ class PushNotificationIOS {
    *
    * See https://reactnative.dev/docs/pushnotificationios#getscheduledlocalnotifications
    */
-  // $FlowFixMe[unclear-type]
-  static getScheduledLocalNotifications(callback: Function): void {
+  static getScheduledLocalNotifications(callback: LegacyFunction): void {
     invariant(
       NativePushNotificationManagerIOS,
       'PushNotificationManager is not available.',
@@ -365,8 +363,7 @@ class PushNotificationIOS {
    */
   static addEventListener(
     type: PushNotificationEventName,
-    // $FlowFixMe[unclear-type]
-    handler: Function,
+    handler: LegacyFunction,
   ): void {
     invariant(
       type === 'notification' ||
