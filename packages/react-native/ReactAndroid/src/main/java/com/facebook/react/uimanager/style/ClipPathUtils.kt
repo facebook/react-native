@@ -16,7 +16,10 @@ import com.facebook.react.uimanager.PixelUtil
 
 internal object ClipPathUtils {
 
-  private fun resolveLengthPercentage(lengthPercentage: LengthPercentage, referenceDimension: Float): Float {
+  private fun resolveLengthPercentage(
+      lengthPercentage: LengthPercentage,
+      referenceDimension: Float,
+  ): Float {
     return when (lengthPercentage.type) {
       LengthPercentageType.POINT -> PixelUtil.toPixelFromDIP(lengthPercentage.resolve(1f))
       LengthPercentageType.PERCENT -> lengthPercentage.resolve(referenceDimension)
@@ -51,15 +54,17 @@ internal object ClipPathUtils {
   private fun createCirclePath(circle: CircleShape, bounds: RectF): Path {
     val path = Path()
 
-    // Resolve radius (use smaller dimension as reference for percentages, matching CSS closest-side)
+    // Resolve radius (use smaller dimension as reference for percentages, matching CSS
+    // closest-side)
     // Default to 50% of closest-side if radius is not specified
     val referenceDimension = minOf(bounds.width(), bounds.height())
-    val radius = if (circle.r != null) {
-      resolveLengthPercentage(circle.r, referenceDimension)
-    } else {
-      // Default to 50% of closest-side (min(width, height) / 2)
-      referenceDimension / 2.0f
-    }
+    val radius =
+        if (circle.r != null) {
+          resolveLengthPercentage(circle.r, referenceDimension)
+        } else {
+          // Default to 50% of closest-side (min(width, height) / 2)
+          referenceDimension / 2.0f
+        }
 
     // Resolve center (default to center of bounds)
     val cx =
@@ -84,16 +89,18 @@ internal object ClipPathUtils {
     val path = Path()
 
     // Resolve radii (default to 50% if not specified)
-    val rx = if (ellipse.rx != null) {
-      resolveLengthPercentage(ellipse.rx, bounds.width())
-    } else {
-      bounds.width() / 2.0f
-    }
-    val ry = if (ellipse.ry != null) {
-      resolveLengthPercentage(ellipse.ry, bounds.height())
-    } else {
-      bounds.height() / 2.0f
-    }
+    val rx =
+        if (ellipse.rx != null) {
+          resolveLengthPercentage(ellipse.rx, bounds.width())
+        } else {
+          bounds.width() / 2.0f
+        }
+    val ry =
+        if (ellipse.ry != null) {
+          resolveLengthPercentage(ellipse.ry, bounds.height())
+        } else {
+          bounds.height() / 2.0f
+        }
 
     // Resolve center (default to center of bounds)
     val cx =
@@ -203,12 +210,17 @@ internal object ClipPathUtils {
     val bottomRightRadii = borderRadius.bottomRight.toPixelFromDIP()
     val bottomLeftRadii = borderRadius.bottomLeft.toPixelFromDIP()
 
-    val radii = floatArrayOf(
-        topLeftRadii.horizontal, topLeftRadii.vertical,
-        topRightRadii.horizontal, topRightRadii.vertical,
-        bottomRightRadii.horizontal, bottomRightRadii.vertical,
-        bottomLeftRadii.horizontal, bottomLeftRadii.vertical
-    )
+    val radii =
+        floatArrayOf(
+            topLeftRadii.horizontal,
+            topLeftRadii.vertical,
+            topRightRadii.horizontal,
+            topRightRadii.vertical,
+            bottomRightRadii.horizontal,
+            bottomRightRadii.vertical,
+            bottomLeftRadii.horizontal,
+            bottomLeftRadii.vertical,
+        )
 
     path.addRoundRect(bounds, radii, Path.Direction.CW)
     return path

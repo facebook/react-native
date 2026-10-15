@@ -20,12 +20,16 @@ import android.os.Build
 import android.view.View
 import android.widget.ImageView
 import androidx.annotation.ColorInt
+import androidx.core.graphics.withSave
 import com.facebook.react.R
+import com.facebook.react.bridge.ReactContext
 import com.facebook.react.bridge.ReadableArray
 import com.facebook.react.bridge.ReadableMap
 import com.facebook.react.common.annotations.UnstableReactNativeAPI
+import com.facebook.react.fabric.FabricUIManager
 import com.facebook.react.uimanager.PixelUtil.dpToPx
 import com.facebook.react.uimanager.PixelUtil.pxToDp
+import com.facebook.react.uimanager.common.UIManagerType
 import com.facebook.react.uimanager.drawable.BackgroundDrawable
 import com.facebook.react.uimanager.drawable.BackgroundImageDrawable
 import com.facebook.react.uimanager.drawable.BorderDrawable
@@ -50,10 +54,6 @@ import com.facebook.react.uimanager.style.GeometryBoxUtil
 import com.facebook.react.uimanager.style.GeometryBoxUtil.getGeometryBoxBounds
 import com.facebook.react.uimanager.style.LogicalEdge
 import com.facebook.react.uimanager.style.OutlineStyle
-import androidx.core.graphics.withSave
-import com.facebook.react.bridge.ReactContext
-import com.facebook.react.fabric.FabricUIManager
-import com.facebook.react.uimanager.common.UIManagerType
 
 /**
  * Utility object responsible for applying backgrounds, borders, and related visual effects to
@@ -468,48 +468,57 @@ public object BackgroundStyleApplicator {
     canvas.withSave {
       val composite = getCompositeBackgroundDrawable(view)
       val uiManager =
-        UIManagerHelper.getUIManager(view.context as ReactContext, UIManagerType.FABRIC) as? FabricUIManager
+          UIManagerHelper.getUIManager(view.context as ReactContext, UIManagerType.FABRIC)
+              as? FabricUIManager
       val surfaceId = UIManagerHelper.getSurfaceId(view)
       val viewId = view.id
       val computedMarginInsets = uiManager?.getComputedMarginInsets(surfaceId, viewId)
       val computedPaddingInsets = uiManager?.getComputedPaddingInsets(surfaceId, viewId)
       val computedBorderInsets =
-        composite?.borderInsets?.resolve(composite.layoutDirection, view.context)
-      val bounds = getGeometryBoxBounds(
-        view,
-        clipPath.geometryBox,
-        computedMarginInsets,
-        computedPaddingInsets,
-        computedBorderInsets
-      )
+          composite?.borderInsets?.resolve(composite.layoutDirection, view.context)
+      val bounds =
+          getGeometryBoxBounds(
+              view,
+              clipPath.geometryBox,
+              computedMarginInsets,
+              computedPaddingInsets,
+              computedBorderInsets,
+          )
       val drawingRect = Rect()
       view.getDrawingRect(drawingRect)
       bounds.offset(drawingRect.left.toFloat(), drawingRect.top.toFloat())
 
-      val path: Path? = if (clipPath.shape != null) {
-        ClipPathUtils.createPathFromBasicShape(clipPath.shape, bounds)
-      } else if (clipPath.geometryBox != null) {
-        val borderRadius = composite?.borderRadius
-        if (borderRadius != null) {
-          val adjustedBorderRadius = GeometryBoxUtil.adjustBorderRadiusForGeometryBox(
-            view, clipPath.geometryBox, borderRadius.resolve(
-              composite.layoutDirection,
-              view.context,
-              PixelUtil.toDIPFromPixel(drawingRect.width().toFloat()),
-              PixelUtil.toDIPFromPixel(drawingRect.height().toFloat())
-            ), computedMarginInsets, computedPaddingInsets, computedBorderInsets
-          )
-          if (adjustedBorderRadius != null) {
-            ClipPathUtils.createRoundedRectPath(bounds, adjustedBorderRadius)
+      val path: Path? =
+          if (clipPath.shape != null) {
+            ClipPathUtils.createPathFromBasicShape(clipPath.shape, bounds)
+          } else if (clipPath.geometryBox != null) {
+            val borderRadius = composite?.borderRadius
+            if (borderRadius != null) {
+              val adjustedBorderRadius =
+                  GeometryBoxUtil.adjustBorderRadiusForGeometryBox(
+                      view,
+                      clipPath.geometryBox,
+                      borderRadius.resolve(
+                          composite.layoutDirection,
+                          view.context,
+                          PixelUtil.toDIPFromPixel(drawingRect.width().toFloat()),
+                          PixelUtil.toDIPFromPixel(drawingRect.height().toFloat()),
+                      ),
+                      computedMarginInsets,
+                      computedPaddingInsets,
+                      computedBorderInsets,
+                  )
+              if (adjustedBorderRadius != null) {
+                ClipPathUtils.createRoundedRectPath(bounds, adjustedBorderRadius)
+              } else {
+                null
+              }
+            } else {
+              null
+            }
           } else {
             null
           }
-        } else {
-          null
-        }
-      } else {
-        null
-      }
 
       if (path != null) {
         clipPath(path)

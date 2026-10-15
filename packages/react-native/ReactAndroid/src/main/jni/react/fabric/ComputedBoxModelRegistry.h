@@ -23,34 +23,32 @@ struct BoxModelData {
   EdgeInsets marginInsets{};
   EdgeInsets paddingInsets{};
 
-  bool operator==(const BoxModelData &other) const {
+  bool operator==(const BoxModelData &other) const
+  {
     return marginInsets == other.marginInsets && paddingInsets == other.paddingInsets;
   }
 
-  bool operator!=(const BoxModelData &other) const {
+  bool operator!=(const BoxModelData &other) const
+  {
     return !(*this == other);
   }
 };
 
 /*
  * ComputedBoxModelRegistry stores computed margin and padding values for views
- * that need them. This is required for clip-path geometry box calculations including 
+ * that need them. This is required for clip-path geometry box calculations including
  * margin-box and content-box.
  */
 class ComputedBoxModelRegistry final {
  public:
   ComputedBoxModelRegistry() = default;
-  ComputedBoxModelRegistry(const ComputedBoxModelRegistry&) = delete;
-  ComputedBoxModelRegistry &operator=(const ComputedBoxModelRegistry&) = delete;
+  ComputedBoxModelRegistry(const ComputedBoxModelRegistry &) = delete;
+  ComputedBoxModelRegistry &operator=(const ComputedBoxModelRegistry &) = delete;
 
   /*
    * Stores both margins and paddings for a view.
    */
-  void store(
-      SurfaceId surfaceId,
-      Tag viewTag,
-      const EdgeInsets &marginInsets,
-      const EdgeInsets &paddingInsets);
+  void store(SurfaceId surfaceId, Tag viewTag, const EdgeInsets &marginInsets, const EdgeInsets &paddingInsets);
 
   /*
    * Retrieves computed margins for a view on a given surface.

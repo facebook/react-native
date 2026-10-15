@@ -19,7 +19,6 @@ namespace facebook::react {
 struct AnimatedProps;
 class ComputedBoxModelRegistry;
 
-
 class MountingTransaction;
 struct ShadowView;
 

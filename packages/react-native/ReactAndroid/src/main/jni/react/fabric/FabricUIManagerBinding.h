@@ -145,7 +145,7 @@ class FabricUIManagerBinding : public jni::HybridClass<FabricUIManagerBinding>,
   void uninstallFabricUIManager();
 
   jfloatArray getComputedMarginInsets(jint surfaceId, jint viewTag);
-  
+
   jfloatArray getComputedPaddingInsets(jint surfaceId, jint viewTag);
 
   // Private member variables

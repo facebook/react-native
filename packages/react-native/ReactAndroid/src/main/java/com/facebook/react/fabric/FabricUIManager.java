@@ -1550,7 +1550,8 @@ public class FabricUIManager
 
   @Nullable
   public RectF getComputedPaddingInsets(int surfaceId, int viewTag) {
-    float[] insets = mBinding != null ? mBinding.getComputedPaddingInsets(surfaceId, viewTag) : null;
+    float[] insets =
+        mBinding != null ? mBinding.getComputedPaddingInsets(surfaceId, viewTag) : null;
     return computeInsetsToRectF(insets, surfaceId, viewTag);
   }
 

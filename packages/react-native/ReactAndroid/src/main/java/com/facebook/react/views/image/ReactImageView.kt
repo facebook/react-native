@@ -378,9 +378,7 @@ public class ReactImageView(
   public override fun hasOverlappingRendering(): Boolean = false
 
   public override fun draw(canvas: Canvas) {
-    BackgroundStyleApplicator.applyClipPathIfPresent(this, canvas) {
-      super.draw(canvas)
-    }
+    BackgroundStyleApplicator.applyClipPathIfPresent(this, canvas) { super.draw(canvas) }
   }
 
   public override fun onDraw(canvas: Canvas) {
