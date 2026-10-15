@@ -133,7 +133,6 @@ public open class ReactEditText public constructor(context: Context) : AppCompat
   private var keyListener: InternalKeyListener? = null
   private var detectScrollMovement = false
   private var onKeyPress = false
-  private var lastKeyDownFromInputConnection: KeyEvent? = null
   private val textAttributes: TextAttributes
   private var typefaceDirty = false
   private var fontFamily: String? = null
@@ -340,31 +339,17 @@ public open class ReactEditText public constructor(context: Context) : AppCompat
     return super.onTouchEvent(ev)
   }
 
-  // A key the input method sends through the input connection reaches this view too, after
-  // ReactEditTextInputConnectionWrapper has reported it, so only the keys it never saw are
-  // reported here: the ones a hardware keyboard sends.
+  // Every key event reaches the view here: a hardware keyboard's, and one an input method sends
+  // through the input connection, including the hardware keys an input method forwards.
   override fun onKeyDown(keyCode: Int, event: KeyEvent): Boolean {
-    if (onKeyPress && !isKeyDownFromInputConnection(event)) {
-      HardwareKeyPress.keyName(event)?.let { key ->
+    if (onKeyPress) {
+      KeyPressKey.from(event)?.let { key ->
         eventDispatcher?.dispatchEvent(
             ReactTextInputKeyPressEvent(UIManagerHelper.getSurfaceId(this), id, key)
         )
       }
     }
     return super.onKeyDown(keyCode, event)
-  }
-
-  internal fun noteKeyEventFromInputConnection(event: KeyEvent) {
-    if (event.action == KeyEvent.ACTION_DOWN) {
-      lastKeyDownFromInputConnection = event
-    }
-  }
-
-  // The view receives a copy of the event the input method sent, so it is matched by the key and
-  // the time it went down.
-  private fun isKeyDownFromInputConnection(event: KeyEvent): Boolean {
-    val sent = lastKeyDownFromInputConnection ?: return false
-    return sent.keyCode == event.keyCode && sent.downTime == event.downTime
   }
 
   // Consume 'Enter' key events: TextView tries to give focus to the next TextInput, but it can't

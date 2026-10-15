@@ -10,11 +10,10 @@ package com.facebook.react.views.textinput
 import android.view.KeyEvent
 
 /**
- * Names a hardware key press the way `onKeyPress` names the keys a soft keyboard types: the key's
- * `KeyboardEvent.key` value on the web for a key that types no character, and the character
- * otherwise.
+ * Names a key event the way `onKeyPress` names a key: by the key's `KeyboardEvent.key` value on the
+ * web for a key that types no character, and by the character otherwise.
  */
-internal object HardwareKeyPress {
+internal object KeyPressKey {
 
   private val namedKeys: Map<Int, String> =
       mapOf(
@@ -39,7 +38,7 @@ internal object HardwareKeyPress {
    * The key to report for [event], or `null` for a key with no name that types no character — a
    * modifier on its own, or a chord such as Ctrl+Z.
    */
-  fun keyName(event: KeyEvent): String? {
+  fun from(event: KeyEvent): String? {
     namedKeys[event.keyCode]?.let {
       return it
     }

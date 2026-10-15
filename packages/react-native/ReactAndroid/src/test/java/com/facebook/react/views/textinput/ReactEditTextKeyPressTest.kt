@@ -12,9 +12,11 @@
 package com.facebook.react.views.textinput
 
 import android.util.DisplayMetrics
+import android.view.InputDevice
 import android.view.KeyCharacterMap
 import android.view.KeyEvent
 import android.view.inputmethod.EditorInfo
+import android.view.inputmethod.InputConnection
 import androidx.core.content.res.ResourcesCompat.ID_NULL
 import com.facebook.react.bridge.BridgeReactContext
 import com.facebook.react.bridge.ReactTestHelper.createMockCatalystInstance
@@ -41,7 +43,7 @@ import org.robolectric.annotation.Config
 
 @RunWith(RobolectricTestRunner::class)
 @Config(shadows = [ShadowArguments::class])
-class ReactEditTextHardwareKeyPressTest {
+class ReactEditTextKeyPressTest {
 
   private lateinit var view: ReactEditText
   private val reportedKeys = mutableListOf<String?>()
@@ -76,23 +78,52 @@ class ReactEditTextHardwareKeyPressTest {
     return payload.firstValue.getString("key")
   }
 
-  private fun hardwareKeyDown(keyCode: Int, metaState: Int = 0): KeyEvent {
+  private fun keyEvent(
+      action: Int,
+      keyCode: Int,
+      downTime: Long,
+      metaState: Int = 0,
+      flags: Int = 0,
+  ): KeyEvent =
+      KeyEvent(
+          downTime,
+          downTime,
+          action,
+          keyCode,
+          0,
+          metaState,
+          KeyCharacterMap.VIRTUAL_KEYBOARD,
+          0,
+          flags,
+          InputDevice.SOURCE_KEYBOARD,
+      )
+
+  private fun pressHardwareKey(keyCode: Int, metaState: Int = 0) {
     val downTime = nextDownTime++
-    return KeyEvent(
-        downTime,
-        downTime,
-        KeyEvent.ACTION_DOWN,
-        keyCode,
-        0,
-        metaState,
-        KeyCharacterMap.VIRTUAL_KEYBOARD,
-        0,
+    view.dispatchKeyEvent(keyEvent(KeyEvent.ACTION_DOWN, keyCode, downTime, metaState))
+    view.dispatchKeyEvent(keyEvent(KeyEvent.ACTION_UP, keyCode, downTime, metaState))
+  }
+
+  private fun keyPressFromInputMethod(keyCode: Int, flags: Int): List<KeyEvent> {
+    val downTime = nextDownTime++
+    return listOf(
+        keyEvent(KeyEvent.ACTION_DOWN, keyCode, downTime, flags = flags),
+        keyEvent(KeyEvent.ACTION_UP, keyCode, downTime, flags = flags),
     )
   }
 
-  private fun pressHardwareKey(keyCode: Int, metaState: Int = 0) {
-    view.dispatchKeyEvent(hardwareKeyDown(keyCode, metaState))
+  // The input connection posts each event to the view's window, which hands the view a copy
+  // without FLAG_FROM_SYSTEM once the input method's call has returned. A view outside a window
+  // receives nothing, so the test hands it those copies.
+  private fun sendFromInputMethod(inputConnection: InputConnection, events: List<KeyEvent>) {
+    events.forEach { inputConnection.sendKeyEvent(it) }
+    events.forEach {
+      view.dispatchKeyEvent(KeyEvent.changeFlags(it, it.flags and KeyEvent.FLAG_FROM_SYSTEM.inv()))
+    }
   }
+
+  private fun openInputConnection(): InputConnection =
+      checkNotNull(view.onCreateInputConnection(EditorInfo()))
 
   @Test
   fun hardwareNavigationKeysAreReportedByTheirWebKeyNames() {
@@ -151,25 +182,44 @@ class ReactEditTextHardwareKeyPressTest {
   }
 
   @Test
-  fun keyEventTheInputMethodSendsIsReportedOnceByTheInputConnection() {
-    val inputConnection = checkNotNull(view.onCreateInputConnection(EditorInfo()))
-    val softBackspace =
-        KeyEvent(
-            nextDownTime,
-            nextDownTime,
-            KeyEvent.ACTION_DOWN,
+  fun backspaceTheInputMethodSendsIsReportedOnce() {
+    sendFromInputMethod(
+        openInputConnection(),
+        keyPressFromInputMethod(
             KeyEvent.KEYCODE_DEL,
-            0,
-            0,
-            KeyCharacterMap.VIRTUAL_KEYBOARD,
-            0,
             KeyEvent.FLAG_SOFT_KEYBOARD or KeyEvent.FLAG_KEEP_TOUCH_MODE,
-        )
-
-    inputConnection.sendKeyEvent(softBackspace)
-    view.dispatchKeyEvent(KeyEvent(softBackspace))
+        ),
+    )
 
     assertThat(reportedKeys).containsExactly("Backspace")
+  }
+
+  @Test
+  fun hardwareKeyTheInputMethodForwardsIsReported() {
+    sendFromInputMethod(
+        openInputConnection(),
+        keyPressFromInputMethod(KeyEvent.KEYCODE_DPAD_LEFT, KeyEvent.FLAG_FROM_SYSTEM),
+    )
+
+    assertThat(reportedKeys).containsExactly("ArrowLeft")
+  }
+
+  @Test
+  fun keysTheInputMethodSendsTogetherAreReportedInTheOrderTheViewReceivesThem() {
+    sendFromInputMethod(
+        openInputConnection(),
+        keyPressFromInputMethod(KeyEvent.KEYCODE_DPAD_LEFT, KeyEvent.FLAG_FROM_SYSTEM) +
+            keyPressFromInputMethod(KeyEvent.KEYCODE_DEL, KeyEvent.FLAG_FROM_SYSTEM),
+    )
+
+    assertThat(reportedKeys).containsExactly("ArrowLeft", "Backspace")
+  }
+
+  @Test
+  fun textTheInputMethodCommitsIsReportedByTheInputConnection() {
+    openInputConnection().commitText("a", 1)
+
+    assertThat(reportedKeys).containsExactly("a")
   }
 
   @Test
