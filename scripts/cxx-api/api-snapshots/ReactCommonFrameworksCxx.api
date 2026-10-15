@@ -1799,14 +1799,6 @@ class facebook::react::NativeModulePerfLogger {
   public virtual ~NativeModulePerfLogger() = default;
 }
 
-class facebook::react::NativeViewTransition : public NativeViewTransitionCxxSpec<facebook::react::NativeViewTransition> {
-  public NativeViewTransition(std::shared_ptr<facebook::react::CallInvoker> jsInvoker);
-  public facebook::jsi::Value findPseudoElementShadowNodeByTag(facebook::jsi::Runtime& rt, double reactTag);
-  public std::optional<facebook::jsi::Object> getViewTransitionInstance(facebook::jsi::Runtime& rt, const std::string& name, const std::string& pseudo);
-  public void transitionAnimationFinished(facebook::jsi::Runtime& rt, double animationId);
-  public void waitForTransitionAnimation(facebook::jsi::Runtime& rt, double animationId);
-}
-
 class facebook::react::ParagraphAttributes : public facebook::react::DebugStringConvertible {
   public Float minimumFontScale;
   public Float minimumFontSize;

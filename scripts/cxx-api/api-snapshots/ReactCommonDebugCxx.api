@@ -943,14 +943,6 @@ class facebook::react::NativeMethodCallInvoker {
   public virtual ~NativeMethodCallInvoker() = default;
 }
 
-class facebook::react::NativeViewTransition : public NativeViewTransitionCxxSpec<facebook::react::NativeViewTransition> {
-  public NativeViewTransition(std::shared_ptr<facebook::react::CallInvoker> jsInvoker);
-  public facebook::jsi::Value findPseudoElementShadowNodeByTag(facebook::jsi::Runtime& rt, double reactTag);
-  public std::optional<facebook::jsi::Object> getViewTransitionInstance(facebook::jsi::Runtime& rt, const std::string& name, const std::string& pseudo);
-  public void transitionAnimationFinished(facebook::jsi::Runtime& rt, double animationId);
-  public void waitForTransitionAnimation(facebook::jsi::Runtime& rt, double animationId);
-}
-
 class facebook::react::Props : public virtual facebook::react::Sealable, public virtual facebook::react::DebugStringConvertible {
   public Props() = default;
   public Props(const facebook::react::Props& other) = default;
