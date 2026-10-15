@@ -139,7 +139,7 @@ function generateRCTThirdPartyComponents(
     .flatMap(library => {
       const components = componentsInLibraries[library];
       return components.map(({componentName, className}) => {
-        return `\t\t@"${componentName}": NSClassFromString(@"${className}"), // ${library}`;
+        return `\t\t@"${componentName}": @"${className}", // ${library}`;
       });
     })
     .join('\n');
@@ -177,10 +177,24 @@ function findFilesWithExtension(
       return null;
     }
 
-    if (
-      fs.existsSync(absolutePath) &&
-      fs.statSync(absolutePath).isDirectory()
-    ) {
+    // A library's own sources never live in its dependencies, and crawling them
+    // is what makes this walk explode on large projects.
+    if (file === 'node_modules') {
+      return null;
+    }
+
+    if (!fs.existsSync(absolutePath)) {
+      return null;
+    }
+
+    // `lstatSync` does not resolve symlinks: following them can loop forever,
+    // e.g. workspace packages that link into each other under pnpm.
+    const stats = fs.lstatSync(absolutePath);
+    if (stats.isSymbolicLink()) {
+      return null;
+    }
+
+    if (stats.isDirectory()) {
       files.push(...findFilesWithExtension(absolutePath, extension));
     } else if (file.endsWith(extension)) {
       files.push(absolutePath);

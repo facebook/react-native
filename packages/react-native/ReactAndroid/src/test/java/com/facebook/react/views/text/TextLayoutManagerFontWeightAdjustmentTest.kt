@@ -12,6 +12,7 @@ import android.graphics.Typeface
 import android.os.Build
 import android.text.TextPaint
 import androidx.annotation.RequiresApi
+import com.facebook.react.bridge.JavaOnlyArray
 import com.facebook.react.bridge.JavaOnlyMap
 import com.facebook.react.uimanager.DisplayMetricsHolder
 import com.facebook.react.uimanager.ReactStylesDiffMap
@@ -95,16 +96,78 @@ class TextLayoutManagerFontWeightAdjustmentTest {
   }
 
   @Test
+  fun `text paint applies base attributes used to shape generated ellipses`() {
+    val textAttributes =
+        TextAttributeProps.fromReadableMap(
+            ReactStylesDiffMap(
+                JavaOnlyMap.of(
+                    "fontFamily",
+                    "serif",
+                    "fontSize",
+                    32.0,
+                    "letterSpacing",
+                    1.5,
+                    "fontVariant",
+                    JavaOnlyArray.of("small-caps"),
+                ),
+            ),
+        )
+
+    val paint = TextPaint()
+    TextLayoutManager.updateTextPaint(
+        paint,
+        textAttributes,
+        RuntimeEnvironment.getApplication().assets,
+        0,
+    )
+
+    assertThat(paint.typeface).isNotNull
+    assertThat(paint.textSize).isEqualTo(textAttributes.fontSize.toFloat())
+    assertThat(paint.letterSpacing).isEqualTo(textAttributes.letterSpacing)
+    assertThat(paint.fontFeatureSettings).isEqualTo("'smcp'")
+
+    TextLayoutManager.resetTextPaint(paint, 12f)
+
+    assertThat(paint.typeface).isNull()
+    assertThat(paint.textSize).isEqualTo(12f)
+    assertThat(paint.letterSpacing).isEqualTo(0f)
+    assertThat(paint.fontFeatureSettings).isNull()
+  }
+
+  @Test
+  fun `text paint enables the shaping flags used by custom style spans`() {
+    val paint = mock<TextPaint>()
+    val textAttributes =
+        TextAttributeProps.fromReadableMap(
+            ReactStylesDiffMap(
+                JavaOnlyMap.of("fontVariant", JavaOnlyArray.of("small-caps")),
+            ),
+        )
+
+    TextLayoutManager.updateTextPaint(
+        paint,
+        textAttributes,
+        RuntimeEnvironment.getApplication().assets,
+        0,
+    )
+
+    verify(paint).setFontFeatureSettings("'smcp'")
+    verify(paint).setSubpixelText(true)
+    verify(paint).setLinearText(true)
+  }
+
+  @Test
   fun `custom style applies font variation settings after high level font properties`() {
     val paint = mock<TextPaint>()
-    val span = CustomStyleSpan(
-        Typeface.NORMAL,
-        700,
-        null,
-        "'wght' 450",
-        "sans-serif",
-        RuntimeEnvironment.getApplication().assets,
-    )
+    val span =
+        CustomStyleSpan(
+            Typeface.NORMAL,
+            700,
+            null,
+            "'wght' 450",
+            "sans-serif",
+            RuntimeEnvironment.getApplication().assets,
+        )
 
     span.updateMeasureState(paint)
 

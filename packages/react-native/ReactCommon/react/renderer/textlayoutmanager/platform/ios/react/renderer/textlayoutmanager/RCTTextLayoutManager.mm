@@ -8,6 +8,7 @@
 #import "RCTTextLayoutManager.h"
 
 #import <array>
+#import <cmath>
 
 #import "RCTAttributedTextUtils.h"
 
@@ -58,7 +59,7 @@ static NSLineBreakMode RCTNSLineBreakModeFromEllipsizeMode(EllipsizeMode ellipsi
   return [self _measureTextStorage:textStorage paragraphAttributes:paragraphAttributes layoutContext:layoutContext];
 }
 
-- (TextMeasurement)measureAttributedString:(AttributedString)attributedString
+- (TextMeasurement)measureAttributedString:(const AttributedString &)attributedString
                        paragraphAttributes:(ParagraphAttributes)paragraphAttributes
                              layoutContext:(TextLayoutContext)layoutContext
                          layoutConstraints:(LayoutConstraints)layoutConstraints
@@ -69,7 +70,7 @@ static NSLineBreakMode RCTNSLineBreakModeFromEllipsizeMode(EllipsizeMode ellipsi
                        layoutConstraints:layoutConstraints];
 }
 
-- (CGRect)drawingFrameForAttributedString:(AttributedString)attributedString
+- (CGRect)drawingFrameForAttributedString:(const AttributedString &)attributedString
                       paragraphAttributes:(ParagraphAttributes)paragraphAttributes
                                     frame:(CGRect)frame
                            containerFrame:(CGRect *)containerFrame
@@ -127,7 +128,7 @@ static NSLineBreakMode RCTNSLineBreakModeFromEllipsizeMode(EllipsizeMode ellipsi
   return drawingFrame;
 }
 
-- (void)drawAttributedString:(AttributedString)attributedString
+- (void)drawAttributedString:(const AttributedString &)attributedString
          paragraphAttributes:(ParagraphAttributes)paragraphAttributes
                        frame:(CGRect)frame
            drawHighlightPath:(void (^_Nullable)(UIBezierPath *highlightPath))block
@@ -186,8 +187,8 @@ static NSLineBreakMode RCTNSLineBreakModeFromEllipsizeMode(EllipsizeMode ellipsi
                     // remains visible at small sizes and proportionate at
                     // large ones. ~`fontSize / 12` plus a 1.5pt floor.
                     CGFloat thickness = MAX(fontSize / 12.0f, 1.5f);
-                    CGFloat wavyWavelength = 1.0f + 2.0f * round(2.0f * thickness + 0.5f);
-                    CGFloat wavyCpDistance = 0.5f + round(3.0f * thickness + 0.5f);
+                    CGFloat wavyWavelength = 1.0f + 2.0f * std::round(2.0f * thickness + 0.5f);
+                    CGFloat wavyCpDistance = 0.5f + std::round(3.0f * thickness + 0.5f);
 
                     NSRange targetGlyphRange = [layoutManager glyphRangeForCharacterRange:attrRange
                                                                      actualCharacterRange:nullptr];
@@ -234,7 +235,6 @@ static NSLineBreakMode RCTNSLineBreakModeFromEllipsizeMode(EllipsizeMode ellipsi
                                                    CGFloat baseline =
                                                        lineRect.origin.y + font.ascender + frame.origin.y;
 
-                                                   // NOLINTNEXTLINE(cppcoreguidelines-init-variables)
                                                    for (NSString *line in lines) {
                                                      CGFloat y = 0.0f;
                                                      if ([line isEqualToString:@"underline"]) {
@@ -363,7 +363,7 @@ static NSLineBreakMode RCTNSLineBreakModeFromEllipsizeMode(EllipsizeMode ellipsi
   }
 }
 
-- (LinesMeasurements)getLinesForAttributedString:(facebook::react::AttributedString)attributedString
+- (LinesMeasurements)getLinesForAttributedString:(const facebook::react::AttributedString &)attributedString
                              paragraphAttributes:(facebook::react::ParagraphAttributes)paragraphAttributes
                                             size:(CGSize)size
 {
@@ -415,6 +415,22 @@ static NSLineBreakMode RCTNSLineBreakModeFromEllipsizeMode(EllipsizeMode ellipsi
   return paragraphLines;
 }
 
+- (CGFloat)_maximumFontSizeInAttributedString:(NSAttributedString *)attributedString
+{
+  __block CGFloat maximumFontSize = 0.0;
+  [attributedString enumerateAttribute:NSFontAttributeName
+                               inRange:NSMakeRange(0, attributedString.length)
+                               options:NSAttributedStringEnumerationLongestEffectiveRangeNotRequired
+                            usingBlock:^(id _Nullable value, NSRange range, BOOL *_Nonnull stop) {
+                              CGFloat fontSize = ((UIFont *)value).pointSize;
+                              if (fontSize > maximumFontSize) {
+                                maximumFontSize = fontSize;
+                              }
+                            }];
+
+  return maximumFontSize;
+}
+
 - (NSTextStorage *)_textStorageAndLayoutManagerWithAttributesString:(NSAttributedString *)attributedString
                                                 paragraphAttributes:(ParagraphAttributes)paragraphAttributes
                                                                size:(CGSize)size
@@ -438,15 +454,20 @@ static NSLineBreakMode RCTNSLineBreakModeFromEllipsizeMode(EllipsizeMode ellipsi
   [textStorage addLayoutManager:layoutManager];
 
   if (paragraphAttributes.adjustsFontSizeToFit) {
-    CGFloat minimumFontSize = !isnan(paragraphAttributes.minimumFontSize) ? paragraphAttributes.minimumFontSize : 4.0;
-    CGFloat maximumFontSize = !isnan(paragraphAttributes.maximumFontSize) ? paragraphAttributes.maximumFontSize : 96.0;
+    CGFloat maximumFontSize = [self _maximumFontSizeInAttributedString:attributedString];
+    CGFloat minimumFontSize = 4.0;
+    if (!isnan(paragraphAttributes.minimumFontSize)) {
+      minimumFontSize = paragraphAttributes.minimumFontSize;
+    } else if (!isnan(paragraphAttributes.minimumFontScale)) {
+      minimumFontSize = MAX(paragraphAttributes.minimumFontScale * maximumFontSize, 4.0);
+    }
     [textStorage scaleFontSizeToFitSize:size minimumFontSize:minimumFontSize maximumFontSize:maximumFontSize];
   }
 
   return textStorage;
 }
 
-- (std::shared_ptr<const EventEmitter>)getEventEmitterWithAttributeString:(AttributedString)attributedString
+- (std::shared_ptr<const EventEmitter>)getEventEmitterWithAttributeString:(const AttributedString &)attributedString
                                                       paragraphAttributes:(ParagraphAttributes)paragraphAttributes
                                                                     frame:(CGRect)frame
                                                                   atPoint:(CGPoint)point
@@ -476,7 +497,7 @@ static NSLineBreakMode RCTNSLineBreakModeFromEllipsizeMode(EllipsizeMode ellipsi
   return nil;
 }
 
-- (void)getRectWithAttributedString:(AttributedString)attributedString
+- (void)getRectWithAttributedString:(const AttributedString &)attributedString
                 paragraphAttributes:(ParagraphAttributes)paragraphAttributes
                  enumerateAttribute:(NSString *)enumerateAttribute
                               frame:(CGRect)frame
@@ -518,7 +539,7 @@ static NSLineBreakMode RCTNSLineBreakModeFromEllipsizeMode(EllipsizeMode ellipsi
 
 #pragma mark - Private
 
-- (NSAttributedString *)_nsAttributedStringFromAttributedString:(AttributedString)attributedString
+- (NSAttributedString *)_nsAttributedStringFromAttributedString:(const AttributedString &)attributedString
 {
   auto sharedNSAttributedString = _cache.get(attributedString, [&]() {
     return wrapManagedObject(RCTNSAttributedStringFromAttributedString(attributedString));

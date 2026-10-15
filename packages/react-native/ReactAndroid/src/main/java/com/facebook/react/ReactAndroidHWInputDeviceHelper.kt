@@ -29,7 +29,13 @@ internal class ReactAndroidHWInputDeviceHelper {
         (eventKeyAction == KeyEvent.ACTION_UP || eventKeyAction == KeyEvent.ACTION_DOWN) &&
             KEY_EVENTS_ACTIONS.containsKey(eventKeyCode)
     ) {
-      dispatchEvent(context, KEY_EVENTS_ACTIONS[eventKeyCode], lastFocusedViewId, eventKeyAction)
+      dispatchEvent(
+          context,
+          KEY_EVENTS_ACTIONS[eventKeyCode],
+          lastFocusedViewId,
+          eventKeyAction,
+          ev.eventTime,
+      )
     }
   }
 
@@ -58,11 +64,15 @@ internal class ReactAndroidHWInputDeviceHelper {
       eventType: String?,
       targetViewId: Int,
       eventKeyAction: Int = -1,
+      eventTime: Long = NO_EVENT_TIME,
   ) {
     val event: WritableMap =
         WritableNativeMap().apply {
           putString("eventType", eventType)
           putInt("eventKeyAction", eventKeyAction)
+          if (eventTime != NO_EVENT_TIME) {
+            putDouble("eventTime", eventTime.toDouble())
+          }
           if (targetViewId != View.NO_ID) {
             putInt("tag", targetViewId)
           }
@@ -71,30 +81,33 @@ internal class ReactAndroidHWInputDeviceHelper {
   }
 
   private companion object {
+    private const val NO_EVENT_TIME: Long = -1
+
     /**
      * Contains a mapping between handled KeyEvents and the corresponding navigation event that
      * should be fired when the KeyEvent is received.
      */
-    private val KEY_EVENTS_ACTIONS: Map<Int, String> = mapOf(
-        KeyEvent.KEYCODE_DPAD_CENTER to "select",
-        KeyEvent.KEYCODE_ENTER to "select",
-        KeyEvent.KEYCODE_SPACE to "select",
-        KeyEvent.KEYCODE_MEDIA_PLAY to "play",
-        KeyEvent.KEYCODE_MEDIA_PAUSE to "pause",
-        KeyEvent.KEYCODE_MEDIA_PLAY_PAUSE to "playPause",
-        KeyEvent.KEYCODE_MEDIA_REWIND to "rewind",
-        KeyEvent.KEYCODE_MEDIA_FAST_FORWARD to "fastForward",
-        KeyEvent.KEYCODE_MEDIA_STOP to "stop",
-        KeyEvent.KEYCODE_MEDIA_NEXT to "next",
-        KeyEvent.KEYCODE_MEDIA_PREVIOUS to "previous",
-        KeyEvent.KEYCODE_DPAD_UP to "up",
-        KeyEvent.KEYCODE_DPAD_RIGHT to "right",
-        KeyEvent.KEYCODE_DPAD_DOWN to "down",
-        KeyEvent.KEYCODE_DPAD_LEFT to "left",
-        KeyEvent.KEYCODE_INFO to "info",
-        KeyEvent.KEYCODE_MENU to "menu",
-        KeyEvent.KEYCODE_CHANNEL_UP to "channelUp",
-        KeyEvent.KEYCODE_CHANNEL_DOWN to "channelDown",
-    )
+    private val KEY_EVENTS_ACTIONS: Map<Int, String> =
+        mapOf(
+            KeyEvent.KEYCODE_DPAD_CENTER to "select",
+            KeyEvent.KEYCODE_ENTER to "select",
+            KeyEvent.KEYCODE_SPACE to "select",
+            KeyEvent.KEYCODE_MEDIA_PLAY to "play",
+            KeyEvent.KEYCODE_MEDIA_PAUSE to "pause",
+            KeyEvent.KEYCODE_MEDIA_PLAY_PAUSE to "playPause",
+            KeyEvent.KEYCODE_MEDIA_REWIND to "rewind",
+            KeyEvent.KEYCODE_MEDIA_FAST_FORWARD to "fastForward",
+            KeyEvent.KEYCODE_MEDIA_STOP to "stop",
+            KeyEvent.KEYCODE_MEDIA_NEXT to "next",
+            KeyEvent.KEYCODE_MEDIA_PREVIOUS to "previous",
+            KeyEvent.KEYCODE_DPAD_UP to "up",
+            KeyEvent.KEYCODE_DPAD_RIGHT to "right",
+            KeyEvent.KEYCODE_DPAD_DOWN to "down",
+            KeyEvent.KEYCODE_DPAD_LEFT to "left",
+            KeyEvent.KEYCODE_INFO to "info",
+            KeyEvent.KEYCODE_MENU to "menu",
+            KeyEvent.KEYCODE_CHANNEL_UP to "channelUp",
+            KeyEvent.KEYCODE_CHANNEL_DOWN to "channelDown",
+        )
   }
 }

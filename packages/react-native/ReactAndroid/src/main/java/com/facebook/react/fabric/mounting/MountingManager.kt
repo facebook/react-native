@@ -64,14 +64,15 @@ internal class MountingManager(
       reactContext: ThemedReactContext?,
       rootView: View?,
   ): SurfaceMountingManager {
-    val surfaceMountingManager = SurfaceMountingManager(
-        surfaceId,
-        jsResponderHandler,
-        viewManagerRegistry,
-        rootViewManager,
-        mountItemExecutor,
-        checkNotNull(reactContext),
-    )
+    val surfaceMountingManager =
+        SurfaceMountingManager(
+            surfaceId,
+            jsResponderHandler,
+            viewManagerRegistry,
+            rootViewManager,
+            mountItemExecutor,
+            checkNotNull(reactContext),
+        )
 
     // There could technically be a race condition here if addRootView is called twice from
     // different threads, though this is (probably) extremely unlikely, and likely an error.
@@ -265,6 +266,16 @@ internal class MountingManager(
     }
 
     getSurfaceManagerForView(reactTag)?.storeSynchronousMountPropsOverride(reactTag, props)
+  }
+
+  /** Returns false when no surface owns [reactTag] yet, so the caller can queue the update. */
+  @UiThread
+  fun updateAnimatedPropsSynchronously(reactTag: Int, props: ReadableMap): Boolean {
+    assertOnUiThread()
+    val surfaceMountingManager = getSurfaceManagerForView(reactTag) ?: return false
+    surfaceMountingManager.storeSynchronousMountPropsOverride(reactTag, props)
+    surfaceMountingManager.updatePropsSynchronously(reactTag, props)
+    return true
   }
 
   @UiThread

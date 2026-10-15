@@ -46,18 +46,19 @@ public open class ReactViewManager : ReactClippingViewManager<ReactViewGroup>() 
   public companion object {
     public const val REACT_CLASS: String = ViewProps.VIEW_CLASS_NAME
 
-    private val SPACING_TYPES = intArrayOf(
-        Spacing.ALL,
-        Spacing.LEFT,
-        Spacing.RIGHT,
-        Spacing.TOP,
-        Spacing.BOTTOM,
-        Spacing.START,
-        Spacing.END,
-        Spacing.BLOCK,
-        Spacing.BLOCK_END,
-        Spacing.BLOCK_START,
-    )
+    private val SPACING_TYPES =
+        intArrayOf(
+            Spacing.ALL,
+            Spacing.LEFT,
+            Spacing.RIGHT,
+            Spacing.TOP,
+            Spacing.BOTTOM,
+            Spacing.START,
+            Spacing.END,
+            Spacing.BLOCK,
+            Spacing.BLOCK_END,
+            Spacing.BLOCK_START,
+        )
     private const val CMD_HOTSPOT_UPDATE = 1
     private const val CMD_SET_PRESSED = 2
     private const val HOTSPOT_UPDATE_KEY = "hotspotUpdate"
@@ -123,14 +124,16 @@ public open class ReactViewManager : ReactClippingViewManager<ReactViewGroup>() 
     view.axOrderList = axOrderList
   }
 
-  @ReactProp(name = "hasTVPreferredFocus")
-  public open fun setTVPreferredFocus(view: ReactViewGroup, hasTVPreferredFocus: Boolean) {
-    if (hasTVPreferredFocus) {
-      view.isFocusable = true
-      view.isFocusableInTouchMode = true
-      view.requestFocus()
-    }
-  }
+  /**
+   * Retained for binary compatibility with [ReactViewManager] subclasses.
+   *
+   * This method no longer registers a React prop or changes view focus.
+   */
+  @Deprecated("Use focusable or focus() instead")
+  public open fun setTVPreferredFocus(
+      view: ReactViewGroup,
+      hasTVPreferredFocus: Boolean,
+  ): Unit = Unit
 
   @ReactProp(name = ViewProps.BACKGROUND_IMAGE, customType = "BackgroundImage")
   public open fun setBackgroundImage(view: ReactViewGroup, backgroundImage: ReadableArray?) {

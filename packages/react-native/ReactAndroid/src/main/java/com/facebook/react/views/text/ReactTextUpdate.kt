@@ -16,6 +16,7 @@ internal class ReactTextUpdate(
     val textAlign: Int,
     val textBreakStrategy: Int,
     val justificationMode: Int,
+    val baseTextAttributes: TextAttributeProps? = null,
 ) {
   companion object {
     @JvmStatic
@@ -25,12 +26,13 @@ internal class ReactTextUpdate(
         textAlign: Int,
         textBreakStrategy: Int,
         justificationMode: Int,
-    ): ReactTextUpdate = ReactTextUpdate(
-        text,
-        jsEventCounter,
-        textAlign,
-        textBreakStrategy,
-        justificationMode,
-    )
+    ): ReactTextUpdate =
+        ReactTextUpdate(
+            text,
+            jsEventCounter,
+            textAlign,
+            textBreakStrategy,
+            justificationMode,
+        )
   }
 }

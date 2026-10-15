@@ -1028,22 +1028,24 @@ public class ReactHostImpl(
           jsBundleLoader.onSuccess(
               { task ->
                 val bundleLoader = checkNotNull(task.getResult())
-                val reactContext = bridgelessReactContextRef.getOrCreate {
-                  stateTracker.enterState(method, "Creating BridgelessReactContext")
-                  BridgelessReactContext(context, this)
-                }
+                val reactContext =
+                    bridgelessReactContextRef.getOrCreate {
+                      stateTracker.enterState(method, "Creating BridgelessReactContext")
+                      BridgelessReactContext(context, this)
+                    }
                 reactContext.jsExceptionHandler = devSupportManager
 
                 stateTracker.enterState(method, "Creating ReactInstance")
-                val instance = ReactInstance(
-                    reactContext,
-                    reactHostDelegate,
-                    componentFactory,
-                    devSupportManager,
-                    { e: Exception -> this.handleHostException(e) },
-                    useDevSupport,
-                    getOrCreateReactHostInspectorTarget(),
-                )
+                val instance =
+                    ReactInstance(
+                        reactContext,
+                        reactHostDelegate,
+                        componentFactory,
+                        devSupportManager,
+                        { e: Exception -> this.handleHostException(e) },
+                        useDevSupport,
+                        getOrCreateReactHostInspectorTarget(),
+                    )
                 reactInstance = instance
 
                 val memoryPressureListener = createMemoryPressureListener(instance)
@@ -1147,8 +1149,7 @@ public class ReactHostImpl(
             { task ->
               val isMetroRunning = checkNotNull(task.getResult())
               if (isMetroRunning) {
-                // Since metro is running, fetcxception(method, "ReactContext is null. Reload
-                // reason: $h the JS bundle from the server
+                // Since metro is running, fetch the JS bundle from the server
                 loadJSBundleFromMetro()
               } else {
                 Task.forResult(reactHostDelegate.jsBundleLoader)
@@ -1157,7 +1158,16 @@ public class ReactHostImpl(
             bgExecutor,
         )
       } else {
-        if (ReactBuildConfig.DEBUG) {
+        if (useDevSupport) {
+          // Dev support is on, so the developer expects to be editing JS against a packager, but
+          // the bundle can only come from the app. Nothing downstream reports this, because no
+          // packager request is ever made.
+          FLog.w(
+              TAG,
+              "Dev support is enabled but packager server access is not. The JS bundle will be " +
+                  "loaded from the app and the development server will not be used.",
+          )
+        } else if (ReactBuildConfig.DEBUG) {
           FLog.d(TAG, "Packager server access is disabled in this environment")
         }
 
@@ -1605,12 +1615,13 @@ public class ReactHostImpl(
             TracingState.ENABLED_IN_BACKGROUND_MODE,
             TracingState.ENABLED_IN_CDP_MODE -> {
               if (InspectorFlags.getFrameRecordingEnabled()) {
-                val observer = FrameTimingsObserver(
-                    _screenshotsEnabled,
-                    { frameTimingsSequence ->
-                      inspectorTarget.recordFrameTimings(frameTimingsSequence)
-                    },
-                )
+                val observer =
+                    FrameTimingsObserver(
+                        _screenshotsEnabled,
+                        { frameTimingsSequence ->
+                          inspectorTarget.recordFrameTimings(frameTimingsSequence)
+                        },
+                    )
                 observer.setCurrentWindow(currentActivity?.window)
                 observer.start()
                 frameTimingsObserver = observer

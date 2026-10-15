@@ -7,6 +7,8 @@
 
 #pragma once
 
+#include <react/cxxstableapi/UmbrellaGuard.h>
+
 #include <unordered_map>
 #include <variant>
 
@@ -16,7 +18,7 @@
 
 #include <react/renderer/core/RawPropsPrimitives.h>
 
-#include <react/debug/react_native_assert.h>
+#include <React/Debug.h>
 
 namespace facebook::react {
 

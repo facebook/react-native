@@ -67,6 +67,8 @@ export type AutolinkingArgs = {
   autolinkingJson: string | null,
   output: string | null,
   xcframeworksPath: string | null,
+  // Platform floor of every manifest this run writes; sanitized by parseArgs.
+  iosDeploymentTarget: string,
 };
 
 export type SpmTarget = {
@@ -206,6 +208,7 @@ export type AggregatorInput = {
   // the aggregator's package deps + the AutolinkedAggregate target deps.
   pluginPackageDeps?: ReadonlyArray<PluginPackageDep>,
   pluginProductDeps?: ReadonlyArray<PluginProductDep>,
+  iosDeploymentTarget?: ?string,
 };
 
 // --- Autolinking plugins (PREVIEW / unstable contract) ---
@@ -321,7 +324,8 @@ export type PluginResult = {
   flavoredFrameworks: Array<PluginFlavoredFramework>,
   // Absolute paths (dirs or files) the Xcode auto-sync build phase should watch
   // for staleness, e.g. the plugin dep's own `Package.swift` and per-module
-  // manifests. Folded into `.spm-sync-watch-paths` by main().
+  // manifests. Folded into `.spm-sync-watch-paths` (or `.spm-sync-watch-absent`
+  // while missing) by main().
   watchPaths: Array<string>,
   // Build-time shell phases for the app target, recorded to
   // `.spm-plugin-script-phases.json` by main() and injected by `spm add`/
@@ -377,6 +381,7 @@ export type SynthPackageSpec = {
   // `<react/renderer/components/safeareacontext/X.h>` resolve through the
   // dep's own `common/cpp/` subtree.
   headerSearchPaths?: ?Array<string>,
+  iosDeploymentTarget?: ?string,
 };
 
 

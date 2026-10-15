@@ -7,6 +7,8 @@
 
 #pragma once
 
+#include <react/cxxstableapi/UmbrellaGuard.h>
+
 #include <string>
 
 namespace facebook::react {
@@ -15,6 +17,11 @@ namespace facebook::react {
  * `Tag` and `InstanceHandle` are used to address React Native components.
  */
 using Tag = int32_t;
+
+/*
+ * Value representing an unset tag.
+ */
+constexpr Tag kNoTag = -1;
 
 /*
  * An id of a running Surface instance that is used to refer to the instance.

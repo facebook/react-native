@@ -32,9 +32,13 @@ import com.facebook.react.bridge.CatalystInstance
 import com.facebook.react.bridge.JavaOnlyMap
 import com.facebook.react.bridge.ReactTestHelper.createMockCatalystInstance
 import com.facebook.react.internal.featureflags.ReactNativeFeatureFlagsForTests
+import com.facebook.react.uimanager.BackgroundStyleApplicator
 import com.facebook.react.uimanager.DisplayMetricsHolder
+import com.facebook.react.uimanager.LengthPercentage
+import com.facebook.react.uimanager.LengthPercentageType
 import com.facebook.react.uimanager.ReactStylesDiffMap
 import com.facebook.react.uimanager.ThemedReactContext
+import com.facebook.react.uimanager.style.BorderRadiusProp
 import com.facebook.react.views.text.DefaultStyleValuesUtil.getDefaultTextColorHint
 import com.facebook.react.views.text.ReactTextUpdate
 import com.facebook.react.views.text.internal.span.CustomStyleSpan
@@ -244,21 +248,22 @@ class ReactTextInputPropertyTest {
       return
     }
 
-    val expectedHints = listOf(
-        "2fa-app-otp" to HintConstants.AUTOFILL_HINT_2FA_APP_OTP,
-        "email-otp" to HintConstants.AUTOFILL_HINT_EMAIL_OTP,
-        "flight-confirmation-code" to HintConstants.AUTOFILL_HINT_FLIGHT_CONFIRMATION_CODE,
-        "flight-number" to HintConstants.AUTOFILL_HINT_FLIGHT_NUMBER,
-        "gift-card-number" to HintConstants.AUTOFILL_HINT_GIFT_CARD_NUMBER,
-        "gift-card-pin" to HintConstants.AUTOFILL_HINT_GIFT_CARD_PIN,
-        "loyalty-account-number" to HintConstants.AUTOFILL_HINT_LOYALTY_ACCOUNT_NUMBER,
-        "postal-address-dependent-locality" to
-            HintConstants.AUTOFILL_HINT_POSTAL_ADDRESS_DEPENDENT_LOCALITY,
-        "postal-address-unit" to HintConstants.AUTOFILL_HINT_POSTAL_ADDRESS_APT_NUMBER,
-        "promo-code" to HintConstants.AUTOFILL_HINT_PROMO_CODE,
-        "upi-vpa" to HintConstants.AUTOFILL_HINT_UPI_VPA,
-        "wifi-password" to HintConstants.AUTOFILL_HINT_WIFI_PASSWORD,
-    )
+    val expectedHints =
+        listOf(
+            "2fa-app-otp" to HintConstants.AUTOFILL_HINT_2FA_APP_OTP,
+            "email-otp" to HintConstants.AUTOFILL_HINT_EMAIL_OTP,
+            "flight-confirmation-code" to HintConstants.AUTOFILL_HINT_FLIGHT_CONFIRMATION_CODE,
+            "flight-number" to HintConstants.AUTOFILL_HINT_FLIGHT_NUMBER,
+            "gift-card-number" to HintConstants.AUTOFILL_HINT_GIFT_CARD_NUMBER,
+            "gift-card-pin" to HintConstants.AUTOFILL_HINT_GIFT_CARD_PIN,
+            "loyalty-account-number" to HintConstants.AUTOFILL_HINT_LOYALTY_ACCOUNT_NUMBER,
+            "postal-address-dependent-locality" to
+                HintConstants.AUTOFILL_HINT_POSTAL_ADDRESS_DEPENDENT_LOCALITY,
+            "postal-address-unit" to HintConstants.AUTOFILL_HINT_POSTAL_ADDRESS_APT_NUMBER,
+            "promo-code" to HintConstants.AUTOFILL_HINT_PROMO_CODE,
+            "upi-vpa" to HintConstants.AUTOFILL_HINT_UPI_VPA,
+            "wifi-password" to HintConstants.AUTOFILL_HINT_WIFI_PASSWORD,
+        )
 
     expectedHints.forEach { (autoComplete, expectedHint) ->
       manager.updateProperties(view, buildStyles("autoComplete", autoComplete))
@@ -376,17 +381,14 @@ class ReactTextInputPropertyTest {
   fun testKeyboardTypeUrl() {
     manager.updateProperties(view, buildStyles("keyboardType", "url"))
     assertThat(view.inputType and generalKeyboardTypeFlags)
-        .isEqualTo(InputType.TYPE_TEXT_VARIATION_URI)
+        .isEqualTo(InputType.TYPE_CLASS_TEXT or InputType.TYPE_TEXT_VARIATION_URI)
   }
 
   @Test
   fun testKeyboardTypeVisiblePassword() {
-    val passwordVisibilityFlag =
-        InputType.TYPE_TEXT_VARIATION_VISIBLE_PASSWORD and
-            InputType.TYPE_TEXT_VARIATION_PASSWORD.inv()
-
     manager.updateProperties(view, buildStyles("keyboardType", "visible-password"))
-    assertThat(view.inputType and generalKeyboardTypeFlags).isEqualTo(passwordVisibilityFlag)
+    assertThat(view.inputType and (InputType.TYPE_MASK_CLASS or InputType.TYPE_MASK_VARIATION))
+        .isEqualTo(InputType.TYPE_CLASS_TEXT or InputType.TYPE_TEXT_VARIATION_VISIBLE_PASSWORD)
   }
 
   @Test
@@ -458,16 +460,16 @@ class ReactTextInputPropertyTest {
 
     manager.updateProperties(view, buildStyles("textAlign", "start"))
     assertThat(
-        view.gravity and
-            (Gravity.HORIZONTAL_GRAVITY_MASK or Gravity.RELATIVE_HORIZONTAL_GRAVITY_MASK),
-    )
+            view.gravity and
+                (Gravity.HORIZONTAL_GRAVITY_MASK or Gravity.RELATIVE_HORIZONTAL_GRAVITY_MASK),
+        )
         .isEqualTo(Gravity.START)
 
     manager.updateProperties(view, buildStyles("textAlign", "end"))
     assertThat(
-        view.gravity and
-            (Gravity.HORIZONTAL_GRAVITY_MASK or Gravity.RELATIVE_HORIZONTAL_GRAVITY_MASK),
-    )
+            view.gravity and
+                (Gravity.HORIZONTAL_GRAVITY_MASK or Gravity.RELATIVE_HORIZONTAL_GRAVITY_MASK),
+        )
         .isEqualTo(Gravity.END)
 
     manager.updateProperties(view, buildStyles("textAlign", null))
@@ -571,22 +573,24 @@ class ReactTextInputPropertyTest {
             "'wght' 550",
         ),
     )
-    val matchingSpan = CustomStyleSpan(
-        0,
-        400,
-        view.fontFeatureSettings,
-        "'wght' 550",
-        "sans-serif",
-        themedContext.assets,
-    )
-    val differingSpan = CustomStyleSpan(
-        0,
-        400,
-        view.fontFeatureSettings,
-        "'wght' 700",
-        "sans-serif",
-        themedContext.assets,
-    )
+    val matchingSpan =
+        CustomStyleSpan(
+            0,
+            400,
+            view.fontFeatureSettings,
+            "'wght' 550",
+            "sans-serif",
+            themedContext.assets,
+        )
+    val differingSpan =
+        CustomStyleSpan(
+            0,
+            400,
+            view.fontFeatureSettings,
+            "'wght' 700",
+            "sans-serif",
+            themedContext.assets,
+        )
     val textUpdate =
         SpannableString("matching different").apply {
           setSpan(matchingSpan, 0, 8, Spanned.SPAN_EXCLUSIVE_EXCLUSIVE)
@@ -630,6 +634,22 @@ class ReactTextInputPropertyTest {
     )
 
     assertThat(checkNotNull(view.text).getSpans(0, view.length(), MarkerSpan::class.java)).isEmpty()
+  }
+
+  @Test
+  fun testBorderRadius() {
+    // Percentage border radii arrive as strings and must not crash the property updater
+    manager.updateProperties(view, buildStyles("borderRadius", "50%"))
+    assertThat(BackgroundStyleApplicator.getBorderRadius(view, BorderRadiusProp.BORDER_RADIUS))
+        .isEqualTo(LengthPercentage(50f, LengthPercentageType.PERCENT))
+
+    manager.updateProperties(view, buildStyles("borderRadius", 10.0))
+    assertThat(BackgroundStyleApplicator.getBorderRadius(view, BorderRadiusProp.BORDER_RADIUS))
+        .isEqualTo(LengthPercentage(10f, LengthPercentageType.POINT))
+
+    manager.updateProperties(view, buildStyles("borderRadius", null))
+    assertThat(BackgroundStyleApplicator.getBorderRadius(view, BorderRadiusProp.BORDER_RADIUS))
+        .isNull()
   }
 
   private fun buildStyles(vararg keysAndValues: Any?): ReactStylesDiffMap {

@@ -138,6 +138,9 @@ function attachDefaultEventTypes(
   }
 }
 
+// $FlowFixMe[method-unbinding]
+const hasOwnProperty = Object.prototype.hasOwnProperty;
+
 // TODO: Figure out how to avoid all this runtime initialization cost.
 function merge(
   destination: ?ViewManagerConfig,
@@ -151,12 +154,16 @@ function merge(
   }
 
   for (const key in source) {
-    if (!source.hasOwnProperty(key)) {
+    /* $FlowFixMe[invalid-this-arg] Error exposed after fixing this typing
+     * unsoundness in flow */
+    if (!hasOwnProperty.call(source, key)) {
       continue;
     }
 
     let sourceValue = source[key];
-    if (destination.hasOwnProperty(key)) {
+    /* $FlowFixMe[invalid-this-arg] Error exposed after fixing this typing
+     * unsoundness in flow */
+    if (hasOwnProperty.call(destination, key)) {
       const destinationValue = destination[key];
       if (
         typeof sourceValue === 'object' &&

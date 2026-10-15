@@ -7,7 +7,7 @@
 
 #pragma once
 
-#include <react/cxxstableapi/UmbrellaGuard.h>
+#include <react/cxxstableapi/FrameworksGuard.h>
 
 #include <optional>
 #include <type_traits>
@@ -195,9 +195,9 @@ struct CSSDataTypeParser<CSSTransformOrigin> {
         return CSSPercentage{100.0f};
       case CSSTransformOriginKeyword::Bottom:
         return CSSPercentage{100.0f};
+      default:
+        return {};
     }
-
-    return {};
   }
 };
 

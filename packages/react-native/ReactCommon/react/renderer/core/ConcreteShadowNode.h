@@ -7,7 +7,9 @@
 
 #pragma once
 
-#include <react/debug/react_native_assert.h>
+#include <react/cxxstableapi/UmbrellaGuard.h>
+
+#include <React/Debug.h>
 #include <react/renderer/core/ConcreteState.h>
 #include <react/renderer/core/Props.h>
 #include <react/renderer/core/PropsParserContext.h>

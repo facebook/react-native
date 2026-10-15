@@ -7,9 +7,11 @@
 
 #pragma once
 
+#include <react/cxxstableapi/UmbrellaGuard.h>
+
 #include <atomic>
 
-#include <react/debug/flags.h>
+#include <React/Debug.h>
 
 namespace facebook::react {
 

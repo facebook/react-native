@@ -7,8 +7,10 @@
 
 #pragma once
 
+#include <react/cxxstableapi/UmbrellaGuard.h>
+
+#include <React/Timing.h>
 #include <react/renderer/core/EventTarget.h>
-#include <react/timing/primitives.h>
 
 #include <optional>
 #include <string_view>

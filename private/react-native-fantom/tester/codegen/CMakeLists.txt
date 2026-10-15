@@ -24,6 +24,7 @@ target_link_libraries(
   react_codegen_rncore
   jsi
   react_nativemodule_core
+  react_renderer_componentregistry
   rrc_view
 )
 

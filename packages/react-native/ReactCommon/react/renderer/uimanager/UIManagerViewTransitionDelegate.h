@@ -9,10 +9,13 @@
 
 #include <react/cxxstableapi/FrameworksGuard.h>
 
-#include <react/renderer/core/ShadowNode.h>
-#include <react/renderer/graphics/Float.h>
+#include <React/Graphics.h>
+#include <React/RendererCore.h>
+
 #include <functional>
+#include <memory>
 #include <optional>
+#include <string>
 
 namespace facebook::react {
 
@@ -52,7 +55,7 @@ class UIManagerViewTransitionDelegate {
     Float y{0};
     Float width{0};
     Float height{0};
-    Tag nativeTag{-1};
+    Tag nativeTag{kNoTag};
   };
 
   virtual std::optional<ViewTransitionInstance> getViewTransitionInstance(

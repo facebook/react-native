@@ -31,9 +31,8 @@ Pod::Spec.new do |s|
   s.author                 = "Meta Platforms, Inc. and its affiliates"
   s.platforms              = min_supported_versions
   s.source                 = source
-  s.source_files           = podspec_sources("**/*.{cpp,h,mm}", "**/*.h")
+  s.source_files           = podspec_sources("*.{cpp,h,mm}", "*.h")
   s.header_dir             = "react/renderer/debug"
-  s.exclude_files          = "tests"
   s.pod_target_xcconfig    = {
     "CLANG_CXX_LANGUAGE_STANDARD" => rct_cxx_language_standard(),
     "HEADER_SEARCH_PATHS" => header_search_paths.join(' '),
@@ -43,8 +42,17 @@ Pod::Spec.new do |s|
   resolve_use_frameworks(s, header_mappings_dir: "../../..", module_name: "React_rendererdebug")
 
   add_dependency(s, "React-debug")
+  add_dependency(s, "React-utils", :additional_framework_paths => ["react/utils/platform/ios"])
   add_rn_third_party_dependencies(s)
   add_rncore_dependency(s)
+
+  s.dependency "React-cxxstableapi"
+
+  s.subspec "debugUmbrella" do |ss|
+    ss.source_files        = "React/*.h"
+    ss.header_dir          = ""
+    ss.header_mappings_dir = "."
+  end
 
   mark_as_react_native_build(s)
 end

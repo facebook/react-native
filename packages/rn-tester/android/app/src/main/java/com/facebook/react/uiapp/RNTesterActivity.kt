@@ -22,7 +22,7 @@ import com.facebook.react.devsupport.DevMenuConfiguration
 import java.io.FileDescriptor
 import java.io.PrintWriter
 
-internal class RNTesterActivity : ReactActivity() {
+internal open class RNTesterActivity : ReactActivity() {
   class RNTesterActivityDelegate(val activity: ReactActivity, mainComponentName: String) :
       DefaultReactActivityDelegate(activity, mainComponentName) {
     private val PARAM_ROUTE = "route"
@@ -67,11 +67,12 @@ internal class RNTesterActivity : ReactActivity() {
     maybeUpdateBackgroundColor()
 
     reactDelegate?.reactHost?.let { reactHost ->
-      val devMenuConfiguration = DevMenuConfiguration(
-          devMenuEnabled = true,
-          shakeGestureEnabled = true,
-          keyboardShortcutsEnabled = true,
-      )
+      val devMenuConfiguration =
+          DevMenuConfiguration(
+              devMenuEnabled = true,
+              shakeGestureEnabled = true,
+              keyboardShortcutsEnabled = true,
+          )
       reactHost.setDevMenuConfiguration(devMenuConfiguration)
     }
 

@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<52d39a196023796eed43d419c5a0b855>>
+ * @generated SignedSource<<4eb26b4190d023d26a50f54b6e3ea5eb>>
  * @flow strict
  * @noformat
  */
@@ -37,6 +37,7 @@ export type ReactNativeFeatureFlagsJsOnly = Readonly<{
   enableImperativeEvents_DEPRECATED: Getter<boolean>,
   enableNativeEventTargetEventDispatching: Getter<boolean>,
   externalElementInspectionEnabled: Getter<boolean>,
+  fixCrossOrientationNestedListViewability: Getter<boolean>,
   fixVirtualizeListCollapseWindowSize: Getter<boolean>,
   isLayoutAnimationEnabled: Getter<boolean>,
   shouldUseAnimatedObjectForTransform: Getter<boolean>,
@@ -54,6 +55,8 @@ export type ReactNativeFeatureFlags = Readonly<{
   cxxNativeAnimatedEnabled: Getter<boolean>,
   defaultTextToOverflowHidden: Getter<boolean>,
   disableEarlyViewCommandExecution: Getter<boolean>,
+  disableIdleEventDispatchFrameCallbackRearmAndroid: Getter<boolean>,
+  disableIdleMountItemFrameCallbackRearmAndroid: Getter<boolean>,
   disableImageViewPreallocationAndroid: Getter<boolean>,
   disableMountItemReorderingAndroid: Getter<boolean>,
   disableSubviewClippingAndroid: Getter<boolean>,
@@ -61,9 +64,10 @@ export type ReactNativeFeatureFlags = Readonly<{
   disableViewPreallocationAndroid: Getter<boolean>,
   enableAccessibilityOrder: Getter<boolean>,
   enableAccumulatedUpdatesInRawPropsAndroid: Getter<boolean>,
+  enableAndroidAutoOffscreenCompositingForElevation: Getter<boolean>,
   enableAndroidTextMeasurementOptimizations: Getter<boolean>,
+  enableAsyncDiskCacheCheckInMultiSourceImageAndroid: Getter<boolean>,
   enableBridgelessArchitecture: Getter<boolean>,
-  enableBufferedCallInvoker: Getter<boolean>,
   enableCppPropsIteratorSetter: Getter<boolean>,
   enableCustomFocusSearchOnClippedElementsAndroid: Getter<boolean>,
   enableDestroyShadowTreeRevisionAsync: Getter<boolean>,
@@ -71,6 +75,7 @@ export type ReactNativeFeatureFlags = Readonly<{
   enableEagerRootViewAttachment: Getter<boolean>,
   enableExclusivePropsUpdateAndroid: Getter<boolean>,
   enableFabricCommitBranching: Getter<boolean>,
+  enableFabricCommitBranchingMergeOnMainThread: Getter<boolean>,
   enableFabricLogs: Getter<boolean>,
   enableFlexboxAutoMinSizeInStrictMode: Getter<boolean>,
   enableFontScaleChangesUpdatingLayout: Getter<boolean>,
@@ -91,6 +96,7 @@ export type ReactNativeFeatureFlags = Readonly<{
   enableMountingCoordinatorPullModelAndroid: Getter<boolean>,
   enableMutationObserverByDefault: Getter<boolean>,
   enableNativeCSSParsing: Getter<boolean>,
+  enablePreallocatedPropsDiffOnInsertAndroid: Getter<boolean>,
   enablePreparedTextLayout: Getter<boolean>,
   enablePropsUpdateReconciliationAndroid: Getter<boolean>,
   enableResizeObserverByDefault: Getter<boolean>,
@@ -102,8 +108,9 @@ export type ReactNativeFeatureFlags = Readonly<{
   enableViewRecyclingForText: Getter<boolean>,
   enableViewRecyclingForView: Getter<boolean>,
   enableVirtualViewContainerStateExperimental: Getter<boolean>,
-  fixDifferentiatorParentTagForUnflattenCase: Getter<boolean>,
+  fixBorderlessRippleAndroid: Getter<boolean>,
   fixMappingOfEventPrioritiesBetweenFabricAndReact: Getter<boolean>,
+  fixTextLayoutOnPixelDensityChange: Getter<boolean>,
   fixYogaFlexBasisFitContentInMainAxis: Getter<boolean>,
   fuseboxAssertSingleHostState: Getter<boolean>,
   fuseboxEnabledRelease: Getter<boolean>,
@@ -132,6 +139,7 @@ export type ReactNativeFeatureFlags = Readonly<{
   useSharedAnimatedBackend: Getter<boolean>,
   useTraitHiddenOnAndroid: Getter<boolean>,
   useTurboModuleInterop: Getter<boolean>,
+  useWindowDensityForDisplayMetricsAndroid: Getter<boolean>,
   viewCullingOutsetRatio: Getter<number>,
   viewTransitionEnabled: Getter<boolean>,
   viewTransitionUseHardwareBitmapAndroid: Getter<boolean>,
@@ -184,6 +192,11 @@ export const enableNativeEventTargetEventDispatching: Getter<boolean> = createJa
 export const externalElementInspectionEnabled: Getter<boolean> = createJavaScriptFlagGetter('externalElementInspectionEnabled', true);
 
 /**
+ * When enabled, a VirtualizedList nested inside a list of the opposite orientation does not report viewable items while its containing cell is outside the parent viewport.
+ */
+export const fixCrossOrientationNestedListViewability: Getter<boolean> = createJavaScriptFlagGetter('fixCrossOrientationNestedListViewability', false);
+
+/**
  * Fixing an edge case where the current window size is not properly calculated with fast scrolling. Window size collapsed to 1 element even if windowSize more than the current amount of elements
  */
 export const fixVirtualizeListCollapseWindowSize: Getter<boolean> = createJavaScriptFlagGetter('fixVirtualizeListCollapseWindowSize', false);
@@ -233,6 +246,14 @@ export const defaultTextToOverflowHidden: Getter<boolean> = createNativeFlagGett
  */
 export const disableEarlyViewCommandExecution: Getter<boolean> = createNativeFlagGetter('disableEarlyViewCommandExecution', false);
 /**
+ * Make the batched-event-dispatch Choreographer frame callback one-shot on Android instead of re-posting itself every frame
+ */
+export const disableIdleEventDispatchFrameCallbackRearmAndroid: Getter<boolean> = createNativeFlagGetter('disableIdleEventDispatchFrameCallbackRearmAndroid', false);
+/**
+ * Stop re-arming the DISPATCH_UI Choreographer frame callback at vsync rate while no mount items are pending on Android; queueing new items re-arms it
+ */
+export const disableIdleMountItemFrameCallbackRearmAndroid: Getter<boolean> = createNativeFlagGetter('disableIdleMountItemFrameCallbackRearmAndroid', false);
+/**
  * Force disable view preallocation for images triggered from createNode off the main thread on Android
  */
 export const disableImageViewPreallocationAndroid: Getter<boolean> = createNativeFlagGetter('disableImageViewPreallocationAndroid', false);
@@ -261,17 +282,21 @@ export const enableAccessibilityOrder: Getter<boolean> = createNativeFlagGetter(
  */
 export const enableAccumulatedUpdatesInRawPropsAndroid: Getter<boolean> = createNativeFlagGetter('enableAccumulatedUpdatesInRawPropsAndroid', false);
 /**
+ * When enabled, a View with reduced opacity that contains an elevated descendant is composited offscreen so the elevation shadow fades uniformly instead of rendering as banded per-primitive alpha.
+ */
+export const enableAndroidAutoOffscreenCompositingForElevation: Getter<boolean> = createNativeFlagGetter('enableAndroidAutoOffscreenCompositingForElevation', false);
+/**
  * Enables various optimizations throughout the path of measuring text on Android.
  */
 export const enableAndroidTextMeasurementOptimizations: Getter<boolean> = createNativeFlagGetter('enableAndroidTextMeasurementOptimizations', false);
 /**
+ * Runs multi-source image disk-cache checks asynchronously on Android.
+ */
+export const enableAsyncDiskCacheCheckInMultiSourceImageAndroid: Getter<boolean> = createNativeFlagGetter('enableAsyncDiskCacheCheckInMultiSourceImageAndroid', false);
+/**
  * Feature flag to enable the new bridgeless architecture.
  */
 export const enableBridgelessArchitecture: Getter<boolean> = createNativeFlagGetter('enableBridgelessArchitecture', true);
-/**
- * Route async CallInvoker work through the ReactInstance buffered runtime executor, so it is ordered against callable module calls and cannot run before the JS bundle has finished evaluating. invokeSync is unaffected.
- */
-export const enableBufferedCallInvoker: Getter<boolean> = createNativeFlagGetter('enableBufferedCallInvoker', true);
 /**
  * Enable prop iterator setter-style construction of Props in C++ (this flag is not used in Java).
  */
@@ -297,9 +322,13 @@ export const enableEagerRootViewAttachment: Getter<boolean> = createNativeFlagGe
  */
 export const enableExclusivePropsUpdateAndroid: Getter<boolean> = createNativeFlagGetter('enableExclusivePropsUpdateAndroid', false);
 /**
- * Enables Fabric commit branching to fix starvation problems and atomic JS updates.
+ * Enables Fabric commit branching to fix atomic JS updates.
  */
 export const enableFabricCommitBranching: Getter<boolean> = createNativeFlagGetter('enableFabricCommitBranching', false);
+/**
+ * Enables Fabric commit branching merge to happen on the main thread to fix starvation problems.
+ */
+export const enableFabricCommitBranchingMergeOnMainThread: Getter<boolean> = createNativeFlagGetter('enableFabricCommitBranchingMergeOnMainThread', false);
 /**
  * This feature flag enables logs for Fabric.
  */
@@ -381,6 +410,10 @@ export const enableMutationObserverByDefault: Getter<boolean> = createNativeFlag
  */
 export const enableNativeCSSParsing: Getter<boolean> = createNativeFlagGetter('enableNativeCSSParsing', false);
 /**
+ * When enabled together with `enableAccumulatedUpdatesInRawPropsAndroid`, the Insert of a preallocated view only sends the difference between the props the view was preallocated with and the inserted props, instead of sending all props again on every Insert.
+ */
+export const enablePreallocatedPropsDiffOnInsertAndroid: Getter<boolean> = createNativeFlagGetter('enablePreallocatedPropsDiffOnInsertAndroid', false);
+/**
  * Enables caching text layout artifacts for later reuse
  */
 export const enablePreparedTextLayout: Getter<boolean> = createNativeFlagGetter('enablePreparedTextLayout', false);
@@ -425,13 +458,17 @@ export const enableViewRecyclingForView: Getter<boolean> = createNativeFlagGette
  */
 export const enableVirtualViewContainerStateExperimental: Getter<boolean> = createNativeFlagGetter('enableVirtualViewContainerStateExperimental', false);
 /**
- * Fix incorrect parentTag passed as parentTagForUpdate in the unflatten-unflatten branch of calculateShadowViewMutationsFlattener, which causes UPDATE mutations to reference a parent being created in the same batch.
+ * Prevents a borderless ripple feedback underlay from projecting the entire view background on Android, which could hide the background and ripple.
  */
-export const fixDifferentiatorParentTagForUnflattenCase: Getter<boolean> = createNativeFlagGetter('fixDifferentiatorParentTagForUnflattenCase', true);
+export const fixBorderlessRippleAndroid: Getter<boolean> = createNativeFlagGetter('fixBorderlessRippleAndroid', false);
 /**
  * Uses the default event priority instead of the discreet event priority by default when dispatching events from Fabric to React.
  */
 export const fixMappingOfEventPrioritiesBetweenFabricAndReact: Getter<boolean> = createNativeFlagGetter('fixMappingOfEventPrioritiesBetweenFabricAndReact', false);
+/**
+ * Re-measures text and re-sends padding and overflow insets to mounted views when the pixel density changes, so text and padded views do not keep sizes from the old density.
+ */
+export const fixTextLayoutOnPixelDensityChange: Getter<boolean> = createNativeFlagGetter('fixTextLayoutOnPixelDensityChange', false);
 /**
  * Fix flex basis computation to not apply FitContent constraint in the main axis for non-measure container nodes, preventing unnecessary re-measurement in scroll containers.
  */
@@ -457,7 +494,7 @@ export const fuseboxScreenshotCaptureEnabled: Getter<boolean> = createNativeFlag
  */
 export const fuseboxWebSocketEventsEnabled: Getter<boolean> = createNativeFlagGetter('fuseboxWebSocketEventsEnabled', false);
 /**
- * When enabled, uses optimized platform-specific paths to apply animated props synchronously. On Android, this uses a batched int/double buffer protocol with a single JNI call. On iOS, this passes AnimatedProps directly through the delegate chain and applies them via cloneProps, avoiding the folly::dynamic round-trip.
+ * When enabled, uses optimized platform-specific paths to apply animated props synchronously. On Android, this uses a batched int/double buffer protocol with a single JNI call. Other platforms apply the props of each view through the existing synchronous update.
  */
 export const optimizedAnimatedPropUpdates: Getter<boolean> = createNativeFlagGetter('optimizedAnimatedPropUpdates', false);
 /**
@@ -544,6 +581,10 @@ export const useTraitHiddenOnAndroid: Getter<boolean> = createNativeFlagGetter('
  * In Bridgeless mode, should legacy NativeModules use the TurboModule system?
  */
 export const useTurboModuleInterop: Getter<boolean> = createNativeFlagGetter('useTurboModuleInterop', false);
+/**
+ * Keeps the window density in the screen display metrics instead of the physical display density, so text is measured at the density the window renders at.
+ */
+export const useWindowDensityForDisplayMetricsAndroid: Getter<boolean> = createNativeFlagGetter('useWindowDensityForDisplayMetricsAndroid', false);
 /**
  * Outset the culling context frame with the provided ratio. The culling context frame size will be outset by width * ratio on the left and right, and height * ratio on the top and bottom.
  */

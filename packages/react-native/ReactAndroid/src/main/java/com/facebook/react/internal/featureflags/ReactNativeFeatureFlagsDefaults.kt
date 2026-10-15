@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<891abee69433c105d062b45ed357fd5c>>
+ * @generated SignedSource<<669f16e131d4a5ddc026ffecc6893575>>
  */
 
 /**
@@ -33,6 +33,10 @@ public open class ReactNativeFeatureFlagsDefaults : ReactNativeFeatureFlagsProvi
 
   override fun disableEarlyViewCommandExecution(): Boolean = false
 
+  override fun disableIdleEventDispatchFrameCallbackRearmAndroid(): Boolean = false
+
+  override fun disableIdleMountItemFrameCallbackRearmAndroid(): Boolean = false
+
   override fun disableImageViewPreallocationAndroid(): Boolean = false
 
   override fun disableMountItemReorderingAndroid(): Boolean = false
@@ -47,11 +51,13 @@ public open class ReactNativeFeatureFlagsDefaults : ReactNativeFeatureFlagsProvi
 
   override fun enableAccumulatedUpdatesInRawPropsAndroid(): Boolean = false
 
+  override fun enableAndroidAutoOffscreenCompositingForElevation(): Boolean = false
+
   override fun enableAndroidTextMeasurementOptimizations(): Boolean = false
 
-  override fun enableBridgelessArchitecture(): Boolean = true
+  override fun enableAsyncDiskCacheCheckInMultiSourceImageAndroid(): Boolean = false
 
-  override fun enableBufferedCallInvoker(): Boolean = true
+  override fun enableBridgelessArchitecture(): Boolean = true
 
   override fun enableCppPropsIteratorSetter(): Boolean = false
 
@@ -66,6 +72,8 @@ public open class ReactNativeFeatureFlagsDefaults : ReactNativeFeatureFlagsProvi
   override fun enableExclusivePropsUpdateAndroid(): Boolean = false
 
   override fun enableFabricCommitBranching(): Boolean = false
+
+  override fun enableFabricCommitBranchingMergeOnMainThread(): Boolean = false
 
   override fun enableFabricLogs(): Boolean = false
 
@@ -107,6 +115,8 @@ public open class ReactNativeFeatureFlagsDefaults : ReactNativeFeatureFlagsProvi
 
   override fun enableNativeCSSParsing(): Boolean = false
 
+  override fun enablePreallocatedPropsDiffOnInsertAndroid(): Boolean = false
+
   override fun enablePreparedTextLayout(): Boolean = false
 
   override fun enablePropsUpdateReconciliationAndroid(): Boolean = false
@@ -129,9 +139,11 @@ public open class ReactNativeFeatureFlagsDefaults : ReactNativeFeatureFlagsProvi
 
   override fun enableVirtualViewContainerStateExperimental(): Boolean = false
 
-  override fun fixDifferentiatorParentTagForUnflattenCase(): Boolean = true
+  override fun fixBorderlessRippleAndroid(): Boolean = false
 
   override fun fixMappingOfEventPrioritiesBetweenFabricAndReact(): Boolean = false
+
+  override fun fixTextLayoutOnPixelDensityChange(): Boolean = false
 
   override fun fixYogaFlexBasisFitContentInMainAxis(): Boolean = false
 
@@ -188,6 +200,8 @@ public open class ReactNativeFeatureFlagsDefaults : ReactNativeFeatureFlagsProvi
   override fun useTraitHiddenOnAndroid(): Boolean = false
 
   override fun useTurboModuleInterop(): Boolean = false
+
+  override fun useWindowDensityForDisplayMetricsAndroid(): Boolean = false
 
   override fun viewCullingOutsetRatio(): Double = 0.0
 

@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<0537b7ab2bf0250ddd0cfaec6c52111b>>
+ * @generated SignedSource<<62dbb584d6aaf595314636a81346e3e5>>
  */
 
 /**
@@ -19,7 +19,7 @@
 
 #pragma once
 
-#include <react/cxxstableapi/UmbrellaGuard.h>
+#include <react/cxxstableapi/PrivateGuard.h>
 
 #include <react/featureflags/ReactNativeFeatureFlagsAccessor.h>
 #include <react/featureflags/ReactNativeFeatureFlagsProvider.h>
@@ -67,6 +67,16 @@ class ReactNativeFeatureFlags {
   RN_EXPORT static bool disableEarlyViewCommandExecution();
 
   /**
+   * Make the batched-event-dispatch Choreographer frame callback one-shot on Android instead of re-posting itself every frame
+   */
+  RN_EXPORT static bool disableIdleEventDispatchFrameCallbackRearmAndroid();
+
+  /**
+   * Stop re-arming the DISPATCH_UI Choreographer frame callback at vsync rate while no mount items are pending on Android; queueing new items re-arms it
+   */
+  RN_EXPORT static bool disableIdleMountItemFrameCallbackRearmAndroid();
+
+  /**
    * Force disable view preallocation for images triggered from createNode off the main thread on Android
    */
   RN_EXPORT static bool disableImageViewPreallocationAndroid();
@@ -102,19 +112,24 @@ class ReactNativeFeatureFlags {
   RN_EXPORT static bool enableAccumulatedUpdatesInRawPropsAndroid();
 
   /**
+   * When enabled, a View with reduced opacity that contains an elevated descendant is composited offscreen so the elevation shadow fades uniformly instead of rendering as banded per-primitive alpha.
+   */
+  RN_EXPORT static bool enableAndroidAutoOffscreenCompositingForElevation();
+
+  /**
    * Enables various optimizations throughout the path of measuring text on Android.
    */
   RN_EXPORT static bool enableAndroidTextMeasurementOptimizations();
 
   /**
+   * Runs multi-source image disk-cache checks asynchronously on Android.
+   */
+  RN_EXPORT static bool enableAsyncDiskCacheCheckInMultiSourceImageAndroid();
+
+  /**
    * Feature flag to enable the new bridgeless architecture.
    */
   RN_EXPORT static bool enableBridgelessArchitecture();
-
-  /**
-   * Route async CallInvoker work through the ReactInstance buffered runtime executor, so it is ordered against callable module calls and cannot run before the JS bundle has finished evaluating. invokeSync is unaffected.
-   */
-  RN_EXPORT static bool enableBufferedCallInvoker();
 
   /**
    * Enable prop iterator setter-style construction of Props in C++ (this flag is not used in Java).
@@ -147,9 +162,14 @@ class ReactNativeFeatureFlags {
   RN_EXPORT static bool enableExclusivePropsUpdateAndroid();
 
   /**
-   * Enables Fabric commit branching to fix starvation problems and atomic JS updates.
+   * Enables Fabric commit branching to fix atomic JS updates.
    */
   RN_EXPORT static bool enableFabricCommitBranching();
+
+  /**
+   * Enables Fabric commit branching merge to happen on the main thread to fix starvation problems.
+   */
+  RN_EXPORT static bool enableFabricCommitBranchingMergeOnMainThread();
 
   /**
    * This feature flag enables logs for Fabric.
@@ -252,6 +272,11 @@ class ReactNativeFeatureFlags {
   RN_EXPORT static bool enableNativeCSSParsing();
 
   /**
+   * When enabled together with `enableAccumulatedUpdatesInRawPropsAndroid`, the Insert of a preallocated view only sends the difference between the props the view was preallocated with and the inserted props, instead of sending all props again on every Insert.
+   */
+  RN_EXPORT static bool enablePreallocatedPropsDiffOnInsertAndroid();
+
+  /**
    * Enables caching text layout artifacts for later reuse
    */
   RN_EXPORT static bool enablePreparedTextLayout();
@@ -307,14 +332,19 @@ class ReactNativeFeatureFlags {
   RN_EXPORT static bool enableVirtualViewContainerStateExperimental();
 
   /**
-   * Fix incorrect parentTag passed as parentTagForUpdate in the unflatten-unflatten branch of calculateShadowViewMutationsFlattener, which causes UPDATE mutations to reference a parent being created in the same batch.
+   * Prevents a borderless ripple feedback underlay from projecting the entire view background on Android, which could hide the background and ripple.
    */
-  RN_EXPORT static bool fixDifferentiatorParentTagForUnflattenCase();
+  RN_EXPORT static bool fixBorderlessRippleAndroid();
 
   /**
    * Uses the default event priority instead of the discreet event priority by default when dispatching events from Fabric to React.
    */
   RN_EXPORT static bool fixMappingOfEventPrioritiesBetweenFabricAndReact();
+
+  /**
+   * Re-measures text and re-sends padding and overflow insets to mounted views when the pixel density changes, so text and padded views do not keep sizes from the old density.
+   */
+  RN_EXPORT static bool fixTextLayoutOnPixelDensityChange();
 
   /**
    * Fix flex basis computation to not apply FitContent constraint in the main axis for non-measure container nodes, preventing unnecessary re-measurement in scroll containers.
@@ -347,7 +377,7 @@ class ReactNativeFeatureFlags {
   RN_EXPORT static bool fuseboxWebSocketEventsEnabled();
 
   /**
-   * When enabled, uses optimized platform-specific paths to apply animated props synchronously. On Android, this uses a batched int/double buffer protocol with a single JNI call. On iOS, this passes AnimatedProps directly through the delegate chain and applies them via cloneProps, avoiding the folly::dynamic round-trip.
+   * When enabled, uses optimized platform-specific paths to apply animated props synchronously. On Android, this uses a batched int/double buffer protocol with a single JNI call. Other platforms apply the props of each view through the existing synchronous update.
    */
   RN_EXPORT static bool optimizedAnimatedPropUpdates();
 
@@ -455,6 +485,11 @@ class ReactNativeFeatureFlags {
    * In Bridgeless mode, should legacy NativeModules use the TurboModule system?
    */
   RN_EXPORT static bool useTurboModuleInterop();
+
+  /**
+   * Keeps the window density in the screen display metrics instead of the physical display density, so text is measured at the density the window renders at.
+   */
+  RN_EXPORT static bool useWindowDensityForDisplayMetricsAndroid();
 
   /**
    * Outset the culling context frame with the provided ratio. The culling context frame size will be outset by width * ratio on the left and right, and height * ratio on the top and bottom.

@@ -7,10 +7,12 @@
 
 #pragma once
 
+#include <react/cxxstableapi/UmbrellaGuard.h>
+
 #ifdef RN_SERIALIZABLE_STATE
+#include <React/MapBuffer.h>
 #include <fbjni/fbjni.h>
 #include <folly/dynamic.h>
-#include <react/renderer/mapbuffer/MapBuffer.h>
 #endif
 
 #include <react/renderer/core/ShadowNodeFamily.h>

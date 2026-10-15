@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<909f4afa6f96b4e77577432e4d98ba76>>
+ * @generated SignedSource<<cd218b84f81cb128569351055afcceeb>>
  */
 
 /**
@@ -69,6 +69,16 @@ bool NativeReactNativeFeatureFlags::disableEarlyViewCommandExecution(
   return ReactNativeFeatureFlags::disableEarlyViewCommandExecution();
 }
 
+bool NativeReactNativeFeatureFlags::disableIdleEventDispatchFrameCallbackRearmAndroid(
+    jsi::Runtime& /*runtime*/) {
+  return ReactNativeFeatureFlags::disableIdleEventDispatchFrameCallbackRearmAndroid();
+}
+
+bool NativeReactNativeFeatureFlags::disableIdleMountItemFrameCallbackRearmAndroid(
+    jsi::Runtime& /*runtime*/) {
+  return ReactNativeFeatureFlags::disableIdleMountItemFrameCallbackRearmAndroid();
+}
+
 bool NativeReactNativeFeatureFlags::disableImageViewPreallocationAndroid(
     jsi::Runtime& /*runtime*/) {
   return ReactNativeFeatureFlags::disableImageViewPreallocationAndroid();
@@ -104,19 +114,24 @@ bool NativeReactNativeFeatureFlags::enableAccumulatedUpdatesInRawPropsAndroid(
   return ReactNativeFeatureFlags::enableAccumulatedUpdatesInRawPropsAndroid();
 }
 
+bool NativeReactNativeFeatureFlags::enableAndroidAutoOffscreenCompositingForElevation(
+    jsi::Runtime& /*runtime*/) {
+  return ReactNativeFeatureFlags::enableAndroidAutoOffscreenCompositingForElevation();
+}
+
 bool NativeReactNativeFeatureFlags::enableAndroidTextMeasurementOptimizations(
     jsi::Runtime& /*runtime*/) {
   return ReactNativeFeatureFlags::enableAndroidTextMeasurementOptimizations();
 }
 
+bool NativeReactNativeFeatureFlags::enableAsyncDiskCacheCheckInMultiSourceImageAndroid(
+    jsi::Runtime& /*runtime*/) {
+  return ReactNativeFeatureFlags::enableAsyncDiskCacheCheckInMultiSourceImageAndroid();
+}
+
 bool NativeReactNativeFeatureFlags::enableBridgelessArchitecture(
     jsi::Runtime& /*runtime*/) {
   return ReactNativeFeatureFlags::enableBridgelessArchitecture();
-}
-
-bool NativeReactNativeFeatureFlags::enableBufferedCallInvoker(
-    jsi::Runtime& /*runtime*/) {
-  return ReactNativeFeatureFlags::enableBufferedCallInvoker();
 }
 
 bool NativeReactNativeFeatureFlags::enableCppPropsIteratorSetter(
@@ -152,6 +167,11 @@ bool NativeReactNativeFeatureFlags::enableExclusivePropsUpdateAndroid(
 bool NativeReactNativeFeatureFlags::enableFabricCommitBranching(
     jsi::Runtime& /*runtime*/) {
   return ReactNativeFeatureFlags::enableFabricCommitBranching();
+}
+
+bool NativeReactNativeFeatureFlags::enableFabricCommitBranchingMergeOnMainThread(
+    jsi::Runtime& /*runtime*/) {
+  return ReactNativeFeatureFlags::enableFabricCommitBranchingMergeOnMainThread();
 }
 
 bool NativeReactNativeFeatureFlags::enableFabricLogs(
@@ -254,6 +274,11 @@ bool NativeReactNativeFeatureFlags::enableNativeCSSParsing(
   return ReactNativeFeatureFlags::enableNativeCSSParsing();
 }
 
+bool NativeReactNativeFeatureFlags::enablePreallocatedPropsDiffOnInsertAndroid(
+    jsi::Runtime& /*runtime*/) {
+  return ReactNativeFeatureFlags::enablePreallocatedPropsDiffOnInsertAndroid();
+}
+
 bool NativeReactNativeFeatureFlags::enablePreparedTextLayout(
     jsi::Runtime& /*runtime*/) {
   return ReactNativeFeatureFlags::enablePreparedTextLayout();
@@ -309,14 +334,19 @@ bool NativeReactNativeFeatureFlags::enableVirtualViewContainerStateExperimental(
   return ReactNativeFeatureFlags::enableVirtualViewContainerStateExperimental();
 }
 
-bool NativeReactNativeFeatureFlags::fixDifferentiatorParentTagForUnflattenCase(
+bool NativeReactNativeFeatureFlags::fixBorderlessRippleAndroid(
     jsi::Runtime& /*runtime*/) {
-  return ReactNativeFeatureFlags::fixDifferentiatorParentTagForUnflattenCase();
+  return ReactNativeFeatureFlags::fixBorderlessRippleAndroid();
 }
 
 bool NativeReactNativeFeatureFlags::fixMappingOfEventPrioritiesBetweenFabricAndReact(
     jsi::Runtime& /*runtime*/) {
   return ReactNativeFeatureFlags::fixMappingOfEventPrioritiesBetweenFabricAndReact();
+}
+
+bool NativeReactNativeFeatureFlags::fixTextLayoutOnPixelDensityChange(
+    jsi::Runtime& /*runtime*/) {
+  return ReactNativeFeatureFlags::fixTextLayoutOnPixelDensityChange();
 }
 
 bool NativeReactNativeFeatureFlags::fixYogaFlexBasisFitContentInMainAxis(
@@ -457,6 +487,11 @@ bool NativeReactNativeFeatureFlags::useTraitHiddenOnAndroid(
 bool NativeReactNativeFeatureFlags::useTurboModuleInterop(
     jsi::Runtime& /*runtime*/) {
   return ReactNativeFeatureFlags::useTurboModuleInterop();
+}
+
+bool NativeReactNativeFeatureFlags::useWindowDensityForDisplayMetricsAndroid(
+    jsi::Runtime& /*runtime*/) {
+  return ReactNativeFeatureFlags::useWindowDensityForDisplayMetricsAndroid();
 }
 
 double NativeReactNativeFeatureFlags::viewCullingOutsetRatio(

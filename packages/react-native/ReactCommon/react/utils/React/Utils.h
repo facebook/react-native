@@ -13,8 +13,12 @@
 //   #include <React/Utils.h>
 //
 // Re-exports the module's public interface headers. React Native's own code
-// should keep using the fine-grained `<react/utils/...>` includes; only outside
-// consumers use this umbrella.
+// should keep using the fine-grained `<react/utils/...>` includes, except in
+// headers it exports to consumers: those are preprocessed in the consumer's
+// translation unit, where the fine-grained include hits this module's
+// <react/cxxstableapi/UmbrellaGuard.h>. `RN_ALLOW_FRAMEWORKS` does not suppress
+// that guard, so a "for frameworks" header must reach this module through the
+// umbrella.
 // =============================================================================
 
 // Marks that the following headers are pulled in through the umbrella, so their
@@ -26,25 +30,13 @@
 #undef RN_UMBRELLA_CONTEXT
 #define RN_UMBRELLA_CONTEXT 1
 
-#include <react/utils/Base64.h>
 #include <react/utils/ContextContainer.h>
-#include <react/utils/FloatComparison.h>
-#include <react/utils/LowPriorityExecutor.h>
 #include <react/utils/ManagedObjectWrapper.h>
-#include <react/utils/MoveWrapper.h>
-#include <react/utils/OnScopeExit.h>
-#include <react/utils/PackTraits.h>
 #include <react/utils/ReactNativeVersion.h>
-#include <react/utils/RunLoopObserver.h>
 #include <react/utils/SharedFunction.h>
-#include <react/utils/SimpleThreadSafeCache.h>
 #include <react/utils/Telemetry.h>
-#include <react/utils/TemplateStringLiteral.h>
-#include <react/utils/Uuid.h>
 #include <react/utils/fnv1a.h>
 #include <react/utils/hash_combine.h>
-#include <react/utils/iequals.h>
-#include <react/utils/jsi-utils.h>
 #include <react/utils/toLower.h>
 #include <react/utils/to_underlying.h>
 

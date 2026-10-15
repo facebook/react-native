@@ -7,16 +7,17 @@
 
 #pragma once
 
+#include <react/cxxstableapi/UmbrellaGuard.h>
+
 #include <functional>
 #include <memory>
 
-#include <react/debug/react_native_assert.h>
+#include <React/Debug.h>
 #include <react/renderer/core/State.h>
 
 #ifdef RN_SERIALIZABLE_STATE
+#include <React/MapBuffer.h>
 #include <fbjni/fbjni.h>
-#include <react/renderer/mapbuffer/MapBuffer.h>
-#include <react/renderer/mapbuffer/MapBufferBuilder.h>
 #endif
 
 namespace facebook::react {

@@ -7,6 +7,8 @@
 
 #pragma once
 
+#include <react/cxxstableapi/UmbrellaGuard.h>
+
 #include <limits>
 #include <optional>
 #include <string>
@@ -80,6 +82,12 @@ class RawProps final {
    * will be removed as soon Android implementation does not need it.
    */
   folly::dynamic toDynamic(const std::function<bool(const std::string &)> &filterObjectKeys = nullptr) const;
+
+  // The pointer is valid while this RawProps owns its dynamic source.
+  const folly::dynamic *getDynamic() const noexcept
+  {
+    return mode_ == Mode::Dynamic ? &dynamic_ : nullptr;
+  }
 
   /*
    * Returns `true` if the object is empty.

@@ -7,6 +7,9 @@
 
 #pragma once
 
+#include <react/cxxstableapi/UmbrellaGuard.h>
+
+#include <react/renderer/core/ReactPrimitives.h>
 #include <memory>
 #include <mutex>
 #include <vector>
@@ -61,7 +64,7 @@ class EventQueue {
   /*
    * Experimental API exposed to support EventEmitter::experimental_flushSync.
    */
-  void experimental_flushSync() const;
+  void experimental_flushSync(Tag tag) const;
 
  protected:
   /*

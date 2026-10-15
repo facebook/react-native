@@ -216,6 +216,23 @@ load from Metro instead of a bundled `main.jsbundle`. CocoaPods injects it at
 `pod install` time, so this keeps SwiftPM apps at parity. An existing value is
 left alone.
 
+### iOS deployment target
+
+Every manifest React Native generates — the `Autolinked` aggregate, the synth
+package per dependency, and each scaffolded community package — declares the
+same platform floor: your app's `IPHONEOS_DEPLOYMENT_TARGET`, never below React
+Native's own minimum (15.1). SwiftPM refuses to link a product whose minimum is
+higher than the target depending on it, so a dependency that needs more (Expo's
+packages need iOS 16.4) only resolves once the app asks for at least as much:
+raise the deployment target in Xcode and re-run `react-native spm update`.
+
+A floor set in an `.xcconfig` your configuration is based on is honored,
+`#include` chains included; one set through a build-setting variable
+(`$(MY_FLOOR)`) is not, and falls back to React Native's minimum. `spm add` and
+`spm update` also refresh the platform-floor line of existing scaffolded
+manifests (they never create new ones) — if you persisted a scaffold with
+`patch-package`, re-run `npx patch-package <dep>` afterwards.
+
 ## Files the tool touches
 
 Paths are relative to the Xcode project directory (`ios/`) unless noted.
@@ -241,7 +258,7 @@ Because `deinit` drops the marker, it drops both.
 | Path                           | Written by                          | Contents                                                                                                                                                                                  |
 | ------------------------------ | ----------------------------------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
 | `build/generated/ios/`         | `add`, `update`, `sync`, `codegen`  | Codegen output plus the SwiftPM codegen manifest (the `React-GeneratedCode` package).                                                                                                     |
-| `build/generated/autolinking/` | `add`, `update`, `sync`             | `Package.swift`, `autolinking.json`, `packages/`, `libs/`, `headers/`, the `.spm-sync-stamp`, `.spm-sync-watch-paths`, and any `.spm-plugin-*.json` plugin manifests.                     |
+| `build/generated/autolinking/` | `add`, `update`, `sync`             | `Package.swift`, `autolinking.json`, `packages/`, `libs/`, `headers/`, the `.spm-sync-stamp`, `.spm-sync-watch-paths`, `.spm-sync-watch-absent`, and any `.spm-plugin-*.json` manifests.  |
 | `build/xcframeworks/`          | `add`, `update`, `sync`, `download` | The `debug/` and `release/` flavor slots (symlinks into the cache), `ReactHeadersTarget/`, the headers-only xcframeworks, `Package.swift`, `flavored-frameworks.json`, `.artifact-stamp`. |
 | `.build/`, `Package.resolved`  | Xcode / SwiftPM                     | SwiftPM's own build directory and resolution file. Machine-specific.                                                                                                                      |
 
@@ -694,6 +711,11 @@ _existing_ set of generated packages current; they do not create the first one.
      [plugin](./spm-autolinking-plugins.md#watchpaths--plugin-staleness-inputs)
      `watchPaths`; a watched file that is newer, a watched dir with a newer
      child, or a watched path that has **vanished** all mark stale
+   - every path in `.spm-sync-watch-absent` — watched paths that did not exist
+     at the last sync; one that **appears** marks stale. This includes each
+     dependency's root `Package.swift` and `.react-native/`: one that appears
+     later (e.g. after `spm scaffold`) changes self-managed detection. Projects
+     get this check after running `npx react-native spm update` once
 2. If any input is newer (or the stamp is missing): runs
    `npx react-native spm sync`, which re-executes autolinking + package
    generation (downloading artifacts if the cache slot is incomplete) and writes

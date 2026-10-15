@@ -467,6 +467,99 @@ describe('generateSynthPackageSwift', () => {
 });
 
 // ---------------------------------------------------------------------------
+// Platform floor — a manifest must not sit below the app's own iOS deployment
+// target: SwiftPM refuses a product whose minimum is higher than the depending
+// target's, so a self-managed dep at iOS 16.4 (Expo) would fail to link.
+// ---------------------------------------------------------------------------
+
+describe('iOS platform floor', () => {
+  it('defaults the aggregator to the React Native minimum, and raises it on request', () => {
+    expect(generateAutolinkedPackageSwift({})).toContain(
+      'platforms: [.iOS("15.1")]',
+    );
+    expect(
+      generateAutolinkedPackageSwift({iosDeploymentTarget: '16.4'}),
+    ).toContain('platforms: [.iOS("16.4")]');
+  });
+
+  it('defaults each synth package to the React Native minimum, and raises it on request', () => {
+    const spec = {swiftName: 'MyDep'};
+    expect(generateSynthPackageSwift(spec)).toContain(
+      'platforms: [.iOS("15.1")]',
+    );
+    expect(
+      generateSynthPackageSwift({...spec, iosDeploymentTarget: '16.4'}),
+    ).toContain('platforms: [.iOS("16.4")]');
+  });
+});
+
+describe('main() — --ios-deployment-target', () => {
+  let created = [];
+  let spies = [];
+
+  beforeEach(() => {
+    for (const m of ['log', 'warn', 'error']) {
+      spies.push(jest.spyOn(console, m).mockImplementation(() => {}));
+    }
+  });
+  afterEach(() => {
+    for (const s of spies) s.mockRestore();
+    spies = [];
+    for (const d of created) fs.rmSync(d, {recursive: true, force: true});
+    created = [];
+  });
+
+  // An app-local spm.module is the only route that produces BOTH the
+  // aggregator and a synth manifest without a community dep on disk.
+  function buildApp() {
+    const appRoot = fs.mkdtempSync(path.join(os.tmpdir(), 'spm-platform-'));
+    created.push(appRoot);
+    const rnRoot = path.join(appRoot, 'rn');
+    fs.mkdirSync(rnRoot, {recursive: true});
+    fs.writeFileSync(
+      path.join(appRoot, 'package.json'),
+      JSON.stringify({name: 'app'}),
+    );
+    const modDir = path.join(appRoot, 'ios', 'MyNativeModule');
+    fs.mkdirSync(modDir, {recursive: true});
+    fs.writeFileSync(path.join(modDir, 'Module.mm'), '// native source\n');
+    fs.writeFileSync(
+      path.join(appRoot, 'react-native.config.js'),
+      `module.exports = ${JSON.stringify({
+        spm: {modules: [{name: 'MyNativeModule', path: 'ios/MyNativeModule'}]},
+      })};\n`,
+    );
+    const autolinkDir = path.join(appRoot, 'build', 'generated', 'autolinking');
+    fs.mkdirSync(autolinkDir, {recursive: true});
+    fs.writeFileSync(
+      path.join(autolinkDir, 'autolinking.json'),
+      JSON.stringify({dependencies: {}}),
+    );
+    return {appRoot, rnRoot, autolinkDir};
+  }
+
+  it('sanitizes the flag into both the aggregator and the synth manifest', () => {
+    const {appRoot, rnRoot, autolinkDir} = buildApp();
+    main([
+      '--app-root',
+      appRoot,
+      '--react-native-root',
+      rnRoot,
+      '--ios-deployment-target',
+      '16',
+    ]);
+    for (const manifest of [
+      path.join(autolinkDir, 'Package.swift'),
+      path.join(autolinkDir, 'packages', 'MyNativeModule', 'Package.swift'),
+    ]) {
+      expect(fs.readFileSync(manifest, 'utf8')).toContain(
+        'platforms: [.iOS("16.0")]',
+      );
+    }
+  });
+});
+
+// ---------------------------------------------------------------------------
 // linkHeaderTree
 //
 // Mirrors header files from srcDir into a separate destDir via relative
@@ -1786,7 +1879,7 @@ describe('main() — scriptPhases sidecar', () => {
 // and deduped/sorted: (1) each module's source DIR; (2) each npm dep's
 // checked-in root Package.swift (FILE) and .react-native/ (DIR) — threaded from
 // the autolinking model's dep root, not derived by walking up; (3) plugin
-// watchPaths. Nonexistent paths are filtered at emission time.
+// watchPaths. Nonexistent paths go to .spm-sync-watch-absent instead.
 // ---------------------------------------------------------------------------
 
 describe('main() — .spm-sync-watch-paths emission', () => {
@@ -1827,8 +1920,8 @@ describe('main() — .spm-sync-watch-paths emission', () => {
     fs.writeFileSync(path.join(fooDir, 'Foo.swift'), '// src\n');
 
     // (C) A plugin-host dep contributing watchPaths: one existing absolute path
-    // (kept), one absent absolute path (filtered at emission), one relative
-    // path (dropped by invokePlugins).
+    // (kept), one absent absolute path (listed as absent), one relative path
+    // (dropped by invokePlugins).
     const expoDir = path.join(appRoot, 'node_modules', 'expo');
     fs.mkdirSync(path.join(expoDir, 'ios'), {recursive: true});
     fs.writeFileSync(path.join(expoDir, 'ios', 'Expo.mm'), '// native\n');
@@ -1847,12 +1940,20 @@ describe('main() — .spm-sync-watch-paths emission', () => {
         "    productDependencies: [{name: 'ExpoModulesCore', package: 'ExpoModulesCore'}],",
         '    watchPaths: [',
         "      path.join(__dirname, 'Package.swift'),", // exists → kept
-        "      path.join(__dirname, 'MISSING.swift'),", // absent → filtered at emission
+        "      path.join(__dirname, 'MISSING.swift'),", // absent → listed as absent
         "      'rel/manifest',", // relative → dropped by invokePlugins
         '    ],',
         '  };',
         '};',
       ].join('\n') + '\n',
+    );
+
+    // (D) The app's project file: Xcode rewrites it on every IDE edit, so
+    // watching it would re-sync after each one.
+    fs.mkdirSync(path.join(appRoot, 'App.xcodeproj'));
+    fs.writeFileSync(
+      path.join(appRoot, 'App.xcodeproj', 'project.pbxproj'),
+      '\n',
     );
 
     const autolinkDir = path.join(appRoot, 'build', 'generated', 'autolinking');
@@ -1879,6 +1980,9 @@ describe('main() — .spm-sync-watch-paths emission', () => {
     // (C) plugin's existing absolute watchPath is kept.
     expect(lines).toContain(path.join(expoDir, 'Package.swift'));
 
+    // (D) the app's project file is not watched.
+    expect(lines.some(l => l.includes('project.pbxproj'))).toBe(false);
+
     // Filtered / dropped entries never reach the file.
     expect(lines.some(l => l.includes('MISSING.swift'))).toBe(false);
     expect(lines.some(l => l.includes('rel/manifest'))).toBe(false);
@@ -1886,6 +1990,151 @@ describe('main() — .spm-sync-watch-paths emission', () => {
     // Deduped and sorted (stable, deterministic output).
     expect(new Set(lines).size).toBe(lines.length);
     expect([...lines].sort()).toEqual(lines);
+
+    expect(
+      fs.readFileSync(path.join(autolinkDir, '.spm-sync-watch-absent'), 'utf8'),
+    ).toBe(path.join(expoDir, 'MISSING.swift') + '\n');
+  });
+
+  it('lists a dep root without Package.swift or .react-native/ as absent', () => {
+    const appRoot = fs.realpathSync(
+      fs.mkdtempSync(path.join(os.tmpdir(), 'spm-watch-absent-')),
+    );
+    created.push(appRoot);
+    const rnRoot = path.join(appRoot, 'rn');
+    fs.mkdirSync(rnRoot, {recursive: true});
+    fs.writeFileSync(
+      path.join(appRoot, 'package.json'),
+      JSON.stringify({name: 'app'}),
+    );
+
+    // Self-managed through ios/Package.swift, so nothing exists at the root.
+    const barDir = path.join(appRoot, 'node_modules', 'react-native-bar');
+    fs.mkdirSync(path.join(barDir, 'ios'), {recursive: true});
+    fs.writeFileSync(
+      path.join(barDir, 'ios', 'Package.swift'),
+      '// swift-tools-version:5.9\n// hand-authored\n',
+    );
+    fs.writeFileSync(path.join(barDir, 'ios', 'Bar.swift'), '// src\n');
+
+    const autolinkDir = path.join(appRoot, 'build', 'generated', 'autolinking');
+    fs.mkdirSync(autolinkDir, {recursive: true});
+    fs.writeFileSync(
+      path.join(autolinkDir, 'autolinking.json'),
+      JSON.stringify({
+        dependencies: {
+          'react-native-bar': {root: barDir, platforms: {ios: {}}},
+        },
+      }),
+    );
+
+    main(['--app-root', appRoot, '--react-native-root', rnRoot]);
+
+    expect(
+      fs.readFileSync(path.join(autolinkDir, '.spm-sync-watch-absent'), 'utf8'),
+    ).toBe(
+      [
+        path.join(barDir, '.react-native'),
+        path.join(barDir, 'Package.swift'),
+      ].join('\n') + '\n',
+    );
+  });
+});
+
+// ---------------------------------------------------------------------------
+// main() — libs/ symlinks for self-managed deps
+//
+// Xcode loads each libs/<SwiftName> symlink as a local package root. Replacing
+// one that did not change invalidates the package graph Xcode already holds,
+// and the build then fails with "Missing package product". So a sync that
+// changes nothing must leave every inode under libs/ — and libs/ itself —
+// untouched, while a dep that is gone must lose its symlink.
+// ---------------------------------------------------------------------------
+
+describe('main() — libs/ symlinks for self-managed deps', () => {
+  const {created} = useTempApps();
+
+  function buildApp(depNames) {
+    const appRoot = fs.realpathSync(
+      fs.mkdtempSync(path.join(os.tmpdir(), 'spm-libs-sync-')),
+    );
+    created.push(appRoot);
+    const rnRoot = path.join(appRoot, 'rn');
+    fs.mkdirSync(rnRoot, {recursive: true});
+    fs.writeFileSync(
+      path.join(appRoot, 'package.json'),
+      JSON.stringify({name: 'app'}),
+    );
+
+    const dependencies = {};
+    for (const npmName of depNames) {
+      // A hand-authored root Package.swift (no AUTOGEN marker) is what makes a
+      // dep self-managed.
+      const depDir = path.join(appRoot, 'node_modules', npmName);
+      fs.mkdirSync(depDir, {recursive: true});
+      fs.writeFileSync(
+        path.join(depDir, 'Package.swift'),
+        '// swift-tools-version:5.9\n// hand-authored\n',
+      );
+      fs.writeFileSync(path.join(depDir, 'Source.swift'), '// src\n');
+      dependencies[npmName] = {root: depDir, platforms: {ios: {}}};
+    }
+
+    const autolinkDir = path.join(appRoot, 'build', 'generated', 'autolinking');
+    fs.mkdirSync(autolinkDir, {recursive: true});
+    const writeAutolinkingJson = names =>
+      fs.writeFileSync(
+        path.join(autolinkDir, 'autolinking.json'),
+        JSON.stringify({
+          dependencies: Object.fromEntries(
+            names.map(n => [n, dependencies[n]]),
+          ),
+        }),
+      );
+    writeAutolinkingJson(depNames);
+
+    return {
+      libsDir: path.join(autolinkDir, 'libs'),
+      writeAutolinkingJson,
+      sync: () => main(['--app-root', appRoot, '--react-native-root', rnRoot]),
+    };
+  }
+
+  const inodesOf = libsDir =>
+    Object.fromEntries(
+      ['.', ...fs.readdirSync(libsDir)].map(entry => [
+        entry,
+        fs.lstatSync(path.join(libsDir, entry)).ino,
+      ]),
+    );
+
+  it('keeps every inode when nothing changed', () => {
+    const app = buildApp(['react-native-foo', 'react-native-bar']);
+
+    app.sync();
+    const before = inodesOf(app.libsDir);
+    expect(Object.keys(before).sort()).toEqual([
+      '.',
+      'ReactNativeBar',
+      'ReactNativeFoo',
+    ]);
+
+    app.sync();
+    expect(inodesOf(app.libsDir)).toEqual(before);
+  });
+
+  it('drops the symlink of a dep that is no longer autolinked', () => {
+    const app = buildApp(['react-native-foo', 'react-native-bar']);
+
+    app.sync();
+    expect(fs.readdirSync(app.libsDir).sort()).toEqual([
+      'ReactNativeBar',
+      'ReactNativeFoo',
+    ]);
+
+    app.writeAutolinkingJson(['react-native-foo']);
+    app.sync();
+    expect(fs.readdirSync(app.libsDir)).toEqual(['ReactNativeFoo']);
   });
 });
 

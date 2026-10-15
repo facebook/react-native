@@ -7,7 +7,9 @@
 
 #pragma once
 
-#include <react/debug/flags.h>
+#include <react/cxxstableapi/UmbrellaGuard.h>
+
+#include <React/Debug.h>
 
 //
 // This file contains flags that should __never__ be enabled for

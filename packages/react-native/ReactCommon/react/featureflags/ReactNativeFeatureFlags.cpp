@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<023b0be9315450130aac118c65ac53eb>>
+ * @generated SignedSource<<f90778065a9a5f48383dd9b4606bd862>>
  */
 
 /**
@@ -46,6 +46,14 @@ bool ReactNativeFeatureFlags::disableEarlyViewCommandExecution() {
   return getAccessor().disableEarlyViewCommandExecution();
 }
 
+bool ReactNativeFeatureFlags::disableIdleEventDispatchFrameCallbackRearmAndroid() {
+  return getAccessor().disableIdleEventDispatchFrameCallbackRearmAndroid();
+}
+
+bool ReactNativeFeatureFlags::disableIdleMountItemFrameCallbackRearmAndroid() {
+  return getAccessor().disableIdleMountItemFrameCallbackRearmAndroid();
+}
+
 bool ReactNativeFeatureFlags::disableImageViewPreallocationAndroid() {
   return getAccessor().disableImageViewPreallocationAndroid();
 }
@@ -74,16 +82,20 @@ bool ReactNativeFeatureFlags::enableAccumulatedUpdatesInRawPropsAndroid() {
   return getAccessor().enableAccumulatedUpdatesInRawPropsAndroid();
 }
 
+bool ReactNativeFeatureFlags::enableAndroidAutoOffscreenCompositingForElevation() {
+  return getAccessor().enableAndroidAutoOffscreenCompositingForElevation();
+}
+
 bool ReactNativeFeatureFlags::enableAndroidTextMeasurementOptimizations() {
   return getAccessor().enableAndroidTextMeasurementOptimizations();
 }
 
-bool ReactNativeFeatureFlags::enableBridgelessArchitecture() {
-  return getAccessor().enableBridgelessArchitecture();
+bool ReactNativeFeatureFlags::enableAsyncDiskCacheCheckInMultiSourceImageAndroid() {
+  return getAccessor().enableAsyncDiskCacheCheckInMultiSourceImageAndroid();
 }
 
-bool ReactNativeFeatureFlags::enableBufferedCallInvoker() {
-  return getAccessor().enableBufferedCallInvoker();
+bool ReactNativeFeatureFlags::enableBridgelessArchitecture() {
+  return getAccessor().enableBridgelessArchitecture();
 }
 
 bool ReactNativeFeatureFlags::enableCppPropsIteratorSetter() {
@@ -112,6 +124,10 @@ bool ReactNativeFeatureFlags::enableExclusivePropsUpdateAndroid() {
 
 bool ReactNativeFeatureFlags::enableFabricCommitBranching() {
   return getAccessor().enableFabricCommitBranching();
+}
+
+bool ReactNativeFeatureFlags::enableFabricCommitBranchingMergeOnMainThread() {
+  return getAccessor().enableFabricCommitBranchingMergeOnMainThread();
 }
 
 bool ReactNativeFeatureFlags::enableFabricLogs() {
@@ -194,6 +210,10 @@ bool ReactNativeFeatureFlags::enableNativeCSSParsing() {
   return getAccessor().enableNativeCSSParsing();
 }
 
+bool ReactNativeFeatureFlags::enablePreallocatedPropsDiffOnInsertAndroid() {
+  return getAccessor().enablePreallocatedPropsDiffOnInsertAndroid();
+}
+
 bool ReactNativeFeatureFlags::enablePreparedTextLayout() {
   return getAccessor().enablePreparedTextLayout();
 }
@@ -238,12 +258,16 @@ bool ReactNativeFeatureFlags::enableVirtualViewContainerStateExperimental() {
   return getAccessor().enableVirtualViewContainerStateExperimental();
 }
 
-bool ReactNativeFeatureFlags::fixDifferentiatorParentTagForUnflattenCase() {
-  return getAccessor().fixDifferentiatorParentTagForUnflattenCase();
+bool ReactNativeFeatureFlags::fixBorderlessRippleAndroid() {
+  return getAccessor().fixBorderlessRippleAndroid();
 }
 
 bool ReactNativeFeatureFlags::fixMappingOfEventPrioritiesBetweenFabricAndReact() {
   return getAccessor().fixMappingOfEventPrioritiesBetweenFabricAndReact();
+}
+
+bool ReactNativeFeatureFlags::fixTextLayoutOnPixelDensityChange() {
+  return getAccessor().fixTextLayoutOnPixelDensityChange();
 }
 
 bool ReactNativeFeatureFlags::fixYogaFlexBasisFitContentInMainAxis() {
@@ -356,6 +380,10 @@ bool ReactNativeFeatureFlags::useTraitHiddenOnAndroid() {
 
 bool ReactNativeFeatureFlags::useTurboModuleInterop() {
   return getAccessor().useTurboModuleInterop();
+}
+
+bool ReactNativeFeatureFlags::useWindowDensityForDisplayMetricsAndroid() {
+  return getAccessor().useWindowDensityForDisplayMetricsAndroid();
 }
 
 double ReactNativeFeatureFlags::viewCullingOutsetRatio() {

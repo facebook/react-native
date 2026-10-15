@@ -328,10 +328,24 @@ exports[`execute test-app "ReactCodegen/RCTThirdPartyComponentsProvider.mm" shou
   static dispatch_once_t nativeComponentsToken;
 
   dispatch_once(&nativeComponentsToken, ^{
-    thirdPartyComponents = @{
-		@\\"TestAppComponent\\": NSClassFromString(@\\"RCTTestAppComponent\\"), // test-app
-		@\\"TestLibraryComponent\\": NSClassFromString(@\\"RCTTestLibraryComponent\\"), // test-library
+    NSDictionary<NSString *, NSString *> * componentMapping = @{
+		@\\"TestAppComponent\\": @\\"RCTTestAppComponent\\", // test-app
+		@\\"TestLibraryComponent\\": @\\"RCTTestLibraryComponent\\", // test-library
     };
+
+    NSMutableDictionary *dict = [[NSMutableDictionary alloc] initWithCapacity:componentMapping.count];
+
+    for (NSString *key in componentMapping) {
+      // Nil for a library this target does not link (an app extension, macOS).
+      Class klass = NSClassFromString(componentMapping[key]);
+      if (!klass) {
+        continue;
+      }
+
+      [dict setObject:klass forKey:key];
+    }
+
+    thirdPartyComponents = dict;
   });
 
   return thirdPartyComponents;
@@ -426,6 +440,7 @@ header_search_paths = [
 
 if use_frameworks
   ReactNativePodsUtils.create_header_search_path_for_frameworks(\\"PODS_CONFIGURATION_BUILD_DIR\\", \\"React-Fabric\\", \\"React_Fabric\\", [\\"react/renderer/components/view/platform/cxx\\"])
+    .concat(ReactNativePodsUtils.create_header_search_path_for_frameworks(\\"PODS_CONFIGURATION_BUILD_DIR\\", \\"React-bridging\\", \\"React_bridging\\", []))
     .concat(ReactNativePodsUtils.create_header_search_path_for_frameworks(\\"PODS_CONFIGURATION_BUILD_DIR\\", \\"React-FabricImage\\", \\"React_FabricImage\\", []))
     .concat(ReactNativePodsUtils.create_header_search_path_for_frameworks(\\"PODS_CONFIGURATION_BUILD_DIR\\", \\"React-graphics\\", \\"React_graphics\\", [\\"react/renderer/graphics/platform/ios\\"]))
     .concat(ReactNativePodsUtils.create_header_search_path_for_frameworks(\\"PODS_CONFIGURATION_BUILD_DIR\\", \\"ReactCommon\\", \\"ReactCommon\\", [\\"react/nativemodule/core\\"]))
@@ -821,9 +836,23 @@ exports[`execute test-app-legacy "ReactCodegen/RCTThirdPartyComponentsProvider.m
   static dispatch_once_t nativeComponentsToken;
 
   dispatch_once(&nativeComponentsToken, ^{
-    thirdPartyComponents = @{
-		@\\"TestAppDeprecatedComponent\\": NSClassFromString(@\\"RCTTestAppDeprecatedComponentClass\\"), // test-app-legacy
+    NSDictionary<NSString *, NSString *> * componentMapping = @{
+		@\\"TestAppDeprecatedComponent\\": @\\"RCTTestAppDeprecatedComponentClass\\", // test-app-legacy
     };
+
+    NSMutableDictionary *dict = [[NSMutableDictionary alloc] initWithCapacity:componentMapping.count];
+
+    for (NSString *key in componentMapping) {
+      // Nil for a library this target does not link (an app extension, macOS).
+      Class klass = NSClassFromString(componentMapping[key]);
+      if (!klass) {
+        continue;
+      }
+
+      [dict setObject:klass forKey:key];
+    }
+
+    thirdPartyComponents = dict;
   });
 
   return thirdPartyComponents;
@@ -909,6 +938,7 @@ header_search_paths = [
 
 if use_frameworks
   ReactNativePodsUtils.create_header_search_path_for_frameworks(\\"PODS_CONFIGURATION_BUILD_DIR\\", \\"React-Fabric\\", \\"React_Fabric\\", [\\"react/renderer/components/view/platform/cxx\\"])
+    .concat(ReactNativePodsUtils.create_header_search_path_for_frameworks(\\"PODS_CONFIGURATION_BUILD_DIR\\", \\"React-bridging\\", \\"React_bridging\\", []))
     .concat(ReactNativePodsUtils.create_header_search_path_for_frameworks(\\"PODS_CONFIGURATION_BUILD_DIR\\", \\"React-FabricImage\\", \\"React_FabricImage\\", []))
     .concat(ReactNativePodsUtils.create_header_search_path_for_frameworks(\\"PODS_CONFIGURATION_BUILD_DIR\\", \\"React-graphics\\", \\"React_graphics\\", [\\"react/renderer/graphics/platform/ios\\"]))
     .concat(ReactNativePodsUtils.create_header_search_path_for_frameworks(\\"PODS_CONFIGURATION_BUILD_DIR\\", \\"ReactCommon\\", \\"ReactCommon\\", [\\"react/nativemodule/core\\"]))

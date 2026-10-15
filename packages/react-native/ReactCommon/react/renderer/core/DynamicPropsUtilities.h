@@ -7,8 +7,10 @@
 
 #pragma once
 
+#include <react/cxxstableapi/FrameworksGuard.h>
+
+#include <React/RendererCore.h>
 #include <folly/dynamic.h>
-#include <react/renderer/core/RawProps.h>
 
 namespace facebook::react {
 

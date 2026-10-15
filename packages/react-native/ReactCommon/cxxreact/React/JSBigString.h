@@ -13,8 +13,12 @@
 //   #include <React/JSBigString.h>
 //
 // Re-exports the module's public interface headers. React Native's own code
-// should keep using the fine-grained `<cxxreact/...>` includes; only outside
-// consumers use this umbrella.
+// should keep using the fine-grained `<cxxreact/...>` includes, except in
+// headers it exports to consumers: those are preprocessed in the consumer's
+// translation unit, where the fine-grained include hits this module's
+// <react/cxxstableapi/UmbrellaGuard.h>. `RN_ALLOW_FRAMEWORKS` does not suppress
+// that guard, so a "for frameworks" header must reach this module through the
+// umbrella.
 // =============================================================================
 
 // Marks that the following headers are pulled in through the umbrella, so their
@@ -27,7 +31,6 @@
 #define RN_UMBRELLA_CONTEXT 1
 
 #include <cxxreact/JSBigString.h>
-#include <cxxreact/JSBundleType.h>
 
 #undef RN_UMBRELLA_CONTEXT
 #pragma pop_macro("RN_UMBRELLA_CONTEXT")
