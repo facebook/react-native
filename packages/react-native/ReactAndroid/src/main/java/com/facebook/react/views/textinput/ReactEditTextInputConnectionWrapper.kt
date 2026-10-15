@@ -38,10 +38,10 @@ import com.facebook.react.uimanager.events.EventDispatcher
  * separate call to [InputConnection.setComposingText]. Here we chose to emit the last input of a
  * batch edit as that tends to be the user input, but it's completely arbitrary.
  *
- * <p>N.B. this class reports only the keys an input method types as text. A key event reaches
- * [ReactEditText.onKeyDown], which reports it, whether a hardware keyboard sends it or an input
- * method does through [InputConnection.sendKeyEvent], as one does for a backspace with nothing to
- * delete or for a hardware keyboard's key it forwards.
+ * <p>N.B. this class reports only the keys an input method types as text. A key event, whether a
+ * hardware keyboard sends it or an input method does through [InputConnection.sendKeyEvent] (a
+ * backspace with nothing to delete, or a hardware keyboard's key it handles), is reported by
+ * [ReactEditText.onKeyDown].
  */
 internal class ReactEditTextInputConnectionWrapper(
     target: InputConnection,

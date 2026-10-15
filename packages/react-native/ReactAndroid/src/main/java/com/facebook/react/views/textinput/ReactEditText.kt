@@ -339,8 +339,8 @@ public open class ReactEditText public constructor(context: Context) : AppCompat
     return super.onTouchEvent(ev)
   }
 
-  // Every key event reaches the view here: a hardware keyboard's, and one an input method sends
-  // through the input connection, including the hardware keys an input method forwards.
+  // Every key event reaches the view here, whether a hardware keyboard sent it or an input method
+  // did through the input connection, as an input method does with the hardware keys it handles.
   override fun onKeyDown(keyCode: Int, event: KeyEvent): Boolean {
     if (onKeyPress) {
       KeyPressKey.from(event)?.let { key ->

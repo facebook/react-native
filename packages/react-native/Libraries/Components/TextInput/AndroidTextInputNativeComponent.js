@@ -438,8 +438,8 @@ export type AndroidTextInputNativeProps = Readonly<{
    * where `keyValue` is `'Enter'` or `'Backspace'` for respective keys and
    * the typed-in character otherwise including `' '` for space.
    * On Android, keys pressed on a hardware keyboard are reported as well, and a
-   * key that types no character by its `KeyboardEvent.key` value, such as
-   * `'ArrowLeft'` or `'Home'`.
+   * key that types no character is reported by its `KeyboardEvent.key` value,
+   * such as `'ArrowLeft'` or `'Home'`.
    * Fires before `onChange` callbacks.
    */
   onKeyPress?: ?BubblingEventHandler<Readonly<{target: Int32, key: string}>>,
