@@ -10,6 +10,7 @@
 
 'use strict';
 
+import deepEquals from './RNTesterDeepEquals';
 import * as React from 'react';
 import {useEffect, useState} from 'react';
 import {
@@ -19,14 +20,13 @@ import {
   Text,
   View,
 } from 'react-native';
-import deepDiffer from 'react-native/Libraries/Utilities/differ/deepDiffer';
 
 const {TestModule} = NativeModules;
 
 const TEST_PAYLOAD = {foo: 'bar'};
 
 type AppEvent = {
-  data: Object,
+  data: any,
   ts: number,
 };
 
@@ -44,7 +44,7 @@ function AppEventsTest(): React.Node {
 
   useEffect(() => {
     const receiveEvent = (event: any) => {
-      if (deepDiffer(event.data, TEST_PAYLOAD)) {
+      if (!deepEquals(event.data, TEST_PAYLOAD)) {
         throw new Error('Received wrong event: ' + JSON.stringify(event));
       }
       const elapsed = Date.now() - event.ts + 'ms';

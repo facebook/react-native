@@ -45,7 +45,9 @@ describe('Event Timing API', () => {
       root.render(<View />);
     });
 
-    const element = nullthrows(root.document.documentElement.firstElementChild);
+    const element = nullthrows(
+      nullthrows(root.document.documentElement).firstElementChild,
+    );
 
     expect(callback).not.toHaveBeenCalled();
 
@@ -72,6 +74,7 @@ describe('Event Timing API', () => {
       entry.processingEnd - entry.startTime,
     );
 
+    // $FlowFixMe[prop-missing]
     expect(entry.interactionId).toBeGreaterThanOrEqual(0);
   });
 
@@ -94,7 +97,9 @@ describe('Event Timing API', () => {
       );
     });
 
-    const element = nullthrows(root.document.documentElement.firstElementChild);
+    const element = nullthrows(
+      nullthrows(root.document.documentElement).firstElementChild,
+    );
 
     expect(callback).not.toHaveBeenCalled();
 
@@ -125,6 +130,7 @@ describe('Event Timing API', () => {
       entry.processingEnd - entry.startTime,
     );
 
+    // $FlowFixMe[prop-missing]
     expect(entry.interactionId).toBeGreaterThanOrEqual(0);
   });
 
@@ -152,7 +158,9 @@ describe('Event Timing API', () => {
       root.render(<MyComponent />);
     });
 
-    const element = nullthrows(root.document.documentElement.firstElementChild);
+    const element = nullthrows(
+      nullthrows(root.document.documentElement).firstElementChild,
+    );
 
     expect(callback).not.toHaveBeenCalled();
 
@@ -181,6 +189,7 @@ describe('Event Timing API', () => {
 
     // TODO: When Fantom provides structured data from mounting manager, add timestamp to operations and verify that the duration includes that.
 
+    // $FlowFixMe[prop-missing]
     expect(entry.interactionId).toBeGreaterThanOrEqual(0);
   });
 
@@ -203,7 +212,9 @@ describe('Event Timing API', () => {
       );
     });
 
-    const element = nullthrows(root.document.documentElement.firstElementChild);
+    const element = nullthrows(
+      nullthrows(root.document.documentElement).firstElementChild,
+    );
 
     expect(callback).not.toHaveBeenCalled();
 
@@ -230,7 +241,9 @@ describe('Event Timing API', () => {
       root.render(<View />);
     });
 
-    const element = nullthrows(root.document.documentElement.firstElementChild);
+    const element = nullthrows(
+      nullthrows(root.document.documentElement).firstElementChild,
+    );
 
     expect(performance.eventCounts).not.toBeInstanceOf(Map);
 
@@ -325,7 +338,7 @@ describe('Event Timing API', () => {
       });
 
       const element = nullthrows(
-        root.document.documentElement.firstElementChild,
+        nullthrows(root.document.documentElement).firstElementChild,
       );
 
       expect(callback).not.toHaveBeenCalled();
@@ -371,7 +384,7 @@ describe('Event Timing API', () => {
       });
 
       const element = nullthrows(
-        root.document.documentElement.firstElementChild,
+        nullthrows(root.document.documentElement).firstElementChild,
       );
 
       expect(callback).not.toHaveBeenCalled();

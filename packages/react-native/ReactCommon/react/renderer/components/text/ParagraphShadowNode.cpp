@@ -88,7 +88,9 @@ const Content& ParagraphShadowNode::getContent(
   attributedString.setBaseTextAttributes(textAttributes);
 
   content_ = Content{
-      attributedString, getConcreteProps().paragraphAttributes, attachments};
+      .attributedString = std::move(attributedString),
+      .paragraphAttributes = getConcreteProps().paragraphAttributes,
+      .attachments = std::move(attachments)};
 
   return content_.value();
 }
@@ -151,7 +153,12 @@ void ParagraphShadowNode::updateStateIfNeeded(
 
   react_native_assert(textLayoutManager_);
 
-  if (state.measuredLayout.measurement.size == layout.measurement.size &&
+  bool pointScaleFactorChanged =
+      ReactNativeFeatureFlags::fixTextLayoutOnPixelDensityChange() &&
+      state.measuredLayout.pointScaleFactor != layout.pointScaleFactor;
+
+  if (!pointScaleFactorChanged &&
+      state.measuredLayout.measurement.size == layout.measurement.size &&
       state.attributedString == content.attributedString &&
       state.paragraphAttributes == content.paragraphAttributes) {
     return;
@@ -253,6 +260,7 @@ Size ParagraphShadowNode::measureContent(
       measuredLayouts_.push_back(
           MeasuredPreparedTextLayout{
               .layoutConstraints = layoutConstraints,
+              .pointScaleFactor = layoutContext.pointScaleFactor,
               .measurement = measurement,
               // PreparedTextLayout is not trivially copyable on all platforms
               // NOLINTNEXTLINE(performance-move-const-arg)
@@ -264,7 +272,7 @@ Size ParagraphShadowNode::measureContent(
 
   auto size = textLayoutManager_
                   ->measure(
-                      AttributedStringBox{content.attributedString},
+                      AttributedStringBox{std::move(content.attributedString)},
                       content.paragraphAttributes,
                       textLayoutContext,
                       layoutConstraints)
@@ -282,7 +290,7 @@ Float ParagraphShadowNode::baseline(
   auto content =
       getContentWithMeasuredAttachments(layoutContext, layoutConstraints);
 
-  AttributedStringBox attributedStringBox{content.attributedString};
+  AttributedStringBox attributedStringBox{std::move(content.attributedString)};
 
   if constexpr (TextLayoutManagerExtended::supportsLineMeasurement()) {
     auto lines =
@@ -335,6 +343,10 @@ void ParagraphShadowNode::layout(LayoutContext layoutContext) {
       react_native_assert(measuredLayout);
       updateStateIfNeeded<ParagraphState>(content, *measuredLayout);
 
+    } else if (ReactNativeFeatureFlags::fixTextLayoutOnPixelDensityChange()) {
+      MeasuredPreparedTextLayout unpreparedLayout;
+      unpreparedLayout.pointScaleFactor = layoutContext.pointScaleFactor;
+      updateStateIfNeeded<ParagraphState>(content, unpreparedLayout);
     } else {
       updateStateIfNeeded(content);
     }
@@ -346,7 +358,9 @@ void ParagraphShadowNode::layout(LayoutContext layoutContext) {
       .pointScaleFactor = layoutContext.pointScaleFactor,
       .surfaceId = getSurfaceId(),
   };
-  AttributedStringBox attributedStringBox{content.attributedString};
+  // The state update above already captured the attributed string and
+  // nothing below reads it, so the box can take it instead of copying it.
+  AttributedStringBox attributedStringBox{std::move(content.attributedString)};
 
   if (getConcreteProps().onTextLayout) {
     if constexpr (TextLayoutManagerExtended::supportsLineMeasurement()) {

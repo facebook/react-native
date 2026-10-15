@@ -15,8 +15,8 @@ Map {
 #pragma once
 
 #include <react/renderer/components/ALL_PROP/ShadowNodes.h>
-#include <react/renderer/core/ConcreteComponentDescriptor.h>
-#include <react/renderer/componentregistry/ComponentDescriptorProviderRegistry.h>
+#include <React/ComponentRegistry.h>
+#include <React/RendererCore.h>
 
 namespace facebook::react {
 
@@ -45,8 +45,8 @@ Map {
 #pragma once
 
 #include <react/renderer/components/ALL_PROP_WITH_OPTIONAL_GEN/ShadowNodes.h>
-#include <react/renderer/core/ConcreteComponentDescriptor.h>
-#include <react/renderer/componentregistry/ComponentDescriptorProviderRegistry.h>
+#include <React/ComponentRegistry.h>
+#include <React/RendererCore.h>
 
 namespace facebook::react {
 
@@ -75,8 +75,8 @@ Map {
 #pragma once
 
 #include <react/renderer/components/ALL_PROP_WITH_OPTIONAL_OBJECT_GEN/ShadowNodes.h>
-#include <react/renderer/core/ConcreteComponentDescriptor.h>
-#include <react/renderer/componentregistry/ComponentDescriptorProviderRegistry.h>
+#include <React/ComponentRegistry.h>
+#include <React/RendererCore.h>
 
 namespace facebook::react {
 
@@ -105,8 +105,8 @@ Map {
 #pragma once
 
 #include <react/renderer/components/ARRAY_PROPS/ShadowNodes.h>
-#include <react/renderer/core/ConcreteComponentDescriptor.h>
-#include <react/renderer/componentregistry/ComponentDescriptorProviderRegistry.h>
+#include <React/ComponentRegistry.h>
+#include <React/RendererCore.h>
 
 namespace facebook::react {
 
@@ -135,8 +135,8 @@ Map {
 #pragma once
 
 #include <react/renderer/components/ARRAY_PROPS_WITH_NESTED_OBJECT/ShadowNodes.h>
-#include <react/renderer/core/ConcreteComponentDescriptor.h>
-#include <react/renderer/componentregistry/ComponentDescriptorProviderRegistry.h>
+#include <React/ComponentRegistry.h>
+#include <React/RendererCore.h>
 
 namespace facebook::react {
 
@@ -165,8 +165,8 @@ Map {
 #pragma once
 
 #include <react/renderer/components/ARRAY_PROPS_WITH_NESTED_OBJECT_WITH_OPTIONAL_GEN/ShadowNodes.h>
-#include <react/renderer/core/ConcreteComponentDescriptor.h>
-#include <react/renderer/componentregistry/ComponentDescriptorProviderRegistry.h>
+#include <React/ComponentRegistry.h>
+#include <React/RendererCore.h>
 
 namespace facebook::react {
 
@@ -195,8 +195,8 @@ Map {
 #pragma once
 
 #include <react/renderer/components/ARRAY_PROPS_WITH_NESTED_OBJECT_WITH_OPTIONAL_OBJECT_GEN/ShadowNodes.h>
-#include <react/renderer/core/ConcreteComponentDescriptor.h>
-#include <react/renderer/componentregistry/ComponentDescriptorProviderRegistry.h>
+#include <React/ComponentRegistry.h>
+#include <React/RendererCore.h>
 
 namespace facebook::react {
 
@@ -225,8 +225,8 @@ Map {
 #pragma once
 
 #include <react/renderer/components/ARRAY_PROPS_WITH_OPTIONAL_GEN/ShadowNodes.h>
-#include <react/renderer/core/ConcreteComponentDescriptor.h>
-#include <react/renderer/componentregistry/ComponentDescriptorProviderRegistry.h>
+#include <React/ComponentRegistry.h>
+#include <React/RendererCore.h>
 
 namespace facebook::react {
 
@@ -255,8 +255,8 @@ Map {
 #pragma once
 
 #include <react/renderer/components/ARRAY_PROPS_WITH_OPTIONAL_OBJECT_GEN/ShadowNodes.h>
-#include <react/renderer/core/ConcreteComponentDescriptor.h>
-#include <react/renderer/componentregistry/ComponentDescriptorProviderRegistry.h>
+#include <React/ComponentRegistry.h>
+#include <React/RendererCore.h>
 
 namespace facebook::react {
 
@@ -285,8 +285,8 @@ Map {
 #pragma once
 
 #include <react/renderer/components/BOOLEAN_PROP/ShadowNodes.h>
-#include <react/renderer/core/ConcreteComponentDescriptor.h>
-#include <react/renderer/componentregistry/ComponentDescriptorProviderRegistry.h>
+#include <React/ComponentRegistry.h>
+#include <React/RendererCore.h>
 
 namespace facebook::react {
 
@@ -315,8 +315,8 @@ Map {
 #pragma once
 
 #include <react/renderer/components/COLOR_PROP/ShadowNodes.h>
-#include <react/renderer/core/ConcreteComponentDescriptor.h>
-#include <react/renderer/componentregistry/ComponentDescriptorProviderRegistry.h>
+#include <React/ComponentRegistry.h>
+#include <React/RendererCore.h>
 
 namespace facebook::react {
 
@@ -345,8 +345,8 @@ Map {
 #pragma once
 
 #include <react/renderer/components/COMMANDS/ShadowNodes.h>
-#include <react/renderer/core/ConcreteComponentDescriptor.h>
-#include <react/renderer/componentregistry/ComponentDescriptorProviderRegistry.h>
+#include <React/ComponentRegistry.h>
+#include <React/RendererCore.h>
 
 namespace facebook::react {
 
@@ -375,8 +375,8 @@ Map {
 #pragma once
 
 #include <react/renderer/components/COMMANDS_AND_PROPS/ShadowNodes.h>
-#include <react/renderer/core/ConcreteComponentDescriptor.h>
-#include <react/renderer/componentregistry/ComponentDescriptorProviderRegistry.h>
+#include <React/ComponentRegistry.h>
+#include <React/RendererCore.h>
 
 namespace facebook::react {
 
@@ -405,8 +405,8 @@ Map {
 #pragma once
 
 #include <react/renderer/components/DIMENSION_PROP/ShadowNodes.h>
-#include <react/renderer/core/ConcreteComponentDescriptor.h>
-#include <react/renderer/componentregistry/ComponentDescriptorProviderRegistry.h>
+#include <React/ComponentRegistry.h>
+#include <React/RendererCore.h>
 
 namespace facebook::react {
 
@@ -435,8 +435,8 @@ Map {
 #pragma once
 
 #include <react/renderer/components/DOUBLE_PROPS/ShadowNodes.h>
-#include <react/renderer/core/ConcreteComponentDescriptor.h>
-#include <react/renderer/componentregistry/ComponentDescriptorProviderRegistry.h>
+#include <React/ComponentRegistry.h>
+#include <React/RendererCore.h>
 
 namespace facebook::react {
 
@@ -465,8 +465,8 @@ Map {
 #pragma once
 
 #include <react/renderer/components/EVENT_NESTED_OBJECT_PROPS/ShadowNodes.h>
-#include <react/renderer/core/ConcreteComponentDescriptor.h>
-#include <react/renderer/componentregistry/ComponentDescriptorProviderRegistry.h>
+#include <React/ComponentRegistry.h>
+#include <React/RendererCore.h>
 
 namespace facebook::react {
 
@@ -495,8 +495,8 @@ Map {
 #pragma once
 
 #include <react/renderer/components/EVENT_PROPS/ShadowNodes.h>
-#include <react/renderer/core/ConcreteComponentDescriptor.h>
-#include <react/renderer/componentregistry/ComponentDescriptorProviderRegistry.h>
+#include <React/ComponentRegistry.h>
+#include <React/RendererCore.h>
 
 namespace facebook::react {
 
@@ -525,8 +525,8 @@ Map {
 #pragma once
 
 #include <react/renderer/components/EVENTS_WITH_PAPER_NAME/ShadowNodes.h>
-#include <react/renderer/core/ConcreteComponentDescriptor.h>
-#include <react/renderer/componentregistry/ComponentDescriptorProviderRegistry.h>
+#include <React/ComponentRegistry.h>
+#include <React/RendererCore.h>
 
 namespace facebook::react {
 
@@ -555,8 +555,8 @@ Map {
 #pragma once
 
 #include <react/renderer/components/EXCLUDE_ANDROID/ShadowNodes.h>
-#include <react/renderer/core/ConcreteComponentDescriptor.h>
-#include <react/renderer/componentregistry/ComponentDescriptorProviderRegistry.h>
+#include <React/ComponentRegistry.h>
+#include <React/RendererCore.h>
 
 namespace facebook::react {
 
@@ -585,8 +585,8 @@ Map {
 #pragma once
 
 #include <react/renderer/components/EXCLUDE_ANDROID_IOS/ShadowNodes.h>
-#include <react/renderer/core/ConcreteComponentDescriptor.h>
-#include <react/renderer/componentregistry/ComponentDescriptorProviderRegistry.h>
+#include <React/ComponentRegistry.h>
+#include <React/RendererCore.h>
 
 namespace facebook::react {
 
@@ -615,8 +615,8 @@ Map {
 #pragma once
 
 #include <react/renderer/components/EXCLUDE_IOS_TWO_COMPONENTS_DIFFERENT_FILES/ShadowNodes.h>
-#include <react/renderer/core/ConcreteComponentDescriptor.h>
-#include <react/renderer/componentregistry/ComponentDescriptorProviderRegistry.h>
+#include <React/ComponentRegistry.h>
+#include <React/RendererCore.h>
 
 namespace facebook::react {
 
@@ -646,8 +646,8 @@ Map {
 #pragma once
 
 #include <react/renderer/components/FLOAT_PROPS/ShadowNodes.h>
-#include <react/renderer/core/ConcreteComponentDescriptor.h>
-#include <react/renderer/componentregistry/ComponentDescriptorProviderRegistry.h>
+#include <React/ComponentRegistry.h>
+#include <React/RendererCore.h>
 
 namespace facebook::react {
 
@@ -676,8 +676,8 @@ Map {
 #pragma once
 
 #include <react/renderer/components/IMAGE_PROP/ShadowNodes.h>
-#include <react/renderer/core/ConcreteComponentDescriptor.h>
-#include <react/renderer/componentregistry/ComponentDescriptorProviderRegistry.h>
+#include <React/ComponentRegistry.h>
+#include <React/RendererCore.h>
 
 namespace facebook::react {
 
@@ -706,8 +706,8 @@ Map {
 #pragma once
 
 #include <react/renderer/components/INSETS_PROP/ShadowNodes.h>
-#include <react/renderer/core/ConcreteComponentDescriptor.h>
-#include <react/renderer/componentregistry/ComponentDescriptorProviderRegistry.h>
+#include <React/ComponentRegistry.h>
+#include <React/RendererCore.h>
 
 namespace facebook::react {
 
@@ -736,8 +736,8 @@ Map {
 #pragma once
 
 #include <react/renderer/components/INT32_ENUM_PROP/ShadowNodes.h>
-#include <react/renderer/core/ConcreteComponentDescriptor.h>
-#include <react/renderer/componentregistry/ComponentDescriptorProviderRegistry.h>
+#include <React/ComponentRegistry.h>
+#include <React/RendererCore.h>
 
 namespace facebook::react {
 
@@ -766,8 +766,8 @@ Map {
 #pragma once
 
 #include <react/renderer/components/INTEGER_PROPS/ShadowNodes.h>
-#include <react/renderer/core/ConcreteComponentDescriptor.h>
-#include <react/renderer/componentregistry/ComponentDescriptorProviderRegistry.h>
+#include <React/ComponentRegistry.h>
+#include <React/RendererCore.h>
 
 namespace facebook::react {
 
@@ -796,8 +796,8 @@ Map {
 #pragma once
 
 #include <react/renderer/components/INTERFACE_ONLY/ShadowNodes.h>
-#include <react/renderer/core/ConcreteComponentDescriptor.h>
-#include <react/renderer/componentregistry/ComponentDescriptorProviderRegistry.h>
+#include <React/ComponentRegistry.h>
+#include <React/RendererCore.h>
 
 namespace facebook::react {
 
@@ -826,8 +826,8 @@ Map {
 #pragma once
 
 #include <react/renderer/components/MIXED_PROP/ShadowNodes.h>
-#include <react/renderer/core/ConcreteComponentDescriptor.h>
-#include <react/renderer/componentregistry/ComponentDescriptorProviderRegistry.h>
+#include <React/ComponentRegistry.h>
+#include <React/RendererCore.h>
 
 namespace facebook::react {
 
@@ -856,8 +856,8 @@ Map {
 #pragma once
 
 #include <react/renderer/components/MULTI_NATIVE_PROP/ShadowNodes.h>
-#include <react/renderer/core/ConcreteComponentDescriptor.h>
-#include <react/renderer/componentregistry/ComponentDescriptorProviderRegistry.h>
+#include <React/ComponentRegistry.h>
+#include <React/RendererCore.h>
 
 namespace facebook::react {
 
@@ -886,8 +886,8 @@ Map {
 #pragma once
 
 #include <react/renderer/components/NO_PROPS_NO_EVENTS/ShadowNodes.h>
-#include <react/renderer/core/ConcreteComponentDescriptor.h>
-#include <react/renderer/componentregistry/ComponentDescriptorProviderRegistry.h>
+#include <React/ComponentRegistry.h>
+#include <React/RendererCore.h>
 
 namespace facebook::react {
 
@@ -916,8 +916,8 @@ Map {
 #pragma once
 
 #include <react/renderer/components/OBJECT_PROPS/ShadowNodes.h>
-#include <react/renderer/core/ConcreteComponentDescriptor.h>
-#include <react/renderer/componentregistry/ComponentDescriptorProviderRegistry.h>
+#include <React/ComponentRegistry.h>
+#include <React/RendererCore.h>
 
 namespace facebook::react {
 
@@ -946,8 +946,8 @@ Map {
 #pragma once
 
 #include <react/renderer/components/OBJECT_PROPS_WITH_OPTIONAL_GEN/ShadowNodes.h>
-#include <react/renderer/core/ConcreteComponentDescriptor.h>
-#include <react/renderer/componentregistry/ComponentDescriptorProviderRegistry.h>
+#include <React/ComponentRegistry.h>
+#include <React/RendererCore.h>
 
 namespace facebook::react {
 
@@ -976,8 +976,8 @@ Map {
 #pragma once
 
 #include <react/renderer/components/OBJECT_PROPS_WITH_OPTIONAL_OBJECT_GEN/ShadowNodes.h>
-#include <react/renderer/core/ConcreteComponentDescriptor.h>
-#include <react/renderer/componentregistry/ComponentDescriptorProviderRegistry.h>
+#include <React/ComponentRegistry.h>
+#include <React/RendererCore.h>
 
 namespace facebook::react {
 
@@ -1006,8 +1006,8 @@ Map {
 #pragma once
 
 #include <react/renderer/components/POINT_PROP/ShadowNodes.h>
-#include <react/renderer/core/ConcreteComponentDescriptor.h>
-#include <react/renderer/componentregistry/ComponentDescriptorProviderRegistry.h>
+#include <React/ComponentRegistry.h>
+#include <React/RendererCore.h>
 
 namespace facebook::react {
 
@@ -1036,8 +1036,8 @@ Map {
 #pragma once
 
 #include <react/renderer/components/STRING_ENUM_PROP/ShadowNodes.h>
-#include <react/renderer/core/ConcreteComponentDescriptor.h>
-#include <react/renderer/componentregistry/ComponentDescriptorProviderRegistry.h>
+#include <React/ComponentRegistry.h>
+#include <React/RendererCore.h>
 
 namespace facebook::react {
 
@@ -1066,8 +1066,8 @@ Map {
 #pragma once
 
 #include <react/renderer/components/STRING_PROP/ShadowNodes.h>
-#include <react/renderer/core/ConcreteComponentDescriptor.h>
-#include <react/renderer/componentregistry/ComponentDescriptorProviderRegistry.h>
+#include <React/ComponentRegistry.h>
+#include <React/RendererCore.h>
 
 namespace facebook::react {
 
@@ -1096,8 +1096,8 @@ Map {
 #pragma once
 
 #include <react/renderer/components/TWO_COMPONENTS_DIFFERENT_FILES/ShadowNodes.h>
-#include <react/renderer/core/ConcreteComponentDescriptor.h>
-#include <react/renderer/componentregistry/ComponentDescriptorProviderRegistry.h>
+#include <React/ComponentRegistry.h>
+#include <React/RendererCore.h>
 
 namespace facebook::react {
 
@@ -1127,8 +1127,8 @@ Map {
 #pragma once
 
 #include <react/renderer/components/TWO_COMPONENTS_SAME_FILE/ShadowNodes.h>
-#include <react/renderer/core/ConcreteComponentDescriptor.h>
-#include <react/renderer/componentregistry/ComponentDescriptorProviderRegistry.h>
+#include <React/ComponentRegistry.h>
+#include <React/RendererCore.h>
 
 namespace facebook::react {
 
