@@ -73,7 +73,9 @@ component View(ref?: React.RefSetter<ViewInstance>, ...props: ViewProps) {
   return actualView;
 }
 
-// Must check every prop that `transformProps` reads.
+// Must check every prop that `transformProps` reads. Compares against
+// `undefined` rather than `null` so that `null` values still go through
+// `transformProps`, which strips them.
 function needsPropTransforms(props: ViewProps): boolean {
   return (
     props.accessibilityState !== undefined ||
