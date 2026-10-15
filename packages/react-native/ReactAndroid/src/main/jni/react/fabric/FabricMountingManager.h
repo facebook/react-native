@@ -32,15 +32,22 @@ class FabricMountingManager final {
 
   void onSurfaceStop(SurfaceId surfaceId);
 
+  /*
+   * Can be called from any thread.
+   */
   void maybePreallocateShadowNode(const ShadowNode &shadowNode);
 
+  /*
+   * Can be called from any thread.
+   */
   void destroyUnmountedShadowNode(const ShadowNodeFamily &family);
 
   /*
    * Drains preallocatedViewsQueue_: preallocates each queued view on the Java
    * side and registers its tag in allocatedViewRegistry_ so that executeMount
    * skips the redundant Create mount item for this tag. In the pull model, it
-   * skips the views whose family was destroyed. Can be called by any thread.
+   * skips the views whose family was destroyed. Must be called on the UI
+   * thread.
    */
   void drainPreallocateViewsQueue();
 

@@ -432,7 +432,7 @@ class FabricMountingManagerInstrumentationTest {
     val helper = createTestHelper()
     helper.startSurface(surfaceId)
     helper.preallocateView(surfaceId, 42)
-    helper.mountCreate(surfaceId, 42)
+    helper.executeCreateMutation(surfaceId, 42)
 
     helper.destroyCommittedView(surfaceId, 42)
 
