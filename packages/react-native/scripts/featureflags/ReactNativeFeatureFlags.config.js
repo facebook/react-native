@@ -512,6 +512,7 @@ const definitions: FeatureFlagDefinitions = {
       ossReleaseStage: 'none',
     },
     enableMountingCoordinatorPullModelAndroid: {
+      dangerouslyExposeInPublicCppHeaders: true,
       defaultValue: false,
       metadata: {
         dateAdded: '2026-07-14',
@@ -690,6 +691,17 @@ const definitions: FeatureFlagDefinitions = {
         dateAdded: '2024-06-18',
         description:
           'Uses the default event priority instead of the discreet event priority by default when dispatching events from Fabric to React.',
+        expectedReleaseValue: true,
+        purpose: 'experimentation',
+      },
+      ossReleaseStage: 'none',
+    },
+    fixTextLayoutOnPixelDensityChange: {
+      defaultValue: false,
+      metadata: {
+        dateAdded: '2026-10-11',
+        description:
+          'Re-measures text and re-sends padding and overflow insets to mounted views when the pixel density changes, so text and padded views do not keep sizes from the old density.',
         expectedReleaseValue: true,
         purpose: 'experimentation',
       },
@@ -992,6 +1004,17 @@ const definitions: FeatureFlagDefinitions = {
         purpose: 'experimentation',
       },
       ossReleaseStage: 'canary',
+    },
+    useWindowDensityForDisplayMetricsAndroid: {
+      defaultValue: false,
+      metadata: {
+        dateAdded: '2026-10-11',
+        description:
+          'Keeps the window density in the screen display metrics instead of the physical display density, so text is measured at the density the window renders at.',
+        expectedReleaseValue: true,
+        purpose: 'experimentation',
+      },
+      ossReleaseStage: 'none',
     },
     viewCullingOutsetRatio: {
       defaultValue: 0,

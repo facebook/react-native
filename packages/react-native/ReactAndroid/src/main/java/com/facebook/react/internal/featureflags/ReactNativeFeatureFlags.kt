@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<d824f6746b2cc7d4560164c04d123988>>
+ * @generated SignedSource<<cfa7aa53731059247d858fd8fb6e914b>>
  */
 
 /**
@@ -391,6 +391,12 @@ public object ReactNativeFeatureFlags {
   public fun fixMappingOfEventPrioritiesBetweenFabricAndReact(): Boolean = accessor.fixMappingOfEventPrioritiesBetweenFabricAndReact()
 
   /**
+   * Re-measures text and re-sends padding and overflow insets to mounted views when the pixel density changes, so text and padded views do not keep sizes from the old density.
+   */
+  @JvmStatic
+  public fun fixTextLayoutOnPixelDensityChange(): Boolean = accessor.fixTextLayoutOnPixelDensityChange()
+
+  /**
    * Fix flex basis computation to not apply FitContent constraint in the main axis for non-measure container nodes, preventing unnecessary re-measurement in scroll containers.
    */
   @JvmStatic
@@ -557,6 +563,12 @@ public object ReactNativeFeatureFlags {
    */
   @JvmStatic
   public fun useTurboModuleInterop(): Boolean = accessor.useTurboModuleInterop()
+
+  /**
+   * Keeps the window density in the screen display metrics instead of the physical display density, so text is measured at the density the window renders at.
+   */
+  @JvmStatic
+  public fun useWindowDensityForDisplayMetricsAndroid(): Boolean = accessor.useWindowDensityForDisplayMetricsAndroid()
 
   /**
    * Outset the culling context frame with the provided ratio. The culling context frame size will be outset by width * ratio on the left and right, and height * ratio on the top and bottom.

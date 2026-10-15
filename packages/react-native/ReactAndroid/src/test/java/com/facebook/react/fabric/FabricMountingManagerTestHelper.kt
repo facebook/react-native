@@ -37,6 +37,26 @@ class FabricMountingManagerTestHelper private constructor(fabricUIManager: Fabri
 
   external fun synchronouslyUpdateAnimatedProps(tags: IntArray, props: Array<NativeMap>)
 
+  external fun startSurfaceWithConstraints(
+      surfaceId: Int,
+      widthDp: Float,
+      heightDp: Float,
+      pointScaleFactor: Float,
+  )
+
+  external fun mountViewWithPadding(surfaceId: Int, tag: Int, padding: Float)
+
+  external fun updateSurfaceConstraints(
+      surfaceId: Int,
+      widthDp: Float,
+      heightDp: Float,
+      pointScaleFactor: Float,
+  )
+
+  external fun overrideFeatureFlags(fixTextLayoutOnPixelDensityChange: Boolean)
+
+  external fun resetFeatureFlags()
+
   companion object {
     init {
       SoLoader.loadLibrary("fabricjni")

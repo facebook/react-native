@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<3e94c46a8a6fda2a4c0378e326291d73>>
+ * @generated SignedSource<<ee4c0f9c1e7c6af3b0d15948ebc519b3>>
  */
 
 /**
@@ -84,6 +84,7 @@ internal class ReactNativeFeatureFlagsLocalAccessor : ReactNativeFeatureFlagsAcc
   private var enableVirtualViewContainerStateExperimentalCache: Boolean? = null
   private var fixBorderlessRippleAndroidCache: Boolean? = null
   private var fixMappingOfEventPrioritiesBetweenFabricAndReactCache: Boolean? = null
+  private var fixTextLayoutOnPixelDensityChangeCache: Boolean? = null
   private var fixYogaFlexBasisFitContentInMainAxisCache: Boolean? = null
   private var fuseboxAssertSingleHostStateCache: Boolean? = null
   private var fuseboxEnabledReleaseCache: Boolean? = null
@@ -112,6 +113,7 @@ internal class ReactNativeFeatureFlagsLocalAccessor : ReactNativeFeatureFlagsAcc
   private var useSharedAnimatedBackendCache: Boolean? = null
   private var useTraitHiddenOnAndroidCache: Boolean? = null
   private var useTurboModuleInteropCache: Boolean? = null
+  private var useWindowDensityForDisplayMetricsAndroidCache: Boolean? = null
   private var viewCullingOutsetRatioCache: Double? = null
   private var viewTransitionEnabledCache: Boolean? = null
   private var viewTransitionUseHardwareBitmapAndroidCache: Boolean? = null
@@ -717,6 +719,16 @@ internal class ReactNativeFeatureFlagsLocalAccessor : ReactNativeFeatureFlagsAcc
     return cached
   }
 
+  override fun fixTextLayoutOnPixelDensityChange(): Boolean {
+    var cached = fixTextLayoutOnPixelDensityChangeCache
+    if (cached == null) {
+      cached = currentProvider.fixTextLayoutOnPixelDensityChange()
+      accessedFeatureFlags.add("fixTextLayoutOnPixelDensityChange")
+      fixTextLayoutOnPixelDensityChangeCache = cached
+    }
+    return cached
+  }
+
   override fun fixYogaFlexBasisFitContentInMainAxis(): Boolean {
     var cached = fixYogaFlexBasisFitContentInMainAxisCache
     if (cached == null) {
@@ -993,6 +1005,16 @@ internal class ReactNativeFeatureFlagsLocalAccessor : ReactNativeFeatureFlagsAcc
       cached = currentProvider.useTurboModuleInterop()
       accessedFeatureFlags.add("useTurboModuleInterop")
       useTurboModuleInteropCache = cached
+    }
+    return cached
+  }
+
+  override fun useWindowDensityForDisplayMetricsAndroid(): Boolean {
+    var cached = useWindowDensityForDisplayMetricsAndroidCache
+    if (cached == null) {
+      cached = currentProvider.useWindowDensityForDisplayMetricsAndroid()
+      accessedFeatureFlags.add("useWindowDensityForDisplayMetricsAndroid")
+      useWindowDensityForDisplayMetricsAndroidCache = cached
     }
     return cached
   }

@@ -1,5 +1,11 @@
 # Changelog
 
+## v0.88.0-rc.6
+
+### Fixed
+
+- **TypeScript**: Add missing types for the public `AssetRegistry` API ([b8ec87e457](https://github.com/react/react-native/commit/b8ec87e457c72377dab85599e1ae8c176eb242e7) by [@byCedric](https://github.com/byCedric))
+
 ## v0.88.0-rc.4
 
 ### Changed

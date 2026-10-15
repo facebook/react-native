@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<0c7d62679814835a3ef86a63174c7f7f>>
+ * @generated SignedSource<<18267103ef4f3eb22f23a15b808528c2>>
  */
 
 /**
@@ -143,6 +143,8 @@ public interface ReactNativeFeatureFlagsProvider {
 
   @DoNotStrip public fun fixMappingOfEventPrioritiesBetweenFabricAndReact(): Boolean
 
+  @DoNotStrip public fun fixTextLayoutOnPixelDensityChange(): Boolean
+
   @DoNotStrip public fun fixYogaFlexBasisFitContentInMainAxis(): Boolean
 
   @DoNotStrip public fun fuseboxAssertSingleHostState(): Boolean
@@ -198,6 +200,8 @@ public interface ReactNativeFeatureFlagsProvider {
   @DoNotStrip public fun useTraitHiddenOnAndroid(): Boolean
 
   @DoNotStrip public fun useTurboModuleInterop(): Boolean
+
+  @DoNotStrip public fun useWindowDensityForDisplayMetricsAndroid(): Boolean
 
   @DoNotStrip public fun viewCullingOutsetRatio(): Double
 

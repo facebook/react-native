@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<8a82a13c242d68512b2e87e723f93aa3>>
+ * @generated SignedSource<<52db1adfed5fd99e4ca145b50dc413a0>>
  */
 
 /**
@@ -269,6 +269,10 @@ class ReactNativeFeatureFlagsDefaults : public ReactNativeFeatureFlagsProvider {
     return false;
   }
 
+  bool fixTextLayoutOnPixelDensityChange() override {
+    return false;
+  }
+
   bool fixYogaFlexBasisFitContentInMainAxis() override {
     return false;
   }
@@ -378,6 +382,10 @@ class ReactNativeFeatureFlagsDefaults : public ReactNativeFeatureFlagsProvider {
   }
 
   bool useTurboModuleInterop() override {
+    return false;
+  }
+
+  bool useWindowDensityForDisplayMetricsAndroid() override {
     return false;
   }
 

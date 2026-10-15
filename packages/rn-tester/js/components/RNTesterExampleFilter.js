@@ -25,8 +25,8 @@ const {
 } = require('react-native');
 
 type Props<T> = {
-  filter: Function,
-  render: Function,
+  filter: any,
+  render: any,
   disableSearch?: boolean,
   testID?: string,
   hideFilterPills?: boolean,

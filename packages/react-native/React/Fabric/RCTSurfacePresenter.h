@@ -74,7 +74,8 @@ NS_ASSUME_NONNULL_BEGIN
  * Deprecated.
  * Use `RCTMountingTransactionObserverCoordinator` instead.
  */
-- (void)addObserver:(id<RCTSurfacePresenterObserver>)observer;
+- (void)addObserver:(id<RCTSurfacePresenterObserver>)observer
+    __deprecated_msg("Use RCTMountingTransactionObserverCoordinator instead.");
 - (void)removeObserver:(id<RCTSurfacePresenterObserver>)observer;
 
 /*

@@ -7,6 +7,8 @@
 
 #pragma once
 
+#include <react/cxxstableapi/FrameworksGuard.h>
+
 #import <Foundation/Foundation.h>
 
 #include <folly/dynamic.h>

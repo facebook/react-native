@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<9272123d1a9171ac730313ebbd0c74f2>>
+ * @generated SignedSource<<8d27c5f3feb4c8000922012882701b7e>>
  */
 
 /**
@@ -587,6 +587,15 @@ class ReactNativeFeatureFlagsDynamicProvider : public ReactNativeFeatureFlagsDef
     return ReactNativeFeatureFlagsDefaults::fixMappingOfEventPrioritiesBetweenFabricAndReact();
   }
 
+  bool fixTextLayoutOnPixelDensityChange() override {
+    auto value = values_["fixTextLayoutOnPixelDensityChange"];
+    if (!value.isNull()) {
+      return value.getBool();
+    }
+
+    return ReactNativeFeatureFlagsDefaults::fixTextLayoutOnPixelDensityChange();
+  }
+
   bool fixYogaFlexBasisFitContentInMainAxis() override {
     auto value = values_["fixYogaFlexBasisFitContentInMainAxis"];
     if (!value.isNull()) {
@@ -837,6 +846,15 @@ class ReactNativeFeatureFlagsDynamicProvider : public ReactNativeFeatureFlagsDef
     }
 
     return ReactNativeFeatureFlagsDefaults::useTurboModuleInterop();
+  }
+
+  bool useWindowDensityForDisplayMetricsAndroid() override {
+    auto value = values_["useWindowDensityForDisplayMetricsAndroid"];
+    if (!value.isNull()) {
+      return value.getBool();
+    }
+
+    return ReactNativeFeatureFlagsDefaults::useWindowDensityForDisplayMetricsAndroid();
   }
 
   double viewCullingOutsetRatio() override {
