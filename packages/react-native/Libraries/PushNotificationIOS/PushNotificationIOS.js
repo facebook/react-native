@@ -279,8 +279,7 @@ class PushNotificationIOS {
    * See https://reactnative.dev/docs/pushnotificationios#getdeliverednotifications
    */
   static getDeliveredNotifications(
-    // $FlowFixMe[unclear-type]
-    callback: (notifications: Array<Object>) => void,
+    callback: (notifications: Array<LegacyObject>) => void,
   ): void {
     invariant(
       NativePushNotificationManagerIOS,
