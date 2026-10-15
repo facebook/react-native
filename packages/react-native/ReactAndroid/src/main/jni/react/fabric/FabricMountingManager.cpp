@@ -599,6 +599,8 @@ void FabricMountingManager::executeMount(
 
   bool maintainMutationOrder =
       ReactNativeFeatureFlags::disableMountItemReorderingAndroid();
+  bool updateViewsOnDensityChange =
+      ReactNativeFeatureFlags::fixTextLayoutOnPixelDensityChange();
 
   auto revisionNumber = telemetry.getRevisionNumber();
 
@@ -688,12 +690,19 @@ void FabricMountingManager::executeMount(
                       CppMountItem::UpdateStateMountItem(newChildShadowView));
             }
 
+            bool pointScaleChanged = updateViewsOnDensityChange &&
+                oldChildShadowView.layoutMetrics.pointScaleFactor !=
+                    newChildShadowView.layoutMetrics.pointScaleFactor;
+
             // Padding: padding mountItems must be executed before layout props
             // are updated in the view. This is necessary to ensure that events
             // (resulting from layout changes) are dispatched with the correct
             // padding information.
             if (oldChildShadowView.layoutMetrics.contentInsets !=
-                newChildShadowView.layoutMetrics.contentInsets) {
+                    newChildShadowView.layoutMetrics.contentInsets ||
+                (pointScaleChanged &&
+                 newChildShadowView.layoutMetrics.contentInsets !=
+                     EdgeInsets::ZERO)) {
               (maintainMutationOrder ? cppCommonMountItems
                                      : cppUpdatePaddingMountItems)
                   .push_back(
@@ -713,8 +722,11 @@ void FabricMountingManager::executeMount(
             // children of the current view. The layout of current view may not
             // change, and we separate this part from layout mount items to not
             // pack too much data there.
-            if ((oldChildShadowView.layoutMetrics.overflowInset !=
-                 newChildShadowView.layoutMetrics.overflowInset)) {
+            if (oldChildShadowView.layoutMetrics.overflowInset !=
+                    newChildShadowView.layoutMetrics.overflowInset ||
+                (pointScaleChanged &&
+                 newChildShadowView.layoutMetrics.overflowInset !=
+                     EdgeInsets::ZERO)) {
               (maintainMutationOrder ? cppCommonMountItems
                                      : cppUpdateOverflowInsetMountItems)
                   .push_back(

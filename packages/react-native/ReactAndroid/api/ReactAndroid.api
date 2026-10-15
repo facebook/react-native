@@ -3226,6 +3226,7 @@ public abstract class com/facebook/react/uimanager/BaseViewManager : com/faceboo
 	public fun setMoveShouldSetResponder (Landroid/view/View;Z)V
 	public fun setMoveShouldSetResponderCapture (Landroid/view/View;Z)V
 	public fun setNativeId (Landroid/view/View;Ljava/lang/String;)V
+	public fun setOnSafeAreaInsetsChange (Landroid/view/View;Z)V
 	public fun setOpacity (Landroid/view/View;F)V
 	public fun setOutlineColor (Landroid/view/View;Ljava/lang/Integer;)V
 	public fun setOutlineOffset (Landroid/view/View;F)V
@@ -4566,6 +4567,7 @@ public final class com/facebook/react/uimanager/ViewProps {
 	public static final field NONE Ljava/lang/String;
 	public static final field NUMBER_OF_LINES Ljava/lang/String;
 	public static final field ON Ljava/lang/String;
+	public static final field ON_SAFE_AREA_INSETS_CHANGE Ljava/lang/String;
 	public static final field OPACITY Ljava/lang/String;
 	public static final field OUTLINE_COLOR Ljava/lang/String;
 	public static final field OUTLINE_OFFSET Ljava/lang/String;
@@ -5152,7 +5154,7 @@ public class com/facebook/react/viewmanagers/VirtualViewManagerDelegate : com/fa
 }
 
 public abstract interface class com/facebook/react/viewmanagers/VirtualViewManagerInterface : com/facebook/react/uimanager/ViewManagerWithGeneratedInterface {
-	public abstract fun setInitialHidden (Landroid/view/View;Z)V
+	public abstract fun setInitialHidden (Landroid/view/View;Ljava/lang/Boolean;)V
 	public abstract fun setRemoveClippedSubviews (Landroid/view/View;Z)V
 	public abstract fun setRenderState (Landroid/view/View;I)V
 }
@@ -6580,8 +6582,8 @@ public final class com/facebook/react/views/virtual/view/ReactVirtualViewManager
 	public synthetic fun createViewInstance (Lcom/facebook/react/uimanager/ThemedReactContext;)Landroid/view/View;
 	public fun getName ()Ljava/lang/String;
 	public synthetic fun prepareToRecycleView (Lcom/facebook/react/uimanager/ThemedReactContext;Landroid/view/View;)Landroid/view/View;
-	public synthetic fun setInitialHidden (Landroid/view/View;Z)V
-	public fun setInitialHidden (Lcom/facebook/react/views/virtual/view/ReactVirtualView;Z)V
+	public synthetic fun setInitialHidden (Landroid/view/View;Ljava/lang/Boolean;)V
+	public fun setInitialHidden (Lcom/facebook/react/views/virtual/view/ReactVirtualView;Ljava/lang/Boolean;)V
 	public synthetic fun setNativeId (Landroid/view/View;Ljava/lang/String;)V
 	public fun setNativeId (Lcom/facebook/react/views/virtual/view/ReactVirtualView;Ljava/lang/String;)V
 	public synthetic fun setRemoveClippedSubviews (Landroid/view/View;Z)V

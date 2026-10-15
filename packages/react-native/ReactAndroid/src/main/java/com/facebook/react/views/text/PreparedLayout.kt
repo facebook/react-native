@@ -22,4 +22,5 @@ internal class PreparedLayout(
     val reactTags: IntArray,
     val textBreakStrategy: Int,
     val justificationMode: Int,
+    val baseTextAttributes: TextAttributeProps,
 )

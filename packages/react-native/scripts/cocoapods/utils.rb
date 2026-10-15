@@ -366,6 +366,8 @@ class ReactNativePodsUtils
     def self.stable_umbrella_frameworks
         [
             ["React-Fabric", "React_Fabric"],
+            ["React-callinvoker", "React_callinvoker"],
+            ["React-cxxreact", "React_cxxreact"],
             ["React-debug", "React_debug"],
             ["React-rendererdebug", "React_rendererdebug"],
             ["React-timing", "React_timing"],

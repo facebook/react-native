@@ -9,9 +9,9 @@
 
 #include <react/cxxstableapi/FrameworksGuard.h>
 
+#include <React/Graphics.h>
 #include <React/RendererCore.h>
 #include <react/renderer/attributedstring/TextAttributes.h>
-#include <react/renderer/graphics/Color.h>
 
 namespace facebook::react {
 

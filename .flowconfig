@@ -16,6 +16,7 @@ packages/react-native-codegen/e2e/__test_fixtures__/modules/NativeEnumTurboModul
 **/*.windows.js
 
 **/node_modules/resolve/test/resolver/malformed_package_json/package.json
+**/node_modules/invariant/**
 
 ; Checked-in build output
 packages/debugger-frontend/dist/**
@@ -51,6 +52,9 @@ module.file_ext=.json
 experimental.multi_platform=true
 experimental.multi_platform.extensions=.ios
 experimental.multi_platform.extensions=.android
+
+experimental.assertion_functions=true
+experimental.disable_invariant_special_casing=true
 
 munge_underscores=true
 
@@ -96,4 +100,4 @@ untyped-import
 untyped-type-import
 
 [version]
-^0.334.0
+^0.335.0

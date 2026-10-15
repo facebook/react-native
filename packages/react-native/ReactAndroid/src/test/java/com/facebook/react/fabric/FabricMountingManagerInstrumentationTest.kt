@@ -7,6 +7,7 @@
 
 package com.facebook.react.fabric
 
+import android.graphics.Rect
 import androidx.test.ext.junit.runners.AndroidJUnit4
 import androidx.test.platform.app.InstrumentationRegistry
 import com.facebook.react.ReactRootView
@@ -26,6 +27,7 @@ import com.facebook.react.uimanager.ThemedReactContext
 import com.facebook.react.uimanager.ViewManager
 import com.facebook.react.uimanager.ViewManagerRegistry
 import com.facebook.react.uimanager.events.BatchEventDispatchedListener
+import com.facebook.react.views.view.ReactViewGroup
 import com.facebook.react.views.view.ReactViewManager
 import com.facebook.soloader.SoLoader
 import org.assertj.core.api.Assertions.assertThat
@@ -51,6 +53,7 @@ class FabricMountingManagerInstrumentationTest {
   private lateinit var mountingManager: MountingManager
   private lateinit var themedReactContext: ThemedReactContext
   private val surfaceId = 1
+  private var nativeFeatureFlagsHelper: FabricMountingManagerTestHelper? = null
 
   companion object {
     @BeforeClass
@@ -75,6 +78,7 @@ class FabricMountingManagerInstrumentationTest {
 
   @After
   fun tearDown() {
+    nativeFeatureFlagsHelper?.resetFeatureFlags()
     ReactNativeFeatureFlags.dangerouslyReset()
   }
 
@@ -222,13 +226,37 @@ class FabricMountingManagerInstrumentationTest {
 
   // ---- Native code tests via FabricMountingManagerTestHelper ----
 
-  private fun createFabricUIManager(): FabricUIManager {
+  private fun createFabricUIManager(
+      viewManagers: List<ViewManager<*, *>> = listOf(ReactViewManager()),
+  ): FabricUIManager {
     val context = InstrumentationRegistry.getInstrumentation().targetContext
     val reactAppContext = mock(ReactApplicationContext::class.java)
     `when`(reactAppContext.applicationContext).thenReturn(context)
     `when`(reactAppContext.exceptionHandler).thenReturn(JSExceptionHandler {})
-    val viewManagerRegistry = ViewManagerRegistry(listOf<ViewManager<*, *>>(ReactViewManager()))
+    val viewManagerRegistry = ViewManagerRegistry(viewManagers)
     return FabricUIManager(reactAppContext, viewManagerRegistry, BatchEventDispatchedListener {})
+  }
+
+  private fun mountPaddedView(
+      fixTextLayoutOnPixelDensityChange: Boolean
+  ): Pair<FabricMountingManagerTestHelper, ReactViewGroup> {
+    val fabricUIManager = createFabricUIManager(listOf(PaddingViewManager()))
+    val helper = FabricMountingManagerTestHelper.create(fabricUIManager)
+    helper.overrideFeatureFlags(fixTextLayoutOnPixelDensityChange)
+    nativeFeatureFlagsHelper = helper
+    fabricUIManager.setBinding(FabricUIManagerBinding())
+    fabricUIManager.startSurface(
+        SurfaceHandlerBinding("TestSurface"),
+        themedReactContext,
+        ReactRootView(themedReactContext).apply { setRootViewTag(surfaceId) },
+    )
+    helper.startSurfaceWithConstraints(surfaceId, 300f, 300f, 2f)
+    lateinit var view: ReactViewGroup
+    InstrumentationRegistry.getInstrumentation().runOnMainSync {
+      helper.mountViewWithPadding(surfaceId, 42, 10f)
+      view = fabricUIManager.resolveView(42) as ReactViewGroup
+    }
+    return helper to view
   }
 
   private fun createTestHelper(): FabricMountingManagerTestHelper =
@@ -334,5 +362,38 @@ class FabricMountingManagerInstrumentationTest {
     val fallbackView = smm.getView(44)
     assertThat(fallbackView.alpha).isEqualTo(0.5f)
     assertThat(fallbackView.tag).isEqualTo("animated-view")
+  }
+
+  @Test
+  fun native_updateSurfaceConstraints_resendsPaddingAndOverflowInsetInPixels() {
+    val (helper, view) = mountPaddedView(fixTextLayoutOnPixelDensityChange = true)
+    assertThat(view.paddingTop).isEqualTo(20)
+    assertThat(view.overflowInset).isEqualTo(Rect(-20, -20, -20, -20))
+
+    InstrumentationRegistry.getInstrumentation().runOnMainSync {
+      helper.updateSurfaceConstraints(surfaceId, 300f, 300f, 1f)
+    }
+
+    assertThat(intArrayOf(view.paddingLeft, view.paddingTop, view.paddingRight, view.paddingBottom))
+        .containsExactly(10, 10, 10, 10)
+    assertThat(view.overflowInset).isEqualTo(Rect(-10, -10, -10, -10))
+  }
+
+  @Test
+  fun native_updateSurfaceConstraints_withoutFlag_keepsPaddingAndOverflowInsetInPixels() {
+    val (helper, view) = mountPaddedView(fixTextLayoutOnPixelDensityChange = false)
+
+    InstrumentationRegistry.getInstrumentation().runOnMainSync {
+      helper.updateSurfaceConstraints(surfaceId, 300f, 300f, 1f)
+    }
+
+    assertThat(view.paddingTop).isEqualTo(20)
+    assertThat(view.overflowInset).isEqualTo(Rect(-20, -20, -20, -20))
+  }
+
+  private class PaddingViewManager : ReactViewManager() {
+    override fun setPadding(view: ReactViewGroup, left: Int, top: Int, right: Int, bottom: Int) {
+      view.setPadding(left, top, right, bottom)
+    }
   }
 }

@@ -163,7 +163,7 @@ jobs:
         run: echo "status=failure" >> $GITHUB_OUTPUT
 
   report:
-    needs: test
+    needs: [build, test]
     if: always()
     runs-on: ubuntu-latest
     outputs:
@@ -171,7 +171,9 @@ jobs:
     steps:
       - id: check
         run: |
-          if [[ "${{ needs.test.outputs.status }}" == "failure" ]]; then
+          if [[ "${{ needs.build.result }}" != "success" ||
+                "${{ needs.test.result }}" != "success" ||
+                "${{ needs.test.outputs.status }}" == "failure" ]]; then
             echo "status=failure" >> $GITHUB_OUTPUT
           else
             echo "status=success" >> $GITHUB_OUTPUT

@@ -10,6 +10,8 @@
 #include <fbjni/fbjni.h>
 #include <react/jni/NativeMap.h>
 #include <react/renderer/components/view/ViewComponentDescriptor.h>
+#include <react/renderer/mounting/ShadowTree.h>
+#include <react/renderer/mounting/ShadowTreeDelegate.h>
 
 #include <react/fabric/FabricMountingManager.h>
 
@@ -30,6 +32,11 @@ class FabricMountingManagerTestHelper : public jni::HybridClass<FabricMountingMa
   void synchronouslyUpdateAnimatedProps(
       jni::alias_ref<jni::JArrayInt> tags,
       jni::alias_ref<jni::JArrayClass<NativeMap::javaobject>> props);
+  void startSurfaceWithConstraints(jint surfaceId, jfloat widthDp, jfloat heightDp, jfloat pointScaleFactor);
+  void mountViewWithPadding(jint surfaceId, jint tag, jfloat padding);
+  void updateSurfaceConstraints(jint surfaceId, jfloat widthDp, jfloat heightDp, jfloat pointScaleFactor);
+  void overrideFeatureFlags(jboolean fixTextLayoutOnPixelDensityChange);
+  void resetFeatureFlags();
 
   static void registerNatives();
 
@@ -42,9 +49,14 @@ class FabricMountingManagerTestHelper : public jni::HybridClass<FabricMountingMa
       jni::alias_ref<jhybridobject> jobj,
       jni::alias_ref<JFabricUIManager::javaobject> jFabricUIManager);
 
+  void mountPendingTransaction();
+
   jni::global_ref<JFabricUIManager::javaobject> javaUIManager_;
   std::shared_ptr<FabricMountingManager> mountingManager_;
+  std::shared_ptr<ContextContainer> contextContainer_;
   std::unique_ptr<ViewComponentDescriptor> viewComponentDescriptor_;
+  std::unique_ptr<ShadowTreeDelegate> shadowTreeDelegate_;
+  std::unique_ptr<ShadowTree> shadowTree_;
 };
 
 } // namespace facebook::react

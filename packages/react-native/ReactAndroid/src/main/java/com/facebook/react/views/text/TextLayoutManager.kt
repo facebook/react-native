@@ -371,6 +371,7 @@ internal object TextLayoutManager {
         if (
             textAttributes.fontStyle != ReactConstants.UNSET ||
                 textAttributes.fontWeight != ReactConstants.UNSET ||
+                textAttributes.fontFeatureSettings != null ||
                 textAttributes.fontVariationSettings != null ||
                 textAttributes.fontFamily != null
         ) {
@@ -607,6 +608,7 @@ internal object TextLayoutManager {
         if (
             fragment.props.fontStyle != ReactConstants.UNSET ||
                 fragment.props.fontWeight != ReactConstants.UNSET ||
+                fragment.props.fontFeatureSettings != null ||
                 fragment.props.fontVariationSettings != null ||
                 fragment.props.fontFamily != null
         ) {
@@ -1003,8 +1005,8 @@ internal object TextLayoutManager {
    * Sets attributes on the TextPaint, used for content outside the Spannable text, like for empty
    * strings, or newlines after the last trailing character
    */
-  @VisibleForTesting
-  internal fun updateTextPaint(
+  @JvmStatic
+  fun updateTextPaint(
       paint: TextPaint,
       baseTextAttributes: TextAttributeProps,
       assets: AssetManager,
@@ -1014,9 +1016,14 @@ internal object TextLayoutManager {
       paint.textSize = baseTextAttributes.fontSize.toFloat()
     }
 
+    if (baseTextAttributes.isLetterSpacingSet) {
+      paint.letterSpacing = baseTextAttributes.letterSpacing
+    }
+
     if (
         baseTextAttributes.fontStyle != ReactConstants.UNSET ||
             baseTextAttributes.fontWeight != ReactConstants.UNSET ||
+            baseTextAttributes.fontFeatureSettings != null ||
             baseTextAttributes.fontVariationSettings != null ||
             baseTextAttributes.fontFamily != null
     ) {
@@ -1041,6 +1048,9 @@ internal object TextLayoutManager {
         paint.isFakeBoldText = missingStyle and Typeface.BOLD != 0
         paint.textSkewX = if ((missingStyle and Typeface.ITALIC) != 0) -0.25f else 0f
       }
+
+      paint.isSubpixelText = true
+      paint.isLinearText = true
     } else {
       val typeface = ReactTypefaceUtils.applyFontWeightAdjustment(null, fontWeightAdjustment)
       if (typeface != null) {
@@ -1048,6 +1058,7 @@ internal object TextLayoutManager {
       }
     }
 
+    paint.fontFeatureSettings = baseTextAttributes.fontFeatureSettings
     ReactTypefaceUtils.applyFontVariationSettings(paint, baseTextAttributes.fontVariationSettings)
   }
 
@@ -1061,12 +1072,23 @@ internal object TextLayoutManager {
       fontWeightAdjustment: Int,
   ): TextPaint {
     val paint = checkNotNull(textPaintInstance.get())
-    paint.setTypeface(null)
-    paint.textSize = 12f
-    paint.isFakeBoldText = false
-    paint.textSkewX = 0f
+    resetTextPaint(paint, 12f)
     updateTextPaint(paint, baseTextAttributes, assets, fontWeightAdjustment)
     return paint
+  }
+
+  /** Clears every attribute [updateTextPaint] may set, so a reused paint starts from defaults. */
+  @JvmStatic
+  fun resetTextPaint(paint: TextPaint, textSize: Float) {
+    paint.setTypeface(null)
+    paint.textSize = textSize
+    paint.letterSpacing = 0f
+    paint.fontFeatureSettings = null
+    paint.isFakeBoldText = false
+    paint.textSkewX = 0f
+    paint.isSubpixelText = false
+    paint.isLinearText = false
+    ReactTypefaceUtils.applyFontVariationSettings(paint, null)
   }
 
   private fun newPaintWithAttributes(
@@ -1333,6 +1355,7 @@ internal object TextLayoutManager {
         reactTags,
         result.textBreakStrategy,
         result.justificationMode,
+        baseTextAttributes,
     )
   }
 

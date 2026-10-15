@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<6abef654d3dd784b7211ac8874069020>>
+ * @generated SignedSource<<52db1adfed5fd99e4ca145b50dc413a0>>
  */
 
 /**
@@ -49,6 +49,10 @@ class ReactNativeFeatureFlagsDefaults : public ReactNativeFeatureFlagsProvider {
     return false;
   }
 
+  bool disableIdleEventDispatchFrameCallbackRearmAndroid() override {
+    return false;
+  }
+
   bool disableIdleMountItemFrameCallbackRearmAndroid() override {
     return false;
   }
@@ -89,11 +93,11 @@ class ReactNativeFeatureFlagsDefaults : public ReactNativeFeatureFlagsProvider {
     return false;
   }
 
-  bool enableBridgelessArchitecture() override {
-    return true;
+  bool enableAsyncDiskCacheCheckInMultiSourceImageAndroid() override {
+    return false;
   }
 
-  bool enableBufferedCallInvoker() override {
+  bool enableBridgelessArchitecture() override {
     return true;
   }
 
@@ -257,7 +261,15 @@ class ReactNativeFeatureFlagsDefaults : public ReactNativeFeatureFlagsProvider {
     return false;
   }
 
+  bool fixBorderlessRippleAndroid() override {
+    return false;
+  }
+
   bool fixMappingOfEventPrioritiesBetweenFabricAndReact() override {
+    return false;
+  }
+
+  bool fixTextLayoutOnPixelDensityChange() override {
     return false;
   }
 
@@ -370,6 +382,10 @@ class ReactNativeFeatureFlagsDefaults : public ReactNativeFeatureFlagsProvider {
   }
 
   bool useTurboModuleInterop() override {
+    return false;
+  }
+
+  bool useWindowDensityForDisplayMetricsAndroid() override {
     return false;
   }
 
