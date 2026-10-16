@@ -34,8 +34,8 @@
 #include <reactperflogger/ReactPerfettoCategories.h>
 #endif
 
-#if defined(__ANDROID__) && !defined(WITH_PERFETTO) && !defined(WITH_FBSYSTRACE)
-#include <dlfcn.h>
+#if defined(__ANDROID__) && __ANDROID_API__ >= 23 && !defined(WITH_PERFETTO) && !defined(WITH_FBSYSTRACE)
+#include <android/trace.h>
 #endif
 
 #if defined(__APPLE__)
@@ -99,41 +99,16 @@ struct ConcreteTraceSection {
   fbsystrace::FbSystraceSection m_section;
 };
 using TraceSectionUnwrapped = ConcreteTraceSection;
-#elif defined(__ANDROID__)
+#elif defined(__ANDROID__) && __ANDROID_API__ >= 23
 // Route TraceSection to the platform ATrace API so
 // that C++ sections show up in Perfetto/systrace captures of OSS builds.
-// Resolved with dlsym to avoid adding a link dependency on libandroid to
-// every target that includes this header.
-namespace detail {
-struct ATraceApi {
-  bool (*isEnabled)() = nullptr;
-  void (*beginSection)(const char *) = nullptr;
-  void (*endSection)() = nullptr;
-};
-
-inline const ATraceApi &getATraceApi()
-{
-  static const ATraceApi api = [] {
-    ATraceApi result;
-    if (void *lib = dlopen("libandroid.so", RTLD_NOW | RTLD_LOCAL)) {
-      result.isEnabled = reinterpret_cast<bool (*)()>(dlsym(lib, "ATrace_isEnabled"));
-      result.beginSection = reinterpret_cast<void (*)(const char *)>(dlsym(lib, "ATrace_beginSection"));
-      result.endSection = reinterpret_cast<void (*)()>(dlsym(lib, "ATrace_endSection"));
-    }
-    return result;
-  }();
-  return api;
-}
-} // namespace detail
-
 struct ATraceSection {
  public:
   template <typename... ConvertsToStringPiece>
   explicit ATraceSection(const char *name, [[maybe_unused]] ConvertsToStringPiece &&...args)
   {
-    const auto &api = detail::getATraceApi();
-    if (api.isEnabled != nullptr && api.beginSection != nullptr && api.endSection != nullptr && api.isEnabled()) {
-      api.beginSection(name);
+    if (ATrace_isEnabled()) {
+      ATrace_beginSection(name);
       active_ = true;
     }
   }
@@ -141,7 +116,7 @@ struct ATraceSection {
   ~ATraceSection()
   {
     if (active_) {
-      detail::getATraceApi().endSection();
+      ATrace_endSection();
     }
   }
 
