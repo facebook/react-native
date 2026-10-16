@@ -712,7 +712,8 @@ public class FabricUIManager
         preparedLayout.getVerticalOffset(),
         reactTags,
         preparedLayout.getTextBreakStrategy(),
-        preparedLayout.getJustificationMode());
+        preparedLayout.getJustificationMode(),
+        preparedLayout.getBaseTextAttributes());
   }
 
   @AnyThread

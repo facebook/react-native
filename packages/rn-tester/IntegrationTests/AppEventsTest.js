@@ -26,7 +26,7 @@ const {TestModule} = NativeModules;
 const TEST_PAYLOAD = {foo: 'bar'};
 
 type AppEvent = {
-  data: Object,
+  data: any,
   ts: number,
 };
 

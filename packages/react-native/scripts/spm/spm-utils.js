@@ -214,7 +214,7 @@ function deriveAppName(
 }
 
 // $FlowFixMe[unclear-type] JSON data has dynamic shape
-function readPackageJson(dir /*: string */) /*: Object | null */ {
+function readPackageJson(dir /*: string */) /*: any | null */ {
   const pkgPath = path.join(dir, 'package.json');
   if (!fs.existsSync(pkgPath)) {
     return null;

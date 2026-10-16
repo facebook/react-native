@@ -82,6 +82,9 @@ public class TextAttributeProps private constructor() {
   private var lineHeightInput: Float = ReactConstants.UNSET.toFloat()
   private var letterSpacingInput: Float = Float.NaN
 
+  internal val isLetterSpacingSet: Boolean
+    get() = !letterSpacingInput.isNaN()
+
   // `ReactConstants.UNSET` is -1, same as `LayoutDirection.UNDEFINED` (which is a hidden symbol)
   public var layoutDirection: Int = ReactConstants.UNSET
     private set

@@ -4819,51 +4819,51 @@ flora-colossus@^3.0.2:
   dependencies:
     debug "^4.4.1"
 
-flow-api-translator@0.333.0:
-  version "0.333.0"
-  resolved "https://registry.yarnpkg.com/flow-api-translator/-/flow-api-translator-0.333.0.tgz#3ad6552c47ce6930f0cbab3ce46ec2875f4c6e6f"
-  integrity sha512-T1CvQdFtDj+ss6cKZSMsul1uAf6jwKRKwQBIzyjEUeuz6t8kLNrhLT/vBYtZBjjQV6/gQFa6LvT/UE75FOAqSA==
+flow-api-translator@0.335.0:
+  version "0.335.0"
+  resolved "https://registry.yarnpkg.com/flow-api-translator/-/flow-api-translator-0.335.0.tgz#62bd5c7d3494c67226f41022febb820e59437486"
+  integrity sha512-APzyBFsT9x22NlBEYHi/ru++y4Yglx1pwwII9vLXg816ggoVxF5bSmcUxy1B+3Axj+pU5hYGWtJ7z24c5U9cLg==
   dependencies:
     "@babel/code-frame" "^7.16.0"
     "@typescript-eslint/parser" "8.38.0"
     "@typescript-eslint/visitor-keys" "8.38.0"
     flow-enums-runtime "^0.0.6"
-    flow-eslint "0.333.0"
-    flow-estree "0.333.0"
-    flow-parser "0.333.0"
-    flow-transform "0.333.0"
+    flow-eslint "0.335.0"
+    flow-estree "0.335.0"
+    flow-parser "0.335.0"
+    flow-transform "0.335.0"
     typescript "5.3.2"
 
-flow-bin@^0.335.0:
-  version "0.335.0"
-  resolved "https://registry.yarnpkg.com/flow-bin/-/flow-bin-0.335.0.tgz#dd0d0d19b82c77d1d261d774e96bc624dd4143bc"
-  integrity sha512-a5Su683/8G03Cuj0nI9BMZxgg5M3VJtOA8R3/ADw7KcCXN2OdP72jC5ZtlpzWEwZjV+l/L+Up/Nw+CVYeghWxg==
+flow-bin@^0.336.0:
+  version "0.336.0"
+  resolved "https://registry.yarnpkg.com/flow-bin/-/flow-bin-0.336.0.tgz#ac946f9cdf134b83ab4f7a98a0de34324f6b94f4"
+  integrity sha512-I5sPg/GISpXH4W14eGWgiIsrDKY0uvvvXjlEDOI2t0pguEwbMgpnaYzMMMBoHZcYYtNJIF/0eGsbPnN7uP2zOQ==
 
 flow-enums-runtime@^0.0.6:
   version "0.0.6"
   resolved "https://registry.yarnpkg.com/flow-enums-runtime/-/flow-enums-runtime-0.0.6.tgz#5bb0cd1b0a3e471330f4d109039b7eba5cb3e787"
   integrity sha512-3PYnM29RFXwvAN6Pc/scUfkI7RwhQ/xqyLUyPNlXUp9S40zI8nup9tUSrTLSVnWGBN38FNiGWbwZOB6uR4OGdw==
 
-flow-eslint@0.333.0:
-  version "0.333.0"
-  resolved "https://registry.yarnpkg.com/flow-eslint/-/flow-eslint-0.333.0.tgz#58a06f317c743982abdd96663a87c1434d75f4ff"
-  integrity sha512-u4EJk0AuRCbr/OHzcTB2gWhMoIC/Y31J+UNwuFPYLHXvmPSobkpVo9geWR5DgQn3ecI3l/gKXiMsAHwrFSENPA==
+flow-eslint@0.335.0:
+  version "0.335.0"
+  resolved "https://registry.yarnpkg.com/flow-eslint/-/flow-eslint-0.335.0.tgz#a8383914568f16475ef5cd62c157843b62e52910"
+  integrity sha512-G/6qz7O1Otv3/fhZBvVyBQFvDihHZnRIXhJAwQ2HjWhurszVDHSrO4ZOEdCdZTMRtLmCltfPOBTMJRDaKERNCA==
   dependencies:
     esrecurse "^4.3.0"
-    flow-estree "0.333.0"
-    flow-parser "0.333.0"
+    flow-estree "0.335.0"
+    flow-parser "0.335.0"
 
-flow-estree@0.333.0:
-  version "0.333.0"
-  resolved "https://registry.yarnpkg.com/flow-estree/-/flow-estree-0.333.0.tgz#f3360e2c0451e71bfe619107a4d37cf4e1a90ad6"
-  integrity sha512-jyHzdWcuegTEO1fGakW+hZ91PS49xdMSBjCReBu+Xv05vX+ueVdf1ZtFIfqrdJOL9Uows7RMsHXOH6h6RDW/ZA==
+flow-estree@0.335.0:
+  version "0.335.0"
+  resolved "https://registry.yarnpkg.com/flow-estree/-/flow-estree-0.335.0.tgz#6867e678070b0edb13ff37636d8aaf4b444516bb"
+  integrity sha512-sfJYlOSnrbBI4ruZ7UG5OJLz16E1hs+Kkt/De8F7vm6UafLfvZIWjkoBmZtKoN6EIOa3zgGkVczt0xpmmQixGA==
 
-flow-parser@0.333.0:
-  version "0.333.0"
-  resolved "https://registry.yarnpkg.com/flow-parser/-/flow-parser-0.333.0.tgz#2310ee20b108debab3f7bcee16fffdee96067edc"
-  integrity sha512-bSL/1CALDbKlG0nKDD1/09XmNNbhnIMKuqzpe+Mv4NBHoKET23cYacaQmh41dq2RJ17TaQc5HQ3hFaj5OHR7ZA==
+flow-parser@0.335.0:
+  version "0.335.0"
+  resolved "https://registry.yarnpkg.com/flow-parser/-/flow-parser-0.335.0.tgz#27c879530fd7fe9521129b15e6d9cedd9860c645"
+  integrity sha512-TpG7cWiAAh5EoOjaGuzggks8HOM6DJhey1RmMmnzGUd+AYmsl77S5EXvb6gxAEGX40FyfkXEwsvQcuI6Knkm7g==
   dependencies:
-    flow-estree "0.333.0"
+    flow-estree "0.335.0"
 
 flow-remove-types@^2.237.2:
   version "2.259.1"
@@ -4874,17 +4874,17 @@ flow-remove-types@^2.237.2:
     pirates "^3.0.2"
     vlq "^0.2.1"
 
-flow-transform@0.333.0:
-  version "0.333.0"
-  resolved "https://registry.yarnpkg.com/flow-transform/-/flow-transform-0.333.0.tgz#66082c7932361463aebadf058f71d206cfd55c3b"
-  integrity sha512-3xF5Vtwkeu/p3/YjPmKthqxPoYn6XkaL1TprTDjCVD3PUdbNngCYbzzaRK27r6RkSZOxP3R5uTxAUoZKgiIg/w==
+flow-transform@0.335.0:
+  version "0.335.0"
+  resolved "https://registry.yarnpkg.com/flow-transform/-/flow-transform-0.335.0.tgz#ec49dedfd5507da0228f715ad20315c6ebf6ae75"
+  integrity sha512-TUBmPSufhaWaD0Amw/wR8v6+F+CLbnY8aHoUyb3hykEp6kDiPrCvem96uhN/uJ8CnjO2OODxxsisa0ikYaBt5w==
   dependencies:
     "@babel/code-frame" "^7.16.0"
     esquery "^1.4.0"
     flow-enums-runtime "^0.0.6"
-    flow-eslint "0.333.0"
-    flow-estree "0.333.0"
-    flow-parser "0.333.0"
+    flow-eslint "0.335.0"
+    flow-estree "0.335.0"
+    flow-parser "0.335.0"
     string-width "4.2.3"
 
 for-each@^0.3.3:
