@@ -195,6 +195,8 @@ public class ReactTextView extends AppCompatTextView implements ReactCompoundVie
     if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
       setFocusable(View.FOCUSABLE_AUTO);
     }
+    // TextView's constructor makes the view important for accessibility
+    setImportantForAccessibility(View.IMPORTANT_FOR_ACCESSIBILITY_YES);
 
     setHyphenationFrequency(Layout.HYPHENATION_FREQUENCY_NONE);
     updateView(); // call after changing ellipsizeLocation in particular
