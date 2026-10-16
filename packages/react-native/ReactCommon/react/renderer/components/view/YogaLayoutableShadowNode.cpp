@@ -357,8 +357,17 @@ void YogaLayoutableShadowNode::updateYogaChildren() {
   bool isClean = !YGNodeIsDirty(&yogaNode_) &&
       getChildren().size() == YGNodeGetChildCount(&yogaNode_);
 
-  auto oldYogaChildren =
-      isClean ? yogaNode_.getChildren() : std::vector<yoga::Node*>{};
+  // A `display: none` node is laid out with zero size whatever its children
+  // are, so its children can't make its layout stale. Yoga never cleans the
+  // descendants of a hidden node either, so a child that was created or
+  // changed while the node was hidden stays dirty until the node is shown.
+  // Comparing children here would dirty the hidden node, and every ancestor
+  // up to the root, on every commit that clones it. Showing the node again
+  // changes its style, which dirties it in `updateYogaProps`.
+  bool isHidden = yogaNode_.style().display() == yoga::Display::None;
+
+  auto oldYogaChildren = isClean && !isHidden ? yogaNode_.getChildren()
+                                              : std::vector<yoga::Node*>{};
 
   yogaNode_.setChildren({});
   yogaLayoutableChildren_.clear();
@@ -371,7 +380,7 @@ void YogaLayoutableShadowNode::updateYogaChildren() {
       appendYogaChild(yogaLayoutableChild);
       adoptYogaChild(i);
 
-      if (isClean) {
+      if (isClean && !isHidden) {
         auto yogaChildIndex = yogaLayoutableChildren_.size() - 1;
         auto& oldYogaChildNode = *oldYogaChildren.at(yogaChildIndex);
         auto& newYogaChildNode =
