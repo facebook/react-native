@@ -8,6 +8,7 @@
 #include "ClipPath.h"
 
 #include <folly/dynamic.h>
+#include <glog/logging.h>
 #include <sstream>
 #include <string>
 #include <vector>
@@ -31,6 +32,10 @@ std::string geometryBoxToString(facebook::react::GeometryBox box) {
       return "stroke-box";
     case facebook::react::GeometryBox::ViewBox:
       return "view-box";
+    default:
+      LOG(ERROR) << "Unexpected GeometryBox value: "
+                 << static_cast<int>(box);
+      return "";
   }
 }
 } // namespace

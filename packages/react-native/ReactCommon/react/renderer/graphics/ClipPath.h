@@ -12,6 +12,9 @@
 #include <react/renderer/graphics/ValueUnit.h>
 #include <optional>
 #include <sstream>
+#include <utility>
+#include <variant>
+#include <vector>
 
 #ifdef RN_SERIALIZABLE_STATE
 #include <folly/dynamic.h>

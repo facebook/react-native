@@ -45,6 +45,10 @@ GeometryBox convertCSSGeometryBox(CSSGeometryBox cssBox) {
       return GeometryBox::StrokeBox;
     case CSSGeometryBox::ViewBox:
       return GeometryBox::ViewBox;
+    default:
+      LOG(ERROR) << "Unexpected CSSGeometryBox value: "
+                 << static_cast<int>(cssBox);
+      return GeometryBox::BorderBox;
   }
 }
 
