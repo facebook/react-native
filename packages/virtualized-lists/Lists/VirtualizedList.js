@@ -1457,6 +1457,10 @@ class VirtualizedList extends StateSafePureComponent<
   > = null;
   _parentRegistration: ?ParentRegistration = null;
   _offsetFromParentVirtualizedList: number = 0;
+  // Ids of state updates that React hasn't processed yet. While any are pending,
+  // `this.state` is behind the state the next updater will see.
+  _pendingStateUpdates: Set<number> = new Set();
+  _nextStateUpdateId: number = 0;
   _pendingViewabilityUpdate: boolean = false;
   _prevParentOffset: number = 0;
   _scrollMetrics: {
@@ -2002,7 +2006,12 @@ class VirtualizedList extends StateSafePureComponent<
       zoomScale,
     };
     if (this.state.pendingScrollUpdateCount > 0) {
-      this.setState<'pendingScrollUpdateCount'>({pendingScrollUpdateCount: 0});
+      const updateId = this._nextStateUpdateId++;
+      this._pendingStateUpdates.add(updateId);
+      this.setState<'pendingScrollUpdateCount'>(() => {
+        this._pendingStateUpdates.delete(updateId);
+        return {pendingScrollUpdateCount: 0};
+      });
     }
     this._updateViewableItems(this.props, this.state.cellsAroundViewport);
     this._notifyCrossOrientationChildren(false, 0);
@@ -2161,7 +2170,45 @@ class VirtualizedList extends StateSafePureComponent<
     this._updateViewableItems(this.props, this.state.cellsAroundViewport);
     this._notifyCrossOrientationChildren();
 
+    // This runs on every scroll event, and most of the time the window of
+    // rendered cells doesn't change. The updater below would then return null,
+    // but React would still re-render the list to find that out, so do the same
+    // comparison here first. It only gives the same answer while no other
+    // update is pending (`this.state` would be behind) and once the list has
+    // been laid out (before that, layout callbacks arrive back to back and the
+    // updater would see metrics from after this call).
+    if (
+      this._pendingStateUpdates.size === 0 &&
+      this._scrollMetrics.visibleLength > 0 &&
+      this._listMetrics.getContentLength() > 0
+    ) {
+      const {cellsAroundViewport, pendingScrollUpdateCount, renderMask} =
+        this.state;
+      const nextCellsAroundViewport = this._adjustCellsAroundViewport(
+        this.props,
+        cellsAroundViewport,
+        pendingScrollUpdateCount,
+      );
+      if (
+        nextCellsAroundViewport.first === cellsAroundViewport.first &&
+        nextCellsAroundViewport.last === cellsAroundViewport.last &&
+        VirtualizedList._createRenderMask(
+          this.props,
+          nextCellsAroundViewport,
+          this._getNonViewportRenderRegions(this.props),
+        ).equals(renderMask)
+      ) {
+        // No update means no componentDidUpdate to reset this, which would
+        // push the next hiPri update onto the batching timer.
+        this._hiPriInProgress = false;
+        return;
+      }
+    }
+
+    const updateId = this._nextStateUpdateId++;
+    this._pendingStateUpdates.add(updateId);
     this.setState<'cellsAroundViewport' | 'renderMask'>((state, props) => {
+      this._pendingStateUpdates.delete(updateId);
       const cellsAroundViewport = this._adjustCellsAroundViewport(
         props,
         state.cellsAroundViewport,
