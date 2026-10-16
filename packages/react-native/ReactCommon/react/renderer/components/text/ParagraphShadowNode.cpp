@@ -64,11 +64,17 @@ ParagraphShadowNode::ParagraphShadowNode(
   // attributed string and the layouts measured for it instead of rebuilding
   // and re-measuring them. `getContent` drops both if the layout context they
   // were built for no longer matches.
+  //
+  // Content with attachments is not kept: they point at the children the
+  // content was built from, and `layout` replaces those children with laid-out
+  // clones, so in a later revision the pointers would outlive the nodes.
   if (fragment.props == nullptr && fragment.children == nullptr) {
     const auto& source =
         static_cast<const ParagraphShadowNode&>(sourceShadowNode);
-    content_ = source.content_;
-    measuredLayouts_ = source.measuredLayouts_;
+    if (source.content_.has_value() && source.content_->attachments.empty()) {
+      content_ = source.content_;
+      measuredLayouts_ = source.measuredLayouts_;
+    }
   }
 }
 
