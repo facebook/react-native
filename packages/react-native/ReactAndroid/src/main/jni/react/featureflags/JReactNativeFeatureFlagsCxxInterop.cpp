@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<b2c6084f34caae5b1b575578993554c8>>
+ * @generated SignedSource<<03ba14cc503dbb18da5a6715a09db553>>
  */
 
 /**
@@ -579,6 +579,12 @@ class ReactNativeFeatureFlagsJavaProvider
     return method(javaProvider_);
   }
 
+  bool useWindowDensityForDisplayMetricsAndroid() override {
+    static const auto method =
+        getReactNativeFeatureFlagsProviderJavaClass()->getMethod<jboolean()>("useWindowDensityForDisplayMetricsAndroid");
+    return method(javaProvider_);
+  }
+
   double viewCullingOutsetRatio() override {
     static const auto method =
         getReactNativeFeatureFlagsProviderJavaClass()->getMethod<jdouble()>("viewCullingOutsetRatio");
@@ -1057,6 +1063,11 @@ bool JReactNativeFeatureFlagsCxxInterop::useTurboModuleInterop(
   return ReactNativeFeatureFlags::useTurboModuleInterop();
 }
 
+bool JReactNativeFeatureFlagsCxxInterop::useWindowDensityForDisplayMetricsAndroid(
+    facebook::jni::alias_ref<JReactNativeFeatureFlagsCxxInterop> /*unused*/) {
+  return ReactNativeFeatureFlags::useWindowDensityForDisplayMetricsAndroid();
+}
+
 double JReactNativeFeatureFlagsCxxInterop::viewCullingOutsetRatio(
     facebook::jni::alias_ref<JReactNativeFeatureFlagsCxxInterop> /*unused*/) {
   return ReactNativeFeatureFlags::viewCullingOutsetRatio();
@@ -1378,6 +1389,9 @@ void JReactNativeFeatureFlagsCxxInterop::registerNatives() {
       makeNativeMethod(
         "useTurboModuleInterop",
         JReactNativeFeatureFlagsCxxInterop::useTurboModuleInterop),
+      makeNativeMethod(
+        "useWindowDensityForDisplayMetricsAndroid",
+        JReactNativeFeatureFlagsCxxInterop::useWindowDensityForDisplayMetricsAndroid),
       makeNativeMethod(
         "viewCullingOutsetRatio",
         JReactNativeFeatureFlagsCxxInterop::viewCullingOutsetRatio),

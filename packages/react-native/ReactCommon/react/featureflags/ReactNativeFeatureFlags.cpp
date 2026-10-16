@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<ee9fe969fb38740df6eb19831f35b941>>
+ * @generated SignedSource<<a83e4c29269bb09d21bfaa24867951d9>>
  */
 
 /**
@@ -384,6 +384,10 @@ bool ReactNativeFeatureFlags::useTraitHiddenOnAndroid() {
 
 bool ReactNativeFeatureFlags::useTurboModuleInterop() {
   return getAccessor().useTurboModuleInterop();
+}
+
+bool ReactNativeFeatureFlags::useWindowDensityForDisplayMetricsAndroid() {
+  return getAccessor().useWindowDensityForDisplayMetricsAndroid();
 }
 
 double ReactNativeFeatureFlags::viewCullingOutsetRatio() {

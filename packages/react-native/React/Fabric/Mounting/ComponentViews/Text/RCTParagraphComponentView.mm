@@ -157,6 +157,14 @@ using namespace facebook::react;
     const auto &newData = std::static_pointer_cast<const ParagraphShadowNode::ConcreteState>(state)->getData();
     const auto &oldData = std::static_pointer_cast<const ParagraphShadowNode::ConcreteState>(oldState)->getData();
     if (!newData.attributedString.isContentEqual(oldData.attributedString)) {
+      // Changes inside a hidden subtree must not interrupt VoiceOver on visible content.
+      UIView *view = self;
+      while (view != nil) {
+        if (view.accessibilityElementsHidden) {
+          return;
+        }
+        view = view.superview;
+      }
       UIAccessibilityPostNotification(UIAccessibilityLayoutChangedNotification, nil);
     }
   }

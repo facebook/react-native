@@ -1016,6 +1016,17 @@ const definitions: FeatureFlagDefinitions = {
       },
       ossReleaseStage: 'canary',
     },
+    useWindowDensityForDisplayMetricsAndroid: {
+      defaultValue: false,
+      metadata: {
+        dateAdded: '2026-10-11',
+        description:
+          'Keeps the window density in the screen display metrics instead of the physical display density, so text is measured at the density the window renders at.',
+        expectedReleaseValue: true,
+        purpose: 'experimentation',
+      },
+      ossReleaseStage: 'none',
+    },
     viewCullingOutsetRatio: {
       defaultValue: 0,
       metadata: {

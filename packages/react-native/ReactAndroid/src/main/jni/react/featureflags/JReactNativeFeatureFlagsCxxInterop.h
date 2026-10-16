@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<58f971b8506bac3f3e1a6c566d8ab4a0>>
+ * @generated SignedSource<<c9cc75e2b55001d8788c2688714816a9>>
  */
 
 /**
@@ -298,6 +298,9 @@ class JReactNativeFeatureFlagsCxxInterop
     facebook::jni::alias_ref<JReactNativeFeatureFlagsCxxInterop>);
 
   static bool useTurboModuleInterop(
+    facebook::jni::alias_ref<JReactNativeFeatureFlagsCxxInterop>);
+
+  static bool useWindowDensityForDisplayMetricsAndroid(
     facebook::jni::alias_ref<JReactNativeFeatureFlagsCxxInterop>);
 
   static double viewCullingOutsetRatio(

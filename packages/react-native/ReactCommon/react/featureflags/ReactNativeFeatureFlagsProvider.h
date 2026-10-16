@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<1ccbbc5f4a5e6e19068b68828db6f1a6>>
+ * @generated SignedSource<<db86aa9c903640cf327b898ba0cd6916>>
  */
 
 /**
@@ -117,6 +117,7 @@ class ReactNativeFeatureFlagsProvider {
   virtual bool useSharedAnimatedBackend() = 0;
   virtual bool useTraitHiddenOnAndroid() = 0;
   virtual bool useTurboModuleInterop() = 0;
+  virtual bool useWindowDensityForDisplayMetricsAndroid() = 0;
   virtual double viewCullingOutsetRatio() = 0;
   virtual bool viewTransitionEnabled() = 0;
   virtual bool viewTransitionUseHardwareBitmapAndroid() = 0;

@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<fa74043c9a578c4f071d1757933fbcba>>
+ * @generated SignedSource<<5cf5ab7e5ed7e28258c511f9e8911861>>
  */
 
 /**
@@ -124,6 +124,7 @@ class ReactNativeFeatureFlagsAccessor {
   bool useSharedAnimatedBackend();
   bool useTraitHiddenOnAndroid();
   bool useTurboModuleInterop();
+  bool useWindowDensityForDisplayMetricsAndroid();
   double viewCullingOutsetRatio();
   bool viewTransitionEnabled();
   bool viewTransitionUseHardwareBitmapAndroid();
@@ -139,7 +140,7 @@ class ReactNativeFeatureFlagsAccessor {
   std::unique_ptr<ReactNativeFeatureFlagsProvider> currentProvider_;
   bool wasOverridden_;
 
-  std::array<std::atomic<const char*>, 94> accessedFeatureFlags_;
+  std::array<std::atomic<const char*>, 95> accessedFeatureFlags_;
 
   std::atomic<std::optional<bool>> commonTestFlag_;
   std::atomic<std::optional<bool>> cdpInteractionMetricsEnabled_;
@@ -231,6 +232,7 @@ class ReactNativeFeatureFlagsAccessor {
   std::atomic<std::optional<bool>> useSharedAnimatedBackend_;
   std::atomic<std::optional<bool>> useTraitHiddenOnAndroid_;
   std::atomic<std::optional<bool>> useTurboModuleInterop_;
+  std::atomic<std::optional<bool>> useWindowDensityForDisplayMetricsAndroid_;
   std::atomic<std::optional<double>> viewCullingOutsetRatio_;
   std::atomic<std::optional<bool>> viewTransitionEnabled_;
   std::atomic<std::optional<bool>> viewTransitionUseHardwareBitmapAndroid_;

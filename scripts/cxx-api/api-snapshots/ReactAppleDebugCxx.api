@@ -3238,7 +3238,6 @@ template <typename T>
 concept facebook::react::RawPropsFilterable = requires(facebook::react::RawProps& rawProps) {
   { T::filterRawProps(rawProps) } -> std::same_as<void>;
 };
-NSArray<NSString*>* facebook::react::extractKeysFromFollyDynamic(const folly::dynamic& dyn);
 NSError* facebook::react::tryAndReturnError(const std::function<void()>& func);
 NSString* facebook::react::deriveSourceURL(NSURL* url);
 YGDirection facebook::react::yogaDirectionFromLayoutDirection(facebook::react::LayoutDirection direction);
@@ -3277,8 +3276,6 @@ float facebook::react::blueFromHostPlatformColor(facebook::react::Color color);
 float facebook::react::greenFromHostPlatformColor(facebook::react::Color color);
 float facebook::react::redFromHostPlatformColor(facebook::react::Color color);
 float facebook::react::yogaFloatFromFloat(facebook::react::Float value);
-folly::dynamic facebook::react::convertIdToFollyDynamic(id json);
-id facebook::react::convertFollyDynamicToId(const folly::dynamic& dyn);
 int facebook::react::toInt(const facebook::react::DisplayType& displayType);
 int facebook::react::toInt(const facebook::react::LayoutDirection& layoutDirection);
 std::optional<facebook::react::BlendMode> facebook::react::blendModeFromString(std::string_view blendModeName);
@@ -4320,14 +4317,6 @@ class facebook::react::NativeVibrationSpecJSI : public facebook::react::ObjCTurb
   public NativeVibrationSpecJSI(const facebook::react::ObjCTurboModule::InitParams& params);
 }
 
-class facebook::react::NativeViewTransition : public facebook::react::NativeViewTransitionCxxSpec<facebook::react::NativeViewTransition> {
-  public NativeViewTransition(std::shared_ptr<facebook::react::CallInvoker> jsInvoker);
-  public facebook::jsi::Value findPseudoElementShadowNodeByTag(facebook::jsi::Runtime& rt, double reactTag);
-  public std::optional<facebook::jsi::Object> getViewTransitionInstance(facebook::jsi::Runtime& rt, const std::string& name, const std::string& pseudo);
-  public void transitionAnimationFinished(facebook::jsi::Runtime& rt, double animationId);
-  public void waitForTransitionAnimation(facebook::jsi::Runtime& rt, double animationId);
-}
-
 class facebook::react::NativeWebSocketModuleSpecJSI : public facebook::react::ObjCTurboModule {
   public NativeWebSocketModuleSpecJSI(const facebook::react::ObjCTurboModule::InitParams& params);
 }
@@ -4532,6 +4521,7 @@ class facebook::react::ShadowNode : public facebook::react::Sealable, public fac
 
 class facebook::react::ShadowNodeFamily : public facebook::jsi::NativeState {
   public ShadowNodeFamily(const facebook::react::ShadowNodeFamilyFragment& fragment, facebook::react::SharedEventEmitter eventEmitter, facebook::react::EventDispatcher::Weak eventDispatcher, const facebook::react::ComponentDescriptor& componentDescriptor);
+  public bool hasBeenMounted() const;
   public const facebook::react::ComponentDescriptor& getComponentDescriptor() const;
   public facebook::jsi::Value getInstanceHandle(facebook::jsi::Runtime& runtime) const;
   public facebook::react::ComponentHandle getComponentHandle() const;
@@ -4547,6 +4537,7 @@ class facebook::react::ShadowNodeFamily : public facebook::jsi::NativeState {
   public using Shared = std::shared_ptr<facebook::react::ShadowNodeFamily>;
   public using Weak = std::weak_ptr<facebook::react::ShadowNodeFamily>;
   public void dispatchRawState(facebook::react::StateUpdate&& stateUpdate, facebook::react::EventQueue::UpdateMode updateMode);
+  public void onFamilyDestroyed(std::function<void(const facebook::react::ShadowNodeFamily& family)> callback);
   public void onUnmountedFamilyDestroyed(std::function<void(const facebook::react::ShadowNodeFamily& family)> callback);
   public void setInstanceHandle(facebook::react::InstanceHandle::Shared& instanceHandle);
   public void setMostRecentState(const std::shared_ptr<const facebook::react::State>& state);

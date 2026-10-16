@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<c40dee44e904ef34f6efdd116a8e8910>>
+ * @generated SignedSource<<798a8c3d63d9f5db2d3e967ea05ce0bb>>
  */
 
 /**
@@ -490,6 +490,11 @@ class ReactNativeFeatureFlags {
    * In Bridgeless mode, should legacy NativeModules use the TurboModule system?
    */
   RN_EXPORT static bool useTurboModuleInterop();
+
+  /**
+   * Keeps the window density in the screen display metrics instead of the physical display density, so text is measured at the density the window renders at.
+   */
+  RN_EXPORT static bool useWindowDensityForDisplayMetricsAndroid();
 
   /**
    * Outset the culling context frame with the provided ratio. The culling context frame size will be outset by width * ratio on the left and right, and height * ratio on the top and bottom.

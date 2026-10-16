@@ -1799,14 +1799,6 @@ class facebook::react::NativeModulePerfLogger {
   public virtual ~NativeModulePerfLogger() = default;
 }
 
-class facebook::react::NativeViewTransition : public NativeViewTransitionCxxSpec<facebook::react::NativeViewTransition> {
-  public NativeViewTransition(std::shared_ptr<facebook::react::CallInvoker> jsInvoker);
-  public facebook::jsi::Value findPseudoElementShadowNodeByTag(facebook::jsi::Runtime& rt, double reactTag);
-  public std::optional<facebook::jsi::Object> getViewTransitionInstance(facebook::jsi::Runtime& rt, const std::string& name, const std::string& pseudo);
-  public void transitionAnimationFinished(facebook::jsi::Runtime& rt, double animationId);
-  public void waitForTransitionAnimation(facebook::jsi::Runtime& rt, double animationId);
-}
-
 class facebook::react::ParagraphAttributes : public facebook::react::DebugStringConvertible {
   public Float minimumFontScale;
   public Float minimumFontSize;
@@ -2251,6 +2243,7 @@ class facebook::react::ShadowNode : public facebook::react::Sealable, public fac
 
 class facebook::react::ShadowNodeFamily : public facebook::jsi::NativeState {
   public ShadowNodeFamily(const facebook::react::ShadowNodeFamilyFragment& fragment, facebook::react::SharedEventEmitter eventEmitter, facebook::react::EventDispatcher::Weak eventDispatcher, const facebook::react::ComponentDescriptor& componentDescriptor);
+  public bool hasBeenMounted() const;
   public const facebook::react::ComponentDescriptor& getComponentDescriptor() const;
   public facebook::jsi::Value getInstanceHandle(facebook::jsi::Runtime& runtime) const;
   public facebook::react::ComponentHandle getComponentHandle() const;
@@ -2266,6 +2259,7 @@ class facebook::react::ShadowNodeFamily : public facebook::jsi::NativeState {
   public using Shared = std::shared_ptr<facebook::react::ShadowNodeFamily>;
   public using Weak = std::weak_ptr<facebook::react::ShadowNodeFamily>;
   public void dispatchRawState(facebook::react::StateUpdate&& stateUpdate, facebook::react::EventQueue::UpdateMode updateMode);
+  public void onFamilyDestroyed(std::function<void(const facebook::react::ShadowNodeFamily& family)> callback);
   public void onUnmountedFamilyDestroyed(std::function<void(const facebook::react::ShadowNodeFamily& family)> callback);
   public void setInstanceHandle(facebook::react::InstanceHandle::Shared& instanceHandle);
   public void setMostRecentState(const std::shared_ptr<const facebook::react::State>& state);
@@ -4624,6 +4618,13 @@ struct facebook::react::ReactNativeVersionType {
   public int32_t Minor;
   public int32_t Patch;
   public std::string_view Prerelease;
+}
+
+struct facebook::react::RecoverableError : public std::exception {
+  public RecoverableError(const std::string& what_);
+  public virtual const char* what() const noexcept override;
+  template <typename E>
+  public static void runRethrowingAsRecoverable(std::function<void()> act);
 }
 
 struct facebook::react::Rect {

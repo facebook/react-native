@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<fb5318d7fd0a01d90aeeb312312f9364>>
+ * @generated SignedSource<<ed2231f3d12509b34d7bcc78fdc64bc0>>
  */
 
 /**
@@ -855,6 +855,15 @@ class ReactNativeFeatureFlagsDynamicProvider : public ReactNativeFeatureFlagsDef
     }
 
     return ReactNativeFeatureFlagsDefaults::useTurboModuleInterop();
+  }
+
+  bool useWindowDensityForDisplayMetricsAndroid() override {
+    auto value = values_["useWindowDensityForDisplayMetricsAndroid"];
+    if (!value.isNull()) {
+      return value.getBool();
+    }
+
+    return ReactNativeFeatureFlagsDefaults::useWindowDensityForDisplayMetricsAndroid();
   }
 
   double viewCullingOutsetRatio() override {
