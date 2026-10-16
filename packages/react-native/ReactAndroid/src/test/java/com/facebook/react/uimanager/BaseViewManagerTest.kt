@@ -9,6 +9,7 @@
 
 package com.facebook.react.uimanager
 
+import android.view.View
 import android.view.View.OnFocusChangeListener
 import android.view.accessibility.AccessibilityNodeInfo
 import androidx.core.view.ViewCompat
@@ -21,6 +22,10 @@ import com.facebook.react.internal.featureflags.ReactNativeFeatureFlags
 import com.facebook.react.internal.featureflags.ReactNativeFeatureFlagsDefaults
 import com.facebook.react.internal.featureflags.ReactNativeFeatureFlagsForTests
 import com.facebook.react.touch.JSResponderHandler
+import com.facebook.react.views.scroll.ReactHorizontalScrollViewManager
+import com.facebook.react.views.scroll.ReactNestedScrollViewManager
+import com.facebook.react.views.scroll.ReactScrollViewAccessibilityDelegate
+import com.facebook.react.views.scroll.ReactScrollViewManager
 import com.facebook.react.views.view.ReactViewGroup
 import com.facebook.react.views.view.ReactViewManager
 import com.facebook.testutils.shadows.ShadowArguments
@@ -238,11 +243,27 @@ class BaseViewManagerTest {
   }
 
   @Test
-  fun testRecycledViewWithoutAccessibilityPropsHasNoAccessibilityDelegate() {
-    val recycled = recycleView(JavaOnlyMap.of(ViewProps.ROLE, "button"))
+  fun testRecycledScrollViewsKeepTheAccessibilityDelegateTheirConstructorsInstall() {
+    ReactNativeFeatureFlags.dangerouslyReset()
+    ReactNativeFeatureFlags.override(
+        object : ReactNativeFeatureFlagsDefaults() {
+          override fun enableViewRecycling(): Boolean = true
 
-    Assertions.assertThat(ViewCompat.hasAccessibilityDelegate(recycled))
-        .isEqualTo(ViewCompat.hasAccessibilityDelegate(view))
+          override fun enableViewRecyclingForScrollView(): Boolean = true
+        },
+    )
+
+    val recycledScrollViews =
+        listOf(
+            recycleView(ReactScrollViewManager(), JavaOnlyMap()),
+            recycleView(ReactHorizontalScrollViewManager(), JavaOnlyMap()),
+            recycleView(ReactNestedScrollViewManager(), JavaOnlyMap()),
+        )
+
+    for (recycled in recycledScrollViews) {
+      Assertions.assertThat(ViewCompat.getAccessibilityDelegate(recycled))
+          .isInstanceOf(ReactScrollViewAccessibilityDelegate::class.java)
+    }
   }
 
   @Test
@@ -303,17 +324,25 @@ class BaseViewManagerTest {
   private fun recycleView(
       previousProps: JavaOnlyMap,
       beforeDrop: (ReactViewGroup) -> Unit = {},
-  ): ReactViewGroup {
-    val previous = createView(previousProps)
+  ): ReactViewGroup = recycleView(viewManager, previousProps, beforeDrop)
+
+  private fun <T : View> recycleView(
+      manager: ViewManager<T, *>,
+      previousProps: JavaOnlyMap,
+      beforeDrop: (T) -> Unit = {},
+  ): T {
+    val previous = createView(manager, previousProps)
     beforeDrop(previous)
-    viewManager.onDropViewInstance(previous)
-    val recycled = createView(JavaOnlyMap())
+    manager.onDropViewInstance(previous)
+    val recycled = createView(manager, JavaOnlyMap())
     Assertions.assertThat(recycled).isSameAs(previous)
     return recycled
   }
 
-  private fun createView(props: JavaOnlyMap): ReactViewGroup =
-      viewManager.createView(
+  private fun createView(props: JavaOnlyMap): ReactViewGroup = createView(viewManager, props)
+
+  private fun <T : View> createView(manager: ViewManager<T, *>, props: JavaOnlyMap): T =
+      manager.createView(
           1,
           themedReactContext,
           ReactStylesDiffMap(props),
