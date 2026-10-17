@@ -43,12 +43,14 @@ import {
   horizontalOrDefault,
   initialNumToRenderOrDefault,
   maxToRenderPerBatchOrDefault,
+  numColumnsOrDefault,
   onEndReachedThresholdOrDefault,
   onStartReachedThresholdOrDefault,
   windowSizeOrDefault,
 } from './VirtualizedListProps';
 import {
   computeWindowedRenderLimits,
+  expandCellsToWholeRows,
   keyExtractor as defaultKeyExtractor,
 } from './VirtualizeUtils';
 import invariant from 'invariant';
@@ -596,6 +598,27 @@ class VirtualizedList extends StateSafePureComponent<
       'VirtualizedList: The windowSize prop must be present and set to a value greater than 0.',
     );
 
+    const numColumns = numColumnsOrDefault(props.experimental_numColumns);
+    invariant(
+      Number.isInteger(numColumns) && numColumns >= 1,
+      'VirtualizedList: experimental_numColumns must be a positive integer.',
+    );
+    if (numColumns > 1) {
+      invariant(
+        !horizontalOrDefault(props.horizontal),
+        'VirtualizedList: experimental_numColumns does not support horizontal lists.',
+      );
+      invariant(
+        props.ItemSeparatorComponent == null,
+        'VirtualizedList: experimental_numColumns does not support ItemSeparatorComponent.',
+      );
+      invariant(
+        props.stickyHeaderIndices == null ||
+          props.stickyHeaderIndices.length === 0,
+        'VirtualizedList: experimental_numColumns does not support stickyHeaderIndices.',
+      );
+    }
+
     const itemCount = getItemCount(data);
 
     if (
@@ -673,18 +696,22 @@ class VirtualizedList extends StateSafePureComponent<
     );
 
     const renderMask = new CellRenderMask(itemCount);
+    const numColumns = numColumnsOrDefault(props.experimental_numColumns);
+    const addCellsInWholeRows = (cells: {first: number, last: number}) => {
+      renderMask.addCells(expandCellsToWholeRows(cells, numColumns, itemCount));
+    };
 
     if (itemCount > 0) {
       const allRegions = [cellsAroundViewport, ...(additionalRegions ?? [])];
       for (const region of allRegions) {
-        renderMask.addCells(region);
+        addCellsInWholeRows(region);
       }
 
       // The initially rendered cells are retained as part of the
       // "scroll-to-top" optimization
       if (props.initialScrollIndex == null || props.initialScrollIndex <= 0) {
         const initialRegion = VirtualizedList._initialRenderRegion(props);
-        renderMask.addCells(initialRegion);
+        addCellsInWholeRows(initialRegion);
       }
 
       // The layout coordinates of sticky headers may be off-screen while the
@@ -950,6 +977,7 @@ class VirtualizedList extends StateSafePureComponent<
       renderItem,
     } = this.props;
     const stickyOffset = ListHeaderComponent ? 1 : 0;
+    const numColumns = numColumnsOrDefault(this.props.experimental_numColumns);
     const end = getItemCount(data) - 1;
     let prevCellKey;
     last = Math.min(end, last);
@@ -977,6 +1005,7 @@ class VirtualizedList extends StateSafePureComponent<
           inversionStyle={inversionStyle}
           item={item}
           key={key}
+          numColumns={numColumns}
           prevCellKey={prevCellKey}
           onUpdateSeparators={this._onUpdateSeparators}
           onCellFocusCapture={this._onCellFocusCapture}
@@ -1138,6 +1167,9 @@ class VirtualizedList extends StateSafePureComponent<
         ? styles.horizontallyInverted
         : styles.verticallyInverted
       : null;
+    const isGridLayout =
+      numColumnsOrDefault(this.props.experimental_numColumns) > 1;
+    const fullWidthStyle = isGridLayout ? styles.gridFullWidth : null;
     const cells: Array<any | React.Node> = [];
     // Avoid allocating a Set on every render when no sticky headers are
     // configured (the common case).
@@ -1169,8 +1201,11 @@ class VirtualizedList extends StateSafePureComponent<
             collapsable={false}
             onLayout={this._onLayoutHeader}
             style={StyleSheet.compose(
-              inversionStyle,
-              this.props.ListHeaderComponentStyle,
+              fullWidthStyle,
+              StyleSheet.compose(
+                inversionStyle,
+                this.props.ListHeaderComponentStyle,
+              ),
             )}>
             {
               // $FlowFixMe[incompatible-type] - Typing ReactNativeComponent revealed errors
@@ -1197,7 +1232,10 @@ class VirtualizedList extends StateSafePureComponent<
         <VirtualizedListCellContextProvider
           cellKey={this._getCellKey() + '-empty'}
           key="$empty">
-          {this._renderEmptyComponent(element, inversionStyle)}
+          {this._renderEmptyComponent(
+            element,
+            StyleSheet.compose(fullWidthStyle, inversionStyle),
+          )}
         </VirtualizedListCellContextProvider>,
       );
     }
@@ -1247,7 +1285,9 @@ class VirtualizedList extends StateSafePureComponent<
             <View
               key={`$spacer-${section.first}`}
               // $FlowFixMe[incompatible-type]
-              style={{[spacerKey]: spacerSize}}
+              style={StyleSheet.compose(fullWidthStyle, {
+                [spacerKey]: spacerSize,
+              })}
             />,
           );
         } else {
@@ -1288,8 +1328,11 @@ class VirtualizedList extends StateSafePureComponent<
           <View
             onLayout={this._onLayoutFooter}
             style={StyleSheet.compose(
-              inversionStyle,
-              this.props.ListFooterComponentStyle,
+              fullWidthStyle,
+              StyleSheet.compose(
+                inversionStyle,
+                this.props.ListFooterComponentStyle,
+              ),
             )}>
             {
               // $FlowFixMe[incompatible-type] - Typing ReactNativeComponent revealed errors
@@ -1303,6 +1346,18 @@ class VirtualizedList extends StateSafePureComponent<
     // 4. Render the ScrollView
     const scrollProps = {
       ...this.props,
+      ...(isGridLayout
+        ? {
+            contentContainerStyle: StyleSheet.compose(
+              this.props.contentContainerStyle,
+              // Android inverts lists on both axes, so reverse each row to
+              // keep items in reading order once the list is flipped back.
+              this.props.inverted && Platform.OS === 'android'
+                ? styles.gridContentContainerAndroidInverted
+                : styles.gridContentContainer,
+            ),
+          }
+        : null),
       onContentSizeChange: this._onContentSizeChange,
       onLayout: this._onLayout,
       onScroll: this._onScroll,
@@ -2301,6 +2356,17 @@ class VirtualizedList extends StateSafePureComponent<
 }
 
 const styles = StyleSheet.create({
+  gridContentContainer: {
+    flexDirection: 'row',
+    flexWrap: 'wrap',
+  },
+  gridContentContainerAndroidInverted: {
+    flexDirection: 'row-reverse',
+    flexWrap: 'wrap',
+  },
+  gridFullWidth: {
+    width: '100%',
+  },
   verticallyInverted:
     Platform.OS === 'android'
       ? {transform: [{scale: -1}]}

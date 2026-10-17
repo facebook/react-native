@@ -34,6 +34,7 @@ export type Props<ItemT> = {
   index: number,
   inversionStyle: StyleProp<ViewStyle>,
   item: ItemT,
+  numColumns?: ?number,
   onCellLayout?: (
     event: LayoutChangeEvent,
     cellKey: string,
@@ -183,6 +184,7 @@ export default class CellRenderer<ItemT> extends React.PureComponent<
       item,
       index,
       inversionStyle,
+      numColumns,
       onCellLayout,
       renderItem,
     } = this.props;
@@ -204,13 +206,16 @@ export default class CellRenderer<ItemT> extends React.PureComponent<
           // $FlowFixMe[not-a-component]
           <ItemSeparatorComponent {...this.state.separatorProps} />
         );
-    const cellStyle = inversionStyle
-      ? horizontal
-        ? [styles.rowReverse, inversionStyle]
-        : [styles.columnReverse, inversionStyle]
-      : horizontal
-        ? [styles.row, inversionStyle]
-        : inversionStyle;
+    const cellStyle =
+      numColumns != null && numColumns > 1
+        ? [getGridCellStyle(numColumns), inversionStyle]
+        : inversionStyle
+          ? horizontal
+            ? [styles.rowReverse, inversionStyle]
+            : [styles.columnReverse, inversionStyle]
+          : horizontal
+            ? [styles.row, inversionStyle]
+            : inversionStyle;
     const result = !CellRendererComponent ? (
       <View
         style={cellStyle}
@@ -238,6 +243,22 @@ export default class CellRenderer<ItemT> extends React.PureComponent<
       </VirtualizedListCellContextProvider>
     );
   }
+}
+
+const gridCellStyles: Map<number, ViewStyle> = new Map();
+
+// Cells use a row direction so that an item with `flex: 1` fills its column,
+// as it does inside a row of a FlatList with `numColumns`.
+function getGridCellStyle(numColumns: number): ViewStyle {
+  let gridCellStyle = gridCellStyles.get(numColumns);
+  if (gridCellStyle == null) {
+    // Rounded down so that a full row of cells never adds up to more than
+    // 100% and wraps early because of floating point error.
+    const widthPercent = Math.floor((100 / numColumns) * 10000) / 10000;
+    gridCellStyle = {flexDirection: 'row', width: `${widthPercent}%`};
+    gridCellStyles.set(numColumns, gridCellStyle);
+  }
+  return gridCellStyle;
 }
 
 const styles = StyleSheet.create({
