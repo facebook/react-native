@@ -11,7 +11,7 @@
 import VirtualizedList from '../VirtualizedList';
 import {format} from 'node:util';
 import * as React from 'react';
-import {createElement, createRef} from 'react';
+import {Activity, createElement, createRef} from 'react';
 import {act, create} from 'react-test-renderer';
 
 jest.useFakeTimers();
@@ -3046,6 +3046,47 @@ it('handles rapid prepends with coalesced scroll event (regression for #53542)',
   expect(
     component.getInstance().state.cellsAroundViewport.first,
   ).toBeGreaterThanOrEqual(0);
+});
+
+it('keeps rendering batches after being hidden and shown again', async () => {
+  const items = generateItems(20);
+  const ITEM_HEIGHT = 10;
+  const listRef = createRef();
+  const props = {
+    ...baseItemProps(items),
+    ...fixedHeightItemLayoutProps(ITEM_HEIGHT),
+  };
+
+  const renderList = mode => (
+    <Activity mode={mode}>
+      <VirtualizedList ref={listRef} initialNumToRender={5} {...props} />
+    </Activity>
+  );
+
+  let component;
+  await act(() => {
+    component = create(renderList('visible'));
+  });
+  const list = listRef.current;
+
+  // Schedules a batch that is still pending when the list gets hidden.
+  await act(() => {
+    list._onLayout({nativeEvent: {layout: {width: 10, height: 30}}});
+  });
+
+  await act(() => {
+    component.update(renderList('hidden'));
+  });
+  await act(() => {
+    component.update(renderList('visible'));
+  });
+
+  await act(() => {
+    list._onContentSizeChange(10, 200);
+    performAllBatches();
+  });
+
+  expect(list.state.cellsAroundViewport.last).toBeGreaterThan(4);
 });
 
 function generateItems(count, startKey = 0) {
