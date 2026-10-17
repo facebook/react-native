@@ -8,12 +8,13 @@
 package com.facebook.react.fabric
 
 import com.facebook.jni.HybridClassBase
+import com.facebook.react.bridge.NativeMap
 import com.facebook.soloader.SoLoader
 
 /**
  * JNI test helper that wraps a real C++ [FabricMountingManager] to exercise native code paths
- * around preallocateShadowView, destroyUnmountedShadowNode, and the allocatedViewRegistry_
- * lifecycle.
+ * around the preallocation queue, executeMount, destroyUnmountedShadowNode, and the
+ * allocatedViewRegistry_ lifecycle.
  */
 class FabricMountingManagerTestHelper private constructor(fabricUIManager: FabricUIManager) :
     HybridClassBase() {
@@ -30,9 +31,41 @@ class FabricMountingManagerTestHelper private constructor(fabricUIManager: Fabri
 
   external fun preallocateView(surfaceId: Int, tag: Int)
 
+  external fun queuePreallocation(surfaceId: Int, tag: Int)
+
+  external fun drainPreallocationQueue()
+
+  external fun executeCreateMutation(surfaceId: Int, tag: Int)
+
+  external fun dropFamily(tag: Int)
+
   external fun destroyUnmountedView(surfaceId: Int, tag: Int)
 
+  external fun destroyCommittedView(surfaceId: Int, tag: Int)
+
   external fun isTagAllocated(surfaceId: Int, tag: Int): Boolean
+
+  external fun synchronouslyUpdateAnimatedProps(tags: IntArray, props: Array<NativeMap>)
+
+  external fun startSurfaceWithConstraints(
+      surfaceId: Int,
+      widthDp: Float,
+      heightDp: Float,
+      pointScaleFactor: Float,
+  )
+
+  external fun mountViewWithPadding(surfaceId: Int, tag: Int, padding: Float)
+
+  external fun updateSurfaceConstraints(
+      surfaceId: Int,
+      widthDp: Float,
+      heightDp: Float,
+      pointScaleFactor: Float,
+  )
+
+  external fun overrideFeatureFlags(fixTextLayoutOnPixelDensityChange: Boolean)
+
+  external fun resetFeatureFlags()
 
   companion object {
     init {

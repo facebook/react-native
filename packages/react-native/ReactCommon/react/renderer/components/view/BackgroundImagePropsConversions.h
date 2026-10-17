@@ -7,12 +7,11 @@
 
 #pragma once
 
-#include <react/cxxstableapi/UmbrellaGuard.h>
+#include <react/cxxstableapi/FrameworksGuard.h>
 
+#include <React/Graphics.h>
+#include <React/RendererCore.h>
 #include <react/featureflags/ReactNativePublicFeatureFlags.h>
-#include <react/renderer/core/PropsParserContext.h>
-#include <react/renderer/core/RawProps.h>
-#include <react/renderer/graphics/BackgroundImage.h>
 
 namespace facebook::react {
 

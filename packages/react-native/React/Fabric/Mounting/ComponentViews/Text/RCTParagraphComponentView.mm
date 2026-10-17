@@ -27,7 +27,7 @@ using namespace facebook::react;
 
 @interface RCTTextLayoutManager (RCTParagraphComponentViewPrivate)
 
-- (CGRect)drawingFrameForAttributedString:(facebook::react::AttributedString)attributedString
+- (CGRect)drawingFrameForAttributedString:(const facebook::react::AttributedString &)attributedString
                       paragraphAttributes:(facebook::react::ParagraphAttributes)paragraphAttributes
                                     frame:(CGRect)frame
                            containerFrame:(CGRect *)containerFrame;
@@ -137,7 +137,6 @@ using namespace facebook::react;
 {
   _textView.state = std::static_pointer_cast<const ParagraphShadowNode::ConcreteState>(state);
   [_textView setNeedsDisplay];
-  [self setNeedsLayout];
 
   // If the attributed string has changed, we need to notify the accessibility system that something changed,
   // otherwise it may hold on to stale values (this happens most often when an element is updated async)
@@ -146,6 +145,14 @@ using namespace facebook::react;
     const auto &newData = std::static_pointer_cast<const ParagraphShadowNode::ConcreteState>(state)->getData();
     const auto &oldData = std::static_pointer_cast<const ParagraphShadowNode::ConcreteState>(oldState)->getData();
     if (!newData.attributedString.isContentEqual(oldData.attributedString)) {
+      // Changes inside a hidden subtree must not interrupt VoiceOver on visible content.
+      UIView *view = self;
+      while (view != nil) {
+        if (view.accessibilityElementsHidden) {
+          return;
+        }
+        view = view.superview;
+      }
       UIAccessibilityPostNotification(UIAccessibilityLayoutChangedNotification, nil);
     }
   }
@@ -158,9 +165,15 @@ using namespace facebook::react;
   // re-applying individual sub-values which weren't changed.
   [super updateLayoutMetrics:layoutMetrics oldLayoutMetrics:_layoutMetrics];
   _textView.layoutMetrics = _layoutMetrics;
-  _textLayoutFrame = RCTCGRectFromRect(_layoutMetrics.getContentFrame());
   [_textView setNeedsDisplay];
-  [self setNeedsLayout];
+}
+
+- (void)finalizeUpdates:(RNComponentViewUpdateMask)updateMask
+{
+  [super finalizeUpdates:updateMask];
+  if ((updateMask & (RNComponentViewUpdateMaskState | RNComponentViewUpdateMaskLayoutMetrics)) != 0) {
+    [self _updateTextViewFrame];
+  }
 }
 
 - (void)prepareForRecycle
@@ -170,10 +183,8 @@ using namespace facebook::react;
   _accessibilityProvider = nil;
 }
 
-- (void)layoutSubviews
+- (void)_updateTextViewFrame
 {
-  [super layoutSubviews];
-
   CGRect textViewFrame = self.bounds;
   CGRect drawingFrame = RCTCGRectFromRect(_layoutMetrics.getContentFrame());
 

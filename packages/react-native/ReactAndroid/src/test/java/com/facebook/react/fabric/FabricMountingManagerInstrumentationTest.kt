@@ -7,6 +7,7 @@
 
 package com.facebook.react.fabric
 
+import android.graphics.Rect
 import androidx.test.ext.junit.runners.AndroidJUnit4
 import androidx.test.platform.app.InstrumentationRegistry
 import com.facebook.react.ReactRootView
@@ -14,19 +15,25 @@ import com.facebook.react.bridge.JSExceptionHandler
 import com.facebook.react.bridge.JavaOnlyMap
 import com.facebook.react.bridge.ReactApplicationContext
 import com.facebook.react.bridge.ReadableType
+import com.facebook.react.bridge.WritableNativeArray
 import com.facebook.react.bridge.WritableNativeMap
 import com.facebook.react.fabric.mounting.MountingManager
 import com.facebook.react.fabric.mounting.MountingManager.MountItemExecutor
 import com.facebook.react.fabric.mounting.mountitems.IntBufferBatchMountItem
 import com.facebook.react.internal.featureflags.ReactNativeFeatureFlags
+import com.facebook.react.internal.featureflags.ReactNativeFeatureFlagsCxxInterop
+import com.facebook.react.internal.featureflags.ReactNativeFeatureFlagsDefaults
 import com.facebook.react.internal.featureflags.ReactNativeFeatureFlagsForTests
+import com.facebook.react.uimanager.PixelUtil
 import com.facebook.react.uimanager.ThemedReactContext
 import com.facebook.react.uimanager.ViewManager
 import com.facebook.react.uimanager.ViewManagerRegistry
 import com.facebook.react.uimanager.events.BatchEventDispatchedListener
+import com.facebook.react.views.view.ReactViewGroup
 import com.facebook.react.views.view.ReactViewManager
 import com.facebook.soloader.SoLoader
 import org.assertj.core.api.Assertions.assertThat
+import org.assertj.core.api.Assertions.within
 import org.junit.After
 import org.junit.Before
 import org.junit.BeforeClass
@@ -48,6 +55,7 @@ class FabricMountingManagerInstrumentationTest {
   private lateinit var mountingManager: MountingManager
   private lateinit var themedReactContext: ThemedReactContext
   private val surfaceId = 1
+  private var nativeFeatureFlagsHelper: FabricMountingManagerTestHelper? = null
 
   companion object {
     @BeforeClass
@@ -72,7 +80,9 @@ class FabricMountingManagerInstrumentationTest {
 
   @After
   fun tearDown() {
+    nativeFeatureFlagsHelper?.resetFeatureFlags()
     ReactNativeFeatureFlags.dangerouslyReset()
+    ReactNativeFeatureFlagsCxxInterop.dangerouslyReset()
   }
 
   private fun startSurface() {
@@ -131,7 +141,7 @@ class FabricMountingManagerInstrumentationTest {
 
   /**
    * Simulates the scenario fixed by D98729251 via IntBufferBatchMountItem:
-   * 1. Preallocate a view (simulates C++ preallocateShadowView calling Java preallocateView)
+   * 1. Preallocate a view (simulates the C++ preallocation drain calling Java preallocateView)
    * 2. Delete it (simulates C++ destroyUnmountedShadowNode calling Java destroyUnmountedView)
    * 3. CREATE + INSERT via batch mount item (simulates C++ executeMount after the fix erases from
    *    allocatedViewRegistry_, so CREATE is included in the batch)
@@ -219,15 +229,49 @@ class FabricMountingManagerInstrumentationTest {
 
   // ---- Native code tests via FabricMountingManagerTestHelper ----
 
-  private fun createTestHelper(): FabricMountingManagerTestHelper {
+  private fun createFabricUIManager(
+      viewManagers: List<ViewManager<*, *>> = listOf(ReactViewManager()),
+  ): FabricUIManager {
     val context = InstrumentationRegistry.getInstrumentation().targetContext
     val reactAppContext = mock(ReactApplicationContext::class.java)
     `when`(reactAppContext.applicationContext).thenReturn(context)
     `when`(reactAppContext.exceptionHandler).thenReturn(JSExceptionHandler {})
-    val viewManagerRegistry = ViewManagerRegistry(listOf<ViewManager<*, *>>(ReactViewManager()))
-    val fabricUIManager =
-        FabricUIManager(reactAppContext, viewManagerRegistry, BatchEventDispatchedListener {})
-    return FabricMountingManagerTestHelper.create(fabricUIManager)
+    val viewManagerRegistry = ViewManagerRegistry(viewManagers)
+    return FabricUIManager(reactAppContext, viewManagerRegistry, BatchEventDispatchedListener {})
+  }
+
+  private fun mountPaddedView(
+      fixTextLayoutOnPixelDensityChange: Boolean
+  ): Pair<FabricMountingManagerTestHelper, ReactViewGroup> {
+    val fabricUIManager = createFabricUIManager(listOf(PaddingViewManager()))
+    val helper = FabricMountingManagerTestHelper.create(fabricUIManager)
+    helper.overrideFeatureFlags(fixTextLayoutOnPixelDensityChange)
+    nativeFeatureFlagsHelper = helper
+    fabricUIManager.setBinding(FabricUIManagerBinding())
+    fabricUIManager.startSurface(
+        SurfaceHandlerBinding("TestSurface"),
+        themedReactContext,
+        ReactRootView(themedReactContext).apply { setRootViewTag(surfaceId) },
+    )
+    helper.startSurfaceWithConstraints(surfaceId, 300f, 300f, 2f)
+    lateinit var view: ReactViewGroup
+    InstrumentationRegistry.getInstrumentation().runOnMainSync {
+      helper.mountViewWithPadding(surfaceId, 42, 10f)
+      view = fabricUIManager.resolveView(42) as ReactViewGroup
+    }
+    return helper to view
+  }
+
+  private fun createTestHelper(): FabricMountingManagerTestHelper =
+      FabricMountingManagerTestHelper.create(createFabricUIManager())
+
+  /** Enables the pull model in the C++ feature flags that the helper's native code reads. */
+  private fun enablePullModel() {
+    ReactNativeFeatureFlagsCxxInterop.dangerouslyForceOverride(
+        object : ReactNativeFeatureFlagsDefaults() {
+          override fun enableMountingCoordinatorPullModelAndroid(): Boolean = true
+        }
+    )
   }
 
   /**
@@ -242,7 +286,8 @@ class FabricMountingManagerInstrumentationTest {
   }
 
   /**
-   * Exercises real C++ preallocateShadowView — verifies the tag is added to allocatedViewRegistry_.
+   * Exercises the real C++ preallocation queue — verifies the tag is added to
+   * allocatedViewRegistry_.
    */
   @Test
   fun native_preallocateView_addsToRegistry() {
@@ -275,5 +320,155 @@ class FabricMountingManagerInstrumentationTest {
     assertThat(helper.isTagAllocated(surfaceId, 42)).isTrue()
     helper.destroyUnmountedView(surfaceId, 42)
     assertThat(helper.isTagAllocated(surfaceId, 42)).isFalse()
+  }
+
+  /**
+   * Runs a batch through the real C++ encoder, the JNI call and the Kotlin decoder, and checks the
+   * props that reach the mounted views. The C++ and Kotlin command tables must stay in sync.
+   */
+  @Test
+  fun native_synchronouslyUpdateAnimatedProps_appliesEncodedBatchToViews() {
+    val fabricUIManager = createFabricUIManager()
+    val helper = FabricMountingManagerTestHelper.create(fabricUIManager)
+    val uiMountingManager =
+        FabricUIManager::class
+            .java
+            .getDeclaredField("mMountingManager")
+            .apply { isAccessible = true }
+            .get(fabricUIManager) as MountingManager
+    uiMountingManager.startSurface(surfaceId, themedReactContext, ReactRootView(themedReactContext))
+    for ((index, tag) in intArrayOf(42, 43, 44).withIndex()) {
+      createAndInsertMountItem(tag, surfaceId, index).execute(uiMountingManager)
+    }
+
+    val opacity = WritableNativeMap().apply { putDouble("opacity", 0.25) }
+    val transform =
+        WritableNativeMap().apply {
+          putArray(
+              "transform",
+              WritableNativeArray().apply {
+                pushMap(WritableNativeMap().apply { putDouble("translateX", 10.0) })
+                pushMap(WritableNativeMap().apply { putString("rotate", "90deg") })
+                pushMap(WritableNativeMap().apply { putDouble("scale", 2.0) })
+              },
+          )
+        }
+    val rawFallback =
+        WritableNativeMap().apply {
+          putDouble("opacity", 0.5)
+          putString("testID", "animated-view")
+        }
+    InstrumentationRegistry.getInstrumentation().runOnMainSync {
+      helper.synchronouslyUpdateAnimatedProps(
+          intArrayOf(42, 43, 44),
+          arrayOf(opacity, transform, rawFallback),
+      )
+    }
+
+    val smm = uiMountingManager.getSurfaceManagerEnforced(surfaceId, "test")
+    assertThat(smm.getView(42).alpha).isEqualTo(0.25f)
+    val transformed = smm.getView(43)
+    assertThat(transformed.translationX).isCloseTo(PixelUtil.toPixelFromDIP(10.0), within(0.01f))
+    assertThat(transformed.rotation).isCloseTo(90f, within(0.01f))
+    assertThat(transformed.scaleX).isCloseTo(2f, within(0.001f))
+    assertThat(transformed.scaleY).isCloseTo(2f, within(0.001f))
+    val fallbackView = smm.getView(44)
+    assertThat(fallbackView.alpha).isEqualTo(0.5f)
+    assertThat(fallbackView.tag).isEqualTo("animated-view")
+  }
+
+  /**
+   * In the pull model, a view whose family is destroyed before the queue drains must not be
+   * preallocated: no family callback is left to destroy it.
+   */
+  @Test
+  fun native_drainPreallocationQueue_pullModel_skipsViewWhoseFamilyWasDestroyed() {
+    enablePullModel()
+    val helper = createTestHelper()
+    helper.startSurface(surfaceId)
+    helper.queuePreallocation(surfaceId, 42)
+    helper.dropFamily(42)
+
+    helper.drainPreallocationQueue()
+
+    assertThat(helper.isTagAllocated(surfaceId, 42)).isFalse()
+  }
+
+  /** Without the pull model, a committed family does not destroy its view. */
+  @Test
+  fun native_destroyCommittedView_keepsPreallocatedView() {
+    val helper = createTestHelper()
+    helper.startSurface(surfaceId)
+    helper.preallocateView(surfaceId, 42)
+
+    helper.destroyCommittedView(surfaceId, 42)
+
+    assertThat(helper.isTagAllocated(surfaceId, 42)).isTrue()
+  }
+
+  /**
+   * A pull can skip the commits that created and deleted the view of a committed family. Its
+   * preallocated view is destroyed with the family.
+   */
+  @Test
+  fun native_destroyCommittedView_pullModel_destroysPreallocatedView() {
+    enablePullModel()
+    val helper = createTestHelper()
+    helper.startSurface(surfaceId)
+    helper.preallocateView(surfaceId, 42)
+
+    helper.destroyCommittedView(surfaceId, 42)
+
+    assertThat(helper.isTagAllocated(surfaceId, 42)).isFalse()
+  }
+
+  /**
+   * In the pull model, a family can be destroyed before the pending Delete of its mounted view
+   * executes. A view that a mount created stays registered until that Delete.
+   */
+  @Test
+  fun native_destroyCommittedView_pullModel_keepsViewCreatedByMount() {
+    enablePullModel()
+    val helper = createTestHelper()
+    helper.startSurface(surfaceId)
+    helper.preallocateView(surfaceId, 42)
+    helper.executeCreateMutation(surfaceId, 42)
+
+    helper.destroyCommittedView(surfaceId, 42)
+
+    assertThat(helper.isTagAllocated(surfaceId, 42)).isTrue()
+  }
+
+  @Test
+  fun native_updateSurfaceConstraints_resendsPaddingAndOverflowInsetInPixels() {
+    val (helper, view) = mountPaddedView(fixTextLayoutOnPixelDensityChange = true)
+    assertThat(view.paddingTop).isEqualTo(20)
+    assertThat(view.overflowInset).isEqualTo(Rect(-20, -20, -20, -20))
+
+    InstrumentationRegistry.getInstrumentation().runOnMainSync {
+      helper.updateSurfaceConstraints(surfaceId, 300f, 300f, 1f)
+    }
+
+    assertThat(intArrayOf(view.paddingLeft, view.paddingTop, view.paddingRight, view.paddingBottom))
+        .containsExactly(10, 10, 10, 10)
+    assertThat(view.overflowInset).isEqualTo(Rect(-10, -10, -10, -10))
+  }
+
+  @Test
+  fun native_updateSurfaceConstraints_withoutFlag_keepsPaddingAndOverflowInsetInPixels() {
+    val (helper, view) = mountPaddedView(fixTextLayoutOnPixelDensityChange = false)
+
+    InstrumentationRegistry.getInstrumentation().runOnMainSync {
+      helper.updateSurfaceConstraints(surfaceId, 300f, 300f, 1f)
+    }
+
+    assertThat(view.paddingTop).isEqualTo(20)
+    assertThat(view.overflowInset).isEqualTo(Rect(-20, -20, -20, -20))
+  }
+
+  private class PaddingViewManager : ReactViewManager() {
+    override fun setPadding(view: ReactViewGroup, left: Int, top: Int, right: Int, bottom: Int) {
+      view.setPadding(left, top, right, bottom)
+    }
   }
 }

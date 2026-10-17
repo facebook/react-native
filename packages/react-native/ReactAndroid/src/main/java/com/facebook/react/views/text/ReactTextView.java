@@ -67,11 +67,13 @@ public class ReactTextView extends AppCompatTextView implements ReactCompoundVie
   // compile against an SDK older than 35 (see AndroidVersion).
   private static final @Nullable Method SET_USE_BOUNDS_FOR_WIDTH = resolveSetUseBoundsForWidth();
 
+  private final float mDefaultTextSize;
   private int mNumberOfLines;
   private @Nullable TextUtils.TruncateAt mEllipsizeLocation;
   private boolean mAdjustsFontSizeToFit;
   private float mFontSize;
   private float mMinimumFontSize;
+  private float mMinimumFontScale;
   private float mLetterSpacing;
   private int mLinkifyMaskType;
   private boolean mTextIsSelectable;
@@ -84,6 +86,7 @@ public class ReactTextView extends AppCompatTextView implements ReactCompoundVie
   @SuppressWarnings("this-escape")
   public ReactTextView(Context context) {
     super(context);
+    mDefaultTextSize = getTextSize();
     initView();
   }
 
@@ -133,6 +136,7 @@ public class ReactTextView extends AppCompatTextView implements ReactCompoundVie
     mEllipsizeLocation = TextUtils.TruncateAt.END;
     mFontSize = Float.NaN;
     mMinimumFontSize = Float.NaN;
+    mMinimumFontScale = Float.NaN;
     mLetterSpacing = 0.f;
     mOverflow = Overflow.VISIBLE;
     mSpanned = null;
@@ -163,6 +167,7 @@ public class ReactTextView extends AppCompatTextView implements ReactCompoundVie
     // reset text
     setLayoutParams(EMPTY_LAYOUT_PARAMS);
     super.setText(null);
+    TextLayoutManager.resetTextPaint(getPaint(), mDefaultTextSize);
     applyTextAttributes();
 
     // Call setters to ensure that any super setters are called
@@ -190,6 +195,8 @@ public class ReactTextView extends AppCompatTextView implements ReactCompoundVie
     if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
       setFocusable(View.FOCUSABLE_AUTO);
     }
+    // TextView's constructor makes the view important for accessibility
+    setImportantForAccessibility(View.IMPORTANT_FOR_ACCESSIBILITY_YES);
 
     setHyphenationFrequency(Layout.HYPHENATION_FREQUENCY_NONE);
     updateView(); // call after changing ellipsizeLocation in particular
@@ -239,6 +246,7 @@ public class ReactTextView extends AppCompatTextView implements ReactCompoundVie
             getHeight(),
             YogaMeasureMode.EXACTLY,
             mMinimumFontSize,
+            mMinimumFontScale,
             mNumberOfLines,
             getIncludeFontPadding(),
             getBreakStrategy(),
@@ -381,6 +389,7 @@ public class ReactTextView extends AppCompatTextView implements ReactCompoundVie
         Linkify.addLinks((Spannable) spanned, mLinkifyMaskType);
         setMovementMethod(LinkMovementMethod.getInstance());
       }
+      applyBaseTextAttributes(update.getBaseTextAttributes());
       setText(spanned);
 
       int nextTextAlign = update.getTextAlign();
@@ -399,6 +408,24 @@ public class ReactTextView extends AppCompatTextView implements ReactCompoundVie
       // Ensure onLayout is called so the inline views can be repositioned.
       requestLayout();
     }
+  }
+
+  /**
+   * Android draws generated ellipses with the view's paint rather than a span, so it must match the
+   * base attributes TextLayoutManager measured with.
+   */
+  private void applyBaseTextAttributes(@Nullable TextAttributeProps baseTextAttributes) {
+    if (baseTextAttributes == null) {
+      return;
+    }
+
+    TextLayoutManager.resetTextPaint(getPaint(), mDefaultTextSize);
+    applyTextAttributes();
+    TextLayoutManager.updateTextPaint(
+        getPaint(),
+        baseTextAttributes,
+        getContext().getAssets(),
+        ReactTypefaceUtils.getFontWeightAdjustment(getContext()));
   }
 
   @Override
@@ -540,8 +567,17 @@ public class ReactTextView extends AppCompatTextView implements ReactCompoundVie
     applyTextAttributes();
   }
 
+  /**
+   * @deprecated Use {@link #setMinimumFontScale(float)} instead.
+   */
+  @Deprecated
   public void setMinimumFontSize(float minimumFontSize) {
     mMinimumFontSize = minimumFontSize;
+    mShouldAdjustSpannableFontSize = true;
+  }
+
+  public void setMinimumFontScale(float minimumFontScale) {
+    mMinimumFontScale = minimumFontScale;
     mShouldAdjustSpannableFontSize = true;
   }
 

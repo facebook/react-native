@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<dde6447659f81e2f474e857cdf2259d5>>
+ * @generated SignedSource<<84b944e162fc53799326c584a5edd17d>>
  */
 
 /**
@@ -48,6 +48,8 @@ class NativeReactNativeFeatureFlags
 
   bool disableEarlyViewCommandExecution(jsi::Runtime& runtime);
 
+  bool disableIdleEventDispatchFrameCallbackRearmAndroid(jsi::Runtime& runtime);
+
   bool disableIdleMountItemFrameCallbackRearmAndroid(jsi::Runtime& runtime);
 
   bool disableImageViewPreallocationAndroid(jsi::Runtime& runtime);
@@ -68,9 +70,9 @@ class NativeReactNativeFeatureFlags
 
   bool enableAndroidTextMeasurementOptimizations(jsi::Runtime& runtime);
 
-  bool enableBridgelessArchitecture(jsi::Runtime& runtime);
+  bool enableAsyncDiskCacheCheckInMultiSourceImageAndroid(jsi::Runtime& runtime);
 
-  bool enableBufferedCallInvoker(jsi::Runtime& runtime);
+  bool enableBridgelessArchitecture(jsi::Runtime& runtime);
 
   bool enableCppPropsIteratorSetter(jsi::Runtime& runtime);
 
@@ -128,6 +130,8 @@ class NativeReactNativeFeatureFlags
 
   bool enableNativeCSSParsing(jsi::Runtime& runtime);
 
+  bool enablePreallocatedPropsDiffOnInsertAndroid(jsi::Runtime& runtime);
+
   bool enablePreparedTextLayout(jsi::Runtime& runtime);
 
   bool enablePropsUpdateReconciliationAndroid(jsi::Runtime& runtime);
@@ -150,7 +154,11 @@ class NativeReactNativeFeatureFlags
 
   bool enableVirtualViewContainerStateExperimental(jsi::Runtime& runtime);
 
+  bool fixBorderlessRippleAndroid(jsi::Runtime& runtime);
+
   bool fixMappingOfEventPrioritiesBetweenFabricAndReact(jsi::Runtime& runtime);
+
+  bool fixTextLayoutOnPixelDensityChange(jsi::Runtime& runtime);
 
   bool fixYogaFlexBasisFitContentInMainAxis(jsi::Runtime& runtime);
 
@@ -207,6 +215,8 @@ class NativeReactNativeFeatureFlags
   bool useTraitHiddenOnAndroid(jsi::Runtime& runtime);
 
   bool useTurboModuleInterop(jsi::Runtime& runtime);
+
+  bool useWindowDensityForDisplayMetricsAndroid(jsi::Runtime& runtime);
 
   double viewCullingOutsetRatio(jsi::Runtime& runtime);
 

@@ -143,7 +143,6 @@ val preparePrefab by
                       Pair("../ReactCommon/react/renderer/core/React/", "React/"),
                       // react_renderer_css
                       Pair("../ReactCommon/react/renderer/css/", "react/renderer/css/"),
-                      Pair("../ReactCommon/react/renderer/css/React/", "React/"),
                       // react_debug
                       Pair("../ReactCommon/react/debug/", "react/debug/"),
                       Pair("../ReactCommon/react/debug/React/", "React/"),
@@ -614,7 +613,6 @@ android {
             "-DREACT_BUILD_DIR=$buildDir",
             "-DANDROID_STL=c++_shared",
             "-DANDROID_TOOLCHAIN=clang",
-            "-DANDROID_SUPPORT_FLEXIBLE_PAGE_SIZES=ON",
             "-DCMAKE_POLICY_DEFAULT_CMP0069=NEW",
         )
 

@@ -171,7 +171,19 @@ public constructor(
 
     val minimumFontSize: Float =
         paragraphAttributes.getDouble(TextLayoutManager.PA_KEY_MINIMUM_FONT_SIZE).toFloat()
-    view.setMinimumFontSize(minimumFontSize)
+    @Suppress("DEPRECATION") view.setMinimumFontSize(minimumFontSize)
+    val minimumFontScale: Float =
+        if (paragraphAttributes.contains(TextLayoutManager.PA_KEY_MINIMUM_FONT_SCALE))
+            paragraphAttributes.getDouble(TextLayoutManager.PA_KEY_MINIMUM_FONT_SCALE).toFloat()
+        else Float.NaN
+    view.setMinimumFontScale(minimumFontScale)
+
+    view.setEllipsizeLocation(
+        TextAttributeProps.getEllipsizeMode(
+            paragraphAttributes.getString(TextLayoutManager.PA_KEY_ELLIPSIZE_MODE),
+        ),
+    )
+    view.updateView()
 
     // Clear any stale PreparedLayout from a previous update
     view.setPreparedLayout(null)
@@ -189,6 +201,9 @@ public constructor(
         TextLayoutManager.getTextGravity(attributedString, spanned),
         textBreakStrategy,
         TextAttributeProps.getJustificationMode(props, currentJustificationMode),
+        TextAttributeProps.fromMapBuffer(
+            attributedString.getMapBuffer(TextLayoutManager.AS_KEY_BASE_ATTRIBUTES),
+        ),
     )
   }
 
@@ -218,6 +233,7 @@ public constructor(
         textAlign,
         preparedLayout.textBreakStrategy,
         preparedLayout.justificationMode,
+        preparedLayout.baseTextAttributes,
     )
   }
 

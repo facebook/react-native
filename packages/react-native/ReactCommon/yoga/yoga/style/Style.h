@@ -653,6 +653,7 @@ class YG_EXPORT Style {
         alignItems_ == other.alignItems_ && alignSelf_ == other.alignSelf_ &&
         positionType_ == other.positionType_ && flexWrap_ == other.flexWrap_ &&
         overflow_ == other.overflow_ && display_ == other.display_ &&
+        boxSizing_ == other.boxSizing_ &&
         numbersEqual(flex_, pool_, other.flex_, other.pool_) &&
         numbersEqual(flexGrow_, pool_, other.flexGrow_, other.pool_) &&
         numbersEqual(flexShrink_, pool_, other.flexShrink_, other.pool_) &&

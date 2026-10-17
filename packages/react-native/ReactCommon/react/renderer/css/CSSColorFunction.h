@@ -7,7 +7,7 @@
 
 #pragma once
 
-#include <react/cxxstableapi/UmbrellaGuard.h>
+#include <react/cxxstableapi/FrameworksGuard.h>
 
 #include <algorithm>
 #include <array>
@@ -18,14 +18,13 @@
 #include <string_view>
 #include <tuple>
 
+#include <React/Utils.h>
 #include <react/renderer/css/CSSAngle.h>
 #include <react/renderer/css/CSSKeyword.h>
 #include <react/renderer/css/CSSNumber.h>
 #include <react/renderer/css/CSSPercentage.h>
 #include <react/renderer/css/CSSValueParser.h>
 #include <react/utils/PackTraits.h>
-#include <react/utils/fnv1a.h>
-#include <react/utils/to_underlying.h>
 
 namespace facebook::react {
 
@@ -49,7 +48,7 @@ constexpr uint8_t clamp255Component(float f)
   // be rounded towards +∞.
   // https://www.w3.org/TR/css-color-4/#rgb-functions
   auto i = static_cast<int32_t>(f);
-  auto ceiled = f > i ? i + 1 : i;
+  auto ceiled = f > static_cast<float>(i) ? i + 1 : i;
   return static_cast<uint8_t>(std::clamp(ceiled, 0, 255));
 }
 
@@ -721,7 +720,9 @@ inline std::optional<CSSColor> parseLabFunction(CSSValueParser &parser, CSSLabCo
     return {};
   }
 
-  return oklabToCSSColor<CSSColor>(labColorSpaceToOklab(colorSpace, *l, *a, *b), alpha);
+  return oklabToCSSColor<CSSColor>(
+      labColorSpaceToOklab(colorSpace, static_cast<double>(*l), static_cast<double>(*a), static_cast<double>(*b)),
+      alpha);
 }
 
 /**
@@ -765,7 +766,9 @@ inline std::optional<CSSColor> parseLchFunction(CSSValueParser &parser, CSSLabCo
   auto hueRadians = std::fmod(static_cast<double>(*h), 360.0) * std::numbers::pi / 180.0;
 
   return oklabToCSSColor<CSSColor>(
-      labColorSpaceToOklab(colorSpace, *l, chroma * std::cos(hueRadians), chroma * std::sin(hueRadians)), alpha);
+      labColorSpaceToOklab(
+          colorSpace, static_cast<double>(*l), chroma * std::cos(hueRadians), chroma * std::sin(hueRadians)),
+      alpha);
 }
 
 } // namespace detail

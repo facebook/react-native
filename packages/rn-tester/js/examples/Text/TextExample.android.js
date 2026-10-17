@@ -155,6 +155,14 @@ class AdjustingFontSize extends React.Component<
         </RNTesterText>
 
         <RNTesterText
+          numberOfLines={1}
+          adjustsFontSizeToFit={true}
+          minimumFontScale={0.5}
+          style={{fontSize: 40, marginVertical: 6}}>
+          Can limit how small the text becomes with minimumFontScale
+        </RNTesterText>
+
+        <RNTesterText
           adjustsFontSizeToFit={true}
           numberOfLines={1}
           style={{fontSize: 30, marginVertical: 6}}>
@@ -522,6 +530,18 @@ function MaxFontSizeMultiplierExample(props: {}): React.Node {
       </Text>
       <Text allowFontScaling={true} maxFontSizeMultiplier={1}>
         <Text maxFontSizeMultiplier={0}>Ignore inherited max (no max)</Text>
+      </Text>
+      <Text
+        allowFontScaling={true}
+        maxFontSizeMultiplier={1}
+        style={{
+          marginTop: 10,
+          lineHeight: 20,
+          letterSpacing: 1,
+          backgroundColor: 'lightgray',
+        }}>
+        lineHeight and letterSpacing are capped too (max 1x): these lines keep
+        the same spacing at any system font size
       </Text>
     </View>
   );

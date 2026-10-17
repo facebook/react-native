@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<cfd99e53a077549124370e6bb123ba43>>
+ * @generated SignedSource<<18267103ef4f3eb22f23a15b808528c2>>
  */
 
 /**
@@ -33,6 +33,8 @@ public interface ReactNativeFeatureFlagsProvider {
 
   @DoNotStrip public fun disableEarlyViewCommandExecution(): Boolean
 
+  @DoNotStrip public fun disableIdleEventDispatchFrameCallbackRearmAndroid(): Boolean
+
   @DoNotStrip public fun disableIdleMountItemFrameCallbackRearmAndroid(): Boolean
 
   @DoNotStrip public fun disableImageViewPreallocationAndroid(): Boolean
@@ -53,9 +55,9 @@ public interface ReactNativeFeatureFlagsProvider {
 
   @DoNotStrip public fun enableAndroidTextMeasurementOptimizations(): Boolean
 
-  @DoNotStrip public fun enableBridgelessArchitecture(): Boolean
+  @DoNotStrip public fun enableAsyncDiskCacheCheckInMultiSourceImageAndroid(): Boolean
 
-  @DoNotStrip public fun enableBufferedCallInvoker(): Boolean
+  @DoNotStrip public fun enableBridgelessArchitecture(): Boolean
 
   @DoNotStrip public fun enableCppPropsIteratorSetter(): Boolean
 
@@ -113,6 +115,8 @@ public interface ReactNativeFeatureFlagsProvider {
 
   @DoNotStrip public fun enableNativeCSSParsing(): Boolean
 
+  @DoNotStrip public fun enablePreallocatedPropsDiffOnInsertAndroid(): Boolean
+
   @DoNotStrip public fun enablePreparedTextLayout(): Boolean
 
   @DoNotStrip public fun enablePropsUpdateReconciliationAndroid(): Boolean
@@ -135,7 +139,11 @@ public interface ReactNativeFeatureFlagsProvider {
 
   @DoNotStrip public fun enableVirtualViewContainerStateExperimental(): Boolean
 
+  @DoNotStrip public fun fixBorderlessRippleAndroid(): Boolean
+
   @DoNotStrip public fun fixMappingOfEventPrioritiesBetweenFabricAndReact(): Boolean
+
+  @DoNotStrip public fun fixTextLayoutOnPixelDensityChange(): Boolean
 
   @DoNotStrip public fun fixYogaFlexBasisFitContentInMainAxis(): Boolean
 
@@ -192,6 +200,8 @@ public interface ReactNativeFeatureFlagsProvider {
   @DoNotStrip public fun useTraitHiddenOnAndroid(): Boolean
 
   @DoNotStrip public fun useTurboModuleInterop(): Boolean
+
+  @DoNotStrip public fun useWindowDensityForDisplayMetricsAndroid(): Boolean
 
   @DoNotStrip public fun viewCullingOutsetRatio(): Double
 

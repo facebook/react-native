@@ -98,6 +98,7 @@ internal object TextLayoutManager {
   const val PA_KEY_MINIMUM_FONT_SIZE: Int = 6
   const val PA_KEY_TEXT_ALIGN_VERTICAL: Int = 8
   const val PA_KEY_TEXT_WIDTH_MODE: Int = 9
+  const val PA_KEY_MINIMUM_FONT_SCALE: Int = 10
 
   private val TAG: String = TextLayoutManager::class.java.simpleName
 
@@ -370,6 +371,7 @@ internal object TextLayoutManager {
         if (
             textAttributes.fontStyle != ReactConstants.UNSET ||
                 textAttributes.fontWeight != ReactConstants.UNSET ||
+                textAttributes.fontFeatureSettings != null ||
                 textAttributes.fontVariationSettings != null ||
                 textAttributes.fontFamily != null
         ) {
@@ -606,6 +608,7 @@ internal object TextLayoutManager {
         if (
             fragment.props.fontStyle != ReactConstants.UNSET ||
                 fragment.props.fontWeight != ReactConstants.UNSET ||
+                fragment.props.fontFeatureSettings != null ||
                 fragment.props.fontVariationSettings != null ||
                 fragment.props.fontFamily != null
         ) {
@@ -1002,8 +1005,8 @@ internal object TextLayoutManager {
    * Sets attributes on the TextPaint, used for content outside the Spannable text, like for empty
    * strings, or newlines after the last trailing character
    */
-  @VisibleForTesting
-  internal fun updateTextPaint(
+  @JvmStatic
+  fun updateTextPaint(
       paint: TextPaint,
       baseTextAttributes: TextAttributeProps,
       assets: AssetManager,
@@ -1013,9 +1016,14 @@ internal object TextLayoutManager {
       paint.textSize = baseTextAttributes.fontSize.toFloat()
     }
 
+    if (baseTextAttributes.isLetterSpacingSet) {
+      paint.letterSpacing = baseTextAttributes.letterSpacing
+    }
+
     if (
         baseTextAttributes.fontStyle != ReactConstants.UNSET ||
             baseTextAttributes.fontWeight != ReactConstants.UNSET ||
+            baseTextAttributes.fontFeatureSettings != null ||
             baseTextAttributes.fontVariationSettings != null ||
             baseTextAttributes.fontFamily != null
     ) {
@@ -1040,6 +1048,9 @@ internal object TextLayoutManager {
         paint.isFakeBoldText = missingStyle and Typeface.BOLD != 0
         paint.textSkewX = if ((missingStyle and Typeface.ITALIC) != 0) -0.25f else 0f
       }
+
+      paint.isSubpixelText = true
+      paint.isLinearText = true
     } else {
       val typeface = ReactTypefaceUtils.applyFontWeightAdjustment(null, fontWeightAdjustment)
       if (typeface != null) {
@@ -1047,6 +1058,7 @@ internal object TextLayoutManager {
       }
     }
 
+    paint.fontFeatureSettings = baseTextAttributes.fontFeatureSettings
     ReactTypefaceUtils.applyFontVariationSettings(paint, baseTextAttributes.fontVariationSettings)
   }
 
@@ -1060,12 +1072,23 @@ internal object TextLayoutManager {
       fontWeightAdjustment: Int,
   ): TextPaint {
     val paint = checkNotNull(textPaintInstance.get())
-    paint.setTypeface(null)
-    paint.textSize = 12f
-    paint.isFakeBoldText = false
-    paint.textSkewX = 0f
+    resetTextPaint(paint, 12f)
     updateTextPaint(paint, baseTextAttributes, assets, fontWeightAdjustment)
     return paint
+  }
+
+  /** Clears every attribute [updateTextPaint] may set, so a reused paint starts from defaults. */
+  @JvmStatic
+  fun resetTextPaint(paint: TextPaint, textSize: Float) {
+    paint.setTypeface(null)
+    paint.textSize = textSize
+    paint.letterSpacing = 0f
+    paint.fontFeatureSettings = null
+    paint.isFakeBoldText = false
+    paint.textSkewX = 0f
+    paint.isSubpixelText = false
+    paint.isLinearText = false
+    ReactTypefaceUtils.applyFontVariationSettings(paint, null)
   }
 
   private fun newPaintWithAttributes(
@@ -1171,6 +1194,10 @@ internal object TextLayoutManager {
           if (paragraphAttributes.contains(PA_KEY_MINIMUM_FONT_SIZE))
               paragraphAttributes.getDouble(PA_KEY_MINIMUM_FONT_SIZE).toFloat()
           else Float.NaN
+      val minimumFontScale =
+          if (paragraphAttributes.contains(PA_KEY_MINIMUM_FONT_SCALE))
+              paragraphAttributes.getDouble(PA_KEY_MINIMUM_FONT_SCALE).toFloat()
+          else Float.NaN
 
       adjustSpannableFontToFit(
           text,
@@ -1179,6 +1206,7 @@ internal object TextLayoutManager {
           height,
           heightYogaMeasureMode,
           minimumFontSize,
+          minimumFontScale,
           maximumNumberOfLines,
           includeFontPadding,
           textBreakStrategy,
@@ -1327,6 +1355,7 @@ internal object TextLayoutManager {
         reactTags,
         result.textBreakStrategy,
         result.justificationMode,
+        baseTextAttributes,
     )
   }
 
@@ -1338,6 +1367,7 @@ internal object TextLayoutManager {
       height: Float,
       heightYogaMeasureMode: YogaMeasureMode,
       minimumFontSizeAttr: Float,
+      minimumFontScale: Float,
       maximumNumberOfLines: Int,
       includeFontPadding: Boolean,
       textBreakStrategy: Int,
@@ -1349,16 +1379,24 @@ internal object TextLayoutManager {
     var boring = isBoring(text, paint)
     var layout: Layout
 
-    // Minimum font size is 4pts to match the iOS implementation.
-    val minimumFontSize =
-        (if (minimumFontSizeAttr.isNaN()) 4.dpToPx() else minimumFontSizeAttr).toInt()
-
     // Find the largest font size used in the spannable to use as a starting point.
-    var currentFontSize = minimumFontSize
+    var currentFontSize = 0
     val spans = text.getSpans(0, text.length, ReactAbsoluteSizeSpan::class.java)
     for (span in spans) {
       currentFontSize = max(currentFontSize, span.size)
     }
+
+    // An explicit minimum font size wins over minimumFontScale, which is applied to the largest
+    // font size in the spannable. The 4dp floor matches the iOS implementation.
+    val absoluteMinimumFontSize = 4.dpToPx().toInt()
+    val minimumFontSize =
+        when {
+          !minimumFontSizeAttr.isNaN() -> minimumFontSizeAttr.toInt()
+          !minimumFontScale.isNaN() && minimumFontScale > 0f ->
+              max((minimumFontScale * currentFontSize).toInt(), absoluteMinimumFontSize)
+          else -> absoluteMinimumFontSize
+        }
+    currentFontSize = max(currentFontSize, minimumFontSize)
 
     var intervalStart = minimumFontSize
     var intervalEnd = currentFontSize
