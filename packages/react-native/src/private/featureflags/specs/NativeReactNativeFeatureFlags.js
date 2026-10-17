@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<3972c873d92371d3dc67eaa3a6217427>>
+ * @generated SignedSource<<40cc7b87d7658fb5aa3d33f468eff3fc>>
  * @flow strict
  * @noformat
  */
@@ -114,6 +114,7 @@ export interface Spec extends TurboModule {
   readonly useSharedAnimatedBackend?: () => boolean;
   readonly useTraitHiddenOnAndroid?: () => boolean;
   readonly useTurboModuleInterop?: () => boolean;
+  readonly useWindowDensityForDisplayMetricsAndroid?: () => boolean;
   readonly viewCullingOutsetRatio?: () => number;
   readonly viewTransitionEnabled?: () => boolean;
   readonly viewTransitionUseHardwareBitmapAndroid?: () => boolean;

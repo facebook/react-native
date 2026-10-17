@@ -328,10 +328,24 @@ exports[`execute test-app "ReactCodegen/RCTThirdPartyComponentsProvider.mm" shou
   static dispatch_once_t nativeComponentsToken;
 
   dispatch_once(&nativeComponentsToken, ^{
-    thirdPartyComponents = @{
-		@\\"TestAppComponent\\": NSClassFromString(@\\"RCTTestAppComponent\\"), // test-app
-		@\\"TestLibraryComponent\\": NSClassFromString(@\\"RCTTestLibraryComponent\\"), // test-library
+    NSDictionary<NSString *, NSString *> * componentMapping = @{
+		@\\"TestAppComponent\\": @\\"RCTTestAppComponent\\", // test-app
+		@\\"TestLibraryComponent\\": @\\"RCTTestLibraryComponent\\", // test-library
     };
+
+    NSMutableDictionary *dict = [[NSMutableDictionary alloc] initWithCapacity:componentMapping.count];
+
+    for (NSString *key in componentMapping) {
+      // Nil for a library this target does not link (an app extension, macOS).
+      Class klass = NSClassFromString(componentMapping[key]);
+      if (!klass) {
+        continue;
+      }
+
+      [dict setObject:klass forKey:key];
+    }
+
+    thirdPartyComponents = dict;
   });
 
   return thirdPartyComponents;
@@ -822,9 +836,23 @@ exports[`execute test-app-legacy "ReactCodegen/RCTThirdPartyComponentsProvider.m
   static dispatch_once_t nativeComponentsToken;
 
   dispatch_once(&nativeComponentsToken, ^{
-    thirdPartyComponents = @{
-		@\\"TestAppDeprecatedComponent\\": NSClassFromString(@\\"RCTTestAppDeprecatedComponentClass\\"), // test-app-legacy
+    NSDictionary<NSString *, NSString *> * componentMapping = @{
+		@\\"TestAppDeprecatedComponent\\": @\\"RCTTestAppDeprecatedComponentClass\\", // test-app-legacy
     };
+
+    NSMutableDictionary *dict = [[NSMutableDictionary alloc] initWithCapacity:componentMapping.count];
+
+    for (NSString *key in componentMapping) {
+      // Nil for a library this target does not link (an app extension, macOS).
+      Class klass = NSClassFromString(componentMapping[key]);
+      if (!klass) {
+        continue;
+      }
+
+      [dict setObject:klass forKey:key];
+    }
+
+    thirdPartyComponents = dict;
   });
 
   return thirdPartyComponents;
