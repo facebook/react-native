@@ -7,6 +7,7 @@
 
 package com.facebook.react.modules.accessibilityinfo
 
+import android.app.UiModeManager
 import android.content.ContentResolver
 import android.content.Context
 import android.database.ContentObserver
@@ -72,6 +73,11 @@ internal class AccessibilityInfoModule(context: ReactApplicationContext) :
           }
         }
       }
+  private val uiModeManager: UiModeManager? =
+      context.applicationContext.getSystemService(Context.UI_MODE_SERVICE) as UiModeManager?
+  // Listener that is notified when the contrast level changes (API 34+). Created lazily so that
+  // older versions never load the ContrastChangeListener interface.
+  private var contrastChangeListener: Any? = null
   private val accessibilityManager: AccessibilityManager?
   private val touchExplorationStateChangeListener: ReactTouchExplorationStateChangeListener =
       ReactTouchExplorationStateChangeListener()
@@ -80,6 +86,7 @@ internal class AccessibilityInfoModule(context: ReactApplicationContext) :
   private val contentResolver: ContentResolver
   private var reduceMotionEnabled = false
   private var highTextContrastEnabled = false
+  private var contrastLevel = 0f
   private var touchExplorationEnabled = false
   private var accessibilityServiceEnabled = false
   private var recommendedTimeout = 0
@@ -95,6 +102,7 @@ internal class AccessibilityInfoModule(context: ReactApplicationContext) :
     accessibilityServiceEnabled = accessibilityManager?.isEnabled ?: false
     reduceMotionEnabled = isReduceMotionEnabledValue
     highTextContrastEnabled = isHighTextContrastEnabledValue
+    contrastLevel = contrastLevelValue
     grayscaleModeEnabled = isGrayscaleEnabledValue
   }
 
@@ -154,6 +162,14 @@ internal class AccessibilityInfoModule(context: ReactApplicationContext) :
       ) != 0
     }
 
+  private val contrastLevelValue: Float
+    get() =
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.UPSIDE_DOWN_CAKE) {
+          uiModeManager?.contrast ?: 0f
+        } else {
+          0f
+        }
+
   override fun isReduceMotionEnabled(successCallback: Callback) {
     successCallback.invoke(reduceMotionEnabled)
   }
@@ -168,6 +184,10 @@ internal class AccessibilityInfoModule(context: ReactApplicationContext) :
 
   override fun isHighTextContrastEnabled(successCallback: Callback) {
     successCallback.invoke(highTextContrastEnabled)
+  }
+
+  override fun getContrastLevel(successCallback: Callback) {
+    successCallback.invoke(contrastLevel.toDouble())
   }
 
   override fun isTouchExplorationEnabled(successCallback: Callback) {
@@ -208,6 +228,42 @@ internal class AccessibilityInfoModule(context: ReactApplicationContext) :
     }
   }
 
+  private fun updateAndSendContrastLevelChangeEvent() {
+    val newContrastLevel = contrastLevelValue
+    if (contrastLevel != newContrastLevel) {
+      contrastLevel = newContrastLevel
+      getReactApplicationContextIfActiveOrWarn()
+          ?.emitDeviceEvent(CONTRAST_LEVEL_EVENT_NAME, contrastLevel.toDouble())
+    }
+  }
+
+  private fun registerContrastChangeListener() {
+    if (
+        Build.VERSION.SDK_INT < Build.VERSION_CODES.UPSIDE_DOWN_CAKE ||
+            contrastChangeListener != null
+    ) {
+      return
+    }
+    val manager = uiModeManager ?: return
+    val listener =
+        UiModeManager.ContrastChangeListener {
+          if (reactApplicationContext.hasActiveReactInstance()) {
+            updateAndSendContrastLevelChangeEvent()
+          }
+        }
+    manager.addContrastChangeListener(reactApplicationContext.mainExecutor, listener)
+    contrastChangeListener = listener
+  }
+
+  private fun unregisterContrastChangeListener() {
+    if (Build.VERSION.SDK_INT < Build.VERSION_CODES.UPSIDE_DOWN_CAKE) {
+      return
+    }
+    val listener = contrastChangeListener as? UiModeManager.ContrastChangeListener ?: return
+    uiModeManager?.removeContrastChangeListener(listener)
+    contrastChangeListener = null
+  }
+
   private fun updateAndSendTouchExplorationChangeEvent(enabled: Boolean) {
     if (touchExplorationEnabled != enabled) {
       touchExplorationEnabled = enabled
@@ -243,12 +299,15 @@ internal class AccessibilityInfoModule(context: ReactApplicationContext) :
     val highTextContrastUri =
         Settings.Secure.getUriFor(ACCESSIBILITY_HIGH_TEXT_CONTRAST_ENABLED_CONSTANT)
     contentResolver.registerContentObserver(highTextContrastUri, false, highTextContrastObserver)
+    // Registering does not report the current value, so read it again below.
+    registerContrastChangeListener()
     updateAndSendTouchExplorationChangeEvent(
         accessibilityManager?.isTouchExplorationEnabled == true,
     )
     updateAndSendAccessibilityServiceChangeEvent(accessibilityManager?.isEnabled == true)
     updateAndSendReduceMotionChangeEvent()
     updateAndSendHighTextContrastChangeEvent()
+    updateAndSendContrastLevelChangeEvent()
     updateAndSendInvertColorsChangeEvent()
     updateAndSendGrayscaleModeChangeEvent()
   }
@@ -260,6 +319,7 @@ internal class AccessibilityInfoModule(context: ReactApplicationContext) :
     accessibilityManager?.removeAccessibilityStateChangeListener(accessibilityServiceChangeListener)
     contentResolver.unregisterContentObserver(animationScaleObserver)
     contentResolver.unregisterContentObserver(highTextContrastObserver)
+    unregisterContrastChangeListener()
   }
 
   override fun initialize() {
@@ -274,6 +334,7 @@ internal class AccessibilityInfoModule(context: ReactApplicationContext) :
 
   override fun invalidate() {
     reactApplicationContext.removeLifecycleEventListener(this)
+    unregisterContrastChangeListener()
     super.invalidate()
   }
 
@@ -318,5 +379,6 @@ internal class AccessibilityInfoModule(context: ReactApplicationContext) :
         "high_text_contrast_enabled" // constant is marked with @hide
     private const val INVERT_COLOR_EVENT_NAME = "invertColorDidChange"
     private const val GRAYSCALE_MODE_EVENT_NAME = "grayscaleModeDidChange"
+    private const val CONTRAST_LEVEL_EVENT_NAME = "contrastLevelDidChange"
   }
 }

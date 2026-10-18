@@ -21,6 +21,7 @@ import NativeAccessibilityManagerIOS from './NativeAccessibilityManager';
 // Events that are only supported on Android.
 type AccessibilityEventDefinitionsAndroid = {
   accessibilityServiceChanged: [boolean],
+  contrastLevelChanged: [number],
   highTextContrastChanged: [boolean],
 };
 
@@ -53,6 +54,7 @@ const EventNames: Map<keyof AccessibilityEventDefinitions, string> =
         ['change', 'touchExplorationDidChange'],
         ['reduceMotionChanged', 'reduceMotionDidChange'],
         ['highTextContrastChanged', 'highTextContrastDidChange'],
+        ['contrastLevelChanged', 'contrastLevelDidChange'],
         ['screenReaderChanged', 'touchExplorationDidChange'],
         ['accessibilityServiceChanged', 'accessibilityServiceDidChange'],
         ['invertColorsChanged', 'invertColorDidChange'],
@@ -222,6 +224,35 @@ const AccessibilityInfo = {
       });
     } else {
       return Promise.resolve(false);
+    }
+  },
+
+  /**
+   * Query the contrast level chosen in the system settings.
+   *
+   * Returns a promise which resolves to a number from -1 to 1, where 0 is
+   * the standard contrast and higher values mean more contrast. This is the
+   * Android equivalent of "Increase Contrast" on iOS
+   * (see `isDarkerSystemColorsEnabled`). Requires Android 14 (API 34) or
+   * later; earlier versions resolve to 0.
+   *
+   * @platform android
+   */
+  getContrastLevel(): Promise<number> {
+    if (Platform.OS === 'android') {
+      return new Promise((resolve, reject) => {
+        if (NativeAccessibilityInfoAndroid?.getContrastLevel != null) {
+          NativeAccessibilityInfoAndroid.getContrastLevel(resolve);
+        } else {
+          reject(
+            new Error(
+              'NativeAccessibilityInfoAndroid.getContrastLevel is not available',
+            ),
+          );
+        }
+      });
+    } else {
+      return Promise.resolve(0);
     }
   },
 
@@ -445,6 +476,9 @@ const AccessibilityInfo = {
    *
    * These events are only supported on Android:
    *
+   * - `contrastLevelChanged`: Android-only event. Fires when the contrast level
+   *   changes. The argument to the event handler is a number from -1 to 1
+   *   (see `getContrastLevel`). Requires Android 14 (API 34) or later.
    * - `highTextContrastChanged`: Android-only event. Fires when the state of the high text contrast
    *   toggle changes. The argument to the event handler is a boolean. The boolean is `true` when
    *   high text contrast is enabled and `false` otherwise.

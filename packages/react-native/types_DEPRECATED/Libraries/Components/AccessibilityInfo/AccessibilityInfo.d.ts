@@ -96,6 +96,14 @@ export interface AccessibilityInfoStatic {
   isShowBordersEnabled: () => Promise<boolean>;
 
   /**
+   * Query the contrast level chosen in the system settings, from -1 to 1.
+   * Requires Android 14 (API 34) or later; resolves to 0 otherwise.
+   *
+   * @platform android
+   */
+  getContrastLevel: () => Promise<number>;
+
+  /**
    * Query whether darker system colors is currently enabled.
    *
    * @platform ios
@@ -150,6 +158,15 @@ export interface AccessibilityInfoStatic {
   addEventListener(
     eventName: AccessibilityAnnouncementEventName,
     handler: AccessibilityAnnouncementFinishedEventHandler,
+  ): EmitterSubscription;
+  /**
+   * Fires when the contrast level changes. The argument is a number from -1 to 1.
+   *
+   * @platform android
+   */
+  addEventListener(
+    eventName: 'contrastLevelChanged',
+    handler: (contrastLevel: number) => void,
   ): EmitterSubscription;
 
   /**

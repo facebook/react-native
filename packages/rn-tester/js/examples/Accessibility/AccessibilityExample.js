@@ -1577,6 +1577,7 @@ class DisplayOptionsStatusExample extends React.Component<{}> {
           optionChecker={AccessibilityInfo.isScreenReaderEnabled}
           notification={'screenReaderChanged'}
         />
+        {isAndroid ? <ContrastLevelExample /> : null}
         {isAndroid ? null : (
           <>
             <DisplayOptionStatusExample
@@ -1609,6 +1610,35 @@ class DisplayOptionsStatusExample extends React.Component<{}> {
       </View>
     );
   }
+}
+
+function ContrastLevelExample(): React.Node {
+  const [contrastLevel, setContrastLevel] = useState<?number>(null);
+  const [lastEvent, setLastEvent] = useState<?number>(null);
+  useEffect(() => {
+    const listener = AccessibilityInfo.addEventListener(
+      'contrastLevelChanged',
+      level => {
+        setLastEvent(level);
+        setContrastLevel(level);
+      },
+    );
+    // $FlowFixMe[unused-promise]
+    AccessibilityInfo.getContrastLevel().then(setContrastLevel);
+    return () => listener.remove();
+  }, []);
+  return (
+    <View>
+      <RNTesterText>
+        {'Contrast level is '}
+        {contrastLevel ?? '…'}.
+      </RNTesterText>
+      <RNTesterText>
+        {'Last contrastLevelChanged event: '}
+        {lastEvent ?? 'none'}.
+      </RNTesterText>
+    </View>
+  );
 }
 
 function DisplayOptionStatusExample({
