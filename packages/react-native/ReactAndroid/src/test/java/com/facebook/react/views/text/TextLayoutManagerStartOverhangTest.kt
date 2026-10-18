@@ -117,6 +117,36 @@ class TextLayoutManagerStartOverhangTest {
   }
 
   @Test
+  @Config(sdk = [35])
+  fun `mixed paragraph directions disable the start overhang drawing shift`() {
+    // The blank line between the RTL paragraphs has no strong character, so it is laid out LTR.
+    val layout =
+        createLayout(
+            YogaMeasureMode.EXACTLY,
+            text = SpannableString("שלום\n\nעולם"),
+            maxNumberOfLines = 0,
+        )
+
+    assertThat(TextLayoutManager.hasMixedParagraphDirections(layout)).isTrue()
+    assertThat(getBooleanLayoutProperty(layout, "getUseBoundsForWidth")).isTrue()
+    assertThat(getBooleanLayoutProperty(layout, "getShiftDrawingOffsetForStartOverhang")).isFalse()
+  }
+
+  @Test
+  @Config(sdk = [35])
+  fun `single paragraph direction keeps the start overhang drawing shift`() {
+    val layout =
+        createLayout(
+            YogaMeasureMode.EXACTLY,
+            text = SpannableString("שלום\nעולם"),
+            maxNumberOfLines = 0,
+        )
+
+    assertThat(TextLayoutManager.hasMixedParagraphDirections(layout)).isFalse()
+    assertThat(getBooleanLayoutProperty(layout, "getShiftDrawingOffsetForStartOverhang")).isTrue()
+  }
+
+  @Test
   @Config(sdk = [34])
   fun `EXACTLY mode remains supported before Android 15`() {
     val layout = createLayout(YogaMeasureMode.EXACTLY)

@@ -903,6 +903,24 @@ internal object TextLayoutManager {
             enableStartOverhang,
         )
 
+    // Android 15/16 leak RTL line bounds into later LTR lines, shifting the whole drawing right.
+    if (enableStartOverhang && hasMixedParagraphDirections(layout)) {
+      return buildLayout(
+          text,
+          layoutWidth,
+          includeFontPadding,
+          textBreakStrategy,
+          hyphenationFrequency,
+          alignment,
+          justificationMode,
+          ellipsizeMode,
+          maxNumberOfLines,
+          paint,
+          enableStartOverhang,
+          shiftDrawingOffsetForStartOverhang = false,
+      )
+    }
+
     // Layout.draw shifts negative (left-side) overhang, but RTL line starts can overflow to the
     // right. Reserve that ink inside an EXACT layout without changing the width reported to Yoga.
     return if (enableStartOverhang) {
@@ -941,6 +959,15 @@ internal object TextLayoutManager {
   }
 
   @VisibleForTesting
+  internal fun hasMixedParagraphDirections(layout: Layout): Boolean {
+    if (Build.VERSION.SDK_INT < VERSION_CODE_VANILLA_ICE_CREAM || layout.lineCount == 0) {
+      return false
+    }
+    val firstDirection = layout.getParagraphDirection(0)
+    return (1 until layout.lineCount).any { layout.getParagraphDirection(it) != firstDirection }
+  }
+
+  @VisibleForTesting
   internal fun getRtlRightOverhang(layout: Layout): Int {
     if (
         Build.VERSION.SDK_INT < VERSION_CODE_VANILLA_ICE_CREAM ||
@@ -969,6 +996,7 @@ internal object TextLayoutManager {
       maxNumberOfLines: Int,
       paint: TextPaint,
       enableStartOverhang: Boolean,
+      shiftDrawingOffsetForStartOverhang: Boolean = enableStartOverhang,
   ): Layout {
     val builder =
         StaticLayout.Builder.obtain(text, 0, text.length, paint, layoutWidth)
@@ -995,7 +1023,7 @@ internal object TextLayoutManager {
     // measurement returned to the caller.
     if (Build.VERSION.SDK_INT >= VERSION_CODE_VANILLA_ICE_CREAM) {
       setUseBoundsForWidth(builder, enableStartOverhang)
-      setShiftDrawingOffsetForStartOverhang(builder, enableStartOverhang)
+      setShiftDrawingOffsetForStartOverhang(builder, shiftDrawingOffsetForStartOverhang)
     }
 
     return builder.build()
