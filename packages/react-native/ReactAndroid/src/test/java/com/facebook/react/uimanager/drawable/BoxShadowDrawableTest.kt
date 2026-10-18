@@ -8,14 +8,11 @@
 package com.facebook.react.uimanager.drawable
 
 import android.content.Context
-import android.graphics.Canvas
 import android.graphics.Color
-import android.graphics.Paint
 import android.graphics.Path
 import android.graphics.PorterDuff
 import android.graphics.PorterDuffColorFilter
 import android.graphics.Rect
-import android.graphics.RectF
 import android.graphics.drawable.Drawable
 import android.util.DisplayMetrics
 import android.util.LayoutDirection
@@ -38,6 +35,8 @@ import org.mockito.kotlin.times
 import org.mockito.kotlin.verify
 import org.robolectric.RobolectricTestRunner
 import org.robolectric.RuntimeEnvironment
+
+private val TRANSLUCENT_RED = Color.argb(128, 255, 0, 0)
 
 /** Tests for [InsetBoxShadowDrawable] and [OutsetBoxShadowDrawable] */
 @RunWith(RobolectricTestRunner::class)
@@ -183,29 +182,35 @@ class BoxShadowDrawableTest {
   }
 
   @Test
-  fun insetShadowKeepsItsGeometryWhenItsAlphaOrColorFilterChanges() {
-    val borderRadius = spy(roundedBy(8f))
-    val drawable = insetShadow(borderRadius).withBounds(Rect(0, 0, 100, 50))
-    drawable.draw(RecordingCanvas())
-
-    drawable.alpha = 128
-    drawable.colorFilter = PorterDuffColorFilter(Color.RED, PorterDuff.Mode.SRC_IN)
-    drawable.draw(RecordingCanvas())
-
-    verify(borderRadius, times(1)).resolve(any(), any(), any(), any())
+  fun insetShadowKeepsItsGeometryWhenItsColorAlphaOrColorFilterChanges() {
+    assertKeepsItsGeometryThrough({ insetShadow(it) }) {
+      it.shadowColor = Color.RED
+      it.alpha = 128
+      it.colorFilter = PorterDuffColorFilter(Color.BLUE, PorterDuff.Mode.SRC_IN)
+    }
   }
 
   @Test
-  fun outsetShadowKeepsItsGeometryWhenItsAlphaOrColorFilterChanges() {
-    val borderRadius = spy(roundedBy(8f))
-    val drawable = outsetShadow(borderRadius).withBounds(Rect(0, 0, 100, 50))
-    drawable.draw(RecordingCanvas())
+  fun blurredInsetShadowKeepsItsGeometryWhenItsColorAlphaOrColorFilterChanges() {
+    assertKeepsItsGeometryThrough({ insetShadow(it, blurRadius = 4f) }) {
+      it.shadowColor = Color.RED
+      it.alpha = 128
+      it.colorFilter = PorterDuffColorFilter(Color.BLUE, PorterDuff.Mode.SRC_IN)
+    }
+  }
 
-    drawable.alpha = 128
-    drawable.colorFilter = PorterDuffColorFilter(Color.RED, PorterDuff.Mode.SRC_IN)
-    drawable.draw(RecordingCanvas())
+  @Test
+  fun outsetShadowKeepsItsGeometryWhenItsColorAlphaOrColorFilterChanges() {
+    assertKeepsItsGeometryThrough({ outsetShadow(it, blurRadius = 4f) }) {
+      it.shadowColor = Color.RED
+      it.alpha = 128
+      it.colorFilter = PorterDuffColorFilter(Color.BLUE, PorterDuff.Mode.SRC_IN)
+    }
+  }
 
-    verify(borderRadius, times(1)).resolve(any(), any(), any(), any())
+  @Test
+  fun outsetShadowKeepsItsGeometryWhenItsBlurChanges() {
+    assertKeepsItsGeometryThrough({ outsetShadow(it, blurRadius = 4f) }) { it.blurRadius = 6f }
   }
 
   @Test
@@ -232,30 +237,155 @@ class BoxShadowDrawableTest {
     assertDrawsLike(drawable, expected)
   }
 
+  @Test
+  fun insetShadowFollowsEachShadowValueChangedAloneInPlace() {
+    assertFollowsEachChangeAlone(
+        { insetShadow(roundedBy(8f)) },
+        InPlaceChange("shadowColor", { it.shadowColor = Color.RED }) {
+          insetShadow(roundedBy(8f), shadowColor = Color.RED)
+        },
+        InPlaceChange("offsetX", { it.offsetX = -4f }) {
+          insetShadow(roundedBy(8f), offsetX = -4f)
+        },
+        InPlaceChange("offsetY", { it.offsetY = 5f }) { insetShadow(roundedBy(8f), offsetY = 5f) },
+        InPlaceChange("blurRadius", { it.blurRadius = 4f }) {
+          insetShadow(roundedBy(8f), blurRadius = 4f)
+        },
+        InPlaceChange("spread", { it.spread = 3f }) { insetShadow(roundedBy(8f), spread = 3f) },
+    )
+  }
+
+  @Test
+  fun outsetShadowFollowsEachShadowValueChangedAloneInPlace() {
+    assertFollowsEachChangeAlone(
+        { outsetShadow(roundedBy(8f)) },
+        InPlaceChange("shadowColor", { it.shadowColor = Color.RED }) {
+          outsetShadow(roundedBy(8f), shadowColor = Color.RED)
+        },
+        InPlaceChange("offsetX", { it.offsetX = -4f }) {
+          outsetShadow(roundedBy(8f), offsetX = -4f)
+        },
+        InPlaceChange("offsetY", { it.offsetY = 5f }) { outsetShadow(roundedBy(8f), offsetY = 5f) },
+        InPlaceChange("blurRadius", { it.blurRadius = 4f }) {
+          outsetShadow(roundedBy(8f), blurRadius = 4f)
+        },
+        InPlaceChange("spread", { it.spread = 3f }) { outsetShadow(roundedBy(8f), spread = 3f) },
+    )
+  }
+
+  @Test
+  fun insetShadowLosesItsBlurInPlace() {
+    val drawable = insetShadow(roundedBy(8f), blurRadius = 4f).withBounds(Rect(0, 0, 100, 50))
+    drawable.draw(RecordingCanvas())
+
+    drawable.blurRadius = 0f
+
+    assertDrawsLike(drawable, insetShadow(roundedBy(8f)).withBounds(Rect(0, 0, 100, 50)))
+  }
+
+  @Test
+  fun insetShadowColorChangedInPlaceKeepsTheDrawableAlpha() {
+    val drawable = insetShadow(null).withBounds(Rect(0, 0, 100, 50)).apply { alpha = 102 }
+
+    drawable.shadowColor = TRANSLUCENT_RED
+
+    assertDrawsLike(
+        drawable,
+        insetShadow(null, shadowColor = TRANSLUCENT_RED).withBounds(Rect(0, 0, 100, 50)).apply {
+          alpha = 102
+        },
+    )
+    assertDrawsUnlike(
+        drawable,
+        insetShadow(null, shadowColor = TRANSLUCENT_RED).withBounds(Rect(0, 0, 100, 50)),
+    )
+  }
+
+  @Test
+  fun outsetShadowColorChangedInPlaceKeepsTheDrawableAlpha() {
+    val drawable = outsetShadow(null).withBounds(Rect(0, 0, 100, 50)).apply { alpha = 102 }
+
+    drawable.shadowColor = TRANSLUCENT_RED
+
+    assertDrawsLike(
+        drawable,
+        outsetShadow(null, shadowColor = TRANSLUCENT_RED).withBounds(Rect(0, 0, 100, 50)).apply {
+          alpha = 102
+        },
+    )
+    assertDrawsUnlike(
+        drawable,
+        outsetShadow(null, shadowColor = TRANSLUCENT_RED).withBounds(Rect(0, 0, 100, 50)),
+    )
+  }
+
+  @Test
+  fun insetShadowValuesSetToWhatTheyAlreadyAreDoNotInvalidate() {
+    val callback = CountingCallback()
+    val drawable = insetShadow(roundedBy(8f), blurRadius = 4f).apply { this.callback = callback }
+
+    drawable.shadowColor = Color.BLACK
+    drawable.offsetX = 2f
+    drawable.offsetY = 3f
+    drawable.blurRadius = 4f
+    drawable.spread = 1f
+    assertThat(callback.invalidations).isZero()
+
+    drawable.spread = 2f
+    assertThat(callback.invalidations).isEqualTo(1)
+  }
+
+  @Test
+  fun outsetShadowValuesSetToWhatTheyAlreadyAreDoNotInvalidate() {
+    val callback = CountingCallback()
+    val drawable = outsetShadow(roundedBy(8f), blurRadius = 4f).apply { this.callback = callback }
+
+    drawable.shadowColor = Color.BLACK
+    drawable.offsetX = 2f
+    drawable.offsetY = 3f
+    drawable.blurRadius = 4f
+    drawable.spread = 1f
+    assertThat(callback.invalidations).isZero()
+
+    drawable.spread = 2f
+    assertThat(callback.invalidations).isEqualTo(1)
+  }
+
   private fun insetShadow(
       borderRadius: BorderRadiusStyle?,
       borderInsets: BorderInsets? = null,
       blurRadius: Float = 0f,
+      shadowColor: Int = Color.BLACK,
+      offsetX: Float = 2f,
+      offsetY: Float = 3f,
+      spread: Float = 1f,
   ): InsetBoxShadowDrawable =
       InsetBoxShadowDrawable(
           context = context,
-          shadowColor = Color.BLACK,
-          offsetX = 2f,
-          offsetY = 3f,
+          shadowColor = shadowColor,
+          offsetX = offsetX,
+          offsetY = offsetY,
           blurRadius = blurRadius,
-          spread = 1f,
+          spread = spread,
           borderInsets = borderInsets,
           borderRadius = borderRadius,
       )
 
-  private fun outsetShadow(borderRadius: BorderRadiusStyle?): OutsetBoxShadowDrawable =
+  private fun outsetShadow(
+      borderRadius: BorderRadiusStyle?,
+      blurRadius: Float = 0f,
+      shadowColor: Int = Color.BLACK,
+      offsetX: Float = 2f,
+      offsetY: Float = 3f,
+      spread: Float = 1f,
+  ): OutsetBoxShadowDrawable =
       OutsetBoxShadowDrawable(
           context = context,
-          shadowColor = Color.BLACK,
-          offsetX = 2f,
-          offsetY = 3f,
-          blurRadius = 0f,
-          spread = 1f,
+          shadowColor = shadowColor,
+          offsetX = offsetX,
+          offsetY = offsetY,
+          blurRadius = blurRadius,
+          spread = spread,
           borderRadius = borderRadius,
       )
 
@@ -297,62 +427,59 @@ class BoxShadowDrawableTest {
         .isEqualTo(RecordingCanvas().also { expected.draw(it) }.calls)
   }
 
-  /** Records each call a drawable makes as text, and every geometry object it hands the canvas. */
-  private class RecordingCanvas : Canvas() {
-    val calls = mutableListOf<String>()
-    val geometry = mutableListOf<Any>()
-    val drawnPaths = mutableListOf<Path>()
+  private fun <T : Drawable> assertKeepsItsGeometryThrough(
+      build: (BorderRadiusStyle) -> T,
+      change: (T) -> Unit,
+  ) {
+    val borderRadius = spy(roundedBy(8f))
+    val drawable = build(borderRadius).withBounds(Rect(0, 0, 100, 50))
+    drawable.draw(RecordingCanvas())
 
-    override fun clipPath(path: Path): Boolean {
-      record("clipPath ${describe(path)}", path)
-      return true
+    change(drawable)
+    drawable.draw(RecordingCanvas())
+
+    verify(borderRadius, times(1)).resolve(any(), any(), any(), any())
+  }
+
+  private fun assertDrawsUnlike(drawable: Drawable, other: Drawable) {
+    assertThat(RecordingCanvas().also { drawable.draw(it) }.calls)
+        .isNotEqualTo(RecordingCanvas().also { other.draw(it) }.calls)
+  }
+
+  /** One shadow value set on a drawable that already drew, and a drawable built with it. */
+  private class InPlaceChange<T : Drawable>(
+      val value: String,
+      val change: (T) -> Unit,
+      val expected: () -> T,
+  )
+
+  private fun <T : Drawable> assertFollowsEachChangeAlone(
+      build: () -> T,
+      vararg changes: InPlaceChange<T>,
+  ) {
+    for (inPlaceChange in changes) {
+      val drawable = build().withBounds(Rect(0, 0, 100, 50))
+      drawable.draw(RecordingCanvas())
+
+      inPlaceChange.change(drawable)
+
+      val expected = inPlaceChange.expected().withBounds(Rect(0, 0, 100, 50))
+      assertThat(RecordingCanvas().also { drawable.draw(it) }.calls)
+          .describedAs(inPlaceChange.value)
+          .isEqualTo(RecordingCanvas().also { expected.draw(it) }.calls)
+    }
+  }
+
+  /** Counts the invalidations a drawable asks its callback for. */
+  private class CountingCallback : Drawable.Callback {
+    var invalidations = 0
+
+    override fun invalidateDrawable(who: Drawable) {
+      invalidations++
     }
 
-    override fun clipOutPath(path: Path): Boolean {
-      record("clipOutPath ${describe(path)}", path)
-      return true
-    }
+    override fun scheduleDrawable(who: Drawable, what: Runnable, `when`: Long) = Unit
 
-    override fun clipRect(rect: RectF): Boolean {
-      record("clipRect $rect", rect)
-      return true
-    }
-
-    override fun clipOutRect(rect: Rect): Boolean {
-      record("clipOutRect $rect", rect)
-      return true
-    }
-
-    override fun drawPath(path: Path, paint: Paint) {
-      drawnPaths.add(path)
-      record("drawPath ${path.fillType} ${describe(path)}", path)
-    }
-
-    override fun drawRect(rect: RectF, paint: Paint) {
-      record("drawRect $rect", rect)
-    }
-
-    override fun drawDoubleRoundRect(
-        outer: RectF,
-        outerRadii: FloatArray,
-        inner: RectF,
-        innerRadii: FloatArray,
-        paint: Paint,
-    ) {
-      record(
-          "drawDoubleRoundRect $outer ${outerRadii.toList()} $inner ${innerRadii.toList()}",
-          outer,
-          outerRadii,
-          inner,
-          innerRadii,
-      )
-    }
-
-    private fun record(call: String, vararg drawnGeometry: Any) {
-      calls.add(call)
-      geometry.addAll(drawnGeometry)
-    }
-
-    private fun describe(path: Path): String = path.approximate(0.5f).toList().toString()
+    override fun unscheduleDrawable(who: Drawable, what: Runnable) = Unit
   }
 }
