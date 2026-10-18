@@ -700,8 +700,16 @@ static BOOL RCTLayerTransformCollapsesAxis(CALayer *layer)
   // the oldLayoutMetrics parameter (which comes from the shadow tree).
   auto previousFrameSize = _layoutMetrics.frame.size;
 
+  // A relayout that only moves the view leaves everything `invalidateLayer`
+  // derives unchanged, since it works in the view's own coordinates. The hover
+  // shape is the exception: iOS evaluates it in the superview's space.
+  auto movedLayoutMetrics = layoutMetrics;
+  movedLayoutMetrics.frame.origin = _layoutMetrics.frame.origin;
+  BOOL const onlyMoved = movedLayoutMetrics == _layoutMetrics;
   _layoutMetrics = layoutMetrics;
-  _needsInvalidateLayer = YES;
+  if (!onlyMoved || _props->cursor == Cursor::Pointer) {
+    _needsInvalidateLayer = YES;
+  }
 
   _borderLayer.frame = self.layer.bounds;
 
