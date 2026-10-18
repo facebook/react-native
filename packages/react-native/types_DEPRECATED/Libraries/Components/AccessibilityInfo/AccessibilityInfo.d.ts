@@ -26,7 +26,9 @@ type AccessibilityChangeEventName =
   | 'reduceMotionChanged'
   /** iOS only */
   | 'reduceTransparencyChanged'
-  | 'screenReaderChanged';
+  | 'screenReaderChanged'
+  /** iOS only */
+  | 'switchControlChanged';
 
 type AccessibilityChangeEvent = boolean;
 
@@ -85,6 +87,13 @@ export interface AccessibilityInfoStatic {
    * @platform android
    */
   isHighTextContrastEnabled: () => Promise<boolean>;
+
+  /**
+   * Query whether Switch Control is currently running.
+   *
+   * @platform ios
+   */
+  isSwitchControlEnabled: () => Promise<boolean>;
 
   /**
    * Query whether darker system colors is currently enabled.

@@ -1464,6 +1464,12 @@ class AccessibilityTest extends React.Component {
   }
 }
 
+AccessibilityInfo.isSwitchControlEnabled().then(isEnabled =>
+  console.log(`AccessibilityInfo.isSwitchControlEnabled => ${isEnabled}`),
+);
+AccessibilityInfo.addEventListener('switchControlChanged', isEnabled =>
+  console.log(`AccessibilityInfo.switchControlChanged => ${isEnabled}`),
+);
 AccessibilityInfo.isBoldTextEnabled().then(isEnabled =>
   console.log(`AccessibilityInfo.isBoldTextEnabled => ${isEnabled}`),
 );

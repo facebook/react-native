@@ -30,6 +30,7 @@ type AccessibilityEventDefinitionsIOS = {
   boldTextChanged: [boolean],
   darkerSystemColorsChanged: [boolean],
   reduceTransparencyChanged: [boolean],
+  switchControlChanged: [boolean],
 };
 
 type AccessibilityEventDefinitions = {
@@ -67,6 +68,7 @@ const EventNames: Map<keyof AccessibilityEventDefinitions, string> =
         ['reduceTransparencyChanged', 'reduceTransparencyChanged'],
         ['screenReaderChanged', 'screenReaderChanged'],
         ['darkerSystemColorsChanged', 'darkerSystemColorsChanged'],
+        ['switchControlChanged', 'switchControlChanged'],
       ]);
 
 /**
@@ -288,6 +290,37 @@ const AccessibilityInfo = {
   },
 
   /**
+   * Query whether Switch Control is currently running.
+   *
+   * Returns a promise which resolves to a boolean.
+   * The result is `true` when Switch Control running is enabled and `false` otherwise.
+   *
+   * @platform ios
+   */
+  isSwitchControlEnabled(): Promise<boolean> {
+    if (Platform.OS === 'android') {
+      return Promise.resolve(false);
+    } else {
+      return new Promise((resolve, reject) => {
+        if (
+          NativeAccessibilityManagerIOS?.getCurrentSwitchControlState != null
+        ) {
+          NativeAccessibilityManagerIOS.getCurrentSwitchControlState(
+            resolve,
+            reject,
+          );
+        } else {
+          reject(
+            new Error(
+              'NativeAccessibilityManagerIOS.getCurrentSwitchControlState is not available',
+            ),
+          );
+        }
+      });
+    }
+  },
+
+  /**
    * Query whether reduced transparency is currently enabled.
    *
    * Returns a promise which resolves to a boolean.
@@ -406,6 +439,9 @@ const AccessibilityInfo = {
    * - `darkerSystemColorsChanged`: iOS-only event. Fires when the state of the dark system colors
    *   toggle changes. The argument to the event handler is a boolean. The boolean is `true` when
    *   dark system colors is enabled and `false` otherwise.
+   *
+   * - `switchControlChanged`: iOS-only event. Fires when Switch Control starts or stops running.
+   *   The argument to the event handler is a boolean.
    *
    * These events are only supported on Android:
    *

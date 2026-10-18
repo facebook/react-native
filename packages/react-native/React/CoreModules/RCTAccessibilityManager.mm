@@ -92,6 +92,11 @@ RCT_EXPORT_MODULE()
                                                object:nil];
 
     [[NSNotificationCenter defaultCenter] addObserver:self
+                                             selector:@selector(switchControlStatusDidChange:)
+                                                 name:UIAccessibilitySwitchControlStatusDidChangeNotification
+                                               object:nil];
+
+    [[NSNotificationCenter defaultCenter] addObserver:self
                                              selector:@selector(voiceVoiceOverStatusDidChange:)
                                                  name:UIAccessibilityVoiceOverStatusDidChangeNotification
                                                object:nil];
@@ -103,6 +108,7 @@ RCT_EXPORT_MODULE()
     _isReduceMotionEnabled = UIAccessibilityIsReduceMotionEnabled();
     _isDarkerSystemColorsEnabled = UIAccessibilityDarkerSystemColorsEnabled();
     _isReduceTransparencyEnabled = UIAccessibilityIsReduceTransparencyEnabled();
+    _isSwitchControlEnabled = UIAccessibilityIsSwitchControlRunning();
     _isVoiceOverEnabled = UIAccessibilityIsVoiceOverRunning();
   }
   return self;
@@ -203,6 +209,19 @@ RCT_EXPORT_MODULE()
 #pragma clang diagnostic ignored "-Wdeprecated-declarations"
     [[_moduleRegistry moduleForName:"EventDispatcher"] sendDeviceEventWithName:@"reduceTransparencyChanged"
                                                                           body:@(_isReduceTransparencyEnabled)];
+#pragma clang diagnostic pop
+  }
+}
+
+- (void)switchControlStatusDidChange:(__unused NSNotification *)notification
+{
+  BOOL newValue = UIAccessibilityIsSwitchControlRunning();
+  if (_isSwitchControlEnabled != newValue) {
+    _isSwitchControlEnabled = newValue;
+#pragma clang diagnostic push
+#pragma clang diagnostic ignored "-Wdeprecated-declarations"
+    [[_moduleRegistry moduleForName:"EventDispatcher"] sendDeviceEventWithName:@"switchControlChanged"
+                                                                          body:@(_isSwitchControlEnabled)];
 #pragma clang diagnostic pop
   }
 }
@@ -409,6 +428,11 @@ static void setMultipliers(
                                   onError:(__unused RCTResponseSenderBlock)onError
 {
   onSuccess(@[ @(_isReduceTransparencyEnabled) ]);
+}
+
+- (void)getCurrentSwitchControlState:(RCTResponseSenderBlock)onSuccess onError:(__unused RCTResponseSenderBlock)onError
+{
+  onSuccess(@[ @(_isSwitchControlEnabled) ]);
 }
 
 - (void)getCurrentVoiceOverState:(RCTResponseSenderBlock)onSuccess onError:(__unused RCTResponseSenderBlock)onError

@@ -16,6 +16,9 @@ const mockGetCurrentPrefersCrossFadeTransitionsState = jest.fn(
 const mockGetCurrentDarkerSystemColorsState = jest.fn((onSuccess, onError) =>
   onSuccess(true),
 );
+const mockGetCurrentSwitchControlState = jest.fn((onSuccess, onError) =>
+  onSuccess(true),
+);
 const mockGetCurrentBoldTextState = jest.fn((onSuccess, onError) =>
   onSuccess(true),
 );
@@ -35,6 +38,13 @@ const mockGetCurrentVoiceOverState = jest.fn((onSuccess, onError) =>
   onSuccess(true),
 );
 let mockNativeAccessibilityManagerIOS: {
+  getCurrentSwitchControlState: JestMockFn<
+    [
+      onSuccess: (isSwitchControlEnabled: boolean) => void,
+      onError: (error: Error) => void,
+    ],
+    void,
+  > | null,
   getCurrentPrefersCrossFadeTransitionsState: JestMockFn<
     [
       onSuccess: (prefersCrossFadeTransitions: boolean) => void,
@@ -92,6 +102,7 @@ let mockNativeAccessibilityManagerIOS: {
     void,
   > | null,
 } = {
+  getCurrentSwitchControlState: mockGetCurrentSwitchControlState,
   getCurrentPrefersCrossFadeTransitionsState:
     mockGetCurrentPrefersCrossFadeTransitionsState,
   getCurrentDarkerSystemColorsState: mockGetCurrentDarkerSystemColorsState,
@@ -660,6 +671,49 @@ describe('AccessibilityInfo', () => {
     });
   });
 
+  describe('isSwitchControlEnabled', () => {
+    describe('Android', () => {
+      it('should return immediately', async () => {
+        /* $FlowFixMe[incompatible-type] */
+        Platform.OS = 'android';
+
+        const result = await AccessibilityInfo.isSwitchControlEnabled();
+
+        expect(result).toBe(false);
+      });
+    });
+
+    describe('iOS', () => {
+      it('should call getCurrentSwitchControlState if available', async () => {
+        /* $FlowFixMe[incompatible-type] */
+        Platform.OS = 'ios';
+
+        const result = await AccessibilityInfo.isSwitchControlEnabled();
+
+        expect(mockGetCurrentSwitchControlState).toHaveBeenCalled();
+        expect(result).toBe(true);
+      });
+
+      it('should throw error if getCurrentSwitchControlState is not available', async () => {
+        /* $FlowFixMe[incompatible-type] */
+        Platform.OS = 'ios';
+
+        mockNativeAccessibilityManagerIOS.getCurrentSwitchControlState = null;
+
+        const result: unknown =
+          await AccessibilityInfo.isSwitchControlEnabled().catch(e => e);
+
+        invariant(
+          result instanceof Error,
+          'Expected isSwitchControlEnabled to reject',
+        );
+        expect(result.message).toEqual(
+          'NativeAccessibilityManagerIOS.getCurrentSwitchControlState is not available',
+        );
+      });
+    });
+  });
+
   describe('isDarkerSystemColorsEnabled', () => {
     describe('Android', () => {
       it('should return immediately', async () => {
@@ -791,6 +845,7 @@ describe('AccessibilityInfo', () => {
 
   afterEach(() => {
     mockNativeAccessibilityManagerIOS = {
+      getCurrentSwitchControlState: mockGetCurrentSwitchControlState,
       getCurrentPrefersCrossFadeTransitionsState:
         mockGetCurrentPrefersCrossFadeTransitionsState,
       getCurrentDarkerSystemColorsState: mockGetCurrentDarkerSystemColorsState,
