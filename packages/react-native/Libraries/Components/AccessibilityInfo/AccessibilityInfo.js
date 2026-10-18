@@ -30,6 +30,7 @@ type AccessibilityEventDefinitionsIOS = {
   boldTextChanged: [boolean],
   darkerSystemColorsChanged: [boolean],
   reduceTransparencyChanged: [boolean],
+  differentiateWithoutColorChanged: [boolean],
 };
 
 type AccessibilityEventDefinitions = {
@@ -67,6 +68,10 @@ const EventNames: Map<keyof AccessibilityEventDefinitions, string> =
         ['reduceTransparencyChanged', 'reduceTransparencyChanged'],
         ['screenReaderChanged', 'screenReaderChanged'],
         ['darkerSystemColorsChanged', 'darkerSystemColorsChanged'],
+        [
+          'differentiateWithoutColorChanged',
+          'differentiateWithoutColorChanged',
+        ],
       ]);
 
 /**
@@ -288,6 +293,38 @@ const AccessibilityInfo = {
   },
 
   /**
+   * Query whether differentiate without color is currently enabled.
+   *
+   * Returns a promise which resolves to a boolean.
+   * The result is `true` when differentiate without color is enabled and `false` otherwise.
+   *
+   * @platform ios
+   */
+  isDifferentiateWithoutColorEnabled(): Promise<boolean> {
+    if (Platform.OS === 'android') {
+      return Promise.resolve(false);
+    } else {
+      return new Promise((resolve, reject) => {
+        if (
+          NativeAccessibilityManagerIOS?.getCurrentDifferentiateWithoutColorState !=
+          null
+        ) {
+          NativeAccessibilityManagerIOS.getCurrentDifferentiateWithoutColorState(
+            resolve,
+            reject,
+          );
+        } else {
+          reject(
+            new Error(
+              'NativeAccessibilityManagerIOS.getCurrentDifferentiateWithoutColorState is not available',
+            ),
+          );
+        }
+      });
+    }
+  },
+
+  /**
    * Query whether reduced transparency is currently enabled.
    *
    * Returns a promise which resolves to a boolean.
@@ -406,6 +443,9 @@ const AccessibilityInfo = {
    * - `darkerSystemColorsChanged`: iOS-only event. Fires when the state of the dark system colors
    *   toggle changes. The argument to the event handler is a boolean. The boolean is `true` when
    *   dark system colors is enabled and `false` otherwise.
+   *
+   * - `differentiateWithoutColorChanged`: iOS-only event. Fires when the state of the differentiate without color toggle changes.
+   *   The argument to the event handler is a boolean.
    *
    * These events are only supported on Android:
    *

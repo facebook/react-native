@@ -26,7 +26,9 @@ type AccessibilityChangeEventName =
   | 'reduceMotionChanged'
   /** iOS only */
   | 'reduceTransparencyChanged'
-  | 'screenReaderChanged';
+  | 'screenReaderChanged'
+  /** iOS only */
+  | 'differentiateWithoutColorChanged';
 
 type AccessibilityChangeEvent = boolean;
 
@@ -85,6 +87,13 @@ export interface AccessibilityInfoStatic {
    * @platform android
    */
   isHighTextContrastEnabled: () => Promise<boolean>;
+
+  /**
+   * Query whether differentiate without color is currently enabled.
+   *
+   * @platform ios
+   */
+  isDifferentiateWithoutColorEnabled: () => Promise<boolean>;
 
   /**
    * Query whether darker system colors is currently enabled.

@@ -38,6 +38,10 @@ export interface Spec extends TurboModule {
     onSuccess: (prefersCrossFadeTransitions: boolean) => void,
     onError: (error: UnsafeObject) => void,
   ) => void;
+  readonly getCurrentDifferentiateWithoutColorState?: (
+    onSuccess: (isDifferentiateWithoutColorEnabled: boolean) => void,
+    onError: (error: UnsafeObject) => void,
+  ) => void;
   readonly getCurrentReduceTransparencyState: (
     onSuccess: (isReduceTransparencyEnabled: boolean) => void,
     onError: (error: UnsafeObject) => void,

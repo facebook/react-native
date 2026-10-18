@@ -91,6 +91,12 @@ RCT_EXPORT_MODULE()
                                                  name:UIAccessibilityReduceTransparencyStatusDidChangeNotification
                                                object:nil];
 
+    [[NSNotificationCenter defaultCenter]
+        addObserver:self
+           selector:@selector(differentiateWithoutColorStatusDidChange:)
+               name:UIAccessibilityShouldDifferentiateWithoutColorDidChangeNotification
+             object:nil];
+
     [[NSNotificationCenter defaultCenter] addObserver:self
                                              selector:@selector(voiceVoiceOverStatusDidChange:)
                                                  name:UIAccessibilityVoiceOverStatusDidChangeNotification
@@ -103,6 +109,7 @@ RCT_EXPORT_MODULE()
     _isReduceMotionEnabled = UIAccessibilityIsReduceMotionEnabled();
     _isDarkerSystemColorsEnabled = UIAccessibilityDarkerSystemColorsEnabled();
     _isReduceTransparencyEnabled = UIAccessibilityIsReduceTransparencyEnabled();
+    _isDifferentiateWithoutColorEnabled = UIAccessibilityShouldDifferentiateWithoutColor();
     _isVoiceOverEnabled = UIAccessibilityIsVoiceOverRunning();
   }
   return self;
@@ -203,6 +210,19 @@ RCT_EXPORT_MODULE()
 #pragma clang diagnostic ignored "-Wdeprecated-declarations"
     [[_moduleRegistry moduleForName:"EventDispatcher"] sendDeviceEventWithName:@"reduceTransparencyChanged"
                                                                           body:@(_isReduceTransparencyEnabled)];
+#pragma clang diagnostic pop
+  }
+}
+
+- (void)differentiateWithoutColorStatusDidChange:(__unused NSNotification *)notification
+{
+  BOOL newValue = UIAccessibilityShouldDifferentiateWithoutColor();
+  if (_isDifferentiateWithoutColorEnabled != newValue) {
+    _isDifferentiateWithoutColorEnabled = newValue;
+#pragma clang diagnostic push
+#pragma clang diagnostic ignored "-Wdeprecated-declarations"
+    [[_moduleRegistry moduleForName:"EventDispatcher"] sendDeviceEventWithName:@"differentiateWithoutColorChanged"
+                                                                          body:@(_isDifferentiateWithoutColorEnabled)];
 #pragma clang diagnostic pop
   }
 }
@@ -409,6 +429,12 @@ static void setMultipliers(
                                   onError:(__unused RCTResponseSenderBlock)onError
 {
   onSuccess(@[ @(_isReduceTransparencyEnabled) ]);
+}
+
+- (void)getCurrentDifferentiateWithoutColorState:(RCTResponseSenderBlock)onSuccess
+                                         onError:(__unused RCTResponseSenderBlock)onError
+{
+  onSuccess(@[ @(_isDifferentiateWithoutColorEnabled) ]);
 }
 
 - (void)getCurrentVoiceOverState:(RCTResponseSenderBlock)onSuccess onError:(__unused RCTResponseSenderBlock)onError

@@ -16,6 +16,9 @@ const mockGetCurrentPrefersCrossFadeTransitionsState = jest.fn(
 const mockGetCurrentDarkerSystemColorsState = jest.fn((onSuccess, onError) =>
   onSuccess(true),
 );
+const mockGetCurrentDifferentiateWithoutColorState = jest.fn(
+  (onSuccess, onError) => onSuccess(true),
+);
 const mockGetCurrentBoldTextState = jest.fn((onSuccess, onError) =>
   onSuccess(true),
 );
@@ -35,6 +38,13 @@ const mockGetCurrentVoiceOverState = jest.fn((onSuccess, onError) =>
   onSuccess(true),
 );
 let mockNativeAccessibilityManagerIOS: {
+  getCurrentDifferentiateWithoutColorState: JestMockFn<
+    [
+      onSuccess: (isDifferentiateWithoutColorEnabled: boolean) => void,
+      onError: (error: Error) => void,
+    ],
+    void,
+  > | null,
   getCurrentPrefersCrossFadeTransitionsState: JestMockFn<
     [
       onSuccess: (prefersCrossFadeTransitions: boolean) => void,
@@ -92,6 +102,8 @@ let mockNativeAccessibilityManagerIOS: {
     void,
   > | null,
 } = {
+  getCurrentDifferentiateWithoutColorState:
+    mockGetCurrentDifferentiateWithoutColorState,
   getCurrentPrefersCrossFadeTransitionsState:
     mockGetCurrentPrefersCrossFadeTransitionsState,
   getCurrentDarkerSystemColorsState: mockGetCurrentDarkerSystemColorsState,
@@ -660,6 +672,54 @@ describe('AccessibilityInfo', () => {
     });
   });
 
+  describe('isDifferentiateWithoutColorEnabled', () => {
+    describe('Android', () => {
+      it('should return immediately', async () => {
+        /* $FlowFixMe[incompatible-type] */
+        Platform.OS = 'android';
+
+        const result =
+          await AccessibilityInfo.isDifferentiateWithoutColorEnabled();
+
+        expect(result).toBe(false);
+      });
+    });
+
+    describe('iOS', () => {
+      it('should call getCurrentDifferentiateWithoutColorState if available', async () => {
+        /* $FlowFixMe[incompatible-type] */
+        Platform.OS = 'ios';
+
+        const result =
+          await AccessibilityInfo.isDifferentiateWithoutColorEnabled();
+
+        expect(mockGetCurrentDifferentiateWithoutColorState).toHaveBeenCalled();
+        expect(result).toBe(true);
+      });
+
+      it('should throw error if getCurrentDifferentiateWithoutColorState is not available', async () => {
+        /* $FlowFixMe[incompatible-type] */
+        Platform.OS = 'ios';
+
+        mockNativeAccessibilityManagerIOS.getCurrentDifferentiateWithoutColorState =
+          null;
+
+        const result: unknown =
+          await AccessibilityInfo.isDifferentiateWithoutColorEnabled().catch(
+            e => e,
+          );
+
+        invariant(
+          result instanceof Error,
+          'Expected isDifferentiateWithoutColorEnabled to reject',
+        );
+        expect(result.message).toEqual(
+          'NativeAccessibilityManagerIOS.getCurrentDifferentiateWithoutColorState is not available',
+        );
+      });
+    });
+  });
+
   describe('isDarkerSystemColorsEnabled', () => {
     describe('Android', () => {
       it('should return immediately', async () => {
@@ -791,6 +851,8 @@ describe('AccessibilityInfo', () => {
 
   afterEach(() => {
     mockNativeAccessibilityManagerIOS = {
+      getCurrentDifferentiateWithoutColorState:
+        mockGetCurrentDifferentiateWithoutColorState,
       getCurrentPrefersCrossFadeTransitionsState:
         mockGetCurrentPrefersCrossFadeTransitionsState,
       getCurrentDarkerSystemColorsState: mockGetCurrentDarkerSystemColorsState,

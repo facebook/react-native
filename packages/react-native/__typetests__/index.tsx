@@ -1464,6 +1464,18 @@ class AccessibilityTest extends React.Component {
   }
 }
 
+AccessibilityInfo.isDifferentiateWithoutColorEnabled().then(isEnabled =>
+  console.log(
+    `AccessibilityInfo.isDifferentiateWithoutColorEnabled => ${isEnabled}`,
+  ),
+);
+AccessibilityInfo.addEventListener(
+  'differentiateWithoutColorChanged',
+  isEnabled =>
+    console.log(
+      `AccessibilityInfo.differentiateWithoutColorChanged => ${isEnabled}`,
+    ),
+);
 AccessibilityInfo.isBoldTextEnabled().then(isEnabled =>
   console.log(`AccessibilityInfo.isBoldTextEnabled => ${isEnabled}`),
 );
