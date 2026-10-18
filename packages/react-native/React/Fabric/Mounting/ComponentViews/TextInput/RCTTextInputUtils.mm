@@ -273,6 +273,111 @@ UITextSmartInsertDeleteType RCTUITextSmartInsertDeleteTypeFromOptionalBool(std::
       : UITextSmartInsertDeleteTypeDefault;
 }
 
+// The end of the composed character sequence (an emoji, a letter with combining marks) that `index` falls in.
+static NSUInteger RCTComposedSequenceBoundaryAtOrAfter(NSString *text, NSUInteger index)
+{
+  if (index == 0 || index >= text.length) {
+    return index;
+  }
+  NSRange sequence = [text rangeOfComposedCharacterSequenceAtIndex:index];
+  return sequence.location < index ? NSMaxRange(sequence) : index;
+}
+
+NSRange RCTTextInputChangedRange(NSString *oldText, NSString *newText)
+{
+  // Read the characters through inline buffers rather than copying both strings.
+  CFStringInlineBuffer oldBuffer;
+  CFStringInlineBuffer newBuffer;
+  CFStringInitInlineBuffer((__bridge CFStringRef)oldText, &oldBuffer, CFRangeMake(0, oldText.length));
+  CFStringInitInlineBuffer((__bridge CFStringRef)newText, &newBuffer, CFRangeMake(0, newText.length));
+  NSUInteger oldLength = oldText.length;
+  NSUInteger newLength = newText.length;
+  NSUInteger shorter = MIN(oldLength, newLength);
+  NSUInteger prefix = 0;
+  while (prefix < shorter &&
+         CFStringGetCharacterFromInlineBuffer(&oldBuffer, prefix) ==
+             CFStringGetCharacterFromInlineBuffer(&newBuffer, prefix)) {
+    prefix++;
+  }
+  NSUInteger suffix = 0;
+  while (suffix < shorter - prefix &&
+         CFStringGetCharacterFromInlineBuffer(&oldBuffer, oldLength - 1 - suffix) ==
+             CFStringGetCharacterFromInlineBuffer(&newBuffer, newLength - 1 - suffix)) {
+    suffix++;
+  }
+  // Don't split a composed character sequence: the edit starts and ends on sequence boundaries of both texts.
+  if (prefix < oldLength) {
+    prefix = MIN(prefix, [oldText rangeOfComposedCharacterSequenceAtIndex:prefix].location);
+  }
+  if (prefix < newLength) {
+    prefix = MIN(prefix, [newText rangeOfComposedCharacterSequenceAtIndex:prefix].location);
+  }
+  suffix = MIN(suffix, shorter - prefix);
+  NSUInteger oldEnd = RCTComposedSequenceBoundaryAtOrAfter(oldText, oldLength - suffix);
+  NSUInteger newEnd = RCTComposedSequenceBoundaryAtOrAfter(newText, newLength - suffix);
+  suffix = MIN(oldLength - oldEnd, newLength - newEnd);
+  return NSMakeRange(prefix, oldLength - prefix - suffix);
+}
+
+BOOL RCTTextInputTextToRestore(
+    NSString *textBeforeUpdate,
+    NSString *typedText,
+    NSString *writtenText,
+    NSRange *range,
+    NSString *_Nullable *_Nonnull text)
+{
+  if ([typedText isEqualToString:textBeforeUpdate]) {
+    return NO;
+  }
+  NSRange replaced = RCTTextInputChangedRange(textBeforeUpdate, typedText);
+  NSUInteger insertedLength = typedText.length - (textBeforeUpdate.length - replaced.length);
+  NSString *inserted = [typedText substringWithRange:NSMakeRange(replaced.location, insertedLength)];
+  if (![writtenText isEqualToString:textBeforeUpdate]) {
+    // JS changed the characters: put back an insertion only, at the same distance from the end of the text.
+    if (replaced.length > 0 || insertedLength == 0) {
+      return NO;
+    }
+    NSUInteger distanceFromEnd = textBeforeUpdate.length - replaced.location;
+    NSUInteger location = writtenText.length > distanceFromEnd ? writtenText.length - distanceFromEnd : 0;
+    if (location < writtenText.length) {
+      location = [writtenText rangeOfComposedCharacterSequenceAtIndex:location].location;
+    }
+    replaced = NSMakeRange(location, 0);
+  }
+  *range = replaced;
+  *text = inserted;
+  return YES;
+}
+
+NSString *_Nullable RCTTextInputTextWithinLength(NSString *text, NSInteger allowedLength)
+{
+  if (allowedLength > 0 && (NSInteger)text.length > allowedLength) {
+    // make sure unicode characters that are longer than 16 bits (such as emojis) are not cut off
+    NSRange cutOffCharacterRange = [text rangeOfComposedCharacterSequenceAtIndex:allowedLength - 1];
+    if ((NSInteger)NSMaxRange(cutOffCharacterRange) > allowedLength) {
+      // the character at the length limit takes more than 16bits, truncation should end at the character before
+      allowedLength = cutOffCharacterRange.location;
+    }
+  }
+
+  if (allowedLength <= 0) {
+    return nil;
+  }
+
+  return allowedLength > (NSInteger)text.length ? text : [text substringToIndex:allowedLength];
+}
+
+NSInteger RCTTextInputOffsetAfterEdit(NSInteger offset, NSRange range, NSUInteger insertedLength)
+{
+  if (offset >= (NSInteger)NSMaxRange(range)) {
+    return offset + (NSInteger)insertedLength - (NSInteger)range.length;
+  }
+  if (offset >= (NSInteger)range.location) {
+    return range.location + insertedLength;
+  }
+  return offset;
+}
+
 #if !TARGET_OS_TV
 UIDataDetectorTypes RCTUITextViewDataDetectorTypesFromStringVector(const std::vector<std::string> &dataDetectorTypes)
 {

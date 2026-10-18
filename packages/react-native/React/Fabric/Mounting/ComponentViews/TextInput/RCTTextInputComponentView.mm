@@ -79,6 +79,30 @@ static NSSet<NSNumber *> *returnKeyTypesSet;
    */
   NSDictionary<NSAttributedStringKey, id> *_originalTypingAttributes;
 
+  /*
+   * While JS's text is written into the field, UIKit can deliver the keys queued behind `-setAttributedText:` inside
+   * the write, and the write then replaces them. `_textBeforeUpdateFromJS` is the field's text before the write (nil
+   * outside one). A key that goes through -textInputShouldChangeText:inRange: during the write sets
+   * `_keyTypedDuringUpdateFromJS`, and the change UIKit reports next is recorded in `_textTypedDuringUpdateFromJS`
+   * (and the selection it left in `_selectionTypedDuringUpdateFromJS`).
+   * Other changes reported during the write are the write's own (a text view reports it). A key that leaves marked
+   * text (IME composition) sets `_markedTextDuringUpdateFromJS`: composition is not put back as plain text.
+   * See -_setAttributedStringFromJS: and -_restoreTextTypedDuringUpdateFromJS:writtenText:.
+   */
+  NSString *_textBeforeUpdateFromJS;
+  NSString *_textTypedDuringUpdateFromJS;
+  AttributedString::Range _selectionTypedDuringUpdateFromJS;
+  BOOL _keyTypedDuringUpdateFromJS;
+  BOOL _markedTextDuringUpdateFromJS;
+  /*
+   * While -_restoreTextTypedDuringUpdateFromJS:writtenText: puts keys back, the range its edit replaces and the length
+   * it adds (both 0 outside it). UIKit can deliver more queued keys inside that edit, before it applies: their
+   * `maxLength` check counts that length, and a key that edits text before the end of that range is dropped (see
+   * -textInputShouldChangeText:inRange:).
+   */
+  NSRange _rangeBeingRestored;
+  NSInteger _lengthBeingRestored;
+
   BOOL _hasInputAccessoryView;
   CGSize _previousContentSize;
 }
@@ -361,10 +385,127 @@ static NSSet<NSNumber *> *returnKeyTypesSet;
   }
 
   if (_mostRecentEventCount == _state->getData().mostRecentEventCount) {
-    _comingFromJS = YES;
-    [self _setAttributedString:RCTNSAttributedStringFromAttributedStringBox(data.attributedStringBox)];
-    _comingFromJS = NO;
+    [self _setAttributedStringFromJS:RCTNSAttributedStringFromAttributedStringBox(data.attributedStringBox)];
   }
+}
+
+// Writes JS's text into the field and puts back the keys UIKit delivered during the write.
+- (void)_setAttributedStringFromJS:(NSAttributedString *)attributedString
+{
+  NSString *textBeforeUpdate = [self _beginUpdateFromJS];
+  [self _setAttributedString:attributedString];
+  _comingFromJS = NO;
+  [self _restoreTextTypedDuringUpdateFromJS:textBeforeUpdate writtenText:attributedString.string];
+}
+
+// Starts a write from JS (`_comingFromJS`): returns the field's text before it.
+- (NSString *)_beginUpdateFromJS
+{
+  _comingFromJS = YES;
+  _textBeforeUpdateFromJS = [_backedTextInputView.attributedText.string copy];
+  _textTypedDuringUpdateFromJS = nil;
+  _selectionTypedDuringUpdateFromJS = {};
+  _keyTypedDuringUpdateFromJS = NO;
+  _markedTextDuringUpdateFromJS = NO;
+  return _textBeforeUpdateFromJS;
+}
+
+- (void)_setSelectedRange:(AttributedString::Range)range
+{
+  UITextPosition *start = [_backedTextInputView positionFromPosition:_backedTextInputView.beginningOfDocument
+                                                              offset:range.location];
+  UITextPosition *end = [_backedTextInputView positionFromPosition:_backedTextInputView.beginningOfDocument
+                                                            offset:range.location + range.length];
+  if (start != nil && end != nil) {
+    [_backedTextInputView setSelectedTextRange:[_backedTextInputView textRangeFromPosition:start toPosition:end]
+                                notifyDelegate:NO];
+  }
+}
+
+- (void)_endUpdateFromJS
+{
+  _textBeforeUpdateFromJS = nil;
+  _textTypedDuringUpdateFromJS = nil;
+  _selectionTypedDuringUpdateFromJS = {};
+  _keyTypedDuringUpdateFromJS = NO;
+  _markedTextDuringUpdateFromJS = NO;
+}
+
+// Applies the edit the user made during the write from JS (`textBeforeUpdate` -> the text the keys left, see
+// RCTTextInputTextToRestore) to the text JS wrote, within `maxLength`, and reports it as typing (-textInputDidChange,
+// then -textInputDidChangeSelection), so JS receives those keys and can still change or reject them. The selection is
+// mapped through the edit: JS's selection (setTextAndSelection) or the caret the write restored. Nothing is put back
+// while the user composes text (IME marked text): composition is not committed as plain text.
+- (void)_restoreTextTypedDuringUpdateFromJS:(NSString *)textBeforeUpdate writtenText:(NSString *)writtenText
+{
+  NSString *typedText = _textTypedDuringUpdateFromJS;
+  AttributedString::Range typedSelection = _selectionTypedDuringUpdateFromJS;
+  BOOL markedText = _markedTextDuringUpdateFromJS || _backedTextInputView.markedTextRange != nil;
+  [self _endUpdateFromJS];
+  if (typedText == nil || markedText) {
+    return;
+  }
+  if (![_backedTextInputView.attributedText.string isEqualToString:writtenText]) {
+    // The keys arrived after the write had replaced the text (a text view can deliver them there), so the field
+    // still has them: only report them. The write then put the caret back where it was before the keys: put it
+    // after them again.
+    if ([_backedTextInputView.attributedText.string isEqualToString:typedText]) {
+      [self _setSelectedRange:typedSelection];
+    }
+    [self textInputDidChange];
+    [self textInputDidChangeSelection];
+    return;
+  }
+  NSRange replaced;
+  NSString *inserted;
+  if (!RCTTextInputTextToRestore(textBeforeUpdate, typedText, writtenText, &replaced, &inserted)) {
+    return;
+  }
+  const auto &props = static_cast<const TextInputProps &>(*_props);
+  if (inserted.length > 0 && props.maxLength < std::numeric_limits<int>::max()) {
+    // UIKit checked these keys against the text before the write.
+    inserted = RCTTextInputTextWithinLength(
+        inserted, (NSInteger)props.maxLength - (NSInteger)writtenText.length + (NSInteger)replaced.length);
+    if (inserted == nil) {
+      return;
+    }
+  }
+
+  AttributedString::Range selection = [self _selectionRange];
+  UITextPosition *replacedStart = [_backedTextInputView positionFromPosition:_backedTextInputView.beginningOfDocument
+                                                                      offset:replaced.location];
+  UITextPosition *replacedEnd = [_backedTextInputView positionFromPosition:replacedStart offset:replaced.length];
+  UITextRange *replacedRange = [_backedTextInputView textRangeFromPosition:replacedStart toPosition:replacedEnd];
+  if (replacedRange == nil) {
+    return;
+  }
+  // Put the keys back as UIKit inserts typed text: as an edit the user can undo, with the attributes of JS's text
+  // before them (the typing attributes, set after the caret moved). UIKit can deliver more queued keys inside this
+  // edit, before it applies: the caret is put after `replacedRange`, so they land after it, stay in the field (only
+  // `replacedRange` is replaced) and are reported with it.
+  [_backedTextInputView setSelectedTextRange:[_backedTextInputView textRangeFromPosition:replacedEnd
+                                                                              toPosition:replacedEnd]
+                              notifyDelegate:NO];
+  NSAttributedString *textBeforeRestore = _backedTextInputView.attributedText;
+  [self _updateTypingAttributesSampledAt:replaced.location];
+  NSInteger lengthAdded = (NSInteger)inserted.length - (NSInteger)replaced.length;
+  _comingFromJS = YES;
+  _rangeBeingRestored = replaced;
+  _lengthBeingRestored = lengthAdded;
+  [_backedTextInputView replaceRange:replacedRange withText:inserted];
+  _rangeBeingRestored = NSMakeRange(0, 0);
+  _lengthBeingRestored = 0;
+  // The keys UIKit delivered inside the edit follow the restored ones: the selection moves past them too.
+  NSInteger delivered =
+      (NSInteger)_backedTextInputView.attributedText.length - (NSInteger)textBeforeRestore.length - lengthAdded;
+  NSUInteger insertedLength = inserted.length + (NSUInteger)MAX(delivered, (NSInteger)0);
+  NSInteger start = RCTTextInputOffsetAfterEdit(selection.location, replaced, insertedLength);
+  NSInteger end = RCTTextInputOffsetAfterEdit(selection.location + selection.length, replaced, insertedLength);
+  [self _setSelectedRange:{.location = (int)start, .length = (int)(end - start)}];
+  [self _updateTypingAttributes];
+  _comingFromJS = NO;
+  [self textInputDidChange];
+  [self textInputDidChangeSelection];
 }
 
 - (void)updateLayoutMetrics:(const LayoutMetrics &)layoutMetrics
@@ -466,26 +607,24 @@ static NSSet<NSNumber *> *returnKeyTypesSet;
     }
   }
 
+  NSString *allowedText = text;
   if (props.maxLength < std::numeric_limits<int>::max()) {
-    NSInteger allowedLength = props.maxLength - _backedTextInputView.attributedText.string.length + range.length;
-
-    if (allowedLength > 0 && text.length > allowedLength) {
-      // make sure unicode characters that are longer than 16 bits (such as emojis) are not cut off
-      NSRange cutOffCharacterRange = [text rangeOfComposedCharacterSequenceAtIndex:allowedLength - 1];
-      if (cutOffCharacterRange.location + cutOffCharacterRange.length > allowedLength) {
-        // the character at the length limit takes more than 16bits, truncation should end at the character before
-        allowedLength = cutOffCharacterRange.location;
-      }
-    }
-
-    if (allowedLength <= 0) {
-      return nil;
-    }
-
-    return allowedLength > text.length ? text : [text substringToIndex:allowedLength];
+    allowedText = RCTTextInputTextWithinLength(
+        text,
+        (NSInteger)props.maxLength - (NSInteger)_backedTextInputView.attributedText.string.length -
+            _lengthBeingRestored + (NSInteger)range.length);
   }
 
-  return text;
+  if (range.location < NSMaxRange(_rangeBeingRestored)) {
+    // UIKit delivers this key inside the edit that puts keys back, before it applies, and it edits text before the
+    // end of the range that edit replaces (a backspace): the edit would then replace other text. The key is dropped.
+    return nil;
+  }
+  if (_textBeforeUpdateFromJS != nil) {
+    // UIKit delivers this key during a write from JS: see -textInputDidChange.
+    _keyTypedDuringUpdateFromJS = YES;
+  }
+  return allowedText;
 }
 
 - (BOOL)textInputShouldChangeTextInRange:(NSRange)range replacementText:(NSString *)text
@@ -496,6 +635,14 @@ static NSSet<NSNumber *> *returnKeyTypesSet;
 - (void)textInputDidChange
 {
   if (_comingFromJS) {
+    // The change a key made during a write from JS (see `_textBeforeUpdateFromJS`). Other changes reported during the
+    // write are the write's own: a text view reports the text JS wrote.
+    if (_keyTypedDuringUpdateFromJS) {
+      _keyTypedDuringUpdateFromJS = NO;
+      _textTypedDuringUpdateFromJS = [_backedTextInputView.attributedText.string copy];
+      _selectionTypedDuringUpdateFromJS = [self _selectionRange];
+      _markedTextDuringUpdateFromJS = _markedTextDuringUpdateFromJS || _backedTextInputView.markedTextRange != nil;
+    }
     return;
   }
 
@@ -595,12 +742,14 @@ static NSSet<NSNumber *> *returnKeyTypesSet;
   if (_mostRecentEventCount != eventCount) {
     return;
   }
-  _comingFromJS = YES;
+  NSString *textBeforeUpdate = [self _beginUpdateFromJS];
+  NSString *writtenText = nil;
   if (value && ![value isEqualToString:_backedTextInputView.attributedText.string]) {
     NSAttributedString *attributedString =
         [[NSAttributedString alloc] initWithString:value attributes:_backedTextInputView.defaultTextAttributes];
     [self _setAttributedString:attributedString];
     [self _updateState];
+    writtenText = attributedString.string;
   }
 
   UITextPosition *startPosition = [_backedTextInputView positionFromPosition:_backedTextInputView.beginningOfDocument
@@ -617,6 +766,13 @@ static NSSet<NSNumber *> *returnKeyTypesSet;
     [_backedTextInputView scrollRangeToVisible:NSMakeRange(offsetEnd, 0)];
   }
   _comingFromJS = NO;
+  // A controlled `value` that JS changed (e.g. a transform in onChangeText) is written here: put back the keys UIKit
+  // delivered during the write, keeping JS's selection.
+  if (writtenText != nil) {
+    [self _restoreTextTypedDuringUpdateFromJS:textBeforeUpdate writtenText:writtenText];
+  } else {
+    [self _endUpdateFromJS];
+  }
 }
 
 #pragma mark - Default input accessory view
@@ -826,8 +982,16 @@ static NSSet<NSNumber *> *returnKeyTypesSet;
   if (_backedTextInputView.attributedText.length > 0 && _backedTextInputView.selectedTextRange != nil) {
     NSUInteger offsetStart = [_backedTextInputView offsetFromPosition:_backedTextInputView.beginningOfDocument
                                                            toPosition:_backedTextInputView.selectedTextRange.start];
+    [self _updateTypingAttributesSampledAt:offsetStart];
+  }
+}
 
-    NSUInteger samplePoint = offsetStart == 0 ? 0 : offsetStart - 1;
+// The typing attributes for text inserted at `offset`: the attributes of the character before it, or after it at the
+// start of the field. Used for the caret (-_updateTypingAttributes) and for keys put back after a write from JS.
+- (void)_updateTypingAttributesSampledAt:(NSUInteger)offset
+{
+  if (_backedTextInputView.attributedText.length > 0) {
+    NSUInteger samplePoint = offset == 0 ? 0 : offset - 1;
     _backedTextInputView.typingAttributes = [_backedTextInputView.attributedText attributesAtIndex:samplePoint
                                                                                     effectiveRange:NULL];
   }

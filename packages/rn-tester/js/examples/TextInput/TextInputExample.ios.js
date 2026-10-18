@@ -356,15 +356,31 @@ const styles = StyleSheet.create({
   typingLineHeight: {
     lineHeight: 22,
   },
+  typingMultiline: {
+    height: 60,
+  },
+  typingNested: {
+    color: '#0a63d6',
+    fontWeight: '600',
+  },
 });
 
 // Type quickly into each empty field: every key must land, including the ones
 // typed while the field's text makes a round trip through React state
-// (react/react-native#58904). JS's copy of each value is shown below.
+// (react/react-native#58904). JS's copy of each value is shown below. In the
+// multiline field, type "abc" then press "Append": it must read "abc def"
+// once. The formatted field turns digits into "12-34" and never exceeds 5
+// characters.
 function TypingRoundTripExample(): React.Node {
   const [uncontrolled, setUncontrolled] = React.useState('');
   const [controlled, setControlled] = React.useState('');
   const [lineHeight, setLineHeight] = React.useState('');
+  const [nested, setNested] = React.useState('');
+  const [nestedMultiline, setNestedMultiline] = React.useState('');
+  const [uppercase, setUppercase] = React.useState('');
+  const [stripped, setStripped] = React.useState('');
+  const [multiline, setMultiline] = React.useState('');
+  const [formatted, setFormatted] = React.useState('');
   const common = {
     autoCapitalize: 'none' as const,
     autoCorrect: false,
@@ -392,8 +408,68 @@ function TypingRoundTripExample(): React.Node {
         value={lineHeight}
         onChangeText={setLineHeight}
       />
+      <TextInput {...common} testID="typing-nested" onChangeText={setNested}>
+        <Text style={styles.typingNested}>{nested}</Text>
+      </TextInput>
+      <TextInput
+        {...common}
+        testID="typing-nested-multiline"
+        multiline={true}
+        onChangeText={setNestedMultiline}>
+        <Text style={styles.typingNested}>{nestedMultiline}</Text>
+      </TextInput>
+      <TextInput
+        {...common}
+        testID="typing-uppercase"
+        value={uppercase}
+        onChangeText={text => setUppercase(text.toUpperCase())}
+      />
+      <TextInput
+        {...common}
+        testID="typing-strip-slashes"
+        value={stripped}
+        onChangeText={text => setStripped(text.replace(/\//g, ''))}
+      />
+      <TextInput
+        {...common}
+        testID="typing-multiline"
+        multiline={true}
+        style={[styles.typingInput, styles.typingMultiline]}
+        value={multiline}
+        onChangeText={setMultiline}
+      />
+      <Button
+        testID="typing-multiline-append"
+        title="Append ' def'"
+        onPress={() => setMultiline(text => text + ' def')}
+      />
+      <TextInput
+        {...common}
+        testID="typing-max-length-formatted"
+        keyboardType="number-pad"
+        maxLength={5}
+        value={formatted}
+        onChangeText={text => {
+          const digits = text.replace(/[^0-9]/g, '');
+          setFormatted(
+            digits.length > 2
+              ? digits.slice(0, 2) + '-' + digits.slice(2)
+              : digits,
+          );
+        }}
+      />
       <RNTesterText testID="typing-js-values">
-        {[uncontrolled, controlled, lineHeight].join('|')}
+        {[
+          uncontrolled,
+          controlled,
+          lineHeight,
+          nested,
+          nestedMultiline,
+          uppercase,
+          stripped,
+          multiline,
+          formatted,
+        ].join('|')}
       </RNTesterText>
     </View>
   );
