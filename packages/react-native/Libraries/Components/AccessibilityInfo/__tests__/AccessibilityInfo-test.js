@@ -115,6 +115,7 @@ let mockNativeAccessibilityManagerIOS: {
 };
 
 const ANDROID_RECOMMENDED_TIMEOUT = 6000;
+const mockIsBoldTextEnabledAndroid = jest.fn(onSuccess => onSuccess(true));
 const mockIsHighTextContrastEnabled = jest.fn(onSuccess => onSuccess(true));
 const mockIsGrayscaleEnabled = jest.fn(onSuccess => onSuccess(true));
 const mockIsInvertColorsEnabled = jest.fn(onSuccess => onSuccess(true));
@@ -125,6 +126,10 @@ const mockGetRecommendedTimeoutMillis = jest.fn((originalTimeout, onSuccess) =>
   onSuccess(ANDROID_RECOMMENDED_TIMEOUT),
 );
 let mockNativeAccessibilityInfoAndroid: {
+  isBoldTextEnabled: JestMockFn<
+    [onSuccess: (isBoldTextEnabled: boolean) => void],
+    void,
+  > | null,
   isHighTextContrastEnabled: JestMockFn<
     [onSuccess: (isHighTextContrastEnabled: boolean) => void],
     void,
@@ -154,6 +159,7 @@ let mockNativeAccessibilityInfoAndroid: {
     void,
   > | null,
 } = {
+  isBoldTextEnabled: mockIsBoldTextEnabledAndroid,
   isHighTextContrastEnabled: mockIsHighTextContrastEnabled,
   isGrayscaleEnabled: mockIsGrayscaleEnabled,
   isInvertColorsEnabled: mockIsInvertColorsEnabled,
@@ -187,9 +193,21 @@ describe('AccessibilityInfo', () => {
 
   describe('isBoldTextEnabled', () => {
     describe('Android', () => {
-      it('should return immediately', async () => {
+      it('should call isBoldTextEnabled if available', async () => {
         /* $FlowFixMe[incompatible-type] */
         Platform.OS = 'android';
+
+        const isBoldTextEnabled = await AccessibilityInfo.isBoldTextEnabled();
+
+        expect(mockIsBoldTextEnabledAndroid).toHaveBeenCalled();
+        expect(isBoldTextEnabled).toBe(true);
+      });
+
+      it('should return false if isBoldTextEnabled is not available', async () => {
+        /* $FlowFixMe[incompatible-type] */
+        Platform.OS = 'android';
+
+        mockNativeAccessibilityInfoAndroid.isBoldTextEnabled = null;
 
         const isBoldTextEnabled = await AccessibilityInfo.isBoldTextEnabled();
 
@@ -860,6 +878,7 @@ describe('AccessibilityInfo', () => {
       mockNativeAccessibilityManagerIOS;
 
     mockNativeAccessibilityInfoAndroid = {
+      isBoldTextEnabled: mockIsBoldTextEnabledAndroid,
       isHighTextContrastEnabled: mockIsHighTextContrastEnabled,
       isGrayscaleEnabled: mockIsGrayscaleEnabled,
       isInvertColorsEnabled: mockIsInvertColorsEnabled,

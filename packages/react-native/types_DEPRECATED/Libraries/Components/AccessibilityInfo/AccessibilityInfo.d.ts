@@ -13,7 +13,7 @@ import {EmitterSubscription} from '../../vendor/emitter/EventEmitter';
 type AccessibilityChangeEventName =
   /** Android only */
   | 'accessibilityServiceChanged'
-  /** iOS only */
+  /** On Android, requires Android 12 (API 31) or later */
   | 'boldTextChanged'
   /** @deprecated Maps to 'screenReaderChanged' */
   | 'change'
@@ -57,7 +57,7 @@ export interface AccessibilityInfoStatic {
   /**
    * Query whether bold text is currently enabled.
    *
-   * @platform ios
+   * On Android, requires Android 12 (API 31) or later.
    */
   isBoldTextEnabled: () => Promise<boolean>;
 

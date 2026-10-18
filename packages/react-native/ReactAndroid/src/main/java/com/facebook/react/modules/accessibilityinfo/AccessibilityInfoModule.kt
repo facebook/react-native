@@ -7,8 +7,10 @@
 
 package com.facebook.react.modules.accessibilityinfo
 
+import android.content.ComponentCallbacks
 import android.content.ContentResolver
 import android.content.Context
+import android.content.res.Configuration
 import android.database.ContentObserver
 import android.net.Uri
 import android.os.Build
@@ -72,6 +74,22 @@ internal class AccessibilityInfoModule(context: ReactApplicationContext) :
           }
         }
       }
+  // Listener that is notified when the bold text setting (font weight adjustment) changes.
+  private val boldTextCallbacks: ComponentCallbacks =
+      object : ComponentCallbacks {
+        override fun onConfigurationChanged(newConfig: Configuration) {
+          if (reactApplicationContext.hasActiveReactInstance()) {
+            updateAndSendBoldTextChangeEvent()
+          }
+        }
+
+        @Deprecated(
+            "onLowMemory is deprecated, use onTrimMemory instead.",
+            ReplaceWith("onTrimMemory(level)"),
+        )
+        override fun onLowMemory(): Unit = Unit
+      }
+  private var boldTextCallbacksRegistered = false
   private val accessibilityManager: AccessibilityManager?
   private val touchExplorationStateChangeListener: ReactTouchExplorationStateChangeListener =
       ReactTouchExplorationStateChangeListener()
@@ -80,6 +98,7 @@ internal class AccessibilityInfoModule(context: ReactApplicationContext) :
   private val contentResolver: ContentResolver
   private var reduceMotionEnabled = false
   private var highTextContrastEnabled = false
+  private var boldTextEnabled = false
   private var touchExplorationEnabled = false
   private var accessibilityServiceEnabled = false
   private var recommendedTimeout = 0
@@ -95,6 +114,7 @@ internal class AccessibilityInfoModule(context: ReactApplicationContext) :
     accessibilityServiceEnabled = accessibilityManager?.isEnabled ?: false
     reduceMotionEnabled = isReduceMotionEnabledValue
     highTextContrastEnabled = isHighTextContrastEnabledValue
+    boldTextEnabled = isBoldTextEnabledValue
     grayscaleModeEnabled = isGrayscaleEnabledValue
   }
 
@@ -154,6 +174,11 @@ internal class AccessibilityInfoModule(context: ReactApplicationContext) :
       ) != 0
     }
 
+  private val isBoldTextEnabledValue: Boolean
+    get() =
+        Build.VERSION.SDK_INT >= Build.VERSION_CODES.S &&
+            isBoldTextEnabled(reactApplicationContext.resources.configuration.fontWeightAdjustment)
+
   override fun isReduceMotionEnabled(successCallback: Callback) {
     successCallback.invoke(reduceMotionEnabled)
   }
@@ -168,6 +193,10 @@ internal class AccessibilityInfoModule(context: ReactApplicationContext) :
 
   override fun isHighTextContrastEnabled(successCallback: Callback) {
     successCallback.invoke(highTextContrastEnabled)
+  }
+
+  override fun isBoldTextEnabled(successCallback: Callback) {
+    successCallback.invoke(boldTextEnabled)
   }
 
   override fun isTouchExplorationEnabled(successCallback: Callback) {
@@ -208,6 +237,15 @@ internal class AccessibilityInfoModule(context: ReactApplicationContext) :
     }
   }
 
+  private fun updateAndSendBoldTextChangeEvent() {
+    val isBoldTextEnabled = isBoldTextEnabledValue
+    if (boldTextEnabled != isBoldTextEnabled) {
+      boldTextEnabled = isBoldTextEnabled
+      getReactApplicationContextIfActiveOrWarn()
+          ?.emitDeviceEvent(BOLD_TEXT_EVENT_NAME, boldTextEnabled)
+    }
+  }
+
   private fun updateAndSendTouchExplorationChangeEvent(enabled: Boolean) {
     if (touchExplorationEnabled != enabled) {
       touchExplorationEnabled = enabled
@@ -243,12 +281,17 @@ internal class AccessibilityInfoModule(context: ReactApplicationContext) :
     val highTextContrastUri =
         Settings.Secure.getUriFor(ACCESSIBILITY_HIGH_TEXT_CONTRAST_ENABLED_CONSTANT)
     contentResolver.registerContentObserver(highTextContrastUri, false, highTextContrastObserver)
+    if (!boldTextCallbacksRegistered) {
+      reactApplicationContext.applicationContext.registerComponentCallbacks(boldTextCallbacks)
+      boldTextCallbacksRegistered = true
+    }
     updateAndSendTouchExplorationChangeEvent(
         accessibilityManager?.isTouchExplorationEnabled == true,
     )
     updateAndSendAccessibilityServiceChangeEvent(accessibilityManager?.isEnabled == true)
     updateAndSendReduceMotionChangeEvent()
     updateAndSendHighTextContrastChangeEvent()
+    updateAndSendBoldTextChangeEvent()
     updateAndSendInvertColorsChangeEvent()
     updateAndSendGrayscaleModeChangeEvent()
   }
@@ -260,6 +303,14 @@ internal class AccessibilityInfoModule(context: ReactApplicationContext) :
     accessibilityManager?.removeAccessibilityStateChangeListener(accessibilityServiceChangeListener)
     contentResolver.unregisterContentObserver(animationScaleObserver)
     contentResolver.unregisterContentObserver(highTextContrastObserver)
+    unregisterBoldTextCallbacks()
+  }
+
+  private fun unregisterBoldTextCallbacks() {
+    if (boldTextCallbacksRegistered) {
+      reactApplicationContext.applicationContext.unregisterComponentCallbacks(boldTextCallbacks)
+      boldTextCallbacksRegistered = false
+    }
   }
 
   override fun initialize() {
@@ -270,10 +321,12 @@ internal class AccessibilityInfoModule(context: ReactApplicationContext) :
     updateAndSendAccessibilityServiceChangeEvent(accessibilityManager?.isEnabled == true)
     updateAndSendReduceMotionChangeEvent()
     updateAndSendHighTextContrastChangeEvent()
+    updateAndSendBoldTextChangeEvent()
   }
 
   override fun invalidate() {
     reactApplicationContext.removeLifecycleEventListener(this)
+    unregisterBoldTextCallbacks()
     super.invalidate()
   }
 
@@ -318,5 +371,14 @@ internal class AccessibilityInfoModule(context: ReactApplicationContext) :
         "high_text_contrast_enabled" // constant is marked with @hide
     private const val INVERT_COLOR_EVENT_NAME = "invertColorDidChange"
     private const val GRAYSCALE_MODE_EVENT_NAME = "grayscaleModeDidChange"
+    private const val BOLD_TEXT_EVENT_NAME = "boldTextDidChange"
+
+    /**
+     * Bold text raises the font weight adjustment. A negative adjustment means lighter text, and
+     * [Configuration.FONT_WEIGHT_ADJUSTMENT_UNDEFINED] means the value is not known.
+     */
+    internal fun isBoldTextEnabled(fontWeightAdjustment: Int): Boolean =
+        fontWeightAdjustment != Configuration.FONT_WEIGHT_ADJUSTMENT_UNDEFINED &&
+            fontWeightAdjustment > 0
   }
 }

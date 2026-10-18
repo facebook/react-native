@@ -1392,21 +1392,17 @@ class EnabledExamples extends React.Component<{}> {
   render(): React.Node {
     return (
       <View style={styles.sectionContainer}>
+        <RNTesterBlock title="isBoldTextEnabled()">
+          <EnabledExample test="bold text" eventListener="boldTextChanged" />
+        </RNTesterBlock>
+
         {Platform.OS === 'ios' ? (
-          <>
-            <RNTesterBlock title="isBoldTextEnabled()">
-              <EnabledExample
-                test="bold text"
-                eventListener="boldTextChanged"
-              />
-            </RNTesterBlock>
-            <RNTesterBlock title="isReduceTransparencyEnabled()">
-              <EnabledExample
-                test="reduce transparency"
-                eventListener="reduceTransparencyChanged"
-              />
-            </RNTesterBlock>
-          </>
+          <RNTesterBlock title="isReduceTransparencyEnabled()">
+            <EnabledExample
+              test="reduce transparency"
+              eventListener="reduceTransparencyChanged"
+            />
+          </RNTesterBlock>
         ) : null}
 
         {Platform.OS === 'android' ? (
@@ -1577,13 +1573,13 @@ class DisplayOptionsStatusExample extends React.Component<{}> {
           optionChecker={AccessibilityInfo.isScreenReaderEnabled}
           notification={'screenReaderChanged'}
         />
+        <DisplayOptionStatusExample
+          optionName={'Bold Text'}
+          optionChecker={AccessibilityInfo.isBoldTextEnabled}
+          notification={'boldTextChanged'}
+        />
         {isAndroid ? null : (
           <>
-            <DisplayOptionStatusExample
-              optionName={'Bold Text'}
-              optionChecker={AccessibilityInfo.isBoldTextEnabled}
-              notification={'boldTextChanged'}
-            />
             <DisplayOptionStatusExample
               optionName={'Grayscale'}
               optionChecker={AccessibilityInfo.isGrayscaleEnabled}
