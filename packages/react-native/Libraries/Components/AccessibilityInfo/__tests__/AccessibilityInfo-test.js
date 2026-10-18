@@ -16,6 +16,9 @@ const mockGetCurrentPrefersCrossFadeTransitionsState = jest.fn(
 const mockGetCurrentDarkerSystemColorsState = jest.fn((onSuccess, onError) =>
   onSuccess(true),
 );
+const mockGetCurrentOnOffSwitchLabelsState = jest.fn((onSuccess, onError) =>
+  onSuccess(true),
+);
 const mockGetCurrentBoldTextState = jest.fn((onSuccess, onError) =>
   onSuccess(true),
 );
@@ -35,6 +38,13 @@ const mockGetCurrentVoiceOverState = jest.fn((onSuccess, onError) =>
   onSuccess(true),
 );
 let mockNativeAccessibilityManagerIOS: {
+  getCurrentOnOffSwitchLabelsState: JestMockFn<
+    [
+      onSuccess: (isOnOffSwitchLabelsEnabled: boolean) => void,
+      onError: (error: Error) => void,
+    ],
+    void,
+  > | null,
   getCurrentPrefersCrossFadeTransitionsState: JestMockFn<
     [
       onSuccess: (prefersCrossFadeTransitions: boolean) => void,
@@ -92,6 +102,7 @@ let mockNativeAccessibilityManagerIOS: {
     void,
   > | null,
 } = {
+  getCurrentOnOffSwitchLabelsState: mockGetCurrentOnOffSwitchLabelsState,
   getCurrentPrefersCrossFadeTransitionsState:
     mockGetCurrentPrefersCrossFadeTransitionsState,
   getCurrentDarkerSystemColorsState: mockGetCurrentDarkerSystemColorsState,
@@ -660,6 +671,50 @@ describe('AccessibilityInfo', () => {
     });
   });
 
+  describe('isOnOffSwitchLabelsEnabled', () => {
+    describe('Android', () => {
+      it('should return immediately', async () => {
+        /* $FlowFixMe[incompatible-type] */
+        Platform.OS = 'android';
+
+        const result = await AccessibilityInfo.isOnOffSwitchLabelsEnabled();
+
+        expect(result).toBe(false);
+      });
+    });
+
+    describe('iOS', () => {
+      it('should call getCurrentOnOffSwitchLabelsState if available', async () => {
+        /* $FlowFixMe[incompatible-type] */
+        Platform.OS = 'ios';
+
+        const result = await AccessibilityInfo.isOnOffSwitchLabelsEnabled();
+
+        expect(mockGetCurrentOnOffSwitchLabelsState).toHaveBeenCalled();
+        expect(result).toBe(true);
+      });
+
+      it('should throw error if getCurrentOnOffSwitchLabelsState is not available', async () => {
+        /* $FlowFixMe[incompatible-type] */
+        Platform.OS = 'ios';
+
+        mockNativeAccessibilityManagerIOS.getCurrentOnOffSwitchLabelsState =
+          null;
+
+        const result: unknown =
+          await AccessibilityInfo.isOnOffSwitchLabelsEnabled().catch(e => e);
+
+        invariant(
+          result instanceof Error,
+          'Expected isOnOffSwitchLabelsEnabled to reject',
+        );
+        expect(result.message).toEqual(
+          'NativeAccessibilityManagerIOS.getCurrentOnOffSwitchLabelsState is not available',
+        );
+      });
+    });
+  });
+
   describe('isDarkerSystemColorsEnabled', () => {
     describe('Android', () => {
       it('should return immediately', async () => {
@@ -791,6 +846,7 @@ describe('AccessibilityInfo', () => {
 
   afterEach(() => {
     mockNativeAccessibilityManagerIOS = {
+      getCurrentOnOffSwitchLabelsState: mockGetCurrentOnOffSwitchLabelsState,
       getCurrentPrefersCrossFadeTransitionsState:
         mockGetCurrentPrefersCrossFadeTransitionsState,
       getCurrentDarkerSystemColorsState: mockGetCurrentDarkerSystemColorsState,

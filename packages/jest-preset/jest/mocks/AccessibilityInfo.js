@@ -20,6 +20,9 @@ const AccessibilityInfo = {
   isAccessibilityServiceEnabled: jest.fn(() =>
     Promise.resolve(false),
   ) as JestMockFn<$FlowFixMe, $FlowFixMe>,
+  isOnOffSwitchLabelsEnabled: jest.fn(() =>
+    Promise.resolve(false),
+  ) as JestMockFn<$FlowFixMe, $FlowFixMe>,
   isBoldTextEnabled: jest.fn(() => Promise.resolve(false)) as JestMockFn<
     $FlowFixMe,
     $FlowFixMe,

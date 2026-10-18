@@ -30,6 +30,7 @@ type AccessibilityEventDefinitionsIOS = {
   boldTextChanged: [boolean],
   darkerSystemColorsChanged: [boolean],
   reduceTransparencyChanged: [boolean],
+  onOffSwitchLabelsChanged: [boolean],
 };
 
 type AccessibilityEventDefinitions = {
@@ -67,6 +68,7 @@ const EventNames: Map<keyof AccessibilityEventDefinitions, string> =
         ['reduceTransparencyChanged', 'reduceTransparencyChanged'],
         ['screenReaderChanged', 'screenReaderChanged'],
         ['darkerSystemColorsChanged', 'darkerSystemColorsChanged'],
+        ['onOffSwitchLabelsChanged', 'onOffSwitchLabelsChanged'],
       ]);
 
 /**
@@ -288,6 +290,38 @@ const AccessibilityInfo = {
   },
 
   /**
+   * Query whether on/off switch labels are currently enabled.
+   *
+   * Returns a promise which resolves to a boolean.
+   * The result is `true` when on/off labels is enabled and `false` otherwise.
+   *
+   * @platform ios
+   */
+  isOnOffSwitchLabelsEnabled(): Promise<boolean> {
+    if (Platform.OS === 'android') {
+      return Promise.resolve(false);
+    } else {
+      return new Promise((resolve, reject) => {
+        if (
+          NativeAccessibilityManagerIOS?.getCurrentOnOffSwitchLabelsState !=
+          null
+        ) {
+          NativeAccessibilityManagerIOS.getCurrentOnOffSwitchLabelsState(
+            resolve,
+            reject,
+          );
+        } else {
+          reject(
+            new Error(
+              'NativeAccessibilityManagerIOS.getCurrentOnOffSwitchLabelsState is not available',
+            ),
+          );
+        }
+      });
+    }
+  },
+
+  /**
    * Query whether reduced transparency is currently enabled.
    *
    * Returns a promise which resolves to a boolean.
@@ -406,6 +440,9 @@ const AccessibilityInfo = {
    * - `darkerSystemColorsChanged`: iOS-only event. Fires when the state of the dark system colors
    *   toggle changes. The argument to the event handler is a boolean. The boolean is `true` when
    *   dark system colors is enabled and `false` otherwise.
+   *
+   * - `onOffSwitchLabelsChanged`: iOS-only event. Fires when the state of the on/off labels toggle changes.
+   *   The argument to the event handler is a boolean.
    *
    * These events are only supported on Android:
    *

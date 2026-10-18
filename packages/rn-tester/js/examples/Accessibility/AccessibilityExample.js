@@ -1595,6 +1595,11 @@ class DisplayOptionsStatusExample extends React.Component<{}> {
               notification={'invertColorsChanged'}
             />
             <DisplayOptionStatusExample
+              optionName={'On/Off Labels'}
+              optionChecker={AccessibilityInfo.isOnOffSwitchLabelsEnabled}
+              notification={'onOffSwitchLabelsChanged'}
+            />
+            <DisplayOptionStatusExample
               optionName={'Reduce Transparency'}
               optionChecker={AccessibilityInfo.isReduceTransparencyEnabled}
               notification={'reduceTransparencyChanged'}

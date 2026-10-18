@@ -26,7 +26,9 @@ type AccessibilityChangeEventName =
   | 'reduceMotionChanged'
   /** iOS only */
   | 'reduceTransparencyChanged'
-  | 'screenReaderChanged';
+  | 'screenReaderChanged'
+  /** iOS only */
+  | 'onOffSwitchLabelsChanged';
 
 type AccessibilityChangeEvent = boolean;
 
@@ -85,6 +87,13 @@ export interface AccessibilityInfoStatic {
    * @platform android
    */
   isHighTextContrastEnabled: () => Promise<boolean>;
+
+  /**
+   * Query whether on/off switch labels are currently enabled.
+   *
+   * @platform ios
+   */
+  isOnOffSwitchLabelsEnabled: () => Promise<boolean>;
 
   /**
    * Query whether darker system colors is currently enabled.
