@@ -355,7 +355,10 @@ static BOOL RCTLayerTransformCollapsesAxis(CALayer *layer)
   if (oldViewProps.opacity != newViewProps.opacity &&
       ![_propKeysManagedByAnimated_DO_NOT_USE_THIS_IS_BROKEN containsObject:@"opacity"]) {
     self.layer.opacity = (float)newViewProps.opacity;
-    needsInvalidateLayer = YES;
+    // `invalidateLayer` only reads the opacity to combine it with `filter`.
+    if (!newViewProps.filter.empty()) {
+      needsInvalidateLayer = YES;
+    }
   }
 
   // Disable `removeClippedSubviews` when Fabric View Culling is enabled.
