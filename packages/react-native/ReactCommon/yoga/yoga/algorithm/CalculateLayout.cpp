@@ -2704,6 +2704,19 @@ static void calculateLayoutImpl(
 //  Input parameters are the same as calculateLayoutImpl (see above)
 //  Return parameter is true if layout was performed, false if skipped
 //
+// A cached result holds only for the owner size it was computed against when
+// the node's style resolves a percentage against that size.
+static bool isCachedForOwnerSize(
+    const yoga::Node* const node,
+    const CachedMeasurement& cachedMeasurement,
+    const float ownerWidth,
+    const float ownerHeight) {
+  return (!node->style().resolvesAgainstOwnerWidth() ||
+          yoga::inexactEquals(cachedMeasurement.ownerWidth, ownerWidth)) &&
+      (!node->style().resolvesAgainstOwnerHeight() ||
+       yoga::inexactEquals(cachedMeasurement.ownerHeight, ownerHeight));
+}
+
 bool calculateLayoutInternal(
     yoga::Node* const node,
     const float availableWidth,
@@ -2736,6 +2749,8 @@ bool calculateLayoutInternal(
     layout->cachedLayout.heightSizingMode = SizingMode::MaxContent;
     layout->cachedLayout.computedWidth = -1;
     layout->cachedLayout.computedHeight = -1;
+    layout->cachedLayout.ownerWidth = -1;
+    layout->cachedLayout.ownerHeight = -1;
   }
 
   CachedMeasurement* cachedResults = nullptr;
@@ -2768,7 +2783,9 @@ bool calculateLayoutInternal(
             layout->cachedLayout.computedHeight,
             marginAxisRow,
             marginAxisColumn,
-            node->getConfig())) {
+            node->getConfig()) &&
+        isCachedForOwnerSize(
+            node, layout->cachedLayout, ownerWidth, ownerHeight)) {
       cachedResults = &layout->cachedLayout;
     } else {
       // Try to use the measurement cache.
@@ -2786,7 +2803,9 @@ bool calculateLayoutInternal(
                 layout->cachedMeasurements[i].computedHeight,
                 marginAxisRow,
                 marginAxisColumn,
-                node->getConfig())) {
+                node->getConfig()) &&
+            isCachedForOwnerSize(
+                node, layout->cachedMeasurements[i], ownerWidth, ownerHeight)) {
           cachedResults = &layout->cachedMeasurements[i];
           break;
         }
@@ -2798,7 +2817,9 @@ bool calculateLayoutInternal(
         yoga::inexactEquals(
             layout->cachedLayout.availableHeight, availableHeight) &&
         layout->cachedLayout.widthSizingMode == widthSizingMode &&
-        layout->cachedLayout.heightSizingMode == heightSizingMode) {
+        layout->cachedLayout.heightSizingMode == heightSizingMode &&
+        isCachedForOwnerSize(
+            node, layout->cachedLayout, ownerWidth, ownerHeight)) {
       cachedResults = &layout->cachedLayout;
     }
   } else {
@@ -2808,7 +2829,9 @@ bool calculateLayoutInternal(
           yoga::inexactEquals(
               layout->cachedMeasurements[i].availableHeight, availableHeight) &&
           layout->cachedMeasurements[i].widthSizingMode == widthSizingMode &&
-          layout->cachedMeasurements[i].heightSizingMode == heightSizingMode) {
+          layout->cachedMeasurements[i].heightSizingMode == heightSizingMode &&
+          isCachedForOwnerSize(
+              node, layout->cachedMeasurements[i], ownerWidth, ownerHeight)) {
         cachedResults = &layout->cachedMeasurements[i];
         break;
       }
@@ -2871,6 +2894,8 @@ bool calculateLayoutInternal(
           layout->measuredDimension(Dimension::Width);
       newCacheEntry->computedHeight =
           layout->measuredDimension(Dimension::Height);
+      newCacheEntry->ownerWidth = ownerWidth;
+      newCacheEntry->ownerHeight = ownerHeight;
     }
   }
 
