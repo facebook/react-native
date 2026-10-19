@@ -16,6 +16,8 @@ import type {ColorValue} from '../../StyleSheet/StyleSheet';
 import type {
   GestureResponderEvent,
   LayoutChangeEvent,
+  SafeAreaInsets,
+  SafeAreaInsetsChangeEvent,
   ScrollEvent,
 } from '../../Types/CoreEventTypes';
 import type {EventSubscription} from '../../vendor/emitter/EventEmitter';
@@ -23,6 +25,9 @@ import type {KeyboardEvent, KeyboardMetrics} from '../Keyboard/Keyboard';
 import type {ViewProps} from '../View/ViewPropTypes';
 import type {ScrollViewStickyHeaderProps} from './ScrollViewStickyHeader';
 
+import getSafeAreaContentPadding, {
+  getSafeAreaContentInset,
+} from '../../../src/private/components/scrollview/getSafeAreaContentPadding';
 import {
   HScrollContentViewNativeComponent,
   HScrollViewNativeComponent,
@@ -386,8 +391,13 @@ export type ScrollViewPropsIOS = Readonly<{
    */
   zoomScale?: ?number,
   /**
-   * This property specifies how the safe area insets are used to modify the
-   * content area of the scroll view.
+   * How the safe area insets modify the content area of the scroll view.
+   *
+   * Along the scrollable axis, the insets become content insets, so content
+   * scrolls under the system UI. Across it, every value except `'never'` pads
+   * the content container by the insets, so content is laid out clear of the
+   * system UI, such as the rail on iPhone Duo or camera cutout in landscape,
+   * while the container's background still extends edge to edge.
    *
    * @default `'never'`
    * @platform ios
@@ -792,6 +802,7 @@ export type ScrollViewProps = Readonly<{
 
 type ScrollViewState = {
   layoutHeight: ?number,
+  safeAreaInsets: ?SafeAreaInsets,
 };
 
 const IS_ANIMATING_TOUCH_START_THRESHOLD_MS = 16;
@@ -881,6 +892,7 @@ class ScrollView extends React.Component<ScrollViewProps, ScrollViewState> {
 
   state: ScrollViewState = {
     layoutHeight: null,
+    safeAreaInsets: null,
   };
 
   componentDidMount() {
@@ -1245,6 +1257,11 @@ class ScrollView extends React.Component<ScrollViewProps, ScrollViewState> {
   _handleScroll = (e: ScrollEvent) => {
     this._observedScrollSinceBecomingResponder = true;
     this.props.onScroll && this.props.onScroll(e);
+  };
+
+  _handleSafeAreaInsetsChange = (e: SafeAreaInsetsChangeEvent) => {
+    this.setState({safeAreaInsets: e.nativeEvent.insets});
+    this.props.experimental_onSafeAreaInsetsChange?.(e);
   };
 
   _handleLayout = (e: LayoutChangeEvent) => {
@@ -1747,9 +1764,38 @@ class ScrollView extends React.Component<ScrollViewProps, ScrollViewState> {
       ? HScrollContentViewNativeComponent
       : VScrollContentViewNativeComponent;
 
+    // Along the scrollable axis UIKit turns the safe area into content insets,
+    // so content scrolls under the system UI. Across it there is nothing to
+    // scroll, so the content container is padded instead and content is laid
+    // out clear of the system UI, such as the rail on iPhone Duo. Under
+    // 'always' UIKit insets that axis as well, which the contentInset passed
+    // to native cancels out.
+    const padsContentForSafeArea =
+      Platform.OS === 'ios' &&
+      this.props.contentInsetAdjustmentBehavior != null &&
+      this.props.contentInsetAdjustmentBehavior !== 'never';
+    const {safeAreaInsets} = this.state;
+    const contentInset =
+      padsContentForSafeArea &&
+      safeAreaInsets != null &&
+      this.props.contentInsetAdjustmentBehavior === 'always'
+        ? getSafeAreaContentInset(
+            this.props.contentInset,
+            safeAreaInsets,
+            horizontal,
+          )
+        : this.props.contentInset;
+
     const contentContainerStyle = [
       horizontal && styles.contentContainerHorizontal,
       this.props.contentContainerStyle,
+      padsContentForSafeArea && safeAreaInsets != null
+        ? getSafeAreaContentPadding(
+            this.props.contentContainerStyle,
+            safeAreaInsets,
+            horizontal,
+          )
+        : null,
     ];
     if (__DEV__ && this.props.style !== undefined) {
       // $FlowFixMe[underconstrained-implicit-instantiation]
@@ -1864,6 +1910,7 @@ class ScrollView extends React.Component<ScrollViewProps, ScrollViewState> {
       ...otherProps,
       alwaysBounceHorizontal,
       alwaysBounceVertical,
+      contentInset,
       style: StyleSheet.compose(baseStyle, this.props.style),
       // Override the onContentSizeChange from props, since this event can
       // bubble up from TextInputs
@@ -1886,6 +1933,9 @@ class ScrollView extends React.Component<ScrollViewProps, ScrollViewState> {
       onTouchStart: this._handleTouchStart,
       onTouchCancel: this._handleTouchCancel,
       onScroll: this._handleScroll,
+      experimental_onSafeAreaInsetsChange: padsContentForSafeArea
+        ? this._handleSafeAreaInsetsChange
+        : this.props.experimental_onSafeAreaInsetsChange,
       endDraggingSensitivityMultiplier:
         experimental_endDraggingSensitivityMultiplier,
       scrollEventThrottle: hasStickyHeaders
