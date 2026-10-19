@@ -117,9 +117,10 @@ class ParagraphShadowNode
 
   /**
    * Returns any previously prepared layout, generated for measurement, which
-   * may be used, given the currently assigned layout to the ShadowNode
+   * may be used, given the currently assigned layout to the ShadowNode and
+   * the current pixel density
    */
-  MeasuredPreparedTextLayout *findUsableLayout();
+  MeasuredPreparedTextLayout *findUsableLayout(Float pointScaleFactor);
 
   /**
    * Returns the final measure of the content frame, before layout rounding

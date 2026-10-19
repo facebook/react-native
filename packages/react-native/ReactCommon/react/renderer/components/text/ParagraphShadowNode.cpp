@@ -221,7 +221,8 @@ void ParagraphShadowNode::updateStateIfNeeded(const Content& content) {
           textLayoutManager_});
 }
 
-MeasuredPreparedTextLayout* ParagraphShadowNode::findUsableLayout() {
+MeasuredPreparedTextLayout* ParagraphShadowNode::findUsableLayout(
+    Float pointScaleFactor) {
   MeasuredPreparedTextLayout* ret = nullptr;
 
   if constexpr (TextLayoutManagerExtended::supportsPreparedTextLayout()) {
@@ -233,7 +234,8 @@ MeasuredPreparedTextLayout* ParagraphShadowNode::findUsableLayout() {
     // adjusted by a constraint (like min-size).
     auto expectedSize = rawContentSize();
     for (auto& prevLayout : measuredLayouts_) {
-      if (floatEquality(
+      if (prevLayout.pointScaleFactor == pointScaleFactor &&
+          floatEquality(
               prevLayout.measurement.size.width, expectedSize.width) &&
           floatEquality(
               prevLayout.measurement.size.height, expectedSize.height)) {
@@ -262,8 +264,11 @@ Size ParagraphShadowNode::measureContent(
     const LayoutContext& layoutContext,
     const LayoutConstraints& layoutConstraints) const {
   if constexpr (TextLayoutManagerExtended::supportsPreparedTextLayout()) {
+    // Layouts carried over from a previous revision may have been prepared
+    // at another pixel density, which they can't be reused for.
     for (const auto& layout : measuredLayouts_) {
-      if (layout.layoutConstraints == layoutConstraints) {
+      if (layout.layoutConstraints == layoutConstraints &&
+          layout.pointScaleFactor == layoutContext.pointScaleFactor) {
         return layout.measurement.size;
       }
     }
@@ -353,7 +358,7 @@ void ParagraphShadowNode::layout(LayoutContext layoutContext) {
   auto content =
       getContentWithMeasuredAttachments(layoutContext, layoutConstraints);
 
-  auto measuredLayout = findUsableLayout();
+  auto measuredLayout = findUsableLayout(layoutContext.pointScaleFactor);
 
   if constexpr (
       TextLayoutManagerExtended::supportsPreparedTextLayout() &&
@@ -370,7 +375,7 @@ void ParagraphShadowNode::layout(LayoutContext layoutContext) {
       // culled
       if (measuredLayout == nullptr) {
         measureContent(layoutContext, layoutConstraints);
-        measuredLayout = findUsableLayout();
+        measuredLayout = findUsableLayout(layoutContext.pointScaleFactor);
       }
       react_native_assert(measuredLayout);
       updateStateIfNeeded<ParagraphState>(content, *measuredLayout);
