@@ -150,9 +150,10 @@ static BOOL RCTAttributedStringHasAttachments(const AttributedString &attributed
   // string records fragment layout metrics); redraw only when content or
   // paragraph attributes changed. Attachments are sized from those metrics.
   BOOL needsDisplay = YES;
-  if (newState && oldState && _textView.state) {
+  if (newState && _textView.state) {
     const auto &newData = newState->getData();
-    const auto &oldData = std::static_pointer_cast<const ParagraphShadowNode::ConcreteState>(oldState)->getData();
+    // Compare with the state the view last drew, which recycling can make differ from `oldState`.
+    const auto &oldData = _textView.state->getData();
     needsDisplay = !newData.attributedString.isContentEqual(oldData.attributedString) ||
         newData.paragraphAttributes != oldData.paragraphAttributes ||
         RCTAttributedStringHasAttachments(newData.attributedString);
