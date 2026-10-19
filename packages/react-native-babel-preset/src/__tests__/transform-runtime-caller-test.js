@@ -41,7 +41,10 @@ describe('babel runtime caller options', () => {
     const code = 'const {a, ...rest} = obj;';
     const result = transformWithCaller(
       code,
-      {dev: false},
+      {
+        dev: false,
+        customTransformOptions: {unstable_preserveDestructuring: false},
+      },
       {babelRuntimeModuleName: '@react-native/babel-runtime'},
     );
     expect(result).toContain(
@@ -54,7 +57,11 @@ describe('babel runtime caller options', () => {
     const code = 'const {a, ...rest} = obj;';
     const result = transformWithCaller(
       code,
-      {dev: false, babelRuntimeModuleName: '@from/options'},
+      {
+        dev: false,
+        babelRuntimeModuleName: '@from/options',
+        customTransformOptions: {unstable_preserveDestructuring: false},
+      },
       {babelRuntimeModuleName: '@from/caller'},
     );
     expect(result).toContain('@from/options/helpers/objectWithoutProperties');
