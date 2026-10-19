@@ -10,6 +10,8 @@
 #include <yoga/algorithm/PixelGrid.h>
 #include <yoga/numeric/Comparison.h>
 
+#include <cmath>
+
 namespace facebook::yoga {
 
 namespace {
@@ -23,7 +25,13 @@ double roundValueToPixelGridDouble(
   // We want to calculate `fractional` such that `floor(scaledValue) =
   // scaledValue
   // - fractional`.
-  double fractional = fmod(scaledValue, 1.0);
+  //
+  // `copysign(x - trunc(x), x)` is bit-identical to `fmod(x, 1.0)` for every
+  // double (including -0.0, infinities and NaN) but avoids the libm `fmod`
+  // loop, which is slow on some platforms (e.g. Android's bionic). This
+  // function runs six times per node on every layout pass.
+  double fractional =
+      std::copysign(scaledValue - std::trunc(scaledValue), scaledValue);
   if (fractional < 0) {
     // This branch is for handling negative numbers for `value`.
     //
