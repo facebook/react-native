@@ -16,7 +16,10 @@ import com.facebook.react.bridge.BridgeReactContext
 import com.facebook.react.bridge.CatalystInstance
 import com.facebook.react.bridge.JavaOnlyMap
 import com.facebook.react.bridge.ReactTestHelper.createMockCatalystInstance
+import com.facebook.react.internal.featureflags.ReactNativeFeatureFlags
+import com.facebook.react.internal.featureflags.ReactNativeFeatureFlagsDefaults
 import com.facebook.react.internal.featureflags.ReactNativeFeatureFlagsForTests
+import com.facebook.react.touch.JSResponderHandler
 import com.facebook.react.uimanager.BackgroundStyleApplicator
 import com.facebook.react.uimanager.DisplayMetricsHolder
 import com.facebook.react.uimanager.LengthPercentage
@@ -44,6 +47,11 @@ class ReactTextViewPropertyTest {
   @Before
   fun setup() {
     ReactNativeFeatureFlagsForTests.setUp()
+    ReactNativeFeatureFlags.override(
+        object : ReactNativeFeatureFlagsDefaults() {
+          override fun enableViewRecycling(): Boolean = true
+        },
+    )
     context = BridgeReactContext(RuntimeEnvironment.getApplication())
     catalystInstanceMock = createMockCatalystInstance()
     context.initializeWithInstance(catalystInstanceMock)
@@ -55,6 +63,7 @@ class ReactTextViewPropertyTest {
   @After
   fun teardown() {
     DisplayMetricsHolder.setScreenDisplayMetrics(null)
+    ReactNativeFeatureFlags.dangerouslyReset()
   }
 
   private fun buildStyles(vararg keysAndValues: Any?): ReactStylesDiffMap {
@@ -77,5 +86,23 @@ class ReactTextViewPropertyTest {
     manager.updateProperties(view, buildStyles("borderRadius", null))
     assertThat(BackgroundStyleApplicator.getBorderRadius(view, BorderRadiusProp.BORDER_RADIUS))
         .isNull()
+  }
+
+  @Test
+  fun testRecycledViewIsAsImportantForAccessibilityAsANewView() {
+    val previous =
+        manager.createView(
+            1,
+            themedContext,
+            buildStyles("importantForAccessibility", "no-hide-descendants"),
+            null,
+            JSResponderHandler(),
+        )
+    manager.onDropViewInstance(previous)
+    val recycled = manager.createView(2, themedContext, buildStyles(), null, JSResponderHandler())
+
+    assertThat(recycled).isSameAs(previous)
+    assertThat(recycled.importantForAccessibility)
+        .isEqualTo(manager.createViewInstance(themedContext).importantForAccessibility)
   }
 }

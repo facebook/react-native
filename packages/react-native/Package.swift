@@ -416,6 +416,7 @@ let reactCoreRCTWebsocket = RNTarget(
 let reactCoreModules = RNTarget(
   name: .reactCoreModules,
   path: "React/CoreModules",
+  linkedFrameworks: ["Accessibility"],
   excludedPaths: ["PlatformStubs/RCTStatusBarManager.mm"],
   dependencies: [.reactNativeDependencies, .jsi, .yoga, .reactTurboModuleCore, .reactFeatureFlags]
 )

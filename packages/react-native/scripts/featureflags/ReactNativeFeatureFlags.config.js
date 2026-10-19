@@ -1116,16 +1116,6 @@ const definitions: FeatureFlagDefinitions = {
       },
       ossReleaseStage: 'none',
     },
-    enableImperativeEvents_DEPRECATED: {
-      defaultValue: false,
-      metadata: {
-        description:
-          'Deprecated in favor of the common flag with the same name, which is the one that can be configured by OSS release stage. This is only kept so JS bundles delivered to older native builds, where the common flag is unavailable, can still enable the feature.',
-        expectedReleaseValue: true,
-        purpose: 'release',
-      },
-      ossReleaseStage: 'none',
-    },
     enableNativeEventTargetEventDispatching: {
       defaultValue: true,
       metadata: {

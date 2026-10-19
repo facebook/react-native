@@ -4834,10 +4834,10 @@ flow-api-translator@0.335.0:
     flow-transform "0.335.0"
     typescript "5.3.2"
 
-flow-bin@^0.335.0:
-  version "0.335.0"
-  resolved "https://registry.yarnpkg.com/flow-bin/-/flow-bin-0.335.0.tgz#dd0d0d19b82c77d1d261d774e96bc624dd4143bc"
-  integrity sha512-a5Su683/8G03Cuj0nI9BMZxgg5M3VJtOA8R3/ADw7KcCXN2OdP72jC5ZtlpzWEwZjV+l/L+Up/Nw+CVYeghWxg==
+flow-bin@^0.336.0:
+  version "0.336.0"
+  resolved "https://registry.yarnpkg.com/flow-bin/-/flow-bin-0.336.0.tgz#ac946f9cdf134b83ab4f7a98a0de34324f6b94f4"
+  integrity sha512-I5sPg/GISpXH4W14eGWgiIsrDKY0uvvvXjlEDOI2t0pguEwbMgpnaYzMMMBoHZcYYtNJIF/0eGsbPnN7uP2zOQ==
 
 flow-enums-runtime@^0.0.6:
   version "0.0.6"
@@ -4858,6 +4858,11 @@ flow-estree@0.335.0:
   resolved "https://registry.yarnpkg.com/flow-estree/-/flow-estree-0.335.0.tgz#6867e678070b0edb13ff37636d8aaf4b444516bb"
   integrity sha512-sfJYlOSnrbBI4ruZ7UG5OJLz16E1hs+Kkt/De8F7vm6UafLfvZIWjkoBmZtKoN6EIOa3zgGkVczt0xpmmQixGA==
 
+flow-estree@0.336.0:
+  version "0.336.0"
+  resolved "https://registry.yarnpkg.com/flow-estree/-/flow-estree-0.336.0.tgz#e9e90c68ac69b078b2d167588e47a11e5d240d86"
+  integrity sha512-0VaGWHJourzh88otU5bVJ4Z/oIsD+R6yaeR0Q8t8dezsKQI/RLi5m3fNzkiLYLhJ+YwM3JRSKlOqGplOI5Yo3w==
+
 flow-parser@0.335.0:
   version "0.335.0"
   resolved "https://registry.yarnpkg.com/flow-parser/-/flow-parser-0.335.0.tgz#27c879530fd7fe9521129b15e6d9cedd9860c645"
@@ -4865,12 +4870,19 @@ flow-parser@0.335.0:
   dependencies:
     flow-estree "0.335.0"
 
-flow-remove-types@^2.237.2:
-  version "2.259.1"
-  resolved "https://registry.yarnpkg.com/flow-remove-types/-/flow-remove-types-2.259.1.tgz#ee78962cbd73d85f0e94183b354c43399903c734"
-  integrity sha512-H+ww7Q6c4xXFAoZGZnC37FJmA9Zzu3UpQ96q3/geCQiaZiTXmM7ZeN53DYpu4be8cvPEp15K0SZTOtaiGoWU5A==
+flow-parser@^0.336.0:
+  version "0.336.0"
+  resolved "https://registry.yarnpkg.com/flow-parser/-/flow-parser-0.336.0.tgz#5c34f8a97edfa241d3e71c7a1dcd99a56b1cc2bc"
+  integrity sha512-O8QvQf/B3rBF+eagcc9/WMAjfJoaKckdgSd8PT/qvMIIe4ZjVKrSqV5SDnRFAKY0VrE8r5C4ADYgvYhmwkWADA==
   dependencies:
-    hermes-parser "0.25.1"
+    flow-estree "0.336.0"
+
+flow-remove-types@^2.336.0:
+  version "2.336.0"
+  resolved "https://registry.yarnpkg.com/flow-remove-types/-/flow-remove-types-2.336.0.tgz#0131b825a84dc216553e09e4e6597975bd25c77b"
+  integrity sha512-B1VuB3FPAsPTwIDJ7n+UElnKMnuwXBfbFRoLFKiNvbmqRQoramUydtUPqZ7bB8ot23pquOMGmu9fkqH7IxAsDA==
+  dependencies:
+    flow-parser "^0.336.0"
     pirates "^3.0.2"
     vlq "^0.2.1"
 
@@ -5242,19 +5254,19 @@ hermes-estree@0.36.1:
   resolved "https://registry.yarnpkg.com/hermes-estree/-/hermes-estree-0.36.1.tgz#71368d9e78238728e11ef1f458a8921d0564a572"
   integrity sha512-guv1nQ6IJ7S83NRFPWc3SA7IBZrdNC9kapwOq6uXvF4wP+sDCgjzQbKPCoyYmoyZRzztF/n/c36l/rccCZSiCw==
 
-hermes-parser@0.25.1, hermes-parser@^0.25.1:
-  version "0.25.1"
-  resolved "https://registry.yarnpkg.com/hermes-parser/-/hermes-parser-0.25.1.tgz#5be0e487b2090886c62bd8a11724cd766d5f54d1"
-  integrity sha512-6pEjquH3rqaI6cYAXYPcz9MS4rY6R4ngRgrgfDshRptUZIc3lw0MCIJIGDj9++mfySOuPTHB4nrSW99BCvOPIA==
-  dependencies:
-    hermes-estree "0.25.1"
-
 hermes-parser@0.36.1:
   version "0.36.1"
   resolved "https://registry.yarnpkg.com/hermes-parser/-/hermes-parser-0.36.1.tgz#f619b9f99bf34e80fb6f7024b1c62944d2beb14a"
   integrity sha512-GApNk4zLHi2UWoWZZkx7LNCOSzLSc5lB55pZ/PhK7ycFeg7u5LcF88p/WbpIi1XUDtE0MpHE3uRR3u3KB7TjSQ==
   dependencies:
     hermes-estree "0.36.1"
+
+hermes-parser@^0.25.1:
+  version "0.25.1"
+  resolved "https://registry.yarnpkg.com/hermes-parser/-/hermes-parser-0.25.1.tgz#5be0e487b2090886c62bd8a11724cd766d5f54d1"
+  integrity sha512-6pEjquH3rqaI6cYAXYPcz9MS4rY6R4ngRgrgfDshRptUZIc3lw0MCIJIGDj9++mfySOuPTHB4nrSW99BCvOPIA==
+  dependencies:
+    hermes-estree "0.25.1"
 
 html-escaper@^2.0.0:
   version "2.0.2"
@@ -6721,10 +6733,10 @@ memfs@^4.38.2:
     tree-dump "^1.0.3"
     tslib "^2.0.0"
 
-memoize-one@^5.0.0:
-  version "5.2.1"
-  resolved "https://registry.yarnpkg.com/memoize-one/-/memoize-one-5.2.1.tgz#8337aa3c4335581839ec01c3d594090cebe8f00e"
-  integrity sha512-zYiwtZUcYyXKo/np96AGZAckk+FWWsUdJ3cHGGmld7+AhvcWmQyGCYUh1hc4Q/pkOhb65dQR/pqCyK0cOaHz4Q==
+memoize-one@^6.0.0:
+  version "6.0.0"
+  resolved "https://registry.yarnpkg.com/memoize-one/-/memoize-one-6.0.0.tgz#b2591b871ed82948aee4727dc6abceeeac8c1045"
+  integrity sha512-rkpe71W0N0c0Xz6QD0eJETuWAJGnJ9afsl1srmwPrI+yBCkge5EycXXbYRyvL29zZVUWQCY7InPRCv3GDXuZNw==
 
 merge-stream@^2.0.0:
   version "2.0.0"

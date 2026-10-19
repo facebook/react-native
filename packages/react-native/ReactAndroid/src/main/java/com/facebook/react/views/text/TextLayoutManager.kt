@@ -841,7 +841,8 @@ internal object TextLayoutManager {
     }
   }
 
-  private fun createLayout(
+  @VisibleForTesting
+  internal fun createLayout(
       text: Spannable,
       boring: BoringLayout.Metrics?,
       width: Float,
@@ -879,13 +880,22 @@ internal object TextLayoutManager {
       )
     }
 
-    val desiredWidth = ceil(Layout.getDesiredWidth(text, paint)).toInt()
-
+    // Layout.getDesiredWidth is a full measuring pass over the text, so only run it when its
+    // result can affect the layout width. It cannot when the width is EXACTLY, nor when the text
+    // was boring but did not fit: boring.width is the unwrapped width of the same text and we only
+    // get here if it exceeds floor(width), so min(desiredWidth, floor(width)) is floor(width).
     val layoutWidth =
-        when (widthYogaMeasureMode) {
-          YogaMeasureMode.EXACTLY -> ceil(width).toInt()
-          YogaMeasureMode.AT_MOST -> min(desiredWidth, floor(width).toInt())
-          else -> desiredWidth
+        when {
+          widthYogaMeasureMode == YogaMeasureMode.EXACTLY -> ceil(width).toInt()
+          widthYogaMeasureMode == YogaMeasureMode.AT_MOST && boring != null -> floor(width).toInt()
+          else -> {
+            val desiredWidth = ceil(Layout.getDesiredWidth(text, paint)).toInt()
+            if (widthYogaMeasureMode == YogaMeasureMode.AT_MOST) {
+              min(desiredWidth, floor(width).toInt())
+            } else {
+              desiredWidth
+            }
+          }
         }
     val enableStartOverhang = widthYogaMeasureMode == YogaMeasureMode.EXACTLY
     val layout =
@@ -1356,6 +1366,8 @@ internal object TextLayoutManager {
         result.textBreakStrategy,
         result.justificationMode,
         baseTextAttributes,
+        // `result.layout.text` may be ellipsized; keep the full text for a11y.
+        sourceText = text,
     )
   }
 
