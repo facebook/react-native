@@ -213,6 +213,55 @@ RCTMakeUIGraphicsImageRenderer(CGSize size, UIColor *backgroundColor, BOOL hasCo
   return renderer;
 }
 
+static id RCTSolidBorderImageCacheColor(UIColor *color)
+{
+  if (color == nil) {
+    return [NSNull null];
+  }
+  // A dynamic color resolves differently per trait collection, so an image drawn with it can't be reused.
+  return [color resolvedColorWithTraitCollection:[UITraitCollection currentTraitCollection]] == color ? color : nil;
+}
+
+// A stretchable border image doesn't depend on the view size, only on these inputs, so views with the
+// same border can share one image instead of each drawing its own.
+static NSArray *RCTSolidBorderImageCacheKey(
+    RCTCornerRadii cornerRadii,
+    UIEdgeInsets borderInsets,
+    RCTBorderColors borderColors,
+    UIColor *backgroundColor,
+    BOOL drawToEdge)
+{
+  id top = RCTSolidBorderImageCacheColor(borderColors.top);
+  id left = RCTSolidBorderImageCacheColor(borderColors.left);
+  id bottom = RCTSolidBorderImageCacheColor(borderColors.bottom);
+  id right = RCTSolidBorderImageCacheColor(borderColors.right);
+  id background = RCTSolidBorderImageCacheColor(backgroundColor);
+  if (top == nil || left == nil || bottom == nil || right == nil || background == nil) {
+    return nil;
+  }
+  return @[
+    [NSValue valueWithBytes:&cornerRadii objCType:@encode(RCTCornerRadii)],
+    [NSValue valueWithUIEdgeInsets:borderInsets],
+    top,
+    left,
+    bottom,
+    right,
+    background,
+    @(drawToEdge),
+  ];
+}
+
+static NSCache<NSArray *, UIImage *> *RCTSolidBorderImageCache(void)
+{
+  static NSCache<NSArray *, UIImage *> *cache;
+  static dispatch_once_t onceToken;
+  dispatch_once(&onceToken, ^{
+    cache = [NSCache new];
+    cache.countLimit = 64;
+  });
+  return cache;
+}
+
 static UIImage *RCTGetSolidBorderImage(
     RCTCornerRadii cornerRadii,
     CGSize viewSize,
@@ -223,6 +272,9 @@ static UIImage *RCTGetSolidBorderImage(
 {
   const BOOL hasCornerRadii = RCTCornerRadiiAreAboveThreshold(cornerRadii);
   const RCTCornerInsets cornerInsets = RCTGetCornerInsets(cornerRadii, borderInsets);
+  // Keyed by the widths as passed in, since the corner insets above are computed from them before rounding.
+  NSArray *const cacheKey =
+      RCTSolidBorderImageCacheKey(cornerRadii, borderInsets, borderColors, backgroundColor, drawToEdge);
 
   // Incorrect render for borders that are not proportional to device pixel: borders get stretched and become
   // significantly bigger than expected.
@@ -238,6 +290,13 @@ static UIImage *RCTGetSolidBorderImage(
        viewSize.height) &&
       (borderInsets.top + cornerInsets.topRight.height + borderInsets.bottom + cornerInsets.bottomLeft.height <=
        viewSize.height);
+
+  if (makeStretchable && cacheKey != nil) {
+    UIImage *cachedImage = [RCTSolidBorderImageCache() objectForKey:cacheKey];
+    if (cachedImage != nil) {
+      return cachedImage;
+    }
+  }
 
   UIEdgeInsets edgeInsets =
       (UIEdgeInsets){borderInsets.top + MAX(cornerInsets.topLeft.height, cornerInsets.topRight.height),
@@ -417,6 +476,9 @@ static UIImage *RCTGetSolidBorderImage(
 
   if (makeStretchable) {
     image = [image resizableImageWithCapInsets:edgeInsets];
+    if (cacheKey != nil) {
+      [RCTSolidBorderImageCache() setObject:image forKey:cacheKey];
+    }
   }
 
   return image;
