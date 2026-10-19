@@ -112,9 +112,9 @@ void roundLayoutResultsToPixelGrid(
     // whole number, we don't have any fraction To verify if the result is close
     // to whole number we want to check both floor and ceil numbers
 
-    const double scaledNodeWith = nodeWidth * pointScaleFactor;
+    const double scaledNodeWidth = nodeWidth * pointScaleFactor;
     const bool hasFractionalWidth =
-        !yoga::inexactEquals(round(scaledNodeWith), scaledNodeWith);
+        !yoga::inexactEquals(round(scaledNodeWidth), scaledNodeWidth);
 
     const double scaledNodeHeight = nodeHeight * pointScaleFactor;
     const bool hasFractionalHeight =
@@ -122,25 +122,32 @@ void roundLayoutResultsToPixelGrid(
 
     node->getLayout().setDimension(
         Dimension::Width,
-        static_cast<float>(
-            roundValueToPixelGridDouble(
-                absoluteNodeRight,
-                pointScaleFactor,
-                (textRounding && hasFractionalWidth),
-                (textRounding && !hasFractionalWidth)) -
-            roundValueToPixelGridDouble(
-                absoluteNodeLeft, pointScaleFactor, false, textRounding)));
+        textRounding && !hasFractionalWidth
+            ? static_cast<float>(round(scaledNodeWidth) / pointScaleFactor)
+            : static_cast<float>(
+                  roundValueToPixelGridDouble(
+                      absoluteNodeRight,
+                      pointScaleFactor,
+                      textRounding,
+                      false) -
+                  roundValueToPixelGridDouble(
+                      absoluteNodeLeft,
+                      pointScaleFactor,
+                      false,
+                      textRounding)));
 
     node->getLayout().setDimension(
         Dimension::Height,
-        static_cast<float>(
-            roundValueToPixelGridDouble(
-                absoluteNodeBottom,
-                pointScaleFactor,
-                (textRounding && hasFractionalHeight),
-                (textRounding && !hasFractionalHeight)) -
-            roundValueToPixelGridDouble(
-                absoluteNodeTop, pointScaleFactor, false, textRounding)));
+        textRounding && !hasFractionalHeight
+            ? static_cast<float>(round(scaledNodeHeight) / pointScaleFactor)
+            : static_cast<float>(
+                  roundValueToPixelGridDouble(
+                      absoluteNodeBottom,
+                      pointScaleFactor,
+                      textRounding,
+                      false) -
+                  roundValueToPixelGridDouble(
+                      absoluteNodeTop, pointScaleFactor, false, textRounding)));
   }
 
   for (yoga::Node* child : node->getChildren()) {
