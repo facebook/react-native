@@ -168,6 +168,15 @@
     [textAttributes removeObjectForKey:NSForegroundColorAttributeName];
   }
 
+  // UITextField's placeholder label keeps the paragraph style of the previous placeholder and applies it to a
+  // placeholder that has none, so a line height that was removed from the text attributes would still be used.
+  // A paragraph style matching the label's initial one avoids that.
+  if (textAttributes[NSParagraphStyleAttributeName] == nil) {
+    NSMutableParagraphStyle *paragraphStyle = [NSMutableParagraphStyle new];
+    paragraphStyle.lineBreakMode = NSLineBreakByTruncatingTail;
+    textAttributes[NSParagraphStyleAttributeName] = paragraphStyle;
+  }
+
   return textAttributes;
 }
 
