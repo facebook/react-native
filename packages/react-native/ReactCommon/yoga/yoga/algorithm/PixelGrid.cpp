@@ -12,7 +12,9 @@
 
 namespace facebook::yoga {
 
-float roundValueToPixelGrid(
+namespace {
+
+double roundValueToPixelGridDouble(
     const double value,
     const double pointScaleFactor,
     const bool forceCeil,
@@ -60,7 +62,18 @@ float roundValueToPixelGrid(
   }
   return (std::isnan(scaledValue) || std::isnan(pointScaleFactor))
       ? YGUndefined
-      : (float)(scaledValue / pointScaleFactor);
+      : scaledValue / pointScaleFactor;
+}
+
+} // namespace
+
+float roundValueToPixelGrid(
+    const double value,
+    const double pointScaleFactor,
+    const bool forceCeil,
+    const bool forceFloor) {
+  return static_cast<float>(roundValueToPixelGridDouble(
+      value, pointScaleFactor, forceCeil, forceFloor));
 }
 
 void roundLayoutResultsToPixelGrid(
@@ -109,23 +122,25 @@ void roundLayoutResultsToPixelGrid(
 
     node->getLayout().setDimension(
         Dimension::Width,
-        roundValueToPixelGrid(
-            absoluteNodeRight,
-            pointScaleFactor,
-            (textRounding && hasFractionalWidth),
-            (textRounding && !hasFractionalWidth)) -
-            roundValueToPixelGrid(
-                absoluteNodeLeft, pointScaleFactor, false, textRounding));
+        static_cast<float>(
+            roundValueToPixelGridDouble(
+                absoluteNodeRight,
+                pointScaleFactor,
+                (textRounding && hasFractionalWidth),
+                (textRounding && !hasFractionalWidth)) -
+            roundValueToPixelGridDouble(
+                absoluteNodeLeft, pointScaleFactor, false, textRounding)));
 
     node->getLayout().setDimension(
         Dimension::Height,
-        roundValueToPixelGrid(
-            absoluteNodeBottom,
-            pointScaleFactor,
-            (textRounding && hasFractionalHeight),
-            (textRounding && !hasFractionalHeight)) -
-            roundValueToPixelGrid(
-                absoluteNodeTop, pointScaleFactor, false, textRounding));
+        static_cast<float>(
+            roundValueToPixelGridDouble(
+                absoluteNodeBottom,
+                pointScaleFactor,
+                (textRounding && hasFractionalHeight),
+                (textRounding && !hasFractionalHeight)) -
+            roundValueToPixelGridDouble(
+                absoluteNodeTop, pointScaleFactor, false, textRounding)));
   }
 
   for (yoga::Node* child : node->getChildren()) {
