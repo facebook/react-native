@@ -92,6 +92,12 @@ const Content& ParagraphShadowNode::getContent(
   if (content_.has_value()) {
     const auto& baseTextAttributes =
         content_->attributedString.getBaseTextAttributes();
+    // The content is built from this node's props and children, and it is
+    // only carried over to revisions that have neither new props nor new
+    // children (see the copy constructor). The only other inputs are the
+    // font size multiplier from the layout context and the layout direction
+    // Yoga resolves from the parent, and those can change without new props
+    // or children, so they are the two things to check here.
     if (baseTextAttributes.fontSizeMultiplier ==
             layoutContext.fontSizeMultiplier &&
         baseTextAttributes.layoutDirection == layoutDirection) {
