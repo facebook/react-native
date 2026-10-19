@@ -102,7 +102,8 @@ const getBabelRC = (function () {
     // $FlowFixMe[incompatible-use] `extends` is missing in null or undefined.
     // $FlowFixMe[incompatible-type] `extends` is missing in null or undefined.
     if (!babelRC.extends) {
-      const {experimentalImportSupport, ...presetOptions} = options;
+      const {babelRuntimeVersion, experimentalImportSupport, ...presetOptions} =
+        options;
 
       // $FlowFixMe[incompatible-use] `presets` is missing in null or undefined.
       babelRC.presets = [
@@ -112,7 +113,10 @@ const getBabelRC = (function () {
             projectRoot,
             ...presetOptions,
             disableImportExportTransform: experimentalImportSupport,
-            enableBabelRuntime: options.enableBabelRuntime,
+            // Metro passes the version of its own `@babel/runtime` when
+            // `enableBabelRuntime` is `true`.
+            enableBabelRuntime:
+              babelRuntimeVersion ?? options.enableBabelRuntime,
           },
         ],
       ];
@@ -187,6 +191,8 @@ const transform /*: BabelTransformer['transform'] */ = ({
   src,
   plugins,
 }) => {
+  // $FlowFixMe[prop-missing] Remove suppression after next Metro release
+  const {babelRuntimeModuleName, babelRuntimeVersion} = options;
   const babelConfig /*: BabelCoreOptions */ = {
     // ES modules require sourceType='module' but OSS may not always want that
     sourceType: 'unambiguous',
@@ -201,6 +207,11 @@ const transform /*: BabelTransformer['transform'] */ = ({
       inlinePlatform: options.inlinePlatform,
       experimentalImportSupport: options.experimentalImportSupport,
       unstable_transformProfile: options.unstable_transformProfile,
+      // Metro's own `@babel/runtime`, for a preset configured by a project
+      // Babel config. The keys match the preset's own options.
+      ...(babelRuntimeModuleName != null && babelRuntimeVersion != null
+        ? {babelRuntimeModuleName, enableBabelRuntime: babelRuntimeVersion}
+        : null),
     },
     ast: true,
 
