@@ -158,6 +158,20 @@ static BOOL IsNotificationRemote(UNNotification *notification)
   return [notification.request.trigger isKindOfClass:[UNPushNotificationTrigger class]];
 }
 
+// setBadgeCount: dispatch_syncs onto the UserNotifications connection queue, which another
+// thread can hold for a whole usernotificationsd round trip. Serial so writes land in order.
+static dispatch_queue_t RCTBadgeCountQueue(void)
+{
+  static dispatch_queue_t queue;
+  static dispatch_once_t onceToken;
+  dispatch_once(&onceToken, ^{
+    queue = dispatch_queue_create(
+        "com.facebook.react.PushNotificationManager.badgeCount",
+        dispatch_queue_attr_make_with_qos_class(DISPATCH_QUEUE_SERIAL, QOS_CLASS_UTILITY, 0));
+  });
+  return queue;
+}
+
 RCT_EXPORT_MODULE()
 
 - (dispatch_queue_t)methodQueue
@@ -324,13 +338,15 @@ RCT_EXPORT_MODULE()
 {
   NSInteger badgeCount = (NSInteger)lround(number);
   if (@available(iOS 16.0, *)) {
-    [UNUserNotificationCenter.currentNotificationCenter
-                setBadgeCount:badgeCount
-        withCompletionHandler:^(NSError *_Nullable error) {
-          if (error != nil) {
-            RCTLogWarn(@"Failed to set application icon badge number: %@", error);
-          }
-        }];
+    dispatch_async(RCTBadgeCountQueue(), ^{
+      [UNUserNotificationCenter.currentNotificationCenter
+                  setBadgeCount:badgeCount
+          withCompletionHandler:^(NSError *_Nullable error) {
+            if (error != nil) {
+              RCTLogWarn(@"Failed to set application icon badge number: %@", error);
+            }
+          }];
+    });
   } else {
     RCTSharedApplication().applicationIconBadgeNumber = badgeCount;
   }
