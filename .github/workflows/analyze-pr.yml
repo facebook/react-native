@@ -71,6 +71,11 @@ jobs:
         with:
           marker: '<!-- analyze-pr -->'
           sections: '[${{ toJSON(steps.check-pr-body.outputs.message) }}, ${{ toJSON(steps.check-branch-target.outputs.message) }}]'
+      - name: Suggest the iOS E2E run
+        uses: ./.github/actions/post-pr-comment
+        with:
+          marker: '<!-- e2e-ios-on-demand -->'
+          sections: '["Maintainers: to run the iOS Maestro E2E suites on remote simulators against this pull request, comment `@react-native-bot e2e-tests` once its Test All run has built the apps."]'
       - name: Fail if validation errors
         if: steps.check-pr-body.outputs.status == 'FAIL' || steps.check-branch-target.outputs.status == 'FAIL'
         run: exit 1
