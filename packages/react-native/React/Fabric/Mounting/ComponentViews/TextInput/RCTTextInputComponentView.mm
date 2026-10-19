@@ -796,19 +796,25 @@ static NSSet<NSNumber *> *returnKeyTypesSet;
   UITextRange *selectedRange = _backedTextInputView.selectedTextRange;
   NSInteger oldTextLength = _backedTextInputView.attributedText.string.length;
   _backedTextInputView.attributedText = attributedString;
-  // Updating the UITextView attributedText, for example changing the lineHeight, the color or adding
-  // a new paragraph with \n, causes the cursor to move to the end of the Text and scroll.
-  // This is fixed by restoring the cursor position and scrolling to that position (iOS issue 652653).
-  // Maintaining a cursor position relative to the end of the old text.
-  NSInteger offsetStart = [_backedTextInputView offsetFromPosition:_backedTextInputView.beginningOfDocument
-                                                        toPosition:selectedRange.start];
-  NSInteger offsetFromEnd = oldTextLength - offsetStart;
-  NSInteger newOffset = attributedString.string.length - offsetFromEnd;
-  UITextPosition *position = [_backedTextInputView positionFromPosition:_backedTextInputView.beginningOfDocument
-                                                                 offset:newOffset];
-  [_backedTextInputView setSelectedTextRange:[_backedTextInputView textRangeFromPosition:position toPosition:position]
-                              notifyDelegate:YES];
-  [_backedTextInputView scrollRangeToVisible:NSMakeRange(offsetStart, 0)];
+  // A single-line input that is not being edited has no cursor to keep: UIKit places one when editing begins.
+  // Restoring it anyway makes UIKit scroll the field editor to it when the text doesn't fit, and the editor keeps
+  // that offset after the text fits again, so text typed later in this view (also after recycling) is drawn too high.
+  BOOL isMultiline = [_backedTextInputView isKindOfClass:[UITextView class]];
+  if (isMultiline || _backedTextInputView.isFirstResponder) {
+    // Updating the UITextView attributedText, for example changing the lineHeight, the color or adding
+    // a new paragraph with \n, causes the cursor to move to the end of the Text and scroll.
+    // This is fixed by restoring the cursor position and scrolling to that position (iOS issue 652653).
+    // Maintaining a cursor position relative to the end of the old text.
+    NSInteger offsetStart = [_backedTextInputView offsetFromPosition:_backedTextInputView.beginningOfDocument
+                                                          toPosition:selectedRange.start];
+    NSInteger offsetFromEnd = oldTextLength - offsetStart;
+    NSInteger newOffset = attributedString.string.length - offsetFromEnd;
+    UITextPosition *position = [_backedTextInputView positionFromPosition:_backedTextInputView.beginningOfDocument
+                                                                   offset:newOffset];
+    [_backedTextInputView setSelectedTextRange:[_backedTextInputView textRangeFromPosition:position toPosition:position]
+                                notifyDelegate:YES];
+    [_backedTextInputView scrollRangeToVisible:NSMakeRange(offsetStart, 0)];
+  }
 
   // A zero-length selection range can cause the caret position to change on iOS,
   // and we have already updated the caret position, so we can safely ignore caret changing in this place.
