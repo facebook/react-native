@@ -151,7 +151,7 @@ describe('<SectionList>', () => {
       );
     });
 
-    it('reports the next sticky section header and the items after it', () => {
+    it('reports the items around sticky section headers that are on screen', () => {
       // Two sections, each one 50px sticky header followed by five 80px rows:
       // header A at 0, rows A1-A5, header B at 450, rows B1-B5.
       const sections: Array<SectionBase<Item>> = ['A', 'B'].map(name => ({
@@ -191,7 +191,8 @@ describe('<SectionList>', () => {
           ).getNativeScrollRef(),
         );
 
-        // Header A is pinned. Header B (at 450) and B1-B4 are fully on screen.
+        // Header A is pinned over A4. Header B (at 450) and B1-B4 are fully on
+        // screen.
         Fantom.scrollTo(scrollView, {x: 0, y: 254});
         // Flush the render batches scheduled by cell layout events.
         timers.runAllTimers();
@@ -212,9 +213,15 @@ describe('<SectionList>', () => {
               ? `header ${token.section.key}`
               : token.item.key,
         );
-        for (const label of ['header B', 'B1', 'B2', 'B3', 'B4']) {
-          expect(viewableLabels).toContain(label);
-        }
+        expect(viewableLabels).toEqual([
+          'header A',
+          'A5',
+          'header B',
+          'B1',
+          'B2',
+          'B3',
+          'B4',
+        ]);
       } finally {
         timers.uninstall();
       }

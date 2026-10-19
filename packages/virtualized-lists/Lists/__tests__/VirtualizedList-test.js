@@ -1242,6 +1242,30 @@ describe('VirtualizedList', () => {
     });
     expect(getCellOffset(component, 5)).toBe(260);
   });
+
+  it('does not report items hidden behind a sticky list header', async () => {
+    // A 120dip header is pinned over items 0-4. Items 5-10 are fully visible.
+    expect(await viewableIndicesBelowStickyListHeader({})).toEqual([
+      5, 6, 7, 8, 9, 10,
+    ]);
+  });
+
+  it.each([
+    ['inverted', {inverted: true}],
+    ['invertStickyHeaders', {invertStickyHeaders: true}],
+    ['stickyHeaderHiddenOnScroll', {stickyHeaderHiddenOnScroll: true}],
+    [
+      'StickyHeaderComponent',
+      {StickyHeaderComponent: () => createElement('CustomStickyHeader')},
+    ],
+  ])(
+    'keeps the whole viewport when sticky headers are drawn elsewhere (%s)',
+    async (_name, props) => {
+      expect(await viewableIndicesBelowStickyListHeader(props)).toEqual([
+        4, 5, 6, 7, 8, 9, 10,
+      ]);
+    },
+  );
 });
 
 it('unmounts sticky headers moved below viewport', async () => {
@@ -3271,6 +3295,55 @@ function getCellOffset(component, itemIndex) {
   const instance = component.getInstance();
   return instance.__getListMetrics().getCellMetrics(itemIndex, instance.props)
     .offset;
+}
+
+// Renders thirty 80dip items below a sticky 120dip list header in a 600dip
+// viewport, scrolls to 400 and returns the indices reported as viewable.
+async function viewableIndicesBelowStickyListHeader(props) {
+  const items = generateItems(30);
+  const onViewableItemsChanged = jest.fn();
+
+  let component;
+  await act(() => {
+    component = create(
+      <VirtualizedList
+        {...baseItemProps(items)}
+        ListHeaderComponent={() => createElement('Header')}
+        stickyHeaderIndices={[0]}
+        initialNumToRender={items.length}
+        viewabilityConfig={{itemVisiblePercentThreshold: 100}}
+        onViewableItemsChanged={onViewableItemsChanged}
+        {...props}
+      />,
+    );
+  });
+
+  await act(() => {
+    simulateLayout(component, {
+      viewport: {width: 10, height: 600},
+      content: {width: 10, height: 120 + items.length * 80},
+    });
+    component.getInstance()._onLayoutHeader({
+      nativeEvent: {layout: {width: 10, height: 120, x: 0, y: 0}},
+    });
+    for (let i = 0; i < items.length; i++) {
+      simulateCellLayout(component, items, i, {
+        width: 10,
+        height: 80,
+        x: 0,
+        y: 120 + i * 80,
+      });
+    }
+    performAllBatches();
+  });
+
+  await act(() => {
+    simulateScroll(component, {x: 0, y: 400});
+    performAllBatches();
+  });
+
+  const lastCall = onViewableItemsChanged.mock.calls.at(-1)[0];
+  return lastCall.viewableItems.map(token => token.index);
 }
 
 function simulateScroll(component, position) {

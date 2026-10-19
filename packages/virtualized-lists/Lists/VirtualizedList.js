@@ -9,7 +9,7 @@
  */
 
 import type {CellMetricProps, ListOrientation} from './ListMetricsAggregator';
-import type {ViewToken} from './ViewabilityHelper';
+import type {PinnedStickyHeader, ViewToken} from './ViewabilityHelper';
 import type {
   Item,
   ListRenderItem,
@@ -49,6 +49,7 @@ import {
 } from './VirtualizedListProps';
 import {
   computeWindowedRenderLimits,
+  findPinnedStickyHeader,
   keyExtractor as defaultKeyExtractor,
 } from './VirtualizeUtils';
 import invariant from 'invariant';
@@ -2316,24 +2317,91 @@ class VirtualizedList extends StateSafePureComponent<
     ) {
       return;
     }
+    if (this._viewabilityTuples.length === 0) {
+      return;
+    }
+    const scrollOffset = this._scrollMetrics.offset;
     const visibleLength =
       this._scrollMetrics.crossAxisLength > 0
         ? this._scrollMetrics.visibleLength
         : 0;
     const shouldSuppressViewableItems =
       suppressViewableItems ?? this._shouldSuppressViewableItems();
+    const pinnedStickyHeader = this._getPinnedStickyHeader(scrollOffset);
     this._viewabilityTuples.forEach(tuple => {
       tuple.viewabilityHelper.onUpdate(
         props,
-        this._scrollMetrics.offset,
+        scrollOffset,
         visibleLength,
         this._listMetrics,
         this._createViewToken,
         tuple.onViewableItemsChanged,
         cellsAroundViewport,
         shouldSuppressViewableItems,
+        pinnedStickyHeader,
       );
     });
+  }
+
+  _getPinnedStickyHeader(scrollOffset: number): ?PinnedStickyHeader {
+    const {
+      ListHeaderComponent,
+      StickyHeaderComponent,
+      data,
+      getItemCount,
+      horizontal,
+      invertStickyHeaders,
+      inverted,
+      stickyHeaderHiddenOnScroll,
+      stickyHeaderIndices,
+    } = this.props;
+    const stickToBottom =
+      invertStickyHeaders !== undefined ? invertStickyHeaders : inverted;
+    // Only the default sticky header of a vertical scroll view pins to the
+    // start of the viewport. Where other sticky headers are drawn is unknown.
+    if (
+      stickyHeaderIndices == null ||
+      stickyHeaderIndices.length === 0 ||
+      horizontalOrDefault(horizontal) ||
+      stickToBottom === true ||
+      stickyHeaderHiddenOnScroll === true ||
+      StickyHeaderComponent != null ||
+      this._isNestedWithSameOrientation()
+    ) {
+      return null;
+    }
+
+    const stickyOffset = ListHeaderComponent ? 1 : 0;
+    const itemCount = getItemCount(data);
+    const pinned = findPinnedStickyHeader(
+      stickyHeaderIndices,
+      stickyIndex => {
+        if (stickyOffset === 1 && stickyIndex === 0) {
+          // The list header is the first child of the content container.
+          return {offset: 0, length: this._headerLength};
+        }
+        const cellIndex = stickyIndex - stickyOffset;
+        if (
+          !Number.isInteger(cellIndex) ||
+          cellIndex < 0 ||
+          cellIndex >= itemCount
+        ) {
+          return null;
+        }
+        return this._listMetrics.getCellMetrics(cellIndex, this.props);
+      },
+      scrollOffset,
+    );
+    if (pinned == null) {
+      return null;
+    }
+    return {
+      coveredLength: pinned.coveredLength,
+      cellIndex:
+        stickyOffset === 1 && pinned.stickyIndex === 0
+          ? null
+          : pinned.stickyIndex - stickyOffset,
+    };
   }
 }
 
