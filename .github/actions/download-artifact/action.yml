@@ -8,6 +8,14 @@ inputs:
   path:
     description: Destination path
     required: true
+  run-id:
+    description: Workflow run to download from; defaults to the current run
+    required: false
+    default: ''
+  github-token:
+    description: Token with actions:read, needed when run-id is another run
+    required: false
+    default: ''
 
 outputs:
   download-path:
@@ -25,6 +33,8 @@ runs:
       with:
         name: ${{ inputs.name }}
         path: ${{ inputs.path }}
+        run-id: ${{ inputs.run-id || github.run_id }}
+        github-token: ${{ inputs.github-token }}
 
     - name: Wait before attempt 2
       if: ${{ always() && steps.download-1.outcome == 'failure' }}
@@ -41,6 +51,8 @@ runs:
       with:
         name: ${{ inputs.name }}
         path: ${{ inputs.path }}
+        run-id: ${{ inputs.run-id || github.run_id }}
+        github-token: ${{ inputs.github-token }}
 
     - name: Wait before attempt 3
       if: ${{ always() && steps.download-2.outcome == 'failure' }}
@@ -57,3 +69,5 @@ runs:
       with:
         name: ${{ inputs.name }}
         path: ${{ inputs.path }}
+        run-id: ${{ inputs.run-id || github.run_id }}
+        github-token: ${{ inputs.github-token }}
