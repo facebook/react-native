@@ -147,10 +147,28 @@ const getPreset = (src, options, babel) => {
     options.customTransformOptions?.unstable_preserveBlockScoping,
   );
 
-  // Preserve destructuring syntax if the experiment is enabled.
-  const preserveDestructuring = TRUE_VALS.has(
-    options.customTransformOptions?.unstable_preserveDestructuring,
-  );
+  // `enableBabelRuntime` (a boolean toggle or a string @babel/runtime version to
+  // pin) and `babelRuntimeModuleName` (the module helpers are imported from) may
+  // be provided via options or, for programmatic callers such as Metro, via
+  // Babel caller data. Options take precedence over caller data, consistent with
+  // the other options resolved here.
+  const enableBabelRuntime =
+    options.enableBabelRuntime ?? babel?.caller(getEnableBabelRuntime) ?? true;
+
+  // When @babel/plugin-transform-runtime is disabled, generators and async
+  // functions are lowered by @babel/plugin-transform-regenerator, which cannot
+  // handle destructuring patterns inside them (e.g. `const {a} = await x()`).
+  const usesRegeneratorTransform =
+    enableRegenerator && enableBabelRuntime === false;
+
+  // Preserve destructuring syntax by default, as Hermes supports it natively.
+  // It is still transformed when the regenerator transform is in use, because
+  // that transform requires destructuring to be lowered first.
+  const preserveDestructuring =
+    !usesRegeneratorTransform &&
+    TRUE_VALS.has(
+      options.customTransformOptions?.unstable_preserveDestructuring ?? true,
+    );
 
   const isNull = src == null;
   const hasClass = isNull || src.indexOf('class') !== -1;
@@ -267,14 +285,6 @@ const getPreset = (src, options, babel) => {
       {loose: true},
     ]);
   }
-
-  // `enableBabelRuntime` (a boolean toggle or a string @babel/runtime version to
-  // pin) and `babelRuntimeModuleName` (the module helpers are imported from) may
-  // be provided via options or, for programmatic callers such as Metro, via
-  // Babel caller data. Options take precedence over caller data, consistent with
-  // the other options resolved here.
-  const enableBabelRuntime =
-    options.enableBabelRuntime ?? babel?.caller(getEnableBabelRuntime) ?? true;
 
   if (enableBabelRuntime !== false) {
     // A string value pins a specific runtime version to optimize output.
