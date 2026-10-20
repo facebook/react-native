@@ -163,13 +163,12 @@ using namespace facebook::react;
 
 - (void)updateClippedSubviewsWithClipRect:(CGRect)clipRect relativeToView:(UIView *)clipView
 {
-  clipRect = [clipView convertRect:clipRect toView:self];
-
   // Normal views don't support unmounting, so all
   // this does is forward message to our subviews,
-  // in case any of those do support it
+  // in case any of those do support it. The rect stays relative to `clipView`;
+  // a view that clips converts it to its own coordinates.
   for (UIView *subview in self.subviews) {
-    [subview updateClippedSubviewsWithClipRect:clipRect relativeToView:self];
+    [subview updateClippedSubviewsWithClipRect:clipRect relativeToView:clipView];
   }
 }
 
