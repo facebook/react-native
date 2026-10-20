@@ -95,6 +95,10 @@ val preparePrefab by
                       Pair("../ReactCommon/hermes/inspector-modern/", "hermes/inspector-modern/"),
                       // fabricjni
                       Pair("src/main/jni/react/fabric", "react/fabric/"),
+                      Pair(
+                          "src/main/jni/react/newarchdefaults/CoreComponentsRegistry.h",
+                          "react/fabric/",
+                      ),
                       // uimanagerjni
                       Pair("src/main/jni/react/uimanager", "react/uimanager/"),
                       // glog
