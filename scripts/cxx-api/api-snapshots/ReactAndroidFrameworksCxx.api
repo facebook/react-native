@@ -740,6 +740,7 @@ facebook::react::SharedColor facebook::react::colorFromComponents(facebook::reac
 facebook::react::SharedColor facebook::react::colorFromRGBA(uint8_t r, uint8_t g, uint8_t b, uint8_t a);
 facebook::react::SharedColor facebook::react::parsePlatformColor(const facebook::react::ContextContainer& contextContainer, int32_t surfaceId, const facebook::react::RawValue& value);
 facebook::react::SharedColor facebook::react::whiteColor();
+facebook::react::Size facebook::react::measureHostComponent(const facebook::react::ContextContainer* contextContainer, facebook::react::FabricUIManagerMeasureArgs args);
 facebook::react::Size facebook::react::yogaMeassureToSize(int64_t value);
 facebook::react::SurfaceId facebook::react::getNextRootViewTag() noexcept;
 facebook::react::TurboModuleMethodValueKind facebook::react::getTurboModuleMethodValueKind(facebook::jsi::Runtime& rt, const facebook::jsi::Value* value);
@@ -6079,6 +6080,15 @@ struct facebook::react::EventPayload {
   public virtual facebook::react::EventPayloadType getType() const = 0;
   public virtual std::optional<double> extractValue(const std::vector<std::string>&) const;
   public virtual ~EventPayload() = default;
+}
+
+struct facebook::react::FabricUIManagerMeasureArgs {
+  public const char* componentName;
+  public facebook::react::LayoutConstraints layoutConstraints;
+  public facebook::react::SurfaceId surfaceId;
+  public folly::dynamic localData;
+  public folly::dynamic props;
+  public folly::dynamic state;
 }
 
 struct facebook::react::FilterFunction {
