@@ -553,14 +553,17 @@ describe('exists', () => {
 describe('download', () => {
   let originalFetch;
   let tempDir;
+  let warnSpy;
 
   beforeEach(() => {
     originalFetch = globalThis.fetch;
     tempDir = fs.mkdtempSync(path.join(os.tmpdir(), 'spm-download-'));
+    warnSpy = jest.spyOn(console, 'warn').mockImplementation(() => {});
   });
 
   afterEach(() => {
     globalThis.fetch = originalFetch;
+    warnSpy.mockRestore();
     fs.rmSync(tempDir, {recursive: true, force: true});
   });
 
@@ -596,9 +599,19 @@ describe('download', () => {
       .mockResolvedValueOnce(downloadResponse('complete'));
     const destination = path.join(tempDir, 'artifact.tar.gz');
 
-    await download('https://example/artifact.tar.gz', destination, () => {});
+    const pending = download(
+      'https://example/artifact.tar.gz',
+      destination,
+      () => {},
+    );
+    await jest.advanceTimersByTimeAsync(1_500);
+    await pending;
 
     expect(globalThis.fetch).toHaveBeenCalledTimes(2);
+    expect(warnSpy).toHaveBeenCalledTimes(1);
+    expect(warnSpy).toHaveBeenCalledWith(
+      expect.stringContaining('retrying in 1000ms'),
+    );
     expect(fs.readFileSync(destination, 'utf8')).toBe('complete');
     expect(fs.existsSync(`${destination}.download`)).toBe(false);
   });
@@ -621,6 +634,10 @@ describe('download', () => {
       await pending;
 
       expect(globalThis.fetch).toHaveBeenCalledTimes(2);
+      expect(warnSpy).toHaveBeenCalledTimes(1);
+      expect(warnSpy).toHaveBeenCalledWith(
+        expect.stringContaining('retrying in 1000ms'),
+      );
       expect(fs.readFileSync(destination, 'utf8')).toBe('complete');
       expect(fs.existsSync(`${destination}.download`)).toBe(false);
     } finally {
@@ -643,6 +660,7 @@ describe('download', () => {
     ).rejects.toThrow(/HTTP 404/);
 
     expect(globalThis.fetch).toHaveBeenCalledTimes(1);
+    expect(warnSpy).not.toHaveBeenCalled();
     expect(fs.existsSync(destination)).toBe(false);
   });
 });
