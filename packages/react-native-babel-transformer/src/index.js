@@ -102,8 +102,12 @@ const getBabelRC = (function () {
     // $FlowFixMe[incompatible-use] `extends` is missing in null or undefined.
     // $FlowFixMe[incompatible-type] `extends` is missing in null or undefined.
     if (!babelRC.extends) {
-      const {babelRuntimeVersion, experimentalImportSupport, ...presetOptions} =
-        options;
+      const {
+        babelRuntimeModuleName,
+        babelRuntimeVersion,
+        experimentalImportSupport,
+        ...presetOptions
+      } = options;
 
       // $FlowFixMe[incompatible-use] `presets` is missing in null or undefined.
       babelRC.presets = [
@@ -113,10 +117,14 @@ const getBabelRC = (function () {
             projectRoot,
             ...presetOptions,
             disableImportExportTransform: experimentalImportSupport,
-            // Metro passes the version of its own `@babel/runtime` when
-            // `enableBabelRuntime` is `true`.
-            enableBabelRuntime:
-              babelRuntimeVersion ?? options.enableBabelRuntime,
+            // A version is only safe to target alongside the module it
+            // describes, so Metro's `@babel/runtime` is passed as a pair.
+            ...(babelRuntimeModuleName != null && babelRuntimeVersion != null
+              ? {
+                  babelRuntimeModuleName,
+                  enableBabelRuntime: babelRuntimeVersion,
+                }
+              : {enableBabelRuntime: options.enableBabelRuntime}),
           },
         ],
       ];

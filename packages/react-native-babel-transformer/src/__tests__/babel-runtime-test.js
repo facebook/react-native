@@ -30,12 +30,20 @@ beforeEach(() => {
   jest.resetModules();
 });
 
+const METRO_BABEL_RUNTIME = {
+  babelRuntimeModuleName: 'metro:babel-runtime',
+  babelRuntimeVersion: '7.29.0',
+};
+
 function transformToCode({
+  babelRuntime,
   extendsBabelConfigPath,
-  metroBabelRuntime,
 }: {
+  babelRuntime: ?Readonly<{
+    babelRuntimeModuleName?: string,
+    babelRuntimeVersion?: string,
+  }>,
   extendsBabelConfigPath?: string,
-  metroBabelRuntime: boolean,
 }): string {
   const {transform} = require('../index.js');
   const {ast} = transform({
@@ -43,12 +51,7 @@ function transformToCode({
     src: SRC,
     plugins: [],
     options: {
-      ...(metroBabelRuntime
-        ? {
-            babelRuntimeModuleName: 'metro:babel-runtime',
-            babelRuntimeVersion: '7.29.0',
-          }
-        : null),
+      ...babelRuntime,
       dev: true,
       enableBabelRuntime: true,
       enableBabelRCLookup: false,
@@ -72,7 +75,7 @@ describe.each([
   test("imports helpers from Metro's own @babel/runtime when Metro passes it", () => {
     const code = transformToCode({
       extendsBabelConfigPath,
-      metroBabelRuntime: true,
+      babelRuntime: METRO_BABEL_RUNTIME,
     });
 
     expect(code).toContain(
@@ -84,10 +87,19 @@ describe.each([
   test('inlines newer helpers when Metro passes no @babel/runtime', () => {
     const code = transformToCode({
       extendsBabelConfigPath,
-      metroBabelRuntime: false,
+      babelRuntime: null,
     });
 
     expect(code).not.toContain('metro:babel-runtime');
+    expect(code).toContain('function _interopRequireWildcard(');
+  });
+
+  test('ignores a @babel/runtime version without a module name', () => {
+    const code = transformToCode({
+      babelRuntime: {babelRuntimeVersion: '7.29.0'},
+      extendsBabelConfigPath,
+    });
+
     expect(code).toContain('function _interopRequireWildcard(');
   });
 });
