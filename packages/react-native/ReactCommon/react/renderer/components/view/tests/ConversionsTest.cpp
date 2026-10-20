@@ -8,6 +8,8 @@
 #include <array>
 #include <limits>
 #include <memory>
+#include <utility>
+#include <vector>
 
 #include <gtest/gtest.h>
 
@@ -806,6 +808,101 @@ TEST(
   fromRawValue(PropsParserContext{-1, ContextContainer{}}, value, result);
 
   EXPECT_TRUE(result.isSet());
+}
+
+TEST(
+    ConversionsTest,
+    processed_transform_with_a_string_that_parses_to_infinity_is_ignored) {
+  const auto transforms = std::vector<folly::dynamic>{
+      folly::dynamic::object("rotate", "1e1000deg"),
+      folly::dynamic::object("skewX", "1e1000deg"),
+      folly::dynamic::object("translateX", "1e1000%"),
+      folly::dynamic::object("translate", folly::dynamic::array(0, "1e1000%"))};
+
+  for (const auto& transform : transforms) {
+    RawValue value{folly::dynamic::array(
+        folly::dynamic::object("translateX", 10), transform)};
+    Transform result;
+    fromRawValue(PropsParserContext{-1, ContextContainer{}}, value, result);
+
+    EXPECT_EQ(result, Transform::Identity())
+        << transform.keys().begin()->asString();
+  }
+
+  RawValue origin{folly::dynamic::array("1e1000%", "50%", 0)};
+  TransformOrigin originResult;
+  fromRawValue(
+      PropsParserContext{-1, ContextContainer{}}, origin, originResult);
+
+  EXPECT_FALSE(originResult.isSet());
+}
+
+TEST(
+    ConversionsTest,
+    processed_transform_with_an_operand_it_cannot_read_is_ignored) {
+  const auto transforms = std::vector<folly::dynamic>{
+      folly::dynamic::object("scale", "2"),
+      folly::dynamic::object("perspective", true),
+      folly::dynamic::object("translateX", "ten"),
+      folly::dynamic::object("translateY", "ten"),
+      folly::dynamic::object("translate", folly::dynamic::array("ten", 0)),
+      folly::dynamic::object("translate", folly::dynamic::array(0, "ten"))};
+
+  for (const auto& transform : transforms) {
+    RawValue value{folly::dynamic::array(
+        folly::dynamic::object("translateX", 10), transform)};
+    Transform result;
+    fromRawValue(PropsParserContext{-1, ContextContainer{}}, value, result);
+
+    EXPECT_EQ(result, Transform::Identity())
+        << transform.keys().begin()->asString();
+  }
+
+  RawValue matrix{folly::dynamic::array(folly::dynamic::object("matrix", 1))};
+  auto matrixResult = Transform::Translate(10, 0, 0);
+  fromRawValue(
+      PropsParserContext{-1, ContextContainer{}}, matrix, matrixResult);
+
+  EXPECT_EQ(matrixResult, Transform::Identity());
+}
+
+TEST(
+    ConversionsTest,
+    processed_transform_origin_with_an_entry_it_cannot_read_is_unset) {
+  const auto origins = std::array{
+      folly::dynamic::array("ten", "50%", 0),
+      folly::dynamic::array("50%", "ten", 0),
+      folly::dynamic::array("50%", "50%", "ten")};
+
+  for (size_t index = 0; index < origins.size(); index++) {
+    RawValue value{origins[index]};
+    TransformOrigin result;
+    fromRawValue(PropsParserContext{-1, ContextContainer{}}, value, result);
+
+    EXPECT_FALSE(result.isSet()) << "origin " << index;
+  }
+}
+
+TEST(ConversionsTest, processed_transform_scales_along_one_axis) {
+  const auto axes =
+      std::array<std::pair<const char*, std::array<float, 3>>, 3>{{
+          {"scaleX", {2, 1, 1}},
+          {"scaleY", {1, 2, 1}},
+          {"scaleZ", {1, 1, 2}},
+      }};
+
+  for (const auto& [operation, factors] : axes) {
+    RawValue value{folly::dynamic::array(folly::dynamic::object(operation, 2))};
+    Transform result;
+    fromRawValue(PropsParserContext{-1, ContextContainer{}}, value, result);
+
+    ASSERT_EQ(result.operations.size(), 1) << operation;
+    EXPECT_EQ(result.operations[0].type, TransformOperationType::Scale)
+        << operation;
+    EXPECT_EQ(result.operations[0].x.value, factors[0]) << operation;
+    EXPECT_EQ(result.operations[0].y.value, factors[1]) << operation;
+    EXPECT_EQ(result.operations[0].z.value, factors[2]) << operation;
+  }
 }
 
 } // namespace facebook::react

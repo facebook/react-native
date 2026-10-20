@@ -571,6 +571,14 @@ class MatrixMathHelperTest {
   }
 
   @Test
+  fun testApplyNegativePerspectiveKeepsItsDepth() {
+    val matrix = MatrixMathHelper.createIdentityMatrix()
+    MatrixMathHelper.applyPerspective(matrix, -100.0)
+
+    assertThat(matrix[11]).isEqualTo(0.01)
+  }
+
+  @Test
   fun testApplyScaleX() {
     val matrix = MatrixMathHelper.createIdentityMatrix()
     MatrixMathHelper.applyScaleX(matrix, 2.0)

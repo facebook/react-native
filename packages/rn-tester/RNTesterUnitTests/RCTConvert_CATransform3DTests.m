@@ -103,9 +103,40 @@ static BOOL IsFiniteTransform(CATransform3D transform)
   }
 }
 
+- (void)testPerspectiveFromOnePixelKeepsItsDepth
+{
+  XCTAssertEqual([RCTConvert CATransform3D:@[ @{@"perspective" : @1000} ]].m34, -1.0 / 1000);
+  XCTAssertEqual([RCTConvert CATransform3D:@[ @{@"perspective" : @(-100)} ]].m34, 1.0 / 100);
+}
+
+- (void)testAngleInRadiansIsRead
+{
+  CATransform3D result = [RCTConvert CATransform3D:@[ @{@"rotate" : @"0.5rad"} ]];
+  XCTAssertTrue(CATransform3DEqualToTransform(result, CATransform3DMakeRotation(0.5, 0, 0, 1)));
+}
+
+- (void)testTranslateWithADepthIsRead
+{
+  CATransform3D result = [RCTConvert CATransform3D:@[ @{@"translate" : @[ @1, @2, @3 ]} ]];
+  XCTAssertEqual(result.m41, 1);
+  XCTAssertEqual(result.m42, 2);
+  XCTAssertEqual(result.m43, 3);
+}
+
+- (void)testTransformOriginIsRead
+{
+  RCTTransformOrigin result = [RCTConvert RCTTransformOrigin:@[ @10, @"75%", @5 ]];
+  XCTAssertEqual(result.x.unit, YGUnitPoint);
+  XCTAssertEqual(result.x.value, 10);
+  XCTAssertEqual(result.y.unit, YGUnitPercent);
+  XCTAssertEqual(result.y.value, 75);
+  XCTAssertEqual(result.z, 5);
+}
+
 - (void)testTransformOriginHoldingANonFiniteNumberIsIgnored
 {
-  for (NSArray *transformOrigin in @[ @[ @(NAN), @0, @0 ], @[ @0, @(INFINITY), @0 ], @[ @0, @0, @(NAN) ] ]) {
+  for (NSArray *transformOrigin in
+       @[ @[ @(NAN), @0, @0 ], @[ @0, @(INFINITY), @0 ], @[ @0, @0, @(NAN) ], @[ @"1e39%", @0, @0 ] ]) {
     RCTTransformOrigin result = [RCTConvert RCTTransformOrigin:transformOrigin];
     XCTAssertEqual(result.x.unit, YGUnitPercent, @"%@", transformOrigin);
     XCTAssertEqual(result.x.value, 50, @"%@", transformOrigin);

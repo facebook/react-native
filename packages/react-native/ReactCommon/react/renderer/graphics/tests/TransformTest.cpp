@@ -180,3 +180,22 @@ TEST(TransformTest, interpolatingBetweenPerspectivesInterpolatesTheirMatrices) {
 
   EXPECT_NEAR(transform.matrix[11], -0.0075, 1e-7);
 }
+
+TEST(TransformTest, negativePerspectiveKeepsItsDepth) {
+  auto transform = Transform::Perspective(-100);
+
+  EXPECT_FLOAT_EQ(transform.matrix[11], 1.0f / 100);
+  EXPECT_EQ(transform.operations[0].x.value, -100);
+}
+
+TEST(TransformTest, interpolatingATranslateInterpolatesItsDistance) {
+  auto size = facebook::react::Size{100, 100};
+  auto transform = Transform::Interpolate(
+      0.5,
+      Transform::Translate(20, 0, 0),
+      Transform::Translate(100, 40, 0),
+      size);
+
+  EXPECT_FLOAT_EQ(transform.matrix[12], 60);
+  EXPECT_FLOAT_EQ(transform.matrix[13], 20);
+}
