@@ -149,6 +149,13 @@ struct Transform {
   static bool isHorizontalInversion(const Transform &transform) noexcept;
 
   /*
+   * Whether every operand of every operation is finite. NaN and infinity are
+   * not CSS numbers, so a transform holding one is an invalid declaration:
+   * https://drafts.csswg.org/css-values-4/#numbers
+   */
+  static bool hasFiniteOperands(const Transform &transform) noexcept;
+
+  /*
    * Equality operators.
    */
   bool operator==(const Transform &rhs) const noexcept;

@@ -65,8 +65,8 @@ internal object SkewMatrixHelper {
   /**
    * Builds a [Matrix] in pixel coordinates by walking [transforms] left-to-right and applying each
    * operation via `Matrix.preX` around the resolved pivot. Pivot is the view center; a
-   * [transformOrigin] whose axes and depth are all finite overrides it per axis (Number values are
-   * DIP, "P%" strings are P/100 of the view dimension; the depth only has to be finite).
+   * [transformOrigin] whose axes and depth are all finite as floats overrides it per axis (Number
+   * values are DIP, "P%" strings are P/100 of the view dimension; the depth only has to be finite).
    *
    * Composition is pre-multiplication: when the resulting matrix is applied to a point, the
    * rightmost (last) array entry is applied first. Matches CSS / iOS conventions and the
@@ -171,7 +171,7 @@ internal object SkewMatrixHelper {
       origin == null ||
           origin.size() <= 2 ||
           origin.getType(2) != ReadableType.Number ||
-          origin.getDouble(2).isFinite()
+          origin.getDouble(2).toFloat().isFinite()
 
   private fun isRawMatrixShorthand(transforms: ReadableArray): Boolean =
       transforms.size() == 16 && transforms.getType(0) == ReadableType.Number

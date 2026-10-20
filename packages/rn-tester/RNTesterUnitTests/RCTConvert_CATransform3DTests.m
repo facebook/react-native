@@ -13,17 +13,6 @@
 
 @end
 
-static BOOL IsFiniteTransform(CATransform3D transform)
-{
-  const CGFloat *entries = (const CGFloat *)&transform;
-  for (NSUInteger index = 0; index < 16; index++) {
-    if (!isfinite(entries[index])) {
-      return NO;
-    }
-  }
-  return YES;
-}
-
 @implementation RCTConvert_CATransform3DTests
 
 - (void)testTransformHoldingANonFiniteNumberIsIgnored
@@ -60,33 +49,26 @@ static BOOL IsFiniteTransform(CATransform3D transform)
   }
 }
 
-- (void)testNumberPastTheLargestFloatIsKept
+- (void)testNumberPastTheLargestFloatIsIgnored
 {
-  CGFloat pastTheLargestFloat = 1e39;
-
-  CATransform3D translated = [RCTConvert CATransform3D:@[ @{@"translateY" : @(pastTheLargestFloat)} ]];
-  XCTAssertEqual(translated.m42, pastTheLargestFloat);
-
-  CATransform3D scaled = [RCTConvert CATransform3D:@[ @{@"scale" : @(pastTheLargestFloat)} ]];
-  XCTAssertEqual(scaled.m11, pastTheLargestFloat);
-  XCTAssertEqual(scaled.m22, pastTheLargestFloat);
-}
-
-- (void)testAnglePastTheLargestFloatIsKept
-{
-  for (NSString *operation in @[ @"rotate", @"skewX" ]) {
-    CATransform3D result = [RCTConvert CATransform3D:@[ @{operation : @"1e+39deg"} ]];
-    XCTAssertTrue(IsFiniteTransform(result), @"%@", operation);
-    XCTAssertFalse(CATransform3DIsIdentity(result), @"%@", operation);
+  for (NSDictionary *transform in @[
+         @{@"translateY" : @1e39},
+         @{@"scale" : @1e39},
+         @{@"perspective" : @1e39},
+         @{@"rotate" : @"1e+39deg"},
+         @{@"skewX" : @"1e+39deg"}
+       ]) {
+    CATransform3D result = [RCTConvert CATransform3D:@[ @{@"translateX" : @10}, transform ]];
+    XCTAssertTrue(CATransform3DIsIdentity(result), @"%@", transform);
   }
 }
 
-- (void)testTransformWhoseMatrixOverflowsIsIgnored
+- (void)testTransformWhoseMatrixOverflowsAFloatIsIgnored
 {
-  NSArray *overflowingMatrix = @[ @1e200, @0, @0, @0, @0, @1, @0, @0, @0, @0, @1, @0, @0, @0, @0, @1 ];
+  NSArray *scaledMatrix = @[ @1e20, @0, @0, @0, @0, @1, @0, @0, @0, @0, @1, @0, @0, @0, @0, @1 ];
   NSArray<NSArray *> *transforms = @[
-    @[ @{@"translateX" : @10}, @{@"scale" : @1e200}, @{@"scale" : @1e200} ],
-    @[ @{@"translateX" : @10}, @{@"matrix" : overflowingMatrix}, @{@"matrix" : overflowingMatrix} ],
+    @[ @{@"translateX" : @10}, @{@"scale" : @1e20}, @{@"scale" : @1e20} ],
+    @[ @{@"translateX" : @10}, @{@"matrix" : scaledMatrix}, @{@"matrix" : scaledMatrix} ],
   ];
 
   for (NSArray *transform in transforms) {
@@ -136,8 +118,14 @@ static BOOL IsFiniteTransform(CATransform3D transform)
 - (void)testTransformOriginHoldingANonFiniteNumberIsIgnored
 {
   RCTTransformOrigin noOrigin = [RCTConvert RCTTransformOrigin:nil];
-  for (NSArray *transformOrigin in
-       @[ @[ @(NAN), @0, @0 ], @[ @0, @(INFINITY), @0 ], @[ @0, @0, @(NAN) ], @[ @"1e39%", @0, @0 ] ]) {
+  for (NSArray *transformOrigin in @[
+         @[ @(NAN), @0, @0 ],
+         @[ @0, @(INFINITY), @0 ],
+         @[ @0, @0, @(NAN) ],
+         @[ @"1e39%", @0, @0 ],
+         @[ @1e39, @0, @0 ],
+         @[ @0, @0, @1e39 ]
+       ]) {
     RCTTransformOrigin result = [RCTConvert RCTTransformOrigin:transformOrigin];
     XCTAssertEqual(result.x.unit, noOrigin.x.unit, @"%@", transformOrigin);
     XCTAssertEqual(result.y.unit, noOrigin.y.unit, @"%@", transformOrigin);
@@ -155,7 +143,7 @@ static BOOL IsFiniteTransform(CATransform3D transform)
   view.reactTransform = [RCTConvert CATransform3D:@[ @{@"scale" : @2} ]];
   XCTAssertEqual(view.layer.transform.m41, 150);
 
-  view.reactTransform = [RCTConvert CATransform3D:@[ @{@"scale" : @1.3e306} ]];
+  view.reactTransform = [RCTConvert CATransform3D:@[ @{@"scale" : @3e38} ]];
   XCTAssertTrue(CATransform3DIsIdentity(view.layer.transform));
 }
 

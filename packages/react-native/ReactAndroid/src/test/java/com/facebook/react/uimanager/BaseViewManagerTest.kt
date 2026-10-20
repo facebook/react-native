@@ -369,7 +369,7 @@ class BaseViewManagerTest {
           ),
       )
 
-      Assertions.assertThat(skewMatrixValues(view)[Matrix.MTRANS_X])
+      Assertions.assertThat(skewMatrixValues(view, "$origin")[Matrix.MTRANS_X])
           .describedAs("$origin")
           .isCloseTo(translateX, Assertions.within(1e-4f))
     }
@@ -378,8 +378,11 @@ class BaseViewManagerTest {
   private val skewX10: JavaOnlyMap
     get() = JavaOnlyMap.of("skewX", "10deg")
 
-  private fun skewMatrixValues(view: View): FloatArray =
-      FloatArray(9).also { (view.getTag(R.id.skew_animation_matrix) as Matrix).getValues(it) }
+  private fun skewMatrixValues(view: View, description: String): FloatArray {
+    val matrix = view.getTag(R.id.skew_animation_matrix)
+    Assertions.assertThat(matrix).describedAs(description).isInstanceOf(Matrix::class.java)
+    return FloatArray(9).also { (matrix as Matrix).getValues(it) }
+  }
 
   private fun recycleView(
       previousProps: JavaOnlyMap,

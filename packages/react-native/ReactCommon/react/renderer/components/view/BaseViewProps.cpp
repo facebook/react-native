@@ -57,10 +57,12 @@ bool isFiniteTransformOrigin(const TransformOrigin& transformOrigin) {
       std::isfinite(transformOrigin.z);
 }
 
+// React Native holds a transform's numbers as floats, so an entry past the
+// largest float overflows where the matrix is a double too.
 bool isFiniteMatrix(const Transform& transform) {
   return std::all_of(
       transform.matrix.begin(), transform.matrix.end(), [](Float value) {
-        return std::isfinite(value);
+        return std::isfinite(static_cast<float>(value));
       });
 }
 
@@ -573,6 +575,13 @@ Transform BaseViewProps::resolveTransform(
     const Size& frameSize,
     const Transform& transform,
     const TransformOrigin& transformOrigin) {
+  // NaN and infinity are not CSS numbers, so a transform holding one is an
+  // invalid declaration, drawn untransformed:
+  // https://drafts.csswg.org/css-values-4/#numbers
+  if (!Transform::hasFiniteOperands(transform)) {
+    return {};
+  }
+
   auto transformMatrix = Transform{};
 
   // transform is matrix
@@ -581,18 +590,12 @@ Transform BaseViewProps::resolveTransform(
     transformMatrix = transform;
   } else {
     for (const auto& operation : transform.operations) {
-      // -1 / ±Infinity is a finite m34, so the matrix's own check cannot see a
-      // non-finite perspective.
-      if (operation.type == TransformOperationType::Perspective &&
-          !std::isfinite(operation.x.value)) {
-        return Transform{};
-      }
       transformMatrix = transformMatrix *
           Transform::FromTransformOperation(operation, frameSize, transform);
     }
   }
 
-  // A non-finite origin is ignored, so the transform turns about the centre.
+  // A non-finite origin is ignored, so the transform turns about the center.
   if (transformOrigin.isSet() && isFiniteTransformOrigin(transformOrigin)) {
     std::array<float, 3> translateOffsets = getTranslateForTransformOrigin(
         frameSize.width, frameSize.height, transformOrigin);
@@ -604,11 +607,11 @@ Transform BaseViewProps::resolveTransform(
             -translateOffsets[0], -translateOffsets[1], -translateOffsets[2]);
   }
 
-  // NaN and infinity are not CSS numbers, so a transform holding one is an
-  // invalid declaration, drawn untransformed:
-  // https://drafts.csswg.org/css-values-4/#numbers
-  // So is a composition of finite numbers that overflows.
-  return isFiniteMatrix(transformMatrix) ? transformMatrix : Transform{};
+  // A transform whose matrix overflows is drawn untransformed too.
+  if (!isFiniteMatrix(transformMatrix)) {
+    return {};
+  }
+  return transformMatrix;
 }
 
 bool BaseViewProps::getClipsContentToBounds() const {

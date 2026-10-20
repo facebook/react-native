@@ -40,7 +40,10 @@ public object TransformHelper {
     } else {
       value = transformMap.getDouble(key)
     }
-    return if (inRadians) value else MatrixMathHelper.degreesToRadians(value)
+    // The C++ transform parser holds an angle as a float, so one past the largest float is infinite
+    // on this path too.
+    val angle = value.toFloat().toDouble()
+    return if (inRadians) angle else MatrixMathHelper.degreesToRadians(angle)
   }
 
   @Deprecated(
@@ -122,7 +125,7 @@ public object TransformHelper {
           "perspective" -> {
             val perspective = transform.getDouble(transformType)
             // -1 / ±Infinity is a finite m34, so the result's own check below cannot see it.
-            if (!perspective.isFinite()) {
+            if (!perspective.toFloat().isFinite()) {
               MatrixMathHelper.resetIdentityMatrix(result)
               return
             }
@@ -197,8 +200,9 @@ public object TransformHelper {
 
     // NaN and infinity are not CSS numbers, so a transform holding one is an invalid declaration
     // and is ignored: https://drafts.csswg.org/css-values-4/#numbers. Every other non-finite
-    // operand makes the matrix non-finite.
-    if (!result.all { it.isFinite() }) {
+    // operand makes the matrix non-finite, and BaseViewManager applies it as floats, so an entry
+    // past the largest float is an overflow.
+    if (!result.all { it.toFloat().isFinite() }) {
       MatrixMathHelper.resetIdentityMatrix(result)
     }
   }
@@ -244,7 +248,7 @@ public object TransformHelper {
       }
     }
 
-    if (!origin.all { it.isFinite() }) {
+    if (!origin.all { it.toFloat().isFinite() }) {
       return null
     }
 

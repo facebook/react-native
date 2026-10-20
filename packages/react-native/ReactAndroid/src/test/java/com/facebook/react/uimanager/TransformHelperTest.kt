@@ -51,16 +51,7 @@ class TransformHelperTest {
               )
 
       for (transform in transforms) {
-        val result = DoubleArray(16)
-        TransformHelper.processTransform(
-            JavaOnlyArray.of(JavaOnlyMap.of("translateX", 10.0), transform),
-            result,
-            100f,
-            100f,
-            null,
-        )
-
-        assertThat(result)
+        assertThat(processTranslatedBy10(transform))
             .describedAs("$transform")
             .containsExactly(*MatrixMathHelper.createIdentityMatrix())
       }
@@ -75,69 +66,91 @@ class TransformHelperTest {
             JavaOnlyMap.of("skewX", "Infinityrad"),
             JavaOnlyMap.of("translateX", "NaN%"),
         )) {
-      val result = DoubleArray(16)
-      TransformHelper.processTransform(
-          JavaOnlyArray.of(JavaOnlyMap.of("translateX", 10.0), transform),
-          result,
-          100f,
-          100f,
-          null,
-      )
-
-      assertThat(result)
+      assertThat(processTranslatedBy10(transform))
           .describedAs("$transform")
           .containsExactly(*MatrixMathHelper.createIdentityMatrix())
     }
   }
 
   @Test
-  fun testTransformOriginHoldingANonFiniteNumberIsIgnored() {
-    val transforms = JavaOnlyArray.of(JavaOnlyMap.of("scaleX", 2.0))
-    val aboutTheCenter = MatrixMathHelper.createIdentityMatrix().apply { this[0] = 2.0 }
+  fun testTranslatePastTheLargestFloatIsIgnored() {
+    assertThat(processTranslatedBy10(JavaOnlyMap.of("translateY", 1e39)))
+        .containsExactly(*MatrixMathHelper.createIdentityMatrix())
+  }
 
+  @Test
+  fun testPerspectivePastTheLargestFloatIsIgnored() {
+    assertThat(processTranslatedBy10(JavaOnlyMap.of("perspective", 1e39)))
+        .containsExactly(*MatrixMathHelper.createIdentityMatrix())
+  }
+
+  @Test
+  fun testAnglePastTheLargestFloatIsIgnored() {
+    assertThat(processTranslatedBy10(JavaOnlyMap.of("rotate", "1e39deg")))
+        .containsExactly(*MatrixMathHelper.createIdentityMatrix())
+  }
+
+  @Test
+  fun testTransformWhoseMatrixOverflowsAFloatIsIgnored() {
+    assertThat(
+            processTransform(
+                JavaOnlyArray.of(JavaOnlyMap.of("scale", 1e20), JavaOnlyMap.of("scale", 1e20)),
+            )
+        )
+        .containsExactly(*MatrixMathHelper.createIdentityMatrix())
+  }
+
+  @Test
+  fun testTransformOriginHoldingANonFiniteNumberIsIgnored() {
     for (transformOrigin in
         listOf(
             JavaOnlyArray.of(Double.NaN, 0.0, 0.0),
             JavaOnlyArray.of(0.0, Double.POSITIVE_INFINITY, 0.0),
             JavaOnlyArray.of(0.0, 0.0, Double.NaN),
         )) {
-      val result = DoubleArray(16)
-      TransformHelper.processTransform(transforms, result, 100f, 100f, transformOrigin)
-
-      assertThat(result).describedAs("$transformOrigin").containsExactly(*aboutTheCenter)
+      assertThat(processTransform(scaledXBy2, transformOrigin))
+          .describedAs("$transformOrigin")
+          .containsExactly(*scaledXBy2AboutTheCenter)
     }
   }
 
   @Test
-  fun testFiniteTransformOriginMovesThePivot() {
-    val result = DoubleArray(16)
-    TransformHelper.processTransform(
-        JavaOnlyArray.of(JavaOnlyMap.of("scaleX", 2.0)),
-        result,
-        100f,
-        100f,
-        JavaOnlyArray.of(0.0, 0.0, 0.0),
-    )
+  fun testTransformOriginPastTheLargestFloatIsIgnored() {
+    assertThat(processTransform(scaledXBy2, JavaOnlyArray.of(1e39, 0.0, 0.0)))
+        .containsExactly(*scaledXBy2AboutTheCenter)
+  }
 
+  @Test
+  fun testFiniteTransformOriginMovesThePivot() {
     val aboutTheTopLeftCorner =
         MatrixMathHelper.createIdentityMatrix().apply {
           this[0] = 2.0
           this[12] = 50.0
         }
-    assertThat(result).containsExactly(*aboutTheTopLeftCorner)
+    assertThat(processTransform(scaledXBy2, JavaOnlyArray.of(0.0, 0.0, 0.0)))
+        .containsExactly(*aboutTheTopLeftCorner)
   }
 
   @Test
   fun testPerspectiveBelowOnePixelRendersAsOnePixel() {
-    val result = DoubleArray(16)
-    TransformHelper.processTransform(
-        JavaOnlyArray.of(JavaOnlyMap.of("perspective", 0.0)),
-        result,
-        100f,
-        100f,
-        null,
-    )
-
-    assertThat(result[11]).isEqualTo(-1.0)
+    assertThat(processTransform(JavaOnlyArray.of(JavaOnlyMap.of("perspective", 0.0)))[11])
+        .isEqualTo(-1.0)
   }
+
+  private val scaledXBy2: JavaOnlyArray
+    get() = JavaOnlyArray.of(JavaOnlyMap.of("scaleX", 2.0))
+
+  private val scaledXBy2AboutTheCenter: DoubleArray
+    get() = MatrixMathHelper.createIdentityMatrix().apply { this[0] = 2.0 }
+
+  private fun processTranslatedBy10(transform: JavaOnlyMap): DoubleArray =
+      processTransform(JavaOnlyArray.of(JavaOnlyMap.of("translateX", 10.0), transform))
+
+  private fun processTransform(
+      transforms: JavaOnlyArray,
+      transformOrigin: JavaOnlyArray? = null,
+  ): DoubleArray =
+      DoubleArray(16).also { result ->
+        TransformHelper.processTransform(transforms, result, 100f, 100f, transformOrigin)
+      }
 }

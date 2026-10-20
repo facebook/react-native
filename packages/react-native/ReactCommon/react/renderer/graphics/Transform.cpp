@@ -7,6 +7,7 @@
 
 #include "Transform.h"
 
+#include <algorithm>
 #include <cmath>
 #include <limits>
 
@@ -283,6 +284,16 @@ Transform::Translate(Float x, Float y, Float z) noexcept {
     const Transform& lhs,
     const Transform& rhs,
     const Size& size) {
+  // A transform holding a non-finite number is drawn untransformed
+  // (BaseViewProps::resolveTransform), so it interpolates as no transform does.
+  if (!hasFiniteOperands(lhs) || !hasFiniteOperands(rhs)) {
+    return Interpolate(
+        animationProgress,
+        hasFiniteOperands(lhs) ? lhs : Transform{},
+        hasFiniteOperands(rhs) ? rhs : Transform{},
+        size);
+  }
+
   // Iterate through operations and reconstruct an interpolated resulting
   // transform If at any point we hit an "Arbitrary" Transform, return at that
   // point
@@ -371,6 +382,18 @@ Transform::Translate(Float x, Float y, Float z) noexcept {
 /* static */ bool Transform::isHorizontalInversion(
     const Transform& transform) noexcept {
   return floatEquality(transform.at(0, 0), static_cast<Float>(-1.0f));
+}
+
+/* static */ bool Transform::hasFiniteOperands(
+    const Transform& transform) noexcept {
+  return std::all_of(
+      transform.operations.begin(),
+      transform.operations.end(),
+      [](const TransformOperation& operation) {
+        return std::isfinite(operation.x.value) &&
+            std::isfinite(operation.y.value) &&
+            std::isfinite(operation.z.value);
+      });
 }
 
 bool Transform::operator==(const Transform& rhs) const noexcept {

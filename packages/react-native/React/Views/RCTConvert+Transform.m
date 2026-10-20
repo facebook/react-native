@@ -13,7 +13,7 @@ BOOL RCTIsFiniteTransform(CATransform3D transform)
 {
   const CGFloat *entries = (const CGFloat *)&transform;
   for (NSUInteger i = 0; i < kMatrixArrayLength; i++) {
-    if (!isfinite(entries[i])) {
+    if (!isfinite((float)entries[i])) {
       return NO;
     }
   }
@@ -32,14 +32,14 @@ static BOOL RCTIsNonFiniteLength(YGValue value)
   if ([json isKindOfClass:[NSString class]]) {
     NSString *stringValue = (NSString *)json;
     if ([stringValue hasSuffix:@"deg"]) {
-      CGFloat degrees = [[stringValue substringToIndex:stringValue.length - 3] doubleValue];
+      CGFloat degrees = [[stringValue substringToIndex:stringValue.length - 3] floatValue];
       return degrees * M_PI / 180;
     }
     if ([stringValue hasSuffix:@"rad"]) {
-      return [[stringValue substringToIndex:stringValue.length - 3] doubleValue];
+      return [[stringValue substringToIndex:stringValue.length - 3] floatValue];
     }
   }
-  return [json doubleValue];
+  return [json floatValue];
 }
 
 + (CATransform3D)CATransform3DFromMatrix:(id)json
@@ -104,7 +104,7 @@ static BOOL RCTIsNonFiniteLength(YGValue value)
       transform = CATransform3DConcat(next, transform);
 
     } else if ([property isEqualToString:@"perspective"]) {
-      CGFloat perspective = [value doubleValue];
+      CGFloat perspective = [value floatValue];
       // -1 / ±Infinity is a finite m34, so the matrix's own check cannot see it.
       if (!isfinite(perspective)) {
         return CATransform3DIdentity;
@@ -127,45 +127,45 @@ static BOOL RCTIsNonFiniteLength(YGValue value)
       transform = CATransform3DRotate(transform, rotate, 0, 0, 1);
 
     } else if ([property isEqualToString:@"scale"]) {
-      CGFloat scale = [value doubleValue];
+      CGFloat scale = [value floatValue];
       scale = ABS(scale) < zeroScaleThreshold ? zeroScaleThreshold : scale;
       transform = CATransform3DScale(transform, scale, scale, 1);
 
     } else if ([property isEqualToString:@"scaleX"]) {
-      CGFloat scale = [value doubleValue];
+      CGFloat scale = [value floatValue];
       scale = ABS(scale) < zeroScaleThreshold ? zeroScaleThreshold : scale;
       transform = CATransform3DScale(transform, scale, 1, 1);
 
     } else if ([property isEqualToString:@"scaleY"]) {
-      CGFloat scale = [value doubleValue];
+      CGFloat scale = [value floatValue];
       scale = ABS(scale) < zeroScaleThreshold ? zeroScaleThreshold : scale;
       transform = CATransform3DScale(transform, 1, scale, 1);
 
     } else if ([property isEqualToString:@"translate"]) {
       NSArray *array = (NSArray<NSNumber *> *)value;
-      CGFloat translateX = [array[0] doubleValue];
-      CGFloat translateY = [array[1] doubleValue];
-      CGFloat translateZ = array.count > 2 ? [array[2] doubleValue] : 0;
+      CGFloat translateX = [array[0] floatValue];
+      CGFloat translateY = [array[1] floatValue];
+      CGFloat translateZ = array.count > 2 ? [array[2] floatValue] : 0;
       transform = CATransform3DTranslate(transform, translateX, translateY, translateZ);
 
     } else if ([property isEqualToString:@"translateX"]) {
-      CGFloat translate = [value doubleValue];
+      CGFloat translate = [value floatValue];
       transform = CATransform3DTranslate(transform, translate, 0, 0);
 
     } else if ([property isEqualToString:@"translateY"]) {
-      CGFloat translate = [value doubleValue];
+      CGFloat translate = [value floatValue];
       transform = CATransform3DTranslate(transform, 0, translate, 0);
 
     } else if ([property isEqualToString:@"skewX"]) {
       CGFloat skew = [self convertToRadians:value];
       next = CATransform3DIdentity;
-      next.m21 = tan(skew);
+      next.m21 = tanf(skew);
       transform = CATransform3DConcat(next, transform);
 
     } else if ([property isEqualToString:@"skewY"]) {
       CGFloat skew = [self convertToRadians:value];
       next = CATransform3DIdentity;
-      next.m12 = tan(skew);
+      next.m12 = tanf(skew);
       transform = CATransform3DConcat(next, transform);
 
     } else {
@@ -181,7 +181,7 @@ static BOOL RCTIsNonFiniteLength(YGValue value)
       [RCTConvert YGValue:json[0]], [RCTConvert YGValue:json[1]], [RCTConvert CGFloat:json[2]]};
   // A non-finite origin converts as no origin does, and a view turns about its center for both.
   if (RCTIsNonFiniteLength(transformOrigin.x) || RCTIsNonFiniteLength(transformOrigin.y) ||
-      !isfinite(transformOrigin.z)) {
+      !isfinite((float)transformOrigin.z)) {
     return (RCTTransformOrigin){YGValueUndefined, YGValueUndefined, 0};
   }
   return transformOrigin;

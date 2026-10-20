@@ -10,6 +10,7 @@
 #include <gtest/gtest.h>
 #include <array>
 #include <cmath>
+#include <limits>
 #include <utility>
 
 using namespace facebook::react;
@@ -215,6 +216,42 @@ TEST(TransformTest, interpolatingAPerspectiveAwayKeepsTheOperationsBesideIt) {
         rotation.matrix[index],
         1e-6)
         << "entry " << index;
+  }
+}
+
+// A transform holding a non-finite number is drawn untransformed, so an
+// animation toward or from one interpolates toward or from no transform.
+TEST(
+    TransformTest,
+    interpolatingTowardATransformHoldingANonFiniteNumberInterpolatesTowardNoTransform) {
+  auto size = facebook::react::Size{100, 100};
+  constexpr auto infinity = std::numeric_limits<Float>::infinity();
+  auto rotation = Transform::RotateY(M_PI / 4);
+  auto rotated = Transform::Perspective(100) * rotation;
+  auto halfwayToNoTransform = rebuildFromOperations(
+      Transform::Interpolate(0.5, rotated, Transform::Identity(), size), size);
+  const auto nonFiniteTransforms = std::array{
+      Transform::Perspective(infinity) * rotation,
+      Transform::Perspective(-infinity) * rotation,
+      Transform::Perspective(100) *
+          Transform::RotateY(std::numeric_limits<Float>::quiet_NaN())};
+
+  for (size_t transformIndex = 0; transformIndex < nonFiniteTransforms.size();
+       transformIndex++) {
+    const auto& nonFinite = nonFiniteTransforms[transformIndex];
+    auto forward = rebuildFromOperations(
+        Transform::Interpolate(0.5, rotated, nonFinite, size), size);
+    auto backward = rebuildFromOperations(
+        Transform::Interpolate(0.5, nonFinite, rotated, size), size);
+
+    for (size_t index = 0; index < 16; index++) {
+      EXPECT_NEAR(
+          forward.matrix[index], halfwayToNoTransform.matrix[index], 1e-6)
+          << "toward transform " << transformIndex << ", entry " << index;
+      EXPECT_NEAR(
+          backward.matrix[index], halfwayToNoTransform.matrix[index], 1e-6)
+          << "from transform " << transformIndex << ", entry " << index;
+    }
   }
 }
 

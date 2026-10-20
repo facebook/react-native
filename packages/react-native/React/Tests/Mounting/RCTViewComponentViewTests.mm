@@ -237,6 +237,13 @@ static RCTViewComponentView *makeViewWithTransform(const Transform &transform)
   XCTAssertTrue(CATransform3DIsIdentity(view.layer.transform));
 }
 
+- (void)testTransformWhoseMatrixOverflowsAFloatIsNotApplied
+{
+  RCTViewComponentView *view = makeViewWithTransform(Transform::Scale(1e20, 1, 1) * Transform::Scale(1e20, 1, 1));
+
+  XCTAssertTrue(CATransform3DIsIdentity(view.layer.transform));
+}
+
 #pragma mark - Full Keyboard Access focusability
 
 static RCTViewComponentView *makeViewWithRole(bool accessible, const std::string &accessibilityRole)
