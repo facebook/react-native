@@ -358,7 +358,8 @@ static NSLineBreakMode RCTNSLineBreakModeFromEllipsizeMode(EllipsizeMode ellipsi
                                                                   longestEffectiveRange:&currentRange
                                                                                 inRange:characterRange];
                                            if (NSEqualRanges(currentRange, characterRange) &&
-                                               (currentAttribute == attribute || [currentAttribute isEqual:attribute])) {
+                                               (currentAttribute == attribute ||
+                                                [currentAttribute isEqual:attribute])) {
                                              continue;
                                            }
                                            [textStorage removeAttribute:key range:characterRange];
