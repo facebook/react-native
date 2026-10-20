@@ -7,148 +7,6 @@
 
 #import <React/RCTBackedTextInputDelegateAdapter.h>
 
-#import <react/featureflags/ReactNativeFeatureFlags.h>
-
-#import <optional>
-#include <utility>
-
-namespace {
-
-struct PendingTextInputEdit final {
-  NSUInteger backingViewGeneration;
-  NSUInteger nativeEditRevision;
-  NSRange range;
-  __strong NSString *baseText;
-  __strong NSString *replacementText;
-
-  BOOL apply(id<RCTBackedTextInputViewProtocol> backedTextInputView) const;
-};
-
-BOOL PendingTextInputEdit::apply(id<RCTBackedTextInputViewProtocol> backedTextInputView) const
-{
-  NSString *currentText = backedTextInputView.attributedText.string;
-  if (![currentText isEqualToString:baseText]) {
-    return NO;
-  }
-
-  if (range.location > currentText.length || range.length > currentText.length - range.location) {
-    return NO;
-  }
-
-  NSUInteger rangeEnd = NSMaxRange(range);
-  if (range.location > NSIntegerMax || rangeEnd > NSIntegerMax ||
-      replacementText.length > NSIntegerMax - range.location) {
-    return NO;
-  }
-  NSUInteger caretOffset = range.location + replacementText.length;
-
-  NSMutableString *expectedText = [currentText mutableCopy];
-  [expectedText replaceCharactersInRange:range withString:replacementText];
-
-  UITextPosition *startPosition = [backedTextInputView positionFromPosition:backedTextInputView.beginningOfDocument
-                                                                     offset:static_cast<NSInteger>(range.location)];
-  UITextPosition *endPosition = [backedTextInputView positionFromPosition:backedTextInputView.beginningOfDocument
-                                                                   offset:static_cast<NSInteger>(rangeEnd)];
-  if (startPosition == nil || endPosition == nil) {
-    return NO;
-  }
-
-  UITextRange *textRange = [backedTextInputView textRangeFromPosition:startPosition toPosition:endPosition];
-  if (textRange == nil) {
-    return NO;
-  }
-  [backedTextInputView replaceRange:textRange withText:replacementText];
-
-  NSString *resultText = backedTextInputView.attributedText.string;
-  if (![resultText isEqualToString:expectedText]) {
-    return ![resultText isEqualToString:currentText];
-  }
-
-  UITextPosition *caretPosition = [backedTextInputView positionFromPosition:backedTextInputView.beginningOfDocument
-                                                                     offset:static_cast<NSInteger>(caretOffset)];
-  if (caretPosition != nil) {
-    UITextRange *caretRange = [backedTextInputView textRangeFromPosition:caretPosition toPosition:caretPosition];
-    if (caretRange != nil) {
-      [backedTextInputView setSelectedTextRange:caretRange notifyDelegate:YES];
-    }
-  }
-  return YES;
-}
-
-class PendingTextInputEditCoordinator final {
- public:
-  void schedule(
-      id<RCTBackedTextInputViewProtocol> backedTextInputView,
-      NSRange range,
-      NSString *replacementText,
-      dispatch_block_t drainBlock)
-  {
-    _pendingEdit = PendingTextInputEdit{
-        .backingViewGeneration = _backingViewGeneration,
-        .nativeEditRevision = _nativeEditRevision,
-        .range = range,
-        .baseText = [backedTextInputView.attributedText.string copy],
-        .replacementText = replacementText,
-    };
-    if (_drainScheduled) {
-      return;
-    }
-
-    _drainScheduled = YES;
-    dispatch_async(dispatch_get_main_queue(), drainBlock);
-  }
-
-  BOOL drain(id<RCTBackedTextInputViewProtocol> backedTextInputView, BOOL isEditable)
-  {
-    _drainScheduled = NO;
-    if (!_pendingEdit.has_value()) {
-      return NO;
-    }
-
-    PendingTextInputEdit edit = std::move(*_pendingEdit);
-    _pendingEdit.reset();
-    if (backedTextInputView == nil || !isEditable || backedTextInputView.markedTextRange != nil ||
-        edit.backingViewGeneration != _backingViewGeneration) {
-      return NO;
-    }
-    if (edit.nativeEditRevision != _nativeEditRevision &&
-        ![backedTextInputView.attributedText.string isEqualToString:edit.baseText]) {
-      return NO;
-    }
-
-    _isApplying = YES;
-    BOOL didApply = edit.apply(backedTextInputView);
-    _isApplying = NO;
-    return didApply;
-  }
-
-  void invalidate()
-  {
-    _pendingEdit.reset();
-    _backingViewGeneration++;
-    _nativeEditRevision++;
-  }
-
-  void nativeStateDidChange()
-  {
-    _nativeEditRevision++;
-  }
-
-  BOOL isApplying() const
-  {
-    return _isApplying;
-  }
-
- private:
-  std::optional<PendingTextInputEdit> _pendingEdit;
-  NSUInteger _backingViewGeneration{1};
-  NSUInteger _nativeEditRevision{0};
-  BOOL _drainScheduled{NO};
-  BOOL _isApplying{NO};
-};
-
-} // namespace
-
 #pragma mark - RCTBackedTextFieldDelegateAdapter (for UITextField)
 
 static void *TextFieldSelectionObservingContext = &TextFieldSelectionObservingContext;
@@ -160,15 +18,10 @@ static void *TextFieldSelectionObservingContext = &TextFieldSelectionObservingCo
     UITextDropDelegate
 #endif
     >
-
-- (void)schedulePendingTextInputEditWithRange:(NSRange)range replacementText:(NSString *)replacementText;
-- (void)drainPendingTextInputEdit;
-
 @end
 
 @implementation RCTBackedTextFieldDelegateAdapter {
   __weak UITextField<RCTBackedTextInputViewProtocol> *_backedTextInputView;
-  PendingTextInputEditCoordinator _pendingEditCoordinator;
   BOOL _textDidChangeIsComing;
   UITextRange *_previousSelectedTextRange;
 }
@@ -218,7 +71,6 @@ static void *TextFieldSelectionObservingContext = &TextFieldSelectionObservingCo
 
 - (void)textFieldDidEndEditing:(__unused UITextField *)textField
 {
-  [self invalidatePendingTextInputEdit];
   if (_textDidChangeIsComing) {
     // iOS does't call `textViewDidChange:` delegate method if the change was happened because of autocorrection
     // which was triggered by losing focus. So, we call it manually.
@@ -233,10 +85,6 @@ static void *TextFieldSelectionObservingContext = &TextFieldSelectionObservingCo
     shouldChangeCharactersInRange:(NSRange)range
                 replacementString:(NSString *)string
 {
-  if (_pendingEditCoordinator.isApplying()) {
-    return YES;
-  }
-
   NSString *newText = [_backedTextInputView.textInputDelegate textInputShouldChangeText:string inRange:range];
 
   if (newText == nil) {
@@ -253,16 +101,10 @@ static void *TextFieldSelectionObservingContext = &TextFieldSelectionObservingCo
   if (range.location > textLength) {
     return NO;
   }
-  if (range.length > textLength - range.location) {
-    range.length = textLength - range.location;
+  if (range.location + range.length > textLength) {
+    range = NSMakeRange(range.location, textLength - range.location);
   }
 
-  if (facebook::react::ReactNativeFeatureFlags::deferTextInputTruncationIOS()) {
-    [self schedulePendingTextInputEditWithRange:range replacementText:newText];
-    return NO;
-  }
-
-  // TODO: Remove this synchronous fallback once deferred TextInput truncation is fully rolled out.
   NSMutableAttributedString *attributedString = [_backedTextInputView.attributedText mutableCopy];
   [attributedString replaceCharactersInRange:range withString:newText];
   [_backedTextInputView setAttributedText:[attributedString copy]];
@@ -278,22 +120,6 @@ static void *TextFieldSelectionObservingContext = &TextFieldSelectionObservingCo
   return NO;
 }
 
-- (void)schedulePendingTextInputEditWithRange:(NSRange)range replacementText:(NSString *)replacementText
-{
-  __weak __typeof(self) weakSelf = self;
-  _pendingEditCoordinator.schedule(_backedTextInputView, range, replacementText, ^{
-    [weakSelf drainPendingTextInputEdit];
-  });
-}
-
-- (void)drainPendingTextInputEdit
-{
-  UITextField<RCTBackedTextInputViewProtocol> *backedTextInputView = _backedTextInputView;
-  if (_pendingEditCoordinator.drain(backedTextInputView, backedTextInputView.enabled)) {
-    [self textFieldDidChange];
-  }
-}
-
 - (BOOL)textFieldShouldReturn:(__unused UITextField *)textField
 {
   // Ignore the value of whether we submitted; just make sure the submit event is called if necessary.
@@ -305,11 +131,6 @@ static void *TextFieldSelectionObservingContext = &TextFieldSelectionObservingCo
 
 - (void)textFieldDidChange
 {
-  if (_pendingEditCoordinator.isApplying()) {
-    return;
-  }
-
-  _pendingEditCoordinator.nativeStateDidChange();
   _textDidChangeIsComing = NO;
   [_backedTextInputView.textInputDelegate textInputDidChange];
 
@@ -334,11 +155,6 @@ static void *TextFieldSelectionObservingContext = &TextFieldSelectionObservingCo
 
 #pragma mark - Public Interface
 
-- (void)invalidatePendingTextInputEdit
-{
-  _pendingEditCoordinator.invalidate();
-}
-
 - (void)skipNextTextInputDidChangeSelectionEventWithTextRange:(UITextRange *)textRange
 {
   _previousSelectedTextRange = textRange;
@@ -353,12 +169,10 @@ static void *TextFieldSelectionObservingContext = &TextFieldSelectionObservingCo
 
 - (void)textFieldProbablyDidChangeSelection
 {
-  if (_pendingEditCoordinator.isApplying() ||
-      [_backedTextInputView.selectedTextRange isEqual:_previousSelectedTextRange]) {
+  if ([_backedTextInputView.selectedTextRange isEqual:_previousSelectedTextRange]) {
     return;
   }
 
-  _pendingEditCoordinator.nativeStateDidChange();
   _previousSelectedTextRange = _backedTextInputView.selectedTextRange;
   [_backedTextInputView.textInputDelegate textInputDidChangeSelection];
 }
@@ -414,15 +228,10 @@ static void *TextFieldSelectionObservingContext = &TextFieldSelectionObservingCo
     UITextDropDelegate
 #endif
     >
-
-- (void)schedulePendingTextInputEditWithRange:(NSRange)range replacementText:(NSString *)replacementText;
-- (void)drainPendingTextInputEdit;
-
 @end
 
 @implementation RCTBackedTextViewDelegateAdapter {
   __weak UITextView<RCTBackedTextInputViewProtocol> *_backedTextInputView;
-  PendingTextInputEditCoordinator _pendingEditCoordinator;
   NSAttributedString *_lastStringStateWasUpdatedWith;
   BOOL _ignoreNextTextInputCall;
   BOOL _textDidChangeIsComing;
@@ -461,7 +270,6 @@ static void *TextFieldSelectionObservingContext = &TextFieldSelectionObservingCo
 
 - (void)textViewDidEndEditing:(__unused UITextView *)textView
 {
-  [self invalidatePendingTextInputEdit];
   if (_textDidChangeIsComing) {
     // iOS does't call `textViewDidChange:` delegate method if the change was happened because of autocorrection
     // which was triggered by losing focus. So, we call it manually.
@@ -474,10 +282,6 @@ static void *TextFieldSelectionObservingContext = &TextFieldSelectionObservingCo
 
 - (BOOL)textView:(__unused UITextView *)textView shouldChangeTextInRange:(NSRange)range replacementText:(NSString *)text
 {
-  if (_pendingEditCoordinator.isApplying()) {
-    return YES;
-  }
-
   // Custom implementation of `textInputShouldReturn` and `textInputDidReturn` pair for `UITextView`.
   if (!_backedTextInputView.textWasPasted && [text isEqualToString:@"\n"]) {
     const BOOL shouldSubmit = [_backedTextInputView.textInputDelegate textInputShouldSubmitOnReturn];
@@ -502,19 +306,13 @@ static void *TextFieldSelectionObservingContext = &TextFieldSelectionObservingCo
   if (range.location > textLength) {
     return NO;
   }
-  if (range.length > textLength - range.location) {
-    range.length = textLength - range.location;
+  if (range.location + range.length > textLength) {
+    range = NSMakeRange(range.location, textLength - range.location);
   } else if ([newText isEqualToString:text]) {
     _textDidChangeIsComing = YES;
     return YES;
   }
 
-  if (facebook::react::ReactNativeFeatureFlags::deferTextInputTruncationIOS()) {
-    [self schedulePendingTextInputEditWithRange:range replacementText:newText];
-    return NO;
-  }
-
-  // TODO: Remove this synchronous fallback once deferred TextInput truncation is fully rolled out.
   NSMutableAttributedString *attributedString = [_backedTextInputView.attributedText mutableCopy];
   [attributedString replaceCharactersInRange:range withString:newText];
   [_backedTextInputView setAttributedText:[attributedString copy]];
@@ -530,31 +328,8 @@ static void *TextFieldSelectionObservingContext = &TextFieldSelectionObservingCo
   return NO;
 }
 
-- (void)schedulePendingTextInputEditWithRange:(NSRange)range replacementText:(NSString *)replacementText
-{
-  __weak __typeof(self) weakSelf = self;
-  _pendingEditCoordinator.schedule(_backedTextInputView, range, replacementText, ^{
-    [weakSelf drainPendingTextInputEdit];
-  });
-}
-
-- (void)drainPendingTextInputEdit
-{
-  UITextView<RCTBackedTextInputViewProtocol> *backedTextInputView = _backedTextInputView;
-  if (_pendingEditCoordinator.drain(backedTextInputView, backedTextInputView.editable)) {
-    [self textViewDidChange:backedTextInputView];
-    _lastStringStateWasUpdatedWith = backedTextInputView.attributedText;
-    [self textViewProbablyDidChangeSelection];
-  }
-}
-
 - (void)textViewDidChange:(__unused UITextView *)textView
 {
-  if (_pendingEditCoordinator.isApplying()) {
-    return;
-  }
-
-  _pendingEditCoordinator.nativeStateDidChange();
   if (_ignoreNextTextInputCall && [_lastStringStateWasUpdatedWith isEqual:_backedTextInputView.attributedText]) {
     _ignoreNextTextInputCall = NO;
     return;
@@ -565,10 +340,6 @@ static void *TextFieldSelectionObservingContext = &TextFieldSelectionObservingCo
 
 - (void)textViewDidChangeSelection:(__unused UITextView *)textView
 {
-  if (_pendingEditCoordinator.isApplying()) {
-    return;
-  }
-
   if (_lastStringStateWasUpdatedWith && ![_lastStringStateWasUpdatedWith isEqual:_backedTextInputView.attributedText]) {
     [self textViewDidChange:_backedTextInputView];
     _ignoreNextTextInputCall = YES;
@@ -588,11 +359,6 @@ static void *TextFieldSelectionObservingContext = &TextFieldSelectionObservingCo
 
 #pragma mark - Public Interface
 
-- (void)invalidatePendingTextInputEdit
-{
-  _pendingEditCoordinator.invalidate();
-}
-
 - (void)skipNextTextInputDidChangeSelectionEventWithTextRange:(UITextRange *)textRange
 {
   _previousSelectedTextRange = textRange;
@@ -602,12 +368,10 @@ static void *TextFieldSelectionObservingContext = &TextFieldSelectionObservingCo
 
 - (void)textViewProbablyDidChangeSelection
 {
-  if (_pendingEditCoordinator.isApplying() ||
-      [_backedTextInputView.selectedTextRange isEqual:_previousSelectedTextRange]) {
+  if ([_backedTextInputView.selectedTextRange isEqual:_previousSelectedTextRange]) {
     return;
   }
 
-  _pendingEditCoordinator.nativeStateDidChange();
   _previousSelectedTextRange = _backedTextInputView.selectedTextRange;
   [_backedTextInputView.textInputDelegate textInputDidChangeSelection];
 }

@@ -93,17 +93,6 @@ const definitions: FeatureFlagDefinitions = {
       },
       ossReleaseStage: 'none',
     },
-    deferTextInputTruncationIOS: {
-      defaultValue: false,
-      metadata: {
-        dateAdded: '2026-10-09',
-        description:
-          'When enabled, iOS TextInput applies edits that JS transforms (e.g. maxLength truncation) incrementally after the UIKit text change delegate call returns, avoiding synchronous text and selection rewrites that can deadlock UIKeyboardTaskQueue.',
-        expectedReleaseValue: true,
-        purpose: 'experimentation',
-      },
-      ossReleaseStage: 'none',
-    },
     disableEarlyViewCommandExecution: {
       defaultValue: false,
       metadata: {

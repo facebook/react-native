@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<32ba8f0fb8f711fe496ca1dca67d185a>>
+ * @generated SignedSource<<f36d78d946c018d3dd3fc30f6071ee76>>
  * @flow strict
  * @noformat
  */
@@ -53,7 +53,6 @@ export type ReactNativeFeatureFlags = Readonly<{
   cdpInteractionMetricsEnabled: Getter<boolean>,
   cxxNativeAnimatedEnabled: Getter<boolean>,
   defaultTextToOverflowHidden: Getter<boolean>,
-  deferTextInputTruncationIOS: Getter<boolean>,
   disableEarlyViewCommandExecution: Getter<boolean>,
   disableIdleEventDispatchFrameCallbackRearmAndroid: Getter<boolean>,
   disableIdleMountItemFrameCallbackRearmAndroid: Getter<boolean>,
@@ -236,10 +235,6 @@ export const cxxNativeAnimatedEnabled: Getter<boolean> = createNativeFlagGetter(
  * When enabled, sets the default overflow style for Text components to hidden instead of visible.
  */
 export const defaultTextToOverflowHidden: Getter<boolean> = createNativeFlagGetter('defaultTextToOverflowHidden', true);
-/**
- * When enabled, iOS TextInput applies edits that JS transforms (e.g. maxLength truncation) incrementally after the UIKit text change delegate call returns, avoiding synchronous text and selection rewrites that can deadlock UIKeyboardTaskQueue.
- */
-export const deferTextInputTruncationIOS: Getter<boolean> = createNativeFlagGetter('deferTextInputTruncationIOS', false);
 /**
  * Dispatch view commands in mount item order.
  */

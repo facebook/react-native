@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<d77173a9237cebe4468236f6a52980a0>>
+ * @generated SignedSource<<62dbb584d6aaf595314636a81346e3e5>>
  */
 
 /**
@@ -60,11 +60,6 @@ class ReactNativeFeatureFlags {
    * When enabled, sets the default overflow style for Text components to hidden instead of visible.
    */
   RN_EXPORT static bool defaultTextToOverflowHidden();
-
-  /**
-   * When enabled, iOS TextInput applies edits that JS transforms (e.g. maxLength truncation) incrementally after the UIKit text change delegate call returns, avoiding synchronous text and selection rewrites that can deadlock UIKeyboardTaskQueue.
-   */
-  RN_EXPORT static bool deferTextInputTruncationIOS();
 
   /**
    * Dispatch view commands in mount item order.
