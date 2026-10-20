@@ -9,6 +9,7 @@
 
 package com.facebook.react.uimanager
 
+import android.graphics.Matrix
 import android.view.View
 import android.view.View.OnFocusChangeListener
 import android.view.accessibility.AccessibilityNodeInfo
@@ -29,6 +30,7 @@ import com.facebook.react.views.scroll.ReactScrollViewManager
 import com.facebook.react.views.view.ReactViewGroup
 import com.facebook.react.views.view.ReactViewManager
 import com.facebook.testutils.shadows.ShadowArguments
+import com.facebook.testutils.shadows.ShadowSoLoader
 import java.util.Locale
 import org.assertj.core.api.Assertions
 import org.junit.After
@@ -42,7 +44,7 @@ import org.robolectric.RobolectricTestRunner
 import org.robolectric.RuntimeEnvironment
 import org.robolectric.annotation.Config
 
-@Config(shadows = [ShadowArguments::class])
+@Config(shadows = [ShadowArguments::class, ShadowSoLoader::class])
 @RunWith(RobolectricTestRunner::class)
 class BaseViewManagerTest {
   private lateinit var viewManager: BaseViewManager<ReactViewGroup, *>
@@ -320,6 +322,55 @@ class BaseViewManagerTest {
     Assertions.assertThat(recycled.getTag(R.id.accessibility_order_parent)).isNull()
     Assertions.assertThat(recycled.getTag(R.id.original_focusability)).isNull()
   }
+
+  @Test
+  fun testSkewedTransformHoldingANonFiniteNumberIsIgnored() {
+    val skewed = createView(JavaOnlyMap.of(ViewProps.TRANSFORM, JavaOnlyArray.of(skewX10)))
+    Assertions.assertThat(skewed.getTag(R.id.skew_animation_matrix)).isNotNull()
+
+    for (nonFiniteNumber in
+        doubleArrayOf(Double.NaN, Double.POSITIVE_INFINITY, Double.NEGATIVE_INFINITY)) {
+      viewManager.updateProperties(
+          skewed,
+          ReactStylesDiffMap(
+              JavaOnlyMap.of(
+                  ViewProps.TRANSFORM,
+                  JavaOnlyArray.of(skewX10, JavaOnlyMap.of("scale", nonFiniteNumber)),
+              )
+          ),
+      )
+
+      Assertions.assertThat(skewed.getTag(R.id.skew_animation_matrix))
+          .describedAs("$nonFiniteNumber")
+          .isNull()
+    }
+  }
+
+  @Test
+  fun testSkewedTransformWithANonFiniteOriginTurnsAboutTheCenter() {
+    val aboutTheCenter =
+        skewMatrixValues(createView(JavaOnlyMap.of(ViewProps.TRANSFORM, JavaOnlyArray.of(skewX10))))
+
+    val withANonFiniteOrigin =
+        skewMatrixValues(
+            createView(
+                JavaOnlyMap.of(
+                    ViewProps.TRANSFORM,
+                    JavaOnlyArray.of(skewX10),
+                    ViewProps.TRANSFORM_ORIGIN,
+                    JavaOnlyArray.of(Double.NaN, 0.0, 0.0),
+                )
+            )
+        )
+
+    Assertions.assertThat(withANonFiniteOrigin).containsExactly(*aboutTheCenter)
+  }
+
+  private val skewX10: JavaOnlyMap
+    get() = JavaOnlyMap.of("skewX", "10deg")
+
+  private fun skewMatrixValues(view: View): FloatArray =
+      FloatArray(9).also { (view.getTag(R.id.skew_animation_matrix) as Matrix).getValues(it) }
 
   private fun recycleView(
       previousProps: JavaOnlyMap,

@@ -80,21 +80,18 @@ internal object SkewMatrixHelper {
       viewHeightDip: Float,
       transformOrigin: ReadableArray?,
   ): Matrix {
-    val pivotXPx: Float
-    val pivotYPx: Float
-    if (transformOrigin == null) {
-      pivotXPx = PixelUtil.toPixelFromDIP(viewWidthDip / 2f)
-      pivotYPx = PixelUtil.toPixelFromDIP(viewHeightDip / 2f)
-    } else {
-      pivotXPx =
-          PixelUtil.toPixelFromDIP(
-              resolveOriginAxis(transformOrigin, 0, viewWidthDip, viewWidthDip / 2f),
-          )
-      pivotYPx =
-          PixelUtil.toPixelFromDIP(
-              resolveOriginAxis(transformOrigin, 1, viewHeightDip, viewHeightDip / 2f),
-          )
-    }
+    val centerXDip = viewWidthDip / 2f
+    val centerYDip = viewHeightDip / 2f
+    val originXDip =
+        transformOrigin?.let { resolveOriginAxis(it, 0, viewWidthDip, centerXDip) } ?: centerXDip
+    val originYDip =
+        transformOrigin?.let { resolveOriginAxis(it, 1, viewHeightDip, centerYDip) } ?: centerYDip
+    // A non-finite origin is ignored, so the transform turns about the center, as
+    // TransformHelper.getTranslateForTransformOrigin turns it.
+    val isFiniteOrigin =
+        originXDip.isFinite() && originYDip.isFinite() && hasFiniteDepth(transformOrigin)
+    val pivotXPx = PixelUtil.toPixelFromDIP(if (isFiniteOrigin) originXDip else centerXDip)
+    val pivotYPx = PixelUtil.toPixelFromDIP(if (isFiniteOrigin) originYDip else centerYDip)
 
     val matrix = Matrix()
     for (i in 0 until transforms.size()) {
@@ -156,6 +153,24 @@ internal object SkewMatrixHelper {
     }
     return matrix
   }
+
+  /**
+   * Whether every entry of [matrix] is finite. It reads into one reused array, so it runs on the UI
+   * thread alone, as [BaseViewManager.setTransformProperty] does.
+   */
+  @JvmStatic
+  fun isFinite(matrix: Matrix): Boolean {
+    matrix.getValues(matrixValues)
+    return matrixValues.all { it.isFinite() }
+  }
+
+  private val matrixValues = FloatArray(9)
+
+  private fun hasFiniteDepth(origin: ReadableArray?): Boolean =
+      origin == null ||
+          origin.size() <= 2 ||
+          origin.getType(2) != ReadableType.Number ||
+          origin.getDouble(2).isFinite()
 
   private fun isRawMatrixShorthand(transforms: ReadableArray): Boolean =
       transforms.size() == 16 && transforms.getType(0) == ReadableType.Number
