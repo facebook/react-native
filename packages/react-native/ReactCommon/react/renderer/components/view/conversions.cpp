@@ -125,12 +125,8 @@ namespace {
 // https://drafts.csswg.org/css-values-4/#numbers
 // A number is read as JavaScript wrote it, before it narrows to Float, so a
 // finite number past the largest float is not taken for one.
-bool isNonFiniteNumber(const RawValue& value) {
-  return value.hasType<double>() && !std::isfinite((double)value);
-}
-
 std::optional<Float> toFloatIfFinite(const RawValue& value) {
-  if (!value.hasType<Float>() || isNonFiniteNumber(value)) {
+  if (!value.hasType<double>() || !std::isfinite((double)value)) {
     return {};
   }
   return (Float)value;
@@ -138,9 +134,13 @@ std::optional<Float> toFloatIfFinite(const RawValue& value) {
 
 // A string operand, such as a percentage, parses to a float that can still be
 // non-finite.
-bool isNonFinite(const RawValue& value, const ValueUnit& valueUnit) {
-  return value.hasType<std::string>() ? !std::isfinite(valueUnit.value)
-                                      : isNonFiniteNumber(value);
+ValueUnit toValueUnitIfFinite(const RawValue& value) {
+  if (value.hasType<double>()) {
+    auto number = toFloatIfFinite(value);
+    return number ? ValueUnit(*number, UnitType::Point) : ValueUnit{};
+  }
+  auto valueUnit = toValueUnit(value);
+  return std::isfinite(valueUnit.value) ? valueUnit : ValueUnit{};
 }
 
 std::optional<Float> toRadians(const RawValue& value) {
@@ -573,14 +573,14 @@ void parseProcessedTransform(
         return;
       }
 
-      auto valueX = toValueUnit(numbers[0]);
-      if (!valueX || isNonFinite(numbers[0], valueX)) {
+      auto valueX = toValueUnitIfFinite(numbers[0]);
+      if (!valueX) {
         result = {};
         return;
       }
 
-      auto valueY = toValueUnit(numbers[1]);
-      if (!valueY || isNonFinite(numbers[1], valueY)) {
+      auto valueY = toValueUnitIfFinite(numbers[1]);
+      if (!valueY) {
         result = {};
         return;
       }
@@ -592,8 +592,8 @@ void parseProcessedTransform(
               .y = valueY,
               .z = Zero});
     } else if (operation == "translateX") {
-      auto valueX = toValueUnit(parameters);
-      if (!valueX || isNonFinite(parameters, valueX)) {
+      auto valueX = toValueUnitIfFinite(parameters);
+      if (!valueX) {
         result = {};
         return;
       }
@@ -605,8 +605,8 @@ void parseProcessedTransform(
               .y = Zero,
               .z = Zero});
     } else if (operation == "translateY") {
-      auto valueY = toValueUnit(parameters);
-      if (!valueY || isNonFinite(parameters, valueY)) {
+      auto valueY = toValueUnitIfFinite(parameters);
+      if (!valueY) {
         result = {};
         return;
       }
@@ -741,8 +741,8 @@ void parseProcessedTransformOrigin(
   TransformOrigin transformOrigin;
 
   for (size_t i = 0; i < 2; i++) {
-    auto origin = toValueUnit(origins[i]);
-    if (!origin || isNonFinite(origins[i], origin)) {
+    auto origin = toValueUnitIfFinite(origins[i]);
+    if (!origin) {
       result = {};
       return;
     }
