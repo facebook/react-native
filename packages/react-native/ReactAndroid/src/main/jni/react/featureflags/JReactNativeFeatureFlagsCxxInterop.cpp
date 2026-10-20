@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<568d6e4175fb51e09bc3d4441ffa9741>>
+ * @generated SignedSource<<d4874865e8c407d1fd6fa1359fa65ef1>>
  */
 
 /**
@@ -507,6 +507,12 @@ class ReactNativeFeatureFlagsJavaProvider
     return method(javaProvider_);
   }
 
+  bool skipUnchangedChildrenInDifferentiator() override {
+    static const auto method =
+        getReactNativeFeatureFlagsProviderJavaClass()->getMethod<jboolean()>("skipUnchangedChildrenInDifferentiator");
+    return method(javaProvider_);
+  }
+
   bool syncAndroidClipBoundsWithOverflow() override {
     static const auto method =
         getReactNativeFeatureFlagsProviderJavaClass()->getMethod<jboolean()>("syncAndroidClipBoundsWithOverflow");
@@ -997,6 +1003,11 @@ bool JReactNativeFeatureFlagsCxxInterop::skipActivityIdentityAssertionOnHostPaus
   return ReactNativeFeatureFlags::skipActivityIdentityAssertionOnHostPause();
 }
 
+bool JReactNativeFeatureFlagsCxxInterop::skipUnchangedChildrenInDifferentiator(
+    facebook::jni::alias_ref<JReactNativeFeatureFlagsCxxInterop> /*unused*/) {
+  return ReactNativeFeatureFlags::skipUnchangedChildrenInDifferentiator();
+}
+
 bool JReactNativeFeatureFlagsCxxInterop::syncAndroidClipBoundsWithOverflow(
     facebook::jni::alias_ref<JReactNativeFeatureFlagsCxxInterop> /*unused*/) {
   return ReactNativeFeatureFlags::syncAndroidClipBoundsWithOverflow();
@@ -1342,6 +1353,9 @@ void JReactNativeFeatureFlagsCxxInterop::registerNatives() {
       makeNativeMethod(
         "skipActivityIdentityAssertionOnHostPause",
         JReactNativeFeatureFlagsCxxInterop::skipActivityIdentityAssertionOnHostPause),
+      makeNativeMethod(
+        "skipUnchangedChildrenInDifferentiator",
+        JReactNativeFeatureFlagsCxxInterop::skipUnchangedChildrenInDifferentiator),
       makeNativeMethod(
         "syncAndroidClipBoundsWithOverflow",
         JReactNativeFeatureFlagsCxxInterop::syncAndroidClipBoundsWithOverflow),
