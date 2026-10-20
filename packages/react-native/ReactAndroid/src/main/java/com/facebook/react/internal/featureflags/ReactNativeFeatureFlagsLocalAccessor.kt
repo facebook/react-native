@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<ee4c0f9c1e7c6af3b0d15948ebc519b3>>
+ * @generated SignedSource<<8ac941ef9289ab543d0adca8bf06a28d>>
  */
 
 /**
@@ -28,6 +28,7 @@ internal class ReactNativeFeatureFlagsLocalAccessor : ReactNativeFeatureFlagsAcc
   private var cdpInteractionMetricsEnabledCache: Boolean? = null
   private var cxxNativeAnimatedEnabledCache: Boolean? = null
   private var defaultTextToOverflowHiddenCache: Boolean? = null
+  private var deferTextInputTruncationIOSCache: Boolean? = null
   private var disableEarlyViewCommandExecutionCache: Boolean? = null
   private var disableIdleEventDispatchFrameCallbackRearmAndroidCache: Boolean? = null
   private var disableIdleMountItemFrameCallbackRearmAndroidCache: Boolean? = null
@@ -155,6 +156,16 @@ internal class ReactNativeFeatureFlagsLocalAccessor : ReactNativeFeatureFlagsAcc
       cached = currentProvider.defaultTextToOverflowHidden()
       accessedFeatureFlags.add("defaultTextToOverflowHidden")
       defaultTextToOverflowHiddenCache = cached
+    }
+    return cached
+  }
+
+  override fun deferTextInputTruncationIOS(): Boolean {
+    var cached = deferTextInputTruncationIOSCache
+    if (cached == null) {
+      cached = currentProvider.deferTextInputTruncationIOS()
+      accessedFeatureFlags.add("deferTextInputTruncationIOS")
+      deferTextInputTruncationIOSCache = cached
     }
     return cached
   }

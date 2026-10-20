@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<8d27c5f3feb4c8000922012882701b7e>>
+ * @generated SignedSource<<80e61e864c897623df27cbf3782db80e>>
  */
 
 /**
@@ -81,6 +81,15 @@ class ReactNativeFeatureFlagsDynamicProvider : public ReactNativeFeatureFlagsDef
     }
 
     return ReactNativeFeatureFlagsDefaults::defaultTextToOverflowHidden();
+  }
+
+  bool deferTextInputTruncationIOS() override {
+    auto value = values_["deferTextInputTruncationIOS"];
+    if (!value.isNull()) {
+      return value.getBool();
+    }
+
+    return ReactNativeFeatureFlagsDefaults::deferTextInputTruncationIOS();
   }
 
   bool disableEarlyViewCommandExecution() override {
