@@ -883,15 +883,19 @@ internal object TextLayoutManager {
     // Layout.getDesiredWidth is a full measuring pass over the text, so only run it when its
     // result can affect the layout width. It cannot when the width is EXACTLY, nor when the text
     // was boring but did not fit: boring.width is the unwrapped width of the same text and we only
-    // get here if it exceeds floor(width), so min(desiredWidth, floor(width)) is floor(width).
+    // get here if it exceeds floor(width), so min(desiredWidth, ceil(width)) is ceil(width).
+    //
+    // AT_MOST wraps at ceil(width), the same width EXACTLY uses when the text is drawn. Wrapping at
+    // floor(width) here measured text that fits in (floor(width), width] as one line more than it
+    // is drawn with. calculateWidth() clamps the reported width to the AT_MOST constraint.
     val layoutWidth =
         when {
           widthYogaMeasureMode == YogaMeasureMode.EXACTLY -> ceil(width).toInt()
-          widthYogaMeasureMode == YogaMeasureMode.AT_MOST && boring != null -> floor(width).toInt()
+          widthYogaMeasureMode == YogaMeasureMode.AT_MOST && boring != null -> ceil(width).toInt()
           else -> {
             val desiredWidth = ceil(Layout.getDesiredWidth(text, paint)).toInt()
             if (widthYogaMeasureMode == YogaMeasureMode.AT_MOST) {
-              min(desiredWidth, floor(width).toInt())
+              min(desiredWidth, ceil(width).toInt())
             } else {
               desiredWidth
             }
@@ -1706,6 +1710,11 @@ internal object TextLayoutManager {
     // subpixel compared to the assigned layout width.
     if (widthYogaMeasureMode == YogaMeasureMode.EXACTLY) {
       return width
+    }
+
+    // The layout may be up to a subpixel wider than an AT_MOST width, see createLayout().
+    if (widthYogaMeasureMode == YogaMeasureMode.AT_MOST) {
+      return min(layout.width.toFloat(), width)
     }
 
     return layout.width.toFloat()
