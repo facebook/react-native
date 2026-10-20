@@ -561,6 +561,16 @@ class MatrixMathHelperTest {
   }
 
   @Test
+  fun testApplyPerspectiveBelowOnePixelRendersAsOnePixel() {
+    for (depth in doubleArrayOf(0.0, -0.0, 0.5)) {
+      val matrix = MatrixMathHelper.createIdentityMatrix()
+      MatrixMathHelper.applyPerspective(matrix, depth)
+
+      assertThat(matrix[11]).describedAs("depth $depth").isEqualTo(-1.0)
+    }
+  }
+
+  @Test
   fun testApplyScaleX() {
     val matrix = MatrixMathHelper.createIdentityMatrix()
     MatrixMathHelper.applyScaleX(matrix, 2.0)

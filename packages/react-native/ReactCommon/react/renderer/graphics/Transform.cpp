@@ -36,7 +36,10 @@ namespace facebook::react {
           .x = ValueUnit(perspective, UnitType::Point),
           .y = Zero,
           .z = Zero});
-  transform.matrix[11] = -1 / perspective;
+  // A depth below 1px renders as 1px:
+  // https://drafts.csswg.org/css-transforms-2/#funcdef-perspective
+  Float depth = perspective >= 0 && perspective < 1 ? 1 : perspective;
+  transform.matrix[11] = -1 / depth;
   return transform;
 }
 

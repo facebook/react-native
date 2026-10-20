@@ -120,9 +120,27 @@ yoga::FloatOptional convertAspectRatio(
 
 namespace {
 
+// NaN and infinity are not CSS numbers, so a transform holding one is an
+// invalid declaration and is ignored:
+// https://drafts.csswg.org/css-values-4/#numbers
+std::optional<Float> toFiniteFloat(const RawValue& value) {
+  if (!value.hasType<Float>()) {
+    return {};
+  }
+  auto number = (Float)value;
+  if (!std::isfinite(number)) {
+    return {};
+  }
+  return number;
+}
+
+bool isFinite(const ValueUnit& valueUnit) {
+  return std::isfinite(valueUnit.value);
+}
+
 std::optional<Float> toRadians(const RawValue& value) {
   if (value.hasType<Float>()) {
-    return (Float)value;
+    return toFiniteFloat(value);
   }
   if (!value.hasType<std::string>()) {
     return {};
@@ -130,8 +148,11 @@ std::optional<Float> toRadians(const RawValue& value) {
 
   auto angle = parseCSSProperty<CSSAngle>((std::string)value);
   if (std::holds_alternative<CSSAngle>(angle)) {
-    return static_cast<float>(
-        std::get<CSSAngle>(angle).degrees * M_PI / 180.0f);
+    auto radians =
+        static_cast<float>(std::get<CSSAngle>(angle).degrees * M_PI / 180.0f);
+    if (std::isfinite(radians)) {
+      return radians;
+    }
   }
 
   return {};
@@ -386,6 +407,13 @@ void parseProcessedTransform(
         return;
       }
 
+      for (auto number : numbers) {
+        if (!std::isfinite(number)) {
+          result = {};
+          return;
+        }
+      }
+
       if (numbers.size() == 16) {
         size_t i = 0;
 
@@ -424,7 +452,8 @@ void parseProcessedTransform(
               .y = Zero,
               .z = Zero});
     } else if (operation == "perspective") {
-      if (!parameters.hasType<Float>()) {
+      auto perspective = toFiniteFloat(parameters);
+      if (!perspective) {
         result = {};
         return;
       }
@@ -432,7 +461,7 @@ void parseProcessedTransform(
       transformMatrix.operations.push_back(
           TransformOperation{
               .type = TransformOperationType::Perspective,
-              .x = ValueUnit((Float)parameters, UnitType::Point),
+              .x = ValueUnit(*perspective, UnitType::Point),
               .y = Zero,
               .z = Zero});
     } else if (operation == "rotateX") {
@@ -475,12 +504,13 @@ void parseProcessedTransform(
               .y = Zero,
               .z = ValueUnit(*radians, UnitType::Point)});
     } else if (operation == "scale") {
-      if (!parameters.hasType<Float>()) {
+      auto scale = toFiniteFloat(parameters);
+      if (!scale) {
         result = {};
         return;
       }
 
-      auto number = ValueUnit((Float)parameters, UnitType::Point);
+      auto number = ValueUnit(*scale, UnitType::Point);
       transformMatrix.operations.push_back(
           TransformOperation{
               .type = TransformOperationType::Scale,
@@ -488,7 +518,8 @@ void parseProcessedTransform(
               .y = number,
               .z = number});
     } else if (operation == "scaleX") {
-      if (!parameters.hasType<Float>()) {
+      auto scale = toFiniteFloat(parameters);
+      if (!scale) {
         result = {};
         return;
       }
@@ -496,11 +527,12 @@ void parseProcessedTransform(
       transformMatrix.operations.push_back(
           TransformOperation{
               .type = TransformOperationType::Scale,
-              .x = ValueUnit((Float)parameters, UnitType::Point),
+              .x = ValueUnit(*scale, UnitType::Point),
               .y = One,
               .z = One});
     } else if (operation == "scaleY") {
-      if (!parameters.hasType<Float>()) {
+      auto scale = toFiniteFloat(parameters);
+      if (!scale) {
         result = {};
         return;
       }
@@ -509,10 +541,11 @@ void parseProcessedTransform(
           TransformOperation{
               .type = TransformOperationType::Scale,
               .x = One,
-              .y = ValueUnit((Float)parameters, UnitType::Point),
+              .y = ValueUnit(*scale, UnitType::Point),
               .z = One});
     } else if (operation == "scaleZ") {
-      if (!parameters.hasType<Float>()) {
+      auto scale = toFiniteFloat(parameters);
+      if (!scale) {
         result = {};
         return;
       }
@@ -522,7 +555,7 @@ void parseProcessedTransform(
               .type = TransformOperationType::Scale,
               .x = One,
               .y = One,
-              .z = ValueUnit((Float)parameters, UnitType::Point)});
+              .z = ValueUnit(*scale, UnitType::Point)});
     } else if (operation == "translate") {
       if (!parameters.hasType<std::vector<RawValue>>()) {
         result = {};
@@ -536,13 +569,13 @@ void parseProcessedTransform(
       }
 
       auto valueX = toValueUnit(numbers[0]);
-      if (!valueX) {
+      if (!valueX || !isFinite(valueX)) {
         result = {};
         return;
       }
 
       auto valueY = toValueUnit(numbers[1]);
-      if (!valueY) {
+      if (!valueY || !isFinite(valueY)) {
         result = {};
         return;
       }
@@ -555,7 +588,7 @@ void parseProcessedTransform(
               .z = Zero});
     } else if (operation == "translateX") {
       auto valueX = toValueUnit(parameters);
-      if (!valueX) {
+      if (!valueX || !isFinite(valueX)) {
         result = {};
         return;
       }
@@ -568,7 +601,7 @@ void parseProcessedTransform(
               .z = Zero});
     } else if (operation == "translateY") {
       auto valueY = toValueUnit(parameters);
-      if (!valueY) {
+      if (!valueY || !isFinite(valueY)) {
         result = {};
         return;
       }
@@ -704,7 +737,7 @@ void parseProcessedTransformOrigin(
 
   for (size_t i = 0; i < 2; i++) {
     auto origin = toValueUnit(origins[i]);
-    if (!origin) {
+    if (!origin || !isFinite(origin)) {
       result = {};
       return;
     }
@@ -712,11 +745,12 @@ void parseProcessedTransformOrigin(
     transformOrigin.xy[i] = origin;
   }
 
-  if (!origins[2].hasType<Float>()) {
+  auto z = toFiniteFloat(origins[2]);
+  if (!z) {
     result = {};
     return;
   }
-  transformOrigin.z = (Float)origins[2];
+  transformOrigin.z = *z;
 
   result = transformOrigin;
 }

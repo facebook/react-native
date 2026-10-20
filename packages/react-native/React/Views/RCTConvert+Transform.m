@@ -9,6 +9,35 @@
 
 static const NSUInteger kMatrixArrayLength = 4 * 4;
 
+// NaN and infinity are not CSS numbers, so a transform holding one is an invalid declaration and is
+// ignored: https://drafts.csswg.org/css-values-4/#numbers
+static BOOL RCTHoldsNonFiniteNumber(id json)
+{
+  if ([json isKindOfClass:[NSNumber class]]) {
+    return !isfinite([json doubleValue]);
+  }
+  if ([json isKindOfClass:[NSArray class]]) {
+    for (id value in (NSArray *)json) {
+      if (RCTHoldsNonFiniteNumber(value)) {
+        return YES;
+      }
+    }
+  }
+  if ([json isKindOfClass:[NSDictionary class]]) {
+    for (id value in [(NSDictionary *)json allValues]) {
+      if (RCTHoldsNonFiniteNumber(value)) {
+        return YES;
+      }
+    }
+  }
+  return NO;
+}
+
+static BOOL RCTIsNonFiniteLength(YGValue value)
+{
+  return (value.unit == YGUnitPoint || value.unit == YGUnitPercent) && !isfinite(value.value);
+}
+
 @implementation RCTConvert (Transform)
 
 + (CGFloat)convertToRadians:(id)json
@@ -56,6 +85,9 @@ static const NSUInteger kMatrixArrayLength = 4 * 4;
     RCTLogConvertError(json, @"a CATransform3D. Did you pass something other than an array?");
     return transform;
   }
+  if (RCTHoldsNonFiniteNumber(json)) {
+    return transform;
+  }
   // legacy matrix support
   if ([(NSArray *)json count] == kMatrixArrayLength && [json[0] isKindOfClass:[NSNumber class]]) {
     RCTLogWarn(
@@ -79,8 +111,10 @@ static const NSUInteger kMatrixArrayLength = 4 * 4;
       transform = CATransform3DConcat(next, transform);
 
     } else if ([property isEqualToString:@"perspective"]) {
+      // A depth below 1px renders as 1px: https://drafts.csswg.org/css-transforms-2/#funcdef-perspective
+      CGFloat perspective = [value floatValue];
       next = CATransform3DIdentity;
-      next.m34 = -1 / [value floatValue];
+      next.m34 = -1 / (perspective >= 0 && perspective < 1 ? 1 : perspective);
       transform = CATransform3DConcat(next, transform);
 
     } else if ([property isEqualToString:@"rotateX"]) {
@@ -148,6 +182,10 @@ static const NSUInteger kMatrixArrayLength = 4 * 4;
 {
   RCTTransformOrigin transformOrigin = {
       [RCTConvert YGValue:json[0]], [RCTConvert YGValue:json[1]], [RCTConvert CGFloat:json[2]]};
+  if (RCTIsNonFiniteLength(transformOrigin.x) || RCTIsNonFiniteLength(transformOrigin.y) ||
+      !isfinite(transformOrigin.z)) {
+    return (RCTTransformOrigin){(YGValue){50, YGUnitPercent}, (YGValue){50, YGUnitPercent}, 0};
+  }
   return transformOrigin;
 }
 

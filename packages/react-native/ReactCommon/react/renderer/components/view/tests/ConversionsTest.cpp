@@ -6,6 +6,7 @@
  */
 
 #include <array>
+#include <limits>
 #include <memory>
 
 #include <gtest/gtest.h>
@@ -672,6 +673,98 @@ TEST(ConversionsTest, float_optional_undefined_for_string) {
   fromRawValue(PropsParserContext{-1, ContextContainer{}}, value, result);
 
   EXPECT_TRUE(result.isUndefined());
+}
+
+TEST(ConversionsTest, processed_transform_with_a_non_finite_number_is_ignored) {
+  constexpr std::array nonFiniteNumbers{
+      std::numeric_limits<double>::quiet_NaN(),
+      std::numeric_limits<double>::infinity(),
+      -std::numeric_limits<double>::infinity()};
+  constexpr std::array operations{
+      "perspective",
+      "rotate",
+      "rotateX",
+      "rotateY",
+      "rotateZ",
+      "scale",
+      "scaleX",
+      "scaleY",
+      "scaleZ",
+      "skewX",
+      "skewY",
+      "translateX",
+      "translateY"};
+
+  for (auto nonFiniteNumber : nonFiniteNumbers) {
+    auto transforms = std::vector<folly::dynamic>{
+        folly::dynamic::object(
+            "translate", folly::dynamic::array(nonFiniteNumber, 0)),
+        folly::dynamic::object(
+            "translate", folly::dynamic::array(0, nonFiniteNumber))};
+    for (const auto* operation : operations) {
+      transforms.push_back(folly::dynamic::object(operation, nonFiniteNumber));
+    }
+
+    for (const auto& transform : transforms) {
+      RawValue value{folly::dynamic::array(
+          folly::dynamic::object("translateX", 10), transform)};
+      Transform result;
+      fromRawValue(PropsParserContext{-1, ContextContainer{}}, value, result);
+
+      EXPECT_EQ(result, Transform::Identity())
+          << transform.keys().begin()->asString() << " holding "
+          << nonFiniteNumber;
+    }
+  }
+}
+
+TEST(
+    ConversionsTest,
+    processed_transform_matrix_with_a_non_finite_entry_is_ignored) {
+  auto matrix =
+      folly::dynamic::array(1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1);
+  auto twoDimensionalMatrix = folly::dynamic::array(1, 0, 0, 0, 1, 0, 0, 0, 1);
+
+  for (size_t index = 0; index < matrix.size(); index++) {
+    auto nonFiniteMatrix = matrix;
+    nonFiniteMatrix[index] = std::numeric_limits<double>::quiet_NaN();
+    RawValue value{folly::dynamic::array(
+        folly::dynamic::object("matrix", nonFiniteMatrix))};
+    Transform result;
+    fromRawValue(PropsParserContext{-1, ContextContainer{}}, value, result);
+
+    EXPECT_EQ(result, Transform::Identity()) << "entry " << index;
+  }
+
+  for (size_t index = 0; index < twoDimensionalMatrix.size(); index++) {
+    auto nonFiniteMatrix = twoDimensionalMatrix;
+    nonFiniteMatrix[index] = std::numeric_limits<double>::infinity();
+    RawValue value{folly::dynamic::array(
+        folly::dynamic::object("matrix", nonFiniteMatrix))};
+    Transform result;
+    fromRawValue(PropsParserContext{-1, ContextContainer{}}, value, result);
+
+    EXPECT_EQ(result, Transform::Identity()) << "entry " << index;
+  }
+}
+
+TEST(
+    ConversionsTest,
+    processed_transform_origin_with_a_non_finite_number_is_ignored) {
+  constexpr auto notANumber = std::numeric_limits<double>::quiet_NaN();
+  constexpr auto infinity = std::numeric_limits<double>::infinity();
+  const auto origins = std::array{
+      folly::dynamic::array(notANumber, "50%", 0),
+      folly::dynamic::array("50%", infinity, 0),
+      folly::dynamic::array(10, 10, notANumber)};
+
+  for (size_t index = 0; index < origins.size(); index++) {
+    RawValue value{origins[index]};
+    TransformOrigin result;
+    fromRawValue(PropsParserContext{-1, ContextContainer{}}, value, result);
+
+    EXPECT_FALSE(result.isSet()) << "origin " << index;
+  }
 }
 
 } // namespace facebook::react

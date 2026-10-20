@@ -134,3 +134,28 @@ TEST(TransformTest, scalingAndTranslatingRect) {
   EXPECT_EQ(transformedRect.size.width, 150);
   EXPECT_EQ(transformedRect.size.height, 200);
 }
+
+TEST(TransformTest, perspectiveBelowOnePixelRendersAsOnePixel) {
+  for (auto depth : {0.0, -0.0, 0.5}) {
+    auto transform = Transform::Perspective(depth);
+
+    EXPECT_EQ(transform.matrix[11], -1) << "depth " << depth;
+    EXPECT_EQ(transform.operations[0].x.value, depth) << "depth " << depth;
+  }
+
+  EXPECT_FLOAT_EQ(Transform::Perspective(1000).matrix[11], -1.0f / 1000);
+}
+
+TEST(TransformTest, interpolatingPerspectiveTowardNoPerspectiveStaysFinite) {
+  auto size = facebook::react::Size{100, 100};
+  auto from = Transform::Perspective(100);
+  auto to = Transform::Identity();
+
+  for (auto progress : {0.0, 0.5, 0.99, 1.0}) {
+    auto transform = Transform::Interpolate(progress, from, to, size);
+
+    for (auto value : transform.matrix) {
+      EXPECT_TRUE(std::isfinite(value)) << "progress " << progress;
+    }
+  }
+}

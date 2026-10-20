@@ -83,6 +83,9 @@ public object TransformHelper {
 
     val helperMatrix = helperMatrix.get()!!
     MatrixMathHelper.resetIdentityMatrix(result)
+    if (holdsNonFiniteNumber(transforms)) {
+      return
+    }
     val offsets =
         getTranslateForTransformOrigin(
             viewWidth,
@@ -187,6 +190,36 @@ public object TransformHelper {
       MatrixMathHelper.applyTranslate3D(helperMatrix, -offsets[0], -offsets[1], -offsets[2])
       MatrixMathHelper.multiplyInto(result, result, helperMatrix)
     }
+
+    // A string operand, such as "NaNdeg", can still parse to a non-finite number.
+    if (!result.all { it.isFinite() }) {
+      MatrixMathHelper.resetIdentityMatrix(result)
+    }
+  }
+
+  // NaN and infinity are not CSS numbers, so a transform holding one is an invalid declaration and
+  // is ignored: https://drafts.csswg.org/css-values-4/#numbers
+  private fun holdsNonFiniteNumber(values: ReadableArray): Boolean {
+    for (index in 0 until values.size()) {
+      when (values.getType(index)) {
+        ReadableType.Number -> if (!values.getDouble(index).isFinite()) return true
+        ReadableType.Array -> if (holdsNonFiniteNumber(values.getArray(index)!!)) return true
+        ReadableType.Map -> {
+          val transform = values.getMap(index)!!
+          val iterator = transform.keySetIterator()
+          while (iterator.hasNextKey()) {
+            val key = iterator.nextKey()
+            when (transform.getType(key)) {
+              ReadableType.Number -> if (!transform.getDouble(key).isFinite()) return true
+              ReadableType.Array -> if (holdsNonFiniteNumber(transform.getArray(key)!!)) return true
+              else -> {}
+            }
+          }
+        }
+        else -> {}
+      }
+    }
+    return false
   }
 
   internal fun parseTranslateValue(stringValue: String, dimension: Double): Double {
@@ -228,6 +261,10 @@ public object TransformHelper {
         }
         else -> {}
       }
+    }
+
+    if (!origin.all { it.isFinite() }) {
+      return null
     }
 
     val newTranslateX = -viewCenterX + origin[0]
