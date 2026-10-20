@@ -9,6 +9,7 @@
 
 #include <cxxreact/TraceSection.h>
 #include <react/debug/react_native_assert.h>
+#include <react/featureflags/ReactNativeFeatureFlags.h>
 #include <algorithm>
 #include <unordered_map>
 #include "internal/CullingContext.h"
@@ -89,6 +90,35 @@ sliceChildShadowNodeViewPairsFromViewNodePair(
       allowFlattened,
       shadowViewNodePair.contextOrigin,
       cullingContext);
+}
+
+/*
+ * Slices the children of a matched pair in both trees. With
+ * `skipUnchangedChildrenInDifferentiator`, children that are the same node in
+ * both trees are left out when possible: they produce no mutations.
+ */
+static void sliceMatchedPairChildren(
+    const ShadowViewNodePair& oldPair,
+    const ShadowViewNodePair& newPair,
+    ViewNodePairScope& scope,
+    const CullingContext& oldCullingContext,
+    const CullingContext& newCullingContext,
+    std::vector<ShadowViewNodePair*>& oldChildPairs,
+    std::vector<ShadowViewNodePair*>& newChildPairs) {
+  if (ReactNativeFeatureFlags::skipUnchangedChildrenInDifferentiator() &&
+      sliceChangedChildShadowNodeViewPairs(
+          oldPair,
+          newPair,
+          scope,
+          false /* allowFlattened */,
+          oldChildPairs,
+          newChildPairs)) {
+    return;
+  }
+  oldChildPairs = sliceChildShadowNodeViewPairsFromViewNodePair(
+      oldPair, scope, false /* allowFlattened */, oldCullingContext);
+  newChildPairs = sliceChildShadowNodeViewPairsFromViewNodePair(
+      newPair, scope, false /* allowFlattened */, newCullingContext);
 }
 
 /*
@@ -299,10 +329,16 @@ static void updateMatchedPairSubtrees(
   if (oldPair.shadowNode != newPair.shadowNode ||
       oldCullingContextCopy != newCullingContextCopy) {
     ViewNodePairScope innerScope{};
-    auto oldGrandChildPairs = sliceChildShadowNodeViewPairsFromViewNodePair(
-        oldPair, innerScope, false, oldCullingContextCopy);
-    auto newGrandChildPairs = sliceChildShadowNodeViewPairsFromViewNodePair(
-        newPair, innerScope, false, newCullingContextCopy);
+    std::vector<ShadowViewNodePair*> oldGrandChildPairs;
+    std::vector<ShadowViewNodePair*> newGrandChildPairs;
+    sliceMatchedPairChildren(
+        oldPair,
+        newPair,
+        innerScope,
+        oldCullingContextCopy,
+        newCullingContextCopy,
+        oldGrandChildPairs,
+        newGrandChildPairs);
     const size_t newGrandChildPairsSize = newGrandChildPairs.size();
 
     calculateShadowViewMutations(
@@ -948,10 +984,16 @@ static void calculateShadowViewMutations(
         (oldChildPair.shadowNode != newChildPair.shadowNode ||
          adjustedOldCullingContext != adjustedNewCullingContext)) {
       ViewNodePairScope innerScope{};
-      auto oldGrandChildPairs = sliceChildShadowNodeViewPairsFromViewNodePair(
-          oldChildPair, innerScope, false, adjustedOldCullingContext);
-      auto newGrandChildPairs = sliceChildShadowNodeViewPairsFromViewNodePair(
-          newChildPair, innerScope, false, adjustedNewCullingContext);
+      std::vector<ShadowViewNodePair*> oldGrandChildPairs;
+      std::vector<ShadowViewNodePair*> newGrandChildPairs;
+      sliceMatchedPairChildren(
+          oldChildPair,
+          newChildPair,
+          innerScope,
+          adjustedOldCullingContext,
+          adjustedNewCullingContext,
+          oldGrandChildPairs,
+          newGrandChildPairs);
 
       const size_t newGrandChildPairsSize = newGrandChildPairs.size();
 
@@ -1382,18 +1424,16 @@ ShadowViewMutation::List calculateShadowViewMutations(
             oldRootShadowView, newRootShadowView, {}));
   }
 
-  auto sliceOne = sliceChildShadowNodeViewPairs(
+  std::vector<ShadowViewNodePair*> sliceOne;
+  std::vector<ShadowViewNodePair*> sliceTwo;
+  sliceMatchedPairChildren(
       ShadowViewNodePair{.shadowNode = &oldRootShadowNode},
-      viewNodePairScope,
-      false /* allowFlattened */,
-      {} /* layoutOffset */,
-      {} /* cullingContext */);
-  auto sliceTwo = sliceChildShadowNodeViewPairs(
       ShadowViewNodePair{.shadowNode = &newRootShadowNode},
       viewNodePairScope,
-      false /* allowFlattened */,
-      {} /* layoutOffset */,
-      {} /* cullingContext */);
+      {} /* oldCullingContext */,
+      {} /* newCullingContext */,
+      sliceOne,
+      sliceTwo);
 
   mutations.reserve(256);
 

@@ -889,6 +889,17 @@ const definitions: FeatureFlagDefinitions = {
       },
       ossReleaseStage: 'none',
     },
+    skipUnchangedChildrenInDifferentiator: {
+      defaultValue: false,
+      metadata: {
+        dateAdded: '2026-10-20',
+        description:
+          'When a node changes, the differ leaves out its children that are unchanged in both trees instead of describing and comparing them.',
+        expectedReleaseValue: true,
+        purpose: 'experimentation',
+      },
+      ossReleaseStage: 'none',
+    },
     syncAndroidClipBoundsWithOverflow: {
       defaultValue: false,
       metadata: {
