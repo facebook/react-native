@@ -222,9 +222,79 @@ static id RCTSolidBorderImageCacheColor(UIColor *color)
   return [color resolvedColorWithTraitCollection:[UITraitCollection currentTraitCollection]] == color ? color : nil;
 }
 
+// Key of the solid border image cache. It hashes the radii and widths itself: NSArray hashes by count
+// and NSValue gives every struct of a custom type the same hash.
+@interface RCTSolidBorderImageCacheKey : NSObject
+@end
+
+@implementation RCTSolidBorderImageCacheKey {
+  RCTCornerRadii _cornerRadii;
+  UIEdgeInsets _borderInsets;
+  NSArray *_colors;
+  BOOL _drawToEdge;
+  NSUInteger _hash;
+}
+
+- (instancetype)initWithCornerRadii:(RCTCornerRadii)cornerRadii
+                       borderInsets:(UIEdgeInsets)borderInsets
+                             colors:(NSArray *)colors
+                         drawToEdge:(BOOL)drawToEdge
+{
+  if (self = [super init]) {
+    _cornerRadii = cornerRadii;
+    _borderInsets = borderInsets;
+    _colors = colors;
+    _drawToEdge = drawToEdge;
+    const CGFloat values[] = {
+        cornerRadii.topLeftHorizontal,
+        cornerRadii.topLeftVertical,
+        cornerRadii.topRightHorizontal,
+        cornerRadii.topRightVertical,
+        cornerRadii.bottomLeftHorizontal,
+        cornerRadii.bottomLeftVertical,
+        cornerRadii.bottomRightHorizontal,
+        cornerRadii.bottomRightVertical,
+        borderInsets.top,
+        borderInsets.left,
+        borderInsets.bottom,
+        borderInsets.right,
+    };
+    NSUInteger hash = drawToEdge;
+    for (size_t i = 0; i < sizeof(values) / sizeof(values[0]); i++) {
+      uint64_t bits;
+      memcpy(&bits, &values[i], sizeof(bits));
+      hash = hash * 31 + (NSUInteger)(bits ^ (bits >> 32));
+    }
+    for (id color in colors) {
+      hash = hash * 31 + [color hash];
+    }
+    _hash = hash;
+  }
+  return self;
+}
+
+- (NSUInteger)hash
+{
+  return _hash;
+}
+
+- (BOOL)isEqual:(id)object
+{
+  if (![object isKindOfClass:[RCTSolidBorderImageCacheKey class]]) {
+    return NO;
+  }
+  RCTSolidBorderImageCacheKey *other = object;
+  return _hash == other->_hash && _drawToEdge == other->_drawToEdge &&
+      memcmp(&_cornerRadii, &other->_cornerRadii, sizeof(RCTCornerRadii)) == 0 &&
+      memcmp(&_borderInsets, &other->_borderInsets, sizeof(UIEdgeInsets)) == 0 &&
+      [_colors isEqualToArray:other->_colors];
+}
+
+@end
+
 // A stretchable border image doesn't depend on the view size, only on these inputs, so views with the
 // same border can share one image instead of each drawing its own.
-static NSArray *RCTSolidBorderImageCacheKey(
+static RCTSolidBorderImageCacheKey *RCTSolidBorderImageCacheKeyFor(
     RCTCornerRadii cornerRadii,
     UIEdgeInsets borderInsets,
     RCTBorderColors borderColors,
@@ -239,21 +309,15 @@ static NSArray *RCTSolidBorderImageCacheKey(
   if (top == nil || left == nil || bottom == nil || right == nil || background == nil) {
     return nil;
   }
-  return @[
-    [NSValue valueWithBytes:&cornerRadii objCType:@encode(RCTCornerRadii)],
-    [NSValue valueWithUIEdgeInsets:borderInsets],
-    top,
-    left,
-    bottom,
-    right,
-    background,
-    @(drawToEdge),
-  ];
+  return [[RCTSolidBorderImageCacheKey alloc] initWithCornerRadii:cornerRadii
+                                                     borderInsets:borderInsets
+                                                           colors:@[ top, left, bottom, right, background ]
+                                                       drawToEdge:drawToEdge];
 }
 
-static NSCache<NSArray *, UIImage *> *RCTSolidBorderImageCache(void)
+static NSCache<RCTSolidBorderImageCacheKey *, UIImage *> *RCTSolidBorderImageCache(void)
 {
-  static NSCache<NSArray *, UIImage *> *cache;
+  static NSCache<RCTSolidBorderImageCacheKey *, UIImage *> *cache;
   static dispatch_once_t onceToken;
   dispatch_once(&onceToken, ^{
     cache = [NSCache new];
@@ -273,8 +337,8 @@ static UIImage *RCTGetSolidBorderImage(
   const BOOL hasCornerRadii = RCTCornerRadiiAreAboveThreshold(cornerRadii);
   const RCTCornerInsets cornerInsets = RCTGetCornerInsets(cornerRadii, borderInsets);
   // Keyed by the widths as passed in, since the corner insets above are computed from them before rounding.
-  NSArray *const cacheKey =
-      RCTSolidBorderImageCacheKey(cornerRadii, borderInsets, borderColors, backgroundColor, drawToEdge);
+  RCTSolidBorderImageCacheKey *const cacheKey =
+      RCTSolidBorderImageCacheKeyFor(cornerRadii, borderInsets, borderColors, backgroundColor, drawToEdge);
 
   // Incorrect render for borders that are not proportional to device pixel: borders get stretched and become
   // significantly bigger than expected.
