@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<cfa7aa53731059247d858fd8fb6e914b>>
+ * @generated SignedSource<<a9fc02c20449f356bba332d1d3c4b25b>>
  */
 
 /**
@@ -53,6 +53,12 @@ public object ReactNativeFeatureFlags {
    */
   @JvmStatic
   public fun defaultTextToOverflowHidden(): Boolean = accessor.defaultTextToOverflowHidden()
+
+  /**
+   * When enabled, iOS TextInput applies edits that JS transforms (e.g. maxLength truncation) incrementally after the UIKit text change delegate call returns, avoiding synchronous text and selection rewrites that can deadlock UIKeyboardTaskQueue.
+   */
+  @JvmStatic
+  public fun deferTextInputTruncationIOS(): Boolean = accessor.deferTextInputTruncationIOS()
 
   /**
    * Dispatch view commands in mount item order.
