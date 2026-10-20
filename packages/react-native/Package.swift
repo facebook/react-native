@@ -71,7 +71,9 @@ let yoga = RNTarget(
   name: .yoga,
   path: "ReactCommon/yoga",
   excludedPaths: ["test"],
-  publicHeadersPath: "yoga"
+  publicHeadersPath: "yoga",
+  // Android builds Yoga at -O2 in every build type, Debug included, so match it.
+  defines: [.unsafeFlags(["-O2"])]
 )
 
 // React-oscompat.podspec
