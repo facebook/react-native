@@ -8,7 +8,9 @@
 #include <react/renderer/graphics/Transform.h>
 
 #include <gtest/gtest.h>
+#include <array>
 #include <cmath>
+#include <utility>
 
 using namespace facebook::react;
 
@@ -146,16 +148,35 @@ TEST(TransformTest, perspectiveBelowOnePixelRendersAsOnePixel) {
   EXPECT_FLOAT_EQ(Transform::Perspective(1000).matrix[11], -1.0f / 1000);
 }
 
-TEST(TransformTest, interpolatingPerspectiveTowardNoPerspectiveStaysFinite) {
+// A perspective interpolates as its matrix, where m34 is -1 / depth and no
+// perspective is 0:
+// https://drafts.csswg.org/css-transforms-2/#interpolation-of-transform-functions
+TEST(
+    TransformTest,
+    interpolatingPerspectiveTowardNoPerspectiveInterpolatesItsMatrix) {
   auto size = facebook::react::Size{100, 100};
   auto from = Transform::Perspective(100);
   auto to = Transform::Identity();
 
-  for (auto progress : {0.0, 0.5, 0.99, 1.0}) {
+  for (auto [progress, m34] : std::array<std::pair<Float, Float>, 5>{
+           {{0, -0.01},
+            {0.5, -0.005},
+            {0.99, -0.0001},
+            {1, 0},
+            {1.125, 0.00125}}}) {
     auto transform = Transform::Interpolate(progress, from, to, size);
 
-    for (auto value : transform.matrix) {
-      EXPECT_TRUE(std::isfinite(value)) << "progress " << progress;
-    }
+    EXPECT_NEAR(transform.matrix[11], m34, 1e-7) << "progress " << progress;
   }
+
+  EXPECT_NEAR(
+      Transform::Interpolate(0.5, to, from, size).matrix[11], -0.005, 1e-7);
+}
+
+TEST(TransformTest, interpolatingBetweenPerspectivesInterpolatesTheirMatrices) {
+  auto size = facebook::react::Size{100, 100};
+  auto transform = Transform::Interpolate(
+      0.5, Transform::Perspective(100), Transform::Perspective(200), size);
+
+  EXPECT_NEAR(transform.matrix[11], -0.0075, 1e-7);
 }

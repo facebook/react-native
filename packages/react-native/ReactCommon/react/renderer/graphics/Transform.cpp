@@ -8,12 +8,42 @@
 #include "Transform.h"
 
 #include <cmath>
+#include <limits>
 
 #include <glog/logging.h>
 #include <react/debug/react_native_assert.h>
 #include <react/utils/FloatComparison.h>
 
 namespace facebook::react {
+
+namespace {
+
+// A depth from 0 up to 1px renders as 1px:
+// https://drafts.csswg.org/css-transforms-2/#funcdef-perspective
+Float renderedDepth(Float perspective) {
+  return perspective >= 0 && perspective < 1 ? 1 : perspective;
+}
+
+Float inverseDepth(const TransformOperation& perspective) {
+  return 1 / renderedDepth(perspective.x.resolve(0));
+}
+
+// A perspective interpolates as its matrix, whose m34 is -1 / depth:
+// https://drafts.csswg.org/css-transforms-2/#interpolation-of-transform-functions
+Transform perspectiveOfInverseDepth(Float inverseDepth) {
+  auto transform = Transform{};
+  auto Zero = ValueUnit(0, UnitType::Point);
+  transform.operations.push_back(
+      TransformOperation{
+          .type = TransformOperationType::Perspective,
+          .x = ValueUnit(1 / inverseDepth, UnitType::Point),
+          .y = Zero,
+          .z = Zero});
+  transform.matrix[11] = -inverseDepth;
+  return transform;
+}
+
+} // namespace
 
 /* static */ Transform Transform::Identity() noexcept {
   return {};
@@ -36,10 +66,7 @@ namespace facebook::react {
           .x = ValueUnit(perspective, UnitType::Point),
           .y = Zero,
           .z = Zero});
-  // A depth below 1px renders as 1px:
-  // https://drafts.csswg.org/css-transforms-2/#funcdef-perspective
-  Float depth = perspective >= 0 && perspective < 1 ? 1 : perspective;
-  transform.matrix[11] = -1 / depth;
+  transform.matrix[11] = -1 / renderedDepth(perspective);
   return transform;
 }
 
@@ -220,9 +247,12 @@ Transform::Translate(Float x, Float y, Float z) noexcept {
           .y = Zero,
           .z = Zero};
     case TransformOperationType::Perspective:
+      // No perspective: an infinite depth, whose m34 is 0.
       return TransformOperation{
           .type = TransformOperationType::Perspective,
-          .x = Zero,
+          .x =
+              ValueUnit{
+                  std::numeric_limits<Float>::infinity(), UnitType::Point},
           .y = Zero,
           .z = Zero};
     case TransformOperationType::Scale:
@@ -304,6 +334,15 @@ Transform::Translate(Float x, Float y, Float z) noexcept {
              : Transform::DefaultTransformOperation(type));
     react_native_assert(type == lhsOp.type);
     react_native_assert(type == rhsOp.type);
+
+    if (type == TransformOperationType::Perspective) {
+      result =
+          result *
+          perspectiveOfInverseDepth(
+              inverseDepth(lhsOp) +
+              (inverseDepth(rhsOp) - inverseDepth(lhsOp)) * animationProgress);
+      continue;
+    }
 
     result = result *
         Transform::FromTransformOperation(
