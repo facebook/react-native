@@ -1107,6 +1107,7 @@ internal object TextLayoutManager {
       fontWeightAdjustment: Int,
   ): TextPaint {
     val paint = TextPaint(TextPaint.ANTI_ALIAS_FLAG)
+    paint.density = DisplayMetricsHolder.getScreenDisplayMetrics().density
     updateTextPaint(paint, baseTextAttributes, assets, fontWeightAdjustment)
     return paint
   }
