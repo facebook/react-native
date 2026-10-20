@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<52db1adfed5fd99e4ca145b50dc413a0>>
+ * @generated SignedSource<<710e3219e8ad9f87c71f74c53587d938>>
  */
 
 /**
@@ -150,6 +150,10 @@ class ReactNativeFeatureFlagsDefaults : public ReactNativeFeatureFlagsProvider {
   }
 
   bool enableIOSTextBaselineOffsetPerLine() override {
+    return false;
+  }
+
+  bool enableIOSTextKit2() override {
     return false;
   }
 

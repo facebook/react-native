@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<568d6e4175fb51e09bc3d4441ffa9741>>
+ * @generated SignedSource<<a7be59fb76794ceaf822bb348217fab5>>
  */
 
 /**
@@ -222,6 +222,12 @@ class ReactNativeFeatureFlagsJavaProvider
   bool enableIOSTextBaselineOffsetPerLine() override {
     static const auto method =
         getReactNativeFeatureFlagsProviderJavaClass()->getMethod<jboolean()>("enableIOSTextBaselineOffsetPerLine");
+    return method(javaProvider_);
+  }
+
+  bool enableIOSTextKit2() override {
+    static const auto method =
+        getReactNativeFeatureFlagsProviderJavaClass()->getMethod<jboolean()>("enableIOSTextKit2");
     return method(javaProvider_);
   }
 
@@ -762,6 +768,11 @@ bool JReactNativeFeatureFlagsCxxInterop::enableIOSTextBaselineOffsetPerLine(
   return ReactNativeFeatureFlags::enableIOSTextBaselineOffsetPerLine();
 }
 
+bool JReactNativeFeatureFlagsCxxInterop::enableIOSTextKit2(
+    facebook::jni::alias_ref<JReactNativeFeatureFlagsCxxInterop> /*unused*/) {
+  return ReactNativeFeatureFlags::enableIOSTextKit2();
+}
+
 bool JReactNativeFeatureFlagsCxxInterop::enableIOSViewClipToPaddingBox(
     facebook::jni::alias_ref<JReactNativeFeatureFlagsCxxInterop> /*unused*/) {
   return ReactNativeFeatureFlags::enableIOSViewClipToPaddingBox();
@@ -1201,6 +1212,9 @@ void JReactNativeFeatureFlagsCxxInterop::registerNatives() {
       makeNativeMethod(
         "enableIOSTextBaselineOffsetPerLine",
         JReactNativeFeatureFlagsCxxInterop::enableIOSTextBaselineOffsetPerLine),
+      makeNativeMethod(
+        "enableIOSTextKit2",
+        JReactNativeFeatureFlagsCxxInterop::enableIOSTextKit2),
       makeNativeMethod(
         "enableIOSViewClipToPaddingBox",
         JReactNativeFeatureFlagsCxxInterop::enableIOSViewClipToPaddingBox),

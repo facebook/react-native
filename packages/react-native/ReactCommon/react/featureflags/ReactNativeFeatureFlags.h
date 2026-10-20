@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<62dbb584d6aaf595314636a81346e3e5>>
+ * @generated SignedSource<<31c3cf5d353b9888d972e33c4bfb0910>>
  */
 
 /**
@@ -195,6 +195,11 @@ class ReactNativeFeatureFlags {
    * Applies base offset for each line of text separately on iOS.
    */
   RN_EXPORT static bool enableIOSTextBaselineOffsetPerLine();
+
+  /**
+   * Lays out, measures and draws iOS Text with TextKit 2 (NSTextLayoutManager) instead of TextKit 1 (NSLayoutManager). Requires iOS 16 or later; older versions keep using TextKit 1.
+   */
+  RN_EXPORT static bool enableIOSTextKit2();
 
   /**
    * iOS Views will clip to their padding box vs border box

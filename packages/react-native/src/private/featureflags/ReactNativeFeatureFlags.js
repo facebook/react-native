@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<f36d78d946c018d3dd3fc30f6071ee76>>
+ * @generated SignedSource<<432678103ed00404892a32355743d484>>
  * @flow strict
  * @noformat
  */
@@ -80,6 +80,7 @@ export type ReactNativeFeatureFlags = Readonly<{
   enableFontScaleChangesUpdatingLayout: Getter<boolean>,
   enableIOSCompressedTextFrameAdjustment: Getter<boolean>,
   enableIOSTextBaselineOffsetPerLine: Getter<boolean>,
+  enableIOSTextKit2: Getter<boolean>,
   enableIOSViewClipToPaddingBox: Getter<boolean>,
   enableImagePrefetchingAndroid: Getter<boolean>,
   enableImageTransparentTintColor: Getter<boolean>,
@@ -343,6 +344,10 @@ export const enableIOSCompressedTextFrameAdjustment: Getter<boolean> = createNat
  * Applies base offset for each line of text separately on iOS.
  */
 export const enableIOSTextBaselineOffsetPerLine: Getter<boolean> = createNativeFlagGetter('enableIOSTextBaselineOffsetPerLine', false);
+/**
+ * Lays out, measures and draws iOS Text with TextKit 2 (NSTextLayoutManager) instead of TextKit 1 (NSLayoutManager). Requires iOS 16 or later; older versions keep using TextKit 1.
+ */
+export const enableIOSTextKit2: Getter<boolean> = createNativeFlagGetter('enableIOSTextKit2', false);
 /**
  * iOS Views will clip to their padding box vs border box
  */
