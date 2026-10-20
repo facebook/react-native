@@ -64,9 +64,9 @@ internal object SkewMatrixHelper {
 
   /**
    * Builds a [Matrix] in pixel coordinates by walking [transforms] left-to-right and applying each
-   * operation via `Matrix.preX` around the resolved pivot. Pivot is the view center; if
-   * [transformOrigin] is set, it overrides per-axis (Number values are DIP, "P%" strings are P/100
-   * of the view dimension; Z is ignored).
+   * operation via `Matrix.preX` around the resolved pivot. Pivot is the view center; a
+   * [transformOrigin] whose axes and depth are all finite overrides it per axis (Number values are
+   * DIP, "P%" strings are P/100 of the view dimension; the depth only has to be finite).
    *
    * Composition is pre-multiplication: when the resulting matrix is applied to a point, the
    * rightmost (last) array entry is applied first. Matches CSS / iOS conventions and the
@@ -154,17 +154,18 @@ internal object SkewMatrixHelper {
     return matrix
   }
 
-  /**
-   * Whether every entry of [matrix] is finite. It reads into one reused array, so it runs on the UI
-   * thread alone, as [BaseViewManager.setTransformProperty] does.
-   */
+  /** Whether every entry of [matrix] is finite. */
   @JvmStatic
   fun isFinite(matrix: Matrix): Boolean {
-    matrix.getValues(matrixValues)
-    return matrixValues.all { it.isFinite() }
+    val values = matrixValues.get()!!
+    matrix.getValues(values)
+    return values.all { it.isFinite() }
   }
 
-  private val matrixValues = FloatArray(9)
+  private val matrixValues: ThreadLocal<FloatArray> =
+      object : ThreadLocal<FloatArray>() {
+        override fun initialValue(): FloatArray = FloatArray(9)
+      }
 
   private fun hasFiniteDepth(origin: ReadableArray?): Boolean =
       origin == null ||

@@ -8,6 +8,12 @@
 #import <React/RCTConvert.h>
 #import "UIView+React.h"
 
+/**
+ * Whether every entry of a transform is finite: Core Animation hides a layer whose transform is not, and can hide its
+ * siblings.
+ */
+RCT_EXTERN BOOL RCTIsFiniteTransform(CATransform3D transform);
+
 @interface RCTConvert (Transform)
 
 + (CATransform3D)CATransform3D:(id)json;

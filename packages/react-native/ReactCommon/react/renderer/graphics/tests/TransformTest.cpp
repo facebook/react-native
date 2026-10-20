@@ -14,6 +14,21 @@
 
 using namespace facebook::react;
 
+namespace {
+
+// BaseViewProps::resolveTransform mounts the matrix rebuilt from a transform's
+// operations, not the transform's own matrix.
+Transform rebuildFromOperations(const Transform& transform, const Size& size) {
+  auto rebuilt = Transform{};
+  for (const auto& operation : transform.operations) {
+    rebuilt =
+        rebuilt * Transform::FromTransformOperation(operation, size, transform);
+  }
+  return rebuilt;
+}
+
+} // namespace
+
 TEST(TransformTest, transformingSize) {
   auto size = facebook::react::Size{100, 200};
   auto scaledSize = size * Transform::Scale(0.5, 0.5, 1);
@@ -167,10 +182,13 @@ TEST(
     auto transform = Transform::Interpolate(progress, from, to, size);
 
     EXPECT_NEAR(transform.matrix[11], m34, 1e-7) << "progress " << progress;
+    EXPECT_NEAR(rebuildFromOperations(transform, size).matrix[11], m34, 1e-7)
+        << "progress " << progress;
   }
 
-  EXPECT_NEAR(
-      Transform::Interpolate(0.5, to, from, size).matrix[11], -0.005, 1e-7);
+  auto backward = Transform::Interpolate(0.5, to, from, size);
+  EXPECT_NEAR(backward.matrix[11], -0.005, 1e-7);
+  EXPECT_NEAR(rebuildFromOperations(backward, size).matrix[11], -0.005, 1e-7);
 }
 
 TEST(TransformTest, interpolatingBetweenPerspectivesInterpolatesTheirMatrices) {
@@ -179,6 +197,25 @@ TEST(TransformTest, interpolatingBetweenPerspectivesInterpolatesTheirMatrices) {
       0.5, Transform::Perspective(100), Transform::Perspective(200), size);
 
   EXPECT_NEAR(transform.matrix[11], -0.0075, 1e-7);
+  EXPECT_NEAR(rebuildFromOperations(transform, size).matrix[11], -0.0075, 1e-7);
+}
+
+TEST(TransformTest, interpolatingAPerspectiveAwayKeepsTheOperationsBesideIt) {
+  auto size = facebook::react::Size{100, 100};
+  auto rotation = Transform::RotateZ(M_PI / 4);
+  auto transform = Transform::Interpolate(
+      1, Transform::Perspective(100) * rotation, rotation, size);
+
+  for (const auto& operation : transform.operations) {
+    EXPECT_NE(operation.type, TransformOperationType::Perspective);
+  }
+  for (size_t index = 0; index < 16; index++) {
+    EXPECT_NEAR(
+        rebuildFromOperations(transform, size).matrix[index],
+        rotation.matrix[index],
+        1e-6)
+        << "entry " << index;
+  }
 }
 
 TEST(TransformTest, negativePerspectiveKeepsItsDepth) {

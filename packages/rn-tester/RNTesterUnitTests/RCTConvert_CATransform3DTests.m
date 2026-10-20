@@ -135,15 +135,28 @@ static BOOL IsFiniteTransform(CATransform3D transform)
 
 - (void)testTransformOriginHoldingANonFiniteNumberIsIgnored
 {
+  RCTTransformOrigin noOrigin = [RCTConvert RCTTransformOrigin:nil];
   for (NSArray *transformOrigin in
        @[ @[ @(NAN), @0, @0 ], @[ @0, @(INFINITY), @0 ], @[ @0, @0, @(NAN) ], @[ @"1e39%", @0, @0 ] ]) {
     RCTTransformOrigin result = [RCTConvert RCTTransformOrigin:transformOrigin];
-    XCTAssertEqual(result.x.unit, YGUnitPercent, @"%@", transformOrigin);
-    XCTAssertEqual(result.x.value, 50, @"%@", transformOrigin);
-    XCTAssertEqual(result.y.unit, YGUnitPercent, @"%@", transformOrigin);
-    XCTAssertEqual(result.y.value, 50, @"%@", transformOrigin);
-    XCTAssertEqual(result.z, 0, @"%@", transformOrigin);
+    XCTAssertEqual(result.x.unit, noOrigin.x.unit, @"%@", transformOrigin);
+    XCTAssertEqual(result.y.unit, noOrigin.y.unit, @"%@", transformOrigin);
+    XCTAssertEqual(result.z, noOrigin.z, @"%@", transformOrigin);
   }
+  XCTAssertEqual(noOrigin.x.unit, YGUnitUndefined);
+  XCTAssertEqual(noOrigin.y.unit, YGUnitUndefined);
+}
+
+- (void)testLegacyViewTransformThatOverflowsWithItsOriginIsIgnored
+{
+  UIView *view = [[UIView alloc] initWithFrame:CGRectMake(0, 0, 300, 300)];
+  view.reactTransformOrigin = [RCTConvert RCTTransformOrigin:@[ @0, @0, @0 ]];
+
+  view.reactTransform = [RCTConvert CATransform3D:@[ @{@"scale" : @2} ]];
+  XCTAssertEqual(view.layer.transform.m41, 150);
+
+  view.reactTransform = [RCTConvert CATransform3D:@[ @{@"scale" : @1.3e306} ]];
+  XCTAssertTrue(CATransform3DIsIdentity(view.layer.transform));
 }
 
 @end

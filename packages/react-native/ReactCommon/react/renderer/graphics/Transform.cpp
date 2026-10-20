@@ -28,19 +28,11 @@ Float inverseDepth(const TransformOperation& perspective) {
   return 1 / renderedDepth(perspective.x.resolve(0));
 }
 
-// A perspective interpolates as its matrix, whose m34 is -1 / depth:
+// A perspective interpolates as its matrix, whose m34 is -1 / depth, and an
+// inverse depth of 0 is no perspective:
 // https://drafts.csswg.org/css-transforms-2/#interpolation-of-transform-functions
-Transform perspectiveOfInverseDepth(Float inverseDepth) {
-  auto transform = Transform{};
-  auto Zero = ValueUnit(0, UnitType::Point);
-  transform.operations.push_back(
-      TransformOperation{
-          .type = TransformOperationType::Perspective,
-          .x = ValueUnit(1 / inverseDepth, UnitType::Point),
-          .y = Zero,
-          .z = Zero});
-  transform.matrix[11] = -inverseDepth;
-  return transform;
+Transform perspectiveOfInverseDepth(Float inverse) {
+  return inverse == 0 ? Transform{} : Transform::Perspective(1 / inverse);
 }
 
 } // namespace

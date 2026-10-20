@@ -9,7 +9,7 @@
 
 static const NSUInteger kMatrixArrayLength = 4 * 4;
 
-static BOOL RCTIsFiniteTransform(CATransform3D transform)
+BOOL RCTIsFiniteTransform(CATransform3D transform)
 {
   const CGFloat *entries = (const CGFloat *)&transform;
   for (NSUInteger i = 0; i < kMatrixArrayLength; i++) {
@@ -179,9 +179,10 @@ static BOOL RCTIsNonFiniteLength(YGValue value)
 {
   RCTTransformOrigin transformOrigin = {
       [RCTConvert YGValue:json[0]], [RCTConvert YGValue:json[1]], [RCTConvert CGFloat:json[2]]};
+  // A non-finite origin converts as no origin does, and a view turns about its center for both.
   if (RCTIsNonFiniteLength(transformOrigin.x) || RCTIsNonFiniteLength(transformOrigin.y) ||
       !isfinite(transformOrigin.z)) {
-    return (RCTTransformOrigin){(YGValue){50, YGUnitPercent}, (YGValue){50, YGUnitPercent}, 0};
+    return (RCTTransformOrigin){YGValueUndefined, YGValueUndefined, 0};
   }
   return transformOrigin;
 }

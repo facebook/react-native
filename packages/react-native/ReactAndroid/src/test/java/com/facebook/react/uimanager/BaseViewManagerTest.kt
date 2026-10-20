@@ -348,22 +348,31 @@ class BaseViewManagerTest {
 
   @Test
   fun testSkewedTransformWithANonFiniteOriginTurnsAboutTheCenter() {
-    val aboutTheCenter =
-        skewMatrixValues(createView(JavaOnlyMap.of(ViewProps.TRANSFORM, JavaOnlyArray.of(skewX10))))
+    // skewX 10deg about a 100 x 100 view's center introduces MTRANS_X = -tan(10deg) * 50.
+    val aboutTheCenter = -Math.tan(Math.toRadians(10.0)).toFloat() * 50f
+    for ((origin, translateX) in
+        listOf(
+            JavaOnlyArray.of(Double.NaN, 0.0, 0.0) to aboutTheCenter,
+            JavaOnlyArray.of(0.0, 0.0, 0.0) to 0f,
+        )) {
+      val view = createView(JavaOnlyMap())
+      view.layout(0, 0, 100, 100)
+      viewManager.updateProperties(
+          view,
+          ReactStylesDiffMap(
+              JavaOnlyMap.of(
+                  ViewProps.TRANSFORM,
+                  JavaOnlyArray.of(skewX10),
+                  ViewProps.TRANSFORM_ORIGIN,
+                  origin,
+              )
+          ),
+      )
 
-    val withANonFiniteOrigin =
-        skewMatrixValues(
-            createView(
-                JavaOnlyMap.of(
-                    ViewProps.TRANSFORM,
-                    JavaOnlyArray.of(skewX10),
-                    ViewProps.TRANSFORM_ORIGIN,
-                    JavaOnlyArray.of(Double.NaN, 0.0, 0.0),
-                )
-            )
-        )
-
-    Assertions.assertThat(withANonFiniteOrigin).containsExactly(*aboutTheCenter)
+      Assertions.assertThat(skewMatrixValues(view)[Matrix.MTRANS_X])
+          .describedAs("$origin")
+          .isCloseTo(translateX, Assertions.within(1e-4f))
+    }
   }
 
   private val skewX10: JavaOnlyMap

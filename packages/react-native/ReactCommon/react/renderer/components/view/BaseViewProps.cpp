@@ -8,6 +8,7 @@
 #include "BaseViewProps.h"
 
 #include <algorithm>
+#include <cmath>
 
 #include <react/renderer/components/view/BackgroundImagePropsConversions.h>
 #include <react/renderer/components/view/BoxShadowPropsConversions.h>
@@ -48,6 +49,19 @@ std::array<float, 3> getTranslateForTransformOrigin(
   float newTranslateZ = origin[2];
 
   return std::array{newTranslateX, newTranslateY, newTranslateZ};
+}
+
+bool isFiniteTransformOrigin(const TransformOrigin& transformOrigin) {
+  return std::isfinite(transformOrigin.xy[0].value) &&
+      std::isfinite(transformOrigin.xy[1].value) &&
+      std::isfinite(transformOrigin.z);
+}
+
+bool isFiniteMatrix(const Transform& transform) {
+  return std::all_of(
+      transform.matrix.begin(), transform.matrix.end(), [](Float value) {
+        return std::isfinite(value);
+      });
 }
 
 } // namespace
@@ -567,12 +581,19 @@ Transform BaseViewProps::resolveTransform(
     transformMatrix = transform;
   } else {
     for (const auto& operation : transform.operations) {
+      // -1 / ±Infinity is a finite m34, so the matrix's own check cannot see a
+      // non-finite perspective.
+      if (operation.type == TransformOperationType::Perspective &&
+          !std::isfinite(operation.x.value)) {
+        return Transform{};
+      }
       transformMatrix = transformMatrix *
           Transform::FromTransformOperation(operation, frameSize, transform);
     }
   }
 
-  if (transformOrigin.isSet()) {
+  // A non-finite origin is ignored, so the transform turns about the centre.
+  if (transformOrigin.isSet() && isFiniteTransformOrigin(transformOrigin)) {
     std::array<float, 3> translateOffsets = getTranslateForTransformOrigin(
         frameSize.width, frameSize.height, transformOrigin);
     transformMatrix =
@@ -583,7 +604,11 @@ Transform BaseViewProps::resolveTransform(
             -translateOffsets[0], -translateOffsets[1], -translateOffsets[2]);
   }
 
-  return transformMatrix;
+  // NaN and infinity are not CSS numbers, so a transform holding one is an
+  // invalid declaration, drawn untransformed:
+  // https://drafts.csswg.org/css-values-4/#numbers
+  // So is a composition of finite numbers that overflows.
+  return isFiniteMatrix(transformMatrix) ? transformMatrix : Transform{};
 }
 
 bool BaseViewProps::getClipsContentToBounds() const {
