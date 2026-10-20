@@ -232,7 +232,7 @@ val preparePrefab by
                       Pair("../ReactCommon/callinvoker/", ""),
                       Pair("../ReactCommon/callinvoker/React/", "React/"),
                       Pair("../ReactCommon/cxxreact/", "cxxreact/"),
-                      // Exported because the public cxxreact/ErrorUtils.h includes it
+                      // Exported because the deprecated cxxreact/ErrorUtils.h shim includes it
                       Pair("../ReactCommon/jserrorhandler/", "jserrorhandler/"),
                       Pair("../ReactCommon/react/bridging/", "react/bridging/"),
                       Pair("../ReactCommon/react/bridging/React/", "React/"),

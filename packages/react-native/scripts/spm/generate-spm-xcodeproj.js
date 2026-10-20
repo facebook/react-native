@@ -52,6 +52,7 @@ const {
 } = require('./spm-pbxproj');
 const {
   AUTOLINKED_PACKAGE_NAME,
+  CXX_API_DEFINES,
   REACT_CODEGEN_APP_PRODUCTS,
   REACT_CODEGEN_PACKAGE_NAME,
   REACT_NATIVE_PACKAGE_NAME,
@@ -1144,6 +1145,16 @@ const DEBUG_ARRAY_SETTINGS = [
   {key: 'SWIFT_ACTIVE_COMPILATION_CONDITIONS', values: ['DEBUG']},
 ];
 
+// The React Native C++ stable API macros the app opted into (CXX_API_DEFINES),
+// defined for the app target's own C++.
+function cxxApiArraySettings(
+  cxxApiDefines /*: ReadonlyArray<string> */,
+) /*: Array<{key: string, values: Array<string>}> */ {
+  return cxxApiDefines.length > 0
+    ? [{key: 'GCC_PREPROCESSOR_DEFINITIONS', values: [...cxxApiDefines]}]
+    : [];
+}
+
 /** The XCBuildConfiguration UUIDs of a target (via its buildConfigurationList). */
 function targetBuildConfigUuids(
   text /*: string */,
@@ -1290,6 +1301,7 @@ function injectSpmIntoPbxproj(
   generatedSources /*: ReadonlyArray<GeneratedSource> */ = [],
   flavoredFrameworks /*: ReadonlyArray<FlavoredFrameworkManifestEntry> */ = [],
   scriptPhases /*: ReadonlyArray<PluginScriptPhase> */ = [],
+  cxxApiDefines /*: ReadonlyArray<string> */ = [],
 ) /*: {text: string, injectedUuids: Array<string>, createdArrayFields: Array<CreatedArrayField>, buildSettingChanges: Array<BuildSettingChange>, generatedSourceUuids: {[string]: Array<string>}, scriptPhaseUuids: {[string]: string}} */ {
   let text = input;
   const mkUuid = (section /*: string */, id /*: string */) =>
@@ -1387,6 +1399,7 @@ function injectSpmIntoPbxproj(
       buildConfigurationName(text, configUuid),
       reactNativePath,
       flavoredFrameworks,
+      cxxApiDefines,
     );
     text = merged.text;
     buildSettingChanges.push(merged.change);
@@ -1737,6 +1750,7 @@ function mergeReactBuildSettings(
   configurationName /*: string */,
   reactNativePath /*: string */,
   flavoredFrameworks /*: ReadonlyArray<FlavoredFrameworkManifestEntry> */ = [],
+  cxxApiDefines /*: ReadonlyArray<string> */ = [],
 ) /*: {text: string, change: BuildSettingChange} */ {
   let text = input;
   const scalars = [
@@ -1768,6 +1782,7 @@ function mergeReactBuildSettings(
     ...(flavorForBuildConfiguration(configurationName) === 'debug'
       ? DEBUG_ARRAY_SETTINGS
       : []),
+    ...cxxApiArraySettings(cxxApiDefines),
     ...frameworkArrayBuildSettings(flavoredFrameworks),
   ];
   for (const {key, values} of arraySettings) {
@@ -2256,7 +2271,7 @@ function readScriptPhasesManifest(
  */
 function readMarker(
   xcodeprojPath /*: string */,
-) /*: ?{targetUuid?: ?string, generatedSources?: {[string]: Array<string>}, scriptPhases?: {[string]: string}, linkedFrameworks?: Array<{id: string, frameworkName: string}>, artifactsVersionOverride?: ?string, configCommand?: ?Array<string>, buildSettingChanges?: Array<BuildSettingChange>, createdArrayFields?: Array<CreatedArrayField>, scheme?: {file?: ?string, created?: ?boolean}, ...} */ {
+) /*: ?{targetUuid?: ?string, generatedSources?: {[string]: Array<string>}, scriptPhases?: {[string]: string}, linkedFrameworks?: Array<{id: string, frameworkName: string}>, artifactsVersionOverride?: ?string, configCommand?: ?Array<string>, cxxApiDefines?: unknown, buildSettingChanges?: Array<BuildSettingChange>, createdArrayFields?: Array<CreatedArrayField>, scheme?: {file?: ?string, created?: ?boolean}, ...} */ {
   const markerPath = path.join(xcodeprojPath, SPM_INJECTED_MARKER);
   try {
     // $FlowFixMe[incompatible-return] JSON.parse returns any
@@ -2509,6 +2524,25 @@ function readPinnedConfigCommand(appRoot /*: string */) /*: ?Array<string> */ {
 }
 
 /**
+ * The React Native C++ stable API macros the last `spm add`/`update` opted into
+ * (CXX_API_DEFINES), as recorded in the injected xcodeproj's
+ * `.spm-injected.json` marker. The build-time `sync` reads them back because
+ * Xcode builds inherit neither the env vars nor the shell that set them. Never
+ * throws; empty when nothing is injected or the marker can't be read, and a
+ * hand-edited marker can only yield known macro names.
+ */
+function readCxxApiDefines(appRoot /*: string */) /*: Array<string> */ {
+  const xcodeprojPath = findInjectedXcodeproj(appRoot);
+  if (xcodeprojPath == null) {
+    return [];
+  }
+  const recorded = readMarker(xcodeprojPath)?.cxxApiDefines;
+  return Array.isArray(recorded)
+    ? CXX_API_DEFINES.filter(name => recorded.includes(name))
+    : [];
+}
+
+/**
  * Union the array fields RN has created across syncs, deduped by container+key.
  *
  * THE CANONICAL STATEMENT of why anything RN created is recorded stickily (the
@@ -2547,7 +2581,7 @@ function mergeCreatedArrayFields(
  * when the project can't be safely edited (caller surfaces it; fail-loud).
  */
 function injectSpmIntoExistingXcodeproj(
-  opts /*: {appRoot: string, reactNativeRoot: string, xcodeprojPath: string, appName?: ?string, artifactsVersionOverride?: ?string, configCommand?: ?Array<string>} */,
+  opts /*: {appRoot: string, reactNativeRoot: string, xcodeprojPath: string, appName?: ?string, artifactsVersionOverride?: ?string, configCommand?: ?Array<string>, cxxApiDefines?: ReadonlyArray<string>} */,
 ) /*: {status: 'injected', target: string} | {status: 'refused', reason: string} */ {
   const {appRoot, reactNativeRoot, xcodeprojPath} = opts;
   const pbxprojPath = path.join(xcodeprojPath, 'project.pbxproj');
@@ -2639,6 +2673,7 @@ function injectSpmIntoExistingXcodeproj(
     generatedSources,
     flavoredFrameworks,
     scriptPhases,
+    opts.cxxApiDefines ?? [],
   );
 
   const changed = writeIfChanged(pbxprojPath, text);
@@ -2713,6 +2748,10 @@ function injectSpmIntoExistingXcodeproj(
         })),
         artifactsVersionOverride,
         configCommand,
+        // Read back by readCxxApiDefines for the build-time sync. Not
+        // set-or-preserve like the pins above: every `add`/`update` re-reads
+        // the env vars, so unsetting one turns its macro off.
+        cxxApiDefines: opts.cxxApiDefines ?? [],
         scheme: {
           file: schemeResult.file,
           // Sticky — see mergeCreatedArrayFields for why a later sync cannot
@@ -2985,6 +3024,7 @@ module.exports = {
   readMarker,
   readArtifactsVersionOverride,
   readPinnedConfigCommand,
+  readCxxApiDefines,
   readScriptPhasesManifest,
   assertPluginFrameworksLinked,
   PluginFrameworkMismatchError,
