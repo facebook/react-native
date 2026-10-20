@@ -93,8 +93,7 @@ class TransformHelperTest {
   @Test
   fun testTransformOriginHoldingANonFiniteNumberIsIgnored() {
     val transforms = JavaOnlyArray.of(JavaOnlyMap.of("scaleX", 2.0))
-    val expected = DoubleArray(16)
-    TransformHelper.processTransform(transforms, expected, 100f, 100f, null)
+    val aboutTheCenter = MatrixMathHelper.createIdentityMatrix().apply { this[0] = 2.0 }
 
     for (transformOrigin in
         listOf(
@@ -105,8 +104,27 @@ class TransformHelperTest {
       val result = DoubleArray(16)
       TransformHelper.processTransform(transforms, result, 100f, 100f, transformOrigin)
 
-      assertThat(result).describedAs("$transformOrigin").containsExactly(*expected)
+      assertThat(result).describedAs("$transformOrigin").containsExactly(*aboutTheCenter)
     }
+  }
+
+  @Test
+  fun testFiniteTransformOriginMovesThePivot() {
+    val result = DoubleArray(16)
+    TransformHelper.processTransform(
+        JavaOnlyArray.of(JavaOnlyMap.of("scaleX", 2.0)),
+        result,
+        100f,
+        100f,
+        JavaOnlyArray.of(0.0, 0.0, 0.0),
+    )
+
+    val aboutTheTopLeftCorner =
+        MatrixMathHelper.createIdentityMatrix().apply {
+          this[0] = 2.0
+          this[12] = 50.0
+        }
+    assertThat(result).containsExactly(*aboutTheTopLeftCorner)
   }
 
   @Test
