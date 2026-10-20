@@ -13,6 +13,17 @@
 
 @end
 
+static BOOL IsFiniteTransform(CATransform3D transform)
+{
+  const CGFloat *entries = (const CGFloat *)&transform;
+  for (NSUInteger index = 0; index < 16; index++) {
+    if (!isfinite(entries[index])) {
+      return NO;
+    }
+  }
+  return YES;
+}
+
 @implementation RCTConvert_CATransform3DTests
 
 - (void)testTransformHoldingANonFiniteNumberIsIgnored
@@ -46,6 +57,41 @@
       CATransform3D result = [RCTConvert CATransform3D:@[ @{@"translateX" : @10}, transform ]];
       XCTAssertTrue(CATransform3DIsIdentity(result), @"%@", transform);
     }
+  }
+}
+
+- (void)testNumberPastTheLargestFloatIsKept
+{
+  CGFloat pastTheLargestFloat = 1e39;
+
+  CATransform3D translated = [RCTConvert CATransform3D:@[ @{@"translateY" : @(pastTheLargestFloat)} ]];
+  XCTAssertEqual(translated.m42, pastTheLargestFloat);
+
+  CATransform3D scaled = [RCTConvert CATransform3D:@[ @{@"scale" : @(pastTheLargestFloat)} ]];
+  XCTAssertEqual(scaled.m11, pastTheLargestFloat);
+  XCTAssertEqual(scaled.m22, pastTheLargestFloat);
+}
+
+- (void)testAnglePastTheLargestFloatIsKept
+{
+  for (NSString *operation in @[ @"rotate", @"skewX" ]) {
+    CATransform3D result = [RCTConvert CATransform3D:@[ @{operation : @"1e+39deg"} ]];
+    XCTAssertTrue(IsFiniteTransform(result), @"%@", operation);
+    XCTAssertFalse(CATransform3DIsIdentity(result), @"%@", operation);
+  }
+}
+
+- (void)testTransformWhoseMatrixOverflowsIsIgnored
+{
+  NSArray *overflowingMatrix = @[ @1e200, @0, @0, @0, @0, @1, @0, @0, @0, @0, @1, @0, @0, @0, @0, @1 ];
+  NSArray<NSArray *> *transforms = @[
+    @[ @{@"translateX" : @10}, @{@"scale" : @1e200}, @{@"scale" : @1e200} ],
+    @[ @{@"translateX" : @10}, @{@"matrix" : overflowingMatrix}, @{@"matrix" : overflowingMatrix} ],
+  ];
+
+  for (NSArray *transform in transforms) {
+    CATransform3D result = [RCTConvert CATransform3D:transform];
+    XCTAssertTrue(CATransform3DIsIdentity(result), @"%@", transform);
   }
 }
 

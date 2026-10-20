@@ -9,28 +9,15 @@
 
 static const NSUInteger kMatrixArrayLength = 4 * 4;
 
-// NaN and infinity are not CSS numbers, so a transform holding one is an invalid declaration and is
-// ignored: https://drafts.csswg.org/css-values-4/#numbers
-static BOOL RCTHoldsNonFiniteNumber(id json)
+static BOOL RCTIsFiniteTransform(CATransform3D transform)
 {
-  if ([json isKindOfClass:[NSNumber class]]) {
-    return !isfinite([json doubleValue]);
-  }
-  if ([json isKindOfClass:[NSArray class]]) {
-    for (id value in (NSArray *)json) {
-      if (RCTHoldsNonFiniteNumber(value)) {
-        return YES;
-      }
+  const CGFloat *entries = (const CGFloat *)&transform;
+  for (NSUInteger i = 0; i < kMatrixArrayLength; i++) {
+    if (!isfinite(entries[i])) {
+      return NO;
     }
   }
-  if ([json isKindOfClass:[NSDictionary class]]) {
-    for (id value in [(NSDictionary *)json allValues]) {
-      if (RCTHoldsNonFiniteNumber(value)) {
-        return YES;
-      }
-    }
-  }
-  return NO;
+  return YES;
 }
 
 static BOOL RCTIsNonFiniteLength(YGValue value)
@@ -45,14 +32,14 @@ static BOOL RCTIsNonFiniteLength(YGValue value)
   if ([json isKindOfClass:[NSString class]]) {
     NSString *stringValue = (NSString *)json;
     if ([stringValue hasSuffix:@"deg"]) {
-      CGFloat degrees = [[stringValue substringToIndex:stringValue.length - 3] floatValue];
+      CGFloat degrees = [[stringValue substringToIndex:stringValue.length - 3] doubleValue];
       return degrees * M_PI / 180;
     }
     if ([stringValue hasSuffix:@"rad"]) {
-      return [[stringValue substringToIndex:stringValue.length - 3] floatValue];
+      return [[stringValue substringToIndex:stringValue.length - 3] doubleValue];
     }
   }
-  return [json floatValue];
+  return [json doubleValue];
 }
 
 + (CATransform3D)CATransform3DFromMatrix:(id)json
@@ -77,15 +64,21 @@ static BOOL RCTIsNonFiniteLength(YGValue value)
 
 + (CATransform3D)CATransform3D:(id)json
 {
+  CATransform3D transform = [self CATransform3DFromTransforms:json];
+  // NaN and infinity are not CSS numbers, so a transform holding one is an invalid declaration and is ignored:
+  // https://drafts.csswg.org/css-values-4/#numbers. Every non-finite operand but a perspective's makes the
+  // matrix non-finite.
+  return RCTIsFiniteTransform(transform) ? transform : CATransform3DIdentity;
+}
+
++ (CATransform3D)CATransform3DFromTransforms:(id)json
+{
   CATransform3D transform = CATransform3DIdentity;
   if (!json) {
     return transform;
   }
   if (![json isKindOfClass:[NSArray class]]) {
     RCTLogConvertError(json, @"a CATransform3D. Did you pass something other than an array?");
-    return transform;
-  }
-  if (RCTHoldsNonFiniteNumber(json)) {
     return transform;
   }
   // legacy matrix support
@@ -111,8 +104,12 @@ static BOOL RCTIsNonFiniteLength(YGValue value)
       transform = CATransform3DConcat(next, transform);
 
     } else if ([property isEqualToString:@"perspective"]) {
-      // A depth below 1px renders as 1px: https://drafts.csswg.org/css-transforms-2/#funcdef-perspective
-      CGFloat perspective = [value floatValue];
+      CGFloat perspective = [value doubleValue];
+      // -1 / ±Infinity is a finite m34, so the matrix's own check cannot see it.
+      if (!isfinite(perspective)) {
+        return CATransform3DIdentity;
+      }
+      // A depth from 0 up to 1px renders as 1px: https://drafts.csswg.org/css-transforms-2/#funcdef-perspective
       next = CATransform3DIdentity;
       next.m34 = -1 / (perspective >= 0 && perspective < 1 ? 1 : perspective);
       transform = CATransform3DConcat(next, transform);
@@ -130,45 +127,45 @@ static BOOL RCTIsNonFiniteLength(YGValue value)
       transform = CATransform3DRotate(transform, rotate, 0, 0, 1);
 
     } else if ([property isEqualToString:@"scale"]) {
-      CGFloat scale = [value floatValue];
+      CGFloat scale = [value doubleValue];
       scale = ABS(scale) < zeroScaleThreshold ? zeroScaleThreshold : scale;
       transform = CATransform3DScale(transform, scale, scale, 1);
 
     } else if ([property isEqualToString:@"scaleX"]) {
-      CGFloat scale = [value floatValue];
+      CGFloat scale = [value doubleValue];
       scale = ABS(scale) < zeroScaleThreshold ? zeroScaleThreshold : scale;
       transform = CATransform3DScale(transform, scale, 1, 1);
 
     } else if ([property isEqualToString:@"scaleY"]) {
-      CGFloat scale = [value floatValue];
+      CGFloat scale = [value doubleValue];
       scale = ABS(scale) < zeroScaleThreshold ? zeroScaleThreshold : scale;
       transform = CATransform3DScale(transform, 1, scale, 1);
 
     } else if ([property isEqualToString:@"translate"]) {
       NSArray *array = (NSArray<NSNumber *> *)value;
-      CGFloat translateX = [array[0] floatValue];
-      CGFloat translateY = [array[1] floatValue];
-      CGFloat translateZ = array.count > 2 ? [array[2] floatValue] : 0;
+      CGFloat translateX = [array[0] doubleValue];
+      CGFloat translateY = [array[1] doubleValue];
+      CGFloat translateZ = array.count > 2 ? [array[2] doubleValue] : 0;
       transform = CATransform3DTranslate(transform, translateX, translateY, translateZ);
 
     } else if ([property isEqualToString:@"translateX"]) {
-      CGFloat translate = [value floatValue];
+      CGFloat translate = [value doubleValue];
       transform = CATransform3DTranslate(transform, translate, 0, 0);
 
     } else if ([property isEqualToString:@"translateY"]) {
-      CGFloat translate = [value floatValue];
+      CGFloat translate = [value doubleValue];
       transform = CATransform3DTranslate(transform, 0, translate, 0);
 
     } else if ([property isEqualToString:@"skewX"]) {
       CGFloat skew = [self convertToRadians:value];
       next = CATransform3DIdentity;
-      next.m21 = tanf(skew);
+      next.m21 = tan(skew);
       transform = CATransform3DConcat(next, transform);
 
     } else if ([property isEqualToString:@"skewY"]) {
       CGFloat skew = [self convertToRadians:value];
       next = CATransform3DIdentity;
-      next.m12 = tanf(skew);
+      next.m12 = tan(skew);
       transform = CATransform3DConcat(next, transform);
 
     } else {
