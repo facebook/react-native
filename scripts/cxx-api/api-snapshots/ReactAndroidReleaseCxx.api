@@ -375,7 +375,6 @@ struct facebook::hermes::ISetEventLoopControl : public facebook::jsi::ICast {
 
 const char facebook::react::ViewComponentName[];
 const facebook::react::EventTag facebook::react::EMPTY_EVENT_TAG;
-constexpr auto facebook::react::rncore_ModuleProvider;
 constexpr facebook::react::ReactNativeVersionType facebook::react::ReactNativeVersion;
 constexpr facebook::react::Tag facebook::react::kNoTag;
 constexpr uint32_t facebook::react::INITIAL_BUCKETS_SIZE;
