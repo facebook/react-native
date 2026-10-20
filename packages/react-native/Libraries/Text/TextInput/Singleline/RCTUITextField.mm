@@ -11,6 +11,11 @@
 #import <React/RCTUtils.h>
 #import <React/UIView+React.h>
 
+@interface RCTBackedTextFieldDelegateAdapter (PendingTextInputEdit)
+- (void)invalidatePendingTextInputEdit;
+- (void)schedulePendingTextInputEditWithRange:(NSRange)range replacementText:(NSString *)replacementText;
+@end
+
 @implementation RCTUITextField {
   RCTBackedTextFieldDelegateAdapter *_textInputDelegateAdapter;
   NSDictionary<NSAttributedStringKey, id> *_defaultTextAttributes;
@@ -252,6 +257,16 @@
   }
 
   [super setSelectedTextRange:selectedTextRange];
+}
+
+- (void)rct_invalidatePendingTextInputEdit
+{
+  [_textInputDelegateAdapter invalidatePendingTextInputEdit];
+}
+
+- (void)rct_enqueueTextInputEditWithRange:(NSRange)range replacementText:(NSString *)replacementText
+{
+  [_textInputDelegateAdapter schedulePendingTextInputEditWithRange:range replacementText:replacementText];
 }
 
 - (void)scrollRangeToVisible:(NSRange)range
