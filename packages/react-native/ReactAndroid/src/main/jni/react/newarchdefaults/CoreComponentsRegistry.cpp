@@ -38,6 +38,10 @@ sharedProviderRegistry() {
 void addCoreComponents(
     std::shared_ptr<const ComponentDescriptorProviderRegistry>
         providerRegistry) {
+  if (providerRegistry == nullptr) {
+    return;
+  }
+
   providerRegistry->add(
       concreteComponentDescriptorProvider<
           AndroidProgressBarComponentDescriptor>());
