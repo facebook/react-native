@@ -767,4 +767,45 @@ TEST(
   }
 }
 
+TEST(
+    ConversionsTest,
+    processed_transform_with_a_number_past_the_largest_float_is_kept) {
+  constexpr auto pastTheLargestFloat = 1e39;
+  const auto transforms = std::vector<folly::dynamic>{
+      folly::dynamic::object("perspective", pastTheLargestFloat),
+      folly::dynamic::object("scale", pastTheLargestFloat),
+      folly::dynamic::object("translateY", pastTheLargestFloat),
+      folly::dynamic::object(
+          "translate", folly::dynamic::array(pastTheLargestFloat, 0))};
+
+  for (const auto& transform : transforms) {
+    RawValue value{folly::dynamic::array(
+        folly::dynamic::object("translateX", 10), transform)};
+    Transform result;
+    fromRawValue(PropsParserContext{-1, ContextContainer{}}, value, result);
+
+    EXPECT_EQ(result.operations.size(), 2)
+        << transform.keys().begin()->asString();
+  }
+
+  auto matrix = folly::dynamic::array(
+      pastTheLargestFloat, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1);
+  RawValue value{
+      folly::dynamic::array(folly::dynamic::object("matrix", matrix))};
+  Transform result;
+  fromRawValue(PropsParserContext{-1, ContextContainer{}}, value, result);
+
+  EXPECT_NE(result, Transform::Identity());
+}
+
+TEST(
+    ConversionsTest,
+    processed_transform_origin_with_a_number_past_the_largest_float_is_kept) {
+  RawValue value{folly::dynamic::array(1e39, "50%", 0)};
+  TransformOrigin result;
+  fromRawValue(PropsParserContext{-1, ContextContainer{}}, value, result);
+
+  EXPECT_TRUE(result.isSet());
+}
+
 } // namespace facebook::react
