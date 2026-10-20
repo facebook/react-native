@@ -383,11 +383,18 @@ module.exports = {
   get useAnimatedColor() {
     return require('./Libraries/Animated/useAnimatedColor').default;
   },
+  get useAppState() {
+    return require('./Libraries/AppState/useAppState').default;
+  },
   get useColorScheme() {
     return require('./Libraries/Utilities/useColorScheme').default;
   },
   get usePressability() {
     return require('./Libraries/Pressability/usePressability').default;
+  },
+  get useVerticalBarEdgeIOS() {
+    return require('./Libraries/Components/StatusBar/useVerticalBarEdgeIOS')
+      .default;
   },
   get useWindowDimensions() {
     return require('./Libraries/Utilities/useWindowDimensions').default;
