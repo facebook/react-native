@@ -44,6 +44,11 @@ class FileReader extends EventTarget {
   _error: ?Error;
   _result: ?ReaderResult;
   _aborted: boolean = false;
+  // Keep the Blob strongly referenced until the native read settles. If the
+  // caller drops its own reference the Blob can be GC'd mid-read. Its
+  // BlobCollector finalizer then frees the native buffer and the read fails
+  // with "The specified blob is invalid".
+  _blob: ?Blob;
 
   constructor() {
     super();
@@ -54,6 +59,14 @@ class FileReader extends EventTarget {
     this._readyState = EMPTY;
     this._error = null;
     this._result = null;
+    this._blob = null;
+  }
+
+  _releaseBlob(blob: Blob): void {
+    // A stale read settling after abort() must not drop a newer read's blob.
+    if (this._blob === blob) {
+      this._blob = null;
+    }
   }
 
   _setReadyState(newState: ReadyState) {
@@ -80,8 +93,11 @@ class FileReader extends EventTarget {
       );
     }
 
+    this._blob = blob;
+
     NativeFileReaderModule.readAsDataURL(blob.data).then(
       (text: string) => {
+        this._releaseBlob(blob);
         if (this._aborted) {
           return;
         }
@@ -93,6 +109,7 @@ class FileReader extends EventTarget {
         this._setReadyState(DONE);
       },
       error => {
+        this._releaseBlob(blob);
         if (this._aborted) {
           return;
         }
@@ -111,8 +128,11 @@ class FileReader extends EventTarget {
       );
     }
 
+    this._blob = blob;
+
     NativeFileReaderModule.readAsDataURL(blob.data).then(
       (text: string) => {
+        this._releaseBlob(blob);
         if (this._aborted) {
           return;
         }
@@ -120,6 +140,7 @@ class FileReader extends EventTarget {
         this._setReadyState(DONE);
       },
       error => {
+        this._releaseBlob(blob);
         if (this._aborted) {
           return;
         }
@@ -138,8 +159,11 @@ class FileReader extends EventTarget {
       );
     }
 
+    this._blob = blob;
+
     NativeFileReaderModule.readAsText(blob.data, encoding).then(
       (text: string) => {
+        this._releaseBlob(blob);
         if (this._aborted) {
           return;
         }
@@ -147,6 +171,7 @@ class FileReader extends EventTarget {
         this._setReadyState(DONE);
       },
       error => {
+        this._releaseBlob(blob);
         if (this._aborted) {
           return;
         }
