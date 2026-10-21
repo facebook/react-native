@@ -25,8 +25,6 @@
   __weak id<RCTSurfacePresenterStub> _bridgelessSurfacePresenter;
 }
 
-@synthesize bridge = _bridge;
-
 RCT_EXPORT_MODULE()
 
 + (BOOL)requiresMainQueueSetup

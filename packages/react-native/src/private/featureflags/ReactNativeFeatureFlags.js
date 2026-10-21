@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<e15f57e454f8516526fcf7e23bb9c157>>
+ * @generated SignedSource<<05fa3d8358f3bddc3a628d0f5aa2f1c3>>
  * @flow strict
  * @noformat
  */
@@ -293,7 +293,7 @@ export const enableAndroidAutoOffscreenCompositingForElevation: Getter<boolean> 
 /**
  * Enables various optimizations throughout the path of measuring text on Android.
  */
-export const enableAndroidTextMeasurementOptimizations: Getter<boolean> = createNativeFlagGetter('enableAndroidTextMeasurementOptimizations', false);
+export const enableAndroidTextMeasurementOptimizations: Getter<boolean> = createNativeFlagGetter('enableAndroidTextMeasurementOptimizations', true);
 /**
  * Runs multi-source image disk-cache checks asynchronously on Android.
  */
@@ -421,7 +421,7 @@ export const enablePreallocatedPropsDiffOnInsertAndroid: Getter<boolean> = creat
 /**
  * Enables caching text layout artifacts for later reuse
  */
-export const enablePreparedTextLayout: Getter<boolean> = createNativeFlagGetter('enablePreparedTextLayout', false);
+export const enablePreparedTextLayout: Getter<boolean> = createNativeFlagGetter('enablePreparedTextLayout', true);
 /**
  * When enabled, Android will receive prop updates based on the differences between the last rendered shadow node and the last committed shadow node.
  */
@@ -517,7 +517,7 @@ export const perfMonitorV2Enabled: Getter<boolean> = createNativeFlagGetter('per
 /**
  * Number cached PreparedLayouts in TextLayoutManager cache
  */
-export const preparedTextCacheSize: Getter<number> = createNativeFlagGetter('preparedTextCacheSize', 200);
+export const preparedTextCacheSize: Getter<number> = createNativeFlagGetter('preparedTextCacheSize', 1000);
 /**
  * Enables a new mechanism in ShadowTree to prevent problems caused by multiple threads trying to commit concurrently. If a thread tries to commit a few times unsuccessfully, it will acquire a lock and try again.
  */
