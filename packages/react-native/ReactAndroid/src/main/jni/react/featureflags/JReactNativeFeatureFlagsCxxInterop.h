@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<2c8f9205f1de55591ede3845ba2fa877>>
+ * @generated SignedSource<<5e769fa7ac77deacc90e2ae22182b931>>
  */
 
 /**
@@ -43,6 +43,9 @@ class JReactNativeFeatureFlagsCxxInterop
     facebook::jni::alias_ref<JReactNativeFeatureFlagsCxxInterop>);
 
   static bool deferTextInputTruncationIOS(
+    facebook::jni::alias_ref<JReactNativeFeatureFlagsCxxInterop>);
+
+  static bool deferYogaChildCloningUntilLayout(
     facebook::jni::alias_ref<JReactNativeFeatureFlagsCxxInterop>);
 
   static bool disableEarlyViewCommandExecution(

@@ -104,6 +104,17 @@ const definitions: FeatureFlagDefinitions = {
       },
       ossReleaseStage: 'none',
     },
+    deferYogaChildCloningUntilLayout: {
+      defaultValue: false,
+      metadata: {
+        dateAdded: '2026-10-21',
+        description:
+          'When a node gets a new list of children, the children that a previous revision of the node still owns stay shared with that revision instead of being cloned right away. Yoga clones them if it lays the node out.',
+        expectedReleaseValue: true,
+        purpose: 'experimentation',
+      },
+      ossReleaseStage: 'none',
+    },
     disableEarlyViewCommandExecution: {
       defaultValue: false,
       metadata: {

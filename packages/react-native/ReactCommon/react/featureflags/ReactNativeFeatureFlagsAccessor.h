@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<0b7f6d7766d1e038b3909bb7ea634f83>>
+ * @generated SignedSource<<68c87b23f3fc063f401c060199045b8c>>
  */
 
 /**
@@ -39,6 +39,7 @@ class ReactNativeFeatureFlagsAccessor {
   bool cxxNativeAnimatedEnabled();
   bool defaultTextToOverflowHidden();
   bool deferTextInputTruncationIOS();
+  bool deferYogaChildCloningUntilLayout();
   bool disableEarlyViewCommandExecution();
   bool disableIdleEventDispatchFrameCallbackRearmAndroid();
   bool disableIdleMountItemFrameCallbackRearmAndroid();
@@ -141,13 +142,14 @@ class ReactNativeFeatureFlagsAccessor {
   std::unique_ptr<ReactNativeFeatureFlagsProvider> currentProvider_;
   bool wasOverridden_;
 
-  std::array<std::atomic<const char*>, 96> accessedFeatureFlags_;
+  std::array<std::atomic<const char*>, 97> accessedFeatureFlags_;
 
   std::atomic<std::optional<bool>> commonTestFlag_;
   std::atomic<std::optional<bool>> cdpInteractionMetricsEnabled_;
   std::atomic<std::optional<bool>> cxxNativeAnimatedEnabled_;
   std::atomic<std::optional<bool>> defaultTextToOverflowHidden_;
   std::atomic<std::optional<bool>> deferTextInputTruncationIOS_;
+  std::atomic<std::optional<bool>> deferYogaChildCloningUntilLayout_;
   std::atomic<std::optional<bool>> disableEarlyViewCommandExecution_;
   std::atomic<std::optional<bool>> disableIdleEventDispatchFrameCallbackRearmAndroid_;
   std::atomic<std::optional<bool>> disableIdleMountItemFrameCallbackRearmAndroid_;

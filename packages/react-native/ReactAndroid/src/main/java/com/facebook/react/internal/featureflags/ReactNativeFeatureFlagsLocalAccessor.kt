@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<c36b0b2d7173aa78b7cb175658fc89d2>>
+ * @generated SignedSource<<ad04b2eec324da0239508ee8164df70b>>
  */
 
 /**
@@ -29,6 +29,7 @@ internal class ReactNativeFeatureFlagsLocalAccessor : ReactNativeFeatureFlagsAcc
   private var cxxNativeAnimatedEnabledCache: Boolean? = null
   private var defaultTextToOverflowHiddenCache: Boolean? = null
   private var deferTextInputTruncationIOSCache: Boolean? = null
+  private var deferYogaChildCloningUntilLayoutCache: Boolean? = null
   private var disableEarlyViewCommandExecutionCache: Boolean? = null
   private var disableIdleEventDispatchFrameCallbackRearmAndroidCache: Boolean? = null
   private var disableIdleMountItemFrameCallbackRearmAndroidCache: Boolean? = null
@@ -167,6 +168,16 @@ internal class ReactNativeFeatureFlagsLocalAccessor : ReactNativeFeatureFlagsAcc
       cached = currentProvider.deferTextInputTruncationIOS()
       accessedFeatureFlags.add("deferTextInputTruncationIOS")
       deferTextInputTruncationIOSCache = cached
+    }
+    return cached
+  }
+
+  override fun deferYogaChildCloningUntilLayout(): Boolean {
+    var cached = deferYogaChildCloningUntilLayoutCache
+    if (cached == null) {
+      cached = currentProvider.deferYogaChildCloningUntilLayout()
+      accessedFeatureFlags.add("deferYogaChildCloningUntilLayout")
+      deferYogaChildCloningUntilLayoutCache = cached
     }
     return cached
   }

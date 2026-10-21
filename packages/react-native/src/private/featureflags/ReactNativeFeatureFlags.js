@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<721554b73a49d12b6cc4be542c81ec07>>
+ * @generated SignedSource<<e15f57e454f8516526fcf7e23bb9c157>>
  * @flow strict
  * @noformat
  */
@@ -54,6 +54,7 @@ export type ReactNativeFeatureFlags = Readonly<{
   cxxNativeAnimatedEnabled: Getter<boolean>,
   defaultTextToOverflowHidden: Getter<boolean>,
   deferTextInputTruncationIOS: Getter<boolean>,
+  deferYogaChildCloningUntilLayout: Getter<boolean>,
   disableEarlyViewCommandExecution: Getter<boolean>,
   disableIdleEventDispatchFrameCallbackRearmAndroid: Getter<boolean>,
   disableIdleMountItemFrameCallbackRearmAndroid: Getter<boolean>,
@@ -241,6 +242,10 @@ export const defaultTextToOverflowHidden: Getter<boolean> = createNativeFlagGett
  * When enabled, iOS TextInput applies edits that JS transforms (e.g. maxLength truncation) incrementally after the UIKit text change delegate call returns, avoiding synchronous text and selection rewrites that can deadlock UIKeyboardTaskQueue.
  */
 export const deferTextInputTruncationIOS: Getter<boolean> = createNativeFlagGetter('deferTextInputTruncationIOS', false);
+/**
+ * When a node gets a new list of children, the children that a previous revision of the node still owns stay shared with that revision instead of being cloned right away. Yoga clones them if it lays the node out.
+ */
+export const deferYogaChildCloningUntilLayout: Getter<boolean> = createNativeFlagGetter('deferYogaChildCloningUntilLayout', false);
 /**
  * Dispatch view commands in mount item order.
  */

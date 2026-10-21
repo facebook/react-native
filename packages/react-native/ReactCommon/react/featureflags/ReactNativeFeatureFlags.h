@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<ec78b5d1f026f52f188c7592f6f6bae8>>
+ * @generated SignedSource<<edfc4724b1f39028b1df0c9757ef5512>>
  */
 
 /**
@@ -65,6 +65,11 @@ class ReactNativeFeatureFlags {
    * When enabled, iOS TextInput applies edits that JS transforms (e.g. maxLength truncation) incrementally after the UIKit text change delegate call returns, avoiding synchronous text and selection rewrites that can deadlock UIKeyboardTaskQueue.
    */
   RN_EXPORT static bool deferTextInputTruncationIOS();
+
+  /**
+   * When a node gets a new list of children, the children that a previous revision of the node still owns stay shared with that revision instead of being cloned right away. Yoga clones them if it lays the node out.
+   */
+  RN_EXPORT static bool deferYogaChildCloningUntilLayout();
 
   /**
    * Dispatch view commands in mount item order.

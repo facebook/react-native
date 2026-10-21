@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<1ab2eec7b9c5bdd181ec5fbfd37149ab>>
+ * @generated SignedSource<<f831fb06cb03ec0e45fa6a9e433e1c89>>
  */
 
 /**
@@ -66,6 +66,12 @@ class ReactNativeFeatureFlagsJavaProvider
   bool deferTextInputTruncationIOS() override {
     static const auto method =
         getReactNativeFeatureFlagsProviderJavaClass()->getMethod<jboolean()>("deferTextInputTruncationIOS");
+    return method(javaProvider_);
+  }
+
+  bool deferYogaChildCloningUntilLayout() override {
+    static const auto method =
+        getReactNativeFeatureFlagsProviderJavaClass()->getMethod<jboolean()>("deferYogaChildCloningUntilLayout");
     return method(javaProvider_);
   }
 
@@ -644,6 +650,11 @@ bool JReactNativeFeatureFlagsCxxInterop::deferTextInputTruncationIOS(
   return ReactNativeFeatureFlags::deferTextInputTruncationIOS();
 }
 
+bool JReactNativeFeatureFlagsCxxInterop::deferYogaChildCloningUntilLayout(
+    facebook::jni::alias_ref<JReactNativeFeatureFlagsCxxInterop> /*unused*/) {
+  return ReactNativeFeatureFlags::deferYogaChildCloningUntilLayout();
+}
+
 bool JReactNativeFeatureFlagsCxxInterop::disableEarlyViewCommandExecution(
     facebook::jni::alias_ref<JReactNativeFeatureFlagsCxxInterop> /*unused*/) {
   return ReactNativeFeatureFlags::disableEarlyViewCommandExecution();
@@ -1145,6 +1156,9 @@ void JReactNativeFeatureFlagsCxxInterop::registerNatives() {
       makeNativeMethod(
         "deferTextInputTruncationIOS",
         JReactNativeFeatureFlagsCxxInterop::deferTextInputTruncationIOS),
+      makeNativeMethod(
+        "deferYogaChildCloningUntilLayout",
+        JReactNativeFeatureFlagsCxxInterop::deferYogaChildCloningUntilLayout),
       makeNativeMethod(
         "disableEarlyViewCommandExecution",
         JReactNativeFeatureFlagsCxxInterop::disableEarlyViewCommandExecution),

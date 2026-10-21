@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<ca361bb00c0b31657c5a1559a12d5f5a>>
+ * @generated SignedSource<<cff1b1e324367dd9e2565b089f1a5d84>>
  */
 
 /**
@@ -67,6 +67,11 @@ bool NativeReactNativeFeatureFlags::defaultTextToOverflowHidden(
 bool NativeReactNativeFeatureFlags::deferTextInputTruncationIOS(
     jsi::Runtime& /*runtime*/) {
   return ReactNativeFeatureFlags::deferTextInputTruncationIOS();
+}
+
+bool NativeReactNativeFeatureFlags::deferYogaChildCloningUntilLayout(
+    jsi::Runtime& /*runtime*/) {
+  return ReactNativeFeatureFlags::deferYogaChildCloningUntilLayout();
 }
 
 bool NativeReactNativeFeatureFlags::disableEarlyViewCommandExecution(
