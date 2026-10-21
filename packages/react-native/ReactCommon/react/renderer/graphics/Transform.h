@@ -133,10 +133,11 @@ struct Transform {
   static Transform Rotate(Float angleX, Float angleY, Float angleZ) noexcept;
 
   /**
-   * Perform an interpolation between lhs and rhs, given progress.
-   * This first decomposes the matrices into translation, scale, and rotation,
-   * performs slerp between the two rotations, and a linear interpolation
-   * of scale and translation.
+   * Perform an interpolation between lhs and rhs, given progress, operation by
+   * operation: an operation without a counterpart of its type on the other side
+   * interpolates against its identity, a perspective interpolates as its
+   * matrix, and the interpolation stops at an arbitrary matrix. A transform
+   * holding a non-finite number interpolates as no transform.
    *
    * @param animationProgress of the animation
    * @param lhs start of the interpolation
@@ -147,13 +148,6 @@ struct Transform {
 
   static bool isVerticalInversion(const Transform &transform) noexcept;
   static bool isHorizontalInversion(const Transform &transform) noexcept;
-
-  /*
-   * Whether every operand of every operation is finite. NaN and infinity are
-   * not CSS numbers, so a transform holding one is an invalid declaration:
-   * https://drafts.csswg.org/css-values-4/#numbers
-   */
-  static bool hasFiniteOperands(const Transform &transform) noexcept;
 
   /*
    * Equality operators.

@@ -19,6 +19,7 @@
 #include <react/renderer/core/graphicsConversions.h>
 #include <react/renderer/core/propsConversions.h>
 #include <react/renderer/debug/debugStringConvertibleUtils.h>
+#include <react/renderer/graphics/TransformUtils.h>
 #include <react/renderer/graphics/ValueUnit.h>
 
 namespace facebook::react {
@@ -578,7 +579,7 @@ Transform BaseViewProps::resolveTransform(
   // NaN and infinity are not CSS numbers, so a transform holding one is an
   // invalid declaration, drawn untransformed:
   // https://drafts.csswg.org/css-values-4/#numbers
-  if (!Transform::hasFiniteOperands(transform)) {
+  if (!hasFiniteOperands(transform)) {
     return {};
   }
 
@@ -607,7 +608,8 @@ Transform BaseViewProps::resolveTransform(
             -translateOffsets[0], -translateOffsets[1], -translateOffsets[2]);
   }
 
-  // A transform whose matrix overflows is drawn untransformed too.
+  // A valid transform whose matrix overflows cannot be drawn, so it is drawn
+  // untransformed too.
   if (!isFiniteMatrix(transformMatrix)) {
     return {};
   }

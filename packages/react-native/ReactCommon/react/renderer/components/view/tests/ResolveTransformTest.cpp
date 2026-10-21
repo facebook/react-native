@@ -470,6 +470,7 @@ TEST_F(ResolveTransformTest, StringThatParsesToInfinityIsUntransformed) {
   Size frameSize{.width = 100, .height = 100};
   const auto transforms = std::vector<folly::dynamic>{
       folly::dynamic::object("rotate", "1e1000deg"),
+      folly::dynamic::object("rotate", "1e37rad"),
       folly::dynamic::object("skewX", "1e1000deg"),
       folly::dynamic::object("translateX", "1e1000%")};
 
@@ -511,6 +512,49 @@ TEST_F(ResolveTransformTest, CompositionThatOverflowsIsUntransformed) {
       TransformOrigin{});
 
   EXPECT_EQ(result, Transform::Identity());
+}
+
+TEST_F(
+    ResolveTransformTest,
+    PercentageThatResolvesPastTheLargestFloatIsUntransformed) {
+  Size frameSize{.width = 100, .height = 100};
+  auto translated = BaseViewProps::resolveTransform(
+      frameSize,
+      parseTransform(
+          folly::dynamic::array(folly::dynamic::object("translateX", "1e37%"))),
+      TransformOrigin{});
+  auto aboutAFarOrigin = BaseViewProps::resolveTransform(
+      frameSize,
+      parseTransform(
+          folly::dynamic::array(folly::dynamic::object("scaleX", 2))),
+      parseTransformOrigin(folly::dynamic::array("1e37%", "50%", 0)));
+
+  EXPECT_EQ(translated, Transform::Identity());
+  EXPECT_EQ(aboutAFarOrigin, Transform::Identity());
+}
+
+// A valid transform animates toward its value however large its matrix grows,
+// as the browsers animate it, and a frame whose matrix overflows is drawn
+// untransformed.
+TEST_F(
+    ResolveTransformTest,
+    AnimationTowardACompositionThatOverflowsDrawsTheFramesItCan) {
+  Size frameSize{.width = 100, .height = 100};
+  auto overflowing = parseTransform(
+      folly::dynamic::array(
+          folly::dynamic::object("scale", 1e20),
+          folly::dynamic::object("scale", 1e20)));
+  auto early = BaseViewProps::resolveTransform(
+      frameSize,
+      Transform::Interpolate(0.1, Transform{}, overflowing, frameSize),
+      TransformOrigin{});
+  auto late = BaseViewProps::resolveTransform(
+      frameSize,
+      Transform::Interpolate(0.5, Transform{}, overflowing, frameSize),
+      TransformOrigin{});
+
+  EXPECT_GT(early.matrix[0], 1e37);
+  EXPECT_EQ(late, Transform::Identity());
 }
 
 TEST_F(ResolveTransformTest, NonFiniteTransformOriginTurnsAboutTheCenter) {

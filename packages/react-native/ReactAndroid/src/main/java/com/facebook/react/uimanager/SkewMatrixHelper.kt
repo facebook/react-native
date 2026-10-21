@@ -64,9 +64,10 @@ internal object SkewMatrixHelper {
 
   /**
    * Builds a [Matrix] in pixel coordinates by walking [transforms] left-to-right and applying each
-   * operation via `Matrix.preX` around the resolved pivot. Pivot is the view center; a
-   * [transformOrigin] whose axes and depth are all finite as floats overrides it per axis (Number
-   * values are DIP, "P%" strings are P/100 of the view dimension; the depth only has to be finite).
+   * operation via `Matrix.preX` around the resolved pivot. Pivot is the view center; if
+   * [transformOrigin] is set, it overrides per-axis as [TransformHelper.resolveTransformOrigin]
+   * resolves it (Number values are DIP, "P%" strings are P/100 of the view dimension; Z is
+   * ignored), and an origin declaring a non-finite number is ignored.
    *
    * Composition is pre-multiplication: when the resulting matrix is applied to a point, the
    * rightmost (last) array entry is applied first. Matches CSS / iOS conventions and the
@@ -80,18 +81,14 @@ internal object SkewMatrixHelper {
       viewHeightDip: Float,
       transformOrigin: ReadableArray?,
   ): Matrix {
-    val centerXDip = viewWidthDip / 2f
-    val centerYDip = viewHeightDip / 2f
-    val originXDip =
-        transformOrigin?.let { resolveOriginAxis(it, 0, viewWidthDip, centerXDip) } ?: centerXDip
-    val originYDip =
-        transformOrigin?.let { resolveOriginAxis(it, 1, viewHeightDip, centerYDip) } ?: centerYDip
-    // A non-finite origin is ignored, so the transform turns about the center, as
-    // TransformHelper.getTranslateForTransformOrigin turns it.
-    val isFiniteOrigin =
-        originXDip.isFinite() && originYDip.isFinite() && hasFiniteDepth(transformOrigin)
-    val pivotXPx = PixelUtil.toPixelFromDIP(if (isFiniteOrigin) originXDip else centerXDip)
-    val pivotYPx = PixelUtil.toPixelFromDIP(if (isFiniteOrigin) originYDip else centerYDip)
+    val origin =
+        transformOrigin?.let {
+          TransformHelper.resolveTransformOrigin(it, viewWidthDip, viewHeightDip)
+        }
+    val pivotXPx =
+        PixelUtil.toPixelFromDIP(if (origin == null) viewWidthDip / 2f else origin[0].toFloat())
+    val pivotYPx =
+        PixelUtil.toPixelFromDIP(if (origin == null) viewHeightDip / 2f else origin[1].toFloat())
 
     val matrix = Matrix()
     for (i in 0 until transforms.size()) {
@@ -154,6 +151,9 @@ internal object SkewMatrixHelper {
     return matrix
   }
 
+  private fun isRawMatrixShorthand(transforms: ReadableArray): Boolean =
+      transforms.size() == 16 && transforms.getType(0) == ReadableType.Number
+
   /** Whether every entry of [matrix] is finite. */
   @JvmStatic
   fun isFinite(matrix: Matrix): Boolean {
@@ -166,37 +166,6 @@ internal object SkewMatrixHelper {
       object : ThreadLocal<FloatArray>() {
         override fun initialValue(): FloatArray = FloatArray(9)
       }
-
-  private fun hasFiniteDepth(origin: ReadableArray?): Boolean =
-      origin == null ||
-          origin.size() <= 2 ||
-          origin.getType(2) != ReadableType.Number ||
-          origin.getDouble(2).toFloat().isFinite()
-
-  private fun isRawMatrixShorthand(transforms: ReadableArray): Boolean =
-      transforms.size() == 16 && transforms.getType(0) == ReadableType.Number
-
-  private fun resolveOriginAxis(
-      origin: ReadableArray,
-      axis: Int,
-      dimensionDip: Float,
-      defaultDip: Float,
-  ): Float {
-    if (origin.size() <= axis) return defaultDip
-    return when (origin.getType(axis)) {
-      ReadableType.Number -> origin.getDouble(axis).toFloat()
-      ReadableType.String -> {
-        val part = origin.getString(axis) ?: return defaultDip
-        if (!part.endsWith("%")) return defaultDip
-        try {
-          (part.dropLast(1).toDouble() * dimensionDip / 100.0).toFloat()
-        } catch (e: NumberFormatException) {
-          defaultDip
-        }
-      }
-      else -> defaultDip
-    }
-  }
 
   private fun parseTranslateValue(value: ReadableArray, index: Int, dimensionDip: Float): Double {
     if (value.getType(index) != ReadableType.String) {

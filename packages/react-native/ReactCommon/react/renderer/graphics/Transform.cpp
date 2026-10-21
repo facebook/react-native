@@ -7,12 +7,12 @@
 
 #include "Transform.h"
 
-#include <algorithm>
 #include <cmath>
 #include <limits>
 
 #include <glog/logging.h>
 #include <react/debug/react_native_assert.h>
+#include <react/renderer/graphics/TransformUtils.h>
 #include <react/utils/FloatComparison.h>
 
 namespace facebook::react {
@@ -281,18 +281,16 @@ Transform::Translate(Float x, Float y, Float z) noexcept {
 
 /* static */ Transform Transform::Interpolate(
     Float animationProgress,
-    const Transform& lhs,
-    const Transform& rhs,
+    const Transform& declaredLhs,
+    const Transform& declaredRhs,
     const Size& size) {
-  // A transform holding a non-finite number is drawn untransformed
-  // (BaseViewProps::resolveTransform), so it interpolates as no transform does.
-  if (!hasFiniteOperands(lhs) || !hasFiniteOperands(rhs)) {
-    return Interpolate(
-        animationProgress,
-        hasFiniteOperands(lhs) ? lhs : Transform{},
-        hasFiniteOperands(rhs) ? rhs : Transform{},
-        size);
-  }
+  // A transform holding a non-finite number is an invalid declaration, which
+  // animates as no transform does. A valid one animates however large its
+  // matrix grows, and a frame whose matrix cannot be drawn is drawn
+  // untransformed (BaseViewProps::resolveTransform).
+  const auto noTransform = Transform{};
+  const auto& lhs = hasFiniteOperands(declaredLhs) ? declaredLhs : noTransform;
+  const auto& rhs = hasFiniteOperands(declaredRhs) ? declaredRhs : noTransform;
 
   // Iterate through operations and reconstruct an interpolated resulting
   // transform If at any point we hit an "Arbitrary" Transform, return at that
@@ -382,18 +380,6 @@ Transform::Translate(Float x, Float y, Float z) noexcept {
 /* static */ bool Transform::isHorizontalInversion(
     const Transform& transform) noexcept {
   return floatEquality(transform.at(0, 0), static_cast<Float>(-1.0f));
-}
-
-/* static */ bool Transform::hasFiniteOperands(
-    const Transform& transform) noexcept {
-  return std::all_of(
-      transform.operations.begin(),
-      transform.operations.end(),
-      [](const TransformOperation& operation) {
-        return std::isfinite(operation.x.value) &&
-            std::isfinite(operation.y.value) &&
-            std::isfinite(operation.z.value);
-      });
 }
 
 bool Transform::operator==(const Transform& rhs) const noexcept {

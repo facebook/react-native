@@ -210,13 +210,6 @@ class SkewMatrixHelperTest {
   }
 
   @Test
-  fun buildAffine2DMatrix_isNotFinite_whenASkewAngleIsPastTheLargestFloat() {
-    val transforms = JavaOnlyArray.of(JavaOnlyMap.of("skewX", "1e39deg"))
-    val matrix = SkewMatrixHelper.buildAffine2DMatrix(transforms, 100f, 100f, null)
-    assertThat(SkewMatrixHelper.isFinite(matrix)).isFalse()
-  }
-
-  @Test
   fun buildAffine2DMatrix_pivotRespectsTransformOrigin_withADepth() {
     // A finite depth, or one that is not a number, leaves the pivot where the origin puts it.
     val transforms = JavaOnlyArray.of(JavaOnlyMap.of("skewX", "20deg"))

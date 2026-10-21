@@ -36,7 +36,9 @@ static BOOL RCTIsNonFiniteLength(YGValue value)
       return degrees * M_PI / 180;
     }
     if ([stringValue hasSuffix:@"rad"]) {
-      return [[stringValue substringToIndex:stringValue.length - 3] floatValue];
+      // The C++ transform parser holds an angle with a unit in degrees, as a float.
+      float degrees = [[stringValue substringToIndex:stringValue.length - 3] floatValue] * 57.295779513f;
+      return degrees * M_PI / 180;
     }
   }
   return [json floatValue];
@@ -57,7 +59,8 @@ static BOOL RCTIsNonFiniteLength(YGValue value)
     return transform;
   }
   for (NSUInteger i = 0; i < kMatrixArrayLength; i++) {
-    ((CGFloat *)&transform)[i] = [RCTConvert CGFloat:json[i]];
+    // Read as a float, as every other operand is, so an entry past the largest float stays infinite.
+    ((CGFloat *)&transform)[i] = (float)[RCTConvert CGFloat:json[i]];
   }
   return transform;
 }

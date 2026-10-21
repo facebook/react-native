@@ -219,7 +219,7 @@ TEST(TransformTest, interpolatingAPerspectiveAwayKeepsTheOperationsBesideIt) {
   }
 }
 
-// A transform holding a non-finite number is drawn untransformed, so an
+// A transform holding a non-finite number is an invalid declaration, so an
 // animation toward or from one interpolates toward or from no transform.
 TEST(
     TransformTest,

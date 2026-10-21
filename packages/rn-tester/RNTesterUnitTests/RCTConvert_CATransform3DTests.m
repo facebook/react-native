@@ -51,16 +51,27 @@
 
 - (void)testNumberPastTheLargestFloatIsIgnored
 {
+  // An angle with a unit is held in degrees, so 1e37rad is past the largest float.
   for (NSDictionary *transform in @[
          @{@"translateY" : @1e39},
          @{@"scale" : @1e39},
          @{@"perspective" : @1e39},
          @{@"rotate" : @"1e+39deg"},
-         @{@"skewX" : @"1e+39deg"}
+         @{@"skewX" : @"1e+39deg"},
+         @{@"rotate" : @"1e+37rad"},
+         @{@"skewX" : @"1e+37rad"}
        ]) {
     CATransform3D result = [RCTConvert CATransform3D:@[ @{@"translateX" : @10}, transform ]];
     XCTAssertTrue(CATransform3DIsIdentity(result), @"%@", transform);
   }
+}
+
+- (void)testMatrixEntryPastTheLargestFloatIsIgnoredAfterAScale
+{
+  NSArray *pastTheLargestFloat = @[ @1e39, @0, @0, @0, @0, @1, @0, @0, @0, @0, @1, @0, @0, @0, @0, @1 ];
+  CATransform3D result =
+      [RCTConvert CATransform3D:@[ @{@"matrix" : pastTheLargestFloat}, @{@"scaleX" : @0.01}, @{@"translateX" : @10} ]];
+  XCTAssertTrue(CATransform3DIsIdentity(result));
 }
 
 - (void)testTransformWhoseMatrixOverflowsAFloatIsIgnored
@@ -94,7 +105,11 @@
 - (void)testAngleInRadiansIsRead
 {
   CATransform3D result = [RCTConvert CATransform3D:@[ @{@"rotate" : @"0.5rad"} ]];
-  XCTAssertTrue(CATransform3DEqualToTransform(result, CATransform3DMakeRotation(0.5, 0, 0, 1)));
+  CATransform3D expected = CATransform3DMakeRotation(0.5, 0, 0, 1);
+  XCTAssertEqualWithAccuracy(result.m11, expected.m11, 1e-6);
+  XCTAssertEqualWithAccuracy(result.m12, expected.m12, 1e-6);
+  XCTAssertEqualWithAccuracy(result.m21, expected.m21, 1e-6);
+  XCTAssertEqualWithAccuracy(result.m22, expected.m22, 1e-6);
 }
 
 - (void)testTranslateWithADepthIsRead

@@ -9,11 +9,26 @@
 
 #include <react/cxxstableapi/PrivateGuard.h>
 
+#include <algorithm>
+#include <cmath>
+
 #include <folly/dynamic.h>
 #include <react/renderer/graphics/Transform.h>
 #include <react/renderer/graphics/ValueUnit.h>
 
 namespace facebook::react {
+
+/**
+ * Whether every operand of every operation is finite. NaN and infinity are not
+ * CSS numbers, so a transform holding one is an invalid declaration:
+ * https://drafts.csswg.org/css-values-4/#numbers
+ */
+inline bool hasFiniteOperands(const Transform &transform)
+{
+  return std::all_of(transform.operations.begin(), transform.operations.end(), [](const TransformOperation &operation) {
+    return std::isfinite(operation.x.value) && std::isfinite(operation.y.value) && std::isfinite(operation.z.value);
+  });
+}
 
 /**
  * Serializes a ValueUnit to a folly::dynamic object and appends it to the

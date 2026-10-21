@@ -347,6 +347,53 @@ class BaseViewManagerTest {
   }
 
   @Test
+  fun testSkewedTransformWithAnAnglePastTheLargestFloatIsIgnored() {
+    // An angle with a unit is held in degrees, so 1e37rad is past the largest float.
+    for (angle in listOf("1e39deg", "1e37rad")) {
+      val skewed = createView(JavaOnlyMap.of(ViewProps.TRANSFORM, JavaOnlyArray.of(skewX10)))
+      Assertions.assertThat(skewed.getTag(R.id.skew_animation_matrix)).isNotNull()
+
+      viewManager.updateProperties(
+          skewed,
+          ReactStylesDiffMap(
+              JavaOnlyMap.of(
+                  ViewProps.TRANSFORM,
+                  JavaOnlyArray.of(JavaOnlyMap.of("skewX", angle)),
+              )
+          ),
+      )
+
+      Assertions.assertThat(skewed.getTag(R.id.skew_animation_matrix)).describedAs(angle).isNull()
+    }
+  }
+
+  @Test
+  fun testSkewedTransformAboutAnOriginPastTheLargestFloatIsIgnored() {
+    val skewed = createView(JavaOnlyMap())
+    skewed.layout(0, 0, 100, 100)
+    val rotatedAndSkewed = JavaOnlyArray.of(JavaOnlyMap.of("rotate", "45deg"), skewX10)
+    viewManager.updateProperties(
+        skewed,
+        ReactStylesDiffMap(JavaOnlyMap.of(ViewProps.TRANSFORM, rotatedAndSkewed)),
+    )
+    Assertions.assertThat(skewed.getTag(R.id.skew_animation_matrix)).isNotNull()
+
+    viewManager.updateProperties(
+        skewed,
+        ReactStylesDiffMap(
+            JavaOnlyMap.of(
+                ViewProps.TRANSFORM,
+                rotatedAndSkewed,
+                ViewProps.TRANSFORM_ORIGIN,
+                JavaOnlyArray.of("1e37%", "0%", 0.0),
+            )
+        ),
+    )
+
+    Assertions.assertThat(skewed.getTag(R.id.skew_animation_matrix)).isNull()
+  }
+
+  @Test
   fun testSkewedTransformWithANonFiniteOriginTurnsAboutTheCenter() {
     // skewX 10deg about a 100 x 100 view's center introduces MTRANS_X = -tan(10deg) * 50.
     val aboutTheCenter = -Math.tan(Math.toRadians(10.0)).toFloat() * 50f
