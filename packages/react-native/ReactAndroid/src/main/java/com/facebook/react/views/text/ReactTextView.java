@@ -49,6 +49,7 @@ import com.facebook.react.uimanager.style.LogicalEdge;
 import com.facebook.react.uimanager.style.Overflow;
 import com.facebook.react.util.AndroidVersion;
 import com.facebook.react.views.text.internal.span.CanvasEffectSpan;
+import com.facebook.react.views.text.internal.span.ReactAbsoluteSizeSpan;
 import com.facebook.react.views.text.internal.span.ReactFragmentIndexSpan;
 import com.facebook.react.views.text.internal.span.ReactTagSpan;
 import com.facebook.yoga.YogaMeasureMode;
@@ -81,6 +82,11 @@ public class ReactTextView extends AppCompatTextView implements ReactCompoundVie
   private Overflow mOverflow = Overflow.VISIBLE;
 
   private @Nullable Spannable mSpanned;
+  // Fitting the font size to the view shrinks the font size spans of mSpanned in place. These are
+  // the spans it had before the first fit, so that a later fit (when the view's size changes) can
+  // start from the original sizes, and the text can grow back.
+  private @Nullable Spanned mUnfittedSpanned;
+  private @Nullable TextAttributeProps mBaseTextAttributes;
   private @Nullable PreparedLayout mPreparedLayout;
 
   @SuppressWarnings("this-escape")
@@ -140,6 +146,8 @@ public class ReactTextView extends AppCompatTextView implements ReactCompoundVie
     mLetterSpacing = 0.f;
     mOverflow = Overflow.VISIBLE;
     mSpanned = null;
+    mUnfittedSpanned = null;
+    mBaseTextAttributes = null;
     mPreparedLayout = null;
     matchLineBreakingToMeasurement();
   }
@@ -239,6 +247,13 @@ public class ReactTextView extends AppCompatTextView implements ReactCompoundVie
       Spannable spanned = getSpanned();
       if (mAdjustsFontSizeToFit && spanned != null && mShouldAdjustSpannableFontSize) {
         mShouldAdjustSpannableFontSize = false;
+        if (mUnfittedSpanned == null) {
+          mUnfittedSpanned = new SpannableString(spanned);
+        } else {
+          restoreUnfittedFontSizes(spanned, mUnfittedSpanned);
+          // Fitting also scales the paint's text size, so start again from the base attributes.
+          applyBaseTextAttributes(mBaseTextAttributes);
+        }
         TextLayoutManager.adjustSpannableFontToFit(
             spanned,
             getWidth(),
@@ -410,11 +425,27 @@ public class ReactTextView extends AppCompatTextView implements ReactCompoundVie
     }
   }
 
+  private static void restoreUnfittedFontSizes(Spannable spanned, Spanned unfitted) {
+    for (ReactAbsoluteSizeSpan span :
+        spanned.getSpans(0, spanned.length(), ReactAbsoluteSizeSpan.class)) {
+      spanned.removeSpan(span);
+    }
+    for (ReactAbsoluteSizeSpan span :
+        unfitted.getSpans(0, unfitted.length(), ReactAbsoluteSizeSpan.class)) {
+      spanned.setSpan(
+          span,
+          unfitted.getSpanStart(span),
+          unfitted.getSpanEnd(span),
+          unfitted.getSpanFlags(span));
+    }
+  }
+
   /**
    * Android draws generated ellipses with the view's paint rather than a span, so it must match the
    * base attributes TextLayoutManager measured with.
    */
   private void applyBaseTextAttributes(@Nullable TextAttributeProps baseTextAttributes) {
+    mBaseTextAttributes = baseTextAttributes;
     if (baseTextAttributes == null) {
       return;
     }
@@ -662,6 +693,7 @@ public class ReactTextView extends AppCompatTextView implements ReactCompoundVie
 
   public void setSpanned(Spannable spanned) {
     mSpanned = spanned;
+    mUnfittedSpanned = null;
     mShouldAdjustSpannableFontSize = true;
   }
 
