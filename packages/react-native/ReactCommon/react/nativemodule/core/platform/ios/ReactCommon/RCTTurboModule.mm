@@ -30,6 +30,7 @@
 #import <mutex>
 
 #import <sstream>
+#import <string>
 #import <vector>
 
 using namespace facebook;
@@ -60,7 +61,33 @@ static jsi::Value convertNSNumberToJSINumber(jsi::Runtime &runtime, NSNumber *va
 
 static jsi::String convertNSStringToJSIString(jsi::Runtime &runtime, NSString *value)
 {
-  return jsi::String::createFromUtf8(runtime, ([value UTF8String] != nullptr) ? [value UTF8String] : "");
+  // Use the string's own ASCII characters when CoreFoundation can expose them,
+  // and otherwise convert it to UTF-8 once, with an explicit length, so the
+  // JS runtime doesn't have to measure it.
+  CFStringRef string = (__bridge CFStringRef)value;
+  CFIndex length = CFStringGetLength(string);
+  if (const char *ascii = CFStringGetCStringPtr(string, kCFStringEncodingASCII)) {
+    return jsi::String::createFromAscii(runtime, ascii, static_cast<size_t>(length));
+  }
+  std::string utf8(CFStringGetMaximumSizeForEncoding(length, kCFStringEncodingUTF8), '\0');
+  CFIndex utf8Length = 0;
+  CFIndex convertedLength = CFStringGetBytes(
+      string,
+      CFRangeMake(0, length),
+      kCFStringEncodingUTF8,
+      0,
+      false,
+      reinterpret_cast<UInt8 *>(utf8.data()),
+      static_cast<CFIndex>(utf8.size()),
+      &utf8Length);
+  if (convertedLength == length) {
+    return jsi::String::createFromUtf8(
+        runtime, reinterpret_cast<const uint8_t *>(utf8.data()), static_cast<size_t>(utf8Length));
+  }
+  // UTF-8 can't encode unpaired surrogates, so pass those strings as UTF-16.
+  std::u16string utf16(length, u'\0');
+  CFStringGetCharacters(string, CFRangeMake(0, length), reinterpret_cast<UniChar *>(utf16.data()));
+  return jsi::String::createFromUtf16(runtime, utf16);
 }
 
 static jsi::Object convertNSDictionaryToJSIObject(jsi::Runtime &runtime, NSDictionary *value)
