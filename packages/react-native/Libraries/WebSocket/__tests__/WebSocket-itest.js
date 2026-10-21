@@ -25,9 +25,11 @@ describe('WebSocket', function () {
 
   it('should not dispatch message events after close() is called', () => {
     const socket = new WebSocket('wss://echo.websocket.org');
+    // $FlowFixMe[prop-missing]
     const id = socket._socketId;
-    const messages: Array<mixed> = [];
+    const messages: Array<unknown> = [];
     socket.onmessage = event => {
+      // $FlowFixMe[prop-missing]
       messages.push(event.data);
     };
 
