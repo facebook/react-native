@@ -119,7 +119,6 @@ typedef void (^RCTDevMenuAlertActionHandler)(UIAlertAction *action);
   NSMutableArray<RCTDevMenuItem *> *_extraMenuItems;
 }
 
-@synthesize bridge = _bridge;
 @synthesize moduleRegistry = _moduleRegistry;
 @synthesize callableJSModules = _callableJSModules;
 @synthesize bundleManager = _bundleManager;
