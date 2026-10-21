@@ -125,29 +125,12 @@ void FabricUIManagerBinding::pullAndExecuteTransaction(SurfaceId surfaceId) {
 
   std::shared_ptr<const MountingCoordinator> mountingCoordinator;
   {
-    std::shared_lock lock(surfaceHandlerRegistryMutex_);
-    auto iterator = surfaceHandlerRegistry_.find(surfaceId);
-    if (iterator == surfaceHandlerRegistry_.end()) {
+    std::scoped_lock lock(pullableMountingCoordinatorsMutex_);
+    auto pullable = pullableMountingCoordinators_.extract(surfaceId);
+    if (pullable.empty()) {
       return;
     }
-    const auto* surfaceHandler = std::get_if<SurfaceHandler>(&iterator->second);
-    jni::local_ref<SurfaceHandlerBinding::jhybridobject> javaSurfaceHandler;
-    if (surfaceHandler == nullptr) {
-      javaSurfaceHandler =
-          std::get<jni::weak_ref<SurfaceHandlerBinding::jhybridobject>>(
-              iterator->second)
-              .lockLocal();
-      if (javaSurfaceHandler) {
-        surfaceHandler = &javaSurfaceHandler->cthis()->getSurfaceHandler();
-      }
-    }
-    if (surfaceHandler != nullptr) {
-      mountingCoordinator = surfaceHandler->getMountingCoordinator();
-    }
-  }
-
-  if (mountingCoordinator == nullptr) {
-    return;
+    mountingCoordinator = std::move(pullable.mapped());
   }
 
   auto mountingManager = getMountingManager("pullAndExecuteTransaction");
@@ -732,8 +715,19 @@ void FabricUIManagerBinding::schedulerShouldRenderTransactions(
     // commit thread). Just notify Java that a transaction is available; the UI
     // thread calls back into `pullAndExecuteTransaction` at its next mount
     // dispatch.
-    mountingManager->onTransactionAvailable(
-        mountingCoordinator->getSurfaceId());
+    auto surfaceId = mountingCoordinator->getSurfaceId();
+    {
+      std::scoped_lock lock(pullableMountingCoordinatorsMutex_);
+      auto& pullable = pullableMountingCoordinators_[surfaceId];
+      if (pullable != nullptr && pullable != mountingCoordinator) {
+        LOG(WARNING)
+            << "FabricUIManagerBinding::schedulerShouldRenderTransactions: "
+            << "surface " << surfaceId
+            << " was restarted while the previous surface's commit waits to be pulled";
+      }
+      pullable = mountingCoordinator;
+    }
+    mountingManager->onTransactionAvailable(surfaceId);
   } else if (ReactNativeFeatureFlags::
                  enableAccumulatedUpdatesInRawPropsAndroid()) {
     auto mountingTransaction = mountingCoordinator->pullTransaction(
