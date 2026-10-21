@@ -271,9 +271,8 @@ RCT_EXPORT_MODULE()
     return _handlers;
   }
 
-  NSArray<id<RCTURLRequestHandler>> *newHandlers = _handlersProvider
-      ? _handlersProvider(self.moduleRegistry)
-      : [self.bridge modulesConformingToProtocol:@protocol(RCTURLRequestHandler)];
+  RCTAssert(_handlersProvider != nil, @"Trying to find RCTURLRequestHandlers and handlers provider not set.");
+  NSArray<id<RCTURLRequestHandler>> *newHandlers = _handlersProvider(self.moduleRegistry);
 
   // Get handlers, sorted in reverse priority order (highest priority first)
   newHandlers = [newHandlers
