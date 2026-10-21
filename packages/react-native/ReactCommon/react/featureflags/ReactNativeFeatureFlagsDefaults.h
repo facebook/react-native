@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<474469c92e08f5eff4efc126bb2b7db9>>
+ * @generated SignedSource<<46e48274f8b27b9c6136b13048682252>>
  */
 
 /**
@@ -94,7 +94,7 @@ class ReactNativeFeatureFlagsDefaults : public ReactNativeFeatureFlagsProvider {
   }
 
   bool enableAndroidTextMeasurementOptimizations() override {
-    return false;
+    return true;
   }
 
   bool enableAsyncDiskCacheCheckInMultiSourceImageAndroid() override {
@@ -222,7 +222,7 @@ class ReactNativeFeatureFlagsDefaults : public ReactNativeFeatureFlagsProvider {
   }
 
   bool enablePreparedTextLayout() override {
-    return false;
+    return true;
   }
 
   bool enablePropsUpdateReconciliationAndroid() override {
@@ -318,7 +318,7 @@ class ReactNativeFeatureFlagsDefaults : public ReactNativeFeatureFlagsProvider {
   }
 
   double preparedTextCacheSize() override {
-    return 200.0;
+    return 1000.0;
   }
 
   bool preventShadowTreeCommitExhaustion() override {

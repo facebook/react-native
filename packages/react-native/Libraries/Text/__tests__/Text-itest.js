@@ -323,7 +323,9 @@ describe('<Text>', () => {
         });
 
         expect(root.getRenderedOutput({props: ['selectable']}).toJSX()).toEqual(
-          <rn-paragraph selectable={'true'}>{TEST_TEXT}</rn-paragraph>,
+          <rn-selectableParagraph selectable={'true'}>
+            {TEST_TEXT}
+          </rn-selectableParagraph>,
         );
       });
 

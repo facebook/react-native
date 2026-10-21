@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<0151a6981c002284da2c1415de4e968e>>
+ * @generated SignedSource<<cd6aa804d1c10b93775adf83419368e3>>
  */
 
 /**
@@ -55,7 +55,7 @@ public open class ReactNativeFeatureFlagsDefaults : ReactNativeFeatureFlagsProvi
 
   override fun enableAndroidAutoOffscreenCompositingForElevation(): Boolean = false
 
-  override fun enableAndroidTextMeasurementOptimizations(): Boolean = false
+  override fun enableAndroidTextMeasurementOptimizations(): Boolean = true
 
   override fun enableAsyncDiskCacheCheckInMultiSourceImageAndroid(): Boolean = false
 
@@ -119,7 +119,7 @@ public open class ReactNativeFeatureFlagsDefaults : ReactNativeFeatureFlagsProvi
 
   override fun enablePreallocatedPropsDiffOnInsertAndroid(): Boolean = false
 
-  override fun enablePreparedTextLayout(): Boolean = false
+  override fun enablePreparedTextLayout(): Boolean = true
 
   override fun enablePropsUpdateReconciliationAndroid(): Boolean = false
 
@@ -167,7 +167,7 @@ public open class ReactNativeFeatureFlagsDefaults : ReactNativeFeatureFlagsProvi
 
   override fun perfMonitorV2Enabled(): Boolean = false
 
-  override fun preparedTextCacheSize(): Double = 200.0
+  override fun preparedTextCacheSize(): Double = 1000.0
 
   override fun preventShadowTreeCommitExhaustion(): Boolean = false
 
