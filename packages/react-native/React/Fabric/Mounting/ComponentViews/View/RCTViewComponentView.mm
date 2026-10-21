@@ -105,6 +105,25 @@ static BOOL RCTViewIsInteractiveAccessibilityElement(UIView *view, const ViewPro
 }
 #endif
 
+// The number of live views with `removeClippedSubviews` on. Only such views act on
+// `updateClippedSubviewsWithClipRect:relativeToView:`, so while it is 0 a ScrollView
+// can skip walking its subviews. Views are only created and changed on the main thread.
+static NSUInteger RCTClippingViewCount = 0;
+
+NSUInteger RCTViewComponentViewClippingViewCount(void)
+{
+  return RCTClippingViewCount;
+}
+
+static void RCTUpdateClippingViewCount(BOOL wasClipping, BOOL isClipping)
+{
+  if (isClipping && !wasClipping) {
+    RCTClippingViewCount++;
+  } else if (wasClipping && !isClipping) {
+    RCTClippingViewCount--;
+  }
+}
+
 @implementation RCTViewComponentView {
   UIColor *_backgroundColor;
   CALayer *_backgroundColorLayer;
@@ -366,6 +385,7 @@ static BOOL RCTLayerTransformCollapsesAxis(CALayer *layer)
     // Compare against the current state, not `_props`: `prepareForRecycle` resets
     // `_removeClippedSubviews` but keeps `_props`.
     if (_removeClippedSubviews != newViewProps.removeClippedSubviews) {
+      RCTUpdateClippingViewCount(_removeClippedSubviews, newViewProps.removeClippedSubviews);
       _removeClippedSubviews = newViewProps.removeClippedSubviews;
       [self _updateRemoveClippedSubviewsState];
     }
@@ -850,6 +870,11 @@ static BOOL RCTEdgeInsetsEqualWithThreshold(UIEdgeInsets lhs, UIEdgeInsets rhs, 
   [self invalidateLayer];
 }
 
+- (void)dealloc
+{
+  RCTUpdateClippingViewCount(_removeClippedSubviews, NO);
+}
+
 - (void)prepareForRecycle
 {
   [super prepareForRecycle];
@@ -887,6 +912,7 @@ static BOOL RCTEdgeInsetsEqualWithThreshold(UIEdgeInsets lhs, UIEdgeInsets rhs, 
   _propKeysManagedByAnimated_DO_NOT_USE_THIS_IS_BROKEN = nil;
   _eventEmitter.reset();
   _isJSResponder = NO;
+  RCTUpdateClippingViewCount(_removeClippedSubviews, NO);
   _removeClippedSubviews = NO;
   _reactSubviews = [NSMutableArray new];
   _layoutMetrics = EmptyLayoutMetrics;

@@ -20,6 +20,9 @@ static Props::Shared makeViewProps(bool removeClippedSubviews)
   return props;
 }
 
+// Defined in RCTViewComponentView.mm.
+NSUInteger RCTViewComponentViewClippingViewCount(void);
+
 @interface RCTViewComponentViewTests : XCTestCase
 @end
 
@@ -161,6 +164,48 @@ static Props::Shared makeViewProps(bool removeClippedSubviews)
   XCTAssertNil(child.superview);
   NSMutableArray *reactSubviews = [view valueForKey:@"_reactSubviews"];
   XCTAssertEqual(reactSubviews.count, 1u);
+}
+
+#pragma mark - Clipping view count
+
+// The count is shared by all views, so each test compares it against its value at the start.
+
+- (void)testClippingViewCountFollowsRemoveClippedSubviews
+{
+  NSUInteger initialCount = RCTViewComponentViewClippingViewCount();
+  RCTViewComponentView *first = [RCTViewComponentView new];
+  RCTViewComponentView *second = [RCTViewComponentView new];
+
+  [first updateProps:makeViewProps(true) oldProps:ViewShadowNode::defaultSharedProps()];
+  [second updateProps:makeViewProps(true) oldProps:ViewShadowNode::defaultSharedProps()];
+  XCTAssertEqual(RCTViewComponentViewClippingViewCount(), initialCount + 2);
+
+  // Props that keep `removeClippedSubviews` on don't count the view again.
+  [first updateProps:makeViewProps(true) oldProps:nullptr];
+  XCTAssertEqual(RCTViewComponentViewClippingViewCount(), initialCount + 2);
+
+  [first updateProps:makeViewProps(false) oldProps:nullptr];
+  XCTAssertEqual(RCTViewComponentViewClippingViewCount(), initialCount + 1);
+  [second updateProps:makeViewProps(false) oldProps:nullptr];
+  XCTAssertEqual(RCTViewComponentViewClippingViewCount(), initialCount);
+}
+
+- (void)testClippingViewCountAfterRecycleAndDealloc
+{
+  NSUInteger initialCount = RCTViewComponentViewClippingViewCount();
+  @autoreleasepool {
+    RCTViewComponentView *view = [RCTViewComponentView new];
+    [view updateProps:makeViewProps(true) oldProps:ViewShadowNode::defaultSharedProps()];
+    XCTAssertEqual(RCTViewComponentViewClippingViewCount(), initialCount + 1);
+
+    [view prepareForRecycle];
+    XCTAssertEqual(RCTViewComponentViewClippingViewCount(), initialCount);
+
+    [view updateProps:makeViewProps(true) oldProps:nullptr];
+    XCTAssertEqual(RCTViewComponentViewClippingViewCount(), initialCount + 1);
+  }
+  // The view was deallocated with `removeClippedSubviews` on.
+  XCTAssertEqual(RCTViewComponentViewClippingViewCount(), initialCount);
 }
 
 #pragma mark - hitTest against non-invertible transforms (#50797)
