@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<32ba8f0fb8f711fe496ca1dca67d185a>>
+ * @generated SignedSource<<721554b73a49d12b6cc4be542c81ec07>>
  * @flow strict
  * @noformat
  */
@@ -128,6 +128,7 @@ export type ReactNativeFeatureFlags = Readonly<{
   shouldPressibilityUseW3CPointerEventsForHover: Getter<boolean>,
   shouldTriggerResponderTransferOnScrollAndroid: Getter<boolean>,
   skipActivityIdentityAssertionOnHostPause: Getter<boolean>,
+  skipUnchangedChildrenInDifferentiator: Getter<boolean>,
   syncAndroidClipBoundsWithOverflow: Getter<boolean>,
   traceTurboModulePromiseRejectionsOnAndroid: Getter<boolean>,
   updateRuntimeShadowNodeReferencesOnCommit: Getter<boolean>,
@@ -536,6 +537,10 @@ export const shouldTriggerResponderTransferOnScrollAndroid: Getter<boolean> = cr
  * Skip activity identity assertion in ReactHostImpl::onHostPause()
  */
 export const skipActivityIdentityAssertionOnHostPause: Getter<boolean> = createNativeFlagGetter('skipActivityIdentityAssertionOnHostPause', false);
+/**
+ * When a node changes, the differ leaves out its children that are unchanged in both trees instead of describing and comparing them.
+ */
+export const skipUnchangedChildrenInDifferentiator: Getter<boolean> = createNativeFlagGetter('skipUnchangedChildrenInDifferentiator', false);
 /**
  * Override getClipBounds on Android views to return the padding box when overflow is hidden
  */

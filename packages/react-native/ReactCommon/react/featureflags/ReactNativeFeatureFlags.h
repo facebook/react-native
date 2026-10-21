@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<d77173a9237cebe4468236f6a52980a0>>
+ * @generated SignedSource<<ec78b5d1f026f52f188c7592f6f6bae8>>
  */
 
 /**
@@ -435,6 +435,11 @@ class ReactNativeFeatureFlags {
    * Skip activity identity assertion in ReactHostImpl::onHostPause()
    */
   RN_EXPORT static bool skipActivityIdentityAssertionOnHostPause();
+
+  /**
+   * When a node changes, the differ leaves out its children that are unchanged in both trees instead of describing and comparing them.
+   */
+  RN_EXPORT static bool skipUnchangedChildrenInDifferentiator();
 
   /**
    * Override getClipBounds on Android views to return the padding box when overflow is hidden
