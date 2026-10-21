@@ -61,10 +61,12 @@ bool isFiniteTransformOrigin(const TransformOrigin& transformOrigin) {
 // React Native holds a transform's numbers as floats, so an entry past the
 // largest float overflows where the matrix is a double too.
 bool isFiniteMatrix(const Transform& transform) {
-  return std::all_of(
-      transform.matrix.begin(), transform.matrix.end(), [](Float value) {
-        return std::isfinite(static_cast<float>(value));
-      });
+  for (const auto value : transform.matrix) {
+    if (!std::isfinite(static_cast<float>(value))) {
+      return false;
+    }
+  }
+  return true;
 }
 
 } // namespace

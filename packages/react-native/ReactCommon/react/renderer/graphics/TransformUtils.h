@@ -9,7 +9,6 @@
 
 #include <react/cxxstableapi/PrivateGuard.h>
 
-#include <algorithm>
 #include <cmath>
 
 #include <folly/dynamic.h>
@@ -25,9 +24,12 @@ namespace facebook::react {
  */
 inline bool hasFiniteOperands(const Transform &transform)
 {
-  return std::all_of(transform.operations.begin(), transform.operations.end(), [](const TransformOperation &operation) {
-    return std::isfinite(operation.x.value) && std::isfinite(operation.y.value) && std::isfinite(operation.z.value);
-  });
+  for (const auto &operation : transform.operations) {
+    if (!std::isfinite(operation.x.value) || !std::isfinite(operation.y.value) || !std::isfinite(operation.z.value)) {
+      return false;
+    }
+  }
+  return true;
 }
 
 /**
