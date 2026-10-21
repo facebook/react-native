@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<ca361bb00c0b31657c5a1559a12d5f5a>>
+ * @generated SignedSource<<22a4de3d151fb1644095e66cccdf7557>>
  */
 
 /**
@@ -442,6 +442,11 @@ bool NativeReactNativeFeatureFlags::skipActivityIdentityAssertionOnHostPause(
 bool NativeReactNativeFeatureFlags::skipUnchangedChildrenInDifferentiator(
     jsi::Runtime& /*runtime*/) {
   return ReactNativeFeatureFlags::skipUnchangedChildrenInDifferentiator();
+}
+
+bool NativeReactNativeFeatureFlags::sleepUntilNextTimerIOS(
+    jsi::Runtime& /*runtime*/) {
+  return ReactNativeFeatureFlags::sleepUntilNextTimerIOS();
 }
 
 bool NativeReactNativeFeatureFlags::syncAndroidClipBoundsWithOverflow(

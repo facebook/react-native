@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<9d10bd1b003d8b0de95141f5676877a2>>
+ * @generated SignedSource<<930c7b54ccc029d19d56176100a863e7>>
  * @flow strict
  * @noformat
  */
@@ -129,6 +129,7 @@ export type ReactNativeFeatureFlags = Readonly<{
   shouldTriggerResponderTransferOnScrollAndroid: Getter<boolean>,
   skipActivityIdentityAssertionOnHostPause: Getter<boolean>,
   skipUnchangedChildrenInDifferentiator: Getter<boolean>,
+  sleepUntilNextTimerIOS: Getter<boolean>,
   syncAndroidClipBoundsWithOverflow: Getter<boolean>,
   traceTurboModulePromiseRejectionsOnAndroid: Getter<boolean>,
   updateRuntimeShadowNodeReferencesOnCommit: Getter<boolean>,
@@ -541,6 +542,10 @@ export const skipActivityIdentityAssertionOnHostPause: Getter<boolean> = createN
  * When a node changes, the differ leaves out its children that are unchanged in both trees instead of describing and comparing them.
  */
 export const skipUnchangedChildrenInDifferentiator: Getter<boolean> = createNativeFlagGetter('skipUnchangedChildrenInDifferentiator', false);
+/**
+ * When the next JS timer is more than two frames away, iOS waits for it with a one-shot timer instead of a display link that wakes the JS thread on every frame until the timer is due.
+ */
+export const sleepUntilNextTimerIOS: Getter<boolean> = createNativeFlagGetter('sleepUntilNextTimerIOS', false);
 /**
  * Override getClipBounds on Android views to return the padding box when overflow is hidden
  */

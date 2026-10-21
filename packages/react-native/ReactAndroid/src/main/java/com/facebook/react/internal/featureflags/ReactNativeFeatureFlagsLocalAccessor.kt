@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<c36b0b2d7173aa78b7cb175658fc89d2>>
+ * @generated SignedSource<<c1c11efd3072b053ef64fe93272842fd>>
  */
 
 /**
@@ -104,6 +104,7 @@ internal class ReactNativeFeatureFlagsLocalAccessor : ReactNativeFeatureFlagsAcc
   private var shouldTriggerResponderTransferOnScrollAndroidCache: Boolean? = null
   private var skipActivityIdentityAssertionOnHostPauseCache: Boolean? = null
   private var skipUnchangedChildrenInDifferentiatorCache: Boolean? = null
+  private var sleepUntilNextTimerIOSCache: Boolean? = null
   private var syncAndroidClipBoundsWithOverflowCache: Boolean? = null
   private var traceTurboModulePromiseRejectionsOnAndroidCache: Boolean? = null
   private var updateRuntimeShadowNodeReferencesOnCommitCache: Boolean? = null
@@ -917,6 +918,16 @@ internal class ReactNativeFeatureFlagsLocalAccessor : ReactNativeFeatureFlagsAcc
       cached = currentProvider.skipUnchangedChildrenInDifferentiator()
       accessedFeatureFlags.add("skipUnchangedChildrenInDifferentiator")
       skipUnchangedChildrenInDifferentiatorCache = cached
+    }
+    return cached
+  }
+
+  override fun sleepUntilNextTimerIOS(): Boolean {
+    var cached = sleepUntilNextTimerIOSCache
+    if (cached == null) {
+      cached = currentProvider.sleepUntilNextTimerIOS()
+      accessedFeatureFlags.add("sleepUntilNextTimerIOS")
+      sleepUntilNextTimerIOSCache = cached
     }
     return cached
   }

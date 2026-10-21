@@ -11,6 +11,7 @@
 #import <React/RCTConvert.h>
 #import <React/RCTLog.h>
 #import <React/RCTUtils.h>
+#import <react/featureflags/ReactNativeFeatureFlags.h>
 
 static const NSTimeInterval kMinimumSleepInterval = 1;
 
@@ -19,6 +20,16 @@ static const NSTimeInterval kMinimumSleepInterval = 1;
 static const NSTimeInterval kFrameDuration = 1.0 / 60.0;
 // The minimum time left in a frame to trigger the idle callback.
 static const NSTimeInterval kIdleCallbackFrameDeadline = 0.001;
+
+// The display link wakes the JS thread on every frame while it runs. When the
+// next timer is further away than this, it is paused and a sleep timer wakes
+// the JS thread when the timer is due instead. That is two frames with
+// `sleepUntilNextTimerIOS`, and `kMinimumSleepInterval` otherwise.
+static NSTimeInterval RCTMinimumSleepInterval()
+{
+  return facebook::react::ReactNativeFeatureFlags::sleepUntilNextTimerIOS() ? 2 * kFrameDuration
+                                                                            : kMinimumSleepInterval;
+}
 
 @interface _RCTTimer : NSObject
 
@@ -284,8 +295,8 @@ static const NSTimeInterval kIdleCallbackFrameDeadline = 0.001;
     if (timerCount == 0) {
       _paused = YES;
     }
-    // If the next timer is more than 1 second out, pause and schedule an NSTimer;
-    else if ([nextScheduledTarget timeIntervalSinceNow] > kMinimumSleepInterval) {
+    // If the next timer is far enough out, pause and schedule an NSTimer;
+    else if ([nextScheduledTarget timeIntervalSinceNow] > RCTMinimumSleepInterval()) {
       [self scheduleSleepTimer:nextScheduledTarget];
       _paused = YES;
     }
@@ -347,7 +358,7 @@ static const NSTimeInterval kIdleCallbackFrameDeadline = 0.001;
   if (_inBackground) {
     [self scheduleSleepTimer:timer.target];
   } else if (_paused) {
-    if ([timer.target timeIntervalSinceNow] > kMinimumSleepInterval) {
+    if ([timer.target timeIntervalSinceNow] > RCTMinimumSleepInterval()) {
       [self scheduleSleepTimer:timer.target];
     } else {
       [self startTimers];
