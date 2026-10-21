@@ -40,7 +40,6 @@ static uint16_t RCTUniqueCoalescingKeyGenerator = 0;
   NSRecursiveLock *_observersLock;
 }
 
-@synthesize bridge = _bridge;
 @synthesize dispatchToJSThread = _dispatchToJSThread;
 @synthesize callableJSModules = _callableJSModules;
 
@@ -175,13 +174,7 @@ RCT_EXPORT_MODULE()
   [_eventQueueLock unlock];
 
   if (scheduleEventsDispatch) {
-    if (_bridge != nullptr) {
-      [_bridge
-          dispatchBlock:^{
-            [self flushEventsQueue];
-          }
-                  queue:RCTJSThread];
-    } else if (_dispatchToJSThread != nullptr) {
+    if (_dispatchToJSThread != nullptr) {
       _dispatchToJSThread(^{
         [self flushEventsQueue];
       });
