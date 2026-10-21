@@ -129,7 +129,9 @@ using namespace facebook::react;
     _bridgeModuleDecorator = [[RCTBridgeModuleDecorator alloc] initWithViewRegistry:[RCTViewRegistry new]
                                                                      moduleRegistry:moduleRegistry
                                                                       bundleManager:bundleManager
-                                                                  callableJSModules:[RCTCallableJSModules new]];
+                                                                  callableJSModules:[RCTCallableJSModules new]
+                                                                      launchOptions:launchOptions
+                                                                  performanceLogger:_performanceLogger];
     _devMenuConfigurationDecorator =
 #if RCT_DEV_MENU
         [[RCTDevMenuConfigurationDecorator alloc] initWithDevMenuConfiguration:devMenuConfiguration];
