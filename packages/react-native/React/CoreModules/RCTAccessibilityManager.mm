@@ -487,15 +487,6 @@ void RCTAccessibilityManagerSetIsVoiceOverEnabled(
 
 @end
 
-@implementation RCTBridge (RCTAccessibilityManager)
-
-- (RCTAccessibilityManager *)accessibilityManager
-{
-  return [self moduleForClass:[RCTAccessibilityManager class]];
-}
-
-@end
-
 @implementation RCTBridgeProxy (RCTAccessibilityManager)
 
 - (RCTAccessibilityManager *)accessibilityManager
