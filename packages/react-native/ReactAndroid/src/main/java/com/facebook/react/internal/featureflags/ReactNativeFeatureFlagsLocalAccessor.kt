@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<ee4c0f9c1e7c6af3b0d15948ebc519b3>>
+ * @generated SignedSource<<0bd25bf6a785133ec204bafca5e34c2c>>
  */
 
 /**
@@ -55,6 +55,7 @@ internal class ReactNativeFeatureFlagsLocalAccessor : ReactNativeFeatureFlagsAcc
   private var enableFontScaleChangesUpdatingLayoutCache: Boolean? = null
   private var enableIOSCompressedTextFrameAdjustmentCache: Boolean? = null
   private var enableIOSTextBaselineOffsetPerLineCache: Boolean? = null
+  private var enableIOSTextKit2Cache: Boolean? = null
   private var enableIOSViewClipToPaddingBoxCache: Boolean? = null
   private var enableImagePrefetchingAndroidCache: Boolean? = null
   private var enableImageTransparentTintColorCache: Boolean? = null
@@ -425,6 +426,16 @@ internal class ReactNativeFeatureFlagsLocalAccessor : ReactNativeFeatureFlagsAcc
       cached = currentProvider.enableIOSTextBaselineOffsetPerLine()
       accessedFeatureFlags.add("enableIOSTextBaselineOffsetPerLine")
       enableIOSTextBaselineOffsetPerLineCache = cached
+    }
+    return cached
+  }
+
+  override fun enableIOSTextKit2(): Boolean {
+    var cached = enableIOSTextKit2Cache
+    if (cached == null) {
+      cached = currentProvider.enableIOSTextKit2()
+      accessedFeatureFlags.add("enableIOSTextKit2")
+      enableIOSTextKit2Cache = cached
     }
     return cached
   }

@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<18267103ef4f3eb22f23a15b808528c2>>
+ * @generated SignedSource<<074d3690279f3661f0c43f0499f642ac>>
  */
 
 /**
@@ -84,6 +84,8 @@ public interface ReactNativeFeatureFlagsProvider {
   @DoNotStrip public fun enableIOSCompressedTextFrameAdjustment(): Boolean
 
   @DoNotStrip public fun enableIOSTextBaselineOffsetPerLine(): Boolean
+
+  @DoNotStrip public fun enableIOSTextKit2(): Boolean
 
   @DoNotStrip public fun enableIOSViewClipToPaddingBox(): Boolean
 

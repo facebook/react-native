@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<cfa7aa53731059247d858fd8fb6e914b>>
+ * @generated SignedSource<<aae7dd747a706926dad5a4e95b1a2f38>>
  */
 
 /**
@@ -215,6 +215,12 @@ public object ReactNativeFeatureFlags {
    */
   @JvmStatic
   public fun enableIOSTextBaselineOffsetPerLine(): Boolean = accessor.enableIOSTextBaselineOffsetPerLine()
+
+  /**
+   * Lays out, measures and draws iOS Text with TextKit 2 (NSTextLayoutManager) instead of TextKit 1 (NSLayoutManager). Requires iOS 16 or later; older versions keep using TextKit 1.
+   */
+  @JvmStatic
+  public fun enableIOSTextKit2(): Boolean = accessor.enableIOSTextKit2()
 
   /**
    * iOS Views will clip to their padding box vs border box
