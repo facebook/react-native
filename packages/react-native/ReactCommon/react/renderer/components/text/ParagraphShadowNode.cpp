@@ -73,7 +73,13 @@ ParagraphShadowNode::ParagraphShadowNode(
         static_cast<const ParagraphShadowNode&>(sourceShadowNode);
     if (source.content_.has_value() && source.content_->attachments.empty()) {
       content_ = source.content_;
-      measuredLayouts_ = source.measuredLayouts_;
+      // A layout is later matched by its measured size alone (see
+      // `findUsableLayout`). Text that fits its font size to the constraints
+      // can measure the same under different constraints with a different
+      // font size, so its layouts are not kept.
+      if (!source.content_->paragraphAttributes.adjustsFontSizeToFit) {
+        measuredLayouts_ = source.measuredLayouts_;
+      }
     }
   }
 }
@@ -84,28 +90,38 @@ bool ParagraphShadowNode::shouldNewRevisionDirtyMeasurement(
   return fragment.props != nullptr;
 }
 
-const Content& ParagraphShadowNode::getContent(
-    const LayoutContext& layoutContext) const {
-  auto layoutDirection = YGNodeLayoutGetDirection(&yogaNode_) == YGDirectionRTL
+LayoutDirection ParagraphShadowNode::resolvedLayoutDirection() const {
+  return YGNodeLayoutGetDirection(&yogaNode_) == YGDirectionRTL
       ? LayoutDirection::RightToLeft
       : LayoutDirection::LeftToRight;
-  if (content_.has_value()) {
-    const auto& baseTextAttributes =
-        content_->attributedString.getBaseTextAttributes();
-    // The content is built from this node's props and children, and it is
-    // only carried over to revisions that have neither new props nor new
-    // children (see the copy constructor). The only other inputs are the
-    // font size multiplier from the layout context and the layout direction
-    // Yoga resolves from the parent, and those can change without new props
-    // or children, so they are the two things to check here.
-    if (baseTextAttributes.fontSizeMultiplier ==
-            layoutContext.fontSizeMultiplier &&
-        baseTextAttributes.layoutDirection == layoutDirection) {
-      return content_.value();
-    }
-    // Carried over from a previous revision, but built for another context.
+}
+
+void ParagraphShadowNode::dropContentBuiltForAnotherContext(
+    const LayoutContext& layoutContext) const {
+  if (!content_.has_value()) {
+    return;
+  }
+  const auto& baseTextAttributes =
+      content_->attributedString.getBaseTextAttributes();
+  // The content is built from this node's props and children, and it is only
+  // carried over to revisions that have neither new props nor new children
+  // (see the copy constructor). The only other inputs are the font size
+  // multiplier from the layout context and the layout direction Yoga resolves
+  // from the parent, and those can change without new props or children, so
+  // they are the two things to check here.
+  if (baseTextAttributes.fontSizeMultiplier !=
+          layoutContext.fontSizeMultiplier ||
+      baseTextAttributes.layoutDirection != resolvedLayoutDirection()) {
     content_.reset();
     measuredLayouts_.clear();
+  }
+}
+
+const Content& ParagraphShadowNode::getContent(
+    const LayoutContext& layoutContext) const {
+  dropContentBuiltForAnotherContext(layoutContext);
+  if (content_.has_value()) {
+    return content_.value();
   }
 
   ensureUnsealed();
@@ -113,7 +129,7 @@ const Content& ParagraphShadowNode::getContent(
   auto textAttributes = TextAttributes::defaultTextAttributes();
   textAttributes.fontSizeMultiplier = layoutContext.fontSizeMultiplier;
   textAttributes.apply(getConcreteProps().textAttributes);
-  textAttributes.layoutDirection = layoutDirection;
+  textAttributes.layoutDirection = resolvedLayoutDirection();
   auto attributedString = AttributedString{};
   auto attachments = Attachments{};
   buildAttributedString(textAttributes, *this, attributedString, attachments);
@@ -248,7 +264,11 @@ MeasuredPreparedTextLayout* ParagraphShadowNode::findUsableLayout(
     // exact width/height was given), or if our content measurement was
     // adjusted by a constraint (like min-size).
     auto expectedSize = rawContentSize();
-    for (auto& prevLayout : measuredLayouts_) {
+    // Newest first, so that a layout measured for this revision wins over an
+    // equally sized one carried over from a previous revision.
+    for (auto it = measuredLayouts_.rbegin(); it != measuredLayouts_.rend();
+         ++it) {
+      auto& prevLayout = *it;
       if (prevLayout.pointScaleFactor == pointScaleFactor &&
           floatEquality(
               prevLayout.measurement.size.width, expectedSize.width) &&
@@ -278,6 +298,10 @@ Size ParagraphShadowNode::rawContentSize() {
 Size ParagraphShadowNode::measureContent(
     const LayoutContext& layoutContext,
     const LayoutConstraints& layoutConstraints) const {
+  // Layouts carried over from a previous revision were prepared for its
+  // content, so drop them first if that content no longer applies.
+  dropContentBuiltForAnotherContext(layoutContext);
+
   if constexpr (TextLayoutManagerExtended::supportsPreparedTextLayout()) {
     // Layouts carried over from a previous revision may have been prepared
     // at another pixel density, which they can't be reused for.

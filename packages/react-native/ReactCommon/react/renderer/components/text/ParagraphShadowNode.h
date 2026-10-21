@@ -96,6 +96,15 @@ class ParagraphShadowNode
   const Content &getContent(const LayoutContext &layoutContext) const;
 
   /*
+   * Drops the content and the layouts measured for it if the content was built
+   * for another font size multiplier or layout direction (it may have been
+   * carried over from a previous revision).
+   */
+  void dropContentBuiltForAnotherContext(const LayoutContext &layoutContext) const;
+
+  LayoutDirection resolvedLayoutDirection() const;
+
+  /*
    * Builds and returns a `Content` object with given `layoutConstraints`.
    */
   Content getContentWithMeasuredAttachments(
