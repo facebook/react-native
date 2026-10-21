@@ -13,14 +13,7 @@
 namespace facebook::react {
 
 static LayoutMetrics layoutMetricsFromShadowNode(const ShadowNode& shadowNode) {
-  // A node with the `ViewKind` trait inherits `ConcreteViewShadowNode`, so it
-  // is a `LayoutableShadowNode`; only other nodes need the checked cast.
-  if (shadowNode.getTraits().check(ShadowNodeTraits::Trait::ViewKind)) {
-    return static_cast<const LayoutableShadowNode&>(shadowNode)
-        .getLayoutMetrics();
-  }
-  auto layoutableShadowNode =
-      dynamic_cast<const LayoutableShadowNode*>(&shadowNode);
+  auto layoutableShadowNode = shadowNode.asLayoutable();
   return layoutableShadowNode != nullptr
       ? layoutableShadowNode->getLayoutMetrics()
       : EmptyLayoutMetrics;
