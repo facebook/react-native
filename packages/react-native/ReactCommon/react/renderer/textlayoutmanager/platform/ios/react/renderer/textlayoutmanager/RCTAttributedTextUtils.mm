@@ -205,7 +205,8 @@ NSMutableDictionary<NSAttributedStringKey, id> *RCTNSTextAttributesFromTextAttri
     attributes[NSForegroundColorAttributeName] = effectiveForegroundColor;
   }
 
-  if (textAttributes.backgroundColor || !isnan(textAttributes.opacity)) {
+  // A clear background draws nothing, but TextKit still computes and fills its rects on every draw.
+  if (textAttributes.backgroundColor && textAttributes.backgroundColor != clearColor()) {
     attributes[NSBackgroundColorAttributeName] = RCTEffectiveBackgroundColorFromTextAttributes(textAttributes);
   }
 

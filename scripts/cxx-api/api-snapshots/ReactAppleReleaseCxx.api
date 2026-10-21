@@ -1410,7 +1410,7 @@ interface RCTMountingManager : public NSObject {
 }
 
 interface RCTMultipartDataTask : public NSObject {
-  public virtual instancetype initWithURL:partHandler:progressHandler:(NSURL* url, RCTMultipartDataTaskCallback partHandler, RCTMultipartProgressCallback progressHandler);
+  public virtual instancetype initWithURL:partHandler:progressHandler:(NSURL* url, RCTMultipartDataTaskCallback partHandler, _Nullable RCTMultipartProgressCallback progressHandler);
   public virtual void startTask();
 }
 

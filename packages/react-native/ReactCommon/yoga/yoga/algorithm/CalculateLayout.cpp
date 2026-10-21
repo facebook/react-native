@@ -1138,12 +1138,16 @@ static float distributeFreeSpaceSecondPass(
         // Use a relative epsilon guard instead of exact equality: after the
         // first pass removes all constrained items,
         // totalFlexShrinkScaledFactors may be near-zero rather than exactly 0
-        // due to floating-point cancellation.  Dividing by a near-zero value
+        // due to floating-point cancellation. Dividing by a near-zero value
         // produces a gigantic childSize that overwhelms the min/max clamp.
+        // A positive total is always such a residual: with non-negative
+        // flexShrink a real total is never positive
+        // (https://github.com/react/yoga/issues/2038).
         const float shrinkFactorMagnitude =
             std::abs(flexLine.layout.totalFlexShrinkScaledFactors);
         if (yoga::isDefined(flexLine.layout.totalFlexShrinkScaledFactors) &&
-            shrinkFactorMagnitude < 1e-6f) {
+            (shrinkFactorMagnitude < 1e-6f ||
+             flexLine.layout.totalFlexShrinkScaledFactors > 0)) {
           childSize = childFlexBasis + flexShrinkScaledFactor;
         } else {
           childSize = childFlexBasis +
