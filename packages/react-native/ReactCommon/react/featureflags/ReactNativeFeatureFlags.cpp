@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<2c4c3259015438d07cc137e9288db04a>>
+ * @generated SignedSource<<f90778065a9a5f48383dd9b4606bd862>>
  */
 
 /**
@@ -44,6 +44,10 @@ bool ReactNativeFeatureFlags::defaultTextToOverflowHidden() {
 
 bool ReactNativeFeatureFlags::disableEarlyViewCommandExecution() {
   return getAccessor().disableEarlyViewCommandExecution();
+}
+
+bool ReactNativeFeatureFlags::disableIdleEventDispatchFrameCallbackRearmAndroid() {
+  return getAccessor().disableIdleEventDispatchFrameCallbackRearmAndroid();
 }
 
 bool ReactNativeFeatureFlags::disableIdleMountItemFrameCallbackRearmAndroid() {
@@ -262,6 +266,10 @@ bool ReactNativeFeatureFlags::fixMappingOfEventPrioritiesBetweenFabricAndReact()
   return getAccessor().fixMappingOfEventPrioritiesBetweenFabricAndReact();
 }
 
+bool ReactNativeFeatureFlags::fixTextLayoutOnPixelDensityChange() {
+  return getAccessor().fixTextLayoutOnPixelDensityChange();
+}
+
 bool ReactNativeFeatureFlags::fixYogaFlexBasisFitContentInMainAxis() {
   return getAccessor().fixYogaFlexBasisFitContentInMainAxis();
 }
@@ -372,6 +380,10 @@ bool ReactNativeFeatureFlags::useTraitHiddenOnAndroid() {
 
 bool ReactNativeFeatureFlags::useTurboModuleInterop() {
   return getAccessor().useTurboModuleInterop();
+}
+
+bool ReactNativeFeatureFlags::useWindowDensityForDisplayMetricsAndroid() {
+  return getAccessor().useWindowDensityForDisplayMetricsAndroid();
 }
 
 double ReactNativeFeatureFlags::viewCullingOutsetRatio() {

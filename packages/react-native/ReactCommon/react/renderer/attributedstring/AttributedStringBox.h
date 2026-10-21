@@ -37,6 +37,7 @@ class AttributedStringBox final {
    * Custom explicit constructors.
    */
   explicit AttributedStringBox(const AttributedString &value);
+  explicit AttributedStringBox(AttributedString &&value);
   explicit AttributedStringBox(std::shared_ptr<void> opaquePointer);
 
   /*

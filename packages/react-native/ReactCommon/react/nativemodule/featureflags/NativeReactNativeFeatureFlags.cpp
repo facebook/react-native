@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<ba099c1dd4f51df3033a5f731edbc50a>>
+ * @generated SignedSource<<cd218b84f81cb128569351055afcceeb>>
  */
 
 /**
@@ -67,6 +67,11 @@ bool NativeReactNativeFeatureFlags::defaultTextToOverflowHidden(
 bool NativeReactNativeFeatureFlags::disableEarlyViewCommandExecution(
     jsi::Runtime& /*runtime*/) {
   return ReactNativeFeatureFlags::disableEarlyViewCommandExecution();
+}
+
+bool NativeReactNativeFeatureFlags::disableIdleEventDispatchFrameCallbackRearmAndroid(
+    jsi::Runtime& /*runtime*/) {
+  return ReactNativeFeatureFlags::disableIdleEventDispatchFrameCallbackRearmAndroid();
 }
 
 bool NativeReactNativeFeatureFlags::disableIdleMountItemFrameCallbackRearmAndroid(
@@ -339,6 +344,11 @@ bool NativeReactNativeFeatureFlags::fixMappingOfEventPrioritiesBetweenFabricAndR
   return ReactNativeFeatureFlags::fixMappingOfEventPrioritiesBetweenFabricAndReact();
 }
 
+bool NativeReactNativeFeatureFlags::fixTextLayoutOnPixelDensityChange(
+    jsi::Runtime& /*runtime*/) {
+  return ReactNativeFeatureFlags::fixTextLayoutOnPixelDensityChange();
+}
+
 bool NativeReactNativeFeatureFlags::fixYogaFlexBasisFitContentInMainAxis(
     jsi::Runtime& /*runtime*/) {
   return ReactNativeFeatureFlags::fixYogaFlexBasisFitContentInMainAxis();
@@ -477,6 +487,11 @@ bool NativeReactNativeFeatureFlags::useTraitHiddenOnAndroid(
 bool NativeReactNativeFeatureFlags::useTurboModuleInterop(
     jsi::Runtime& /*runtime*/) {
   return ReactNativeFeatureFlags::useTurboModuleInterop();
+}
+
+bool NativeReactNativeFeatureFlags::useWindowDensityForDisplayMetricsAndroid(
+    jsi::Runtime& /*runtime*/) {
+  return ReactNativeFeatureFlags::useWindowDensityForDisplayMetricsAndroid();
 }
 
 double NativeReactNativeFeatureFlags::viewCullingOutsetRatio(

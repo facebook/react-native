@@ -19,6 +19,7 @@ import android.view.accessibility.AccessibilityEvent;
 import androidx.annotation.ColorInt;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
+import androidx.core.view.AccessibilityDelegateCompat;
 import androidx.core.view.ViewCompat;
 import com.facebook.common.logging.FLog;
 import com.facebook.react.R;
@@ -93,6 +94,11 @@ public abstract class BaseViewManager<T extends View, C extends LayoutShadowNode
     view.setTag(R.id.accessibility_actions, null);
     view.setTag(R.id.accessibility_value, null);
     view.setTag(R.id.accessibility_state_expanded, null);
+    view.setTag(R.id.accessibility_collection, null);
+    view.setTag(R.id.accessibility_collection_item, null);
+    view.setTag(R.id.role, null);
+    view.setTag(R.id.accessibility_order_parent, null);
+    view.setTag(R.id.original_focusability, null);
     view.setTag(R.id.accessibility_state_disabled, null);
     view.setEnabled(true);
     view.setTag(R.id.view_clipped, null);
@@ -160,6 +166,20 @@ public abstract class BaseViewManager<T extends View, C extends LayoutShadowNode
     view.setClickable(false);
     view.setFocusable(false);
     view.setFocusableInTouchMode(false);
+
+    // Accessibility state the props apply to the view itself, as a new view has it. The delegate
+    // stays, since a view's constructor may have installed it, and forgets what it cached.
+    AccessibilityDelegateCompat accessibilityDelegate = ViewCompat.getAccessibilityDelegate(view);
+    if (accessibilityDelegate instanceof ReactAccessibilityDelegate) {
+      ((ReactAccessibilityDelegate) accessibilityDelegate).internal_prepareToRecycle();
+    }
+    view.setContentDescription(null);
+    view.setSelected(false);
+    view.setImportantForAccessibility(View.IMPORTANT_FOR_ACCESSIBILITY_AUTO);
+    ViewCompat.setAccessibilityLiveRegion(view, ViewCompat.ACCESSIBILITY_LIVE_REGION_NONE);
+    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.P) {
+      view.setScreenReaderFocusable(false);
+    }
 
     // Predictably, alpha defaults to 1:
     // https://android.googlesource.com/platform/frameworks/base/+/a175a5b/core/java/android/view/View.java#2186

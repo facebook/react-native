@@ -30,7 +30,7 @@ appId: ${APP_ID} # iOS: com.meta.RNTester.localDevelopment | Android: com.facebo
     timeout: 30000
 - scrollUntilVisible:
     element:
-      text: 'Brownie'
+      id: 'Brownie'
     direction: RIGHT
     speed: 60
     visibilityPercentage: 50

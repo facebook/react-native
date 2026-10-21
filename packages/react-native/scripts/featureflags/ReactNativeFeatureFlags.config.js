@@ -103,6 +103,17 @@ const definitions: FeatureFlagDefinitions = {
       },
       ossReleaseStage: 'none',
     },
+    disableIdleEventDispatchFrameCallbackRearmAndroid: {
+      defaultValue: false,
+      metadata: {
+        dateAdded: '2026-09-07',
+        description:
+          'Make the batched-event-dispatch Choreographer frame callback one-shot on Android instead of re-posting itself every frame',
+        expectedReleaseValue: true,
+        purpose: 'experimentation',
+      },
+      ossReleaseStage: 'experimental',
+    },
     disableIdleMountItemFrameCallbackRearmAndroid: {
       defaultValue: false,
       metadata: {
@@ -501,6 +512,7 @@ const definitions: FeatureFlagDefinitions = {
       ossReleaseStage: 'none',
     },
     enableMountingCoordinatorPullModelAndroid: {
+      dangerouslyExposeInPublicCppHeaders: true,
       defaultValue: false,
       metadata: {
         dateAdded: '2026-07-14',
@@ -679,6 +691,17 @@ const definitions: FeatureFlagDefinitions = {
         dateAdded: '2024-06-18',
         description:
           'Uses the default event priority instead of the discreet event priority by default when dispatching events from Fabric to React.',
+        expectedReleaseValue: true,
+        purpose: 'experimentation',
+      },
+      ossReleaseStage: 'none',
+    },
+    fixTextLayoutOnPixelDensityChange: {
+      defaultValue: false,
+      metadata: {
+        dateAdded: '2026-10-11',
+        description:
+          'Re-measures text and re-sends padding and overflow insets to mounted views when the pixel density changes, so text and padded views do not keep sizes from the old density.',
         expectedReleaseValue: true,
         purpose: 'experimentation',
       },
@@ -982,6 +1005,17 @@ const definitions: FeatureFlagDefinitions = {
       },
       ossReleaseStage: 'canary',
     },
+    useWindowDensityForDisplayMetricsAndroid: {
+      defaultValue: false,
+      metadata: {
+        dateAdded: '2026-10-11',
+        description:
+          'Keeps the window density in the screen display metrics instead of the physical display density, so text is measured at the density the window renders at.',
+        expectedReleaseValue: true,
+        purpose: 'experimentation',
+      },
+      ossReleaseStage: 'none',
+    },
     viewCullingOutsetRatio: {
       defaultValue: 0,
       metadata: {
@@ -1079,16 +1113,6 @@ const definitions: FeatureFlagDefinitions = {
           'Use the deferred cell render update mechanism for focus change in FlatList.',
         expectedReleaseValue: true,
         purpose: 'experimentation',
-      },
-      ossReleaseStage: 'none',
-    },
-    enableImperativeEvents_DEPRECATED: {
-      defaultValue: false,
-      metadata: {
-        description:
-          'Deprecated in favor of the common flag with the same name, which is the one that can be configured by OSS release stage. This is only kept so JS bundles delivered to older native builds, where the common flag is unavailable, can still enable the feature.',
-        expectedReleaseValue: true,
-        purpose: 'release',
       },
       ossReleaseStage: 'none',
     },

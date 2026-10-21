@@ -40,7 +40,8 @@ public class TextAttributeProps private constructor() {
           if (value == ReactConstants.UNSET.toFloat()) {
             Float.NaN
           } else {
-            if (allowFontScaling) toPixelFromSP(value) else toPixelFromDIP(value)
+            if (allowFontScaling) toPixelFromSP(value, maxFontSizeMultiplier)
+            else toPixelFromDIP(value)
           }
     }
 
@@ -80,6 +81,9 @@ public class TextAttributeProps private constructor() {
   private var fontSizeInput: Float = ReactConstants.UNSET.toFloat()
   private var lineHeightInput: Float = ReactConstants.UNSET.toFloat()
   private var letterSpacingInput: Float = Float.NaN
+
+  internal val isLetterSpacingSet: Boolean
+    get() = !letterSpacingInput.isNaN()
 
   // `ReactConstants.UNSET` is -1, same as `LayoutDirection.UNDEFINED` (which is a hidden symbol)
   public var layoutDirection: Int = ReactConstants.UNSET
@@ -169,7 +173,7 @@ public class TextAttributeProps private constructor() {
   public var letterSpacing: Float
     get() {
       val letterSpacingPixels =
-          if (allowFontScaling) toPixelFromSP(letterSpacingInput)
+          if (allowFontScaling) toPixelFromSP(letterSpacingInput, maxFontSizeMultiplier)
           else toPixelFromDIP(letterSpacingInput)
 
       require(fontSize > 0) { "FontSize should be a positive value. Current value: $fontSize" }

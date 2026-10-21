@@ -69,6 +69,9 @@ export type AutolinkingArgs = {
   xcframeworksPath: string | null,
   // Platform floor of every manifest this run writes; sanitized by parseArgs.
   iosDeploymentTarget: string,
+  // React Native C++ stable API macros (CXX_API_DEFINES) the app opted into;
+  // defined in the synth packages of its spm.modules.
+  cxxApiDefines: ReadonlyArray<string>,
 };
 
 export type SpmTarget = {
@@ -324,7 +327,8 @@ export type PluginResult = {
   flavoredFrameworks: Array<PluginFlavoredFramework>,
   // Absolute paths (dirs or files) the Xcode auto-sync build phase should watch
   // for staleness, e.g. the plugin dep's own `Package.swift` and per-module
-  // manifests. Folded into `.spm-sync-watch-paths` by main().
+  // manifests. Folded into `.spm-sync-watch-paths` (or `.spm-sync-watch-absent`
+  // while missing) by main().
   watchPaths: Array<string>,
   // Build-time shell phases for the app target, recorded to
   // `.spm-plugin-script-phases.json` by main() and injected by `spm add`/
@@ -381,6 +385,8 @@ export type SynthPackageSpec = {
   // dep's own `common/cpp/` subtree.
   headerSearchPaths?: ?Array<string>,
   iosDeploymentTarget?: ?string,
+  // React Native C++ stable API macros defined in the synth target.
+  cxxApiDefines?: ReadonlyArray<string>,
 };
 
 

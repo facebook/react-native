@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<419516aab11d7e44485bb29e696a75dd>>
+ * @generated SignedSource<<8d27c5f3feb4c8000922012882701b7e>>
  */
 
 /**
@@ -90,6 +90,15 @@ class ReactNativeFeatureFlagsDynamicProvider : public ReactNativeFeatureFlagsDef
     }
 
     return ReactNativeFeatureFlagsDefaults::disableEarlyViewCommandExecution();
+  }
+
+  bool disableIdleEventDispatchFrameCallbackRearmAndroid() override {
+    auto value = values_["disableIdleEventDispatchFrameCallbackRearmAndroid"];
+    if (!value.isNull()) {
+      return value.getBool();
+    }
+
+    return ReactNativeFeatureFlagsDefaults::disableIdleEventDispatchFrameCallbackRearmAndroid();
   }
 
   bool disableIdleMountItemFrameCallbackRearmAndroid() override {
@@ -578,6 +587,15 @@ class ReactNativeFeatureFlagsDynamicProvider : public ReactNativeFeatureFlagsDef
     return ReactNativeFeatureFlagsDefaults::fixMappingOfEventPrioritiesBetweenFabricAndReact();
   }
 
+  bool fixTextLayoutOnPixelDensityChange() override {
+    auto value = values_["fixTextLayoutOnPixelDensityChange"];
+    if (!value.isNull()) {
+      return value.getBool();
+    }
+
+    return ReactNativeFeatureFlagsDefaults::fixTextLayoutOnPixelDensityChange();
+  }
+
   bool fixYogaFlexBasisFitContentInMainAxis() override {
     auto value = values_["fixYogaFlexBasisFitContentInMainAxis"];
     if (!value.isNull()) {
@@ -828,6 +846,15 @@ class ReactNativeFeatureFlagsDynamicProvider : public ReactNativeFeatureFlagsDef
     }
 
     return ReactNativeFeatureFlagsDefaults::useTurboModuleInterop();
+  }
+
+  bool useWindowDensityForDisplayMetricsAndroid() override {
+    auto value = values_["useWindowDensityForDisplayMetricsAndroid"];
+    if (!value.isNull()) {
+      return value.getBool();
+    }
+
+    return ReactNativeFeatureFlagsDefaults::useWindowDensityForDisplayMetricsAndroid();
   }
 
   double viewCullingOutsetRatio() override {

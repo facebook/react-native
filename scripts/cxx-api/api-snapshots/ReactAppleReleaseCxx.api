@@ -567,6 +567,7 @@ interface RCTAccessibilityManager : public NSObject <RCTBridgeModule> {
   public @property (assign) BOOL isInvertColorsEnabled;
   public @property (assign) BOOL isReduceMotionEnabled;
   public @property (assign) BOOL isReduceTransparencyEnabled;
+  public @property (assign) BOOL isShowBordersEnabled;
   public @property (assign) BOOL isVoiceOverEnabled;
   public @property (assign) BOOL prefersCrossFadeTransitions;
   public @property (assign, readonly) CGFloat multiplier;
@@ -1292,16 +1293,6 @@ interface RCTLegacyViewManagerInteropComponentView : public RCTViewComponentView
   public virtual static void supportLegacyViewManagersWithPrefix:(NSString* prefix);
 }
 
-interface RCTLegacyViewManagerInteropCoordinator : public NSObject {
-  public virtual NSString* componentViewName();
-  public virtual UIView* createPaperViewWithTag:(NSInteger tag);
-  public virtual instancetype initWithComponentData:bridge:bridgeProxy:bridgelessInteropData:(RCTComponentData* componentData, _Nullable RCTBridge* bridge, _Nullable RCTBridgeProxy* bridgeProxy, RCTBridgeModuleDecorator* bridgelessInteropData);
-  public virtual void addObserveForTag:usingBlock:(NSInteger tag, InterceptorBlock block);
-  public virtual void handleCommand:args:reactTag:paperView:(NSString* commandName, NSArray* args, NSInteger tag, UIView* paperView);
-  public virtual void removeObserveForTag:(NSInteger tag);
-  public virtual void setProps:forView:(NSDictionary<NSString*, id>* props, UIView* view);
-}
-
 interface RCTLegacyViewManagerInteropCoordinatorAdapter : public NSObject {
   public @property (copy) void(^eventInterceptor)(std::string eventName, folly::dynamic&& event);
   public @property (strong) UIView* paperView;
@@ -1419,7 +1410,7 @@ interface RCTMountingManager : public NSObject {
 }
 
 interface RCTMultipartDataTask : public NSObject {
-  public virtual instancetype initWithURL:partHandler:progressHandler:(NSURL* url, RCTMultipartDataTaskCallback partHandler, RCTMultipartProgressCallback progressHandler);
+  public virtual instancetype initWithURL:partHandler:progressHandler:(NSURL* url, RCTMultipartDataTaskCallback partHandler, _Nullable RCTMultipartProgressCallback progressHandler);
   public virtual void startTask();
 }
 
@@ -1929,12 +1920,6 @@ interface RCTTransformAnimatedNode : public RCTAnimatedNode {
   public virtual NSDictionary<NSString*, NSObject*>* propsDictionary();
 }
 
-interface RCTTurboModuleManager : public NSObject <RCTTurboModuleRegistry> {
-  public virtual instancetype initWithBridgeProxy:bridgeModuleDecorator:delegate:jsInvoker:devMenuConfigurationDecorator:(RCTBridgeProxy* bridgeProxy, RCTBridgeModuleDecorator* bridgeModuleDecorator, id<RCTTurboModuleManagerDelegate> delegate, std::shared_ptr<facebook::react::CallInvoker> jsInvoker, RCTDevMenuConfigurationDecorator* devMenuConfigurationDecorator);
-  public virtual void installJSBindings:(facebook::jsi::Runtime& runtime);
-  public virtual void invalidate();
-}
-
 interface RCTUIImageViewAnimated : public UIImageView {
 }
 
@@ -2169,6 +2154,7 @@ protocol NativeAccessibilityManagerSpec : public NSObjectRCTBridgeModule, public
   public virtual void getCurrentPrefersCrossFadeTransitionsState:onError:(RCTResponseSenderBlock onSuccess, RCTResponseSenderBlock onError);
   public virtual void getCurrentReduceMotionState:onError:(RCTResponseSenderBlock onSuccess, RCTResponseSenderBlock onError);
   public virtual void getCurrentReduceTransparencyState:onError:(RCTResponseSenderBlock onSuccess, RCTResponseSenderBlock onError);
+  public virtual void getCurrentShowBordersState:onError:(RCTResponseSenderBlock onSuccess, RCTResponseSenderBlock onError);
   public virtual void getCurrentVoiceOverState:onError:(RCTResponseSenderBlock onSuccess, RCTResponseSenderBlock onError);
   public virtual void setAccessibilityContentSizeMultipliers:(JS::NativeAccessibilityManager::SpecSetAccessibilityContentSizeMultipliersJSMultipliers& JSMultipliers);
   public virtual void setAccessibilityFocus:(double reactTag);
@@ -2953,14 +2939,6 @@ protocol RCTTurboModule : public RCTModuleProvider {
   public virtual void setEventEmitterCallback:(EventEmitterCallbackWrapper* eventEmitterCallbackWrapper);
 }
 
-protocol RCTTurboModuleManagerDelegate : public NSObject {
-  public virtual Class getModuleClassFromName:(const char* name);
-  public virtual NSArray<id<RCTBridgeModule>>* extraModulesForBridge:((deprecated("Please make all native modules returned from this method TurboModule-compatible.")) __attribute);
-  public virtual id<RCTModuleProvider> getModuleProvider:(const char* name);
-  public virtual id<RCTTurboModule> getModuleInstanceFromClass:(Class moduleClass);
-  public virtual std::shared_ptr<facebook::react::TurboModule> getTurboModule:jsInvoker:(const std::string& name, std::shared_ptr<facebook::react::CallInvoker> jsInvoker);
-}
-
 protocol RCTTurboModuleRegistry : public NSObject {
   public virtual BOOL moduleIsInitialized:(const char* moduleName);
   public virtual id moduleForName:(const char* moduleName);
@@ -3163,7 +3141,6 @@ struct facebook::hermes::ISetEventLoopControl : public facebook::jsi::ICast {
 
 const char facebook::react::ViewComponentName[];
 const facebook::react::EventTag facebook::react::EMPTY_EVENT_TAG;
-constexpr char facebook::react::LayoutConformanceShadowNodeComponentName[];
 constexpr facebook::react::ReactNativeVersionType facebook::react::ReactNativeVersion;
 constexpr facebook::react::Tag facebook::react::kNoTag;
 constexpr uint32_t facebook::react::INITIAL_BUCKETS_SIZE;
@@ -3210,7 +3187,6 @@ using facebook::react::GradientDirection = std::variant<facebook::react::Float, 
 using facebook::react::HostPlatformTouch = facebook::react::BaseTouch;
 using facebook::react::HostPlatformViewEventEmitter = facebook::react::BaseViewEventEmitter;
 using facebook::react::ImageSources = std::vector<facebook::react::ImageSource>;
-using facebook::react::LayoutConformanceComponentDescriptor = facebook::react::ConcreteComponentDescriptor<facebook::react::LayoutConformanceShadowNode>;
 using facebook::react::ModalHostViewSupportedOrientationsMask = uint32_t;
 using facebook::react::NativeMethodCallFunc = std::function<void()>;
 using facebook::react::PromiseSetupFunctionType = std::function<void(facebook::jsi::Runtime& rt, std::shared_ptr<facebook::react::Promise>)>;
@@ -3264,16 +3240,13 @@ template <typename T>
 concept facebook::react::RawPropsFilterable = requires(facebook::react::RawProps& rawProps) {
   { T::filterRawProps(rawProps) } -> std::same_as<void>;
 };
-NSArray<NSString*>* facebook::react::extractKeysFromFollyDynamic(const folly::dynamic& dyn);
 NSError* facebook::react::tryAndReturnError(const std::function<void()>& func);
 NSString* facebook::react::deriveSourceURL(NSURL* url);
 YGDirection facebook::react::yogaDirectionFromLayoutDirection(facebook::react::LayoutDirection direction);
 bool facebook::react::areBorderRadiiCircular(const facebook::react::BorderRadii& borderRadii);
 bool facebook::react::hostPlatformColorIsColorMeaningful(facebook::react::Color color) noexcept;
 bool facebook::react::isColorMeaningful(const facebook::react::SharedColor& color) noexcept;
-bool facebook::react::isHermesBytecodeBundle(const facebook::react::BundleHeader& header);
 bool facebook::react::isZero(facebook::react::Float n);
-const char* facebook::react::stringForScriptTag(const facebook::react::ScriptTag& tag);
 constexpr auto facebook::react::to_underlying(auto e) noexcept;
 constexpr char facebook::react::toLower(char c);
 constexpr uint32_t facebook::react::fnv1aLowercase(std::string_view string);
@@ -3289,7 +3262,6 @@ facebook::react::Float facebook::react::floatFromYogaOptionalFloat(facebook::yog
 facebook::react::LayoutMetrics facebook::react::layoutMetricsFromYogaNode(facebook::yoga::Node& yogaNode);
 facebook::react::Rect facebook::react::insetBy(const facebook::react::Rect& rect, const facebook::react::EdgeInsets& insets) noexcept;
 facebook::react::Rect facebook::react::outsetBy(const facebook::react::Rect& rect, const facebook::react::EdgeInsets& outsets) noexcept;
-facebook::react::ScriptTag facebook::react::parseTypeFromHeader(const facebook::react::BundleHeader& header);
 facebook::react::SharedColor facebook::react::blackColor();
 facebook::react::SharedColor facebook::react::clearColor();
 facebook::react::SharedColor facebook::react::colorFromComponents(facebook::react::ColorComponents components);
@@ -3306,8 +3278,6 @@ float facebook::react::blueFromHostPlatformColor(facebook::react::Color color);
 float facebook::react::greenFromHostPlatformColor(facebook::react::Color color);
 float facebook::react::redFromHostPlatformColor(facebook::react::Color color);
 float facebook::react::yogaFloatFromFloat(facebook::react::Float value);
-folly::dynamic facebook::react::convertIdToFollyDynamic(id json);
-id facebook::react::convertFollyDynamicToId(const folly::dynamic& dyn);
 int facebook::react::toInt(const facebook::react::DisplayType& displayType);
 int facebook::react::toInt(const facebook::react::LayoutDirection& layoutDirection);
 std::optional<facebook::react::BlendMode> facebook::react::blendModeFromString(std::string_view blendModeName);
@@ -4017,9 +3987,6 @@ class facebook::react::JSBigString : public facebook::jsi::Buffer {
   public ~JSBigString() override = default;
 }
 
-class facebook::react::LayoutConformanceShadowNode : public facebook::react::ConcreteShadowNode<facebook::react::LayoutConformanceShadowNodeComponentName, facebook::react::YogaLayoutableShadowNode, facebook::react::LayoutConformanceProps> {
-}
-
 class facebook::react::LayoutableShadowNode : public facebook::react::ShadowNode {
   public LayoutableShadowNode(const facebook::react::ShadowNode& sourceShadowNode, const facebook::react::ShadowNodeFragment& fragment);
   public LayoutableShadowNode(const facebook::react::ShadowNodeFragment& fragment, const facebook::react::ShadowNodeFamily::Shared& family, facebook::react::ShadowNodeTraits traits);
@@ -4351,32 +4318,8 @@ class facebook::react::NativeVibrationSpecJSI : public facebook::react::ObjCTurb
   public NativeVibrationSpecJSI(const facebook::react::ObjCTurboModule::InitParams& params);
 }
 
-class facebook::react::NativeViewTransition : public facebook::react::NativeViewTransitionCxxSpec<facebook::react::NativeViewTransition> {
-  public NativeViewTransition(std::shared_ptr<facebook::react::CallInvoker> jsInvoker);
-  public facebook::jsi::Value findPseudoElementShadowNodeByTag(facebook::jsi::Runtime& rt, double reactTag);
-  public std::optional<facebook::jsi::Object> getViewTransitionInstance(facebook::jsi::Runtime& rt, const std::string& name, const std::string& pseudo);
-  public void transitionAnimationFinished(facebook::jsi::Runtime& rt, double animationId);
-  public void waitForTransitionAnimation(facebook::jsi::Runtime& rt, double animationId);
-}
-
 class facebook::react::NativeWebSocketModuleSpecJSI : public facebook::react::ObjCTurboModule {
   public NativeWebSocketModuleSpecJSI(const facebook::react::ObjCTurboModule::InitParams& params);
-}
-
-class facebook::react::ObjCInteropTurboModule : public facebook::react::ObjCTurboModule {
-  protected virtual NSString* getArgumentTypeName(facebook::jsi::Runtime& runtime, NSString* methodName, int argIndex) override;
-  protected virtual facebook::jsi::Value convertReturnIdToJSIValue(facebook::jsi::Runtime& runtime, const char* methodName, facebook::react::TurboModuleMethodValueKind returnType, id result) override;
-  protected virtual facebook::jsi::Value create(facebook::jsi::Runtime& runtime, const facebook::jsi::PropNameID& propName) override;
-  protected virtual void setInvocationArg(facebook::jsi::Runtime& runtime, const char* methodName, const std::string& objCArgType, const facebook::jsi::Value& arg, size_t i, NSInvocation* inv, NSMutableArray* retainedObjectsForInvocation, bool mustCopyBytes) override;
-  public ObjCInteropTurboModule(const facebook::react::ObjCTurboModule::InitParams& params);
-  public virtual std::vector<facebook::jsi::PropNameID> getPropertyNames(facebook::jsi::Runtime& runtime) override;
-}
-
-struct facebook::react::ObjCInteropTurboModule::MethodDescriptor {
-  public SEL selector;
-  public facebook::react::TurboModuleMethodValueKind jsReturnKind;
-  public size_t jsArgCount;
-  public std::string methodName;
 }
 
 class facebook::react::ObjCTurboModule : public facebook::react::TurboModule {
@@ -4573,6 +4516,7 @@ class facebook::react::ShadowNode : public facebook::react::Sealable, public fac
 
 class facebook::react::ShadowNodeFamily : public facebook::jsi::NativeState {
   public ShadowNodeFamily(const facebook::react::ShadowNodeFamilyFragment& fragment, facebook::react::SharedEventEmitter eventEmitter, facebook::react::EventDispatcher::Weak eventDispatcher, const facebook::react::ComponentDescriptor& componentDescriptor);
+  public bool hasBeenMounted() const;
   public const facebook::react::ComponentDescriptor& getComponentDescriptor() const;
   public facebook::jsi::Value getInstanceHandle(facebook::jsi::Runtime& runtime) const;
   public facebook::react::ComponentHandle getComponentHandle() const;
@@ -4588,6 +4532,7 @@ class facebook::react::ShadowNodeFamily : public facebook::jsi::NativeState {
   public using Shared = std::shared_ptr<facebook::react::ShadowNodeFamily>;
   public using Weak = std::weak_ptr<facebook::react::ShadowNodeFamily>;
   public void dispatchRawState(facebook::react::StateUpdate&& stateUpdate, facebook::react::EventQueue::UpdateMode updateMode);
+  public void onFamilyDestroyed(std::function<void(const facebook::react::ShadowNodeFamily& family)> callback);
   public void onUnmountedFamilyDestroyed(std::function<void(const facebook::react::ShadowNodeFamily& family)> callback);
   public void setInstanceHandle(facebook::react::InstanceHandle::Shared& instanceHandle);
   public void setMostRecentState(const std::shared_ptr<const facebook::react::State>& state);
@@ -4714,12 +4659,6 @@ class facebook::react::TurboModule : public facebook::jsi::HostObject {
 struct facebook::react::TurboModule::MethodMetadata {
   public facebook::jsi::Value(*invoker)(facebook::jsi::Runtime &rt, facebook::react::TurboModule &turboModule, const facebook::jsi::Value *args, size_t count);
   public size_t argCount;
-}
-
-class facebook::react::TurboModuleBinding {
-  public static void install(facebook::jsi::Runtime& runtime, TurboModuleProviderFunctionType&& moduleProvider, TurboModuleProviderFunctionType&& legacyModuleProvider = nullptr, std::shared_ptr<facebook::react::LongLivedObjectCollection> longLivedObjectCollection = nullptr);
-  public static void install(facebook::jsi::Runtime& runtime, facebook::react::TurboModuleProviderFunctionTypeWithRuntime&& moduleProvider, facebook::react::TurboModuleProviderFunctionTypeWithRuntime&& legacyModuleProvider = nullptr, std::shared_ptr<facebook::react::LongLivedObjectCollection> longLivedObjectCollection = nullptr);
-  public ~TurboModuleBinding();
 }
 
 class facebook::react::TurboModuleWithJSIBindings {
@@ -5203,11 +5142,6 @@ enum facebook::react::SchedulerPriority : int {
   UserBlockingPriority,
 }
 
-enum facebook::react::ScriptTag {
-  RAMBundle,
-  String,
-}
-
 enum facebook::react::TransformOperationType : uint8_t {
   Arbitrary,
   Identity,
@@ -5366,20 +5300,13 @@ struct facebook::react::Bridging<void> {
   public static void fromJs(facebook::jsi::Runtime&, const facebook::jsi::Value&);
 }
 
-struct facebook::react::BundleHeader {
-  public BundleHeader();
-  public facebook::react::Magic32 magic32;
-  public uint32_t version;
-  public uint64_t magic64;
-}
-
 struct facebook::react::Color {
-  public Color();
   public Color(const facebook::react::ColorComponents& components);
   public Color(const facebook::react::DynamicColor& dynamicColor);
   public Color(int32_t color);
   public bool operator!=(const facebook::react::Color& other) const;
   public bool operator==(const facebook::react::Color& other) const;
+  public constexpr Color();
   public facebook::react::ColorComponents getColorComponents() const;
   public float getChannel(int channelId) const;
   public int32_t getColor() const;
@@ -5452,12 +5379,6 @@ struct facebook::react::ImageURLLoaderAttribution {
   public std::string queryRootName;
 }
 
-struct facebook::react::LayoutConformanceProps : public facebook::react::YogaStylableProps {
-  public LayoutConformanceProps() = default;
-  public LayoutConformanceProps(const facebook::react::PropsParserContext& context, const facebook::react::LayoutConformanceProps& sourceProps, const facebook::react::RawProps& rawProps);
-  public facebook::react::LayoutConformance mode;
-}
-
 struct facebook::react::LayoutConstraints {
   public facebook::react::LayoutDirection layoutDirection;
   public facebook::react::Size clamp(const facebook::react::Size& size) const;
@@ -5495,11 +5416,6 @@ struct facebook::react::LinearGradient {
   public bool operator==(const facebook::react::LinearGradient& other) const = default;
   public facebook::react::GradientDirection direction;
   public std::vector<facebook::react::ColorStop> colorStops;
-}
-
-struct facebook::react::Magic32 {
-  public uint32_t reserved_;
-  public uint32_t value;
 }
 
 struct facebook::react::ModalHostViewSupportedOrientationsMaskWrapped {
@@ -7928,6 +7844,14 @@ class facebook::jsi::RuntimeDecorator : public facebook::jsi::Runtime {
   public virtual facebook::jsi::ICast* castInterface(const facebook::jsi::UUID& interfaceUUID) override;
   public virtual facebook::jsi::Instrumentation& instrumentation() override;
   public virtual facebook::jsi::Object global() override;
+  public virtual facebook::jsi::Value createError(const facebook::jsi::String& msg) override;
+  public virtual facebook::jsi::Value createEvalError(const facebook::jsi::String& msg) override;
+  public virtual facebook::jsi::Value createRangeError(const facebook::jsi::String& msg) override;
+  public virtual facebook::jsi::Value createReferenceError(const facebook::jsi::String& msg) override;
+  public virtual facebook::jsi::Value createSyntaxError(const facebook::jsi::String& msg) override;
+  public virtual facebook::jsi::Value createTypeError(const facebook::jsi::String& msg) override;
+  public virtual facebook::jsi::Value createURIError(const facebook::jsi::String& msg) override;
+  public virtual facebook::jsi::Value createValueFromJsonUtf8(const uint8_t* json, size_t length) override;
   public virtual facebook::jsi::Value evaluateJavaScript(const std::shared_ptr<const facebook::jsi::Buffer>& buffer, const std::string& sourceURL) override;
   public virtual facebook::jsi::Value evaluatePreparedJavaScript(const std::shared_ptr<const facebook::jsi::PreparedJavaScript>& js) override;
   public virtual std::shared_ptr<const facebook::jsi::PreparedJavaScript> prepareJavaScript(const std::shared_ptr<const facebook::jsi::Buffer>& buffer, std::string sourceURL) override;
@@ -8034,6 +7958,13 @@ class facebook::jsi::WithRuntimeDecorator : public facebook::jsi::RuntimeDecorat
   public virtual facebook::jsi::ICast* castInterface(const facebook::jsi::UUID& interfaceUUID) override;
   public virtual facebook::jsi::Instrumentation& instrumentation() override;
   public virtual facebook::jsi::Object global() override;
+  public virtual facebook::jsi::Value createError(const facebook::jsi::String& msg) override;
+  public virtual facebook::jsi::Value createEvalError(const facebook::jsi::String& msg) override;
+  public virtual facebook::jsi::Value createRangeError(const facebook::jsi::String& msg) override;
+  public virtual facebook::jsi::Value createReferenceError(const facebook::jsi::String& msg) override;
+  public virtual facebook::jsi::Value createSyntaxError(const facebook::jsi::String& msg) override;
+  public virtual facebook::jsi::Value createTypeError(const facebook::jsi::String& msg) override;
+  public virtual facebook::jsi::Value createURIError(const facebook::jsi::String& msg) override;
   public virtual facebook::jsi::Value evaluateJavaScript(const std::shared_ptr<const facebook::jsi::Buffer>& buffer, const std::string& sourceURL) override;
   public virtual facebook::jsi::Value evaluatePreparedJavaScript(const std::shared_ptr<const facebook::jsi::PreparedJavaScript>& js) override;
   public virtual std::shared_ptr<const facebook::jsi::PreparedJavaScript> prepareJavaScript(const std::shared_ptr<const facebook::jsi::Buffer>& buffer, std::string sourceURL) override;
@@ -8398,6 +8329,8 @@ class facebook::yoga::Style {
   public bool isInlineStartPositionAuto(facebook::yoga::FlexDirection axis, facebook::yoga::Direction direction) const;
   public bool isInlineStartPositionDefined(facebook::yoga::FlexDirection axis, facebook::yoga::Direction direction) const;
   public bool operator==(const facebook::yoga::Style& other) const;
+  public bool resolvesAgainstOwnerHeight() const;
+  public bool resolvesAgainstOwnerWidth() const;
   public bool verticalInsetsDefined() const;
   public const facebook::yoga::GridLine& gridColumnEnd() const;
   public const facebook::yoga::GridLine& gridColumnStart() const;
@@ -8760,6 +8693,8 @@ struct facebook::yoga::CachedMeasurement {
   public float availableWidth;
   public float computedHeight;
   public float computedWidth;
+  public float ownerHeight;
+  public float ownerWidth;
 }
 
 struct facebook::yoga::Event {
@@ -8909,6 +8844,9 @@ struct facebook::yoga::LayoutResults {
   public float rawDimension(facebook::yoga::Dimension axis) const;
   public static constexpr int32_t MaxCachedMeasurements;
   public std::array<facebook::yoga::CachedMeasurement, facebook::yoga::LayoutResults::MaxCachedMeasurements> cachedMeasurements;
+  public std::array<float, 2> minContent;
+  public std::array<float, 2> minContentOwnerWidth;
+  public std::array<uint32_t, 2> minContentGeneration;
   public uint32_t computedFlexBasisGeneration;
   public uint32_t configVersion;
   public uint32_t generationCount;

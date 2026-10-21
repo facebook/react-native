@@ -89,9 +89,15 @@ class ShadowNodeFamily final : public jsi::NativeState {
   SharedEventEmitter getEventEmitter() const;
 
   /**
+   * @param callback will be executed when this ShadowNodeFamily is destroyed.
+   */
+  void onFamilyDestroyed(std::function<void(const ShadowNodeFamily &family)> callback);
+
+  /**
    * @param callback will be executed when an unmounted instance of
    * ShadowNodeFamily is destroyed.
    */
+  [[deprecated("Use onFamilyDestroyed and check hasBeenMounted() instead")]]
   void onUnmountedFamilyDestroyed(std::function<void(const ShadowNodeFamily &family)> callback);
 
   /*
@@ -101,9 +107,15 @@ class ShadowNodeFamily final : public jsi::NativeState {
   void setMostRecentState(const std::shared_ptr<const State> &state);
 
   /**
-   * Mark this ShadowNodeFamily as mounted.
+   * Mark this ShadowNodeFamily as part of a committed shadow tree.
    */
   void setMounted();
+
+  /**
+   * Whether this ShadowNodeFamily was ever part of a committed shadow tree.
+   * Its view may not have been mounted on the platform yet.
+   */
+  bool hasBeenMounted() const;
 
   /*
    * Dispatches a state update with given priority.
@@ -128,8 +140,7 @@ class ShadowNodeFamily final : public jsi::NativeState {
   void setInstanceHandle(InstanceHandle::Shared &instanceHandle);
 
   /**
-   * Override destructor to call onUnmountedFamilyDestroyedCallback() for
-   * ShadowViews that were preallocated but never mounted on the screen.
+   * Calls the callback set by onFamilyDestroyed.
    */
   ~ShadowNodeFamily();
 
@@ -148,7 +159,7 @@ class ShadowNodeFamily final : public jsi::NativeState {
   std::shared_ptr<const State> mostRecentState_;
   mutable std::mutex mutex_;
 
-  std::function<void(ShadowNodeFamily &family)> onUnmountedFamilyDestroyedCallback_ = nullptr;
+  std::function<void(ShadowNodeFamily &family)> onFamilyDestroyedCallback_ = nullptr;
 
   /*
    * Deprecated.
@@ -196,7 +207,7 @@ class ShadowNodeFamily final : public jsi::NativeState {
   bool hasParent_{false};
 
   /*
-   * Determines if the ShadowNodeFamily was ever mounted on the screen.
+   * Determines if the ShadowNodeFamily was ever part of a committed shadow tree.
    */
   bool hasBeenMounted_{false};
 };

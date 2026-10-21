@@ -201,6 +201,9 @@ public constructor(
         TextLayoutManager.getTextGravity(attributedString, spanned),
         textBreakStrategy,
         TextAttributeProps.getJustificationMode(props, currentJustificationMode),
+        TextAttributeProps.fromMapBuffer(
+            attributedString.getMapBuffer(TextLayoutManager.AS_KEY_BASE_ATTRIBUTES),
+        ),
     )
   }
 
@@ -230,6 +233,7 @@ public constructor(
         textAlign,
         preparedLayout.textBreakStrategy,
         preparedLayout.justificationMode,
+        preparedLayout.baseTextAttributes,
     )
   }
 

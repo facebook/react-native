@@ -19,7 +19,6 @@
 
 import _inherits from "@babel/runtime/helpers/inherits";
 import _setPrototypeOf from "@babel/runtime/helpers/setPrototypeOf";
-import _slicedToArray from "@babel/runtime/helpers/slicedToArray";
 import _asyncToGenerator from "@babel/runtime/helpers/asyncToGenerator";
 import _classPrivateFieldLooseBase from "@babel/runtime/helpers/classPrivateFieldLooseBase";
 import _classPrivateFieldLooseKey from "@babel/runtime/helpers/classPrivateFieldLooseKey";
@@ -121,8 +120,9 @@ function processUser({
   age = 18,
   ...rest
 }) {
-  var _rest$city = rest.city,
-    city = _rest$city === void 0 ? 'Unknown' : _rest$city;
+  var {
+    city = 'Unknown'
+  } = rest;
   return `${name} (${age}) from ${city}`;
 }
 function mergeConfigs(base, ...overrides) {
@@ -136,10 +136,7 @@ function mergeConfigs(base, ...overrides) {
 }
 function sumPairs(pairs) {
   var total = 0;
-  for (var _ref of pairs) {
-    var _ref2 = _slicedToArray(_ref, 2);
-    var a = _ref2[0];
-    var b = _ref2[1];
+  for (var [a, b] of pairs) {
     total += a + b;
   }
   return total;
@@ -202,14 +199,8 @@ var LegacyComponent = React.createClass({
 function ModernComponent({
   initialCount = 0
 }) {
-  var _useState = useState(initialCount),
-    _useState2 = _slicedToArray(_useState, 2),
-    count = _useState2[0],
-    setCount = _useState2[1];
-  var _useState3 = useState(Status.Active),
-    _useState4 = _slicedToArray(_useState3, 2),
-    status = _useState4[0],
-    setStatus = _useState4[1];
+  var [count, setCount] = useState(initialCount);
+  var [status, setStatus] = useState(Status.Active);
   useEffect(() => {
     var timer = setInterval(() => {
       setCount(c => c + 1);
@@ -227,12 +218,12 @@ function ModernComponent({
     return _handleAsyncClick.apply(this, arguments);
   }
   var handleClick = function () {
-    var _ref3 = _asyncToGenerator(function* () {
+    var _ref = _asyncToGenerator(function* () {
       yield handleAsyncClick();
       setStatus(Status.Pending);
     });
     return function handleClick() {
-      return _ref3.apply(this, arguments);
+      return _ref.apply(this, arguments);
     };
   }();
   return _jsxs("div", {

@@ -348,7 +348,7 @@ class VirtualizedList extends StateSafePureComponent<
     }
   }
 
-  setNativeProps(props: Object) {
+  setNativeProps(props: LegacyObject) {
     if (this._scrollRef) {
       this._scrollRef.setNativeProps(props);
     }
@@ -855,6 +855,7 @@ class VirtualizedList extends StateSafePureComponent<
     this._unregisterFromParent(false);
     // $FlowFixMe[incompatible-type]
     clearTimeout(this._updateCellsToRenderTimeoutID);
+    this._updateCellsToRenderTimeoutID = null;
     this._viewabilityTuples.forEach(tuple => {
       tuple.viewabilityHelper.dispose();
     });
@@ -929,7 +930,7 @@ class VirtualizedList extends StateSafePureComponent<
   }
 
   _pushCells(
-    cells: Array<Object>,
+    cells: Array<any>,
     stickyHeaderIndices: Array<number>,
     stickyIndicesFromProps: ?Set<number>,
     first: number,
@@ -1015,7 +1016,7 @@ class VirtualizedList extends StateSafePureComponent<
     };
   }
 
-  _onUpdateSeparators = (keys: Array<?string>, newProps: Object) => {
+  _onUpdateSeparators = (keys: Array<?string>, newProps: any) => {
     keys.forEach(key => {
       const ref = key != null && this._cellRefs[key];
       ref && ref.updateSeparatorProps(newProps);
@@ -1939,7 +1940,7 @@ class VirtualizedList extends StateSafePureComponent<
     this._onScroll(e);
   }
 
-  _onScroll = (e: Object) => {
+  _onScroll = (e: any) => {
     this._nestedChildLists.forEach(childList => {
       childList._onScroll(e);
     });

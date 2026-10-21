@@ -41,7 +41,6 @@ exports.safeJsonParse = safeJsonParse;
 exports.sumPairs = sumPairs;
 var _inherits2 = _interopRequireDefault(require("@babel/runtime/helpers/inherits"));
 var _setPrototypeOf2 = _interopRequireDefault(require("@babel/runtime/helpers/setPrototypeOf"));
-var _slicedToArray2 = _interopRequireDefault(require("@babel/runtime/helpers/slicedToArray"));
 var _asyncToGenerator2 = _interopRequireDefault(require("@babel/runtime/helpers/asyncToGenerator"));
 var _awaitAsyncGenerator2 = _interopRequireDefault(require("@babel/runtime/helpers/awaitAsyncGenerator"));
 var _wrapAsyncGenerator2 = _interopRequireDefault(require("@babel/runtime/helpers/wrapAsyncGenerator"));
@@ -139,8 +138,9 @@ function processUser({
   age = 18,
   ...rest
 }) {
-  var _rest$city = rest.city,
-    city = _rest$city === void 0 ? 'Unknown' : _rest$city;
+  var {
+    city = 'Unknown'
+  } = rest;
   return `${name} (${age}) from ${city}`;
 }
 function mergeConfigs(base, ...overrides) {
@@ -155,10 +155,7 @@ function mergeConfigs(base, ...overrides) {
 function sumPairs(pairs) {
   var total = 0;
   for (var _iterator = _createForOfIteratorHelperLoose(pairs), _step; !(_step = _iterator()).done;) {
-    var _ref = _step.value;
-    var _ref2 = (0, _slicedToArray2.default)(_ref, 2);
-    var a = _ref2[0];
-    var b = _ref2[1];
+    var [a, b] = _step.value;
     total += a + b;
   }
   return total;
@@ -222,14 +219,8 @@ var LegacyComponent = exports.LegacyComponent = React.createClass({
 function ModernComponent({
   initialCount = 0
 }) {
-  var _useState = (0, _react.useState)(initialCount),
-    _useState2 = (0, _slicedToArray2.default)(_useState, 2),
-    count = _useState2[0],
-    setCount = _useState2[1];
-  var _useState3 = (0, _react.useState)(Status.Active),
-    _useState4 = (0, _slicedToArray2.default)(_useState3, 2),
-    status = _useState4[0],
-    setStatus = _useState4[1];
+  var [count, setCount] = (0, _react.useState)(initialCount);
+  var [status, setStatus] = (0, _react.useState)(Status.Active);
   (0, _react.useEffect)(() => {
     var timer = setInterval(() => {
       setCount(c => c + 1);
@@ -247,12 +238,12 @@ function ModernComponent({
     return _handleAsyncClick.apply(this, arguments);
   }
   var handleClick = function () {
-    var _ref3 = (0, _asyncToGenerator2.default)(function* () {
+    var _ref = (0, _asyncToGenerator2.default)(function* () {
       yield handleAsyncClick();
       setStatus(Status.Pending);
     });
     return function handleClick() {
-      return _ref3.apply(this, arguments);
+      return _ref.apply(this, arguments);
     };
   }();
   return (0, _jsxRuntime.jsxs)("div", {

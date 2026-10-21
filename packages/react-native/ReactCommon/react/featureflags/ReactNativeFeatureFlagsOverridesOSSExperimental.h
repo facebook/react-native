@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<03cfd37618eb47d4612a78af04c9332f>>
+ * @generated SignedSource<<ce1f3ba8d99493c855b95ce9929716ac>>
  */
 
 /**
@@ -28,6 +28,10 @@ namespace facebook::react {
 class ReactNativeFeatureFlagsOverridesOSSExperimental : public ReactNativeFeatureFlagsOverridesOSSCanary {
  public:
     ReactNativeFeatureFlagsOverridesOSSExperimental() = default;
+
+  bool disableIdleEventDispatchFrameCallbackRearmAndroid() override {
+    return true;
+  }
 
   bool disableIdleMountItemFrameCallbackRearmAndroid() override {
     return true;

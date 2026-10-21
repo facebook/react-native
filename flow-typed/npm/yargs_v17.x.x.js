@@ -103,7 +103,7 @@ declare module 'yargs' {
       builder?:
         | {[key: string]: Options, ...}
         | ((yargsInstance: Yargs) => unknown),
-      handler?: Function,
+      handler?: any,
     ): this;
     command(
       cmd: string | Array<string>,

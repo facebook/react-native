@@ -758,7 +758,7 @@ public open class ReactTextInputManager public constructor() :
     } else if (KEYBOARD_TYPE_VISIBLE_PASSWORD.equals(keyboardType, ignoreCase = true)) {
       // This will supersede secureTextEntry={false}. If it doesn't, due to the way
       //  the flags work out, the underlying field will end up a URI-type field.
-      flagsToSet = InputType.TYPE_TEXT_VARIATION_VISIBLE_PASSWORD
+      flagsToSet = InputType.TYPE_CLASS_TEXT or InputType.TYPE_TEXT_VARIATION_VISIBLE_PASSWORD
     } else if (KEYBOARD_TYPE_URI.equals(keyboardType, ignoreCase = true)) {
       flagsToSet = InputType.TYPE_CLASS_TEXT or InputType.TYPE_TEXT_VARIATION_URI
     }

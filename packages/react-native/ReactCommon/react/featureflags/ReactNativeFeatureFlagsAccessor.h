@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<bb4e2abea4bad1fa19519df5b3c01c13>>
+ * @generated SignedSource<<074e6ad1d773f289f93ce1d16656ec6e>>
  */
 
 /**
@@ -39,6 +39,7 @@ class ReactNativeFeatureFlagsAccessor {
   bool cxxNativeAnimatedEnabled();
   bool defaultTextToOverflowHidden();
   bool disableEarlyViewCommandExecution();
+  bool disableIdleEventDispatchFrameCallbackRearmAndroid();
   bool disableIdleMountItemFrameCallbackRearmAndroid();
   bool disableImageViewPreallocationAndroid();
   bool disableMountItemReorderingAndroid();
@@ -93,6 +94,7 @@ class ReactNativeFeatureFlagsAccessor {
   bool enableVirtualViewContainerStateExperimental();
   bool fixBorderlessRippleAndroid();
   bool fixMappingOfEventPrioritiesBetweenFabricAndReact();
+  bool fixTextLayoutOnPixelDensityChange();
   bool fixYogaFlexBasisFitContentInMainAxis();
   bool fuseboxAssertSingleHostState();
   bool fuseboxEnabledRelease();
@@ -121,6 +123,7 @@ class ReactNativeFeatureFlagsAccessor {
   bool useSharedAnimatedBackend();
   bool useTraitHiddenOnAndroid();
   bool useTurboModuleInterop();
+  bool useWindowDensityForDisplayMetricsAndroid();
   double viewCullingOutsetRatio();
   bool viewTransitionEnabled();
   bool viewTransitionUseHardwareBitmapAndroid();
@@ -136,13 +139,14 @@ class ReactNativeFeatureFlagsAccessor {
   std::unique_ptr<ReactNativeFeatureFlagsProvider> currentProvider_;
   bool wasOverridden_;
 
-  std::array<std::atomic<const char*>, 91> accessedFeatureFlags_;
+  std::array<std::atomic<const char*>, 94> accessedFeatureFlags_;
 
   std::atomic<std::optional<bool>> commonTestFlag_;
   std::atomic<std::optional<bool>> cdpInteractionMetricsEnabled_;
   std::atomic<std::optional<bool>> cxxNativeAnimatedEnabled_;
   std::atomic<std::optional<bool>> defaultTextToOverflowHidden_;
   std::atomic<std::optional<bool>> disableEarlyViewCommandExecution_;
+  std::atomic<std::optional<bool>> disableIdleEventDispatchFrameCallbackRearmAndroid_;
   std::atomic<std::optional<bool>> disableIdleMountItemFrameCallbackRearmAndroid_;
   std::atomic<std::optional<bool>> disableImageViewPreallocationAndroid_;
   std::atomic<std::optional<bool>> disableMountItemReorderingAndroid_;
@@ -197,6 +201,7 @@ class ReactNativeFeatureFlagsAccessor {
   std::atomic<std::optional<bool>> enableVirtualViewContainerStateExperimental_;
   std::atomic<std::optional<bool>> fixBorderlessRippleAndroid_;
   std::atomic<std::optional<bool>> fixMappingOfEventPrioritiesBetweenFabricAndReact_;
+  std::atomic<std::optional<bool>> fixTextLayoutOnPixelDensityChange_;
   std::atomic<std::optional<bool>> fixYogaFlexBasisFitContentInMainAxis_;
   std::atomic<std::optional<bool>> fuseboxAssertSingleHostState_;
   std::atomic<std::optional<bool>> fuseboxEnabledRelease_;
@@ -225,6 +230,7 @@ class ReactNativeFeatureFlagsAccessor {
   std::atomic<std::optional<bool>> useSharedAnimatedBackend_;
   std::atomic<std::optional<bool>> useTraitHiddenOnAndroid_;
   std::atomic<std::optional<bool>> useTurboModuleInterop_;
+  std::atomic<std::optional<bool>> useWindowDensityForDisplayMetricsAndroid_;
   std::atomic<std::optional<double>> viewCullingOutsetRatio_;
   std::atomic<std::optional<bool>> viewTransitionEnabled_;
   std::atomic<std::optional<bool>> viewTransitionUseHardwareBitmapAndroid_;

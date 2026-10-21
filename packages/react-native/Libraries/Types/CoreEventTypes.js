@@ -86,8 +86,7 @@ export type SafeAreaInsets = Readonly<{
 export type SafeAreaInsetsChangeEvent = NativeSyntheticEvent<
   Readonly<{
     /**
-     * The part of the view that is covered by the system UI, in the view's own
-     * coordinate space.
+     * Inset measurements in points (iOS) or dp (Android), not display pixels.
      */
     insets: SafeAreaInsets,
   }>,

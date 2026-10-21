@@ -39,6 +39,8 @@ class UtilsTests < Test::Unit::TestCase
         ENV['USE_FRAMEWORKS'] = nil
         ENV['RCT_REMOVE_LEGACY_MODULE_INTEROP'] = nil
         ENV['RCT_REMOVE_LEGACY_COMPONENT_INTEROP'] = nil
+        ENV['RN_STRICT_API'] = nil
+        ENV['RN_ALLOW_FRAMEWORKS'] = nil
         system_reset_commands
         $RN_PLATFORMS = nil
     end
@@ -614,6 +616,79 @@ class UtilsTests < Test::Unit::TestCase
     end
 
     # ==================================== #
+    # Test - Set strict C++ API flags      #
+    # ==================================== #
+
+    def strict_cxx_api_installer_mock(user_project_mock, pods_project_mock)
+        return InstallerMock.new(pods_project_mock, [AggregatedProjectMock.new(user_project_mock)])
+    end
+
+    def strict_cxx_api_pods_project_mock
+        return PodsProjectMock.new([], {"hermes-engine" => {}}, "test/path-pod.xcodeproj", [
+            BuildConfigurationMock.new("Debug"),
+            BuildConfigurationMock.new("Release"),
+        ])
+    end
+
+    def assert_strict_cxx_api_flags(project_mock, strict:, allow_frameworks:)
+        project_mock.build_configurations.each do |config|
+            ["OTHER_CFLAGS", "OTHER_CPLUSPLUSFLAGS"].each do |key|
+                setting = config.build_settings[key]
+                assert_equal(strict, setting.include?("-DRN_STRICT_API"))
+                assert_equal(allow_frameworks, setting.include?("-DRN_ALLOW_FRAMEWORKS"))
+            end
+        end
+    end
+
+    def run_set_strict_cxx_api_flags
+        user_project_mock = prepare_empty_user_project_mock()
+        pods_project_mock = strict_cxx_api_pods_project_mock()
+        ReactNativePodsUtils.set_strict_cxx_api_flags(
+            strict_cxx_api_installer_mock(user_project_mock, pods_project_mock)
+        )
+        return [user_project_mock, pods_project_mock]
+    end
+
+    def test_setStrictCxxApiFlags_whenUnset_addsNothing
+        run_set_strict_cxx_api_flags().each do |project_mock|
+            assert_strict_cxx_api_flags(project_mock, strict: false, allow_frameworks: false)
+        end
+    end
+
+    def test_setStrictCxxApiFlags_whenStrictEnabled_addsRnStrictApiToUserAndPodsProjects
+        ENV['RN_STRICT_API'] = '1'
+        run_set_strict_cxx_api_flags().each do |project_mock|
+            assert_strict_cxx_api_flags(project_mock, strict: true, allow_frameworks: false)
+        end
+    end
+
+    def test_setStrictCxxApiFlags_whenAllowFrameworksEnabled_addsRnAllowFrameworksToUserAndPodsProjects
+        ENV['RN_ALLOW_FRAMEWORKS'] = '1'
+        run_set_strict_cxx_api_flags().each do |project_mock|
+            assert_strict_cxx_api_flags(project_mock, strict: false, allow_frameworks: true)
+        end
+    end
+
+    def test_setStrictCxxApiFlags_whenDisabled_removesPreviouslyAddedFlags
+        # Arrange
+        ENV['RN_STRICT_API'] = '1'
+        ENV['RN_ALLOW_FRAMEWORKS'] = '1'
+        user_project_mock = prepare_empty_user_project_mock()
+        pods_project_mock = strict_cxx_api_pods_project_mock()
+        installer = strict_cxx_api_installer_mock(user_project_mock, pods_project_mock)
+        ReactNativePodsUtils.set_strict_cxx_api_flags(installer)
+
+        # Act
+        ENV['RN_STRICT_API'] = '0'
+        ENV['RN_ALLOW_FRAMEWORKS'] = '0'
+        ReactNativePodsUtils.set_strict_cxx_api_flags(installer)
+
+        # Assert
+        assert_strict_cxx_api_flags(user_project_mock, strict: false, allow_frameworks: false)
+        assert_strict_cxx_api_flags(pods_project_mock, strict: false, allow_frameworks: false)
+    end
+
+    # ==================================== #
     # Test - Set build setting             #
     # ==================================== #
 
@@ -782,7 +857,7 @@ class UtilsTests < Test::Unit::TestCase
         # Assert
         user_project_mock.build_configurations.each do |config|
             received_search_path = config.build_settings["HEADER_SEARCH_PATHS"]
-            expected_search_path = "$(inherited) ${PODS_CONFIGURATION_BUILD_DIR}/ReactCommon/ReactCommon.framework/Headers ${PODS_CONFIGURATION_BUILD_DIR}/ReactCommon/ReactCommon.framework/Headers/react/nativemodule/core ${PODS_CONFIGURATION_BUILD_DIR}/React-runtimeexecutor/React_runtimeexecutor.framework/Headers ${PODS_CONFIGURATION_BUILD_DIR}/React-runtimeexecutor/React_runtimeexecutor.framework/Headers/platform/ios ${PODS_CONFIGURATION_BUILD_DIR}/ReactCommon-Samples/ReactCommon_Samples.framework/Headers ${PODS_CONFIGURATION_BUILD_DIR}/ReactCommon-Samples/ReactCommon_Samples.framework/Headers/platform/ios ${PODS_CONFIGURATION_BUILD_DIR}/React-Fabric/React_Fabric.framework/Headers/react/renderer/components/view/platform/cxx ${PODS_CONFIGURATION_BUILD_DIR}/React-Fabric/React_Fabric.framework/Headers/react/renderer/components/scrollview/platform/cxx ${PODS_CONFIGURATION_BUILD_DIR}/React-Fabric/React_Fabric.framework/Headers/react/renderer/components/scrollview/platform/ios ${PODS_CONFIGURATION_BUILD_DIR}/React-Fabric/React_Fabric.framework/Headers ${PODS_CONFIGURATION_BUILD_DIR}/React-debug/React_debug.framework/Headers ${PODS_CONFIGURATION_BUILD_DIR}/React-rendererdebug/React_rendererdebug.framework/Headers ${PODS_CONFIGURATION_BUILD_DIR}/React-timing/React_timing.framework/Headers ${PODS_CONFIGURATION_BUILD_DIR}/React-utils/React_utils.framework/Headers ${PODS_CONFIGURATION_BUILD_DIR}/React-FabricComponents/React_FabricComponents.framework/Headers/react/renderer/textlayoutmanager/platform/ios ${PODS_CONFIGURATION_BUILD_DIR}/React-FabricComponents/React_FabricComponents.framework/Headers/react/renderer/components/text/platform/cxx ${PODS_CONFIGURATION_BUILD_DIR}/React-FabricComponents/React_FabricComponents.framework/Headers/react/renderer/components/textinput/platform/ios ${PODS_CONFIGURATION_BUILD_DIR}/React-FabricComponents/React_FabricComponents.framework/Headers/react/renderer/components/switch/iosswitch ${PODS_CONFIGURATION_BUILD_DIR}/React-NativeModulesApple/React_NativeModulesApple.framework/Headers ${PODS_CONFIGURATION_BUILD_DIR}/React-bridging/React_bridging.framework/Headers ${PODS_CONFIGURATION_BUILD_DIR}/React-graphics/React_graphics.framework/Headers ${PODS_CONFIGURATION_BUILD_DIR}/React-graphics/React_graphics.framework/Headers/react/renderer/graphics/platform/ios ${PODS_CONFIGURATION_BUILD_DIR}/React-featureflags/React_featureflags.framework/Headers ${PODS_CONFIGURATION_BUILD_DIR}/React-renderercss/React_renderercss.framework/Headers ${PODS_CONFIGURATION_BUILD_DIR}/React-cxxstableapi/React_cxxstableapi.framework/Headers"
+            expected_search_path = "$(inherited) ${PODS_CONFIGURATION_BUILD_DIR}/ReactCommon/ReactCommon.framework/Headers ${PODS_CONFIGURATION_BUILD_DIR}/ReactCommon/ReactCommon.framework/Headers/react/nativemodule/core ${PODS_CONFIGURATION_BUILD_DIR}/React-runtimeexecutor/React_runtimeexecutor.framework/Headers ${PODS_CONFIGURATION_BUILD_DIR}/React-runtimeexecutor/React_runtimeexecutor.framework/Headers/platform/ios ${PODS_CONFIGURATION_BUILD_DIR}/ReactCommon-Samples/ReactCommon_Samples.framework/Headers ${PODS_CONFIGURATION_BUILD_DIR}/ReactCommon-Samples/ReactCommon_Samples.framework/Headers/platform/ios ${PODS_CONFIGURATION_BUILD_DIR}/React-Fabric/React_Fabric.framework/Headers/react/renderer/components/view/platform/cxx ${PODS_CONFIGURATION_BUILD_DIR}/React-Fabric/React_Fabric.framework/Headers/react/renderer/components/scrollview/platform/cxx ${PODS_CONFIGURATION_BUILD_DIR}/React-Fabric/React_Fabric.framework/Headers/react/renderer/components/scrollview/platform/ios ${PODS_CONFIGURATION_BUILD_DIR}/React-Fabric/React_Fabric.framework/Headers ${PODS_CONFIGURATION_BUILD_DIR}/React-callinvoker/React_callinvoker.framework/Headers ${PODS_CONFIGURATION_BUILD_DIR}/React-cxxreact/React_cxxreact.framework/Headers ${PODS_CONFIGURATION_BUILD_DIR}/React-debug/React_debug.framework/Headers ${PODS_CONFIGURATION_BUILD_DIR}/React-rendererdebug/React_rendererdebug.framework/Headers ${PODS_CONFIGURATION_BUILD_DIR}/React-timing/React_timing.framework/Headers ${PODS_CONFIGURATION_BUILD_DIR}/React-utils/React_utils.framework/Headers ${PODS_CONFIGURATION_BUILD_DIR}/React-FabricComponents/React_FabricComponents.framework/Headers/react/renderer/textlayoutmanager/platform/ios ${PODS_CONFIGURATION_BUILD_DIR}/React-FabricComponents/React_FabricComponents.framework/Headers/react/renderer/components/text/platform/cxx ${PODS_CONFIGURATION_BUILD_DIR}/React-FabricComponents/React_FabricComponents.framework/Headers/react/renderer/components/textinput/platform/ios ${PODS_CONFIGURATION_BUILD_DIR}/React-FabricComponents/React_FabricComponents.framework/Headers/react/renderer/components/switch/iosswitch ${PODS_CONFIGURATION_BUILD_DIR}/React-NativeModulesApple/React_NativeModulesApple.framework/Headers ${PODS_CONFIGURATION_BUILD_DIR}/React-bridging/React_bridging.framework/Headers ${PODS_CONFIGURATION_BUILD_DIR}/React-graphics/React_graphics.framework/Headers ${PODS_CONFIGURATION_BUILD_DIR}/React-graphics/React_graphics.framework/Headers/react/renderer/graphics/platform/ios ${PODS_CONFIGURATION_BUILD_DIR}/React-featureflags/React_featureflags.framework/Headers ${PODS_CONFIGURATION_BUILD_DIR}/React-renderercss/React_renderercss.framework/Headers ${PODS_CONFIGURATION_BUILD_DIR}/React-cxxstableapi/React_cxxstableapi.framework/Headers"
             assert_equal(expected_search_path, received_search_path)
         end
 
@@ -986,6 +1061,8 @@ class UtilsTests < Test::Unit::TestCase
 
         assert_equal([
             "${PODS_CONFIGURATION_BUILD_DIR}/React-Fabric/React_Fabric.framework/Headers",
+            "${PODS_CONFIGURATION_BUILD_DIR}/React-callinvoker/React_callinvoker.framework/Headers",
+            "${PODS_CONFIGURATION_BUILD_DIR}/React-cxxreact/React_cxxreact.framework/Headers",
             "${PODS_CONFIGURATION_BUILD_DIR}/React-debug/React_debug.framework/Headers",
             "${PODS_CONFIGURATION_BUILD_DIR}/React-rendererdebug/React_rendererdebug.framework/Headers",
             "${PODS_CONFIGURATION_BUILD_DIR}/React-timing/React_timing.framework/Headers",

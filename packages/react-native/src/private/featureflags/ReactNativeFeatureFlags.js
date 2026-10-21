@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<af6139096ee6674041dc18f92a7d1f91>>
+ * @generated SignedSource<<f36d78d946c018d3dd3fc30f6071ee76>>
  * @flow strict
  * @noformat
  */
@@ -34,7 +34,6 @@ export type ReactNativeFeatureFlagsJsOnly = Readonly<{
   animatedKeepListenersOnDetach: Getter<boolean>,
   animatedShouldSyncValueBeforeStartCallback: Getter<boolean>,
   deferFlatListFocusChangeRenderUpdate: Getter<boolean>,
-  enableImperativeEvents_DEPRECATED: Getter<boolean>,
   enableNativeEventTargetEventDispatching: Getter<boolean>,
   externalElementInspectionEnabled: Getter<boolean>,
   fixCrossOrientationNestedListViewability: Getter<boolean>,
@@ -55,6 +54,7 @@ export type ReactNativeFeatureFlags = Readonly<{
   cxxNativeAnimatedEnabled: Getter<boolean>,
   defaultTextToOverflowHidden: Getter<boolean>,
   disableEarlyViewCommandExecution: Getter<boolean>,
+  disableIdleEventDispatchFrameCallbackRearmAndroid: Getter<boolean>,
   disableIdleMountItemFrameCallbackRearmAndroid: Getter<boolean>,
   disableImageViewPreallocationAndroid: Getter<boolean>,
   disableMountItemReorderingAndroid: Getter<boolean>,
@@ -109,6 +109,7 @@ export type ReactNativeFeatureFlags = Readonly<{
   enableVirtualViewContainerStateExperimental: Getter<boolean>,
   fixBorderlessRippleAndroid: Getter<boolean>,
   fixMappingOfEventPrioritiesBetweenFabricAndReact: Getter<boolean>,
+  fixTextLayoutOnPixelDensityChange: Getter<boolean>,
   fixYogaFlexBasisFitContentInMainAxis: Getter<boolean>,
   fuseboxAssertSingleHostState: Getter<boolean>,
   fuseboxEnabledRelease: Getter<boolean>,
@@ -137,6 +138,7 @@ export type ReactNativeFeatureFlags = Readonly<{
   useSharedAnimatedBackend: Getter<boolean>,
   useTraitHiddenOnAndroid: Getter<boolean>,
   useTurboModuleInterop: Getter<boolean>,
+  useWindowDensityForDisplayMetricsAndroid: Getter<boolean>,
   viewCullingOutsetRatio: Getter<number>,
   viewTransitionEnabled: Getter<boolean>,
   viewTransitionUseHardwareBitmapAndroid: Getter<boolean>,
@@ -172,11 +174,6 @@ export const animatedShouldSyncValueBeforeStartCallback: Getter<boolean> = creat
  * Use the deferred cell render update mechanism for focus change in FlatList.
  */
 export const deferFlatListFocusChangeRenderUpdate: Getter<boolean> = createJavaScriptFlagGetter('deferFlatListFocusChangeRenderUpdate', false);
-
-/**
- * Deprecated in favor of the common flag with the same name, which is the one that can be configured by OSS release stage. This is only kept so JS bundles delivered to older native builds, where the common flag is unavailable, can still enable the feature.
- */
-export const enableImperativeEvents_DEPRECATED: Getter<boolean> = createJavaScriptFlagGetter('enableImperativeEvents_DEPRECATED', false);
 
 /**
  * When enabled, the React Native renderer dispatches events through the W3C EventTarget API (addEventListener/dispatchEvent) instead of the legacy plugin-based system.
@@ -242,6 +239,10 @@ export const defaultTextToOverflowHidden: Getter<boolean> = createNativeFlagGett
  * Dispatch view commands in mount item order.
  */
 export const disableEarlyViewCommandExecution: Getter<boolean> = createNativeFlagGetter('disableEarlyViewCommandExecution', false);
+/**
+ * Make the batched-event-dispatch Choreographer frame callback one-shot on Android instead of re-posting itself every frame
+ */
+export const disableIdleEventDispatchFrameCallbackRearmAndroid: Getter<boolean> = createNativeFlagGetter('disableIdleEventDispatchFrameCallbackRearmAndroid', false);
 /**
  * Stop re-arming the DISPATCH_UI Choreographer frame callback at vsync rate while no mount items are pending on Android; queueing new items re-arms it
  */
@@ -459,6 +460,10 @@ export const fixBorderlessRippleAndroid: Getter<boolean> = createNativeFlagGette
  */
 export const fixMappingOfEventPrioritiesBetweenFabricAndReact: Getter<boolean> = createNativeFlagGetter('fixMappingOfEventPrioritiesBetweenFabricAndReact', false);
 /**
+ * Re-measures text and re-sends padding and overflow insets to mounted views when the pixel density changes, so text and padded views do not keep sizes from the old density.
+ */
+export const fixTextLayoutOnPixelDensityChange: Getter<boolean> = createNativeFlagGetter('fixTextLayoutOnPixelDensityChange', false);
+/**
  * Fix flex basis computation to not apply FitContent constraint in the main axis for non-measure container nodes, preventing unnecessary re-measurement in scroll containers.
  */
 export const fixYogaFlexBasisFitContentInMainAxis: Getter<boolean> = createNativeFlagGetter('fixYogaFlexBasisFitContentInMainAxis', false);
@@ -570,6 +575,10 @@ export const useTraitHiddenOnAndroid: Getter<boolean> = createNativeFlagGetter('
  * In Bridgeless mode, should legacy NativeModules use the TurboModule system?
  */
 export const useTurboModuleInterop: Getter<boolean> = createNativeFlagGetter('useTurboModuleInterop', false);
+/**
+ * Keeps the window density in the screen display metrics instead of the physical display density, so text is measured at the density the window renders at.
+ */
+export const useWindowDensityForDisplayMetricsAndroid: Getter<boolean> = createNativeFlagGetter('useWindowDensityForDisplayMetricsAndroid', false);
 /**
  * Outset the culling context frame with the provided ratio. The culling context frame size will be outset by width * ratio on the left and right, and height * ratio on the top and bottom.
  */
