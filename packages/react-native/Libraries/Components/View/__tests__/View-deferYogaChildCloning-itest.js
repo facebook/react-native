@@ -17,7 +17,7 @@ import * as Fantom from '@react-native/fantom';
 import nullthrows from 'nullthrows';
 import * as React from 'react';
 import {useState} from 'react';
-import {ScrollView, TextInput, View} from 'react-native';
+import {ScrollView, Text, TextInput, View} from 'react-native';
 
 // With `deferYogaChildCloningUntilLayout`, the unchanged children of a node
 // that gets a new list of children stay shared with the previous revision of
@@ -31,6 +31,39 @@ function rectOf(ref: {
 }): [number, number, number, number] {
   const rect = nullthrows(ref.current).getBoundingClientRect();
   return [rect.x, rect.y, rect.width, rect.height];
+}
+
+type Refs = ReadonlyArray<React.RefObject<HostInstance | null>>;
+
+function createRefs(count: number): Refs {
+  return Array.from({length: count}, () => React.createRef<HostInstance>());
+}
+
+// Renders `steps` one commit at a time, then renders the last step into a
+// fresh root, and checks that both roots end up with the same layout.
+function expectSameLayoutAsFreshRender(
+  render: (step: number, refs: Refs) => React.MixedElement,
+  stepCount: number,
+  refCount: number,
+): void {
+  const refs = createRefs(refCount);
+  const root = Fantom.createRoot();
+  for (let step = 0; step < stepCount; step++) {
+    Fantom.runTask(() => {
+      root.render(render(step, refs));
+    });
+  }
+
+  const freshRefs = createRefs(refCount);
+  const freshRoot = Fantom.createRoot();
+  Fantom.runTask(() => {
+    freshRoot.render(render(stepCount - 1, freshRefs));
+  });
+
+  expect(refs.map(rectOf)).toEqual(freshRefs.map(rectOf));
+
+  root.destroy();
+  freshRoot.destroy();
 }
 
 function Rows({
@@ -275,6 +308,101 @@ describe('deferYogaChildCloningUntilLayout', () => {
     expect(rectOf(afterRef)).toEqual([0, 30, 390, 10]);
 
     root.destroy();
+  });
+
+  it('lays out shared children of a node whose layout comes from the cache', () => {
+    // The container's height changes while the row's size doesn't, so Yoga
+    // restores the row from its cache; then a sibling changes color.
+    expectSameLayoutAsFreshRender(
+      (step, refs) => (
+        <View
+          collapsable={false}
+          style={{
+            height: step % 2 === 0 ? 300 : 400,
+            justifyContent: 'center',
+          }}>
+          <View collapsable={false} style={{flexDirection: 'row'}}>
+            <View ref={refs[0]} style={{width: 20, height: 20}} />
+            <View
+              ref={refs[1]}
+              style={{
+                width: 20,
+                height: 20,
+                backgroundColor: step < 2 ? 'red' : 'blue',
+              }}
+            />
+          </View>
+          <View ref={refs[2]} style={{height: 10}} />
+        </View>
+      ),
+      5,
+      3,
+    );
+  });
+
+  it('positions an absolute child of a shared static node', () => {
+    expectSameLayoutAsFreshRender(
+      (step, refs) => (
+        <View
+          ref={refs[0]}
+          collapsable={false}
+          style={{width: 200, height: step < 2 ? 100 : 150}}>
+          <View ref={refs[1]} collapsable={false} style={{position: 'static'}}>
+            <View
+              ref={refs[2]}
+              style={{position: 'absolute', bottom: 0, width: 10, height: 10}}
+            />
+          </View>
+          <View
+            ref={refs[3]}
+            style={{height: 10, backgroundColor: step < 1 ? 'red' : 'blue'}}
+          />
+        </View>
+      ),
+      3,
+      4,
+    );
+  });
+
+  it('lays out shared children of a display: contents node', () => {
+    expectSameLayoutAsFreshRender(
+      (step, refs) => (
+        <View collapsable={false}>
+          <View style={{display: 'contents'}}>
+            <View ref={refs[0]} style={{height: step < 2 ? 10 : 30}} />
+            <View ref={refs[1]} style={{height: 10}} />
+          </View>
+          <View
+            ref={refs[2]}
+            style={{height: 10, backgroundColor: step < 1 ? 'red' : 'blue'}}
+          />
+        </View>
+      ),
+      3,
+      3,
+    );
+  });
+
+  it('aligns shared text to the baseline', () => {
+    expectSameLayoutAsFreshRender(
+      (step, refs) => (
+        <View
+          collapsable={false}
+          style={{flexDirection: 'row', alignItems: 'baseline'}}>
+          <Text ref={refs[0]} style={{fontSize: step < 2 ? 10 : 20}}>
+            Hello
+          </Text>
+          <Text
+            ref={refs[1]}
+            style={{fontSize: 10, color: step < 1 ? 'red' : 'blue'}}>
+            World
+          </Text>
+          <View ref={refs[2]} style={{width: 10, height: 10}} />
+        </View>
+      ),
+      3,
+      3,
+    );
   });
 
   // The same steps as View-yogaNodeOwnerAssertion-itest.js, which once left

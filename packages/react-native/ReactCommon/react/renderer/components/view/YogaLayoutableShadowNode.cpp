@@ -756,6 +756,19 @@ void YogaLayoutableShadowNode::layout(LayoutContext layoutContext) {
   // Reading data from a dirtied node does not make sense.
   react_native_assert(!YGNodeIsDirty(&yogaNode_));
 
+  if (ReactNativeFeatureFlags::deferYogaChildCloningUntilLayout()) {
+    // A child that Yoga lays out is a clone that this node owns, but Yoga can
+    // set a new layout on this node from its cache without cloning its
+    // children. A child that is still shared with another revision must not
+    // be written to below, so clone it first if it carries a new layout.
+    for (size_t i = 0; i < yogaLayoutableChildren_.size(); i++) {
+      const auto& child = *yogaLayoutableChildren_[i];
+      if (child.yogaNode_.getHasNewLayout() && !doesOwn(child)) {
+        cloneChildInPlace(i);
+      }
+    }
+  }
+
   for (auto childYogaNode : yogaNode_.getChildren()) {
     auto& childNode = shadowNodeFromContext(childYogaNode);
 
