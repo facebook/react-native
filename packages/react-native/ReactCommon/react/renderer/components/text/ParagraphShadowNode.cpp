@@ -77,8 +77,14 @@ ParagraphShadowNode::ParagraphShadowNode(
       // `findUsableLayout`). Text that fits its font size to the constraints
       // can measure the same under different constraints with a different
       // font size, so its layouts are not kept.
-      if (!source.content_->paragraphAttributes.adjustsFontSizeToFit) {
-        measuredLayouts_ = source.measuredLayouts_;
+      //
+      // Only the layout the source used is kept (`layout` drops the others).
+      // Every layout holds a JNI global reference on Android, so carrying all
+      // of them would let them pile up across revisions when only the
+      // constraints change, until the global reference table overflows.
+      if (!source.content_->paragraphAttributes.adjustsFontSizeToFit &&
+          !source.measuredLayouts_.empty()) {
+        measuredLayouts_.push_back(source.measuredLayouts_.back());
       }
     }
   }
@@ -418,6 +424,15 @@ void ParagraphShadowNode::layout(LayoutContext layoutContext) {
       }
       react_native_assert(measuredLayout);
       updateStateIfNeeded<ParagraphState>(content, *measuredLayout);
+
+      // Only this layout can be reused by a later revision (see the copy
+      // constructor), so drop the others measured for this one.
+      if (measuredLayouts_.size() > 1) {
+        auto usedLayout = std::move(*measuredLayout);
+        measuredLayouts_.clear();
+        measuredLayouts_.push_back(std::move(usedLayout));
+        measuredLayout = &measuredLayouts_.back();
+      }
 
     } else if (ReactNativeFeatureFlags::fixTextLayoutOnPixelDensityChange()) {
       MeasuredPreparedTextLayout unpreparedLayout;
