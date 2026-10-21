@@ -29,7 +29,7 @@ jobs:
       - name: Setup Node.js
         uses: ./.github/actions/setup-node
       - name: Download App
-        uses: actions/download-artifact@v7
+        uses: ./.github/actions/download-artifact
         with:
           name: RNTesterApp-NewArch-${{ matrix.flavor }}
           path: /tmp/RNTesterBuild/RNTester.app
