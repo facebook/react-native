@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<9d10bd1b003d8b0de95141f5676877a2>>
+ * @generated SignedSource<<5a79107fda7ef89a1d68594cad01b8e7>>
  * @flow strict
  * @noformat
  */
@@ -398,7 +398,7 @@ export const enableLayoutAnimationsOnIOS: Getter<boolean> = createNativeFlagGett
  */
 export const enableModuleArgumentNSNullConversionIOS: Getter<boolean> = createNativeFlagGetter('enableModuleArgumentNSNullConversionIOS', false);
 /**
- * When enabled, Android mounts transactions with the pull model (like iOS): the commit thread no longer pulls and builds the mount batch in schedulerShouldRenderTransactions. Instead the UI thread pulls the transaction itself via a PullTransactionMountItem enqueued in the MountItemDispatcher, builds the IntBufferBatchMountItem, and applies it synchronously. Requires `enableAccumulatedUpdatesInRawPropsAndroid` to be enabled as well, since a single pull may collapse several commits into one diff and therefore needs complete accumulated rawProps; when used together with Props 2.0, also enable `enableExclusivePropsUpdateAndroid` and `enablePropsUpdateReconciliationAndroid`.
+ * When enabled, Android mounts transactions with the pull model (like iOS): the commit thread no longer pulls and builds the mount batch in schedulerShouldRenderTransactions. Instead the UI thread pulls the transaction itself at its next mount dispatch, builds the IntBufferBatchMountItem, and applies it synchronously. Requires `enableAccumulatedUpdatesInRawPropsAndroid` to be enabled as well, since a single pull may collapse several commits into one diff and therefore needs complete accumulated rawProps; when used together with Props 2.0, also enable `enableExclusivePropsUpdateAndroid` and `enablePropsUpdateReconciliationAndroid`.
  */
 export const enableMountingCoordinatorPullModelAndroid: Getter<boolean> = createNativeFlagGetter('enableMountingCoordinatorPullModelAndroid', false);
 /**
