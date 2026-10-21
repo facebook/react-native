@@ -13,10 +13,12 @@
 
 namespace facebook::react {
 
+namespace {
+
 /*
  * Sorting comparator for `reorderInPlaceIfNeeded`.
  */
-static bool shouldFirstPairComesBeforeSecondOne(
+bool shouldFirstPairComesBeforeSecondOne(
     const ShadowViewNodePair* lhs,
     const ShadowViewNodePair* rhs) noexcept {
   return lhs->shadowNode->getOrderIndex() < rhs->shadowNode->getOrderIndex();
@@ -25,8 +27,7 @@ static bool shouldFirstPairComesBeforeSecondOne(
 /*
  * Reorders pairs in-place based on `orderIndex` using a stable sort algorithm.
  */
-static void reorderInPlaceIfNeeded(
-    std::vector<ShadowViewNodePair*>& pairs) noexcept {
+void reorderInPlaceIfNeeded(std::vector<ShadowViewNodePair*>& pairs) noexcept {
   if (pairs.size() < 2) {
     return;
   }
@@ -50,7 +51,7 @@ static void reorderInPlaceIfNeeded(
 /*
  * Whether the slicer leaves out `shadowNode` and its descendants.
  */
-static bool isHiddenWhenSlicing(const ShadowNode& shadowNode) {
+bool isHiddenWhenSlicing(const ShadowNode& shadowNode) {
   // T153547836: Disabled on Android because the mounting infrastructure
   // is not fully ready yet.
   return
@@ -73,7 +74,7 @@ struct ChildSlice {
   bool areChildrenFlattened;
 };
 
-static ChildSlice sliceChild(
+ChildSlice sliceChild(
     const ShadowNode& parentShadowNode,
     const ShadowNode& childShadowNode,
     ShadowView shadowView,
@@ -112,7 +113,7 @@ static ChildSlice sliceChild(
  * Adds `childSlice` to `scope` and its pair to `pairList`: statically
  * positioned pairs go before absolutely positioned ones.
  */
-static void addChildSlice(
+void addChildSlice(
     std::vector<ShadowViewNodePair*>& pairList,
     size_t& startOfStaticIndex,
     ViewNodePairScope& scope,
@@ -136,7 +137,7 @@ static void addChildSlice(
   }
 }
 
-static void sliceChildShadowNodeViewPairsRecursively(
+void sliceChildShadowNodeViewPairsRecursively(
     std::vector<ShadowViewNodePair*>& pairList,
     size_t& startOfStaticIndex,
     ViewNodePairScope& scope,
@@ -216,7 +217,7 @@ static void sliceChildShadowNodeViewPairsRecursively(
 /*
  * Sets the mount index of each pair after reordering.
  */
-static void assignMountIndexes(std::vector<ShadowViewNodePair*>& pairList) {
+void assignMountIndexes(std::vector<ShadowViewNodePair*>& pairList) {
   size_t mountIndex = 0;
   for (auto child : pairList) {
     child->mountIndex =
@@ -224,7 +225,7 @@ static void assignMountIndexes(std::vector<ShadowViewNodePair*>& pairList) {
   }
 }
 
-static bool sliceChangedChildShadowNodeViewPairsRecursively(
+bool sliceChangedChildShadowNodeViewPairsRecursively(
     std::vector<ShadowViewNodePair*>& oldPairList,
     size_t& oldStartOfStaticIndex,
     std::vector<ShadowViewNodePair*>& newPairList,
@@ -337,6 +338,8 @@ static bool sliceChangedChildShadowNodeViewPairsRecursively(
   }
   return true;
 }
+
+} // namespace
 
 bool sliceChangedChildShadowNodeViewPairs(
     const ShadowViewNodePair& oldShadowNodePair,
