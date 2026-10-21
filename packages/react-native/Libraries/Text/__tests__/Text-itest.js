@@ -634,23 +634,23 @@ describe('<Text>', () => {
       });
     });
 
-   describe('aria-live', () => {
-     it('is mapped to accessibilityLiveRegion', () => {
-       const root = Fantom.createRoot();
-       Fantom.runTask(() => {
-         root.render(<Text aria-live="polite">{TEST_TEXT}</Text>);
-       });
-       expect(
-         root
-           .getRenderedOutput({props: ['accessibilityLiveRegion']})
-           .toJSX(),
-       ).toEqual(
-         <rn-paragraph accessibilityLiveRegion="polite">
-           {TEST_TEXT}
-         </rn-paragraph>,
-       );
-     });
-   });
+    describe('aria-live', () => {
+      it('is mapped to accessibilityLiveRegion', () => {
+        const root = Fantom.createRoot();
+        Fantom.runTask(() => {
+          root.render(<Text aria-live="polite">{TEST_TEXT}</Text>);
+        });
+        expect(
+          root
+            .getRenderedOutput({props: ['accessibilityLiveRegion']})
+            .toJSX(),
+        ).toEqual(
+          <rn-paragraph accessibilityLiveRegion="polite">
+            {TEST_TEXT}
+          </rn-paragraph>,
+        );
+      });
+    });
   });
 
   describe('ref', () => {
