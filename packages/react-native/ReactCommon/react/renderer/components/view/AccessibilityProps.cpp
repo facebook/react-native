@@ -18,12 +18,12 @@ namespace facebook::react {
 // members. This makes accessibilityTraits the single source of truth.
 // See: github.com/facebook/react-native/issues/57515
 static AccessibilityTraits deriveAccessibilityTraits(
-    std::optional<Role> role,
+    Role role,
     const std::string& accessibilityRole,
     const std::optional<AccessibilityState>& accessibilityState) {
   AccessibilityTraits traits = AccessibilityTraits::None;
-  if (role.value_or(Role::None) != Role::None) {
-    fromString(toString(*role), traits);
+  if (role != Role::None) {
+    fromString(toString(role), traits);
   } else if (!accessibilityRole.empty()) {
     fromString(accessibilityRole, traits);
   }
@@ -179,15 +179,16 @@ AccessibilityProps::AccessibilityProps(
   auto* accessibilityRoleValue = rawProps.at("accessibilityRole");
   auto* roleValue = rawProps.at("role");
 
-  if (accessibilityRoleValue == nullptr) {
+  if (accessibilityRoleValue == nullptr ||
+      !accessibilityRoleValue->hasValue()) {
     accessibilityRole = sourceProps.accessibilityRole;
-  } else if (accessibilityRoleValue->hasValue()) {
+  } else {
     fromRawValue(context, *accessibilityRoleValue, accessibilityRole);
   }
 
-  if (roleValue == nullptr) {
+  if (roleValue == nullptr || !roleValue->hasValue()) {
     role = sourceProps.role;
-  } else if (roleValue->hasValue()) {
+  } else {
     fromRawValue(context, *roleValue, role);
   }
 
