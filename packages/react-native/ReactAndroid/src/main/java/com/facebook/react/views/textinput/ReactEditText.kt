@@ -314,6 +314,11 @@ public open class ReactEditText public constructor(context: Context) : AppCompat
   }
 
   override fun onTouchEvent(ev: MotionEvent): Boolean {
+    // Disabled inputs must not block an ancestor from handling the touch.
+    if (!isEnabled) {
+      return false
+    }
+
     when (ev.action) {
       MotionEvent.ACTION_DOWN -> {
         detectScrollMovement = true
