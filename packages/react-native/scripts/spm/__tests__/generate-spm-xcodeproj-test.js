@@ -20,6 +20,7 @@ const {
   generateXcscheme,
   readScriptPhasesManifest,
 } = require('../generate-spm-xcodeproj');
+const {DOMParser} = require('@xmldom/xmldom');
 const {execFileSync} = require('node:child_process');
 const fs = require('node:fs');
 const os = require('node:os');
@@ -135,6 +136,40 @@ describe('scheme pre-action', () => {
     expect(result).toContain('&gt;');
     expect(result).toContain('&amp;');
     expect(result).toContain('&lt;');
+  });
+
+  function parsedSyncScript(xml) {
+    return new DOMParser()
+      .parseFromString(xml, 'text/xml')
+      .getElementsByTagName('ActionContent')[0]
+      .getAttribute('scriptText');
+  }
+
+  const MULTILINE_SCRIPT = 'set -e\n\tif [ "$A" ]; then\r\n  a && b < c\nfi';
+
+  it('keeps line breaks and tabs when an XML parser reads the script', () => {
+    const result = generateXcscheme(
+      'MyApp',
+      'TARGET_UUID',
+      'MyApp',
+      MULTILINE_SCRIPT,
+    );
+    expect(parsedSyncScript(result)).toBe(MULTILINE_SCRIPT);
+  });
+
+  it('encodes line breaks when it refreshes a script written with raw ones', () => {
+    const legacy = generateXcscheme(
+      'MyApp',
+      'TARGET_UUID',
+      'MyApp',
+      'OLD',
+    ).replace('scriptText = "OLD"', 'scriptText = "old\n# line 2"');
+    const updated = addPreActionToScheme(
+      legacy,
+      'TARGET_UUID',
+      MULTILINE_SCRIPT,
+    );
+    expect(parsedSyncScript(updated)).toBe(MULTILINE_SCRIPT);
   });
 
   it('refreshes stale script text and is idempotent', () => {
