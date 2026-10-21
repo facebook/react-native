@@ -132,6 +132,7 @@ public open class ReactEditText public constructor(context: Context) : AppCompat
   private var scrollWatcher: ScrollWatcher?
   private var keyListener: InternalKeyListener? = null
   private var detectScrollMovement = false
+  private var isParentInterceptDisallowed = false
   private var onKeyPress = false
   private val textAttributes: TextAttributes
   private var typefaceDirty = false
@@ -316,6 +317,11 @@ public open class ReactEditText public constructor(context: Context) : AppCompat
   override fun onTouchEvent(ev: MotionEvent): Boolean {
     // Disabled inputs must not block an ancestor from handling the touch.
     if (!isEnabled) {
+      if (isParentInterceptDisallowed) {
+        parent?.requestDisallowInterceptTouchEvent(false)
+        isParentInterceptDisallowed = false
+      }
+      detectScrollMovement = false
       return false
     }
 
@@ -325,6 +331,7 @@ public open class ReactEditText public constructor(context: Context) : AppCompat
         // Disallow parent views to intercept touch events, until we can detect if we should be
         // capturing these touches or not.
         this.parent.requestDisallowInterceptTouchEvent(true)
+        isParentInterceptDisallowed = true
       }
 
       MotionEvent.ACTION_MOVE ->
@@ -337,9 +344,13 @@ public open class ReactEditText public constructor(context: Context) : AppCompat
             ) {
               // We cannot scroll, let parent views take care of these touches.
               this.parent.requestDisallowInterceptTouchEvent(false)
+              isParentInterceptDisallowed = false
             }
             detectScrollMovement = false
           }
+
+      MotionEvent.ACTION_UP,
+      MotionEvent.ACTION_CANCEL -> isParentInterceptDisallowed = false
     }
     return super.onTouchEvent(ev)
   }

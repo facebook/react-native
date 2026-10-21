@@ -267,6 +267,56 @@ class ReactTextInputPropertyTest {
   }
 
   @Test
+  fun testDisablingInputDuringGestureAllowsParentInterception() {
+    for (moveBeforeDisabling in listOf(false, true)) {
+      // Keep interception disallowed even if the input receives a MOVE before being disabled.
+      val input =
+          object : ReactEditText(themedContext) {
+            override fun canScrollVertically(direction: Int): Boolean = true
+          }
+      var interceptedMove = false
+      val parent =
+          object : FrameLayout(themedContext) {
+            override fun onInterceptTouchEvent(event: MotionEvent): Boolean {
+              if (event.action == MotionEvent.ACTION_MOVE) {
+                interceptedMove = true
+                return true
+              }
+              return false
+            }
+
+            override fun onTouchEvent(event: MotionEvent): Boolean = true
+          }
+      parent.addView(input)
+      parent.layout(0, 0, 100, 100)
+      input.layout(0, 0, 100, 100)
+
+      fun dispatch(action: Int): Boolean {
+        val event = MotionEvent.obtain(0, 0, action, 10f, 10f, 0)
+        return try {
+          parent.dispatchTouchEvent(event)
+        } finally {
+          event.recycle()
+        }
+      }
+
+      assertThat(dispatch(MotionEvent.ACTION_DOWN)).isTrue()
+      if (moveBeforeDisabling) {
+        dispatch(MotionEvent.ACTION_MOVE)
+      }
+      assertThat(interceptedMove).isFalse()
+
+      input.isEnabled = false
+      // The first disabled MOVE releases the parent's interception flag.
+      dispatch(MotionEvent.ACTION_MOVE)
+      assertThat(interceptedMove).isFalse()
+      dispatch(MotionEvent.ACTION_MOVE)
+      assertThat(interceptedMove).isTrue()
+      dispatch(MotionEvent.ACTION_UP)
+    }
+  }
+
+  @Test
   fun testEditable() {
     manager.updateProperties(view, buildStyles())
     assertThat(view.isEnabled).isTrue
