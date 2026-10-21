@@ -413,8 +413,7 @@ static inline UIViewAnimationOptions animationOptionsWithCurve(UIViewAnimationCu
 
   auto *scrollView = (RCTEnhancedScrollView *)_scrollView;
   if (oldScrollViewProps.snapToAlignment != newScrollViewProps.snapToAlignment) {
-    scrollView.snapToAlignment =
-        RCTNSStringFromString(toString(newScrollViewProps.snapToAlignment.value_or(ScrollViewSnapToAlignment::Start)));
+    scrollView.snapToAlignment = RCTNSStringFromString(toString(newScrollViewProps.snapToAlignment));
   }
 
   scrollView.snapToStart = newScrollViewProps.snapToStart;

@@ -80,7 +80,7 @@ BaseScrollViewProps::BaseScrollViewProps(
           rawProps,
           "decelerationRate",
           sourceProps.decelerationRate,
-          kDefaultDecelerationRate)),
+          (Float)0.998)),
       endDraggingSensitivityMultiplier(convertRawProp(
           context,
           rawProps,
@@ -427,7 +427,10 @@ SharedDebugStringConvertibleList BaseScrollViewProps::getDebugProps() const {
               "snapToInterval",
               snapToInterval,
               defaultScrollViewProps.snapToInterval),
-          debugStringConvertibleItem("snapToAlignment", snapToAlignment),
+          debugStringConvertibleItem(
+              "snapToAlignment",
+              snapToAlignment,
+              defaultScrollViewProps.snapToAlignment),
           debugStringConvertibleItem(
               "disableIntervalMomentum",
               disableIntervalMomentum,

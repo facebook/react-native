@@ -41,13 +41,7 @@ class BaseScrollViewProps : public ViewProps {
   bool automaticallyAdjustContentInsets{};
   bool automaticallyAdjustsScrollIndicatorInsets{true};
   bool automaticallyAdjustKeyboardInsets{false};
-#ifdef ANDROID
-  // ReactScrollView's initial rate.
-  static constexpr Float kDefaultDecelerationRate = 0.985f;
-#else
-  static constexpr Float kDefaultDecelerationRate = 0.998f;
-#endif
-  Float decelerationRate{kDefaultDecelerationRate};
+  Float decelerationRate{0.998f};
   Float endDraggingSensitivityMultiplier{1};
   bool directionalLockEnabled{};
   ScrollViewIndicatorStyle indicatorStyle{};
@@ -69,7 +63,7 @@ class BaseScrollViewProps : public ViewProps {
   Point contentOffset{};
   EdgeInsets scrollIndicatorInsets{};
   Float snapToInterval{};
-  std::optional<ScrollViewSnapToAlignment> snapToAlignment{};
+  ScrollViewSnapToAlignment snapToAlignment{};
   bool disableIntervalMomentum{false};
   std::vector<Float> snapToOffsets{};
   bool snapToStart{true};

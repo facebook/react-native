@@ -49,13 +49,7 @@ HostPlatformScrollViewProps::HostPlatformScrollViewProps(
           rawProps,
           "endFillColor",
           sourceProps.endFillColor,
-          clearColor())),
-      scrollsChildToFocus(convertRawProp(
-          context,
-          rawProps,
-          "scrollsChildToFocus",
-          sourceProps.scrollsChildToFocus,
-          true)) {}
+          clearColor())) {}
 
 void HostPlatformScrollViewProps::setProp(
     const PropsParserContext& context,
@@ -75,7 +69,6 @@ void HostPlatformScrollViewProps::setProp(
     RAW_SET_PROP_SWITCH_CASE_BASIC(fadingEdgeLength);
     RAW_SET_PROP_SWITCH_CASE_BASIC(overScrollMode);
     RAW_SET_PROP_SWITCH_CASE_BASIC(endFillColor);
-    RAW_SET_PROP_SWITCH_CASE_BASIC(scrollsChildToFocus);
   }
 }
 
@@ -103,11 +96,7 @@ SharedDebugStringConvertibleList HostPlatformScrollViewProps::getDebugProps()
           debugStringConvertibleItem(
               "endFillColor",
               endFillColor,
-              defaultScrollViewProps.endFillColor),
-          debugStringConvertibleItem(
-              "scrollsChildToFocus",
-              scrollsChildToFocus,
-              defaultScrollViewProps.scrollsChildToFocus)};
+              defaultScrollViewProps.endFillColor)};
 }
 #endif
 
@@ -312,9 +301,17 @@ folly::dynamic HostPlatformScrollViewProps::getDiffProps(
   }
 
   if (snapToAlignment != oldProps->snapToAlignment) {
-    result["snapToAlignment"] = snapToAlignment.has_value()
-        ? toString(*snapToAlignment)
-        : folly::dynamic(nullptr);
+    switch (snapToAlignment) {
+      case ScrollViewSnapToAlignment::Start:
+        result["snapToAlignment"] = "start";
+        break;
+      case ScrollViewSnapToAlignment::Center:
+        result["snapToAlignment"] = "center";
+        break;
+      case ScrollViewSnapToAlignment::End:
+        result["snapToAlignment"] = "end";
+        break;
+    }
   }
 
   if (disableIntervalMomentum != oldProps->disableIntervalMomentum) {
@@ -381,10 +378,6 @@ folly::dynamic HostPlatformScrollViewProps::getDiffProps(
 
   if (endFillColor != oldProps->endFillColor) {
     result["endFillColor"] = *endFillColor;
-  }
-
-  if (scrollsChildToFocus != oldProps->scrollsChildToFocus) {
-    result["scrollsChildToFocus"] = scrollsChildToFocus;
   }
 
   return result;
