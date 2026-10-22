@@ -34,7 +34,7 @@ jobs:
       - name: Install node dependencies
         uses: ./.github/actions/yarn-install
       - name: Download APK
-        uses: actions/download-artifact@v7
+        uses: ./.github/actions/download-artifact
         with:
           name: rntester-${{ matrix.flavor }}
           path: ./packages/rn-tester/android/app/build/outputs/apk/${{ matrix.flavor }}/
@@ -43,7 +43,7 @@ jobs:
       - name: Download previous per-flow test state
         if: ${{ inputs.retry-attempt > 0 }}
         continue-on-error: true
-        uses: actions/download-artifact@v7
+        uses: ./.github/actions/download-artifact
         with:
           name: e2e_android_rntester_state_${{ matrix.flavor }}_arm64-v8a_NewArch
           path: /tmp/maestro-android-state
