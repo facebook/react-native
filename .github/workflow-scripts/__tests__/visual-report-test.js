@@ -79,13 +79,12 @@ describe('visual reports and approval', () => {
     const platform = results => ({
       platform: 'ios',
       environmentKey: 'ios-x-0123abcd',
-      baselineSha: SHA_B,
       results,
     });
-    const changed = sha => ({
+    const changed = (sha, expectedSha = 'e') => ({
       id: 'a/b/c',
       status: 'changed',
-      expected: {sha256: 'e'},
+      expected: {sha256: expectedSha},
       captured: {sha256: sha},
     });
 
@@ -100,6 +99,9 @@ describe('visual reports and approval', () => {
       expect(first).toMatch(/^[0-9a-f]{16}$/);
       expect(differenceFingerprint([platform([changed('1')])])).toBe(first);
       expect(differenceFingerprint([platform([changed('2')])])).not.toBe(first);
+      expect(differenceFingerprint([platform([changed('1', 'f')])])).not.toBe(
+        first,
+      );
     });
 
     test.each([

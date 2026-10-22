@@ -296,7 +296,6 @@ async function prepare() {
     platforms.map(platform => ({
       platform: platform.platform,
       environmentKey: platform.environmentKey,
-      baselineSha: platform.baseline?.sha,
       results: platform.results,
     })),
   );

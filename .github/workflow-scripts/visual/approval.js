@@ -17,12 +17,13 @@ const APPROVER_PERMISSIONS = ['admin', 'maintain', 'write'];
 /**
  * Identifies a set of visual differences: which tests differ, how, and the
  * exact expected and captured images. An approval applies to one fingerprint,
- * so a push that changes any difference needs a new approval. Returns null
- * when there are no differences.
+ * so a push that changes any difference needs a new approval. The baseline
+ * commit isn't part of it: a rebase that leaves the expected images unchanged
+ * keeps the approval. Returns null when there are no differences.
  */
 function differenceFingerprint(platforms) {
   const lines = [];
-  for (const {platform, environmentKey, baselineSha, results} of platforms) {
+  for (const {platform, environmentKey, results} of platforms) {
     for (const result of results) {
       if (result.status === 'unchanged') {
         continue;
@@ -31,7 +32,6 @@ function differenceFingerprint(platforms) {
         [
           platform,
           environmentKey,
-          baselineSha ?? '',
           result.id,
           result.status,
           result.expected?.sha256 ?? '',
