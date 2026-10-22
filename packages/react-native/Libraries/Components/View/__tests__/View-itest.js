@@ -197,6 +197,31 @@ describe('<View>', () => {
           ).toEqual(<rn-view transform='[{"translateX": 10}]' />);
         });
 
+        it('resolves percentages in string translateX and translateY against the view size', () => {
+          const root = Fantom.createRoot();
+
+          const viewRef = createRef<HostInstance>();
+          Fantom.runTask(() => {
+            root.render(
+              <View
+                ref={viewRef}
+                style={{
+                  width: 200,
+                  height: 50,
+                  transform: 'translateX(10%) translateY(20%)',
+                }}
+              />,
+            );
+          });
+
+          const viewBounds = nullthrows(
+            viewRef.current,
+          ).getBoundingClientRect();
+          // 10% of the 200 width and 20% of the 50 height.
+          expect(viewBounds.x).toBe(20);
+          expect(viewBounds.y).toBe(10);
+        });
+
         [
           [undefined, {x: -5, y: 0, width: 20, height: 10}],
           ['50% 50%', {x: -5, y: 0, width: 20, height: 10}],
