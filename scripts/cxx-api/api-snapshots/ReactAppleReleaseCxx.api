@@ -805,8 +805,7 @@ interface RCTComponentData : public NSObject {
   public @property (assign, readonly) Class managerClass;
   public @property (copy) void(^eventInterceptor)(NSString* eventName, NSDictionary* event, NSNumber* reactTag);
   public @property (copy, readonly) NSString* name;
-  public @property (strong, readonly) RCTViewManager* bridgelessViewManager;
-  public @property (weak, readonly) RCTViewManager* manager;
+  public @property (strong, readonly) RCTViewManager* manager;
   public virtual NSDictionary<NSString*, id>* viewConfig();
   public virtual RCTShadowView* createShadowViewWithTag:(NSNumber* tag);
   public virtual UIView* createViewWithTag:rootTag:(_Nullable NSNumber* tag, _Nullable NSNumber* rootTag);
