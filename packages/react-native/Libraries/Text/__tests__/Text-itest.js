@@ -641,9 +641,7 @@ describe('<Text>', () => {
           root.render(<Text aria-live="polite">{TEST_TEXT}</Text>);
         });
         expect(
-          root
-            .getRenderedOutput({props: ['accessibilityLiveRegion']})
-            .toJSX(),
+          root.getRenderedOutput({props: ['accessibilityLiveRegion']}).toJSX(),
         ).toEqual(
           <rn-paragraph accessibilityLiveRegion="polite">
             {TEST_TEXT}
