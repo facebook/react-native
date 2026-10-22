@@ -22,6 +22,7 @@
 @class RCTModuleRegistry;
 @class RCTViewRegistry;
 @class RCTCallableJSModules;
+@class RCTPerformanceLogger;
 
 /**
  * The type of a block that is capable of sending a response to a bridged
@@ -167,6 +168,25 @@ RCT_EXTERN_C_END
  * RCTCallableJSModules!` to your module.
  */
 @property (nonatomic, weak, readwrite) RCTCallableJSModules *callableJSModules;
+
+/**
+ * The launch options that were used to initialize the React instance.
+ * Useful for modules that need to read launch-time configuration.
+ *
+ * To implement this in your module, just add `@synthesize launchOptions =
+ * _launchOptions;`. If using Swift, add `@objc var launchOptions:
+ * NSDictionary!` to your module.
+ */
+@property (nonatomic, copy, readwrite) NSDictionary *launchOptions;
+
+/**
+ * Link to the Performance Logger that logs React Native perf events.
+ *
+ * To implement this in your module, just add `@synthesize performanceLogger =
+ * _performanceLogger;`. If using Swift, add `@objc var performanceLogger:
+ * RCTPerformanceLogger!` to your module.
+ */
+@property (nonatomic, strong, readwrite) RCTPerformanceLogger *performanceLogger;
 
 /**
  * A reference to the RCTBridge. Useful for modules that require access

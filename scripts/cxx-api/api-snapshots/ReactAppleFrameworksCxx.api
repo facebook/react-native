@@ -712,10 +712,12 @@ interface RCTBridge : public NSObject <RCTInvalidating> {
 }
 
 interface RCTBridgeModuleDecorator : public NSObject {
+  public @property (copy, readonly) NSDictionary* launchOptions;
   public @property (strong, readonly) RCTBundleManager* bundleManager;
   public @property (strong, readonly) RCTCallableJSModules* callableJSModules;
   public @property (strong, readonly) RCTModuleRegistry* moduleRegistry;
-  public virtual instancetype initWithViewRegistry:moduleRegistry:bundleManager:callableJSModules:(RCTViewRegistry* viewRegistry, RCTModuleRegistry* moduleRegistry, RCTBundleManager* bundleManager, RCTCallableJSModules* callableJSModules);
+  public @property (strong, readonly) RCTPerformanceLogger* performanceLogger;
+  public virtual instancetype initWithViewRegistry:moduleRegistry:bundleManager:callableJSModules:launchOptions:performanceLogger:(RCTViewRegistry* viewRegistry, RCTModuleRegistry* moduleRegistry, RCTBundleManager* bundleManager, RCTCallableJSModules* callableJSModules, NSDictionary* launchOptions, RCTPerformanceLogger* performanceLogger);
   public virtual void attachInteropAPIsToModule:(id<RCTBridgeModule> bridgeModule);
 }
 
@@ -2613,6 +2615,8 @@ protocol RCTBridgeMethod : public NSObject {
 }
 
 protocol RCTBridgeModule : public NSObject {
+  public @property (copy) NSDictionary* launchOptions;
+  public @property (strong) RCTPerformanceLogger* performanceLogger;
   public @property (strong, readonly) dispatch_queue_t methodQueue;
   public @property (weak) RCTBundleManager* bundleManager;
   public @property (weak) RCTCallableJSModules* callableJSModules;
