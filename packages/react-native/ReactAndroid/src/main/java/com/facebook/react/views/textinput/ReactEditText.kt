@@ -168,6 +168,16 @@ public open class ReactEditText public constructor(context: Context) : AppCompat
   internal val isMultiline: Boolean
     get() = (inputType and InputType.TYPE_TEXT_FLAG_MULTI_LINE) != 0
 
+  // Mirrors TextView.shouldAdvanceFocusOnEnter, which advances focus on Enter for both email
+  // address and subject even when multiline (newlines don't make sense there).
+  private val isEmailInput: Boolean
+    get() =
+        (inputType and InputType.TYPE_MASK_CLASS) == InputType.TYPE_CLASS_TEXT &&
+            (inputType and InputType.TYPE_MASK_VARIATION).let {
+              it == InputType.TYPE_TEXT_VARIATION_EMAIL_ADDRESS ||
+                  it == InputType.TYPE_TEXT_VARIATION_EMAIL_SUBJECT
+            }
+
   private val isSecureText: Boolean
     get() =
         ((inputType and
@@ -342,8 +352,12 @@ public open class ReactEditText public constructor(context: Context) : AppCompat
   // Consume 'Enter' key events: TextView tries to give focus to the next TextInput, but it can't
   // since we only allow JS to change focus, which in turn causes TextView to crash.
   override fun onKeyUp(keyCode: Int, event: KeyEvent): Boolean {
-    if (keyCode == KeyEvent.KEYCODE_ENTER && !isMultiline) {
+    val isEnterKey = keyCode == KeyEvent.KEYCODE_ENTER || keyCode == KeyEvent.KEYCODE_NUMPAD_ENTER
+    if (isEnterKey && !isMultiline) {
       hideSoftKeyboard()
+      return true
+    }
+    if (isEnterKey && ((event.flags and KeyEvent.FLAG_EDITOR_ACTION) != 0 || isEmailInput)) {
       return true
     }
     return super.onKeyUp(keyCode, event)
