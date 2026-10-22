@@ -267,7 +267,39 @@ bool sliceChangedChildShadowNodeViewPairsRecursively(
     if (oldChildShadowNode.getTag() != newChildShadowNode.getTag() ||
         oldChildShadowNode.getOrderIndex() !=
             newChildShadowNode.getOrderIndex()) {
-      return false;
+      // A replaced leaf that doesn't form a view (like the raw text of a
+      // `Text` whose string changed) has no mount index, so both nodes can be
+      // listed as they are without shifting the views around them.
+      if (!oldChildShadowNode.getChildren().empty() ||
+          !newChildShadowNode.getChildren().empty()) {
+        return false;
+      }
+      auto oldLeafSlice = sliceChild(
+          oldShadowNode,
+          oldChildShadowNode,
+          ShadowView(oldChildShadowNode),
+          oldLayoutOffset);
+      auto newLeafSlice = sliceChild(
+          newShadowNode,
+          newChildShadowNode,
+          ShadowView(newChildShadowNode),
+          newLayoutOffset);
+      if (oldLeafSlice.isConcreteView || newLeafSlice.isConcreteView) {
+        return false;
+      }
+      addChildSlice(
+          oldPairList,
+          oldStartOfStaticIndex,
+          scope,
+          oldLeafSlice,
+          oldChildShadowNode);
+      addChildSlice(
+          newPairList,
+          newStartOfStaticIndex,
+          scope,
+          newLeafSlice,
+          newChildShadowNode);
+      continue;
     }
 
     auto oldChildSlice = sliceChild(
