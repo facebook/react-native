@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<1ab2eec7b9c5bdd181ec5fbfd37149ab>>
+ * @generated SignedSource<<3b896bb2cd426156c8e0ceaf97a63f74>>
  */
 
 /**
@@ -324,6 +324,12 @@ class ReactNativeFeatureFlagsJavaProvider
   bool enablePreallocatedPropsDiffOnInsertAndroid() override {
     static const auto method =
         getReactNativeFeatureFlagsProviderJavaClass()->getMethod<jboolean()>("enablePreallocatedPropsDiffOnInsertAndroid");
+    return method(javaProvider_);
+  }
+
+  bool enablePremountItemsBetweenFramesAndroid() override {
+    static const auto method =
+        getReactNativeFeatureFlagsProviderJavaClass()->getMethod<jboolean()>("enablePremountItemsBetweenFramesAndroid");
     return method(javaProvider_);
   }
 
@@ -859,6 +865,11 @@ bool JReactNativeFeatureFlagsCxxInterop::enablePreallocatedPropsDiffOnInsertAndr
   return ReactNativeFeatureFlags::enablePreallocatedPropsDiffOnInsertAndroid();
 }
 
+bool JReactNativeFeatureFlagsCxxInterop::enablePremountItemsBetweenFramesAndroid(
+    facebook::jni::alias_ref<JReactNativeFeatureFlagsCxxInterop> /*unused*/) {
+  return ReactNativeFeatureFlags::enablePremountItemsBetweenFramesAndroid();
+}
+
 bool JReactNativeFeatureFlagsCxxInterop::enablePreparedTextLayout(
     facebook::jni::alias_ref<JReactNativeFeatureFlagsCxxInterop> /*unused*/) {
   return ReactNativeFeatureFlags::enablePreparedTextLayout();
@@ -1274,6 +1285,9 @@ void JReactNativeFeatureFlagsCxxInterop::registerNatives() {
       makeNativeMethod(
         "enablePreallocatedPropsDiffOnInsertAndroid",
         JReactNativeFeatureFlagsCxxInterop::enablePreallocatedPropsDiffOnInsertAndroid),
+      makeNativeMethod(
+        "enablePremountItemsBetweenFramesAndroid",
+        JReactNativeFeatureFlagsCxxInterop::enablePremountItemsBetweenFramesAndroid),
       makeNativeMethod(
         "enablePreparedTextLayout",
         JReactNativeFeatureFlagsCxxInterop::enablePreparedTextLayout),

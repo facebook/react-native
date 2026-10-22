@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<ec15d61f2d6f06c6ec5998f8524de016>>
+ * @generated SignedSource<<583b5df6e0b5482bda7adbe81829f484>>
  */
 
 /**
@@ -477,6 +477,15 @@ class ReactNativeFeatureFlagsDynamicProvider : public ReactNativeFeatureFlagsDef
     }
 
     return ReactNativeFeatureFlagsDefaults::enablePreallocatedPropsDiffOnInsertAndroid();
+  }
+
+  bool enablePremountItemsBetweenFramesAndroid() override {
+    auto value = values_["enablePremountItemsBetweenFramesAndroid"];
+    if (!value.isNull()) {
+      return value.getBool();
+    }
+
+    return ReactNativeFeatureFlagsDefaults::enablePremountItemsBetweenFramesAndroid();
   }
 
   bool enablePreparedTextLayout() override {
