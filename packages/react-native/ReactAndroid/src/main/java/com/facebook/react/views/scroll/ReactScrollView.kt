@@ -590,7 +590,7 @@ constructor(context: Context, private val fpsListener: FpsListener? = null) :
 
     velocityHelper.calculateVelocity(ev)
     val action = ev.actionMasked
-    if (action == MotionEvent.ACTION_UP && dragging) {
+    if ((action == MotionEvent.ACTION_UP || action == MotionEvent.ACTION_CANCEL) && dragging) {
       ReactScrollViewHelper.updateFabricScrollState(this)
       val velocityX = velocityHelper.xVelocity
       val velocityY = velocityHelper.yVelocity
