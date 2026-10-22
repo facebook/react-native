@@ -58,6 +58,7 @@ jobs:
             --pathToLocalReactNative "$REACT_NATIVE_PKG"
 
           echo -e "\nreact.internal.mavenLocalRepo=$MAVEN_LOCAL" >> /tmp/RNTestProject/android/gradle.properties
+          echo "strictCxxApiEnabled=true" >> /tmp/RNTestProject/android/gradle.properties
 
           CAPITALIZED_FLAVOR=$(echo "${{ matrix.flavor }}" | awk '{print toupper(substr($0, 1, 1)) substr($0, 2)}')
           cd /tmp/RNTestProject/android
