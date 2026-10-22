@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<ec3e384af62c0e672da53b57354bca62>>
+ * @generated SignedSource<<8c3be9a45fa1118c418be24467580edf>>
  */
 
 /**
@@ -37,6 +37,8 @@ public object ReactNativeFeatureFlagsCxxInterop {
   @DoNotStrip @JvmStatic public external fun defaultTextToOverflowHidden(): Boolean
 
   @DoNotStrip @JvmStatic public external fun deferTextInputTruncationIOS(): Boolean
+
+  @DoNotStrip @JvmStatic public external fun deferYogaChildCloningUntilLayout(): Boolean
 
   @DoNotStrip @JvmStatic public external fun disableEarlyViewCommandExecution(): Boolean
 

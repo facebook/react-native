@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<b5f4608f47743d0e2e9b1db3db551227>>
+ * @generated SignedSource<<2abf1e8d28c8f625e2a51cf2e48c1c90>>
  */
 
 /**
@@ -59,6 +59,12 @@ public object ReactNativeFeatureFlags {
    */
   @JvmStatic
   public fun deferTextInputTruncationIOS(): Boolean = accessor.deferTextInputTruncationIOS()
+
+  /**
+   * When a node gets a new list of children, the children that a previous revision of the node still owns stay shared with that revision instead of being cloned right away. Yoga clones them if it lays the node out.
+   */
+  @JvmStatic
+  public fun deferYogaChildCloningUntilLayout(): Boolean = accessor.deferYogaChildCloningUntilLayout()
 
   /**
    * Dispatch view commands in mount item order.

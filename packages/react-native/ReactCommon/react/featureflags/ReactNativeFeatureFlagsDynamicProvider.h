@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<ec15d61f2d6f06c6ec5998f8524de016>>
+ * @generated SignedSource<<8055b18812c46f782673688416ee1625>>
  */
 
 /**
@@ -90,6 +90,15 @@ class ReactNativeFeatureFlagsDynamicProvider : public ReactNativeFeatureFlagsDef
     }
 
     return ReactNativeFeatureFlagsDefaults::deferTextInputTruncationIOS();
+  }
+
+  bool deferYogaChildCloningUntilLayout() override {
+    auto value = values_["deferYogaChildCloningUntilLayout"];
+    if (!value.isNull()) {
+      return value.getBool();
+    }
+
+    return ReactNativeFeatureFlagsDefaults::deferYogaChildCloningUntilLayout();
   }
 
   bool disableEarlyViewCommandExecution() override {

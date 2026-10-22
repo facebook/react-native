@@ -203,11 +203,20 @@ void YogaLayoutableShadowNode::adoptYogaChild(size_t index) {
   auto& childNode =
       dynamic_cast<const YogaLayoutableShadowNode&>(*getChildren().at(index));
 
-  if (YGNodeGetOwner(&childNode.yogaNode_) == nullptr) {
+  auto childOwner = YGNodeGetOwner(&childNode.yogaNode_);
+  if (childOwner == nullptr) {
     // The child node is not owned.
     childNode.yogaNode_.setOwner(&yogaNode_);
     // At this point the child yoga node must be already inserted by the caller.
     // react_native_assert(layoutableChildNode.yogaNode_.isDirty());
+  } else if (
+      childOwner != &yogaNode_ &&
+      ReactNativeFeatureFlags::deferYogaChildCloningUntilLayout()) {
+    // The child is owned by another node, usually a previous revision of this
+    // node that the child is unchanged from. Keep sharing it instead of
+    // cloning it here: Yoga clones each child it doesn't own before laying it
+    // out (see `yogaNodeCloneCallbackConnector`), so the child is only cloned
+    // if this node is laid out.
   } else {
     // The child is owned by some other node, we need to clone that.
     // TODO: At this point, React has wrong reference to the node. (T138668036)
@@ -746,6 +755,19 @@ static EdgeInsets calculateOverflowInset(
 void YogaLayoutableShadowNode::layout(LayoutContext layoutContext) {
   // Reading data from a dirtied node does not make sense.
   react_native_assert(!YGNodeIsDirty(&yogaNode_));
+
+  if (ReactNativeFeatureFlags::deferYogaChildCloningUntilLayout()) {
+    // A child that Yoga lays out is a clone that this node owns, but Yoga can
+    // set a new layout on this node from its cache without cloning its
+    // children. A child that is still shared with another revision must not
+    // be written to below, so clone it first if it carries a new layout.
+    for (size_t i = 0; i < yogaLayoutableChildren_.size(); i++) {
+      const auto& child = *yogaLayoutableChildren_[i];
+      if (child.yogaNode_.getHasNewLayout() && !doesOwn(child)) {
+        cloneChildInPlace(i);
+      }
+    }
+  }
 
   for (auto childYogaNode : yogaNode_.getChildren()) {
     auto& childNode = shadowNodeFromContext(childYogaNode);
