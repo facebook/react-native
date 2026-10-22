@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<46e48274f8b27b9c6136b13048682252>>
+ * @generated SignedSource<<54faf124b1b044c9542d807207f6effd>>
  */
 
 /**
@@ -342,6 +342,10 @@ class ReactNativeFeatureFlagsDefaults : public ReactNativeFeatureFlagsProvider {
   }
 
   bool skipActivityIdentityAssertionOnHostPause() override {
+    return false;
+  }
+
+  bool skipNativePropsForViewManagerWithDelegateAndroid() override {
     return false;
   }
 

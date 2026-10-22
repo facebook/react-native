@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<d2d170d333194ce2f2a4f1d93321ac6d>>
+ * @generated SignedSource<<fd7f64704846ec7bcdaf04b96be8dded>>
  */
 
 /**
@@ -99,6 +99,7 @@ internal class ReactNativeFeatureFlagsCxxAccessor : ReactNativeFeatureFlagsAcces
   private var shouldPressibilityUseW3CPointerEventsForHoverCache: Boolean? = null
   private var shouldTriggerResponderTransferOnScrollAndroidCache: Boolean? = null
   private var skipActivityIdentityAssertionOnHostPauseCache: Boolean? = null
+  private var skipNativePropsForViewManagerWithDelegateAndroidCache: Boolean? = null
   private var skipUnchangedChildrenInDifferentiatorCache: Boolean? = null
   private var syncAndroidClipBoundsWithOverflowCache: Boolean? = null
   private var traceTurboModulePromiseRejectionsOnAndroidCache: Boolean? = null
@@ -824,6 +825,15 @@ internal class ReactNativeFeatureFlagsCxxAccessor : ReactNativeFeatureFlagsAcces
     if (cached == null) {
       cached = ReactNativeFeatureFlagsCxxInterop.skipActivityIdentityAssertionOnHostPause()
       skipActivityIdentityAssertionOnHostPauseCache = cached
+    }
+    return cached
+  }
+
+  override fun skipNativePropsForViewManagerWithDelegateAndroid(): Boolean {
+    var cached = skipNativePropsForViewManagerWithDelegateAndroidCache
+    if (cached == null) {
+      cached = ReactNativeFeatureFlagsCxxInterop.skipNativePropsForViewManagerWithDelegateAndroid()
+      skipNativePropsForViewManagerWithDelegateAndroidCache = cached
     }
     return cached
   }

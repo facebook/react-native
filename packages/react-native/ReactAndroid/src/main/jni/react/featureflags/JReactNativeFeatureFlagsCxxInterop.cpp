@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<1ab2eec7b9c5bdd181ec5fbfd37149ab>>
+ * @generated SignedSource<<516e5edb1eaef04da5ebdbca446d3e44>>
  */
 
 /**
@@ -513,6 +513,12 @@ class ReactNativeFeatureFlagsJavaProvider
     return method(javaProvider_);
   }
 
+  bool skipNativePropsForViewManagerWithDelegateAndroid() override {
+    static const auto method =
+        getReactNativeFeatureFlagsProviderJavaClass()->getMethod<jboolean()>("skipNativePropsForViewManagerWithDelegateAndroid");
+    return method(javaProvider_);
+  }
+
   bool skipUnchangedChildrenInDifferentiator() override {
     static const auto method =
         getReactNativeFeatureFlagsProviderJavaClass()->getMethod<jboolean()>("skipUnchangedChildrenInDifferentiator");
@@ -1014,6 +1020,11 @@ bool JReactNativeFeatureFlagsCxxInterop::skipActivityIdentityAssertionOnHostPaus
   return ReactNativeFeatureFlags::skipActivityIdentityAssertionOnHostPause();
 }
 
+bool JReactNativeFeatureFlagsCxxInterop::skipNativePropsForViewManagerWithDelegateAndroid(
+    facebook::jni::alias_ref<JReactNativeFeatureFlagsCxxInterop> /*unused*/) {
+  return ReactNativeFeatureFlags::skipNativePropsForViewManagerWithDelegateAndroid();
+}
+
 bool JReactNativeFeatureFlagsCxxInterop::skipUnchangedChildrenInDifferentiator(
     facebook::jni::alias_ref<JReactNativeFeatureFlagsCxxInterop> /*unused*/) {
   return ReactNativeFeatureFlags::skipUnchangedChildrenInDifferentiator();
@@ -1367,6 +1378,9 @@ void JReactNativeFeatureFlagsCxxInterop::registerNatives() {
       makeNativeMethod(
         "skipActivityIdentityAssertionOnHostPause",
         JReactNativeFeatureFlagsCxxInterop::skipActivityIdentityAssertionOnHostPause),
+      makeNativeMethod(
+        "skipNativePropsForViewManagerWithDelegateAndroid",
+        JReactNativeFeatureFlagsCxxInterop::skipNativePropsForViewManagerWithDelegateAndroid),
       makeNativeMethod(
         "skipUnchangedChildrenInDifferentiator",
         JReactNativeFeatureFlagsCxxInterop::skipUnchangedChildrenInDifferentiator),

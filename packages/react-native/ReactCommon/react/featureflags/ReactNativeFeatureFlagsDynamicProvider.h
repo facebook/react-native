@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<ec15d61f2d6f06c6ec5998f8524de016>>
+ * @generated SignedSource<<233d0dac73b90466287604aa01e0606e>>
  */
 
 /**
@@ -756,6 +756,15 @@ class ReactNativeFeatureFlagsDynamicProvider : public ReactNativeFeatureFlagsDef
     }
 
     return ReactNativeFeatureFlagsDefaults::skipActivityIdentityAssertionOnHostPause();
+  }
+
+  bool skipNativePropsForViewManagerWithDelegateAndroid() override {
+    auto value = values_["skipNativePropsForViewManagerWithDelegateAndroid"];
+    if (!value.isNull()) {
+      return value.getBool();
+    }
+
+    return ReactNativeFeatureFlagsDefaults::skipNativePropsForViewManagerWithDelegateAndroid();
   }
 
   bool skipUnchangedChildrenInDifferentiator() override {

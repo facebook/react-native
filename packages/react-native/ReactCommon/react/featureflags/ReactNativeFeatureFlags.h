@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<e3c3ccaf63fcdcf48c6f02f793f77b65>>
+ * @generated SignedSource<<c3421c24ffbf5c1e5e0b49826d2bd415>>
  */
 
 /**
@@ -435,6 +435,11 @@ class ReactNativeFeatureFlags {
    * Skip activity identity assertion in ReactHostImpl::onHostPause()
    */
   RN_EXPORT static bool skipActivityIdentityAssertionOnHostPause();
+
+  /**
+   * Skip native prop metadata generation on Android for view managers with custom delegates. Requires their components to use static view configs.
+   */
+  RN_EXPORT static bool skipNativePropsForViewManagerWithDelegateAndroid();
 
   /**
    * When a node changes, the differ leaves out its children that are unchanged in both trees instead of describing and comparing them.
