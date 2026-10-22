@@ -911,6 +911,17 @@ const definitions: FeatureFlagDefinitions = {
       },
       ossReleaseStage: 'none',
     },
+    sleepUntilNextTimerIOS: {
+      defaultValue: false,
+      metadata: {
+        dateAdded: '2026-10-21',
+        description:
+          'When the next JS timer is more than two frames away, iOS waits for it with a one-shot timer instead of a display link that wakes the JS thread on every frame until the timer is due.',
+        expectedReleaseValue: true,
+        purpose: 'experimentation',
+      },
+      ossReleaseStage: 'none',
+    },
     syncAndroidClipBoundsWithOverflow: {
       defaultValue: false,
       metadata: {

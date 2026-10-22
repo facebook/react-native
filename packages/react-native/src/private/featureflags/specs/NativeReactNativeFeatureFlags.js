@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<a21712fc03890b45ea92ecb883fa3139>>
+ * @generated SignedSource<<8162cc18a70ca8fd190a3e3243bd83c9>>
  * @flow strict
  * @noformat
  */
@@ -105,6 +105,7 @@ export interface Spec extends TurboModule {
   readonly shouldTriggerResponderTransferOnScrollAndroid?: () => boolean;
   readonly skipActivityIdentityAssertionOnHostPause?: () => boolean;
   readonly skipUnchangedChildrenInDifferentiator?: () => boolean;
+  readonly sleepUntilNextTimerIOS?: () => boolean;
   readonly syncAndroidClipBoundsWithOverflow?: () => boolean;
   readonly traceTurboModulePromiseRejectionsOnAndroid?: () => boolean;
   readonly updateRuntimeShadowNodeReferencesOnCommit?: () => boolean;
