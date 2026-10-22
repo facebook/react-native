@@ -1117,13 +1117,16 @@ UIImage *__nullable RCTImageFromLocalBundleAssetURL(NSURL *imageURL)
 
 UIImage *__nullable RCTImageFromLocalAssetURL(NSURL *imageURL)
 {
+  NSString *catalogName = nil;
   if (RCTUseAssetCatalog()) {
-    NSString *catalogName = RCTAssetCatalogNameForURL(imageURL);
+    catalogName = RCTAssetCatalogNameForURL(imageURL);
     if (catalogName != nil) {
       // The app opted into the asset catalog and this is a packager asset, so it
-      // was compiled into RNAssets.bundle at build time. Trust the catalog and
-      // return directly, keeping the common path a single lookup with no
-      // filesystem fallback. Non-catalog assets (nil name) fall through below.
+      // was compiled into RNAssets.bundle at build time. Return directly on a
+      // hit, keeping the common path a single lookup. Non-catalog assets (nil
+      // name) and catalog misses fall through to the loose-file lookup below:
+      // the CLI copies animated PNGs as loose files, since actool would compile
+      // them into a single still frame.
       NSBundle *assetCatalogBundle = RCTAssetCatalogBundle();
       if (assetCatalogBundle == nil) {
         // Passing a nil bundle to imageNamed:inBundle: would silently search the
@@ -1135,14 +1138,9 @@ UIImage *__nullable RCTImageFromLocalAssetURL(NSURL *imageURL)
         return nil;
       }
       UIImage *image = [UIImage imageNamed:catalogName inBundle:assetCatalogBundle compatibleWithTraitCollection:nil];
-      if (image == nil) {
-        RCTLogError(
-            @"Image \"%@\" (%@) was not found in the asset catalog. RCTUseAssetCatalog is enabled, "
-             "so image assets must be compiled into the app's RNAssets.bundle at build time.",
-            catalogName,
-            imageURL);
+      if (image != nil) {
+        return image;
       }
-      return image;
     }
   }
 
@@ -1193,6 +1191,14 @@ UIImage *__nullable RCTImageFromLocalAssetURL(NSURL *imageURL)
         break;
       }
     }
+  }
+
+  if (image == nil && catalogName != nil) {
+    RCTLogError(
+        @"Image \"%@\" (%@) was not found in the asset catalog or as a file. RCTUseAssetCatalog is enabled, "
+         "so image assets must be compiled into the app's RNAssets.bundle at build time.",
+        catalogName,
+        imageURL);
   }
   return image;
 }

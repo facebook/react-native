@@ -1115,6 +1115,10 @@ const styles = StyleSheet.create({
     flex: 1,
     height: 200,
   },
+  apng: {
+    width: 64,
+    height: 64,
+  },
   base64: {
     flex: 1,
     height: 50,
@@ -1960,6 +1964,22 @@ exports.examples = [
           testID="image-animated-gif"
           style={styles.gif}
           source={require('../../assets/tumblr_mfqekpMktw1rn90umo1_500.gif')}
+        />
+      );
+    },
+    platform: 'ios',
+  },
+  {
+    title: 'Animated PNG',
+    name: 'animated-png',
+    description:
+      'A bundled APNG. With RCTUseAssetCatalog on, it ships as a loose file instead of being compiled into the asset catalog, which would keep only its first frame.',
+    render: function (): React.Node {
+      return (
+        <Image
+          testID="image-animated-png"
+          style={styles.apng}
+          source={require('../../assets/animated.png')}
         />
       );
     },

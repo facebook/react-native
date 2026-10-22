@@ -86,7 +86,59 @@ export function getImageSet(catalogDir: string, asset: AssetData): ImageSet {
 }
 
 export function isCatalogAsset(asset: AssetData): boolean {
-  return asset.type === 'png' || asset.type === 'jpg' || asset.type === 'jpeg';
+  if (asset.type === 'png') {
+    // The runtime resolves an asset by name, so all of its scales must be
+    // either in the catalog or loose.
+    return !asset.files.some(isAnimatedPNG);
+  }
+  return asset.type === 'jpg' || asset.type === 'jpeg';
+}
+
+const PNG_SIGNATURE = Buffer.from([
+  0x89, 0x50, 0x4e, 0x47, 0x0d, 0x0a, 0x1a, 0x0a,
+]);
+
+/**
+ * Whether the file is an animated PNG: a PNG with an `acTL` chunk before its
+ * first `IDAT` (https://www.w3.org/TR/png-3/#acTL-chunk). actool compiles
+ * such a file into a single still frame, so it must stay a loose file.
+ *
+ * Only the chunk headers are read. An unreadable or malformed file is reported
+ * as not animated so that it stays on the catalog path, where actool reports it.
+ */
+export function isAnimatedPNG(filePath: string): boolean {
+  let fd = null;
+  try {
+    fd = fs.openSync(filePath, 'r');
+    const signature = Buffer.alloc(PNG_SIGNATURE.length);
+    if (
+      fs.readSync(fd, signature, 0, signature.length, 0) !== signature.length ||
+      !signature.equals(PNG_SIGNATURE)
+    ) {
+      return false;
+    }
+    const chunkHeader = Buffer.alloc(8);
+    let position = signature.length;
+    while (fs.readSync(fd, chunkHeader, 0, 8, position) === 8) {
+      const dataLength = chunkHeader.readUInt32BE(0);
+      const type = chunkHeader.toString('latin1', 4, 8);
+      if (type === 'acTL') {
+        return true;
+      }
+      if (type === 'IDAT' || type === 'IEND') {
+        return false;
+      }
+      // Skip the chunk data and its 4-byte CRC.
+      position += 8 + dataLength + 4;
+    }
+    return false;
+  } catch {
+    return false;
+  } finally {
+    if (fd != null) {
+      fs.closeSync(fd);
+    }
+  }
 }
 
 export function writeImageSet(imageSet: ImageSet): void {
