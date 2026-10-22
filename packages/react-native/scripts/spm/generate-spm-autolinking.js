@@ -823,15 +823,6 @@ function expandSpmSourceGlobs(
 }
 
 /**
- * Converts an autolinking.json dependency to an SPM target spec.
- * Returns null if the dependency doesn't have iOS support.
- *
- * `swiftNameByNpm` maps each autolinked dep's npm name to its resolved Swift
- * name (populated by expandSpmDependencies from the dep's podspec and
- * `spm.name`). Every name this function emits comes from there — see
- * requireSwiftName.
- */
-/**
  * The Swift name expandSpmDependencies resolved for `npmName`, or a hard error:
  * re-deriving one here would emit a reference nothing in the graph matches.
  */
@@ -847,6 +838,15 @@ function requireSwiftName(
   return resolved;
 }
 
+/**
+ * Converts an autolinking.json dependency to an SPM target spec.
+ * Returns null if the dependency doesn't have iOS support.
+ *
+ * `swiftNameByNpm` maps each autolinked dep's npm name to its resolved Swift
+ * name (populated by expandSpmDependencies from the dep's podspec and
+ * `spm.name`). Every name this function emits comes from there — see
+ * requireSwiftName.
+ */
 function autolinkingDepToSpmTarget(
   depName /*: string */,
   dep /*: AutolinkedDep */,
