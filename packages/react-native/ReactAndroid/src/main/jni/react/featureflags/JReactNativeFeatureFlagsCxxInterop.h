@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<2c8f9205f1de55591ede3845ba2fa877>>
+ * @generated SignedSource<<38f80c710ed3e6f9a5f3073bcabc864e>>
  */
 
 /**
@@ -265,6 +265,9 @@ class JReactNativeFeatureFlagsCxxInterop
     facebook::jni::alias_ref<JReactNativeFeatureFlagsCxxInterop>);
 
   static bool skipActivityIdentityAssertionOnHostPause(
+    facebook::jni::alias_ref<JReactNativeFeatureFlagsCxxInterop>);
+
+  static bool skipNativePropsForViewManagerWithDelegateAndroid(
     facebook::jni::alias_ref<JReactNativeFeatureFlagsCxxInterop>);
 
   static bool skipUnchangedChildrenInDifferentiator(
