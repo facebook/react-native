@@ -10,6 +10,7 @@ package com.facebook.react.interfaces
 import android.view.Window
 import com.facebook.react.bridge.ReactApplicationContext
 import com.facebook.react.bridge.ReactTestHelper
+import com.facebook.react.internal.featureflags.ReactNativeFeatureFlagsForTests
 import com.facebook.testutils.shadows.ShadowSoLoader
 import org.junit.Before
 import org.junit.Test
@@ -19,6 +20,7 @@ import org.mockito.kotlin.never
 import org.mockito.kotlin.times
 import org.mockito.kotlin.verify
 import org.robolectric.RobolectricTestRunner
+import org.robolectric.RuntimeEnvironment
 import org.robolectric.annotation.Config
 
 @RunWith(RobolectricTestRunner::class)
@@ -29,7 +31,9 @@ class ExtraWindowEventListenerTest {
 
   @Before
   fun setUp() {
-    reactContext = ReactTestHelper.createCatalystContextForTest()
+    ReactNativeFeatureFlagsForTests.setUp()
+    reactContext =
+        ReactTestHelper.createTestReactApplicationContext(RuntimeEnvironment.getApplication())
     window = mock()
   }
 
