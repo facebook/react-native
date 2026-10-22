@@ -8,7 +8,9 @@ Each test is a [Maestro](https://maestro.dev) flow in `flows/`. Maestro only ope
 
 1. Test All builds RNTester Release for Android and iOS. Once a build is ready, the `test_visual_android_rntester` and `test_visual_ios_rntester` jobs (`.github/workflows/visual-capture-rntester.yml`) run every flow in this directory on one canonical device per platform: an API 35 Pixel 7 emulator and an iPhone 17 Pro simulator on iOS 26.2. They upload the screenshots and a manifest of the device environment as `visual-capture-android` and `visual-capture-ios` artifacts.
 2. When Test All completes, Visual Compare RNTester (`.github/workflows/visual-compare-rntester.yml`) compares the screenshots with the baseline and reports a `Visual regression (android)` and `Visual regression (ios)` check and a `Visual regression approval` gate, plus a single PR comment with the expected, captured and diff images for anything that changed.
-3. On pushes to `main`, the captures become the baseline for that commit.
+3. On pushes to `main`, Visual Compare RNTester also publishes the captures as the baseline for that commit. There's no separate workflow for this: the same run publishes them once it has compared them.
+
+Only `main` and pull requests into it are compared. Stable branches have no baselines, so Visual Compare RNTester skips them.
 
 The baseline for a PR is the one for the commit it's based on, or the nearest earlier commit on `main` that has one. Baselines are keyed by device environment too (OS image, screen size, density, font scale, locale and so on), so a change to the CI device starts a fresh baseline rather than failing every PR.
 
