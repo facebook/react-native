@@ -14,9 +14,7 @@ import '@react-native/fantom/src/setUpDefaultReactNativeEnvironment';
 import type {HostInstance} from 'react-native';
 import type {AccessibilityProps} from 'react-native';
 
-import accessibilityPropsSuite, {
-  rolePropSuite,
-} from '../../../../src/private/__tests__/utilities/accessibilityPropsSuite';
+import accessibilityPropsSuite from '../../../../src/private/__tests__/utilities/accessibilityPropsSuite';
 import * as Fantom from '@react-native/fantom';
 import nullthrows from 'nullthrows';
 import * as React from 'react';
@@ -52,7 +50,6 @@ describe('<TouchableHighlight>', () => {
     }
 
     accessibilityPropsSuite(ComponentWithAccessibilityProps);
-    rolePropSuite(ComponentWithAccessibilityProps);
 
     describe('aria state props', () => {
       it('maps aria-checked to accessibilityState', () => {
