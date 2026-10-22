@@ -66,9 +66,14 @@ using namespace facebook::react;
     [self _updateLayoutContext];
 
     [[NSNotificationCenter defaultCenter] addObserver:self
-                                             selector:@selector(handleContentSizeCategoryDidChangeNotification:)
+                                             selector:@selector(handleLayoutContextDidChangeNotification:)
                                                  name:UIContentSizeCategoryDidChangeNotification
                                                object:nil];
+
+    [[NSNotificationCenter defaultCenter] addObserver:self
+                                             selector:@selector(handleLayoutContextDidChangeNotification:)
+                                                 name:RCTLayoutDirectionDidChangeNotification
+                                               object:surfacePresenter];
   }
 
   return self;
@@ -76,9 +81,18 @@ using namespace facebook::react;
 
 - (void)resetWithSurfacePresenter:(RCTSurfacePresenter *)surfacePresenter
 {
+  [[NSNotificationCenter defaultCenter] removeObserver:self
+                                                  name:RCTLayoutDirectionDidChangeNotification
+                                                object:_surfacePresenter];
+
   _view = nil;
   _surfacePresenter = surfacePresenter;
   [_surfacePresenter registerSurface:self];
+
+  [[NSNotificationCenter defaultCenter] addObserver:self
+                                           selector:@selector(handleLayoutContextDidChangeNotification:)
+                                               name:RCTLayoutDirectionDidChangeNotification
+                                             object:_surfacePresenter];
 }
 
 - (void)dealloc
@@ -288,7 +302,7 @@ using namespace facebook::react;
   return YES;
 }
 
-- (void)handleContentSizeCategoryDidChangeNotification:(NSNotification *)notification
+- (void)handleLayoutContextDidChangeNotification:(NSNotification *)notification
 {
   [self _updateLayoutContext];
 }

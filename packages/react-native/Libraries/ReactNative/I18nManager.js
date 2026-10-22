@@ -8,11 +8,14 @@
  * @format
  */
 
+import type {EventSubscription} from '../vendor/emitter/EventEmitter';
 import type {I18nManagerConstants} from './NativeI18nManager';
 
+import EventEmitter from '../vendor/emitter/EventEmitter';
 import NativeI18nManager from './NativeI18nManager';
+import invariant from 'invariant';
 
-const i18nConstants: I18nManagerConstants = getI18nManagerConstants();
+let i18nConstants: I18nManagerConstants = getI18nManagerConstants();
 
 function getI18nManagerConstants(): I18nManagerConstants {
   if (NativeI18nManager) {
@@ -27,6 +30,24 @@ function getI18nManagerConstants(): I18nManagerConstants {
   };
 }
 
+const eventEmitter = new EventEmitter<{
+  change: [I18nManagerConstants],
+}>();
+
+function updateConstants(): void {
+  const {isRTL, doLeftAndRightSwapInRTL, localeIdentifier} =
+    getI18nManagerConstants();
+
+  if (
+    isRTL !== i18nConstants.isRTL ||
+    doLeftAndRightSwapInRTL !== i18nConstants.doLeftAndRightSwapInRTL ||
+    localeIdentifier !== i18nConstants.localeIdentifier
+  ) {
+    i18nConstants = {isRTL, doLeftAndRightSwapInRTL, localeIdentifier};
+    eventEmitter.emit('change', i18nConstants);
+  }
+}
+
 /**
  * Utilities for managing Right-to-Left (RTL) layout support.
  *
@@ -39,7 +60,7 @@ export default {
 
   /**
    * Allows the app to opt in to RTL layout behavior. Should be called early
-   * in app startup. Takes effect on the next app reload.
+   * in app startup. Takes effect after `relayout()` or on the next app reload.
    */
   allowRTL: (shouldAllow: boolean) => {
     if (!NativeI18nManager) {
@@ -51,7 +72,7 @@ export default {
 
   /**
    * Forces the app into RTL layout mode, regardless of the device locale.
-   * Takes effect on the next app reload.
+   * Takes effect after `relayout()` or on the next app reload.
    */
   forceRTL: (shouldForce: boolean) => {
     if (!NativeI18nManager) {
@@ -73,10 +94,45 @@ export default {
     NativeI18nManager.swapLeftAndRightInRTL(flipStyles);
   },
 
+  /**
+   * Applies the values set by `allowRTL`, `forceRTL` and
+   * `swapLeftAndRightInRTL` to the running app, without a reload.
+   */
+  relayout: (): Promise<void> => {
+    if (NativeI18nManager?.relayout == null) {
+      return Promise.resolve();
+    }
+
+    return NativeI18nManager.relayout().then(updateConstants);
+  },
+
+  /**
+   * Add an event handler. Supported events:
+   *
+   * - `change`: Fires when `relayout` changes a constant, with the new
+   *   constants.
+   */
+  addEventListener: (
+    type: 'change',
+    handler: (constants: I18nManagerConstants) => void,
+  ): EventSubscription => {
+    invariant(
+      type === 'change',
+      'Trying to subscribe to unknown event: "%s"',
+      type,
+    );
+    return eventEmitter.addListener(type, handler);
+  },
+
   /** Whether the current layout direction is Right-to-Left. */
-  isRTL: i18nConstants.isRTL as I18nManagerConstants['isRTL'],
+  // $FlowFixMe[unsafe-getters-setters]
+  get isRTL(): I18nManagerConstants['isRTL'] {
+    return i18nConstants.isRTL;
+  },
 
   /** Whether left and right style properties are swapped in RTL mode. */
-  doLeftAndRightSwapInRTL:
-    i18nConstants.doLeftAndRightSwapInRTL as I18nManagerConstants['doLeftAndRightSwapInRTL'],
+  // $FlowFixMe[unsafe-getters-setters]
+  get doLeftAndRightSwapInRTL(): I18nManagerConstants['doLeftAndRightSwapInRTL'] {
+    return i18nConstants.doLeftAndRightSwapInRTL;
+  },
 };

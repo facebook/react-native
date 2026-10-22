@@ -23,6 +23,7 @@ export interface Spec extends TurboModule {
   allowRTL: (allowRTL: boolean) => void;
   forceRTL: (forceRTL: boolean) => void;
   swapLeftAndRightInRTL: (flipStyles: boolean) => void;
+  relayout: () => Promise<void>;
 }
 
 export default TurboModuleRegistry.get<Spec>('I18nManager') as ?Spec;

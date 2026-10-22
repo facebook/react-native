@@ -12,6 +12,8 @@ RCT_EXTERN NSString *const RCTPlatformName;
 RCT_EXTERN NSString *const RCTUserInterfaceStyleDidChangeNotification;
 RCT_EXTERN NSString *const RCTUserInterfaceStyleDidChangeNotificationTraitCollectionKey;
 
+RCT_EXTERN NSString *const RCTLayoutDirectionDidChangeNotification;
+
 RCT_EXTERN NSString *const RCTWindowFrameDidChangeNotification;
 
 RCT_EXTERN NSString *const RCTNotifyEventDispatcherObserversOfEvent_DEPRECATED;

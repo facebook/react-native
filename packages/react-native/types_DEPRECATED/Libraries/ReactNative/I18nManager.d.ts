@@ -7,15 +7,24 @@
  * @format
  */
 
+import {EmitterSubscription} from '../vendor/emitter/EventEmitter';
+
+type I18nManagerConstants = {
+  isRTL: boolean;
+  doLeftAndRightSwapInRTL: boolean;
+  localeIdentifier?: string | null | undefined;
+};
+
 export interface I18nManagerStatic {
-  getConstants: () => {
-    isRTL: boolean;
-    doLeftAndRightSwapInRTL: boolean;
-    localeIdentifier?: string | null | undefined;
-  };
+  getConstants: () => I18nManagerConstants;
   allowRTL: (allowRTL: boolean) => void;
   forceRTL: (forceRTL: boolean) => void;
   swapLeftAndRightInRTL: (swapLeftAndRight: boolean) => void;
+  relayout: () => Promise<void>;
+  addEventListener: (
+    type: 'change',
+    handler: (constants: I18nManagerConstants) => void,
+  ) => EmitterSubscription;
   isRTL: boolean;
   doLeftAndRightSwapInRTL: boolean;
 }

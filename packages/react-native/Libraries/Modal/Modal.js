@@ -12,6 +12,7 @@ import type {HostInstance} from '../../src/private/types/HostInstance';
 import type {ViewProps} from '../Components/View/ViewPropTypes';
 import type {RootTag} from '../ReactNative/RootTag';
 import type {DirectEventHandler} from '../Types/CodegenTypes';
+import type {EventSubscription} from '../vendor/emitter/EventEmitter';
 
 import {type ColorValue} from '../StyleSheet/StyleSheet';
 import Platform from '../Utilities/Platform';
@@ -243,6 +244,7 @@ class Modal extends React.Component<ModalProps, ModalState> {
   static contextType: React.Context<RootTag> = RootTagContext;
 
   _identifier: number;
+  _i18nSubscription: ?EventSubscription;
 
   constructor(props: ModalProps) {
     super(props);
@@ -255,7 +257,15 @@ class Modal extends React.Component<ModalProps, ModalState> {
     };
   }
 
+  componentDidMount() {
+    this._i18nSubscription = I18nManager.addEventListener('change', () => {
+      this.forceUpdate();
+    });
+  }
+
   componentWillUnmount() {
+    this._i18nSubscription?.remove();
+
     if (Platform.OS === 'ios') {
       this.setState({isRendered: false});
     }
@@ -352,7 +362,12 @@ class Modal extends React.Component<ModalProps, ModalState> {
           <ScrollView.Context.Provider value={null}>
             <View
               // $FlowFixMe[incompatible-type]
-              style={[styles.container, this.props.style, containerStyles]}
+              style={[
+                styles.container,
+                I18nManager.isRTL ? styles.containerRTL : styles.containerLTR,
+                this.props.style,
+                containerStyles,
+              ]}
               collapsable={false}>
               {innerChildren}
             </View>
@@ -368,22 +383,20 @@ class Modal extends React.Component<ModalProps, ModalState> {
   }
 }
 
-const side = I18nManager.getConstants().isRTL ? 'right' : 'left';
 const styles = StyleSheet.create({
   modal: {
     position: 'absolute',
   },
-  /* $FlowFixMe[incompatible-type] Natural Inference rollout. See
-   * https://fburl.com/workplace/6291gfvu */
   container: {
-    /* $FlowFixMe[invalid-computed-prop] (>=0.111.0 site=react_native_fb) This
-     * comment suppresses an error found when Flow v0.111 was deployed. To see
-     * the error, delete this comment and run Flow. */
-    // $FlowFixMe[incompatible-type]
-    [side]: 0,
     top: 0,
     flex: 1,
     backgroundColor: 'white',
+  },
+  containerLTR: {
+    left: 0,
+  },
+  containerRTL: {
+    right: 0,
   },
 });
 

@@ -9,8 +9,11 @@ package com.facebook.react.modules.i18nmanager
 
 import androidx.core.os.ConfigurationCompat
 import com.facebook.fbreact.specs.NativeI18nManagerSpec
+import com.facebook.react.bridge.Promise
 import com.facebook.react.bridge.ReactApplicationContext
+import com.facebook.react.bridge.UiThreadUtil
 import com.facebook.react.module.annotations.ReactModule
+import com.facebook.react.runtime.BridgelessReactContext
 import java.util.Locale
 
 /** [com.facebook.react.bridge.NativeModule] that allows JS to set allowRTL and get isRTL status. */
@@ -39,6 +42,14 @@ internal class I18nManagerModule(context: ReactApplicationContext?) :
 
   override fun swapLeftAndRightInRTL(value: Boolean) {
     I18nUtil.instance.swapLeftAndRightInRTL(reactApplicationContext, value)
+  }
+
+  override fun relayout(promise: Promise) {
+    UiThreadUtil.runOnUiThread {
+      (reactApplicationContext as? BridgelessReactContext)
+          ?.updateLayoutDirectionOfAttachedSurfaces()
+      promise.resolve(null)
+    }
   }
 
   companion object {

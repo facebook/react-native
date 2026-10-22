@@ -7,7 +7,9 @@
 
 #import <FBReactNativeSpec/FBReactNativeSpec.h>
 
+#import <React/RCTConstants.h>
 #import <React/RCTI18nUtil.h>
+#import <React/RCTSurfacePresenterStub.h>
 #import "RCTI18nManager.h"
 
 #import "CoreModulesPlugins.h"
@@ -17,13 +19,20 @@ using namespace facebook::react;
 @interface RCTI18nManager () <NativeI18nManagerSpec>
 @end
 
-@implementation RCTI18nManager
+@implementation RCTI18nManager {
+  __weak id<RCTSurfacePresenterStub> _surfacePresenter;
+}
 
 RCT_EXPORT_MODULE()
 
 + (BOOL)requiresMainQueueSetup
 {
   return NO;
+}
+
+- (void)setSurfacePresenter:(id<RCTSurfacePresenterStub>)surfacePresenter
+{
+  _surfacePresenter = surfacePresenter;
 }
 
 - (void)allowRTL:(BOOL)value
@@ -39,6 +48,18 @@ RCT_EXPORT_MODULE()
 - (void)swapLeftAndRightInRTL:(BOOL)value
 {
   [[RCTI18nUtil sharedInstance] swapLeftAndRightInRTL:value];
+}
+
+- (void)relayout:(RCTPromiseResolveBlock)resolve reject:(__unused RCTPromiseRejectBlock)reject
+{
+  id<RCTSurfacePresenterStub> surfacePresenter = _surfacePresenter;
+
+  dispatch_async(dispatch_get_main_queue(), ^{
+    // Only the surfaces of this React instance read the new layout direction
+    [[NSNotificationCenter defaultCenter] postNotificationName:RCTLayoutDirectionDidChangeNotification
+                                                        object:surfacePresenter];
+    resolve(nil);
+  });
 }
 
 - (NSDictionary *)constantsToExport
