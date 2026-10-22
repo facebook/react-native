@@ -73,7 +73,7 @@ const styles = StyleSheet.create({
     alignItems: 'flex-start',
     flexDirection: 'row',
     flexShrink: 1,
-    maxWidth: 120,
+    maxWidth: 90,
   },
   row: {
     alignItems: 'flex-start',
