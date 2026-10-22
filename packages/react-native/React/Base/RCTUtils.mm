@@ -1126,20 +1126,16 @@ UIImage *__nullable RCTImageFromLocalAssetURL(NSURL *imageURL)
       // hit, keeping the common path a single lookup. Non-catalog assets (nil
       // name) and catalog misses fall through to the loose-file lookup below:
       // the CLI copies animated PNGs as loose files, since actool would compile
-      // them into a single still frame.
+      // them into a single still frame. RNAssets.bundle itself is absent when
+      // every image asset was copied loose, so a missing bundle is a miss too.
       NSBundle *assetCatalogBundle = RCTAssetCatalogBundle();
-      if (assetCatalogBundle == nil) {
-        // Passing a nil bundle to imageNamed:inBundle: would silently search the
-        // main bundle instead, potentially resolving an unrelated app image.
-        RCTLogError(
-            @"RCTUseAssetCatalog is enabled but RNAssets.bundle was not found in the app. Image assets must be "
-             "bundled by react-native-xcode.sh, which compiles them into the app at build time. (loading %@)",
-            imageURL);
-        return nil;
-      }
-      UIImage *image = [UIImage imageNamed:catalogName inBundle:assetCatalogBundle compatibleWithTraitCollection:nil];
-      if (image != nil) {
-        return image;
+      // Passing a nil bundle to imageNamed:inBundle: would silently search the
+      // main bundle instead, potentially resolving an unrelated app image.
+      if (assetCatalogBundle != nil) {
+        UIImage *image = [UIImage imageNamed:catalogName inBundle:assetCatalogBundle compatibleWithTraitCollection:nil];
+        if (image != nil) {
+          return image;
+        }
       }
     }
   }
@@ -1194,11 +1190,18 @@ UIImage *__nullable RCTImageFromLocalAssetURL(NSURL *imageURL)
   }
 
   if (image == nil && catalogName != nil) {
-    RCTLogError(
-        @"Image \"%@\" (%@) was not found in the asset catalog or as a file. RCTUseAssetCatalog is enabled, "
-         "so image assets must be compiled into the app's RNAssets.bundle at build time.",
-        catalogName,
-        imageURL);
+    if (RCTAssetCatalogBundle() == nil) {
+      RCTLogError(
+          @"RCTUseAssetCatalog is enabled but RNAssets.bundle was not found in the app. Image assets must be "
+           "bundled by react-native-xcode.sh, which compiles them into the app at build time. (loading %@)",
+          imageURL);
+    } else {
+      RCTLogError(
+          @"Image \"%@\" (%@) was not found in the asset catalog or as a file. RCTUseAssetCatalog is enabled, "
+           "so image assets must be compiled into the app's RNAssets.bundle at build time.",
+          catalogName,
+          imageURL);
+    }
   }
   return image;
 }
