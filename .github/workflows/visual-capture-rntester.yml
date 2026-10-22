@@ -89,7 +89,7 @@ jobs:
           if-no-files-found: error
           retention-days: 14
       - name: Upload Maestro logs
-        if: failure()
+        if: always()
         uses: ./.github/actions/upload-artifact
         with:
           name: visual-maestro-logs-android
@@ -156,7 +156,7 @@ jobs:
           if-no-files-found: error
           retention-days: 14
       - name: Upload Maestro logs
-        if: failure()
+        if: always()
         uses: ./.github/actions/upload-artifact
         with:
           name: visual-maestro-logs-ios
