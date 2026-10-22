@@ -22,7 +22,11 @@ env:
 
 jobs:
   approve:
-    if: github.event.label.name == 'visual-change-approved'
+    # Nothing runs until the repository has GCP credentials configured.
+    if: |
+      vars.VISUAL_GCP_PROJECT != '' &&
+      vars.VISUAL_WORKLOAD_IDENTITY_PROVIDER != '' &&
+      github.event.label.name == 'visual-change-approved'
     runs-on: ubuntu-latest
     permissions:
       checks: write

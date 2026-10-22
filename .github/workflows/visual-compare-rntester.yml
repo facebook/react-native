@@ -37,8 +37,10 @@ jobs:
     # to other branches have no baseline to compare with or publish. Pull
     # requests into other branches are skipped in compare-run.js, because
     # workflow_run doesn't include the base branch of a pull request from a
-    # fork.
+    # fork. Nothing runs until the repository has GCP credentials configured.
     if: |
+      vars.VISUAL_GCP_PROJECT != '' &&
+      vars.VISUAL_WORKLOAD_IDENTITY_PROVIDER != '' &&
       contains(fromJSON('["success", "failure"]'), github.event.workflow_run.conclusion) &&
       (
         github.event.workflow_run.event == 'pull_request' ||
