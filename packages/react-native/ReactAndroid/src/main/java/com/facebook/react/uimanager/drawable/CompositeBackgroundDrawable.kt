@@ -187,8 +187,6 @@ internal class CompositeBackgroundDrawable(
   elevation shadow. */
   override fun getOutline(outline: Outline) {
     if (borderRadius?.hasRoundedBorders() == true) {
-      val pathForOutline = Path()
-
       val computedBorderRadius =
           borderRadius?.resolve(
               layoutDirection,
@@ -199,9 +197,8 @@ internal class CompositeBackgroundDrawable(
 
       val computedBorderInsets = borderInsets?.resolve(layoutDirection, context)
 
-      computedBorderRadius?.let {
-        pathForOutline.addRoundRect(
-            RectF(bounds),
+      val radii =
+          computedBorderRadius?.let {
             floatArrayOf(
                 (it.topLeft.horizontal + (computedBorderInsets?.left ?: 0f)).dpToPx(),
                 (it.topLeft.vertical + (computedBorderInsets?.top ?: 0f)).dpToPx(),
@@ -211,10 +208,19 @@ internal class CompositeBackgroundDrawable(
                 (it.bottomRight.vertical + (computedBorderInsets?.bottom ?: 0f)).dpToPx(),
                 (it.bottomLeft.horizontal + (computedBorderInsets?.left ?: 0f)).dpToPx(),
                 (it.bottomLeft.vertical + (computedBorderInsets?.bottom ?: 0f)).dpToPx(),
-            ),
-            Path.Direction.CW,
-        )
+            )
+          }
+
+      // Four equal circular corners describe the same shape as the rounded path below, without
+      // building a path. Like the path, a radius larger than half the shorter side is reduced to
+      // it.
+      if (radii != null && radii.all { it == radii[0] }) {
+        outline.setRoundRect(bounds, minOf(radii[0], minOf(bounds.width(), bounds.height()) / 2f))
+        return
       }
+
+      val pathForOutline = Path()
+      radii?.let { pathForOutline.addRoundRect(RectF(bounds), it, Path.Direction.CW) }
 
       if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R) {
         outline.setPath(pathForOutline)
