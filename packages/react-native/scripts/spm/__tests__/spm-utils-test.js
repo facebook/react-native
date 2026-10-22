@@ -30,6 +30,7 @@ const {
   isPublishableVersion,
   isValidSwiftName,
   makeLogger,
+  readLibraryProducts,
   readPackageJson,
   remotePackageConfig,
   resolveInstalledRnVersion,
@@ -819,5 +820,118 @@ describe('per-app header farm (ReactAppHeaders SPM target)', () => {
       fs.existsSync(path.join(appRoot, 'build', '.react-app-headers.tmp')),
     ).toBe(false);
     expect(second.virtualPaths.has('MyLib/Provider.h')).toBe(true);
+  });
+});
+
+// ---------------------------------------------------------------------------
+// readLibraryProducts — the library products a hand-authored Package.swift
+// declares, read as text so no Swift toolchain is needed.
+// ---------------------------------------------------------------------------
+
+describe('readLibraryProducts', () => {
+  const manifest = products => `// swift-tools-version:5.9
+import PackageDescription
+
+let package = Package(
+    name: "Whatever",
+    products: [
+${products}
+    ],
+    targets: []
+)
+`;
+
+  it('reads a single-line library product', () => {
+    expect(
+      readLibraryProducts(
+        manifest('        .library(name: "FooKit", targets: ["FooKit"]),'),
+      ),
+    ).toEqual({names: ['FooKit'], nonLiteral: false});
+  });
+
+  it('reads a multi-line library product with a type', () => {
+    expect(
+      readLibraryProducts(
+        manifest(`        .library(
+            name: "FooKit",
+            type: .dynamic,
+            targets: ["FooKit"]
+        ),`),
+      ),
+    ).toEqual({names: ['FooKit'], nonLiteral: false});
+  });
+
+  it('reads every library product', () => {
+    expect(
+      readLibraryProducts(
+        manifest(`        .library(name: "A", targets: ["A"]),
+        .library(name: "B", targets: ["B"]),`),
+      ),
+    ).toEqual({names: ['A', 'B'], nonLiteral: false});
+  });
+
+  it('reads no products from a manifest that declares none', () => {
+    expect(readLibraryProducts(manifest(''))).toEqual({
+      names: [],
+      nonLiteral: false,
+    });
+  });
+
+  it('flags an interpolated name as non-literal', () => {
+    expect(
+      readLibraryProducts(
+        manifest('        .library(name: "\\(prefix)Kit", targets: ["X"]),'),
+      ),
+    ).toEqual({names: [], nonLiteral: true});
+  });
+
+  it('flags a name held in a variable as non-literal', () => {
+    expect(
+      readLibraryProducts(
+        manifest(`        .library(name: "A", targets: ["A"]),
+        .library(name: libName, targets: [libName]),`),
+      ),
+    ).toEqual({names: ['A'], nonLiteral: true});
+  });
+
+  it('ignores commented-out library products', () => {
+    expect(
+      readLibraryProducts(
+        manifest(`        // .library(name: "Old", targets: ["Old"]),
+        /* .library(name: "Older", targets: ["Older"]), */
+        /*
+        .library(name: "Oldest", targets: ["Oldest"]),
+        */
+        .library(name: "FooKit", targets: ["FooKit"]),`),
+      ),
+    ).toEqual({names: ['FooKit'], nonLiteral: false});
+  });
+
+  it('does not read a URL or glob inside a string as a comment', () => {
+    const text = `// swift-tools-version:5.9
+import PackageDescription
+
+let package = Package(
+    name: "FooKit",
+    dependencies: [.package(url: "https://github.com/foo/bar.git", from: "1.0.0")],
+    targets: [.target(name: "FooKit", exclude: ["a/*.mm"])],
+    products: [.library(name: "FooKit", targets: ["FooKit"])],
+    // .library(name: "Commented", targets: [])
+)
+`;
+    expect(readLibraryProducts(text)).toEqual({
+      names: ['FooKit'],
+      nonLiteral: false,
+    });
+  });
+
+  it('ignores executable and plugin products', () => {
+    expect(
+      readLibraryProducts(
+        manifest(`        .executable(name: "Tool", targets: ["Tool"]),
+        .plugin(name: "Gen", targets: ["Gen"]),
+        .library(name: "FooKit", targets: ["FooKit"]),`),
+      ),
+    ).toEqual({names: ['FooKit'], nonLiteral: false});
   });
 });

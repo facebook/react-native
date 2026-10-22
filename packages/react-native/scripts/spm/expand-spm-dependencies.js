@@ -16,9 +16,12 @@ const {
   readPodspecNames,
 } = require('./read-podspec');
 const {
+  AUTOGEN_MARKER,
   RESERVED_SWIFT_NAMES,
+  SCAFFOLDER_MARKER,
   isValidSwiftName,
   makeLogger,
+  readLibraryProducts,
   swiftNameKey,
   toC99Name,
   toSwiftName,
@@ -51,7 +54,7 @@ const {warn} = makeLogger('expand-spm-dependencies');
  */
 
 /*::
-import type {AutolinkedDep} from './spm-types';
+import type {AutolinkedDep, AutolinkingIosPlatform} from './spm-types';
 import type {SwiftpmConfig} from './swiftpm-config';
 
 // react-native.config.js entries have a user-defined shape, so we use an
@@ -66,9 +69,16 @@ type ResolveDep = (name: string, fromRoot: string) => ?string;
 type PodspecNameKey = 'header_dir' | 'module_name' | 'name';
 type ResolvedSwiftName = {
   name: string,
-  source: 'config' | 'podspec' | 'npm',
+  source: 'config' | 'podspec' | 'npm' | 'manifest',
   podspecKey?: PodspecNameKey,
 };
+// The library products of the hand-authored Package.swift a dep ships.
+type ManifestProducts = {
+  names: ReadonlyArray<string>,
+  nonLiteral: boolean,
+  manifestPath: string,
+};
+type ReadManifestProducts = (root: string) => ?ManifestProducts;
 // The podspec fields that name a library. A PodspecModel satisfies it.
 type PodspecFacts = {
   readonly name?: ?string,
@@ -87,6 +97,7 @@ type Options = {
   resolveDep: ResolveDep,
   readPodspec?: ?ReadPodspec,
   readSwiftpmConfig?: ?ReadSwiftpmConfig,
+  readManifestProducts?: ?ReadManifestProducts,
   // Names to reserve alongside RESERVED_SWIFT_NAMES, supplied by the caller
   // (remote mode relabels the RN package) since this module reads no config.
   extraReservedNames?: ?ReadonlyArray<string>,
@@ -101,6 +112,17 @@ class SpmNameCollisionError extends Error {
   constructor(message /*: string */) {
     super(message);
     this.name = 'SpmNameCollisionError';
+  }
+}
+
+/**
+ * A dep's own Package.swift cannot link under the name React Native resolved —
+ * a misconfiguration, surfaced like SpmNameCollisionError.
+ */
+class SpmManifestProductError extends Error {
+  constructor(message /*: string */) {
+    super(message);
+    this.name = 'SpmManifestProductError';
   }
 }
 
@@ -162,7 +184,9 @@ function podspecSwiftName(
  * a library declares wins; the podspec is the transitional source of truth
  * behind it — `react-native-svg` publishes `RNSVG`, not `ReactNativeSvg` — in
  * the order `header_dir` → `module_name` → pod name. The npm name is the last
- * resort, for a library that ships a `Package.swift` and no podspec.
+ * resort, for a library that ships a `Package.swift` and no podspec. A
+ * hand-authored `Package.swift` overrides a derived name it cannot link under
+ * (see manifestSwiftName).
  *
  * The source is what tells the scaffolder which names are safe to write into a
  * library's package.json: a derived one, never a guessed one.
@@ -171,6 +195,7 @@ function resolveSwiftName(
   npmName /*: string */,
   spmConfig /*: ?SwiftpmConfig */,
   podspec /*: ?PodspecFacts */,
+  manifest /*: ?ManifestProducts */,
 ) /*: ResolvedSwiftName */ {
   const declared = spmConfig?.name;
   if (declared != null) {
@@ -188,21 +213,62 @@ function resolveSwiftName(
   }
 
   const fromPodspec = podspecSwiftName(npmName, podspec);
-  if (fromPodspec != null) {
-    return {
-      name: fromPodspec.name,
-      source: 'podspec',
-      podspecKey: fromPodspec.key,
-    };
+  const derived /*: ResolvedSwiftName */ =
+    fromPodspec != null
+      ? {name: fromPodspec.name, source: 'podspec', podspecKey: fromPodspec.key}
+      : {name: toSwiftName(npmName), source: 'npm'};
+  const fromManifest = manifestSwiftName(npmName, derived.name, manifest);
+  if (fromManifest != null) {
+    return {name: fromManifest, source: 'manifest'};
   }
-  const fromNpm = toSwiftName(npmName);
-  if (podspec != null) {
+  if (derived.source === 'npm' && podspec != null) {
     warn(
-      `'${npmName}' ships a podspec React Native could not read a name from (CocoaPods may not be installed), so it is named '${fromNpm}' after its npm package instead. ` +
+      `'${npmName}' ships a podspec React Native could not read a name from (CocoaPods may not be installed), so it is named '${derived.name}' after its npm package instead. ` +
         `A machine that can read the podspec may resolve a different name — set 'swiftpmConfig.name' in ${npmName}'s package.json to settle it everywhere.`,
     );
   }
-  return {name: fromNpm, source: 'npm'};
+  return derived;
+}
+
+/**
+ * The name a dep's hand-authored Package.swift settles, when it differs from
+ * the derived one. The aggregator links `.product(name: <swiftName>, ...)`, so
+ * the name must be one of the manifest's library products: its only product
+ * replaces a derived name it does not match. Null keeps the derived name —
+ * including when a product name is not a literal, which text cannot read.
+ * Throws when several products leave no single one to fall back to.
+ */
+function manifestSwiftName(
+  npmName /*: string */,
+  derivedName /*: string */,
+  manifest /*: ?ManifestProducts */,
+) /*: ?string */ {
+  // A manifest with no library product names nothing to link, so the derived
+  // name keeps today's behavior.
+  if (
+    manifest == null ||
+    manifest.names.length === 0 ||
+    manifest.names.includes(derivedName) ||
+    manifest.nonLiteral
+  ) {
+    return null;
+  }
+  const {names, manifestPath} = manifest;
+  if (names.length === 1) {
+    const [product] = names;
+    if (isValidSwiftName(product)) {
+      return product;
+    }
+    warn(
+      `'${npmName}' ships ${manifestPath} declaring the library product '${product}', which is not a valid SwiftPM name, so it keeps the name '${derivedName}' and cannot link that product. ` +
+        `Set 'swiftpmConfig.name' in ${npmName}'s package.json to the product to link.`,
+    );
+    return null;
+  }
+  const declared = names.map(name => `'${name}'`).join(', ');
+  throw new SpmManifestProductError(
+    `react-native autolinking: '${npmName}' ships ${manifestPath} declaring the library products ${declared}, but React Native resolved the name '${derivedName}', which is not one of them. Set 'swiftpmConfig.name' in ${npmName}'s package.json to the product to link.`,
+  );
 }
 
 function collisionDiagnosis(
@@ -294,6 +360,13 @@ function expandSpmDependencies(
 ) /*: Array<AutolinkedDep> */ {
   const {readConfig, resolveDep, readPodspec, extraReservedNames} = options;
   const spmConfigOf = options.readSwiftpmConfig ?? readSwiftpmConfig;
+  const readManifest = options.readManifestProducts ?? readManifestProducts;
+  const manifestOf = (
+    root /*: string */,
+    ios /*: AutolinkingIosPlatform */,
+    spmConfig /*: ?SwiftpmConfig */,
+  ) /*: ?ManifestProducts */ =>
+    depManifestProducts(root, ios, spmConfig, readManifest);
   const reserved = reservedSwiftNames(extraReservedNames);
   const byName /*: Map<string, AutolinkedDep> */ = new Map();
   for (const dep of directDeps) {
@@ -331,6 +404,7 @@ function expandSpmDependencies(
         currentName,
         spmConfig,
         podspecFor(current.root, current.platforms.ios.podspecPath),
+        manifestOf(current.root, current.platforms.ios, spmConfig),
       );
       current.swiftName = resolved.name;
       current.swiftNameSource = resolved.source;
@@ -358,10 +432,15 @@ function expandSpmDependencies(
           continue;
         }
 
+        const transitiveSpmConfig = spmConfigOf(
+          transitiveRoot,
+          transitiveConfig,
+        );
         const resolved = resolveSwiftName(
           transitiveName,
-          spmConfigOf(transitiveRoot, transitiveConfig),
+          transitiveSpmConfig,
           podspecFor(transitiveRoot, iosPlatform.podspecPath),
+          manifestOf(transitiveRoot, iosPlatform, transitiveSpmConfig),
         );
         byName.set(transitiveName, {
           name: transitiveName,
@@ -485,10 +564,60 @@ function defaultReadPodspec(
   }
 }
 
+/**
+ * The library products of the Package.swift the autolinker would treat as the
+ * dep's own — the first of `<root>/Package.swift` and `<root>/ios/Package.swift`
+ * it did not generate, as findSelfManagedPackageDir picks. A scaffolded
+ * manifest is React Native's output, not the library's word, so it names
+ * nothing.
+ */
+function readManifestProducts(root /*: string */) /*: ?ManifestProducts */ {
+  for (const manifestPath of [
+    path.join(root, 'Package.swift'),
+    path.join(root, 'ios', 'Package.swift'),
+  ]) {
+    let content;
+    try {
+      content = fs.readFileSync(manifestPath, 'utf8');
+    } catch {
+      continue;
+    }
+    if (content.includes(AUTOGEN_MARKER)) {
+      continue;
+    }
+    if (content.includes(SCAFFOLDER_MARKER)) {
+      return null;
+    }
+    return {...readLibraryProducts(content), manifestPath};
+  }
+  return null;
+}
+
+/**
+ * The manifest that names one autolinked dep, read from the dir
+ * findSelfManagedPackageDir searches. A plugin host is linked through its
+ * plugin, never as `.product(name: <swiftName>, ...)`, so its manifest does
+ * not name it.
+ */
+function depManifestProducts(
+  root /*: string */,
+  ios /*: AutolinkingIosPlatform */,
+  spmConfig /*: ?SwiftpmConfig */,
+  readManifest /*: ReadManifestProducts */ = readManifestProducts,
+) /*: ?ManifestProducts */ {
+  if (spmConfig?.autolinkingPlugin != null) {
+    return null;
+  }
+  return readManifest(ios.sourceDir ?? root);
+}
+
 module.exports = {
+  SpmManifestProductError,
   SpmNameCollisionError,
   assertSwiftNameNotReserved,
+  depManifestProducts,
   expandSpmDependencies,
+  readManifestProducts,
   resolveSwiftName,
   defaultReadConfig,
   defaultReadPodspec,

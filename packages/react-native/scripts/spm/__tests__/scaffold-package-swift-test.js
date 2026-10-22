@@ -1383,6 +1383,41 @@ describe('scaffoldAll', () => {
     ).toThrow(/React Native reserves/);
   });
 
+  it('reports a manifest that cannot link under the resolved name as itself, not as a transitive failure', () => {
+    const depRoot = path.join(appRoot, 'node_modules', 'react-native-foo');
+    fs.mkdirSync(depRoot, {recursive: true});
+    fs.writeFileSync(
+      path.join(depRoot, 'Package.swift'),
+      [
+        '// swift-tools-version:5.9',
+        'import PackageDescription',
+        'let package = Package(',
+        '    name: "Foo",',
+        '    products: [',
+        '        .library(name: "A", targets: ["A"]),',
+        '        .library(name: "B", targets: ["B"]),',
+        '    ],',
+        '    targets: []',
+        ')',
+        '',
+      ].join('\n'),
+    );
+    writeAutolinkingJson({
+      'react-native-foo': {root: depRoot, platforms: {ios: {}}},
+    });
+    const logSpy = jest.spyOn(console, 'log').mockImplementation(() => {});
+    try {
+      expect(() =>
+        scaffoldAll({appRoot, projectRoot: appRoot, reactNativeRoot: appRoot}),
+      ).toThrow(/declaring the library products 'A', 'B'/);
+      expect(
+        logSpy.mock.calls.map(call => call.join(' ')).join('\n'),
+      ).not.toMatch(/Transitive dependency expansion failed/);
+    } finally {
+      logSpy.mockRestore();
+    }
+  });
+
   it('still falls back to the direct deps when a transitive dep cannot be resolved', () => {
     const depRoot = path.join(appRoot, 'node_modules', 'react-native-a');
     fs.mkdirSync(depRoot, {recursive: true});

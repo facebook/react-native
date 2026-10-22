@@ -156,7 +156,7 @@ export type AutolinkedDep = {
   swiftName?: string,
   // Where swiftName came from. Only a podspec-derived name is safe for the
   // scaffolder to record in the library's package.json.
-  swiftNameSource?: 'config' | 'podspec' | 'npm',
+  swiftNameSource?: 'config' | 'podspec' | 'npm' | 'manifest',
   // Which podspec field named it ('podspec' source only), so `spm scaffold` can
   // report the choice it made between `header_dir` and `module_name`.
   swiftNamePodspecKey?: 'header_dir' | 'module_name' | 'name',

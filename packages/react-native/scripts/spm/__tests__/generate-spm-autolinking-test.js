@@ -2134,6 +2134,7 @@ describe('main() — libs/ symlinks for self-managed deps', () => {
     writeAutolinkingJson(depNames);
 
     return {
+      appRoot,
       libsDir: path.join(autolinkDir, 'libs'),
       writeAutolinkingJson,
       sync: () => main(['--app-root', appRoot, '--react-native-root', rnRoot]),
@@ -2175,6 +2176,39 @@ describe('main() — libs/ symlinks for self-managed deps', () => {
     app.writeAutolinkingJson(['react-native-foo']);
     app.sync();
     expect(fs.readdirSync(app.libsDir)).toEqual(['ReactNativeFoo']);
+  });
+
+  it('links the library product the manifest declares, through a libs/ alias of the same name', () => {
+    const app = buildApp(['react-native-foo']);
+    const depDir = path.join(app.appRoot, 'node_modules', 'react-native-foo');
+    fs.writeFileSync(
+      path.join(depDir, 'Package.swift'),
+      [
+        '// swift-tools-version:5.9',
+        'import PackageDescription',
+        'let package = Package(',
+        '    name: "FooKit",',
+        '    products: [.library(name: "FooKit", targets: ["FooKit"])],',
+        '    targets: [.target(name: "FooKit", path: ".")]',
+        ')',
+        '',
+      ].join('\n'),
+    );
+
+    app.sync();
+
+    const manifest = fs.readFileSync(
+      path.join(app.libsDir, '..', 'Package.swift'),
+      'utf8',
+    );
+    const product = manifest.match(
+      /\.product\(name: "([^"]+)", package: "([^"]+)"\)/,
+    );
+    expect(product?.slice(1)).toEqual(['FooKit', 'FooKit']);
+    const alias = path.join(app.libsDir, 'FooKit');
+    expect(path.basename(alias)).toBe(product?.[2]);
+    expect(fs.realpathSync(alias)).toBe(fs.realpathSync(depDir));
+    expect(manifest).not.toContain('ReactNativeFoo');
   });
 });
 

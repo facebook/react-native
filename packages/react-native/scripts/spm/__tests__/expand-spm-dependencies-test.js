@@ -38,11 +38,14 @@ const {
   defaultReadConfig,
   defaultReadPodspec,
   expandSpmDependencies,
+  readManifestProducts,
   resolveSwiftName,
 } = require('../expand-spm-dependencies');
 const {
+  AUTOGEN_MARKER,
   REACT_HEADERS_TARGET_DIR,
   RESERVED_SWIFT_NAMES,
+  SCAFFOLDER_MARKER,
   toSwiftName,
 } = require('../spm-utils');
 const fs = require('node:fs');
@@ -995,6 +998,358 @@ describe('expandSpmDependencies (swiftpmConfig)', () => {
     } finally {
       warnSpy.mockRestore();
     }
+  });
+});
+
+// ---------------------------------------------------------------------------
+// resolveSwiftName — the library products a hand-authored Package.swift
+// declares. The aggregator links `.product(name: <swiftName>, ...)`, so a name
+// the manifest does not declare cannot link.
+// ---------------------------------------------------------------------------
+
+describe('resolveSwiftName (hand-authored Package.swift)', () => {
+  const manifestPath = '/foo/Package.swift';
+  const products = (names, nonLiteral = false) => ({
+    names,
+    nonLiteral,
+    manifestPath,
+  });
+
+  function withWarnings(fn) {
+    const warnSpy = jest.spyOn(console, 'warn').mockImplementation(() => {});
+    try {
+      const result = fn();
+      return {
+        result,
+        warnings: warnSpy.mock.calls.map(call => call.join(' ')).join('\n'),
+      };
+    } finally {
+      warnSpy.mockRestore();
+    }
+  }
+
+  it('keeps a declared name ahead of the manifest', () => {
+    expect(
+      resolveSwiftName(
+        'react-native-foo',
+        {name: 'Declared'},
+        {name: 'RNFoo'},
+        products(['FooKit']),
+      ),
+    ).toEqual({name: 'Declared', source: 'config'});
+  });
+
+  it('keeps the derived name when there is no manifest', () => {
+    expect(
+      resolveSwiftName('react-native-foo', null, {name: 'RNFoo'}, null),
+    ).toEqual({name: 'RNFoo', source: 'podspec', podspecKey: 'name'});
+  });
+
+  it('keeps the derived name when the manifest declares it', () => {
+    expect(
+      resolveSwiftName(
+        'react-native-foo',
+        null,
+        {name: 'RNFoo'},
+        products(['Other', 'RNFoo']),
+      ),
+    ).toEqual({name: 'RNFoo', source: 'podspec', podspecKey: 'name'});
+  });
+
+  it('keeps the derived name when a product name is not a literal', () => {
+    expect(
+      resolveSwiftName(
+        'react-native-foo',
+        null,
+        {name: 'RNFoo'},
+        products(['FooKit'], true),
+      ),
+    ).toEqual({name: 'RNFoo', source: 'podspec', podspecKey: 'name'});
+  });
+
+  it("takes the manifest's only library product over the derived name", () => {
+    expect(
+      resolveSwiftName(
+        'react-native-foo',
+        null,
+        {name: 'RNFoo'},
+        products(['FooKit']),
+      ),
+    ).toEqual({name: 'FooKit', source: 'manifest'});
+    expect(
+      resolveSwiftName('react-native-foo', null, null, products(['FooKit'])),
+    ).toEqual({name: 'FooKit', source: 'manifest'});
+  });
+
+  it('takes a dashed only product, as it would a dashed swiftpmConfig.name', () => {
+    expect(
+      resolveSwiftName(
+        'react-native-skia',
+        null,
+        {name: 'RNSkia'},
+        products(['react-native-skia-apple-ios']),
+      ),
+    ).toEqual({name: 'react-native-skia-apple-ios', source: 'manifest'});
+  });
+
+  it('does not warn about an unreadable podspec when the manifest names the library', () => {
+    const {result, warnings} = withWarnings(() =>
+      resolveSwiftName(
+        'react-native-foo',
+        null,
+        {name: '', headerDir: null},
+        products(['FooKit']),
+      ),
+    );
+    expect(result).toEqual({name: 'FooKit', source: 'manifest'});
+    expect(warnings).toBe('');
+  });
+
+  it('keeps the derived name, and says so, when the only product is not a valid name', () => {
+    const {result, warnings} = withWarnings(() =>
+      resolveSwiftName(
+        'react-native-foo',
+        null,
+        {name: 'RNFoo'},
+        products(['Foo.Kit']),
+      ),
+    );
+    expect(result).toEqual({
+      name: 'RNFoo',
+      source: 'podspec',
+      podspecKey: 'name',
+    });
+    expect(warnings).toContain('react-native-foo');
+    expect(warnings).toContain('Foo.Kit');
+    expect(warnings).toContain('swiftpmConfig.name');
+  });
+
+  it('keeps the derived name, silently, when the manifest declares no library products', () => {
+    const {result, warnings} = withWarnings(() =>
+      resolveSwiftName('react-native-foo', null, {name: 'RNFoo'}, products([])),
+    );
+    expect(result).toEqual({
+      name: 'RNFoo',
+      source: 'podspec',
+      podspecKey: 'name',
+    });
+    expect(warnings).toBe('');
+  });
+
+  it('refuses a manifest whose several library products all differ from the derived name', () => {
+    expect(() =>
+      resolveSwiftName(
+        'react-native-foo',
+        null,
+        {name: 'RNFoo'},
+        products(['A', 'B']),
+      ),
+    ).toThrow(
+      "react-native autolinking: 'react-native-foo' ships /foo/Package.swift declaring the library products 'A', 'B', but React Native resolved the name 'RNFoo', which is not one of them. Set 'swiftpmConfig.name' in react-native-foo's package.json to the product to link.",
+    );
+  });
+});
+
+// ---------------------------------------------------------------------------
+// expandSpmDependencies — the manifest a dep ships, read from disk.
+// ---------------------------------------------------------------------------
+
+describe('expandSpmDependencies (hand-authored Package.swift)', () => {
+  let tmpRoot;
+  let roots = 0;
+
+  beforeAll(() => {
+    tmpRoot = fs.mkdtempSync(
+      path.join(fs.realpathSync(os.tmpdir()), 'spm-expand-manifest-'),
+    );
+  });
+
+  afterAll(() => {
+    fs.rmSync(tmpRoot, {recursive: true, force: true});
+  });
+
+  const manifestDeclaring = name =>
+    `// swift-tools-version:5.9
+import PackageDescription
+
+let package = Package(
+    name: "${name}",
+    products: [
+        .library(
+            name: "${name}",
+            targets: ["${name}"]
+        ),
+    ],
+    targets: [.target(name: "${name}", path: "ios")]
+)
+`;
+
+  // `files` maps a path relative to the dep root to its content.
+  function makeRoot(files) {
+    const root = path.join(tmpRoot, `pkg-${roots++}`);
+    for (const [rel, content] of Object.entries(files)) {
+      fs.mkdirSync(path.dirname(path.join(root, rel)), {recursive: true});
+      fs.writeFileSync(path.join(root, rel), content);
+    }
+    return root;
+  }
+
+  function expandOne(root, {podspec = {name: 'RNFoo'}} = {}) {
+    return expandSpmDependencies(
+      [{name: 'react-native-foo', root, platforms: {ios: {}}}],
+      {
+        readConfig: makeReadConfig({}),
+        resolveDep: makeResolveDep({}),
+        readPodspec: makeReadPodspec({[root]: podspec}),
+      },
+    )[0];
+  }
+
+  it('names a dep after the one library product its root Package.swift declares', () => {
+    const foo = expandOne(
+      makeRoot({'Package.swift': manifestDeclaring('FooKit')}),
+    );
+    expect(foo.swiftName).toBe('FooKit');
+    expect(foo.swiftNameSource).toBe('manifest');
+  });
+
+  it('reads a Package.swift under ios/', () => {
+    const foo = expandOne(
+      makeRoot({'ios/Package.swift': manifestDeclaring('FooKit')}),
+    );
+    expect(foo.swiftName).toBe('FooKit');
+  });
+
+  it('ignores a scaffolded Package.swift', () => {
+    const foo = expandOne(
+      makeRoot({
+        'Package.swift': `${SCAFFOLDER_MARKER}\n${manifestDeclaring('FooKit')}`,
+      }),
+    );
+    expect(foo.swiftName).toBe('RNFoo');
+    expect(foo.swiftNameSource).toBe('podspec');
+  });
+
+  it('reads the hand-authored ios/ manifest past an autolinker-generated root one', () => {
+    const foo = expandOne(
+      makeRoot({
+        'Package.swift': `${AUTOGEN_MARKER}\n${manifestDeclaring('Synth')}`,
+        'ios/Package.swift': manifestDeclaring('FooKit'),
+      }),
+    );
+    expect(foo.swiftName).toBe('FooKit');
+  });
+
+  it('refuses a dep whose manifest cannot link under the derived name', () => {
+    const root = makeRoot({
+      'Package.swift': `${manifestDeclaring('A')}\n// .library(name: "B")\nlet _ = [.library(name: "C", targets: [])]\n`,
+    });
+    expect(() => expandOne(root)).toThrow(
+      `ships ${path.join(root, 'Package.swift')} declaring the library products 'A', 'C'`,
+    );
+  });
+
+  it('names a transitive dep after its manifest too', () => {
+    const fooRoot = makeRoot({'Package.swift': manifestDeclaring('FooKit')});
+    const result = expandSpmDependencies(
+      [{name: 'react-native-bar', root: '/bar', platforms: {ios: {}}}],
+      {
+        ...fixtures({
+          '/bar': {spm: {dependencies: ['react-native-foo']}},
+          [fooRoot]: {dependency: {platforms: {ios: {}}}},
+        }),
+        resolveDep: makeResolveDep({'react-native-foo': fooRoot}),
+        readPodspec: makeReadPodspec({[fooRoot]: {name: 'RNFoo'}}),
+      },
+    );
+    const [bar, foo] = result;
+    expect(bar.spmDependencies).toEqual(['react-native-foo']);
+    expect(foo.swiftName).toBe('FooKit');
+    expect(foo.swiftNameSource).toBe('manifest');
+  });
+
+  it('keeps the derived name when a scaffolded root manifest sits over a hand-authored ios/ one', () => {
+    // The autolinker treats the scaffolded root manifest as the dep's own, so
+    // the ios/ one is never linked and must not name the dep either.
+    const root = makeRoot({
+      'Package.swift': `${SCAFFOLDER_MARKER}\n${manifestDeclaring('Scaffolded')}`,
+      'ios/Package.swift': manifestDeclaring('FooKit'),
+    });
+    expect(readManifestProducts(root)).toBe(null);
+    expect(expandOne(root).swiftName).toBe('RNFoo');
+  });
+
+  it('reads the manifest from the ios sourceDir, as the autolinker does', () => {
+    const root = makeRoot({
+      'Package.swift': `${manifestDeclaring('A')}\nlet _ = [.library(name: "B", targets: [])]\n`,
+      'ios/Package.swift': manifestDeclaring('FooKit'),
+    });
+    const sourceDir = path.join(root, 'ios');
+    const [foo] = expandSpmDependencies(
+      [{name: 'react-native-foo', root, platforms: {ios: {sourceDir}}}],
+      {
+        readConfig: makeReadConfig({}),
+        resolveDep: makeResolveDep({}),
+        readPodspec: makeReadPodspec({[root]: {name: 'RNFoo'}}),
+      },
+    );
+    expect(foo.swiftName).toBe('FooKit');
+  });
+
+  it('reads a transitive dep manifest from its ios sourceDir', () => {
+    const fooRoot = makeRoot({
+      'Package.swift': `${manifestDeclaring('A')}\nlet _ = [.library(name: "B", targets: [])]\n`,
+      'ios/Package.swift': manifestDeclaring('FooKit'),
+    });
+    const [, foo] = expandSpmDependencies(
+      [{name: 'react-native-bar', root: '/bar', platforms: {ios: {}}}],
+      {
+        ...fixtures({
+          '/bar': {spm: {dependencies: ['react-native-foo']}},
+          [fooRoot]: {
+            dependency: {
+              platforms: {ios: {sourceDir: path.join(fooRoot, 'ios')}},
+            },
+          },
+        }),
+        resolveDep: makeResolveDep({'react-native-foo': fooRoot}),
+        readPodspec: makeReadPodspec({[fooRoot]: {name: 'RNFoo'}}),
+      },
+    );
+    expect(foo.swiftName).toBe('FooKit');
+  });
+
+  it('leaves a plugin host its derived name, whatever its manifest declares', () => {
+    // A plugin host is never linked as `.product(name: <swiftName>, ...)`: its
+    // plugin contributes its products, so its manifest cannot settle its name.
+    const root = makeRoot({
+      'package.json': JSON.stringify({
+        name: 'react-native-foo',
+        swiftpmConfig: {autolinkingPlugin: './spm-plugin.js'},
+      }),
+      'Package.swift': `${manifestDeclaring('A')}\nlet _ = [.library(name: "B", targets: [])]\n`,
+    });
+    const foo = expandOne(root);
+    expect(foo.swiftName).toBe('RNFoo');
+    expect(foo.swiftNameSource).toBe('podspec');
+  });
+
+  it('takes the manifest reader through options', () => {
+    const readManifest = jest.fn(() => ({
+      names: ['Injected'],
+      nonLiteral: false,
+      manifestPath: '/foo/Package.swift',
+    }));
+    const [foo] = expandSpmDependencies(
+      [{name: 'react-native-foo', root: '/foo', platforms: {ios: {}}}],
+      {
+        readConfig: makeReadConfig({}),
+        resolveDep: makeResolveDep({}),
+        readManifestProducts: readManifest,
+      },
+    );
+    expect(readManifest).toHaveBeenCalledWith('/foo');
+    expect(foo.swiftName).toBe('Injected');
   });
 });
 
