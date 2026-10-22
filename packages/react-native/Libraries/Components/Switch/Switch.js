@@ -177,6 +177,7 @@ const Switch: component(
   ...SwitchProps,
 }): React.Node {
   const {
+    accessibilityState,
     disabled,
     ios_backgroundColor,
     onChange,
@@ -227,7 +228,6 @@ const Switch: component(
     }
   }, [value, native]);
 
-  const {accessibilityState} = restProps;
   const _disabled = disabled != null ? disabled : accessibilityState?.disabled;
 
   const _accessibilityState: ?AccessibilityState =
