@@ -8,6 +8,7 @@
  */
 
 const {compareCapture, compareImages, policyFor} = require('../visual/compare');
+const {resolveContext} = require('../visual/compare-run');
 const {buildManifest, environmentKey, sha256} = require('../visual/manifest');
 const {readPngDimensions} = require('../visual/png');
 const {validateCapture} = require('../visual/validate');
@@ -257,5 +258,58 @@ describe('visual comparison', () => {
         ['a/a/same', 'unchanged'],
       ]);
     });
+  });
+
+  describe('resolveContext', () => {
+    const ENV = {
+      CAPTURE_HEAD_SHA: SHA_A,
+      CAPTURE_HEAD_REPOSITORY: 'someone/react-native',
+      CAPTURE_RUN_ID: '34',
+      CAPTURE_RUN_ATTEMPT: '1',
+      DEFAULT_BRANCH: 'main',
+    };
+    const savedEnv = {...process.env};
+
+    afterEach(() => {
+      process.env = {...savedEnv};
+    });
+
+    function resolve(env, pull) {
+      Object.assign(process.env, ENV, env);
+      return resolveContext({
+        repository: 'react/react-native',
+        findPullRequest: async () => pull,
+      });
+    }
+
+    test.each([
+      ['main', 'pull'],
+      ['0.85-stable', null],
+    ])('a pull request into %s resolves to %s', async (base, kind) => {
+      const context = await resolve(
+        {CAPTURE_EVENT: 'pull_request', CAPTURE_HEAD_BRANCH: 'feature'},
+        {number: 12, base: {ref: base}},
+      );
+      expect(context?.kind ?? null).toBe(kind);
+    });
+
+    test.each([
+      ['main', 'react/react-native', 'main'],
+      ['0.85-stable', 'react/react-native', null],
+      ['main', 'someone/react-native', null],
+    ])(
+      'a push to %s in %s resolves to %s',
+      async (branch, repository, kind) => {
+        const context = await resolve(
+          {
+            CAPTURE_EVENT: 'push',
+            CAPTURE_HEAD_BRANCH: branch,
+            CAPTURE_HEAD_REPOSITORY: repository,
+          },
+          null,
+        );
+        expect(context?.kind ?? null).toBe(kind);
+      },
+    );
   });
 });

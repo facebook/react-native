@@ -73,7 +73,9 @@ async function resolveContext(github) {
 
   if (event === 'pull_request') {
     const pull = await github.findPullRequest(headSha, headRepository);
-    if (pull == null) {
+    // Baselines only exist for the default branch, so pull requests into
+    // other branches have nothing to compare with.
+    if (pull == null || pull.base.ref !== defaultBranch) {
       return null;
     }
     return {
@@ -251,7 +253,9 @@ async function prepare() {
 
   const context = await resolveContext(github);
   if (context == null) {
-    console.info('Not an open pull request or a push to the default branch.');
+    console.info(
+      'Not an open pull request into, or a push to, the default branch.',
+    );
     writeFile(path.join(outDir, 'state.json'), 'null\n');
     return;
   }

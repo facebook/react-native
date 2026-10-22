@@ -33,8 +33,21 @@ env:
 jobs:
   find_captures:
     # Test All can fail for reasons unrelated to rendering, so a failed run is
-    # still compared. A platform with no capture is reported as such.
-    if: contains(fromJSON('["success", "failure"]'), github.event.workflow_run.conclusion)
+    # still compared. A platform with no capture is reported as such. Pushes
+    # to other branches have no baseline to compare with or publish. Pull
+    # requests into other branches are skipped in compare-run.js, because
+    # workflow_run doesn't include the base branch of a pull request from a
+    # fork.
+    if: |
+      contains(fromJSON('["success", "failure"]'), github.event.workflow_run.conclusion) &&
+      (
+        github.event.workflow_run.event == 'pull_request' ||
+        (
+          github.event.workflow_run.event == 'push' &&
+          github.event.workflow_run.head_branch == github.event.repository.default_branch &&
+          github.event.workflow_run.head_repository.full_name == github.repository
+        )
+      )
     runs-on: ubuntu-latest
     permissions:
       actions: read
