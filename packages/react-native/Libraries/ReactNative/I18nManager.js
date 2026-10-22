@@ -26,7 +26,7 @@ function getI18nManagerConstants(): I18nManagerConstants {
 
   return {
     isRTL: false,
-    doLeftAndRightSwapInRTL: true,
+    doLeftAndRightSwapInRTL: false,
   };
 }
 
@@ -85,6 +85,9 @@ export default {
   /**
    * Controls whether `left`/`right` style properties are automatically swapped
    * in RTL layouts. When enabled, `left` becomes `right` and vice versa.
+   *
+   * @deprecated Use `start` and `end` style properties, such as
+   * `marginStart`, instead.
    */
   swapLeftAndRightInRTL: (flipStyles: boolean) => {
     if (!NativeI18nManager) {
@@ -130,7 +133,12 @@ export default {
     return i18nConstants.isRTL;
   },
 
-  /** Whether left and right style properties are swapped in RTL mode. */
+  /**
+   * Whether left and right style properties are swapped in RTL mode.
+   *
+   * @deprecated Use `start` and `end` style properties, such as
+   * `marginStart`, instead.
+   */
   // $FlowFixMe[unsafe-getters-setters]
   get doLeftAndRightSwapInRTL(): I18nManagerConstants['doLeftAndRightSwapInRTL'] {
     return i18nConstants.doLeftAndRightSwapInRTL;

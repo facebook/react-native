@@ -228,7 +228,7 @@ const NativeModules = {
     >,
     getConstants: (): $FlowFixMe => ({
       isRTL: false,
-      doLeftAndRightSwapInRTL: true,
+      doLeftAndRightSwapInRTL: false,
     }),
   },
 };

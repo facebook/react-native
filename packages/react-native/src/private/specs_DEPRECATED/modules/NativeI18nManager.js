@@ -13,6 +13,10 @@ import type {TurboModule} from '../../../../Libraries/TurboModule/RCTExport';
 import * as TurboModuleRegistry from '../../../../Libraries/TurboModule/TurboModuleRegistry';
 
 export type I18nManagerConstants = {
+  /**
+   * @deprecated Use `start` and `end` style properties, such as
+   * `marginStart`, instead.
+   */
   doLeftAndRightSwapInRTL: boolean,
   isRTL: boolean,
   localeIdentifier?: ?string,

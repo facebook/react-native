@@ -46,7 +46,7 @@ public class I18nUtil private constructor() {
   }
 
   public fun doLeftAndRightSwapInRTL(context: Context): Boolean =
-      isPrefSet(context, KEY_FOR_PERFS_MAKE_RTL_FLIP_LEFT_AND_RIGHT_STYLES, true)
+      isPrefSet(context, KEY_FOR_PERFS_MAKE_RTL_FLIP_LEFT_AND_RIGHT_STYLES, false)
 
   public fun swapLeftAndRightInRTL(context: Context, flip: Boolean) {
     setPref(context, KEY_FOR_PERFS_MAKE_RTL_FLIP_LEFT_AND_RIGHT_STYLES, flip)

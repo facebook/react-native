@@ -11,6 +11,10 @@ import {EmitterSubscription} from '../vendor/emitter/EventEmitter';
 
 type I18nManagerConstants = {
   isRTL: boolean;
+  /**
+   * @deprecated Use `start` and `end` style properties, such as
+   * `marginStart`, instead.
+   */
   doLeftAndRightSwapInRTL: boolean;
   localeIdentifier?: string | null | undefined;
 };
@@ -19,6 +23,10 @@ export interface I18nManagerStatic {
   getConstants: () => I18nManagerConstants;
   allowRTL: (allowRTL: boolean) => void;
   forceRTL: (forceRTL: boolean) => void;
+  /**
+   * @deprecated Use `start` and `end` style properties, such as
+   * `marginStart`, instead.
+   */
   swapLeftAndRightInRTL: (swapLeftAndRight: boolean) => void;
   relayout: () => Promise<void>;
   addEventListener: (
@@ -26,6 +34,10 @@ export interface I18nManagerStatic {
     handler: (constants: I18nManagerConstants) => void,
   ) => EmitterSubscription;
   isRTL: boolean;
+  /**
+   * @deprecated Use `start` and `end` style properties, such as
+   * `marginStart`, instead.
+   */
   doLeftAndRightSwapInRTL: boolean;
 }
 
