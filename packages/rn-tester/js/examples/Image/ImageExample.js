@@ -1973,7 +1973,7 @@ exports.examples = [
     title: 'Animated PNG',
     name: 'animated-png',
     description:
-      'A bundled APNG. With RCTUseAssetCatalog on, it ships as a loose file instead of being compiled into the asset catalog, which would keep only its first frame.',
+      'A bundled APNG. Image shows its first frame, but with RCTUseAssetCatalog on the file ships loose, with all its frames, instead of being flattened into the asset catalog.',
     render: function (): React.Node {
       return (
         <Image
