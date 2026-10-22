@@ -72,6 +72,11 @@ bool hasASCIIPointer(NSString *string)
   return CFStringGetCStringPtr((__bridge CFStringRef)string, kCFStringEncodingASCII) != nullptr;
 }
 
+bool hasUTF16Pointer(NSString *string)
+{
+  return CFStringGetCharactersPtr((__bridge CFStringRef)string) != nullptr;
+}
+
 } // namespace
 
 @interface RCTTurboModuleStringConversionTests : XCTestCase
@@ -116,12 +121,15 @@ bool hasASCIIPointer(NSString *string)
   // Short strings like this one are tagged pointers, which have no character buffer.
   NSString *string = stringWithCharacters({u'i', u'd'});
   XCTAssertFalse(hasASCIIPointer(string), @"Expected the string to have no ASCII pointer");
+  XCTAssertFalse(hasUTF16Pointer(string), @"Expected the string to have no UTF-16 pointer");
   [self assertConvertsToSameCharacters:string];
 }
 
 - (void)testNonASCIIString
 {
-  [self assertConvertsToSameCharacters:stringFromUTF8Data(@"Zażółć gęślą jaźń")];
+  NSString *string = stringFromUTF8Data(@"Zażółć gęślą jaźń");
+  XCTAssertTrue(hasUTF16Pointer(string), @"Expected the string to expose its UTF-16 characters");
+  [self assertConvertsToSameCharacters:string];
   [self assertConvertsToSameCharacters:stringFromUTF8Data(@"日本語のテキスト")];
 }
 
@@ -149,6 +157,7 @@ bool hasASCIIPointer(NSString *string)
   NSString *string =
       [[RCTTurboModuleStringConversionTestsString alloc] initWithCharacters:{u'a', u'ż', 0xD83D, 0xDE80}];
   XCTAssertFalse(hasASCIIPointer(string), @"Expected the string to have no ASCII pointer");
+  XCTAssertFalse(hasUTF16Pointer(string), @"Expected the string to have no UTF-16 pointer");
   [self assertConvertsToSameCharacters:string];
 }
 
@@ -163,8 +172,17 @@ bool hasASCIIPointer(NSString *string)
 
 - (void)testStringWithLoneSurrogateIsKept
 {
-  [self assertConvertsToSameCharacters:stringWithCharacters({u'a', 0xD800, u'b'})];
+  NSString *string = stringWithCharacters({u'a', 0xD800, u'b'});
+  XCTAssertTrue(hasUTF16Pointer(string), @"Expected the string to expose its UTF-16 characters");
+  [self assertConvertsToSameCharacters:string];
   [self assertConvertsToSameCharacters:stringWithCharacters({u'a', 0xDC00})];
+}
+
+- (void)testStringSubclassWithLoneSurrogateIsKept
+{
+  NSString *string = [[RCTTurboModuleStringConversionTestsString alloc] initWithCharacters:{u'a', 0xD800, u'b'}];
+  XCTAssertFalse(hasUTF16Pointer(string), @"Expected the string to have no UTF-16 pointer");
+  [self assertConvertsToSameCharacters:string];
 }
 
 @end
