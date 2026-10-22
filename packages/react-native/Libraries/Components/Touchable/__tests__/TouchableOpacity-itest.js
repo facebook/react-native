@@ -12,7 +12,9 @@
 import '@react-native/fantom/src/setUpDefaultReactNativeEnvironment';
 
 import type {HostInstance} from 'react-native';
+import type {AccessibilityProps} from 'react-native';
 
+import {rolePropSuite} from '../../../../src/private/__tests__/utilities/accessibilityPropsSuite';
 import * as Fantom from '@react-native/fantom';
 import nullthrows from 'nullthrows';
 import * as React from 'react';
@@ -25,6 +27,16 @@ describe('<TouchableOpacity>', () => {
   });
 
   describe('props', () => {
+    component ComponentWithAccessibilityProps(...props: AccessibilityProps) {
+      return (
+        <TouchableOpacity {...props}>
+          <Text>Touchable</Text>
+        </TouchableOpacity>
+      );
+    }
+
+    rolePropSuite(ComponentWithAccessibilityProps);
+
     describe('rendering', () => {
       it('renders as a view with accessible="true"', () => {
         const root = Fantom.createRoot();
