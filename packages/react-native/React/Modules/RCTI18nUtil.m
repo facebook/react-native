@@ -78,7 +78,11 @@
 
 - (BOOL)doLeftAndRightSwapInRTL
 {
-  return [[NSUserDefaults standardUserDefaults] boolForKey:@"RCTI18nUtil_makeRTLFlipLeftAndRightStyles"];
+  NSNumber *value = [[NSUserDefaults standardUserDefaults] objectForKey:@"RCTI18nUtil_makeRTLFlipLeftAndRightStyles"];
+  if (value == nil) {
+    return YES;
+  }
+  return [value boolValue];
 }
 
 - (void)swapLeftAndRightInRTL:(BOOL)value
