@@ -14,6 +14,7 @@ import RNTesterText from '../../components/RNTesterText';
 import * as React from 'react';
 import {ScrollView, StyleSheet, Text, View} from 'react-native';
 
+// Long enough to wrap within each item's maximum width.
 const LABELS = [
   'Comfort: Moderate',
   'Sitting, Standing, Roomscale',
