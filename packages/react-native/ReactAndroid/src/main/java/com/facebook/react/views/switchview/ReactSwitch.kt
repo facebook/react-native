@@ -15,6 +15,7 @@ import android.graphics.drawable.ColorDrawable
 import android.graphics.drawable.Drawable
 import android.graphics.drawable.RippleDrawable
 import androidx.appcompat.widget.SwitchCompat
+import com.facebook.react.uimanager.drawable.CompositeBackgroundDrawable
 
 /**
  * Switch that has its value controlled by JS. Whenever the value of the switch changes, we do not
@@ -41,8 +42,12 @@ internal class ReactSwitch(context: Context) : SwitchCompat(context) {
   }
 
   override fun setBackgroundColor(color: Int) {
-    background =
+    val ripple =
         RippleDrawable(createRippleDrawableColorStateList(color), ColorDrawable(color), null)
+    // Keep the outline, box shadows and other styles layered over the background by
+    // BackgroundStyleApplicator, which may have been applied before the background color.
+    val composite = background as? CompositeBackgroundDrawable
+    background = composite?.withNewOriginalBackground(ripple) ?: ripple
   }
 
   fun setColor(drawable: Drawable, color: Int?) {
@@ -60,10 +65,13 @@ internal class ReactSwitch(context: Context) : SwitchCompat(context) {
   fun setThumbColor(color: Int?) {
     setColor(super.getThumbDrawable(), color)
 
-    // Set the ripple color if background is instance of RippleDrawable
-    if (color != null && super.getBackground() is RippleDrawable) {
-      val customColorState = createRippleDrawableColorStateList(color)
-      (super.getBackground() as RippleDrawable).setColor(customColorState)
+    // Set the ripple color if the background is, or is wrapped around, a RippleDrawable
+    val currentBackground = super.getBackground()
+    val ripple =
+        (currentBackground as? CompositeBackgroundDrawable)?.originalBackground as? RippleDrawable
+            ?: currentBackground as? RippleDrawable
+    if (color != null && ripple != null) {
+      ripple.setColor(createRippleDrawableColorStateList(color))
     }
   }
 
