@@ -13,7 +13,7 @@ import NativeI18nManager from './NativeI18nManager';
 
 export type I18nManagerConstants = {
   isRTL: boolean,
-  localeIdentifier?: ?string,
+  localeIdentifier: string,
   /**
    * @deprecated Has no effect, and is always `false`. Use `start` and `end`
    * style properties, such as `marginStart`, instead.
@@ -31,7 +31,10 @@ function warnDoLeftAndRightSwapInRTLDeprecated(): void {
 }
 
 function getI18nManagerConstants(): I18nManagerConstants {
-  const nativeConstants = NativeI18nManager?.getConstants() ?? {isRTL: false};
+  const nativeConstants = NativeI18nManager?.getConstants() ?? {
+    isRTL: false,
+    localeIdentifier: 'en-US',
+  };
 
   return {
     isRTL: nativeConstants.isRTL,

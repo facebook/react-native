@@ -225,6 +225,7 @@ const NativeModules = {
     >,
     getConstants: (): $FlowFixMe => ({
       isRTL: false,
+      localeIdentifier: 'en-US',
     }),
   },
 };

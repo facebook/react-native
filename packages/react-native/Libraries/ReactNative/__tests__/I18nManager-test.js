@@ -12,7 +12,10 @@
 
 import type {I18nManagerConstants} from '../NativeI18nManager';
 
-let nativeConstants: I18nManagerConstants = {isRTL: false};
+let nativeConstants: I18nManagerConstants = {
+  isRTL: false,
+  localeIdentifier: 'en-US',
+};
 
 const nativeModule = {
   getConstants: jest.fn(() => nativeConstants),
@@ -28,7 +31,7 @@ describe('I18nManager', () => {
   it('updates the constants after forceRTL', async () => {
     const I18nManager = require('../I18nManager').default;
 
-    nativeConstants = {isRTL: true};
+    nativeConstants = {isRTL: true, localeIdentifier: 'ar-EG'};
     I18nManager.forceRTL(true);
 
     // The constants are updated by a callback registered on this promise

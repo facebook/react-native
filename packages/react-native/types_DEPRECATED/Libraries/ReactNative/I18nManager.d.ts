@@ -14,7 +14,7 @@ type I18nManagerConstants = {
    * style properties, such as `marginStart`, instead.
    */
   doLeftAndRightSwapInRTL: boolean;
-  localeIdentifier?: string | null | undefined;
+  localeIdentifier: string;
 };
 
 export interface I18nManagerStatic {
