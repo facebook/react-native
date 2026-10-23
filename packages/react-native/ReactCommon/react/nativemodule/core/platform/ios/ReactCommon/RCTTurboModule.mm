@@ -684,8 +684,9 @@ NSString *ObjCTurboModule::getArgumentTypeName(jsi::Runtime &runtime, NSString *
           [argumentTypes addObject:arguments[j].type];
         }
 
-        NSString *normalizedOtherMethodName = [otherMethodName componentsSeparatedByString:@":"][0];
-        findOrCreateMethodInfo(normalizedOtherMethodName.UTF8String).argumentTypeNames = argumentTypes;
+        std::string_view otherMethodNameView = otherMethodName.UTF8String;
+        std::string_view normalizedOtherMethodName = otherMethodNameView.substr(0, otherMethodNameView.find(':'));
+        findOrCreateMethodInfo(normalizedOtherMethodName).argumentTypeNames = argumentTypes;
       }
 
       free(methods);
@@ -998,10 +999,11 @@ SEL ObjCTurboModule::getMethodArgConversionSelector(NSString *methodName, size_t
 
 void ObjCTurboModule::setMethodArgConversionSelector(NSString *methodName, size_t argIndex, NSString *fnName)
 {
+  const char *methodNameUTF8 = methodName.UTF8String;
   std::lock_guard<std::mutex> lock(methodInfosMutex_);
-  std::vector<SEL> &selectors = findOrCreateMethodInfo(methodName.UTF8String).argConversionSelectors;
+  std::vector<SEL> &selectors = findOrCreateMethodInfo(methodNameUTF8).argConversionSelectors;
   if (selectors.empty()) {
-    selectors.resize(methodMap_.at(methodName.UTF8String).argCount, nullptr);
+    selectors.resize(methodMap_.at(methodNameUTF8).argCount, nullptr);
   }
   selectors.at(argIndex) = NSSelectorFromString(fnName);
 }
