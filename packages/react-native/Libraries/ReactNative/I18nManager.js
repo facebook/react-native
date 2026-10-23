@@ -8,8 +8,6 @@
  * @format
  */
 
-import type {I18nManagerConstants as NativeI18nManagerConstants} from './NativeI18nManager';
-
 import warnOnce from '../Utilities/warnOnce';
 import NativeI18nManager from './NativeI18nManager';
 
@@ -32,22 +30,21 @@ function warnDoLeftAndRightSwapInRTLDeprecated(): void {
   );
 }
 
-const createConstants = (
-  constants: NativeI18nManagerConstants,
-): I18nManagerConstants => ({
-  isRTL: constants.isRTL,
-  localeIdentifier: constants.localeIdentifier,
-  // $FlowFixMe[unsafe-getters-setters]
-  get doLeftAndRightSwapInRTL(): boolean {
-    warnDoLeftAndRightSwapInRTLDeprecated();
-    return false;
-  },
-});
+function getI18nManagerConstants(): I18nManagerConstants {
+  const nativeConstants = NativeI18nManager?.getConstants() ?? {isRTL: false};
 
-const getNativeConstants = (): NativeI18nManagerConstants =>
-  NativeI18nManager?.getConstants() ?? {isRTL: false};
+  return {
+    isRTL: nativeConstants.isRTL,
+    localeIdentifier: nativeConstants.localeIdentifier,
+    // $FlowFixMe[unsafe-getters-setters]
+    get doLeftAndRightSwapInRTL(): boolean {
+      warnDoLeftAndRightSwapInRTLDeprecated();
+      return false;
+    },
+  };
+}
 
-let i18nConstants: I18nManagerConstants = createConstants(getNativeConstants());
+let i18nConstants: I18nManagerConstants = getI18nManagerConstants();
 
 /**
  * Utilities for managing Right-to-Left (RTL) layout support.
@@ -79,7 +76,7 @@ export default {
    */
   forceRTL: (shouldForce: boolean): void => {
     void NativeI18nManager?.forceRTL(shouldForce).then(() => {
-      i18nConstants = createConstants(getNativeConstants());
+      i18nConstants = getI18nManagerConstants();
     });
   },
 
