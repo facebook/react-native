@@ -336,23 +336,6 @@ const PodspecExceptions /*: {[key: string]: PodSpecConfiguration} */ = {
     headerPatterns: ['*.h'],
     headerDir: 'jsinspector-modern/tracing',
   },
-  'ReactCommon/react/featureflags/React-featureflags.podspec': {
-    name: 'React-featureflags',
-    headerPatterns: [],
-    headerDir: '',
-    subSpecs: [
-      {
-        name: 'featureflags',
-        headerPatterns: ['*.h'],
-        headerDir: 'react/featureflags',
-      },
-      {
-        name: 'featureflagsUmbrella',
-        headerPatterns: ['React/*.h'],
-        headerDir: 'React',
-      },
-    ],
-  },
   'React/React-RCTFabric.podspec': {
     name: 'React-RCTFabric',
     headerPatterns: ['Fabric/**/*.h'],
@@ -671,11 +654,6 @@ const PodspecExceptions /*: {[key: string]: PodSpecConfiguration} */ = {
         name: 'css',
         headerPatterns: ['*.h'],
         headerDir: 'react/renderer/css',
-      },
-      {
-        name: 'cssUmbrella',
-        headerPatterns: ['React/*.h'],
-        headerDir: 'React',
       },
     ],
   },

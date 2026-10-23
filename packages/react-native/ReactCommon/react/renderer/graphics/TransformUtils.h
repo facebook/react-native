@@ -7,7 +7,7 @@
 
 #pragma once
 
-#include <react/cxxstableapi/UmbrellaGuard.h>
+#include <react/cxxstableapi/PrivateGuard.h>
 
 #include <folly/dynamic.h>
 #include <react/renderer/graphics/Transform.h>
@@ -75,7 +75,7 @@ inline void updateTransformProps(
       serializeTransformAxis(operation, "rotate", 0, resultTranslateArray);
       return;
     case TransformOperationType::Perspective:
-      serializeTransformAxis(operation, "perspective", 0, resultTranslateArray);
+      serializeTransformOperationValue("perspective", operation.x, resultTranslateArray);
       return;
     case TransformOperationType::Arbitrary: {
       folly::dynamic result = folly::dynamic::object();

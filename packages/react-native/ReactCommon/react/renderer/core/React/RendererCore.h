@@ -38,9 +38,6 @@
 #include <react/renderer/core/ConcreteComponentDescriptor.h>
 #include <react/renderer/core/ConcreteShadowNode.h>
 #include <react/renderer/core/ConcreteState.h>
-#include <react/renderer/core/DynamicEventPayload.h>
-#include <react/renderer/core/DynamicPointerEvent.h>
-#include <react/renderer/core/DynamicPropsUtilities.h>
 #include <react/renderer/core/EventBeat.h>
 #include <react/renderer/core/EventDispatcher.h>
 #include <react/renderer/core/EventEmitter.h>
@@ -67,7 +64,6 @@
 #include <react/renderer/core/RawPropsParser.h>
 #include <react/renderer/core/ReactEventPriority.h>
 #include <react/renderer/core/ReactPrimitives.h>
-#include <react/renderer/core/ReactRootViewTagGenerator.h>
 #include <react/renderer/core/Sealable.h>
 #include <react/renderer/core/ShadowNode.h>
 #include <react/renderer/core/ShadowNodeFamily.h>

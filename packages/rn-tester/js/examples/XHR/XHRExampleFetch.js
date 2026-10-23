@@ -23,7 +23,7 @@ import {
 
 class XHRExampleFetch extends React.Component<any, any> {
   responseURL: ?string;
-  responseHeaders: ?Object;
+  responseHeaders: ?any;
   intervalId: ?ReturnType<typeof setInterval>;
 
   constructor(props: any) {

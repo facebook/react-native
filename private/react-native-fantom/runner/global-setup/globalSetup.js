@@ -9,13 +9,11 @@
  */
 
 import type {DevToolLauncher} from '@react-native/dev-middleware';
-import type {ConfigT} from 'metro-config';
 
 import {isOSS, validateEnvironmentVariables} from '../EnvironmentOptions';
 import {getTestBuildOutputPath} from '../paths';
 import build from './build';
 import {createDevMiddleware} from '@react-native/dev-middleware';
-import connect from 'connect';
 import * as Metro from 'metro';
 import {Server} from 'node:net';
 import path from 'node:path';
@@ -72,20 +70,8 @@ async function startMetroServer() {
     unstable_toolLauncher: devToolLauncher,
   });
 
-  const enhanceMiddleware: ConfigT['server']['enhanceMiddleware'] = (
-    metroMiddleware,
-    metroServer,
-  ) => {
-    const server = connect();
-    server.use(metroMiddleware);
-    server.use(devMiddleware);
-    return server;
-  };
-
-  // $FlowExpectedError[cannot-write]
-  metroConfig.server.enhanceMiddleware = enhanceMiddleware;
-
   const server = await Metro.runServer(metroConfig, {
+    unstable_extraMiddleware: [devMiddleware],
     waitForBundler: true,
     watch: true,
     websocketEndpoints: {

@@ -212,8 +212,8 @@ const FileTemplate = ({
 
 #pragma once
 
-#include <ReactCommon/TurboModule.h>
 #include <React/Bridging.h>
+#include <React/NativeModuleCore.h>
 
 namespace facebook::react {
 

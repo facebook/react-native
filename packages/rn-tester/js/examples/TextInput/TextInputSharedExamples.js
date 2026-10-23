@@ -505,6 +505,7 @@ class SelectionExample extends React.Component<
           </RNTesterText>
           {/* $FlowFixMe[method-unbinding] added when improving typing for this
            * parameters */}
+          {/* $FlowFixMe[invalid-tuple-arity] */}
           <RNTesterText onPress={this.placeAtRandom.bind(this)}>
             Place at Random
           </RNTesterText>
@@ -516,6 +517,7 @@ class SelectionExample extends React.Component<
           </RNTesterText>
           {/* $FlowFixMe[method-unbinding] added when improving typing for this
            * parameters */}
+          {/* $FlowFixMe[invalid-tuple-arity] */}
           <RNTesterText onPress={this.selectRandom.bind(this)}>
             Select Random
           </RNTesterText>
@@ -804,7 +806,7 @@ function DynamicContentWidth() {
 function AutogrowingTextInputExample({
   style,
   ...props
-}: React.ElementConfig<typeof TextInput>) {
+}: React.ComponentProps<typeof TextInput>) {
   const [multiline, setMultiline] = useState(true);
   const [fullWidth, setFullWidth] = useState(true);
   const [text, setText] = useState('');

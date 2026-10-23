@@ -7,7 +7,7 @@
 
 #pragma once
 
-#include <react/cxxstableapi/FrameworksGuard.h>
+#include <react/cxxstableapi/PrivateGuard.h>
 
 #include <React/Graphics.h>
 #include <react/renderer/animations/primitives.h>

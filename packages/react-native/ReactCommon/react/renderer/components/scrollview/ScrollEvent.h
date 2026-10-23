@@ -9,11 +9,10 @@
 
 #include <react/cxxstableapi/FrameworksGuard.h>
 
+#include <React/Graphics.h>
 #include <React/RendererCore.h>
 #include <React/RendererDebug.h>
 #include <folly/dynamic.h>
-#include <react/renderer/graphics/RectangleEdges.h>
-#include <react/renderer/graphics/Size.h>
 
 #include <optional>
 #include <string>

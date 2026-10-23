@@ -49,7 +49,6 @@
 #include <react/renderer/graphics/RectangleEdges.h>
 #include <react/renderer/graphics/Size.h>
 #include <react/renderer/graphics/Transform.h>
-#include <react/renderer/graphics/TransformUtils.h>
 #include <react/renderer/graphics/ValueUnit.h>
 #include <react/renderer/graphics/Vector.h>
 #include <react/renderer/graphics/fromRawValueShared.h>

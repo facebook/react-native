@@ -7,13 +7,15 @@
 
 #pragma once
 
+#include <react/cxxstableapi/FrameworksGuard.h>
+
 #import <memory>
 
+#import <React/NativeModuleCore.h>
 #import <React/RCTBridgeModuleDecorator.h>
 #import <React/RCTDefines.h>
 #import <React/RCTTurboModuleRegistry.h>
-#import <ReactCommon/RuntimeExecutor.h>
-#import <ReactCommon/TurboModuleBinding.h>
+#import <React/RuntimeExecutor.h>
 
 #import "RCTTurboModule.h"
 

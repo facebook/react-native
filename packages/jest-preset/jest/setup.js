@@ -44,6 +44,7 @@ Object.defineProperties(global, {
     enumerable: true,
     value: {
       // $FlowFixMe[method-unbinding]
+      // $FlowFixMe[incompatible-type]
       now: jest.fn(Date.now),
     },
     writable: true,
@@ -91,6 +92,12 @@ mock(
   'm#react-native/Libraries/AppState/AppState',
   // $FlowFixMe[incompatible-type] - `./mocks/AppState` is incomplete.
   'm#./mocks/AppState',
+);
+mock(
+  // $FlowFixMe[cannot-resolve-module]
+  'm#react-native/Libraries/AppState/useAppState',
+  // $FlowFixMe[react-rule-hook-incompatible]
+  'm#./mocks/useAppState',
 );
 mock(
   // $FlowFixMe[cannot-resolve-module]

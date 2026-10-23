@@ -8,10 +8,12 @@
 package com.facebook.react.utils
 
 import com.android.build.api.variant.ApplicationAndroidComponentsExtension
+import com.android.build.api.variant.LibraryAndroidComponentsExtension
 import com.android.build.api.variant.Variant
 import com.facebook.react.ReactExtension
 import com.facebook.react.internal.StubPchBuildService
 import com.facebook.react.utils.ProjectUtils.getReactNativeArchitectures
+import com.facebook.react.utils.ProjectUtils.isStrictCxxApiEnabled
 import java.io.File
 import org.gradle.api.Project
 
@@ -55,8 +57,8 @@ internal object NdkConfiguratorUtils {
         if (cmakeArgs.none { it.startsWith("-DANDROID_STL") }) {
           cmakeArgs.add("-DANDROID_STL=c++_shared")
         }
-        if (cmakeArgs.none { it.startsWith("-DANDROID_SUPPORT_FLEXIBLE_PAGE_SIZES") }) {
-          cmakeArgs.add("-DANDROID_SUPPORT_FLEXIBLE_PAGE_SIZES=ON")
+        if (project.isStrictCxxApiEnabled && cmakeArgs.none { it.startsWith("-DRN_STRICT_API") }) {
+          cmakeArgs.add("-DRN_STRICT_API=ON")
         }
 
         val architectures = project.getReactNativeArchitectures()
@@ -66,6 +68,14 @@ internal object NdkConfiguratorUtils {
           ext.defaultConfig.ndk.abiFilters.addAll(architectures)
         }
       }
+    }
+  }
+
+  /** Defines RN_STRICT_API for the library's own native code. */
+  fun configureStrictCxxApiForLibrary(project: Project) {
+    project.extensions.getByType(LibraryAndroidComponentsExtension::class.java).onVariants { variant
+      ->
+      variant.externalNativeBuild?.cppFlags?.add("-DRN_STRICT_API")
     }
   }
 

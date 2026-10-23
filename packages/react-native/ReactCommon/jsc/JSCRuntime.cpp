@@ -178,6 +178,8 @@ class JSCRuntime : public jsi::Runtime {
 
   jsi::String createStringFromAscii(const char* str, size_t length) override;
   jsi::String createStringFromUtf8(const uint8_t* utf8, size_t length) override;
+  jsi::String createStringFromUtf16(const char16_t* utf16, size_t length)
+      override;
   std::string utf8(const jsi::String& /*str*/) override;
   size_t length(const jsi::String& /*str*/) override;
 
@@ -737,6 +739,18 @@ jsi::String JSCRuntime::createStringFromUtf8(
     size_t length) {
   std::string tmp(reinterpret_cast<const char*>(str), length);
   JSStringRef stringRef = JSStringCreateWithUTF8CString(tmp.c_str());
+  auto result = createString(stringRef);
+  JSStringRelease(stringRef);
+  return result;
+}
+
+jsi::String JSCRuntime::createStringFromUtf16(
+    const char16_t* utf16,
+    size_t length) {
+  JSStringRef stringRef = JSStringCreateWithCharacters(
+      // NOLINTNEXTLINE(cppcoreguidelines-pro-type-reinterpret-cast)
+      reinterpret_cast<const JSChar*>(utf16),
+      length);
   auto result = createString(stringRef);
   JSStringRelease(stringRef);
   return result;

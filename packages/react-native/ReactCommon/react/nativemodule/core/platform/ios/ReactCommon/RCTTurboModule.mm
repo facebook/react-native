@@ -30,6 +30,7 @@
 #import <mutex>
 
 #import <sstream>
+#import <string>
 #import <vector>
 
 using namespace facebook;
@@ -60,7 +61,28 @@ static jsi::Value convertNSNumberToJSINumber(jsi::Runtime &runtime, NSNumber *va
 
 static jsi::String convertNSStringToJSIString(jsi::Runtime &runtime, NSString *value)
 {
-  return jsi::String::createFromUtf8(runtime, ([value UTF8String] != nullptr) ? [value UTF8String] : "");
+  if (value == nil) {
+    return jsi::String::createFromAscii(runtime, "", 0);
+  }
+
+  // Hand the JS runtime the string's own ASCII or UTF-16 characters when
+  // CoreFoundation can expose them, and copy them once otherwise.
+  auto string = (__bridge CFStringRef)value;
+  CFIndex length = CFStringGetLength(string);
+  if (const char *ascii = CFStringGetCStringPtr(string, kCFStringEncodingASCII)) {
+    return jsi::String::createFromAscii(runtime, ascii, static_cast<size_t>(length));
+  }
+  if (const UniChar *characters = CFStringGetCharactersPtr(string)) {
+    return jsi::String::createFromUtf16(
+        runtime,
+        // NOLINTNEXTLINE(cppcoreguidelines-pro-type-reinterpret-cast)
+        reinterpret_cast<const char16_t *>(characters),
+        static_cast<size_t>(length));
+  }
+  std::u16string utf16(length, u'\0');
+  // NOLINTNEXTLINE(cppcoreguidelines-pro-type-reinterpret-cast)
+  CFStringGetCharacters(string, CFRangeMake(0, length), reinterpret_cast<UniChar *>(utf16.data()));
+  return jsi::String::createFromUtf16(runtime, utf16);
 }
 
 static jsi::Object convertNSDictionaryToJSIObject(jsi::Runtime &runtime, NSDictionary *value)

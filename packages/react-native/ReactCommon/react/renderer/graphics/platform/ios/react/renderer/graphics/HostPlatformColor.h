@@ -26,7 +26,7 @@ struct Color {
   Color(int32_t color);
   Color(const DynamicColor &dynamicColor);
   Color(const ColorComponents &components);
-  Color() : uiColor_(nullptr) {};
+  constexpr Color() : uiColor_(nullptr), uiColorHashValue_(0) {};
   int32_t getColor() const;
   std::size_t getUIColorHash() const;
 

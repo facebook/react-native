@@ -442,7 +442,9 @@ describe('react-native-babel-preset transform snapshots', () => {
     it('handles destructuring with defaults', () => {
       const code = `const {a, b = 10, ...rest} = obj;`;
       const result = transformCode(code, {dev: false});
-      expect(result).toContain('_objectWithoutProperties');
+      expect(result).toContain('b = 10');
+      expect(result).toContain('...rest');
+      expect(result).not.toContain('_objectWithoutProperties');
     });
 
     it('handles JSX transformation', () => {
@@ -637,13 +639,16 @@ describe('react-native-babel-preset transform snapshots', () => {
       expect(result).not.toContain('_slicedToArray');
     });
 
-    it('transforms destructuring without unstable_preserveDestructuring', () => {
+    it('transforms destructuring when unstable_preserveDestructuring is false', () => {
       const code = `
         const {a, b, ...rest} = obj;
       `;
       const result = transformCode(code, {
         dev: false,
         unstable_transformProfile: 'hermes-stable',
+        customTransformOptions: {
+          unstable_preserveDestructuring: false,
+        },
       });
       expect(result).toContain('_objectWithoutProperties');
     });

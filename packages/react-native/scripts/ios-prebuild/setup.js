@@ -67,7 +67,6 @@ async function setup(
   link('React/CoreModules', 'React');
   link('React/Modules', 'React');
   link('React/Fabric', 'React');
-  link('React/Profiler', 'React');
   link('React/CoreModules', 'React');
   link('React/Runtime', 'React');
   link('React/Views/ScrollView', 'React');
@@ -108,7 +107,6 @@ async function setup(
   link('ReactCommon/react/renderer/componentregistry/React', 'React');
   link('ReactCommon/react/renderer/core');
   link('ReactCommon/react/renderer/core/React', 'React');
-  link('ReactCommon/react/renderer/css/React', 'React');
   link('ReactCommon/react/renderer/components/image/React', 'React');
   link('ReactCommon/react/renderer/mapbuffer/React', 'React');
   link('ReactCommon/react/bridging');
@@ -122,7 +120,6 @@ async function setup(
   link('ReactCommon/react/renderer/debug');
   link('ReactCommon/react/renderer/debug/React', 'React');
   link('ReactCommon/react/featureflags');
-  link('ReactCommon/react/featureflags/React', 'React');
   link('ReactCommon/react/renderer/graphics');
   link(
     'ReactCommon/react/renderer/graphics/platform/ios',
@@ -188,11 +185,26 @@ function createHeaderLinker(
     const source = path.resolve(root, fromPath);
     const target = path.resolve(linksFolder, includePath ?? fromPath);
 
+    let entries;
+    try {
+      entries = fs.readdirSync(source, {withFileTypes: true});
+    } catch (e) {
+      if (e.code === 'ENOENT') {
+        // A source folder was deleted without updating the link() list below.
+        // Warn instead of crashing the whole prebuild (and OSS builds with it).
+        console.warn(
+          `Skipping missing source folder ${path.relative(root, source)} ` +
+            `— remove its link() entry from setup.js if the deletion was intentional.`,
+        );
+        return;
+      }
+      throw e;
+    }
+
     createFolderIfNotExists(target);
 
     let linkedFiles = 0;
 
-    const entries = fs.readdirSync(source, {withFileTypes: true});
     if (
       entries.some(
         dirent => dirent.isFile() && /\.(h|hpp)$/.test(String(dirent.name)),

@@ -13,6 +13,8 @@
 #include <React/Utils.h>
 #include <react/renderer/attributedstring/AttributedString.h>
 #include <react/renderer/attributedstring/ParagraphAttributes.h>
+#include <react/utils/FloatComparison.h>
+#include <react/utils/SimpleThreadSafeCache.h>
 
 namespace facebook::react {
 

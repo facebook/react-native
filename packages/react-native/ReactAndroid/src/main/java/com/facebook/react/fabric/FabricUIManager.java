@@ -62,11 +62,11 @@ import com.facebook.react.fabric.mounting.MountItemDispatcher;
 import com.facebook.react.fabric.mounting.MountingManager;
 import com.facebook.react.fabric.mounting.SurfaceMountingManager;
 import com.facebook.react.fabric.mounting.mountitems.BatchMountItem;
+import com.facebook.react.fabric.mounting.mountitems.BatchedAnimatedPropsMountItem;
 import com.facebook.react.fabric.mounting.mountitems.DispatchCommandMountItem;
 import com.facebook.react.fabric.mounting.mountitems.MountItem;
 import com.facebook.react.fabric.mounting.mountitems.MountItemFactory;
 import com.facebook.react.fabric.mounting.mountitems.PrefetchResourcesMountItem;
-import com.facebook.react.fabric.mounting.mountitems.PullTransactionMountItem;
 import com.facebook.react.fabric.mounting.mountitems.SynchronousMountItem;
 import com.facebook.react.internal.featureflags.ReactNativeFeatureFlags;
 import com.facebook.react.internal.featureflags.ReactNativeNewArchitectureFeatureFlags;
@@ -236,6 +236,11 @@ public class FabricUIManager
           // This executor can be technically accessed before the dispatcher is created,
           // but if that happens, something is terribly wrong
           mMountItemDispatcher.dispatchMountItems(items);
+          // Only called when a surface's root view attaches, before the surface counts as attached,
+          // so the dispatch above skips its pull. Pull model: the next frame pulls it.
+          if (mMountItemDispatcher.hasSurfaceIdsToPull()) {
+            mDispatchUIFrameCallback.schedule();
+          }
         }
       };
 
@@ -261,6 +266,9 @@ public class FabricUIManager
     mReactApplicationContext.registerComponentCallbacks(viewManagerRegistry);
   }
 
+  /**
+   * @deprecated Use {@code ReactHost.createSurface(...)} and {@code ReactSurface.start()} instead.
+   */
   @Override
   @UiThread
   @ThreadConfined(UI)
@@ -270,7 +278,8 @@ public class FabricUIManager
     ReactSoftExceptionLogger.logSoftException(
         TAG,
         new IllegalViewOperationException(
-            "Do not call addRootView in Fabric; it is unsupported. Call startSurface instead."));
+            "Do not call addRootView in Fabric; it is unsupported. Use ReactHost.createSurface(...)"
+                + " and ReactSurface.start() instead."));
 
     ReactRoot reactRootView = (ReactRoot) rootView;
     final int rootTag = reactRootView.getRootViewTag();
@@ -340,6 +349,10 @@ public class FabricUIManager
     return mBinding != null ? mBinding.getRelativeAncestorList(rootTag, childTag) : null;
   }
 
+  /**
+   * @deprecated Use {@code ReactHost.createSurface(...)} and {@code ReactSurface.start()} instead.
+   */
+  @Deprecated
   @Override
   @AnyThread
   @ThreadConfined(ANY)
@@ -429,6 +442,10 @@ public class FabricUIManager
     mEventDispatcher.dispatchAllEvents();
   }
 
+  /**
+   * @deprecated Use {@code ReactSurface.stop()} instead.
+   */
+  @Deprecated
   @AnyThread
   @ThreadConfined(ANY)
   @Override
@@ -699,7 +716,9 @@ public class FabricUIManager
         preparedLayout.getVerticalOffset(),
         reactTags,
         preparedLayout.getTextBreakStrategy(),
-        preparedLayout.getJustificationMode());
+        preparedLayout.getJustificationMode(),
+        preparedLayout.getBaseTextAttributes(),
+        preparedLayout.getSourceText());
   }
 
   @AnyThread
@@ -832,6 +851,35 @@ public class FabricUIManager
     }
 
     synchronousMountItem.execute(mMountingManager);
+
+    ReactMarker.logFabricMarker(
+        ReactMarkerConstants.FABRIC_UPDATE_UI_MAIN_THREAD_END, null, commitNumber);
+  }
+
+  /** Called from C++ via JNI with a batch encoded by AnimatedPropBufferEncoder.cpp. */
+  @SuppressLint("NotInvokedPrivateMethod")
+  @SuppressWarnings("unused")
+  @UiThread
+  @ThreadConfined(UI)
+  private void synchronouslyUpdateViewBatch(
+      int[] intBuffer, double[] doubleBuffer, Object[] rawPropsBuffer) {
+    UiThreadUtil.assertOnUiThread();
+
+    int commitNumber = mCurrentSynchronousCommitNumber++;
+    ReactMarker.logFabricMarker(
+        ReactMarkerConstants.FABRIC_UPDATE_UI_MAIN_THREAD_START, null, commitNumber);
+
+    if (ReactNativeFeatureFlags.enableFabricLogs()) {
+      FLog.d(
+          TAG,
+          "SynchronouslyUpdateViewBatch: %d ints, %d doubles, %d raw props",
+          intBuffer.length,
+          doubleBuffer.length,
+          rawPropsBuffer.length);
+    }
+
+    new BatchedAnimatedPropsMountItem(intBuffer, doubleBuffer, rawPropsBuffer, mMountItemDispatcher)
+        .execute(mMountingManager);
 
     ReactMarker.logFabricMarker(
         ReactMarkerConstants.FABRIC_UPDATE_UI_MAIN_THREAD_END, null, commitNumber);
@@ -973,15 +1021,9 @@ public class FabricUIManager
     if (shouldSchedule) {
       Assertions.assertNotNull(mountItem, "MountItem is null");
       if (synchronous) {
-        if (mMountingManager.isWaitingForViewAttach(mountItem.getSurfaceId())) {
-          // Regular mount items are still being deferred into the surface's attach queue.
-          // Executing this batch inline would run it ahead of the preallocations queued there.
-          mMountItemDispatcher.addMountItem(mountItem);
-        } else {
-          // Pull model: we are already on the UI thread, inside the dispatcher's loop executing
-          // a PullTransactionMountItem. We don't schedule the item, we execute it directly.
-          mountItem.execute(mMountingManager);
-        }
+        // Pull model: we are already on the UI thread, inside the dispatcher's pull of a surface
+        // whose root view is attached. We don't schedule the item, we execute it directly.
+        mountItem.execute(mMountingManager);
       } else {
         mMountItemDispatcher.addMountItem(mountItem);
         if (UiThreadUtil.isOnUiThread()) {
@@ -1031,19 +1073,18 @@ public class FabricUIManager
 
   /**
    * Pull model: called from C++ via JNI (usually on the commit thread) to signal that a transaction
-   * is available for {@code surfaceId}. Enqueues a PullTransactionMountItem so the UI thread pulls
-   * and applies the transaction itself, preserving mount-item ordering.
+   * is available for {@code surfaceId}. The next dispatch on the UI thread pulls and applies it
+   * before the queued mount items.
    */
   @SuppressWarnings("unused")
   @AnyThread
   @ThreadConfined(ANY)
   @VisibleForTesting
   void onTransactionAvailable(int surfaceId) {
-    FabricUIManagerBinding binding = mBinding;
-    if (binding == null) {
+    if (mBinding == null) {
       return;
     }
-    mMountItemDispatcher.addMountItem(new PullTransactionMountItem(surfaceId, binding));
+    mMountItemDispatcher.addSurfaceIdToPull(surfaceId);
     if (UiThreadUtil.isOnUiThread()) {
       mMountItemDispatcher.tryDispatchMountItems();
     }
@@ -1508,16 +1549,14 @@ public class FabricUIManager
         listener.didMountItems(FabricUIManager.this);
       }
 
-      if (mountItems == null || mountItems.isEmpty()) {
-        return;
-      }
-
-      // Collect surface IDs for all the mount items
-      for (MountItem mountItem : mountItems) {
-        if (mountItem != null
-            && mountItem.getSurfaceId() != View.NO_ID
-            && !mSurfaceIdsWithPendingMountNotification.contains(mountItem.getSurfaceId())) {
-          mSurfaceIdsWithPendingMountNotification.add(mountItem.getSurfaceId());
+      if (mountItems != null) {
+        // Collect surface IDs for all the mount items
+        for (MountItem mountItem : mountItems) {
+          if (mountItem != null
+              && mountItem.getSurfaceId() != View.NO_ID
+              && !mSurfaceIdsWithPendingMountNotification.contains(mountItem.getSurfaceId())) {
+            mSurfaceIdsWithPendingMountNotification.add(mountItem.getSurfaceId());
+          }
         }
       }
 
@@ -1545,6 +1584,20 @@ public class FabricUIManager
                     binding.reportMount(surfaceId);
                   }
                 });
+      }
+    }
+
+    @UiThread
+    @ThreadConfined(UI)
+    @Override
+    public void pullTransaction(int surfaceId) {
+      FabricUIManagerBinding binding = mBinding;
+      if (binding == null) {
+        return;
+      }
+      binding.pullAndExecuteTransaction(surfaceId);
+      if (!mSurfaceIdsWithPendingMountNotification.contains(surfaceId)) {
+        mSurfaceIdsWithPendingMountNotification.add(surfaceId);
       }
     }
 

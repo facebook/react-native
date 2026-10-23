@@ -10,6 +10,7 @@
 #include <cxxreact/TraceSection.h>
 #include <jsinspector-modern/tracing/PerformanceTracerSection.h>
 #include <react/debug/react_native_assert.h>
+#include <react/featureflags/ReactNativeFeatureFlags.h>
 #include <react/renderer/components/root/RootComponentDescriptor.h>
 #include <react/renderer/core/LayoutContext.h>
 #include <react/renderer/core/LayoutPrimitives.h>

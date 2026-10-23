@@ -51,10 +51,10 @@ public class ReactVirtualView(context: Context) :
   @VisibleForTesting
   internal fun doAttachedToWindow() {
     scrollView = getScrollView()
+    updateParentOffset()
     // onAttachedToWindow is usually called before layout but there are cases where it's called
     // after. If called after, we need to report the updated layout to the VirtualViewContainer
     if (hadLayout) {
-      updateParentOffset()
       reportRectChangeToContainer()
     }
     debugLog("doAttachedToWindow")
@@ -120,6 +120,8 @@ public class ReactVirtualView(context: Context) :
     mode = null
     modeChangeEmitter = null
     hadLayout = false
+    offsetX = 0
+    offsetY = 0
     lastContainerRelativeRect.setEmpty()
     lastClippingRect.setEmpty()
     containerRelativeRect.setEmpty()

@@ -95,6 +95,10 @@ val preparePrefab by
                       Pair("../ReactCommon/hermes/inspector-modern/", "hermes/inspector-modern/"),
                       // fabricjni
                       Pair("src/main/jni/react/fabric", "react/fabric/"),
+                      Pair(
+                          "src/main/jni/react/newarchdefaults/CoreComponentsRegistry.h",
+                          "react/fabric/",
+                      ),
                       // uimanagerjni
                       Pair("src/main/jni/react/uimanager", "react/uimanager/"),
                       // glog
@@ -115,7 +119,6 @@ val preparePrefab by
                       Pair("../ReactCommon/cxxreact/React/", "React/"),
                       // react_featureflags
                       Pair("../ReactCommon/react/featureflags/", "react/featureflags/"),
-                      Pair("../ReactCommon/react/featureflags/React/", "React/"),
                       // react_devtoolsruntimesettings
                       Pair(
                           "../ReactCommon/react/devtoolsruntimesettings/",
@@ -144,7 +147,6 @@ val preparePrefab by
                       Pair("../ReactCommon/react/renderer/core/React/", "React/"),
                       // react_renderer_css
                       Pair("../ReactCommon/react/renderer/css/", "react/renderer/css/"),
-                      Pair("../ReactCommon/react/renderer/css/React/", "React/"),
                       // react_debug
                       Pair("../ReactCommon/react/debug/", "react/debug/"),
                       Pair("../ReactCommon/react/debug/React/", "React/"),
@@ -234,7 +236,7 @@ val preparePrefab by
                       Pair("../ReactCommon/callinvoker/", ""),
                       Pair("../ReactCommon/callinvoker/React/", "React/"),
                       Pair("../ReactCommon/cxxreact/", "cxxreact/"),
-                      // Exported because the public cxxreact/ErrorUtils.h includes it
+                      // Exported because the deprecated cxxreact/ErrorUtils.h shim includes it
                       Pair("../ReactCommon/jserrorhandler/", "jserrorhandler/"),
                       Pair("../ReactCommon/react/bridging/", "react/bridging/"),
                       Pair("../ReactCommon/react/bridging/React/", "React/"),
@@ -615,7 +617,6 @@ android {
             "-DREACT_BUILD_DIR=$buildDir",
             "-DANDROID_STL=c++_shared",
             "-DANDROID_TOOLCHAIN=clang",
-            "-DANDROID_SUPPORT_FLEXIBLE_PAGE_SIZES=ON",
             "-DCMAKE_POLICY_DEFAULT_CMP0069=NEW",
         )
 
