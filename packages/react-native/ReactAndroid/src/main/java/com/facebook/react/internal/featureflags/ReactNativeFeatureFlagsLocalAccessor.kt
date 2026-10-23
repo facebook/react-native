@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<861063ef7d217992d3cecd410e25d885>>
+ * @generated SignedSource<<f18d16c52745abc62a0b9ccad5358a0b>>
  */
 
 /**
@@ -93,6 +93,7 @@ internal class ReactNativeFeatureFlagsLocalAccessor : ReactNativeFeatureFlagsAcc
   private var fuseboxFrameRecordingEnabledCache: Boolean? = null
   private var fuseboxScreenshotCaptureEnabledCache: Boolean? = null
   private var fuseboxWebSocketEventsEnabledCache: Boolean? = null
+  private var keepTimersRunningWhileHostPausedAndroidCache: Boolean? = null
   private var optimizedAnimatedPropUpdatesCache: Boolean? = null
   private var overrideBySynchronousMountPropsAtMountingAndroidCache: Boolean? = null
   private var perfIssuesEnabledCache: Boolean? = null
@@ -808,6 +809,16 @@ internal class ReactNativeFeatureFlagsLocalAccessor : ReactNativeFeatureFlagsAcc
       cached = currentProvider.fuseboxWebSocketEventsEnabled()
       accessedFeatureFlags.add("fuseboxWebSocketEventsEnabled")
       fuseboxWebSocketEventsEnabledCache = cached
+    }
+    return cached
+  }
+
+  override fun keepTimersRunningWhileHostPausedAndroid(): Boolean {
+    var cached = keepTimersRunningWhileHostPausedAndroidCache
+    if (cached == null) {
+      cached = currentProvider.keepTimersRunningWhileHostPausedAndroid()
+      accessedFeatureFlags.add("keepTimersRunningWhileHostPausedAndroid")
+      keepTimersRunningWhileHostPausedAndroidCache = cached
     }
     return cached
   }

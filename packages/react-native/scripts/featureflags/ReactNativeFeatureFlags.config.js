@@ -793,6 +793,17 @@ const definitions: FeatureFlagDefinitions = {
       },
       ossReleaseStage: 'canary',
     },
+    keepTimersRunningWhileHostPausedAndroid: {
+      defaultValue: false,
+      metadata: {
+        dateAdded: '2026-10-22',
+        description:
+          'Keep JS timers running on Android while the React host is paused, stopping them only when the React instance is destroyed. Matches iOS, where timers do not depend on host lifecycle.',
+        expectedReleaseValue: true,
+        purpose: 'experimentation',
+      },
+      ossReleaseStage: 'none',
+    },
     optimizedAnimatedPropUpdates: {
       defaultValue: false,
       metadata: {

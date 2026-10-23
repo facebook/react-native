@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<3f0c67926f9bc7a9973e17afe59b3ec9>>
+ * @generated SignedSource<<08c7aeb5d0329359da0e21fea43007df>>
  */
 
 /**
@@ -175,6 +175,8 @@ class NativeReactNativeFeatureFlags
   bool fuseboxScreenshotCaptureEnabled(jsi::Runtime& runtime);
 
   bool fuseboxWebSocketEventsEnabled(jsi::Runtime& runtime);
+
+  bool keepTimersRunningWhileHostPausedAndroid(jsi::Runtime& runtime);
 
   bool optimizedAnimatedPropUpdates(jsi::Runtime& runtime);
 

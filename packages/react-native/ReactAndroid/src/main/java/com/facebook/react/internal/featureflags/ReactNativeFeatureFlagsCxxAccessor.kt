@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<846a8685f662d66dbcdaa4324c772d51>>
+ * @generated SignedSource<<1cefe829b93cd661df195cbf3a3663a7>>
  */
 
 /**
@@ -89,6 +89,7 @@ internal class ReactNativeFeatureFlagsCxxAccessor : ReactNativeFeatureFlagsAcces
   private var fuseboxFrameRecordingEnabledCache: Boolean? = null
   private var fuseboxScreenshotCaptureEnabledCache: Boolean? = null
   private var fuseboxWebSocketEventsEnabledCache: Boolean? = null
+  private var keepTimersRunningWhileHostPausedAndroidCache: Boolean? = null
   private var optimizedAnimatedPropUpdatesCache: Boolean? = null
   private var overrideBySynchronousMountPropsAtMountingAndroidCache: Boolean? = null
   private var perfIssuesEnabledCache: Boolean? = null
@@ -735,6 +736,15 @@ internal class ReactNativeFeatureFlagsCxxAccessor : ReactNativeFeatureFlagsAcces
     if (cached == null) {
       cached = ReactNativeFeatureFlagsCxxInterop.fuseboxWebSocketEventsEnabled()
       fuseboxWebSocketEventsEnabledCache = cached
+    }
+    return cached
+  }
+
+  override fun keepTimersRunningWhileHostPausedAndroid(): Boolean {
+    var cached = keepTimersRunningWhileHostPausedAndroidCache
+    if (cached == null) {
+      cached = ReactNativeFeatureFlagsCxxInterop.keepTimersRunningWhileHostPausedAndroid()
+      keepTimersRunningWhileHostPausedAndroidCache = cached
     }
     return cached
   }
