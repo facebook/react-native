@@ -503,7 +503,8 @@ void YogaLayoutableShadowNode::configureYogaTree(
   // `pointScaleFactor` it is not part of the Yoga config, so a change does not
   // invalidate Yoga's layout cache. Dirty the node when it changes to force
   // re-measurement. We propagate up to the root so an unchanged, still-cached
-  // ancestor isn't skipped by `calculateLayoutInternal` before reaching us.
+  // ancestor isn't skipped by `calculateLayoutInternal` before reaching us. An
+  // owner that is already dirty stops it; the child loop below covers that.
   if (ReactNativeFeatureFlags::enableFontScaleChangesUpdatingLayout() &&
       getTraits().check(ShadowNodeTraits::Trait::MeasurableYogaNode) &&
       !floatEquality(
@@ -546,6 +547,16 @@ void YogaLayoutableShadowNode::configureYogaTree(
     } else {
       cloneChildInPlace(i).configureYogaTree(
           pointScaleFactor, fontSizeMultiplier, errata, swapLeftAndRight);
+    }
+
+    // An in-place clone can come back dirty without dirtying this node, from
+    // `setSize()` in a descriptor's `adopt()` or from `completeClone()`.
+    // Apply the rule of `updateYogaChildren()` so Yoga doesn't skip it.
+    if (yogaLayoutableChildren_[i]->yogaNode_.isDirty() &&
+        !yogaNode_.isDirty() &&
+        yogaNode_.style().display() != yoga::Display::None &&
+        ReactNativeFeatureFlags::enableFontScaleChangesUpdatingLayout()) {
+      yogaNode_.setDirty(true);
     }
   }
 }
