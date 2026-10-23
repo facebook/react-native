@@ -471,6 +471,7 @@ const examples: Array<RNTesterModuleExample> = [
     },
   },
   {
+    name: 'scrollTextInputsVertical',
     title: '<ScrollView> TextInputs\n',
     description:
       'Vertical scroll gestures on a TextInput should scroll the ScrollView unless the input can also scroll vertically.',
@@ -479,6 +480,7 @@ const examples: Array<RNTesterModuleExample> = [
     },
   },
   {
+    name: 'scrollTextInputsHorizontal',
     title: '<ScrollView> TextInputs (horizontal = true)\n',
     description:
       'Horizontal scroll gestures on a TextInput should scroll the ScrollView unless the input can also scroll horizontally.',
@@ -634,7 +636,7 @@ const VerticalScrollTextInputs = () => {
 
   return (
     <View>
-      <RNTesterText style={styles.text}>
+      <RNTesterText style={styles.text} testID="vertical_status">
         scrolled = {verticalScrolled ? 'true' : 'false'}
       </RNTesterText>
       <ScrollView
@@ -645,16 +647,22 @@ const VerticalScrollTextInputs = () => {
         onScroll={event => {
           setVerticalScrolled(event.nativeEvent.contentOffset.y > 0);
         }}>
-        <TextInput placeholder="TextInput" style={styles.textInput} />
+        <TextInput
+          placeholder="TextInput"
+          style={styles.textInput}
+          testID="text_input_vertical"
+        />
         <TextInput
           placeholder="TextInput (center)"
           style={styles.textInput}
           textAlign="center"
+          testID="text_input_vertical_center"
         />
         <TextInput
           placeholder="TextInput (right)"
           style={styles.textInput}
           textAlign="right"
+          testID="text_input_vertical_right"
         />
         <TextInput
           defaultValue={
@@ -662,6 +670,7 @@ const VerticalScrollTextInputs = () => {
           }
           placeholder="TextInput"
           style={styles.textInput}
+          testID="text_input_vertical_overflow_width"
         />
         <TextInput
           defaultValue={
@@ -670,6 +679,7 @@ const VerticalScrollTextInputs = () => {
           placeholder="TextInput"
           style={styles.textInput}
           multiline
+          testID="text_input_vertical_overflow_height"
         />
         <View
           style={[styles.textInput, {backgroundColor: '#cccccc', height: 200}]}
@@ -682,6 +692,7 @@ const VerticalScrollTextInputs = () => {
             y: 0,
           });
         }}
+        testID="scroll_to_top_button"
       />
     </View>
   );
@@ -711,11 +722,13 @@ const HorizontalScrollTextInputs = () => {
             styles.textInput,
             {backgroundColor: '#cccccc', width: 100, height: '100%'},
           ]}
+          testID="left_filler"
         />
         <View style={{gap: 20}}>
           <TextInput
             placeholder="TextInput"
             style={[styles.textInput, {width: 200}]}
+            testID="text_input_horizontal"
           />
           <TextInput
             defaultValue={
@@ -723,6 +736,7 @@ const HorizontalScrollTextInputs = () => {
             }
             placeholder="TextInput"
             style={[styles.textInput, {width: 200}]}
+            testID="text_input_horizontal_overflow_width"
           />
           <TextInput
             defaultValue={
@@ -731,6 +745,7 @@ const HorizontalScrollTextInputs = () => {
             placeholder="TextInput"
             style={[styles.textInput, {width: 200}]}
             multiline
+            testID="text_input_horizontal_overflow_height"
           />
         </View>
         <View
@@ -747,6 +762,7 @@ const HorizontalScrollTextInputs = () => {
             x: 0,
           });
         }}
+        testID="scroll_to_start_button"
       />
     </View>
   );
