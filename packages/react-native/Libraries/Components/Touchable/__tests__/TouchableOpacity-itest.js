@@ -11,7 +11,7 @@
 
 import '@react-native/fantom/src/setUpDefaultReactNativeEnvironment';
 
-import type {HostInstance} from 'react-native';
+import type {AccessibilityProps, HostInstance} from 'react-native';
 
 import * as Fantom from '@react-native/fantom';
 import nullthrows from 'nullthrows';
@@ -25,6 +25,41 @@ describe('<TouchableOpacity>', () => {
   });
 
   describe('props', () => {
+    it('lets View resolve accessibility aliases and their precedence', () => {
+      const root = Fantom.createRoot();
+
+      Fantom.runTask(() => {
+        root.render(
+          <TouchableOpacity
+            aria-label="ARIA label"
+            accessibilityLabel="Legacy label"
+            aria-busy={false}
+            aria-checked={false}
+            aria-expanded={false}
+            aria-selected={false}
+            accessibilityState={{
+              busy: true,
+              checked: true,
+              expanded: true,
+              selected: true,
+            }}
+          />,
+        );
+      });
+
+      expect(
+        root
+          .getRenderedOutput({
+            props: ['accessibilityLabel', 'accessibilityState'],
+          })
+          .toJSONObject().props,
+      ).toEqual({
+        accessibilityLabel: 'ARIA label',
+        accessibilityState:
+          '{disabled:false,selected:false,checked:Unchecked,busy:false,expanded:false}',
+      });
+    });
+
     describe('rendering', () => {
       it('renders as a view with accessible="true"', () => {
         const root = Fantom.createRoot();
@@ -120,6 +155,44 @@ describe('<TouchableOpacity>', () => {
 
         expect(onPressCallback).toHaveBeenCalledTimes(1);
       });
+    });
+
+    it('uses inherited disabled state for presses and lets disabled override it', () => {
+      const root = Fantom.createRoot();
+      const elementRef = createRef<HostInstance>();
+      const onPress = jest.fn();
+
+      const disabledProps: ReadonlyArray<AccessibilityProps> = [
+        {'aria-disabled': true},
+        {accessibilityState: {disabled: true}},
+      ];
+      for (const props of disabledProps) {
+        Fantom.runTask(() => {
+          root.render(
+            <TouchableOpacity {...props} ref={elementRef} onPress={onPress} />,
+          );
+        });
+        Fantom.dispatchNativeEvent(nullthrows(elementRef.current), 'click');
+        expect(onPress).not.toHaveBeenCalled();
+      }
+
+      Fantom.runTask(() => {
+        root.render(
+          <TouchableOpacity
+            ref={elementRef}
+            onPress={onPress}
+            disabled={false}
+            aria-disabled={true}
+          />,
+        );
+      });
+      Fantom.dispatchNativeEvent(nullthrows(elementRef.current), 'click');
+      expect(onPress).toHaveBeenCalledTimes(1);
+      expect(
+        root.getRenderedOutput({props: ['accessibilityState']}).toJSX(),
+      ).toEqual(
+        <rn-view accessibilityState="{disabled:false,selected:null,checked:None,busy:false,expanded:null}" />,
+      );
     });
 
     describe('disabled', () => {
