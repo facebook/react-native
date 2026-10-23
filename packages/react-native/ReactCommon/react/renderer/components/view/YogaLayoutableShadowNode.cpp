@@ -590,7 +590,16 @@ YogaLayoutableShadowNode& YogaLayoutableShadowNode::cloneChildInPlace(
        .state = childNode.getState()});
 
   replaceChild(childNode, clonedChildNode, layoutableChildIndex);
-  return static_cast<YogaLayoutableShadowNode&>(*clonedChildNode);
+
+  auto& clonedChild = static_cast<YogaLayoutableShadowNode&>(*clonedChildNode);
+
+  // `ComponentDescriptor::adopt` can dirty the clone (e.g. `ModalHostView`
+  // calls `setSize`) without propagating it, so Yoga would skip the clone.
+  if (clonedChild.yogaNode_.isDirty()) {
+    yogaNode_.markDirtyAndPropagate();
+  }
+
+  return clonedChild;
 }
 
 void YogaLayoutableShadowNode::setSize(Size size) const {

@@ -358,6 +358,72 @@ TEST_F(YogaDirtyFlagTest, clonedPropsPreserveAspectRatio) {
       });
 }
 
+// We're not running this on Android as ModalHostViewShadowNode
+// need to go through JNI to resolve the initial screen size.
+#ifndef ANDROID
+TEST(YogaFontScaleTest, fontScaleChangeReachesTextInsideModal) {
+  auto builder = simpleComponentBuilder();
+  auto rootShadowNode = std::shared_ptr<RootShadowNode>{};
+
+  // clang-format off
+  auto element =
+      Element<RootShadowNode>()
+        .reference(rootShadowNode)
+        .tag(1)
+        .children({
+          Element<ParagraphShadowNode>()
+            .tag(2),
+          Element<ViewShadowNode>()
+            .tag(3)
+            .children({
+              Element<ModalHostViewShadowNode>()
+                .tag(4)
+                .children({
+                  Element<ViewShadowNode>()
+                    .tag(5)
+                    .children({
+                      Element<ParagraphShadowNode>()
+                        .tag(6)
+                    })
+                })
+            })
+        });
+  // clang-format on
+
+  builder.build(element);
+  rootShadowNode->layoutIfNeeded();
+
+  ContextContainer contextContainer{};
+  PropsParserContext parserContext{-1, contextContainer};
+
+  auto layoutContext = rootShadowNode->getConcreteProps().layoutContext;
+  layoutContext.fontSizeMultiplier = 2;
+
+  auto newRootShadowNode = rootShadowNode->clone(
+      parserContext,
+      rootShadowNode->getConcreteProps().layoutConstraints,
+      layoutContext);
+  newRootShadowNode->dirtyLayout();
+
+  /*
+   * `ModalHostView` is dirtied by its descriptor when it's cloned for the new
+   * font scale. That must not stop the text inside it from being laid out.
+   */
+  EXPECT_TRUE(newRootShadowNode->layoutIfNeeded());
+
+  auto paragraph = std::static_pointer_cast<const ParagraphShadowNode>(
+      newRootShadowNode->getChildren()
+          .at(1)
+          ->getChildren()
+          .at(0)
+          ->getChildren()
+          .at(0)
+          ->getChildren()
+          .at(0));
+  EXPECT_EQ(paragraph->getLayoutMetrics().fontSizeMultiplier, 2);
+}
+#endif
+
 // Exercises the two branches of YogaLayoutableShadowNode's clone constructor:
 // `!fragment.children` (children inherited from source) and
 // `fragment.children` set (children list replaced). The cloned subtree must
