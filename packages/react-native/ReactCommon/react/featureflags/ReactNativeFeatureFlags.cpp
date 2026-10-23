@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<493a51a28c2f55411c5c5aea374638d1>>
+ * @generated SignedSource<<d1ce2494ba7e57787e11f478da395823>>
  */
 
 /**
@@ -236,6 +236,10 @@ bool ReactNativeFeatureFlags::enableResizeObserverByDefault() {
 
 bool ReactNativeFeatureFlags::enableSwiftUIBasedFilters() {
   return getAccessor().enableSwiftUIBasedFilters();
+}
+
+bool ReactNativeFeatureFlags::enableSynchronousTransformOverlay() {
+  return getAccessor().enableSynchronousTransformOverlay();
 }
 
 bool ReactNativeFeatureFlags::enableViewCulling() {

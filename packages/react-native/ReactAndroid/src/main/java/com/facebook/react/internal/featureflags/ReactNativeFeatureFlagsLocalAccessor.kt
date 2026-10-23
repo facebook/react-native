@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<861063ef7d217992d3cecd410e25d885>>
+ * @generated SignedSource<<f4f5e44a7ece1d27086b22ec96eec441>>
  */
 
 /**
@@ -77,6 +77,7 @@ internal class ReactNativeFeatureFlagsLocalAccessor : ReactNativeFeatureFlagsAcc
   private var enablePropsUpdateReconciliationAndroidCache: Boolean? = null
   private var enableResizeObserverByDefaultCache: Boolean? = null
   private var enableSwiftUIBasedFiltersCache: Boolean? = null
+  private var enableSynchronousTransformOverlayCache: Boolean? = null
   private var enableViewCullingCache: Boolean? = null
   private var enableViewRecyclingCache: Boolean? = null
   private var enableViewRecyclingForImageCache: Boolean? = null
@@ -648,6 +649,16 @@ internal class ReactNativeFeatureFlagsLocalAccessor : ReactNativeFeatureFlagsAcc
       cached = currentProvider.enableSwiftUIBasedFilters()
       accessedFeatureFlags.add("enableSwiftUIBasedFilters")
       enableSwiftUIBasedFiltersCache = cached
+    }
+    return cached
+  }
+
+  override fun enableSynchronousTransformOverlay(): Boolean {
+    var cached = enableSynchronousTransformOverlayCache
+    if (cached == null) {
+      cached = currentProvider.enableSynchronousTransformOverlay()
+      accessedFeatureFlags.add("enableSynchronousTransformOverlay")
+      enableSynchronousTransformOverlayCache = cached
     }
     return cached
   }
