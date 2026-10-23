@@ -16,7 +16,7 @@ import com.facebook.react.module.annotations.ReactModule
 import com.facebook.react.runtime.BridgelessReactContext
 import java.util.Locale
 
-/** [com.facebook.react.bridge.NativeModule] that allows JS to set allowRTL and get isRTL status. */
+/** [com.facebook.react.bridge.NativeModule] that allows JS to set forceRTL and get isRTL status. */
 @ReactModule(name = NativeI18nManagerSpec.NAME)
 internal class I18nManagerModule(context: ReactApplicationContext?) :
     NativeI18nManagerSpec(context) {
@@ -27,25 +27,14 @@ internal class I18nManagerModule(context: ReactApplicationContext?) :
 
     return mapOf(
         "isRTL" to I18nUtil.instance.isRTL(context),
-        "doLeftAndRightSwapInRTL" to I18nUtil.instance.doLeftAndRightSwapInRTL(),
         "localeIdentifier" to locale.toString(),
     )
-  }
-
-  override fun allowRTL(value: Boolean, promise: Promise) {
-    val wasRTL = I18nUtil.instance.isRTL(reactApplicationContext)
-    I18nUtil.instance.allowRTL(value)
-    relayoutIfNeeded(wasRTL, promise)
   }
 
   override fun forceRTL(value: Boolean, promise: Promise) {
     val wasRTL = I18nUtil.instance.isRTL(reactApplicationContext)
     I18nUtil.instance.forceRTL(value)
     relayoutIfNeeded(wasRTL, promise)
-  }
-
-  override fun swapLeftAndRightInRTL(value: Boolean) {
-    I18nUtil.instance.swapLeftAndRightInRTL(value)
   }
 
   private fun relayoutIfNeeded(wasRTL: Boolean, promise: Promise) {

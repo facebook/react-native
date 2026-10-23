@@ -8,7 +8,6 @@
 package com.facebook.react.uimanager
 
 import com.facebook.react.internal.featureflags.ReactNativeFeatureFlagsForTests
-import com.facebook.react.modules.i18nmanager.I18nUtil
 import com.facebook.react.uimanager.style.BorderRadiusProp
 import com.facebook.react.uimanager.style.BorderRadiusStyle
 import com.facebook.react.uimanager.style.ComputedBorderRadiusProp
@@ -73,60 +72,10 @@ class BorderRadiusStyleTest {
   @Before
   fun setup() {
     ReactNativeFeatureFlagsForTests.setUp()
-    I18nUtil.instance.swapLeftAndRightInRTL(false)
   }
 
   @Test
   fun testCorrectPriorityRTL() {
-    I18nUtil.instance.swapLeftAndRightInRTL(true)
-    val propertyOrderMap =
-        mapOf(
-            ComputedBorderRadiusProp.COMPUTED_BORDER_TOP_LEFT_RADIUS to
-                arrayOf(
-                    BorderRadiusProp.BORDER_RADIUS,
-                    BorderRadiusProp.BORDER_TOP_RIGHT_RADIUS,
-                    BorderRadiusProp.BORDER_TOP_END_RADIUS,
-                    BorderRadiusProp.BORDER_START_END_RADIUS,
-                ),
-            ComputedBorderRadiusProp.COMPUTED_BORDER_TOP_RIGHT_RADIUS to
-                arrayOf(
-                    BorderRadiusProp.BORDER_RADIUS,
-                    BorderRadiusProp.BORDER_TOP_LEFT_RADIUS,
-                    BorderRadiusProp.BORDER_TOP_START_RADIUS,
-                    BorderRadiusProp.BORDER_START_START_RADIUS,
-                ),
-            ComputedBorderRadiusProp.COMPUTED_BORDER_BOTTOM_LEFT_RADIUS to
-                arrayOf(
-                    BorderRadiusProp.BORDER_RADIUS,
-                    BorderRadiusProp.BORDER_BOTTOM_RIGHT_RADIUS,
-                    BorderRadiusProp.BORDER_BOTTOM_END_RADIUS,
-                    BorderRadiusProp.BORDER_END_END_RADIUS,
-                ),
-            ComputedBorderRadiusProp.COMPUTED_BORDER_BOTTOM_RIGHT_RADIUS to
-                arrayOf(
-                    BorderRadiusProp.BORDER_RADIUS,
-                    BorderRadiusProp.BORDER_BOTTOM_LEFT_RADIUS,
-                    BorderRadiusProp.BORDER_BOTTOM_START_RADIUS,
-                    BorderRadiusProp.BORDER_END_START_RADIUS,
-                ),
-        )
-
-    propertyOrderMap.forEach { order ->
-      val borderRadiusStyle = BorderRadiusStyle()
-      // Starting count on 3 to test 0 override
-      var count = 3f
-      for (prop in order.value) {
-        borderRadiusStyle.set(prop, LengthPercentage(count, LengthPercentageType.POINT))
-        val resolved = borderRadiusStyle.resolve(1, width = 100f, height = 100f)
-        assertThat(resolved.get(order.key)).isEqualTo(CornerRadii(count, count))
-        count -= 1f
-      }
-    }
-  }
-
-  @Test
-  fun testCorrectPriorityRTLNoSwap() {
-    I18nUtil.instance.swapLeftAndRightInRTL(false)
     val propertyOrderMap =
         mapOf(
             ComputedBorderRadiusProp.COMPUTED_BORDER_TOP_LEFT_RADIUS to
@@ -173,20 +122,17 @@ class BorderRadiusStyleTest {
   }
 
   @Test
-  fun testBottomLogicalCornersRTLRegardlessOfSwap() {
+  fun testBottomLogicalCornersRTL() {
     val borderRadiusStyle =
         BorderRadiusStyle(
             bottomStart = LengthPercentage(10f, LengthPercentageType.POINT),
             bottomEnd = LengthPercentage(20f, LengthPercentageType.POINT),
         )
 
-    for (swap in listOf(false, true)) {
-      I18nUtil.instance.swapLeftAndRightInRTL(swap)
-      val resolved = borderRadiusStyle.resolve(1, width = 100f, height = 100f)
+    val resolved = borderRadiusStyle.resolve(1, width = 100f, height = 100f)
 
-      assertThat(resolved.bottomLeft).isEqualTo(CornerRadii(20f, 20f))
-      assertThat(resolved.bottomRight).isEqualTo(CornerRadii(10f, 10f))
-    }
+    assertThat(resolved.bottomLeft).isEqualTo(CornerRadii(20f, 20f))
+    assertThat(resolved.bottomRight).isEqualTo(CornerRadii(10f, 10f))
   }
 
   @Test

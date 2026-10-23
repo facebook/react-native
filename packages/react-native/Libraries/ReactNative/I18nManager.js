@@ -9,41 +9,61 @@
  */
 
 import type {EventSubscription} from '../vendor/emitter/EventEmitter';
-import type {I18nManagerConstants} from './NativeI18nManager';
+import type {I18nManagerConstants as NativeI18nManagerConstants} from './NativeI18nManager';
 
+import warnOnce from '../Utilities/warnOnce';
 import EventEmitter from '../vendor/emitter/EventEmitter';
 import NativeI18nManager from './NativeI18nManager';
 import invariant from 'invariant';
 
-let i18nConstants: I18nManagerConstants = getI18nManagerConstants();
+export type I18nManagerConstants = {
+  isRTL: boolean,
+  localeIdentifier?: ?string,
+  /**
+   * @deprecated Has no effect, and is always `false`. Use `start` and `end`
+   * style properties, such as `marginStart`, instead.
+   */
+  doLeftAndRightSwapInRTL: boolean,
+};
 
-function getI18nManagerConstants(): I18nManagerConstants {
-  if (NativeI18nManager) {
-    const {isRTL, doLeftAndRightSwapInRTL, localeIdentifier} =
-      NativeI18nManager.getConstants();
-    return {isRTL, doLeftAndRightSwapInRTL, localeIdentifier};
-  }
-
-  return {
-    isRTL: false,
-    doLeftAndRightSwapInRTL: false,
-  };
+function warnDoLeftAndRightSwapInRTLDeprecated(): void {
+  warnOnce(
+    'I18nManager.doLeftAndRightSwapInRTL',
+    'I18nManager.doLeftAndRightSwapInRTL is deprecated and has no effect, it is ' +
+      'always false. Use `start` and `end` style properties, such as ' +
+      '`marginStart`, instead.',
+  );
 }
+
+const createConstants = (
+  constants: NativeI18nManagerConstants,
+): I18nManagerConstants => ({
+  isRTL: constants.isRTL,
+  localeIdentifier: constants.localeIdentifier,
+  // $FlowFixMe[unsafe-getters-setters]
+  get doLeftAndRightSwapInRTL(): boolean {
+    warnDoLeftAndRightSwapInRTLDeprecated();
+    return false;
+  },
+});
+
+const getNativeConstants = (): NativeI18nManagerConstants =>
+  NativeI18nManager?.getConstants() ?? {isRTL: false};
+
+let i18nConstants: I18nManagerConstants = createConstants(getNativeConstants());
 
 const eventEmitter = new EventEmitter<{
   change: [I18nManagerConstants],
 }>();
 
-function updateConstants() {
-  const {isRTL, doLeftAndRightSwapInRTL, localeIdentifier} =
-    getI18nManagerConstants();
+function updateConstants(): void {
+  const nativeConstants = getNativeConstants();
 
   if (
-    isRTL !== i18nConstants.isRTL ||
-    doLeftAndRightSwapInRTL !== i18nConstants.doLeftAndRightSwapInRTL ||
-    localeIdentifier !== i18nConstants.localeIdentifier
+    nativeConstants.isRTL !== i18nConstants.isRTL ||
+    nativeConstants.localeIdentifier !== i18nConstants.localeIdentifier
   ) {
-    i18nConstants = {isRTL, doLeftAndRightSwapInRTL, localeIdentifier};
+    i18nConstants = createConstants(nativeConstants);
     eventEmitter.emit('change', i18nConstants);
   }
 }
@@ -59,18 +79,18 @@ export default {
   },
 
   /**
-   * Allows the app to opt in to RTL layout behavior. Should be called early
-   * in app startup. Resolves once the layout is updated.
-   *
-   * @deprecated Set `RCTSupportsRTL` to `true` in Info.plist on iOS, or
-   * `android:supportsRtl="true"` in AndroidManifest.xml on Android, instead.
+   * @deprecated Has no effect. Set `RCTSupportsRTL` to `true` in Info.plist on
+   * iOS, or `android:supportsRtl="true"` in AndroidManifest.xml on Android,
+   * instead.
    */
-  allowRTL: (shouldAllow: boolean): Promise<void> => {
-    if (!NativeI18nManager) {
-      return Promise.resolve();
-    }
-
-    return NativeI18nManager.allowRTL(shouldAllow).then(updateConstants);
+  allowRTL: (shouldAllow: boolean): void => {
+    warnOnce(
+      'I18nManager.allowRTL',
+      'I18nManager.allowRTL() is deprecated and has no effect. Set ' +
+        '`RCTSupportsRTL` to `true` in Info.plist on iOS, or ' +
+        '`android:supportsRtl="true"` in AndroidManifest.xml on Android, ' +
+        'instead.',
+    );
   },
 
   /**
@@ -86,25 +106,23 @@ export default {
   },
 
   /**
-   * Controls whether `left`/`right` style properties are automatically swapped
-   * in RTL layouts. When enabled, `left` becomes `right` and vice versa.
-   *
-   * @deprecated Use `start` and `end` style properties, such as
+   * @deprecated Has no effect. Use `start` and `end` style properties, such as
    * `marginStart`, instead.
    */
-  swapLeftAndRightInRTL: (flipStyles: boolean) => {
-    if (!NativeI18nManager) {
-      return;
-    }
-
-    NativeI18nManager.swapLeftAndRightInRTL(flipStyles);
+  swapLeftAndRightInRTL: (flipStyles: boolean): void => {
+    warnOnce(
+      'I18nManager.swapLeftAndRightInRTL',
+      'I18nManager.swapLeftAndRightInRTL() is deprecated and has no effect. ' +
+        'Use `start` and `end` style properties, such as `marginStart`, ' +
+        'instead.',
+    );
   },
 
   /**
    * Add an event handler. Supported events:
    *
-   * - `change`: Fires when `allowRTL` or `forceRTL` changes a constant, with
-   *   the new constants.
+   * - `change`: Fires when `forceRTL` changes a constant, with the new
+   *   constants.
    */
   addEventListener: (
     type: 'change',
@@ -125,13 +143,12 @@ export default {
   },
 
   /**
-   * Whether left and right style properties are swapped in RTL mode.
-   *
-   * @deprecated Use `start` and `end` style properties, such as
-   * `marginStart`, instead.
+   * @deprecated Has no effect, and is always `false`. Use `start` and `end`
+   * style properties, such as `marginStart`, instead.
    */
   // $FlowFixMe[unsafe-getters-setters]
   get doLeftAndRightSwapInRTL(): I18nManagerConstants['doLeftAndRightSwapInRTL'] {
-    return i18nConstants.doLeftAndRightSwapInRTL;
+    warnDoLeftAndRightSwapInRTLDeprecated();
+    return false;
   },
 };

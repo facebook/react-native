@@ -208,8 +208,6 @@ using namespace facebook::react;
   auto layoutContext = _surfaceHandler->getLayoutContext();
 
   layoutContext.pointScaleFactor = RCTScreenScale();
-  layoutContext.swapLeftAndRightInRTL =
-      [[RCTI18nUtil sharedInstance] isRTL] && [[RCTI18nUtil sharedInstance] doLeftAndRightSwapInRTL];
   layoutContext.fontSizeMultiplier = RCTFontSizeMultiplier();
 
   _surfaceHandler->constraintLayout(layoutConstraints, layoutContext);

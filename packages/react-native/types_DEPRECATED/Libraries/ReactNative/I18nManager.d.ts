@@ -12,8 +12,8 @@ import {EmitterSubscription} from '../vendor/emitter/EventEmitter';
 type I18nManagerConstants = {
   isRTL: boolean;
   /**
-   * @deprecated Use `start` and `end` style properties, such as
-   * `marginStart`, instead.
+   * @deprecated Has no effect, and is always `false`. Use `start` and `end`
+   * style properties, such as `marginStart`, instead.
    */
   doLeftAndRightSwapInRTL: boolean;
   localeIdentifier?: string | null | undefined;
@@ -22,13 +22,14 @@ type I18nManagerConstants = {
 export interface I18nManagerStatic {
   getConstants: () => I18nManagerConstants;
   /**
-   * @deprecated Set `RCTSupportsRTL` to `true` in Info.plist on iOS, or
-   * `android:supportsRtl="true"` in AndroidManifest.xml on Android, instead.
+   * @deprecated Has no effect. Set `RCTSupportsRTL` to `true` in Info.plist on
+   * iOS, or `android:supportsRtl="true"` in AndroidManifest.xml on Android,
+   * instead.
    */
-  allowRTL: (allowRTL: boolean) => Promise<void>;
+  allowRTL: (allowRTL: boolean) => void;
   forceRTL: (forceRTL: boolean) => Promise<void>;
   /**
-   * @deprecated Use `start` and `end` style properties, such as
+   * @deprecated Has no effect. Use `start` and `end` style properties, such as
    * `marginStart`, instead.
    */
   swapLeftAndRightInRTL: (swapLeftAndRight: boolean) => void;
@@ -38,8 +39,8 @@ export interface I18nManagerStatic {
   ) => EmitterSubscription;
   isRTL: boolean;
   /**
-   * @deprecated Use `start` and `end` style properties, such as
-   * `marginStart`, instead.
+   * @deprecated Has no effect, and is always `false`. Use `start` and `end`
+   * style properties, such as `marginStart`, instead.
    */
   doLeftAndRightSwapInRTL: boolean;
 }

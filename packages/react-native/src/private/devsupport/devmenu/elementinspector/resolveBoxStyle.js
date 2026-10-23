@@ -12,8 +12,6 @@
 
 import type {ViewStyleProp} from '../../../../../Libraries/StyleSheet/StyleSheet';
 
-const I18nManager =
-  require('../../../../../Libraries/ReactNative/I18nManager').default;
 const flattenStyle =
   require('../../../../../Libraries/StyleSheet/flattenStyle').default;
 
@@ -92,22 +90,12 @@ function resolveBoxStyle(
 
     const styleForEnd = getStyleValue(prefix + 'End');
     if (styleForEnd != null) {
-      const constants = I18nManager.getConstants();
-      if (constants.isRTL && constants.doLeftAndRightSwapInRTL) {
-        result.left = styleForEnd;
-      } else {
-        result.right = styleForEnd;
-      }
+      result.right = styleForEnd;
       hasParts = true;
     }
     const styleForStart = getStyleValue(prefix + 'Start');
     if (styleForStart != null) {
-      const constants = I18nManager.getConstants();
-      if (constants.isRTL && constants.doLeftAndRightSwapInRTL) {
-        result.right = styleForStart;
-      } else {
-        result.left = styleForStart;
-      }
+      result.left = styleForStart;
       hasParts = true;
     }
   }

@@ -11,9 +11,7 @@
 
 @implementation RCTI18nUtil {
   BOOL _isRTLSupported;
-  BOOL _isRTLAllowed;
   BOOL _isRTLForced;
-  BOOL _doLeftAndRightSwapInRTL;
 }
 
 + (instancetype)sharedInstance
@@ -31,9 +29,7 @@
 {
   if (self = [super init]) {
     _isRTLSupported = [[[NSBundle mainBundle] objectForInfoDictionaryKey:@"RCTSupportsRTL"] boolValue];
-    _isRTLAllowed = _isRTLSupported;
     _isRTLForced = NO;
-    _doLeftAndRightSwapInRTL = NO;
   }
   return self;
 }
@@ -43,7 +39,7 @@
  * Always false unless `RCTSupportsRTL` is true in Info.plist.
  * Otherwise, this only happens when the app:
  * - is forcing RTL layout, regardless of the active language (for development purpose)
- * - allows RTL layout when using RTL locale
+ * - or is using an RTL locale
  */
 - (BOOL)isRTL
 {
@@ -53,28 +49,10 @@
   if ([self isRTLForced]) {
     return YES;
   }
-  if ([self isRTLAllowed] && [self isApplicationPreferredLanguageRTL]) {
+  if ([self isApplicationPreferredLanguageRTL]) {
     return YES;
   }
   return NO;
-}
-
-/**
- * Should be used very early during app start up
- * Before the bridge is initialized
- * @return whether the app allows RTL layout, default is the `RCTSupportsRTL`
- * value in Info.plist, or false when it is not set
- */
-- (BOOL)isRTLAllowed
-{
-  return _isRTLAllowed;
-}
-
-- (void)allowRTL:(BOOL)rtlStatus
-{
-  if (_isRTLSupported) {
-    _isRTLAllowed = rtlStatus;
-  }
 }
 
 /**
@@ -89,16 +67,6 @@
 - (void)forceRTL:(BOOL)rtlStatus
 {
   _isRTLForced = rtlStatus;
-}
-
-- (BOOL)doLeftAndRightSwapInRTL
-{
-  return _doLeftAndRightSwapInRTL;
-}
-
-- (void)swapLeftAndRightInRTL:(BOOL)value
-{
-  _doLeftAndRightSwapInRTL = value;
 }
 
 // Check if the current device language is RTL

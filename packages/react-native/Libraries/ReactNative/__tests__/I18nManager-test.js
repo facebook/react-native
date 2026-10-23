@@ -12,10 +12,7 @@
 
 import type {I18nManagerConstants} from '../NativeI18nManager';
 
-let nativeConstants: I18nManagerConstants = {
-  isRTL: false,
-  doLeftAndRightSwapInRTL: false,
-};
+let nativeConstants: I18nManagerConstants = {isRTL: false};
 
 const nativeModule = {
   getConstants: jest.fn(() => nativeConstants),
@@ -33,16 +30,14 @@ describe('I18nManager', () => {
     const handler = jest.fn();
 
     I18nManager.addEventListener('change', handler);
-    nativeConstants = {isRTL: true, doLeftAndRightSwapInRTL: false};
+    nativeConstants = {isRTL: true};
     await I18nManager.forceRTL(true);
 
     expect(nativeModule.forceRTL).toHaveBeenCalledWith(true);
     expect(I18nManager.isRTL).toBe(true);
 
-    expect(handler).toHaveBeenCalledWith({
-      isRTL: true,
-      doLeftAndRightSwapInRTL: false,
-      localeIdentifier: undefined,
-    });
+    expect(handler).toHaveBeenCalledWith(
+      expect.objectContaining({isRTL: true}),
+    );
   });
 });

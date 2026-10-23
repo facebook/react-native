@@ -15,18 +15,16 @@ import androidx.core.text.TextUtilsCompat
 import java.util.Locale
 
 public class I18nUtil private constructor() {
-  @Volatile private var rtlAllowed: Boolean = true
   @Volatile private var rtlForced: Boolean = false
-  @Volatile private var leftAndRightSwapInRTL: Boolean = false
 
   /**
-   * Check if the device is currently running on an RTL locale. This only happens when the app:
+   * Check if the device is currently running on an RTL locale. This only happens when the app
+   * supports RTL, and:
    * * is forcing RTL layout, regardless of the active language (for development purpose)
-   * * allows RTL layout when using RTL locale
+   * * or is running on an RTL locale
    */
   public fun isRTL(context: Context): Boolean =
-      applicationHasRtlSupport(context) &&
-          (isRTLForced() || (isRTLAllowed() && isDevicePreferredLanguageRTL(context)))
+      applicationHasRtlSupport(context) && (isRTLForced() || isDevicePreferredLanguageRTL(context))
 
   /**
    * Android relies on the presence of `android:supportsRtl="true"` being set in order to resolve
@@ -35,23 +33,6 @@ public class I18nUtil private constructor() {
    */
   private fun applicationHasRtlSupport(context: Context): Boolean {
     return (context.applicationInfo.flags and ApplicationInfo.FLAG_SUPPORTS_RTL) != 0
-  }
-
-  /**
-   * Should be used very early during app start up Before the bridge is initialized
-   *
-   * @return whether the app allows RTL layout, default is true
-   */
-  private fun isRTLAllowed(): Boolean = rtlAllowed
-
-  public fun allowRTL(allowRTL: Boolean) {
-    rtlAllowed = allowRTL
-  }
-
-  public fun doLeftAndRightSwapInRTL(): Boolean = leftAndRightSwapInRTL
-
-  public fun swapLeftAndRightInRTL(flip: Boolean) {
-    leftAndRightSwapInRTL = flip
   }
 
   /** Could be used to test RTL layout with English Used for development and testing purpose */

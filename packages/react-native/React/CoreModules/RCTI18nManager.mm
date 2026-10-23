@@ -35,23 +35,11 @@ RCT_EXPORT_MODULE()
   _surfacePresenter = surfacePresenter;
 }
 
-- (void)allowRTL:(BOOL)value resolve:(RCTPromiseResolveBlock)resolve reject:(__unused RCTPromiseRejectBlock)reject
-{
-  BOOL wasRTL = [[RCTI18nUtil sharedInstance] isRTL];
-  [[RCTI18nUtil sharedInstance] allowRTL:value];
-  [self _relayoutIfNeeded:wasRTL resolve:resolve];
-}
-
 - (void)forceRTL:(BOOL)value resolve:(RCTPromiseResolveBlock)resolve reject:(__unused RCTPromiseRejectBlock)reject
 {
   BOOL wasRTL = [[RCTI18nUtil sharedInstance] isRTL];
   [[RCTI18nUtil sharedInstance] forceRTL:value];
   [self _relayoutIfNeeded:wasRTL resolve:resolve];
-}
-
-- (void)swapLeftAndRightInRTL:(BOOL)value
-{
-  [[RCTI18nUtil sharedInstance] swapLeftAndRightInRTL:value];
 }
 
 - (void)_relayoutIfNeeded:(BOOL)wasRTL resolve:(RCTPromiseResolveBlock)resolve
@@ -80,7 +68,6 @@ RCT_EXPORT_MODULE()
 {
   return @{
     @"isRTL" : @([[RCTI18nUtil sharedInstance] isRTL]),
-    @"doLeftAndRightSwapInRTL" : @([[RCTI18nUtil sharedInstance] doLeftAndRightSwapInRTL])
   };
 }
 
