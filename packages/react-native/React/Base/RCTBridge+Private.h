@@ -16,8 +16,9 @@ RCT_EXTERN void RCTRegisterModule(Class);
 
 @interface RCTBridge ()
 
-+ (instancetype)currentBridge;
-+ (void)setCurrentBridge:(RCTBridge *)bridge;
++ (instancetype)currentBridge __deprecated_msg("This API will be removed along with the legacy architecture.");
++ (void)setCurrentBridge:(RCTBridge *)bridge
+    __deprecated_msg("This API will be removed along with the legacy architecture.");
 
 /**
  * This method is used to invoke a callback that was registered in the
