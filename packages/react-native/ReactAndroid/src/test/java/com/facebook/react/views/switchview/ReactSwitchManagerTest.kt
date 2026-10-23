@@ -110,6 +110,16 @@ class ReactSwitchManagerTest {
     assertThat(rippleColor()).isEqualTo(Color.WHITE)
   }
 
+  @Test
+  fun backgroundColorDoesNotUseClearedThumbColor() {
+    manager.setThumbColor(view, Color.GREEN)
+    manager.setThumbColor(view, null)
+    manager.setBackgroundColor(view, Color.WHITE)
+
+    val pressed = intArrayOf(android.R.attr.state_pressed)
+    assertThat(rippleEffectColor().getColorForState(pressed, 0)).isEqualTo(Color.WHITE)
+  }
+
   private fun ripple(): RippleDrawable {
     val background = view.background
     val drawable =

@@ -75,11 +75,9 @@ internal class ReactSwitch(context: Context) : SwitchCompat(context) {
     val ripple =
         (currentBackground as? CompositeBackgroundDrawable)?.originalBackground as? RippleDrawable
             ?: currentBackground as? RippleDrawable
-    if (color != null) {
-      rippleColor = color
-      // The theme's ripple may share its state with other drawables loaded from the same resource
-      ripple?.mutate()
-      ripple?.setColor(createRippleDrawableColorStateList(color))
+    rippleColor = color
+    if (color != null && ripple != null) {
+      ripple.setColor(createRippleDrawableColorStateList(color))
     }
   }
 
