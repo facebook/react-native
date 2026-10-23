@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<7e430d5b575ea983d53ecde87c4dc9f0>>
+ * @generated SignedSource<<02bae939bf76d168cd5c1911f6f85272>>
  */
 
 /**
@@ -216,12 +216,6 @@ class ReactNativeFeatureFlagsJavaProvider
   bool enableFollowUpMountItemDispatchAndroid() override {
     static const auto method =
         getReactNativeFeatureFlagsProviderJavaClass()->getMethod<jboolean()>("enableFollowUpMountItemDispatchAndroid");
-    return method(javaProvider_);
-  }
-
-  bool enableFontScaleChangesUpdatingLayout() override {
-    static const auto method =
-        getReactNativeFeatureFlagsProviderJavaClass()->getMethod<jboolean()>("enableFontScaleChangesUpdatingLayout");
     return method(javaProvider_);
   }
 
@@ -775,11 +769,6 @@ bool JReactNativeFeatureFlagsCxxInterop::enableFollowUpMountItemDispatchAndroid(
   return ReactNativeFeatureFlags::enableFollowUpMountItemDispatchAndroid();
 }
 
-bool JReactNativeFeatureFlagsCxxInterop::enableFontScaleChangesUpdatingLayout(
-    facebook::jni::alias_ref<JReactNativeFeatureFlagsCxxInterop> /*unused*/) {
-  return ReactNativeFeatureFlags::enableFontScaleChangesUpdatingLayout();
-}
-
 bool JReactNativeFeatureFlagsCxxInterop::enableIOSCompressedTextFrameAdjustment(
     facebook::jni::alias_ref<JReactNativeFeatureFlagsCxxInterop> /*unused*/) {
   return ReactNativeFeatureFlags::enableIOSCompressedTextFrameAdjustment();
@@ -1231,9 +1220,6 @@ void JReactNativeFeatureFlagsCxxInterop::registerNatives() {
       makeNativeMethod(
         "enableFollowUpMountItemDispatchAndroid",
         JReactNativeFeatureFlagsCxxInterop::enableFollowUpMountItemDispatchAndroid),
-      makeNativeMethod(
-        "enableFontScaleChangesUpdatingLayout",
-        JReactNativeFeatureFlagsCxxInterop::enableFontScaleChangesUpdatingLayout),
       makeNativeMethod(
         "enableIOSCompressedTextFrameAdjustment",
         JReactNativeFeatureFlagsCxxInterop::enableIOSCompressedTextFrameAdjustment),

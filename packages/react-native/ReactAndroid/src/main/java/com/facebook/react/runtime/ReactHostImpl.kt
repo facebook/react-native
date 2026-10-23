@@ -733,15 +733,13 @@ public class ReactHostImpl(
   override fun onConfigurationChanged(context: Context) {
     val currentReactContext = this.currentReactContext
     if (currentReactContext != null) {
-      if (ReactNativeFeatureFlags.enableFontScaleChangesUpdatingLayout()) {
-        val previousFontScale = PixelUtil.toPixelFromSP(1.0)
-        DisplayMetricsHolder.initDisplayMetrics(currentReactContext)
-        val newFontScale = PixelUtil.toPixelFromSP(1.0)
+      val previousFontScale = PixelUtil.toPixelFromSP(1.0)
+      DisplayMetricsHolder.initDisplayMetrics(currentReactContext)
+      val newFontScale = PixelUtil.toPixelFromSP(1.0)
 
-        if (previousFontScale != newFontScale) {
-          synchronized(attachedSurfaces) {
-            attachedSurfaces.forEach { surface -> surface.view?.requestLayout() }
-          }
+      if (previousFontScale != newFontScale) {
+        synchronized(attachedSurfaces) {
+          attachedSurfaces.forEach { surface -> surface.view?.requestLayout() }
         }
       }
 

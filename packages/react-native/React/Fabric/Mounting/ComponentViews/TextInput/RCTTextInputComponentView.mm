@@ -154,9 +154,8 @@ static NSSet<NSNumber *> *returnKeyTypesSet;
 {
   [super traitCollectionDidChange:previousTraitCollection];
 
-  if (facebook::react::ReactNativeFeatureFlags::enableFontScaleChangesUpdatingLayout() &&
-      UITraitCollection.currentTraitCollection.preferredContentSizeCategory !=
-          previousTraitCollection.preferredContentSizeCategory) {
+  if (UITraitCollection.currentTraitCollection.preferredContentSizeCategory !=
+      previousTraitCollection.preferredContentSizeCategory) {
     const auto &newTextInputProps = static_cast<const TextInputProps &>(*_props);
     _backedTextInputView.defaultTextAttributes =
         RCTNSTextAttributesFromTextAttributes(newTextInputProps.getEffectiveTextAttributes(RCTFontSizeMultiplier()));

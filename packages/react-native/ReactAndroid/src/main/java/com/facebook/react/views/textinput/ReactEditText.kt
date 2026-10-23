@@ -1048,10 +1048,7 @@ public open class ReactEditText public constructor(context: Context) : AppCompat
   public override fun onConfigurationChanged(newConfig: Configuration) {
     super.onConfigurationChanged(newConfig)
 
-    if (
-        ReactNativeNewArchitectureFeatureFlags.enableBridgelessArchitecture() &&
-            ReactNativeFeatureFlags.enableFontScaleChangesUpdatingLayout()
-    ) {
+    if (ReactNativeNewArchitectureFeatureFlags.enableBridgelessArchitecture()) {
       applyTextAttributes()
     }
   }

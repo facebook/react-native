@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<2d7aa66f222fa01d4cc93c7d5ef2fdb7>>
+ * @generated SignedSource<<7085da13d979f0747b42c6c1b99a5f4c>>
  */
 
 /**
@@ -190,11 +190,6 @@ class ReactNativeFeatureFlags {
    * When mount items are queued while MountItemDispatcher is already dispatching on Android (e.g. from a synchronous state update), dispatch them in the same frame instead of deferring them to the next one.
    */
   RN_EXPORT static bool enableFollowUpMountItemDispatchAndroid();
-
-  /**
-   * Enables font scale changes updating layout for measurable nodes.
-   */
-  RN_EXPORT static bool enableFontScaleChangesUpdatingLayout();
 
   /**
    * Adjusts iOS Text drawing frames for compressed explicit line heights.
