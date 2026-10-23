@@ -28,7 +28,6 @@ using namespace facebook::react;
 
 @implementation RCTLegacyViewManagerInteropCoordinator {
   RCTComponentData *_componentData;
-  __weak RCTBridge *_bridge;
   __weak RCTBridgeModuleDecorator *_bridgelessInteropData;
   __weak RCTBridgeProxy *_bridgeProxy;
 
@@ -47,22 +46,13 @@ using namespace facebook::react;
 }
 
 - (instancetype)initWithComponentData:(RCTComponentData *)componentData
-                               bridge:(nullable RCTBridge *)bridge
                           bridgeProxy:(nullable RCTBridgeProxy *)bridgeProxy
                 bridgelessInteropData:(RCTBridgeModuleDecorator *)bridgelessInteropData
 {
   if (self = [super init]) {
     _componentData = componentData;
-    _bridge = bridge;
     _bridgelessInteropData = bridgelessInteropData;
     _bridgeProxy = bridgeProxy;
-
-    if (bridgelessInteropData) {
-      //  During bridge mode, RCTBridgeModules will be decorated with these APIs by the bridge.
-      RCTAssert(
-          _bridge == nil,
-          @"RCTLegacyViewManagerInteropCoordinator should not be initialized with RCTBridgeModuleDecorator in bridge mode.");
-    }
 
     _eventInterceptors = [NSMutableDictionary new];
 
@@ -117,9 +107,7 @@ using namespace facebook::react;
              reactTag:(NSInteger)tag
             paperView:(nonnull UIView *)paperView
 {
-  Class managerClass = _componentData.managerClass;
   [self _lookupModuleMethodsIfNecessary];
-  RCTModuleData *moduleData = [_bridge.batchedBridge moduleDataForName:RCTBridgeModuleNameForClass(managerClass)];
   id<RCTBridgeMethod> method;
 
   // We can't use `[NSString intValue]` as "0" is a valid command,
@@ -129,9 +117,9 @@ using namespace facebook::react;
   NSNumberFormatter *formatter = [[NSNumberFormatter alloc] init];
 
   if ([commandName isKindOfClass:[NSNumber class]] || [formatter numberFromString:commandName] != NULL) {
-    method = moduleData ? moduleData.methods[[commandName intValue]] : _moduleMethods[[commandName intValue]];
+    method = _moduleMethods[[commandName intValue]];
   } else if ([commandName isKindOfClass:[NSString class]]) {
-    method = moduleData ? moduleData.methodsByName[commandName] : _moduleMethodsByName[commandName];
+    method = _moduleMethodsByName[commandName];
     if (method == nil) {
       RCTLogError(@"No command found with name \"%@\"", commandName);
     }
@@ -142,26 +130,6 @@ using namespace facebook::react;
 
   NSArray *newArgs = [@[ [NSNumber numberWithInteger:tag] ] arrayByAddingObjectsFromArray:args];
 
-  if (_bridge) {
-    [self _handleCommandsOnBridge:method withArgs:newArgs];
-  } else {
-    [self _handleCommandsOnBridgeless:method withArgs:newArgs];
-  }
-}
-
-#pragma mark - Private
-- (void)_handleCommandsOnBridge:(id<RCTBridgeMethod>)method withArgs:(NSArray *)newArgs
-{
-  [_bridge.batchedBridge
-      dispatchBlock:^{
-        [method invokeWithBridge:self->_bridge module:self->_componentData.manager arguments:newArgs];
-        [self->_bridge.uiManager setNeedsLayout];
-      }
-              queue:RCTGetUIManagerQueue()];
-}
-
-- (void)_handleCommandsOnBridgeless:(id<RCTBridgeMethod>)method withArgs:(NSArray *)newArgs
-{
   RCTViewManager *componentViewManager = self->_componentData.manager;
   [componentViewManager setValue:_bridgeProxy forKey:@"bridge"];
 
@@ -171,30 +139,17 @@ using namespace facebook::react;
       }];
 }
 
+#pragma mark - Private
+
 - (void)_addUIBlock:(RCTViewManagerUIBlock)block
 {
-  if (_bridge) {
-    [self _addUIBlockOnBridge:block];
-  } else {
-    [self->_bridgeProxy.uiManager addUIBlock:block];
-  }
-}
-
-- (void)_addUIBlockOnBridge:(RCTViewManagerUIBlock)block
-{
-  __weak __typeof__(self) weakSelf = self;
-  [_bridge.batchedBridge
-      dispatchBlock:^{
-        __typeof__(self) strongSelf = weakSelf;
-        [strongSelf->_bridge.uiManager addUIBlock:block];
-      }
-              queue:RCTGetUIManagerQueue()];
+  [self->_bridgeProxy.uiManager addUIBlock:block];
 }
 
 // This is copy-pasta from RCTModuleData.
 - (void)_lookupModuleMethodsIfNecessary
 {
-  if (!_bridge && !_moduleMethods) {
+  if (!_moduleMethods) {
     _moduleMethods = [NSMutableArray new];
     _moduleMethodsByName = [NSMutableDictionary new];
 
