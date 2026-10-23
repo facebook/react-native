@@ -7,7 +7,6 @@
 
 #import <FBReactNativeSpec/FBReactNativeSpec.h>
 
-#import <React/RCTConstants.h>
 #import <React/RCTI18nUtil.h>
 #import <React/RCTSurfacePresenterStub.h>
 #import "RCTI18nManager.h"
@@ -35,28 +34,21 @@ RCT_EXPORT_MODULE()
   _surfacePresenter = surfacePresenter;
 }
 
-- (void)forceRTL:(BOOL)value resolve:(RCTPromiseResolveBlock)resolve reject:(__unused RCTPromiseRejectBlock)reject
+- (NSNumber *)forceRTL:(BOOL)value
 {
   BOOL wasRTL = [[RCTI18nUtil sharedInstance] isRTL];
   [[RCTI18nUtil sharedInstance] forceRTL:value];
-  [self _relayoutIfNeeded:wasRTL resolve:resolve];
-}
+  BOOL isRTL = [[RCTI18nUtil sharedInstance] isRTL];
 
-- (void)_relayoutIfNeeded:(BOOL)wasRTL resolve:(RCTPromiseResolveBlock)resolve
-{
-  if ([[RCTI18nUtil sharedInstance] isRTL] == wasRTL) {
-    resolve(nil);
-    return;
+  if (isRTL != wasRTL) {
+    // Returns before the relayout, so JS reads the new value before any layout event
+    id<RCTSurfacePresenterStub> surfacePresenter = _surfacePresenter;
+    dispatch_async(dispatch_get_main_queue(), ^{
+      [surfacePresenter updateLayoutDirectionOfSurfaces];
+    });
   }
 
-  id<RCTSurfacePresenterStub> surfacePresenter = _surfacePresenter;
-
-  dispatch_async(dispatch_get_main_queue(), ^{
-    // Only the surfaces of this React instance read the new layout direction
-    [[NSNotificationCenter defaultCenter] postNotificationName:RCTLayoutDirectionDidChangeNotification
-                                                        object:surfacePresenter];
-    resolve(nil);
-  });
+  return @(isRTL);
 }
 
 - (NSDictionary *)constantsToExport

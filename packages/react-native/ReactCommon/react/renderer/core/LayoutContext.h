@@ -35,7 +35,7 @@ struct LayoutContext {
    * list. The order is not specified. Nothing in this collection is owing (on
    * purpose), make sure the memory is managed responsibly.
    */
-  std::vector<const LayoutableShadowNode*>* affectedNodes{};
+  std::vector<const LayoutableShadowNode *> *affectedNodes{};
 
   /*
    * Multiplier used to change size of the font in surface.
@@ -54,19 +54,11 @@ struct LayoutContext {
   Size viewportSize{};
 };
 
-inline bool operator==(const LayoutContext& lhs, const LayoutContext& rhs) {
+inline bool operator==(const LayoutContext &lhs, const LayoutContext &rhs)
+{
   return std::tie(
-             lhs.pointScaleFactor,
-             lhs.affectedNodes,
-             lhs.fontSizeMultiplier,
-             lhs.viewportOffset,
-             lhs.viewportSize) ==
-      std::tie(
-             rhs.pointScaleFactor,
-             rhs.affectedNodes,
-             rhs.fontSizeMultiplier,
-             rhs.viewportOffset,
-             rhs.viewportSize);
+             lhs.pointScaleFactor, lhs.affectedNodes, lhs.fontSizeMultiplier, lhs.viewportOffset, lhs.viewportSize) ==
+      std::tie(rhs.pointScaleFactor, rhs.affectedNodes, rhs.fontSizeMultiplier, rhs.viewportOffset, rhs.viewportSize);
 }
 
 } // namespace facebook::react

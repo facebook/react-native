@@ -12,8 +12,6 @@ NSString *const RCTPlatformName = @"ios";
 NSString *const RCTUserInterfaceStyleDidChangeNotification = @"RCTUserInterfaceStyleDidChangeNotification";
 NSString *const RCTUserInterfaceStyleDidChangeNotificationTraitCollectionKey = @"traitCollection";
 
-NSString *const RCTLayoutDirectionDidChangeNotification = @"RCTLayoutDirectionDidChangeNotification";
-
 NSString *const RCTWindowFrameDidChangeNotification = @"RCTWindowFrameDidChangeNotification";
 
 NSString *const RCTJavaScriptDidFailToLoadNotification = @"RCTJavaScriptDidFailToLoadNotification";

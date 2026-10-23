@@ -219,10 +219,7 @@ const NativeModules = {
     removeListeners: jest.fn() as JestMockFn<$FlowFixMe, $FlowFixMe>,
   },
   I18nManager: {
-    forceRTL: jest.fn(() => Promise.resolve()) as JestMockFn<
-      $FlowFixMe,
-      $FlowFixMe,
-    >,
+    forceRTL: jest.fn(() => false) as JestMockFn<$FlowFixMe, $FlowFixMe>,
     getConstants: (): $FlowFixMe => ({
       isRTL: false,
       localeIdentifier: 'en-US',

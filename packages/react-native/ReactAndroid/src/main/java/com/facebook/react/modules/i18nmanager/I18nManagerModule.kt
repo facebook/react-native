@@ -9,7 +9,6 @@ package com.facebook.react.modules.i18nmanager
 
 import androidx.core.os.ConfigurationCompat
 import com.facebook.fbreact.specs.NativeI18nManagerSpec
-import com.facebook.react.bridge.Promise
 import com.facebook.react.bridge.ReactApplicationContext
 import com.facebook.react.bridge.UiThreadUtil
 import com.facebook.react.module.annotations.ReactModule
@@ -31,23 +30,20 @@ internal class I18nManagerModule(context: ReactApplicationContext?) :
     )
   }
 
-  override fun forceRTL(value: Boolean, promise: Promise) {
+  override fun forceRTL(value: Boolean): Boolean {
     val wasRTL = I18nUtil.instance.isRTL(reactApplicationContext)
     I18nUtil.instance.forceRTL(value)
-    relayoutIfNeeded(wasRTL, promise)
-  }
+    val isRTL = I18nUtil.instance.isRTL(reactApplicationContext)
 
-  private fun relayoutIfNeeded(wasRTL: Boolean, promise: Promise) {
-    if (I18nUtil.instance.isRTL(reactApplicationContext) == wasRTL) {
-      promise.resolve(null)
-      return
+    if (isRTL != wasRTL) {
+      // Returns before the relayout, so JS reads the new value before any layout event
+      UiThreadUtil.runOnUiThread {
+        (reactApplicationContext as? BridgelessReactContext)
+            ?.updateLayoutDirectionOfAttachedSurfaces()
+      }
     }
 
-    UiThreadUtil.runOnUiThread {
-      (reactApplicationContext as? BridgelessReactContext)
-          ?.updateLayoutDirectionOfAttachedSurfaces()
-      promise.resolve(null)
-    }
+    return isRTL
   }
 
   companion object {

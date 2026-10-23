@@ -12,14 +12,14 @@
 
 import type {I18nManagerConstants} from '../NativeI18nManager';
 
-let nativeConstants: I18nManagerConstants = {
+const nativeConstants: I18nManagerConstants = {
   isRTL: false,
   localeIdentifier: 'en-US',
 };
 
 const nativeModule = {
   getConstants: jest.fn(() => nativeConstants),
-  forceRTL: jest.fn(() => Promise.resolve()),
+  forceRTL: jest.fn((forceRTL: boolean) => forceRTL),
 };
 
 jest.mock('../NativeI18nManager', () => ({
@@ -28,17 +28,19 @@ jest.mock('../NativeI18nManager', () => ({
 }));
 
 describe('I18nManager', () => {
-  it('updates the constants after forceRTL', async () => {
+  it('updates the constants when forceRTL returns', () => {
     const I18nManager = require('../I18nManager').default;
 
-    nativeConstants = {isRTL: true, localeIdentifier: 'ar-EG'};
     I18nManager.forceRTL(true);
 
-    // The constants are updated by a callback registered on this promise
-    // before the test awaits it, so the update has run once the await returns.
-    await nativeModule.forceRTL.mock.results[0].value;
-
     expect(nativeModule.forceRTL).toHaveBeenCalledWith(true);
+    expect(nativeModule.getConstants).toHaveBeenCalledTimes(1);
     expect(I18nManager.isRTL).toBe(true);
+
+    expect(I18nManager.getConstants()).toEqual({
+      doLeftAndRightSwapInRTL: false,
+      isRTL: true,
+      localeIdentifier: 'en-US',
+    });
   });
 });

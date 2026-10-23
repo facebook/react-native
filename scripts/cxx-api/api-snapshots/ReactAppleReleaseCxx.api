@@ -250,6 +250,7 @@ category RCTSurfacePresenter(Surface) {
   public virtual void setupAnimationDriverWithSurfaceHandler:(const facebook::react::SurfaceHandler& surfaceHandler);
   public virtual void synchronouslyUpdateViewOnUIThread:props:(NSNumber* reactTag, NSDictionary* props);
   public virtual void unregisterSurface:(RCTFabricSurface* surface);
+  public virtual void updateLayoutDirectionOfSurfaces();
 }
 
 category UIImage(React) {
@@ -2312,9 +2313,9 @@ protocol NativeHeadlessJsTaskSupportSpec : public NSObjectRCTBridgeModule, publi
 }
 
 protocol NativeI18nManagerSpec : public NSObjectRCTBridgeModule, public RCTTurboModule {
+  public virtual NSNumber* forceRTL:(BOOL forceRTL);
   public virtual facebook::react::ModuleConstants<JS::NativeI18nManager::Constants> constantsToExport();
   public virtual facebook::react::ModuleConstants<JS::NativeI18nManager::Constants> getConstants();
-  public virtual void forceRTL:resolve:reject:(BOOL forceRTL, RCTPromiseResolveBlock resolve, RCTPromiseRejectBlock reject);
 }
 
 protocol NativeImageEditorSpec : public NSObjectRCTBridgeModule, public RCTTurboModule {
@@ -2885,6 +2886,7 @@ protocol RCTSurfacePresenterStub : public NSObject {
   public virtual void addObserver:(id<RCTSurfacePresenterObserver> observer);
   public virtual void removeObserver:(id<RCTSurfacePresenterObserver> observer);
   public virtual void synchronouslyUpdateViewOnUIThread:props:(NSNumber* reactTag, NSDictionary* props);
+  public virtual void updateLayoutDirectionOfSurfaces();
 }
 
 protocol RCTSurfaceProtocol : public NSObject {
@@ -9103,7 +9105,7 @@ struct JS::NativeI18nManager::Constants::Builder {
 }
 
 struct JS::NativeI18nManager::Constants::Builder::Input {
-  protected NSString* localeIdentifier;
+  protected RCTRequired<NSString*> localeIdentifier;
   protected RCTRequired<bool> isRTL;
 }
 

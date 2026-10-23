@@ -63,17 +63,12 @@ using namespace facebook::react;
 
     [self setMinimumSize:CGSizeZero maximumSize:RCTViewportSize()];
 
-    [self _updateLayoutContext];
+    [self updateLayoutContext];
 
     [[NSNotificationCenter defaultCenter] addObserver:self
-                                             selector:@selector(handleLayoutContextDidChangeNotification:)
+                                             selector:@selector(handleContentSizeCategoryDidChangeNotification:)
                                                  name:UIContentSizeCategoryDidChangeNotification
                                                object:nil];
-
-    [[NSNotificationCenter defaultCenter] addObserver:self
-                                             selector:@selector(handleLayoutContextDidChangeNotification:)
-                                                 name:RCTLayoutDirectionDidChangeNotification
-                                               object:surfacePresenter];
   }
 
   return self;
@@ -81,18 +76,9 @@ using namespace facebook::react;
 
 - (void)resetWithSurfacePresenter:(RCTSurfacePresenter *)surfacePresenter
 {
-  [[NSNotificationCenter defaultCenter] removeObserver:self
-                                                  name:RCTLayoutDirectionDidChangeNotification
-                                                object:_surfacePresenter];
-
   _view = nil;
   _surfacePresenter = surfacePresenter;
   [_surfacePresenter registerSurface:self];
-
-  [[NSNotificationCenter defaultCenter] addObserver:self
-                                           selector:@selector(handleLayoutContextDidChangeNotification:)
-                                               name:RCTLayoutDirectionDidChangeNotification
-                                             object:_surfacePresenter];
 }
 
 - (void)dealloc
@@ -171,7 +157,7 @@ using namespace facebook::react;
 
   if (!_view) {
     _view = [[RCTSurfaceView alloc] initWithSurface:self];
-    [self _updateLayoutContext];
+    [self updateLayoutContext];
 #if !TARGET_OS_TV
     _touchHandler = [RCTSurfaceTouchHandler new];
     [_touchHandler attachToView:_view];
@@ -200,7 +186,7 @@ using namespace facebook::react;
   }
 }
 
-- (void)_updateLayoutContext
+- (void)updateLayoutContext
 {
   auto layoutConstraints = _surfaceHandler->getLayoutConstraints();
   layoutConstraints.layoutDirection = RCTLayoutDirection([[RCTI18nUtil sharedInstance] isRTL]);
@@ -300,9 +286,9 @@ using namespace facebook::react;
   return YES;
 }
 
-- (void)handleLayoutContextDidChangeNotification:(NSNotification *)notification
+- (void)handleContentSizeCategoryDidChangeNotification:(NSNotification *)notification
 {
-  [self _updateLayoutContext];
+  [self updateLayoutContext];
 }
 
 #pragma mark - Private
