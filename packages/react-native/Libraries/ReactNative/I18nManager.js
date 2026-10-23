@@ -11,7 +11,7 @@
 import warnOnce from '../Utilities/warnOnce';
 import NativeI18nManager from './NativeI18nManager';
 
-export type I18nManagerConstants = {
+type I18nManagerConstants = {
   /**
    * @deprecated Has no effect, and is always `false`. Use `start` and `end`
    * style properties, such as `marginStart`, instead.
