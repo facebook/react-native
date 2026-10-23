@@ -1349,22 +1349,6 @@ interface RCTModalHostViewComponentView : public RCTViewComponentView <UIAdaptiv
   public virtual void presentViewController:animated:completion:(UIViewController* modalViewController, BOOL animated, void(^)(void) completion);
 }
 
-interface RCTModuleData : public NSObject <RCTInvalidating> {
-  public @property (assign) BOOL requiresMainQueueSetup;
-  public @property (assign, readonly) BOOL hasConstantsToExport;
-  public @property (assign, readonly) BOOL hasInstance;
-  public @property (assign, readonly) BOOL implementsBatchDidComplete;
-  public @property (copy, readonly) NSArray<id<RCTBridgeMethod>>* methods;
-  public @property (copy, readonly) NSDictionary<NSString*, id<RCTBridgeMethod>>* methodsByName;
-  public @property (copy, readonly) NSDictionary<NSString*, id>* exportedConstants;
-  public @property (copy, readonly) NSString* name;
-  public @property (strong) id<RCTBridgeModule> instance;
-  public @property (strong, readonly) Class moduleClass;
-  public @property (strong, readonly) dispatch_queue_t methodQueue;
-  public @property (weak) id<RCTModuleDataCallInvokerProvider> callInvokerProvider;
-  public virtual void gatherConstants();
-}
-
 interface RCTModuleMethod : public NSObject <RCTBridgeMethod> {
   public @property (assign, readonly) Class moduleClass;
   public @property (assign, readonly) SEL selector;
@@ -2791,10 +2775,6 @@ protocol RCTLocalizationProtocol : public NSObject {
 }
 
 protocol RCTModalHostViewViewProtocol : public NSObject {
-}
-
-protocol RCTModuleDataCallInvokerProvider : public NSObject {
-  public virtual RCTCallInvoker* callInvokerForModuleData:(RCTModuleData* moduleData);
 }
 
 protocol RCTModuleProvider : public NSObjectNSObject {
