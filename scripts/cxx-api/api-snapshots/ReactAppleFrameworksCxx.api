@@ -794,8 +794,8 @@ interface RCTCallInvoker : public NSObject {
 }
 
 interface RCTCallableJSModules : public NSObject {
-  public virtual void invokeModule:method:withArgs:(NSString* moduleName, NSString* methodName, NSArray* args);
-  public virtual void invokeModule:method:withArgs:onComplete:(NSString* moduleName, NSString* methodName, NSArray* args, dispatch_block_t onComplete);
+  public virtual void invokeModule:method:withArgs:(NSString* moduleName, NSString* methodName, _Nullable NSArray* args);
+  public virtual void invokeModule:method:withArgs:onComplete:(NSString* moduleName, NSString* methodName, _Nullable NSArray* args, _Nullable dispatch_block_t onComplete);
   public virtual void setBridgelessJSModuleMethodInvoker:(RCTBridgelessJSModuleMethodInvoker bridgelessJSModuleMethodInvoker);
 }
 
@@ -1425,9 +1425,9 @@ interface RCTModuleProviders : public NSObject {
 
 interface RCTModuleRegistry : public NSObject {
   public virtual BOOL moduleIsInitialized:(Class moduleClass);
-  public virtual id moduleForClass:(Class moduleClass);
-  public virtual id moduleForName:(const char* moduleName);
-  public virtual id moduleForName:lazilyLoadIfNecessary:(const char* moduleName, BOOL lazilyLoad);
+  public virtual _Nullable id moduleForClass:(Class moduleClass);
+  public virtual _Nullable id moduleForName:(const char* moduleName);
+  public virtual _Nullable id moduleForName:lazilyLoadIfNecessary:(const char* moduleName, BOOL lazilyLoad);
   public virtual void setTurboModuleRegistry:(id<RCTTurboModuleRegistry> turboModuleRegistry);
 }
 
@@ -2157,8 +2157,8 @@ interface RCTViewManager : public NSObject <RCTBridgeModule> {
 }
 
 interface RCTViewRegistry : public NSObject {
-  public virtual UIView* viewForReactTag:(NSNumber* reactTag);
-  public virtual void addUIBlock:(RCTViewRegistryUIBlock block);
+  public virtual _Nullable UIView* viewForReactTag:(NSNumber* reactTag);
+  public virtual void addUIBlock:(_Nullable RCTViewRegistryUIBlock block);
   public virtual void setBridgelessComponentViewProvider:(RCTBridgelessComponentViewProvider bridgelessComponentViewProvider);
 }
 
@@ -2621,8 +2621,8 @@ protocol RCTBridgeModule : public NSObject {
   public @property (weak) RCTCallableJSModules* callableJSModules;
   public @property (weak) RCTModuleRegistry* moduleRegistry;
   public @property (weak, readonly) RCTBridge* bridge;
-  public virtual NSArray<id<RCTBridgeMethod>>* methodsToExport();
   public virtual NSDictionary* constantsToExport();
+  public virtual _Nullable NSArray<id<RCTBridgeMethod>>* methodsToExport();
   public virtual static BOOL requiresMainQueueSetup();
   public virtual static NSString* moduleName();
   public virtual void batchDidComplete();
