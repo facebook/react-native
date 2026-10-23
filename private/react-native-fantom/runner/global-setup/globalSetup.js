@@ -10,13 +10,18 @@
 
 import type {DevToolLauncher} from '@react-native/dev-middleware';
 
-import {isOSS, validateEnvironmentVariables} from '../EnvironmentOptions';
+import {
+  debugJS,
+  isOSS,
+  validateEnvironmentVariables,
+} from '../EnvironmentOptions';
 import {getTestBuildOutputPath} from '../paths';
 import build from './build';
 import {createDevMiddleware} from '@react-native/dev-middleware';
 import * as Metro from 'metro';
 import {Server} from 'node:net';
 import path from 'node:path';
+import open from 'open';
 
 export default async function globalSetup(
   globalConfig: {
@@ -55,20 +60,73 @@ async function startMetroServer() {
   // $FlowExpectedError[cannot-write]
   metroConfig.server.port = Number(process.env.__FANTOM_METRO_PORT__);
 
-  // No-op app launcher to prevent debugger-shell launches during tests
+  const serverBaseUrl = `http://localhost:${metroConfig.server.port}`;
+  const debuggerLaunches = new Map<string, Map<string, Promise<void>>>();
   const devToolLauncher: DevToolLauncher = {
-    launchDebuggerAppWindow: async (_url: string) => {},
-    launchDebuggerShell: async () => {},
-    prepareDebuggerShell: async () => ({code: 'not_implemented'}),
+    launchDebuggerAppWindow: async (url: string) => {
+      if (!debugJS) {
+        return;
+      }
+      const frontendUrl = new URL(url);
+      const inspectorUrl = new URL(
+        frontendUrl.searchParams.get('ws') ??
+          frontendUrl.searchParams.get('wss') ??
+          '',
+        frontendUrl,
+      );
+      const deviceId = inspectorUrl.searchParams.get('device');
+      const launches =
+        deviceId == null ? undefined : debuggerLaunches.get(deviceId);
+      if (launches == null) {
+        await launchChromeDebugger(url);
+        return;
+      }
+      let launch = launches.get(url);
+      if (launch == null) {
+        launch = launchChromeDebugger(url);
+        launches.set(url, launch);
+      }
+      try {
+        await launch;
+      } catch (error) {
+        if (launches.get(url) === launch) {
+          launches.delete(url);
+        }
+        throw error;
+      }
+    },
   };
 
   const {
     middleware: devMiddleware,
     websocketEndpoints: debuggerWebsocketEndpoints,
   } = createDevMiddleware({
-    serverBaseUrl: `http://localhost:${metroConfig.server.port}`,
+    serverBaseUrl,
     unstable_toolLauncher: devToolLauncher,
+    unstable_experiments: {
+      enableStandaloneFuseboxShell: false,
+    },
   });
+
+  debuggerWebsocketEndpoints['/inspector/device'].on(
+    'connection',
+    (socket, request) => {
+      const deviceId = new URL(
+        request.url ?? '',
+        serverBaseUrl,
+      ).searchParams.get('device');
+      if (deviceId == null) {
+        return;
+      }
+      const launches = new Map<string, Promise<void>>();
+      debuggerLaunches.set(deviceId, launches);
+      socket.on('close', () => {
+        if (debuggerLaunches.get(deviceId) === launches) {
+          debuggerLaunches.delete(deviceId);
+        }
+      });
+    },
+  );
 
   const server = await Metro.runServer(metroConfig, {
     unstable_extraMiddleware: [devMiddleware],
@@ -81,6 +139,31 @@ async function startMetroServer() {
 
   // $FlowExpectedError[prop-missing]
   globalThis.__FANTOM_METRO_SERVER__ = server;
+}
+
+async function launchChromeDebugger(url: string): Promise<void> {
+  const subprocess = await open.openApp(open.apps.chrome, {
+    arguments: [`--app=${url}`],
+    newInstance: true,
+  });
+  let stderr = '';
+  subprocess.stderr?.on('data', data => {
+    stderr += data.toString();
+  });
+  await new Promise<void>((resolve, reject) => {
+    subprocess.once('error', reject);
+    subprocess.once('exit', (code, signal) => {
+      if (code === 0) {
+        resolve();
+      } else {
+        const error = new Error(
+          `Could not launch Fantom DevTools: ${stderr.trim() || `Chrome exited with code ${String(code)}, signal ${String(signal)}`}`,
+        );
+        console.error(error.message);
+        reject(error);
+      }
+    });
+  });
 }
 
 async function findAvailablePort(): Promise<number> {

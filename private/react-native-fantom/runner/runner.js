@@ -40,6 +40,7 @@ import {
 import formatFantomConfig from './formatFantomConfig';
 import getFantomTestConfigs from './getFantomTestConfigs';
 import processLLVMCoverage from './llvm/processLLVMCoverage';
+import openDebugger from './openDebugger';
 import {
   JS_HEAP_SNAPSHOTS_OUTPUT_PATH,
   JS_TRACES_OUTPUT_PATH,
@@ -419,8 +420,14 @@ module.exports = async function runTest(
         )
       : runFantomTester(rnTesterCommandArgs, rnTesterOptions, env);
 
-    const [processedResult, benchmarkResult] =
-      await processRNTesterCommandResult(rnTesterCommandResult);
+    const [[processedResult, benchmarkResult]] = await Promise.all([
+      processRNTesterCommandResult(rnTesterCommandResult),
+      EnvironmentOptions.debugJS
+        ? openDebugger(rnTesterCommandResult.done).catch(error => {
+            console.warn('Fantom DevTools could not open:', error.message);
+          })
+        : Promise.resolve(),
+    ]);
 
     const hasInlineSnapshotUpdates =
       processedResult.testResults?.some(r =>
