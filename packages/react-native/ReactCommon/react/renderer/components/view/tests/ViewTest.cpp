@@ -790,14 +790,15 @@ class FontScaleLayoutTest : public ::testing::Test {
   // `SurfaceHandler::constraintLayout` does, and lays it out.
   RootShadowNode::Unshared layOutWithFontScale(
       const RootShadowNode& root,
-      Float fontSizeMultiplier) {
+      Float fontSizeMultiplier,
+      std::vector<const LayoutableShadowNode*>* affectedNodes = nullptr) {
     auto layoutContext = root.getConcreteProps().layoutContext;
     layoutContext.fontSizeMultiplier = fontSizeMultiplier;
     auto newRoot = root.clone(
         parserContext_,
         root.getConcreteProps().layoutConstraints,
         layoutContext);
-    EXPECT_TRUE(newRoot->layoutIfNeeded());
+    EXPECT_TRUE(newRoot->layoutIfNeeded(affectedNodes));
     return newRoot;
   }
 };
@@ -837,6 +838,7 @@ TEST_F(FontScaleLayoutTest, fontScaleChangeLaysOutMeasurableNodesInsideModal) {
     for (const auto& container : modal->getChildren()) {
       const auto& leaf = static_cast<const LayoutableShadowNode&>(
           *container->getChildren().at(0));
+      SCOPED_TRACE(leaf.getComponentName());
       EXPECT_EQ(leaf.getLayoutMetrics().fontSizeMultiplier, fontSizeMultiplier);
       EXPECT_EQ(
           leaf.getLayoutMetrics().frame.size.height, 10 * fontSizeMultiplier);
@@ -852,9 +854,10 @@ TEST_F(FontScaleLayoutTest, fontScaleChangeLaysOutMeasurableNodesInsideModal) {
   expectLaidOutWithFontScale(*smallerRootShadowNode, 1);
 }
 
-TEST_F(FontScaleLayoutTest, fontScaleChangeWhileHiddenLaysOutNodesOnceShown) {
+// `completeClone()` dirties an in-place clone of this leaf without its owner,
+// as it does for a text input, so it needs no modal to go stale.
+TEST_F(FontScaleLayoutTest, fontScaleChangeLaysOutInputLikeNodeWithoutModal) {
   auto rootShadowNode = std::shared_ptr<RootShadowNode>{};
-  auto containerShadowNode = std::shared_ptr<ViewShadowNode>{};
 
   // clang-format off
   auto element =
@@ -865,47 +868,86 @@ TEST_F(FontScaleLayoutTest, fontScaleChangeWhileHiddenLaysOutNodesOnceShown) {
           Element<ViewShadowNode>()
             .tag(2)
             .children({
-              Element<ModalHostViewShadowNode>()
+              Element<ViewShadowNode>()
                 .tag(3)
-                .children({
-                  Element<ViewShadowNode>()
-                    .tag(4)
-                    .reference(containerShadowNode)
-                    .children({Element<FontScaledTextShadowNode>().tag(5)})
-                })
+                .children({Element<FontScaledInputShadowNode>().tag(4)})
             })
         });
   // clang-format on
 
-  // Lays out the leaf while shown, so it has a measurement at the old scale.
   builder_.build(element);
   EXPECT_TRUE(rootShadowNode->layoutIfNeeded());
 
-  auto cloneWithContainerDisplay = [&](const ShadowNode& root,
-                                       yoga::Display display) {
-    return std::static_pointer_cast<RootShadowNode>(root.cloneTree(
-        containerShadowNode->getFamily(),
-        [display](const ShadowNode& oldShadowNode) {
-          auto viewProps = std::make_shared<ViewProps>();
-          viewProps->yogaStyle.setDisplay(display);
-          return oldShadowNode.clone(ShadowNodeFragment{.props = viewProps});
-        }));
+  auto expectLaidOutWithFontScale = [](const RootShadowNode& root,
+                                       Float fontSizeMultiplier) {
+    const auto& leaf = static_cast<const LayoutableShadowNode&>(
+        *root.getChildren().at(0)->getChildren().at(0)->getChildren().at(0));
+    EXPECT_EQ(leaf.getLayoutMetrics().fontSizeMultiplier, fontSizeMultiplier);
+    EXPECT_EQ(
+        leaf.getLayoutMetrics().frame.size.height, 10 * fontSizeMultiplier);
   };
 
-  auto hiddenRootShadowNode =
-      cloneWithContainerDisplay(*rootShadowNode, yoga::Display::None);
-  EXPECT_TRUE(hiddenRootShadowNode->layoutIfNeeded());
+  auto largerRootShadowNode = layOutWithFontScale(*rootShadowNode, 1.5);
+  expectLaidOutWithFontScale(*largerRootShadowNode, 1.5);
 
-  auto largerRootShadowNode = layOutWithFontScale(*hiddenRootShadowNode, 1.5);
+  auto smallerRootShadowNode = layOutWithFontScale(*largerRootShadowNode, 1);
+  expectLaidOutWithFontScale(*smallerRootShadowNode, 1);
+}
+
+TEST_F(FontScaleLayoutTest, fontScaleChangeSkipsHiddenSubtreeUntilShown) {
+  auto rootShadowNode = std::shared_ptr<RootShadowNode>{};
+  auto hiddenShadowNode = std::shared_ptr<ViewShadowNode>{};
+
+  // clang-format off
+  auto element =
+      Element<RootShadowNode>()
+        .reference(rootShadowNode)
+        .tag(1)
+        .children({
+          Element<ViewShadowNode>()
+            .tag(2)
+            .children({
+              Element<ViewShadowNode>()
+                .tag(3)
+                .reference(hiddenShadowNode)
+                .props([] {
+                  auto sharedProps = std::make_shared<ViewProps>();
+                  sharedProps->yogaStyle.setDisplay(yoga::Display::None);
+                  return sharedProps;
+                })
+                .children({Element<FontScaledInputShadowNode>().tag(4)})
+            })
+        });
+  // clang-format on
+
+  builder_.build(element);
+  EXPECT_TRUE(rootShadowNode->layoutIfNeeded());
+
+  // A hidden node lays out no children, so a dirty clone below it must not
+  // make Yoga lay the hidden node out again.
+  auto affectedNodes = std::vector<const LayoutableShadowNode*>{};
+  auto largerRootShadowNode =
+      layOutWithFontScale(*rootShadowNode, 1.5, &affectedNodes);
+  for (const auto* node : affectedNodes) {
+    EXPECT_NE(node->getTag(), hiddenShadowNode->getTag());
+  }
 
   auto shownRootShadowNode =
-      cloneWithContainerDisplay(*largerRootShadowNode, yoga::Display::Flex);
+      std::static_pointer_cast<RootShadowNode>(largerRootShadowNode->cloneTree(
+          hiddenShadowNode->getFamily(), [](const ShadowNode& oldShadowNode) {
+            auto viewProps = std::make_shared<ViewProps>();
+            viewProps->yogaStyle.setDisplay(yoga::Display::Flex);
+            return oldShadowNode.clone(ShadowNodeFragment{.props = viewProps});
+          }));
   EXPECT_TRUE(shownRootShadowNode->layoutIfNeeded());
 
-  const auto& modal =
-      shownRootShadowNode->getChildren().at(0)->getChildren().at(0);
   const auto& leaf = static_cast<const LayoutableShadowNode&>(
-      *modal->getChildren().at(0)->getChildren().at(0));
+      *shownRootShadowNode->getChildren()
+           .at(0)
+           ->getChildren()
+           .at(0)
+           ->getChildren()
+           .at(0));
   EXPECT_EQ(leaf.getLayoutMetrics().fontSizeMultiplier, 1.5);
   EXPECT_EQ(leaf.getLayoutMetrics().frame.size.height, 15);
 }
