@@ -5,8 +5,6 @@
  * LICENSE file in the root directory of this source tree.
  */
 
-@file:Suppress("DEPRECATION")
-
 package com.facebook.react.modules.deviceinfo
 
 import android.app.Activity
@@ -20,10 +18,10 @@ import androidx.core.view.WindowInsetsCompat
 import androidx.window.layout.WindowMetrics
 import androidx.window.layout.WindowMetricsCalculator
 import androidx.window.layout.WindowMetricsCalculatorDecorator
-import com.facebook.react.bridge.BridgeReactContext
 import com.facebook.react.bridge.JavaOnlyMap
+import com.facebook.react.bridge.ReactApplicationContext
 import com.facebook.react.bridge.ReactContext
-import com.facebook.react.bridge.ReactTestHelper
+import com.facebook.react.bridge.ReactTestHelper.createTestReactApplicationContext
 import com.facebook.react.bridge.WritableMap
 import com.facebook.react.internal.featureflags.ReactNativeFeatureFlagsForTests
 import com.facebook.react.uimanager.DisplayMetricsHolder
@@ -43,6 +41,7 @@ import org.mockito.ArgumentCaptor
 import org.mockito.ArgumentMatchers
 import org.mockito.MockedStatic
 import org.mockito.Mockito.mockStatic
+import org.mockito.kotlin.doNothing
 import org.mockito.kotlin.doReturn
 import org.mockito.kotlin.mock
 import org.mockito.kotlin.spy
@@ -69,7 +68,7 @@ class DeviceInfoModuleTest : TestCase() {
   private lateinit var deviceInfoModule: DeviceInfoModule
   private lateinit var fakePortraitDisplayMetrics: WritableMap
   private lateinit var fakeLandscapeDisplayMetrics: WritableMap
-  private lateinit var reactContext: BridgeReactContext
+  private lateinit var reactContext: ReactApplicationContext
   private lateinit var displayMetricsHolder: MockedStatic<DisplayMetricsHolder>
 
   @Before
@@ -83,9 +82,11 @@ class DeviceInfoModuleTest : TestCase() {
     fakeLandscapeDisplayMetrics.putInt("height", 100)
 
     displayMetricsHolder = mockStatic(DisplayMetricsHolder::class.java)
-    reactContext = spy(BridgeReactContext(RuntimeEnvironment.getApplication()))
-    val catalystInstanceMock = ReactTestHelper.createMockCatalystInstance()
-    reactContext.initializeWithInstance(catalystInstanceMock)
+    reactContext = spy(createTestReactApplicationContext(RuntimeEnvironment.getApplication()))
+    doReturn(true).whenever(reactContext).hasActiveReactInstance()
+    doNothing()
+        .whenever(reactContext)
+        .emitDeviceEvent(ArgumentMatchers.anyString(), ArgumentMatchers.any())
     deviceInfoModule = spy(DeviceInfoModule(reactContext))
   }
 
