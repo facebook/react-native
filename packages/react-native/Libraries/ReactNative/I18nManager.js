@@ -34,7 +34,7 @@ const eventEmitter = new EventEmitter<{
   change: [I18nManagerConstants],
 }>();
 
-function updateConstants(): void {
+function updateConstants() {
   const {isRTL, doLeftAndRightSwapInRTL, localeIdentifier} =
     getI18nManagerConstants();
 
@@ -60,26 +60,29 @@ export default {
 
   /**
    * Allows the app to opt in to RTL layout behavior. Should be called early
-   * in app startup. Takes effect after `relayout()` or on the next app reload.
+   * in app startup. Resolves once the layout is updated.
+   *
+   * @deprecated Set `RCTSupportsRTL` to `true` in Info.plist on iOS, or
+   * `android:supportsRtl="true"` in AndroidManifest.xml on Android, instead.
    */
-  allowRTL: (shouldAllow: boolean) => {
+  allowRTL: (shouldAllow: boolean): Promise<void> => {
     if (!NativeI18nManager) {
-      return;
+      return Promise.resolve();
     }
 
-    NativeI18nManager.allowRTL(shouldAllow);
+    return NativeI18nManager.allowRTL(shouldAllow).then(updateConstants);
   },
 
   /**
    * Forces the app into RTL layout mode, regardless of the device locale.
-   * Takes effect after `relayout()` or on the next app reload.
+   * Resolves once the layout is updated.
    */
-  forceRTL: (shouldForce: boolean) => {
+  forceRTL: (shouldForce: boolean): Promise<void> => {
     if (!NativeI18nManager) {
-      return;
+      return Promise.resolve();
     }
 
-    NativeI18nManager.forceRTL(shouldForce);
+    return NativeI18nManager.forceRTL(shouldForce).then(updateConstants);
   },
 
   /**
@@ -98,22 +101,10 @@ export default {
   },
 
   /**
-   * Applies the values set by `allowRTL`, `forceRTL` and
-   * `swapLeftAndRightInRTL` to the running app, without a reload.
-   */
-  relayout: (): Promise<void> => {
-    if (NativeI18nManager?.relayout == null) {
-      return Promise.resolve();
-    }
-
-    return NativeI18nManager.relayout().then(updateConstants);
-  },
-
-  /**
    * Add an event handler. Supported events:
    *
-   * - `change`: Fires when `relayout` changes a constant, with the new
-   *   constants.
+   * - `change`: Fires when `allowRTL` or `forceRTL` changes a constant, with
+   *   the new constants.
    */
   addEventListener: (
     type: 'change',

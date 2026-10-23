@@ -7,7 +7,6 @@
 
 package com.facebook.react.uimanager.style
 
-import android.content.Context
 import android.util.LayoutDirection
 import com.facebook.react.modules.i18nmanager.I18nUtil
 import com.facebook.react.uimanager.LengthPercentage
@@ -140,14 +139,12 @@ internal data class BorderRadiusStyle(
    * corner radii do not overlap per the CSS specification.
    *
    * @param layoutDirection The resolved layout direction (LTR or RTL)
-   * @param context Android context for RTL configuration
    * @param width The width of the element for percentage resolution
    * @param height The height of the element for percentage resolution
    * @return ComputedBorderRadius with resolved physical corner radii
    */
   fun resolve(
       layoutDirection: Int,
-      context: Context,
       width: Float,
       height: Float,
   ): ComputedBorderRadius {
@@ -176,7 +173,7 @@ internal data class BorderRadiusStyle(
               height = height,
           )
       LayoutDirection.RTL ->
-          if (I18nUtil.instance.doLeftAndRightSwapInRTL(context)) {
+          if (I18nUtil.instance.doLeftAndRightSwapInRTL()) {
             ensureNoOverlap(
                 topLeft =
                     (startEnd ?: topEnd ?: topRight ?: uniform)?.let {

@@ -390,7 +390,7 @@ public class FabricUIManager
         viewportOffset.x,
         viewportOffset.y,
         I18nUtil.getInstance().isRTL(context),
-        I18nUtil.getInstance().doLeftAndRightSwapInRTL(context));
+        I18nUtil.getInstance().doLeftAndRightSwapInRTL());
     return rootTag;
   }
 
@@ -1151,7 +1151,7 @@ public class FabricUIManager
     boolean doLeftAndRightSwapInRTL = false;
     if (context != null) {
       isRTL = I18nUtil.getInstance().isRTL(context);
-      doLeftAndRightSwapInRTL = I18nUtil.getInstance().doLeftAndRightSwapInRTL(context);
+      doLeftAndRightSwapInRTL = I18nUtil.getInstance().doLeftAndRightSwapInRTL();
     }
 
     Assertions.assertNotNull(mBinding, "Binding in FabricUIManager is null");

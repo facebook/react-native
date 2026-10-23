@@ -688,7 +688,7 @@ public open class LayoutShadowNode : ReactShadowNodeImpl() {
   }
 
   private fun maybeTransformLeftRightToStartEnd(spacingType: Int): Int {
-    if (!I18nUtil.instance.doLeftAndRightSwapInRTL(getThemedContext())) {
+    if (!I18nUtil.instance.doLeftAndRightSwapInRTL()) {
       return spacingType
     }
 

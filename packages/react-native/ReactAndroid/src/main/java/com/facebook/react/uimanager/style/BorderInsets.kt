@@ -7,7 +7,6 @@
 
 package com.facebook.react.uimanager.style
 
-import android.content.Context
 import android.graphics.RectF
 import android.util.LayoutDirection
 import com.facebook.react.modules.i18nmanager.I18nUtil
@@ -40,13 +39,11 @@ internal class BorderInsets {
    * correctly map logical properties to physical edges.
    *
    * @param layoutDirection The resolved layout direction (LTR or RTL)
-   * @param context Android context for RTL swap preference
    * @return RectF with left, top, right, bottom insets
    * @throws IllegalArgumentException if layoutDirection is not LTR or RTL
    */
   fun resolve(
       layoutDirection: Int,
-      context: Context,
   ): RectF {
     return when (layoutDirection) {
       LayoutDirection.LTR ->
@@ -75,7 +72,7 @@ internal class BorderInsets {
                   ?: 0f,
           )
       LayoutDirection.RTL ->
-          if (I18nUtil.instance.doLeftAndRightSwapInRTL(context)) {
+          if (I18nUtil.instance.doLeftAndRightSwapInRTL()) {
             RectF(
                 edgeInsets[LogicalEdge.END.ordinal]
                     ?: edgeInsets[LogicalEdge.RIGHT.ordinal]

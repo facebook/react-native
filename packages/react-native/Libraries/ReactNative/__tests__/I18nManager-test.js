@@ -12,61 +12,37 @@
 
 import type {I18nManagerConstants} from '../NativeI18nManager';
 
-let nativeConstants: I18nManagerConstants;
-let nativeModule: $FlowFixMe;
+let nativeConstants: I18nManagerConstants = {
+  isRTL: false,
+  doLeftAndRightSwapInRTL: false,
+};
 
-function requireI18nManager() {
-  jest.resetModules();
-  jest.doMock('../NativeI18nManager', () => ({
-    __esModule: true,
-    default: nativeModule,
-  }));
-  return require('../I18nManager').default;
-}
+const nativeModule = {
+  getConstants: jest.fn(() => nativeConstants),
+  forceRTL: jest.fn(() => Promise.resolve()),
+};
+
+jest.mock('../NativeI18nManager', () => ({
+  __esModule: true,
+  default: nativeModule,
+}));
 
 describe('I18nManager', () => {
-  beforeEach(() => {
-    nativeConstants = {isRTL: false, doLeftAndRightSwapInRTL: true};
-    nativeModule = {
-      getConstants: jest.fn(() => nativeConstants),
-      relayout: jest.fn(() => Promise.resolve()),
-    };
-  });
-
-  it('updates the constants and emits change after relayout', async () => {
-    const I18nManager = requireI18nManager();
+  it('updates the constants and emits change after forceRTL', async () => {
+    const I18nManager = require('../I18nManager').default;
     const handler = jest.fn();
+
     I18nManager.addEventListener('change', handler);
-
     nativeConstants = {isRTL: true, doLeftAndRightSwapInRTL: false};
-    await I18nManager.relayout();
+    await I18nManager.forceRTL(true);
 
-    const expected = {
+    expect(nativeModule.forceRTL).toHaveBeenCalledWith(true);
+    expect(I18nManager.isRTL).toBe(true);
+
+    expect(handler).toHaveBeenCalledWith({
       isRTL: true,
       doLeftAndRightSwapInRTL: false,
       localeIdentifier: undefined,
-    };
-
-    expect(I18nManager.isRTL).toBe(true);
-    expect(I18nManager.doLeftAndRightSwapInRTL).toBe(false);
-    expect(I18nManager.getConstants()).toEqual(expected);
-    expect(handler).toHaveBeenCalledTimes(1);
-    expect(handler).toHaveBeenCalledWith(expected);
-  });
-
-  it('does not emit change when no constant changed', async () => {
-    const I18nManager = requireI18nManager();
-    const handler = jest.fn();
-
-    I18nManager.addEventListener('change', handler);
-    await I18nManager.relayout();
-    expect(handler).not.toHaveBeenCalled();
-  });
-
-  it('resolves when the native module has no relayout', async () => {
-    delete nativeModule.relayout;
-
-    const I18nManager = requireI18nManager();
-    await expect(I18nManager.relayout()).resolves.toBeUndefined();
+    });
   });
 });

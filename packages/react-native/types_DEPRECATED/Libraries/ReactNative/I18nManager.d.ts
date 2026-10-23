@@ -21,14 +21,17 @@ type I18nManagerConstants = {
 
 export interface I18nManagerStatic {
   getConstants: () => I18nManagerConstants;
-  allowRTL: (allowRTL: boolean) => void;
-  forceRTL: (forceRTL: boolean) => void;
+  /**
+   * @deprecated Set `RCTSupportsRTL` to `true` in Info.plist on iOS, or
+   * `android:supportsRtl="true"` in AndroidManifest.xml on Android, instead.
+   */
+  allowRTL: (allowRTL: boolean) => Promise<void>;
+  forceRTL: (forceRTL: boolean) => Promise<void>;
   /**
    * @deprecated Use `start` and `end` style properties, such as
    * `marginStart`, instead.
    */
   swapLeftAndRightInRTL: (swapLeftAndRight: boolean) => void;
-  relayout: () => Promise<void>;
   addEventListener: (
     type: 'change',
     handler: (constants: I18nManagerConstants) => void,

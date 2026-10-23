@@ -7,8 +7,8 @@
 
 package com.facebook.react.uimanager
 
-import android.content.Context
 import com.facebook.react.internal.featureflags.ReactNativeFeatureFlagsForTests
+import com.facebook.react.modules.i18nmanager.I18nUtil
 import com.facebook.react.uimanager.style.BorderRadiusProp
 import com.facebook.react.uimanager.style.BorderRadiusStyle
 import com.facebook.react.uimanager.style.ComputedBorderRadiusProp
@@ -18,13 +18,10 @@ import org.junit.Before
 import org.junit.Test
 import org.junit.runner.RunWith
 import org.robolectric.RobolectricTestRunner
-import org.robolectric.RuntimeEnvironment
 
 /** Tests for [BorderRadiusStyle] */
 @RunWith(RobolectricTestRunner::class)
 class BorderRadiusStyleTest {
-
-  private val ctx: Context = RuntimeEnvironment.getApplication()
 
   @Test
   fun testCorrectPriorityLTR() {
@@ -66,7 +63,7 @@ class BorderRadiusStyleTest {
       var count = 3f
       for (prop in order.value) {
         borderRadiusStyle.set(prop, LengthPercentage(count, LengthPercentageType.POINT))
-        val resolved = borderRadiusStyle.resolve(0, context = ctx, width = 100f, height = 100f)
+        val resolved = borderRadiusStyle.resolve(0, width = 100f, height = 100f)
         assertThat(resolved.get(order.key)).isEqualTo(CornerRadii(count, count))
         count -= 1f
       }
@@ -76,11 +73,12 @@ class BorderRadiusStyleTest {
   @Before
   fun setup() {
     ReactNativeFeatureFlagsForTests.setUp()
+    I18nUtil.instance.swapLeftAndRightInRTL(false)
   }
 
   @Test
   fun testCorrectPriorityRTL() {
-    setContextLeftAndRightSwap(ctx, true)
+    I18nUtil.instance.swapLeftAndRightInRTL(true)
     val propertyOrderMap =
         mapOf(
             ComputedBorderRadiusProp.COMPUTED_BORDER_TOP_LEFT_RADIUS to
@@ -119,7 +117,7 @@ class BorderRadiusStyleTest {
       var count = 3f
       for (prop in order.value) {
         borderRadiusStyle.set(prop, LengthPercentage(count, LengthPercentageType.POINT))
-        val resolved = borderRadiusStyle.resolve(1, context = ctx, width = 100f, height = 100f)
+        val resolved = borderRadiusStyle.resolve(1, width = 100f, height = 100f)
         assertThat(resolved.get(order.key)).isEqualTo(CornerRadii(count, count))
         count -= 1f
       }
@@ -128,7 +126,7 @@ class BorderRadiusStyleTest {
 
   @Test
   fun testCorrectPriorityRTLNoSwap() {
-    setContextLeftAndRightSwap(ctx, false)
+    I18nUtil.instance.swapLeftAndRightInRTL(false)
     val propertyOrderMap =
         mapOf(
             ComputedBorderRadiusProp.COMPUTED_BORDER_TOP_LEFT_RADIUS to
@@ -167,7 +165,7 @@ class BorderRadiusStyleTest {
       var count = 3f
       for (prop in order.value) {
         borderRadiusStyle.set(prop, LengthPercentage(count, LengthPercentageType.POINT))
-        val resolved = borderRadiusStyle.resolve(1, context = ctx, width = 100f, height = 100f)
+        val resolved = borderRadiusStyle.resolve(1, width = 100f, height = 100f)
         assertThat(resolved.get(order.key)).isEqualTo(CornerRadii(count, count))
         count -= 1f
       }
@@ -183,8 +181,8 @@ class BorderRadiusStyleTest {
         )
 
     for (swap in listOf(false, true)) {
-      setContextLeftAndRightSwap(ctx, swap)
-      val resolved = borderRadiusStyle.resolve(1, context = ctx, width = 100f, height = 100f)
+      I18nUtil.instance.swapLeftAndRightInRTL(swap)
+      val resolved = borderRadiusStyle.resolve(1, width = 100f, height = 100f)
 
       assertThat(resolved.bottomLeft).isEqualTo(CornerRadii(20f, 20f))
       assertThat(resolved.bottomRight).isEqualTo(CornerRadii(10f, 10f))
@@ -200,26 +198,11 @@ class BorderRadiusStyleTest {
             bottomLeft = LengthPercentage(20f, LengthPercentageType.PERCENT),
             bottomRight = LengthPercentage(30f, LengthPercentageType.PERCENT),
         )
-    val resolved = borderRadiusStyle.resolve(0, context = ctx, width = 1000f, height = 1000f)
+    val resolved = borderRadiusStyle.resolve(0, width = 1000f, height = 1000f)
 
     assertThat(resolved.topLeft).isEqualTo(CornerRadii(0f, 0f))
     assertThat(resolved.topRight).isEqualTo(CornerRadii(100f, 100f))
     assertThat(resolved.bottomLeft).isEqualTo(CornerRadii(200f, 200f))
     assertThat(resolved.bottomRight).isEqualTo(CornerRadii(300f, 300f))
-  }
-
-  /*
-   * Make I18nUtil.instance.doLeftAndRightSwapInRTL(context) return false
-   * by setting context preference
-   */
-  private fun setContextLeftAndRightSwap(context: Context, leftAndRightSwap: Boolean) {
-    val sharedPrefs =
-        context.getSharedPreferences(
-            "com.facebook.react.modules.i18nmanager.I18nUtil",
-            Context.MODE_PRIVATE,
-        )
-    val editor = sharedPrefs.edit()
-    editor.putBoolean("RCTI18nUtil_makeRTLFlipLeftAndRightStyles", leftAndRightSwap)
-    editor.apply()
   }
 }

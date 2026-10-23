@@ -27,24 +27,33 @@ internal class I18nManagerModule(context: ReactApplicationContext?) :
 
     return mapOf(
         "isRTL" to I18nUtil.instance.isRTL(context),
-        "doLeftAndRightSwapInRTL" to I18nUtil.instance.doLeftAndRightSwapInRTL(context),
+        "doLeftAndRightSwapInRTL" to I18nUtil.instance.doLeftAndRightSwapInRTL(),
         "localeIdentifier" to locale.toString(),
     )
   }
 
-  override fun allowRTL(value: Boolean) {
-    I18nUtil.instance.allowRTL(reactApplicationContext, value)
+  override fun allowRTL(value: Boolean, promise: Promise) {
+    val wasRTL = I18nUtil.instance.isRTL(reactApplicationContext)
+    I18nUtil.instance.allowRTL(value)
+    relayoutIfNeeded(wasRTL, promise)
   }
 
-  override fun forceRTL(value: Boolean) {
-    I18nUtil.instance.forceRTL(reactApplicationContext, value)
+  override fun forceRTL(value: Boolean, promise: Promise) {
+    val wasRTL = I18nUtil.instance.isRTL(reactApplicationContext)
+    I18nUtil.instance.forceRTL(value)
+    relayoutIfNeeded(wasRTL, promise)
   }
 
   override fun swapLeftAndRightInRTL(value: Boolean) {
-    I18nUtil.instance.swapLeftAndRightInRTL(reactApplicationContext, value)
+    I18nUtil.instance.swapLeftAndRightInRTL(value)
   }
 
-  override fun relayout(promise: Promise) {
+  private fun relayoutIfNeeded(wasRTL: Boolean, promise: Promise) {
+    if (I18nUtil.instance.isRTL(reactApplicationContext) == wasRTL) {
+      promise.resolve(null)
+      return
+    }
+
     UiThreadUtil.runOnUiThread {
       (reactApplicationContext as? BridgelessReactContext)
           ?.updateLayoutDirectionOfAttachedSurfaces()

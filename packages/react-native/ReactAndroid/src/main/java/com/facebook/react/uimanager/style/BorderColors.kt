@@ -7,7 +7,6 @@
 
 package com.facebook.react.uimanager.style
 
-import android.content.Context
 import android.graphics.Color
 import android.util.LayoutDirection
 import androidx.annotation.ColorInt
@@ -54,11 +53,10 @@ internal value class BorderColors(
    * top, bottom).
    *
    * @param layoutDirection The resolved layout direction (LTR or RTL)
-   * @param context Android context for RTL swap preference
    * @return ColorEdges with resolved physical edge colors
    * @throws IllegalArgumentException if layoutDirection is not LTR or RTL
    */
-  fun resolve(layoutDirection: Int, context: Context): ColorEdges {
+  fun resolve(layoutDirection: Int): ColorEdges {
     return when (layoutDirection) {
       LayoutDirection.LTR ->
           ColorEdges(
@@ -86,7 +84,7 @@ internal value class BorderColors(
                   ?: Color.BLACK,
           )
       LayoutDirection.RTL ->
-          if (I18nUtil.instance.doLeftAndRightSwapInRTL(context)) {
+          if (I18nUtil.instance.doLeftAndRightSwapInRTL()) {
             ColorEdges(
                 edgeColors[LogicalEdge.END.ordinal]
                     ?: edgeColors[LogicalEdge.RIGHT.ordinal]

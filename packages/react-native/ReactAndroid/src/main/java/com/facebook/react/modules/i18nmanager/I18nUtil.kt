@@ -15,6 +15,10 @@ import androidx.core.text.TextUtilsCompat
 import java.util.Locale
 
 public class I18nUtil private constructor() {
+  @Volatile private var rtlAllowed: Boolean = true
+  @Volatile private var rtlForced: Boolean = false
+  @Volatile private var leftAndRightSwapInRTL: Boolean = false
+
   /**
    * Check if the device is currently running on an RTL locale. This only happens when the app:
    * * is forcing RTL layout, regardless of the active language (for development purpose)
@@ -22,7 +26,7 @@ public class I18nUtil private constructor() {
    */
   public fun isRTL(context: Context): Boolean =
       applicationHasRtlSupport(context) &&
-          (isRTLForced(context) || (isRTLAllowed(context) && isDevicePreferredLanguageRTL(context)))
+          (isRTLForced() || (isRTLAllowed() && isDevicePreferredLanguageRTL(context)))
 
   /**
    * Android relies on the presence of `android:supportsRtl="true"` being set in order to resolve
@@ -38,27 +42,25 @@ public class I18nUtil private constructor() {
    *
    * @return whether the app allows RTL layout, default is true
    */
-  private fun isRTLAllowed(context: Context): Boolean =
-      isPrefSet(context, KEY_FOR_PREFS_ALLOWRTL, true)
+  private fun isRTLAllowed(): Boolean = rtlAllowed
 
-  public fun allowRTL(context: Context, allowRTL: Boolean) {
-    setPref(context, KEY_FOR_PREFS_ALLOWRTL, allowRTL)
+  public fun allowRTL(allowRTL: Boolean) {
+    rtlAllowed = allowRTL
   }
 
-  public fun doLeftAndRightSwapInRTL(context: Context): Boolean =
-      isPrefSet(context, KEY_FOR_PERFS_MAKE_RTL_FLIP_LEFT_AND_RIGHT_STYLES, false)
+  public fun doLeftAndRightSwapInRTL(): Boolean = leftAndRightSwapInRTL
 
-  public fun swapLeftAndRightInRTL(context: Context, flip: Boolean) {
-    setPref(context, KEY_FOR_PERFS_MAKE_RTL_FLIP_LEFT_AND_RIGHT_STYLES, flip)
+  public fun swapLeftAndRightInRTL(flip: Boolean) {
+    leftAndRightSwapInRTL = flip
   }
 
   /** Could be used to test RTL layout with English Used for development and testing purpose */
-  private fun isRTLForced(context: Context): Boolean =
-      isPrefSet(context, KEY_FOR_PREFS_FORCERTL, false) ||
+  private fun isRTLForced(): Boolean =
+      rtlForced ||
           System.getProperty("FORCE_RTL_FOR_TESTING", "false").equals("true", ignoreCase = true)
 
-  public fun forceRTL(context: Context, forceRTL: Boolean) {
-    setPref(context, KEY_FOR_PREFS_FORCERTL, forceRTL)
+  public fun forceRTL(forceRTL: Boolean) {
+    rtlForced = forceRTL
   }
 
   // Check if the current device language is RTL
@@ -69,26 +71,9 @@ public class I18nUtil private constructor() {
     return directionality == View.LAYOUT_DIRECTION_RTL
   }
 
-  private fun isPrefSet(context: Context, key: String, defaultValue: Boolean): Boolean =
-      context
-          .getSharedPreferences(SHARED_PREFS_NAME, Context.MODE_PRIVATE)
-          .getBoolean(key, defaultValue)
-
-  private fun setPref(context: Context, key: String, value: Boolean) {
-    val editor = context.getSharedPreferences(SHARED_PREFS_NAME, Context.MODE_PRIVATE).edit()
-    editor.putBoolean(key, value)
-    editor.apply()
-  }
-
   public companion object {
     public val instance: I18nUtil = I18nUtil()
       @JvmStatic get() = field
-
-    private const val SHARED_PREFS_NAME = "com.facebook.react.modules.i18nmanager.I18nUtil"
-    private const val KEY_FOR_PREFS_ALLOWRTL = "RCTI18nUtil_allowRTL"
-    private const val KEY_FOR_PREFS_FORCERTL = "RCTI18nUtil_forceRTL"
-    private const val KEY_FOR_PERFS_MAKE_RTL_FLIP_LEFT_AND_RIGHT_STYLES =
-        "RCTI18nUtil_makeRTLFlipLeftAndRightStyles"
 
     /**
      * We're just re-adding this to reduce a breaking change for libraries in React Native 0.75.
