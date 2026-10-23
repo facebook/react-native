@@ -820,6 +820,19 @@ void ObjCTurboModule::setInvocationArg(
   }
 }
 
+NSMethodSignature *ObjCTurboModule::getMethodSignature(SEL selector)
+{
+  std::lock_guard<std::mutex> lock(methodSignaturesMutex_);
+  auto it = methodSignatures_.find(selector);
+  if (it != methodSignatures_.end()) {
+    return it->second;
+  }
+  const NSObject<RCTBridgeModule> *module = instance_;
+  NSMethodSignature *methodSignature = [module methodSignatureForSelector:selector];
+  methodSignatures_.emplace(selector, methodSignature);
+  return methodSignature;
+}
+
 NSInvocation *ObjCTurboModule::createMethodInvocation(
     jsi::Runtime &runtime,
     bool isSync,
@@ -837,8 +850,7 @@ NSInvocation *ObjCTurboModule::createMethodInvocation(
     TurboModulePerfLogger::asyncMethodCallArgConversionStart(moduleName, methodName);
   }
 
-  const NSObject<RCTBridgeModule> *module = instance_;
-  NSMethodSignature *methodSignature = [module methodSignatureForSelector:selector];
+  NSMethodSignature *methodSignature = getMethodSignature(selector);
   if (count > methodSignature.numberOfArguments - 2) {
     throw jsi::JSError(
         runtime,

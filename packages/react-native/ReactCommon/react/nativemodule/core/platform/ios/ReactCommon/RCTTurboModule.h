@@ -16,6 +16,7 @@
 #import <React/RCTModuleMethod.h>
 #import <functional>
 #import <memory>
+#import <mutex>
 #import <string>
 #import <unordered_map>
 
@@ -140,6 +141,11 @@ class JSI_EXPORT ObjCTurboModule : public TurboModule {
    */
   NSMutableDictionary<NSString *, NSMutableArray *> *methodArgConversionSelectors_;
   NSDictionary<NSString *, NSArray<NSString *> *> *methodArgumentTypeNames_;
+
+  // A method's signature doesn't change, so it's looked up once per selector.
+  std::unordered_map<SEL, NSMethodSignature *> methodSignatures_;
+  std::mutex methodSignaturesMutex_;
+  NSMethodSignature *getMethodSignature(SEL selector);
 
   bool isMethodSync(TurboModuleMethodValueKind returnType);
   bool mustCopyJSHeapArrayBufferBytes(TurboModuleMethodValueKind returnType);
