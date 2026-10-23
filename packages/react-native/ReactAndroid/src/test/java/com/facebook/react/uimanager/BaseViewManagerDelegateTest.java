@@ -10,6 +10,7 @@ package com.facebook.react.uimanager;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.verify;
 
+import android.graphics.Color;
 import com.facebook.react.bridge.ReactApplicationContext;
 import com.facebook.react.bridge.ReactTestHelper;
 import com.facebook.react.internal.featureflags.ReactNativeFeatureFlags;
@@ -59,5 +60,26 @@ public class BaseViewManagerDelegateTest {
     delegate.setProperty(view, ViewProps.OUTLINE_COLOR, null);
 
     verify(viewManager).setOutlineColor(view, null);
+  }
+
+  @Test
+  public void setShadowColorResetsToBlack() {
+    delegate.setProperty(view, ViewProps.SHADOW_COLOR, null);
+
+    verify(viewManager).setShadowColor(view, Color.BLACK);
+  }
+
+  @Test
+  public void setOutlineOffsetResetsToZero() {
+    delegate.setProperty(view, ViewProps.OUTLINE_OFFSET, null);
+
+    verify(viewManager).setOutlineOffset(view, 0f);
+  }
+
+  @Test
+  public void setOutlineWidthResetsToZero() {
+    delegate.setProperty(view, ViewProps.OUTLINE_WIDTH, null);
+
+    verify(viewManager).setOutlineWidth(view, 0f);
   }
 }
