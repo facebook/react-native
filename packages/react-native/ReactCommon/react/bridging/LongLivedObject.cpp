@@ -36,11 +36,13 @@ void LongLivedObjectCollection::add(std::shared_ptr<LongLivedObject> so) {
 
 void LongLivedObjectCollection::remove(const LongLivedObject* o) {
   std::scoped_lock lock(collectionMutex_);
+  // Empty owner: lookup-only alias, with no ownership or control block.
+  const std::shared_ptr<LongLivedObject> lookupKey{
+      std::shared_ptr<LongLivedObject>{}, const_cast<LongLivedObject*>(o)};
+
   // A shared_ptr hashes and compares by the pointer it stores, so a
   // non-owning shared_ptr to `o` finds its entry without walking the set.
-  auto entry = collection_.find(
-      std::shared_ptr<LongLivedObject>(
-          std::shared_ptr<LongLivedObject>(), const_cast<LongLivedObject*>(o)));
+  auto entry = collection_.find(lookupKey);
   if (entry != collection_.end()) {
     collection_.erase(entry);
   }
