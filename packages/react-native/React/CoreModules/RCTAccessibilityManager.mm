@@ -9,7 +9,6 @@
 #import "RCTAccessibilityManager+Internal.h"
 
 #import <FBReactNativeSpec/FBReactNativeSpec.h>
-#import <React/RCTBridge.h>
 #import <React/RCTConvert.h>
 #import <React/RCTEventDispatcherProtocol.h>
 #import <React/RCTLog.h>
