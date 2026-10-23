@@ -133,7 +133,7 @@ class FlatListExample extends React.PureComponent<Props, State> {
     this.setState({[key]: value});
 
   _setIsRTL: boolean => void = value => {
-    void I18nManager.forceRTL(value);
+    I18nManager.forceRTL(value);
     this.setState({isRTL: value});
     Alert.alert(
       'Reload this page',

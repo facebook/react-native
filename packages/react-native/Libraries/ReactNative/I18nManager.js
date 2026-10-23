@@ -49,17 +49,6 @@ const getNativeConstants = (): NativeI18nManagerConstants =>
 
 let i18nConstants: I18nManagerConstants = createConstants(getNativeConstants());
 
-function updateConstants(): void {
-  const nativeConstants = getNativeConstants();
-
-  if (
-    nativeConstants.isRTL !== i18nConstants.isRTL ||
-    nativeConstants.localeIdentifier !== i18nConstants.localeIdentifier
-  ) {
-    i18nConstants = createConstants(nativeConstants);
-  }
-}
-
 /**
  * Utilities for managing Right-to-Left (RTL) layout support.
  *
@@ -87,14 +76,11 @@ export default {
 
   /**
    * Forces the app into RTL layout mode, regardless of the device locale.
-   * Resolves once the layout is updated.
    */
-  forceRTL: (shouldForce: boolean): Promise<void> => {
-    if (!NativeI18nManager) {
-      return Promise.resolve();
-    }
-
-    return NativeI18nManager.forceRTL(shouldForce).then(updateConstants);
+  forceRTL: (shouldForce: boolean): void => {
+    void NativeI18nManager?.forceRTL(shouldForce).then(() => {
+      i18nConstants = createConstants(getNativeConstants());
+    });
   },
 
   /**

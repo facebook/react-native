@@ -25,7 +25,7 @@ export interface I18nManagerStatic {
    * instead.
    */
   allowRTL: (allowRTL: boolean) => void;
-  forceRTL: (forceRTL: boolean) => Promise<void>;
+  forceRTL: (forceRTL: boolean) => void;
   /**
    * @deprecated Has no effect. Use `start` and `end` style properties, such as
    * `marginStart`, instead.

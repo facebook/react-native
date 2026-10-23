@@ -235,7 +235,7 @@ class RTLToggleExample extends React.Component<any, RTLToggleState> {
   }
 
   _onDirectionChange = () => {
-    void I18nManager.forceRTL(!this.state.isRTL);
+    I18nManager.forceRTL(!this.state.isRTL);
     this.setState({isRTL: !this.state.isRTL});
   };
 }

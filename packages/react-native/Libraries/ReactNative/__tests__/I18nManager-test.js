@@ -29,7 +29,11 @@ describe('I18nManager', () => {
     const I18nManager = require('../I18nManager').default;
 
     nativeConstants = {isRTL: true};
-    await I18nManager.forceRTL(true);
+    I18nManager.forceRTL(true);
+
+    // The constants are updated by a callback registered on this promise
+    // before the test awaits it, so the update has run once the await returns.
+    await nativeModule.forceRTL.mock.results[0].value;
 
     expect(nativeModule.forceRTL).toHaveBeenCalledWith(true);
     expect(I18nManager.isRTL).toBe(true);
