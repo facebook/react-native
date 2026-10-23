@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<846a8685f662d66dbcdaa4324c772d51>>
+ * @generated SignedSource<<eed52c54382753f03848f15fe822f36e>>
  */
 
 /**
@@ -82,6 +82,7 @@ internal class ReactNativeFeatureFlagsCxxAccessor : ReactNativeFeatureFlagsAcces
   private var enableVirtualViewContainerStateExperimentalCache: Boolean? = null
   private var fixBorderlessRippleAndroidCache: Boolean? = null
   private var fixMappingOfEventPrioritiesBetweenFabricAndReactCache: Boolean? = null
+  private var fixMultilineContentJumpAndroidCache: Boolean? = null
   private var fixTextLayoutOnPixelDensityChangeCache: Boolean? = null
   private var fixYogaFlexBasisFitContentInMainAxisCache: Boolean? = null
   private var fuseboxAssertSingleHostStateCache: Boolean? = null
@@ -672,6 +673,15 @@ internal class ReactNativeFeatureFlagsCxxAccessor : ReactNativeFeatureFlagsAcces
     if (cached == null) {
       cached = ReactNativeFeatureFlagsCxxInterop.fixMappingOfEventPrioritiesBetweenFabricAndReact()
       fixMappingOfEventPrioritiesBetweenFabricAndReactCache = cached
+    }
+    return cached
+  }
+
+  override fun fixMultilineContentJumpAndroid(): Boolean {
+    var cached = fixMultilineContentJumpAndroidCache
+    if (cached == null) {
+      cached = ReactNativeFeatureFlagsCxxInterop.fixMultilineContentJumpAndroid()
+      fixMultilineContentJumpAndroidCache = cached
     }
     return cached
   }
