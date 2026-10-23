@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<2d7aa66f222fa01d4cc93c7d5ef2fdb7>>
+ * @generated SignedSource<<b830327c98c52cf294d5a881ef4733a7>>
  */
 
 /**
@@ -385,6 +385,11 @@ class ReactNativeFeatureFlags {
    * Enable reporting of WebSocket network events (`Network.webSocket*` CDP events) to the React Native DevTools CDP backend.
    */
   RN_EXPORT static bool fuseboxWebSocketEventsEnabled();
+
+  /**
+   * Keep JS timers running on Android while the React host is paused, stopping them only when the React instance is destroyed. Matches iOS, where timers do not depend on host lifecycle.
+   */
+  RN_EXPORT static bool keepTimersRunningWhileHostPausedAndroid();
 
   /**
    * When enabled, uses optimized platform-specific paths to apply animated props synchronously. On Android, this uses a batched int/double buffer protocol with a single JNI call. Other platforms apply the props of each view through the existing synchronous update.

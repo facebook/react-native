@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<73327eab3ccc39c8d823c9d2b110d23c>>
+ * @generated SignedSource<<7b53a0598c8395ff667fbd432f190782>>
  * @flow strict
  * @noformat
  */
@@ -118,6 +118,7 @@ export type ReactNativeFeatureFlags = Readonly<{
   fuseboxFrameRecordingEnabled: Getter<boolean>,
   fuseboxScreenshotCaptureEnabled: Getter<boolean>,
   fuseboxWebSocketEventsEnabled: Getter<boolean>,
+  keepTimersRunningWhileHostPausedAndroid: Getter<boolean>,
   optimizedAnimatedPropUpdates: Getter<boolean>,
   overrideBySynchronousMountPropsAtMountingAndroid: Getter<boolean>,
   perfIssuesEnabled: Getter<boolean>,
@@ -498,6 +499,10 @@ export const fuseboxScreenshotCaptureEnabled: Getter<boolean> = createNativeFlag
  * Enable reporting of WebSocket network events (`Network.webSocket*` CDP events) to the React Native DevTools CDP backend.
  */
 export const fuseboxWebSocketEventsEnabled: Getter<boolean> = createNativeFlagGetter('fuseboxWebSocketEventsEnabled', false);
+/**
+ * Keep JS timers running on Android while the React host is paused, stopping them only when the React instance is destroyed. Matches iOS, where timers do not depend on host lifecycle.
+ */
+export const keepTimersRunningWhileHostPausedAndroid: Getter<boolean> = createNativeFlagGetter('keepTimersRunningWhileHostPausedAndroid', false);
 /**
  * When enabled, uses optimized platform-specific paths to apply animated props synchronously. On Android, this uses a batched int/double buffer protocol with a single JNI call. Other platforms apply the props of each view through the existing synchronous update.
  */

@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<f8fad51e8b31224b04d7933da8affb3a>>
+ * @generated SignedSource<<f308cce94b6675fb99b66792ba49347a>>
  */
 
 /**
@@ -443,6 +443,12 @@ public object ReactNativeFeatureFlags {
    */
   @JvmStatic
   public fun fuseboxWebSocketEventsEnabled(): Boolean = accessor.fuseboxWebSocketEventsEnabled()
+
+  /**
+   * Keep JS timers running on Android while the React host is paused, stopping them only when the React instance is destroyed. Matches iOS, where timers do not depend on host lifecycle.
+   */
+  @JvmStatic
+  public fun keepTimersRunningWhileHostPausedAndroid(): Boolean = accessor.keepTimersRunningWhileHostPausedAndroid()
 
   /**
    * When enabled, uses optimized platform-specific paths to apply animated props synchronously. On Android, this uses a batched int/double buffer protocol with a single JNI call. Other platforms apply the props of each view through the existing synchronous update.
