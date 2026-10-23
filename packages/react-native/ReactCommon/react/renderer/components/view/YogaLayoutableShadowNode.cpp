@@ -544,7 +544,15 @@ void YogaLayoutableShadowNode::configureYogaTree(
           child.resolveErrata(errata),
           swapLeftAndRight);
     } else {
-      cloneChildInPlace(i).configureYogaTree(
+      auto& clonedChild = cloneChildInPlace(i);
+
+      // The clone can be dirty (e.g. `ModalHostView` calls `setSize` in
+      // `adopt`) while we are not, so Yoga would skip it.
+      if (clonedChild.yogaNode_.isDirty()) {
+        yogaNode_.markDirtyAndPropagate();
+      }
+
+      clonedChild.configureYogaTree(
           pointScaleFactor, fontSizeMultiplier, errata, swapLeftAndRight);
     }
   }
@@ -590,16 +598,7 @@ YogaLayoutableShadowNode& YogaLayoutableShadowNode::cloneChildInPlace(
        .state = childNode.getState()});
 
   replaceChild(childNode, clonedChildNode, layoutableChildIndex);
-
-  auto& clonedChild = static_cast<YogaLayoutableShadowNode&>(*clonedChildNode);
-
-  // `ComponentDescriptor::adopt` can dirty the clone (e.g. `ModalHostView`
-  // calls `setSize`) without propagating it, so Yoga would skip the clone.
-  if (clonedChild.yogaNode_.isDirty()) {
-    yogaNode_.markDirtyAndPropagate();
-  }
-
-  return clonedChild;
+  return static_cast<YogaLayoutableShadowNode&>(*clonedChildNode);
 }
 
 void YogaLayoutableShadowNode::setSize(Size size) const {
