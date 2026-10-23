@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<41d72ef0a42994ab19ca76c16dc04a86>>
+ * @generated SignedSource<<e858c92fe126f06dee2673ae5b052365>>
  */
 
 /**
@@ -603,6 +603,15 @@ class ReactNativeFeatureFlagsDynamicProvider : public ReactNativeFeatureFlagsDef
     }
 
     return ReactNativeFeatureFlagsDefaults::fixMappingOfEventPrioritiesBetweenFabricAndReact();
+  }
+
+  bool fixTextInlineViewLineHeight() override {
+    auto value = values_["fixTextInlineViewLineHeight"];
+    if (!value.isNull()) {
+      return value.getBool();
+    }
+
+    return ReactNativeFeatureFlagsDefaults::fixTextInlineViewLineHeight();
   }
 
   bool fixTextLayoutOnPixelDensityChange() override {
