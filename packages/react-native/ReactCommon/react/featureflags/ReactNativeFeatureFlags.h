@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<62dbb584d6aaf595314636a81346e3e5>>
+ * @generated SignedSource<<2d7aa66f222fa01d4cc93c7d5ef2fdb7>>
  */
 
 /**
@@ -60,6 +60,11 @@ class ReactNativeFeatureFlags {
    * When enabled, sets the default overflow style for Text components to hidden instead of visible.
    */
   RN_EXPORT static bool defaultTextToOverflowHidden();
+
+  /**
+   * When enabled, iOS TextInput applies edits that JS transforms (e.g. maxLength truncation) incrementally after the UIKit text change delegate call returns, avoiding synchronous text and selection rewrites that can deadlock UIKeyboardTaskQueue.
+   */
+  RN_EXPORT static bool deferTextInputTruncationIOS();
 
   /**
    * Dispatch view commands in mount item order.
@@ -182,6 +187,11 @@ class ReactNativeFeatureFlags {
   RN_EXPORT static bool enableFlexboxAutoMinSizeInStrictMode();
 
   /**
+   * When mount items are queued while MountItemDispatcher is already dispatching on Android (e.g. from a synchronous state update), dispatch them in the same frame instead of deferring them to the next one.
+   */
+  RN_EXPORT static bool enableFollowUpMountItemDispatchAndroid();
+
+  /**
    * Enables font scale changes updating layout for measurable nodes.
    */
   RN_EXPORT static bool enableFontScaleChangesUpdatingLayout();
@@ -257,7 +267,7 @@ class ReactNativeFeatureFlags {
   RN_EXPORT static bool enableModuleArgumentNSNullConversionIOS();
 
   /**
-   * When enabled, Android mounts transactions with the pull model (like iOS): the commit thread no longer pulls and builds the mount batch in schedulerShouldRenderTransactions. Instead the UI thread pulls the transaction itself via a PullTransactionMountItem enqueued in the MountItemDispatcher, builds the IntBufferBatchMountItem, and applies it synchronously. Requires `enableAccumulatedUpdatesInRawPropsAndroid` to be enabled as well, since a single pull may collapse several commits into one diff and therefore needs complete accumulated rawProps; when used together with Props 2.0, also enable `enableExclusivePropsUpdateAndroid` and `enablePropsUpdateReconciliationAndroid`.
+   * When enabled, Android mounts transactions with the pull model (like iOS): the commit thread no longer pulls and builds the mount batch in schedulerShouldRenderTransactions. Instead the UI thread pulls the transaction itself at its next mount dispatch, builds the IntBufferBatchMountItem, and applies it synchronously. Requires `enableAccumulatedUpdatesInRawPropsAndroid` to be enabled as well, since a single pull may collapse several commits into one diff and therefore needs complete accumulated rawProps; when used together with Props 2.0, also enable `enableExclusivePropsUpdateAndroid` and `enablePropsUpdateReconciliationAndroid`.
    */
   RN_EXPORT static bool enableMountingCoordinatorPullModelAndroid();
 
@@ -430,6 +440,11 @@ class ReactNativeFeatureFlags {
    * Skip activity identity assertion in ReactHostImpl::onHostPause()
    */
   RN_EXPORT static bool skipActivityIdentityAssertionOnHostPause();
+
+  /**
+   * When a node changes, the differ leaves out its children that are unchanged in both trees instead of describing and comparing them.
+   */
+  RN_EXPORT static bool skipUnchangedChildrenInDifferentiator();
 
   /**
    * Override getClipBounds on Android views to return the padding box when overflow is hidden

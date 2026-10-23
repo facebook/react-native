@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<37e2e57a137f899bb94e78bd265de562>>
+ * @generated SignedSource<<dfa41f479803f71200142269d679b3a1>>
  */
 
 /**
@@ -598,7 +598,7 @@ constructor(context: Context, private val fpsListener: FpsListener? = null) :
 
     velocityHelper.calculateVelocity(ev)
     val action = ev.actionMasked
-    if (action == MotionEvent.ACTION_UP && dragging) {
+    if ((action == MotionEvent.ACTION_UP || action == MotionEvent.ACTION_CANCEL) && dragging) {
       ReactScrollViewHelper.updateFabricScrollState(this)
       val velocityX = velocityHelper.xVelocity
       val velocityY = velocityHelper.yVelocity

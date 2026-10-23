@@ -53,7 +53,7 @@ jobs:
         with:
           persist-credentials: false
       - name: Download RNTester app
-        uses: actions/download-artifact@v7
+        uses: ./.github/actions/download-artifact
         with:
           name: ${{ inputs.artifact-name }}
           path: ${{ inputs.download-path }}

@@ -10,7 +10,6 @@
 #import <objc/runtime.h>
 
 #import "RCTAssert.h"
-#import "RCTBridge+Private.h"
 #import "RCTBridge.h"
 #import "RCTLog.h"
 #import "RCTPerformanceLogger.h"

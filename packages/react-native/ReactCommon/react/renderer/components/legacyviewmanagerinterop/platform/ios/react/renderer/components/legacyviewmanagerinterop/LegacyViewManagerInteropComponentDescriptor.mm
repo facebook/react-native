@@ -75,7 +75,7 @@ static Class getViewManagerFromComponentName(const std::string &componentName)
   return nil;
 }
 
-static Class getViewManagerClass(const std::string &componentName, RCTBridge *bridge, RCTBridgeProxy *bridgeProxy)
+static Class getViewManagerClass(const std::string &componentName, RCTBridgeProxy *bridgeProxy)
 {
   Class viewManager = getViewManagerFromComponentName(componentName);
   if (viewManager != nil) {
@@ -90,11 +90,7 @@ static Class getViewManagerClass(const std::string &componentName, RCTBridge *br
       }
     }
   } else {
-    // If all the heuristics fail, let's try to retrieve the view manager from the bridge/bridgeProxy
-    if (bridge != nil) {
-      return [[bridge moduleForName:RCTNSStringFromString(componentName)] class];
-    }
-
+    // If all the heuristics fail, let's try to retrieve the view manager from the bridge proxy
     if (bridgeProxy != nil) {
       return [[bridgeProxy moduleForName:RCTNSStringFromString(componentName) lazilyLoadIfNecessary:YES] class];
     }
@@ -107,12 +103,6 @@ static std::shared_ptr<void> constructCoordinator(
     const std::shared_ptr<const ContextContainer> &contextContainer,
     const ComponentDescriptor::Flavor &flavor)
 {
-  auto optionalBridge = contextContainer->find<std::shared_ptr<void>>("Bridge");
-  RCTBridge *bridge;
-  if (optionalBridge) {
-    bridge = unwrapManagedObjectWeakly(optionalBridge.value());
-  }
-
   RCTBridgeProxy *bridgeProxy;
   auto optionalBridgeProxy = contextContainer->find<std::shared_ptr<void>>("RCTBridgeProxy");
   if (optionalBridgeProxy) {
@@ -120,7 +110,7 @@ static std::shared_ptr<void> constructCoordinator(
   }
 
   auto componentName = *std::static_pointer_cast<const std::string>(flavor);
-  Class viewManagerClass = getViewManagerClass(componentName, bridge, bridgeProxy);
+  Class viewManagerClass = getViewManagerClass(componentName, bridgeProxy);
   assert(viewManagerClass);
 
   auto optionalEventDispatcher = contextContainer->find<std::shared_ptr<void>>("RCTEventDispatcher");
@@ -135,13 +125,11 @@ static std::shared_ptr<void> constructCoordinator(
     bridgeModuleDecorator = unwrapManagedObject(optionalModuleDecorator.value());
   }
 
-  RCTComponentData *componentData =
-      [[RCTComponentData alloc] initWithManagerClass:viewManagerClass
-                                              bridge:bridge != nil ? bridge : (RCTBridge *)bridgeProxy
-                                     eventDispatcher:eventDispatcher];
+  RCTComponentData *componentData = [[RCTComponentData alloc] initWithManagerClass:viewManagerClass
+                                                                            bridge:(RCTBridge *)bridgeProxy
+                                                                   eventDispatcher:eventDispatcher];
   return wrapManagedObject([[RCTLegacyViewManagerInteropCoordinator alloc]
       initWithComponentData:componentData
-                     bridge:bridge
                 bridgeProxy:bridgeProxy
       bridgelessInteropData:bridgeModuleDecorator]);
 }

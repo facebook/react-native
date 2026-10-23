@@ -601,7 +601,7 @@ describe('<View>', () => {
           ).toEqual(<rn-view accessibilityLiveRegion="polite" />);
         });
 
-        it('does not unflatten view', () => {
+        it('unflattens view', () => {
           const root = Fantom.createRoot();
 
           Fantom.runTask(() => {
@@ -612,7 +612,7 @@ describe('<View>', () => {
             root
               .getRenderedOutput({props: ['accessibilityLiveRegion']})
               .toJSX(),
-          ).toEqual(null);
+          ).toEqual(<rn-view accessibilityLiveRegion="polite" />);
         });
       });
 
@@ -840,6 +840,20 @@ describe('<View>', () => {
               .getRenderedOutput({props: ['accessibilityLiveRegion']})
               .toJSX(),
           ).toEqual(<rn-view />);
+        });
+
+        it('keeps the view from being flattened', () => {
+          const root = Fantom.createRoot();
+
+          Fantom.runTask(() => {
+            root.render(<View aria-live="polite" />);
+          });
+
+          expect(
+            root
+              .getRenderedOutput({props: ['accessibilityLiveRegion']})
+              .toJSX(),
+          ).toEqual(<rn-view accessibilityLiveRegion="polite" />);
         });
       });
 
