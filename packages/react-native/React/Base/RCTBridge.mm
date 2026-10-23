@@ -27,7 +27,6 @@
 #import "RCTModuleData.h"
 #import "RCTPausedInDebuggerOverlayController.h"
 #import "RCTPerformanceLogger.h"
-#import "RCTProfile.h"
 #import "RCTReloadCommand.h"
 #import "RCTUtils.h"
 
