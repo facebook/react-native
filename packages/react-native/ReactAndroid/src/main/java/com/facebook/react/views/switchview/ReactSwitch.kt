@@ -27,6 +27,7 @@ internal class ReactSwitch(context: Context) : SwitchCompat(context) {
   private var allowChange = true
   private var trackColorForFalse: Int? = null
   private var trackColorForTrue: Int? = null
+  private var rippleColor: Int? = null
 
   override fun setChecked(checked: Boolean) {
     if (allowChange && isChecked != checked) {
@@ -43,7 +44,11 @@ internal class ReactSwitch(context: Context) : SwitchCompat(context) {
 
   override fun setBackgroundColor(color: Int) {
     val ripple =
-        RippleDrawable(createRippleDrawableColorStateList(color), ColorDrawable(color), null)
+        RippleDrawable(
+            createRippleDrawableColorStateList(rippleColor ?: color),
+            ColorDrawable(color),
+            null,
+        )
     // Keep the outline, box shadows and other styles layered over the background by
     // BackgroundStyleApplicator, which may have been applied before the background color.
     val composite = background as? CompositeBackgroundDrawable
@@ -70,8 +75,11 @@ internal class ReactSwitch(context: Context) : SwitchCompat(context) {
     val ripple =
         (currentBackground as? CompositeBackgroundDrawable)?.originalBackground as? RippleDrawable
             ?: currentBackground as? RippleDrawable
-    if (color != null && ripple != null) {
-      ripple.setColor(createRippleDrawableColorStateList(color))
+    if (color != null) {
+      rippleColor = color
+      // The theme's ripple may share its state with other drawables loaded from the same resource
+      ripple?.mutate()
+      ripple?.setColor(createRippleDrawableColorStateList(color))
     }
   }
 
