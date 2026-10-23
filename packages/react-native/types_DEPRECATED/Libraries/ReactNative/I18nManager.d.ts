@@ -9,12 +9,12 @@
 
 type I18nManagerConstants = {
   isRTL: boolean;
+  localeIdentifier: string;
   /**
    * @deprecated Has no effect, and is always `false`. Use `start` and `end`
    * style properties, such as `marginStart`, instead.
    */
   doLeftAndRightSwapInRTL: boolean;
-  localeIdentifier: string;
 };
 
 export interface I18nManagerStatic {
