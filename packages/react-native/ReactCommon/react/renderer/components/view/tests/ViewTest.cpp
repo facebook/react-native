@@ -11,8 +11,10 @@
 #include <gtest/gtest.h>
 
 #include <react/renderer/componentregistry/ComponentDescriptorProviderRegistry.h>
+#include <react/renderer/components/modal/ModalHostViewComponentDescriptor.h>
 #include <react/renderer/components/root/RootComponentDescriptor.h>
 #include <react/renderer/components/scrollview/ScrollViewComponentDescriptor.h>
+#include <react/renderer/components/view/ConcreteViewShadowNode.h>
 #include <react/renderer/components/view/ViewComponentDescriptor.h>
 #include <react/renderer/core/PropsParserContext.h>
 #include <react/renderer/element/ComponentBuilder.h>
@@ -703,5 +705,210 @@ TEST_F(YogaCloneTest, cloneTreeClonesPathPlusSiblings) {
   EXPECT_EQ(newGrandchildA, origGrandchildA)
       << "Grandchild under unchanged sibling must be shared";
 }
+
+// NOLINTNEXTLINE(modernize-avoid-c-arrays)
+static const char FontScaledTextComponentName[] = "FontScaledText";
+// NOLINTNEXTLINE(modernize-avoid-c-arrays)
+static const char FontScaledInputComponentName[] = "FontScaledInput";
+
+/*
+ * A measurable leaf whose height follows the font scale. With
+ * `keepsMeasurementOnClone` it keeps its measurement when cloned without new
+ * props, like `ParagraphShadowNode`; without it, every clone dirties it, like
+ * a text input.
+ */
+template <const char* ComponentName, bool keepsMeasurementOnClone>
+class FontScaledShadowNode final
+    : public ConcreteViewShadowNode<ComponentName> {
+ public:
+  using Base = ConcreteViewShadowNode<ComponentName>;
+  using Base::Base;
+
+  static ShadowNodeTraits BaseTraits() {
+    auto traits = Base::BaseTraits();
+    traits.set(ShadowNodeTraits::Trait::LeafYogaNode);
+    traits.set(ShadowNodeTraits::Trait::MeasurableYogaNode);
+    return traits;
+  }
+
+  Size measureContent(
+      const LayoutContext& layoutContext,
+      const LayoutConstraints& /*layoutConstraints*/) const override {
+    return {
+        .width = 10 * layoutContext.fontSizeMultiplier,
+        .height = 10 * layoutContext.fontSizeMultiplier};
+  }
+
+ protected:
+  bool shouldNewRevisionDirtyMeasurement(
+      const ShadowNode& sourceShadowNode,
+      const ShadowNodeFragment& fragment) const override {
+    return keepsMeasurementOnClone
+        ? fragment.props != nullptr
+        : Base::shouldNewRevisionDirtyMeasurement(sourceShadowNode, fragment);
+  }
+};
+
+using FontScaledTextShadowNode =
+    FontScaledShadowNode<FontScaledTextComponentName, true>;
+using FontScaledInputShadowNode =
+    FontScaledShadowNode<FontScaledInputComponentName, false>;
+
+// `ModalHostViewShadowNode` needs JNI to create its initial state on Android.
+#ifndef ANDROID
+class FontScaleLayoutTest : public ::testing::Test {
+ protected:
+  ComponentDescriptorProviderRegistry providerRegistry_{};
+  ComponentDescriptorRegistry::Shared registry_;
+  ComponentBuilder builder_;
+  ContextContainer contextContainer_{};
+  PropsParserContext parserContext_{-1, contextContainer_};
+
+  FontScaleLayoutTest()
+      : registry_(providerRegistry_.createComponentDescriptorRegistry(
+            ComponentDescriptorParameters{
+                .eventDispatcher = EventDispatcher::Shared{},
+                .contextContainer = nullptr,
+                .flavor = nullptr})),
+        builder_(registry_) {
+    providerRegistry_.add(
+        concreteComponentDescriptorProvider<RootComponentDescriptor>());
+    providerRegistry_.add(
+        concreteComponentDescriptorProvider<ViewComponentDescriptor>());
+    providerRegistry_.add(
+        concreteComponentDescriptorProvider<
+            ModalHostViewComponentDescriptor>());
+    providerRegistry_.add(
+        concreteComponentDescriptorProvider<
+            ConcreteComponentDescriptor<FontScaledTextShadowNode>>());
+    providerRegistry_.add(
+        concreteComponentDescriptorProvider<
+            ConcreteComponentDescriptor<FontScaledInputShadowNode>>());
+  }
+
+  // Clones the root with a new font scale, as
+  // `SurfaceHandler::constraintLayout` does, and lays it out.
+  RootShadowNode::Unshared layOutWithFontScale(
+      const RootShadowNode& root,
+      Float fontSizeMultiplier) {
+    auto layoutContext = root.getConcreteProps().layoutContext;
+    layoutContext.fontSizeMultiplier = fontSizeMultiplier;
+    auto newRoot = root.clone(
+        parserContext_,
+        root.getConcreteProps().layoutConstraints,
+        layoutContext);
+    EXPECT_TRUE(newRoot->layoutIfNeeded());
+    return newRoot;
+  }
+};
+
+TEST_F(FontScaleLayoutTest, fontScaleChangeLaysOutMeasurableNodesInsideModal) {
+  auto rootShadowNode = std::shared_ptr<RootShadowNode>{};
+
+  // clang-format off
+  auto element =
+      Element<RootShadowNode>()
+        .reference(rootShadowNode)
+        .tag(1)
+        .children({
+          Element<ViewShadowNode>()
+            .tag(2)
+            .children({
+              Element<ModalHostViewShadowNode>()
+                .tag(3)
+                .children({
+                  Element<ViewShadowNode>()
+                    .tag(4)
+                    .children({Element<FontScaledTextShadowNode>().tag(5)}),
+                  Element<ViewShadowNode>()
+                    .tag(6)
+                    .children({Element<FontScaledInputShadowNode>().tag(7)})
+                })
+            })
+        });
+  // clang-format on
+
+  builder_.build(element);
+  EXPECT_TRUE(rootShadowNode->layoutIfNeeded());
+
+  auto expectLaidOutWithFontScale = [](const RootShadowNode& root,
+                                       Float fontSizeMultiplier) {
+    const auto& modal = root.getChildren().at(0)->getChildren().at(0);
+    for (const auto& container : modal->getChildren()) {
+      const auto& leaf = static_cast<const LayoutableShadowNode&>(
+          *container->getChildren().at(0));
+      EXPECT_EQ(leaf.getLayoutMetrics().fontSizeMultiplier, fontSizeMultiplier);
+      EXPECT_EQ(
+          leaf.getLayoutMetrics().frame.size.height, 10 * fontSizeMultiplier);
+    }
+  };
+
+  expectLaidOutWithFontScale(*rootShadowNode, 1);
+
+  auto largerRootShadowNode = layOutWithFontScale(*rootShadowNode, 1.5);
+  expectLaidOutWithFontScale(*largerRootShadowNode, 1.5);
+
+  auto smallerRootShadowNode = layOutWithFontScale(*largerRootShadowNode, 1);
+  expectLaidOutWithFontScale(*smallerRootShadowNode, 1);
+}
+
+TEST_F(FontScaleLayoutTest, fontScaleChangeWhileHiddenLaysOutNodesOnceShown) {
+  auto rootShadowNode = std::shared_ptr<RootShadowNode>{};
+  auto containerShadowNode = std::shared_ptr<ViewShadowNode>{};
+
+  // clang-format off
+  auto element =
+      Element<RootShadowNode>()
+        .reference(rootShadowNode)
+        .tag(1)
+        .children({
+          Element<ViewShadowNode>()
+            .tag(2)
+            .children({
+              Element<ModalHostViewShadowNode>()
+                .tag(3)
+                .children({
+                  Element<ViewShadowNode>()
+                    .tag(4)
+                    .reference(containerShadowNode)
+                    .children({Element<FontScaledTextShadowNode>().tag(5)})
+                })
+            })
+        });
+  // clang-format on
+
+  // Lays out the leaf while shown, so it has a measurement at the old scale.
+  builder_.build(element);
+  EXPECT_TRUE(rootShadowNode->layoutIfNeeded());
+
+  auto cloneWithContainerDisplay = [&](const ShadowNode& root,
+                                       yoga::Display display) {
+    return std::static_pointer_cast<RootShadowNode>(root.cloneTree(
+        containerShadowNode->getFamily(),
+        [display](const ShadowNode& oldShadowNode) {
+          auto viewProps = std::make_shared<ViewProps>();
+          viewProps->yogaStyle.setDisplay(display);
+          return oldShadowNode.clone(ShadowNodeFragment{.props = viewProps});
+        }));
+  };
+
+  auto hiddenRootShadowNode =
+      cloneWithContainerDisplay(*rootShadowNode, yoga::Display::None);
+  EXPECT_TRUE(hiddenRootShadowNode->layoutIfNeeded());
+
+  auto largerRootShadowNode = layOutWithFontScale(*hiddenRootShadowNode, 1.5);
+
+  auto shownRootShadowNode =
+      cloneWithContainerDisplay(*largerRootShadowNode, yoga::Display::Flex);
+  EXPECT_TRUE(shownRootShadowNode->layoutIfNeeded());
+
+  const auto& modal =
+      shownRootShadowNode->getChildren().at(0)->getChildren().at(0);
+  const auto& leaf = static_cast<const LayoutableShadowNode&>(
+      *modal->getChildren().at(0)->getChildren().at(0));
+  EXPECT_EQ(leaf.getLayoutMetrics().fontSizeMultiplier, 1.5);
+  EXPECT_EQ(leaf.getLayoutMetrics().frame.size.height, 15);
+}
+#endif
 
 } // namespace facebook::react

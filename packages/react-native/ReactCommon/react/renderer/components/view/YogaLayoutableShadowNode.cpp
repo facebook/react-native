@@ -504,11 +504,21 @@ void YogaLayoutableShadowNode::configureYogaTree(
   // invalidate Yoga's layout cache. Dirty the node when it changes to force
   // re-measurement. We propagate up to the root so an unchanged, still-cached
   // ancestor isn't skipped by `calculateLayoutInternal` before reaching us.
+  // Unlike `markDirtyAndPropagate()`, keep going past an owner that is already
+  // dirty: `setSize()`, which Modal's `adopt()` calls, dirties a node without
+  // its ancestors. Stop at a `display: none` owner, which lays out no children.
   if (ReactNativeFeatureFlags::enableFontScaleChangesUpdatingLayout() &&
       getTraits().check(ShadowNodeTraits::Trait::MeasurableYogaNode) &&
       !floatEquality(
           getLayoutMetrics().fontSizeMultiplier, fontSizeMultiplier)) {
-    yogaNode_.markDirtyAndPropagate();
+    for (auto* node = &yogaNode_;
+         node != nullptr && node->style().display() != yoga::Display::None;
+         node = node->getOwner()) {
+      if (!node->isDirty()) {
+        node->setDirty(true);
+        node->setLayoutComputedFlexBasis(yoga::FloatOptional());
+      }
+    }
   }
 
   // TODO: `swapLeftAndRight` modified backing props and cannot be undone
