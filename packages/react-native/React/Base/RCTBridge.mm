@@ -322,10 +322,6 @@ void RCTUIManagerSetDispatchAccessibilityManagerInitOntoMain(BOOL enabled)
   return NO;
 }
 
-- (void)setUp
-{
-}
-
 - (void)enqueueCallback:(NSNumber *)cbID args:(NSArray *)args
 {
 }
