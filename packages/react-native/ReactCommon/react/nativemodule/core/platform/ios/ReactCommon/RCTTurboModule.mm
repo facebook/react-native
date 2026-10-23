@@ -172,10 +172,57 @@ jsi::Value convertObjCObjectToJSIValue(jsi::Runtime &runtime, id value)
   return jsi::Value::undefined();
 }
 
+static bool hasLoneSurrogate(const char16_t *chars, size_t length)
+{
+  bool hasSurrogate = false;
+  for (size_t i = 0; i < length; i++) {
+    hasSurrogate |= (chars[i] & 0xF800) == 0xD800;
+  }
+  if (!hasSurrogate) {
+    return false;
+  }
+  for (size_t i = 0; i < length; i++) {
+    if ((chars[i] & 0xFC00) == 0xD800 && i + 1 < length && (chars[i + 1] & 0xFC00) == 0xDC00) {
+      i++;
+    } else if ((chars[i] & 0xF800) == 0xD800) {
+      return true;
+    }
+  }
+  return false;
+}
+
 static NSString *convertJSIStringToNSString(jsi::Runtime &runtime, const jsi::String &value)
 {
-  auto utf8 = value.utf8(runtime);
-  NSString *result = [[NSString alloc] initWithBytes:utf8.data() length:utf8.size() encoding:NSUTF8StringEncoding];
+  // Copy the string's own ASCII or UTF-16 characters instead of converting them to UTF-8 and back.
+  NSString *result = nil;
+  size_t chunkCount = 0;
+  bool needsUTF8 = false;
+  auto readChunk = [&](bool ascii, const void *data, size_t length) {
+    if (++chunkCount > 1) {
+      needsUTF8 = true;
+      return;
+    }
+    if (ascii) {
+      result = [[NSString alloc] initWithBytes:data length:length encoding:NSASCIIStringEncoding];
+      return;
+    }
+    const auto *chars = static_cast<const char16_t *>(data);
+    // A lone surrogate can't be encoded as UTF-8, and native code often needs UTF-8, so such strings
+    // keep going through UTF-8, which replaces it as before. So does a leading byte order mark,
+    // which decoding UTF-8 drops.
+    if ((length > 0 && chars[0] == 0xFEFF) || hasLoneSurrogate(chars, length)) {
+      needsUTF8 = true;
+      return;
+    }
+    result = [[NSString alloc] initWithCharacters:reinterpret_cast<const unichar *>(chars) length:length];
+  };
+  value.getStringData(runtime, readChunk);
+
+  // Strings that arrive in several chunks also take the UTF-8 path. No runtime here splits strings.
+  if (needsUTF8 || (result == nil && chunkCount > 0)) {
+    auto utf8 = value.utf8(runtime);
+    result = [[NSString alloc] initWithBytes:utf8.data() length:utf8.size() encoding:NSUTF8StringEncoding];
+  }
   return result != nil ? result : @"";
 }
 
