@@ -12,7 +12,6 @@ import type {HostInstance} from '../../src/private/types/HostInstance';
 import type {ViewProps} from '../Components/View/ViewPropTypes';
 import type {RootTag} from '../ReactNative/RootTag';
 import type {DirectEventHandler} from '../Types/CodegenTypes';
-import type {EventSubscription} from '../vendor/emitter/EventEmitter';
 
 import {type ColorValue} from '../StyleSheet/StyleSheet';
 import Platform from '../Utilities/Platform';
@@ -23,7 +22,6 @@ import * as React from 'react';
 const ScrollView = require('../Components/ScrollView/ScrollView').default;
 const View = require('../Components/View/View').default;
 const AppContainer = require('../ReactNative/AppContainer').default;
-const I18nManager = require('../ReactNative/I18nManager').default;
 const {RootTagContext} = require('../ReactNative/RootTag');
 const StyleSheet = require('../StyleSheet/StyleSheet').default;
 
@@ -244,7 +242,6 @@ class Modal extends React.Component<ModalProps, ModalState> {
   static contextType: React.Context<RootTag> = RootTagContext;
 
   _identifier: number;
-  _i18nSubscription: ?EventSubscription;
 
   constructor(props: ModalProps) {
     super(props);
@@ -257,15 +254,7 @@ class Modal extends React.Component<ModalProps, ModalState> {
     };
   }
 
-  componentDidMount() {
-    this._i18nSubscription = I18nManager.addEventListener('change', () => {
-      this.forceUpdate();
-    });
-  }
-
   componentWillUnmount() {
-    this._i18nSubscription?.remove();
-
     if (Platform.OS === 'ios') {
       this.setState({isRendered: false});
     }
@@ -362,12 +351,7 @@ class Modal extends React.Component<ModalProps, ModalState> {
           <ScrollView.Context.Provider value={null}>
             <View
               // $FlowFixMe[incompatible-type]
-              style={[
-                styles.container,
-                I18nManager.isRTL ? styles.containerRTL : styles.containerLTR,
-                this.props.style,
-                containerStyles,
-              ]}
+              style={[styles.container, this.props.style, containerStyles]}
               collapsable={false}>
               {innerChildren}
             </View>
@@ -389,14 +373,9 @@ const styles = StyleSheet.create({
   },
   container: {
     top: 0,
+    start: 0,
     flex: 1,
     backgroundColor: 'white',
-  },
-  containerLTR: {
-    left: 0,
-  },
-  containerRTL: {
-    right: 0,
   },
 });
 

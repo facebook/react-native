@@ -25,19 +25,13 @@ jest.mock('../NativeI18nManager', () => ({
 }));
 
 describe('I18nManager', () => {
-  it('updates the constants and emits change after forceRTL', async () => {
+  it('updates the constants after forceRTL', async () => {
     const I18nManager = require('../I18nManager').default;
-    const handler = jest.fn();
 
-    I18nManager.addEventListener('change', handler);
     nativeConstants = {isRTL: true};
     await I18nManager.forceRTL(true);
 
     expect(nativeModule.forceRTL).toHaveBeenCalledWith(true);
     expect(I18nManager.isRTL).toBe(true);
-
-    expect(handler).toHaveBeenCalledWith(
-      expect.objectContaining({isRTL: true}),
-    );
   });
 });

@@ -11,7 +11,6 @@
 'use strict';
 
 import type {RNTesterModuleExample} from '../../types/RNTesterTypes';
-import type {EventSubscription} from 'react-native';
 
 import RNTexterText from '../../components/RNTesterText';
 import * as React from 'react';
@@ -211,21 +210,6 @@ class RTLToggleExample extends React.Component<any, RTLToggleState> {
     this.state = {
       isRTL: I18nManager.isRTL,
     };
-  }
-
-  _i18nSubscription: ?EventSubscription;
-
-  componentDidMount() {
-    this._i18nSubscription = I18nManager.addEventListener(
-      'change',
-      ({isRTL}) => {
-        this.setState({isRTL});
-      },
-    );
-  }
-
-  componentWillUnmount() {
-    this._i18nSubscription?.remove();
   }
 
   render(): React.Node {

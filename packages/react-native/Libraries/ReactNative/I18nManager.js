@@ -8,13 +8,10 @@
  * @format
  */
 
-import type {EventSubscription} from '../vendor/emitter/EventEmitter';
 import type {I18nManagerConstants as NativeI18nManagerConstants} from './NativeI18nManager';
 
 import warnOnce from '../Utilities/warnOnce';
-import EventEmitter from '../vendor/emitter/EventEmitter';
 import NativeI18nManager from './NativeI18nManager';
-import invariant from 'invariant';
 
 export type I18nManagerConstants = {
   isRTL: boolean,
@@ -52,10 +49,6 @@ const getNativeConstants = (): NativeI18nManagerConstants =>
 
 let i18nConstants: I18nManagerConstants = createConstants(getNativeConstants());
 
-const eventEmitter = new EventEmitter<{
-  change: [I18nManagerConstants],
-}>();
-
 function updateConstants(): void {
   const nativeConstants = getNativeConstants();
 
@@ -64,7 +57,6 @@ function updateConstants(): void {
     nativeConstants.localeIdentifier !== i18nConstants.localeIdentifier
   ) {
     i18nConstants = createConstants(nativeConstants);
-    eventEmitter.emit('change', i18nConstants);
   }
 }
 
@@ -116,24 +108,6 @@ export default {
         'Use `start` and `end` style properties, such as `marginStart`, ' +
         'instead.',
     );
-  },
-
-  /**
-   * Add an event handler. Supported events:
-   *
-   * - `change`: Fires when `forceRTL` changes a constant, with the new
-   *   constants.
-   */
-  addEventListener: (
-    type: 'change',
-    handler: (constants: I18nManagerConstants) => void,
-  ): EventSubscription => {
-    invariant(
-      type === 'change',
-      'Trying to subscribe to unknown event: "%s"',
-      type,
-    );
-    return eventEmitter.addListener(type, handler);
   },
 
   /** Whether the current layout direction is Right-to-Left. */

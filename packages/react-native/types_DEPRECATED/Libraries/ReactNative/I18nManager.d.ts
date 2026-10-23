@@ -7,8 +7,6 @@
  * @format
  */
 
-import {EmitterSubscription} from '../vendor/emitter/EventEmitter';
-
 type I18nManagerConstants = {
   isRTL: boolean;
   /**
@@ -33,10 +31,6 @@ export interface I18nManagerStatic {
    * `marginStart`, instead.
    */
   swapLeftAndRightInRTL: (swapLeftAndRight: boolean) => void;
-  addEventListener: (
-    type: 'change',
-    handler: (constants: I18nManagerConstants) => void,
-  ) => EmitterSubscription;
   isRTL: boolean;
   /**
    * @deprecated Has no effect, and is always `false`. Use `start` and `end`
