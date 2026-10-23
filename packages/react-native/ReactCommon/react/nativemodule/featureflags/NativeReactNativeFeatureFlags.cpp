@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<9a6ac5848903ca3ed19923163a0a4a55>>
+ * @generated SignedSource<<8e92c24f7332028fdfd6baf51bcf1189>>
  */
 
 /**
@@ -62,6 +62,11 @@ bool NativeReactNativeFeatureFlags::cxxNativeAnimatedEnabled(
 bool NativeReactNativeFeatureFlags::defaultTextToOverflowHidden(
     jsi::Runtime& /*runtime*/) {
   return ReactNativeFeatureFlags::defaultTextToOverflowHidden();
+}
+
+bool NativeReactNativeFeatureFlags::deferTextInputTruncationIOS(
+    jsi::Runtime& /*runtime*/) {
+  return ReactNativeFeatureFlags::deferTextInputTruncationIOS();
 }
 
 bool NativeReactNativeFeatureFlags::disableEarlyViewCommandExecution(
@@ -182,6 +187,11 @@ bool NativeReactNativeFeatureFlags::enableFabricLogs(
 bool NativeReactNativeFeatureFlags::enableFlexboxAutoMinSizeInStrictMode(
     jsi::Runtime& /*runtime*/) {
   return ReactNativeFeatureFlags::enableFlexboxAutoMinSizeInStrictMode();
+}
+
+bool NativeReactNativeFeatureFlags::enableFollowUpMountItemDispatchAndroid(
+    jsi::Runtime& /*runtime*/) {
+  return ReactNativeFeatureFlags::enableFollowUpMountItemDispatchAndroid();
 }
 
 bool NativeReactNativeFeatureFlags::enableFontScaleChangesUpdatingLayout(
@@ -437,6 +447,11 @@ bool NativeReactNativeFeatureFlags::shouldTriggerResponderTransferOnScrollAndroi
 bool NativeReactNativeFeatureFlags::skipActivityIdentityAssertionOnHostPause(
     jsi::Runtime& /*runtime*/) {
   return ReactNativeFeatureFlags::skipActivityIdentityAssertionOnHostPause();
+}
+
+bool NativeReactNativeFeatureFlags::skipUnchangedChildrenInDifferentiator(
+    jsi::Runtime& /*runtime*/) {
+  return ReactNativeFeatureFlags::skipUnchangedChildrenInDifferentiator();
 }
 
 bool NativeReactNativeFeatureFlags::syncAndroidClipBoundsWithOverflow(

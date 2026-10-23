@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<052991ba253839b99c9cf36d81882c69>>
+ * @generated SignedSource<<110d03d6e24e35123054558f78ed6e38>>
  */
 
 /**
@@ -43,6 +43,10 @@ class ReactNativeFeatureFlagsDefaults : public ReactNativeFeatureFlagsProvider {
 
   bool defaultTextToOverflowHidden() override {
     return true;
+  }
+
+  bool deferTextInputTruncationIOS() override {
+    return false;
   }
 
   bool disableEarlyViewCommandExecution() override {
@@ -90,7 +94,7 @@ class ReactNativeFeatureFlagsDefaults : public ReactNativeFeatureFlagsProvider {
   }
 
   bool enableAndroidTextMeasurementOptimizations() override {
-    return false;
+    return true;
   }
 
   bool enableAsyncDiskCacheCheckInMultiSourceImageAndroid() override {
@@ -138,6 +142,10 @@ class ReactNativeFeatureFlagsDefaults : public ReactNativeFeatureFlagsProvider {
   }
 
   bool enableFlexboxAutoMinSizeInStrictMode() override {
+    return false;
+  }
+
+  bool enableFollowUpMountItemDispatchAndroid() override {
     return false;
   }
 
@@ -222,7 +230,7 @@ class ReactNativeFeatureFlagsDefaults : public ReactNativeFeatureFlagsProvider {
   }
 
   bool enablePreparedTextLayout() override {
-    return false;
+    return true;
   }
 
   bool enablePropsUpdateReconciliationAndroid() override {
@@ -318,7 +326,7 @@ class ReactNativeFeatureFlagsDefaults : public ReactNativeFeatureFlagsProvider {
   }
 
   double preparedTextCacheSize() override {
-    return 200.0;
+    return 1000.0;
   }
 
   bool preventShadowTreeCommitExhaustion() override {
@@ -342,6 +350,10 @@ class ReactNativeFeatureFlagsDefaults : public ReactNativeFeatureFlagsProvider {
   }
 
   bool skipActivityIdentityAssertionOnHostPause() override {
+    return false;
+  }
+
+  bool skipUnchangedChildrenInDifferentiator() override {
     return false;
   }
 

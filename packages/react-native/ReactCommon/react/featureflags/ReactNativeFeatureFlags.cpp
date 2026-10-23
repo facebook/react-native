@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<a83e4c29269bb09d21bfaa24867951d9>>
+ * @generated SignedSource<<f963b76af391f7ccdbe875cb79fee3a6>>
  */
 
 /**
@@ -40,6 +40,10 @@ bool ReactNativeFeatureFlags::cxxNativeAnimatedEnabled() {
 
 bool ReactNativeFeatureFlags::defaultTextToOverflowHidden() {
   return getAccessor().defaultTextToOverflowHidden();
+}
+
+bool ReactNativeFeatureFlags::deferTextInputTruncationIOS() {
+  return getAccessor().deferTextInputTruncationIOS();
 }
 
 bool ReactNativeFeatureFlags::disableEarlyViewCommandExecution() {
@@ -136,6 +140,10 @@ bool ReactNativeFeatureFlags::enableFabricLogs() {
 
 bool ReactNativeFeatureFlags::enableFlexboxAutoMinSizeInStrictMode() {
   return getAccessor().enableFlexboxAutoMinSizeInStrictMode();
+}
+
+bool ReactNativeFeatureFlags::enableFollowUpMountItemDispatchAndroid() {
+  return getAccessor().enableFollowUpMountItemDispatchAndroid();
 }
 
 bool ReactNativeFeatureFlags::enableFontScaleChangesUpdatingLayout() {
@@ -340,6 +348,10 @@ bool ReactNativeFeatureFlags::shouldTriggerResponderTransferOnScrollAndroid() {
 
 bool ReactNativeFeatureFlags::skipActivityIdentityAssertionOnHostPause() {
   return getAccessor().skipActivityIdentityAssertionOnHostPause();
+}
+
+bool ReactNativeFeatureFlags::skipUnchangedChildrenInDifferentiator() {
+  return getAccessor().skipUnchangedChildrenInDifferentiator();
 }
 
 bool ReactNativeFeatureFlags::syncAndroidClipBoundsWithOverflow() {

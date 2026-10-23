@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<251ea4cc6399489c950cfb356d74d518>>
+ * @generated SignedSource<<6f000f6e075f4b93c4c4e58f9930e86e>>
  * @flow strict
  * @noformat
  */
@@ -29,6 +29,7 @@ export interface Spec extends TurboModule {
   readonly cdpInteractionMetricsEnabled?: () => boolean;
   readonly cxxNativeAnimatedEnabled?: () => boolean;
   readonly defaultTextToOverflowHidden?: () => boolean;
+  readonly deferTextInputTruncationIOS?: () => boolean;
   readonly disableEarlyViewCommandExecution?: () => boolean;
   readonly disableIdleEventDispatchFrameCallbackRearmAndroid?: () => boolean;
   readonly disableIdleMountItemFrameCallbackRearmAndroid?: () => boolean;
@@ -53,6 +54,7 @@ export interface Spec extends TurboModule {
   readonly enableFabricCommitBranchingMergeOnMainThread?: () => boolean;
   readonly enableFabricLogs?: () => boolean;
   readonly enableFlexboxAutoMinSizeInStrictMode?: () => boolean;
+  readonly enableFollowUpMountItemDispatchAndroid?: () => boolean;
   readonly enableFontScaleChangesUpdatingLayout?: () => boolean;
   readonly enableIOSCompressedTextFrameAdjustment?: () => boolean;
   readonly enableIOSPartialTextSelection?: () => boolean;
@@ -104,6 +106,7 @@ export interface Spec extends TurboModule {
   readonly shouldPressibilityUseW3CPointerEventsForHover?: () => boolean;
   readonly shouldTriggerResponderTransferOnScrollAndroid?: () => boolean;
   readonly skipActivityIdentityAssertionOnHostPause?: () => boolean;
+  readonly skipUnchangedChildrenInDifferentiator?: () => boolean;
   readonly syncAndroidClipBoundsWithOverflow?: () => boolean;
   readonly traceTurboModulePromiseRejectionsOnAndroid?: () => boolean;
   readonly updateRuntimeShadowNodeReferencesOnCommit?: () => boolean;

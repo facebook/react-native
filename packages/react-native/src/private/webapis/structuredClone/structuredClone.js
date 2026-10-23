@@ -308,7 +308,7 @@ function cloneArrayBuffer(value: ArrayBuffer): ArrayBuffer {
   return result;
 }
 
-function cloneTypedArray(value: $TypedArray): $TypedArray {
+function cloneTypedArray(value: $TypedArray<ArrayBuffer>): $TypedArray {
   const buffer = cloneArrayBuffer(value.buffer);
   const {byteOffset, length} = value;
 
@@ -365,7 +365,9 @@ function defineEnumerableProperty(
   });
 }
 
-declare function isTypedArray(value: unknown): implies value is $TypedArray;
+declare function isTypedArray(
+  value: unknown,
+): implies value is $TypedArray<ArrayBuffer>;
 function isTypedArray(value: unknown): boolean {
   return ArrayBuffer.isView(value) && !(value instanceof DataView);
 }

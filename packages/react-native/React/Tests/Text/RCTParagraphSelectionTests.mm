@@ -182,6 +182,10 @@ class RCTParagraphSelectionFeatureFlags : public ReactNativeFeatureFlagsDefaults
   stateData.attributedString = std::move(attributedString);
   stateData.paragraphAttributes = ParagraphAttributes{};
   stateData.layoutManager = _textLayoutManager;
+  // The paragraph view lays out the text in this size, not in its frame. The
+  // shadow node stores the content frame size here, and every test lays the
+  // paragraph out at 320 x 100 with no padding.
+  stateData.layoutSize = facebook::react::Size{320, 100};
 
   return std::make_shared<const ParagraphShadowNode::ConcreteState>(
       std::make_shared<const ParagraphState>(std::move(stateData)), ShadowNodeFamily::Weak{});

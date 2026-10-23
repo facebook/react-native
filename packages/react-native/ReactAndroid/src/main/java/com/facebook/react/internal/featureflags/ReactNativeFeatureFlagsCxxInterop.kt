@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<a07abcfe6135d2c84718f7cabf6ea9fa>>
+ * @generated SignedSource<<2beab0a6a3214d221cbb0ed1ef759591>>
  */
 
 /**
@@ -35,6 +35,8 @@ public object ReactNativeFeatureFlagsCxxInterop {
   @DoNotStrip @JvmStatic public external fun cxxNativeAnimatedEnabled(): Boolean
 
   @DoNotStrip @JvmStatic public external fun defaultTextToOverflowHidden(): Boolean
+
+  @DoNotStrip @JvmStatic public external fun deferTextInputTruncationIOS(): Boolean
 
   @DoNotStrip @JvmStatic public external fun disableEarlyViewCommandExecution(): Boolean
 
@@ -83,6 +85,8 @@ public object ReactNativeFeatureFlagsCxxInterop {
   @DoNotStrip @JvmStatic public external fun enableFabricLogs(): Boolean
 
   @DoNotStrip @JvmStatic public external fun enableFlexboxAutoMinSizeInStrictMode(): Boolean
+
+  @DoNotStrip @JvmStatic public external fun enableFollowUpMountItemDispatchAndroid(): Boolean
 
   @DoNotStrip @JvmStatic public external fun enableFontScaleChangesUpdatingLayout(): Boolean
 
@@ -185,6 +189,8 @@ public object ReactNativeFeatureFlagsCxxInterop {
   @DoNotStrip @JvmStatic public external fun shouldTriggerResponderTransferOnScrollAndroid(): Boolean
 
   @DoNotStrip @JvmStatic public external fun skipActivityIdentityAssertionOnHostPause(): Boolean
+
+  @DoNotStrip @JvmStatic public external fun skipUnchangedChildrenInDifferentiator(): Boolean
 
   @DoNotStrip @JvmStatic public external fun syncAndroidClipBoundsWithOverflow(): Boolean
 

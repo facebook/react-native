@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<6f7bbf68449f6d26366cd64b9d7b4048>>
+ * @generated SignedSource<<7046b099190ddbae4b850c4ff3d9edc6>>
  */
 
 /**
@@ -28,6 +28,7 @@ internal class ReactNativeFeatureFlagsLocalAccessor : ReactNativeFeatureFlagsAcc
   private var cdpInteractionMetricsEnabledCache: Boolean? = null
   private var cxxNativeAnimatedEnabledCache: Boolean? = null
   private var defaultTextToOverflowHiddenCache: Boolean? = null
+  private var deferTextInputTruncationIOSCache: Boolean? = null
   private var disableEarlyViewCommandExecutionCache: Boolean? = null
   private var disableIdleEventDispatchFrameCallbackRearmAndroidCache: Boolean? = null
   private var disableIdleMountItemFrameCallbackRearmAndroidCache: Boolean? = null
@@ -52,6 +53,7 @@ internal class ReactNativeFeatureFlagsLocalAccessor : ReactNativeFeatureFlagsAcc
   private var enableFabricCommitBranchingMergeOnMainThreadCache: Boolean? = null
   private var enableFabricLogsCache: Boolean? = null
   private var enableFlexboxAutoMinSizeInStrictModeCache: Boolean? = null
+  private var enableFollowUpMountItemDispatchAndroidCache: Boolean? = null
   private var enableFontScaleChangesUpdatingLayoutCache: Boolean? = null
   private var enableIOSCompressedTextFrameAdjustmentCache: Boolean? = null
   private var enableIOSPartialTextSelectionCache: Boolean? = null
@@ -103,6 +105,7 @@ internal class ReactNativeFeatureFlagsLocalAccessor : ReactNativeFeatureFlagsAcc
   private var shouldPressibilityUseW3CPointerEventsForHoverCache: Boolean? = null
   private var shouldTriggerResponderTransferOnScrollAndroidCache: Boolean? = null
   private var skipActivityIdentityAssertionOnHostPauseCache: Boolean? = null
+  private var skipUnchangedChildrenInDifferentiatorCache: Boolean? = null
   private var syncAndroidClipBoundsWithOverflowCache: Boolean? = null
   private var traceTurboModulePromiseRejectionsOnAndroidCache: Boolean? = null
   private var updateRuntimeShadowNodeReferencesOnCommitCache: Boolean? = null
@@ -156,6 +159,16 @@ internal class ReactNativeFeatureFlagsLocalAccessor : ReactNativeFeatureFlagsAcc
       cached = currentProvider.defaultTextToOverflowHidden()
       accessedFeatureFlags.add("defaultTextToOverflowHidden")
       defaultTextToOverflowHiddenCache = cached
+    }
+    return cached
+  }
+
+  override fun deferTextInputTruncationIOS(): Boolean {
+    var cached = deferTextInputTruncationIOSCache
+    if (cached == null) {
+      cached = currentProvider.deferTextInputTruncationIOS()
+      accessedFeatureFlags.add("deferTextInputTruncationIOS")
+      deferTextInputTruncationIOSCache = cached
     }
     return cached
   }
@@ -396,6 +409,16 @@ internal class ReactNativeFeatureFlagsLocalAccessor : ReactNativeFeatureFlagsAcc
       cached = currentProvider.enableFlexboxAutoMinSizeInStrictMode()
       accessedFeatureFlags.add("enableFlexboxAutoMinSizeInStrictMode")
       enableFlexboxAutoMinSizeInStrictModeCache = cached
+    }
+    return cached
+  }
+
+  override fun enableFollowUpMountItemDispatchAndroid(): Boolean {
+    var cached = enableFollowUpMountItemDispatchAndroidCache
+    if (cached == null) {
+      cached = currentProvider.enableFollowUpMountItemDispatchAndroid()
+      accessedFeatureFlags.add("enableFollowUpMountItemDispatchAndroid")
+      enableFollowUpMountItemDispatchAndroidCache = cached
     }
     return cached
   }
@@ -906,6 +929,16 @@ internal class ReactNativeFeatureFlagsLocalAccessor : ReactNativeFeatureFlagsAcc
       cached = currentProvider.skipActivityIdentityAssertionOnHostPause()
       accessedFeatureFlags.add("skipActivityIdentityAssertionOnHostPause")
       skipActivityIdentityAssertionOnHostPauseCache = cached
+    }
+    return cached
+  }
+
+  override fun skipUnchangedChildrenInDifferentiator(): Boolean {
+    var cached = skipUnchangedChildrenInDifferentiatorCache
+    if (cached == null) {
+      cached = currentProvider.skipUnchangedChildrenInDifferentiator()
+      accessedFeatureFlags.add("skipUnchangedChildrenInDifferentiator")
+      skipUnchangedChildrenInDifferentiatorCache = cached
     }
     return cached
   }

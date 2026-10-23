@@ -58,7 +58,6 @@ public open class ReactAccessibilityDelegate( // The View this delegate is attac
         }
       }
   private val accessibilityActionsMap = HashMap<Int, String?>()
-  private var accessibilityLabelledBy: View? = null
 
   init {
     // We need to reset these two properties, as ExploreByTouchHelper sets focusable to "true" and
@@ -67,6 +66,12 @@ public open class ReactAccessibilityDelegate( // The View this delegate is attac
     // announcement coalescing.
     hostView.isFocusable = originalFocus
     hostView.importantForAccessibility = originalImportantForAccessibility
+  }
+
+  /** Forgets the actions cached from the props of a view that is about to be recycled. */
+  @JvmName("internal_prepareToRecycle")
+  internal fun prepareToRecycle() {
+    accessibilityActionsMap.clear()
   }
 
   override fun onInitializeAccessibilityNodeInfo(host: View, info: AccessibilityNodeInfoCompat) {
@@ -91,9 +96,9 @@ public open class ReactAccessibilityDelegate( // The View this delegate is attac
 
     val accessibilityLabelledBy = host.getTag(R.id.labelled_by)
     if (accessibilityLabelledBy != null) {
-      this.accessibilityLabelledBy = findView(host.rootView, accessibilityLabelledBy as String)
-      if (this.accessibilityLabelledBy != null) {
-        info.setLabeledBy(this.accessibilityLabelledBy)
+      val labellingView = findView(host.rootView, accessibilityLabelledBy as String)
+      if (labellingView != null) {
+        info.setLabeledBy(labellingView)
       }
     }
 

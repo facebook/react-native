@@ -90,26 +90,16 @@ NativeTestModuleSpecJSI::NativeTestModuleSpecJSI(const ObjCTurboModule::InitPara
   NSMutableDictionary<NSString *, NSNumber *> *_snapshotCounter;
 }
 
-@synthesize bridge = _bridge;
 @synthesize moduleRegistry = _moduleRegistry;
+@synthesize viewRegistry_DEPRECATED = _viewRegistry_DEPRECATED;
 
 RCT_EXPORT_MODULE()
-
-- (dispatch_queue_t)methodQueue
-{
-  return _bridge.uiManager.methodQueue;
-}
-
-- (void)setMethodQueue:(dispatch_queue_t)methodQueue
-{
-  // noop
-}
 
 - (void)verifySnapshot:(RCTResponseSenderBlock)callback
 {
   RCTAssert(_controller != nil, @"No snapshot controller configured.");
 
-  [_bridge.uiManager addUIBlock:^(RCTUIManager *uiManager, NSDictionary<NSNumber *, UIView *> *viewRegistry) {
+  [_viewRegistry_DEPRECATED addUIBlock:^(__unused RCTViewRegistry *viewRegistry) {
     NSString *testName = NSStringFromSelector(self->_testSelector);
     if (!self->_snapshotCounter) {
       self->_snapshotCounter = [NSMutableDictionary new];
@@ -163,10 +153,9 @@ RCT_REMAP_METHOD(
 
 - (void)markTestPassed:(BOOL)success
 {
-  [_bridge.uiManager
-      addUIBlock:^(__unused RCTUIManager *uiManager, __unused NSDictionary<NSNumber *, UIView *> *viewRegistry) {
-        self->_status = success ? RCTTestStatusPassed : RCTTestStatusFailed;
-      }];
+  [_viewRegistry_DEPRECATED addUIBlock:^(__unused RCTViewRegistry *viewRegistry) {
+    self->_status = success ? RCTTestStatusPassed : RCTTestStatusFailed;
+  }];
 }
 
 - (std::shared_ptr<facebook::react::TurboModule>)getTurboModule:

@@ -7,6 +7,8 @@
 
 package com.facebook.react.uimanager;
 
+import static com.facebook.react.uimanager.internal.FloatPropertySanitizer.sanitizeFloatPropertyValue;
+
 import android.graphics.Color;
 import android.graphics.Matrix;
 import android.graphics.Paint;
@@ -19,6 +21,7 @@ import android.view.accessibility.AccessibilityEvent;
 import androidx.annotation.ColorInt;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
+import androidx.core.view.AccessibilityDelegateCompat;
 import androidx.core.view.ViewCompat;
 import com.facebook.common.logging.FLog;
 import com.facebook.react.R;
@@ -93,6 +96,11 @@ public abstract class BaseViewManager<T extends View, C extends LayoutShadowNode
     view.setTag(R.id.accessibility_actions, null);
     view.setTag(R.id.accessibility_value, null);
     view.setTag(R.id.accessibility_state_expanded, null);
+    view.setTag(R.id.accessibility_collection, null);
+    view.setTag(R.id.accessibility_collection_item, null);
+    view.setTag(R.id.role, null);
+    view.setTag(R.id.accessibility_order_parent, null);
+    view.setTag(R.id.original_focusability, null);
     view.setTag(R.id.accessibility_state_disabled, null);
     view.setEnabled(true);
     view.setTag(R.id.view_clipped, null);
@@ -160,6 +168,20 @@ public abstract class BaseViewManager<T extends View, C extends LayoutShadowNode
     view.setClickable(false);
     view.setFocusable(false);
     view.setFocusableInTouchMode(false);
+
+    // Accessibility state the props apply to the view itself, as a new view has it. The delegate
+    // stays, since a view's constructor may have installed it, and forgets what it cached.
+    AccessibilityDelegateCompat accessibilityDelegate = ViewCompat.getAccessibilityDelegate(view);
+    if (accessibilityDelegate instanceof ReactAccessibilityDelegate) {
+      ((ReactAccessibilityDelegate) accessibilityDelegate).internal_prepareToRecycle();
+    }
+    view.setContentDescription(null);
+    view.setSelected(false);
+    view.setImportantForAccessibility(View.IMPORTANT_FOR_ACCESSIBILITY_AUTO);
+    ViewCompat.setAccessibilityLiveRegion(view, ViewCompat.ACCESSIBILITY_LIVE_REGION_NONE);
+    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.P) {
+      view.setScreenReaderFocusable(false);
+    }
 
     // Predictably, alpha defaults to 1:
     // https://android.googlesource.com/platform/frameworks/base/+/a175a5b/core/java/android/view/View.java#2186
@@ -278,7 +300,7 @@ public abstract class BaseViewManager<T extends View, C extends LayoutShadowNode
 
   @ReactProp(name = ViewProps.ELEVATION)
   public void setElevation(@NonNull T view, float elevation) {
-    float px = PixelUtil.toPixelFromDIP(elevation);
+    float px = sanitizeFloatPropertyValue(PixelUtil.toPixelFromDIP(elevation));
     boolean wasElevated = view.getElevation() > 0f;
     ViewCompat.setElevation(view, px);
     if (wasElevated != (px > 0f)) {
@@ -533,13 +555,13 @@ public abstract class BaseViewManager<T extends View, C extends LayoutShadowNode
   @Deprecated
   @ReactProp(name = ViewProps.SCALE_X, defaultFloat = 1f)
   public void setScaleX(@NonNull T view, float scaleX) {
-    view.setScaleX(scaleX);
+    view.setScaleX(sanitizeFloatPropertyValue(scaleX));
   }
 
   @Deprecated
   @ReactProp(name = ViewProps.SCALE_Y, defaultFloat = 1f)
   public void setScaleY(@NonNull T view, float scaleY) {
-    view.setScaleY(scaleY);
+    view.setScaleY(sanitizeFloatPropertyValue(scaleY));
   }
 
   @Deprecated
@@ -697,29 +719,6 @@ public abstract class BaseViewManager<T extends View, C extends LayoutShadowNode
     }
     view.setAnimationMatrix(null);
     view.setTag(R.id.skew_animation_matrix, null);
-  }
-
-  /**
-   * Prior to Android P things like setScaleX() allowed passing float values that were bogus such as
-   * Float.NaN. If the app is targeting Android P or later then passing these values will result in
-   * an exception being thrown. Since JS might still send Float.NaN, we want to keep the code
-   * backward compatible and continue using the fallback value if an invalid float is passed.
-   */
-  private static float sanitizeFloatPropertyValue(float value) {
-    if (value >= -Float.MAX_VALUE && value <= Float.MAX_VALUE) {
-      return value;
-    }
-    if (value < -Float.MAX_VALUE || value == Float.NEGATIVE_INFINITY) {
-      return -Float.MAX_VALUE;
-    }
-    if (value > Float.MAX_VALUE || value == Float.POSITIVE_INFINITY) {
-      return Float.MAX_VALUE;
-    }
-    if (Float.isNaN(value)) {
-      return 0;
-    }
-    // Shouldn't be possible to reach this point.
-    throw new IllegalStateException("Invalid float property value: " + value);
   }
 
   protected void updateViewAccessibility(@NonNull T view) {

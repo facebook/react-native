@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<ed2231f3d12509b34d7bcc78fdc64bc0>>
+ * @generated SignedSource<<bf6158fd0538518bd698e235d28df44e>>
  */
 
 /**
@@ -81,6 +81,15 @@ class ReactNativeFeatureFlagsDynamicProvider : public ReactNativeFeatureFlagsDef
     }
 
     return ReactNativeFeatureFlagsDefaults::defaultTextToOverflowHidden();
+  }
+
+  bool deferTextInputTruncationIOS() override {
+    auto value = values_["deferTextInputTruncationIOS"];
+    if (!value.isNull()) {
+      return value.getBool();
+    }
+
+    return ReactNativeFeatureFlagsDefaults::deferTextInputTruncationIOS();
   }
 
   bool disableEarlyViewCommandExecution() override {
@@ -297,6 +306,15 @@ class ReactNativeFeatureFlagsDynamicProvider : public ReactNativeFeatureFlagsDef
     }
 
     return ReactNativeFeatureFlagsDefaults::enableFlexboxAutoMinSizeInStrictMode();
+  }
+
+  bool enableFollowUpMountItemDispatchAndroid() override {
+    auto value = values_["enableFollowUpMountItemDispatchAndroid"];
+    if (!value.isNull()) {
+      return value.getBool();
+    }
+
+    return ReactNativeFeatureFlagsDefaults::enableFollowUpMountItemDispatchAndroid();
   }
 
   bool enableFontScaleChangesUpdatingLayout() override {
@@ -756,6 +774,15 @@ class ReactNativeFeatureFlagsDynamicProvider : public ReactNativeFeatureFlagsDef
     }
 
     return ReactNativeFeatureFlagsDefaults::skipActivityIdentityAssertionOnHostPause();
+  }
+
+  bool skipUnchangedChildrenInDifferentiator() override {
+    auto value = values_["skipUnchangedChildrenInDifferentiator"];
+    if (!value.isNull()) {
+      return value.getBool();
+    }
+
+    return ReactNativeFeatureFlagsDefaults::skipUnchangedChildrenInDifferentiator();
   }
 
   bool syncAndroidClipBoundsWithOverflow() override {

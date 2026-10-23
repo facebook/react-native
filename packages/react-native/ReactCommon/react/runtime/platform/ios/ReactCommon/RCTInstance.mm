@@ -129,7 +129,9 @@ using namespace facebook::react;
     _bridgeModuleDecorator = [[RCTBridgeModuleDecorator alloc] initWithViewRegistry:[RCTViewRegistry new]
                                                                      moduleRegistry:moduleRegistry
                                                                       bundleManager:bundleManager
-                                                                  callableJSModules:[RCTCallableJSModules new]];
+                                                                  callableJSModules:[RCTCallableJSModules new]
+                                                                      launchOptions:launchOptions
+                                                                  performanceLogger:_performanceLogger];
     _devMenuConfigurationDecorator =
 #if RCT_DEV_MENU
         [[RCTDevMenuConfigurationDecorator alloc] initWithDevMenuConfiguration:devMenuConfiguration];
@@ -183,11 +185,15 @@ using namespace facebook::react;
 
 - (void)invalidate
 {
-  std::lock_guard<std::mutex> lock(_invalidationMutex);
-  _valid = false;
-  if (_reactInstance) {
-    _reactInstance->unregisterFromInspector();
+  {
+    std::lock_guard<std::mutex> lock(_invalidationMutex);
+    _valid = false;
+    if (_reactInstance) {
+      _reactInstance->unregisterFromInspector();
+    }
   }
+  // suspend shouldn't be called under _invalidationMutex: it notifies surface observers,
+  // which can call callFunctionOnJSModule and deadlock on the same mutex.
   [_surfacePresenter suspend];
   [_jsThreadManager dispatchToJSThread:^{
     /**

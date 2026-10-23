@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<97ec0d34678aa52a4588181ed6a810f2>>
+ * @generated SignedSource<<089745d80569272425613b8ac8b20779>>
  */
 
 /**
@@ -45,6 +45,8 @@ class NativeReactNativeFeatureFlags
   bool cxxNativeAnimatedEnabled(jsi::Runtime& runtime);
 
   bool defaultTextToOverflowHidden(jsi::Runtime& runtime);
+
+  bool deferTextInputTruncationIOS(jsi::Runtime& runtime);
 
   bool disableEarlyViewCommandExecution(jsi::Runtime& runtime);
 
@@ -93,6 +95,8 @@ class NativeReactNativeFeatureFlags
   bool enableFabricLogs(jsi::Runtime& runtime);
 
   bool enableFlexboxAutoMinSizeInStrictMode(jsi::Runtime& runtime);
+
+  bool enableFollowUpMountItemDispatchAndroid(jsi::Runtime& runtime);
 
   bool enableFontScaleChangesUpdatingLayout(jsi::Runtime& runtime);
 
@@ -195,6 +199,8 @@ class NativeReactNativeFeatureFlags
   bool shouldTriggerResponderTransferOnScrollAndroid(jsi::Runtime& runtime);
 
   bool skipActivityIdentityAssertionOnHostPause(jsi::Runtime& runtime);
+
+  bool skipUnchangedChildrenInDifferentiator(jsi::Runtime& runtime);
 
   bool syncAndroidClipBoundsWithOverflow(jsi::Runtime& runtime);
 

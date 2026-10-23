@@ -232,6 +232,100 @@ TEST_F(YogaDirtyFlagTest, updatingStateForScrollViewMistNotDirtyYogaNode) {
       static_cast<RootShadowNode&>(*newRootShadowNode).layoutIfNeeded());
 }
 
+TEST_F(YogaDirtyFlagTest, dirtyChildOfHiddenNodeMustNotDirtyIt) {
+  /*
+   * A `display: none` node is laid out with zero size whatever its children
+   * are, and Yoga never cleans the descendants of a hidden node. A child that
+   * changed while its parent was hidden must *not* dirty the parent, otherwise
+   * every commit that clones the parent re-runs layout from the root.
+   */
+  auto& childFamily = innerShadowNode_->getChildren().at(0)->getFamily();
+
+  auto hiddenRootShadowNode = rootShadowNode_->cloneTree(
+      innerShadowNode_->getFamily(), [](const ShadowNode& oldShadowNode) {
+        auto viewProps = std::make_shared<ViewProps>();
+        viewProps->yogaStyle.setDisplay(yoga::Display::None);
+        return oldShadowNode.clone(ShadowNodeFragment{.props = viewProps});
+      });
+
+  /*
+   * Hiding the node *must* dirty it.
+   */
+  EXPECT_TRUE(
+      static_cast<RootShadowNode&>(*hiddenRootShadowNode).layoutIfNeeded());
+
+  /*
+   * Changing the layout of a child of the hidden node dirties the child, but
+   * not the hidden node.
+   */
+  auto changedRootShadowNode = hiddenRootShadowNode->cloneTree(
+      childFamily, [](const ShadowNode& oldShadowNode) {
+        auto viewProps = std::make_shared<ViewProps>();
+        viewProps->yogaStyle.setDimension(
+            yoga::Dimension::Width, yoga::StyleSizeLength::points(42));
+        return oldShadowNode.clone(ShadowNodeFragment{.props = viewProps});
+      });
+
+  EXPECT_FALSE(
+      static_cast<RootShadowNode&>(*changedRootShadowNode).layoutIfNeeded());
+
+  /*
+   * The child is still dirty, because the layout pass didn't visit it. A
+   * later change to its non-layout props must not dirty the hidden node
+   * either.
+   */
+  auto newRootShadowNode = changedRootShadowNode->cloneTree(
+      childFamily, [](const ShadowNode& oldShadowNode) {
+        auto viewProps = std::make_shared<ViewProps>();
+        viewProps->yogaStyle.setDimension(
+            yoga::Dimension::Width, yoga::StyleSizeLength::points(42));
+        viewProps->opacity = 0.5;
+        return oldShadowNode.clone(ShadowNodeFragment{.props = viewProps});
+      });
+
+  EXPECT_FALSE(
+      static_cast<RootShadowNode&>(*newRootShadowNode).layoutIfNeeded());
+}
+
+TEST_F(YogaDirtyFlagTest, showingHiddenNodeMustDirtyItAndLayOutItsChildren) {
+  /*
+   * Showing a hidden node again *must* dirty it, and the children that
+   * changed while it was hidden must be laid out.
+   */
+  auto& childFamily = innerShadowNode_->getChildren().at(0)->getFamily();
+
+  auto hiddenRootShadowNode = rootShadowNode_->cloneTree(
+      innerShadowNode_->getFamily(), [](const ShadowNode& oldShadowNode) {
+        auto viewProps = std::make_shared<ViewProps>();
+        viewProps->yogaStyle.setDisplay(yoga::Display::None);
+        return oldShadowNode.clone(ShadowNodeFragment{.props = viewProps});
+      });
+  static_cast<RootShadowNode&>(*hiddenRootShadowNode).layoutIfNeeded();
+
+  auto changedRootShadowNode = hiddenRootShadowNode->cloneTree(
+      childFamily, [](const ShadowNode& oldShadowNode) {
+        auto viewProps = std::make_shared<ViewProps>();
+        viewProps->yogaStyle.setDimension(
+            yoga::Dimension::Width, yoga::StyleSizeLength::points(42));
+        return oldShadowNode.clone(ShadowNodeFragment{.props = viewProps});
+      });
+  static_cast<RootShadowNode&>(*changedRootShadowNode).layoutIfNeeded();
+
+  auto shownRootShadowNode = changedRootShadowNode->cloneTree(
+      innerShadowNode_->getFamily(), [](const ShadowNode& oldShadowNode) {
+        return oldShadowNode.clone(
+            ShadowNodeFragment{.props = std::make_shared<ViewProps>()});
+      });
+
+  EXPECT_TRUE(
+      static_cast<RootShadowNode&>(*shownRootShadowNode).layoutIfNeeded());
+
+  auto child = std::static_pointer_cast<const ViewShadowNode>(
+      shownRootShadowNode->getChildren().at(1)->getChildren().at(0));
+  EXPECT_EQ(child->getLayoutMetrics().displayType, DisplayType::Flex);
+  EXPECT_EQ(child->getLayoutMetrics().frame.size.width, 42);
+}
+
 TEST_F(YogaDirtyFlagTest, clonedPropsPreserveAspectRatio) {
   ContextContainer contextContainer{};
   PropsParserContext parserContext{-1, contextContainer};

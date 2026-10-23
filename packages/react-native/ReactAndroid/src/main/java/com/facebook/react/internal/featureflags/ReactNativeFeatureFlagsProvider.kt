@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<b89438a6cde7d90026bb22ab49ce51ff>>
+ * @generated SignedSource<<d2bd1756996f871ddcb2b8912445987f>>
  */
 
 /**
@@ -30,6 +30,8 @@ public interface ReactNativeFeatureFlagsProvider {
   @DoNotStrip public fun cxxNativeAnimatedEnabled(): Boolean
 
   @DoNotStrip public fun defaultTextToOverflowHidden(): Boolean
+
+  @DoNotStrip public fun deferTextInputTruncationIOS(): Boolean
 
   @DoNotStrip public fun disableEarlyViewCommandExecution(): Boolean
 
@@ -78,6 +80,8 @@ public interface ReactNativeFeatureFlagsProvider {
   @DoNotStrip public fun enableFabricLogs(): Boolean
 
   @DoNotStrip public fun enableFlexboxAutoMinSizeInStrictMode(): Boolean
+
+  @DoNotStrip public fun enableFollowUpMountItemDispatchAndroid(): Boolean
 
   @DoNotStrip public fun enableFontScaleChangesUpdatingLayout(): Boolean
 
@@ -180,6 +184,8 @@ public interface ReactNativeFeatureFlagsProvider {
   @DoNotStrip public fun shouldTriggerResponderTransferOnScrollAndroid(): Boolean
 
   @DoNotStrip public fun skipActivityIdentityAssertionOnHostPause(): Boolean
+
+  @DoNotStrip public fun skipUnchangedChildrenInDifferentiator(): Boolean
 
   @DoNotStrip public fun syncAndroidClipBoundsWithOverflow(): Boolean
 
