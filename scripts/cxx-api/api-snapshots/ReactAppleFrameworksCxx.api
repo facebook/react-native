@@ -43,11 +43,6 @@ category RCTBridge(RCTSurfacePresenterStub) {
   public virtual void setSurfacePresenter:(id<RCTSurfacePresenterStub> presenter);
 }
 
-category RCTBridge(RCTTurboModule) {
-  public virtual std::shared_ptr<facebook::react::CallInvoker> jsCallInvoker();
-  public virtual std::shared_ptr<facebook::react::NativeMethodCallInvoker> decorateNativeMethodCallInvoker:(std::shared_ptr<facebook::react::NativeMethodCallInvoker> nativeMethodCallInvoker);
-}
-
 category RCTBridge(RCTUIManager) {
   public @property (assign, readonly) RCTUIManager* uiManager;
 }

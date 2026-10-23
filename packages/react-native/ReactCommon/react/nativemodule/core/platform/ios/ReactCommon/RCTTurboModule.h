@@ -200,16 +200,3 @@ class JSI_EXPORT ObjCTurboModule : public TurboModule {
 @optional
 - (void)setEventEmitterCallback:(EventEmitterCallbackWrapper *)eventEmitterCallbackWrapper;
 @end
-
-/**
- * These methods are all implemented by RCTCxxBridge, which subclasses RCTBridge. Hence, they must only be used in
- * contexts where the concrete class of an RCTBridge instance is RCTCxxBridge. This happens, for example, when
- * [RCTCxxBridgeDelegate jsExecutorFactoryForBridge:(RCTBridge *)] is invoked by RCTCxxBridge.
- *
- * TODO: Consolidate this extension with the one in RCTSurfacePresenter.
- */
-@interface RCTBridge (RCTTurboModule)
-- (std::shared_ptr<facebook::react::CallInvoker>)jsCallInvoker;
-- (std::shared_ptr<facebook::react::NativeMethodCallInvoker>)decorateNativeMethodCallInvoker:
-    (std::shared_ptr<facebook::react::NativeMethodCallInvoker>)nativeMethodCallInvoker;
-@end
