@@ -24,7 +24,6 @@
 #import "RCTLog.h"
 #import "RCTModuleData.h"
 #import "RCTModuleMethod.h"
-#import "RCTProfile.h"
 #import "RCTScrollableProtocol.h"
 #import "RCTShadowView.h"
 #import "RCTSurfaceRootShadowView.h"
