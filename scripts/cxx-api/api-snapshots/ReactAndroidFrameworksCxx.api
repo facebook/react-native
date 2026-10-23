@@ -1439,8 +1439,9 @@ class facebook::react::BaseScrollViewProps : public facebook::react::HostPlatfor
   public facebook::react::Point contentOffset;
   public facebook::react::ScrollViewIndicatorStyle indicatorStyle;
   public facebook::react::ScrollViewKeyboardDismissMode keyboardDismissMode;
-  public facebook::react::ScrollViewSnapToAlignment snapToAlignment;
+  public static constexpr facebook::react::Float kDefaultDecelerationRate;
   public std::optional<facebook::react::ScrollViewMaintainVisibleContentPosition> maintainVisibleContentPosition;
+  public std::optional<facebook::react::ScrollViewSnapToAlignment> snapToAlignment;
   public std::vector<facebook::react::Float> snapToOffsets;
   public void setProp(const facebook::react::PropsParserContext& context, facebook::react::RawPropsPropNameHash hash, const char* propName, const facebook::react::RawValue& value);
 }
@@ -2049,6 +2050,7 @@ class facebook::react::HostPlatformScrollViewProps : public facebook::react::Bas
   public HostPlatformScrollViewProps() = default;
   public HostPlatformScrollViewProps(const facebook::react::PropsParserContext& context, const facebook::react::HostPlatformScrollViewProps& sourceProps, const facebook::react::RawProps& rawProps);
   public bool nestedScrollEnabled;
+  public bool scrollsChildToFocus;
   public bool sendMomentumEvents;
   public facebook::react::SharedColor endFillColor;
   public folly::dynamic fadingEdgeLength;
