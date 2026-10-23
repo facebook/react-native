@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<3f0c67926f9bc7a9973e17afe59b3ec9>>
+ * @generated SignedSource<<22aaf992a3dd50efcb2476ef41be568a>>
  */
 
 /**
@@ -143,6 +143,8 @@ class NativeReactNativeFeatureFlags
   bool enableResizeObserverByDefault(jsi::Runtime& runtime);
 
   bool enableSwiftUIBasedFilters(jsi::Runtime& runtime);
+
+  bool enableSynchronousTransformOverlay(jsi::Runtime& runtime);
 
   bool enableViewCulling(jsi::Runtime& runtime);
 

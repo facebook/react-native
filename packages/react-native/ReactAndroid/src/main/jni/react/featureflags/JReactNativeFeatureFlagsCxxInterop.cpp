@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<7e430d5b575ea983d53ecde87c4dc9f0>>
+ * @generated SignedSource<<718437adc32ac2d802dba0f07b3ef5a0>>
  */
 
 /**
@@ -354,6 +354,12 @@ class ReactNativeFeatureFlagsJavaProvider
   bool enableSwiftUIBasedFilters() override {
     static const auto method =
         getReactNativeFeatureFlagsProviderJavaClass()->getMethod<jboolean()>("enableSwiftUIBasedFilters");
+    return method(javaProvider_);
+  }
+
+  bool enableSynchronousTransformOverlay() override {
+    static const auto method =
+        getReactNativeFeatureFlagsProviderJavaClass()->getMethod<jboolean()>("enableSynchronousTransformOverlay");
     return method(javaProvider_);
   }
 
@@ -890,6 +896,11 @@ bool JReactNativeFeatureFlagsCxxInterop::enableSwiftUIBasedFilters(
   return ReactNativeFeatureFlags::enableSwiftUIBasedFilters();
 }
 
+bool JReactNativeFeatureFlagsCxxInterop::enableSynchronousTransformOverlay(
+    facebook::jni::alias_ref<JReactNativeFeatureFlagsCxxInterop> /*unused*/) {
+  return ReactNativeFeatureFlags::enableSynchronousTransformOverlay();
+}
+
 bool JReactNativeFeatureFlagsCxxInterop::enableViewCulling(
     facebook::jni::alias_ref<JReactNativeFeatureFlagsCxxInterop> /*unused*/) {
   return ReactNativeFeatureFlags::enableViewCulling();
@@ -1300,6 +1311,9 @@ void JReactNativeFeatureFlagsCxxInterop::registerNatives() {
       makeNativeMethod(
         "enableSwiftUIBasedFilters",
         JReactNativeFeatureFlagsCxxInterop::enableSwiftUIBasedFilters),
+      makeNativeMethod(
+        "enableSynchronousTransformOverlay",
+        JReactNativeFeatureFlagsCxxInterop::enableSynchronousTransformOverlay),
       makeNativeMethod(
         "enableViewCulling",
         JReactNativeFeatureFlagsCxxInterop::enableViewCulling),
