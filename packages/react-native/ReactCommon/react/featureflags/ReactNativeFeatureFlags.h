@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<2d7aa66f222fa01d4cc93c7d5ef2fdb7>>
+ * @generated SignedSource<<7b76517f0c1d334fad73a96881a2f377>>
  */
 
 /**
@@ -350,6 +350,11 @@ class ReactNativeFeatureFlags {
    * Uses the default event priority instead of the discreet event priority by default when dispatching events from Fabric to React.
    */
   RN_EXPORT static bool fixMappingOfEventPrioritiesBetweenFabricAndReact();
+
+  /**
+   * Flushes TextInput state updates synchronously on Android when a multiline input changes line count, so the new height mounts in the same frame instead of the content jumping. Pairs with enableFollowUpMountItemDispatchAndroid for updates that happen during mount dispatch.
+   */
+  RN_EXPORT static bool fixMultilineContentJumpAndroid();
 
   /**
    * Re-measures text and re-sends padding and overflow insets to mounted views when the pixel density changes, so text and padded views do not keep sizes from the old density.

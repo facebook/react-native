@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<7e430d5b575ea983d53ecde87c4dc9f0>>
+ * @generated SignedSource<<f4fcec6774ae07298cc5539ab1e2f5e4>>
  */
 
 /**
@@ -408,6 +408,12 @@ class ReactNativeFeatureFlagsJavaProvider
   bool fixMappingOfEventPrioritiesBetweenFabricAndReact() override {
     static const auto method =
         getReactNativeFeatureFlagsProviderJavaClass()->getMethod<jboolean()>("fixMappingOfEventPrioritiesBetweenFabricAndReact");
+    return method(javaProvider_);
+  }
+
+  bool fixMultilineContentJumpAndroid() override {
+    static const auto method =
+        getReactNativeFeatureFlagsProviderJavaClass()->getMethod<jboolean()>("fixMultilineContentJumpAndroid");
     return method(javaProvider_);
   }
 
@@ -935,6 +941,11 @@ bool JReactNativeFeatureFlagsCxxInterop::fixMappingOfEventPrioritiesBetweenFabri
   return ReactNativeFeatureFlags::fixMappingOfEventPrioritiesBetweenFabricAndReact();
 }
 
+bool JReactNativeFeatureFlagsCxxInterop::fixMultilineContentJumpAndroid(
+    facebook::jni::alias_ref<JReactNativeFeatureFlagsCxxInterop> /*unused*/) {
+  return ReactNativeFeatureFlags::fixMultilineContentJumpAndroid();
+}
+
 bool JReactNativeFeatureFlagsCxxInterop::fixTextLayoutOnPixelDensityChange(
     facebook::jni::alias_ref<JReactNativeFeatureFlagsCxxInterop> /*unused*/) {
   return ReactNativeFeatureFlags::fixTextLayoutOnPixelDensityChange();
@@ -1327,6 +1338,9 @@ void JReactNativeFeatureFlagsCxxInterop::registerNatives() {
       makeNativeMethod(
         "fixMappingOfEventPrioritiesBetweenFabricAndReact",
         JReactNativeFeatureFlagsCxxInterop::fixMappingOfEventPrioritiesBetweenFabricAndReact),
+      makeNativeMethod(
+        "fixMultilineContentJumpAndroid",
+        JReactNativeFeatureFlagsCxxInterop::fixMultilineContentJumpAndroid),
       makeNativeMethod(
         "fixTextLayoutOnPixelDensityChange",
         JReactNativeFeatureFlagsCxxInterop::fixTextLayoutOnPixelDensityChange),
