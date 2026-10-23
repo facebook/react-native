@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<73327eab3ccc39c8d823c9d2b110d23c>>
+ * @generated SignedSource<<c25d4512eaf557228989ed517a7faa15>>
  * @flow strict
  * @noformat
  */
@@ -79,7 +79,6 @@ export type ReactNativeFeatureFlags = Readonly<{
   enableFabricLogs: Getter<boolean>,
   enableFlexboxAutoMinSizeInStrictMode: Getter<boolean>,
   enableFollowUpMountItemDispatchAndroid: Getter<boolean>,
-  enableFontScaleChangesUpdatingLayout: Getter<boolean>,
   enableIOSCompressedTextFrameAdjustment: Getter<boolean>,
   enableIOSTextBaselineOffsetPerLine: Getter<boolean>,
   enableIOSViewClipToPaddingBox: Getter<boolean>,
@@ -342,10 +341,6 @@ export const enableFlexboxAutoMinSizeInStrictMode: Getter<boolean> = createNativ
  * When mount items are queued while MountItemDispatcher is already dispatching on Android (e.g. from a synchronous state update), dispatch them in the same frame instead of deferring them to the next one.
  */
 export const enableFollowUpMountItemDispatchAndroid: Getter<boolean> = createNativeFlagGetter('enableFollowUpMountItemDispatchAndroid', false);
-/**
- * Enables font scale changes updating layout for measurable nodes.
- */
-export const enableFontScaleChangesUpdatingLayout: Getter<boolean> = createNativeFlagGetter('enableFontScaleChangesUpdatingLayout', true);
 /**
  * Adjusts iOS Text drawing frames for compressed explicit line heights.
  */

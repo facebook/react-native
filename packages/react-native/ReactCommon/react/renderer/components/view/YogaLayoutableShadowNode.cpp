@@ -504,8 +504,7 @@ void YogaLayoutableShadowNode::configureYogaTree(
   // invalidate Yoga's layout cache. Dirty the node when it changes to force
   // re-measurement. We propagate up to the root so an unchanged, still-cached
   // ancestor isn't skipped by `calculateLayoutInternal` before reaching us.
-  if (ReactNativeFeatureFlags::enableFontScaleChangesUpdatingLayout() &&
-      getTraits().check(ShadowNodeTraits::Trait::MeasurableYogaNode) &&
+  if (getTraits().check(ShadowNodeTraits::Trait::MeasurableYogaNode) &&
       !floatEquality(
           getLayoutMetrics().fontSizeMultiplier, fontSizeMultiplier)) {
     yogaNode_.markDirtyAndPropagate();
