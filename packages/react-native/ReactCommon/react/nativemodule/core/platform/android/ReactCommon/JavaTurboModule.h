@@ -9,7 +9,10 @@
 
 #include <react/cxxstableapi/UmbrellaGuard.h>
 
+#include <mutex>
 #include <string>
+#include <unordered_map>
+#include <vector>
 
 #include <React/Bridging.h>
 #include <React/CallInvoker.h>
@@ -61,6 +64,15 @@ class JSI_EXPORT JavaTurboModule : public TurboModule {
   // instance_ can be of type JTurboModule, or JNativeModule
   jni::global_ref<jobject> instance_;
   std::shared_ptr<NativeMethodCallInvoker> nativeMethodCallInvoker_;
+
+  // A method's JNI signature, parsed on its first call since it doesn't change.
+  struct MethodInfo {
+    std::vector<std::string> argTypes;
+    std::string returnType;
+  };
+  std::unordered_map<jmethodID, MethodInfo> methodInfos_;
+  std::mutex methodInfosMutex_;
+  const MethodInfo &getMethodInfo(jmethodID methodID, const std::string &methodSignature);
 };
 
 } // namespace facebook::react

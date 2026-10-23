@@ -588,6 +588,24 @@ void rejectWithException(
 
 } // namespace
 
+const JavaTurboModule::MethodInfo& JavaTurboModule::getMethodInfo(
+    jmethodID methodID,
+    const std::string& methodSignature) {
+  std::lock_guard<std::mutex> lock(methodInfosMutex_);
+  auto entry = methodInfos_.find(methodID);
+  if (entry == methodInfos_.end()) {
+    entry = methodInfos_
+                .emplace(
+                    methodID,
+                    MethodInfo{
+                        getMethodArgTypesFromSignature(methodSignature),
+                        methodSignature.substr(
+                            methodSignature.find_last_of(')') + 1)})
+                .first;
+  }
+  return entry->second;
+}
+
 jsi::Value JavaTurboModule::invokeJavaMethod(
     jsi::Runtime& runtime,
     TurboModuleMethodValueKind valueKind,
@@ -689,14 +707,13 @@ jsi::Value JavaTurboModule::invokeJavaMethod(
     return returnValue;
   }
 
-  std::vector<std::string> methodArgTypes =
-      getMethodArgTypesFromSignature(methodSignature);
+  const MethodInfo& methodInfo = getMethodInfo(methodID, methodSignature);
 
   JNIArgs jniArgs = convertJSIArgsToJNIArgs(
       env,
       runtime,
       methodNameStr,
-      methodArgTypes,
+      methodInfo.argTypes,
       args,
       argCount,
       jsInvoker_,
@@ -712,8 +729,7 @@ jsi::Value JavaTurboModule::invokeJavaMethod(
 
   switch (valueKind) {
     case BooleanKind: {
-      std::string returnType =
-          methodSignature.substr(methodSignature.find_last_of(')') + 1);
+      const std::string& returnType = methodInfo.returnType;
       if (returnType == "Ljava/lang/Boolean;") {
         auto returnObject =
             env->CallObjectMethodA(instance, methodID, jargs.data());
@@ -749,8 +765,7 @@ jsi::Value JavaTurboModule::invokeJavaMethod(
       }
     }
     case NumberKind: {
-      std::string returnType =
-          methodSignature.substr(methodSignature.find_last_of(')') + 1);
+      const std::string& returnType = methodInfo.returnType;
       if (returnType == "Ljava/lang/Double;" ||
           returnType == "Ljava/lang/Float;" ||
           returnType == "Ljava/lang/Integer;") {
