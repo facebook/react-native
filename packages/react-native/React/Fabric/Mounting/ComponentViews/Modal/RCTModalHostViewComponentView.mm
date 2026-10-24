@@ -17,6 +17,10 @@
 
 #import "RCTFabricModalHostViewController.h"
 
+@interface RCTFabricModalHostViewController ()
+- (void)captureStatusBarAppearance;
+@end
+
 using namespace facebook::react;
 
 #if !TARGET_OS_TV
@@ -173,6 +177,7 @@ static ModalHostViewEventEmitter::OnOrientationChange onOrientationChangeStruct(
     [self saveAccessibilityFocusedView];
     self.viewController.presentationController.delegate = self;
     self.viewController.modalInPresentation = _modalInPresentation;
+    [self.viewController captureStatusBarAppearance];
 
     _isPresented = YES;
     [self presentViewController:self.viewController
