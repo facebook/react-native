@@ -1585,7 +1585,6 @@ interface RCTRootViewFactoryConfiguration : public NSObject {
   public @property (assign) RCTCustomizeRootViewBlock customizeRootView;
   public @property (assign) RCTExtraLazyModuleClassesForBridge extraLazyModuleClassesForBridge;
   public @property (assign) RCTExtraModulesForBridgeBlock extraModulesForBridge;
-  public @property (assign) RCTLoadSourceForBridgeBlock loadSourceForBridge;
   public @property (assign) RCTLoadSourceForBridgeWithProgressBlock loadSourceForBridgeWithProgress;
   public @property (assign) RCTSourceURLForBridgeBlock sourceURLForBridge;
   public @property (weak) id<RCTJSRuntimeConfiguratorProtocol> jsRuntimeConfiguratorDelegate;
