@@ -24,8 +24,8 @@ void RCTAccessibilityManagerSetIsVoiceOverEnabled(
 typedef NSDictionary<NSString *, id> *_Nullable (^RCTAccessibilityPreferencesReader)(void);
 
 // Replaces how this module reads the settings behind getPreferences(), and
-// re-reads them without sending preferencesChanged. Pass nil to read the
-// system settings again.
+// re-reads them without sending accessibilityPreferencesChanged. Pass nil to
+// read the system settings again.
 void RCTAccessibilityManagerSetPreferencesReader(
     RCTAccessibilityManager *accessibilityManager,
     RCTAccessibilityPreferencesReader _Nullable preferencesReader);

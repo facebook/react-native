@@ -51,15 +51,33 @@ describe('AccessibilityInfo preferencesChanged', () => {
       prefersSwitchLabels: true,
       prefersNonColorIndicators: false,
     };
-    RCTDeviceEventEmitter.emit('preferencesChanged', preferences);
+    RCTDeviceEventEmitter.emit('accessibilityPreferencesChanged', preferences);
     subscription.remove();
-    RCTDeviceEventEmitter.emit('preferencesChanged', {
+    RCTDeviceEventEmitter.emit('accessibilityPreferencesChanged', {
       prefersSwitchLabels: false,
       prefersNonColorIndicators: false,
     });
 
     expect(handler).toHaveBeenCalledTimes(1);
     expect(handler).toHaveBeenCalledWith(preferences);
+  });
+
+  it('ignores a bare preferencesChanged device event on iOS', () => {
+    const {AccessibilityInfo, RCTDeviceEventEmitter} = loadForPlatform('ios');
+    const handler = jest.fn();
+
+    const subscription = AccessibilityInfo.addEventListener(
+      'preferencesChanged',
+      handler,
+    );
+    // Another module could emit this name on the shared emitter.
+    RCTDeviceEventEmitter.emit('preferencesChanged', {
+      prefersSwitchLabels: true,
+      prefersNonColorIndicators: true,
+    });
+    subscription.remove();
+
+    expect(handler).not.toHaveBeenCalled();
   });
 
   it('does not subscribe on Android', () => {
@@ -71,7 +89,7 @@ describe('AccessibilityInfo preferencesChanged', () => {
       'preferencesChanged',
       handler,
     );
-    RCTDeviceEventEmitter.emit('preferencesChanged', {
+    RCTDeviceEventEmitter.emit('accessibilityPreferencesChanged', {
       prefersSwitchLabels: true,
       prefersNonColorIndicators: true,
     });

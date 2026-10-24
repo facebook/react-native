@@ -91,7 +91,7 @@ const EventNames: Map<keyof AccessibilityEventDefinitions, string> =
         ['screenReaderChanged', 'screenReaderChanged'],
         ['darkerSystemColorsChanged', 'darkerSystemColorsChanged'],
         ['showBordersChanged', 'showBordersChanged'],
-        ['preferencesChanged', 'preferencesChanged'],
+        ['preferencesChanged', 'accessibilityPreferencesChanged'],
       ]);
 
 /**

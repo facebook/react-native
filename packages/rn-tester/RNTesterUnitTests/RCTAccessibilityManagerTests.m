@@ -190,7 +190,7 @@ static BOOL RCTIsCFBoolean(id value)
   [self postNotification:UIAccessibilityOnOffSwitchLabelsDidChangeNotification];
   [self postNotification:UIAccessibilityOnOffSwitchLabelsDidChangeNotification];
 
-  XCTAssertEqualObjects(eventDispatcher.events, (@[ @[ @"preferencesChanged", RCTTestPreferences(YES, NO) ] ]));
+  XCTAssertEqualObjects(eventDispatcher.events, (@[ @[ @"accessibilityPreferencesChanged", RCTTestPreferences(YES, NO) ] ]));
   XCTAssertEqualObjects([self currentPreferencesOf:manager], RCTTestPreferences(YES, NO));
 }
 
@@ -207,7 +207,7 @@ static BOOL RCTIsCFBoolean(id value)
   [self postNotification:UIAccessibilityShouldDifferentiateWithoutColorDidChangeNotification];
   [self postNotification:UIAccessibilityShouldDifferentiateWithoutColorDidChangeNotification];
 
-  XCTAssertEqualObjects(eventDispatcher.events, (@[ @[ @"preferencesChanged", RCTTestPreferences(NO, YES) ] ]));
+  XCTAssertEqualObjects(eventDispatcher.events, (@[ @[ @"accessibilityPreferencesChanged", RCTTestPreferences(NO, YES) ] ]));
   XCTAssertEqualObjects([self currentPreferencesOf:manager], RCTTestPreferences(NO, YES));
 }
 
@@ -245,8 +245,8 @@ static BOOL RCTIsCFBoolean(id value)
   settingsB.preferences = RCTTestPreferences(NO, YES);
   [self postNotification:UIAccessibilityOnOffSwitchLabelsDidChangeNotification];
 
-  XCTAssertEqualObjects(eventDispatcherA.events, (@[ @[ @"preferencesChanged", RCTTestPreferences(YES, NO) ] ]));
-  XCTAssertEqualObjects(eventDispatcherB.events, (@[ @[ @"preferencesChanged", RCTTestPreferences(NO, YES) ] ]));
+  XCTAssertEqualObjects(eventDispatcherA.events, (@[ @[ @"accessibilityPreferencesChanged", RCTTestPreferences(YES, NO) ] ]));
+  XCTAssertEqualObjects(eventDispatcherB.events, (@[ @[ @"accessibilityPreferencesChanged", RCTTestPreferences(NO, YES) ] ]));
 }
 
 - (void)testReaderValuesReachTheEventAsCFBooleans

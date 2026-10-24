@@ -315,7 +315,8 @@ RCT_EXPORT_MODULE()
     _preferences = newPreferences;
 #pragma clang diagnostic push
 #pragma clang diagnostic ignored "-Wdeprecated-declarations"
-    [[_moduleRegistry moduleForName:"EventDispatcher"] sendDeviceEventWithName:@"preferencesChanged" body:_preferences];
+    [[_moduleRegistry moduleForName:"EventDispatcher"] sendDeviceEventWithName:@"accessibilityPreferencesChanged"
+                                                                          body:_preferences];
 #pragma clang diagnostic pop
   }
 }
