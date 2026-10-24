@@ -5,11 +5,6 @@ category NSTextStorage(FontScaling) {
   public virtual void scaleFontSizeWithRatio:minimumFontSize:maximumFontSize:(CGFloat ratio, CGFloat minimumFontSize, CGFloat maximumFontSize);
 }
 
-category RCTBridge(Inspector) {
-  public @property (assign, readonly) BOOL inspectable;
-  public @property (assign, readonly) facebook::react::jsinspector_modern::HostTarget* inspectorTarget;
-}
-
 category RCTBridge(RCTAccessibilityManager) {
   public @property (assign, readonly) RCTAccessibilityManager* accessibilityManager;
 }
