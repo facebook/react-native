@@ -795,6 +795,27 @@ describe('AccessibilityInfo', () => {
           'NativeAccessibilityInfoAndroid.getContrastLevel is not available',
         );
       });
+
+      it('should throw error if NativeAccessibilityInfoAndroid is not available', async () => {
+        /* $FlowFixMe[incompatible-type] */
+        Platform.OS = 'android';
+
+        const nativeAccessibilityInfoModule = jest.requireMock(
+          '../NativeAccessibilityInfo',
+        );
+        nativeAccessibilityInfoModule.default = null;
+
+        const result: unknown =
+          await AccessibilityInfo.getContrastLevel().catch(e => e);
+
+        invariant(
+          result instanceof Error,
+          'Expected getContrastLevel to reject',
+        );
+        expect(result.message).toEqual(
+          'NativeAccessibilityInfoAndroid.getContrastLevel is not available',
+        );
+      });
     });
 
     describe('iOS', () => {
