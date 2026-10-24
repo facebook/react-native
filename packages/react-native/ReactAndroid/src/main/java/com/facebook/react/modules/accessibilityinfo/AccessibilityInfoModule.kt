@@ -17,11 +17,13 @@ import android.os.Build
 import android.provider.Settings
 import android.view.accessibility.AccessibilityEvent
 import android.view.accessibility.AccessibilityManager
+import com.facebook.common.logging.FLog
 import com.facebook.fbreact.specs.NativeAccessibilityInfoSpec
 import com.facebook.react.bridge.Callback
 import com.facebook.react.bridge.LifecycleEventListener
 import com.facebook.react.bridge.ReactApplicationContext
 import com.facebook.react.bridge.UiThreadUtil
+import com.facebook.react.common.ReactConstants
 import com.facebook.react.module.annotations.ReactModule
 
 /**
@@ -80,7 +82,8 @@ internal class AccessibilityInfoModule(context: ReactApplicationContext) :
   private val boldTextCallbacks: ComponentCallbacks =
       object : ComponentCallbacks {
         override fun onConfigurationChanged(newConfig: Configuration) {
-          if (reactApplicationContext.hasActiveReactInstance()) {
+          // A change already queued on the main thread can arrive after `invalidate()`.
+          if (!invalidated && reactApplicationContext.hasActiveReactInstance()) {
             updateAndSendBoldTextChangeEvent(
                 Build.VERSION.SDK_INT >= Build.VERSION_CODES.S &&
                     isBoldFontWeightAdjustment(newConfig.fontWeightAdjustment)
@@ -91,7 +94,11 @@ internal class AccessibilityInfoModule(context: ReactApplicationContext) :
         @Deprecated("Overrides deprecated ComponentCallbacks.onLowMemory()")
         override fun onLowMemory(): Unit = Unit
       }
+  // Only read and written on the main thread.
   private var boldTextCallbacksRegistered = false
+  // Set by `invalidate()`, on any thread, and read on the main thread. Once set, nothing registers
+  // again and queued callbacks send nothing.
+  @Volatile private var invalidated = false
   private val accessibilityManager: AccessibilityManager?
   private val touchExplorationStateChangeListener: ReactTouchExplorationStateChangeListener =
       ReactTouchExplorationStateChangeListener()
@@ -100,7 +107,8 @@ internal class AccessibilityInfoModule(context: ReactApplicationContext) :
   private val contentResolver: ContentResolver
   private var reduceMotionEnabled = false
   private var highTextContrastEnabled = false
-  private var boldTextEnabled = false
+  // Written on the main thread and read on the native modules thread.
+  @Volatile private var boldTextEnabled = false
   private var touchExplorationEnabled = false
   private var accessibilityServiceEnabled = false
   private var recommendedTimeout = 0
@@ -275,6 +283,9 @@ internal class AccessibilityInfoModule(context: ReactApplicationContext) :
   }
 
   override fun onHostResume() {
+    if (invalidated) {
+      return
+    }
     accessibilityManager?.addTouchExplorationStateChangeListener(
         touchExplorationStateChangeListener,
     )
@@ -308,7 +319,11 @@ internal class AccessibilityInfoModule(context: ReactApplicationContext) :
   }
 
   private fun registerBoldTextCallbacks() {
-    if (!boldTextCallbacksRegistered && Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) {
+    if (
+        !invalidated &&
+            !boldTextCallbacksRegistered &&
+            Build.VERSION.SDK_INT >= Build.VERSION_CODES.S
+    ) {
       reactApplicationContext.applicationContext.registerComponentCallbacks(boldTextCallbacks)
       boldTextCallbacksRegistered = true
     }
@@ -333,8 +348,19 @@ internal class AccessibilityInfoModule(context: ReactApplicationContext) :
   }
 
   override fun invalidate() {
+    // Removing the listener first drops an `onHostResume` that `ReactContext` has already queued.
     reactApplicationContext.removeLifecycleEventListener(this)
-    unregisterBoldTextCallbacks()
+    invalidated = true
+    // `invalidate()` can run off the main thread, but the callbacks are registered on it.
+    if (UiThreadUtil.isOnUiThread()) {
+      unregisterBoldTextCallbacks()
+    } else if (!UiThreadUtil.runOnUiThread { unregisterBoldTextCallbacks() }) {
+      FLog.w(
+          ReactConstants.TAG,
+          "AccessibilityInfoModule: could not post to the main thread, so the bold text " +
+              "listener may leak.",
+      )
+    }
     super.invalidate()
   }
 
