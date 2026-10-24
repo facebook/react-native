@@ -6,7 +6,6 @@
  */
 
 #import "RCTBridge.h"
-#import "RCTBridge+Inspector.h"
 #import "RCTBridge+Private.h"
 
 #import <objc/runtime.h>
