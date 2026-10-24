@@ -29,7 +29,6 @@
 #import <React/RCTEventDispatcherProtocol.h>
 #import <React/RCTLog.h>
 #import <React/RCTLogBox.h>
-#import <React/RCTModuleData.h>
 #import <React/RCTPerformanceLogger.h>
 #import <React/RCTRedBox.h>
 #import <React/RCTSurfacePresenter.h>
