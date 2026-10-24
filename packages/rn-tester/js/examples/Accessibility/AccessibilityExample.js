@@ -1634,9 +1634,11 @@ function ContrastLevelExample(): React.Node {
           setContrastLevel(String(level));
         }
       })
-      .catch((error: Error) => {
+      .catch((error: unknown) => {
         if (!ignoreStartingRead) {
-          setContrastLevel(`Unavailable: ${error.message}`);
+          const message =
+            error instanceof Error ? error.message : String(error);
+          setContrastLevel(`Unavailable: ${message}`);
         }
       });
     return function cleanup() {
