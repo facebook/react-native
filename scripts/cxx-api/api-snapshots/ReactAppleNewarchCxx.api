@@ -5,16 +5,8 @@ category NSTextStorage(FontScaling) {
   public virtual void scaleFontSizeWithRatio:minimumFontSize:maximumFontSize:(CGFloat ratio, CGFloat minimumFontSize, CGFloat maximumFontSize);
 }
 
-category RCTBridge(RCTAccessibilityManager) {
-  public @property (assign, readonly) RCTAccessibilityManager* accessibilityManager;
-}
-
 category RCTBridge(RCTDevMenu) {
   public @property (assign, readonly) RCTDevMenu* devMenu;
-}
-
-category RCTBridge(RCTDevSettings) {
-  public @property (assign, readonly) RCTDevSettings* devSettings;
 }
 
 category RCTBridge(RCTEventDispatcher) {
@@ -25,20 +17,8 @@ category RCTBridge(RCTImageLoader) {
   public @property (assign, readonly) RCTImageLoader* imageLoader;
 }
 
-category RCTBridge(RCTImageStoreManager) {
-  public @property (assign, readonly) RCTImageStoreManager* imageStoreManager;
-}
-
-category RCTBridge(RCTNetworking) {
-  public @property (assign, readonly) RCTNetworking* networking;
-}
-
 category RCTBridge(RCTUIManager) {
   public @property (assign, readonly) RCTUIManager* uiManager;
-}
-
-category RCTBridge(RCTWebSocketModule) {
-  public virtual RCTWebSocketModule* webSocketModule();
 }
 
 category RCTBridgeProxy(Cxx) {
