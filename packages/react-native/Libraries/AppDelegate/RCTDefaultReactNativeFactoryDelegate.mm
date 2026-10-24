@@ -6,6 +6,9 @@
  */
 
 #import "RCTDefaultReactNativeFactoryDelegate.h"
+#import <React/RCTBridge.h>
+#import <React/RCTJavaScriptLoader.h>
+#import <React/RCTRootView.h>
 #import <ReactCommon/RCTHost.h>
 #import "RCTAppSetupUtils.h"
 #import "RCTDependencyProvider.h"
@@ -54,10 +57,13 @@
 #endif
 }
 
+#pragma clang diagnostic push
+#pragma clang diagnostic ignored "-Wdeprecated-declarations"
 - (void)customizeRootView:(RCTRootView *)rootView
 {
   // Override point for customization after application launch.
 }
+#pragma clang diagnostic pop
 
 - (RCTColorSpace)defaultColorSpace
 {
