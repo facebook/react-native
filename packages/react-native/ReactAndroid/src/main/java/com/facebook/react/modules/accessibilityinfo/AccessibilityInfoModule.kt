@@ -16,12 +16,17 @@ import android.os.Build
 import android.provider.Settings
 import android.view.accessibility.AccessibilityEvent
 import android.view.accessibility.AccessibilityManager
+import androidx.annotation.RequiresApi
+import com.facebook.common.logging.FLog
 import com.facebook.fbreact.specs.NativeAccessibilityInfoSpec
 import com.facebook.react.bridge.Callback
 import com.facebook.react.bridge.LifecycleEventListener
 import com.facebook.react.bridge.ReactApplicationContext
 import com.facebook.react.bridge.UiThreadUtil
+import com.facebook.react.common.ReactConstants
 import com.facebook.react.module.annotations.ReactModule
+import java.util.concurrent.Executor
+import java.util.concurrent.atomic.AtomicBoolean
 
 /**
  * Module that monitors and provides information about the state of Touch Exploration service on the
@@ -73,11 +78,9 @@ internal class AccessibilityInfoModule(context: ReactApplicationContext) :
           }
         }
       }
-  private val uiModeManager: UiModeManager? =
-      context.applicationContext.getSystemService(Context.UI_MODE_SERVICE) as UiModeManager?
-  // Listener that is notified when the contrast level changes (API 34+). Created lazily so that
-  // older versions never load the ContrastChangeListener interface.
-  private var contrastChangeListener: Any? = null
+  // Notified when the contrast level changes. Only created on Android 14 (API 34) or later, when
+  // there is a UiModeManager, so that older versions never load ContrastChangeListener.
+  private val contrastListener: ContrastListenerApi34?
   private val accessibilityManager: AccessibilityManager?
   private val touchExplorationStateChangeListener: ReactTouchExplorationStateChangeListener =
       ReactTouchExplorationStateChangeListener()
@@ -86,7 +89,12 @@ internal class AccessibilityInfoModule(context: ReactApplicationContext) :
   private val contentResolver: ContentResolver
   private var reduceMotionEnabled = false
   private var highTextContrastEnabled = false
-  private var contrastLevel = 0f
+  // Written on the main thread and read on the native modules thread.
+  @Volatile private var contrastLevel = 0f
+  private val warnedAboutContrast = AtomicBoolean(false)
+  // Set by invalidate(), so that a resume or a contrast change already queued on the main thread
+  // can't register listeners or send events after teardown.
+  @Volatile private var invalidated = false
   private var touchExplorationEnabled = false
   private var accessibilityServiceEnabled = false
   private var recommendedTimeout = 0
@@ -98,6 +106,19 @@ internal class AccessibilityInfoModule(context: ReactApplicationContext) :
     accessibilityManager =
         appContext.getSystemService(Context.ACCESSIBILITY_SERVICE) as AccessibilityManager?
     contentResolver = reactApplicationContext.contentResolver
+    val uiModeManager = appContext.getSystemService(Context.UI_MODE_SERVICE) as UiModeManager?
+    contrastListener =
+        if (
+            Build.VERSION.SDK_INT >= Build.VERSION_CODES.UPSIDE_DOWN_CAKE && uiModeManager != null
+        ) {
+          ContrastListenerApi34(uiModeManager) { rawLevel ->
+            if (!invalidated && reactApplicationContext.hasActiveReactInstance()) {
+              updateAndSendContrastLevelChangeEvent(normalizedContrastLevel(rawLevel))
+            }
+          }
+        } else {
+          null
+        }
     touchExplorationEnabled = accessibilityManager?.isTouchExplorationEnabled ?: false
     accessibilityServiceEnabled = accessibilityManager?.isEnabled ?: false
     reduceMotionEnabled = isReduceMotionEnabledValue
@@ -163,12 +184,25 @@ internal class AccessibilityInfoModule(context: ReactApplicationContext) :
     }
 
   private val contrastLevelValue: Float
-    get() =
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.UPSIDE_DOWN_CAKE) {
-          uiModeManager?.contrast ?: 0f
-        } else {
-          0f
-        }
+    get() {
+      if (Build.VERSION.SDK_INT < Build.VERSION_CODES.UPSIDE_DOWN_CAKE) {
+        return 0f
+      }
+      val listener = contrastListener ?: return 0f
+      return normalizedContrastLevel(listener.currentLevel())
+    }
+
+  private fun normalizedContrastLevel(rawLevel: Float): Float {
+    val level = normalizeContrast(rawLevel)
+    // `level != rawLevel` is also true for NaN.
+    if (level != rawLevel && !warnedAboutContrast.getAndSet(true)) {
+      FLog.w(
+          ReactConstants.TAG,
+          "UiModeManager reported the contrast level $rawLevel, using $level instead",
+      )
+    }
+    return level
+  }
 
   override fun isReduceMotionEnabled(successCallback: Callback) {
     successCallback.invoke(reduceMotionEnabled)
@@ -228,40 +262,27 @@ internal class AccessibilityInfoModule(context: ReactApplicationContext) :
     }
   }
 
-  private fun updateAndSendContrastLevelChangeEvent() {
-    val newContrastLevel = contrastLevelValue
-    if (contrastLevel != newContrastLevel) {
-      contrastLevel = newContrastLevel
+  /** [level] must already be normalized. */
+  private fun updateAndSendContrastLevelChangeEvent(level: Float) {
+    if (contrastLevel != level) {
+      contrastLevel = level
       getReactApplicationContextIfActiveOrWarn()
-          ?.emitDeviceEvent(CONTRAST_LEVEL_EVENT_NAME, contrastLevel.toDouble())
+          ?.emitDeviceEvent(CONTRAST_LEVEL_EVENT_NAME, level.toDouble())
     }
   }
 
   private fun registerContrastChangeListener() {
-    if (
-        Build.VERSION.SDK_INT < Build.VERSION_CODES.UPSIDE_DOWN_CAKE ||
-            contrastChangeListener != null
-    ) {
+    if (invalidated || Build.VERSION.SDK_INT < Build.VERSION_CODES.UPSIDE_DOWN_CAKE) {
       return
     }
-    val manager = uiModeManager ?: return
-    val listener =
-        UiModeManager.ContrastChangeListener {
-          if (reactApplicationContext.hasActiveReactInstance()) {
-            updateAndSendContrastLevelChangeEvent()
-          }
-        }
-    manager.addContrastChangeListener(reactApplicationContext.mainExecutor, listener)
-    contrastChangeListener = listener
+    contrastListener?.register(reactApplicationContext.mainExecutor)
   }
 
   private fun unregisterContrastChangeListener() {
     if (Build.VERSION.SDK_INT < Build.VERSION_CODES.UPSIDE_DOWN_CAKE) {
       return
     }
-    val listener = contrastChangeListener as? UiModeManager.ContrastChangeListener ?: return
-    uiModeManager?.removeContrastChangeListener(listener)
-    contrastChangeListener = null
+    contrastListener?.unregister()
   }
 
   private fun updateAndSendTouchExplorationChangeEvent(enabled: Boolean) {
@@ -290,6 +311,9 @@ internal class AccessibilityInfoModule(context: ReactApplicationContext) :
   }
 
   override fun onHostResume() {
+    if (invalidated) {
+      return
+    }
     accessibilityManager?.addTouchExplorationStateChangeListener(
         touchExplorationStateChangeListener,
     )
@@ -299,7 +323,8 @@ internal class AccessibilityInfoModule(context: ReactApplicationContext) :
     val highTextContrastUri =
         Settings.Secure.getUriFor(ACCESSIBILITY_HIGH_TEXT_CONTRAST_ENABLED_CONSTANT)
     contentResolver.registerContentObserver(highTextContrastUri, false, highTextContrastObserver)
-    // Registering does not report the current value, so read it again below.
+    // The contrast listener is removed while paused, and registering doesn't report the current
+    // value, so the level is read again below.
     registerContrastChangeListener()
     updateAndSendTouchExplorationChangeEvent(
         accessibilityManager?.isTouchExplorationEnabled == true,
@@ -307,7 +332,7 @@ internal class AccessibilityInfoModule(context: ReactApplicationContext) :
     updateAndSendAccessibilityServiceChangeEvent(accessibilityManager?.isEnabled == true)
     updateAndSendReduceMotionChangeEvent()
     updateAndSendHighTextContrastChangeEvent()
-    updateAndSendContrastLevelChangeEvent()
+    updateAndSendContrastLevelChangeEvent(contrastLevelValue)
     updateAndSendInvertColorsChangeEvent()
     updateAndSendGrayscaleModeChangeEvent()
   }
@@ -333,8 +358,19 @@ internal class AccessibilityInfoModule(context: ReactApplicationContext) :
   }
 
   override fun invalidate() {
+    // Removing the lifecycle listener first drops an onHostResume that ReactContext has queued.
     reactApplicationContext.removeLifecycleEventListener(this)
-    unregisterContrastChangeListener()
+    invalidated = true
+    // The contrast listener is added and removed on the UI thread, but invalidate() can run on
+    // another thread.
+    if (UiThreadUtil.isOnUiThread()) {
+      unregisterContrastChangeListener()
+    } else if (!UiThreadUtil.runOnUiThread { unregisterContrastChangeListener() }) {
+      FLog.w(
+          ReactConstants.TAG,
+          "Couldn't post the removal of the contrast listener, so it may leak",
+      )
+    }
     super.invalidate()
   }
 
@@ -369,6 +405,36 @@ internal class AccessibilityInfoModule(context: ReactApplicationContext) :
     successCallback.invoke(recommendedTimeout)
   }
 
+  /**
+   * Owns the API 34 contrast listener, so that the module never refers to
+   * [UiModeManager.ContrastChangeListener] directly. Each module has its own instance. [register]
+   * and [unregister] must be called on the UI thread.
+   */
+  @RequiresApi(Build.VERSION_CODES.UPSIDE_DOWN_CAKE)
+  private class ContrastListenerApi34(
+      private val manager: UiModeManager,
+      onChange: (Float) -> Unit,
+  ) {
+    private val listener = UiModeManager.ContrastChangeListener { level -> onChange(level) }
+    private var registered = false
+
+    fun register(executor: Executor) {
+      if (!registered) {
+        manager.addContrastChangeListener(executor, listener)
+        registered = true
+      }
+    }
+
+    fun unregister() {
+      if (registered) {
+        manager.removeContrastChangeListener(listener)
+        registered = false
+      }
+    }
+
+    fun currentLevel(): Float = manager.contrast
+  }
+
   companion object {
     const val NAME: String = NativeAccessibilityInfoSpec.NAME
     private const val REDUCE_MOTION_EVENT_NAME = "reduceMotionDidChange"
@@ -380,5 +446,9 @@ internal class AccessibilityInfoModule(context: ReactApplicationContext) :
     private const val INVERT_COLOR_EVENT_NAME = "invertColorDidChange"
     private const val GRAYSCALE_MODE_EVENT_NAME = "grayscaleModeDidChange"
     private const val CONTRAST_LEVEL_EVENT_NAME = "contrastLevelDidChange"
+
+    /** Maps NaN to the standard contrast, 0, and clamps everything else to the range -1 to 1. */
+    private fun normalizeContrast(raw: Float): Float =
+        if (raw.isNaN()) 0f else raw.coerceIn(-1f, 1f)
   }
 }
