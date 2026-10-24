@@ -19,10 +19,6 @@
 #import <string>
 #import <unordered_map>
 
-#define RCT_IS_TURBO_MODULE_CLASS(klass) \
-  ((RCTTurboModuleEnabled() && [(klass) conformsToProtocol:@protocol(RCTTurboModule)]))
-#define RCT_IS_TURBO_MODULE_INSTANCE(module) RCT_IS_TURBO_MODULE_CLASS([(module) class])
-
 namespace facebook::react {
 
 class CallbackWrapper;
