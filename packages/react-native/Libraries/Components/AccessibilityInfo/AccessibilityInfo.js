@@ -230,11 +230,16 @@ const AccessibilityInfo = {
   /**
    * Query the contrast level chosen in the system settings.
    *
-   * Returns a promise which resolves to a number from -1 to 1, where 0 is
-   * the standard contrast and higher values mean more contrast. This is the
-   * Android equivalent of "Increase Contrast" on iOS
-   * (see `isDarkerSystemColorsEnabled`). Requires Android 14 (API 34) or
-   * later; earlier versions resolve to 0.
+   * Returns a promise which resolves to a number from -1 to 1, where 0 is the standard contrast and
+   * higher values mean more contrast. This is the closest Android counterpart to "Increase
+   * Contrast" on iOS. Requires Android 14 (API 34) or later.
+   *
+   * The promise also resolves to 0 on Android versions before 14, and when the device has no
+   * `UiModeManager`, so callers can't tell these cases apart from the standard contrast. It rejects
+   * if the native method is missing, for example when the native code is older than the JavaScript.
+   *
+   * On iOS this always resolves to 0; use `isDarkerSystemColorsEnabled` to check whether "Increase
+   * Contrast" is on.
    *
    * @platform android
    */
@@ -244,6 +249,9 @@ const AccessibilityInfo = {
         if (NativeAccessibilityInfoAndroid?.getContrastLevel != null) {
           NativeAccessibilityInfoAndroid.getContrastLevel(resolve);
         } else {
+          // This is a new API, so there's no old value to keep resolving: a missing native
+          // method rejects, as `isShowBordersEnabled` does, rather than looking like the
+          // standard contrast.
           reject(
             new Error(
               'NativeAccessibilityInfoAndroid.getContrastLevel is not available',
@@ -252,6 +260,8 @@ const AccessibilityInfo = {
         }
       });
     } else {
+      // iOS has no contrast level, only the on/off "Increase Contrast" setting, which
+      // `isDarkerSystemColorsEnabled` reports.
       return Promise.resolve(0);
     }
   },
@@ -476,9 +486,9 @@ const AccessibilityInfo = {
    *
    * These events are only supported on Android:
    *
-   * - `contrastLevelChanged`: Android-only event. Fires when the contrast level
-   *   changes. The argument to the event handler is a number from -1 to 1
-   *   (see `getContrastLevel`). Requires Android 14 (API 34) or later.
+   * - `contrastLevelChanged`: Android-only event. Fires when the contrast level changes. The
+   *   argument to the event handler is a number from -1 to 1 (see `getContrastLevel`). Requires
+   *   Android 14 (API 34) or later.
    * - `highTextContrastChanged`: Android-only event. Fires when the state of the high text contrast
    *   toggle changes. The argument to the event handler is a boolean. The boolean is `true` when
    *   high text contrast is enabled and `false` otherwise.
