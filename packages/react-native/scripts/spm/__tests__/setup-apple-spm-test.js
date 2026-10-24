@@ -10,18 +10,79 @@
 
 'use strict';
 
+// `pod` is faked so the CocoaPods conversion tests need no CocoaPods install,
+// and the autolinking config command (spawnSync → npx) fails fast instead of
+// reaching the network. A test that sets mockAutolinkingSourceDir lets the
+// config command succeed instead, so `main` gets far enough to write
+// build/generated/ — what "refuses before any change" has to rule out. git and
+// everything else run for real.
+const mockPodCalls = [];
+let mockAutolinkingSourceDir = null;
+jest.mock('node:child_process', () => {
+  const actual = jest.requireActual('node:child_process');
+  return {
+    ...actual,
+    execFileSync: (command, args, options) => {
+      if (command === 'pod') {
+        mockPodCalls.push(args);
+        return '';
+      }
+      return actual.execFileSync(command, args, options);
+    },
+    spawnSync: () =>
+      mockAutolinkingSourceDir == null
+        ? {status: 1, stdout: '', stderr: 'stubbed in test'}
+        : {
+            status: 0,
+            stdout: JSON.stringify({
+              project: {ios: {sourceDir: mockAutolinkingSourceDir}},
+              dependencies: {},
+            }),
+            stderr: '',
+          },
+  };
+});
+
+// A test that sets mockInjectorCalls to an array runs `add` to the end: the
+// xcframeworks package (which needs real XCFramework slices) is skipped, and
+// the injector (which needs that package's output) only records its options.
+let mockInjectorCalls = null;
+jest.mock('../generate-spm-package', () => {
+  const actual = jest.requireActual('../generate-spm-package');
+  return {
+    ...actual,
+    main: argv => (mockInjectorCalls == null ? actual.main(argv) : undefined),
+  };
+});
+jest.mock('../generate-spm-xcodeproj', () => {
+  const actual = jest.requireActual('../generate-spm-xcodeproj');
+  return {
+    ...actual,
+    injectSpmIntoExistingXcodeproj: opts => {
+      if (mockInjectorCalls == null) {
+        return actual.injectSpmIntoExistingXcodeproj(opts);
+      }
+      mockInjectorCalls.push(opts);
+      return {status: 'injected', target: 'MyApp'};
+    },
+  };
+});
+
 const {
   detectStandardRnLayoutRedirect,
   determineVersion,
   ensureBothArtifactFlavors,
+  ensureGitignoreSpmEntries,
   findInjectedXcodeproj,
   generateAutolinkingConfigOrFailClosed,
+  main,
   parseArgs,
   resolveAction,
   resolveAppIosDeploymentTarget,
   resolveConfigCommandToPin,
   resolveCxxApiDefines,
   resolveExplicitConfigCommand,
+  runDeintegrate,
   shouldAutoDeintegrate,
 } = require('../../setup-apple-spm');
 const {REQUIRED_ARTIFACTS} = require('../download-spm-artifacts');
@@ -61,6 +122,26 @@ function mkXcodeproj(appRoot, name, {cocoapods = false} = {}) {
     `// !$*UTF8*$!\n{\n\tobjects = {\n${baseConfig}\t};\n}\n`,
   );
   return dir;
+}
+
+// A Debug or Release artifact slot that passes validation: every required
+// XCFramework directory, listed in artifacts.json.
+function writeCompleteArtifactSlot(root, flavor) {
+  const slot = path.join(root, flavor);
+  fs.mkdirSync(path.join(slot, 'hermes-headers', 'hermes'), {
+    recursive: true,
+  });
+  const artifacts = {};
+  for (const name of REQUIRED_ARTIFACTS) {
+    const xcframeworkPath = path.join(slot, `${name}.xcframework`);
+    fs.mkdirSync(xcframeworkPath, {recursive: true});
+    artifacts[name] = {xcframeworkPath};
+  }
+  fs.writeFileSync(
+    path.join(slot, 'artifacts.json'),
+    JSON.stringify(artifacts),
+  );
+  return slot;
 }
 
 function gitInitAndCommit(dir) {
@@ -461,21 +542,7 @@ describe('dual-flavor artifact input', () => {
   afterEach(() => fs.rmSync(root, {recursive: true, force: true}));
 
   function writeCompleteSlot(flavor) {
-    const slot = path.join(root, flavor);
-    fs.mkdirSync(path.join(slot, 'hermes-headers', 'hermes'), {
-      recursive: true,
-    });
-    const artifacts = {};
-    for (const name of REQUIRED_ARTIFACTS) {
-      const xcframeworkPath = path.join(slot, `${name}.xcframework`);
-      fs.mkdirSync(xcframeworkPath, {recursive: true});
-      artifacts[name] = {xcframeworkPath};
-    }
-    fs.writeFileSync(
-      path.join(slot, 'artifacts.json'),
-      JSON.stringify(artifacts),
-    );
-    return slot;
+    return writeCompleteArtifactSlot(root, flavor);
   }
 
   function args() {
@@ -617,6 +684,645 @@ describe('shouldAutoDeintegrate', () => {
     // conversion only touches the pbxproj + Podfile, which stay clean.
     fs.writeFileSync(path.join(tempDir, 'package-lock.json'), '{}');
     expect(shouldAutoDeintegrate(tempDir, xcodeproj)).toBe(true);
+  });
+
+  it('false when Podfile.bak exists, which the conversion would overwrite', () => {
+    const xcodeproj = mkXcodeproj(tempDir, 'MyApp.xcodeproj', {
+      cocoapods: true,
+    });
+    fs.writeFileSync(
+      path.join(tempDir, 'Podfile'),
+      "target 'MyApp' do\n  use_react_native!\nend\n",
+    );
+    fs.writeFileSync(
+      path.join(tempDir, 'Podfile.bak'),
+      "target 'Old' do\nend\n",
+    );
+    gitInitAndCommit(tempDir);
+    expect(shouldAutoDeintegrate(tempDir, xcodeproj)).toBe(false);
+  });
+
+  describe('third-party pod detection', () => {
+    function podfileWith(line) {
+      return `target 'MyApp' do\n  use_react_native!\n${line}\nend\n`;
+    }
+
+    function autoDeintegrates(podfile) {
+      const xcodeproj = mkXcodeproj(tempDir, 'MyApp.xcodeproj', {
+        cocoapods: true,
+      });
+      fs.writeFileSync(path.join(tempDir, 'Podfile'), podfile);
+      gitInitAndCommit(tempDir);
+      return shouldAutoDeintegrate(tempDir, xcodeproj);
+    }
+
+    it.each([
+      ["  pod 'MBProgressHUD'"],
+      ['  pod "MBProgressHUD"'],
+      ["  pod('Firebase/Analytics')"],
+      ['  pod ("Firebase/Analytics")'],
+      ["  pod( 'Firebase/Analytics', '~> 10.0')"],
+      ["target 'App' do; pod('Foo'); end"],
+      ["  use_frameworks!; pod 'Foo'"],
+    ])('detects %s', line => {
+      expect(autoDeintegrates(podfileWith(line))).toBe(false);
+    });
+
+    it.each([
+      ["  # pod 'MBProgressHUD'"],
+      ["  podspec :path => '../MyLib.podspec'"],
+      ["  pods_root = 'Pods'"],
+      ["  pod_targets = ['MyApp']"],
+      ["  # use_frameworks!; pod 'MBProgressHUD'"],
+      ["  use_frameworks!; podspec :path => '../MyLib.podspec'"],
+    ])('ignores %s', line => {
+      expect(autoDeintegrates(podfileWith(line))).toBe(true);
+    });
+  });
+});
+
+// ---------------------------------------------------------------------------
+// CocoaPods conversion is reversible: `--deintegrate` moves the Podfile aside
+// as Podfile.bak instead of editing it, and `deinit` moves it back.
+// ---------------------------------------------------------------------------
+
+describe('Podfile backup and restore', () => {
+  // Same shape as private/helloworld/ios/Podfile: a multi-line
+  // use_react_native! call and a post_install hook, which line-based
+  // stripping would leave as invalid Ruby.
+  const STOCK_PODFILE = [
+    'require_relative "../node_modules/react-native/scripts/react_native_pods"',
+    '',
+    'platform :ios, min_ios_version_supported',
+    'prepare_react_native_project!',
+    '',
+    "target 'MyApp' do",
+    '  config = use_native_modules!',
+    '',
+    '  use_react_native!(',
+    '    :path => config[:reactNativePath],',
+    '    :app_path => "#{Pod::Config.instance.installation_root}/.."',
+    '  )',
+    '',
+    '  post_install do |installer|',
+    '    react_native_post_install(',
+    '      installer,',
+    '      config[:reactNativePath],',
+    '      :mac_catalyst_enabled => false',
+    '    )',
+    '  end',
+    'end',
+    '',
+  ].join('\n');
+  const PODFILE_WITH_THIRD_PARTY_POD = STOCK_PODFILE.replace(
+    '  config = use_native_modules!\n',
+    "  config = use_native_modules!\n  pod 'Foo'\n",
+  );
+
+  let appRoot;
+  let podfilePath;
+  let backupPath;
+  let logSpy;
+  let warnSpy;
+  let errorSpy;
+
+  beforeEach(() => {
+    appRoot = fs.mkdtempSync(path.join(os.tmpdir(), 'spm-podfile-backup-'));
+    podfilePath = path.join(appRoot, 'Podfile');
+    backupPath = path.join(appRoot, 'Podfile.bak');
+    mockPodCalls.length = 0;
+    jest.spyOn(process, 'cwd').mockReturnValue(appRoot);
+    logSpy = jest.spyOn(console, 'log').mockImplementation(() => {});
+    warnSpy = jest.spyOn(console, 'warn').mockImplementation(() => {});
+    errorSpy = jest.spyOn(console, 'error').mockImplementation(() => {});
+  });
+
+  afterEach(() => {
+    jest.restoreAllMocks();
+    process.exitCode = undefined;
+    mockAutolinkingSourceDir = null;
+    mockInjectorCalls = null;
+    fs.rmSync(appRoot, {recursive: true, force: true});
+  });
+
+  // `spm add` that runs to the end offline: a successful config command,
+  // complete local artifact slots, and a recording injector.
+  function runAdd(...flags) {
+    const artifacts = fs.mkdtempSync(path.join(os.tmpdir(), 'spm-artifacts-'));
+    writeCompleteArtifactSlot(artifacts, 'debug');
+    writeCompleteArtifactSlot(artifacts, 'release');
+    mockAutolinkingSourceDir = appRoot;
+    mockInjectorCalls = [];
+    return main([
+      'add',
+      ...flags,
+      '--skip-codegen',
+      '--version',
+      '0.85.0',
+      '--download',
+      'skip',
+      '--artifacts',
+      artifacts,
+    ]).finally(() => fs.rmSync(artifacts, {recursive: true, force: true}));
+  }
+
+  function expectCocoaPodsAdvice() {
+    expect(errors()).toContain('CocoaPods-integrated');
+    expect(errors()).toMatch(/only React Native[^\n]*`spm add --deintegrate`/);
+    expect(errors()).toContain('Keeping non-RN pods');
+    expect(errors()).not.toContain('non-RN pods are fine');
+  }
+
+  function expectNoPipelineOutput(xcodeproj) {
+    expect(mockPodCalls).not.toContainEqual(['deintegrate']);
+    expect(fs.existsSync(path.join(appRoot, '.gitignore'))).toBe(false);
+    expect(fs.existsSync(path.join(appRoot, 'build'))).toBe(false);
+    expect(fs.existsSync(path.join(xcodeproj, SPM_INJECTED_MARKER))).toBe(
+      false,
+    );
+  }
+
+  function output(spy) {
+    return spy.mock.calls.map(call => call.join(' ')).join('\n');
+  }
+
+  function errors() {
+    return output(warnSpy) + '\n' + output(errorSpy);
+  }
+
+  function mkInjectedProject(markerFields = {}) {
+    const xcodeproj = mkXcodeproj(appRoot, 'MyApp.xcodeproj');
+    mkInjectedXcodeproj(appRoot, 'MyApp.xcodeproj', markerFields);
+    return xcodeproj;
+  }
+
+  describe('add --deintegrate', () => {
+    it('moves a stock Podfile aside as Podfile.bak, byte-identical and unedited', () => {
+      fs.writeFileSync(podfilePath, STOCK_PODFILE);
+
+      runDeintegrate(appRoot);
+
+      expect(mockPodCalls).toContainEqual(['deintegrate']);
+      expect(fs.existsSync(podfilePath)).toBe(false);
+      expect(fs.readFileSync(backupPath, 'utf8')).toBe(STOCK_PODFILE);
+    });
+
+    it('fails loud and changes nothing when Podfile.bak already exists', () => {
+      const olderBackup = "target 'Old' do\nend\n";
+      fs.writeFileSync(podfilePath, STOCK_PODFILE);
+      fs.writeFileSync(backupPath, olderBackup);
+
+      expect(() => runDeintegrate(appRoot)).toThrow();
+
+      expect(process.exitCode).toBe(1);
+      expect(errors()).toContain('Podfile.bak already exists');
+      expect(mockPodCalls).not.toContainEqual(['deintegrate']);
+      expect(fs.readFileSync(podfilePath, 'utf8')).toBe(STOCK_PODFILE);
+      expect(fs.readFileSync(backupPath, 'utf8')).toBe(olderBackup);
+    });
+
+    it('refuses before any change when the Podfile has non-React-Native pods', async () => {
+      const xcodeproj = mkXcodeproj(appRoot, 'MyApp.xcodeproj', {
+        cocoapods: true,
+      });
+      const pbxprojPath = path.join(xcodeproj, 'project.pbxproj');
+      const pbxprojBefore = fs.readFileSync(pbxprojPath, 'utf8');
+      fs.writeFileSync(podfilePath, PODFILE_WITH_THIRD_PARTY_POD);
+      mockAutolinkingSourceDir = appRoot;
+
+      await main(['add', '--deintegrate']);
+
+      expect(process.exitCode).toBe(1);
+      expect(errors()).toMatch(/pods?\b[^]*SwiftPM/i);
+      expect(errors()).toMatch(/stop working/i);
+      expectNoPipelineOutput(xcodeproj);
+      expect(fs.readFileSync(podfilePath, 'utf8')).toBe(
+        PODFILE_WITH_THIRD_PARTY_POD,
+      );
+      expect(fs.existsSync(backupPath)).toBe(false);
+      expect(fs.readFileSync(pbxprojPath, 'utf8')).toBe(pbxprojBefore);
+    });
+
+    it('refuses before any change when Podfile.bak already exists', async () => {
+      const xcodeproj = mkXcodeproj(appRoot, 'MyApp.xcodeproj', {
+        cocoapods: true,
+      });
+      const olderBackup = "target 'Old' do\nend\n";
+      fs.writeFileSync(podfilePath, STOCK_PODFILE);
+      fs.writeFileSync(backupPath, olderBackup);
+      mockAutolinkingSourceDir = appRoot;
+
+      await main(['add', '--deintegrate']);
+
+      expect(process.exitCode).toBe(1);
+      expect(errors()).toContain('Podfile.bak already exists');
+      expectNoPipelineOutput(xcodeproj);
+      expect(fs.readFileSync(podfilePath, 'utf8')).toBe(STOCK_PODFILE);
+      expect(fs.readFileSync(backupPath, 'utf8')).toBe(olderBackup);
+    });
+
+    it('does not auto-convert on the zero-arg path when Podfile.bak already exists', async () => {
+      const xcodeproj = mkXcodeproj(appRoot, 'MyApp.xcodeproj', {
+        cocoapods: true,
+      });
+      const olderBackup = "target 'Old' do\nend\n";
+      fs.writeFileSync(podfilePath, STOCK_PODFILE);
+      fs.writeFileSync(backupPath, olderBackup);
+      gitInitAndCommit(appRoot);
+      mockAutolinkingSourceDir = appRoot;
+
+      await main([]);
+
+      expect(process.exitCode).toBe(1);
+      expect(errors()).toContain('CocoaPods-integrated');
+      expectNoPipelineOutput(xcodeproj);
+      expect(fs.readFileSync(podfilePath, 'utf8')).toBe(STOCK_PODFILE);
+      expect(fs.readFileSync(backupPath, 'utf8')).toBe(olderBackup);
+    });
+
+    it('refuses before any change when Podfile.bak is a dangling symlink', async () => {
+      const xcodeproj = mkXcodeproj(appRoot, 'MyApp.xcodeproj', {
+        cocoapods: true,
+      });
+      fs.writeFileSync(podfilePath, STOCK_PODFILE);
+      fs.symlinkSync('missing-podfile', backupPath);
+
+      await runAdd('--deintegrate');
+
+      expect(process.exitCode).toBe(1);
+      expect(errors()).toContain('Podfile.bak already exists');
+      expectNoPipelineOutput(xcodeproj);
+      expect(fs.readFileSync(podfilePath, 'utf8')).toBe(STOCK_PODFILE);
+      expect(fs.readlinkSync(backupPath)).toBe('missing-podfile');
+    });
+
+    // Shows that expectNoPipelineOutput can fail: this run gets past every
+    // refusal and writes what the refusal tests rule out.
+    it('runs the pipeline when nothing refuses the conversion', async () => {
+      mkXcodeproj(appRoot, 'MyApp.xcodeproj', {cocoapods: true});
+      fs.writeFileSync(podfilePath, STOCK_PODFILE);
+
+      await runAdd('--deintegrate');
+
+      expect(mockPodCalls).toContainEqual(['deintegrate']);
+      expect(fs.existsSync(path.join(appRoot, 'build'))).toBe(true);
+      expect(fs.existsSync(path.join(appRoot, '.gitignore'))).toBe(true);
+    });
+
+    it('says when --deintegrate applies if the project is still CocoaPods-integrated after it', async () => {
+      // The faked `pod deintegrate` leaves the pbxproj integrated.
+      mkXcodeproj(appRoot, 'MyApp.xcodeproj', {cocoapods: true});
+      fs.writeFileSync(podfilePath, STOCK_PODFILE);
+
+      await runAdd('--deintegrate');
+
+      expect(process.exitCode).toBe(1);
+      expectCocoaPodsAdvice();
+    });
+  });
+
+  it('says when --deintegrate applies on an explicit `spm add` of a CocoaPods project', async () => {
+    const xcodeproj = mkXcodeproj(appRoot, 'MyApp.xcodeproj', {
+      cocoapods: true,
+    });
+    fs.writeFileSync(podfilePath, PODFILE_WITH_THIRD_PARTY_POD);
+
+    await runAdd();
+
+    expect(process.exitCode).toBe(1);
+    expectCocoaPodsAdvice();
+    expectNoPipelineOutput(xcodeproj);
+  });
+
+  describe('deinit', () => {
+    it('restores Podfile.bak to Podfile, byte-identical, and says to run `pod install`', async () => {
+      mkInjectedProject();
+      fs.writeFileSync(backupPath, STOCK_PODFILE);
+
+      await main(['deinit']);
+
+      expect(process.exitCode).toBeUndefined();
+      expect(fs.existsSync(backupPath)).toBe(false);
+      expect(fs.readFileSync(podfilePath, 'utf8')).toBe(STOCK_PODFILE);
+      expect(output(logSpy)).toContain('pod install');
+    });
+
+    it('leaves the Podfile untouched when there is no Podfile.bak', async () => {
+      mkInjectedProject();
+      fs.writeFileSync(podfilePath, STOCK_PODFILE);
+
+      await main(['deinit']);
+
+      expect(fs.readFileSync(podfilePath, 'utf8')).toBe(STOCK_PODFILE);
+      expect(fs.existsSync(backupPath)).toBe(false);
+    });
+
+    it('fails loud and keeps both files when Podfile and Podfile.bak both exist', async () => {
+      mkInjectedProject();
+      const current = "target 'MyApp' do\nend\n";
+      fs.writeFileSync(podfilePath, current);
+      fs.writeFileSync(backupPath, STOCK_PODFILE);
+
+      await main(['deinit']);
+
+      expect(process.exitCode).toBe(1);
+      expect(errors()).toContain('Podfile.bak');
+      expect(errors()).toMatch(/\bPodfile\b(?!\.bak)/);
+      expect(fs.readFileSync(podfilePath, 'utf8')).toBe(current);
+      expect(fs.readFileSync(backupPath, 'utf8')).toBe(STOCK_PODFILE);
+    });
+
+    it('fails loud and changes nothing when Podfile is a dangling symlink next to Podfile.bak', async () => {
+      const xcodeproj = mkInjectedProject();
+      const markerPath = path.join(xcodeproj, SPM_INJECTED_MARKER);
+      const markerBefore = fs.readFileSync(markerPath, 'utf8');
+      fs.symlinkSync('missing-podfile', podfilePath);
+      fs.writeFileSync(backupPath, STOCK_PODFILE);
+
+      await main(['deinit']);
+
+      expect(process.exitCode).toBe(1);
+      expect(errors()).toContain('Both Podfile and Podfile.bak exist');
+      expect(fs.readlinkSync(podfilePath)).toBe('missing-podfile');
+      expect(fs.readFileSync(backupPath, 'utf8')).toBe(STOCK_PODFILE);
+      expect(fs.readFileSync(markerPath, 'utf8')).toBe(markerBefore);
+    });
+
+    it('restores Podfile.bak even when no SPM injection is found', async () => {
+      fs.writeFileSync(backupPath, STOCK_PODFILE);
+
+      await main(['deinit']);
+
+      expect(process.exitCode).toBeUndefined();
+      expect(fs.existsSync(backupPath)).toBe(false);
+      expect(fs.readFileSync(podfilePath, 'utf8')).toBe(STOCK_PODFILE);
+      expect(output(logSpy)).toContain('pod install');
+    });
+
+    it('does not claim there is nothing to do when it restores Podfile.bak', async () => {
+      fs.writeFileSync(backupPath, STOCK_PODFILE);
+
+      await main(['deinit']);
+
+      expect(output(logSpy)).toContain('No SwiftPM injection found.');
+      expect(output(logSpy)).not.toContain('nothing to remove');
+    });
+
+    it('says there is nothing to remove when there is nothing to do', async () => {
+      await main(['deinit']);
+
+      expect(output(logSpy)).toContain(
+        'No SPM injection found — nothing to remove.',
+      );
+    });
+
+    it('restores Podfile.bak even when removing an empty directory fails', async () => {
+      mkInjectedProject();
+      fs.mkdirSync(path.join(appRoot, 'ReactNativeSPM', 'Scripts'), {
+        recursive: true,
+      });
+      fs.writeFileSync(backupPath, STOCK_PODFILE);
+      jest.spyOn(fs, 'rmdirSync').mockImplementation(() => {
+        throw new Error('EACCES: permission denied');
+      });
+
+      await main(['deinit']);
+
+      expect(fs.readFileSync(podfilePath, 'utf8')).toBe(STOCK_PODFILE);
+      expect(fs.existsSync(backupPath)).toBe(false);
+      expect(errors()).toContain('EACCES');
+    });
+  });
+
+  describe('deinit undoes exactly the .gitignore lines add recorded', () => {
+    const HEADER = '# SPM – auto-generated at build time (do not commit)';
+    const ENTRIES = [
+      'Package.resolved',
+      'build/generated/',
+      'build/xcframeworks/',
+      '.build/',
+    ];
+    let gitignorePath;
+
+    beforeEach(() => {
+      gitignorePath = path.join(appRoot, '.gitignore');
+    });
+
+    // What `add` does to .gitignore, with its record stored in the marker.
+    function add(previous = null) {
+      const record = ensureGitignoreSpmEntries(appRoot, previous);
+      mkInjectedProject({gitignore: record});
+      return record;
+    }
+
+    // Only deinit's output counts as a note; add's own log line does not.
+    async function deinit() {
+      jest.clearAllMocks();
+      await main(['deinit']);
+    }
+
+    function readGitignore() {
+      return fs.readFileSync(gitignorePath, 'utf8');
+    }
+
+    function gitignoreNotes() {
+      return [output(logSpy), errors()]
+        .join('\n')
+        .split('\n')
+        .filter(line => line.includes('.gitignore'));
+    }
+
+    it('records the lines it appended, and none the file already had', () => {
+      fs.writeFileSync(gitignorePath, 'node_modules/\nPackage.resolved\n');
+
+      expect(add()).toEqual({
+        created: false,
+        lines: [HEADER, 'build/generated/', 'build/xcframeworks/', '.build/'],
+      });
+    });
+
+    it('records that it created the file', () => {
+      expect(add()).toEqual({created: true, lines: [HEADER, ...ENTRIES]});
+    });
+
+    it('keeps the record unchanged on a later run that appends nothing', () => {
+      const first = add();
+
+      expect(ensureGitignoreSpmEntries(appRoot, first)).toEqual(first);
+    });
+
+    it('deletes a .gitignore that add created and nobody changed', async () => {
+      add();
+
+      await deinit();
+
+      expect(fs.existsSync(gitignorePath)).toBe(false);
+    });
+
+    it('removes only the lines add appended to an existing .gitignore', async () => {
+      const userContent = 'node_modules/\n*.log\n';
+      fs.writeFileSync(gitignorePath, userContent);
+      add();
+
+      await deinit();
+
+      expect(readGitignore()).toBe(userContent);
+    });
+
+    it('keeps the entries the user already had', async () => {
+      const userContent = 'node_modules/\nPackage.resolved\n';
+      fs.writeFileSync(gitignorePath, userContent);
+      add();
+      expect(readGitignore()).not.toBe(userContent);
+
+      await deinit();
+
+      expect(readGitignore()).toBe(userContent);
+    });
+
+    it('leaves a .gitignore that already had every entry untouched', async () => {
+      const userContent = ['node_modules/', HEADER, ...ENTRIES, ''].join('\n');
+      fs.writeFileSync(gitignorePath, userContent);
+      add();
+
+      await deinit();
+
+      expect(readGitignore()).toBe(userContent);
+      expect(gitignoreNotes()).toEqual([]);
+    });
+
+    it('keeps an empty .gitignore the user had', async () => {
+      fs.writeFileSync(gitignorePath, '');
+      add();
+
+      await deinit();
+
+      expect(readGitignore()).toBe('');
+    });
+
+    it('keeps lines the user added to a .gitignore add created, and says so in one line', async () => {
+      add();
+      fs.appendFileSync(gitignorePath, '\n# mine\nsecrets/\n');
+
+      await deinit();
+
+      expect(readGitignore()).toBe('\n# mine\nsecrets/\n');
+      expect(gitignoreNotes()).toHaveLength(1);
+    });
+
+    it('keeps a recorded line the user edited, and says so in one line', async () => {
+      add();
+      fs.writeFileSync(
+        gitignorePath,
+        readGitignore().replace('build/generated/\n', 'build/generated/**\n'),
+      );
+
+      await deinit();
+
+      expect(readGitignore()).toBe('build/generated/**\n');
+      expect(gitignoreNotes()).toHaveLength(1);
+      expect(process.exitCode).toBeUndefined();
+    });
+
+    it('leaves .gitignore alone when the marker has no record (an older add)', async () => {
+      ensureGitignoreSpmEntries(appRoot);
+      mkInjectedProject();
+      const before = readGitignore();
+
+      await deinit();
+
+      expect(readGitignore()).toBe(before);
+      expect(gitignoreNotes()).toEqual([]);
+    });
+
+    it('leaves .gitignore alone when there is no marker', async () => {
+      const userContent = ['node_modules/', '', HEADER, ...ENTRIES, ''].join(
+        '\n',
+      );
+      fs.writeFileSync(gitignorePath, userContent);
+
+      await deinit();
+
+      expect(readGitignore()).toBe(userContent);
+    });
+
+    it('also removes an entry that a later add appended', async () => {
+      const userContent = 'node_modules/\n';
+      const olderLines = [HEADER, ...ENTRIES.slice(0, 3)];
+      fs.writeFileSync(
+        gitignorePath,
+        userContent + ['', ...olderLines, ''].join('\n'),
+      );
+      const record = add({created: false, lines: olderLines});
+      expect(record.lines).toEqual([...olderLines, HEADER, '.build/']);
+
+      await deinit();
+
+      expect(readGitignore()).toBe(userContent);
+    });
+
+    it('restores Podfile.bak even when the .gitignore cleanup fails', async () => {
+      add();
+      fs.writeFileSync(backupPath, STOCK_PODFILE);
+      const readFileSync = fs.readFileSync;
+      jest.spyOn(fs, 'readFileSync').mockImplementation((file, ...rest) => {
+        if (file === gitignorePath) {
+          throw new Error('EIO: i/o error');
+        }
+        return readFileSync(file, ...rest);
+      });
+
+      await deinit();
+
+      expect(fs.readFileSync(podfilePath, 'utf8')).toBe(STOCK_PODFILE);
+      expect(fs.existsSync(backupPath)).toBe(false);
+      expect(gitignoreNotes().join('\n')).toContain('EIO');
+    });
+
+    describe('add hands the injector the record it wrote', () => {
+      it('records a .gitignore that add created', async () => {
+        mkXcodeproj(appRoot, 'MyApp.xcodeproj');
+
+        await runAdd();
+
+        expect(process.exitCode).toBeUndefined();
+        expect(mockInjectorCalls).toHaveLength(1);
+        expect(mockInjectorCalls[0].gitignore).toEqual({
+          created: true,
+          lines: [HEADER, ...ENTRIES],
+        });
+      });
+
+      it('extends the record of an earlier add from the marker', async () => {
+        const olderLines = [HEADER, ...ENTRIES.slice(0, 3)];
+        fs.writeFileSync(gitignorePath, ['', ...olderLines, ''].join('\n'));
+        mkInjectedProject({gitignore: {created: true, lines: olderLines}});
+
+        await runAdd();
+
+        expect(mockInjectorCalls[0].gitignore).toEqual({
+          created: true,
+          lines: [...olderLines, HEADER, '.build/'],
+        });
+      });
+    });
+  });
+
+  it('tells the user on the zero-arg conversion that `spm deinit` restores CocoaPods', async () => {
+    mkXcodeproj(appRoot, 'MyApp.xcodeproj', {cocoapods: true});
+    fs.writeFileSync(podfilePath, STOCK_PODFILE);
+    gitInitAndCommit(appRoot);
+
+    await main([]);
+
+    const conversionMessage = output(logSpy)
+      .split('\n')
+      .find(line => line.includes('freshly-scaffolded CocoaPods project'));
+    expect(conversionMessage).toContain('spm deinit');
+    expect(conversionMessage).toMatch(/restor/i);
+    expect(conversionMessage).not.toContain(
+      'Revert with `git` or `spm deinit`',
+    );
   });
 });
 

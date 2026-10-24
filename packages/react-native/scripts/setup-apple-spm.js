@@ -10,7 +10,11 @@
 
 'use strict';
 
-/*:: import type {CliConfigJson, SetupArgs} from './spm/spm-types'; */
+/*:: import type {
+  CliConfigJson,
+  GitignoreRecord,
+  SetupArgs,
+} from './spm/spm-types'; */
 
 /**
  * setup-apple-spm.js – Entry point for setting up Swift Package Manager support
@@ -25,13 +29,14 @@
  *                              settings, the Sync build phase) into your
  *                              existing .xcodeproj, in place. Idempotent.
  *                              Default on first run. `--deintegrate` first
- *                              runs `pod deintegrate` + strips React Native
- *                              from the Podfile (CocoaPods → SPM migration).
+ *                              runs `pod deintegrate` + moves the Podfile to
+ *                              Podfile.bak (CocoaPods → SPM migration).
  *   update                     Re-run the pipeline and refresh the existing
  *                              injection. Default once a project is injected.
  *   deinit                     The exact inverse of `add`: surgically remove
  *                              only what `add` injected (recorded in
  *                              .spm-injected.json) and drop the marker.
+ *                              Restores Podfile.bak to Podfile.
  *   scaffold                   Generate Package.swift for community deps that
  *                              lack SPM support.
  *   sync                       Re-run the build-time autolinking sync and its
@@ -52,8 +57,8 @@
  *   --yes                       Skip the dirty-pbxproj confirmation prompt.
  *   [add] --xcodeproj <path>    Which .xcodeproj to inject into (when several).
  *   [add] --product-name <name> Which app target to inject into (when several).
- *   [add] --deintegrate         Run `pod deintegrate` + strip RN from the
- *                               Podfile before injecting.
+ *   [add] --deintegrate         Run `pod deintegrate` + move the Podfile to
+ *                               Podfile.bak before injecting.
  *   [advanced] --artifacts <path>          Local two-flavor artifact root;
  *                               must contain debug/ and release/ cache slots.
  *   [advanced] --download <auto|skip|force> Artifact policy (default: auto).
@@ -197,7 +202,7 @@ function parseArgs(argv /*: Array<string> */) /*: SetupArgs */ {
       type: 'boolean',
       default: false,
       describe:
-        '[add] Run `pod deintegrate` + strip React Native from the Podfile before injecting (CocoaPods → SPM migration).',
+        '[add] Run `pod deintegrate` + move the Podfile to Podfile.bak before injecting (CocoaPods → SPM migration).',
     })
     .option('artifacts', {
       type: 'string',
@@ -266,36 +271,100 @@ const SPM_GITIGNORE_ENTRIES = [
   'build/xcframeworks/',
   '.build/',
 ];
+const SPM_GITIGNORE_HEADER =
+  '# SPM – auto-generated at build time (do not commit)';
 
 /**
  * Ensure the project's .gitignore contains entries for SPM-generated
- * directories. Called during init so that generated artifacts are not
- * accidentally committed.
+ * directories, so generated artifacts are not accidentally committed. Returns
+ * `previous` (the record in the marker, if any) extended with what this run
+ * wrote, for `spm deinit` to undo.
  */
-function ensureGitignoreSpmEntries(appRoot /*: string */) {
+function ensureGitignoreSpmEntries(
+  appRoot /*: string */,
+  previous /*: ?GitignoreRecord */,
+) /*: GitignoreRecord */ {
   const gitignorePath = path.join(appRoot, '.gitignore');
-  let content = '';
-  if (fs.existsSync(gitignorePath)) {
-    content = fs.readFileSync(gitignorePath, 'utf8');
-  }
+  const exists = fs.existsSync(gitignorePath);
+  const content = exists ? fs.readFileSync(gitignorePath, 'utf8') : '';
+  const created = previous?.created === true;
+  const lines = previous?.lines ?? [];
 
   const existingEntries = new Set(content.split('\n').map(l => l.trim()));
   const missing = SPM_GITIGNORE_ENTRIES.filter(e => !existingEntries.has(e));
 
   if (missing.length === 0) {
-    return;
+    return {created, lines};
   }
 
-  const block = [
-    '',
-    '# SPM – auto-generated at build time (do not commit)',
-    ...missing,
-  ].join('\n');
+  const block = ['', SPM_GITIGNORE_HEADER, ...missing].join('\n');
 
   // Append, ensuring we start on a fresh line
   const separator = content.length > 0 && !content.endsWith('\n') ? '\n' : '';
   fs.writeFileSync(gitignorePath, content + separator + block + '\n', 'utf8');
   log(`Updated .gitignore with SPM entries: ${missing.join(', ')}`);
+  return {
+    created: created || !exists,
+    lines: [...lines, SPM_GITIGNORE_HEADER, ...missing],
+  };
+}
+
+/**
+ * The inverse of ensureGitignoreSpmEntries: removes the lines `record` says
+ * `add` appended (a header with the blank line written before it), and the
+ * file when `add` created it and nothing else is left. Without a record, as
+ * in a marker from before it existed, .gitignore is left untouched.
+ */
+function removeGitignoreSpmEntries(
+  appRoot /*: string */,
+  record /*: ?GitignoreRecord */,
+) {
+  const gitignorePath = path.join(appRoot, '.gitignore');
+  if (
+    record == null ||
+    record.lines.length === 0 ||
+    !fs.existsSync(gitignorePath)
+  ) {
+    return;
+  }
+  const lines = fs.readFileSync(gitignorePath, 'utf8').split('\n');
+  let changedByUser = 0;
+  // Last occurrence first: `add` only ever appends.
+  for (const recorded of [...record.lines].reverse()) {
+    const index = lines.lastIndexOf(recorded);
+    if (index === -1) {
+      changedByUser++;
+    } else if (
+      recorded === SPM_GITIGNORE_HEADER &&
+      index > 0 &&
+      lines[index - 1] === ''
+    ) {
+      lines.splice(index - 1, 2);
+    } else {
+      lines.splice(index, 1);
+    }
+  }
+  const remaining = lines.join('\n');
+  if (record.created && remaining.trim() === '') {
+    fs.rmSync(gitignorePath);
+    log('Removed .gitignore, which `spm add` created.');
+    return;
+  }
+  fs.writeFileSync(gitignorePath, remaining, 'utf8');
+  if (changedByUser > 0) {
+    log(
+      `.gitignore: ${changedByUser} SPM line(s) changed or removed after ` +
+        '`spm add` were left as they are. Remove any SPM entries you no ' +
+        'longer need.',
+    );
+  } else if (record.created) {
+    log(
+      'Removed the SPM entries from .gitignore. Kept the file, which ' +
+        '`spm add` created, because it now has lines of your own.',
+    );
+  } else {
+    log('Removed the SPM entries from .gitignore.');
+  }
 }
 
 /**
@@ -681,6 +750,21 @@ function pbxprojUsesCocoaPods(xcodeprojPath /*: string */) /*: boolean */ {
   }
 }
 
+// A web link, because npm does not ship the __docs__ directories.
+const KEEPING_NON_RN_PODS_DOCS_URL =
+  'https://github.com/facebook/react-native/blob/main/packages/react-native/' +
+  'scripts/spm/__docs__/spm-scripts.md#keeping-non-rn-pods';
+
+function cocoaPodsIntegratedMessage(xcodeprojPath /*: string */) /*: string */ {
+  return (
+    `${path.basename(xcodeprojPath)} is CocoaPods-integrated. If your ` +
+    'Podfile declares only React Native, re-run `spm add --deintegrate` ' +
+    '(runs `pod deintegrate` and moves the Podfile to Podfile.bak). If it ' +
+    'declares other pods, convert by hand as described in "Keeping non-RN ' +
+    `pods": ${KEEPING_NON_RN_PODS_DOCS_URL}`
+  );
+}
+
 // True when the Podfile still declares React Native integration — a latent
 // landmine even after `pod deintegrate` (a future `pod install` re-breaks the
 // SPM graph). Warned about (not refused) once the pbxproj itself is clean.
@@ -694,13 +778,16 @@ function podfileHasRnIntegration(appRoot /*: string */) /*: boolean */ {
   );
 }
 
-// True when the Podfile declares any explicit `pod '...'` (third-party pods).
+// True when the Podfile declares any explicit `pod '...'` or `pod('...')`
+// (third-party pods), at the start of a line or after a `;`.
 function podfileHasThirdPartyPods(appRoot /*: string */) /*: boolean */ {
   const podfilePath = path.join(appRoot, 'Podfile');
   if (!fs.existsSync(podfilePath)) {
     return false;
   }
-  return /^\s*pod\s+['"]/m.test(fs.readFileSync(podfilePath, 'utf8'));
+  return /^(?:[^#\n]*;)?\s*pod\s*\(?\s*['"]/m.test(
+    fs.readFileSync(podfilePath, 'utf8'),
+  );
 }
 
 // The zero-arg "fresh project" safe-gate: auto-`add --deintegrate` ONLY when it
@@ -718,7 +805,7 @@ function shouldAutoDeintegrate(
   if (xcodeprojPath == null || !pbxprojUsesCocoaPods(xcodeprojPath)) {
     return false;
   }
-  if (podfileHasThirdPartyPods(appRoot)) {
+  if (podfileHasThirdPartyPods(appRoot) || hasPodfileBackup(appRoot)) {
     return false;
   }
   const pbxprojPath = path.join(xcodeprojPath, 'project.pbxproj');
@@ -735,10 +822,17 @@ function shouldAutoDeintegrate(
   return true;
 }
 
-// Run `pod deintegrate` then strip React Native from the Podfile (leaving any
-// non-RN pods). Requires CocoaPods on PATH (fail-loud otherwise). Flag-gated ⇒
-// no prompt ⇒ CI-safe. Does NOT touch the .xcworkspace.
+// Run `pod deintegrate` then move the Podfile aside as Podfile.bak, unedited,
+// so `spm deinit` can put CocoaPods back exactly as it was. Requires CocoaPods
+// on PATH (fail-loud otherwise). Flag-gated ⇒ no prompt ⇒ CI-safe. Does NOT
+// touch the .xcworkspace.
 function runDeintegrate(appRoot /*: string */) /*: void */ {
+  const podfilePath = path.join(appRoot, 'Podfile');
+  const backupPath = path.join(appRoot, 'Podfile.bak');
+  if (refuseToOverwritePodfileBackup(appRoot)) {
+    process.exitCode = 1;
+    throw new Error('Podfile.bak already exists');
+  }
   try {
     execFileSync('pod', ['--version'], {stdio: 'ignore'});
   } catch {
@@ -752,23 +846,62 @@ function runDeintegrate(appRoot /*: string */) /*: void */ {
   log('Running `pod deintegrate`...');
   execFileSync('pod', ['deintegrate'], {cwd: appRoot, stdio: 'inherit'});
 
-  const podfilePath = path.join(appRoot, 'Podfile');
-  if (fs.existsSync(podfilePath)) {
-    const orig = fs.readFileSync(podfilePath, 'utf8');
-    const stripped = orig
-      .split('\n')
-      .filter(
-        l =>
-          !/use_react_native!|use_native_modules!|prepare_react_native_project!/.test(
-            l,
-          ),
-      )
-      .join('\n');
-    if (stripped !== orig) {
-      fs.writeFileSync(podfilePath, stripped, 'utf8');
-      log('Stripped React Native integration from Podfile.');
-    }
+  if (entryExists(podfilePath)) {
+    fs.renameSync(podfilePath, backupPath);
+    log('Moved Podfile to Podfile.bak. `spm deinit` restores it.');
   }
+}
+
+// Unlike existsSync, true for a dangling symlink too, which a rename onto
+// that path would silently replace.
+function entryExists(filePath /*: string */) /*: boolean */ {
+  try {
+    fs.lstatSync(filePath);
+    return true;
+  } catch {
+    return false;
+  }
+}
+
+function hasPodfileBackup(appRoot /*: string */) /*: boolean */ {
+  return entryExists(path.join(appRoot, 'Podfile.bak'));
+}
+
+// True (after logging) when runDeintegrate would have to overwrite
+// Podfile.bak, which may hold the only copy of an earlier Podfile.
+function refuseToOverwritePodfileBackup(appRoot /*: string */) /*: boolean */ {
+  if (!hasPodfileBackup(appRoot)) {
+    return false;
+  }
+  logError(
+    'Podfile.bak already exists, and `--deintegrate` will not overwrite it. ' +
+      'Move or delete Podfile.bak, then run the command again. ' +
+      'Nothing was changed.',
+  );
+  return true;
+}
+
+// The inverse of runDeintegrate's Podfile move. Returns false (after logging)
+// when both files exist, so the caller stops before changing anything.
+function checkPodfileRestorable(appRoot /*: string */) /*: boolean */ {
+  if (hasPodfileBackup(appRoot) && entryExists(path.join(appRoot, 'Podfile'))) {
+    logError(
+      'Both Podfile and Podfile.bak exist, so `spm deinit` cannot restore ' +
+        'Podfile.bak without overwriting Podfile. Keep the one you want, ' +
+        'delete the other, then run `spm deinit` again.',
+    );
+    return false;
+  }
+  return true;
+}
+
+function restorePodfile(appRoot /*: string */) /*: void */ {
+  const backupPath = path.join(appRoot, 'Podfile.bak');
+  if (!entryExists(backupPath)) {
+    return;
+  }
+  fs.renameSync(backupPath, path.join(appRoot, 'Podfile'));
+  log('Restored Podfile from Podfile.bak. Next step: run `pod install`.');
 }
 
 // Pick the .xcodeproj to inject into: --xcodeproj override > a prior in-place
@@ -852,6 +985,7 @@ async function setupXcodeproj(
   reactNativeRoot /*: string */,
   action /*: string */,
   cxxApiDefines /*: ReadonlyArray<string> */,
+  gitignore /*: ?GitignoreRecord */,
 ) /*: Promise<void> */ {
   const target = resolveInjectionTarget(args, appRoot);
   if (target.error != null) {
@@ -879,12 +1013,7 @@ async function setupXcodeproj(
 
   // Preflight: a still-CocoaPods-integrated pbxproj is the real build-breaker.
   if (pbxprojUsesCocoaPods(xcodeprojPath)) {
-    logError(
-      `${path.basename(xcodeprojPath)} is CocoaPods-integrated. Re-run ` +
-        '`spm add --deintegrate` to convert it (runs `pod deintegrate` + ' +
-        'strips React Native from the Podfile), or run `pod deintegrate` ' +
-        'yourself first. Side-by-side non-RN pods are fine.',
-    );
+    logError(cocoaPodsIntegratedMessage(xcodeprojPath));
     process.exitCode = 1;
     throw new Error('CocoaPods-integrated project');
   }
@@ -930,6 +1059,7 @@ async function setupXcodeproj(
     artifactsVersionOverride: args.version ?? null,
     configCommand: resolveConfigCommandToPin(args),
     cxxApiDefines,
+    gitignore,
   });
   if (result.status !== 'injected') {
     logError(`SPM injection failed: ${result.reason}`);
@@ -1122,7 +1252,7 @@ async function main(argv /*:: ?: Array<string> */) /*: Promise<void> */ {
   ) {
     log(
       'Detected a freshly-scaffolded CocoaPods project — converting to SwiftPM ' +
-        '(running `pod deintegrate`). Revert with `git` or `spm deinit`.',
+        '(running `pod deintegrate`). `spm deinit` restores CocoaPods.',
     );
     args.deintegrate = true;
   }
@@ -1137,16 +1267,46 @@ async function main(argv /*:: ?: Array<string> */) /*: Promise<void> */ {
       args.xcodeprojPath != null
         ? path.resolve(appRoot, args.xcodeprojPath)
         : findInjectedXcodeproj(appRoot);
-    if (xcodeprojPath == null) {
-      log('No SPM injection found — nothing to remove.');
+    if (!checkPodfileRestorable(appRoot)) {
+      process.exitCode = 1;
       return;
     }
-    const result = removeSpmInjection({appRoot, xcodeprojPath});
-    log(
-      result.status === 'removed'
-        ? `Removed SPM packages from ${path.basename(xcodeprojPath)}.`
-        : 'No SPM injection found — nothing to remove.',
+    // removeSpmInjection drops the marker, and the record with it.
+    const gitignoreRecord =
+      xcodeprojPath != null ? readMarker(xcodeprojPath)?.gitignore : null;
+    if (
+      xcodeprojPath != null &&
+      removeSpmInjection({appRoot, xcodeprojPath}).status === 'removed'
+    ) {
+      log(`Removed SPM packages from ${path.basename(xcodeprojPath)}.`);
+    } else if (hasPodfileBackup(appRoot)) {
+      log('No SwiftPM injection found.');
+    } else {
+      log('No SPM injection found — nothing to remove.');
+    }
+    try {
+      removeGitignoreSpmEntries(appRoot, gitignoreRecord);
+    } catch (e) {
+      logError(
+        `Could not remove the SPM entries from .gitignore: ${e.message}. ` +
+          'Remove them by hand.',
+      );
+    }
+    restorePodfile(appRoot);
+    return;
+  }
+
+  if (args.deintegrate && podfileHasThirdPartyPods(appRoot)) {
+    logError(
+      'Your Podfile declares pods that are not part of React Native. They ' +
+        'would stop working under SwiftPM, so the conversion is refused. ' +
+        'Nothing was changed.',
     );
+    process.exitCode = 1;
+    return;
+  }
+  if (args.deintegrate && refuseToOverwritePodfileBackup(appRoot)) {
+    process.exitCode = 1;
     return;
   }
 
@@ -1157,12 +1317,7 @@ async function main(argv /*:: ?: Array<string> */) /*: Promise<void> */ {
   if ((action === 'add' || action === 'update') && !args.deintegrate) {
     const target = resolveInjectionTarget(args, appRoot);
     if (target.path != null && pbxprojUsesCocoaPods(target.path)) {
-      logError(
-        `${path.basename(target.path)} is CocoaPods-integrated. Re-run ` +
-          '`spm add --deintegrate` to convert it (runs `pod deintegrate` + ' +
-          'strips React Native from the Podfile), or run `pod deintegrate` ' +
-          'yourself first. Side-by-side non-RN pods are fine.',
-      );
+      logError(cocoaPodsIntegratedMessage(target.path));
       process.exitCode = 1;
       return;
     }
@@ -1379,15 +1534,28 @@ async function main(argv /*:: ?: Array<string> */) /*: Promise<void> */ {
   // so no path-locator JSON is written.
   buildPerAppHeaderTree(appRoot, {log});
 
-  // First-time setup only adds the gitignore entries on `add`.
+  // First-time setup only adds the gitignore entries on `add`. The record
+  // reaches the marker through setupXcodeproj, which writes it.
+  let gitignoreRecord = null;
   if (action === 'add') {
-    ensureGitignoreSpmEntries(appRoot);
+    const injected = resolveInjectionTarget(args, appRoot).path;
+    gitignoreRecord = ensureGitignoreSpmEntries(
+      appRoot,
+      injected != null ? readMarker(injected)?.gitignore : null,
+    );
   }
 
   // Xcodeproj setup: in-place injection into the existing project (the only
   // strategy — no rename, no from-scratch; git is the safety net).
   try {
-    await setupXcodeproj(args, appRoot, reactNativeRoot, action, cxxApiDefines);
+    await setupXcodeproj(
+      args,
+      appRoot,
+      reactNativeRoot,
+      action,
+      cxxApiDefines,
+      gitignoreRecord,
+    );
   } catch (e) {
     logError(`xcodeproj setup failed: ${e.message}`);
     if (process.exitCode == null) {
@@ -1409,6 +1577,7 @@ module.exports = {
   main,
   detectStandardRnLayoutRedirect,
   determineVersion,
+  ensureGitignoreSpmEntries,
   findInjectedXcodeproj,
   generateAutolinkingConfigOrFailClosed,
   parseArgs,
@@ -1417,6 +1586,7 @@ module.exports = {
   resolveConfigCommandToPin,
   resolveExplicitConfigCommand,
   resolveCxxApiDefines,
+  runDeintegrate,
   shouldAutoDeintegrate,
   ensureBothArtifactFlavors,
 };
