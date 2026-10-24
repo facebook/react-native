@@ -13,7 +13,6 @@
 #import <React/NSDataBigString.h>
 #import <React/RCTAssert.h>
 #import <React/RCTBridge+Inspector.h>
-#import <React/RCTBridge+Private.h>
 #import <React/RCTBridge.h>
 #import <React/RCTBridgeModule.h>
 #import <React/RCTBridgeModuleDecorator.h>
@@ -328,7 +327,6 @@ using namespace facebook::react;
   bridgeProxy.jsCallInvoker = jsCallInvoker;
   bridgeProxy.performanceLogger = _performanceLogger;
   _bridgeProxy = bridgeProxy;
-  [RCTBridge setCurrentBridge:(RCTBridge *)bridgeProxy];
 
   // Set up TurboModules
   _turboModuleManager = [[RCTTurboModuleManager alloc] initWithBridgeProxy:bridgeProxy
