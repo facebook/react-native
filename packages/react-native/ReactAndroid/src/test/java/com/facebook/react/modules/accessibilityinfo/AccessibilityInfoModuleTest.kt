@@ -7,6 +7,10 @@
 
 package com.facebook.react.modules.accessibilityinfo
 
+import android.app.Application
+import android.content.ComponentCallbacks
+import android.content.Context
+import android.content.ContextWrapper
 import android.content.res.Configuration
 import com.facebook.react.bridge.BridgeReactContext
 import com.facebook.react.bridge.Callback
@@ -31,36 +35,38 @@ import org.robolectric.annotation.Config
 @Config(shadows = [ShadowSoLoader::class, ShadowNativeLoader::class])
 class AccessibilityInfoModuleTest {
 
+  private lateinit var recordingContext: RecordingContext
   private lateinit var reactContext: BridgeReactContext
   private lateinit var module: AccessibilityInfoModule
 
   @Before
   fun setUp() {
     ReactNativeFeatureFlagsForTests.setUp()
-    reactContext = spy(BridgeReactContext(RuntimeEnvironment.getApplication()))
+    recordingContext = RecordingContext(RuntimeEnvironment.getApplication())
+    reactContext = spy(BridgeReactContext(recordingContext))
     reactContext.initializeWithInstance(ReactTestHelper.createMockCatalystInstance())
     module = AccessibilityInfoModule(reactContext)
   }
 
   @Test
-  fun boldTextIsEnabledForAPositiveFontWeightAdjustment() {
-    assertThat(AccessibilityInfoModule.isBoldTextEnabled(300)).isTrue()
+  fun aPositiveFontWeightAdjustmentIsBold() {
+    assertThat(AccessibilityInfoModule.isBoldFontWeightAdjustment(300)).isTrue()
   }
 
   @Test
-  fun boldTextIsDisabledWithoutAFontWeightAdjustment() {
-    assertThat(AccessibilityInfoModule.isBoldTextEnabled(0)).isFalse()
+  fun noFontWeightAdjustmentIsNotBold() {
+    assertThat(AccessibilityInfoModule.isBoldFontWeightAdjustment(0)).isFalse()
   }
 
   @Test
-  fun boldTextIsDisabledForANegativeFontWeightAdjustment() {
-    assertThat(AccessibilityInfoModule.isBoldTextEnabled(-100)).isFalse()
+  fun aNegativeFontWeightAdjustmentIsNotBold() {
+    assertThat(AccessibilityInfoModule.isBoldFontWeightAdjustment(-100)).isFalse()
   }
 
   @Test
-  fun boldTextIsDisabledWhenTheFontWeightAdjustmentIsUndefined() {
+  fun anUndefinedFontWeightAdjustmentIsNotBold() {
     assertThat(
-            AccessibilityInfoModule.isBoldTextEnabled(
+            AccessibilityInfoModule.isBoldFontWeightAdjustment(
                 Configuration.FONT_WEIGHT_ADJUSTMENT_UNDEFINED
             )
         )
@@ -133,6 +139,52 @@ class AccessibilityInfoModuleTest {
   }
 
   @Test
+  fun theConfigurationAndroidPassesInIsUsed() {
+    module.onHostResume()
+
+    // The Application's resources are not updated, so only `newConfig` says bold text is on.
+    val config =
+        Configuration(RuntimeEnvironment.getApplication().resources.configuration).apply {
+          fontWeightAdjustment = 300
+        }
+    dispatchConfigurationChange(config)
+
+    verify(reactContext, times(1)).emitDeviceEvent(BOLD_TEXT_EVENT, true)
+    assertThat(currentBoldText()).isTrue()
+  }
+
+  @Test
+  fun resumingThroughTheReactContextRegistersOnce() {
+    module.initialize()
+    reactContext.onHostResume(null)
+    reactContext.onHostResume(null)
+
+    assertThat(recordingContext.registrations).hasSize(1)
+
+    dispatchConfigurationChange(setFontWeightAdjustment(300))
+
+    verify(reactContext, times(1)).emitDeviceEvent(BOLD_TEXT_EVENT, true)
+  }
+
+  @Test
+  @Config(sdk = [30])
+  fun nothingIsRegisteredBeforeAndroid12() {
+    module = AccessibilityInfoModule(reactContext)
+    module.initialize()
+    reactContext.onHostResume(null)
+
+    assertThat(recordingContext.registrations).isEmpty()
+
+    val config =
+        Configuration(RuntimeEnvironment.getApplication().resources.configuration).apply {
+          orientation = Configuration.ORIENTATION_LANDSCAPE
+        }
+    dispatchConfigurationChange(config)
+
+    verifyNoBoldTextEvent()
+  }
+
+  @Test
   @Config(sdk = [30])
   fun boldTextIsAlwaysFalseBeforeAndroid12() {
     module = AccessibilityInfoModule(reactContext)
@@ -167,6 +219,30 @@ class AccessibilityInfoModuleTest {
 
   private fun dispatchConfigurationChange(config: Configuration) {
     RuntimeEnvironment.getApplication().onConfigurationChanged(config)
+  }
+
+  /**
+   * The module registers its callbacks on the application context. Returning itself from
+   * [getApplicationContext] makes this wrapper that context, so it can record each call and the
+   * thread it ran on before passing it to the real [Application]. It calls [getBaseContext] rather
+   * than `super`: before Android 12, [ContextWrapper] doesn't override these methods, and
+   * [Context]'s versions forward to [getApplicationContext], which is this wrapper.
+   */
+  private class RecordingContext(base: Application) : ContextWrapper(base) {
+    val registrations = mutableListOf<Thread>()
+    val unregistrations = mutableListOf<Thread>()
+
+    override fun getApplicationContext(): Context = this
+
+    override fun registerComponentCallbacks(callback: ComponentCallbacks) {
+      registrations.add(Thread.currentThread())
+      baseContext.registerComponentCallbacks(callback)
+    }
+
+    override fun unregisterComponentCallbacks(callback: ComponentCallbacks) {
+      unregistrations.add(Thread.currentThread())
+      baseContext.unregisterComponentCallbacks(callback)
+    }
   }
 
   private companion object {
