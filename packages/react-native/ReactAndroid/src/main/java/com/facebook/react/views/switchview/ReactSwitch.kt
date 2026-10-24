@@ -15,7 +15,7 @@ import android.graphics.drawable.ColorDrawable
 import android.graphics.drawable.Drawable
 import android.graphics.drawable.RippleDrawable
 import androidx.appcompat.widget.SwitchCompat
-import com.facebook.react.uimanager.drawable.CompositeBackgroundDrawable
+import com.facebook.react.uimanager.BackgroundStyleApplicator
 
 /**
  * Switch that has its value controlled by JS. Whenever the value of the switch changes, we do not
@@ -28,6 +28,7 @@ internal class ReactSwitch(context: Context) : SwitchCompat(context) {
   private var trackColorForFalse: Int? = null
   private var trackColorForTrue: Int? = null
   private var rippleColor: Int? = null
+  private var switchBackgroundColor: Int? = null
 
   override fun setChecked(checked: Boolean) {
     if (allowChange && isChecked != checked) {
@@ -43,6 +44,7 @@ internal class ReactSwitch(context: Context) : SwitchCompat(context) {
   }
 
   override fun setBackgroundColor(color: Int) {
+    switchBackgroundColor = color
     val ripple =
         RippleDrawable(
             createRippleDrawableColorStateList(rippleColor ?: color),
@@ -51,8 +53,9 @@ internal class ReactSwitch(context: Context) : SwitchCompat(context) {
         )
     // Keep the outline, box shadows and other styles layered over the background by
     // BackgroundStyleApplicator, which may have been applied before the background color.
-    val composite = background as? CompositeBackgroundDrawable
-    background = composite?.withNewOriginalBackground(ripple) ?: ripple
+    if (!BackgroundStyleApplicator.setOriginalBackground(this, ripple)) {
+      background = ripple
+    }
   }
 
   fun setColor(drawable: Drawable, color: Int?) {
@@ -73,11 +76,24 @@ internal class ReactSwitch(context: Context) : SwitchCompat(context) {
     // Set the ripple color if the background is, or is wrapped around, a RippleDrawable
     val currentBackground = super.getBackground()
     val ripple =
-        (currentBackground as? CompositeBackgroundDrawable)?.originalBackground as? RippleDrawable
+        (BackgroundStyleApplicator.getOriginalBackground(this) as? RippleDrawable)
             ?: currentBackground as? RippleDrawable
     rippleColor = color
-    if (color != null && ripple != null) {
-      ripple.setColor(createRippleDrawableColorStateList(color))
+    if (ripple != null) {
+      // When thumbColor is removed, fall back to the background's own color so the ripple
+      // doesn't keep the old thumb tint. The theme's default ripple can have no content
+      // layer, so never index into it blindly (getDrawable throws when empty).
+      val effectColor =
+          color
+              ?: switchBackgroundColor
+              ?: if (ripple.numberOfLayers > 0) {
+                (ripple.getDrawable(0) as? ColorDrawable)?.color
+              } else {
+                null
+              }
+      if (effectColor != null) {
+        ripple.setColor(createRippleDrawableColorStateList(effectColor))
+      }
     }
   }
 

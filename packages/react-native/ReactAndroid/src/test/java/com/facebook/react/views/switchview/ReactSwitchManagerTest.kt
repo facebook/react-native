@@ -120,6 +120,43 @@ class ReactSwitchManagerTest {
     assertThat(rippleEffectColor().getColorForState(pressed, 0)).isEqualTo(Color.WHITE)
   }
 
+  @Test
+  fun clearingThumbColorResetsLiveRipple() {
+    manager.setBackgroundColor(view, Color.WHITE)
+    manager.setThumbColor(view, Color.GREEN)
+    manager.setThumbColor(view, null)
+
+    val pressed = intArrayOf(android.R.attr.state_pressed)
+    assertThat(rippleEffectColor().getColorForState(pressed, 0)).isEqualTo(Color.WHITE)
+  }
+
+  @Test
+  fun clearingThumbColorResetsLiveRippleInsideComposite() {
+    manager.setBackgroundColor(view, Color.WHITE)
+    manager.setOutlineWidth(view, 3f)
+    manager.setThumbColor(view, Color.GREEN)
+    manager.setThumbColor(view, null)
+
+    val pressed = intArrayOf(android.R.attr.state_pressed)
+    assertThat(rippleEffectColor().getColorForState(pressed, 0)).isEqualTo(Color.WHITE)
+  }
+
+  @Test
+  fun clearingThumbColorWithoutBackgroundDoesNotCrash() {
+    // A Switch with no backgroundColor keeps the theme's ripple, which can have no layers.
+    manager.setThumbColor(view, Color.GREEN)
+    manager.setThumbColor(view, null)
+  }
+
+  @Test
+  fun getOutlineWidthReturnsWidthNotOffset() {
+    manager.setOutlineWidth(view, 3f)
+    manager.setOutlineOffset(view, 8f)
+
+    assertThat(BackgroundStyleApplicator.getOutlineWidth(view)).isEqualTo(6f)
+    assertThat(BackgroundStyleApplicator.getOutlineOffset(view)).isEqualTo(16f)
+  }
+
   private fun ripple(): RippleDrawable {
     val background = view.background
     val drawable =
