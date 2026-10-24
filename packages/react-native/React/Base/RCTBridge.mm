@@ -252,17 +252,6 @@ void RCTUIManagerSetDispatchAccessibilityManagerInitOntoMain(BOOL enabled)
   return self;
 }
 
-- (void)enqueueJSCall:(NSString *)moduleDotMethod args:(NSArray *)args
-{
-}
-
-- (void)enqueueJSCall:(NSString *)module
-               method:(NSString *)method
-                 args:(NSArray *)args
-           completion:(__strong dispatch_block_t)completion
-{
-}
-
 - (void)registerSegmentWithId:(NSUInteger)segmentId path:(NSString *)path
 {
 }
@@ -291,35 +280,8 @@ void RCTUIManagerSetDispatchAccessibilityManagerInitOntoMain(BOOL enabled)
   return nil;
 }
 
-- (NSArray *)modulesConformingToProtocol:(Protocol *)protocol
-{
-  return @[];
-}
-
-- (BOOL)moduleIsInitialized:(Class)moduleClass
-{
-  return NO;
-}
-
-- (void)reload __attribute__((deprecated("Use RCTReloadCommand instead")))
-{
-}
-
-- (void)reloadWithReason:(NSString *)reason __attribute__((deprecated("Use RCTReloadCommand instead")))
-{
-}
-
 - (void)onFastRefresh
 {
-}
-
-- (void)requestReload __attribute__((deprecated("Use RCTReloadCommand instead")))
-{
-}
-
-- (BOOL)isBatchActive
-{
-  return NO;
 }
 
 - (void)enqueueCallback:(NSNumber *)cbID args:(NSArray *)args
