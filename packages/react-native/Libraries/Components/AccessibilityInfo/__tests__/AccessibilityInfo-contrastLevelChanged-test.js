@@ -66,7 +66,9 @@ describe('AccessibilityInfo contrastLevelChanged', () => {
       'contrastLevelChanged',
       handler,
     );
+    // Neither the Android name nor the public name reaches the handler.
     RCTDeviceEventEmitter.emit('contrastLevelDidChange', 0.5);
+    RCTDeviceEventEmitter.emit('contrastLevelChanged', 0.5);
     subscription.remove();
 
     expect(handler).not.toHaveBeenCalled();
