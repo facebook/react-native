@@ -348,6 +348,8 @@ const AccessibilityInfo = {
    *
    * Returns a promise which resolves to an `AccessibilityPreferences` object.
    * On Android, which has none of these settings, every field is `false`.
+   * On iOS, rejects if the native module or method is missing (for example,
+   * JS newer than the app binary).
    */
   getPreferences(): Promise<AccessibilityPreferences> {
     if (Platform.OS === 'android') {
@@ -355,17 +357,18 @@ const AccessibilityInfo = {
     } else {
       return new Promise((resolve, reject) => {
         if (NativeAccessibilityManagerIOS?.getCurrentPreferences != null) {
-          // The fields are written out twice by hand: inline in the native
-          // module spec (a named type would add C++ structs to the API
-          // snapshots) and in the TypeScript types. Passing `resolve` as
-          // `onSuccess` makes Flow's exact object types check that the spec
-          // matches `AccessibilityPreferences`; `__typetests__` covers the
-          // TypeScript copy.
+          // Besides `AccessibilityPreferences`, the fields are written by
+          // hand inline in the native module spec (a named type would add C++
+          // structs to the API snapshots) and in the TypeScript types.
+          // Passing `resolve` as `onSuccess` makes Flow's exact object types
+          // check the spec against `AccessibilityPreferences`;
+          // `__typetests__` covers the TypeScript types. The native keys in
+          // RCTAccessibilityManager.mm must match too.
           NativeAccessibilityManagerIOS.getCurrentPreferences(resolve, reject);
         } else {
-          // A new API, so a missing native method rejects rather than
-          // resolving a snapshot that looks like "every setting off", as
-          // `isShowBordersEnabled` does.
+          // A new API, so a missing native method rejects, as
+          // `isShowBordersEnabled` does, rather than resolving a snapshot that
+          // looks like every setting is off.
           reject(
             new Error(
               'NativeAccessibilityManagerIOS.getCurrentPreferences is not available',

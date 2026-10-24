@@ -122,6 +122,8 @@ export interface AccessibilityInfoStatic {
   /**
    * Query the accessibility preferences that change how custom controls
    * should be drawn. On Android, every field is `false`.
+   * On iOS, rejects if the native module or method is missing (for example,
+   * JS newer than the app binary).
    */
   getPreferences: () => Promise<AccessibilityPreferences>;
 
