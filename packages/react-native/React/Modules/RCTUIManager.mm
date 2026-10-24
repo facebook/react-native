@@ -22,7 +22,6 @@
 #import "RCTLayoutAnimation.h"
 #import "RCTLayoutAnimationGroup.h"
 #import "RCTLog.h"
-#import "RCTModuleData.h"
 #import "RCTModuleMethod.h"
 #import "RCTScrollableProtocol.h"
 #import "RCTShadowView.h"
