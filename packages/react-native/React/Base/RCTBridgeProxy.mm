@@ -6,13 +6,11 @@
  */
 
 #import "RCTBridgeProxy.h"
-#import "RCTBridgeProxy+Cxx.h"
 
 #import <React/RCTBridge+Private.h>
 #import <React/RCTBridge.h>
 #import <React/RCTLog.h>
 #import <React/RCTUIManager.h>
-#import <ReactCommon/CallInvoker.h>
 #import <jsi/jsi.h>
 
 using namespace facebook;
@@ -24,12 +22,6 @@ using namespace facebook;
 - (void)forwardInvocation:(NSInvocation *)invocation;
 @end
 
-@interface RCTBridgeProxy ()
-
-@property (nonatomic, readwrite) std::shared_ptr<facebook::react::CallInvoker> jsCallInvoker;
-
-@end
-
 @implementation RCTBridgeProxy {
   RCTUIManagerProxy *_uiManagerProxy;
   RCTModuleRegistry *_moduleRegistry;
@@ -38,7 +30,6 @@ using namespace facebook;
   NSDictionary *_launchOptions;
   void (^_dispatchToJSThread)(dispatch_block_t);
   void (^_registerSegmentWithId)(NSNumber *, NSString *);
-  void *_runtime;
 }
 
 @synthesize performanceLogger = _performanceLogger;
@@ -62,7 +53,6 @@ using namespace facebook;
     _callableJSModules = callableJSModules;
     _dispatchToJSThread = dispatchToJSThread;
     _registerSegmentWithId = registerSegmentWithId;
-    _runtime = runtime;
     _launchOptions = [launchOptions copy];
   }
 
@@ -90,22 +80,6 @@ using namespace facebook;
 {
   [self logWarning:@"This method is unsupported. Returning nil." cmd:_cmd];
   return nil;
-}
-
-/**
- * Used By:
- *  - RCTBlobCollector
- */
-- (void *)runtime
-{
-  [self logWarning:@"Please migrate to C++ TurboModule or RuntimeExecutor." cmd:_cmd];
-  return _runtime;
-}
-
-- (std::shared_ptr<facebook::react::CallInvoker>)jsCallInvoker
-{
-  [self logWarning:@"Please migrate to RuntimeExecutor" cmd:_cmd];
-  return _jsCallInvoker;
 }
 
 /**
@@ -241,59 +215,14 @@ using namespace facebook;
   return NO;
 }
 
-/**
- * RCTBridge ()
- */
-
-- (NSString *)bridgeDescription
-{
-  [self logWarning:@"This method is not supported. Returning \"BridgeProxy\"." cmd:_cmd];
-  return @"BridgeProxy";
-}
-
 - (void)enqueueCallback:(NSNumber *)cbID args:(NSArray *)args
 {
   [self logError:@"This method is not supported. No-oping." cmd:_cmd];
 }
 
-- (RCTBridge *)batchedBridge
-{
-  [self logWarning:@"This method is not supported. Returning bridge proxy." cmd:_cmd];
-  return (RCTBridge *)self;
-}
-
-- (void)setBatchedBridge
-{
-  [self logError:@"This method is not supported. No-oping." cmd:_cmd];
-}
-
-- (RCTBridgeModuleListProvider)moduleProvider
-{
-  [self logWarning:@"This method is not supported. Returning empty block" cmd:_cmd];
-  return ^{
-    return @[];
-  };
-}
-
 - (RCTModuleRegistry *)moduleRegistry
 {
   return _moduleRegistry;
-}
-
-/**
- * RCTBridge (RCTCxxBridge)
- */
-
-- (RCTBridge *)parentBridge
-{
-  [self logWarning:@"This method is not supported. Returning bridge proxy." cmd:_cmd];
-  return (RCTBridge *)self;
-}
-
-- (BOOL)moduleSetupComplete
-{
-  [self logWarning:@"This method is not supported. Returning YES." cmd:_cmd];
-  return YES;
 }
 
 - (void)registerAdditionalModuleClasses:(NSArray<Class> *)newModules
@@ -304,57 +233,12 @@ using namespace facebook;
            cmd:_cmd];
 }
 
-- (void)updateModuleWithInstance:(id<RCTBridgeModule>)instance
-{
-  [self logError:@"This method is not supported. Nooping." cmd:_cmd];
-}
-
-- (void)startProfiling
-{
-  [self logWarning:@"This method is not supported. Nooping." cmd:_cmd];
-}
-
-- (void)stopProfiling:(void (^)(NSData *))callback
-{
-  [self logWarning:@"This method is not supported. Nooping." cmd:_cmd];
-}
-
-- (id)callNativeModule:(NSUInteger)moduleID method:(NSUInteger)methodID params:(NSArray *)params
-{
-  [self logError:@"This method is not supported. Nooping and returning nil." cmd:_cmd];
-  return nil;
-}
-
-- (void)logMessage:(NSString *)message level:(NSString *)level
-{
-  [self logWarning:@"This method is not supported. Nooping." cmd:_cmd];
-}
-
-- (void)_immediatelyCallTimer:(NSNumber *)timer
-{
-  [self logWarning:@"This method is not supported. Nooping." cmd:_cmd];
-}
-
-/**
- * RCTBridge (Inspector)
- */
-- (BOOL)inspectable
-{
-  [self logWarning:@"This method is not supported. Returning NO." cmd:_cmd];
-  return NO;
-}
-
 /**
  * RCTBridge (RCTUIManager)
  */
 - (RCTUIManager *)uiManager
 {
   return (RCTUIManager *)_uiManagerProxy;
-}
-
-- (RCTBridgeProxy *)object
-{
-  return self;
 }
 
 /**

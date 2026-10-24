@@ -5,21 +5,8 @@ category NSTextStorage(FontScaling) {
   public virtual void scaleFontSizeWithRatio:minimumFontSize:maximumFontSize:(CGFloat ratio, CGFloat minimumFontSize, CGFloat maximumFontSize);
 }
 
-category RCTBridge(Inspector) {
-  public @property (assign, readonly) BOOL inspectable;
-  public @property (assign, readonly) facebook::react::jsinspector_modern::HostTarget* inspectorTarget;
-}
-
-category RCTBridge(RCTAccessibilityManager) {
-  public @property (assign, readonly) RCTAccessibilityManager* accessibilityManager;
-}
-
 category RCTBridge(RCTDevMenu) {
   public @property (assign, readonly) RCTDevMenu* devMenu;
-}
-
-category RCTBridge(RCTDevSettings) {
-  public @property (assign, readonly) RCTDevSettings* devSettings;
 }
 
 category RCTBridge(RCTEventDispatcher) {
@@ -30,29 +17,8 @@ category RCTBridge(RCTImageLoader) {
   public @property (assign, readonly) RCTImageLoader* imageLoader;
 }
 
-category RCTBridge(RCTImageStoreManager) {
-  public @property (assign, readonly) RCTImageStoreManager* imageStoreManager;
-}
-
-category RCTBridge(RCTNetworking) {
-  public @property (assign, readonly) RCTNetworking* networking;
-}
-
-category RCTBridge(RCTSurfacePresenterStub) {
-  public virtual id<RCTSurfacePresenterStub> surfacePresenter();
-  public virtual void setSurfacePresenter:(id<RCTSurfacePresenterStub> presenter);
-}
-
 category RCTBridge(RCTUIManager) {
   public @property (assign, readonly) RCTUIManager* uiManager;
-}
-
-category RCTBridge(RCTWebSocketModule) {
-  public virtual RCTWebSocketModule* webSocketModule();
-}
-
-category RCTBridgeProxy(Cxx) {
-  public @property (assign) std::shared_ptr<facebook::react::CallInvoker> jsCallInvoker;
 }
 
 category RCTBridgeProxy(RCTAccessibilityManager) {
@@ -672,28 +638,16 @@ interface RCTBlobManager : public NSObject <RCTBridgeModule, RCTURLRequestHandle
 interface RCTBridge : public NSObject <RCTInvalidating> {
   public @property (assign, readonly) BOOL loading;
   public @property (assign, readonly) BOOL valid;
-  public @property (copy, readonly) NSArray<Class>* moduleClasses;
   public @property (copy, readonly) NSDictionary* launchOptions;
   public @property (strong) Class executorClass;
   public @property (strong, readonly) NSURL* bundleURL;
   public @property (strong, readonly) RCTPerformanceLogger* performanceLogger;
-  public @property (weak, readonly) id<RCTBridgeDelegate> delegate;
-  public virtual BOOL isBatchActive();
-  public virtual BOOL moduleIsInitialized:(Class moduleClass);
-  public virtual NSArray* modulesConformingToProtocol:(Protocol* protocol);
   public virtual RCTBridgeModuleDecorator* bridgeModuleDecorator();
   public virtual id moduleForClass:(Class moduleClass);
   public virtual id moduleForName:(NSString* moduleName);
   public virtual id moduleForName:lazilyLoadIfNecessary:(NSString* moduleName, BOOL lazilyLoad);
-  public virtual instancetype initWithBundleURL:moduleProvider:launchOptions:(NSURL* bundleURL, RCTBridgeModuleListProvider block, NSDictionary* launchOptions);
-  public virtual instancetype initWithDelegate:launchOptions:(id<RCTBridgeDelegate> delegate, NSDictionary* launchOptions);
-  public virtual void enqueueJSCall:args:(NSString* moduleDotMethod, NSArray* args);
-  public virtual void enqueueJSCall:method:args:completion:(NSString* module, NSString* method, NSArray* args, dispatch_block_t completion);
   public virtual void onFastRefresh();
   public virtual void registerSegmentWithId:path:(NSUInteger segmentId, NSString* path);
-  public virtual void reload();
-  public virtual void reloadWithReason:(NSString* reason);
-  public virtual void requestReload();
   public virtual void setRCTTurboModuleRegistry:(id<RCTTurboModuleRegistry> turboModuleRegistry);
 }
 
@@ -1349,22 +1303,6 @@ interface RCTModalHostViewComponentView : public RCTViewComponentView <UIAdaptiv
   public virtual void presentViewController:animated:completion:(UIViewController* modalViewController, BOOL animated, void(^)(void) completion);
 }
 
-interface RCTModuleData : public NSObject <RCTInvalidating> {
-  public @property (assign) BOOL requiresMainQueueSetup;
-  public @property (assign, readonly) BOOL hasConstantsToExport;
-  public @property (assign, readonly) BOOL hasInstance;
-  public @property (assign, readonly) BOOL implementsBatchDidComplete;
-  public @property (copy, readonly) NSArray<id<RCTBridgeMethod>>* methods;
-  public @property (copy, readonly) NSDictionary<NSString*, id<RCTBridgeMethod>>* methodsByName;
-  public @property (copy, readonly) NSDictionary<NSString*, id>* exportedConstants;
-  public @property (copy, readonly) NSString* name;
-  public @property (strong) id<RCTBridgeModule> instance;
-  public @property (strong, readonly) Class moduleClass;
-  public @property (strong, readonly) dispatch_queue_t methodQueue;
-  public @property (weak) id<RCTModuleDataCallInvokerProvider> callInvokerProvider;
-  public virtual void gatherConstants();
-}
-
 interface RCTModuleMethod : public NSObject <RCTBridgeMethod> {
   public @property (assign, readonly) Class moduleClass;
   public @property (assign, readonly) SEL selector;
@@ -1622,11 +1560,12 @@ interface RCTRootViewFactoryConfiguration : public NSObject {
   public @property (assign) RCTCustomizeRootViewBlock customizeRootView;
   public @property (assign) RCTExtraLazyModuleClassesForBridge extraLazyModuleClassesForBridge;
   public @property (assign) RCTExtraModulesForBridgeBlock extraModulesForBridge;
-  public @property (assign) RCTLoadSourceForBridgeBlock loadSourceForBridge;
   public @property (assign) RCTLoadSourceForBridgeWithProgressBlock loadSourceForBridgeWithProgress;
   public @property (assign) RCTSourceURLForBridgeBlock sourceURLForBridge;
   public @property (weak) id<RCTJSRuntimeConfiguratorProtocol> jsRuntimeConfiguratorDelegate;
+  public virtual instancetype initWithBundleURL:(NSURL* bundleURL);
   public virtual instancetype initWithBundleURL:newArchEnabled:(NSURL* bundleURL, BOOL newArchEnabled);
+  public virtual instancetype initWithBundleURLBlock:(RCTBundleURLBlock bundleURLBlock);
   public virtual instancetype initWithBundleURLBlock:newArchEnabled:(RCTBundleURLBlock bundleURLBlock, BOOL newArchEnabled);
 }
 
@@ -2554,7 +2493,6 @@ protocol RCTBridgeModule : public NSObject {
   public virtual _Nullable NSArray<id<RCTBridgeMethod>>* methodsToExport();
   public virtual static BOOL requiresMainQueueSetup();
   public virtual static NSString* moduleName();
-  public virtual void batchDidComplete();
 }
 
 protocol RCTCallInvokerModule : public NSObject {
@@ -2603,10 +2541,6 @@ protocol RCTCustomRefreshControlProtocol {
   public @property (assign, readonly) BOOL refreshing;
   public @property (copy) RCTDirectEventBlock onRefresh;
   public @property (weak) UIScrollView* scrollView;
-}
-
-protocol RCTCxxBridgeDelegate : public RCTBridgeDelegate {
-  public virtual std::unique_ptr<facebook::react::JSExecutorFactory> jsExecutorFactoryForBridge:(RCTBridge* bridge);
 }
 
 protocol RCTDebuggingOverlayViewProtocol : public NSObject {
@@ -2783,10 +2717,6 @@ protocol RCTLocalizationProtocol : public NSObject {
 }
 
 protocol RCTModalHostViewViewProtocol : public NSObject {
-}
-
-protocol RCTModuleDataCallInvokerProvider : public NSObject {
-  public virtual RCTCallInvoker* callInvokerForModuleData:(RCTModuleData* moduleData);
 }
 
 protocol RCTModuleProvider : public NSObjectNSObject {
