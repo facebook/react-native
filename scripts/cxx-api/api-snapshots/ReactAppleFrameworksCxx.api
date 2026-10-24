@@ -2636,10 +2636,6 @@ protocol RCTCustomRefreshControlProtocol {
   public @property (weak) UIScrollView* scrollView;
 }
 
-protocol RCTCxxBridgeDelegate : public RCTBridgeDelegate {
-  public virtual std::unique_ptr<facebook::react::JSExecutorFactory> jsExecutorFactoryForBridge:(RCTBridge* bridge);
-}
-
 protocol RCTDebuggingOverlayViewProtocol : public NSObject {
   public virtual void clearElementsHighlights();
   public virtual void highlightElements:(const NSArray* elements);

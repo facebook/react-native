@@ -11,7 +11,6 @@
 #import <React/RCTUtils.h>
 #import "RCTJSRuntimeConfiguratorProtocol.h"
 
-@protocol RCTCxxBridgeDelegate;
 @protocol RCTComponentViewFactoryComponentProvider;
 @protocol RCTTurboModuleManagerDelegate;
 @protocol RCTHostDelegate;
