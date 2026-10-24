@@ -2561,7 +2561,6 @@ protocol RCTBackedTextInputViewProtocol : public UITextInput {
 }
 
 protocol RCTBridgeDelegate : public NSObject {
-  public virtual NSURL* _Nullable sourceURLForBridge:(RCTBridge* bridge);
 }
 
 protocol RCTBridgeMethod : public NSObject {

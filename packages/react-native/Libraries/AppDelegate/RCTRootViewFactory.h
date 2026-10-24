@@ -6,6 +6,7 @@
  */
 
 #import <React/RCTBridge.h>
+#import <React/RCTJavaScriptLoader.h>
 #import <React/RCTRootView.h>
 #import <React/RCTUtils.h>
 #import "RCTJSRuntimeConfiguratorProtocol.h"

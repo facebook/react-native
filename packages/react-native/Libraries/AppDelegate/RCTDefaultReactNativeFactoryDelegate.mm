@@ -6,8 +6,6 @@
  */
 
 #import "RCTDefaultReactNativeFactoryDelegate.h"
-#import <React/RCTBridge.h>
-#import <React/RCTJavaScriptLoader.h>
 #import <React/RCTRootView.h>
 #import <ReactCommon/RCTHost.h>
 #import "RCTAppSetupUtils.h"
@@ -28,13 +26,6 @@
 }
 
 @synthesize dependencyProvider;
-
-- (NSURL *_Nullable)sourceURLForBridge:(nonnull RCTBridge *)bridge
-{
-  [NSException raise:@"RCTBridgeDelegate::sourceURLForBridge not implemented"
-              format:@"Subclasses must implement a valid sourceURLForBridge method"];
-  return nil;
-}
 
 - (UIViewController *)createRootViewController
 {
@@ -130,13 +121,6 @@
 - (id<RCTTurboModule>)getModuleInstanceFromClass:(Class)moduleClass
 {
   return nullptr;
-}
-
-- (void)loadSourceForBridge:(RCTBridge *)bridge
-                 onProgress:(RCTSourceLoadProgressBlock)onProgress
-                 onComplete:(RCTSourceLoadBlock)loadCallback
-{
-  [RCTJavaScriptLoader loadBundleAtURL:[self sourceURLForBridge:bridge] onProgress:onProgress onComplete:loadCallback];
 }
 
 @end
