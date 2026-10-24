@@ -672,28 +672,18 @@ interface RCTBlobManager : public NSObject <RCTBridgeModule, RCTURLRequestHandle
 interface RCTBridge : public NSObject <RCTInvalidating> {
   public @property (assign, readonly) BOOL loading;
   public @property (assign, readonly) BOOL valid;
-  public @property (copy, readonly) NSArray<Class>* moduleClasses;
   public @property (copy, readonly) NSDictionary* launchOptions;
   public @property (strong) Class executorClass;
   public @property (strong, readonly) NSURL* bundleURL;
   public @property (strong, readonly) RCTPerformanceLogger* performanceLogger;
-  public @property (weak, readonly) id<RCTBridgeDelegate> delegate;
-  public virtual BOOL isBatchActive();
-  public virtual BOOL moduleIsInitialized:(Class moduleClass);
-  public virtual NSArray* modulesConformingToProtocol:(Protocol* protocol);
   public virtual RCTBridgeModuleDecorator* bridgeModuleDecorator();
   public virtual id moduleForClass:(Class moduleClass);
   public virtual id moduleForName:(NSString* moduleName);
   public virtual id moduleForName:lazilyLoadIfNecessary:(NSString* moduleName, BOOL lazilyLoad);
   public virtual instancetype initWithBundleURL:moduleProvider:launchOptions:(NSURL* bundleURL, RCTBridgeModuleListProvider block, NSDictionary* launchOptions);
   public virtual instancetype initWithDelegate:launchOptions:(id<RCTBridgeDelegate> delegate, NSDictionary* launchOptions);
-  public virtual void enqueueJSCall:args:(NSString* moduleDotMethod, NSArray* args);
-  public virtual void enqueueJSCall:method:args:completion:(NSString* module, NSString* method, NSArray* args, dispatch_block_t completion);
   public virtual void onFastRefresh();
   public virtual void registerSegmentWithId:path:(NSUInteger segmentId, NSString* path);
-  public virtual void reload();
-  public virtual void reloadWithReason:(NSString* reason);
-  public virtual void requestReload();
   public virtual void setRCTTurboModuleRegistry:(id<RCTTurboModuleRegistry> turboModuleRegistry);
 }
 
