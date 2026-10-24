@@ -108,11 +108,6 @@
 
 #pragma mark - RCTArchConfiguratorProtocol
 
-- (BOOL)newArchEnabled
-{
-  return YES;
-}
-
 - (Class)getModuleClassFromName:(const char *)name
 {
   return nullptr;

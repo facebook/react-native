@@ -43,15 +43,6 @@ NSString *RCTBridgeModuleNameForClass(Class bridgeModuleClass);
  */
 NSMutableArray<NSString *> *getModulesLoadedWithOldArch(void);
 
-/**
- * The New Architecture is enabled by default. These APIs are no-ops and will
- * be removed in a future release.
- */
-BOOL RCTTurboModuleEnabled(void)
-    __attribute__((deprecated("TurboModules are always enabled; this always returns YES (NO in test env).")));
-void RCTEnableTurboModule(BOOL enabled)
-    __attribute__((deprecated("No-op. The New Architecture is enabled by default.")));
-
 #ifndef RCT_REMOVE_LEGACY_MODULE_INTEROP
 // Turn on TurboModule interop
 BOOL RCTTurboModuleInteropEnabled(void);
@@ -63,9 +54,6 @@ void RCTEnableTurboModuleInterop(BOOL enabled);
 BOOL RCTFabricInteropLayerEnabled(void);
 void RCTEnableFabricInteropLayer(BOOL enabled);
 #endif // RCT_REMOVE_LEGACY_COMPONENT_INTEROP
-
-BOOL RCTUIManagerDispatchAccessibilityManagerInitOntoMain(void);
-void RCTUIManagerSetDispatchAccessibilityManagerInitOntoMain(BOOL enabled);
 
 typedef enum {
   kRCTBridgeProxyLoggingLevelNone,
