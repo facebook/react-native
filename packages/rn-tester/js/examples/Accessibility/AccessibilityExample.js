@@ -1613,25 +1613,42 @@ class DisplayOptionsStatusExample extends React.Component<{}> {
 }
 
 function ContrastLevelExample(): React.Node {
-  const [contrastLevel, setContrastLevel] = useState<?number>(null);
+  const [contrastLevel, setContrastLevel] = useState<string>('loading');
   const [lastEvent, setLastEvent] = useState<?number>(null);
   useEffect(() => {
+    // Set once an event arrives or the example unmounts, so that a slow starting read can't
+    // overwrite a newer value.
+    let ignoreStartingRead = false;
     const listener = AccessibilityInfo.addEventListener(
       'contrastLevelChanged',
       level => {
+        ignoreStartingRead = true;
         setLastEvent(level);
-        setContrastLevel(level);
+        setContrastLevel(String(level));
       },
     );
     // $FlowFixMe[unused-promise]
-    AccessibilityInfo.getContrastLevel().then(setContrastLevel);
-    return () => listener.remove();
+    AccessibilityInfo.getContrastLevel()
+      .then(level => {
+        if (!ignoreStartingRead) {
+          setContrastLevel(String(level));
+        }
+      })
+      .catch((error: Error) => {
+        if (!ignoreStartingRead) {
+          setContrastLevel(`Unavailable: ${error.message}`);
+        }
+      });
+    return function cleanup() {
+      ignoreStartingRead = true;
+      listener.remove();
+    };
   }, []);
   return (
     <View>
       <RNTesterText>
         {'Contrast level is '}
-        {contrastLevel ?? '…'}.
+        {contrastLevel}.
       </RNTesterText>
       <RNTesterText>
         {'Last contrastLevelChanged event: '}
