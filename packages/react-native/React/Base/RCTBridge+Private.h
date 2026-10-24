@@ -27,13 +27,6 @@ RCT_EXTERN void RCTRegisterModule(Class);
 - (void)enqueueCallback:(NSNumber *)cbID args:(NSArray *)args;
 
 /**
- * This property is mostly used on the main thread, but may be touched from
- * a background thread if the RCTBridge happens to deallocate on a background
- * thread. Therefore, we want all writes to it to be seen atomically.
- */
-@property (atomic, strong) RCTBridge *batchedBridge;
-
-/**
  * An object that allows one to require NativeModules/TurboModules.
  * RCTModuleRegistry is implemented in bridgeless mode and bridge mode.
  */

@@ -21,10 +21,6 @@ category RCTBridge(RCTUIManager) {
   public @property (assign, readonly) RCTUIManager* uiManager;
 }
 
-category RCTBridgeProxy(Cxx) {
-  public @property (assign) std::shared_ptr<facebook::react::CallInvoker> jsCallInvoker;
-}
-
 category RCTBridgeProxy(RCTAccessibilityManager) {
   public @property (assign, readonly) RCTAccessibilityManager* accessibilityManager;
 }

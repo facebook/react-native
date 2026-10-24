@@ -15,7 +15,6 @@
 #import <React/RCTBridge.h>
 #import <React/RCTBridgeModule.h>
 #import <React/RCTBridgeModuleDecorator.h>
-#import <React/RCTBridgeProxy+Cxx.h>
 #import <React/RCTBridgeProxy.h>
 #import <React/RCTComponentViewFactory.h>
 #import <React/RCTConstants.h>
@@ -323,7 +322,6 @@ using namespace facebook::react;
           }
           runtime:_reactInstance->getJavaScriptContext()
           launchOptions:_launchOptions];
-  bridgeProxy.jsCallInvoker = jsCallInvoker;
   bridgeProxy.performanceLogger = _performanceLogger;
   _bridgeProxy = bridgeProxy;
 

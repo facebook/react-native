@@ -29,7 +29,6 @@
  * For this reason, the block should always return new module instances, and
  * module instances should not be shared between bridges.
  */
-typedef NSArray<id<RCTBridgeModule>> * (^RCTBridgeModuleListProvider)(void);
 
 RCT_EXTERN_C_BEGIN
 
