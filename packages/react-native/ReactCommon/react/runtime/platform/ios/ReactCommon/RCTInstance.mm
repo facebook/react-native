@@ -7,7 +7,12 @@
 
 #import "RCTInstance.h"
 
+#import <objc/runtime.h>
+
 #import <memory>
+#import <string>
+#import <type_traits>
+#import <vector>
 
 #import <FBReactNativeSpec/FBReactNativeSpec.h>
 #import <React/NSDataBigString.h>
@@ -63,6 +68,244 @@ using namespace facebook::react;
 
 @interface RCTInstance () <RCTTurboModuleManagerDelegate>
 @end
+
+namespace {
+
+bool hasLoneSurrogate(const UniChar *characters, size_t length)
+{
+  bool hasSurrogate = false;
+  for (size_t i = 0; i < length; i++) {
+    hasSurrogate |= (characters[i] & 0xF800) == 0xD800;
+  }
+  if (!hasSurrogate) {
+    return false;
+  }
+  for (size_t i = 0; i < length; i++) {
+    if ((characters[i] & 0xFC00) == 0xD800 && i + 1 < length && (characters[i + 1] & 0xFC00) == 0xDC00) {
+      i++;
+    } else if ((characters[i] & 0xF800) == 0xD800) {
+      return true;
+    }
+  }
+  return false;
+}
+
+// An argument of a JS module call, read on the calling thread so that the JS thread can create
+// the JS value without Objective-C calls. It has the structure that `convertIdToFollyDynamic`
+// creates, but strings keep their ASCII or UTF-16 characters instead of being encoded as UTF-8.
+class CallArgument {
+ public:
+  explicit CallArgument(id value)
+  {
+    if ([value isKindOfClass:[NSString class]]) {
+      kind_ = Kind::String;
+      setString(value);
+    } else if ([value isKindOfClass:[NSNumber class]]) {
+      setNumber(value);
+    } else if ([value isKindOfClass:[NSArray class]]) {
+      kind_ = Kind::Array;
+      children_.reserve([value count]);
+      for (id element in value) {
+        children_.emplace_back(element);
+      }
+    } else if ([value isKindOfClass:[NSDictionary class]]) {
+      kind_ = Kind::Object;
+      children_.reserve([value count] * 2);
+      for (id key in value) {
+        if ([key isKindOfClass:[NSString class]]) {
+          children_.emplace_back(key);
+        } else if (NSString *numberKey = numberKeyString(key)) {
+          children_.emplace_back(numberKey);
+        } else {
+          continue;
+        }
+        children_.emplace_back(value[key]);
+      }
+    }
+  }
+
+  jsi::Value toJSValue(jsi::Runtime &runtime) const
+  {
+    switch (kind_) {
+      case Kind::Null:
+        return jsi::Value::null();
+      case Kind::Boolean:
+        return jsi::Value(boolean_);
+      case Kind::Number:
+        return jsi::Value(number_);
+      case Kind::String:
+        return createString<jsi::String>(runtime);
+      case Kind::Array: {
+        jsi::Array array(runtime, children_.size());
+        for (size_t i = 0; i < children_.size(); i++) {
+          array.setValueAtIndex(runtime, i, children_[i].toJSValue(runtime));
+        }
+        return array;
+      }
+      case Kind::Object: {
+        jsi::Object object(runtime);
+        for (size_t i = 0; i + 1 < children_.size(); i += 2) {
+          object.setProperty(
+              runtime, children_[i].createString<jsi::PropNameID>(runtime), children_[i + 1].toJSValue(runtime));
+        }
+        return object;
+      }
+    }
+  }
+
+ private:
+  enum class Kind : uint8_t { Null, Boolean, Number, String, Array, Object };
+  enum class Encoding : uint8_t { Ascii, Utf16, Utf8 };
+
+  // Number keys become strings, and other keys are skipped, as `convertIdToFollyDynamic` does. Kept
+  // out of the constructor so that each level of nesting needs less stack.
+  __attribute__((noinline)) static NSString *numberKeyString(id key)
+  {
+    folly::dynamic dynamicKey = convertIdToFollyDynamic(key);
+    return dynamicKey.isNumber() ? @(dynamicKey.asString().c_str()) : nil;
+  }
+
+  void setNumber(NSNumber *value)
+  {
+    // The same rules as `convertIdToFollyDynamic`.
+    switch ([value objCType][0]) {
+      case _C_BOOL:
+        kind_ = Kind::Boolean;
+        boolean_ = [value boolValue];
+        return;
+      case _C_CHR:
+        if ([value isKindOfClass:[@YES class]]) {
+          kind_ = Kind::Boolean;
+          boolean_ = [value boolValue];
+          return;
+        }
+        kind_ = Kind::Number;
+        number_ = (double)[value longLongValue];
+        return;
+      case _C_UCHR:
+      case _C_SHT:
+      case _C_USHT:
+      case _C_INT:
+      case _C_UINT:
+      case _C_LNG:
+      case _C_ULNG:
+      case _C_LNG_LNG:
+      case _C_ULNG_LNG:
+        kind_ = Kind::Number;
+        number_ = (double)[value longLongValue];
+        return;
+      case _C_FLT:
+      case _C_DBL:
+        kind_ = Kind::Number;
+        number_ = [value doubleValue];
+        return;
+      default:
+        return;
+    }
+  }
+
+  void setString(NSString *value)
+  {
+    string_ = [value copy];
+    auto string = (__bridge CFStringRef)string_;
+    CFIndex length = CFStringGetLength(string);
+    length_ = static_cast<size_t>(length);
+    // Point at the string's own characters when CoreFoundation exposes them, and copy them
+    // otherwise.
+    if ((asciiCharacters_ = CFStringGetCStringPtr(string, kCFStringEncodingASCII)) != nullptr) {
+      encoding_ = Encoding::Ascii;
+      return;
+    }
+    if ((utf16Characters_ = CFStringGetCharactersPtr(string)) == nullptr) {
+      ownedCharacters_.resize(length_);
+      if (CFStringGetBytes(
+              string,
+              CFRangeMake(0, length),
+              kCFStringEncodingASCII,
+              0,
+              false,
+              // NOLINTNEXTLINE(cppcoreguidelines-pro-type-reinterpret-cast)
+              reinterpret_cast<UInt8 *>(ownedCharacters_.data()),
+              length,
+              nullptr) == length) {
+        encoding_ = Encoding::Ascii;
+        string_ = nil;
+        return;
+      }
+      ownedCharacters_.clear();
+      ownedUtf16Characters_.resize(length_);
+      // NOLINTNEXTLINE(cppcoreguidelines-pro-type-reinterpret-cast)
+      CFStringGetCharacters(string, CFRangeMake(0, length), reinterpret_cast<UniChar *>(ownedUtf16Characters_.data()));
+    }
+    encoding_ = Encoding::Utf16;
+    // NOLINTNEXTLINE(cppcoreguidelines-pro-type-reinterpret-cast)
+    const auto *characters = utf16Characters_ ?: reinterpret_cast<const UniChar *>(ownedUtf16Characters_.data());
+    // A lone surrogate can't be encoded as UTF-8, so such strings keep converting through UTF-8
+    // as before.
+    if (hasLoneSurrogate(characters, length_)) {
+      NSData *data = [string_ dataUsingEncoding:NSUTF8StringEncoding];
+      encoding_ = Encoding::Utf8;
+      utf16Characters_ = nullptr;
+      ownedUtf16Characters_.clear();
+      ownedCharacters_.assign(static_cast<const char *>(data.bytes), data.length);
+      length_ = data.length;
+    }
+    if (utf16Characters_ == nullptr) {
+      string_ = nil;
+    }
+  }
+
+  template <typename T>
+  T createString(jsi::Runtime &runtime) const
+  {
+    constexpr bool kPropNameID = std::is_same_v<T, jsi::PropNameID>;
+    switch (encoding_) {
+      case Encoding::Ascii: {
+        const char *characters = asciiCharacters_ ?: ownedCharacters_.data();
+        if constexpr (kPropNameID) {
+          return jsi::PropNameID::forAscii(runtime, characters, length_);
+        } else {
+          return jsi::String::createFromAscii(runtime, characters, length_);
+        }
+      }
+      case Encoding::Utf16: {
+        // NOLINTNEXTLINE(cppcoreguidelines-pro-type-reinterpret-cast)
+        const auto *characters =
+            utf16Characters_ ? reinterpret_cast<const char16_t *>(utf16Characters_) : ownedUtf16Characters_.data();
+        if constexpr (kPropNameID) {
+          return jsi::PropNameID::forUtf16(runtime, characters, length_);
+        } else {
+          return jsi::String::createFromUtf16(runtime, characters, length_);
+        }
+      }
+      case Encoding::Utf8: {
+        // NOLINTNEXTLINE(cppcoreguidelines-pro-type-reinterpret-cast)
+        const auto *characters = reinterpret_cast<const uint8_t *>(ownedCharacters_.data());
+        if constexpr (kPropNameID) {
+          return jsi::PropNameID::forUtf8(runtime, characters, length_);
+        } else {
+          return jsi::String::createFromUtf8(runtime, characters, length_);
+        }
+      }
+    }
+  }
+
+  Kind kind_{Kind::Null};
+  Encoding encoding_{Encoding::Ascii};
+  bool boolean_{false};
+  double number_{0};
+  // Keeps `asciiCharacters_` or `utf16Characters_` valid when they point into the string.
+  NSString *string_{nil};
+  const char *asciiCharacters_{nullptr};
+  const UniChar *utf16Characters_{nullptr};
+  size_t length_{0};
+  std::string ownedCharacters_;
+  std::u16string ownedUtf16Characters_;
+  // Array elements, or object keys and values in turn.
+  std::vector<CallArgument> children_;
+};
+
+} // namespace
 
 @implementation RCTInstance {
   std::unique_ptr<ReactInstance> _reactInstance;
@@ -173,6 +416,11 @@ using namespace facebook::react;
 
 - (void)callFunctionOnJSModule:(NSString *)moduleName method:(NSString *)method args:(NSArray *)args
 {
+  auto callArgs = std::make_shared<std::vector<CallArgument>>();
+  callArgs->reserve(args.count);
+  for (id arg in args) {
+    callArgs->emplace_back(arg);
+  }
   // This is called from arbitrary threads, while -invalidate destroys _reactInstance on
   // the JS thread, so checking _valid and dereferencing have to happen as one step.
   std::lock_guard<std::mutex> lock(_invalidationMutex);
@@ -180,7 +428,14 @@ using namespace facebook::react;
     return;
   }
   _reactInstance->callFunctionOnModule(
-      [moduleName UTF8String] ?: "", [method UTF8String] ?: "", convertIdToFollyDynamic(args ? args : @[]));
+      [moduleName UTF8String] ?: "",
+      [method UTF8String] ?: "",
+      [callArgs](jsi::Runtime &runtime, std::vector<jsi::Value> &jsArgs) {
+        jsArgs.reserve(callArgs->size());
+        for (const auto &arg : *callArgs) {
+          jsArgs.push_back(arg.toJSValue(runtime));
+        }
+      });
 }
 
 - (void)invalidate

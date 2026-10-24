@@ -821,4 +821,54 @@ function getResult() {
   EXPECT_EQ(result.getNumber(), 1);
 }
 
+TEST_F(ReactInstanceTest, testCallFunctionOnModule_withArgFactory) {
+  initializeRuntimeWithScript(R"xyz123(
+let result;
+const module = {
+  bar: (a, b) => {
+    result = a + ':' + b;
+  },
+};
+RN$registerCallableModule('foo', () => module);
+function getResult() {
+  return result;
+}
+  )xyz123");
+
+  instance_->callFunctionOnModule(
+      "foo", "bar", [](jsi::Runtime& runtime, std::vector<jsi::Value>& args) {
+        args.emplace_back(jsi::String::createFromAscii(runtime, "baz"));
+        args.emplace_back(2);
+      });
+  step();
+
+  auto result = runtime_->global()
+                    .getPropertyAsFunction(*runtime_, "getResult")
+                    .call(*runtime_);
+  EXPECT_EQ(result.getString(*runtime_).utf8(*runtime_), "baz:2");
+}
+
+TEST_F(ReactInstanceTest, testCallFunctionOnModule_withEmptyArgFactory) {
+  initializeRuntimeWithScript(R"xyz123(
+let result;
+const module = {
+  bar: (...args) => {
+    result = args.length;
+  },
+};
+RN$registerCallableModule('foo', () => module);
+function getResult() {
+  return result;
+}
+  )xyz123");
+
+  instance_->callFunctionOnModule("foo", "bar", ReactInstance::ArgFactory{});
+  step();
+
+  auto result = runtime_->global()
+                    .getPropertyAsFunction(*runtime_, "getResult")
+                    .call(*runtime_);
+  EXPECT_EQ(result.getNumber(), 0);
+}
+
 } // namespace facebook::react
