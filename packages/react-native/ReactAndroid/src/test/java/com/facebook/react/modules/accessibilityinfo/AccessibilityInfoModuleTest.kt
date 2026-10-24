@@ -131,7 +131,7 @@ class AccessibilityInfoModuleTest {
   }
 
   @Test
-  fun notANumberIsTreatedAsTheStandardContrast() {
+  fun notANumberBeforeAnyChangeKeepsTheStandardContrast() {
     resume()
     val listener = registeredListener()
 
@@ -142,6 +142,41 @@ class AccessibilityInfoModuleTest {
     resume()
 
     assertNoContrastEvent()
+    assertThat(currentContrastLevel()).isEqualTo(0.0)
+  }
+
+  @Test
+  fun notANumberFromTheListenerKeepsTheLastLevel() {
+    resume()
+    val listener = registeredListener()
+
+    listener.onContrastChanged(0.5f)
+    listener.onContrastChanged(Float.NaN)
+
+    verify(reactContext, times(1)).emitDeviceEvent(CONTRAST_LEVEL_EVENT, 0.5)
+    verify(reactContext, never()).emitDeviceEvent(CONTRAST_LEVEL_EVENT, 0.0)
+    assertThat(currentContrastLevel()).isEqualTo(0.5)
+  }
+
+  @Test
+  fun notANumberOnResumeKeepsTheLastLevel() {
+    resume()
+    registeredListener().onContrastChanged(0.5f)
+    pause()
+
+    whenever(uiModeManager.contrast).thenReturn(Float.NaN)
+    resume()
+
+    verify(reactContext, times(1)).emitDeviceEvent(CONTRAST_LEVEL_EVENT, 0.5)
+    verify(reactContext, never()).emitDeviceEvent(CONTRAST_LEVEL_EVENT, 0.0)
+    assertThat(currentContrastLevel()).isEqualTo(0.5)
+  }
+
+  @Test
+  fun notANumberAtTheStartIsTheStandardContrast() {
+    whenever(uiModeManager.contrast).thenReturn(Float.NaN)
+    startModule()
+
     assertThat(currentContrastLevel()).isEqualTo(0.0)
   }
 

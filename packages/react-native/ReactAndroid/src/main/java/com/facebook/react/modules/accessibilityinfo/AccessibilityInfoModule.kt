@@ -91,7 +91,8 @@ internal class AccessibilityInfoModule(context: ReactApplicationContext) :
   private var highTextContrastEnabled = false
   // Written on the main thread and read on the native modules thread.
   @Volatile private var contrastLevel = 0f
-  private val warnedAboutContrast = AtomicBoolean(false)
+  private val warnedAboutNaNContrast = AtomicBoolean(false)
+  private val warnedAboutOutOfRangeContrast = AtomicBoolean(false)
   // Set by invalidate(), so that a resume or a contrast change already queued on the main thread
   // can't register listeners or send events after teardown.
   @Volatile private var invalidated = false
@@ -113,7 +114,7 @@ internal class AccessibilityInfoModule(context: ReactApplicationContext) :
         ) {
           ContrastListenerApi34(uiModeManager) { rawLevel ->
             if (!invalidated && reactApplicationContext.hasActiveReactInstance()) {
-              updateAndSendContrastLevelChangeEvent(normalizedContrastLevel(rawLevel))
+              normalizedContrastLevel(rawLevel)?.let { updateAndSendContrastLevelChangeEvent(it) }
             }
           }
         } else {
@@ -123,7 +124,8 @@ internal class AccessibilityInfoModule(context: ReactApplicationContext) :
     accessibilityServiceEnabled = accessibilityManager?.isEnabled ?: false
     reduceMotionEnabled = isReduceMotionEnabledValue
     highTextContrastEnabled = isHighTextContrastEnabledValue
-    contrastLevel = contrastLevelValue
+    // There is no earlier value to keep, so NaN at the start is the standard contrast.
+    contrastLevel = contrastLevelValue ?: 0f
     grayscaleModeEnabled = isGrayscaleEnabledValue
   }
 
@@ -183,7 +185,8 @@ internal class AccessibilityInfoModule(context: ReactApplicationContext) :
       ) != 0
     }
 
-  private val contrastLevelValue: Float
+  /** The current contrast level, clamped to the range -1 to 1, or null if Android reports NaN. */
+  private val contrastLevelValue: Float?
     get() {
       if (Build.VERSION.SDK_INT < Build.VERSION_CODES.UPSIDE_DOWN_CAKE) {
         return 0f
@@ -192,13 +195,24 @@ internal class AccessibilityInfoModule(context: ReactApplicationContext) :
       return normalizedContrastLevel(listener.currentLevel())
     }
 
-  private fun normalizedContrastLevel(rawLevel: Float): Float {
-    val level = normalizeContrast(rawLevel)
-    // `level != rawLevel` is also true for NaN.
-    if (level != rawLevel && !warnedAboutContrast.getAndSet(true)) {
+  /**
+   * Clamps [rawLevel] to the range -1 to 1, or returns null for NaN so the caller can ignore it.
+   */
+  private fun normalizedContrastLevel(rawLevel: Float): Float? {
+    if (rawLevel.isNaN()) {
+      if (!warnedAboutNaNContrast.getAndSet(true)) {
+        FLog.w(
+            ReactConstants.TAG,
+            "AccessibilityInfoModule: UiModeManager reported a contrast level that is not a number, ignoring it",
+        )
+      }
+      return null
+    }
+    val level = rawLevel.coerceIn(-1f, 1f)
+    if (level != rawLevel && !warnedAboutOutOfRangeContrast.getAndSet(true)) {
       FLog.w(
           ReactConstants.TAG,
-          "UiModeManager reported the contrast level $rawLevel, using $level instead",
+          "AccessibilityInfoModule: UiModeManager reported the contrast level $rawLevel, using $level instead",
       )
     }
     return level
@@ -332,7 +346,8 @@ internal class AccessibilityInfoModule(context: ReactApplicationContext) :
     updateAndSendAccessibilityServiceChangeEvent(accessibilityManager?.isEnabled == true)
     updateAndSendReduceMotionChangeEvent()
     updateAndSendHighTextContrastChangeEvent()
-    updateAndSendContrastLevelChangeEvent(contrastLevelValue)
+    // A NaN keeps the last level, so nothing is sent.
+    contrastLevelValue?.let { updateAndSendContrastLevelChangeEvent(it) }
     updateAndSendInvertColorsChangeEvent()
     updateAndSendGrayscaleModeChangeEvent()
   }
@@ -362,14 +377,16 @@ internal class AccessibilityInfoModule(context: ReactApplicationContext) :
     reactApplicationContext.removeLifecycleEventListener(this)
     invalidated = true
     // The contrast listener is added and removed on the UI thread, but invalidate() can run on
-    // another thread.
-    if (UiThreadUtil.isOnUiThread()) {
-      unregisterContrastChangeListener()
-    } else if (!UiThreadUtil.runOnUiThread { unregisterContrastChangeListener() }) {
-      FLog.w(
-          ReactConstants.TAG,
-          "Couldn't post the removal of the contrast listener, so it may leak",
-      )
+    // another thread. There is nothing to remove before Android 14 or without a UiModeManager.
+    if (contrastListener != null) {
+      if (UiThreadUtil.isOnUiThread()) {
+        unregisterContrastChangeListener()
+      } else if (!UiThreadUtil.runOnUiThread { unregisterContrastChangeListener() }) {
+        FLog.w(
+            ReactConstants.TAG,
+            "AccessibilityInfoModule: Couldn't post the removal of the contrast listener, so it may leak",
+        )
+      }
     }
     super.invalidate()
   }
@@ -446,9 +463,5 @@ internal class AccessibilityInfoModule(context: ReactApplicationContext) :
     private const val INVERT_COLOR_EVENT_NAME = "invertColorDidChange"
     private const val GRAYSCALE_MODE_EVENT_NAME = "grayscaleModeDidChange"
     private const val CONTRAST_LEVEL_EVENT_NAME = "contrastLevelDidChange"
-
-    /** Maps NaN to the standard contrast, 0, and clamps everything else to the range -1 to 1. */
-    private fun normalizeContrast(raw: Float): Float =
-        if (raw.isNaN()) 0f else raw.coerceIn(-1f, 1f)
   }
 }
