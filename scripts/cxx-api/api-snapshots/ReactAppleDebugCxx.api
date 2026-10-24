@@ -33,11 +33,6 @@ category RCTBridge(RCTNetworking) {
   public @property (assign, readonly) RCTNetworking* networking;
 }
 
-category RCTBridge(RCTSurfacePresenterStub) {
-  public virtual id<RCTSurfacePresenterStub> surfacePresenter();
-  public virtual void setSurfacePresenter:(id<RCTSurfacePresenterStub> presenter);
-}
-
 category RCTBridge(RCTUIManager) {
   public @property (assign, readonly) RCTUIManager* uiManager;
 }
