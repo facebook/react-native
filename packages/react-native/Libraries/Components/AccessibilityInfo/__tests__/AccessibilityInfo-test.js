@@ -128,6 +128,7 @@ let mockNativeAccessibilityManagerIOS: {
   getCurrentReduceTransparencyState: mockGetCurrentReduceTransparencyState,
   getCurrentVoiceOverState: mockGetCurrentVoiceOverState,
 };
+
 const ANDROID_RECOMMENDED_TIMEOUT = 6000;
 const mockIsHighTextContrastEnabled = jest.fn(onSuccess => onSuccess(true));
 const mockIsGrayscaleEnabled = jest.fn(onSuccess => onSuccess(true));
@@ -847,15 +848,18 @@ describe('AccessibilityInfo', () => {
     });
 
     describe('iOS', () => {
-      it('should return originalTimeout without calling native', async () => {
+      it('should return originalTimeout, as the iOS module has no getRecommendedTimeoutMillis', async () => {
         /* $FlowFixMe[incompatible-type] */
         Platform.OS = 'ios';
+
+        expect(
+          jest.requireMock('../NativeAccessibilityManager').default,
+        ).not.toHaveProperty('getRecommendedTimeoutMillis');
 
         const recommendedTimeoutMillis =
           await AccessibilityInfo.getRecommendedTimeoutMillis(5000);
 
         expect(recommendedTimeoutMillis).toBe(5000);
-        expect(mockGetRecommendedTimeoutMillis).not.toHaveBeenCalled();
       });
     });
   });
