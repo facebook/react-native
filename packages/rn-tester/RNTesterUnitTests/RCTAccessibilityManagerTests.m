@@ -11,6 +11,7 @@
 #import <React/RCTAccessibilityManager+Internal.h>
 #import <React/RCTAccessibilityManager.h>
 #import <React/RCTBridgeModule.h>
+#import <React/RCTLog.h>
 
 // The native module method JS calls, from the generated spec.
 @interface RCTAccessibilityManager (RCTAccessibilityManagerTests)
@@ -105,6 +106,7 @@ static BOOL RCTIsCFBoolean(id value)
 
 - (void)tearDown
 {
+  RCTSetLogFunction(RCTDefaultLogFunction);
   _moduleRegistries = nil;
   [super tearDown];
 }
@@ -190,7 +192,8 @@ static BOOL RCTIsCFBoolean(id value)
   [self postNotification:UIAccessibilityOnOffSwitchLabelsDidChangeNotification];
   [self postNotification:UIAccessibilityOnOffSwitchLabelsDidChangeNotification];
 
-  XCTAssertEqualObjects(eventDispatcher.events, (@[ @[ @"accessibilityPreferencesChanged", RCTTestPreferences(YES, NO) ] ]));
+  XCTAssertEqualObjects(
+      eventDispatcher.events, (@[ @[ @"accessibilityPreferencesChanged", RCTTestPreferences(YES, NO) ] ]));
   XCTAssertEqualObjects([self currentPreferencesOf:manager], RCTTestPreferences(YES, NO));
 }
 
@@ -207,7 +210,8 @@ static BOOL RCTIsCFBoolean(id value)
   [self postNotification:UIAccessibilityShouldDifferentiateWithoutColorDidChangeNotification];
   [self postNotification:UIAccessibilityShouldDifferentiateWithoutColorDidChangeNotification];
 
-  XCTAssertEqualObjects(eventDispatcher.events, (@[ @[ @"accessibilityPreferencesChanged", RCTTestPreferences(NO, YES) ] ]));
+  XCTAssertEqualObjects(
+      eventDispatcher.events, (@[ @[ @"accessibilityPreferencesChanged", RCTTestPreferences(NO, YES) ] ]));
   XCTAssertEqualObjects([self currentPreferencesOf:manager], RCTTestPreferences(NO, YES));
 }
 
@@ -245,8 +249,10 @@ static BOOL RCTIsCFBoolean(id value)
   settingsB.preferences = RCTTestPreferences(NO, YES);
   [self postNotification:UIAccessibilityOnOffSwitchLabelsDidChangeNotification];
 
-  XCTAssertEqualObjects(eventDispatcherA.events, (@[ @[ @"accessibilityPreferencesChanged", RCTTestPreferences(YES, NO) ] ]));
-  XCTAssertEqualObjects(eventDispatcherB.events, (@[ @[ @"accessibilityPreferencesChanged", RCTTestPreferences(NO, YES) ] ]));
+  XCTAssertEqualObjects(
+      eventDispatcherA.events, (@[ @[ @"accessibilityPreferencesChanged", RCTTestPreferences(YES, NO) ] ]));
+  XCTAssertEqualObjects(
+      eventDispatcherB.events, (@[ @[ @"accessibilityPreferencesChanged", RCTTestPreferences(NO, YES) ] ]));
 }
 
 - (void)testReaderValuesReachTheEventAsCFBooleans
@@ -274,15 +280,36 @@ static BOOL RCTIsCFBoolean(id value)
   RCTAccessibilityManagerTestsEventDispatcher *eventDispatcher = [RCTAccessibilityManagerTestsEventDispatcher new];
   RCTAccessibilityManager *manager = [self managerWithEventDispatcher:eventDispatcher];
   XCTAssertNotNil(manager);
+  BOOL systemSwitchLabels = UIAccessibilityIsOnOffSwitchLabelsEnabled();
+  BOOL systemNonColorIndicators = UIAccessibilityShouldDifferentiateWithoutColor();
+  // Start from the opposite of the system values, so a cache left unchanged
+  // would not match the system values below.
+  RCTAccessibilityManagerSetPreferencesReader(manager, ^NSDictionary<NSString *, id> * {
+    return RCTTestPreferences(!systemSwitchLabels, !systemNonColorIndicators);
+  });
+  XCTAssertEqualObjects(
+      [self currentPreferencesOf:manager], RCTTestPreferences(!systemSwitchLabels, !systemNonColorIndicators));
+  NSMutableArray<NSString *> *warnings = [NSMutableArray new];
+  RCTSetLogFunction(
+      ^(RCTLogLevel level,
+        __unused RCTLogSource source,
+        __unused NSString *fileName,
+        __unused NSNumber *lineNumber,
+        NSString *message) {
+        if (level == RCTLogLevelWarning) {
+          [warnings addObject:message];
+        }
+      });
 
   RCTAccessibilityManagerSetPreferencesReader(manager, ^NSDictionary<NSString *, id> * {
     return nil;
   });
 
+  XCTAssertEqual(warnings.count, 1);
+  XCTAssertTrue([warnings.firstObject containsString:@"reader returned nil"]);
   XCTAssertEqualObjects(
-      [self currentPreferencesOf:manager],
-      RCTTestPreferences(
-          UIAccessibilityIsOnOffSwitchLabelsEnabled(), UIAccessibilityShouldDifferentiateWithoutColor()));
+      [self currentPreferencesOf:manager], RCTTestPreferences(systemSwitchLabels, systemNonColorIndicators));
+  XCTAssertEqual(eventDispatcher.events.count, 0);
 }
 
 - (void)testResettingTheReaderReturnsTheSystemValues
