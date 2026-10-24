@@ -213,6 +213,21 @@ describe('AccessibilityInfo', () => {
 
         expect(isBoldTextEnabled).toBe(false);
       });
+
+      it('should return false if NativeAccessibilityInfoAndroid is not available', async () => {
+        /* $FlowFixMe[incompatible-type] */
+        Platform.OS = 'android';
+
+        const nativeAccessibilityInfoModule = jest.requireMock(
+          '../NativeAccessibilityInfo',
+        );
+        nativeAccessibilityInfoModule.default = null;
+
+        const isBoldTextEnabled = await AccessibilityInfo.isBoldTextEnabled();
+
+        expect(mockIsBoldTextEnabledAndroid).not.toHaveBeenCalled();
+        expect(isBoldTextEnabled).toBe(false);
+      });
     });
 
     describe('iOS', () => {

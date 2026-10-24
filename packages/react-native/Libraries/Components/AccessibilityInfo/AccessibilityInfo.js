@@ -93,7 +93,10 @@ const AccessibilityInfo = {
         if (NativeAccessibilityInfoAndroid?.isBoldTextEnabled != null) {
           NativeAccessibilityInfoAndroid.isBoldTextEnabled(resolve);
         } else {
-          // Native code that predates Android support keeps the old behavior.
+          // `isBoldTextEnabled` is an existing API that resolved `false` on
+          // Android before native support was added, so it keeps resolving
+          // `false` when the native module or method is missing. APIs that are
+          // new reject instead, like `isShowBordersEnabled`.
           resolve(false);
         }
       });
@@ -430,7 +433,7 @@ const AccessibilityInfo = {
    *   changes. The argument to the event handler is a boolean. The boolean is `true` when invert
    *   colors is enabled and `false` otherwise.
    * - `boldTextChanged`: Fires when the state of the bold text toggle changes.
-   *   The argument to the event handler is a boolean. The boolean is `true` when a bold text
+   *   The argument to the event handler is a boolean. The boolean is `true` when bold text
    *   is enabled and `false` otherwise. On Android, requires Android 12 (API 31) or later.
    *
    * These events are only supported on iOS:
