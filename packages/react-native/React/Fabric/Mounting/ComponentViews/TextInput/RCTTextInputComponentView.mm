@@ -805,8 +805,16 @@ static NSSet<NSNumber *> *returnKeyTypesSet;
 
 - (void)_emitContentSizeChangeAfterTextChange
 {
+  if (![self _hasEmittedContentSize]) {
+    return;
+  }
   [_backedTextInputView layoutIfNeeded];
   [self _emitContentSizeChangeIfNeeded];
+}
+
+- (BOOL)_hasEmittedContentSize
+{
+  return !CGSizeEqualToSize(_previousContentSize, CGSizeZero);
 }
 
 - (void)_emitContentSizeChangeIfNeeded
