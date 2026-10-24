@@ -91,6 +91,9 @@ RCTSendScrollEventForNativeAnimations_DEPRECATED(UIScrollView *scrollView, NSInt
 
 @end
 
+// Defined in RCTViewComponentView.mm.
+NSUInteger RCTViewComponentViewClippingViewCount(void);
+
 @implementation RCTScrollViewComponentView {
   ScrollViewShadowNode::ConcreteState::Shared _state;
   CGSize _contentSize;
@@ -1003,6 +1006,11 @@ static inline UIViewAnimationOptions animationOptionsWithCurve(UIViewAnimationCu
 - (void)_remountChildren
 {
   if (ReactNativeFeatureFlags::enableViewCulling()) {
+    return;
+  }
+
+  // The walk below only changes something at a view with `removeClippedSubviews` on.
+  if (RCTViewComponentViewClippingViewCount() == 0) {
     return;
   }
 
