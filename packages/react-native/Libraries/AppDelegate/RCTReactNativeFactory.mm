@@ -295,11 +295,6 @@ static NSDictionary *RCTConvertConnectionOptionsToLaunchOptions(UISceneConnectio
     [weakSelf.delegate customizeRootView:(RCTRootView *)rootView];
   };
 
-  configuration.sourceURLForBridge = ^NSURL *_Nullable(RCTBridge *_Nonnull bridge)
-  {
-    return [weakSelf.delegate bundleURL];
-  };
-
   if ([self.delegate respondsToSelector:@selector(extraModulesForBridge:)]) {
     configuration.extraModulesForBridge = ^NSArray<id<RCTBridgeModule>> *_Nonnull(RCTBridge *_Nonnull bridge)
     {
