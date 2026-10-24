@@ -15,6 +15,7 @@
 
 #include <react/renderer/attributedstring/conversions.h>
 #include <react/renderer/core/RawValue.h>
+#include <react/renderer/graphics/Color.h>
 
 #include <array>
 #include <utility>
@@ -131,6 +132,70 @@ static NSDictionary<NSNumber *, NSNumber *> *FontVariationsFromSettings(std::opt
   XCTAssertEqual(NSTextAlignmentFromTextAlign(@"start", LayoutDirection::RightToLeft), NSTextAlignmentRight);
   XCTAssertEqual(NSTextAlignmentFromTextAlign(@"end", LayoutDirection::LeftToRight), NSTextAlignmentRight);
   XCTAssertEqual(NSTextAlignmentFromTextAlign(@"end", LayoutDirection::RightToLeft), NSTextAlignmentLeft);
+}
+
+- (void)testDefaultClearBackgroundIsOmitted
+{
+  TextAttributes textAttributes = TextAttributes::defaultTextAttributes();
+
+  NSDictionary<NSAttributedStringKey, id> *attributes = RCTNSTextAttributesFromTextAttributes(textAttributes);
+
+  XCTAssertNil(attributes[NSBackgroundColorAttributeName]);
+  XCTAssertEqualObjects(attributes[NSForegroundColorAttributeName], [UIColor colorWithRed:0 green:0 blue:0 alpha:1]);
+}
+
+- (void)testOpacityDoesNotAddBackgroundColor
+{
+  TextAttributes textAttributes;
+  textAttributes.opacity = 0.5;
+
+  NSDictionary<NSAttributedStringKey, id> *attributes = RCTNSTextAttributesFromTextAttributes(textAttributes);
+
+  XCTAssertNil(attributes[NSBackgroundColorAttributeName]);
+  XCTAssertEqualObjects(attributes[NSForegroundColorAttributeName], [UIColor colorWithWhite:0 alpha:0.5]);
+}
+
+- (void)testDefaultClearBackgroundWithOpacityIsOmitted
+{
+  TextAttributes textAttributes = TextAttributes::defaultTextAttributes();
+  textAttributes.opacity = 0.5;
+
+  NSDictionary<NSAttributedStringKey, id> *attributes = RCTNSTextAttributesFromTextAttributes(textAttributes);
+
+  XCTAssertNil(attributes[NSBackgroundColorAttributeName]);
+  XCTAssertEqualObjects(attributes[NSForegroundColorAttributeName], [UIColor colorWithRed:0 green:0 blue:0 alpha:0.5]);
+}
+
+- (void)testVisibleBackgroundColorPreservesAlphaWithOpacity
+{
+  TextAttributes textAttributes;
+  textAttributes.backgroundColor = colorFromComponents({.red = 1, .alpha = 0.5, .colorSpace = ColorSpace::sRGB});
+
+  NSDictionary<NSAttributedStringKey, id> *attributes = RCTNSTextAttributesFromTextAttributes(textAttributes);
+
+  XCTAssertEqualObjects(attributes[NSBackgroundColorAttributeName], [UIColor colorWithRed:1 green:0 blue:0 alpha:0.5]);
+
+  textAttributes.opacity = 0.5;
+  attributes = RCTNSTextAttributesFromTextAttributes(textAttributes);
+
+  XCTAssertEqualObjects(attributes[NSBackgroundColorAttributeName], [UIColor colorWithRed:1 green:0 blue:0 alpha:0.25]);
+}
+
+- (void)testForegroundColorPreservesAlphaWithOpacity
+{
+  TextAttributes textAttributes = TextAttributes::defaultTextAttributes();
+  textAttributes.foregroundColor = colorFromComponents({.blue = 1, .alpha = 0.5, .colorSpace = ColorSpace::sRGB});
+
+  NSDictionary<NSAttributedStringKey, id> *attributes = RCTNSTextAttributesFromTextAttributes(textAttributes);
+
+  XCTAssertNil(attributes[NSBackgroundColorAttributeName]);
+  XCTAssertEqualObjects(attributes[NSForegroundColorAttributeName], [UIColor colorWithRed:0 green:0 blue:1 alpha:0.5]);
+
+  textAttributes.opacity = 0.5;
+  attributes = RCTNSTextAttributesFromTextAttributes(textAttributes);
+
+  XCTAssertNil(attributes[NSBackgroundColorAttributeName]);
+  XCTAssertEqualObjects(attributes[NSForegroundColorAttributeName], [UIColor colorWithRed:0 green:0 blue:1 alpha:0.25]);
 }
 
 - (void)testSamenessOfEmptyAttributedStrings
